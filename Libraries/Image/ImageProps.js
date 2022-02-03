@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,6 +15,8 @@ import type {EdgeInsetsProp} from '../StyleSheet/EdgeInsetsPropType';
 import type {ImageSource} from './ImageSource';
 import type {ViewStyleProp, ImageStyleProp} from '../StyleSheet/StyleSheet';
 import type {ViewProps} from '../Components/View/ViewPropTypes';
+import type {Node, Ref} from 'react';
+import typeof Image from './Image';
 
 export type ImageLoadEvent = SyntheticEvent<
   $ReadOnly<{|
@@ -30,19 +32,19 @@ type IOSImageProps = $ReadOnly<{|
   /**
    * A static image to display while loading the image source.
    *
-   * See https://reactnative.dev/docs/image.html#defaultsource
+   * See https://reactnative.dev/docs/image#defaultsource
    */
   defaultSource?: ?ImageSource,
   /**
    * Invoked when a partial load of the image is complete.
    *
-   * See https://reactnative.dev/docs/image.html#onpartialload
+   * See https://reactnative.dev/docs/image#onpartialload
    */
   onPartialLoad?: ?() => void,
   /**
    * Invoked on download progress with `{nativeEvent: {loaded, total}}`.
    *
-   * See https://reactnative.dev/docs/image.html#onprogress
+   * See https://reactnative.dev/docs/image#onprogress
    */
   onProgress?: ?(
     event: SyntheticEvent<$ReadOnly<{|loaded: number, total: number|}>>,
@@ -63,7 +65,7 @@ export type ImageProps = {|
   /**
    * When true, indicates the image is an accessibility element.
    *
-   * See https://reactnative.dev/docs/image.html#accessible
+   * See https://reactnative.dev/docs/image#accessible
    */
   accessible?: ?boolean,
 
@@ -76,26 +78,26 @@ export type ImageProps = {|
    * The text that's read by the screen reader when the user interacts with
    * the image.
    *
-   * See https://reactnative.dev/docs/image.html#accessibilitylabel
+   * See https://reactnative.dev/docs/image#accessibilitylabel
    */
   accessibilityLabel?: ?Stringish,
 
   /**
    * blurRadius: the blur radius of the blur filter added to the image
    *
-   * See https://reactnative.dev/docs/image.html#blurradius
+   * See https://reactnative.dev/docs/image#blurradius
    */
   blurRadius?: ?number,
 
   /**
-   * See https://reactnative.dev/docs/image.html#capinsets
+   * See https://reactnative.dev/docs/image#capinsets
    */
   capInsets?: ?EdgeInsetsProp,
 
   /**
    * Invoked on load error with `{nativeEvent: {error}}`.
    *
-   * See https://reactnative.dev/docs/image.html#onerror
+   * See https://reactnative.dev/docs/image#onerror
    */
   onError?: ?(
     event: SyntheticEvent<
@@ -109,7 +111,7 @@ export type ImageProps = {|
    * Invoked on mount and layout changes with
    * `{nativeEvent: {layout: {x, y, width, height}}}`.
    *
-   * See https://reactnative.dev/docs/image.html#onlayout
+   * See https://reactnative.dev/docs/image#onlayout
    */
 
   onLayout?: ?(event: LayoutEvent) => mixed,
@@ -117,38 +119,38 @@ export type ImageProps = {|
   /**
    * Invoked when load completes successfully.
    *
-   * See https://reactnative.dev/docs/image.html#onload
+   * See https://reactnative.dev/docs/image#onload
    */
   onLoad?: ?(event: ImageLoadEvent) => void,
 
   /**
    * Invoked when load either succeeds or fails.
    *
-   * See https://reactnative.dev/docs/image.html#onloadend
+   * See https://reactnative.dev/docs/image#onloadend
    */
   onLoadEnd?: ?() => void,
 
   /**
    * Invoked on load start.
    *
-   * See https://reactnative.dev/docs/image.html#onloadstart
+   * See https://reactnative.dev/docs/image#onloadstart
    */
   onLoadStart?: ?() => void,
 
   /**
-   * See https://reactnative.dev/docs/image.html#resizemethod
+   * See https://reactnative.dev/docs/image#resizemethod
    */
   resizeMethod?: ?('auto' | 'resize' | 'scale'),
 
   /**
    * The image source (either a remote URL or a local file resource).
    *
-   * See https://reactnative.dev/docs/image.html#source
+   * See https://reactnative.dev/docs/image#source
    */
   source?: ?ImageSource,
 
   /**
-   * See https://reactnative.dev/docs/image.html#style
+   * See https://reactnative.dev/docs/image#style
    */
   style?: ?ImageStyleProp,
 
@@ -156,7 +158,7 @@ export type ImageProps = {|
    * Determines how to resize the image when the frame doesn't match the raw
    * image dimensions.
    *
-   * See https://reactnative.dev/docs/image.html#resizemode
+   * See https://reactnative.dev/docs/image#resizemode
    */
   resizeMode?: ?('cover' | 'contain' | 'stretch' | 'repeat' | 'center'),
 
@@ -164,10 +166,36 @@ export type ImageProps = {|
    * A unique identifier for this element to be used in UI Automation
    * testing scripts.
    *
-   * See https://reactnative.dev/docs/image.html#testid
+   * See https://reactnative.dev/docs/image#testid
    */
   testID?: ?string,
 
   src?: empty,
   children?: empty,
 |};
+
+export type ImageBackgroundProps = $ReadOnly<{|
+  ...ImageProps,
+  children?: Node,
+
+  /**
+   * Style applied to the outer View component
+   *
+   * See https://reactnative.dev/docs/imagebackground#style
+   */
+  style?: ?ViewStyleProp,
+
+  /**
+   * Style applied to the inner Image component
+   *
+   * See https://reactnative.dev/docs/imagebackground#imagestyle
+   */
+  imageStyle?: ?ImageStyleProp,
+
+  /**
+   * Allows to set a reference to the inner Image component
+   *
+   * See https://reactnative.dev/docs/imagebackground#imageref
+   */
+  imageRef?: Ref<Image>,
+|}>;

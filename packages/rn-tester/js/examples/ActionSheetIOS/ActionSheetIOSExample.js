@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -85,6 +85,41 @@ class ActionSheetTintExample extends React.Component<
         cancelButtonIndex: CANCEL_INDEX,
         destructiveButtonIndex: DESTRUCTIVE_INDEX,
         tintColor: 'green',
+      },
+      buttonIndex => {
+        this.setState({clicked: BUTTONS[buttonIndex]});
+      },
+    );
+  };
+}
+
+class ActionSheetCancelButtonTintExample extends React.Component<
+  $FlowFixMeProps,
+  $FlowFixMeState,
+> {
+  state = {
+    clicked: 'none',
+  };
+
+  render() {
+    return (
+      <View>
+        <Text onPress={this.showActionSheet} style={style.button}>
+          Click to show the ActionSheet
+        </Text>
+        <Text>Clicked button: {this.state.clicked}</Text>
+      </View>
+    );
+  }
+
+  showActionSheet = () => {
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options: BUTTONS,
+        cancelButtonIndex: CANCEL_INDEX,
+        destructiveButtonIndex: DESTRUCTIVE_INDEX,
+        tintColor: 'green',
+        cancelButtonTintColor: 'brown',
       },
       buttonIndex => {
         this.setState({clicked: BUTTONS[buttonIndex]});
@@ -340,6 +375,12 @@ exports.examples = [
     title: 'Show Action Sheet with tinted buttons',
     render(): React.Element<any> {
       return <ActionSheetTintExample />;
+    },
+  },
+  {
+    title: 'Show Action Sheet with cancel tinted button',
+    render(): React.Element<any> {
+      return <ActionSheetCancelButtonTintExample />;
     },
   },
   {

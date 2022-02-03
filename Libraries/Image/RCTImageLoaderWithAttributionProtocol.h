@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,13 +10,8 @@
 #import <React/RCTImageLoaderProtocol.h>
 #import <React/RCTImageURLLoaderWithAttribution.h>
 
-RCT_EXTERN BOOL RCTImageLoadingInstrumentationEnabled(void);
 RCT_EXTERN BOOL RCTImageLoadingPerfInstrumentationEnabled(void);
-RCT_EXTERN void RCTEnableImageLoadingInstrumentation(BOOL enabled);
 RCT_EXTERN void RCTEnableImageLoadingPerfInstrumentation(BOOL enabled);
-
-RCT_EXTERN BOOL RCTGetImageLoadingPerfInstrumentationForFabricEnabled();
-RCT_EXTERN void RCTSetImageLoadingPerfInstrumentationForFabricEnabledBlock(BOOL (^getEnabled)());
 
 @protocol RCTImageLoaderWithAttributionProtocol<RCTImageLoaderProtocol, RCTImageLoaderLoggableProtocol>
 

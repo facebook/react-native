@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,12 +9,16 @@
 #import <React/RCTNativeAnimatedModule.h>
 #import <React/RCTNativeAnimatedNodesManager.h>
 #import <React/RCTLog.h>
+#import <React/RCTInitializing.h>
 
 #import <RCTTypeSafety/RCTConvertHelpers.h>
 
 #import "RCTAnimationPlugins.h"
 
 typedef void (^AnimatedOperation)(RCTNativeAnimatedNodesManager *nodesManager);
+
+@interface RCTNativeAnimatedModule () <RCTInitializing>
+@end
 
 @implementation RCTNativeAnimatedModule
 {
@@ -69,10 +73,9 @@ RCT_EXPORT_MODULE();
   [bridge.surfacePresenter addObserver:self];
 }
 
-- (void)setModuleRegistry:(RCTModuleRegistry *)moduleRegistry
+- (void)initialize
 {
-  [super setModuleRegistry:moduleRegistry];
-  [[moduleRegistry moduleForName:"EventDispatcher"] addDispatchObserver:self];
+  [[self.moduleRegistry moduleForName:"EventDispatcher"] addDispatchObserver:self];
 }
 
 /*

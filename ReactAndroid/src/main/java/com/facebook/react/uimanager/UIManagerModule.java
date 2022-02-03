@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -89,21 +89,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     implements OnBatchCompleteListener, LifecycleEventListener, UIManager {
   public static final String TAG = UIManagerModule.class.getSimpleName();
 
-  /** Enables lazy discovery of a specific {@link ViewManager} by its name. */
-  public interface ViewManagerResolver {
-    /**
-     * {@class UIManagerModule} class uses this method to get a ViewManager by its name. This is the
-     * same name that comes from JS by {@code UIManager.ViewManagerName} call.
-     */
-    @Nullable
-    ViewManager getViewManager(String viewManagerName);
-
-    /**
-     * Provides a list of view manager names to register in JS as {@code UIManager.ViewManagerName}
-     */
-    List<String> getViewManagerNames();
-  }
-
   /** Resolves a name coming from native side to a name of the event that is exposed to JS. */
   public interface CustomEventNamesResolver {
     /** Returns custom event name by the provided event name. */
@@ -129,6 +114,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   private volatile int mViewManagerConstantsCacheSize;
 
   private int mBatchId = 0;
+  private int mNumRootViews = 0;
 
   @SuppressWarnings("deprecated")
   public UIManagerModule(
@@ -457,6 +443,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
             -1);
 
     mUIImplementation.registerRootView(rootView, tag, themedRootContext);
+    mNumRootViews++;
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     return tag;
   }
@@ -480,6 +467,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   @ReactMethod
   public void removeRootView(int rootViewTag) {
     mUIImplementation.removeRootView(rootViewTag);
+    mNumRootViews--;
   }
 
   public void updateNodeSize(int nodeViewTag, int newWidth, int newHeight) {
@@ -820,7 +808,12 @@ public class UIManagerModule extends ReactContextBaseJavaModule
       listener.willDispatchViewUpdates(this);
     }
     try {
-      mUIImplementation.dispatchViewUpdates(batchId);
+      // If there are no RootViews registered, there will be no View updates to dispatch.
+      // This is a hack to prevent this from being called when Fabric is used everywhere.
+      // This should no longer be necessary in Bridgeless Mode.
+      if (mNumRootViews > 0) {
+        mUIImplementation.dispatchViewUpdates(batchId);
+      }
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
@@ -962,6 +955,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     public void onLowMemory() {}
   }
 
+  @Override
   public View resolveView(int tag) {
     UiThreadUtil.assertOnUiThread();
     return mUIImplementation

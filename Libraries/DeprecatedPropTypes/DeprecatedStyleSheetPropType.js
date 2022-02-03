@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,10 +15,10 @@ const flattenStyle = require('../StyleSheet/flattenStyle');
 
 function DeprecatedStyleSheetPropType(shape: {
   [key: string]: ReactPropsCheckType,
-  ...,
+  ...
 }): ReactPropsCheckType {
   const shapePropType = deprecatedCreateStrictShapeTypeChecker(shape);
-  return function(props, propName, componentName, location?, ...rest) {
+  return function (props, propName, componentName, location?, ...rest) {
     let newProps = props;
     if (props[propName]) {
       // Just make a dummy prop object with only the flattened style

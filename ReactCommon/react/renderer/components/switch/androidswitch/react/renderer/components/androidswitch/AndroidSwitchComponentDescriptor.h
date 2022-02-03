@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -27,10 +27,9 @@ class AndroidSwitchComponentDescriptor final
         measurementsManager_(std::make_shared<AndroidSwitchMeasurementsManager>(
             contextContainer_)) {}
 
-  void adopt(UnsharedShadowNode shadowNode) const override {
+  void adopt(ShadowNode::Unshared const &shadowNode) const override {
     ConcreteComponentDescriptor::adopt(shadowNode);
 
-    assert(std::dynamic_pointer_cast<AndroidSwitchShadowNode>(shadowNode));
     auto androidSwitchShadowNode =
         std::static_pointer_cast<AndroidSwitchShadowNode>(shadowNode);
 

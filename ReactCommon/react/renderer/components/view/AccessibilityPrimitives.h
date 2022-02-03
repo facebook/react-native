@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,9 @@
 
 #pragma once
 
+#include <butter/optional.h>
 #include <cinttypes>
+#include <string>
 
 namespace facebook {
 namespace react {
@@ -31,6 +33,7 @@ enum class AccessibilityTraits : uint32_t {
   CausesPageTurn = (1 << 14),
   Header = (1 << 15),
   Switch = (1 << 16),
+  TabBar = (1 << 17),
 };
 
 constexpr enum AccessibilityTraits operator|(
@@ -44,6 +47,11 @@ constexpr enum AccessibilityTraits operator&(
     const enum AccessibilityTraits rhs) {
   return (enum AccessibilityTraits)((uint32_t)lhs & (uint32_t)rhs);
 }
+
+struct AccessibilityAction {
+  std::string name{""};
+  butter::optional<std::string> label{};
+};
 
 struct AccessibilityState {
   bool disabled{false};
@@ -64,6 +72,26 @@ constexpr bool operator==(
 constexpr bool operator!=(
     AccessibilityState const &lhs,
     AccessibilityState const &rhs) {
+  return !(rhs == lhs);
+}
+
+struct AccessibilityValue {
+  butter::optional<int> min;
+  butter::optional<int> max;
+  butter::optional<int> now;
+  butter::optional<std::string> text{};
+};
+
+constexpr bool operator==(
+    AccessibilityValue const &lhs,
+    AccessibilityValue const &rhs) {
+  return lhs.min == rhs.min && lhs.max == rhs.max && lhs.now == rhs.now &&
+      lhs.text == rhs.text;
+}
+
+constexpr bool operator!=(
+    AccessibilityValue const &lhs,
+    AccessibilityValue const &rhs) {
   return !(rhs == lhs);
 }
 

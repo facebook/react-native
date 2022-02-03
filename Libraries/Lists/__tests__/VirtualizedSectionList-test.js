@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -103,26 +103,37 @@ describe('VirtualizedSectionList', () => {
 
   it('handles separators correctly', () => {
     const infos = [];
-    const component = ReactTestRenderer.create(
-      <VirtualizedSectionList
-        ItemSeparatorComponent={props => <separator {...props} />}
-        sections={[
-          {title: 's0', data: [{key: 'i0'}, {key: 'i1'}, {key: 'i2'}]},
-        ]}
-        renderItem={info => {
-          infos.push(info);
-          return <item title={info.item.key} />;
-        }}
-        getItem={(data, key) => data[key]}
-        getItemCount={data => data.length}
-      />,
-    );
+    let component;
+    ReactTestRenderer.act(() => {
+      component = ReactTestRenderer.create(
+        <VirtualizedSectionList
+          ItemSeparatorComponent={props => <separator {...props} />}
+          sections={[
+            {title: 's0', data: [{key: 'i0'}, {key: 'i1'}, {key: 'i2'}]},
+          ]}
+          renderItem={info => {
+            infos.push(info);
+            return <item title={info.item.key} />;
+          }}
+          getItem={(data, key) => data[key]}
+          getItemCount={data => data.length}
+        />,
+      );
+    });
     expect(component).toMatchSnapshot();
-    infos[1].separators.highlight();
+
+    ReactTestRenderer.act(() => {
+      infos[1].separators.highlight();
+    });
     expect(component).toMatchSnapshot();
-    infos[2].separators.updateProps('leading', {press: true});
+    ReactTestRenderer.act(() => {
+      infos[2].separators.updateProps('leading', {press: true});
+    });
     expect(component).toMatchSnapshot();
-    infos[1].separators.unhighlight();
+    ReactTestRenderer.act(() => {
+      infos[1].separators.unhighlight();
+    });
+    expect(component).toMatchSnapshot();
   });
 
   it('handles nested lists', () => {
@@ -158,7 +169,9 @@ describe('VirtualizedSectionList', () => {
   describe('scrollToLocation', () => {
     const ITEM_HEIGHT = 100;
 
-    const createVirtualizedSectionList = props => {
+    const createVirtualizedSectionList = (
+      props: void | $TEMPORARY$object<{stickySectionHeadersEnabled: boolean}>,
+    ) => {
       const component = ReactTestRenderer.create(
         <VirtualizedSectionList
           sections={[
@@ -196,7 +209,7 @@ describe('VirtualizedSectionList', () => {
 
       const viewOffset = 25;
 
-      // $FlowFixMe scrollToLocation isn't on instance
+      // $FlowFixMe[prop-missing] scrollToLocation isn't on instance
       instance?.scrollToLocation({
         sectionIndex: 0,
         itemIndex: 1,

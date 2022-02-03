@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,95 +10,124 @@
 
 'use strict';
 
-const React = require('react');
+import * as React from 'react';
 
-const {
-  PermissionsAndroid,
-  Picker,
-  StyleSheet,
-  Text,
-  TouchableWithoutFeedback,
-  View,
-} = require('react-native');
+import {PermissionsAndroid, StyleSheet, Text, View} from 'react-native';
+import RNTOption from '../../components/RNTOption';
+import RNTesterButton from '../../components/RNTesterButton';
 
-const Item = Picker.Item;
+function PermissionsExample() {
+  const [permission, setPermission] = React.useState(
+    PermissionsAndroid.PERMISSIONS.CAMERA,
+  );
+  const [hasPermission, setHasPermission] = React.useState('Not Checked');
 
-class PermissionsExample extends React.Component<{...}, $FlowFixMeState> {
-  state = {
-    permission: PermissionsAndroid.PERMISSIONS.CAMERA,
-    hasPermission: 'Not Checked',
+  const requestPermission = async () => {
+    let result;
+    try {
+      result = await PermissionsAndroid.request(permission, {
+        title: 'Permission Explanation',
+        message:
+          'The app needs the following permission ' +
+          permission +
+          ' because of reasons. Please approve.',
+      });
+      setHasPermission(result + ' for ' + permission);
+    } catch (e) {
+      throw e;
+    }
   };
 
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.text}>Permission Name:</Text>
-        <Picker
-          style={styles.picker}
-          selectedValue={this.state.permission}
-          onValueChange={this._onSelectPermission.bind(this)}>
-          <Item
+  const checkPermission = async () => {
+    let result;
+    try {
+      result = await PermissionsAndroid.check(permission);
+    } catch (e) {
+      throw e;
+    }
+    setHasPermission(`${result ? 'Granted' : 'Revoked'} for ${permission}`);
+  };
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.block}>
+        <Text style={styles.title}>Select Permission</Text>
+        <View style={styles.row}>
+          <RNTOption
             label={PermissionsAndroid.PERMISSIONS.CAMERA}
-            value={PermissionsAndroid.PERMISSIONS.CAMERA}
+            key={PermissionsAndroid.PERMISSIONS.CAMERA}
+            onPress={() => setPermission(PermissionsAndroid.PERMISSIONS.CAMERA)}
+            selected={permission === PermissionsAndroid.PERMISSIONS.CAMERA}
+            style={styles.option}
           />
-          <Item
+          <RNTOption
             label={PermissionsAndroid.PERMISSIONS.READ_CALENDAR}
-            value={PermissionsAndroid.PERMISSIONS.READ_CALENDAR}
+            key={PermissionsAndroid.PERMISSIONS.READ_CALENDAR}
+            onPress={() =>
+              setPermission(PermissionsAndroid.PERMISSIONS.READ_CALENDAR)
+            }
+            selected={
+              permission === PermissionsAndroid.PERMISSIONS.READ_CALENDAR
+            }
+            style={styles.option}
           />
-          <Item
+          <RNTOption
             label={PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION}
-            value={PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION}
+            key={PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION}
+            onPress={() =>
+              setPermission(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
+            }
+            selected={
+              permission === PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+            }
+            style={styles.option}
           />
-        </Picker>
-        <TouchableWithoutFeedback onPress={this._checkPermission}>
-          <View>
-            <Text style={[styles.touchable, styles.text]}>
-              Check Permission
-            </Text>
-          </View>
-        </TouchableWithoutFeedback>
-        <Text style={styles.text}>
-          Permission Status: {this.state.hasPermission}
-        </Text>
-        <TouchableWithoutFeedback onPress={this._requestPermission}>
-          <View>
-            <Text style={[styles.touchable, styles.text]}>
-              Request Permission
-            </Text>
-          </View>
-        </TouchableWithoutFeedback>
+        </View>
       </View>
-    );
-  }
-
-  _onSelectPermission = (permission: string | number) => {
-    this.setState({
-      permission: permission,
-    });
-  };
-
-  _checkPermission = async () => {
-    let result = await PermissionsAndroid.check(this.state.permission);
-    this.setState({
-      hasPermission:
-        (result ? 'Granted' : 'Revoked') + ' for ' + this.state.permission,
-    });
-  };
-
-  _requestPermission = async () => {
-    let result = await PermissionsAndroid.request(this.state.permission, {
-      title: 'Permission Explanation',
-      message:
-        'The app needs the following permission ' +
-        this.state.permission +
-        ' because of reasons. Please approve.',
-    });
-
-    this.setState({
-      hasPermission: result + ' for ' + this.state.permission,
-    });
-  };
+      <RNTesterButton onPress={checkPermission}>
+        <View>
+          <Text style={[styles.touchable, styles.text]}>Check Permission</Text>
+        </View>
+      </RNTesterButton>
+      <RNTesterButton onPress={requestPermission}>
+        <View>
+          <Text style={[styles.touchable, styles.text]}>
+            Request Permission
+          </Text>
+        </View>
+      </RNTesterButton>
+      <Text style={styles.text}>Permission Status: {hasPermission}</Text>
+    </View>
+  );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
+  },
+  block: {
+    borderColor: 'rgba(0,0,0, 0.1)',
+    borderBottomWidth: 1,
+    padding: 6,
+  },
+  row: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  title: {
+    fontWeight: 'bold',
+  },
+  text: {
+    fontSize: 20,
+  },
+  touchable: {
+    color: '#007AFF',
+  },
+  option: {
+    margin: 6,
+  },
+});
 
 exports.displayName = (undefined: ?string);
 exports.framework = 'React';
@@ -113,19 +142,3 @@ exports.examples = [
     render: (): React.Node => <PermissionsExample />,
   },
 ];
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'white',
-  },
-  text: {
-    margin: 10,
-  },
-  touchable: {
-    color: '#007AFF',
-  },
-  picker: {
-    flex: 1,
-  },
-});

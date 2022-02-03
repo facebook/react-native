@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -26,8 +26,7 @@ type NativeProps = $ReadOnly<{|
   testIdentifier?: ?string,
 |}>;
 
-const RCTSnapshotNativeComponent: HostComponent<NativeProps> = requireNativeComponent<NativeProps>(
-  'RCTSnapshot',
-);
+const RCTSnapshotNativeComponent: HostComponent<NativeProps> =
+  requireNativeComponent<NativeProps>('RCTSnapshot');
 
 module.exports = RCTSnapshotNativeComponent;

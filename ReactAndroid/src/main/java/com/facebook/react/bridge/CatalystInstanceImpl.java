@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -85,8 +85,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private final String mJsPendingCallsTitleForTrace =
       "pending_js_calls_instance" + sNextInstanceIdForTrace.getAndIncrement();
   private volatile boolean mDestroyed = false;
-  private volatile boolean mNativeModulesThreadDestructionComplete = false;
-  private volatile boolean mJSThreadDestructionComplete = false;
   private final TraceListener mTraceListener;
   private final JavaScriptModuleRegistry mJSModuleRegistry;
   private final JSBundleLoader mJSBundleLoader;
@@ -110,7 +108,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
   // C++ parts
   private final HybridData mHybridData;
 
-  private static native HybridData initHybrid();
+  private static native HybridData initHybrid(
+      boolean enableRuntimeScheduler, boolean enableRuntimeSchedulerInTurboModule);
 
   public native CallInvokerHolderImpl getJSCallInvokerHolder();
 
@@ -125,7 +124,15 @@ public class CatalystInstanceImpl implements CatalystInstance {
     FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge.");
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "createCatalystInstanceImpl");
 
-    mHybridData = initHybrid();
+    if (ReactFeatureFlags.enableRuntimeSchedulerInTurboModule
+        && !ReactFeatureFlags.enableRuntimeScheduler) {
+      Assertions.assertUnreachable();
+    }
+
+    mHybridData =
+        initHybrid(
+            ReactFeatureFlags.enableRuntimeScheduler,
+            ReactFeatureFlags.enableRuntimeSchedulerInTurboModule);
 
     mReactQueueConfiguration =
         ReactQueueConfigurationImpl.create(
@@ -141,6 +148,11 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
     FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge before initializeBridge");
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "initializeCxxBridge");
+
+    if (ReactFeatureFlags.warnOnLegacyNativeModuleSystemUse) {
+      warnOnLegacyNativeModuleSystemUse();
+    }
+
     initializeBridge(
         new BridgeCallback(this),
         jsExecutor,
@@ -207,6 +219,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   private native void jniExtendNativeModules(
       Collection<JavaModuleWrapper> javaModules, Collection<ModuleHolder> cxxModules);
+
+  private native void warnOnLegacyNativeModuleSystemUse();
 
   private native void initializeBridge(
       ReactCallback callback,
@@ -551,8 +565,9 @@ public class CatalystInstanceImpl implements CatalystInstance {
     return mJavaScriptContextHolder;
   }
 
-  @Override
   public native RuntimeExecutor getRuntimeExecutor();
+
+  public native RuntimeScheduler getRuntimeScheduler();
 
   @Override
   public void addJSIModules(List<JSIModuleSpec> jsiModules) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,6 +7,7 @@
 
 #include "Instance.h"
 
+#include "ErrorUtils.h"
 #include "JSBigString.h"
 #include "JSBundleType.h"
 #include "JSExecutor.h"
@@ -246,7 +247,26 @@ std::shared_ptr<CallInvoker> Instance::getJSCallInvoker() {
 }
 
 RuntimeExecutor Instance::getRuntimeExecutor() {
-  return nativeToJsBridge_->getRuntimeExecutor();
+  std::weak_ptr<NativeToJsBridge> weakNativeToJsBridge = nativeToJsBridge_;
+
+  auto runtimeExecutor =
+      [weakNativeToJsBridge](
+          std::function<void(jsi::Runtime & runtime)> &&callback) {
+        if (auto strongNativeToJsBridge = weakNativeToJsBridge.lock()) {
+          strongNativeToJsBridge->runOnExecutorQueue(
+              [callback = std::move(callback)](JSExecutor *executor) {
+                jsi::Runtime *runtime =
+                    (jsi::Runtime *)executor->getJavaScriptContext();
+                try {
+                  callback(*runtime);
+                  executor->flush();
+                } catch (jsi::JSError &originalError) {
+                  handleJSError(*runtime, originalError, true);
+                }
+              });
+        }
+      };
+  return runtimeExecutor;
 }
 
 std::shared_ptr<CallInvoker> Instance::getDecoratedNativeCallInvoker(

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,7 +14,6 @@
 #include <ReactCommon/TurboCxxModule.h>
 #include <ReactCommon/TurboModuleBinding.h>
 #include <ReactCommon/TurboModulePerfLogger.h>
-#include <react/jni/JMessageQueueThread.h>
 
 #include "TurboModuleManager.h"
 
@@ -26,20 +25,44 @@ TurboModuleManager::TurboModuleManager(
     RuntimeExecutor runtimeExecutor,
     std::shared_ptr<CallInvoker> jsCallInvoker,
     std::shared_ptr<CallInvoker> nativeCallInvoker,
-    jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate)
+    jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate,
+    bool useGlobalCallbackCleanupScopeUsingRetainJSCallback,
+    bool useTurboModuleManagerCallbackCleanupScope)
     : javaPart_(jni::make_global(jThis)),
       runtimeExecutor_(runtimeExecutor),
       jsCallInvoker_(jsCallInvoker),
       nativeCallInvoker_(nativeCallInvoker),
       delegate_(jni::make_global(delegate)),
-      turboModuleCache_(std::make_shared<TurboModuleCache>()) {}
+      turboModuleCache_(std::make_shared<TurboModuleCache>()) {
+  if (useGlobalCallbackCleanupScopeUsingRetainJSCallback) {
+    longLivedObjectCollection_ = nullptr;
+    retainJSCallback_ = [](jsi::Function &&callback,
+                           jsi::Runtime &runtime,
+                           std::shared_ptr<CallInvoker> jsInvoker) {
+      return CallbackWrapper::createWeak(
+          std::move(callback), runtime, jsInvoker);
+    };
+  } else if (useTurboModuleManagerCallbackCleanupScope) {
+    longLivedObjectCollection_ = std::make_shared<LongLivedObjectCollection>();
+    retainJSCallback_ = [longLivedObjectCollection =
+                             longLivedObjectCollection_](
+                            jsi::Function &&callback,
+                            jsi::Runtime &runtime,
+                            std::shared_ptr<CallInvoker> jsInvoker) {
+      return CallbackWrapper::createWeak(
+          longLivedObjectCollection, std::move(callback), runtime, jsInvoker);
+    };
+  }
+}
 
 jni::local_ref<TurboModuleManager::jhybriddata> TurboModuleManager::initHybrid(
     jni::alias_ref<jhybridobject> jThis,
     jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutor,
     jni::alias_ref<CallInvokerHolder::javaobject> jsCallInvokerHolder,
     jni::alias_ref<CallInvokerHolder::javaobject> nativeCallInvokerHolder,
-    jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate) {
+    jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate,
+    bool useGlobalCallbackCleanupScopeUsingRetainJSCallback,
+    bool useTurboModuleManagerCallbackCleanupScope) {
   auto jsCallInvoker = jsCallInvokerHolder->cthis()->getCallInvoker();
   auto nativeCallInvoker = nativeCallInvokerHolder->cthis()->getCallInvoker();
 
@@ -48,7 +71,9 @@ jni::local_ref<TurboModuleManager::jhybriddata> TurboModuleManager::initHybrid(
       runtimeExecutor->cthis()->get(),
       jsCallInvoker,
       nativeCallInvoker,
-      delegate);
+      delegate,
+      useGlobalCallbackCleanupScopeUsingRetainJSCallback,
+      useTurboModuleManagerCallbackCleanupScope);
 }
 
 void TurboModuleManager::registerNatives() {
@@ -70,7 +95,8 @@ void TurboModuleManager::installJSIBindings() {
          jsCallInvoker_ = std::weak_ptr<CallInvoker>(jsCallInvoker_),
          nativeCallInvoker_ = std::weak_ptr<CallInvoker>(nativeCallInvoker_),
          delegate_ = jni::make_weak(delegate_),
-         javaPart_ = jni::make_weak(javaPart_)](
+         javaPart_ = jni::make_weak(javaPart_),
+         retainJSCallback = retainJSCallback_](
             const std::string &name) -> std::shared_ptr<TurboModule> {
       auto turboModuleCache = turboModuleCache_.lock();
       auto jsCallInvoker = jsCallInvoker_.lock();
@@ -131,7 +157,8 @@ void TurboModuleManager::installJSIBindings() {
             .moduleName = name,
             .instance = moduleInstance,
             .jsInvoker = jsCallInvoker,
-            .nativeInvoker = nativeCallInvoker};
+            .nativeInvoker = nativeCallInvoker,
+            .retainJSCallback = retainJSCallback};
 
         auto turboModule = delegate->cthis()->getTurboModule(name, params);
         turboModuleCache->insert({name, turboModule});
@@ -142,7 +169,12 @@ void TurboModuleManager::installJSIBindings() {
       return nullptr;
     };
 
-    TurboModuleBinding::install(runtime, std::move(turboModuleProvider));
+    if (longLivedObjectCollection_) {
+      TurboModuleBinding::install(
+          runtime, std::move(turboModuleProvider), longLivedObjectCollection_);
+    } else {
+      TurboModuleBinding::install(runtime, std::move(turboModuleProvider));
+    }
   });
 }
 

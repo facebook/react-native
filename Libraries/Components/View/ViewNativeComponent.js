@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,13 +16,12 @@ import ReactNativeViewViewConfigAndroid from './ReactNativeViewViewConfigAndroid
 import {type ViewProps as Props} from './ViewPropTypes';
 import * as React from 'react';
 
-const ViewNativeComponent: HostComponent<Props> = NativeComponentRegistry.get<Props>(
-  'RCTView',
-  () =>
+const ViewNativeComponent: HostComponent<Props> =
+  NativeComponentRegistry.get<Props>('RCTView', () =>
     Platform.OS === 'android'
       ? ReactNativeViewViewConfigAndroid
       : {uiViewClassName: 'RCTView'},
-);
+  );
 
 interface NativeCommands {
   +hotspotUpdate: (

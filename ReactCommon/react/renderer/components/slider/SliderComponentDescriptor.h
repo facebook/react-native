@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -28,10 +28,9 @@ class SliderComponentDescriptor final
                 ? std::make_shared<SliderMeasurementsManager>(contextContainer_)
                 : nullptr) {}
 
-  void adopt(UnsharedShadowNode shadowNode) const override {
+  void adopt(ShadowNode::Unshared const &shadowNode) const override {
     ConcreteComponentDescriptor::adopt(shadowNode);
 
-    assert(std::dynamic_pointer_cast<SliderShadowNode>(shadowNode));
     auto sliderShadowNode =
         std::static_pointer_cast<SliderShadowNode>(shadowNode);
 

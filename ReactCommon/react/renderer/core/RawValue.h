@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,10 +7,12 @@
 
 #pragma once
 
-#include <better/map.h>
+#include <butter/map.h>
 #include <folly/dynamic.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
+
+#include <react/debug/react_native_assert.h>
 
 namespace facebook {
 namespace react {
@@ -76,7 +78,7 @@ class RawValue {
   /*
    * Copy constructor and copy assignment operator would be private and only for
    * internal use, but it's needed for user-code that does `auto val =
-   * (better::map<std::string, RawValue>)rawVal;`
+   * (butter::map<std::string, RawValue>)rawVal;`
    */
   RawValue(RawValue const &other) noexcept : dynamic_(other.dynamic_) {}
 
@@ -183,13 +185,13 @@ class RawValue {
   template <typename T>
   static bool checkValueType(
       const folly::dynamic &dynamic,
-      better::map<std::string, T> *type) noexcept {
+      butter::map<std::string, T> *type) noexcept {
     if (!dynamic.isObject()) {
       return false;
     }
 
     for (const auto &item : dynamic.items()) {
-      assert(item.first.isString());
+      react_native_assert(item.first.isString());
       if (!checkValueType(item.second, (T *)nullptr)) {
         return false;
       }
@@ -213,7 +215,7 @@ class RawValue {
   }
 
   static int castValue(const folly::dynamic &dynamic, int *type) noexcept {
-    return dynamic.asInt();
+    return static_cast<int>(dynamic.asInt());
   }
 
   static int64_t castValue(
@@ -223,7 +225,7 @@ class RawValue {
   }
 
   static float castValue(const folly::dynamic &dynamic, float *type) noexcept {
-    return dynamic.asDouble();
+    return static_cast<float>(dynamic.asDouble());
   }
 
   static double castValue(
@@ -242,7 +244,7 @@ class RawValue {
   static std::vector<T> castValue(
       const folly::dynamic &dynamic,
       std::vector<T> *type) noexcept {
-    assert(dynamic.isArray());
+    react_native_assert(dynamic.isArray());
     auto result = std::vector<T>{};
     result.reserve(dynamic.size());
     for (const auto &item : dynamic) {
@@ -255,7 +257,7 @@ class RawValue {
   static std::vector<std::vector<T>> castValue(
       const folly::dynamic &dynamic,
       std::vector<std::vector<T>> *type) noexcept {
-    assert(dynamic.isArray());
+    react_native_assert(dynamic.isArray());
     auto result = std::vector<std::vector<T>>{};
     result.reserve(dynamic.size());
     for (const auto &item : dynamic) {
@@ -265,13 +267,13 @@ class RawValue {
   }
 
   template <typename T>
-  static better::map<std::string, T> castValue(
+  static butter::map<std::string, T> castValue(
       const folly::dynamic &dynamic,
-      better::map<std::string, T> *type) noexcept {
-    assert(dynamic.isObject());
-    auto result = better::map<std::string, T>{};
+      butter::map<std::string, T> *type) noexcept {
+    react_native_assert(dynamic.isObject());
+    auto result = butter::map<std::string, T>{};
     for (const auto &item : dynamic.items()) {
-      assert(item.first.isString());
+      react_native_assert(item.first.isString());
       result[item.first.getString()] = castValue(item.second, (T *)nullptr);
     }
     return result;

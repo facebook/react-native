@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,9 +9,8 @@
  */
 
 import {ansiToJson} from 'anser';
-import Text from '../../Text/Text';
-import View from '../../Components/View/View';
 import * as React from 'react';
+import {StyleSheet, Text, View} from 'react-native';
 
 import type {TextStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
@@ -77,9 +76,9 @@ export default function Ansi({
   };
 
   return (
-    <View style={{flexDirection: 'column'}}>
+    <View>
       {parsedLines.map((items, i) => (
-        <View style={{flexDirection: 'row'}} key={i}>
+        <View style={styles.line} key={i}>
           {items.map((bundle, key) => {
             const textStyle =
               bundle.fg && COLORS[bundle.fg]
@@ -101,3 +100,9 @@ export default function Ansi({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  line: {
+    flexDirection: 'row',
+  },
+});

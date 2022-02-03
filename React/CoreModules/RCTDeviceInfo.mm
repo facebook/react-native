@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,6 +12,7 @@
 #import <React/RCTAssert.h>
 #import <React/RCTConstants.h>
 #import <React/RCTEventDispatcherProtocol.h>
+#import <React/RCTInitializing.h>
 #import <React/RCTUIUtils.h>
 #import <React/RCTUtils.h>
 
@@ -19,7 +20,7 @@
 
 using namespace facebook::react;
 
-@interface RCTDeviceInfo () <NativeDeviceInfoSpec>
+@interface RCTDeviceInfo () <NativeDeviceInfoSpec, RCTInitializing>
 @end
 
 @implementation RCTDeviceInfo {
@@ -28,7 +29,6 @@ using namespace facebook::react;
 }
 
 @synthesize moduleRegistry = _moduleRegistry;
-@synthesize turboModuleRegistry = _turboModuleRegistry;
 
 RCT_EXPORT_MODULE()
 
@@ -42,13 +42,12 @@ RCT_EXPORT_MODULE()
   return dispatch_get_main_queue();
 }
 
-- (void)setModuleRegistry:(RCTModuleRegistry *)moduleRegistry
+- (void)initialize
 {
-  _moduleRegistry = moduleRegistry;
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(didReceiveNewContentSizeMultiplier)
                                                name:RCTAccessibilityManagerDidUpdateMultiplierNotification
-                                             object:[moduleRegistry moduleForName:"AccessibilityManager"]];
+                                             object:[_moduleRegistry moduleForName:"AccessibilityManager"]];
 
   _currentInterfaceOrientation = [RCTSharedApplication() statusBarOrientation];
 

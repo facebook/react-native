@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -66,15 +66,6 @@ public class FabricViewStateManager {
       return;
     }
 
-    Runnable failureRunnable =
-        new Runnable() {
-          @Override
-          // Run on the UI thread
-          public void run() {
-            FLog.e(TAG, "UpdateState failed - retrying! " + numTries);
-            setState(stateWrapper, stateUpdateCallback, numTries + 1);
-          }
-        };
     @Nullable WritableMap stateUpdate = stateUpdateCallback.getStateUpdate();
     if (stateUpdate == null) {
       return;
@@ -88,7 +79,7 @@ public class FabricViewStateManager {
     setState(mStateWrapper, stateUpdateCallback, 0);
   }
 
-  public @Nullable ReadableMap getState() {
-    return mStateWrapper != null ? mStateWrapper.getState() : null;
+  public @Nullable ReadableMap getStateData() {
+    return mStateWrapper != null ? mStateWrapper.getStateData() : null;
   }
 }

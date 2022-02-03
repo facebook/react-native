@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,6 +10,7 @@
 #include <functional>
 #include <memory>
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/core/State.h>
 
 namespace facebook {
@@ -89,7 +90,7 @@ class ConcreteState : public State {
 
     auto stateUpdate = StateUpdate{
         family, [=](StateData::Shared const &oldData) -> StateData::Shared {
-          assert(oldData);
+          react_native_assert(oldData);
           return callback(*std::static_pointer_cast<Data const>(oldData));
         }};
 
@@ -103,6 +104,9 @@ class ConcreteState : public State {
 
   void updateState(folly::dynamic data) const override {
     updateState(std::move(Data(getData(), data)));
+  }
+  MapBuffer getMapBuffer() const override {
+    return getData().getMapBuffer();
   }
 #endif
 };

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -166,6 +166,9 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
   // have a value of `1.0 / nativeTouch.maximumPossibleForce`)?
   if (RCTForceTouchAvailable()) {
     reactTouch[@"force"] = @(RCTZeroIfNaN(nativeTouch.force / nativeTouch.maximumPossibleForce));
+  } else if (nativeTouch.type == UITouchTypePencil) {
+    reactTouch[@"force"] = @(RCTZeroIfNaN(nativeTouch.force / nativeTouch.maximumPossibleForce));
+    reactTouch[@"altitudeAngle"] = @(RCTZeroIfNaN(nativeTouch.altitudeAngle));
   }
 }
 

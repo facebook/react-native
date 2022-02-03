@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,6 +8,8 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTBridge.h>
+#import <React/RCTBridgeModule.h>
+#import <React/RCTEventDispatcherProtocol.h>
 
 @protocol RCTRootViewDelegate;
 
@@ -50,9 +52,18 @@ extern
 /**
  * - Designated initializer -
  */
+- (instancetype)initWithFrame:(CGRect)frame
+                       bridge:(RCTBridge *)bridge
+                   moduleName:(NSString *)moduleName
+            initialProperties:(nullable NSDictionary *)initialProperties NS_DESIGNATED_INITIALIZER;
+
+/**
+ * - Convenience initializer -
+ * The frame will default to CGRectZero.
+ */
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
-             initialProperties:(nullable NSDictionary *)initialProperties NS_DESIGNATED_INITIALIZER;
+             initialProperties:(nullable NSDictionary *)initialProperties;
 
 /**
  * - Convenience initializer -
@@ -65,6 +76,19 @@ extern
                        moduleName:(NSString *)moduleName
                 initialProperties:(nullable NSDictionary *)initialProperties
                     launchOptions:(nullable NSDictionary *)launchOptions;
+
+/**
+ * This API allows RCTRootView users to know if the root view is backed by the bridge.
+ */
+@property (nonatomic, readonly) BOOL hasBridge;
+
+/**
+ * This API allows users of RCTRootView to access other NativeModules, without
+ * directly accessing the bridge.
+ */
+@property (nonatomic, strong, readonly) RCTModuleRegistry *moduleRegistry;
+
+@property (nonatomic, strong, readonly) id<RCTEventDispatcherProtocol> eventDispatcher;
 
 /**
  * The name of the JavaScript module to execute within the

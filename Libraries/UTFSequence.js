@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,7 +16,7 @@ const deepFreezeAndThrowOnMutationInDev = require('./Utilities/deepFreezeAndThro
  * A collection of Unicode sequences for various characters and emoji.
  *
  *  - More explicit than using the sequences directly in code.
- *  - Source code should be limitted to ASCII.
+ *  - Source code should be limited to ASCII.
  *  - Less chance of typos.
  */
 const UTFSequence: {|

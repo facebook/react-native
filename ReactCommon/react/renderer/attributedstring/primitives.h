@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -53,7 +53,11 @@ enum class EllipsizeMode {
   Middle // Truncate middle of line: "ab...yz".
 };
 
-enum class TextBreakStrategy { Simple, Balanced, HighQuality };
+enum class TextBreakStrategy {
+  Simple, // Simple strategy.
+  HighQuality, // High-quality strategy, including hyphenation.
+  Balanced // Balances line lengths.
+};
 
 enum class TextAlignment {
   Natural, // Indicates the default alignment for script.
@@ -77,15 +81,7 @@ enum class TextDecorationLineType {
   UnderlineStrikethrough
 };
 
-enum class TextDecorationLineStyle { Single, Thick, Double };
-
-enum class TextDecorationLinePattern {
-  Solid,
-  Dot,
-  Dash,
-  DashDot,
-  DashDotDot,
-};
+enum class TextDecorationStyle { Solid, Double, Dotted, Dashed };
 
 enum class AccessibilityRole {
   None,
@@ -112,9 +108,24 @@ enum class AccessibilityRole {
   Spinbutton,
   Switch,
   Tab,
+  TabBar,
   Tablist,
   Timer,
   Toolbar,
+};
+
+enum class TextTransform {
+  None,
+  Uppercase,
+  Lowercase,
+  Capitalize,
+  Unset,
+};
+
+enum class HyphenationFrequency {
+  None, // No hyphenation.
+  Normal, // Less frequent hyphenation.
+  Full // Standard amount of hyphenation.
 };
 
 } // namespace react
@@ -157,15 +168,8 @@ struct hash<facebook::react::WritingDirection> {
 };
 
 template <>
-struct hash<facebook::react::TextDecorationLinePattern> {
-  size_t operator()(const facebook::react::TextDecorationLinePattern &v) const {
-    return hash<int>()(static_cast<int>(v));
-  }
-};
-
-template <>
-struct hash<facebook::react::TextDecorationLineStyle> {
-  size_t operator()(const facebook::react::TextDecorationLineStyle &v) const {
+struct hash<facebook::react::TextDecorationStyle> {
+  size_t operator()(const facebook::react::TextDecorationStyle &v) const {
     return hash<int>()(static_cast<int>(v));
   }
 };
@@ -194,6 +198,20 @@ struct hash<facebook::react::TextBreakStrategy> {
 template <>
 struct hash<facebook::react::AccessibilityRole> {
   size_t operator()(const facebook::react::AccessibilityRole &v) const {
+    return hash<int>()(static_cast<int>(v));
+  }
+};
+
+template <>
+struct hash<facebook::react::TextTransform> {
+  size_t operator()(const facebook::react::TextTransform &v) const {
+    return hash<int>()(static_cast<int>(v));
+  }
+};
+
+template <>
+struct hash<facebook::react::HyphenationFrequency> {
+  size_t operator()(const facebook::react::HyphenationFrequency &v) const {
     return hash<int>()(static_cast<int>(v));
   }
 };

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,7 +16,6 @@
 @implementation RCTPropsAnimatedNode
 {
   NSNumber *_connectedViewTag;
-  NSNumber *_rootTag;
   NSString *_connectedViewName;
   __weak RCTBridge *_bridge;
   __weak id<RCTSurfacePresenterStub> _surfacePresenter;
@@ -48,7 +47,6 @@
   _connectedViewTag = viewTag;
   _connectedViewName = viewName;
   _managedByFabric = RCTUIManagerTypeForTagIsFabric(viewTag);
-  _rootTag = nil;
 }
 
 - (void)disconnectFromView:(NSNumber *)viewTag
@@ -58,7 +56,6 @@
   _connectedViewTag = nil;
   _connectedViewName = nil;
   _managedByFabric = NO;
-  _rootTag = nil;
 }
 
 - (void)updateView

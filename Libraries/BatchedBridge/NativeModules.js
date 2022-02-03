@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,7 +14,7 @@ const BatchedBridge = require('./BatchedBridge');
 
 const invariant = require('invariant');
 
-import type {ExtendedError} from '../Core/Devtools/parseErrorStack';
+import type {ExtendedError} from '../Core/ExtendedError';
 
 export type ModuleConfig = [
   string /* name */,
@@ -101,6 +101,8 @@ function genMethod(moduleID: number, methodID: number, type: MethodType) {
   if (type === 'promise') {
     fn = function promiseMethodWrapper(...args: Array<mixed>) {
       // In case we reject, capture a useful stack trace here.
+      /* $FlowFixMe[class-object-subtyping] added when improving typing for
+       * this parameters */
       const enqueueingFrameError: ExtendedError = new Error();
       return new Promise((resolve, reject) => {
         BatchedBridge.enqueueNativeCall(
@@ -166,6 +168,8 @@ function updateErrorWithErrorData(
   errorData: {message: string, ...},
   error: ExtendedError,
 ): ExtendedError {
+  /* $FlowFixMe[class-object-subtyping] added when improving typing for this
+   * parameters */
   return Object.assign(error, errorData || {});
 }
 

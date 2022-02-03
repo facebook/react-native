@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,12 +10,13 @@
  */
 
 import type {PressEvent} from '../../Types/CoreEventTypes';
-import * as HoverState from '../HoverState';
-import Pressability from '../Pressability';
-import invariant from 'invariant';
-import nullthrows from 'nullthrows';
-import Platform from '../../Utilities/Platform';
-import UIManager from '../../ReactNative/UIManager';
+
+const HoverState = require('../HoverState');
+const Pressability = require('../Pressability').default;
+const invariant = require('invariant');
+const nullthrows = require('nullthrows');
+const Platform = require('../../Utilities/Platform');
+const UIManager = require('../../ReactNative/UIManager');
 
 // TODO: Move this util to a shared location.
 function getMock<TArguments: $ReadOnlyArray<mixed>, TReturn>(
@@ -256,7 +257,7 @@ describe('Pressability', () => {
     beforeEach(() => {
       originalPlatform = Platform.OS;
       Platform.OS = 'web';
-      // $FlowExpectedError
+      // $FlowExpectedError[prop-missing]
       HoverState.isHoverEnabled.mockReturnValue(true);
     });
 
@@ -276,7 +277,7 @@ describe('Pressability', () => {
         typeof handlers.onMouseEnter === 'function',
         'Expected to find "onMouseEnter" function',
       );
-      // $FlowExpectedError
+      // $FlowExpectedError[not-a-function]
       handlers.onMouseEnter(createMockMouseEvent('onMouseEnter'));
       expect(config.onHoverIn).toBeCalled();
     });
@@ -289,7 +290,7 @@ describe('Pressability', () => {
         typeof handlers.onMouseEnter === 'function',
         'Expected to find "onMouseEnter" function',
       );
-      // $FlowExpectedError
+      // $FlowExpectedError[not-a-function]
       handlers.onMouseEnter(createMockMouseEvent('onMouseEnter'));
       expect(config.onHoverIn).toBeCalled();
     });
@@ -302,7 +303,7 @@ describe('Pressability', () => {
         typeof handlers.onMouseEnter === 'function',
         'Expected to find "onMouseEnter" function',
       );
-      // $FlowExpectedError
+      // $FlowExpectedError[not-a-function]
       handlers.onMouseEnter(createMockMouseEvent('onMouseEnter'));
       expect(config.onHoverIn).toBeCalled();
     });
@@ -315,7 +316,7 @@ describe('Pressability', () => {
         typeof handlers.onMouseEnter === 'function',
         'Expected to find "onMouseEnter" function',
       );
-      // $FlowExpectedError
+      // $FlowExpectedError[not-a-function]
       handlers.onMouseEnter(createMockMouseEvent('onMouseEnter'));
       jest.advanceTimersByTime(499);
       expect(config.onHoverIn).not.toBeCalled();
@@ -331,7 +332,7 @@ describe('Pressability', () => {
         typeof handlers.onMouseEnter === 'function',
         'Expected to find "onMouseEnter" function',
       );
-      // $FlowExpectedError
+      // $FlowExpectedError[not-a-function]
       handlers.onMouseEnter(createMockMouseEvent('onMouseEnter'));
       expect(config.onHoverIn).toBeCalled();
     });

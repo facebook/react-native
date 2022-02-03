@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -122,6 +122,13 @@ const UserFlow = {
     }
   },
 
+  /**
+   * Completes flow as failed
+   *
+   * ErrorName should be short and easily categorazable (it is attached as point to the UserFlow and can be used for aggregations).
+   * For example: io_error, network_error, parse_error, validation_error.
+   * DebugInfo is free-form string, where you can attach detailed error message. It is attached as data to the point (see ErrorName).
+   */
   endFailure(
     flowId: FlowId,
     errorName: string,

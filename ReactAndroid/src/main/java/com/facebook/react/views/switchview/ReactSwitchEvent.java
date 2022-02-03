@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -45,11 +45,5 @@ import com.facebook.react.uimanager.events.Event;
     eventData.putInt("target", getViewTag());
     eventData.putBoolean("value", getIsChecked());
     return eventData;
-  }
-
-  @Override
-  public short getCoalescingKey() {
-    // All switch events for a given view can be coalesced.
-    return 0;
   }
 }

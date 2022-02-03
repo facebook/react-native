@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -26,7 +26,7 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
@@ -35,6 +35,7 @@ import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import java.util.HashMap;
 
 /**
@@ -82,6 +83,7 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
   public enum AccessibilityRole {
     NONE,
     BUTTON,
+    TOGGLEBUTTON,
     LINK,
     SEARCH,
     IMAGE,
@@ -106,12 +108,15 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
     TAB,
     TABLIST,
     TIMER,
+    LIST,
     TOOLBAR;
 
     public static String getValue(AccessibilityRole role) {
       switch (role) {
         case BUTTON:
           return "android.widget.Button";
+        case TOGGLEBUTTON:
+          return "android.widget.ToggleButton";
         case SEARCH:
           return "android.widget.EditText";
         case IMAGE:
@@ -132,6 +137,8 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
           return "android.widget.SpinButton";
         case SWITCH:
           return "android.widget.Switch";
+        case LIST:
+          return "android.widget.AbsListView";
         case NONE:
         case LINK:
         case SUMMARY:
@@ -185,6 +192,8 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
         };
   }
 
+  @Nullable View mAccessibilityLabelledBy;
+
   @Override
   public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
     super.onInitializeAccessibilityNodeInfo(host, info);
@@ -192,6 +201,15 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
         (AccessibilityRole) host.getTag(R.id.accessibility_role);
     if (accessibilityRole != null) {
       setRole(info, accessibilityRole, host.getContext());
+    }
+
+    final Object accessibilityLabelledBy = host.getTag(R.id.labelled_by);
+    if (accessibilityLabelledBy != null) {
+      mAccessibilityLabelledBy =
+          ReactFindViewUtil.findView(host.getRootView(), (String) accessibilityLabelledBy);
+      if (mAccessibilityLabelledBy != null) {
+        info.setLabeledBy(mAccessibilityLabelledBy);
+      }
     }
 
     // state is changeable.
@@ -292,7 +310,7 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
       final WritableMap event = Arguments.createMap();
       event.putString("actionName", mAccessibilityActionsMap.get(action));
       ReactContext reactContext = (ReactContext) host.getContext();
-      if (reactContext.hasActiveCatalystInstance()) {
+      if (reactContext.hasActiveReactInstance()) {
         final int reactTag = host.getId();
         final int surfaceId = UIManagerHelper.getSurfaceId(reactContext);
         UIManager uiManager = UIManagerHelper.getUIManager(reactContext, reactTag);
@@ -313,7 +331,7 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
                   });
         }
       } else {
-        ReactSoftException.logSoftException(
+        ReactSoftExceptionLogger.logSoftException(
             TAG, new ReactNoCrashSoftException("Cannot get RCTEventEmitter, no CatalystInstance"));
       }
 
@@ -382,16 +400,16 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
         spannable.setSpan(new URLSpan(""), 0, spannable.length(), 0);
         nodeInfo.setText(spannable);
       }
-    } else if (role.equals(AccessibilityRole.SEARCH)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.search_description));
     } else if (role.equals(AccessibilityRole.IMAGE)) {
       nodeInfo.setRoleDescription(context.getString(R.string.image_description));
     } else if (role.equals(AccessibilityRole.IMAGEBUTTON)) {
       nodeInfo.setRoleDescription(context.getString(R.string.imagebutton_description));
       nodeInfo.setClickable(true);
     } else if (role.equals(AccessibilityRole.BUTTON)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.button_description));
       nodeInfo.setClickable(true);
+    } else if (role.equals(AccessibilityRole.TOGGLEBUTTON)) {
+      nodeInfo.setClickable(true);
+      nodeInfo.setCheckable(true);
     } else if (role.equals(AccessibilityRole.SUMMARY)) {
       nodeInfo.setRoleDescription(context.getString(R.string.summary_description));
     } else if (role.equals(AccessibilityRole.HEADER)) {

@@ -4,7 +4,7 @@ exports[`GenerateComponentDescriptorH can generate fixture ARRAY_PROPS 1`] = `
 Map {
   "ComponentDescriptors.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -32,7 +32,7 @@ exports[`GenerateComponentDescriptorH can generate fixture ARRAY_PROPS_WITH_NEST
 Map {
   "ComponentDescriptors.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -60,7 +60,7 @@ exports[`GenerateComponentDescriptorH can generate fixture BOOLEAN_PROP 1`] = `
 Map {
   "ComponentDescriptors.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -88,7 +88,7 @@ exports[`GenerateComponentDescriptorH can generate fixture COLOR_PROP 1`] = `
 Map {
   "ComponentDescriptors.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -116,7 +116,7 @@ exports[`GenerateComponentDescriptorH can generate fixture COMMANDS 1`] = `
 Map {
   "ComponentDescriptors.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -144,7 +144,7 @@ exports[`GenerateComponentDescriptorH can generate fixture COMMANDS_AND_PROPS 1`
 Map {
   "ComponentDescriptors.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -172,7 +172,7 @@ exports[`GenerateComponentDescriptorH can generate fixture DOUBLE_PROPS 1`] = `
 Map {
   "ComponentDescriptors.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -200,7 +200,7 @@ exports[`GenerateComponentDescriptorH can generate fixture EVENT_NESTED_OBJECT_P
 Map {
   "ComponentDescriptors.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -228,7 +228,7 @@ exports[`GenerateComponentDescriptorH can generate fixture EVENT_PROPS 1`] = `
 Map {
   "ComponentDescriptors.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -256,7 +256,7 @@ exports[`GenerateComponentDescriptorH can generate fixture EVENTS_WITH_PAPER_NAM
 Map {
   "ComponentDescriptors.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -284,7 +284,7 @@ exports[`GenerateComponentDescriptorH can generate fixture EXCLUDE_ANDROID 1`] =
 Map {
   "ComponentDescriptors.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -312,7 +312,7 @@ exports[`GenerateComponentDescriptorH can generate fixture EXCLUDE_ANDROID_IOS 1
 Map {
   "ComponentDescriptors.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -340,7 +340,7 @@ exports[`GenerateComponentDescriptorH can generate fixture FLOAT_PROPS 1`] = `
 Map {
   "ComponentDescriptors.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -368,7 +368,7 @@ exports[`GenerateComponentDescriptorH can generate fixture IMAGE_PROP 1`] = `
 Map {
   "ComponentDescriptors.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -396,7 +396,7 @@ exports[`GenerateComponentDescriptorH can generate fixture INSETS_PROP 1`] = `
 Map {
   "ComponentDescriptors.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -424,7 +424,7 @@ exports[`GenerateComponentDescriptorH can generate fixture INT32_ENUM_PROP 1`] =
 Map {
   "ComponentDescriptors.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -452,7 +452,7 @@ exports[`GenerateComponentDescriptorH can generate fixture INTEGER_PROPS 1`] = `
 Map {
   "ComponentDescriptors.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -480,7 +480,7 @@ exports[`GenerateComponentDescriptorH can generate fixture INTERFACE_ONLY 1`] = 
 Map {
   "ComponentDescriptors.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -508,7 +508,7 @@ exports[`GenerateComponentDescriptorH can generate fixture MULTI_NATIVE_PROP 1`]
 Map {
   "ComponentDescriptors.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -536,7 +536,7 @@ exports[`GenerateComponentDescriptorH can generate fixture NO_PROPS_NO_EVENTS 1`
 Map {
   "ComponentDescriptors.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -564,7 +564,7 @@ exports[`GenerateComponentDescriptorH can generate fixture OBJECT_PROPS 1`] = `
 Map {
   "ComponentDescriptors.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -592,7 +592,7 @@ exports[`GenerateComponentDescriptorH can generate fixture POINT_PROP 1`] = `
 Map {
   "ComponentDescriptors.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -620,7 +620,7 @@ exports[`GenerateComponentDescriptorH can generate fixture STRING_ENUM_PROP 1`] 
 Map {
   "ComponentDescriptors.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -648,7 +648,7 @@ exports[`GenerateComponentDescriptorH can generate fixture STRING_PROP 1`] = `
 Map {
   "ComponentDescriptors.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -676,7 +676,7 @@ exports[`GenerateComponentDescriptorH can generate fixture TWO_COMPONENTS_DIFFER
 Map {
   "ComponentDescriptors.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -705,7 +705,7 @@ exports[`GenerateComponentDescriptorH can generate fixture TWO_COMPONENTS_SAME_F
 Map {
   "ComponentDescriptors.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.

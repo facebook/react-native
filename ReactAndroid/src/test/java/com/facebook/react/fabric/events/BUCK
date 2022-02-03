@@ -1,0 +1,16 @@
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "react_native_target", "rn_robolectric_test")
+
+rn_robolectric_test(
+    name = "events",
+    srcs = glob(["*.java"]),
+    contacts = ["oncall+react_native@xmail.facebook.com"],
+    deps = [
+        react_native_dep("third-party/java/jsr-305:jsr-305"),
+        react_native_dep("third-party/java/junit:junit"),
+        react_native_target("java/com/facebook/react:react"),
+        react_native_target("java/com/facebook/react/bridge:bridge"),
+        react_native_target("java/com/facebook/react/common:common"),
+        react_native_target("java/com/facebook/react/touch:touch"),
+        react_native_target("java/com/facebook/react/fabric:fabric"),
+    ],
+)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -75,6 +75,19 @@ class JSI_EXPORT Instrumentation {
 
   /// Stop capture JS stack-traces for JS heap allocated objects.
   virtual void stopTrackingHeapObjectStackTraces() = 0;
+
+  /// Start a heap sampling profiler that will sample heap allocations, and the
+  /// stack trace they were allocated at. Reports a summary of which functions
+  /// allocated the most.
+  /// \param samplingInterval The number of bytes allocated to wait between
+  ///   samples. This will be used as the expected value of a poisson
+  ///   distribution.
+  virtual void startHeapSampling(size_t samplingInterval) = 0;
+
+  /// Turns off the heap sampling profiler previously enabled via
+  /// \c startHeapSampling. Writes the output of the sampling heap profiler to
+  /// \p os. The output is a JSON formatted string.
+  virtual void stopHeapSampling(std::ostream& os) = 0;
 
   /// Captures the heap to a file
   ///

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -29,7 +29,12 @@ function getPropProperties(
   }
 }
 
-function getTypeAnnotationForArray(name, typeAnnotation, defaultValue, types) {
+function getTypeAnnotationForArray(
+  name: string,
+  typeAnnotation: $FlowFixMe,
+  defaultValue: $FlowFixMe | null,
+  types: TypeDeclarationMap,
+) {
   const extractedTypeAnnotation = getValueFromTypes(typeAnnotation, types);
   if (extractedTypeAnnotation.type === 'NullableTypeAnnotation') {
     throw new Error(
@@ -161,7 +166,7 @@ function getTypeAnnotationForArray(name, typeAnnotation, defaultValue, types) {
         );
       } else {
         throw new Error(
-          `Unsupported union type for "${name}", recieved "${unionType}"`,
+          `Unsupported union type for "${name}", received "${unionType}"`,
         );
       }
     default:
@@ -171,11 +176,11 @@ function getTypeAnnotationForArray(name, typeAnnotation, defaultValue, types) {
 }
 
 function getTypeAnnotation(
-  name,
+  name: string,
   annotation,
-  defaultValue,
-  withNullDefault,
-  types,
+  defaultValue: $FlowFixMe | null,
+  withNullDefault: boolean,
+  types: TypeDeclarationMap,
 ) {
   const typeAnnotation = getValueFromTypes(annotation, types);
 
@@ -325,7 +330,7 @@ function getTypeAnnotation(
 }
 
 function buildPropSchema(
-  property,
+  property: PropAST,
   types: TypeDeclarationMap,
 ): ?NamedShape<PropTypeAnnotation> {
   const name = property.key.name;
@@ -416,7 +421,7 @@ function buildPropSchema(
   };
 }
 
-// $FlowFixMe there's no flowtype for ASTs
+// $FlowFixMe[unclear-type] there's no flowtype for ASTs
 type PropAST = Object;
 
 function verifyPropNotAlreadyDefined(

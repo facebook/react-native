@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,7 +14,11 @@ const BatchedBridge = require('../BatchedBridge/BatchedBridge');
 
 const RCTEventEmitter = {
   register(eventEmitter: any) {
-    BatchedBridge.registerCallableModule('RCTEventEmitter', eventEmitter);
+    if (global.RN$Bridgeless) {
+      global.RN$registerCallableModule('RCTEventEmitter', () => eventEmitter);
+    } else {
+      BatchedBridge.registerCallableModule('RCTEventEmitter', eventEmitter);
+    }
   },
 };
 

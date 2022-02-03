@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -30,12 +30,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)schedulerDidDispatchCommand:(facebook::react::ShadowView const &)shadowView
                         commandName:(std::string const &)commandName
-                               args:(folly::dynamic const)args;
+                               args:(folly::dynamic const &)args;
 
 - (void)schedulerDidSendAccessibilityEvent:(facebook::react::ShadowView const &)shadowView
                                  eventType:(std::string const &)eventType;
 
-- (void)schedulerDidSetIsJSResponder:(BOOL)isJSResponder forShadowView:(facebook::react::ShadowView const &)shadowView;
+- (void)schedulerDidSetIsJSResponder:(BOOL)isJSResponder
+                blockNativeResponder:(BOOL)blockNativeResponder
+                       forShadowView:(facebook::react::ShadowView const &)shadowView;
 
 @end
 

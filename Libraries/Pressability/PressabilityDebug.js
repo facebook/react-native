@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -52,17 +52,20 @@ export function PressabilityDebugView({color, hitSlop}: Props): React.Node {
       return (
         <View
           pointerEvents="none"
-          style={{
-            backgroundColor: baseColor.slice(0, -2) + '0F', // 15%
-            borderColor: baseColor.slice(0, -2) + '55', // 85%
-            borderStyle: 'dashed',
-            borderWidth: 1,
-            bottom: -(hitSlop?.bottom ?? 0),
-            left: -(hitSlop?.left ?? 0),
-            position: 'absolute',
-            right: -(hitSlop?.right ?? 0),
-            top: -(hitSlop?.top ?? 0),
-          }}
+          style={
+            // eslint-disable-next-line react-native/no-inline-styles
+            {
+              backgroundColor: baseColor.slice(0, -2) + '0F', // 15%
+              borderColor: baseColor.slice(0, -2) + '55', // 85%
+              borderStyle: 'dashed',
+              borderWidth: 1,
+              bottom: -(hitSlop?.bottom ?? 0),
+              left: -(hitSlop?.left ?? 0),
+              position: 'absolute',
+              right: -(hitSlop?.right ?? 0),
+              top: -(hitSlop?.top ?? 0),
+            }
+          }
         />
       );
     }

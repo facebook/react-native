@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -115,7 +115,11 @@ public enum ReactMarkerConstants {
   FABRIC_BATCH_EXECUTION_END,
   FABRIC_UPDATE_UI_MAIN_THREAD_START,
   FABRIC_UPDATE_UI_MAIN_THREAD_END,
-  // New markers used by bridgeless RN below this line
-  REACT_INSTANCE_INIT_START,
-  REACT_INSTANCE_INIT_END
+  // New markers used by bridge and bridgeless loading below this line
+  REACT_BRIDGE_LOADING_START,
+  REACT_BRIDGE_LOADING_END,
+  REACT_BRIDGELESS_LOADING_START,
+  REACT_BRIDGELESS_LOADING_END,
+  LOAD_REACT_NATIVE_MAPBUFFER_SO_FILE_START,
+  LOAD_REACT_NATIVE_MAPBUFFER_SO_FILE_END,
 }

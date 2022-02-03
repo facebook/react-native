@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -89,7 +89,7 @@ SYMBOL_NAME(RCTProfileTrampoline):
 
   pop {lr} // pop the caller
   pop {r0} // pop the return value
-  bx lr // jump to the calleer
+  bx lr // jump to the caller
 
   trap
 

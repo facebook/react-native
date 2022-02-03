@@ -1,11 +1,6 @@
 load("@fbsource//tools/build_defs:glob_defs.bzl", "subdir_glob")
 load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "get_android_inspector_flags", "get_apple_compiler_flags", "get_apple_inspector_flags", "get_preprocessor_flags_for_build_mode", "react_native_xplat_target", "rn_xplat_cxx_library")
 
-CXX_LIBRARY_COMPILER_FLAGS = [
-    "-std=c++14",
-    "-Wall",
-]
-
 rn_xplat_cxx_library(
     name = "module",
     header_namespace = "",
@@ -17,7 +12,6 @@ rn_xplat_cxx_library(
         ],
         prefix = "cxxreact",
     ),
-    compiler_flags = CXX_LIBRARY_COMPILER_FLAGS,
     fbobjc_compiler_flags = get_apple_compiler_flags(),
     force_static = True,
     labels = ["supermodule:xplat/default/public.react_native.infra"],
@@ -39,16 +33,9 @@ rn_xplat_cxx_library(
         [("", "JSBigString.h")],
         prefix = "cxxreact",
     ),
-    compiler_flags = CXX_LIBRARY_COMPILER_FLAGS + [
-        "-fexceptions",
-        "-frtti",
-    ],
     fbobjc_compiler_flags = get_apple_compiler_flags(),
     force_static = True,
     labels = ["supermodule:xplat/default/public.react_native.infra"],
-    preprocessor_flags = [
-        "-DWITH_FBREMAP=1",
-    ],
     visibility = [
         "PUBLIC",
     ],
@@ -64,9 +51,8 @@ rn_xplat_cxx_library(
     srcs = ["SampleCxxModule.cpp"],
     header_namespace = "",
     exported_headers = ["SampleCxxModule.h"],
-    compiler_flags = CXX_LIBRARY_COMPILER_FLAGS + [
+    compiler_flags = [
         "-fno-omit-frame-pointer",
-        "-fexceptions",
     ],
     fbobjc_compiler_flags = get_apple_compiler_flags(),
     labels = ["supermodule:xplat/default/public.react_native.infra"],
@@ -123,10 +109,6 @@ rn_xplat_cxx_library(
         )
         for header in CXXREACT_PUBLIC_HEADERS
     ]),
-    compiler_flags = CXX_LIBRARY_COMPILER_FLAGS + [
-        "-fexceptions",
-        "-frtti",
-    ],
     fbandroid_preprocessor_flags = get_android_inspector_flags(),
     fbobjc_compiler_flags = get_apple_compiler_flags(),
     fbobjc_force_static = True,
@@ -155,6 +137,7 @@ rn_xplat_cxx_library(
         react_native_xplat_target("microprofiler:microprofiler"),
         react_native_xplat_target("runtimeexecutor:runtimeexecutor"),
         react_native_xplat_target("reactperflogger:reactperflogger"),
+        react_native_xplat_target("logger:logger"),
         "//third-party/glog:glog",
         "//xplat/folly:optional",
     ],

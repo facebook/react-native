@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,6 +9,7 @@
  */
 
 'use strict';
+import type {NativeModulePropertyShape} from '../../../CodegenSchema';
 
 import type {SchemaType} from '../../../CodegenSchema';
 import type {MethodSerializationOutput} from './serializeMethod';
@@ -51,11 +52,14 @@ namespace facebook {
 const HeaderFileTemplate = ({
   moduleDeclarations,
   structInlineMethods,
+  assumeNonnull,
 }: $ReadOnly<{
   moduleDeclarations: string,
   structInlineMethods: string,
-}>) => `/**
- * ${'C'}opyright (c) Facebook, Inc. and its affiliates.
+  assumeNonnull: boolean,
+}>) =>
+  `/**
+ * ${'C'}opyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -81,9 +85,12 @@ const HeaderFileTemplate = ({
 #import <folly/Optional.h>
 #import <vector>
 
-${moduleDeclarations}
-${structInlineMethods}
-`;
+` +
+  (assumeNonnull ? '\nNS_ASSUME_NONNULL_BEGIN\n' : '') +
+  moduleDeclarations +
+  '\n' +
+  structInlineMethods +
+  (assumeNonnull ? '\nNS_ASSUME_NONNULL_END\n' : '\n');
 
 const SourceFileTemplate = ({
   headerFileName,
@@ -92,7 +99,7 @@ const SourceFileTemplate = ({
   headerFileName: string,
   moduleImplementations: string,
 }>) => `/**
- * ${'C'}opyright (c) Facebook, Inc. and its affiliates.
+ * ${'C'}opyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -114,6 +121,7 @@ module.exports = {
     libraryName: string,
     schema: SchemaType,
     packageName?: string,
+    assumeNonnull: boolean,
   ): FilesOutput {
     const nativeModules = getModules(schema);
 
@@ -135,7 +143,7 @@ module.exports = {
       const structCollector = new StructCollector();
 
       const methodSerializations: Array<MethodSerializationOutput> = [];
-      const serializeProperty = property => {
+      const serializeProperty = (property: NativeModulePropertyShape) => {
         methodSerializations.push(
           ...serializeMethod(
             hasteModuleName,
@@ -194,6 +202,7 @@ module.exports = {
     const headerFile = HeaderFileTemplate({
       moduleDeclarations: moduleDeclarations.join('\n'),
       structInlineMethods: structInlineMethods.join('\n'),
+      assumeNonnull,
     });
 
     const sourceFileName = `${libraryName}-generated.mm`;

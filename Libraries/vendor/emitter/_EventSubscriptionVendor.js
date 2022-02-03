@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -23,7 +23,7 @@ class EventSubscriptionVendor<EventDefinitions: {...}> {
     [type: $Keys<EventDefinitions>]: Array<
       EventSubscription<EventDefinitions, $FlowFixMe>,
     >,
-    ...,
+    ...
   };
 
   constructor() {
@@ -58,7 +58,7 @@ class EventSubscriptionVendor<EventDefinitions: {...}> {
    * Removes a bulk set of the subscriptions.
    *
    * @param {?string} eventType - Optional name of the event type whose
-   *   registered supscriptions to remove, if null remove all subscriptions.
+   *   registered subscriptions to remove, if null remove all subscriptions.
    */
   removeAllSubscriptions<K: $Keys<EventDefinitions>>(eventType: ?K): void {
     if (eventType == null) {

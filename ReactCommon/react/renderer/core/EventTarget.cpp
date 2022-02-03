@@ -1,11 +1,13 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 #include "EventTarget.h"
+
+#include <react/debug/react_native_assert.h>
 
 namespace facebook {
 namespace react {
@@ -38,8 +40,10 @@ void EventTarget::retain(jsi::Runtime &runtime) const {
   // particular implementation of JSI was able to detect this inconsistency and
   // dealt with it, but some JSI implementation may not support this feature and
   // that case will lead to a crash in those environments.
-  assert(!strongInstanceHandle_.isNull());
-  assert(!strongInstanceHandle_.isUndefined());
+
+  // TODO: Replace with mustfix once mustfix is ready in React Native.
+  // react_native_assert(!strongInstanceHandle_.isNull());
+  // react_native_assert(!strongInstanceHandle_.isUndefined());
 }
 
 void EventTarget::release(jsi::Runtime &runtime) const {

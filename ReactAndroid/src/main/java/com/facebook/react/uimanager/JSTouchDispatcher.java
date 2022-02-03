@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -50,15 +50,9 @@ public class JSTouchDispatcher {
     mTargetTag = -1;
   }
 
-  private int getSurfaceId() {
-    if (mRootViewGroup instanceof ReactRoot) {
-      return ((ReactRoot) mRootViewGroup).getRootViewTag();
-    }
-    if (mRootViewGroup != null && mRootViewGroup.getContext() instanceof ThemedReactContext) {
-      ThemedReactContext context = (ThemedReactContext) mRootViewGroup.getContext();
-      return context.getSurfaceId();
-    }
-    return -1;
+  public void onChildEndedNativeGesture(MotionEvent androidEvent, EventDispatcher eventDispatcher) {
+    // There should be only one child gesture at any given time. We can safely turn off the flag.
+    mChildIsHandlingNativeGesture = false;
   }
 
   /**
@@ -85,7 +79,7 @@ public class JSTouchDispatcher {
       mTargetTag = findTargetTagAndSetCoordinates(ev);
       eventDispatcher.dispatchEvent(
           TouchEvent.obtain(
-              getSurfaceId(),
+              UIManagerHelper.getSurfaceId(mRootViewGroup),
               mTargetTag,
               TouchEventType.START,
               ev,
@@ -110,7 +104,7 @@ public class JSTouchDispatcher {
       findTargetTagAndSetCoordinates(ev);
       eventDispatcher.dispatchEvent(
           TouchEvent.obtain(
-              getSurfaceId(),
+              UIManagerHelper.getSurfaceId(mRootViewGroup),
               mTargetTag,
               TouchEventType.END,
               ev,
@@ -125,7 +119,7 @@ public class JSTouchDispatcher {
       findTargetTagAndSetCoordinates(ev);
       eventDispatcher.dispatchEvent(
           TouchEvent.obtain(
-              getSurfaceId(),
+              UIManagerHelper.getSurfaceId(mRootViewGroup),
               mTargetTag,
               TouchEventType.MOVE,
               ev,
@@ -137,7 +131,7 @@ public class JSTouchDispatcher {
       // New pointer goes down, this can only happen after ACTION_DOWN is sent for the first pointer
       eventDispatcher.dispatchEvent(
           TouchEvent.obtain(
-              getSurfaceId(),
+              UIManagerHelper.getSurfaceId(mRootViewGroup),
               mTargetTag,
               TouchEventType.START,
               ev,
@@ -146,10 +140,10 @@ public class JSTouchDispatcher {
               mTargetCoordinates[1],
               mTouchEventCoalescingKeyHelper));
     } else if (action == MotionEvent.ACTION_POINTER_UP) {
-      // Exactly onw of the pointers goes up
+      // Exactly one of the pointers goes up
       eventDispatcher.dispatchEvent(
           TouchEvent.obtain(
-              getSurfaceId(),
+              UIManagerHelper.getSurfaceId(mRootViewGroup),
               mTargetTag,
               TouchEventType.END,
               ev,
@@ -198,7 +192,7 @@ public class JSTouchDispatcher {
     Assertions.assertNotNull(eventDispatcher)
         .dispatchEvent(
             TouchEvent.obtain(
-                getSurfaceId(),
+                UIManagerHelper.getSurfaceId(mRootViewGroup),
                 mTargetTag,
                 TouchEventType.CANCEL,
                 androidEvent,

@@ -4,9 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
+ * @noformat
  * @flow strict-local
+ * @generated SignedSource<<a81ed33269e71024fedad145e843fab0>>
+ *
+ * This file was sync'd from the facebook/react repository.
  */
+
+'use strict';
 
 import {type ViewConfig} from './ReactNativeTypes';
 import invariant from 'invariant';

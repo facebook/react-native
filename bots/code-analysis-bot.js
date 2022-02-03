@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -30,8 +30,7 @@ function push(arr, key, value) {
 const converterSummary = {
   eslint:
     '`eslint` found some issues. Run `yarn lint --fix` to automatically fix problems.',
-  flow:
-    '`flow` found some issues. Run `yarn flow check` to analyze your code and address any errors.',
+  flow: '`flow` found some issues. Run `yarn flow check` to analyze your code and address any errors.',
   shellcheck:
     '`shellcheck` found some issues. Run `yarn shellcheck` to analyze shell scripts.',
   'google-java-format':
@@ -51,20 +50,20 @@ const converterSummary = {
  * is an array of objects of the shape message and line.
  */
 const converters = {
-  raw: function(output, input) {
+  raw: function (output, input) {
     for (let key in input) {
-      input[key].forEach(function(message) {
+      input[key].forEach(function (message) {
         push(output, key, message);
       });
     }
   },
 
-  'google-java-format': function(output, input) {
+  'google-java-format': function (output, input) {
     if (!input) {
       return;
     }
 
-    input.forEach(function(change) {
+    input.forEach(function (change) {
       push(output, change.file, {
         message: `\`google-java-format\` suggested changes:
 \`\`\`diff
@@ -77,12 +76,12 @@ ${change.description}
     });
   },
 
-  flow: function(output, input) {
+  flow: function (output, input) {
     if (!input || !input.errors) {
       return;
     }
 
-    input.errors.forEach(function(error) {
+    input.errors.forEach(function (error) {
       push(output, error.message[0].path, {
         message: error.message.map(message => message.descr).join(' '),
         line: error.message[0].line,
@@ -91,13 +90,13 @@ ${change.description}
     });
   },
 
-  eslint: function(output, input) {
+  eslint: function (output, input) {
     if (!input) {
       return;
     }
 
-    input.forEach(function(file) {
-      file.messages.forEach(function(message) {
+    input.forEach(function (file) {
+      file.messages.forEach(function (message) {
         push(output, file.filePath, {
           message: message.ruleId + ': ' + message.message,
           line: message.line,
@@ -107,12 +106,12 @@ ${change.description}
     });
   },
 
-  shellcheck: function(output, input) {
+  shellcheck: function (output, input) {
     if (!input) {
       return;
     }
 
-    input.forEach(function(report) {
+    input.forEach(function (report) {
       push(output, report.file, {
         message:
           '**[SC' +
@@ -285,10 +284,10 @@ async function main(messages, owner, repo, pull_number) {
 
 let content = '';
 process.stdin.resume();
-process.stdin.on('data', function(buf) {
+process.stdin.on('data', function (buf) {
   content += buf.toString();
 });
-process.stdin.on('end', function() {
+process.stdin.on('end', function () {
   let messages = {};
 
   // Since we send a few http requests to setup the process, we don't want

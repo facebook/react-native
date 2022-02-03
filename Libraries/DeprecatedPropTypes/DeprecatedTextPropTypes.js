@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -27,7 +27,7 @@ module.exports = {
    * When `numberOfLines` is set, this prop defines how text will be
    * truncated.
    *
-   * See https://reactnative.dev/docs/text.html#ellipsizemode
+   * See https://reactnative.dev/docs/text#ellipsizemode
    */
   ellipsizeMode: (PropTypes.oneOf([
     'head',
@@ -38,13 +38,13 @@ module.exports = {
   /**
    * Used to truncate the text with an ellipsis.
    *
-   * See https://reactnative.dev/docs/text.html#numberoflines
+   * See https://reactnative.dev/docs/text#numberoflines
    */
   numberOfLines: PropTypes.number,
   /**
    * Set text break strategy on Android.
    *
-   * See https://reactnative.dev/docs/text.html#textbreakstrategy
+   * See https://reactnative.dev/docs/text#textbreakstrategy
    */
   textBreakStrategy: (PropTypes.oneOf([
     'simple',
@@ -54,63 +54,63 @@ module.exports = {
   /**
    * Invoked on mount and layout changes.
    *
-   * See https://reactnative.dev/docs/text.html#onlayout
+   * See https://reactnative.dev/docs/text#onlayout
    */
   onLayout: PropTypes.func,
   /**
    * This function is called on press.
    *
-   * See https://reactnative.dev/docs/text.html#onpress
+   * See https://reactnative.dev/docs/text#onpress
    */
   onPress: PropTypes.func,
   /**
    * This function is called on long press.
    *
-   * See https://reactnative.dev/docs/text.html#onlongpress
+   * See https://reactnative.dev/docs/text#onlongpress
    */
   onLongPress: PropTypes.func,
   /**
    * Defines how far your touch may move off of the button, before
    * deactivating the button.
    *
-   * See https://reactnative.dev/docs/text.html#pressretentionoffset
+   * See https://reactnative.dev/docs/text#pressretentionoffset
    */
   pressRetentionOffset: DeprecatedEdgeInsetsPropType,
   /**
    * Lets the user select text.
    *
-   * See https://reactnative.dev/docs/text.html#selectable
+   * See https://reactnative.dev/docs/text#selectable
    */
   selectable: PropTypes.bool,
   /**
    * The highlight color of the text.
    *
-   * See https://reactnative.dev/docs/text.html#selectioncolor
+   * See https://reactnative.dev/docs/text#selectioncolor
    */
   selectionColor: DeprecatedColorPropType,
   /**
    * When `true`, no visual change is made when text is pressed down.
    *
-   * See https://reactnative.dev/docs/text.html#supperhighlighting
+   * See https://reactnative.dev/docs/text#supperhighlighting
    */
   suppressHighlighting: PropTypes.bool,
   style: stylePropType,
   /**
    * Used to locate this view in end-to-end tests.
    *
-   * See https://reactnative.dev/docs/text.html#testid
+   * See https://reactnative.dev/docs/text#testid
    */
   testID: PropTypes.string,
   /**
    * Used to locate this view from native code.
    *
-   * See https://reactnative.dev/docs/text.html#nativeid
+   * See https://reactnative.dev/docs/text#nativeid
    */
   nativeID: PropTypes.string,
   /**
    * Whether fonts should scale to respect Text Size accessibility settings.
    *
-   * See https://reactnative.dev/docs/text.html#allowfontscaling
+   * See https://reactnative.dev/docs/text#allowfontscaling
    */
   allowFontScaling: PropTypes.bool,
   /**
@@ -124,31 +124,31 @@ module.exports = {
   /**
    * Indicates whether the view is an accessibility element.
    *
-   * See https://reactnative.dev/docs/text.html#accessible
+   * See https://reactnative.dev/docs/text#accessible
    */
   accessible: PropTypes.bool,
   /**
    * Whether font should be scaled down automatically.
    *
-   * See https://reactnative.dev/docs/text.html#adjustsfontsizetofit
+   * See https://reactnative.dev/docs/text#adjustsfontsizetofit
    */
   adjustsFontSizeToFit: PropTypes.bool,
   /**
    * Smallest possible scale a font can reach.
    *
-   * See https://reactnative.dev/docs/text.html#minimumfontscale
+   * See https://reactnative.dev/docs/text#minimumfontscale
    */
   minimumFontScale: PropTypes.number,
   /**
    * Specifies the disabled state of the text view for testing purposes.
    *
-   * See https://reactnative.dev/docs/text.html#disabled
+   * See https://reactnative.dev/docs/text#disabled
    */
   disabled: PropTypes.bool,
   /**
    * Determines the types of data converted to clickable URLs in text.
    *
-   * See https://reactnative.dev/docs/text.html#dataDetectorType
+   * See https://reactnative.dev/docs/text#dataDetectorType
    */
   dataDetectorType: (PropTypes.oneOf(
     DataDetectorTypes,

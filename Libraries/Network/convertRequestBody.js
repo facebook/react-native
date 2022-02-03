@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -34,7 +34,8 @@ function convertRequestBody(body: RequestBody): Object {
     return {formData: body.getParts()};
   }
   if (body instanceof ArrayBuffer || ArrayBuffer.isView(body)) {
-    // $FlowFixMe: no way to assert that 'body' is indeed an ArrayBufferView
+    /* $FlowFixMe[incompatible-call] : no way to assert that 'body' is indeed
+     * an ArrayBufferView */
     return {base64: binaryToBase64(body)};
   }
   return body;

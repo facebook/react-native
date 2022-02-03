@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -60,6 +60,9 @@ RCT_NOT_IMPLEMENTED(-(nullable instancetype)initWithCoder : (NSCoder *)coder)
     _surface.delegate = self;
     _stage = surface.stage;
     [self _updateViews];
+
+    // For backward compatibility with RCTRootView, set a color here instead of transparent (OS default).
+    self.backgroundColor = [UIColor whiteColor];
   }
 
   return self;

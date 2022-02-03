@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -57,13 +57,14 @@ class ItemComponent extends React.PureComponent<{
   onPress: (key: string) => void,
   onShowUnderlay?: () => void,
   onHideUnderlay?: () => void,
+  textSelectable?: ?boolean,
   ...
 }> {
   _onPress = () => {
     this.props.onPress(this.props.item.key);
   };
   render(): React.Node {
-    const {fixedHeight, horizontal, item} = this.props;
+    const {fixedHeight, horizontal, item, textSelectable} = this.props;
     const itemHash = Math.abs(hashCode(item.title));
     const imgSource = THUMB_URLS[itemHash % THUMB_URLS.length];
     return (
@@ -81,6 +82,7 @@ class ItemComponent extends React.PureComponent<{
           {!item.noImage && <Image style={styles.thumb} source={imgSource} />}
           <Text
             style={styles.text}
+            selectable={textSelectable}
             numberOfLines={horizontal || fixedHeight ? 3 : undefined}>
             {item.title} - {item.text}
           </Text>

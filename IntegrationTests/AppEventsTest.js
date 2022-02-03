@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -38,6 +38,7 @@ class AppEventsTest extends React.Component<{...}, State> {
     NativeAppEventEmitter.addListener('testEvent', this.receiveEvent);
     const event = {data: TEST_PAYLOAD, ts: Date.now()};
     TestModule.sendAppEvent('testEvent', event);
+    // eslint-disable-next-line react/no-did-mount-set-state
     this.setState({sent: event});
   }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,9 +11,12 @@
 #include <mutex>
 #include <string>
 
-#include <better/map.h>
-#include <better/mutex.h>
-#include <better/optional.h>
+#include <butter/map.h>
+#include <butter/mutex.h>
+#include <butter/optional.h>
+
+#include <react/debug/flags.h>
+#include <react/debug/react_native_assert.h>
 
 namespace facebook {
 namespace react {
@@ -39,13 +42,9 @@ class ContextContainer final {
    */
   template <typename T>
   void insert(std::string const &key, T const &instance) const {
-    std::unique_lock<better::shared_mutex> lock(mutex_);
+    std::unique_lock<butter::shared_mutex> lock(mutex_);
 
     instances_.insert({key, std::make_shared<T>(instance)});
-
-#ifndef NDEBUG
-    typeNames_.insert({key, typeid(T).name()});
-#endif
   }
 
   /*
@@ -53,13 +52,9 @@ class ContextContainer final {
    * Does nothing if the instance was not found.
    */
   void erase(std::string const &key) const {
-    std::unique_lock<better::shared_mutex> lock(mutex_);
+    std::unique_lock<butter::shared_mutex> lock(mutex_);
 
     instances_.erase(key);
-
-#ifndef NDEBUG
-    typeNames_.erase(key);
-#endif
   }
 
   /*
@@ -68,16 +63,11 @@ class ContextContainer final {
    * values from the given container.
    */
   void update(ContextContainer const &contextContainer) const {
-    std::unique_lock<better::shared_mutex> lock(mutex_);
+    std::unique_lock<butter::shared_mutex> lock(mutex_);
 
     for (auto const &pair : contextContainer.instances_) {
       instances_.erase(pair.first);
       instances_.insert(pair);
-#ifndef NDEBUG
-      typeNames_.erase(pair.first);
-      typeNames_.insert(
-          {pair.first, contextContainer.typeNames_.at(pair.first)});
-#endif
     }
   }
 
@@ -88,14 +78,11 @@ class ContextContainer final {
    */
   template <typename T>
   T at(std::string const &key) const {
-    std::shared_lock<better::shared_mutex> lock(mutex_);
+    std::shared_lock<butter::shared_mutex> lock(mutex_);
 
-    assert(
+    react_native_assert(
         instances_.find(key) != instances_.end() &&
         "ContextContainer doesn't have an instance for given key.");
-    assert(
-        typeNames_.at(key) == typeid(T).name() &&
-        "ContextContainer stores an instance of different type for given key.");
     return *std::static_pointer_cast<T>(instances_.at(key));
   }
 
@@ -105,28 +92,21 @@ class ContextContainer final {
    * Returns an empty optional if the instance could not be found.
    */
   template <typename T>
-  better::optional<T> find(std::string const &key) const {
-    std::shared_lock<better::shared_mutex> lock(mutex_);
+  butter::optional<T> find(std::string const &key) const {
+    std::shared_lock<butter::shared_mutex> lock(mutex_);
 
     auto iterator = instances_.find(key);
     if (iterator == instances_.end()) {
       return {};
     }
 
-    assert(
-        typeNames_.at(key) == typeid(T).name() &&
-        "ContextContainer stores an instance of different type for given key.");
-
     return *std::static_pointer_cast<T>(iterator->second);
   }
 
  private:
-  mutable better::shared_mutex mutex_;
+  mutable butter::shared_mutex mutex_;
   // Protected by mutex_`.
-  mutable better::map<std::string, std::shared_ptr<void>> instances_;
-#ifndef NDEBUG
-  mutable better::map<std::string, std::string> typeNames_;
-#endif
+  mutable butter::map<std::string, std::shared_ptr<void>> instances_;
 };
 
 } // namespace react

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,9 +10,7 @@
 
 import type {____ViewStyle_Internal} from './StyleSheetTypes';
 
-export default function splitLayoutProps(
-  props: ?____ViewStyle_Internal,
-): {
+export default function splitLayoutProps(props: ?____ViewStyle_Internal): {
   outer: ?____ViewStyle_Internal,
   inner: ?____ViewStyle_Internal,
 } {
@@ -21,10 +19,8 @@ export default function splitLayoutProps(
 
   if (props != null) {
     // $FlowIgnore[incompatible-exact] Will contain a subset of keys from `props`.
-    // $FlowIgnore[incompatible-type] Values are preserved within a key.
     outer = {};
     // $FlowIgnore[incompatible-exact] Will contain a subset of keys from `props`.
-    // $FlowIgnore[incompatible-type] Values are preserved within a key.
     inner = {};
 
     for (const prop of Object.keys(props)) {

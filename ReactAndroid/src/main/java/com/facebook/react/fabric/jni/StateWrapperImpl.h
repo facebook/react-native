@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,6 +8,7 @@
 #pragma once
 
 #include <fbjni/fbjni.h>
+#include <react/common/mapbuffer/ReadableMapBuffer.h>
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/core/State.h>
 
@@ -25,12 +26,9 @@ class StateWrapperImpl : public jni::HybridClass<StateWrapperImpl> {
 
   static void registerNatives();
 
-  jni::local_ref<ReadableNativeMap::jhybridobject> getState();
+  jni::local_ref<ReadableMapBuffer::jhybridobject> getStateMapBufferDataImpl();
+  jni::local_ref<ReadableNativeMap::jhybridobject> getStateDataImpl();
   void updateStateImpl(NativeMap *map);
-  void updateStateWithFailureCallbackImpl(
-      NativeMap *map,
-      jni::alias_ref<jobject> self,
-      int callbackRefId);
 
   State::Shared state_;
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,7 +14,7 @@ const ReactPropTypes = require('prop-types');
 
 const deprecatedPropType = require('../Utilities/deprecatedPropType');
 
-const TransformMatrixPropType = function(
+const TransformMatrixPropType = function (
   props: Object,
   propName: string,
   componentName: string,
@@ -27,7 +27,7 @@ const TransformMatrixPropType = function(
   }
 };
 
-const DecomposedMatrixPropType = function(
+const DecomposedMatrixPropType = function (
   props: Object,
   propName: string,
   componentName: string,

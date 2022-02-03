@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,6 +10,7 @@
 #import <mutex>
 
 #import <React/RCTAssert.h>
+#import <React/RCTConstants.h>
 #import <React/RCTConversions.h>
 #import <React/RCTFollyConvert.h>
 #import <React/RCTI18nUtil.h>
@@ -21,6 +22,7 @@
 #import <React/RCTSurfaceView.h>
 #import <React/RCTUIManagerUtils.h>
 #import <React/RCTUtils.h>
+#import <react/renderer/mounting/MountingCoordinator.h>
 
 #import "RCTSurfacePresenter.h"
 
@@ -32,7 +34,13 @@ using namespace facebook::react;
   // `SurfaceHandler` is a thread-safe object, so we don't need additional synchronization.
   // Objective-C++ classes cannot have instance variables without default constructors,
   // hence we wrap a value into `optional` to workaround it.
-  better::optional<SurfaceHandler> _surfaceHandler;
+  butter::optional<SurfaceHandler> _surfaceHandler;
+
+  // Protects Surface's start and stop processes.
+  // Even though SurfaceHandler is tread-safe, it will crash if we try to stop a surface that is not running.
+  // To make the API easy to use, we check the status of the surface before calling `start` or `stop`,
+  // and we need this mutex to prevent races.
+  std::mutex _surfaceMutex;
 
   // Can be accessed from the main thread only.
   RCTSurfaceView *_Nullable _view;
@@ -53,6 +61,8 @@ using namespace facebook::react;
     _surfaceHandler->setProps(convertIdToFollyDynamic(initialProperties));
 
     [_surfacePresenter registerSurface:self];
+
+    [self setMinimumSize:CGSizeZero maximumSize:RCTViewportSize()];
 
     [self _updateLayoutContext];
 
@@ -79,22 +89,35 @@ using namespace facebook::react;
 
 #pragma mark - Life-cycle management
 
-- (BOOL)start
+- (void)start
 {
-  _surfaceHandler->start();
-  [self _propagateStageChange];
+  std::lock_guard<std::mutex> lock(_surfaceMutex);
 
-  RCTExecuteOnMainQueue(^{
+  if (_surfaceHandler->getStatus() != SurfaceHandler::Status::Registered) {
+    return;
+  }
+
+  // We need to register a root view component here synchronously because right after
+  // we start a surface, it can initiate an update that can query the root component.
+  RCTUnsafeExecuteOnMainQueueSync(^{
     [self->_surfacePresenter.mountingManager attachSurfaceToView:self.view
                                                        surfaceId:self->_surfaceHandler->getSurfaceId()];
   });
 
+  _surfaceHandler->start();
+  [self _propagateStageChange];
+
   [_surfacePresenter setupAnimationDriverWithSurfaceHandler:*_surfaceHandler];
-  return YES;
 }
 
-- (BOOL)stop
+- (void)stop
 {
+  std::lock_guard<std::mutex> lock(_surfaceMutex);
+
+  if (_surfaceHandler->getStatus() != SurfaceHandler::Status::Running) {
+    return;
+  }
+
   _surfaceHandler->stop();
   [self _propagateStageChange];
 
@@ -102,8 +125,6 @@ using namespace facebook::react;
     [self->_surfacePresenter.mountingManager detachSurfaceFromView:self.view
                                                          surfaceId:self->_surfaceHandler->getSurfaceId()];
   });
-
-  return YES;
 }
 
 #pragma mark - Immutable Properties (no need to enforce synchronization)
@@ -150,6 +171,8 @@ using namespace facebook::react;
 - (void)_updateLayoutContext
 {
   auto layoutConstraints = _surfaceHandler->getLayoutConstraints();
+  layoutConstraints.layoutDirection = RCTLayoutDirection([[RCTI18nUtil sharedInstance] isRTL]);
+
   auto layoutContext = _surfaceHandler->getLayoutContext();
 
   layoutContext.pointScaleFactor = RCTScreenScale();

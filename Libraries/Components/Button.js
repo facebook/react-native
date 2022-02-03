@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,18 +11,21 @@
 
 'use strict';
 
-const Platform = require('../Utilities/Platform');
-const React = require('react');
-const StyleSheet = require('../StyleSheet/StyleSheet');
-const Text = require('../Text/Text');
-const TouchableNativeFeedback = require('./Touchable/TouchableNativeFeedback');
-const TouchableOpacity = require('./Touchable/TouchableOpacity');
-const View = require('./View/View');
+import * as React from 'react';
+import Platform from '../Utilities/Platform';
+import StyleSheet, {type ColorValue} from '../StyleSheet/StyleSheet';
+import Text from '../Text/Text';
+import TouchableNativeFeedback from './Touchable/TouchableNativeFeedback';
+import TouchableOpacity from './Touchable/TouchableOpacity';
+import View from './View/View';
+import invariant from 'invariant';
 
-const invariant = require('invariant');
-
+import type {
+  AccessibilityState,
+  AccessibilityActionEvent,
+  AccessibilityActionInfo,
+} from './View/ViewAccessibility';
 import type {PressEvent} from '../Types/CoreEventTypes';
-import type {ColorValue} from '../StyleSheet/StyleSheet';
 
 type ButtonProps = $ReadOnly<{|
   /**
@@ -134,6 +137,15 @@ type ButtonProps = $ReadOnly<{|
     Used to locate this view in end-to-end tests.
    */
   testID?: ?string,
+
+  /**
+   * Accessibility props.
+   */
+  accessible?: ?boolean,
+  accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
+  onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
+  accessibilityState?: ?AccessibilityState,
+  accessibilityHint?: ?string,
 |}>;
 
 /**
@@ -148,7 +160,7 @@ type ButtonProps = $ReadOnly<{|
   [button:examples].
 
   [button:source]:
-  https://github.com/facebook/react-native/blob/master/Libraries/Components/Button.js
+  https://github.com/facebook/react-native/blob/HEAD/Libraries/Components/Button.js
 
   [button:examples]:
   https://js.coach/?menu%5Bcollections%5D=React%20Native&page=1&query=button
@@ -261,8 +273,11 @@ class Button extends React.Component<ButtonProps> {
       nextFocusLeft,
       nextFocusRight,
       nextFocusUp,
-      disabled,
       testID,
+      accessible,
+      accessibilityActions,
+      accessibilityHint,
+      onAccessibilityAction,
     } = this.props;
     const buttonStyles = [styles.button];
     const textStyles = [styles.text];
@@ -273,12 +288,22 @@ class Button extends React.Component<ButtonProps> {
         buttonStyles.push({backgroundColor: color});
       }
     }
-    const accessibilityState = {};
+
+    const disabled =
+      this.props.disabled != null
+        ? this.props.disabled
+        : this.props.accessibilityState?.disabled;
+
+    const accessibilityState =
+      disabled !== this.props.accessibilityState?.disabled
+        ? {...this.props.accessibilityState, disabled}
+        : this.props.accessibilityState;
+
     if (disabled) {
       buttonStyles.push(styles.buttonDisabled);
       textStyles.push(styles.textDisabled);
-      accessibilityState.disabled = true;
     }
+
     invariant(
       typeof title === 'string',
       'The title prop of a Button must be a string',
@@ -287,9 +312,14 @@ class Button extends React.Component<ButtonProps> {
       Platform.OS === 'android' ? title.toUpperCase() : title;
     const Touchable =
       Platform.OS === 'android' ? TouchableNativeFeedback : TouchableOpacity;
+
     return (
       <Touchable
+        accessible={accessible}
+        accessibilityActions={accessibilityActions}
+        onAccessibilityAction={onAccessibilityAction}
         accessibilityLabel={accessibilityLabel}
+        accessibilityHint={accessibilityHint}
         accessibilityRole="button"
         accessibilityState={accessibilityState}
         hasTVPreferredFocus={hasTVPreferredFocus}

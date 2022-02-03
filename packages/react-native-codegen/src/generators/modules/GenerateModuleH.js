@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -43,7 +43,7 @@ const FileTemplate = ({
   modules: string,
 }>) => {
   return `/**
- * ${'C'}opyright (c) Facebook, Inc. and its affiliates.
+ * ${'C'}opyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -124,6 +124,7 @@ module.exports = {
     libraryName: string,
     schema: SchemaType,
     packageName?: string,
+    assumeNonnull: boolean = false,
   ): FilesOutput {
     const nativeModules = getModules(schema);
 
@@ -137,11 +138,10 @@ module.exports = {
 
         const traversedProperties = properties
           .map(prop => {
-            const [
-              propTypeAnnotation,
-            ] = unwrapNullable<NativeModuleFunctionTypeAnnotation>(
-              prop.typeAnnotation,
-            );
+            const [propTypeAnnotation] =
+              unwrapNullable<NativeModuleFunctionTypeAnnotation>(
+                prop.typeAnnotation,
+              );
             const traversedArgs = propTypeAnnotation.params
               .map(param => {
                 const translatedParam = translatePrimitiveJSTypeToCpp(

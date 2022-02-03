@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -21,7 +21,6 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -67,7 +66,7 @@ public class UIImplementation {
 
   public UIImplementation(
       ReactApplicationContext reactContext,
-      UIManagerModule.ViewManagerResolver viewManagerResolver,
+      ViewManagerResolver viewManagerResolver,
       EventDispatcher eventDispatcher,
       int minTimeLeftInFrameForNonBatchedOperationMs) {
     this(
@@ -965,9 +964,7 @@ public class UIImplementation {
       }
     }
     cssNode.markUpdateSeen();
-    if (ReactFeatureFlags.enableTransitionLayoutOnlyViewCleanup) {
-      mNativeViewHierarchyOptimizer.onViewUpdatesCompleted(cssNode);
-    }
+    mNativeViewHierarchyOptimizer.onViewUpdatesCompleted(cssNode);
   }
 
   public void addUIBlock(UIBlock block) {

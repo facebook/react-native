@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,10 +7,7 @@
 
 #pragma once
 
-#include "ParagraphShadowNode.h"
-
-#include <react/config/ReactNativeConfig.h>
-#include <react/renderer/components/view/ViewPropsInterpolation.h>
+#include <react/renderer/components/text/ParagraphShadowNode.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 #include <react/renderer/textlayoutmanager/TextLayoutManager.h>
 #include <react/utils/ContextContainer.h>
@@ -31,23 +28,10 @@ class ParagraphComponentDescriptor final
     textLayoutManager_ = std::make_shared<TextLayoutManager>(contextContainer_);
   }
 
-  virtual SharedProps interpolateProps(
-      float animationProgress,
-      const SharedProps &props,
-      const SharedProps &newProps) const override {
-    SharedProps interpolatedPropsShared = cloneProps(newProps, {});
-
-    interpolateViewProps(
-        animationProgress, props, newProps, interpolatedPropsShared);
-
-    return interpolatedPropsShared;
-  };
-
  protected:
-  void adopt(UnsharedShadowNode shadowNode) const override {
+  void adopt(ShadowNode::Unshared const &shadowNode) const override {
     ConcreteComponentDescriptor::adopt(shadowNode);
 
-    assert(std::dynamic_pointer_cast<ParagraphShadowNode>(shadowNode));
     auto paragraphShadowNode =
         std::static_pointer_cast<ParagraphShadowNode>(shadowNode);
 
@@ -57,7 +41,7 @@ class ParagraphComponentDescriptor final
   }
 
  private:
-  SharedTextLayoutManager textLayoutManager_;
+  std::shared_ptr<TextLayoutManager const> textLayoutManager_;
 };
 
 } // namespace react

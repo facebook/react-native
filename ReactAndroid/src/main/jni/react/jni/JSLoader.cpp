@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -66,7 +66,7 @@ loadScriptFromAssets(AAssetManager *manager, const std::string &assetName) {
 
   throw std::runtime_error(folly::to<std::string>(
       "Unable to load script. Make sure you're "
-      "either running Metro (run 'react-native start') or that your bundle '",
+      "either running Metro (run 'npx react-native start') or that your bundle '",
       assetName,
       "' is packaged correctly for release."));
 }

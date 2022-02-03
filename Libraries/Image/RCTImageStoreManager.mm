@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -196,6 +196,11 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
   }
 }
 
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params
+{
+  return std::make_shared<facebook::react::NativeImageStoreIOSSpecJSI>(params);
+}
+
 @end
 
 @implementation RCTImageStoreManager (Deprecated)
@@ -232,11 +237,6 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
       block([UIImage imageWithData:imageData]);
     });
   });
-}
-
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params
-{
-  return std::make_shared<facebook::react::NativeImageStoreIOSSpecJSI>(params);
 }
 
 @end

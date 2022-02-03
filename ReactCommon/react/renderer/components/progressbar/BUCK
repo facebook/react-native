@@ -32,12 +32,6 @@ rn_xplat_cxx_library(
         ],
         prefix = "react/renderer/components/progressbar",
     ),
-    compiler_flags = [
-        "-fexceptions",
-        "-frtti",
-        "-std=c++14",
-        "-Wall",
-    ],
     cxx_tests = [":tests"],
     fbandroid_deps = [
         react_native_target("jni/react/jni:jni"),
@@ -85,6 +79,7 @@ rn_xplat_cxx_library(
         "//xplat/folly:memory",
         "//xplat/folly:molly",
         YOGA_CXX_TARGET,
+        react_native_xplat_target("react/debug:debug"),
         react_native_xplat_target("react/renderer/debug:debug"),
         react_native_xplat_target("react/renderer/core:core"),
         react_native_xplat_target("react/renderer/components/image:image"),
@@ -104,7 +99,7 @@ fb_xplat_cxx_test(
     compiler_flags = [
         "-fexceptions",
         "-frtti",
-        "-std=c++14",
+        "-std=c++17",
         "-Wall",
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],

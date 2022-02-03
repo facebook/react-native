@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -29,14 +29,11 @@ RCT_EXPORT_MODULE();
 
 @end
 
-
 @interface FlexibleSizeExampleView () <RCTRootViewDelegate>
 
 @end
 
-
-@implementation FlexibleSizeExampleView
-{
+@implementation FlexibleSizeExampleView {
   RCTRootView *_resizableRootView;
   UITextView *_currentSizeTextView;
   BOOL _sizeUpdated;
@@ -76,10 +73,11 @@ RCT_EXPORT_MODULE();
 {
   float textViewHeight = 60;
   float spacingHeight = 10;
-  [_resizableRootView setFrame:CGRectMake(0, textViewHeight + spacingHeight, self.frame.size.width, _resizableRootView.frame.size.height)];
+  [_resizableRootView
+      setFrame:CGRectMake(
+                   0, textViewHeight + spacingHeight, self.frame.size.width, _resizableRootView.frame.size.height)];
   [_currentSizeTextView setFrame:CGRectMake(0, 0, self.frame.size.width, textViewHeight)];
 }
-
 
 - (NSArray<UIView<RCTComponent> *> *)reactSubviews
 {
@@ -87,7 +85,6 @@ RCT_EXPORT_MODULE();
   (void)[super reactSubviews];
   return @[];
 }
-
 
 #pragma mark - RCTRootViewDelegate
 
@@ -98,13 +95,16 @@ RCT_EXPORT_MODULE();
 
   if (!_sizeUpdated) {
     _sizeUpdated = TRUE;
-    _currentSizeTextView.text = [NSString stringWithFormat:@"RCTRootViewDelegate: content with initially unknown size has appeared, updating root view's size so the content fits."];
+    _currentSizeTextView.text = [NSString
+        stringWithFormat:
+            @"RCTRootViewDelegate: content with initially unknown size has appeared, updating root view's size so the content fits."];
 
   } else {
-    _currentSizeTextView.text = [NSString stringWithFormat:@"RCTRootViewDelegate: content size has been changed to (%ld, %ld), updating root view's size.",
-                                 (long)newFrame.size.width,
-                                 (long)newFrame.size.height];
-
+    _currentSizeTextView.text =
+        [NSString stringWithFormat:
+                      @"RCTRootViewDelegate: content size has been changed to (%ld, %ld), updating root view's size.",
+                      (long)newFrame.size.width,
+                      (long)newFrame.size.height];
   }
 
   rootView.frame = newFrame;

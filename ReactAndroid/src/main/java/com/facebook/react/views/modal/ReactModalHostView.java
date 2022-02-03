@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -23,6 +23,7 @@ import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
+import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
 import com.facebook.react.bridge.GuardedRunnable;
@@ -60,6 +61,8 @@ import java.util.ArrayList;
  */
 public class ReactModalHostView extends ViewGroup
     implements LifecycleEventListener, FabricViewStateManager.HasFabricViewStateManager {
+
+  private static final String TAG = "ReactModalHost";
 
   // This listener is called when the user presses KeyEvent.KEYCODE_BACK
   // An event is then passed to JS which can either close or not close the Modal by setting the
@@ -244,6 +247,15 @@ public class ReactModalHostView extends ViewGroup
     // If the existing Dialog is currently up, we may need to redraw it or we may be able to update
     // the property without having to recreate the dialog
     if (mDialog != null) {
+      Context dialogContext = ContextUtils.findContextOfType(mDialog.getContext(), Activity.class);
+      // TODO(T85755791): remove after investigation
+      FLog.e(
+          TAG,
+          "Updating existing dialog with context: "
+              + dialogContext
+              + "@"
+              + dialogContext.hashCode());
+
       if (mPropertyRequiresNewDialog) {
         dismiss();
       } else {
@@ -269,6 +281,9 @@ public class ReactModalHostView extends ViewGroup
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
 
+    // TODO(T85755791): remove after investigation
+    FLog.e(TAG, "Creating new dialog from context: " + context + "@" + context.hashCode());
+
     mDialog.setContentView(getContentView());
     updateProperties();
 
@@ -278,14 +293,11 @@ public class ReactModalHostView extends ViewGroup
           @Override
           public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
             if (event.getAction() == KeyEvent.ACTION_UP) {
-              // We need to stop the BACK button from closing the dialog by default so we capture
-              // that
-              // event and instead inform JS so that it can make the decision as to whether or not
-              // to
-              // allow the back button to close the dialog.  If it chooses to, it can just set
-              // visible
-              // to false on the Modal and the Modal will go away
-              if (keyCode == KeyEvent.KEYCODE_BACK) {
+              // We need to stop the BACK button and ESCAPE key from closing the dialog by default
+              // so we capture that event and instead inform JS so that it can make the decision as
+              // to whether or not to allow the back/escape key to close the dialog. If it chooses
+              // to, it can just set visible to false on the Modal and the Modal will go away
+              if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_ESCAPE) {
                 Assertions.assertNotNull(
                     mOnRequestCloseListener,
                     "setOnRequestCloseListener must be called by the manager");
@@ -293,9 +305,8 @@ public class ReactModalHostView extends ViewGroup
                 return true;
               } else {
                 // We redirect the rest of the key events to the current activity, since the
-                // activity
-                // expects to receive those events and react to them, ie. in the case of the dev
-                // menu
+                // activity expects to receive those events and react to them, ie. in the case of
+                // the dev menu
                 Activity currentActivity = ((ReactContext) getContext()).getCurrentActivity();
                 if (currentActivity != null) {
                   return currentActivity.onKeyUp(keyCode, event);
@@ -456,7 +467,7 @@ public class ReactModalHostView extends ViewGroup
 
       // Check incoming state values. If they're already the correct value, return early to prevent
       // infinite UpdateState/SetState loop.
-      ReadableMap currentState = getFabricViewStateManager().getState();
+      ReadableMap currentState = getFabricViewStateManager().getStateData();
       if (currentState != null) {
         float delta = (float) 0.9;
         float stateScreenHeight =
@@ -517,8 +528,18 @@ public class ReactModalHostView extends ViewGroup
     }
 
     @Override
-    public void onChildStartedNativeGesture(MotionEvent androidEvent) {
-      mJSTouchDispatcher.onChildStartedNativeGesture(androidEvent, mEventDispatcher);
+    public void onChildStartedNativeGesture(MotionEvent ev) {
+      mJSTouchDispatcher.onChildStartedNativeGesture(ev, mEventDispatcher);
+    }
+
+    @Override
+    public void onChildStartedNativeGesture(View childView, MotionEvent ev) {
+      mJSTouchDispatcher.onChildStartedNativeGesture(ev, mEventDispatcher);
+    }
+
+    @Override
+    public void onChildEndedNativeGesture(View childView, MotionEvent ev) {
+      mJSTouchDispatcher.onChildEndedNativeGesture(ev, mEventDispatcher);
     }
 
     @Override

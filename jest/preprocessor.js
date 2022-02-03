@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,8 +13,8 @@
 'use strict';
 
 const babelRegisterOnly = require('metro-babel-register');
-const createCacheKeyFunction = require('@jest/create-cache-key-function')
-  .default;
+const createCacheKeyFunction =
+  require('@jest/create-cache-key-function').default;
 
 const {transformSync: babelTransformSync} = require('@babel/core');
 const generate = require('@babel/generator').default;

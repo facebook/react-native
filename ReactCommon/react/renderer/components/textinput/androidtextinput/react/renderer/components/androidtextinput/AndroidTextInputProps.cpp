@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -37,215 +37,182 @@ static bool hasValue(
 }
 
 AndroidTextInputProps::AndroidTextInputProps(
+    const PropsParserContext &context,
     const AndroidTextInputProps &sourceProps,
     const RawProps &rawProps)
-    : ViewProps(sourceProps, rawProps),
-      BaseTextProps(sourceProps, rawProps),
-      autoCompleteType(convertRawProp(
+    : ViewProps(context, sourceProps, rawProps),
+      BaseTextProps(context, sourceProps, rawProps),
+      autoComplete(convertRawProp(
+          context,
           rawProps,
-          "autoCompleteType",
-          sourceProps.autoCompleteType,
+          "autoComplete",
+          sourceProps.autoComplete,
           {})),
-      returnKeyLabel(convertRawProp(
-          rawProps,
+      returnKeyLabel(convertRawProp(context, rawProps,
           "returnKeyLabel",
           sourceProps.returnKeyLabel,
           {})),
-      numberOfLines(convertRawProp(
-          rawProps,
+      numberOfLines(convertRawProp(context, rawProps,
           "numberOfLines",
           sourceProps.numberOfLines,
           {0})),
-      disableFullscreenUI(convertRawProp(
-          rawProps,
+      disableFullscreenUI(convertRawProp(context, rawProps,
           "disableFullscreenUI",
           sourceProps.disableFullscreenUI,
           {false})),
-      textBreakStrategy(convertRawProp(
-          rawProps,
+      textBreakStrategy(convertRawProp(context, rawProps,
           "textBreakStrategy",
           sourceProps.textBreakStrategy,
           {})),
-      underlineColorAndroid(convertRawProp(
-          rawProps,
+      underlineColorAndroid(convertRawProp(context, rawProps,
           "underlineColorAndroid",
           sourceProps.underlineColorAndroid,
           {})),
-      inlineImageLeft(convertRawProp(
-          rawProps,
+      inlineImageLeft(convertRawProp(context, rawProps,
           "inlineImageLeft",
           sourceProps.inlineImageLeft,
           {})),
-      inlineImagePadding(convertRawProp(
-          rawProps,
+      inlineImagePadding(convertRawProp(context, rawProps,
           "inlineImagePadding",
           sourceProps.inlineImagePadding,
           {0})),
-      importantForAutofill(convertRawProp(
-          rawProps,
+      importantForAutofill(convertRawProp(context, rawProps,
           "importantForAutofill",
           sourceProps.importantForAutofill,
           {})),
-      showSoftInputOnFocus(convertRawProp(
-          rawProps,
+      showSoftInputOnFocus(convertRawProp(context, rawProps,
           "showSoftInputOnFocus",
           sourceProps.showSoftInputOnFocus,
           {false})),
-      autoCapitalize(convertRawProp(
-          rawProps,
+      autoCapitalize(convertRawProp(context, rawProps,
           "autoCapitalize",
           sourceProps.autoCapitalize,
           {})),
-      autoCorrect(convertRawProp(
-          rawProps,
+      autoCorrect(convertRawProp(context, rawProps,
           "autoCorrect",
           sourceProps.autoCorrect,
           {false})),
-      autoFocus(convertRawProp(
-          rawProps,
+      autoFocus(convertRawProp(context, rawProps,
           "autoFocus",
           sourceProps.autoFocus,
           {false})),
-      allowFontScaling(convertRawProp(
-          rawProps,
+      allowFontScaling(convertRawProp(context, rawProps,
           "allowFontScaling",
           sourceProps.allowFontScaling,
           {false})),
-      maxFontSizeMultiplier(convertRawProp(
-          rawProps,
+      maxFontSizeMultiplier(convertRawProp(context, rawProps,
           "maxFontSizeMultiplier",
           sourceProps.maxFontSizeMultiplier,
           {0.0})),
       editable(
-          convertRawProp(rawProps, "editable", sourceProps.editable, {false})),
-      keyboardType(convertRawProp(
-          rawProps,
+          convertRawProp(context, rawProps, "editable", sourceProps.editable, {false})),
+      keyboardType(convertRawProp(context, rawProps,
           "keyboardType",
           sourceProps.keyboardType,
           {})),
-      returnKeyType(convertRawProp(
-          rawProps,
+      returnKeyType(convertRawProp(context, rawProps,
           "returnKeyType",
           sourceProps.returnKeyType,
           {})),
       maxLength(
-          convertRawProp(rawProps, "maxLength", sourceProps.maxLength, {0})),
-      multiline(convertRawProp(
-          rawProps,
+          convertRawProp(context, rawProps, "maxLength", sourceProps.maxLength, {0})),
+      multiline(convertRawProp(context, rawProps,
           "multiline",
           sourceProps.multiline,
           {false})),
       placeholder(
-          convertRawProp(rawProps, "placeholder", sourceProps.placeholder, {})),
-      placeholderTextColor(convertRawProp(
-          rawProps,
+          convertRawProp(context, rawProps, "placeholder", sourceProps.placeholder, {})),
+      placeholderTextColor(convertRawProp(context, rawProps,
           "placeholderTextColor",
           sourceProps.placeholderTextColor,
           {})),
-      secureTextEntry(convertRawProp(
-          rawProps,
+      secureTextEntry(convertRawProp(context, rawProps,
           "secureTextEntry",
           sourceProps.secureTextEntry,
           {false})),
-      selectionColor(convertRawProp(
-          rawProps,
+      selectionColor(convertRawProp(context, rawProps,
           "selectionColor",
           sourceProps.selectionColor,
           {})),
       selection(
-          convertRawProp(rawProps, "selection", sourceProps.selection, {})),
-      value(convertRawProp(rawProps, "value", sourceProps.value, {})),
-      defaultValue(convertRawProp(
-          rawProps,
+          convertRawProp(context, rawProps, "selection", sourceProps.selection, {})),
+      value(convertRawProp(context, rawProps, "value", sourceProps.value, {})),
+      defaultValue(convertRawProp(context, rawProps,
           "defaultValue",
           sourceProps.defaultValue,
           {})),
-      selectTextOnFocus(convertRawProp(
-          rawProps,
+      selectTextOnFocus(convertRawProp(context, rawProps,
           "selectTextOnFocus",
           sourceProps.selectTextOnFocus,
           {false})),
-      blurOnSubmit(convertRawProp(
-          rawProps,
+      blurOnSubmit(convertRawProp(context, rawProps,
           "blurOnSubmit",
           sourceProps.blurOnSubmit,
           {false})),
-      caretHidden(convertRawProp(
-          rawProps,
+      caretHidden(convertRawProp(context, rawProps,
           "caretHidden",
           sourceProps.caretHidden,
           {false})),
-      contextMenuHidden(convertRawProp(
-          rawProps,
+      contextMenuHidden(convertRawProp(context, rawProps,
           "contextMenuHidden",
           sourceProps.contextMenuHidden,
           {false})),
-      textShadowColor(convertRawProp(
-          rawProps,
+      textShadowColor(convertRawProp(context, rawProps,
           "textShadowColor",
           sourceProps.textShadowColor,
           {})),
-      textShadowRadius(convertRawProp(
-          rawProps,
+      textShadowRadius(convertRawProp(context, rawProps,
           "textShadowRadius",
           sourceProps.textShadowRadius,
           {0.0})),
-      textDecorationLine(convertRawProp(
-          rawProps,
+      textDecorationLine(convertRawProp(context, rawProps,
           "textDecorationLine",
           sourceProps.textDecorationLine,
           {})),
       fontStyle(
-          convertRawProp(rawProps, "fontStyle", sourceProps.fontStyle, {})),
-      textShadowOffset(convertRawProp(
-          rawProps,
+          convertRawProp(context, rawProps, "fontStyle", sourceProps.fontStyle, {})),
+      textShadowOffset(convertRawProp(context, rawProps,
           "textShadowOffset",
           sourceProps.textShadowOffset,
           {})),
-      lineHeight(convertRawProp(
-          rawProps,
+      lineHeight(convertRawProp(context, rawProps,
           "lineHeight",
           sourceProps.lineHeight,
           {0.0})),
-      textTransform(convertRawProp(
-          rawProps,
+      textTransform(convertRawProp(context, rawProps,
           "textTransform",
           sourceProps.textTransform,
           {})),
-      color(convertRawProp(rawProps, "color", sourceProps.color, {0})),
-      letterSpacing(convertRawProp(
-          rawProps,
+      color(0 /*convertRawProp(context, rawProps, "color", sourceProps.color, {0})*/),
+      letterSpacing(convertRawProp(context, rawProps,
           "letterSpacing",
           sourceProps.letterSpacing,
           {0.0})),
       fontSize(
-          convertRawProp(rawProps, "fontSize", sourceProps.fontSize, {0.0})),
+          convertRawProp(context, rawProps, "fontSize", sourceProps.fontSize, {0.0})),
       textAlign(
-          convertRawProp(rawProps, "textAlign", sourceProps.textAlign, {})),
-      includeFontPadding(convertRawProp(
-          rawProps,
+          convertRawProp(context, rawProps, "textAlign", sourceProps.textAlign, {})),
+      includeFontPadding(convertRawProp(context, rawProps,
           "includeFontPadding",
           sourceProps.includeFontPadding,
           {false})),
       fontWeight(
-          convertRawProp(rawProps, "fontWeight", sourceProps.fontWeight, {})),
+          convertRawProp(context, rawProps, "fontWeight", sourceProps.fontWeight, {})),
       fontFamily(
-          convertRawProp(rawProps, "fontFamily", sourceProps.fontFamily, {})),
-      textAlignVertical(convertRawProp(
-          rawProps,
+          convertRawProp(context, rawProps, "fontFamily", sourceProps.fontFamily, {})),
+      textAlignVertical(convertRawProp(context, rawProps,
           "textAlignVertical",
           sourceProps.textAlignVertical,
           {})),
       cursorColor(
-          convertRawProp(rawProps, "cursorColor", sourceProps.cursorColor, {})),
-      mostRecentEventCount(convertRawProp(
-          rawProps,
+          convertRawProp(context, rawProps, "cursorColor", sourceProps.cursorColor, {})),
+      mostRecentEventCount(convertRawProp(context, rawProps,
           "mostRecentEventCount",
           sourceProps.mostRecentEventCount,
           {0})),
-      text(convertRawProp(rawProps, "text", sourceProps.text, {})),
+      text(convertRawProp(context, rawProps, "text", sourceProps.text, {})),
       paragraphAttributes(
-          convertRawProp(rawProps, sourceProps.paragraphAttributes, {})),
+          convertRawProp(context, rawProps, sourceProps.paragraphAttributes, {})),
       // See AndroidTextInputComponentDescriptor for usage
       // TODO T63008435: can these, and this feature, be removed entirely?
       hasPadding(hasValue(rawProps, sourceProps.hasPadding, "", "padding", "")),
@@ -294,7 +261,7 @@ AndroidTextInputProps::AndroidTextInputProps(
 // TODO T53300085: support this in codegen; this was hand-written
 folly::dynamic AndroidTextInputProps::getDynamic() const {
   folly::dynamic props = folly::dynamic::object();
-  props["autoCompleteType"] = autoCompleteType;
+  props["autoComplete"] = autoComplete;
   props["returnKeyLabel"] = returnKeyLabel;
   props["numberOfLines"] = numberOfLines;
   props["disableFullscreenUI"] = disableFullscreenUI;
@@ -332,7 +299,7 @@ folly::dynamic AndroidTextInputProps::getDynamic() const {
   props["textShadowOffset"] = toDynamic(textShadowOffset);
   props["lineHeight"] = lineHeight;
   props["textTransform"] = textTransform;
-  props["color"] = color;
+  props["color"] = toDynamic(color);
   props["letterSpacing"] = letterSpacing;
   props["fontSize"] = fontSize;
   props["textAlign"] = textAlign;

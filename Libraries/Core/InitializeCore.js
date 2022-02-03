@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,6 @@
  * @format
  * @flow strict-local
  */
-
-/* globals window: true */
 
 /**
  * Sets up global variables typical in most JavaScript environments.
@@ -43,6 +41,7 @@ require('./setUpSegmentFetcher');
 if (__DEV__) {
   require('./checkNativeVersion');
   require('./setUpDeveloperTools');
+  require('../LogBox/LogBox').install();
 }
 
 const GlobalPerformanceLogger = require('../Utilities/GlobalPerformanceLogger');

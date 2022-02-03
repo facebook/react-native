@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -43,48 +43,47 @@ function configureNext(
     return;
   }
 
-  if (UIManager?.configureNextLayoutAnimation) {
-    UIManager.configureNextLayoutAnimation(
-      config,
-      onAnimationDidEnd ?? function() {},
-      onAnimationDidFail ??
-        function() {} /* this should never be called in Non-Fabric */,
-    );
-  }
+  // Since LayoutAnimations may possibly be disabled for now on iOS (Fabric),
+  // or Android (non-Fabric) we race a setTimeout with animation completion,
+  // in case onComplete is never called
+  // from native. Once LayoutAnimations+Fabric unconditionally ship everywhere, we can
+  // delete this mechanism at least in the Fabric branch.
+  let animationCompletionHasRun = false;
+  const onAnimationComplete = () => {
+    if (animationCompletionHasRun) {
+      return;
+    }
+    animationCompletionHasRun = true;
+    clearTimeout(raceWithAnimationId);
+    onAnimationDidEnd?.();
+  };
+  const raceWithAnimationId = setTimeout(
+    onAnimationComplete,
+    (config.duration ?? 0) + 17 /* one frame + 1ms */,
+  );
 
   // In Fabric, LayoutAnimations are unconditionally enabled for Android, and
   // conditionally enabled on iOS (pending fully shipping; this is a temporary state).
   const FabricUIManager: FabricUIManagerSpec = global?.nativeFabricUIManager;
   if (FabricUIManager?.configureNextLayoutAnimation) {
-    // Since LayoutAnimations may possibly be disabled for now on iOS, we race
-    // a setTimeout with animation completion, in case onComplete is never called
-    // from native. Once LayoutAnimations unconditionally ship everywhere, we can
-    // delete this mechanism.
-    // TODO: (T65643440) remove timeout once LayoutAnimation ships on iOS.
-    let animationCompletionHasRun = false;
-    const onAnimationComplete = () => {
-      if (Platform.OS === 'ios') {
-        if (animationCompletionHasRun) {
-          return;
-        }
-        animationCompletionHasRun = true;
-        clearTimeout(raceWithAnimationId);
-      }
-      onAnimationDidEnd?.();
-    };
-    const raceWithAnimationId =
-      Platform.OS === 'ios'
-        ? setTimeout(
-            onAnimationComplete,
-            (config.duration ?? 0) + 17 /* one frame + 1ms */,
-          )
-        : null;
-
     global?.nativeFabricUIManager?.configureNextLayoutAnimation(
       config,
       onAnimationComplete,
       onAnimationDidFail ??
-        function() {} /* this will only be called if configuration parsing fails */,
+        function () {} /* this will only be called if configuration parsing fails */,
+    );
+    return;
+  }
+
+  // This will only run if Fabric is *not* installed.
+  // If you have Fabric + non-Fabric running in the same VM, non-Fabric LayoutAnimations
+  // will not work.
+  if (UIManager?.configureNextLayoutAnimation) {
+    UIManager.configureNextLayoutAnimation(
+      config,
+      onAnimationComplete ?? function () {},
+      onAnimationDidFail ??
+        function () {} /* this should never be called in Non-Fabric */,
     );
   }
 }

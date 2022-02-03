@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -36,14 +36,14 @@ import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatEditText;
-import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.uimanager.FabricViewStateManager;
+import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.text.CustomLetterSpacingSpan;
@@ -107,14 +107,15 @@ public class ReactEditText extends AppCompatEditText
   private TextAttributes mTextAttributes;
   private boolean mTypefaceDirty = false;
   private @Nullable String mFontFamily = null;
-  private int mFontWeight = ReactTypefaceUtils.UNSET;
-  private int mFontStyle = ReactTypefaceUtils.UNSET;
+  private int mFontWeight = UNSET;
+  private int mFontStyle = UNSET;
   private boolean mAutoFocus = false;
   private boolean mDidAttachToWindow = false;
 
   private ReactViewBackgroundManager mReactBackgroundManager;
 
-  private final FabricViewStateManager mFabricViewStateManager = new FabricViewStateManager();
+  private final @Nullable FabricViewStateManager mFabricViewStateManager =
+      new FabricViewStateManager();
   protected boolean mDisableTextDiffing = false;
 
   protected boolean mIsSettingTextFromState = false;
@@ -155,7 +156,7 @@ public class ReactEditText extends AppCompatEditText
 
     ViewCompat.setAccessibilityDelegate(
         this,
-        new AccessibilityDelegateCompat() {
+        new ReactAccessibilityDelegate() {
           @Override
           public boolean performAccessibilityAction(View host, int action, Bundle args) {
             if (action == AccessibilityNodeInfo.ACTION_CLICK) {
@@ -331,8 +332,18 @@ public class ReactEditText extends AppCompatEditText
     }
 
     if (start != UNSET && end != UNSET) {
+      // clamp selection values for safety
+      start = clampToTextLength(start);
+      end = clampToTextLength(end);
+
       setSelection(start, end);
     }
+  }
+
+  private int clampToTextLength(int value) {
+    int textLength = getText() == null ? 0 : getText().length();
+
+    return Math.max(0, Math.min(value, textLength));
   }
 
   @Override
@@ -734,8 +745,11 @@ public class ReactEditText extends AppCompatEditText
     // wrapper 100% of the time.
     // Since the LocalData object is constructed by getting values from the underlying EditText
     // view, we don't need to construct one or apply it at all - it provides no use in Fabric.
-    if (!mFabricViewStateManager.hasStateWrapper()) {
-      ReactContext reactContext = getReactContext(this);
+    ReactContext reactContext = getReactContext(this);
+
+    if (mFabricViewStateManager != null
+        && !mFabricViewStateManager.hasStateWrapper()
+        && !reactContext.isBridgeless()) {
       final ReactTextInputLocalData localData = new ReactTextInputLocalData(this);
       UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
       if (uiManager != null) {
@@ -971,7 +985,7 @@ public class ReactEditText extends AppCompatEditText
    */
   private void updateCachedSpannable(boolean resetStyles) {
     // Noops in non-Fabric
-    if (!mFabricViewStateManager.hasStateWrapper()) {
+    if (mFabricViewStateManager != null && !mFabricViewStateManager.hasStateWrapper()) {
       return;
     }
     // If this view doesn't have an ID yet, we don't have a cache key, so bail here
@@ -1028,7 +1042,7 @@ public class ReactEditText extends AppCompatEditText
       try {
         sb.append(currentText.subSequence(0, currentText.length()));
       } catch (IndexOutOfBoundsException e) {
-        ReactSoftException.logSoftException(TAG, e);
+        ReactSoftExceptionLogger.logSoftException(TAG, e);
       }
     }
 

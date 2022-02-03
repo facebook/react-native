@@ -1,4 +1,4 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -17,13 +17,33 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/androidtextinput/
 LOCAL_CFLAGS := \
   -DLOG_TAG=\"Fabric\"
 
-LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall
+LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
 
 LOCAL_STATIC_LIBRARIES :=
 
-LOCAL_SHARED_LIBRARIES := libyoga glog libfolly_json libglog_init libreact_render_core libreact_render_mounting libreact_render_componentregistry libreact_render_debug libreact_render_graphics libreact_render_uimanager libreact_render_imagemanager libreact_render_textlayoutmanager libreact_render_attributedstring librrc_text librrc_image librrc_view libreact_utils
+LOCAL_SHARED_LIBRARIES := \
+  glog \
+  libfolly_json \
+  libglog_init \
+  libjsi \
+  libreact_debug \
+  libreact_render_attributedstring \
+  libreact_render_componentregistry \
+  libreact_render_core \
+  libreact_render_debug \
+  libreact_render_graphics \
+  libreact_render_imagemanager \
+  libreact_render_mapbuffer \
+  libreact_render_mounting \
+  libreact_render_textlayoutmanager \
+  libreact_render_uimanager \
+  libreact_utils \
+  librrc_image \
+  librrc_text \
+  librrc_view \
+  libyoga
 
-include $(BUILD_SHARED_LIBRARY)
+include $(BUILD_STATIC_LIBRARY)
 
 $(call import-module,glog)
 $(call import-module,folly)
@@ -41,4 +61,6 @@ $(call import-module,react/renderer/components/image)
 $(call import-module,react/renderer/components/view)
 $(call import-module,react/renderer/components/text)
 $(call import-module,react/utils)
+$(call import-module,react/debug)
 $(call import-module,yogajni)
+$(call import-module,react/renderer/mapbuffer)

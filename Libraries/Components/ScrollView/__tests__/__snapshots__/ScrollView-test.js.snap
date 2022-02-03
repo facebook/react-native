@@ -34,7 +34,6 @@ exports[`<ScrollView /> should render as expected: should deep render when not m
   onTouchMove={[Function]}
   onTouchStart={[Function]}
   pagingEnabled={false}
-  scrollBarThumbImage={null}
   scrollViewRef={null}
   sendMomentumEvents={false}
   snapToEnd={true}

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,6 +12,7 @@
 #include <react/renderer/components/view/primitives.h>
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/Props.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Geometry.h>
 #include <react/renderer/graphics/Transform.h>
@@ -26,7 +27,10 @@ using SharedViewProps = std::shared_ptr<ViewProps const>;
 class ViewProps : public YogaStylableProps, public AccessibilityProps {
  public:
   ViewProps() = default;
-  ViewProps(ViewProps const &sourceProps, RawProps const &rawProps);
+  ViewProps(
+      const PropsParserContext &context,
+      ViewProps const &sourceProps,
+      RawProps const &rawProps);
 
 #pragma mark - Props
 
@@ -50,14 +54,22 @@ class ViewProps : public YogaStylableProps, public AccessibilityProps {
   Transform transform{};
   BackfaceVisibility backfaceVisibility{};
   bool shouldRasterize{};
-  better::optional<int> zIndex{};
+  butter::optional<int> zIndex{};
 
   // Events
   PointerEventsMode pointerEvents{};
   EdgeInsets hitSlop{};
   bool onLayout{};
 
+  bool pointerEnter{};
+
+  bool pointerLeave{};
+
+  bool pointerMove{};
+
   bool collapsable{true};
+
+  bool removeClippedSubviews{false};
 
   Float elevation{}; /* Android-only */
 

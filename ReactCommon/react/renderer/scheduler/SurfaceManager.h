@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <better/map.h>
+#include <butter/map.h>
 #include <mutex>
 
 #include <react/renderer/core/LayoutConstraints.h>
@@ -26,7 +26,7 @@ namespace react {
  */
 class SurfaceManager final {
  public:
-  SurfaceManager(Scheduler const &scheduler) noexcept;
+  explicit SurfaceManager(Scheduler const &scheduler) noexcept;
 
 #pragma mark - Surface Management
 
@@ -55,12 +55,12 @@ class SurfaceManager final {
  private:
   void visit(
       SurfaceId surfaceId,
-      std::function<void(SurfaceHandler const &surfaceHandler)> callback)
+      std::function<void(SurfaceHandler const &surfaceHandler)> const &callback)
       const noexcept;
 
   Scheduler const &scheduler_;
-  mutable better::shared_mutex mutex_; // Protects `registry_`.
-  mutable better::map<SurfaceId, SurfaceHandler> registry_{};
+  mutable butter::shared_mutex mutex_; // Protects `registry_`.
+  mutable butter::map<SurfaceId, SurfaceHandler> registry_{};
 };
 
 } // namespace react

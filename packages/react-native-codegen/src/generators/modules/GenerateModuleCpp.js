@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -77,7 +77,7 @@ const FileTemplate = ({
   modules: string,
 }>) => {
   return `/**
- * ${'C'}opyright (c) Facebook, Inc. and its affiliates.
+ * ${'C'}opyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -162,11 +162,8 @@ function serializePropertyIntoHostFunction(
   property: NativeModulePropertyShape,
   resolveAlias: AliasResolver,
 ): string {
-  const [
-    propertyTypeAnnotation,
-  ] = unwrapNullable<NativeModuleFunctionTypeAnnotation>(
-    property.typeAnnotation,
-  );
+  const [propertyTypeAnnotation] =
+    unwrapNullable<NativeModuleFunctionTypeAnnotation>(property.typeAnnotation);
   const isVoid =
     propertyTypeAnnotation.returnTypeAnnotation.type === 'VoidTypeAnnotation';
 
@@ -185,6 +182,7 @@ module.exports = {
     libraryName: string,
     schema: SchemaType,
     packageName?: string,
+    assumeNonnull: boolean = false,
   ): FilesOutput {
     const nativeModules = getModules(schema);
 

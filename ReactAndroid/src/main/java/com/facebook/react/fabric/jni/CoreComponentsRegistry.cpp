@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,8 +12,6 @@
 #include <fbjni/fbjni.h>
 
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
-#include <react/renderer/components/androidpicker/AndroidDialogPickerComponentDescriptor.h>
-#include <react/renderer/components/androidpicker/AndroidDropdownPickerComponentDescriptor.h>
 #include <react/renderer/components/androidswitch/AndroidSwitchComponentDescriptor.h>
 #include <react/renderer/components/androidtextinput/AndroidTextInputComponentDescriptor.h>
 #include <react/renderer/components/image/ImageComponentDescriptor.h>
@@ -65,13 +63,12 @@ CoreComponentsRegistry::sharedProviderRegistry() {
     providerRegistry->add(
         concreteComponentDescriptorProvider<ScrollViewComponentDescriptor>());
     providerRegistry->add(
+        concreteComponentDescriptorProvider<
+            AndroidHorizontalScrollContentViewComponentDescriptor>());
+    providerRegistry->add(
         concreteComponentDescriptorProvider<ParagraphComponentDescriptor>());
     providerRegistry->add(concreteComponentDescriptorProvider<
                           AndroidDrawerLayoutComponentDescriptor>());
-    providerRegistry->add(concreteComponentDescriptorProvider<
-                          AndroidDialogPickerComponentDescriptor>());
-    providerRegistry->add(concreteComponentDescriptorProvider<
-                          AndroidDropdownPickerComponentDescriptor>());
 
     return providerRegistry;
   }();

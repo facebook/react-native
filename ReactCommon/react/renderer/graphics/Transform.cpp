@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,6 +10,7 @@
 #include <cmath>
 
 #include <glog/logging.h>
+#include <react/debug/react_native_assert.h>
 
 namespace facebook {
 namespace react {
@@ -182,14 +183,14 @@ TransformOperation Transform::DefaultTransformOperation(
 }
 
 Transform Transform::Interpolate(
-    float animationProgress,
+    Float animationProgress,
     Transform const &lhs,
     Transform const &rhs) {
   // Iterate through operations and reconstruct an interpolated resulting
   // transform If at any point we hit an "Arbitrary" Transform, return at that
   // point
   Transform result = Transform::Identity();
-  for (int i = 0, j = 0;
+  for (size_t i = 0, j = 0;
        i < lhs.operations.size() || j < rhs.operations.size();) {
     bool haveLHS = i < lhs.operations.size();
     bool haveRHS = j < rhs.operations.size();
@@ -226,8 +227,8 @@ Transform Transform::Interpolate(
         (haveRHS && rhs.operations[j].type == type
              ? rhs.operations[j++]
              : Transform::DefaultTransformOperation(type));
-    assert(type == lhsOp.type);
-    assert(type == rhsOp.type);
+    react_native_assert(type == lhsOp.type);
+    react_native_assert(type == rhsOp.type);
 
     result = result *
         Transform::FromTransformOperation(TransformOperation{

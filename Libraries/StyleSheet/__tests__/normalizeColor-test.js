@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,21 +13,19 @@
 const {OS} = require('../../Utilities/Platform');
 const normalizeColor = require('../normalizeColor');
 
-it('forwards calls to @react-native/normalize-color/base', () => {
-  jest
-    .resetModules()
-    .mock('@react-native/normalize-color/base', () => jest.fn());
+it('forwards calls to @react-native/normalize-color', () => {
+  jest.resetModules().mock('@react-native/normalize-color', () => jest.fn());
 
   expect(require('../normalizeColor')('#abc')).not.toBe(null);
-  expect(require('@react-native/normalize-color/base')).toBeCalled();
+  expect(require('@react-native/normalize-color')).toBeCalled();
 });
 
 describe('iOS', () => {
   if (OS === 'ios') {
-    const PlatformColor = require('../PlatformColorValueTypes.ios')
-      .PlatformColor;
-    const DynamicColorIOS = require('../PlatformColorValueTypesIOS.ios')
-      .DynamicColorIOS;
+    const PlatformColor =
+      require('../PlatformColorValueTypes.ios').PlatformColor;
+    const DynamicColorIOS =
+      require('../PlatformColorValueTypesIOS.ios').DynamicColorIOS;
 
     it('should normalize iOS PlatformColor colors', () => {
       const color = PlatformColor('systemRedColor');
@@ -40,6 +38,25 @@ describe('iOS', () => {
       const color = DynamicColorIOS({light: 'black', dark: 'white'});
       const normalizedColor = normalizeColor(color);
       const expectedColor = {dynamic: {light: 'black', dark: 'white'}};
+      expect(normalizedColor).toEqual(expectedColor);
+    });
+
+    it('should normalize iOS Dynamic colors with accessible colors', () => {
+      const color = DynamicColorIOS({
+        light: 'black',
+        dark: 'white',
+        highContrastLight: 'red',
+        highContrastDark: 'blue',
+      });
+      const normalizedColor = normalizeColor(color);
+      const expectedColor = {
+        dynamic: {
+          light: 'black',
+          dark: 'white',
+          highContrastLight: 'red',
+          highContrastDark: 'blue',
+        },
+      };
       expect(normalizedColor).toEqual(expectedColor);
     });
 
@@ -62,8 +79,8 @@ describe('iOS', () => {
 
 describe('Android', () => {
   if (OS === 'android') {
-    const PlatformColor = require('../PlatformColorValueTypes.android')
-      .PlatformColor;
+    const PlatformColor =
+      require('../PlatformColorValueTypes.android').PlatformColor;
 
     it('should normalize Android PlatformColor colors', () => {
       const color = PlatformColor('?attr/colorPrimary');

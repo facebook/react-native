@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -54,6 +54,15 @@
 #define RCT_DEV_MENU RCT_DEV
 #endif
 
+/**
+ * Controls for the core packgaer loading functionality
+ * By default, this inherits from RCT_DEV_MENU but it also gives the capability to
+ * enable the packager functionality without the rest of the dev tools from RCT_DEV_MENU
+ */
+#ifndef RCT_ENABLE_LOADING_FROM_PACKAGER
+#define RCT_ENABLE_LOADING_FROM_PACKAGER RCT_DEV_MENU
+#endif
+
 #ifndef RCT_ENABLE_INSPECTOR
 #if RCT_DEV && __has_include(<React/RCTInspectorDevServerHelper.h>)
 #define RCT_ENABLE_INSPECTOR 1
@@ -62,11 +71,11 @@
 #endif
 #endif
 
-#ifndef ENABLE_PACKAGER_CONNECTION
+#ifndef RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION
 #if RCT_DEV && (__has_include("RCTPackagerConnection.h") || __has_include(<React/RCTPackagerConnection.h>))
-#define ENABLE_PACKAGER_CONNECTION 1
+#define RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION 1
 #else
-#define ENABLE_PACKAGER_CONNECTION 0
+#define RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION 0
 #endif
 #endif
 
@@ -142,3 +151,13 @@
     @throw _RCTNotImplementedException(_cmd, [self class]);                                             \
   }                                                                                                     \
   _Pragma("clang diagnostic pop")
+
+/**
+ * Controls for activating the new architecture without the legacy system.
+ * Note: this is work in progress.
+ */
+#ifdef REACT_NATIVE_FORCE_NEW_ARCHITECTURE
+#define RCT_NEW_ARCHITECTURE 1
+#else
+#define RCT_NEW_ARCHITECTURE 0
+#endif

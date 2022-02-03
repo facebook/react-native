@@ -4,9 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
+ * @noformat
  * @flow strict-local
+ * @generated SignedSource<<4f1549884fbe8fc2aea495692e3f665d>>
+ *
+ * This file was sync'd from the facebook/react repository.
  */
+
+'use strict';
 
 import {ReactNativeViewConfigRegistry} from 'react-native/Libraries/ReactPrivate/ReactNativePrivateInterface';
 import {type ViewConfig} from './ReactNativeTypes';

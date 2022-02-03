@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,7 +16,7 @@ jest.setMock('../../BatchedBridge/NativeModules', {
 
 const Blob = require('../Blob');
 
-describe('Blob', function() {
+describe('Blob', function () {
   it('should create empty blob', () => {
     const blob = new Blob();
     expect(blob).toBeInstanceOf(Blob);

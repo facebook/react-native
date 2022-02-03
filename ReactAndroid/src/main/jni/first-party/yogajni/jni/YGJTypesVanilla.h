@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -20,11 +20,15 @@ class PtrJNodeMapVanilla {
 
 public:
   PtrJNodeMapVanilla() : ptrsToIdxs_{}, javaNodes_{} {}
-  PtrJNodeMapVanilla(
-      jlong* nativePointers,
-      size_t nativePointersSize,
-      jobjectArray javaNodes)
+  PtrJNodeMapVanilla(jlongArray javaNativePointers, jobjectArray javaNodes)
       : javaNodes_{javaNodes} {
+
+    JNIEnv* env = getCurrentEnv();
+    size_t nativePointersSize = env->GetArrayLength(javaNativePointers);
+    std::vector<jlong> nativePointers(nativePointersSize);
+    env->GetLongArrayRegion(
+        javaNativePointers, 0, nativePointersSize, nativePointers.data());
+
     for (size_t i = 0; i < nativePointersSize; ++i) {
       ptrsToIdxs_[(YGNodeRef) nativePointers[i]] = i;
     }

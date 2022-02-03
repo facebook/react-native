@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -71,12 +71,18 @@ class EventEmitter {
       const std::string &type,
       const ValueFactory &payloadFactory =
           EventEmitter::defaultPayloadFactory(),
-      const EventPriority &priority = EventPriority::AsynchronousBatched) const;
+      EventPriority priority = EventPriority::AsynchronousBatched,
+      RawEvent::Category category = RawEvent::Category::Unspecified) const;
 
   void dispatchEvent(
       const std::string &type,
       const folly::dynamic &payload,
-      const EventPriority &priority = EventPriority::AsynchronousBatched) const;
+      EventPriority priority = EventPriority::AsynchronousBatched,
+      RawEvent::Category category = RawEvent::Category::Unspecified) const;
+
+  void dispatchUniqueEvent(
+      const std::string &type,
+      const folly::dynamic &payload) const;
 
   void dispatchUniqueEvent(
       const std::string &type,

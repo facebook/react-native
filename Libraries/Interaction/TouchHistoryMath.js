@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -24,7 +24,7 @@ const TouchHistoryMath = {
    * touches vs. previous centroid of now actively moving touches.
    * @return {number} value of centroid in specified dimension.
    */
-  centroidDimension: function(
+  centroidDimension: function (
     touchHistory,
     touchesChangedAfter,
     isXAxis,
@@ -81,7 +81,7 @@ const TouchHistoryMath = {
     return count > 0 ? total / count : TouchHistoryMath.noCentroid;
   },
 
-  currentCentroidXOfTouchesChangedAfter: function(
+  currentCentroidXOfTouchesChangedAfter: function (
     touchHistory,
     touchesChangedAfter,
   ) {
@@ -93,7 +93,7 @@ const TouchHistoryMath = {
     );
   },
 
-  currentCentroidYOfTouchesChangedAfter: function(
+  currentCentroidYOfTouchesChangedAfter: function (
     touchHistory,
     touchesChangedAfter,
   ) {
@@ -105,7 +105,7 @@ const TouchHistoryMath = {
     );
   },
 
-  previousCentroidXOfTouchesChangedAfter: function(
+  previousCentroidXOfTouchesChangedAfter: function (
     touchHistory,
     touchesChangedAfter,
   ) {
@@ -117,7 +117,7 @@ const TouchHistoryMath = {
     );
   },
 
-  previousCentroidYOfTouchesChangedAfter: function(
+  previousCentroidYOfTouchesChangedAfter: function (
     touchHistory,
     touchesChangedAfter,
   ) {
@@ -129,7 +129,7 @@ const TouchHistoryMath = {
     );
   },
 
-  currentCentroidX: function(touchHistory) {
+  currentCentroidX: function (touchHistory) {
     return TouchHistoryMath.centroidDimension(
       touchHistory,
       0, // touchesChangedAfter
@@ -138,7 +138,7 @@ const TouchHistoryMath = {
     );
   },
 
-  currentCentroidY: function(touchHistory) {
+  currentCentroidY: function (touchHistory) {
     return TouchHistoryMath.centroidDimension(
       touchHistory,
       0, // touchesChangedAfter

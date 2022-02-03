@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -58,7 +58,8 @@ export type HermesParsedStack = {|
 // 4. source URL (filename)
 // 5. line number (1 based)
 // 6. column number (1 based) or virtual offset (0 based)
-const RE_FRAME = /^ {4}at (.+?)(?: \((native)\)?| \((address at )?(.+?):(\d+):(\d+)\))$/;
+const RE_FRAME =
+  /^ {4}at (.+?)(?: \((native)\)?| \((address at )?(.*?):(\d+):(\d+)\))$/;
 
 // Capturing groups:
 // 1. count of skipped frames

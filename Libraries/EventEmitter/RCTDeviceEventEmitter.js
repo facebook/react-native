@@ -1,44 +1,22 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict
  * @format
- * @flow
  */
 
-import EventEmitter from '../vendor/emitter/EventEmitter';
-import type EmitterSubscription from '../vendor/emitter/_EmitterSubscription';
-import EventSubscriptionVendor from '../vendor/emitter/_EventSubscriptionVendor';
-
-/**
- * Deprecated - subclass NativeEventEmitter to create granular event modules instead of
- * adding all event listeners directly to RCTDeviceEventEmitter.
- */
-class RCTDeviceEventEmitter<
-  EventDefinitions: {...},
-> extends EventEmitter<EventDefinitions> {
-  sharedSubscriber: EventSubscriptionVendor<EventDefinitions>;
-
-  constructor() {
-    const sharedSubscriber = new EventSubscriptionVendor<EventDefinitions>();
-    super(sharedSubscriber);
-    this.sharedSubscriber = sharedSubscriber;
-  }
-
-  removeSubscription<K: $Keys<EventDefinitions>>(
-    subscription: EmitterSubscription<EventDefinitions, K>,
-  ): void {
-    if (subscription.emitter !== this) {
-      subscription.emitter.removeSubscription(subscription);
-    } else {
-      super.removeSubscription(subscription);
-    }
-  }
-}
+import EventEmitter, {type IEventEmitter} from '../vendor/emitter/EventEmitter';
 
 // FIXME: use typed events
 type RCTDeviceEventDefinitions = $FlowFixMe;
 
-export default (new RCTDeviceEventEmitter(): RCTDeviceEventEmitter<RCTDeviceEventDefinitions>);
+/**
+ * Global EventEmitter used by the native platform to emit events to JavaScript.
+ * Events are identified by globally unique event names.
+ *
+ * NativeModules that emit events should instead subclass `NativeEventEmitter`.
+ */
+export default (new EventEmitter(): IEventEmitter<RCTDeviceEventDefinitions>);

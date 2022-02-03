@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {ExtendedError} from './Devtools/parseErrorStack';
+import type {ExtendedError} from './ExtendedError';
 import type {ExceptionData} from './NativeExceptionsManager';
 
 class SyntheticError extends Error {
@@ -56,90 +56,57 @@ function reportException(
   isFatal: boolean,
   reportToConsole: boolean, // only true when coming from handleException; the error has not yet been logged
 ) {
-  const NativeExceptionsManager = require('./NativeExceptionsManager').default;
-  if (NativeExceptionsManager) {
-    const parseErrorStack = require('./Devtools/parseErrorStack');
-    const stack = parseErrorStack(e?.stack);
-    const currentExceptionID = ++exceptionID;
-    const originalMessage = e.message || '';
-    let message = originalMessage;
-    if (e.componentStack != null) {
-      message += `\n\nThis error is located at:${e.componentStack}`;
-    }
-    const namePrefix = e.name == null || e.name === '' ? '' : `${e.name}: `;
+  const parseErrorStack = require('./Devtools/parseErrorStack');
+  const stack = parseErrorStack(e?.stack);
+  const currentExceptionID = ++exceptionID;
+  const originalMessage = e.message || '';
+  let message = originalMessage;
+  if (e.componentStack != null) {
+    message += `\n\nThis error is located at:${e.componentStack}`;
+  }
+  const namePrefix = e.name == null || e.name === '' ? '' : `${e.name}: `;
 
-    if (!message.startsWith(namePrefix)) {
-      message = namePrefix + message;
-    }
+  if (!message.startsWith(namePrefix)) {
+    message = namePrefix + message;
+  }
 
-    message =
-      e.jsEngine == null ? message : `${message}, js engine: ${e.jsEngine}`;
+  message =
+    e.jsEngine == null ? message : `${message}, js engine: ${e.jsEngine}`;
 
-    const isHandledByLogBox =
-      e.forceRedbox !== true && !global.RN$Bridgeless && !global.RN$Express;
+  const data = preprocessException({
+    message,
+    originalMessage: message === originalMessage ? null : originalMessage,
+    name: e.name == null || e.name === '' ? null : e.name,
+    componentStack:
+      typeof e.componentStack === 'string' ? e.componentStack : null,
+    stack,
+    id: currentExceptionID,
+    isFatal,
+    extraData: {
+      jsEngine: e.jsEngine,
+      rawStack: e.stack,
+    },
+  });
 
-    const data = preprocessException({
-      message,
-      originalMessage: message === originalMessage ? null : originalMessage,
-      name: e.name == null || e.name === '' ? null : e.name,
-      componentStack:
-        typeof e.componentStack === 'string' ? e.componentStack : null,
-      stack,
-      id: currentExceptionID,
-      isFatal,
-      extraData: {
-        jsEngine: e.jsEngine,
-        rawStack: e.stack,
-
-        // Hack to hide native redboxes when in the LogBox experiment.
-        // This is intentionally untyped and stuffed here, because it is temporary.
-        suppressRedBox: isHandledByLogBox,
-      },
-    });
-
-    if (reportToConsole) {
-      // we feed back into console.error, to make sure any methods that are
-      // monkey patched on top of console.error are called when coming from
-      // handleException
-      console.error(data.message);
-    }
-
-    if (__DEV__ && isHandledByLogBox) {
-      const LogBoxData = require('../LogBox/Data/LogBoxData');
-      LogBoxData.addException({
-        ...data,
-        isComponentError: !!e.isComponentError,
-      });
-    }
-
-    NativeExceptionsManager.reportException(data);
-
-    if (__DEV__ && !global.RN$Express) {
-      if (e.preventSymbolication === true) {
-        return;
-      }
-      const symbolicateStackTrace = require('./Devtools/symbolicateStackTrace');
-      symbolicateStackTrace(stack)
-        .then(({stack: prettyStack}) => {
-          if (prettyStack) {
-            NativeExceptionsManager.updateExceptionMessage(
-              data.message,
-              prettyStack,
-              currentExceptionID,
-            );
-          } else {
-            throw new Error('The stack is null');
-          }
-        })
-        .catch(error => {
-          console.log('Unable to symbolicate stack trace: ' + error.message);
-        });
-    }
-  } else if (reportToConsole) {
+  if (reportToConsole) {
     // we feed back into console.error, to make sure any methods that are
     // monkey patched on top of console.error are called when coming from
     // handleException
-    console.error(e);
+    console.error(data.message);
+  }
+
+  if (__DEV__) {
+    const LogBox = require('../LogBox/LogBox');
+    LogBox.addException({
+      ...data,
+      isComponentError: !!e.isComponentError,
+    });
+  } else if (isFatal || e.type !== 'warn') {
+    const NativeExceptionsManager =
+      require('./NativeExceptionsManager').default;
+    if (NativeExceptionsManager) {
+      NativeExceptionsManager.reportException(data);
+    }
   }
 }
 
@@ -169,15 +136,17 @@ function handleException(e: mixed, isFatal: boolean) {
   }
   try {
     inExceptionHandler = true;
+    /* $FlowFixMe[class-object-subtyping] added when improving typing for this
+     * parameters */
     reportException(error, isFatal, /*reportToConsole*/ true);
   } finally {
     inExceptionHandler = false;
   }
 }
 
-function reactConsoleErrorHandler() {
+function reactConsoleErrorHandler(...args) {
   // bubble up to any original handlers
-  console._errorOriginal.apply(console, arguments);
+  console._errorOriginal(...args);
   if (!console.reportErrorsAsExceptions) {
     return;
   }
@@ -213,31 +182,35 @@ function reactConsoleErrorHandler() {
     return;
   }
 
-  if (arguments[0] && arguments[0].stack) {
+  let error;
+
+  const firstArg = args[0];
+  if (firstArg?.stack) {
     // reportException will console.error this with high enough fidelity.
-    reportException(
-      arguments[0],
-      /* isFatal */ false,
-      /*reportToConsole*/ false,
-    );
+    error = firstArg;
   } else {
     const stringifySafe = require('../Utilities/stringifySafe').default;
-    const str = Array.prototype.map
-      .call(arguments, value =>
-        typeof value === 'string' ? value : stringifySafe(value),
-      )
-      .join(' ');
-
-    if (str.slice(0, 9) === 'Warning: ') {
+    if (typeof firstArg === 'string' && firstArg.startsWith('Warning: ')) {
       // React warnings use console.error so that a stack trace is shown, but
       // we don't (currently) want these to show a redbox
       // (Note: Logic duplicated in polyfills/console.js.)
       return;
     }
-    const error: ExtendedError = new SyntheticError(str);
+    const message = args
+      .map(arg => (typeof arg === 'string' ? arg : stringifySafe(arg)))
+      .join(' ');
+
+    error = new SyntheticError(message);
     error.name = 'console.error';
-    reportException(error, /* isFatal */ false, /*reportToConsole*/ false);
   }
+
+  reportException(
+    /* $FlowFixMe[class-object-subtyping] added when improving typing for this
+     * parameters */
+    error,
+    false, // isFatal
+    false, // reportToConsole
+  );
 }
 
 /**

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -52,10 +52,6 @@ type AndroidProps = $ReadOnly<{|
    * Size of the refresh indicator.
    */
   size?: ?('default' | 'large'),
-  /**
-   * Progress view top offset
-   */
-  progressViewOffset?: ?number,
 |}>;
 
 export type RefreshControlProps = $ReadOnly<{|
@@ -72,6 +68,11 @@ export type RefreshControlProps = $ReadOnly<{|
    * Whether the view should be indicating an active refresh.
    */
   refreshing: boolean,
+
+  /**
+   * Progress view top offset
+   */
+  progressViewOffset?: ?number,
 |}>;
 
 /**
@@ -157,14 +158,8 @@ class RefreshControl extends React.Component<RefreshControlProps> {
 
   render(): React.Node {
     if (Platform.OS === 'ios') {
-      const {
-        enabled,
-        colors,
-        progressBackgroundColor,
-        size,
-        progressViewOffset,
-        ...props
-      } = this.props;
+      const {enabled, colors, progressBackgroundColor, size, ...props} =
+        this.props;
       return (
         <PullToRefreshViewNativeComponent
           {...props}

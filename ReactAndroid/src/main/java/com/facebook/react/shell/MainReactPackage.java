@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -23,7 +23,6 @@ import com.facebook.react.modules.blob.BlobModule;
 import com.facebook.react.modules.blob.FileReaderModule;
 import com.facebook.react.modules.camera.ImageStoreManager;
 import com.facebook.react.modules.clipboard.ClipboardModule;
-import com.facebook.react.modules.datepicker.DatePickerDialogModule;
 import com.facebook.react.modules.dialog.DialogModule;
 import com.facebook.react.modules.fresco.FrescoModule;
 import com.facebook.react.modules.i18nmanager.I18nManagerModule;
@@ -43,8 +42,6 @@ import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.drawer.ReactDrawerLayoutManager;
 import com.facebook.react.views.image.ReactImageManager;
 import com.facebook.react.views.modal.ReactModalHostManager;
-import com.facebook.react.views.picker.ReactDialogPickerManager;
-import com.facebook.react.views.picker.ReactDropdownPickerManager;
 import com.facebook.react.views.progressbar.ReactProgressBarViewManager;
 import com.facebook.react.views.scroll.ReactHorizontalScrollContainerViewManager;
 import com.facebook.react.views.scroll.ReactHorizontalScrollViewManager;
@@ -74,7 +71,6 @@ import java.util.Map;
       FileReaderModule.class,
       AsyncStorageModule.class,
       ClipboardModule.class,
-      DatePickerDialogModule.class,
       DialogModule.class,
       FrescoModule.class,
       I18nManagerModule.class,
@@ -119,8 +115,6 @@ public class MainReactPackage extends TurboReactPackage {
         return new AsyncStorageModule(context);
       case ClipboardModule.NAME:
         return new ClipboardModule(context);
-      case DatePickerDialogModule.FRAGMENT_TAG:
-        return new DatePickerDialogModule(context);
       case DialogModule.NAME:
         return new DialogModule(context);
       case FrescoModule.NAME:
@@ -160,9 +154,7 @@ public class MainReactPackage extends TurboReactPackage {
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
     List<ViewManager> viewManagers = new ArrayList<>();
 
-    viewManagers.add(new ReactDialogPickerManager());
     viewManagers.add(new ReactDrawerLayoutManager());
-    viewManagers.add(new ReactDropdownPickerManager());
     viewManagers.add(new ReactHorizontalScrollViewManager());
     viewManagers.add(new ReactHorizontalScrollContainerViewManager());
     viewManagers.add(new ReactProgressBarViewManager());
@@ -203,7 +195,6 @@ public class MainReactPackage extends TurboReactPackage {
             FileReaderModule.class,
             AsyncStorageModule.class,
             ClipboardModule.class,
-            DatePickerDialogModule.class,
             DialogModule.class,
             FrescoModule.class,
             I18nManagerModule.class,
