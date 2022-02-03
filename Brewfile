@@ -1,2 +1,2 @@
-brew "node@12"
+brew "node@16"
 brew "watchman"

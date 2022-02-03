@@ -9,5 +9,5 @@ steps:
   - script: sudo chown -R $(whoami) /usr/local/*
     displayName: 'fix node permissions'
 
-  - script: brew link node@12 --overwrite --force
-    displayName: 'ensure node 12'
+  - script: brew link node@16 --overwrite --force
+    displayName: 'ensure node 16'

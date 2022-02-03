@@ -1,14 +1,14 @@
 steps:
   - task: UseNode@1
     inputs:
-      version: '12.x'
+      version: '16.x'
 
   - template: apple-droid-node-patching.yml
     parameters:
       apply_office_patches: true
 
-  # This is currently required as the command task (strangely) always runs elevated .. 
-  # which makes all the files touched by the above patching step unreadable by following non-command tasks without sudo. 
+  # This is currently required as the command task (strangely) always runs elevated ..
+  # which makes all the files touched by the above patching step unreadable by following non-command tasks without sudo.
   # This makes all the files readable.
   - task: CmdLine@2
     displayName: chmod

@@ -28,11 +28,11 @@ executors:
     <<: *defaults
     docker:
       # Note: Version set separately for Windows builds, see below.
-      - image: circleci/node:14
+      - image: circleci/node:16
   nodeprevlts:
     <<: *defaults
     docker:
-      - image: circleci/node:12
+      - image: circleci/node:14
   reactnativeandroid:
     <<: *defaults
     docker:
@@ -399,7 +399,7 @@ jobs:
             - brew_install:
                 package: watchman
             - brew_install:
-                package: node@12
+                package: node@16
             - run:
                 name: "Brew: Tap wix/brew"
                 command: HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew >/dev/null

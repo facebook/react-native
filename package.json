@@ -7,7 +7,7 @@
   "license": "MIT",
   "repository": "git@github.com:microsoft/react-native-macos.git",
   "engines": {
-    "node": ">=12"
+    "node": ">=14"
   },
   "jest-junit": {
     "outputDirectory": "reports/junit",
