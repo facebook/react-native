@@ -60,9 +60,8 @@ Binding::getInspectorDataForInstance(
   }
 
   EventEmitterWrapper *cEventEmitter = cthis(eventEmitterWrapper);
-  InspectorData data = scheduler->getInspectorDataForInstance(
-      enableEventEmitterRawPointer_ ? *cEventEmitter->eventEmitterPointer
-                                    : *cEventEmitter->eventEmitter);
+  InspectorData data =
+      scheduler->getInspectorDataForInstance(*cEventEmitter->eventEmitter);
 
   folly::dynamic result = folly::dynamic::object;
   result["fileName"] = data.fileName;
@@ -368,9 +367,6 @@ void Binding::installFabricUIManager(
 
   disableRevisionCheckForPreallocation_ =
       config->getBool("react_fabric:disable_revision_check_for_preallocation");
-
-  enableEventEmitterRawPointer_ =
-      config->getBool("react_fabric:enable_event_emitter_wrapper_raw_pointer");
 
   if (enableFabricLogs_) {
     LOG(WARNING) << "Binding::installFabricUIManager() was called (address: "
