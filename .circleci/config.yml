@@ -589,6 +589,37 @@ jobs:
           command: cd template/android/ && ./gradlew assembleDebug
 
   # -------------------------
+  #    JOBS: Test Android RNTester
+  # -------------------------
+  test_android_rntester:
+    executor: reactnativeandroid
+    parameters:
+      use_hermes:
+          type: boolean
+          default: false
+    steps:
+      - checkout
+      - run_yarn
+
+      - run:
+          name: Generate artifacts for Maven
+          command: ./gradlew :ReactAndroid:installArchives
+
+      - when:
+          condition: << parameters.use_hermes >>
+          steps:
+            - run:
+                name: Build RNTester with Hermes
+                command: ./gradlew :packages:rn-tester:android:app:assembleHermesDebug
+      - when:
+          condition:
+            not: << parameters.use_hermes >>
+          steps:
+            - run:
+                name: Build RNTester with JSC
+                command: ./gradlew :packages:rn-tester:android:app:assembleJscDebug
+
+  # -------------------------
   #    JOBS: Test iOS Template
   # -------------------------
   test_ios_template:
@@ -619,6 +650,40 @@ jobs:
             xcodebuild build \
               -workspace ~/tmp/$PROJECT_NAME/ios/$PROJECT_NAME.xcworkspace \
               -scheme $PROJECT_NAME \
+              -sdk iphonesimulator
+
+  # -------------------------
+  #    JOBS: Test iOS RNTester
+  # -------------------------
+  test_ios_rntester:
+    executor: reactnativeios
+    parameters:
+      use_hermes:
+          type: boolean
+          default: false
+    steps:
+      - checkout
+      - run_yarn
+
+      - when:
+          condition: << parameters.use_hermes >>
+          steps:
+            - run:
+                name: Set USE_HERMES=1
+                command: echo "export USE_HERMES=1" >> $BASH_ENV
+
+      - run:
+          name: Install CocoaPods dependencies
+          command: |
+            rm -rf packages/rn-tester/Pods
+            cd packages/rn-tester && bundle exec pod install
+
+      - run:
+          name: Build RNTester
+          command: |
+            xcodebuild build \
+              -workspace packages/rn-tester/RNTesterPods.xcworkspace \
+              -scheme RNTester \
               -sdk iphonesimulator
 
   # -------------------------
@@ -885,9 +950,31 @@ workflows:
           filters:
             branches:
               ignore: gh-pages
+      - test_android_rntester:
+          name: test_android_rntester_hermes
+          use_hermes: true
+          filters:
+            branches:
+              ignore: gh-pages
+      - test_android_rntester:
+          name: test_android_rntester_jsc
+          filters:
+            branches:
+              ignore: gh-pages
       - test_ios_template:
           requires:
             - build_npm_package
+          filters:
+            branches:
+              ignore: gh-pages
+      - test_ios_rntester:
+          name: test_ios_rntester_hermes
+          use_hermes: true
+          filters:
+            branches:
+              ignore: gh-pages
+      - test_ios_rntester:
+          name: test_ios_rntester_jsc
           filters:
             branches:
               ignore: gh-pages
