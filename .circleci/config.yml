@@ -682,7 +682,7 @@ jobs:
           name: Build RNTester
           command: |
             xcodebuild build \
-              -workspace RNTesterPods.xcworkspace \
+              -workspace packages/rn-tester/RNTesterPods.xcworkspace \
               -scheme RNTester \
               -sdk iphonesimulator
 
