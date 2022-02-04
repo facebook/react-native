@@ -165,17 +165,17 @@ struct Transform {
 };
 
 /*
- * Applies tranformation to the given point.
+ * Applies transformation to the given point.
  */
 Point operator*(Point const &point, Transform const &transform);
 
 /*
- * Applies tranformation to the given size.
+ * Applies transformation to the given size.
  */
 Size operator*(Size const &size, Transform const &transform);
 
 /*
- * Applies tranformation to the given rect.
+ * Applies transformation to the given rect.
  * ONLY SUPPORTS scale and translation transformation.
  */
 Rect operator*(Rect const &rect, Transform const &transform);
