@@ -54,7 +54,7 @@ const ToastWithCenterGravity = () => {
     <Pressable
       onPress={() =>
         ToastAndroid.showWithGravity(
-          'A problem has been occured while submitting your data.',
+          'A problem has been occurred while submitting your data.',
           ToastAndroid.SHORT,
           ToastAndroid.CENTER,
         )
