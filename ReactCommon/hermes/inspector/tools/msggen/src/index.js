@@ -41,7 +41,6 @@ const proto = mergeDomains(standard, custom);
 function parseDomains(
   domainObjs: Array<any>,
   ignoreExperimental: boolean,
-  includeExperimental: Set<string>,
 ): Descriptor {
   const desc = {
     types: [],
@@ -60,12 +59,7 @@ function parseDomains(
     }
 
     for (const commandObj of obj.commands || []) {
-      const command = Command.create(
-        domain,
-        commandObj,
-        !includeExperimental.has(`${domain}.${commandObj.name}`) &&
-          ignoreExperimental,
-      );
+      const command = Command.create(domain, commandObj, ignoreExperimental);
       if (command) {
         desc.commands.push(command);
       }
@@ -205,27 +199,18 @@ function main() {
     .boolean('e')
     .alias('e', 'ignore-experimental')
     .describe('e', 'ignore experimental commands, props, and types')
-    .alias('i', 'include-experimental')
-    .describe('i', 'experimental commands to include')
     .alias('r', 'roots')
     .describe('r', 'path to a file listing root types, events, and commands')
     .nargs('r', 1)
     .demandCommand(2, 2).argv;
 
   const ignoreExperimental = !!args.e;
-  const includeExperimental = new Set(
-    typeof args.i === 'string' ? args.i.split(',') : [],
-  );
   const [headerPath, implPath] = args._;
 
   const headerStream = fs.createWriteStream(headerPath);
   const implStream = fs.createWriteStream(implPath);
 
-  const desc = parseDomains(
-    proto.domains,
-    ignoreExperimental,
-    includeExperimental,
-  );
+  const desc = parseDomains(proto.domains, ignoreExperimental);
   const graph = buildGraph(desc);
   const roots = parseRoots(desc, String(args.roots));
 
