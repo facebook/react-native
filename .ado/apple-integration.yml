@@ -1,6 +1,6 @@
 name: Integrate $(Date:yyyyMMdd).$(Rev:.r)
 variables:
-  - template: variables/mac.yml
+  - template: variables/vars.yml
 trigger:
   branches:
     include:
@@ -21,7 +21,7 @@ jobs:
   - job: react_native_test_app
     displayName: react-native-test-app
     pool:
-      vmImage: $(VmImage)
+      vmImage: $(VmImageApple)
       demands: ['npm', 'sh', 'xcode']
     workspace:
       clean: all

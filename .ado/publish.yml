@@ -4,7 +4,7 @@
 # This file defines the build steps to publish a release
 name: $(Date:yyyyMMdd).$(Rev:.r)
 
-trigger: 
+trigger:
   batch: true
   branches:
     include:
@@ -17,13 +17,13 @@ trigger:
 pr: none
 
 variables:
-  - template: variables/mac.yml
+  - template: variables/vars.yml
 
 jobs:
   - job: RNGithubNpmJSPublish
     displayName: React-Native GitHub Publish to npmjs.org
     pool:
-      vmImage: $(VmImage)
+      vmImage: $(VmImageApple)
     timeoutInMinutes: 90 # how long to run the job before automatically cancelling
     cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
     steps:
@@ -107,7 +107,7 @@ jobs:
   - job: RNMacOSInitNpmJSPublish
     displayName: react-native-macos-init Publish to npmjs.org
     pool:
-      vmImage: ubuntu-18.04
+      vmImage: $(VmImageUbuntu)
     timeoutInMinutes: 90 # how long to run the job before automatically cancelling
     cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
     condition: eq(variables['Build.SourceBranchName'], 'main')
@@ -144,7 +144,7 @@ jobs:
   - job: RNGithubOfficePublish
     displayName: React-Native GitHub Publish to Office
     pool:
-      vmImage: ubuntu-18.04
+      vmImage: $(VmImageUbuntu)
     timeoutInMinutes: 90 # how long to run the job before automatically cancelling
     cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
     steps:
@@ -203,4 +203,4 @@ jobs:
         displayName: 'Publish final artifacts'
         inputs:
           PathtoPublish: '$(Build.StagingDirectory)/final'
-          ArtifactName: 'ReactNative-Final' 
+          ArtifactName: 'ReactNative-Final'

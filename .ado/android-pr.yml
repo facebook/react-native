@@ -12,11 +12,14 @@ pr:
     exclude:
       - '*.md'
 
+variables:
+  - template: variables/vars.yml
+
 jobs:
   - job: AndroidRNPR
     displayName: Android React Native PR
     pool:
-      vmImage: ubuntu-18.04
+      vmImage: $(VmImageUbuntu)
     timeoutInMinutes: 90 # how long to run the job before automatically cancelling
     cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
     steps:
@@ -81,7 +84,7 @@ jobs:
 
 #     In RN64 "clean" task tries to run the build again. It is reproing in 0.64-stable branch but fixed in 0.65-stable.
 #     I can't zero on the exact cause .. but turns out the issue is with rntester clean task.
-#     
+#
 #     mganandraj@RNDroid:~/github/rnm-64$ ./gradlew :packages:rn-tester:android:app:clean --dry-run
 #     :packages:react-native-codegen:android:buildCodegenCLI SKIPPED
 #     :packages:rn-tester:android:app:generateCodegenSchemaFromJavaScript SKIPPED
@@ -102,4 +105,4 @@ jobs:
         displayName: 'Publish final artifacts'
         inputs:
           PathtoPublish: '$(Build.StagingDirectory)/final'
-          ArtifactName: 'ReactNative-Final' 
+          ArtifactName: 'ReactNative-Final'
