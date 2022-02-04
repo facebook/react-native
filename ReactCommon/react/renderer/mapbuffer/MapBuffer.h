@@ -80,12 +80,8 @@ class MapBuffer {
     uint32_t bufferSize; // Amount of bytes used to store the map in memory
   };
 
-<<<<<<< HEAD
-  struct __attribute__((__packed__)) Bucket {
-=======
   #pragma pack(1)
   struct Bucket {
->>>>>>> 0cb71be647e... Adjust MapBuffer Code
     Key key;
     uint16_t type;
     uint64_t data;
@@ -95,11 +91,7 @@ class MapBuffer {
   };
 
   static_assert(sizeof(Header) == 8, "MapBuffer header size is incorrect.");
-<<<<<<< HEAD
   static_assert(sizeof(Bucket) == 12, "MapBuffer bucket size is incorrect.");
-=======
-  static_assert(sizeof(Bucket) == 12, "MapBuffer bucket size is incorrect");
->>>>>>> 0cb71be647e... Adjust MapBuffer Code
 
   /**
    * Data types available for serialization in MapBuffer
