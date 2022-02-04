@@ -384,7 +384,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   scrollToEnd(params?: ?{animated?: ?boolean, ...}) {
     const animated = params ? params.animated : true;
     const veryLast = this.props.getItemCount(this.props.data) - 1;
-    const frame = this._getFrameMetricsApprox(veryLast);
+    const frame = this.__getFrameMetricsApprox(veryLast);
     const offset = Math.max(
       0,
       frame.offset +
@@ -458,7 +458,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       });
       return;
     }
-    const frame = this._getFrameMetricsApprox(index);
+    const frame = this.__getFrameMetricsApprox(index);
     const offset =
       Math.max(
         0,
@@ -950,8 +950,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           // See if there are any sticky headers in the virtualized space that we need to render.
           for (let ii = firstAfterInitial - 1; ii > lastInitialIndex; ii--) {
             if (stickyIndicesFromProps.has(ii + stickyOffset)) {
-              const initBlock = this._getFrameMetricsApprox(lastInitialIndex);
-              const stickyBlock = this._getFrameMetricsApprox(ii);
+              const initBlock = this.__getFrameMetricsApprox(lastInitialIndex);
+              const stickyBlock = this.__getFrameMetricsApprox(ii);
               const leadSpace =
                 stickyBlock.offset -
                 initBlock.offset -
@@ -968,7 +968,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
                 inversionStyle,
               );
               const trailSpace =
-                this._getFrameMetricsApprox(first).offset -
+                this.__getFrameMetricsApprox(first).offset -
                 (stickyBlock.offset + stickyBlock.length);
               cells.push(
                 <View key="$sticky_trail" style={{[spacerKey]: trailSpace}} />,
@@ -979,9 +979,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           }
         }
         if (!insertedStickySpacer) {
-          const initBlock = this._getFrameMetricsApprox(lastInitialIndex);
+          const initBlock = this.__getFrameMetricsApprox(lastInitialIndex);
           const firstSpace =
-            this._getFrameMetricsApprox(first).offset -
+            this.__getFrameMetricsApprox(first).offset -
             (initBlock.offset + initBlock.length);
           cells.push(
             <View key="$lead_spacer" style={{[spacerKey]: firstSpace}} />,
@@ -1005,14 +1005,14 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         this._hasWarned.keys = true;
       }
       if (!isVirtualizationDisabled && last < itemCount - 1) {
-        const lastFrame = this._getFrameMetricsApprox(last);
+        const lastFrame = this.__getFrameMetricsApprox(last);
         // Without getItemLayout, we limit our tail spacer to the _highestMeasuredFrameIndex to
         // prevent the user for hyperscrolling into un-measured area because otherwise content will
         // likely jump around as it renders in above the viewport.
         const end = this.props.getItemLayout
           ? itemCount - 1
           : Math.min(itemCount - 1, this._highestMeasuredFrameIndex);
-        const endFrame = this._getFrameMetricsApprox(end);
+        const endFrame = this.__getFrameMetricsApprox(end);
         const tailSpacerLength =
           endFrame.offset +
           endFrame.length -
@@ -1419,7 +1419,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const framesInLayout = [];
     const itemCount = this.props.getItemCount(this.props.data);
     for (let ii = 0; ii < itemCount; ii++) {
-      const frame = this._getFrameMetricsApprox(ii);
+      const frame = this.__getFrameMetricsApprox(ii);
       /* $FlowFixMe[prop-missing] (>=0.68.0 site=react_native_fb) This comment
        * suppresses an error found when Flow v0.68 was deployed. To see the
        * error delete this comment and run Flow. */
@@ -1427,8 +1427,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         framesInLayout.push(frame);
       }
     }
-    const windowTop = this._getFrameMetricsApprox(this.state.first).offset;
-    const frameLast = this._getFrameMetricsApprox(this.state.last);
+    const windowTop = this.__getFrameMetricsApprox(this.state.first).offset;
+    const frameLast = this.__getFrameMetricsApprox(this.state.last);
     const windowLen = frameLast.offset + frameLast.length - windowTop;
     const visTop = this._scrollMetrics.offset;
     const visLen = this._scrollMetrics.visibleLength;
@@ -1642,7 +1642,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     // Mark as high priority if we're close to the start of the first item
     // But only if there are items before the first rendered item
     if (first > 0) {
-      const distTop = offset - this._getFrameMetricsApprox(first).offset;
+      const distTop = offset - this.__getFrameMetricsApprox(first).offset;
       hiPri =
         hiPri || distTop < 0 || (velocity < -2 && distTop < scrollingThreshold);
     }
@@ -1650,7 +1650,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     // But only if there are items after the last rendered item
     if (last < itemCount - 1) {
       const distBottom =
-        this._getFrameMetricsApprox(last).offset - (offset + visibleLength);
+        this.__getFrameMetricsApprox(last).offset - (offset + visibleLength);
       hiPri =
         hiPri ||
         distBottom < 0 ||
@@ -1752,7 +1752,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
               maxToRenderPerBatchOrDefault(this.props.maxToRenderPerBatch),
               windowSizeOrDefault(this.props.windowSize),
               state,
-              this._getFrameMetricsApprox,
+              this.__getFrameMetricsApprox,
               this._scrollMetrics,
             );
           }
@@ -1815,13 +1815,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     return {index, item, key: this._keyExtractor(item, index), isViewable};
   };
 
-  _getFrameMetricsApprox = (
-    index: number,
-  ): {
+  __getFrameMetricsApprox: (index: number) => {
     length: number,
     offset: number,
     ...
-  } => {
+  } = index => {
     const frame = this._getFrameMetrics(index);
     if (frame && frame.index === index) {
       // check for invalid frames due to row re-ordering
