@@ -18,12 +18,30 @@ import java.io.File
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.internal.jvm.Jvm
+import kotlin.system.exitProcess
 
 class ReactPlugin : Plugin<Project> {
   override fun apply(project: Project) {
+    checkJvmVersion()
     val extension = project.extensions.create("react", ReactExtension::class.java, project)
     applyAppPlugin(project, extension)
     applyCodegenPlugin(project, extension)
+  }
+
+  private fun checkJvmVersion(){
+    val jvmVersion = Jvm.current()?.javaVersion?.majorVersion
+    if ((jvmVersion?.toIntOrNull() ?: 0) <= 8) {
+      println("\n\n\n")
+      println("**************************************************************************************************************")
+      println("\n\n")
+      println("ERROR: requires JDK11 or higher.")
+      println("Incompatible major version detected: '" + jvmVersion + "'")
+      println("\n\n")
+      println("**************************************************************************************************************")
+      println("\n\n\n")
+      exitProcess(1)
+    }
   }
 
   private fun applyAppPlugin(project: Project, config: ReactExtension) {
