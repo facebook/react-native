@@ -8,8 +8,6 @@
  * @format
  */
 
-import type {UIManagerJSInterface} from './UIManager';
+'use strict';
 
-export default {
-  unstable_UIManager: (null: ?UIManagerJSInterface),
-};
+export type PlatformConfig = {};

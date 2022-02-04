@@ -27,6 +27,7 @@ import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import androidx.annotation.Nullable;
@@ -826,9 +827,12 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       getRootView().getWindowVisibleDisplayFrame(mVisibleViewArea);
       int notchHeight = 0;
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-        DisplayCutout displayCutout = getRootView().getRootWindowInsets().getDisplayCutout();
-        if (displayCutout != null) {
-          notchHeight = displayCutout.getSafeInsetTop();
+        WindowInsets insets = getRootView().getRootWindowInsets();
+        if (insets != null) {
+          DisplayCutout displayCutout = insets.getDisplayCutout();
+          if (displayCutout != null) {
+            notchHeight = displayCutout.getSafeInsetTop();
+          }
         }
       }
       final int heightDiff =

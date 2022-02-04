@@ -10,90 +10,32 @@
 
 'use strict';
 
-import type {ResolvedAssetSource} from './AssetSourceResolver';
 import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
-import type {ImageProps} from './ImageProps';
 import type {ViewProps} from '../Components/View/ViewPropTypes';
+import type {ImageResizeMode} from './ImageResizeMode';
 import * as NativeComponentRegistry from '../NativeComponent/NativeComponentRegistry';
-import type {
-  ColorValue,
-  DangerouslyImpreciseStyle,
-  ImageStyleProp,
-} from '../StyleSheet/StyleSheet';
+import type {ColorValue} from '../StyleSheet/StyleSheet';
 
-type Props = $ReadOnly<{
-  ...ImageProps,
+type NativeProps = $ReadOnly<{
   ...ViewProps,
-
-  style?: ImageStyleProp | DangerouslyImpreciseStyle,
-
-  // iOS native props
-  tintColor?: ColorValue,
-
-  // Android native props
-  shouldNotifyLoadEvents?: boolean,
-  src?: ?ResolvedAssetSource | $ReadOnlyArray<{uri: string, ...}>,
-  headers?: ?string,
-  defaultSrc?: ?string,
-  loadingIndicatorSrc?: ?string,
-  internal_analyticTag?: ?string,
+  resizeMode?: ?ImageResizeMode,
+  src?: ?$ReadOnlyArray<?$ReadOnly<{uri: string, ...}>>,
+  tintColor?: ?ColorValue,
+  headers?: ?{[string]: string},
 }>;
 
-const TextInlineImage: HostComponent<Props> =
-  NativeComponentRegistry.get<Props>('RCTTextInlineImage', () => ({
+const TextInlineImage: HostComponent<NativeProps> =
+  NativeComponentRegistry.get<NativeProps>('RCTTextInlineImage', () => ({
     uiViewClassName: 'RCTTextInlineImage',
     bubblingEventTypes: {},
-    directEventTypes: {
-      topLoadStart: {
-        registrationName: 'onLoadStart',
-      },
-      topProgress: {
-        registrationName: 'onProgress',
-      },
-      topError: {
-        registrationName: 'onError',
-      },
-      topPartialLoad: {
-        registrationName: 'onPartialLoad',
-      },
-      topLoad: {
-        registrationName: 'onLoad',
-      },
-      topLoadEnd: {
-        registrationName: 'onLoadEnd',
-      },
-    },
+    directEventTypes: {},
     validAttributes: {
-      blurRadius: true,
-      capInsets: {
-        diff: require('../Utilities/differ/insetsDiffer'),
-      },
-      defaultSource: {
-        process: require('./resolveAssetSource'),
-      },
-      defaultSrc: true,
-      fadeDuration: true,
-      headers: true,
-      internal_analyticTag: true,
-      loadingIndicatorSrc: true,
-      onError: true,
-      onLoad: true,
-      onLoadEnd: true,
-      onLoadStart: true,
-      onPartialLoad: true,
-      onProgress: true,
-      overlayColor: {
-        process: require('../StyleSheet/processColor'),
-      },
-      progressiveRenderingEnabled: true,
-      resizeMethod: true,
       resizeMode: true,
-      shouldNotifyLoadEvents: true,
-      source: true,
       src: true,
       tintColor: {
         process: require('../StyleSheet/processColor'),
       },
+      headers: true,
     },
   }));
 

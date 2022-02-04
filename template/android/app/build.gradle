@@ -233,11 +233,6 @@ android {
 
         }
     }
-
-    packagingOptions {
-        pickFirst '**/libhermes.so'
-        pickFirst '**/libjsc.so'
-    }
 }
 
 dependencies {

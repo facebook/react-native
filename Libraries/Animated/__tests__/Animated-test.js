@@ -782,6 +782,19 @@ describe('Animated tests', () => {
       value1.setValue(1492);
       expect(value2.__getValue()).toBe(7);
     });
+
+    it('should start tracking immediately on animation start', () => {
+      const value1 = new Animated.Value(42);
+      const value2 = new Animated.Value(0);
+      Animated.timing(value2, {
+        toValue: value1,
+        duration: 0,
+        useNativeDriver: false,
+      }).start();
+      expect(value2.__getValue()).toBe(42);
+      value1.setValue(7);
+      expect(value2.__getValue()).toBe(7);
+    });
   });
 
   describe('Animated Vectors', () => {
@@ -957,6 +970,117 @@ describe('Animated tests', () => {
         value.setValue(inputValues[i]);
         expect(diffClampValue.__getValue()).toBe(expectedValues[i]);
       }
+    });
+  });
+
+  describe('Animated Colors', () => {
+    it('should normalize colors', () => {
+      let color = new Animated.Color();
+      expect(color.__getValue()).toEqual('rgba(0, 0, 0, 1)');
+
+      color = new Animated.Color({r: 11, g: 22, b: 33, a: 1.0});
+      expect(color.__getValue()).toEqual('rgba(11, 22, 33, 1)');
+
+      color = new Animated.Color('rgba(255, 0, 0, 1.0)');
+      expect(color.__getValue()).toEqual('rgba(255, 0, 0, 1)');
+
+      color = new Animated.Color('#ff0000ff');
+      expect(color.__getValue()).toEqual('rgba(255, 0, 0, 1)');
+
+      color = new Animated.Color('red');
+      expect(color.__getValue()).toEqual('rgba(255, 0, 0, 1)');
+
+      color = new Animated.Color({
+        r: new Animated.Value(255),
+        g: new Animated.Value(0),
+        b: new Animated.Value(0),
+        a: new Animated.Value(1.0),
+      });
+      expect(color.__getValue()).toEqual('rgba(255, 0, 0, 1)');
+
+      color = new Animated.Color('unknown');
+      expect(color.__getValue()).toEqual('rgba(0, 0, 0, 1)');
+
+      color = new Animated.Color({key: 'value'});
+      expect(color.__getValue()).toEqual('rgba(0, 0, 0, 1)');
+    });
+
+    it('should animate colors', () => {
+      const color = new Animated.Color({r: 255, g: 0, b: 0, a: 1.0});
+      const callback = jest.fn();
+      const node = new AnimatedProps(
+        {
+          style: {
+            backgroundColor: color,
+            transform: [
+              {
+                scale: color.a.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [1, 2],
+                }),
+              },
+            ],
+          },
+        },
+        callback,
+      );
+
+      expect(node.__getValue()).toEqual({
+        style: {
+          backgroundColor: 'rgba(255, 0, 0, 1)',
+          transform: [{scale: 2}],
+        },
+      });
+
+      node.__attach();
+      expect(callback.mock.calls.length).toBe(0);
+
+      color.setValue({r: 11, g: 22, b: 33, a: 0.5});
+      expect(callback.mock.calls.length).toBe(4);
+      expect(node.__getValue()).toEqual({
+        style: {
+          backgroundColor: 'rgba(11, 22, 33, 0.5)',
+          transform: [{scale: 1.5}],
+        },
+      });
+
+      node.__detach();
+      color.setValue({r: 255, g: 0, b: 0, a: 1.0});
+      expect(callback.mock.calls.length).toBe(4);
+    });
+
+    it('should track colors', () => {
+      const color1 = new Animated.Color();
+      const color2 = new Animated.Color();
+      Animated.timing(color2, {
+        toValue: color1,
+        duration: 0,
+        useNativeDriver: false,
+      }).start();
+      color1.setValue({r: 11, g: 22, b: 33, a: 0.5});
+      expect(color2.__getValue()).toEqual('rgba(11, 22, 33, 0.5)');
+
+      // Make sure tracking keeps working (see stopTogether in ParallelConfig used
+      // by maybeVectorAnim).
+      color1.setValue({r: 255, g: 0, b: 0, a: 1.0});
+      expect(color2.__getValue()).toEqual('rgba(255, 0, 0, 1)');
+    });
+
+    it('should track with springs', () => {
+      const color1 = new Animated.Color();
+      const color2 = new Animated.Color();
+      Animated.spring(color2, {
+        toValue: color1,
+        tension: 3000, // faster spring for faster test
+        friction: 60,
+        useNativeDriver: false,
+      }).start();
+      color1.setValue({r: 11, g: 22, b: 33, a: 0.5});
+      jest.runAllTimers();
+      expect(color2.__getValue()).toEqual('rgba(11, 22, 33, 0.5)');
+      color1.setValue({r: 44, g: 55, b: 66, a: 0.0});
+      jest.runAllTimers();
+      expect(color2.__getValue()).toEqual('rgba(44, 55, 66, 0)');
     });
   });
 });

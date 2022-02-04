@@ -28,8 +28,10 @@ HeapProfiler.heapStatsUpdate
 HeapProfiler.lastSeenObjectId
 HeapProfiler.getObjectByHeapObjectId
 HeapProfiler.getHeapObjectId
+Runtime.callFunctionOn
 Runtime.consoleAPICalled
 Runtime.evaluate
 Runtime.executionContextCreated
+Runtime.getHeapUsage
 Runtime.getProperties
 Runtime.runIfWaitingForDebugger

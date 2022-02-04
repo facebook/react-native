@@ -28,11 +28,11 @@ executors:
     <<: *defaults
     docker:
       # Note: Version set separately for Windows builds, see below.
-      - image: circleci/node:14
+      - image: circleci/node:16
   nodeprevlts:
     <<: *defaults
     docker:
-      - image: circleci/node:12
+      - image: circleci/node:14
   reactnativeandroid:
     <<: *defaults
     docker:
@@ -354,10 +354,6 @@ jobs:
         description: Specifies whether unit tests should run.
         type: boolean
         default: false
-      run_detox_tests:
-        description: Specifies whether Detox e2e tests should run.
-        type: boolean
-        default: false
       run_disabled_tests:
         description: Specifies whether disabled tests should run. Set this to true to debug failing tests.
         type: boolean
@@ -380,7 +376,7 @@ jobs:
       - run:
           name: Configure Environment Variables
           command: |
-            echo 'export PATH=/usr/local/opt/node@14/bin:$PATH' >> $BASH_ENV
+            echo 'export PATH=/usr/local/opt/node@16/bin:$PATH' >> $BASH_ENV
             source $BASH_ENV
 
       - with_brew_cache_span:
@@ -397,7 +393,7 @@ jobs:
           name: Configure Node
           # Sourcing find-node.sh will ensure nvm is set up.
           # It also helps future invocation of find-node.sh prevent permission issue with nvm.sh.
-          command: source scripts/find-node.sh && nvm install 14 && nvm alias default 14
+          command: source scripts/find-node.sh && nvm install 16 && nvm alias default 16
 
       - run:
           name: Configure Watchman
@@ -435,13 +431,6 @@ jobs:
             - run:
                 name: "Run Tests: iOS Unit and Integration Tests"
                 command: yarn test-ios
-      # Runs iOS Detox e2e tests
-      - when:
-          condition: << parameters.run_detox_tests >>
-          steps:
-            - run:
-                name: "Run Tests: Detox iOS End-to-End Tests"
-                command: yarn run build-ios-e2e && yarn run test-ios-e2e
 
       # Optionally, run disabled tests
       - when:
@@ -600,6 +589,37 @@ jobs:
           command: cd template/android/ && ./gradlew assembleDebug
 
   # -------------------------
+  #    JOBS: Test Android RNTester
+  # -------------------------
+  test_android_rntester:
+    executor: reactnativeandroid
+    parameters:
+      use_hermes:
+          type: boolean
+          default: false
+    steps:
+      - checkout
+      - run_yarn
+
+      - run:
+          name: Generate artifacts for Maven
+          command: ./gradlew :ReactAndroid:installArchives
+
+      - when:
+          condition: << parameters.use_hermes >>
+          steps:
+            - run:
+                name: Build RNTester with Hermes
+                command: ./gradlew :packages:rn-tester:android:app:assembleHermesDebug
+      - when:
+          condition:
+            not: << parameters.use_hermes >>
+          steps:
+            - run:
+                name: Build RNTester with JSC
+                command: ./gradlew :packages:rn-tester:android:app:assembleJscDebug
+
+  # -------------------------
   #    JOBS: Test iOS Template
   # -------------------------
   test_ios_template:
@@ -633,6 +653,40 @@ jobs:
               -sdk iphonesimulator
 
   # -------------------------
+  #    JOBS: Test iOS RNTester
+  # -------------------------
+  test_ios_rntester:
+    executor: reactnativeios
+    parameters:
+      use_hermes:
+          type: boolean
+          default: false
+    steps:
+      - checkout
+      - run_yarn
+
+      - when:
+          condition: << parameters.use_hermes >>
+          steps:
+            - run:
+                name: Set USE_HERMES=1
+                command: echo "export USE_HERMES=1" >> $BASH_ENV
+
+      - run:
+          name: Install CocoaPods dependencies
+          command: |
+            rm -rf packages/rn-tester/Pods
+            cd packages/rn-tester && bundle exec pod install
+
+      - run:
+          name: Build RNTester
+          command: |
+            xcodebuild build \
+              -workspace packages/rn-tester/RNTesterPods.xcworkspace \
+              -scheme RNTester \
+              -sdk iphonesimulator
+
+  # -------------------------
   #    JOBS: Windows
   # -------------------------
   test_windows:
@@ -655,8 +709,8 @@ jobs:
           name: Install Node
           # Note: Version set separately for non-Windows builds, see above.
           command: |
-            nvm install 14.17.0
-            nvm use 14.17.0
+            nvm install 16
+            nvm use 16
 
       # Setup Dependencies
       - run:
@@ -744,6 +798,12 @@ jobs:
   #      JOBS: Releases
   # -------------------------
   prepare_package_for_release:
+    parameters:
+      version:
+        type: string
+      latest:
+        type: boolean
+        default: false
     executor: reactnativeios
     steps:
       - checkout
@@ -754,7 +814,7 @@ jobs:
       - run:
           name: "Set new react-native version and commit changes"
           command: |
-            node ./scripts/prepare-package-for-release.js
+            node ./scripts/prepare-package-for-release.js -v << parameters.version >> -l << parameters.latest >>
 
   build_npm_package:
     parameters:
@@ -838,13 +898,35 @@ jobs:
           command: |
             echo "Nightly build run"
 
+
+# -------------------------
+#        PIPELINE PARAMETERS
+# -------------------------
+parameters:
+  run_package_release_workflow_only:
+    default: false
+    type: boolean
+
+  release_latest:
+    default: false
+    type: boolean
+
+  release_version:
+    default: "9999"
+    type: string
+
 # -------------------------
 #        WORK FLOWS
+#
+#  When creating a new workflow, make sure to include condition `unless: << pipeline.parameters.run_package_release_workflow_only >>`
+#  It's setup this way so we can trigger a release via a POST
+#  See limitations: https://support.circleci.com/hc/en-us/articles/360050351292-How-to-trigger-a-workflow-via-CircleCI-API-v2
 # -------------------------
 workflows:
   version: 2
 
   tests:
+    unless: << pipeline.parameters.run_package_release_workflow_only >>
     jobs:
       - build_npm_package:
           # Build a release package on every untagged commit, but do not publish to npm.
@@ -868,9 +950,31 @@ workflows:
           filters:
             branches:
               ignore: gh-pages
+      - test_android_rntester:
+          name: test_android_rntester_hermes
+          use_hermes: true
+          filters:
+            branches:
+              ignore: gh-pages
+      - test_android_rntester:
+          name: test_android_rntester_jsc
+          filters:
+            branches:
+              ignore: gh-pages
       - test_ios_template:
           requires:
             - build_npm_package
+          filters:
+            branches:
+              ignore: gh-pages
+      - test_ios_rntester:
+          name: test_ios_rntester_hermes
+          use_hermes: true
+          filters:
+            branches:
+              ignore: gh-pages
+      - test_ios_rntester:
+          name: test_ios_rntester_jsc
           filters:
             branches:
               ignore: gh-pages
@@ -898,15 +1002,6 @@ workflows:
       #     use_hermes: true
       #     use_frameworks: true
       #     run_unit_tests: true
-      # DISABLED: Detox tests need to be fixed
-      # - test_ios:
-      #     name: test_ios_detox
-      #     run_detox_tests: true
-      # DISABLED: USE_FRAMEWORKS=1 not supported by Flipper
-      # - test_ios:
-      #     name: test_ios_detox_frameworks
-      #     use_frameworks: true
-      #     run_detox_tests: true
       - test_js:
           name: test_js_prev_lts
           executor: nodeprevlts
@@ -919,20 +1014,20 @@ workflows:
               ignore: gh-pages
           run_disabled_tests: false
 
-  releases:
+  # This workflow should only be triggered by release script
+  package_release:
+    when: << pipeline.parameters.run_package_release_workflow_only >>
     jobs:
-      # This job will trigger on relevant release branch pushes.
-      # It prepares the package and triggers `build_npm_package` for release
+      # This job will trigger publish_release workflow
       - prepare_package_for_release:
           name: prepare_package_for_release
-          # Since CircleCI does not support branch AND tag filters, we manually check in job
-          # and no-op if there is no `publish-v{version}` tag set.
-          filters:
-            branches:
-              only:
-                - /^(\d+)\.(\d+)-stable$/
+          version: << pipeline.parameters.release_version >>
+          latest : << pipeline.parameters.release_latest >>
 
-      # This job will trigger when a version tag is pushed (by prepare_package_for_release)
+  publish_release:
+    unless: << pipeline.parameters.run_package_release_workflow_only >>
+    jobs:
+      # This job will trigger when a version tag is pushed (by package_release)
       - build_npm_package:
           name: build_and_publish_npm_package
           context: react-native-bot
@@ -950,6 +1045,7 @@ workflows:
               only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
 
   analysis:
+    unless: << pipeline.parameters.run_package_release_workflow_only >>
     jobs:
       # Run lints on every commit other than those to the gh-pages branch
       - analyze_code:
@@ -970,6 +1066,7 @@ workflows:
               ignore: gh-pages
 
   nightly:
+    unless: << pipeline.parameters.run_package_release_workflow_only >>
     triggers:
       - schedule:
           cron: "0 20 * * *"

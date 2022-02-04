@@ -91,7 +91,7 @@ RCT_EXPORT_METHOD(updateExceptionMessage
                   : (double)exceptionId)
 {
   RCTRedBox *redbox = [_moduleRegistry moduleForName:"RedBox"];
-  [redbox showErrorMessage:message withStack:stack errorCookie:(int)exceptionId];
+  [redbox updateErrorMessage:message withStack:stack errorCookie:(int)exceptionId];
 
   if (_delegate && [_delegate respondsToSelector:@selector(updateJSExceptionWithMessage:stack:exceptionId:)]) {
     [_delegate updateJSExceptionWithMessage:message stack:stack exceptionId:[NSNumber numberWithDouble:exceptionId]];

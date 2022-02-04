@@ -73,7 +73,7 @@ public class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineIm
     mHeaders = headers;
   }
 
-  @ReactProp(name = "tintColor")
+  @ReactProp(name = "tintColor", customType = "Color")
   public void setTintColor(int tintColor) {
     mTintColor = tintColor;
   }

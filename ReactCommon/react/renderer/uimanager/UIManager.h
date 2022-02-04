@@ -127,9 +127,9 @@ class UIManager final : public ShadowTreeDelegate {
       SharedEventTarget eventTarget) const;
 
   ShadowNode::Shared cloneNode(
-      const ShadowNode::Shared &shadowNode,
-      const SharedShadowNodeSharedList &children = nullptr,
-      const RawProps *rawProps = nullptr) const;
+      ShadowNode const &shadowNode,
+      SharedShadowNodeSharedList const &children = nullptr,
+      RawProps const *rawProps = nullptr) const;
 
   void appendChild(
       const ShadowNode::Shared &parentShadowNode,
