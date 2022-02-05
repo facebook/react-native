@@ -15,7 +15,7 @@ import getNativeComponentAttributes from '../ReactNative/getNativeComponentAttri
 import {createViewConfig} from './ViewConfig';
 import {isIgnored} from './ViewConfigIgnore';
 
-type Difference =
+export type Difference =
   | {
       type: 'missing',
       path: Array<string>,
@@ -33,7 +33,7 @@ type Difference =
       staticValue: mixed,
     };
 
-type ValidationResult = ValidResult | InvalidResult;
+export type ValidationResult = ValidResult | InvalidResult;
 type ValidResult = {
   type: 'valid',
 };
@@ -42,19 +42,15 @@ type InvalidResult = {
   differences: Array<Difference>,
 };
 
-type ViewConfigValidationResult = {
+// e.g. require('MyNativeComponent') where MyNativeComponent.js exports a HostComponent
+type JSModule = $FlowFixMe;
+
+export function validateStaticViewConfigs(nativeComponent: JSModule): {
   componentName: string,
   nativeViewConfig?: ?ViewConfig,
   staticViewConfig?: ?ViewConfig,
   validationResult?: ?ValidationResult,
-};
-
-// e.g. require('MyNativeComponent') where MyNativeComponent.js exports a HostComponent
-type JSModule = $FlowFixMe;
-
-export function validateStaticViewConfigs(
-  nativeComponent: JSModule,
-): ViewConfigValidationResult {
+} {
   const nativeViewConfig = getNativeComponentAttributes(
     nativeComponent.default || nativeComponent,
   );
