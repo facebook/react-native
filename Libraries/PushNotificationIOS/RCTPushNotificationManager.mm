@@ -367,6 +367,9 @@ RCT_EXPORT_METHOD(presentLocalNotification:(JS::NativePushNotificationManagerIOS
   }
   if (notification.isSilent()) {
     notificationDict[@"isSilent"] = @(*notification.isSilent());
+    if ([notificationDict[@"isSilent"] isEqualToNumber:@(NO)]) {
+      notificationDict[@"soundName"] = notification.soundName();
+    }
   }
   [RCTSharedApplication() presentLocalNotificationNow:[RCTConvert UILocalNotification:notificationDict]];
 }
@@ -388,6 +391,9 @@ RCT_EXPORT_METHOD(scheduleLocalNotification:(JS::NativePushNotificationManagerIO
   }
   if (notification.isSilent()) {
     notificationDict[@"isSilent"] = @(*notification.isSilent());
+    if ([notificationDict[@"isSilent"] isEqualToNumber:@(NO)]) {
+      notificationDict[@"soundName"] = notification.soundName();
+    }
   }
   [RCTSharedApplication() scheduleLocalNotification:[RCTConvert UILocalNotification:notificationDict]];
 }
