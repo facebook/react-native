@@ -313,10 +313,12 @@ RCT_EXPORT_METHOD(requestPermissions:(JS::NativePushNotificationManagerIOS::Spec
     if (error != NULL) {
       reject(@"-1", @"Error - Push authorization request failed.", error);
     } else {
-      [RCTSharedApplication() registerForRemoteNotifications];
-      [UNUserNotificationCenter.currentNotificationCenter getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings * _Nonnull settings) {
-         resolve(RCTPromiseResolveValueForUNNotificationSettings(settings));
-      }];
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [RCTSharedApplication() registerForRemoteNotifications];
+        [UNUserNotificationCenter.currentNotificationCenter getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings * _Nonnull settings) {
+           resolve(RCTPromiseResolveValueForUNNotificationSettings(settings));
+        }];
+      });
     }
   }];
 }
