@@ -328,18 +328,24 @@ afterEvaluate {
                         from(jsBundleDir)
                     }
                 } else {
-                    into ("assets/${targetPath}") {
+                    // Workaround for Android Gradle Plugin 7.1 asset directory
+                    if (androidComponents.pluginVersion.major == 7 && androidComponents.pluginVersion.minor == 1) {
                         from(jsBundleDir)
-                    }
+                        into("$buildDir/intermediates/assets/${variant.name}/merge${targetName}Assets")
+                    }else{
+                        into ("assets/${targetPath}") {
+                            from(jsBundleDir)
+                        }
 
-                    // Workaround for Android Gradle Plugin 3.2+ new asset directory
-                    into ("merged_assets/${variant.name}/merge${targetName}Assets/out") {
-                        from(jsBundleDir)
-                    }
+                        // Workaround for Android Gradle Plugin 3.2+ new asset directory
+                        into ("merged_assets/${variant.name}/merge${targetName}Assets/out") {
+                            from(jsBundleDir)
+                        }
 
-                    // Workaround for Android Gradle Plugin 3.4+ new asset directory
-                    into ("merged_assets/${variant.name}/out") {
-                        from(jsBundleDir)
+                        // Workaround for Android Gradle Plugin 3.4+ new asset directory
+                        into ("merged_assets/${variant.name}/out") {
+                            from(jsBundleDir)
+                        }
                     }
                 }
             }
