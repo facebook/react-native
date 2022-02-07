@@ -179,6 +179,18 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   }
 
  protected:
+  /*
+   * Called immediatelly after `ShadowNode` is created or cloned.
+   *
+   * Override this method to pass information from custom `ComponentDescriptor`
+   * to new instance of `ShadowNode`.
+   *
+   * Example usages:
+   *   - Inject image manager to `ImageShadowNode` in
+   * `ImageComponentDescriptor`.
+   *   - Set `ShadowNode`'s size from state in
+   * `ModalHostViewComponentDescriptor`.
+   */
   virtual void adopt(ShadowNode::Unshared const &shadowNode) const {
     // Default implementation does nothing.
     react_native_assert(
