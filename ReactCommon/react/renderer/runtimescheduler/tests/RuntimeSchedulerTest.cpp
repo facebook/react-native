@@ -532,7 +532,7 @@ TEST_F(RuntimeSchedulerTest, sameThreadTaskCreatesImmediatePriorityTask) {
           runtimeScheduler_->scheduleTask(
               SchedulerPriority::ImmediatePriority, std::move(callback));
 
-          runtimeScheduler_->callImmediates(runtime);
+          runtimeScheduler_->callExpiredTasks(runtime);
         });
   });
 
@@ -569,7 +569,7 @@ TEST_F(RuntimeSchedulerTest, sameThreadTaskCreatesLowPriorityTask) {
 
           runtimeScheduler_->scheduleTask(
               SchedulerPriority::LowPriority, std::move(callback));
-          runtimeScheduler_->callImmediates(runtime);
+          runtimeScheduler_->callExpiredTasks(runtime);
 
           EXPECT_FALSE(didRunSubsequentTask);
         });
