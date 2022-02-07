@@ -14,7 +14,10 @@ NSString* const RCTVersionMinor = @"minor";
 NSString* const RCTVersionPatch = @"patch";
 NSString* const RCTVersionPrerelease = @"prerelease";
 
-
+// [TODO(macOS GH#944)
+// Note: Be careful not to override these version numbers
+// when we merge upstream stable branches into main
+// TODO(macOS GH#944)]
 NSDictionary* RCTGetReactNativeVersion(void)
 {
   static NSDictionary* __rnVersion;
@@ -22,7 +25,7 @@ NSDictionary* RCTGetReactNativeVersion(void)
   dispatch_once(&onceToken, ^(void){
     __rnVersion = @{
                   RCTVersionMajor: @(0),
-                  RCTVersionMinor: @(66),
+                  RCTVersionMinor: @(0),
                   RCTVersionPatch: @(0),
                   RCTVersionPrerelease: [NSNull null],
                   };
