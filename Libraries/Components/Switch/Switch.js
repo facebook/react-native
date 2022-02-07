@@ -189,7 +189,7 @@ const SwitchWithForwardedRef: React.AbstractComponent<
   const _accessibilityState =
     _disabled !== accessibilityState?.disabled
       ? {...accessibilityState, disabled: _disabled}
-      : _accessibilityState;
+      : accessibilityState;
 
   if (Platform.OS === 'android') {
     const platformProps = {
