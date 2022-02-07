@@ -29,7 +29,7 @@ const {
 } = require(\\"react-native/Libraries/Renderer/shims/ReactNative\\");
 
 let nativeComponentName = 'RCTModule';
-export default NativeComponentRegistry.get(nativeComponentName, () => ({
+export const __INTERNAL_VIEW_CONFIG = {
   uiViewClassName: 'RCTModule',
   bubblingEventTypes: {
     topBubblingEventDefinedInlineNull: {
@@ -45,11 +45,10 @@ export default NativeComponentRegistry.get(nativeComponentName, () => ({
     }
   },
   validAttributes: {
-    boolean_default_true_optional_both: true,
-    onDirectEventDefinedInlineNull: true,
-    onBubblingEventDefinedInlineNull: true
+    boolean_default_true_optional_both: true
   }
-}));
+};
+export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 export const Commands = {
   hotspotUpdate(ref, x, y) {
     dispatchCommand(ref, \\"hotspotUpdate\\", [x, y]);
@@ -91,7 +90,7 @@ const {
 } = require(\\"react-native/Libraries/Renderer/shims/ReactNative\\");
 
 let nativeComponentName = 'RCTModule';
-export default NativeComponentRegistry.get(nativeComponentName, () => ({
+export const __INTERNAL_VIEW_CONFIG = {
   uiViewClassName: 'RCTModule',
   bubblingEventTypes: {
     topBubblingEventDefinedInlineNull: {
@@ -107,11 +106,10 @@ export default NativeComponentRegistry.get(nativeComponentName, () => ({
     }
   },
   validAttributes: {
-    boolean_default_true_optional_both: true,
-    onDirectEventDefinedInlineNull: true,
-    onBubblingEventDefinedInlineNull: true
+    boolean_default_true_optional_both: true
   }
-}));
+};
+export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 export const Commands = {
   hotspotUpdate(ref, x, y) {
     dispatchCommand(ref, \\"hotspotUpdate\\", [x, y]);

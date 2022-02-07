@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -98,7 +98,7 @@ static NSURL *ipBundleURL()
 {
   RCTBundleURLProvider *settings = [RCTBundleURLProvider sharedSettings];
   settings.jsLocation = nil;
-  NSURL *URL = [settings jsBundleURLForBundleRoot:testFile fallbackResource:nil];
+  NSURL *URL = [settings jsBundleURLForBundleRoot:testFile];
   if (!getenv("CI_USE_PACKAGER")) {
     XCTAssertEqualObjects(URL, mainBundleURL());
   } else {
@@ -112,7 +112,7 @@ static NSURL *ipBundleURL()
   [[[classMock stub] andReturnValue:@YES] isPackagerRunning:[OCMArg any] scheme:[OCMArg any]];
   RCTBundleURLProvider *settings = [RCTBundleURLProvider sharedSettings];
   settings.jsLocation = @"localhost";
-  NSURL *URL = [settings jsBundleURLForBundleRoot:testFile fallbackResource:nil];
+  NSURL *URL = [settings jsBundleURLForBundleRoot:testFile];
   XCTAssertEqualObjects(URL, localhostBundleURL());
 }
 
@@ -122,7 +122,7 @@ static NSURL *ipBundleURL()
   [[[classMock stub] andReturnValue:@YES] isPackagerRunning:[OCMArg any] scheme:[OCMArg any]];
   RCTBundleURLProvider *settings = [RCTBundleURLProvider sharedSettings];
   settings.jsLocation = @"192.168.1.1";
-  NSURL *URL = [settings jsBundleURLForBundleRoot:testFile fallbackResource:nil];
+  NSURL *URL = [settings jsBundleURLForBundleRoot:testFile];
   XCTAssertEqualObjects(URL, ipBundleURL());
 }
 

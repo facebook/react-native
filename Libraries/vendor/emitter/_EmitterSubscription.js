@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,7 +13,7 @@
 import type EventEmitter from './EventEmitter';
 import _EventSubscription from './_EventSubscription';
 import type EventSubscriptionVendor from './_EventSubscriptionVendor';
-import {type EventSubscription} from './EventSubscription';
+import type {EventSubscription} from './EventSubscription';
 
 /**
  * EmitterSubscription represents a subscription with listener and context data.

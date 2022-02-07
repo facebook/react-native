@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,8 +10,12 @@
 
 import type {PartialViewConfig} from '../../Renderer/shims/ReactNativeTypes';
 
+type PartialViewConfigWithoutName = $Rest<
+  PartialViewConfig,
+  {uiViewClassName: string},
+>;
+
 const RCTTextInputViewConfig = {
-  uiViewClassName: 'RCTSinglelineTextInputView',
   bubblingEventTypes: {
     topBlur: {
       phasedRegistrationNames: {
@@ -23,6 +27,12 @@ const RCTTextInputViewConfig = {
       phasedRegistrationNames: {
         bubbled: 'onChange',
         captured: 'onChangeCapture',
+      },
+    },
+    topContentSizeChange: {
+      phasedRegistrationNames: {
+        captured: 'onContentSizeChangeCapture',
+        bubbled: 'onContentSizeChange',
       },
     },
     topEndEditing: {
@@ -69,7 +79,23 @@ const RCTTextInputViewConfig = {
       },
     },
   },
-  directEventTypes: {},
+  directEventTypes: {
+    topTextInput: {
+      registrationName: 'onTextInput',
+    },
+    topKeyPressSync: {
+      registrationName: 'onKeyPressSync',
+    },
+    topScroll: {
+      registrationName: 'onScroll',
+    },
+    topSelectionChange: {
+      registrationName: 'onSelectionChange',
+    },
+    topChangeSync: {
+      registrationName: 'onChangeSync',
+    },
+  },
   validAttributes: {
     fontSize: true,
     fontWeight: true,
@@ -97,23 +123,18 @@ const RCTTextInputViewConfig = {
     caretHidden: true,
     enablesReturnKeyAutomatically: true,
     placeholderTextColor: {process: require('../../StyleSheet/processColor')},
-    onSelectionChange: true,
     clearButtonMode: true,
-    onContentSizeChange: true,
     keyboardType: true,
     selection: true,
     returnKeyType: true,
     blurOnSubmit: true,
     mostRecentEventCount: true,
-    onChange: true,
     scrollEnabled: true,
     selectionColor: {process: require('../../StyleSheet/processColor')},
     contextMenuHidden: true,
     secureTextEntry: true,
-    onTextInput: true,
     placeholder: true,
     autoCorrect: true,
-    onScroll: true,
     multiline: true,
     textContentType: true,
     maxLength: true,
@@ -124,7 +145,9 @@ const RCTTextInputViewConfig = {
     selectTextOnFocus: true,
     text: true,
     clearTextOnFocus: true,
+    showSoftInputOnFocus: true,
+    autoFocus: true,
   },
 };
 
-module.exports = (RCTTextInputViewConfig: PartialViewConfig);
+module.exports = (RCTTextInputViewConfig: PartialViewConfigWithoutName);

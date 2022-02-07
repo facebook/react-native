@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -89,16 +89,26 @@ if (!includesChangelog) {
 
 // Warns if the PR is opened against stable, as commits need to be cherry picked and tagged by a release maintainer.
 // Fails if the PR is opened against anything other than `main` or `-stable`.
-const isMergeRefMaster = danger.github.pr.base.ref === 'main';
+const isMergeRefMain = danger.github.pr.base.ref === 'main';
 const isMergeRefStable = danger.github.pr.base.ref.indexOf('-stable') !== -1;
-if (!isMergeRefMaster && isMergeRefStable) {
-  const title = ':grey_question: Base Branch';
-  const idea =
-    'The base branch for this PR is something other than `main`. Are you sure you want to merge these changes into a stable release? If you are interested in backporting updates to an older release, the suggested approach is to land those changes on `main` first and then cherry-pick the commits into the branch for that release. The [Releases Guide](https://github.com/facebook/react-native/blob/HEAD/Releases.md) has more information.';
-  warn(`${title} - <i>${idea}</i>`);
-} else if (!isMergeRefMaster && !isMergeRefStable) {
+if (!isMergeRefMain && !isMergeRefStable) {
   const title = ':exclamation: Base Branch';
   const idea =
-    'The base branch for this PR is something other than `main`. [Are you sure you want to target something other than the `main` branch?](https://reactnative.dev/docs/contributing#pull-requests)';
+    'The base branch for this PR is something other than `main` or a `-stable` branch. [Are you sure you want to target something other than the `main` branch?](https://reactnative.dev/docs/contributing#pull-requests)';
   fail(`${title} - <i>${idea}</i>`);
+}
+
+// If the PR is opened against stable should add `Pick Request` label
+if (isMergeRefStable) {
+  const {owner, repo, number: issueNumber} = danger.github.thisPR;
+
+  danger.github.api.request(
+    'POST /repos/{owner}/{repo}/issues/{issueNumber}/labels',
+    {
+      owner,
+      repo,
+      issueNumber,
+      labels: ['Pick Request'],
+    },
+  );
 }

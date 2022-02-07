@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -57,7 +57,8 @@ class ParagraphShadowNode final : public ConcreteViewShadowNode<
    * `ParagraphShadowNode` uses the manager to measure text content
    * and construct `ParagraphState` objects.
    */
-  void setTextLayoutManager(SharedTextLayoutManager textLayoutManager);
+  void setTextLayoutManager(
+      std::shared_ptr<TextLayoutManager const> textLayoutManager);
 
 #pragma mark - LayoutableShadowNode
 
@@ -96,12 +97,12 @@ class ParagraphShadowNode final : public ConcreteViewShadowNode<
    */
   void updateStateIfNeeded(Content const &content);
 
-  SharedTextLayoutManager textLayoutManager_;
+  std::shared_ptr<TextLayoutManager const> textLayoutManager_;
 
   /*
    * Cached content of the subtree started from the node.
    */
-  mutable better::optional<Content> content_{};
+  mutable butter::optional<Content> content_{};
 };
 
 } // namespace react

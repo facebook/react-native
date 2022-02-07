@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,9 +11,9 @@
 #include <mutex>
 #include <string>
 
-#include <better/map.h>
-#include <better/mutex.h>
-#include <better/optional.h>
+#include <butter/map.h>
+#include <butter/mutex.h>
+#include <butter/optional.h>
 
 #include <react/debug/flags.h>
 #include <react/debug/react_native_assert.h>
@@ -42,7 +42,7 @@ class ContextContainer final {
    */
   template <typename T>
   void insert(std::string const &key, T const &instance) const {
-    std::unique_lock<better::shared_mutex> lock(mutex_);
+    std::unique_lock<butter::shared_mutex> lock(mutex_);
 
     instances_.insert({key, std::make_shared<T>(instance)});
   }
@@ -52,7 +52,7 @@ class ContextContainer final {
    * Does nothing if the instance was not found.
    */
   void erase(std::string const &key) const {
-    std::unique_lock<better::shared_mutex> lock(mutex_);
+    std::unique_lock<butter::shared_mutex> lock(mutex_);
 
     instances_.erase(key);
   }
@@ -63,7 +63,7 @@ class ContextContainer final {
    * values from the given container.
    */
   void update(ContextContainer const &contextContainer) const {
-    std::unique_lock<better::shared_mutex> lock(mutex_);
+    std::unique_lock<butter::shared_mutex> lock(mutex_);
 
     for (auto const &pair : contextContainer.instances_) {
       instances_.erase(pair.first);
@@ -78,7 +78,7 @@ class ContextContainer final {
    */
   template <typename T>
   T at(std::string const &key) const {
-    std::shared_lock<better::shared_mutex> lock(mutex_);
+    std::shared_lock<butter::shared_mutex> lock(mutex_);
 
     react_native_assert(
         instances_.find(key) != instances_.end() &&
@@ -92,8 +92,8 @@ class ContextContainer final {
    * Returns an empty optional if the instance could not be found.
    */
   template <typename T>
-  better::optional<T> find(std::string const &key) const {
-    std::shared_lock<better::shared_mutex> lock(mutex_);
+  butter::optional<T> find(std::string const &key) const {
+    std::shared_lock<butter::shared_mutex> lock(mutex_);
 
     auto iterator = instances_.find(key);
     if (iterator == instances_.end()) {
@@ -104,9 +104,9 @@ class ContextContainer final {
   }
 
  private:
-  mutable better::shared_mutex mutex_;
+  mutable butter::shared_mutex mutex_;
   // Protected by mutex_`.
-  mutable better::map<std::string, std::shared_ptr<void>> instances_;
+  mutable butter::map<std::string, std::shared_ptr<void>> instances_;
 };
 
 } // namespace react

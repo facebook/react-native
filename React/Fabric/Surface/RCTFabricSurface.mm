@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -34,7 +34,7 @@ using namespace facebook::react;
   // `SurfaceHandler` is a thread-safe object, so we don't need additional synchronization.
   // Objective-C++ classes cannot have instance variables without default constructors,
   // hence we wrap a value into `optional` to workaround it.
-  better::optional<SurfaceHandler> _surfaceHandler;
+  butter::optional<SurfaceHandler> _surfaceHandler;
 
   // Protects Surface's start and stop processes.
   // Even though SurfaceHandler is tread-safe, it will crash if we try to stop a surface that is not running.

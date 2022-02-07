@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <better/map.h>
-#include <better/small_vector.h>
+#include <butter/map.h>
+#include <butter/small_vector.h>
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawProps.h>
@@ -76,7 +76,7 @@ class RawPropsParser final {
   RawValue const *at(RawProps const &rawProps, RawPropsKey const &key)
       const noexcept;
 
-  mutable better::small_vector<RawPropsKey, kNumberOfPropsPerComponentSoftCap>
+  mutable butter::small_vector<RawPropsKey, kNumberOfPropsPerComponentSoftCap>
       keys_{};
   mutable RawPropsKeyMap nameToIndex_{};
   mutable int size_{0};

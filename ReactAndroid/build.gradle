@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -272,13 +272,19 @@ task installArchives {
     dependsOn("publishReleasePublicationToNpmRepository")
 }
 
+// Creating sources with comments
+task androidSourcesJar(type: Jar) {
+  classifier = 'sources'
+  from android.sourceSets.main.java.srcDirs
+}
+
 android {
     compileSdkVersion 31
-    if (project.hasProperty("ANDROID_NDK_VERSION")) {
-        ndkVersion project.property("ANDROID_NDK_VERSION")
-    }
-    if (project.hasProperty("ANDROID_NDK_PATH")) {
-        ndkPath project.property("ANDROID_NDK_PATH")
+
+    // Used to override the NDK path & version on internal CI
+    if (System.getenv("ANDROID_NDK") != null && System.getenv("LOCAL_ANDROID_NDK_VERSION") != null) {
+        ndkPath System.getenv("ANDROID_NDK")
+        ndkVersion System.getenv("LOCAL_ANDROID_NDK_VERSION")
     }
 
     defaultConfig {
@@ -345,6 +351,12 @@ android {
     packagingOptions {
         exclude("META-INF/NOTICE")
         exclude("META-INF/LICENSE")
+        // We intentionally don't want to bundle any JS Runtime inside the Android AAR
+        // we produce. The reason behind this is that we want to allow users to pick the
+        // JS engine by specifying a dependency on either `hermes-engine` or `android-jsc`
+        // that will include the necessary .so files to load.
+        exclude("**/libhermes.so")
+        exclude("**/libjsc.so")
     }
 
     configurations {
@@ -380,7 +392,7 @@ dependencies {
     testImplementation("org.powermock:powermock-module-junit4-rule:${POWERMOCK_VERSION}")
     testImplementation("org.powermock:powermock-classloading-xstream:${POWERMOCK_VERSION}")
     testImplementation("org.mockito:mockito-core:${MOCKITO_CORE_VERSION}")
-    testImplementation("org.easytesting:fest-assert-core:2.0M10")
+    testImplementation("org.assertj:assertj-core:3.21.0")
     testImplementation("org.robolectric:robolectric:${ROBOLECTRIC_VERSION}")
 
     androidTestImplementation(fileTree(dir: "src/main/third-party/java/buck-android-support/", include: ["*.jar"]))
@@ -413,6 +425,9 @@ afterEvaluate {
             release(MavenPublication) {
                 // Applies the component for the release build variant.
                 from components.release
+
+                // Add additional sourcesJar to artifacts
+                artifact(androidSourcesJar)
 
                 // You can then customize attributes of the publication as shown below.
                 artifactId = POM_ARTIFACT_ID

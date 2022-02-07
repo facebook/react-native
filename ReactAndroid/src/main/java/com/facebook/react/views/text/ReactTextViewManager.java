@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -22,6 +22,7 @@ import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.yoga.YogaMeasureMode;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -152,9 +153,15 @@ public class ReactTextViewManager
 
   @Override
   public @Nullable Map getExportedCustomDirectEventTypeConstants() {
-    return MapBuilder.of(
-        "topTextLayout", MapBuilder.of("registrationName", "onTextLayout"),
-        "topInlineViewLayout", MapBuilder.of("registrationName", "onInlineViewLayout"));
+    @Nullable
+    Map<String, Object> baseEventTypeConstants = super.getExportedCustomDirectEventTypeConstants();
+    Map<String, Object> eventTypeConstants =
+        baseEventTypeConstants == null ? new HashMap<String, Object>() : baseEventTypeConstants;
+    eventTypeConstants.putAll(
+        MapBuilder.of(
+            "topTextLayout", MapBuilder.of("registrationName", "onTextLayout"),
+            "topInlineViewLayout", MapBuilder.of("registrationName", "onInlineViewLayout")));
+    return eventTypeConstants;
   }
 
   @Override

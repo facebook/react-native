@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,6 +8,7 @@
 #include "LayoutAnimationKeyFrameManager.h"
 
 #include <algorithm>
+#include <utility>
 
 #include <react/debug/flags.h>
 #include <react/debug/react_native_assert.h>
@@ -85,8 +86,8 @@ void PrintMutationInstructionRelative(
 }
 #endif
 
-static inline float
-interpolateFloats(float coefficient, float oldValue, float newValue) {
+static inline Float
+interpolateFloats(Float coefficient, Float oldValue, Float newValue) {
   return oldValue + (newValue - oldValue) * coefficient;
 }
 
@@ -96,7 +97,7 @@ LayoutAnimationKeyFrameManager::LayoutAnimationKeyFrameManager(
     RuntimeExecutor runtimeExecutor,
     ContextContainer::Shared &contextContainer,
     LayoutAnimationStatusDelegate *delegate)
-    : runtimeExecutor_(runtimeExecutor),
+    : runtimeExecutor_(std::move(runtimeExecutor)),
       contextContainer_(contextContainer),
       layoutAnimationStatusDelegate_(delegate),
       now_([]() {
@@ -172,7 +173,7 @@ bool LayoutAnimationKeyFrameManager::shouldOverridePullTransaction() const {
   return shouldAnimateFrame();
 }
 
-better::optional<MountingTransaction>
+butter::optional<MountingTransaction>
 LayoutAnimationKeyFrameManager::pullTransaction(
     SurfaceId surfaceId,
     MountingTransaction::Number transactionNumber,
@@ -250,7 +251,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
         surfaceId, mutations, conflictingAnimations);
 
     // Are we animating this list of mutations?
-    better::optional<LayoutAnimation> currentAnimation{};
+    butter::optional<LayoutAnimation> currentAnimation{};
     {
       std::lock_guard<std::mutex> lock(currentAnimationMutex_);
       if (currentAnimation_) {
@@ -271,9 +272,9 @@ LayoutAnimationKeyFrameManager::pullTransaction(
       // TODO: to prevent this step we could tag Remove/Insert mutations as
       // being moves on the Differ level, since we know that there? We could use
       // TinyMap here, but it's not exposed by Differentiator (yet).
-      better::set<Tag> insertedTags;
-      better::set<Tag> deletedTags;
-      better::set<Tag> reparentedTags; // tags that are deleted and recreated
+      butter::set<Tag> insertedTags;
+      butter::set<Tag> deletedTags;
+      butter::set<Tag> reparentedTags; // tags that are deleted and recreated
       std::unordered_map<Tag, ShadowViewMutation> movedTags;
       for (const auto &mutation : mutations) {
         if (mutation.type == ShadowViewMutation::Type::Insert) {
@@ -320,7 +321,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
           continue;
         }
 
-        better::optional<ShadowViewMutation> executeMutationImmediately{};
+        butter::optional<ShadowViewMutation> executeMutationImmediately{};
 
         bool isRemoveReinserted =
             mutation.type == ShadowViewMutation::Type::Remove &&
@@ -1063,7 +1064,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
 
 void LayoutAnimationKeyFrameManager::uiManagerDidConfigureNextLayoutAnimation(
     LayoutAnimation layoutAnimation) const {
-  currentAnimation_ = better::optional<LayoutAnimation>{layoutAnimation};
+  currentAnimation_ = butter::optional<LayoutAnimation>{layoutAnimation};
 }
 
 void LayoutAnimationKeyFrameManager::setLayoutAnimationStatusDelegate(
@@ -1074,7 +1075,7 @@ void LayoutAnimationKeyFrameManager::setLayoutAnimationStatusDelegate(
 
 void LayoutAnimationKeyFrameManager::setClockNow(
     std::function<uint64_t()> now) {
-  now_ = now;
+  now_ = std::move(now);
 }
 
 void LayoutAnimationKeyFrameManager::enableSkipInvalidatedKeyFrames() {
@@ -1114,7 +1115,7 @@ LayoutAnimationKeyFrameManager::getComponentDescriptorForShadowView(
 }
 
 ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
-    double progress,
+    Float progress,
     ShadowView const &startingView,
     ShadowView const &finalView) const {
   react_native_assert(startingView.tag > 0);
@@ -1308,7 +1309,7 @@ void LayoutAnimationKeyFrameManager::
 
   // First, collect all final mutations that could impact this immediate
   // mutation.
-  std::vector<ShadowViewMutation *> candidateMutations{};
+  std::vector<ShadowViewMutation const *> candidateMutations{};
 
   for (auto inflightAnimationIt =
            inflightAnimations_.rbegin() + (skipLastAnimation ? 1 : 0);
@@ -1322,11 +1323,7 @@ void LayoutAnimationKeyFrameManager::
       continue;
     }
 
-    for (auto it = inflightAnimation.keyFrames.begin();
-         it != inflightAnimation.keyFrames.end();
-         it++) {
-      auto &animatedKeyFrame = *it;
-
+    for (auto const &animatedKeyFrame : inflightAnimation.keyFrames) {
       if (animatedKeyFrame.invalidated) {
         continue;
       }
@@ -1337,7 +1334,8 @@ void LayoutAnimationKeyFrameManager::
         continue;
       }
 
-      for (auto &delayedMutation : animatedKeyFrame.finalMutationsForKeyFrame) {
+      for (auto const &delayedMutation :
+           animatedKeyFrame.finalMutationsForKeyFrame) {
         if (delayedMutation.type != ShadowViewMutation::Type::Remove) {
           continue;
         }
@@ -1375,7 +1373,7 @@ void LayoutAnimationKeyFrameManager::
             candidateMutations.begin(),
             candidateMutations.end(),
             [&changed, &mutation, &adjustedDelta, &isRemoveMutation](
-                ShadowViewMutation *candidateMutation) {
+                ShadowViewMutation const *candidateMutation) {
               bool indexConflicts =
                   (candidateMutation->index < mutation.index ||
                    (isRemoveMutation &&
@@ -1430,11 +1428,7 @@ void LayoutAnimationKeyFrameManager::adjustDelayedMutationIndicesForMutation(
       continue;
     }
 
-    for (auto it = inflightAnimation.keyFrames.begin();
-         it != inflightAnimation.keyFrames.end();
-         it++) {
-      auto &animatedKeyFrame = *it;
-
+    for (auto &animatedKeyFrame : inflightAnimation.keyFrames) {
       if (animatedKeyFrame.invalidated) {
         continue;
       }
@@ -1616,7 +1610,7 @@ void LayoutAnimationKeyFrameManager::deleteAnimationsForStoppedSurfaces()
 
   // Execute stopSurface on any ongoing animations
   if (inflightAnimationsExistInitially) {
-    better::set<SurfaceId> surfaceIdsToStop{};
+    butter::set<SurfaceId> surfaceIdsToStop{};
     {
       std::lock_guard<std::mutex> lock(surfaceIdsToStopMutex_);
       surfaceIdsToStop = surfaceIdsToStop_;

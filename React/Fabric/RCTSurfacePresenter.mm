@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -79,7 +79,7 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   ContextContainer::Shared _contextContainer; // Protected by `_schedulerLifeCycleMutex`.
   RuntimeExecutor _runtimeExecutor; // Protected by `_schedulerLifeCycleMutex`.
 
-  better::shared_mutex _observerListMutex;
+  butter::shared_mutex _observerListMutex;
   NSMutableArray<id<RCTSurfacePresenterObserver>> *_observers;
 }
 
@@ -99,6 +99,14 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     _observers = [NSMutableArray array];
 
     _scheduler = [self _createScheduler];
+
+    auto reactNativeConfig = _contextContainer->at<std::shared_ptr<ReactNativeConfig const>>("ReactNativeConfig");
+    if (reactNativeConfig->getBool("react_native_new_architecture:suspend_before_app_termination")) {
+      [[NSNotificationCenter defaultCenter] addObserver:self
+                                               selector:@selector(_applicationWillTerminate)
+                                                   name:UIApplicationWillTerminateNotification
+                                                 object:nil];
+    }
   }
 
   return self;
@@ -285,9 +293,7 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     return std::make_unique<MainRunLoopObserver>(activities, owner);
   };
 
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_background_executor_ios")) {
-    toolbox.backgroundExecutor = RCTGetBackgroundExecutor();
-  }
+  toolbox.backgroundExecutor = RCTGetBackgroundExecutor();
 
   toolbox.synchronousEventBeatFactory =
       [runtimeExecutor, runtimeScheduler = runtimeScheduler](EventBeat::SharedOwnerBox const &ownerBox) {
@@ -329,6 +335,11 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   }];
 }
 
+- (void)_applicationWillTerminate
+{
+  [self suspend];
+}
+
 #pragma mark - RCTSchedulerDelegate
 
 - (void)schedulerDidFinishTransaction:(MountingCoordinator::Shared const &)mountingCoordinator
@@ -338,7 +349,7 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 
 - (void)schedulerDidDispatchCommand:(ShadowView const &)shadowView
                         commandName:(std::string const &)commandName
-                               args:(folly::dynamic const)args
+                               args:(folly::dynamic const &)args
 {
   ReactTag tag = shadowView.tag;
   NSString *commandStr = [[NSString alloc] initWithUTF8String:commandName.c_str()];
@@ -367,13 +378,13 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 
 - (void)addObserver:(id<RCTSurfacePresenterObserver>)observer
 {
-  std::unique_lock<better::shared_mutex> lock(_observerListMutex);
+  std::unique_lock<butter::shared_mutex> lock(_observerListMutex);
   [self->_observers addObject:observer];
 }
 
 - (void)removeObserver:(id<RCTSurfacePresenterObserver>)observer
 {
-  std::unique_lock<better::shared_mutex> lock(_observerListMutex);
+  std::unique_lock<butter::shared_mutex> lock(_observerListMutex);
   [self->_observers removeObject:observer];
 }
 
@@ -383,7 +394,7 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 {
   RCTAssertMainQueue();
 
-  std::shared_lock<better::shared_mutex> lock(_observerListMutex);
+  std::shared_lock<butter::shared_mutex> lock(_observerListMutex);
   for (id<RCTSurfacePresenterObserver> observer in _observers) {
     if ([observer respondsToSelector:@selector(willMountComponentsWithRootTag:)]) {
       [observer willMountComponentsWithRootTag:rootTag];
@@ -395,7 +406,7 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 {
   RCTAssertMainQueue();
 
-  std::shared_lock<better::shared_mutex> lock(_observerListMutex);
+  std::shared_lock<butter::shared_mutex> lock(_observerListMutex);
   for (id<RCTSurfacePresenterObserver> observer in _observers) {
     if ([observer respondsToSelector:@selector(didMountComponentsWithRootTag:)]) {
       [observer didMountComponentsWithRootTag:rootTag];

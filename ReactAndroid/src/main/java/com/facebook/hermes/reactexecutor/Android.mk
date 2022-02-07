@@ -1,4 +1,4 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -40,7 +40,7 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH) $(REACT_NATIVE)/ReactCommon/jsi $(call find-no
 
 LOCAL_CPP_FEATURES := exceptions
 
-LOCAL_STATIC_LIBRARIES := libjsireact libhermes-executor-common-debug libhermes-inspector
+LOCAL_STATIC_LIBRARIES := libjsireact libhermes-executor-common-debug
 LOCAL_SHARED_LIBRARIES := \
   libfb \
   libfbjni \

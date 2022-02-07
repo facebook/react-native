@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -65,7 +65,7 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
 
   // Create a RuntimeExecutor
   RuntimeExecutor runtimeExecutor =
-      [](std::function<void(jsi::Runtime & runtime)> fn) {};
+      [](std::function<void(jsi::Runtime &)> const &) {};
 
   // Create component descriptor registry for animation driver
   auto providerRegistry =

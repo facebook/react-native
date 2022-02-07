@@ -1,4 +1,4 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -61,12 +61,12 @@ Pod::Spec.new do |s|
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
   end
 
-  s.subspec "better" do |ss|
+  s.subspec "butter" do |ss|
     ss.dependency             folly_dep_name, folly_version
     ss.compiler_flags       = folly_compiler_flags
-    ss.source_files         = "better/**/*.{m,mm,cpp,h}"
-    ss.exclude_files        = "better/tests"
-    ss.header_dir           = "better"
+    ss.source_files         = "butter/**/*.{m,mm,cpp,h}"
+    ss.exclude_files        = "butter/tests"
+    ss.header_dir           = "butter"
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
   end
 

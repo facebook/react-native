@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,6 +12,13 @@
 
 const AUTO_SET_TIMESTAMP = -1;
 const DUMMY_INSTANCE_KEY = 0;
+
+// Defines map of annotations for markEvent
+// Use as following:
+// {string: {key1: value1, key2: value2}}
+export type AnnotationsMap = $Shape<{
+  string: ?{[string]: string, ...},
+}>;
 
 const QuickPerformanceLogger = {
   markerStart(
@@ -87,6 +94,16 @@ const QuickPerformanceLogger = {
   ): void {
     if (global.nativeQPLMarkerDrop) {
       global.nativeQPLMarkerDrop(markerId, instanceKey);
+    }
+  },
+
+  markEvent(
+    markerId: number,
+    type: string,
+    annotations: ?AnnotationsMap = null,
+  ): void {
+    if (global.nativeQPLMarkEvent) {
+      global.nativeQPLMarkEvent(markerId, type, annotations);
     }
   },
 

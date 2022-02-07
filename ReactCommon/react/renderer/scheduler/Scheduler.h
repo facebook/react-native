@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -36,7 +36,7 @@ namespace react {
 class Scheduler final : public UIManagerDelegate {
  public:
   Scheduler(
-      SchedulerToolbox schedulerToolbox,
+      SchedulerToolbox const &schedulerToolbox,
       UIManagerAnimationDelegate *animationDelegate,
       SchedulerDelegate *delegate);
   ~Scheduler();
@@ -95,7 +95,7 @@ class Scheduler final : public UIManagerDelegate {
   void uiManagerDidDispatchCommand(
       const ShadowNode::Shared &shadowNode,
       std::string const &commandName,
-      folly::dynamic const args) override;
+      folly::dynamic const &args) override;
   void uiManagerDidSendAccessibilityEvent(
       const ShadowNode::Shared &shadowNode,
       std::string const &eventType) override;
@@ -125,7 +125,7 @@ class Scheduler final : public UIManagerDelegate {
    * parts that need to have ownership (and only ownership) of that, and then
    * fill the optional.
    */
-  std::shared_ptr<better::optional<EventDispatcher const>> eventDispatcher_;
+  std::shared_ptr<butter::optional<EventDispatcher const>> eventDispatcher_;
 
   /**
    * Hold onto ContextContainer. See SchedulerToolbox.

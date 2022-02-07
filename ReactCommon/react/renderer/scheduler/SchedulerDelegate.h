@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -47,7 +47,7 @@ class SchedulerDelegate {
   virtual void schedulerDidDispatchCommand(
       const ShadowView &shadowView,
       std::string const &commandName,
-      folly::dynamic const args) = 0;
+      folly::dynamic const &args) = 0;
 
   virtual void schedulerDidSendAccessibilityEvent(
       const ShadowView &shadowView,

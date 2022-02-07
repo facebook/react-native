@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -202,48 +202,62 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @Nullable
   @Override
   public Map<String, Object> getExportedCustomBubblingEventTypeConstants() {
-    return MapBuilder.<String, Object>builder()
-        .put(
-            "topSubmitEditing",
-            MapBuilder.of(
-                "phasedRegistrationNames",
-                MapBuilder.of("bubbled", "onSubmitEditing", "captured", "onSubmitEditingCapture")))
-        .put(
-            "topEndEditing",
-            MapBuilder.of(
-                "phasedRegistrationNames",
-                MapBuilder.of("bubbled", "onEndEditing", "captured", "onEndEditingCapture")))
-        .put(
-            "topTextInput",
-            MapBuilder.of(
-                "phasedRegistrationNames",
-                MapBuilder.of("bubbled", "onTextInput", "captured", "onTextInputCapture")))
-        .put(
-            "topFocus",
-            MapBuilder.of(
-                "phasedRegistrationNames",
-                MapBuilder.of("bubbled", "onFocus", "captured", "onFocusCapture")))
-        .put(
-            "topBlur",
-            MapBuilder.of(
-                "phasedRegistrationNames",
-                MapBuilder.of("bubbled", "onBlur", "captured", "onBlurCapture")))
-        .put(
-            "topKeyPress",
-            MapBuilder.of(
-                "phasedRegistrationNames",
-                MapBuilder.of("bubbled", "onKeyPress", "captured", "onKeyPressCapture")))
-        .build();
+    @Nullable
+    Map<String, Object> baseEventTypeConstants =
+        super.getExportedCustomBubblingEventTypeConstants();
+    Map<String, Object> eventTypeConstants =
+        baseEventTypeConstants == null ? new HashMap<String, Object>() : baseEventTypeConstants;
+    eventTypeConstants.putAll(
+        MapBuilder.<String, Object>builder()
+            .put(
+                "topSubmitEditing",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of(
+                        "bubbled", "onSubmitEditing", "captured", "onSubmitEditingCapture")))
+            .put(
+                "topEndEditing",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onEndEditing", "captured", "onEndEditingCapture")))
+            .put(
+                "topTextInput",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onTextInput", "captured", "onTextInputCapture")))
+            .put(
+                "topFocus",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onFocus", "captured", "onFocusCapture")))
+            .put(
+                "topBlur",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onBlur", "captured", "onBlurCapture")))
+            .put(
+                "topKeyPress",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onKeyPress", "captured", "onKeyPressCapture")))
+            .build());
+    return eventTypeConstants;
   }
 
   @Nullable
   @Override
   public Map<String, Object> getExportedCustomDirectEventTypeConstants() {
-    return MapBuilder.<String, Object>builder()
-        .put(
-            ScrollEventType.getJSEventName(ScrollEventType.SCROLL),
-            MapBuilder.of("registrationName", "onScroll"))
-        .build();
+    @Nullable
+    Map<String, Object> baseEventTypeConstants = super.getExportedCustomDirectEventTypeConstants();
+    Map<String, Object> eventTypeConstants =
+        baseEventTypeConstants == null ? new HashMap<String, Object>() : baseEventTypeConstants;
+    eventTypeConstants.putAll(
+        MapBuilder.<String, Object>builder()
+            .put(
+                ScrollEventType.getJSEventName(ScrollEventType.SCROLL),
+                MapBuilder.of("registrationName", "onScroll"))
+            .build());
+    return eventTypeConstants;
   }
 
   @Override

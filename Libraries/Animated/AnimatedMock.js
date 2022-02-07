@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -23,6 +23,8 @@ import type {EndCallback} from './animations/Animation';
 import type {TimingAnimationConfig} from './animations/TimingAnimation';
 import type {DecayAnimationConfig} from './animations/DecayAnimation';
 import type {SpringAnimationConfig} from './animations/SpringAnimation';
+
+import AnimatedColor from './nodes/AnimatedColor';
 
 /**
  * Animations are a source of flakiness in snapshot testing. This mock replaces
@@ -89,7 +91,7 @@ const mockCompositeAnimation = (
 });
 
 const spring = function (
-  value: AnimatedValue | AnimatedValueXY,
+  value: AnimatedValue | AnimatedValueXY | AnimatedColor,
   config: SpringAnimationConfig,
 ): CompositeAnimation {
   const anyValue: any = value;
@@ -103,7 +105,7 @@ const spring = function (
 };
 
 const timing = function (
-  value: AnimatedValue | AnimatedValueXY,
+  value: AnimatedValue | AnimatedValueXY | AnimatedColor,
   config: TimingAnimationConfig,
 ): CompositeAnimation {
   const anyValue: any = value;
@@ -117,7 +119,7 @@ const timing = function (
 };
 
 const decay = function (
-  value: AnimatedValue | AnimatedValueXY,
+  value: AnimatedValue | AnimatedValueXY | AnimatedColor,
   config: DecayAnimationConfig,
 ): CompositeAnimation {
   return emptyAnimation;
@@ -164,6 +166,7 @@ const loop = function (
 module.exports = {
   Value: AnimatedValue,
   ValueXY: AnimatedValueXY,
+  Color: AnimatedColor,
   Interpolation: AnimatedInterpolation,
   Node: AnimatedNode,
   decay,

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -51,7 +51,7 @@ void RCTCopyBackedTextInput(
   [toTextInput setSelectedTextRange:fromTextInput.selectedTextRange notifyDelegate:NO];
 }
 
-UITextAutocorrectionType RCTUITextAutocorrectionTypeFromOptionalBool(facebook::better::optional<bool> autoCorrect)
+UITextAutocorrectionType RCTUITextAutocorrectionTypeFromOptionalBool(facebook::butter::optional<bool> autoCorrect)
 {
   return autoCorrect.has_value() ? (*autoCorrect ? UITextAutocorrectionTypeYes : UITextAutocorrectionTypeNo)
                                  : UITextAutocorrectionTypeDefault;
@@ -84,7 +84,7 @@ UIKeyboardAppearance RCTUIKeyboardAppearanceFromKeyboardAppearance(KeyboardAppea
   }
 }
 
-UITextSpellCheckingType RCTUITextSpellCheckingTypeFromOptionalBool(facebook::better::optional<bool> spellCheck)
+UITextSpellCheckingType RCTUITextSpellCheckingTypeFromOptionalBool(facebook::butter::optional<bool> spellCheck)
 {
   return spellCheck.has_value() ? (*spellCheck ? UITextSpellCheckingTypeYes : UITextSpellCheckingTypeNo)
                                 : UITextSpellCheckingTypeDefault;

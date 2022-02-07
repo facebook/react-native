@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -23,10 +23,10 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
 });
 
 const SinglelineTextInputNativeComponent: HostComponent<mixed> =
-  NativeComponentRegistry.get<mixed>(
-    'RCTSinglelineTextInputView',
-    () => RCTTextInputViewConfig,
-  );
+  NativeComponentRegistry.get<mixed>('RCTSinglelineTextInputView', () => ({
+    uiViewClassName: 'RCTSinglelineTextInputView',
+    ...RCTTextInputViewConfig,
+  }));
 
 // flowlint-next-line unclear-type:off
 export default ((SinglelineTextInputNativeComponent: any): HostComponent<mixed>);

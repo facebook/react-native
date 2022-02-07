@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -87,12 +87,24 @@ TextInputProps::TextInputProps(
           rawProps,
           "selection",
           sourceProps.selection,
-          better::optional<Selection>())),
+          butter::optional<Selection>())),
       inputAccessoryViewID(convertRawProp(
           context,
           rawProps,
           "inputAccessoryViewID",
           sourceProps.inputAccessoryViewID,
+          {})),
+      onKeyPressSync(convertRawProp(
+          context,
+          rawProps,
+          "onKeyPressSync",
+          sourceProps.onKeyPressSync,
+          {})),
+      onChangeSync(convertRawProp(
+          context,
+          rawProps,
+          "onChangeSync",
+          sourceProps.onChangeSync,
           {})){};
 
 TextAttributes TextInputProps::getEffectiveTextAttributes(

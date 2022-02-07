@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -599,10 +599,31 @@ export type Props = $ReadOnly<{|
   onChange?: ?(e: ChangeEvent) => mixed,
 
   /**
+   * DANGER: this API is not stable and will change in the future.
+   *
+   * Callback will be called on the main thread and may result in dropped frames.
+   * Callback that is called when the text input's text changes.
+   *
+   * @platform ios
+   */
+  unstable_onChangeSync?: ?(e: ChangeEvent) => mixed,
+
+  /**
    * Callback that is called when the text input's text changes.
    * Changed text is passed as an argument to the callback handler.
    */
   onChangeText?: ?(text: string) => mixed,
+
+  /**
+   * DANGER: this API is not stable and will change in the future.
+   *
+   * Callback will be called on the main thread and may result in dropped frames.
+   * Callback that is called when the text input's text changes.
+   * Changed text is passed as an argument to the callback handler.
+   *
+   * @platform ios
+   */
+  unstable_onChangeTextSync?: ?(text: string) => mixed,
 
   /**
    * Callback that is called when the text input's content size changes.
@@ -631,6 +652,21 @@ export type Props = $ReadOnly<{|
    * Fires before `onChange` callbacks.
    */
   onKeyPress?: ?(e: KeyPressEvent) => mixed,
+
+  /**
+   * DANGER: this API is not stable and will change in the future.
+   *
+   * Callback will be called on the main thread and may result in dropped frames.
+   *
+   * Callback that is called when a key is pressed.
+   * This will be called with `{ nativeEvent: { key: keyValue } }`
+   * where `keyValue` is `'Enter'` or `'Backspace'` for respective keys and
+   * the typed-in character otherwise including `' '` for space.
+   * Fires before `onChange` callbacks.
+   *
+   * @platform ios
+   */
+  unstable_onKeyPressSync?: ?(e: KeyPressEvent) => mixed,
 
   /**
    * Called when a touch is engaged.
@@ -766,6 +802,7 @@ type ImperativeMethods = $ReadOnly<{|
   clear: () => void,
   isFocused: () => boolean,
   getNativeRef: () => ?React.ElementRef<HostComponent<mixed>>,
+  setSelection: (start: number, end: number) => void,
 |}>;
 
 const emptyFunctionThatReturnsTrue = () => true;
@@ -1009,6 +1046,18 @@ function InternalTextInput(props: Props): React.Node {
     }
   }
 
+  function setSelection(start: number, end: number): void {
+    if (inputRef.current != null) {
+      viewCommands.setTextAndSelection(
+        inputRef.current,
+        mostRecentEventCount,
+        null,
+        start,
+        end,
+      );
+    }
+  }
+
   // TODO: Fix this returning true on null === null, when no input is focused
   function isFocused(): boolean {
     return TextInputState.currentlyFocusedInput() === inputRef.current;
@@ -1049,6 +1098,7 @@ function InternalTextInput(props: Props): React.Node {
         ref.clear = clear;
         ref.isFocused = isFocused;
         ref.getNativeRef = getNativeRef;
+        ref.setSelection = setSelection;
       }
     },
   });
@@ -1057,6 +1107,26 @@ function InternalTextInput(props: Props): React.Node {
     const currentText = event.nativeEvent.text;
     props.onChange && props.onChange(event);
     props.onChangeText && props.onChangeText(currentText);
+
+    if (inputRef.current == null) {
+      // calling `props.onChange` or `props.onChangeText`
+      // may clean up the input itself. Exits here.
+      return;
+    }
+
+    setLastNativeText(currentText);
+    // This must happen last, after we call setLastNativeText.
+    // Different ordering can cause bugs when editing AndroidTextInputs
+    // with multiple Fragments.
+    // We must update this so that controlled input updates work.
+    setMostRecentEventCount(event.nativeEvent.eventCount);
+  };
+
+  const _onChangeSync = (event: ChangeEvent) => {
+    const currentText = event.nativeEvent.text;
+    props.unstable_onChangeSync && props.unstable_onChangeSync(event);
+    props.unstable_onChangeTextSync &&
+      props.unstable_onChangeTextSync(currentText);
 
     if (inputRef.current == null) {
       // calling `props.onChange` or `props.onChangeText`
@@ -1158,6 +1228,10 @@ function InternalTextInput(props: Props): React.Node {
         ? [styles.multilineInput, props.style]
         : props.style;
 
+    const useOnChangeSync =
+      (props.unstable_onChangeSync || props.unstable_onChangeTextSync) &&
+      !(props.onChange || props.onChangeText);
+
     textInput = (
       <RCTTextInputView
         ref={_setNativeRef}
@@ -1170,7 +1244,9 @@ function InternalTextInput(props: Props): React.Node {
         focusable={focusable}
         mostRecentEventCount={mostRecentEventCount}
         onBlur={_onBlur}
+        onKeyPressSync={props.unstable_onKeyPressSync}
         onChange={_onChange}
+        onChangeSync={useOnChangeSync === true ? _onChangeSync : null}
         onContentSizeChange={props.onContentSizeChange}
         onFocus={_onFocus}
         onScroll={_onScroll}
@@ -1264,13 +1340,6 @@ const ExportedForwardRef: React.AbstractComponent<
     />
   );
 });
-
-/**
- * Switch to `deprecated-react-native-prop-types` for compatibility with future
- * releases. This is deprecated and will be removed in the future.
- */
-ExportedForwardRef.propTypes =
-  require('deprecated-react-native-prop-types').TextInputPropTypes;
 
 // $FlowFixMe[prop-missing]
 ExportedForwardRef.State = {

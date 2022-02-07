@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,7 +18,7 @@ import type {
   Layout,
   LayoutEvent,
 } from '../../Types/CoreEventTypes';
-import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
+import type {EdgeInsetsOrSizeProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {Node} from 'react';
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {
@@ -433,6 +433,13 @@ export type ViewProps = $ReadOnly<{|
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
 
   /**
+   * Specifies the nativeID of the associated label text. When the assistive technology focuses on the component with this props, the text is read aloud.
+   *
+   * @platform android
+   */
+  accessibilityLabelledBy?: ?string | ?Array<string>,
+
+  /**
    * Views that are only used to layout their children or otherwise don't draw
    * anything may be automatically removed from the native hierarchy as an
    * optimization. Set this property to `false` to disable this optimization and
@@ -474,7 +481,7 @@ export type ViewProps = $ReadOnly<{|
    *
    * See https://reactnative.dev/docs/view#hitslop
    */
-  hitSlop?: ?EdgeInsetsProp,
+  hitSlop?: ?EdgeInsetsOrSizeProp,
 
   /**
    * Controls whether the `View` can be the target of touch events.

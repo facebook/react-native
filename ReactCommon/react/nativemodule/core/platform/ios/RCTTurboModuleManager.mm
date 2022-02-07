@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -437,10 +437,15 @@ static Class getFallbackClassFromName(const char *name)
     __block id<RCTTurboModule> module = nil;
 
     if ([moduleClass conformsToProtocol:@protocol(RCTTurboModule)]) {
+      __weak __typeof(self) weakSelf = self;
       dispatch_block_t work = ^{
-        module = [self _createAndSetUpRCTTurboModule:moduleClass
-                                          moduleName:moduleName
-                                            moduleId:moduleHolder->getModuleId()];
+        auto strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
+        module = [strongSelf _createAndSetUpRCTTurboModule:moduleClass
+                                                moduleName:moduleName
+                                                  moduleId:moduleHolder->getModuleId()];
       };
 
       if ([self _requiresMainQueueSetup:moduleClass]) {

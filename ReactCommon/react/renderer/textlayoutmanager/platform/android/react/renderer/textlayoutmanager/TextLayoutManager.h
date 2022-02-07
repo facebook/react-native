@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -27,7 +27,11 @@ using SharedTextLayoutManager = std::shared_ptr<const TextLayoutManager>;
 class TextLayoutManager {
  public:
   TextLayoutManager(const ContextContainer::Shared &contextContainer)
-      : contextContainer_(contextContainer) {
+      : contextContainer_(contextContainer),
+        measureCache_{
+            contextContainer->at<bool>("EnableLargeTextMeasureCache")
+                ? 1024
+                : kSimpleThreadSafeCacheSizeCap} {
     static auto value =
         contextContainer->at<bool>("MapBufferSerializationEnabled");
     mapBufferSerializationEnabled_ = value;
@@ -38,7 +42,7 @@ class TextLayoutManager {
    * Measures `attributedString` using native text rendering infrastructure.
    */
   TextMeasurement measure(
-      AttributedStringBox attributedStringBox,
+      AttributedStringBox const &attributedStringBox,
       ParagraphAttributes paragraphAttributes,
       LayoutConstraints layoutConstraints) const;
 
@@ -48,7 +52,7 @@ class TextLayoutManager {
    */
   TextMeasurement measureCachedSpannableById(
       int64_t cacheId,
-      ParagraphAttributes paragraphAttributes,
+      ParagraphAttributes const &paragraphAttributes,
       LayoutConstraints layoutConstraints) const;
 
   /*
@@ -56,8 +60,8 @@ class TextLayoutManager {
    * infrastructure.
    */
   LinesMeasurements measureLines(
-      AttributedString attributedString,
-      ParagraphAttributes paragraphAttributes,
+      AttributedString const &attributedString,
+      ParagraphAttributes const &paragraphAttributes,
       Size size) const;
 
   /*
@@ -69,23 +73,23 @@ class TextLayoutManager {
  private:
   TextMeasurement doMeasure(
       AttributedString attributedString,
-      ParagraphAttributes paragraphAttributes,
+      ParagraphAttributes const &paragraphAttributes,
       LayoutConstraints layoutConstraints) const;
 
   TextMeasurement doMeasureMapBuffer(
       AttributedString attributedString,
-      ParagraphAttributes paragraphAttributes,
+      ParagraphAttributes const &paragraphAttributes,
       LayoutConstraints layoutConstraints) const;
 
   LinesMeasurements measureLinesMapBuffer(
-      AttributedString attributedString,
-      ParagraphAttributes paragraphAttributes,
+      AttributedString const &attributedString,
+      ParagraphAttributes const &paragraphAttributes,
       Size size) const;
 
   void *self_;
   ContextContainer::Shared contextContainer_;
   bool mapBufferSerializationEnabled_;
-  TextMeasureCache measureCache_{};
+  TextMeasureCache measureCache_;
 };
 
 } // namespace react

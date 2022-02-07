@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -17,7 +17,7 @@
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/mounting/MountingOverrideDelegate.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
-#include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
+#include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #include <react/renderer/templateprocessor/UITemplateProcessor.h>
 #include <react/renderer/uimanager/UIManager.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
@@ -31,7 +31,7 @@ namespace facebook {
 namespace react {
 
 Scheduler::Scheduler(
-    SchedulerToolbox schedulerToolbox,
+    SchedulerToolbox const &schedulerToolbox,
     UIManagerAnimationDelegate *animationDelegate,
     SchedulerDelegate *delegate) {
   runtimeExecutor_ = schedulerToolbox.runtimeExecutor;
@@ -43,14 +43,30 @@ Scheduler::Scheduler(
 
   // Creating a container for future `EventDispatcher` instance.
   eventDispatcher_ =
-      std::make_shared<better::optional<EventDispatcher const>>();
+      std::make_shared<butter::optional<EventDispatcher const>>();
 
   auto uiManager = std::make_shared<UIManager>(
       runtimeExecutor_, schedulerToolbox.backgroundExecutor, contextContainer_);
   auto eventOwnerBox = std::make_shared<EventBeat::OwnerBox>();
   eventOwnerBox->owner = eventDispatcher_;
 
-  auto eventPipe = [uiManager](
+#ifdef ANDROID
+  auto enableCallImmediates = reactNativeConfig_->getBool(
+      "react_native_new_architecture:enable_call_immediates_android");
+#else
+  auto enableCallImmediates = reactNativeConfig_->getBool(
+      "react_native_new_architecture:enable_call_immediates_ios");
+#endif
+
+  auto weakRuntimeScheduler =
+      contextContainer_->find<std::weak_ptr<RuntimeScheduler>>(
+          "RuntimeScheduler");
+  auto runtimeScheduler =
+      (enableCallImmediates && weakRuntimeScheduler.hasValue())
+      ? weakRuntimeScheduler.value().lock()
+      : nullptr;
+
+  auto eventPipe = [uiManager, runtimeScheduler = runtimeScheduler.get()](
                        jsi::Runtime &runtime,
                        const EventTarget *eventTarget,
                        const std::string &type,
@@ -62,6 +78,9 @@ Scheduler::Scheduler(
               runtime, eventTarget, type, priority, payloadFactory);
         },
         runtime);
+    if (runtimeScheduler) {
+      runtimeScheduler->callImmediates(runtime);
+    }
   };
 
   auto statePipe = [uiManager](StateUpdate const &stateUpdate) {
@@ -86,12 +105,11 @@ Scheduler::Scheduler(
   uiManager->setDelegate(this);
   uiManager->setComponentDescriptorRegistry(componentDescriptorRegistry_);
 
-  runtimeExecutor_([uiManager,
-                    runtimeExecutor = runtimeExecutor_](jsi::Runtime &runtime) {
-    auto uiManagerBinding =
-        UIManagerBinding::createAndInstallIfNeeded(runtime, runtimeExecutor);
-    uiManagerBinding->attach(uiManager);
-  });
+  runtimeExecutor_(
+      [uiManager, runtimeExecutor = runtimeExecutor_](jsi::Runtime &runtime) {
+        UIManagerBinding::createAndInstallIfNeeded(
+            runtime, runtimeExecutor, uiManager);
+      });
 
   auto componentDescriptorRegistryKey =
       "ComponentDescriptorRegistry_DO_NOT_USE_PRETTY_PLEASE";
@@ -105,7 +123,7 @@ Scheduler::Scheduler(
   commitHooks_ = schedulerToolbox.commitHooks;
   uiManager_ = uiManager;
 
-  for (auto commitHook : commitHooks_) {
+  for (auto const &commitHook : commitHooks_) {
     uiManager->registerCommitHook(*commitHook);
   }
 
@@ -128,7 +146,7 @@ Scheduler::~Scheduler() {
   LOG(WARNING) << "Scheduler::~Scheduler() was called (address: " << this
                << ").";
 
-  for (auto commitHook : commitHooks_) {
+  for (auto const &commitHook : commitHooks_) {
     uiManager_->unregisterCommitHook(*commitHook);
   }
 
@@ -207,10 +225,10 @@ InspectorData Scheduler::getInspectorDataForInstance(
         // TODO T97216348: remove folly::dynamic from InspectorData struct
         result.props = dynamic["props"];
         auto hierarchy = dynamic["hierarchy"];
-        for (size_t i = 0; i < hierarchy.size(); i++) {
-          auto viewHierarchyValue = hierarchy[i]["name"];
+        for (auto &i : hierarchy) {
+          auto viewHierarchyValue = i["name"];
           if (!viewHierarchyValue.isNull()) {
-            result.hierarchy.push_back(viewHierarchyValue.c_str());
+            result.hierarchy.emplace_back(viewHierarchyValue.c_str());
           }
         }
         return result;
@@ -315,7 +333,7 @@ void Scheduler::uiManagerDidCloneShadowNode(
 void Scheduler::uiManagerDidDispatchCommand(
     const ShadowNode::Shared &shadowNode,
     std::string const &commandName,
-    folly::dynamic const args) {
+    folly::dynamic const &args) {
   SystraceSection s("Scheduler::uiManagerDispatchCommand");
 
   if (delegate_) {

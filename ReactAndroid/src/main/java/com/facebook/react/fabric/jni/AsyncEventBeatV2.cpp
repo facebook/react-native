@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -20,8 +20,8 @@ AsyncEventBeatV2::AsyncEventBeatV2(
     jni::global_ref<jobject> javaUIManager)
     : EventBeat(ownerBox),
       eventBeatManager_(eventBeatManager),
-      runtimeExecutor_(runtimeExecutor),
-      javaUIManager_(javaUIManager) {
+      runtimeExecutor_(std::move(runtimeExecutor)),
+      javaUIManager_(std::move(javaUIManager)) {
   eventBeatManager->addObserver(*this);
 }
 

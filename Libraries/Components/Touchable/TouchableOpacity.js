@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -188,7 +188,6 @@ class TouchableOpacity extends React.Component<Props, State> {
     Animated.timing(this.state.anim, {
       toValue,
       duration,
-      // $FlowFixMe[method-unbinding]
       easing: Easing.inOut(Easing.quad),
       useNativeDriver: true,
     }).start();
@@ -261,7 +260,12 @@ class TouchableOpacity extends React.Component<Props, State> {
 
   componentDidUpdate(prevProps: Props, prevState: State) {
     this.state.pressability.configure(this._createPressabilityConfig());
-    if (this.props.disabled !== prevProps.disabled) {
+    if (
+      this.props.disabled !== prevProps.disabled ||
+      (flattenStyle(prevProps.style)?.opacity !==
+        flattenStyle(this.props.style)?.opacity) !==
+        undefined
+    ) {
       this._opacityInactive(250);
     }
   }

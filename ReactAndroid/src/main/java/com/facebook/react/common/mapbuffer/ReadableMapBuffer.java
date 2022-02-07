@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -25,36 +25,41 @@ public class ReadableMapBuffer implements Iterable<ReadableMapBuffer.MapBufferEn
     ReadableMapBufferSoLoader.staticInit();
   }
 
+  /**
+   * Data types supported by MapBuffer. Keep in sync with definition in `MapBuffer.h`, as enum
+   * serialization relies on correct order.
+   */
+  public enum DataType {
+    BOOL,
+    INT,
+    DOUBLE,
+    STRING,
+    MAP;
+  }
+
   // Value used to verify if the data is serialized with LittleEndian order.
   private static final int ALIGNMENT = 0xFE;
 
   // 8 bytes = 2 (alignment) + 2 (count) + 4 (size)
   private static final int HEADER_SIZE = 8;
 
-  // key size = 2 bytes
-  private static final int KEY_SIZE = 2;
+  // 10 bytes = 2 (key) + 2 (type) + 8 (value)
+  private static final int BUCKET_SIZE = 12;
 
-  // 10 bytes = 2 bytes key + 8 bytes value
-  private static final int BUCKET_SIZE = 10;
+  // 2 bytes = 2 (key)
+  private static final int TYPE_OFFSET = 2;
+
+  // 4 bytes = 2 (key) + 2 (type)
+  private static final int VALUE_OFFSET = 4;
 
   private static final int INT_SIZE = 4;
 
-  // TODO T83483191: consider moving short to INTs, we are doing extra cast operations just because
-  //  of short java operates with int
-  private static final int SHORT_SIZE = 2;
-
-  private static final short SHORT_ONE = (short) 1;
-
   @Nullable ByteBuffer mBuffer = null;
 
-  // Size of the Serialized Data
-  @SuppressWarnings("unused")
-  private int mSizeOfData = 0;
-
   // Amount of items serialized on the ByteBuffer
-  @SuppressWarnings("unused")
-  private short mCount = 0;
+  private int mCount = 0;
 
+  @DoNotStrip
   private ReadableMapBuffer(HybridData hybridData) {
     mHybridData = hybridData;
   }
@@ -64,8 +69,6 @@ public class ReadableMapBuffer implements Iterable<ReadableMapBuffer.MapBufferEn
     readHeader();
   }
 
-  private native ByteBuffer importByteBufferAllocateDirect();
-
   private native ByteBuffer importByteBuffer();
 
   @SuppressWarnings("unused")
@@ -73,27 +76,8 @@ public class ReadableMapBuffer implements Iterable<ReadableMapBuffer.MapBufferEn
   @Nullable
   private HybridData mHybridData;
 
-  @Override
-  protected void finalize() throws Throwable {
-    super.finalize();
-    if (mHybridData != null) {
-      mHybridData.resetNative();
-    }
-  }
-
-  private int getKeyOffsetForBucketIndex(int bucketIndex) {
+  private static int getKeyOffsetForBucketIndex(int bucketIndex) {
     return HEADER_SIZE + BUCKET_SIZE * bucketIndex;
-  }
-
-  private int getValueOffsetForKey(short key) {
-    importByteBufferAndReadHeader();
-    int bucketIndex = getBucketIndexForKey(key);
-    if (bucketIndex == -1) {
-      // TODO T83483191: Add tests
-      throw new IllegalArgumentException("Unable to find key: " + key);
-    }
-    assertKeyExists(key, bucketIndex);
-    return getKeyOffsetForBucketIndex(bucketIndex) + KEY_SIZE;
   }
 
   // returns the relative offset of the first byte of dynamic data
@@ -107,16 +91,17 @@ public class ReadableMapBuffer implements Iterable<ReadableMapBuffer.MapBufferEn
    * @return the "bucket index" for a key or -1 if not found. It uses a binary search algorithm
    *     (log(n))
    */
-  private int getBucketIndexForKey(short key) {
-    short lo = 0;
-    short hi = (short) (getCount() - SHORT_ONE);
+  private int getBucketIndexForKey(int key) {
+    importByteBufferAndReadHeader();
+    int lo = 0;
+    int hi = getCount() - 1;
     while (lo <= hi) {
-      final short mid = (short) ((lo + hi) >>> SHORT_ONE);
-      final short midVal = readKey(getKeyOffsetForBucketIndex(mid));
+      final int mid = (lo + hi) >>> 1;
+      final int midVal = readUnsignedShort(getKeyOffsetForBucketIndex(mid));
       if (midVal < key) {
-        lo = (short) (mid + SHORT_ONE);
+        lo = mid + 1;
       } else if (midVal > key) {
-        hi = (short) (mid - SHORT_ONE);
+        hi = mid - 1;
       } else {
         return mid;
       }
@@ -124,8 +109,34 @@ public class ReadableMapBuffer implements Iterable<ReadableMapBuffer.MapBufferEn
     return -1;
   }
 
-  private short readKey(int position) {
-    return mBuffer.getShort(position);
+  private DataType readDataType(int bucketIndex) {
+    int value = readUnsignedShort(getKeyOffsetForBucketIndex(bucketIndex) + TYPE_OFFSET);
+    return DataType.values()[value];
+  }
+
+  private int getTypedValueOffsetForKey(int key, DataType expected) {
+    int bucketIndex = getBucketIndexForKey(key);
+    DataType dataType = readDataType(bucketIndex);
+    if (bucketIndex == -1) {
+      throw new IllegalArgumentException("Key not found: " + key);
+    }
+
+    if (dataType != expected) {
+      throw new IllegalStateException(
+          "Expected "
+              + expected
+              + " for key: "
+              + key
+              + " found "
+              + dataType.toString()
+              + " instead.");
+    }
+
+    return getKeyOffsetForBucketIndex(bucketIndex) + VALUE_OFFSET;
+  }
+
+  private int readUnsignedShort(int bufferPosition) {
+    return mBuffer.getShort(bufferPosition) & 0xFFFF;
   }
 
   private double readDoubleValue(int bufferPosition) {
@@ -175,9 +186,7 @@ public class ReadableMapBuffer implements Iterable<ReadableMapBuffer.MapBufferEn
       mBuffer.order(ByteOrder.LITTLE_ENDIAN);
     }
     // count
-    mCount = mBuffer.getShort();
-    // size
-    mSizeOfData = mBuffer.getInt();
+    mCount = readUnsignedShort(mBuffer.position());
   }
 
   /**
@@ -186,13 +195,24 @@ public class ReadableMapBuffer implements Iterable<ReadableMapBuffer.MapBufferEn
    * @param key Key to search for
    * @return true if and only if the Key received as a parameter is stored in the MapBuffer.
    */
-  public boolean hasKey(short key) {
+  public boolean hasKey(int key) {
     // TODO T83483191: Add tests
     return getBucketIndexForKey(key) != -1;
   }
 
+  @Nullable
+  public DataType getType(int key) {
+    int bucketIndex = getBucketIndexForKey(key);
+
+    if (bucketIndex == -1) {
+      throw new IllegalArgumentException("Key not found: " + key);
+    }
+
+    return readDataType(bucketIndex);
+  }
+
   /** @return amount of elements stored into the MapBuffer */
-  public short getCount() {
+  public int getCount() {
     importByteBufferAndReadHeader();
     return mCount;
   }
@@ -201,37 +221,36 @@ public class ReadableMapBuffer implements Iterable<ReadableMapBuffer.MapBufferEn
    * @param key {@link int} representing the key
    * @return return the int associated to the Key received as a parameter.
    */
-  public int getInt(short key) {
-    // TODO T83483191: extract common code of "get methods"
-    return readIntValue(getValueOffsetForKey(key));
+  public int getInt(int key) {
+    return readIntValue(getTypedValueOffsetForKey(key, DataType.INT));
   }
 
   /**
    * @param key {@link int} representing the key
    * @return return the double associated to the Key received as a parameter.
    */
-  public double getDouble(short key) {
-    return readDoubleValue(getValueOffsetForKey(key));
+  public double getDouble(int key) {
+    return readDoubleValue(getTypedValueOffsetForKey(key, DataType.DOUBLE));
   }
 
   /**
    * @param key {@link int} representing the key
    * @return return the int associated to the Key received as a parameter.
    */
-  public String getString(short key) {
-    return readStringValue(getValueOffsetForKey(key));
+  public String getString(int key) {
+    return readStringValue(getTypedValueOffsetForKey(key, DataType.STRING));
   }
 
-  public boolean getBoolean(short key) {
-    return readBooleanValue(getValueOffsetForKey(key));
+  public boolean getBoolean(int key) {
+    return readBooleanValue(getTypedValueOffsetForKey(key, DataType.BOOL));
   }
 
   /**
    * @param key {@link int} representing the key
    * @return return the int associated to the Key received as a parameter.
    */
-  public ReadableMapBuffer getMapBuffer(short key) {
-    return readMapBufferValue(getValueOffsetForKey(key));
+  public ReadableMapBuffer getMapBuffer(int key) {
+    return readMapBufferValue(getTypedValueOffsetForKey(key, DataType.MAP));
   }
 
   /**
@@ -250,8 +269,8 @@ public class ReadableMapBuffer implements Iterable<ReadableMapBuffer.MapBufferEn
     return mBuffer;
   }
 
-  private void assertKeyExists(short key, int bucketIndex) {
-    short storedKey = mBuffer.getShort(getKeyOffsetForBucketIndex(bucketIndex));
+  private void assertKeyExists(int key, int bucketIndex) {
+    int storedKey = readUnsignedShort(getKeyOffsetForBucketIndex(bucketIndex));
     if (storedKey != key) {
       throw new IllegalStateException(
           "Stored key doesn't match parameter - expected: " + key + " - found: " + storedKey);
@@ -286,8 +305,8 @@ public class ReadableMapBuffer implements Iterable<ReadableMapBuffer.MapBufferEn
   @Override
   public Iterator<MapBufferEntry> iterator() {
     return new Iterator<MapBufferEntry>() {
-      short current = 0;
-      short last = (short) (getCount() - SHORT_ONE);
+      int current = 0;
+      final int last = getCount() - 1;
 
       @Override
       public boolean hasNext() {
@@ -309,39 +328,61 @@ public class ReadableMapBuffer implements Iterable<ReadableMapBuffer.MapBufferEn
       mBucketOffset = position;
     }
 
+    private void assertType(DataType expected) {
+      DataType dataType = getType();
+      if (expected != dataType) {
+        throw new IllegalStateException(
+            "Expected "
+                + expected
+                + " for key: "
+                + getKey()
+                + " found "
+                + dataType.toString()
+                + " instead.");
+      }
+    }
+
     /** @return a {@link short} that represents the key of this {@link MapBufferEntry}. */
-    public short getKey() {
-      return readKey(mBucketOffset);
+    public int getKey() {
+      return readUnsignedShort(mBucketOffset);
+    }
+
+    public DataType getType() {
+      return DataType.values()[readUnsignedShort(mBucketOffset + TYPE_OFFSET)];
     }
 
     /** @return the double value that is stored in this {@link MapBufferEntry}. */
-    public double getDouble(double defaultValue) {
-      // TODO T83483191 Extend serialization of MapBuffer to add type checking
+    public double getDouble() {
       // TODO T83483191 Extend serialization of MapBuffer to return null if there's no value
       // stored in this MapBufferEntry.
-      return readDoubleValue(mBucketOffset + KEY_SIZE);
+      assertType(DataType.DOUBLE);
+      return readDoubleValue(mBucketOffset + VALUE_OFFSET);
     }
 
     /** @return the int value that is stored in this {@link MapBufferEntry}. */
-    public int getInt(int defaultValue) {
-      return readIntValue(mBucketOffset + KEY_SIZE);
+    public int getInt() {
+      assertType(DataType.INT);
+      return readIntValue(mBucketOffset + VALUE_OFFSET);
     }
 
     /** @return the boolean value that is stored in this {@link MapBufferEntry}. */
-    public boolean getBoolean(boolean defaultValue) {
-      return readBooleanValue(mBucketOffset + KEY_SIZE);
+    public boolean getBoolean() {
+      assertType(DataType.BOOL);
+      return readBooleanValue(mBucketOffset + VALUE_OFFSET);
     }
 
     /** @return the String value that is stored in this {@link MapBufferEntry}. */
     public @Nullable String getString() {
-      return readStringValue(mBucketOffset + KEY_SIZE);
+      assertType(DataType.STRING);
+      return readStringValue(mBucketOffset + VALUE_OFFSET);
     }
 
     /**
      * @return the {@link ReadableMapBuffer} value that is stored in this {@link MapBufferEntry}.
      */
     public @Nullable ReadableMapBuffer getReadableMapBuffer() {
-      return readMapBufferValue(mBucketOffset + KEY_SIZE);
+      assertType(DataType.MAP);
+      return readMapBufferValue(mBucketOffset + VALUE_OFFSET);
     }
   }
 }

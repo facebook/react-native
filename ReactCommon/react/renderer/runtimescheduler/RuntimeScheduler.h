@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -20,7 +20,7 @@ namespace react {
 class RuntimeScheduler final {
  public:
   RuntimeScheduler(
-      RuntimeExecutor const &runtimeExecutor,
+      RuntimeExecutor runtimeExecutor,
       std::function<RuntimeSchedulerTimePoint()> now =
           RuntimeSchedulerClock::now);
   /*
@@ -45,20 +45,67 @@ class RuntimeScheduler final {
    * component.
    */
   void executeNowOnTheSameThread(
-      std::function<void(jsi::Runtime &runtime)> callback) const;
+      std::function<void(jsi::Runtime &runtime)> callback);
 
+  /*
+   * Adds a JavaScript callback to priority queue with given priority.
+   * Triggers workloop if needed.
+   *
+   * Thread synchronization must be enforced externally.
+   */
   std::shared_ptr<Task> scheduleTask(
       SchedulerPriority priority,
       jsi::Function callback);
 
-  void cancelTask(std::shared_ptr<Task> const &task) noexcept;
+  /*
+   * Cancelled task will never be executed.
+   *
+   * Operates on JSI object.
+   * Thread synchronization must be enforced externally.
+   */
+  void cancelTask(Task &task) noexcept;
 
+  /*
+   * Return value indicates if host platform has a pending access to the
+   * runtime.
+   *
+   * Can be called from any thread.
+   */
   bool getShouldYield() const noexcept;
 
+  /*
+   * Return value informs if the current task is executed inside synchronous
+   * block.
+   *
+   * Can be called from any thread.
+   */
+  bool getIsSynchronous() const noexcept;
+
+  /*
+   * Returns value of currently executed task. Designed to be called from React.
+   *
+   * Thread synchronization must be enforced externally.
+   */
   SchedulerPriority getCurrentPriorityLevel() const noexcept;
 
+  /*
+   * Returns current monotonic time. This time is not related to wall clock
+   * time.
+   *
+   * Thread synchronization must be enforced externally.
+   */
   RuntimeSchedulerTimePoint now() const noexcept;
 
+  /*
+   * Immediate is a task that is expired and should have been already executed
+   * or has priority set to Immediate. Designed to be called in the event
+   * pipeline after an event is dispatched to React. React may schedule events
+   * with immediate priority which need to be handled before the next event is
+   * sent to React.
+   *
+   * Thread synchronization must be enforced externally.
+   */
+  void callImmediates(jsi::Runtime &runtime);
   void setEnableYielding(bool enableYielding);
 
  private:
@@ -70,9 +117,21 @@ class RuntimeScheduler final {
 
   RuntimeExecutor const runtimeExecutor_;
   mutable SchedulerPriority currentPriority_{SchedulerPriority::NormalPriority};
-  mutable std::atomic_bool shouldYield_{false};
+
+  /*
+   * Counter indicating how many access to the runtime have been requested.
+   */
+  mutable std::atomic<uint_fast8_t> runtimeAccessRequests_{0};
+
+  mutable std::atomic_bool isSynchronous_{false};
 
   void startWorkLoop(jsi::Runtime &runtime) const;
+
+  /*
+   * Schedules a work loop unless it has been already scheduled
+   * This is to avoid unnecessary calls to `runtimeExecutor`.
+   */
+  void scheduleWorkLoopIfNecessary() const;
 
   /*
    * Returns a time point representing the current point in time. May be called
@@ -84,7 +143,7 @@ class RuntimeScheduler final {
    * Flag indicating if callback on JavaScript queue has been
    * scheduled.
    */
-  std::atomic_bool isCallbackScheduled_{false};
+  mutable std::atomic_bool isWorkLoopScheduled_{false};
 
   /*
    * Flag indicating if yielding is enabled.
@@ -98,7 +157,7 @@ class RuntimeScheduler final {
   /*
    * This flag is set while performing work, to prevent re-entrancy.
    */
-  mutable bool isPerformingWork_{false};
+  mutable std::atomic_bool isPerformingWork_{false};
 };
 
 } // namespace react

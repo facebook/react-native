@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<c63c5718d1b40bee38ff92020247d874>>
+ * @generated SignedSource<<10efd73d5435b5750183622476c68681>>
  */
 
 'use strict';
@@ -156,7 +156,7 @@ var invokeGuardedCallbackImpl = invokeGuardedCallbackProd;
       // when we call document.createEvent(). However this can cause confusing
       // errors: https://github.com/facebook/create-react-app/issues/3482
       // So we preemptively throw with a better message instead.
-      if (typeof document === "undefined") {
+      if (typeof document === "undefined" || document === null) {
         throw new Error(
           "The `document` global was defined when React was initialized, but is not " +
             "defined anymore. This can happen in a test environment if a component " +
@@ -2868,6 +2868,7 @@ var enableProfilerCommitHooks = true;
 var enableLazyElements = false;
 var warnAboutStringRefs = false;
 var warnOnSubscriptionInsideStartTransition = false;
+var enableSuspenseAvoidThisFallback = false;
 var enableNewReconciler = false;
 var enableLazyContextPropagation = false;
 
@@ -4008,6 +4009,7 @@ function reenableLogs() {
 
 var rendererID = null;
 var injectedHook = null;
+var injectedProfilingHooks = null;
 var hasLoggedError = false;
 var isDevToolsPresent = typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined";
 function injectInternals(internals) {
@@ -4038,7 +4040,12 @@ function injectInternals(internals) {
   }
 
   try {
-    rendererID = hook.inject(internals); // We have successfully injected, so now it is safe to set up hooks.
+    rendererID = hook.inject(
+      Object.assign({}, internals, {
+        getLaneLabelMap: getLaneLabelMap,
+        injectProfilingHooks: injectProfilingHooks
+      })
+    ); // We have successfully injected, so now it is safe to set up hooks.
 
     injectedHook = hook;
   } catch (err) {
@@ -4163,6 +4170,272 @@ function setIsStrictModeForDevtools(newIsStrictMode) {
       disableLogs();
     } else {
       reenableLogs();
+    }
+  }
+} // Profiler API hooks
+
+function injectProfilingHooks(profilingHooks) {
+  injectedProfilingHooks = profilingHooks;
+}
+
+function getLaneLabelMap() {
+  var map = new Map();
+  var lane = 1;
+
+  for (var index = 0; index < TotalLanes; index++) {
+    var label = getLabelForLane(lane);
+    map.set(lane, label);
+    lane *= 2;
+  }
+
+  return map;
+}
+
+function markCommitStarted(lanes) {
+  {
+    if (
+      injectedProfilingHooks !== null &&
+      typeof injectedProfilingHooks.markCommitStarted === "function"
+    ) {
+      injectedProfilingHooks.markCommitStarted(lanes);
+    }
+  }
+}
+function markCommitStopped() {
+  {
+    if (
+      injectedProfilingHooks !== null &&
+      typeof injectedProfilingHooks.markCommitStopped === "function"
+    ) {
+      injectedProfilingHooks.markCommitStopped();
+    }
+  }
+}
+function markComponentRenderStarted(fiber) {
+  {
+    if (
+      injectedProfilingHooks !== null &&
+      typeof injectedProfilingHooks.markComponentRenderStarted === "function"
+    ) {
+      injectedProfilingHooks.markComponentRenderStarted(fiber);
+    }
+  }
+}
+function markComponentRenderStopped() {
+  {
+    if (
+      injectedProfilingHooks !== null &&
+      typeof injectedProfilingHooks.markComponentRenderStopped === "function"
+    ) {
+      injectedProfilingHooks.markComponentRenderStopped();
+    }
+  }
+}
+function markComponentPassiveEffectMountStarted(fiber) {
+  {
+    if (
+      injectedProfilingHooks !== null &&
+      typeof injectedProfilingHooks.markComponentPassiveEffectMountStarted ===
+        "function"
+    ) {
+      injectedProfilingHooks.markComponentPassiveEffectMountStarted(fiber);
+    }
+  }
+}
+function markComponentPassiveEffectMountStopped() {
+  {
+    if (
+      injectedProfilingHooks !== null &&
+      typeof injectedProfilingHooks.markComponentPassiveEffectMountStopped ===
+        "function"
+    ) {
+      injectedProfilingHooks.markComponentPassiveEffectMountStopped();
+    }
+  }
+}
+function markComponentPassiveEffectUnmountStarted(fiber) {
+  {
+    if (
+      injectedProfilingHooks !== null &&
+      typeof injectedProfilingHooks.markComponentPassiveEffectUnmountStarted ===
+        "function"
+    ) {
+      injectedProfilingHooks.markComponentPassiveEffectUnmountStarted(fiber);
+    }
+  }
+}
+function markComponentPassiveEffectUnmountStopped() {
+  {
+    if (
+      injectedProfilingHooks !== null &&
+      typeof injectedProfilingHooks.markComponentPassiveEffectUnmountStopped ===
+        "function"
+    ) {
+      injectedProfilingHooks.markComponentPassiveEffectUnmountStopped();
+    }
+  }
+}
+function markComponentLayoutEffectMountStarted(fiber) {
+  {
+    if (
+      injectedProfilingHooks !== null &&
+      typeof injectedProfilingHooks.markComponentLayoutEffectMountStarted ===
+        "function"
+    ) {
+      injectedProfilingHooks.markComponentLayoutEffectMountStarted(fiber);
+    }
+  }
+}
+function markComponentLayoutEffectMountStopped() {
+  {
+    if (
+      injectedProfilingHooks !== null &&
+      typeof injectedProfilingHooks.markComponentLayoutEffectMountStopped ===
+        "function"
+    ) {
+      injectedProfilingHooks.markComponentLayoutEffectMountStopped();
+    }
+  }
+}
+function markComponentLayoutEffectUnmountStarted(fiber) {
+  {
+    if (
+      injectedProfilingHooks !== null &&
+      typeof injectedProfilingHooks.markComponentLayoutEffectUnmountStarted ===
+        "function"
+    ) {
+      injectedProfilingHooks.markComponentLayoutEffectUnmountStarted(fiber);
+    }
+  }
+}
+function markComponentLayoutEffectUnmountStopped() {
+  {
+    if (
+      injectedProfilingHooks !== null &&
+      typeof injectedProfilingHooks.markComponentLayoutEffectUnmountStopped ===
+        "function"
+    ) {
+      injectedProfilingHooks.markComponentLayoutEffectUnmountStopped();
+    }
+  }
+}
+function markComponentErrored(fiber, thrownValue, lanes) {
+  {
+    if (
+      injectedProfilingHooks !== null &&
+      typeof injectedProfilingHooks.markComponentErrored === "function"
+    ) {
+      injectedProfilingHooks.markComponentErrored(fiber, thrownValue, lanes);
+    }
+  }
+}
+function markComponentSuspended(fiber, wakeable, lanes) {
+  {
+    if (
+      injectedProfilingHooks !== null &&
+      typeof injectedProfilingHooks.markComponentSuspended === "function"
+    ) {
+      injectedProfilingHooks.markComponentSuspended(fiber, wakeable, lanes);
+    }
+  }
+}
+function markLayoutEffectsStarted(lanes) {
+  {
+    if (
+      injectedProfilingHooks !== null &&
+      typeof injectedProfilingHooks.markLayoutEffectsStarted === "function"
+    ) {
+      injectedProfilingHooks.markLayoutEffectsStarted(lanes);
+    }
+  }
+}
+function markLayoutEffectsStopped() {
+  {
+    if (
+      injectedProfilingHooks !== null &&
+      typeof injectedProfilingHooks.markLayoutEffectsStopped === "function"
+    ) {
+      injectedProfilingHooks.markLayoutEffectsStopped();
+    }
+  }
+}
+function markPassiveEffectsStarted(lanes) {
+  {
+    if (
+      injectedProfilingHooks !== null &&
+      typeof injectedProfilingHooks.markPassiveEffectsStarted === "function"
+    ) {
+      injectedProfilingHooks.markPassiveEffectsStarted(lanes);
+    }
+  }
+}
+function markPassiveEffectsStopped() {
+  {
+    if (
+      injectedProfilingHooks !== null &&
+      typeof injectedProfilingHooks.markPassiveEffectsStopped === "function"
+    ) {
+      injectedProfilingHooks.markPassiveEffectsStopped();
+    }
+  }
+}
+function markRenderStarted(lanes) {
+  {
+    if (
+      injectedProfilingHooks !== null &&
+      typeof injectedProfilingHooks.markRenderStarted === "function"
+    ) {
+      injectedProfilingHooks.markRenderStarted(lanes);
+    }
+  }
+}
+function markRenderYielded() {
+  {
+    if (
+      injectedProfilingHooks !== null &&
+      typeof injectedProfilingHooks.markRenderYielded === "function"
+    ) {
+      injectedProfilingHooks.markRenderYielded();
+    }
+  }
+}
+function markRenderStopped() {
+  {
+    if (
+      injectedProfilingHooks !== null &&
+      typeof injectedProfilingHooks.markRenderStopped === "function"
+    ) {
+      injectedProfilingHooks.markRenderStopped();
+    }
+  }
+}
+function markRenderScheduled(lane) {
+  {
+    if (
+      injectedProfilingHooks !== null &&
+      typeof injectedProfilingHooks.markRenderScheduled === "function"
+    ) {
+      injectedProfilingHooks.markRenderScheduled(lane);
+    }
+  }
+}
+function markForceUpdateScheduled(fiber, lane) {
+  {
+    if (
+      injectedProfilingHooks !== null &&
+      typeof injectedProfilingHooks.markForceUpdateScheduled === "function"
+    ) {
+      injectedProfilingHooks.markForceUpdateScheduled(fiber, lane);
+    }
+  }
+}
+function markStateUpdateScheduled(fiber, lane) {
+  {
+    if (
+      injectedProfilingHooks !== null &&
+      typeof injectedProfilingHooks.markStateUpdateScheduled === "function"
+    ) {
+      injectedProfilingHooks.markStateUpdateScheduled(fiber, lane);
     }
   }
 }
@@ -4989,7 +5262,6 @@ function shim() {
 
 var supportsMutation = false;
 var commitMount = shim;
-var clearContainer = shim;
 
 // Renderers that don't support hydration
 // can re-export everything from this module.
@@ -6006,358 +6278,6 @@ function flushSyncCallbacks() {
   }
 
   return null;
-}
-
-var ReactVersion = "18.0.0-c1220ebdd-20211123";
-
-var SCHEDULING_PROFILER_VERSION = 1;
-
-var getLabelForLane$1 = getLabelForLane;
-var TotalLanes$1 = TotalLanes;
-/**
- * If performance exists and supports the subset of the User Timing API that we
- * require.
- */
-
-var supportsUserTiming =
-  typeof performance !== "undefined" &&
-  typeof performance.mark === "function" &&
-  typeof performance.clearMarks === "function";
-var supportsUserTimingV3 = false;
-
-{
-  if (supportsUserTiming) {
-    var CHECK_V3_MARK = "__v3";
-    var markOptions = {}; // $FlowFixMe: Ignore Flow complaining about needing a value
-
-    Object.defineProperty(markOptions, "startTime", {
-      get: function() {
-        supportsUserTimingV3 = true;
-        return 0;
-      },
-      set: function() {}
-    });
-
-    try {
-      // $FlowFixMe: Flow expects the User Timing level 2 API.
-      performance.mark(CHECK_V3_MARK, markOptions);
-    } catch (error) {
-      // Ignore
-    } finally {
-      performance.clearMarks(CHECK_V3_MARK);
-    }
-  }
-}
-
-var laneLabels = [];
-function getLaneLabels() {
-  if (laneLabels.length === 0) {
-    var lane = 1;
-
-    for (var index = 0; index < TotalLanes$1; index++) {
-      laneLabels.push(getLabelForLane$1(lane));
-      lane *= 2;
-    }
-  }
-
-  return laneLabels;
-}
-
-function markLaneToLabelMetadata() {
-  getLaneLabels();
-  markAndClear("--react-lane-labels-" + laneLabels.join(","));
-}
-
-function markAndClear(name) {
-  performance.mark(name);
-  performance.clearMarks(name);
-}
-
-function markVersionMetadata() {
-  markAndClear("--react-version-" + ReactVersion);
-  markAndClear("--profiler-version-" + SCHEDULING_PROFILER_VERSION);
-}
-
-function markInternalModuleRanges() {
-  /* global __REACT_DEVTOOLS_GLOBAL_HOOK__ */
-  if (
-    typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" &&
-    typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.getInternalModuleRanges === "function"
-  ) {
-    var ranges = __REACT_DEVTOOLS_GLOBAL_HOOK__.getInternalModuleRanges(); // This check would not be required,
-    // except that it's possible for things to override __REACT_DEVTOOLS_GLOBAL_HOOK__.
-
-    if (isArray(ranges)) {
-      for (var i = 0; i < ranges.length; i++) {
-        var range = ranges[i];
-
-        if (isArray(range) && range.length === 2) {
-          var _ranges$i = ranges[i],
-            startStackFrame = _ranges$i[0],
-            stopStackFrame = _ranges$i[1];
-          markAndClear("--react-internal-module-start-" + startStackFrame);
-          markAndClear("--react-internal-module-stop-" + stopStackFrame);
-        }
-      }
-    }
-  }
-}
-
-function markCommitStarted(lanes) {
-  {
-    if (supportsUserTimingV3) {
-      markAndClear("--commit-start-" + lanes); // Certain types of metadata should be logged infrequently.
-      // Normally we would log this during module init,
-      // but there's no guarantee a user is profiling at that time.
-      // Commits happen infrequently (less than renders or state updates)
-      // so we log this extra information along with a commit.
-      // It will likely be logged more than once but that's okay.
-      //
-      // TODO Once DevTools supports starting/stopping the profiler,
-      // we can log this data only once (when started) and remove the per-commit logging.
-
-      markVersionMetadata();
-      markLaneToLabelMetadata();
-      markInternalModuleRanges();
-    }
-  }
-}
-function markCommitStopped() {
-  {
-    if (supportsUserTimingV3) {
-      markAndClear("--commit-stop");
-    }
-  }
-}
-function markComponentRenderStarted(fiber) {
-  {
-    if (supportsUserTimingV3) {
-      var componentName = getComponentNameFromFiber(fiber) || "Unknown"; // TODO (timeline) Add component stack id
-
-      markAndClear("--component-render-start-" + componentName);
-    }
-  }
-}
-function markComponentRenderStopped() {
-  {
-    if (supportsUserTimingV3) {
-      markAndClear("--component-render-stop");
-    }
-  }
-}
-function markComponentPassiveEffectMountStarted(fiber) {
-  {
-    if (supportsUserTimingV3) {
-      var componentName = getComponentNameFromFiber(fiber) || "Unknown"; // TODO (timeline) Add component stack id
-
-      markAndClear("--component-passive-effect-mount-start-" + componentName);
-    }
-  }
-}
-function markComponentPassiveEffectMountStopped() {
-  {
-    if (supportsUserTimingV3) {
-      markAndClear("--component-passive-effect-mount-stop");
-    }
-  }
-}
-function markComponentPassiveEffectUnmountStarted(fiber) {
-  {
-    if (supportsUserTimingV3) {
-      var componentName = getComponentNameFromFiber(fiber) || "Unknown"; // TODO (timeline) Add component stack id
-
-      markAndClear("--component-passive-effect-unmount-start-" + componentName);
-    }
-  }
-}
-function markComponentPassiveEffectUnmountStopped() {
-  {
-    if (supportsUserTimingV3) {
-      markAndClear("--component-passive-effect-unmount-stop");
-    }
-  }
-}
-function markComponentLayoutEffectMountStarted(fiber) {
-  {
-    if (supportsUserTimingV3) {
-      var componentName = getComponentNameFromFiber(fiber) || "Unknown"; // TODO (timeline) Add component stack id
-
-      markAndClear("--component-layout-effect-mount-start-" + componentName);
-    }
-  }
-}
-function markComponentLayoutEffectMountStopped() {
-  {
-    if (supportsUserTimingV3) {
-      markAndClear("--component-layout-effect-mount-stop");
-    }
-  }
-}
-function markComponentLayoutEffectUnmountStarted(fiber) {
-  {
-    if (supportsUserTimingV3) {
-      var componentName = getComponentNameFromFiber(fiber) || "Unknown"; // TODO (timeline) Add component stack id
-
-      markAndClear("--component-layout-effect-unmount-start-" + componentName);
-    }
-  }
-}
-function markComponentLayoutEffectUnmountStopped() {
-  {
-    if (supportsUserTimingV3) {
-      markAndClear("--component-layout-effect-unmount-stop");
-    }
-  }
-}
-function markComponentErrored(fiber, thrownValue, lanes) {
-  {
-    if (supportsUserTimingV3) {
-      var componentName = getComponentNameFromFiber(fiber) || "Unknown";
-      var phase = fiber.alternate === null ? "mount" : "update";
-      var message = "";
-
-      if (
-        thrownValue !== null &&
-        typeof thrownValue === "object" &&
-        typeof thrownValue.message === "string"
-      ) {
-        message = thrownValue.message;
-      } else if (typeof thrownValue === "string") {
-        message = thrownValue;
-      } // TODO (timeline) Add component stack id
-
-      markAndClear("--error-" + componentName + "-" + phase + "-" + message);
-    }
-  }
-}
-var PossiblyWeakMap$1 = typeof WeakMap === "function" ? WeakMap : Map; // $FlowFixMe: Flow cannot handle polymorphic WeakMaps
-
-var wakeableIDs = new PossiblyWeakMap$1();
-var wakeableID = 0;
-
-function getWakeableID(wakeable) {
-  if (!wakeableIDs.has(wakeable)) {
-    wakeableIDs.set(wakeable, wakeableID++);
-  }
-
-  return wakeableIDs.get(wakeable);
-}
-
-function markComponentSuspended(fiber, wakeable, lanes) {
-  {
-    if (supportsUserTimingV3) {
-      var eventType = wakeableIDs.has(wakeable) ? "resuspend" : "suspend";
-      var id = getWakeableID(wakeable);
-      var componentName = getComponentNameFromFiber(fiber) || "Unknown";
-      var phase = fiber.alternate === null ? "mount" : "update"; // Following the non-standard fn.displayName convention,
-      // frameworks like Relay may also annotate Promises with a displayName,
-      // describing what operation/data the thrown Promise is related to.
-      // When this is available we should pass it along to the Timeline.
-
-      var displayName = wakeable.displayName || ""; // TODO (timeline) Add component stack id
-
-      markAndClear(
-        "--suspense-" +
-          eventType +
-          "-" +
-          id +
-          "-" +
-          componentName +
-          "-" +
-          phase +
-          "-" +
-          lanes +
-          "-" +
-          displayName
-      );
-      wakeable.then(
-        function() {
-          return markAndClear(
-            "--suspense-resolved-" + id + "-" + componentName
-          );
-        },
-        function() {
-          return markAndClear(
-            "--suspense-rejected-" + id + "-" + componentName
-          );
-        }
-      );
-    }
-  }
-}
-function markLayoutEffectsStarted(lanes) {
-  {
-    if (supportsUserTimingV3) {
-      markAndClear("--layout-effects-start-" + lanes);
-    }
-  }
-}
-function markLayoutEffectsStopped() {
-  {
-    if (supportsUserTimingV3) {
-      markAndClear("--layout-effects-stop");
-    }
-  }
-}
-function markPassiveEffectsStarted(lanes) {
-  {
-    if (supportsUserTimingV3) {
-      markAndClear("--passive-effects-start-" + lanes);
-    }
-  }
-}
-function markPassiveEffectsStopped() {
-  {
-    if (supportsUserTimingV3) {
-      markAndClear("--passive-effects-stop");
-    }
-  }
-}
-function markRenderStarted(lanes) {
-  {
-    if (supportsUserTimingV3) {
-      markAndClear("--render-start-" + lanes);
-    }
-  }
-}
-function markRenderYielded() {
-  {
-    if (supportsUserTimingV3) {
-      markAndClear("--render-yield");
-    }
-  }
-}
-function markRenderStopped() {
-  {
-    if (supportsUserTimingV3) {
-      markAndClear("--render-stop");
-    }
-  }
-}
-function markRenderScheduled(lane) {
-  {
-    if (supportsUserTimingV3) {
-      markAndClear("--schedule-render-" + lane);
-    }
-  }
-}
-function markForceUpdateScheduled(fiber, lane) {
-  {
-    if (supportsUserTimingV3) {
-      var componentName = getComponentNameFromFiber(fiber) || "Unknown"; // TODO (timeline) Add component stack id
-
-      markAndClear("--schedule-forced-update-" + lane + "-" + componentName);
-    }
-  }
-}
-function markStateUpdateScheduled(fiber, lane) {
-  {
-    if (supportsUserTimingV3) {
-      var componentName = getComponentNameFromFiber(fiber) || "Unknown"; // TODO (timeline) Add component stack id
-
-      markAndClear("--schedule-state-update-" + lane + "-" + componentName);
-    }
-  }
 }
 
 var ReactCurrentBatchConfig = ReactSharedInternals.ReactCurrentBatchConfig;
@@ -10448,16 +10368,9 @@ function shouldCaptureSuspense(workInProgress, hasInvisibleParent) {
 
   var props = workInProgress.memoizedProps; // Regular boundaries always capture.
 
-  if (props.unstable_avoidThisFallback !== true) {
+  {
     return true;
   } // If it's a boundary we should avoid, then we prefer to bubble up to the
-  // parent boundary if it is currently invisible.
-
-  if (hasInvisibleParent) {
-    return false;
-  } // If the parent is not able to handle it, we must handle it.
-
-  return true;
 }
 function findFirstSuspended(row) {
   var node = row;
@@ -12206,12 +12119,19 @@ function getIsUpdatingOpaqueValueInRenderPhaseInDEV() {
 
 function mountId() {
   var hook = mountWorkInProgressHook();
+  var root = getWorkInProgressRoot(); // TODO: In Fizz, id generation is specific to each server config. Maybe we
+  // should do this in Fiber, too? Deferring this decision for now because
+  // there's no other place to store the prefix except for an internal field on
+  // the public createRoot object, which the fiber tree does not currently have
+  // a reference to.
+
+  var identifierPrefix = root.identifierPrefix;
   var id;
 
   {
     // Use a lowercase r prefix for client-generated ids.
     var globalClientId = globalClientIdCounter++;
-    id = "r:" + globalClientId.toString(32);
+    id = identifierPrefix + "r:" + globalClientId.toString(32);
   }
 
   hook.memoizedState = id;
@@ -13562,7 +13482,7 @@ function logCapturedError(boundary, errorInfo) {
   }
 }
 
-var PossiblyWeakMap$2 = typeof WeakMap === "function" ? WeakMap : Map;
+var PossiblyWeakMap$1 = typeof WeakMap === "function" ? WeakMap : Map;
 
 function createRootErrorUpdate(fiber, errorInfo, lane) {
   var update = createUpdate(NoTimestamp, lane); // Unmount the root by rendering null.
@@ -13667,7 +13587,7 @@ function attachWakeableListeners(suspenseBoundary, root, wakeable, lanes) {
     var threadIDs;
 
     if (pingCache === null) {
-      pingCache = root.pingCache = new PossiblyWeakMap$2();
+      pingCache = root.pingCache = new PossiblyWeakMap$1();
       threadIDs = new Set();
       pingCache.set(wakeable, threadIDs);
     } else {
@@ -13742,16 +13662,9 @@ function resetSuspendedComponent(sourceFiber, rootRenderLanes) {
 
 function getNearestSuspenseBoundaryToCapture(returnFiber) {
   var node = returnFiber;
-  var hasInvisibleParentBoundary = hasSuspenseContext(
-    suspenseStackCursor.current,
-    InvisibleParentSuspenseContext
-  );
 
   do {
-    if (
-      node.tag === SuspenseComponent &&
-      shouldCaptureSuspense(node, hasInvisibleParentBoundary)
-    ) {
+    if (node.tag === SuspenseComponent && shouldCaptureSuspense(node)) {
       return node;
     } // This boundary already captured during this render. Continue to the next
     // boundary.
@@ -14743,7 +14656,8 @@ function completeWork(current, workInProgress, renderLanes) {
           // should be able to immediately restart from within throwException.
           var hasInvisibleChildContext =
             current === null &&
-            workInProgress.memoizedProps.unstable_avoidThisFallback !== true;
+            (workInProgress.memoizedProps.unstable_avoidThisFallback !== true ||
+              !enableSuspenseAvoidThisFallback);
 
           if (
             hasInvisibleChildContext ||
@@ -16566,7 +16480,7 @@ function updateSuspenseComponent(current, workInProgress, renderLanes) {
       // Mark this subtree context as having at least one invisible parent that could
       // handle the fallback state.
       // Avoided boundaries are not considered since they cannot handle preferred fallback states.
-      if (nextProps.unstable_avoidThisFallback !== true) {
+      {
         suspenseContext = addSubtreeSuspenseContext(
           suspenseContext,
           InvisibleParentSuspenseContext
@@ -20685,8 +20599,6 @@ function recoverFromConcurrentError(root, errorRetryLanes) {
     {
       errorHydratingContainer(root.containerInfo);
     }
-
-    clearContainer(root.containerInfo);
   }
 
   var exitStatus;
@@ -23531,7 +23443,7 @@ function assignFiberPropertiesInDEV(target, source) {
   return target;
 }
 
-function FiberRootNode(containerInfo, tag, hydrate) {
+function FiberRootNode(containerInfo, tag, hydrate, identifierPrefix) {
   this.tag = tag;
   this.containerInfo = containerInfo;
   this.pendingChildren = null;
@@ -23554,6 +23466,7 @@ function FiberRootNode(containerInfo, tag, hydrate) {
   this.finishedLanes = NoLanes;
   this.entangledLanes = NoLanes;
   this.entanglements = createLaneMap(NoLanes);
+  this.identifierPrefix = identifierPrefix;
 
   {
     this.effectDuration = 0;
@@ -23588,9 +23501,10 @@ function createFiberRoot(
   hydrate,
   hydrationCallbacks,
   isStrictMode,
-  concurrentUpdatesByDefaultOverride
+  concurrentUpdatesByDefaultOverride,
+  identifierPrefix
 ) {
-  var root = new FiberRootNode(containerInfo, tag, hydrate);
+  var root = new FiberRootNode(containerInfo, tag, hydrate, identifierPrefix);
   // stateNode is any.
 
   var uninitializedFiber = createHostRootFiber(
@@ -23611,6 +23525,8 @@ function createFiberRoot(
   initializeUpdateQueue(uninitializedFiber);
   return root;
 }
+
+var ReactVersion = "18.0.0-rc.0-51947a14b-20220113";
 
 function createPortal(
   children,
@@ -23737,7 +23653,8 @@ function createContainer(
   hydrate,
   hydrationCallbacks,
   isStrictMode,
-  concurrentUpdatesByDefaultOverride
+  concurrentUpdatesByDefaultOverride,
+  identifierPrefix
 ) {
   return createFiberRoot(
     containerInfo,
@@ -23745,7 +23662,8 @@ function createContainer(
     hydrate,
     hydrationCallbacks,
     isStrictMode,
-    concurrentUpdatesByDefaultOverride
+    concurrentUpdatesByDefaultOverride,
+    identifierPrefix
   );
 }
 function updateContainer(element, container, parentComponent, callback) {
@@ -24539,7 +24457,8 @@ function render(element, containerTag, callback, concurrentRoot) {
       false,
       null,
       false,
-      null
+      null,
+      ""
     );
     roots.set(containerTag, root);
   }

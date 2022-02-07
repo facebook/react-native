@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -100,7 +100,7 @@ class AnimatedValue extends AnimatedWithChildren {
   __detach() {
     if (this.__isNative) {
       NativeAnimatedAPI.getValue(this.__getNativeTag(), value => {
-        this._value = value;
+        this._value = value - this._offset;
       });
     }
     this.stopAnimation();
@@ -186,7 +186,13 @@ class AnimatedValue extends AnimatedWithChildren {
     this.stopTracking();
     this._animation && this._animation.stop();
     this._animation = null;
-    callback && callback(this.__getValue());
+    if (callback) {
+      if (this.__isNative) {
+        NativeAnimatedAPI.getValue(this.__getNativeTag(), callback);
+      } else {
+        callback(this.__getValue());
+      }
+    }
   }
 
   /**
@@ -205,7 +211,7 @@ class AnimatedValue extends AnimatedWithChildren {
     }
   }
 
-  _onAnimatedValueUpdateReceived(value: number): void {
+  __onAnimatedValueUpdateReceived(value: number): void {
     this._updateValue(value, false /*flush*/);
   }
 
@@ -264,6 +270,8 @@ class AnimatedValue extends AnimatedWithChildren {
   track(tracking: AnimatedTracking): void {
     this.stopTracking();
     this._tracking = tracking;
+    // Make sure that the tracking animation starts executing
+    this._tracking && this._tracking.update();
   }
 
   _updateValue(value: number, flush: boolean): void {

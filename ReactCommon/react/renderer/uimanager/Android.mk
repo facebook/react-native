@@ -1,4 +1,4 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -32,6 +32,7 @@ LOCAL_SHARED_LIBRARIES := \
   libreact_render_debug \
   libreact_render_graphics \
   libreact_render_leakchecker \
+  libreact_render_runtimescheduler \
   libreact_render_mounting \
   libreact_config \
   librrc_root \
@@ -49,6 +50,7 @@ $(call import-module,react/renderer/components/view)
 $(call import-module,react/renderer/componentregistry)
 $(call import-module,react/renderer/core)
 $(call import-module,react/renderer/leakchecker)
+$(call import-module,react/renderer/runtimescheduler)
 $(call import-module,react/renderer/debug)
 $(call import-module,react/renderer/graphics)
 $(call import-module,react/renderer/mounting)

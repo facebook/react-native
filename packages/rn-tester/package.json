@@ -19,7 +19,6 @@
   },
   "devDependencies": {
     "connect": "^3.6.5",
-    "detox": "16.7.2",
     "ws": "^6.1.4"
   },
   "codegenConfig": {
@@ -30,6 +29,13 @@
         "ios": {},
         "android": {},
         "jsSrcsDir": "NativeModuleExample"
+      },
+      {
+        "name": "MyNativeViewSpec",
+        "type": "components",
+        "ios": {},
+        "android": {},
+        "jsSrcsDir": "NativeComponentExample/js"
       }
     ]
   }

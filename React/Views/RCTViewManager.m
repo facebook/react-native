@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -163,8 +163,9 @@ RCT_CUSTOM_VIEW_PROPERTY(shouldRasterizeIOS, BOOL, RCTView)
 RCT_CUSTOM_VIEW_PROPERTY(transform, CATransform3D, RCTView)
 {
   view.layer.transform = json ? [RCTConvert CATransform3D:json] : defaultView.layer.transform;
-  // Enable edge antialiasing in perspective transforms
-  view.layer.allowsEdgeAntialiasing = !(view.layer.transform.m34 == 0.0f);
+  // Enable edge antialiasing in rotation, skew, or perspective transforms
+  view.layer.allowsEdgeAntialiasing =
+      view.layer.transform.m12 != 0.0f || view.layer.transform.m21 != 0.0f || view.layer.transform.m34 != 0.0f;
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(accessibilityRole, UIAccessibilityTraits, RCTView)

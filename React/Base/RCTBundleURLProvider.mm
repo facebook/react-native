@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -199,26 +199,23 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
                                               runModule:NO];
 }
 
-- (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
-                   fallbackResource:(NSString *)resourceName
-                  fallbackExtension:(NSString *)extension
+- (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot fallbackExtension:(NSString *)extension
 {
   return [self jsBundleURLForBundleRoot:bundleRoot
                     fallbackURLProvider:^NSURL * {
-                      return [self jsBundleURLForFallbackResource:resourceName fallbackExtension:extension];
+                      return [self jsBundleURLForFallbackExtension:extension];
                     }];
 }
 
-- (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot fallbackResource:(NSString *)resourceName
+- (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
 {
-  return [self jsBundleURLForBundleRoot:bundleRoot fallbackResource:resourceName fallbackExtension:nil];
+  return [self jsBundleURLForBundleRoot:bundleRoot fallbackExtension:nil];
 }
 
-- (NSURL *)jsBundleURLForFallbackResource:(NSString *)resourceName fallbackExtension:(NSString *)extension
+- (NSURL *)jsBundleURLForFallbackExtension:(NSString *)extension
 {
-  resourceName = resourceName ?: @"main";
   extension = extension ?: @"jsbundle";
-  return [[NSBundle mainBundle] URLForResource:resourceName withExtension:extension];
+  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:extension];
 }
 
 - (NSURL *)resourceURLForResourceRoot:(NSString *)root

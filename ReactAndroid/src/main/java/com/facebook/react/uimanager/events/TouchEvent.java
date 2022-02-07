@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,7 +13,6 @@ import androidx.core.util.Pools;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.SoftAssertions;
-import com.facebook.react.config.ReactFeatureFlags;
 
 /**
  * An event representing the start, end or movement of a touch. Corresponds to a single {@link
@@ -183,29 +182,14 @@ public class TouchEvent extends Event<TouchEvent> {
   @Override
   public void dispatch(RCTEventEmitter rctEventEmitter) {
     if (verifyMotionEvent()) {
-      TouchesHelper.sendTouchEvent(rctEventEmitter, this);
+      TouchesHelper.sendTouchesLegacy(rctEventEmitter, this);
     }
   }
 
   @Override
   public void dispatchModern(RCTModernEventEmitter rctEventEmitter) {
-    if (ReactFeatureFlags.useUpdatedTouchPreprocessing) {
-      if (verifyMotionEvent()) {
-        TouchesHelper.sendTouchEventModern(rctEventEmitter, this, /* useDispatchV2 */ false);
-      }
-    } else {
-      dispatch(rctEventEmitter);
-    }
-  }
-
-  @Override
-  public void dispatchModernV2(RCTModernEventEmitter rctEventEmitter) {
-    if (ReactFeatureFlags.useUpdatedTouchPreprocessing) {
-      if (verifyMotionEvent()) {
-        TouchesHelper.sendTouchEventModern(rctEventEmitter, this, /* useDispatchV2 */ true);
-      }
-    } else {
-      dispatch(rctEventEmitter);
+    if (verifyMotionEvent()) {
+      rctEventEmitter.receiveTouches(this);
     }
   }
 

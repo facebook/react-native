@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -37,6 +37,7 @@ import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.yoga.YogaNode;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -220,12 +221,15 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider>
   }
 
   @Override
+  @ReactProp(name = "disabled")
   public void setDisabled(ReactSlider view, boolean value) {}
 
   @Override
+  @ReactProp(name = "maximumTrackImage", customType = "ImageSource")
   public void setMaximumTrackImage(ReactSlider view, @Nullable ReadableMap value) {}
 
   @Override
+  @ReactProp(name = "minimumTrackImage", customType = "ImageSource")
   public void setMinimumTrackImage(ReactSlider view, @Nullable ReadableMap value) {}
 
   @Override
@@ -234,9 +238,11 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider>
   }
 
   @Override
+  @ReactProp(name = "thumbImage", customType = "ImageSource")
   public void setThumbImage(ReactSlider view, @Nullable ReadableMap value) {}
 
   @Override
+  @ReactProp(name = "trackImage", customType = "ImageSource")
   public void setTrackImage(ReactSlider view, @Nullable ReadableMap value) {}
 
   @Override
@@ -246,9 +252,34 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider>
 
   @Override
   public Map getExportedCustomDirectEventTypeConstants() {
-    return MapBuilder.of(
-        ReactSlidingCompleteEvent.EVENT_NAME,
-        MapBuilder.of("registrationName", "onSlidingComplete"));
+    @Nullable
+    Map<String, Object> baseEventTypeConstants = super.getExportedCustomDirectEventTypeConstants();
+    Map<String, Object> eventTypeConstants =
+        baseEventTypeConstants == null ? new HashMap<String, Object>() : baseEventTypeConstants;
+    eventTypeConstants.putAll(
+        MapBuilder.of(
+            ReactSlidingCompleteEvent.EVENT_NAME,
+            MapBuilder.of("registrationName", "onSlidingComplete")));
+    return eventTypeConstants;
+  }
+
+  @Nullable
+  @Override
+  public Map<String, Object> getExportedCustomBubblingEventTypeConstants() {
+    @Nullable
+    Map<String, Object> baseEventTypeConstants =
+        super.getExportedCustomBubblingEventTypeConstants();
+    Map<String, Object> eventTypeConstants =
+        baseEventTypeConstants == null ? new HashMap<String, Object>() : baseEventTypeConstants;
+    eventTypeConstants.putAll(
+        MapBuilder.<String, Object>builder()
+            .put(
+                "topValueChange",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onValueChange", "captured", "onValueChangeCapture")))
+            .build());
+    return eventTypeConstants;
   }
 
   @Override

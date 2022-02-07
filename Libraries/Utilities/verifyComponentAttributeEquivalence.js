@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,7 +8,7 @@
  * @flow
  */
 
-import ReactNativeViewViewConfig from '../Components/View/ReactNativeViewViewConfig';
+import PlatformBaseViewConfig from '../NativeComponent/PlatformBaseViewConfig';
 import {type ViewConfig} from '../Renderer/shims/ReactNativeTypes';
 
 const IGNORED_KEYS = ['transform', 'hitSlop'];
@@ -60,7 +60,9 @@ export default function verifyComponentAttributeEquivalence(
   }
 }
 
-export function lefthandObjectDiff(leftObj: Object, rightObj: Object): Object {
+// Return the different key-value pairs of the right object, by iterating through the keys in the left object
+// Note it won't return a difference where a key is missing in the left but exists the right.
+function lefthandObjectDiff(leftObj: Object, rightObj: Object): Object {
   const differentKeys = {};
 
   function compare(leftItem: any, rightItem: any, key: string) {
@@ -107,7 +109,7 @@ export function getConfigWithoutViewProps(
   }
 
   return Object.keys(viewConfig[propName])
-    .filter(prop => !ReactNativeViewViewConfig[propName][prop])
+    .filter(prop => !PlatformBaseViewConfig[propName][prop])
     .reduce((obj, prop) => {
       obj[prop] = viewConfig[propName][prop];
       return obj;

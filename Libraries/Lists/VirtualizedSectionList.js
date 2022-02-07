@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -137,8 +137,7 @@ class VirtualizedSectionList<
       return;
     }
     if (params.itemIndex > 0 && this.props.stickySectionHeadersEnabled) {
-      // $FlowFixMe[prop-missing] Cannot access private property
-      const frame = this._listRef._getFrameMetricsApprox(
+      const frame = this._listRef.__getFrameMetricsApprox(
         index - params.itemIndex,
       );
       viewOffset += frame.length;

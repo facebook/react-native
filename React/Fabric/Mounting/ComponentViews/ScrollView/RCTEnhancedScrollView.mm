@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -246,7 +246,7 @@
     NSInteger snapIndex = velocityAlongAxis > 0.0 ? ceil(fractionalIndex)
         : velocityAlongAxis < 0.0                 ? floor(fractionalIndex)
                                                   : round(fractionalIndex);
-    CGFloat newTargetContentOffset = (snapIndex * snapToIntervalF) - alignmentOffset;
+    CGFloat newTargetContentOffset = ((CGFloat)snapIndex * snapToIntervalF) - alignmentOffset;
 
     // Set new targetContentOffset
     if (isHorizontal) {

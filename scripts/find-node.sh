@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -19,12 +19,16 @@ fi
 # Define NVM_DIR and source the nvm.sh setup script
 [ -z "$NVM_DIR" ] && export NVM_DIR="$HOME/.nvm"
 
+# Source nvm with '--no-use' and then `nvm use` to respect .nvmrc
+# See: https://github.com/nvm-sh/nvm/issues/2053
 if [[ -s "$HOME/.nvm/nvm.sh" ]]; then
   # shellcheck source=/dev/null
-  . "$HOME/.nvm/nvm.sh"
+  . "$HOME/.nvm/nvm.sh" --no-use
+  nvm use 2> /dev/null || nvm use default
 elif [[ -x "$(command -v brew)" && -s "$(brew --prefix nvm)/nvm.sh" ]]; then
   # shellcheck source=/dev/null
-  . "$(brew --prefix nvm)/nvm.sh"
+  . "$(brew --prefix nvm)/nvm.sh" --no-use
+  nvm use 2> /dev/null || nvm use default
 fi
 
 # Set up the nodenv node version manager if present
@@ -55,4 +59,11 @@ fi
 if [[ -x "$HOME/.volta/bin/node" ]]; then
   export VOLTA_HOME="$HOME/.volta"
   export PATH="$VOLTA_HOME/bin:$PATH"
+fi
+
+# Set up the fnm node version manager if present
+if [[ -x "$HOME/.fnm/fnm" ]]; then
+  eval "$("$HOME/.fnm/fnm" env)"
+elif [[ -x "$(command -v brew)" && -x "$(brew --prefix fnm)/bin/fnm" ]]; then
+  eval "$("$(brew --prefix fnm)/bin/fnm" env)"
 fi

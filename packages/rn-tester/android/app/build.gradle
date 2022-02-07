@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -143,11 +143,11 @@ def reactNativeArchitectures() {
 
 android {
     compileSdkVersion 31
-    if (project.hasProperty("ANDROID_NDK_VERSION")) {
-        ndkVersion project.property("ANDROID_NDK_VERSION")
-    }
-    if (project.hasProperty("ANDROID_NDK_PATH")) {
-        ndkPath project.property("ANDROID_NDK_PATH")
+
+    // Used to override the NDK path & version on internal CI
+    if (System.getenv("ANDROID_NDK") != null && System.getenv("LOCAL_ANDROID_NDK_VERSION") != null) {
+        ndkPath System.getenv("ANDROID_NDK")
+        ndkVersion System.getenv("LOCAL_ANDROID_NDK_VERSION")
     }
 
     flavorDimensions "vm"
@@ -197,8 +197,6 @@ android {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
-            // Detox-specific additions to pro-guard
-            proguardFile "${rootProject.projectDir}/../node_modules/detox/android/detox/proguard-rules-app.pro"
         }
     }
     sourceSets.main {
@@ -250,8 +248,6 @@ dependencies {
         jscImplementation 'org.webkit:android-jsc:+'
     }
 
-    // Use detox test library
-    androidTestImplementation('com.wix:detox:+') { transitive = true }
     androidTestImplementation 'junit:junit:4.12'
 }
 

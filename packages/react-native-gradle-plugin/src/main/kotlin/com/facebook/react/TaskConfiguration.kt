@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -231,7 +231,6 @@ private fun Project.cleanupVMFiles(
 
       if (cleanup) {
         // Reduce size by deleting the debugger/inspector
-        it.include("**/libhermes-inspector.so")
         it.include("**/libhermes-executor-debug.so")
       } else {
         // Release libs take precedence and must be removed
@@ -241,10 +240,6 @@ private fun Project.cleanupVMFiles(
     } else {
       // For JSC, delete all the libhermes* files
       it.include("**/libhermes*.so")
-      // Delete the libjscexecutor from release build
-      if (cleanup) {
-        it.include("**/libjscexecutor.so")
-      }
     }
   }
       .visit { visit ->

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -105,6 +105,8 @@ import java.util.Map;
         } else {
           mPropMap.putDouble(entry.getKey(), ((ValueAnimatedNode) node).getValue());
         }
+      } else if (node instanceof ColorAnimatedNode) {
+        mPropMap.putInt(entry.getKey(), ((ColorAnimatedNode) node).getColor());
       } else {
         throw new IllegalArgumentException(
             "Unsupported type of node used in property node " + node.getClass());

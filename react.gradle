@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -363,7 +363,6 @@ afterEvaluate {
 
                     if (cleanup) {
                         // Reduce size by deleting the debugger/inspector
-                        include '**/libhermes-inspector.so'
                         include '**/libhermes-executor-debug.so'
                     } else {
                         // Release libs take precedence and must be removed
@@ -373,10 +372,6 @@ afterEvaluate {
                 } else {
                     // For JSC, delete all the libhermes* files
                     include "**/libhermes*.so"
-                    // Delete the libjscexecutor from release build
-                    if (cleanup) {
-                        include "**/libjscexecutor.so"
-                    }
                 }
             }.visit { details ->
                 def targetVariant1 = ".*/transforms/[^/]*/${variant.name}/.*"

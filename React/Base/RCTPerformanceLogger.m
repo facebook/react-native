@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,54 +9,24 @@
 
 #import "RCTLog.h"
 #import "RCTPerformanceLogger.h"
+#import "RCTPerformanceLoggerLabels.h"
 #import "RCTProfile.h"
 #import "RCTRootView.h"
 
 @interface RCTPerformanceLogger () {
   int64_t _data[RCTPLSize][2];
-  NSUInteger _cookies[RCTPLSize];
+  NSInteger _cookies[RCTPLSize];
 }
-
-@property (nonatomic, copy) NSArray<NSString *> *labelsForTags;
 
 @end
 
 @implementation RCTPerformanceLogger
 
-- (instancetype)init
-{
-  if (self = [super init]) {
-    // Keep this in sync with RCTPLTag
-    _labelsForTags = @[
-      @"ScriptDownload",
-      @"ScriptExecution",
-      @"RAMBundleLoad",
-      @"RAMStartupCodeSize",
-      @"RAMStartupNativeRequires",
-      @"RAMStartupNativeRequiresCount",
-      @"RAMNativeRequires",
-      @"RAMNativeRequiresCount",
-      @"NativeModuleInit",
-      @"NativeModuleMainThread",
-      @"NativeModulePrepareConfig",
-      @"NativeModuleMainThreadUsesCount",
-      @"NativeModuleSetup",
-      @"TurboModuleSetup",
-      @"JSCWrapperOpenLibrary",
-      @"BridgeStartup",
-      @"RootViewTTI",
-      @"BundleSize",
-      @"ReactInstanceInit",
-    ];
-  }
-  return self;
-}
-
 - (void)markStartForTag:(RCTPLTag)tag
 {
 #if RCT_PROFILE
   if (RCTProfileIsProfiling()) {
-    NSString *label = _labelsForTags[tag];
+    NSString *label = RCTPLLabelForTag(tag);
     _cookies[tag] = RCTProfileBeginAsyncEvent(RCTProfileTagAlways, label, nil);
   }
 #endif
@@ -68,7 +38,7 @@
 {
 #if RCT_PROFILE
   if (RCTProfileIsProfiling()) {
-    NSString *label = _labelsForTags[tag];
+    NSString *label = RCTPLLabelForTag(tag);
     RCTProfileEndAsyncEvent(RCTProfileTagAlways, @"native", _cookies[tag], label, @"RCTPerformanceLogger");
   }
 #endif
