@@ -8,7 +8,6 @@
 #include <memory>
 
 #include <gtest/gtest.h>
-#pragma pack(pop, 1)
 #include <react/renderer/mapbuffer/MapBuffer.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 

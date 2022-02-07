@@ -14,7 +14,7 @@ namespace facebook {
 namespace react {
 
 constexpr uint32_t INT_SIZE = sizeof(uint32_t);
-constexpr double DOUBLE_SIZE = sizeof(double);
+constexpr uint32_t DOUBLE_SIZE = sizeof(double);
 constexpr uint32_t MAX_BUCKET_VALUE_SIZE = sizeof(uint64_t);
 
 MapBuffer MapBufferBuilder::EMPTY() {
@@ -66,7 +66,7 @@ void MapBufferBuilder::putDouble(MapBuffer::Key key, double value) {
       key,
       MapBuffer::DataType::Double,
       reinterpret_cast<uint8_t const *>(&value),
-      static_cast<uint32_t>(DOUBLE_SIZE));
+      DOUBLE_SIZE);
 }
 
 void MapBufferBuilder::putInt(MapBuffer::Key key, int32_t value) {
@@ -126,7 +126,7 @@ MapBuffer MapBufferBuilder::build() {
   auto headerSize = sizeof(MapBuffer::Header);
   auto bufferSize = headerSize + bucketSize + dynamicData_.size();
 
-  header_.bufferSize = static_cast<uint32_t>(bufferSize);
+  header_.bufferSize = bufferSize;
 
   if (needsSort_) {
     std::sort(buckets_.begin(), buckets_.end(), compareBuckets);
