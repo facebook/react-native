@@ -42,12 +42,15 @@ import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 /** Dialog for displaying JS errors in an eye-catching form (red box). */
-/* package */ class RedBoxDialog extends Dialog implements AdapterView.OnItemClickListener {
+/* package */ class RedBoxDialog implements AdapterView.OnItemClickListener {
 
   private final DevSupportManager mDevSupportManager;
   private final DoubleTapReloadRecognizer mDoubleTapReloadRecognizer;
   private final @Nullable RedBoxHandler mRedBoxHandler;
+  private final View mContentView;
+  private final Context mContext;
 
+  private @Nullable Dialog mDialog;
   private ListView mStackView;
   private Button mReloadJsButton;
   private Button mDismissButton;
@@ -238,20 +241,17 @@ import org.json.JSONObject;
 
   protected RedBoxDialog(
       Context context, DevSupportManager devSupportManager, @Nullable RedBoxHandler redBoxHandler) {
-    super(context, R.style.Theme_Catalyst_RedBox);
-
-    requestWindowFeature(Window.FEATURE_NO_TITLE);
-
-    setContentView(R.layout.redbox_view);
+    mContext = context;
+    mContentView = (View) LayoutInflater.from(context).inflate(R.layout.redbox_view, null);
 
     mDevSupportManager = devSupportManager;
     mDoubleTapReloadRecognizer = new DoubleTapReloadRecognizer();
     mRedBoxHandler = redBoxHandler;
 
-    mStackView = (ListView) findViewById(R.id.rn_redbox_stack);
+    mStackView = (ListView) mContentView.findViewById(R.id.rn_redbox_stack);
     mStackView.setOnItemClickListener(this);
 
-    mReloadJsButton = (Button) findViewById(R.id.rn_redbox_reload_button);
+    mReloadJsButton = (Button) mContentView.findViewById(R.id.rn_redbox_reload_button);
     mReloadJsButton.setOnClickListener(
         new View.OnClickListener() {
           @Override
@@ -259,7 +259,7 @@ import org.json.JSONObject;
             mDevSupportManager.handleReloadJS();
           }
         });
-    mDismissButton = (Button) findViewById(R.id.rn_redbox_dismiss_button);
+    mDismissButton = (Button) mContentView.findViewById(R.id.rn_redbox_dismiss_button);
     mDismissButton.setOnClickListener(
         new View.OnClickListener() {
           @Override
@@ -269,12 +269,12 @@ import org.json.JSONObject;
         });
 
     if (mRedBoxHandler != null && mRedBoxHandler.isReportEnabled()) {
-      mLoadingIndicator = (ProgressBar) findViewById(R.id.rn_redbox_loading_indicator);
-      mLineSeparator = (View) findViewById(R.id.rn_redbox_line_separator);
-      mReportTextView = (TextView) findViewById(R.id.rn_redbox_report_label);
+      mLoadingIndicator = (ProgressBar) mContentView.findViewById(R.id.rn_redbox_loading_indicator);
+      mLineSeparator = (View) mContentView.findViewById(R.id.rn_redbox_line_separator);
+      mReportTextView = (TextView) mContentView.findViewById(R.id.rn_redbox_report_label);
       mReportTextView.setMovementMethod(LinkMovementMethod.getInstance());
       mReportTextView.setHighlightColor(Color.TRANSPARENT);
-      mReportButton = (Button) findViewById(R.id.rn_redbox_report_button);
+      mReportButton = (Button) mContentView.findViewById(R.id.rn_redbox_report_button);
       mReportButton.setOnClickListener(mReportButtonOnClickListener);
     }
   }
@@ -303,15 +303,39 @@ import org.json.JSONObject;
             AsyncTask.THREAD_POOL_EXECUTOR, (StackFrame) mStackView.getAdapter().getItem(position));
   }
 
-  @Override
   public boolean onKeyUp(int keyCode, KeyEvent event) {
     if (keyCode == KeyEvent.KEYCODE_MENU) {
       mDevSupportManager.showDevOptionsDialog();
       return true;
     }
-    if (mDoubleTapReloadRecognizer.didDoubleTapR(keyCode, getCurrentFocus())) {
+    if (mDoubleTapReloadRecognizer.didDoubleTapR(keyCode, mDialog.getCurrentFocus())) {
       mDevSupportManager.handleReloadJS();
     }
-    return super.onKeyUp(keyCode, event);
+    return mDialog.onKeyUp(keyCode, event);
+  }
+
+  public Context getContext() {
+    return mContext;
+  }
+
+  public View getContentView() {
+    return mContentView;
+  }
+
+  public boolean isShowing() {
+    return mDialog.isShowing();
+  }
+
+  public void show() {
+    if (mDialog == null) {
+      mDialog = new Dialog(mContext, R.style.Theme_Catalyst_RedBox);
+      mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+    }
+    mDialog.setContentView(mContentView);
+    mDialog.show();
+  }
+
+  public void dismiss() {
+    mDialog.dismiss();
   }
 }
