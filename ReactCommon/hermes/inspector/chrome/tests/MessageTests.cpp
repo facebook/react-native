@@ -1102,6 +1102,153 @@ TEST(MessageTests, testStepOverRequest) {
   EXPECT_EQ(resolvedReq->method, deserializedReq.method);
 }
 
+TEST(MessageTests, testEvaluateOnCallFrameResponseMinimal) {
+  std::string message = R"(
+    {
+      "result":
+        {
+          "result":{
+            "type": "string"
+          }
+        },
+      "id":2
+    }
+  )";
+
+  // Serialize and Deserialize are inverse functions
+  dynamic messageJSON = folly::parseJson(message);
+  debugger::EvaluateOnCallFrameResponse deserializedReq(messageJSON);
+  EXPECT_EQ(deserializedReq.toDynamic(), messageJSON);
+
+  EXPECT_FALSE(deserializedReq.result.subtype.hasValue());
+  EXPECT_FALSE(deserializedReq.result.value.hasValue());
+  EXPECT_FALSE(deserializedReq.result.unserializableValue.hasValue());
+  EXPECT_FALSE(deserializedReq.result.description.hasValue());
+  EXPECT_FALSE(deserializedReq.result.objectId.hasValue());
+
+  // Specifics
+  EXPECT_EQ(deserializedReq.id, 2);
+  EXPECT_EQ(deserializedReq.result.type, "string");
+}
+
+TEST(MessageTests, testEvaluateOnCallFrameResponseFull) {
+  std::string message = R"(
+    {
+      "result":
+        {
+          "result":{
+            "type": "string",
+            "subtype": "SuperString",
+            "value": {"foobarkey": "foobarval"},
+            "unserializableValue": "unserializableValueVal",
+            "description": "A Wonderful desc",
+            "objectId": "AnObjectID"
+          }
+        },
+      "id":2
+    }
+  )";
+
+  // Serialize and Deserialize are inverse functions
+  dynamic messageJSON = folly::parseJson(message);
+  debugger::EvaluateOnCallFrameResponse deserializedReq(messageJSON);
+  EXPECT_EQ(deserializedReq.toDynamic(), messageJSON);
+
+  EXPECT_TRUE(deserializedReq.result.subtype.hasValue());
+  EXPECT_TRUE(deserializedReq.result.value.hasValue());
+  EXPECT_TRUE(deserializedReq.result.unserializableValue.hasValue());
+  EXPECT_TRUE(deserializedReq.result.description.hasValue());
+  EXPECT_TRUE(deserializedReq.result.objectId.hasValue());
+
+  EXPECT_EQ(deserializedReq.result.subtype.value(), "SuperString");
+  EXPECT_EQ(
+      deserializedReq.result.value.value(),
+      folly::parseJson(R"({"foobarkey": "foobarval"})"));
+  EXPECT_EQ(
+      deserializedReq.result.unserializableValue.value(),
+      "unserializableValueVal");
+  EXPECT_EQ(deserializedReq.result.description.value(), "A Wonderful desc");
+  EXPECT_EQ(deserializedReq.result.objectId.value(), "AnObjectID");
+
+  // Specifics
+  EXPECT_EQ(deserializedReq.id, 2);
+  EXPECT_EQ(deserializedReq.result.type, "string");
+}
+
+TEST(MessageTests, testSetBreakpointByUrlResponse) {
+  std::string message = R"({
+    "id": 1,
+    "result":{
+      "breakpointId": "myBreakpointId",
+      "locations": [
+        {
+          "lineNumber": 2,
+          "columnNumber": 3,
+          "scriptId": "myScriptId"
+        }
+      ]
+    }
+  })";
+
+  // Serialize and Deserialize are inverse functions
+  dynamic messageJSON = folly::parseJson(message);
+  debugger::SetBreakpointByUrlResponse deserializedReq(messageJSON);
+  EXPECT_EQ(deserializedReq.toDynamic(), messageJSON);
+
+  // Specifics
+  EXPECT_EQ(deserializedReq.id, 1);
+  EXPECT_EQ(deserializedReq.breakpointId, "myBreakpointId");
+  EXPECT_EQ(deserializedReq.locations.size(), 1);
+  EXPECT_EQ(deserializedReq.locations[0].lineNumber, 2);
+  EXPECT_EQ(deserializedReq.locations[0].columnNumber, 3);
+  EXPECT_EQ(deserializedReq.locations[0].scriptId, "myScriptId");
+}
+
+TEST(MessageTests, testSetBreakpointResponse) {
+  std::string message = R"({
+    "id": 1,
+    "result":{
+      "breakpointId": "myBreakpointId",
+      "actualLocation":
+        {
+          "lineNumber": 2,
+          "columnNumber": 3,
+          "scriptId": "myScriptId"
+        }
+    }
+  })";
+
+  // Serialize and Deserialize are inverse functions
+  dynamic messageJSON = folly::parseJson(message);
+  debugger::SetBreakpointResponse deserializedReq(messageJSON);
+  EXPECT_EQ(deserializedReq.toDynamic(), messageJSON);
+
+  // Specifics
+  EXPECT_EQ(deserializedReq.breakpointId, "myBreakpointId");
+  EXPECT_EQ(deserializedReq.actualLocation.lineNumber, 2);
+  EXPECT_EQ(deserializedReq.actualLocation.columnNumber, 3);
+  EXPECT_EQ(deserializedReq.actualLocation.scriptId, "myScriptId");
+  EXPECT_EQ(deserializedReq.id, 1);
+}
+
+TEST(MessageTests, testSetInstrumentationBreakpointResponse) {
+  std::string message = R"({
+    "id": 1,
+    "result":{
+      "breakpointId": "myBreakpointId"
+    }
+  })";
+
+  // Serialize and Deserialize are inverse functions
+  dynamic messageJSON = folly::parseJson(message);
+  debugger::SetInstrumentationBreakpointResponse deserializedReq(messageJSON);
+  EXPECT_EQ(deserializedReq.toDynamic(), messageJSON);
+
+  // Specifics
+  EXPECT_EQ(deserializedReq.breakpointId, "myBreakpointId");
+  EXPECT_EQ(deserializedReq.id, 1);
+}
+
 } // namespace message
 } // namespace chrome
 } // namespace inspector
