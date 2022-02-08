@@ -126,7 +126,7 @@ MapBuffer MapBufferBuilder::build() {
   auto headerSize = sizeof(MapBuffer::Header);
   auto bufferSize = headerSize + bucketSize + dynamicData_.size();
 
-  header_.bufferSize = bufferSize;
+  header_.bufferSize = static_cast<uint32_t>(bufferSize);
 
   if (needsSort_) {
     std::sort(buckets_.begin(), buckets_.end(), compareBuckets);
