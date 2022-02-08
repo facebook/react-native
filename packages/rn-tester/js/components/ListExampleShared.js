@@ -53,8 +53,8 @@ function genNewerItems(count: number, start: number = 0): Array<Item> {
 
 function genOlderItems(count: number, start: number = 0): Array<Item> {
   const dataBlob = [];
-  for (let i = start; i < start - count; i--) {
-    dataBlob.push(genItemData(i));
+  for (let i = count; i > 0; i--) {
+    dataBlob.push(genItemData(start - i));
   }
   return dataBlob;
 }
