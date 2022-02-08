@@ -9,8 +9,6 @@
 
 #import "RCTDynamicColor.h"
 
-#import "RCTAppearance.h"
-
 #define RCT_FORWARD_PROPERTY( PROP, TYPE ) \
 - (TYPE)PROP { return [[self effectiveColor] PROP]; }
 
@@ -61,7 +59,7 @@ static NSString *const RCTDarkAquaColor = @"darkAquaColor";
 - (NSColor *)effectiveColor
 {
   NSColor *effectiveColor = _aquaColor;
-  NSAppearance *appearance = [RCTAppearance currentAppearance] ?: [NSApp effectiveAppearance];
+  NSAppearance *appearance = [NSAppearance currentAppearance] ?: [NSApp effectiveAppearance];
 
   NSAppearanceName appearanceName = [appearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
 

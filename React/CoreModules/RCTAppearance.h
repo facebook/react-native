@@ -19,7 +19,4 @@ RCT_EXTERN NSString *RCTColorSchemePreference(NSAppearance *appearance);
 #endif // ]TODO(macOS GH#774)
 
 @interface RCTAppearance : RCTEventEmitter <RCTBridgeModule>
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
-+ (NSAppearance *)currentAppearance;
-#endif // ]TODO(macOS GH#774)
 @end
