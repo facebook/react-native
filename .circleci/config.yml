@@ -571,18 +571,17 @@ jobs:
       - run_yarn
 
       - run:
-          name: Setup the Android Template
-          command: |
-            cd template
-            # We replace the "react-native" dependency version with file:.. so we use it from source.
-            sed -i 's/\"react-native\"\:.*/\"react-native\"\: \"file\:\.\.\"/g' package.json
-            npm install
-            # react-native-community/cli is needed as the Android template is referencing a .gradle file inside it.
-            npm i @react-native-community/cli
-
-      - run:
           name: Bundle the latest version of ReactAndroid
           command: ./gradlew :ReactAndroid:publishReleasePublicationToNpmRepository
+      
+      - run:
+          name: Setup the Android Template
+          command: |
+            # We pack the NPM package and install it with npm add.
+            npm pack
+            cd template
+            npm add ../react-native-1000.0.0.tgz
+            npm install
 
       - run:
           name: Build the template application
