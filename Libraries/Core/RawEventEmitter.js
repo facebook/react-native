@@ -11,7 +11,7 @@
 import EventEmitter from '../vendor/emitter/EventEmitter';
 import type {IEventEmitter} from '../vendor/emitter/EventEmitter';
 
-export type RawEventTelemetryEvent = $ReadOnly<{|
+export type RawEventEmitterEvent = $ReadOnly<{|
   eventName: string,
   // We expect, but do not/cannot require, that nativeEvent is an object
   // with the properties: key, elementType (string), type (string), tag (numeric),
@@ -20,10 +20,19 @@ export type RawEventTelemetryEvent = $ReadOnly<{|
 |}>;
 
 type RawEventDefinitions = {
-  [eventChannel: string]: [RawEventTelemetryEvent],
+  [eventChannel: string]: [RawEventEmitterEvent],
 };
 
-const RawEventTelemetryEventEmitter: IEventEmitter<RawEventDefinitions> =
+const RawEventEmitter: IEventEmitter<RawEventDefinitions> =
   new EventEmitter<RawEventDefinitions>();
 
-export default RawEventTelemetryEventEmitter;
+// See the React renderer / react repo for how this is used.
+// Raw events are emitted here when they are received in JS
+// and before any event Plugins process them or before components
+// have a chance to respond to them. This allows you to implement
+// app-specific perf monitoring, which is unimplemented by default,
+// making this entire RawEventEmitter do nothing by default until
+// *you* add listeners for your own app.
+// Besides perf monitoring and maybe debugging, this RawEventEmitter
+// should not be used.
+export default RawEventEmitter;
