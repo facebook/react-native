@@ -266,16 +266,18 @@ RCT_EXPORT_METHOD(hide)
 
 - (void)showOfflineMessage
 {
-  RCTUIColor *color = [RCTUIColor whiteColor]; // TODO(macOS GH#774)
-  RCTUIColor *backgroundColor = [RCTUIColor blackColor]; // TODO(macOS GH#774)
+  dispatch_async(dispatch_get_main_queue(), ^{
+    RCTUIColor *color = [RCTUIColor whiteColor]; // TODO(macOS GH#774)
+    RCTUIColor *backgroundColor = [RCTUIColor blackColor]; // TODO(macOS GH#774)
 
-  if ([self isDarkModeEnabled]) {
-    color = [RCTUIColor blackColor]; // TODO(macOS GH#774)
-    backgroundColor = [RCTUIColor whiteColor]; // TODO(macOS GH#774)
-  }
+    if ([self isDarkModeEnabled]) {
+      color = [RCTUIColor blackColor]; // TODO(macOS GH#774)
+      backgroundColor = [RCTUIColor whiteColor]; // TODO(macOS GH#774)
+    }
 
-  NSString *message = [NSString stringWithFormat:@"Connect to %@ to develop JavaScript.", RCT_PACKAGER_NAME];
-  [self showMessage:message color:color backgroundColor:backgroundColor];
+    NSString *message = [NSString stringWithFormat:@"Connect to %@ to develop JavaScript.", RCT_PACKAGER_NAME];
+    [self showMessage:message color:color backgroundColor:backgroundColor];
+  });
 }
 
 - (BOOL)isDarkModeEnabled
