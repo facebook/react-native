@@ -81,7 +81,7 @@ NSString *RCTColorSchemePreference(NSAppearance *appearance)
     return RCTAppearanceColorSchemeLight;
   }
 
-  appearance = appearance ?: [NSAppearance currentAppearance];
+  appearance = appearance ?: [RCTAppearance currentAppearance];
   NSAppearanceName appearanceName = [appearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
   return appearances[appearanceName] ?: RCTAppearanceColorSchemeLight;
 }
@@ -95,6 +95,21 @@ NSString *RCTColorSchemePreference(NSAppearance *appearance)
 }
 
 RCT_EXPORT_MODULE(Appearance)
+
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
+// We define this wrapper because [NSAppearance currentAppearance] must be called on the main thread
++ (NSAppearance *)currentAppearance {
+  if ([NSThread isMainThread]) {
+    return [NSAppearance currentAppearance];
+  } else {
+    __block NSAppearance *appearance = nil;
+    dispatch_sync(dispatch_get_main_queue(), ^{
+      appearance = [NSAppearance currentAppearance];
+    });
+    return appearance;
+  }
+}
+#endif // ]TODO(macOS GH#774)
 
 + (BOOL)requiresMainQueueSetup
 {
