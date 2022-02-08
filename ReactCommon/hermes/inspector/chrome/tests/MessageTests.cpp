@@ -1249,6 +1249,280 @@ TEST(MessageTests, testSetInstrumentationBreakpointResponse) {
   EXPECT_EQ(deserializedReq.id, 1);
 }
 
+TEST(MessageTests, testBreakpointResolvedNotification) {
+  std::string message = R"(
+    {
+      "method": "Debugger.breakpointResolved",
+      "params":{
+        "breakpointId" : "42",
+        "location":
+        {
+          "lineNumber": 2,
+          "columnNumber": 3,
+          "scriptId": "myScriptId"
+        }
+      }
+    }
+  )";
+
+  // Serialize and Deserialize are inverse functions
+  dynamic messageJSON = folly::parseJson(message);
+  debugger::BreakpointResolvedNotification deserializedReq(messageJSON);
+  EXPECT_EQ(deserializedReq.toDynamic(), messageJSON);
+
+  // Specifics
+  EXPECT_EQ(deserializedReq.method, "Debugger.breakpointResolved");
+  EXPECT_EQ(deserializedReq.breakpointId, "42");
+  EXPECT_EQ(deserializedReq.location.lineNumber, 2);
+  EXPECT_EQ(deserializedReq.location.columnNumber, 3);
+  EXPECT_EQ(deserializedReq.location.scriptId, "myScriptId");
+}
+
+TEST(MessageTests, testPauseNotificationMinimal) {
+  std::string message = R"(
+    {
+      "method": "Debugger.paused",
+      "params":{
+        "reason": "Some Valid Reason",
+        "callFrames":[
+          {
+            "callFrameId": "aCallFrameId",
+            "functionName": "aFunctionName",
+            "location":{
+              "lineNumber": 2,
+              "columnNumber": 3,
+              "scriptId": "myScriptId"
+            },
+            "url": "aURL",
+            "scopeChain": [
+              {
+                "type": "aType",
+                "object": {
+                  "type": "aRemoteObjectType"
+                }
+              }
+            ],
+            "this": {
+              "type": "aType"
+            }
+          }
+        ]
+      }
+    }
+  )";
+
+  // Serialize and Deserialize are inverse functions
+  dynamic messageJSON = folly::parseJson(message);
+  debugger::PausedNotification deserializedReq(messageJSON);
+  EXPECT_EQ(deserializedReq.toDynamic(), messageJSON);
+
+  EXPECT_FALSE(deserializedReq.callFrames[0].functionLocation.hasValue());
+  EXPECT_FALSE(deserializedReq.callFrames[0].returnValue.hasValue());
+  EXPECT_FALSE(deserializedReq.asyncStackTrace.hasValue());
+  EXPECT_FALSE(deserializedReq.hitBreakpoints.hasValue());
+  EXPECT_FALSE(deserializedReq.data.hasValue());
+
+  // Specifics
+  EXPECT_EQ(deserializedReq.method, "Debugger.paused");
+  EXPECT_EQ(deserializedReq.reason, "Some Valid Reason");
+  EXPECT_EQ(deserializedReq.callFrames[0].functionName, "aFunctionName");
+  EXPECT_EQ(deserializedReq.callFrames[0].callFrameId, "aCallFrameId");
+  EXPECT_EQ(deserializedReq.callFrames[0].url, "aURL");
+  EXPECT_EQ(deserializedReq.callFrames[0].location.lineNumber, 2);
+  EXPECT_EQ(deserializedReq.callFrames[0].location.columnNumber, 3);
+  EXPECT_EQ(deserializedReq.callFrames[0].location.scriptId, "myScriptId");
+  EXPECT_EQ(deserializedReq.callFrames[0].scopeChain[0].type, "aType");
+  EXPECT_EQ(
+      deserializedReq.callFrames[0].scopeChain[0].object.type,
+      "aRemoteObjectType");
+  EXPECT_EQ(deserializedReq.callFrames[0].thisObj.type, "aType");
+}
+
+TEST(MessageTests, testPauseNotificationFull) {
+  std::string message = R"(
+    {
+      "method": "Debugger.paused",
+      "params":{
+        "reason": "Some Valid Reason",
+        "callFrames":[
+          {
+            "functionLocation": {
+              "lineNumber": 2,
+              "columnNumber": 3,
+              "scriptId": "myScriptId"
+            },
+            "returnValue" : {
+              "type": "aRemoteObjectType",
+              "subtype": "subtype",
+              "className":"className",
+              "value": "value",
+              "unserializableValue": "unserializableValue",
+              "description": "description",
+              "objectId": "objectId"
+            },
+            "callFrameId": "aCallFrameId",
+            "functionName": "aFunctionName",
+            "location":{
+              "lineNumber": 2,
+              "columnNumber": 3,
+              "scriptId": "myScriptId"
+            },
+            "url": "aURL",
+            "scopeChain": [
+              {
+                "type": "aType",
+                "object": {
+                  "type": "aRemoteObjectType"
+                }
+              }
+            ],
+            "this": {
+              "type": "aType"
+            }
+          }
+        ],
+        "data": {"dataKey": "dataVal"},
+        "hitBreakpoints": [
+          "foo","bar"
+        ],
+        "asyncStackTrace":{
+          "description": "an asyncStackTrace Desc",
+          "callFrames":[
+          {
+            "functionName": "aFunctionName",
+            "lineNumber": 2,
+            "columnNumber": 3,
+            "scriptId": "myScriptId",
+            "url": "aURL"
+          }
+        ]
+      }
+      }
+    }
+  )";
+
+  folly::Optional<debugger::Location> functionLocation;
+  folly::Optional<runtime::RemoteObject> returnValue;
+  // Serialize and Deserialize are inverse functions
+  dynamic messageJSON = folly::parseJson(message);
+  debugger::PausedNotification deserializedReq(messageJSON);
+  EXPECT_EQ(deserializedReq.toDynamic(), messageJSON);
+
+  // Check optionnals
+  // ----------------
+  EXPECT_TRUE(deserializedReq.callFrames[0].functionLocation.hasValue());
+  EXPECT_TRUE(deserializedReq.callFrames[0].returnValue.hasValue());
+  EXPECT_TRUE(deserializedReq.asyncStackTrace.hasValue());
+  EXPECT_TRUE(deserializedReq.hitBreakpoints.hasValue());
+  EXPECT_TRUE(deserializedReq.data.hasValue());
+
+  EXPECT_TRUE(
+      deserializedReq.callFrames[0].returnValue.value().subtype.hasValue());
+  EXPECT_TRUE(
+      deserializedReq.callFrames[0].returnValue.value().className.hasValue());
+  EXPECT_TRUE(deserializedReq.callFrames[0]
+                  .returnValue.value()
+                  .unserializableValue.hasValue());
+  EXPECT_TRUE(
+      deserializedReq.callFrames[0].returnValue.value().value.hasValue());
+  EXPECT_TRUE(
+      deserializedReq.callFrames[0].returnValue.value().description.hasValue());
+  EXPECT_TRUE(
+      deserializedReq.callFrames[0].returnValue.value().objectId.hasValue());
+
+  // Check optionnals Values
+  // -----------------------
+  EXPECT_EQ(
+      deserializedReq.callFrames[0].functionLocation.value().lineNumber, 2);
+  EXPECT_EQ(
+      deserializedReq.callFrames[0].functionLocation.value().columnNumber, 3);
+  EXPECT_EQ(
+      deserializedReq.callFrames[0].functionLocation.value().scriptId,
+      "myScriptId");
+
+  EXPECT_EQ(
+      deserializedReq.callFrames[0].returnValue.value().type,
+      "aRemoteObjectType");
+  EXPECT_EQ(
+      deserializedReq.callFrames[0].returnValue.value().subtype.hasValue(),
+      true);
+  EXPECT_EQ(
+      deserializedReq.callFrames[0].returnValue.value().subtype.value(),
+      "subtype");
+  EXPECT_EQ(
+      deserializedReq.callFrames[0].returnValue.value().className.hasValue(),
+      true);
+  EXPECT_EQ(
+      deserializedReq.callFrames[0].returnValue.value().className.value(),
+      "className");
+  EXPECT_EQ(
+      deserializedReq.callFrames[0].returnValue.value().value.hasValue(), true);
+  EXPECT_EQ(
+      deserializedReq.callFrames[0].returnValue.value().value.value(), "value");
+  EXPECT_EQ(
+      deserializedReq.callFrames[0]
+          .returnValue.value()
+          .unserializableValue.hasValue(),
+      true);
+  EXPECT_EQ(
+      deserializedReq.callFrames[0]
+          .returnValue.value()
+          .unserializableValue.value(),
+      "unserializableValue");
+  EXPECT_EQ(
+      deserializedReq.callFrames[0].returnValue.value().description.hasValue(),
+      true);
+  EXPECT_EQ(
+      deserializedReq.callFrames[0].returnValue.value().description.value(),
+      "description");
+  EXPECT_EQ(
+      deserializedReq.callFrames[0].returnValue.value().objectId.hasValue(),
+      true);
+  EXPECT_EQ(
+      deserializedReq.callFrames[0].returnValue.value().objectId.value(),
+      "objectId");
+
+  EXPECT_EQ(deserializedReq.hitBreakpoints.value()[0], "foo");
+  EXPECT_EQ(deserializedReq.hitBreakpoints.value()[1], "bar");
+
+  EXPECT_EQ(
+      deserializedReq.data.value(),
+      folly::parseJson(R"({"dataKey": "dataVal"})"));
+
+  // Check Compulsory
+  // ----------------
+  EXPECT_EQ(deserializedReq.method, "Debugger.paused");
+  EXPECT_EQ(deserializedReq.reason, "Some Valid Reason");
+  EXPECT_EQ(deserializedReq.callFrames[0].functionName, "aFunctionName");
+  EXPECT_EQ(deserializedReq.callFrames[0].callFrameId, "aCallFrameId");
+  EXPECT_EQ(deserializedReq.callFrames[0].url, "aURL");
+  EXPECT_EQ(deserializedReq.callFrames[0].location.lineNumber, 2);
+  EXPECT_EQ(deserializedReq.callFrames[0].location.columnNumber, 3);
+  EXPECT_EQ(deserializedReq.callFrames[0].location.scriptId, "myScriptId");
+  EXPECT_EQ(deserializedReq.callFrames[0].scopeChain[0].type, "aType");
+  EXPECT_EQ(
+      deserializedReq.callFrames[0].scopeChain[0].object.type,
+      "aRemoteObjectType");
+  EXPECT_EQ(deserializedReq.callFrames[0].thisObj.type, "aType");
+}
+
+
+TEST(MessageTests, testResumedNotification) {
+  std::string message = R"(
+    {
+      "method": "Debugger.resumed"
+    }
+  )";
+
+  // Serialize and Deserialize are inverse functions
+  dynamic messageJSON = folly::parseJson(message);
+  debugger::ResumedNotification deserializedReq(messageJSON);
+  EXPECT_EQ(deserializedReq.toDynamic(), messageJSON);
+
+  // Specifics
+  EXPECT_EQ(deserializedReq.method, "Debugger.resumed");
+}
+
 } // namespace message
 } // namespace chrome
 } // namespace inspector
