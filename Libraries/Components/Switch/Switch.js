@@ -139,7 +139,6 @@ const SwitchWithForwardedRef: React.AbstractComponent<
 > = React.forwardRef(function Switch(props, forwardedRef): React.Node {
   const {
     disabled,
-    accessibilityState,
     ios_backgroundColor,
     onChange,
     onValueChange,
@@ -184,15 +183,18 @@ const SwitchWithForwardedRef: React.AbstractComponent<
     }
   }, [value, native]);
 
-  const _disabled = disabled != null ? disabled : accessibilityState?.disabled;
-
-  const _accessibilityState =
-    _disabled !== accessibilityState?.disabled
-      ? {...accessibilityState, disabled: _disabled}
-      : accessibilityState;
-
   if (Platform.OS === 'android') {
+    const {accessibilityState} = restProps;
+    const _disabled =
+      disabled != null ? disabled : accessibilityState?.disabled;
+
+    const _accessibilityState =
+      _disabled !== accessibilityState?.disabled
+        ? {...accessibilityState, disabled: _disabled}
+        : accessibilityState;
+
     const platformProps = {
+      accessibilityState: _accessibilityState,
       enabled: _disabled !== true,
       on: value === true,
       style,
@@ -205,7 +207,6 @@ const SwitchWithForwardedRef: React.AbstractComponent<
     return (
       <AndroidSwitchNativeComponent
         {...restProps}
-        accessibilityState={_accessibilityState}
         {...platformProps}
         accessibilityRole={props.accessibilityRole ?? 'switch'}
         onChange={handleChange}
@@ -216,7 +217,7 @@ const SwitchWithForwardedRef: React.AbstractComponent<
     );
   } else {
     const platformProps = {
-      disabled: _disabled,
+      disabled,
       onTintColor: trackColorForTrue,
       style: StyleSheet.compose(
         {height: 31, width: 51},
