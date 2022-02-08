@@ -21,7 +21,7 @@ const {
   PlainInput,
   SeparatorComponent,
   Spindicator,
-  genItemData,
+  genNewerItems,
   pressItem,
   renderSmallSwitchOption,
   renderStackedItem,
@@ -161,7 +161,7 @@ export function SectionList_scrollable(Props: {
   const [logViewable, setLogViewable] = React.useState(false);
   const [debug, setDebug] = React.useState(false);
   const [inverted, setInverted] = React.useState(false);
-  const [data, setData] = React.useState(genItemData(1000));
+  const [data, setData] = React.useState(genNewerItems(1000));
 
   const filterRegex = new RegExp(String(filterText), 'i');
   const filter = item =>

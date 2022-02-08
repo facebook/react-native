@@ -34,7 +34,7 @@ import {
   PlainInput,
   SeparatorComponent,
   Spindicator,
-  genItemData,
+  genNewerItems,
   getItemLayout,
   pressItem,
   renderSmallSwitchOption,
@@ -67,7 +67,7 @@ type State = {|
 
 class FlatListExample extends React.PureComponent<Props, State> {
   state: State = {
-    data: genItemData(100),
+    data: genNewerItems(100),
     debug: false,
     horizontal: false,
     inverted: false,
@@ -222,6 +222,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
             keyboardShouldPersistTaps="always"
             keyboardDismissMode="on-drag"
             numColumns={1}
+            onStartReached={this._onStartReached}
             onEndReached={this._onEndReached}
             onRefresh={this._onRefresh}
             onScroll={
@@ -251,12 +252,13 @@ class FlatListExample extends React.PureComponent<Props, State> {
   _getItemLayout = (data: any, index: number) => {
     return getItemLayout(data, index, this.state.horizontal);
   };
+  _onStartReached = () => {};
   _onEndReached = () => {
     if (this.state.data.length >= 1000) {
       return;
     }
     this.setState(state => ({
-      data: state.data.concat(genItemData(100, state.data.length)),
+      data: state.data.concat(genNewerItems(100, state.data.length)),
     }));
   };
   _onPressCallback = () => {
