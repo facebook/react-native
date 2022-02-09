@@ -1,9 +1,15 @@
-load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
+load(
+    "@fbsource//tools/build_defs:default_platform_defs.bzl",
+    "ANDROID",
+    "get_default_target_platform",
+)
+load("@fbsource//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 
 fb_native.prebuilt_jar(
     name = "annotation",
     binary_jar = ":annotation.jar",
     visibility = ["PUBLIC"],
+    default_target_platform = get_default_target_platform(ANDROID),
 )
 
 fb_native.android_library(
@@ -378,6 +384,7 @@ fb_native.android_prebuilt_aar(
 fb_native.prebuilt_jar(
     name = "collection-binary",
     binary_jar = ":collection-binary.jar",
+    default_target_platform = get_default_target_platform(ANDROID),
 )
 
 fb_native.android_prebuilt_aar(
@@ -393,6 +400,7 @@ fb_native.android_prebuilt_aar(
 fb_native.prebuilt_jar(
     name = "core-common-binary",
     binary_jar = ":core-common-binary.jar",
+    default_target_platform = get_default_target_platform(ANDROID),
 )
 
 fb_native.android_prebuilt_aar(
@@ -443,6 +451,7 @@ fb_native.android_prebuilt_aar(
 fb_native.prebuilt_jar(
     name = "lifecycle-common-binary",
     binary_jar = ":lifecycle-common-binary.jar",
+    default_target_platform = get_default_target_platform(ANDROID),
 )
 
 fb_native.android_prebuilt_aar(
