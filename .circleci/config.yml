@@ -569,20 +569,18 @@ jobs:
     steps:
       - checkout
       - run_yarn
+      - attach_workspace:
+          at: .
 
       - run:
-          name: Setup the Android Template
+          name: Create Android template project
           command: |
+            REPO_ROOT=$(pwd)
+            PACKAGE=$(cat build/react-native-package-version)
+            PATH_TO_PACKAGE="$REPO_ROOT/build/$PACKAGE"
             cd template
-            # We replace the "react-native" dependency version with file:.. so we use it from source.
-            sed -i 's/\"react-native\"\:.*/\"react-native\"\: \"file\:\.\.\"/g' package.json
+            npm add $PATH_TO_PACKAGE
             npm install
-            # react-native-community/cli is needed as the Android template is referencing a .gradle file inside it.
-            npm i @react-native-community/cli
-
-      - run:
-          name: Bundle the latest version of ReactAndroid
-          command: ./gradlew :ReactAndroid:publishReleasePublicationToNpmRepository
 
       - run:
           name: Build the template application
@@ -917,11 +915,6 @@ workflows:
       - build_npm_package:
           # Build a release package on every untagged commit, but do not publish to npm.
           publish_npm_args: --dry-run
-          filters:
-            branches:
-              only:
-                - main
-                - /^pull\/.*$/
       - test_js:
           run_disabled_tests: false
           filters:
@@ -933,6 +926,8 @@ workflows:
             branches:
               ignore: gh-pages
       - test_android_template:
+          requires:
+            - build_npm_package
           filters:
             branches:
               ignore: gh-pages
