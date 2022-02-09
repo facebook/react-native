@@ -11,7 +11,10 @@
 import {Platform} from 'react-native';
 import type {PartialViewConfig} from '../Renderer/shims/ReactNativeTypes';
 import ReactNativeStyleAttributes from '../Components/View/ReactNativeStyleAttributes';
-import {DynamicallyInjectedByGestureHandler} from './ViewConfigIgnore';
+import {
+  DynamicallyInjectedByGestureHandler,
+  ConditionallyIgnoredEventHandlers,
+} from './ViewConfigIgnore';
 
 type PartialViewConfigWithoutName = $Rest<
   PartialViewConfig,
@@ -446,6 +449,14 @@ const PlatformBaseViewConfig: PartialViewConfigWithoutName =
           direction: true,
 
           style: ReactNativeStyleAttributes,
+
+          ...ConditionallyIgnoredEventHandlers({
+            onLayout: true,
+            onMagicTap: true,
+            onAccessibilityAction: true,
+            onAccessibilityEscape: true,
+            onAccessibilityTap: true,
+          }),
         },
       };
 
