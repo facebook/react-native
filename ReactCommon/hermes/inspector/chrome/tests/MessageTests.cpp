@@ -1506,7 +1506,6 @@ TEST(MessageTests, testPauseNotificationFull) {
   EXPECT_EQ(deserializedReq.callFrames[0].thisObj.type, "aType");
 }
 
-
 TEST(MessageTests, testResumedNotification) {
   std::string message = R"(
     {
