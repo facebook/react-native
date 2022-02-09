@@ -434,6 +434,7 @@ rn_xplat_cxx_library2(
         "//fbobjc/Libraries/FBQPLMetadataProviders/...",
         "//fbobjc/Libraries/FBReactKit/...",
         "//fbobjc/Libraries/FBiOSSecurityUtils/...",
+        "//fbobjc/Libraries/RCTPrerendering/...",
         "//fbobjc/VendorLib/react-native-maps:react-native-maps",
         "//xplat/js:",
         "//xplat/js/react-native-github/React/...",

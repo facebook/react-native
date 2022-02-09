@@ -593,10 +593,6 @@ jobs:
   # -------------------------
   test_android_rntester:
     executor: reactnativeandroid
-    parameters:
-      use_hermes:
-          type: boolean
-          default: false
     steps:
       - checkout
       - run_yarn
@@ -605,19 +601,9 @@ jobs:
           name: Generate artifacts for Maven
           command: ./gradlew :ReactAndroid:installArchives
 
-      - when:
-          condition: << parameters.use_hermes >>
-          steps:
-            - run:
-                name: Build RNTester with Hermes
-                command: ./gradlew :packages:rn-tester:android:app:assembleHermesDebug
-      - when:
-          condition:
-            not: << parameters.use_hermes >>
-          steps:
-            - run:
-                name: Build RNTester with JSC
-                command: ./gradlew :packages:rn-tester:android:app:assembleJscDebug
+      - run:
+          name: Assemble RNTester
+          command: ./gradlew :packages:rn-tester:android:app:assembleDebug
 
   # -------------------------
   #    JOBS: Test iOS Template
@@ -951,13 +937,6 @@ workflows:
             branches:
               ignore: gh-pages
       - test_android_rntester:
-          name: test_android_rntester_hermes
-          use_hermes: true
-          filters:
-            branches:
-              ignore: gh-pages
-      - test_android_rntester:
-          name: test_android_rntester_jsc
           filters:
             branches:
               ignore: gh-pages

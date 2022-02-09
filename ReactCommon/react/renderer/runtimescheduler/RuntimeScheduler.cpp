@@ -92,7 +92,7 @@ void RuntimeScheduler::executeNowOnTheSameThread(
   scheduleWorkLoopIfNecessary();
 }
 
-void RuntimeScheduler::callImmediates(jsi::Runtime &runtime) {
+void RuntimeScheduler::callExpiredTasks(jsi::Runtime &runtime) {
   auto previousPriority = currentPriority_;
   try {
     while (!taskQueue_.empty()) {

@@ -59,8 +59,6 @@ struct ExceptionDetails;
 struct ExecutionContextCreatedNotification;
 struct ExecutionContextDescription;
 using ExecutionContextId = int;
-struct GetHeapUsageRequest;
-struct GetHeapUsageResponse;
 struct GetPropertiesRequest;
 struct GetPropertiesResponse;
 struct InternalPropertyDescriptor;
@@ -129,7 +127,6 @@ struct RequestHandler {
   virtual void handle(const heapProfiler::TakeHeapSnapshotRequest &req) = 0;
   virtual void handle(const runtime::CallFunctionOnRequest &req) = 0;
   virtual void handle(const runtime::EvaluateRequest &req) = 0;
-  virtual void handle(const runtime::GetHeapUsageRequest &req) = 0;
   virtual void handle(const runtime::GetPropertiesRequest &req) = 0;
   virtual void handle(const runtime::RunIfWaitingForDebuggerRequest &req) = 0;
 };
@@ -165,7 +162,6 @@ struct NoopRequestHandler : public RequestHandler {
   void handle(const heapProfiler::TakeHeapSnapshotRequest &req) override {}
   void handle(const runtime::CallFunctionOnRequest &req) override {}
   void handle(const runtime::EvaluateRequest &req) override {}
-  void handle(const runtime::GetHeapUsageRequest &req) override {}
   void handle(const runtime::GetPropertiesRequest &req) override {}
   void handle(const runtime::RunIfWaitingForDebuggerRequest &req) override {}
 };
@@ -404,8 +400,6 @@ struct debugger::ResumeRequest : public Request {
 
   folly::dynamic toDynamic() const override;
   void accept(RequestHandler &handler) const override;
-
-  folly::Optional<bool> terminateOnResume;
 };
 
 struct debugger::SetBreakpointRequest : public Request {
@@ -554,7 +548,6 @@ struct heapProfiler::StopTrackingHeapObjectsRequest : public Request {
 
   folly::Optional<bool> reportProgress;
   folly::Optional<bool> treatGlobalObjectsAsRoots;
-  folly::Optional<bool> captureNumericValue;
 };
 
 struct heapProfiler::TakeHeapSnapshotRequest : public Request {
@@ -566,7 +559,6 @@ struct heapProfiler::TakeHeapSnapshotRequest : public Request {
 
   folly::Optional<bool> reportProgress;
   folly::Optional<bool> treatGlobalObjectsAsRoots;
-  folly::Optional<bool> captureNumericValue;
 };
 
 struct runtime::CallFunctionOnRequest : public Request {
@@ -602,14 +594,6 @@ struct runtime::EvaluateRequest : public Request {
   folly::Optional<bool> returnByValue;
   folly::Optional<bool> userGesture;
   folly::Optional<bool> awaitPromise;
-};
-
-struct runtime::GetHeapUsageRequest : public Request {
-  GetHeapUsageRequest();
-  explicit GetHeapUsageRequest(const folly::dynamic &obj);
-
-  folly::dynamic toDynamic() const override;
-  void accept(RequestHandler &handler) const override;
 };
 
 struct runtime::GetPropertiesRequest : public Request {
@@ -723,15 +707,6 @@ struct runtime::EvaluateResponse : public Response {
 
   runtime::RemoteObject result{};
   folly::Optional<runtime::ExceptionDetails> exceptionDetails;
-};
-
-struct runtime::GetHeapUsageResponse : public Response {
-  GetHeapUsageResponse() = default;
-  explicit GetHeapUsageResponse(const folly::dynamic &obj);
-  folly::dynamic toDynamic() const override;
-
-  double usedSize{};
-  double totalSize{};
 };
 
 struct runtime::GetPropertiesResponse : public Response {

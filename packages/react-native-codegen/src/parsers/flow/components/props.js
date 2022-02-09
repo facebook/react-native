@@ -319,6 +319,10 @@ function getTypeAnnotation(
           `Unsupported union type for "${name}", received "${unionType}"`,
         );
       }
+    case 'ObjectTypeAnnotation':
+      throw new Error(
+        `Cannot use "${type}" type annotation for "${name}": object types must be declared using $ReadOnly<>`,
+      );
     case 'NumberTypeAnnotation':
       throw new Error(
         `Cannot use "${type}" type annotation for "${name}": must use a specific numeric type like Int32, Double, or Float`,
