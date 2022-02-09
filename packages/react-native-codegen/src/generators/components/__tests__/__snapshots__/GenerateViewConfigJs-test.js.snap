@@ -295,6 +295,7 @@ Map {
 'use strict';
 
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
+const {ConditionallyIgnoredEventHandlers} = require('react-native/Libraries/NativeComponent/ViewConfigIgnore');
 
 let nativeComponentName = 'EventsNestedObjectNativeComponent';
 
@@ -313,6 +314,10 @@ export const __INTERNAL_VIEW_CONFIG = {
 
   validAttributes: {
     disabled: true,
+
+    ...ConditionallyIgnoredEventHandlers({
+      onChange: true,
+    }),
   },
 };
 
@@ -338,6 +343,7 @@ Map {
 'use strict';
 
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
+const {ConditionallyIgnoredEventHandlers} = require('react-native/Libraries/NativeComponent/ViewConfigIgnore');
 
 let nativeComponentName = 'EventsNativeComponent';
 
@@ -373,6 +379,13 @@ export const __INTERNAL_VIEW_CONFIG = {
 
   validAttributes: {
     disabled: true,
+
+    ...ConditionallyIgnoredEventHandlers({
+      onChange: true,
+      onEventDirect: true,
+      onOrientationChange: true,
+      onEnd: true,
+    }),
   },
 };
 
@@ -398,6 +411,7 @@ Map {
 'use strict';
 
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
+const {ConditionallyIgnoredEventHandlers} = require('react-native/Libraries/NativeComponent/ViewConfigIgnore');
 
 let nativeComponentName = 'RCTInterfaceOnlyComponent';
 
@@ -420,7 +434,12 @@ export const __INTERNAL_VIEW_CONFIG = {
     },
   },
 
-  validAttributes: {},
+  validAttributes: {
+    ...ConditionallyIgnoredEventHandlers({
+      onChange: true,
+      onDire tChange: true,
+    }),
+  },
 };
 
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
@@ -688,6 +707,7 @@ Map {
 'use strict';
 
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
+const {ConditionallyIgnoredEventHandlers} = require('react-native/Libraries/NativeComponent/ViewConfigIgnore');
 
 let nativeComponentName = 'RCTInterfaceOnlyComponent';
 
@@ -706,6 +726,10 @@ export const __INTERNAL_VIEW_CONFIG = {
 
   validAttributes: {
     accessibilityHint: true,
+
+    ...ConditionallyIgnoredEventHandlers({
+      onChange: true,
+    }),
   },
 };
 
@@ -1046,8 +1070,7 @@ const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/
 const {UIManager} = require(\\"react-native\\")
 
 let nativeComponentName = 'NativeComponentName';
-const staticViewConfigsEnabled = global.__fbStaticViewConfig === true;
-if (staticViewConfigsEnabled) {
+if (global.__nativeComponentRegistry__hasComponent) {
   if (UIManager.hasViewManagerConfig('NativeComponentName')) {
     nativeComponentName = 'NativeComponentName';
   } else if (UIManager.hasViewManagerConfig('DeprecatedNativeComponentName')) {

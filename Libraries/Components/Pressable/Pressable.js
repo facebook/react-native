@@ -22,7 +22,7 @@ import type {
 } from '../View/ViewAccessibility';
 import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 import usePressability from '../../Pressability/usePressability';
-import {normalizeRect, type RectOrSize} from '../../StyleSheet/Rect';
+import {type RectOrSize} from '../../StyleSheet/Rect';
 import type {
   LayoutEvent,
   MouseEvent,
@@ -182,6 +182,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
     delayLongPress,
     disabled,
     focusable,
+    hitSlop,
     onHoverIn,
     onHoverOut,
     onLongPress,
@@ -201,8 +202,6 @@ function Pressable(props: Props, forwardedRef): React.Node {
   const android_rippleConfig = useAndroidRippleForView(android_ripple, viewRef);
 
   const [pressed, setPressed] = usePressState(testOnly_pressed === true);
-
-  const hitSlop = normalizeRect(props.hitSlop);
 
   const accessibilityState =
     disabled != null

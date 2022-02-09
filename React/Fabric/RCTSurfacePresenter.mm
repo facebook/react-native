@@ -99,6 +99,14 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     _observers = [NSMutableArray array];
 
     _scheduler = [self _createScheduler];
+
+    auto reactNativeConfig = _contextContainer->at<std::shared_ptr<ReactNativeConfig const>>("ReactNativeConfig");
+    if (reactNativeConfig->getBool("react_native_new_architecture:suspend_before_app_termination")) {
+      [[NSNotificationCenter defaultCenter] addObserver:self
+                                               selector:@selector(_applicationWillTerminate)
+                                                   name:UIApplicationWillTerminateNotification
+                                                 object:nil];
+    }
   }
 
   return self;
@@ -271,6 +279,8 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   auto weakRuntimeScheduler = _contextContainer->find<std::weak_ptr<RuntimeScheduler>>("RuntimeScheduler");
   auto runtimeScheduler = weakRuntimeScheduler.hasValue() ? weakRuntimeScheduler.value().lock() : nullptr;
   if (runtimeScheduler) {
+    runtimeScheduler->setEnableYielding(
+        reactNativeConfig->getBool("react_native_new_architecture:runtimescheduler_enable_yielding_ios"));
     runtimeExecutor = [runtimeScheduler](std::function<void(jsi::Runtime & runtime)> &&callback) {
       runtimeScheduler->scheduleWork(std::move(callback));
     };
@@ -323,6 +333,11 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
       [scheduler unregisterSurface:surface.surfaceHandler];
     }
   }];
+}
+
+- (void)_applicationWillTerminate
+{
+  [self suspend];
 }
 
 #pragma mark - RCTSchedulerDelegate

@@ -90,6 +90,18 @@ const API = {
       NativeAnimatedModule.createAnimatedNode(tag, config),
     );
   },
+  updateAnimatedNodeConfig: function (
+    tag: number,
+    config: AnimatedNodeConfig,
+  ): void {
+    invariant(NativeAnimatedModule, 'Native animated module is not available');
+    if (typeof NativeAnimatedModule.updateAnimatedNodeConfig === 'function') {
+      API.queueOperation(() =>
+        // $FlowIgnore[not-a-function] - checked above
+        NativeAnimatedModule.updateAnimatedNodeConfig(tag, config),
+      );
+    }
+  },
   startListeningToAnimatedNodeValue: function (tag: number) {
     invariant(NativeAnimatedModule, 'Native animated module is not available');
     API.queueOperation(() =>

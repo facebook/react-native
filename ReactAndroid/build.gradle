@@ -272,6 +272,12 @@ task installArchives {
     dependsOn("publishReleasePublicationToNpmRepository")
 }
 
+// Creating sources with comments
+task androidSourcesJar(type: Jar) {
+  classifier = 'sources'
+  from android.sourceSets.main.java.srcDirs
+}
+
 android {
     compileSdkVersion 31
 
@@ -345,6 +351,12 @@ android {
     packagingOptions {
         exclude("META-INF/NOTICE")
         exclude("META-INF/LICENSE")
+        // We intentionally don't want to bundle any JS Runtime inside the Android AAR
+        // we produce. The reason behind this is that we want to allow users to pick the
+        // JS engine by specifying a dependency on either `hermes-engine` or `android-jsc`
+        // that will include the necessary .so files to load.
+        exclude("**/libhermes.so")
+        exclude("**/libjsc.so")
     }
 
     configurations {
@@ -413,6 +425,9 @@ afterEvaluate {
             release(MavenPublication) {
                 // Applies the component for the release build variant.
                 from components.release
+
+                // Add additional sourcesJar to artifacts
+                artifact(androidSourcesJar)
 
                 // You can then customize attributes of the publication as shown below.
                 artifactId = POM_ARTIFACT_ID

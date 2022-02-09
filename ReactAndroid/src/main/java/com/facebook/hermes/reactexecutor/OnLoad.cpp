@@ -47,6 +47,7 @@ static ::hermes::vm::RuntimeConfig makeRuntimeConfig(jlong heapSizeMB) {
 
   return vm::RuntimeConfig::Builder()
       .withGCConfig(gcConfigBuilder.build())
+      .withEnableSampleProfiling(true)
       .build();
 }
 

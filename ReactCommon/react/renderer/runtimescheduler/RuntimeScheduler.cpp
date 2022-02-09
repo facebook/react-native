@@ -22,13 +22,19 @@ RuntimeScheduler::RuntimeScheduler(
 
 void RuntimeScheduler::scheduleWork(
     std::function<void(jsi::Runtime &)> callback) const {
-  shouldYield_ = true;
-  runtimeExecutor_(
-      [this, callback = std::move(callback)](jsi::Runtime &runtime) {
-        shouldYield_ = false;
-        callback(runtime);
-        startWorkLoop(runtime);
-      });
+  if (enableYielding_) {
+    runtimeAccessRequests_ += 1;
+    runtimeExecutor_(
+        [this, callback = std::move(callback)](jsi::Runtime &runtime) {
+          runtimeAccessRequests_ -= 1;
+          callback(runtime);
+          startWorkLoop(runtime);
+        });
+  } else {
+    runtimeExecutor_([callback = std::move(callback)](jsi::Runtime &runtime) {
+      callback(runtime);
+    });
+  }
 }
 
 std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
@@ -45,7 +51,7 @@ std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
 }
 
 bool RuntimeScheduler::getShouldYield() const noexcept {
-  return shouldYield_;
+  return runtimeAccessRequests_ > 0;
 }
 
 bool RuntimeScheduler::getIsSynchronous() const noexcept {
@@ -64,35 +70,19 @@ RuntimeSchedulerTimePoint RuntimeScheduler::now() const noexcept {
   return now_();
 }
 
+void RuntimeScheduler::setEnableYielding(bool enableYielding) {
+  enableYielding_ = enableYielding;
+}
+
 void RuntimeScheduler::executeNowOnTheSameThread(
     std::function<void(jsi::Runtime &runtime)> callback) {
-  shouldYield_ = true;
+  runtimeAccessRequests_ += 1;
   executeSynchronouslyOnSameThread_CAN_DEADLOCK(
       runtimeExecutor_,
       [this, callback = std::move(callback)](jsi::Runtime &runtime) {
-        shouldYield_ = false;
-        auto task = jsi::Function::createFromHostFunction(
-            runtime,
-            jsi::PropNameID::forUtf8(runtime, ""),
-            3,
-            [callback = std::move(callback)](
-                jsi::Runtime &runtime,
-                jsi::Value const &,
-                jsi::Value const *arguments,
-                size_t) -> jsi::Value {
-              callback(runtime);
-              return jsi::Value::undefined();
-            });
-
-        // We are about to trigger work loop. Setting `isCallbackScheduled_` to
-        // true prevents unnecessary call to `runtimeExecutor`.
-        isWorkLoopScheduled_ = true;
-        this->scheduleTask(
-            SchedulerPriority::ImmediatePriority, std::move(task));
-        isWorkLoopScheduled_ = false;
-
+        runtimeAccessRequests_ -= 1;
         isSynchronous_ = true;
-        startWorkLoop(runtime);
+        callback(runtime);
         isSynchronous_ = false;
       });
 
@@ -100,6 +90,37 @@ void RuntimeScheduler::executeNowOnTheSameThread(
   // only expired tasks are executed. Tasks with lower priority
   // might be still in the queue.
   scheduleWorkLoopIfNecessary();
+}
+
+void RuntimeScheduler::callExpiredTasks(jsi::Runtime &runtime) {
+  auto previousPriority = currentPriority_;
+  try {
+    while (!taskQueue_.empty()) {
+      auto topPriorityTask = taskQueue_.top();
+      auto now = now_();
+      auto didUserCallbackTimeout = topPriorityTask->expirationTime <= now;
+
+      if (!didUserCallbackTimeout) {
+        break;
+      }
+
+      currentPriority_ = topPriorityTask->priority;
+      auto result = topPriorityTask->execute(runtime);
+
+      if (result.isObject() && result.getObject(runtime).isFunction(runtime)) {
+        topPriorityTask->callback =
+            result.getObject(runtime).getFunction(runtime);
+      } else {
+        if (taskQueue_.top() == topPriorityTask) {
+          taskQueue_.pop();
+        }
+      }
+    }
+  } catch (jsi::JSError &error) {
+    handleFatalError(runtime, error);
+  }
+
+  currentPriority_ = previousPriority;
 }
 
 #pragma mark - Private
@@ -123,17 +144,11 @@ void RuntimeScheduler::startWorkLoop(jsi::Runtime &runtime) const {
       auto now = now_();
       auto didUserCallbackTimeout = topPriorityTask->expirationTime <= now;
 
-      // This task hasn't expired and we need to yield.
-      auto shouldBreakBecauseYield = !didUserCallbackTimeout && shouldYield_;
-
-      // This task hasn't expired but we are in synchronous mode and need to
-      // only execute the necessary minimum.
-      auto shouldBreakBecauseSynchronous =
-          !didUserCallbackTimeout && isSynchronous_;
-
-      if (shouldBreakBecauseYield || shouldBreakBecauseSynchronous) {
+      if (!didUserCallbackTimeout && getShouldYield()) {
+        // This currentTask hasn't expired, and we need to yield.
         break;
       }
+
       currentPriority_ = topPriorityTask->priority;
       auto result = topPriorityTask->execute(runtime);
 

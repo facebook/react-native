@@ -8,7 +8,7 @@
  * @flow
  */
 
-import ReactNativeViewViewConfig from '../Components/View/ReactNativeViewViewConfig';
+import PlatformBaseViewConfig from '../NativeComponent/PlatformBaseViewConfig';
 import {type ViewConfig} from '../Renderer/shims/ReactNativeTypes';
 
 const IGNORED_KEYS = ['transform', 'hitSlop'];
@@ -62,7 +62,7 @@ export default function verifyComponentAttributeEquivalence(
 
 // Return the different key-value pairs of the right object, by iterating through the keys in the left object
 // Note it won't return a difference where a key is missing in the left but exists the right.
-export function lefthandObjectDiff(leftObj: Object, rightObj: Object): Object {
+function lefthandObjectDiff(leftObj: Object, rightObj: Object): Object {
   const differentKeys = {};
 
   function compare(leftItem: any, rightItem: any, key: string) {
@@ -109,7 +109,7 @@ export function getConfigWithoutViewProps(
   }
 
   return Object.keys(viewConfig[propName])
-    .filter(prop => !ReactNativeViewViewConfig[propName][prop])
+    .filter(prop => !PlatformBaseViewConfig[propName][prop])
     .reduce((obj, prop) => {
       obj[prop] = viewConfig[propName][prop];
       return obj;

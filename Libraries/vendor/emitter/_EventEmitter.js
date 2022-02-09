@@ -12,7 +12,7 @@
 const invariant = require('invariant');
 
 import EmitterSubscription from './_EmitterSubscription';
-import {type EventSubscription} from './EventSubscription';
+import type {EventSubscription} from './EventSubscription';
 import EventSubscriptionVendor from './_EventSubscriptionVendor';
 
 const sparseFilterPredicate = () => true;

@@ -405,7 +405,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
     ViewManagerPropertyUpdater.clear();
 
-    // When using ReactFeatureFlags.enableExperimentalStaticViewConfigs enabled, FabriUIManager is
+    // When using StaticViewConfigs is enabled, FabriUIManager is
     // responsible for initializing and deallocating EventDispatcher.
     // TODO T83943316: Remove this IF once StaticViewConfigs are enabled by default
     if (mShouldDeallocateEventDispatcher) {

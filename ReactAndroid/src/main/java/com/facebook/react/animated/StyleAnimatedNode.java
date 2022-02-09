@@ -43,6 +43,8 @@ import java.util.Map;
         ((TransformAnimatedNode) node).collectViewUpdates(propsMap);
       } else if (node instanceof ValueAnimatedNode) {
         propsMap.putDouble(entry.getKey(), ((ValueAnimatedNode) node).getValue());
+      } else if (node instanceof ColorAnimatedNode) {
+        propsMap.putInt(entry.getKey(), ((ColorAnimatedNode) node).getColor());
       } else {
         throw new IllegalArgumentException(
             "Unsupported type of node used in property node " + node.getClass());

@@ -64,9 +64,6 @@ public class ReactFeatureFlags {
   /** This feature flag enables logs for Fabric */
   public static boolean enableFabricLogs = false;
 
-  /** Enables Static ViewConfig in RN Android native code. */
-  public static boolean enableExperimentalStaticViewConfigs = false;
-
   public static boolean enableRuntimeScheduler = false;
 
   public static boolean enableRuntimeSchedulerInTurboModule = false;
@@ -104,7 +101,4 @@ public class ReactFeatureFlags {
 
   /** TODO: T103427072 Delete ReactFeatureFlags.enableNestedTextOnPressEventFix */
   public static boolean enableNestedTextOnPressEventFix = true;
-
-  /** TODO: T107492383 Delete this flag. Enables postprocessor for rounded corners for Image */
-  public static boolean enableRoundedCornerPostprocessing = false;
 }

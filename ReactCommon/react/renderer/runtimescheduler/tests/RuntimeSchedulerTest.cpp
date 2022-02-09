@@ -43,6 +43,7 @@ class RuntimeSchedulerTest : public testing::Test {
 
     runtimeScheduler_ =
         std::make_unique<RuntimeScheduler>(runtimeExecutor, stubNow);
+    runtimeScheduler_->setEnableYielding(true);
   }
 
   jsi::Function createHostFunctionFromLambda(
@@ -317,13 +318,14 @@ TEST_F(RuntimeSchedulerTest, getCurrentPriorityLevel) {
 }
 
 TEST_F(RuntimeSchedulerTest, scheduleWork) {
+  runtimeScheduler_->setEnableYielding(false);
   bool wasCalled = false;
   runtimeScheduler_->scheduleWork(
       [&](jsi::Runtime const &) { wasCalled = true; });
 
   EXPECT_FALSE(wasCalled);
 
-  EXPECT_TRUE(runtimeScheduler_->getShouldYield());
+  EXPECT_FALSE(runtimeScheduler_->getShouldYield());
 
   EXPECT_EQ(stubQueue_->size(), 1);
 
@@ -517,7 +519,7 @@ TEST_F(RuntimeSchedulerTest, sameThreadTaskCreatesImmediatePriorityTask) {
   std::thread t1([this, &didRunSynchronousTask, &didRunSubsequentTask]() {
     runtimeScheduler_->executeNowOnTheSameThread(
         [this, &didRunSynchronousTask, &didRunSubsequentTask](
-            jsi::Runtime &rt) {
+            jsi::Runtime &runtime) {
           didRunSynchronousTask = true;
 
           auto callback = createHostFunctionFromLambda(
@@ -529,6 +531,8 @@ TEST_F(RuntimeSchedulerTest, sameThreadTaskCreatesImmediatePriorityTask) {
 
           runtimeScheduler_->scheduleTask(
               SchedulerPriority::ImmediatePriority, std::move(callback));
+
+          runtimeScheduler_->callExpiredTasks(runtime);
         });
   });
 
@@ -553,7 +557,7 @@ TEST_F(RuntimeSchedulerTest, sameThreadTaskCreatesLowPriorityTask) {
   std::thread t1([this, &didRunSynchronousTask, &didRunSubsequentTask]() {
     runtimeScheduler_->executeNowOnTheSameThread(
         [this, &didRunSynchronousTask, &didRunSubsequentTask](
-            jsi::Runtime &rt) {
+            jsi::Runtime &runtime) {
           didRunSynchronousTask = true;
 
           auto callback = createHostFunctionFromLambda(
@@ -565,6 +569,9 @@ TEST_F(RuntimeSchedulerTest, sameThreadTaskCreatesLowPriorityTask) {
 
           runtimeScheduler_->scheduleTask(
               SchedulerPriority::LowPriority, std::move(callback));
+          runtimeScheduler_->callExpiredTasks(runtime);
+
+          EXPECT_FALSE(didRunSubsequentTask);
         });
   });
 
@@ -589,6 +596,44 @@ TEST_F(RuntimeSchedulerTest, sameThreadTaskCreatesLowPriorityTask) {
   EXPECT_TRUE(didRunSubsequentTask);
 
   EXPECT_EQ(stubQueue_->size(), 0);
+}
+
+TEST_F(RuntimeSchedulerTest, twoThreadsRequestAccessToTheRuntime) {
+  bool didRunSynchronousTask = false;
+  bool didRunWork = false;
+
+  runtimeScheduler_->scheduleWork(
+      [&didRunWork](jsi::Runtime &) { didRunWork = true; });
+
+  std::thread t1([this, &didRunSynchronousTask]() {
+    runtimeScheduler_->executeNowOnTheSameThread(
+        [&didRunSynchronousTask](jsi::Runtime &runtime) {
+          didRunSynchronousTask = true;
+        });
+  });
+
+  auto hasTask = stubQueue_->waitForTasks(2, 1ms);
+
+  EXPECT_TRUE(hasTask);
+  EXPECT_FALSE(didRunWork);
+  EXPECT_FALSE(didRunSynchronousTask);
+  EXPECT_TRUE(runtimeScheduler_->getShouldYield());
+  EXPECT_EQ(stubQueue_->size(), 2);
+
+  stubQueue_->tick();
+
+  EXPECT_TRUE(didRunWork);
+  EXPECT_FALSE(didRunSynchronousTask);
+  EXPECT_TRUE(runtimeScheduler_->getShouldYield());
+  EXPECT_EQ(stubQueue_->size(), 1);
+
+  stubQueue_->tick();
+
+  t1.join();
+
+  EXPECT_TRUE(didRunWork);
+  EXPECT_TRUE(didRunSynchronousTask);
+  EXPECT_FALSE(runtimeScheduler_->getShouldYield());
 }
 
 } // namespace facebook::react
