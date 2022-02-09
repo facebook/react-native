@@ -1,3 +1,8 @@
+load(
+    "@fbsource//tools/build_defs:default_platform_defs.bzl",
+    "ANDROID",
+    "get_default_target_platform",
+)
 load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 load("//tools/build_defs/oss:rn_defs.bzl", "react_native_integration_tests_target")
 
@@ -8,4 +13,5 @@ fb_native.prebuilt_jar(
     visibility = [
         react_native_integration_tests_target("..."),
     ],
+    default_target_platform = get_default_target_platform(ANDROID),
 )

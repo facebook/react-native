@@ -1,9 +1,15 @@
+load(
+    "@fbsource//tools/build_defs:default_platform_defs.bzl",
+    "ANDROID",
+    "get_default_target_platform",
+)
 load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 
 fb_native.prebuilt_jar(
     name = "jsr-305",
     binary_jar = ":jsr305-binary.jar",
     visibility = ["PUBLIC"],
+    default_target_platform = get_default_target_platform(ANDROID),
 )
 
 fb_native.remote_file(
