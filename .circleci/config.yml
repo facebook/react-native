@@ -578,9 +578,9 @@ jobs:
             REPO_ROOT=$(pwd)
             PACKAGE=$(cat build/react-native-package-version)
             PATH_TO_PACKAGE="$REPO_ROOT/build/$PACKAGE"
+            cd template
             npm add $PATH_TO_PACKAGE
             npm install
-            node "$REPO_ROOT/cli.js" init "$PROJECT_NAME" --template "$REPO_ROOT"
 
       - run:
           name: Build the template application
