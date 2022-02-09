@@ -9,10 +9,6 @@
  */
 
 import {type ViewConfig} from '../Renderer/shims/ReactNativeTypes';
-// $FlowFixMe[nonstrict-import]
-import getNativeComponentAttributes from '../ReactNative/getNativeComponentAttributes';
-// $FlowFixMe[nonstrict-import]
-import {createViewConfig} from './ViewConfig';
 import {isIgnored} from './ViewConfigIgnore';
 
 export type Difference =
@@ -41,37 +37,6 @@ type InvalidResult = {
   type: 'invalid',
   differences: Array<Difference>,
 };
-
-// e.g. require('MyNativeComponent') where MyNativeComponent.js exports a HostComponent
-type JSModule = $FlowFixMe;
-
-export function validateStaticViewConfigs(nativeComponent: JSModule): {
-  componentName: string,
-  nativeViewConfig?: ?ViewConfig,
-  staticViewConfig?: ?ViewConfig,
-  validationResult?: ?ValidationResult,
-} {
-  const nativeViewConfig = getNativeComponentAttributes(
-    nativeComponent.default || nativeComponent,
-  );
-
-  const generatedPartialViewConfig = nativeComponent.__INTERNAL_VIEW_CONFIG;
-  const staticViewConfig: ?ViewConfig =
-    generatedPartialViewConfig && createViewConfig(generatedPartialViewConfig);
-
-  const componentName: string = nativeComponent.default || nativeComponent;
-  const validationResult: ?ValidationResult =
-    nativeViewConfig &&
-    staticViewConfig &&
-    validate(componentName, nativeViewConfig, staticViewConfig);
-
-  return {
-    componentName,
-    nativeViewConfig,
-    staticViewConfig,
-    validationResult,
-  };
-}
 
 /**
  * During the migration from native view configs to static view configs, this is
