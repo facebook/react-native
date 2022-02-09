@@ -539,6 +539,12 @@ fb_native.remote_file(
 )
 
 fb_native.remote_file(
+    name = "appcompat-resources-binary-aar",
+    sha1 = "527d93d44bb18bc7dcf5213df8d4d069f0ceff61",
+    url = "mvn:androidx.appcompat:appcompat-resources:aar:1.4.1",
+)
+
+fb_native.remote_file(
     name = "asynclayoutinflater-binary-aar",
     sha1 = "5ffa788d19a6863799f25cb50d4fdfb0ec649037",
     url = "mvn:androidx.asynclayoutinflater:asynclayoutinflater:aar:1.0.0",
