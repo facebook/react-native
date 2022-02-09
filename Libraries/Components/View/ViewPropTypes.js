@@ -77,7 +77,7 @@ type DirectEventProps = $ReadOnly<{|
   onPreferredScrollerStyleDidChange?: ?(event: ScrollEvent) => mixed, // TODO(macOS GH#774)
 
   /**
-   * When `acceptsKeyboardFocus` is true, the system will try to invoke this function
+   * When `focusable` is true, the system will try to invoke this function
    * when the user performs accessibility key down gesture.
    */
   onScrollKeyDown?: ?(event: ScrollEvent) => mixed, // TODO(macOS GH#774)
@@ -593,12 +593,6 @@ export type ViewProps = $ReadOnly<{|
    * @platform macos
    */
   acceptsFirstMouse?: ?boolean, // TODO(macOS GH#774)
-
-  /**
-   * Specifies whether the view participates in the key view loop as user tabs
-   * through different controls.
-   */
-  acceptsKeyboardFocus?: ?boolean, // TODO(macOS GH#774)
 
   /**
    * The react tag of the view that follows the current view in the key view loop.

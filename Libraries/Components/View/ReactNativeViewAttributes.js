@@ -21,9 +21,6 @@ const UIView = {
   accessibilityState: true,
   accessibilityValue: true,
   accessibilityHint: true,
-  acceptsFirstMouse: true, // TODO(macOS GH#774)
-  acceptsKeyboardFocus: true, // TODO(macOS GH#774)
-  enableFocusRing: true, // TODO(macOS GH#774)
   importantForAccessibility: true,
   nativeID: true,
   testID: true,
@@ -36,7 +33,11 @@ const UIView = {
   onAccessibilityEscape: true,
   collapsable: true,
   needsOffscreenAlphaCompositing: true,
-  onMouseEnter: true, // [TODO(macOS GH#774)
+  style: ReactNativeStyleAttributes,
+  // [TODO(macOS GH#774)
+  acceptsFirstMouse: true,
+  enableFocusRing: true,
+  onMouseEnter: true,
   onMouseLeave: true,
   onDragEnter: true,
   onDragLeave: true,
@@ -45,9 +46,9 @@ const UIView = {
   onKeyUp: true,
   validKeysDown: true,
   validKeysUp: true,
-  draggedTypes: true, // ]TODO(macOS GH#774)
-  nextKeyViewTag: true, // TODO(macOS GH#768)
-  style: ReactNativeStyleAttributes,
+  draggedTypes: true,
+  nextKeyViewTag: true,
+  // ]TODO(macOS GH#774)
 };
 
 const RCTView = {
