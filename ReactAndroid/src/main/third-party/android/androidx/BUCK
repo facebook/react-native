@@ -534,8 +534,8 @@ fb_native.remote_file(
 
 fb_native.remote_file(
     name = "appcompat-binary-aar",
-    sha1 = "002533a36c928bb27a3cc6843a25f83754b3c3ae",
-    url = "mvn:androidx.appcompat:appcompat:aar:1.0.2",
+    sha1 = "d384d125d196ed4997b418d7ba6fc18a4680ed22",
+    url = "mvn:androidx.appcompat:appcompat:aar:1.4.1",
 )
 
 fb_native.remote_file(
