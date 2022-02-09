@@ -14,6 +14,7 @@ import AnimatedValue from './AnimatedValue';
 import AnimatedWithChildren from './AnimatedWithChildren';
 import normalizeColor from '../../StyleSheet/normalizeColor';
 import {processColorObject} from '../../StyleSheet/PlatformColorValueTypes';
+import NativeAnimatedHelper from '../NativeAnimatedHelper';
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
@@ -166,9 +167,19 @@ export default class AnimatedColor extends AnimatedWithChildren {
       }
 
       if (this.nativeColor) {
-        this.__makeNative();
-        // TODO (T111170195): In order to support setValue() with a platform color, update the
-        // native AnimatedNode (if it exists) with a new config.
+        if (!this.__isNative) {
+          this.__makeNative();
+        }
+
+        const nativeTag = this.__getNativeTag();
+        NativeAnimatedHelper.API.setWaitingForIdentifier(nativeTag.toString());
+        NativeAnimatedHelper.API.updateAnimatedNodeConfig(
+          nativeTag,
+          this.__getNativeConfig(),
+        );
+        NativeAnimatedHelper.API.unsetWaitingForIdentifier(
+          nativeTag.toString(),
+        );
       }
     }
   }

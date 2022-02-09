@@ -259,6 +259,12 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
     saveCallback(@[@(valueNode.value)]);
 }
 
+- (void)updateAnimatedNodeConfig:(NSNumber *)tag
+                    config:(NSDictionary<NSString *, id> *)config
+{
+  // TODO (T111179606): Support platform colors for color animations
+}
+
 #pragma mark -- Drivers
 
 - (void)startAnimatingNode:(NSNumber *)animationId

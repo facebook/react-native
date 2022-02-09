@@ -16,15 +16,16 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.views.view.ColorUtil;
 
 /** Animated node that represents a color. */
-/*package*/ class ColorAnimatedNode extends AnimatedNode {
+/*package*/ class ColorAnimatedNode extends AnimatedNode
+    implements AnimatedNodeWithUpdateableConfig {
 
   private final NativeAnimatedNodesManager mNativeAnimatedNodesManager;
   private final ReactApplicationContext mReactApplicationContext;
-  private final int mRNodeId;
-  private final int mGNodeId;
-  private final int mBNodeId;
-  private final int mANodeId;
-  private final ReadableMap mNativeColor;
+  private int mRNodeId;
+  private int mGNodeId;
+  private int mBNodeId;
+  private int mANodeId;
+  private ReadableMap mNativeColor;
   private boolean mNativeColorApplied;
 
   public ColorAnimatedNode(
@@ -33,12 +34,7 @@ import com.facebook.react.views.view.ColorUtil;
       ReactApplicationContext reactApplicationContext) {
     mNativeAnimatedNodesManager = nativeAnimatedNodesManager;
     mReactApplicationContext = reactApplicationContext;
-    mRNodeId = config.getInt("r");
-    mGNodeId = config.getInt("g");
-    mBNodeId = config.getInt("b");
-    mANodeId = config.getInt("a");
-    mNativeColor = config.getMap("nativeColor");
-    tryApplyNativeColor();
+    onUpdateConfig(config);
   }
 
   public int getColor() {
@@ -55,6 +51,16 @@ import com.facebook.react.views.view.ColorUtil;
     double a = aNode.getValue();
 
     return ColorUtil.normalize(r, g, b, a);
+  }
+
+  public void onUpdateConfig(ReadableMap config) {
+    mRNodeId = config.getInt("r");
+    mGNodeId = config.getInt("g");
+    mBNodeId = config.getInt("b");
+    mANodeId = config.getInt("a");
+    mNativeColor = config.getMap("nativeColor");
+    mNativeColorApplied = false;
+    tryApplyNativeColor();
   }
 
   @Override
