@@ -48,11 +48,20 @@ const Text: React.AbstractComponent<
 
   const [isHighlighted, setHighlighted] = useState(false);
 
+  const _disabled =
+    restProps.disabled != null
+      ? restProps.disabled
+      : props.accessibilityState?.disabled;
+  const _accessibilityState =
+    _disabled !== props.accessibilityState?.disabled
+      ? {...props.accessibilityState, disabled: _disabled}
+      : props.accessibilityState;
+
   const isPressable =
     (onPress != null ||
       onLongPress != null ||
       onStartShouldSetResponder != null) &&
-    restProps.disabled !== true;
+    _disabled !== true;
 
   const initialized = useLazyInitialization(isPressable);
   const config = useMemo(
@@ -174,7 +183,9 @@ const Text: React.AbstractComponent<
       <NativeText
         {...restProps}
         {...eventHandlersForText}
+        disabled={_disabled}
         accessible={accessible !== false}
+        accessibilityState={_accessibilityState}
         allowFontScaling={allowFontScaling !== false}
         ellipsizeMode={ellipsizeMode ?? 'tail'}
         isHighlighted={isHighlighted}
