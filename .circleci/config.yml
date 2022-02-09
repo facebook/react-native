@@ -569,6 +569,8 @@ jobs:
     steps:
       - checkout
       - run_yarn
+      - attach_workspace:
+          at: .
 
       - run:
           name: Create Android template project
