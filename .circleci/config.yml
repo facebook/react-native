@@ -571,17 +571,14 @@ jobs:
       - run_yarn
 
       - run:
-          name: Bundle the latest version of ReactAndroid
-          command: ./gradlew :ReactAndroid:publishReleasePublicationToNpmRepository
-      
-      - run:
-          name: Setup the Android Template
+          name: Create Android template project
           command: |
-            # We pack the NPM package and install it with npm add.
-            npm pack
-            cd template
-            npm add ../react-native-1000.0.0.tgz
+            REPO_ROOT=$(pwd)
+            PACKAGE=$(cat build/react-native-package-version)
+            PATH_TO_PACKAGE="$REPO_ROOT/build/$PACKAGE"
+            npm add $PATH_TO_PACKAGE
             npm install
+            node "$REPO_ROOT/cli.js" init "$PROJECT_NAME" --template "$REPO_ROOT"
 
       - run:
           name: Build the template application
@@ -932,6 +929,8 @@ workflows:
             branches:
               ignore: gh-pages
       - test_android_template:
+          requires:
+            - build_npm_package
           filters:
             branches:
               ignore: gh-pages
