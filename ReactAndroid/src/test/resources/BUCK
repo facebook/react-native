@@ -1,16 +1,9 @@
-load(
-    "@fbsource//tools/build_defs:default_platform_defs.bzl",
-    "ANDROID",
-    "get_default_target_platform",
-)
-
 # Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
-load("@fbsource//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 
-fb_native.java_library(
+java_library(
     name = "robolectric",
     srcs = [],
     labels = [
@@ -21,5 +14,4 @@ fb_native.java_library(
     ],
     resources_root = ".",
     visibility = ["PUBLIC"],
-    default_target_platform = get_default_target_platform(ANDROID),
 )
