@@ -570,8 +570,8 @@ fb_native.remote_file(
 
 fb_native.remote_file(
     name = "core-binary-aar",
-    sha1 = "263deba7f9c24bd0cefb93c0aaaf402cc50828ee",
-    url = "mvn:androidx.core:core:aar:1.0.1",
+    sha1 = "b26edc58f29ca0671e60828a68582760f880acdd",
+    url = "mvn:androidx.core:core:aar:1.7.0",
 )
 
 fb_native.remote_file(
