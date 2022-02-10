@@ -48,8 +48,8 @@ void ViewShadowNode::initialize() noexcept {
 
   bool formsView = formsStackingContext ||
       isColorMeaningful(viewProps.backgroundColor) ||
-      isColorMeaningful(viewProps.foregroundColor) || viewProps.pointerEnter ||
-      viewProps.pointerLeave || viewProps.pointerMove ||
+      isColorMeaningful(viewProps.foregroundColor) ||
+      viewProps.events.bits.any() ||
       !(viewProps.yogaStyle.border() == YGStyle::Edges{}) ||
       !viewProps.testId.empty();
 

@@ -418,4 +418,29 @@ RCT_EXPORT_SHADOW_PROPERTY(onLayout, RCTDirectEventBlock)
 
 RCT_EXPORT_SHADOW_PROPERTY(direction, YGDirection)
 
+// The events below define the properties that are not used by native directly, but required in the view config for new
+// renderer to function.
+// They can be deleted after Static View Configs are rolled out.
+
+// PanResponder handlers
+RCT_CUSTOM_VIEW_PROPERTY(onMoveShouldSetResponder, BOOL, RCTView) {}
+RCT_CUSTOM_VIEW_PROPERTY(onMoveShouldSetResponderCapture, BOOL, RCTView) {}
+RCT_CUSTOM_VIEW_PROPERTY(onStartShouldSetResponder, BOOL, RCTView) {}
+RCT_CUSTOM_VIEW_PROPERTY(onStartShouldSetResponderCapture, BOOL, RCTView) {}
+RCT_CUSTOM_VIEW_PROPERTY(onResponderGrant, BOOL, RCTView) {}
+RCT_CUSTOM_VIEW_PROPERTY(onResponderReject, BOOL, RCTView) {}
+RCT_CUSTOM_VIEW_PROPERTY(onResponderStart, BOOL, RCTView) {}
+RCT_CUSTOM_VIEW_PROPERTY(onResponderEnd, BOOL, RCTView) {}
+RCT_CUSTOM_VIEW_PROPERTY(onResponderRelease, BOOL, RCTView) {}
+RCT_CUSTOM_VIEW_PROPERTY(onResponderMove, BOOL, RCTView) {}
+RCT_CUSTOM_VIEW_PROPERTY(onResponderTerminate, BOOL, RCTView) {}
+RCT_CUSTOM_VIEW_PROPERTY(onResponderTerminationRequest, BOOL, RCTView) {}
+RCT_CUSTOM_VIEW_PROPERTY(onShouldBlockNativeResponder, BOOL, RCTView) {}
+
+// Touch events
+RCT_CUSTOM_VIEW_PROPERTY(onTouchStart, BOOL, RCTView) {}
+RCT_CUSTOM_VIEW_PROPERTY(onTouchMove, BOOL, RCTView) {}
+RCT_CUSTOM_VIEW_PROPERTY(onTouchEnd, BOOL, RCTView) {}
+RCT_CUSTOM_VIEW_PROPERTY(onTouchCancel, BOOL, RCTView) {}
+
 @end

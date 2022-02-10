@@ -38,13 +38,13 @@ const PlatformBaseViewConfig: PartialViewConfigWithoutName =
             registrationName: 'onAccessibilityAction',
           },
           topPointerEnter: {
-            registrationName: 'pointerenter',
+            registrationName: 'onPointerEnter',
           },
           topPointerLeave: {
-            registrationName: 'pointerleave',
+            registrationName: 'onPointerLeave',
           },
           topPointerMove: {
-            registrationName: 'pointermove',
+            registrationName: 'onPointerMove',
           },
           onGestureHandlerEvent: DynamicallyInjectedByGestureHandler({
             registrationName: 'onGestureHandlerEvent',
@@ -219,9 +219,31 @@ const PlatformBaseViewConfig: PartialViewConfigWithoutName =
           position: true,
           onLayout: true,
 
-          pointerenter: true,
-          pointerleave: true,
-          pointermove: true,
+          // Pointer events
+          onPointerEnter: true,
+          onPointerLeave: true,
+          onPointerMove: true,
+
+          // PanResponder handlers
+          onMoveShouldSetResponder: true,
+          onMoveShouldSetResponderCapture: true,
+          onStartShouldSetResponder: true,
+          onStartShouldSetResponderCapture: true,
+          onResponderGrant: true,
+          onResponderReject: true,
+          onResponderStart: true,
+          onResponderEnd: true,
+          onResponderRelease: true,
+          onResponderMove: true,
+          onResponderTerminate: true,
+          onResponderTerminationRequest: true,
+          onShouldBlockNativeResponder: true,
+
+          // Touch events
+          onTouchStart: true,
+          onTouchMove: true,
+          onTouchEnd: true,
+          onTouchCancel: true,
 
           style: ReactNativeStyleAttributes,
         },
@@ -456,6 +478,27 @@ const PlatformBaseViewConfig: PartialViewConfigWithoutName =
             onAccessibilityAction: true,
             onAccessibilityEscape: true,
             onAccessibilityTap: true,
+
+            // PanResponder handlers
+            onMoveShouldSetResponder: true,
+            onMoveShouldSetResponderCapture: true,
+            onStartShouldSetResponder: true,
+            onStartShouldSetResponderCapture: true,
+            onResponderGrant: true,
+            onResponderReject: true,
+            onResponderStart: true,
+            onResponderEnd: true,
+            onResponderRelease: true,
+            onResponderMove: true,
+            onResponderTerminate: true,
+            onResponderTerminationRequest: true,
+            onShouldBlockNativeResponder: true,
+
+            // Touch events
+            onTouchStart: true,
+            onTouchMove: true,
+            onTouchEnd: true,
+            onTouchCancel: true,
           }),
         },
       };

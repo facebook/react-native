@@ -11,12 +11,53 @@
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Geometry.h>
 #include <array>
+#include <bitset>
 #include <cmath>
 
 namespace facebook {
 namespace react {
 
 enum class PointerEventsMode { Auto, None, BoxNone, BoxOnly };
+
+struct ViewEvents {
+  std::bitset<32> bits{};
+
+  enum class Offset : std::size_t {
+    // Pointer events
+    PointerEnter = 0,
+    PointerMove = 1,
+    PointerLeave = 2,
+
+    // PanResponder callbacks
+    MoveShouldSetResponder = 3,
+    MoveShouldSetResponderCapture = 4,
+    StartShouldSetResponder = 5,
+    StartShouldSetResponderCapture = 6,
+    ResponderGrant = 7,
+    ResponderReject = 8,
+    ResponderStart = 9,
+    ResponderEnd = 10,
+    ResponderRelease = 11,
+    ResponderMove = 12,
+    ResponderTerminate = 13,
+    ResponderTerminationRequest = 14,
+    ShouldBlockNativeResponder = 15,
+
+    // Touch events
+    TouchStart = 16,
+    TouchMove = 17,
+    TouchEnd = 18,
+    TouchCancel = 19,
+  };
+
+  constexpr bool operator[](const Offset offset) const {
+    return bits[static_cast<std::size_t>(offset)];
+  }
+
+  std::bitset<32>::reference operator[](const Offset offset) {
+    return bits[static_cast<std::size_t>(offset)];
+  }
+};
 
 enum class BackfaceVisibility { Auto, Visible, Hidden };
 
