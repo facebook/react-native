@@ -9,11 +9,11 @@
 #include <react/renderer/core/EventBeat.h>
 #include <react/renderer/uimanager/primitives.h>
 
-#include "AsyncEventBeatV2.h"
+#include "AsyncEventBeat.h"
 
 namespace facebook::react {
 
-AsyncEventBeatV2::AsyncEventBeatV2(
+AsyncEventBeat::AsyncEventBeat(
     EventBeat::SharedOwnerBox const &ownerBox,
     EventBeatManager *eventBeatManager,
     RuntimeExecutor runtimeExecutor,
@@ -25,11 +25,11 @@ AsyncEventBeatV2::AsyncEventBeatV2(
   eventBeatManager->addObserver(*this);
 }
 
-AsyncEventBeatV2::~AsyncEventBeatV2() {
+AsyncEventBeat::~AsyncEventBeat() {
   eventBeatManager_->removeObserver(*this);
 }
 
-void AsyncEventBeatV2::tick() const {
+void AsyncEventBeat::tick() const {
   if (!isRequested_ || isBeatCallbackScheduled_) {
     return;
   }
@@ -50,11 +50,11 @@ void AsyncEventBeatV2::tick() const {
   });
 }
 
-void AsyncEventBeatV2::induce() const {
+void AsyncEventBeat::induce() const {
   tick();
 }
 
-void AsyncEventBeatV2::request() const {
+void AsyncEventBeat::request() const {
   bool alreadyRequested = isRequested_;
   EventBeat::request();
   if (!alreadyRequested) {
