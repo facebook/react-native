@@ -21,7 +21,7 @@ end
 def pods(options = {})
   project 'RNTesterPods.xcodeproj'
 
-  fabric_enabled = true
+  fabric_enabled = false 
   puts "Building RNTester with Fabric #{fabric_enabled ? "enabled" : "disabled"}."
 
   prefix_path = "../.."

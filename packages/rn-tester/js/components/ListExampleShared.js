@@ -44,6 +44,7 @@ function genItemData(i): Item {
 }
 
 function genNewerItems(count: number, start: number = 0): Array<Item> {
+  console.log('RORY_DEBUG generating new items', {start, count});
   const dataBlob = [];
   for (let i = start; i < count + start; i++) {
     dataBlob.push(genItemData(i));
@@ -52,6 +53,7 @@ function genNewerItems(count: number, start: number = 0): Array<Item> {
 }
 
 function genOlderItems(count: number, start: number = 0): Array<Item> {
+  console.log('RORY_DEBUG generating older items', {start, count});
   const dataBlob = [];
   for (let i = count; i > 0; i--) {
     dataBlob.push(genItemData(start - i));

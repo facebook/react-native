@@ -463,9 +463,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     );
     invariant(
       index < getItemCount(data),
-      `scrollToIndex out of range: requested index ${index} is out of 0 to ${getItemCount(
-        data,
-      ) - 1}`,
+      `scrollToIndex out of range: requested index ${index} is out of 0 to ${
+        getItemCount(data) - 1
+      }`,
     );
     if (!getItemLayout && index > this._highestMeasuredFrameIndex) {
       invariant(
@@ -906,11 +906,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         );
       }
     }
-    const {
-      ListEmptyComponent,
-      ListFooterComponent,
-      ListHeaderComponent,
-    } = this.props;
+    const {ListEmptyComponent, ListFooterComponent, ListHeaderComponent} =
+      this.props;
     const {data, horizontal} = this.props;
     const isVirtualizationDisabled = this._isVirtualizationDisabled();
     const inversionStyle = this.props.inverted
@@ -935,15 +932,13 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       cells.push(
         <VirtualizedListCellContextProvider
           cellKey={this._getCellKey() + '-header'}
-          key="$header"
-        >
+          key="$header">
           <View
             onLayout={this._onLayoutHeader}
             style={StyleSheet.compose(
               inversionStyle,
               this.props.ListHeaderComponentStyle,
-            )}
-          >
+            )}>
             {
               // $FlowFixMe[incompatible-type] - Typing ReactNativeComponent revealed errors
               element
@@ -961,6 +956,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         ? -1
         : initialNumToRenderOrDefault(this.props.initialNumToRender) - 1;
       const {first, last} = this.state;
+      // console.log('RORY_DEBUG first and last in VirtualizedList.render', {
+      //   first,
+      //   last,
+      // });
       this._pushCells(
         cells,
         stickyHeaderIndices,
@@ -1010,6 +1009,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           const firstSpace =
             this.__getFrameMetricsApprox(first).offset -
             (initBlock.offset + initBlock.length);
+          // console.log('RORY_DEBUG frame metrics before inserting lead_spacer', {
+          //   initBlock,
+          //   firstSpace,
+          // });
           cells.push(
             <View key="$lead_spacer" style={{[spacerKey]: firstSpace}} />,
           );
@@ -1082,15 +1085,13 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       cells.push(
         <VirtualizedListCellContextProvider
           cellKey={this._getFooterCellKey()}
-          key="$footer"
-        >
+          key="$footer">
           <View
             onLayout={this._onLayoutFooter}
             style={StyleSheet.compose(
               inversionStyle,
               this.props.ListFooterComponentStyle,
-            )}
-          >
+            )}>
             {
               // $FlowFixMe[incompatible-type] - Typing ReactNativeComponent revealed errors
               element
@@ -1135,8 +1136,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           registerAsNestedChild: this._registerAsNestedChild,
           unregisterAsNestedChild: this._unregisterAsNestedChild,
           debugInfo: this._getDebugInfo(),
-        }}
-      >
+        }}>
         {React.cloneElement(
           (
             this.props.renderScrollComponent ||
@@ -1195,6 +1195,26 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         tuple.viewabilityHelper.resetViewableIndices();
       });
     }
+
+    const prevFirstKey =
+      Array.isArray(prevProps.data) && prevProps.data.length
+        ? prevProps.data[0].key
+        : undefined;
+    const firstKey =
+      Array.isArray(data) && data.length ? data[0].key : undefined;
+    const didPrependNewItems = firstKey !== prevFirstKey;
+    const prependedItemsOffset =
+      data.findIndex(item => item.key === prevFirstKey) ?? 0;
+    if (didPrependNewItems && prependedItemsOffset) {
+      console.log('RORY_DEBUG prepended new items', {
+        prependedItemsOffset,
+      });
+      this._updateScrollMetricsForPrependedItems(
+        data.slice(0),
+        prependedItemsOffset,
+      );
+    }
+
     // The `this._hiPriInProgress` is guaranteeing a hiPri cell update will only happen
     // once per fiber update. The `_scheduleCellsToRenderUpdate` will set it to true
     // if a hiPri update needs to perform. If `componentDidUpdate` is triggered with
@@ -1644,7 +1664,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const timestamp = e.timeStamp;
     let visibleLength = this._selectLength(e.nativeEvent.layoutMeasurement);
     let contentLength = this._selectLength(e.nativeEvent.contentSize);
+    console.log('RORY_DEBUG contentLength from onScroll', contentLength);
     let offset = this._selectOffset(e.nativeEvent.contentOffset);
+    console.log('RORY_DEBUG offset from onScroll', offset);
     let dOffset = offset - this._scrollMetrics.offset;
 
     if (this._isNestedWithSameOrientation()) {
@@ -1653,15 +1675,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         // know our offset from our offset from our parent
         return;
       }
-      ({
-        visibleLength,
-        contentLength,
-        offset,
-        dOffset,
-      } = this._convertParentScrollMetrics({
-        visibleLength,
-        offset,
-      }));
+      ({visibleLength, contentLength, offset, dOffset} =
+        this._convertParentScrollMetrics({
+          visibleLength,
+          offset,
+        }));
     }
 
     const dt = this._scrollMetrics.timestamp
@@ -1708,6 +1726,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const {first, last} = this.state;
     const {offset, visibleLength, velocity} = this._scrollMetrics;
     const itemCount = this.props.getItemCount(this.props.data);
+
+    // console.log(
+    //   'RORY_DEBUG state and metrics in _scheduleCellsToRenderUpdate',
+    //   {first, last, offset, visibleLength, velocity, itemCount},
+    // );
+
     let hiPri = false;
     const onStartReachedThreshold = onStartReachedThresholdOrDefault(
       this.props.onStartReachedThreshold,
@@ -1718,24 +1742,24 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     // Mark as high priority if we're close to the start of the first item
     // But only if there are items before the first rendered item
     if (first > 0) {
-      const distTop = offset - this.__getFrameMetricsApprox(first).offset;
+      const distStart = offset - this.__getFrameMetricsApprox(first).offset;
       hiPri =
         hiPri ||
-        distTop < 0 ||
+        distStart < 0 ||
         (velocity < -2 &&
-          distTop <
+          distStart <
             getScrollingThreshold(visibleLength, onStartReachedThreshold));
     }
     // Mark as high priority if we're close to the end of the last item
     // But only if there are items after the last rendered item
     if (last < itemCount - 1) {
-      const distBottom =
+      const distEnd =
         this.__getFrameMetricsApprox(last).offset - (offset + visibleLength);
       hiPri =
         hiPri ||
-        distBottom < 0 ||
+        distEnd < 0 ||
         (velocity > 2 &&
-          distBottom <
+          distEnd <
             getScrollingThreshold(visibleLength, onEndReachedThreshold));
     }
     // Only trigger high-priority updates if we've actually rendered cells,
@@ -1899,6 +1923,21 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       return newState;
     });
   };
+
+  _updateScrollMetricsForPrependedItems(prependedItems: Array<Item>) {
+    const offsetBefore = this._scrollMetrics.offset;
+    const {data, getItemLayout} = this.props;
+    this._scrollMetrics.offset += getItemLayout
+      ? prependedItems.reduce(
+          (offset, item) => offset + getItemLayout(data, item.index).length,
+          0,
+        )
+      : prependedItems.length * this._averageCellLength;
+    console.log('RORY_DEBUG updatedScrollMetricsForPrependedItems', {
+      offsetBefore,
+      offsetAfter: this._scrollMetrics.offset,
+    });
+  }
 
   _createViewToken = (index: number, isViewable: boolean) => {
     const {data, getItem} = this.props;
@@ -2157,8 +2196,7 @@ class CellRenderer extends React.Component<
       <CellRendererComponent
         {...this.props}
         style={cellStyle}
-        onLayout={onLayout}
-      >
+        onLayout={onLayout}>
         {element}
         {itemSeparator}
       </CellRendererComponent>

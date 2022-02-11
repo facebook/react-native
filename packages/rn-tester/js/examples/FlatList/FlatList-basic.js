@@ -263,6 +263,21 @@ class FlatListExample extends React.PureComponent<Props, State> {
       data: genOlderItems(100, state.first).concat(state.data),
       first: state.first - 100,
     }));
+    // const first = this.state.first;
+    // if (first <= 0) {
+    //   return;
+    // }
+    // this.setState(
+    //   state => ({
+    //     data: genOlderItems(100, state.first).concat(state.data),
+    //     first: state.first - 100,
+    //   }),
+    //   () => {
+    //     const index = this.state.last - first;
+    //     console.log('RORY_DEBUG scrolling to index', index);
+    //     this._listRef.scrollToIndex({viewPosition: 0.75, index});
+    //   },
+    // );
   };
   _onEndReached = () => {
     if (this.state.last >= 1000) {
