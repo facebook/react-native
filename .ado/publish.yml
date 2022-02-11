@@ -83,6 +83,17 @@ jobs:
         inputs:
           script: node .ado/removeWorkspaceConfig.js
 
+      - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+        displayName: 📒 Generate Manifest
+        inputs:
+          BuildDropPath: $(System.DefaultWorkingDirectory)
+
+      - task: PublishPipelineArtifact@1
+        displayName: 📒 Publish Manifest
+        inputs:
+          artifactName: SBom-RNGithubNpmJSPublish-$(System.JobAttempt)
+          targetPath: $(System.DefaultWorkingDirectory)/_manifest
+
       - script: npm publish --tag $(npmDistTag) --registry https://registry.npmjs.org/ --//registry.npmjs.org/:_authToken=$(npmAuthToken)
         displayName: Publish react-native-macos to npmjs.org
 
@@ -141,6 +152,18 @@ jobs:
           script: |
             npx beachball publish --branch origin/$(Build.SourceBranchName) -n $(npmAuthToken) -yes -m "applying package updates ***NO_CI***" --access public
 
+      # beachball modifies the package.json files so run manifest generation after it.
+      - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+        displayName: 📒 Generate Manifest
+        inputs:
+          BuildDropPath: $(System.DefaultWorkingDirectory)
+
+      - task: PublishPipelineArtifact@1
+        displayName: 📒 Publish Manifest
+        inputs:
+          artifactName: SBom-RNMacOSInitNpmJSPublish-$(System.JobAttempt)
+          targetPath: $(System.DefaultWorkingDirectory)/_manifest
+
   - job: RNGithubOfficePublish
     displayName: React-Native GitHub Publish to Office
     pool:
@@ -198,6 +221,11 @@ jobs:
           BUILD_SOURCEBRANCH: $(Build.SourceBranch)
           SYSTEM_ACCESSTOKEN: $(System.AccessToken)
           githubApiToken: $(githubApiToken)
+
+      - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+        displayName: 📒 Generate Manifest
+        inputs:
+          BuildDropPath: $(Build.StagingDirectory)/final
 
       - task: PublishBuildArtifacts@1
         displayName: 'Publish final artifacts'
