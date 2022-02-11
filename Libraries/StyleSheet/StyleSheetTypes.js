@@ -14,7 +14,7 @@ const AnimatedNode = require('../Animated/nodes/AnimatedNode');
 
 import type {NativeColorValue} from './PlatformColorValueTypes';
 
-export type ____ColorValue_Internal = null | string | NativeColorValue;
+export type ____ColorValue_Internal = null | string | number | NativeColorValue;
 
 export type ColorArrayValue = null | $ReadOnlyArray<____ColorValue_Internal>;
 export type PointValue = {|
