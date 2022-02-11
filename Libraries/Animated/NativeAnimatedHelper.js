@@ -368,7 +368,7 @@ function assertNativeAnimatedModule(): void {
 let _warnedMissingNativeAnimated = false;
 
 function shouldUseNativeDriver(
-  config: {...AnimationConfig, ...} | EventConfig,
+  config: $ReadOnly<{...AnimationConfig, ...}> | EventConfig,
 ): boolean {
   if (config.useNativeDriver == null) {
     console.warn(
