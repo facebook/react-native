@@ -55,6 +55,11 @@ class AccessibilityIOSExample extends React.Component<Props> {
             This view's children are hidden from the accessibility tree
           </Text>
         </View>
+        <View>
+          <Text accessibilityLanguage="it-IT">
+            This view's language should be `it-IT`
+          </Text>
+        </View>
       </RNTesterBlock>
     );
   }
