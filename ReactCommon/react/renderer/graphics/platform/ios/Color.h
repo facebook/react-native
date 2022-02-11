@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <butter/optional.h>
 #include <cmath>
 
 #include <folly/Hash.h>

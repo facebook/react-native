@@ -14,6 +14,7 @@
 #import <React/RCTFollyConvert.h>
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
+#import <react/config/ReactNativeConfig.h>
 #import <react/renderer/components/root/RootShadowNode.h>
 #import <react/renderer/core/LayoutableShadowNode.h>
 #import <react/renderer/core/RawProps.h>
@@ -315,6 +316,11 @@ static void RCTPerformMountInstructions(
   }
   if (props[@"opacity"] && componentView.layer.opacity != (float)newViewProps.opacity) {
     componentView.layer.opacity = newViewProps.opacity;
+  }
+
+  auto reactNativeConfig = _contextContainer->at<std::shared_ptr<ReactNativeConfig const>>("ReactNativeConfig");
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:finalize_updates_on_synchronous_update_view_ios")) {
+    [componentView finalizeUpdates:RNComponentViewUpdateMaskProps];
   }
 }
 

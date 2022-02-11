@@ -406,6 +406,7 @@ class JSI_EXPORT PropNameID : public Pointer {
   }
 
   /// Create a PropNameID from utf8 values.  The data is copied.
+  /// Results are undefined if \p utf8 contains invalid code points.
   static PropNameID
   forUtf8(Runtime& runtime, const uint8_t* utf8, size_t length) {
     return runtime.createPropNameIDFromUtf8(utf8, length);
@@ -413,6 +414,7 @@ class JSI_EXPORT PropNameID : public Pointer {
 
   /// Create a PropNameID from utf8-encoded octets stored in a
   /// std::string.  The string data is transformed and copied.
+  /// Results are undefined if \p utf8 contains invalid code points.
   static PropNameID forUtf8(Runtime& runtime, const std::string& utf8) {
     return runtime.createPropNameIDFromUtf8(
         reinterpret_cast<const uint8_t*>(utf8.data()), utf8.size());
@@ -502,14 +504,16 @@ class JSI_EXPORT String : public Pointer {
   }
 
   /// Create a JS string from utf8-encoded octets.  The string data is
-  /// transformed and copied.
+  /// transformed and copied.  Results are undefined if \p utf8 contains invalid
+  /// code points.
   static String
   createFromUtf8(Runtime& runtime, const uint8_t* utf8, size_t length) {
     return runtime.createStringFromUtf8(utf8, length);
   }
 
   /// Create a JS string from utf8-encoded octets stored in a
-  /// std::string.  The string data is transformed and copied.
+  /// std::string.  The string data is transformed and copied.  Results are
+  /// undefined if \p utf8 contains invalid code points.
   static String createFromUtf8(Runtime& runtime, const std::string& utf8) {
     return runtime.createStringFromUtf8(
         reinterpret_cast<const uint8_t*>(utf8.data()), utf8.length());

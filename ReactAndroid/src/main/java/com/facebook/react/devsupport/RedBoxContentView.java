@@ -7,21 +7,20 @@
 
 package com.facebook.react.devsupport;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.text.SpannedString;
 import android.text.method.LinkMovementMethod;
-import android.view.KeyEvent;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -32,6 +31,7 @@ import com.facebook.react.R;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
+import com.facebook.react.devsupport.interfaces.ErrorType;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler.ReportCompletedListener;
 import com.facebook.react.devsupport.interfaces.StackFrame;
@@ -42,15 +42,10 @@ import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 /** Dialog for displaying JS errors in an eye-catching form (red box). */
-/* package */ class RedBoxDialog implements AdapterView.OnItemClickListener {
+public class RedBoxContentView extends LinearLayout implements AdapterView.OnItemClickListener {
 
-  private final DevSupportManager mDevSupportManager;
-  private final DoubleTapReloadRecognizer mDoubleTapReloadRecognizer;
-  private final @Nullable RedBoxHandler mRedBoxHandler;
-  private final View mContentView;
-  private final Context mContext;
-
-  private @Nullable Dialog mDialog;
+  private @Nullable RedBoxHandler mRedBoxHandler;
+  private DevSupportManager mDevSupportManager;
   private ListView mStackView;
   private Button mReloadJsButton;
   private Button mDismissButton;
@@ -239,42 +234,50 @@ import org.json.JSONObject;
     }
   }
 
-  protected RedBoxDialog(
-      Context context, DevSupportManager devSupportManager, @Nullable RedBoxHandler redBoxHandler) {
-    mContext = context;
-    mContentView = (View) LayoutInflater.from(context).inflate(R.layout.redbox_view, null);
+  public RedBoxContentView(Context context) {
+    super(context);
+  }
 
+  public RedBoxContentView setDevSupportManager(DevSupportManager devSupportManager) {
     mDevSupportManager = devSupportManager;
-    mDoubleTapReloadRecognizer = new DoubleTapReloadRecognizer();
-    mRedBoxHandler = redBoxHandler;
+    return this;
+  }
 
-    mStackView = (ListView) mContentView.findViewById(R.id.rn_redbox_stack);
+  public RedBoxContentView setRedBoxHandler(@Nullable RedBoxHandler redBoxHandler) {
+    mRedBoxHandler = redBoxHandler;
+    return this;
+  }
+
+  public void init() {
+    LayoutInflater.from(getContext()).inflate(R.layout.redbox_view, this);
+
+    mStackView = (ListView) findViewById(R.id.rn_redbox_stack);
     mStackView.setOnItemClickListener(this);
 
-    mReloadJsButton = (Button) mContentView.findViewById(R.id.rn_redbox_reload_button);
+    mReloadJsButton = (Button) findViewById(R.id.rn_redbox_reload_button);
     mReloadJsButton.setOnClickListener(
         new View.OnClickListener() {
           @Override
           public void onClick(View v) {
-            mDevSupportManager.handleReloadJS();
+            Assertions.assertNotNull(mDevSupportManager).handleReloadJS();
           }
         });
-    mDismissButton = (Button) mContentView.findViewById(R.id.rn_redbox_dismiss_button);
+    mDismissButton = (Button) findViewById(R.id.rn_redbox_dismiss_button);
     mDismissButton.setOnClickListener(
         new View.OnClickListener() {
           @Override
           public void onClick(View v) {
-            dismiss();
+            Assertions.assertNotNull(mDevSupportManager).hideRedboxDialog();
           }
         });
 
     if (mRedBoxHandler != null && mRedBoxHandler.isReportEnabled()) {
-      mLoadingIndicator = (ProgressBar) mContentView.findViewById(R.id.rn_redbox_loading_indicator);
-      mLineSeparator = (View) mContentView.findViewById(R.id.rn_redbox_line_separator);
-      mReportTextView = (TextView) mContentView.findViewById(R.id.rn_redbox_report_label);
+      mLoadingIndicator = (ProgressBar) findViewById(R.id.rn_redbox_loading_indicator);
+      mLineSeparator = (View) findViewById(R.id.rn_redbox_line_separator);
+      mReportTextView = (TextView) findViewById(R.id.rn_redbox_report_label);
       mReportTextView.setMovementMethod(LinkMovementMethod.getInstance());
       mReportTextView.setHighlightColor(Color.TRANSPARENT);
-      mReportButton = (Button) mContentView.findViewById(R.id.rn_redbox_report_button);
+      mReportButton = (Button) findViewById(R.id.rn_redbox_report_button);
       mReportButton.setOnClickListener(mReportButtonOnClickListener);
     }
   }
@@ -298,44 +301,25 @@ import org.json.JSONObject;
 
   @Override
   public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-    new OpenStackFrameTask(mDevSupportManager)
+    new OpenStackFrameTask(Assertions.assertNotNull(mDevSupportManager))
         .executeOnExecutor(
             AsyncTask.THREAD_POOL_EXECUTOR, (StackFrame) mStackView.getAdapter().getItem(position));
   }
 
-  public boolean onKeyUp(int keyCode, KeyEvent event) {
-    if (keyCode == KeyEvent.KEYCODE_MENU) {
-      mDevSupportManager.showDevOptionsDialog();
-      return true;
+  /** Refresh the content view with latest errors from dev support manager */
+  public void refreshContentView() {
+    @Nullable String message = mDevSupportManager.getLastErrorTitle();
+    @Nullable StackFrame[] stack = mDevSupportManager.getLastErrorStack();
+    @Nullable ErrorType errorType = mDevSupportManager.getLastErrorType();
+    Pair<String, StackFrame[]> errorInfo =
+        mDevSupportManager.processErrorCustomizers(Pair.create(message, stack));
+    setExceptionDetails(errorInfo.first, errorInfo.second);
+
+    // JS errors are reported here after source mapping.
+    RedBoxHandler redBoxHandler = mDevSupportManager.getRedBoxHandler();
+    if (redBoxHandler != null) {
+      redBoxHandler.handleRedbox(message, stack, errorType);
+      resetReporting();
     }
-    if (mDoubleTapReloadRecognizer.didDoubleTapR(keyCode, mDialog.getCurrentFocus())) {
-      mDevSupportManager.handleReloadJS();
-    }
-    return mDialog.onKeyUp(keyCode, event);
-  }
-
-  public Context getContext() {
-    return mContext;
-  }
-
-  public View getContentView() {
-    return mContentView;
-  }
-
-  public boolean isShowing() {
-    return mDialog.isShowing();
-  }
-
-  public void show() {
-    if (mDialog == null) {
-      mDialog = new Dialog(mContext, R.style.Theme_Catalyst_RedBox);
-      mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-    }
-    mDialog.setContentView(mContentView);
-    mDialog.show();
-  }
-
-  public void dismiss() {
-    mDialog.dismiss();
   }
 }

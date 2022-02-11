@@ -6,6 +6,7 @@
  */
 
 import org.apache.tools.ant.taskdefs.condition.Os
+import org.gradle.internal.jvm.Jvm
 
 def config = project.hasProperty("react") ? project.react : [:];
 
@@ -127,6 +128,19 @@ android {
         resValue "integer", "react_native_dev_server_port", reactNativeDevServerPort()
         resValue "integer", "react_native_inspector_proxy_port", reactNativeInspectorProxyPort()
     }
+}
+
+def jvmVersion = Jvm.current().javaVersion.majorVersion
+if (jvmVersion.toInteger() <= 8) {
+    println "\n\n\n"
+    println "**************************************************************************************************************"
+    println "\n\n"
+    println "ERROR: requires JDK11 or higher."
+    println "Incompatible major version detected: '" + jvmVersion + "'"
+    println "\n\n"
+    println "**************************************************************************************************************"
+    println "\n\n\n"
+    System.exit(1)
 }
 
 afterEvaluate {

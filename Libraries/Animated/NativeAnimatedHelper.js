@@ -234,22 +234,36 @@ const API = {
 /**
  * Styles allowed by the native animated implementation.
  *
- * In general native animated implementation should support any numeric property that doesn't need
- * to be updated through the shadow view hierarchy (all non-layout properties).
+ * In general native animated implementation should support any numeric or color property that
+ * doesn't need to be updated through the shadow view hierarchy (all non-layout properties).
  */
+const SUPPORTED_COLOR_STYLES = {
+  backgroundColor: true,
+  borderBottomColor: true,
+  borderColor: true,
+  borderEndColor: true,
+  borderLeftColor: true,
+  borderRightColor: true,
+  borderStartColor: true,
+  borderTopColor: true,
+  color: true,
+  tintColor: true,
+};
+
 const SUPPORTED_STYLES = {
-  opacity: true,
-  transform: true,
-  borderRadius: true,
+  ...SUPPORTED_COLOR_STYLES,
   borderBottomEndRadius: true,
   borderBottomLeftRadius: true,
   borderBottomRightRadius: true,
   borderBottomStartRadius: true,
+  borderRadius: true,
   borderTopEndRadius: true,
   borderTopLeftRadius: true,
   borderTopRightRadius: true,
   borderTopStartRadius: true,
   elevation: true,
+  opacity: true,
+  transform: true,
   zIndex: true,
   /* ios styles */
   shadowOpacity: true,
@@ -397,6 +411,10 @@ function transformDataType(value: number | string): number | string {
 
 module.exports = {
   API,
+  SUPPORTED_STYLES,
+  SUPPORTED_COLOR_STYLES,
+  SUPPORTED_TRANSFORMS,
+  SUPPORTED_INTERPOLATION_PARAMS,
   addWhitelistedStyleProp,
   addWhitelistedTransformProp,
   addWhitelistedInterpolationParam,

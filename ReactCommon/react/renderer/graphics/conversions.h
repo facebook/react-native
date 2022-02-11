@@ -51,17 +51,7 @@ inline void fromRawValue(
 
 #ifdef ANDROID
 
-inline folly::dynamic toDynamic(const SharedColor &color) {
-  ColorComponents components = colorComponentsFromColor(color);
-  auto ratio = 255.f;
-  return (
-      ((int)round(components.alpha * ratio) & 0xff) << 24 |
-      ((int)round(components.red * ratio) & 0xff) << 16 |
-      ((int)round(components.green * ratio) & 0xff) << 8 |
-      ((int)round(components.blue * ratio) & 0xff));
-}
-
-inline int toMapBuffer(const SharedColor &color) {
+inline int toAndroidRepr(const SharedColor &color) {
   ColorComponents components = colorComponentsFromColor(color);
   auto ratio = 255.f;
   return (

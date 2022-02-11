@@ -22,18 +22,16 @@ export function DynamicallyInjectedByGestureHandler<T: {...}>(object: T): T {
 }
 
 /**
- * On iOS, ViewManager events declarations generate {eventName}: true entries
- * in ViewConfig valueAttributes. In our Static ViewConfig infra, we generate
- * these {eventName}: true entries during runtime by inspecting a ViewConfig's
- * bubblingEventTypes, and directEventTypes.
+ * On iOS, ViewManager event declarations generate {eventName}: true entries
+ * in ViewConfig valueAttributes. These entries aren't generated for Android.
+ * This annotation allows Static ViewConfigs to insert these entries into
+ * iOS but not Android.
  *
- * However, not all event declarations generate these {eventName}: true entries.
- * So, the ViewConfig infra generates extra {eventName}: true entries for some
- * events. These extra entries are harmless. So, the logic below makes the ViewConfig
- * Validator ignore all extra {eventName}: true entries in static ViewConfig
- * validAttributes.
+ * In the future, we want to remove this platform-inconsistency.
+ * This annotation also allows us to safely test this removal by setting
+ * global.RN$ViewConfigEventValidAttributesDisabled = true server-side.
  *
- * TODO(T110872225): Remove this logic
+ * TODO(T110872225): Remove this logic, after achieving platform-consistency
  */
 export function ConditionallyIgnoredEventHandlers<T: {[name: string]: true}>(
   value: T,
