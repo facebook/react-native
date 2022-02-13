@@ -126,6 +126,10 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
 
   NSInteger index = 0;
   bool isCancelButtonIndex = false;
+  // The handler for a button might get called more than once when tapping outside
+  // the action sheet on iPad. RCTResponseSenderBlock can only be called once so
+  // keep track of callback invocation here.
+  __block bool callbackInvoked = false;
   for (NSString *option in buttons) {
     UIAlertActionStyle style = UIAlertActionStyleDefault;
     if ([destructiveButtonIndices containsObject:@(index)]) {
@@ -139,7 +143,9 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
     UIAlertAction *actionButton = [UIAlertAction actionWithTitle:option
                                                            style:style
                                                          handler:^(__unused UIAlertAction *action) {
-                                                           callback(@[ @(localIndex) ]);
+                                                           if (!callbackInvoked) {
+                                                             callback(@[ @(localIndex) ]);
+                                                           }
                                                          }];
     if (isCancelButtonIndex) {
       [actionButton setValue:cancelButtonTintColor forKey:@"titleTextColor"];
