@@ -23,11 +23,7 @@ using namespace facebook::react;
 @interface RCTActionSheetManager () <UIActionSheetDelegate, NativeActionSheetManagerSpec>
 @end
 
-@implementation RCTActionSheetManager {
-  // Use NSMapTable, as UIAlertViews do not implement <NSCopying>
-  // which is required for NSDictionary keys
-  NSMapTable *_callbacks;
-}
+@implementation RCTActionSheetManager
 
 RCT_EXPORT_MODULE()
 
@@ -62,10 +58,6 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
   if (RCTRunningInAppExtension()) {
     RCTLogError(@"Unable to show action sheet from app extension");
     return;
-  }
-
-  if (!_callbacks) {
-    _callbacks = [NSMapTable strongToStrongObjectsMapTable];
   }
 
   NSString *title = options.title();
