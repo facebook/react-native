@@ -34,7 +34,7 @@ def hermesCommand = config.hermesCommand ?: "../../node_modules/hermes-engine/%O
 /**
  * Detects CLI location in a similar fashion to the React Native CLI
  */
-def detectCliPath(config) {
+def detectCliPath(config, reactRoot) {
     // 1. preconfigured path
     if (config.cliPath) {
         def cliJsAbsolute = new File(config.cliPath)
@@ -173,7 +173,7 @@ afterEvaluate {
 
         // Additional node and packager commandline arguments
         def nodeExecutableAndArgs = config.nodeExecutableAndArgs ?: ["node"]
-        def cliPath = detectCliPath(config)
+        def cliPath = detectCliPath(config, reactRoot)
 
         def execCommand = []
 
