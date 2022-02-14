@@ -144,6 +144,7 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
                                                            style:style
                                                          handler:^(__unused UIAlertAction *action) {
                                                            if (!callbackInvoked) {
+                                                             callbackInvoked = true;
                                                              callback(@[ @(localIndex) ]);
                                                            }
                                                          }];
