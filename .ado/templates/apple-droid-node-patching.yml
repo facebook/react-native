@@ -5,4 +5,4 @@ steps:
   - task: CmdLine@2
     displayName: Apply Android specific patches for Office consumption
     inputs:
-      script: node $(System.DefaultWorkingDirectory)/android-patches/patching-tool/bundle/bundle.js patch $(System.DefaultWorkingDirectory) Build OfficeRNHost V8 Focus MAC ImageColor --patch-store $(System.DefaultWorkingDirectory)/android-patches/patches --log-folder $(System.DefaultWorkingDirectory)/android-patches/logs --confirm ${{ parameters.apply_office_patches }}
+      script: node $(System.DefaultWorkingDirectory)/android-patches/patching-tool/bundle/bundle.js patch $(System.DefaultWorkingDirectory) Build OfficeRNHost V8 Focus MAC ImageColor JniUtils RootViewAttach --patch-store $(System.DefaultWorkingDirectory)/android-patches/patches --log-folder $(System.DefaultWorkingDirectory)/android-patches/logs --confirm ${{ parameters.apply_office_patches }}

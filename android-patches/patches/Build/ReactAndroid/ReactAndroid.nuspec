@@ -1,6 +1,6 @@
---- /dev/null	2022-01-12 17:14:59.000000000 -0800
-+++ /var/folders/vs/8_b205053dddbcv7btj0w0v80000gn/T/update-1h8V3n/merge/Build/ReactAndroid/ReactAndroid.nuspec	2022-01-12 15:04:31.000000000 -0800
-@@ -0,0 +1,242 @@
+--- /dev/ReactAndroid/ReactAndroid.nuspec	1969-12-31 16:00:00.000000000 -0800
++++ /dev/ReactAndroid/ReactAndroid.nuspec	2022-02-13 23:24:19.927074747 -0800
+@@ -0,0 +1,262 @@
 +<?xml version="1.0" encoding="utf-8"?>
 +<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 +  <metadata>
@@ -120,6 +120,16 @@
 +    <file src="build\react-ndk\all\x86\libturbomodulejsijni.so" target="lib\droidx86"/>
 +    <file src="build\react-ndk\all\arm64-v8a\libturbomodulejsijni.so" target="lib\droidarm64"/>
 +
++    <file src="build\react-ndk\all\x86_64\libjsi.so" target="lib\droidx64"/>
++    <file src="build\react-ndk\all\armeabi-v7a\libjsi.so" target="lib\droidarm"/>
++    <file src="build\react-ndk\all\x86\libjsi.so" target="lib\droidx86"/>
++    <file src="build\react-ndk\all\arm64-v8a\libjsi.so" target="lib\droidarm64"/>
++
++    <file src="build\react-ndk\all\x86_64\liblogger.so" target="lib\droidx64"/>
++    <file src="build\react-ndk\all\armeabi-v7a\liblogger.so" target="lib\droidarm"/>
++    <file src="build\react-ndk\all\x86\liblogger.so" target="lib\droidx86"/>
++    <file src="build\react-ndk\all\arm64-v8a\liblogger.so" target="lib\droidarm64"/>
++
 +    <!-- Unstripped binaries -->
 +    <file src="build\tmp\buildReactNdkLib\local\x86_64\libfb.so" target="lib\droidx64\unstripped"/>
 +    <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libfb.so" target="lib\droidarm\unstripped"/>
@@ -225,7 +235,17 @@
 +    <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libturbomodulejsijni.so" target="lib\droidarm\unstripped"/>
 +    <file src="build\tmp\buildReactNdkLib\local\x86\libturbomodulejsijni.so" target="lib\droidx86\unstripped"/>
 +    <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libturbomodulejsijni.so" target="lib\droidarm64\unstripped"/>
-+    
++
++    <file src="build\tmp\buildReactNdkLib\local\x86_64\libjsi.so" target="lib\droidx64\unstripped"/>
++    <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libjsi.so" target="lib\droidarm\unstripped"/>
++    <file src="build\tmp\buildReactNdkLib\local\x86\libjsi.so" target="lib\droidx86\unstripped"/>
++    <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libjsi.so" target="lib\droidarm64\unstripped"/>
++
++    <file src="build\tmp\buildReactNdkLib\local\x86_64\liblogger.so" target="lib\droidx64\unstripped"/>
++    <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\liblogger.so" target="lib\droidarm\unstripped"/>
++    <file src="build\tmp\buildReactNdkLib\local\x86\liblogger.so" target="lib\droidx86\unstripped"/>
++    <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\liblogger.so" target="lib\droidarm64\unstripped"/>
++
 +    <!-- AAR and POM -->
 +    <file src="..\android\com\**\*" target="maven\com"/>
 +
