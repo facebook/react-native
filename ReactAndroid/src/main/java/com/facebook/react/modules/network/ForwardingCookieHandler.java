@@ -147,10 +147,9 @@ public class ForwardingCookieHandler extends CookieHandler {
         // as that is somewhat consistent across OEMs.
         // For instance, the Exception thrown on OxygenOS 11 is a RuntimeException but the message contains the required strings.
         // https://android.googlesource.com/platform/frameworks/base/+/master/core/java/android/webkit/WebViewFactory.java#348
-        if (message!=null && 
-            (message.contains("WebView provider") 
-              || message.contains("No WebView installed")
-                || message.contains("WebView"))) {
+        if (exception.getClass().getCanonicalName().contains("MissingWebViewPackageException") || 
+            (message!=null && (message.contains("WebView provider") ||
+              message.contains("No WebView installed")))) {
             return null;
         } else {
           throw exception;
