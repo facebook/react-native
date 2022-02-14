@@ -1012,6 +1012,7 @@ public class ReactInstanceManager {
     mReactInstanceEventListeners.remove(listener);
   }
 
+  /** @return current ReactApplicationContext */
   @VisibleForTesting
   public @Nullable ReactContext getCurrentReactContext() {
     synchronized (mReactContextLock) {
