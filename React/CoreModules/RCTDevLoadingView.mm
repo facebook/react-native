@@ -266,7 +266,8 @@ RCT_EXPORT_METHOD(hide)
 
 - (void)showOfflineMessage
 {
-  dispatch_async(dispatch_get_main_queue(), ^{
+  // [TODO(macOS GH#774) - isDarkModeEnabled should only be run on the main thread
+  RCTExecuteOnMainQueue(^{
     RCTUIColor *color = [RCTUIColor whiteColor]; // TODO(macOS GH#774)
     RCTUIColor *backgroundColor = [RCTUIColor blackColor]; // TODO(macOS GH#774)
 
@@ -278,6 +279,7 @@ RCT_EXPORT_METHOD(hide)
     NSString *message = [NSString stringWithFormat:@"Connect to %@ to develop JavaScript.", RCT_PACKAGER_NAME];
     [self showMessage:message color:color backgroundColor:backgroundColor];
   });
+  // ]TODO(macOS GH#774)
 }
 
 - (BOOL)isDarkModeEnabled
