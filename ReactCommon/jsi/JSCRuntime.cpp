@@ -151,6 +151,7 @@ class JSCRuntime : public jsi::Runtime {
   jsi::PropNameID createPropNameIDFromUtf8(const uint8_t *utf8, size_t length)
       override;
   jsi::PropNameID createPropNameIDFromString(const jsi::String &str) override;
+  jsi::PropNameID createPropNameIDFromSymbol(const jsi::Symbol &sym) override;
   std::string utf8(const jsi::PropNameID &) override;
   bool compare(const jsi::PropNameID &, const jsi::PropNameID &) override;
 
@@ -651,6 +652,13 @@ jsi::PropNameID JSCRuntime::createPropNameIDFromUtf8(
 
 jsi::PropNameID JSCRuntime::createPropNameIDFromString(const jsi::String &str) {
   return createPropNameID(stringRef(str));
+}
+
+jsi::PropNameID JSCRuntime::createPropNameIDFromSymbol(const jsi::Symbol &sym) {
+  // TODO: Support for symbols through the native API in JSC is very limited.
+  // While we could construct a PropNameID here, we would not be able to get a
+  // symbol property through the C++ API.
+  throw std::logic_error("Not implemented");
 }
 
 std::string JSCRuntime::utf8(const jsi::PropNameID &sym) {
