@@ -33,7 +33,7 @@ export interface UIManagerJSInterface extends Spec {
 
 const UIManager: UIManagerJSInterface =
   global.RN$Bridgeless === true
-    ? require('./DummyUIManager')
+    ? require('./BridgelessUIManager')
     : require('./PaperUIManager');
 
 module.exports = UIManager;

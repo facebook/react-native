@@ -1070,7 +1070,7 @@ const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/
 const {UIManager} = require(\\"react-native\\")
 
 let nativeComponentName = 'NativeComponentName';
-if (global.__nativeComponentRegistry__hasComponent) {
+if (global.RN$Bridgeless) {
   if (UIManager.hasViewManagerConfig('NativeComponentName')) {
     nativeComponentName = 'NativeComponentName';
   } else if (UIManager.hasViewManagerConfig('DeprecatedNativeComponentName')) {
