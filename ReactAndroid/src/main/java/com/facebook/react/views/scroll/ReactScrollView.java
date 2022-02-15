@@ -954,10 +954,13 @@ public class ReactScrollView extends ScrollView
   }
 
   /**
-   * Calls `updateFabricScrollState` and updates state.
+   * Calls `super.scrollTo` and updates state.
    *
-   * <p>`scrollTo` changes `contentOffset` and we need to keep `contentOffset` in sync between
-   * scroll view and state. Calling ScrollView's `scrollTo` doesn't update state.
+   * <p>`super.scrollTo` changes `contentOffset` and we need to keep `contentOffset` in sync between
+   * scroll view and state.
+   *
+   * <p>Note that while we can override scrollTo, we *cannot* override `smoothScrollTo` because it
+   * is final. See `reactSmoothScrollTo`.
    */
   @Override
   public void scrollTo(int x, int y) {
@@ -967,7 +970,7 @@ public class ReactScrollView extends ScrollView
   }
 
   private boolean isContentReady() {
-    View child = getChildAt(0);
+    View child = getContentView();
     return child != null && child.getWidth() != 0 && child.getHeight() != 0;
   }
 

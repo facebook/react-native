@@ -661,8 +661,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   }
 
   private View getContentView() {
-    View contentView = getChildAt(0);
-    return contentView;
+    return getChildAt(0);
   }
 
   public void setEndFillColor(int color) {
@@ -1191,12 +1190,13 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     }
 
     super.scrollTo(x, y);
-    // The final scroll position might be different from (x, y). For example, we may need to scroll
-    // to the last item in the list, but that item cannot be move to the start position of the view.
-    final int actualX = getScrollX();
-    final int actualY = getScrollY();
-    ReactScrollViewHelper.updateFabricScrollState(this, actualX, actualY);
-    setPendingContentOffsets(actualX, actualY);
+    ReactScrollViewHelper.updateFabricScrollState(this);
+    setPendingContentOffsets(x, y);
+  }
+
+  private boolean isContentReady() {
+    View child = getContentView();
+    return child != null && child.getWidth() != 0 && child.getHeight() != 0;
   }
 
   /**
@@ -1210,8 +1210,8 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     if (DEBUG_MODE) {
       FLog.i(TAG, "setPendingContentOffsets[%d] x %d y %d", getId(), x, y);
     }
-    View child = getContentView();
-    if (child != null && child.getWidth() != 0 && child.getHeight() != 0) {
+
+    if (isContentReady()) {
       pendingContentOffsetX = UNSET_CONTENT_OFFSET;
       pendingContentOffsetY = UNSET_CONTENT_OFFSET;
     } else {
