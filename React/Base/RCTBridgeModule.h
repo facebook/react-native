@@ -441,7 +441,7 @@ typedef NSURL * (^RCTBridgelessBundleURLGetter)(void);
                            andSetter:(RCTBridgelessBundleURLSetter)setter
                     andDefaultGetter:(RCTBridgelessBundleURLGetter)defaultGetter;
 - (void)resetBundleURL;
-@property NSURL *bundleURL;
+@property (strong) NSURL *bundleURL;
 @end
 
 typedef RCTPlatformView * (^RCTBridgelessComponentViewProvider)(NSNumber *); // TODO(macOS GH#774)
