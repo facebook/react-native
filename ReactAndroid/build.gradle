@@ -418,6 +418,10 @@ afterEvaluate {
 
     // Needed as some of the native sources needs to be downloaded
     // before configureNdkBuildDebug could be executed.
+    reactNativeArchitectures().each { architecture ->
+        tasks.named("configureNdkBuildDebug[${architecture}]") { dependsOn(preBuild) }
+        tasks.named("configureNdkBuildRelease[${architecture}]") { dependsOn(preBuild) }
+    }
     configureNdkBuildDebug.dependsOn(preBuild)
     configureNdkBuildRelease.dependsOn(preBuild)
 
