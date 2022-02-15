@@ -116,11 +116,11 @@ public class ReadableMapBuffer implements Iterable<ReadableMapBuffer.MapBufferEn
 
   private int getTypedValueOffsetForKey(int key, DataType expected) {
     int bucketIndex = getBucketIndexForKey(key);
-    DataType dataType = readDataType(bucketIndex);
     if (bucketIndex == -1) {
       throw new IllegalArgumentException("Key not found: " + key);
     }
 
+    DataType dataType = readDataType(bucketIndex);
     if (dataType != expected) {
       throw new IllegalStateException(
           "Expected "

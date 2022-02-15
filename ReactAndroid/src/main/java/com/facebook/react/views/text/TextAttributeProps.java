@@ -48,7 +48,7 @@ public class TextAttributeProps {
   public static final short TA_KEY_TEXT_DECORATION_COLOR = 14;
   public static final short TA_KEY_TEXT_DECORATION_LINE = 15;
   public static final short TA_KEY_TEXT_DECORATION_STYLE = 16;
-  public static final short TA_KEY_TEXT_SHADOW_RAIDUS = 18;
+  public static final short TA_KEY_TEXT_SHADOW_RADIUS = 18;
   public static final short TA_KEY_TEXT_SHADOW_COLOR = 19;
   public static final short TA_KEY_IS_HIGHLIGHTED = 20;
   public static final short TA_KEY_LAYOUT_DIRECTION = 21;
@@ -193,8 +193,8 @@ public class TextAttributeProps {
           break;
         case TA_KEY_TEXT_DECORATION_STYLE:
           break;
-        case TA_KEY_TEXT_SHADOW_RAIDUS:
-          result.setTextShadowRadius(entry.getInt());
+        case TA_KEY_TEXT_SHADOW_RADIUS:
+          result.setTextShadowRadius((float) entry.getDouble());
           break;
         case TA_KEY_TEXT_SHADOW_COLOR:
           result.setTextShadowColor(entry.getInt());
@@ -243,7 +243,7 @@ public class TextAttributeProps {
     result.setTextDecorationLine(getStringProp(props, ViewProps.TEXT_DECORATION_LINE));
     result.setTextShadowOffset(
         props.hasKey(PROP_SHADOW_OFFSET) ? props.getMap(PROP_SHADOW_OFFSET) : null);
-    result.setTextShadowRadius(getIntProp(props, PROP_SHADOW_RADIUS, 1));
+    result.setTextShadowRadius(getFloatProp(props, PROP_SHADOW_RADIUS, 1));
     result.setTextShadowColor(getIntProp(props, PROP_SHADOW_COLOR, DEFAULT_TEXT_SHADOW_COLOR));
     result.setTextTransform(getStringProp(props, PROP_TEXT_TRANSFORM));
     result.setLayoutDirection(getStringProp(props, ViewProps.LAYOUT_DIRECTION));

@@ -46,7 +46,7 @@ public class StateWrapperImpl implements StateWrapper {
 
   @Override
   @Nullable
-  public ReadableMapBuffer getStatDataMapBuffer() {
+  public ReadableMapBuffer getStateDataMapBuffer() {
     if (mDestroyed) {
       FLog.e(TAG, "Race between StateWrapperImpl destruction and getState");
       return null;
