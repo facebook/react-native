@@ -24,6 +24,7 @@ import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.SurfaceDelegateFactory;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.devsupport.DefaultDevSupportManagerFactory;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
@@ -34,7 +35,6 @@ import com.facebook.react.jscexecutor.JSCExecutorFactory;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.uimanager.UIImplementationProvider;
-import com.facebook.react.BuildConfig;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -70,7 +70,7 @@ public class ReactInstanceManagerBuilder {
   private boolean enableHermes = false;
 
   /* package protected */ ReactInstanceManagerBuilder() {
-    enableHermes = BuildConfig.HERMES_ENABLED;
+    enableHermes = ReactBuildConfig.HERMES_ENABLED;
   }
 
   /** Sets a provider of {@link UIImplementation}. Uses default provider if null is passed. */

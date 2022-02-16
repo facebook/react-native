@@ -21,4 +21,5 @@ public class ReactBuildConfig {
   public static final boolean IS_INTERNAL_BUILD = BuildConfig.IS_INTERNAL_BUILD;
   public static final int EXOPACKAGE_FLAGS = BuildConfig.EXOPACKAGE_FLAGS;
   public static final int HERMES_BYTECODE_VERSION = BuildConfig.HERMES_BYTECODE_VERSION;
+  public static final boolean HERMES_ENABLED = BuildConfig.HERMES_ENABLED;
 }
