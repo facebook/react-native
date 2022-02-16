@@ -647,8 +647,8 @@ if (__DEV__) {
       invariant(
         false,
         'ViewPagerAndroid has been removed from React Native. ' +
-          "It can now be installed and imported from '@react-native-community/viewpager' instead of 'react-native'. " +
-          'See https://github.com/callstack/react-native-viewpager',
+          "It can now be installed and imported from 'react-native-pager-view' instead of 'react-native'. " +
+          'See https://github.com/callstack/react-native-pager-view',
       );
     },
   });
