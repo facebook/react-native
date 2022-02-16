@@ -353,10 +353,10 @@ public class ReactInstanceManagerBuilder {
       // If JSC is included, use it as normal
       initializeSoLoaderIfNecessary(applicationContext);
       // Relying solely on try catch block and loading jsc even when
-      // project is suing hermes can lead to launchtime crashes expecially in
+      // project is using hermes can lead to launch-time crashes especially in
       // monorepo architectures and hybrid apps using both native android
       // and react native.
-      // So we use the value of enableHermes from build.gradle to decide which
+      // So we can use the value of enableHermes from build.gradle to decide which
       // library to load at launch
       if(enableHermes){
         HermesExecutor.loadLibrary();
