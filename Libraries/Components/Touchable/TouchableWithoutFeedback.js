@@ -68,8 +68,8 @@ type Props = $ReadOnly<{|
   onPress?: ?(event: PressEvent) => mixed,
   onPressIn?: ?(event: PressEvent) => mixed,
   onPressOut?: ?(event: PressEvent) => mixed,
-  acceptsFirstMouse?: ?boolean, // [TODO(macOS GH#774)
-  acceptsKeyboardFocus?: ?boolean,
+  // [TODO(macOS GH#774)
+  acceptsFirstMouse?: ?boolean,
   enableFocusRing?: ?boolean,
   tooltip?: ?string,
   onMouseEnter?: (event: MouseEvent) => void,
@@ -77,7 +77,8 @@ type Props = $ReadOnly<{|
   onDragEnter?: (event: MouseEvent) => void,
   onDragLeave?: (event: MouseEvent) => void,
   onDrop?: (event: MouseEvent) => void,
-  draggedTypes?: ?DraggedTypesType, // ]TODO(macOS GH#774)
+  draggedTypes?: ?DraggedTypesType,
+  // ]TODO(macOS GH#774)
   pressRetentionOffset?: ?EdgeInsetsProp,
   rejectResponderTermination?: ?boolean,
   testID?: ?string,
@@ -157,23 +158,12 @@ class TouchableWithoutFeedback extends React.Component<Props, State> {
           : this.props.accessibilityState,
       focusable:
         this.props.focusable !== false && this.props.onPress !== undefined,
+      // [TODO(macOS GH#774)
       acceptsFirstMouse:
-        this.props.acceptsFirstMouse !== false && !this.props.disabled, // [TODO(macOS GH#774)
-      // [macOS #656 We need to reconcile between focusable and acceptsKeyboardFocus
-      // (e.g. if one is explicitly disabled, we shouldn't implicitly enable the
-      // other on the underlying view). Prefer passing acceptsKeyboardFocus if
-      // passed explicitly to preserve original behavior, and trigger view warnings.
-      ...(this.props.acceptsKeyboardFocus !== undefined
-        ? {
-            acceptsKeyboardFocus:
-              this.props.acceptsKeyboardFocus === true && !this.props.disabled,
-          }
-        : {
-            focusable: this.props.focusable !== false && !this.props.disabled,
-          }),
-      // macOS]
+        this.props.acceptsFirstMouse !== false && !this.props.disabled,
       enableFocusRing:
-        this.props.enableFocusRing !== false && !this.props.disabled, // ]TODO(macOS GH#774)
+        this.props.enableFocusRing !== false && !this.props.disabled,
+      // ]TODO(macOS GH#774)
     };
     for (const prop of PASSTHROUGH_PROPS) {
       if (this.props[prop] !== undefined) {

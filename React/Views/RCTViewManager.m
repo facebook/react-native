@@ -385,12 +385,6 @@ RCT_CUSTOM_VIEW_PROPERTY(acceptsFirstMouse, BOOL, RCTView)
     view.acceptsFirstMouse = json ? [RCTConvert BOOL:json] : defaultView.acceptsFirstMouse;
   }
 }
-RCT_CUSTOM_VIEW_PROPERTY(acceptsKeyboardFocus, BOOL, RCTView)
-{
-  if ([view respondsToSelector:@selector(setFocusable:)]) {
-    view.focusable = json ? [RCTConvert BOOL:json] : defaultView.focusable;
-  }
-}
 RCT_CUSTOM_VIEW_PROPERTY(focusable, BOOL, RCTView)
 {
   if ([view respondsToSelector:@selector(setFocusable:)]) {

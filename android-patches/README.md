@@ -1,24 +1,39 @@
-This is out of data .. TBD.
+# Android Patches for react-native internal deployment
 
-#### For command line options, try
+This folder contains the patches applied during CI flow to this codebase, when generating the Office "flavour" of `react-native`.
 
-> node_modules\.bin\ts-node.cmd src\index.ts --help
+This is how it happens:
 
-###### For detailed options on each commands,
+* `.ado/publish.yml` has a job called `RNGithubOfficePublish`
+* That uses as template `templates/android-build-office.yml`
+* That when used invokes `.ado/templates/apple-droid-node-patching.yml` passing the parameter `apply_office_patches` as `true`
+* This last file is the one that *actually* triggers the patching script, in the formula as follows:
 
-> node_modules\.bin\ts-node.cmd src\index.ts diff --help
-> node_modules\.bin\ts-node.cmd src\index.ts patch --help
+```sh
+node $(System.DefaultWorkingDirectory)/android-patches/bundle/bundle.js patch $(System.DefaultWorkingDirectory) Build OfficeRNHost V8 Focus MAC ImageColor --patch-store $(System.DefaultWorkingDirectory)/android-patches/patches --log-folder $(System.DefaultWorkingDirectory)/android-patches/logs --confirm ${{ parameters.apply_office_patches }}
+```
 
-##### Examples
+Splitting this up clarifies how the patching command works:
 
-###### To create diff-patches
+* `node ./android-patches/bundle/bundle.js`
+  * The command is invoked via node directly using the bundled version
+* `patch .`
+  * The patch command, invoked targeting the root of the fork
+* `Build OfficeRNHost V8 Focus MAC ImageColor`
+  * Passing the name of each patch's folder.
+* `--patch-store ./android-patches/patches`
+  * Passing the folder that contains the subfolders listed above
+* `--log-folder ./android-patches/logs`
+  * Folder for logs
+* `--confirm true`
+  * Flag stating that yes, I want to run it
 
-> ts-node.cmd src\index.ts diff e:\github\ms-react-native-forpatch e:\github\fb-react-native-forpatch-base
+## The patching tool
 
-###### To apply diff-patches
+As you can see from above, we use the tool directly via a generated `bundle.js`. This is because the tool itself was a fork of [`patch-package`](https://github.com/ds300/patch-package) that underwent a series of changes ([more details here](https://github.com/microsoft/react-native-macos/pull/254#issuecomment-592594790)).
 
-> node_modules\.bin\ts-node.cmd src\index.ts patch E:\github\fb-rn-p BuildAndThirdPartyFixes V8Integration --patch-store E:\github\office-android-patches\patches-droid-office-grouped
+You can find more details about this tool in `./patching-tool/README.md`.
 
-###### To reverse-patch the dirty fork
+## How to create a new patch
 
-> node_modules\.bin\ts-node src\index.ts patch E:\github\ms-react-native-forpatch BuildAndThirdPartyFixes --patch-store E:\github\office-android-patches\patches-droid-office-grouped --reverse
+*To Be Added*

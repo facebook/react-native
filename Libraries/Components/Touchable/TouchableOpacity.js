@@ -266,14 +266,6 @@ class TouchableOpacity extends React.Component<Props, State> {
         accessibilityLiveRegion={this.props.accessibilityLiveRegion}
         accessibilityViewIsModal={this.props.accessibilityViewIsModal}
         accessibilityElementsHidden={this.props.accessibilityElementsHidden}
-        acceptsFirstMouse={
-          this.props.acceptsFirstMouse !== false && !this.props.disabled
-        } // TODO(macOS GH#774)
-        enableFocusRing={
-          (this.props.enableFocusRing === undefined ||
-            this.props.enableFocusRing === true) &&
-          !this.props.disabled
-        } // TODO(macOS GH#774)
         style={[this.props.style, {opacity: this.state.anim}]}
         nativeID={this.props.nativeID}
         testID={this.props.testID}
@@ -285,33 +277,26 @@ class TouchableOpacity extends React.Component<Props, State> {
         nextFocusUp={this.props.nextFocusUp}
         hasTVPreferredFocus={this.props.hasTVPreferredFocus}
         hitSlop={this.props.hitSlop}
-        // [macOS #656 We need to reconcile between focusable and acceptsKeyboardFocus
-        // (e.g. if one is explicitly disabled, we shouldn't implicitly enable the
-        // other on the underlying view). Prefer passing acceptsKeyboardFocus if
-        // passed explicitly to preserve original behavior, and trigger view warnings.
-        {...(this.props.acceptsKeyboardFocus !== undefined
-          ? {
-              acceptsKeyboardFocus:
-                this.props.acceptsKeyboardFocus === true &&
-                !this.props.disabled,
-            }
-          : {
-              focusable: this.props.focusable !== false && !this.props.disabled,
-            })}
-        // macOS]
-        tooltip={this.props.tooltip} // TODO(macOS/win GH#774)
-        onMouseEnter={this.props.onMouseEnter} // [TODO(macOS GH#774)
+        // [TODO(macOS GH#774)
+        acceptsFirstMouse={
+          this.props.acceptsFirstMouse !== false && !this.props.disabled
+        }
+        enableFocusRing={
+          (this.props.enableFocusRing === undefined ||
+            this.props.enableFocusRing === true) &&
+          !this.props.disabled
+        }
+        focusable={this.props.focusable !== false && !this.props.disabled}
+        tooltip={this.props.tooltip}
+        onMouseEnter={this.props.onMouseEnter}
         onMouseLeave={this.props.onMouseLeave}
         onDragEnter={this.props.onDragEnter}
         onDragLeave={this.props.onDragLeave}
         onDrop={this.props.onDrop}
         onFocus={this.props.onFocus}
         onBlur={this.props.onBlur}
-        onKeyDown={this.props.onKeyDown}
-        onKeyUp={this.props.onKeyUp}
-        validKeysDown={this.props.validKeysDown}
-        validKeysUp={this.props.validKeysUp}
-        draggedTypes={this.props.draggedTypes} // ]TODO(macOS GH#774)
+        draggedTypes={this.props.draggedTypes}
+        // ]TODO(macOS/win GH#774)
         ref={this.props.hostRef}
         {...eventHandlersWithoutBlurAndFocus}>
         {this.props.children}
