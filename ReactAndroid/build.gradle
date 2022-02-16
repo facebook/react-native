@@ -44,6 +44,10 @@ def boostPath = dependenciesPath ?: System.getenv("REACT_NATIVE_BOOST_PATH")
 // Setup build type for NDK, supported values: {debug, release}
 def nativeBuildType = System.getenv("NATIVE_BUILD_TYPE") ?: "release"
 
+def config = project.hasProperty("react") ? project.react : [:]
+
+def enableHermes = config.enableHermes ?: false
+
 task createNativeDepsDirectories {
     downloadsDir.mkdirs()
     thirdPartyNdkDir.mkdirs()
@@ -298,6 +302,13 @@ android {
         buildConfigField("boolean", "IS_INTERNAL_BUILD", "false")
         buildConfigField("int", "EXOPACKAGE_FLAGS", "0")
         buildConfigField("int", "HERMES_BYTECODE_VERSION", "0")
+        // setting buildConfigField to check for hermes or jsc
+        if(enableHermes){
+            buildConfigField("boolean", "HERMES_ENABLED", "true")
+        }
+        else{
+            buildConfigField("boolean", "HERMES_ENABLED", "false")
+        }
 
         resValue "integer", "react_native_dev_server_port", reactNativeDevServerPort()
         resValue "integer", "react_native_inspector_proxy_port", reactNativeInspectorProxyPort()
