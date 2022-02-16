@@ -105,6 +105,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       ReactFeatureFlags.enableFabricLogs
           || PrinterHolder.getPrinter()
               .shouldDisplayLogMessage(ReactDebugOverlayTags.FABRIC_UI_MANAGER);
+  public ConsoleReactFabricPerfLogger mConsoleReactFabricPerfLogger;
 
   static {
     FabricSoLoader.staticInit();
@@ -364,6 +365,10 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   public void initialize() {
     mEventDispatcher.registerEventEmitter(FABRIC, new FabricEventEmitter(this));
     mEventDispatcher.addBatchEventDispatchedListener(mEventBeatManager);
+    if (ENABLE_FABRIC_LOGS) {
+      mConsoleReactFabricPerfLogger = new ConsoleReactFabricPerfLogger();
+      ReactMarker.addFabricListener(mConsoleReactFabricPerfLogger);
+    }
   }
 
   // This is called on the JS thread (see CatalystInstanceImpl).
@@ -372,6 +377,10 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @ThreadConfined(ANY)
   public void onCatalystInstanceDestroy() {
     FLog.i(TAG, "FabricUIManager.onCatalystInstanceDestroy");
+
+    if (mConsoleReactFabricPerfLogger != null) {
+      ReactMarker.removeFabricListener(mConsoleReactFabricPerfLogger);
+    }
 
     if (mDestroyed) {
       ReactSoftExceptionLogger.logSoftException(
@@ -767,23 +776,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       ReactMarker.logFabricMarker(
           ReactMarkerConstants.FABRIC_LAYOUT_END, null, commitNumber, layoutEndTime);
       ReactMarker.logFabricMarker(ReactMarkerConstants.FABRIC_COMMIT_END, null, commitNumber);
-
-      if (ENABLE_FABRIC_LOGS) {
-        FLog.i(
-            TAG,
-            "Statistic of Fabric commit #: "
-                + commitNumber
-                + "\n - Total commit time: "
-                + (finishTransactionEndTime - commitStartTime)
-                + " ms.\n - Layout: "
-                + mLayoutTime
-                + " ms.\n - Diffing: "
-                + (diffEndTime - diffStartTime)
-                + " ms.\n"
-                + " - FinishTransaction (Diffing + Processing + Serialization of MountingInstructions): "
-                + mFinishTransactionCPPTime
-                + " ms.");
-      }
     }
   }
 
