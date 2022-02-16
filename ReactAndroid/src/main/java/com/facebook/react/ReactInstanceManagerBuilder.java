@@ -66,8 +66,19 @@ public class ReactInstanceManagerBuilder {
   private @Nullable Map<String, RequestHandler> mCustomPackagerCommandHandlers;
   private @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
   private @Nullable SurfaceDelegateFactory mSurfaceDelegateFactory;
+  private String jscOrHermes = "";
 
   /* package protected */ ReactInstanceManagerBuilder() {}
+
+  /* package protected (can switch between hermes {hermesEnabled: true} and jsc {hermesEnabled: false}) */
+  ReactInstanceManagerBuilder(Boolean hermesEnabled) {
+    // if the builder is called with arguments, set the current js engine based on the value
+    if(hermesEnabled){
+      jscOrHermes = "hermes";
+    }
+    else
+      jscOrHermes = "jsc";
+  }
 
   /** Sets a provider of {@link UIImplementation}. Uses default provider if null is passed. */
   public ReactInstanceManagerBuilder setUIImplementationProvider(
@@ -345,40 +356,71 @@ public class ReactInstanceManagerBuilder {
 
   private JavaScriptExecutorFactory getDefaultJSExecutorFactory(
       String appName, String deviceName, Context applicationContext) {
-    try {
-      // If JSC is included, use it as normal
-      initializeSoLoaderIfNecessary(applicationContext);
-      JSCExecutor.loadLibrary();
-      return new JSCExecutorFactory(appName, deviceName);
-    } catch (UnsatisfiedLinkError jscE) {
-      // https://github.com/facebook/hermes/issues/78 shows that
-      // people who aren't trying to use Hermes are having issues.
-      // https://github.com/facebook/react-native/issues/25923#issuecomment-554295179
-      // includes the actual JSC error in at least one case.
-      //
-      // So, if "__cxa_bad_typeid" shows up in the jscE exception
-      // message, then we will assume that's the failure and just
-      // throw now.
+    // if the app uses old way of building ReactInstanceManager,
+    // use the old buggy code
 
-      if (jscE.getMessage().contains("__cxa_bad_typeid")) {
-        throw jscE;
-      }
-
-      // Otherwise use Hermes
+    // Relying solely on try catch block and loading jsc even when
+    // project is using hermes can lead to launchtime crashes expecially in
+    // monorepo architectures and hybrid apps using both native android
+    // and react native.
+    // So we can use the value of enableHermes receved by the constructor
+    // to decide which library to load at launch
+    if(jscOrHermes.isEmpty()) {
       try {
-        HermesExecutor.loadLibrary();
-        return new HermesExecutorFactory();
-      } catch (UnsatisfiedLinkError hermesE) {
-        // If we get here, either this is a JSC build, and of course
-        // Hermes failed (since it's not in the APK), or it's a Hermes
-        // build, and Hermes had a problem.
+        // If JSC is included, use it as normal
+        initializeSoLoaderIfNecessary(applicationContext);
+        JSCExecutor.loadLibrary();
+        return new JSCExecutorFactory(appName, deviceName);
+      } catch (UnsatisfiedLinkError jscE) {
+        // https://github.com/facebook/hermes/issues/78 shows that
+        // people who aren't trying to use Hermes are having issues.
+        // https://github.com/facebook/react-native/issues/25923#issuecomment-554295179
+        // includes the actual JSC error in at least one case.
+        //
+        // So, if "__cxa_bad_typeid" shows up in the jscE exception
+        // message, then we will assume that's the failure and just
+        // throw now.
 
-        // We suspect this is a JSC issue (it's the default), so we
-        // will throw that exception, but we will print hermesE first,
-        // since it could be a Hermes issue and we don't want to
-        // swallow that.
-        hermesE.printStackTrace();
-        throw jscE;
+        if (jscE.getMessage().contains("__cxa_bad_typeid")) {
+          throw jscE;
+        }
+
+        // Otherwise use Hermes
+        try {
+          HermesExecutor.loadLibrary();
+          return new HermesExecutorFactory();
+        } catch (UnsatisfiedLinkError hermesE) {
+          // If we get here, either this is a JSC build, and of course
+          // Hermes failed (since it's not in the APK), or it's a Hermes
+          // build, and Hermes had a problem.
+
+          // We suspect this is a JSC issue (it's the default), so we
+          // will throw that exception, but we will print hermesE first,
+          // since it could be a Hermes issue and we don't want to
+          // swallow that.
+          hermesE.printStackTrace();
+          throw jscE;
+        }
+      }
+    }
+    // if the app explicitly specifies which engine to use, directly load
+    // that library
+    else{
+      try {
+        initializeSoLoaderIfNecessary(applicationContext);
+        if(jscOrHermes.equals("hermes")){
+          HermesExecutor.loadLibrary();
+          return new HermesExecutorFactory();
+        }
+        else{
+          JSCExecutor.loadLibrary();
+          return new JSCExecutorFactory(appName, deviceName);
+        }
+      } catch (UnsatisfiedLinkError e) {
+        // linking library failed, so we print its stacktrace and
+        // throw the exception
+        e.printStackTrace();
+        throw e;
       }
     }
   }
