@@ -966,7 +966,10 @@ workflows:
       - test_ios:
           name: test_ios_unit_hermes
           use_hermes: true
-          run_unit_tests: true
+          # TODO(ncor, neildhar) Integration tests for iOS + Hermes are currently
+          # disabled due to an ABI incompatibility introduced by D33830544.
+          # They can be re-enabled as soon as Hermes 0.12.0 is released.
+          run_unit_tests: false
           filters:
             branches:
               ignore: gh-pages
