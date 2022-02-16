@@ -105,7 +105,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       ReactFeatureFlags.enableFabricLogs
           || PrinterHolder.getPrinter()
               .shouldDisplayLogMessage(ReactDebugOverlayTags.FABRIC_UI_MANAGER);
-  public ConsoleReactFabricPerfLogger mConsoleReactFabricPerfLogger;
+  public DevToolsReactPerfLogger mDevToolsReactPerfLogger;
 
   static {
     FabricSoLoader.staticInit();
@@ -366,8 +366,32 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mEventDispatcher.registerEventEmitter(FABRIC, new FabricEventEmitter(this));
     mEventDispatcher.addBatchEventDispatchedListener(mEventBeatManager);
     if (ENABLE_FABRIC_LOGS) {
-      mConsoleReactFabricPerfLogger = new ConsoleReactFabricPerfLogger();
-      ReactMarker.addFabricListener(mConsoleReactFabricPerfLogger);
+      mDevToolsReactPerfLogger = new DevToolsReactPerfLogger();
+      mDevToolsReactPerfLogger.addDevToolsReactPerfLoggerListener(
+          new DevToolsReactPerfLogger.DevToolsReactPerfLoggerListener() {
+            @Override
+            public void onFabricCommitEnd(DevToolsReactPerfLogger.FabricCommitPoint commitPoint) {
+              FLog.i(
+                  TAG,
+                  "Statistic of Fabric commit #: "
+                      + commitPoint.getCommitNumber()
+                      + "\n - Total commit time: "
+                      + (commitPoint.getFinishTransactionEnd() - commitPoint.getCommitStart())
+                      + " ms.\n - Layout: "
+                      + (commitPoint.getLayoutEnd() - commitPoint.getLayoutStart())
+                      + " ms.\n - Diffing: "
+                      + (commitPoint.getDiffEnd() - commitPoint.getDiffStart())
+                      + " ms.\n"
+                      + " - FinishTransaction (Diffing + Processing + Serialization of MutationInstructions): "
+                      + (commitPoint.getFinishTransactionEnd()
+                          - commitPoint.getFinishTransactionStart())
+                      + " ms.\n"
+                      + " - Mounting: "
+                      + (commitPoint.getBatchExecutionEnd() - commitPoint.getBatchExecutionStart())
+                      + " ms.");
+            }
+          });
+      ReactMarker.addFabricListener(mDevToolsReactPerfLogger);
     }
   }
 
@@ -378,8 +402,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   public void onCatalystInstanceDestroy() {
     FLog.i(TAG, "FabricUIManager.onCatalystInstanceDestroy");
 
-    if (mConsoleReactFabricPerfLogger != null) {
-      ReactMarker.removeFabricListener(mConsoleReactFabricPerfLogger);
+    if (mDevToolsReactPerfLogger != null) {
+      ReactMarker.removeFabricListener(mDevToolsReactPerfLogger);
     }
 
     if (mDestroyed) {
