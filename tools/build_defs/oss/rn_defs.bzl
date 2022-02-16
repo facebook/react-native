@@ -211,6 +211,11 @@ def rn_android_resource(*args, **kwargs):
     native.android_resource(*args, **kwargs)
 
 def rn_android_prebuilt_aar(*args, **kwargs):
+    native.alias(
+        name = kwargs["name"] + "Android",
+        actual = ":" + kwargs["name"],
+        visibility = kwargs.get("visibility") or ["PUBLIC"],
+    )
     native.android_prebuilt_aar(*args, **kwargs)
 
 def rn_apple_library(*args, **kwargs):
