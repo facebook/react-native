@@ -233,6 +233,11 @@ def rn_java_annotation_processor(*args, **kwargs):
     native.java_annotation_processor(*args, **kwargs)
 
 def rn_prebuilt_native_library(*args, **kwargs):
+    native.alias(
+        name = kwargs["name"] + "Android",
+        actual = ":" + kwargs["name"],
+        visibility = kwargs.get("visibility") or ["PUBLIC"],
+    )
     native.prebuilt_native_library(*args, **kwargs)
 
 def rn_prebuilt_jar(*args, **kwargs):
