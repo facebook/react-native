@@ -282,3 +282,12 @@ void RCTErrorNotAllowedForNewArchitecture(id context, NSString *extra)
 
   RCTLogError(@"%@", getNewArchitectureViolationMessage(context, extra));
 }
+
+void RCTLogNotAllowedForNewArchitecture(id context, NSString *extra)
+{
+  if (!newArchitectureViolationReporting) {
+    return;
+  }
+
+  RCTLogInfo(@"%@", getNewArchitectureViolationMessage(context, extra));
+}

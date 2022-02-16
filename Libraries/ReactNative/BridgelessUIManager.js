@@ -118,8 +118,7 @@ module.exports = {
     console.error(errorMessageForMethod('measureLayoutRelativeToParent')),
   setJSResponder: (reactTag: ?number, blockNativeResponder: boolean): void =>
     console.error(errorMessageForMethod('setJSResponder')),
-  clearJSResponder: (): void =>
-    console.error(errorMessageForMethod('clearJSResponder')),
+  clearJSResponder: (): void => {}, // Don't log error here because we're aware it gets called
   configureNextLayoutAnimation: (
     config: Object,
     callback: () => void,
