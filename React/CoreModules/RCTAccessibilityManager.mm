@@ -76,13 +76,6 @@ RCT_EXPORT_MODULE()
                                                  name:UIAccessibilityReduceMotionStatusDidChangeNotification
                                                object:nil];
 
-      if (@available(iOS 14.0, *)) {
-          [[NSNotificationCenter defaultCenter] addObserver:self
-                                                   selector:@selector(prefersCrossFadeTransitionsStatusDidChange:)
-                                                       name:UIAccessibilityPrefersCrossFadeTransitionsStatusDidChangeNotification
-                                                     object:nil];
-      }
-
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(reduceTransparencyStatusDidChange:)
                                                  name:UIAccessibilityReduceTransparencyStatusDidChangeNotification
@@ -98,7 +91,6 @@ RCT_EXPORT_MODULE()
     _isGrayscaleEnabled = UIAccessibilityIsGrayscaleEnabled();
     _isInvertColorsEnabled = UIAccessibilityIsInvertColorsEnabled();
     _isReduceMotionEnabled = UIAccessibilityIsReduceMotionEnabled();
-    _prefersCrossFadeTransitions = UIAccessibilityPrefersCrossFadeTransitions();
     _isReduceTransparencyEnabled = UIAccessibilityIsReduceTransparencyEnabled();
     _isVoiceOverEnabled = UIAccessibilityIsVoiceOverRunning();
   }
@@ -173,19 +165,6 @@ RCT_EXPORT_MODULE()
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"reduceMotionChanged"
                                                                           body:@(_isReduceMotionEnabled)];
-#pragma clang diagnostic pop
-  }
-}
-
-- (void)prefersCrossFadeTransitionsStatusDidChange:(__unused NSNotification *)notification
-{
-  BOOL newPrefersCrossFadeTransitionsEnabled = UIAccessibilityPrefersCrossFadeTransitions();
-  if (_prefersCrossFadeTransitions != newPrefersCrossFadeTransitionsEnabled) {
-    _prefersCrossFadeTransitions = newPrefersCrossFadeTransitionsEnabled;
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"prefersCrossFadeTransitionsChanged"
-                                                                          body:@(_prefersCrossFadeTransitions)];
 #pragma clang diagnostic pop
   }
 }
@@ -383,7 +362,12 @@ RCT_EXPORT_METHOD(getCurrentPrefersCrossFadeTransitionsState
                   : (RCTResponseSenderBlock)onSuccess onError
                   : (__unused RCTResponseSenderBlock)onError)
 {
-  onSuccess(@[ @(_prefersCrossFadeTransitions) ]);
+
+    if (@available(iOS 14.0, *)) {
+        onSuccess(@[ @(UIAccessibilityPrefersCrossFadeTransitions()) ]);
+    } else {
+        onSuccess(@[ @(false) ]);
+    }
 }
 
 RCT_EXPORT_METHOD(getCurrentReduceTransparencyState
