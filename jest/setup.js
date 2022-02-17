@@ -128,6 +128,7 @@ jest
       isGrayscaleEnabled: jest.fn(),
       isInvertColorsEnabled: jest.fn(),
       isReduceMotionEnabled: jest.fn(),
+      prefersCrossFadeTransitions: jest.fn(),
       isReduceTransparencyEnabled: jest.fn(),
       isScreenReaderEnabled: jest.fn(() => Promise.resolve(false)),
       removeEventListener: jest.fn(),
