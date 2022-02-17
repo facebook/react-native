@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<5cd13a68c6b2a6d7a0ea84aff011af30>>
+ * @generated SignedSource<<eef52a9065b2dd437d09e6817f7462d1>>
  */
 
 'use strict';
@@ -1281,6 +1281,7 @@ var ScopeComponent = 21;
 var OffscreenComponent = 22;
 var LegacyHiddenComponent = 23;
 var CacheComponent = 24;
+var TracingMarkerComponent = 25;
 
 /**
  * Instance of element that should respond to touch/move types of interactions,
@@ -2614,6 +2615,7 @@ var REACT_DEBUG_TRACING_MODE_TYPE = 0xeae1;
 var REACT_OFFSCREEN_TYPE = 0xeae2;
 var REACT_LEGACY_HIDDEN_TYPE = 0xeae3;
 var REACT_CACHE_TYPE = 0xeae4;
+var REACT_TRACING_MARKER_TYPE = 0xeae5;
 
 if (typeof Symbol === "function" && Symbol.for) {
   var symbolFor = Symbol.for;
@@ -2634,6 +2636,7 @@ if (typeof Symbol === "function" && Symbol.for) {
   REACT_OFFSCREEN_TYPE = symbolFor("react.offscreen");
   REACT_LEGACY_HIDDEN_TYPE = symbolFor("react.legacy_hidden");
   REACT_CACHE_TYPE = symbolFor("react.cache");
+  REACT_TRACING_MARKER_TYPE = symbolFor("react.tracing_marker");
 }
 
 var MAYBE_ITERATOR_SYMBOL = typeof Symbol === "function" && Symbol.iterator;
@@ -2715,6 +2718,9 @@ function getComponentNameFromType(type) {
 
     case REACT_CACHE_TYPE:
       return "Cache";
+
+    case REACT_TRACING_MARKER_TYPE:
+      return "TracingMarker";
   }
 
   if (typeof type === "object") {
@@ -2835,6 +2841,9 @@ function getComponentNameFromFiber(fiber) {
 
     case SuspenseListComponent:
       return "SuspenseList";
+
+    case TracingMarkerComponent:
+      return "TracingMarker";
     // The display name for this tags come from the user-provided type:
 
     case ClassComponent:
@@ -10545,7 +10554,7 @@ function warnAboutMultipleRenderersDEV(mutableSource) {
 function getSuspendedCachePool() {
   {
     return null;
-  } // We check the cache on the stack first, since that's the one any new Caches
+  } // This function is called when a Suspense boundary suspends. It returns the
 }
 
 var ReactCurrentDispatcher$1 = ReactSharedInternals.ReactCurrentDispatcher,
@@ -13616,7 +13625,7 @@ function createClassErrorUpdate(fiber, errorInfo, lane) {
   return update;
 }
 
-function attachWakeableListeners(suspenseBoundary, root, wakeable, lanes) {
+function attachPingListener(root, wakeable, lanes) {
   // Attach a ping listener
   //
   // The data might resolve before we have a chance to commit the fallback. Or,
@@ -13629,38 +13638,40 @@ function attachWakeableListeners(suspenseBoundary, root, wakeable, lanes) {
   //
   // We only need to do this in concurrent mode. Legacy Suspense always
   // commits fallbacks synchronously, so there are no pings.
-  if (suspenseBoundary.mode & ConcurrentMode) {
-    var pingCache = root.pingCache;
-    var threadIDs;
+  var pingCache = root.pingCache;
+  var threadIDs;
 
-    if (pingCache === null) {
-      pingCache = root.pingCache = new PossiblyWeakMap$1();
+  if (pingCache === null) {
+    pingCache = root.pingCache = new PossiblyWeakMap$1();
+    threadIDs = new Set();
+    pingCache.set(wakeable, threadIDs);
+  } else {
+    threadIDs = pingCache.get(wakeable);
+
+    if (threadIDs === undefined) {
       threadIDs = new Set();
       pingCache.set(wakeable, threadIDs);
-    } else {
-      threadIDs = pingCache.get(wakeable);
+    }
+  }
 
-      if (threadIDs === undefined) {
-        threadIDs = new Set();
-        pingCache.set(wakeable, threadIDs);
+  if (!threadIDs.has(lanes)) {
+    // Memoize using the thread ID to prevent redundant listeners.
+    threadIDs.add(lanes);
+    var ping = pingSuspendedRoot.bind(null, root, wakeable, lanes);
+
+    {
+      if (isDevToolsPresent) {
+        // If we have pending work still, restore the original updaters
+        restorePendingUpdaters(root, lanes);
       }
     }
 
-    if (!threadIDs.has(lanes)) {
-      // Memoize using the thread ID to prevent redundant listeners.
-      threadIDs.add(lanes);
-      var ping = pingSuspendedRoot.bind(null, root, wakeable, lanes);
+    wakeable.then(ping, ping);
+  }
+}
 
-      {
-        if (isDevToolsPresent) {
-          // If we have pending work still, restore the original updaters
-          restorePendingUpdaters(root, lanes);
-        }
-      }
-
-      wakeable.then(ping, ping);
-    }
-  } // Retry listener
+function attachRetryListener(suspenseBoundary, root, wakeable, lanes) {
+  // Retry listener
   //
   // If the fallback does commit, we need to attach a different type of
   // listener. This one schedules an update on the Suspense boundary to turn
@@ -13671,7 +13682,6 @@ function attachWakeableListeners(suspenseBoundary, root, wakeable, lanes) {
   //
   // When the wakeable resolves, we'll attempt to render the boundary
   // again ("retry").
-
   var wakeables = suspenseBoundary.updateQueue;
 
   if (wakeables === null) {
@@ -13889,25 +13899,45 @@ function throwException(
         sourceFiber,
         root,
         rootRenderLanes
-      );
-      attachWakeableListeners(
-        suspenseBoundary,
-        root,
-        wakeable,
-        rootRenderLanes
-      );
+      ); // We only attach ping listeners in concurrent mode. Legacy Suspense always
+      // commits fallbacks synchronously, so there are no pings.
+
+      if (suspenseBoundary.mode & ConcurrentMode) {
+        attachPingListener(root, wakeable, rootRenderLanes);
+      }
+
+      attachRetryListener(suspenseBoundary, root, wakeable);
       return;
     } else {
-      // No boundary was found. Fallthrough to error mode.
+      // No boundary was found. If we're inside startTransition, this is OK.
+      // We can suspend and wait for more data to arrive.
+      if (includesOnlyTransitions(rootRenderLanes)) {
+        // This is a transition. Suspend. Since we're not activating a Suspense
+        // boundary, this will unwind all the way to the root without performing
+        // a second pass to render a fallback. (This is arguably how refresh
+        // transitions should work, too, since we're not going to commit the
+        // fallbacks anyway.)
+        attachPingListener(root, wakeable, rootRenderLanes);
+        renderDidSuspendDelayIfPossible();
+        return;
+      } // We're not in a transition. We treat this case like an error because
+      // discrete renders are expected to finish synchronously to maintain
+      // consistency with external state.
+      // TODO: This will error during non-transition concurrent renders, too.
+      // But maybe it shouldn't?
       // TODO: We should never call getComponentNameFromFiber in production.
       // Log a warning or something to prevent us from accidentally bundling it.
-      value = new Error(
+
+      var uncaughtSuspenseError = new Error(
         (getComponentNameFromFiber(sourceFiber) || "A React component") +
           " suspended while rendering, but no fallback UI was specified.\n" +
           "\n" +
           "Add a <Suspense fallback=...> component higher in the tree to " +
           "provide a loading indicator or placeholder to display."
-      );
+      ); // If we're outside a transition, fall through to the regular error path.
+      // The error will be caught by the nearest suspense boundary.
+
+      value = uncaughtSuspenseError;
     }
   } // We didn't find a boundary that could handle this type of exception. Start
   // over and traverse parent path again, this time treating the exception
@@ -18085,15 +18115,17 @@ function unwindWork(workInProgress, renderLanes) {
       resetWorkInProgressVersions();
       var _flags = workInProgress.flags;
 
-      if ((_flags & DidCapture) !== NoFlags) {
-        throw new Error(
-          "The root failed to unmount after an error. This is likely a bug in " +
-            "React. Please file an issue."
-        );
-      }
+      if (
+        (_flags & ShouldCapture) !== NoFlags &&
+        (_flags & DidCapture) === NoFlags
+      ) {
+        // There was an error during render that wasn't captured by a suspense
+        // boundary. Do a second pass on the root to unmount the children.
+        workInProgress.flags = (_flags & ~ShouldCapture) | DidCapture;
+        return workInProgress;
+      } // We unwound to the root without completing it. Exit.
 
-      workInProgress.flags = (_flags & ~ShouldCapture) | DidCapture;
-      return workInProgress;
+      return null;
     }
 
     case HostComponent: {
@@ -20098,12 +20130,13 @@ var CommitContext =
 var RetryAfterError =
   /*       */
   8;
-var RootIncomplete = 0;
+var RootInProgress = 0;
 var RootFatalErrored = 1;
 var RootErrored = 2;
 var RootSuspended = 3;
 var RootSuspendedWithDelay = 4;
-var RootCompleted = 5; // Describes where we are in the React execution stack
+var RootCompleted = 5;
+var RootDidNotComplete = 6; // Describes where we are in the React execution stack
 
 var executionContext = NoContext; // The root we're working on
 
@@ -20123,7 +20156,7 @@ var workInProgressRootRenderLanes = NoLanes; // Stack that allows components to 
 var subtreeRenderLanes = NoLanes;
 var subtreeRenderLanesCursor = createCursor(NoLanes); // Whether to root completed, errored, suspended, etc.
 
-var workInProgressRootExitStatus = RootIncomplete; // A fatal error, if one is thrown
+var workInProgressRootExitStatus = RootInProgress; // A fatal error, if one is thrown
 
 var workInProgressRootFatalError = null; // "Included" lanes refer to lanes that were worked on during this render. It's
 // slightly different than `renderLanes` because `renderLanes` can change as you
@@ -20580,7 +20613,7 @@ function performConcurrentWorkOnRoot(root, didTimeout) {
     ? renderRootConcurrent(root, lanes)
     : renderRootSync(root, lanes);
 
-  if (exitStatus !== RootIncomplete) {
+  if (exitStatus !== RootInProgress) {
     if (exitStatus === RootErrored) {
       // If something threw an error, try rendering one more time. We'll
       // render synchronously to block concurrent data mutations, and we'll
@@ -20600,46 +20633,59 @@ function performConcurrentWorkOnRoot(root, didTimeout) {
       markRootSuspended$1(root, lanes);
       ensureRootIsScheduled(root, now());
       throw fatalError;
-    } // Check if this render may have yielded to a concurrent event, and if so,
-    // confirm that any newly rendered stores are consistent.
-    // TODO: It's possible that even a concurrent render may never have yielded
-    // to the main thread, if it was fast enough, or if it expired. We could
-    // skip the consistency check in that case, too.
+    }
 
-    var renderWasConcurrent = !includesBlockingLane(root, lanes);
-    var finishedWork = root.current.alternate;
+    if (exitStatus === RootDidNotComplete) {
+      // The render unwound without completing the tree. This happens in special
+      // cases where need to exit the current render without producing a
+      // consistent tree or committing.
+      //
+      // This should only happen during a concurrent render, not a discrete or
+      // synchronous update. We should have already checked for this when we
+      // unwound the stack.
+      markRootSuspended$1(root, lanes);
+    } else {
+      // The render completed.
+      // Check if this render may have yielded to a concurrent event, and if so,
+      // confirm that any newly rendered stores are consistent.
+      // TODO: It's possible that even a concurrent render may never have yielded
+      // to the main thread, if it was fast enough, or if it expired. We could
+      // skip the consistency check in that case, too.
+      var renderWasConcurrent = !includesBlockingLane(root, lanes);
+      var finishedWork = root.current.alternate;
 
-    if (
-      renderWasConcurrent &&
-      !isRenderConsistentWithExternalStores(finishedWork)
-    ) {
-      // A store was mutated in an interleaved event. Render again,
-      // synchronously, to block further mutations.
-      exitStatus = renderRootSync(root, lanes); // We need to check again if something threw
+      if (
+        renderWasConcurrent &&
+        !isRenderConsistentWithExternalStores(finishedWork)
+      ) {
+        // A store was mutated in an interleaved event. Render again,
+        // synchronously, to block further mutations.
+        exitStatus = renderRootSync(root, lanes); // We need to check again if something threw
 
-      if (exitStatus === RootErrored) {
-        var _errorRetryLanes = getLanesToRetrySynchronouslyOnError(root);
+        if (exitStatus === RootErrored) {
+          var _errorRetryLanes = getLanesToRetrySynchronouslyOnError(root);
 
-        if (_errorRetryLanes !== NoLanes) {
-          lanes = _errorRetryLanes;
-          exitStatus = recoverFromConcurrentError(root, _errorRetryLanes); // We assume the tree is now consistent because we didn't yield to any
-          // concurrent events.
+          if (_errorRetryLanes !== NoLanes) {
+            lanes = _errorRetryLanes;
+            exitStatus = recoverFromConcurrentError(root, _errorRetryLanes); // We assume the tree is now consistent because we didn't yield to any
+            // concurrent events.
+          }
         }
-      }
 
-      if (exitStatus === RootFatalErrored) {
-        var _fatalError = workInProgressRootFatalError;
-        prepareFreshStack(root, NoLanes);
-        markRootSuspended$1(root, lanes);
-        ensureRootIsScheduled(root, now());
-        throw _fatalError;
-      }
-    } // We now have a consistent tree. The next step is either to commit it,
-    // or, if something suspended, wait to commit it after a timeout.
+        if (exitStatus === RootFatalErrored) {
+          var _fatalError = workInProgressRootFatalError;
+          prepareFreshStack(root, NoLanes);
+          markRootSuspended$1(root, lanes);
+          ensureRootIsScheduled(root, now());
+          throw _fatalError;
+        }
+      } // We now have a consistent tree. The next step is either to commit it,
+      // or, if something suspended, wait to commit it after a timeout.
 
-    root.finishedWork = finishedWork;
-    root.finishedLanes = lanes;
-    finishConcurrentRender(root, exitStatus, lanes);
+      root.finishedWork = finishedWork;
+      root.finishedLanes = lanes;
+      finishConcurrentRender(root, exitStatus, lanes);
+    }
   }
 
   ensureRootIsScheduled(root, now());
@@ -20684,11 +20730,11 @@ function recoverFromConcurrentError(root, errorRetryLanes) {
 }
 
 function queueRecoverableErrors(errors) {
-  if (workInProgressRootConcurrentErrors === null) {
+  if (workInProgressRootRecoverableErrors === null) {
     workInProgressRootRecoverableErrors = errors;
   } else {
-    workInProgressRootConcurrentErrors = workInProgressRootConcurrentErrors.push.apply(
-      null,
+    workInProgressRootRecoverableErrors.push.apply(
+      workInProgressRootRecoverableErrors,
       errors
     );
   }
@@ -20696,7 +20742,7 @@ function queueRecoverableErrors(errors) {
 
 function finishConcurrentRender(root, exitStatus, lanes) {
   switch (exitStatus) {
-    case RootIncomplete:
+    case RootInProgress:
     case RootFatalErrored: {
       throw new Error("Root did not complete. This is a bug in React.");
     }
@@ -20923,6 +20969,10 @@ function performSyncWorkOnRoot(root) {
     markRootSuspended$1(root, lanes);
     ensureRootIsScheduled(root, now());
     throw fatalError;
+  }
+
+  if (exitStatus === RootDidNotComplete) {
+    throw new Error("Root did not complete. This is a bug in React.");
   } // We now have a consistent tree. Because this is a sync render, we
   // will commit it even if something suspended.
 
@@ -21032,7 +21082,7 @@ function prepareFreshStack(root, lanes) {
   workInProgressRoot = root;
   workInProgress = createWorkInProgress(root.current, null);
   workInProgressRootRenderLanes = subtreeRenderLanes = workInProgressRootIncludedLanes = lanes;
-  workInProgressRootExitStatus = RootIncomplete;
+  workInProgressRootExitStatus = RootInProgress;
   workInProgressRootFatalError = null;
   workInProgressRootSkippedLanes = NoLanes;
   workInProgressRootInterleavedUpdatedLanes = NoLanes;
@@ -21162,13 +21212,13 @@ function markSkippedUpdateLanes(lane) {
   );
 }
 function renderDidSuspend() {
-  if (workInProgressRootExitStatus === RootIncomplete) {
+  if (workInProgressRootExitStatus === RootInProgress) {
     workInProgressRootExitStatus = RootSuspended;
   }
 }
 function renderDidSuspendDelayIfPossible() {
   if (
-    workInProgressRootExitStatus === RootIncomplete ||
+    workInProgressRootExitStatus === RootInProgress ||
     workInProgressRootExitStatus === RootSuspended ||
     workInProgressRootExitStatus === RootErrored
   ) {
@@ -21207,7 +21257,7 @@ function renderDidError(error) {
 function renderHasNotSuspendedYet() {
   // If something errored or completed, we can't really be sure,
   // so those are false.
-  return workInProgressRootExitStatus === RootIncomplete;
+  return workInProgressRootExitStatus === RootInProgress;
 }
 
 function renderRootSync(root, lanes) {
@@ -21329,7 +21379,7 @@ function renderRootConcurrent(root, lanes) {
       markRenderYielded();
     }
 
-    return RootIncomplete;
+    return RootInProgress;
   } else {
     // Completed the tree.
     {
@@ -21448,6 +21498,11 @@ function completeUnitOfWork(unitOfWork) {
         returnFiber.flags |= Incomplete;
         returnFiber.subtreeFlags = NoFlags;
         returnFiber.deletions = null;
+      } else {
+        // We've unwound all the way to the root.
+        workInProgressRootExitStatus = RootDidNotComplete;
+        workInProgress = null;
+        return;
       }
     }
 
@@ -21464,7 +21519,7 @@ function completeUnitOfWork(unitOfWork) {
     workInProgress = completedWork;
   } while (completedWork !== null); // We've reached the root.
 
-  if (workInProgressRootExitStatus === RootIncomplete) {
+  if (workInProgressRootExitStatus === RootInProgress) {
     workInProgressRootExitStatus = RootCompleted;
   }
 }
@@ -21695,13 +21750,11 @@ function commitRootImpl(root, recoverableErrors, renderPriorityLevel) {
   if (recoverableErrors !== null) {
     // There were errors during this render, but recovered from them without
     // needing to surface it to the UI. We log them here.
+    var onRecoverableError = root.onRecoverableError;
+
     for (var i = 0; i < recoverableErrors.length; i++) {
       var recoverableError = recoverableErrors[i];
-      var onRecoverableError = root.onRecoverableError;
-
-      if (onRecoverableError !== null) {
-        onRecoverableError(recoverableError);
-      }
+      onRecoverableError(recoverableError);
     }
   }
 
@@ -23302,6 +23355,10 @@ function createFiberFromTypeAndProps(
 
       // eslint-disable-next-line no-fallthrough
 
+      case REACT_TRACING_MARKER_TYPE:
+
+      // eslint-disable-next-line no-fallthrough
+
       default: {
         if (typeof type === "object" && type !== null) {
           switch (type.$$typeof) {
@@ -23602,7 +23659,8 @@ function createFiberRoot(
   // them through the root constructor. Perhaps we should put them all into a
   // single type, like a DynamicHostConfig that is defined by the renderer.
   identifierPrefix,
-  onRecoverableError
+  onRecoverableError,
+  transitionCallbacks
 ) {
   var root = new FiberRootNode(
     containerInfo,
@@ -23632,7 +23690,7 @@ function createFiberRoot(
   return root;
 }
 
-var ReactVersion = "18.0.0-rc.0-a3bde7974-20220208";
+var ReactVersion = "18.0.0-rc.0-27b569969-20220211";
 
 function createPortal(
   children,
@@ -23761,7 +23819,8 @@ function createContainer(
   isStrictMode,
   concurrentUpdatesByDefaultOverride,
   identifierPrefix,
-  onRecoverableError
+  onRecoverableError,
+  transitionCallbacks
 ) {
   return createFiberRoot(
     containerInfo,
@@ -24553,6 +24612,12 @@ function sendAccessibilityEvent(handle, eventType) {
   }
 }
 
+function onRecoverableError(error$1) {
+  // TODO: Expose onRecoverableError option to userspace
+  // eslint-disable-next-line react-internal/no-production-logging, react-internal/warning-args
+  error(error$1);
+}
+
 function render(element, containerTag, callback, concurrentRoot) {
   var root = roots.get(containerTag);
 
@@ -24567,7 +24632,7 @@ function render(element, containerTag, callback, concurrentRoot) {
       false,
       null,
       "",
-      null
+      onRecoverableError
     );
     roots.set(containerTag, root);
   }
