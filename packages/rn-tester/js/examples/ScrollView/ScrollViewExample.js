@@ -35,237 +35,237 @@ exports.category = 'Basic';
 exports.description =
   'Component that enables scrolling through child components';
 const examples = ([
-  {
-    name: 'scrollTo',
-    title: '<ScrollView>\n',
-    description:
-      'To make content scrollable, wrap it within a <ScrollView> component',
-    render: function (): React.Node {
-      let _scrollView: ?React.ElementRef<typeof ScrollView>;
-      return (
-        <View>
-          <ScrollView
-            ref={scrollView => {
-              _scrollView = scrollView;
-            }}
-            automaticallyAdjustContentInsets={false}
-            onScroll={() => {
-              console.log('onScroll!');
-            }}
-            scrollEventThrottle={200}
-            style={styles.scrollView}
-            testID="scroll_vertical">
-            {ITEMS.map(createItemRow)}
-          </ScrollView>
-          <Button
-            label="Scroll to top"
-            onPress={() => {
-              nullthrows(_scrollView).scrollTo({y: 0});
-            }}
-            testID="scroll_to_top_button"
-          />
-          <Button
-            label="Scroll to bottom"
-            onPress={() => {
-              nullthrows(_scrollView).scrollToEnd({animated: true});
-            }}
-            testID="scroll_to_bottom_button"
-          />
-          <Button
-            label="Flash scroll indicators"
-            onPress={() => {
-              nullthrows(_scrollView).flashScrollIndicators();
-            }}
-            testID="flash_scroll_indicators_button"
-          />
-        </View>
-      );
-    },
-  },
-  {
-    name: 'horizontalScrollTo',
-    title: '<ScrollView> (horizontal = true)\n',
-    description:
-      "You can display <ScrollView>'s child components horizontally rather than vertically",
-    render: function (): React.Node {
-      return (
-        <View>
-          <HorizontalScrollView direction="ltr" />
-        </View>
-      );
-    },
-  },
-  {
-    name: 'horizontalScrollToRTL',
-    title: '<ScrollView> (horizontal = true) in RTL\n',
-    description:
-      "You can display <ScrollView>'s child components horizontally rather than vertically",
-    render: function (): React.Node {
-      return (
-        <View>
-          <HorizontalScrollView direction="rtl" />
-        </View>
-      );
-    },
-  },
-  {
-    title: '<ScrollView> enable & disable\n',
-    description: 'ScrollView scrolling behaviour can be disabled and enabled',
-    render: function (): React.Node {
-      class EnableDisableList extends React.Component<
-        {},
-        {scrollEnabled: boolean},
-      > {
-        state = {
-          scrollEnabled: true,
-        };
-        render() {
-          return (
-            <View>
-              <ScrollView
-                automaticallyAdjustContentInsets={false}
-                style={styles.scrollView}
-                scrollEnabled={this.state.scrollEnabled}>
-                {ITEMS.map(createItemRow)}
-              </ScrollView>
-              <Text>
-                {'Scrolling enabled = ' + this.state.scrollEnabled.toString()}
-              </Text>
-              <Button
-                label="Disable Scrolling"
-                onPress={() => {
-                  this.setState({scrollEnabled: false});
-                }}
-              />
-              <Button
-                label="Enable Scrolling"
-                onPress={() => {
-                  this.setState({scrollEnabled: true});
-                }}
-              />
-            </View>
-          );
-        }
-      }
-      return <EnableDisableList />;
-    },
-  },
-  {
-    title: '<ScrollView> Content\n',
-    description: 'Adjust properties of content inside ScrollView.',
-    render: function (): React.Node {
-      return <ContentExample />;
-    },
-  },
-  {
-    title: '<ScrollView> Deceleration Rate\n',
-    description:
-      'Determines how quickly the scroll view decelerates after the user lifts their finger.',
-    render: function (): React.Node {
-      return <DecelerationRateExample />;
-    },
-  },
-  {
-    title: '<ScrollView> Enable & Disable Scrolling Behavior\n',
-    description:
-      'DirectionalLockEnabled (iOS), disableIntervalMomentum, disableScrollViewPanResponder can be enabled or disabled.',
-    render: function (): React.Node {
-      return <DisableEnable />;
-    },
-  },
-  {
-    name: 'invertStickyHeaders',
-    title: '<ScrollView> Invert Sticky Headers\n',
-    description:
-      'If sticky headers should stick at the bottom instead of the top of the ScrollView. This is usually used with inverted ScrollViews.',
-    render: function (): React.Node {
-      return <InvertStickyHeaders />;
-    },
-  },
-  {
-    name: 'multipleStickyHeaders',
-    title: '<ScrollView> Multiple Sticky Headers\n',
-    description:
-      'Scroll down to see 3 sticky headers stick when they get to the top.',
-    render: function (): React.Node {
-      return <MultipleStickyHeaders />;
-    },
-  },
-  {
-    name: 'pressableStickyHeaders',
-    title: '<ScrollView> Pressable Sticky Header\n',
-    description:
-      'Press the blue box to toggle it between blue and yellow. The box should remain Pressable after scrolling.',
-    render: function (): React.Node {
-      return (
-        <View style={{height: 400}}>
-          <ScrollViewPressableStickyHeaderExample />
-        </View>
-      );
-    },
-  },
-  {
-    name: 'keyboardShouldPersistTaps',
-    title: '<ScrollView> Keyboard Options\n',
-    description:
-      'Toggle the keyboard using the search bar and determine keyboard behavior in response to drag and tap.',
-    render: function (): React.Node {
-      return <KeyboardExample />;
-    },
-  },
-  {
-    title: '<ScrollView> OnContentSizeChange\n',
-    description:
-      'The text below will change when scrollable content view of the ScrollView changes.',
-    render: function (): React.Node {
-      return <OnContentSizeChange />;
-    },
-  },
-  {
-    title: '<ScrollView> OnMomentumScroll\n',
-    description:
-      'An alert will be called when the momentum scroll starts or ends.',
-    render: function (): React.Node {
-      return <OnMomentumScroll />;
-    },
-  },
-  {
-    title: '<ScrollView> OnScroll Options\n',
-    description:
-      'Change the behavior of onScroll using these options: onScrollBeginDrag, onScrollEndDrag, onScrollToTop (iOS), and overScrollMode (Android).',
-    render: function (): React.Node {
-      return <OnScrollOptions />;
-    },
-  },
-  {
-    title: '<ScrollView> RefreshControl\n',
-    description: 'Pull down to see RefreshControl indicator.',
-    render: function (): React.Node {
-      return <RefreshControlExample />;
-    },
-  },
-  {
-    title: '<ScrollView> Remove Clipped Subviews\n',
-    description:
-      'When true, offscreen child views (whose overflow value is hidden) are removed from their native backing superview when offscreen.',
-    render: function (): React.Node {
-      return <RemoveClippedSubviews />;
-    },
-  },
-  {
-    title: '<ScrollView> Scroll Indicator\n',
-    description: 'Adjust properties of the scroll indicator.',
-    render: function (): React.Node {
-      return <ScrollIndicatorExample />;
-    },
-  },
-  {
-    title: '<ScrollView> SnapTo Options\n',
-    description: 'Adjust properties of snapping to the scroll view.',
-    render: function (): React.Node {
-      return <SnapToOptions />;
-    },
-  },
+  // {
+  //   name: 'scrollTo',
+  //   title: '<ScrollView>\n',
+  //   description:
+  //     'To make content scrollable, wrap it within a <ScrollView> component',
+  //   render: function (): React.Node {
+  //     let _scrollView: ?React.ElementRef<typeof ScrollView>;
+  //     return (
+  //       <View>
+  //         <ScrollView
+  //           ref={scrollView => {
+  //             _scrollView = scrollView;
+  //           }}
+  //           automaticallyAdjustContentInsets={false}
+  //           onScroll={() => {
+  //             console.log('onScroll!');
+  //           }}
+  //           scrollEventThrottle={200}
+  //           style={styles.scrollView}
+  //           testID="scroll_vertical">
+  //           {ITEMS.map(createItemRow)}
+  //         </ScrollView>
+  //         <Button
+  //           label="Scroll to top"
+  //           onPress={() => {
+  //             nullthrows(_scrollView).scrollTo({y: 0});
+  //           }}
+  //           testID="scroll_to_top_button"
+  //         />
+  //         <Button
+  //           label="Scroll to bottom"
+  //           onPress={() => {
+  //             nullthrows(_scrollView).scrollToEnd({animated: true});
+  //           }}
+  //           testID="scroll_to_bottom_button"
+  //         />
+  //         <Button
+  //           label="Flash scroll indicators"
+  //           onPress={() => {
+  //             nullthrows(_scrollView).flashScrollIndicators();
+  //           }}
+  //           testID="flash_scroll_indicators_button"
+  //         />
+  //       </View>
+  //     );
+  //   },
+  // },
+  // {
+  //   name: 'horizontalScrollTo',
+  //   title: '<ScrollView> (horizontal = true)\n',
+  //   description:
+  //     "You can display <ScrollView>'s child components horizontally rather than vertically",
+  //   render: function (): React.Node {
+  //     return (
+  //       <View>
+  //         <HorizontalScrollView direction="ltr" />
+  //       </View>
+  //     );
+  //   },
+  // },
+  // {
+  //   name: 'horizontalScrollToRTL',
+  //   title: '<ScrollView> (horizontal = true) in RTL\n',
+  //   description:
+  //     "You can display <ScrollView>'s child components horizontally rather than vertically",
+  //   render: function (): React.Node {
+  //     return (
+  //       <View>
+  //         <HorizontalScrollView direction="rtl" />
+  //       </View>
+  //     );
+  //   },
+  // },
+  // {
+  //   title: '<ScrollView> enable & disable\n',
+  //   description: 'ScrollView scrolling behaviour can be disabled and enabled',
+  //   render: function (): React.Node {
+  //     class EnableDisableList extends React.Component<
+  //       {},
+  //       {scrollEnabled: boolean},
+  //     > {
+  //       state = {
+  //         scrollEnabled: true,
+  //       };
+  //       render() {
+  //         return (
+  //           <View>
+  //             <ScrollView
+  //               automaticallyAdjustContentInsets={false}
+  //               style={styles.scrollView}
+  //               scrollEnabled={this.state.scrollEnabled}>
+  //               {ITEMS.map(createItemRow)}
+  //             </ScrollView>
+  //             <Text>
+  //               {'Scrolling enabled = ' + this.state.scrollEnabled.toString()}
+  //             </Text>
+  //             <Button
+  //               label="Disable Scrolling"
+  //               onPress={() => {
+  //                 this.setState({scrollEnabled: false});
+  //               }}
+  //             />
+  //             <Button
+  //               label="Enable Scrolling"
+  //               onPress={() => {
+  //                 this.setState({scrollEnabled: true});
+  //               }}
+  //             />
+  //           </View>
+  //         );
+  //       }
+  //     }
+  //     return <EnableDisableList />;
+  //   },
+  // },
+  // {
+  //   title: '<ScrollView> Content\n',
+  //   description: 'Adjust properties of content inside ScrollView.',
+  //   render: function (): React.Node {
+  //     return <ContentExample />;
+  //   },
+  // },
+  // {
+  //   title: '<ScrollView> Deceleration Rate\n',
+  //   description:
+  //     'Determines how quickly the scroll view decelerates after the user lifts their finger.',
+  //   render: function (): React.Node {
+  //     return <DecelerationRateExample />;
+  //   },
+  // },
+  // {
+  //   title: '<ScrollView> Enable & Disable Scrolling Behavior\n',
+  //   description:
+  //     'DirectionalLockEnabled (iOS), disableIntervalMomentum, disableScrollViewPanResponder can be enabled or disabled.',
+  //   render: function (): React.Node {
+  //     return <DisableEnable />;
+  //   },
+  // },
+  // {
+  //   name: 'invertStickyHeaders',
+  //   title: '<ScrollView> Invert Sticky Headers\n',
+  //   description:
+  //     'If sticky headers should stick at the bottom instead of the top of the ScrollView. This is usually used with inverted ScrollViews.',
+  //   render: function (): React.Node {
+  //     return <InvertStickyHeaders />;
+  //   },
+  // },
+  // {
+  //   name: 'multipleStickyHeaders',
+  //   title: '<ScrollView> Multiple Sticky Headers\n',
+  //   description:
+  //     'Scroll down to see 3 sticky headers stick when they get to the top.',
+  //   render: function (): React.Node {
+  //     return <MultipleStickyHeaders />;
+  //   },
+  // },
+  // {
+  //   name: 'pressableStickyHeaders',
+  //   title: '<ScrollView> Pressable Sticky Header\n',
+  //   description:
+  //     'Press the blue box to toggle it between blue and yellow. The box should remain Pressable after scrolling.',
+  //   render: function (): React.Node {
+  //     return (
+  //       <View style={{height: 400}}>
+  //         <ScrollViewPressableStickyHeaderExample />
+  //       </View>
+  //     );
+  //   },
+  // },
+  // {
+  //   name: 'keyboardShouldPersistTaps',
+  //   title: '<ScrollView> Keyboard Options\n',
+  //   description:
+  //     'Toggle the keyboard using the search bar and determine keyboard behavior in response to drag and tap.',
+  //   render: function (): React.Node {
+  //     return <KeyboardExample />;
+  //   },
+  // },
+  // {
+  //   title: '<ScrollView> OnContentSizeChange\n',
+  //   description:
+  //     'The text below will change when scrollable content view of the ScrollView changes.',
+  //   render: function (): React.Node {
+  //     return <OnContentSizeChange />;
+  //   },
+  // },
+  // {
+  //   title: '<ScrollView> OnMomentumScroll\n',
+  //   description:
+  //     'An alert will be called when the momentum scroll starts or ends.',
+  //   render: function (): React.Node {
+  //     return <OnMomentumScroll />;
+  //   },
+  // },
+  // {
+  //   title: '<ScrollView> OnScroll Options\n',
+  //   description:
+  //     'Change the behavior of onScroll using these options: onScrollBeginDrag, onScrollEndDrag, onScrollToTop (iOS), and overScrollMode (Android).',
+  //   render: function (): React.Node {
+  //     return <OnScrollOptions />;
+  //   },
+  // },
+  // {
+  //   title: '<ScrollView> RefreshControl\n',
+  //   description: 'Pull down to see RefreshControl indicator.',
+  //   render: function (): React.Node {
+  //     return <RefreshControlExample />;
+  //   },
+  // },
+  // {
+  //   title: '<ScrollView> Remove Clipped Subviews\n',
+  //   description:
+  //     'When true, offscreen child views (whose overflow value is hidden) are removed from their native backing superview when offscreen.',
+  //   render: function (): React.Node {
+  //     return <RemoveClippedSubviews />;
+  //   },
+  // },
+  // {
+  //   title: '<ScrollView> Scroll Indicator\n',
+  //   description: 'Adjust properties of the scroll indicator.',
+  //   render: function (): React.Node {
+  //     return <ScrollIndicatorExample />;
+  //   },
+  // },
+  // {
+  //   title: '<ScrollView> SnapTo Options\n',
+  //   description: 'Adjust properties of snapping to the scroll view.',
+  //   render: function (): React.Node {
+  //     return <SnapToOptions />;
+  //   },
+  // },
 ]: Array<RNTesterModuleExample>);
 
 if (Platform.OS === 'ios') {
@@ -291,26 +291,26 @@ if (Platform.OS === 'ios') {
               <ScrollView
                 automaticallyAdjustContentInsets={false}
                 maintainVisibleContentPosition={{
-                  minIndexForVisible: 1,
-                  autoscrollToTopThreshold: 10,
+                  minIndexForVisible: 0,
+                  autoscrollToTopThreshold: -Number.MAX_SAFE_INTEGER,
                 }}
                 style={styles.scrollView}>
                 {this.state.items.map(item =>
                   React.cloneElement(item, {key: item.props.msg}),
                 )}
               </ScrollView>
-              <ScrollView
-                horizontal={true}
-                automaticallyAdjustContentInsets={false}
-                maintainVisibleContentPosition={{
-                  minIndexForVisible: 1,
-                  autoscrollToTopThreshold: 10,
-                }}
-                style={[styles.scrollView, styles.horizontalScrollView]}>
-                {this.state.items.map(item =>
-                  React.cloneElement(item, {key: item.props.msg, style: null}),
-                )}
-              </ScrollView>
+              {/*<ScrollView*/}
+              {/*  horizontal={true}*/}
+              {/*  automaticallyAdjustContentInsets={false}*/}
+              {/*  maintainVisibleContentPosition={{*/}
+              {/*    minIndexForVisible: 1,*/}
+              {/*    autoscrollToTopThreshold: 10,*/}
+              {/*  }}*/}
+              {/*  style={[styles.scrollView, styles.horizontalScrollView]}>*/}
+              {/*  {this.state.items.map(item =>*/}
+              {/*    React.cloneElement(item, {key: item.props.msg, style: null}),*/}
+              {/*  )}*/}
+              {/*</ScrollView>*/}
               <View style={styles.row}>
                 <Button
                   label="Add to top"
@@ -391,103 +391,103 @@ if (Platform.OS === 'ios') {
       return <AppendingList />;
     },
   });
-  examples.push({
-    title: '<ScrollView> (centerContent = true)\n',
-    description:
-      'ScrollView puts its content in the center if the content is smaller than scroll view',
-    render: function (): React.Node {
-      function CenterContentList(): React.Node {
-        return (
-          <ScrollView style={styles.scrollView} centerContent={true}>
-            <Text>This should be in center.</Text>
-          </ScrollView>
-        );
-      }
-      return <CenterContentList />;
-    },
-  });
-  examples.push({
-    title: '<ScrollView> (contentOffset = {x: 100, y: 0})\n',
-    description: 'Initial contentOffset can be set on ScrollView.',
-    render: function (): React.Node {
-      function CenterContentList(): React.Node {
-        return (
-          <ScrollView
-            style={[styles.scrollView, {height: 100}]}
-            horizontal={true}
-            contentOffset={{x: 100, y: 0}}>
-            {ITEMS.map(createItemRow)}
-          </ScrollView>
-        );
-      }
-      return <CenterContentList />;
-    },
-  });
-  examples.push({
-    title: '<ScrollView> Always Bounces\n',
-    description: 'Always bounce vertically or horizontally.',
-    render: function (): React.Node {
-      return (
-        <>
-          <Text style={styles.text}>Vertical</Text>
-          <BouncesExampleVertical />
-          <Text style={styles.text}>Horizontal</Text>
-          <BouncesExampleHorizontal />
-        </>
-      );
-    },
-  });
-  examples.push({
-    title: '<ScrollView> Bounces & Bounces Zoom\n',
-    description: 'There are different options for bouncing behavior.',
-    render: function (): React.Node {
-      return <BouncesExample />;
-    },
-  });
-  examples.push({
-    title: '<ScrollView> Indicator Style\n',
-    description: 'There are different options for indicator style colors.',
-    render: function (): React.Node {
-      return <IndicatorStyle />;
-    },
-  });
-  examples.push({
-    title: '<ScrollView> Maximum & Minimum Zoom Scale\n',
-    description: 'Set the maximum and minimum allowed zoom scale.',
-    render: function (): React.Node {
-      return <MaxMinZoomScale />;
-    },
-  });
-  examples.push({
-    title: '<ScrollView> Maximum & Minimum Zoom Scale\n',
-    description: 'Set the maximum and minimum allowed zoom scale.',
-    render: function (): React.Node {
-      return <MaxMinZoomScale />;
-    },
-  });
-  examples.push({
-    title: '<ScrollView> ScrollTo Options\n',
-    description:
-      'Toggle scrollToOverflowEnabled and scrollsToTop. When scrollToOverflowEnabled is true, the scroll view can be programmatically scrolled beyond its content size. When scrollsToTop is true, the scroll view scrolls to top when the status bar is tapped.',
-    render: function (): React.Node {
-      return <ScrollToOptions />;
-    },
-  });
-} else if (Platform.OS === 'android') {
-  examples.push({
-    title: '<ScrollView> EndFillColor & FadingEdgeLength\n',
-    description: 'Toggle to set endFillColor and fadingEdgeLength.',
-    render: function (): React.Node {
-      return <EndFillColorFadingEdgeLen />;
-    },
-  });
-  examples.push({
-    title: '<ScrollView> persistentScrollBar\n',
-    description: 'Toggle to set persistentScrollbar option.',
-    render: function (): React.Node {
-      return <AndroidScrollBarOptions />;
-    },
-  });
+  //   examples.push({
+  //     title: '<ScrollView> (centerContent = true)\n',
+  //     description:
+  //       'ScrollView puts its content in the center if the content is smaller than scroll view',
+  //     render: function (): React.Node {
+  //       function CenterContentList(): React.Node {
+  //         return (
+  //           <ScrollView style={styles.scrollView} centerContent={true}>
+  //             <Text>This should be in center.</Text>
+  //           </ScrollView>
+  //         );
+  //       }
+  //       return <CenterContentList />;
+  //     },
+  //   });
+  //   examples.push({
+  //     title: '<ScrollView> (contentOffset = {x: 100, y: 0})\n',
+  //     description: 'Initial contentOffset can be set on ScrollView.',
+  //     render: function (): React.Node {
+  //       function CenterContentList(): React.Node {
+  //         return (
+  //           <ScrollView
+  //             style={[styles.scrollView, {height: 100}]}
+  //             horizontal={true}
+  //             contentOffset={{x: 100, y: 0}}>
+  //             {ITEMS.map(createItemRow)}
+  //           </ScrollView>
+  //         );
+  //       }
+  //       return <CenterContentList />;
+  //     },
+  //   });
+  //   examples.push({
+  //     title: '<ScrollView> Always Bounces\n',
+  //     description: 'Always bounce vertically or horizontally.',
+  //     render: function (): React.Node {
+  //       return (
+  //         <>
+  //           <Text style={styles.text}>Vertical</Text>
+  //           <BouncesExampleVertical />
+  //           <Text style={styles.text}>Horizontal</Text>
+  //           <BouncesExampleHorizontal />
+  //         </>
+  //       );
+  //     },
+  //   });
+  //   examples.push({
+  //     title: '<ScrollView> Bounces & Bounces Zoom\n',
+  //     description: 'There are different options for bouncing behavior.',
+  //     render: function (): React.Node {
+  //       return <BouncesExample />;
+  //     },
+  //   });
+  //   examples.push({
+  //     title: '<ScrollView> Indicator Style\n',
+  //     description: 'There are different options for indicator style colors.',
+  //     render: function (): React.Node {
+  //       return <IndicatorStyle />;
+  //     },
+  //   });
+  //   examples.push({
+  //     title: '<ScrollView> Maximum & Minimum Zoom Scale\n',
+  //     description: 'Set the maximum and minimum allowed zoom scale.',
+  //     render: function (): React.Node {
+  //       return <MaxMinZoomScale />;
+  //     },
+  //   });
+  //   examples.push({
+  //     title: '<ScrollView> Maximum & Minimum Zoom Scale\n',
+  //     description: 'Set the maximum and minimum allowed zoom scale.',
+  //     render: function (): React.Node {
+  //       return <MaxMinZoomScale />;
+  //     },
+  //   });
+  //   examples.push({
+  //     title: '<ScrollView> ScrollTo Options\n',
+  //     description:
+  //       'Toggle scrollToOverflowEnabled and scrollsToTop. When scrollToOverflowEnabled is true, the scroll view can be programmatically scrolled beyond its content size. When scrollsToTop is true, the scroll view scrolls to top when the status bar is tapped.',
+  //     render: function (): React.Node {
+  //       return <ScrollToOptions />;
+  //     },
+  //   });
+  // } else if (Platform.OS === 'android') {
+  //   examples.push({
+  //     title: '<ScrollView> EndFillColor & FadingEdgeLength\n',
+  //     description: 'Toggle to set endFillColor and fadingEdgeLength.',
+  //     render: function (): React.Node {
+  //       return <EndFillColorFadingEdgeLen />;
+  //     },
+  //   });
+  //   examples.push({
+  //     title: '<ScrollView> persistentScrollBar\n',
+  //     description: 'Toggle to set persistentScrollbar option.',
+  //     render: function (): React.Node {
+  //       return <AndroidScrollBarOptions />;
+  //     },
+  //   });
 }
 exports.examples = examples;
 

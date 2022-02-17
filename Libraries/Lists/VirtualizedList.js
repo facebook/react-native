@@ -1196,24 +1196,21 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       });
     }
 
-    const prevFirstKey =
-      Array.isArray(prevProps.data) && prevProps.data.length
-        ? prevProps.data[0].key
-        : undefined;
-    const firstKey =
-      Array.isArray(data) && data.length ? data[0].key : undefined;
-    const didPrependNewItems = firstKey !== prevFirstKey;
-    const prependedItemsOffset =
-      data.findIndex(item => item.key === prevFirstKey) ?? 0;
-    if (didPrependNewItems && prependedItemsOffset) {
-      console.log('RORY_DEBUG prepended new items', {
-        prependedItemsOffset,
-      });
-      this._updateScrollMetricsForPrependedItems(
-        data.slice(0),
-        prependedItemsOffset,
-      );
-    }
+    // const prevFirstKey =
+    //   Array.isArray(prevProps.data) && prevProps.data.length
+    //     ? prevProps.data[0].key
+    //     : undefined;
+    // const firstKey =
+    //   Array.isArray(data) && data.length ? data[0].key : undefined;
+    // const didPrependNewItems = firstKey !== prevFirstKey;
+    // const prependedItemsOffset =
+    //   data.findIndex(item => item.key === prevFirstKey) ?? 0;
+    // if (didPrependNewItems && prependedItemsOffset) {
+    //   console.log('RORY_DEBUG prepended new items', {
+    //     prependedItemsOffset,
+    //   });
+    //   this._updateScrollMetricsForPrependedItems(data, prependedItemsOffset);
+    // }
 
     // The `this._hiPriInProgress` is guaranteeing a hiPri cell update will only happen
     // once per fiber update. The `_scheduleCellsToRenderUpdate` will set it to true
@@ -1260,6 +1257,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     dOffset: 0,
     dt: 10,
     offset: 0,
+    // virtualOffset: 0,
     timestamp: 0,
     velocity: 0,
     visibleLength: 0,
@@ -1554,6 +1552,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       onEndReached,
       onEndReachedThreshold,
     } = this.props;
+    // const {contentLength, visibleLength, offset, virtualOffset} =
+    //   this._scrollMetrics;
+    // const distanceFromStart = virtualOffset;
     const {contentLength, visibleLength, offset} = this._scrollMetrics;
     const distanceFromStart = offset;
     const distanceFromEnd = contentLength - visibleLength - offset;
@@ -1568,6 +1569,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const shouldExecuteNewCallback =
       this._scrollMetrics.contentLength !== this._sentStartForContentLength &&
       this._scrollMetrics.contentLength !== this._sentEndForContentLength;
+
+    // console.log(
+    //   'RORY_DEBUG maybe calling onStartReached, has user interacted?',
+    //   this._hasInteracted,
+    // );
 
     // First check if the user just scrolled within the end threshold
     // and call onEndReached only once for a given content length,
@@ -1589,8 +1595,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       onStartReached &&
       isWithinStartThreshold &&
       shouldExecuteNewCallback &&
+      this._hasInteracted &&
       this.state.first === 0
     ) {
+      // console.log('RORY_DEBUG calling onStartReached');
       this._sentStartForContentLength = this._scrollMetrics.contentLength;
       onStartReached({distanceFromStart});
     }
@@ -1661,12 +1669,22 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     if (this.props.onScroll) {
       this.props.onScroll(e);
     }
+    // console.log(
+    //   'RORY_DEBUG full scrollMetrics in onScroll',
+    //   this._scrollMetrics,
+    // );
     const timestamp = e.timeStamp;
     let visibleLength = this._selectLength(e.nativeEvent.layoutMeasurement);
     let contentLength = this._selectLength(e.nativeEvent.contentSize);
-    console.log('RORY_DEBUG contentLength from onScroll', contentLength);
+    // console.log('RORY_DEBUG contentLength from onScroll', contentLength);
     let offset = this._selectOffset(e.nativeEvent.contentOffset);
-    console.log('RORY_DEBUG offset from onScroll', offset);
+    // let virtualOffset = this._scrollMetrics.virtualOffset + offset;
+    // console.log('RORY_DEBUG offset from onScroll', offset);
+    // console.log('RORY_DEBUg inset from onScroll', e.nativeEvent.contentInset);
+    // console.log(
+    //   'RORY_DEBUG previous scrollMetrics offset from onScroll',
+    //   this._scrollMetrics.offset,
+    // );
     let dOffset = offset - this._scrollMetrics.offset;
 
     if (this._isNestedWithSameOrientation()) {
@@ -1709,7 +1727,14 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       timestamp,
       velocity,
       visibleLength,
+      // virtualOffset,
     };
+
+    // console.log(
+    //   'RORY_DEBUG full _scrollMetrics after onScroll',
+    //   this._scrollMetrics,
+    // );
+
     this._updateViewableItems(this.props.data);
     if (!this.props) {
       return;
@@ -1926,17 +1951,30 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   _updateScrollMetricsForPrependedItems(prependedItems: Array<Item>) {
     const offsetBefore = this._scrollMetrics.offset;
+    // const virtualOffsetBefore = this._scrollMetrics.virtualOffset;
     const {data, getItemLayout} = this.props;
-    this._scrollMetrics.offset += getItemLayout
-      ? prependedItems.reduce(
-          (offset, item) => offset + getItemLayout(data, item.index).length,
-          0,
-        )
-      : prependedItems.length * this._averageCellLength;
-    console.log('RORY_DEBUG updatedScrollMetricsForPrependedItems', {
-      offsetBefore,
-      offsetAfter: this._scrollMetrics.offset,
-    });
+    // this._scrollMetrics.virtualOffset =
+    //   this._scrollMetrics.offset + getItemLayout
+    //     ? prependedItems.reduce(
+    //         (offset, item) => offset + getItemLayout(data, item.index).length,
+    //         0,
+    //       )
+    //     : prependedItems.length * this._averageCellLength;
+    const offsetAfter =
+      offsetBefore + getItemLayout
+        ? prependedItems.reduce(
+            (offset, item) => offset + getItemLayout(data, item.index).length,
+            0,
+          )
+        : prependedItems.length * this._averageCellLength;
+    // this._scrollMetrics.offset = offsetAfter;
+    // console.log('RORY_DEBUG updatedScrollMetricsForPrependedItems', {
+    //   // virtualOffsetBefore,
+    //   offsetBefore,
+    //   offsetAfter,
+    //   // virtualOffsetAfter: this._scrollMetrics.virtualOffset,
+    // });
+    this.scrollToOffset({animated: false, offset: offsetAfter});
   }
 
   _createViewToken = (index: number, isViewable: boolean) => {

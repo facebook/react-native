@@ -903,10 +903,13 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
 {
   RCTAssertUIManagerQueue();
 
+//  NSLog(@"RORY_DEBUG uiManagerWillPerformMounting");
+
   [manager prependUIBlock:^(
                __unused RCTUIManager *uiManager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     BOOL horz = [self isHorizontal:self->_scrollView];
     NSUInteger minIdx = [self->_maintainVisibleContentPosition[@"minIndexForVisible"] integerValue];
+    NSLog(@"RORY_DEBUG there are now %lu subviews", self->_contentView.subviews.count);
     for (NSUInteger ii = minIdx; ii < self->_contentView.subviews.count; ++ii) {
       // Find the first entirely visible view. This must be done after we update the content offset
       // or it will tend to grab rows that were made visible by the shift in position
@@ -920,17 +923,23 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
         CGFloat bottomInset =
             self.inverted ? self->_scrollView.contentInset.top : self->_scrollView.contentInset.bottom;
         CGFloat y = self->_scrollView.contentOffset.y + bottomInset;
+        NSLog(@"RORY_DEBUG subview.frame.origin.y %f", subview.frame.origin.y);
+        NSLog(@"RORY_DEBUG y %f", y);
         hasNewView = subview.frame.origin.y > y;
       }
       if (hasNewView || ii == self->_contentView.subviews.count - 1) {
         self->_prevFirstVisibleFrame = subview.frame;
         self->_firstVisibleView = subview;
+        NSLog(@"RORY_DEBUG setting _firstVisibleView at index %lu", ii);
+//        NSLog(@"RORY_DEBUG setting _prevFirstVisibleFrame %@", NSStringFromCGRect(self->_prevFirstVisibleFrame));
+//        NSLog(@"RORY_DEBUG setting _firstVisibleView %@", self->_firstVisibleView);
         break;
       }
     }
   }];
   [manager addUIBlock:^(__unused RCTUIManager *uiManager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     if (self->_maintainVisibleContentPosition == nil) {
+      NSLog(@"RORY_DEBUG maintainVisibleContentPosition is nil, aborting...");
       return; // The prop might have changed in the previous UIBlocks, so need to abort here.
     }
     NSNumber *autoscrollThreshold = self->_maintainVisibleContentPosition[@"autoscrollToTopThreshold"];
@@ -952,15 +961,20 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
     } else {
       CGRect newFrame = self->_firstVisibleView.frame;
       CGFloat deltaY = newFrame.origin.y - self->_prevFirstVisibleFrame.origin.y;
+      NSLog(@"RORY_DEBUG newFrameY %f", newFrame.origin.y);
+      NSLog(@"RORY_DEBUG prevFrameY %f", self->_prevFirstVisibleFrame.origin.y);
+      NSLog(@"RORY_DEBUG deltaY %f", deltaY);
       if (ABS(deltaY) > 0.1) {
         CGFloat bottomInset =
             self.inverted ? self->_scrollView.contentInset.top : self->_scrollView.contentInset.bottom;
         CGFloat y = self->_scrollView.contentOffset.y + bottomInset;
         self->_scrollView.contentOffset =
             CGPointMake(self->_scrollView.contentOffset.x, self->_scrollView.contentOffset.y + deltaY);
+        NSLog(@"RORY_DEBUG updated contentOffset to %f", self->_scrollView.contentOffset.y);
         if (autoscrollThreshold != nil) {
           // If the offset WAS within the threshold of the start, animate to the start.
           if (y - deltaY <= [autoscrollThreshold integerValue]) {
+            NSLog(@"RORY_DEBUG auto-scroll detected");
             [self scrollToOffset:CGPointMake(self->_scrollView.contentOffset.x, -bottomInset) animated:YES];
           }
         }

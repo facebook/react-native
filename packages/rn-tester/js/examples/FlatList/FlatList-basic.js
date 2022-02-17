@@ -71,12 +71,12 @@ class FlatListExample extends React.PureComponent<Props, State> {
     data: genNewerItems(100, 500),
     first: 500,
     last: 600,
-    debug: false,
+    debug: true,
     horizontal: false,
     inverted: false,
     filterText: '',
     fixedHeight: true,
-    logViewable: false,
+    logViewable: true,
     virtualized: true,
     empty: false,
     useFlatListItemComponent: false,
@@ -236,6 +236,10 @@ class FlatListExample extends React.PureComponent<Props, State> {
             refreshing={false}
             contentContainerStyle={styles.list}
             viewabilityConfig={VIEWABILITY_CONFIG}
+            maintainVisibleContentPosition={{
+              minIndexForVisible: 0,
+              autoscrollToTopThreshold: -Number.MAX_SAFE_INTEGER,
+            }}
             {...flatListItemRendererProps}
           />
         </View>
@@ -259,6 +263,11 @@ class FlatListExample extends React.PureComponent<Props, State> {
     if (this.state.first <= 0) {
       return;
     }
+
+    if (this.state.first <= 400) {
+      return;
+    }
+
     this.setState(state => ({
       data: genOlderItems(100, state.first).concat(state.data),
       first: state.first - 100,
