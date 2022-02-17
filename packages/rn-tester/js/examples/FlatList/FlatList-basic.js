@@ -66,9 +66,11 @@ type State = {|
   textSelectable: boolean,
 |};
 
+const PAGE_SIZE = 20;
+
 class FlatListExample extends React.PureComponent<Props, State> {
   state: State = {
-    data: genNewerItems(100, 500),
+    data: genNewerItems(10, 500),
     first: 500,
     last: 600,
     debug: true,
@@ -206,8 +208,8 @@ class FlatListExample extends React.PureComponent<Props, State> {
           <Animated.FlatList
             fadingEdgeLength={this.state.fadingEdgeLength}
             ItemSeparatorComponent={ItemSeparatorComponent}
-            ListHeaderComponent={<HeaderComponent />}
-            ListFooterComponent={FooterComponent}
+            // ListHeaderComponent={<HeaderComponent />}
+            // ListFooterComponent={FooterComponent}
             ListEmptyComponent={ListEmptyComponent}
             data={this.state.empty ? [] : filteredData}
             debug={this.state.debug}
@@ -264,13 +266,9 @@ class FlatListExample extends React.PureComponent<Props, State> {
       return;
     }
 
-    if (this.state.first <= 400) {
-      return;
-    }
-
     this.setState(state => ({
-      data: genOlderItems(100, state.first).concat(state.data),
-      first: state.first - 100,
+      data: genOlderItems(PAGE_SIZE, state.first).concat(state.data),
+      first: state.first - PAGE_SIZE,
     }));
     // const first = this.state.first;
     // if (first <= 0) {
@@ -288,13 +286,16 @@ class FlatListExample extends React.PureComponent<Props, State> {
     //   },
     // );
   };
+
+  _throttledOnStartReached = _.throttle(this._onStartReached, 1000);
+
   _onEndReached = () => {
     if (this.state.last >= 1000) {
       return;
     }
     this.setState(state => ({
-      data: state.data.concat(genNewerItems(100, state.last)),
-      last: state.last + 100,
+      data: state.data.concat(genNewerItems(PAGE_SIZE, state.last)),
+      last: state.last + PAGE_SIZE,
     }));
   };
   _onPressCallback = () => {

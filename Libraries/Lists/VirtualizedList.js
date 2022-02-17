@@ -26,6 +26,8 @@ import {
   computeWindowedRenderLimits,
 } from './VirtualizeUtils';
 
+console.log('RORY_DEBUG Im in VirtualizedList');
+
 import * as React from 'react';
 import type {ScrollResponderType} from '../Components/ScrollView/ScrollView';
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
@@ -1595,7 +1597,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       onStartReached &&
       isWithinStartThreshold &&
       shouldExecuteNewCallback &&
-      this._hasInteracted &&
       this.state.first === 0
     ) {
       // console.log('RORY_DEBUG calling onStartReached');

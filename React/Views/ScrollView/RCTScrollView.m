@@ -924,13 +924,13 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
             self.inverted ? self->_scrollView.contentInset.top : self->_scrollView.contentInset.bottom;
         CGFloat y = self->_scrollView.contentOffset.y + bottomInset;
         NSLog(@"RORY_DEBUG subview.frame.origin.y %f", subview.frame.origin.y);
-        NSLog(@"RORY_DEBUG y %f", y);
+        NSLog(@"RORY_DEBUG contentOffset %f", y);
         hasNewView = subview.frame.origin.y > y;
       }
       if (hasNewView || ii == self->_contentView.subviews.count - 1) {
         self->_prevFirstVisibleFrame = subview.frame;
         self->_firstVisibleView = subview;
-        NSLog(@"RORY_DEBUG setting _firstVisibleView at index %lu", ii);
+        NSLog(@"RORY_DEBUG setting _prevFirstVisibleFrame.origin.y %f", self->_prevFirstVisibleFrame.origin.y);
 //        NSLog(@"RORY_DEBUG setting _prevFirstVisibleFrame %@", NSStringFromCGRect(self->_prevFirstVisibleFrame));
 //        NSLog(@"RORY_DEBUG setting _firstVisibleView %@", self->_firstVisibleView);
         break;
