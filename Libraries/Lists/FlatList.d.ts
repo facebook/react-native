@@ -147,19 +147,6 @@ export interface FlatListProps<ItemT> extends VirtualizedListProps<ItemT> {
   numColumns?: number | undefined;
 
   /**
-   * Called once when the scroll position gets within onEndReachedThreshold of the rendered content.
-   */
-  onEndReached?: ((info: {distanceFromEnd: number}) => void) | null | undefined;
-
-  /**
-   * How far from the end (in units of visible length of the list) the bottom edge of the
-   * list must be from the end of the content to trigger the `onEndReached` callback.
-   * Thus a value of 0.5 will trigger `onEndReached` when the end of the content is
-   * within half the visible length of the list.
-   */
-  onEndReachedThreshold?: number | null | undefined;
-
-  /**
    * If provided, a standard RefreshControl will be added for "Pull to Refresh" functionality.
    * Make sure to also set the refreshing prop correctly.
    */
