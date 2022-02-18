@@ -1,0 +1,21 @@
+//
+//  Debug-macOS.xcconfig
+//  RNTesterPods
+//
+
+#include "../../Pods/Target Support Files/Pods-RNTester-macOS/Pods-RNTester-macOS.release.xcconfig"
+
+ENABLE_ADDRESS_SANITIZER = NO
+
+RUN_CLANG_STATIC_ANALYZER = YES
+CLANG_STATIC_ANALYZER_MODE[sdk=iphonesimulator*] = deep
+// Required security settings for production code (do not override at target/project level, with the possible
+// exception of legacy test code)
+CLANG_ANALYZER_SECURITY_FLOATLOOPCOUNTER[sdk=iphonesimulator*] = YES
+CLANG_ANALYZER_SECURITY_KEYCHAIN_API[sdk=iphonesimulator*] = YES
+CLANG_ANALYZER_SECURITY_INSECUREAPI_UNCHECKEDRETURN[sdk=iphonesimulator*] = YES
+CLANG_ANALYZER_SECURITY_INSECUREAPI_GETPW_GETS[sdk=iphonesimulator*] = YES
+CLANG_ANALYZER_SECURITY_INSECUREAPI_MKSTEMP[sdk=iphonesimulator*] = YES
+CLANG_ANALYZER_SECURITY_INSECUREAPI_RAND[sdk=iphonesimulator*] = YES
+CLANG_ANALYZER_SECURITY_INSECUREAPI_STRCPY[sdk=iphonesimulator*] = YES
+CLANG_ANALYZER_SECURITY_INSECUREAPI_VFORK[sdk=iphonesimulator*] = YES

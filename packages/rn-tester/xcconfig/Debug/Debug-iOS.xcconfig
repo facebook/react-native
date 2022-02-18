@@ -1,0 +1,8 @@
+//
+//  Debug.xcconfig
+//  RNTesterPods
+//
+
+#include "../../Pods/Target Support Files/Pods-RNTester/Pods-RNTester.debug.xcconfig"
+
+ENABLE_ADDRESS_SANITIZER[sdk=iphonesimulator*] = YES
