@@ -79,13 +79,13 @@ class GenerateCodegenArtifactsTaskTest {
   @Test
   @WithOs(OS.UNIX)
   fun setupCommandLine_withoutJavaGenerator_willSetupCorrectly() {
-    val reactRoot = tempFolder.newFolder("node_modules/react-native/")
+    val reactNativeDir = tempFolder.newFolder("node_modules/react-native/")
     val codegenDir = tempFolder.newFolder("codegen")
     val outputDir = tempFolder.newFolder("output")
 
     val task =
         createTestTask<GenerateCodegenArtifactsTask> {
-          it.reactRoot.set(reactRoot)
+          it.reactNativeDir.set(reactNativeDir)
           it.codegenDir.set(codegenDir)
           it.generatedSrcDir.set(outputDir)
           it.nodeExecutableAndArgs.set(listOf("--verbose"))
@@ -99,7 +99,7 @@ class GenerateCodegenArtifactsTaskTest {
         listOf(
             "yarn",
             "--verbose",
-            File(reactRoot, "scripts/generate-specs-cli.js").toString(),
+            File(reactNativeDir, "scripts/generate-specs-cli.js").toString(),
             "--platform",
             "android",
             "--schemaPath",

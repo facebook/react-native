@@ -33,7 +33,7 @@ class PathUtilsTest {
   @Test
   fun detectedEntryFile_withAndroidEntryPoint() {
     val extension = TestReactExtension(ProjectBuilder.builder().build())
-    extension.reactRoot.set(tempFolder.root)
+    extension.root.set(tempFolder.root)
     tempFolder.newFile("index.android.js")
 
     val actual = detectedEntryFile(extension)
@@ -44,7 +44,7 @@ class PathUtilsTest {
   @Test
   fun detectedEntryFile_withDefaultEntryPoint() {
     val extension = TestReactExtension(ProjectBuilder.builder().build())
-    extension.reactRoot.set(tempFolder.root)
+    extension.root.set(tempFolder.root)
 
     val actual = detectedEntryFile(extension)
 
@@ -80,7 +80,7 @@ class PathUtilsTest {
   fun detectedCliPath_withCliFromNodeModules() {
     val project = ProjectBuilder.builder().build()
     val extension = TestReactExtension(project)
-    extension.reactRoot.set(tempFolder.root)
+    extension.root.set(tempFolder.root)
     val expected =
         File(tempFolder.root, "node_modules/react-native/cli.js").apply {
           parentFile.mkdirs()

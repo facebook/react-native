@@ -20,7 +20,7 @@ import org.gradle.api.tasks.*
 
 abstract class GenerateCodegenArtifactsTask : Exec() {
 
-  @get:Internal abstract val reactRoot: DirectoryProperty
+  @get:Internal abstract val reactNativeDir: DirectoryProperty
 
   @get:Internal abstract val codegenDir: DirectoryProperty
 
@@ -34,6 +34,9 @@ abstract class GenerateCodegenArtifactsTask : Exec() {
 
   @get:Input abstract val libraryName: Property<String>
 
+  // We're keeping this just to fire a warning at the user should they use the `reactRoot` property.
+  @get:Internal abstract val deprecatedReactRoot: DirectoryProperty
+
   @get:InputFile
   val combineJsToSchemaCli: Provider<RegularFile> =
       codegenDir.file("lib/cli/combine/combine-js-to-schema-cli.js")
@@ -46,6 +49,7 @@ abstract class GenerateCodegenArtifactsTask : Exec() {
   @get:OutputDirectory val generatedJniFiles: Provider<Directory> = generatedSrcDir.dir("jni")
 
   override fun exec() {
+    checkForDeprecatedProperty()
     setupCommandLine()
     super.exec()
     if (useJavaGenerator.getOrElse(false)) {
@@ -63,11 +67,35 @@ abstract class GenerateCodegenArtifactsTask : Exec() {
     }
   }
 
+  private fun checkForDeprecatedProperty() {
+    if (deprecatedReactRoot.isPresent) {
+      project.logger.error(
+          """
+        ********************************************************************************
+        The `reactRoot` property is deprecated and will be removed in 
+        future versions of React Native. The property is currently ignored.
+        
+        You should instead use either:
+        - [root] to point to your root project (where the package.json lives)
+        - [reactNativeDir] to point to the NPM package of react native.
+        
+        You should be fine by just removing the `reactRoot` line entirely from 
+        your build.gradle file. Otherwise a valid configuration would look like:
+        
+        react {
+            root = rootProject.file('..')
+            reactNativeDir = rootProject.file('../node_modules/react-native')
+        }
+        ********************************************************************************
+      """.trimIndent())
+    }
+  }
+
   internal fun setupCommandLine() {
     commandLine(
         windowsAwareYarn(
             *nodeExecutableAndArgs.get().toTypedArray(),
-            reactRoot.file("scripts/generate-specs-cli.js").get().asFile.absolutePath,
+            reactNativeDir.file("scripts/generate-specs-cli.js").get().asFile.absolutePath,
             "--platform",
             "android",
             "--schemaPath",
