@@ -3,7 +3,7 @@
 exports[`GeneratePropsJavaPojo can generate fixture ARRAY_PROPS 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/Slider/ArrayPropsNativeComponentPropsObjectElement.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -26,7 +26,7 @@ public class ArrayPropsNativeComponentPropsObjectElement {
 }
 ",
   "java/com/facebook/react/viewmanagers/Slider/ArrayPropsNativeComponentPropsArrayElementObjectElement.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -49,7 +49,7 @@ public class ArrayPropsNativeComponentPropsArrayElementObjectElement {
 }
 ",
   "java/com/facebook/react/viewmanagers/Slider/ArrayPropsNativeComponentPropsArrayElement.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -72,7 +72,7 @@ public class ArrayPropsNativeComponentPropsArrayElement {
 }
 ",
   "java/com/facebook/react/viewmanagers/Slider/ArrayPropsNativeComponentPropsArrayOfArrayOfObjectElementElement.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -95,7 +95,7 @@ public class ArrayPropsNativeComponentPropsArrayOfArrayOfObjectElementElement {
 }
 ",
   "java/com/facebook/react/viewmanagers/Slider/ArrayPropsNativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -174,7 +174,7 @@ public class ArrayPropsNativeComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture ARRAY_PROPS_WITH_NESTED_OBJECT 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/Slider/ArrayPropsNativeComponentPropsNativePrimitivesElement.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -208,7 +208,7 @@ public class ArrayPropsNativeComponentPropsNativePrimitivesElement {
 }
 ",
   "java/com/facebook/react/viewmanagers/Slider/ArrayPropsNativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -236,7 +236,7 @@ public class ArrayPropsNativeComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture BOOLEAN_PROP 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/Switch/BooleanPropNativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -263,7 +263,7 @@ public class BooleanPropNativeComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture COLOR_PROP 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/Switch/ColorPropNativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -291,7 +291,7 @@ public class ColorPropNativeComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture COMMANDS 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/Switch/CommandNativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -315,7 +315,7 @@ public class CommandNativeComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture COMMANDS_AND_PROPS 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/Switch/CommandNativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -343,7 +343,7 @@ public class CommandNativeComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture DOUBLE_PROPS 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/Switch/DoublePropNativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -395,7 +395,7 @@ public class DoublePropNativeComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture EVENT_NESTED_OBJECT_PROPS 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/Switch/EventsNestedObjectNativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -422,7 +422,7 @@ public class EventsNestedObjectNativeComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture EVENT_PROPS 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/Switch/EventsNativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -449,7 +449,7 @@ public class EventsNativeComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture EVENTS_WITH_PAPER_NAME 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/Switch/InterfaceOnlyComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -477,7 +477,7 @@ exports[`GeneratePropsJavaPojo can generate fixture EXCLUDE_ANDROID_IOS 1`] = `M
 exports[`GeneratePropsJavaPojo can generate fixture FLOAT_PROPS 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/Switch/FloatPropNativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -529,7 +529,7 @@ public class FloatPropNativeComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture IMAGE_PROP 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/Slider/ImagePropNativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -558,7 +558,7 @@ public class ImagePropNativeComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture INSETS_PROP 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/ScrollView/InsetsPropNativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -587,7 +587,7 @@ public class InsetsPropNativeComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture INT32_ENUM_PROP 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/Switch/Int32EnumPropsNativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -615,7 +615,7 @@ public class Int32EnumPropsNativeComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture INTEGER_PROPS 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/Switch/IntegerPropNativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -652,7 +652,7 @@ public class IntegerPropNativeComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture INTERFACE_ONLY 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/Switch/InterfaceOnlyComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -680,7 +680,7 @@ public class InterfaceOnlyComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture MULTI_NATIVE_PROP 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/Slider/ImageColorPropNativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -724,7 +724,7 @@ public class ImageColorPropNativeComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture NO_PROPS_NO_EVENTS 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/NoPropsNoEvents/NoPropsNoEventsComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -748,7 +748,7 @@ public class NoPropsNoEventsComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture OBJECT_PROPS 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/ObjectPropsNativeComponent/ObjectPropsPropsObjectPropObjectArrayProp.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -771,7 +771,7 @@ public class ObjectPropsPropsObjectPropObjectArrayProp {
 }
 ",
   "java/com/facebook/react/viewmanagers/ObjectPropsNativeComponent/ObjectPropsPropsObjectPropObjectPrimitiveRequiredProp.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -805,7 +805,7 @@ public class ObjectPropsPropsObjectPropObjectPrimitiveRequiredProp {
 }
 ",
   "java/com/facebook/react/viewmanagers/ObjectPropsNativeComponent/ObjectPropsPropsObjectPropNestedPropANestedPropB.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -828,7 +828,7 @@ public class ObjectPropsPropsObjectPropNestedPropANestedPropB {
 }
 ",
   "java/com/facebook/react/viewmanagers/ObjectPropsNativeComponent/ObjectPropsPropsObjectPropNestedPropA.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -850,7 +850,7 @@ public class ObjectPropsPropsObjectPropNestedPropA {
 }
 ",
   "java/com/facebook/react/viewmanagers/ObjectPropsNativeComponent/ObjectPropsPropsObjectPropNestedArrayAsPropertyArrayPropElement.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -873,7 +873,7 @@ public class ObjectPropsPropsObjectPropNestedArrayAsPropertyArrayPropElement {
 }
 ",
   "java/com/facebook/react/viewmanagers/ObjectPropsNativeComponent/ObjectPropsPropsObjectPropNestedArrayAsProperty.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -896,7 +896,7 @@ public class ObjectPropsPropsObjectPropNestedArrayAsProperty {
 }
 ",
   "java/com/facebook/react/viewmanagers/ObjectPropsNativeComponent/ObjectPropsPropsObjectProp.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -964,7 +964,7 @@ public class ObjectPropsPropsObjectProp {
 }
 ",
   "java/com/facebook/react/viewmanagers/ObjectPropsNativeComponent/ObjectPropsProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -991,7 +991,7 @@ public class ObjectPropsProps {
 exports[`GeneratePropsJavaPojo can generate fixture POINT_PROP 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/Switch/PointPropNativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -1020,7 +1020,7 @@ public class PointPropNativeComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture STRING_ENUM_PROP 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/Switch/StringEnumPropsNativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -1048,7 +1048,7 @@ public class StringEnumPropsNativeComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture STRING_PROP 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/Switch/StringPropComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -1081,7 +1081,7 @@ public class StringPropComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture TWO_COMPONENTS_DIFFERENT_FILES 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/ComponentFile1/MultiFile1NativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -1103,7 +1103,7 @@ public class MultiFile1NativeComponentProps {
 }
 ",
   "java/com/facebook/react/viewmanagers/ComponentFile2/MultiFile2NativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -1130,7 +1130,7 @@ public class MultiFile2NativeComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture TWO_COMPONENTS_SAME_FILE 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/MyComponents/MultiComponent1NativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -1152,7 +1152,7 @@ public class MultiComponent1NativeComponentProps {
 }
 ",
   "java/com/facebook/react/viewmanagers/MyComponents/MultiComponent2NativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.

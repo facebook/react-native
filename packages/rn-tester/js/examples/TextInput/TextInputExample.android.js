@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -152,7 +152,7 @@ exports.examples = ([
   ...TextInputSharedExamples,
   {
     title: 'Colors and text inputs',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <TextInput
@@ -202,7 +202,7 @@ exports.examples = ([
   },
   {
     title: 'Font Weight',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <TextInput
@@ -234,7 +234,7 @@ exports.examples = ([
   },
   {
     title: 'Text input, themes and heights',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <TextInput
           placeholder="If you set height, beware of padding set from themes"
@@ -245,7 +245,7 @@ exports.examples = ([
   },
   {
     title: 'letterSpacing',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <TextInput
@@ -270,7 +270,7 @@ exports.examples = ([
   },
   {
     title: 'Passwords',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <TextInput
@@ -290,7 +290,7 @@ exports.examples = ([
   },
   {
     title: 'Editable',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <TextInput
           defaultValue="Can't touch this! (>'-')> ^(' - ')^ <('-'<) (>'-')> ^(' - ')^"
@@ -302,7 +302,7 @@ exports.examples = ([
   },
   {
     title: 'Multiline',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <TextInput
@@ -344,7 +344,7 @@ exports.examples = ([
   {
     title: 'Fixed number of lines',
     platform: 'android',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <TextInput
@@ -363,7 +363,7 @@ exports.examples = ([
   },
   {
     title: 'Auto-expanding',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <AutogrowingTextInputExample
@@ -387,7 +387,7 @@ exports.examples = ([
   },
   {
     title: 'Return key',
-    render: function(): React.Node {
+    render: function (): React.Node {
       const returnKeyTypes = [
         'none',
         'go',
@@ -428,7 +428,7 @@ exports.examples = ([
   },
   {
     title: 'Inline Images',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <TextInput
@@ -452,7 +452,7 @@ exports.examples = ([
   },
   {
     title: 'Toggle Default Padding',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <ToggleDefaultPaddingExample />;
     },
   },

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,6 +15,7 @@ const AnimatedNode = require('./AnimatedNode');
 const AnimatedWithChildren = require('./AnimatedWithChildren');
 
 import type {InterpolationConfigType} from './AnimatedInterpolation';
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
 class AnimatedModulo extends AnimatedWithChildren {
   _a: AnimatedNode;
@@ -26,9 +27,9 @@ class AnimatedModulo extends AnimatedWithChildren {
     this._modulus = modulus;
   }
 
-  __makeNative() {
-    this._a.__makeNative();
-    super.__makeNative();
+  __makeNative(platformConfig: ?PlatformConfig) {
+    this._a.__makeNative(platformConfig);
+    super.__makeNative(platformConfig);
   }
 
   __getValue(): number {

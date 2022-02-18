@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -47,9 +47,8 @@ public class TextAttributeProps {
   public static final short TA_KEY_BEST_WRITING_DIRECTION = 13;
   public static final short TA_KEY_TEXT_DECORATION_COLOR = 14;
   public static final short TA_KEY_TEXT_DECORATION_LINE = 15;
-  public static final short TA_KEY_TEXT_DECORATION_LINE_STYLE = 16;
-  public static final short TA_KEY_TEXT_DECORATION_LINE_PATTERN = 17;
-  public static final short TA_KEY_TEXT_SHADOW_RAIDUS = 18;
+  public static final short TA_KEY_TEXT_DECORATION_STYLE = 16;
+  public static final short TA_KEY_TEXT_SHADOW_RADIUS = 18;
   public static final short TA_KEY_TEXT_SHADOW_COLOR = 19;
   public static final short TA_KEY_IS_HIGHLIGHTED = 20;
   public static final short TA_KEY_LAYOUT_DIRECTION = 21;
@@ -68,9 +67,10 @@ public class TextAttributeProps {
   private static final int DEFAULT_TEXT_SHADOW_COLOR = 0x55000000;
   private static final int DEFAULT_JUSTIFICATION_MODE =
       (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? 0 : Layout.JUSTIFICATION_MODE_NONE;
-
   private static final int DEFAULT_BREAK_STRATEGY =
       (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.BREAK_STRATEGY_HIGH_QUALITY;
+  private static final int DEFAULT_HYPHENATION_FREQUENCY =
+      (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.HYPHENATION_FREQUENCY_NONE;
 
   protected float mLineHeight = Float.NaN;
   protected boolean mIsColorSet = false;
@@ -150,10 +150,10 @@ public class TextAttributeProps {
       ReadableMapBuffer.MapBufferEntry entry = iterator.next();
       switch (entry.getKey()) {
         case TA_KEY_FOREGROUND_COLOR:
-          result.setColor(entry.getInt(0));
+          result.setColor(entry.getInt());
           break;
         case TA_KEY_BACKGROUND_COLOR:
-          result.setBackgroundColor(entry.getInt(0));
+          result.setBackgroundColor(entry.getInt());
           break;
         case TA_KEY_OPACITY:
           break;
@@ -161,7 +161,7 @@ public class TextAttributeProps {
           result.setFontFamily(entry.getString());
           break;
         case TA_KEY_FONT_SIZE:
-          result.setFontSize((float) entry.getDouble(UNSET));
+          result.setFontSize((float) entry.getDouble());
           break;
         case TA_KEY_FONT_SIZE_MULTIPLIER:
           break;
@@ -175,13 +175,13 @@ public class TextAttributeProps {
           result.setFontVariant(entry.getReadableMapBuffer());
           break;
         case TA_KEY_ALLOW_FONT_SCALING:
-          result.setAllowFontScaling(entry.getBoolean(true));
+          result.setAllowFontScaling(entry.getBoolean());
           break;
         case TA_KEY_LETTER_SPACING:
-          result.setLetterSpacing((float) entry.getDouble(Float.NaN));
+          result.setLetterSpacing((float) entry.getDouble());
           break;
         case TA_KEY_LINE_HEIGHT:
-          result.setLineHeight((float) entry.getDouble(UNSET));
+          result.setLineHeight((float) entry.getDouble());
           break;
         case TA_KEY_ALIGNMENT:
           break;
@@ -192,15 +192,13 @@ public class TextAttributeProps {
         case TA_KEY_TEXT_DECORATION_LINE:
           result.setTextDecorationLine(entry.getString());
           break;
-        case TA_KEY_TEXT_DECORATION_LINE_STYLE:
+        case TA_KEY_TEXT_DECORATION_STYLE:
           break;
-        case TA_KEY_TEXT_DECORATION_LINE_PATTERN:
-          break;
-        case TA_KEY_TEXT_SHADOW_RAIDUS:
-          result.setTextShadowRadius(entry.getInt(1));
+        case TA_KEY_TEXT_SHADOW_RADIUS:
+          result.setTextShadowRadius((float) entry.getDouble());
           break;
         case TA_KEY_TEXT_SHADOW_COLOR:
-          result.setTextShadowColor(entry.getInt(DEFAULT_TEXT_SHADOW_COLOR));
+          result.setTextShadowColor(entry.getInt());
           break;
         case TA_KEY_IS_HIGHLIGHTED:
           break;
@@ -246,7 +244,7 @@ public class TextAttributeProps {
     result.setTextDecorationLine(getStringProp(props, ViewProps.TEXT_DECORATION_LINE));
     result.setTextShadowOffset(
         props.hasKey(PROP_SHADOW_OFFSET) ? props.getMap(PROP_SHADOW_OFFSET) : null);
-    result.setTextShadowRadius(getIntProp(props, PROP_SHADOW_RADIUS, 1));
+    result.setTextShadowRadius(getFloatProp(props, PROP_SHADOW_RADIUS, 1));
     result.setTextShadowColor(getIntProp(props, PROP_SHADOW_COLOR, DEFAULT_TEXT_SHADOW_COLOR));
     result.setTextTransform(getStringProp(props, PROP_TEXT_TRANSFORM));
     result.setLayoutDirection(getStringProp(props, ViewProps.LAYOUT_DIRECTION));
@@ -570,5 +568,23 @@ public class TextAttributeProps {
       }
     }
     return androidTextBreakStrategy;
+  }
+
+  public static int getHyphenationFrequency(@Nullable String hyphenationFrequency) {
+    int androidHyphenationFrequency = DEFAULT_HYPHENATION_FREQUENCY;
+    if (hyphenationFrequency != null) {
+      switch (hyphenationFrequency) {
+        case "none":
+          androidHyphenationFrequency = Layout.HYPHENATION_FREQUENCY_NONE;
+          break;
+        case "normal":
+          androidHyphenationFrequency = Layout.HYPHENATION_FREQUENCY_NORMAL;
+          break;
+        default:
+          androidHyphenationFrequency = Layout.HYPHENATION_FREQUENCY_FULL;
+          break;
+      }
+    }
+    return androidHyphenationFrequency;
   }
 }

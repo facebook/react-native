@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,9 +13,13 @@ import RotatingImagesExample from './RotatingImagesExample';
 import ContinuousInteractionsExample from './ContinuousInteractionsExample';
 import LoopingExample from './LoopingExample';
 import MovingBoxExample from './MovingBoxExample';
+import EasingExample from './EasingExample';
 import FadeInViewExample from './FadeInViewExample';
 import ComposeAnimationsWithEasingExample from './ComposeAnimationsWithEasingExample';
 import TransformBounceExample from './TransformBounceExample';
+import ComposingExample from './ComposingExample';
+import TransformStylesExample from './TransformStylesExample';
+import ColorStylesExample from './ColorStylesExample';
 
 export default ({
   framework: 'React',
@@ -27,7 +31,11 @@ export default ({
     'build and maintain.',
   showIndividualExamples: true,
   examples: [
+    TransformStylesExample,
+    ColorStylesExample,
     FadeInViewExample,
+    ComposingExample,
+    EasingExample,
     ComposeAnimationsWithEasingExample,
     RotatingImagesExample,
     MovingBoxExample,

@@ -9,7 +9,7 @@ rn_robolectric_test(
     ],
     deps = [
         YOGA_TARGET,
-        react_native_dep("third-party/java/fest:fest"),
+        react_native_dep("third-party/java/assertj:assertj-core"),
         react_native_dep("third-party/java/junit:junit"),
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
     ],

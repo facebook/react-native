@@ -1,18 +1,19 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
  * @flow strict-local
  * @format
+ * @lint-ignore-every LICENSELINT
  */
 
 'use strict';
 
 const NATIVE_MODULES_WITH_ARRAY_WITH_NO_TYPE_FOR_CONTENT = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -36,7 +37,7 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 const NATIVE_MODULES_WITH_ARRAY_WITH_NO_TYPE_FOR_CONTENT_AS_PARAM = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -60,7 +61,7 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 const NATIVE_MODULES_WITH_READ_ONLY_OBJECT_NO_TYPE_FOR_CONTENT = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -84,7 +85,7 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 const NATIVE_MODULES_WITH_NOT_ONLY_METHODS = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -112,7 +113,7 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 const NATIVE_MODULES_WITH_UNNAMED_PARAMS = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -137,7 +138,7 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 const NATIVE_MODULES_WITH_PROMISE_WITHOUT_TYPE = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -162,7 +163,7 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 const TWO_NATIVE_MODULES_EXPORTED_WITH_DEFAULT = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -184,7 +185,7 @@ export default TurboModuleRegistry.getEnforcing<Spec2>('SampleTurboModule2');
 
 const TWO_NATIVE_EXTENDING_TURBO_MODULE = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.

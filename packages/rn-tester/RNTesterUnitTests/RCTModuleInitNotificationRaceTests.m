@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,10 +12,10 @@
 
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeModule.h>
+#import <React/RCTInitializing.h>
 #import <React/RCTJavaScriptExecutor.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTViewManager.h>
-#import <React/RCTInitializing.h>
 
 @interface RCTTestViewManager : RCTViewManager
 @end
@@ -29,13 +29,12 @@ RCT_EXPORT_MODULE()
 
 - (NSArray<NSString *> *)customBubblingEventTypes
 {
-  return @[@"foo"];
+  return @[ @"foo" ];
 }
 
 #pragma clang diagnostic pop
 
 @end
-
 
 @interface RCTNotificationObserverModule : NSObject <RCTBridgeModule, RCTInitializing>
 
@@ -51,7 +50,10 @@ RCT_EXPORT_MODULE()
 
 - (void)initialize
 {
-  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didInitViewManager:) name:RCTDidInitializeModuleNotification object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(didInitViewManager:)
+                                               name:RCTDidInitializeModuleNotification
+                                             object:nil];
 }
 
 - (void)didInitViewManager:(NSNotification *)note
@@ -64,8 +66,7 @@ RCT_EXPORT_MODULE()
 
 @end
 
-@interface RCTModuleInitNotificationRaceTests : XCTestCase <RCTBridgeDelegate>
-{
+@interface RCTModuleInitNotificationRaceTests : XCTestCase <RCTBridgeDelegate> {
   RCTBridge *_bridge;
   RCTNotificationObserverModule *_notificationObserver;
 }
@@ -81,7 +82,7 @@ RCT_EXPORT_MODULE()
 
 - (NSArray *)extraModulesForBridge:(__unused RCTBridge *)bridge
 {
-  return @[[RCTTestViewManager new], _notificationObserver];
+  return @[ [RCTTestViewManager new], _notificationObserver ];
 }
 
 - (void)setUp

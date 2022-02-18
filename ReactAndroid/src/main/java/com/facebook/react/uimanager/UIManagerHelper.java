@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -20,7 +20,7 @@ import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.JSIModuleType;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -55,7 +55,7 @@ public class UIManagerHelper {
     if (context.isBridgeless()) {
       @Nullable UIManager uiManager = (UIManager) context.getJSIModule(JSIModuleType.UIManager);
       if (uiManager == null) {
-        ReactSoftException.logSoftException(
+        ReactSoftExceptionLogger.logSoftException(
             TAG,
             new ReactNoCrashSoftException(
                 "Cannot get UIManager because the instance hasn't been initialized yet."));
@@ -65,7 +65,7 @@ public class UIManagerHelper {
     }
 
     if (!context.hasCatalystInstance()) {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           TAG,
           new ReactNoCrashSoftException(
               "Cannot get UIManager because the context doesn't contain a CatalystInstance."));
@@ -74,7 +74,7 @@ public class UIManagerHelper {
     // TODO T60461551: add tests to verify emission of events when the ReactContext is being turn
     // down.
     if (!context.hasActiveReactInstance()) {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           TAG,
           new ReactNoCrashSoftException(
               "Cannot get UIManager because the context doesn't contain an active CatalystInstance."));
@@ -89,7 +89,7 @@ public class UIManagerHelper {
           : catalystInstance.getNativeModule(UIManagerModule.class);
     } catch (IllegalArgumentException ex) {
       // TODO T67518514 Clean this up once we migrate everything over to bridgeless mode
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           TAG,
           new ReactNoCrashSoftException(
               "Cannot get UIManager for UIManagerType: " + uiManagerType));
@@ -105,7 +105,7 @@ public class UIManagerHelper {
   public static EventDispatcher getEventDispatcherForReactTag(ReactContext context, int reactTag) {
     EventDispatcher eventDispatcher = getEventDispatcher(context, getUIManagerType(reactTag));
     if (eventDispatcher == null) {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           TAG, new IllegalStateException("Cannot get EventDispatcher for reactTag " + reactTag));
     }
     return eventDispatcher;
@@ -127,7 +127,7 @@ public class UIManagerHelper {
     }
     UIManager uiManager = getUIManager(context, uiManagerType, false);
     if (uiManager == null) {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           TAG,
           new ReactNoCrashSoftException(
               "Unable to find UIManager for UIManagerType " + uiManagerType));
@@ -135,7 +135,7 @@ public class UIManagerHelper {
     }
     EventDispatcher eventDispatcher = (EventDispatcher) uiManager.getEventDispatcher();
     if (eventDispatcher == null) {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           TAG,
           new IllegalStateException(
               "Cannot get EventDispatcher for UIManagerType " + uiManagerType));
@@ -160,10 +160,18 @@ public class UIManagerHelper {
   }
 
   /**
-   * @return Get the ThemedReactContext associated with a View, if possible, and then call
-   *     getSurfaceId on it. See above (getReactContext) for additional context.
+   * @return Gets the surfaceId for the {@link ThemedReactContext} associated with a View, if
+   *     possible, and then call getSurfaceId on it. See above (getReactContext) for additional
+   *     context.
+   *     <p>For RootViews, the root's rootViewTag is returned
+   *     <p>Returns -1 for non-Fabric views
    */
   public static int getSurfaceId(View view) {
+    if (view instanceof ReactRoot) {
+      ReactRoot rootView = (ReactRoot) view;
+      return rootView.getUIManagerType() == UIManagerType.FABRIC ? rootView.getRootViewTag() : -1;
+    }
+
     int reactTag = view.getId();
 
     // In non-Fabric we don't have (or use) SurfaceId
@@ -177,10 +185,9 @@ public class UIManagerHelper {
     }
 
     int surfaceId = getSurfaceId(context);
-
-    // All Fabric-managed Views (should) have a ThemedReactContext attached.
     if (surfaceId == -1) {
-      ReactSoftException.logSoftException(
+      // All Fabric-managed Views (should) have a ThemedReactContext attached.
+      ReactSoftExceptionLogger.logSoftException(
           TAG,
           new IllegalStateException(
               "Fabric View [" + reactTag + "] does not have SurfaceId associated with it"));

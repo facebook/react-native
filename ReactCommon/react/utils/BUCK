@@ -34,12 +34,6 @@ rn_xplat_cxx_library(
         ],
         prefix = "react/utils",
     ),
-    compiler_flags = [
-        "-fexceptions",
-        "-frtti",
-        "-std=c++17",
-        "-Wall",
-    ],
     fbandroid_deps = [
         react_native_target("java/com/facebook/react/common/mapbuffer/jni:jni"),
         react_native_xplat_target("react/renderer/mapbuffer:mapbuffer"),
@@ -58,12 +52,13 @@ rn_xplat_cxx_library(
     tests = [],
     visibility = ["PUBLIC"],
     deps = [
+        "//third-party/glog:glog",
         "//xplat/folly:container_evicting_cache_map",
         "//xplat/folly:headers_only",
         "//xplat/folly:memory",
         "//xplat/folly:molly",
         "//xplat/jsi:jsi",
-        react_native_xplat_target("better:better"),
+        react_native_xplat_target("butter:butter"),
         react_native_xplat_target("react/debug:debug"),
     ],
 )

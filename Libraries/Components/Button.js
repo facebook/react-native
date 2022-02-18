@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -145,6 +145,7 @@ type ButtonProps = $ReadOnly<{|
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
   accessibilityState?: ?AccessibilityState,
+  accessibilityHint?: ?string,
 |}>;
 
 /**
@@ -275,6 +276,7 @@ class Button extends React.Component<ButtonProps> {
       testID,
       accessible,
       accessibilityActions,
+      accessibilityHint,
       onAccessibilityAction,
     } = this.props;
     const buttonStyles = [styles.button];
@@ -317,6 +319,7 @@ class Button extends React.Component<ButtonProps> {
         accessibilityActions={accessibilityActions}
         onAccessibilityAction={onAccessibilityAction}
         accessibilityLabel={accessibilityLabel}
+        accessibilityHint={accessibilityHint}
         accessibilityRole="button"
         accessibilityState={accessibilityState}
         hasTVPreferredFocus={hasTVPreferredFocus}

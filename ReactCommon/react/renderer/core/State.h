@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -34,9 +34,9 @@ class State {
    * Constructors are protected to make calling them directly with
    * type-erasured arguments impossible.
    */
-  explicit State(StateData::Shared const &data, State const &state);
+  explicit State(StateData::Shared data, State const &state);
   explicit State(
-      StateData::Shared const &data,
+      StateData::Shared data,
       ShadowNodeFamily::Shared const &family);
 
  public:

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,7 +10,6 @@
 #include <React/RCTComponentData.h>
 #include <React/RCTEventDispatcher.h>
 #include <React/RCTModuleData.h>
-#include <React/RCTUIManager.h>
 #include <react/utils/ContextContainer.h>
 #include <react/utils/ManagedObjectWrapper.h>
 #include "LegacyViewManagerInteropState.h"

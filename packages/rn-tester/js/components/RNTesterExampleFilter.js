@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,25 +16,26 @@ const {
   View,
   ScrollView,
   Image,
+  Platform,
 } = require('react-native');
 import {RNTesterThemeContext} from './RNTesterTheme';
 
 import type {SectionData} from '../types/RNTesterTypes';
 
-type Props = {
+type Props<T> = {
   filter: Function,
   render: Function,
   disableSearch?: boolean,
   testID?: string,
   hideFilterPills?: boolean,
   page: 'examples_page' | 'components_page' | 'bookmarks_page',
-  sections: SectionData[],
+  sections: $ReadOnlyArray<SectionData<T>>,
   ...
 };
 
 type State = {filter: string, category: string, ...};
 
-class RNTesterExampleFilter extends React.Component<Props, State> {
+class RNTesterExampleFilter<T> extends React.Component<Props<T>, State> {
   state: State = {filter: '', category: ''};
 
   render(): React.Node {
@@ -51,7 +52,7 @@ class RNTesterExampleFilter extends React.Component<Props, State> {
       );
     }
 
-    const filter = example => {
+    const filter = (example: T) => {
       const category = this.state.category;
       return (
         this.props.disableSearch ||
@@ -78,7 +79,11 @@ class RNTesterExampleFilter extends React.Component<Props, State> {
     );
   }
 
-  _renderFilteredSections(filteredSections): ?React.Element<any> {
+  _renderFilteredSections(
+    filteredSections: Array<
+      $TEMPORARY$object<{data: Array<T>, key: string, title: string}>,
+    >,
+  ): ?React.Element<any> {
     if (this.props.page === 'examples_page') {
       return (
         <ScrollView
@@ -108,7 +113,12 @@ class RNTesterExampleFilter extends React.Component<Props, State> {
             <View
               style={[
                 styles.searchRow,
-                {backgroundColor: theme.BackgroundColor},
+                {
+                  backgroundColor:
+                    Platform.OS === 'ios'
+                      ? theme.SystemBackgroundColor
+                      : theme.BackgroundColor,
+                },
               ]}>
               <View style={styles.textInputStyle}>
                 <Image

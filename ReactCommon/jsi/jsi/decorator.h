@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -175,6 +175,9 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
   };
   PropNameID createPropNameIDFromString(const String& str) override {
     return plain_.createPropNameIDFromString(str);
+  };
+  PropNameID createPropNameIDFromSymbol(const Symbol& sym) override {
+    return plain_.createPropNameIDFromSymbol(sym);
   };
   std::string utf8(const PropNameID& id) override {
     return plain_.utf8(id);

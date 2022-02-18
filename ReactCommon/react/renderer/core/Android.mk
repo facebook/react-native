@@ -1,4 +1,4 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -15,7 +15,15 @@ LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../../../
 
-LOCAL_SHARED_LIBRARIES := libfolly_json libjsi libfolly_futures libreact_utils libreact_debug libreact_render_debug libreact_render_graphics
+LOCAL_SHARED_LIBRARIES := \
+  libfolly_futures \
+  libfolly_json \
+  libglog \
+  libjsi \
+  libreact_debug \
+  libreact_render_debug \
+  libreact_render_graphics \
+  libreact_utils
 
 LOCAL_CFLAGS := \
   -DLOG_TAG=\"Fabric\"

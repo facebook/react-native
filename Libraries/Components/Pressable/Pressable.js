@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -22,8 +22,12 @@ import type {
 } from '../View/ViewAccessibility';
 import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 import usePressability from '../../Pressability/usePressability';
-import {normalizeRect, type RectOrSize} from '../../StyleSheet/Rect';
-import type {LayoutEvent, PressEvent} from '../../Types/CoreEventTypes';
+import {type RectOrSize} from '../../StyleSheet/Rect';
+import type {
+  LayoutEvent,
+  MouseEvent,
+  PressEvent,
+} from '../../Types/CoreEventTypes';
 import View from '../View/View';
 
 type ViewStyleProp = $ElementType<React.ElementConfig<typeof View>, 'style'>;
@@ -64,6 +68,16 @@ type Props = $ReadOnly<{|
   children: React.Node | ((state: StateCallbackType) => React.Node),
 
   /**
+   * Duration to wait after hover in before calling `onHoverIn`.
+   */
+  delayHoverIn?: ?number,
+
+  /**
+   * Duration to wait after hover out before calling `onHoverOut`.
+   */
+  delayHoverOut?: ?number,
+
+  /**
    * Duration (in milliseconds) from `onPressIn` before `onLongPress` is called.
    */
   delayLongPress?: ?number,
@@ -88,6 +102,16 @@ type Props = $ReadOnly<{|
    * Called when this view's layout changes.
    */
   onLayout?: ?(event: LayoutEvent) => mixed,
+
+  /**
+   * Called when the hover is activated to provide visual feedback.
+   */
+  onHoverIn?: ?(event: MouseEvent) => mixed,
+
+  /**
+   * Called when the hover is deactivated to undo visual feedback.
+   */
+  onHoverOut?: ?(event: MouseEvent) => mixed,
 
   /**
    * Called when a long-tap gesture is detected.
@@ -152,9 +176,14 @@ function Pressable(props: Props, forwardedRef): React.Node {
     android_ripple,
     cancelable,
     children,
+    delayHoverIn,
+    delayHoverOut,
     delayLongPress,
     disabled,
     focusable,
+    hitSlop,
+    onHoverIn,
+    onHoverOut,
     onLongPress,
     onPress,
     onPressIn,
@@ -172,8 +201,6 @@ function Pressable(props: Props, forwardedRef): React.Node {
   const android_rippleConfig = useAndroidRippleForView(android_ripple, viewRef);
 
   const [pressed, setPressed] = usePressState(testOnly_pressed === true);
-
-  const hitSlop = normalizeRect(props.hitSlop);
 
   const accessibilityState =
     disabled != null
@@ -196,8 +223,12 @@ function Pressable(props: Props, forwardedRef): React.Node {
       hitSlop,
       pressRectOffset: pressRetentionOffset,
       android_disableSound,
+      delayHoverIn,
+      delayHoverOut,
       delayLongPress,
       delayPressIn: unstable_pressDelay,
+      onHoverIn,
+      onHoverOut,
       onLongPress,
       onPress,
       onPressIn(event: PressEvent): void {
@@ -224,9 +255,13 @@ function Pressable(props: Props, forwardedRef): React.Node {
       android_disableSound,
       android_rippleConfig,
       cancelable,
+      delayHoverIn,
+      delayHoverOut,
       delayLongPress,
       disabled,
       hitSlop,
+      onHoverIn,
+      onHoverOut,
       onLongPress,
       onPress,
       onPressIn,

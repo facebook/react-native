@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,17 +7,21 @@
 
 #pragma once
 
-#include <better/map.h>
+#include <butter/map.h>
 #include <folly/dynamic.h>
 #include <glog/logging.h>
 #include <react/debug/react_native_assert.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/graphics/conversions.h>
 #include <react/renderer/imagemanager/primitives.h>
 
 namespace facebook {
 namespace react {
 
-inline void fromRawValue(const RawValue &value, ImageSource &result) {
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    ImageSource &result) {
   if (value.hasType<std::string>()) {
     result = {
         /* .type = */ ImageSource::Type::Remote,
@@ -26,8 +30,8 @@ inline void fromRawValue(const RawValue &value, ImageSource &result) {
     return;
   }
 
-  if (value.hasType<better::map<std::string, RawValue>>()) {
-    auto items = (better::map<std::string, RawValue>)value;
+  if (value.hasType<butter::map<std::string, RawValue>>()) {
+    auto items = (butter::map<std::string, RawValue>)value;
     result = {};
 
     result.type = ImageSource::Type::Remote;
@@ -89,7 +93,10 @@ inline std::string toString(const ImageSource &value) {
   return "{uri: " + value.uri + "}";
 }
 
-inline void fromRawValue(const RawValue &value, ImageResizeMode &result) {
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    ImageResizeMode &result) {
   react_native_assert(value.hasType<std::string>());
   if (!value.hasType<std::string>()) {
     LOG(ERROR) << "Unsupported ImageResizeMode type";

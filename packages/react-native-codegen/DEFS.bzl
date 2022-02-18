@@ -1,4 +1,4 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -195,12 +195,6 @@ def rn_codegen_modules(
         exported_headers = {
             "{}/{}.h".format(name, name): ":{}".format(generate_module_jni_h_name),
         },
-        compiler_flags = [
-            "-fexceptions",
-            "-frtti",
-            "-std=c++14",
-            "-Wall",
-        ],
         force_static = True,
         preprocessor_flags = [
             "-DLOG_TAG=\"ReactNative\"",
@@ -254,6 +248,7 @@ def rn_codegen_modules(
             srcs = [
                 ":{}".format(generate_module_mm_name),
             ],
+            autoglob = False,
             labels = library_labels + ["codegen_rule"],
             visibility = ["PUBLIC"],
             exported_deps = [
@@ -415,12 +410,6 @@ def rn_codegen_components(
                     "RCTComponentViewHelpers.h": ":{}".format(generate_component_hobjcpp_name),
                     "ShadowNodes.h": ":{}".format(generate_shadow_node_h_name),
                 },
-                compiler_flags = [
-                    "-fexceptions",
-                    "-frtti",
-                    "-std=c++14",
-                    "-Wall",
-                ],
                 fbobjc_compiler_flags = get_apple_compiler_flags(),
                 fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
                 ios_exported_headers = {
@@ -456,10 +445,12 @@ def rn_codegen_components(
         # Tests
         fb_xplat_cxx_test(
             name = "generated_tests-{}".format(name),
-            srcs = [
+            # TODO T96844980: Fix and enable generated_tests-codegen_testsAndroid
+            srcs = [] if ANDROID else [
                 ":{}".format(generate_tests_cpp_name),
             ],
             apple_sdks = (IOS, MACOSX),
+            fbandroid_use_instrumentation_test = True,
             compiler_flags = [
                 "-fexceptions",
                 "-frtti",
@@ -470,6 +461,8 @@ def rn_codegen_components(
             labels = library_labels + ["codegen_rule"],
             platforms = (ANDROID, APPLE, CXX),
             deps = [
+                YOGA_CXX_TARGET,
+                react_native_xplat_target("react/renderer/core:core"),
                 "//xplat/third-party/gmock:gtest",
                 ":generated_components-{}".format(name),
             ],
@@ -558,12 +551,6 @@ def rn_codegen_cxx_modules(
                 "NativeModules.cpp": ":{}".format(generate_module_cpp_name),
                 "NativeModules.h": ":{}".format(generate_module_h_name),
             },
-            compiler_flags = [
-                "-fexceptions",
-                "-frtti",
-                "-std=c++14",
-                "-Wall",
-            ],
             fbobjc_compiler_flags = get_apple_compiler_flags(),
             fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
             labels = ["codegen_rule"],

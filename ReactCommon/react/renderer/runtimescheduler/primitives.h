@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,7 +11,8 @@
 #include <jsi/jsi.h>
 #include <react/renderer/runtimescheduler/Task.h>
 
-namespace facebook::react {
+namespace facebook {
+namespace react {
 
 struct TaskWrapper : public jsi::HostObject {
   TaskWrapper(std::shared_ptr<Task> const &task) : task(task) {}
@@ -36,4 +37,5 @@ inline static std::shared_ptr<Task> taskFromValue(
   return value.getObject(runtime).getHostObject<TaskWrapper>(runtime)->task;
 }
 
-} // namespace facebook::react
+} // namespace react
+} // namespace facebook

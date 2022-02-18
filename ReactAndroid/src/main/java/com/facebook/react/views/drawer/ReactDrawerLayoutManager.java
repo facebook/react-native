@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -31,6 +31,7 @@ import com.facebook.react.views.drawer.events.DrawerClosedEvent;
 import com.facebook.react.views.drawer.events.DrawerOpenedEvent;
 import com.facebook.react.views.drawer.events.DrawerSlideEvent;
 import com.facebook.react.views.drawer.events.DrawerStateChangedEvent;
+import java.util.HashMap;
 import java.util.Map;
 
 /** View Manager for {@link ReactDrawerLayout} components. */
@@ -153,12 +154,15 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
   }
 
   @Override
+  @ReactProp(name = "keyboardDismissMode")
   public void setKeyboardDismissMode(ReactDrawerLayout view, @Nullable String value) {}
 
   @Override
+  @ReactProp(name = "drawerBackgroundColor", customType = "Color")
   public void setDrawerBackgroundColor(ReactDrawerLayout view, @Nullable Integer value) {}
 
   @Override
+  @ReactProp(name = "statusBarBackgroundColor", customType = "Color")
   public void setStatusBarBackgroundColor(ReactDrawerLayout view, @Nullable Integer value) {}
 
   @Override
@@ -210,12 +214,18 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
 
   @Override
   public @Nullable Map getExportedCustomDirectEventTypeConstants() {
-    return MapBuilder.of(
-        DrawerSlideEvent.EVENT_NAME, MapBuilder.of("registrationName", "onDrawerSlide"),
-        DrawerOpenedEvent.EVENT_NAME, MapBuilder.of("registrationName", "onDrawerOpen"),
-        DrawerClosedEvent.EVENT_NAME, MapBuilder.of("registrationName", "onDrawerClose"),
-        DrawerStateChangedEvent.EVENT_NAME,
-            MapBuilder.of("registrationName", "onDrawerStateChanged"));
+    @Nullable
+    Map<String, Object> baseEventTypeConstants = super.getExportedCustomDirectEventTypeConstants();
+    Map<String, Object> eventTypeConstants =
+        baseEventTypeConstants == null ? new HashMap<String, Object>() : baseEventTypeConstants;
+    eventTypeConstants.putAll(
+        MapBuilder.of(
+            DrawerSlideEvent.EVENT_NAME, MapBuilder.of("registrationName", "onDrawerSlide"),
+            DrawerOpenedEvent.EVENT_NAME, MapBuilder.of("registrationName", "onDrawerOpen"),
+            DrawerClosedEvent.EVENT_NAME, MapBuilder.of("registrationName", "onDrawerClose"),
+            DrawerStateChangedEvent.EVENT_NAME,
+                MapBuilder.of("registrationName", "onDrawerStateChanged")));
+    return eventTypeConstants;
   }
 
   /**

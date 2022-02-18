@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -55,7 +55,7 @@ using namespace facebook::react;
                     action:@selector(sliderTouchEnd:)
           forControlEvents:(UIControlEventTouchUpInside | UIControlEventTouchUpOutside | UIControlEventTouchCancel)];
 
-    _sliderView.value = defaultProps->value;
+    _sliderView.value = (float)defaultProps->value;
 
     _trackImageResponseObserverProxy = RCTImageResponseObserverProxy(self);
     _minimumTrackImageResponseObserverProxy = RCTImageResponseObserverProxy(self);
@@ -94,8 +94,8 @@ using namespace facebook::react;
   _thumbImage = nil;
 
   const auto &props = *std::static_pointer_cast<const SliderProps>(_props);
-  _sliderView.value = props.value;
-  _previousValue = props.value;
+  _sliderView.value = (float)props.value;
+  _previousValue = (float)props.value;
 }
 
 #pragma mark - RCTComponentViewProtocol
@@ -112,18 +112,18 @@ using namespace facebook::react;
 
   // `minimumValue`
   if (oldSliderProps.minimumValue != newSliderProps.minimumValue) {
-    _sliderView.minimumValue = newSliderProps.minimumValue;
+    _sliderView.minimumValue = (float)newSliderProps.minimumValue;
   }
 
   // `maximumValue`
   if (oldSliderProps.maximumValue != newSliderProps.maximumValue) {
-    _sliderView.maximumValue = newSliderProps.maximumValue;
+    _sliderView.maximumValue = (float)newSliderProps.maximumValue;
   }
 
   // `value`
   if (oldSliderProps.value != newSliderProps.value) {
-    _sliderView.value = newSliderProps.value;
-    _previousValue = newSliderProps.value;
+    _sliderView.value = (float)newSliderProps.value;
+    _previousValue = (float)newSliderProps.value;
   }
 
   // `disabled`
@@ -301,9 +301,10 @@ using namespace facebook::react;
   const auto &props = *std::static_pointer_cast<const SliderProps>(_props);
 
   if (props.step > 0 && props.step <= (props.maximumValue - props.minimumValue)) {
-    value = MAX(
+    value = (float)std::max(
         props.minimumValue,
-        MIN(props.maximumValue, props.minimumValue + round((value - props.minimumValue) / props.step) * props.step));
+        std::min(
+            props.maximumValue, props.minimumValue + round((value - props.minimumValue) / props.step) * props.step));
 
     [_sliderView setValue:value animated:YES];
   }

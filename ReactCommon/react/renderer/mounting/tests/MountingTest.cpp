@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,6 +9,7 @@
 
 #include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/mounting/Differentiator.h>
 #include <react/renderer/mounting/stubs.h>
 
@@ -31,14 +32,18 @@ static SharedViewProps nonFlattenedDefaultProps(
   dynamic["nativeId"] = "NativeId";
   dynamic["accessible"] = true;
 
+  ContextContainer contextContainer{};
+  PropsParserContext parserContext{-1, contextContainer};
+
   return std::static_pointer_cast<ViewProps const>(
-      componentDescriptor.cloneProps(nullptr, RawProps{dynamic}));
+      componentDescriptor.cloneProps(
+          parserContext, nullptr, RawProps{dynamic}));
 }
 
 static ShadowNode::Shared makeNode(
     ComponentDescriptor const &componentDescriptor,
     int tag,
-    ShadowNode::ListOfShared children,
+    const ShadowNode::ListOfShared &children,
     bool flattened = false) {
   auto props = flattened ? generateDefaultProps(componentDescriptor)
                          : nonFlattenedDefaultProps(componentDescriptor);
@@ -78,8 +83,11 @@ TEST(MountingTest, testReorderingInstructionGeneration) {
               ShadowNodeFragment{RootShadowNode::defaultSharedProps()},
               rootFamily)));
 
+  PropsParserContext parserContext{-1, *contextContainer};
+
   // Applying size constraints.
   emptyRootNode = emptyRootNode->clone(
+      parserContext,
       LayoutConstraints{
           Size{512, 0}, Size{512, std::numeric_limits<Float>::infinity()}},
       LayoutContext{});
@@ -350,9 +358,9 @@ TEST(MountingTest, testReorderingInstructionGeneration) {
   // The actual nodes that should be created in this transaction have a tag >
   // 105.
   EXPECT_TRUE(mutations6.size() == 25);
-  for (int i = 0; i < mutations6.size(); i++) {
-    if (mutations6[i].type == ShadowViewMutation::Create) {
-      EXPECT_TRUE(mutations6[i].newChildShadowView.tag > 105);
+  for (auto &i : mutations6) {
+    if (i.type == ShadowViewMutation::Create) {
+      EXPECT_TRUE(i.newChildShadowView.tag > 105);
     }
   }
 }
@@ -383,8 +391,11 @@ TEST(MountingTest, testViewReparentingInstructionGeneration) {
               ShadowNodeFragment{RootShadowNode::defaultSharedProps()},
               rootFamily)));
 
+  PropsParserContext parserContext{-1, *contextContainer};
+
   // Applying size constraints.
   emptyRootNode = emptyRootNode->clone(
+      parserContext,
       LayoutConstraints{
           Size{512, 0}, Size{512, std::numeric_limits<Float>::infinity()}},
       LayoutContext{});

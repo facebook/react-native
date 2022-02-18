@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,6 +7,8 @@
  * @flow strict-local
  * @format
  */
+
+/* eslint-disable no-alert */
 
 import * as React from 'react';
 import {Modal, Platform, StyleSheet, Switch, Text, View} from 'react-native';
@@ -39,12 +41,10 @@ function ModalPresentation() {
   const [visible, setVisible] = React.useState(false);
   const [hardwareAccelerated, setHardwareAccelerated] = React.useState(false);
   const [statusBarTranslucent, setStatusBarTranslucent] = React.useState(false);
-  const [presentationStyle, setPresentationStyle] = React.useState(
-    'fullScreen',
-  );
-  const [supportedOrientationKey, setSupportedOrientationKey] = React.useState(
-    'Portrait',
-  );
+  const [presentationStyle, setPresentationStyle] =
+    React.useState('fullScreen');
+  const [supportedOrientationKey, setSupportedOrientationKey] =
+    React.useState('Portrait');
   const [currentOrientation, setCurrentOrientation] = React.useState('unknown');
   const [action, setAction] = React.useState('None');
   const actions = Platform.OS === 'ios' ? iOSActions : noniOSActions;
@@ -139,22 +139,6 @@ function ModalPresentation() {
       ) : null}
       {Platform.isTV !== true ? (
         <>
-          <View>
-            {Platform.OS === 'ios' && presentationStyle !== 'overFullScreen' ? (
-              <Text style={styles.warning}>
-                Modal can only be transparent with overFullScreen
-                presentationStyle
-              </Text>
-            ) : null}
-            <View style={styles.inlineBlock}>
-              <Text style={styles.title}>Transparent</Text>
-              <Switch
-                value={transparent}
-                disabled={presentationStyle !== 'overFullScreen'}
-                onValueChange={() => setTransparent(!transparent)}
-              />
-            </View>
-          </View>
           {Platform.OS === 'ios' ? (
             <View style={styles.block}>
               <Text style={styles.title}>Presentation Style</Text>
@@ -176,6 +160,22 @@ function ModalPresentation() {
               </View>
             </View>
           ) : null}
+          <View style={styles.block}>
+            <View style={styles.rowWithSpaceBetween}>
+              <Text style={styles.title}>Transparent</Text>
+              <Switch
+                value={transparent}
+                disabled={presentationStyle !== 'overFullScreen'}
+                onValueChange={() => setTransparent(!transparent)}
+              />
+            </View>
+            {Platform.OS === 'ios' && presentationStyle !== 'overFullScreen' ? (
+              <Text style={styles.warning}>
+                iOS Modal can only be transparent with 'overFullScreen'
+                Presentation Style
+              </Text>
+            ) : null}
+          </View>
           <View style={styles.block}>
             <Text style={styles.title}>Supported Orientation</Text>
             <View style={styles.row}>
@@ -212,9 +212,12 @@ function ModalPresentation() {
 
 const styles = StyleSheet.create({
   row: {
-    flex: 1,
     flexWrap: 'wrap',
     flexDirection: 'row',
+  },
+  rowWithSpaceBetween: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   block: {
     borderColor: 'rgba(0,0,0, 0.1)',
@@ -247,9 +250,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   warning: {
+    margin: 3,
     fontSize: 12,
     color: 'red',
-    alignSelf: 'center',
   },
 });
 

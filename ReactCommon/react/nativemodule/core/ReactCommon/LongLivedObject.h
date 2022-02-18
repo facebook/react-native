@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -26,10 +26,11 @@ namespace react {
  */
 class LongLivedObject {
  public:
-  void allowRelease();
+  virtual void allowRelease();
 
  protected:
   LongLivedObject();
+  virtual ~LongLivedObject();
 };
 
 /**
@@ -39,6 +40,7 @@ class LongLivedObjectCollection {
  public:
   static LongLivedObjectCollection &get();
 
+  LongLivedObjectCollection();
   LongLivedObjectCollection(LongLivedObjectCollection const &) = delete;
   void operator=(LongLivedObjectCollection const &) = delete;
 
@@ -47,7 +49,6 @@ class LongLivedObjectCollection {
   void clear() const;
 
  private:
-  LongLivedObjectCollection();
   mutable std::unordered_set<std::shared_ptr<LongLivedObject>> collection_;
   mutable std::mutex collectionMutex_;
 };

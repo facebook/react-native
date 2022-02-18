@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -47,7 +47,7 @@ class MessageQueue {
   _callID: number;
   _lastFlush: number;
   _eventLoopStartTime: number;
-  _immediatesCallback: ?() => void;
+  _reactNativeMicrotasksCallback: ?() => void;
 
   _debugInfo: {[number]: [number, number], ...};
   _remoteModuleTable: {[number]: string, ...};
@@ -63,7 +63,7 @@ class MessageQueue {
     this._callID = 0;
     this._lastFlush = 0;
     this._eventLoopStartTime = Date.now();
-    this._immediatesCallback = null;
+    this._reactNativeMicrotasksCallback = null;
 
     if (__DEV__) {
       this._debugInfo = {};
@@ -72,19 +72,17 @@ class MessageQueue {
     }
 
     // $FlowFixMe[cannot-write]
-    // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-    this.callFunctionReturnFlushedQueue = this.callFunctionReturnFlushedQueue.bind(
-      this,
-    );
+    this.callFunctionReturnFlushedQueue =
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
+      this.callFunctionReturnFlushedQueue.bind(this);
     // $FlowFixMe[cannot-write]
     // $FlowFixMe[method-unbinding] added when improving typing for this parameters
     this.flushedQueue = this.flushedQueue.bind(this);
 
     // $FlowFixMe[cannot-write]
-    // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-    this.invokeCallbackAndReturnFlushedQueue = this.invokeCallbackAndReturnFlushedQueue.bind(
-      this,
-    );
+    this.invokeCallbackAndReturnFlushedQueue =
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
+      this.invokeCallbackAndReturnFlushedQueue.bind(this);
   }
 
   /**
@@ -132,7 +130,7 @@ class MessageQueue {
 
   flushedQueue(): null | [Array<number>, Array<number>, Array<mixed>, number] {
     this.__guard(() => {
-      this.__callImmediates();
+      this.__callReactNativeMicrotasks();
     });
 
     const queue = this._queue;
@@ -354,8 +352,8 @@ class MessageQueue {
   // For JSTimers to register its callback. Otherwise a circular dependency
   // between modules is introduced. Note that only one callback may be
   // registered at a time.
-  setImmediatesCallback(fn: () => void) {
-    this._immediatesCallback = fn;
+  setReactNativeMicrotasksCallback(fn: () => void) {
+    this._reactNativeMicrotasksCallback = fn;
   }
 
   /**
@@ -387,10 +385,10 @@ class MessageQueue {
     );
   }
 
-  __callImmediates() {
-    Systrace.beginEvent('JSTimers.callImmediates()');
-    if (this._immediatesCallback != null) {
-      this._immediatesCallback();
+  __callReactNativeMicrotasks() {
+    Systrace.beginEvent('JSTimers.callReactNativeMicrotasks()');
+    if (this._reactNativeMicrotasksCallback != null) {
+      this._reactNativeMicrotasksCallback();
     }
     Systrace.endEvent();
   }
@@ -409,7 +407,7 @@ class MessageQueue {
     const moduleMethods = this.getCallableModule(module);
     invariant(
       !!moduleMethods,
-      `Module ${module} is not a registered callable module (calling ${method}). A frequent cause of the error is that the application entry file path is incorrect. 
+      `Module ${module} is not a registered callable module (calling ${method}). A frequent cause of the error is that the application entry file path is incorrect.
       This can also happen when the JS bundle is corrupt or there is an early initialization error when loading React Native.`,
     );
     invariant(

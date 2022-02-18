@@ -28,6 +28,7 @@ rn_android_library(
         react_native_target("java/com/facebook/react/modules/core:core"),
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
         react_native_target("java/com/facebook/react/uimanager/annotations:annotations"),
+        react_native_target("java/com/facebook/react/views/view:view"),
     ],
-    exported_deps = [react_native_root_target("Libraries:FBReactNativeSpec")],
+    exported_deps = [react_native_root_target(":FBReactNativeSpec")],
 )

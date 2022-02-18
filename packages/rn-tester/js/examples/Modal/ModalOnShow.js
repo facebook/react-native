@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -132,6 +132,6 @@ export default ({
   title: "Modal's onShow/onDismiss",
   name: 'onShow',
   description:
-    'onShow and onDismiss (iOS only) callbacks are called when modals is shown/dissmissed',
+    'onShow and onDismiss (iOS only) callbacks are called when a modal is shown/dismissed',
   render: (): React.Node => <ModalOnShowOnDismiss />,
 }: RNTesterModuleExample);

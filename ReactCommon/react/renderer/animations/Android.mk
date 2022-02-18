@@ -1,4 +1,4 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -21,7 +21,23 @@ LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
 
 LOCAL_STATIC_LIBRARIES :=
 
-LOCAL_SHARED_LIBRARIES := libreact_render_graphics libglog_init glog libruntimeexecutor libyoga librrc_view libreact_render_uimanager libfolly_futures libreact_render_componentregistry libreactconfig libfolly_json libjsi libreact_render_core libreact_render_debug libreact_render_mounting libreact_debug
+LOCAL_SHARED_LIBRARIES := \
+  glog \
+  libfolly_futures \
+  libfolly_json \
+  libglog_init \
+  libjsi \
+  libreact_debug \
+  libreact_render_componentregistry \
+  libreact_render_core \
+  libreact_render_debug \
+  libreact_render_graphics \
+  libreact_render_mounting \
+  libreact_render_uimanager \
+  libreact_config \
+  librrc_view \
+  libruntimeexecutor \
+  libyoga
 
 include $(BUILD_SHARED_LIBRARY)
 

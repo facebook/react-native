@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -210,8 +210,7 @@ RCT_EXPORT_MODULE()
 - (void)setDefaultJSBundle
 {
   [[RCTBundleURLProvider sharedSettings] resetToDefaults];
-  self->_bundleManager.bundleURL = [[RCTBundleURLProvider sharedSettings] jsBundleURLForFallbackResource:nil
-                                                                                       fallbackExtension:nil];
+  self->_bundleManager.bundleURL = [[RCTBundleURLProvider sharedSettings] jsBundleURLForFallbackExtension:nil];
   RCTTriggerReloadCommandListeners(@"Dev menu - reset to default");
 }
 
@@ -350,7 +349,7 @@ RCT_EXPORT_MODULE()
                                                     [weakSelf setDefaultJSBundle];
                                                     return;
                                                   }
-                                                  NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+                                                  NSNumberFormatter *formatter = [NSNumberFormatter new];
                                                   formatter.numberStyle = NSNumberFormatterDecimalStyle;
                                                   NSNumber *portNumber =
                                                       [formatter numberFromString:portTextField.text];
@@ -363,8 +362,7 @@ RCT_EXPORT_MODULE()
                                                     [bundleManager resetBundleURL];
                                                   } else {
                                                     bundleManager.bundleURL = [[RCTBundleURLProvider sharedSettings]
-                                                        jsBundleURLForBundleRoot:bundleRoot
-                                                                fallbackResource:nil];
+                                                        jsBundleURLForBundleRoot:bundleRoot];
                                                   }
 
                                                   RCTTriggerReloadCommandListeners(@"Dev menu - apply changes");

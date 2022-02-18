@@ -30,7 +30,6 @@ flow/
 emoji=true
 
 exact_by_default=true
-indexed_access=false
 
 format.bracket_spacing=false
 
@@ -56,7 +55,7 @@ sketchy-null-mixed=warn
 sketchy-number=warn
 untyped-type-import=warn
 nonstrict-import=warn
-deprecated-type=warn
+deprecated-type=error
 unsafe-getters-setters=warn
 unnecessary-invariant=warn
 signature-verification-failure=warn
@@ -71,4 +70,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.155.1
+^0.171.0

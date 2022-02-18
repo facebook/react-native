@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -147,17 +147,17 @@ if (__DEV__) {
     },
   };
 
-  const isRCTLogAdviceWarning = (...args) => {
+  const isRCTLogAdviceWarning = (...args: Array<mixed>) => {
     // RCTLogAdvice is a native logging function designed to show users
     // a message in the console, but not show it to them in Logbox.
     return typeof args[0] === 'string' && args[0].startsWith('(ADVICE)');
   };
 
-  const isWarningModuleWarning = (...args) => {
+  const isWarningModuleWarning = (...args: any) => {
     return typeof args[0] === 'string' && args[0].startsWith('Warning: ');
   };
 
-  const registerWarning = (...args): void => {
+  const registerWarning = (...args: Array<mixed>): void => {
     // Let warnings within LogBox itself fall through.
     if (LogBoxData.isLogBoxErrorMessage(String(args[0]))) {
       originalConsoleError(...args);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,12 +11,12 @@
 
 'use strict';
 
-import * as React from 'react';
-import ScrollView from '../ScrollView';
-import * as ReactNativeTestTools from '../../../Utilities/ReactNativeTestTools';
-import ReactTestRenderer from 'react-test-renderer';
-import View from '../../View/View';
-import Text from '../../../Text/Text';
+const React = require('react');
+const ScrollView = require('../ScrollView');
+const ReactNativeTestTools = require('../../../Utilities/ReactNativeTestTools');
+const ReactTestRenderer = require('react-test-renderer');
+const View = require('../../View/View');
+const Text = require('../../../Text/Text');
 
 describe('<ScrollView />', () => {
   it('should render as expected', () => {

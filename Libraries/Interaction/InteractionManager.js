@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -86,14 +86,11 @@ const InteractionManager = {
    * Schedule a function to run after all interactions have completed. Returns a cancellable
    * "promise".
    */
-  runAfterInteractions(
-    task: ?Task,
-  ): {
+  runAfterInteractions(task: ?Task): {
     then: <U>(
       onFulfill?: ?(void) => ?(Promise<U> | U),
       onReject?: ?(error: mixed) => ?(Promise<U> | U),
     ) => Promise<U>,
-    done: () => void,
     cancel: () => void,
     ...
   } {
@@ -112,17 +109,7 @@ const InteractionManager = {
     return {
       // $FlowFixMe[method-unbinding] added when improving typing for this parameters
       then: promise.then.bind(promise),
-      done: (...args) => {
-        // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-        if (promise.done) {
-          return promise.done(...args);
-        } else {
-          console.warn(
-            'Tried to call done when not supported by current Promise implementation.',
-          );
-        }
-      },
-      cancel: function() {
+      cancel: function () {
         _taskQueue.cancelTasks(tasks);
       },
     };

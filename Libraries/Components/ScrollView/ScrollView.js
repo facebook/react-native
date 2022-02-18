@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -161,6 +161,7 @@ export type ScrollViewImperativeMethods = $ReadOnly<{|
   >,
 |}>;
 
+export type DecelerationRateType = 'fast' | 'normal' | number;
 export type ScrollResponderType = ScrollViewImperativeMethods;
 
 type IOSProps = $ReadOnly<{|
@@ -171,6 +172,12 @@ type IOSProps = $ReadOnly<{|
    * @platform ios
    */
   automaticallyAdjustContentInsets?: ?boolean,
+  /**
+   * Controls whether the ScrollView should automatically adjust it's contentInset
+   * and scrollViewInsets when the Keyboard changes it's size. The default value is false.
+   * @platform ios
+   */
+  automaticallyAdjustKeyboardInsets?: ?boolean,
   /**
    * Controls whether iOS should automatically adjust the scroll indicator
    * insets. The default value is true. Available on iOS 13 and later.
@@ -347,17 +354,6 @@ type IOSProps = $ReadOnly<{|
    */
   showsHorizontalScrollIndicator?: ?boolean,
   /**
-   * When `snapToInterval` is set, `snapToAlignment` will define the relationship
-   * of the snapping to the scroll view.
-   *
-   *   - `'start'` (the default) will align the snap at the left (horizontal) or top (vertical)
-   *   - `'center'` will align the snap in the center
-   *   - `'end'` will align the snap at the right (horizontal) or bottom (vertical)
-   *
-   * @platform ios
-   */
-  snapToAlignment?: ?('start' | 'center' | 'end'),
-  /**
    * The current scale of the scroll view content. The default value is 1.0.
    * @platform ios
    */
@@ -478,7 +474,7 @@ export type Props = $ReadOnly<{|
    *   - `'normal'`: 0.998 on iOS, 0.985 on Android (the default)
    *   - `'fast'`: 0.99 on iOS, 0.9 on Android
    */
-  decelerationRate?: ?('fast' | 'normal' | number),
+  decelerationRate?: ?DecelerationRateType,
   /**
    * When true, the scroll view's children are arranged horizontally in a row
    * instead of vertically in a column. The default value is false.
@@ -598,6 +594,15 @@ export type Props = $ReadOnly<{|
    */
   StickyHeaderComponent?: StickyHeaderComponentType,
   /**
+   * When `snapToInterval` is set, `snapToAlignment` will define the relationship
+   * of the snapping to the scroll view.
+   *
+   *   - `'start'` (the default) will align the snap at the left (horizontal) or top (vertical)
+   *   - `'center'` will align the snap in the center
+   *   - `'end'` will align the snap at the right (horizontal) or bottom (vertical)
+   */
+  snapToAlignment?: ?('start' | 'center' | 'end'),
+  /**
    * When set, causes the scroll view to stop at multiples of the value of
    * `snapToInterval`. This can be used for paginating through children
    * that have lengths smaller than the scroll view. Typically used in
@@ -670,7 +675,7 @@ type State = {|
 
 const IS_ANIMATING_TOUCH_START_THRESHOLD_MS = 16;
 
-type ScrollViewComponentStatics = $ReadOnly<{|
+export type ScrollViewComponentStatics = $ReadOnly<{|
   Context: typeof ScrollViewContext,
 |}>;
 
@@ -690,7 +695,7 @@ type ScrollViewComponentStatics = $ReadOnly<{|
  * view from becoming the responder.
  *
  *
- * `<ScrollView>` vs [`<FlatList>`](https://reactnative.dev/docs/flatlist.html) - which one to use?
+ * `<ScrollView>` vs [`<FlatList>`](https://reactnative.dev/docs/flatlist) - which one to use?
  *
  * `ScrollView` simply renders all its react child components at once. That
  * makes it very easy to understand and use.
@@ -723,10 +728,8 @@ class ScrollView extends React.Component<Props, State> {
 
   _scrollAnimatedValue: AnimatedImplementation.Value;
   _scrollAnimatedValueAttachment: ?{detach: () => void, ...} = null;
-  _stickyHeaderRefs: Map<
-    string,
-    React.ElementRef<StickyHeaderComponentType>,
-  > = new Map();
+  _stickyHeaderRefs: Map<string, React.ElementRef<StickyHeaderComponentType>> =
+    new Map();
   _headerLayoutYs: Map<string, number> = new Map();
 
   _keyboardWillOpenTo: ?KeyboardEvent = null;
@@ -847,7 +850,8 @@ class ScrollView extends React.Component<Props, State> {
         ref.scrollToEnd = this.scrollToEnd;
         ref.flashScrollIndicators = this.flashScrollIndicators;
         ref.scrollResponderZoomTo = this.scrollResponderZoomTo;
-        ref.scrollResponderScrollNativeHandleToKeyboard = this.scrollResponderScrollNativeHandleToKeyboard;
+        ref.scrollResponderScrollNativeHandleToKeyboard =
+          this.scrollResponderScrollNativeHandleToKeyboard;
       }
     },
   });
@@ -1117,11 +1121,12 @@ class ScrollView extends React.Component<Props, State> {
       this.props.stickyHeaderIndices &&
       this.props.stickyHeaderIndices.length > 0
     ) {
-      this._scrollAnimatedValueAttachment = AnimatedImplementation.attachNativeEvent(
-        this._scrollViewRef,
-        'onScroll',
-        [{nativeEvent: {contentOffset: {y: this._scrollAnimatedValue}}}],
-      );
+      this._scrollAnimatedValueAttachment =
+        AnimatedImplementation.attachNativeEvent(
+          this._scrollViewRef,
+          'onScroll',
+          [{nativeEvent: {contentOffset: {y: this._scrollAnimatedValue}}}],
+        );
     }
   }
 
@@ -1176,11 +1181,6 @@ class ScrollView extends React.Component<Props, State> {
             "cause frame drops, use a bigger number if you don't need as " +
             'much precision.',
         );
-      }
-    }
-    if (Platform.OS === 'android') {
-      if (this.props.keyboardDismissMode === 'on-drag' && this._isTouching) {
-        dismissKeyboard();
       }
     }
     this._observedScrollSinceBecomingResponder = true;
@@ -1299,6 +1299,14 @@ class ScrollView extends React.Component<Props, State> {
    */
   _handleScrollBeginDrag: (e: ScrollEvent) => void = (e: ScrollEvent) => {
     FrameRateLogger.beginScroll(); // TODO: track all scrolls after implementing onScrollEndAnimation
+
+    if (
+      Platform.OS === 'android' &&
+      this.props.keyboardDismissMode === 'on-drag'
+    ) {
+      dismissKeyboard();
+    }
+
     this.props.onScrollBeginDrag && this.props.onScrollBeginDrag(e);
   };
 
@@ -1720,8 +1728,8 @@ class ScrollView extends React.Component<Props, State> {
       onScrollEndDrag: this._handleScrollEndDrag,
       onScrollShouldSetResponder: this._handleScrollShouldSetResponder,
       onStartShouldSetResponder: this._handleStartShouldSetResponder,
-      onStartShouldSetResponderCapture: this
-        ._handleStartShouldSetResponderCapture,
+      onStartShouldSetResponderCapture:
+        this._handleStartShouldSetResponderCapture,
       onTouchEnd: this._handleTouchEnd,
       onTouchMove: this._handleTouchMove,
       onTouchStart: this._handleTouchStart,

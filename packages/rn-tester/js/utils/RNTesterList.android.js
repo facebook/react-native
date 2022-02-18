@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -24,24 +24,10 @@ const Components: Array<RNTesterModuleInfo> = [
     module: require('../examples/Button/ButtonExample'),
   },
   {
-    key: 'FlatListExample',
+    key: 'FlatListExampleIndex',
+    module: require('../examples/FlatList/FlatListExampleIndex').default,
     category: 'ListView',
-    module: require('../examples/FlatList/FlatListExample'),
-  },
-  {
-    key: 'FlatList-withSeparators',
-    module: require('../examples/FlatList/FlatList-withSeparators'),
-    category: 'ListView',
-  },
-  {
-    key: 'FlatList-onViewableItemsChanged',
-    module: require('../examples/FlatList/FlatList-onViewableItemsChanged'),
-    category: 'ListView',
-  },
-  {
-    key: 'FlatList-onEndReached',
-    module: require('../examples/FlatList/FlatList-onEndReached'),
-    category: 'ListView',
+    supportsTVOS: true,
   },
   {
     key: 'ImageExample',
@@ -60,11 +46,6 @@ const Components: Array<RNTesterModuleInfo> = [
     key: 'ModalExample',
     category: 'UI',
     module: require('../examples/Modal/ModalExample'),
-  },
-  {
-    key: 'MultiColumnExample',
-    category: 'ListView',
-    module: require('../examples/MultiColumn/MultiColumnExample'),
   },
   {
     key: 'NewAppScreenExample',
@@ -125,6 +106,10 @@ const Components: Array<RNTesterModuleInfo> = [
     module: require('../examples/TextInput/TextInputExample'),
   },
   {
+    key: 'TextInputs with key prop',
+    module: require('../examples/TextInput/TextInputKeyProp'),
+  },
+  {
     key: 'TouchableExample',
     category: 'UI',
     module: require('../examples/Touchable/TouchableExample'),
@@ -133,6 +118,11 @@ const Components: Array<RNTesterModuleInfo> = [
     key: 'ViewExample',
     category: 'Basic',
     module: require('../examples/View/ViewExample'),
+  },
+  {
+    key: 'NewArchitectureExample',
+    category: 'UI',
+    module: require('../examples/NewArchitecture/NewArchitectureExample'),
   },
 ];
 

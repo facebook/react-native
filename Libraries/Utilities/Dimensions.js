@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,25 +14,20 @@ import EventEmitter, {
 import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
 import NativeDeviceInfo, {
   type DisplayMetrics,
+  type DisplayMetricsAndroid,
   type DimensionsPayload,
 } from './NativeDeviceInfo';
 import invariant from 'invariant';
 
-type DimensionsValue = {
-  window?: DisplayMetrics,
-  screen?: DisplayMetrics,
-  ...
-};
-
 const eventEmitter = new EventEmitter<{
-  change: [DimensionsValue],
+  change: [DimensionsPayload],
 }>();
 let dimensionsInitialized = false;
-let dimensions: DimensionsValue;
+let dimensions: DimensionsPayload;
 
 class Dimensions {
   /**
-   * NOTE: `useWindowDimensions` is the preffered API for React components.
+   * NOTE: `useWindowDimensions` is the preferred API for React components.
    *
    * Initial dimensions are set before `runApplication` is called so they should
    * be available before any other require's are run, but may be updated later.
@@ -46,9 +41,9 @@ class Dimensions {
    * Example: `const {height, width} = Dimensions.get('window');`
    *
    * @param {string} dim Name of dimension as defined when calling `set`.
-   * @returns {Object?} Value for the dimension.
+   * @returns {DisplayMetrics? | DisplayMetricsAndroid?} Value for the dimension.
    */
-  static get(dim: string): Object {
+  static get(dim: string): DisplayMetrics | DisplayMetricsAndroid {
     invariant(dimensions[dim], 'No dimension set for key ' + dim);
     return dimensions[dim];
   }
@@ -57,9 +52,9 @@ class Dimensions {
    * This should only be called from native code by sending the
    * didUpdateDimensions event.
    *
-   * @param {object} dims Simple string-keyed object of dimensions to set
+   * @param {DimensionsPayload} dims Simple string-keyed object of dimensions to set
    */
-  static set(dims: $ReadOnly<{[key: string]: any, ...}>): void {
+  static set(dims: $ReadOnly<DimensionsPayload>): void {
     // We calculate the window dimensions in JS so that we don't encounter loss of
     // precision in transferring the dimensions (which could be non-integers) over
     // the bridge.
@@ -128,7 +123,7 @@ class Dimensions {
   }
 }
 
-let initialDims: ?$ReadOnly<{[key: string]: any, ...}> =
+let initialDims: ?$ReadOnly<DimensionsPayload> =
   global.nativeExtensions &&
   global.nativeExtensions.DeviceInfo &&
   global.nativeExtensions.DeviceInfo.Dimensions;

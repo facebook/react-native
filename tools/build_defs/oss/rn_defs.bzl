@@ -1,4 +1,4 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -10,6 +10,11 @@ This lets us build React Native:
  - Outside of Facebook by running buck in the root of the git repo
 """
 # @lint-ignore-every BUCKRESTRICTEDSYNTAX
+
+load(
+    "//tools/build_defs:js_glob.bzl",
+    _js_glob = "js_glob",
+)
 
 _DEBUG_PREPROCESSOR_FLAGS = []
 
@@ -49,6 +54,8 @@ IOS = "ios"
 
 MACOSX = "macosx"
 
+APPLETVOS = "appletvos"
+
 YOGA_TARGET = "//ReactAndroid/src/main/java/com/facebook:yoga"
 
 YOGA_CXX_TARGET = "//ReactCommon/yoga:yoga"
@@ -61,6 +68,9 @@ JNI_TARGET = "//ReactAndroid/src/main/jni/first-party/jni-hack:jni-hack"
 
 KEYSTORE_TARGET = "//keystores:debug"
 
+# Minimum supported iOS version for RN
+REACT_NATIVE_TARGET_IOS_SDK = "11.0"
+
 def get_apple_inspector_flags():
     return []
 
@@ -72,19 +82,53 @@ def get_react_native_preprocessor_flags():
     # This is a replacement for NDEBUG since NDEBUG is always defined in Buck on all Android builds.
     return []
 
+def get_react_native_ios_target_sdk_version():
+    return REACT_NATIVE_TARGET_IOS_SDK
+
 # Building is not supported in OSS right now
-def rn_xplat_cxx_library(name, **kwargs):
-    new_kwargs = {
+def rn_xplat_cxx_library(name, compiler_flags_enable_exceptions = False, compiler_flags_enable_rtti = False, **kwargs):
+    visibility = kwargs.get("visibility", [])
+    kwargs = {
         k: v
         for k, v in kwargs.items()
         if k.startswith("exported_")
     }
 
+    # RTTI and exceptions must either be both on, or both off
+    if compiler_flags_enable_exceptions != compiler_flags_enable_rtti:
+        fail("Must enable or disable both exceptions and RTTI; they cannot be mismatched. See this post for details: https://fb.workplace.com/groups/iosappsize/permalink/2277094415672494/")
+
+    # These are the default compiler flags for ALL React Native Cxx targets.
+    # For all of these, we PREPEND to compiler_flags: if these are already set
+    # or being overridden in compiler_flags, it's very likely that the flag is set
+    # app-wide or that we're otherwise in some special mode.
+    # OSS builds cannot have platform-specific flags here, so these are the same
+    # for all platforms.
+    kwargs["compiler_flags"] = kwargs.get("compiler_flags", [])
+    kwargs["compiler_flags"] = ["-std=c++17"] + kwargs["compiler_flags"]
+    kwargs["compiler_flags"] = ["-Wall"] + kwargs["compiler_flags"]
+    kwargs["compiler_flags"] = ["-Werror"] + kwargs["compiler_flags"]
+
+    # For now, we allow turning off RTTI and exceptions for android builds only
+    if compiler_flags_enable_exceptions:
+        kwargs["compiler_flags"] = ["-fexceptions"] + kwargs["compiler_flags"]
+    else:
+        # TODO: fbjni currently DOES NOT WORK with -fno-exceptions, which breaks MOST RN Android modules
+        kwargs["compiler_flags"] = ["-fexceptions"] + kwargs["compiler_flags"]
+        kwargs["compiler_flags"] = ["-fno-exceptions"] + kwargs["compiler_flags"]
+
+    if compiler_flags_enable_rtti:
+        kwargs["compiler_flags"] = ["-frtti"] + kwargs["compiler_flags"]
+    else:
+        kwargs["compiler_flags"] = ["-fno-rtti"] + kwargs["compiler_flags"]
+
     native.cxx_library(
         name = name,
-        visibility = kwargs.get("visibility", []),
-        **new_kwargs
+        visibility = visibility,
+        **kwargs
     )
+
+rn_xplat_cxx_library2 = rn_xplat_cxx_library
 
 # Example: react_native_target('java/com/facebook/react/common:common')
 def react_native_target(path):
@@ -172,16 +216,9 @@ def rn_android_prebuilt_aar(*args, **kwargs):
 def rn_apple_library(*args, **kwargs):
     kwargs.setdefault("link_whole", True)
     kwargs.setdefault("enable_exceptions", True)
-    kwargs.setdefault("target_sdk_version", "11.0")
+    kwargs.setdefault("target_sdk_version", get_react_native_ios_target_sdk_version())
 
-    # Unsupported kwargs
-    _ = kwargs.pop("autoglob", False)
-    _ = kwargs.pop("plugins_only", False)
-    _ = kwargs.pop("enable_exceptions", False)
-    _ = kwargs.pop("extension_api_only", False)
-    _ = kwargs.pop("sdks", [])
-
-    native.apple_library(*args, **kwargs)
+    fb_apple_library(*args, **kwargs)
 
 def rn_java_library(*args, **kwargs):
     _ = kwargs.pop("is_androidx", False)
@@ -243,8 +280,7 @@ def rn_robolectric_test(name, srcs, vm_args = None, *args, **kwargs):
         **kwargs
     )
 
-def cxx_library(allow_jni_merging = None, **kwargs):
-    _ignore = allow_jni_merging
+def cxx_library(**kwargs):
     args = {
         k: v
         for k, v in kwargs.items()
@@ -265,6 +301,8 @@ def _paths_join(path, *others):
             result += "/" + p
 
     return result
+
+js_glob = _js_glob
 
 def subdir_glob(glob_specs, exclude = None, prefix = ""):
     """Returns a dict of sub-directory relative paths to full paths.
@@ -334,6 +372,17 @@ def _single_subdir_glob(dirpath, glob_pattern, exclude = None, prefix = None):
     return results
 
 def fb_apple_library(*args, **kwargs):
+    # Unsupported kwargs
+    _ = kwargs.pop("autoglob", False)
+    _ = kwargs.pop("plugins_only", False)
+    _ = kwargs.pop("enable_exceptions", False)
+    _ = kwargs.pop("extension_api_only", False)
+    _ = kwargs.pop("sdks", [])
+    _ = kwargs.pop("inherited_buck_flags", [])
+    _ = kwargs.pop("plugins", [])
+    _ = kwargs.pop("complete_nullability", False)
+    _ = kwargs.pop("plugins_header", "")
+
     native.apple_library(*args, **kwargs)
 
 def oss_cxx_library(**kwargs):
@@ -348,6 +397,25 @@ def fb_xplat_cxx_test(**_kwargs):
     pass
 
 # iOS Plugin support.
-def react_module_plugin_providers():
+def react_module_plugin_providers(*args, **kwargs):
     # Noop for now
     return []
+
+def react_fabric_component_plugin_provider(name, native_class_func):
+    return None
+
+HERMES_BYTECODE_VERSION = -1
+
+RCT_IMAGE_DATA_DECODER_SOCKET = None
+RCT_IMAGE_URL_LOADER_SOCKET = None
+RCT_URL_REQUEST_HANDLER_SOCKET = None
+
+def make_resource_glob(path):
+    return native.glob([path + "/**/*." + x for x in [
+        "m4a",
+        "mp3",
+        "otf",
+        "png",
+        "ttf",
+        "caf",
+    ]])

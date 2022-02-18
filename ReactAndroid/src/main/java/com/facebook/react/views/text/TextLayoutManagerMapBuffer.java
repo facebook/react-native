@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -25,7 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
@@ -60,6 +60,7 @@ public class TextLayoutManagerMapBuffer {
   public static final short PA_KEY_TEXT_BREAK_STRATEGY = 2;
   public static final short PA_KEY_ADJUST_FONT_SIZE_TO_FIT = 3;
   public static final short PA_KEY_INCLUDE_FONT_PADDING = 4;
+  public static final short PA_KEY_HYPHENATION_FREQUENCY = 5;
 
   private static final boolean ENABLE_MEASURE_LOGGING = ReactBuildConfig.DEBUG && false;
 
@@ -115,7 +116,7 @@ public class TextLayoutManagerMapBuffer {
       SpannableStringBuilder sb,
       List<SetSpanOperation> ops) {
 
-    for (short i = 0, length = fragments.getCount(); i < length; i++) {
+    for (int i = 0, length = fragments.getCount(); i < length; i++) {
       ReadableMapBuffer fragment = fragments.getMapBuffer(i);
       int start = sb.length();
 
@@ -261,7 +262,8 @@ public class TextLayoutManagerMapBuffer {
       float width,
       YogaMeasureMode widthYogaMeasureMode,
       boolean includeFontPadding,
-      int textBreakStrategy) {
+      int textBreakStrategy,
+      int hyphenationFrequency) {
     Layout layout;
     int spanLength = text.length();
     boolean unconstrainedWidth = widthYogaMeasureMode == YogaMeasureMode.UNDEFINED || width < 0;
@@ -292,14 +294,14 @@ public class TextLayoutManagerMapBuffer {
                 .setLineSpacing(0.f, 1.f)
                 .setIncludePad(includeFontPadding)
                 .setBreakStrategy(textBreakStrategy)
-                .setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NORMAL)
+                .setHyphenationFrequency(hyphenationFrequency)
                 .build();
       }
 
     } else if (boring != null && (unconstrainedWidth || boring.width <= width)) {
       int boringLayoutWidth = boring.width;
       if (boring.width < 0) {
-        ReactSoftException.logSoftException(
+        ReactSoftExceptionLogger.logSoftException(
             TAG, new ReactNoCrashSoftException("Text width is invalid: " + boring.width));
         boringLayoutWidth = 0;
       }
@@ -335,7 +337,7 @@ public class TextLayoutManagerMapBuffer {
                 .setLineSpacing(0.f, 1.f)
                 .setIncludePad(includeFontPadding)
                 .setBreakStrategy(textBreakStrategy)
-                .setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NORMAL);
+                .setHyphenationFrequency(hyphenationFrequency);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
           builder.setUseLineSpacingFromFallbacks(true);
@@ -388,6 +390,9 @@ public class TextLayoutManagerMapBuffer {
         paragraphAttributes.hasKey(PA_KEY_INCLUDE_FONT_PADDING)
             ? paragraphAttributes.getBoolean(PA_KEY_INCLUDE_FONT_PADDING)
             : DEFAULT_INCLUDE_FONT_PADDING;
+    int hyphenationFrequency =
+        TextAttributeProps.getTextBreakStrategy(
+            paragraphAttributes.getString(PA_KEY_HYPHENATION_FREQUENCY));
 
     if (text == null) {
       throw new IllegalStateException("Spannable element has not been prepared in onBeforeLayout");
@@ -401,7 +406,13 @@ public class TextLayoutManagerMapBuffer {
 
     Layout layout =
         createLayout(
-            text, boring, width, widthYogaMeasureMode, includeFontPadding, textBreakStrategy);
+            text,
+            boring,
+            width,
+            widthYogaMeasureMode,
+            includeFontPadding,
+            textBreakStrategy,
+            hyphenationFrequency);
 
     int maximumNumberOfLines =
         paragraphAttributes.hasKey(PA_KEY_MAX_NUMBER_OF_LINES)
@@ -511,16 +522,16 @@ public class TextLayoutManagerMapBuffer {
 
           // The attachment array returns the positions of each of the attachments as
           attachmentsPositions[attachmentPosition] =
-              PixelUtil.toSPFromPixel(placeholderTopPosition);
+              PixelUtil.toDIPFromPixel(placeholderTopPosition);
           attachmentsPositions[attachmentPosition + 1] =
-              PixelUtil.toSPFromPixel(placeholderLeftPosition);
+              PixelUtil.toDIPFromPixel(placeholderLeftPosition);
           attachmentIndex++;
         }
       }
     }
 
-    float widthInSP = PixelUtil.toSPFromPixel(calculatedWidth);
-    float heightInSP = PixelUtil.toSPFromPixel(calculatedHeight);
+    float widthInSP = PixelUtil.toDIPFromPixel(calculatedWidth);
+    float heightInSP = PixelUtil.toDIPFromPixel(calculatedHeight);
 
     if (ENABLE_MEASURE_LOGGING) {
       FLog.e(
@@ -558,10 +569,19 @@ public class TextLayoutManagerMapBuffer {
         paragraphAttributes.hasKey(PA_KEY_INCLUDE_FONT_PADDING)
             ? paragraphAttributes.getBoolean(PA_KEY_INCLUDE_FONT_PADDING)
             : DEFAULT_INCLUDE_FONT_PADDING;
+    int hyphenationFrequency =
+        TextAttributeProps.getTextBreakStrategy(
+            paragraphAttributes.getString(PA_KEY_HYPHENATION_FREQUENCY));
 
     Layout layout =
         createLayout(
-            text, boring, width, YogaMeasureMode.EXACTLY, includeFontPadding, textBreakStrategy);
+            text,
+            boring,
+            width,
+            YogaMeasureMode.EXACTLY,
+            includeFontPadding,
+            textBreakStrategy,
+            hyphenationFrequency);
     return FontMetricsUtil.getFontMetrics(text, layout, sTextPaintInstance, context);
   }
 

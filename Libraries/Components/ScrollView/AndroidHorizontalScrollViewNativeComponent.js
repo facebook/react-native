@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,9 +12,8 @@ import type {ScrollViewNativeProps as Props} from './ScrollViewNativeComponentTy
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
 
-const AndroidHorizontalScrollViewNativeComponent: HostComponent<Props> = NativeComponentRegistry.get<Props>(
-  'AndroidHorizontalScrollView',
-  () => ({
+const AndroidHorizontalScrollViewNativeComponent: HostComponent<Props> =
+  NativeComponentRegistry.get<Props>('AndroidHorizontalScrollView', () => ({
     uiViewClassName: 'AndroidHorizontalScrollView',
     bubblingEventTypes: {},
     directEventTypes: {},
@@ -31,13 +30,25 @@ const AndroidHorizontalScrollViewNativeComponent: HostComponent<Props> = NativeC
       scrollPerfTag: true,
       sendMomentumEvents: true,
       showsHorizontalScrollIndicator: true,
+      snapToAlignment: true,
       snapToEnd: true,
       snapToInterval: true,
       snapToStart: true,
       snapToOffsets: true,
       contentOffset: true,
+      borderBottomLeftRadius: true,
+      borderBottomRightRadius: true,
+      borderRadius: true,
+      borderStyle: true,
+      borderRightColor: {process: require('../../StyleSheet/processColor')},
+      borderColor: {process: require('../../StyleSheet/processColor')},
+      borderBottomColor: {process: require('../../StyleSheet/processColor')},
+      borderTopLeftRadius: true,
+      borderTopColor: {process: require('../../StyleSheet/processColor')},
+      removeClippedSubviews: true,
+      borderTopRightRadius: true,
+      borderLeftColor: {process: require('../../StyleSheet/processColor')},
     },
-  }),
-);
+  }));
 
 export default AndroidHorizontalScrollViewNativeComponent;

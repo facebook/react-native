@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,7 +15,6 @@
 #include <yoga/YGEnums.h>
 #include <yoga/YGValue.h>
 
-#include <react/debug/react_native_assert.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
 namespace facebook {
@@ -88,8 +87,6 @@ class AndroidTextInputComponentDescriptor final
 
  protected:
   void adopt(ShadowNode::Unshared const &shadowNode) const override {
-    react_native_assert(
-        std::dynamic_pointer_cast<AndroidTextInputShadowNode>(shadowNode));
     auto textInputShadowNode =
         std::static_pointer_cast<AndroidTextInputShadowNode>(shadowNode);
 
@@ -183,7 +180,7 @@ class AndroidTextInputComponentDescriptor final
       "com/facebook/react/fabric/FabricUIManager";
 
   SharedTextLayoutManager textLayoutManager_;
-  mutable better::map<int, YGStyle::Edges> surfaceIdToThemePaddingMap_;
+  mutable butter::map<int, YGStyle::Edges> surfaceIdToThemePaddingMap_;
 };
 
 } // namespace react

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,6 +8,7 @@
 package com.facebook.react.modules.i18nmanager;
 
 import android.content.Context;
+import android.os.Build;
 import com.facebook.fbreact.specs.NativeI18nManagerSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -36,7 +37,12 @@ public class I18nManagerModule extends NativeI18nManagerSpec {
   @Override
   public Map<String, Object> getTypedExportedConstants() {
     final Context context = getReactApplicationContext();
-    final Locale locale = context.getResources().getConfiguration().locale;
+    final Locale locale;
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+      locale = context.getResources().getConfiguration().getLocales().get(0);
+    } else {
+      locale = context.getResources().getConfiguration().locale;
+    }
 
     final Map<String, Object> constants = MapBuilder.newHashMap();
     constants.put("isRTL", sharedI18nUtilInstance.isRTL(context));

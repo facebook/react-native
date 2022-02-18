@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,7 +13,7 @@
 /**
  * Keep this in sync with `DeprecatedImageSourcePropType.js`.
  *
- * This type is intentinoally inexact in order to permit call sites that supply
+ * This type is intentionally inexact in order to permit call sites that supply
  * extra properties.
  */
 export interface ImageURISource {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -274,11 +274,20 @@ void RCTEnforceNotAllowedForNewArchitecture(id context, NSString *extra)
   RCTAssert(0, @"%@", getNewArchitectureViolationMessage(context, extra));
 }
 
-void RCTWarnNotAllowedForNewArchitecture(id context, NSString *extra)
+void RCTErrorNotAllowedForNewArchitecture(id context, NSString *extra)
 {
   if (!newArchitectureViolationReporting) {
     return;
   }
 
-  RCTLogWarn(@"%@", getNewArchitectureViolationMessage(context, extra));
+  RCTLogError(@"%@", getNewArchitectureViolationMessage(context, extra));
+}
+
+void RCTLogNotAllowedForNewArchitecture(id context, NSString *extra)
+{
+  if (!newArchitectureViolationReporting) {
+    return;
+  }
+
+  RCTLogInfo(@"%@", getNewArchitectureViolationMessage(context, extra));
 }

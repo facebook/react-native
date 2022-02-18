@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -22,10 +22,15 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['focus', 'blur', 'setTextAndSelection'],
 });
 
-const MultilineTextInputNativeComponent: HostComponent<mixed> = NativeComponentRegistry.get<mixed>(
-  'RCTMultilineTextInputView',
-  () => RCTTextInputViewConfig,
-);
+const MultilineTextInputNativeComponent: HostComponent<mixed> =
+  NativeComponentRegistry.get<mixed>('RCTMultilineTextInputView', () => ({
+    uiViewClassName: 'RCTMultilineTextInputView',
+    ...RCTTextInputViewConfig,
+    validAttributes: {
+      ...RCTTextInputViewConfig.validAttributes,
+      dataDetectorTypes: true,
+    },
+  }));
 
 // flowlint-next-line unclear-type:off
 export default ((MultilineTextInputNativeComponent: any): HostComponent<mixed>);

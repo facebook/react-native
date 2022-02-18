@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -30,6 +30,8 @@ std::string kindToString(const Value& v, Runtime* rt = nullptr) {
     return "a number";
   } else if (v.isString()) {
     return "a string";
+  } else if (v.isSymbol()) {
+    return "a symbol";
   } else {
     assert(v.isObject() && "Expecting object.");
     return rt != nullptr && v.getObject(*rt).isFunction(*rt) ? "a function"

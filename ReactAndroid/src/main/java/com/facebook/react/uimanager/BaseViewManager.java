@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -135,6 +135,21 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   public void setNativeId(@NonNull T view, @Nullable String nativeId) {
     view.setTag(R.id.view_tag_native_id, nativeId);
     ReactFindViewUtil.notifyViewRendered(view);
+  }
+
+  @Override
+  @ReactProp(name = ViewProps.ACCESSIBILITY_LABELLED_BY)
+  public void setAccessibilityLabelledBy(@NonNull T view, @Nullable Dynamic nativeId) {
+    if (nativeId.isNull()) {
+      return;
+    }
+    if (nativeId.getType() == ReadableType.String) {
+      view.setTag(R.id.labelled_by, nativeId.asString());
+    } else if (nativeId.getType() == ReadableType.Array) {
+      // On Android, this takes a single View as labeledBy. If an array is specified, set the first
+      // element in the tag.
+      view.setTag(R.id.labelled_by, nativeId.asArray().getString(0));
+    }
   }
 
   @Override
@@ -430,9 +445,17 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
   @Override
   public @Nullable Map<String, Object> getExportedCustomDirectEventTypeConstants() {
-    return MapBuilder.<String, Object>builder()
-        .put("topAccessibilityAction", MapBuilder.of("registrationName", "onAccessibilityAction"))
-        .build();
+    @Nullable
+    Map<String, Object> baseEventTypeConstants = super.getExportedCustomDirectEventTypeConstants();
+    Map<String, Object> eventTypeConstants =
+        baseEventTypeConstants == null ? new HashMap<String, Object>() : baseEventTypeConstants;
+    eventTypeConstants.putAll(
+        MapBuilder.<String, Object>builder()
+            .put(
+                "topAccessibilityAction",
+                MapBuilder.of("registrationName", "onAccessibilityAction"))
+            .build());
+    return eventTypeConstants;
   }
 
   @Override
@@ -462,5 +485,105 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
   private void logUnsupportedPropertyWarning(String propName) {
     FLog.w(ReactConstants.TAG, "%s doesn't support property '%s'", getName(), propName);
+  }
+
+  @ReactProp(name = "onPointerEnter")
+  public void setPointerEnter(@NonNull T view, boolean value) {
+    view.setTag(R.id.pointer_enter, value);
+  }
+
+  @ReactProp(name = "onPointerLeave")
+  public void setPointerLeave(@NonNull T view, boolean value) {
+    view.setTag(R.id.pointer_leave, value);
+  }
+
+  @ReactProp(name = "onPointerMove")
+  public void setPointerMove(@NonNull T view, boolean value) {
+    view.setTag(R.id.pointer_move, value);
+  }
+
+  @ReactProp(name = "onMoveShouldSetResponder")
+  public void setMoveShouldSetResponder(@NonNull T view, boolean value) {
+    // no-op, handled by JSResponder
+  }
+
+  @ReactProp(name = "onMoveShouldSetResponderCapture")
+  public void setMoveShouldSetResponderCapture(@NonNull T view, boolean value) {
+    // no-op, handled by JSResponder
+  }
+
+  @ReactProp(name = "onStartShouldSetResponder")
+  public void setStartShouldSetResponder(@NonNull T view, boolean value) {
+    // no-op, handled by JSResponder
+  }
+
+  @ReactProp(name = "onStartShouldSetResponderCapture")
+  public void setStartShouldSetResponderCapture(@NonNull T view, boolean value) {
+    // no-op, handled by JSResponder
+  }
+
+  @ReactProp(name = "onResponderGrant")
+  public void setResponderGrant(@NonNull T view, boolean value) {
+    // no-op, handled by JSResponder
+  }
+
+  @ReactProp(name = "onResponderReject")
+  public void setResponderReject(@NonNull T view, boolean value) {
+    // no-op, handled by JSResponder
+  }
+
+  @ReactProp(name = "onResponderStart")
+  public void setResponderStart(@NonNull T view, boolean value) {
+    // no-op, handled by JSResponder
+  }
+
+  @ReactProp(name = "onResponderEnd")
+  public void setResponderEnd(@NonNull T view, boolean value) {
+    // no-op, handled by JSResponder
+  }
+
+  @ReactProp(name = "onResponderRelease")
+  public void setResponderRelease(@NonNull T view, boolean value) {
+    // no-op, handled by JSResponder
+  }
+
+  @ReactProp(name = "onResponderMove")
+  public void setResponderMove(@NonNull T view, boolean value) {
+    // no-op, handled by JSResponder
+  }
+
+  @ReactProp(name = "onResponderTerminate")
+  public void setResponderTerminate(@NonNull T view, boolean value) {
+    // no-op, handled by JSResponder
+  }
+
+  @ReactProp(name = "onResponderTerminationRequest")
+  public void setResponderTerminationRequest(@NonNull T view, boolean value) {
+    // no-op, handled by JSResponder
+  }
+
+  @ReactProp(name = "onShouldBlockNativeResponder")
+  public void setShouldBlockNativeResponder(@NonNull T view, boolean value) {
+    // no-op, handled by JSResponder
+  }
+
+  @ReactProp(name = "onTouchStart")
+  public void setTouchStart(@NonNull T view, boolean value) {
+    // no-op, handled by JSResponder
+  }
+
+  @ReactProp(name = "onTouchMove")
+  public void setTouchMove(@NonNull T view, boolean value) {
+    // no-op, handled by JSResponder
+  }
+
+  @ReactProp(name = "onTouchEnd")
+  public void setTouchEnd(@NonNull T view, boolean value) {
+    // no-op, handled by JSResponder
+  }
+
+  @ReactProp(name = "onTouchCancel")
+  public void setTouchCancel(@NonNull T view, boolean value) {
+    // no-op, handled by JSResponder
   }
 }

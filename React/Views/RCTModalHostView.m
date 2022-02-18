@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -24,6 +24,7 @@
   RCTTouchHandler *_touchHandler;
   UIView *_reactSubview;
   UIInterfaceOrientation _lastKnownOrientation;
+  RCTDirectEventBlock _onRequestClose;
 }
 
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
@@ -54,6 +55,18 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
   if (_reactSubview && _isPresented) {
     [_bridge.uiManager setSize:newBounds.size forView:_reactSubview];
     [self notifyForOrientationChange];
+  }
+}
+
+- (void)setOnRequestClose:(RCTDirectEventBlock)onRequestClose
+{
+  _onRequestClose = onRequestClose;
+}
+
+- (void)presentationControllerDidAttemptToDismiss:(UIPresentationController *)controller
+{
+  if (_onRequestClose != nil) {
+    _onRequestClose(nil);
   }
 }
 
@@ -168,6 +181,9 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
     }
     if (self.presentationStyle != UIModalPresentationNone) {
       _modalViewController.modalPresentationStyle = self.presentationStyle;
+    }
+    if (@available(iOS 13.0, *)) {
+      _modalViewController.presentationController.delegate = self;
     }
     [_delegate presentModalHostView:self withViewController:_modalViewController animated:[self hasAnimationType]];
     _isPresented = YES;

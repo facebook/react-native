@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -29,11 +29,10 @@ class EventDispatcher {
   using Weak = std::weak_ptr<EventDispatcher const>;
 
   EventDispatcher(
-      EventQueueProcessor eventProcessor,
+      EventQueueProcessor const &eventProcessor,
       EventBeat::Factory const &synchonousEventBeatFactory,
       EventBeat::Factory const &asynchonousEventBeatFactory,
-      EventBeat::SharedOwnerBox const &ownerBox,
-      bool unbatchedQueuesOnly);
+      EventBeat::SharedOwnerBox const &ownerBox);
 
   /*
    * Dispatches a raw event with given priority using event-delivery pipe.
@@ -60,8 +59,6 @@ class EventDispatcher {
   std::unique_ptr<BatchedEventQueue> synchronousBatchedQueue_;
   std::unique_ptr<UnbatchedEventQueue> asynchronousUnbatchedQueue_;
   std::unique_ptr<BatchedEventQueue> asynchronousBatchedQueue_;
-
-  bool const unbatchedQueuesOnly_;
 };
 
 } // namespace react

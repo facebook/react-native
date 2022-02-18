@@ -18,7 +18,7 @@ If you are eager to start contributing code right away, we have a list of [good 
 
 There are other ways you can contribute without writing a single line of code. Here are a few things you can do to help out:
 
-1. **Replying and handling open issues.** We get a lot of issues every day, and some of them may lack necessary information. You can help out by guiding people through the process of filling out the issue template, asking for clarifying information, or pointing them to existing issues that match their description of the problem. We cover more about this process in the [Issue Triage wiki](https://github.com/facebook/react-native/wiki/Issues#triage).
+1. **Replying and handling open issues.** We get a lot of issues every day, and some of them may lack necessary information. You can help out by guiding people through the process of filling out the issue template, asking for clarifying information, or pointing them to existing issues that match their description of the problem. We cover more about this process in the [Issue Triage wiki](https://github.com/facebook/react-native/wiki/Triaging-GitHub-Issues).
 2. **Reviewing pull requests for the docs.** Reviewing [documentation updates](https://github.com/facebook/react-native-website/pulls) can be as simple as checking for spelling and grammar. If you encounter situations that can be explained better in the docs, click **Edit** at the top of most docs pages to get started with your own contribution.
 3. **Help people write test plans.** Some pull requests sent to the main repository may lack a proper test plan. These help reviewers understand how the change was tested, and can speed up the time it takes for a contribution to be accepted.
 
@@ -42,7 +42,8 @@ The main repository, <https://github.com/facebook/react-native>, contains the Re
 There are a few other repositories you might want to familiarize yourself with:
 
 * **React Native website** which contains the source code for the website, including the documentation, located at <https://github.com/facebook/react-native-website>
-* **Releases** are coordinated through the <https://github.com/react-native-community/react-native-releases> repository. This includes important documents such as the Changelog.
+* **Releases**  Conversations for new releases are happening [in this discussion repo](https://github.com/reactwg/react-native-releases/discussions).
+* **Changelog** The changelog can be found [here](https://github.com/facebook/react-native/blob/main/CHANGELOG.md).
 * **Discussions** about the future of React Native take place in the <https://github.com/react-native-community/discussions-and-proposals> repository.
 * **High-quality plugins** for React Native can be found throughout the [React Native Community GitHub Organization](http://github.com/react-native-community/).
 
@@ -50,7 +51,7 @@ Browsing through these repositories should provide some insight into how the Rea
 
 ## GitHub Issues
 
-We use GitHub issues to track bugs exclusively. We have documented our issue handling processes in the [Issues wiki](https://github.com/facebook/react-native/wiki/Issues).
+We use GitHub issues to track bugs exclusively. We have documented our issue handling processes in the [Issues wiki](https://github.com/facebook/react-native/wiki/Triaging-GitHub-Issues).
 
 ### Security Bugs
 
@@ -93,7 +94,7 @@ If all goes well, your pull request will be merged. If it is not merged, maintai
 
 ### Step-by-step Guide
 
-Whenever you are ready to contribute code, check out our [step-by-step guide to sending your first pull request](https://github.com/facebook/react-native/wiki/Pull-Requests#getting-ready-to-submit-your-first-pull-request), or read the [How to Contribute Code](https://github.com/facebook/react-native/wiki/How-to-Contribute) wiki for more details.
+Whenever you are ready to contribute code, check out our [step-by-step guide to sending your first pull request](https://github.com/facebook/react-native/wiki/How-to-Open-a-Pull-Request), or read the [How to Contribute Code](https://github.com/facebook/react-native/wiki/How-to-Contribute-Code) wiki for more details.
 
 ### Tests
 

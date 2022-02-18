@@ -1,11 +1,12 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 #include "YogaLayoutableShadowNode.h"
+#include <logger/react_native_log.h>
 #include <react/debug/flags.h>
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/components/view/ViewProps.h>
@@ -22,6 +23,41 @@
 namespace facebook {
 namespace react {
 
+static int FabricDefaultYogaLog(
+    const YGConfigRef,
+    const YGNodeRef,
+    YGLogLevel level,
+    const char *format,
+    va_list args) {
+  va_list args_copy;
+  va_copy(args_copy, args);
+
+  // Adding 1 to add space for terminating null character.
+  int size_s = vsnprintf(nullptr, 0, format, args);
+  auto size = static_cast<size_t>(size_s);
+  std::vector<char> buffer(size);
+
+  vsnprintf(buffer.data(), size, format, args_copy);
+  switch (level) {
+    case YGLogLevelError:
+      react_native_log_error(buffer.data());
+      break;
+    case YGLogLevelFatal:
+      react_native_log_fatal(buffer.data());
+      break;
+    case YGLogLevelWarn:
+      react_native_log_warn(buffer.data());
+      break;
+    case YGLogLevelInfo:
+    case YGLogLevelDebug:
+    case YGLogLevelVerbose:
+    default:
+      react_native_log_info(buffer.data());
+  }
+
+  return size_s;
+}
+
 thread_local LayoutContext threadLocalLayoutContext;
 
 ShadowNodeTraits YogaLayoutableShadowNode::BaseTraits() {
@@ -35,7 +71,7 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
     ShadowNodeFamily::Shared const &family,
     ShadowNodeTraits traits)
     : LayoutableShadowNode(fragment, family, traits),
-      yogaConfig_(nullptr),
+      yogaConfig_(FabricDefaultYogaLog),
       yogaNode_(&initializeYogaConfig(yogaConfig_)) {
   yogaNode_.setContext(this);
 
@@ -61,7 +97,7 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
     ShadowNode const &sourceShadowNode,
     ShadowNodeFragment const &fragment)
     : LayoutableShadowNode(sourceShadowNode, fragment),
-      yogaConfig_(nullptr),
+      yogaConfig_(FabricDefaultYogaLog),
       yogaNode_(
           static_cast<YogaLayoutableShadowNode const &>(sourceShadowNode)
               .yogaNode_,
@@ -209,20 +245,26 @@ void YogaLayoutableShadowNode::appendChild(
   yogaNode_.setDirty(true);
 
   // All children of a non-leaf `YogaLayoutableShadowNode` must be a
-  // `YogaLayoutableShadowNode`s.
-  react_native_assert(
-      traitCast<YogaLayoutableShadowNode const *>(childNode.get()));
+  // `YogaLayoutableShadowNode`s to be appended. This happens when invalid
+  // string/numeric child is passed which is not YogaLayoutableShadowNode
+  // (e.g. RCTRawText). This used to throw an error, but we are ignoring it
+  // because we want core library components to be fault-tolerant and degrade
+  // gracefully. A soft error will be emitted from JavaScript.
+  if (traitCast<YogaLayoutableShadowNode const *>(childNode.get())) {
+    // Appending the Yoga node.
+    appendYogaChild(*childNode);
 
-  // Appending the Yoga node.
-  appendYogaChild(*childNode);
+    ensureYogaChildrenLookFine();
+    ensureYogaChildrenAlighment();
 
-  ensureYogaChildrenLookFine();
-  ensureYogaChildrenAlighment();
+    // Adopting the Yoga node.
+    adoptYogaChild(getChildren().size() - 1);
 
-  // Adopting the Yoga node.
-  adoptYogaChild(getChildren().size() - 1);
-
-  ensureConsistency();
+    ensureConsistency();
+  } else {
+    react_native_log_error(
+        "Text strings must be rendered within a <Text> component.");
+  }
 }
 
 bool YogaLayoutableShadowNode::doesOwn(
@@ -405,7 +447,6 @@ void YogaLayoutableShadowNode::layoutTree(
 
   {
     SystraceSection s("YogaLayoutableShadowNode::YGNodeCalculateLayout");
-
     YGNodeCalculateLayout(&yogaNode_, ownerWidth, ownerHeight, direction);
   }
 
@@ -487,8 +528,17 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
   }
 
   if (yogaNode_.getStyle().overflow() == YGOverflowVisible) {
+    auto transform = getTransform();
+    auto transformedContentFrame = contentFrame;
+    if (Transform::Identity() != transform) {
+      // When animation uses native driver, Yoga has no knowledge of the
+      // animation. In case the content goes out from current container, we need
+      // to union the content frame with its transformed frame.
+      transformedContentFrame = contentFrame * getTransform();
+      transformedContentFrame.unionInPlace(contentFrame);
+    }
     layoutMetrics_.overflowInset =
-        calculateOverflowInset(layoutMetrics_.frame, contentFrame);
+        calculateOverflowInset(layoutMetrics_.frame, transformedContentFrame);
   } else {
     layoutMetrics_.overflowInset = {};
   }
@@ -565,28 +615,12 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
       yogaFloatFromFloat(size.width), yogaFloatFromFloat(size.height)};
 }
 
-#ifdef RN_DEBUG_YOGA_LOGGER
-static int YogaLog(
-    const YGConfigRef config,
-    const YGNodeRef node,
-    YGLogLevel level,
-    const char *format,
-    va_list args) {
-  int result = vsnprintf(NULL, 0, format, args);
-  std::vector<char> buffer(1 + result);
-  vsnprintf(buffer.data(), buffer.size(), format, args);
-  LOG(ERROR) << "RNYogaLogger " << buffer.data();
-  return result;
-}
-#endif
-
 YGConfig &YogaLayoutableShadowNode::initializeYogaConfig(YGConfig &config) {
   config.setCloneNodeCallback(
       YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector);
   config.useLegacyStretchBehaviour = true;
 #ifdef RN_DEBUG_YOGA_LOGGER
   config.printTree = true;
-  config.setLogger(&YogaLog);
 #endif
   return config;
 }

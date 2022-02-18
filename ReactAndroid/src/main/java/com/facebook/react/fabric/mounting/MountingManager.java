@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -19,7 +19,7 @@ import androidx.annotation.UiThread;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.RetryableMountingLayerException;
@@ -75,27 +75,21 @@ public class MountingManager {
     mMountItemExecutor = mountItemExecutor;
   }
 
-  /** Starts surface and attaches the root view. */
-  @AnyThread
-  public void startSurface(
-      final int surfaceId, @NonNull final View rootView, ThemedReactContext themedReactContext) {
-    SurfaceMountingManager mountingManager = startSurface(surfaceId);
-    mountingManager.attachRootView(rootView, themedReactContext);
-  }
-
   /**
    * Starts surface without attaching the view. All view operations executed against that surface
    * will be queued until the view is attached.
    */
   @AnyThread
-  public SurfaceMountingManager startSurface(final int surfaceId) {
+  public SurfaceMountingManager startSurface(
+      final int surfaceId, ThemedReactContext reactContext, @Nullable View rootView) {
     SurfaceMountingManager surfaceMountingManager =
         new SurfaceMountingManager(
             surfaceId,
             mJSResponderHandler,
             mViewManagerRegistry,
             mRootViewManager,
-            mMountItemExecutor);
+            mMountItemExecutor,
+            reactContext);
 
     // There could technically be a race condition here if addRootView is called twice from
     // different threads, though this is (probably) extremely unlikely, and likely an error.
@@ -104,13 +98,18 @@ public class MountingManager {
     // This *will* crash in Debug mode, but not in production.
     mSurfaceIdToManager.putIfAbsent(surfaceId, surfaceMountingManager);
     if (mSurfaceIdToManager.get(surfaceId) != surfaceMountingManager) {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           TAG,
           new IllegalStateException(
               "Called startSurface more than once for the SurfaceId [" + surfaceId + "]"));
     }
 
     mMostRecentSurfaceMountingManager = mSurfaceIdToManager.get(surfaceId);
+
+    if (rootView != null) {
+      surfaceMountingManager.attachRootView(rootView, reactContext);
+    }
+
     return surfaceMountingManager;
   }
 
@@ -121,7 +120,7 @@ public class MountingManager {
         getSurfaceManagerEnforced(surfaceId, "attachView");
 
     if (surfaceMountingManager.isStopped()) {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           TAG, new IllegalStateException("Trying to attach a view to a stopped surface"));
       return;
     }
@@ -148,7 +147,7 @@ public class MountingManager {
         mMostRecentSurfaceMountingManager = null;
       }
     } else {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           TAG,
           new IllegalStateException(
               "Cannot call stopSurface on non-existent surface: [" + surfaceId + "]"));
@@ -314,8 +313,8 @@ public class MountingManager {
   }
 
   /**
-   * Clears the JS Responder specified by {@link #setJSResponder(int, int, int, boolean)}. After
-   * this method is called, all the touch events are going to be handled by JS.
+   * Clears the JS Responder specified by {@link SurfaceMountingManager#setJSResponder}. After this
+   * method is called, all the touch events are going to be handled by JS.
    */
   @UiThread
   public void clearJSResponder() {

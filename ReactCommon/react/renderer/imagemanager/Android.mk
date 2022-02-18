@@ -1,4 +1,4 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -11,7 +11,14 @@ LOCAL_MODULE := react_render_imagemanager
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp $(LOCAL_PATH)/platform/cxx/react/renderer/imagemanager/*.cpp)
 
-LOCAL_SHARED_LIBRARIES := libfolly_json libyoga libfolly_json libreact_render_core libreact_render_debug libreact_render_graphics libreact_render_mounting libreact_debug
+LOCAL_SHARED_LIBRARIES := \
+  libfolly_json \
+  libreact_debug \
+  libreact_render_core \
+  libreact_render_debug \
+  libreact_render_graphics \
+  libreact_render_mounting \
+  libyoga
 
 LOCAL_STATIC_LIBRARIES :=
 

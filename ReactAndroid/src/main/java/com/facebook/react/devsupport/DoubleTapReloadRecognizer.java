@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,7 +14,7 @@ import android.widget.EditText;
 
 /**
  * A class allows recognizing double key tap of "R", used to reload JS in {@link
- * AbstractReactActivity}, {@link RedBoxDialog} and {@link ReactActivity}.
+ * AbstractReactActivity}, {@link RedBoxDialogSurfaceDelegate} and {@link ReactActivity}.
  */
 public class DoubleTapReloadRecognizer {
   private boolean mDoRefresh = false;

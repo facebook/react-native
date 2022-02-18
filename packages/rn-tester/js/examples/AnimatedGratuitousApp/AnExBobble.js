@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -35,7 +35,7 @@ class AnExBobble extends React.Component<Object, any> {
       return new Animated.ValueXY();
     });
     this.state.selectedBobble = null;
-    const bobblePanListener = (e, gestureState) => {
+    const bobblePanListener = (e: any, gestureState: any) => {
       // async events => change selection
       const newSelected = computeNewSelected(gestureState);
       if (this.state.selectedBobble !== newSelected) {

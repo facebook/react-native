@@ -1,4 +1,4 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -21,11 +21,23 @@ LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
 
 LOCAL_STATIC_LIBRARIES :=
 
-LOCAL_SHARED_LIBRARIES := libbetter libyoga libfolly_futures glog libfolly_json libglog_init libreact_render_core libreact_render_debug librrc_view librrc_root libreact_utils libreact_debug
+LOCAL_SHARED_LIBRARIES := \
+  glog \
+  libbutter \
+  libfolly_futures \
+  libfolly_json \
+  libglog_init \
+  libreact_debug \
+  libreact_render_core \
+  libreact_render_debug \
+  libreact_utils \
+  librrc_root \
+  librrc_view \
+  libyoga
 
 include $(BUILD_SHARED_LIBRARY)
 
-$(call import-module,better)
+$(call import-module,butter)
 $(call import-module,glog)
 $(call import-module,folly)
 $(call import-module,react/utils)

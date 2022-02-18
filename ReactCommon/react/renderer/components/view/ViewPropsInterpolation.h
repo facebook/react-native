@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,9 +7,8 @@
 
 #pragma once
 
-#include "ViewProps.h"
-
-#include <react/debug/react_native_assert.h>
+#include <react/renderer/components/view/ViewProps.h>
+#include <react/renderer/graphics/Transform.h>
 
 namespace facebook {
 namespace react {
@@ -24,13 +23,6 @@ static inline void interpolateViewProps(
     const SharedProps &oldPropsShared,
     const SharedProps &newPropsShared,
     SharedProps &interpolatedPropsShared) {
-  // Verify the static_casts below are safe
-  react_native_assert(
-      dynamic_cast<ViewProps const *>(oldPropsShared.get()) != nullptr &&
-      dynamic_cast<ViewProps const *>(newPropsShared.get()) != nullptr &&
-      dynamic_cast<ViewProps const *>(interpolatedPropsShared.get()) !=
-          nullptr);
-
   ViewProps const *oldViewProps =
       static_cast<ViewProps const *>(oldPropsShared.get());
   ViewProps const *newViewProps =

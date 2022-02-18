@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -33,7 +33,7 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
@@ -43,6 +43,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import java.util.ArrayList;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import java.util.HashMap;
 import java.util.List;
 
@@ -213,6 +214,8 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     mAccessibilityLinks = (AccessibilityLinks) mView.getTag(R.id.accessibility_links);
   }
 
+  @Nullable View mAccessibilityLabelledBy;
+
   @Override
   public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
     super.onInitializeAccessibilityNodeInfo(host, info);
@@ -220,6 +223,15 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
         (AccessibilityRole) host.getTag(R.id.accessibility_role);
     if (accessibilityRole != null) {
       setRole(info, accessibilityRole, host.getContext());
+    }
+
+    final Object accessibilityLabelledBy = host.getTag(R.id.labelled_by);
+    if (accessibilityLabelledBy != null) {
+      mAccessibilityLabelledBy =
+          ReactFindViewUtil.findView(host.getRootView(), (String) accessibilityLabelledBy);
+      if (mAccessibilityLabelledBy != null) {
+        info.setLabeledBy(mAccessibilityLabelledBy);
+      }
     }
 
     // state is changeable.
@@ -341,7 +353,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
                   });
         }
       } else {
-        ReactSoftException.logSoftException(
+        ReactSoftExceptionLogger.logSoftException(
             TAG, new ReactNoCrashSoftException("Cannot get RCTEventEmitter, no CatalystInstance"));
       }
 

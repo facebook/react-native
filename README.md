@@ -32,7 +32,7 @@
   <span> · </span>
   <a href="https://reactnative.dev/docs/tutorial">Learn the Basics</a>
   <span> · </span>
-  <a href="https://reactnative.dev/showcase.html">Showcase</a>
+  <a href="https://reactnative.dev/showcase">Showcase</a>
   <span> · </span>
   <a href="https://reactnative.dev/docs/contributing">Contribute</a>
   <span> · </span>
@@ -97,7 +97,7 @@ The source for the React Native documentation and website is hosted on a separat
 
 Upgrading to new versions of React Native may give you access to more APIs, views, developer tools, and other goodies. See the [Upgrading Guide][u] for instructions.
 
-React Native releases are discussed in the React Native Community, [**@react-native-community/react-native-releases**][repo-releases].
+React Native releases are discussed [in this discussion repo](https://github.com/reactwg/react-native-releases/discussions).
 
 [u]: https://reactnative.dev/docs/upgrading
 [repo-releases]: https://github.com/react-native-community/react-native-releases

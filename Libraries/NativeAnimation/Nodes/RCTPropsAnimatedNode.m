@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,11 +12,11 @@
 #import <React/RCTStyleAnimatedNode.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTValueAnimatedNode.h>
+#import <React/RCTColorAnimatedNode.h>
 
 @implementation RCTPropsAnimatedNode
 {
   NSNumber *_connectedViewTag;
-  NSNumber *_rootTag;
   NSString *_connectedViewName;
   __weak RCTBridge *_bridge;
   __weak id<RCTSurfacePresenterStub> _surfacePresenter;
@@ -48,7 +48,6 @@
   _connectedViewTag = viewTag;
   _connectedViewName = viewName;
   _managedByFabric = RCTUIManagerTypeForTagIsFabric(viewTag);
-  _rootTag = nil;
 }
 
 - (void)disconnectFromView:(NSNumber *)viewTag
@@ -58,7 +57,6 @@
   _connectedViewTag = nil;
   _connectedViewName = nil;
   _managedByFabric = NO;
-  _rootTag = nil;
 }
 
 - (void)updateView
@@ -121,17 +119,21 @@
   for (NSNumber *parentTag in self.parentNodes.keyEnumerator) {
     RCTAnimatedNode *parentNode = [self.parentNodes objectForKey:parentTag];
     if ([parentNode isKindOfClass:[RCTStyleAnimatedNode class]]) {
-      [self->_propsDictionary addEntriesFromDictionary:[(RCTStyleAnimatedNode *)parentNode propsDictionary]];
-
+      RCTStyleAnimatedNode *styleAnimatedNode = (RCTStyleAnimatedNode *)parentNode;
+      [_propsDictionary addEntriesFromDictionary:styleAnimatedNode.propsDictionary];
     } else if ([parentNode isKindOfClass:[RCTValueAnimatedNode class]]) {
+      RCTValueAnimatedNode *valueAnimatedNode = (RCTValueAnimatedNode *)parentNode;
       NSString *property = [self propertyNameForParentTag:parentTag];
-      id animatedObject = [(RCTValueAnimatedNode *)parentNode animatedObject];
+      id animatedObject = valueAnimatedNode.animatedObject;
       if (animatedObject) {
-        self->_propsDictionary[property] = animatedObject;
+        _propsDictionary[property] = animatedObject;
       } else {
-        CGFloat value = [(RCTValueAnimatedNode *)parentNode value];
-        self->_propsDictionary[property] = @(value);
+        _propsDictionary[property] = @(valueAnimatedNode.value);
       }
+    } else if ([parentNode isKindOfClass:[RCTColorAnimatedNode class]]) {
+      RCTColorAnimatedNode *colorAnimatedNode = (RCTColorAnimatedNode *)parentNode;
+      NSString *property = [self propertyNameForParentTag:parentTag];
+      _propsDictionary[property] = @(colorAnimatedNode.color);
     }
   }
 

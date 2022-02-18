@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -40,15 +40,6 @@ public abstract class Event<T extends Event> {
   private long mTimestampMs;
   private int mUniqueID = sUniqueID++;
 
-  // Android native Event times use 'uptimeMillis', and historically we've used `uptimeMillis`
-  // throughout this Event class as the coalescing key for events, and for other purposes.
-  // To get an accurate(ish) absolute UNIX time for the event, we store the initial clock time here.
-  // uptimeMillis can then be added to this to get an accurate UNIX time.
-  // However, we still default to uptimeMillis: you must explicitly request UNIX time if you want
-  // that; see `getUnixTimestampMs`.
-  public static final long sInitialClockTimeUnixOffset =
-      SystemClock.currentTimeMillis() - SystemClock.uptimeMillis();
-
   protected Event() {}
 
   @Deprecated
@@ -65,8 +56,16 @@ public abstract class Event<T extends Event> {
     init(-1, viewTag);
   }
 
-  /** This method needs to be called before event is sent to event dispatcher. */
   protected void init(int surfaceId, int viewTag) {
+    init(surfaceId, viewTag, SystemClock.uptimeMillis());
+  }
+
+  /**
+   * This method needs to be called before event is sent to event dispatcher. Event timestamps can
+   * optionally be dated/backdated to a custom time: for example, touch events should be dated with
+   * the system event time.
+   */
+  protected void init(int surfaceId, int viewTag, long timestampMs) {
     mSurfaceId = surfaceId;
     mViewTag = viewTag;
 
@@ -82,9 +81,7 @@ public abstract class Event<T extends Event> {
     // At some point it would be great to pass the SurfaceContext here instead.
     mUIManagerType = (surfaceId == -1 ? UIManagerType.DEFAULT : UIManagerType.FABRIC);
 
-    // This is a *relative* time. See `getUnixTimestampMs`.
-    mTimestampMs = SystemClock.uptimeMillis();
-
+    mTimestampMs = timestampMs;
     mInitialized = true;
   }
 
@@ -104,11 +101,6 @@ public abstract class Event<T extends Event> {
    */
   public final long getTimestampMs() {
     return mTimestampMs;
-  }
-
-  /** @return the time at which the event happened as a UNIX timestamp, in milliseconds. */
-  public final long getUnixTimestampMs() {
-    return sInitialClockTimeUnixOffset + mTimestampMs;
   }
 
   /** @return false if this Event can *never* be coalesced */
@@ -167,14 +159,14 @@ public abstract class Event<T extends Event> {
   /**
    * Dispatch this event to JS using the given event emitter. Compatible with old and new renderer.
    * Instead of using this or dispatchModern, it is recommended that you simply override
-   * `getEventData`. In the future
+   * `getEventData`.
    */
   @Deprecated
   public void dispatch(RCTEventEmitter rctEventEmitter) {
     WritableMap eventData = getEventData();
     if (eventData == null) {
       throw new IllegalViewOperationException(
-          "Event: you must return a valid, non-null value from `getEventData`, or override `dispatch` and `disatchModern`. Event: "
+          "Event: you must return a valid, non-null value from `getEventData`, or override `dispatch` and `dispatchModern`. Event: "
               + getEventName());
     }
     rctEventEmitter.receiveEvent(getViewTag(), getEventName(), eventData);
@@ -190,31 +182,24 @@ public abstract class Event<T extends Event> {
     return null;
   }
 
+  @EventCategoryDef
+  protected int getEventCategory() {
+    return EventCategoryDef.UNSPECIFIED;
+  }
+
   /**
    * Dispatch this event to JS using a V2 EventEmitter. If surfaceId is not -1 and `getEventData` is
    * non-null, this will use the RCTModernEventEmitter API. Otherwise, it falls back to the
    * old-style dispatch function. For Event classes that need to do something different, this method
    * can always be overridden entirely, but it is not recommended.
+   *
+   * <p>This method additionally allows C++ to coalesce events and detect continuous ones for
+   * concurrent mode (Fabric only).
+   *
+   * @see #dispatch
    */
   @Deprecated
   public void dispatchModern(RCTModernEventEmitter rctEventEmitter) {
-    if (getSurfaceId() != -1) {
-      WritableMap eventData = getEventData();
-      if (eventData != null) {
-        rctEventEmitter.receiveEvent(getSurfaceId(), getViewTag(), getEventName(), getEventData());
-        return;
-      }
-    }
-    dispatch(rctEventEmitter);
-  }
-
-  /**
-   * Dispatch this event to JS using a V2 version of dispatchModern. See all comments from
-   * `dispatchModern` - all still apply. This method additionally allows C++ to coalesce events
-   * (Fabric only). This will ONLY be called in an experimental path, and in Fabric only.
-   */
-  @Deprecated
-  public void dispatchModernV2(RCTModernEventEmitter rctEventEmitter) {
     if (getSurfaceId() != -1) {
       WritableMap eventData = getEventData();
       if (eventData != null) {
@@ -224,7 +209,8 @@ public abstract class Event<T extends Event> {
             getEventName(),
             canCoalesce(),
             getCoalescingKey(),
-            getEventData());
+            eventData,
+            getEventCategory());
         return;
       }
     }

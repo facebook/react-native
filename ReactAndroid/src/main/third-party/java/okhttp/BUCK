@@ -30,8 +30,8 @@ rn_prebuilt_jar(
 
 fb_native.remote_file(
     name = "okhttp3-binary.jar",
-    sha1 = "51215279c3fe472c59b6b7dd7491e6ac2e28a81b",
-    url = "mvn:com.squareup.okhttp3:okhttp:jar:4.9.1",
+    sha1 = "5302714ee9320b64cf65ed865e5f65981ef9ba46",
+    url = "mvn:com.squareup.okhttp3:okhttp:jar:4.9.2",
 )
 
 rn_prebuilt_jar(
@@ -41,6 +41,6 @@ rn_prebuilt_jar(
 
 fb_native.remote_file(
     name = "okhttp3-urlconnection-binary.jar",
-    sha1 = "f45e809215bd0961350148cf5b78707865084e6f",
-    url = "mvn:com.squareup.okhttp3:okhttp-urlconnection:jar:4.9.1",
+    sha1 = "3b9e64d3d56370bc7488ed8b336d17a8013cb336",
+    url = "mvn:com.squareup.okhttp3:okhttp-urlconnection:jar:4.9.2",
 )

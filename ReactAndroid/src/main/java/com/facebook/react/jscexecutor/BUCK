@@ -20,7 +20,8 @@ rn_xplat_cxx_library(
     srcs = glob(["*.cpp"]),
     headers = glob(["*.h"]),
     header_namespace = "",
-    compiler_flags = ["-fexceptions"],
+    compiler_flags_enable_exceptions = True,  # TODO: is this necessary?
+    compiler_flags_enable_rtti = True,  # TODO: is this necessary?
     fbandroid_allow_jni_merging = True,
     platforms = ANDROID,
     soname = "libjscexecutor.$(ext)",

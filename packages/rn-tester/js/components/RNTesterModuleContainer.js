@@ -1,9 +1,10 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
@@ -23,28 +24,27 @@ import type {
 type Props = {
   module: RNTesterModule,
   example?: ?RNTesterModuleExample,
-  onExampleCardPress: (exampleName: string) => mixed,
+  onExampleCardPress?: ?(exampleName: string) => mixed,
 };
 
-function getExampleTitle(title, platform) {
+function getExampleTitle(title: $FlowFixMe, platform: $FlowFixMe) {
   return platform != null ? `${title} (${platform} only)` : title;
 }
 
 export default function RNTesterModuleContainer(props: Props): React.Node {
   const {module, example, onExampleCardPress} = props;
   const theme = React.useContext(RNTesterThemeContext);
-  const renderExample = (e, i) => {
+  const renderExample = (e: $FlowFixMe, i: $FlowFixMe) => {
     // Filter platform-specific es
-    const {description, platform} = e;
-    let {title} = e;
+    const {title, description, platform, render: ExampleComponent} = e;
     if (platform != null && Platform.OS !== platform) {
       return null;
     }
     return module.showIndividualExamples === true ? (
       <RNTPressableRow
         key={e.name}
-        onPress={() => onExampleCardPress(e.name)}
-        title={e.title}
+        onPress={() => onExampleCardPress?.(e.name)}
+        title={title}
         description={description}
         accessibilityLabel={e.name + ' ' + description}
         style={StyleSheet.compose(styles.separator, {
@@ -56,22 +56,25 @@ export default function RNTesterModuleContainer(props: Props): React.Node {
         key={i}
         title={getExampleTitle(title, platform)}
         description={description}>
-        {e.render()}
+        <ExampleComponent />
       </RNTesterBlock>
     );
   };
 
+  // TODO remove this case
   if (module.examples.length === 1) {
     const description = module.examples[0].description ?? module.description;
+    const ModuleSingleExample = module.examples[0].render;
     return (
       <>
         <Header description={description} theme={theme} />
-        {module.examples[0].render()}
+        <ModuleSingleExample />
       </>
     );
   }
 
-  const filter = ({example: e, filterRegex}) => filterRegex.test(e.title);
+  const filter = ({example: e, filterRegex}: $FlowFixMe) =>
+    filterRegex.test(e.title);
 
   const sections = [
     {
@@ -81,19 +84,17 @@ export default function RNTesterModuleContainer(props: Props): React.Node {
     },
   ];
 
-  const showIndividualExamples =
-    module.showIndividualExamples === true && example != null;
-
-  return showIndividualExamples ? (
+  return module.showIndividualExamples === true && example != null ? (
     <>
       <RNTTestDetails
         title={example.title}
         description={example.description}
-        test={example.test}
         expect={example.expect}
         theme={theme}
       />
-      <View style={styles.examplesContainer}>{example.render()}</View>
+      <View style={styles.examplesContainer}>
+        <example.render />
+      </View>
     </>
   ) : (
     <>
@@ -124,7 +125,12 @@ function Header(props: {
       style={[
         styles.headerContainer,
         props.noBottomPadding === true ? styles.headerNoBottomPadding : null,
-        {backgroundColor: props.theme.BackgroundColor},
+        {
+          backgroundColor:
+            Platform.OS === 'ios'
+              ? props.theme.SystemBackgroundColor
+              : props.theme.BackgroundColor,
+        },
       ]}>
       <Text style={styles.headerDescription}>{props.description}</Text>
     </View>

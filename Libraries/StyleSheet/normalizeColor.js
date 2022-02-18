@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,7 +10,7 @@
 
 /* eslint no-bitwise: 0 */
 
-import normalizeColorBase from '@react-native/normalize-color/base';
+import _normalizeColor from '@react-native/normalize-color';
 
 import type {ColorValue} from './StyleSheet';
 import type {ProcessedColorValue} from './processColor';
@@ -22,12 +22,12 @@ function normalizeColor(
     const {normalizeColorObject} = require('./PlatformColorValueTypes');
     const normalizedColor = normalizeColorObject(color);
     if (normalizedColor != null) {
-      return color;
+      return normalizedColor;
     }
   }
 
   if (typeof color === 'string' || typeof color === 'number') {
-    return normalizeColorBase(color);
+    return _normalizeColor(color);
   }
 }
 

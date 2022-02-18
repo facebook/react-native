@@ -31,12 +31,6 @@ rn_xplat_cxx_library(
         ],
         prefix = "react/renderer/uimanager",
     ),
-    compiler_flags = [
-        "-fexceptions",
-        "-frtti",
-        "-std=c++17",
-        "-Wall",
-    ],
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
     fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
     force_static = True,
@@ -66,6 +60,7 @@ rn_xplat_cxx_library(
         react_native_xplat_target("react/renderer/componentregistry:componentregistry"),
         react_native_xplat_target("react/renderer/debug:debug"),
         react_native_xplat_target("runtimeexecutor:runtimeexecutor"),
+        react_native_xplat_target("react/renderer/runtimescheduler:runtimescheduler"),
     ],
 )
 

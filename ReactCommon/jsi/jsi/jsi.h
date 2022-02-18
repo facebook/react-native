@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -200,13 +200,13 @@ class JSI_EXPORT Runtime {
   /// Hosts may call this function again to resume the draining if it was
   /// suspended due to either exceptions or the \p maxMicrotasksHint bound.
   /// E.g. a host may repetitively invoke this function until the queue is
-  /// drained to implement the "microtask checkpint" defined in WHATWG HTML
+  /// drained to implement the "microtask checkpoint" defined in WHATWG HTML
   /// event loop: https://html.spec.whatwg.org/C#perform-a-microtask-checkpoint.
   ///
   /// Note that error propagation is only a concern if a host needs to implement
-  /// `queueMicrotask`, a recent API that allows enqueueing aribitary functions
+  /// `queueMicrotask`, a recent API that allows enqueueing arbitrary functions
   /// (hence may throw) as microtasks. Exceptions from ECMA-262 Promise Jobs are
-  /// handled internally to VMs and are never propagrated to hosts.
+  /// handled internally to VMs and are never propagated to hosts.
   ///
   /// This API offers some queue management to hosts at its best effort due to
   /// different behaviors and limitations imposed by different VMs and APIs. By
@@ -274,6 +274,7 @@ class JSI_EXPORT Runtime {
       const uint8_t* utf8,
       size_t length) = 0;
   virtual PropNameID createPropNameIDFromString(const String& str) = 0;
+  virtual PropNameID createPropNameIDFromSymbol(const Symbol& sym) = 0;
   virtual std::string utf8(const PropNameID&) = 0;
   virtual bool compare(const PropNameID&, const PropNameID&) = 0;
 
@@ -406,6 +407,7 @@ class JSI_EXPORT PropNameID : public Pointer {
   }
 
   /// Create a PropNameID from utf8 values.  The data is copied.
+  /// Results are undefined if \p utf8 contains invalid code points.
   static PropNameID
   forUtf8(Runtime& runtime, const uint8_t* utf8, size_t length) {
     return runtime.createPropNameIDFromUtf8(utf8, length);
@@ -413,6 +415,7 @@ class JSI_EXPORT PropNameID : public Pointer {
 
   /// Create a PropNameID from utf8-encoded octets stored in a
   /// std::string.  The string data is transformed and copied.
+  /// Results are undefined if \p utf8 contains invalid code points.
   static PropNameID forUtf8(Runtime& runtime, const std::string& utf8) {
     return runtime.createPropNameIDFromUtf8(
         reinterpret_cast<const uint8_t*>(utf8.data()), utf8.size());
@@ -421,6 +424,11 @@ class JSI_EXPORT PropNameID : public Pointer {
   /// Create a PropNameID from a JS string.
   static PropNameID forString(Runtime& runtime, const jsi::String& str) {
     return runtime.createPropNameIDFromString(str);
+  }
+
+  /// Create a PropNameID from a JS symbol.
+  static PropNameID forSymbol(Runtime& runtime, const jsi::Symbol& sym) {
+    return runtime.createPropNameIDFromSymbol(sym);
   }
 
   // Creates a vector of PropNameIDs constructed from given arguments.
@@ -502,14 +510,16 @@ class JSI_EXPORT String : public Pointer {
   }
 
   /// Create a JS string from utf8-encoded octets.  The string data is
-  /// transformed and copied.
+  /// transformed and copied.  Results are undefined if \p utf8 contains invalid
+  /// code points.
   static String
   createFromUtf8(Runtime& runtime, const uint8_t* utf8, size_t length) {
     return runtime.createStringFromUtf8(utf8, length);
   }
 
   /// Create a JS string from utf8-encoded octets stored in a
-  /// std::string.  The string data is transformed and copied.
+  /// std::string.  The string data is transformed and copied.  Results are
+  /// undefined if \p utf8 contains invalid code points.
   static String createFromUtf8(Runtime& runtime, const std::string& utf8) {
     return runtime.createStringFromUtf8(
         reinterpret_cast<const uint8_t*>(utf8.data()), utf8.length());
@@ -680,7 +690,7 @@ class JSI_EXPORT Object : public Pointer {
   std::shared_ptr<T> getHostObject(Runtime& runtime) const;
 
   /// \return a shared_ptr<T> which refers to the same underlying
-  /// \c HostObject that was used to crete this object. If \c isHostObject<T>
+  /// \c HostObject that was used to create this object. If \c isHostObject<T>
   /// is false, this will throw.
   template <typename T = HostObject>
   std::shared_ptr<T> asHostObject(Runtime& runtime) const;

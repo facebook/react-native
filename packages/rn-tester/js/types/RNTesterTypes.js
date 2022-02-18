@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,7 +15,6 @@ export type RNTesterModuleExample = $ReadOnly<{|
   title: string,
   platform?: 'ios' | 'android',
   description?: string,
-  test?: string,
   expect?: string,
   render: () => React.Node,
 |}>;
@@ -44,16 +43,16 @@ export type RNTesterModuleInfo = $ReadOnly<{|
   exampleType?: 'components' | 'apis',
 |}>;
 
-export type SectionData = {
+export type SectionData<T> = {
   key: string,
   title: string,
-  data: Array<RNTesterModuleInfo>,
+  data: Array<T>,
 };
 
 export type ExamplesList = $ReadOnly<{|
-  components: SectionData[],
-  apis: SectionData[],
-  bookmarks: SectionData[],
+  components: $ReadOnlyArray<SectionData<RNTesterModuleInfo>>,
+  apis: $ReadOnlyArray<SectionData<RNTesterModuleInfo>>,
+  bookmarks: $ReadOnlyArray<SectionData<RNTesterModuleInfo>>,
 |}>;
 
 export type ScreenTypes = 'components' | 'apis' | 'bookmarks' | null;
