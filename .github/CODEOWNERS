@@ -5,5 +5,5 @@
 * @microsoft/apple-rn-team
 
 # React Android specific ones
-/ReactAndroid/ @mganandraj
-/android-patches/ @mganandraj
+/ReactAndroid/ @microsoft/rnandroid
+/android-patches/ @microsoft/rnandroid

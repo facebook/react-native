@@ -3,7 +3,7 @@
   "private": true,
   "version": "1000.0.0",
   "bin": "./cli.js",
-  "description": "[Microsoft Fork] A framework for building native apps using React",
+  "description": "React Native for macOS",
   "license": "MIT",
   "repository": "git@github.com:microsoft/react-native-macos.git",
   "engines": {
