@@ -80,7 +80,7 @@ react {
     cliPath = "../../../../cli.js"
     bundleAssetName = "RNTesterApp.android.bundle"
     entryFile = file("../../js/RNTesterApp.android.js")
-    reactRoot = rootDir
+    root = rootDir
     inputExcludes = ["android/**", "./**", ".gradle/**"]
     composeSourceMapsPath = "$rootDir/scripts/compose-source-maps.js"
     hermesCommand = "$rootDir/node_modules/hermes-engine/%OS-BIN%/hermesc"
@@ -88,6 +88,7 @@ react {
 
     // Codegen Configs
     jsRootDir = file("$rootDir/packages/rn-tester")
+    reactNativeDir = rootDir
     libraryName = "rntester"
     useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET")?.toBoolean() ?: false
 }
