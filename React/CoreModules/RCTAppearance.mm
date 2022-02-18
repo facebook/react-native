@@ -81,7 +81,11 @@ NSString *RCTColorSchemePreference(NSAppearance *appearance)
     return RCTAppearanceColorSchemeLight;
   }
 
-  appearance = appearance ?: [NSAppearance currentAppearance];
+	if (@available(macOS 11.0, *)) {
+		appearance = appearance ?: [NSAppearance currentDrawingAppearance];
+	} else {
+		appearance = appearance ?: [NSAppearance currentAppearance];
+	}
   NSAppearanceName appearanceName = [appearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
   return appearances[appearanceName] ?: RCTAppearanceColorSchemeLight;
 }
