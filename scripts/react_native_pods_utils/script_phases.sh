@@ -33,10 +33,7 @@ else
 fi
 
 find_node () {
-    # shellcheck disable=SC1091
-    source "$RCT_SCRIPT_RN_DIR/scripts/find-node.sh"
-
-    NODE_BINARY="${NODE_BINARY:-$(command -v node || true)}"
+    NODE_BINARY="$(command -v node)"
     if [ -z "$NODE_BINARY" ]; then
         error "error: Could not find node. Make sure it is in bash PATH or set the NODE_BINARY environment variable."
     fi
