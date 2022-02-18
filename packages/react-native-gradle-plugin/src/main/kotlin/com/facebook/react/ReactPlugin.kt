@@ -23,25 +23,26 @@ import org.gradle.internal.jvm.Jvm
 
 class ReactPlugin : Plugin<Project> {
   override fun apply(project: Project) {
-    checkJvmVersion()
+    checkJvmVersion(project)
     val extension = project.extensions.create("react", ReactExtension::class.java, project)
     applyAppPlugin(project, extension)
     applyCodegenPlugin(project, extension)
   }
 
-  private fun checkJvmVersion() {
+  private fun checkJvmVersion(project: Project) {
     val jvmVersion = Jvm.current()?.javaVersion?.majorVersion
     if ((jvmVersion?.toIntOrNull() ?: 0) <= 8) {
-      println("\n\n\n")
-      println(
-          "**************************************************************************************************************")
-      println("\n\n")
-      println("ERROR: requires JDK11 or higher.")
-      println("Incompatible major version detected: '" + jvmVersion + "'")
-      println("\n\n")
-      println(
-          "**************************************************************************************************************")
-      println("\n\n\n")
+      project.logger.error(
+          """
+      
+      ********************************************************************************
+      
+      ERROR: requires JDK11 or higher.
+      Incompatible major version detected: '$jvmVersion'
+      
+      ********************************************************************************
+      
+      """.trimIndent())
       exitProcess(1)
     }
   }
@@ -95,7 +96,8 @@ class ReactPlugin : Plugin<Project> {
         project.tasks.register(
             "generateCodegenArtifactsFromSchema", GenerateCodegenArtifactsTask::class.java) {
           it.dependsOn(generateCodegenSchemaTask)
-          it.reactRoot.set(extension.reactRoot)
+          it.reactNativeDir.set(extension.reactNativeDir)
+          it.deprecatedReactRoot.set(extension.reactRoot)
           it.nodeExecutableAndArgs.set(extension.nodeExecutableAndArgs)
           it.codegenDir.set(extension.codegenDir)
           it.useJavaGenerator.set(extension.useJavaGenerator)

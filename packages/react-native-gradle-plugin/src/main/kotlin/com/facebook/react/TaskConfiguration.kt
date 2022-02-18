@@ -17,7 +17,6 @@ import com.facebook.react.utils.detectedCliPath
 import com.facebook.react.utils.detectedEntryFile
 import com.facebook.react.utils.detectedHermesCommand
 import java.io.File
-import java.util.*
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.tasks.Copy
@@ -56,11 +55,9 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactExte
         it.group = REACT_GROUP
         it.description = "create JS bundle and assets for $targetName."
 
-        it.reactRoot = config.reactRoot.get().asFile
+        it.reactRoot = config.root.get().asFile
         it.sources =
-            fileTree(config.reactRoot) { fileTree ->
-              fileTree.setExcludes(config.inputExcludes.get())
-            }
+            fileTree(config.root) { fileTree -> fileTree.setExcludes(config.inputExcludes.get()) }
         it.execCommand = execCommand
         it.bundleCommand = config.bundleCommand.get()
         it.devEnabled = !config.disableDevForVariant(variant)
@@ -98,7 +95,7 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactExte
         it.group = REACT_GROUP
         it.description = "bundle hermes resources for $targetName"
 
-        it.reactRoot = config.reactRoot.get().asFile
+        it.reactRoot = config.root.get().asFile
         it.hermesCommand = detectedHermesCommand(config)
         it.hermesFlags = config.hermesFlagsForVariant(variant)
         it.jsBundleFile = jsBundleFile
