@@ -15,6 +15,8 @@ import type {ColorValue} from './StyleSheet';
 export type DynamicColorMacOSTuple = {
   light: ColorValue,
   dark: ColorValue,
+  highContrastLight?: ColorValue,
+  highContrastDark?: ColorValue,
 };
 
 export const DynamicColorMacOS = (

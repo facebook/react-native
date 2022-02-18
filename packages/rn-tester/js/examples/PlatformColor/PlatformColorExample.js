@@ -266,6 +266,27 @@ function DynamicColorsExample() {
           }}
         />
       </View>
+      <View style={styles.row}>
+        <Text style={styles.labelCell}>
+          DynamicColorMacOS({'{\n'}
+          {'  '}light: 'red',{'\n'}
+          {'  '}dark: 'blue',{'\n'}
+          {'  '}highContrastLight: 'green',{'\n'}
+          {'  '}highContrastDark: 'orange',{'\n'}
+          {'}'})
+        </Text>
+        <View
+          style={{
+            ...styles.colorCell,
+            backgroundColor: DynamicColorMacOS({
+              light: 'red',
+              dark: 'blue',
+              highContrastLight: 'green',
+              highContrastDark: 'orange',
+            }),
+          }}
+        />
+      </View>
     </View>
   ) : // ]TODO(macOS GH#774)
   Platform.OS === 'ios' ? (
