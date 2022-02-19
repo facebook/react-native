@@ -19,6 +19,7 @@ import type {
 } from '../Renderer/shims/ReactNativeTypes';
 
 import Platform from '../Utilities/Platform';
+import ReactNativeFeatureFlags from '../ReactNative/ReactNativeFeatureFlags';
 
 // Reexport type
 export type LayoutAnimationConfig = LayoutAnimationConfig_;
@@ -26,10 +27,11 @@ export type LayoutAnimationConfig = LayoutAnimationConfig_;
 type OnAnimationDidEndCallback = () => void;
 type OnAnimationDidFailCallback = () => void;
 
-let isLayoutAnimationEnabled: boolean = true;
+let isLayoutAnimationEnabled: boolean =
+  ReactNativeFeatureFlags.isLayoutAnimationEnabled();
 
 function setEnabled(value: boolean) {
-  isLayoutAnimationEnabled = value;
+  isLayoutAnimationEnabled = isLayoutAnimationEnabled;
 }
 
 /**
