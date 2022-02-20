@@ -7,6 +7,7 @@
 
 package com.facebook.react.animated;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
@@ -33,6 +34,8 @@ import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.common.ViewUtil;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
@@ -102,16 +105,76 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
     }
   }
 
+  private class ConcurrentOperationQueue {
+    private final Queue<UIThreadOperation> mQueue = new ConcurrentLinkedQueue<>();
+
+    @AnyThread
+    boolean isEmpty() {
+      return mQueue.isEmpty();
+    }
+
+    @AnyThread
+    void add(UIThreadOperation operation) {
+      mQueue.add(operation);
+    }
+
+    @UiThread
+    void executeBatch(long maxBatchNumber, NativeAnimatedNodesManager nodesManager) {
+      List<UIThreadOperation> operations = new ArrayList<>();
+      while (true) {
+        // There is a race condition where `peek` may return a non-null value and isEmpty() is
+        // false,
+        // but `poll` returns a null value - it's not clear why since we only peek and poll on the
+        // UI
+        // thread, but it might be something that happens during teardown or a crash. Regardless,
+        // the
+        // root cause is not currently known so we're extra cautious here.
+        // It happens equally in Fabric and non-Fabric.
+        UIThreadOperation peekedOperation = mQueue.peek();
+
+        // This is the same as operationQueue.isEmpty()
+        if (peekedOperation == null) {
+          break;
+        }
+        // The rest of the operations are for the next frame.
+        if (peekedOperation.getBatchNumber() > maxBatchNumber) {
+          break;
+        }
+
+        // Since we apparently can't guarantee that there is still an operation on the queue,
+        // much less the same operation, we do a poll and another null check. If this isn't
+        // the same operation as the peeked operation, we can't do anything about it - we still
+        // need to execute it, we have no mechanism to put it at the front of the queue, and it
+        // won't cause any errors to execute it earlier than expected (just a bit of UI jank at
+        // worst)
+        // so we just continue happily along.
+        UIThreadOperation polledOperation = mQueue.poll();
+        if (peekedOperation != polledOperation) {
+          ReactSoftExceptionLogger.logSoftException(
+              NAME,
+              new RuntimeException(
+                  "Inconsistency detected: peeked animation operation different from polled: "
+                      + peekedOperation
+                      + " / "
+                      + polledOperation));
+        }
+        if (polledOperation == null) {
+          break;
+        }
+        operations.add(polledOperation);
+      }
+
+      for (UIThreadOperation operation : operations) {
+        operation.execute(nodesManager);
+      }
+    }
+  }
+
   @NonNull private final GuardedFrameCallback mAnimatedFrameCallback;
   private final ReactChoreographer mReactChoreographer;
 
-  @NonNull
-  private final ConcurrentLinkedQueue<UIThreadOperation> mOperations =
-      new ConcurrentLinkedQueue<>();
-
-  @NonNull
-  private final ConcurrentLinkedQueue<UIThreadOperation> mPreOperations =
-      new ConcurrentLinkedQueue<>();
+  @NonNull private final ConcurrentOperationQueue mOperations = new ConcurrentOperationQueue();
+  @NonNull private final ConcurrentOperationQueue mPreOperations = new ConcurrentOperationQueue();
 
   private final AtomicReference<NativeAnimatedNodesManager> mNodesManager = new AtomicReference<>();
 
@@ -221,51 +284,8 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
       }
     }
 
-    executeAllOperations(mPreOperations, batchNumber);
-    executeAllOperations(mOperations, batchNumber);
-  }
-
-  @UiThread
-  private void executeAllOperations(Queue<UIThreadOperation> operationQueue, long maxBatchNumber) {
-    NativeAnimatedNodesManager nodesManager = getNodesManager();
-    while (true) {
-      // There is a race condition where `peek` may return a non-null value and isEmpty() is false,
-      // but `poll` returns a null value - it's not clear why since we only peek and poll on the UI
-      // thread, but it might be something that happens during teardown or a crash. Regardless, the
-      // root cause is not currently known so we're extra cautious here.
-      // It happens equally in Fabric and non-Fabric.
-      UIThreadOperation peekedOperation = operationQueue.peek();
-
-      // This is the same as operationQueue.isEmpty()
-      if (peekedOperation == null) {
-        return;
-      }
-      // The rest of the operations are for the next frame.
-      if (peekedOperation.getBatchNumber() > maxBatchNumber) {
-        return;
-      }
-
-      // Since we apparently can't guarantee that there is still an operation on the queue,
-      // much less the same operation, we do a poll and another null check. If this isn't
-      // the same operation as the peeked operation, we can't do anything about it - we still
-      // need to execute it, we have no mechanism to put it at the front of the queue, and it
-      // won't cause any errors to execute it earlier than expected (just a bit of UI jank at worst)
-      // so we just continue happily along.
-      UIThreadOperation polledOperation = operationQueue.poll();
-      if (peekedOperation != polledOperation) {
-        ReactSoftExceptionLogger.logSoftException(
-            NAME,
-            new RuntimeException(
-                "Inconsistency detected: peeked animation operation different from polled: "
-                    + peekedOperation
-                    + " / "
-                    + polledOperation));
-      }
-      if (polledOperation == null) {
-        return;
-      }
-      polledOperation.execute(nodesManager);
-    }
+    mPreOperations.executeBatch(batchNumber, getNodesManager());
+    mOperations.executeBatch(batchNumber, getNodesManager());
   }
 
   // For non-FabricUIManager only
@@ -285,7 +305,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
         new UIBlock() {
           @Override
           public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
-            executeAllOperations(mPreOperations, frameNo);
+            mPreOperations.executeBatch(frameNo, getNodesManager());
           }
         };
 
@@ -293,7 +313,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
         new UIBlock() {
           @Override
           public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
-            executeAllOperations(mOperations, frameNo);
+            mOperations.executeBatch(frameNo, getNodesManager());
           }
         };
 
