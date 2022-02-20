@@ -252,6 +252,15 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
       // won't cause any errors to execute it earlier than expected (just a bit of UI jank at worst)
       // so we just continue happily along.
       UIThreadOperation polledOperation = operationQueue.poll();
+      if (peekedOperation != polledOperation) {
+        ReactSoftExceptionLogger.logSoftException(
+            NAME,
+            new RuntimeException(
+                "Inconsistency detected: peeked animation operation different from polled: "
+                    + peekedOperation
+                    + " / "
+                    + polledOperation));
+      }
       if (polledOperation == null) {
         return;
       }
