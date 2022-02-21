@@ -279,6 +279,7 @@ task androidSourcesJar(type: Jar) {
 }
 
 android {
+    buildToolsVersion = "31.0.0"
     compileSdkVersion 31
 
     // Used to override the NDK path & version on internal CI
@@ -418,6 +419,10 @@ afterEvaluate {
 
     // Needed as some of the native sources needs to be downloaded
     // before configureNdkBuildDebug could be executed.
+    reactNativeArchitectures().each { architecture ->
+        tasks.named("configureNdkBuildDebug[${architecture}]") { dependsOn(preBuild) }
+        tasks.named("configureNdkBuildRelease[${architecture}]") { dependsOn(preBuild) }
+    }
     configureNdkBuildDebug.dependsOn(preBuild)
     configureNdkBuildRelease.dependsOn(preBuild)
 

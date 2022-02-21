@@ -143,6 +143,7 @@ def reactNativeArchitectures() {
 }
 
 android {
+    buildToolsVersion = "31.0.0"
     compileSdkVersion 31
 
     // Used to override the NDK path & version on internal CI
@@ -298,6 +299,16 @@ if (enableCodegen) {
     }
 
     afterEvaluate {
+        reactNativeArchitectures().each { architecture ->
+            tasks.named("configureNdkBuildDebug[${architecture}]") {
+                dependsOn("preHermesDebugBuild")
+                dependsOn("preJscDebugBuild")
+            }
+            tasks.named("configureNdkBuildRelease[${architecture}]") {
+                dependsOn("preHermesReleaseBuild")
+                dependsOn("preJscReleaseBuild")
+            }
+        }
         configureNdkBuildRelease.dependsOn(packageReactReleaseNdkLibs)
         preHermesReleaseBuild.dependsOn(packageReactReleaseNdkLibs)
         preJscReleaseBuild.dependsOn(packageReactReleaseNdkLibs)
