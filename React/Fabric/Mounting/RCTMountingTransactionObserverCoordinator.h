@@ -31,9 +31,9 @@ class RCTMountingTransactionObserverCoordinator final {
    * To be called from `RCTMountingManager`.
    */
   void notifyObserversMountingTransactionWillMount(
-      facebook::react::MountingTransactionMetadata const &metadata) const;
+      facebook::react::MountingTransaction const &transaction) const;
   void notifyObserversMountingTransactionDidMount(
-      facebook::react::MountingTransactionMetadata const &metadata) const;
+      facebook::react::MountingTransaction const &transaction) const;
 
  private:
   facebook::butter::map<

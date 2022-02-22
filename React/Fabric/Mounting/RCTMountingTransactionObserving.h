@@ -50,14 +50,14 @@ NS_ASSUME_NONNULL_BEGIN
  * Is not being called for a component view which is being mounted as part of the transaction (because the view is not
  * registered as an observer yet).
  */
-- (void)mountingTransactionWillMountWithMetadata:(facebook::react::MountingTransactionMetadata const &)metadata;
+- (void)mountingTransactionWillMount:(facebook::react::MountingTransaction const &)transaction;
 
 /*
  * Called right after the last mutation instruction is executed.
  * Is not being called for a component view which was being unmounted as part of the transaction (because the view is
  * not registered as an observer already).
  */
-- (void)mountingTransactionDidMountWithMetadata:(facebook::react::MountingTransactionMetadata const &)metadata;
+- (void)mountingTransactionDidMount:(facebook::react::MountingTransaction const &)transaction;
 
 @end
 

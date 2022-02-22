@@ -40,9 +40,9 @@ void RCTMountingTransactionObserverCoordinator::unregisterViewComponentDescripto
 }
 
 void RCTMountingTransactionObserverCoordinator::notifyObserversMountingTransactionWillMount(
-    MountingTransactionMetadata const &metadata) const
+    MountingTransaction const &transaction) const
 {
-  auto surfaceId = metadata.surfaceId;
+  auto surfaceId = transaction.getSurfaceId();
   auto surfaceRegistryIterator = registry_.find(surfaceId);
   if (surfaceRegistryIterator == registry_.end()) {
     return;
@@ -51,15 +51,15 @@ void RCTMountingTransactionObserverCoordinator::notifyObserversMountingTransacti
   for (auto const &componentViewDescriptor : surfaceRegistry) {
     if (componentViewDescriptor.observesMountingTransactionWillMount) {
       [(id<RCTMountingTransactionObserving>)componentViewDescriptor.view
-          mountingTransactionWillMountWithMetadata:metadata];
+          mountingTransactionWillMount:transaction];
     }
   }
 }
 
 void RCTMountingTransactionObserverCoordinator::notifyObserversMountingTransactionDidMount(
-    MountingTransactionMetadata const &metadata) const
+    MountingTransaction const &transaction) const
 {
-  auto surfaceId = metadata.surfaceId;
+  auto surfaceId = transaction.getSurfaceId();
   auto surfaceRegistryIterator = registry_.find(surfaceId);
   if (surfaceRegistryIterator == registry_.end()) {
     return;
@@ -68,7 +68,7 @@ void RCTMountingTransactionObserverCoordinator::notifyObserversMountingTransacti
   for (auto const &componentViewDescriptor : surfaceRegistry) {
     if (componentViewDescriptor.observesMountingTransactionDidMount) {
       [(id<RCTMountingTransactionObserving>)componentViewDescriptor.view
-          mountingTransactionDidMountWithMetadata:metadata];
+          mountingTransactionDidMount:transaction];
     }
   }
 }

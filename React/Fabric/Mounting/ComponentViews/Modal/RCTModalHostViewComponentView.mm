@@ -192,9 +192,14 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 
 #pragma mark - RCTMountingTransactionObserving
 
-- (void)mountingTransactionWillMountWithMetadata:(MountingTransactionMetadata const &)metadata
+- (void)mountingTransactionWillMount:(MountingTransaction const &)transaction
 {
-  _modalContentsSnapshot = [self.viewController.view snapshotViewAfterScreenUpdates:NO];
+  for (auto mutation : transaction.getMutations()) {
+    if (mutation.type == ShadowViewMutation::Type::Delete && mutation.parentShadowView.componentName == ModalHostViewComponentName) {
+      _modalContentsSnapshot = [self.viewController.view snapshotViewAfterScreenUpdates:NO];
+      return;
+    }
+  }
 }
 
 #pragma mark - UIView methods

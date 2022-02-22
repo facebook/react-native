@@ -26,6 +26,7 @@ class MountingTransactionMetadata final {
   MountingTransaction::Number number;
   TransactionTelemetry telemetry;
   SurfaceTelemetry surfaceTelemetry;
+  ShadowViewMutationList const &mutations;
 };
 
 } // namespace react

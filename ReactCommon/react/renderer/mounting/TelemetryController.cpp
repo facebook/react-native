@@ -17,9 +17,9 @@ TelemetryController::TelemetryController(
     : mountingCoordinator_(mountingCoordinator) {}
 
 bool TelemetryController::pullTransaction(
-    std::function<void(MountingTransactionMetadata metadata)> const &willMount,
-    std::function<void(ShadowViewMutationList const &mutations)> const &doMount,
-    std::function<void(MountingTransactionMetadata metadata)> const &didMount)
+    std::function<void(MountingTransaction const &transaction)> const &willMount,
+    std::function<void(MountingTransaction const &transaction)> const &doMount,
+    std::function<void(MountingTransaction const &transaction)> const &didMount)
     const {
   auto optional = mountingCoordinator_.pullTransaction();
   if (!optional.has_value()) {
@@ -37,15 +37,15 @@ bool TelemetryController::pullTransaction(
   auto compoundTelemetry = compoundTelemetry_;
   mutex_.unlock();
 
-  willMount({surfaceId, number, telemetry, compoundTelemetry});
+  willMount(transaction);
 
   telemetry.willMount();
-  doMount(transaction.getMutations());
+  doMount(transaction);
   telemetry.didMount();
 
   compoundTelemetry.incorporate(telemetry, numberOfMutations);
 
-  didMount({surfaceId, number, telemetry, compoundTelemetry});
+  didMount(transaction);
 
   mutex_.lock();
   compoundTelemetry_ = compoundTelemetry;
