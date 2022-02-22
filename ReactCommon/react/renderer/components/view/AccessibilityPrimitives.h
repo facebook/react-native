@@ -54,6 +54,18 @@ struct AccessibilityAction {
   butter::optional<std::string> label{};
 };
 
+inline static bool operator==(
+    AccessibilityAction const &lhs,
+    AccessibilityAction const &rhs) {
+  return lhs.name == rhs.name && lhs.label == rhs.label;
+}
+
+inline static bool operator!=(
+    AccessibilityAction const &lhs,
+    AccessibilityAction const &rhs) {
+  return !(rhs == lhs);
+}
+
 struct AccessibilityState {
   bool disabled{false};
   bool selected{false};

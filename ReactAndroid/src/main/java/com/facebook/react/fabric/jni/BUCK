@@ -26,6 +26,7 @@ rn_xplat_cxx_library(
         react_native_xplat_target("react/renderer/mapbuffer:mapbuffer"),
         react_native_xplat_target("react/config:config"),
         react_native_xplat_target("react/renderer/animations:animations"),
+        react_native_xplat_target("react/renderer/graphics:graphics"),
         react_native_xplat_target("react/renderer/uimanager:uimanager"),
         react_native_xplat_target("react/renderer/scheduler:scheduler"),
         react_native_xplat_target("react/renderer/mounting:mounting"),
@@ -48,6 +49,7 @@ rn_xplat_cxx_library(
         react_native_xplat_target("react/renderer/components/switch:androidswitch"),
         react_native_xplat_target("react/renderer/components/progressbar:androidprogressbar"),
         react_native_xplat_target("react/renderer/components/text:text"),
+        react_native_xplat_target("react/renderer/components/view:view"),
         react_native_xplat_target("react/renderer/components/textinput:androidtextinput"),
     ],
 )

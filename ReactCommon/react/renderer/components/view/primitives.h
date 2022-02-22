@@ -59,6 +59,14 @@ struct ViewEvents {
   }
 };
 
+inline static bool operator==(ViewEvents const &lhs, ViewEvents const &rhs) {
+  return lhs.bits == rhs.bits;
+}
+
+inline static bool operator!=(ViewEvents const &lhs, ViewEvents const &rhs) {
+  return lhs.bits != rhs.bits;
+}
+
 enum class BackfaceVisibility { Auto, Visible, Hidden };
 
 enum class BorderStyle { Solid, Dotted, Dashed };
