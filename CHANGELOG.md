@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.67.3
+
+### Fixed
+
+#### Android specific
+
+- Text with adjustsFontSizeToFit changes the text layout infinitely ([c1db41f060](https://github.com/facebook/react-native/commit/c1db41f060908e6ab001aaace7c20c610056f59a))
+
+#### iOS specific
+
+- Fix a broken input for the Korean alphabet in TextInput ([1a83dc36ce](https://github.com/facebook/react-native/commit/1a83dc36ce0af33ac7a3c311354fce4bfa5ba1a3) by [@bernard-kms](https://github.com/bernard-kms))
+
 ## v0.67.2
 
 ### Fixed
