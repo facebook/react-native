@@ -263,6 +263,10 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     RCTExperimentSetPreemptiveViewAllocationDisabled(YES);
   }
 
+  RCTSetInteropLayerKeepViewHierarchy(
+      reactNativeConfig &&
+      reactNativeConfig->getBool("react_native_new_architecture:interop_layer_keep_view_hierarchy"));
+
   auto componentRegistryFactory =
       [factory = wrapManagedObject(_mountingManager.componentViewRegistry.componentViewFactory)](
           EventDispatcher::Weak const &eventDispatcher, ContextContainer::Shared const &contextContainer) {
@@ -279,8 +283,7 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   auto weakRuntimeScheduler = _contextContainer->find<std::weak_ptr<RuntimeScheduler>>("RuntimeScheduler");
   auto runtimeScheduler = weakRuntimeScheduler.hasValue() ? weakRuntimeScheduler.value().lock() : nullptr;
   if (runtimeScheduler) {
-    runtimeScheduler->setEnableYielding(
-        reactNativeConfig->getBool("react_native_new_architecture:runtimescheduler_enable_yielding_ios"));
+    runtimeScheduler->setEnableYielding(true);
     runtimeExecutor = [runtimeScheduler](std::function<void(jsi::Runtime & runtime)> &&callback) {
       runtimeScheduler->scheduleWork(std::move(callback));
     };

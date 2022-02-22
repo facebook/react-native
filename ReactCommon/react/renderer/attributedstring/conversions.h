@@ -977,7 +977,7 @@ constexpr static MapBuffer::Key TA_KEY_BEST_WRITING_DIRECTION = 13;
 constexpr static MapBuffer::Key TA_KEY_TEXT_DECORATION_COLOR = 14;
 constexpr static MapBuffer::Key TA_KEY_TEXT_DECORATION_LINE = 15;
 constexpr static MapBuffer::Key TA_KEY_TEXT_DECORATION_STYLE = 16;
-constexpr static MapBuffer::Key TA_KEY_TEXT_SHADOW_RAIDUS = 18;
+constexpr static MapBuffer::Key TA_KEY_TEXT_SHADOW_RADIUS = 18;
 constexpr static MapBuffer::Key TA_KEY_TEXT_SHADOW_COLOR = 19;
 constexpr static MapBuffer::Key TA_KEY_IS_HIGHLIGHTED = 20;
 constexpr static MapBuffer::Key TA_KEY_LAYOUT_DIRECTION = 21;
@@ -1104,7 +1104,7 @@ inline MapBuffer toMapBuffer(const TextAttributes &textAttributes) {
   // Shadow
   if (!std::isnan(textAttributes.textShadowRadius)) {
     builder.putDouble(
-        TA_KEY_TEXT_SHADOW_RAIDUS, textAttributes.textShadowRadius);
+        TA_KEY_TEXT_SHADOW_RADIUS, textAttributes.textShadowRadius);
   }
   if (textAttributes.textShadowColor) {
     builder.putInt(

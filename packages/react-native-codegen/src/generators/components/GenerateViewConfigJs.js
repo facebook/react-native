@@ -141,7 +141,7 @@ const DeprecatedComponentNameCheckTemplate = ({
   paperComponentNameDeprecated: string,
 }) =>
   `
-if (global.__nativeComponentRegistry__hasComponent) {
+if (global.RN$Bridgeless) {
   if (UIManager.hasViewManagerConfig('${componentName}')) {
     nativeComponentName = '${componentName}';
   } else if (UIManager.hasViewManagerConfig('${paperComponentNameDeprecated}')) {

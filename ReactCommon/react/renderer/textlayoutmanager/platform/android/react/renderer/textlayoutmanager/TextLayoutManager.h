@@ -28,14 +28,12 @@ class TextLayoutManager {
  public:
   TextLayoutManager(const ContextContainer::Shared &contextContainer)
       : contextContainer_(contextContainer),
-        measureCache_{
+        mapBufferSerializationEnabled_(
+            contextContainer->at<bool>("MapBufferSerializationEnabled")),
+        measureCache_(
             contextContainer->at<bool>("EnableLargeTextMeasureCache")
                 ? 1024
-                : kSimpleThreadSafeCacheSizeCap} {
-    static auto value =
-        contextContainer->at<bool>("MapBufferSerializationEnabled");
-    mapBufferSerializationEnabled_ = value;
-  }
+                : kSimpleThreadSafeCacheSizeCap) {}
   ~TextLayoutManager();
 
   /*

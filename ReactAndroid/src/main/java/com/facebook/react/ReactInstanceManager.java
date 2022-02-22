@@ -1012,6 +1012,7 @@ public class ReactInstanceManager {
     mReactInstanceEventListeners.remove(listener);
   }
 
+  /** @return current ReactApplicationContext */
   @VisibleForTesting
   public @Nullable ReactContext getCurrentReactContext() {
     synchronized (mReactContextLock) {
@@ -1174,7 +1175,6 @@ public class ReactInstanceManager {
 
       mDevSupportManager.onNewReactContextCreated(reactContext);
       mMemoryPressureRouter.addMemoryPressureListener(catalystInstance);
-      moveReactContextToCurrentLifecycleState();
 
       ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_START);
       for (ReactRoot reactRoot : mAttachedReactRoots) {
@@ -1196,6 +1196,8 @@ public class ReactInstanceManager {
         new Runnable() {
           @Override
           public void run() {
+            moveReactContextToCurrentLifecycleState();
+
             for (com.facebook.react.ReactInstanceEventListener listener : finalListeners) {
               // Sometimes this listener is null - probably due to race
               // condition between allocating listeners with a certain
@@ -1207,10 +1209,6 @@ public class ReactInstanceManager {
             }
           }
         });
-    Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
-    ReactMarker.logMarker(SETUP_REACT_CONTEXT_END);
-    // Mark end of bridge loading
-    ReactMarker.logMarker(ReactMarkerConstants.REACT_BRIDGE_LOADING_END);
     reactContext.runOnJSQueueThread(
         new Runnable() {
           @Override
@@ -1226,6 +1224,11 @@ public class ReactInstanceManager {
             Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
           }
         });
+
+    Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+    ReactMarker.logMarker(SETUP_REACT_CONTEXT_END);
+    // Mark end of bridge loading
+    ReactMarker.logMarker(ReactMarkerConstants.REACT_BRIDGE_LOADING_END);
   }
 
   private void attachRootViewToInstance(final ReactRoot reactRoot) {

@@ -134,8 +134,7 @@ Scheduler::Scheduler(
   uiManager_->setAnimationDelegate(animationDelegate);
 
 #ifdef ANDROID
-  removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
-      "react_fabric:remove_outstanding_surfaces_on_destruction_android");
+  removeOutstandingSurfacesOnDestruction_ = true;
 #else
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_ios");

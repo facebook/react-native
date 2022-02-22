@@ -7,12 +7,17 @@
 
 #import "RCTView.h"
 
+#import <React/RCTMockDef.h>
+
 #import "RCTAutoInsetsProtocol.h"
 #import "RCTBorderDrawing.h"
 #import "RCTI18nUtil.h"
 #import "RCTLog.h"
 #import "RCTViewUtils.h"
 #import "UIView+React.h"
+
+RCT_MOCK_DEF(RCTView, RCTContentInsets);
+#define RCTContentInsets RCT_MOCK_USE(RCTView, RCTContentInsets)
 
 UIAccessibilityTraits const SwitchAccessibilityTrait = 0x20000000000001;
 

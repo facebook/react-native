@@ -24,8 +24,8 @@ const setAndForwardRef = require('../Utilities/setAndForwardRef');
 let animatedComponentNextId = 1;
 
 export type AnimatedComponentType<
-  Props: {+[string]: mixed, ...},
-  Instance,
+  -Props: {+[string]: mixed, ...},
+  +Instance = mixed,
 > = React.AbstractComponent<
   $ObjMap<
     Props &

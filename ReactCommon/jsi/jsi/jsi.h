@@ -274,6 +274,7 @@ class JSI_EXPORT Runtime {
       const uint8_t* utf8,
       size_t length) = 0;
   virtual PropNameID createPropNameIDFromString(const String& str) = 0;
+  virtual PropNameID createPropNameIDFromSymbol(const Symbol& sym) = 0;
   virtual std::string utf8(const PropNameID&) = 0;
   virtual bool compare(const PropNameID&, const PropNameID&) = 0;
 
@@ -423,6 +424,11 @@ class JSI_EXPORT PropNameID : public Pointer {
   /// Create a PropNameID from a JS string.
   static PropNameID forString(Runtime& runtime, const jsi::String& str) {
     return runtime.createPropNameIDFromString(str);
+  }
+
+  /// Create a PropNameID from a JS symbol.
+  static PropNameID forSymbol(Runtime& runtime, const jsi::Symbol& sym) {
+    return runtime.createPropNameIDFromSymbol(sym);
   }
 
   // Creates a vector of PropNameIDs constructed from given arguments.

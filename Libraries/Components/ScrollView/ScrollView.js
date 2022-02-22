@@ -675,7 +675,7 @@ type State = {|
 
 const IS_ANIMATING_TOUCH_START_THRESHOLD_MS = 16;
 
-type ScrollViewComponentStatics = $ReadOnly<{|
+export type ScrollViewComponentStatics = $ReadOnly<{|
   Context: typeof ScrollViewContext,
 |}>;
 

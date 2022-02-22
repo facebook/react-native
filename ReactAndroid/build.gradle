@@ -279,6 +279,7 @@ task androidSourcesJar(type: Jar) {
 }
 
 android {
+    buildToolsVersion = "31.0.0"
     compileSdkVersion 31
 
     // Used to override the NDK path & version on internal CI
@@ -407,7 +408,7 @@ react {
     // This should be changed to a more generic name, e.g. `ReactCoreSpec`.
     libraryName = "rncore"
     jsRootDir = file("../Libraries")
-    reactRoot = file("$projectDir/..")
+    reactNativeDir = file("$projectDir/..")
     useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET")?.toBoolean() ?: false
     // We search for the codegen in either one of the `node_modules` folder or in the
     // root packages folder (that's for when we build from source without calling `yarn install`).
@@ -418,6 +419,10 @@ afterEvaluate {
 
     // Needed as some of the native sources needs to be downloaded
     // before configureNdkBuildDebug could be executed.
+    reactNativeArchitectures().each { architecture ->
+        tasks.named("configureNdkBuildDebug[${architecture}]") { dependsOn(preBuild) }
+        tasks.named("configureNdkBuildRelease[${architecture}]") { dependsOn(preBuild) }
+    }
     configureNdkBuildDebug.dependsOn(preBuild)
     configureNdkBuildRelease.dependsOn(preBuild)
 

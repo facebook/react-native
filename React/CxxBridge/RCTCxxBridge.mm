@@ -348,6 +348,9 @@ struct RCTInstanceCallback : public InstanceCallback {
                                              selector:@selector(handleMemoryWarning)
                                                  name:UIApplicationDidReceiveMemoryWarningNotification
                                                object:nil];
+
+    RCTLogSetBridgeModuleRegistry(_objCModuleRegistry);
+    RCTLogSetBridgeCallableJSModules(_callableJSModules);
   }
   return self;
 }

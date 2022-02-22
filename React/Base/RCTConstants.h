@@ -15,3 +15,9 @@ RCT_EXTERN NSString *const RCTUserInterfaceStyleDidChangeNotificationTraitCollec
  */
 RCT_EXTERN BOOL RCTExperimentGetPreemptiveViewAllocationDisabled(void);
 RCT_EXTERN void RCTExperimentSetPreemptiveViewAllocationDisabled(BOOL value);
+
+/*
+ * Interop layer keep view hierarchy.
+ */
+RCT_EXTERN BOOL RCTGetInteropLayerKeepViewHierarchy(void);
+RCT_EXTERN void RCTSetInteropLayerKeepViewHierarchy(BOOL value);

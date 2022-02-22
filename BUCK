@@ -36,6 +36,7 @@ RCTCXXBRIDGE_PUBLIC_HEADERS = {
         "JSCExecutorFactory.h",
         "NSDataBigString.h",
         "RCTCxxBridgeDelegate.h",
+        "RCTJSIExecutorRuntimeInstaller.h",
         "RCTMessageThread.h",
     ]
 }

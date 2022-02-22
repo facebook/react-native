@@ -308,6 +308,22 @@ function addWhitelistedInterpolationParam(param: string): void {
   SUPPORTED_INTERPOLATION_PARAMS[param] = true;
 }
 
+function isSupportedColorStyleProp(prop: string): boolean {
+  return SUPPORTED_COLOR_STYLES.hasOwnProperty(prop);
+}
+
+function isSupportedStyleProp(prop: string): boolean {
+  return SUPPORTED_STYLES.hasOwnProperty(prop);
+}
+
+function isSupportedTransformProp(prop: string): boolean {
+  return SUPPORTED_TRANSFORMS.hasOwnProperty(prop);
+}
+
+function isSupportedInterpolationParam(param: string): boolean {
+  return SUPPORTED_INTERPOLATION_PARAMS.hasOwnProperty(param);
+}
+
 function validateTransform(
   configs: Array<
     | {
@@ -325,7 +341,7 @@ function validateTransform(
   >,
 ): void {
   configs.forEach(config => {
-    if (!SUPPORTED_TRANSFORMS.hasOwnProperty(config.property)) {
+    if (!isSupportedTransformProp(config.property)) {
       throw new Error(
         `Property '${config.property}' is not supported by native animated module`,
       );
@@ -335,7 +351,7 @@ function validateTransform(
 
 function validateStyles(styles: {[key: string]: ?number, ...}): void {
   for (const key in styles) {
-    if (!SUPPORTED_STYLES.hasOwnProperty(key)) {
+    if (!isSupportedStyleProp(key)) {
       throw new Error(
         `Style property '${key}' is not supported by native animated module`,
       );
@@ -345,7 +361,7 @@ function validateStyles(styles: {[key: string]: ?number, ...}): void {
 
 function validateInterpolation(config: InterpolationConfigType): void {
   for (const key in config) {
-    if (!SUPPORTED_INTERPOLATION_PARAMS.hasOwnProperty(key)) {
+    if (!isSupportedInterpolationParam(key)) {
       throw new Error(
         `Interpolation property '${key}' is not supported by native animated module`,
       );
@@ -368,7 +384,7 @@ function assertNativeAnimatedModule(): void {
 let _warnedMissingNativeAnimated = false;
 
 function shouldUseNativeDriver(
-  config: {...AnimationConfig, ...} | EventConfig,
+  config: $ReadOnly<{...AnimationConfig, ...}> | EventConfig,
 ): boolean {
   if (config.useNativeDriver == null) {
     console.warn(
@@ -411,10 +427,10 @@ function transformDataType(value: number | string): number | string {
 
 module.exports = {
   API,
-  SUPPORTED_STYLES,
-  SUPPORTED_COLOR_STYLES,
-  SUPPORTED_TRANSFORMS,
-  SUPPORTED_INTERPOLATION_PARAMS,
+  isSupportedColorStyleProp,
+  isSupportedStyleProp,
+  isSupportedTransformProp,
+  isSupportedInterpolationParam,
   addWhitelistedStyleProp,
   addWhitelistedTransformProp,
   addWhitelistedInterpolationParam,

@@ -184,8 +184,18 @@ const SwitchWithForwardedRef: React.AbstractComponent<
   }, [value, native]);
 
   if (Platform.OS === 'android') {
+    const {accessibilityState} = restProps;
+    const _disabled =
+      disabled != null ? disabled : accessibilityState?.disabled;
+
+    const _accessibilityState =
+      _disabled !== accessibilityState?.disabled
+        ? {...accessibilityState, disabled: _disabled}
+        : accessibilityState;
+
     const platformProps = {
-      enabled: disabled !== true,
+      accessibilityState: _accessibilityState,
+      enabled: _disabled !== true,
       on: value === true,
       style,
       thumbTintColor: thumbColor,

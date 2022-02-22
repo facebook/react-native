@@ -183,7 +183,8 @@ __attribute__((used)) RCT_EXTERN void RCTEnableNewArchitectureViolationReporting
 
 // When reporting is enabled, trigger an assertion.
 __attribute__((used)) RCT_EXTERN void RCTEnforceNotAllowedForNewArchitecture(id context, NSString *extra);
-
-// When reporting is enabled, warn about the violation. Use this to prepare a specific callsite
+// When reporting is enabled, trigger an error but do not crash. Use this to prepare a specific callsite
 // for stricter enforcement. When ready, switch it to use the variant above.
-__attribute__((used)) RCT_EXTERN void RCTWarnNotAllowedForNewArchitecture(id context, NSString *extra);
+__attribute__((used)) RCT_EXTERN void RCTErrorNotAllowedForNewArchitecture(id context, NSString *extra);
+// When reporting is enabled, log an message. When ready, switch it to use the variant above.
+__attribute__((used)) RCT_EXTERN void RCTLogNotAllowedForNewArchitecture(id context, NSString *extra);

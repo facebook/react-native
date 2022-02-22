@@ -254,6 +254,7 @@ public class ReactContext extends ContextWrapper {
   }
 
   /** Should be called by the hosting Fragment in {@link Fragment#onResume} */
+  @ThreadConfined(UI)
   public void onHostResume(@Nullable Activity activity) {
     mLifecycleState = LifecycleState.RESUMED;
     mCurrentActivity = new WeakReference(activity);
@@ -282,6 +283,7 @@ public class ReactContext extends ContextWrapper {
   }
 
   /** Should be called by the hosting Fragment in {@link Fragment#onPause} */
+  @ThreadConfined(UI)
   public void onHostPause() {
     mLifecycleState = LifecycleState.BEFORE_RESUME;
     ReactMarker.logMarker(ReactMarkerConstants.ON_HOST_PAUSE_START);
