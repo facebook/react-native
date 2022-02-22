@@ -8,6 +8,7 @@
 #include "FabricMountingManager.h"
 #include "EventEmitterWrapper.h"
 #include "StateWrapperImpl.h"
+#include "viewPropConversions.h"
 
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/components/scrollview/ScrollViewProps.h>
@@ -177,11 +178,6 @@ static inline void writeIntBufferTypePreamble(
   }
 }
 
-inline local_ref<ReadableMap::javaobject> castReadableMap(
-    local_ref<ReadableNativeMap::javaobject> const &nativeMap) {
-  return make_local(reinterpret_cast<ReadableMap::javaobject>(nativeMap.get()));
-}
-
 inline local_ref<ReadableArray::javaobject> castReadableArray(
     local_ref<ReadableNativeArray::javaobject> const &nativeArray) {
   return make_local(
@@ -220,6 +216,22 @@ static inline float scale(Float value, Float pointScaleFactor) {
                << " result: " << result;
   }
   return result;
+}
+
+local_ref<jobject> FabricMountingManager::getProps(
+    ShadowView const &oldShadowView,
+    ShadowView const &newShadowView) {
+  if (useMapBufferForViewProps_ &&
+      newShadowView.traits.check(ShadowNodeTraits::Trait::View)) {
+    auto oldProps = oldShadowView.props != nullptr
+        ? static_cast<ViewProps const &>(*oldShadowView.props)
+        : ViewProps{};
+    auto newProps = static_cast<ViewProps const &>(*newShadowView.props);
+    return ReadableMapBuffer::createWithContents(
+        viewPropsDiff(oldProps, newProps));
+  } else {
+    return ReadableNativeMap::newObjectCxxArgs(newShadowView.props->rawProps);
+  }
 }
 
 void FabricMountingManager::executeMount(
@@ -308,7 +320,8 @@ void FabricMountingManager::executeMount(
           if (!isVirtual) {
             if (oldChildShadowView.props != newChildShadowView.props) {
               cppUpdatePropsMountItems.push_back(
-                  CppMountItem::UpdatePropsMountItem(newChildShadowView));
+                  CppMountItem::UpdatePropsMountItem(
+                      oldChildShadowView, newChildShadowView));
             }
             if (oldChildShadowView.state != newChildShadowView.state) {
               cppUpdateStateMountItems.push_back(
@@ -367,7 +380,7 @@ void FabricMountingManager::executeMount(
                 shouldRememberAllocatedViews_ ? allocationCheck : revisionCheck;
             if (shouldCreateView) {
               cppUpdatePropsMountItems.push_back(
-                  CppMountItem::UpdatePropsMountItem(newChildShadowView));
+                  CppMountItem::UpdatePropsMountItem({}, newChildShadowView));
             }
 
             // State
@@ -484,7 +497,6 @@ void FabricMountingManager::executeMount(
 
   // Allocate the intBuffer and object array, now that we know exact sizes
   // necessary
-  // TODO: don't allocate at all if size is zero
   jintArray intBufferArray = env->NewIntArray(batchMountItemIntsSize);
   local_ref<JArrayClass<jobject>> objBufferArray =
       JArrayClass<jobject>::newArray(batchMountItemObjectsSize);
@@ -525,10 +537,8 @@ void FabricMountingManager::executeMount(
       int isLayoutable =
           mountItem.newChildShadowView.layoutMetrics != EmptyLayoutMetrics ? 1
                                                                            : 0;
-
-      local_ref<ReadableMap::javaobject> props =
-          castReadableMap(ReadableNativeMap::newObjectCxxArgs(
-              mountItem.newChildShadowView.props->rawProps));
+      local_ref<JObject> props =
+          getProps(mountItem.oldChildShadowView, mountItem.newChildShadowView);
 
       // Do not hold onto Java object from C
       // We DO want to hold onto C object from Java, since we don't know the
@@ -584,11 +594,8 @@ void FabricMountingManager::executeMount(
       temp[0] = mountItem.newChildShadowView.tag;
       env->SetIntArrayRegion(intBufferArray, intBufferPosition, 1, temp);
       intBufferPosition += 1;
-
-      auto newProps = mountItem.newChildShadowView.props->rawProps;
-      local_ref<ReadableMap::javaobject> newPropsReadableMap =
-          castReadableMap(ReadableNativeMap::newObjectCxxArgs(newProps));
-      (*objBufferArray)[objBufferPosition++] = newPropsReadableMap.get();
+      (*objBufferArray)[objBufferPosition++] =
+          getProps(mountItem.oldChildShadowView, mountItem.newChildShadowView);
     }
   }
   if (!cppUpdateStateMountItems.empty()) {
@@ -795,15 +802,11 @@ void FabricMountingManager::preallocateShadowView(
 
   bool isLayoutableShadowNode = shadowView.layoutMetrics != EmptyLayoutMetrics;
 
-  static auto preallocateView = jni::findClassStatic(UIManagerJavaDescriptor)
-                                    ->getMethod<void(
-                                        jint,
-                                        jint,
-                                        jstring,
-                                        ReadableMap::javaobject,
-                                        jobject,
-                                        jobject,
-                                        jboolean)>("preallocateView");
+  static auto preallocateView =
+      jni::findClassStatic(UIManagerJavaDescriptor)
+          ->getMethod<void(
+              jint, jint, jstring, jobject, jobject, jobject, jboolean)>(
+              "preallocateView");
 
   // Do not hold onto Java object from C
   // We DO want to hold onto C object from Java, since we don't know the
@@ -826,8 +829,8 @@ void FabricMountingManager::preallocateShadowView(
     }
   }
 
-  local_ref<ReadableMap::javaobject> props = castReadableMap(
-      ReadableNativeMap::newObjectCxxArgs(shadowView.props->rawProps));
+  local_ref<JObject> props = getProps({}, shadowView);
+
   auto component = getPlatformComponentName(shadowView);
 
   preallocateView(
@@ -942,6 +945,8 @@ FabricMountingManager::FabricMountingManager(
   useOverflowInset_ = doesUseOverflowInset();
   shouldRememberAllocatedViews_ = config->getBool(
       "react_native_new_architecture:remember_views_on_mount_android");
+  useMapBufferForViewProps_ = config->getBool(
+      "react_native_new_architecture:use_mapbuffer_for_viewprops");
 }
 
 } // namespace react

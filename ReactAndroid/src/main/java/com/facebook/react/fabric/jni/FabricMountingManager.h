@@ -76,6 +76,11 @@ class FabricMountingManager {
   bool disableRevisionCheckForPreallocation_{false};
   bool useOverflowInset_{false};
   bool shouldRememberAllocatedViews_{false};
+  bool useMapBufferForViewProps_{false};
+
+  jni::local_ref<jobject> getProps(
+      ShadowView const &oldShadowView,
+      ShadowView const &newShadowView);
 };
 
 } // namespace react
