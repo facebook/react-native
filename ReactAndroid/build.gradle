@@ -8,6 +8,7 @@
 plugins {
     id("com.android.library")
     id("com.facebook.react")
+    id("org.jetbrains.kotlin.android")
     id("maven-publish")
     id("de.undercouch.download")
 }
