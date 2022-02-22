@@ -107,6 +107,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
 
   private class ConcurrentOperationQueue {
     private final Queue<UIThreadOperation> mQueue = new ConcurrentLinkedQueue<>();
+    @Nullable private UIThreadOperation mPeekedOperation = null;
 
     @AnyThread
     boolean isEmpty() {
@@ -120,53 +121,43 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
 
     @UiThread
     void executeBatch(long maxBatchNumber, NativeAnimatedNodesManager nodesManager) {
+      List<UIThreadOperation> operations = drainQueueIntoList(maxBatchNumber);
+      for (UIThreadOperation operation : operations) {
+        operation.execute(nodesManager);
+      }
+    }
+
+    @UiThread
+    private List<UIThreadOperation> drainQueueIntoList(long maxBatchNumber) {
       List<UIThreadOperation> operations = new ArrayList<>();
       while (true) {
-        // There is a race condition where `peek` may return a non-null value and isEmpty() is
-        // false,
-        // but `poll` returns a null value - it's not clear why since we only peek and poll on the
-        // UI
-        // thread, but it might be something that happens during teardown or a crash. Regardless,
-        // the
-        // root cause is not currently known so we're extra cautious here.
-        // It happens equally in Fabric and non-Fabric.
-        UIThreadOperation peekedOperation = mQueue.peek();
-
-        // This is the same as operationQueue.isEmpty()
-        if (peekedOperation == null) {
-          break;
-        }
-        // The rest of the operations are for the next frame.
-        if (peekedOperation.getBatchNumber() > maxBatchNumber) {
-          break;
+        // Due to a race condition, we manually "carry-over" a polled item from previous batch
+        // instead of peeking the queue itself for consistency.
+        // TODO(T112522554): Clean up the queue access
+        if (mPeekedOperation != null) {
+          if (mPeekedOperation.getBatchNumber() > maxBatchNumber) {
+            break;
+          }
+          operations.add(mPeekedOperation);
+          mPeekedOperation = null;
         }
 
-        // Since we apparently can't guarantee that there is still an operation on the queue,
-        // much less the same operation, we do a poll and another null check. If this isn't
-        // the same operation as the peeked operation, we can't do anything about it - we still
-        // need to execute it, we have no mechanism to put it at the front of the queue, and it
-        // won't cause any errors to execute it earlier than expected (just a bit of UI jank at
-        // worst)
-        // so we just continue happily along.
         UIThreadOperation polledOperation = mQueue.poll();
-        if (peekedOperation != polledOperation) {
-          ReactSoftExceptionLogger.logSoftException(
-              NAME,
-              new RuntimeException(
-                  "Inconsistency detected: peeked animation operation different from polled: "
-                      + peekedOperation
-                      + " / "
-                      + polledOperation));
-        }
         if (polledOperation == null) {
+          // This is the same as mQueue.isEmpty()
+          break;
+        }
+
+        if (polledOperation.getBatchNumber() > maxBatchNumber) {
+          // Because the operation is already retrieved from the queue, there's no way of placing it
+          // back as the head element, so we remember it manually here
+          mPeekedOperation = polledOperation;
           break;
         }
         operations.add(polledOperation);
       }
 
-      for (UIThreadOperation operation : operations) {
-        operation.execute(nodesManager);
-      }
+      return operations;
     }
   }
 
