@@ -263,5 +263,38 @@ inline void fromRawValue(
   }
 }
 
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    AccessibilityLabelledBy &result) {
+  if (value.hasType<std::string>()) {
+    result.value.push_back((std::string)value);
+  } else if (value.hasType<std::vector<std::string>>()) {
+    result.value = (std::vector<std::string>)value;
+  }
+}
+
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    AccessibilityLiveRegion &result) {
+  react_native_assert(value.hasType<std::string>());
+  if (value.hasType<std::string>()) {
+    auto string = (std::string)value;
+    if (string == "none") {
+      result = AccessibilityLiveRegion::None;
+    } else if (string == "polite") {
+      result = AccessibilityLiveRegion::Polite;
+    } else if (string == "assertive") {
+      result = AccessibilityLiveRegion::Assertive;
+    } else {
+      LOG(ERROR) << "Unsupported AccessibilityLiveRegion value: " << string;
+      react_native_assert(false);
+    }
+  } else {
+    LOG(ERROR) << "Unsupported AccessibilityLiveRegion type";
+  }
+}
+
 } // namespace react
 } // namespace facebook

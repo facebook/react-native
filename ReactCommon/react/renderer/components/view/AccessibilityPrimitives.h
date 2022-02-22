@@ -10,6 +10,7 @@
 #include <butter/optional.h>
 #include <cinttypes>
 #include <string>
+#include <vector>
 
 namespace facebook {
 namespace react {
@@ -75,6 +76,22 @@ constexpr bool operator!=(
   return !(rhs == lhs);
 }
 
+struct AccessibilityLabelledBy {
+  std::vector<std::string> value{};
+};
+
+inline static bool operator==(
+    AccessibilityLabelledBy const &lhs,
+    AccessibilityLabelledBy const &rhs) {
+  return lhs.value == rhs.value;
+}
+
+inline static bool operator!=(
+    AccessibilityLabelledBy const &lhs,
+    AccessibilityLabelledBy const &rhs) {
+  return !(lhs == rhs);
+}
+
 struct AccessibilityValue {
   butter::optional<int> min;
   butter::optional<int> max;
@@ -100,6 +117,12 @@ enum class ImportantForAccessibility {
   Yes,
   No,
   NoHideDescendants,
+};
+
+enum class AccessibilityLiveRegion {
+  None,
+  Polite,
+  Assertive,
 };
 
 } // namespace react

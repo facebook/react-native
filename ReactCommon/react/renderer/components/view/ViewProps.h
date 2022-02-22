@@ -69,6 +69,18 @@ class ViewProps : public YogaStylableProps, public AccessibilityProps {
 
   Float elevation{}; /* Android-only */
 
+#ifdef ANDROID
+
+  butter::optional<NativeDrawable> nativeBackground{};
+  butter::optional<NativeDrawable> nativeForeground{};
+
+  bool focusable{false};
+  bool hasTVPreferredFocus{false};
+  bool needsOffscreenAlphaCompositing{false};
+  bool renderToHardwareTextureAndroid{false};
+
+#endif
+
 #pragma mark - Convenience Methods
 
   BorderMetrics resolveBorderMetrics(LayoutMetrics const &layoutMetrics) const;
