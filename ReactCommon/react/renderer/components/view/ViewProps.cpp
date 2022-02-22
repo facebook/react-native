@@ -137,13 +137,53 @@ ViewProps::ViewProps(
           rawProps,
           "removeClippedSubviews",
           sourceProps.removeClippedSubviews,
-          false)),
+          false))
+#ifdef ANDROID
+      ,
       elevation(convertRawProp(
           context,
           rawProps,
           "elevation",
           sourceProps.elevation,
-          {})){};
+          {})),
+      nativeBackground(convertRawProp(
+          context,
+          rawProps,
+          "nativeBackgroundAndroid",
+          sourceProps.nativeBackground,
+          {})),
+      nativeForeground(convertRawProp(
+          context,
+          rawProps,
+          "nativeForegroundAndroid",
+          sourceProps.nativeForeground,
+          {})),
+      focusable(convertRawProp(
+          context,
+          rawProps,
+          "focusable",
+          sourceProps.focusable,
+          {})),
+      hasTVPreferredFocus(convertRawProp(
+          context,
+          rawProps,
+          "hasTVPreferredFocus",
+          sourceProps.hasTVPreferredFocus,
+          {})),
+      needsOffscreenAlphaCompositing(convertRawProp(
+          context,
+          rawProps,
+          "needsOffscreenAlphaCompositing",
+          sourceProps.needsOffscreenAlphaCompositing,
+          {})),
+      renderToHardwareTextureAndroid(convertRawProp(
+          context,
+          rawProps,
+          "renderToHardwareTextureAndroid",
+          sourceProps.renderToHardwareTextureAndroid,
+          {}))
+#endif
+          {};
 
 #pragma mark - Convenience Methods
 

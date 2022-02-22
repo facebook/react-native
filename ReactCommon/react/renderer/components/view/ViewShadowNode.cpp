@@ -35,7 +35,6 @@ void ViewShadowNode::initialize() noexcept {
       viewProps.pointerEvents == PointerEventsMode::None ||
       !viewProps.nativeId.empty() || viewProps.accessible ||
       viewProps.opacity != 1.0 || viewProps.transform != Transform{} ||
-      viewProps.elevation != 0 ||
       (viewProps.zIndex.has_value() &&
        viewProps.yogaStyle.positionType() != YGPositionTypeStatic) ||
       viewProps.yogaStyle.display() == YGDisplayNone ||
@@ -46,12 +45,24 @@ void ViewShadowNode::initialize() noexcept {
       viewProps.importantForAccessibility != ImportantForAccessibility::Auto ||
       viewProps.removeClippedSubviews;
 
+#ifdef ANDROID
+  formsStackingContext = formsStackingContext || viewProps.elevation != 0;
+#endif
+
   bool formsView = formsStackingContext ||
       isColorMeaningful(viewProps.backgroundColor) ||
       isColorMeaningful(viewProps.foregroundColor) ||
       viewProps.events.bits.any() ||
       !(viewProps.yogaStyle.border() == YGStyle::Edges{}) ||
       !viewProps.testId.empty();
+
+#ifdef ANDROID
+  formsView = formsView || viewProps.nativeBackground.has_value() ||
+      viewProps.nativeForeground.has_value() || viewProps.focusable ||
+      viewProps.hasTVPreferredFocus ||
+      viewProps.needsOffscreenAlphaCompositing ||
+      viewProps.renderToHardwareTextureAndroid;
+#endif
 
   if (formsView) {
     traits_.set(ShadowNodeTraits::Trait::FormsView);
