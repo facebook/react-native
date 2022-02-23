@@ -127,7 +127,7 @@ def rn_codegen_modules(
             ios_assume_nonnull = ios_assume_nonnull,
         ),
         out = "codegenfiles-{}".format(name),
-        labels = ["codegen_rule"],
+        labels = ["codegen_rule", "uses_local_filesystem_abspaths"],
     )
 
     ##################
