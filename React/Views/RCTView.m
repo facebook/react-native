@@ -123,7 +123,7 @@ static NSString *RCTRecursiveAccessibilityLabel(RCTUIView *view) // TODO(macOS I
 
 @implementation RCTView {
   RCTUIColor *_backgroundColor; // TODO(OSS Candidate ISS#2710739)
-  RCTEventDispatcher *_eventDispatcher; // TODO(OSS Candidate ISS#2710739)
+  id<RCTEventDispatcherProtocol> _eventDispatcher; // TODO(OSS Candidate ISS#2710739)
 #if TARGET_OS_OSX // [TODO(macOS GH#774)
   NSTrackingArea *_trackingArea;
   BOOL _hasMouseOver;
@@ -133,7 +133,7 @@ static NSString *RCTRecursiveAccessibilityLabel(RCTUIView *view) // TODO(macOS I
 }
 
 // [TODO(OSS Candidate ISS#2710739)
-- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
+- (instancetype)initWithEventDispatcher:(id<RCTEventDispatcherProtocol>)eventDispatcher
 {
   if ((self = [self initWithFrame:CGRectZero])) {
     _eventDispatcher = eventDispatcher;
