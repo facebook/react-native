@@ -21,8 +21,9 @@ namespace react {
 ViewProps::ViewProps(
     const PropsParserContext &context,
     ViewProps const &sourceProps,
-    RawProps const &rawProps)
-    : YogaStylableProps(context, sourceProps, rawProps),
+    RawProps const &rawProps,
+    bool shouldSetRawProps)
+    : YogaStylableProps(context, sourceProps, rawProps, shouldSetRawProps),
       AccessibilityProps(context, sourceProps, rawProps),
       opacity(convertRawProp(
           context,

@@ -223,6 +223,9 @@ local_ref<jobject> FabricMountingManager::getProps(
     ShadowView const &newShadowView) {
   if (useMapBufferForViewProps_ &&
       newShadowView.traits.check(ShadowNodeTraits::Trait::View)) {
+    react_native_assert(
+        newShadowView.props->rawProps.empty() &&
+        "Raw props must be empty when views are using mapbuffer");
     auto oldProps = oldShadowView.props != nullptr
         ? static_cast<ViewProps const &>(*oldShadowView.props)
         : ViewProps{};
