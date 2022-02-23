@@ -17,8 +17,9 @@ steps:
 
   # Install NuGet
   - task: CmdLine@2
+    displayName: Install NuGet
     inputs:
-      script: mkdir $(System.DefaultWorkingDirectory)/nuget-bin/ && curl -o $(System.DefaultWorkingDirectory)/nuget-bin/nuget.exe https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
+      script: curl -o $(System.DefaultWorkingDirectory)/nuget-bin/nuget.exe --create-dirs https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
 
   - task: CmdLine@2
     displayName: "Rename package to react-native"
