@@ -232,10 +232,10 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
       int columnSpan = accessibilityCollectionItem.getInt("columnSpan");
       boolean heading = accessibilityCollectionItem.getBoolean("heading");
 
-      AccessibilityNodeInfoCompat.CollectionItemInfoCompat collectionItemInfoCompat =
+      AccessibilityNodeInfoCompat.CollectionItemInfoCompat collectionItemCompat =
           AccessibilityNodeInfoCompat.CollectionItemInfoCompat.obtain(
               rowIndex, rowSpan, columnIndex, columnSpan, heading);
-      info.setCollectionItemInfo(collectionItemInfoCompat);
+      info.setCollectionItemInfo(collectionItemCompat);
     }
 
     if (accessibilityActions != null) {
