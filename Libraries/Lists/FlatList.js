@@ -672,7 +672,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     const accessibilityCollectionProps = {
       itemCount: this.props.data ? this.props.data.length : 0,
       rowCount: this._getItemCount(this.props.data),
-      columnCount: this.props.numColumns,
+      columnCount: numColumnsOrDefault(this.props.numColumns),
       hierarchical: false,
     };
 
