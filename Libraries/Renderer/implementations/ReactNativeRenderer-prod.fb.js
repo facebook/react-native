@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<864338c9d062ce0a8cdbee102f1e32d4>>
+ * @generated SignedSource<<4999d18c1629b3657b9e8453167861e8>>
  */
 
 "use strict";
@@ -926,7 +926,7 @@ eventPluginOrder = Array.prototype.slice.call([
   "ReactNativeBridgeEventPlugin"
 ]);
 recomputePluginOrdering();
-var injectedNamesToPlugins$jscomp$inline_223 = {
+var injectedNamesToPlugins$jscomp$inline_224 = {
     ResponderEventPlugin: ResponderEventPlugin,
     ReactNativeBridgeEventPlugin: {
       eventTypes: {},
@@ -961,33 +961,33 @@ var injectedNamesToPlugins$jscomp$inline_223 = {
       }
     }
   },
-  isOrderingDirty$jscomp$inline_224 = !1,
-  pluginName$jscomp$inline_225;
-for (pluginName$jscomp$inline_225 in injectedNamesToPlugins$jscomp$inline_223)
+  isOrderingDirty$jscomp$inline_225 = !1,
+  pluginName$jscomp$inline_226;
+for (pluginName$jscomp$inline_226 in injectedNamesToPlugins$jscomp$inline_224)
   if (
-    injectedNamesToPlugins$jscomp$inline_223.hasOwnProperty(
-      pluginName$jscomp$inline_225
+    injectedNamesToPlugins$jscomp$inline_224.hasOwnProperty(
+      pluginName$jscomp$inline_226
     )
   ) {
-    var pluginModule$jscomp$inline_226 =
-      injectedNamesToPlugins$jscomp$inline_223[pluginName$jscomp$inline_225];
+    var pluginModule$jscomp$inline_227 =
+      injectedNamesToPlugins$jscomp$inline_224[pluginName$jscomp$inline_226];
     if (
-      !namesToPlugins.hasOwnProperty(pluginName$jscomp$inline_225) ||
-      namesToPlugins[pluginName$jscomp$inline_225] !==
-        pluginModule$jscomp$inline_226
+      !namesToPlugins.hasOwnProperty(pluginName$jscomp$inline_226) ||
+      namesToPlugins[pluginName$jscomp$inline_226] !==
+        pluginModule$jscomp$inline_227
     ) {
-      if (namesToPlugins[pluginName$jscomp$inline_225])
+      if (namesToPlugins[pluginName$jscomp$inline_226])
         throw Error(
           "EventPluginRegistry: Cannot inject two different event plugins using the same name, `" +
-            (pluginName$jscomp$inline_225 + "`.")
+            (pluginName$jscomp$inline_226 + "`.")
         );
       namesToPlugins[
-        pluginName$jscomp$inline_225
-      ] = pluginModule$jscomp$inline_226;
-      isOrderingDirty$jscomp$inline_224 = !0;
+        pluginName$jscomp$inline_226
+      ] = pluginModule$jscomp$inline_227;
+      isOrderingDirty$jscomp$inline_225 = !0;
     }
   }
-isOrderingDirty$jscomp$inline_224 && recomputePluginOrdering();
+isOrderingDirty$jscomp$inline_225 && recomputePluginOrdering();
 var instanceCache = new Map(),
   instanceProps = new Map();
 function getInstanceFromTag(tag) {
@@ -3842,7 +3842,7 @@ function startTransition(setPending, callback) {
     0 !== previousPriority && 4 > previousPriority ? previousPriority : 4;
   setPending(!0);
   var prevTransition = ReactCurrentBatchConfig$1.transition;
-  ReactCurrentBatchConfig$1.transition = 1;
+  ReactCurrentBatchConfig$1.transition = {};
   try {
     setPending(!1), callback();
   } finally {
@@ -4030,7 +4030,7 @@ var ContextOnlyDispatcher = {
       mountEffect(
         function() {
           var prevTransition = ReactCurrentBatchConfig$1.transition;
-          ReactCurrentBatchConfig$1.transition = 1;
+          ReactCurrentBatchConfig$1.transition = {};
           try {
             setValue(value);
           } finally {
@@ -4114,7 +4114,7 @@ var ContextOnlyDispatcher = {
       updateEffect(
         function() {
           var prevTransition = ReactCurrentBatchConfig$1.transition;
-          ReactCurrentBatchConfig$1.transition = 1;
+          ReactCurrentBatchConfig$1.transition = {};
           try {
             setValue(value);
           } finally {
@@ -4157,7 +4157,7 @@ var ContextOnlyDispatcher = {
       updateEffect(
         function() {
           var prevTransition = ReactCurrentBatchConfig$1.transition;
-          ReactCurrentBatchConfig$1.transition = 1;
+          ReactCurrentBatchConfig$1.transition = {};
           try {
             setValue(value);
           } finally {
@@ -5518,24 +5518,26 @@ function attemptEarlyBailoutIfNoScheduledUpdate(
   }
   return bailoutOnAlreadyFinishedWork(current, workInProgress, renderLanes);
 }
-function unwindWork(workInProgress) {
+function unwindWork(current, workInProgress) {
   popTreeContext(workInProgress);
   switch (workInProgress.tag) {
     case 1:
-      isContextProvider(workInProgress.type) && popContext();
-      var flags = workInProgress.flags;
-      return flags & 65536
-        ? ((workInProgress.flags = (flags & -65537) | 128), workInProgress)
-        : null;
+      return (
+        isContextProvider(workInProgress.type) && popContext(),
+        (current = workInProgress.flags),
+        current & 65536
+          ? ((workInProgress.flags = (current & -65537) | 128), workInProgress)
+          : null
+      );
     case 3:
       return (
         popHostContainer(),
         pop(didPerformWorkStackCursor),
         pop(contextStackCursor),
         resetWorkInProgressVersions(),
-        (flags = workInProgress.flags),
-        0 !== (flags & 65536) && 0 === (flags & 128)
-          ? ((workInProgress.flags = (flags & -65537) | 128), workInProgress)
+        (current = workInProgress.flags),
+        0 !== (current & 65536) && 0 === (current & 128)
+          ? ((workInProgress.flags = (current & -65537) | 128), workInProgress)
           : null
       );
     case 5:
@@ -5543,9 +5545,9 @@ function unwindWork(workInProgress) {
     case 13:
       return (
         pop(suspenseStackCursor),
-        (flags = workInProgress.flags),
-        flags & 65536
-          ? ((workInProgress.flags = (flags & -65537) | 128), workInProgress)
+        (current = workInProgress.flags),
+        current & 65536
+          ? ((workInProgress.flags = (current & -65537) | 128), workInProgress)
           : null
       );
     case 19:
@@ -6384,7 +6386,7 @@ function requestUpdateLane(fiber) {
   if (0 === (fiber.mode & 1)) return 1;
   if (0 !== (executionContext & 2) && 0 !== workInProgressRootRenderLanes)
     return workInProgressRootRenderLanes & -workInProgressRootRenderLanes;
-  if (0 !== ReactCurrentBatchConfig.transition)
+  if (null !== ReactCurrentBatchConfig.transition)
     return (
       0 === currentEventTransitionLane &&
         ((fiber = nextTransitionLane),
@@ -6406,18 +6408,29 @@ function scheduleUpdateOnFiber(fiber, lane, eventTime) {
   var root = markUpdateLaneFromFiberToRoot(fiber, lane);
   if (null === root) return null;
   markRootUpdated(root, lane, eventTime);
-  if (0 === (executionContext & 2) || root !== workInProgressRoot)
-    root === workInProgressRoot &&
-      (0 === (executionContext & 2) &&
-        (workInProgressRootInterleavedUpdatedLanes |= lane),
-      4 === workInProgressRootExitStatus &&
-        markRootSuspended$1(root, workInProgressRootRenderLanes)),
-      ensureRootIsScheduled(root, eventTime),
-      1 === lane &&
-        0 === executionContext &&
-        0 === (fiber.mode & 1) &&
-        ((workInProgressRootRenderTargetTime = now() + 500),
-        includesLegacySyncCallbacks && flushSyncCallbacks());
+  if (0 === (executionContext & 2) || root !== workInProgressRoot) {
+    if (root.isDehydrated && 0 !== root.tag) {
+      workInProgressRoot === root && prepareFreshStack(root, 0);
+      root.isDehydrated = !1;
+      var onRecoverableError$93 = root.onRecoverableError;
+      onRecoverableError$93(
+        Error(
+          "This root received an early update, before anything was able hydrate. Switched the entire root to client rendering."
+        )
+      );
+    } else
+      root === workInProgressRoot &&
+        (0 === (executionContext & 2) &&
+          (workInProgressRootInterleavedUpdatedLanes |= lane),
+        4 === workInProgressRootExitStatus &&
+          markRootSuspended$1(root, workInProgressRootRenderLanes));
+    ensureRootIsScheduled(root, eventTime);
+    1 === lane &&
+      0 === executionContext &&
+      0 === (fiber.mode & 1) &&
+      ((workInProgressRootRenderTargetTime = now() + 500),
+      includesLegacySyncCallbacks && flushSyncCallbacks());
+  }
   return root;
 }
 function markUpdateLaneFromFiberToRoot(sourceFiber, lane) {
@@ -6664,9 +6677,13 @@ function performConcurrentWorkOnRoot(root, didTimeout) {
     : null;
 }
 function recoverFromConcurrentError(root, errorRetryLanes) {
-  var prevExecutionContext = executionContext;
-  executionContext |= 8;
-  root.isDehydrated && (root.isDehydrated = !1);
+  root.isDehydrated &&
+    ((root.isDehydrated = !1),
+    renderDidError(
+      Error(
+        "There was an error while hydrating. Because the error happened outside of a Suspense boundary, the entire root will switch to client rendering."
+      )
+    ));
   var errorsFromFirstAttempt = workInProgressRootConcurrentErrors;
   root = renderRootSync(root, errorRetryLanes);
   2 !== root &&
@@ -6677,7 +6694,6 @@ function recoverFromConcurrentError(root, errorRetryLanes) {
           workInProgressRootRecoverableErrors,
           errorsFromFirstAttempt
         ));
-  executionContext = prevExecutionContext;
   return root;
 }
 function isRenderConsistentWithExternalStores(finishedWork) {
@@ -6937,7 +6953,7 @@ function handleError(root$jscomp$0, thrownValue) {
             } else wakeables.add(root);
             break a;
           } else {
-            if ((thrownValue & 4194240) === thrownValue) {
+            if (0 === (thrownValue & 1)) {
               attachPingListener(root, wakeable, thrownValue);
               renderDidSuspendDelayIfPossible();
               break a;
@@ -6948,12 +6964,7 @@ function handleError(root$jscomp$0, thrownValue) {
             );
           }
         }
-        root = value;
-        4 !== workInProgressRootExitStatus &&
-          (workInProgressRootExitStatus = 2);
-        null === workInProgressRootConcurrentErrors
-          ? (workInProgressRootConcurrentErrors = [root])
-          : workInProgressRootConcurrentErrors.push(root);
+        renderDidError(value);
         value = createCapturedValue(value, sourceFiber);
         root = returnFiber;
         do {
@@ -7025,6 +7036,12 @@ function renderDidSuspendDelayIfPossible() {
       0 === (workInProgressRootInterleavedUpdatedLanes & 268435455)) ||
     markRootSuspended$1(workInProgressRoot, workInProgressRootRenderLanes);
 }
+function renderDidError(error) {
+  4 !== workInProgressRootExitStatus && (workInProgressRootExitStatus = 2);
+  null === workInProgressRootConcurrentErrors
+    ? (workInProgressRootConcurrentErrors = [error])
+    : workInProgressRootConcurrentErrors.push(error);
+}
 function renderRootSync(root, lanes) {
   var prevExecutionContext = executionContext;
   executionContext |= 2;
@@ -7077,7 +7094,7 @@ function completeUnitOfWork(unitOfWork) {
         return;
       }
     } else {
-      current = unwindWork(completedWork);
+      current = unwindWork(current, completedWork);
       if (null !== current) {
         current.flags &= 32767;
         workInProgress = current;
@@ -7106,7 +7123,7 @@ function commitRoot(root, recoverableErrors) {
   var previousUpdateLanePriority = currentUpdatePriority,
     prevTransition = ReactCurrentBatchConfig$2.transition;
   try {
-    (ReactCurrentBatchConfig$2.transition = 0),
+    (ReactCurrentBatchConfig$2.transition = null),
       (currentUpdatePriority = 1),
       commitRootImpl(root, recoverableErrors, previousUpdateLanePriority);
   } finally {
@@ -7147,7 +7164,7 @@ function commitRootImpl(root, recoverableErrors, renderPriorityLevel) {
   remainingLanes = 0 !== (finishedWork.flags & 15990);
   if (0 !== (finishedWork.subtreeFlags & 15990) || remainingLanes) {
     remainingLanes = ReactCurrentBatchConfig$2.transition;
-    ReactCurrentBatchConfig$2.transition = 0;
+    ReactCurrentBatchConfig$2.transition = null;
     var previousPriority = currentUpdatePriority;
     currentUpdatePriority = 1;
     var prevExecutionContext = executionContext;
@@ -7200,7 +7217,7 @@ function flushPassiveEffects() {
       prevTransition = ReactCurrentBatchConfig$2.transition,
       previousPriority = currentUpdatePriority;
     try {
-      ReactCurrentBatchConfig$2.transition = 0;
+      ReactCurrentBatchConfig$2.transition = null;
       currentUpdatePriority = 16 > renderPriority ? 16 : renderPriority;
       if (null === rootWithPendingPassiveEffects)
         var JSCompiler_inline_result = !1;
@@ -7353,11 +7370,7 @@ function captureCommitPhaseError(sourceFiber, nearestMountedAncestor, error) {
   if (3 === sourceFiber.tag)
     captureCommitPhaseErrorOnRoot(sourceFiber, sourceFiber, error);
   else
-    for (
-      nearestMountedAncestor = sourceFiber.return;
-      null !== nearestMountedAncestor;
-
-    ) {
+    for (; null !== nearestMountedAncestor; ) {
       if (3 === nearestMountedAncestor.tag) {
         captureCommitPhaseErrorOnRoot(
           nearestMountedAncestor,
@@ -8285,10 +8298,10 @@ batchedUpdatesImpl = function(fn, a) {
   }
 };
 var roots = new Map(),
-  devToolsConfig$jscomp$inline_969 = {
+  devToolsConfig$jscomp$inline_971 = {
     findFiberByHostInstance: getInstanceFromTag,
     bundleType: 0,
-    version: "18.0.0-rc.0-27b569969-20220211",
+    version: "18.0.0-rc.0-4de99b3ca-20220221",
     rendererPackageName: "react-native-renderer",
     rendererConfig: {
       getInspectorDataForViewTag: function() {
@@ -8304,10 +8317,10 @@ var roots = new Map(),
     }
   };
 var internals$jscomp$inline_1229 = {
-  bundleType: devToolsConfig$jscomp$inline_969.bundleType,
-  version: devToolsConfig$jscomp$inline_969.version,
-  rendererPackageName: devToolsConfig$jscomp$inline_969.rendererPackageName,
-  rendererConfig: devToolsConfig$jscomp$inline_969.rendererConfig,
+  bundleType: devToolsConfig$jscomp$inline_971.bundleType,
+  version: devToolsConfig$jscomp$inline_971.version,
+  rendererPackageName: devToolsConfig$jscomp$inline_971.rendererPackageName,
+  rendererConfig: devToolsConfig$jscomp$inline_971.rendererConfig,
   overrideHookState: null,
   overrideHookStateDeletePath: null,
   overrideHookStateRenamePath: null,
@@ -8323,14 +8336,14 @@ var internals$jscomp$inline_1229 = {
     return null === fiber ? null : fiber.stateNode;
   },
   findFiberByHostInstance:
-    devToolsConfig$jscomp$inline_969.findFiberByHostInstance ||
+    devToolsConfig$jscomp$inline_971.findFiberByHostInstance ||
     emptyFindFiberByHostInstance,
   findHostInstancesForRefresh: null,
   scheduleRefresh: null,
   scheduleRoot: null,
   setRefreshHandler: null,
   getCurrentFiber: null,
-  reconcilerVersion: "18.0.0-rc.0-27b569969-20220211"
+  reconcilerVersion: "18.0.0-rc.0-4de99b3ca-20220221"
 };
 if ("undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__) {
   var hook$jscomp$inline_1230 = __REACT_DEVTOOLS_GLOBAL_HOOK__;
