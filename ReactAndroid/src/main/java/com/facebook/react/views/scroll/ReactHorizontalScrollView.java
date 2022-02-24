@@ -128,11 +128,11 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
           public void onInitializeAccessibilityEvent(View host, AccessibilityEvent event) {
             super.onInitializeAccessibilityEvent(host, event);
             event.setScrollable(mScrollEnabled);
-            final ReadableMap accessibilityCollectionInfo =
-                (ReadableMap) host.getTag(R.id.accessibility_collection_info);
+            final ReadableMap accessibilityCollection =
+                (ReadableMap) host.getTag(R.id.accessibility_collection);
 
-            if (accessibilityCollectionInfo != null) {
-              event.setItemCount(accessibilityCollectionInfo.getInt("itemCount"));
+            if (accessibilityCollection != null) {
+              event.setItemCount(accessibilityCollection.getInt("itemCount"));
               View contentView = getContentView();
               Integer firstVisibleIndex = null;
               Integer lastVisibleIndex = null;
@@ -145,8 +145,8 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
                 View nextChild = ((ViewGroup) contentView).getChildAt(index);
                 boolean isVisible = isPartiallyScrolledInView(nextChild);
 
-                ReadableMap accessibilityCollectionItemInfo =
-                    (ReadableMap) nextChild.getTag(R.id.accessibility_collection_item_info);
+                ReadableMap accessibilityCollectionItem =
+                    (ReadableMap) nextChild.getTag(R.id.accessibility_collection_item);
 
                 if (!(nextChild instanceof ViewGroup)) {
                   return;
@@ -154,27 +154,26 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
                 int childCount = ((ViewGroup) nextChild).getChildCount();
 
-                // If this child's accessibilityCollectionItemInfo is null, we'll check one more
+                // If this child's accessibilityCollectionItem is null, we'll check one more
                 // nested child.
                 // Happens when getItemLayout is not passed in FlatList which adds an additional
                 // View in the hierarchy.
-                if (childCount > 0 && accessibilityCollectionItemInfo == null) {
+                if (childCount > 0 && accessibilityCollectionItem == null) {
                   View nestedNextChild = ((ViewGroup) nextChild).getChildAt(0);
                   if (nestedNextChild != null) {
                     ReadableMap nestedChildAccessibilityInfo =
-                        (ReadableMap)
-                            nestedNextChild.getTag(R.id.accessibility_collection_item_info);
+                        (ReadableMap) nestedNextChild.getTag(R.id.accessibility_collection_item);
                     if (nestedChildAccessibilityInfo != null) {
-                      accessibilityCollectionItemInfo = nestedChildAccessibilityInfo;
+                      accessibilityCollectionItem = nestedChildAccessibilityInfo;
                     }
                   }
                 }
 
-                if (isVisible == true && accessibilityCollectionItemInfo != null) {
+                if (isVisible == true && accessibilityCollectionItem != null) {
                   if (firstVisibleIndex == null) {
-                    firstVisibleIndex = accessibilityCollectionItemInfo.getInt("itemIndex");
+                    firstVisibleIndex = accessibilityCollectionItem.getInt("itemIndex");
                   }
-                  lastVisibleIndex = accessibilityCollectionItemInfo.getInt("itemIndex");
+                  lastVisibleIndex = accessibilityCollectionItem.getInt("itemIndex");
                   ;
                 }
 
@@ -198,13 +197,13 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
               ReactAccessibilityDelegate.setRole(info, accessibilityRole, host.getContext());
             }
 
-            final ReadableMap accessibilityCollectionInfo =
-                (ReadableMap) host.getTag(R.id.accessibility_collection_info);
+            final ReadableMap accessibilityCollection =
+                (ReadableMap) host.getTag(R.id.accessibility_collection);
 
-            if (accessibilityCollectionInfo != null) {
-              int rowCount = accessibilityCollectionInfo.getInt("rowCount");
-              int columnCount = accessibilityCollectionInfo.getInt("columnCount");
-              boolean hierarchical = accessibilityCollectionInfo.getBoolean("hierarchical");
+            if (accessibilityCollection != null) {
+              int rowCount = accessibilityCollection.getInt("rowCount");
+              int columnCount = accessibilityCollection.getInt("columnCount");
+              boolean hierarchical = accessibilityCollection.getBoolean("hierarchical");
 
               AccessibilityNodeInfoCompat.CollectionInfoCompat collectionInfoCompat =
                   AccessibilityNodeInfoCompat.CollectionInfoCompat.obtain(

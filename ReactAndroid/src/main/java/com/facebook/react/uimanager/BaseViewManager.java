@@ -166,7 +166,6 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     updateViewContentDescription(view);
   }
 
-
   @Override
   @ReactProp(name = ViewProps.ACCESSIBILITY_ROLE)
   public void setAccessibilityRole(@NonNull T view, @Nullable String accessibilityRole) {
@@ -176,17 +175,18 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setTag(R.id.accessibility_role, AccessibilityRole.fromValue(accessibilityRole));
   }
 
-
   @Override
-  @ReactProp(name = ViewProps.ACCESSIBILITY_COLLECTION_INFO)
-  public void setAccessibilityCollectionInfo(@NonNull T view,  @Nullable ReadableMap accessibilityCollectionInfo) {
-    view.setTag(R.id.accessibility_collection_info, accessibilityCollectionInfo);
+  @ReactProp(name = ViewProps.ACCESSIBILITY_COLLECTION)
+  public void setAccessibilityCollection(
+      @NonNull T view, @Nullable ReadableMap accessibilityCollection) {
+    view.setTag(R.id.accessibility_collection, accessibilityCollection);
   }
 
   @Override
-  @ReactProp(name = ViewProps.ACCESSIBILITY_COLLECTION_ITEM_INFO)
-  public void setAccessibilityCollectionItemInfo(@NonNull T view,  @Nullable ReadableMap accessibilityCollectionItemInfo) {
-    view.setTag(R.id.accessibility_collection_item_info, accessibilityCollectionItemInfo);
+  @ReactProp(name = ViewProps.ACCESSIBILITY_COLLECTION_ITEM)
+  public void setAccessibilityCollectionItem(
+      @NonNull T view, @Nullable ReadableMap accessibilityCollectionItem) {
+    view.setTag(R.id.accessibility_collection_item, accessibilityCollectionItem);
   }
 
   @Override

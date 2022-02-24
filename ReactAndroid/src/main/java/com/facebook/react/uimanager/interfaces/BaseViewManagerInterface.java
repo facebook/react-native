@@ -27,10 +27,10 @@ public interface BaseViewManagerInterface<T extends View> {
   void setAccessibilityLiveRegion(T view, @Nullable String liveRegion);
 
   void setAccessibilityRole(T view, @Nullable String accessibilityRole);
-  
-  void setAccessibilityCollectionInfo(T view, @Nullable ReadableMap accessibilityCollectionInfo);
-  
-  void setAccessibilityCollectionItemInfo(T view, @Nullable ReadableMap accessibilityCollectionItemInfo);
+
+  void setAccessibilityCollection(T view, @Nullable ReadableMap accessibilityCollection);
+
+  void setAccessibilityCollectionItem(T view, @Nullable ReadableMap accessibilityCollectionItem);
 
   void setViewState(T view, @Nullable ReadableMap accessibilityState);
 

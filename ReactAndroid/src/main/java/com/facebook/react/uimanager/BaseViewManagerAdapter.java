@@ -32,10 +32,12 @@ public abstract class BaseViewManagerAdapter<T extends View>
   public void setAccessibilityRole(@NonNull T view, @Nullable String accessibilityRole) {}
 
   @Override
-  public void setAccessibilityCollectionInfo(@NonNull T view, @Nullable ReadableMap accessibilityCollectionInfo) {}
+  public void setAccessibilityCollection(
+      @NonNull T view, @Nullable ReadableMap accessibilityCollection) {}
 
   @Override
-  public void setAccessibilityCollectionItemInfo(@NonNull T view, @Nullable ReadableMap accessibilityCollectionItemInfo) {}
+  public void setAccessibilityCollectionItem(
+      @NonNull T view, @Nullable ReadableMap accessibilityCollectionItem) {}
 
   @Override
   public void setViewState(@NonNull T view, @Nullable ReadableMap accessibilityState) {}

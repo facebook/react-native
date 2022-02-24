@@ -614,7 +614,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
           return (
             <View style={StyleSheet.compose(styles.row, columnWrapperStyle)}>
               {item.map((it, kk) => {
-                const accessibilityCollectionItemInfo = {
+                const accessibilityCollectionItem = {
                   rowIndex: index,
                   rowSpan: 1,
                   columnIndex: (index * numColumns + kk) % numColumns,
@@ -627,9 +627,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
                   <View
                     importantForAccessibility="yes"
                     style={styles.cellStyle}
-                    accessibilityCollectionItemInfo={
-                      accessibilityCollectionItemInfo
-                    }>
+                    accessibilityCollectionItem={accessibilityCollectionItem}>
                     {renderer({
                       item: it,
                       index: index * numColumns + kk,
@@ -646,7 +644,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
         } else {
           const {index} = info;
 
-          const accessibilityCollectionItemInfo = {
+          const accessibilityCollectionItem = {
             rowIndex: index,
             rowSpan: 1,
             columnIndex: 0,
@@ -659,7 +657,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
             <View
               importantForAccessibility="yes"
               style={styles.cellStyle}
-              accessibilityCollectionItemInfo={accessibilityCollectionItemInfo}>
+              accessibilityCollectionItem={accessibilityCollectionItem}>
               {renderer(info)}
             </View>
           );
@@ -668,7 +666,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     };
   };
 
-  _getAccessibilityCollectionInfo = () => {
+  _getAccessibilityCollection = () => {
     const accessibilityCollectionProps = {
       itemCount: this.props.data ? this.props.data.length : 0,
       rowCount: this._getItemCount(this.props.data),
@@ -693,7 +691,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
         getItem={this._getItem}
         getItemCount={this._getItemCount}
         keyExtractor={this._keyExtractor}
-        accessibilityCollectionInfo={this._getAccessibilityCollectionInfo()}
+        accessibilityCollection={this._getAccessibilityCollection()}
         accessibilityRole={Platform.select({
           android: this.props.numColumns > 1 ? 'grid' : 'list',
         })}

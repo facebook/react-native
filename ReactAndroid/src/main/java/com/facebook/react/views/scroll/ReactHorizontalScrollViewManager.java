@@ -169,10 +169,10 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
     view.setPagingEnabled(pagingEnabled);
   }
 
-  @ReactProp(name = ViewProps.ACCESSIBILITY_COLLECTION_INFO)
-  public void setAccessibilityCollectionInfo(
-      ReactHorizontalScrollView view, @Nullable ReadableMap accessibilityCollectionInfo) {
-    view.setTag(R.id.accessibility_collection_info, accessibilityCollectionInfo);
+  @ReactProp(name = ViewProps.ACCESSIBILITY_COLLECTION)
+  public void setAccessibilityCollection(
+      ReactHorizontalScrollView view, @Nullable ReadableMap accessibilityCollection) {
+    view.setTag(R.id.accessibility_collection, accessibilityCollection);
   }
 
   /** Controls overScroll behaviour */

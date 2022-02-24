@@ -223,14 +223,14 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
     final ReadableArray accessibilityActions =
         (ReadableArray) host.getTag(R.id.accessibility_actions);
 
-    final ReadableMap accessibilityCollectionItemInfo =
-        (ReadableMap) host.getTag(R.id.accessibility_collection_item_info);
-    if (accessibilityCollectionItemInfo != null) {
-      int rowIndex = accessibilityCollectionItemInfo.getInt("rowIndex");
-      int columnIndex = accessibilityCollectionItemInfo.getInt("columnIndex");
-      int rowSpan = accessibilityCollectionItemInfo.getInt("rowSpan");
-      int columnSpan = accessibilityCollectionItemInfo.getInt("columnSpan");
-      boolean heading = accessibilityCollectionItemInfo.getBoolean("heading");
+    final ReadableMap accessibilityCollectionItem =
+        (ReadableMap) host.getTag(R.id.accessibility_collection_item);
+    if (accessibilityCollectionItem != null) {
+      int rowIndex = accessibilityCollectionItem.getInt("rowIndex");
+      int columnIndex = accessibilityCollectionItem.getInt("columnIndex");
+      int rowSpan = accessibilityCollectionItem.getInt("rowSpan");
+      int columnSpan = accessibilityCollectionItem.getInt("columnSpan");
+      boolean heading = accessibilityCollectionItem.getBoolean("heading");
 
       AccessibilityNodeInfoCompat.CollectionItemInfoCompat collectionItemInfoCompat =
           AccessibilityNodeInfoCompat.CollectionItemInfoCompat.obtain(
@@ -474,7 +474,7 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
             || view.getTag(R.id.accessibility_state) != null
             || view.getTag(R.id.accessibility_actions) != null
             || view.getTag(R.id.react_test_id) != null
-            || view.getTag(R.id.accessibility_collection_item_info) != null)) {
+            || view.getTag(R.id.accessibility_collection_item) != null)) {
       ViewCompat.setAccessibilityDelegate(view, new ReactAccessibilityDelegate());
     }
   }
