@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Use PriorityPrefetch to prefetch images at a lower priority.
  * The priority logic is up to each @RCTImageLoaderProtocol implementation
  */
-typedef NS_ENUM(NSUInteger, RCTImageLoaderPriority) {
+typedef NS_ENUM(NSInteger, RCTImageLoaderPriority) {
   RCTImageLoaderPriorityImmediate,
   RCTImageLoaderPriorityPrefetch
 };

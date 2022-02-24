@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include <better/optional.h>
+#include <butter/optional.h>
 
 namespace facebook {
 namespace react {
@@ -77,6 +77,12 @@ enum class KeyboardType {
   VisiblePassword,
 };
 
+class Selection final {
+ public:
+  int start{0};
+  int end{0};
+};
+
 /*
  * Controls features of text inputs.
  */
@@ -100,7 +106,7 @@ class TextInputTraits final {
    * iOS & Android
    * Default value: `empty` (`null`).
    */
-  better::optional<bool> autoCorrect{};
+  butter::optional<bool> autoCorrect{};
 
   /*
    * iOS & Android
@@ -135,7 +141,7 @@ class TextInputTraits final {
    * Can be empty (`null` in JavaScript) which means `default`.
    * Default value: `empty` (`null`).
    */
-  better::optional<bool> spellCheck{};
+  butter::optional<bool> spellCheck{};
 
   /*
    * iOS & Android

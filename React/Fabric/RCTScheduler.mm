@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -48,7 +48,7 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
   void schedulerDidDispatchCommand(
       const ShadowView &shadowView,
       const std::string &commandName,
-      const folly::dynamic args) override
+      const folly::dynamic &args) override
   {
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
     [scheduler.delegate schedulerDidDispatchCommand:shadowView commandName:commandName args:args];
@@ -110,7 +110,6 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
   std::shared_ptr<SchedulerDelegateProxy> _delegateProxy;
   std::shared_ptr<LayoutAnimationDelegateProxy> _layoutAnimationDelegateProxy;
   RunLoopObserver::Unique _uiRunLoopObserver;
-  BOOL _layoutAnimationsEnabled;
 }
 
 - (instancetype)initWithToolbox:(SchedulerToolbox)toolbox
@@ -118,14 +117,22 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
   if (self = [super init]) {
     auto reactNativeConfig =
         toolbox.contextContainer->at<std::shared_ptr<const ReactNativeConfig>>("ReactNativeConfig");
-    _layoutAnimationsEnabled = reactNativeConfig->getBool("react_fabric:enabled_layout_animations_ios");
 
     _delegateProxy = std::make_shared<SchedulerDelegateProxy>((__bridge void *)self);
 
-    if (_layoutAnimationsEnabled) {
+    if (reactNativeConfig->getBool("react_fabric:enabled_layout_animations_ios")) {
       _layoutAnimationDelegateProxy = std::make_shared<LayoutAnimationDelegateProxy>((__bridge void *)self);
-      _animationDriver =
-          std::make_shared<LayoutAnimationDriver>(toolbox.runtimeExecutor, _layoutAnimationDelegateProxy.get());
+      _animationDriver = std::make_shared<LayoutAnimationDriver>(
+          toolbox.runtimeExecutor, toolbox.contextContainer, _layoutAnimationDelegateProxy.get());
+      if (reactNativeConfig->getBool("react_fabric:enabled_skip_invalidated_key_frames_ios")) {
+        _animationDriver->enableSkipInvalidatedKeyFrames();
+      }
+      if (reactNativeConfig->getBool("react_fabric:enable_crash_on_missing_component_descriptor")) {
+        _animationDriver->enableCrashOnMissingComponentDescriptor();
+      }
+      if (reactNativeConfig->getBool("react_fabric:enable_simulate_image_props_memory_access")) {
+        _animationDriver->enableSimulateImagePropsMemoryAccess();
+      }
       _uiRunLoopObserver =
           toolbox.mainRunLoopObserverFactory(RunLoopObserver::Activity::BeforeWaiting, _layoutAnimationDelegateProxy);
       _uiRunLoopObserver->setDelegate(_layoutAnimationDelegateProxy.get());
@@ -148,7 +155,8 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
   if (_animationDriver) {
     _animationDriver->setLayoutAnimationStatusDelegate(nullptr);
   }
-  _animationDriver = nullptr;
+
+  _scheduler->setDelegate(nullptr);
 }
 
 - (void)registerSurface:(facebook::react::SurfaceHandler const &)surfaceHandler

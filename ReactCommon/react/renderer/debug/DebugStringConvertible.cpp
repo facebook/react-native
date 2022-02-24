@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -26,7 +26,7 @@ std::string DebugStringConvertible::getDebugChildrenDescription(
   auto trailing = options.format ? std::string{"\n"} : std::string{""};
   auto childrenString = std::string{""};
 
-  for (auto child : getDebugChildren()) {
+  for (auto const &child : getDebugChildren()) {
     if (!child) {
       continue;
     }
@@ -52,7 +52,7 @@ std::string DebugStringConvertible::getDebugPropsDescription(
 
   auto propsString = std::string{""};
 
-  for (auto prop : getDebugProps()) {
+  for (auto const &prop : getDebugProps()) {
     if (!prop) {
       continue;
     }

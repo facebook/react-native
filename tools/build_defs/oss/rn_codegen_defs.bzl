@@ -1,4 +1,4 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -24,10 +24,12 @@ def rn_codegen(
         name,
         ios_assume_nonnull,
         native_module_spec_name = None,
+        native_component_spec_name = None,
         android_package_name = None,
         codegen_components = False,
         codegen_modules = False,
-        library_labels = []):
+        library_labels = [],
+        src_prefix = ""):
     if (codegen_modules):
         error_header = "rn_codegen(name=\"{}\")".format(name)
         if not native_module_spec_name:
@@ -38,9 +40,10 @@ def rn_codegen(
 
         spec_srcs = native.glob(
             [
-                "**/Native*.js",
+                src_prefix + "**/Native*.js",
             ],
             exclude = [
+                src_prefix + "**/nativeImageSource.js",
                 "**/__*__/**",
             ],
         )
@@ -64,23 +67,24 @@ def rn_codegen(
         )
 
     if (codegen_components):
+        component_spec_name = native_component_spec_name or name
         fb_native.genrule(
-            name = "codegen_rn_components_schema_{}".format(name),
+            name = "codegen_rn_components_schema_{}".format(component_spec_name),
             srcs = native.glob(
                 [
-                    "**/*NativeComponent.js",
+                    src_prefix + "**/*NativeComponent.js",
                 ],
                 exclude = [
                     "**/__*__/**",
                 ],
             ),
             cmd = "$(exe {}) $OUT $SRCS".format(react_native_root_target("packages/react-native-codegen:write_to_json")),
-            out = "schema-{}.json".format(name),
+            out = "schema-{}.json".format(component_spec_name),
             labels = ["codegen_rule"],
         )
 
         rn_codegen_components(
-            name = name,
-            schema_target = ":codegen_rn_components_schema_{}".format(name),
+            name = component_spec_name,
+            schema_target = ":codegen_rn_components_schema_{}".format(component_spec_name),
             library_labels = library_labels,
         )

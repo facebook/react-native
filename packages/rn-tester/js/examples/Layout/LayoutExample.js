@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -200,7 +200,7 @@ exports.displayName = 'LayoutExample';
 exports.examples = [
   {
     title: 'Simple layout using flexbox',
-    render: function(): React.Element<typeof LayoutExample> {
+    render: function (): React.Element<typeof LayoutExample> {
       return <LayoutExample />;
     },
   },

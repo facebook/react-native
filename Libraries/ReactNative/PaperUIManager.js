@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -34,12 +34,12 @@ function getConstants(): Object {
 function getViewManagerConfig(viewManagerName: string): any {
   if (
     viewManagerConfigs[viewManagerName] === undefined &&
+    global.nativeCallSyncHook && // If we're in the Chrome Debugger, let's not even try calling the sync method
     NativeUIManager.getConstantsForViewManager
   ) {
     try {
-      viewManagerConfigs[
-        viewManagerName
-      ] = NativeUIManager.getConstantsForViewManager(viewManagerName);
+      viewManagerConfigs[viewManagerName] =
+        NativeUIManager.getConstantsForViewManager(viewManagerName);
     } catch (e) {
       console.error(
         "NativeUIManager.getConstantsForViewManager('" +

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,6 @@
 
 package com.facebook.react.views.text;
 
-import android.graphics.Typeface;
 import android.os.Build;
 import android.text.Layout;
 import android.text.TextUtils;
@@ -48,9 +47,8 @@ public class TextAttributeProps {
   public static final short TA_KEY_BEST_WRITING_DIRECTION = 13;
   public static final short TA_KEY_TEXT_DECORATION_COLOR = 14;
   public static final short TA_KEY_TEXT_DECORATION_LINE = 15;
-  public static final short TA_KEY_TEXT_DECORATION_LINE_STYLE = 16;
-  public static final short TA_KEY_TEXT_DECORATION_LINE_PATTERN = 17;
-  public static final short TA_KEY_TEXT_SHADOW_RAIDUS = 18;
+  public static final short TA_KEY_TEXT_DECORATION_STYLE = 16;
+  public static final short TA_KEY_TEXT_SHADOW_RADIUS = 18;
   public static final short TA_KEY_TEXT_SHADOW_COLOR = 19;
   public static final short TA_KEY_IS_HIGHLIGHTED = 20;
   public static final short TA_KEY_LAYOUT_DIRECTION = 21;
@@ -69,9 +67,10 @@ public class TextAttributeProps {
   private static final int DEFAULT_TEXT_SHADOW_COLOR = 0x55000000;
   private static final int DEFAULT_JUSTIFICATION_MODE =
       (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? 0 : Layout.JUSTIFICATION_MODE_NONE;
-
   private static final int DEFAULT_BREAK_STRATEGY =
       (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.BREAK_STRATEGY_HIGH_QUALITY;
+  private static final int DEFAULT_HYPHENATION_FREQUENCY =
+      (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.HYPHENATION_FREQUENCY_NONE;
 
   protected float mLineHeight = Float.NaN;
   protected boolean mIsColorSet = false;
@@ -104,12 +103,7 @@ public class TextAttributeProps {
   protected @Nullable ReactAccessibilityDelegate.AccessibilityRole mAccessibilityRole = null;
   protected boolean mIsAccessibilityRoleSet = false;
 
-  /**
-   * mFontStyle can be {@link Typeface#NORMAL} or {@link Typeface#ITALIC}. mFontWeight can be {@link
-   * Typeface#NORMAL} or {@link Typeface#BOLD}.
-   */
   protected int mFontStyle = UNSET;
-
   protected int mFontWeight = UNSET;
   /**
    * NB: If a font family is used that does not have a style in a certain Android version (ie.
@@ -155,10 +149,10 @@ public class TextAttributeProps {
       ReadableMapBuffer.MapBufferEntry entry = iterator.next();
       switch (entry.getKey()) {
         case TA_KEY_FOREGROUND_COLOR:
-          result.setColor(entry.getInt(0));
+          result.setColor(entry.getInt());
           break;
         case TA_KEY_BACKGROUND_COLOR:
-          result.setBackgroundColor(entry.getInt(0));
+          result.setBackgroundColor(entry.getInt());
           break;
         case TA_KEY_OPACITY:
           break;
@@ -166,7 +160,7 @@ public class TextAttributeProps {
           result.setFontFamily(entry.getString());
           break;
         case TA_KEY_FONT_SIZE:
-          result.setFontSize((float) entry.getDouble(UNSET));
+          result.setFontSize((float) entry.getDouble());
           break;
         case TA_KEY_FONT_SIZE_MULTIPLIER:
           break;
@@ -180,13 +174,13 @@ public class TextAttributeProps {
           result.setFontVariant(entry.getReadableMapBuffer());
           break;
         case TA_KEY_ALLOW_FONT_SCALING:
-          result.setAllowFontScaling(entry.getBoolean(true));
+          result.setAllowFontScaling(entry.getBoolean());
           break;
         case TA_KEY_LETTER_SPACING:
-          result.setLetterSpacing((float) entry.getDouble(Float.NaN));
+          result.setLetterSpacing((float) entry.getDouble());
           break;
         case TA_KEY_LINE_HEIGHT:
-          result.setLineHeight((float) entry.getDouble(UNSET));
+          result.setLineHeight((float) entry.getDouble());
           break;
         case TA_KEY_ALIGNMENT:
           break;
@@ -197,15 +191,13 @@ public class TextAttributeProps {
         case TA_KEY_TEXT_DECORATION_LINE:
           result.setTextDecorationLine(entry.getString());
           break;
-        case TA_KEY_TEXT_DECORATION_LINE_STYLE:
+        case TA_KEY_TEXT_DECORATION_STYLE:
           break;
-        case TA_KEY_TEXT_DECORATION_LINE_PATTERN:
-          break;
-        case TA_KEY_TEXT_SHADOW_RAIDUS:
-          result.setTextShadowRadius(entry.getInt(1));
+        case TA_KEY_TEXT_SHADOW_RADIUS:
+          result.setTextShadowRadius((float) entry.getDouble());
           break;
         case TA_KEY_TEXT_SHADOW_COLOR:
-          result.setTextShadowColor(entry.getInt(DEFAULT_TEXT_SHADOW_COLOR));
+          result.setTextShadowColor(entry.getInt());
           break;
         case TA_KEY_IS_HIGHLIGHTED:
           break;
@@ -251,7 +243,7 @@ public class TextAttributeProps {
     result.setTextDecorationLine(getStringProp(props, ViewProps.TEXT_DECORATION_LINE));
     result.setTextShadowOffset(
         props.hasKey(PROP_SHADOW_OFFSET) ? props.getMap(PROP_SHADOW_OFFSET) : null);
-    result.setTextShadowRadius(getIntProp(props, PROP_SHADOW_RADIUS, 1));
+    result.setTextShadowRadius(getFloatProp(props, PROP_SHADOW_RADIUS, 1));
     result.setTextShadowColor(getIntProp(props, PROP_SHADOW_COLOR, DEFAULT_TEXT_SHADOW_COLOR));
     result.setTextTransform(getStringProp(props, PROP_TEXT_TRANSFORM));
     result.setLayoutDirection(getStringProp(props, ViewProps.LAYOUT_DIRECTION));
@@ -460,39 +452,12 @@ public class TextAttributeProps {
     mFontFeatureSettings = TextUtils.join(", ", features);
   }
 
-  /**
-   * /* This code is duplicated in ReactTextInputManager /* TODO: Factor into a common place they
-   * can both use
-   */
   private void setFontWeight(@Nullable String fontWeightString) {
-    int fontWeightNumeric =
-        fontWeightString != null ? parseNumericFontWeight(fontWeightString) : -1;
-    int fontWeight = UNSET;
-    if (fontWeightNumeric >= 500 || "bold".equals(fontWeightString)) {
-      fontWeight = Typeface.BOLD;
-    } else if ("normal".equals(fontWeightString)
-        || (fontWeightNumeric != -1 && fontWeightNumeric < 500)) {
-      fontWeight = Typeface.NORMAL;
-    }
-    if (fontWeight != mFontWeight) {
-      mFontWeight = fontWeight;
-    }
+    mFontWeight = ReactTypefaceUtils.parseFontWeight(fontWeightString);
   }
 
-  /**
-   * /* This code is duplicated in ReactTextInputManager /* TODO: Factor into a common place they
-   * can both use
-   */
   private void setFontStyle(@Nullable String fontStyleString) {
-    int fontStyle = UNSET;
-    if ("italic".equals(fontStyleString)) {
-      fontStyle = Typeface.ITALIC;
-    } else if ("normal".equals(fontStyleString)) {
-      fontStyle = Typeface.NORMAL;
-    }
-    if (fontStyle != mFontStyle) {
-      mFontStyle = fontStyle;
-    }
+    mFontStyle = ReactTypefaceUtils.parseFontStyle(fontStyleString);
   }
 
   private void setIncludeFontPadding(boolean includepad) {
@@ -602,20 +567,21 @@ public class TextAttributeProps {
     return androidTextBreakStrategy;
   }
 
-  /**
-   * Return -1 if the input string is not a valid numeric fontWeight (100, 200, ..., 900), otherwise
-   * return the weight.
-   *
-   * <p>This code is duplicated in ReactTextInputManager TODO: Factor into a common place they can
-   * both use
-   */
-  private static int parseNumericFontWeight(String fontWeightString) {
-    // This should be much faster than using regex to verify input and Integer.parseInt
-    return fontWeightString.length() == 3
-            && fontWeightString.endsWith("00")
-            && fontWeightString.charAt(0) <= '9'
-            && fontWeightString.charAt(0) >= '1'
-        ? 100 * (fontWeightString.charAt(0) - '0')
-        : -1;
+  public static int getHyphenationFrequency(@Nullable String hyphenationFrequency) {
+    int androidHyphenationFrequency = DEFAULT_HYPHENATION_FREQUENCY;
+    if (hyphenationFrequency != null) {
+      switch (hyphenationFrequency) {
+        case "none":
+          androidHyphenationFrequency = Layout.HYPHENATION_FREQUENCY_NONE;
+          break;
+        case "normal":
+          androidHyphenationFrequency = Layout.HYPHENATION_FREQUENCY_NORMAL;
+          break;
+        default:
+          androidHyphenationFrequency = Layout.HYPHENATION_FREQUENCY_FULL;
+          break;
+      }
+    }
+    return androidHyphenationFrequency;
   }
 }

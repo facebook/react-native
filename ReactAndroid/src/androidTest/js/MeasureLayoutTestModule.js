@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,11 +9,11 @@
 
 'use strict';
 
-const React = require('react');
-const {StyleSheet, UIManager, View, findNodeHandle} = require('react-native');
-const BatchedBridge = require('react-native/Libraries/BatchedBridge/BatchedBridge');
-
-const assertEquals = require('./Asserts').assertEquals;
+import * as React from 'react';
+import {useEffect, useRef} from 'react';
+import {StyleSheet, UIManager, View, findNodeHandle} from 'react-native';
+import BatchedBridge from 'react-native/Libraries/BatchedBridge/BatchedBridge';
+import {assertEquals} from './Asserts';
 
 const styles = StyleSheet.create({
   A: {
@@ -45,24 +45,27 @@ const styles = StyleSheet.create({
 
 let A, B, C, D;
 
-class MeasureLayoutTestApp extends React.Component {
-  componentDidMount() {
-    A = findNodeHandle(this.refs.A);
-    B = findNodeHandle(this.refs.B);
-    C = findNodeHandle(this.refs.C);
-    D = findNodeHandle(this.refs.D);
-  }
+function MeasureLayoutTestApp() {
+  const refA = useRef(null);
+  const refB = useRef(null);
+  const refC = useRef(null);
+  const refD = useRef(null);
 
-  render() {
-    return (
-      <View ref="A" style={styles.A} collapsable={false}>
-        <View ref="B" style={styles.B} collapsable={false}>
-          <View ref="C" style={styles.C} collapsable={false} />
-        </View>
-        <View ref="D" style={styles.D} collapsable={false} />
+  useEffect(() => {
+    A = findNodeHandle(refA.current);
+    B = findNodeHandle(refB.current);
+    C = findNodeHandle(refC.current);
+    D = findNodeHandle(refD.current);
+  });
+
+  return (
+    <View ref={refA} style={styles.A} collapsable={false}>
+      <View ref={refB} style={styles.B} collapsable={false}>
+        <View ref={refC} style={styles.C} collapsable={false} />
       </View>
-    );
-  }
+      <View ref={refD} style={styles.D} collapsable={false} />
+    </View>
+  );
 }
 
 function shouldNotCallThisCallback() {
@@ -70,91 +73,42 @@ function shouldNotCallThisCallback() {
 }
 
 const MeasureLayoutTestModule = {
-  MeasureLayoutTestApp: MeasureLayoutTestApp,
-  verifyMeasureOnViewA: function() {
-    UIManager.measure(A, function(a, b, width, height, x, y) {
+  MeasureLayoutTestApp,
+  verifyMeasureOnViewA: function () {
+    UIManager.measure(A, function (a, b, width, height, x, y) {
       assertEquals(500, width);
       assertEquals(500, height);
       assertEquals(0, x);
       assertEquals(0, y);
     });
   },
-  verifyMeasureOnViewC: function() {
-    UIManager.measure(C, function(a, b, width, height, x, y) {
+  verifyMeasureOnViewC: function () {
+    UIManager.measure(C, function (a, b, width, height, x, y) {
       assertEquals(50, width);
       assertEquals(150, height);
       assertEquals(150, x);
       assertEquals(150, y);
     });
   },
-  verifyMeasureLayoutCRelativeToA: function() {
-    UIManager.measureLayout(C, A, shouldNotCallThisCallback, function(
-      x,
-      y,
-      width,
-      height,
-    ) {
-      assertEquals(50, width);
-      assertEquals(150, height);
-      assertEquals(150, x);
-      assertEquals(150, y);
-    });
-  },
-  verifyMeasureLayoutCRelativeToB: function() {
-    UIManager.measureLayout(C, B, shouldNotCallThisCallback, function(
-      x,
-      y,
-      width,
-      height,
-    ) {
-      assertEquals(50, width);
-      assertEquals(150, height);
-      assertEquals(100, x);
-      assertEquals(70, y);
-    });
-  },
-  verifyMeasureLayoutCRelativeToSelf: function() {
-    UIManager.measureLayout(C, C, shouldNotCallThisCallback, function(
-      x,
-      y,
-      width,
-      height,
-    ) {
-      assertEquals(50, width);
-      assertEquals(150, height);
-      assertEquals(0, x);
-      assertEquals(0, y);
-    });
-  },
-  verifyMeasureLayoutRelativeToParentOnViewA: function() {
-    UIManager.measureLayoutRelativeToParent(
+  verifyMeasureLayoutCRelativeToA: function () {
+    UIManager.measureLayout(
+      C,
       A,
       shouldNotCallThisCallback,
-      function(x, y, width, height) {
-        assertEquals(500, width);
-        assertEquals(500, height);
-        assertEquals(0, x);
-        assertEquals(0, y);
+      function (x, y, width, height) {
+        assertEquals(50, width);
+        assertEquals(150, height);
+        assertEquals(150, x);
+        assertEquals(150, y);
       },
     );
   },
-  verifyMeasureLayoutRelativeToParentOnViewB: function() {
-    UIManager.measureLayoutRelativeToParent(
+  verifyMeasureLayoutCRelativeToB: function () {
+    UIManager.measureLayout(
+      C,
       B,
       shouldNotCallThisCallback,
-      function(x, y, width, height) {
-        assertEquals(200, width);
-        assertEquals(300, height);
-        assertEquals(50, x);
-        assertEquals(80, y);
-      },
-    );
-  },
-  verifyMeasureLayoutRelativeToParentOnViewC: function() {
-    UIManager.measureLayoutRelativeToParent(
-      C,
-      shouldNotCallThisCallback,
-      function(x, y, width, height) {
+      function (x, y, width, height) {
         assertEquals(50, width);
         assertEquals(150, height);
         assertEquals(100, x);
@@ -162,40 +116,89 @@ const MeasureLayoutTestModule = {
       },
     );
   },
-  verifyMeasureLayoutDRelativeToB: function() {
+  verifyMeasureLayoutCRelativeToSelf: function () {
+    UIManager.measureLayout(
+      C,
+      C,
+      shouldNotCallThisCallback,
+      function (x, y, width, height) {
+        assertEquals(50, width);
+        assertEquals(150, height);
+        assertEquals(0, x);
+        assertEquals(0, y);
+      },
+    );
+  },
+  verifyMeasureLayoutRelativeToParentOnViewA: function () {
+    UIManager.measureLayoutRelativeToParent(
+      A,
+      shouldNotCallThisCallback,
+      function (x, y, width, height) {
+        assertEquals(500, width);
+        assertEquals(500, height);
+        assertEquals(0, x);
+        assertEquals(0, y);
+      },
+    );
+  },
+  verifyMeasureLayoutRelativeToParentOnViewB: function () {
+    UIManager.measureLayoutRelativeToParent(
+      B,
+      shouldNotCallThisCallback,
+      function (x, y, width, height) {
+        assertEquals(200, width);
+        assertEquals(300, height);
+        assertEquals(50, x);
+        assertEquals(80, y);
+      },
+    );
+  },
+  verifyMeasureLayoutRelativeToParentOnViewC: function () {
+    UIManager.measureLayoutRelativeToParent(
+      C,
+      shouldNotCallThisCallback,
+      function (x, y, width, height) {
+        assertEquals(50, width);
+        assertEquals(150, height);
+        assertEquals(100, x);
+        assertEquals(70, y);
+      },
+    );
+  },
+  verifyMeasureLayoutDRelativeToB: function () {
     UIManager.measureLayout(
       D,
       B,
-      function() {
+      function () {
         assertEquals(true, true);
       },
       shouldNotCallThisCallback,
     );
   },
-  verifyMeasureLayoutNonExistentTag: function() {
+  verifyMeasureLayoutNonExistentTag: function () {
     UIManager.measureLayout(
       192,
       A,
-      function() {
+      function () {
         assertEquals(true, true);
       },
       shouldNotCallThisCallback,
     );
   },
-  verifyMeasureLayoutNonExistentAncestor: function() {
+  verifyMeasureLayoutNonExistentAncestor: function () {
     UIManager.measureLayout(
       B,
       192,
-      function() {
+      function () {
         assertEquals(true, true);
       },
       shouldNotCallThisCallback,
     );
   },
-  verifyMeasureLayoutRelativeToParentNonExistentTag: function() {
+  verifyMeasureLayoutRelativeToParentNonExistentTag: function () {
     UIManager.measureLayoutRelativeToParent(
       192,
-      function() {
+      function () {
         assertEquals(true, true);
       },
       shouldNotCallThisCallback,

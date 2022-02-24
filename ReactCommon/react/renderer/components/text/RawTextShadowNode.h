@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -39,9 +39,6 @@ inline RawTextShadowNode const &traitCast<RawTextShadowNode const &>(
     ShadowNode const &shadowNode) {
   bool castable =
       shadowNode.getTraits().check(ShadowNodeTraits::Trait::RawText);
-  react_native_assert(
-      castable ==
-      (dynamic_cast<RawTextShadowNode const *>(&shadowNode) != nullptr));
   react_native_assert(castable);
   (void)castable;
   return static_cast<RawTextShadowNode const &>(shadowNode);
@@ -55,9 +52,6 @@ inline RawTextShadowNode const *traitCast<RawTextShadowNode const *>(
   }
   bool castable =
       shadowNode->getTraits().check(ShadowNodeTraits::Trait::RawText);
-  react_native_assert(
-      castable ==
-      (dynamic_cast<RawTextShadowNode const *>(shadowNode) != nullptr));
   if (!castable) {
     return nullptr;
   }

@@ -1,8 +1,8 @@
 {
   "name": "react-native-codegen",
-  "version": "0.0.7",
+  "version": "0.0.13",
   "description": "⚛️ Code generation tools for React Native",
-  "homepage": "https://github.com/facebook/react-native/tree/master/packages/react-native-codegen",
+  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/react-native-codegen",
   "repository": {
     "type": "git",
     "url": "git@github.com:facebook/react-native.git",
@@ -18,8 +18,9 @@
     "lib"
   ],
   "dependencies": {
+    "@babel/parser": "^7.14.0",
     "flow-parser": "^0.121.0",
-    "jscodeshift": "^0.11.0",
+    "jscodeshift": "^0.13.1",
     "nullthrows": "^1.1.1"
   },
   "devDependencies": {
@@ -37,6 +38,6 @@
     "invariant": "^2.2.4",
     "micromatch": "^4.0.2",
     "mkdirp": "^0.5.1",
-    "prettier": "1.19.1"
+    "prettier": "^2.4.1"
   }
 }

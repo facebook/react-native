@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -154,6 +154,18 @@ using namespace facebook::react;
 - (nullable NSSet<NSString *> *)propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN
 {
   return nil;
+}
+
+- (void)updateClippedSubviewsWithClipRect:(CGRect)clipRect relativeToView:(UIView *)clipView
+{
+  clipRect = [clipView convertRect:clipRect toView:self];
+
+  // Normal views don't support unmounting, so all
+  // this does is forward message to our subviews,
+  // in case any of those do support it
+  for (UIView *subview in self.subviews) {
+    [subview updateClippedSubviewsWithClipRect:clipRect relativeToView:self];
+  }
 }
 
 @end

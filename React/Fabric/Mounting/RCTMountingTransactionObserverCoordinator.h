@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,8 +8,8 @@
 #import <React/RCTComponentViewDescriptor.h>
 #import "RCTMountingTransactionObserverCoordinator.h"
 
-#import <better/map.h>
-#import <better/set.h>
+#import <butter/map.h>
+#import <butter/set.h>
 
 #import <react/renderer/mounting/MountingTransactionMetadata.h>
 
@@ -36,8 +36,8 @@ class RCTMountingTransactionObserverCoordinator final {
       facebook::react::MountingTransactionMetadata const &metadata) const;
 
  private:
-  facebook::better::map<
+  facebook::butter::map<
       facebook::react::SurfaceId,
-      facebook::better::set<RCTComponentViewDescriptor>>
+      facebook::butter::set<RCTComponentViewDescriptor>>
       registry_;
 };

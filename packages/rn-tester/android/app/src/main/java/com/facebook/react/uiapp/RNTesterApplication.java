@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,6 +9,7 @@ package com.facebook.react.uiapp;
 
 import android.app.Application;
 import android.content.Context;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.fbreact.specs.SampleTurboModule;
 import com.facebook.react.ReactApplication;
@@ -28,17 +29,20 @@ import com.facebook.react.bridge.UIManager;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.fabric.CoreComponentsRegistry;
+import com.facebook.react.fabric.EmptyReactNativeConfig;
 import com.facebook.react.fabric.FabricJSIModuleProvider;
-import com.facebook.react.fabric.ReactNativeConfig;
 import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.shell.MainReactPackage;
+import com.facebook.react.uiapp.component.MyNativeViewManager;
+import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.views.text.ReactFontManager;
 import com.facebook.soloader.SoLoader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -104,6 +108,21 @@ public class RNTesterApplication extends Application implements ReactApplication
                     }
                   };
                 }
+              },
+              new ReactPackage() {
+                @NonNull
+                @Override
+                public List<NativeModule> createNativeModules(
+                    @NonNull ReactApplicationContext reactContext) {
+                  return Collections.emptyList();
+                }
+
+                @NonNull
+                @Override
+                public List<ViewManager> createViewManagers(
+                    @NonNull ReactApplicationContext reactContext) {
+                  return Collections.singletonList(new MyNativeViewManager());
+                }
               });
         }
 
@@ -139,8 +158,9 @@ public class RNTesterApplication extends Application implements ReactApplication
 
                       @Override
                       public JSIModuleProvider<UIManager> getJSIModuleProvider() {
-                        final ComponentFactory ComponentFactory = new ComponentFactory();
-                        CoreComponentsRegistry.register(ComponentFactory);
+                        final ComponentFactory componentFactory = new ComponentFactory();
+                        CoreComponentsRegistry.register(componentFactory);
+                        RNTesterComponentsRegistry.register(componentFactory);
                         final ReactInstanceManager reactInstanceManager = getReactInstanceManager();
 
                         ViewManagerRegistry viewManagerRegistry =
@@ -150,29 +170,9 @@ public class RNTesterApplication extends Application implements ReactApplication
 
                         return new FabricJSIModuleProvider(
                             reactApplicationContext,
-                            ComponentFactory,
+                            componentFactory,
                             // TODO: T71362667 add ReactNativeConfig's support in RNTester
-                            new ReactNativeConfig() {
-                              @Override
-                              public boolean getBool(final String s) {
-                                return false;
-                              }
-
-                              @Override
-                              public int getInt64(final String s) {
-                                return 0;
-                              }
-
-                              @Override
-                              public String getString(final String s) {
-                                return "";
-                              }
-
-                              @Override
-                              public double getDouble(final String s) {
-                                return 0;
-                              }
-                            },
+                            new EmptyReactNativeConfig(),
                             viewManagerRegistry);
                       }
                     });

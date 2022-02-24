@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -23,17 +23,19 @@ struct RawEvent {
   /*
    * Defines category of a native platform event. This is used to deduce types
    * of events for Concurrent Mode.
+   * This enum is duplicated for JNI access in `EventCategoryDef.java`, keep in
+   * sync.
    */
   enum class Category {
     /*
      * Start of a continuous event. To be used with touchStart.
      */
-    ContinuousStart,
+    ContinuousStart = 0,
 
     /*
      * End of a continuous event. To be used with touchEnd.
      */
-    ContinuousEnd,
+    ContinuousEnd = 1,
 
     /*
      * Priority for this event will be determined from other events in the
@@ -41,19 +43,19 @@ struct RawEvent {
      * default. If it is not triggered by continuous event, its priority will be
      * discrete.
      */
-    Unspecified,
+    Unspecified = 2,
 
     /*
      * Forces discrete type for the event. Regardless if continuous event is
      * ongoing.
      */
-    Discrete,
+    Discrete = 3,
 
     /*
      * Forces continuous type for the event. Regardless if continuous event
      * isn't ongoing.
      */
-    Continuous
+    Continuous = 4
   };
 
   RawEvent(

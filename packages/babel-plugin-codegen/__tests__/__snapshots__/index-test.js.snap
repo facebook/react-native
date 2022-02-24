@@ -22,14 +22,18 @@ interface NativeCommands {
   +scrollTo: (viewRef: React.ElementRef<NativeType>, y: Int32, animated: boolean) => void,
 }
 
-const NativeComponentRegistry = require('NativeComponentRegistry');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
+
+const {
+  ConditionallyIgnoredEventHandlers
+} = require('react-native/Libraries/NativeComponent/ViewConfigIgnore');
 
 const {
   dispatchCommand
 } = require(\\"react-native/Libraries/Renderer/shims/ReactNative\\");
 
 let nativeComponentName = 'RCTModule';
-export default NativeComponentRegistry.get(nativeComponentName, () => ({
+export const __INTERNAL_VIEW_CONFIG = {
   uiViewClassName: 'RCTModule',
   bubblingEventTypes: {
     topBubblingEventDefinedInlineNull: {
@@ -46,10 +50,13 @@ export default NativeComponentRegistry.get(nativeComponentName, () => ({
   },
   validAttributes: {
     boolean_default_true_optional_both: true,
-    onDirectEventDefinedInlineNull: true,
-    onBubblingEventDefinedInlineNull: true
+    ...ConditionallyIgnoredEventHandlers({
+      onDirectEventDefinedInlineNull: true,
+      onBubblingEventDefinedInlineNull: true
+    })
   }
-}));
+};
+export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 export const Commands = {
   hotspotUpdate(ref, x, y) {
     dispatchCommand(ref, \\"hotspotUpdate\\", [x, y]);
@@ -84,14 +91,18 @@ interface NativeCommands {
   +scrollTo: (viewRef: React.ElementRef<NativeType>, y: Int32, animated: boolean) => void,
 }
 
-const NativeComponentRegistry = require('NativeComponentRegistry');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
+
+const {
+  ConditionallyIgnoredEventHandlers
+} = require('react-native/Libraries/NativeComponent/ViewConfigIgnore');
 
 const {
   dispatchCommand
 } = require(\\"react-native/Libraries/Renderer/shims/ReactNative\\");
 
 let nativeComponentName = 'RCTModule';
-export default NativeComponentRegistry.get(nativeComponentName, () => ({
+export const __INTERNAL_VIEW_CONFIG = {
   uiViewClassName: 'RCTModule',
   bubblingEventTypes: {
     topBubblingEventDefinedInlineNull: {
@@ -108,10 +119,13 @@ export default NativeComponentRegistry.get(nativeComponentName, () => ({
   },
   validAttributes: {
     boolean_default_true_optional_both: true,
-    onDirectEventDefinedInlineNull: true,
-    onBubblingEventDefinedInlineNull: true
+    ...ConditionallyIgnoredEventHandlers({
+      onDirectEventDefinedInlineNull: true,
+      onBubblingEventDefinedInlineNull: true
+    })
   }
-}));
+};
+export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 export const Commands = {
   hotspotUpdate(ref, x, y) {
     dispatchCommand(ref, \\"hotspotUpdate\\", [x, y]);

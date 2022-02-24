@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -20,14 +20,14 @@ using namespace facebook::jni;
 namespace facebook {
 namespace react {
 
-TextLayoutManager::~TextLayoutManager() {}
+TextLayoutManager::~TextLayoutManager() = default;
 
 void *TextLayoutManager::getNativeTextLayoutManager() const {
   return self_;
 }
 
 TextMeasurement TextLayoutManager::measure(
-    AttributedStringBox attributedStringBox,
+    AttributedStringBox const &attributedStringBox,
     ParagraphAttributes paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
   auto &attributedString = attributedStringBox.getValue();
@@ -59,7 +59,7 @@ TextMeasurement TextLayoutManager::measure(
 
 TextMeasurement TextLayoutManager::measureCachedSpannableById(
     int64_t cacheId,
-    ParagraphAttributes paragraphAttributes,
+    ParagraphAttributes const &paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
   auto env = Environment::current();
   auto attachmentPositions = env->NewFloatArray(0);
@@ -93,8 +93,8 @@ TextMeasurement TextLayoutManager::measureCachedSpannableById(
 }
 
 LinesMeasurements TextLayoutManager::measureLines(
-    AttributedString attributedString,
-    ParagraphAttributes paragraphAttributes,
+    AttributedString const &attributedString,
+    ParagraphAttributes const &paragraphAttributes,
     Size size) const {
   if (mapBufferSerializationEnabled_) {
     return measureLinesMapBuffer(attributedString, paragraphAttributes, size);
@@ -147,8 +147,8 @@ LinesMeasurements TextLayoutManager::measureLines(
 }
 
 LinesMeasurements TextLayoutManager::measureLinesMapBuffer(
-    AttributedString attributedString,
-    ParagraphAttributes paragraphAttributes,
+    AttributedString const &attributedString,
+    ParagraphAttributes const &paragraphAttributes,
     Size size) const {
   const jni::global_ref<jobject> &fabricUIManager =
       contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
@@ -189,12 +189,12 @@ LinesMeasurements TextLayoutManager::measureLinesMapBuffer(
 
 TextMeasurement TextLayoutManager::doMeasure(
     AttributedString attributedString,
-    ParagraphAttributes paragraphAttributes,
+    ParagraphAttributes const &paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
   layoutConstraints.maximumSize.height = std::numeric_limits<Float>::infinity();
 
   int attachmentsCount = 0;
-  for (auto fragment : attributedString.getFragments()) {
+  for (auto const &fragment : attributedString.getFragments()) {
     if (fragment.isAttachment()) {
       attachmentsCount++;
     }
@@ -219,19 +219,21 @@ TextMeasurement TextLayoutManager::doMeasure(
       maximumSize.height,
       attachmentPositions);
 
-  jfloat *attachmentData = env->GetFloatArrayElements(attachmentPositions, 0);
+  jfloat *attachmentData =
+      env->GetFloatArrayElements(attachmentPositions, nullptr);
 
   auto attachments = TextMeasurement::Attachments{};
   if (attachmentsCount > 0) {
     folly::dynamic fragments = serializedAttributedString["fragments"];
     int attachmentIndex = 0;
-    for (int i = 0; i < fragments.size(); i++) {
-      folly::dynamic fragment = fragments[i];
-      if (fragment["isAttachment"] == true) {
+    for (auto const &fragment : fragments) {
+      auto isAttachment = fragment.find("isAttachment");
+      if (isAttachment != fragment.items().end() &&
+          isAttachment->second.getBool()) {
         float top = attachmentData[attachmentIndex * 2];
         float left = attachmentData[attachmentIndex * 2 + 1];
-        float width = (float)fragment["width"].getDouble();
-        float height = (float)fragment["height"].getDouble();
+        auto width = (float)fragment["width"].getDouble();
+        auto height = (float)fragment["height"].getDouble();
 
         auto rect = facebook::react::Rect{
             {left, top}, facebook::react::Size{width, height}};
@@ -251,12 +253,12 @@ TextMeasurement TextLayoutManager::doMeasure(
 
 TextMeasurement TextLayoutManager::doMeasureMapBuffer(
     AttributedString attributedString,
-    ParagraphAttributes paragraphAttributes,
+    ParagraphAttributes const &paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
   layoutConstraints.maximumSize.height = std::numeric_limits<Float>::infinity();
 
   int attachmentsCount = 0;
-  for (auto fragment : attributedString.getFragments()) {
+  for (auto const &fragment : attributedString.getFragments()) {
     if (fragment.isAttachment()) {
       attachmentsCount++;
     }
@@ -282,12 +284,13 @@ TextMeasurement TextLayoutManager::doMeasureMapBuffer(
       maximumSize.height,
       attachmentPositions);
 
-  jfloat *attachmentData = env->GetFloatArrayElements(attachmentPositions, 0);
+  jfloat *attachmentData =
+      env->GetFloatArrayElements(attachmentPositions, nullptr);
 
   auto attachments = TextMeasurement::Attachments{};
   if (attachmentsCount > 0) {
     int attachmentIndex = 0;
-    for (auto fragment : attributedString.getFragments()) {
+    for (const auto &fragment : attributedString.getFragments()) {
       if (fragment.isAttachment()) {
         float top = attachmentData[attachmentIndex * 2];
         float left = attachmentData[attachmentIndex * 2 + 1];

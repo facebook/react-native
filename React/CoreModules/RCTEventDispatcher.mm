@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -54,6 +54,11 @@ RCT_EXPORT_MODULE()
   _eventsDispatchScheduled = NO;
   _observers = [NSHashTable weakObjectsHashTable];
   _observersLock = [NSLock new];
+}
+
+- (void)sendViewEventWithName:(NSString *)name reactTag:(NSNumber *)reactTag
+{
+  [_callableJSModules invokeModule:@"RCTViewEventEmitter" method:@"emit" withArgs:@[ name, RCTNullIfNil(reactTag) ]];
 }
 
 - (void)sendAppEventWithName:(NSString *)name body:(id)body

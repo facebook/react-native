@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -17,7 +17,7 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UIManagerListener;
@@ -365,7 +365,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
     if (nodesManager != null) {
       nodesManager.initializeEventListenerForUIManagerType(mUIManagerType);
     } else {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           NAME,
           new RuntimeException(
               "initializeLifecycleEventListenersForViewTag could not get NativeAnimatedNodesManager"));
@@ -456,6 +456,32 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
                       + config.toHashMap().toString());
             }
             animatedNodesManager.createAnimatedNode(tag, config);
+          }
+        });
+  }
+
+  @Override
+  public void updateAnimatedNodeConfig(final double tagDouble, final ReadableMap config) {
+    final int tag = (int) tagDouble;
+    if (ANIMATED_MODULE_DEBUG) {
+      FLog.d(
+          NAME,
+          "queue updateAnimatedNodeConfig: " + tag + " config: " + config.toHashMap().toString());
+    }
+
+    addOperation(
+        new UIThreadOperation() {
+          @Override
+          public void execute(NativeAnimatedNodesManager animatedNodesManager) {
+            if (ANIMATED_MODULE_DEBUG) {
+              FLog.d(
+                  NAME,
+                  "execute updateAnimatedNodeConfig: "
+                      + tag
+                      + " config: "
+                      + config.toHashMap().toString());
+            }
+            animatedNodesManager.updateAnimatedNodeConfig(tag, config);
           }
         });
   }

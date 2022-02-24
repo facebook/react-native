@@ -21,10 +21,8 @@
 @class OCMStubRecorder;
 @class OCMockObject;
 
-
-@interface OCMMacroState : NSObject
-{
-    OCMRecorder *recorder;
+@interface OCMMacroState : NSObject {
+  OCMRecorder *recorder;
 }
 
 + (void)beginStubMacro;

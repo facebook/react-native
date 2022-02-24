@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,190 +11,148 @@
 'use strict';
 
 /**
- * This script bumps a new version for open source releases.
- * It updates the version in json/gradle files and makes sure they are consistent between each other
- * After changing the files it makes a commit and tags it.
- * All you have to do is push changes to remote and CI will make a new build.
+ * This script walks a releaser through bumping the version for a release
+ * It will commit the appropriate tags to trigger the CircleCI jobs.
  */
-const fs = require('fs');
-const {cat, echo, exec, exit, sed} = require('shelljs');
+const {exec, exit} = require('shelljs');
 const yargs = require('yargs');
+const inquirer = require('inquirer');
+const request = require('request');
+
+const {
+  parseVersion,
+  isReleaseBranch,
+  getBranchName,
+} = require('./version-utils');
 
 let argv = yargs
   .option('r', {
     alias: 'remote',
     default: 'origin',
   })
-  .option('n', {
-    alias: 'nightly',
-    type: 'boolean',
-    default: false,
+  .option('t', {
+    alias: 'token',
+    describe:
+      'Your CircleCI personal API token. See https://circleci.com/docs/2.0/managing-api-tokens/#creating-a-personal-api-token to set one',
+    required: true,
+  })
+  .option('v', {
+    alias: 'to-version',
+    describe: 'Version you aim to release, ex. 0.67.0-rc.1, 0.66.3',
+    required: true,
+  })
+  .check(() => {
+    const branch = getBranchName();
+    exitIfNotOnReleaseBranch(branch);
+    return true;
   }).argv;
 
-const nightlyBuild = argv.nightly;
-
-let version, branch;
-if (nightlyBuild) {
-  const currentCommit = exec('git rev-parse HEAD', {
-    silent: true,
-  }).stdout.trim();
-  version = `0.0.0-${currentCommit.slice(0, 9)}`;
-} else {
-  // Check we are in release branch, e.g. 0.33-stable
-  branch = exec('git symbolic-ref --short HEAD', {
-    silent: true,
-  }).stdout.trim();
-
-  if (branch.indexOf('-stable') === -1) {
-    echo('You must be in 0.XX-stable branch to bump a version');
-    exit(1);
-  }
-
-  // e.g. 0.33
-  let versionMajor = branch.slice(0, branch.indexOf('-stable'));
-
-  // - check that argument version matches branch
-  // e.g. 0.33.1 or 0.33.0-rc4
-  version = argv._[0];
-  if (!version || version.indexOf(versionMajor) !== 0) {
-    echo(
-      `You must pass a tag like 0.${versionMajor}.[X]-rc[Y] to bump a version`,
+function exitIfNotOnReleaseBranch(branch) {
+  if (!isReleaseBranch(branch)) {
+    console.log(
+      'This script must be run in a react-native git repository checkout and on a release branch',
     );
     exit(1);
   }
 }
 
-// Generate version files to detect mismatches between JS and native.
-let match = version.match(/^(\d+)\.(\d+)\.(\d+)(?:-(.+))?$/);
-if (!match) {
-  echo(
-    `You must pass a correctly formatted version; couldn't parse ${version}`,
+function getLatestTag(versionPrefix) {
+  const tags = exec(`git tag --list "v${versionPrefix}*" --sort=-refname`, {
+    silent: true,
+  })
+    .stdout.trim()
+    .split('\n')
+    .filter(tag => tag.length > 0);
+  if (tags.length > 0) {
+    return tags[0];
+  }
+  return null;
+}
+
+function triggerReleaseWorkflow(options) {
+  return new Promise((resolve, reject) => {
+    request(options, function (error, response, body) {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(body);
+      }
+    });
+  });
+}
+
+async function main() {
+  const branch = getBranchName();
+  const token = argv.token;
+  const releaseVersion = argv.toVersion;
+
+  const {pushed} = await inquirer.prompt({
+    type: 'confirm',
+    name: 'pushed',
+    message: `This script will trigger a release with whatever changes are on the remote branch: ${branch}. \nMake sure you have pushed any updates remotely.`,
+  });
+
+  if (!pushed) {
+    console.log(`Please run 'git push ${argv.remote} ${branch}'`);
+    exit(1);
+    return;
+  }
+
+  let latest = false;
+  const {version, prerelease} = parseVersion(releaseVersion);
+  if (!prerelease) {
+    const {setLatest} = await inquirer.prompt({
+      type: 'confirm',
+      name: 'setLatest',
+      message: `Do you want to set ${version} as "latest" release on npm?`,
+    });
+    latest = setLatest;
+  }
+
+  const npmTag = latest ? 'latest' : !prerelease ? branch : 'next';
+  const {confirmRelease} = await inquirer.prompt({
+    type: 'confirm',
+    name: 'confirmRelease',
+    message: `Releasing version "${version}" with npm tag "${npmTag}". Is this correct?`,
+  });
+
+  if (!confirmRelease) {
+    console.log('Aborting.');
+    return;
+  }
+
+  const parameters = {
+    release_version: version,
+    release_latest: latest,
+    run_package_release_workflow_only: true,
+  };
+
+  const options = {
+    method: 'POST',
+    url: 'https://circleci.com/api/v2/project/github/facebook/react-native/pipeline',
+    headers: {
+      'Circle-Token': token,
+      'content-type': 'application/json',
+    },
+    body: {
+      branch,
+      parameters,
+    },
+    json: true,
+  };
+
+  // See response: https://circleci.com/docs/api/v2/#operation/triggerPipeline
+  const body = await triggerReleaseWorkflow(options);
+  console.log(
+    `Monitor your release workflow: https://app.circleci.com/pipelines/github/facebook/react-native/${body.number}`,
   );
-  exit(1);
-}
-let [, major, minor, patch, prerelease] = match;
 
-fs.writeFileSync(
-  'ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java',
-  cat('scripts/versiontemplates/ReactNativeVersion.java.template')
-    .replace('${major}', major)
-    .replace('${minor}', minor)
-    .replace('${patch}', patch)
-    .replace(
-      '${prerelease}',
-      prerelease !== undefined ? `"${prerelease}"` : 'null',
-    ),
-  'utf-8',
-);
-
-fs.writeFileSync(
-  'React/Base/RCTVersion.m',
-  cat('scripts/versiontemplates/RCTVersion.m.template')
-    .replace('${major}', `@(${major})`)
-    .replace('${minor}', `@(${minor})`)
-    .replace('${patch}', `@(${patch})`)
-    .replace(
-      '${prerelease}',
-      prerelease !== undefined ? `@"${prerelease}"` : '[NSNull null]',
-    ),
-  'utf-8',
-);
-
-fs.writeFileSync(
-  'ReactCommon/cxxreact/ReactNativeVersion.h',
-  cat('scripts/versiontemplates/ReactNativeVersion.h.template')
-    .replace('${major}', major)
-    .replace('${minor}', minor)
-    .replace('${patch}', patch)
-    .replace(
-      '${prerelease}',
-      prerelease !== undefined ? `"${prerelease}"` : '""',
-    ),
-  'utf-8',
-);
-
-fs.writeFileSync(
-  'Libraries/Core/ReactNativeVersion.js',
-  cat('scripts/versiontemplates/ReactNativeVersion.js.template')
-    .replace('${major}', major)
-    .replace('${minor}', minor)
-    .replace('${patch}', patch)
-    .replace(
-      '${prerelease}',
-      prerelease !== undefined ? `'${prerelease}'` : 'null',
-    ),
-  'utf-8',
-);
-
-let packageJson = JSON.parse(cat('package.json'));
-packageJson.version = version;
-delete packageJson.workspaces;
-delete packageJson.private;
-fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2), 'utf-8');
-
-// Change ReactAndroid/gradle.properties
-if (
-  sed(
-    '-i',
-    /^VERSION_NAME=.*/,
-    `VERSION_NAME=${version}`,
-    'ReactAndroid/gradle.properties',
-  ).code
-) {
-  echo("Couldn't update version for Gradle");
-  exit(1);
+  // TODO
+  // - Output the release changelog to paste into Github releases
+  // - Link to release discussions to update
+  // - Verify RN-diff publish is through
 }
 
-// Change react-native version in the template's package.json
-exec(`node scripts/set-rn-template-version.js ${version}`);
-
-// Verify that files changed, we just do a git diff and check how many times version is added across files
-let numberOfChangedLinesWithNewVersion = exec(
-  `git diff -U0 | grep '^[+]' | grep -c ${version} `,
-  {silent: true},
-).stdout.trim();
-
-// Release builds should commit the version bumps, and create tags.
-// Nightly builds do not need to do that.
-if (!nightlyBuild) {
-  if (+numberOfChangedLinesWithNewVersion !== 3) {
-    echo(
-      'Failed to update all the files. package.json and gradle.properties must have versions in them',
-    );
-    echo('Fix the issue, revert and try again');
-    exec('git diff');
-    exit(1);
-  }
-
-  // Make commit [0.21.0-rc] Bump version numbers
-  if (exec(`git commit -a -m "[${version}] Bump version numbers"`).code) {
-    echo('failed to commit');
-    exit(1);
-  }
-
-  // Add tag v0.21.0-rc
-  if (exec(`git tag v${version}`).code) {
-    echo(
-      `failed to tag the commit with v${version}, are you sure this release wasn't made earlier?`,
-    );
-    echo('You may want to rollback the last commit');
-    echo('git reset --hard HEAD~1');
-    exit(1);
-  }
-
-  // Push newly created tag
-  let remote = argv.remote;
-  exec(`git push ${remote} v${version}`);
-
-  // Tag latest if doing stable release
-  if (version.indexOf('rc') === -1) {
-    exec('git tag -d latest');
-    exec(`git push ${remote} :latest`);
-    exec('git tag latest');
-    exec(`git push ${remote} latest`);
-  }
-
-  exec(`git push ${remote} ${branch} --follow-tags`);
-}
-
-exit(0);
+main().then(() => {
+  exit(0);
+});

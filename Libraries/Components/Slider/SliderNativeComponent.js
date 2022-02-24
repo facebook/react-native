@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -47,9 +47,8 @@ type NativeProps = $ReadOnly<{|
   value?: WithDefault<Double, 0>,
 
   // Events
-  onChange?: ?BubblingEventHandler<Event>,
-  onValueChange?: ?BubblingEventHandler<Event, 'paperValueChange'>,
-  onSlidingComplete?: ?DirectEventHandler<Event, 'paperSlidingComplete'>,
+  onValueChange?: ?BubblingEventHandler<Event>,
+  onSlidingComplete?: ?DirectEventHandler<Event>,
 |}>;
 
 export default (codegenNativeComponent<NativeProps>('Slider', {

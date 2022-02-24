@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,12 +7,13 @@
 
 #pragma once
 
-#include <better/optional.h>
+#include <butter/optional.h>
 #include <jsi/jsi.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerClock.h>
 #include <react/renderer/runtimescheduler/SchedulerPriority.h>
 
-namespace facebook::react {
+namespace facebook {
+namespace react {
 
 class RuntimeScheduler;
 class TaskPriorityComparer;
@@ -28,10 +29,10 @@ struct Task final {
   friend TaskPriorityComparer;
 
   SchedulerPriority priority;
-  better::optional<jsi::Function> callback;
+  butter::optional<jsi::Function> callback;
   RuntimeSchedulerClock::time_point expirationTime;
 
-  jsi::Value execute(jsi::Runtime &runtime) const;
+  jsi::Value execute(jsi::Runtime &runtime);
 };
 
 class TaskPriorityComparer {
@@ -43,4 +44,5 @@ class TaskPriorityComparer {
   }
 };
 
-} // namespace facebook::react
+} // namespace react
+} // namespace facebook

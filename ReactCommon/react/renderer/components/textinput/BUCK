@@ -33,12 +33,6 @@ rn_xplat_cxx_library(
         ],
         prefix = "react/renderer/components/androidtextinput",
     ),
-    compiler_flags = [
-        "-fexceptions",
-        "-frtti",
-        "-std=c++17",
-        "-Wall",
-    ],
     cxx_tests = [":tests"],
     fbandroid_deps = [
         react_native_xplat_target("react/renderer/mapbuffer:mapbuffer"),

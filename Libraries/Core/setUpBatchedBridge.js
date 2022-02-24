@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,12 +11,24 @@
 'use strict';
 
 let registerModule;
-if (global.RN$Bridgeless && global.RN$registerCallableModule) {
+if (global.RN$Bridgeless === true && global.RN$registerCallableModule) {
   registerModule = global.RN$registerCallableModule;
 } else {
   const BatchedBridge = require('../BatchedBridge/BatchedBridge');
-  registerModule = (moduleName, factory) =>
-    BatchedBridge.registerLazyCallableModule(moduleName, factory);
+  registerModule = (
+    moduleName:
+      | $TEMPORARY$string<'GlobalPerformanceLogger'>
+      | $TEMPORARY$string<'HMRClient'>
+      | $TEMPORARY$string<'HeapCapture'>
+      | $TEMPORARY$string<'JSDevSupportModule'>
+      | $TEMPORARY$string<'JSTimers'>
+      | $TEMPORARY$string<'RCTDeviceEventEmitter'>
+      | $TEMPORARY$string<'RCTLog'>
+      | $TEMPORARY$string<'RCTNativeAppEventEmitter'>
+      | $TEMPORARY$string<'SamplingProfiler'>
+      | $TEMPORARY$string<'Systrace'>,
+    factory,
+  ) => BatchedBridge.registerLazyCallableModule(moduleName, factory);
 }
 
 registerModule('Systrace', () => require('../Performance/Systrace'));

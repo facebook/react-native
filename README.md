@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/facebook/react-native/blob/master/LICENSE">
+  <a href="https://github.com/facebook/react-native/blob/HEAD/LICENSE">
     <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="React Native is released under the MIT license." />
   </a>
   <a href="https://circleci.com/gh/facebook/react-native">
@@ -32,13 +32,13 @@
   <span> · </span>
   <a href="https://reactnative.dev/docs/tutorial">Learn the Basics</a>
   <span> · </span>
-  <a href="https://reactnative.dev/showcase.html">Showcase</a>
+  <a href="https://reactnative.dev/showcase">Showcase</a>
   <span> · </span>
   <a href="https://reactnative.dev/docs/contributing">Contribute</a>
   <span> · </span>
   <a href="https://reactnative.dev/help">Community</a>
   <span> · </span>
-  <a href="https://github.com/facebook/react-native/blob/master/.github/SUPPORT.md">Support</a>
+  <a href="https://github.com/facebook/react-native/blob/HEAD/.github/SUPPORT.md">Support</a>
 </h3>
 
 React Native brings [**React**'s][r] declarative UI framework to iOS and Android. With React Native, you use native UI controls and have full access to the native platform.
@@ -52,7 +52,7 @@ React Native is developed and supported by many companies and individual core co
 
 [r]: https://reactjs.org/
 [p]: https://reactnative.dev/docs/out-of-tree-platforms
-[e]: https://github.com/facebook/react-native/blob/master/ECOSYSTEM.md
+[e]: https://github.com/facebook/react-native/blob/HEAD/ECOSYSTEM.md
 
 ## Contents
 
@@ -97,7 +97,7 @@ The source for the React Native documentation and website is hosted on a separat
 
 Upgrading to new versions of React Native may give you access to more APIs, views, developer tools, and other goodies. See the [Upgrading Guide][u] for instructions.
 
-React Native releases are discussed in the React Native Community, [**@react-native-community/react-native-releases**][repo-releases].
+React Native releases are discussed [in this discussion repo](https://github.com/reactwg/react-native-releases/discussions).
 
 [u]: https://reactnative.dev/docs/upgrading
 [repo-releases]: https://github.com/react-native-community/react-native-releases
@@ -143,5 +143,5 @@ React Native is MIT licensed, as found in the [LICENSE][l] file.
 
 React Native documentation is Creative Commons licensed, as found in the [LICENSE-docs][ld] file.
 
-[l]: https://github.com/facebook/react-native/blob/master/LICENSE
-[ld]: https://github.com/facebook/react-native/blob/master/LICENSE-docs
+[l]: https://github.com/facebook/react-native/blob/HEAD/LICENSE
+[ld]: https://github.com/facebook/react-native/blob/HEAD/LICENSE-docs

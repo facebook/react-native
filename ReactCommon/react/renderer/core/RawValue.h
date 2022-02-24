@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <better/map.h>
+#include <butter/map.h>
 #include <folly/dynamic.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
@@ -78,7 +78,7 @@ class RawValue {
   /*
    * Copy constructor and copy assignment operator would be private and only for
    * internal use, but it's needed for user-code that does `auto val =
-   * (better::map<std::string, RawValue>)rawVal;`
+   * (butter::map<std::string, RawValue>)rawVal;`
    */
   RawValue(RawValue const &other) noexcept : dynamic_(other.dynamic_) {}
 
@@ -185,7 +185,7 @@ class RawValue {
   template <typename T>
   static bool checkValueType(
       const folly::dynamic &dynamic,
-      better::map<std::string, T> *type) noexcept {
+      butter::map<std::string, T> *type) noexcept {
     if (!dynamic.isObject()) {
       return false;
     }
@@ -267,11 +267,11 @@ class RawValue {
   }
 
   template <typename T>
-  static better::map<std::string, T> castValue(
+  static butter::map<std::string, T> castValue(
       const folly::dynamic &dynamic,
-      better::map<std::string, T> *type) noexcept {
+      butter::map<std::string, T> *type) noexcept {
     react_native_assert(dynamic.isObject());
-    auto result = better::map<std::string, T>{};
+    auto result = butter::map<std::string, T>{};
     for (const auto &item : dynamic.items()) {
       react_native_assert(item.first.isString());
       result[item.first.getString()] = castValue(item.second, (T *)nullptr);

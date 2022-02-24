@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,26 +11,27 @@
 
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/element/ComponentBuilder.h>
 #include <react/renderer/element/Element.h>
-#include <react/renderer/element/testUtils.h>
-
 #include <react/renderer/mounting/MountingCoordinator.h>
 #include <react/renderer/mounting/ShadowTree.h>
 #include <react/renderer/mounting/ShadowTreeDelegate.h>
+
+#include <react/renderer/element/testUtils.h>
 
 using namespace facebook::react;
 
 class DummyShadowTreeDelegate : public ShadowTreeDelegate {
  public:
-  virtual RootShadowNode::Unshared shadowTreeWillCommit(
+  RootShadowNode::Unshared shadowTreeWillCommit(
       ShadowTree const &shadowTree,
       RootShadowNode::Shared const &oldRootShadowNode,
       RootShadowNode::Unshared const &newRootShadowNode) const override {
     return newRootShadowNode;
   };
 
-  virtual void shadowTreeDidFinishTransaction(
+  void shadowTreeDidFinishTransaction(
       ShadowTree const &shadowTree,
       MountingCoordinator::Shared const &mountingCoordinator) const override{};
 };
@@ -89,6 +90,8 @@ TEST(StateReconciliationTest, testStateReconciliation) {
         });
   // clang-format on
 
+  ContextContainer contextContainer{};
+
   auto shadowNode = builder.build(element);
 
   auto rootShadowNodeState1 = shadowNode->ShadowNode::clone({});
@@ -98,7 +101,11 @@ TEST(StateReconciliationTest, testStateReconciliation) {
   auto state1 = shadowNodeAB->getState();
   auto shadowTreeDelegate = DummyShadowTreeDelegate{};
   ShadowTree shadowTree{
-      SurfaceId{11}, LayoutConstraints{}, LayoutContext{}, shadowTreeDelegate};
+      SurfaceId{11},
+      LayoutConstraints{},
+      LayoutContext{},
+      shadowTreeDelegate,
+      contextContainer};
 
   shadowTree.commit(
       [&](RootShadowNode const &oldRootShadowNode) {

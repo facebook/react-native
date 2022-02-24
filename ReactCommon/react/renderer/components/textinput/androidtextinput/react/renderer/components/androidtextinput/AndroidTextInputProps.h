@@ -1,11 +1,13 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 #pragma once
+
+// foo bar 2
 
 // #include <react/renderer/components/text/BaseTextProps.h>
 #include <react/renderer/core/Props.h>
@@ -16,6 +18,7 @@
 #include <react/renderer/attributedstring/conversions.h>
 #include <react/renderer/components/text/BaseTextProps.h>
 #include <react/renderer/components/view/ViewProps.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/imagemanager/primitives.h>
@@ -31,17 +34,18 @@ struct AndroidTextInputSelectionStruct {
 };
 
 static inline void fromRawValue(
+    const PropsParserContext &context,
     const RawValue &value,
     AndroidTextInputSelectionStruct &result) {
-  auto map = (better::map<std::string, RawValue>)value;
+  auto map = (butter::map<std::string, RawValue>)value;
 
   auto start = map.find("start");
   if (start != map.end()) {
-    fromRawValue(start->second, result.start);
+    fromRawValue(context, start->second, result.start);
   }
   auto end = map.find("end");
   if (end != map.end()) {
-    fromRawValue(end->second, result.end);
+    fromRawValue(context, end->second, result.end);
   }
 }
 
@@ -56,17 +60,18 @@ struct AndroidTextInputTextShadowOffsetStruct {
 };
 
 static inline void fromRawValue(
+    const PropsParserContext &context,
     const RawValue &value,
     AndroidTextInputTextShadowOffsetStruct &result) {
-  auto map = (better::map<std::string, RawValue>)value;
+  auto map = (butter::map<std::string, RawValue>)value;
 
   auto width = map.find("width");
   if (width != map.end()) {
-    fromRawValue(width->second, result.width);
+    fromRawValue(context, width->second, result.width);
   }
   auto height = map.find("height");
   if (height != map.end()) {
-    fromRawValue(height->second, result.height);
+    fromRawValue(context, height->second, result.height);
   }
 }
 
@@ -96,6 +101,7 @@ class AndroidTextInputProps final : public ViewProps, public BaseTextProps {
  public:
   AndroidTextInputProps() = default;
   AndroidTextInputProps(
+      const PropsParserContext &context,
       const AndroidTextInputProps &sourceProps,
       const RawProps &rawProps);
 
@@ -103,7 +109,7 @@ class AndroidTextInputProps final : public ViewProps, public BaseTextProps {
 
 #pragma mark - Props
 
-  const std::string autoCompleteType{};
+  const std::string autoComplete{};
   const std::string returnKeyLabel{};
   const int numberOfLines{0};
   const bool disableFullscreenUI{false};
@@ -141,7 +147,7 @@ class AndroidTextInputProps final : public ViewProps, public BaseTextProps {
   const AndroidTextInputTextShadowOffsetStruct textShadowOffset{};
   const Float lineHeight{0.0};
   const std::string textTransform{};
-  const int color{0};
+  const SharedColor color{0};
   const Float letterSpacing{0.0};
   const Float fontSize{0.0};
   const std::string textAlign{};

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -156,9 +156,6 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
                        auto eventEmitter = [self modalEventEmitter];
                        if (eventEmitter) {
                          eventEmitter->onShow(ModalHostViewEventEmitter::OnShow{});
-
-                         // A hack so that EventEmitter.cpp's eventTarget_ does not become null when modal is dismissed
-                         eventEmitter->setEnabled(true);
                        }
                      }];
   }
@@ -171,12 +168,11 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
     UIView *snapshot = _modalContentsSnapshot;
     [self.viewController.view addSubview:snapshot];
 
-    auto eventEmitter = [self modalEventEmitter];
     [self dismissViewController:self.viewController
                        animated:_shouldAnimatePresentation
                      completion:^{
                        [snapshot removeFromSuperview];
-
+                       auto eventEmitter = [self modalEventEmitter];
                        if (eventEmitter) {
                          eventEmitter->onDismiss(ModalHostViewEventEmitter::OnDismiss{});
                        }

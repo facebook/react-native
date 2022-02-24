@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -50,6 +50,9 @@ void TextAttributes::apply(TextAttributes textAttributes) {
   letterSpacing = !std::isnan(textAttributes.letterSpacing)
       ? textAttributes.letterSpacing
       : letterSpacing;
+  textTransform = textAttributes.textTransform.hasValue()
+      ? textAttributes.textTransform
+      : textTransform;
 
   // Paragraph Styles
   lineHeight = !std::isnan(textAttributes.lineHeight)
@@ -68,13 +71,9 @@ void TextAttributes::apply(TextAttributes textAttributes) {
   textDecorationLineType = textAttributes.textDecorationLineType.hasValue()
       ? textAttributes.textDecorationLineType
       : textDecorationLineType;
-  textDecorationLineStyle = textAttributes.textDecorationLineStyle.hasValue()
-      ? textAttributes.textDecorationLineStyle
-      : textDecorationLineStyle;
-  textDecorationLinePattern =
-      textAttributes.textDecorationLinePattern.hasValue()
-      ? textAttributes.textDecorationLinePattern
-      : textDecorationLinePattern;
+  textDecorationStyle = textAttributes.textDecorationStyle.hasValue()
+      ? textAttributes.textDecorationStyle
+      : textDecorationStyle;
 
   // Shadow
   textShadowOffset = textAttributes.textShadowOffset.hasValue()
@@ -114,13 +113,13 @@ bool TextAttributes::operator==(const TextAttributes &rhs) const {
              baseWritingDirection,
              textDecorationColor,
              textDecorationLineType,
-             textDecorationLineStyle,
-             textDecorationLinePattern,
+             textDecorationStyle,
              textShadowOffset,
              textShadowColor,
              isHighlighted,
              layoutDirection,
-             accessibilityRole) ==
+             accessibilityRole,
+             textTransform) ==
       std::tie(
              rhs.foregroundColor,
              rhs.backgroundColor,
@@ -133,13 +132,13 @@ bool TextAttributes::operator==(const TextAttributes &rhs) const {
              rhs.baseWritingDirection,
              rhs.textDecorationColor,
              rhs.textDecorationLineType,
-             rhs.textDecorationLineStyle,
-             rhs.textDecorationLinePattern,
+             rhs.textDecorationStyle,
              rhs.textShadowOffset,
              rhs.textShadowColor,
              rhs.isHighlighted,
              rhs.layoutDirection,
-             rhs.accessibilityRole) &&
+             rhs.accessibilityRole,
+             rhs.textTransform) &&
       floatEquality(opacity, rhs.opacity) &&
       floatEquality(fontSize, rhs.fontSize) &&
       floatEquality(fontSizeMultiplier, rhs.fontSizeMultiplier) &&
@@ -194,10 +193,7 @@ SharedDebugStringConvertibleList TextAttributes::getDebugProps() const {
       debugStringConvertibleItem("textDecorationColor", textDecorationColor),
       debugStringConvertibleItem(
           "textDecorationLineType", textDecorationLineType),
-      debugStringConvertibleItem(
-          "textDecorationLineStyle", textDecorationLineStyle),
-      debugStringConvertibleItem(
-          "textDecorationLinePattern", textDecorationLinePattern),
+      debugStringConvertibleItem("textDecorationStyle", textDecorationStyle),
 
       // Shadow
       debugStringConvertibleItem("textShadowOffset", textShadowOffset),

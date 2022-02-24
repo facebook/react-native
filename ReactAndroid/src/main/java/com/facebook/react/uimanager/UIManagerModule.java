@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -40,7 +40,6 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
@@ -114,6 +113,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   private volatile int mViewManagerConstantsCacheSize;
 
   private int mBatchId = 0;
+  private int mNumRootViews = 0;
 
   @SuppressWarnings("deprecated")
   public UIManagerModule(
@@ -233,9 +233,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     mUIImplementation.onCatalystInstanceDestroyed();
 
     ReactApplicationContext reactApplicationContext = getReactApplicationContext();
-    if (ReactFeatureFlags.enableReactContextCleanupFix) {
-      reactApplicationContext.removeLifecycleEventListener(this);
-    }
     reactApplicationContext.unregisterComponentCallbacks(mMemoryTrimCallback);
     YogaNodePool.get().clear();
     ViewManagerPropertyUpdater.clear();
@@ -290,16 +287,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   @Deprecated
   @Override
   public void preInitializeViewManagers(List<String> viewManagerNames) {
-    if (ReactFeatureFlags.enableExperimentalStaticViewConfigs) {
-      for (String viewManagerName : viewManagerNames) {
-        mUIImplementation.resolveViewManager(viewManagerName);
-      }
-      // When Static view configs are enabled it is not necessary to pre-compute the constants for
-      // viewManagers, although the pre-initialization of viewManager objects is still necessary
-      // for performance reasons.
-      return;
-    }
-
     Map<String, WritableMap> constantsMap = new ArrayMap<>();
     for (String viewManagerName : viewManagerNames) {
       WritableMap constants = computeConstantsForViewManager(viewManagerName);
@@ -442,6 +429,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
             -1);
 
     mUIImplementation.registerRootView(rootView, tag, themedRootContext);
+    mNumRootViews++;
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     return tag;
   }
@@ -465,6 +453,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   @ReactMethod
   public void removeRootView(int rootViewTag) {
     mUIImplementation.removeRootView(rootViewTag);
+    mNumRootViews--;
   }
 
   public void updateNodeSize(int nodeViewTag, int newWidth, int newHeight) {
@@ -805,7 +794,12 @@ public class UIManagerModule extends ReactContextBaseJavaModule
       listener.willDispatchViewUpdates(this);
     }
     try {
-      mUIImplementation.dispatchViewUpdates(batchId);
+      // If there are no RootViews registered, there will be no View updates to dispatch.
+      // This is a hack to prevent this from being called when Fabric is used everywhere.
+      // This should no longer be necessary in Bridgeless Mode.
+      if (mNumRootViews > 0) {
+        mUIImplementation.dispatchViewUpdates(batchId);
+      }
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
@@ -947,6 +941,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     public void onLowMemory() {}
   }
 
+  @Override
   public View resolveView(int tag) {
     UiThreadUtil.assertOnUiThread();
     return mUIImplementation

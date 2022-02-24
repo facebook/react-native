@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -17,6 +17,8 @@ const NativeAnimatedHelper = require('../NativeAnimatedHelper');
 
 const flattenStyle = require('../../StyleSheet/flattenStyle');
 
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
+
 class AnimatedStyle extends AnimatedWithChildren {
   _style: Object;
 
@@ -33,7 +35,7 @@ class AnimatedStyle extends AnimatedWithChildren {
   }
 
   // Recursively get values for nested styles (like iOS's shadowOffset)
-  _walkStyleAndGetValues(style) {
+  _walkStyleAndGetValues(style: any) {
     const updatedStyle = {};
     for (const key in style) {
       const value = style[key];
@@ -58,7 +60,7 @@ class AnimatedStyle extends AnimatedWithChildren {
   }
 
   // Recursively get animated values for nested styles (like iOS's shadowOffset)
-  _walkStyleAndGetAnimatedValues(style) {
+  _walkStyleAndGetAnimatedValues(style: any) {
     const updatedStyle = {};
     for (const key in style) {
       const value = style[key];
@@ -95,14 +97,14 @@ class AnimatedStyle extends AnimatedWithChildren {
     super.__detach();
   }
 
-  __makeNative() {
+  __makeNative(platformConfig: ?PlatformConfig) {
     for (const key in this._style) {
       const value = this._style[key];
       if (value instanceof AnimatedNode) {
-        value.__makeNative();
+        value.__makeNative(platformConfig);
       }
     }
-    super.__makeNative();
+    super.__makeNative(platformConfig);
   }
 
   __getNativeConfig(): Object {
@@ -110,7 +112,7 @@ class AnimatedStyle extends AnimatedWithChildren {
     for (const styleKey in this._style) {
       if (this._style[styleKey] instanceof AnimatedNode) {
         const style = this._style[styleKey];
-        style.__makeNative();
+        style.__makeNative(this.__getPlatformConfig());
         styleConfig[styleKey] = style.__getNativeTag();
       }
       // Non-animated styles are set using `setNativeProps`, no need

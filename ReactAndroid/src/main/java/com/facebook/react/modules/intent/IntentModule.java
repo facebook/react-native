@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -86,25 +86,8 @@ public class IntentModule extends NativeIntentAndroidSpec {
     }
 
     try {
-      Activity currentActivity = getCurrentActivity();
       Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url).normalizeScheme());
-
-      String selfPackageName = getReactApplicationContext().getPackageName();
-      ComponentName componentName =
-          intent.resolveActivity(getReactApplicationContext().getPackageManager());
-      String otherPackageName = (componentName != null ? componentName.getPackageName() : "");
-
-      // If there is no currentActivity or we are launching to a different package we need to set
-      // the FLAG_ACTIVITY_NEW_TASK flag
-      if (currentActivity == null || !selfPackageName.equals(otherPackageName)) {
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      }
-
-      if (currentActivity != null) {
-        currentActivity.startActivity(intent);
-      } else {
-        getReactApplicationContext().startActivity(intent);
-      }
+      sendOSIntent(intent, false);
 
       promise.resolve(true);
     } catch (Exception e) {
@@ -235,6 +218,27 @@ public class IntentModule extends NativeIntentAndroidSpec {
       }
     }
 
-    getReactApplicationContext().startActivity(intent);
+    sendOSIntent(intent, true);
+  }
+
+  private void sendOSIntent(Intent intent, Boolean useNewTaskFlag) {
+    Activity currentActivity = getCurrentActivity();
+
+    String selfPackageName = getReactApplicationContext().getPackageName();
+    ComponentName componentName =
+        intent.resolveActivity(getReactApplicationContext().getPackageManager());
+    String otherPackageName = (componentName != null ? componentName.getPackageName() : "");
+
+    // If there is no currentActivity or we are launching to a different package we need to set
+    // the FLAG_ACTIVITY_NEW_TASK flag
+    if (useNewTaskFlag || currentActivity == null || !selfPackageName.equals(otherPackageName)) {
+      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    }
+
+    if (currentActivity != null) {
+      currentActivity.startActivity(intent);
+    } else {
+      getReactApplicationContext().startActivity(intent);
+    }
   }
 }

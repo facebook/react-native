@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -42,14 +42,16 @@ void ViewShadowNode::initialize() noexcept {
       viewProps.getClipsContentToBounds() ||
       isColorMeaningful(viewProps.shadowColor) ||
       viewProps.accessibilityElementsHidden ||
-      viewProps.importantForAccessibility != ImportantForAccessibility::Auto;
+      viewProps.accessibilityViewIsModal ||
+      viewProps.importantForAccessibility != ImportantForAccessibility::Auto ||
+      viewProps.removeClippedSubviews;
 
-  bool formsView = isColorMeaningful(viewProps.backgroundColor) ||
+  bool formsView = formsStackingContext ||
+      isColorMeaningful(viewProps.backgroundColor) ||
       isColorMeaningful(viewProps.foregroundColor) ||
+      viewProps.events.bits.any() ||
       !(viewProps.yogaStyle.border() == YGStyle::Edges{}) ||
       !viewProps.testId.empty();
-
-  formsView = formsView || formsStackingContext;
 
   if (formsView) {
     traits_.set(ShadowNodeTraits::Trait::FormsView);

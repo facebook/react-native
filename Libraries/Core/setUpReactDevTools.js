@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -58,12 +58,13 @@ if (__DEV__) {
         isWebSocketOpen = true;
       });
 
-      const viewConfig = require('../Components/View/ReactNativeViewViewConfig');
+      const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
+
       reactDevTools.connectToDevTools({
         isAppActive,
         resolveRNStyle: require('../StyleSheet/flattenStyle'),
         nativeStyleEditorValidAttributes: Object.keys(
-          viewConfig.validAttributes.style,
+          ReactNativeStyleAttributes,
         ),
         websocket: ws,
       });

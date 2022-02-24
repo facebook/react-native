@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,7 +11,9 @@
 import * as React from 'react';
 import RNTesterButton from '../../components/RNTesterButton';
 import {Text, StyleSheet, View, Animated} from 'react-native';
-import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+import RNTConfigurationBlock from '../../components/RNTConfigurationBlock';
+import ToggleNativeDriver from './utils/ToggleNativeDriver';
 
 const styles = StyleSheet.create({
   content: {
@@ -25,75 +27,97 @@ const styles = StyleSheet.create({
   },
 });
 
+function TransformBounceView({useNativeDriver}: {useNativeDriver: boolean}) {
+  const anim = new Animated.Value(0);
+  const bounceAnimation = Animated.spring(anim, {
+    // Returns to the start
+    toValue: 0,
+
+    // Velocity makes it move
+    velocity: 3,
+
+    // Slow
+    tension: -10,
+
+    // Oscillate a lot
+    friction: 1,
+
+    useNativeDriver,
+  });
+
+  return (
+    <>
+      <RNTesterButton
+        onPress={() => {
+          bounceAnimation.start();
+        }}>
+        Press to Fling it!
+      </RNTesterButton>
+      <Animated.View
+        style={[
+          styles.content,
+          {
+            transform: [
+              // Array order matters
+              {
+                scale: anim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: ([1, 4]: $ReadOnlyArray<number>),
+                }),
+              },
+              {
+                translateX: anim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: ([0, 500]: $ReadOnlyArray<number>),
+                }),
+              },
+              {
+                rotate: anim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: ([
+                    '0deg',
+                    '360deg', // 'deg' or 'rad'
+                  ]: $ReadOnlyArray<string>),
+                }),
+              },
+            ],
+          },
+        ]}>
+        <Text>Transforms!</Text>
+      </Animated.View>
+    </>
+  );
+}
+
+function TransformBounceExample(): React.Node {
+  const [useNativeDriver, setUseNativeDriver] = React.useState(false);
+
+  return (
+    <View>
+      <RNTConfigurationBlock>
+        <ToggleNativeDriver
+          value={useNativeDriver}
+          onValueChange={setUseNativeDriver}
+        />
+      </RNTConfigurationBlock>
+      <TransformBounceView
+        key={`transform-bounce-view-${
+          useNativeDriver ? 'native' : 'js'
+        }-driver`}
+        useNativeDriver={useNativeDriver}
+      />
+    </View>
+  );
+}
+
 export default ({
   title: 'Transform Bounce',
+  name: 'transformBounce',
+  expect: 'Transform animation on rotation, translation, scale of View',
   description: ('One `Animated.Value` is driven by a ' +
     'spring with custom constants and mapped to an ' +
     'ordered set of transforms.  Each transform has ' +
     'an interpolation to convert the value into the ' +
     'right range and units.': string),
-  render: function(): React.Node {
-    // $FlowFixMe[incompatible-use]
-    // $FlowFixMe[incompatible-type]
-    this.anim = this.anim || new Animated.Value(0);
-    return (
-      <View>
-        <RNTesterButton
-          onPress={() => {
-            // $FlowFixMe[incompatible-use]
-            Animated.spring(this.anim, {
-              // Returns to the start
-              toValue: 0,
-
-              // Velocity makes it move
-              velocity: 3,
-
-              // Slow
-              tension: -10,
-
-              // Oscillate a lot
-              friction: 1,
-
-              useNativeDriver: false,
-            }).start();
-          }}>
-          Press to Fling it!
-        </RNTesterButton>
-        <Animated.View
-          style={[
-            styles.content,
-            {
-              transform: [
-                // Array order matters
-                {
-                  scale: this.anim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [1, 4],
-                  }),
-                },
-                {
-                  // $FlowFixMe[incompatible-use]
-                  translateX: this.anim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0, 500],
-                  }),
-                },
-                {
-                  // $FlowFixMe[incompatible-use]
-                  rotate: this.anim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [
-                      '0deg',
-                      '360deg', // 'deg' or 'rad'
-                    ],
-                  }),
-                },
-              ],
-            },
-          ]}>
-          <Text>Transforms!</Text>
-        </Animated.View>
-      </View>
-    );
-  },
-}: RNTesterExampleModuleItem);
+  render: () => <TransformBounceExample />,
+}: RNTesterModuleExample);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,13 +10,10 @@
 #import <React/RCTBorderStyle.h>
 #import <React/RCTComponent.h>
 #import <React/RCTPointerEvents.h>
-#import <React/RCTView.h>
 
 extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 
 @protocol RCTAutoInsetsProtocol;
-
-@class RCTView;
 
 @interface RCTView : UIView
 
@@ -36,11 +33,6 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 + (void)autoAdjustInsetsForView:(UIView<RCTAutoInsetsProtocol> *)parentView
                  withScrollView:(UIScrollView *)scrollView
                    updateOffset:(BOOL)updateOffset;
-
-/**
- * Find the first view controller whose view, or any subview is the specified view.
- */
-+ (UIEdgeInsets)contentInsetsForView:(UIView *)curView;
 
 /**
  * Layout direction of the view.
@@ -82,13 +74,13 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 /**
  * Border colors (actually retained).
  */
-@property (nonatomic, assign) CGColorRef borderTopColor;
-@property (nonatomic, assign) CGColorRef borderRightColor;
-@property (nonatomic, assign) CGColorRef borderBottomColor;
-@property (nonatomic, assign) CGColorRef borderLeftColor;
-@property (nonatomic, assign) CGColorRef borderStartColor;
-@property (nonatomic, assign) CGColorRef borderEndColor;
-@property (nonatomic, assign) CGColorRef borderColor;
+@property (nonatomic, strong) UIColor *borderTopColor;
+@property (nonatomic, strong) UIColor *borderRightColor;
+@property (nonatomic, strong) UIColor *borderBottomColor;
+@property (nonatomic, strong) UIColor *borderLeftColor;
+@property (nonatomic, strong) UIColor *borderStartColor;
+@property (nonatomic, strong) UIColor *borderEndColor;
+@property (nonatomic, strong) UIColor *borderColor;
 
 /**
  * Border widths.

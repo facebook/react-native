@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -24,7 +24,7 @@ class ViewShadowNode final : public ConcreteViewShadowNode<
                                  ViewEventEmitter> {
  public:
   static ShadowNodeTraits BaseTraits() {
-    auto traits = BaseShadowNode::BaseTraits();
+    auto traits = ConcreteViewShadowNode::BaseTraits();
     traits.set(ShadowNodeTraits::Trait::View);
     return traits;
   }

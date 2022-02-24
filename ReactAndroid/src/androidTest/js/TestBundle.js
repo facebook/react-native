@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -20,9 +20,7 @@ require('./TestJSLocaleModule');
 require('./TestJSToJavaParametersModule');
 require('./TestJavaToJSReturnValuesModule');
 require('./UIManagerTestModule');
-
 require('./CatalystRootViewTestModule');
-require('./DatePickerDialogTestModule');
 require('./MeasureLayoutTestModule');
 require('./ScrollViewTestModule');
 require('./ShareTestModule');
@@ -42,11 +40,6 @@ const apps = [
     appKey: 'CatalystRootViewTestApp',
     component: () =>
       require('./CatalystRootViewTestModule').CatalystRootViewTestApp,
-  },
-  {
-    appKey: 'DatePickerDialogTestApp',
-    component: () =>
-      require('./DatePickerDialogTestModule').DatePickerDialogTestApp,
   },
   {
     appKey: 'JSResponderTestApp',

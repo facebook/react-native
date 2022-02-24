@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -40,7 +40,7 @@ void RCTEnableImageLoadingPerfInstrumentation(BOOL enabled)
 
 static NSInteger RCTImageBytesForImage(UIImage *image)
 {
-  NSInteger singleImageBytes = image.size.width * image.size.height * image.scale * image.scale * 4;
+  NSInteger singleImageBytes = (NSInteger)(image.size.width * image.size.height * image.scale * image.scale * 4);
   return image.images ? image.images.count * singleImageBytes : singleImageBytes;
 }
 
@@ -614,7 +614,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   });
 
   return [[RCTImageURLLoaderRequest alloc] initWithRequestId:requestId imageURL:request.URL cancellationBlock:^{
-    BOOL alreadyCancelled = atomic_fetch_or(cancelled.get(), 1);
+    BOOL alreadyCancelled = atomic_fetch_or(cancelled.get(), 1) ? YES : NO;
     if (alreadyCancelled) {
       return;
     }
@@ -754,7 +754,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   __block dispatch_block_t cancelLoad = nil;
   __block NSLock *cancelLoadLock = [NSLock new];
   dispatch_block_t cancellationBlock = ^{
-    BOOL alreadyCancelled = atomic_fetch_or(cancelled.get(), 1);
+    BOOL alreadyCancelled = atomic_fetch_or(cancelled.get(), 1) ? YES : NO;
     if (alreadyCancelled) {
       return;
     }
@@ -904,7 +904,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   } else {
     dispatch_block_t decodeBlock = ^{
       // Calculate the size, in bytes, that the decompressed image will require
-      NSInteger decodedImageBytes = (size.width * scale) * (size.height * scale) * 4;
+      NSInteger decodedImageBytes = (NSInteger)((size.width * scale) * (size.height * scale) * 4);
 
       // Mark these bytes as in-use
       self->_activeBytes += decodedImageBytes;

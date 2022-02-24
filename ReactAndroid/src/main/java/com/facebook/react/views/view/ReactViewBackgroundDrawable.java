@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -89,6 +89,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
   private @Nullable Path mOuterClipPathForBorderRadius;
   private @Nullable Path mPathForBorderRadiusOutline;
   private @Nullable Path mPathForBorder;
+  private Path mPathForSingleBorder = new Path();
   private @Nullable Path mCenterDrawPath;
   private @Nullable RectF mInnerClipTempRectForBorderRadius;
   private @Nullable RectF mOuterClipTempRectForBorderRadius;
@@ -968,6 +969,14 @@ public class ReactViewBackgroundDrawable extends Drawable {
     mPaint.setPathEffect(mPathEffectForBorderStyle);
   }
 
+  private void updatePathEffect(int borderWidth) {
+    PathEffect pathEffectForBorderStyle = null;
+    if (mBorderStyle != null) {
+      pathEffectForBorderStyle = BorderStyle.getPathEffect(mBorderStyle, borderWidth);
+    }
+    mPaint.setPathEffect(pathEffectForBorderStyle);
+  }
+
   /** For rounded borders we use default "borderWidth" property. */
   public float getFullBorderWidth() {
     return (mBorderWidth != null && !YogaConstants.isUndefined(mBorderWidth.getRaw(Spacing.ALL)))
@@ -1083,6 +1092,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
               colorTop,
               colorRight,
               colorBottom);
+
       if (fastBorderColor != 0) {
         if (Color.alpha(fastBorderColor) != 0) {
           // Border color is not transparent.
@@ -1090,21 +1100,42 @@ public class ReactViewBackgroundDrawable extends Drawable {
           int bottom = bounds.bottom;
 
           mPaint.setColor(fastBorderColor);
+          mPaint.setStyle(Paint.Style.STROKE);
           if (borderLeft > 0) {
-            int leftInset = left + borderLeft;
-            canvas.drawRect(left, top, leftInset, bottom - borderBottom, mPaint);
+            mPathForSingleBorder.reset();
+            int width = Math.round(borderWidth.left);
+            updatePathEffect(width);
+            mPaint.setStrokeWidth(width);
+            mPathForSingleBorder.moveTo(left + width / 2, top);
+            mPathForSingleBorder.lineTo(left + width / 2, bottom);
+            canvas.drawPath(mPathForSingleBorder, mPaint);
           }
           if (borderTop > 0) {
-            int topInset = top + borderTop;
-            canvas.drawRect(left + borderLeft, top, right, topInset, mPaint);
+            mPathForSingleBorder.reset();
+            int width = Math.round(borderWidth.top);
+            updatePathEffect(width);
+            mPaint.setStrokeWidth(width);
+            mPathForSingleBorder.moveTo(left, top + width / 2);
+            mPathForSingleBorder.lineTo(right, top + width / 2);
+            canvas.drawPath(mPathForSingleBorder, mPaint);
           }
           if (borderRight > 0) {
-            int rightInset = right - borderRight;
-            canvas.drawRect(rightInset, top + borderTop, right, bottom, mPaint);
+            mPathForSingleBorder.reset();
+            int width = Math.round(borderWidth.right);
+            updatePathEffect(width);
+            mPaint.setStrokeWidth(width);
+            mPathForSingleBorder.moveTo(right - width / 2, top);
+            mPathForSingleBorder.lineTo(right - width / 2, bottom);
+            canvas.drawPath(mPathForSingleBorder, mPaint);
           }
           if (borderBottom > 0) {
-            int bottomInset = bottom - borderBottom;
-            canvas.drawRect(left, bottomInset, right - borderRight, bottom, mPaint);
+            mPathForSingleBorder.reset();
+            int width = Math.round(borderWidth.bottom);
+            updatePathEffect(width);
+            mPaint.setStrokeWidth(width);
+            mPathForSingleBorder.moveTo(left, bottom - width / 2);
+            mPathForSingleBorder.lineTo(right, bottom - width / 2);
+            canvas.drawPath(mPathForSingleBorder, mPaint);
           }
         }
       } else {

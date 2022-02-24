@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -52,10 +52,15 @@ EventEmitter::EventEmitter(
 void EventEmitter::dispatchEvent(
     const std::string &type,
     const folly::dynamic &payload,
-    EventPriority priority) const {
-  dispatchEvent(type, [payload](jsi::Runtime &runtime) {
-    return valueFromDynamic(runtime, payload);
-  });
+    EventPriority priority,
+    RawEvent::Category category) const {
+  dispatchEvent(
+      type,
+      [payload](jsi::Runtime &runtime) {
+        return valueFromDynamic(runtime, payload);
+      },
+      priority,
+      category);
 }
 
 void EventEmitter::dispatchUniqueEvent(

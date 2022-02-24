@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -52,7 +52,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class LockFreeEventDispatcherImpl implements EventDispatcher, LifecycleEventListener {
 
-  private final boolean DEBUG_MODE = true && ReactBuildConfig.DEBUG;
+  private final boolean DEBUG_MODE = ReactBuildConfig.DEBUG;
   private final String TAG = LockFreeEventDispatcherImpl.class.getSimpleName();
 
   private final ReactApplicationContext mReactContext;
@@ -77,14 +77,14 @@ public class LockFreeEventDispatcherImpl implements EventDispatcher, LifecycleEv
     Assertions.assertNotNull(mReactEventEmitter);
 
     if (DEBUG_MODE) {
-      FLog.d(TAG, "dispatchEvent: " + event.toString());
+      FLog.v(TAG, "dispatchEvent: " + event.toString());
     }
 
     for (EventDispatcherListener listener : mListeners) {
       listener.onEventDispatch(event);
     }
 
-    event.dispatchModernV2(mReactEventEmitter);
+    event.dispatchModern(mReactEventEmitter);
     event.dispose();
   }
 
@@ -125,7 +125,8 @@ public class LockFreeEventDispatcherImpl implements EventDispatcher, LifecycleEv
 
   @Override
   public void onHostResume() {
-    maybePostFrameCallbackFromNonUI();
+    UiThreadUtil.assertOnUiThread();
+    mCurrentFrameCallback.resume();
   }
 
   @Override
@@ -181,6 +182,11 @@ public class LockFreeEventDispatcherImpl implements EventDispatcher, LifecycleEv
       }
 
       driveEventBeats();
+    }
+
+    public void resume() {
+      mShouldStop = false;
+      maybePost();
     }
 
     public void stop() {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,6 +9,8 @@
  */
 
 'use strict';
+import type {CommandOptions} from './options';
+import type {TypeDeclarationMap} from '../utils';
 
 import type {ComponentSchemaBuilderConfig} from './schema.js';
 const {getCommands} = require('./commands');
@@ -119,7 +121,11 @@ function findComponentConfig(ast) {
   };
 }
 
-function getCommandProperties(commandTypeName, types, commandOptions) {
+function getCommandProperties(
+  commandTypeName,
+  types: TypeDeclarationMap,
+  commandOptions: ?CommandOptions,
+) {
   if (commandTypeName == null) {
     return [];
   }

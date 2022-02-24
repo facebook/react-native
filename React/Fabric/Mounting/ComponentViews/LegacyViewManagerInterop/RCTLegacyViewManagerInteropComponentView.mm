@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -29,8 +29,6 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    RCTWarnNotAllowedForNewArchitecture(
-        self, @"ViewManager with interop layer is not allowed in the new architecture.");
     static const auto defaultProps = std::make_shared<const LegacyViewManagerInteropViewProps>();
     _props = defaultProps;
     _viewsToBeMounted = [NSMutableArray new];
@@ -67,6 +65,12 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
 
 + (BOOL)isSupported:(NSString *)componentName
 {
+  RCTLogNotAllowedForNewArchitecture(
+      self,
+      [NSString
+          stringWithFormat:
+              @"Legacy ViewManagers should be migrated to Fabric ComponentViews in the new architecture to reduce risk. Component using interop layer: %@",
+              componentName]);
   return [[RCTLegacyViewManagerInteropComponentView supportedViewManagers] containsObject:componentName];
 }
 

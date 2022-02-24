@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -76,7 +76,7 @@ using namespace facebook::react;
 /**
  * Must be kept in sync with `MessageQueue.js`.
  */
-typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
+typedef NS_ENUM(NSInteger, RCTBridgeFields) {
   RCTBridgeFieldRequestModuleIDs = 0,
   RCTBridgeFieldMethodIDs,
   RCTBridgeFieldParams,
@@ -136,8 +136,7 @@ static void notifyAboutModuleSetup(RCTPerformanceLogger *performanceLogger, cons
 static void mapReactMarkerToPerformanceLogger(
     const ReactMarker::ReactMarkerId markerId,
     RCTPerformanceLogger *performanceLogger,
-    const char *tag,
-    int instanceKey)
+    const char *tag)
 {
   switch (markerId) {
     case ReactMarker::RUN_JS_BUNDLE_START:
@@ -177,13 +176,8 @@ static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogg
 {
   __weak RCTPerformanceLogger *weakPerformanceLogger = performanceLogger;
   ReactMarker::logTaggedMarker = [weakPerformanceLogger](const ReactMarker::ReactMarkerId markerId, const char *tag) {
-    mapReactMarkerToPerformanceLogger(markerId, weakPerformanceLogger, tag, 0);
+    mapReactMarkerToPerformanceLogger(markerId, weakPerformanceLogger, tag);
   };
-
-  ReactMarker::logTaggedMarkerWithInstanceKey =
-      [weakPerformanceLogger](const ReactMarker::ReactMarkerId markerId, const char *tag, const int instanceKey) {
-        mapReactMarkerToPerformanceLogger(markerId, weakPerformanceLogger, tag, instanceKey);
-      };
 }
 
 @interface RCTCxxBridge ()
@@ -244,6 +238,11 @@ struct RCTInstanceCallback : public InstanceCallback {
 @synthesize performanceLogger = _performanceLogger;
 @synthesize valid = _valid;
 
+- (RCTModuleRegistry *)moduleRegistry
+{
+  return _objCModuleRegistry;
+}
+
 - (void)setRCTTurboModuleRegistry:(id<RCTTurboModuleRegistry>)turboModuleRegistry
 {
   _turboModuleRegistry = turboModuleRegistry;
@@ -285,6 +284,18 @@ struct RCTInstanceCallback : public InstanceCallback {
 
   if ([bridgeModule respondsToSelector:@selector(setCallableJSModules:)]) {
     bridgeModule.callableJSModules = _callableJSModules;
+  }
+
+  /**
+   * Attach the RCTModuleRegistry to this TurboModule, which allows this TurboModule
+   * to require other TurboModules/NativeModules.
+   *
+   * Usage: In the TurboModule @implementation, include:
+   *   `@synthesize moduleRegistry = _moduleRegistry`
+   */
+
+  if ([bridgeModule respondsToSelector:@selector(setModuleRegistry:)]) {
+    bridgeModule.moduleRegistry = _objCModuleRegistry;
   }
 }
 
@@ -337,6 +348,9 @@ struct RCTInstanceCallback : public InstanceCallback {
                                              selector:@selector(handleMemoryWarning)
                                                  name:UIApplicationDidReceiveMemoryWarningNotification
                                                object:nil];
+
+    RCTLogSetBridgeModuleRegistry(_objCModuleRegistry);
+    RCTLogSetBridgeCallableJSModules(_callableJSModules);
   }
   return self;
 }
@@ -1113,7 +1127,7 @@ struct RCTInstanceCallback : public InstanceCallback {
   [self.devSettings setupHMRClientWithBundleURL:self.bundleURL];
 }
 
-#if RCT_DEV_MENU
+#if RCT_DEV_MENU | RCT_PACKAGER_LOADING_FUNCTIONALITY
 - (void)loadAndExecuteSplitBundleURL:(NSURL *)bundleURL
                              onError:(RCTLoadAndExecuteErrorBlock)onError
                           onComplete:(dispatch_block_t)onComplete

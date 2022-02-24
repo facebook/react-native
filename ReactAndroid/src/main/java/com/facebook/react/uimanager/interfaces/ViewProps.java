@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,6 +9,7 @@ package com.facebook.react.uimanager;
 
 import android.graphics.Color;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableType;
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -153,6 +154,7 @@ public class ViewProps {
   public static final String ACCESSIBILITY_STATE = "accessibilityState";
   public static final String ACCESSIBILITY_ACTIONS = "accessibilityActions";
   public static final String ACCESSIBILITY_VALUE = "accessibilityValue";
+  public static final String ACCESSIBILITY_LABELLED_BY = "accessibilityLabelledBy";
   public static final String IMPORTANT_FOR_ACCESSIBILITY = "importantForAccessibility";
 
   // DEPRECATED
@@ -260,10 +262,14 @@ public class ViewProps {
         // Ignore if explicitly set to default opacity.
         return map.isNull(OPACITY) || map.getDouble(OPACITY) == 1d;
       case BORDER_RADIUS: // Without a background color or border width set, a border won't show.
-        if (map.hasKey(BACKGROUND_COLOR)
-            && !map.isNull(BACKGROUND_COLOR)
-            && map.getInt(BACKGROUND_COLOR) != Color.TRANSPARENT) {
-          return false;
+        if (map.hasKey(BACKGROUND_COLOR)) {
+          ReadableType valueType = map.getType(BACKGROUND_COLOR);
+          if (valueType == ReadableType.Number
+              && map.getInt(BACKGROUND_COLOR) != Color.TRANSPARENT) {
+            return false;
+          } else if (valueType != ReadableType.Null) {
+            return false;
+          }
         }
         if (map.hasKey(BORDER_WIDTH)
             && !map.isNull(BORDER_WIDTH)

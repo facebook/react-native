@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -87,7 +87,7 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
 {
   if ((self = [super initWithFrame:CGRectZero])) {
     _bridge = bridge;
-    _imageView = [[RCTUIImageViewAnimated alloc] init];
+    _imageView = [RCTUIImageViewAnimated new];
     _imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self addSubview:_imageView];
 
@@ -234,6 +234,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
   [_imageLoader trackURLImageRequestDidDestroy:_loaderRequest];
   _loaderRequest = nil;
+
+  if (!self.image) {
+    self.image = _defaultImage;
+  }
 }
 
 - (void)clearImageIfDetached
@@ -309,9 +313,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     }
 
     RCTImageLoaderProgressBlock progressHandler = nil;
-    if (_onProgress) {
+    if (self.onProgress) {
+      RCTDirectEventBlock onProgress = self.onProgress;
       progressHandler = ^(int64_t loaded, int64_t total) {
-        self->_onProgress(@{
+        onProgress(@{
           @"loaded": @((double)loaded),
           @"total": @((double)total),
         });
@@ -367,8 +372,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   }
 
   if (error) {
+    __weak RCTImageView *weakSelf = self;
     RCTExecuteOnMainQueue(^{
-      self.image = nil;
+      weakSelf.image = nil;
     });
 
     if (_onError) {
@@ -380,33 +386,39 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     return;
   }
 
+  __weak RCTImageView *weakSelf = self;
   void (^setImageBlock)(UIImage *) = ^(UIImage *image) {
+    RCTImageView *strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
     if (!isPartialLoad) {
-      self->_imageSource = source;
-      self->_pendingImageSource = nil;
+      strongSelf->_imageSource = source;
+      strongSelf->_pendingImageSource = nil;
     }
 
-    self.image = image;
+    strongSelf.image = image;
 
     if (isPartialLoad) {
-      if (self->_onPartialLoad) {
-        self->_onPartialLoad(nil);
+      if (strongSelf->_onPartialLoad) {
+        strongSelf->_onPartialLoad(nil);
       }
     } else {
-      if (self->_onLoad) {
+      if (strongSelf->_onLoad) {
         RCTImageSource *sourceLoaded = [source imageSourceWithSize:image.size scale:source.scale];
-        self->_onLoad(onLoadParamsForSource(sourceLoaded));
+        strongSelf->_onLoad(onLoadParamsForSource(sourceLoaded));
       }
-      if (self->_onLoadEnd) {
-        self->_onLoadEnd(nil);
+      if (strongSelf->_onLoadEnd) {
+        strongSelf->_onLoadEnd(nil);
       }
     }
   };
 
   if (_blurRadius > __FLT_EPSILON__) {
     // Blur on a background thread to avoid blocking interaction
+    CGFloat blurRadius = self.blurRadius;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-      UIImage *blurredImage = RCTBlurredImageWithRadius(loadedImage, self->_blurRadius);
+      UIImage *blurredImage = RCTBlurredImageWithRadius(loadedImage, blurRadius);
       RCTExecuteOnMainQueue(^{
         setImageBlock(blurredImage);
       });

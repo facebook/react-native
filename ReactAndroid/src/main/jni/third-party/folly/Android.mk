@@ -86,11 +86,13 @@ LOCAL_SRC_FILES := \
   folly/io/async/AsyncTimeout.cpp \
   folly/io/async/EventBase.cpp \
   folly/io/async/EventBaseBackendBase.cpp \
+  folly/io/async/EventBaseLocal.cpp \
   folly/io/async/EventHandler.cpp \
   folly/io/async/HHWheelTimer.cpp \
   folly/io/async/Request.cpp \
   folly/io/async/TimeoutManager.cpp \
   folly/io/async/VirtualEventBase.cpp \
+  folly/lang/Exception.cpp \
   folly/memory/MallctlHelper.cpp \
   folly/portability/SysMembarrier.cpp \
   folly/synchronization/AsymmetricMemoryBarrier.cpp \
@@ -106,7 +108,7 @@ LOCAL_SRC_FILES := \
 LOCAL_C_INCLUDES := $(LOCAL_PATH)
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
 
-LOCAL_CFLAGS += -fexceptions -fno-omit-frame-pointer -frtti -Wno-sign-compare
+LOCAL_CFLAGS += -fexceptions -fno-omit-frame-pointer -frtti -Wno-sign-compare -Wno-unused-variable
 
 LOCAL_CFLAGS += $(FOLLY_FLAGS)
 

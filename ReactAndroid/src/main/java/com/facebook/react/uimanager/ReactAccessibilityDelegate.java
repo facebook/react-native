@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,14 +8,12 @@
 package com.facebook.react.uimanager;
 
 import android.content.Context;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.SpannableString;
 import android.text.style.URLSpan;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import androidx.annotation.Nullable;
 import androidx.core.view.AccessibilityDelegateCompat;
@@ -28,7 +26,7 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
@@ -37,6 +35,7 @@ import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import java.util.HashMap;
 
 /**
@@ -196,6 +195,8 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
         };
   }
 
+  @Nullable View mAccessibilityLabelledBy;
+
   @Override
   public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
     super.onInitializeAccessibilityNodeInfo(host, info);
@@ -203,6 +204,15 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
         (AccessibilityRole) host.getTag(R.id.accessibility_role);
     if (accessibilityRole != null) {
       setRole(info, accessibilityRole, host.getContext());
+    }
+
+    final Object accessibilityLabelledBy = host.getTag(R.id.labelled_by);
+    if (accessibilityLabelledBy != null) {
+      mAccessibilityLabelledBy =
+          ReactFindViewUtil.findView(host.getRootView(), (String) accessibilityLabelledBy);
+      if (mAccessibilityLabelledBy != null) {
+        info.setLabeledBy(mAccessibilityLabelledBy);
+      }
     }
 
     // state is changeable.
@@ -214,7 +224,7 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
         (ReadableArray) host.getTag(R.id.accessibility_actions);
 
     final ReadableMap accessibilityCollectionItemInfo =
-      (ReadableMap) host.getTag(R.id.accessibility_collection_item_info);
+        (ReadableMap) host.getTag(R.id.accessibility_collection_item_info);
     if (accessibilityCollectionItemInfo != null) {
       int rowIndex = accessibilityCollectionItemInfo.getInt("rowIndex");
       int columnIndex = accessibilityCollectionItemInfo.getInt("columnIndex");
@@ -222,7 +232,9 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
       int columnSpan = accessibilityCollectionItemInfo.getInt("columnSpan");
       boolean heading = accessibilityCollectionItemInfo.getBoolean("heading");
 
-      AccessibilityNodeInfoCompat.CollectionItemInfoCompat collectionItemInfoCompat = AccessibilityNodeInfoCompat.CollectionItemInfoCompat.obtain(rowIndex, rowSpan, columnIndex, columnSpan, heading);
+      AccessibilityNodeInfoCompat.CollectionItemInfoCompat collectionItemInfoCompat =
+          AccessibilityNodeInfoCompat.CollectionItemInfoCompat.obtain(
+              rowIndex, rowSpan, columnIndex, columnSpan, heading);
       info.setCollectionItemInfo(collectionItemInfoCompat);
     }
 
@@ -280,7 +292,6 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
       info.setViewIdResourceName(testId);
     }
   }
-
 
   @Override
   public void onInitializeAccessibilityEvent(View host, AccessibilityEvent event) {
@@ -340,7 +351,7 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
                   });
         }
       } else {
-        ReactSoftException.logSoftException(
+        ReactSoftExceptionLogger.logSoftException(
             TAG, new ReactNoCrashSoftException("Cannot get RCTEventEmitter, no CatalystInstance"));
       }
 

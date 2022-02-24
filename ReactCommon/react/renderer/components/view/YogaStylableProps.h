@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,6 +10,7 @@
 #include <yoga/YGStyle.h>
 
 #include <react/renderer/core/Props.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
 
 namespace facebook {
@@ -19,6 +20,7 @@ class YogaStylableProps : public Props {
  public:
   YogaStylableProps() = default;
   YogaStylableProps(
+      const PropsParserContext &context,
       YogaStylableProps const &sourceProps,
       RawProps const &rawProps);
 

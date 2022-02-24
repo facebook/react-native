@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,15 +14,15 @@ import java.util.Map;
 /**
  * Utility class for Fabric components, this will be removed
  *
- * <p>//TODO T31905686: remove this class when the component names are unified between JS - Android
- * - iOS - C++
+ * <p>TODO T97384889: remove this class when the component names are unified between JS - Android -
+ * iOS - C++
  */
 public class FabricComponents {
 
   private static @NonNull final Map<String, String> sComponentNames = new HashMap<>();
 
   static {
-    // TODO T31905686: unify component names between JS - Android - iOS - C++
+    // TODO T97384889: unify component names between JS - Android - iOS - C++
     sComponentNames.put("View", "RCTView");
     sComponentNames.put("Image", "RCTImageView");
     sComponentNames.put("ScrollView", "RCTScrollView");
@@ -40,6 +40,7 @@ public class FabricComponents {
     sComponentNames.put("Map", "RCTMap");
     sComponentNames.put("WebView", "RCTWebView");
     sComponentNames.put("Keyframes", "RCTKeyframes");
+    sComponentNames.put("ImpressionTrackingView", "RCTImpressionTrackingView");
   }
 
   /** @return the name of component in the Fabric environment */

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -21,6 +21,7 @@ import typeof flattenStyle from '../StyleSheet/flattenStyle';
 import {type DangerouslyImpreciseStyleProp} from '../StyleSheet/StyleSheet';
 import typeof ReactFiberErrorDialog from '../Core/ReactFiberErrorDialog';
 import typeof legacySendAccessibilityEvent from '../Components/AccessibilityInfo/legacySendAccessibilityEvent';
+import typeof RawEventEmitter from '../Core/RawEventEmitter';
 
 // flowlint unsafe-getters-setters:off
 module.exports = {
@@ -49,8 +50,7 @@ module.exports = {
     return require('../Utilities/differ/deepDiffer');
   },
   get deepFreezeAndThrowOnMutationInDev(): deepFreezeAndThrowOnMutationInDev<
-    // $FlowFixMe[deprecated-type] - can't properly parameterize the getter's type
-    *,
+    {...} | Array<mixed>,
   > {
     return require('../Utilities/deepFreezeAndThrowOnMutationInDev');
   },
@@ -62,5 +62,8 @@ module.exports = {
   },
   get legacySendAccessibilityEvent(): legacySendAccessibilityEvent {
     return require('../Components/AccessibilityInfo/legacySendAccessibilityEvent');
+  },
+  get RawEventEmitter(): RawEventEmitter {
+    return require('../Core/RawEventEmitter').default;
   },
 };

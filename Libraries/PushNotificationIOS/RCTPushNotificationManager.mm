@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -76,7 +76,7 @@ RCT_ENUM_CONVERTER(UIBackgroundFetchResult, (@{
 
 @end
 #else
-@interface RCTPushNotificationManager () <NativePushNotificationManagerIOS>
+@interface RCTPushNotificationManager () <NativePushNotificationManagerIOSSpec>
 @end
 #endif // TARGET_OS_UIKITFORMAC
 
@@ -103,7 +103,6 @@ static NSDictionary *RCTFormatLocalNotification(UILocalNotification *notificatio
   return formattedLocalNotification;
 }
 
-API_AVAILABLE(ios(10.0))
 static NSDictionary *RCTFormatUNNotification(UNNotification *notification)
 {
   NSMutableDictionary *formattedNotification = [NSMutableDictionary dictionary];
@@ -314,10 +313,12 @@ RCT_EXPORT_METHOD(requestPermissions:(JS::NativePushNotificationManagerIOS::Spec
     if (error != NULL) {
       reject(@"-1", @"Error - Push authorization request failed.", error);
     } else {
-      [RCTSharedApplication() registerForRemoteNotifications];
-      [UNUserNotificationCenter.currentNotificationCenter getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings * _Nonnull settings) {
-         resolve(RCTPromiseResolveValueForUNNotificationSettings(settings));
-      }];
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [RCTSharedApplication() registerForRemoteNotifications];
+        [UNUserNotificationCenter.currentNotificationCenter getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings * _Nonnull settings) {
+           resolve(RCTPromiseResolveValueForUNNotificationSettings(settings));
+        }];
+      });
     }
   }];
 }
@@ -366,6 +367,9 @@ RCT_EXPORT_METHOD(presentLocalNotification:(JS::NativePushNotificationManagerIOS
   }
   if (notification.isSilent()) {
     notificationDict[@"isSilent"] = @(*notification.isSilent());
+    if ([notificationDict[@"isSilent"] isEqualToNumber:@(NO)]) {
+      notificationDict[@"soundName"] = notification.soundName();
+    }
   }
   [RCTSharedApplication() presentLocalNotificationNow:[RCTConvert UILocalNotification:notificationDict]];
 }
@@ -387,6 +391,9 @@ RCT_EXPORT_METHOD(scheduleLocalNotification:(JS::NativePushNotificationManagerIO
   }
   if (notification.isSilent()) {
     notificationDict[@"isSilent"] = @(*notification.isSilent());
+    if ([notificationDict[@"isSilent"] isEqualToNumber:@(NO)]) {
+      notificationDict[@"soundName"] = notification.soundName();
+    }
   }
   [RCTSharedApplication() scheduleLocalNotification:[RCTConvert UILocalNotification:notificationDict]];
 }

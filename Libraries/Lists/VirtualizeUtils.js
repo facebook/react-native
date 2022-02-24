@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -20,9 +20,7 @@ import invariant from 'invariant';
 export function elementsThatOverlapOffsets(
   offsets: Array<number>,
   itemCount: number,
-  getFrameMetrics: (
-    index: number,
-  ) => {
+  getFrameMetrics: (index: number) => {
     length: number,
     offset: number,
     ...
@@ -96,9 +94,7 @@ export function computeWindowedRenderLimits(
     last: number,
     ...
   },
-  getFrameMetricsApprox: (
-    index: number,
-  ) => {
+  getFrameMetricsApprox: (index: number) => {
     length: number,
     offset: number,
     ...

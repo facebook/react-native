@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,8 @@
 
 #include "Differentiator.h"
 
-#include <better/map.h>
-#include <better/small_vector.h>
+#include <butter/map.h>
+#include <butter/small_vector.h>
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/debug/SystraceSection.h>
@@ -168,7 +168,7 @@ class TinyMap final {
     erasedAtFront_ = 0;
   }
 
-  better::small_vector<Pair, DefaultSize> vector_;
+  butter::small_vector<Pair, DefaultSize> vector_;
   size_t numErased_{0};
   size_t erasedAtFront_{0};
 };
@@ -895,8 +895,8 @@ static void calculateShadowViewMutationsFlattener(
           // Construct unvisited nodes map
           auto unvisitedRecursiveChildPairs =
               TinyMap<Tag, ShadowViewNodePair *>{};
-          for (size_t i = 0; i < flattenedNodes.size(); i++) {
-            auto &newChild = *flattenedNodes[i];
+          for (auto &flattenedNode : flattenedNodes) {
+            auto &newChild = *flattenedNode;
 
             auto unvisitedOtherNodesIt =
                 unvisitedOtherNodes.find(newChild.shadowView.tag);
@@ -959,14 +959,12 @@ static void calculateShadowViewMutationsFlattener(
             // If old nodes were not visited, we know that we can delete them
             // now. They will be removed from the hierarchy by the outermost
             // loop of this function.
-            for (auto unvisitedOldChildPairIt =
-                     unvisitedRecursiveChildPairs.begin();
-                 unvisitedOldChildPairIt != unvisitedRecursiveChildPairs.end();
-                 unvisitedOldChildPairIt++) {
-              if (unvisitedOldChildPairIt->first == 0) {
+            for (auto &unvisitedRecursiveChildPair :
+                 unvisitedRecursiveChildPairs) {
+              if (unvisitedRecursiveChildPair.first == 0) {
                 continue;
               }
-              auto &oldFlattenedNode = *unvisitedOldChildPairIt->second;
+              auto &oldFlattenedNode = *unvisitedRecursiveChildPair.second;
 
               // Node unvisited - mark the entire subtree for deletion
               if (oldFlattenedNode.isConcreteView &&
@@ -1026,13 +1024,11 @@ static void calculateShadowViewMutationsFlattener(
   // Final step: go through creation/deletion candidates and delete/create
   // subtrees if they were never visited during the execution of the above
   // loop and recursions.
-  for (auto it = deletionCreationCandidatePairs.begin();
-       it != deletionCreationCandidatePairs.end();
-       it++) {
-    if (it->first == 0) {
+  for (auto &deletionCreationCandidatePair : deletionCreationCandidatePairs) {
+    if (deletionCreationCandidatePair.first == 0) {
       continue;
     }
-    auto &treeChildPair = *it->second;
+    auto &treeChildPair = *deletionCreationCandidatePair.second;
 
     // If node was visited during a flattening/unflattening recursion,
     // and the node in the other tree is concrete, that means it was
@@ -1477,14 +1473,12 @@ static void calculateShadowViewMutationsV2(
     // subtrees/nodes. We do this here because we need to traverse the entire
     // list to make sure that a node was not reparented into an unflattened
     // node that occurs *after* it in the hierarchy, due to zIndex ordering.
-    for (auto it = deletionCandidatePairs.begin();
-         it != deletionCandidatePairs.end();
-         it++) {
-      if (it->first == 0) {
+    for (auto &deletionCandidatePair : deletionCandidatePairs) {
+      if (deletionCandidatePair.first == 0) {
         continue;
       }
 
-      auto const &oldChildPair = *it->second;
+      auto const &oldChildPair = *deletionCandidatePair.second;
 
       DEBUG_LOGS({
         LOG(ERROR)
@@ -1520,17 +1514,16 @@ static void calculateShadowViewMutationsV2(
 
     // Final step: generate Create instructions for entirely new
     // subtrees/nodes that are not the result of flattening or unflattening.
-    for (auto it = newInsertedPairs.begin(); it != newInsertedPairs.end();
-         it++) {
+    for (auto &newInsertedPair : newInsertedPairs) {
       // Erased elements of a TinyMap will have a Tag/key of 0 - skip those
       // These *should* be removed by the map; there are currently no KNOWN
       // cases where TinyMap will do the wrong thing, but there are not yet
       // any unit tests explicitly for TinyMap, so this is safer for now.
-      if (it->first == 0) {
+      if (newInsertedPair.first == 0) {
         continue;
       }
 
-      auto const &newChildPair = *it->second;
+      auto const &newChildPair = *newInsertedPair.second;
 
       DEBUG_LOGS({
         LOG(ERROR)

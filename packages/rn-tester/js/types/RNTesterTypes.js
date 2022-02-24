@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,15 +10,16 @@
 
 import * as React from 'react';
 
-export type RNTesterExampleModuleItem = $ReadOnly<{|
+export type RNTesterModuleExample = $ReadOnly<{|
   name?: string,
   title: string,
-  platform?: string,
+  platform?: 'ios' | 'android',
   description?: string,
+  expect?: string,
   render: () => React.Node,
 |}>;
 
-export type RNTesterExampleModule = $ReadOnly<{|
+export type RNTesterModule = $ReadOnly<{|
   title: string,
   testTitle?: ?string,
   description: string,
@@ -26,15 +27,15 @@ export type RNTesterExampleModule = $ReadOnly<{|
   documentationURL?: ?string,
   category?: ?string,
   framework?: string,
-  examples: Array<RNTesterExampleModuleItem>,
-  simpleExampleContainer?: ?boolean,
+  examples: Array<RNTesterModuleExample>,
   category?: string,
   documentationURL?: string,
+  showIndividualExamples?: boolean,
 |}>;
 
-export type RNTesterExample = $ReadOnly<{|
+export type RNTesterModuleInfo = $ReadOnly<{|
   key: string,
-  module: RNTesterExampleModule,
+  module: RNTesterModule,
   category?: string,
   supportsTVOS?: boolean,
   documentationURL?: string,
@@ -42,16 +43,16 @@ export type RNTesterExample = $ReadOnly<{|
   exampleType?: 'components' | 'apis',
 |}>;
 
-export type SectionData = {
+export type SectionData<T> = {
   key: string,
   title: string,
-  data: Array<RNTesterExample>,
+  data: Array<T>,
 };
 
 export type ExamplesList = $ReadOnly<{|
-  components: SectionData[],
-  apis: SectionData[],
-  bookmarks: SectionData[],
+  components: $ReadOnlyArray<SectionData<RNTesterModuleInfo>>,
+  apis: $ReadOnlyArray<SectionData<RNTesterModuleInfo>>,
+  bookmarks: $ReadOnlyArray<SectionData<RNTesterModuleInfo>>,
 |}>;
 
 export type ScreenTypes = 'components' | 'apis' | 'bookmarks' | null;
@@ -59,7 +60,9 @@ export type ScreenTypes = 'components' | 'apis' | 'bookmarks' | null;
 export type ComponentList = null | {components: string[], apis: string[]};
 
 export type RNTesterState = {
-  openExample: null | string,
+  activeModuleKey: null | string,
+  activeModuleTitle: null | string,
+  activeModuleExampleKey: null | string,
   screen: ScreenTypes,
   bookmarks: ComponentList,
   recentlyUsed: ComponentList,
