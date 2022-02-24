@@ -10,6 +10,7 @@
 #include <butter/optional.h>
 #include <cinttypes>
 #include <string>
+#include <vector>
 
 namespace facebook {
 namespace react {
@@ -53,6 +54,18 @@ struct AccessibilityAction {
   butter::optional<std::string> label{};
 };
 
+inline static bool operator==(
+    AccessibilityAction const &lhs,
+    AccessibilityAction const &rhs) {
+  return lhs.name == rhs.name && lhs.label == rhs.label;
+}
+
+inline static bool operator!=(
+    AccessibilityAction const &lhs,
+    AccessibilityAction const &rhs) {
+  return !(rhs == lhs);
+}
+
 struct AccessibilityState {
   bool disabled{false};
   bool selected{false};
@@ -73,6 +86,22 @@ constexpr bool operator!=(
     AccessibilityState const &lhs,
     AccessibilityState const &rhs) {
   return !(rhs == lhs);
+}
+
+struct AccessibilityLabelledBy {
+  std::vector<std::string> value{};
+};
+
+inline static bool operator==(
+    AccessibilityLabelledBy const &lhs,
+    AccessibilityLabelledBy const &rhs) {
+  return lhs.value == rhs.value;
+}
+
+inline static bool operator!=(
+    AccessibilityLabelledBy const &lhs,
+    AccessibilityLabelledBy const &rhs) {
+  return !(lhs == rhs);
 }
 
 struct AccessibilityValue {
@@ -100,6 +129,12 @@ enum class ImportantForAccessibility {
   Yes,
   No,
   NoHideDescendants,
+};
+
+enum class AccessibilityLiveRegion {
+  None,
+  Polite,
+  Assertive,
 };
 
 } // namespace react

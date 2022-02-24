@@ -127,7 +127,7 @@ def rn_codegen_modules(
             ios_assume_nonnull = ios_assume_nonnull,
         ),
         out = "codegenfiles-{}".format(name),
-        labels = ["codegen_rule"],
+        labels = ["codegen_rule", "uses_local_filesystem_abspaths"],
     )
 
     ##################
@@ -485,7 +485,7 @@ def rn_codegen_components(
             deps = [
                 react_native_dep("third-party/android/androidx:annotation"),
                 react_native_target("java/com/facebook/react/bridge:bridge"),
-                react_native_target("java/com/facebook/react/uimanager/interfaces:interfaces"),
+                react_native_target("java/com/facebook/react/uimanager:interfaces"),
             ],
         )
 

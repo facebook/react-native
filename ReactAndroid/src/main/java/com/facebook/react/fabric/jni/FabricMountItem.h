@@ -35,7 +35,9 @@ struct CppMountItem final {
       ShadowView const &shadowView,
       int index);
 
-  static CppMountItem UpdatePropsMountItem(ShadowView const &shadowView);
+  static CppMountItem UpdatePropsMountItem(
+      ShadowView const &oldShadowView,
+      ShadowView const &newShadowView);
 
   static CppMountItem UpdateStateMountItem(ShadowView const &shadowView);
 

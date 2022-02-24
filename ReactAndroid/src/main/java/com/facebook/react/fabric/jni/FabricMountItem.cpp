@@ -28,8 +28,11 @@ CppMountItem CppMountItem::RemoveMountItem(
     int index) {
   return {CppMountItem::Type::Remove, parentView, shadowView, {}, index};
 }
-CppMountItem CppMountItem::UpdatePropsMountItem(ShadowView const &shadowView) {
-  return {CppMountItem::Type::UpdateProps, {}, {}, shadowView, -1};
+CppMountItem CppMountItem::UpdatePropsMountItem(
+    ShadowView const &oldShadowView,
+    ShadowView const &newShadowView) {
+  return {
+      CppMountItem::Type::UpdateProps, {}, oldShadowView, newShadowView, -1};
 }
 CppMountItem CppMountItem::UpdateStateMountItem(ShadowView const &shadowView) {
   return {CppMountItem::Type::UpdateState, {}, {}, shadowView, -1};

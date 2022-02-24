@@ -30,6 +30,10 @@ class AccessibilityProps {
   AccessibilityTraits accessibilityTraits{AccessibilityTraits::None};
   AccessibilityState accessibilityState;
   std::string accessibilityLabel{""};
+  AccessibilityLabelledBy accessibilityLabelledBy{};
+  AccessibilityLiveRegion accessibilityLiveRegion{
+      AccessibilityLiveRegion::None};
+  std::string accessibilityRole{""};
   std::string accessibilityHint{""};
   AccessibilityValue accessibilityValue;
   std::vector<AccessibilityAction> accessibilityActions{};

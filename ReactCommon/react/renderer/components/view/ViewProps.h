@@ -30,7 +30,8 @@ class ViewProps : public YogaStylableProps, public AccessibilityProps {
   ViewProps(
       const PropsParserContext &context,
       ViewProps const &sourceProps,
-      RawProps const &rawProps);
+      RawProps const &rawProps,
+      bool shouldSetRawProps = true);
 
 #pragma mark - Props
 
@@ -68,6 +69,18 @@ class ViewProps : public YogaStylableProps, public AccessibilityProps {
   bool removeClippedSubviews{false};
 
   Float elevation{}; /* Android-only */
+
+#ifdef ANDROID
+
+  butter::optional<NativeDrawable> nativeBackground{};
+  butter::optional<NativeDrawable> nativeForeground{};
+
+  bool focusable{false};
+  bool hasTVPreferredFocus{false};
+  bool needsOffscreenAlphaCompositing{false};
+  bool renderToHardwareTextureAndroid{false};
+
+#endif
 
 #pragma mark - Convenience Methods
 
