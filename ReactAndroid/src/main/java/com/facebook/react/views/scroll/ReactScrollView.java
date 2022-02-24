@@ -114,11 +114,6 @@ public class ReactScrollView extends ScrollView
     this(context, null);
   }
 
-  private View getContentView() {
-    View contentView = getChildAt(0);
-    return contentView;
-  }
-
   public ReactScrollView(Context context, @Nullable FpsListener fpsListener) {
     super(context);
     mFpsListener = fpsListener;
