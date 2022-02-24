@@ -177,7 +177,6 @@ public class ReactScrollView extends ScrollView
                     firstVisibleIndex = accessibilityCollectionItem.getInt("itemIndex");
                   }
                   lastVisibleIndex = accessibilityCollectionItem.getInt("itemIndex");
-                  ;
                 }
 
                 if (firstVisibleIndex != null && lastVisibleIndex != null) {
