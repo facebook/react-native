@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.68-stable
+## 0.68.0
 
 ### Breaking
 
@@ -12,7 +12,7 @@
 
 #### iOS specific
 
-
+- Remove fallbackResource from RCTBundleURLProvider API ([0912ee179c](https://github.com/facebook/react-native/commit/0912ee179c210fb6b2ed9afbb3f2fbc5fb8a2bb3)) by [@philIip](https://github.com/philIip)
 
 ### Added
 
@@ -49,6 +49,8 @@
 
 ### Changed
 
+- Gradle: Deprecate `reactRoot` in favor of `root` and `reactNativeDir` ([8bc324fd34](https://github.com/facebook/react-native/commit/8bc324fd34337ab159e2e21e213a6c5b06c548da) by [@cortinico](https://github.com/cortinico))
+- Bump RN CLI to v7.0.3 to address web debugging issue ([df2e934a69](https://github.com/facebook/react-native/commit/df2e934a697b5b207053db3bbcf71492932a6062) by [@kelset](https://github.com/kelset))
 - Bump RN CLI to v7, and Metro to 67 ([848ba6fb1d](https://github.com/facebook/react-native/commit/848ba6fb1db81bbb44efd373af9e81f31f227aef) by [@kelset](https://github.com/kelset))
 - CI moved to Node 16. ([f1488db109](https://github.com/facebook/react-native/commit/f1488db109d13e748b071c02b40e90cdca1cc79d) by [@kelset](https://github.com/kelset))
 - Upgraded react-devtools-core dependency to 4.23.0 ([1cc217d5ef](https://github.com/facebook/react-native/commit/1cc217d5effdbee4cf2f64063a443ecb331673d4) by [@bvaughn](https://github.com/bvaughn))
@@ -100,6 +102,8 @@
 - RootView's onChildStartedNativeGesture now takes the child view as its first argument ([03e513de41](https://github.com/facebook/react-native/commit/03e513de41bf60f071eacbbb9604c83605abf625) by [@javache](https://github.com/javache))
 - Add ReactInstanceEventListenerV2 for migration ([ce74aa4ed3](https://github.com/facebook/react-native/commit/ce74aa4ed335d4c36ce722d47937b582045e05c4) by [@sshic](https://github.com/sshic))
 - Summary: Changelog: [Android][Changed] Improved logic of findTargetPathAndCoordinatesForTouch ([dfe42d6b75](https://github.com/facebook/react-native/commit/dfe42d6b75005f519c0e2c87c75e7886dce3345c) by [@javache](https://github.com/javache))
+- Set a resolution strategy for com.facebook.react:react-native when on New Architecture ([e695bc0bb5](https://github.com/facebook/react-native/commit/e695bc0bb50fc1c712e9862ed8fe4e7cc6619fae) by [@cortinico](https://github.com/cortinico))
+- Jvm 11 error message ([4e947ecb2d](https://github.com/facebook/react-native/commit/4e947ecb2dabfa0226af7f859c828847b4d891c0) by [@nomi9995](https://github.com/nomi9995))
 
 #### iOS specific
 
