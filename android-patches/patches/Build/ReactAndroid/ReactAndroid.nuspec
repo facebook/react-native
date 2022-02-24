@@ -1,5 +1,8 @@
---- /dev/ReactAndroid/ReactAndroid.nuspec	1969-12-31 16:00:00.000000000 -0800
-+++ /dev/ReactAndroid/ReactAndroid.nuspec	2022-02-13 23:24:19.927074747 -0800
+diff --git a/ReactAndroid/ReactAndroid.nuspec b/ReactAndroid/ReactAndroid.nuspec
+new file mode 100644
+index 0000000000..87a89816c7
+--- /dev/null
++++ b/ReactAndroid/ReactAndroid.nuspec
 @@ -0,0 +1,262 @@
 +<?xml version="1.0" encoding="utf-8"?>
 +<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">

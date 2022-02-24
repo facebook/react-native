@@ -1,5 +1,8 @@
---- /dev/null	2022-01-12 17:14:59.000000000 -0800
-+++ /var/folders/vs/8_b205053dddbcv7btj0w0v80000gn/T/update-1h8V3n/merge/V8/ReactAndroid/src/main/jni/third-party/v8jsi/Android.mk	2022-01-12 15:04:31.000000000 -0800
+diff --git a/ReactAndroid/src/main/jni/third-party/v8jsi/Android.mk b/ReactAndroid/src/main/jni/third-party/v8jsi/Android.mk
+new file mode 100644
+index 0000000000..ca299e0278
+--- /dev/null
++++ b/ReactAndroid/src/main/jni/third-party/v8jsi/Android.mk
 @@ -0,0 +1,17 @@
 +LOCAL_PATH:= $(call my-dir)
 +include $(CLEAR_VARS)

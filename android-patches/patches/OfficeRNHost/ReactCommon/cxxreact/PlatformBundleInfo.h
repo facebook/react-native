@@ -1,5 +1,8 @@
---- /dev/null	2022-01-12 17:14:59.000000000 -0800
-+++ /var/folders/vs/8_b205053dddbcv7btj0w0v80000gn/T/update-1h8V3n/merge/OfficeRNHost/ReactCommon/cxxreact/PlatformBundleInfo.h	2022-01-12 15:04:31.000000000 -0800
+diff --git a/ReactCommon/cxxreact/PlatformBundleInfo.h b/ReactCommon/cxxreact/PlatformBundleInfo.h
+new file mode 100644
+index 0000000000..84fb4a2aa6
+--- /dev/null
++++ b/ReactCommon/cxxreact/PlatformBundleInfo.h
 @@ -0,0 +1,15 @@
 +#pragma once
 +
