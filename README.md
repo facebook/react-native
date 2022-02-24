@@ -61,10 +61,11 @@ The source for the React Native documentation and website is hosted on a separat
 [React Native for Windows + macOS](https://microsoft.github.io/react-native-windows/) has its own separate documentation site where Windows and macOS
 specific information, like API docs and blog updates live. We are still working on the documentation for macOS, contributions are welcome!
 
-### Examples
+If you're looking for sample code, just browse the [RNTester folder](https://github.com/microsoft/react-native-macos/tree/master/packages/rn-tester) for examples
 
-- Using the CLI in the [Getting Started](https://microsoft.github.io/react-native-windows/docs/rnm-getting-started) guide will set you up with a sample React Native for macOS app that you can begin editing right away.
-- If you're looking for sample code, just browse the [RNTester folder](https://github.com/microsoft/react-native-macos/tree/master/packages/rn-tester) for examples
+### Git flow and syncing with upstream
+
+For more details on how this fork handles keeping up with upstream, and how the general git flow works, check out [this dedicated document](./docs/GitFlow.md).
 
 ## License
 
