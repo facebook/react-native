@@ -109,7 +109,13 @@ def use_react_native! (options={})
 
   if hermes_enabled
     pod 'React-hermes', :path => "#{prefix}/ReactCommon/hermes"
-    pod 'hermes-engine', '~> 0.11.0'
+
+    if ENV['BUILD_HERMES_SOURCE'] == '1'
+      hermes_source_path = locatePathToHermesSource!(prefix)
+      pod 'hermes-engine', :path => "#{hermes_source_path}/hermes-engine.podspec"
+    else
+      pod 'hermes-engine', '~> 0.11.0'
+    end
     pod 'libevent', '~> 2.1.12'
   end
 end
@@ -620,6 +626,20 @@ def use_react_native_codegen!(spec, options={})
     :execution_position => :before_compile,
     :show_env_vars_in_log => true
   }
+end
+
+def locatePathToHermesSource!(react_native_path)
+  return if ENV['BUILD_HERMES_SOURCE'] != '1'
+
+  hermes_source_path = "#{react_native_path}/sdks/hermes"
+
+  if !File.exist?(hermes_source_path)
+    Pod::UI.warn "[Hermes] Error: Hermes source code must be present at #{hermes_source_path} when BUILD_HERMES_SOURCE is enabled."
+    Pod::UI.warn '[Hermes] Verify that the release of React Native that you are using has the Hermes source code included.'
+    exit 1
+  end
+
+  hermes_source_path
 end
 
 # This provides a post_install workaround for build issues related Xcode 12.5 and Apple Silicon (M1) machines.
