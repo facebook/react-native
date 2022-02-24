@@ -266,12 +266,25 @@ export function emitRequestDef(stream: Writable, command: Command) {
     assign(method, obj, "method");\n\n`);
 
   if (props.length > 0) {
-    stream.write('dynamic params = obj.at("params");\n');
+    const optionalParams = props.every(p => p.optional);
+    if (optionalParams) {
+      stream.write(`
+        auto it = obj.find("params");
+        if (it != obj.items().end()) {
+          dynamic params = it->second;
+      `);
+    } else {
+      stream.write('dynamic params = obj.at("params");\n');
+    }
 
     for (const prop of props) {
       const id = prop.getCppIdentifier();
       const name = prop.name;
       stream.write(`assign(${id}, params, "${name}");\n`);
+    }
+
+    if (optionalParams) {
+      stream.write('}');
     }
   }
 
