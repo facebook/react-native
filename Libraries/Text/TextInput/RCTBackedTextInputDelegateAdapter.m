@@ -187,17 +187,17 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 - (BOOL)control:(NSControl *)control textView:(NSTextView *)fieldEditor doCommandBySelector:(SEL)commandSelector
 {
+  id<RCTBackedTextInputDelegate> textInputDelegate = [_backedTextInputView textInputDelegate];
   BOOL commandHandled = NO;
   // enter/return
   if (commandSelector == @selector(insertNewline:) || commandSelector == @selector(insertNewlineIgnoringFieldEditor:)) {
     [self textFieldDidEndEditingOnExit];
-    if ([[_backedTextInputView textInputDelegate] textInputShouldReturn]) {
+    if ([textInputDelegate textInputShouldReturn]) {
       [[_backedTextInputView window] makeFirstResponder:nil];
     }
     commandHandled = YES;
     //backspace
   } else if (commandSelector == @selector(deleteBackward:)) {
-    id<RCTBackedTextInputDelegate> textInputDelegate = [_backedTextInputView textInputDelegate];
     if (textInputDelegate != nil && ![textInputDelegate textInputShouldHandleDeleteBackward:_backedTextInputView]) {
       commandHandled = YES;
     } else {
@@ -214,7 +214,13 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
     //paste
   } else if (commandSelector == @selector(paste:)) {
     _backedTextInputView.textWasPasted = YES;
-  }
+    //escape
+  } else if (commandSelector == @selector(cancelOperation:)) {
+    [textInputDelegate textInputDidCancel];
+    [[_backedTextInputView window] makeFirstResponder:nil];
+    commandHandled = YES;
+}
+
   return commandHandled;
 }
 
@@ -411,6 +417,12 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
     //deleteForward
   } else if (commandSelector == @selector(deleteForward:)) {
     commandHandled = textInputDelegate != nil && ![textInputDelegate textInputShouldHandleDeleteForward:_backedTextInputView];
+    //escape
+  } else if (commandSelector == @selector(cancelOperation:)) {
+    [textInputDelegate textInputDidCancel];
+    [_backedTextInputView.window makeFirstResponder:nil];
+    commandHandled = YES;
+    
   }
 
   return commandHandled;
