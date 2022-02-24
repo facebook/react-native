@@ -1,5 +1,8 @@
---- /dev/null	2022-01-12 17:14:59.000000000 -0800
-+++ /var/folders/vs/8_b205053dddbcv7btj0w0v80000gn/T/update-1h8V3n/merge/V8/ReactAndroid/src/main/java/com/facebook/react/v8executor/V8ExecutorFactory.h	2022-01-12 15:04:31.000000000 -0800
+diff --git a/ReactAndroid/src/main/java/com/facebook/react/v8executor/V8ExecutorFactory.h b/ReactAndroid/src/main/java/com/facebook/react/v8executor/V8ExecutorFactory.h
+new file mode 100644
+index 0000000000..0606103d3a
+--- /dev/null
++++ b/ReactAndroid/src/main/java/com/facebook/react/v8executor/V8ExecutorFactory.h
 @@ -0,0 +1,17 @@
 +#include <folly/dynamic.h>
 +#include <jsiexecutor/jsireact/JSIExecutor.h>
