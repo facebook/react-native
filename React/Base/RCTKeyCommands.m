@@ -19,7 +19,7 @@
 @interface UIEvent (UIPhysicalKeyboardEvent)
 
 @property (nonatomic) NSString *_modifiedEventInput;
-@property (nonatomic) NSString *_unmodifiedInput;
+@property (nonatomic) NSString *_unmodifiedInput; 
 @property (nonatomic) UIKeyModifierFlags _modifierEventFlags;
 @property (nonatomic) BOOL _isKeyEventDown;
 @property (nonatomic) long _keyCode;
