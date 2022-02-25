@@ -245,6 +245,7 @@ REACT_PUBLIC_HEADERS = {
     "React/RCTBridgeDelegate.h": RCTBASE_PATH + "RCTBridgeDelegate.h",
     "React/RCTBridgeMethod.h": RCTBASE_PATH + "RCTBridgeMethod.h",
     "React/RCTBridgeModule.h": RCTBASE_PATH + "RCTBridgeModule.h",
+    "React/RCTBridgeModuleDecorator.h": RCTBASE_PATH + "RCTBridgeModuleDecorator.h",
     "React/RCTBundleURLProvider.h": RCTBASE_PATH + "RCTBundleURLProvider.h",
     "React/RCTComponent.h": RCTVIEWS_PATH + "RCTComponent.h",
     "React/RCTComponentData.h": RCTVIEWS_PATH + "RCTComponentData.h",
