@@ -16,7 +16,6 @@
 #include <React/RCTUIManager.h>
 #include <React/RCTUIManagerUtils.h>
 #include <React/RCTUtils.h>
-#include <React/RCTWeakViewHolder.h>
 #include <folly/json.h>
 #include <objc/runtime.h>
 
@@ -85,14 +84,6 @@ using namespace facebook::react;
 {
   UIView *view = [_componentData createViewWithTag:[NSNumber numberWithInteger:tag] rootTag:NULL];
   [_bridgelessInteropData attachInteropAPIsToModule:(id<RCTBridgeModule>)_componentData.bridgelessViewManager];
-
-  if ([_componentData.bridgelessViewManager conformsToProtocol:@protocol(RCTWeakViewHolder)]) {
-    id<RCTWeakViewHolder> weakViewHolder = (id<RCTWeakViewHolder>)_componentData.bridgelessViewManager;
-    if (!weakViewHolder.weakViews) {
-      weakViewHolder.weakViews = [NSMapTable strongToWeakObjectsMapTable];
-    }
-    [weakViewHolder.weakViews setObject:view forKey:[NSNumber numberWithInteger:tag]];
-  }
   return view;
 }
 
