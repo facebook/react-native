@@ -174,7 +174,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
                     firstVisibleIndex = accessibilityCollectionItem.getInt("itemIndex");
                   }
                   lastVisibleIndex = accessibilityCollectionItem.getInt("itemIndex");
-                  ;
                 }
 
                 if (firstVisibleIndex != null && lastVisibleIndex != null) {
