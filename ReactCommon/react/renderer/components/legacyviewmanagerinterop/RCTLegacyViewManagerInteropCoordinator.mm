@@ -25,6 +25,7 @@ using namespace facebook::react;
 @implementation RCTLegacyViewManagerInteropCoordinator {
   RCTComponentData *_componentData;
   __weak RCTBridge *_bridge;
+  __weak RCTBridgeModuleDecorator *_bridgelessInteropData;
   /*
    Each instance of `RCTLegacyViewManagerInteropComponentView` registers a block to which events are dispatched.
    This is the container that maps unretained UIView pointer to a block to which the event is dispatched.
@@ -39,11 +40,20 @@ using namespace facebook::react;
   NSMutableDictionary<NSString *, id<RCTBridgeMethod>> *_moduleMethodsByName;
 }
 
-- (instancetype)initWithComponentData:(RCTComponentData *)componentData bridge:(RCTBridge *)bridge
+- (instancetype)initWithComponentData:(RCTComponentData *)componentData
+                               bridge:(RCTBridge *)bridge
+                bridgelessInteropData:(RCTBridgeModuleDecorator *)bridgelessInteropData;
 {
   if (self = [super init]) {
     _componentData = componentData;
     _bridge = bridge;
+    _bridgelessInteropData = bridgelessInteropData;
+    if (bridgelessInteropData) {
+      //  During bridge mode, RCTBridgeModules will be decorated with these APIs by the bridge.
+      RCTAssert(
+          _bridge == nil,
+          @"RCTLegacyViewManagerInteropCoordinator should not be intialized with RCTBridgeModuleDecorator in bridge mode.");
+    }
 
     _eventInterceptors = [NSMutableDictionary new];
 
@@ -74,6 +84,8 @@ using namespace facebook::react;
 - (UIView *)createPaperViewWithTag:(NSInteger)tag;
 {
   UIView *view = [_componentData createViewWithTag:[NSNumber numberWithInteger:tag] rootTag:NULL];
+  [_bridgelessInteropData attachInteropAPIsToModule:(id<RCTBridgeModule>)_componentData.bridgelessViewManager];
+
   if ([_componentData.bridgelessViewManager conformsToProtocol:@protocol(RCTWeakViewHolder)]) {
     id<RCTWeakViewHolder> weakViewHolder = (id<RCTWeakViewHolder>)_componentData.bridgelessViewManager;
     if (!weakViewHolder.weakViews) {
