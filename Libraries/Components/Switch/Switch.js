@@ -170,7 +170,8 @@ const SwitchWithForwardedRef: React.AbstractComponent<
     // that the update should be ignored and we should stick with the value
     // that we have in JS.
     const jsValue = value === true;
-    const shouldUpdateNativeSwitch = native.value !== jsValue;
+    const shouldUpdateNativeSwitch =
+      native.value != null && native.value !== jsValue;
     if (
       shouldUpdateNativeSwitch &&
       nativeSwitchRef.current?.setNativeProps != null
