@@ -436,8 +436,6 @@ export type ViewProps = $ReadOnly<{|
    * Prop used internally to announce with TalkBack rows and columns of a FlatList
    * See https://bit.ly/3viYSh8
    *
-   * @platform android
-   *
    */
   accessibilityCollectionItem?: ?{
     rowIndex: number,
