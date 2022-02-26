@@ -215,15 +215,16 @@ RCT_CUSTOM_VIEW_PROPERTY(shouldRasterizeIOS, BOOL, RCTView)
 
 RCT_CUSTOM_VIEW_PROPERTY(transform, CATransform3D, RCTView)
 {
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
+#if TARGET_OS_OSX // [TODO(macOS GH#460)
+  CATransform3D transform = json ? [RCTConvert CATransform3D:json] : defaultView.layer.transform;
+  [view setTransform3D:transform];
+  [view setNeedsDisplay];
+#else  // ]TODO(macOS GH#460)]
   view.layer.transform = json ? [RCTConvert CATransform3D:json] : defaultView.layer.transform;
-  // Enable edge antialiasing in perspective transforms
-  view.layer.allowsEdgeAntialiasing = !(view.layer.transform.m34 == 0.0f);
-#elif TARGET_OS_OSX // [TODO(macOS GH#774)
-  view.layer.sublayerTransform = json ? [RCTConvert CATransform3D:json] : defaultView.layer.sublayerTransform;
-  // TODO: Improve this by enabling edge antialiasing only for transforms with rotation or skewing
-  view.layer.edgeAntialiasingMask = !CATransform3DIsIdentity(view.layer.sublayerTransform) ? kCALayerLeftEdge | kCALayerRightEdge | kCALayerBottomEdge | kCALayerTopEdge : 0;
-#endif // ]TODO(macOS GH#774)
+  // Enable edge antialiasing in rotation, skew, or perspective transforms
+  view.layer.allowsEdgeAntialiasing =
+      view.layer.transform.m12 != 0.0f || view.layer.transform.m21 != 0.0f || view.layer.transform.m34 != 0.0f;
+#endif // [TODO(macOS GH#460)]
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(accessibilityRole, UIAccessibilityTraits, RCTView)

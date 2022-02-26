@@ -128,6 +128,9 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 /**
  * macOS Properties
  */
+
+@property (nonatomic, assign) CATransform3D transform3D;
+
 @property (nonatomic, copy) RCTDirectEventBlock onDoubleClick;
 @property (nonatomic, copy) RCTDirectEventBlock onClick;
 @property (nonatomic, copy) RCTDirectEventBlock onMouseEnter;
