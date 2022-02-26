@@ -6,6 +6,14 @@ exports[`FlatList renders all the bells and whistles 1`] = `
   ListEmptyComponent={[Function]}
   ListFooterComponent={[Function]}
   ListHeaderComponent={[Function]}
+  accessibilityCollection={
+    Object {
+      "columnCount": 2,
+      "hierarchical": false,
+      "itemCount": 5,
+      "rowCount": 3,
+    }
+  }
   data={
     Array [
       Object {
@@ -67,12 +75,50 @@ exports[`FlatList renders all the bells and whistles 1`] = `
           }
         }
       >
-        <item
-          value="0"
-        />
-        <item
-          value="1"
-        />
+        <View
+          accessibilityCollectionItem={
+            Object {
+              "columnIndex": 0,
+              "columnSpan": 1,
+              "heading": false,
+              "itemIndex": 0,
+              "rowIndex": 0,
+              "rowSpan": 1,
+            }
+          }
+          importantForAccessibility="yes"
+          style={
+            Object {
+              "flex": 1,
+            }
+          }
+        >
+          <item
+            value="0"
+          />
+        </View>
+        <View
+          accessibilityCollectionItem={
+            Object {
+              "columnIndex": 1,
+              "columnSpan": 1,
+              "heading": false,
+              "itemIndex": 1,
+              "rowIndex": 0,
+              "rowSpan": 1,
+            }
+          }
+          importantForAccessibility="yes"
+          style={
+            Object {
+              "flex": 1,
+            }
+          }
+        >
+          <item
+            value="1"
+          />
+        </View>
       </View>
       <separator />
     </View>
@@ -86,12 +132,50 @@ exports[`FlatList renders all the bells and whistles 1`] = `
           }
         }
       >
-        <item
-          value="2"
-        />
-        <item
-          value="3"
-        />
+        <View
+          accessibilityCollectionItem={
+            Object {
+              "columnIndex": 0,
+              "columnSpan": 1,
+              "heading": false,
+              "itemIndex": 2,
+              "rowIndex": 1,
+              "rowSpan": 1,
+            }
+          }
+          importantForAccessibility="yes"
+          style={
+            Object {
+              "flex": 1,
+            }
+          }
+        >
+          <item
+            value="2"
+          />
+        </View>
+        <View
+          accessibilityCollectionItem={
+            Object {
+              "columnIndex": 1,
+              "columnSpan": 1,
+              "heading": false,
+              "itemIndex": 3,
+              "rowIndex": 1,
+              "rowSpan": 1,
+            }
+          }
+          importantForAccessibility="yes"
+          style={
+            Object {
+              "flex": 1,
+            }
+          }
+        >
+          <item
+            value="3"
+          />
+        </View>
       </View>
       <separator />
     </View>
@@ -105,9 +189,28 @@ exports[`FlatList renders all the bells and whistles 1`] = `
           }
         }
       >
-        <item
-          value="4"
-        />
+        <View
+          accessibilityCollectionItem={
+            Object {
+              "columnIndex": 0,
+              "columnSpan": 1,
+              "heading": false,
+              "itemIndex": 4,
+              "rowIndex": 2,
+              "rowSpan": 1,
+            }
+          }
+          importantForAccessibility="yes"
+          style={
+            Object {
+              "flex": 1,
+            }
+          }
+        >
+          <item
+            value="4"
+          />
+        </View>
       </View>
     </View>
     <View
@@ -121,6 +224,14 @@ exports[`FlatList renders all the bells and whistles 1`] = `
 
 exports[`FlatList renders empty list 1`] = `
 <RCTScrollView
+  accessibilityCollection={
+    Object {
+      "columnCount": 1,
+      "hierarchical": false,
+      "itemCount": 0,
+      "rowCount": 0,
+    }
+  }
   data={Array []}
   getItem={[Function]}
   getItemCount={[Function]}
@@ -144,6 +255,14 @@ exports[`FlatList renders empty list 1`] = `
 
 exports[`FlatList renders null list 1`] = `
 <RCTScrollView
+  accessibilityCollection={
+    Object {
+      "columnCount": 1,
+      "hierarchical": false,
+      "itemCount": 0,
+      "rowCount": 0,
+    }
+  }
   getItem={[Function]}
   getItemCount={[Function]}
   keyExtractor={[Function]}
@@ -166,6 +285,14 @@ exports[`FlatList renders null list 1`] = `
 
 exports[`FlatList renders simple list (multiple columns) 1`] = `
 <RCTScrollView
+  accessibilityCollection={
+    Object {
+      "columnCount": 2,
+      "hierarchical": false,
+      "itemCount": 3,
+      "rowCount": 2,
+    }
+  }
   data={
     Array [
       Object {
@@ -207,12 +334,50 @@ exports[`FlatList renders simple list (multiple columns) 1`] = `
           }
         }
       >
-        <item
-          value="i1"
-        />
-        <item
-          value="i2"
-        />
+        <View
+          accessibilityCollectionItem={
+            Object {
+              "columnIndex": 0,
+              "columnSpan": 1,
+              "heading": false,
+              "itemIndex": 0,
+              "rowIndex": 0,
+              "rowSpan": 1,
+            }
+          }
+          importantForAccessibility="yes"
+          style={
+            Object {
+              "flex": 1,
+            }
+          }
+        >
+          <item
+            value="i1"
+          />
+        </View>
+        <View
+          accessibilityCollectionItem={
+            Object {
+              "columnIndex": 1,
+              "columnSpan": 1,
+              "heading": false,
+              "itemIndex": 1,
+              "rowIndex": 0,
+              "rowSpan": 1,
+            }
+          }
+          importantForAccessibility="yes"
+          style={
+            Object {
+              "flex": 1,
+            }
+          }
+        >
+          <item
+            value="i2"
+          />
+        </View>
       </View>
     </View>
     <View
@@ -226,9 +391,28 @@ exports[`FlatList renders simple list (multiple columns) 1`] = `
           }
         }
       >
-        <item
-          value="i3"
-        />
+        <View
+          accessibilityCollectionItem={
+            Object {
+              "columnIndex": 0,
+              "columnSpan": 1,
+              "heading": false,
+              "itemIndex": 2,
+              "rowIndex": 1,
+              "rowSpan": 1,
+            }
+          }
+          importantForAccessibility="yes"
+          style={
+            Object {
+              "flex": 1,
+            }
+          }
+        >
+          <item
+            value="i3"
+          />
+        </View>
       </View>
     </View>
   </View>
@@ -237,6 +421,14 @@ exports[`FlatList renders simple list (multiple columns) 1`] = `
 
 exports[`FlatList renders simple list 1`] = `
 <RCTScrollView
+  accessibilityCollection={
+    Object {
+      "columnCount": 1,
+      "hierarchical": false,
+      "itemCount": 3,
+      "rowCount": 3,
+    }
+  }
   data={
     Array [
       Object {
@@ -271,25 +463,82 @@ exports[`FlatList renders simple list 1`] = `
       onLayout={[Function]}
       style={null}
     >
-      <item
-        value="i1"
-      />
+      <View
+        accessibilityCollectionItem={
+          Object {
+            "columnIndex": 0,
+            "columnSpan": 1,
+            "heading": false,
+            "itemIndex": 0,
+            "rowIndex": 0,
+            "rowSpan": 1,
+          }
+        }
+        importantForAccessibility="yes"
+        style={
+          Object {
+            "flex": 1,
+          }
+        }
+      >
+        <item
+          value="i1"
+        />
+      </View>
     </View>
     <View
       onLayout={[Function]}
       style={null}
     >
-      <item
-        value="i2"
-      />
+      <View
+        accessibilityCollectionItem={
+          Object {
+            "columnIndex": 0,
+            "columnSpan": 1,
+            "heading": false,
+            "itemIndex": 1,
+            "rowIndex": 1,
+            "rowSpan": 1,
+          }
+        }
+        importantForAccessibility="yes"
+        style={
+          Object {
+            "flex": 1,
+          }
+        }
+      >
+        <item
+          value="i2"
+        />
+      </View>
     </View>
     <View
       onLayout={[Function]}
       style={null}
     >
-      <item
-        value="i3"
-      />
+      <View
+        accessibilityCollectionItem={
+          Object {
+            "columnIndex": 0,
+            "columnSpan": 1,
+            "heading": false,
+            "itemIndex": 2,
+            "rowIndex": 2,
+            "rowSpan": 1,
+          }
+        }
+        importantForAccessibility="yes"
+        style={
+          Object {
+            "flex": 1,
+          }
+        }
+      >
+        <item
+          value="i3"
+        />
+      </View>
     </View>
   </View>
 </RCTScrollView>
@@ -298,6 +547,14 @@ exports[`FlatList renders simple list 1`] = `
 exports[`FlatList renders simple list using ListItemComponent (multiple columns) 1`] = `
 <RCTScrollView
   ListItemComponent={[Function]}
+  accessibilityCollection={
+    Object {
+      "columnCount": 2,
+      "hierarchical": false,
+      "itemCount": 3,
+      "rowCount": 2,
+    }
+  }
   data={
     Array [
       Object {
@@ -338,12 +595,50 @@ exports[`FlatList renders simple list using ListItemComponent (multiple columns)
           }
         }
       >
-        <item
-          value="i1"
-        />
-        <item
-          value="i2"
-        />
+        <View
+          accessibilityCollectionItem={
+            Object {
+              "columnIndex": 0,
+              "columnSpan": 1,
+              "heading": false,
+              "itemIndex": 0,
+              "rowIndex": 0,
+              "rowSpan": 1,
+            }
+          }
+          importantForAccessibility="yes"
+          style={
+            Object {
+              "flex": 1,
+            }
+          }
+        >
+          <item
+            value="i1"
+          />
+        </View>
+        <View
+          accessibilityCollectionItem={
+            Object {
+              "columnIndex": 1,
+              "columnSpan": 1,
+              "heading": false,
+              "itemIndex": 1,
+              "rowIndex": 0,
+              "rowSpan": 1,
+            }
+          }
+          importantForAccessibility="yes"
+          style={
+            Object {
+              "flex": 1,
+            }
+          }
+        >
+          <item
+            value="i2"
+          />
+        </View>
       </View>
     </View>
     <View
@@ -357,9 +652,28 @@ exports[`FlatList renders simple list using ListItemComponent (multiple columns)
           }
         }
       >
-        <item
-          value="i3"
-        />
+        <View
+          accessibilityCollectionItem={
+            Object {
+              "columnIndex": 0,
+              "columnSpan": 1,
+              "heading": false,
+              "itemIndex": 2,
+              "rowIndex": 1,
+              "rowSpan": 1,
+            }
+          }
+          importantForAccessibility="yes"
+          style={
+            Object {
+              "flex": 1,
+            }
+          }
+        >
+          <item
+            value="i3"
+          />
+        </View>
       </View>
     </View>
   </View>
@@ -369,6 +683,14 @@ exports[`FlatList renders simple list using ListItemComponent (multiple columns)
 exports[`FlatList renders simple list using ListItemComponent 1`] = `
 <RCTScrollView
   ListItemComponent={[Function]}
+  accessibilityCollection={
+    Object {
+      "columnCount": 1,
+      "hierarchical": false,
+      "itemCount": 3,
+      "rowCount": 3,
+    }
+  }
   data={
     Array [
       Object {
@@ -402,25 +724,82 @@ exports[`FlatList renders simple list using ListItemComponent 1`] = `
       onLayout={[Function]}
       style={null}
     >
-      <item
-        value="i1"
-      />
+      <View
+        accessibilityCollectionItem={
+          Object {
+            "columnIndex": 0,
+            "columnSpan": 1,
+            "heading": false,
+            "itemIndex": 0,
+            "rowIndex": 0,
+            "rowSpan": 1,
+          }
+        }
+        importantForAccessibility="yes"
+        style={
+          Object {
+            "flex": 1,
+          }
+        }
+      >
+        <item
+          value="i1"
+        />
+      </View>
     </View>
     <View
       onLayout={[Function]}
       style={null}
     >
-      <item
-        value="i2"
-      />
+      <View
+        accessibilityCollectionItem={
+          Object {
+            "columnIndex": 0,
+            "columnSpan": 1,
+            "heading": false,
+            "itemIndex": 1,
+            "rowIndex": 1,
+            "rowSpan": 1,
+          }
+        }
+        importantForAccessibility="yes"
+        style={
+          Object {
+            "flex": 1,
+          }
+        }
+      >
+        <item
+          value="i2"
+        />
+      </View>
     </View>
     <View
       onLayout={[Function]}
       style={null}
     >
-      <item
-        value="i3"
-      />
+      <View
+        accessibilityCollectionItem={
+          Object {
+            "columnIndex": 0,
+            "columnSpan": 1,
+            "heading": false,
+            "itemIndex": 2,
+            "rowIndex": 2,
+            "rowSpan": 1,
+          }
+        }
+        importantForAccessibility="yes"
+        style={
+          Object {
+            "flex": 1,
+          }
+        }
+      >
+        <item
+          value="i3"
+        />
+      </View>
     </View>
   </View>
 </RCTScrollView>
