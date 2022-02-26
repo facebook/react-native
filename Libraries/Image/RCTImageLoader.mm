@@ -492,6 +492,16 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   BOOL cacheResult = [loadHandler respondsToSelector:@selector(shouldCacheLoadedImages)] ?
   [loadHandler shouldCacheLoadedImages] : YES;
 
+  if (cacheResult) {
+    UIImage *image = [[self imageCache] imageForUrl:request.URL.absoluteString
+                                               size:size
+                                              scale:scale
+                                         resizeMode:resizeMode];
+    if (image) {
+      partialLoadHandler(image);
+    }
+  }
+
   auto cancelled = std::make_shared<std::atomic<int>>(0);
   __block dispatch_block_t cancelLoad = nil;
   __block NSLock *cancelLoadLock = [NSLock new];
