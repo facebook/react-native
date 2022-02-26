@@ -299,7 +299,6 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
     // Set item count and current item index on accessibility events for adjustable
     // in order to make Talkback announce the value of the adjustable
     final ReadableMap accessibilityValue = (ReadableMap) host.getTag(R.id.accessibility_value);
-
     if (accessibilityValue != null
         && accessibilityValue.hasKey("min")
         && accessibilityValue.hasKey("now")
