@@ -667,9 +667,13 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   };
 
   _getAccessibilityCollection = () => {
+    const _getItemCountInternal = (data: any): number => {
+      return this._getItemCount(data);
+    };
+
     const accessibilityCollectionProps = {
       itemCount: this.props.data ? this.props.data.length : 0,
-      rowCount: this._getItemCount(this.props.data),
+      rowCount: _getItemCountInternal(this.props.data),
       columnCount: numColumnsOrDefault(this.props.numColumns),
       hierarchical: false,
     };
@@ -693,7 +697,8 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
         keyExtractor={this._keyExtractor}
         accessibilityCollection={this._getAccessibilityCollection()}
         accessibilityRole={Platform.select({
-          android: this.props.numColumns > 1 ? 'grid' : 'list',
+          android:
+            numColumnsOrDefault(this.props.numColumns) > 1 ? 'grid' : 'list',
         })}
         ref={this._captureRef}
         viewabilityConfigCallbackPairs={this._virtualizedListPairs}
