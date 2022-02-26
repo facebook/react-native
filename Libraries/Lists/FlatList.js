@@ -624,6 +624,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
                 };
 
                 const element = (
+                  // $FlowFixMe[prop-missing] https://bit.ly/3viYSh8
                   <View
                     importantForAccessibility="yes"
                     style={styles.cellStyle}
@@ -654,6 +655,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
           };
 
           return (
+            // $FlowFixMe[prop-missing] https://bit.ly/3viYSh8
             <View
               importantForAccessibility="yes"
               style={styles.cellStyle}
