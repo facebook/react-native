@@ -20,14 +20,10 @@
     "babel-jest": "^26.6.3",
     "eslint": "^7.32.0",
     "jest": "^26.6.3",
-    "metro-react-native-babel-preset": "^0.67.0",
-    "react-native-gradle-plugin": "^0.0.4",
+    "metro-react-native-babel-preset": "^0.68.0",
     "react-test-renderer": "17.0.2"
   },
   "jest": {
     "preset": "react-native"
-  },
-  "codegenConfig": {
-    "libraries": []
   }
 }

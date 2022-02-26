@@ -56,7 +56,7 @@ static bool areFieldsEqual(char const *lhs, char const *rhs) {
   if (lhs == nullptr || rhs == nullptr) {
     return lhs == rhs;
   }
-  return std::string(lhs) == std::string(rhs);
+  return lhs == rhs || strcmp(lhs, rhs) == 0;
 }
 
 bool operator==(RawPropsKey const &lhs, RawPropsKey const &rhs) noexcept {

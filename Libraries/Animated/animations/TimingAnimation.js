@@ -23,7 +23,7 @@ import type {RgbaValue} from '../nodes/AnimatedColor';
 
 import AnimatedColor from '../nodes/AnimatedColor';
 
-export type TimingAnimationConfig = {
+export type TimingAnimationConfig = $ReadOnly<{
   ...AnimationConfig,
   toValue:
     | number
@@ -40,15 +40,15 @@ export type TimingAnimationConfig = {
   easing?: (value: number) => number,
   duration?: number,
   delay?: number,
-};
+}>;
 
-export type TimingAnimationConfigSingle = {
+export type TimingAnimationConfigSingle = $ReadOnly<{
   ...AnimationConfig,
   toValue: number | AnimatedValue | AnimatedInterpolation,
   easing?: (value: number) => number,
   duration?: number,
   delay?: number,
-};
+}>;
 
 let _easeInOut;
 function easeInOut() {

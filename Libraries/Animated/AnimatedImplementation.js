@@ -91,7 +91,7 @@ const diffClamp = function (
 
 const _combineCallbacks = function (
   callback: ?EndCallback,
-  config: {...AnimationConfig, ...},
+  config: $ReadOnly<{...AnimationConfig, ...}>,
 ) {
   if (callback && config.onComplete) {
     return (...args) => {

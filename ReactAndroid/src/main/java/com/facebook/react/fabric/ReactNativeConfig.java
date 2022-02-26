@@ -31,12 +31,12 @@ public interface ReactNativeConfig {
   boolean getBool(@NonNull String param);
 
   /**
-   * Get an integer param by string name. Default should be 0.
+   * Get a Long param by string name. Default should be 0.
    *
    * @param param The string name of the parameter being requested.
    */
   @DoNotStrip
-  int getInt64(@NonNull String param);
+  long getInt64(@NonNull String param);
 
   /**
    * Get a string param by string name. Default should be "", empty string.

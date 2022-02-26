@@ -38,7 +38,7 @@ class MapBufferBuilder {
   MapBuffer build();
 
  private:
-  MapBuffer::Header header_ = {.count = 0, .bufferSize = 0};
+  MapBuffer::Header header_;
 
   std::vector<MapBuffer::Bucket> buckets_{};
 

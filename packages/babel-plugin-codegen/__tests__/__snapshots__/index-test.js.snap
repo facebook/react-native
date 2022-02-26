@@ -25,6 +25,10 @@ interface NativeCommands {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 const {
+  ConditionallyIgnoredEventHandlers
+} = require('react-native/Libraries/NativeComponent/ViewConfigIgnore');
+
+const {
   dispatchCommand
 } = require(\\"react-native/Libraries/Renderer/shims/ReactNative\\");
 
@@ -45,7 +49,11 @@ export const __INTERNAL_VIEW_CONFIG = {
     }
   },
   validAttributes: {
-    boolean_default_true_optional_both: true
+    boolean_default_true_optional_both: true,
+    ...ConditionallyIgnoredEventHandlers({
+      onDirectEventDefinedInlineNull: true,
+      onBubblingEventDefinedInlineNull: true
+    })
   }
 };
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
@@ -86,6 +94,10 @@ interface NativeCommands {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 const {
+  ConditionallyIgnoredEventHandlers
+} = require('react-native/Libraries/NativeComponent/ViewConfigIgnore');
+
+const {
   dispatchCommand
 } = require(\\"react-native/Libraries/Renderer/shims/ReactNative\\");
 
@@ -106,7 +118,11 @@ export const __INTERNAL_VIEW_CONFIG = {
     }
   },
   validAttributes: {
-    boolean_default_true_optional_both: true
+    boolean_default_true_optional_both: true,
+    ...ConditionallyIgnoredEventHandlers({
+      onDirectEventDefinedInlineNull: true,
+      onBubblingEventDefinedInlineNull: true
+    })
   }
 };
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);

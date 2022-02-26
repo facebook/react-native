@@ -17,7 +17,8 @@ public class MainActivity extends ReactActivity {
 
   /**
    * Returns the instance of the {@link ReactActivityDelegate}. There the RootView is created and
-   * you can specify the rendered you wish to use (Fabric or the older renderer).
+   * you can specify the renderer you wish to use - the new renderer (Fabric) or the old renderer
+   * (Paper).
    */
   @Override
   protected ReactActivityDelegate createReactActivityDelegate() {

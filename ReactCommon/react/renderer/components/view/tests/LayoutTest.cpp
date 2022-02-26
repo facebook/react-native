@@ -74,7 +74,7 @@ class LayoutTest : public ::testing::Test {
             Element<ViewShadowNode>()
               .reference(viewShadowNodeA_)
               .props([] {
-                auto sharedProps = std::make_shared<ViewProps>();
+                auto sharedProps = std::make_shared<ViewShadowNodeProps>();
                 auto &props = *sharedProps;
                 auto &yogaStyle = props.yogaStyle;
                 yogaStyle.positionType() = YGPositionTypeAbsolute;
@@ -86,7 +86,7 @@ class LayoutTest : public ::testing::Test {
                 Element<ViewShadowNode>()
                   .reference(viewShadowNodeAB_)
                   .props([] {
-                    auto sharedProps = std::make_shared<ViewProps>();
+                    auto sharedProps = std::make_shared<ViewShadowNodeProps>();
                     auto &props = *sharedProps;
                     auto &yogaStyle = props.yogaStyle;
                     yogaStyle.positionType() = YGPositionTypeAbsolute;
@@ -100,7 +100,7 @@ class LayoutTest : public ::testing::Test {
                     Element<ViewShadowNode>()
                       .reference(viewShadowNodeABC_)
                       .props([=] {
-                        auto sharedProps = std::make_shared<ViewProps>();
+                        auto sharedProps = std::make_shared<ViewShadowNodeProps>();
                         auto &props = *sharedProps;
                         auto &yogaStyle = props.yogaStyle;
 
@@ -119,7 +119,7 @@ class LayoutTest : public ::testing::Test {
                         Element<ViewShadowNode>()
                           .reference(viewShadowNodeABCD_)
                           .props([] {
-                            auto sharedProps = std::make_shared<ViewProps>();
+                            auto sharedProps = std::make_shared<ViewShadowNodeProps>();
                             auto &props = *sharedProps;
                             auto &yogaStyle = props.yogaStyle;
                             yogaStyle.positionType() = YGPositionTypeAbsolute;
@@ -133,7 +133,7 @@ class LayoutTest : public ::testing::Test {
                     Element<ViewShadowNode>()
                       .reference(viewShadowNodeABE_)
                       .props([] {
-                        auto sharedProps = std::make_shared<ViewProps>();
+                        auto sharedProps = std::make_shared<ViewShadowNodeProps>();
                         auto &props = *sharedProps;
                         auto &yogaStyle = props.yogaStyle;
                         yogaStyle.positionType() = YGPositionTypeAbsolute;

@@ -8,6 +8,7 @@
 plugins {
     id("com.android.library")
     id("com.facebook.react")
+    id("org.jetbrains.kotlin.android")
     id("maven-publish")
     id("de.undercouch.download")
 }
@@ -279,6 +280,7 @@ task androidSourcesJar(type: Jar) {
 }
 
 android {
+    buildToolsVersion = "31.0.0"
     compileSdkVersion 31
 
     // Used to override the NDK path & version on internal CI
@@ -370,7 +372,8 @@ dependencies {
     api("com.facebook.infer.annotation:infer-annotation:0.18.0")
     api("com.facebook.yoga:proguard-annotations:1.19.0")
     api("javax.inject:javax.inject:1")
-    api("androidx.appcompat:appcompat:1.0.2")
+    api("androidx.appcompat:appcompat:${APPCOMPAT_VERSION}")
+    api("androidx.appcompat:appcompat-resources:${APPCOMPAT_VERSION}")
     api("androidx.autofill:autofill:1.1.0")
     api("androidx.swiperefreshlayout:swiperefreshlayout:1.0.0")
     api("com.facebook.fresco:fresco:${FRESCO_VERSION}")
@@ -406,7 +409,7 @@ react {
     // This should be changed to a more generic name, e.g. `ReactCoreSpec`.
     libraryName = "rncore"
     jsRootDir = file("../Libraries")
-    reactRoot = file("$projectDir/..")
+    reactNativeDir = file("$projectDir/..")
     useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET")?.toBoolean() ?: false
     // We search for the codegen in either one of the `node_modules` folder or in the
     // root packages folder (that's for when we build from source without calling `yarn install`).
@@ -417,6 +420,10 @@ afterEvaluate {
 
     // Needed as some of the native sources needs to be downloaded
     // before configureNdkBuildDebug could be executed.
+    reactNativeArchitectures().each { architecture ->
+        tasks.named("configureNdkBuildDebug[${architecture}]") { dependsOn(preBuild) }
+        tasks.named("configureNdkBuildRelease[${architecture}]") { dependsOn(preBuild) }
+    }
     configureNdkBuildDebug.dependsOn(preBuild)
     configureNdkBuildRelease.dependsOn(preBuild)
 

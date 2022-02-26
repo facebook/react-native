@@ -274,6 +274,7 @@ class JSI_EXPORT Runtime {
       const uint8_t* utf8,
       size_t length) = 0;
   virtual PropNameID createPropNameIDFromString(const String& str) = 0;
+  virtual PropNameID createPropNameIDFromSymbol(const Symbol& sym) = 0;
   virtual std::string utf8(const PropNameID&) = 0;
   virtual bool compare(const PropNameID&, const PropNameID&) = 0;
 
@@ -406,6 +407,7 @@ class JSI_EXPORT PropNameID : public Pointer {
   }
 
   /// Create a PropNameID from utf8 values.  The data is copied.
+  /// Results are undefined if \p utf8 contains invalid code points.
   static PropNameID
   forUtf8(Runtime& runtime, const uint8_t* utf8, size_t length) {
     return runtime.createPropNameIDFromUtf8(utf8, length);
@@ -413,6 +415,7 @@ class JSI_EXPORT PropNameID : public Pointer {
 
   /// Create a PropNameID from utf8-encoded octets stored in a
   /// std::string.  The string data is transformed and copied.
+  /// Results are undefined if \p utf8 contains invalid code points.
   static PropNameID forUtf8(Runtime& runtime, const std::string& utf8) {
     return runtime.createPropNameIDFromUtf8(
         reinterpret_cast<const uint8_t*>(utf8.data()), utf8.size());
@@ -421,6 +424,11 @@ class JSI_EXPORT PropNameID : public Pointer {
   /// Create a PropNameID from a JS string.
   static PropNameID forString(Runtime& runtime, const jsi::String& str) {
     return runtime.createPropNameIDFromString(str);
+  }
+
+  /// Create a PropNameID from a JS symbol.
+  static PropNameID forSymbol(Runtime& runtime, const jsi::Symbol& sym) {
+    return runtime.createPropNameIDFromSymbol(sym);
   }
 
   // Creates a vector of PropNameIDs constructed from given arguments.
@@ -502,14 +510,16 @@ class JSI_EXPORT String : public Pointer {
   }
 
   /// Create a JS string from utf8-encoded octets.  The string data is
-  /// transformed and copied.
+  /// transformed and copied.  Results are undefined if \p utf8 contains invalid
+  /// code points.
   static String
   createFromUtf8(Runtime& runtime, const uint8_t* utf8, size_t length) {
     return runtime.createStringFromUtf8(utf8, length);
   }
 
   /// Create a JS string from utf8-encoded octets stored in a
-  /// std::string.  The string data is transformed and copied.
+  /// std::string.  The string data is transformed and copied.  Results are
+  /// undefined if \p utf8 contains invalid code points.
   static String createFromUtf8(Runtime& runtime, const std::string& utf8) {
     return runtime.createStringFromUtf8(
         reinterpret_cast<const uint8_t*>(utf8.data()), utf8.length());

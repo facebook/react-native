@@ -6,6 +6,7 @@
  */
 
 import org.apache.tools.ant.taskdefs.condition.Os
+import org.gradle.internal.jvm.Jvm
 
 def config = project.hasProperty("react") ? project.react : [:];
 
@@ -127,6 +128,19 @@ android {
         resValue "integer", "react_native_dev_server_port", reactNativeDevServerPort()
         resValue "integer", "react_native_inspector_proxy_port", reactNativeInspectorProxyPort()
     }
+}
+
+def jvmVersion = Jvm.current().javaVersion.majorVersion
+if (jvmVersion.toInteger() <= 8) {
+    println "\n\n\n"
+    println "**************************************************************************************************************"
+    println "\n\n"
+    println "ERROR: requires JDK11 or higher."
+    println "Incompatible major version detected: '" + jvmVersion + "'"
+    println "\n\n"
+    println "**************************************************************************************************************"
+    println "\n\n\n"
+    System.exit(1)
 }
 
 afterEvaluate {
@@ -304,29 +318,24 @@ afterEvaluate {
             group = "react"
             description = "copy bundled JS into ${targetName}."
 
+            from(jsBundleDir)
             if (config."jsBundleDir${targetName}") {
-                from(jsBundleDir)
                 into(file(config."jsBundleDir${targetName}"))
             } else {
                 into ("$buildDir/intermediates")
                 if (isAndroidLibrary) {
-                    into ("library_assets/${variant.name}/out") {
-                        from(jsBundleDir)
-                    }
+                    into ("library_assets/${variant.name}/out")
                 } else {
-                    into ("assets/${targetPath}") {
-                        from(jsBundleDir)
-                    }
+                    into ("assets/${targetPath}")
 
                     // Workaround for Android Gradle Plugin 3.2+ new asset directory
-                    into ("merged_assets/${variant.name}/merge${targetName}Assets/out") {
-                        from(jsBundleDir)
-                    }
+                    into ("merged_assets/${variant.name}/merge${targetName}Assets/out")
 
                     // Workaround for Android Gradle Plugin 3.4+ new asset directory
-                    into ("merged_assets/${variant.name}/out") {
-                        from(jsBundleDir)
-                    }
+                    into ("merged_assets/${variant.name}/out")
+
+                    // Workaround for Android Gradle Plugin 7.1 asset directory
+                    into("$buildDir/intermediates/assets/${variant.name}/merge${targetName}Assets")
                 }
             }
 

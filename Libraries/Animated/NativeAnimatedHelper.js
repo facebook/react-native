@@ -90,6 +90,18 @@ const API = {
       NativeAnimatedModule.createAnimatedNode(tag, config),
     );
   },
+  updateAnimatedNodeConfig: function (
+    tag: number,
+    config: AnimatedNodeConfig,
+  ): void {
+    invariant(NativeAnimatedModule, 'Native animated module is not available');
+    if (typeof NativeAnimatedModule.updateAnimatedNodeConfig === 'function') {
+      API.queueOperation(() =>
+        // $FlowIgnore[not-a-function] - checked above
+        NativeAnimatedModule.updateAnimatedNodeConfig(tag, config),
+      );
+    }
+  },
   startListeningToAnimatedNodeValue: function (tag: number) {
     invariant(NativeAnimatedModule, 'Native animated module is not available');
     API.queueOperation(() =>
@@ -222,22 +234,36 @@ const API = {
 /**
  * Styles allowed by the native animated implementation.
  *
- * In general native animated implementation should support any numeric property that doesn't need
- * to be updated through the shadow view hierarchy (all non-layout properties).
+ * In general native animated implementation should support any numeric or color property that
+ * doesn't need to be updated through the shadow view hierarchy (all non-layout properties).
  */
+const SUPPORTED_COLOR_STYLES = {
+  backgroundColor: true,
+  borderBottomColor: true,
+  borderColor: true,
+  borderEndColor: true,
+  borderLeftColor: true,
+  borderRightColor: true,
+  borderStartColor: true,
+  borderTopColor: true,
+  color: true,
+  tintColor: true,
+};
+
 const SUPPORTED_STYLES = {
-  opacity: true,
-  transform: true,
-  borderRadius: true,
+  ...SUPPORTED_COLOR_STYLES,
   borderBottomEndRadius: true,
   borderBottomLeftRadius: true,
   borderBottomRightRadius: true,
   borderBottomStartRadius: true,
+  borderRadius: true,
   borderTopEndRadius: true,
   borderTopLeftRadius: true,
   borderTopRightRadius: true,
   borderTopStartRadius: true,
   elevation: true,
+  opacity: true,
+  transform: true,
   zIndex: true,
   /* ios styles */
   shadowOpacity: true,
@@ -282,6 +308,22 @@ function addWhitelistedInterpolationParam(param: string): void {
   SUPPORTED_INTERPOLATION_PARAMS[param] = true;
 }
 
+function isSupportedColorStyleProp(prop: string): boolean {
+  return SUPPORTED_COLOR_STYLES.hasOwnProperty(prop);
+}
+
+function isSupportedStyleProp(prop: string): boolean {
+  return SUPPORTED_STYLES.hasOwnProperty(prop);
+}
+
+function isSupportedTransformProp(prop: string): boolean {
+  return SUPPORTED_TRANSFORMS.hasOwnProperty(prop);
+}
+
+function isSupportedInterpolationParam(param: string): boolean {
+  return SUPPORTED_INTERPOLATION_PARAMS.hasOwnProperty(param);
+}
+
 function validateTransform(
   configs: Array<
     | {
@@ -299,7 +341,7 @@ function validateTransform(
   >,
 ): void {
   configs.forEach(config => {
-    if (!SUPPORTED_TRANSFORMS.hasOwnProperty(config.property)) {
+    if (!isSupportedTransformProp(config.property)) {
       throw new Error(
         `Property '${config.property}' is not supported by native animated module`,
       );
@@ -309,7 +351,7 @@ function validateTransform(
 
 function validateStyles(styles: {[key: string]: ?number, ...}): void {
   for (const key in styles) {
-    if (!SUPPORTED_STYLES.hasOwnProperty(key)) {
+    if (!isSupportedStyleProp(key)) {
       throw new Error(
         `Style property '${key}' is not supported by native animated module`,
       );
@@ -319,7 +361,7 @@ function validateStyles(styles: {[key: string]: ?number, ...}): void {
 
 function validateInterpolation(config: InterpolationConfigType): void {
   for (const key in config) {
-    if (!SUPPORTED_INTERPOLATION_PARAMS.hasOwnProperty(key)) {
+    if (!isSupportedInterpolationParam(key)) {
       throw new Error(
         `Interpolation property '${key}' is not supported by native animated module`,
       );
@@ -342,7 +384,7 @@ function assertNativeAnimatedModule(): void {
 let _warnedMissingNativeAnimated = false;
 
 function shouldUseNativeDriver(
-  config: {...AnimationConfig, ...} | EventConfig,
+  config: $ReadOnly<{...AnimationConfig, ...}> | EventConfig,
 ): boolean {
   if (config.useNativeDriver == null) {
     console.warn(
@@ -385,6 +427,10 @@ function transformDataType(value: number | string): number | string {
 
 module.exports = {
   API,
+  isSupportedColorStyleProp,
+  isSupportedStyleProp,
+  isSupportedTransformProp,
+  isSupportedInterpolationParam,
   addWhitelistedStyleProp,
   addWhitelistedTransformProp,
   addWhitelistedInterpolationParam,

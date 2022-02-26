@@ -7,7 +7,6 @@
 
 #include "Binding.h"
 #include "AsyncEventBeat.h"
-#include "AsyncEventBeatV2.h"
 #include "EventEmitterWrapper.h"
 #include "ReactNativeConfigHolder.h"
 #include "StateWrapperImpl.h"
@@ -396,41 +395,27 @@ void Binding::installFabricUIManager(
               std::function<void(jsi::Runtime & runtime)> &&callback) {
             runtimeScheduler->scheduleWork(std::move(callback));
           };
+      contextContainer->insert(
+          "RuntimeScheduler",
+          std::weak_ptr<RuntimeScheduler>(runtimeScheduler));
     }
   }
 
-  auto enableV2AsynchronousEventBeat =
-      config->getBool("react_fabric:enable_asynchronous_event_beat_v2_android");
-
   // TODO: T31905686 Create synchronous Event Beat
   EventBeat::Factory synchronousBeatFactory =
-      [eventBeatManager,
-       runtimeExecutor,
-       globalJavaUiManager,
-       enableV2AsynchronousEventBeat](EventBeat::SharedOwnerBox const &ownerBox)
+      [eventBeatManager, runtimeExecutor, globalJavaUiManager](
+          EventBeat::SharedOwnerBox const &ownerBox)
       -> std::unique_ptr<EventBeat> {
-    if (enableV2AsynchronousEventBeat) {
-      return std::make_unique<AsyncEventBeatV2>(
-          ownerBox, eventBeatManager, runtimeExecutor, globalJavaUiManager);
-    } else {
-      return std::make_unique<AsyncEventBeat>(
-          ownerBox, eventBeatManager, runtimeExecutor, globalJavaUiManager);
-    }
+    return std::make_unique<AsyncEventBeat>(
+        ownerBox, eventBeatManager, runtimeExecutor, globalJavaUiManager);
   };
 
   EventBeat::Factory asynchronousBeatFactory =
-      [eventBeatManager,
-       runtimeExecutor,
-       globalJavaUiManager,
-       enableV2AsynchronousEventBeat](EventBeat::SharedOwnerBox const &ownerBox)
+      [eventBeatManager, runtimeExecutor, globalJavaUiManager](
+          EventBeat::SharedOwnerBox const &ownerBox)
       -> std::unique_ptr<EventBeat> {
-    if (enableV2AsynchronousEventBeat) {
-      return std::make_unique<AsyncEventBeatV2>(
-          ownerBox, eventBeatManager, runtimeExecutor, globalJavaUiManager);
-    } else {
-      return std::make_unique<AsyncEventBeat>(
-          ownerBox, eventBeatManager, runtimeExecutor, globalJavaUiManager);
-    }
+    return std::make_unique<AsyncEventBeat>(
+        ownerBox, eventBeatManager, runtimeExecutor, globalJavaUiManager);
   };
 
   contextContainer->insert("ReactNativeConfig", config);

@@ -390,12 +390,6 @@ jobs:
                 package: applesimutils
 
       - run:
-          name: Configure Node
-          # Sourcing find-node.sh will ensure nvm is set up.
-          # It also helps future invocation of find-node.sh prevent permission issue with nvm.sh.
-          command: source scripts/find-node.sh && nvm install 16 && nvm alias default 16
-
-      - run:
           name: Configure Watchman
           command: echo "{}" > .watchmanconfig
 
@@ -569,20 +563,18 @@ jobs:
     steps:
       - checkout
       - run_yarn
+      - attach_workspace:
+          at: .
 
       - run:
-          name: Setup the Android Template
+          name: Create Android template project
           command: |
+            REPO_ROOT=$(pwd)
+            PACKAGE=$(cat build/react-native-package-version)
+            PATH_TO_PACKAGE="$REPO_ROOT/build/$PACKAGE"
             cd template
-            # We replace the "react-native" dependency version with file:.. so we use it from source.
-            sed -i 's/\"react-native\"\:.*/\"react-native\"\: \"file\:\.\.\"/g' package.json
+            npm add $PATH_TO_PACKAGE
             npm install
-            # react-native-community/cli is needed as the Android template is referencing a .gradle file inside it.
-            npm i @react-native-community/cli
-
-      - run:
-          name: Bundle the latest version of ReactAndroid
-          command: ./gradlew :ReactAndroid:publishReleasePublicationToNpmRepository
 
       - run:
           name: Build the template application
@@ -593,10 +585,6 @@ jobs:
   # -------------------------
   test_android_rntester:
     executor: reactnativeandroid
-    parameters:
-      use_hermes:
-          type: boolean
-          default: false
     steps:
       - checkout
       - run_yarn
@@ -605,19 +593,9 @@ jobs:
           name: Generate artifacts for Maven
           command: ./gradlew :ReactAndroid:installArchives
 
-      - when:
-          condition: << parameters.use_hermes >>
-          steps:
-            - run:
-                name: Build RNTester with Hermes
-                command: ./gradlew :packages:rn-tester:android:app:assembleHermesDebug
-      - when:
-          condition:
-            not: << parameters.use_hermes >>
-          steps:
-            - run:
-                name: Build RNTester with JSC
-                command: ./gradlew :packages:rn-tester:android:app:assembleJscDebug
+      - run:
+          name: Assemble RNTester
+          command: ./gradlew :packages:rn-tester:android:app:assembleDebug
 
   # -------------------------
   #    JOBS: Test iOS Template
@@ -931,11 +909,6 @@ workflows:
       - build_npm_package:
           # Build a release package on every untagged commit, but do not publish to npm.
           publish_npm_args: --dry-run
-          filters:
-            branches:
-              only:
-                - main
-                - /^pull\/.*$/
       - test_js:
           run_disabled_tests: false
           filters:
@@ -947,17 +920,12 @@ workflows:
             branches:
               ignore: gh-pages
       - test_android_template:
+          requires:
+            - build_npm_package
           filters:
             branches:
               ignore: gh-pages
       - test_android_rntester:
-          name: test_android_rntester_hermes
-          use_hermes: true
-          filters:
-            branches:
-              ignore: gh-pages
-      - test_android_rntester:
-          name: test_android_rntester_jsc
           filters:
             branches:
               ignore: gh-pages
@@ -992,7 +960,10 @@ workflows:
       - test_ios:
           name: test_ios_unit_hermes
           use_hermes: true
-          run_unit_tests: true
+          # TODO(ncor, neildhar) Integration tests for iOS + Hermes are currently
+          # disabled due to an ABI incompatibility introduced by D33830544.
+          # They can be re-enabled as soon as Hermes 0.12.0 is released.
+          run_unit_tests: false
           filters:
             branches:
               ignore: gh-pages

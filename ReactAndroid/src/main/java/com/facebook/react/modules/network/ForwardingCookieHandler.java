@@ -142,9 +142,16 @@ public class ForwardingCookieHandler extends CookieHandler {
         // We cannot catch MissingWebViewPackageException as it is in a private / system API
         // class. This validates the exception's message to ensure we are only handling this
         // specific exception.
+        // The exception class doesn't always contain the correct name as it depends on the OEM
+        // and OS version. It is better to check the message for clues regarding the exception
+        // as that is somewhat consistent across OEMs.
+        // For instance, the Exception thrown on OxygenOS 11 is a RuntimeException but the message
+        // contains the required strings.
         // https://android.googlesource.com/platform/frameworks/base/+/master/core/java/android/webkit/WebViewFactory.java#348
-        if (message != null
-            && exception.getClass().getCanonicalName().contains("MissingWebViewPackageException")) {
+        if (exception.getClass().getCanonicalName().contains("MissingWebViewPackageException")
+            || (message != null
+                && (message.contains("WebView provider")
+                    || message.contains("No WebView installed")))) {
           return null;
         } else {
           throw exception;

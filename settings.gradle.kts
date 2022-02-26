@@ -22,3 +22,14 @@ include(
 // Include this to enable codegen Gradle plugin.
 includeBuild("packages/react-native-gradle-plugin/")
 
+rootProject.name = "react-native-github"
+
+plugins {
+    id("com.gradle.enterprise").version("3.7.1")
+}
+
+// If you specify a file inside gradle/gradle-enterprise.gradle.kts
+// you can configure your custom Gradle Enterprise instance
+if (File("./gradle/gradle-enterprise.gradle.kts").exists()) {
+    apply(from = "./gradle/gradle-enterprise.gradle.kts")
+}
