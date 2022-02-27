@@ -10,6 +10,9 @@
 </p>
 
 <p align="center">
+  <a href="https://bank.gov.ua/en/news/all/natsionalniy-bank-vidkriv-spetsrahunok-dlya-zboru-koshtiv-na-potrebi-armiyi">
+    <img src="https://img.shields.io/badge/Support-Ukraine-blue?style=flat&logo=adguard" alt="Support Ukraine" />
+  </a>
   <a href="https://github.com/facebook/react-native/blob/HEAD/LICENSE">
     <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="React Native is released under the MIT license." />
   </a>
