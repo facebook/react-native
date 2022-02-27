@@ -28,6 +28,7 @@ using namespace facebook::react;
 RCT_EXPORT_MODULE()
 
 @synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED;
+NSMutableArray<UIAlertController *> *_alertControllers = [NSMutableArray array];
 
 - (dispatch_queue_t)methodQueue
 {
@@ -137,6 +138,7 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
                                                          handler:^(__unused UIAlertAction *action) {
                                                            if (!callbackInvoked) {
                                                              callbackInvoked = true;
+                                                             [_alertControllers removeObject:alertController];
                                                              callback(@[ @(localIndex) ]);
                                                            }
                                                          }];
@@ -178,7 +180,19 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
   }
 #endif
 
+  [_alertControllers addObject:alertController];
   [self presentViewController:alertController onParentViewController:controller anchorViewTag:anchorViewTag];
+}
+
+RCT_EXPORT_METHOD(dismissActionSheet)
+{
+  if(_alertControllers.count == 0){
+    RCTLogWarn(@"Unable to dismiss action sheet");
+  }
+
+  id _alertController = [_alertControllers lastObject];
+  [_alertController dismissViewControllerAnimated:YES completion:nil];
+  [_alertControllers removeLastObject];
 }
 
 RCT_EXPORT_METHOD(showShareActionSheetWithOptions
