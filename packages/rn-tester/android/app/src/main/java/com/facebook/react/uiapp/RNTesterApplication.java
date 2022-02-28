@@ -171,7 +171,6 @@ public class RNTesterApplication extends Application implements ReactApplication
                         return new FabricJSIModuleProvider(
                             reactApplicationContext,
                             componentFactory,
-                            // TODO: T71362667 add ReactNativeConfig's support in RNTester
                             ReactNativeConfig.DefaultValuesReactNativeConfig,
                             viewManagerRegistry);
                       }
