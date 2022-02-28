@@ -22,6 +22,30 @@ import com.facebook.proguard.annotations.DoNotStrip;
  */
 @DoNotStrip
 public interface ReactNativeConfig {
+
+  public final ReactNativeConfig DefaultValuesReactNativeConfig =
+      new ReactNativeConfig() {
+        @Override
+        public boolean getBool(@NonNull String param) {
+          return false;
+        }
+
+        @Override
+        public long getInt64(@NonNull String param) {
+          return 0;
+        }
+
+        @Override
+        public String getString(@NonNull String param) {
+          return null;
+        }
+
+        @Override
+        public double getDouble(@NonNull String param) {
+          return 0;
+        }
+      };
+
   /**
    * Get a boolean param by string name. Default should be false.
    *
