@@ -37,6 +37,18 @@ class TextLayoutManager {
   ~TextLayoutManager();
 
   /*
+   * Not copyable.
+   */
+  TextLayoutManager(TextLayoutManager const &) = delete;
+  TextLayoutManager &operator=(TextLayoutManager const &) = delete;
+
+  /*
+   * Not movable.
+   */
+  TextLayoutManager(TextLayoutManager &&) = delete;
+  TextLayoutManager &operator=(TextLayoutManager &&) = delete;
+
+  /*
    * Measures `attributedString` using native text rendering infrastructure.
    */
   TextMeasurement measure(
