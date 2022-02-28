@@ -23,7 +23,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 @DoNotStrip
 public interface ReactNativeConfig {
 
-  public final ReactNativeConfig DefaultValuesReactNativeConfig = new EmptyReactNativeConfig();
+  ReactNativeConfig DEFAULT_CONFIG = new EmptyReactNativeConfig();
 
   /**
    * Get a boolean param by string name. Default should be false.
