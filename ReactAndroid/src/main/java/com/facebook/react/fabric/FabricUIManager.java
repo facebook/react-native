@@ -382,7 +382,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
                       + " ms.\n - Diffing: "
                       + (commitPoint.getDiffEnd() - commitPoint.getDiffStart())
                       + " ms.\n"
-                      + " - FinishTransaction (Diffing + Processing + Serialization of MutationInstructions): "
+                      + " - FinishTransaction (Diffing + JNI serialization): "
                       + (commitPoint.getFinishTransactionEnd()
                           - commitPoint.getFinishTransactionStart())
                       + " ms.\n"
