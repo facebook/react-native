@@ -34,7 +34,6 @@ class TextLayoutManager {
             contextContainer->at<bool>("EnableLargeTextMeasureCache")
                 ? 1024
                 : kSimpleThreadSafeCacheSizeCap) {}
-  ~TextLayoutManager();
 
   /*
    * Not copyable.

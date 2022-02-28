@@ -20,8 +20,6 @@ using namespace facebook::jni;
 namespace facebook {
 namespace react {
 
-TextLayoutManager::~TextLayoutManager() = default;
-
 void *TextLayoutManager::getNativeTextLayoutManager() const {
   return self_;
 }
