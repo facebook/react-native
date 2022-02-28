@@ -26,14 +26,7 @@ using SharedTextLayoutManager = std::shared_ptr<const TextLayoutManager>;
  */
 class TextLayoutManager {
  public:
-  TextLayoutManager(const ContextContainer::Shared &contextContainer)
-      : contextContainer_(contextContainer),
-        mapBufferSerializationEnabled_(
-            contextContainer->at<bool>("MapBufferSerializationEnabled")),
-        measureCache_(
-            contextContainer->at<bool>("EnableLargeTextMeasureCache")
-                ? 1024
-                : kSimpleThreadSafeCacheSizeCap) {}
+  TextLayoutManager(const ContextContainer::Shared &contextContainer);
 
   /*
    * Not copyable.
