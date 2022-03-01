@@ -30,7 +30,7 @@ def rn_codegen(
         codegen_modules = False,
         library_labels = [],
         src_prefix = ""):
-    if (codegen_modules):
+    if codegen_modules:
         error_header = "rn_codegen(name=\"{}\")".format(name)
         if not native_module_spec_name:
             fail("{}: When codegen_modules = True, native_module_spec_name must be specified.".format(error_header))
@@ -66,7 +66,13 @@ def rn_codegen(
             library_labels = library_labels,
         )
 
-    if (codegen_components):
+        rn_codegen_cxx_modules(
+            name = native_module_spec_name,
+            schema_target = ":{}".format(module_schema_target),
+            library_labels = library_labels,
+        )
+
+    if codegen_components:
         component_spec_name = native_component_spec_name or name
         fb_native.genrule(
             name = "codegen_rn_components_schema_{}".format(component_spec_name),
