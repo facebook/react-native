@@ -83,6 +83,7 @@ class RN_EXPORT Instance {
       std::string &&method,
       folly::dynamic &&params);
   void callJSCallback(uint64_t callbackId, folly::dynamic &&params);
+  void flush();
 
   // This method is experimental, and may be modified or removed.
   void registerBundle(uint32_t bundleId, const std::string &bundlePath);

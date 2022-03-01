@@ -103,6 +103,11 @@ RCT_EXTERN void RCTRegisterModule(Class);
 - (void)dispatchBlock:(dispatch_block_t)block queue:(dispatch_queue_t)queue;
 
 /**
+ * Call JSIExecutor::flush
+ */
+- (void)flush;
+
+/**
  * Get the module data for a given module name. Used by UIManager to implement
  * the `dispatchViewManagerCommand` method.
  */

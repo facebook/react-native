@@ -1239,6 +1239,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
   }
 }
 
+- (void)flush
+{
+  _reactInstance->flush();
+}
+
 #pragma mark - RCTInvalidating
 
 - (void)invalidate

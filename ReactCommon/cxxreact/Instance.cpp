@@ -246,6 +246,10 @@ std::shared_ptr<CallInvoker> Instance::getJSCallInvoker() {
   return std::static_pointer_cast<CallInvoker>(jsCallInvoker_);
 }
 
+void Instance::flush() {
+  nativeToJsBridge_->runOnExecutorQueue([](JSExecutor *executor) { executor->flush(); });
+}
+
 RuntimeExecutor Instance::getRuntimeExecutor() {
   std::weak_ptr<NativeToJsBridge> weakNativeToJsBridge = nativeToJsBridge_;
 
