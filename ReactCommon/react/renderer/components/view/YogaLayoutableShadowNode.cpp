@@ -479,7 +479,6 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
   react_native_assert(!yogaNode_.isDirty());
 
   auto contentFrame = Rect{};
-
   for (auto childYogaNode : yogaNode_.getChildren()) {
     auto &childNode =
         *static_cast<YogaLayoutableShadowNode *>(childYogaNode->getContext());
@@ -521,24 +520,36 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
 
     auto layoutMetricsWithOverflowInset = childNode.getLayoutMetrics();
     if (layoutMetricsWithOverflowInset.displayType != DisplayType::None) {
+      // The contentFrame should always union with existing child node layout +
+      // overflowInset. The transform may in a deferred animation and not
+      // applied yet.
       contentFrame.unionInPlace(insetBy(
           layoutMetricsWithOverflowInset.frame,
           layoutMetricsWithOverflowInset.overflowInset));
+
+      auto childTransform = childNode.getTransform();
+      if (childTransform != Transform::Identity()) {
+        // The child node's transform matrix will affect the parent node's
+        // contentFrame. We need to union with child node's after transform
+        // layout here.
+        contentFrame.unionInPlace(insetBy(
+            layoutMetricsWithOverflowInset.frame * childTransform,
+            layoutMetricsWithOverflowInset.overflowInset * childTransform));
+      }
     }
   }
 
   if (yogaNode_.getStyle().overflow() == YGOverflowVisible) {
-    auto transform = getTransform();
-    auto transformedContentFrame = contentFrame;
-    if (Transform::Identity() != transform) {
-      // When animation uses native driver, Yoga has no knowledge of the
-      // animation. In case the content goes out from current container, we need
-      // to union the content frame with its transformed frame.
-      transformedContentFrame = contentFrame * getTransform();
-      transformedContentFrame.unionInPlace(contentFrame);
-    }
+    // Note that the parent node's overflow layout is NOT affected by its
+    // transform matrix. That transform matrix is applied on the parent node as
+    // well as all of its child nodes, which won't cause changes on the
+    // overflowInset values. A special note on the scale transform -- the scaled
+    // layout may look like it's causing overflowInset changes, but it's purely
+    // cosmetic and will be handled by pixel density conversion logic later when
+    // render the view. The actual overflowInset value is not changed as if the
+    // transform is not happening here.
     layoutMetrics_.overflowInset =
-        calculateOverflowInset(layoutMetrics_.frame, transformedContentFrame);
+        calculateOverflowInset(layoutMetrics_.frame, contentFrame);
   } else {
     layoutMetrics_.overflowInset = {};
   }
