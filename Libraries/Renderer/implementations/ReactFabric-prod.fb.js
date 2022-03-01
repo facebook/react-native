@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<9d64ad4ce3ec89212953470f0d425676>>
+ * @generated SignedSource<<7389c5406141344364bedc0bb9bbd92e>>
  */
 
 "use strict";
@@ -87,6 +87,7 @@ function executeDirectDispatch(event) {
   event._dispatchInstances = null;
   return dispatchListener;
 }
+var assign = Object.assign;
 function functionThatReturnsTrue() {
   return !0;
 }
@@ -119,7 +120,7 @@ function SyntheticEvent(
   this.isPropagationStopped = functionThatReturnsFalse;
   return this;
 }
-Object.assign(SyntheticEvent.prototype, {
+assign(SyntheticEvent.prototype, {
   preventDefault: function() {
     this.defaultPrevented = !0;
     var event = this.nativeEvent;
@@ -173,10 +174,10 @@ SyntheticEvent.extend = function(Interface) {
   var Super = this;
   E.prototype = Super.prototype;
   var prototype = new E();
-  Object.assign(prototype, Class.prototype);
+  assign(prototype, Class.prototype);
   Class.prototype = prototype;
   Class.prototype.constructor = Class;
-  Class.Interface = Object.assign({}, Super.Interface, Interface);
+  Class.Interface = assign({}, Super.Interface, Interface);
   Class.extend = Super.extend;
   addEventPoolingTo(Class);
   return Class;
@@ -1028,45 +1029,25 @@ ResponderEventPlugin.injection.injectGlobalResponderHandler({
 });
 var ReactSharedInternals =
     React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED,
-  REACT_ELEMENT_TYPE = 60103,
-  REACT_PORTAL_TYPE = 60106,
-  REACT_FRAGMENT_TYPE = 60107,
-  REACT_STRICT_MODE_TYPE = 60108,
-  REACT_PROFILER_TYPE = 60114,
-  REACT_PROVIDER_TYPE = 60109,
-  REACT_CONTEXT_TYPE = 60110,
-  REACT_FORWARD_REF_TYPE = 60112,
-  REACT_SUSPENSE_TYPE = 60113,
-  REACT_SUSPENSE_LIST_TYPE = 60120,
-  REACT_MEMO_TYPE = 60115,
-  REACT_LAZY_TYPE = 60116,
-  REACT_DEBUG_TRACING_MODE_TYPE = 60129,
-  REACT_OFFSCREEN_TYPE = 60130,
-  REACT_LEGACY_HIDDEN_TYPE = 60131,
-  REACT_CACHE_TYPE = 60132,
-  REACT_TRACING_MARKER_TYPE = 60133;
-if ("function" === typeof Symbol && Symbol.for) {
-  var symbolFor = Symbol.for;
-  REACT_ELEMENT_TYPE = symbolFor("react.element");
-  REACT_PORTAL_TYPE = symbolFor("react.portal");
-  REACT_FRAGMENT_TYPE = symbolFor("react.fragment");
-  REACT_STRICT_MODE_TYPE = symbolFor("react.strict_mode");
-  REACT_PROFILER_TYPE = symbolFor("react.profiler");
-  REACT_PROVIDER_TYPE = symbolFor("react.provider");
-  REACT_CONTEXT_TYPE = symbolFor("react.context");
-  REACT_FORWARD_REF_TYPE = symbolFor("react.forward_ref");
-  REACT_SUSPENSE_TYPE = symbolFor("react.suspense");
-  REACT_SUSPENSE_LIST_TYPE = symbolFor("react.suspense_list");
-  REACT_MEMO_TYPE = symbolFor("react.memo");
-  REACT_LAZY_TYPE = symbolFor("react.lazy");
-  symbolFor("react.scope");
-  REACT_DEBUG_TRACING_MODE_TYPE = symbolFor("react.debug_trace_mode");
-  REACT_OFFSCREEN_TYPE = symbolFor("react.offscreen");
-  REACT_LEGACY_HIDDEN_TYPE = symbolFor("react.legacy_hidden");
-  REACT_CACHE_TYPE = symbolFor("react.cache");
-  REACT_TRACING_MARKER_TYPE = symbolFor("react.tracing_marker");
-}
-var MAYBE_ITERATOR_SYMBOL = "function" === typeof Symbol && Symbol.iterator;
+  REACT_ELEMENT_TYPE = Symbol.for("react.element"),
+  REACT_PORTAL_TYPE = Symbol.for("react.portal"),
+  REACT_FRAGMENT_TYPE = Symbol.for("react.fragment"),
+  REACT_STRICT_MODE_TYPE = Symbol.for("react.strict_mode"),
+  REACT_PROFILER_TYPE = Symbol.for("react.profiler"),
+  REACT_PROVIDER_TYPE = Symbol.for("react.provider"),
+  REACT_CONTEXT_TYPE = Symbol.for("react.context"),
+  REACT_FORWARD_REF_TYPE = Symbol.for("react.forward_ref"),
+  REACT_SUSPENSE_TYPE = Symbol.for("react.suspense"),
+  REACT_SUSPENSE_LIST_TYPE = Symbol.for("react.suspense_list"),
+  REACT_MEMO_TYPE = Symbol.for("react.memo"),
+  REACT_LAZY_TYPE = Symbol.for("react.lazy");
+Symbol.for("react.scope");
+var REACT_DEBUG_TRACING_MODE_TYPE = Symbol.for("react.debug_trace_mode"),
+  REACT_OFFSCREEN_TYPE = Symbol.for("react.offscreen"),
+  REACT_LEGACY_HIDDEN_TYPE = Symbol.for("react.legacy_hidden"),
+  REACT_CACHE_TYPE = Symbol.for("react.cache"),
+  REACT_TRACING_MARKER_TYPE = Symbol.for("react.tracing_marker"),
+  MAYBE_ITERATOR_SYMBOL = Symbol.iterator;
 function getIteratorFn(maybeIterable) {
   if (null === maybeIterable || "object" !== typeof maybeIterable) return null;
   maybeIterable =
@@ -2053,7 +2034,7 @@ function processChildContext(fiber, type, parentContext) {
           contextKey +
           '" is not defined in childContextTypes.'
       );
-  return Object.assign({}, parentContext, instance);
+  return assign({}, parentContext, instance);
 }
 function pushContextProvider(workInProgress) {
   workInProgress =
@@ -2163,7 +2144,7 @@ function describeFiber(fiber) {
 }
 function resolveDefaultProps(Component, baseProps) {
   if (Component && Component.defaultProps) {
-    baseProps = Object.assign({}, baseProps);
+    baseProps = assign({}, baseProps);
     Component = Component.defaultProps;
     for (var propName in Component)
       void 0 === baseProps[propName] &&
@@ -2408,7 +2389,7 @@ function processUpdateQueue(
                   ? workInProgress.call(updateEventTime, newState, updateLane)
                   : workInProgress;
               if (null === updateLane || void 0 === updateLane) break a;
-              newState = Object.assign({}, newState, updateLane);
+              newState = assign({}, newState, updateLane);
               break a;
             case 2:
               hasForceUpdate = !0;
@@ -2495,7 +2476,7 @@ function applyDerivedStateFromProps(
   getDerivedStateFromProps =
     null === getDerivedStateFromProps || void 0 === getDerivedStateFromProps
       ? ctor
-      : Object.assign({}, ctor, getDerivedStateFromProps);
+      : assign({}, ctor, getDerivedStateFromProps);
   workInProgress.memoizedState = getDerivedStateFromProps;
   0 === workInProgress.lanes &&
     (workInProgress.updateQueue.baseState = getDerivedStateFromProps);
@@ -4110,7 +4091,8 @@ var ContextOnlyDispatcher = {
       var hook = mountWorkInProgressHook(),
         identifierPrefix = workInProgressRoot.identifierPrefix,
         globalClientId = globalClientIdCounter++;
-      identifierPrefix = identifierPrefix + "r:" + globalClientId.toString(32);
+      identifierPrefix =
+        ":" + identifierPrefix + "r" + globalClientId.toString(32) + ":";
       return (hook.memoizedState = identifierPrefix);
     },
     unstable_isNewReconciler: !1
@@ -4792,6 +4774,10 @@ function completeWork(current, workInProgress, renderLanes) {
           : bubbleProperties(workInProgress),
         null
       );
+    case 24:
+      return null;
+    case 25:
+      return null;
   }
   throw Error(
     "Unknown unit of work tag (" +
@@ -6869,8 +6855,7 @@ function handleError(root$jscomp$0, thrownValue) {
               break a;
             }
             value = Error(
-              (getComponentNameFromFiber(sourceFiber) || "A React component") +
-                " suspended while rendering, but no fallback UI was specified.\n\nAdd a <Suspense fallback=...> component higher in the tree to provide a loading indicator or placeholder to display."
+              "A component suspended while responding to synchronous input. This will cause the UI to be replaced with a loading indicator. To fix, updates that suspend should be wrapped with startTransition."
             );
           }
         }
@@ -7081,7 +7066,7 @@ function commitRootImpl(root, recoverableErrors, renderPriorityLevel) {
     executionContext |= 4;
     ReactCurrentOwner$2.current = null;
     commitBeforeMutationEffects(root, finishedWork);
-    commitMutationEffects(root, finishedWork);
+    commitMutationEffects(root, finishedWork, lanes);
     root.current = finishedWork;
     commitLayoutEffects(finishedWork, root, lanes);
     requestPaint();
@@ -7280,7 +7265,11 @@ function captureCommitPhaseError(sourceFiber, nearestMountedAncestor, error) {
   if (3 === sourceFiber.tag)
     captureCommitPhaseErrorOnRoot(sourceFiber, sourceFiber, error);
   else
-    for (; null !== nearestMountedAncestor; ) {
+    for (
+      nearestMountedAncestor = sourceFiber.return;
+      null !== nearestMountedAncestor;
+
+    ) {
       if (3 === nearestMountedAncestor.tag) {
         captureCommitPhaseErrorOnRoot(
           nearestMountedAncestor,
@@ -8208,10 +8197,10 @@ batchedUpdatesImpl = function(fn, a) {
   }
 };
 var roots = new Map(),
-  devToolsConfig$jscomp$inline_930 = {
+  devToolsConfig$jscomp$inline_932 = {
     findFiberByHostInstance: getInstanceFromInstance,
     bundleType: 0,
-    version: "18.0.0-rc.0-4de99b3ca-20220221",
+    version: "18.0.0-rc.1-17806594c-20220301",
     rendererPackageName: "react-native-renderer",
     rendererConfig: {
       getInspectorDataForViewTag: function() {
@@ -8226,11 +8215,11 @@ var roots = new Map(),
       }.bind(null, findNodeHandle)
     }
   };
-var internals$jscomp$inline_1178 = {
-  bundleType: devToolsConfig$jscomp$inline_930.bundleType,
-  version: devToolsConfig$jscomp$inline_930.version,
-  rendererPackageName: devToolsConfig$jscomp$inline_930.rendererPackageName,
-  rendererConfig: devToolsConfig$jscomp$inline_930.rendererConfig,
+var internals$jscomp$inline_1181 = {
+  bundleType: devToolsConfig$jscomp$inline_932.bundleType,
+  version: devToolsConfig$jscomp$inline_932.version,
+  rendererPackageName: devToolsConfig$jscomp$inline_932.rendererPackageName,
+  rendererConfig: devToolsConfig$jscomp$inline_932.rendererConfig,
   overrideHookState: null,
   overrideHookStateDeletePath: null,
   overrideHookStateRenamePath: null,
@@ -8246,26 +8235,26 @@ var internals$jscomp$inline_1178 = {
     return null === fiber ? null : fiber.stateNode;
   },
   findFiberByHostInstance:
-    devToolsConfig$jscomp$inline_930.findFiberByHostInstance ||
+    devToolsConfig$jscomp$inline_932.findFiberByHostInstance ||
     emptyFindFiberByHostInstance,
   findHostInstancesForRefresh: null,
   scheduleRefresh: null,
   scheduleRoot: null,
   setRefreshHandler: null,
   getCurrentFiber: null,
-  reconcilerVersion: "18.0.0-rc.0-4de99b3ca-20220221"
+  reconcilerVersion: "18.0.0-rc.1-17806594c-20220301"
 };
 if ("undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__) {
-  var hook$jscomp$inline_1179 = __REACT_DEVTOOLS_GLOBAL_HOOK__;
+  var hook$jscomp$inline_1182 = __REACT_DEVTOOLS_GLOBAL_HOOK__;
   if (
-    !hook$jscomp$inline_1179.isDisabled &&
-    hook$jscomp$inline_1179.supportsFiber
+    !hook$jscomp$inline_1182.isDisabled &&
+    hook$jscomp$inline_1182.supportsFiber
   )
     try {
-      (rendererID = hook$jscomp$inline_1179.inject(
-        internals$jscomp$inline_1178
+      (rendererID = hook$jscomp$inline_1182.inject(
+        internals$jscomp$inline_1181
       )),
-        (injectedHook = hook$jscomp$inline_1179);
+        (injectedHook = hook$jscomp$inline_1182);
     } catch (err) {}
 }
 exports.createPortal = function(children, containerTag) {
@@ -8315,7 +8304,7 @@ exports.render = function(element, containerTag, callback, concurrentRoot) {
     (root = createFiber(3, null, null, 1 === root ? 1 : 0)),
     (concurrentRoot.current = root),
     (root.stateNode = concurrentRoot),
-    (root.memoizedState = { element: null }),
+    (root.memoizedState = { element: null, cache: null, transitions: null }),
     initializeUpdateQueue(root),
     (root = concurrentRoot),
     roots.set(containerTag, root));
