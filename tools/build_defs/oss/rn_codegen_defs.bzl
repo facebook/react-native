@@ -9,6 +9,7 @@
 load(
     "//packages/react-native-codegen:DEFS.bzl",
     _rn_codegen_components = "rn_codegen_components",
+    _rn_codegen_cxx_modules = "rn_codegen_cxx_modules",
     _rn_codegen_modules = "rn_codegen_modules",
 )
 load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
@@ -18,6 +19,7 @@ load(
 )
 
 rn_codegen_components = _rn_codegen_components
+rn_codegen_cxx_modules = _rn_codegen_cxx_modules
 rn_codegen_modules = _rn_codegen_modules
 
 def rn_codegen(
