@@ -492,7 +492,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   BOOL cacheResult = [loadHandler respondsToSelector:@selector(shouldCacheLoadedImages)] ?
   [loadHandler shouldCacheLoadedImages] : YES;
 
-  if (cacheResult) {
+  if (cacheResult && partialLoadHandler) {
     UIImage *image = [[self imageCache] imageForUrl:request.URL.absoluteString
                                                size:size
                                               scale:scale
