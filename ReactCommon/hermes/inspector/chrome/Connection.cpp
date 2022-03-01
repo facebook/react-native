@@ -103,6 +103,7 @@ class Connection::Impl : public inspector::InspectorObserver,
   void handle(const m::heapProfiler::GetHeapObjectIdRequest &req) override;
   void handle(const m::runtime::CallFunctionOnRequest &req) override;
   void handle(const m::runtime::EvaluateRequest &req) override;
+  void handle(const m::runtime::GetHeapUsageRequest &req) override;
   void handle(const m::runtime::GetPropertiesRequest &req) override;
   void handle(const m::runtime::RunIfWaitingForDebuggerRequest &req) override;
 
@@ -1346,6 +1347,23 @@ Connection::Impl::makePropsFromValue(
   }
 
   return result;
+}
+
+void Connection::Impl::handle(const m::runtime::GetHeapUsageRequest &req) {
+  auto resp = std::make_shared<m::runtime::GetHeapUsageResponse>();
+  resp->id = req.id;
+
+  inspector_
+      ->executeIfEnabled(
+          "Runtime.getHeapUsage",
+          [this, req, resp](const debugger::ProgramState &state) {
+            auto heapInfo = getRuntime().instrumentation().getHeapInfo(false);
+            resp->usedSize = heapInfo["hermes_allocatedBytes"];
+            resp->totalSize = heapInfo["hermes_heapSize"];
+          })
+      .via(executor_.get())
+      .thenValue([this, resp](auto &&) { sendResponseToClient(*resp); })
+      .thenError<std::exception>(sendErrorToClient(req.id));
 }
 
 void Connection::Impl::handle(const m::runtime::GetPropertiesRequest &req) {
