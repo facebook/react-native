@@ -32,7 +32,6 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactCompoundView;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -391,7 +390,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     // We don't need to do bubbling in native (it's already happening in JS).
     // For an explanation of bubbling and capturing, see
     // http://javascript.info/tutorial/bubbling-and-capturing#capturing
-    return ReactFeatureFlags.enableNestedTextOnPressEventFix;
+    return true;
   }
 
   @Override
