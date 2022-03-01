@@ -296,14 +296,15 @@ using namespace facebook::react;
     self.accessibilityElement.accessibilityLabel = RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityLabel);
   }
 
+  // `accessibilityLanguage`
+  if (oldViewProps.accessibilityLanguage != newViewProps.accessibilityLanguage) {
+    self.accessibilityElement.accessibilityLanguage =
+        RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityLanguage);
+  }
+
   // `accessibilityHint`
   if (oldViewProps.accessibilityHint != newViewProps.accessibilityHint) {
     self.accessibilityElement.accessibilityHint = RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityHint);
-  }
-
-  // `accessibilityLanguage`
-  if (oldViewProps.accessibilityLanguage != newViewProps.accessibilityLanguage) {
-    self.accessibilityElement.accessibilityLanguage = RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityLanguage);
   }
 
   // `accessibilityViewIsModal`
