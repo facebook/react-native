@@ -282,7 +282,7 @@ def rn_codegen_components(
         srcs = native.glob(["src/generators/**/*.js"]),
         cmd = "$(exe {}) $(location {}) {} $OUT".format(react_native_root_target("packages/react-native-codegen:generate_all_from_schema"), schema_target, name),
         out = "codegenfiles-{}".format(name),
-        labels = ["codegen_rule"],
+        labels = ["codegen_rule", "uses_local_filesystem_abspaths"],
     )
 
     fb_native.genrule(
