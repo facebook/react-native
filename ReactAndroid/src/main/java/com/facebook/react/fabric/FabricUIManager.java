@@ -428,11 +428,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mReactApplicationContext.removeLifecycleEventListener(this);
     onHostPause();
 
-    // This is not technically thread-safe, since it's read on the UI thread and written
-    // here on the JS thread. We've marked it as volatile so that this writes to UI-thread
-    // memory immediately.
-    mDispatchUIFrameCallback.stop();
-
     mBinding.unregister();
     mBinding = null;
 
