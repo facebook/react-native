@@ -9,12 +9,15 @@
  */
 
 import type {ScrollViewNativeProps as Props} from './ScrollViewNativeComponentType';
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import type {
+  HostComponent,
+  PartialViewConfig,
+} from '../../Renderer/shims/ReactNativeTypes';
 import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
 import {ConditionallyIgnoredEventHandlers} from '../../NativeComponent/ViewConfigIgnore';
 import Platform from '../../Utilities/Platform';
 
-const RCTScrollViewViewConfig =
+export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
   Platform.OS === 'android'
     ? {
         uiViewClassName: 'RCTScrollView',
@@ -153,7 +156,7 @@ const RCTScrollViewViewConfig =
 const ScrollViewNativeComponent: HostComponent<Props> =
   NativeComponentRegistry.get<Props>(
     'RCTScrollView',
-    () => RCTScrollViewViewConfig,
+    () => __INTERNAL_VIEW_CONFIG,
   );
 
 export default ScrollViewNativeComponent;
