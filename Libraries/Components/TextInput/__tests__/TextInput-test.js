@@ -55,7 +55,7 @@ describe('TextInput tests', () => {
   it('has expected instance functions', () => {
     expect(inputRef.current.isFocused).toBeInstanceOf(Function); // Would have prevented S168585
     expect(inputRef.current.clear).toBeInstanceOf(Function);
-    expect(inputRef.current.focus).toBeInstanceOf(Function);
+    expect(inputRef.current.focus).toBeInstanceOf(jest.fn().constructor);
     expect(inputRef.current.blur).toBeInstanceOf(jest.fn().constructor);
     expect(inputRef.current.setNativeProps).toBeInstanceOf(
       jest.fn().constructor,
@@ -79,9 +79,26 @@ describe('TextInput tests', () => {
     });
   });
 
-  it('should have support being focused and unfocused', () => {
+  function createTextInput(extraProps) {
     const textInputRef = React.createRef(null);
-    ReactTestRenderer.create(<TextInput ref={textInputRef} value="value1" />);
+    ReactTestRenderer.create(
+      <TextInput ref={textInputRef} value="value1" {...extraProps} />,
+    );
+    return textInputRef;
+  }
+
+  it('focus() should not do anything if the TextInput is not editable', () => {
+    const textInputRef = createTextInput({editable: false});
+    // currentProps is the property actually containing props at runtime
+    textInputRef.current.currentProps = textInputRef.current.props;
+    expect(textInputRef.current.isFocused()).toBe(false);
+
+    TextInput.State.focusTextInput(textInputRef.current);
+    expect(textInputRef.current.isFocused()).toBe(false);
+  });
+
+  it('should have support for being focused and blurred', () => {
+    const textInputRef = createTextInput();
 
     expect(textInputRef.current.isFocused()).toBe(false);
     ReactNative.findNodeHandle = jest.fn().mockImplementation(ref => {
@@ -106,32 +123,6 @@ describe('TextInput tests', () => {
     TextInput.State.blurTextInput(textInputRef.current);
     expect(textInputRef.current.isFocused()).toBe(false);
     expect(TextInput.State.currentlyFocusedInput()).toBe(null);
-  });
-
-  describe('focus()', () => {
-    function createTextInput(extraProps) {
-      const textInputRef = React.createRef(null);
-      ReactTestRenderer.create(
-        <TextInput ref={textInputRef} value="value1" {...extraProps} />,
-      );
-      const {current} = textInputRef;
-      const mockComponent = Object.getPrototypeOf(current);
-      mockComponent.focus = jest.fn();
-      return {ref: current, mockComponent};
-    }
-
-    it('should call focus() up on the prototype (ReactNativeFiberHostComponent on device / mockComponent.js in tests)', () => {
-      const {ref, mockComponent} = createTextInput();
-      ref.focus();
-
-      expect(mockComponent.focus).toHaveBeenCalled();
-    });
-    it('should not do anything if the TextInput is not editable', () => {
-      const {ref, mockComponent} = createTextInput({editable: false});
-      ref.focus();
-
-      expect(mockComponent.focus).not.toHaveBeenCalled();
-    });
   });
 
   it('should unfocus when other TextInput is focused', () => {
