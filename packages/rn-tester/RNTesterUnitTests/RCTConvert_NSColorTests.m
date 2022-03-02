@@ -11,7 +11,6 @@
 #import <XCTest/XCTest.h>
 
 #import <React/RCTConvert.h>
-#import <React/RCTDynamicColor.h>
 
 @interface RCTConvert_NSColorTests : XCTestCase
 
@@ -85,7 +84,6 @@
   // 16777215 == 0x00FFFFFF == white
   id json = RCTJSONParse(@"{ \"dynamic\": { \"light\":0, \"dark\":16777215 } }", nil);
   NSColor *value = [RCTConvert UIColor:json];
-  XCTAssertTrue([value isKindOfClass:[RCTDynamicColor class]]);
   CGFloat r, g, b, a;
 
   [NSAppearance setCurrentAppearance:[NSAppearance appearanceNamed:NSAppearanceNameAqua]];
@@ -109,7 +107,6 @@
 {
   id json = RCTJSONParse(@"{ \"dynamic\": { \"light\": { \"semantic\": \"systemRedColor\" }, \"dark\":{ \"semantic\": \"systemBlueColor\" } } }", nil);
   NSColor *value = [RCTConvert UIColor:json];
-  XCTAssertTrue([value isKindOfClass:[RCTDynamicColor class]]);
   CGFloat r1, g1, b1, a1;
   CGFloat r2, g2, b2, a2;
 
