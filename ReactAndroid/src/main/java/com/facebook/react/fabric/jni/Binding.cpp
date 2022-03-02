@@ -367,6 +367,9 @@ void Binding::installFabricUIManager(
   disableRevisionCheckForPreallocation_ =
       config->getBool("react_fabric:disable_revision_check_for_preallocation");
 
+  disablePreallocationOnClone_ = config->getBool(
+      "react_native_new_architecture:disable_preallocation_on_clone_android");
+
   if (enableFabricLogs_) {
     LOG(WARNING) << "Binding::installFabricUIManager() was called (address: "
                  << this << ").";
@@ -505,6 +508,9 @@ void Binding::schedulerDidCloneShadowNode(
     SurfaceId surfaceId,
     ShadowNode const &oldShadowNode,
     ShadowNode const &newShadowNode) {
+  if (disablePreallocationOnClone_) {
+    return;
+  }
   // This is only necessary if view preallocation was skipped during
   // createShadowNode
 
