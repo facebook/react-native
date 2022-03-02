@@ -5,7 +5,6 @@
 [kotlin]
   compile_against_abis = True
   kotlin_version = 1.6.10
-  kotlin_home = ReactAndroid/src/main/third-party/kotlin/$(config kotlin.kotlin_version)
 
 [download]
   max_number_of_retries = 3
