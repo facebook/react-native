@@ -74,6 +74,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           removeClippedSubviews: true,
           borderTopRightRadius: true,
           borderLeftColor: {process: require('../../StyleSheet/processColor')},
+          pointerEvents: true,
         },
       }
     : {
