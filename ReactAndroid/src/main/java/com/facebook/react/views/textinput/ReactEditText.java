@@ -154,10 +154,6 @@ public class ReactEditText extends AppCompatEditText
       setLayerType(View.LAYER_TYPE_SOFTWARE, null);
     }
 
-    /*
-    ReactAccessibilityDelegate.setDelegate(
-        this, this.isFocusable(), this.getImportantForAccessibility());
-        */
     ReactAccessibilityDelegate editTextAccessibilityDelegate =
         new ReactAccessibilityDelegate(
             this, this.isFocusable(), this.getImportantForAccessibility()) {
