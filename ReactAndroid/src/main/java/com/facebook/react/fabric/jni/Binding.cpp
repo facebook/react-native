@@ -76,6 +76,14 @@ Binding::getInspectorDataForInstance(
   return ReadableNativeMap::newObjectCxxArgs(result);
 }
 
+bool isLargeTextMeasureCacheEnabled() {
+  static const auto reactFeatureFlagsJavaDescriptor =
+      jni::findClassStatic(Binding::ReactFeatureFlagsJavaDescriptor);
+  const auto field = reactFeatureFlagsJavaDescriptor->getStaticField<jboolean>(
+      "enableLargeTextMeasureCache");
+  return reactFeatureFlagsJavaDescriptor->getStaticFieldValue(field);
+}
+
 bool isMapBufferSerializationEnabled() {
   static const auto reactFeatureFlagsJavaDescriptor =
       jni::findClassStatic(Binding::ReactFeatureFlagsJavaDescriptor);
@@ -437,9 +445,7 @@ void Binding::installFabricUIManager(
       "react_native_new_architecture:dispatch_preallocation_in_bg");
 
   contextContainer->insert(
-      "EnableLargeTextMeasureCache",
-      reactNativeConfig_->getBool(
-          "react_fabric:enable_large_text_measure_cache_android"));
+      "EnableLargeTextMeasureCache", isLargeTextMeasureCacheEnabled());
 
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = contextContainer;

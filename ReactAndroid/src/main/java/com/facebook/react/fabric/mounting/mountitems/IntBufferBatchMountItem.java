@@ -188,6 +188,8 @@ public class IntBufferBatchMountItem implements MountItem {
       }
     }
 
+    surfaceMountingManager.didUpdateViews();
+
     endMarkers();
   }
 
