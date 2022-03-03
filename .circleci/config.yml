@@ -460,6 +460,8 @@ jobs:
       run_disabled_tests:
         type: boolean
         default: false
+    environment:
+      KOTLIN_HOME=third-party/kotlin
     steps:
       - checkout
       - setup_artifacts

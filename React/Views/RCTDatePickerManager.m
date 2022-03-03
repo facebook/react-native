@@ -6,8 +6,6 @@
  */
 
 #import "RCTDatePickerManager.h"
-
-#import <React/RCTUIManager.h>
 #import "RCTBridge.h"
 #import "RCTDatePicker.h"
 #import "UIView+React.h"
@@ -44,6 +42,8 @@ RCT_ENUM_CONVERTER(
 
 @implementation RCTDatePickerManager
 
+@synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED;
+
 RCT_EXPORT_MODULE()
 
 - (UIView *)view
@@ -62,16 +62,15 @@ RCT_REMAP_VIEW_PROPERTY(timeZoneOffsetInMinutes, timeZone, NSTimeZone)
 
 RCT_EXPORT_METHOD(setNativeDate : (nonnull NSNumber *)viewTag toDate : (NSDate *)date)
 {
-  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-    UIView *view = viewRegistry[viewTag];
-
+  [_viewRegistry_DEPRECATED addUIBlock:^(RCTViewRegistry *viewRegistry) {
+    UIView *view = [viewRegistry viewForReactTag:viewTag];
     if ([view isKindOfClass:[RCTDatePicker class]]) {
       [(RCTDatePicker *)view setDate:date];
     } else {
       // This component is used in Fabric through LegacyInteropLayer.
       // `RCTDatePicker` view is subview of `RCTLegacyViewManagerInteropComponentView`.
       // `viewTag` passed as parameter to this method is tag of the `RCTLegacyViewManagerInteropComponentView`.
-      UIView *subview = [uiManager viewForReactTag:viewTag].subviews.firstObject;
+      UIView *subview = view.subviews.firstObject;
       if ([subview isKindOfClass:[RCTDatePicker class]]) {
         [(RCTDatePicker *)subview setDate:date];
       } else {

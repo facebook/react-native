@@ -98,7 +98,4 @@ public class ReactFeatureFlags {
   public static boolean enableAggressiveEventEmitterCleanup = false;
 
   public static boolean insertZReorderBarriersOnViewGroupChildren = true;
-
-  /** TODO: T103427072 Delete ReactFeatureFlags.enableNestedTextOnPressEventFix */
-  public static boolean enableNestedTextOnPressEventFix = true;
 }

@@ -702,18 +702,14 @@ static Class getFallbackClassFromName(const char *name)
 
   BOOL requiresMainQueueSetup = hasConstantsToExport || hasCustomInit;
   if (requiresMainQueueSetup) {
-    const char *methodName = "";
-    if (hasConstantsToExport) {
-      methodName = "constantsToExport";
-    } else if (hasCustomInit) {
-      methodName = "init";
-    }
     RCTLogWarn(
         @"Module %@ requires main queue setup since it overrides `%s` but doesn't implement "
          "`requiresMainQueueSetup`. In a future release React Native will default to initializing all native modules "
          "on a background thread unless explicitly opted-out of.",
         moduleClass,
-        methodName);
+        hasConstantsToExport ? "constantsToExport"
+            : hasCustomInit  ? "init"
+                             : "");
   }
 
   return requiresMainQueueSetup;

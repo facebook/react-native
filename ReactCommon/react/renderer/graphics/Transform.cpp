@@ -360,6 +360,14 @@ Rect operator*(Rect const &rect, Transform const &transform) {
       transformedA, transformedB, transformedC, transformedD);
 }
 
+EdgeInsets operator*(EdgeInsets const &edgeInsets, Transform const &transform) {
+  return EdgeInsets{
+      edgeInsets.left * transform.matrix[0],
+      edgeInsets.top * transform.matrix[5],
+      edgeInsets.right * transform.matrix[0],
+      edgeInsets.bottom * transform.matrix[5]};
+}
+
 Vector operator*(Transform const &transform, Vector const &vector) {
   return {
       vector.x * transform.at(0, 0) + vector.y * transform.at(1, 0) +

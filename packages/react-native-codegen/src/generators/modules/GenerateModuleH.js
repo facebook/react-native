@@ -183,7 +183,7 @@ module.exports = {
       })
       .join('\n');
 
-    const fileName = 'NativeModules.h';
+    const fileName = `${libraryName}JSI.h`;
     const replacedTemplate = FileTemplate({modules});
 
     return new Map([[fileName, replacedTemplate]]);
