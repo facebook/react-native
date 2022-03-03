@@ -13,7 +13,13 @@
 const React = require('react');
 import RNTesterBlock from '../../components/RNTesterBlock';
 import RNTesterPage from '../../components/RNTesterPage';
-import {StyleSheet, Text, View, TouchableWithoutFeedback} from 'react-native';
+import {
+  Alert,
+  StyleSheet,
+  Text,
+  View,
+  TouchableWithoutFeedback,
+} from 'react-native';
 
 const importantForAccessibilityValues = [
   'auto',
@@ -180,7 +186,7 @@ class AccessibilityAndroidExample extends React.Component<
               style={styles.link}
               accessibilityRole="link"
               onPress={() => {
-                alert('pressed test');
+                Alert.alert('pressed test');
               }}>
               test
             </Text>{' '}
@@ -189,7 +195,7 @@ class AccessibilityAndroidExample extends React.Component<
               style={styles.link}
               accessibilityRole="link"
               onPress={() => {
-                alert('pressed Inline Links');
+                Alert.alert('pressed Inline Links');
               }}>
               inline links
             </Text>{' '}
@@ -198,7 +204,7 @@ class AccessibilityAndroidExample extends React.Component<
               style={styles.link}
               accessibilityRole="link"
               onPress={() => {
-                alert('pressed another link');
+                Alert.alert('pressed another link');
               }}>
               another link
             </Text>
@@ -207,7 +213,7 @@ class AccessibilityAndroidExample extends React.Component<
               style={styles.link}
               accessibilityRole="link"
               onPress={() => {
-                alert('pressed long link');
+                Alert.alert('pressed long link');
               }}>
               link that spans multiple lines because the text is so long.
             </Text>
