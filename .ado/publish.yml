@@ -200,7 +200,7 @@ jobs:
       - task: CmdLine@2
         displayName: 'Verify Dependencies can be enumerated'
         inputs:
-          script: sudo apt-get install python3-pip && sudo apt-get install python3-setuptools && pip3 install BeautifulSoup4 && pip3 install wheel && pip3 install wget && python3 android-patches/patching-tool/scripts/downloadDependencies.py $(Build.SourcesDirectory) && tree $(Build.SourcesDirectory)/android
+          script: sudo apt-get install python3-pip && sudo apt-get install python3-setuptools && pip3 install BeautifulSoup4 && pip3 install wheel && pip3 install wget && python3 .ado/downloadAndroidDependencies.py $(Build.SourcesDirectory) && tree $(Build.SourcesDirectory)/android
 
 
       # Very similar to the default pack task .. but appends 'ndk21b' to the nuget pack version
