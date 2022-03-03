@@ -38,7 +38,7 @@
 @property (nonatomic, copy) RCTDirectEventBlock onOrientationChange;
 
 // Fabric only
-@property (nonatomic, copy) RCTBubblingEventBlock onDismiss;
+@property (nonatomic, copy) RCTDirectEventBlock onDismiss;
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 
