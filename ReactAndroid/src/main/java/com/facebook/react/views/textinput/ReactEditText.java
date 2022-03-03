@@ -154,9 +154,13 @@ public class ReactEditText extends AppCompatEditText
       setLayerType(View.LAYER_TYPE_SOFTWARE, null);
     }
 
-    ViewCompat.setAccessibilityDelegate(
-        this,
-        new ReactAccessibilityDelegate() {
+    /*
+    ReactAccessibilityDelegate.setDelegate(
+        this, this.isFocusable(), this.getImportantForAccessibility());
+        */
+    ReactAccessibilityDelegate editTextAccessibilityDelegate =
+        new ReactAccessibilityDelegate(
+            this, this.isFocusable(), this.getImportantForAccessibility()) {
           @Override
           public boolean performAccessibilityAction(View host, int action, Bundle args) {
             if (action == AccessibilityNodeInfo.ACTION_CLICK) {
@@ -172,7 +176,8 @@ public class ReactEditText extends AppCompatEditText
             }
             return super.performAccessibilityAction(host, action, args);
           }
-        });
+        };
+    ViewCompat.setAccessibilityDelegate(this, editTextAccessibilityDelegate);
   }
 
   @Override
