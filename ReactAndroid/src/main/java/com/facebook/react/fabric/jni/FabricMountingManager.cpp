@@ -403,7 +403,8 @@ void FabricMountingManager::executeMount(
             bool revisionCheck =
                 noRevisionCheck || newChildShadowView.props->revision > 1;
             bool allocationCheck =
-                !allocatedViewTags.contains(newChildShadowView.tag);
+                allocatedViewTags.find(newChildShadowView.tag) ==
+                allocatedViewTags.end();
             bool shouldCreateView =
                 shouldRememberAllocatedViews_ ? allocationCheck : revisionCheck;
             if (shouldCreateView) {
@@ -822,7 +823,7 @@ void FabricMountingManager::preallocateShadowView(
       return;
     }
     auto &allocatedViews = allocatedViewsIterator->second;
-    if (allocatedViews.contains(shadowView.tag)) {
+    if (allocatedViews.find(shadowView.tag) != allocatedViews.end()) {
       return;
     }
     allocatedViews.insert(shadowView.tag);
