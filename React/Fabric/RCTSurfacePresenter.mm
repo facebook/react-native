@@ -263,6 +263,10 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     RCTExperimentSetPreemptiveViewAllocationDisabled(YES);
   }
 
+  RCTSetInteropLayerKeepViewHierarchy(
+      reactNativeConfig &&
+      reactNativeConfig->getBool("react_native_new_architecture:interop_layer_keep_view_hierarchy"));
+
   auto componentRegistryFactory =
       [factory = wrapManagedObject(_mountingManager.componentViewRegistry.componentViewFactory)](
           EventDispatcher::Weak const &eventDispatcher, ContextContainer::Shared const &contextContainer) {

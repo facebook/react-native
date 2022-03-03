@@ -59,6 +59,14 @@ struct ViewEvents {
   }
 };
 
+inline static bool operator==(ViewEvents const &lhs, ViewEvents const &rhs) {
+  return lhs.bits == rhs.bits;
+}
+
+inline static bool operator!=(ViewEvents const &lhs, ViewEvents const &rhs) {
+  return lhs.bits != rhs.bits;
+}
+
 enum class BackfaceVisibility { Auto, Visible, Hidden };
 
 enum class BorderStyle { Solid, Dotted, Dashed };
@@ -218,6 +226,49 @@ struct BorderMetrics {
     return !(*this == rhs);
   }
 };
+
+#ifdef ANDROID
+
+struct NativeDrawable {
+  enum class Kind {
+    Ripple,
+    ThemeAttr,
+  };
+
+  struct Ripple {
+    butter::optional<int32_t> color{};
+    bool borderless{false};
+    butter::optional<Float> rippleRadius{};
+
+    bool operator==(const Ripple &rhs) const {
+      return std::tie(this->color, this->borderless, this->rippleRadius) ==
+          std::tie(rhs.color, rhs.borderless, rhs.rippleRadius);
+    }
+  };
+
+  Kind kind;
+  std::string themeAttr;
+  Ripple ripple;
+
+  bool operator==(const NativeDrawable &rhs) const {
+    if (this->kind != rhs.kind)
+      return false;
+    switch (this->kind) {
+      case Kind::ThemeAttr:
+        return this->themeAttr == rhs.themeAttr;
+      case Kind::Ripple:
+        return this->ripple == rhs.ripple;
+    }
+  }
+
+  bool operator!=(const NativeDrawable &rhs) const {
+    return !(*this == rhs);
+  }
+
+  ~NativeDrawable() = default;
+};
+
+#endif
 
 } // namespace react
 } // namespace facebook

@@ -318,29 +318,24 @@ afterEvaluate {
             group = "react"
             description = "copy bundled JS into ${targetName}."
 
+            from(jsBundleDir)
             if (config."jsBundleDir${targetName}") {
-                from(jsBundleDir)
                 into(file(config."jsBundleDir${targetName}"))
             } else {
                 into ("$buildDir/intermediates")
                 if (isAndroidLibrary) {
-                    into ("library_assets/${variant.name}/out") {
-                        from(jsBundleDir)
-                    }
+                    into ("library_assets/${variant.name}/out")
                 } else {
-                    into ("assets/${targetPath}") {
-                        from(jsBundleDir)
-                    }
+                    into ("assets/${targetPath}")
 
                     // Workaround for Android Gradle Plugin 3.2+ new asset directory
-                    into ("merged_assets/${variant.name}/merge${targetName}Assets/out") {
-                        from(jsBundleDir)
-                    }
+                    into ("merged_assets/${variant.name}/merge${targetName}Assets/out")
 
                     // Workaround for Android Gradle Plugin 3.4+ new asset directory
-                    into ("merged_assets/${variant.name}/out") {
-                        from(jsBundleDir)
-                    }
+                    into ("merged_assets/${variant.name}/out")
+
+                    // Workaround for Android Gradle Plugin 7.1 asset directory
+                    into("$buildDir/intermediates/assets/${variant.name}/merge${targetName}Assets")
                 }
             }
 

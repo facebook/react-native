@@ -22,8 +22,9 @@ namespace react {
 YogaStylableProps::YogaStylableProps(
     const PropsParserContext &context,
     YogaStylableProps const &sourceProps,
-    RawProps const &rawProps)
-    : Props(context, sourceProps, rawProps),
+    RawProps const &rawProps,
+    bool shouldSetRawProps)
+    : Props(context, sourceProps, rawProps, shouldSetRawProps),
       yogaStyle(convertRawProp(context, rawProps, sourceProps.yogaStyle)){};
 
 #pragma mark - DebugStringConvertible

@@ -33,8 +33,6 @@ else
 fi
 
 find_node () {
-    # shellcheck disable=SC1091
-    source "$RCT_SCRIPT_RN_DIR/scripts/find-node.sh"
 
     NODE_BINARY="${NODE_BINARY:-$(command -v node || true)}"
     if [ -z "$NODE_BINARY" ]; then

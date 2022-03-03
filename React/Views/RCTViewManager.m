@@ -270,7 +270,7 @@ RCT_CUSTOM_VIEW_PROPERTY(borderRadius, CGFloat, RCTView)
     view.layer.cornerRadius = json ? [RCTConvert CGFloat:json] : defaultView.layer.cornerRadius;
   }
 }
-RCT_CUSTOM_VIEW_PROPERTY(borderColor, CGColor, RCTView)
+RCT_CUSTOM_VIEW_PROPERTY(borderColor, UIColor, RCTView)
 {
   if ([view respondsToSelector:@selector(setBorderColor:)]) {
     view.borderColor = json ? [RCTConvert UIColor:json] : defaultView.borderColor;
