@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<4e8d31482697cd46d1558cbff98e79aa>>
+ * @generated SignedSource<<6d80dd918594e27535a434318a0b1bb0>>
  */
 
 'use strict';
@@ -577,8 +577,7 @@ function hasDispatches(event) {
   return !!event._dispatchListeners;
 }
 
-var assign = Object.assign;
-
+/* eslint valid-typeof: 0 */
 var EVENT_POOL_SIZE = 10;
 /**
  * @interface Event
@@ -687,7 +686,7 @@ function SyntheticEvent(
   return this;
 }
 
-assign(SyntheticEvent.prototype, {
+Object.assign(SyntheticEvent.prototype, {
   preventDefault: function() {
     this.defaultPrevented = true;
     var event = this.nativeEvent;
@@ -817,10 +816,10 @@ SyntheticEvent.extend = function(Interface) {
     return Super.apply(this, arguments);
   }
 
-  assign(prototype, Class.prototype);
+  Object.assign(prototype, Class.prototype);
   Class.prototype = prototype;
   Class.prototype.constructor = Class;
-  Class.Interface = assign({}, Super.Interface, Interface);
+  Class.Interface = Object.assign({}, Super.Interface, Interface);
   Class.extend = Super.extend;
   addEventPoolingTo(Class);
   return Class;
@@ -2597,26 +2596,50 @@ function set(key, value) {
 // ATTENTION
 // When adding new symbols to this file,
 // Please consider also adding to 'react-devtools-shared/src/backend/ReactSymbols'
-// The Symbol used to tag the ReactElement-like types.
-var REACT_ELEMENT_TYPE = Symbol.for("react.element");
-var REACT_PORTAL_TYPE = Symbol.for("react.portal");
-var REACT_FRAGMENT_TYPE = Symbol.for("react.fragment");
-var REACT_STRICT_MODE_TYPE = Symbol.for("react.strict_mode");
-var REACT_PROFILER_TYPE = Symbol.for("react.profiler");
-var REACT_PROVIDER_TYPE = Symbol.for("react.provider");
-var REACT_CONTEXT_TYPE = Symbol.for("react.context");
-var REACT_FORWARD_REF_TYPE = Symbol.for("react.forward_ref");
-var REACT_SUSPENSE_TYPE = Symbol.for("react.suspense");
-var REACT_SUSPENSE_LIST_TYPE = Symbol.for("react.suspense_list");
-var REACT_MEMO_TYPE = Symbol.for("react.memo");
-var REACT_LAZY_TYPE = Symbol.for("react.lazy");
-var REACT_SCOPE_TYPE = Symbol.for("react.scope");
-var REACT_DEBUG_TRACING_MODE_TYPE = Symbol.for("react.debug_trace_mode");
-var REACT_OFFSCREEN_TYPE = Symbol.for("react.offscreen");
-var REACT_LEGACY_HIDDEN_TYPE = Symbol.for("react.legacy_hidden");
-var REACT_CACHE_TYPE = Symbol.for("react.cache");
-var REACT_TRACING_MARKER_TYPE = Symbol.for("react.tracing_marker");
-var MAYBE_ITERATOR_SYMBOL = Symbol.iterator;
+// The Symbol used to tag the ReactElement-like types. If there is no native Symbol
+// nor polyfill, then a plain number is used for performance.
+var REACT_ELEMENT_TYPE = 0xeac7;
+var REACT_PORTAL_TYPE = 0xeaca;
+var REACT_FRAGMENT_TYPE = 0xeacb;
+var REACT_STRICT_MODE_TYPE = 0xeacc;
+var REACT_PROFILER_TYPE = 0xead2;
+var REACT_PROVIDER_TYPE = 0xeacd;
+var REACT_CONTEXT_TYPE = 0xeace;
+var REACT_FORWARD_REF_TYPE = 0xead0;
+var REACT_SUSPENSE_TYPE = 0xead1;
+var REACT_SUSPENSE_LIST_TYPE = 0xead8;
+var REACT_MEMO_TYPE = 0xead3;
+var REACT_LAZY_TYPE = 0xead4;
+var REACT_SCOPE_TYPE = 0xead7;
+var REACT_DEBUG_TRACING_MODE_TYPE = 0xeae1;
+var REACT_OFFSCREEN_TYPE = 0xeae2;
+var REACT_LEGACY_HIDDEN_TYPE = 0xeae3;
+var REACT_CACHE_TYPE = 0xeae4;
+var REACT_TRACING_MARKER_TYPE = 0xeae5;
+
+if (typeof Symbol === "function" && Symbol.for) {
+  var symbolFor = Symbol.for;
+  REACT_ELEMENT_TYPE = symbolFor("react.element");
+  REACT_PORTAL_TYPE = symbolFor("react.portal");
+  REACT_FRAGMENT_TYPE = symbolFor("react.fragment");
+  REACT_STRICT_MODE_TYPE = symbolFor("react.strict_mode");
+  REACT_PROFILER_TYPE = symbolFor("react.profiler");
+  REACT_PROVIDER_TYPE = symbolFor("react.provider");
+  REACT_CONTEXT_TYPE = symbolFor("react.context");
+  REACT_FORWARD_REF_TYPE = symbolFor("react.forward_ref");
+  REACT_SUSPENSE_TYPE = symbolFor("react.suspense");
+  REACT_SUSPENSE_LIST_TYPE = symbolFor("react.suspense_list");
+  REACT_MEMO_TYPE = symbolFor("react.memo");
+  REACT_LAZY_TYPE = symbolFor("react.lazy");
+  REACT_SCOPE_TYPE = symbolFor("react.scope");
+  REACT_DEBUG_TRACING_MODE_TYPE = symbolFor("react.debug_trace_mode");
+  REACT_OFFSCREEN_TYPE = symbolFor("react.offscreen");
+  REACT_LEGACY_HIDDEN_TYPE = symbolFor("react.legacy_hidden");
+  REACT_CACHE_TYPE = symbolFor("react.cache");
+  REACT_TRACING_MARKER_TYPE = symbolFor("react.tracing_marker");
+}
+
+var MAYBE_ITERATOR_SYMBOL = typeof Symbol === "function" && Symbol.iterator;
 var FAUX_ITERATOR_SYMBOL = "@@iterator";
 function getIteratorFn(maybeIterable) {
   if (maybeIterable === null || typeof maybeIterable !== "object") {
@@ -2853,6 +2876,7 @@ var enableProfilerTimer = true;
 var enableProfilerCommitHooks = true;
 var enableLazyElements = false;
 var warnAboutStringRefs = false;
+var warnOnSubscriptionInsideStartTransition = false;
 var enableSuspenseAvoidThisFallback = false;
 var enableNewReconciler = false;
 var enableLazyContextPropagation = false;
@@ -3985,25 +4009,25 @@ function reenableLogs() {
       }; // $FlowFixMe Flow thinks console is immutable.
 
       Object.defineProperties(console, {
-        log: assign({}, props, {
+        log: Object.assign({}, props, {
           value: prevLog
         }),
-        info: assign({}, props, {
+        info: Object.assign({}, props, {
           value: prevInfo
         }),
-        warn: assign({}, props, {
+        warn: Object.assign({}, props, {
           value: prevWarn
         }),
-        error: assign({}, props, {
+        error: Object.assign({}, props, {
           value: prevError
         }),
-        group: assign({}, props, {
+        group: Object.assign({}, props, {
           value: prevGroup
         }),
-        groupCollapsed: assign({}, props, {
+        groupCollapsed: Object.assign({}, props, {
           value: prevGroupCollapsed
         }),
-        groupEnd: assign({}, props, {
+        groupEnd: Object.assign({}, props, {
           value: prevGroupEnd
         })
       });
@@ -4056,7 +4080,7 @@ function injectInternals(internals) {
       // Conditionally inject these hooks only if Timeline profiler is supported by this build.
       // This gives DevTools a way to feature detect that isn't tied to version number
       // (since profiling and timeline are controlled by different feature flags).
-      internals = assign({}, internals, {
+      internals = Object.assign({}, internals, {
         getLaneLabelMap: getLaneLabelMap,
         injectProfilingHooks: injectProfilingHooks
       });
@@ -6118,7 +6142,7 @@ function processChildContext(fiber, type, parentContext) {
       checkPropTypes(childContextTypes, childContext, "child context", name);
     }
 
-    return assign({}, parentContext, childContext);
+    return Object.assign({}, parentContext, childContext);
   }
 }
 
@@ -6886,7 +6910,7 @@ function checkPropStringCoercion(value, propName) {
 function resolveDefaultProps(Component, baseProps) {
   if (Component && Component.defaultProps) {
     // Resolve default props. Taken from ReactElement
-    var props = assign({}, baseProps);
+    var props = Object.assign({}, baseProps);
     var defaultProps = Component.defaultProps;
 
     for (var propName in defaultProps) {
@@ -7525,7 +7549,7 @@ function getStateFromUpdate(
         return prevState;
       } // Merge the partial state and the previous state.
 
-      return assign({}, prevState, partialState);
+      return Object.assign({}, prevState, partialState);
     }
 
     case ForceUpdate: {
@@ -7875,7 +7899,7 @@ function applyDerivedStateFromProps(
   var memoizedState =
     partialState === null || partialState === undefined
       ? prevState
-      : assign({}, prevState, partialState);
+      : Object.assign({}, prevState, partialState);
   workInProgress.memoizedState = memoizedState; // Once the update queue is empty, persist the derived state onto the
   // base state.
 
@@ -8941,7 +8965,7 @@ function popTreeContext(workInProgress) {
   }
 }
 
-var isHydrating = false;
+var isHydrating = false; // Hydration errors that were thrown inside this boundary
 
 function enterHydrationState(fiber) {
   {
@@ -12082,7 +12106,7 @@ function rerenderDeferredValue(value) {
   return prevValue;
 }
 
-function startTransition(setPending, callback, options) {
+function startTransition(setPending, callback) {
   var previousPriority = getCurrentUpdatePriority();
   setCurrentUpdatePriority(
     higherEventPriority(previousPriority, ContinuousEventPriority)
@@ -12104,7 +12128,11 @@ function startTransition(setPending, callback, options) {
     ReactCurrentBatchConfig$1.transition = prevTransition;
 
     {
-      if (prevTransition === null && currentTransition._updatedFibers) {
+      if (
+        prevTransition === null &&
+        warnOnSubscriptionInsideStartTransition &&
+        currentTransition._updatedFibers
+      ) {
         var updatedFibersCount = currentTransition._updatedFibers.size;
 
         if (updatedFibersCount > 10) {
@@ -12171,7 +12199,7 @@ function mountId() {
   {
     // Use a lowercase r prefix for client-generated ids.
     var globalClientId = globalClientIdCounter++;
-    id = ":" + identifierPrefix + "r" + globalClientId.toString(32) + ":";
+    id = identifierPrefix + "r:" + globalClientId.toString(32);
   }
 
   hook.memoizedState = id;
@@ -13909,12 +13937,15 @@ function throwException(
       } // This is a sync/discrete update. We treat this case like an error
       // because discrete renders are expected to produce a complete tree
       // synchronously to maintain consistency with external state.
+      // TODO: We should never call getComponentNameFromFiber in production.
+      // Log a warning or something to prevent us from accidentally bundling it.
 
       var uncaughtSuspenseError = new Error(
-        "A component suspended while responding to synchronous input. This " +
-          "will cause the UI to be replaced with a loading indicator. To " +
-          "fix, updates that suspend should be wrapped " +
-          "with startTransition."
+        (getComponentNameFromFiber(sourceFiber) || "A React component") +
+          " suspended while rendering, but no fallback UI was specified.\n" +
+          "\n" +
+          "Add a <Suspense fallback=...> component higher in the tree to " +
+          "provide a loading indicator or placeholder to display."
       ); // If we're outside a transition, fall through to the regular error path.
       // The error will be caught by the nearest suspense boundary.
 
@@ -15036,14 +15067,6 @@ function completeWork(current, workInProgress, renderLanes) {
         }
       }
 
-      return null;
-    }
-
-    case CacheComponent: {
-      return null;
-    }
-
-    case TracingMarkerComponent: {
       return null;
     }
   }
@@ -17639,7 +17662,6 @@ function attemptEarlyBailoutIfNoScheduledUpdate(
   switch (workInProgress.tag) {
     case HostRoot:
       pushHostRootContext(workInProgress);
-      var root = workInProgress.stateNode;
       break;
 
     case HostComponent:
@@ -18978,9 +19000,8 @@ function commitLayoutEffectOnFiber(
       case IncompleteClassComponent:
       case ScopeComponent:
       case OffscreenComponent:
-      case LegacyHiddenComponent: {
+      case LegacyHiddenComponent:
         break;
-      }
 
       default:
         throw new Error(
@@ -19454,12 +19475,12 @@ function commitMutationEffects(root, firstChild, committedLanes) {
   inProgressLanes = committedLanes;
   inProgressRoot = root;
   nextEffect = firstChild;
-  commitMutationEffects_begin(root, committedLanes);
+  commitMutationEffects_begin(root);
   inProgressLanes = null;
   inProgressRoot = null;
 }
 
-function commitMutationEffects_begin(root, lanes) {
+function commitMutationEffects_begin(root) {
   while (nextEffect !== null) {
     var fiber = nextEffect; // TODO: Should wrap this in flags check, too, as optimization
 
@@ -19484,18 +19505,18 @@ function commitMutationEffects_begin(root, lanes) {
       ensureCorrectReturnPointer(child, fiber);
       nextEffect = child;
     } else {
-      commitMutationEffects_complete(root, lanes);
+      commitMutationEffects_complete(root);
     }
   }
 }
 
-function commitMutationEffects_complete(root, lanes) {
+function commitMutationEffects_complete(root) {
   while (nextEffect !== null) {
     var fiber = nextEffect;
     setCurrentFiber(fiber);
 
     try {
-      commitMutationEffectsOnFiber(fiber, root, lanes);
+      commitMutationEffectsOnFiber(fiber, root);
     } catch (error) {
       reportUncaughtErrorInDEV(error);
       captureCommitPhaseError(fiber, fiber.return, error);
@@ -19514,7 +19535,7 @@ function commitMutationEffects_complete(root, lanes) {
   }
 }
 
-function commitMutationEffectsOnFiber(finishedWork, root, lanes) {
+function commitMutationEffectsOnFiber(finishedWork, root) {
   // TODO: The factoring of this phase could probably be improved. Consider
   // switching on the type of work before checking the flags. That's what
   // we do in all the other phases. I think this one is only different
@@ -20062,12 +20083,12 @@ var TEST_NAME_TYPE = 3;
 var TEXT_TYPE = 4;
 
 if (typeof Symbol === "function" && Symbol.for) {
-  var symbolFor = Symbol.for;
-  COMPONENT_TYPE = symbolFor("selector.component");
-  HAS_PSEUDO_CLASS_TYPE = symbolFor("selector.has_pseudo_class");
-  ROLE_TYPE = symbolFor("selector.role");
-  TEST_NAME_TYPE = symbolFor("selector.test_id");
-  TEXT_TYPE = symbolFor("selector.text");
+  var symbolFor$1 = Symbol.for;
+  COMPONENT_TYPE = symbolFor$1("selector.component");
+  HAS_PSEUDO_CLASS_TYPE = symbolFor$1("selector.has_pseudo_class");
+  ROLE_TYPE = symbolFor$1("selector.role");
+  TEST_NAME_TYPE = symbolFor$1("selector.test_id");
+  TEXT_TYPE = symbolFor$1("selector.text");
 }
 
 var ReactCurrentActQueue = ReactSharedInternals.ReactCurrentActQueue;
@@ -20244,15 +20265,6 @@ function requestUpdateLane(fiber) {
   var isTransition = requestCurrentTransition() !== NoTransition;
 
   if (isTransition) {
-    if (ReactCurrentBatchConfig$2.transition !== null) {
-      var transition = ReactCurrentBatchConfig$2.transition;
-
-      if (!transition._updatedFibers) {
-        transition._updatedFibers = new Set();
-      }
-
-      transition._updatedFibers.add(fiber);
-    } // The algorithm for assigning an update to a lane should be stable for all
     // updates at the same priority within the same event. To do this, the
     // inputs to the algorithm must be the same.
     //
@@ -21315,6 +21327,7 @@ function renderRootSync(root, lanes) {
         movePendingFibersToMemoized(root, lanes);
       }
     }
+
     prepareFreshStack(root, lanes);
   }
 
@@ -21383,6 +21396,7 @@ function renderRootConcurrent(root, lanes) {
         movePendingFibersToMemoized(root, lanes);
       }
     }
+
     resetRenderTimer();
     prepareFreshStack(root, lanes);
   }
@@ -21982,11 +21996,7 @@ function captureCommitPhaseError(sourceFiber, nearestMountedAncestor, error$1) {
     return;
   }
 
-  var fiber = null;
-
-  {
-    fiber = sourceFiber.return;
-  }
+  var fiber = nearestMountedAncestor;
 
   while (fiber !== null) {
     if (fiber.tag === HostRoot) {
@@ -22020,14 +22030,9 @@ function captureCommitPhaseError(sourceFiber, nearestMountedAncestor, error$1) {
   }
 
   {
-    // TODO: Until we re-land skipUnmountedBoundaries (see #20147), this warning
-    // will fire for errors that are thrown by destroy functions inside deleted
-    // trees. What it should instead do is propagate the error to the parent of
-    // the deleted tree. In the meantime, do not add this warning to the
-    // allowlist; this is only for our internal use.
     error(
       "Internal React error: Attempted to capture a commit phase error " +
-        "inside a detached tree. This indicates a bug in React. Likely " +
+        "inside a detached tree. This indicates a bug in React. Potential " +
         "causes include deleting the same fiber more than once, committing an " +
         "already-finished tree, or an inconsistent return pointer.\n\n" +
         "Error message:\n\n%s",
@@ -23661,7 +23666,7 @@ function FiberRootNode(
     this.memoizedUpdaters = new Set();
     var pendingUpdatersLaneMap = (this.pendingUpdatersLaneMap = []);
 
-    for (var _i = 0; _i < TotalLanes; _i++) {
+    for (var i = 0; i < TotalLanes; i++) {
       pendingUpdatersLaneMap.push(new Set());
     }
   }
@@ -23712,9 +23717,7 @@ function createFiberRoot(
 
   {
     var _initialState = {
-      element: null,
-      cache: null,
-      transitions: null
+      element: null
     };
     uninitializedFiber.memoizedState = _initialState;
   }
@@ -23723,7 +23726,7 @@ function createFiberRoot(
   return root;
 }
 
-var ReactVersion = "18.0.0-rc.1-17806594c-20220301";
+var ReactVersion = "18.0.0-rc.0-4de99b3ca-20220221";
 
 function createPortal(
   children,
@@ -23977,7 +23980,7 @@ var setSuspenseHandler = null;
 {
   var copyWithDeleteImpl = function(obj, path, index) {
     var key = path[index];
-    var updated = isArray(obj) ? obj.slice() : assign({}, obj);
+    var updated = isArray(obj) ? obj.slice() : Object.assign({}, obj);
 
     if (index + 1 === path.length) {
       if (isArray(updated)) {
@@ -23999,7 +24002,7 @@ var setSuspenseHandler = null;
 
   var copyWithRenameImpl = function(obj, oldPath, newPath, index) {
     var oldKey = oldPath[index];
-    var updated = isArray(obj) ? obj.slice() : assign({}, obj);
+    var updated = isArray(obj) ? obj.slice() : Object.assign({}, obj);
 
     if (index + 1 === oldPath.length) {
       var newKey = newPath[index]; // $FlowFixMe number or string is fine here
@@ -24051,7 +24054,7 @@ var setSuspenseHandler = null;
     }
 
     var key = path[index];
-    var updated = isArray(obj) ? obj.slice() : assign({}, obj); // $FlowFixMe number or string is fine here
+    var updated = isArray(obj) ? obj.slice() : Object.assign({}, obj); // $FlowFixMe number or string is fine here
 
     updated[key] = copyWithSetImpl(obj[key], path, index + 1, value);
     return updated;
@@ -24086,7 +24089,7 @@ var setSuspenseHandler = null;
       // As a result though, React will see the scheduled update as a noop and bailout.
       // Shallow cloning props works as a workaround for now to bypass the bailout check.
 
-      fiber.memoizedProps = assign({}, fiber.memoizedProps);
+      fiber.memoizedProps = Object.assign({}, fiber.memoizedProps);
       scheduleUpdateOnFiber(fiber, SyncLane, NoTimestamp);
     }
   };
@@ -24103,7 +24106,7 @@ var setSuspenseHandler = null;
       // As a result though, React will see the scheduled update as a noop and bailout.
       // Shallow cloning props works as a workaround for now to bypass the bailout check.
 
-      fiber.memoizedProps = assign({}, fiber.memoizedProps);
+      fiber.memoizedProps = Object.assign({}, fiber.memoizedProps);
       scheduleUpdateOnFiber(fiber, SyncLane, NoTimestamp);
     }
   };
@@ -24120,7 +24123,7 @@ var setSuspenseHandler = null;
       // As a result though, React will see the scheduled update as a noop and bailout.
       // Shallow cloning props works as a workaround for now to bypass the bailout check.
 
-      fiber.memoizedProps = assign({}, fiber.memoizedProps);
+      fiber.memoizedProps = Object.assign({}, fiber.memoizedProps);
       scheduleUpdateOnFiber(fiber, SyncLane, NoTimestamp);
     }
   }; // Support DevTools props for function components, forwardRef, memo, host components, etc.
@@ -24402,7 +24405,7 @@ var getInspectorDataForViewAtPoint;
         function(internalInstanceHandle) {
           if (internalInstanceHandle == null) {
             callback(
-              assign(
+              Object.assign(
                 {
                   pointerY: locationY,
                   frame: {
@@ -24429,7 +24432,7 @@ var getInspectorDataForViewAtPoint;
                 closestInstance
               );
               callback(
-                assign({}, inspectorData, {
+                Object.assign({}, inspectorData, {
                   pointerY: locationY,
                   frame: {
                     left: pageX,
@@ -24454,7 +24457,7 @@ var getInspectorDataForViewAtPoint;
             getInstanceFromTag(nativeViewTag)
           );
           callback(
-            assign({}, inspectorData, {
+            Object.assign({}, inspectorData, {
               pointerY: locationY,
               frame: {
                 left: left,
