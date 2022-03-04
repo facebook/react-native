@@ -10,6 +10,7 @@ import org.apache.tools.ant.taskdefs.condition.Os
 plugins {
     id("de.undercouch.download")
     id("com.android.library")
+    id("maven-publish")
 }
 
 def customDownloadDir = System.getenv("REACT_NATIVE_DOWNLOADS_DIR")
@@ -24,6 +25,10 @@ def ndkBuildJobs = Runtime.runtime.availableProcessors().toString()
 
 // We inject the JSI directory used inside the Hermes build with the -DJSI_DIR config.
 def jsiDir = rootProject.file("ReactCommon/jsi")
+
+// The .aar is placed inside the ./android folder at the top level.
+// There it will be placed alongside the React Android .aar
+def AAR_OUTPUT_URL = "file://${rootDir}/android"
 
 task downloadHermes(type: Download) {
     src("https://github.com/facebook/hermes/tarball/${hermesVersion}")
@@ -168,11 +173,37 @@ android {
         exclude "**/libfbjni.so"
     }
 
-    afterEvaluate {
-        preBuild.dependsOn(buildNinjaForHermes)
-        // Needed as some of the native sources needs to be downloaded
-        // before configureCMakeRelease/configureCMakeMinSizeRel could be executed.
-        configureCMakeRelease.dependsOn(preBuild)
-        configureCMakeMinSizeRel.dependsOn(preBuild)
+    publishing {
+        multipleVariants {
+            withSourcesJar()
+            withJavadocJar()
+            allVariants()
+        }
     }
 }
+
+afterEvaluate {
+    preBuild.dependsOn(buildNinjaForHermes)
+    // Needed as some of the native sources needs to be downloaded
+    // before configureCMakeRelease/configureCMakeMinSizeRel could be executed.
+    configureCMakeRelease.dependsOn(preBuild)
+    configureCMakeMinSizeRel.dependsOn(preBuild)
+
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.default
+                artifactId = "hermes-engine"
+            }
+        }
+        repositories {
+            maven {
+                name = "npm"
+                url = AAR_OUTPUT_URL
+            }
+        }
+    }
+}
+
+group = "com.facebook.react"
+version = VERSION_NAME
