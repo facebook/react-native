@@ -79,7 +79,7 @@ jobs:
           BUILD_SOURCESDIRECTORY: $(Build.SourcesDirectory)
           BUILD_SOURCEBRANCH: $(Build.SourceBranch)
           SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-          githubApiToken: $(githubApiToken)
+          githubApiToken: $(githubAuthToken)
 
 #     In RN64 "clean" task tries to run the build again. It is reproing in 0.64-stable branch but fixed in 0.65-stable.
 #     I can't zero on the exact cause .. but turns out the issue is with rntester clean task.

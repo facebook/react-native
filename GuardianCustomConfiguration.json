@@ -1,0 +1,22 @@
+{
+  "Enabled": true,
+  "Tools": {
+    "CredScan": {
+      "Enabled": true,
+      "Inputs": {
+        "SuppressionsPath": ".config\\CredScanSuppressions.json"
+      }
+    },
+    "ESLint": {
+      "Enabled": true,
+      "Inputs": {
+        "Configuration": "required",
+        "Parser": "@typescript-eslint/parser",
+        "ParserOptions": "",
+        "EnableExclusions": true,
+        "ExclusionPatterns": "*.js",
+        "_justification": "js files in this repo are flow files. the built-in eslint does not support this. Adding a separate step to run the sdl rules for flow files."
+      }
+    }
+  }
+}

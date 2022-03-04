@@ -149,7 +149,7 @@
     "eslint-plugin-jest": "22.4.1",
     "eslint-plugin-jsx-a11y": "6.2.1",
     "eslint-plugin-prettier": "2.6.2",
-    "eslint-plugin-react": "7.21.5",
+    "eslint-plugin-react": "7.28.0",
     "eslint-plugin-react-hooks": "^4.2.0",
     "eslint-plugin-react-native": "3.10.0",
     "eslint-plugin-relay": "1.8.1",
