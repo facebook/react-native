@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import org.apache.tools.ant.taskdefs.condition.Os
+
 plugins {
     id("de.undercouch.download")
 }
@@ -17,6 +19,7 @@ def hermesVersionFile = rootProject.file("sdks/.hermesversion")
 if (hermesVersionFile.exists()) {
     hermesVersion = hermesVersionFile.text
 }
+def ndkBuildJobs = Runtime.runtime.availableProcessors().toString()
 
 task downloadHermes(type: Download) {
     src("https://github.com/facebook/hermes/tarball/${hermesVersion}")
@@ -41,4 +44,24 @@ task unzipHermes(dependsOn: downloadHermes, type: Copy) {
         }
     }
     into(hermesDir)
+}
+
+
+task configureNinjaForHermes(dependsOn: unzipHermes, type: org.gradle.api.tasks.Exec) {
+    workingDir(hermesDir)
+    commandLine(windowsAwareCommandLine("python3", "utils/build/configure.py", "./ninja_build"))
+}
+
+task buildNinjaForHermes(dependsOn: configureNinjaForHermes, type: org.gradle.api.tasks.Exec) {
+    workingDir(hermesDir)
+    commandLine(windowsAwareCommandLine("cmake", "--build", "./ninja_build", "--target", "hermesc", "-j", ndkBuildJobs))
+}
+
+static def windowsAwareCommandLine(String... commands) {
+    def newCommands = []
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        newCommands = ['cmd', '/c']
+    }
+    newCommands.addAll(commands)
+    return newCommands
 }
