@@ -1,6 +1,5 @@
 load("@fbsource//xplat/hermes/defs:hermes.bzl", "HERMES_BYTECODE_VERSION")
 load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
-load("//tools/build_defs:fb_xplat_platform_specific_rule.bzl", "fb_xplat_platform_specific_rule")
 load("//tools/build_defs:fb_xplat_resource.bzl", "fb_xplat_resource")
 load("//tools/build_defs/apple:fb_apple_asset_catalog.bzl", "fb_apple_asset_catalog")
 load("//tools/build_defs/apple:fb_apple_bundle.bzl", "fb_apple_bundle")
@@ -178,11 +177,10 @@ fb_apple_test(
     ],
 )
 
-fb_xplat_platform_specific_rule(
+fb_apple_asset_catalog(
     name = "RNTesterBundleAssetCatalog",
+    create_suffixed_alias = True,
     dirs = ["RNTester/RNTesterBundle/OtherImages.xcassets"],
-    platform = APPLE,
-    rule = fb_apple_asset_catalog,
     visibility = [
         "//fbobjc/Libraries/FBReactKit:",
     ],
@@ -219,11 +217,10 @@ fb_apple_bundle(
     ],
 )
 
-fb_xplat_platform_specific_rule(
+fb_apple_asset_catalog(
     name = "RNTesterAssetCatalog",
+    create_suffixed_alias = True,
     dirs = ["RNTester/Images.xcassets"],
-    platform = APPLE,
-    rule = fb_apple_asset_catalog,
     visibility = [
         "//fbobjc/Libraries/FBReactKit:",
     ],
