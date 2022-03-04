@@ -372,6 +372,13 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
   }
 
+  @ReactProp(name = ViewProps.ERROR)
+  public void setError(ReactEditText view, String error) {
+    if (error != null) {
+      view.setError(error);
+    }
+  }
+
   @ReactProp(name = ViewProps.FONT_SIZE, defaultFloat = ViewDefaults.FONT_SIZE_SP)
   public void setFontSize(ReactEditText view, float fontSize) {
     view.setFontSize(fontSize);
