@@ -21,14 +21,30 @@
 using namespace facebook::react;
 
 @interface RCTActionSheetManager () <UIActionSheetDelegate, NativeActionSheetManagerSpec>
+
+@property (nonatomic, strong) NSMutableArray<UIAlertController *> *alertControllers;
+
 @end
 
 @implementation RCTActionSheetManager
 
+- (instancetype)init
+{
+  self = [super init];
+  if (self) {
+    _alertControllers = [NSMutableArray new];
+  }
+  return self;
+}
+
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
+
 RCT_EXPORT_MODULE()
 
 @synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED;
-NSMutableArray<UIAlertController *> *_alertControllers = [NSMutableArray array];
 
 - (dispatch_queue_t)methodQueue
 {
@@ -138,7 +154,7 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
                                                          handler:^(__unused UIAlertAction *action) {
                                                            if (!callbackInvoked) {
                                                              callbackInvoked = true;
-                                                             [_alertControllers removeObject:alertController];
+                                                               [self->_alertControllers removeObject:alertController];
                                                              callback(@[ @(localIndex) ]);
                                                            }
                                                          }];
