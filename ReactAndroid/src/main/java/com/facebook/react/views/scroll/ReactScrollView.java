@@ -340,11 +340,7 @@ public class ReactScrollView extends ScrollView
 
     try {
       if (super.onInterceptTouchEvent(ev)) {
-        NativeGestureUtil.notifyNativeGestureStarted(this, ev);
-        ReactScrollViewHelper.emitScrollBeginDragEvent(this);
-        mDragging = true;
-        enableFpsListener();
-        getFlingAnimator().cancel();
+        handleInterceptedTouchEvent(ev);
         return true;
       }
     } catch (IllegalArgumentException e) {
@@ -355,6 +351,14 @@ public class ReactScrollView extends ScrollView
     }
 
     return false;
+  }
+
+  protected void handleInterceptedTouchEvent(MotionEvent ev) {
+    NativeGestureUtil.notifyNativeGestureStarted(this, ev);
+    ReactScrollViewHelper.emitScrollBeginDragEvent(this);
+    mDragging = true;
+    enableFpsListener();
+    getFlingAnimator().cancel();
   }
 
   @Override
