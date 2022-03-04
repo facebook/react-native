@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <butter/optional.h>
 #include <chrono>
+#include <optional>
 
 #include <react/renderer/debug/flags.h>
 #include <react/renderer/mounting/Differentiator.h>
@@ -56,7 +56,7 @@ class MountingCoordinator final {
    * However, a consumer should always call it on the same thread (e.g. on the
    * main thread) or ensure sequentiality of mount transactions separately.
    */
-  butter::optional<MountingTransaction> pullTransaction() const;
+  std::optional<MountingTransaction> pullTransaction() const;
 
   /*
    * Blocks the current thread until a new mounting transaction is available or
@@ -104,7 +104,7 @@ class MountingCoordinator final {
 
   mutable std::mutex mutex_;
   mutable ShadowTreeRevision baseRevision_;
-  mutable butter::optional<ShadowTreeRevision> lastRevision_{};
+  mutable std::optional<ShadowTreeRevision> lastRevision_{};
   mutable MountingTransaction::Number number_{0};
   mutable std::condition_variable signal_;
   mutable std::weak_ptr<MountingOverrideDelegate const>

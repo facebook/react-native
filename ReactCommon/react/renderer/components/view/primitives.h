@@ -7,12 +7,13 @@
 
 #pragma once
 
-#include <butter/optional.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Geometry.h>
+
 #include <array>
 #include <bitset>
 #include <cmath>
+#include <optional>
 
 namespace facebook {
 namespace react {
@@ -74,7 +75,7 @@ enum class BorderStyle { Solid, Dotted, Dashed };
 template <typename T>
 struct CascadedRectangleEdges {
   using Counterpart = RectangleEdges<T>;
-  using OptionalT = butter::optional<T>;
+  using OptionalT = std::optional<T>;
 
   OptionalT left{};
   OptionalT top{};
@@ -135,7 +136,7 @@ struct CascadedRectangleEdges {
 template <typename T>
 struct CascadedRectangleCorners {
   using Counterpart = RectangleCorners<T>;
-  using OptionalT = butter::optional<T>;
+  using OptionalT = std::optional<T>;
 
   OptionalT topLeft{};
   OptionalT topRight{};
@@ -236,9 +237,9 @@ struct NativeDrawable {
   };
 
   struct Ripple {
-    butter::optional<int32_t> color{};
+    std::optional<int32_t> color{};
     bool borderless{false};
-    butter::optional<Float> rippleRadius{};
+    std::optional<Float> rippleRadius{};
 
     bool operator==(const Ripple &rhs) const {
       return std::tie(this->color, this->borderless, this->rippleRadius) ==
