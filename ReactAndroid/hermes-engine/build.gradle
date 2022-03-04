@@ -9,6 +9,7 @@ import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
     id("de.undercouch.download")
+    id("com.android.library")
 }
 
 def customDownloadDir = System.getenv("REACT_NATIVE_DOWNLOADS_DIR")
@@ -20,6 +21,9 @@ if (hermesVersionFile.exists()) {
     hermesVersion = hermesVersionFile.text
 }
 def ndkBuildJobs = Runtime.runtime.availableProcessors().toString()
+
+// We inject the JSI directory used inside the Hermes build with the -DJSI_DIR config.
+def jsiDir = rootProject.file("ReactCommon/jsi")
 
 task downloadHermes(type: Download) {
     src("https://github.com/facebook/hermes/tarball/${hermesVersion}")
@@ -49,7 +53,13 @@ task unzipHermes(dependsOn: downloadHermes, type: Copy) {
 
 task configureNinjaForHermes(dependsOn: unzipHermes, type: org.gradle.api.tasks.Exec) {
     workingDir(hermesDir)
-    commandLine(windowsAwareCommandLine("python3", "utils/build/configure.py", "./ninja_build"))
+    commandLine(windowsAwareCommandLine(
+        "python3",
+        "utils/build/configure.py",
+        "--jsidir",
+        jsiDir.absolutePath,
+        "./ninja_build"
+    ))
 }
 
 task buildNinjaForHermes(dependsOn: configureNinjaForHermes, type: org.gradle.api.tasks.Exec) {
@@ -64,4 +74,105 @@ static def windowsAwareCommandLine(String... commands) {
     }
     newCommands.addAll(commands)
     return newCommands
+}
+
+def reactNativeArchitectures() {
+    def value = project.getProperties().get("reactNativeArchitectures")
+    return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+}
+
+android {
+    compileSdkVersion 31
+
+    // Used to override the NDK path & version on internal CI
+    if (System.getenv("ANDROID_NDK") != null && System.getenv("LOCAL_ANDROID_NDK_VERSION") != null) {
+        ndkPath System.getenv("ANDROID_NDK")
+        ndkVersion System.getenv("LOCAL_ANDROID_NDK_VERSION")
+    }
+
+    defaultConfig {
+        minSdkVersion 21
+
+        externalNativeBuild {
+            cmake {
+                arguments "-DHERMES_IS_ANDROID=True"
+                arguments "-DANDROID_STL=c++_shared"
+                arguments "-DANDROID_PIE=True"
+                arguments "-DIMPORT_HERMESC=${new File(hermesDir, "ninja_build/ImportHermesc.cmake").toString()}"
+                arguments "-DJSI_DIR=${jsiDir}"
+                arguments "-DHERMES_SLOW_DEBUG=False"
+                arguments "-DHERMES_BUILD_SHARED_JSI=True"
+                // We intentionally build Hermes with Intl support only. This is to simplify
+                // the build setup and to avoid overcomplicating the build-type matrix.
+                arguments "-DHERMES_ENABLE_INTL=True"
+                targets "libhermes"
+            }
+        }
+        ndk {
+            abiFilters (*reactNativeArchitectures())
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            version "3.10.2"
+            path "$hermesDir/CMakeLists.txt"
+        }
+    }
+
+    buildTypes {
+        debug {
+            externalNativeBuild {
+                cmake {
+                    arguments "-DHERMES_ENABLE_DEBUGGER=True"
+                    // JS developers aren't VM developers.
+                    // Therefore we're passing as build type Release, to provide a faster build.
+                    // This has the (unlucky) side effect of letting AGP call the build
+                    // tasks `configureCMakeRelease` while is actually building the debug flavor.
+                    arguments "-DCMAKE_BUILD_TYPE=Release"
+                }
+            }
+        }
+        release {
+            externalNativeBuild {
+                cmake {
+                    arguments "-DCMAKE_BUILD_TYPE=MinSizeRel"
+                }
+            }
+        }
+    }
+
+    sourceSets {
+        main {
+            manifest.srcFile "$hermesDir/android/hermes/src/main/AndroidManifest.xml"
+            java.srcDirs = [
+                "$hermesDir/lib/Platfrom/Intl/java"
+            ]
+        }
+    }
+
+    buildFeatures {
+        prefab true
+    }
+
+    dependencies {
+        implementation("com.facebook.fbjni:fbjni:0.2.2")
+        implementation("com.facebook.soloader:soloader:0.10.3")
+        implementation("com.facebook.yoga:proguard-annotations:1.19.0")
+        implementation("androidx.annotation:annotation:1.3.0")
+    }
+
+    packagingOptions {
+        exclude "**/libc++_shared.so"
+        exclude "**/libjsi.so"
+        exclude "**/libfbjni.so"
+    }
+
+    afterEvaluate {
+        preBuild.dependsOn(buildNinjaForHermes)
+        // Needed as some of the native sources needs to be downloaded
+        // before configureCMakeRelease/configureCMakeMinSizeRel could be executed.
+        configureCMakeRelease.dependsOn(preBuild)
+        configureCMakeMinSizeRel.dependsOn(preBuild)
+    }
 }
