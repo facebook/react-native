@@ -1,0 +1,44 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+plugins {
+    id("de.undercouch.download")
+}
+
+def customDownloadDir = System.getenv("REACT_NATIVE_DOWNLOADS_DIR")
+def downloadsDir = customDownloadDir ? new File(customDownloadDir) : rootProject.file("sdks/download")
+def hermesDir = rootProject.file("sdks/hermes")
+def hermesVersion = "main"
+def hermesVersionFile = rootProject.file("sdks/.hermesversion")
+if (hermesVersionFile.exists()) {
+    hermesVersion = hermesVersionFile.text
+}
+
+task downloadHermes(type: Download) {
+    src("https://github.com/facebook/hermes/tarball/${hermesVersion}")
+    onlyIfNewer(true)
+    overwrite(false)
+    dest(new File(downloadsDir, "hermes.tar.gz"))
+}
+
+// This task is called by the CI to download all the extrenal source code tarballs.
+task downloadNdkBuildDependencies() {
+    dependsOn(downloadHermes)
+}
+
+task unzipHermes(dependsOn: downloadHermes, type: Copy) {
+    from(tarTree(downloadHermes.dest)) {
+        eachFile { file ->
+            // We flatten the unzip as the tarball contains a `facebook-hermes-<SHA>`
+            // folder at the top level.
+            if (file.relativePath.segments.size() > 1) {
+                file.relativePath = new org.gradle.api.file.RelativePath(!file.isDirectory(), file.relativePath.segments.drop(1))
+            }
+        }
+    }
+    into(hermesDir)
+}
