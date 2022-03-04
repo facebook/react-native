@@ -355,7 +355,7 @@ def get_react_codegen_spec(options={})
     'homepage' => 'https://facebook.com/',
     'license' => 'Unlicense',
     'authors' => 'Facebook',
-    'compiler_flags'  => "#{folly_compiler_flags} #{boost_compiler_flags} -Wno-nullability-completeness",
+    'compiler_flags'  => "#{folly_compiler_flags} #{boost_compiler_flags} -Wno-nullability-completeness -std=c++17",
     'source' => { :git => '' },
     'header_mappings_dir' => './',
     'platforms' => {

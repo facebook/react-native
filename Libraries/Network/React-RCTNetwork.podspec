@@ -34,7 +34,7 @@ Pod::Spec.new do |s|
   s.header_dir             = "RCTNetwork"
   s.pod_target_xcconfig    = {
                                "USE_HEADERMAP" => "YES",
-                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++14",
+                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
                                "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/RCT-Folly\" \"${PODS_ROOT}/Headers/Public/React-Codegen/react/renderer/components\""
                              }
   s.frameworks             = "MobileCoreServices"
