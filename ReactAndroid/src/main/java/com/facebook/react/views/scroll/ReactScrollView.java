@@ -369,7 +369,7 @@ public class ReactScrollView extends ScrollView
     }
 
     mVelocityHelper.calculateVelocity(ev);
-    int action = ev.getAction() & MotionEvent.ACTION_MASK;
+    int action = ev.getActionMasked();
     if (action == MotionEvent.ACTION_UP && mDragging) {
       ReactScrollViewHelper.updateFabricScrollState(this);
 
@@ -380,6 +380,10 @@ public class ReactScrollView extends ScrollView
       // After the touch finishes, we may need to do some scrolling afterwards either as a result
       // of a fling or because we need to page align the content
       handlePostTouchScrolling(Math.round(velocityX), Math.round(velocityY));
+    }
+
+    if (action == MotionEvent.ACTION_DOWN) {
+      cancelPostTouchScrolling();
     }
 
     return super.onTouchEvent(ev);
@@ -609,6 +613,12 @@ public class ReactScrollView extends ScrollView
         };
     ViewCompat.postOnAnimationDelayed(
         this, mPostTouchRunnable, ReactScrollViewHelper.MOMENTUM_DELAY);
+  }
+
+  private void cancelPostTouchScrolling() {
+    if (mPostTouchRunnable != null) {
+      removeCallbacks(mPostTouchRunnable);
+    }
   }
 
   private int predictFinalScrollPosition(int velocityY) {
