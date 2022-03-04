@@ -120,7 +120,7 @@ android {
 
     externalNativeBuild {
         cmake {
-            version "3.10.2"
+            version "3.18.1"
             path "$hermesDir/CMakeLists.txt"
         }
     }
