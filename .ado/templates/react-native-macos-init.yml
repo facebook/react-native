@@ -99,7 +99,7 @@ steps:
       workingDirectory: $(Agent.BuildDirectory)/testcli
 
   - task: CmdLine@2
-    displayName: Run macos
+    displayName: Run macos [test]
     inputs:
       script: npx react-native run-macos
       workingDirectory: $(Agent.BuildDirectory)/testcli

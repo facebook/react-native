@@ -1,0 +1,21 @@
+{
+  "tool": "Credential Scanner",
+  "suppressions": [
+    {
+      "file": "keystores/debug.keystore",
+      "_justification": "Debug key needed for android. Does not contain a particular secret"
+    },
+    {
+      "file": "template/android/app/debug.keystore",
+      "_justification": "Debug key needed for android. Does not contain a particular secret"
+    },
+    {
+      "file": "packages/rn-tester/android/app/gradle.properties",
+      "_justification": "Debug key needed for android. Does not contain a particular secret"
+    },
+    {
+      "file": "packages/rn-tester/android/app/my-release-key.keystore",
+      "_justification": "Debug key needed for android. Does not contain a particular secret"
+    }
+  ]
+}

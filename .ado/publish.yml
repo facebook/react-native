@@ -1,5 +1,5 @@
 # It is expected that a `latestStableBranch` variable is set in the pipeline's settings:
-# https://dev.azure.com/ms/react-native/_apps/hub/ms.vss-build-web.ci-designer-hub?pipelineId=221
+# https://dev.azure.com/office/ISS/_apps/hub/ms.vss-build-web.ci-designer-hub?pipelineId=18541
 
 # This file defines the build steps to publish a release
 name: $(Date:yyyyMMdd).$(Rev:.r)
@@ -18,14 +18,23 @@ pr: none
 
 variables:
   - template: variables/vars.yml
+  - group: React-native-macos Secrets
+  - group: InfoSec-SecurityResults
+  - name: tags
+    value: production,externalfacing
 
 jobs:
   - job: RNGithubNpmJSPublish
     displayName: React-Native GitHub Publish to npmjs.org
     pool:
       vmImage: $(VmImageApple)
+    variables:
+      - name: BUILDSECMON_OPT_IN
+        value: true
     timeoutInMinutes: 90 # how long to run the job before automatically cancelling
     cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
+    dependsOn: 
+      - Compliance
     steps:
       - checkout: self # self represents the repo where the initial Pipelines YAML file was found
         clean: true # whether to fetch clean each time
@@ -111,16 +120,18 @@ jobs:
           BUILD_STAGINGDIRECTORY: $(Build.StagingDirectory)
           BUILD_SOURCEBRANCH: $(Build.SourceBranch)
           SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-          githubApiToken: $(githubApiToken)
+          githubApiToken: $(githubAuthToken)
         condition: and(succeeded(), ne(variables['Build.SourceBranchName'], 'main'))
 
 
   - job: RNMacOSInitNpmJSPublish
     displayName: react-native-macos-init Publish to npmjs.org
-    pool: $(PoolUbuntu)
+    pool: Azure-Pipelines-EO-Ubuntu20.04-Office
     timeoutInMinutes: 90 # how long to run the job before automatically cancelling
     cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
     condition: eq(variables['Build.SourceBranchName'], 'main')
+    dependsOn: 
+      - Compliance
     steps:
       - checkout: self # self represents the repo where the initial Pipelines YAML file was found
         clean: true # whether to fetch clean each time
@@ -146,6 +157,11 @@ jobs:
             yarn build
 
       - task: CmdLine@2
+        displayName: Code tested in other pipeline [test]
+        inputs:
+          script: echo "This code is tested as part of an integration test. See the 'Verify react-native-macos-init' task."
+
+      - task: CmdLine@2
         displayName: "Publish react-native-macos-init to npmjs.org"
         inputs:
           script: |
@@ -165,9 +181,11 @@ jobs:
 
   - job: RNGithubOfficePublish
     displayName: React-Native GitHub Publish to Office
-    pool: $(PoolUbuntu)
+    pool: Azure-Pipelines-EO-Ubuntu20.04-Office
     timeoutInMinutes: 90 # how long to run the job before automatically cancelling
     cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
+    dependsOn: 
+      - Compliance
     steps:
       - checkout: self # self represents the repo where the initial Pipelines YAML file was found
         clean: true # whether to fetch clean each time
@@ -218,7 +236,7 @@ jobs:
           BUILD_SOURCESDIRECTORY: $(Build.SourcesDirectory)
           BUILD_SOURCEBRANCH: $(Build.SourceBranch)
           SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-          githubApiToken: $(githubApiToken)
+          githubApiToken: $(githubAuthToken)
 
       - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
         displayName: 📒 Generate Manifest
@@ -230,3 +248,15 @@ jobs:
         inputs:
           PathtoPublish: '$(Build.StagingDirectory)/final'
           ArtifactName: 'ReactNative-Final'
+
+  - job: Compliance
+    displayName: React-Native GitHub Compliance pipeline
+    pool: OE-OfficePublic
+    timeoutInMinutes: 15 # how long to run the job before automatically cancelling
+    steps:
+      - checkout: self # self represents the repo where the initial Pipelines YAML file was found
+        clean: true # whether to fetch clean each time
+        fetchDepth: 10 # the depth of commits to ask Git to fetch
+        lfs: false # whether to download Git-LFS files
+        submodules: recursive # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
+        persistCredentials: true # set to 'true' to leave the OAuth token in the Git config after the initial fetch
