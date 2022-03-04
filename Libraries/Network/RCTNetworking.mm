@@ -8,7 +8,7 @@
 
 #import <mutex>
 
-#import <FBReactNativeSpec/FBReactNativeSpec.h>
+#import <ReactCodegen/FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTAssert.h>
 #import <React/RCTConvert.h>
 #import <React/RCTLog.h>

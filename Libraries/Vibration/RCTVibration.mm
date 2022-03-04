@@ -8,7 +8,7 @@
 #import <React/RCTVibration.h>
 
 #import <AudioToolbox/AudioToolbox.h>
-#import <FBReactNativeSpec/FBReactNativeSpec.h>
+#import <ReactCodegen/FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTLog.h>
 
 #import "RCTVibrationPlugins.h"

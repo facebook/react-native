@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <FBReactNativeSpec/FBReactNativeSpec.h>
+#import <ReactCodegen/FBReactNativeSpec/FBReactNativeSpec.h>
 
 #import <React/RCTI18nUtil.h>
 #import "RCTI18nManager.h"

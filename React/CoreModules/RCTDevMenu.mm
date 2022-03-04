@@ -7,7 +7,7 @@
 
 #import <React/RCTDevMenu.h>
 
-#import <FBReactNativeSpec/FBReactNativeSpec.h>
+#import <ReactCodegen/FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTDefines.h>

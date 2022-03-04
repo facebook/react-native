@@ -7,7 +7,7 @@
 
 #import "RCTAppState.h"
 
-#import <FBReactNativeSpec/FBReactNativeSpec.h>
+#import <ReactCodegen/FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTAssert.h>
 #import <React/RCTBridge.h>
 #import <React/RCTEventDispatcherProtocol.h>

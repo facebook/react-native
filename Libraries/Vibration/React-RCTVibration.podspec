@@ -36,12 +36,12 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig    = {
                                "USE_HEADERMAP" => "YES",
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
-                               "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/RCT-Folly\" \"${PODS_ROOT}/Headers/Public/React-Codegen/react/renderer/components\""
+                               "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/RCT-Folly\" \"${PODS_ROOT}/Headers/Public/ReactCodegen/react/renderer/components\""
                              }
   s.frameworks             = "AudioToolbox"
 
   s.dependency "RCT-Folly", folly_version
-  s.dependency "React-Codegen", version
+  s.dependency "ReactCodegen", version
   s.dependency "ReactCommon/turbomodule/core", version
   s.dependency "React-jsi", version
   s.dependency "React-Core/RCTVibrationHeaders", version

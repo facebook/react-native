@@ -10,7 +10,7 @@
 #import <atomic>
 #import <memory>
 
-#import <FBReactNativeSpec/FBReactNativeSpec.h>
+#import <ReactCodegen/FBReactNativeSpec/FBReactNativeSpec.h>
 #import <ImageIO/ImageIO.h>
 #import <MobileCoreServices/UTType.h>
 #import <React/RCTAssert.h>

@@ -7,7 +7,7 @@
 
 #import "RCTTiming.h"
 
-#import <FBReactNativeSpec/FBReactNativeSpec.h>
+#import <ReactCodegen/FBReactNativeSpec/FBReactNativeSpec.h>
 
 #import <React/RCTAssert.h>
 #import <React/RCTBridge+Private.h>

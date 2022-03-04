@@ -7,7 +7,7 @@
 
 #import "RCTDeviceInfo.h"
 
-#import <FBReactNativeSpec/FBReactNativeSpec.h>
+#import <ReactCodegen/FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTAccessibilityManager.h>
 #import <React/RCTAssert.h>
 #import <React/RCTConstants.h>

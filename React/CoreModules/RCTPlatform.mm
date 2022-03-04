@@ -9,7 +9,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import <FBReactNativeSpec/FBReactNativeSpec.h>
+#import <ReactCodegen/FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTUtils.h>
 #import <React/RCTVersion.h>
 

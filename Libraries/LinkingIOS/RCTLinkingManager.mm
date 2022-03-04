@@ -7,7 +7,7 @@
 
 #import <React/RCTLinkingManager.h>
 
-#import <FBReactNativeSpec/FBReactNativeSpec.h>
+#import <ReactCodegen/FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTBridge.h>
 #import <React/RCTUtils.h>
 #import <React/RCTLog.h>

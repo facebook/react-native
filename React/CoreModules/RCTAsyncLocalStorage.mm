@@ -11,7 +11,7 @@
 
 #import <CommonCrypto/CommonCryptor.h>
 #import <CommonCrypto/CommonDigest.h>
-#import <FBReactNativeSpec/FBReactNativeSpec.h>
+#import <ReactCodegen/FBReactNativeSpec/FBReactNativeSpec.h>
 
 #import <React/RCTConvert.h>
 #import <React/RCTLog.h>

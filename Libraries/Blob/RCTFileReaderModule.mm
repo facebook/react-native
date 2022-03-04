@@ -8,7 +8,7 @@
 
 #import <React/RCTFileReaderModule.h>
 
-#import <FBReactNativeSpec/FBReactNativeSpec.h>
+#import <ReactCodegen/FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
 
