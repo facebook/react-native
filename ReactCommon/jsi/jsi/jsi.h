@@ -1078,6 +1078,10 @@ class JSI_EXPORT Value {
     return data_.boolean;
   }
 
+  /// \return the boolean value, or throws JSIException if not a
+  /// boolean.
+  bool asBool() const;
+
   /// \return the number value, or asserts if not a number.
   double getNumber() const {
     assert(isNumber());
