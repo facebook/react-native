@@ -12,7 +12,7 @@ Before running the app, make sure you ran:
 
 ### Running on iOS
 
-If you are testing non-fabric component, modify [the fabric_enabled flag in RNTester's Podfile](https://github.com/facebook/react-native/blob/main/packages/rn-tester/Podfile#L21).
+If you are testing non-fabric component, modify [the fabric_enabled flag in RNTester's Podfile](https://github.com/facebook/react-native/blob/main/packages/rn-tester/Podfile#L24).
 
 ```ruby
 fabric_enabled = false
