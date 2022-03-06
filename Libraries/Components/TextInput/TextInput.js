@@ -1281,7 +1281,7 @@ function InternalTextInput(props: Props): React.Node {
        * match up exactly with the props for TextInput. This will need to get
        * fixed */
       <AndroidTextInput
-        error="Fabrizio! Why did you make a mistake?"
+        error="Fabrizio! Why did you make a mistake?
         ref={_setNativeRef}
         {...props}
         {...eventHandlers}
