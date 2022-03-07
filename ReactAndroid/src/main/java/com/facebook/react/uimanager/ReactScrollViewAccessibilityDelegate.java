@@ -12,21 +12,35 @@ import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
+import com.facebook.common.logging.FLog;
 import com.facebook.react.R;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.views.scroll.ReactScrollView;
 
 public class ReactScrollViewAccessibilityDelegate extends AccessibilityDelegateCompat {
+  private final String TAG = ReactScrollViewAccessibilityDelegate.class.getSimpleName();
 
-  public void onInitializeAccessibilityEvent(ReactScrollView host, AccessibilityEvent event) {
+  @Override
+  public void onInitializeAccessibilityEvent(View host, AccessibilityEvent event) {
     super.onInitializeAccessibilityEvent(host, event);
-    // add check on type
-    ReactScrollView scrollView = (ReactScrollView) host;
-    if (scrollView != null) {
-      event.setScrollable(scrollView.getScrollEnabled());
+    if (host instanceof ReactScrollView) {
+      ReactScrollView scrollView = (ReactScrollView) host;
+      onInitializeAccessibilityEventInternal(scrollView, event);
+    } else {
+      FLog.w(
+          TAG,
+          TAG
+              + " method onInitializeAccessibilityNodeInfo was called with host: "
+              + host
+              + " not instanceof ReactScrollView");
     }
+  }
+
+  public void onInitializeAccessibilityEventInternal(
+      ReactScrollView scrollView, AccessibilityEvent event) {
+    event.setScrollable(scrollView.getScrollEnabled());
     final ReadableMap accessibilityCollection =
-        (ReadableMap) host.getTag(R.id.accessibility_collection);
+        (ReadableMap) scrollView.getTag(R.id.accessibility_collection);
 
     if (accessibilityCollection != null) {
       event.setItemCount(accessibilityCollection.getInt("itemCount"));
@@ -84,16 +98,30 @@ public class ReactScrollViewAccessibilityDelegate extends AccessibilityDelegateC
   @Override
   public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
     super.onInitializeAccessibilityNodeInfo(host, info);
+    if (host instanceof ReactScrollView) {
+      ReactScrollView scrollView = (ReactScrollView) host;
+      onInitializeAccessibilityNodeInfoInternal(scrollView, info);
+    } else {
+      FLog.w(
+          TAG,
+          TAG
+              + " method onInitializeAccessibilityNodeInfo was called with host: "
+              + host
+              + " not instanceof ReactScrollView");
+    }
+  };
 
+  public void onInitializeAccessibilityNodeInfoInternal(
+      ReactScrollView scrollView, AccessibilityNodeInfoCompat info) {
     final ReactAccessibilityDelegate.AccessibilityRole accessibilityRole =
-        (ReactAccessibilityDelegate.AccessibilityRole) host.getTag(R.id.accessibility_role);
+        (ReactAccessibilityDelegate.AccessibilityRole) scrollView.getTag(R.id.accessibility_role);
 
     if (accessibilityRole != null) {
-      ReactAccessibilityDelegate.setRole(info, accessibilityRole, host.getContext());
+      ReactAccessibilityDelegate.setRole(info, accessibilityRole, scrollView.getContext());
     }
 
     final ReadableMap accessibilityCollection =
-        (ReadableMap) host.getTag(R.id.accessibility_collection);
+        (ReadableMap) scrollView.getTag(R.id.accessibility_collection);
 
     if (accessibilityCollection != null) {
       int rowCount = accessibilityCollection.getInt("rowCount");
@@ -106,9 +134,6 @@ public class ReactScrollViewAccessibilityDelegate extends AccessibilityDelegateC
       info.setCollectionInfo(collectionInfoCompat);
     }
 
-    ReactScrollView scrollView = (ReactScrollView) host;
-    if (scrollView != null) {
-      info.setScrollable(scrollView.getScrollEnabled());
-    }
+    info.setScrollable(scrollView.getScrollEnabled());
   }
 };
