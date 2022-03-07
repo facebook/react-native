@@ -48,6 +48,25 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
     view.setFocusable(accessible);
   }
 
+  @ReactProp(name = ViewProps.COLOR, customType = "Color")
+  public void setColor(ReactTextView view, int color) {
+    /**
+     * This is needed for natively driven animations for text color. Typically, {@link
+     * ReactTextView#setText} is called via {@link ReactTextViewManager#updateExtraData}, but
+     * natively animated color changes bypass render and layout pass via direct call to {@link
+     * SurfaceMountingManager#updateProps} from {@link UIManager#synchronouslyUpdateViewOnUIThread}.
+     */
+    Spannable spannable = view.getSpanned();
+    if (spannable != null) {
+      spannable.setSpan(
+          new ReactForegroundColorSpan(color),
+          0,
+          spannable.length(),
+          Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+      view.setText(spannable);
+    }
+  }
+
   // maxLines can only be set in master view (block), doesn't really make sense to set in a span
   @ReactProp(name = ViewProps.NUMBER_OF_LINES, defaultInt = ViewDefaults.NUMBER_OF_LINES)
   public void setNumberOfLines(ReactTextView view, int numberOfLines) {

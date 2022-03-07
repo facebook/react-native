@@ -8,10 +8,12 @@
 package com.facebook.react.uimanager;
 
 import android.view.View;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableType;
 import java.util.Map;
 
 /**
@@ -85,9 +87,14 @@ public class ReactStylesDiffMap {
     return mBackingMap.getMap(key);
   }
 
-  @Nullable
+  @NonNull
   public Dynamic getDynamic(String key) {
     return mBackingMap.getDynamic(key);
+  }
+
+  @NonNull
+  public ReadableType getType(String key) {
+    return mBackingMap.getType(key);
   }
 
   @Override
