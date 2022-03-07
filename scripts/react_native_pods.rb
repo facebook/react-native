@@ -546,6 +546,7 @@ def use_react_native_codegen!(spec, options={})
   library_name = options[:library_name] ||= "#{spec.name.gsub('_','-').split('-').collect(&:capitalize).join}Spec"
   Pod::UI.puts "[Codegen] Found #{library_name}"
 
+  relative_installation_root = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
   output_dir = options[:output_dir] ||= $CODEGEN_OUTPUT_DIR
   output_dir_module = "#{output_dir}/#{$CODEGEN_MODULE_DIR}"
   output_dir_component = "#{output_dir}/#{$CODEGEN_COMPONENT_DIR}"
@@ -553,7 +554,7 @@ def use_react_native_codegen!(spec, options={})
   codegen_config = {
     "modules" => {
       :js_srcs_pattern => "Native*.js",
-      :generated_dir => "#{Pod::Config.instance.installation_root}/#{output_dir_module}/#{library_name}",
+      :generated_dir => "#{relative_installation_root}/#{output_dir_module}/#{library_name}",
       :generated_files => [
         "#{library_name}.h",
         "#{library_name}-generated.mm"
@@ -561,7 +562,7 @@ def use_react_native_codegen!(spec, options={})
     },
     "components" => {
       :js_srcs_pattern => "*NativeComponent.js",
-      :generated_dir => "#{Pod::Config.instance.installation_root}/#{output_dir_component}/#{library_name}",
+      :generated_dir => "#{relative_installation_root}/#{output_dir_component}/#{library_name}",
       :generated_files => [
         "ComponentDescriptors.h",
         "EventEmitters.cpp",
@@ -610,7 +611,7 @@ def use_react_native_codegen!(spec, options={})
   spec.script_phase = {
     :name => 'Generate Specs',
     :input_files => input_files, # This also needs to be relative to Xcode
-    :output_files => ["${DERIVED_FILE_DIR}/codegen-#{library_name}.log"].concat(generated_files.map { |filename| " ${PODS_TARGET_SRCROOT}/#{filename}"} ),
+    :output_files => ["${DERIVED_FILE_DIR}/codegen-#{library_name}.log"].concat(generated_files.map { |filename| "${PODS_TARGET_SRCROOT}/#{filename}"} ),
     # The final generated files will be created when this script is invoked at Xcode build time.
     :script => get_script_phases_no_codegen_discovery(
       react_native_path: react_native_path,
