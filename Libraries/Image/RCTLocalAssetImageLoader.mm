@@ -24,7 +24,7 @@ RCT_EXPORT_MODULE()
 
 - (BOOL)canLoadImageURL:(NSURL *)requestURL
 {
-  return RCTIsLocalAssetURL(requestURL);
+  return RCTIsBundleAssetURL(requestURL);
 }
 
 - (BOOL)requiresScheduling

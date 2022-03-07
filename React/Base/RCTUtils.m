@@ -820,18 +820,6 @@ UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL)
     }
   }
 
-  if (!image) {
-    // Attempt to load from the file system
-    const char *fileSystemCString = [imageURL fileSystemRepresentation];
-    if (fileSystemCString != NULL) {
-      NSString *filePath = [NSString stringWithUTF8String:fileSystemCString];
-      if (filePath.pathExtension.length == 0) {
-        filePath = [filePath stringByAppendingPathExtension:@"png"];
-      }
-      image = [UIImage imageWithContentsOfFile:filePath];
-    }
-  }
-
   if (!image && !bundle) {
     // We did not find the image in the mainBundle, check in other shipped frameworks.
     NSArray<NSURL *> *possibleFrameworks =
