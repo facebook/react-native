@@ -55,7 +55,7 @@ void react_native_assert_fail(
 #define react_native_assert(cond)                           \
   if (!(cond)) {                                            \
     LOG(ERROR) << "react_native_assert failure: " << #cond; \
-    google::FlushLogFiles(google::INFO);                    \
+    google::FlushLogFiles(google::GLOG_INFO);               \
     assert(cond);                                           \
   }
 
