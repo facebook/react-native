@@ -19,6 +19,7 @@ import type {
 
 import type {AliasResolver} from './Utils';
 const {createAliasResolver, getModules} = require('./Utils');
+const {indent} = require('../Utils');
 const {unwrapNullable} = require('../../parsers/flow/modules/utils');
 
 type FilesOutput = Map<string, string>;
@@ -32,7 +33,7 @@ protected:
   ${hasteModuleName}CxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
 public:
-${moduleProperties}
+  ${indent(moduleProperties, 2)}
 
 };`;
 };
@@ -57,6 +58,7 @@ const FileTemplate = ({
 
 namespace facebook {
 namespace react {
+
 ${modules}
 
 } // namespace react
