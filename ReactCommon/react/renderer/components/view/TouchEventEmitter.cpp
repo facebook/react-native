@@ -60,12 +60,12 @@ static jsi::Value touchEventPayload(
 }
 
 void TouchEventEmitter::dispatchTouchEvent(
-    std::string const &type,
+    std::string type,
     TouchEvent const &event,
     EventPriority priority,
     RawEvent::Category category) const {
   dispatchEvent(
-      type,
+      std::move(type),
       [event](jsi::Runtime &runtime) {
         return touchEventPayload(runtime, event);
       },

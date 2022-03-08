@@ -19,7 +19,7 @@ EventEmitterWrapper::initHybrid(jni::alias_ref<jclass>) {
 }
 
 void EventEmitterWrapper::invokeEvent(
-    std::string const &eventName,
+    std::string eventName,
     NativeMap *payload,
     int category) {
   // It is marginal, but possible for this to be constructed without a valid
@@ -35,7 +35,7 @@ void EventEmitterWrapper::invokeEvent(
 }
 
 void EventEmitterWrapper::invokeUniqueEvent(
-    std::string const &eventName,
+    std::string eventName,
     NativeMap *payload,
     int customCoalesceKey) {
   // TODO: customCoalesceKey currently unused
