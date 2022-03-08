@@ -395,8 +395,10 @@ afterEvaluate {
 
         if (enableVmCleanup) {
             def task = tasks.findByName("package${targetName}")
-            def transformsLibDir = "$buildDir/intermediates/transforms/"
-            task.doFirst { vmSelectionAction(transformsLibDir) }
+            if (task != null) {
+                def transformsLibDir = "$buildDir/intermediates/transforms/"
+                task.doFirst { vmSelectionAction(transformsLibDir) }
+            }
 
             def sTask = tasks.findByName("strip${targetName}DebugSymbols")
             if (sTask != null) {
