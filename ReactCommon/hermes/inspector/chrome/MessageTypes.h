@@ -1,5 +1,5 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
-// @generated <<SignedSource::*O*zOeWoEQle#+L!plEphiEmie@IsG>>
+// Copyright (c) Meta Platforms, Inc. and affiliates. All Rights Reserved.
+// @generated SignedSource<<41786947d74eb3f47d8168b82b5ccf85>>
 
 #pragma once
 
