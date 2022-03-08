@@ -152,12 +152,7 @@ module.exports = {
                     `Unsupported type for param "${param.name}" in ${prop.name}. Found: ${typeName}`,
                   resolveAlias,
                 );
-                const isObject = translatedParam.startsWith('jsi::');
-                return (
-                  (isObject
-                    ? 'const ' + translatedParam + ' &'
-                    : translatedParam + ' ') + param.name
-                );
+                return `${translatedParam} ${param.name}`;
               })
               .join(', ');
             return propertyTemplate

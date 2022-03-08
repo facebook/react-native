@@ -56,10 +56,10 @@ protected:
   NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
 public:
-  virtual jsi::Object difficult(jsi::Runtime &rt, const jsi::Object &A) = 0;
-  virtual void optionals(jsi::Runtime &rt, const jsi::Object &A) = 0;
-  virtual void optionalMethod(jsi::Runtime &rt, const jsi::Object &options, const jsi::Function &callback, const jsi::Array &extras) = 0;
-  virtual void getArrays(jsi::Runtime &rt, const jsi::Object &options) = 0;
+  virtual jsi::Object difficult(jsi::Runtime &rt, jsi::Object A) = 0;
+  virtual void optionals(jsi::Runtime &rt, jsi::Object A) = 0;
+  virtual void optionalMethod(jsi::Runtime &rt, jsi::Object options, jsi::Function callback, jsi::Array extras) = 0;
+  virtual void getArrays(jsi::Runtime &rt, jsi::Object options) = 0;
 
 };
 
@@ -126,7 +126,7 @@ protected:
 
 public:
   virtual jsi::Object getConstants(jsi::Runtime &rt) = 0;
-  virtual void cropImage(jsi::Runtime &rt, const jsi::Object &cropData) = 0;
+  virtual void cropImage(jsi::Runtime &rt, jsi::Object cropData) = 0;
 
 };
 
@@ -160,9 +160,9 @@ protected:
 
 public:
   virtual jsi::Object getConstants(jsi::Runtime &rt) = 0;
-  virtual jsi::Value getPhotos(jsi::Runtime &rt, const jsi::Object &params) = 0;
-  virtual jsi::Value saveToCameraRoll(jsi::Runtime &rt, const jsi::String &uri, const jsi::String &type) = 0;
-  virtual jsi::Value deletePhotos(jsi::Runtime &rt, const jsi::Array &assets) = 0;
+  virtual jsi::Value getPhotos(jsi::Runtime &rt, jsi::Object params) = 0;
+  virtual jsi::Value saveToCameraRoll(jsi::Runtime &rt, jsi::String uri, jsi::String type) = 0;
+  virtual jsi::Value deletePhotos(jsi::Runtime &rt, jsi::Array assets) = 0;
 
 };
 class JSI_EXPORT NativeImagePickerIOSCxxSpecJSI : public TurboModule {
@@ -170,7 +170,7 @@ protected:
   NativeImagePickerIOSCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
 public:
-  virtual void openCameraDialog(jsi::Runtime &rt, const jsi::Object &config, const jsi::Function &successCallback, const jsi::Function &cancelCallback) = 0;
+  virtual void openCameraDialog(jsi::Runtime &rt, jsi::Object config, jsi::Function successCallback, jsi::Function cancelCallback) = 0;
 
 };
 class JSI_EXPORT NativeExceptionsManagerCxxSpecJSI : public TurboModule {
@@ -178,10 +178,10 @@ protected:
   NativeExceptionsManagerCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
 public:
-  virtual void reportFatalException(jsi::Runtime &rt, const jsi::String &message, const jsi::Array &stack, double exceptionId) = 0;
-  virtual void reportSoftException(jsi::Runtime &rt, const jsi::String &message, const jsi::Array &stack, double exceptionId) = 0;
-  virtual void reportException(jsi::Runtime &rt, const jsi::Object &data) = 0;
-  virtual void updateExceptionMessage(jsi::Runtime &rt, const jsi::String &message, const jsi::Array &stack, double exceptionId) = 0;
+  virtual void reportFatalException(jsi::Runtime &rt, jsi::String message, jsi::Array stack, double exceptionId) = 0;
+  virtual void reportSoftException(jsi::Runtime &rt, jsi::String message, jsi::Array stack, double exceptionId) = 0;
+  virtual void reportException(jsi::Runtime &rt, jsi::Object data) = 0;
+  virtual void updateExceptionMessage(jsi::Runtime &rt, jsi::String message, jsi::Array stack, double exceptionId) = 0;
   virtual void dismissRedbox(jsi::Runtime &rt) = 0;
 
 };
@@ -219,12 +219,12 @@ public:
   virtual void voidFunc(jsi::Runtime &rt) = 0;
   virtual bool getBool(jsi::Runtime &rt, bool arg) = 0;
   virtual double getNumber(jsi::Runtime &rt, double arg) = 0;
-  virtual jsi::String getString(jsi::Runtime &rt, const jsi::String &arg) = 0;
-  virtual jsi::Array getArray(jsi::Runtime &rt, const jsi::Array &arg) = 0;
-  virtual jsi::Object getObject(jsi::Runtime &rt, const jsi::Object &arg) = 0;
+  virtual jsi::String getString(jsi::Runtime &rt, jsi::String arg) = 0;
+  virtual jsi::Array getArray(jsi::Runtime &rt, jsi::Array arg) = 0;
+  virtual jsi::Object getObject(jsi::Runtime &rt, jsi::Object arg) = 0;
   virtual double getRootTag(jsi::Runtime &rt, double arg) = 0;
-  virtual jsi::Object getValue(jsi::Runtime &rt, double x, const jsi::String &y, const jsi::Object &z) = 0;
-  virtual void getValueWithCallback(jsi::Runtime &rt, const jsi::Function &callback) = 0;
+  virtual jsi::Object getValue(jsi::Runtime &rt, double x, jsi::String y, jsi::Object z) = 0;
+  virtual void getValueWithCallback(jsi::Runtime &rt, jsi::Function callback) = 0;
   virtual jsi::Value getValueWithPromise(jsi::Runtime &rt, bool error) = 0;
 
 };
