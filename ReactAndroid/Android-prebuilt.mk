@@ -204,6 +204,3 @@ LOCAL_SRC_FILES := $(REACT_NDK_EXPORT_DIR)/$(TARGET_ARCH_ABI)/libruntimeexecutor
 LOCAL_C_INCLUDES := $(REACT_COMMON_DIR)/runtimeexecutor
 LOCAL_EXPORT_C_INCLUDES := $(REACT_COMMON_DIR)/runtimeexecutor
 include $(PREBUILT_SHARED_LIBRARY)
-
-# fbjni
-include $(FIRST_PARTY_NDK_DIR)/fbjni/Android.mk

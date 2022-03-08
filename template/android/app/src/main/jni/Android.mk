@@ -17,7 +17,7 @@ LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
 
 # If you wish to add a custom TurboModule or Fabric component in your app you
-# will have to uncomment those lines to include the generated source 
+# will have to uncomment those lines to include the generated source
 # files from the codegen (placed in $(GENERATED_SRC_DIR)/codegen/jni)
 #
 # LOCAL_C_INCLUDES += $(GENERATED_SRC_DIR)/codegen/jni
@@ -45,5 +45,12 @@ LOCAL_SHARED_LIBRARIES := \
   libyoga
 
 LOCAL_CFLAGS := -DLOG_TAG=\"ReactNative\" -fexceptions -frtti -std=c++17 -Wall
+
+# This block is needed only if you're building on NDK < r21 internally.
+ifneq ($(call ndk-major-at-least,21),true)
+    $(call import-add-path,$(NDK_GRADLE_INJECTED_IMPORT_PATH))
+endif
+
+$(call import-module,prefab/fbjni)
 
 include $(BUILD_SHARED_LIBRARY)

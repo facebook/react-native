@@ -43,7 +43,6 @@ LOCAL_SHARED_LIBRARIES := \
 
 include $(BUILD_STATIC_LIBRARY)
 
-$(call import-module,fbjni)
 $(call import-module,folly)
 $(call import-module,fbgloginit)
 $(call import-module,glog)

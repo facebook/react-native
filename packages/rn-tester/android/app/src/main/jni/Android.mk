@@ -44,3 +44,10 @@ LOCAL_CFLAGS := \
   -DLOG_TAG=\"ReactNative\"
 LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
 include $(BUILD_SHARED_LIBRARY)
+
+# This block is needed only because we build the project on NDK r17 internally.
+ifneq ($(call ndk-major-at-least,21),true)
+    $(call import-add-path,$(NDK_GRADLE_INJECTED_IMPORT_PATH))
+endif
+
+$(call import-module,prefab/fbjni)

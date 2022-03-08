@@ -40,7 +40,6 @@ include $(BUILD_SHARED_LIBRARY)
 $(call import-module,fbgloginit)
 $(call import-module,folly)
 $(call import-module,fb)
-$(call import-module,fbjni)
 $(call import-module,yogajni)
 $(call import-module,glog)
 

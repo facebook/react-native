@@ -23,4 +23,3 @@ include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,yoga)
 $(call import-module,fb)
-$(call import-module,fbjni)

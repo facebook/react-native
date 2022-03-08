@@ -255,20 +255,6 @@ tasks.register("packageReactNdkReleaseLibsForBuck", Copy) {
     into("src/main/jni/prebuilt/lib")
 }
 
-final def extractNativeDependencies = tasks.register('extractNativeDependencies', ExtractJniAndHeadersTask) {
-    it.extractHeadersConfiguration.setFrom(configurations.extractHeaders)
-    it.extractJniConfiguration.setFrom(configurations.extractJNI)
-    it.baseOutputDir = project.file("src/main/jni/first-party/")
-    // Sadly this task as an output folder path that is directly dependent on
-    // the task input (i.e. src/main/jni/first-party/<package-name>/...
-    // This means that this task is using the parent folder (first-party/) as
-    // @OutputFolder. The `prepareHermes` task will also output inside that
-    // folder and if the two tasks happen to be inside the same run, we want
-    // `extractNativeDependencies` to run after `prepareHermes` to do not
-    // invalidate the input/output calculation for this task.
-    it.mustRunAfter(prepareHermes)
-}
-
 task installArchives {
     dependsOn("publishReleasePublicationToNpmRepository")
 }
@@ -314,6 +300,7 @@ android {
                         "REACT_COMMON_DIR=$projectDir/../ReactCommon",
                         "REACT_GENERATED_SRC_DIR=$buildDir/generated/source",
                         "REACT_SRC_DIR=$projectDir/src/main/java/com/facebook/react",
+                        "APP_STL=c++_shared",
                         "-j${ndkBuildJobs()}"
 
                 if (Os.isFamily(Os.FAMILY_MAC)) {
@@ -333,7 +320,7 @@ android {
         }
     }
 
-    preBuild.dependsOn(prepareJSC, prepareHermes, prepareBoost, prepareDoubleConversion, prepareFmt, prepareFolly, prepareGlog, prepareLibevent, extractNativeDependencies)
+    preBuild.dependsOn(prepareJSC, prepareHermes, prepareBoost, prepareDoubleConversion, prepareFmt, prepareFolly, prepareGlog, prepareLibevent)
     preBuild.dependsOn("generateCodegenArtifactsFromSchema")
 
     sourceSets.main {
@@ -362,9 +349,11 @@ android {
     }
 
     configurations {
-        extractHeaders
-        extractJNI
         javadocDeps.extendsFrom api
+    }
+
+    buildFeatures {
+        prefab true
     }
 }
 
@@ -384,9 +373,7 @@ dependencies {
     api("com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}")
     api("com.squareup.okhttp3:okhttp-urlconnection:${OKHTTP_VERSION}")
     api("com.squareup.okio:okio:2.9.0")
-    api("com.facebook.fbjni:fbjni-java-only:0.2.2")
-    extractHeaders("com.facebook.fbjni:fbjni:0.2.2:headers")
-    extractJNI("com.facebook.fbjni:fbjni:0.2.2")
+    api("com.facebook.fbjni:fbjni:0.2.2")
 
     javadocDeps("com.squareup:javapoet:1.13.0")
 

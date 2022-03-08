@@ -118,6 +118,13 @@ endif
 # Build the files in this directory as a shared library
 include $(BUILD_SHARED_LIBRARY)
 
+# This block is needed only because we build the project on NDK r17 internally.
+ifneq ($(call ndk-major-at-least,21),true)
+    $(call import-add-path,$(NDK_GRADLE_INJECTED_IMPORT_PATH))
+endif
+
+$(call import-module,prefab/fbjni)
+
 # Compile the c++ dependencies required for ReactAndroid
 #
 # How does the import-module function work?
@@ -133,7 +140,6 @@ include $(BUILD_SHARED_LIBRARY)
 $(call import-module,butter)
 $(call import-module,folly)
 $(call import-module,fb)
-$(call import-module,fbjni)
 $(call import-module,jsc)
 $(call import-module,fbgloginit)
 $(call import-module,yogajni)
