@@ -832,6 +832,8 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private void cancelPostTouchScrolling() {
     if (mPostTouchRunnable != null) {
       removeCallbacks(mPostTouchRunnable);
+      mPostTouchRunnable = null;
+      getFlingAnimator().cancel();
     }
   }
 

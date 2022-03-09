@@ -622,6 +622,8 @@ public class ReactScrollView extends ScrollView
   private void cancelPostTouchScrolling() {
     if (mPostTouchRunnable != null) {
       removeCallbacks(mPostTouchRunnable);
+      mPostTouchRunnable = null;
+      getFlingAnimator().cancel();
     }
   }
 
