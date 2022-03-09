@@ -36,11 +36,11 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig    = {
                                "USE_HEADERMAP" => "YES",
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
-                               "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/RCT-Folly\" \"${PODS_ROOT}/Headers/Public/React-Codegen/react/renderer/components\""
+                               "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/RCT-Folly\" \"${PODS_ROOT}/Headers/Public/FBReactNativeSpec/react/renderer/components\""
                              }
   s.framework              = "UserNotifications"
 
-  s.dependency "React-Codegen", version
+  s.dependency "FBReactNativeSpec", version
   s.dependency "RCTTypeSafety", version
   s.dependency "React-Core/RCTPushNotificationHeaders", version
   s.dependency "ReactCommon/turbomodule/core", version

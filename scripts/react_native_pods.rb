@@ -42,7 +42,6 @@ def use_react_native! (options={})
 
   # The Pods which should be included in all projects
   pod 'FBLazyVector', :path => "#{prefix}/Libraries/FBLazyVector"
-  pod 'FBReactNativeSpec', :path => "#{prefix}/React/FBReactNativeSpec"
   pod 'RCTRequired', :path => "#{prefix}/Libraries/RCTRequired"
   pod 'RCTTypeSafety', :path => "#{prefix}/Libraries/TypeSafety"
   pod 'React', :path => "#{prefix}/"
@@ -95,7 +94,7 @@ def use_react_native! (options={})
     generate_react_codegen_podspec!(react_codegen_spec)
   end
 
-  pod 'React-Codegen', :path => $CODEGEN_OUTPUT_DIR
+  pod 'FBReactNativeSpec', :path => $CODEGEN_OUTPUT_DIR
 
   if fabric_enabled
     checkAndGenerateEmptyThirdPartyProvider!(prefix)
@@ -349,7 +348,7 @@ def get_react_codegen_spec(options={})
   boost_compiler_flags = '-Wno-documentation'
 
   spec = {
-    'name' => "React-Codegen",
+    'name' => "FBReactNativeSpec",
     'version' => version,
     'summary' => 'Temp pod for generated files for React Native',
     'homepage' => 'https://facebook.com/',
@@ -357,7 +356,6 @@ def get_react_codegen_spec(options={})
     'authors' => 'Facebook',
     'compiler_flags'  => "#{folly_compiler_flags} #{boost_compiler_flags} -Wno-nullability-completeness -std=c++17",
     'source' => { :git => '' },
-    'header_mappings_dir' => './',
     'platforms' => {
       'ios' => '11.0',
     },
@@ -366,13 +364,12 @@ def get_react_codegen_spec(options={})
       [
         "\"$(PODS_ROOT)/boost\"",
         "\"$(PODS_ROOT)/RCT-Folly\"",
-        "\"${PODS_ROOT}/Headers/Public/React-Codegen/react/renderer/components\"",
+        "\"${PODS_ROOT}/Headers/Public/FBReactNativeSpec/react/renderer/components\"",
         "\"$(PODS_ROOT)/Headers/Private/React-Fabric\"",
         "\"$(PODS_ROOT)/Headers/Private/React-RCTFabric\"",
       ].join(' ')
     },
     'dependencies': {
-      "FBReactNativeSpec":  [version],
       "React-jsiexecutor":  [version],
       "RCT-Folly": [folly_version],
       "RCTRequired": [version],
@@ -388,12 +385,26 @@ def get_react_codegen_spec(options={})
       'React-graphics': [version],
       'React-rncore':  [version],
     });
+
+    # only setup header_mappings_dir for fabric mode, because there are still some other imports like `rncore`.
+    # however, set header_mappings_dir will break `use_frameworks!` build for FBReactNativeSpec.
+    # so far `use_frameworks!` with fabric is not supported.
+    spec[:header_mappings_dir] = '.'
   end
 
   if script_phases
-    Pod::UI.puts "[Codegen] Adding script_phases to React-Codegen."
+    Pod::UI.puts "[Codegen] Adding script_phases to FBReactNativeSpec."
     spec[:'script_phases'] = script_phases
   end
+
+  codegen_output_dir = Pod::Config.instance.installation_root + $CODEGEN_OUTPUT_DIR
+  use_react_native_codegen!(spec, {
+    :react_native_path => Pathname.new("#{__dir__}/..").relative_path_from(codegen_output_dir),
+    :js_srcs_dir => Pathname.new("#{__dir__}/../Libraries").relative_path_from(Pathname.pwd),
+    :js_srcs_dir_in_script_phase => Pathname.new("#{__dir__}/../Libraries").relative_path_from(codegen_output_dir),
+    :library_name => "FBReactNativeSpec",
+    :library_type => "modules",
+  })
 
   return spec
 end
@@ -449,7 +460,7 @@ def get_react_codegen_script_phases(options={})
     'execution_position': :before_compile,
     'input_files' => input_files,
     'show_env_vars_in_log': true,
-    'output_files': ["${DERIVED_FILE_DIR}/react-codegen.log"],
+    'output_files': ["${DERIVED_FILE_DIR}/FBReactNativeSpec.log"],
     'script': get_script_phases_with_codegen_discovery(
       react_native_path: react_native_path,
       relative_app_root: relative_app_root,
@@ -472,14 +483,14 @@ def generate_react_codegen_podspec!(spec)
   # This podspec file should only be create once in the session/pod install.
   # This happens when multiple targets are calling use_react_native!.
   if has_react_codegen_podspec_generated()
-    Pod::UI.puts "[Codegen] Skipping React-Codegen podspec generation."
+    Pod::UI.puts "[Codegen] Skipping FBReactNativeSpec podspec generation."
     return
   end
   relative_installation_root = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
   output_dir = "#{relative_installation_root}/#{$CODEGEN_OUTPUT_DIR}"
   Pod::Executable.execute_command("mkdir", ["-p", output_dir]);
 
-  podspec_path = File.join(output_dir, 'React-Codegen.podspec.json')
+  podspec_path = File.join(output_dir, 'FBReactNativeSpec.podspec.json')
   Pod::UI.puts "[Codegen] Generating #{podspec_path}"
 
   File.open(podspec_path, 'w') do |f|
@@ -516,7 +527,7 @@ def use_react_native_codegen_discovery!(options={})
     exit 1
   end
 
-  # Generate React-Codegen podspec here to add the script phases.
+  # Generate FBReactNativeSpec podspec here to add the script phases.
   script_phases = get_react_codegen_script_phases(options)
   react_codegen_spec = get_react_codegen_spec(fabric_enabled: fabric_enabled, script_phases: script_phases)
   generate_react_codegen_podspec!(react_codegen_spec)
@@ -577,6 +588,7 @@ def use_react_native_codegen!(spec, options={})
 
   # The path to JavaScript files
   js_srcs_dir = options[:js_srcs_dir] ||= "./"
+  js_srcs_dir_in_script_phase = options[:js_srcs_dir_in_script_phase] ||= js_srcs_dir
   library_type = options[:library_type]
 
   if library_type
@@ -605,27 +617,35 @@ def use_react_native_codegen!(spec, options={})
   # Prepare filesystem by creating empty files that will be picked up as references by CocoaPods.
   prepare_command = "mkdir -p #{generated_dirs.join(" ")} && touch -a #{generated_files.join(" ")}"
   system(prepare_command) # Always run prepare_command when a podspec uses the codegen, as CocoaPods may skip invoking this command in certain scenarios. Replace with pre_integrate_hook after updating to CocoaPods 1.11
-  spec.prepare_command = prepare_command
 
-  spec.script_phase = {
+  script_phases = [{
     :name => 'Generate Specs',
     :input_files => input_files, # This also needs to be relative to Xcode
     :output_files => ["${DERIVED_FILE_DIR}/codegen-#{library_name}.log"].concat(generated_files.map { |filename| " ${PODS_TARGET_SRCROOT}/#{filename}"} ),
     # The final generated files will be created when this script is invoked at Xcode build time.
     :script => get_script_phases_no_codegen_discovery(
       react_native_path: react_native_path,
-      codegen_output_dir: $CODEGEN_OUTPUT_DIR,
+      codegen_output_dir: output_dir,
       codegen_module_dir: $CODEGEN_MODULE_DIR,
       codegen_component_dir: $CODEGEN_COMPONENT_DIR,
       library_name: library_name,
       library_type: library_type,
       js_srcs_pattern: js_srcs_pattern,
-      js_srcs_dir: js_srcs_dir,
+      js_srcs_dir: js_srcs_dir_in_script_phase,
       file_list: file_list
     ),
     :execution_position => :before_compile,
     :show_env_vars_in_log => true
-  }
+  }]
+
+  if spec.class == Pod::Specification
+    spec.prepare_command = prepare_command
+    spec.script_phases += script_phases
+  else
+    spec[:prepare_command] = prepare_command
+    spec[:script_phases] ||= []
+    spec[:script_phases] += script_phases
+  end
 end
 
 def locatePathToHermesSource!(react_native_path)
