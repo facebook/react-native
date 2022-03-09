@@ -159,6 +159,12 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
   self.string = text;
 }
 
+- (void)setTypingAttributes:(__unused NSDictionary *)typingAttributes
+{
+  // Prevent NSTextView from changing its own typing attributes out from under us.
+  [super setTypingAttributes:_defaultTextAttributes];
+}
+
 - (NSAttributedString*)attributedText
 {
   return self.textStorage;
@@ -307,13 +313,7 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
   if (self.placeholder == nil) {
     return nil;
   }
-  NSMutableDictionary *placeholderAttributes = [self.typingAttributes mutableCopy];
-  if (placeholderAttributes == nil) {
-    placeholderAttributes = [NSMutableDictionary dictionary];
-  }
-  placeholderAttributes[NSForegroundColorAttributeName] = self.placeholderColor ?: defaultPlaceholderColor();
-  placeholderAttributes[NSFontAttributeName] = self.font ?: defaultPlaceholderFont();
-  return [[NSAttributedString alloc] initWithString:self.placeholder attributes:placeholderAttributes];
+  return [[NSAttributedString alloc] initWithString:self.placeholder attributes:[self _placeholderTextAttributes]];
 }
 
 - (void)drawRect:(NSRect)dirtyRect
@@ -388,7 +388,7 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
   placeholderSize = CGSizeMake(RCTCeilPixelValue(placeholderSize.width), RCTCeilPixelValue(placeholderSize.height));
 #else // [TODO(macOS GH#774)
   CGFloat scale = self.window.backingScaleFactor;
-  CGSize placeholderSize = [placeholder sizeWithAttributes:@{NSFontAttributeName: self.font ?: defaultPlaceholderFont()}];
+  CGSize placeholderSize = [placeholder sizeWithAttributes:[self _placeholderTextAttributes]];
   placeholderSize = CGSizeMake(RCTCeilPixelValue(placeholderSize.width, scale), RCTCeilPixelValue(placeholderSize.height, scale));
 #endif // ]TODO(macOS GH#774)
   placeholderSize.width += textContainerInset.left + textContainerInset.right;
