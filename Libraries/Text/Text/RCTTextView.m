@@ -55,6 +55,8 @@
     self.accessibilityTraits |= UIAccessibilityTraitStaticText;
 #else // [TODO(macOS GH#774)
     self.accessibilityRole = NSAccessibilityStaticTextRole;
+    // Fix blurry text on non-retina displays.
+    self.canDrawSubviewsIntoLayer = YES;
 #endif // ]TODO(macOS GH#774)
     self.opaque = NO;
     RCTUIViewSetContentModeRedraw(self); // TODO(macOS GH#774) and TODO(macOS ISS#3536887)
