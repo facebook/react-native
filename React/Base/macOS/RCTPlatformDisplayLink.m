@@ -71,17 +71,17 @@ static CVReturn RCTPlatformDisplayLinkCallBack(__unused CVDisplayLinkRef display
 
 - (void)addToRunLoop:(NSRunLoop *)runloop forMode:(NSRunLoopMode)mode
 {
-  OSSpinLockLock(&_lock);
+  os_unfair_lock_lock(&_lock);
   _runLoop = runloop;
 
   if (_displayLink != NULL) {
     [_modes addObject:mode];
-    OSSpinLockUnlock(&_lock);
+    os_unfair_lock_unlock(&_lock);
     return;
   }
 
   _modes = @[mode].mutableCopy;
-  OSSpinLockUnlock(&_lock);
+  os_unfair_lock_unlock(&_lock);
   CVReturn ret = CVDisplayLinkCreateWithActiveCGDisplays(&_displayLink);
   if (ret != kCVReturnSuccess) {
     ret = CVDisplayLinkCreateWithCGDisplay(CGMainDisplayID(), &_displayLink);
