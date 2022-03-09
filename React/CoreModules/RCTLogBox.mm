@@ -7,7 +7,7 @@
 
 #import "RCTLogBox.h"
 
-#import <ReactCodegen/FBReactNativeSpec/FBReactNativeSpec.h>
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTLog.h>

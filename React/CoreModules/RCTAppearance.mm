@@ -7,7 +7,7 @@
 
 #import "RCTAppearance.h"
 
-#import <ReactCodegen/FBReactNativeSpec/FBReactNativeSpec.h>
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTConstants.h>
 #import <React/RCTEventEmitter.h>
 

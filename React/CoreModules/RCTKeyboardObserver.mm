@@ -7,7 +7,7 @@
 
 #import "RCTKeyboardObserver.h"
 
-#import <ReactCodegen/FBReactNativeSpec/FBReactNativeSpec.h>
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTEventDispatcherProtocol.h>
 
 #import "CoreModulesPlugins.h"

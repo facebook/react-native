@@ -95,7 +95,7 @@ def use_react_native! (options={})
     generate_react_codegen_podspec!(react_codegen_spec)
   end
 
-  pod 'ReactCodegen', :path => $CODEGEN_OUTPUT_DIR
+  pod 'React-Codegen', :path => $CODEGEN_OUTPUT_DIR
 
   if fabric_enabled
     checkAndGenerateEmptyThirdPartyProvider!(prefix)
@@ -349,7 +349,7 @@ def get_react_codegen_spec(options={})
   boost_compiler_flags = '-Wno-documentation'
 
   spec = {
-    'name' => "ReactCodegen",
+    'name' => "React-Codegen",
     'version' => version,
     'summary' => 'Temp pod for generated files for React Native',
     'homepage' => 'https://facebook.com/',
@@ -366,7 +366,7 @@ def get_react_codegen_spec(options={})
       [
         "\"$(PODS_ROOT)/boost\"",
         "\"$(PODS_ROOT)/RCT-Folly\"",
-        "\"${PODS_ROOT}/Headers/Public/ReactCodegen/react/renderer/components\"",
+        "\"${PODS_ROOT}/Headers/Public/React-Codegen/react/renderer/components\"",
         "\"$(PODS_ROOT)/Headers/Private/React-Fabric\"",
         "\"$(PODS_ROOT)/Headers/Private/React-RCTFabric\"",
       ].join(' ')
@@ -391,7 +391,7 @@ def get_react_codegen_spec(options={})
   end
 
   if script_phases
-    Pod::UI.puts "[Codegen] Adding script_phases to ReactCodegen."
+    Pod::UI.puts "[Codegen] Adding script_phases to React-Codegen."
     spec[:'script_phases'] = script_phases
   end
 
@@ -472,14 +472,14 @@ def generate_react_codegen_podspec!(spec)
   # This podspec file should only be create once in the session/pod install.
   # This happens when multiple targets are calling use_react_native!.
   if has_react_codegen_podspec_generated()
-    Pod::UI.puts "[Codegen] Skipping ReactCodegen podspec generation."
+    Pod::UI.puts "[Codegen] Skipping React-Codegen podspec generation."
     return
   end
   relative_installation_root = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
   output_dir = "#{relative_installation_root}/#{$CODEGEN_OUTPUT_DIR}"
   Pod::Executable.execute_command("mkdir", ["-p", output_dir]);
 
-  podspec_path = File.join(output_dir, 'ReactCodegen.podspec.json')
+  podspec_path = File.join(output_dir, 'React-Codegen.podspec.json')
   Pod::UI.puts "[Codegen] Generating #{podspec_path}"
 
   File.open(podspec_path, 'w') do |f|
@@ -516,7 +516,7 @@ def use_react_native_codegen_discovery!(options={})
     exit 1
   end
 
-  # Generate ReactCodegen podspec here to add the script phases.
+  # Generate React-Codegen podspec here to add the script phases.
   script_phases = get_react_codegen_script_phases(options)
   react_codegen_spec = get_react_codegen_spec(fabric_enabled: fabric_enabled, script_phases: script_phases)
   generate_react_codegen_podspec!(react_codegen_spec)

@@ -13,7 +13,7 @@
 #import <React/RCTUIManager.h>
 #import <React/RCTUtils.h>
 
-#import <ReactCodegen/FBReactNativeSpec/FBReactNativeSpec.h>
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <RCTTypeSafety/RCTConvertHelpers.h>
 
 #import "CoreModulesPlugins.h"

@@ -7,7 +7,7 @@
 
 #import "RCTAlertManager.h"
 
-#import <ReactCodegen/FBReactNativeSpec/FBReactNativeSpec.h>
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <RCTTypeSafety/RCTConvertHelpers.h>
 #import <React/RCTAssert.h>
 #import <React/RCTConvert.h>

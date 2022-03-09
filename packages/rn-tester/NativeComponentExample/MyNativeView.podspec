@@ -33,7 +33,7 @@ Pod::Spec.new do |s|
 
   s.dependency "React"
   s.dependency "React-RCTFabric"
-  s.dependency "ReactCodegen"
+  s.dependency "React-Codegen"
   s.dependency "RCTRequired"
   s.dependency "RCTTypeSafety"
   s.dependency "ReactCommon/turbomodule/core"

@@ -12,7 +12,7 @@
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
 
-#import <ReactCodegen/FBReactNativeSpec/FBReactNativeSpec.h>
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
 
 @implementation RCTConvert (UIStatusBar)
 
