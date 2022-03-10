@@ -111,7 +111,7 @@ def use_react_native! (options={})
     pod 'React-hermes', :path => "#{prefix}/ReactCommon/hermes"
 
     if ENV['BUILD_HERMES_SOURCE'] == '1'
-      hermes_source_path = locatePathToHermesSource!(prefix)
+      hermes_source_path = downloadAndConfigureHermesSource(prefix)
       pod 'hermes-engine', :path => "#{hermes_source_path}/hermes-engine.podspec"
     else
       pod 'hermes-engine', '~> 0.11.0'
@@ -627,6 +627,29 @@ def use_react_native_codegen!(spec, options={})
     :execution_position => :before_compile,
     :show_env_vars_in_log => true
   }
+end
+
+def downloadAndConfigureHermesSource(react_native_path)
+  hermes_tarball_base_url = "https://github.com/facebook/hermes/tarball/"
+  sdks_dir = "#{react_native_path}/sdks"
+  download_dir = "#{sdks_dir}/download"
+  hermes_dir = "#{sdks_dir}/hermes"
+  hermes_tag_file = "#{sdks_dir}/.hermesversion"
+  tarball_path = "#{download_dir}/hermes.tar.gz"
+
+  system("mkdir -p #{hermes_dir} #{download_dir}")
+
+  if(File.exist?(hermes_tag_file))
+    hermes_tag = file_data = File.read(hermes_tag_file).strip
+    hermes_tarball_url = hermes_tarball_base_url + hermes_tag
+  else
+    hermes_tarball_url = hermes_tarball_base_url + "main"
+  end
+
+  system("wget --timestamping -O #{tarball_path} #{hermes_tarball_url}")
+  system("tar -xzf #{tarball_path} --strip-components=1 -C #{hermes_dir}")
+
+  hermes_dir
 end
 
 def locatePathToHermesSource!(react_native_path)

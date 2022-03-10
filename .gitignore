@@ -72,10 +72,6 @@ package-lock.json
 # OS X
 .DS_Store
 
-# Hermes
-/sdks/hermes
-/sdks/download
-
 # Test generated files
 /ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
 *.js.meta
@@ -115,6 +111,11 @@ package-lock.json
 /packages/react-native-codegen/lib
 /ReactCommon/react/renderer/components/rncore/
 /packages/rn-tester/NativeModuleExample/ScreenshotManagerSpec*
+
+# Additional SDKs
+/sdks/.hermesversion
+/sdks/hermes
+/sdks/download
 
 # Visual studio
 .vscode
