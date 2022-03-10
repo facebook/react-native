@@ -136,6 +136,7 @@ static NSRegularExpression *RCTJSStackFrameRegex()
   return stack;
 }
 
+#if DEBUG // TODO(macOS GH#774) description is a debug-only feature
 - (NSString *)description
 {
   return [NSString stringWithFormat:@"<%@: %p method name: %@; file name: %@; line: %ld; column: %ld>",
@@ -146,5 +147,6 @@ static NSRegularExpression *RCTJSStackFrameRegex()
                                     (long)self.lineNumber,
                                     (long)self.column];
 }
+#endif // TODO(macOS GH#774)
 
 @end

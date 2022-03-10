@@ -62,6 +62,7 @@ static RCTSource *RCTSourceCreate(NSURL *url, NSData *data, int64_t length) NS_R
 
 @implementation RCTLoadingProgress
 
+#if DEBUG // TODO(macOS GH#774) description is a debug-only feature
 - (NSString *)description
 {
   NSMutableString *desc = [NSMutableString new];
@@ -77,6 +78,7 @@ static RCTSource *RCTSourceCreate(NSURL *url, NSData *data, int64_t length) NS_R
   [desc appendString:@"\u2026"];
   return desc;
 }
+#endif // TODO(macOS GH#774)
 
 @end
 

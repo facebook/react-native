@@ -570,9 +570,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
   _methodQueue = nil;
 }
 
+#if DEBUG // TODO(macOS GH#774) description is a debug-only feature
 - (NSString *)description
 {
   return [NSString stringWithFormat:@"<%@: %p; name=\"%@\">", [self class], self, self.name];
 }
+#endif // TODO(macOS GH#774)
 
 @end

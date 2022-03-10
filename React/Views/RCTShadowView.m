@@ -393,6 +393,7 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
   return self.reactTag;
 }
 
+#if DEBUG // TODO(macOS GH#774) description is a debug-only feature
 - (NSString *)description
 {
   NSString *description = super.description;
@@ -403,6 +404,7 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
                               NSStringFromCGRect(self.layoutMetrics.frame)];
   return description;
 }
+#endif // TODO(macOS GH#774)
 
 - (void)addRecursiveDescriptionToString:(NSMutableString *)string atLevel:(NSUInteger)level
 {

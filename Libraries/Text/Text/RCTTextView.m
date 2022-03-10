@@ -101,6 +101,7 @@
 }
 #endif // ]TODO(macOS GH#774)
 
+#if DEBUG // TODO(macOS GH#774) description is a debug-only feature
 - (NSString *)description
 {
   NSString *superDescription = super.description;
@@ -114,6 +115,7 @@
   }
   // TODO(macOS GH#774)]
 }
+#endif // TODO(macOS GH#774)
 
 - (void)setSelectable:(BOOL)selectable
 {

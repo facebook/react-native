@@ -54,10 +54,12 @@ typedef struct RGBAPixel {
 
 #pragma mark - Properties
 
+#if DEBUG // TODO(macOS GH#774) description is a debug-only feature
 - (NSString *)description
 {
   return [NSString stringWithFormat:@"%@ %@", [super description], _referenceImagesDirectory];
 }
+#endif // TODO(macOS GH#774)
 
 #pragma mark - Public API
 
