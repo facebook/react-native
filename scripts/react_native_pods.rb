@@ -416,7 +416,7 @@ def get_react_codegen_script_phases(options={})
   end
 
   # We need to convert paths to relative path from installation_root for the script phase for CI.
-  relative_app_root = Pathname.new(app_path).relative_path_from(Pod::Config.instance.installation_root)
+  relative_app_root = Pathname.new(app_path).realpath().relative_path_from(Pod::Config.instance.installation_root)
 
   config_file_dir = options[:config_file_dir] ||= ''
   relative_config_file_dir = ''
@@ -440,7 +440,7 @@ def get_react_codegen_script_phases(options={})
     library_dir = File.join(app_path, library['jsSrcsDir'])
     file_list.concat (`find #{library_dir} -type f \\( -name "Native*.js" -or -name "*NativeComponent.js" \\)`.split("\n").sort)
   end
-  input_files = file_list.map { |filename| "${PODS_ROOT}/../#{Pathname.new(filename).relative_path_from(Pod::Config.instance.installation_root)}" }
+  input_files = file_list.map { |filename| "${PODS_ROOT}/../#{Pathname.new(filename).realpath().relative_path_from(Pod::Config.instance.installation_root)}" }
 
   # Add a script phase to trigger generate artifact.
   # Some code is duplicated so that it's easier to delete the old way and switch over to this once it's stabilized.
