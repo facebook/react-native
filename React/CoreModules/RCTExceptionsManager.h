@@ -6,8 +6,8 @@
  */
 
 #import <Foundation/Foundation.h>
-
 #import <React/RCTBridgeModule.h>
+#import <string>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -37,6 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)reportFatalException:(nullable NSString *)message
                        stack:(nullable NSArray<NSDictionary *> *)stack
                  exceptionId:(double)exceptionId;
+- (void)reportEarlyJsException:(std::string)errorMap;
 
 @property (nonatomic, weak) id<RCTExceptionsManagerDelegate> delegate;
 
