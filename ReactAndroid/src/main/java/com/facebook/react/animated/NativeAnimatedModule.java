@@ -24,6 +24,7 @@ import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UIManagerListener;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.ReactChoreographer;
@@ -108,20 +109,40 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   private class ConcurrentOperationQueue {
     private final Queue<UIThreadOperation> mQueue = new ConcurrentLinkedQueue<>();
     @Nullable private UIThreadOperation mPeekedOperation = null;
+    private boolean mSynchronizedAccess = false;
 
     @AnyThread
     boolean isEmpty() {
       return mQueue.isEmpty();
     }
 
+    void setSynchronizedAccess(boolean isSynchronizedAccess) {
+      mSynchronizedAccess = isSynchronizedAccess;
+    }
+
     @AnyThread
     void add(UIThreadOperation operation) {
-      mQueue.add(operation);
+      if (mSynchronizedAccess) {
+        synchronized (this) {
+          mQueue.add(operation);
+        }
+      } else {
+        mQueue.add(operation);
+      }
     }
 
     @UiThread
     void executeBatch(long maxBatchNumber, NativeAnimatedNodesManager nodesManager) {
-      List<UIThreadOperation> operations = drainQueueIntoList(maxBatchNumber);
+
+      List<UIThreadOperation> operations;
+
+      if (mSynchronizedAccess) {
+        synchronized (this) {
+          operations = drainQueueIntoList(maxBatchNumber);
+        }
+      } else {
+        operations = drainQueueIntoList(maxBatchNumber);
+      }
       for (UIThreadOperation operation : operations) {
         operation.execute(nodesManager);
       }
@@ -210,6 +231,10 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
             }
           }
         };
+
+    // If shipping this flag, make sure to migrate to non-concurrent queue for efficiency
+    mOperations.setSynchronizedAccess(ReactFeatureFlags.enableSynchronizationForAnimated);
+    mPreOperations.setSynchronizedAccess(ReactFeatureFlags.enableSynchronizationForAnimated);
   }
 
   @Override
