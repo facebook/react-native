@@ -12,7 +12,6 @@ import android.text.Spannable;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
-import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
@@ -22,7 +21,6 @@ import com.facebook.react.uimanager.IViewManagerWithChildren;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.ViewProps;
 import com.facebook.yoga.YogaMeasureMode;
 import java.util.HashMap;
 import java.util.Map;
@@ -115,20 +113,6 @@ public class ReactTextViewManager
     Spannable spanned =
         TextLayoutManager.getOrCreateSpannableForText(
             view.getContext(), attributedString, mReactTextViewManagerCallback);
-
-    /**
-     * For natively driven animations for text color, on mount, {@link
-     * UIManager#synchronouslyUpdateViewOnUIThread} may be called before updateState, in which case
-     * the ReactStylesDiffMap will contain the color.
-     */
-    if (props.hasKey(ViewProps.COLOR) && props.getType(ViewProps.COLOR) == ReadableType.Number) {
-      spanned.setSpan(
-          new ReactForegroundColorSpan(props.getInt(ViewProps.COLOR, 0)),
-          0,
-          spanned.length(),
-          Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-    }
-
     view.setSpanned(spanned);
 
     int textBreakStrategy =
