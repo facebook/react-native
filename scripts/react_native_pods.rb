@@ -63,6 +63,7 @@ def use_react_native! (options={})
     pod 'React-Core/DevSupport', :path => "#{prefix}/"
   end
 
+  pod 'React-bridging', :path => "#{prefix}/ReactCommon/react/bridging"
   pod 'React-cxxreact', :path => "#{prefix}/ReactCommon/cxxreact"
   pod 'React-jsi', :path => "#{prefix}/ReactCommon/jsi"
   pod 'React-jsiexecutor', :path => "#{prefix}/ReactCommon/jsiexecutor"
