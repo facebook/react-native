@@ -25,6 +25,9 @@ allprojects {
         maven {
             url = uri("$rootDir/node_modules/jsc-android/dist")
         }
+        maven {
+            url = uri("$rootDir/android")
+        }
         google()
         mavenCentral {
             // We don't want to fetch react-native from Maven Central as there are
