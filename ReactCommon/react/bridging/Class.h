@@ -52,4 +52,14 @@ T callFromJs(
   }
 }
 
+template <typename R, typename... Args>
+constexpr size_t getParameterCount(R (*)(Args...)) {
+  return sizeof...(Args);
+}
+
+template <typename C, typename R, typename... Args>
+constexpr size_t getParameterCount(R (C::*)(Args...)) {
+  return sizeof...(Args);
+}
+
 } // namespace facebook::react::bridging
