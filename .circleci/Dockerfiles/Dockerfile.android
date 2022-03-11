@@ -53,6 +53,4 @@ ADD . /app
 
 RUN yarn
 
-RUN ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog
-
-RUN ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=1
+RUN ./gradlew :ReactAndroid:assembleDebug
