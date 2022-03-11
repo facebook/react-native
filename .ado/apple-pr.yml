@@ -2,7 +2,7 @@
 name: $(Date:yyyyMMdd).$(Rev:.r)
 
 variables:
-  - template: variables/mac.yml
+  - template: variables/vars.yml
 
 trigger: none # will disable CI builds entirely
 
@@ -25,7 +25,7 @@ jobs:
         public:
           apply_office_patches: 'false'
     pool:
-      vmImage: $(VmImage)
+      vmImage: $(VmImageApple)
       demands: ['xcode', 'sh', 'npm']
     steps:
       - template: templates/apple-job-javascript.yml
@@ -42,7 +42,7 @@ jobs:
           packager_platform: 'ios'
           xcode_sdk: iphonesimulator
           xcode_scheme: 'RNTester'
-          xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 8'
+          xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 12'
           xcode_actions_debug: 'build test'
           xcode_actions_release: 'build'
           apply_office_patches: 'false'
@@ -58,7 +58,7 @@ jobs:
           packager_platform: 'ios'
           xcode_sdk: iphonesimulator
           xcode_scheme: 'RNTester'
-          xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 8'
+          xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 12'
           xcode_actions_debug: 'build test'
           xcode_actions_release: 'build'
           apply_office_patches: 'true'
@@ -71,7 +71,7 @@ jobs:
           xcode_actions_release: 'build'
           apply_office_patches: 'true'
     pool:
-      vmImage: $(VmImage)
+      vmImage: $(VmImageApple)
       demands: ['xcode', 'sh', 'npm']
     timeoutInMinutes: 60 # how long to run the job before automatically cancelling
     cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
@@ -96,7 +96,7 @@ jobs:
         MacDebug:
           configuration: Debug
     pool:
-      vmImage: $(VmImage)
+      vmImage: $(VmImageApple)
       demands: ['xcode', 'sh', 'npm']
     steps:
       - template: templates/react-native-macos-init.yml

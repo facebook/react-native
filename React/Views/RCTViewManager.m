@@ -51,7 +51,6 @@ RCT_MULTI_ENUM_CONVERTER(
       // a set of RN accessibilityTraits are macOS specific accessiblity roles and map to nothing on iOS:
       @"disclosure" : @(UIAccessibilityTraitNone),
       @"group" : @(UIAccessibilityTraitNone),
-      @"list" : @(UIAccessibilityTraitNone),
       // ]TODO(macOS GH#774)
       @"alert" : @(UIAccessibilityTraitNone),
       @"checkbox" : @(UIAccessibilityTraitNone),
@@ -384,12 +383,6 @@ RCT_CUSTOM_VIEW_PROPERTY(acceptsFirstMouse, BOOL, RCTView)
 {
   if ([view respondsToSelector:@selector(setAcceptsFirstMouse:)]) {
     view.acceptsFirstMouse = json ? [RCTConvert BOOL:json] : defaultView.acceptsFirstMouse;
-  }
-}
-RCT_CUSTOM_VIEW_PROPERTY(acceptsKeyboardFocus, BOOL, RCTView)
-{
-  if ([view respondsToSelector:@selector(setFocusable:)]) {
-    view.focusable = json ? [RCTConvert BOOL:json] : defaultView.focusable;
   }
 }
 RCT_CUSTOM_VIEW_PROPERTY(focusable, BOOL, RCTView)

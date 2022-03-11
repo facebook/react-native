@@ -266,16 +266,21 @@ RCT_EXPORT_METHOD(hide)
 
 - (void)showOfflineMessage
 {
-  RCTUIColor *color = [RCTUIColor whiteColor]; // TODO(macOS GH#774)
-  RCTUIColor *backgroundColor = [RCTUIColor blackColor]; // TODO(macOS GH#774)
+  // [TODO(macOS GH#774) - isDarkModeEnabled should only be run on the main thread
+  __weak __typeof(self) weakSelf = self;
+  RCTExecuteOnMainQueue(^{
+    RCTUIColor *color = [RCTUIColor whiteColor]; // TODO(macOS GH#774)
+    RCTUIColor *backgroundColor = [RCTUIColor blackColor]; // TODO(macOS GH#774)
 
-  if ([self isDarkModeEnabled]) {
-    color = [RCTUIColor blackColor]; // TODO(macOS GH#774)
-    backgroundColor = [RCTUIColor whiteColor]; // TODO(macOS GH#774)
-  }
+    if ([weakSelf isDarkModeEnabled]) {
+      color = [RCTUIColor blackColor]; // TODO(macOS GH#774)
+      backgroundColor = [RCTUIColor whiteColor]; // TODO(macOS GH#774)
+    }
 
-  NSString *message = [NSString stringWithFormat:@"Connect to %@ to develop JavaScript.", RCT_PACKAGER_NAME];
-  [self showMessage:message color:color backgroundColor:backgroundColor];
+    NSString *message = [NSString stringWithFormat:@"Connect to %@ to develop JavaScript.", RCT_PACKAGER_NAME];
+    [weakSelf showMessage:message color:color backgroundColor:backgroundColor];
+  });
+  // ]TODO(macOS GH#774)
 }
 
 - (BOOL)isDarkModeEnabled

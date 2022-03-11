@@ -5,7 +5,7 @@ exports[`TouchableWithoutFeedback renders correctly 1`] = `
   acceptsFirstMouse={true}
   accessible={true}
   enableFocusRing={true}
-  focusable={true}
+  focusable={false}
   onClick={[Function]}
   onKeyDown={[Function]}
   onKeyUp={[Function]}
@@ -76,7 +76,7 @@ exports[`TouchableWithoutFeedback with disabled state should disable button when
   }
   accessible={true}
   enableFocusRing={true}
-  focusable={true}
+  focusable={false}
   onClick={[Function]}
   onKeyDown={[Function]}
   onKeyUp={[Function]}

@@ -55,18 +55,14 @@
 {
   id json = RCTJSONParse(@"{ \"semantic\": \"alternatingContentBackgroundColorEven\" }", nil);
   NSColor *value = [RCTConvert UIColor:json];
-  if (@available(macOS 10.14, *)) {
-    XCTAssertEqualObjects(value, [NSColor alternatingContentBackgroundColors][0]);
-  }
+  XCTAssertEqualObjects(value, [NSColor alternatingContentBackgroundColors][0]);
 }
 
 - (void)testAlternatingColorOdd
 {
   id json = RCTJSONParse(@"{ \"semantic\": \"alternatingContentBackgroundColorOdd\" }", nil);
   NSColor *value = [RCTConvert UIColor:json];
-  if (@available(macOS 10.14, *)) {
-    XCTAssertEqualObjects(value, [NSColor alternatingContentBackgroundColors][1]);
-  }
+  XCTAssertEqualObjects(value, [NSColor alternatingContentBackgroundColors][1]);
 }
 
 - (void)testAlternatingColorFallbackEven
@@ -99,14 +95,12 @@
   XCTAssertEqual(b, 0);
   XCTAssertEqual(a, 0);
 
-  if (@available(macOS 10.14, *)) {
-    [NSAppearance setCurrentAppearance:[NSAppearance appearanceNamed:NSAppearanceNameDarkAqua]];
-    [value getRed:&r green:&g blue:&b alpha:&a];
-    XCTAssertEqual(r, 1);
-    XCTAssertEqual(g, 1);
-    XCTAssertEqual(b, 1);
-    XCTAssertEqual(a, 0);
-  }
+  [NSAppearance setCurrentAppearance:[NSAppearance appearanceNamed:NSAppearanceNameDarkAqua]];
+  [value getRed:&r green:&g blue:&b alpha:&a];
+  XCTAssertEqual(r, 1);
+  XCTAssertEqual(g, 1);
+  XCTAssertEqual(b, 1);
+  XCTAssertEqual(a, 0);
 
   [NSAppearance setCurrentAppearance:nil];
 }
@@ -127,15 +121,13 @@
   XCTAssertEqual(b1, b2);
   XCTAssertEqual(a1, a2);
 
-  if (@available(macOS 10.14, *)) {
-    [NSAppearance setCurrentAppearance:[NSAppearance appearanceNamed:NSAppearanceNameDarkAqua]];
-    [[value colorUsingColorSpaceName:NSCalibratedRGBColorSpace] getRed:&r1 green:&g1 blue:&b1 alpha:&a1];
-    [[[NSColor systemBlueColor] colorUsingColorSpaceName:NSCalibratedRGBColorSpace] getRed:&r2 green:&g2 blue:&b2 alpha:&a2];
-    XCTAssertEqual(r1, r2);
-    XCTAssertEqual(g1, g2);
-    XCTAssertEqual(b1, b2);
-    XCTAssertEqual(a1, a2);
-  }
+  [NSAppearance setCurrentAppearance:[NSAppearance appearanceNamed:NSAppearanceNameDarkAqua]];
+  [[value colorUsingColorSpaceName:NSCalibratedRGBColorSpace] getRed:&r1 green:&g1 blue:&b1 alpha:&a1];
+  [[[NSColor systemBlueColor] colorUsingColorSpaceName:NSCalibratedRGBColorSpace] getRed:&r2 green:&g2 blue:&b2 alpha:&a2];
+  XCTAssertEqual(r1, r2);
+  XCTAssertEqual(g1, g2);
+  XCTAssertEqual(b1, b2);
+  XCTAssertEqual(a1, a2);
 
   [NSAppearance setCurrentAppearance:nil];
 }

@@ -1,11 +1,10 @@
 name: Integrate $(Date:yyyyMMdd).$(Rev:.r)
 variables:
-  - template: variables/mac.yml
+  - template: variables/vars.yml
 trigger:
   branches:
     include:
-    # GH #948: Disable Integration on main, as we are not currently stable
-    # - main
+      - main
       - '*-stable'
   paths:
     exclude:
@@ -13,8 +12,7 @@ trigger:
 pr:
   branches:
     include:
-    # GH #948: Disable Integration on main, as we are not currently stable
-    # - main
+      - main
       - '*-stable'
   paths:
     exclude:
@@ -23,7 +21,7 @@ jobs:
   - job: react_native_test_app
     displayName: react-native-test-app
     pool:
-      vmImage: $(VmImage)
+      vmImage: $(VmImageApple)
       demands: ['npm', 'sh', 'xcode']
     workspace:
       clean: all
@@ -83,6 +81,7 @@ jobs:
         displayName: Bundle JavaScript
         workingDirectory: react-native-test-app/example
       - bash: |
+          rm macos/Podfile.lock
           pod install --project-directory=macos
         displayName: Install Pods
         workingDirectory: react-native-test-app/example

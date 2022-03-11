@@ -12,11 +12,14 @@ pr:
     exclude:
       - '*.md'
 
+variables:
+  - template: variables/vars.yml
+
 jobs:
   - job: AndroidRNPR
     displayName: Android React Native PR
     pool:
-      vmImage: ubuntu-18.04
+      vmImage: $(VmImageUbuntu)
     timeoutInMinutes: 90 # how long to run the job before automatically cancelling
     cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
     steps:
@@ -44,13 +47,18 @@ jobs:
         inputs:
           script: REACT_NATIVE_BOOST_PATH=$(System.DefaultWorkingDirectory)/build_deps ./gradlew installArchives -Pparam="excludeLibs"
 
+      - task: CmdLine@2
+        displayName: Build rn-tester
+        inputs:
+          script: REACT_NATIVE_BOOST_PATH=$(System.DefaultWorkingDirectory)/build_deps ./gradlew :packages:rn-tester:android:app:assemble
+
       - template: templates\prep-android-nuget.yml
 
       # Verify depenendencies can be enumerated and downloaded ..
       - task: CmdLine@2
         displayName: 'Verify Dependencies can be enumerated'
         inputs:
-          script: sudo apt-get install python3-pip && sudo apt-get install python3-setuptools && pip3 install BeautifulSoup4 && pip3 install wheel && pip3 install wget && python3 android-patches/scripts/downloadDependencies.py $(Build.SourcesDirectory) && tree $(Build.SourcesDirectory)/android
+          script: sudo apt-get install python3-pip && sudo apt-get install python3-setuptools && pip3 install BeautifulSoup4 && pip3 install wheel && pip3 install wget && python3 android-patches/patching-tool/scripts/downloadDependencies.py $(Build.SourcesDirectory) && tree $(Build.SourcesDirectory)/android
 
 
       # Very similar to the default pack task .. but appends 'ndk21' to the nuget pack version
@@ -76,7 +84,7 @@ jobs:
 
 #     In RN64 "clean" task tries to run the build again. It is reproing in 0.64-stable branch but fixed in 0.65-stable.
 #     I can't zero on the exact cause .. but turns out the issue is with rntester clean task.
-#     
+#
 #     mganandraj@RNDroid:~/github/rnm-64$ ./gradlew :packages:rn-tester:android:app:clean --dry-run
 #     :packages:react-native-codegen:android:buildCodegenCLI SKIPPED
 #     :packages:rn-tester:android:app:generateCodegenSchemaFromJavaScript SKIPPED
@@ -97,4 +105,4 @@ jobs:
         displayName: 'Publish final artifacts'
         inputs:
           PathtoPublish: '$(Build.StagingDirectory)/final'
-          ArtifactName: 'ReactNative-Final' 
+          ArtifactName: 'ReactNative-Final'

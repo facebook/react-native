@@ -28,6 +28,12 @@
 #else // [TODO(macOS ISS#3536887)
   _runner = RCTInitRunnerForApp(@"packages/rn-tester/js/RNTesterApp.macos", nil, nil);
 #endif // ]TODO(macOS ISS#3536887)
+
+  // ---------
+  // WHEN SNAPSHOTS ARE FAILING LOCALLY
+  // THIS IS THE LINE TO CHANGE TO "YES"
+  // SO THAT YOU CAN REGENERATE THE SNAPSHOTS!
+  // ---------
   _runner.recordMode = NO;
 }
 

@@ -12,7 +12,7 @@
            CatalystInstanceImpl::handleMemoryPressure),
        makeNativeMethod(
            "getRuntimeExecutor", CatalystInstanceImpl::getRuntimeExecutor),
-+      makeNativeMethod("getPointerOfInstancePointer", CatalystInstanceImpl::getPointerOfInstancePointer)
++      makeNativeMethod("getPointerOfInstancePointer", CatalystInstanceImpl::getPointerOfInstancePointer),
        makeNativeMethod(
            "warnOnLegacyNativeModuleSystemUse",
            CatalystInstanceImpl::warnOnLegacyNativeModuleSystemUse),

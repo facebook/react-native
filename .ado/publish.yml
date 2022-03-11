@@ -4,7 +4,7 @@
 # This file defines the build steps to publish a release
 name: $(Date:yyyyMMdd).$(Rev:.r)
 
-trigger: 
+trigger:
   batch: true
   branches:
     include:
@@ -17,13 +17,13 @@ trigger:
 pr: none
 
 variables:
-  - template: variables/mac.yml
+  - template: variables/vars.yml
 
 jobs:
   - job: RNGithubNpmJSPublish
     displayName: React-Native GitHub Publish to npmjs.org
     pool:
-      vmImage: $(VmImage)
+      vmImage: $(VmImageApple)
     timeoutInMinutes: 90 # how long to run the job before automatically cancelling
     cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
     steps:
@@ -74,7 +74,7 @@ jobs:
       - task: CmdLine@2
         displayName: Bump canary package version
         inputs:
-          script: node scripts/bump-oss-version.js --nightly
+          script: node scripts/bump-oss-version.js --nightly --autogenerateVersionNumber
         condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'main'))
 
       # Publish will fail if package.json is marked as private
@@ -82,6 +82,17 @@ jobs:
         displayName: Remove workspace config from package.json
         inputs:
           script: node .ado/removeWorkspaceConfig.js
+
+      - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+        displayName: 📒 Generate Manifest
+        inputs:
+          BuildDropPath: $(System.DefaultWorkingDirectory)
+
+      - task: PublishPipelineArtifact@1
+        displayName: 📒 Publish Manifest
+        inputs:
+          artifactName: SBom-RNGithubNpmJSPublish-$(System.JobAttempt)
+          targetPath: $(System.DefaultWorkingDirectory)/_manifest
 
       - script: npm publish --tag $(npmDistTag) --registry https://registry.npmjs.org/ --//registry.npmjs.org/:_authToken=$(npmAuthToken)
         displayName: Publish react-native-macos to npmjs.org
@@ -107,7 +118,7 @@ jobs:
   - job: RNMacOSInitNpmJSPublish
     displayName: react-native-macos-init Publish to npmjs.org
     pool:
-      vmImage: vs2017-win2016
+      vmImage: $(VmImageUbuntu)
     timeoutInMinutes: 90 # how long to run the job before automatically cancelling
     cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
     condition: eq(variables['Build.SourceBranchName'], 'main')
@@ -141,10 +152,22 @@ jobs:
           script: |
             npx beachball publish --branch origin/$(Build.SourceBranchName) -n $(npmAuthToken) -yes -m "applying package updates ***NO_CI***" --access public
 
+      # beachball modifies the package.json files so run manifest generation after it.
+      - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+        displayName: 📒 Generate Manifest
+        inputs:
+          BuildDropPath: $(System.DefaultWorkingDirectory)
+
+      - task: PublishPipelineArtifact@1
+        displayName: 📒 Publish Manifest
+        inputs:
+          artifactName: SBom-RNMacOSInitNpmJSPublish-$(System.JobAttempt)
+          targetPath: $(System.DefaultWorkingDirectory)/_manifest
+
   - job: RNGithubOfficePublish
     displayName: React-Native GitHub Publish to Office
     pool:
-      vmImage: ubuntu-18.04
+      vmImage: $(VmImageUbuntu)
     timeoutInMinutes: 90 # how long to run the job before automatically cancelling
     cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
     steps:
@@ -179,7 +202,7 @@ jobs:
       - task: CmdLine@2
         displayName: 'Verify Dependencies can be enumerated'
         inputs:
-          script: sudo apt-get install python3-pip && sudo apt-get install python3-setuptools && pip3 install BeautifulSoup4 && pip3 install wheel && pip3 install wget && python3 android-patches/scripts/downloadDependencies.py $(Build.SourcesDirectory) && tree $(Build.SourcesDirectory)/android
+          script: sudo apt-get install python3-pip && sudo apt-get install python3-setuptools && pip3 install BeautifulSoup4 && pip3 install wheel && pip3 install wget && python3 android-patches/patching-tool/scripts/downloadDependencies.py $(Build.SourcesDirectory) && tree $(Build.SourcesDirectory)/android
 
 
       # Very similar to the default pack task .. but appends 'ndk21b' to the nuget pack version
@@ -199,8 +222,13 @@ jobs:
           SYSTEM_ACCESSTOKEN: $(System.AccessToken)
           githubApiToken: $(githubApiToken)
 
+      - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+        displayName: 📒 Generate Manifest
+        inputs:
+          BuildDropPath: $(Build.StagingDirectory)/final
+
       - task: PublishBuildArtifacts@1
         displayName: 'Publish final artifacts'
         inputs:
           PathtoPublish: '$(Build.StagingDirectory)/final'
-          ArtifactName: 'ReactNative-Final' 
+          ArtifactName: 'ReactNative-Final'

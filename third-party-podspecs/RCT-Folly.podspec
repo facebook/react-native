@@ -40,7 +40,7 @@ Pod::Spec.new do |spec|
                       'folly/hash/SpookyHashV2.cpp',
                       'folly/lang/Assume.cpp',
                       'folly/lang/CString.cpp',
-                      # 'folly/lang/Exception.cpp', # TODO(macOS GH#214) later versions of boost don't support macOS, revert this back to upstream when fixed
+                      'folly/lang/Exception.cpp',
                       'folly/memory/detail/MallocImpl.cpp',
                       'folly/net/NetOps.cpp',
                       'folly/portability/SysUio.cpp',

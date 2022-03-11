@@ -77,17 +77,6 @@ Pod::Spec.new do |s|
     ss.private_header_files   = "React/Cxx*/*.h"
   end
 
-  s.subspec "Hermes" do |ss|
-    ss.platforms = { :osx => "10.15" }
-    ss.source_files = "ReactCommon/hermes/executor/*.{cpp,h}",
-                      "ReactCommon/hermes/inspector/*.{cpp,h}",
-                      "ReactCommon/hermes/inspector/chrome/*.{cpp,h}",
-                      "ReactCommon/hermes/inspector/detail/*.{cpp,h}"
-    ss.pod_target_xcconfig = { "GCC_PREPROCESSOR_DEFINITIONS" => "HERMES_ENABLE_DEBUGGER=1" }
-    ss.dependency "RCT-Folly/Futures"
-    ss.dependency "hermes-engine"
-  end
-
   s.subspec "DevSupport" do |ss|
     ss.source_files = "React/DevSupport/*.{h,mm,m}",
                       "React/Inspector/*.{h,mm,m}"

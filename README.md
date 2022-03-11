@@ -16,11 +16,11 @@
   </a>
 </p>
 
-> See the official [React Native website](https://reactnative.dev/) for an introduction to React Native. 
+> See the official [React Native website](https://reactnative.dev/) for an introduction to React Native.
 
 [React Native](https://reactnative.dev) is a framework developed by Facebook that enables you to build world-class application experiences on native platforms using a consistent developer experience based on JavaScript and [React](https://reactjs.org/). The focus of React Native is on developer efficiency across all the platforms you care about - learn once, write anywhere.
 
-This repository is a working fork of **facebook/react-native** that adds support for the official React Native for macOS implementation from Microsoft. 
+This repository is a working fork of **facebook/react-native** that adds support for the official React Native for macOS implementation from Microsoft.
 
 [hello-world]: https://snack.expo.io/@hramos/hello,-world!
 [new-app]: https://reactnative.dev/docs/getting-started
@@ -28,64 +28,38 @@ This repository is a working fork of **facebook/react-native** that adds support
 
 You can read more about the macOS implementation in our website - [React Native for Windows + macOS](https://microsoft.github.io/react-native-windows/)
 
-The full documentation for React Native can be found on our [website][docs].
-
-The React Native documentation discusses components, APIs, and topics that are specific to React Native. For further documentation on the React API that is shared between React Native and React DOM, refer to the [React documentation][r-docs].
-
-The source for the React Native documentation and website is hosted on a separate repo, [**@facebook/react-native-website**][repo-website].
-
-[docs]: https://reactnative.dev/docs/getting-started
-[r-docs]: https://reactjs.org/docs/getting-started.html
-[repo-website]: https://github.com/facebook/react-native-website
-
-## 🚀 Upgrading
-
-Upgrading to new versions of React Native may give you access to more APIs, views, developer tools, and other goodies. See the [Upgrading Guide][u] for instructions.
-
-React Native releases are discussed in the React Native Community, [**@react-native-community/react-native-releases**][repo-releases].
-
-[u]: https://reactnative.dev/docs/upgrading
-[repo-releases]: https://github.com/react-native-community/react-native-releases
-
-## 👏 How to Contribute
-
-You can read more about the macOS implementation on our website - [React Native for Windows + macOS](https://microsoft.github.io/react-native-windows/)
-
-## Contents
-
-- [Requirements](#requirements)
-- [Getting Started](#getting-started)
-- [Contributing](#contributing)
-- [Documentation](#documentation)
-- [License](#license)
-- [Code of Conduct](#code-of-conduct)
-
 ## Requirements
 
-You can run React Native for macOS apps on Mac devices with versions Mojave (10.14) or newer.
+You can run React Native for macOS apps on Mac devices with versions Catalina (10.15) or newer.
 
 For a full and detailed list of the system requirements and how to set up your development platform, see our [System Requirements](https://microsoft.github.io/react-native-windows/docs/rnm-dependencies) documentation on our website.
 
 ## Getting Started
+
 See the [Getting Started Guide](https://microsoft.github.io/react-native-windows/docs/rnm-getting-started) on our React Native for Windows + macOS website to build your first React Native for macOS app.
 
 ### Logging Issues
+
 Search the [existing issues](https://github.com/microsoft/react-native-macos/issues) and try to make sure your problem doesn’t already exist before opening a new issue. If your issue doesn't exist yet, try to make sure you provide as much information as possible to us so we can help you sooner. It’s helpful if you include information like:
 
 - The version of macOS, React Native, React Native macOS extension where you ran into the issue.
 - A stack trace and reduced repro case when possible.
 - Ensure the [appropriate template](https://github.com/microsoft/react-native-macos/issues/new/choose) is used when filing your issue(s).
 
-##  Contributing
+## Contributing
+
 See [Contributing guidelines](https://github.com/microsoft/react-native-macos/blob/master/CONTRIBUTING.md) for how to set up your fork of the repo and start a PR to contribute to React Native for macOS.
 
 [Good First Issue](https://github.com/microsoft/react-native-macos/labels/good%20first%20issue) and [help wanted](https://github.com/microsoft/react-native-macos/labels/help%20wanted) are great starting points for PRs.
 
 ## Documentation
-[React Native already has great documentation](https://reactnative.dev/docs/getting-started) and we're working to ensure the React Native for Windows + macOS are part of that documentation story.
+
+The full documentation for React Native can be found on the [documentation website][docs]. The React Native documentation discusses components, APIs, and topics that are specific to React Native. For further documentation on the React API that is shared between React Native and React DOM, refer to the [React documentation][r-docs].
+
+The source for the React Native documentation and website is hosted on a separate repo, [**@facebook/react-native-website**][repo-website].
 
 [React Native for Windows + macOS](https://microsoft.github.io/react-native-windows/) has its own separate documentation site where Windows and macOS
-specific information, like API docs and blog updates live. We are bootstrapping documentation for macOS at this time, tune in for updates.
+specific information, like API docs and blog updates live. We are still working on the documentation for macOS, contributions are welcome!
 
 ### Examples
 
@@ -100,5 +74,6 @@ The React Native for macOS extension, including modifications to the original Fa
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
-[l]: https://github.com/facebook/react-native/blob/HEAD/LICENSE
-[ld]: https://github.com/facebook/react-native/blob/HEAD/LICENSE-docs
+[docs]: https://reactnative.dev/docs/getting-started
+[r-docs]: https://reactjs.org/docs/getting-started.html
+[repo-website]: https://github.com/facebook/react-native-website
