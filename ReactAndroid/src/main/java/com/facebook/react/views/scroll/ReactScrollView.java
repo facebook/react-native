@@ -20,6 +20,7 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -119,26 +120,13 @@ public class ReactScrollView extends ScrollView
     setOnHierarchyChangeListener(this);
     setScrollBarStyle(SCROLLBARS_OUTSIDE_OVERLAY);
 
-    ReactScrollViewAccessibilityDelegate<ReactScrollView> delegate =
-        new ReactScrollViewAccessibilityDelegate<ReactScrollView>() {
-
-          public boolean isPartiallyScrolledInView(ReactScrollView view, View nextChild) {
-            return view.isPartiallyScrolledInView(nextChild);
-          }
-
-          public View getContentView(ReactScrollView view) {
-            return view.getContentView();
-          }
-
-          public boolean getScrollEnabled(ReactScrollView view) {
-            return view.getScrollEnabled();
-          }
-        };
+    ReactScrollViewAccessibilityDelegate delegate = new ReactScrollViewAccessibilityDelegate();
     ViewCompat.setAccessibilityDelegate(this, delegate);
   }
 
   @Override
   public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
+    Log.w("TESTING::ReactScrollView", "ReactScrollView onInitializeAccessibilityNodeInfo");
     super.onInitializeAccessibilityNodeInfo(info);
 
     // Expose the testID prop as the resource-id name of the view. Black-box E2E/UI testing

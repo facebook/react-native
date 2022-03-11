@@ -7,7 +7,6 @@
 
 package com.facebook.react.uimanager;
 
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
@@ -18,7 +17,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.views.scroll.ReactHorizontalScrollView;
 import com.facebook.react.views.scroll.ReactScrollView;
 
-public class ReactScrollViewAccessibilityDelegate<T> extends AccessibilityDelegateCompat {
+public class ReactScrollViewAccessibilityDelegate extends AccessibilityDelegateCompat {
   private final String TAG = ReactScrollViewAccessibilityDelegate.class.getSimpleName();
 
   @Override
@@ -27,22 +26,11 @@ public class ReactScrollViewAccessibilityDelegate<T> extends AccessibilityDelega
     onInitializeAccessibilityEventInternal(host, event);
   }
 
-  // could be refactored in an interface with default methods
-  // https://stackoverflow.com/a/13992641/7295772
-  public boolean isPartiallyScrolledInView(T view, View nextChild) {
-    Log.w(TAG, "isPartiallyScrolledInView not implemented: " + view.getClass().getSimpleName());
-    return false;
-  }
-
-  public View getContentView(T view) {
-    Log.w(TAG, "getContentView not implemented for class " + view.getClass().getSimpleName());
-    return (View) view;
-  }
-
-  public boolean getScrollEnabled(T view) {
-    Log.w(TAG, "getScrollEnabled not implemented for class " + view.getClass().getSimpleName());
-    return false;
-  }
+  @Override
+  public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
+    super.onInitializeAccessibilityNodeInfo(host, info);
+    onInitializeAccessibilityNodeInfoInternal(host, info);
+  };
 
   public void onInitializeAccessibilityEventInternal(View view, AccessibilityEvent event) {
     if (!(view instanceof ReactScrollView) && !(view instanceof ReactHorizontalScrollView)) return;
@@ -51,7 +39,16 @@ public class ReactScrollViewAccessibilityDelegate<T> extends AccessibilityDelega
 
     if (accessibilityCollection != null) {
       event.setItemCount(accessibilityCollection.getInt("itemCount"));
-      View contentView = getContentView((T) view);
+      View contentView;
+      if (view instanceof ReactScrollView) {
+        ReactScrollView scrollView = (ReactScrollView) view;
+        contentView = scrollView.getContentView();
+      } else if (view instanceof ReactHorizontalScrollView) {
+        ReactHorizontalScrollView scrollView = (ReactHorizontalScrollView) view;
+        contentView = scrollView.getContentView();
+      } else {
+        return;
+      }
       Integer firstVisibleIndex = null;
       Integer lastVisibleIndex = null;
 
@@ -61,8 +58,16 @@ public class ReactScrollViewAccessibilityDelegate<T> extends AccessibilityDelega
 
       for (int index = 0; index < ((ViewGroup) contentView).getChildCount(); index++) {
         View nextChild = ((ViewGroup) contentView).getChildAt(index);
-        boolean isVisible = isPartiallyScrolledInView((T) view, nextChild);
-
+        boolean isVisible = false;
+        if (view instanceof ReactScrollView) {
+          ReactScrollView scrollView = (ReactScrollView) view;
+          isVisible = scrollView.isPartiallyScrolledInView(nextChild);
+        } else if (view instanceof ReactHorizontalScrollView) {
+          ReactHorizontalScrollView scrollView = (ReactHorizontalScrollView) view;
+          isVisible = scrollView.isPartiallyScrolledInView(nextChild);
+        } else {
+          return;
+        }
         ReadableMap accessibilityCollectionItem =
             (ReadableMap) nextChild.getTag(R.id.accessibility_collection_item);
 
@@ -102,12 +107,6 @@ public class ReactScrollViewAccessibilityDelegate<T> extends AccessibilityDelega
     }
   }
 
-  @Override
-  public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
-    super.onInitializeAccessibilityNodeInfo(host, info);
-    onInitializeAccessibilityNodeInfoInternal(host, info);
-  };
-
   public void onInitializeAccessibilityNodeInfoInternal(
       View view, AccessibilityNodeInfoCompat info) {
     if (!(view instanceof ReactScrollView) && !(view instanceof ReactHorizontalScrollView)) return;
@@ -132,6 +131,12 @@ public class ReactScrollViewAccessibilityDelegate<T> extends AccessibilityDelega
       info.setCollectionInfo(collectionInfoCompat);
     }
 
-    info.setScrollable(getScrollEnabled((T) view));
+    if (view instanceof ReactScrollView) {
+      ReactScrollView scrollView = (ReactScrollView) view;
+      info.setScrollable(scrollView.getScrollEnabled());
+    } else if (view instanceof ReactHorizontalScrollView) {
+      ReactHorizontalScrollView scrollView = (ReactHorizontalScrollView) view;
+      info.setScrollable(scrollView.getScrollEnabled());
+    }
   }
 };

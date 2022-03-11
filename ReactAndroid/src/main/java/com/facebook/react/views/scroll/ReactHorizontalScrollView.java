@@ -116,21 +116,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     mReactBackgroundManager = new ReactViewBackgroundManager(this);
     mFpsListener = fpsListener;
 
-    ReactScrollViewAccessibilityDelegate<ReactHorizontalScrollView> delegate =
-        new ReactScrollViewAccessibilityDelegate<ReactHorizontalScrollView>() {
-
-          public boolean isPartiallyScrolledInView(ReactHorizontalScrollView view, View nextChild) {
-            return view.isPartiallyScrolledInView(nextChild);
-          }
-
-          public View getContentView(ReactHorizontalScrollView view) {
-            return view.getContentView();
-          }
-
-          public boolean getScrollEnabled(ReactHorizontalScrollView view) {
-            return view.getScrollEnabled();
-          }
-        };
+    ReactScrollViewAccessibilityDelegate delegate = new ReactScrollViewAccessibilityDelegate();
     ViewCompat.setAccessibilityDelegate(this, delegate);
 
     mScroller = getOverScrollerFromParent();
