@@ -119,8 +119,7 @@ public class ReactScrollView extends ScrollView
     setOnHierarchyChangeListener(this);
     setScrollBarStyle(SCROLLBARS_OUTSIDE_OVERLAY);
 
-    ReactScrollViewAccessibilityDelegate delegate = new ReactScrollViewAccessibilityDelegate();
-    ViewCompat.setAccessibilityDelegate(this, delegate);
+    ViewCompat.setAccessibilityDelegate(this, new ReactScrollViewAccessibilityDelegate());
   }
 
   @Override
