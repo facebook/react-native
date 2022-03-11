@@ -47,6 +47,7 @@ class LongLivedObjectCollection {
   void add(std::shared_ptr<LongLivedObject> o) const;
   void remove(const LongLivedObject *o) const;
   void clear() const;
+  size_t size() const;
 
  private:
   mutable std::unordered_set<std::shared_ptr<LongLivedObject>> collection_;

@@ -84,6 +84,10 @@ class CallbackWrapper : public LongLivedObject {
     return *(jsInvoker_);
   }
 
+  std::shared_ptr<CallInvoker> jsInvokerPtr() {
+    return jsInvoker_;
+  }
+
   void allowRelease() override {
     if (auto longLivedObjectCollection = longLivedObjectCollection_.lock()) {
       if (longLivedObjectCollection != nullptr) {
