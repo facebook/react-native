@@ -21,7 +21,7 @@ fabric_enabled = false
 Also, if you previously built RNTester with fabric enabled, you might need to clean up the build files and Pods.
 ```sh
 # Clean the generated files and folders to clean install RNTester
-cd packages/rn-tester/
+cd packages/rn-tester
 yarn clean-ios
 ```
 
@@ -46,10 +46,10 @@ You'll need to have all the [prerequisites](https://github.com/facebook/react-na
 Start an Android emulator.
 
 ```sh
-cd react-native
-# In order to use Hermes engine, run `installHermesDebug` instead.
-./gradlew :packages:rn-tester:android:app:installJscDebug
-./scripts/packager.sh
+cd packages/rn-tester
+# In order to use Hermes engine, run `yarn install-android-hermes` instead.
+yarn install-android-jsc
+yarn start
 ```
 
 _Note: Building for the first time can take a while._
