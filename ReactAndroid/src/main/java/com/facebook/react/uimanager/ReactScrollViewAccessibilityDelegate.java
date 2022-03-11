@@ -75,7 +75,7 @@ public class ReactScrollViewAccessibilityDelegate extends AccessibilityDelegateC
 
       for (int index = 0; index < ((ViewGroup) contentView).getChildCount(); index++) {
         View nextChild = ((ViewGroup) contentView).getChildAt(index);
-        boolean isVisible = false;
+        boolean isVisible;
         if (view instanceof ReactScrollView) {
           ReactScrollView scrollView = (ReactScrollView) view;
           isVisible = scrollView.isPartiallyScrolledInView(nextChild);
