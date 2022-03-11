@@ -15,8 +15,6 @@
 #include <ReactCommon/CallInvoker.h>
 #include <ReactCommon/LongLivedObject.h>
 
-using namespace facebook;
-
 namespace facebook {
 namespace react {
 
