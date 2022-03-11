@@ -47,7 +47,7 @@ export interface Spec extends TurboModule {
     |}) => void,
     successCallback: (completed: boolean, activityType: ?string) => void,
   ) => void;
-  +dismissActionSheet: () => void;
+  +dismissActionSheet?: () => void;
 }
 
 export default (TurboModuleRegistry.get<Spec>('ActionSheetManager'): ?Spec);

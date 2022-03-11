@@ -146,7 +146,9 @@ const ActionSheetIOS = {
 
   dismissActionSheet: () => {
     invariant(RCTActionSheetManager, "ActionSheetManager doesn't exist");
-    RCTActionSheetManager.dismissActionSheet();
+    if (typeof RCTActionSheetManager.dismissActionSheet === 'function') {
+      RCTActionSheetManager.dismissActionSheet();
+    }
   },
 };
 
