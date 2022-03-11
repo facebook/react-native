@@ -614,13 +614,14 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
           return (
             <View style={StyleSheet.compose(styles.row, columnWrapperStyle)}>
               {item.map((it, kk) => {
+                const itemIndex = index * numColumns + kk;
                 const accessibilityCollectionItem = {
                   rowIndex: index,
                   rowSpan: 1,
-                  columnIndex: (index * numColumns + kk) % numColumns,
+                  columnIndex: itemIndex % numColumns,
                   columnSpan: 1,
                   heading: false,
-                  itemIndex: index * numColumns + kk,
+                  itemIndex: itemIndex,
                 };
 
                 const element = (
