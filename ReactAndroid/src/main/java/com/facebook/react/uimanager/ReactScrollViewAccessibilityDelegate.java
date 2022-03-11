@@ -32,7 +32,7 @@ public class ReactScrollViewAccessibilityDelegate extends AccessibilityDelegateC
     onInitializeAccessibilityNodeInfoInternal(host, info);
   };
 
-  public void onInitializeAccessibilityEventInternal(View view, AccessibilityEvent event) {
+  private void onInitializeAccessibilityEventInternal(View view, AccessibilityEvent event) {
     if (!(view instanceof ReactScrollView) && !(view instanceof ReactHorizontalScrollView)) return;
     final ReadableMap accessibilityCollection =
         (ReadableMap) view.getTag(R.id.accessibility_collection);
@@ -107,7 +107,7 @@ public class ReactScrollViewAccessibilityDelegate extends AccessibilityDelegateC
     }
   }
 
-  public void onInitializeAccessibilityNodeInfoInternal(
+  private void onInitializeAccessibilityNodeInfoInternal(
       View view, AccessibilityNodeInfoCompat info) {
     if (!(view instanceof ReactScrollView) && !(view instanceof ReactHorizontalScrollView)) return;
     final ReactAccessibilityDelegate.AccessibilityRole accessibilityRole =
