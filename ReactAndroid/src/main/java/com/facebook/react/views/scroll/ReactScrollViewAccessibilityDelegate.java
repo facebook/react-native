@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.uimanager;
+package com.facebook.react.views.scroll;
 
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,8 +16,7 @@ import com.facebook.react.R;
 import com.facebook.react.bridge.AssertionException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.views.scroll.ReactHorizontalScrollView;
-import com.facebook.react.views.scroll.ReactScrollView;
+import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 
 public class ReactScrollViewAccessibilityDelegate extends AccessibilityDelegateCompat {
   private final String TAG = ReactScrollViewAccessibilityDelegate.class.getSimpleName();
