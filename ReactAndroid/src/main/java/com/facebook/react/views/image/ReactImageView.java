@@ -138,8 +138,10 @@ public class ReactImageView extends GenericDraweeView {
 
   // We can't specify rounding in XML, so have to do so here
   private static GenericDraweeHierarchy buildHierarchy(Context context) {
+    RoundingParams roundingParams = RoundingParams.fromCornersRadius(0);
+    roundingParams.setPaintFilterBitmap(true);
     return new GenericDraweeHierarchyBuilder(context.getResources())
-        .setRoundingParams(RoundingParams.fromCornersRadius(0))
+        .setRoundingParams(roundingParams)
         .build();
   }
 

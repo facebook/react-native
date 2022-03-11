@@ -23,7 +23,7 @@ jest.mock(
   () => componentName => componentName,
 );
 jest
-  .spyOn(UIManager, 'getViewManagerConfig')
+  .spyOn(UIManager, 'hasViewManagerConfig')
   .mockImplementation(componentName =>
     componentName.includes('ComponentNameDoesNotExist') ? false : true,
   );

@@ -50,7 +50,7 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
 
 LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
 
-LOCAL_SHARED_LIBRARIES = libfb libfbjni libreact_nativemodule_core
+LOCAL_SHARED_LIBRARIES = libfb libfbjni libreact_nativemodule_core libjsi
 
 LOCAL_STATIC_LIBRARIES = libcallinvokerholder libreactperfloggerjni
 

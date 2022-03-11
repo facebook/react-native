@@ -141,22 +141,12 @@ const DeprecatedComponentNameCheckTemplate = ({
   paperComponentNameDeprecated: string,
 }) =>
   `
-if (global.RN$Bridgeless) {
-  if (UIManager.hasViewManagerConfig('${componentName}')) {
-    nativeComponentName = '${componentName}';
-  } else if (UIManager.hasViewManagerConfig('${paperComponentNameDeprecated}')) {
-    nativeComponentName = '${paperComponentNameDeprecated}';
-  } else {
-    throw new Error('Failed to find native component for either "${componentName}" or "${paperComponentNameDeprecated}", with SVC enabled.');
-  }
+if (UIManager.hasViewManagerConfig('${componentName}')) {
+  nativeComponentName = '${componentName}';
+} else if (UIManager.hasViewManagerConfig('${paperComponentNameDeprecated}')) {
+  nativeComponentName = '${paperComponentNameDeprecated}';
 } else {
-  if (UIManager.getViewManagerConfig('${componentName}')) {
-    nativeComponentName = '${componentName}';
-  } else if (UIManager.getViewManagerConfig('${paperComponentNameDeprecated}')) {
-    nativeComponentName = '${paperComponentNameDeprecated}';
-  } else {
-    throw new Error('Failed to find native component for either "${componentName}" or "${paperComponentNameDeprecated}", with SVC disabled.');
-  }
+  throw new Error('Failed to find native component for either "${componentName}" or "${paperComponentNameDeprecated}"');
 }
 `.trim();
 

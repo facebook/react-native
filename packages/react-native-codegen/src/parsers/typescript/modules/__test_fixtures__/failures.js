@@ -6,8 +6,9 @@
  *
  * @flow strict-local
  * @format
- * @lint-ignore-every LICENSELINT
  */
+
+// @licenselint-loose-mode
 
 const NATIVE_MODULES_WITH_ARRAY_WITH_NO_TYPE_FOR_CONTENT = `
 /**

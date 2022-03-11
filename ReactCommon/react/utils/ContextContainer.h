@@ -9,11 +9,11 @@
 
 #include <memory>
 #include <mutex>
+#include <optional>
 #include <string>
 
 #include <butter/map.h>
 #include <butter/mutex.h>
-#include <butter/optional.h>
 
 #include <react/debug/flags.h>
 #include <react/debug/react_native_assert.h>
@@ -92,7 +92,7 @@ class ContextContainer final {
    * Returns an empty optional if the instance could not be found.
    */
   template <typename T>
-  butter::optional<T> find(std::string const &key) const {
+  std::optional<T> find(std::string const &key) const {
     std::shared_lock<butter::shared_mutex> lock(mutex_);
 
     auto iterator = instances_.find(key);

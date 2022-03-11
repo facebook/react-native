@@ -126,7 +126,7 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactExte
   // Android configuration
   variant.registerGeneratedResFolders(generatedResFolders)
 
-  val packageTask =
+  val packageTask: TaskProvider<out Task>? =
       when (variant) {
         is ApplicationVariant -> variant.packageApplicationProvider
         is LibraryVariant -> variant.packageLibraryProvider
@@ -154,11 +154,11 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactExte
           it.enabled = bundleEnabled
         }
 
-    packageTask.dependsOn(currentCopyResTask)
+    packageTask?.dependsOn(currentCopyResTask)
     preBundleTask.dependsOn(currentCopyResTask)
   }
 
-  packageTask.configure {
+  packageTask?.configure {
     if (config.enableVmCleanup.get()) {
       val libDir = "$buildDir/intermediates/transforms/"
       val targetVariant = ".*/transforms/[^/]*/${variant.name}/.*".toRegex()
@@ -207,7 +207,7 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactExte
   // from Android plugin 4.1+.
   // This ensures to copy the bundle file before mergeResources task starts
   mergeResourcesTask.dependsOn(currentAssetsCopyTask)
-  packageTask.dependsOn(currentAssetsCopyTask)
+  packageTask?.dependsOn(currentAssetsCopyTask)
   preBundleTask.dependsOn(currentAssetsCopyTask)
 }
 

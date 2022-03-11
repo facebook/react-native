@@ -24,6 +24,7 @@ project.xcworkspace
 # Gradle
 /build/
 /packages/react-native-gradle-plugin/build/
+/packages/rn-tester/build
 /packages/rn-tester/android/app/.cxx/
 /packages/rn-tester/android/app/build/
 /packages/rn-tester/android/app/gradle/
@@ -34,6 +35,7 @@ project.xcworkspace
 /ReactAndroid/gradle/
 /ReactAndroid/gradlew
 /ReactAndroid/gradlew.bat
+/ReactAndroid/hermes-engine/build/
 /template/android/app/build/
 /template/android/build/
 
@@ -70,9 +72,6 @@ package-lock.json
 # OS X
 .DS_Store
 
-# Hermes
-/sdks/hermes
-
 # Test generated files
 /ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
 *.js.meta
@@ -85,8 +84,6 @@ package-lock.json
 
 # ReactCommon subdir shouldn't have Xcode project
 /ReactCommon/**/*.xcodeproj
-/packages/rn-tester/build
-/packages/rn-tester/android/app/build/*
 
 # Libs that shouldn't have Xcode project
 /Libraries/FBLazyVector/**/*.xcodeproj
@@ -114,6 +111,11 @@ package-lock.json
 /packages/react-native-codegen/lib
 /ReactCommon/react/renderer/components/rncore/
 /packages/rn-tester/NativeModuleExample/ScreenshotManagerSpec*
+
+# Additional SDKs
+/sdks/.hermesversion
+/sdks/hermes
+/sdks/download
 
 # Visual studio
 .vscode

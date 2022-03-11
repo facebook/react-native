@@ -6,8 +6,9 @@
  *
  * @flow strict-local
  * @format
- * @lint-ignore-every LICENSELINT
  */
+
+// @licenselint-loose-mode
 
 const EMPTY_NATIVE_MODULE = `
 /**

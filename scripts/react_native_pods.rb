@@ -111,7 +111,7 @@ def use_react_native! (options={})
     pod 'React-hermes', :path => "#{prefix}/ReactCommon/hermes"
 
     if ENV['BUILD_HERMES_SOURCE'] == '1'
-      hermes_source_path = locatePathToHermesSource!(prefix)
+      hermes_source_path = downloadAndConfigureHermesSource(prefix)
       pod 'hermes-engine', :path => "#{hermes_source_path}/hermes-engine.podspec"
     else
       pod 'hermes-engine', '~> 0.11.0'
@@ -355,7 +355,7 @@ def get_react_codegen_spec(options={})
     'homepage' => 'https://facebook.com/',
     'license' => 'Unlicense',
     'authors' => 'Facebook',
-    'compiler_flags'  => "#{folly_compiler_flags} #{boost_compiler_flags} -Wno-nullability-completeness",
+    'compiler_flags'  => "#{folly_compiler_flags} #{boost_compiler_flags} -Wno-nullability-completeness -std=c++17",
     'source' => { :git => '' },
     'header_mappings_dir' => './',
     'platforms' => {
@@ -416,7 +416,7 @@ def get_react_codegen_script_phases(options={})
   end
 
   # We need to convert paths to relative path from installation_root for the script phase for CI.
-  relative_app_root = Pathname.new(app_path).relative_path_from(Pod::Config.instance.installation_root)
+  relative_app_root = Pathname.new(app_path).realpath().relative_path_from(Pod::Config.instance.installation_root)
 
   config_file_dir = options[:config_file_dir] ||= ''
   relative_config_file_dir = ''
@@ -440,7 +440,7 @@ def get_react_codegen_script_phases(options={})
     library_dir = File.join(app_path, library['jsSrcsDir'])
     file_list.concat (`find #{library_dir} -type f \\( -name "Native*.js" -or -name "*NativeComponent.js" \\)`.split("\n").sort)
   end
-  input_files = file_list.map { |filename| "${PODS_ROOT}/../#{Pathname.new(filename).relative_path_from(Pod::Config.instance.installation_root)}" }
+  input_files = file_list.map { |filename| "${PODS_ROOT}/../#{Pathname.new(filename).realpath().relative_path_from(Pod::Config.instance.installation_root)}" }
 
   # Add a script phase to trigger generate artifact.
   # Some code is duplicated so that it's easier to delete the old way and switch over to this once it's stabilized.
@@ -546,6 +546,7 @@ def use_react_native_codegen!(spec, options={})
   library_name = options[:library_name] ||= "#{spec.name.gsub('_','-').split('-').collect(&:capitalize).join}Spec"
   Pod::UI.puts "[Codegen] Found #{library_name}"
 
+  relative_installation_root = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
   output_dir = options[:output_dir] ||= $CODEGEN_OUTPUT_DIR
   output_dir_module = "#{output_dir}/#{$CODEGEN_MODULE_DIR}"
   output_dir_component = "#{output_dir}/#{$CODEGEN_COMPONENT_DIR}"
@@ -553,7 +554,7 @@ def use_react_native_codegen!(spec, options={})
   codegen_config = {
     "modules" => {
       :js_srcs_pattern => "Native*.js",
-      :generated_dir => "#{Pod::Config.instance.installation_root}/#{output_dir_module}/#{library_name}",
+      :generated_dir => "#{relative_installation_root}/#{output_dir_module}/#{library_name}",
       :generated_files => [
         "#{library_name}.h",
         "#{library_name}-generated.mm"
@@ -561,7 +562,7 @@ def use_react_native_codegen!(spec, options={})
     },
     "components" => {
       :js_srcs_pattern => "*NativeComponent.js",
-      :generated_dir => "#{Pod::Config.instance.installation_root}/#{output_dir_component}/#{library_name}",
+      :generated_dir => "#{relative_installation_root}/#{output_dir_component}/#{library_name}",
       :generated_files => [
         "ComponentDescriptors.h",
         "EventEmitters.cpp",
@@ -610,7 +611,7 @@ def use_react_native_codegen!(spec, options={})
   spec.script_phase = {
     :name => 'Generate Specs',
     :input_files => input_files, # This also needs to be relative to Xcode
-    :output_files => ["${DERIVED_FILE_DIR}/codegen-#{library_name}.log"].concat(generated_files.map { |filename| " ${PODS_TARGET_SRCROOT}/#{filename}"} ),
+    :output_files => ["${DERIVED_FILE_DIR}/codegen-#{library_name}.log"].concat(generated_files.map { |filename| "${PODS_TARGET_SRCROOT}/#{filename}"} ),
     # The final generated files will be created when this script is invoked at Xcode build time.
     :script => get_script_phases_no_codegen_discovery(
       react_native_path: react_native_path,
@@ -626,6 +627,29 @@ def use_react_native_codegen!(spec, options={})
     :execution_position => :before_compile,
     :show_env_vars_in_log => true
   }
+end
+
+def downloadAndConfigureHermesSource(react_native_path)
+  hermes_tarball_base_url = "https://github.com/facebook/hermes/tarball/"
+  sdks_dir = "#{react_native_path}/sdks"
+  download_dir = "#{sdks_dir}/download"
+  hermes_dir = "#{sdks_dir}/hermes"
+  hermes_tag_file = "#{sdks_dir}/.hermesversion"
+  tarball_path = "#{download_dir}/hermes.tar.gz"
+
+  system("mkdir -p #{hermes_dir} #{download_dir}")
+
+  if(File.exist?(hermes_tag_file))
+    hermes_tag = file_data = File.read(hermes_tag_file).strip
+    hermes_tarball_url = hermes_tarball_base_url + hermes_tag
+  else
+    hermes_tarball_url = hermes_tarball_base_url + "main"
+  end
+
+  system("wget --timestamping -O #{tarball_path} #{hermes_tarball_url}")
+  system("tar -xzf #{tarball_path} --strip-components=1 -C #{hermes_dir}")
+
+  hermes_dir
 end
 
 def locatePathToHermesSource!(react_native_path)

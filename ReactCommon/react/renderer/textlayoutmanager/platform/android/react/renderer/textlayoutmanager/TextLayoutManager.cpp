@@ -20,7 +20,15 @@ using namespace facebook::jni;
 namespace facebook {
 namespace react {
 
-TextLayoutManager::~TextLayoutManager() = default;
+TextLayoutManager::TextLayoutManager(
+    const ContextContainer::Shared &contextContainer)
+    : contextContainer_(contextContainer),
+      mapBufferSerializationEnabled_(
+          contextContainer->at<bool>("MapBufferSerializationEnabled")),
+      measureCache_(
+          contextContainer->at<bool>("EnableLargeTextMeasureCache")
+              ? 1024
+              : kSimpleThreadSafeCacheSizeCap) {}
 
 void *TextLayoutManager::getNativeTextLayoutManager() const {
   return self_;

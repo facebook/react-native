@@ -398,7 +398,13 @@ Map {
 namespace facebook {
 namespace react {
 
+ExcludedAndroidIosComponentProps::ExcludedAndroidIosComponentProps(
+    const PropsParserContext &context,
+    const ExcludedAndroidIosComponentProps &sourceProps,
+    const RawProps &rawProps): ViewProps(context, sourceProps, rawProps)
 
+    
+      {}
 
 } // namespace react
 } // namespace facebook

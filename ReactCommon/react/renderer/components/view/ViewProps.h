@@ -17,6 +17,8 @@
 #include <react/renderer/graphics/Geometry.h>
 #include <react/renderer/graphics/Transform.h>
 
+#include <optional>
+
 namespace facebook {
 namespace react {
 
@@ -55,7 +57,7 @@ class ViewProps : public YogaStylableProps, public AccessibilityProps {
   Transform transform{};
   BackfaceVisibility backfaceVisibility{};
   bool shouldRasterize{};
-  butter::optional<int> zIndex{};
+  std::optional<int> zIndex{};
 
   // Events
   PointerEventsMode pointerEvents{};
@@ -72,8 +74,8 @@ class ViewProps : public YogaStylableProps, public AccessibilityProps {
 
 #ifdef ANDROID
 
-  butter::optional<NativeDrawable> nativeBackground{};
-  butter::optional<NativeDrawable> nativeForeground{};
+  std::optional<NativeDrawable> nativeBackground{};
+  std::optional<NativeDrawable> nativeForeground{};
 
   bool focusable{false};
   bool hasTVPreferredFocus{false};

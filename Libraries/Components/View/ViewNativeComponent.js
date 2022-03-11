@@ -9,14 +9,17 @@
  */
 
 import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
-import {type HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import type {
+  HostComponent,
+  PartialViewConfig,
+} from '../../Renderer/shims/ReactNativeTypes';
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
 import {type ViewProps as Props} from './ViewPropTypes';
 import Platform from '../../Utilities/Platform';
 
 import * as React from 'react';
 
-const ViewPartialViewConfig =
+export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
   Platform.OS === 'android'
     ? {
         uiViewClassName: 'RCTView',
@@ -78,7 +81,7 @@ const ViewPartialViewConfig =
       };
 
 const ViewNativeComponent: HostComponent<Props> =
-  NativeComponentRegistry.get<Props>('RCTView', () => ViewPartialViewConfig);
+  NativeComponentRegistry.get<Props>('RCTView', () => __INTERNAL_VIEW_CONFIG);
 
 interface NativeCommands {
   +hotspotUpdate: (

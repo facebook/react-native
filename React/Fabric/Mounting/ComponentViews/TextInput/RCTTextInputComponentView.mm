@@ -566,8 +566,8 @@ using namespace facebook::react;
 
 - (void)_restoreTextSelection
 {
-  const auto selection = std::dynamic_pointer_cast<TextInputProps const>(_props)->selection.get_pointer();
-  if (selection == nullptr) {
+  auto const selection = std::dynamic_pointer_cast<TextInputProps const>(_props)->selection;
+  if (!selection.has_value()) {
     return;
   }
   auto start = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument

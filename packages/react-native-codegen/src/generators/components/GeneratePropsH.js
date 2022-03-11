@@ -860,13 +860,6 @@ module.exports = {
         }
 
         return Object.keys(components)
-          .filter(componentName => {
-            const component = components[componentName];
-            return !(
-              component.excludedPlatforms &&
-              component.excludedPlatforms.includes('iOS')
-            );
-          })
           .map(componentName => {
             const component = components[componentName];
 
