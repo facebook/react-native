@@ -13,6 +13,8 @@ import android.view.accessibility.AccessibilityEvent;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import com.facebook.react.R;
+import com.facebook.react.bridge.AssertionException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.views.scroll.ReactHorizontalScrollView;
 import com.facebook.react.views.scroll.ReactScrollView;
@@ -23,17 +25,32 @@ public class ReactScrollViewAccessibilityDelegate extends AccessibilityDelegateC
   @Override
   public void onInitializeAccessibilityEvent(View host, AccessibilityEvent event) {
     super.onInitializeAccessibilityEvent(host, event);
-    onInitializeAccessibilityEventInternal(host, event);
+    if (host instanceof ReactScrollView || host instanceof ReactHorizontalScrollView) {
+      onInitializeAccessibilityEventInternal(host, event);
+    } else {
+      ReactSoftExceptionLogger.logSoftException(
+          TAG,
+          new AssertionException(
+              "ReactScrollViewAccessibilityDelegate should only be used with ReactScrollView or ReactHorizontalScrollView, not with class: "
+                  + host.getClass().getSimpleName()));
+    }
   }
 
   @Override
   public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
     super.onInitializeAccessibilityNodeInfo(host, info);
-    onInitializeAccessibilityNodeInfoInternal(host, info);
+    if (host instanceof ReactScrollView || host instanceof ReactHorizontalScrollView) {
+      onInitializeAccessibilityNodeInfoInternal(host, info);
+    } else {
+      ReactSoftExceptionLogger.logSoftException(
+          TAG,
+          new AssertionException(
+              "ReactScrollViewAccessibilityDelegate should only be used with ReactScrollView or ReactHorizontalScrollView, not with class: "
+                  + host.getClass().getSimpleName()));
+    }
   };
 
   private void onInitializeAccessibilityEventInternal(View view, AccessibilityEvent event) {
-    if (!(view instanceof ReactScrollView) && !(view instanceof ReactHorizontalScrollView)) return;
     final ReadableMap accessibilityCollection =
         (ReadableMap) view.getTag(R.id.accessibility_collection);
 
@@ -109,7 +126,6 @@ public class ReactScrollViewAccessibilityDelegate extends AccessibilityDelegateC
 
   private void onInitializeAccessibilityNodeInfoInternal(
       View view, AccessibilityNodeInfoCompat info) {
-    if (!(view instanceof ReactScrollView) && !(view instanceof ReactHorizontalScrollView)) return;
     final ReactAccessibilityDelegate.AccessibilityRole accessibilityRole =
         (ReactAccessibilityDelegate.AccessibilityRole) view.getTag(R.id.accessibility_role);
 
