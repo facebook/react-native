@@ -20,6 +20,7 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -119,7 +120,21 @@ public class ReactScrollView extends ScrollView
     setOnHierarchyChangeListener(this);
     setScrollBarStyle(SCROLLBARS_OUTSIDE_OVERLAY);
 
-    ViewCompat.setAccessibilityDelegate(this, new ReactScrollViewAccessibilityDelegate());
+    ReactScrollViewAccessibilityDelegate<ReactScrollView> delegate =
+        new ReactScrollViewAccessibilityDelegate<ReactScrollView>(this) {
+
+          // possible move the method to ReactScrollViewAccessibilityDelegate
+          // if can not be improved with a generic
+          public boolean isPartiallyScrolledInView(ReactScrollView view, View nextChild) {
+            return view.isPartiallyScrolledInView(nextChild);
+          }
+
+          public View getContentView(ReactScrollView view) {
+            Log.w("TESTING::ReactScrollView", "in react scroll view");
+            return view.getContentView();
+          }
+        };
+    ViewCompat.setAccessibilityDelegate(this, delegate);
   }
 
   @Override

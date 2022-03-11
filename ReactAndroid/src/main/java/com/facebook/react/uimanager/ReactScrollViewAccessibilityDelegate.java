@@ -7,44 +7,57 @@
 
 package com.facebook.react.uimanager;
 
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
-import com.facebook.common.logging.FLog;
 import com.facebook.react.R;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.views.scroll.ReactScrollView;
 
-public class ReactScrollViewAccessibilityDelegate extends AccessibilityDelegateCompat {
+public class ReactScrollViewAccessibilityDelegate<T> extends AccessibilityDelegateCompat {
   private final String TAG = ReactScrollViewAccessibilityDelegate.class.getSimpleName();
+  T obj;
+
+  public ReactScrollViewAccessibilityDelegate(T obj) {
+    super();
+    this.obj = obj;
+  }
+
+  public T getObject() {
+    return this.obj;
+  }
+
+  public void sayHello() {
+    Log.w("TESTING::ReactScrollView", "sayHello");
+  }
 
   @Override
   public void onInitializeAccessibilityEvent(View host, AccessibilityEvent event) {
     super.onInitializeAccessibilityEvent(host, event);
-    if (host instanceof ReactScrollView) {
-      ReactScrollView scrollView = (ReactScrollView) host;
-      onInitializeAccessibilityEventInternal(scrollView, event);
-    } else {
-      FLog.w(
-          TAG,
-          TAG
-              + " method onInitializeAccessibilityNodeInfo was called with host: "
-              + host
-              + " not instanceof ReactScrollView");
-    }
+    onInitializeAccessibilityEventInternal(host, event);
   }
 
-  public void onInitializeAccessibilityEventInternal(
-      ReactScrollView scrollView, AccessibilityEvent event) {
-    event.setScrollable(scrollView.getScrollEnabled());
+  public boolean isPartiallyScrolledInView(T view, View nextChild) {
+    Log.w(TAG, "isPartiallyScrolledInView not implemented");
+    return false;
+  }
+
+  public View getContentView(T view) {
+    Log.w(TAG, "getContentView not implemented");
+    return (View) view;
+  }
+
+  public void onInitializeAccessibilityEventInternal(View view, AccessibilityEvent event) {
+    if (!(view instanceof ReactScrollView)) return;
     final ReadableMap accessibilityCollection =
-        (ReadableMap) scrollView.getTag(R.id.accessibility_collection);
+        (ReadableMap) view.getTag(R.id.accessibility_collection);
 
     if (accessibilityCollection != null) {
       event.setItemCount(accessibilityCollection.getInt("itemCount"));
-      View contentView = scrollView.getContentView();
+      View contentView = getContentView((T) view);
       Integer firstVisibleIndex = null;
       Integer lastVisibleIndex = null;
 
@@ -54,7 +67,7 @@ public class ReactScrollViewAccessibilityDelegate extends AccessibilityDelegateC
 
       for (int index = 0; index < ((ViewGroup) contentView).getChildCount(); index++) {
         View nextChild = ((ViewGroup) contentView).getChildAt(index);
-        boolean isVisible = scrollView.isPartiallyScrolledInView(nextChild);
+        boolean isVisible = isPartiallyScrolledInView((T) view, nextChild);
 
         ReadableMap accessibilityCollectionItem =
             (ReadableMap) nextChild.getTag(R.id.accessibility_collection_item);
@@ -102,7 +115,7 @@ public class ReactScrollViewAccessibilityDelegate extends AccessibilityDelegateC
       ReactScrollView scrollView = (ReactScrollView) host;
       onInitializeAccessibilityNodeInfoInternal(scrollView, info);
     } else {
-      FLog.w(
+      Log.w(
           TAG,
           TAG
               + " method onInitializeAccessibilityNodeInfo was called with host: "

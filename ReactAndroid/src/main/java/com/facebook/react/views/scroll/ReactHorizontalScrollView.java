@@ -220,6 +220,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
                 : ViewCompat.LAYOUT_DIRECTION_LTR);
   }
 
+  public boolean getScrollEnabled() {
+    return mScrollEnabled;
+  }
+
   @Nullable
   private OverScroller getOverScrollerFromParent() {
     OverScroller scroller;
@@ -481,7 +485,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   }
 
   /** Returns whether the given descendent is partially scrolled in view */
-  private boolean isPartiallyScrolledInView(View descendent) {
+  public boolean isPartiallyScrolledInView(View descendent) {
     int scrollDelta = getScrollDelta(descendent);
     descendent.getDrawingRect(mTempRect);
     return scrollDelta != 0 && Math.abs(scrollDelta) < mTempRect.width();
@@ -737,7 +741,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     return getWidth();
   }
 
-  private View getContentView() {
+  public View getContentView() {
     return getChildAt(0);
   }
 
