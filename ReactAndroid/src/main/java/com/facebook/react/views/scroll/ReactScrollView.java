@@ -20,7 +20,6 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -126,7 +125,6 @@ public class ReactScrollView extends ScrollView
 
   @Override
   public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
-    Log.w("TESTING::ReactScrollView", "ReactScrollView onInitializeAccessibilityNodeInfo");
     super.onInitializeAccessibilityNodeInfo(info);
 
     // Expose the testID prop as the resource-id name of the view. Black-box E2E/UI testing
