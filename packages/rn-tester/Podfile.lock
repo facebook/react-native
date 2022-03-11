@@ -110,6 +110,9 @@ PODS:
     - React-RCTSettings (= 1000.0.0)
     - React-RCTText (= 1000.0.0)
     - React-RCTVibration (= 1000.0.0)
+  - React-bridging (1000.0.0):
+    - RCT-Folly (= 2021.06.28.00-v2)
+    - React-jsi (= 1000.0.0)
   - React-callinvoker (1000.0.0)
   - React-Codegen (1000.0.0):
     - FBReactNativeSpec (= 1000.0.0)
@@ -691,6 +694,7 @@ PODS:
     - DoubleConversion
     - glog
     - RCT-Folly (= 2021.06.28.00-v2)
+    - React-bridging (= 1000.0.0)
     - React-callinvoker (= 1000.0.0)
     - React-Core (= 1000.0.0)
     - React-cxxreact (= 1000.0.0)
@@ -701,6 +705,7 @@ PODS:
     - DoubleConversion
     - glog
     - RCT-Folly (= 2021.06.28.00-v2)
+    - React-bridging (= 1000.0.0)
     - React-callinvoker (= 1000.0.0)
     - React-Core (= 1000.0.0)
     - React-cxxreact (= 1000.0.0)
@@ -749,6 +754,7 @@ DEPENDENCIES:
   - RCTRequired (from `../../Libraries/RCTRequired`)
   - RCTTypeSafety (from `../../Libraries/TypeSafety`)
   - React (from `../../`)
+  - React-bridging (from `../../ReactCommon/react/bridging`)
   - React-callinvoker (from `../../ReactCommon/callinvoker`)
   - React-Codegen (from `build/generated/ios`)
   - React-Core (from `../../`)
@@ -820,6 +826,8 @@ EXTERNAL SOURCES:
     :path: "../../Libraries/TypeSafety"
   React:
     :path: "../../"
+  React-bridging:
+    :path: "../../ReactCommon/react/bridging"
   React-callinvoker:
     :path: "../../ReactCommon/callinvoker"
   React-Codegen:
@@ -902,6 +910,7 @@ SPEC CHECKSUMS:
   RCTRequired: af2d6080a4b9ba0885b28ca78879a92066c71cab
   RCTTypeSafety: 2d6c5149fd3b8f2ba89987b47169423efb740300
   React: f64c9f6db5428717922a3292ba6a448615a2e143
+  React-bridging: a86401f93edb5564d437595060e55306c877462d
   React-callinvoker: c5d61e29df57793f0dc10ec2bc01c846f863e51f
   React-Codegen: c4ae835565487e494740b756ce953d8f635a76df
   React-Core: 30784d0eacbd709a3a6a5ae7c02c928634a6247e
@@ -928,7 +937,7 @@ SPEC CHECKSUMS:
   React-RCTVibration: 9a73a3550a0ee184530341f91f9b85ad9cf3465a
   React-rncore: b6e9b49eb1c7c045b98c77b1f94932e3c0be7cec
   React-runtimeexecutor: 4b0c6eb341c7d3ceb5e2385cb0fdb9bf701024f3
-  ReactCommon: 9607f2246289d573adcbd144c02c19ae5246d6a5
+  ReactCommon: f5fd5011a78235afb572a4618bd04a672b41da9d
   ScreenshotManager: 8a08e488cb533b83ebe069ad6109d9c1df9cea79
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   Yoga: faebdb8710c7e742c6ab99e14ed4270b8da27f1f
