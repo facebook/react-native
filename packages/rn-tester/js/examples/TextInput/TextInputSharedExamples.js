@@ -473,7 +473,28 @@ class SelectionExample extends React.Component<
   }
 }
 
+function ErrorExample(): React.Node {
+  const [text, setText] = React.useState('');
+  const [error, setError] = React.useState(null);
+  return (
+    <TextInput
+      errorMessage={error}
+      onChangeText={newText => {
+        setText(newText);
+        setError(newText === 'error' ? 'this input is invalid' : null);
+      }}
+      value={text}
+    />
+  );
+}
+
 module.exports = ([
+  {
+    title: 'Error Message',
+    render: function (): React.Node {
+      return <ErrorExample />;
+    },
+  },
   {
     title: 'Auto-focus',
     render: function (): React.Node {
