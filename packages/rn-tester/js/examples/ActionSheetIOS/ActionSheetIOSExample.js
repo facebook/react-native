@@ -204,6 +204,34 @@ class ActionSheetDisabledExample extends React.Component<Props, State> {
   };
 }
 
+class ActionSheetDismissExample extends React.Component<{...}> {
+  render() {
+    return (
+      <View>
+        <Text onPress={this.showAndDismissActionSheet} style={style.button}>
+          Click to show and automatically dismiss the ActionSheet after 3
+          seconds
+        </Text>
+      </View>
+    );
+  }
+
+  showAndDismissActionSheet = () => {
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options: BUTTONS,
+        cancelButtonIndex: CANCEL_INDEX,
+        destructiveButtonIndex: DESTRUCTIVE_INDEX,
+      },
+      () => {},
+    );
+
+    setTimeout(() => {
+      ActionSheetIOS.dismissActionSheet();
+    }, 3000);
+  };
+}
+
 class ShareActionSheetExample extends React.Component<
   $FlowFixMeProps,
   $FlowFixMeState,
@@ -392,6 +420,12 @@ exports.examples = [
     title: 'Show Action Sheet with disabled buttons',
     render(): React.Element<any> {
       return <ActionSheetDisabledExample />;
+    },
+  },
+  {
+    title: 'Show Action Sheet and automatically dismiss it',
+    render(): React.Element<any> {
+      return <ActionSheetDismissExample />;
     },
   },
   {
