@@ -296,6 +296,12 @@ using namespace facebook::react;
     self.accessibilityElement.accessibilityLabel = RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityLabel);
   }
 
+  // `accessibilityLanguage`
+  if (oldViewProps.accessibilityLanguage != newViewProps.accessibilityLanguage) {
+    self.accessibilityElement.accessibilityLanguage =
+        RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityLanguage);
+  }
+
   // `accessibilityHint`
   if (oldViewProps.accessibilityHint != newViewProps.accessibilityHint) {
     self.accessibilityElement.accessibilityHint = RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityHint);
@@ -335,12 +341,12 @@ using namespace facebook::react;
 
   // `accessibilityValue`
   if (oldViewProps.accessibilityValue != newViewProps.accessibilityValue) {
-    if (newViewProps.accessibilityValue.text.hasValue()) {
+    if (newViewProps.accessibilityValue.text.has_value()) {
       self.accessibilityElement.accessibilityValue =
           RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityValue.text.value());
     } else if (
-        newViewProps.accessibilityValue.now.hasValue() && newViewProps.accessibilityValue.min.hasValue() &&
-        newViewProps.accessibilityValue.max.hasValue()) {
+        newViewProps.accessibilityValue.now.has_value() && newViewProps.accessibilityValue.min.has_value() &&
+        newViewProps.accessibilityValue.max.has_value()) {
       CGFloat val = (CGFloat)(newViewProps.accessibilityValue.now.value()) /
           (newViewProps.accessibilityValue.max.value() - newViewProps.accessibilityValue.min.value());
       self.accessibilityElement.accessibilityValue =

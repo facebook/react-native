@@ -138,6 +138,27 @@ RCT_EXPORT_METHOD(reportException : (JS::NativeExceptionsManager::ExceptionData 
   }
 }
 
+- (void)reportEarlyJsException:(std::string)errorMap
+{
+  NSString *errprStr = [NSString stringWithUTF8String:errorMap.c_str()];
+  NSData *jsonData = [errprStr dataUsingEncoding:NSUTF8StringEncoding];
+  NSError *jsonError;
+  NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:jsonData
+                                                       options:NSJSONWritingPrettyPrinted
+                                                         error:&jsonError];
+
+  NSString *message = [dict objectForKey:@"message"];
+  double exceptionId = [[dict objectForKey:@"id"] doubleValue];
+  NSArray *stack = [dict objectForKey:@"stack"];
+  BOOL isFatal = [[dict objectForKey:@"isFatal"] boolValue];
+
+  if (isFatal) {
+    [self reportFatalException:message stack:stack exceptionId:exceptionId];
+  } else {
+    [self reportSoftException:message stack:stack exceptionId:exceptionId];
+  }
+}
+
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams &)params
 {

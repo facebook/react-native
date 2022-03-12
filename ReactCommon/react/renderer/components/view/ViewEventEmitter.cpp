@@ -12,7 +12,7 @@ namespace react {
 
 #pragma mark - Accessibility
 
-void ViewEventEmitter::onAccessibilityAction(const std::string &name) const {
+void ViewEventEmitter::onAccessibilityAction(std::string const &name) const {
   dispatchEvent("accessibilityAction", [name](jsi::Runtime &runtime) {
     auto payload = jsi::Object(runtime);
     payload.setProperty(runtime, "actionName", name);

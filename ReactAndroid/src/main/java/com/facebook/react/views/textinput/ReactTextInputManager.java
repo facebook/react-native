@@ -644,7 +644,16 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     if (underlineColor == null) {
       drawableToMutate.clearColorFilter();
     } else {
-      drawableToMutate.setColorFilter(underlineColor, PorterDuff.Mode.SRC_IN);
+      // fixes underlineColor transparent not working on API 21
+      // re-sets the TextInput underlineColor https://bit.ly/3M4alr6
+      if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP) {
+        int bottomBorderColor = view.getBorderColor(Spacing.BOTTOM);
+        setBorderColor(view, Spacing.START, underlineColor);
+        drawableToMutate.setColorFilter(underlineColor, PorterDuff.Mode.SRC_IN);
+        setBorderColor(view, Spacing.START, bottomBorderColor);
+      } else {
+        drawableToMutate.setColorFilter(underlineColor, PorterDuff.Mode.SRC_IN);
+      }
     }
   }
 

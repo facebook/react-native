@@ -38,7 +38,7 @@ Pod::Spec.new do |spec|
       '-fexceptions',
       '-Wall',
       '-Werror',
-      '-std=c++1y',
+      '-std=c++17',
       '-fPIC'
   ]
 

@@ -13,6 +13,8 @@
 #include <react/renderer/mapbuffer/MapBuffer.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 
+#include <optional>
+
 namespace facebook {
 namespace react {
 
@@ -122,7 +124,7 @@ MapBuffer convertAccessibilityState(AccessibilityState const &state) {
 inline void putOptionalColor(
     MapBufferBuilder &builder,
     MapBuffer::Key key,
-    butter::optional<SharedColor> const &color) {
+    std::optional<SharedColor> const &color) {
   builder.putInt(key, color.has_value() ? toAndroidRepr(color.value()) : -1);
 }
 
@@ -159,7 +161,7 @@ constexpr MapBuffer::Key CORNER_ALL = 8;
 inline void putOptionalFloat(
     MapBufferBuilder &builder,
     MapBuffer::Key key,
-    butter::optional<Float> const &value) {
+    std::optional<Float> const &value) {
   builder.putDouble(key, value.value_or(NAN));
 }
 
@@ -213,8 +215,7 @@ constexpr MapBuffer::Key NATIVE_DRAWABLE_COLOR = 2;
 constexpr MapBuffer::Key NATIVE_DRAWABLE_BORDERLESS = 3;
 constexpr MapBuffer::Key NATIVE_DRAWABLE_RIPPLE_RADIUS = 4;
 
-MapBuffer convertNativeBackground(
-    butter::optional<NativeDrawable> const &value) {
+MapBuffer convertNativeBackground(std::optional<NativeDrawable> const &value) {
   if (!value.has_value()) {
     return MapBufferBuilder::EMPTY();
   }

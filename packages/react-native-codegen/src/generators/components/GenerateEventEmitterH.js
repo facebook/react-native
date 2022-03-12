@@ -16,7 +16,8 @@ const {
   getCppTypeForAnnotation,
   toSafeCppString,
   generateEventStructName,
-} = require('./CppHelpers.js');
+} = require('./CppHelpers');
+const {indent} = require('../Utils');
 
 import type {
   ComponentShape,
@@ -109,19 +110,6 @@ static char const *toString(const ${enumName} value) {
   }
 }
 `.trim();
-
-function indent(nice: string, spaces: number) {
-  return nice
-    .split('\n')
-    .map((line, index) => {
-      if (line.length === 0 || index === 0) {
-        return line;
-      }
-      const emptySpaces = new Array(spaces + 1).join(' ');
-      return emptySpaces + line;
-    })
-    .join('\n');
-}
 
 function getNativeTypeFromAnnotation(
   componentName: string,

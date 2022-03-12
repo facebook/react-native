@@ -1,5 +1,5 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
-// @generated <<SignedSource::*O*zOeWoEQle#+L!plEphiEmie@IsG>>
+// Copyright (c) Meta Platforms, Inc. and affiliates. All Rights Reserved.
+// @generated SignedSource<<130ce3da2ad67004eb7bb91f19028a89>>
 
 #include "MessageTypes.h"
 

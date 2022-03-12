@@ -34,7 +34,7 @@ Pod::Spec.new do |s|
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
   s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/Headers/Private/React-Core\"",
                                "USE_HEADERMAP" => "YES",
-                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++14" }
+                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++17" }
 
   # TODO (T48588859): Restructure this target to align with dir structure: "react/nativemodule/..."
   # Note: Update this only when ready to minimize breaking changes.

@@ -62,13 +62,13 @@ inline static UIFont *RCTEffectiveFontFromTextAttributes(const TextAttributes &t
   RCTFontProperties fontProperties;
   fontProperties.family = fontFamily;
   fontProperties.size = textAttributes.fontSize;
-  fontProperties.style = textAttributes.fontStyle.hasValue()
+  fontProperties.style = textAttributes.fontStyle.has_value()
       ? RCTFontStyleFromFontStyle(textAttributes.fontStyle.value())
       : RCTFontStyleUndefined;
-  fontProperties.variant = textAttributes.fontVariant.hasValue()
+  fontProperties.variant = textAttributes.fontVariant.has_value()
       ? RCTFontVariantFromFontVariant(textAttributes.fontVariant.value())
       : RCTFontVariantUndefined;
-  fontProperties.weight = textAttributes.fontWeight.hasValue()
+  fontProperties.weight = textAttributes.fontWeight.has_value()
       ? RCTUIFontWeightFromInteger((NSInteger)textAttributes.fontWeight.value())
       : NAN;
   fontProperties.sizeMultiplier = textAttributes.fontSizeMultiplier;
@@ -136,7 +136,7 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(T
   // Paragraph Style
   NSMutableParagraphStyle *paragraphStyle = [NSMutableParagraphStyle new];
   BOOL isParagraphStyleUsed = NO;
-  if (textAttributes.alignment.hasValue()) {
+  if (textAttributes.alignment.has_value()) {
     TextAlignment textAlignment = textAttributes.alignment.value_or(TextAlignment::Natural);
     if (textAttributes.layoutDirection.value_or(LayoutDirection::LeftToRight) == LayoutDirection::RightToLeft) {
       if (textAlignment == TextAlignment::Right) {
@@ -150,7 +150,7 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(T
     isParagraphStyleUsed = YES;
   }
 
-  if (textAttributes.baseWritingDirection.hasValue()) {
+  if (textAttributes.baseWritingDirection.has_value()) {
     paragraphStyle.baseWritingDirection =
         RCTNSWritingDirectionFromWritingDirection(textAttributes.baseWritingDirection.value());
     isParagraphStyleUsed = YES;
@@ -198,7 +198,7 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(T
   }
 
   // Shadow
-  if (textAttributes.textShadowOffset.hasValue()) {
+  if (textAttributes.textShadowOffset.has_value()) {
     auto textShadowOffset = textAttributes.textShadowOffset.value();
     NSShadow *shadow = [NSShadow new];
     shadow.shadowOffset = CGSize{textShadowOffset.width, textShadowOffset.height};
@@ -212,7 +212,7 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(T
     attributes[RCTAttributedStringIsHighlightedAttributeName] = @YES;
   }
 
-  if (textAttributes.accessibilityRole.hasValue()) {
+  if (textAttributes.accessibilityRole.has_value()) {
     auto accessibilityRole = textAttributes.accessibilityRole.value();
     switch (accessibilityRole) {
       case AccessibilityRole::None:
@@ -334,7 +334,7 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedSt
     } else {
       NSString *string = [NSString stringWithCString:fragment.string.c_str() encoding:NSUTF8StringEncoding];
 
-      if (fragment.textAttributes.textTransform.hasValue()) {
+      if (fragment.textAttributes.textTransform.has_value()) {
         auto textTransform = fragment.textAttributes.textTransform.value();
         string = RCTNSStringFromStringApplyingTextTransform(string, textTransform);
       }

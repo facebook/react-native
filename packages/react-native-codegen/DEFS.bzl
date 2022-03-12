@@ -454,7 +454,7 @@ def rn_codegen_components(
             compiler_flags = [
                 "-fexceptions",
                 "-frtti",
-                "-std=c++14",
+                "-std=c++17",
                 "-Wall",
             ],
             contacts = ["oncall+react_native@xmail.facebook.com"],

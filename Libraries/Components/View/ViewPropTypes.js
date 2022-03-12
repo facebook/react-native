@@ -416,6 +416,15 @@ export type ViewProps = $ReadOnly<{|
   accessibilityHint?: ?Stringish,
 
   /**
+   * Indicates to the accessibility services that the UI component is in
+   * a specific language. The provided string should be formatted following
+   * the BCP 47 specification (https://www.rfc-editor.org/info/bcp47).
+   *
+   * @platform ios
+   */
+  accessibilityLanguage?: ?Stringish,
+
+  /**
    * Indicates to accessibility services to treat UI component like a specific role.
    */
   accessibilityRole?: ?AccessibilityRole,
