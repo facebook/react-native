@@ -1423,7 +1423,7 @@ RCT_ENUM_CONVERTER(
       @"link": NSAccessibilityLinkRole, // also a legacy iOS accessibilityTraits
       @"menu": NSAccessibilityMenuRole,
       @"menubar": NSAccessibilityMenuBarRole,
-      @"menuitem": NSAccessibilityMenuBarItemRole,
+      @"menuitem": NSAccessibilityMenuItemRole,
       @"none": NSAccessibilityUnknownRole,
       @"progressbar": NSAccessibilityProgressIndicatorRole,
       @"radio": NSAccessibilityRadioButtonRole,
