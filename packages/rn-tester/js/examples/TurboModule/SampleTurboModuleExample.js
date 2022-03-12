@@ -168,7 +168,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   value: {
-    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+    fontFamily:
+      Platform.OS === 'ios' || Platform.OS === 'macos' ? 'Menlo' : 'monospace', // TODO(macOS GH#774)
     fontSize: 12,
   },
   type: {
