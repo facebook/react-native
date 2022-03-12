@@ -101,7 +101,13 @@ export class URLSearchParams {
     }
     const last = this._searchParams.length - 1;
     return this._searchParams.reduce((acc, curr, index) => {
-      return acc + curr.join('=') + (index === last ? '' : '&');
+      return (
+        acc +
+        encodeURIComponent(curr[0]) +
+        '=' +
+        encodeURIComponent(curr[1]) +
+        (index === last ? '' : '&')
+      );
     }, '');
   }
 }
