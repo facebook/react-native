@@ -649,15 +649,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
             itemIndex: index,
           };
 
-          return (
-            // $FlowFixMe[prop-missing] https://bit.ly/3viYSh8
-            <View
-              importantForAccessibility="yes"
-              style={styles.cellStyle}
-              accessibilityCollectionItem={accessibilityCollectionItem}>
-              {renderer(info)}
-            </View>
-          );
+          return renderer({info, accessibilityCollectionItem});
         }
       },
     };
