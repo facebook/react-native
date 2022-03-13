@@ -600,6 +600,13 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
       }
     };
 
+    const defaultAccessibilityCollectionItem = {
+      rowSpan: 1,
+      columnIndex: 0,
+      columnSpan: 1,
+      heading: false,
+    };
+
     return {
       /* $FlowFixMe[invalid-computed-prop] (>=0.111.0 site=react_native_fb)
        * This comment suppresses an error found when Flow v0.111 was deployed.
@@ -611,24 +618,23 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
             Array.isArray(item),
             'Expected array of items with numColumns > 1',
           );
+
           return (
             <View style={StyleSheet.compose(styles.row, columnWrapperStyle)}>
               {item.map((it, kk) => {
                 const itemIndex = index * numColumns + kk;
                 const accessibilityCollectionItem = {
+                  ...defaultAccessibilityCollectionItem,
                   rowIndex: index,
-                  rowSpan: 1,
                   columnIndex: itemIndex % numColumns,
-                  columnSpan: 1,
-                  heading: false,
                   itemIndex: itemIndex,
                 };
+                const accessibleItem = {...it, accessibilityCollectionItem};
 
                 const element = renderer({
-                  item: it,
+                  item: accessibleItem,
                   index: index * numColumns + kk,
                   separators: info.separators,
-                  accessibilityCollectionItem: accessibilityCollectionItem,
                 });
 
                 return element != null ? (
@@ -641,15 +647,16 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
           const {index} = info;
 
           const accessibilityCollectionItem = {
+            ...defaultAccessibilityCollectionItem,
             rowIndex: index,
-            rowSpan: 1,
-            columnIndex: 0,
-            columnSpan: 1,
-            heading: false,
             itemIndex: index,
           };
+          const accessibleInfo = {
+            ...info,
+            item: {...info.item, accessibilityCollectionItem},
+          };
 
-          return renderer({info, accessibilityCollectionItem});
+          return renderer(accessibleInfo);
         }
       },
     };
