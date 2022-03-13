@@ -24,10 +24,12 @@ LOCAL_SHARED_LIBRARIES := \
   jsinspector \
   libfb \
   libfbjni \
-  libfolly_futures \
-  libfolly_json \
+  libfolly_runtime \
   libglog \
   libhermes \
   libjsi
+
+LOCAL_STATIC_LIBRARIES := \
+  libfolly_futures
 
 include $(BUILD_STATIC_LIBRARY)

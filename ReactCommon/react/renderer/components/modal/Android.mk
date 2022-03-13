@@ -23,7 +23,7 @@ LOCAL_STATIC_LIBRARIES :=
 
 LOCAL_SHARED_LIBRARIES := \
   glog \
-  libfolly_json \
+  libfolly_runtime \
   libglog_init \
   libreact_codegen_rncore \
   libreact_render_componentregistry \

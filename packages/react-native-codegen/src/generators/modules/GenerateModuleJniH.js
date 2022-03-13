@@ -81,7 +81,7 @@ LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp) $(wildcard $(LOCAL_PATH)/reac
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) $(LOCAL_PATH)/react/renderer/components/${libraryName}
 
 LOCAL_SHARED_LIBRARIES := libfbjni \
-  libfolly_json \
+  libfolly_runtime \
   libglog \
   libjsi \
   libreact_codegen_rncore \

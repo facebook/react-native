@@ -28,7 +28,7 @@ LOCAL_STATIC_LIBRARIES := \
 LOCAL_SHARED_LIBRARIES := \
   glog \
   jsinspector \
-  libfolly_json \
+  libfolly_runtime \
   libruntimeexecutor \
   logger
 

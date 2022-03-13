@@ -14,8 +14,6 @@ LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/react/common/mapbuffer/*.cpp)
 LOCAL_SHARED_LIBRARIES := \
   libfb \
   libfbjni \
-  libfolly_futures \
-  libfolly_json \
   libglog \
   libglog_init \
   libreact_debug \

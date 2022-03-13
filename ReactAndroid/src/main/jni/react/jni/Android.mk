@@ -30,7 +30,7 @@ LOCAL_LDLIBS += -landroid
 LOCAL_SHARED_LIBRARIES := \
   libfb \
   libfbjni \
-  libfolly_json \
+  libfolly_runtime \
   libglog_init \
   libreact_render_runtimescheduler \
   libruntimeexecutor \
@@ -87,7 +87,7 @@ LOCAL_LDLIBS += -landroid
 LOCAL_SHARED_LIBRARIES := \
   libfb \
   libfbjni \
-  libfolly_json \
+  libfolly_runtime \
   libglog_init \
   libreact_render_runtimescheduler \
   libreactnativeutilsjni \
