@@ -643,12 +643,10 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
             </View>
           );
         } else {
-          const {index} = info;
-
           const accessibilityCollectionItem = {
             ...defaultAccessibilityCollectionItem,
-            rowIndex: index,
-            itemIndex: index,
+            rowIndex: info.index,
+            itemIndex: info.index,
           };
 
           return renderer({
