@@ -629,10 +629,9 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
                   columnIndex: itemIndex % numColumns,
                   itemIndex: itemIndex,
                 };
-                const collectionItem = {...it, accessibilityCollectionItem};
 
                 const element = renderer({
-                  item: collectionItem,
+                  item: {...it, accessibilityCollectionItem},
                   index: index * numColumns + kk,
                   separators: info.separators,
                 });
@@ -651,12 +650,11 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
             rowIndex: index,
             itemIndex: index,
           };
-          const collectionItem = {
+
+          return renderer({
             ...info,
             item: {...info.item, accessibilityCollectionItem},
-          };
-
-          return renderer(collectionItem);
+          });
         }
       },
     };
