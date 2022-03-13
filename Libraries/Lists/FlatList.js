@@ -618,7 +618,6 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
             Array.isArray(item),
             'Expected array of items with numColumns > 1',
           );
-
           return (
             <View style={StyleSheet.compose(styles.row, columnWrapperStyle)}>
               {item.map((it, kk) => {
@@ -629,14 +628,12 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
                   columnIndex: itemIndex % numColumns,
                   itemIndex: itemIndex,
                 };
-
                 const element = renderer({
                   item: it,
                   index: index * numColumns + kk,
                   separators: info.separators,
                   accessibilityCollectionItem,
                 });
-
                 return element != null ? (
                   <React.Fragment key={kk}>{element}</React.Fragment>
                 ) : null;
