@@ -656,18 +656,6 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     };
   };
 
-  _getAccessibilityCollection = () => {
-    const accessibilityCollectionProps = {
-      itemCount: this.props.data ? this.props.data.length : 0,
-      //$FlowFixMe[incompatible-call] see https://bit.ly/3MJiZLL
-      rowCount: this._getItemCount(this.props.data),
-      columnCount: numColumnsOrDefault(this.props.numColumns),
-      hierarchical: false,
-    };
-
-    return accessibilityCollectionProps;
-  };
-
   render(): React.Node {
     const {
       numColumns,
@@ -682,7 +670,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
         getItem={this._getItem}
         getItemCount={this._getItemCount}
         keyExtractor={this._keyExtractor}
-        accessibilityCollection={this._getAccessibilityCollection()}
+        numColumns={numColumnsOrDefault(this.props.numColumns)}
         accessibilityRole={Platform.select({
           android:
             numColumnsOrDefault(this.props.numColumns) > 1 ? 'grid' : 'list',

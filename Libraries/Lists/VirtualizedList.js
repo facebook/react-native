@@ -1233,6 +1233,17 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     );
   }
 
+  _getAccessibilityCollection = () => {
+    const accessibilityCollectionProps = {
+      itemCount: this.props.data ? this.props.data.length : 0,
+      rowCount: this.props.getItemCount(this.props.data),
+      columnCount: this.props.numColumns,
+      hierarchical: false,
+    };
+
+    return accessibilityCollectionProps;
+  };
+
   _defaultRenderScrollComponent = props => {
     const onRefresh = props.onRefresh;
     if (this._isNestedWithSameOrientation()) {
@@ -1249,6 +1260,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         // $FlowFixMe[prop-missing] Invalid prop usage
         <ScrollView
           {...props}
+          accessibilityCollection={this._getAccessibilityCollection()}
           refreshControl={
             props.refreshControl == null ? (
               <RefreshControl
