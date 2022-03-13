@@ -624,19 +624,13 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
                   itemIndex: itemIndex,
                 };
 
-                const element = (
-                  // $FlowFixMe[prop-missing] https://bit.ly/3viYSh8
-                  <View
-                    importantForAccessibility="yes"
-                    style={styles.cellStyle}
-                    accessibilityCollectionItem={accessibilityCollectionItem}>
-                    {renderer({
-                      item: it,
-                      index: index * numColumns + kk,
-                      separators: info.separators,
-                    })}
-                  </View>
-                );
+                const element = renderer({
+                  item: it,
+                  index: index * numColumns + kk,
+                  separators: info.separators,
+                  accessibilityCollectionItem: accessibilityCollectionItem,
+                });
+
                 return element != null ? (
                   <React.Fragment key={kk}>{element}</React.Fragment>
                 ) : null;
