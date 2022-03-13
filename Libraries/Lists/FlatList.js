@@ -631,9 +631,10 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
                 };
 
                 const element = renderer({
-                  item: {...it, accessibilityCollectionItem},
+                  item: it,
                   index: index * numColumns + kk,
                   separators: info.separators,
+                  accessibilityCollectionItem,
                 });
 
                 return element != null ? (
@@ -651,7 +652,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
 
           return renderer({
             ...info,
-            item: {...info.item, accessibilityCollectionItem},
+            accessibilityCollectionItem,
           });
         }
       },
@@ -661,7 +662,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   _getAccessibilityCollection = () => {
     const accessibilityCollectionProps = {
       itemCount: this.props.data ? this.props.data.length : 0,
-      //$FlowFixMe[incompatible-call] see https://bit.ly/3viYSh8
+      //$FlowFixMe[incompatible-call] see https://bit.ly/3MJiZLL
       rowCount: this._getItemCount(this.props.data),
       columnCount: numColumnsOrDefault(this.props.numColumns),
       hierarchical: false,
@@ -702,7 +703,6 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
 
 const styles = StyleSheet.create({
   row: {flexDirection: 'row'},
-  cellStyle: {flex: 1},
 });
 
 module.exports = FlatList;

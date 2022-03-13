@@ -140,11 +140,11 @@ class MultiColumnExample extends React.PureComponent<
       getItemLayout(data, index).length + 2 * (CARD_MARGIN + BORDER_WIDTH);
     return {length, offset: length * index, index};
   }
-  _renderItemComponent = ({item}: RenderItemProps<any | Item>) => {
+  _renderItemComponent = ({item, accessibilityCollectionItem}) => {
     return (
       <View
         importantForAccessibility="yes"
-        accessibilityCollectionItem={item.accessibilityCollectionItem}
+        accessibilityCollectionItem={accessibilityCollectionItem}
         style={styles.card}>
         <ItemComponent
           item={item}

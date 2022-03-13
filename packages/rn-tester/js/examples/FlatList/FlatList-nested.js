@@ -51,20 +51,25 @@ const DATA = [
   },
 ];
 
-const Item = ({ title }) => (
-  <View style={styles.item}>
-    <Text style={styles.title}>{title}</Text>
+const Item = ({item, accessibilityCollectionItem}) => (
+  <View
+    importantForAccessibility="yes"
+    accessibilityCollectionItem={accessibilityCollectionItem}
+    style={styles.item}>
+      <Text style={styles.title}>{item.title}</Text>
   </View>
 );
 
-const renderItem = ({ item }) => <Item title={item.title} />;
+const renderItem = (props) => <Item {...props} />;
 
-const renderFlatList = ({ item }) => (
-  <View>
-    <Text>Flatlist {item}</Text>
-    <FlatList renderItem={renderItem} horizontal data={DATA} />
-  </View>
-);
+const renderFlatList = ({item}) => {
+  return (
+    <View>
+      <Text>Flatlist {item}</Text>
+      <FlatList renderItem={renderItem} horizontal data={DATA} />
+    </View>
+  );
+};
 
 const FlatListNested = () => {
   return (

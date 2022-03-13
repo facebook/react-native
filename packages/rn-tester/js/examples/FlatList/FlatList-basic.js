@@ -280,7 +280,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
         return (
           <View
             importantForAccessibility="yes"
-            accessibilityCollectionItem={item.accessibilityCollectionItem}
+            accessibilityCollectionItem={accessibilityCollectionItem}
             style={styles.card}>
             <ItemComponent
               item={item}
