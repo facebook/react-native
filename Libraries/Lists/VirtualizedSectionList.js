@@ -338,7 +338,16 @@ class VirtualizedSectionList<
 
   _renderItem =
     (listItemCount: number) =>
-    ({item, index}: {item: Item, index: number, ...}) => {
+    ({
+      item,
+      index,
+      accessibilityCollectionItem,
+    }: {
+      item: Item,
+      index: number,
+      accessibilityCollectionItem: any,
+      ...
+    }) => {
       const info = this._subExtractor(index);
       if (!info) {
         return null;
@@ -367,6 +376,7 @@ class VirtualizedSectionList<
             LeadingSeparatorComponent={
               infoIndex === 0 ? this.props.SectionSeparatorComponent : undefined
             }
+            accessibilityCollectionItem={accessibilityCollectionItem}
             cellKey={info.key}
             index={infoIndex}
             item={item}
@@ -496,6 +506,7 @@ function ItemWithSeparator(props: ItemWithSeparatorProps): React.Node {
     index,
     section,
     inverted,
+    accessibilityCollectionItem,
   } = props;
 
   const [leadingSeparatorHiglighted, setLeadingSeparatorHighlighted] =
@@ -569,6 +580,7 @@ function ItemWithSeparator(props: ItemWithSeparatorProps): React.Node {
     index,
     section,
     separators,
+    accessibilityCollectionItem,
   });
   const leadingSeparator = LeadingSeparatorComponent != null && (
     <LeadingSeparatorComponent
