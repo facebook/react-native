@@ -443,7 +443,7 @@ export type ViewProps = $ReadOnly<{|
 
   /**
    *
-   * Class with information if a node is a collection item of a FlatList, VirtualizedList or SectionList.
+   * Node Information of a FlatList, VirtualizedList or SectionList collection item.
    * A collection item starts at a given row and column in the collection, and spans one or more rows and columns.
    *
    * @platform android
