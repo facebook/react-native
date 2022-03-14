@@ -442,6 +442,22 @@ export type ViewProps = $ReadOnly<{|
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
 
   /**
+   * Prop used internally to announce with TalkBack rows and columns of a FlatList
+   * See https://bit.ly/3viYSh8
+   *
+   * @platform android
+   *
+   */
+  accessibilityCollectionItem?: ?{
+    rowIndex: number,
+    rowSpan: number,
+    columnIndex: number,
+    columnSpan: number,
+    heading: boolean,
+    itemIndex: number,
+  },
+
+  /**
    * Specifies the nativeID of the associated label text. When the assistive technology focuses on the component with this props, the text is read aloud.
    *
    * @platform android
