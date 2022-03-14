@@ -1257,6 +1257,16 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _defaultRenderScrollComponent = props => {
     const {getItemCount, data} = props;
     const onRefresh = props.onRefresh;
+    const numColumns = numColumnsOrDefault(props.numColumns);
+    const accessibilityRole = Platform.select({
+      android: numColumns > 1 ? 'grid' : 'list',
+    });
+    const accessibilityCollection = {
+      itemCount: data ? data.length : 0,
+      rowCount: getItemCount(data),
+      columnCount: numColumnsOrDefault(numColumns),
+      hierarchical: false,
+    };
     if (this._isNestedWithSameOrientation()) {
       // $FlowFixMe[prop-missing] - Typing ReactNativeComponent revealed errors
       return <View {...props} />;
@@ -1267,16 +1277,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           JSON.stringify(props.refreshing ?? 'undefined') +
           '`',
       );
-      const numColumns = numColumnsOrDefault(props.numColumns);
-      const accessibilityRole = Platform.select({
-        android: numColumns > 1 ? 'grid' : 'list',
-      });
-      const accessibilityCollection = {
-        itemCount: data ? data.length : 0,
-        rowCount: getItemCount(data),
-        columnCount: numColumnsOrDefault(numColumns),
-        hierarchical: false,
-      };
       return (
         // $FlowFixMe[prop-missing] Invalid prop usage
         <ScrollView
