@@ -442,8 +442,9 @@ export type ViewProps = $ReadOnly<{|
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
 
   /**
-   * Prop used internally to announce with TalkBack rows and columns of a FlatList
-   * See https://bit.ly/3viYSh8
+   *
+   * Class with information if a node is a collection item of a FlatList, VirtualizedList or SectionList.
+   * A collection item starts at a given row and column in the collection, and spans one or more rows and columns.
    *
    * @platform android
    *
