@@ -600,13 +600,6 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
       }
     };
 
-    const defaultAccessibilityCollectionItem = {
-      rowSpan: 1,
-      columnIndex: 0,
-      columnSpan: 1,
-      heading: false,
-    };
-
     return {
       /* $FlowFixMe[invalid-computed-prop] (>=0.111.0 site=react_native_fb)
        * This comment suppresses an error found when Flow v0.111 was deployed.
@@ -623,14 +616,13 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
               {item.map((it, kk) => {
                 const itemIndex = index * numColumns + kk;
                 const accessibilityCollectionItem = {
-                  ...defaultAccessibilityCollectionItem,
-                  rowIndex: index,
+                  ...info.accessibilityCollectionItem,
                   columnIndex: itemIndex % numColumns,
                   itemIndex: itemIndex,
                 };
                 const element = renderer({
                   item: it,
-                  index: index * numColumns + kk,
+                  index: itemIndex,
                   separators: info.separators,
                   accessibilityCollectionItem,
                 });
@@ -641,16 +633,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
             </View>
           );
         } else {
-          const accessibilityCollectionItem = {
-            ...defaultAccessibilityCollectionItem,
-            rowIndex: info.index,
-            itemIndex: info.index,
-          };
-
-          return renderer({
-            ...info,
-            accessibilityCollectionItem,
-          });
+          return renderer(info);
         }
       },
     };
@@ -670,11 +653,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
         getItem={this._getItem}
         getItemCount={this._getItemCount}
         keyExtractor={this._keyExtractor}
-        numColumns={numColumnsOrDefault(this.props.numColumns)}
-        accessibilityRole={Platform.select({
-          android:
-            numColumnsOrDefault(this.props.numColumns) > 1 ? 'grid' : 'list',
-        })}
+        numColumns={numColumnsOrDefault(numColumns)}
         ref={this._captureRef}
         viewabilityConfigCallbackPairs={this._virtualizedListPairs}
         removeClippedSubviews={removeClippedSubviewsOrDefault(

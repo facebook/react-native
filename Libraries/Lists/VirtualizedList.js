@@ -12,6 +12,7 @@ const Batchinator = require('../Interaction/Batchinator');
 const FillRateHelper = require('./FillRateHelper');
 const ReactNative = require('../Renderer/shims/ReactNative');
 const RefreshControl = require('../Components/RefreshControl/RefreshControl');
+const Platform = require('../Utilities/Platform');
 const ScrollView = require('../Components/ScrollView/ScrollView');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const View = require('../Components/View/View');
@@ -304,6 +305,11 @@ type Props = {|
   ...RequiredProps,
   ...OptionalProps,
 |};
+
+// numColumnsOrDefault(this.props.numColumns)
+function numColumnsOrDefault(numColumns: ?number) {
+  return numColumns ?? 1;
+}
 
 let _usedIndexForKey = false;
 let _keylessItemComponentName: string = '';
@@ -1233,18 +1239,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     );
   }
 
-  _getAccessibilityCollection = () => {
-    const accessibilityCollectionProps = {
-      itemCount: this.props.data ? this.props.data.length : 0,
-      rowCount: this.props.getItemCount(this.props.data),
-      columnCount: this.props.numColumns,
-      hierarchical: false,
-    };
-
-    return accessibilityCollectionProps;
-  };
-
   _defaultRenderScrollComponent = props => {
+    const {getItemCount, data} = props;
     const onRefresh = props.onRefresh;
     if (this._isNestedWithSameOrientation()) {
       // $FlowFixMe[prop-missing] - Typing ReactNativeComponent revealed errors
@@ -1256,11 +1252,22 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           JSON.stringify(props.refreshing ?? 'undefined') +
           '`',
       );
+      const numColumns = numColumnsOrDefault(props.numColumns);
+      const accessibilityRole = Platform.select({
+        android: numColumns > 1 ? 'grid' : 'list',
+      });
+      const accessibilityCollection = {
+        itemCount: data ? data.length : 0,
+        rowCount: getItemCount(data),
+        columnCount: numColumnsOrDefault(numColumns),
+        hierarchical: false,
+      };
       return (
         // $FlowFixMe[prop-missing] Invalid prop usage
         <ScrollView
           {...props}
-          accessibilityCollection={this._getAccessibilityCollection()}
+          accessibilityRole={accessibilityRole}
+          accessibilityCollection={accessibilityCollection}
           refreshControl={
             props.refreshControl == null ? (
               <RefreshControl
@@ -1276,7 +1283,13 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       );
     } else {
       // $FlowFixMe[prop-missing] Invalid prop usage
-      return <ScrollView {...props} />;
+      return (
+        <ScrollView
+          accessibilityRole={accessibilityRole}
+          accessibilityCollection={accessibilityCollection}
+          {...props}
+        />
+      );
     }
   };
 
@@ -2015,10 +2028,19 @@ class CellRenderer extends React.Component<
     }
 
     if (renderItem) {
+      const accessibilityCollectionItem = {
+        itemIndex: index,
+        rowIndex: index,
+        rowSpan: 1,
+        columnIndex: 0,
+        columnSpan: 1,
+        heading: false,
+      };
       return renderItem({
         item,
         index,
         separators: this._separators,
+        accessibilityCollectionItem,
       });
     }
 
