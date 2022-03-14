@@ -27,6 +27,7 @@
 #import <ReactCommon/TurboModulePerfLogger.h>
 #import <ReactCommon/TurboModuleUtils.h>
 
+using namespace facebook;
 using namespace facebook::react;
 
 static int32_t getUniqueId()

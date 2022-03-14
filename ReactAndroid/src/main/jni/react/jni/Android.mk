@@ -30,7 +30,7 @@ LOCAL_LDLIBS += -landroid
 LOCAL_SHARED_LIBRARIES := \
   libfb \
   libfbjni \
-  libfolly_json \
+  libfolly_runtime \
   libglog_init \
   libreact_render_runtimescheduler \
   libruntimeexecutor \
@@ -87,7 +87,7 @@ LOCAL_LDLIBS += -landroid
 LOCAL_SHARED_LIBRARIES := \
   libfb \
   libfbjni \
-  libfolly_json \
+  libfolly_runtime \
   libglog_init \
   libreact_render_runtimescheduler \
   libreactnativeutilsjni \
@@ -143,10 +143,17 @@ $(call import-module,jsiexecutor)
 $(call import-module,logger)
 $(call import-module,callinvoker)
 $(call import-module,reactperflogger)
-$(call import-module,hermes)
 $(call import-module,runtimeexecutor)
 $(call import-module,react/renderer/runtimescheduler)
 $(call import-module,react/nativemodule/core)
+
+# This block is needed only because we build the project on NDK r17 internally.
+ifneq ($(call ndk-major-at-least,21),true)
+    $(call import-add-path,$(NDK_GRADLE_INJECTED_IMPORT_PATH))
+endif
+
+$(call import-module,prefab/hermes-engine)
+
 
 include $(REACT_SRC_DIR)/reactperflogger/jni/Android.mk
 # TODO (T48588859): Restructure this target to align with dir structure: "react/nativemodule/..."

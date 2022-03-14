@@ -17,6 +17,6 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)
 LOCAL_CFLAGS := -fexceptions -frtti -O3
 
 LOCAL_STATIC_LIBRARIES := reactnative reactperflogger
-LOCAL_SHARED_LIBRARIES := libfolly_json glog libjsi
+LOCAL_SHARED_LIBRARIES := libfolly_runtime glog libjsi
 
 include $(BUILD_STATIC_LIBRARY)

@@ -63,6 +63,7 @@ def use_react_native! (options={})
     pod 'React-Core/DevSupport', :path => "#{prefix}/"
   end
 
+  pod 'React-bridging', :path => "#{prefix}/ReactCommon/react/bridging"
   pod 'React-cxxreact', :path => "#{prefix}/ReactCommon/cxxreact"
   pod 'React-jsi', :path => "#{prefix}/ReactCommon/jsi"
   pod 'React-jsiexecutor', :path => "#{prefix}/ReactCommon/jsiexecutor"
@@ -137,10 +138,10 @@ end
 def use_flipper!(versions = {}, configurations: ['Debug'])
   versions['Flipper'] ||= '0.125.0'
   versions['Flipper-Boost-iOSX'] ||= '1.76.0.1.11'
-  versions['Flipper-DoubleConversion'] ||= '3.1.7'
+  versions['Flipper-DoubleConversion'] ||= '3.2.0'
   versions['Flipper-Fmt'] ||= '7.1.7'
   versions['Flipper-Folly'] ||= '2.6.10'
-  versions['Flipper-Glog'] ||= '0.3.9'
+  versions['Flipper-Glog'] ||= '0.5.0.3'
   versions['Flipper-PeerTalk'] ||= '0.0.4'
   versions['Flipper-RSocket'] ||= '1.4.3'
   versions['OpenSSL-Universal'] ||= '1.1.1100'

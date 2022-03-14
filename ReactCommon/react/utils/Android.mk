@@ -23,12 +23,10 @@ LOCAL_STATIC_LIBRARIES :=
 LOCAL_SHARED_LIBRARIES := \
   libglog \
   libglog_init \
-  libreact_debug \
-  libreact_render_mapbuffer
+  libreact_debug
 
 include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,react/debug)
 $(call import-module,fbgloginit)
 $(call import-module,glog)
-$(call import-module,react/renderer/mapbuffer)

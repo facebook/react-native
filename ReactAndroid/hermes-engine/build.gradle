@@ -22,6 +22,7 @@ if (hermesVersionFile.exists()) {
     hermesVersion = hermesVersionFile.text
 }
 def ndkBuildJobs = Runtime.runtime.availableProcessors().toString()
+def prefabHeadersDir = new File("$buildDir/prefab-headers")
 
 // We inject the JSI directory used inside the Hermes build with the -DJSI_DIR config.
 def jsiDir = rootProject.file("ReactCommon/jsi")
@@ -42,6 +43,10 @@ task downloadNdkBuildDependencies() {
     dependsOn(downloadHermes)
 }
 
+task installArchives {
+    dependsOn("publishAllPublicationsToNpmRepository")
+}
+
 task unzipHermes(dependsOn: downloadHermes, type: Copy) {
     from(tarTree(downloadHermes.dest)) {
         eachFile { file ->
@@ -56,7 +61,7 @@ task unzipHermes(dependsOn: downloadHermes, type: Copy) {
 }
 
 
-task configureNinjaForHermes(dependsOn: unzipHermes, type: org.gradle.api.tasks.Exec) {
+task configureNinjaForHermes(dependsOn: unzipHermes, type: Exec) {
     workingDir(hermesDir)
     commandLine(windowsAwareCommandLine(
         "python3",
@@ -67,9 +72,17 @@ task configureNinjaForHermes(dependsOn: unzipHermes, type: org.gradle.api.tasks.
     ))
 }
 
-task buildNinjaForHermes(dependsOn: configureNinjaForHermes, type: org.gradle.api.tasks.Exec) {
+task buildNinjaForHermes(dependsOn: configureNinjaForHermes, type: Exec) {
     workingDir(hermesDir)
     commandLine(windowsAwareCommandLine("cmake", "--build", "./ninja_build", "--target", "hermesc", "-j", ndkBuildJobs))
+}
+
+task prepareHeadersForPrefab(dependsOn: unzipHermes, type: Copy) {
+    from("$hermesDir/API")
+    from("$hermesDir/public")
+    include("**/*.h")
+    exclude("jsi/**")
+    into(prefabHeadersDir)
 }
 
 static def windowsAwareCommandLine(String... commands) {
@@ -88,6 +101,7 @@ def reactNativeArchitectures() {
 
 android {
     compileSdkVersion 31
+    buildToolsVersion = "31.0.0"
 
     // Used to override the NDK path & version on internal CI
     if (System.getenv("ANDROID_NDK") != null && System.getenv("LOCAL_ANDROID_NDK_VERSION") != null) {
@@ -180,12 +194,28 @@ android {
             allVariants()
         }
     }
+
+    buildFeatures {
+        prefabPublishing true
+    }
+
+    prefab {
+        libhermes {
+            headers prefabHeadersDir.absolutePath
+            libraryName "libhermes"
+        }
+    }
 }
 
 afterEvaluate {
     preBuild.dependsOn(buildNinjaForHermes)
+    preBuild.dependsOn(prepareHeadersForPrefab)
     // Needed as some of the native sources needs to be downloaded
     // before configureCMakeRelease/configureCMakeMinSizeRel could be executed.
+    reactNativeArchitectures().each { architecture ->
+        tasks.named("configureCMakeMinSizeRel[${architecture}]") { dependsOn(preBuild) }
+        tasks.named("configureCMakeRelease[${architecture}]") { dependsOn(preBuild) }
+    }
     configureCMakeRelease.dependsOn(preBuild)
     configureCMakeMinSizeRel.dependsOn(preBuild)
 
@@ -206,4 +236,4 @@ afterEvaluate {
 }
 
 group = "com.facebook.react"
-version = VERSION_NAME
+version = parent.publishing_version

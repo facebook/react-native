@@ -24,18 +24,3 @@ void RCTExperimentSetPreemptiveViewAllocationDisabled(BOOL value)
 {
   RCTExperimentPreemptiveViewAllocationDisabled = value;
 }
-
-/*
- * Preemptive View Allocation
- */
-static BOOL RCTInteropLayerKeepViewHierarchy = NO;
-
-BOOL RCTGetInteropLayerKeepViewHierarchy()
-{
-  return RCTInteropLayerKeepViewHierarchy;
-}
-
-void RCTSetInteropLayerKeepViewHierarchy(BOOL value)
-{
-  RCTInteropLayerKeepViewHierarchy = value;
-}
