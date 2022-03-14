@@ -1297,12 +1297,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         />
       );
     } else {
-      // $FlowFixMe[prop-missing] Invalid prop usage
       return (
+        // $FlowFixMe[prop-missing] Invalid prop usage
         <ScrollView
+          {...props}
           accessibilityRole={accessibilityRole}
           accessibilityCollection={accessibilityCollection}
-          {...props}
         />
       );
     }
