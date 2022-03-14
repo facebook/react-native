@@ -52,7 +52,7 @@ export type Separators = {
   ...
 };
 
-type AccessibilityCollectionItem = {
+export type AccessibilityCollectionItem = {
   itemIndex: number,
   rowIndex: number,
   rowSpan: number,

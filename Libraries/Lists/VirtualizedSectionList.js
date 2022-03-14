@@ -11,6 +11,7 @@
 import invariant from 'invariant';
 import type {ViewToken} from './ViewabilityHelper';
 import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';
+import type {AccessibilityCollectionItem} from './VirtualizedList';
 import {View, VirtualizedList} from 'react-native';
 import * as React from 'react';
 
@@ -345,7 +346,7 @@ class VirtualizedSectionList<
     }: {
       item: Item,
       index: number,
-      accessibilityCollectionItem: any,
+      accessibilityCollectionItem: AccessibilityCollectionItem,
       ...
     }) => {
       const info = this._subExtractor(index);
@@ -489,6 +490,7 @@ type ItemWithSeparatorProps = $ReadOnly<{|
   updatePropsFor: (prevCellKey: string, value: Object) => void,
   renderItem: Function,
   inverted: boolean,
+  accessibilityCollectionItem: AccessibilityCollectionItem,
 |}>;
 
 function ItemWithSeparator(props: ItemWithSeparatorProps): React.Node {
