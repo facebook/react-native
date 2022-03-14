@@ -52,10 +52,20 @@ export type Separators = {
   ...
 };
 
+type AccessibilityCollectionItem = {
+  itemIndex: number,
+  rowIndex: number,
+  rowSpan: number,
+  columnIndex: number,
+  columnSpan: number,
+  heading: boolean,
+};
+
 export type RenderItemProps<ItemT> = {
   item: ItemT,
   index: number,
   separators: Separators,
+  accessibilityCollectionItem: AccessibilityCollectionItem,
   ...
 };
 
@@ -74,6 +84,11 @@ type ViewabilityHelperCallbackTuple = {
 };
 
 type RequiredProps = {|
+  /**
+   * The number of columns. Default is 1. Used to calculated accessibilityCollection prop.
+   */
+  numColumns?: number,
+
   /**
    * The default accessor functions assume this is an Array<{key: string} | {id: string}> but you can override
    * getItem, getItemCount, and keyExtractor to handle any type of index-based data.
