@@ -1276,7 +1276,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const rowCount = getItemCount(data);
     const accessibilityCollection = {
       // over-ride _getCellsInItemCount to handle Objects or other data formats
-      // see commit
+      // see https://bit.ly/35RKX7H
       itemCount: this._getCellsInItemCount(props),
       rowCount,
       columnCount: numColumns,
