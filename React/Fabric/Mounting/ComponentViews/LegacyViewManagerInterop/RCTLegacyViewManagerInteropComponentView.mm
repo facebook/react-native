@@ -9,6 +9,7 @@
 
 #import <React/RCTAssert.h>
 #import <React/RCTConstants.h>
+#import <React/RCTConversions.h>
 #import <React/UIView+React.h>
 #import <react/renderer/components/legacyviewmanagerinterop/LegacyViewManagerInteropComponentDescriptor.h>
 #import <react/renderer/components/legacyviewmanagerinterop/LegacyViewManagerInteropViewProps.h>
@@ -227,6 +228,13 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
   if (updateMask & RNComponentViewUpdateMaskProps) {
     const auto &newProps = *std::static_pointer_cast<const LegacyViewManagerInteropViewProps>(_props);
     [_adapter setProps:newProps.otherProps];
+    if (newProps.otherProps.isObject()) {
+      NSMutableArray *updatedPropNames = [NSMutableArray arrayWithCapacity:newProps.otherProps.size()];
+      for (auto &key : newProps.otherProps.keys()) {
+        [updatedPropNames addObject:RCTNSStringFromString(key.asString())];
+      }
+      [_adapter.paperView didSetProps:updatedPropNames];
+    }
   }
 }
 
