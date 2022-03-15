@@ -7,7 +7,7 @@
 ###    jsi     ###
 ##################
 
-cmake_minimum_required(VERSION 3.4.1)
+cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
 add_compile_options(
@@ -17,7 +17,7 @@ add_compile_options(
         -Wno-unused-lambda-capture
         -DLOG_TAG=\"ReactNative\")
 
-file(GLOB jsi_SRC ${CMAKE_CURRENT_SOURCE_DIR}/jsi/*.cpp)
+file(GLOB jsi_SRC CONFIGURE_DEPENDS jsi/*.cpp)
 add_library(jsi SHARED ${jsi_SRC})
 
 target_include_directories(jsi PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

@@ -3,7 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-cmake_minimum_required(VERSION 3.4.1)
+cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
 # These ASM files are picked from the boost release separately,
@@ -12,6 +12,7 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 ENABLE_LANGUAGE(ASM)
 file(GLOB_RECURSE
         boostasm_SRC
+        CONFIGURE_DEPENDS
         ${CMAKE_CURRENT_SOURCE_DIR}/asm/${ANDROID_ABI}/*.S)
 add_library(boost STATIC ${boostasm_SRC})
 
