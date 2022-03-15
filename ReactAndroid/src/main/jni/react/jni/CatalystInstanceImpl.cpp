@@ -276,7 +276,7 @@ void CatalystInstanceImpl::jniLoadScriptFromFile(
     const std::string &sourceURL,
     bool loadSynchronously) {
   auto reactInstance = instance_;
-  if (reactInstance && Instance::isHBCBundle(fileName.c_str())) {
+  if (reactInstance && Instance::isMetroHBCBundle(fileName.c_str())) {
     std::unique_ptr<const JSBigFileString> script;
     RecoverableError::runRethrowingAsRecoverable<std::system_error>(
         [&fileName, &script]() {

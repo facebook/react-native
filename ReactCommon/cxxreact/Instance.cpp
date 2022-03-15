@@ -109,7 +109,7 @@ void Instance::loadScriptFromString(
   }
 }
 
-bool Instance::isHBCBundle(const char *sourcePath) {
+bool Instance::isMetroHBCBundle(const char *sourcePath) {
   std::ifstream bundle_stream(sourcePath, std::ios_base::in);
   BundleHeader header;
 
@@ -118,7 +118,7 @@ bool Instance::isHBCBundle(const char *sourcePath) {
     return false;
   }
 
-  return parseTypeFromHeader(header) == ScriptTag::HBCBundle;
+  return parseTypeFromHeader(header) == ScriptTag::MetroHBCBundle;
 }
 
 bool Instance::isIndexedRAMBundle(const char *sourcePath) {
