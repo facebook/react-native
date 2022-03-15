@@ -99,6 +99,7 @@ type RequiredProps = {|
   getItemCount: (data: any) => number,
   /**
    * Determines how many cells are in the data blob
+   * see https://bit.ly/35RKX7H
    */
   getCellsInItemCount: (data: any) => number,
   /**
