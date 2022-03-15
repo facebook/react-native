@@ -125,6 +125,7 @@ const AccessibilityInfo = {
   /**
    * macOS only
    */
+  // [TODO(macOS GH#774)
   isHighContrastEnabled: function(): Promise<boolean> {
     if (Platform.OS === 'macos') {
       return new Promise((resolve, reject) => {
@@ -141,6 +142,7 @@ const AccessibilityInfo = {
       return Promise.resolve(false);
     }
   },
+  // ]TODO(macOS GH#774)
 
   /**
    * Query whether inverted colors are currently enabled.
