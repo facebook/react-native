@@ -29,11 +29,6 @@ references:
   attach_hermes_workspace: &attach_hermes_workspace
     attach_workspace:
       at: *hermes_workspace_root
-  persist_hermesc_to_workspace: &persist_hermesc_to_workspace
-    persist_to_workspace:
-      root: *hermes_workspace_root
-      paths:
-        - hermesc
 
   # -------------------------
   #        Filters
@@ -808,29 +803,55 @@ jobs:
   # -------------------------
   #      JOBS: Build hermesc
   # -------------------------
-  prepare-hermes-ws:
+  prepare-hermes-workspace:
     docker:
       - image: debian:stretch
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
     steps:
+      - checkout
       - run:
           name: Install dependencies
           command: |
             apt-get update
-            apt-get install -y wget
+            apt-get install -y wget git
       - run:
           name: Set up Hermes workspace
           command: |
-            mkdir -p "$HERMES_WS_DIR/hermes" "$HERMES_WS_DIR/download" "$HERMES_WS_DIR/output" "$HERMES_WS_DIR/hermesc/linux" "$HERMES_WS_DIR/hermesc/macos" "$HERMES_WS_DIR/hermesc/windows"
-            wget --timestamping -O "$HERMES_WS_DIR/download/hermes.tar.gz" https://github.com/facebook/hermes/archive/refs/heads/main.tar.gz
+            mkdir -p "$HERMES_WS_DIR/hermes" "$HERMES_WS_DIR/download" "$HERMES_WS_DIR/output"
+
+            # A checksum for the .hermesversion file can help us restore Hermes and hermesc from cache if available.
+            # Since .hermesversion is not present in all branches, we instead use a temporary file which will
+            # contains the current commit's SHA if there is no .hermesversion in the current branch. Either way,
+            # this results in a checksum that will ensure the cache can be accessed if Hermes has not changed.
+            HERMES_VERSION_FILE="sdks/.hermesversion"
+            if [ -f "$HERMES_VERSION_FILE" ]; then
+              cp "$HERMES_VERSION_FILE" /tmp/hermes/hermesversion
+            else
+              HERMES_SHA1=$(git ls-remote https://github.com/facebook/hermes.git main | cut -f 1)
+              echo $HERMES_SHA1 > /tmp/hermes/hermesversion
+            fi
+      - run:
+          name: Download Hermes tarball
+          command: |
+            HERMES_VERSION_FILE="sdks/.hermesversion"
+            if [ -f "$HERMES_VERSION_FILE" ]; then
+              HERMES_TAG=$(cat $HERMES_VERSION_FILE | tr -d '[:space:]')
+              echo "Using Hermes version tagged $HERMES_TAG"
+              wget --timestamping -O "$HERMES_WS_DIR/download/hermes.tar.gz" https://github.com/facebook/hermes/archive/refs/tags/$HERMES_TAG.tar.gz
+            else
+              echo "Using Hermes latest version from trunk"
+              wget --timestamping -O "$HERMES_WS_DIR/download/hermes.tar.gz" https://github.com/facebook/hermes/archive/refs/heads/main.tar.gz
+            fi
             tar -xzf "$HERMES_WS_DIR/download/hermes.tar.gz" --strip-components=1 -C "$HERMES_WS_DIR/hermes"
       - persist_to_workspace:
           root: *hermes_workspace_root
           paths:
+            - download
             - hermes
             - hermesc
             - output
+            - hermesversion
 
   build-hermesc-linux:
     docker:
@@ -854,14 +875,19 @@ jobs:
             sudo cp /usr/bin/ninja /usr/bin/ninja.real
             printf '%s\n' '#!/bin/sh' 'ninja.real -j4 "$@" || ninja.real -j1 "$@"' | sudo tee /usr/bin/ninja
       - run:
-          name: Build Hermes for Linux
+          name: Build Hermes Compiler for Linux
           command: |
+            HERMESC_LINUX_DIR="$HERMES_WS_DIR/hermesc/linux"
             cd "$HERMES_WS_DIR"
             hermes/utils/build/configure.py --static-link --distribute --cmake-flags="-DCMAKE_CXX_FLAGS=-s"
             cd build_release
             ninja github-cli-release
-      - run: cp -R $HERMES_WS_DIR/build_release $HERMES_WS_DIR/hermesc/linux
-      - *persist_hermesc_to_workspace
+            mkdir -p "$HERMESC_LINUX_DIR"
+            mv $HERMES_WS_DIR/build_release/* "$HERMESC_LINUX_DIR"
+      - persist_to_workspace:
+          root: *hermes_workspace_root
+          paths:
+            - hermesc/linux
 
   build-hermesc-macos:
     macos:
@@ -881,13 +907,18 @@ jobs:
             brew install cmake ninja
             sudo gem install cocoapods
       - run:
-          name: Build Hermes Compiler
+          name: Build Hermes Compiler for macOS
           command: |
+            HERMESC_MACOS_DIR="$HERMES_WS_DIR/hermesc/macos"
             cd "$HERMES_WS_DIR"
             hermes/utils/build/configure.py ./build_host_hermesc
             cmake --build ./build_host_hermesc --target hermesc
-      - run: cp -R "$HERMES_WS_DIR/build_host_hermesc" "$HERMES_WS_DIR/hermesc/macos"
-      - *persist_hermesc_to_workspace
+            mkdir -p "$HERMESC_MACOS_DIR"
+            mv $HERMES_WS_DIR/build_host_hermesc/* "$HERMESC_MACOS_DIR"
+      - persist_to_workspace:
+          root: *hermes_workspace_root
+          paths:
+            - hermesc/macos
 
   build-hermesc-windows:
     executor:
@@ -908,7 +939,6 @@ jobs:
             New-Item -ItemType Directory $Env:HERMES_WS_DIR\output
             New-Item -ItemType Directory $Env:HERMES_WS_DIR\deps
             New-Item -ItemType Directory $Env:HERMES_WS_DIR\windows
-            New-Item -ItemType Directory $Env:HERMES_WS_DIR\hermesc\windows
             New-Item -ItemType SymbolicLink -Target tmp\hermes\hermes -Path $Env:HERMES_WS_DIR -Name hermes
       - run:
           name: Download ICU
@@ -937,8 +967,9 @@ jobs:
             Copy-Item -Path "c:\windows\system32\vcruntime140_1.dll" -Destination "deps"
 
       - run:
-          name: Build Hermes for Windows
+          name: Build Hermes Compiler for Windows
           command: |
+            $HermesCWindowsFolder = "$Env:HERMES_WS_DIR\hermesc\windows"
             $Env:PATH += ";$Env:CMAKE_DIR;$Env:MSBUILD_DIR"
             $Env:ICU_ROOT = "$Env:HERMES_WS_DIR\icu"
             cd $Env:HERMES_WS_DIR
@@ -947,31 +978,25 @@ jobs:
             cd build_release
             cmake --build . --target github-cli-release --config Release
             if (-not $?) { throw "Failed to build Hermes" }
-      - run: Copy-Item -Path "C:\tmp\hermes\build_release\*" -Destination "$Env:HERMES_WS_DIR\hermesc\windows" -Recurse
+            New-Item -ItemType Directory $HermesCWindowsFolder
+            Copy-Item -Path "C:\tmp\hermes\build_release\*" -Destination $HermesCWindowsFolder -Recurse
       - persist_to_workspace:
           root: 'C:\tmp\hermes'
           paths:
-            - hermesc
+            - hermesc\windows
 
-  inject-hermesc:
+  store-hermesc:
     docker:
       - image: debian:stretch
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
     steps:
       - *attach_hermes_workspace
-      - checkout
-      # TODO: Decide where hermesc will be located in the react-native npm package.
-      - run:
-          name: Move hermesc binaries to sdks/hermesc
-          command: |
-            mkdir -p ./sdks/hermesc
-            cp -R $HERMES_WS_DIR/hermesc ./sdks/hermesc
       # Provide a tarball of hermesc binaries as an artifact, for convenience.
       - run: tar -czvf $HERMES_WS_DIR/hermesc.tar.gz $HERMES_WS_DIR/hermesc
       - store_artifacts:
-          path: /tmp/hermes/hermesc
-          destination: hermesc.tar.gz
+          path: /tmp/hermes/hermesc.tar.gz
+          destination: hermesc
 
   # -------------------------
   #      JOBS: Releases
@@ -1001,6 +1026,8 @@ jobs:
         type: string
         default: --dry-run
     executor: reactnativeandroid
+    environment:
+      - HERMES_WS_DIR: *hermes_workspace_root
     steps:
       - run:
           name: Add github.com to SSH known hosts
@@ -1008,11 +1035,21 @@ jobs:
             mkdir -p ~/.ssh
             echo '|1|If6MU203eXTaaWL678YEfWkVMrw=|kqLeIAyTy8pzpj8x8Ae4Fr8Mtlc= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
       - checkout
+      - *attach_hermes_workspace
+      - run:
+          name: Move hermesc binaries to sdks/hermesc
+          command: |
+            mkdir -p ./sdks/hermesc
+            cp -R $HERMES_WS_DIR/hermesc/* ./sdks/hermesc
       - run_yarn
       - install_buck_tooling
       - download_buck_dependencies
       - download_gradle_dependencies
-      # Only tagged releases and nightlies should be able to publish to npm
+
+      # START: Stables and nightlies
+      # This conditional step sets up the necessary credentials for publishing react-native to npm,
+      # and for interacting with GitHub as the react-native-bot account. Important: these steps
+      # should not be allowed to run on commits from pull requests.
       - when:
           condition:
             or:
@@ -1024,7 +1061,12 @@ jobs:
                 git config --global user.email "react-native-bot@users.noreply.github.com"
                 git config --global user.name "npm Deployment Script"
                 echo "machine github.com login react-native-bot password $GITHUB_TOKEN" > ~/.netrc
+      # END: Stables and nightlies
+
       - run: node ./scripts/publish-npm.js << parameters.publish_npm_args >>
+
+      # START: Commitlies
+      # Provide a react-native package for this commit as a Circle CI release artifact.
       - when:
           condition:
             equal: [ --dry-run, << parameters.publish_npm_args >> ]
@@ -1043,7 +1085,10 @@ jobs:
                 root: .
                 paths:
                   - build/*
+      # END: Commitlies
 
+      # START: Commits from pull requests
+      # When building commits from pull requests, leave a comment on the PR with a link to build artifacts
       - when:
           condition:
             matches: { pattern: '^pull\/.*$', value: << pipeline.git.branch >> }
@@ -1052,7 +1097,9 @@ jobs:
             - run:
                 name: Post link to PR build artifacts (pull-bot)
                 command: GITHUB_TOKEN="$PUBLIC_PULLBOT_GITHUB_TOKEN_A""$PUBLIC_PULLBOT_GITHUB_TOKEN_B" scripts/circleci/post-artifacts-link.sh || true
+      # END: Commits from pull requests
 
+      # START: Stable releases
       - when:
           condition:
             equal: [ --release, << parameters.publish_npm_args >> ]
@@ -1064,6 +1111,7 @@ jobs:
                     -H "Accept: application/vnd.github.v3+json" \
                     -u "$PAT_USERNAME:$PAT_TOKEN" \
                     -d "{\"event_type\": \"publish\", \"client_payload\": { \"version\": \"${CIRCLE_TAG:1}\" }}"
+      # END: Stable releases
 
   # -------------------------
   #    JOBS: Nightly
@@ -1107,9 +1155,26 @@ workflows:
   tests:
     unless: << pipeline.parameters.run_package_release_workflow_only >>
     jobs:
+      - prepare-hermes-workspace
+      - build-hermesc-linux:
+          requires:
+            - prepare-hermes-workspace
+      - build-hermesc-macos:
+          requires:
+            - prepare-hermes-workspace
+      - build-hermesc-windows:
+          requires:
+            - prepare-hermes-workspace
+      - store-hermesc:
+          requires:
+            - build-hermesc-linux
+            - build-hermesc-macos
+            - build-hermesc-windows
       - build_npm_package:
           # Build a release package on every untagged commit, but do not publish to npm.
           publish_npm_args: --dry-run
+          requires:
+            - store-hermesc
       - test_js:
           run_disabled_tests: false
       - test_android:
@@ -1166,12 +1231,30 @@ workflows:
   publish_release:
     unless: << pipeline.parameters.run_package_release_workflow_only >>
     jobs:
+      - prepare-hermes-workspace:
+          filters: *only_release_tags
+      - build-hermesc-linux:
+          requires:
+            - prepare-hermes-workspace
+      - build-hermesc-macos:
+          requires:
+            - prepare-hermes-workspace
+      - build-hermesc-windows:
+          requires:
+            - prepare-hermes-workspace
+      - store-hermesc:
+          requires:
+            - build-hermesc-linux
+            - build-hermesc-macos
+            - build-hermesc-windows
       # This job will trigger when a version tag is pushed (by package_release)
       - build_npm_package:
           name: build_and_publish_npm_package
           context: react-native-bot
           publish_npm_args: --release
           filters: *only_release_tags
+          requires:
+            - store-hermesc
 
   analysis:
     unless: << pipeline.parameters.run_package_release_workflow_only >>
@@ -1200,18 +1283,17 @@ workflows:
     jobs:
       - nightly_job
 
-      # TODO: Include hermesc binaries in react-native releases. For now, just build alongside nightly jobs.
-      - prepare-hermes-ws
+      - prepare-hermes-workspace
       - build-hermesc-linux:
           requires:
-            - prepare-hermes-ws
+            - prepare-hermes-workspace
       - build-hermesc-macos:
           requires:
-            - prepare-hermes-ws
+            - prepare-hermes-workspace
       - build-hermesc-windows:
           requires:
-            - prepare-hermes-ws
-      - inject-hermesc:
+            - prepare-hermes-workspace
+      - store-hermesc:
           requires:
             - build-hermesc-linux
             - build-hermesc-macos
@@ -1219,3 +1301,5 @@ workflows:
 
       - build_npm_package:
           publish_npm_args: --nightly
+          requires:
+            - store-hermesc
