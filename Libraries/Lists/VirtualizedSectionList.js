@@ -10,8 +10,8 @@
 
 import invariant from 'invariant';
 import type {ViewToken} from './ViewabilityHelper';
-import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';
 import type {AccessibilityCollectionItem} from './VirtualizedList';
+import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';
 import {View, VirtualizedList} from 'react-native';
 import * as React from 'react';
 

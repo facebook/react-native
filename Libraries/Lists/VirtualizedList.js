@@ -85,11 +85,6 @@ type ViewabilityHelperCallbackTuple = {
 
 type RequiredProps = {|
   /**
-   * The number of columns. Default is 1. Used to calculated accessibilityCollection prop.
-   */
-  numColumns?: number,
-
-  /**
    * The default accessor functions assume this is an Array<{key: string} | {id: string}> but you can override
    * getItem, getItemCount, and keyExtractor to handle any type of index-based data.
    */
@@ -102,6 +97,10 @@ type RequiredProps = {|
    * Determines how many items are in the data blob.
    */
   getItemCount: (data: any) => number,
+  /**
+   * The number of columns. Default is 1. Used to calculated accessibilityCollection prop.
+   */
+  numColumns?: number,
 |};
 type OptionalProps = {|
   renderItem?: ?RenderItemType<Item>,
@@ -1264,7 +1263,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const accessibilityCollection = {
       itemCount: data ? data.length : 0,
       rowCount: getItemCount(data),
-      columnCount: numColumnsOrDefault(numColumns),
+      columnCount: numColumns,
       hierarchical: false,
     };
     if (this._isNestedWithSameOrientation()) {
