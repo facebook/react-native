@@ -420,6 +420,16 @@ afterEvaluate {
     configureNdkBuildDebug.dependsOn(preBuild)
     configureNdkBuildRelease.dependsOn(preBuild)
 
+    // As we're consuming Hermes via Prefab, we're using the AGP C++ reference feature
+    // which is supposed to work for CMake only, we need to introduce an explicit dependency
+    // on publishing libraries prefab tasks.
+    // See https://developer.android.com/studio/releases/gradle-plugin?buildsystem=ndk-build#cpp-references.
+    // If we don't do this, the `configureNdkBuild*` is flaky and fails if the `prefabDebugPackage`
+    // is not yet executed.
+    // This can be safely removed once we move to CMake or once AGP supports C++ references on ndk-build.
+    configureNdkBuildDebug.dependsOn(":ReactAndroid:hermes-engine:prefabDebugPackage")
+    configureNdkBuildRelease.dependsOn(":ReactAndroid:hermes-engine:prefabReleasePackage")
+
     publishing {
         publications {
             release(MavenPublication) {
