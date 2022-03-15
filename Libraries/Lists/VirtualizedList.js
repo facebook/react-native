@@ -94,14 +94,18 @@ type RequiredProps = {|
    */
   getItem: (data: any, index: number) => ?Item,
   /**
-   * Determines how many items are in the data blob.
+   * Determines how many items (rows) are in the data blob.
    */
   getItemCount: (data: any) => number,
+  /**
+   * Determines how many cells are in the data blob
+   */
+  getCellsInItemCount: (data: any) => number,
   /**
    * The number of columns used in FlatList.
    * The default of 1 is used in other components to calculate the accessibilityCollection prop.
    */
-  numColumns?: number,
+  numColumns?: ?number,
 |};
 type OptionalProps = {|
   renderItem?: ?RenderItemType<Item>,
@@ -1254,6 +1258,13 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     );
   }
 
+  _getCellsInItemCount = props => {
+    const {getCellsInItemCount, data} = props;
+    if (getCellsInItemCount) return getCellsInItemCount(data);
+    if (Array.isArray(data)) return data.length;
+    return 0;
+  };
+
   _defaultRenderScrollComponent = props => {
     const {getItemCount, data} = props;
     const onRefresh = props.onRefresh;
@@ -1261,9 +1272,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const accessibilityRole = Platform.select({
       android: numColumns > 1 ? 'grid' : 'list',
     });
+    const rowCount = getItemCount(data);
     const accessibilityCollection = {
-      itemCount: data ? data.length : 0,
-      rowCount: getItemCount(data),
+      // over-ride _getCellsInItemCount to handle Objects or other data formats
+      // see commit
+      itemCount: this._getCellsInItemCount(props),
+      rowCount,
       columnCount: numColumns,
       hierarchical: false,
     };
