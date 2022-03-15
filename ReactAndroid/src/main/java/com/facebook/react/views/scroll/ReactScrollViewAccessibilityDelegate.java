@@ -56,12 +56,9 @@ public class ReactScrollViewAccessibilityDelegate extends AccessibilityDelegateC
     if (accessibilityCollection != null) {
       event.setItemCount(accessibilityCollection.getInt("itemCount"));
       View contentView;
-      if (view instanceof ReactScrollView) {
-        ReactScrollView scrollView = (ReactScrollView) view;
-        contentView = scrollView.getContentView();
-      } else if (view instanceof ReactHorizontalScrollView) {
-        ReactHorizontalScrollView scrollView = (ReactHorizontalScrollView) view;
-        contentView = scrollView.getContentView();
+      if (view instanceof ViewGroup) {
+        ViewGroup viewGroup = (ViewGroup) view;
+        contentView = viewGroup.getChildAt(0);
       } else {
         return;
       }
