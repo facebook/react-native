@@ -26,6 +26,7 @@ target_link_libraries(react_nativemodule_core
         fbjni
         folly_json
         jsi
+        react_bridging
         react_debug
         reactperflogger
         reactnativejni)
