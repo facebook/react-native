@@ -97,7 +97,7 @@ void RawPropsParser::preparse(RawProps const &rawProps) const noexcept {
   rawProps.keyIndexToValueIndex_.resize(keyCount, kRawPropsValueIndexEmpty);
 
   // Resetting the cursor, the next increment will give `0`.
-  rawProps.keyIndexCursor_ = keyCount - 1;
+  rawProps.keyIndexCursor_ = static_cast<int>(keyCount - 1);
 
   switch (rawProps.mode_) {
     case RawProps::Mode::Empty:
