@@ -101,7 +101,7 @@ type RequiredProps = {|
    * Determines how many cells are in the data blob
    * see https://bit.ly/35RKX7H
    */
-  getCellsInItemCount: (data: any) => number,
+  getCellsInItemCount?: (data: any) => number,
   /**
    * The number of columns used in FlatList.
    * The default of 1 is used in other components to calculate the accessibilityCollection prop.
