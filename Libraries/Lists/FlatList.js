@@ -641,7 +641,6 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
 
   render(): React.Node {
     const {
-      numColumns,
       columnWrapperStyle,
       removeClippedSubviews: _removeClippedSubviews,
       ...restProps
@@ -653,7 +652,6 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
         getItem={this._getItem}
         getItemCount={this._getItemCount}
         keyExtractor={this._keyExtractor}
-        numColumns={numColumnsOrDefault(numColumns)}
         ref={this._captureRef}
         viewabilityConfigCallbackPairs={this._virtualizedListPairs}
         removeClippedSubviews={removeClippedSubviewsOrDefault(

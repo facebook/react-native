@@ -98,7 +98,8 @@ type RequiredProps = {|
    */
   getItemCount: (data: any) => number,
   /**
-   * The number of columns. Default is 1. Used to calculated accessibilityCollection prop.
+   * The number of columns used in FlatList.
+   * The default of 1 is used in other components to calculate the accessibilityCollection prop.
    */
   numColumns?: number,
 |};
