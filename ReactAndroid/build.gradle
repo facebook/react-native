@@ -249,7 +249,6 @@ final def extractNativeDependencies = tasks.register('extractNativeDependencies'
 
 task installArchives {
     dependsOn("publishReleasePublicationToNpmRepository")
-    dependsOn(":ReactAndroid:hermes-engine:installArchives")
 }
 
 // Creating sources with comments
@@ -374,12 +373,7 @@ dependencies {
 
     // It's up to the consumer to decide if hermes should be included or not.
     // Therefore hermes-engine is a compileOnly dependency.
-    // Moreover, you can toggle where to get the dependency with `buildHermesFromSource`.
-    if (project.getProperties().getOrDefault("buildHermesFromSource", "false").toBoolean()) {
-        compileOnly(project(":ReactAndroid:hermes-engine"))
-    } else {
-        compileOnly("com.facebook.react:hermes-engine:${VERSION_NAME}")
-    }
+    compileOnly(project(":ReactAndroid:hermes-engine"))
 
     javadocDeps("com.squareup:javapoet:1.13.0")
 
