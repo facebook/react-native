@@ -15,7 +15,12 @@ plugins {
 
 def customDownloadDir = System.getenv("REACT_NATIVE_DOWNLOADS_DIR")
 def downloadsDir = customDownloadDir ? new File(customDownloadDir) : rootProject.file("sdks/download")
-def hermesDir = rootProject.file("sdks/hermes")
+
+// By default we are going to download and unzip hermes inside the /sdks/hermes folder
+// but you can provide an override for where the hermes source code is located.
+def overrideHermesDir = System.getenv("REACT_NATIVE_OVERRIDE_HERMES_DIR") != null
+def hermesDir = System.getenv("REACT_NATIVE_OVERRIDE_HERMES_DIR") ?: rootProject.file("sdks/hermes")
+
 def hermesVersion = "main"
 def hermesVersionFile = rootProject.file("sdks/.hermesversion")
 if (hermesVersionFile.exists()) {
@@ -38,11 +43,6 @@ task downloadHermes(type: Download) {
     dest(new File(downloadsDir, "hermes.tar.gz"))
 }
 
-// This task is called by the CI to download all the extrenal source code tarballs.
-task downloadNdkBuildDependencies() {
-    dependsOn(downloadHermes)
-}
-
 task installArchives {
     dependsOn("publishAllPublicationsToNpmRepository")
 }
@@ -60,8 +60,7 @@ task unzipHermes(dependsOn: downloadHermes, type: Copy) {
     into(hermesDir)
 }
 
-
-task configureNinjaForHermes(dependsOn: unzipHermes, type: Exec) {
+task configureNinjaForHermes(type: Exec) {
     workingDir(hermesDir)
     commandLine(windowsAwareCommandLine(
         "python3",
@@ -77,7 +76,7 @@ task buildNinjaForHermes(dependsOn: configureNinjaForHermes, type: Exec) {
     commandLine(windowsAwareCommandLine("cmake", "--build", "./ninja_build", "--target", "hermesc", "-j", ndkBuildJobs))
 }
 
-task prepareHeadersForPrefab(dependsOn: unzipHermes, type: Copy) {
+task prepareHeadersForPrefab(type: Copy) {
     from("$hermesDir/API")
     from("$hermesDir/public")
     include("**/*.h")
@@ -208,6 +207,12 @@ android {
 }
 
 afterEvaluate {
+    if (!overrideHermesDir) {
+        // If you're not specifying a Hermes Path override, we want to
+        // download/unzip Hermes from Github then.
+        configureNinjaForHermes.dependsOn(unzipHermes)
+        prepareHeadersForPrefab.dependsOn(unzipHermes)
+    }
     preBuild.dependsOn(buildNinjaForHermes)
     preBuild.dependsOn(prepareHeadersForPrefab)
     // Needed as some of the native sources needs to be downloaded

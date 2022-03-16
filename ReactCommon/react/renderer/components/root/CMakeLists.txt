@@ -3,14 +3,13 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-cmake_minimum_required(VERSION 3.4.1)
+cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
 add_compile_options(-fexceptions -frtti -std=c++17 -Wall -DLOG_TAG=\"Fabric\")
 
-add_library(rrc_root SHARED
-        RootProps.cpp
-        RootShadowNode.cpp)
+file(GLOB rrc_root_SRC CONFIGURE_DEPENDS *.cpp)
+add_library(rrc_root SHARED ${rrc_root_SRC})
 
 target_include_directories(rrc_root PUBLIC ${REACT_COMMON_DIR})
 

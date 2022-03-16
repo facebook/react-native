@@ -3,18 +3,13 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-cmake_minimum_required(VERSION 3.4.1)
+cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
 add_compile_options(-fexceptions -frtti -std=c++17 -Wall -DLOG_TAG=\"Fabric\")
 
-add_library(
-        rrc_textinput
-        SHARED
-        androidtextinput/react/renderer/components/androidtextinput/AndroidTextInputProps.cpp
-        androidtextinput/react/renderer/components/androidtextinput/AndroidTextInputShadowNode.cpp
-        androidtextinput/react/renderer/components/androidtextinput/AndroidTextInputState.cpp
-)
+file(GLOB rrc_textinput_SRC CONFIGURE_DEPENDS androidtextinput/react/renderer/components/androidtextinput/*.cpp)
+add_library(rrc_textinput SHARED ${rrc_textinput_SRC})
 
 target_include_directories(rrc_textinput
         PUBLIC
