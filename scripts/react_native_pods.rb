@@ -271,8 +271,9 @@ def modify_flags_for_new_architecture(installer, cpp_flags)
 end
 
 def build_codegen!(react_native_path)
-  codegen_repo_path = "#{react_native_path}/packages/react-native-codegen";
-  codegen_npm_path = "#{react_native_path}/../react-native-codegen";
+  relative_installation_root = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
+  codegen_repo_path = "#{relative_installation_root}/#{react_native_path}/packages/react-native-codegen";
+  codegen_npm_path = "#{relative_installation_root}/#{react_native_path}/../react-native-codegen";
   codegen_cli_path = ""
   if Dir.exist?(codegen_repo_path)
     codegen_cli_path = codegen_repo_path
@@ -313,7 +314,7 @@ def checkAndGenerateEmptyThirdPartyProvider!(react_native_path)
     Pod::Executable.execute_command(
       'node',
       [
-        "#{react_native_path}/scripts/generate-provider-cli.js",
+        "#{relative_installation_root}/#{react_native_path}/scripts/generate-provider-cli.js",
         "--platform", 'ios',
         "--schemaListPath", temp_schema_list_path,
         "--outputDir", "#{output_dir}"
@@ -503,6 +504,7 @@ def use_react_native_codegen_discovery!(options={})
   app_path = options[:app_path]
   fabric_enabled = options[:fabric_enabled] ||= false
   config_file_dir = options[:config_file_dir] ||= ''
+  relative_installation_root = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
 
   if !app_path
     Pod::UI.warn '[Codegen] Error: app_path is required for use_react_native_codegen_discovery.'
@@ -518,7 +520,7 @@ def use_react_native_codegen_discovery!(options={})
   out = Pod::Executable.execute_command(
     'node',
     [
-      "#{react_native_path}/scripts/generate-artifacts.js",
+      "#{relative_installation_root}/#{react_native_path}/scripts/generate-artifacts.js",
       "-p", "#{app_path}",
       "-o", Pod::Config.instance.installation_root,
       "-e", "#{fabric_enabled}",
