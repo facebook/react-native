@@ -17,7 +17,6 @@ add_compile_options(
 file(GLOB react_debug_SRC CONFIGURE_DEPENDS *.cpp)
 add_library(react_debug SHARED ${react_debug_SRC})
 
-# TODO This should not be ../../.. but a proper variable
-target_include_directories(react_debug PUBLIC ../../..)
+target_include_directories(react_debug PUBLIC ${REACT_COMMON_DIR})
 
 target_link_libraries(react_debug log folly_json)
