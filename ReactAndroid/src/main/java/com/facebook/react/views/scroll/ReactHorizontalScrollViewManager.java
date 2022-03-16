@@ -109,7 +109,7 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
   @ReactProp(name = "snapToOffsets")
   public void setSnapToOffsets(
       ReactHorizontalScrollView view, @Nullable ReadableArray snapToOffsets) {
-    if (snapToOffsets == null) {
+    if (snapToOffsets == null || snapToOffsets.size() == 0) {
       view.setSnapOffsets(null);
       return;
     }

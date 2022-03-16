@@ -24,6 +24,7 @@ import com.facebook.react.uimanager.StateWrapper;
  * the Bindings.cpp, where the pointer to the C++ event emitter is set.
  */
 @SuppressLint("MissingNativeLoadLibrary")
+@DoNotStrip
 public class StateWrapperImpl implements StateWrapper {
   static {
     FabricSoLoader.staticInit();

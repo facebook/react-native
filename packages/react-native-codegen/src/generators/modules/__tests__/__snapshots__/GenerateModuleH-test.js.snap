@@ -14,6 +14,7 @@ Map {
 #pragma once
 
 #include <ReactCommon/TurboModule.h>
+#include <react/bridging/Bridging.h>
 
 namespace facebook {
 namespace react {
@@ -25,6 +26,33 @@ protected:
 public:
   
 
+};
+
+template <typename T>
+class JSI_EXPORT NativeSampleTurboModuleCxxSpec : public TurboModule {
+public:
+  jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.get(rt, propName);
+  }
+
+protected:
+  NativeSampleTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
+    : TurboModule(\\"SampleTurboModule\\", jsInvoker),
+      delegate_(static_cast<T*>(this), jsInvoker) {}
+
+private:
+  class Delegate : public NativeSampleTurboModuleCxxSpecJSI {
+  public:
+    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
+      NativeSampleTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+
+    
+
+  private:
+    T *instance_;
+  };
+
+  Delegate delegate_;
 };
 
 } // namespace react
@@ -47,6 +75,7 @@ Map {
 #pragma once
 
 #include <ReactCommon/TurboModule.h>
+#include <react/bridging/Bridging.h>
 
 namespace facebook {
 namespace react {
@@ -61,6 +90,64 @@ public:
   virtual void optionalMethod(jsi::Runtime &rt, jsi::Object options, jsi::Function callback, jsi::Array extras) = 0;
   virtual void getArrays(jsi::Runtime &rt, jsi::Object options) = 0;
 
+};
+
+template <typename T>
+class JSI_EXPORT NativeSampleTurboModuleCxxSpec : public TurboModule {
+public:
+  jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.get(rt, propName);
+  }
+
+protected:
+  NativeSampleTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
+    : TurboModule(\\"SampleTurboModule\\", jsInvoker),
+      delegate_(static_cast<T*>(this), jsInvoker) {}
+
+private:
+  class Delegate : public NativeSampleTurboModuleCxxSpecJSI {
+  public:
+    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
+      NativeSampleTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+
+    jsi::Object difficult(jsi::Runtime &rt, jsi::Object A) override {
+      static_assert(
+          bridging::getParameterCount(&T::difficult) == 2,
+          \\"Expected difficult(...) to have 2 parameters\\");
+
+      return bridging::callFromJs<jsi::Object>(
+          rt, &T::difficult, jsInvoker_, instance_, std::move(A));
+    }
+    void optionals(jsi::Runtime &rt, jsi::Object A) override {
+      static_assert(
+          bridging::getParameterCount(&T::optionals) == 2,
+          \\"Expected optionals(...) to have 2 parameters\\");
+
+      return bridging::callFromJs<void>(
+          rt, &T::optionals, jsInvoker_, instance_, std::move(A));
+    }
+    void optionalMethod(jsi::Runtime &rt, jsi::Object options, jsi::Function callback, jsi::Array extras) override {
+      static_assert(
+          bridging::getParameterCount(&T::optionalMethod) == 4,
+          \\"Expected optionalMethod(...) to have 4 parameters\\");
+
+      return bridging::callFromJs<void>(
+          rt, &T::optionalMethod, jsInvoker_, instance_, std::move(options), std::move(callback), std::move(extras));
+    }
+    void getArrays(jsi::Runtime &rt, jsi::Object options) override {
+      static_assert(
+          bridging::getParameterCount(&T::getArrays) == 2,
+          \\"Expected getArrays(...) to have 2 parameters\\");
+
+      return bridging::callFromJs<void>(
+          rt, &T::getArrays, jsInvoker_, instance_, std::move(options));
+    }
+
+  private:
+    T *instance_;
+  };
+
+  Delegate delegate_;
 };
 
 } // namespace react
@@ -83,6 +170,7 @@ Map {
 #pragma once
 
 #include <ReactCommon/TurboModule.h>
+#include <react/bridging/Bridging.h>
 
 namespace facebook {
 namespace react {
@@ -94,6 +182,33 @@ protected:
 public:
   
 
+};
+
+template <typename T>
+class JSI_EXPORT NativeSampleTurboModuleCxxSpec : public TurboModule {
+public:
+  jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.get(rt, propName);
+  }
+
+protected:
+  NativeSampleTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
+    : TurboModule(\\"SampleTurboModule\\", jsInvoker),
+      delegate_(static_cast<T*>(this), jsInvoker) {}
+
+private:
+  class Delegate : public NativeSampleTurboModuleCxxSpecJSI {
+  public:
+    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
+      NativeSampleTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+
+    
+
+  private:
+    T *instance_;
+  };
+
+  Delegate delegate_;
 };
 
 } // namespace react
@@ -116,6 +231,7 @@ Map {
 #pragma once
 
 #include <ReactCommon/TurboModule.h>
+#include <react/bridging/Bridging.h>
 
 namespace facebook {
 namespace react {
@@ -128,6 +244,48 @@ public:
   virtual jsi::Object getConstants(jsi::Runtime &rt) = 0;
   virtual void cropImage(jsi::Runtime &rt, jsi::Object cropData) = 0;
 
+};
+
+template <typename T>
+class JSI_EXPORT AliasTurboModuleCxxSpec : public TurboModule {
+public:
+  jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.get(rt, propName);
+  }
+
+protected:
+  AliasTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
+    : TurboModule(\\"AliasTurboModule\\", jsInvoker),
+      delegate_(static_cast<T*>(this), jsInvoker) {}
+
+private:
+  class Delegate : public AliasTurboModuleCxxSpecJSI {
+  public:
+    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
+      AliasTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+
+    jsi::Object getConstants(jsi::Runtime &rt) override {
+      static_assert(
+          bridging::getParameterCount(&T::getConstants) == 1,
+          \\"Expected getConstants(...) to have 1 parameters\\");
+
+      return bridging::callFromJs<jsi::Object>(
+          rt, &T::getConstants, jsInvoker_, instance_);
+    }
+    void cropImage(jsi::Runtime &rt, jsi::Object cropData) override {
+      static_assert(
+          bridging::getParameterCount(&T::cropImage) == 2,
+          \\"Expected cropImage(...) to have 2 parameters\\");
+
+      return bridging::callFromJs<void>(
+          rt, &T::cropImage, jsInvoker_, instance_, std::move(cropData));
+    }
+
+  private:
+    T *instance_;
+  };
+
+  Delegate delegate_;
 };
 
 } // namespace react
@@ -150,6 +308,7 @@ Map {
 #pragma once
 
 #include <ReactCommon/TurboModule.h>
+#include <react/bridging/Bridging.h>
 
 namespace facebook {
 namespace react {
@@ -165,6 +324,65 @@ public:
   virtual jsi::Value deletePhotos(jsi::Runtime &rt, jsi::Array assets) = 0;
 
 };
+
+template <typename T>
+class JSI_EXPORT NativeCameraRollManagerCxxSpec : public TurboModule {
+public:
+  jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.get(rt, propName);
+  }
+
+protected:
+  NativeCameraRollManagerCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
+    : TurboModule(\\"CameraRollManager\\", jsInvoker),
+      delegate_(static_cast<T*>(this), jsInvoker) {}
+
+private:
+  class Delegate : public NativeCameraRollManagerCxxSpecJSI {
+  public:
+    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
+      NativeCameraRollManagerCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+
+    jsi::Object getConstants(jsi::Runtime &rt) override {
+      static_assert(
+          bridging::getParameterCount(&T::getConstants) == 1,
+          \\"Expected getConstants(...) to have 1 parameters\\");
+
+      return bridging::callFromJs<jsi::Object>(
+          rt, &T::getConstants, jsInvoker_, instance_);
+    }
+    jsi::Value getPhotos(jsi::Runtime &rt, jsi::Object params) override {
+      static_assert(
+          bridging::getParameterCount(&T::getPhotos) == 2,
+          \\"Expected getPhotos(...) to have 2 parameters\\");
+
+      return bridging::callFromJs<jsi::Value>(
+          rt, &T::getPhotos, jsInvoker_, instance_, std::move(params));
+    }
+    jsi::Value saveToCameraRoll(jsi::Runtime &rt, jsi::String uri, jsi::String type) override {
+      static_assert(
+          bridging::getParameterCount(&T::saveToCameraRoll) == 3,
+          \\"Expected saveToCameraRoll(...) to have 3 parameters\\");
+
+      return bridging::callFromJs<jsi::Value>(
+          rt, &T::saveToCameraRoll, jsInvoker_, instance_, std::move(uri), std::move(type));
+    }
+    jsi::Value deletePhotos(jsi::Runtime &rt, jsi::Array assets) override {
+      static_assert(
+          bridging::getParameterCount(&T::deletePhotos) == 2,
+          \\"Expected deletePhotos(...) to have 2 parameters\\");
+
+      return bridging::callFromJs<jsi::Value>(
+          rt, &T::deletePhotos, jsInvoker_, instance_, std::move(assets));
+    }
+
+  private:
+    T *instance_;
+  };
+
+  Delegate delegate_;
+};
+
 class JSI_EXPORT NativeImagePickerIOSCxxSpecJSI : public TurboModule {
 protected:
   NativeImagePickerIOSCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
@@ -173,6 +391,41 @@ public:
   virtual void openCameraDialog(jsi::Runtime &rt, jsi::Object config, jsi::Function successCallback, jsi::Function cancelCallback) = 0;
 
 };
+
+template <typename T>
+class JSI_EXPORT NativeImagePickerIOSCxxSpec : public TurboModule {
+public:
+  jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.get(rt, propName);
+  }
+
+protected:
+  NativeImagePickerIOSCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
+    : TurboModule(\\"ImagePickerIOS\\", jsInvoker),
+      delegate_(static_cast<T*>(this), jsInvoker) {}
+
+private:
+  class Delegate : public NativeImagePickerIOSCxxSpecJSI {
+  public:
+    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
+      NativeImagePickerIOSCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+
+    void openCameraDialog(jsi::Runtime &rt, jsi::Object config, jsi::Function successCallback, jsi::Function cancelCallback) override {
+      static_assert(
+          bridging::getParameterCount(&T::openCameraDialog) == 4,
+          \\"Expected openCameraDialog(...) to have 4 parameters\\");
+
+      return bridging::callFromJs<void>(
+          rt, &T::openCameraDialog, jsInvoker_, instance_, std::move(config), std::move(successCallback), std::move(cancelCallback));
+    }
+
+  private:
+    T *instance_;
+  };
+
+  Delegate delegate_;
+};
+
 class JSI_EXPORT NativeExceptionsManagerCxxSpecJSI : public TurboModule {
 protected:
   NativeExceptionsManagerCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
@@ -184,6 +437,72 @@ public:
   virtual void updateExceptionMessage(jsi::Runtime &rt, jsi::String message, jsi::Array stack, double exceptionId) = 0;
   virtual void dismissRedbox(jsi::Runtime &rt) = 0;
 
+};
+
+template <typename T>
+class JSI_EXPORT NativeExceptionsManagerCxxSpec : public TurboModule {
+public:
+  jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.get(rt, propName);
+  }
+
+protected:
+  NativeExceptionsManagerCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
+    : TurboModule(\\"ExceptionsManager\\", jsInvoker),
+      delegate_(static_cast<T*>(this), jsInvoker) {}
+
+private:
+  class Delegate : public NativeExceptionsManagerCxxSpecJSI {
+  public:
+    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
+      NativeExceptionsManagerCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+
+    void reportFatalException(jsi::Runtime &rt, jsi::String message, jsi::Array stack, double exceptionId) override {
+      static_assert(
+          bridging::getParameterCount(&T::reportFatalException) == 4,
+          \\"Expected reportFatalException(...) to have 4 parameters\\");
+
+      return bridging::callFromJs<void>(
+          rt, &T::reportFatalException, jsInvoker_, instance_, std::move(message), std::move(stack), std::move(exceptionId));
+    }
+    void reportSoftException(jsi::Runtime &rt, jsi::String message, jsi::Array stack, double exceptionId) override {
+      static_assert(
+          bridging::getParameterCount(&T::reportSoftException) == 4,
+          \\"Expected reportSoftException(...) to have 4 parameters\\");
+
+      return bridging::callFromJs<void>(
+          rt, &T::reportSoftException, jsInvoker_, instance_, std::move(message), std::move(stack), std::move(exceptionId));
+    }
+    void reportException(jsi::Runtime &rt, jsi::Object data) override {
+      static_assert(
+          bridging::getParameterCount(&T::reportException) == 2,
+          \\"Expected reportException(...) to have 2 parameters\\");
+
+      return bridging::callFromJs<void>(
+          rt, &T::reportException, jsInvoker_, instance_, std::move(data));
+    }
+    void updateExceptionMessage(jsi::Runtime &rt, jsi::String message, jsi::Array stack, double exceptionId) override {
+      static_assert(
+          bridging::getParameterCount(&T::updateExceptionMessage) == 4,
+          \\"Expected updateExceptionMessage(...) to have 4 parameters\\");
+
+      return bridging::callFromJs<void>(
+          rt, &T::updateExceptionMessage, jsInvoker_, instance_, std::move(message), std::move(stack), std::move(exceptionId));
+    }
+    void dismissRedbox(jsi::Runtime &rt) override {
+      static_assert(
+          bridging::getParameterCount(&T::dismissRedbox) == 1,
+          \\"Expected dismissRedbox(...) to have 1 parameters\\");
+
+      return bridging::callFromJs<void>(
+          rt, &T::dismissRedbox, jsInvoker_, instance_);
+    }
+
+  private:
+    T *instance_;
+  };
+
+  Delegate delegate_;
 };
 
 } // namespace react
@@ -206,6 +525,7 @@ Map {
 #pragma once
 
 #include <ReactCommon/TurboModule.h>
+#include <react/bridging/Bridging.h>
 
 namespace facebook {
 namespace react {
@@ -229,6 +549,120 @@ public:
 
 };
 
+template <typename T>
+class JSI_EXPORT NativeSampleTurboModuleCxxSpec : public TurboModule {
+public:
+  jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.get(rt, propName);
+  }
+
+protected:
+  NativeSampleTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
+    : TurboModule(\\"SampleTurboModule\\", jsInvoker),
+      delegate_(static_cast<T*>(this), jsInvoker) {}
+
+private:
+  class Delegate : public NativeSampleTurboModuleCxxSpecJSI {
+  public:
+    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
+      NativeSampleTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+
+    jsi::Object getConstants(jsi::Runtime &rt) override {
+      static_assert(
+          bridging::getParameterCount(&T::getConstants) == 1,
+          \\"Expected getConstants(...) to have 1 parameters\\");
+
+      return bridging::callFromJs<jsi::Object>(
+          rt, &T::getConstants, jsInvoker_, instance_);
+    }
+    void voidFunc(jsi::Runtime &rt) override {
+      static_assert(
+          bridging::getParameterCount(&T::voidFunc) == 1,
+          \\"Expected voidFunc(...) to have 1 parameters\\");
+
+      return bridging::callFromJs<void>(
+          rt, &T::voidFunc, jsInvoker_, instance_);
+    }
+    bool getBool(jsi::Runtime &rt, bool arg) override {
+      static_assert(
+          bridging::getParameterCount(&T::getBool) == 2,
+          \\"Expected getBool(...) to have 2 parameters\\");
+
+      return bridging::callFromJs<bool>(
+          rt, &T::getBool, jsInvoker_, instance_, std::move(arg));
+    }
+    double getNumber(jsi::Runtime &rt, double arg) override {
+      static_assert(
+          bridging::getParameterCount(&T::getNumber) == 2,
+          \\"Expected getNumber(...) to have 2 parameters\\");
+
+      return bridging::callFromJs<double>(
+          rt, &T::getNumber, jsInvoker_, instance_, std::move(arg));
+    }
+    jsi::String getString(jsi::Runtime &rt, jsi::String arg) override {
+      static_assert(
+          bridging::getParameterCount(&T::getString) == 2,
+          \\"Expected getString(...) to have 2 parameters\\");
+
+      return bridging::callFromJs<jsi::String>(
+          rt, &T::getString, jsInvoker_, instance_, std::move(arg));
+    }
+    jsi::Array getArray(jsi::Runtime &rt, jsi::Array arg) override {
+      static_assert(
+          bridging::getParameterCount(&T::getArray) == 2,
+          \\"Expected getArray(...) to have 2 parameters\\");
+
+      return bridging::callFromJs<jsi::Array>(
+          rt, &T::getArray, jsInvoker_, instance_, std::move(arg));
+    }
+    jsi::Object getObject(jsi::Runtime &rt, jsi::Object arg) override {
+      static_assert(
+          bridging::getParameterCount(&T::getObject) == 2,
+          \\"Expected getObject(...) to have 2 parameters\\");
+
+      return bridging::callFromJs<jsi::Object>(
+          rt, &T::getObject, jsInvoker_, instance_, std::move(arg));
+    }
+    double getRootTag(jsi::Runtime &rt, double arg) override {
+      static_assert(
+          bridging::getParameterCount(&T::getRootTag) == 2,
+          \\"Expected getRootTag(...) to have 2 parameters\\");
+
+      return bridging::callFromJs<double>(
+          rt, &T::getRootTag, jsInvoker_, instance_, std::move(arg));
+    }
+    jsi::Object getValue(jsi::Runtime &rt, double x, jsi::String y, jsi::Object z) override {
+      static_assert(
+          bridging::getParameterCount(&T::getValue) == 4,
+          \\"Expected getValue(...) to have 4 parameters\\");
+
+      return bridging::callFromJs<jsi::Object>(
+          rt, &T::getValue, jsInvoker_, instance_, std::move(x), std::move(y), std::move(z));
+    }
+    void getValueWithCallback(jsi::Runtime &rt, jsi::Function callback) override {
+      static_assert(
+          bridging::getParameterCount(&T::getValueWithCallback) == 2,
+          \\"Expected getValueWithCallback(...) to have 2 parameters\\");
+
+      return bridging::callFromJs<void>(
+          rt, &T::getValueWithCallback, jsInvoker_, instance_, std::move(callback));
+    }
+    jsi::Value getValueWithPromise(jsi::Runtime &rt, bool error) override {
+      static_assert(
+          bridging::getParameterCount(&T::getValueWithPromise) == 2,
+          \\"Expected getValueWithPromise(...) to have 2 parameters\\");
+
+      return bridging::callFromJs<jsi::Value>(
+          rt, &T::getValueWithPromise, jsInvoker_, instance_, std::move(error));
+    }
+
+  private:
+    T *instance_;
+  };
+
+  Delegate delegate_;
+};
+
 } // namespace react
 } // namespace facebook
 ",
@@ -249,6 +683,7 @@ Map {
 #pragma once
 
 #include <ReactCommon/TurboModule.h>
+#include <react/bridging/Bridging.h>
 
 namespace facebook {
 namespace react {
@@ -261,6 +696,41 @@ public:
   virtual void voidFunc(jsi::Runtime &rt) = 0;
 
 };
+
+template <typename T>
+class JSI_EXPORT NativeSampleTurboModuleCxxSpec : public TurboModule {
+public:
+  jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.get(rt, propName);
+  }
+
+protected:
+  NativeSampleTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
+    : TurboModule(\\"SampleTurboModule\\", jsInvoker),
+      delegate_(static_cast<T*>(this), jsInvoker) {}
+
+private:
+  class Delegate : public NativeSampleTurboModuleCxxSpecJSI {
+  public:
+    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
+      NativeSampleTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+
+    void voidFunc(jsi::Runtime &rt) override {
+      static_assert(
+          bridging::getParameterCount(&T::voidFunc) == 1,
+          \\"Expected voidFunc(...) to have 1 parameters\\");
+
+      return bridging::callFromJs<void>(
+          rt, &T::voidFunc, jsInvoker_, instance_);
+    }
+
+  private:
+    T *instance_;
+  };
+
+  Delegate delegate_;
+};
+
 class JSI_EXPORT NativeSampleTurboModule2CxxSpecJSI : public TurboModule {
 protected:
   NativeSampleTurboModule2CxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
@@ -269,6 +739,48 @@ public:
   virtual jsi::Object getConstants(jsi::Runtime &rt) = 0;
   virtual void voidFunc(jsi::Runtime &rt) = 0;
 
+};
+
+template <typename T>
+class JSI_EXPORT NativeSampleTurboModule2CxxSpec : public TurboModule {
+public:
+  jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.get(rt, propName);
+  }
+
+protected:
+  NativeSampleTurboModule2CxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
+    : TurboModule(\\"SampleTurboModule2\\", jsInvoker),
+      delegate_(static_cast<T*>(this), jsInvoker) {}
+
+private:
+  class Delegate : public NativeSampleTurboModule2CxxSpecJSI {
+  public:
+    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
+      NativeSampleTurboModule2CxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+
+    jsi::Object getConstants(jsi::Runtime &rt) override {
+      static_assert(
+          bridging::getParameterCount(&T::getConstants) == 1,
+          \\"Expected getConstants(...) to have 1 parameters\\");
+
+      return bridging::callFromJs<jsi::Object>(
+          rt, &T::getConstants, jsInvoker_, instance_);
+    }
+    void voidFunc(jsi::Runtime &rt) override {
+      static_assert(
+          bridging::getParameterCount(&T::voidFunc) == 1,
+          \\"Expected voidFunc(...) to have 1 parameters\\");
+
+      return bridging::callFromJs<void>(
+          rt, &T::voidFunc, jsInvoker_, instance_);
+    }
+
+  private:
+    T *instance_;
+  };
+
+  Delegate delegate_;
 };
 
 } // namespace react

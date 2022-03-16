@@ -28,7 +28,7 @@ LOCAL_STATIC_LIBRARIES := \
 LOCAL_SHARED_LIBRARIES := \
   glog \
   jsinspector \
-  libfolly_json \
+  libfolly_runtime \
   libruntimeexecutor \
   logger
 
@@ -42,6 +42,9 @@ $(call import-module,jsc)
 $(call import-module,glog)
 $(call import-module,jsi)
 $(call import-module,jsinspector)
-$(call import-module,hermes/inspector)
 $(call import-module,hermes/executor)
 $(call import-module,logger)
+
+ifeq ($(APP_OPTIM),debug)
+  $(call import-module,hermes/inspector)
+endif

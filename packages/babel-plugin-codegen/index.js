@@ -86,6 +86,7 @@ module.exports = function ({parse, types: t}) {
 
           if (firstDeclaration.type === 'VariableDeclarator') {
             if (
+              firstDeclaration.init &&
               firstDeclaration.init.type === 'CallExpression' &&
               firstDeclaration.init.callee.type === 'Identifier' &&
               firstDeclaration.init.callee.name === 'codegenNativeCommands'

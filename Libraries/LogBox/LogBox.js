@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict
  * @format
  */
 
@@ -75,24 +75,6 @@ if (__DEV__) {
       consoleErrorImpl = registerError;
       consoleWarnImpl = registerWarning;
 
-      if ((console: any).disableYellowBox === true) {
-        LogBoxData.setDisabled(true);
-        console.warn(
-          'console.disableYellowBox has been deprecated and will be removed in a future release. Please use LogBox.ignoreAllLogs(value) instead.',
-        );
-      }
-
-      (Object.defineProperty: any)(console, 'disableYellowBox', {
-        configurable: true,
-        get: () => LogBoxData.isDisabled(),
-        set: value => {
-          LogBoxData.setDisabled(value);
-          console.warn(
-            'console.disableYellowBox has been deprecated and will be removed in a future release. Please use LogBox.ignoreAllLogs(value) instead.',
-          );
-        },
-      });
-
       if (Platform.isTesting) {
         LogBoxData.setDisabled(true);
       }
@@ -115,7 +97,6 @@ if (__DEV__) {
       // After uninstalling:  original > LogBox (noop) > OtherErrorHandler
       consoleErrorImpl = originalConsoleError;
       consoleWarnImpl = originalConsoleWarn;
-      delete (console: any).disableLogBox;
     },
 
     isInstalled(): boolean {
@@ -153,7 +134,7 @@ if (__DEV__) {
     return typeof args[0] === 'string' && args[0].startsWith('(ADVICE)');
   };
 
-  const isWarningModuleWarning = (...args: any) => {
+  const isWarningModuleWarning = (...args: Array<mixed>) => {
     return typeof args[0] === 'string' && args[0].startsWith('Warning: ');
   };
 

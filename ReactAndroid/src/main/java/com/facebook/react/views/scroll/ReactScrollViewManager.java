@@ -102,7 +102,7 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
 
   @ReactProp(name = "snapToOffsets")
   public void setSnapToOffsets(ReactScrollView view, @Nullable ReadableArray snapToOffsets) {
-    if (snapToOffsets == null) {
+    if (snapToOffsets == null || snapToOffsets.size() == 0) {
       view.setSnapOffsets(null);
       return;
     }

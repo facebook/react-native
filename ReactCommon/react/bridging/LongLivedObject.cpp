@@ -41,6 +41,11 @@ void LongLivedObjectCollection::clear() const {
   collection_.clear();
 }
 
+size_t LongLivedObjectCollection::size() const {
+  std::lock_guard<std::mutex> lock(collectionMutex_);
+  return collection_.size();
+}
+
 // LongLivedObject
 LongLivedObject::LongLivedObject() {}
 LongLivedObject::~LongLivedObject() {}

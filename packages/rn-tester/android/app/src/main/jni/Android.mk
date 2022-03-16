@@ -22,8 +22,7 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) $(GENERATED_SRC_DIR)/codegen/jni
 LOCAL_SHARED_LIBRARIES := \
   libfabricjni \
   libfbjni \
-  libfolly_futures \
-  libfolly_json \
+  libfolly_runtime \
   libglog \
   libreact_codegen_rncore \
   libreact_codegen_rntester \

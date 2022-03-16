@@ -14,7 +14,7 @@
 # and build a Android application that can be used to run the
 # tests specified in the scripts/ directory.
 #
-FROM reactnativecommunity/react-native-android:5.2
+FROM reactnativecommunity/react-native-android:5.4
 
 LABEL Description="React Native Android Test Image"
 LABEL maintainer="Héctor Ramos <hector@fb.com>"
@@ -53,6 +53,4 @@ ADD . /app
 
 RUN yarn
 
-RUN ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog
-
-RUN ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=1
+RUN ./gradlew :ReactAndroid:assembleDebug
