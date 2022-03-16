@@ -20,7 +20,7 @@ target_include_directories(reactnative PUBLIC ${REACT_COMMON_DIR})
 target_link_libraries(reactnative
         boost
         callinvoker
-        folly_json
+        folly_runtime
         glog
         jsi
         jsinspector

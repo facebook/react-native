@@ -14,8 +14,7 @@ add_library(rrc_native SHARED ${rrc_native_SRC})
 target_include_directories(rrc_native PUBLIC ${REACT_COMMON_DIR})
 
 target_link_libraries(rrc_native
-        folly_futures
-        folly_json
+        folly_runtime
         glog_init
         jsi
         react_debug

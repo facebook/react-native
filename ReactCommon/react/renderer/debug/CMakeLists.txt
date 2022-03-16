@@ -12,4 +12,4 @@ file(GLOB react_render_debug_SRC CONFIGURE_DEPENDS *.cpp)
 add_library(react_render_debug SHARED ${react_render_debug_SRC})
 
 target_include_directories(react_render_debug PUBLIC ${REACT_COMMON_DIR})
-target_link_libraries(react_render_debug folly_json)
+target_link_libraries(react_render_debug folly_runtime)

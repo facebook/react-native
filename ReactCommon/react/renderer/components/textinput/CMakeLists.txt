@@ -20,7 +20,7 @@ target_include_directories(rrc_textinput
 
 target_link_libraries(rrc_textinput
         glog
-        folly_json
+        folly_runtime
         glog_init
         jsi
         react_debug

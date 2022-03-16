@@ -34,7 +34,7 @@ target_link_libraries(
         jsireact
         fb
         fbjni
-        folly_json
+        folly_runtime
         hermes-engine::libhermes
         jsi
         reactnativejni

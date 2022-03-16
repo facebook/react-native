@@ -13,8 +13,7 @@ add_library(react_render_core SHARED ${react_render_core_SRC})
 
 target_include_directories(react_render_core PUBLIC ${REACT_COMMON_DIR})
 target_link_libraries(react_render_core
-        folly_futures
-        folly_json
+        folly_runtime
         glog
         jsi
         react_debug

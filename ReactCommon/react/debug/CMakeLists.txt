@@ -19,4 +19,4 @@ add_library(react_debug SHARED ${react_debug_SRC})
 
 target_include_directories(react_debug PUBLIC ${REACT_COMMON_DIR})
 
-target_link_libraries(react_debug log folly_json)
+target_link_libraries(react_debug log folly_runtime)

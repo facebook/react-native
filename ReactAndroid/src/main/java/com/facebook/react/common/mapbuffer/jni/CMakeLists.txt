@@ -23,8 +23,7 @@ target_include_directories(mapbufferjni
 target_link_libraries(mapbufferjni
         fb
         fbjni
-        folly_futures
-        folly_json
+        folly_runtime
         glog
         glog_init
         react_debug

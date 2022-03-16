@@ -14,8 +14,7 @@ add_library(react_render_componentregistry SHARED ${react_render_componentregist
 target_include_directories(react_render_componentregistry PUBLIC ${REACT_COMMON_DIR})
 
 target_link_libraries(react_render_componentregistry
-        folly_futures
-        folly_json
+        folly_runtime
         glog_init
         jsi
         react_debug

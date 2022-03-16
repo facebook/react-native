@@ -26,7 +26,7 @@ target_link_libraries(hermes-inspector
         fb
         fbjni
         folly_futures
-        folly_json
+        folly_runtime
         glog
         hermes-engine::libhermes
         jsi)
