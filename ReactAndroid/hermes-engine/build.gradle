@@ -164,7 +164,7 @@ android {
         main {
             manifest.srcFile "$hermesDir/android/hermes/src/main/AndroidManifest.xml"
             java.srcDirs = [
-                "$hermesDir/lib/Platfrom/Intl/java"
+                "$hermesDir/lib/Platform/Intl/java"
             ]
         }
     }
