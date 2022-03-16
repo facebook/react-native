@@ -1678,7 +1678,7 @@ exports[`VirtualizedList test getItem functionality where data is not an Array 1
     Object {
       "columnCount": 1,
       "hierarchical": false,
-      "itemCount": undefined,
+      "itemCount": 0,
       "rowCount": 1,
     }
   }
