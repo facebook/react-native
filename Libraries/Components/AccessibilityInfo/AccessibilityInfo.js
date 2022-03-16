@@ -77,9 +77,8 @@ const AccessibilityInfo = {
    * See https://reactnative.dev/docs/accessibilityinfo.html#isBoldTextEnabled
    */
   isBoldTextEnabled(): Promise<boolean> {
-    if (Platform.OS === 'android') {
-      return Promise.resolve(false);
-    } else {
+    // [TODO(macOS GH#774) - rework logic to return Promise.resolve(false) on macOS
+    if (Platform.OS === 'ios') {
       return new Promise((resolve, reject) => {
         if (NativeAccessibilityManagerApple != null) {
           NativeAccessibilityManagerApple.getCurrentBoldTextState(
@@ -90,7 +89,10 @@ const AccessibilityInfo = {
           reject(null);
         }
       });
+    } else {
+      return Promise.resolve(false);
     }
+    // ]TODO(macOS GH#774)
   },
 
   /**
@@ -102,9 +104,8 @@ const AccessibilityInfo = {
    * See https://reactnative.dev/docs/accessibilityinfo.html#isGrayscaleEnabled
    */
   isGrayscaleEnabled(): Promise<boolean> {
-    if (Platform.OS === 'android') {
-      return Promise.resolve(false);
-    } else {
+    // [TODO(macOS GH#774) - rework logic to return Promise.resolve(false) on macOS
+    if (Platform.OS === 'ios') {
       return new Promise((resolve, reject) => {
         if (NativeAccessibilityManagerApple != null) {
           NativeAccessibilityManagerApple.getCurrentGrayscaleState(
@@ -115,12 +116,16 @@ const AccessibilityInfo = {
           reject(null);
         }
       });
+    } else {
+      return Promise.resolve(false);
     }
+    // ]TODO(macOS GH#774)
   },
 
   /**
    * macOS only
    */
+  // [TODO(macOS GH#774)
   isHighContrastEnabled: function(): Promise<boolean> {
     if (Platform.OS === 'macos') {
       return new Promise((resolve, reject) => {
@@ -137,6 +142,7 @@ const AccessibilityInfo = {
       return Promise.resolve(false);
     }
   },
+  // ]TODO(macOS GH#774)
 
   /**
    * Query whether inverted colors are currently enabled.
@@ -147,9 +153,8 @@ const AccessibilityInfo = {
    * See https://reactnative.dev/docs/accessibilityinfo.html#isInvertColorsEnabled
    */
   isInvertColorsEnabled(): Promise<boolean> {
-    if (Platform.OS === 'android') {
-      return Promise.resolve(false);
-    } else {
+    // [TODO(macOS GH#774) - rework logic to return Promise.resolve(false) on macOS
+    if (Platform.OS === 'ios') {
       return new Promise((resolve, reject) => {
         if (NativeAccessibilityManagerApple != null) {
           NativeAccessibilityManagerApple.getCurrentInvertColorsState(
@@ -160,7 +165,10 @@ const AccessibilityInfo = {
           reject(null);
         }
       });
+    } else {
+      return Promise.resolve(false);
     }
+    // ]TODO(macOS GH#774)
   },
 
   /**
@@ -201,9 +209,8 @@ const AccessibilityInfo = {
    * See https://reactnative.dev/docs/accessibilityinfo.html#isReduceTransparencyEnabled
    */
   isReduceTransparencyEnabled(): Promise<boolean> {
-    if (Platform.OS === 'android') {
-      return Promise.resolve(false);
-    } else {
+    // [TODO(macOS GH#774) - rework logic to return Promise.resolve(false) on macOS
+    if (Platform.OS === 'ios') {
       return new Promise((resolve, reject) => {
         if (NativeAccessibilityManagerApple != null) {
           NativeAccessibilityManagerApple.getCurrentReduceTransparencyState(
@@ -214,7 +221,10 @@ const AccessibilityInfo = {
           reject(null);
         }
       });
+    } else {
+      return Promise.resolve(false);
     }
+    // ]TODO(macOS GH#774)
   },
 
   /**
