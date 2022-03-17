@@ -423,6 +423,10 @@ afterEvaluate {
     // This can be safely removed once we move to CMake or once AGP supports C++ references on ndk-build.
     configureNdkBuildDebug.dependsOn(":ReactAndroid:hermes-engine:prefabDebugPackage")
     configureNdkBuildRelease.dependsOn(":ReactAndroid:hermes-engine:prefabReleasePackage")
+    reactNativeArchitectures().each { architecture ->
+        tasks.named("configureNdkBuildDebug[${architecture}]") { dependsOn(":ReactAndroid:hermes-engine:prefabDebugPackage") }
+        tasks.named("configureNdkBuildRelease[${architecture}]") { dependsOn(":ReactAndroid:hermes-engine:prefabReleasePackage") }
+    }
 
     publishing {
         publications {
