@@ -88,6 +88,12 @@ export type Props = $ReadOnly<{|
   transparent?: ?boolean,
 
   /**
+   * The `overlayColor` prop determines the color that will be applied to
+   * the Modal's background when the `transparent` prop is false.
+   */
+  overlayColor?: ?string,
+
+  /**
    * The `statusBarTranslucent` prop determines whether your modal should go under
    * the system statusbar.
    *
@@ -225,7 +231,9 @@ class Modal extends React.Component<Props> {
 
     const containerStyles = {
       backgroundColor:
-        this.props.transparent === true ? 'transparent' : 'white',
+        this.props.transparent === true
+          ? 'transparent'
+          : this.props.overlayColor || 'white',
     };
 
     let animationType = this.props.animationType || 'none';
@@ -233,7 +241,7 @@ class Modal extends React.Component<Props> {
     let presentationStyle = this.props.presentationStyle;
     if (!presentationStyle) {
       presentationStyle = 'fullScreen';
-      if (this.props.transparent === true) {
+      if (this.props.transparent === true || this.props.overlayColor) {
         presentationStyle = 'overFullScreen';
       }
     }
@@ -249,6 +257,7 @@ class Modal extends React.Component<Props> {
         animationType={animationType}
         presentationStyle={presentationStyle}
         transparent={this.props.transparent}
+        overlayColor={this.props.overlayColor}
         hardwareAccelerated={this.props.hardwareAccelerated}
         onRequestClose={this.props.onRequestClose}
         onShow={this.props.onShow}
