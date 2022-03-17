@@ -33,6 +33,6 @@ Pod::Spec.new do |spec|
                                "HEADER_SEARCH_PATHS" => "$(PODS_TARGET_SRCROOT)/src" }
 
   # Pinning to the same version as React.podspec.
-  spec.platforms = { :ios => "11.0" }
+  spec.platforms = { :ios => "12.4" }
 
 end

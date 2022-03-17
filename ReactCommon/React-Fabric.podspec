@@ -29,7 +29,7 @@ Pod::Spec.new do |s|
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
-  s.platforms              = { :ios => "11.0" }
+  s.platforms              = { :ios => "12.4" }
   s.source                 = source
   s.source_files           = "dummyFile.cpp"
   s.pod_target_xcconfig = { "USE_HEADERMAP" => "YES",
