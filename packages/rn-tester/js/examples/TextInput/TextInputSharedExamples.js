@@ -477,15 +477,6 @@ function ErrorExample(): React.Node {
   const [text, setText] = React.useState('');
   const [error, setError] = React.useState(null);
   const textinput = React.useRef(null);
-  /*
-  React.useEffect(() => {
-    console.log('useEffect text: ' + text);
-    if (!!textinput && text.length > 7) {
-      setError(text);
-      console.log('setError() with text: ' + text);
-    }
-  });
-  */
   return (
     <>
       <Button title="create error" onPress={() => setError('button')} />
