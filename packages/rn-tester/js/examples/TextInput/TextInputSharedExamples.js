@@ -473,65 +473,38 @@ class SelectionExample extends React.Component<
   }
 }
 
-function ErrorOnBlurExample(): React.Node {
-  const [text, setText] = React.useState('');
-  const [error, setError] = React.useState(null);
-  const textinput = React.useRef(null);
-  return (
-    <TextInput
-      ref={textinput}
-      errorMessage={error}
-      onBlur={() => setError('onBlur')}
-      value={text}
-      style={styles.default}
-    />
-  );
-}
-
-function ErrorOnChangeExample(): React.Node {
+function ErrorExample(): React.Node {
   const [text, setText] = React.useState('');
   const [error, setError] = React.useState(null);
   return (
-    <TextInput
-      errorMessage={error}
-      onChangeText={newText => {
-        setText(newText);
-        setError(newText === 'error' ? 'this input is invalid' : null);
-      }}
-      value={text}
-      style={styles.default}
-    />
+    <>
+      <Button onPress={() => setError('button')} title="Press to set error" />
+      <Text>
+        Type error in the below TextInput to display an error message.
+      </Text>
+      <TextInput
+        errorMessage={error}
+        onBlur={() => setError('onBlur')}
+        onChangeText={newText => {
+          setText(newText);
+          if (newText === 'error') {
+            setError('this input is invalid');
+          } else if (error !== 'onBlur') {
+            setError(null);
+          }
+        }}
+        value={text}
+        style={styles.default}
+      />
+    </>
   );
-}
-
-function ErrorUseEffectExample(): React.Node {
-  const [error, setError] = React.useState(null);
-
-  React.useEffect(() => {
-    if (text.length() > 7) setError('too long');
-    if (text.length() < 7) setError(null);
-  });
-
-  return <TextInput value={text} errorMessage={error} style={styles.default} />;
 }
 
 module.exports = ([
   {
-    title: 'Error Message onBlur',
+    title: 'Error Message',
     render: function (): React.Node {
-      return <ErrorOnBlurExample />;
-    },
-  },
-  {
-    title: 'Error Message added onChangeText',
-    render: function (): React.Node {
-      return <ErrorOnChangeExample />;
-    },
-  },
-  {
-    title: 'Error Message added with useEffect',
-    render: function (): React.Node {
-      return <ErrorUseEffectExample />;
+      return <ErrorExample />;
     },
   },
   {
