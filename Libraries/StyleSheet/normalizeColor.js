@@ -22,7 +22,7 @@ function normalizeColor(
     const {normalizeColorObject} = require('./PlatformColorValueTypes');
     const normalizedColor = normalizeColorObject(color);
     if (normalizedColor != null) {
-      return color;
+      return normalizedColor;
     }
   }
 

@@ -9,7 +9,7 @@ import org.gradle.api.internal.classpath.ModuleRegistry
 import org.gradle.configurationcache.extensions.serviceOf
 
 plugins {
-  kotlin("jvm") version "1.5.31"
+  kotlin("jvm") version "1.6.10"
   id("java-gradle-plugin")
 }
 
@@ -46,8 +46,8 @@ dependencies {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {

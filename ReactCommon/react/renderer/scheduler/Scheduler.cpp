@@ -17,7 +17,7 @@
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/mounting/MountingOverrideDelegate.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
-#include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
+#include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #include <react/renderer/templateprocessor/UITemplateProcessor.h>
 #include <react/renderer/uimanager/UIManager.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
@@ -42,15 +42,30 @@ Scheduler::Scheduler(
           "ReactNativeConfig");
 
   // Creating a container for future `EventDispatcher` instance.
-  eventDispatcher_ =
-      std::make_shared<butter::optional<EventDispatcher const>>();
+  eventDispatcher_ = std::make_shared<std::optional<EventDispatcher const>>();
 
   auto uiManager = std::make_shared<UIManager>(
       runtimeExecutor_, schedulerToolbox.backgroundExecutor, contextContainer_);
   auto eventOwnerBox = std::make_shared<EventBeat::OwnerBox>();
   eventOwnerBox->owner = eventDispatcher_;
 
-  auto eventPipe = [uiManager](
+#ifdef ANDROID
+  auto enableCallImmediates = reactNativeConfig_->getBool(
+      "react_native_new_architecture:enable_call_immediates_android");
+#else
+  auto enableCallImmediates = reactNativeConfig_->getBool(
+      "react_native_new_architecture:enable_call_immediates_ios");
+#endif
+
+  auto weakRuntimeScheduler =
+      contextContainer_->find<std::weak_ptr<RuntimeScheduler>>(
+          "RuntimeScheduler");
+  auto runtimeScheduler =
+      (enableCallImmediates && weakRuntimeScheduler.has_value())
+      ? weakRuntimeScheduler.value().lock()
+      : nullptr;
+
+  auto eventPipe = [uiManager, runtimeScheduler = runtimeScheduler.get()](
                        jsi::Runtime &runtime,
                        const EventTarget *eventTarget,
                        const std::string &type,
@@ -62,6 +77,9 @@ Scheduler::Scheduler(
               runtime, eventTarget, type, priority, payloadFactory);
         },
         runtime);
+    if (runtimeScheduler) {
+      runtimeScheduler->callExpiredTasks(runtime);
+    }
   };
 
   auto statePipe = [uiManager](StateUpdate const &stateUpdate) {
@@ -115,8 +133,7 @@ Scheduler::Scheduler(
   uiManager_->setAnimationDelegate(animationDelegate);
 
 #ifdef ANDROID
-  removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
-      "react_fabric:remove_outstanding_surfaces_on_destruction_android");
+  removeOutstandingSurfacesOnDestruction_ = true;
 #else
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_ios");

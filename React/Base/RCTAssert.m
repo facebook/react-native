@@ -274,11 +274,20 @@ void RCTEnforceNotAllowedForNewArchitecture(id context, NSString *extra)
   RCTAssert(0, @"%@", getNewArchitectureViolationMessage(context, extra));
 }
 
-void RCTWarnNotAllowedForNewArchitecture(id context, NSString *extra)
+void RCTErrorNotAllowedForNewArchitecture(id context, NSString *extra)
 {
   if (!newArchitectureViolationReporting) {
     return;
   }
 
-  RCTLogWarn(@"%@", getNewArchitectureViolationMessage(context, extra));
+  RCTLogError(@"%@", getNewArchitectureViolationMessage(context, extra));
+}
+
+void RCTLogNotAllowedForNewArchitecture(id context, NSString *extra)
+{
+  if (!newArchitectureViolationReporting) {
+    return;
+  }
+
+  RCTLogInfo(@"%@", getNewArchitectureViolationMessage(context, extra));
 }

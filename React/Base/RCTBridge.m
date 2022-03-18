@@ -59,7 +59,7 @@ NSArray<Class> *RCTGetModuleClasses(void)
 void RCTRegisterModule(Class);
 void RCTRegisterModule(Class moduleClass)
 {
-  RCTWarnNotAllowedForNewArchitecture(
+  RCTLogNotAllowedForNewArchitecture(
       @"RCTRegisterModule()", [NSString stringWithFormat:@"'%@' was registered unexpectedly", moduleClass]);
 
   static dispatch_once_t onceToken;

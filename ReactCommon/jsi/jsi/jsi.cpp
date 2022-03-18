@@ -30,6 +30,8 @@ std::string kindToString(const Value& v, Runtime* rt = nullptr) {
     return "a number";
   } else if (v.isString()) {
     return "a string";
+  } else if (v.isSymbol()) {
+    return "a symbol";
   } else {
     assert(v.isObject() && "Expecting object.");
     return rt != nullptr && v.getObject(*rt).isFunction(*rt) ? "a function"
@@ -279,6 +281,15 @@ bool Value::strictEquals(Runtime& runtime, const Value& a, const Value& b) {
           static_cast<const Object&>(b.data_.pointer));
   }
   return false;
+}
+
+bool Value::asBool() const {
+  if (!isBool()) {
+    throw JSINativeException(
+        "Value is " + kindToString(*this) + ", expected a boolean");
+  }
+
+  return getBool();
 }
 
 double Value::asNumber() const {

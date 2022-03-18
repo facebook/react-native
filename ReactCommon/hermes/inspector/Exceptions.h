@@ -47,6 +47,12 @@ class MultipleCommandsPendingException : public std::runtime_error {
             ": a step or resume is already pending") {}
 };
 
+class UserCallbackException : public std::runtime_error {
+ public:
+  UserCallbackException(const std::exception &e)
+      : std::runtime_error(std::string("callback exception: ") + e.what()) {}
+};
+
 } // namespace inspector
 } // namespace hermes
 } // namespace facebook

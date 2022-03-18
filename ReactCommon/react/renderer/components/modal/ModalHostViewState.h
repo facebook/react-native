@@ -21,7 +21,7 @@ namespace facebook {
 namespace react {
 
 /*
- * State for <BottomSheetView> component.
+ * State for <ModalHostView> component.
  */
 class ModalHostViewState final {
  public:

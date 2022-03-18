@@ -12,7 +12,11 @@ import type {ResolvedAssetSource} from './AssetSourceResolver';
 import type {ImageProps} from './ImageProps';
 import type {ViewProps} from '../Components/View/ViewPropTypes';
 import * as NativeComponentRegistry from '../NativeComponent/NativeComponentRegistry';
-import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
+import {ConditionallyIgnoredEventHandlers} from '../NativeComponent/ViewConfigIgnore';
+import type {
+  HostComponent,
+  PartialViewConfig,
+} from '../Renderer/shims/ReactNativeTypes';
 import type {
   ColorValue,
   DangerouslyImpreciseStyle,
@@ -32,12 +36,12 @@ type Props = $ReadOnly<{
   // Android native props
   shouldNotifyLoadEvents?: boolean,
   src?: ?ResolvedAssetSource | $ReadOnlyArray<{uri: string, ...}>,
-  headers?: ?string,
+  headers?: ?{[string]: string},
   defaultSrc?: ?string,
   loadingIndicatorSrc?: ?string,
 }>;
 
-const ImageViewViewConfig =
+export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
   Platform.OS === 'android'
     ? {
         uiViewClassName: 'RCTImageView',
@@ -125,10 +129,21 @@ const ImageViewViewConfig =
           tintColor: {
             process: require('../StyleSheet/processColor'),
           },
+          ...ConditionallyIgnoredEventHandlers({
+            onLoadStart: true,
+            onLoad: true,
+            onLoadEnd: true,
+            onProgress: true,
+            onError: true,
+            onPartialLoad: true,
+          }),
         },
       };
 
 const ImageViewNativeComponent: HostComponent<Props> =
-  NativeComponentRegistry.get<Props>('RCTImageView', () => ImageViewViewConfig);
+  NativeComponentRegistry.get<Props>(
+    'RCTImageView',
+    () => __INTERNAL_VIEW_CONFIG,
+  );
 
 export default ImageViewNativeComponent;

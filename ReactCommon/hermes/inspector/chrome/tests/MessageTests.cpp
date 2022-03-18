@@ -52,6 +52,7 @@ TEST(MessageTests, testDeserializeSomeFieldsInRequest) {
   )");
   debugger::SetBreakpointByUrlRequest req(message);
 
+  EXPECT_EQ(req.toDynamic(), message);
   EXPECT_EQ(req.id, 10);
   EXPECT_EQ(req.method, "Debugger.setBreakpointByUrl");
   EXPECT_EQ(req.lineNumber, 42);
@@ -151,7 +152,7 @@ TEST(MessageTests, testDeserializeResponse) {
     }
   })");
   debugger::SetBreakpointByUrlResponse resp(message);
-
+  EXPECT_EQ(resp.toDynamic(), message);
   EXPECT_EQ(resp.id, 1);
   EXPECT_EQ(resp.breakpointId, "myBreakpointId");
   EXPECT_EQ(resp.locations.size(), 1);
@@ -453,6 +454,1075 @@ TEST(MessageTests, TestRequestHandler) {
   EXPECT_EQ(handler.removeReq.id, 2);
   EXPECT_EQ(handler.removeReq.method, "Debugger.removeBreakpoint");
   EXPECT_EQ(handler.removeReq.breakpointId, "foobar");
+}
+
+TEST(MessageTests, testEnableRequest) {
+  std::string message = R"(
+    {
+      "id": 10,
+      "method": "Debugger.enable"
+    }
+  )";
+
+  // Builder does not throw
+  auto req = Request::fromJsonThrowOnError(message);
+  debugger::EnableRequest *resolvedReq =
+      dynamic_cast<debugger::EnableRequest *>(req.get());
+
+  // Builder returns correct type
+  EXPECT_FALSE(resolvedReq == nullptr);
+
+  // Serialize and Deserialize are inverse functions
+  dynamic messageJSON = folly::parseJson(message);
+  debugger::EnableRequest deserializedReq(messageJSON);
+  EXPECT_EQ(deserializedReq.toDynamic(), messageJSON);
+
+  // Specifics
+  EXPECT_EQ(resolvedReq->id, 10);
+  EXPECT_EQ(resolvedReq->method, "Debugger.enable");
+
+  EXPECT_EQ(resolvedReq->id, deserializedReq.id);
+  EXPECT_EQ(resolvedReq->method, deserializedReq.method);
+}
+
+TEST(MessageTests, testDisableRequest) {
+  std::string message = R"(
+    {
+      "id": 10,
+      "method": "Debugger.disable"
+    }
+  )";
+
+  // Builder does not throw
+  auto req = Request::fromJsonThrowOnError(message);
+  debugger::DisableRequest *resolvedReq =
+      dynamic_cast<debugger::DisableRequest *>(req.get());
+
+  // Builder returns correct type
+  EXPECT_FALSE(resolvedReq == nullptr);
+
+  // Serialize and Deserialize are inverse functions
+  dynamic messageJSON = folly::parseJson(message);
+  debugger::DisableRequest deserializedReq(messageJSON);
+  EXPECT_EQ(deserializedReq.toDynamic(), messageJSON);
+
+  // Specifics
+  EXPECT_EQ(resolvedReq->id, 10);
+  EXPECT_EQ(resolvedReq->method, "Debugger.disable");
+
+  EXPECT_EQ(resolvedReq->id, deserializedReq.id);
+  EXPECT_EQ(resolvedReq->method, deserializedReq.method);
+}
+
+TEST(MessageTests, testEvaluateOnCallFrameRequestMinimal) {
+  std::string message = R"(
+    {
+      "id": 10,
+      "method": "Debugger.evaluateOnCallFrame",
+      "params":{
+        "callFrameId" : "42",
+        "expression": "Foo Bar"
+    }
+    }
+  )";
+
+  // Builder does not throw
+  auto req = Request::fromJsonThrowOnError(message);
+  debugger::EvaluateOnCallFrameRequest *resolvedReq =
+      dynamic_cast<debugger::EvaluateOnCallFrameRequest *>(req.get());
+
+  // Builder returns correct type
+  EXPECT_FALSE(resolvedReq == nullptr);
+
+  // Serialize and Deserialize are inverse functions
+  dynamic messageJSON = folly::parseJson(message);
+  debugger::EvaluateOnCallFrameRequest deserializedReq(messageJSON);
+  EXPECT_EQ(deserializedReq.toDynamic(), messageJSON);
+
+  // Specifics
+  EXPECT_EQ(resolvedReq->id, 10);
+  EXPECT_EQ(resolvedReq->method, "Debugger.evaluateOnCallFrame");
+  EXPECT_EQ(resolvedReq->callFrameId, "42");
+  EXPECT_EQ(resolvedReq->expression, "Foo Bar");
+
+  EXPECT_EQ(resolvedReq->id, deserializedReq.id);
+  EXPECT_EQ(resolvedReq->method, deserializedReq.method);
+  EXPECT_EQ(resolvedReq->callFrameId, deserializedReq.callFrameId);
+  EXPECT_EQ(resolvedReq->expression, deserializedReq.expression);
+
+  EXPECT_FALSE(resolvedReq->objectGroup.hasValue());
+  EXPECT_FALSE(resolvedReq->includeCommandLineAPI.hasValue());
+  EXPECT_FALSE(resolvedReq->silent.hasValue());
+  EXPECT_FALSE(resolvedReq->returnByValue.hasValue());
+  EXPECT_FALSE(resolvedReq->throwOnSideEffect.hasValue());
+}
+
+TEST(MessageTests, testEvaluateOnCallFrameRequestFull) {
+  std::string message = R"(
+    {
+      "id": 10,
+      "method": "Debugger.evaluateOnCallFrame",
+      "params":{
+        "callFrameId" : "42",
+        "expression": "Foo Bar",
+        "objectGroup" : "FooBarGroup",
+        "includeCommandLineAPI" : false,
+        "silent" : true,
+        "returnByValue" : false,
+        "throwOnSideEffect" : true
+      }
+    }
+  )";
+
+  // Builder does not throw
+  auto req = Request::fromJsonThrowOnError(message);
+  debugger::EvaluateOnCallFrameRequest *resolvedReq =
+      dynamic_cast<debugger::EvaluateOnCallFrameRequest *>(req.get());
+
+  // Builder returns correct type
+  EXPECT_FALSE(resolvedReq == nullptr);
+
+  // Serialize and Deserialize are inverse functions
+  dynamic messageJSON = folly::parseJson(message);
+  debugger::EvaluateOnCallFrameRequest deserializedReq(messageJSON);
+  EXPECT_EQ(deserializedReq.toDynamic(), messageJSON);
+
+  // Specifics, resolvedReq is correct
+  EXPECT_EQ(resolvedReq->id, 10);
+  EXPECT_EQ(resolvedReq->method, "Debugger.evaluateOnCallFrame");
+  EXPECT_EQ(resolvedReq->callFrameId, "42");
+  EXPECT_EQ(resolvedReq->expression, "Foo Bar");
+
+  EXPECT_TRUE(resolvedReq->objectGroup.hasValue());
+  EXPECT_TRUE(resolvedReq->includeCommandLineAPI.hasValue());
+  EXPECT_TRUE(resolvedReq->silent.hasValue());
+  EXPECT_TRUE(resolvedReq->returnByValue.hasValue());
+  EXPECT_TRUE(resolvedReq->throwOnSideEffect.hasValue());
+
+  EXPECT_TRUE(resolvedReq->objectGroup.value() == "FooBarGroup");
+  EXPECT_TRUE(resolvedReq->includeCommandLineAPI.value() == false);
+  EXPECT_TRUE(resolvedReq->silent.value() == true);
+  EXPECT_TRUE(resolvedReq->returnByValue.value() == false);
+  EXPECT_TRUE(resolvedReq->throwOnSideEffect.value() == true);
+
+  // Specifics, resolvedReq and deserialized match
+
+  EXPECT_EQ(resolvedReq->id, deserializedReq.id);
+  EXPECT_EQ(resolvedReq->method, deserializedReq.method);
+  EXPECT_EQ(resolvedReq->callFrameId, deserializedReq.callFrameId);
+  EXPECT_EQ(resolvedReq->expression, deserializedReq.expression);
+  EXPECT_EQ(
+      resolvedReq->objectGroup.value(), deserializedReq.objectGroup.value());
+  EXPECT_EQ(
+      resolvedReq->includeCommandLineAPI.value(),
+      deserializedReq.includeCommandLineAPI.value());
+  EXPECT_EQ(resolvedReq->silent.value(), deserializedReq.silent.value());
+  EXPECT_EQ(
+      resolvedReq->returnByValue.value(),
+      deserializedReq.returnByValue.value());
+  EXPECT_EQ(
+      resolvedReq->throwOnSideEffect.value(),
+      deserializedReq.throwOnSideEffect.value());
+}
+
+TEST(MessageTests, testPauseRequest) {
+  std::string message = R"(
+    {
+      "id": 10,
+      "method": "Debugger.pause"
+    }
+  )";
+
+  // Builder does not throw
+  auto req = Request::fromJsonThrowOnError(message);
+  debugger::PauseRequest *resolvedReq =
+      dynamic_cast<debugger::PauseRequest *>(req.get());
+
+  // Builder returns correct type
+  EXPECT_FALSE(resolvedReq == nullptr);
+
+  // Serialize and Deserialize are inverse functions
+  dynamic messageJSON = folly::parseJson(message);
+  debugger::PauseRequest deserializedReq(messageJSON);
+  EXPECT_EQ(deserializedReq.toDynamic(), messageJSON);
+
+  // Specifics
+  EXPECT_EQ(resolvedReq->id, 10);
+  EXPECT_EQ(resolvedReq->method, "Debugger.pause");
+
+  EXPECT_EQ(resolvedReq->id, deserializedReq.id);
+  EXPECT_EQ(resolvedReq->method, deserializedReq.method);
+}
+
+TEST(MessageTests, testRemoveBreakpointRequest) {
+  std::string message = R"(
+    {
+      "id": 10,
+      "method": "Debugger.removeBreakpoint",
+      "params":{
+        "breakpointId" : "42"
+      }
+    }
+  )";
+
+  // Builder does not throw
+  auto req = Request::fromJsonThrowOnError(message);
+  debugger::RemoveBreakpointRequest *resolvedReq =
+      dynamic_cast<debugger::RemoveBreakpointRequest *>(req.get());
+
+  // Builder returns correct type
+  EXPECT_FALSE(resolvedReq == nullptr);
+
+  // Serialize and Deserialize are inverse functions
+  dynamic messageJSON = folly::parseJson(message);
+  debugger::RemoveBreakpointRequest deserializedReq(messageJSON);
+  EXPECT_EQ(deserializedReq.toDynamic(), messageJSON);
+
+  // Specifics
+  EXPECT_EQ(resolvedReq->id, 10);
+  EXPECT_EQ(resolvedReq->method, "Debugger.removeBreakpoint");
+  EXPECT_TRUE(resolvedReq->breakpointId == "42");
+
+  EXPECT_EQ(resolvedReq->id, deserializedReq.id);
+  EXPECT_EQ(resolvedReq->method, deserializedReq.method);
+  EXPECT_EQ(resolvedReq->breakpointId, deserializedReq.breakpointId);
+}
+
+TEST(MessageTests, testResumeRequest) {
+  std::string message = R"(
+    {
+      "id": 10,
+      "method": "Debugger.resume",
+      "params": {
+        "terminateOnResume": false
+      }
+    }
+  )";
+
+  // Builder does not throw
+  auto req = Request::fromJsonThrowOnError(message);
+  debugger::ResumeRequest *resolvedReq =
+      dynamic_cast<debugger::ResumeRequest *>(req.get());
+
+  // Builder returns correct type
+  EXPECT_FALSE(resolvedReq == nullptr);
+
+  // Serialize and Deserialize are inverse functions
+  dynamic messageJSON = folly::parseJson(message);
+  debugger::ResumeRequest deserializedReq(messageJSON);
+  EXPECT_EQ(deserializedReq.toDynamic(), messageJSON);
+
+  // Specifics
+  EXPECT_EQ(resolvedReq->id, 10);
+  EXPECT_EQ(resolvedReq->method, "Debugger.resume");
+
+  EXPECT_EQ(resolvedReq->id, deserializedReq.id);
+  EXPECT_EQ(resolvedReq->method, deserializedReq.method);
+}
+
+TEST(MessageTests, testSetBreakpointRequestMinimal) {
+  std::string message = R"(
+    {
+      "id": 10,
+      "method": "Debugger.setBreakpoint",
+      "params":{
+        "location" :
+        {
+          "lineNumber": 2,
+          "columnNumber": 3,
+          "scriptId": "myScriptId"
+        }
+      }
+    }
+  )";
+
+  // Builder does not throw
+  auto req = Request::fromJsonThrowOnError(message);
+  debugger::SetBreakpointRequest *resolvedReq =
+      dynamic_cast<debugger::SetBreakpointRequest *>(req.get());
+
+  // Builder returns correct type
+  EXPECT_FALSE(resolvedReq == nullptr);
+
+  // Serialize and Deserialize are inverse functions
+  dynamic messageJSON = folly::parseJson(message);
+  debugger::SetBreakpointRequest deserializedReq(messageJSON);
+  EXPECT_EQ(deserializedReq.toDynamic(), messageJSON);
+
+  // Specifics
+  debugger::Location location;
+  location.scriptId = "myScriptId";
+  location.lineNumber = 2;
+  location.columnNumber = 3;
+
+  EXPECT_EQ(resolvedReq->id, 10);
+  EXPECT_EQ(resolvedReq->method, "Debugger.setBreakpoint");
+  EXPECT_EQ(resolvedReq->location.scriptId, "myScriptId");
+  EXPECT_EQ(resolvedReq->location.lineNumber, 2);
+  EXPECT_EQ(resolvedReq->location.columnNumber, 3);
+
+  EXPECT_FALSE(resolvedReq->condition.hasValue());
+
+  EXPECT_EQ(resolvedReq->id, deserializedReq.id);
+  EXPECT_EQ(resolvedReq->method, deserializedReq.method);
+  EXPECT_EQ(resolvedReq->location.scriptId, deserializedReq.location.scriptId);
+  EXPECT_EQ(
+      resolvedReq->location.lineNumber, deserializedReq.location.lineNumber);
+  EXPECT_EQ(
+      resolvedReq->location.columnNumber,
+      deserializedReq.location.columnNumber);
+}
+
+TEST(MessageTests, testSetBreakpointRequestFull) {
+  std::string message = R"(
+    {
+      "id": 10,
+      "method": "Debugger.setBreakpoint",
+      "params":{
+        "location" :
+        {
+          "lineNumber": 2,
+          "columnNumber": 3,
+          "scriptId": "myScriptId"
+        },
+        "condition": "FooBarCondition"
+      }
+    }
+  )";
+
+  // Builder does not throw
+  auto req = Request::fromJsonThrowOnError(message);
+  debugger::SetBreakpointRequest *resolvedReq =
+      dynamic_cast<debugger::SetBreakpointRequest *>(req.get());
+
+  // Builder returns correct type
+  EXPECT_FALSE(resolvedReq == nullptr);
+
+  // Serialize and Deserialize are inverse functions
+  dynamic messageJSON = folly::parseJson(message);
+  debugger::SetBreakpointRequest deserializedReq(messageJSON);
+  EXPECT_EQ(deserializedReq.toDynamic(), messageJSON);
+
+  // Specifics
+  EXPECT_EQ(resolvedReq->id, 10);
+  EXPECT_EQ(resolvedReq->method, "Debugger.setBreakpoint");
+  EXPECT_EQ(resolvedReq->location.scriptId, "myScriptId");
+  EXPECT_EQ(resolvedReq->location.lineNumber, 2);
+  EXPECT_EQ(resolvedReq->location.columnNumber, 3);
+
+  EXPECT_TRUE(resolvedReq->condition.hasValue());
+  EXPECT_EQ(resolvedReq->condition.value(), "FooBarCondition");
+
+  EXPECT_EQ(resolvedReq->id, deserializedReq.id);
+  EXPECT_EQ(resolvedReq->method, deserializedReq.method);
+  EXPECT_EQ(resolvedReq->location.scriptId, deserializedReq.location.scriptId);
+  EXPECT_EQ(
+      resolvedReq->location.lineNumber, deserializedReq.location.lineNumber);
+  EXPECT_EQ(
+      resolvedReq->location.columnNumber,
+      deserializedReq.location.columnNumber);
+  EXPECT_EQ(resolvedReq->condition.value(), deserializedReq.condition.value());
+}
+
+TEST(MessageTests, testSetBreakpointByUrlRequestMinimal) {
+  std::string message = R"(
+    {
+      "id": 1,
+      "method": "Debugger.setBreakpointByUrl",
+      "params": {
+        "lineNumber": 2
+      }
+    }
+  )";
+
+  // Builder does not throw
+  auto req = Request::fromJsonThrowOnError(message);
+  debugger::SetBreakpointByUrlRequest *resolvedReq =
+      dynamic_cast<debugger::SetBreakpointByUrlRequest *>(req.get());
+
+  // Builder returns correct type
+  EXPECT_FALSE(resolvedReq == nullptr);
+
+  // Serialize and Deserialize are inverse functions
+  dynamic messageJSON = folly::parseJson(message);
+  debugger::SetBreakpointByUrlRequest deserializedReq(messageJSON);
+  EXPECT_EQ(deserializedReq.toDynamic(), messageJSON);
+
+  // Specifics
+  EXPECT_EQ(resolvedReq->id, 1);
+  EXPECT_EQ(resolvedReq->method, "Debugger.setBreakpointByUrl");
+  EXPECT_EQ(resolvedReq->lineNumber, 2);
+
+  EXPECT_FALSE(resolvedReq->condition.hasValue());
+  EXPECT_FALSE(resolvedReq->columnNumber.hasValue());
+  EXPECT_FALSE(resolvedReq->url.hasValue());
+  EXPECT_FALSE(resolvedReq->urlRegex.hasValue());
+
+  EXPECT_EQ(resolvedReq->id, deserializedReq.id);
+  EXPECT_EQ(resolvedReq->method, deserializedReq.method);
+  EXPECT_EQ(resolvedReq->lineNumber, deserializedReq.lineNumber);
+}
+
+TEST(MessageTests, testSetBreakpointByUrlRequestFull) {
+  std::string message = R"(
+    {
+      "id": 1,
+      "method": "Debugger.setBreakpointByUrl",
+      "params": {
+        "lineNumber": 2,
+        "columnNumber": 3,
+        "condition": "foo == 42",
+        "url": "http://example.com/example.js",
+        "urlRegex": "http://example.com/.*"
+      }
+    }
+  )";
+
+  // Builder does not throw
+  auto req = Request::fromJsonThrowOnError(message);
+  debugger::SetBreakpointByUrlRequest *resolvedReq =
+      dynamic_cast<debugger::SetBreakpointByUrlRequest *>(req.get());
+
+  // Builder returns correct type
+  EXPECT_FALSE(resolvedReq == nullptr);
+
+  // Serialize and Deserialize are inverse functions
+  dynamic messageJSON = folly::parseJson(message);
+  debugger::SetBreakpointByUrlRequest deserializedReq(messageJSON);
+  EXPECT_EQ(deserializedReq.toDynamic(), messageJSON);
+
+  // Specifics
+  EXPECT_EQ(resolvedReq->id, 1);
+  EXPECT_EQ(resolvedReq->method, "Debugger.setBreakpointByUrl");
+  EXPECT_EQ(resolvedReq->lineNumber, 2);
+
+  EXPECT_TRUE(resolvedReq->condition.hasValue());
+  EXPECT_EQ(resolvedReq->condition.value(), "foo == 42");
+  EXPECT_TRUE(resolvedReq->columnNumber.hasValue());
+  EXPECT_EQ(resolvedReq->columnNumber.value(), 3);
+  EXPECT_TRUE(resolvedReq->url.hasValue());
+  EXPECT_EQ(resolvedReq->url.value(), "http://example.com/example.js");
+  EXPECT_TRUE(resolvedReq->urlRegex.hasValue());
+  EXPECT_EQ(resolvedReq->urlRegex.value(), "http://example.com/.*");
+
+  EXPECT_EQ(resolvedReq->id, deserializedReq.id);
+  EXPECT_EQ(resolvedReq->method, deserializedReq.method);
+  EXPECT_EQ(resolvedReq->lineNumber, deserializedReq.lineNumber);
+  EXPECT_EQ(resolvedReq->condition.value(), deserializedReq.condition.value());
+  EXPECT_EQ(
+      resolvedReq->columnNumber.value(), deserializedReq.columnNumber.value());
+  EXPECT_EQ(resolvedReq->url.value(), deserializedReq.url.value());
+  EXPECT_EQ(resolvedReq->urlRegex.value(), deserializedReq.urlRegex.value());
+}
+
+TEST(MessageTests, testSetBreakpointsActiveRequest) {
+  std::string message = R"(
+    {
+      "id": 1,
+      "method": "Debugger.setBreakpointsActive",
+      "params": {
+        "active": true
+      }
+    }
+  )";
+
+  // Builder does not throw
+  auto req = Request::fromJsonThrowOnError(message);
+  debugger::SetBreakpointsActiveRequest *resolvedReq =
+      dynamic_cast<debugger::SetBreakpointsActiveRequest *>(req.get());
+
+  // Builder returns correct type
+  EXPECT_FALSE(resolvedReq == nullptr);
+
+  // Serialize and Deserialize are inverse functions
+  dynamic messageJSON = folly::parseJson(message);
+  debugger::SetBreakpointsActiveRequest deserializedReq(messageJSON);
+  EXPECT_EQ(deserializedReq.toDynamic(), messageJSON);
+
+  // Specifics
+  EXPECT_EQ(resolvedReq->id, 1);
+  EXPECT_EQ(resolvedReq->method, "Debugger.setBreakpointsActive");
+  EXPECT_EQ(resolvedReq->active, true);
+
+  EXPECT_EQ(resolvedReq->id, deserializedReq.id);
+  EXPECT_EQ(resolvedReq->method, deserializedReq.method);
+  EXPECT_EQ(resolvedReq->active, deserializedReq.active);
+}
+
+TEST(MessageTests, testSetInstrumentationBreakpointRequest) {
+  std::string message = R"(
+    {
+      "id": 1,
+      "method": "Debugger.setInstrumentationBreakpoint",
+      "params": {
+        "instrumentation": "TODO: THIS SHOUD NOT BE ACCEPTED BY ENUM"
+      }
+    }
+  )";
+
+  // Builder does not throw
+  auto req = Request::fromJsonThrowOnError(message);
+  debugger::SetInstrumentationBreakpointRequest *resolvedReq =
+      dynamic_cast<debugger::SetInstrumentationBreakpointRequest *>(req.get());
+
+  // Builder returns correct type
+  EXPECT_FALSE(resolvedReq == nullptr);
+
+  // Serialize and Deserialize are inverse functions
+  dynamic messageJSON = folly::parseJson(message);
+  debugger::SetInstrumentationBreakpointRequest deserializedReq(messageJSON);
+  EXPECT_EQ(deserializedReq.toDynamic(), messageJSON);
+
+  // Specifics
+  EXPECT_EQ(resolvedReq->id, 1);
+  EXPECT_EQ(resolvedReq->method, "Debugger.setInstrumentationBreakpoint");
+  EXPECT_EQ(
+      resolvedReq->instrumentation, "TODO: THIS SHOUD NOT BE ACCEPTED BY ENUM");
+
+  EXPECT_EQ(resolvedReq->id, deserializedReq.id);
+  EXPECT_EQ(resolvedReq->method, deserializedReq.method);
+  EXPECT_EQ(resolvedReq->instrumentation, deserializedReq.instrumentation);
+}
+
+TEST(MessageTests, testSetPauseOnExceptionsRequest) {
+  std::string message = R"(
+    {
+      "id": 1,
+      "method": "Debugger.setPauseOnExceptions",
+      "params": {
+        "state": "TODO: THIS SHOUD NOT BE ACCEPTED BY ENUM"
+      }
+    }
+  )";
+
+  // Builder does not throw
+  auto req = Request::fromJsonThrowOnError(message);
+  debugger::SetPauseOnExceptionsRequest *resolvedReq =
+      dynamic_cast<debugger::SetPauseOnExceptionsRequest *>(req.get());
+
+  // Builder returns correct type
+  EXPECT_FALSE(resolvedReq == nullptr);
+
+  // Serialize and Deserialize are inverse functions
+  dynamic messageJSON = folly::parseJson(message);
+  debugger::SetPauseOnExceptionsRequest deserializedReq(messageJSON);
+  EXPECT_EQ(deserializedReq.toDynamic(), messageJSON);
+
+  // Specifics
+  EXPECT_EQ(resolvedReq->id, 1);
+  EXPECT_EQ(resolvedReq->method, "Debugger.setPauseOnExceptions");
+  EXPECT_EQ(resolvedReq->state, "TODO: THIS SHOUD NOT BE ACCEPTED BY ENUM");
+
+  EXPECT_EQ(resolvedReq->id, deserializedReq.id);
+  EXPECT_EQ(resolvedReq->method, deserializedReq.method);
+  EXPECT_EQ(resolvedReq->state, deserializedReq.state);
+}
+
+TEST(MessageTests, testStepIntoRequest) {
+  std::string message = R"(
+    {
+      "id": 10,
+      "method": "Debugger.stepInto"
+    }
+  )";
+
+  // Builder does not throw
+  auto req = Request::fromJsonThrowOnError(message);
+  debugger::StepIntoRequest *resolvedReq =
+      dynamic_cast<debugger::StepIntoRequest *>(req.get());
+
+  // Builder returns correct type
+  EXPECT_FALSE(resolvedReq == nullptr);
+
+  // Serialize and Deserialize are inverse functions
+  dynamic messageJSON = folly::parseJson(message);
+  debugger::StepIntoRequest deserializedReq(messageJSON);
+  EXPECT_EQ(deserializedReq.toDynamic(), messageJSON);
+
+  // Specifics
+  EXPECT_EQ(resolvedReq->id, 10);
+  EXPECT_EQ(resolvedReq->method, "Debugger.stepInto");
+
+  EXPECT_EQ(resolvedReq->id, deserializedReq.id);
+  EXPECT_EQ(resolvedReq->method, deserializedReq.method);
+}
+
+TEST(MessageTests, testStepOutRequest) {
+  std::string message = R"(
+    {
+      "id": 10,
+      "method": "Debugger.stepOut"
+    }
+  )";
+
+  // Builder does not throw
+  auto req = Request::fromJsonThrowOnError(message);
+  debugger::StepOutRequest *resolvedReq =
+      dynamic_cast<debugger::StepOutRequest *>(req.get());
+
+  // Builder returns correct type
+  EXPECT_FALSE(resolvedReq == nullptr);
+
+  // Serialize and Deserialize are inverse functions
+  dynamic messageJSON = folly::parseJson(message);
+  debugger::StepOutRequest deserializedReq(messageJSON);
+  EXPECT_EQ(deserializedReq.toDynamic(), messageJSON);
+
+  // Specifics
+  EXPECT_EQ(resolvedReq->id, 10);
+  EXPECT_EQ(resolvedReq->method, "Debugger.stepOut");
+
+  EXPECT_EQ(resolvedReq->id, deserializedReq.id);
+  EXPECT_EQ(resolvedReq->method, deserializedReq.method);
+}
+
+TEST(MessageTests, testStepOverRequest) {
+  std::string message = R"(
+    {
+      "id": 10,
+      "method": "Debugger.stepOver"
+    }
+  )";
+
+  // Builder does not throw
+  auto req = Request::fromJsonThrowOnError(message);
+  debugger::StepOverRequest *resolvedReq =
+      dynamic_cast<debugger::StepOverRequest *>(req.get());
+
+  // Builder returns correct type
+  EXPECT_FALSE(resolvedReq == nullptr);
+
+  // Serialize and Deserialize are inverse functions
+  dynamic messageJSON = folly::parseJson(message);
+  debugger::StepOverRequest deserializedReq(messageJSON);
+  EXPECT_EQ(deserializedReq.toDynamic(), messageJSON);
+
+  // Specifics
+  EXPECT_EQ(resolvedReq->id, 10);
+  EXPECT_EQ(resolvedReq->method, "Debugger.stepOver");
+
+  EXPECT_EQ(resolvedReq->id, deserializedReq.id);
+  EXPECT_EQ(resolvedReq->method, deserializedReq.method);
+}
+
+TEST(MessageTests, testEvaluateOnCallFrameResponseMinimal) {
+  std::string message = R"(
+    {
+      "result":
+        {
+          "result":{
+            "type": "string"
+          }
+        },
+      "id":2
+    }
+  )";
+
+  // Serialize and Deserialize are inverse functions
+  dynamic messageJSON = folly::parseJson(message);
+  debugger::EvaluateOnCallFrameResponse deserializedReq(messageJSON);
+  EXPECT_EQ(deserializedReq.toDynamic(), messageJSON);
+
+  EXPECT_FALSE(deserializedReq.result.subtype.hasValue());
+  EXPECT_FALSE(deserializedReq.result.value.hasValue());
+  EXPECT_FALSE(deserializedReq.result.unserializableValue.hasValue());
+  EXPECT_FALSE(deserializedReq.result.description.hasValue());
+  EXPECT_FALSE(deserializedReq.result.objectId.hasValue());
+
+  // Specifics
+  EXPECT_EQ(deserializedReq.id, 2);
+  EXPECT_EQ(deserializedReq.result.type, "string");
+}
+
+TEST(MessageTests, testEvaluateOnCallFrameResponseFull) {
+  std::string message = R"(
+    {
+      "result":
+        {
+          "result":{
+            "type": "string",
+            "subtype": "SuperString",
+            "value": {"foobarkey": "foobarval"},
+            "unserializableValue": "unserializableValueVal",
+            "description": "A Wonderful desc",
+            "objectId": "AnObjectID"
+          }
+        },
+      "id":2
+    }
+  )";
+
+  // Serialize and Deserialize are inverse functions
+  dynamic messageJSON = folly::parseJson(message);
+  debugger::EvaluateOnCallFrameResponse deserializedReq(messageJSON);
+  EXPECT_EQ(deserializedReq.toDynamic(), messageJSON);
+
+  EXPECT_TRUE(deserializedReq.result.subtype.hasValue());
+  EXPECT_TRUE(deserializedReq.result.value.hasValue());
+  EXPECT_TRUE(deserializedReq.result.unserializableValue.hasValue());
+  EXPECT_TRUE(deserializedReq.result.description.hasValue());
+  EXPECT_TRUE(deserializedReq.result.objectId.hasValue());
+
+  EXPECT_EQ(deserializedReq.result.subtype.value(), "SuperString");
+  EXPECT_EQ(
+      deserializedReq.result.value.value(),
+      folly::parseJson(R"({"foobarkey": "foobarval"})"));
+  EXPECT_EQ(
+      deserializedReq.result.unserializableValue.value(),
+      "unserializableValueVal");
+  EXPECT_EQ(deserializedReq.result.description.value(), "A Wonderful desc");
+  EXPECT_EQ(deserializedReq.result.objectId.value(), "AnObjectID");
+
+  // Specifics
+  EXPECT_EQ(deserializedReq.id, 2);
+  EXPECT_EQ(deserializedReq.result.type, "string");
+}
+
+TEST(MessageTests, testSetBreakpointByUrlResponse) {
+  std::string message = R"({
+    "id": 1,
+    "result":{
+      "breakpointId": "myBreakpointId",
+      "locations": [
+        {
+          "lineNumber": 2,
+          "columnNumber": 3,
+          "scriptId": "myScriptId"
+        }
+      ]
+    }
+  })";
+
+  // Serialize and Deserialize are inverse functions
+  dynamic messageJSON = folly::parseJson(message);
+  debugger::SetBreakpointByUrlResponse deserializedReq(messageJSON);
+  EXPECT_EQ(deserializedReq.toDynamic(), messageJSON);
+
+  // Specifics
+  EXPECT_EQ(deserializedReq.id, 1);
+  EXPECT_EQ(deserializedReq.breakpointId, "myBreakpointId");
+  EXPECT_EQ(deserializedReq.locations.size(), 1);
+  EXPECT_EQ(deserializedReq.locations[0].lineNumber, 2);
+  EXPECT_EQ(deserializedReq.locations[0].columnNumber, 3);
+  EXPECT_EQ(deserializedReq.locations[0].scriptId, "myScriptId");
+}
+
+TEST(MessageTests, testSetBreakpointResponse) {
+  std::string message = R"({
+    "id": 1,
+    "result":{
+      "breakpointId": "myBreakpointId",
+      "actualLocation":
+        {
+          "lineNumber": 2,
+          "columnNumber": 3,
+          "scriptId": "myScriptId"
+        }
+    }
+  })";
+
+  // Serialize and Deserialize are inverse functions
+  dynamic messageJSON = folly::parseJson(message);
+  debugger::SetBreakpointResponse deserializedReq(messageJSON);
+  EXPECT_EQ(deserializedReq.toDynamic(), messageJSON);
+
+  // Specifics
+  EXPECT_EQ(deserializedReq.breakpointId, "myBreakpointId");
+  EXPECT_EQ(deserializedReq.actualLocation.lineNumber, 2);
+  EXPECT_EQ(deserializedReq.actualLocation.columnNumber, 3);
+  EXPECT_EQ(deserializedReq.actualLocation.scriptId, "myScriptId");
+  EXPECT_EQ(deserializedReq.id, 1);
+}
+
+TEST(MessageTests, testSetInstrumentationBreakpointResponse) {
+  std::string message = R"({
+    "id": 1,
+    "result":{
+      "breakpointId": "myBreakpointId"
+    }
+  })";
+
+  // Serialize and Deserialize are inverse functions
+  dynamic messageJSON = folly::parseJson(message);
+  debugger::SetInstrumentationBreakpointResponse deserializedReq(messageJSON);
+  EXPECT_EQ(deserializedReq.toDynamic(), messageJSON);
+
+  // Specifics
+  EXPECT_EQ(deserializedReq.breakpointId, "myBreakpointId");
+  EXPECT_EQ(deserializedReq.id, 1);
+}
+
+TEST(MessageTests, testBreakpointResolvedNotification) {
+  std::string message = R"(
+    {
+      "method": "Debugger.breakpointResolved",
+      "params":{
+        "breakpointId" : "42",
+        "location":
+        {
+          "lineNumber": 2,
+          "columnNumber": 3,
+          "scriptId": "myScriptId"
+        }
+      }
+    }
+  )";
+
+  // Serialize and Deserialize are inverse functions
+  dynamic messageJSON = folly::parseJson(message);
+  debugger::BreakpointResolvedNotification deserializedReq(messageJSON);
+  EXPECT_EQ(deserializedReq.toDynamic(), messageJSON);
+
+  // Specifics
+  EXPECT_EQ(deserializedReq.method, "Debugger.breakpointResolved");
+  EXPECT_EQ(deserializedReq.breakpointId, "42");
+  EXPECT_EQ(deserializedReq.location.lineNumber, 2);
+  EXPECT_EQ(deserializedReq.location.columnNumber, 3);
+  EXPECT_EQ(deserializedReq.location.scriptId, "myScriptId");
+}
+
+TEST(MessageTests, testPauseNotificationMinimal) {
+  std::string message = R"(
+    {
+      "method": "Debugger.paused",
+      "params":{
+        "reason": "Some Valid Reason",
+        "callFrames":[
+          {
+            "callFrameId": "aCallFrameId",
+            "functionName": "aFunctionName",
+            "location":{
+              "lineNumber": 2,
+              "columnNumber": 3,
+              "scriptId": "myScriptId"
+            },
+            "url": "aURL",
+            "scopeChain": [
+              {
+                "type": "aType",
+                "object": {
+                  "type": "aRemoteObjectType"
+                }
+              }
+            ],
+            "this": {
+              "type": "aType"
+            }
+          }
+        ]
+      }
+    }
+  )";
+
+  // Serialize and Deserialize are inverse functions
+  dynamic messageJSON = folly::parseJson(message);
+  debugger::PausedNotification deserializedReq(messageJSON);
+  EXPECT_EQ(deserializedReq.toDynamic(), messageJSON);
+
+  EXPECT_FALSE(deserializedReq.callFrames[0].functionLocation.hasValue());
+  EXPECT_FALSE(deserializedReq.callFrames[0].returnValue.hasValue());
+  EXPECT_FALSE(deserializedReq.asyncStackTrace.hasValue());
+  EXPECT_FALSE(deserializedReq.hitBreakpoints.hasValue());
+  EXPECT_FALSE(deserializedReq.data.hasValue());
+
+  // Specifics
+  EXPECT_EQ(deserializedReq.method, "Debugger.paused");
+  EXPECT_EQ(deserializedReq.reason, "Some Valid Reason");
+  EXPECT_EQ(deserializedReq.callFrames[0].functionName, "aFunctionName");
+  EXPECT_EQ(deserializedReq.callFrames[0].callFrameId, "aCallFrameId");
+  EXPECT_EQ(deserializedReq.callFrames[0].url, "aURL");
+  EXPECT_EQ(deserializedReq.callFrames[0].location.lineNumber, 2);
+  EXPECT_EQ(deserializedReq.callFrames[0].location.columnNumber, 3);
+  EXPECT_EQ(deserializedReq.callFrames[0].location.scriptId, "myScriptId");
+  EXPECT_EQ(deserializedReq.callFrames[0].scopeChain[0].type, "aType");
+  EXPECT_EQ(
+      deserializedReq.callFrames[0].scopeChain[0].object.type,
+      "aRemoteObjectType");
+  EXPECT_EQ(deserializedReq.callFrames[0].thisObj.type, "aType");
+}
+
+TEST(MessageTests, testPauseNotificationFull) {
+  std::string message = R"(
+    {
+      "method": "Debugger.paused",
+      "params":{
+        "reason": "Some Valid Reason",
+        "callFrames":[
+          {
+            "functionLocation": {
+              "lineNumber": 2,
+              "columnNumber": 3,
+              "scriptId": "myScriptId"
+            },
+            "returnValue" : {
+              "type": "aRemoteObjectType",
+              "subtype": "subtype",
+              "className":"className",
+              "value": "value",
+              "unserializableValue": "unserializableValue",
+              "description": "description",
+              "objectId": "objectId"
+            },
+            "callFrameId": "aCallFrameId",
+            "functionName": "aFunctionName",
+            "location":{
+              "lineNumber": 2,
+              "columnNumber": 3,
+              "scriptId": "myScriptId"
+            },
+            "url": "aURL",
+            "scopeChain": [
+              {
+                "type": "aType",
+                "object": {
+                  "type": "aRemoteObjectType"
+                }
+              }
+            ],
+            "this": {
+              "type": "aType"
+            }
+          }
+        ],
+        "data": {"dataKey": "dataVal"},
+        "hitBreakpoints": [
+          "foo","bar"
+        ],
+        "asyncStackTrace":{
+          "description": "an asyncStackTrace Desc",
+          "callFrames":[
+          {
+            "functionName": "aFunctionName",
+            "lineNumber": 2,
+            "columnNumber": 3,
+            "scriptId": "myScriptId",
+            "url": "aURL"
+          }
+        ]
+      }
+      }
+    }
+  )";
+
+  folly::Optional<debugger::Location> functionLocation;
+  folly::Optional<runtime::RemoteObject> returnValue;
+  // Serialize and Deserialize are inverse functions
+  dynamic messageJSON = folly::parseJson(message);
+  debugger::PausedNotification deserializedReq(messageJSON);
+  EXPECT_EQ(deserializedReq.toDynamic(), messageJSON);
+
+  // Check optionnals
+  // ----------------
+  EXPECT_TRUE(deserializedReq.callFrames[0].functionLocation.hasValue());
+  EXPECT_TRUE(deserializedReq.callFrames[0].returnValue.hasValue());
+  EXPECT_TRUE(deserializedReq.asyncStackTrace.hasValue());
+  EXPECT_TRUE(deserializedReq.hitBreakpoints.hasValue());
+  EXPECT_TRUE(deserializedReq.data.hasValue());
+
+  EXPECT_TRUE(
+      deserializedReq.callFrames[0].returnValue.value().subtype.hasValue());
+  EXPECT_TRUE(
+      deserializedReq.callFrames[0].returnValue.value().className.hasValue());
+  EXPECT_TRUE(deserializedReq.callFrames[0]
+                  .returnValue.value()
+                  .unserializableValue.hasValue());
+  EXPECT_TRUE(
+      deserializedReq.callFrames[0].returnValue.value().value.hasValue());
+  EXPECT_TRUE(
+      deserializedReq.callFrames[0].returnValue.value().description.hasValue());
+  EXPECT_TRUE(
+      deserializedReq.callFrames[0].returnValue.value().objectId.hasValue());
+
+  // Check optionnals Values
+  // -----------------------
+  EXPECT_EQ(
+      deserializedReq.callFrames[0].functionLocation.value().lineNumber, 2);
+  EXPECT_EQ(
+      deserializedReq.callFrames[0].functionLocation.value().columnNumber, 3);
+  EXPECT_EQ(
+      deserializedReq.callFrames[0].functionLocation.value().scriptId,
+      "myScriptId");
+
+  EXPECT_EQ(
+      deserializedReq.callFrames[0].returnValue.value().type,
+      "aRemoteObjectType");
+  EXPECT_EQ(
+      deserializedReq.callFrames[0].returnValue.value().subtype.hasValue(),
+      true);
+  EXPECT_EQ(
+      deserializedReq.callFrames[0].returnValue.value().subtype.value(),
+      "subtype");
+  EXPECT_EQ(
+      deserializedReq.callFrames[0].returnValue.value().className.hasValue(),
+      true);
+  EXPECT_EQ(
+      deserializedReq.callFrames[0].returnValue.value().className.value(),
+      "className");
+  EXPECT_EQ(
+      deserializedReq.callFrames[0].returnValue.value().value.hasValue(), true);
+  EXPECT_EQ(
+      deserializedReq.callFrames[0].returnValue.value().value.value(), "value");
+  EXPECT_EQ(
+      deserializedReq.callFrames[0]
+          .returnValue.value()
+          .unserializableValue.hasValue(),
+      true);
+  EXPECT_EQ(
+      deserializedReq.callFrames[0]
+          .returnValue.value()
+          .unserializableValue.value(),
+      "unserializableValue");
+  EXPECT_EQ(
+      deserializedReq.callFrames[0].returnValue.value().description.hasValue(),
+      true);
+  EXPECT_EQ(
+      deserializedReq.callFrames[0].returnValue.value().description.value(),
+      "description");
+  EXPECT_EQ(
+      deserializedReq.callFrames[0].returnValue.value().objectId.hasValue(),
+      true);
+  EXPECT_EQ(
+      deserializedReq.callFrames[0].returnValue.value().objectId.value(),
+      "objectId");
+
+  EXPECT_EQ(deserializedReq.hitBreakpoints.value()[0], "foo");
+  EXPECT_EQ(deserializedReq.hitBreakpoints.value()[1], "bar");
+
+  EXPECT_EQ(
+      deserializedReq.data.value(),
+      folly::parseJson(R"({"dataKey": "dataVal"})"));
+
+  // Check Compulsory
+  // ----------------
+  EXPECT_EQ(deserializedReq.method, "Debugger.paused");
+  EXPECT_EQ(deserializedReq.reason, "Some Valid Reason");
+  EXPECT_EQ(deserializedReq.callFrames[0].functionName, "aFunctionName");
+  EXPECT_EQ(deserializedReq.callFrames[0].callFrameId, "aCallFrameId");
+  EXPECT_EQ(deserializedReq.callFrames[0].url, "aURL");
+  EXPECT_EQ(deserializedReq.callFrames[0].location.lineNumber, 2);
+  EXPECT_EQ(deserializedReq.callFrames[0].location.columnNumber, 3);
+  EXPECT_EQ(deserializedReq.callFrames[0].location.scriptId, "myScriptId");
+  EXPECT_EQ(deserializedReq.callFrames[0].scopeChain[0].type, "aType");
+  EXPECT_EQ(
+      deserializedReq.callFrames[0].scopeChain[0].object.type,
+      "aRemoteObjectType");
+  EXPECT_EQ(deserializedReq.callFrames[0].thisObj.type, "aType");
+}
+
+TEST(MessageTests, testResumedNotification) {
+  std::string message = R"(
+    {
+      "method": "Debugger.resumed"
+    }
+  )";
+
+  // Serialize and Deserialize are inverse functions
+  dynamic messageJSON = folly::parseJson(message);
+  debugger::ResumedNotification deserializedReq(messageJSON);
+  EXPECT_EQ(deserializedReq.toDynamic(), messageJSON);
+
+  // Specifics
+  EXPECT_EQ(deserializedReq.method, "Debugger.resumed");
 }
 
 } // namespace message

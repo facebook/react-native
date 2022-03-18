@@ -24,21 +24,36 @@ type Options = $ReadOnly<{|
 
 export type NativeComponentType<T> = HostComponent<T>;
 
+// If this function runs then that means the view configs were not
+// generated at build time using `GenerateViewConfigJs.js`. Thus
+// we need to `requireNativeComponent` to get the view configs from view managers.
+// `requireNativeComponent` is not available in Bridgeless mode.
+// e.g. This function runs at runtime if `codegenNativeComponent` was not called
+// from a file suffixed with NativeComponent.js.
 function codegenNativeComponent<Props>(
   componentName: string,
   options?: Options,
 ): NativeComponentType<Props> {
+  const errorMessage =
+    "Native Component '" +
+    componentName +
+    "' that calls codegenNativeComponent was not code generated at build time. Please check its definition.";
+  if (global.RN$Bridgeless === true) {
+    console.error(errorMessage);
+  } else {
+    console.warn(errorMessage);
+  }
   let componentNameInUse =
     options && options.paperComponentName != null
       ? options.paperComponentName
       : componentName;
 
   if (options != null && options.paperComponentNameDeprecated != null) {
-    if (UIManager.getViewManagerConfig(componentName)) {
+    if (UIManager.hasViewManagerConfig(componentName)) {
       componentNameInUse = componentName;
     } else if (
       options.paperComponentNameDeprecated != null &&
-      UIManager.getViewManagerConfig(options.paperComponentNameDeprecated)
+      UIManager.hasViewManagerConfig(options.paperComponentNameDeprecated)
     ) {
       componentNameInUse = options.paperComponentNameDeprecated;
     } else {
@@ -50,10 +65,6 @@ function codegenNativeComponent<Props>(
     }
   }
 
-  // If this function is run at runtime then that means the view configs were not
-  // generated with the view config babel plugin, so we need to require the native component.
-  //
-  // This will be useful during migration, but eventually this will error.
   return (requireNativeComponent<Props>(
     componentNameInUse,
   ): HostComponent<Props>);

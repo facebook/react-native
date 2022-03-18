@@ -57,7 +57,7 @@ void WritableNativeMap::putString(std::string key, alias_ref<jstring> val) {
 
 void WritableNativeMap::putNativeArray(
     std::string key,
-    WritableNativeArray *otherArray) {
+    ReadableNativeArray *otherArray) {
   if (!otherArray) {
     putNull(std::move(key));
     return;
@@ -68,7 +68,7 @@ void WritableNativeMap::putNativeArray(
 
 void WritableNativeMap::putNativeMap(
     std::string key,
-    WritableNativeMap *otherMap) {
+    ReadableNativeMap *otherMap) {
   if (!otherMap) {
     putNull(std::move(key));
     return;

@@ -81,10 +81,10 @@ import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.ReactInstanceDevHelper;
-import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
+import com.facebook.react.devsupport.interfaces.RedBoxHandler;
 import com.facebook.react.modules.appearance.AppearanceModule;
 import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
@@ -97,8 +97,6 @@ import com.facebook.react.surface.ReactStage;
 import com.facebook.react.turbomodule.core.TurboModuleManager;
 import com.facebook.react.turbomodule.core.TurboModuleManagerDelegate;
 import com.facebook.react.turbomodule.core.interfaces.TurboModuleRegistry;
-import com.facebook.react.uimanager.ComponentNameResolver;
-import com.facebook.react.uimanager.ComponentNameResolverManager;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.ReactRoot;
 import com.facebook.react.uimanager.UIImplementationProvider;
@@ -168,7 +166,6 @@ public class ReactInstanceManager {
   private final DevSupportManager mDevSupportManager;
   private final boolean mUseDeveloperSupport;
   private final boolean mRequireActivity;
-  private @Nullable ComponentNameResolverManager mComponentNameResolverManager;
   private final @Nullable NotThreadSafeBridgeIdleDebugListener mBridgeIdleDebugListener;
   private final Object mReactContextLock = new Object();
   private @Nullable volatile ReactContext mCurrentReactContext;
@@ -336,7 +333,7 @@ public class ReactInstanceManager {
         Activity currentActivity = getCurrentActivity();
         if (currentActivity != null) {
           ReactRootView rootView = new ReactRootView(currentActivity);
-          rootView.setIsFabric(ReactFeatureFlags.enableFabricInLogBox);
+          rootView.setIsFabric(ReactFeatureFlags.enableFabricRenderer);
           rootView.startReactApplication(ReactInstanceManager.this, appKey, null);
           return rootView;
         }
@@ -770,7 +767,6 @@ public class ReactInstanceManager {
     synchronized (mPackages) {
       mViewManagerNames = null;
     }
-    mComponentNameResolverManager = null;
     FLog.d(ReactConstants.TAG, "ReactInstanceManager has been destroyed");
   }
 
@@ -1016,6 +1012,7 @@ public class ReactInstanceManager {
     mReactInstanceEventListeners.remove(listener);
   }
 
+  /** @return current ReactApplicationContext */
   @VisibleForTesting
   public @Nullable ReactContext getCurrentReactContext() {
     synchronized (mReactContextLock) {
@@ -1103,14 +1100,22 @@ public class ReactInstanceManager {
                 // create
                 mHasStartedCreatingInitialContext = true;
 
+                final ReactApplicationContext reactApplicationContext;
                 try {
                   Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
                   ReactMarker.logMarker(VM_INIT);
-                  final ReactApplicationContext reactApplicationContext =
+                  reactApplicationContext =
                       createReactContext(
                           initParams.getJsExecutorFactory().create(),
                           initParams.getJsBundleLoader());
-
+                } catch (Exception e) {
+                  // Reset state and bail out. This lets us try again later.
+                  mHasStartedCreatingInitialContext = false;
+                  mCreateReactContextThread = null;
+                  mDevSupportManager.handleException(e);
+                  return;
+                }
+                try {
                   mCreateReactContextThread = null;
                   ReactMarker.logMarker(PRE_SETUP_REACT_CONTEXT_START);
                   final Runnable maybeRecreateReactContextRunnable =
@@ -1170,7 +1175,6 @@ public class ReactInstanceManager {
 
       mDevSupportManager.onNewReactContextCreated(reactContext);
       mMemoryPressureRouter.addMemoryPressureListener(catalystInstance);
-      moveReactContextToCurrentLifecycleState();
 
       ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_START);
       for (ReactRoot reactRoot : mAttachedReactRoots) {
@@ -1192,6 +1196,8 @@ public class ReactInstanceManager {
         new Runnable() {
           @Override
           public void run() {
+            moveReactContextToCurrentLifecycleState();
+
             for (com.facebook.react.ReactInstanceEventListener listener : finalListeners) {
               // Sometimes this listener is null - probably due to race
               // condition between allocating listeners with a certain
@@ -1203,10 +1209,6 @@ public class ReactInstanceManager {
             }
           }
         });
-    Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
-    ReactMarker.logMarker(SETUP_REACT_CONTEXT_END);
-    // Mark end of bridge loading
-    ReactMarker.logMarker(ReactMarkerConstants.REACT_BRIDGE_LOADING_END);
     reactContext.runOnJSQueueThread(
         new Runnable() {
           @Override
@@ -1222,6 +1224,11 @@ public class ReactInstanceManager {
             Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
           }
         });
+
+    Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+    ReactMarker.logMarker(SETUP_REACT_CONTEXT_END);
+    // Mark end of bridge loading
+    ReactMarker.logMarker(ReactMarkerConstants.REACT_BRIDGE_LOADING_END);
   }
 
   private void attachRootViewToInstance(final ReactRoot reactRoot) {
@@ -1382,7 +1389,7 @@ public class ReactInstanceManager {
           mJSIModulePackage.getJSIModules(
               reactContext, catalystInstance.getJavaScriptContextHolder()));
     }
-    if (ReactFeatureFlags.eagerInitializeFabric) {
+    if (ReactFeatureFlags.enableFabricRenderer) {
       catalystInstance.getJSIModule(JSIModuleType.UIManager);
     }
     if (mBridgeIdleDebugListener != null) {
@@ -1390,23 +1397,6 @@ public class ReactInstanceManager {
     }
     if (Systrace.isTracing(TRACE_TAG_REACT_APPS | TRACE_TAG_REACT_JS_VM_CALLS)) {
       catalystInstance.setGlobalVariable("__RCTProfileIsProfiling", "true");
-    }
-    if (ReactFeatureFlags.enableExperimentalStaticViewConfigs) {
-      mComponentNameResolverManager =
-          new ComponentNameResolverManager(
-              catalystInstance.getRuntimeExecutor(),
-              new ComponentNameResolver() {
-                @Override
-                public String[] getComponentNames() {
-                  List<String> viewManagerNames = getViewManagerNames();
-                  if (viewManagerNames == null) {
-                    FLog.e(TAG, "No ViewManager names found");
-                    return new String[0];
-                  }
-                  return viewManagerNames.toArray(new String[0]);
-                }
-              });
-      catalystInstance.setGlobalVariable("__fbStaticViewConfig", "true");
     }
 
     ReactMarker.logMarker(ReactMarkerConstants.PRE_RUN_JS_BUNDLE_START);

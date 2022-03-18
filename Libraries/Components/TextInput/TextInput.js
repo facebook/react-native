@@ -1341,13 +1341,6 @@ const ExportedForwardRef: React.AbstractComponent<
   );
 });
 
-/**
- * Switch to `deprecated-react-native-prop-types` for compatibility with future
- * releases. This is deprecated and will be removed in the future.
- */
-ExportedForwardRef.propTypes =
-  require('deprecated-react-native-prop-types').TextInputPropTypes;
-
 // $FlowFixMe[prop-missing]
 ExportedForwardRef.State = {
   currentlyFocusedInput: TextInputState.currentlyFocusedInput,
@@ -1357,7 +1350,7 @@ ExportedForwardRef.State = {
   blurTextInput: TextInputState.blurTextInput,
 };
 
-type TextInputComponentStatics = $ReadOnly<{|
+export type TextInputComponentStatics = $ReadOnly<{|
   State: $ReadOnly<{|
     currentlyFocusedInput: typeof TextInputState.currentlyFocusedInput,
     currentlyFocusedField: typeof TextInputState.currentlyFocusedField,

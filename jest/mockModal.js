@@ -13,11 +13,11 @@
 'use strict';
 
 const React = require('react');
-const Modal = require('../Libraries/Modal/Modal');
+import typeof Modal from '../Libraries/Modal/Modal';
 
 function mockModal(BaseComponent: $FlowFixMe) {
   class ModalMock extends BaseComponent {
-    render(): React.Element<typeof Modal> {
+    render(): React.Element<Modal> {
       return (
         <BaseComponent {...this.props}>
           {this.props.visible !== true ? null : this.props.children}

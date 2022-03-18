@@ -9,10 +9,8 @@
  */
 
 import type {Node} from 'React';
-import {NativeModules, Button} from 'react-native';
+import {Button} from 'react-native';
 import React from 'react';
-
-const {CrashyCrash} = NativeModules;
 
 exports.displayName = (undefined: ?string);
 exports.framework = 'React';
@@ -31,19 +29,6 @@ exports.examples = [
             const a = {};
             const b = a.w.q; // js crash here
             console.log(b);
-          }}
-        />
-      );
-    },
-  },
-  {
-    title: 'Native crash',
-    render(): Node {
-      return (
-        <Button
-          title="Native crash"
-          onPress={() => {
-            CrashyCrash.letsCrash();
           }}
         />
       );

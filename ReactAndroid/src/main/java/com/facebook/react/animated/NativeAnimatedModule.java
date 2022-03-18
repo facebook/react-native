@@ -7,6 +7,7 @@
 
 package com.facebook.react.animated;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
@@ -23,6 +24,7 @@ import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UIManagerListener;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.ReactChoreographer;
@@ -33,6 +35,8 @@ import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.common.ViewUtil;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
@@ -102,16 +106,87 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
     }
   }
 
+  private class ConcurrentOperationQueue {
+    private final Queue<UIThreadOperation> mQueue = new ConcurrentLinkedQueue<>();
+    @Nullable private UIThreadOperation mPeekedOperation = null;
+    private boolean mSynchronizedAccess = false;
+
+    @AnyThread
+    boolean isEmpty() {
+      return mQueue.isEmpty();
+    }
+
+    void setSynchronizedAccess(boolean isSynchronizedAccess) {
+      mSynchronizedAccess = isSynchronizedAccess;
+    }
+
+    @AnyThread
+    void add(UIThreadOperation operation) {
+      if (mSynchronizedAccess) {
+        synchronized (this) {
+          mQueue.add(operation);
+        }
+      } else {
+        mQueue.add(operation);
+      }
+    }
+
+    @UiThread
+    void executeBatch(long maxBatchNumber, NativeAnimatedNodesManager nodesManager) {
+
+      List<UIThreadOperation> operations;
+
+      if (mSynchronizedAccess) {
+        synchronized (this) {
+          operations = drainQueueIntoList(maxBatchNumber);
+        }
+      } else {
+        operations = drainQueueIntoList(maxBatchNumber);
+      }
+      for (UIThreadOperation operation : operations) {
+        operation.execute(nodesManager);
+      }
+    }
+
+    @UiThread
+    private List<UIThreadOperation> drainQueueIntoList(long maxBatchNumber) {
+      List<UIThreadOperation> operations = new ArrayList<>();
+      while (true) {
+        // Due to a race condition, we manually "carry-over" a polled item from previous batch
+        // instead of peeking the queue itself for consistency.
+        // TODO(T112522554): Clean up the queue access
+        if (mPeekedOperation != null) {
+          if (mPeekedOperation.getBatchNumber() > maxBatchNumber) {
+            break;
+          }
+          operations.add(mPeekedOperation);
+          mPeekedOperation = null;
+        }
+
+        UIThreadOperation polledOperation = mQueue.poll();
+        if (polledOperation == null) {
+          // This is the same as mQueue.isEmpty()
+          break;
+        }
+
+        if (polledOperation.getBatchNumber() > maxBatchNumber) {
+          // Because the operation is already retrieved from the queue, there's no way of placing it
+          // back as the head element, so we remember it manually here
+          mPeekedOperation = polledOperation;
+          break;
+        }
+        operations.add(polledOperation);
+      }
+
+      return operations;
+    }
+  }
+
   @NonNull private final GuardedFrameCallback mAnimatedFrameCallback;
   private final ReactChoreographer mReactChoreographer;
 
-  @NonNull
-  private final ConcurrentLinkedQueue<UIThreadOperation> mOperations =
-      new ConcurrentLinkedQueue<>();
-
-  @NonNull
-  private final ConcurrentLinkedQueue<UIThreadOperation> mPreOperations =
-      new ConcurrentLinkedQueue<>();
+  @NonNull private final ConcurrentOperationQueue mOperations = new ConcurrentOperationQueue();
+  @NonNull private final ConcurrentOperationQueue mPreOperations = new ConcurrentOperationQueue();
 
   private final AtomicReference<NativeAnimatedNodesManager> mNodesManager = new AtomicReference<>();
 
@@ -156,6 +231,10 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
             }
           }
         };
+
+    // If shipping this flag, make sure to migrate to non-concurrent queue for efficiency
+    mOperations.setSynchronizedAccess(ReactFeatureFlags.enableSynchronizationForAnimated);
+    mPreOperations.setSynchronizedAccess(ReactFeatureFlags.enableSynchronizationForAnimated);
   }
 
   @Override
@@ -221,42 +300,8 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
       }
     }
 
-    executeAllOperations(mPreOperations, batchNumber);
-    executeAllOperations(mOperations, batchNumber);
-  }
-
-  @UiThread
-  private void executeAllOperations(Queue<UIThreadOperation> operationQueue, long maxBatchNumber) {
-    NativeAnimatedNodesManager nodesManager = getNodesManager();
-    while (true) {
-      // There is a race condition where `peek` may return a non-null value and isEmpty() is false,
-      // but `poll` returns a null value - it's not clear why since we only peek and poll on the UI
-      // thread, but it might be something that happens during teardown or a crash. Regardless, the
-      // root cause is not currently known so we're extra cautious here.
-      // It happens equally in Fabric and non-Fabric.
-      UIThreadOperation peekedOperation = operationQueue.peek();
-
-      // This is the same as operationQueue.isEmpty()
-      if (peekedOperation == null) {
-        return;
-      }
-      // The rest of the operations are for the next frame.
-      if (peekedOperation.getBatchNumber() > maxBatchNumber) {
-        return;
-      }
-
-      // Since we apparently can't guarantee that there is still an operation on the queue,
-      // much less the same operation, we do a poll and another null check. If this isn't
-      // the same operation as the peeked operation, we can't do anything about it - we still
-      // need to execute it, we have no mechanism to put it at the front of the queue, and it
-      // won't cause any errors to execute it earlier than expected (just a bit of UI jank at worst)
-      // so we just continue happily along.
-      UIThreadOperation polledOperation = operationQueue.poll();
-      if (polledOperation == null) {
-        return;
-      }
-      polledOperation.execute(nodesManager);
-    }
+    mPreOperations.executeBatch(batchNumber, getNodesManager());
+    mOperations.executeBatch(batchNumber, getNodesManager());
   }
 
   // For non-FabricUIManager only
@@ -276,7 +321,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
         new UIBlock() {
           @Override
           public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
-            executeAllOperations(mPreOperations, frameNo);
+            mPreOperations.executeBatch(frameNo, getNodesManager());
           }
         };
 
@@ -284,7 +329,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
         new UIBlock() {
           @Override
           public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
-            executeAllOperations(mOperations, frameNo);
+            mOperations.executeBatch(frameNo, getNodesManager());
           }
         };
 
@@ -456,6 +501,32 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
                       + config.toHashMap().toString());
             }
             animatedNodesManager.createAnimatedNode(tag, config);
+          }
+        });
+  }
+
+  @Override
+  public void updateAnimatedNodeConfig(final double tagDouble, final ReadableMap config) {
+    final int tag = (int) tagDouble;
+    if (ANIMATED_MODULE_DEBUG) {
+      FLog.d(
+          NAME,
+          "queue updateAnimatedNodeConfig: " + tag + " config: " + config.toHashMap().toString());
+    }
+
+    addOperation(
+        new UIThreadOperation() {
+          @Override
+          public void execute(NativeAnimatedNodesManager animatedNodesManager) {
+            if (ANIMATED_MODULE_DEBUG) {
+              FLog.d(
+                  NAME,
+                  "execute updateAnimatedNodeConfig: "
+                      + tag
+                      + " config: "
+                      + config.toHashMap().toString());
+            }
+            animatedNodesManager.updateAnimatedNodeConfig(tag, config);
           }
         });
   }

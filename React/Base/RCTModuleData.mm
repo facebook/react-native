@@ -15,6 +15,7 @@
 
 #import "RCTBridge+Private.h"
 #import "RCTBridge.h"
+#import "RCTBridgeModuleDecorator.h"
 #import "RCTInitializing.h"
 #import "RCTLog.h"
 #import "RCTModuleMethod.h"
@@ -217,10 +218,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
       // initialization requires it (View Managers get their queue by calling
       // self.bridge.uiManager.methodQueue)
       [self setBridgeForInstance];
-      [self setModuleRegistryForInstance];
-      [self setViewRegistryForInstance];
-      [self setBundleManagerForInstance];
-      [self setCallableJSModulesForInstance];
+
+      RCTBridgeModuleDecorator *moduleDecorator =
+          [[RCTBridgeModuleDecorator alloc] initWithViewRegistry:_viewRegistry_DEPRECATED
+                                                  moduleRegistry:_moduleRegistry
+                                                   bundleManager:_bundleManager
+                                               callableJSModules:_callableJSModules];
+      [moduleDecorator attachInteropAPIsToModule:_instance];
     }
 
     [self setUpMethodQueue];
@@ -264,76 +268,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
       RCTLogError(
           @"%@ has no setter or ivar for its bridge, which is not "
            "permitted. You must either @synthesize the bridge property, "
-           "or provide your own setter method.",
-          self.name);
-    }
-    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
-  }
-}
-
-- (void)setModuleRegistryForInstance
-{
-  if ([_instance respondsToSelector:@selector(moduleRegistry)] && _instance.moduleRegistry != _moduleRegistry) {
-    RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setModuleRegistryForInstance]", nil);
-    @try {
-      [(id)_instance setValue:_moduleRegistry forKey:@"moduleRegistry"];
-    } @catch (NSException *exception) {
-      RCTLogError(
-          @"%@ has no setter or ivar for its module registry, which is not "
-           "permitted. You must either @synthesize the moduleRegistry property, "
-           "or provide your own setter method.",
-          self.name);
-    }
-    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
-  }
-}
-
-- (void)setViewRegistryForInstance
-{
-  if ([_instance respondsToSelector:@selector(viewRegistry_DEPRECATED)] &&
-      _instance.viewRegistry_DEPRECATED != _viewRegistry_DEPRECATED) {
-    RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setViewRegistryForInstance]", nil);
-    @try {
-      [(id)_instance setValue:_viewRegistry_DEPRECATED forKey:@"viewRegistry_DEPRECATED"];
-    } @catch (NSException *exception) {
-      RCTLogError(
-          @"%@ has no setter or ivar for its module registry, which is not "
-           "permitted. You must either @synthesize the viewRegistry_DEPRECATED property, "
-           "or provide your own setter method.",
-          self.name);
-    }
-    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
-  }
-}
-
-- (void)setBundleManagerForInstance
-{
-  if ([_instance respondsToSelector:@selector(bundleManager)] && _instance.bundleManager != _bundleManager) {
-    RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setBundleManagerForInstance]", nil);
-    @try {
-      [(id)_instance setValue:_bundleManager forKey:@"bundleManager"];
-    } @catch (NSException *exception) {
-      RCTLogError(
-          @"%@ has no setter or ivar for its module registry, which is not "
-           "permitted. You must either @synthesize the bundleManager property, "
-           "or provide your own setter method.",
-          self.name);
-    }
-    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
-  }
-}
-
-- (void)setCallableJSModulesForInstance
-{
-  if ([_instance respondsToSelector:@selector(callableJSModules)] &&
-      _instance.callableJSModules != _callableJSModules) {
-    RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setCallableJSModulesForInstance]", nil);
-    @try {
-      [(id)_instance setValue:_callableJSModules forKey:@"callableJSModules"];
-    } @catch (NSException *exception) {
-      RCTLogError(
-          @"%@ has no setter or ivar for its module registry, which is not "
-           "permitted. You must either @synthesize the callableJSModules property, "
            "or provide your own setter method.",
           self.name);
     }

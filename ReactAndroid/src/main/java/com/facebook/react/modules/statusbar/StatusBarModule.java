@@ -15,6 +15,7 @@ import android.content.Context;
 import android.os.Build;
 import android.view.View;
 import android.view.WindowInsets;
+import android.view.WindowInsetsController;
 import android.view.WindowManager;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
@@ -184,12 +185,23 @@ public class StatusBarModule extends NativeStatusBarManagerAndroidSpec {
       return;
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      UiThreadUtil.runOnUiThread(
-          new Runnable() {
-            @TargetApi(Build.VERSION_CODES.M)
-            @Override
-            public void run() {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @TargetApi(Build.VERSION_CODES.R)
+          @Override
+          public void run() {
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
+              WindowInsetsController insetsController = activity.getWindow().getInsetsController();
+              if ("dark-content".equals(style)) {
+                // dark-content means dark icons on a light status bar
+                insetsController.setSystemBarsAppearance(
+                    WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
+                    WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS);
+              } else {
+                insetsController.setSystemBarsAppearance(
+                    0, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS);
+              }
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
               View decorView = activity.getWindow().getDecorView();
               int systemUiVisibilityFlags = decorView.getSystemUiVisibility();
               if ("dark-content".equals(style)) {
@@ -199,7 +211,7 @@ public class StatusBarModule extends NativeStatusBarManagerAndroidSpec {
               }
               decorView.setSystemUiVisibility(systemUiVisibilityFlags);
             }
-          });
-    }
+          }
+        });
   }
 }

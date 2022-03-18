@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <butter/optional.h>
 #include <cmath>
+#include <optional>
 
 #include <folly/Hash.h>
 #include <react/renderer/graphics/ColorComponents.h>

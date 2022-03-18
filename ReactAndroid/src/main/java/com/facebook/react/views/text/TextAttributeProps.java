@@ -48,7 +48,7 @@ public class TextAttributeProps {
   public static final short TA_KEY_TEXT_DECORATION_COLOR = 14;
   public static final short TA_KEY_TEXT_DECORATION_LINE = 15;
   public static final short TA_KEY_TEXT_DECORATION_STYLE = 16;
-  public static final short TA_KEY_TEXT_SHADOW_RAIDUS = 18;
+  public static final short TA_KEY_TEXT_SHADOW_RADIUS = 18;
   public static final short TA_KEY_TEXT_SHADOW_COLOR = 19;
   public static final short TA_KEY_IS_HIGHLIGHTED = 20;
   public static final short TA_KEY_LAYOUT_DIRECTION = 21;
@@ -149,10 +149,10 @@ public class TextAttributeProps {
       ReadableMapBuffer.MapBufferEntry entry = iterator.next();
       switch (entry.getKey()) {
         case TA_KEY_FOREGROUND_COLOR:
-          result.setColor(entry.getInt(0));
+          result.setColor(entry.getInt());
           break;
         case TA_KEY_BACKGROUND_COLOR:
-          result.setBackgroundColor(entry.getInt(0));
+          result.setBackgroundColor(entry.getInt());
           break;
         case TA_KEY_OPACITY:
           break;
@@ -160,7 +160,7 @@ public class TextAttributeProps {
           result.setFontFamily(entry.getString());
           break;
         case TA_KEY_FONT_SIZE:
-          result.setFontSize((float) entry.getDouble(UNSET));
+          result.setFontSize((float) entry.getDouble());
           break;
         case TA_KEY_FONT_SIZE_MULTIPLIER:
           break;
@@ -174,13 +174,13 @@ public class TextAttributeProps {
           result.setFontVariant(entry.getReadableMapBuffer());
           break;
         case TA_KEY_ALLOW_FONT_SCALING:
-          result.setAllowFontScaling(entry.getBoolean(true));
+          result.setAllowFontScaling(entry.getBoolean());
           break;
         case TA_KEY_LETTER_SPACING:
-          result.setLetterSpacing((float) entry.getDouble(Float.NaN));
+          result.setLetterSpacing((float) entry.getDouble());
           break;
         case TA_KEY_LINE_HEIGHT:
-          result.setLineHeight((float) entry.getDouble(UNSET));
+          result.setLineHeight((float) entry.getDouble());
           break;
         case TA_KEY_ALIGNMENT:
           break;
@@ -193,11 +193,11 @@ public class TextAttributeProps {
           break;
         case TA_KEY_TEXT_DECORATION_STYLE:
           break;
-        case TA_KEY_TEXT_SHADOW_RAIDUS:
-          result.setTextShadowRadius(entry.getInt(1));
+        case TA_KEY_TEXT_SHADOW_RADIUS:
+          result.setTextShadowRadius((float) entry.getDouble());
           break;
         case TA_KEY_TEXT_SHADOW_COLOR:
-          result.setTextShadowColor(entry.getInt(DEFAULT_TEXT_SHADOW_COLOR));
+          result.setTextShadowColor(entry.getInt());
           break;
         case TA_KEY_IS_HIGHLIGHTED:
           break;
@@ -243,7 +243,7 @@ public class TextAttributeProps {
     result.setTextDecorationLine(getStringProp(props, ViewProps.TEXT_DECORATION_LINE));
     result.setTextShadowOffset(
         props.hasKey(PROP_SHADOW_OFFSET) ? props.getMap(PROP_SHADOW_OFFSET) : null);
-    result.setTextShadowRadius(getIntProp(props, PROP_SHADOW_RADIUS, 1));
+    result.setTextShadowRadius(getFloatProp(props, PROP_SHADOW_RADIUS, 1));
     result.setTextShadowColor(getIntProp(props, PROP_SHADOW_COLOR, DEFAULT_TEXT_SHADOW_COLOR));
     result.setTextTransform(getStringProp(props, PROP_TEXT_TRANSFORM));
     result.setLayoutDirection(getStringProp(props, ViewProps.LAYOUT_DIRECTION));

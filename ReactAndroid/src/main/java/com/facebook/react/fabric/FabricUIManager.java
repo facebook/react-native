@@ -105,6 +105,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       ReactFeatureFlags.enableFabricLogs
           || PrinterHolder.getPrinter()
               .shouldDisplayLogMessage(ReactDebugOverlayTags.FABRIC_UI_MANAGER);
+  public DevToolsReactPerfLogger mDevToolsReactPerfLogger;
 
   static {
     FabricSoLoader.staticInit();
@@ -364,6 +365,34 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   public void initialize() {
     mEventDispatcher.registerEventEmitter(FABRIC, new FabricEventEmitter(this));
     mEventDispatcher.addBatchEventDispatchedListener(mEventBeatManager);
+    if (ENABLE_FABRIC_LOGS) {
+      mDevToolsReactPerfLogger = new DevToolsReactPerfLogger();
+      mDevToolsReactPerfLogger.addDevToolsReactPerfLoggerListener(
+          new DevToolsReactPerfLogger.DevToolsReactPerfLoggerListener() {
+            @Override
+            public void onFabricCommitEnd(DevToolsReactPerfLogger.FabricCommitPoint commitPoint) {
+              FLog.i(
+                  TAG,
+                  "Statistic of Fabric commit #: "
+                      + commitPoint.getCommitNumber()
+                      + "\n - Total commit time: "
+                      + (commitPoint.getFinishTransactionEnd() - commitPoint.getCommitStart())
+                      + " ms.\n - Layout: "
+                      + (commitPoint.getLayoutEnd() - commitPoint.getLayoutStart())
+                      + " ms.\n - Diffing: "
+                      + (commitPoint.getDiffEnd() - commitPoint.getDiffStart())
+                      + " ms.\n"
+                      + " - FinishTransaction (Diffing + JNI serialization): "
+                      + (commitPoint.getFinishTransactionEnd()
+                          - commitPoint.getFinishTransactionStart())
+                      + " ms.\n"
+                      + " - Mounting: "
+                      + (commitPoint.getBatchExecutionEnd() - commitPoint.getBatchExecutionStart())
+                      + " ms.");
+            }
+          });
+      ReactMarker.addFabricListener(mDevToolsReactPerfLogger);
+    }
   }
 
   // This is called on the JS thread (see CatalystInstanceImpl).
@@ -372,6 +401,10 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @ThreadConfined(ANY)
   public void onCatalystInstanceDestroy() {
     FLog.i(TAG, "FabricUIManager.onCatalystInstanceDestroy");
+
+    if (mDevToolsReactPerfLogger != null) {
+      ReactMarker.removeFabricListener(mDevToolsReactPerfLogger);
+    }
 
     if (mDestroyed) {
       ReactSoftExceptionLogger.logSoftException(
@@ -395,17 +428,12 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mReactApplicationContext.removeLifecycleEventListener(this);
     onHostPause();
 
-    // This is not technically thread-safe, since it's read on the UI thread and written
-    // here on the JS thread. We've marked it as volatile so that this writes to UI-thread
-    // memory immediately.
-    mDispatchUIFrameCallback.stop();
-
     mBinding.unregister();
     mBinding = null;
 
     ViewManagerPropertyUpdater.clear();
 
-    // When using ReactFeatureFlags.enableExperimentalStaticViewConfigs enabled, FabriUIManager is
+    // When using StaticViewConfigs is enabled, FabriUIManager is
     // responsible for initializing and deallocating EventDispatcher.
     // TODO T83943316: Remove this IF once StaticViewConfigs are enabled by default
     if (mShouldDeallocateEventDispatcher) {
@@ -671,7 +699,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       int rootTag,
       int reactTag,
       final String componentName,
-      @Nullable ReadableMap props,
+      @Nullable Object props,
       @Nullable Object stateWrapper,
       @Nullable Object eventEmitterWrapper,
       boolean isLayoutable) {
@@ -767,23 +795,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       ReactMarker.logFabricMarker(
           ReactMarkerConstants.FABRIC_LAYOUT_END, null, commitNumber, layoutEndTime);
       ReactMarker.logFabricMarker(ReactMarkerConstants.FABRIC_COMMIT_END, null, commitNumber);
-
-      if (ENABLE_FABRIC_LOGS) {
-        FLog.i(
-            TAG,
-            "Statistic of Fabric commit #: "
-                + commitNumber
-                + "\n - Total commit time: "
-                + (finishTransactionEndTime - commitStartTime)
-                + " ms.\n - Layout: "
-                + mLayoutTime
-                + " ms.\n - Diffing: "
-                + (diffEndTime - diffStartTime)
-                + " ms.\n"
-                + " - FinishTransaction (Diffing + Processing + Serialization of MountingInstructions): "
-                + mFinishTransactionCPPTime
-                + " ms.");
-      }
     }
   }
 

@@ -176,6 +176,9 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
   PropNameID createPropNameIDFromString(const String& str) override {
     return plain_.createPropNameIDFromString(str);
   };
+  PropNameID createPropNameIDFromSymbol(const Symbol& sym) override {
+    return plain_.createPropNameIDFromSymbol(sym);
+  };
   std::string utf8(const PropNameID& id) override {
     return plain_.utf8(id);
   };

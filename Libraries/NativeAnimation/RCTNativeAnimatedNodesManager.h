@@ -63,6 +63,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)extractAnimatedNodeOffset:(NSNumber *)nodeTag;
 
+- (void)updateAnimatedNodeConfig:(NSNumber *)tag
+                    config:(NSDictionary<NSString *, id> *)config;
+
 // drivers
 
 - (void)startAnimatingNode:(NSNumber *)animationId

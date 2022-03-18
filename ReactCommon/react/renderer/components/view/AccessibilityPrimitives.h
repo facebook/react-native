@@ -7,9 +7,10 @@
 
 #pragma once
 
-#include <butter/optional.h>
 #include <cinttypes>
+#include <optional>
 #include <string>
+#include <vector>
 
 namespace facebook {
 namespace react {
@@ -50,8 +51,20 @@ constexpr enum AccessibilityTraits operator&(
 
 struct AccessibilityAction {
   std::string name{""};
-  butter::optional<std::string> label{};
+  std::optional<std::string> label{};
 };
+
+inline static bool operator==(
+    AccessibilityAction const &lhs,
+    AccessibilityAction const &rhs) {
+  return lhs.name == rhs.name && lhs.label == rhs.label;
+}
+
+inline static bool operator!=(
+    AccessibilityAction const &lhs,
+    AccessibilityAction const &rhs) {
+  return !(rhs == lhs);
+}
 
 struct AccessibilityState {
   bool disabled{false};
@@ -75,11 +88,27 @@ constexpr bool operator!=(
   return !(rhs == lhs);
 }
 
+struct AccessibilityLabelledBy {
+  std::vector<std::string> value{};
+};
+
+inline static bool operator==(
+    AccessibilityLabelledBy const &lhs,
+    AccessibilityLabelledBy const &rhs) {
+  return lhs.value == rhs.value;
+}
+
+inline static bool operator!=(
+    AccessibilityLabelledBy const &lhs,
+    AccessibilityLabelledBy const &rhs) {
+  return !(lhs == rhs);
+}
+
 struct AccessibilityValue {
-  butter::optional<int> min;
-  butter::optional<int> max;
-  butter::optional<int> now;
-  butter::optional<std::string> text{};
+  std::optional<int> min;
+  std::optional<int> max;
+  std::optional<int> now;
+  std::optional<std::string> text{};
 };
 
 constexpr bool operator==(
@@ -100,6 +129,12 @@ enum class ImportantForAccessibility {
   Yes,
   No,
   NoHideDescendants,
+};
+
+enum class AccessibilityLiveRegion {
+  None,
+  Polite,
+  Assertive,
 };
 
 } // namespace react

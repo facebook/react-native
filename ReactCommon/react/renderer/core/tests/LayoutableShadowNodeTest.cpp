@@ -148,7 +148,7 @@ TEST(LayoutableShadowNodeTest, relativeLayoutMetricsOnTransformedNode) {
           shadowNode.setLayoutMetrics(layoutMetrics);
         })
         .props([] {
-          auto sharedProps = std::make_shared<ViewProps>();
+          auto sharedProps = std::make_shared<ViewShadowNodeProps>();
           sharedProps->transform = Transform::Scale(0.5, 0.5, 1);
           return sharedProps;
         })
@@ -199,7 +199,7 @@ TEST(LayoutableShadowNodeTest, relativeLayoutMetricsOnTransformedParent) {
       .children({
         Element<ViewShadowNode>()
         .props([] {
-          auto sharedProps = std::make_shared<ViewProps>();
+          auto sharedProps = std::make_shared<ViewShadowNodeProps>();
           sharedProps->transform = Transform::Scale(0.5, 0.5, 1);
           return sharedProps;
         })
@@ -280,7 +280,7 @@ TEST(LayoutableShadowNodeTest, relativeLayoutMetricsOnSameTransformedNode) {
   auto element =
     Element<ViewShadowNode>()
       .props([] {
-        auto sharedProps = std::make_shared<ViewProps>();
+        auto sharedProps = std::make_shared<ViewShadowNodeProps>();
         sharedProps->transform = Transform::Scale(2, 2, 1);
         return sharedProps;
       })

@@ -300,6 +300,7 @@ module.exports = {
     'react/no-multi-comp': 0,
     'react/no-string-refs': 1,
     'react/no-unknown-property': 0,
+    'react/no-unstable-nested-components': 1,
     'react/prop-types': 0,
     'react/react-in-jsx-scope': 1,
     'react/self-closing-comp': 1,
@@ -307,8 +308,8 @@ module.exports = {
 
     // React-Hooks Plugin
     // The following rules are made available via `eslint-plugin-react-hooks`
-    'react-hooks/rules-of-hooks': 'error',
-    'react-hooks/exhaustive-deps': 'error',
+    'react-hooks/rules-of-hooks': 2,
+    'react-hooks/exhaustive-deps': 2,
 
     // React-Native Plugin
     // The following rules are made available via `eslint-plugin-react-native`

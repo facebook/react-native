@@ -11,7 +11,7 @@
 import * as React from 'react';
 import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
 
-export type SyntheticEvent<T> = $ReadOnly<{|
+export type SyntheticEvent<+T> = $ReadOnly<{|
   bubbles: ?boolean,
   cancelable: ?boolean,
   currentTarget: number | React.ElementRef<HostComponent<mixed>>,

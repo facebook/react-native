@@ -7,7 +7,8 @@
 
 #pragma once
 
-#include <butter/optional.h>
+#include <optional>
+
 #include <folly/Likely.h>
 #include <folly/dynamic.h>
 #include <react/renderer/core/PropsParserContext.h>
@@ -106,12 +107,12 @@ T convertRawProp(
 }
 
 template <typename T>
-static butter::optional<T> convertRawProp(
+static std::optional<T> convertRawProp(
     const PropsParserContext &context,
     RawProps const &rawProps,
     char const *name,
-    butter::optional<T> const &sourceValue,
-    butter::optional<T> const &defaultValue,
+    std::optional<T> const &sourceValue,
+    std::optional<T> const &defaultValue,
     char const *namePrefix = nullptr,
     char const *nameSuffix = nullptr) {
   const auto *rawValue = rawProps.at(name, namePrefix, nameSuffix);
@@ -128,7 +129,7 @@ static butter::optional<T> convertRawProp(
 
   T result;
   fromRawValue(context, *rawValue, result);
-  return butter::optional<T>{result};
+  return std::optional<T>{result};
 }
 
 } // namespace react

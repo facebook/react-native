@@ -7,7 +7,6 @@
 
 package com.facebook.react.views.scroll;
 
-import static com.facebook.react.config.ReactFeatureFlags.enableScrollViewSnapToAlignmentProp;
 import static com.facebook.react.views.scroll.ReactScrollViewHelper.SNAP_ALIGNMENT_CENTER;
 import static com.facebook.react.views.scroll.ReactScrollViewHelper.SNAP_ALIGNMENT_DISABLED;
 import static com.facebook.react.views.scroll.ReactScrollViewHelper.SNAP_ALIGNMENT_END;
@@ -40,6 +39,7 @@ import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.FabricViewStateManager;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
+import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.uimanager.ReactOverflowViewWithInset;
@@ -105,6 +105,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private final FabricViewStateManager mFabricViewStateManager = new FabricViewStateManager();
   private final ReactScrollViewScrollState mReactScrollViewScrollState;
   private final ValueAnimator DEFAULT_FLING_ANIMATOR = ObjectAnimator.ofInt(this, "scrollX", 0, 0);
+  private PointerEvents mPointerEvents = PointerEvents.AUTO;
 
   private final Rect mTempRect = new Rect();
 
@@ -452,13 +453,14 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
       return false;
     }
 
+    // We intercept the touch event if the children are not supposed to receive it.
+    if (!PointerEvents.canChildrenBeTouchTarget(mPointerEvents)) {
+      return true;
+    }
+
     try {
       if (super.onInterceptTouchEvent(ev)) {
-        NativeGestureUtil.notifyNativeGestureStarted(this, ev);
-        ReactScrollViewHelper.emitScrollBeginDragEvent(this);
-        mDragging = true;
-        enableFpsListener();
-        getFlingAnimator().cancel();
+        handleInterceptedTouchEvent(ev);
         return true;
       }
     } catch (IllegalArgumentException e) {
@@ -469,6 +471,14 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     }
 
     return false;
+  }
+
+  protected void handleInterceptedTouchEvent(MotionEvent ev) {
+    NativeGestureUtil.notifyNativeGestureStarted(this, ev);
+    ReactScrollViewHelper.emitScrollBeginDragEvent(this);
+    mDragging = true;
+    enableFpsListener();
+    getFlingAnimator().cancel();
   }
 
   @Override
@@ -519,8 +529,13 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
       return false;
     }
 
+    // We do not accept the touch event if this view is not supposed to receive it.
+    if (!PointerEvents.canBeTouchTarget(mPointerEvents)) {
+      return false;
+    }
+
     mVelocityHelper.calculateVelocity(ev);
-    int action = ev.getAction() & MotionEvent.ACTION_MASK;
+    int action = ev.getActionMasked();
     if (action == MotionEvent.ACTION_UP && mDragging) {
       ReactScrollViewHelper.updateFabricScrollState(this);
 
@@ -531,6 +546,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
       // After the touch finishes, we may need to do some scrolling afterwards either as a result
       // of a fling or because we need to page align the content
       handlePostTouchScrolling(Math.round(velocityX), Math.round(velocityY));
+    }
+
+    if (action == MotionEvent.ACTION_DOWN) {
+      cancelPostTouchScrolling();
     }
 
     return super.onTouchEvent(ev);
@@ -650,8 +669,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   }
 
   private View getContentView() {
-    View contentView = getChildAt(0);
-    return contentView;
+    return getChildAt(0);
   }
 
   public void setEndFillColor(int color) {
@@ -811,6 +829,14 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
         this, mPostTouchRunnable, ReactScrollViewHelper.MOMENTUM_DELAY);
   }
 
+  private void cancelPostTouchScrolling() {
+    if (mPostTouchRunnable != null) {
+      removeCallbacks(mPostTouchRunnable);
+      mPostTouchRunnable = null;
+      getFlingAnimator().cancel();
+    }
+  }
+
   private int predictFinalScrollPosition(int velocityX) {
     // predict where a fling would end up so we can scroll to the nearest snap offset
     final int maximumOffset = Math.max(0, computeHorizontalScrollRange() - getWidth());
@@ -896,9 +922,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     }
 
     // pagingEnabled only allows snapping one interval at a time
-    if (mSnapInterval == 0
-        && mSnapOffsets == null
-        && (!enableScrollViewSnapToAlignmentProp || mSnapToAlignment == SNAP_ALIGNMENT_DISABLED)) {
+    if (mSnapInterval == 0 && mSnapOffsets == null && mSnapToAlignment == SNAP_ALIGNMENT_DISABLED) {
       smoothScrollAndSnap(velocityX);
       return;
     }
@@ -943,7 +967,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
           }
         }
       }
-    } else if (enableScrollViewSnapToAlignmentProp && mSnapToAlignment != SNAP_ALIGNMENT_DISABLED) {
+    } else if (mSnapToAlignment != SNAP_ALIGNMENT_DISABLED) {
       if (mSnapInterval > 0) {
         double ratio = (double) targetOffset / mSnapInterval;
         smallerOffset =
@@ -1182,12 +1206,13 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     }
 
     super.scrollTo(x, y);
-    // The final scroll position might be different from (x, y). For example, we may need to scroll
-    // to the last item in the list, but that item cannot be move to the start position of the view.
-    final int actualX = getScrollX();
-    final int actualY = getScrollY();
-    ReactScrollViewHelper.updateFabricScrollState(this, actualX, actualY);
-    setPendingContentOffsets(actualX, actualY);
+    ReactScrollViewHelper.updateFabricScrollState(this);
+    setPendingContentOffsets(x, y);
+  }
+
+  private boolean isContentReady() {
+    View child = getContentView();
+    return child != null && child.getWidth() != 0 && child.getHeight() != 0;
   }
 
   /**
@@ -1201,8 +1226,8 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     if (DEBUG_MODE) {
       FLog.i(TAG, "setPendingContentOffsets[%d] x %d y %d", getId(), x, y);
     }
-    View child = getContentView();
-    if (child != null && child.getWidth() != 0 && child.getHeight() != 0) {
+
+    if (isContentReady()) {
       pendingContentOffsetX = UNSET_CONTENT_OFFSET;
       pendingContentOffsetY = UNSET_CONTENT_OFFSET;
     } else {
@@ -1252,5 +1277,13 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     return ReactScrollViewHelper.predictFinalScrollPosition(
             this, velocityX, 0, Math.max(0, computeHorizontalScrollRange() - getWidth()), 0)
         .x;
+  }
+
+  public void setPointerEvents(PointerEvents pointerEvents) {
+    mPointerEvents = pointerEvents;
+  }
+
+  public PointerEvents getPointerEvents() {
+    return mPointerEvents;
   }
 }

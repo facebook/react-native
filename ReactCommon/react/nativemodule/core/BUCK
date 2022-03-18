@@ -78,6 +78,7 @@ rn_xplat_cxx_library(
         react_native_xplat_target("reactperflogger:reactperflogger"),
     ],
     exported_deps = [
+        react_native_xplat_target("react/bridging:bridging"),
         react_native_xplat_shared_library_target("jsi:jsi"),
     ],
 )

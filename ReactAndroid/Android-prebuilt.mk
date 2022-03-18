@@ -82,6 +82,7 @@ LOCAL_MODULE := react_nativemodule_core
 LOCAL_SRC_FILES := $(REACT_NDK_EXPORT_DIR)/$(TARGET_ARCH_ABI)/libreact_nativemodule_core.so
 LOCAL_EXPORT_C_INCLUDES := \
   $(REACT_ANDROID_SRC_DIR)/jni \
+  $(REACT_COMMON_DIR) \
   $(REACT_COMMON_DIR)/callinvoker \
   $(REACT_COMMON_DIR)/jsi \
   $(REACT_COMMON_DIR)/react/nativemodule/core \

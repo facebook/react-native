@@ -14,9 +14,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
@@ -48,7 +46,6 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.build.ReactBuildConfig;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.modules.fresco.ReactNetworkImageRequest;
 import com.facebook.react.uimanager.FloatUtil;
 import com.facebook.react.uimanager.PixelUtil;
@@ -70,86 +67,17 @@ import java.util.List;
 public class ReactImageView extends GenericDraweeView {
 
   public static final int REMOTE_IMAGE_FADE_DURATION_MS = 300;
-
   public static final String REMOTE_TRANSPARENT_BITMAP_URI =
       "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 
   private static float[] sComputedCornerRadii = new float[4];
 
-  /*
-   * Implementation note re rounded corners:
-   *
-   * Fresco's built-in rounded corners only work for 'cover' resize mode -
-   * this is a limitation in Android itself. Fresco has a workaround for this, but
-   * it requires knowing the background color.
-   *
-   * So for the other modes, we use a postprocessor.
-   * Because the postprocessor uses a modified bitmap, that would just get cropped in
-   * 'cover' mode, so we fall back to Fresco's normal implementation.
-   */
-  private static final Matrix sMatrix = new Matrix();
-  private static final Matrix sInverse = new Matrix();
   private ImageResizeMethod mResizeMethod = ImageResizeMethod.AUTO;
 
   public void updateCallerContext(@Nullable Object callerContext) {
     if (!Objects.equal(mCallerContext, callerContext)) {
       mCallerContext = callerContext;
       mIsDirty = true;
-    }
-  }
-
-  private class RoundedCornerPostprocessor extends BasePostprocessor {
-
-    void getRadii(Bitmap source, float[] computedCornerRadii, float[] mappedRadii) {
-      mScaleType.getTransform(
-          sMatrix,
-          new Rect(0, 0, source.getWidth(), source.getHeight()),
-          source.getWidth(),
-          source.getHeight(),
-          0.0f,
-          0.0f);
-      sMatrix.invert(sInverse);
-
-      mappedRadii[0] = sInverse.mapRadius(computedCornerRadii[0]);
-      mappedRadii[1] = mappedRadii[0];
-
-      mappedRadii[2] = sInverse.mapRadius(computedCornerRadii[1]);
-      mappedRadii[3] = mappedRadii[2];
-
-      mappedRadii[4] = sInverse.mapRadius(computedCornerRadii[2]);
-      mappedRadii[5] = mappedRadii[4];
-
-      mappedRadii[6] = sInverse.mapRadius(computedCornerRadii[3]);
-      mappedRadii[7] = mappedRadii[6];
-    }
-
-    @Override
-    public void process(Bitmap output, Bitmap source) {
-      getCornerRadii(sComputedCornerRadii);
-
-      output.setHasAlpha(true);
-      if (FloatUtil.floatsEqual(sComputedCornerRadii[0], 0f)
-          && FloatUtil.floatsEqual(sComputedCornerRadii[1], 0f)
-          && FloatUtil.floatsEqual(sComputedCornerRadii[2], 0f)
-          && FloatUtil.floatsEqual(sComputedCornerRadii[3], 0f)) {
-        super.process(output, source);
-        return;
-      }
-      Paint paint = new Paint();
-      paint.setAntiAlias(true);
-      paint.setShader(new BitmapShader(source, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
-      Canvas canvas = new Canvas(output);
-
-      float[] radii = new float[8];
-
-      getRadii(source, sComputedCornerRadii, radii);
-
-      Path pathForBorderRadius = new Path();
-
-      pathForBorderRadius.addRoundRect(
-          new RectF(0, 0, source.getWidth(), source.getHeight()), radii, Path.Direction.CW);
-
-      canvas.drawPath(pathForBorderRadius, paint);
     }
   }
 
@@ -198,7 +126,6 @@ public class ReactImageView extends GenericDraweeView {
   private Shader.TileMode mTileMode = ImageResizeMode.defaultTileMode();
   private boolean mIsDirty;
   private final AbstractDraweeControllerBuilder mDraweeControllerBuilder;
-  private @Nullable RoundedCornerPostprocessor mRoundedCornerPostprocessor;
   private @Nullable TilePostprocessor mTilePostprocessor;
   private @Nullable IterativeBoxBlurPostProcessor mIterativeBoxBlurPostProcessor;
   private @Nullable ReactImageDownloadListener mDownloadListener;
@@ -211,8 +138,10 @@ public class ReactImageView extends GenericDraweeView {
 
   // We can't specify rounding in XML, so have to do so here
   private static GenericDraweeHierarchy buildHierarchy(Context context) {
+    RoundingParams roundingParams = RoundingParams.fromCornersRadius(0);
+    roundingParams.setPaintFilterBitmap(true);
     return new GenericDraweeHierarchyBuilder(context.getResources())
-        .setRoundingParams(RoundingParams.fromCornersRadius(0))
+        .setRoundingParams(roundingParams)
         .build();
   }
 
@@ -353,11 +282,6 @@ public class ReactImageView extends GenericDraweeView {
   public void setScaleType(ScalingUtils.ScaleType scaleType) {
     if (mScaleType != scaleType) {
       mScaleType = scaleType;
-      if (shouldUseRoundedCornerPostprocessing()) {
-        mRoundedCornerPostprocessor = new RoundedCornerPostprocessor();
-      } else {
-        mRoundedCornerPostprocessor = null;
-      }
       mIsDirty = true;
     }
   }
@@ -530,9 +454,6 @@ public class ReactImageView extends GenericDraweeView {
       mBackgroundImageDrawable.setRadii(roundingParams.getCornersRadii());
       hierarchy.setBackgroundImage(mBackgroundImageDrawable);
     }
-    if (shouldUseRoundedCornerPostprocessing()) {
-      roundingParams.setCornersRadius(0);
-    }
     roundingParams.setBorder(mBorderColor, mBorderWidth);
     if (mOverlayColor != Color.TRANSPARENT) {
       roundingParams.setOverlayColor(mOverlayColor);
@@ -547,9 +468,6 @@ public class ReactImageView extends GenericDraweeView {
             : mImageSource.isResource() ? 0 : REMOTE_IMAGE_FADE_DURATION_MS);
 
     List<Postprocessor> postprocessors = new LinkedList<>();
-    if (mRoundedCornerPostprocessor != null) {
-      postprocessors.add(mRoundedCornerPostprocessor);
-    }
     if (mIterativeBoxBlurPostProcessor != null) {
       postprocessors.add(mIterativeBoxBlurPostProcessor);
     }
@@ -645,12 +563,6 @@ public class ReactImageView extends GenericDraweeView {
 
   private boolean isTiled() {
     return mTileMode != Shader.TileMode.CLAMP;
-  }
-
-  private boolean shouldUseRoundedCornerPostprocessing() {
-    return mScaleType != ScalingUtils.ScaleType.CENTER_CROP
-        && mScaleType != ScalingUtils.ScaleType.FOCUS_CROP
-        && ReactFeatureFlags.enableRoundedCornerPostprocessing;
   }
 
   private void setSourceImage() {

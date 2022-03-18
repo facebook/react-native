@@ -23,7 +23,6 @@ import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.config.ReactFeatureFlags;
 import java.lang.ref.WeakReference;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -255,6 +254,7 @@ public class ReactContext extends ContextWrapper {
   }
 
   /** Should be called by the hosting Fragment in {@link Fragment#onResume} */
+  @ThreadConfined(UI)
   public void onHostResume(@Nullable Activity activity) {
     mLifecycleState = LifecycleState.RESUMED;
     mCurrentActivity = new WeakReference(activity);
@@ -283,6 +283,7 @@ public class ReactContext extends ContextWrapper {
   }
 
   /** Should be called by the hosting Fragment in {@link Fragment#onPause} */
+  @ThreadConfined(UI)
   public void onHostPause() {
     mLifecycleState = LifecycleState.BEFORE_RESUME;
     ReactMarker.logMarker(ReactMarkerConstants.ON_HOST_PAUSE_START);
@@ -319,11 +320,6 @@ public class ReactContext extends ContextWrapper {
     mDestroyed = true;
     if (mCatalystInstance != null) {
       mCatalystInstance.destroy();
-    }
-    if (ReactFeatureFlags.enableReactContextCleanupFix) {
-      mLifecycleEventListeners.clear();
-      mActivityEventListeners.clear();
-      mWindowFocusEventListeners.clear();
     }
   }
 

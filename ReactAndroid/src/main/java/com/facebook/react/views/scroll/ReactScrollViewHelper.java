@@ -27,6 +27,7 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.common.ViewUtil;
+import com.facebook.react.uimanager.events.EventDispatcher;
 import java.util.Collections;
 import java.util.Set;
 import java.util.WeakHashMap;
@@ -107,20 +108,28 @@ public class ReactScrollViewHelper {
 
     ReactContext reactContext = (ReactContext) scrollView.getContext();
     int surfaceId = UIManagerHelper.getSurfaceId(reactContext);
-    UIManagerHelper.getEventDispatcherForReactTag(reactContext, scrollView.getId())
-        .dispatchEvent(
-            ScrollEvent.obtain(
-                surfaceId,
-                scrollView.getId(),
-                scrollEventType,
-                scrollView.getScrollX(),
-                scrollView.getScrollY(),
-                xVelocity,
-                yVelocity,
-                contentView.getWidth(),
-                contentView.getHeight(),
-                scrollView.getWidth(),
-                scrollView.getHeight()));
+
+    // It's possible for the EventDispatcher to go away - for example,
+    // if there's a crash initiated from JS and we tap on a ScrollView
+    // around teardown of RN, this will cause a NPE. We can safely ignore
+    // this since the crash is usually a red herring.
+    EventDispatcher eventDispatcher =
+        UIManagerHelper.getEventDispatcherForReactTag(reactContext, scrollView.getId());
+    if (eventDispatcher != null) {
+      eventDispatcher.dispatchEvent(
+          ScrollEvent.obtain(
+              surfaceId,
+              scrollView.getId(),
+              scrollEventType,
+              scrollView.getScrollX(),
+              scrollView.getScrollY(),
+              xVelocity,
+              yVelocity,
+              contentView.getWidth(),
+              contentView.getHeight(),
+              scrollView.getWidth(),
+              scrollView.getHeight()));
+    }
   }
 
   /** This is only for Java listeners. onLayout events emitted to JS are handled elsewhere. */

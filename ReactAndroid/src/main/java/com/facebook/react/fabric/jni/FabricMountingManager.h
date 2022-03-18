@@ -23,7 +23,7 @@
 namespace facebook {
 namespace react {
 
-class FabricMountingManager {
+class FabricMountingManager final {
  public:
   constexpr static auto UIManagerJavaDescriptor =
       "com/facebook/react/fabric/FabricUIManager";
@@ -61,8 +61,6 @@ class FabricMountingManager {
 
   void onAllAnimationsComplete();
 
-  virtual ~FabricMountingManager() = default;
-
  private:
   jni::global_ref<jobject> javaUIManager_;
 
@@ -71,12 +69,16 @@ class FabricMountingManager {
   butter::map<SurfaceId, butter::set<Tag>> allocatedViewRegistry_{};
   std::recursive_mutex allocatedViewsMutex_;
 
-  bool enableEventEmitterRawPointer_{false};
-  bool enableEarlyEventEmitterUpdate_{false};
-  bool disablePreallocateViews_{false};
-  bool disableRevisionCheckForPreallocation_{false};
-  bool useOverflowInset_{false};
-  bool shouldRememberAllocatedViews_{false};
+  bool const enableEarlyEventEmitterUpdate_{false};
+  bool const disablePreallocateViews_{false};
+  bool const disableRevisionCheckForPreallocation_{false};
+  bool const useOverflowInset_{false};
+  bool const shouldRememberAllocatedViews_{false};
+  bool const useMapBufferForViewProps_{false};
+
+  jni::local_ref<jobject> getProps(
+      ShadowView const &oldShadowView,
+      ShadowView const &newShadowView);
 };
 
 } // namespace react

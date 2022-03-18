@@ -19,18 +19,9 @@ EventEmitterWrapper::initHybrid(jni::alias_ref<jclass>) {
 }
 
 void EventEmitterWrapper::invokeEvent(
-    std::string const &eventName,
+    std::string eventName,
     NativeMap *payload,
     int category) {
-  if (eventEmitterPointer) {
-    eventEmitterPointer->dispatchEvent(
-        eventName,
-        payload->consume(),
-        EventPriority::AsynchronousBatched,
-        static_cast<RawEvent::Category>(category));
-    return;
-  }
-
   // It is marginal, but possible for this to be constructed without a valid
   // EventEmitter. In those cases, make sure we noop/blackhole events instead of
   // crashing.
@@ -44,13 +35,9 @@ void EventEmitterWrapper::invokeEvent(
 }
 
 void EventEmitterWrapper::invokeUniqueEvent(
-    std::string const &eventName,
+    std::string eventName,
     NativeMap *payload,
     int customCoalesceKey) {
-  if (eventEmitterPointer) {
-    eventEmitterPointer->dispatchUniqueEvent(eventName, payload->consume());
-    return;
-  }
   // TODO: customCoalesceKey currently unused
   // It is marginal, but possible for this to be constructed without a valid
   // EventEmitter. In those cases, make sure we noop/blackhole events instead of

@@ -91,7 +91,7 @@ RCT_EXPORT_METHOD(updateExceptionMessage
                   : (double)exceptionId)
 {
   RCTRedBox *redbox = [_moduleRegistry moduleForName:"RedBox"];
-  [redbox showErrorMessage:message withStack:stack errorCookie:(int)exceptionId];
+  [redbox updateErrorMessage:message withStack:stack errorCookie:(int)exceptionId];
 
   if (_delegate && [_delegate respondsToSelector:@selector(updateJSExceptionWithMessage:stack:exceptionId:)]) {
     [_delegate updateJSExceptionWithMessage:message stack:stack exceptionId:[NSNumber numberWithDouble:exceptionId]];
@@ -135,6 +135,27 @@ RCT_EXPORT_METHOD(reportException : (JS::NativeExceptionsManager::ExceptionData 
     [self reportFatal:message stack:stackArray exceptionId:exceptionId];
   } else {
     [self reportSoft:message stack:stackArray exceptionId:exceptionId];
+  }
+}
+
+- (void)reportEarlyJsException:(std::string)errorMap
+{
+  NSString *errprStr = [NSString stringWithUTF8String:errorMap.c_str()];
+  NSData *jsonData = [errprStr dataUsingEncoding:NSUTF8StringEncoding];
+  NSError *jsonError;
+  NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:jsonData
+                                                       options:NSJSONWritingPrettyPrinted
+                                                         error:&jsonError];
+
+  NSString *message = [dict objectForKey:@"message"];
+  double exceptionId = [[dict objectForKey:@"id"] doubleValue];
+  NSArray *stack = [dict objectForKey:@"stack"];
+  BOOL isFatal = [[dict objectForKey:@"isFatal"] boolValue];
+
+  if (isFatal) {
+    [self reportFatalException:message stack:stack exceptionId:exceptionId];
+  } else {
+    [self reportSoftException:message stack:stack exceptionId:exceptionId];
   }
 }
 

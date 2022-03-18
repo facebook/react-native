@@ -13,6 +13,7 @@
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeMethod.h>
 #import <React/RCTBridgeModule.h>
+#import <React/RCTBridgeModuleDecorator.h>
 #import <React/RCTConstants.h>
 #import <React/RCTConvert.h>
 #import <React/RCTCxxBridgeDelegate.h>
@@ -251,52 +252,12 @@ struct RCTInstanceCallback : public InstanceCallback {
 
 - (void)attachBridgeAPIsToTurboModule:(id<RCTTurboModule>)module
 {
-  id<RCTBridgeModule> bridgeModule = (id<RCTBridgeModule>)module;
-  /**
-   * Attach the RCTViewRegistry to this TurboModule, which allows this TurboModule
-   * To query a React component's UIView, given its reactTag.
-   *
-   * Usage: In the TurboModule @implementation, include:
-   *   `@synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED`
-   */
-  if ([bridgeModule respondsToSelector:@selector(setViewRegistry_DEPRECATED:)]) {
-    bridgeModule.viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED;
-  }
-
-  /**
-   * Attach the RCTBundleManager to this TurboModule, which allows this TurboModule to
-   * read from/write to the app's bundle URL.
-   *
-   * Usage: In the TurboModule @implementation, include:
-   *   `@synthesize bundleManager = _bundleManager`
-   */
-  if ([bridgeModule respondsToSelector:@selector(setBundleManager:)]) {
-    bridgeModule.bundleManager = _bundleManager;
-  }
-
-  /**
-   * Attach the RCTCallableJSModules to this TurboModule, which allows this TurboModule
-   * to call JS Module methods.
-   *
-   * Usage: In the TurboModule @implementation, include:
-   *   `@synthesize callableJSModules = _callableJSModules`
-   */
-
-  if ([bridgeModule respondsToSelector:@selector(setCallableJSModules:)]) {
-    bridgeModule.callableJSModules = _callableJSModules;
-  }
-
-  /**
-   * Attach the RCTModuleRegistry to this TurboModule, which allows this TurboModule
-   * to require other TurboModules/NativeModules.
-   *
-   * Usage: In the TurboModule @implementation, include:
-   *   `@synthesize moduleRegistry = _moduleRegistry`
-   */
-
-  if ([bridgeModule respondsToSelector:@selector(setModuleRegistry:)]) {
-    bridgeModule.moduleRegistry = _objCModuleRegistry;
-  }
+  RCTBridgeModuleDecorator *bridgeModuleDecorator =
+      [[RCTBridgeModuleDecorator alloc] initWithViewRegistry:_viewRegistry_DEPRECATED
+                                              moduleRegistry:_objCModuleRegistry
+                                               bundleManager:_bundleManager
+                                           callableJSModules:_callableJSModules];
+  [bridgeModuleDecorator attachInteropAPIsToModule:(id<RCTBridgeModule>)module];
 }
 
 - (std::shared_ptr<MessageQueueThread>)jsMessageThread
@@ -348,6 +309,9 @@ struct RCTInstanceCallback : public InstanceCallback {
                                              selector:@selector(handleMemoryWarning)
                                                  name:UIApplicationDidReceiveMemoryWarningNotification
                                                object:nil];
+
+    RCTLogSetBridgeModuleRegistry(_objCModuleRegistry);
+    RCTLogSetBridgeCallableJSModules(_callableJSModules);
   }
   return self;
 }

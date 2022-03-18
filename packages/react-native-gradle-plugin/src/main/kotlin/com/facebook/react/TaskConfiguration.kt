@@ -17,7 +17,6 @@ import com.facebook.react.utils.detectedCliPath
 import com.facebook.react.utils.detectedEntryFile
 import com.facebook.react.utils.detectedHermesCommand
 import java.io.File
-import java.util.*
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.tasks.Copy
@@ -56,11 +55,9 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactExte
         it.group = REACT_GROUP
         it.description = "create JS bundle and assets for $targetName."
 
-        it.reactRoot = config.reactRoot.get().asFile
+        it.reactRoot = config.root.get().asFile
         it.sources =
-            fileTree(config.reactRoot) { fileTree ->
-              fileTree.setExcludes(config.inputExcludes.get())
-            }
+            fileTree(config.root) { fileTree -> fileTree.setExcludes(config.inputExcludes.get()) }
         it.execCommand = execCommand
         it.bundleCommand = config.bundleCommand.get()
         it.devEnabled = !config.disableDevForVariant(variant)
@@ -98,7 +95,7 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactExte
         it.group = REACT_GROUP
         it.description = "bundle hermes resources for $targetName"
 
-        it.reactRoot = config.reactRoot.get().asFile
+        it.reactRoot = config.root.get().asFile
         it.hermesCommand = detectedHermesCommand(config)
         it.hermesFlags = config.hermesFlagsForVariant(variant)
         it.jsBundleFile = jsBundleFile
@@ -129,7 +126,7 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactExte
   // Android configuration
   variant.registerGeneratedResFolders(generatedResFolders)
 
-  val packageTask =
+  val packageTask: TaskProvider<out Task>? =
       when (variant) {
         is ApplicationVariant -> variant.packageApplicationProvider
         is LibraryVariant -> variant.packageLibraryProvider
@@ -157,11 +154,11 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactExte
           it.enabled = bundleEnabled
         }
 
-    packageTask.dependsOn(currentCopyResTask)
+    packageTask?.dependsOn(currentCopyResTask)
     preBundleTask.dependsOn(currentCopyResTask)
   }
 
-  packageTask.configure {
+  packageTask?.configure {
     if (config.enableVmCleanup.get()) {
       val libDir = "$buildDir/intermediates/transforms/"
       val targetVariant = ".*/transforms/[^/]*/${variant.name}/.*".toRegex()
@@ -197,6 +194,8 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactExte
           it.into(jsBundleDirConfigValue.get())
         } else {
           it.into(mergeAssetsTask.map { mergeFoldersTask -> mergeFoldersTask.outputDir.get() })
+          // Workaround for Android Gradle Plugin 7.1 asset directory
+          it.into("$buildDir/intermediates/assets/${variant.name}/merge${targetName}Assets")
         }
 
         it.dependsOn(mergeAssetsTask)
@@ -208,7 +207,7 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactExte
   // from Android plugin 4.1+.
   // This ensures to copy the bundle file before mergeResources task starts
   mergeResourcesTask.dependsOn(currentAssetsCopyTask)
-  packageTask.dependsOn(currentAssetsCopyTask)
+  packageTask?.dependsOn(currentAssetsCopyTask)
   preBundleTask.dependsOn(currentAssetsCopyTask)
 }
 
@@ -240,10 +239,6 @@ private fun Project.cleanupVMFiles(
     } else {
       // For JSC, delete all the libhermes* files
       it.include("**/libhermes*.so")
-      // Delete the libjscexecutor from release build
-      if (cleanup) {
-        it.include("**/libjscexecutor.so")
-      }
     }
   }
       .visit { visit ->

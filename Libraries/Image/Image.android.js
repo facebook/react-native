@@ -198,13 +198,22 @@ let Image = (props: ImagePropsType, forwardedRef) => {
             : nativeProps;
         return (
           <TextAncestor.Consumer>
-            {hasTextAncestor =>
-              hasTextAncestor ? (
-                <TextInlineImageNativeComponent {...nativePropsWithAnalytics} />
-              ) : (
-                <ImageViewNativeComponent {...nativePropsWithAnalytics} />
-              )
-            }
+            {hasTextAncestor => {
+              if (hasTextAncestor) {
+                let src = Array.isArray(sources) ? sources : [sources];
+                return (
+                  <TextInlineImageNativeComponent
+                    style={style}
+                    resizeMode={props.resizeMode}
+                    headers={nativeProps.headers}
+                    src={src}
+                    ref={forwardedRef}
+                  />
+                );
+              }
+
+              return <ImageViewNativeComponent {...nativePropsWithAnalytics} />;
+            }}
           </TextAncestor.Consumer>
         );
       }}
@@ -296,12 +305,6 @@ Image.queryCache = queryCache;
  * error found when Flow v0.89 was deployed. To see the error, delete this
  * comment and run Flow. */
 Image.resolveAssetSource = resolveAssetSource;
-
-/**
- * Switch to `deprecated-react-native-prop-types` for compatibility with future
- * releases. This is deprecated and will be removed in the future.
- */
-Image.propTypes = require('deprecated-react-native-prop-types').ImagePropTypes;
 
 const styles = StyleSheet.create({
   base: {

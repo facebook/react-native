@@ -8,7 +8,6 @@
 package com.facebook.react.views.scroll;
 
 import android.graphics.Color;
-import android.util.DisplayMetrics;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
@@ -17,8 +16,8 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
-import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.Spacing;
@@ -97,8 +96,8 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
   @ReactProp(name = "snapToInterval")
   public void setSnapToInterval(ReactScrollView view, float snapToInterval) {
     // snapToInterval needs to be exposed as a float because of the Javascript interface.
-    DisplayMetrics screenDisplayMetrics = DisplayMetricsHolder.getScreenDisplayMetrics();
-    view.setSnapInterval((int) (snapToInterval * screenDisplayMetrics.density));
+    float density = PixelUtil.getDisplayMetricDensity();
+    view.setSnapInterval((int) (snapToInterval * density));
   }
 
   @ReactProp(name = "snapToOffsets")
@@ -108,10 +107,10 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
       return;
     }
 
-    DisplayMetrics screenDisplayMetrics = DisplayMetricsHolder.getScreenDisplayMetrics();
+    float density = PixelUtil.getDisplayMetricDensity();
     List<Integer> offsets = new ArrayList<Integer>();
     for (int i = 0; i < snapToOffsets.size(); i++) {
-      offsets.add((int) (snapToOffsets.getDouble(i) * screenDisplayMetrics.density));
+      offsets.add((int) (snapToOffsets.getDouble(i) * density));
     }
     view.setSnapOffsets(offsets);
   }
@@ -362,5 +361,10 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
             ScrollEventType.getJSEventName(ScrollEventType.MOMENTUM_END),
             MapBuilder.of("registrationName", "onMomentumScrollEnd"))
         .build();
+  }
+
+  @ReactProp(name = ViewProps.POINTER_EVENTS)
+  public void setPointerEvents(ReactScrollView view, @Nullable String pointerEventsStr) {
+    view.setPointerEvents(PointerEvents.parsePointerEvents(pointerEventsStr));
   }
 }

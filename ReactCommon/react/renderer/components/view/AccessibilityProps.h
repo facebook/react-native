@@ -30,7 +30,12 @@ class AccessibilityProps {
   AccessibilityTraits accessibilityTraits{AccessibilityTraits::None};
   AccessibilityState accessibilityState;
   std::string accessibilityLabel{""};
+  AccessibilityLabelledBy accessibilityLabelledBy{};
+  AccessibilityLiveRegion accessibilityLiveRegion{
+      AccessibilityLiveRegion::None};
+  std::string accessibilityRole{""};
   std::string accessibilityHint{""};
+  std::string accessibilityLanguage{""};
   AccessibilityValue accessibilityValue;
   std::vector<AccessibilityAction> accessibilityActions{};
   bool accessibilityViewIsModal{false};

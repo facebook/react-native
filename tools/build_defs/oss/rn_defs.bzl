@@ -177,6 +177,7 @@ def _unique(li):
 def rn_android_library(name, deps = [], plugins = [], *args, **kwargs):
     _ = kwargs.pop("autoglob", False)
     _ = kwargs.pop("is_androidx", False)
+    _ = kwargs.pop("pure_kotlin", False)
     if react_native_target(
         "java/com/facebook/react/uimanager/annotations:annotations",
     ) in deps and name != "processing":

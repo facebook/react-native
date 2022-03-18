@@ -14,20 +14,30 @@ const AnimatedNode = require('../Animated/nodes/AnimatedNode');
 
 import type {NativeColorValue} from './PlatformColorValueTypes';
 
-export type ____ColorValue_Internal = null | string | NativeColorValue;
+export type ____ColorValue_Internal = null | string | number | NativeColorValue;
 
 export type ColorArrayValue = null | $ReadOnlyArray<____ColorValue_Internal>;
-export type PointValue = {|
+export type PointValue = {
   x: number,
   y: number,
-|};
-export type EdgeInsetsValue = {|
+};
+export type EdgeInsetsValue = {
   top: number,
   left: number,
   right: number,
   bottom: number,
-|};
+};
 export type DimensionValue = null | number | string | AnimatedNode;
+
+import type {
+  ____DangerouslyImpreciseStyle_InternalOverrides,
+  ____ImageStyle_InternalOverrides,
+  ____ShadowStyle_InternalOverrides,
+  ____TextStyle_InternalOverrides,
+  ____ViewStyle_InternalOverrides,
+} from './private/_StyleSheetTypesOverrides';
+
+import type {____TransformStyle_Internal} from './private/_TransformStyle';
 
 /**
  * React Native's layout system is based on Flexbox and is powered both
@@ -42,7 +52,7 @@ export type DimensionValue = null | number | string | AnimatedNode;
  * These properties are a subset of our styles that are consumed by the layout
  * algorithm and affect the positioning and sizing of views.
  */
-type ____LayoutStyle_Internal = $ReadOnly<{|
+type ____LayoutStyle_Internal = $ReadOnly<{
   /** `display` sets the display type of this component.
    *
    *  It works similarly to `display` in CSS, but only support 'flex' and 'none'.
@@ -472,49 +482,7 @@ type ____LayoutStyle_Internal = $ReadOnly<{|
    *  @platform ios
    */
   direction?: 'inherit' | 'ltr' | 'rtl',
-|}>;
-
-type ____TransformStyle_Internal = $ReadOnly<{|
-  /**
-   * `transform` accepts an array of transformation objects. Each object specifies
-   * the property that will be transformed as the key, and the value to use in the
-   * transformation. Objects should not be combined. Use a single key/value pair
-   * per object.
-   *
-   * The rotate transformations require a string so that the transform may be
-   * expressed in degrees (deg) or radians (rad). For example:
-   *
-   * `transform([{ rotateX: '45deg' }, { rotateZ: '0.785398rad' }])`
-   *
-   * The skew transformations require a string so that the transform may be
-   * expressed in degrees (deg). For example:
-   *
-   * `transform([{ skewX: '45deg' }])`
-   */
-  transform?: $ReadOnlyArray<
-    | {|+perspective: number | AnimatedNode|}
-    | {|+rotate: string | AnimatedNode|}
-    | {|+rotateX: string | AnimatedNode|}
-    | {|+rotateY: string | AnimatedNode|}
-    | {|+rotateZ: string | AnimatedNode|}
-    | {|+scale: number | AnimatedNode|}
-    | {|+scaleX: number | AnimatedNode|}
-    | {|+scaleY: number | AnimatedNode|}
-    | {|+translateX: number | AnimatedNode|}
-    | {|+translateY: number | AnimatedNode|}
-    | {|
-        +translate:
-          | [number | AnimatedNode, number | AnimatedNode]
-          | AnimatedNode,
-      |}
-    | {|+skewX: string|}
-    | {|+skewY: string|}
-    // TODO: what is the actual type it expects?
-    | {|
-        +matrix: $ReadOnlyArray<number | AnimatedNode> | AnimatedNode,
-      |},
-  >,
-|}>;
+}>;
 
 /**
  * These props can be used to dynamically generate shadows on views, images, text, etc.
@@ -526,7 +494,7 @@ type ____TransformStyle_Internal = $ReadOnly<{|
  * To add a drop shadow to a view use the [`elevation` property](docs/viewstyleproptypes.html#elevation) (Android 5.0+).
  * To customize the color use the [`shadowColor` property](docs/shadow-props.html#shadowColor) (Android 9.0+).
  */
-export type ____ShadowStyle_Internal = $ReadOnly<{|
+export type ____ShadowStyle_InternalCore = $ReadOnly<{
   /**
    * Sets the drop shadow color
    * @platform ios
@@ -536,10 +504,10 @@ export type ____ShadowStyle_Internal = $ReadOnly<{|
    * Sets the drop shadow offset
    * @platform ios
    */
-  shadowOffset?: $ReadOnly<{|
+  shadowOffset?: $ReadOnly<{
     width?: number,
     height?: number,
-  |}>,
+  }>,
   /**
    * Sets the drop shadow opacity (multiplied by the color's alpha component)
    * @platform ios
@@ -550,9 +518,14 @@ export type ____ShadowStyle_Internal = $ReadOnly<{|
    * @platform ios
    */
   shadowRadius?: number,
-|}>;
+}>;
 
-export type ____ViewStyle_Internal = $ReadOnly<{|
+export type ____ShadowStyle_Internal = $ReadOnly<{
+  ...____ShadowStyle_InternalCore,
+  ...____ShadowStyle_InternalOverrides,
+}>;
+
+export type ____ViewStyle_InternalCore = $ReadOnly<{
   ...$Exact<____LayoutStyle_Internal>,
   ...$Exact<____ShadowStyle_Internal>,
   ...$Exact<____TransformStyle_Internal>,
@@ -584,7 +557,12 @@ export type ____ViewStyle_Internal = $ReadOnly<{|
   borderTopWidth?: number | AnimatedNode,
   opacity?: number | AnimatedNode,
   elevation?: number,
-|}>;
+}>;
+
+export type ____ViewStyle_Internal = $ReadOnly<{
+  ...____ViewStyle_InternalCore,
+  ...____ViewStyle_InternalOverrides,
+}>;
 
 export type ____FontWeight_Internal =
   | 'normal'
@@ -599,7 +577,7 @@ export type ____FontWeight_Internal =
   | '800'
   | '900';
 
-export type ____TextStyle_Internal = $ReadOnly<{|
+export type ____TextStyle_InternalCore = $ReadOnly<{
   ...$Exact<____ViewStyle_Internal>,
   color?: ____ColorValue_Internal,
   fontFamily?: string,
@@ -613,10 +591,10 @@ export type ____TextStyle_Internal = $ReadOnly<{|
     | 'tabular-nums'
     | 'proportional-nums',
   >,
-  textShadowOffset?: $ReadOnly<{|
+  textShadowOffset?: $ReadOnly<{
     width: number,
     height: number,
-  |}>,
+  }>,
   textShadowRadius?: number,
   textShadowColor?: ____ColorValue_Internal,
   letterSpacing?: number,
@@ -633,22 +611,37 @@ export type ____TextStyle_Internal = $ReadOnly<{|
   textDecorationColor?: ____ColorValue_Internal,
   textTransform?: 'none' | 'capitalize' | 'uppercase' | 'lowercase',
   writingDirection?: 'auto' | 'ltr' | 'rtl',
-|}>;
+}>;
 
-export type ____ImageStyle_Internal = $ReadOnly<{|
+export type ____TextStyle_Internal = $ReadOnly<{
+  ...____TextStyle_InternalCore,
+  ...____TextStyle_InternalOverrides,
+}>;
+
+export type ____ImageStyle_InternalCore = $ReadOnly<{
   ...$Exact<____ViewStyle_Internal>,
   resizeMode?: 'contain' | 'cover' | 'stretch' | 'center' | 'repeat',
   tintColor?: ____ColorValue_Internal,
   overlayColor?: string,
-|}>;
+}>;
 
-export type ____DangerouslyImpreciseStyle_Internal = {
+export type ____ImageStyle_Internal = $ReadOnly<{
+  ...____ImageStyle_InternalCore,
+  ...____ImageStyle_InternalOverrides,
+}>;
+
+export type ____DangerouslyImpreciseStyle_InternalCore = $ReadOnly<{
   ...$Exact<____TextStyle_Internal>,
-  +resizeMode?: 'contain' | 'cover' | 'stretch' | 'center' | 'repeat',
-  +tintColor?: ____ColorValue_Internal,
-  +overlayColor?: string,
+  resizeMode?: 'contain' | 'cover' | 'stretch' | 'center' | 'repeat',
+  tintColor?: ____ColorValue_Internal,
+  overlayColor?: string,
+}>;
+
+export type ____DangerouslyImpreciseStyle_Internal = $ReadOnly<{
+  ...____DangerouslyImpreciseStyle_InternalCore,
+  ...____DangerouslyImpreciseStyle_InternalOverrides,
   ...
-};
+}>;
 
 type GenericStyleProp<+T> =
   | null

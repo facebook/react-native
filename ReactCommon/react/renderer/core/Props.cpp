@@ -16,7 +16,8 @@ namespace react {
 Props::Props(
     const PropsParserContext &context,
     const Props &sourceProps,
-    const RawProps &rawProps)
+    const RawProps &rawProps,
+    const bool shouldSetRawProps)
     : nativeId(convertRawProp(
           context,
           rawProps,
@@ -26,7 +27,9 @@ Props::Props(
       revision(sourceProps.revision + 1)
 #ifdef ANDROID
       ,
-      rawProps((folly::dynamic)rawProps)
+      rawProps(
+          shouldSetRawProps ? (folly::dynamic)rawProps
+                            : /* null */ folly::dynamic())
 #endif
           {};
 

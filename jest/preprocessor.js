@@ -92,7 +92,6 @@ module.exports = {
           {loose: true}, // dont 'a'.concat('b'), just use 'a'+'b'
         ],
         [require('@babel/plugin-transform-exponentiation-operator')],
-        [require('@babel/plugin-transform-object-assign')],
         [require('@babel/plugin-transform-for-of'), {loose: true}],
         [require('@babel/plugin-transform-react-display-name')],
         [require('@babel/plugin-transform-react-jsx-source')],

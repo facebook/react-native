@@ -13,7 +13,7 @@
 import type EventEmitter from './EventEmitter';
 import _EventSubscription from './_EventSubscription';
 import type EventSubscriptionVendor from './_EventSubscriptionVendor';
-import {type EventSubscription} from './EventSubscription';
+import type {EventSubscription} from './EventSubscription';
 
 /**
  * EmitterSubscription represents a subscription with listener and context data.

@@ -30,7 +30,6 @@ import typeof RefreshControl from './Libraries/Components/RefreshControl/Refresh
 import typeof SafeAreaView from './Libraries/Components/SafeAreaView/SafeAreaView';
 import typeof ScrollView from './Libraries/Components/ScrollView/ScrollView';
 import typeof SectionList from './Libraries/Lists/SectionList';
-import typeof SegmentedControlIOS from './Libraries/Components/SegmentedControlIOS/SegmentedControlIOS';
 import typeof Slider from './Libraries/Components/Slider/Slider';
 import typeof StatusBar from './Libraries/Components/StatusBar/StatusBar';
 import typeof Switch from './Libraries/Components/Switch/Switch';
@@ -192,16 +191,6 @@ module.exports = {
   },
   get SectionList(): SectionList {
     return require('./Libraries/Lists/SectionList').default;
-  },
-  // $FlowFixMe[value-as-type]
-  get SegmentedControlIOS(): SegmentedControlIOS {
-    warnOnce(
-      'segmented-control-ios-moved',
-      'SegmentedControlIOS has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-segmented-control/segmented-control' instead of 'react-native'. " +
-        'See https://github.com/react-native-segmented-control/segmented-control',
-    );
-    return require('./Libraries/Components/SegmentedControlIOS/SegmentedControlIOS');
   },
   get Slider(): Slider {
     warnOnce(
@@ -446,32 +435,32 @@ module.exports = {
   },
   // Deprecated Prop Types
   get ColorPropType(): $FlowFixMe {
-    console.warn(
-      'ColorPropType will be removed from React Native. Migrate to ' +
+    invariant(
+      false,
+      'ColorPropType has been removed from React Native. Migrate to ' +
         "ColorPropType exported from 'deprecated-react-native-prop-types'.",
     );
-    return require('deprecated-react-native-prop-types').ColorPropType;
   },
   get EdgeInsetsPropType(): $FlowFixMe {
-    console.warn(
-      'EdgeInsetsPropType will be removed from React Native. Migrate to ' +
+    invariant(
+      false,
+      'EdgeInsetsPropType has been removed from React Native. Migrate to ' +
         "EdgeInsetsPropType exported from 'deprecated-react-native-prop-types'.",
     );
-    return require('deprecated-react-native-prop-types').EdgeInsetsPropType;
   },
   get PointPropType(): $FlowFixMe {
-    console.warn(
-      'PointPropType will be removed from React Native. Migrate to ' +
+    invariant(
+      false,
+      'PointPropType has been removed from React Native. Migrate to ' +
         "PointPropType exported from 'deprecated-react-native-prop-types'.",
     );
-    return require('deprecated-react-native-prop-types').PointPropType;
   },
   get ViewPropTypes(): $FlowFixMe {
-    console.warn(
-      'ViewPropTypes will be removed from React Native. Migrate to ' +
+    invariant(
+      false,
+      'ViewPropTypes has been removed from React Native. Migrate to ' +
         "ViewPropTypes exported from 'deprecated-react-native-prop-types'.",
     );
-    return require('deprecated-react-native-prop-types').ViewPropTypes;
   },
 };
 
@@ -647,8 +636,8 @@ if (__DEV__) {
       invariant(
         false,
         'ViewPagerAndroid has been removed from React Native. ' +
-          "It can now be installed and imported from '@react-native-community/viewpager' instead of 'react-native'. " +
-          'See https://github.com/callstack/react-native-viewpager',
+          "It can now be installed and imported from 'react-native-pager-view' instead of 'react-native'. " +
+          'See https://github.com/callstack/react-native-pager-view',
       );
     },
   });
@@ -665,6 +654,22 @@ if (__DEV__) {
         'CheckBox has been removed from React Native. ' +
           "It can now be installed and imported from '@react-native-community/checkbox' instead of 'react-native'. " +
           'See https://github.com/react-native-checkbox/react-native-checkbox',
+      );
+    },
+  });
+
+  /* $FlowFixMe[prop-missing] This is intentional: Flow will error when
+   * attempting to access SegmentedControlIOS. */
+  /* $FlowFixMe[invalid-export] This is intentional: Flow will error when
+   * attempting to access SegmentedControlIOS. */
+  Object.defineProperty(module.exports, 'SegmentedControlIOS', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'SegmentedControlIOS has been removed from React Native. ' +
+          "It can now be installed and imported from '@react-native-community/segmented-checkbox' instead of 'react-native'." +
+          'See https://github.com/react-native-segmented-control/segmented-control',
       );
     },
   });

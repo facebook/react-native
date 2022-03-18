@@ -8,7 +8,6 @@
 #pragma once
 
 #include <butter/map.h>
-#include <butter/optional.h>
 #include <folly/Conv.h>
 #include <folly/dynamic.h>
 #include <glog/logging.h>
@@ -23,6 +22,7 @@
 #include <yoga/YGNode.h>
 #include <yoga/Yoga.h>
 #include <cmath>
+#include <optional>
 
 namespace facebook {
 namespace react {
@@ -98,9 +98,9 @@ inline YGValue yogaStyleValueFromFloat(
   return {(float)value, unit};
 }
 
-inline butter::optional<Float> optionalFloatFromYogaValue(
+inline std::optional<Float> optionalFloatFromYogaValue(
     const YGValue value,
-    butter::optional<Float> base = {}) {
+    std::optional<Float> base = {}) {
   switch (value.unit) {
     case YGUnitUndefined:
       return {};
@@ -108,9 +108,8 @@ inline butter::optional<Float> optionalFloatFromYogaValue(
       return floatFromYogaFloat(value.value);
     case YGUnitPercent:
       return base.has_value()
-          ? butter::optional<Float>(
-                base.value() * floatFromYogaFloat(value.value))
-          : butter::optional<Float>();
+          ? std::optional<Float>(base.value() * floatFromYogaFloat(value.value))
+          : std::optional<Float>();
     case YGUnitAuto:
       return {};
   }

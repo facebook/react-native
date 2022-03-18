@@ -89,11 +89,26 @@ if (!includesChangelog) {
 
 // Warns if the PR is opened against stable, as commits need to be cherry picked and tagged by a release maintainer.
 // Fails if the PR is opened against anything other than `main` or `-stable`.
-const isMergeRefMaster = danger.github.pr.base.ref === 'main';
+const isMergeRefMain = danger.github.pr.base.ref === 'main';
 const isMergeRefStable = danger.github.pr.base.ref.indexOf('-stable') !== -1;
-if (!isMergeRefMaster && !isMergeRefStable) {
+if (!isMergeRefMain && !isMergeRefStable) {
   const title = ':exclamation: Base Branch';
   const idea =
     'The base branch for this PR is something other than `main` or a `-stable` branch. [Are you sure you want to target something other than the `main` branch?](https://reactnative.dev/docs/contributing#pull-requests)';
   fail(`${title} - <i>${idea}</i>`);
+}
+
+// If the PR is opened against stable should add `Pick Request` label
+if (isMergeRefStable) {
+  const {owner, repo, number: issueNumber} = danger.github.thisPR;
+
+  danger.github.api.request(
+    'POST /repos/{owner}/{repo}/issues/{issueNumber}/labels',
+    {
+      owner,
+      repo,
+      issueNumber,
+      labels: ['Pick Request'],
+    },
+  );
 }
