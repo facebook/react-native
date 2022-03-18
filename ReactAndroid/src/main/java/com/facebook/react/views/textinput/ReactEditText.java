@@ -1073,10 +1073,6 @@ public class ReactEditText extends AppCompatEditText
     mEventDispatcher = eventDispatcher;
   }
 
-  public void setErrorMessage(String error) {
-    setError(error);
-  }
-
   /**
    * This class will redirect *TextChanged calls to the listeners only in the case where the text is
    * changed by the user, and not explicitly set by JS.
