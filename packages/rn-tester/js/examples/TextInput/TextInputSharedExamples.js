@@ -485,6 +485,7 @@ function ErrorExample(): React.Node {
       <TextInput
         errorMessage={error}
         onBlur={() => setError('onBlur')}
+        onEndEditing={() => setError('onEndEditing')}
         onChangeText={newText => {
           setText(newText);
           if (newText === 'error') {
