@@ -163,6 +163,9 @@
 
 #### Android specific
 
+- Enable cliPath to have an absolute path value ([5d560ca99f](https://github.com/facebook/react-native/commit/5d560ca99ff7220de11d2d76dbe77d73990894a8) by [@Krisztiaan](https://github.com/Krisztiaan))
+- Make sure configureNdkBuild* tasks are depending on ([2fdbf6a10f](https://github.com/facebook/react-native/commit/2fdbf6a10fe67fa3209a51a1105a97c16991f561) by [@cortinico](https://github.com/cortinico))
+- Added a null check to native.value in Switch to fix https://github.com/facebook/react-native/issues/32594 ([8d50bf1133](https://github.com/facebook/react-native/commit/8d50bf113352a6ccdf74c979e1022c6c2ccf6e56) by [@jonathanmos](https://github.com/jonathanmos))
 - Fix overflowInset calculation by using transform values ([8aa87814f6](https://github.com/facebook/react-native/commit/8aa87814f62e42741ebb01994796625473c1310f) by [@ryancat](https://github.com/ryancat))
 - Add missing sources jar into published android artifacts ([384e1a0c7b](https://github.com/facebook/react-native/commit/384e1a0c7bc50d2aab5b59bcedcea5a3e98f1659) by [@Kudo](https://github.com/Kudo))
 - Fix math for detecting if children views are in parent's overflowInset area. ([45244ebce2](https://github.com/facebook/react-native/commit/45244ebce228dfbc3412670e64c11491ba8d8c47) by [@ryancat](https://github.com/ryancat))
@@ -188,6 +191,10 @@
 
 #### iOS specific
 
+- Update Flipper pods to support re-enable macCatalyst ([2a5265dff7](https://github.com/facebook/react-native/commit/2a5265dff7e654f57b43335804840692313f2a56) by [@mikehardy](https://github.com/mikehardy))
+- Fix usage of cocoapods with --project-directory flag and new arch ([9e7d91f2fc](https://github.com/facebook/react-native/commit/9e7d91f2fc4d576b8fba81304a24e50134da93d6) by [@danilobuerger](https://github.com/danilobuerger))
+- Post RCTContentDidAppearNotification with new arch ([75105e692c](https://github.com/facebook/react-native/commit/75105e692c2be9bd192089a6a6ffde7572ee1ce1) by [@danilobuerger](https://github.com/danilobuerger))
+- Remove absolute paths from pods project ([42b01a32a1](https://github.com/facebook/react-native/commit/42b01a32a137f18ae9fd2f00914f2edb0e107421) by [@danilobuerger](https://github.com/danilobuerger))
 - Respect RCTSetDefaultFontHandler chosen font ([89efa1a0c1](https://github.com/facebook/react-native/commit/89efa1a0c1b633bf9edee66583800ad3fc54ce63) by [@danilobuerger](https://github.com/danilobuerger))
 - Fixed duplicated UUIDs problem during pod install phase. ([f595a4e681](https://github.com/facebook/react-native/commit/f595a4e681e75aaf737b6582f69855d76a1f33dd))
 - Fix `Time.h` patch not being applied when running `pod install --project-directory=ios` ([60cef850bd](https://github.com/facebook/react-native/commit/60cef850bd3fd12c32ee1196bd19a559592d1465) by [@tido64](https://github.com/tido64))
