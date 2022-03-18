@@ -296,6 +296,11 @@
 
 ## v0.67.2
 
+### Fixed
+
+- Fix error "mockModal is not a function" ([507b05f4c0](https://github.com/facebook/react-native/commit/507b05f4c02b46109f483a2b79c924a775fd7bd3) by [@AntoineDoubovetzky](https://github.com/AntoineDoubovetzky))
+
+
 #### Android specific
 
 - Fix potential crash if ReactRootView does not have insets attached. ([6239e2f5ce](https://github.com/facebook/react-native/commit/6239e2f5ce82f7c2e683eb4699b9ce3ff1b58ac5) by [@enahum](https://github.com/enahum))
