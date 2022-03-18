@@ -473,24 +473,18 @@ class SelectionExample extends React.Component<
   }
 }
 
-function ErrorExample(): React.Node {
+function ErrorOnBlurExample(): React.Node {
   const [text, setText] = React.useState('');
   const [error, setError] = React.useState(null);
   const textinput = React.useRef(null);
   return (
-    <>
-      <Button title="create error" onPress={() => setError('button')} />
-      <TextInput
-        ref={textinput}
-        errorMessage={error}
-        onBlur={() => setError('onBlur')}
-        onChangeText={newText => {
-          setText(newText);
-          setError(newText === 'error' ? 'this input is invalid' : null);
-        }}
-        value={text}
-      />
-    </>
+    <TextInput
+      ref={textinput}
+      errorMessage={error}
+      onBlur={() => setError('onBlur')}
+      value={text}
+      style={styles.default}
+    />
   );
 }
 
