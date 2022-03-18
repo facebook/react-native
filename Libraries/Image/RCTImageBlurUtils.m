@@ -79,9 +79,20 @@ UIImage *RCTBlurredImageWithRadius(UIImage *inputImage, CGFloat radius)
   free(tempBuffer);
 
   //create image context from buffer
+  CGBitmapInfo bitmapInfoMasked = CGImageGetBitmapInfo(imageRef);
+  CGBitmapInfo bitmapInfo = bitmapInfoMasked & kCGBitmapByteOrderMask;
+  CGImageAlphaInfo alphaInfo = CGImageGetAlphaInfo(imageRef);
+  if (alphaInfo == kCGImageAlphaNone || alphaInfo == kCGImageAlphaOnly) {
+      alphaInfo = kCGImageAlphaNoneSkipFirst;
+  } else if (alphaInfo == kCGImageAlphaFirst) {
+      alphaInfo = kCGImageAlphaPremultipliedFirst;
+  } else if (alphaInfo == kCGImageAlphaLast) {
+      alphaInfo = kCGImageAlphaPremultipliedLast;
+  }
+  bitmapInfo |= alphaInfo;
   CGContextRef ctx = CGBitmapContextCreate(buffer1.data, buffer1.width, buffer1.height,
                                            8, buffer1.rowBytes, CGImageGetColorSpace(imageRef),
-                                           CGImageGetBitmapInfo(imageRef));
+                                           bitmapInfo);
 
   //create image from context
   imageRef = CGBitmapContextCreateImage(ctx);
