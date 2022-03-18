@@ -17,7 +17,7 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../../../ $(LOCAL_PATH) $(LOCAL_PATH)/p
 
 LOCAL_SHARED_LIBRARIES := \
   libfbjni \
-  libfolly_json \
+  libfolly_runtime \
   libjsi \
   libreact_debug \
   libreactnativejni

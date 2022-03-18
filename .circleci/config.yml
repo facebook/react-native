@@ -67,7 +67,7 @@ executors:
   reactnativeandroid:
     <<: *defaults
     docker:
-      - image: reactnativecommunity/react-native-android:5.2
+      - image: reactnativecommunity/react-native-android:5.4
     resource_class: "large"
     environment:
       - TERM: "dumb"

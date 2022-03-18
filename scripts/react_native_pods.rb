@@ -119,6 +119,15 @@ def use_react_native! (options={})
     end
     pod 'libevent', '~> 2.1.12'
   end
+
+  pods_to_update = LocalPodspecPatch.pods_to_update(options)
+  if !pods_to_update.empty?
+    if Pod::Lockfile.public_instance_methods.include?(:detect_changes_with_podfile)
+      Pod::Lockfile.prepend(LocalPodspecPatch)
+    else
+      Pod::UI.warn "Automatically updating #{pods_to_update.join(", ")} has failed, please run `pod update #{pods_to_update.join(" ")} --no-repo-update` manually to fix the issue."
+    end
+  end
 end
 
 def get_default_flags()
@@ -141,7 +150,7 @@ def use_flipper!(versions = {}, configurations: ['Debug'])
   versions['Flipper-DoubleConversion'] ||= '3.2.0'
   versions['Flipper-Fmt'] ||= '7.1.7'
   versions['Flipper-Folly'] ||= '2.6.10'
-  versions['Flipper-Glog'] ||= '0.5.0.3'
+  versions['Flipper-Glog'] ||= '0.5.0.4'
   versions['Flipper-PeerTalk'] ||= '0.0.4'
   versions['Flipper-RSocket'] ||= '1.4.3'
   versions['OpenSSL-Universal'] ||= '1.1.1100'
@@ -278,8 +287,9 @@ def modify_flags_for_new_architecture(installer, cpp_flags)
 end
 
 def build_codegen!(react_native_path)
-  codegen_repo_path = "#{react_native_path}/packages/react-native-codegen";
-  codegen_npm_path = "#{react_native_path}/../react-native-codegen";
+  relative_installation_root = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
+  codegen_repo_path = "#{relative_installation_root}/#{react_native_path}/packages/react-native-codegen";
+  codegen_npm_path = "#{relative_installation_root}/#{react_native_path}/../react-native-codegen";
   codegen_cli_path = ""
   if Dir.exist?(codegen_repo_path)
     codegen_cli_path = codegen_repo_path
@@ -320,7 +330,7 @@ def checkAndGenerateEmptyThirdPartyProvider!(react_native_path)
     Pod::Executable.execute_command(
       'node',
       [
-        "#{react_native_path}/scripts/generate-provider-cli.js",
+        "#{relative_installation_root}/#{react_native_path}/scripts/generate-provider-cli.js",
         "--platform", 'ios',
         "--schemaListPath", temp_schema_list_path,
         "--outputDir", "#{output_dir}"
@@ -510,6 +520,7 @@ def use_react_native_codegen_discovery!(options={})
   app_path = options[:app_path]
   fabric_enabled = options[:fabric_enabled] ||= false
   config_file_dir = options[:config_file_dir] ||= ''
+  relative_installation_root = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
 
   if !app_path
     Pod::UI.warn '[Codegen] Error: app_path is required for use_react_native_codegen_discovery.'
@@ -525,7 +536,7 @@ def use_react_native_codegen_discovery!(options={})
   out = Pod::Executable.execute_command(
     'node',
     [
-      "#{react_native_path}/scripts/generate-artifacts.js",
+      "#{relative_installation_root}/#{react_native_path}/scripts/generate-artifacts.js",
       "-p", "#{app_path}",
       "-o", Pod::Config.instance.installation_root,
       "-e", "#{fabric_enabled}",
@@ -693,4 +704,47 @@ def __apply_Xcode_12_5_M1_post_install_workaround(installer)
   # See https://github.com/facebook/flipper/issues/834 for more details.
   time_header = "#{Pod::Config.instance.installation_root.to_s}/Pods/RCT-Folly/folly/portability/Time.h"
   `sed -i -e  $'s/ && (__IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0)//' #{time_header}`
+end
+
+# Monkeypatch of `Pod::Lockfile` to ensure automatic update of dependencies integrated with a local podspec when their version changed.
+# This is necessary because local podspec dependencies must be otherwise manually updated.
+module LocalPodspecPatch
+  # Returns local podspecs whose versions differ from the one in the `react-native` package.
+  def self.pods_to_update(react_native_options)
+    prefix = react_native_options[:path] ||= "../node_modules/react-native"
+    @@local_podspecs = Dir.glob("#{prefix}/third-party-podspecs/*").map { |file| File.basename(file, ".podspec") }
+    @@local_podspecs = @@local_podspecs.select do |podspec_name|
+      # Read local podspec to determine the cached version
+      local_podspec_path = File.join(
+        Dir.pwd, "Pods/Local Podspecs/#{podspec_name}.podspec.json"
+      )
+
+      # Local podspec cannot be outdated if it does not exist, yet
+      next unless File.file?(local_podspec_path)
+
+      local_podspec = File.read(local_podspec_path)
+      local_podspec_json = JSON.parse(local_podspec)
+      local_version = local_podspec_json["version"]
+
+      # Read the version from a podspec from the `react-native` package
+      podspec_path = "#{prefix}/third-party-podspecs/#{podspec_name}.podspec"
+      current_podspec = Pod::Specification.from_file(podspec_path)
+
+      current_version = current_podspec.version.to_s
+      current_version != local_version
+    end
+    @@local_podspecs
+  end
+
+  # Patched `detect_changes_with_podfile` method
+  def detect_changes_with_podfile(podfile)
+    changes = super(podfile)
+    @@local_podspecs.each do |local_podspec|
+      next unless changes[:unchanged].include?(local_podspec)
+
+      changes[:unchanged].delete(local_podspec)
+      changes[:changed] << local_podspec
+    end
+    changes
+  end
 end

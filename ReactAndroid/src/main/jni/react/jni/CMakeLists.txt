@@ -3,12 +3,12 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-cmake_minimum_required(VERSION 3.4.1)
+cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
 # TODO Those two libraries are building against the same sources
 # and should probably be merged
-file(GLOB reactnativejni_SRC ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+file(GLOB reactnativejni_SRC CONFIGURE_DEPENDS *.cpp)
 
 add_compile_options(
         -fexceptions
@@ -34,7 +34,7 @@ target_link_libraries(reactnativeutilsjni
         callinvokerholder
         fb
         fbjni
-        folly_json
+        folly_runtime
         glog_init
         react_render_runtimescheduler
         reactnative
@@ -61,7 +61,7 @@ target_link_libraries(reactnativejni
         callinvokerholder
         fb
         fbjni
-        folly_json
+        folly_runtime
         glog_init
         logger
         react_render_runtimescheduler

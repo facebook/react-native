@@ -31,6 +31,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
@@ -197,19 +198,25 @@ public class TextLayoutManager {
 
     Spannable preparedSpannableText;
 
-    synchronized (sSpannableCacheLock) {
-      preparedSpannableText = sSpannableCache.get((ReadableNativeMap) attributedString);
-      if (preparedSpannableText != null) {
-        return preparedSpannableText;
+    if (ReactFeatureFlags.enableSpannableCache) {
+      synchronized (sSpannableCacheLock) {
+        preparedSpannableText = sSpannableCache.get((ReadableNativeMap) attributedString);
+        if (preparedSpannableText != null) {
+          return preparedSpannableText;
+        }
       }
-    }
 
-    preparedSpannableText =
-        createSpannableFromAttributedString(
-            context, attributedString, reactTextViewManagerCallback);
+      preparedSpannableText =
+          createSpannableFromAttributedString(
+              context, attributedString, reactTextViewManagerCallback);
 
-    synchronized (sSpannableCacheLock) {
-      sSpannableCache.put((ReadableNativeMap) attributedString, preparedSpannableText);
+      synchronized (sSpannableCacheLock) {
+        sSpannableCache.put((ReadableNativeMap) attributedString, preparedSpannableText);
+      }
+    } else {
+      preparedSpannableText =
+          createSpannableFromAttributedString(
+              context, attributedString, reactTextViewManagerCallback);
     }
 
     return preparedSpannableText;

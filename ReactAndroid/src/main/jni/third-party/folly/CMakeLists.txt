@@ -3,7 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-cmake_minimum_required(VERSION 3.4.1)
+cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
 SET(folly_FLAGS
@@ -19,10 +19,18 @@ SET(folly_FLAGS
         )
 
 ##################
-### folly_json ###
+### folly_runtime ###
 ##################
 
-SET(folly_json_SRC
+SET(folly_runtime_SRC
+        folly/SharedMutex.cpp
+        folly/concurrency/CacheLocality.cpp
+        folly/detail/Futex.cpp
+        folly/lang/SafeAssert.cpp
+        folly/lang/ToAscii.cpp
+        folly/synchronization/ParkingLot.cpp
+        folly/system/ThreadId.cpp
+        folly/system/ThreadName.cpp
         folly/json.cpp
         folly/Unicode.cpp
         folly/Conv.cpp
@@ -35,21 +43,19 @@ SET(folly_json_SRC
         folly/net/NetOps.cpp
         folly/json_pointer.cpp
         folly/lang/CString.cpp
-        folly/lang/SafeAssert.cpp
         folly/detail/UniqueInstance.cpp
         folly/hash/SpookyHashV2.cpp
         folly/container/detail/F14Table.cpp
         folly/ScopeGuard.cpp
-        folly/portability/SysUio.cpp
-        folly/lang/ToAscii.cpp)
+        folly/portability/SysUio.cpp)
 
 IF (CMAKE_BUILD_TYPE MATCHES Debug)
-  list(APPEND folly_json_SRC folly/lang/Assume.cpp)
+  list(APPEND folly_runtime_SRC folly/lang/Assume.cpp)
 ENDIF ()
 
-add_library(folly_json SHARED ${folly_json_SRC})
+add_library(folly_runtime SHARED ${folly_runtime_SRC})
 
-target_compile_options(folly_json
+target_compile_options(folly_runtime
         PRIVATE
         -fexceptions
         -fno-omit-frame-pointer
@@ -57,26 +63,24 @@ target_compile_options(folly_json
         -Wno-sign-compare
         ${folly_FLAGS})
 
-target_compile_options(folly_json PUBLIC ${folly_FLAGS})
+target_compile_options(folly_runtime PUBLIC ${folly_FLAGS})
 
-target_include_directories(folly_json PUBLIC .)
-target_link_libraries(folly_json glog double-conversion boost fmt)
+target_include_directories(folly_runtime PUBLIC .)
+target_link_libraries(folly_runtime glog double-conversion boost fmt)
 
 #####################
 ### folly_futures ###
 #####################
 
-add_library(folly_futures SHARED
+add_library(folly_futures STATIC
         folly/ExceptionWrapper.cpp
         folly/ExceptionString.cpp
         folly/Executor.cpp
-        folly/SharedMutex.cpp
         folly/Singleton.cpp
         folly/Try.cpp
         folly/concurrency/CacheLocality.cpp
         folly/detail/AsyncTrace.cpp
         folly/detail/AtFork.cpp
-        folly/detail/Futex.cpp
         folly/detail/MemoryIdler.cpp
         folly/detail/SingletonStackTrace.cpp
         folly/detail/StaticSingletonManager.cpp
@@ -106,12 +110,9 @@ add_library(folly_futures SHARED
         folly/portability/SysMembarrier.cpp
         folly/synchronization/AsymmetricMemoryBarrier.cpp
         folly/synchronization/Hazptr.cpp
-        folly/synchronization/ParkingLot.cpp
         folly/synchronization/WaitOptions.cpp
         folly/synchronization/detail/Sleeper.cpp
-        folly/system/Pid.cpp
-        folly/system/ThreadId.cpp
-        folly/system/ThreadName.cpp)
+        folly/system/Pid.cpp)
 
 target_compile_options(folly_futures
         PRIVATE
@@ -122,4 +123,4 @@ target_compile_options(folly_futures
         -Wno-unused-variable)
 
 target_include_directories(folly_futures PUBLIC .)
-target_link_libraries(folly_futures glog double-conversion folly_json boost event fmt)
+target_link_libraries(folly_futures glog double-conversion folly_runtime boost event fmt)

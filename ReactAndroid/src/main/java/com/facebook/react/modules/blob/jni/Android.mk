@@ -19,7 +19,7 @@ LOCAL_STATIC_LIBRARIES :=  libjsireact
 LOCAL_SHARED_LIBRARIES := \
   libfb \
   libfbjni \
-  libfolly_json \
+  libfolly_runtime \
   libjsi \
   libreactnativejni
 

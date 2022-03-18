@@ -500,6 +500,16 @@ class TextExample extends React.Component<{...}> {
           <Text style={{fontSize: 12}}>
             <Entity>Entity Name</Entity>
           </Text>
+          <Text style={{fontSize: 8}}>
+            Nested text with size 8,{' '}
+            <Text style={{fontSize: 23}}>size 23, </Text>
+            and size 8 again
+          </Text>
+          <Text style={{color: 'red'}}>
+            Nested text with red color,{' '}
+            <Text style={{color: 'blue'}}>blue color, </Text>
+            and red color again
+          </Text>
         </RNTesterBlock>
         <RNTesterBlock title="Text Align">
           <Text>auto (default) - english LTR</Text>

@@ -14,8 +14,6 @@ LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
 LOCAL_SHARED_LIBRARIES := \
   libfb \
   libfbjni \
-  libfolly_futures \
-  libfolly_json \
   libglog \
   libglog_init \
   librrc_native \

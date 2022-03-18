@@ -143,6 +143,13 @@ const ActionSheetIOS = {
       successCallback,
     );
   },
+
+  dismissActionSheet: () => {
+    invariant(RCTActionSheetManager, "ActionSheetManager doesn't exist");
+    if (typeof RCTActionSheetManager.dismissActionSheet === 'function') {
+      RCTActionSheetManager.dismissActionSheet();
+    }
+  },
 };
 
 module.exports = ActionSheetIOS;

@@ -15,8 +15,7 @@ LOCAL_SHARED_LIBRARIES := \
   glog \
   libfb \
   libfbjni \
-  libfolly_json \
-  libfolly_json \
+  libfolly_runtime \
   libreact_debug
 
 LOCAL_STATIC_LIBRARIES :=
