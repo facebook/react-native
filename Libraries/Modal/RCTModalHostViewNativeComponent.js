@@ -17,6 +17,7 @@ import type {
 } from '../Types/CodegenTypes';
 
 import type {ViewProps} from '../Components/View/ViewPropTypes';
+import {type ProcessedColorValue} from '../StyleSheet/processColor';
 
 type OrientationChangeEvent = $ReadOnly<{|
   orientation: 'portrait' | 'landscape',
@@ -49,6 +50,12 @@ type NativeProps = $ReadOnly<{|
    * See https://reactnative.dev/docs/modal#transparent
    */
   transparent?: WithDefault<boolean, false>,
+
+  /**
+   * The `overlayColor` prop determines the color that will be applied to
+   * the Modal's background when the `transparent` prop is false.
+   */
+  overlayColor?: ?ProcessedColorValue,
 
   /**
    * The `statusBarTranslucent` prop determines whether your modal should go under

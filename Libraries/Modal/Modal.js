@@ -27,6 +27,7 @@ import type {RootTag} from '../ReactNative/RootTag';
 import type {DirectEventHandler} from '../Types/CodegenTypes';
 import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import RCTModalHostView from './RCTModalHostViewNativeComponent';
+import processColor from '../StyleSheet/processColor';
 
 type ModalEventDefinitions = {
   modalDismissed: [{modalID: number}],
@@ -229,11 +230,16 @@ class Modal extends React.Component<Props> {
       return null;
     }
 
+    const overlayColor =
+      this.props.overlayColor == null
+        ? null
+        : processColor(this.props.overlayColor);
+
     const containerStyles = {
       backgroundColor:
         this.props.transparent === true
           ? 'transparent'
-          : this.props.overlayColor || 'white',
+          : overlayColor || 'white',
     };
 
     let animationType = this.props.animationType || 'none';
@@ -257,7 +263,7 @@ class Modal extends React.Component<Props> {
         animationType={animationType}
         presentationStyle={presentationStyle}
         transparent={this.props.transparent}
-        overlayColor={this.props.overlayColor}
+        overlayColor={overlayColor}
         hardwareAccelerated={this.props.hardwareAccelerated}
         onRequestClose={this.props.onRequestClose}
         onShow={this.props.onShow}
