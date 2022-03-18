@@ -18,6 +18,32 @@ def use_react_native! (options={})
   # The prefix to react-native
   prefix = options[:path] ||= "../node_modules/react-native"
 
+  # Other than environment variables, setup new architecture features from options is also supported.
+  unless options[:new_arch_enabled].nil?
+    # new_arch_enabled implicitly enables fabric_enabled / hermes_enabled / codegen_discovery_enabled
+    options[:fabric_enabled] = options[:new_arch_enabled] if options[:fabric_enabled].nil?
+    options[:hermes_enabled] = options[:new_arch_enabled] if options[:hermes_enabled].nil?
+    options[:codegen_discovery_enabled] = options[:new_arch_enabled] if options[:codegen_discovery_enabled].nil?
+
+    if options[:fabric_enabled] != nil && options[:new_arch_enabled] != options[:fabric_enabled]
+      Pod::UI.warn '"new_arch_enabled" and "fabric_enabled" options are exclusive.'
+      Pod::UI.warn 'Will set "fabric_enabled" value same as "new_arch_enabled".'
+      options[:fabric_enabled] = options[:new_arch_enabled]
+    end
+
+    ENV['RCT_NEW_ARCH_ENABLED'] = options[:new_arch_enabled] == true ? '1' : nil
+  end
+
+  unless options[:codegen_discovery_enabled].nil?
+    if options[:new_arch_enabled] != nil && options[:new_arch_enabled] != options[:codegen_discovery_enabled]
+      Pod::UI.warn '"new_arch_enabled" and "codegen_discovery_enabled" options are exclusive.'
+      Pod::UI.warn 'Will set "codegen_discovery_enabled" value same as "new_arch_enabled".'
+      options[:codegen_discovery_enabled] = options[:new_arch_enabled]
+    end
+
+    ENV['USE_CODEGEN_DISCOVERY'] = options[:codegen_discovery_enabled] == true ? '1' : nil
+  end
+
   # Include Fabric dependencies
   fabric_enabled = options[:fabric_enabled] ||= false
 
@@ -132,8 +158,8 @@ end
 
 def get_default_flags()
   flags = {
-    :fabric_enabled => false,
-    :hermes_enabled => false,
+    :fabric_enabled => nil,
+    :hermes_enabled => nil,
   }
 
   if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
