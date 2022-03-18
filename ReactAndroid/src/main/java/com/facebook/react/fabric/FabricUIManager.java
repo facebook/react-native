@@ -540,8 +540,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   private long measureMapBuffer(
       int surfaceId,
       String componentName,
-      ReadableMapBuffer attributedString,
-      ReadableMapBuffer paragraphAttributes,
+      ReadableMapBuffer localData,
+      ReadableMapBuffer props,
+      @Nullable ReadableMapBuffer state,
       float minWidth,
       float maxWidth,
       float minHeight,
@@ -561,11 +562,12 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     }
 
     // TODO: replace ReadableNativeMap -> ReadableMapBuffer
-    return mMountingManager.measureTextMapBuffer(
+    return mMountingManager.measureMapBuffer(
         context,
         componentName,
-        attributedString,
-        paragraphAttributes,
+        localData,
+        props,
+        state,
         getYogaSize(minWidth, maxWidth),
         getYogaMeasureMode(minWidth, maxWidth),
         getYogaSize(minHeight, maxHeight),
