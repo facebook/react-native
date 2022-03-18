@@ -488,11 +488,50 @@ function ErrorOnBlurExample(): React.Node {
   );
 }
 
+function ErrorOnChangeExample(): React.Node {
+  const [text, setText] = React.useState('');
+  const [error, setError] = React.useState(null);
+  return (
+    <TextInput
+      errorMessage={error}
+      onChangeText={newText => {
+        setText(newText);
+        setError(newText === 'error' ? 'this input is invalid' : null);
+      }}
+      value={text}
+      style={styles.default}
+    />
+  );
+}
+
+function ErrorUseEffectExample(): React.Node {
+  const [error, setError] = React.useState(null);
+
+  React.useEffect(() => {
+    if (text.length() > 7) setError('too long');
+    if (text.length() < 7) setError(null);
+  });
+
+  return <TextInput value={text} errorMessage={error} style={styles.default} />;
+}
+
 module.exports = ([
   {
-    title: 'Error Message',
+    title: 'Error Message onBlur',
     render: function (): React.Node {
-      return <ErrorExample />;
+      return <ErrorOnBlurExample />;
+    },
+  },
+  {
+    title: 'Error Message added onChangeText',
+    render: function (): React.Node {
+      return <ErrorOnChangeExample />;
+    },
+  },
+  {
+    title: 'Error Message added with useEffect',
+    render: function (): React.Node {
+      return <ErrorUseEffectExample />;
     },
   },
   {
