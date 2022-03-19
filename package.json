@@ -81,8 +81,7 @@
     "test-android-instrumentation": "yarn run docker-build-android && yarn run test-android-run-instrumentation",
     "test-android-unit": "yarn run docker-build-android && yarn run test-android-run-unit",
     "test-android-e2e": "yarn run docker-build-android && yarn run test-android-run-e2e",
-    "test-ios": "./scripts/objc-test.sh test",
-    "validate-commit-msg":"node ./scripts/validate-commit-msg.js"
+    "test-ios": "./scripts/objc-test.sh test"
   },
   "workspaces": [
     "packages/!(eslint-config-react-native-community)",

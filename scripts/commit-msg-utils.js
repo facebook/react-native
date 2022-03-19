@@ -1,40 +1,25 @@
-require('yargs')
-  .scriptName("pirate-parser")
-  .usage('$0 <cmd> [args]')
-  .command('hello [name]', 'welcome ter yargs!', (yargs) => {
-    yargs.positional('name', {
-      type: 'string',
-      default: 'Cambi',
-      describe: 'the name to say hello to'
-    })
-  }, function (argv) {
-    console.log('hello', argv.name, 'welcome to yargs!')
-  })
-  .help()
-  .argv
-
 const CHANGE_TYPE = [
-  "breaking",
-  "added",
-  "changed",
-  "deprecated",
-  "removed",
-  "fixed",
-  "security",
-  "unknown",
-  "failed",
-] 
+  'breaking',
+  'added',
+  'changed',
+  'deprecated',
+  'removed',
+  'fixed',
+  'security',
+  'unknown',
+  'failed',
+];
 
  const CHANGE_CATEGORY = [
-  "android",
-  "ios",
-  "general",
-  "internal",
-] 
+  'android',
+  'ios',
+  'general',
+  'internal',
+];
 
 const CHANGELOG_LINE_REGEXP = new RegExp(
-  `(\\[(${[...CHANGE_TYPE, ...CHANGE_CATEGORY].join("|")})\\]s*)+`,
-  "i"
+  `(\\[(${[...CHANGE_TYPE, ...CHANGE_CATEGORY].join('|')})\\]s*)+`,
+  'i'
 );
 function isAndroidCommit(change) {
   return (
@@ -94,37 +79,37 @@ function isInternal(change) {
 
 function getChangeType(changelogMsg, commitMsg) {
   if (isBreaking(changelogMsg)) {
-    return "breaking";
+    return 'breaking';
   } else if (isAdded(changelogMsg)) {
-    return "added";
+    return 'added';
   } else if (isChanged(changelogMsg)) {
-    return "changed";
+    return 'changed';
   } else if (isFixed(changelogMsg)) {
-    return "fixed";
+    return 'fixed';
   } else if (isRemoved(changelogMsg)) {
-    return "removed";
+    return 'removed';
   } else if (isDeprecated(changelogMsg)) {
-    return "deprecated";
+    return 'deprecated';
   } else if (isSecurity(commitMsg)) {
-    return "security";
+    return 'security';
   } else if (commitMsg.match(/changelog/i)) {
-    return "failed";
+    return 'failed';
   } else {
-    return "unknown";
+    return 'unknown';
   }
 }
 
 function getChangeCategory(commitMsg) {
   if (isAndroidCommit(commitMsg)) {
-    return "android";
+    return 'android';
   } else if (isIOSCommit(commitMsg)) {
-    return "ios";
+    return 'ios';
   } else {
-    return "general";
+    return 'general';
   }
 }
  function getChangeDimensions(commitMsg) {
-  let changelogMsg = commitMsg.split("\n").find((line) => {
+  let changelogMsg = commitMsg.split('\n').find((line) => {
     return CHANGELOG_LINE_REGEXP.test(line);
   });
   const doesNotFollowTemplate = !changelogMsg;
@@ -136,21 +121,21 @@ function getChangeCategory(commitMsg) {
     doesNotFollowTemplate,
     changeCategory: getChangeCategory(changelogMsg),
     changeType: getChangeType(changelogMsg, commitMsg),
-    fabric: isFabric(changelogMsg.split("\n")[0]),
+    fabric: isFabric(changelogMsg.split('\n')[0]),
     internal: isInternal(changelogMsg),
-    turboModules: isTurboModules(changelogMsg.split("\n")[0]),
+    turboModules: isTurboModules(changelogMsg.split('\n')[0]),
   };
 }
 
 function getChangeMessage(commitMsg) {
-  const commitMessage = commitMsg.split("\n");
+  const commitMessage = commitMsg.split('\n');
   let entry =
     commitMessage
       .reverse()
       .find((a) => /\[ios\]|\[android\]|\[general\]/i.test(a)) ||
     commitMessage.reverse()[0];
-  entry = entry.replace(/^((changelog:\s*)?(\[\w+\]\s?)+[\s-]*)/i, ""); //Remove the [General] [whatever]
-  entry = entry.replace(/ \(#\d*\)$/i, ""); //Remove the PR number if it's on the end
+  entry = entry.replace(/^((changelog:\s*)?(\[\w+\]\s?)+[\s-]*)/i, ''); //Remove the [General] [whatever]
+  entry = entry.replace(/ \(#\d*\)$/i, ''); //Remove the PR number if it's on the end
 
   // Capitalize
   if (/^[a-z]/.test(entry)) {
@@ -160,20 +145,4 @@ function getChangeMessage(commitMsg) {
   return entry;
 }
 
-async function handler() {
-    const readline = require('readline').createInterface({
-      input: process.stdin,
-      output: process.stdout
-    })
-    
-    readline.question('Enter your commit message\n', commitMsg => {
-      readline.close();
-  console.log('formatted messsage', getChangeMessage(commitMsg));
-  const {doesNotFollowTemplate}= getChangeDimensions(commitMsg);
-
-  if(doesNotFollowTemplate){
-    console.log('commit message does not follow template');
-    return;
-  }
-    })
-}
+module.exports = {getChangeDimensions, getChangeMessage};
