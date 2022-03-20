@@ -1,0 +1,20 @@
+#!/usr/bin/env node
+
+/**
+ * Copy this into <rootDir>/.git/hooks/commit-msg.sample and rename file to commit-msg
+ * Commit message convention must follow template [CATEGORY] [TYPE] - MESSAGE
+*/
+
+const fs = require('fs');
+const {getChangeDimensions} = require('../../scripts/commit-msg-utils.js');
+
+const commitFile = process.argv[2];
+const commitMsg = fs.readFileSync(commitFile).toString();
+const {doesNotFollowTemplate} = getChangeDimensions(commitMsg);
+
+if (doesNotFollowTemplate) {
+  console.log('commit message doesn\'t follow convention [CATEGORY] [TYPE] - MESSAGE');
+  process.exit(1);
+} else {
+  process.exit(0);
+}

@@ -17,10 +17,12 @@ const CHANGE_TYPE = [
   'internal',
 ];
 
+// [CATEGORY] [TYPE] - MESSAGE
 const CHANGELOG_LINE_REGEXP = new RegExp(
   `(\\[(${[...CHANGE_TYPE, ...CHANGE_CATEGORY].join('|')})\\]s*)+`,
   'i'
 );
+
 function isAndroidCommit(change) {
   return (
     !/(\[ios\]|\[general\])/i.test(change) &&
