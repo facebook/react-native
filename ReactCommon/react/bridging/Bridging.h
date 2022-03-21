@@ -7,13 +7,13 @@
 
 #pragma once
 
-#include <react/bridging/AString.h>
-#include <react/bridging/Array.h>
-#include <react/bridging/Bool.h>
-#include <react/bridging/Class.h>
-#include <react/bridging/Error.h>
-#include <react/bridging/Function.h>
-#include <react/bridging/Number.h>
-#include <react/bridging/Object.h>
-#include <react/bridging/Promise.h>
-#include <react/bridging/Value.h>
+#include <react/bridging/impl/Array.h>
+#include <react/bridging/impl/Bool.h>
+#include <react/bridging/impl/Class.h>
+#include <react/bridging/impl/Error.h>
+#include <react/bridging/impl/Function.h>
+#include <react/bridging/impl/Number.h>
+#include <react/bridging/impl/Object.h>
+#include <react/bridging/impl/Promise.h>
+#include <react/bridging/impl/String.h>
+#include <react/bridging/impl/Value.h>

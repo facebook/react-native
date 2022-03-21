@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <react/bridging/Base.h>
+#include <react/bridging/impl/Base.h>
 
 namespace facebook::react {
 

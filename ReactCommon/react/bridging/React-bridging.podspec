@@ -31,6 +31,7 @@ Pod::Spec.new do |s|
   s.source_files           = "**/*.{cpp,h}"
   s.exclude_files          = "tests"
   s.header_dir             = "react/bridging"
+  s.header_mappings_dir    = "."
   s.compiler_flags         = folly_compiler_flags
   s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/RCT-Folly\"",
                                "USE_HEADERMAP" => "YES",

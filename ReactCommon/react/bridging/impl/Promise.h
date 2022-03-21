@@ -7,9 +7,10 @@
 
 #pragma once
 
-#include <react/bridging/Error.h>
-#include <react/bridging/Function.h>
 #include <react/bridging/LongLivedObject.h>
+#include <react/bridging/impl/Base.h>
+#include <react/bridging/impl/Error.h>
+#include <react/bridging/impl/Function.h>
 
 #include <mutex>
 #include <optional>

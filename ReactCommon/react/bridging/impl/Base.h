@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <react/bridging/Convert.h>
+#include <react/bridging/impl/Convert.h>
 
 #include <ReactCommon/CallInvoker.h>
 #include <folly/Function.h>

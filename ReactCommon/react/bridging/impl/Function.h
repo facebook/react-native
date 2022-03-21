@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <react/bridging/Base.h>
 #include <react/bridging/CallbackWrapper.h>
+#include <react/bridging/impl/Base.h>
 
 #include <folly/Function.h>
 

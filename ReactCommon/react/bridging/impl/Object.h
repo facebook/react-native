@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <react/bridging/AString.h>
-#include <react/bridging/Base.h>
+#include <react/bridging/impl/Base.h>
+#include <react/bridging/impl/String.h>
 
 #include <butter/map.h>
 #include <map>
