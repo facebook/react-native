@@ -28,7 +28,7 @@ function doPublish(fakeMode) {
   if (!onlyTagSource) {
     // -------- Generating Android Artifacts with JavaDoc
     const depsEnvPrefix = "REACT_NATIVE_BOOST_PATH=" + path.join(process.env.BUILD_SOURCESDIRECTORY, "build_deps");
-    const gradleCommand = path.join(process.env.BUILD_SOURCESDIRECTORY, "gradlew") + " installArchives -Pparam=\"excludeLibs\"";
+    const gradleCommand = path.join(process.env.BUILD_SOURCESDIRECTORY, "gradlew") + " installArchives";
     exec( depsEnvPrefix + " " + gradleCommand );
 
     // undo uncommenting javadoc setting
