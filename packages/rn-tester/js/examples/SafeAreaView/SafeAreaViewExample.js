@@ -89,9 +89,12 @@ class IsIPhoneXExample extends React.Component<{...}> {
       <View>
         <Text>
           Is this an iPhone X:{' '}
-          {DeviceInfo.getConstants().isIPhoneX_deprecated
-            ? 'Yeah!'
-            : 'Nope. (Or `isIPhoneX_deprecated` was already removed.)'}
+          {
+            // $FlowFixMe[sketchy-null-bool]
+            DeviceInfo.getConstants().isIPhoneX_deprecated
+              ? 'Yeah!'
+              : 'Nope. (Or `isIPhoneX_deprecated` was already removed.)'
+          }
         </Text>
       </View>
     );
