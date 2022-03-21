@@ -35,10 +35,8 @@ UIKeyboardType RCTUIKeyboardTypeFromKeyboardType(facebook::react::KeyboardType k
 
 UIReturnKeyType RCTUIReturnKeyTypeFromReturnKeyType(facebook::react::ReturnKeyType returnKeyType);
 
-API_AVAILABLE(ios(10.0))
 UITextContentType RCTUITextContentTypeFromString(std::string const &contentType);
 
-API_AVAILABLE(ios(12.0))
 UITextInputPasswordRules *RCTUITextInputPasswordRulesFromString(std::string const &passwordRules);
 
 NS_ASSUME_NONNULL_END

@@ -43,10 +43,7 @@ void RCTCopyBackedTextInput(
   toTextInput.secureTextEntry = fromTextInput.secureTextEntry;
   toTextInput.keyboardType = fromTextInput.keyboardType;
   toTextInput.textContentType = fromTextInput.textContentType;
-
-  if (@available(iOS 12.0, *)) {
-    toTextInput.passwordRules = fromTextInput.passwordRules;
-  }
+  toTextInput.passwordRules = fromTextInput.passwordRules;
 
   [toTextInput setSelectedTextRange:fromTextInput.selectedTextRange notifyDelegate:NO];
 }
@@ -177,7 +174,6 @@ UIReturnKeyType RCTUIReturnKeyTypeFromReturnKeyType(ReturnKeyType returnKeyType)
   }
 }
 
-API_AVAILABLE(ios(10.0))
 UITextContentType RCTUITextContentTypeFromString(std::string const &contentType)
 {
   static dispatch_once_t onceToken;
@@ -212,14 +208,9 @@ UITextContentType RCTUITextContentTypeFromString(std::string const &contentType)
       @"telephoneNumber" : UITextContentTypeTelephoneNumber,
       @"username" : UITextContentTypeUsername,
       @"password" : UITextContentTypePassword,
+      @"newPassword" : UITextContentTypeNewPassword,
+      @"oneTimeCode" : UITextContentTypeOneTimeCode,
     } mutableCopy];
-
-    if (@available(iOS 12.0, *)) {
-      [mutableContentTypeMap addEntriesFromDictionary:@{
-        @"newPassword" : UITextContentTypeNewPassword,
-        @"oneTimeCode" : UITextContentTypeOneTimeCode
-      }];
-    }
 
     contentTypeMap = [mutableContentTypeMap copy];
   });
@@ -227,7 +218,6 @@ UITextContentType RCTUITextContentTypeFromString(std::string const &contentType)
   return contentTypeMap[RCTNSStringFromString(contentType)] ?: @"";
 }
 
-API_AVAILABLE(ios(12.0))
 UITextInputPasswordRules *RCTUITextInputPasswordRulesFromString(std::string const &passwordRules)
 {
   return [UITextInputPasswordRules passwordRulesWithDescriptor:RCTNSStringFromStringNilIfEmpty(passwordRules)];

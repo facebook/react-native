@@ -215,66 +215,51 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
 - (void)setTextContentType:(NSString *)type
 {
-  #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED)
-    static dispatch_once_t onceToken;
-    static NSDictionary<NSString *, NSString *> *contentTypeMap;
+  static dispatch_once_t onceToken;
+  static NSDictionary<NSString *, NSString *> *contentTypeMap;
 
-    dispatch_once(&onceToken, ^{
-      contentTypeMap = @{@"none": @"",
-                          @"URL": UITextContentTypeURL,
-                          @"addressCity": UITextContentTypeAddressCity,
-                          @"addressCityAndState":UITextContentTypeAddressCityAndState,
-                          @"addressState": UITextContentTypeAddressState,
-                          @"countryName": UITextContentTypeCountryName,
-                          @"creditCardNumber": UITextContentTypeCreditCardNumber,
-                          @"emailAddress": UITextContentTypeEmailAddress,
-                          @"familyName": UITextContentTypeFamilyName,
-                          @"fullStreetAddress": UITextContentTypeFullStreetAddress,
-                          @"givenName": UITextContentTypeGivenName,
-                          @"jobTitle": UITextContentTypeJobTitle,
-                          @"location": UITextContentTypeLocation,
-                          @"middleName": UITextContentTypeMiddleName,
-                          @"name": UITextContentTypeName,
-                          @"namePrefix": UITextContentTypeNamePrefix,
-                          @"nameSuffix": UITextContentTypeNameSuffix,
-                          @"nickname": UITextContentTypeNickname,
-                          @"organizationName": UITextContentTypeOrganizationName,
-                          @"postalCode": UITextContentTypePostalCode,
-                          @"streetAddressLine1": UITextContentTypeStreetAddressLine1,
-                          @"streetAddressLine2": UITextContentTypeStreetAddressLine2,
-                          @"sublocality": UITextContentTypeSublocality,
-                          @"telephoneNumber": UITextContentTypeTelephoneNumber,
-                          @"username": UITextContentTypeUsername,
-                          @"password": UITextContentTypePassword,
-                          };
+  dispatch_once(&onceToken, ^{
+    contentTypeMap = @{
+      @"none": @"",
+      @"URL": UITextContentTypeURL,
+      @"addressCity": UITextContentTypeAddressCity,
+      @"addressCityAndState":UITextContentTypeAddressCityAndState,
+      @"addressState": UITextContentTypeAddressState,
+      @"countryName": UITextContentTypeCountryName,
+      @"creditCardNumber": UITextContentTypeCreditCardNumber,
+      @"emailAddress": UITextContentTypeEmailAddress,
+      @"familyName": UITextContentTypeFamilyName,
+      @"fullStreetAddress": UITextContentTypeFullStreetAddress,
+      @"givenName": UITextContentTypeGivenName,
+      @"jobTitle": UITextContentTypeJobTitle,
+      @"location": UITextContentTypeLocation,
+      @"middleName": UITextContentTypeMiddleName,
+      @"name": UITextContentTypeName,
+      @"namePrefix": UITextContentTypeNamePrefix,
+      @"nameSuffix": UITextContentTypeNameSuffix,
+      @"nickname": UITextContentTypeNickname,
+      @"organizationName": UITextContentTypeOrganizationName,
+      @"postalCode": UITextContentTypePostalCode,
+      @"streetAddressLine1": UITextContentTypeStreetAddressLine1,
+      @"streetAddressLine2": UITextContentTypeStreetAddressLine2,
+      @"sublocality": UITextContentTypeSublocality,
+      @"telephoneNumber": UITextContentTypeTelephoneNumber,
+      @"username": UITextContentTypeUsername,
+      @"password": UITextContentTypePassword,
+      @"newPassword": UITextContentTypeNewPassword,
+      @"oneTimeCode": UITextContentTypeOneTimeCode,
+    };
+  });
 
-      #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 120000 /* __IPHONE_12_0 */
-        if (@available(iOS 12.0, *)) {
-          NSDictionary<NSString *, NSString *> * iOS12extras = @{@"newPassword": UITextContentTypeNewPassword,
-                                                                  @"oneTimeCode": UITextContentTypeOneTimeCode};
-
-          NSMutableDictionary<NSString *, NSString *> * iOS12baseMap = [contentTypeMap mutableCopy];
-          [iOS12baseMap addEntriesFromDictionary:iOS12extras];
-
-          contentTypeMap = [iOS12baseMap copy];
-        }
-      #endif
-    });
-
-    // Setting textContentType to an empty string will disable any
-    // default behaviour, like the autofill bar for password inputs
-    self.backedTextInputView.textContentType = contentTypeMap[type] ?: type;
-  #endif
+  // Setting textContentType to an empty string will disable any
+  // default behaviour, like the autofill bar for password inputs
+  self.backedTextInputView.textContentType = contentTypeMap[type] ?: type;
 }
 
 
 - (void)setPasswordRules:(NSString *)descriptor
 {
-  #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_12_0
-    if (@available(iOS 12.0, *)) {
-      self.backedTextInputView.passwordRules = [UITextInputPasswordRules passwordRulesWithDescriptor:descriptor];
-    }
-  #endif
+  self.backedTextInputView.passwordRules = [UITextInputPasswordRules passwordRulesWithDescriptor:descriptor];
 }
 
 - (UIKeyboardType)keyboardType

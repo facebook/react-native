@@ -179,10 +179,7 @@ using namespace facebook::react;
   }
 
   if (newTextInputProps.traits.passwordRules != oldTextInputProps.traits.passwordRules) {
-    if (@available(iOS 12.0, *)) {
-      _backedTextInputView.passwordRules =
-          RCTUITextInputPasswordRulesFromString(newTextInputProps.traits.passwordRules);
-    }
+    _backedTextInputView.passwordRules = RCTUITextInputPasswordRulesFromString(newTextInputProps.traits.passwordRules);
   }
 
   // Traits `blurOnSubmit`, `clearTextOnFocus`, and `selectTextOnFocus` were omitted intentially here
