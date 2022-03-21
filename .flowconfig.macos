@@ -19,6 +19,9 @@
 ; Flow doesn't support platforms
 .*/Libraries/Utilities/LoadingView.js
 
+; Ignore everything in android-patches
+<PROJECT_ROOT>/android-patches/.*
+
 [untyped]
 .*/node_modules/@react-native-community/cli/.*/.*
 
