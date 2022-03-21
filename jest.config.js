@@ -23,6 +23,7 @@ module.exports = {
     '<rootDir>/template',
     'Libraries/Renderer',
     'packages/rn-tester/e2e',
+    'android-patches',
   ],
   transformIgnorePatterns: ['node_modules/(?!@react-native/)'],
   haste: {
@@ -48,5 +49,7 @@ module.exports = {
     '/__tests__/',
     '/vendor/',
     '<rootDir>/Libraries/react-native/',
+    'android-patches',
   ],
+  modulePathIgnorePatterns: ['android-patches'],
 };

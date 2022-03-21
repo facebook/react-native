@@ -25,6 +25,7 @@ const config = {
     extraNodeModules: {
       'react-native': __dirname,
     },
+    blacklistRE: [/android-patches\/.*/],
   },
   transformer: {},
 };
