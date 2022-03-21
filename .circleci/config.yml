@@ -810,7 +810,7 @@ jobs:
   # -------------------------
   prepare-hermes-ws:
     docker:
-      - image: debian:stretch
+      - image: debian:buster
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
     steps:
@@ -834,7 +834,7 @@ jobs:
 
   build-hermesc-linux:
     docker:
-      - image: debian:stretch
+      - image: debian:buster
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
       - TERM: dumb
@@ -955,7 +955,7 @@ jobs:
 
   inject-hermesc:
     docker:
-      - image: debian:stretch
+      - image: debian:buster
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
     steps:
