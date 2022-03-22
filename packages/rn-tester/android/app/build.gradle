@@ -300,11 +300,11 @@ if (enableCodegen) {
 
     afterEvaluate {
         reactNativeArchitectures().each { architecture ->
-            tasks.named("configureNdkBuildDebug[${architecture}]") {
+            tasks.findByName("configureNdkBuildDebug[${architecture}]")?.configure {
                 dependsOn("preHermesDebugBuild")
                 dependsOn("preJscDebugBuild")
             }
-            tasks.named("configureNdkBuildRelease[${architecture}]") {
+            tasks.findByName("configureNdkBuildRelease[${architecture}]")?.configure {
                 dependsOn("preHermesReleaseBuild")
                 dependsOn("preJscReleaseBuild")
             }
