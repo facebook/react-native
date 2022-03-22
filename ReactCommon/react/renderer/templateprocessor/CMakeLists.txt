@@ -14,8 +14,7 @@ add_library(react_render_templateprocessor SHARED ${react_render_templateprocess
 target_include_directories(react_render_templateprocessor PUBLIC ${REACT_COMMON_DIR})
 
 target_link_libraries(react_render_templateprocessor
-        folly_futures
-        folly_json
+        folly_runtime
         glog
         jsi
         react_config

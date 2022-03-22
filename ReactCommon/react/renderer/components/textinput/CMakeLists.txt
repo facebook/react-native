@@ -14,13 +14,11 @@ add_library(rrc_textinput SHARED ${rrc_textinput_SRC})
 target_include_directories(rrc_textinput
         PUBLIC
           ${CMAKE_CURRENT_SOURCE_DIR}/androidtextinput/
-        PRIVATE
-          ${CMAKE_CURRENT_SOURCE_DIR}/androidtextinput/react/renderer/components/androidtextinput/
 )
 
 target_link_libraries(rrc_textinput
         glog
-        folly_json
+        folly_runtime
         glog_init
         jsi
         react_debug

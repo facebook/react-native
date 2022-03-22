@@ -18,6 +18,6 @@ target_link_libraries(jscexecutor
         jscruntime
         fb
         fbjni
-        folly_json
+        folly_runtime
         jsi
         reactnativejni)

@@ -8,27 +8,31 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 
 add_compile_options(-fexceptions -frtti -std=c++17 -Wall -DLOG_TAG=\"Fabric\")
 
-file(GLOB react_render_scheduler_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(react_render_scheduler SHARED ${react_render_scheduler_SRC})
+file(GLOB rrc_slider_SRC CONFIGURE_DEPENDS *.cpp platform/android/react/renderer/components/slider/*.cpp)
+add_library(rrc_slider STATIC ${rrc_slider_SRC})
 
-target_include_directories(react_render_scheduler PUBLIC ${REACT_COMMON_DIR})
+target_include_directories(rrc_slider
+        PUBLIC
+        ${REACT_COMMON_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/platform/android/
+)
 
-target_link_libraries(react_render_scheduler
-        folly_runtime
+target_link_libraries(rrc_slider
         glog
-        jsi
-        react_config
+        fbjni
+        folly_runtime
+        glog_init
+        react_codegen_rncore
         react_debug
         react_render_componentregistry
         react_render_core
         react_render_debug
         react_render_graphics
-        react_render_mounting
-        react_render_runtimescheduler
-        react_render_templateprocessor
+        react_render_imagemanager
+        react_render_mapbuffer
         react_render_uimanager
-        react_utils
-        rrc_root
+        reactnativeutilsjni
+        rrc_image
         rrc_view
         yoga
 )

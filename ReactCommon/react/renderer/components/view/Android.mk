@@ -24,7 +24,6 @@ LOCAL_STATIC_LIBRARIES :=
 LOCAL_SHARED_LIBRARIES := \
   glog \
   libfolly_runtime \
-  libfolly_futures \
   libglog_init \
   libjsi \
   libreact_debug \

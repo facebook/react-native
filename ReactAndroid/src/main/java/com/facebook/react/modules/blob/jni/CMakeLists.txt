@@ -17,6 +17,6 @@ target_link_libraries(reactnativeblob
         jsireact
         fb
         fbjni
-        folly_json
+        folly_runtime
         jsi
         reactnativejni)

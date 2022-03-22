@@ -18,6 +18,6 @@ target_include_directories(jsireact PUBLIC .)
 target_link_libraries(jsireact
         reactnative
         reactperflogger
-        folly_json
+        folly_runtime
         glog
         jsi)

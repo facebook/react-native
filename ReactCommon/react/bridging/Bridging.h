@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <react/bridging/AString.h>
 #include <react/bridging/Array.h>
 #include <react/bridging/Bool.h>
 #include <react/bridging/Class.h>
@@ -15,5 +16,4 @@
 #include <react/bridging/Number.h>
 #include <react/bridging/Object.h>
 #include <react/bridging/Promise.h>
-#include <react/bridging/String.h>
 #include <react/bridging/Value.h>

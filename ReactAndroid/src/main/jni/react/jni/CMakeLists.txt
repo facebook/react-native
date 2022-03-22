@@ -34,7 +34,7 @@ target_link_libraries(reactnativeutilsjni
         callinvokerholder
         fb
         fbjni
-        folly_json
+        folly_runtime
         glog_init
         react_render_runtimescheduler
         reactnative
@@ -61,7 +61,7 @@ target_link_libraries(reactnativejni
         callinvokerholder
         fb
         fbjni
-        folly_json
+        folly_runtime
         glog_init
         logger
         react_render_runtimescheduler

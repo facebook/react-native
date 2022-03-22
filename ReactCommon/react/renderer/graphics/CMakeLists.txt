@@ -22,4 +22,4 @@ target_include_directories(react_render_graphics
           ${CMAKE_CURRENT_SOURCE_DIR}/platform/cxx/
         )
 
-target_link_libraries(react_render_graphics glog fb fbjni folly_json react_debug)
+target_link_libraries(react_render_graphics glog fb fbjni folly_runtime react_debug)

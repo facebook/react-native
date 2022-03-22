@@ -15,8 +15,7 @@ target_include_directories(rrc_scrollview PUBLIC ${REACT_COMMON_DIR})
 
 target_link_libraries(rrc_scrollview
         glog
-        folly_futures
-        folly_json
+        folly_runtime
         glog_init
         jsi
         react_debug

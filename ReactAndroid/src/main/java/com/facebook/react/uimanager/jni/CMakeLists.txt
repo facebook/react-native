@@ -16,8 +16,7 @@ target_include_directories(uimanagerjni PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(uimanagerjni
         fb
         fbjni
-        folly_futures
-        folly_json
+        folly_runtime
         glog
         glog_init
         rrc_native
