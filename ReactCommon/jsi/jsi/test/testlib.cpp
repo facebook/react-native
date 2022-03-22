@@ -1425,7 +1425,7 @@ TEST_P(JSITest, MultilevelDecoratedHostObject) {
   EXPECT_EQ(1, RD2::numGets);
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     Runtimes,
     JSITest,
     ::testing::ValuesIn(runtimeGenerators()));
