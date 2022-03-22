@@ -66,7 +66,7 @@ public class ReactTextViewManager
 
   @Override
   public ReactTextShadowNode createShadowNodeInstance() {
-    return new ReactTextShadowNode();
+    return new ReactTextShadowNode(mReactTextViewManagerCallback);
   }
 
   public ReactTextShadowNode createShadowNodeInstance(
