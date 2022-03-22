@@ -247,7 +247,7 @@ class Modal extends React.Component<Props> {
     let presentationStyle = this.props.presentationStyle;
     if (!presentationStyle) {
       presentationStyle = 'fullScreen';
-      if (this.props.transparent === true || this.props.overlayColor) {
+      if (this.props.transparent === true || overlayColor) {
         presentationStyle = 'overFullScreen';
       }
     }
