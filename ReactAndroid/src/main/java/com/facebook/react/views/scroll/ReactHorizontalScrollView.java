@@ -654,7 +654,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     return getWidth();
   }
 
-  public View getContentView() {
+  private View getContentView() {
     return getChildAt(0);
   }
 

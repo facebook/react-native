@@ -661,7 +661,7 @@ public class ReactScrollView extends ScrollView
             + getFlingExtrapolatedDistance(velocityY);
   }
 
-  public View getContentView() {
+  private View getContentView() {
     return getChildAt(0);
   }
 
