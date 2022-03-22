@@ -44,6 +44,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import com.facebook.common.logging.FLog;
 import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
@@ -708,9 +711,41 @@ public class ReactInstanceManager {
   public void onHostDestroy(@Nullable Activity activity) {
     // In some cases, Activity may (correctly) be null.
     // See mRequireActivity flag.
-    if (activity == mCurrentActivity) {
-      onHostDestroy();
+    if (activity != null && activity instanceof AppCompatActivity) {
+      //Activity without ReactFragment.
+      if (getRfSize(((AppCompatActivity) activity).getSupportFragmentManager()) == 0) {
+        if (activity == mCurrentActivity) {
+          onHostDestroy();
+        }
+      }
+    } else {
+      if (activity == mCurrentActivity) {
+        onHostDestroy();
+      }
     }
+  }
+
+  /**
+   * get Attach ReactFragment size
+   *
+   * @param fm
+   * @return
+   */
+  private int getRfSize(FragmentManager fm) {
+    List<Fragment> fragments = fm.getFragments();
+
+    int size = 0;
+    for (int i = 0; i < fragments.size(); i++) {
+      Fragment fragment = fragments.get(i);
+      if (!fragment.isDetached()) {
+        if (fragment instanceof ReactFragment) {
+          size++;
+        } else {
+          size += getRfSize(fragment.getChildFragmentManager());
+        }
+      }
+    }
+    return size;
   }
 
   /** Temporary: due to T67035147, log sources of destroy calls. TODO T67035147: delete */
