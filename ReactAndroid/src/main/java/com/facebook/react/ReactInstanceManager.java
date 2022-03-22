@@ -740,7 +740,7 @@ public class ReactInstanceManager {
     int size = 0;
     for (int i = 0; i < fragments.size(); i++) {
       Fragment fragment = fragments.get(i);
-      if (!fragment.isDetached()) {
+      if (!fragment.isDetached() && fragment.getHost() != null) {
         if (fragment instanceof ReactFragment) {
           size++;
         } else {
