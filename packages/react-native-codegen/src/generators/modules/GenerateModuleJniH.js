@@ -115,7 +115,7 @@ const CMakeListsTemplate = ({
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-file(GLOB react_codegen_SRCS *.cpp CONFIGURE_DEPENDS react/renderer/components/${libraryName}/*.cpp)
+file(GLOB react_codegen_SRCS CONFIGURE_DEPENDS *.cpp react/renderer/components/${libraryName}/*.cpp)
 
 add_library(
   react_codegen_${libraryName}

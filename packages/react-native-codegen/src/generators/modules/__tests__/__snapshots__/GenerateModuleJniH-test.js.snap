@@ -69,7 +69,7 @@ include $(BUILD_SHARED_LIBRARY)
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-file(GLOB react_codegen_SRCS *.cpp CONFIGURE_DEPENDS react/renderer/components/SampleWithUppercaseName/*.cpp)
+file(GLOB react_codegen_SRCS CONFIGURE_DEPENDS *.cpp react/renderer/components/SampleWithUppercaseName/*.cpp)
 
 add_library(
   react_codegen_SampleWithUppercaseName
@@ -177,7 +177,7 @@ include $(BUILD_SHARED_LIBRARY)
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-file(GLOB react_codegen_SRCS *.cpp CONFIGURE_DEPENDS react/renderer/components/complex_objects/*.cpp)
+file(GLOB react_codegen_SRCS CONFIGURE_DEPENDS *.cpp react/renderer/components/complex_objects/*.cpp)
 
 add_library(
   react_codegen_complex_objects
@@ -285,7 +285,7 @@ include $(BUILD_SHARED_LIBRARY)
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-file(GLOB react_codegen_SRCS *.cpp CONFIGURE_DEPENDS react/renderer/components/empty_native_modules/*.cpp)
+file(GLOB react_codegen_SRCS CONFIGURE_DEPENDS *.cpp react/renderer/components/empty_native_modules/*.cpp)
 
 add_library(
   react_codegen_empty_native_modules
@@ -393,7 +393,7 @@ include $(BUILD_SHARED_LIBRARY)
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-file(GLOB react_codegen_SRCS *.cpp CONFIGURE_DEPENDS react/renderer/components/native_modules_with_type_aliases/*.cpp)
+file(GLOB react_codegen_SRCS CONFIGURE_DEPENDS *.cpp react/renderer/components/native_modules_with_type_aliases/*.cpp)
 
 add_library(
   react_codegen_native_modules_with_type_aliases
@@ -509,7 +509,7 @@ include $(BUILD_SHARED_LIBRARY)
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-file(GLOB react_codegen_SRCS *.cpp CONFIGURE_DEPENDS react/renderer/components/real_module_example/*.cpp)
+file(GLOB react_codegen_SRCS CONFIGURE_DEPENDS *.cpp react/renderer/components/real_module_example/*.cpp)
 
 add_library(
   react_codegen_real_module_example
@@ -617,7 +617,7 @@ include $(BUILD_SHARED_LIBRARY)
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-file(GLOB react_codegen_SRCS *.cpp CONFIGURE_DEPENDS react/renderer/components/simple_native_modules/*.cpp)
+file(GLOB react_codegen_SRCS CONFIGURE_DEPENDS *.cpp react/renderer/components/simple_native_modules/*.cpp)
 
 add_library(
   react_codegen_simple_native_modules
@@ -733,7 +733,7 @@ include $(BUILD_SHARED_LIBRARY)
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-file(GLOB react_codegen_SRCS *.cpp CONFIGURE_DEPENDS react/renderer/components/two_modules_different_files/*.cpp)
+file(GLOB react_codegen_SRCS CONFIGURE_DEPENDS *.cpp react/renderer/components/two_modules_different_files/*.cpp)
 
 add_library(
   react_codegen_two_modules_different_files
