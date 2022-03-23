@@ -698,6 +698,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
     inlineImageLeft: true,
     editable: true,
     fontVariant: true,
+    android_errorMessage: true,
     borderBottomRightRadius: true,
     borderBottomColor: {process: require('../../StyleSheet/processColor')},
     borderRadius: true,

@@ -246,7 +246,8 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
               mTextBreakStrategy,
               mJustificationMode,
               mSelectionStart,
-              mSelectionEnd);
+              mSelectionEnd,
+              null);
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);
     }
   }

@@ -509,6 +509,20 @@ public class ReactEditText extends AppCompatEditText
     mIsSettingTextFromJS = false;
   }
 
+  /**
+   * Attempt to set an error message or fail silently. EventCounter is the same one used as with
+   * text.
+   *
+   * @param eventCounter
+   * @param errorMessage
+   */
+  public void maybeSetErrorMessage(int eventCounter, String errorMessage) {
+    if (!canUpdateWithEventCount(eventCounter) || getError() == errorMessage) {
+      return;
+    }
+    setError(errorMessage);
+  }
+
   public void maybeSetTextFromState(ReactTextUpdate reactTextUpdate) {
     mIsSettingTextFromState = true;
     maybeSetText(reactTextUpdate);

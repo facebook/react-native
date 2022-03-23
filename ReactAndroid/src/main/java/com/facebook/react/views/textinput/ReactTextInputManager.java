@@ -325,7 +325,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     sb.append(TextTransform.apply(text, TextTransform.UNSET));
 
     return new ReactTextUpdate(
-        sb, mostRecentEventCount, false, 0, 0, 0, 0, Gravity.NO_GRAVITY, 0, 0, start, end);
+        sb, mostRecentEventCount, false, 0, 0, 0, 0, Gravity.NO_GRAVITY, 0, 0, start, end, null);
   }
 
   @Override
@@ -369,11 +369,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
       view.maybeSetTextFromState(update);
       view.maybeSetSelection(update.getJsEventCounter(), selectionStart, selectionEnd);
+      view.maybeSetErrorMessage(update.getJsEventCounter(), update.getErrorMessage());
     }
   }
 
-  @ReactProp(name = ViewProps.ERROR_MESSAGE)
-  public void setAndroidErrorMessage(ReactEditText view, String error) {
+  @ReactProp(name = ViewProps.ANDROID_ERROR_MESSAGE)
+  public void setErrorMessage(ReactEditText view, String error) {
     view.setError(error);
   }
 
@@ -1325,12 +1326,19 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     int textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(paragraphAttributes.getString("textBreakStrategy"));
 
+    @Nullable
+    String errorMessage =
+        props.hasKey(ViewProps.ANDROID_ERROR_MESSAGE)
+            ? props.getString(ViewProps.ANDROID_ERROR_MESSAGE)
+            : null;
+
     return ReactTextUpdate.buildReactTextUpdateFromState(
         spanned,
         state.getInt("mostRecentEventCount"),
         TextAttributeProps.getTextAlignment(props, TextLayoutManager.isRTL(attributedString)),
         textBreakStrategy,
         TextAttributeProps.getJustificationMode(props),
-        containsMultipleFragments);
+        containsMultipleFragments,
+        errorMessage);
   }
 }
