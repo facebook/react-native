@@ -69,6 +69,7 @@ const PERMISSIONS = Object.freeze({
   READ_PHONE_NUMBERS: 'android.permission.READ_PHONE_NUMBERS',
   UWB_RANGING: 'android.permission.UWB_RANGING',
   POST_NOTIFICATION: 'android.permission.POST_NOTIFICATIONS ',
+  NEARBY_WIFI_DEVICES: 'android.permission.NEARBY_WIFI_DEVICES',
 });
 
 /**
@@ -94,6 +95,7 @@ class PermissionsAndroid {
     CALL_PHONE: string,
     CAMERA: string,
     GET_ACCOUNTS: string,
+    NEARBY_WIFI_DEVICES: string,
     POST_NOTIFICATION: string,
     PROCESS_OUTGOING_CALLS: string,
     READ_CALENDAR: string,

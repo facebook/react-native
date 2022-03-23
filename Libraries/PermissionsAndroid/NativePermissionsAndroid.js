@@ -51,7 +51,8 @@ export type PermissionType =
   | 'android.permission.ANSWER_PHONE_CALLS'
   | 'android.permission.READ_PHONE_NUMBERS'
   | 'android.permission.UWB_RANGING'
-  | 'android.permission.POST_NOTIFICATIONS';
+  | 'android.permission.POST_NOTIFICATIONS'
+  | 'android.permission.NEARBY_WIFI_DEVICES';
 */
 
 export interface Spec extends TurboModule {
