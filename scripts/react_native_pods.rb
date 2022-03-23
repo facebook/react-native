@@ -647,19 +647,32 @@ def downloadAndConfigureHermesSource(react_native_path)
   download_dir = "#{sdks_dir}/download"
   hermes_dir = "#{sdks_dir}/hermes"
   hermes_tag_file = "#{sdks_dir}/.hermesversion"
-  tarball_path = "#{download_dir}/hermes.tar.gz"
-
   system("mkdir -p #{hermes_dir} #{download_dir}")
 
-  if(File.exist?(hermes_tag_file))
-    hermes_tag = file_data = File.read(hermes_tag_file).strip
-    hermes_tarball_url = hermes_tarball_base_url + hermes_tag
+  if (File.exist?(hermes_tag_file))
+    hermes_tag = File.read(hermes_tag_file).strip
   else
-    hermes_tarball_url = hermes_tarball_base_url + "main"
+    hermes_tag = "main"
   end
 
-  system("wget --timestamping -O #{tarball_path} #{hermes_tarball_url}")
-  system("tar -xzf #{tarball_path} --strip-components=1 -C #{hermes_dir}")
+  hermes_tarball_url = hermes_tarball_base_url + hermes_tag
+  # GitHub does not provide a last-modified header, so we cannot rely on wget's --timestamping
+  hermes_tag_sha = %x[git ls-remote https://github.com/facebook/hermes #{hermes_tag} | cut -f 1].strip
+  hermes_tarball_path = "#{download_dir}/hermes-#{hermes_tag_sha}.tar.gz"
+
+  if (!File.exist?(hermes_tarball_path))
+    Pod::UI.puts '[Hermes] Downloading Hermes source code'
+    system("wget -q -O #{hermes_tarball_path} #{hermes_tarball_url}")
+  end
+  system("tar -xzf #{hermes_tarball_path} --strip-components=1 -C #{hermes_dir}")
+
+  hermesc_macos_path = "#{sdks_dir}/hermesc/macos/build_host_hermesc"
+  hermesc_macos_link = "#{hermes_dir}/utils/build_host_hermesc"
+  if (File.exist?(hermesc_macos_path))
+    # If hermesc is present, create a symbolic link in the hermes source directory to avoid re-building hermesc
+    Pod::UI.puts "[Hermes] Using pre-compiled Hermes Compiler from #{hermesc_macos_path}"
+    system("ln -s #{hermesc_macos_path} #{hermesc_macos_link}")
+  end
 
   hermes_dir
 end
