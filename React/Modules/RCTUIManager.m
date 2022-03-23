@@ -147,7 +147,8 @@ RCT_EXPORT_MODULE()
 
 - (void)setBridge:(RCTBridge *)bridge
 {
-  RCTEnforceNotAllowedForNewArchitecture(self, @"RCTUIManager must not be initialized for the new architecture");
+  RCTEnforceNewArchitectureValidation(
+      RCTNotAllowedInBridgeless, self, @"RCTUIManager must not be initialized for the new architecture");
 
   RCTAssert(_bridge == nil, @"Should not re-use same UIManager instance");
   _bridge = bridge;
