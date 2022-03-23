@@ -300,7 +300,6 @@
 
 - Fix error "mockModal is not a function" ([507b05f4c0](https://github.com/facebook/react-native/commit/507b05f4c02b46109f483a2b79c924a775fd7bd3) by [@AntoineDoubovetzky](https://github.com/AntoineDoubovetzky))
 
-
 #### Android specific
 
 - Fix potential crash if ReactRootView does not have insets attached. ([6239e2f5ce](https://github.com/facebook/react-native/commit/6239e2f5ce82f7c2e683eb4699b9ce3ff1b58ac5) by [@enahum](https://github.com/enahum))
@@ -309,8 +308,7 @@
 #### iOS specific
 
 - Fix `Time.h` patch not being applied when running `pod install --project-directory=ios` ([60cef850bd](https://github.com/facebook/react-native/commit/60cef850bd3fd12c32ee1196bd19a559592d1465) by [@tido64](https://github.com/tido64))
-- Find-node.sh now respects .nvmrc ([35bcf934b1](https://github.com/facebook/react-native/commit/35bcf934b186e581d100d43e563044300759557f) by [@igrayson](https://github.com/igrayson))**
-
+- Find-node.sh now respects .nvmrc ([35bcf934b1](https://github.com/facebook/react-native/commit/35bcf934b186e581d100d43e563044300759557f) by [@igrayson](https://github.com/igrayson))
 
 ## v0.67.1
 
