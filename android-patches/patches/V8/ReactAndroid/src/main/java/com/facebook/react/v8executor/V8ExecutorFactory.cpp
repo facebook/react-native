@@ -5,7 +5,7 @@ index 0000000000..16de96d215
 +++ b/ReactAndroid/src/main/java/com/facebook/react/v8executor/V8ExecutorFactory.cpp
 @@ -0,0 +1,35 @@
 +#include <jsi/jsi.h>
-+#include <jsi/V8Runtime.h>
++#include <V8Runtime.h>
 +#include <jsireact/JSIExecutor.h>
 +#include <react/jni/JSLoader.h>
 +#include <react/jni/JSLogging.h>
