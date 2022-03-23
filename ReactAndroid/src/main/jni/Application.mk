@@ -32,5 +32,3 @@ APP_CPPFLAGS := -std=c++1y
 APP_LDFLAGS := -Wl,--build-id
 
 NDK_TOOLCHAIN_VERSION := clang
-
-APP_ALLOW_MISSING_DEPS :=true
