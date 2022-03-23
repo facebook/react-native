@@ -25,7 +25,7 @@
     "eslint-plugin-react-native": "^3.11.0"
   },
   "peerDependencies": {
-    "eslint": ">=7",
+    "eslint": "^7 || ^8",
     "prettier": ">=2"
   },
   "devDependencies": {
