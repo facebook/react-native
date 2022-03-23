@@ -90,7 +90,8 @@ export type Props = $ReadOnly<{|
 
   /**
    * The `overlayColor` prop determines the color that will be applied to
-   * the Modal's background when the `transparent` prop is false.
+   * the Modal's background when the `transparent` prop is false. If `overlayColor`
+   * is not used, the Modal's background color will default to white.
    */
   overlayColor?: ?string,
 
@@ -239,7 +240,9 @@ class Modal extends React.Component<Props> {
       backgroundColor:
         this.props.transparent === true
           ? 'transparent'
-          : overlayColor || 'white',
+          : this.props.overlayColor !== null
+          ? this.props.overlayColor
+          : 'white',
     };
 
     let animationType = this.props.animationType || 'none';
@@ -247,7 +250,7 @@ class Modal extends React.Component<Props> {
     let presentationStyle = this.props.presentationStyle;
     if (!presentationStyle) {
       presentationStyle = 'fullScreen';
-      if (this.props.transparent === true || overlayColor) {
+      if (this.props.transparent === true || this.props.overlayColor !== '') {
         presentationStyle = 'overFullScreen';
       }
     }
