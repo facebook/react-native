@@ -373,8 +373,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
   }
 
-  @ReactProp(name = ViewProps.ANDROID_ERROR_MESSAGE)
-  public void setErrorMessage(ReactEditText view, String error) {
+  @ReactProp(name = "errorMessageAndroid")
+  public void setErrorMessage(ReactEditText view, @Nullable String error) {
     view.setError(error);
   }
 
@@ -1328,9 +1328,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
     @Nullable
     String errorMessage =
-        props.hasKey(ViewProps.ANDROID_ERROR_MESSAGE)
-            ? props.getString(ViewProps.ANDROID_ERROR_MESSAGE)
-            : null;
+        props.hasKey("errorMessageAndroid") ? props.getString("errorMessageAndroid") : null;
 
     return ReactTextUpdate.buildReactTextUpdateFromState(
         spanned,

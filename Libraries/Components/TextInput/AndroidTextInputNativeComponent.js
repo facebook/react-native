@@ -164,6 +164,14 @@ export type NativeProps = $ReadOnly<{|
   >,
 
   /**
+   * String to be read by screenreaders to indicate an error state. If this value is
+   * not null, an error will be announced. You can use onChangeText or onBlur to
+   * detect an error and set this prop. Once the error is gone, set this to null
+   * to clear the error
+   */
+  errorMessageAndroid?: ?Stringish,
+
+  /**
    * Sets the return key to the label. Use it instead of `returnKeyType`.
    * @platform android
    */
@@ -698,7 +706,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
     inlineImageLeft: true,
     editable: true,
     fontVariant: true,
-    android_errorMessage: true,
+    errorMessageAndroid: true,
     borderBottomRightRadius: true,
     borderBottomColor: {process: require('../../StyleSheet/processColor')},
     borderRadius: true,

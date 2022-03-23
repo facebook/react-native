@@ -408,7 +408,7 @@ type AndroidProps = $ReadOnly<{|
    * detect an error and set this prop. Once the error is gone, set this to null
    * to clear the error
    */
-  android_errorMessage?: ?Stringish,
+  errorMessageAndroid?: ?Stringish,
 
   importantForAutofill?: ?(
     | 'auto'
