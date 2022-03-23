@@ -52,7 +52,7 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
 #if !TARGET_OS_OSX // [TODO(macOS GH#774)
     float pixelsInPoint = RCTScreenScale();
 #else
-    float pixelsInPoint = 0; // TODO(ISS#1656079): Turn off pixel rounding for macOS until we can get screen resolution passed here
+    float pixelsInPoint = 1; // TODO(ISS#1656079): Use 1x alignment for macOS until we can use backing resolution
 #endif // ]TODO(macOS GH#774)
     YGConfigSetPointScaleFactor(yogaConfig, pixelsInPoint);
     YGConfigSetUseLegacyStretchBehaviour(yogaConfig, true);
