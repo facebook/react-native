@@ -14,8 +14,7 @@ add_library(react_render_animations SHARED ${react_render_animations_SRC})
 target_include_directories(react_render_animations PUBLIC ${REACT_COMMON_DIR})
 
 target_link_libraries(react_render_animations
-        folly_futures
-        folly_json
+        folly_runtime
         glog
         glog_init
         jsi

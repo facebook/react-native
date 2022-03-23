@@ -29,6 +29,10 @@ if (hermesVersionFile.exists()) {
 def ndkBuildJobs = Runtime.runtime.availableProcessors().toString()
 def prefabHeadersDir = new File("$buildDir/prefab-headers")
 
+// By setting REACT_NATIVE_HERMES_SKIP_PREFAB you can skip prefab publishing, to
+// reduce the size of the Hermes published .AAR.
+def skipPrefabPublishing = System.getenv("REACT_NATIVE_HERMES_SKIP_PREFAB") != null
+
 // We inject the JSI directory used inside the Hermes build with the -DJSI_DIR config.
 def jsiDir = rootProject.file("ReactCommon/jsi")
 
@@ -164,13 +168,14 @@ android {
         main {
             manifest.srcFile "$hermesDir/android/hermes/src/main/AndroidManifest.xml"
             java.srcDirs = [
-                "$hermesDir/lib/Platfrom/Intl/java"
+                "$hermesDir/lib/Platform/Intl/java"
             ]
         }
     }
 
     buildFeatures {
         prefab true
+        prefabPublishing !skipPrefabPublishing
     }
 
     dependencies {
@@ -194,10 +199,6 @@ android {
         }
     }
 
-    buildFeatures {
-        prefabPublishing true
-    }
-
     prefab {
         libhermes {
             headers prefabHeadersDir.absolutePath
@@ -218,8 +219,8 @@ afterEvaluate {
     // Needed as some of the native sources needs to be downloaded
     // before configureCMakeRelease/configureCMakeMinSizeRel could be executed.
     reactNativeArchitectures().each { architecture ->
-        tasks.named("configureCMakeMinSizeRel[${architecture}]") { dependsOn(preBuild) }
-        tasks.named("configureCMakeRelease[${architecture}]") { dependsOn(preBuild) }
+        tasks.findByName("configureCMakeMinSizeRel[${architecture}]")?.configure { dependsOn(preBuild) }
+        tasks.findByName("configureCMakeRelease[${architecture}]")?.configure { dependsOn(preBuild) }
     }
     configureCMakeRelease.dependsOn(preBuild)
     configureCMakeMinSizeRel.dependsOn(preBuild)

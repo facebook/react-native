@@ -123,7 +123,7 @@
     "ws": "^6.1.4"
   },
   "devDependencies": {
-    "flow-bin": "^0.173.0",
+    "flow-bin": "^0.174.1",
     "react": "17.0.2"
   },
   "codegenConfig": {

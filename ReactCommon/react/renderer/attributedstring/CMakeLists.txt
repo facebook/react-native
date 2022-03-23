@@ -15,8 +15,7 @@ target_include_directories(react_render_attributedstring PUBLIC ${REACT_COMMON_D
 
 target_link_libraries(react_render_attributedstring
         butter
-        folly_futures
-        folly_json
+        folly_runtime
         glog
         glog_init
         react_debug

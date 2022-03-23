@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.67.4
+
+### Fixed
+
+#### Android specific
+
+- Added a null check to native.value in Switch to fix https://github.com/facebook/react-native/issues/32594 ([8d50bf1133](https://github.com/facebook/react-native/commit/8d50bf113352a6ccdf74c979e1022c6c2ccf6e56) by [@jonathanmos](https://github.com/jonathanmos))
+
 ## v0.67.3
 
 ### Fixed

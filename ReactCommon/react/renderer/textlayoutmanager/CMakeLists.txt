@@ -26,8 +26,7 @@ target_link_libraries(react_render_textlayoutmanager
         glog
         fb
         fbjni
-        folly_futures
-        folly_json
+        folly_runtime
         glog_init
         mapbufferjni
         react_debug

@@ -5,12 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#import <optional>
+
 #import <vector>
 
 #import <Foundation/Foundation.h>
 
 #import <FBLazyVector/FBLazyVector.h>
-#import <folly/Optional.h>
 
 namespace facebook {
 namespace react {
@@ -35,22 +36,22 @@ NSArray *RCTConvertVecToArray(const ContainerT &vec)
 }
 
 template<typename ContainerT>
-NSArray *RCTConvertOptionalVecToArray(const folly::Optional<ContainerT> &vec, id (^convertor)(typename ContainerT::value_type element))
+NSArray *RCTConvertOptionalVecToArray(const std::optional<ContainerT> &vec, id (^convertor)(typename ContainerT::value_type element))
 {
-  return vec.hasValue() ? RCTConvertVecToArray(vec.value(), convertor) : nil;
+  return vec.has_value() ? RCTConvertVecToArray(vec.value(), convertor) : nil;
 }
 
 template<typename ContainerT>
-NSArray *RCTConvertOptionalVecToArray(const folly::Optional<ContainerT> &vec)
+NSArray *RCTConvertOptionalVecToArray(const std::optional<ContainerT> &vec)
 {
-  return vec.hasValue() ? RCTConvertVecToArray(vec.value(), ^id(typename ContainerT::value_type element) { return element; }) : nil;
+  return vec.has_value() ? RCTConvertVecToArray(vec.value(), ^id(typename ContainerT::value_type element) { return element; }) : nil;
 }
 
 bool RCTBridgingToBool(id value);
-folly::Optional<bool> RCTBridgingToOptionalBool(id value);
+std::optional<bool> RCTBridgingToOptionalBool(id value);
 NSString *RCTBridgingToString(id value);
 NSString *RCTBridgingToOptionalString(id value);
-folly::Optional<double> RCTBridgingToOptionalDouble(id value);
+std::optional<double> RCTBridgingToOptionalDouble(id value);
 double RCTBridgingToDouble(id value);
 NSArray *RCTBridgingToArray(id value);
 
@@ -64,10 +65,10 @@ facebook::react::LazyVector<T> RCTBridgingToVec(id value, T (^ctor)(id element))
 }
 
 template<typename T>
-folly::Optional<facebook::react::LazyVector<T>> RCTBridgingToOptionalVec(id value, T (^ctor)(id element))
+std::optional<facebook::react::LazyVector<T>> RCTBridgingToOptionalVec(id value, T (^ctor)(id element))
 {
   if (value == nil || value == (id)kCFNull) {
-    return folly::none;
+    return std::nullopt;
   } else {
     return RCTBridgingToVec(value, ctor);
   }

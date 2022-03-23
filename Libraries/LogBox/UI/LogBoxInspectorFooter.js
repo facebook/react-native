@@ -69,6 +69,7 @@ function FooterButton(props: ButtonProps): React.Node {
 const buttonStyles = StyleSheet.create({
   safeArea: {
     flex: 1,
+    // $FlowFixMe[sketchy-null-bool]
     paddingBottom: DeviceInfo.getConstants().isIPhoneX_deprecated ? 30 : 0,
   },
   content: {

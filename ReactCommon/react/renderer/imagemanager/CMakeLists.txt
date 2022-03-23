@@ -25,7 +25,7 @@ target_include_directories(react_render_imagemanager
         )
 
 target_link_libraries(react_render_imagemanager
-        folly_json
+        folly_runtime
         react_debug
         react_render_core
         react_render_debug

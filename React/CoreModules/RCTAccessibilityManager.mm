@@ -281,9 +281,9 @@ RCT_EXPORT_METHOD(setAccessibilityContentSizeMultipliers
 static void setMultipliers(
     NSMutableDictionary<NSString *, NSNumber *> *multipliers,
     NSString *key,
-    folly::Optional<double> optionalDouble)
+    std::optional<double> optionalDouble)
 {
-  if (optionalDouble.hasValue()) {
+  if (optionalDouble.has_value()) {
     multipliers[key] = @(optionalDouble.value());
   }
 }

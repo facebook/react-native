@@ -31,7 +31,7 @@
  *     * or otherwise `{major}.{minor}-stable`
  */
 
-const {exec, echo, exit, test} = require('shelljs');
+const {exec, echo, exit, test, env} = require('shelljs');
 const {parseVersion, isTaggedLatest} = require('./version-utils');
 const fs = require('fs');
 const os = require('os');
@@ -172,6 +172,13 @@ if (isCommitly) {
 
 // -------- Generating Android Artifacts with JavaDoc
 if (exec('./gradlew :ReactAndroid:installArchives').code) {
+  echo('Could not generate artifacts');
+  exit(1);
+}
+
+// -------- Generating the Hermes Engine Artifacts
+env.REACT_NATIVE_HERMES_SKIP_PREFAB = true;
+if (exec('./gradlew :ReactAndroid:hermes-engine:installArchives').code) {
   echo('Could not generate artifacts');
   exit(1);
 }

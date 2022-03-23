@@ -109,4 +109,7 @@ public class ReactFeatureFlags {
    * JNI.
    */
   public static boolean enableLargeTextMeasureCache = true;
+
+  /** TODO: T113245006 Delete this flag. Enables caching of spannables for text */
+  public static boolean enableSpannableCache = false;
 }

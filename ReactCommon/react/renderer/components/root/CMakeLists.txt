@@ -14,8 +14,7 @@ add_library(rrc_root SHARED ${rrc_root_SRC})
 target_include_directories(rrc_root PUBLIC ${REACT_COMMON_DIR})
 
 target_link_libraries(rrc_root
-        folly_futures
-        folly_json
+        folly_runtime
         glog
         glog_init
         react_debug

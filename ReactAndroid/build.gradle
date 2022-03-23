@@ -77,8 +77,8 @@ task downloadDoubleConversion(dependsOn: createNativeDepsDirectories, type: Down
 
 task prepareDoubleConversion(dependsOn: dependenciesPath ? [] : [downloadDoubleConversion], type: Copy) {
     from(dependenciesPath ?: tarTree(downloadDoubleConversion.dest))
-    from("src/main/jni/third-party/double-conversion/Android.mk")
-    include("double-conversion-${DOUBLE_CONVERSION_VERSION}/src/**/*", "Android.mk")
+    from("src/main/jni/third-party/double-conversion/")
+    include("double-conversion-${DOUBLE_CONVERSION_VERSION}/src/**/*", "Android.mk", "CMakeLists.txt")
     filesMatching("*/src/**/*", { fname -> fname.path = "double-conversion/${fname.name}" })
     includeEmptyDirs = false
     into("$thirdPartyNdkDir/double-conversion")
@@ -93,8 +93,8 @@ task downloadFolly(dependsOn: createNativeDepsDirectories, type: Download) {
 
 task prepareFolly(dependsOn: dependenciesPath ? [] : [downloadFolly], type: Copy) {
     from(dependenciesPath ?: tarTree(downloadFolly.dest))
-    from("src/main/jni/third-party/folly/Android.mk")
-    include("folly-${FOLLY_VERSION}/folly/**/*", "Android.mk")
+    from("src/main/jni/third-party/folly/")
+    include("folly-${FOLLY_VERSION}/folly/**/*", "Android.mk", "CMakeLists.txt")
     eachFile { fname -> fname.path = (fname.path - "folly-${FOLLY_VERSION}/") }
     includeEmptyDirs = false
     into("$thirdPartyNdkDir/folly")
@@ -109,8 +109,8 @@ task downloadFmt(dependsOn: createNativeDepsDirectories, type: Download) {
 
 task prepareFmt(dependsOn: dependenciesPath ? [] : [downloadFmt], type: Copy) {
     from(dependenciesPath ?: tarTree(downloadFmt.dest))
-    from("src/main/jni/third-party/fmt/Android.mk")
-    include("fmt-${FMT_VERSION}/src/**/*", "fmt-${FMT_VERSION}/include/**/*", "Android.mk")
+    from("src/main/jni/third-party/fmt/")
+    include("fmt-${FMT_VERSION}/src/**/*", "fmt-${FMT_VERSION}/include/**/*", "Android.mk", "CMakeLists.txt")
     eachFile { fname -> fname.path = (fname.path - "fmt-${FMT_VERSION}/") }
     includeEmptyDirs = false
     into("$thirdPartyNdkDir/fmt")
@@ -249,7 +249,6 @@ final def extractNativeDependencies = tasks.register('extractNativeDependencies'
 
 task installArchives {
     dependsOn("publishReleasePublicationToNpmRepository")
-    dependsOn(":ReactAndroid:hermes-engine:installArchives")
 }
 
 // Creating sources with comments
@@ -374,12 +373,7 @@ dependencies {
 
     // It's up to the consumer to decide if hermes should be included or not.
     // Therefore hermes-engine is a compileOnly dependency.
-    // Moreover, you can toggle where to get the dependency with `buildHermesFromSource`.
-    if (project.getProperties().getOrDefault("buildHermesFromSource", "false").toBoolean()) {
-        compileOnly(project(":ReactAndroid:hermes-engine"))
-    } else {
-        compileOnly("com.facebook.react:hermes-engine:${VERSION_NAME}")
-    }
+    compileOnly(project(":ReactAndroid:hermes-engine"))
 
     javadocDeps("com.squareup:javapoet:1.13.0")
 
@@ -414,8 +408,8 @@ afterEvaluate {
     // Needed as some of the native sources needs to be downloaded
     // before configureNdkBuildDebug could be executed.
     reactNativeArchitectures().each { architecture ->
-        tasks.named("configureNdkBuildDebug[${architecture}]") { dependsOn(preBuild) }
-        tasks.named("configureNdkBuildRelease[${architecture}]") { dependsOn(preBuild) }
+        tasks.findByName("configureNdkBuildDebug[${architecture}]")?.configure { dependsOn(preBuild) }
+        tasks.findByName("configureNdkBuildRelease[${architecture}]")?.configure { dependsOn(preBuild) }
     }
     configureNdkBuildDebug.dependsOn(preBuild)
     configureNdkBuildRelease.dependsOn(preBuild)
@@ -429,6 +423,10 @@ afterEvaluate {
     // This can be safely removed once we move to CMake or once AGP supports C++ references on ndk-build.
     configureNdkBuildDebug.dependsOn(":ReactAndroid:hermes-engine:prefabDebugPackage")
     configureNdkBuildRelease.dependsOn(":ReactAndroid:hermes-engine:prefabReleasePackage")
+    reactNativeArchitectures().each { architecture ->
+        tasks.findByName("configureNdkBuildDebug[${architecture}]")?.configure { dependsOn(":ReactAndroid:hermes-engine:prefabDebugPackage") }
+        tasks.findByName("configureNdkBuildRelease[${architecture}]")?.configure { dependsOn(":ReactAndroid:hermes-engine:prefabReleasePackage") }
+    }
 
     publishing {
         publications {

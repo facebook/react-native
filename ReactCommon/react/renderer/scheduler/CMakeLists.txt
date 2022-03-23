@@ -14,8 +14,7 @@ add_library(react_render_scheduler SHARED ${react_render_scheduler_SRC})
 target_include_directories(react_render_scheduler PUBLIC ${REACT_COMMON_DIR})
 
 target_link_libraries(react_render_scheduler
-        folly_futures
-        folly_json
+        folly_runtime
         glog
         jsi
         react_config

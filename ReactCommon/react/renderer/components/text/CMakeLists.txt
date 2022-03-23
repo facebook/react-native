@@ -15,7 +15,7 @@ target_include_directories(rrc_text PUBLIC ${REACT_COMMON_DIR})
 
 target_link_libraries(rrc_text
         glog
-        folly_json
+        folly_runtime
         glog_init
         jsi
         react_debug

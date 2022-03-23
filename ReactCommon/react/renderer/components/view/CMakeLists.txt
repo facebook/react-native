@@ -14,8 +14,7 @@ add_library(rrc_view SHARED ${rrc_view_SRC})
 target_include_directories(rrc_view PUBLIC ${REACT_COMMON_DIR})
 
 target_link_libraries(rrc_view
-        folly_futures
-        folly_json
+        folly_runtime
         glog
         glog_init
         jsi

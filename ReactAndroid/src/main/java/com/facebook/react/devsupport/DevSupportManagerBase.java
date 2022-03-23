@@ -343,6 +343,9 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
         new Runnable() {
           @Override
           public void run() {
+            // Keep a copy of the latest error to be shown by the RedBoxSurface
+            updateLastErrorInfo(message, stack, errorCookie, errorType);
+
             if (mRedBoxSurfaceDelegate == null) {
               @Nullable SurfaceDelegate redBoxSurfaceDelegate = createSurfaceDelegate("RedBox");
               if (redBoxSurfaceDelegate != null) {
@@ -361,8 +364,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
               return;
             }
 
-            // The RedBox surface delegate will always show the latest error
-            updateLastErrorInfo(message, stack, errorCookie, errorType);
             mRedBoxSurfaceDelegate.show();
           }
         });

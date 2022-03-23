@@ -109,7 +109,8 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
 
 + (BOOL)isSupported:(NSString *)componentName
 {
-  RCTLogNotAllowedForNewArchitecture(
+  RCTLogNewArchitectureValidation(
+      RCTNotAllowedInBridgeless,
       self,
       [NSString
           stringWithFormat:

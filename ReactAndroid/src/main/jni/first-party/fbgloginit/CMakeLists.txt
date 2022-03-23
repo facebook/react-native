@@ -10,6 +10,6 @@ add_compile_options(-fexceptions -fno-omit-frame-pointer)
 
 add_library(glog_init SHARED glog_init.cpp)
 
-target_include_directories(yoga PUBLIC .)
+target_include_directories(glog_init PUBLIC .)
 
 target_link_libraries(glog_init log glog)

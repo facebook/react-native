@@ -15,8 +15,7 @@ target_include_directories(react_render_uimanager PUBLIC ${REACT_COMMON_DIR})
 
 target_link_libraries(react_render_uimanager
         glog
-        folly_futures
-        folly_json
+        folly_runtime
         jsi
         react_debug
         react_render_componentregistry

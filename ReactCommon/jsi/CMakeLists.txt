@@ -23,7 +23,7 @@ add_library(jsi SHARED ${jsi_SRC})
 target_include_directories(jsi PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(jsi
-        folly_json
+        folly_runtime
         glog)
 
 ##################
@@ -36,7 +36,7 @@ add_library(jscruntime STATIC
 
 target_include_directories(jscruntime PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-target_link_libraries(jscruntime folly_json jsc glog)
+target_link_libraries(jscruntime folly_runtime jsc glog)
 
 # TODO: Remove this flag when ready.
 # Android has this enabled by default, but the flag is still needed for iOS.
