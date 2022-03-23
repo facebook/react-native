@@ -503,12 +503,6 @@ function ErrorExample(): React.Node {
 
 module.exports = ([
   {
-    title: 'Error Message',
-    render: function (): React.Node {
-      return <ErrorExample />;
-    },
-  },
-  {
     title: 'Auto-focus',
     render: function (): React.Node {
       return (
@@ -724,6 +718,12 @@ module.exports = ([
           />
         </View>
       );
+    },
+  },
+  {
+    title: 'Error Message',
+    render: function (): React.Node {
+      return <ErrorExample />;
     },
   },
 ]: Array<RNTesterModuleExample>);
