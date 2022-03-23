@@ -68,7 +68,7 @@ const PERMISSIONS = Object.freeze({
   ANSWER_PHONE_CALLS: 'android.permission.ANSWER_PHONE_CALLS',
   READ_PHONE_NUMBERS: 'android.permission.READ_PHONE_NUMBERS',
   UWB_RANGING: 'android.permission.UWB_RANGING',
-  POST_NOTIFICATION: 'android.permission.POST_NOTIFICATIONS ',
+  POST_NOTIFICATION: 'android.permission.POST_NOTIFICATIONS',
   NEARBY_WIFI_DEVICES: 'android.permission.NEARBY_WIFI_DEVICES',
 });
 
