@@ -407,6 +407,8 @@ type AndroidProps = $ReadOnly<{|
    * not null, an error will be announced. You can use onChangeText or onBlur to
    * detect an error and set this prop. Once the error is gone, set this to null
    * to clear the error
+   *
+   * @platform android
    */
   errorMessageAndroid?: ?Stringish,
 
