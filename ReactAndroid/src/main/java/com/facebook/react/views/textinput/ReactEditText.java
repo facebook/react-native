@@ -503,12 +503,6 @@ public class ReactEditText extends AppCompatEditText
     return ++mNativeEventCount;
   }
 
-  public void maybeSetTextFromJS(ReactTextUpdate reactTextUpdate) {
-    mIsSettingTextFromJS = true;
-    maybeSetText(reactTextUpdate);
-    mIsSettingTextFromJS = false;
-  }
-
   /**
    * Attempt to set an error message or fail silently. EventCounter is the same one used as with
    * text.
@@ -521,6 +515,12 @@ public class ReactEditText extends AppCompatEditText
       return;
     }
     setError(errorMessage);
+  }
+
+  public void maybeSetTextFromJS(ReactTextUpdate reactTextUpdate) {
+    mIsSettingTextFromJS = true;
+    maybeSetText(reactTextUpdate);
+    mIsSettingTextFromJS = false;
   }
 
   public void maybeSetTextFromState(ReactTextUpdate reactTextUpdate) {
