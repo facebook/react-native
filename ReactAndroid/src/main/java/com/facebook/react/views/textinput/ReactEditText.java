@@ -900,8 +900,6 @@ public class ReactEditText extends AppCompatEditText
       requestFocusInternal();
     }
 
-    setError(mErrorMessage);
-
     mDidAttachToWindow = true;
   }
 
