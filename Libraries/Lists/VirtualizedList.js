@@ -1187,6 +1187,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _fillRateHelper: FillRateHelper;
   _frames = {};
   _footerLength = 0;
+  _hasDoneFirstRenderPass = false;
   _hasDoneInitialScroll = false;
   _hasInteracted = false;
   _hasMore = false;
@@ -1745,7 +1746,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           // we'll wipe out the initialNumToRender rendered elements starting at initialScrollIndex.
           // So let's wait until we've scrolled the view to the right place. And until then,
           // we will trust the initialScrollIndex suggestion.
-          if (!this.props.initialScrollIndex || this._scrollMetrics.offset) {
+          if (
+            (this._hasDoneFirstRenderPass &&
+              this.props.initialScrollIndex != null) ||
+            offset
+          ) {
             newState = computeWindowedRenderLimits(
               this.props.data,
               this.props.getItemCount,
@@ -1756,6 +1761,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
               this._scrollMetrics,
             );
           }
+          this._hasDoneFirstRenderPass = true;
         }
       } else {
         const distanceFromEnd = contentLength - visibleLength - offset;
