@@ -4,7 +4,7 @@
  // and the build will use that.
  def boostPath = dependenciesPath ?: System.getenv("REACT_NATIVE_BOOST_PATH")
  
-+def V8Path = 'packages/ReactNative.V8JSI.Android.7.0.276.32-v1'
++def V8Path = 'packages/ReactNative.V8Jsi.Android.0.66.0-stable-v2'
 +
  // Setup build type for NDK, supported values: {debug, release}
  def nativeBuildType = System.getenv("NATIVE_BUILD_TYPE") ?: "release"
