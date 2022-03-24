@@ -9,6 +9,6 @@ This is how it happens:
 * That when used invokes `.ado/templates/apple-droid-node-patching.yml` passing the parameter `apply_office_patches` as `true`
 * This last file is the one that *actually* triggers the patching script
 
-## The patching tool
+## Patching tool
 
-As you can see from above, we use the tool [`draft-patch-rnmacos`](https://github.com/microsoft/rnx-kit/tree/main/packages/draft-patch-rnmacos) that is hosted in the `rnx-kit` repo, via `npx`. Please refer to the README of the package for details on how it works.
+We use the tool [`patcher-rnmacos`](https://github.com/microsoft/rnx-kit/tree/main/incubator/patcher-rnmacos) that is hosted in the `rnx-kit` repo, via `npx`. Please refer to the README of the package for details on how it works.
