@@ -97,7 +97,11 @@ commands:
     steps:
       - restore_cache:
           key: 1-gems-{{ checksum "Gemfile.lock" }}
-      - run: bundle check || bundle install --path vendor/bundle --clean
+      - run:
+          name: Bundle Install
+          command: |
+            source /usr/local/share/chruby/auto.sh
+            bundle check || bundle install --path vendor/bundle --clean
       - save_cache:
           key: 1-gems-{{ checksum "Gemfile.lock" }}
           paths:
