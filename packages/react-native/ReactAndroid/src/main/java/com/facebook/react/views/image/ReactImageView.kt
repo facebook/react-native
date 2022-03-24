@@ -22,6 +22,7 @@ import android.graphics.Shader.TileMode
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.widget.Toast
 import com.facebook.common.references.CloseableReference
 import com.facebook.common.util.UriUtil
 import com.facebook.drawee.backends.pipeline.Fresco
@@ -97,6 +98,7 @@ public class ReactImageView(
   private var scaleType = defaultValue()
   private var tileMode = defaultTileMode()
   private var isDirty = false
+  private var useSmallCache = false
   private var tilePostprocessor: TilePostprocessor? = null
   private var iterativeBoxBlurPostProcessor: IterativeBoxBlurPostProcessor? = null
   private var downloadListener: ReactImageDownloadListener<ImageInfo>? = null
@@ -116,6 +118,13 @@ public class ReactImageView(
   public fun updateCallerContext(callerContext: Any?) {
     if (this.callerContext != callerContext) {
       this.callerContext = callerContext
+      isDirty = true
+    }
+  }
+
+  public fun setUseSmallCache(useSmallCache: Boolean) {
+    if (this.useSmallCache != useSmallCache) {
+      this.useSmallCache = useSmallCache
       isDirty = true
     }
   }
@@ -462,6 +471,12 @@ public class ReactImageView(
       imageRequestBuilder.setDownsampleOverride(DownsampleMode.NEVER)
     }
 
+    if (useSmallCache) {
+      imageRequestBuilder.setCacheChoice(ImageRequest.CacheChoice.SMALL);
+    } else {
+      imageRequestBuilder.setCacheChoice(ImageRequest.CacheChoice.DEFAULT);
+    }
+
     val imageRequest: ImageRequest =
         ReactNetworkImageRequest.fromBuilderWithHeaders(imageRequestBuilder, headers, cacheControl)
 
@@ -491,7 +506,15 @@ public class ReactImageView(
       if (resizeMethod == ImageResizeMethod.NONE) {
         cachedImageRequestBuilder.setDownsampleOverride(DownsampleMode.NEVER)
       }
-      builder.setLowResImageRequest(cachedImageRequestBuilder.build())
+
+      if (useSmallCache) {
+        cachedImageRequestBuilder.setCacheChoice(ImageRequest.CacheChoice.SMALL);
+      } else {
+        cachedImageRequestBuilder.setCacheChoice(ImageRequest.CacheChoice.DEFAULT);
+      }
+
+      val cachedImageRequest = cachedImageRequestBuilder.build()
+      builder.setLowResImageRequest(cachedImageRequest)
     }
 
     if (downloadListener != null && controllerForTesting != null) {
@@ -584,6 +607,12 @@ public class ReactImageView(
     if (ReactBuildConfig.DEBUG &&
         !ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()) {
       RNLog.w(context as ReactContext, "ReactImageView: Image source \"$uri\" doesn't exist")
+
+      Toast.makeText(
+        context,
+        "Warning: Image source \"$uri\" doesn't exist",
+        Toast.LENGTH_SHORT)
+        .show();
     }
   }
 

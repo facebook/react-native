@@ -93,6 +93,11 @@ public constructor(
 
   public override fun getName(): String = REACT_CLASS
 
+  @ReactProp(name = "useSmallCache")
+  public fun setUseSmallCache(view: ReactImageView, useSmallCache: Boolean) {
+    view.setUseSmallCache(useSmallCache)
+  }
+
   @ReactProp(name = "accessible")
   public fun setAccessible(view: ReactImageView, accessible: Boolean) {
     view.isFocusable = accessible
