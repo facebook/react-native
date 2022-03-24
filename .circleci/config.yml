@@ -79,7 +79,7 @@ executors:
   reactnativeios:
     <<: *defaults
     macos:
-      xcode: &_XCODE_VERSION "13.0.0"
+      xcode: &_XCODE_VERSION "13.3.0"
     resource_class: macos.x86.medium.gen2
 
 # -------------------------
