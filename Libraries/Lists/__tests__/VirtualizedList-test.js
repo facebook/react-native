@@ -890,11 +890,6 @@ it('renders items at start of list after scrolling to index 0 with a non-zero in
 
   const instance = component.getInstance();
   instance.scrollToIndex({index: 0});
-
-  // Layout information from before the time we scroll to initial index may not
-  // correspond to the area "initialScrollIndex" points to. Expect only the 5
-  // initial items (starting at initialScrollIndex) to be rendered after
-  // processing all batch work, even though the windowSize allows for more.
   expect(component).toMatchSnapshot();
 });
 
