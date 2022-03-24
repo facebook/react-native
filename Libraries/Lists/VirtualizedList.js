@@ -1749,6 +1749,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           if (
             (this._hasDoneFirstRenderPass &&
               this.props.initialScrollIndex != null) ||
+            !this.props.initialScrollIndex ||
             offset
           ) {
             newState = computeWindowedRenderLimits(

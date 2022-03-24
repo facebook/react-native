@@ -862,18 +862,18 @@ it('does not adjust render area until content area layed out', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('does not adjust render area with non-zero initialScrollIndex until scrolled', () => {
-  const items = generateItems(20);
-  const ITEM_HEIGHT = 10;
+it('renders items at start of list after scrolling to index 0 with a non-zero initialScrollIndex', () => {
+  const items = generateItems(10);
+  const ITEM_HEIGHT = 50;
 
   let component;
   ReactTestRenderer.act(() => {
     component = ReactTestRenderer.create(
       <VirtualizedList
-        initialNumToRender={5}
-        initialScrollIndex={1}
-        windowSize={10}
-        maxToRenderPerBatch={10}
+        initialNumToRender={3}
+        initialScrollIndex={7}
+        windowSize={3}
+        maxToRenderPerBatch={3}
         {...baseItemProps(items)}
         {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
       />,
@@ -883,10 +883,13 @@ it('does not adjust render area with non-zero initialScrollIndex until scrolled'
   ReactTestRenderer.act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
-      content: {width: 10, height: 200},
+      content: {width: 10, height: 50},
     });
     performAllBatches();
   });
+
+  const instance = component.getInstance();
+  instance.scrollToIndex({index: 0});
 
   // Layout information from before the time we scroll to initial index may not
   // correspond to the area "initialScrollIndex" points to. Expect only the 5
