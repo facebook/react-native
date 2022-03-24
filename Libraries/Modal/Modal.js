@@ -240,7 +240,7 @@ class Modal extends React.Component<Props> {
       backgroundColor:
         this.props.transparent === true
           ? 'transparent'
-          : this.props.overlayColor !== null
+          : this.props.overlayColor
           ? this.props.overlayColor
           : 'white',
     };
