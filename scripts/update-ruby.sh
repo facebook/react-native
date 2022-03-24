@@ -63,5 +63,6 @@ bundle lock
 git add \
     .ruby-version \
     Gemfile \
+    Gemfile.lock \
     template/_ruby-version \
     template/Gemfile
