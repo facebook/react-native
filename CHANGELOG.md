@@ -2,21 +2,17 @@
 
 ## 0.68.0
 
-### Breaking
+### Breaking Changes
 
 - CI moved to Node 16. ([f1488db109](https://github.com/facebook/react-native/commit/f1488db109d13e748b071c02b40e90cdca1cc79d) by [@kelset](https://github.com/kelset)).
   This change enforces Node >= 14 for React Native builds.
-
-#### Android specific
-
-- Bump Android Gradle Plugin to 7. ([272cfe5d13](https://github.com/facebook/react-native/commit/272cfe5d1371c38a281cf3883ff0254a8d3505a3) by [@dulmandakh](https://github.com/dulmandakh))
-  This version of Android Gradle plugin enforces JDK 11 for Android builds.
-
-#### iOS specific
-
-- Remove fallbackResource from RCTBundleURLProvider API ([0912ee179c](https://github.com/facebook/react-native/commit/0912ee179c210fb6b2ed9afbb3f2fbc5fb8a2bb3)) by [@philIip](https://github.com/philIip)
+- Bump Android Gradle Plugin to 7.0.1. ([272cfe5d13](https://github.com/facebook/react-native/commit/272cfe5d1371c38a281cf3883ff0254a8d3505a3) by [@dulmandakh](https://github.com/dulmandakh))
+  This version of Android Gradle plugin enforces JDK 11 for Android builds. Do not upgrade to AGP 7.1 as it is not supported by this version of react-native.
+- Removed `fallbackResource` from `RCTBundleURLProvider` API ([0912ee179c](https://github.com/facebook/react-native/commit/0912ee179c210fb6b2ed9afbb3f2fbc5fb8a2bb3)) by [@philIip](https://github.com/philIip)
 
 ### New Architecture
+
+*If you are interested in enabling the new architecture, please refer to [the dedicated documentation](https://reactnative.dev/docs/next/new-architecture-intro).*
 
 - Do not include Facebook license on users codegen'd code ([450967938a](https://github.com/facebook/react-native/commit/450967938ab25c4dabb9d5ecd9f7b57afb1c78dd) by [@cortinico](https://github.com/cortinico))
 
@@ -65,8 +61,7 @@
 
 ### Changed
 
-- Bump RN CLI to v7.0.3 to address web debugging issue ([df2e934a69](https://github.com/facebook/react-native/commit/df2e934a697b5b207053db3bbcf71492932a6062) by [@kelset](https://github.com/kelset))
-- Bump RN CLI to v7, and Metro to 67 ([848ba6fb1d](https://github.com/facebook/react-native/commit/848ba6fb1db81bbb44efd373af9e81f31f227aef) by [@kelset](https://github.com/kelset))
+- Bump RN CLI to v7.0.3, and Metro to 67 ([848ba6fb1d](https://github.com/facebook/react-native/commit/848ba6fb1db81bbb44efd373af9e81f31f227aef) by [@kelset](https://github.com/kelset)) and ([df2e934a69](https://github.com/facebook/react-native/commit/df2e934a697b5b207053db3bbcf71492932a6062) by [@kelset](https://github.com/kelset))
 - Upgraded react-devtools-core dependency to 4.23.0 ([1cc217d5ef](https://github.com/facebook/react-native/commit/1cc217d5effdbee4cf2f64063a443ecb331673d4) by [@bvaughn](https://github.com/bvaughn))
 - Bump Flipper to 0.125.0 ([50057158ca](https://github.com/facebook/react-native/commit/50057158ca32842d70160541e3cb5d4bd512f8f5) by [@cortinico](https://github.com/cortinico))
 - Export Flow type for deceleration rate for use in other files to keep deceleration rate prop values consistently typed ([9b0ed920ef](https://github.com/facebook/react-native/commit/9b0ed920ef087c4c18504adacf9d4f557812cf1b))
@@ -78,10 +73,6 @@
 - Bump react-native-codegen to 0.0.9 ([e3a71b019f](https://github.com/facebook/react-native/commit/e3a71b019fa78e2b4b3454ccc59ea9c8cc543b29) by [@cortinico](https://github.com/cortinico))
 - Accessing `Image.propTypes`, `Text.propTypes`, `TextInput.propTypes`, `ColorPropType`, `EdgeInsetsPropType`, `PointPropType`, or `ViewPropTypes` now emits a deprecation warning. ([3f629049ba](https://github.com/facebook/react-native/commit/3f629049ba9773793978cf9093c7a71af15e3e8d) by [@yungsters](https://github.com/yungsters))
 - Bump `core-workflow-apply-version-label` version ([e973b3afc2](https://github.com/facebook/react-native/commit/e973b3afc274f892a0e5a6fdea9004dc5d84eb2b) by [@lucasbento](https://github.com/lucasbento))
-- Choose Flow or WIP TypeScript Codegen parser based on spec's file extension ([078f6310ba](https://github.com/facebook/react-native/commit/078f6310ba5008224e8683c1463b248f447fefa8) by [@charlesbdudley](https://github.com/charlesbdudley))
-- Add WIP TypeScript support for Native Module Codegen spec parsing ([0d3036abde](https://github.com/facebook/react-native/commit/0d3036abdef0dfe9642a6513350fa5d84eb3c961) by [@charlesbdudley](https://github.com/charlesbdudley))
-- Add WIP TypeScript support for Native Component Codegen spec parsing ([7615bde023](https://github.com/facebook/react-native/commit/7615bde023000bd8a71cfbb8f9f8796db04cd3b6) by [@charlesbdudley](https://github.com/charlesbdudley))
-- Add foundation for WIP TypeScript parser for Codegen ([114d5a8a17](https://github.com/facebook/react-native/commit/114d5a8a1764a4dd6300a295d132e10779b132d7) by [@charlesbdudley](https://github.com/charlesbdudley))
 - Add `vendor/bundle` into .gitignore template ([2f67f5d68b](https://github.com/facebook/react-native/commit/2f67f5d68b17010c49f2996a788fe68c1fe2e9f6) by [@MoOx](https://github.com/MoOx))
 
 #### Android specific
@@ -89,23 +80,22 @@
 - Add allowsEdgeAntialiasing on views with rotations or skew transforms ([e6a3410afe](https://github.com/facebook/react-native/commit/e6a3410afe7d9a4cecf3db0a95503d2ff05bb862))
 - Bump Kotlin version to 1.6.10 ([d0f0234656](https://github.com/facebook/react-native/commit/d0f0234656dc981b422d1e9aa0885afd5fd29879) by [@AKB48](https://github.com/AKB48))
 - Bump Soloader to 0.10.3 ([f45889ef95](https://github.com/facebook/react-native/commit/f45889ef95ec694520e91b0032e591a087e088e5) by [@osartun](https://github.com/osartun))
+- Bump Gradle to 7.3 ([c180627ac7](https://github.com/facebook/react-native/commit/c180627ac7e5e155707b3c9433c4582839e1820e) by [@dulmandakh](https://github.com/dulmandakh))
+- Bump Android compile and target SDK to 31 ([00ac034353](https://github.com/facebook/react-native/commit/00ac034353cbc867991bf79cb1dd103353f47126) by [@ShikaSD](https://github.com/ShikaSD))
 - Use side-by-side NDK for Android ([bd7caa64f5](https://github.com/facebook/react-native/commit/bd7caa64f5d6ee5ea9484e92c3629c9ce711f73c) by [@cortinico](https://github.com/cortinico))
 - Leverage Gradle implicit dependency substitution for Gradle Plugin ([0fccbd53af](https://github.com/facebook/react-native/commit/0fccbd53af86083a8742a33282dc183d07eb27a2) by [@cortinico](https://github.com/cortinico))
 - Remove unused import of JMessageQueueThread.h ([705236e363](https://github.com/facebook/react-native/commit/705236e3637e4f80e5fa4bd7234df9f1e14a5d3d) by [@sshic](https://github.com/sshic))
 - Made `MessageQueueThread#runOnQueue` return a boolean. Made `MessageQueueThreadImpl#runOnQueue` return false when the runnable is not submitted. ([89faf0c9a8](https://github.com/facebook/react-native/commit/89faf0c9a87f6de68ca416d10566dbcbe80d9450))
 - Assume *.ktx assets are packaged as Android drawables ([cb610ddca7](https://github.com/facebook/react-native/commit/cb610ddca79fe29b88568545ab011671fc392c9a) by [@motiz88](https://github.com/motiz88))
 - Add ViewConfigs to support onEnter/onExit/onMove events ([44143b50fd](https://github.com/facebook/react-native/commit/44143b50fdcafe22caa43d76ec3210132ce3af21) by [@mdvacca](https://github.com/mdvacca))
-- Bump Gradle to 7.3 ([c180627ac7](https://github.com/facebook/react-native/commit/c180627ac7e5e155707b3c9433c4582839e1820e) by [@dulmandakh](https://github.com/dulmandakh))
 - Let react_native_assert really abort the app ([2ae06df58f](https://github.com/facebook/react-native/commit/2ae06df58f5f5eaf4386c14d28af25b643401bf3) by [@cortinico](https://github.com/cortinico))
 - Bugfix for multiple shadow threads rendered at the same time, small probability crash. ([9d71b166a6](https://github.com/facebook/react-native/commit/9d71b166a6c9d9afec7186c6a33aedc6975aa43c) by [@chenmo187](https://github.com/chenmo187))
 - RootView's onChildStartedNativeGesture now takes the child view as its first argument ([03e513de41](https://github.com/facebook/react-native/commit/03e513de41bf60f071eacbbb9604c83605abf625) by [@javache](https://github.com/javache))
 - Add ReactInstanceEventListenerV2 for migration ([ce74aa4ed3](https://github.com/facebook/react-native/commit/ce74aa4ed335d4c36ce722d47937b582045e05c4) by [@sshic](https://github.com/sshic))
 - Improved logic of findTargetPathAndCoordinatesForTouch ([dfe42d6b75](https://github.com/facebook/react-native/commit/dfe42d6b75005f519c0e2c87c75e7886dce3345c) by [@javache](https://github.com/javache))
 - Set a resolution strategy for com.facebook.react:react-native when on New Architecture ([e695bc0bb5](https://github.com/facebook/react-native/commit/e695bc0bb50fc1c712e9862ed8fe4e7cc6619fae) by [@cortinico](https://github.com/cortinico))
-- Jvm 11 error message ([4e947ecb2d](https://github.com/facebook/react-native/commit/4e947ecb2dabfa0226af7f859c828847b4d891c0) by [@nomi9995](https://github.com/nomi9995))
 - Make hermes-executor-common a static lib ([b2cf24f41c](https://github.com/facebook/react-native/commit/b2cf24f41cb5f15653b34d396ef2a1c90defdf43) by [@janicduplessis](https://github.com/janicduplessis))
 - Static link for hermes-inspector ([20b0eba581](https://github.com/facebook/react-native/commit/20b0eba581a00e5e7e300f6377379b836617c147) by [@janicduplessis](https://github.com/janicduplessis))
-- Bump Android compile and target SDK to 31 ([00ac034353](https://github.com/facebook/react-native/commit/00ac034353cbc867991bf79cb1dd103353f47126) by [@ShikaSD](https://github.com/ShikaSD))
 
 #### iOS specific
 
@@ -116,32 +106,6 @@
 - IOS Ruby Updates ([1e6add1a43](https://github.com/facebook/react-native/commit/1e6add1a43355bb88c57400a7420a656966bef97) by [@barbieri](https://github.com/barbieri))
 - Update Flipper pods to support re-enable macCatalyst ([2a5265dff7](https://github.com/facebook/react-native/commit/2a5265dff7e654f57b43335804840692313f2a56) by [@mikehardy](https://github.com/mikehardy))
 - Apple Silicon builds of glog & Flipper-Glog ([274c617f5b](https://github.com/facebook/react-native/commit/274c617f5bda263ff29115b3dcc013e47085a78d) by [@rayzr522](https://github.com/rayzr522))
-
-### Deprecated
-
-
-
-#### Android specific
-
-- Gradle: Deprecate `reactRoot` in favor of `root` and `reactNativeDir` ([8bc324fd34](https://github.com/facebook/react-native/commit/8bc324fd34337ab159e2e21e213a6c5b06c548da) by [@cortinico](https://github.com/cortinico))
-
-#### iOS specific
-
-
-
-### Removed
-
-- DeprecatedPropTypes (deep-link) modules removed from React Native. ([23717c6381](https://github.com/facebook/react-native/commit/23717c6381a41b1c5f189376bfa5bc73c7a4da87) by [@yungsters](https://github.com/yungsters))
-- `accessibilityStates` no longer passed through to RCTView. ([1121ed94ab](https://github.com/facebook/react-native/commit/1121ed94ab470be27207b0c8dbae5d19860c08da) by [@luism3861](https://github.com/luism3861))
-
-#### Android specific
-
-
-
-#### iOS specific
-
-- Remove RCTUIManagerObserver from RCTNativeAnimatedTurboModule ([e9ed115bab](https://github.com/facebook/react-native/commit/e9ed115babbc82968380dae22fa928d4ce3cd6da) by [@p-sun](https://github.com/p-sun))
-
 
 ### Fixed
 
@@ -190,11 +154,12 @@
 - Fix onPress event for nested Text in RN Android ([e494e4beb6](https://github.com/facebook/react-native/commit/e494e4beb6a124008fd116178cbc38335bd87809) by [@mdvacca](https://github.com/mdvacca))
 - Fix enableVmCleanup not working for apps with product flavors ([a2b5e4cd82](https://github.com/facebook/react-native/commit/a2b5e4cd825a358419cef1e3823b72215b689686) by [@cortinico](https://github.com/cortinico))
 - Prevent NPE on ThemedReactContext ([f1b5fe1d3e](https://github.com/facebook/react-native/commit/f1b5fe1d3ea49294d8c89accfa27d76a1a97ccea) by [@sshic](https://github.com/sshic))
+- fix: jvm 11 error message from ReactPlugin.kt and react.gradle ([4e947ecb2d](https://github.com/facebook/react-native/commit/4e947ecb2dabfa0226af7f859c828847b4d891c0) by [@nomi9995](https://github.com/nomi9995))
 
 #### iOS specific
 
 - ScrollView: Respect `contentInset` when animating new items with `autoscrollToTopThreshold`, make `automaticallyAdjustKeyboardInsets` work with `autoscrollToTopThreshold` (includes vertical, vertical-inverted, horizontal and horizontal-inverted ScrollViews) ([49a1460a37](https://github.com/facebook/react-native/commit/49a1460a379e3a71358fb38888477ce6ea17e81a) by [@mrousavy](https://github.com/mrousavy))
-- Fix(RCTBlobManager): Prevent RCTConvert error for allowed null blob types ([e1b698c5f2](https://github.com/facebook/react-native/commit/e1b698c5f2b1d689fb3940f8c6a3e298d381ea3a) by [@habovh](https://github.com/habovh))
+- Prevent RCTConvert error for allowed null blob types ([e1b698c5f2](https://github.com/facebook/react-native/commit/e1b698c5f2b1d689fb3940f8c6a3e298d381ea3a) by [@habovh](https://github.com/habovh))
 - Migrate ScreenshotManager from NativeModule to TurboModule ([b13e41d98e](https://github.com/facebook/react-native/commit/b13e41d98e818279d1941f3425707d3c0ce407fc) by [@p-sun](https://github.com/p-sun))
 - Fix usage of cocoapods with --project-directory flag and new arch ([9e7d91f2fc](https://github.com/facebook/react-native/commit/9e7d91f2fc4d576b8fba81304a24e50134da93d6) by [@danilobuerger](https://github.com/danilobuerger))
 - Post RCTContentDidAppearNotification with new arch ([75105e692c](https://github.com/facebook/react-native/commit/75105e692c2be9bd192089a6a6ffde7572ee1ce1) by [@danilobuerger](https://github.com/danilobuerger))
@@ -205,11 +170,28 @@
 - Fix WebSocket control frames having payloads longer than 125 bytes ([86db62b7a8](https://github.com/facebook/react-native/commit/86db62b7a8b28ac82dd0a0627a8b6c351875f682) by [@asmeikal](https://github.com/asmeikal))
 - Stop RedBox from appearing for LogBox handled errors ([9d2df5b8ae](https://github.com/facebook/react-native/commit/9d2df5b8ae95b3cfeae26f64bd1d50bd2b0bbae9) by [@liamjones](https://github.com/liamjones))
 - Enable hitSlop to be set using a single number. ([3addafa525](https://github.com/facebook/react-native/commit/3addafa5257ade685216900bebbad8c35e24e124) by [@javache](https://github.com/javache))
-- __apply_Xcode_12_5_M1_post_install_workaround failing when one of the Pods has no IPHONEOS_DEPLOYMENT_TARGET set ([9cd4092336](https://github.com/facebook/react-native/commit/9cd40923362ff717a722f8f36c8250a29a5142b7) by [@Yonom](https://github.com/Yonom))
+- Fix `__apply_Xcode_12_5_M1_post_install_workaround` failing when one of the Pods has no IPHONEOS_DEPLOYMENT_TARGET set ([9cd4092336](https://github.com/facebook/react-native/commit/9cd40923362ff717a722f8f36c8250a29a5142b7) by [@Yonom](https://github.com/Yonom))
 - This is a quick speculative fix since we know `CFRunLoopPerformBlock` does not push/pop an autorelease pool. ([3fff164dfa](https://github.com/facebook/react-native/commit/3fff164dfa1c97f69b1701e974effc92a94152d6) by [@christophpurrer](https://github.com/christophpurrer))
 - Fixed RCTImageLoaderTests ([1542f83527](https://github.com/facebook/react-native/commit/1542f835273c08776b960929b5aa7cefbd225971) by [@philIip](https://github.com/philIip))
 - Fix Rosetta2 CocoaPods warning on Apple Silicon ([e918362be3](https://github.com/facebook/react-native/commit/e918362be3cb03ae9dee3b8d50a240c599f6723f) by [@oblador](https://github.com/oblador))
-- `pod install --project-directory=ios` fails due to wrong path to `React-Codegen` ([ebb26cf2e4](https://github.com/facebook/react-native/commit/ebb26cf2e420616c8bf01a5148ca4f8419b238d3) by [@tido64](https://github.com/tido64))
+- Fix `pod install --project-directory=ios` failing due to wrong path to `React-Codegen` ([ebb26cf2e4](https://github.com/facebook/react-native/commit/ebb26cf2e420616c8bf01a5148ca4f8419b238d3) by [@tido64](https://github.com/tido64))
+
+### Deprecated
+
+#### Android specific
+
+- Gradle: Deprecate `reactRoot` in favor of `root` and `reactNativeDir` ([8bc324fd34](https://github.com/facebook/react-native/commit/8bc324fd34337ab159e2e21e213a6c5b06c548da) by [@cortinico](https://github.com/cortinico))
+
+
+### Removed
+
+- DeprecatedPropTypes (deep-link) modules removed from React Native. ([23717c6381](https://github.com/facebook/react-native/commit/23717c6381a41b1c5f189376bfa5bc73c7a4da87) by [@yungsters](https://github.com/yungsters))
+- `accessibilityStates` no longer passed through to RCTView. ([1121ed94ab](https://github.com/facebook/react-native/commit/1121ed94ab470be27207b0c8dbae5d19860c08da) by [@luism3861](https://github.com/luism3861))
+
+#### iOS specific
+
+- Remove RCTUIManagerObserver from RCTNativeAnimatedTurboModule ([e9ed115bab](https://github.com/facebook/react-native/commit/e9ed115babbc82968380dae22fa928d4ce3cd6da) by [@p-sun](https://github.com/p-sun))
+
 
 ## 0.67.4
 
