@@ -45,6 +45,8 @@ def boostPath = dependenciesPath ?: System.getenv("REACT_NATIVE_BOOST_PATH")
 // Setup build type for NDK, supported values: {debug, release}
 def nativeBuildType = System.getenv("NATIVE_BUILD_TYPE") ?: "release"
 
+def reactCommonDir = new File("$projectDir/../ReactCommon")
+
 // We put the publishing version from gradle.properties inside ext. so other
 // subprojects can access it as well.
 ext.publishing_version = VERSION_NAME
@@ -283,7 +285,7 @@ android {
 
         externalNativeBuild {
             cmake {
-                arguments "-DREACT_COMMON_DIR=${rootProject.projectDir}/ReactCommon",
+                arguments "-DREACT_COMMON_DIR=${reactCommonDir.absolutePath}",
                         "-DREACT_ANDROID_DIR=$projectDir",
                         "-DANDROID_STL=c++_shared",
                         "-DANDROID_TOOLCHAIN=clang",
