@@ -32,7 +32,7 @@ struct ShadowNodeWrapper : public jsi::HostObject {
 
   // The below method needs to be out-of-line in order for the class to have
   // at least one "key function" (see https://itanium-cxx-abi.github.io/cxx-abi/abi.html#vague-vtable)
-  virtual ~ShadowNodeWrapper();
+  ~ShadowNodeWrapper() override;
 
   ShadowNode::Shared shadowNode;
 };
@@ -43,7 +43,7 @@ struct ShadowNodeListWrapper : public jsi::HostObject {
 
   // The below method needs to be out-of-line in order for the class to have
   // at least one "key function" (see https://itanium-cxx-abi.github.io/cxx-abi/abi.html#vague-vtable)
-  virtual ~ShadowNodeListWrapper();
+  ~ShadowNodeListWrapper() override;
 
   SharedShadowNodeUnsharedList shadowNodeList;
 };
