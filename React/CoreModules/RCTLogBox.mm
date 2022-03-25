@@ -51,7 +51,7 @@ RCT_EXPORT_METHOD(show)
 
       if (strongSelf->_bridge) {
         if (strongSelf->_bridge.valid) {
-          strongSelf->_view = [[RCTLogBoxView alloc] initWithFrame:RCTKeyWindow().frame bridge:strongSelf->_bridge];
+          strongSelf->_view = [[RCTLogBoxView alloc] initWithWindow:RCTKeyWindow() bridge:strongSelf->_bridge];
           [strongSelf->_view show];
         }
       } else {

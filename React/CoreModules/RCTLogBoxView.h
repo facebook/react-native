@@ -15,7 +15,7 @@
 
 - (void)createRootViewController:(UIView *)view;
 
-- (instancetype)initWithFrame:(CGRect)frame bridge:(RCTBridge *)bridge;
+- (instancetype)initWithWindow:(UIWindow *)window bridge:(RCTBridge *)bridge;
 
 - (void)show;
 
