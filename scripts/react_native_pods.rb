@@ -191,6 +191,15 @@ def flipper_post_install(installer)
         config.build_settings['SWIFT_VERSION'] = '4.1'
       end
     end
+
+    # Enable flipper for React-Core Debug configuration
+    if target.name == 'React-Core'
+      target.build_configurations.each do |config|
+        if config.name == 'Debug'
+          config.build_settings['OTHER_CFLAGS'] = "$(inherited) -DFB_SONARKIT_ENABLED=1"
+        end
+      end
+    end
   end
 end
 
