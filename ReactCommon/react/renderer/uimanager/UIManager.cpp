@@ -22,6 +22,20 @@
 
 namespace facebook::react {
 
+ShadowNodeWrapper::~ShadowNodeWrapper() {
+  // implementation is kept empty as there is nothing necessary to do in destrutor
+  // however, it still needs to exist in order to act as a "key function" for
+  // the SHadowNodeWrapper class -- this allow for RTTI to work properly across
+  // the library boundaries (i.e. dynamic_cast that is used by isHostObject method)
+}
+
+ShadowNodeListWrapper::~ShadowNodeListWrapper() {
+  // implementation is kept empty as there is nothing necessary to do in destrutor
+  // however, it still needs to exist in order to act as a "key function" for
+  // the SHadowNodeListWrapper class -- this allow for RTTI to work properly across
+  // the library boundaries (i.e. dynamic_cast that is used by isHostObject method)
+}
+
 static std::unique_ptr<LeakChecker> constructLeakCheckerIfNeeded(
     RuntimeExecutor const &runtimeExecutor) {
 #ifdef REACT_NATIVE_DEBUG

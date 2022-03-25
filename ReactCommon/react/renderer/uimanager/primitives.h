@@ -30,12 +30,20 @@ struct ShadowNodeWrapper : public jsi::HostObject {
   ShadowNodeWrapper(SharedShadowNode shadowNode)
       : shadowNode(std::move(shadowNode)) {}
 
+  // The below method needs to be out-of-line in order for the class to have
+  // at least one "key function" (see https://itanium-cxx-abi.github.io/cxx-abi/abi.html#vague-vtable)
+  virtual ~ShadowNodeWrapper();
+
   ShadowNode::Shared shadowNode;
 };
 
 struct ShadowNodeListWrapper : public jsi::HostObject {
   ShadowNodeListWrapper(SharedShadowNodeUnsharedList shadowNodeList)
       : shadowNodeList(shadowNodeList) {}
+
+  // The below method needs to be out-of-line in order for the class to have
+  // at least one "key function" (see https://itanium-cxx-abi.github.io/cxx-abi/abi.html#vague-vtable)
+  virtual ~ShadowNodeListWrapper();
 
   SharedShadowNodeUnsharedList shadowNodeList;
 };
