@@ -110,8 +110,12 @@ def use_react_native! (options={})
 
   if hermes_enabled
     pod 'React-hermes', :path => "#{prefix}/ReactCommon/hermes"
-    hermes_source_path = downloadAndConfigureHermesSource(prefix)
-    pod 'hermes-engine', :path => "#{hermes_source_path}/hermes-engine.podspec"
+    if ENV['BUILD_HERMES_SOURCE'] == '1'
+      hermes_source_path = downloadAndConfigureHermesSource(prefix)
+      pod 'hermes-engine', :path => "#{hermes_source_path}/hermes-engine.podspec"
+    else
+      pod 'hermes-engine', '~> 0.11.0'
+    end
     pod 'libevent', '~> 2.1.12'
   end
 
