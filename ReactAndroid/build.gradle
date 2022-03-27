@@ -280,6 +280,7 @@ task androidSourcesJar(type: Jar) {
 
 android {
     compileSdkVersion 31
+    ndkVersion rootProject.ext.ndkVersion
 
     // Used to override the NDK path & version on internal CI
     if (System.getenv("ANDROID_NDK") != null && System.getenv("LOCAL_ANDROID_NDK_VERSION") != null) {
