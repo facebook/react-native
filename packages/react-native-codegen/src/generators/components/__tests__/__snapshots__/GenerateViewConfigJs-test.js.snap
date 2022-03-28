@@ -1070,22 +1070,12 @@ const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/
 const {UIManager} = require(\\"react-native\\")
 
 let nativeComponentName = 'NativeComponentName';
-if (global.RN$Bridgeless) {
-  if (UIManager.hasViewManagerConfig('NativeComponentName')) {
-    nativeComponentName = 'NativeComponentName';
-  } else if (UIManager.hasViewManagerConfig('DeprecatedNativeComponentName')) {
-    nativeComponentName = 'DeprecatedNativeComponentName';
-  } else {
-    throw new Error('Failed to find native component for either \\"NativeComponentName\\" or \\"DeprecatedNativeComponentName\\", with SVC enabled.');
-  }
+if (UIManager.hasViewManagerConfig('NativeComponentName')) {
+  nativeComponentName = 'NativeComponentName';
+} else if (UIManager.hasViewManagerConfig('DeprecatedNativeComponentName')) {
+  nativeComponentName = 'DeprecatedNativeComponentName';
 } else {
-  if (UIManager.getViewManagerConfig('NativeComponentName')) {
-    nativeComponentName = 'NativeComponentName';
-  } else if (UIManager.getViewManagerConfig('DeprecatedNativeComponentName')) {
-    nativeComponentName = 'DeprecatedNativeComponentName';
-  } else {
-    throw new Error('Failed to find native component for either \\"NativeComponentName\\" or \\"DeprecatedNativeComponentName\\", with SVC disabled.');
-  }
+  throw new Error('Failed to find native component for either \\"NativeComponentName\\" or \\"DeprecatedNativeComponentName\\"');
 }
 
 export const __INTERNAL_VIEW_CONFIG = {

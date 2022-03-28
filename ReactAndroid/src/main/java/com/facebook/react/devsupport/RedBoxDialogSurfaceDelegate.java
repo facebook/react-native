@@ -42,6 +42,15 @@ public class RedBoxDialogSurfaceDelegate implements SurfaceDelegate {
     // used here.
     RedBoxHandler redBoxHandler = mDevSupportManager.getRedBoxHandler();
     Activity context = mDevSupportManager.getCurrentActivity();
+    if (context == null || context.isFinishing()) {
+      @Nullable String message = mDevSupportManager.getLastErrorTitle();
+      FLog.e(
+          ReactConstants.TAG,
+          "Unable to launch redbox because react activity "
+              + "is not available, here is the error that redbox would've displayed: "
+              + (message != null ? message : "N/A"));
+      return;
+    }
     // Create a new RedBox when currentActivity get updated
     mRedBoxContentView = new RedBoxContentView(context);
     mRedBoxContentView

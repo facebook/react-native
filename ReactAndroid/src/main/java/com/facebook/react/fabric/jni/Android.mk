@@ -15,8 +15,7 @@ LOCAL_SHARED_LIBRARIES := \
   libbutter \
   libfb \
   libfbjni \
-  libfolly_futures \
-  libfolly_json \
+  libfolly_runtime \
   libglog \
   libglog_init \
   libjsi \

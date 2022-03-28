@@ -5,7 +5,6 @@ on:
     branches:
       - main
   pull_request:
-    types: [ synchronize ]
     branches:
       - main
 
@@ -15,5 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Free up space by removing unnecessary folders
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
       - name: Build Docker image with Android test app
         run: npm run docker-build-android

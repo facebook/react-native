@@ -15,6 +15,7 @@ pluginManagement {
 
 include(
     ":ReactAndroid",
+    ":ReactAndroid:hermes-engine",
     ":packages:react-native-codegen:android",
     ":packages:rn-tester:android:app"
 )

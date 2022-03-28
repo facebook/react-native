@@ -382,7 +382,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
                       + " ms.\n - Diffing: "
                       + (commitPoint.getDiffEnd() - commitPoint.getDiffStart())
                       + " ms.\n"
-                      + " - FinishTransaction (Diffing + Processing + Serialization of MutationInstructions): "
+                      + " - FinishTransaction (Diffing + JNI serialization): "
                       + (commitPoint.getFinishTransactionEnd()
                           - commitPoint.getFinishTransactionStart())
                       + " ms.\n"
@@ -427,11 +427,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     // callbacks to stop firing.
     mReactApplicationContext.removeLifecycleEventListener(this);
     onHostPause();
-
-    // This is not technically thread-safe, since it's read on the UI thread and written
-    // here on the JS thread. We've marked it as volatile so that this writes to UI-thread
-    // memory immediately.
-    mDispatchUIFrameCallback.stop();
 
     mBinding.unregister();
     mBinding = null;
@@ -545,8 +540,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   private long measureMapBuffer(
       int surfaceId,
       String componentName,
-      ReadableMapBuffer attributedString,
-      ReadableMapBuffer paragraphAttributes,
+      ReadableMapBuffer localData,
+      ReadableMapBuffer props,
+      @Nullable ReadableMapBuffer state,
       float minWidth,
       float maxWidth,
       float minHeight,
@@ -566,11 +562,12 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     }
 
     // TODO: replace ReadableNativeMap -> ReadableMapBuffer
-    return mMountingManager.measureTextMapBuffer(
+    return mMountingManager.measureMapBuffer(
         context,
         componentName,
-        attributedString,
-        paragraphAttributes,
+        localData,
+        props,
+        state,
         getYogaSize(minWidth, maxWidth),
         getYogaMeasureMode(minWidth, maxWidth),
         getYogaSize(minHeight, maxHeight),
@@ -704,7 +701,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       int rootTag,
       int reactTag,
       final String componentName,
-      @Nullable ReadableMap props,
+      @Nullable Object props,
       @Nullable Object stateWrapper,
       @Nullable Object eventEmitterWrapper,
       boolean isLayoutable) {

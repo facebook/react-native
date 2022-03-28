@@ -26,6 +26,7 @@ import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.mounting.MountingManager.MountItemExecutor;
@@ -42,6 +43,9 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
+import com.facebook.react.views.view.ReactMapBufferViewManager;
+import com.facebook.react.views.view.ReactViewManagerWrapper;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -69,6 +73,14 @@ public class SurfaceMountingManager {
   // This is null *until* StopSurface is called.
   private Set<Integer> mTagSetForStoppedSurface;
 
+  // C++ layer checks for prop revision and doesn't
+  // dispatch createView mount item if view pre-allocation mount item was dispatched.
+  // This leads to missing createView and pre-mature deletion of ViewState.
+  // To work around this issue, ViewState deletion is delayed until subsequent commit.
+  // If the subsequent commit accesses ViewState, it won't be deleted.
+  private Set<Integer> mSoftDeletedViewStateTags;
+  private Set<Integer> mScheduledForDeletionViewStateTags;
+
   private final int mSurfaceId;
 
   public SurfaceMountingManager(
@@ -85,6 +97,11 @@ public class SurfaceMountingManager {
     mRootViewManager = rootViewManager;
     mMountItemExecutor = mountItemExecutor;
     mThemedReactContext = reactContext;
+
+    if (ReactFeatureFlags.enableDelayedViewStateDeletion) {
+      mSoftDeletedViewStateTags = new HashSet();
+      mScheduledForDeletionViewStateTags = new HashSet();
+    }
   }
 
   public boolean isStopped() {
@@ -163,7 +180,13 @@ public class SurfaceMountingManager {
       return;
     }
 
-    mTagToViewState.put(mSurfaceId, new ViewState(mSurfaceId, rootView, mRootViewManager, true));
+    mTagToViewState.put(
+        mSurfaceId,
+        new ViewState(
+            mSurfaceId,
+            rootView,
+            new ReactViewManagerWrapper.DefaultViewManager((ViewManager) mRootViewManager),
+            true));
 
     Runnable runnable =
         new Runnable() {
@@ -534,7 +557,7 @@ public class SurfaceMountingManager {
   public void createView(
       @NonNull String componentName,
       int reactTag,
-      @Nullable ReadableMap props,
+      @Nullable Object props,
       @Nullable StateWrapper stateWrapper,
       @Nullable EventEmitterWrapper eventEmitterWrapper,
       boolean isLayoutable) {
@@ -572,41 +595,48 @@ public class SurfaceMountingManager {
   public void createViewUnsafe(
       @NonNull String componentName,
       int reactTag,
-      @Nullable ReadableMap props,
+      @Nullable Object props,
       @Nullable StateWrapper stateWrapper,
       @Nullable EventEmitterWrapper eventEmitterWrapper,
       boolean isLayoutable) {
     View view = null;
-    ViewManager viewManager = null;
+    ReactViewManagerWrapper viewManager = null;
 
-    ReactStylesDiffMap propsDiffMap = null;
-    if (props != null) {
-      propsDiffMap = new ReactStylesDiffMap(props);
+    Object propMap;
+    if (props instanceof ReadableMap) {
+      propMap = new ReactStylesDiffMap((ReadableMap) props);
+    } else {
+      propMap = props;
     }
 
     if (isLayoutable) {
-      viewManager = mViewManagerRegistry.get(componentName);
+      viewManager =
+          props instanceof ReadableMapBuffer
+              ? ReactMapBufferViewManager.INSTANCE
+              : new ReactViewManagerWrapper.DefaultViewManager(
+                  mViewManagerRegistry.get(componentName));
       // View Managers are responsible for dealing with initial state and props.
       view =
           viewManager.createView(
-              reactTag, mThemedReactContext, propsDiffMap, stateWrapper, mJSResponderHandler);
+              reactTag, mThemedReactContext, propMap, stateWrapper, mJSResponderHandler);
     }
 
     ViewState viewState = new ViewState(reactTag, view, viewManager);
-    viewState.mCurrentProps = propsDiffMap;
+    viewState.mCurrentProps = propMap;
     viewState.mStateWrapper = stateWrapper;
     viewState.mEventEmitter = eventEmitterWrapper;
 
     mTagToViewState.put(reactTag, viewState);
   }
 
-  public void updateProps(int reactTag, ReadableMap props) {
+  public void updateProps(int reactTag, Object props) {
     if (isStopped()) {
       return;
     }
 
     ViewState viewState = getViewState(reactTag);
-    viewState.mCurrentProps = new ReactStylesDiffMap(props);
+    viewState.mCurrentProps =
+        props instanceof ReadableMap ? new ReactStylesDiffMap((ReadableMap) props) : props;
     View view = viewState.mView;
 
     if (view == null) {
@@ -751,7 +781,7 @@ public class SurfaceMountingManager {
       throw new IllegalStateException("Unable to find View for tag: " + reactTag);
     }
 
-    ViewManager viewManager = viewState.mViewManager;
+    ReactViewManagerWrapper viewManager = viewState.mViewManager;
     if (viewManager == null) {
       throw new IllegalStateException("Unable to find ViewManager for view: " + viewState);
     }
@@ -801,7 +831,7 @@ public class SurfaceMountingManager {
     StateWrapper prevStateWrapper = viewState.mStateWrapper;
     viewState.mStateWrapper = stateWrapper;
 
-    ViewManager viewManager = viewState.mViewManager;
+    ReactViewManagerWrapper viewManager = viewState.mViewManager;
 
     if (viewManager == null) {
       throw new IllegalStateException("Unable to find ViewManager for tag: " + reactTag);
@@ -891,9 +921,26 @@ public class SurfaceMountingManager {
     }
 
     // For non-root views we notify viewmanager with {@link ViewManager#onDropInstance}
-    ViewManager viewManager = viewState.mViewManager;
+    ReactViewManagerWrapper viewManager = viewState.mViewManager;
     if (!viewState.mIsRoot && viewManager != null) {
       viewManager.onDropViewInstance(viewState.mView);
+    }
+  }
+
+  @UiThread
+  public void didUpdateViews() {
+    if (ReactFeatureFlags.enableDelayedViewStateDeletion) {
+      for (Integer reactTag : mScheduledForDeletionViewStateTags) {
+        // To delete we simply remove the tag from the registry.
+        // We want to rely on the correct set of MountInstructions being sent to the platform,
+        // or StopSurface being called, so we do not handle deleting descendents of the View.
+        ViewState viewState = mTagToViewState.remove(reactTag);
+        if (viewState != null) {
+          onViewStateDeleted(viewState);
+        }
+      }
+      mScheduledForDeletionViewStateTags = mSoftDeletedViewStateTags;
+      mSoftDeletedViewStateTags = new HashSet();
     }
   }
 
@@ -914,19 +961,23 @@ public class SurfaceMountingManager {
       return;
     }
 
-    // To delete we simply remove the tag from the registry.
-    // We want to rely on the correct set of MountInstructions being sent to the platform,
-    // or StopSurface being called, so we do not handle deleting descendents of the View.
-    mTagToViewState.remove(reactTag);
+    if (ReactFeatureFlags.enableDelayedViewStateDeletion) {
+      mSoftDeletedViewStateTags.add(reactTag);
+    } else {
+      // To delete we simply remove the tag from the registry.
+      // We want to rely on the correct set of MountInstructions being sent to the platform,
+      // or StopSurface being called, so we do not handle deleting descendents of the View.
+      mTagToViewState.remove(reactTag);
 
-    onViewStateDeleted(viewState);
+      onViewStateDeleted(viewState);
+    }
   }
 
   @UiThread
   public void preallocateView(
       String componentName,
       int reactTag,
-      @Nullable ReadableMap props,
+      @Nullable Object props,
       @Nullable StateWrapper stateWrapper,
       @Nullable EventEmitterWrapper eventEmitterWrapper,
       boolean isLayoutable) {
@@ -968,12 +1019,18 @@ public class SurfaceMountingManager {
     if (viewState == null) {
       throw new RetryableMountingLayerException("Unable to find viewState for tag " + tag);
     }
+    if (ReactFeatureFlags.enableDelayedViewStateDeletion) {
+      mScheduledForDeletionViewStateTags.remove(tag);
+    }
     return viewState;
   }
 
   private @Nullable ViewState getNullableViewState(int tag) {
     if (mTagToViewState == null) {
       return null;
+    }
+    if (ReactFeatureFlags.enableDelayedViewStateDeletion) {
+      mScheduledForDeletionViewStateTags.remove(tag);
     }
     return mTagToViewState.get(tag);
   }
@@ -984,7 +1041,7 @@ public class SurfaceMountingManager {
     if (viewState.mViewManager == null) {
       throw new IllegalStateException("Unable to find ViewManager for view: " + viewState);
     }
-    return (ViewGroupManager<ViewGroup>) viewState.mViewManager;
+    return (ViewGroupManager<ViewGroup>) viewState.mViewManager.getViewGroupManager();
   }
 
   public void printSurfaceState() {
@@ -1014,17 +1071,22 @@ public class SurfaceMountingManager {
     @Nullable final View mView;
     final int mReactTag;
     final boolean mIsRoot;
-    @Nullable final ViewManager mViewManager;
-    @Nullable public ReactStylesDiffMap mCurrentProps = null;
+    @Nullable final ReactViewManagerWrapper mViewManager;
+    @Nullable public Object mCurrentProps = null;
     @Nullable public ReadableMap mCurrentLocalData = null;
     @Nullable public StateWrapper mStateWrapper = null;
     @Nullable public EventEmitterWrapper mEventEmitter = null;
 
-    private ViewState(int reactTag, @Nullable View view, @Nullable ViewManager viewManager) {
+    private ViewState(
+        int reactTag, @Nullable View view, @Nullable ReactViewManagerWrapper viewManager) {
       this(reactTag, view, viewManager, false);
     }
 
-    private ViewState(int reactTag, @Nullable View view, ViewManager viewManager, boolean isRoot) {
+    private ViewState(
+        int reactTag,
+        @Nullable View view,
+        @Nullable ReactViewManagerWrapper viewManager,
+        boolean isRoot) {
       mReactTag = reactTag;
       mView = view;
       mIsRoot = isRoot;

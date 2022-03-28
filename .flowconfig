@@ -14,6 +14,8 @@
 ; Flow doesn't support platforms
 .*/Libraries/Utilities/LoadingView.js
 
+.*/node_modules/resolve/test/resolver/malformed_package_json/package\.json$
+
 [untyped]
 .*/node_modules/@react-native-community/cli/.*/.*
 
@@ -58,7 +60,6 @@ nonstrict-import=warn
 deprecated-type=error
 unsafe-getters-setters=warn
 unnecessary-invariant=warn
-signature-verification-failure=warn
 
 [strict]
 deprecated-type
@@ -70,4 +71,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.171.0
+^0.174.1

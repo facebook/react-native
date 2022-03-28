@@ -29,7 +29,7 @@ Pod::Spec.new do |s|
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
-  s.platforms              = { :ios => "11.0" }
+  s.platforms              = { :ios => "12.4" }
   s.compiler_flags         = folly_compiler_flags + ' -Wno-nullability-completeness'
   s.source                 = source
   # This podspec is used to trigger the codegen, and built files are generated in a different location.
@@ -38,7 +38,7 @@ Pod::Spec.new do |s|
 
   s.pod_target_xcconfig    = {
                                "USE_HEADERMAP" => "YES",
-                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++14",
+                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
                                "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/RCT-Folly\""
                              }
 

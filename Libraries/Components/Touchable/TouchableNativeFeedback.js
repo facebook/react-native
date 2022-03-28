@@ -271,6 +271,7 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
         ),
         accessible: this.props.accessible !== false,
         accessibilityHint: this.props.accessibilityHint,
+        accessibilityLanguage: this.props.accessibilityLanguage,
         accessibilityLabel: this.props.accessibilityLabel,
         accessibilityRole: this.props.accessibilityRole,
         accessibilityState: accessibilityState,

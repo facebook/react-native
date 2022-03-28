@@ -82,7 +82,8 @@ RCT_EXPORT_MODULE()
 
 - (void)setBridge:(RCTBridge *)bridge
 {
-  RCTErrorNotAllowedForNewArchitecture(self, @"RCTViewManager must not be initialized for the new architecture");
+  RCTErrorNewArchitectureValidation(
+      RCTNotAllowedInBridgeless, self, @"RCTViewManager must not be initialized for the new architecture");
   _bridge = bridge;
 }
 
@@ -124,6 +125,7 @@ RCT_REMAP_VIEW_PROPERTY(accessible, reactAccessibilityElement.isAccessibilityEle
 RCT_REMAP_VIEW_PROPERTY(accessibilityActions, reactAccessibilityElement.accessibilityActions, NSDictionaryArray)
 RCT_REMAP_VIEW_PROPERTY(accessibilityLabel, reactAccessibilityElement.accessibilityLabel, NSString)
 RCT_REMAP_VIEW_PROPERTY(accessibilityHint, reactAccessibilityElement.accessibilityHint, NSString)
+RCT_REMAP_VIEW_PROPERTY(accessibilityLanguage, reactAccessibilityElement.accessibilityLanguage, NSString)
 RCT_REMAP_VIEW_PROPERTY(accessibilityValue, reactAccessibilityElement.accessibilityValueInternal, NSDictionary)
 RCT_REMAP_VIEW_PROPERTY(accessibilityViewIsModal, reactAccessibilityElement.accessibilityViewIsModal, BOOL)
 RCT_REMAP_VIEW_PROPERTY(accessibilityElementsHidden, reactAccessibilityElement.accessibilityElementsHidden, BOOL)
@@ -270,7 +272,7 @@ RCT_CUSTOM_VIEW_PROPERTY(borderRadius, CGFloat, RCTView)
     view.layer.cornerRadius = json ? [RCTConvert CGFloat:json] : defaultView.layer.cornerRadius;
   }
 }
-RCT_CUSTOM_VIEW_PROPERTY(borderColor, CGColor, RCTView)
+RCT_CUSTOM_VIEW_PROPERTY(borderColor, UIColor, RCTView)
 {
   if ([view respondsToSelector:@selector(setBorderColor:)]) {
     view.borderColor = json ? [RCTConvert UIColor:json] : defaultView.borderColor;

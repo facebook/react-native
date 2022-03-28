@@ -19,8 +19,6 @@ LOCAL_CFLAGS := \
 
 LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
 
-LOCAL_STATIC_LIBRARIES :=
-
 LOCAL_SHARED_LIBRARIES := glog
 
 include $(BUILD_SHARED_LIBRARY)

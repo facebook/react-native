@@ -8,9 +8,9 @@
 #pragma once
 
 #include <limits>
+#include <optional>
 
 #include <butter/map.h>
-#include <butter/optional.h>
 #include <butter/small_vector.h>
 
 #include <folly/dynamic.h>

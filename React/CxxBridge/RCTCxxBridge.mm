@@ -13,6 +13,7 @@
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeMethod.h>
 #import <React/RCTBridgeModule.h>
+#import <React/RCTBridgeModuleDecorator.h>
 #import <React/RCTConstants.h>
 #import <React/RCTConvert.h>
 #import <React/RCTCxxBridgeDelegate.h>
@@ -110,13 +111,6 @@ class GetDescAdapter : public JSExecutorFactory {
   std::shared_ptr<JSExecutorFactory> factory_;
 };
 
-}
-
-static bool isRAMBundle(NSData *script)
-{
-  BundleHeader header;
-  [script getBytes:&header length:sizeof(header)];
-  return parseTypeFromHeader(header) == ScriptTag::RAMBundle;
 }
 
 static void notifyAboutModuleSetup(RCTPerformanceLogger *performanceLogger, const char *tag)
@@ -251,52 +245,12 @@ struct RCTInstanceCallback : public InstanceCallback {
 
 - (void)attachBridgeAPIsToTurboModule:(id<RCTTurboModule>)module
 {
-  id<RCTBridgeModule> bridgeModule = (id<RCTBridgeModule>)module;
-  /**
-   * Attach the RCTViewRegistry to this TurboModule, which allows this TurboModule
-   * To query a React component's UIView, given its reactTag.
-   *
-   * Usage: In the TurboModule @implementation, include:
-   *   `@synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED`
-   */
-  if ([bridgeModule respondsToSelector:@selector(setViewRegistry_DEPRECATED:)]) {
-    bridgeModule.viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED;
-  }
-
-  /**
-   * Attach the RCTBundleManager to this TurboModule, which allows this TurboModule to
-   * read from/write to the app's bundle URL.
-   *
-   * Usage: In the TurboModule @implementation, include:
-   *   `@synthesize bundleManager = _bundleManager`
-   */
-  if ([bridgeModule respondsToSelector:@selector(setBundleManager:)]) {
-    bridgeModule.bundleManager = _bundleManager;
-  }
-
-  /**
-   * Attach the RCTCallableJSModules to this TurboModule, which allows this TurboModule
-   * to call JS Module methods.
-   *
-   * Usage: In the TurboModule @implementation, include:
-   *   `@synthesize callableJSModules = _callableJSModules`
-   */
-
-  if ([bridgeModule respondsToSelector:@selector(setCallableJSModules:)]) {
-    bridgeModule.callableJSModules = _callableJSModules;
-  }
-
-  /**
-   * Attach the RCTModuleRegistry to this TurboModule, which allows this TurboModule
-   * to require other TurboModules/NativeModules.
-   *
-   * Usage: In the TurboModule @implementation, include:
-   *   `@synthesize moduleRegistry = _moduleRegistry`
-   */
-
-  if ([bridgeModule respondsToSelector:@selector(setModuleRegistry:)]) {
-    bridgeModule.moduleRegistry = _objCModuleRegistry;
-  }
+  RCTBridgeModuleDecorator *bridgeModuleDecorator =
+      [[RCTBridgeModuleDecorator alloc] initWithViewRegistry:_viewRegistry_DEPRECATED
+                                              moduleRegistry:_objCModuleRegistry
+                                               bundleManager:_bundleManager
+                                           callableJSModules:_callableJSModules];
+  [bridgeModuleDecorator attachInteropAPIsToModule:(id<RCTBridgeModule>)module];
 }
 
 - (std::shared_ptr<MessageQueueThread>)jsMessageThread
@@ -1537,6 +1491,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
   [self executeApplicationScript:script url:url async:NO];
 }
 
+static uint32_t RCTReadUInt32LE(NSData *script, uint32_t offset)
+{
+  return [script length] < offset + 4 ? 0 : CFSwapInt32LittleToHost(*(((uint32_t *)[script bytes]) + offset / 4));
+}
+
 - (void)executeApplicationScript:(NSData *)script url:(NSURL *)url async:(BOOL)async
 {
   [self _tryAndHandleError:^{
@@ -1545,18 +1504,22 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
                                                         object:self->_parentBridge
                                                       userInfo:@{@"bridge" : self}];
 
+    BundleHeader header;
+    [script getBytes:&header length:sizeof(header)];
+    ScriptTag scriptType = parseTypeFromHeader(header);
+
     // hold a local reference to reactInstance in case a parallel thread
     // resets it between null check and usage
     auto reactInstance = self->_reactInstance;
-    if (reactInstance && RCTIsBytecodeBundle(script)) {
-      UInt32 offset = 8;
+    if (reactInstance && scriptType == ScriptTag::MetroHBCBundle) {
+      uint32_t offset = 8;
       while (offset < script.length) {
-        UInt32 fileLength = RCTReadUInt32LE(script, offset);
+        uint32_t fileLength = RCTReadUInt32LE(script, offset);
         NSData *unit = [script subdataWithRange:NSMakeRange(offset + 4, fileLength)];
         reactInstance->loadScriptFromString(std::make_unique<NSDataBigString>(unit), sourceUrlStr.UTF8String, false);
         offset += ((fileLength + RCT_BYTECODE_ALIGNMENT - 1) & ~(RCT_BYTECODE_ALIGNMENT - 1)) + 4;
       }
-    } else if (isRAMBundle(script)) {
+    } else if (scriptType == ScriptTag::RAMBundle) {
       [self->_performanceLogger markStartForTag:RCTPLRAMBundleLoad];
       auto ramBundle = std::make_unique<JSIndexedRAMBundle>(sourceUrlStr.UTF8String);
       std::unique_ptr<const JSBigString> scriptStr = ramBundle->getStartupCode();

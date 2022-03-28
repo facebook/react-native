@@ -479,7 +479,6 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
   react_native_assert(!yogaNode_.isDirty());
 
   auto contentFrame = Rect{};
-
   for (auto childYogaNode : yogaNode_.getChildren()) {
     auto &childNode =
         *static_cast<YogaLayoutableShadowNode *>(childYogaNode->getContext());
@@ -521,24 +520,36 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
 
     auto layoutMetricsWithOverflowInset = childNode.getLayoutMetrics();
     if (layoutMetricsWithOverflowInset.displayType != DisplayType::None) {
+      // The contentFrame should always union with existing child node layout +
+      // overflowInset. The transform may in a deferred animation and not
+      // applied yet.
       contentFrame.unionInPlace(insetBy(
           layoutMetricsWithOverflowInset.frame,
           layoutMetricsWithOverflowInset.overflowInset));
+
+      auto childTransform = childNode.getTransform();
+      if (childTransform != Transform::Identity()) {
+        // The child node's transform matrix will affect the parent node's
+        // contentFrame. We need to union with child node's after transform
+        // layout here.
+        contentFrame.unionInPlace(insetBy(
+            layoutMetricsWithOverflowInset.frame * childTransform,
+            layoutMetricsWithOverflowInset.overflowInset * childTransform));
+      }
     }
   }
 
   if (yogaNode_.getStyle().overflow() == YGOverflowVisible) {
-    auto transform = getTransform();
-    auto transformedContentFrame = contentFrame;
-    if (Transform::Identity() != transform) {
-      // When animation uses native driver, Yoga has no knowledge of the
-      // animation. In case the content goes out from current container, we need
-      // to union the content frame with its transformed frame.
-      transformedContentFrame = contentFrame * getTransform();
-      transformedContentFrame.unionInPlace(contentFrame);
-    }
+    // Note that the parent node's overflow layout is NOT affected by its
+    // transform matrix. That transform matrix is applied on the parent node as
+    // well as all of its child nodes, which won't cause changes on the
+    // overflowInset values. A special note on the scale transform -- the scaled
+    // layout may look like it's causing overflowInset changes, but it's purely
+    // cosmetic and will be handled by pixel density conversion logic later when
+    // render the view. The actual overflowInset value is not changed as if the
+    // transform is not happening here.
     layoutMetrics_.overflowInset =
-        calculateOverflowInset(layoutMetrics_.frame, transformedContentFrame);
+        calculateOverflowInset(layoutMetrics_.frame, contentFrame);
   } else {
     layoutMetrics_.overflowInset = {};
   }
@@ -690,44 +701,44 @@ void YogaLayoutableShadowNode::swapLeftAndRightInViewProps(
   auto &props = const_cast<ViewProps &>(typedCasting);
 
   // Swap border node values, borderRadii, borderColors and borderStyles.
-  if (props.borderRadii.topLeft.hasValue()) {
+  if (props.borderRadii.topLeft.has_value()) {
     props.borderRadii.topStart = props.borderRadii.topLeft;
-    props.borderRadii.topLeft.clear();
+    props.borderRadii.topLeft.reset();
   }
 
-  if (props.borderRadii.bottomLeft.hasValue()) {
+  if (props.borderRadii.bottomLeft.has_value()) {
     props.borderRadii.bottomStart = props.borderRadii.bottomLeft;
-    props.borderRadii.bottomLeft.clear();
+    props.borderRadii.bottomLeft.reset();
   }
 
-  if (props.borderRadii.topRight.hasValue()) {
+  if (props.borderRadii.topRight.has_value()) {
     props.borderRadii.topEnd = props.borderRadii.topRight;
-    props.borderRadii.topRight.clear();
+    props.borderRadii.topRight.reset();
   }
 
-  if (props.borderRadii.bottomRight.hasValue()) {
+  if (props.borderRadii.bottomRight.has_value()) {
     props.borderRadii.bottomEnd = props.borderRadii.bottomRight;
-    props.borderRadii.bottomRight.clear();
+    props.borderRadii.bottomRight.reset();
   }
 
-  if (props.borderColors.left.hasValue()) {
+  if (props.borderColors.left.has_value()) {
     props.borderColors.start = props.borderColors.left;
-    props.borderColors.left.clear();
+    props.borderColors.left.reset();
   }
 
-  if (props.borderColors.right.hasValue()) {
+  if (props.borderColors.right.has_value()) {
     props.borderColors.end = props.borderColors.right;
-    props.borderColors.right.clear();
+    props.borderColors.right.reset();
   }
 
-  if (props.borderStyles.left.hasValue()) {
+  if (props.borderStyles.left.has_value()) {
     props.borderStyles.start = props.borderStyles.left;
-    props.borderStyles.left.clear();
+    props.borderStyles.left.reset();
   }
 
-  if (props.borderStyles.right.hasValue()) {
+  if (props.borderStyles.right.has_value()) {
     props.borderStyles.end = props.borderStyles.right;
-    props.borderStyles.right.clear();
+    props.borderStyles.right.reset();
   }
 
   YGStyle::Edges const &border = props.yogaStyle.border();

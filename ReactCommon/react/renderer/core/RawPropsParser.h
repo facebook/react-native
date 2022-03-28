@@ -79,7 +79,6 @@ class RawPropsParser final {
   mutable butter::small_vector<RawPropsKey, kNumberOfPropsPerComponentSoftCap>
       keys_{};
   mutable RawPropsKeyMap nameToIndex_{};
-  mutable int size_{0};
   mutable bool ready_{false};
 };
 

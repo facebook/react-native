@@ -11,6 +11,8 @@
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 
+#include <optional>
+
 namespace facebook {
 namespace react {
 
@@ -598,6 +600,59 @@ static inline ViewEvents convertRawProp(
 
   return result;
 }
+
+#ifdef ANDROID
+
+static inline void fromRawValue(
+    const PropsParserContext &context,
+    RawValue const &rawValue,
+    NativeDrawable &result) {
+  auto map = (butter::map<std::string, RawValue>)rawValue;
+
+  auto typeIterator = map.find("type");
+  react_native_assert(
+      typeIterator != map.end() && typeIterator->second.hasType<std::string>());
+  std::string type = (std::string)typeIterator->second;
+
+  if (type == "ThemeAttrAndroid") {
+    auto attrIterator = map.find("attribute");
+    react_native_assert(
+        attrIterator != map.end() &&
+        attrIterator->second.hasType<std::string>());
+
+    result = NativeDrawable{
+        .kind = NativeDrawable::Kind::ThemeAttr,
+        .themeAttr = (std::string)attrIterator->second,
+    };
+  } else if (type == "RippleAndroid") {
+    auto color = map.find("color");
+    auto borderless = map.find("borderless");
+    auto rippleRadius = map.find("rippleRadius");
+
+    result = NativeDrawable{
+        .kind = NativeDrawable::Kind::Ripple,
+        .ripple =
+            NativeDrawable::Ripple{
+                .color = color != map.end() && color->second.hasType<int32_t>()
+                    ? (int32_t)color->second
+                    : std::optional<int32_t>{},
+                .borderless = borderless != map.end() &&
+                        borderless->second.hasType<bool>()
+                    ? (bool)borderless->second
+                    : false,
+                .rippleRadius = rippleRadius != map.end() &&
+                        rippleRadius->second.hasType<Float>()
+                    ? (Float)rippleRadius->second
+                    : std::optional<Float>{},
+            },
+    };
+  } else {
+    LOG(ERROR) << "Unknown native drawable type: " << type;
+    react_native_assert(false);
+  }
+}
+
+#endif
 
 } // namespace react
 } // namespace facebook

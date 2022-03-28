@@ -8,6 +8,7 @@
 #pragma once
 
 #include <cmath>
+#include <optional>
 
 #include <folly/Hash.h>
 #include <react/renderer/graphics/ColorComponents.h>

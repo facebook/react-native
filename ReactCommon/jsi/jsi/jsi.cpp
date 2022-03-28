@@ -283,6 +283,15 @@ bool Value::strictEquals(Runtime& runtime, const Value& a, const Value& b) {
   return false;
 }
 
+bool Value::asBool() const {
+  if (!isBool()) {
+    throw JSINativeException(
+        "Value is " + kindToString(*this) + ", expected a boolean");
+  }
+
+  return getBool();
+}
+
 double Value::asNumber() const {
   if (!isNumber()) {
     throw JSINativeException(

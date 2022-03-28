@@ -63,6 +63,7 @@ def use_react_native! (options={})
     pod 'React-Core/DevSupport', :path => "#{prefix}/"
   end
 
+  pod 'React-bridging', :path => "#{prefix}/ReactCommon/react/bridging"
   pod 'React-cxxreact', :path => "#{prefix}/ReactCommon/cxxreact"
   pod 'React-jsi', :path => "#{prefix}/ReactCommon/jsi"
   pod 'React-jsiexecutor', :path => "#{prefix}/ReactCommon/jsiexecutor"
@@ -109,8 +110,23 @@ def use_react_native! (options={})
 
   if hermes_enabled
     pod 'React-hermes', :path => "#{prefix}/ReactCommon/hermes"
-    pod 'hermes-engine', '~> 0.11.0'
+
+    if ENV['BUILD_HERMES_SOURCE'] == '1'
+      hermes_source_path = downloadAndConfigureHermesSource(prefix)
+      pod 'hermes-engine', :path => "#{hermes_source_path}/hermes-engine.podspec"
+    else
+      pod 'hermes-engine', '~> 0.11.0'
+    end
     pod 'libevent', '~> 2.1.12'
+  end
+
+  pods_to_update = LocalPodspecPatch.pods_to_update(options)
+  if !pods_to_update.empty?
+    if Pod::Lockfile.public_instance_methods.include?(:detect_changes_with_podfile)
+      Pod::Lockfile.prepend(LocalPodspecPatch)
+    else
+      Pod::UI.warn "Automatically updating #{pods_to_update.join(", ")} has failed, please run `pod update #{pods_to_update.join(" ")} --no-repo-update` manually to fix the issue."
+    end
   end
 end
 
@@ -131,10 +147,10 @@ end
 def use_flipper!(versions = {}, configurations: ['Debug'])
   versions['Flipper'] ||= '0.125.0'
   versions['Flipper-Boost-iOSX'] ||= '1.76.0.1.11'
-  versions['Flipper-DoubleConversion'] ||= '3.1.7'
+  versions['Flipper-DoubleConversion'] ||= '3.2.0'
   versions['Flipper-Fmt'] ||= '7.1.7'
   versions['Flipper-Folly'] ||= '2.6.10'
-  versions['Flipper-Glog'] ||= '0.3.9'
+  versions['Flipper-Glog'] ||= '0.5.0.4'
   versions['Flipper-PeerTalk'] ||= '0.0.4'
   versions['Flipper-RSocket'] ||= '1.4.3'
   versions['OpenSSL-Universal'] ||= '1.1.1100'
@@ -271,8 +287,9 @@ def modify_flags_for_new_architecture(installer, cpp_flags)
 end
 
 def build_codegen!(react_native_path)
-  codegen_repo_path = "#{react_native_path}/packages/react-native-codegen";
-  codegen_npm_path = "#{react_native_path}/../react-native-codegen";
+  relative_installation_root = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
+  codegen_repo_path = "#{relative_installation_root}/#{react_native_path}/packages/react-native-codegen";
+  codegen_npm_path = "#{relative_installation_root}/#{react_native_path}/../react-native-codegen";
   codegen_cli_path = ""
   if Dir.exist?(codegen_repo_path)
     codegen_cli_path = codegen_repo_path
@@ -313,7 +330,7 @@ def checkAndGenerateEmptyThirdPartyProvider!(react_native_path)
     Pod::Executable.execute_command(
       'node',
       [
-        "#{react_native_path}/scripts/generate-provider-cli.js",
+        "#{relative_installation_root}/#{react_native_path}/scripts/generate-provider-cli.js",
         "--platform", 'ios',
         "--schemaListPath", temp_schema_list_path,
         "--outputDir", "#{output_dir}"
@@ -349,7 +366,7 @@ def get_react_codegen_spec(options={})
     'homepage' => 'https://facebook.com/',
     'license' => 'Unlicense',
     'authors' => 'Facebook',
-    'compiler_flags'  => "#{folly_compiler_flags} #{boost_compiler_flags} -Wno-nullability-completeness",
+    'compiler_flags'  => "#{folly_compiler_flags} #{boost_compiler_flags} -Wno-nullability-completeness -std=c++17",
     'source' => { :git => '' },
     'header_mappings_dir' => './',
     'platforms' => {
@@ -410,7 +427,7 @@ def get_react_codegen_script_phases(options={})
   end
 
   # We need to convert paths to relative path from installation_root for the script phase for CI.
-  relative_app_root = Pathname.new(app_path).relative_path_from(Pod::Config.instance.installation_root)
+  relative_app_root = Pathname.new(app_path).realpath().relative_path_from(Pod::Config.instance.installation_root)
 
   config_file_dir = options[:config_file_dir] ||= ''
   relative_config_file_dir = ''
@@ -434,7 +451,7 @@ def get_react_codegen_script_phases(options={})
     library_dir = File.join(app_path, library['jsSrcsDir'])
     file_list.concat (`find #{library_dir} -type f \\( -name "Native*.js" -or -name "*NativeComponent.js" \\)`.split("\n").sort)
   end
-  input_files = file_list.map { |filename| "${PODS_ROOT}/../#{Pathname.new(filename).relative_path_from(Pod::Config.instance.installation_root)}" }
+  input_files = file_list.map { |filename| "${PODS_ROOT}/../#{Pathname.new(filename).realpath().relative_path_from(Pod::Config.instance.installation_root)}" }
 
   # Add a script phase to trigger generate artifact.
   # Some code is duplicated so that it's easier to delete the old way and switch over to this once it's stabilized.
@@ -503,6 +520,7 @@ def use_react_native_codegen_discovery!(options={})
   app_path = options[:app_path]
   fabric_enabled = options[:fabric_enabled] ||= false
   config_file_dir = options[:config_file_dir] ||= ''
+  relative_installation_root = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
 
   if !app_path
     Pod::UI.warn '[Codegen] Error: app_path is required for use_react_native_codegen_discovery.'
@@ -518,7 +536,7 @@ def use_react_native_codegen_discovery!(options={})
   out = Pod::Executable.execute_command(
     'node',
     [
-      "#{react_native_path}/scripts/generate-artifacts.js",
+      "#{relative_installation_root}/#{react_native_path}/scripts/generate-artifacts.js",
       "-p", "#{app_path}",
       "-o", Pod::Config.instance.installation_root,
       "-e", "#{fabric_enabled}",
@@ -540,6 +558,7 @@ def use_react_native_codegen!(spec, options={})
   library_name = options[:library_name] ||= "#{spec.name.gsub('_','-').split('-').collect(&:capitalize).join}Spec"
   Pod::UI.puts "[Codegen] Found #{library_name}"
 
+  relative_installation_root = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
   output_dir = options[:output_dir] ||= $CODEGEN_OUTPUT_DIR
   output_dir_module = "#{output_dir}/#{$CODEGEN_MODULE_DIR}"
   output_dir_component = "#{output_dir}/#{$CODEGEN_COMPONENT_DIR}"
@@ -547,7 +566,7 @@ def use_react_native_codegen!(spec, options={})
   codegen_config = {
     "modules" => {
       :js_srcs_pattern => "Native*.js",
-      :generated_dir => "#{Pod::Config.instance.installation_root}/#{output_dir_module}/#{library_name}",
+      :generated_dir => "#{relative_installation_root}/#{output_dir_module}/#{library_name}",
       :generated_files => [
         "#{library_name}.h",
         "#{library_name}-generated.mm"
@@ -555,7 +574,7 @@ def use_react_native_codegen!(spec, options={})
     },
     "components" => {
       :js_srcs_pattern => "*NativeComponent.js",
-      :generated_dir => "#{Pod::Config.instance.installation_root}/#{output_dir_component}/#{library_name}",
+      :generated_dir => "#{relative_installation_root}/#{output_dir_component}/#{library_name}",
       :generated_files => [
         "ComponentDescriptors.h",
         "EventEmitters.cpp",
@@ -604,7 +623,7 @@ def use_react_native_codegen!(spec, options={})
   spec.script_phase = {
     :name => 'Generate Specs',
     :input_files => input_files, # This also needs to be relative to Xcode
-    :output_files => ["${DERIVED_FILE_DIR}/codegen-#{library_name}.log"].concat(generated_files.map { |filename| " ${PODS_TARGET_SRCROOT}/#{filename}"} ),
+    :output_files => ["${DERIVED_FILE_DIR}/codegen-#{library_name}.log"].concat(generated_files.map { |filename| "${PODS_TARGET_SRCROOT}/#{filename}"} ),
     # The final generated files will be created when this script is invoked at Xcode build time.
     :script => get_script_phases_no_codegen_discovery(
       react_native_path: react_native_path,
@@ -620,6 +639,43 @@ def use_react_native_codegen!(spec, options={})
     :execution_position => :before_compile,
     :show_env_vars_in_log => true
   }
+end
+
+def downloadAndConfigureHermesSource(react_native_path)
+  hermes_tarball_base_url = "https://github.com/facebook/hermes/tarball/"
+  sdks_dir = "#{react_native_path}/sdks"
+  download_dir = "#{sdks_dir}/download"
+  hermes_dir = "#{sdks_dir}/hermes"
+  hermes_tag_file = "#{sdks_dir}/.hermesversion"
+  tarball_path = "#{download_dir}/hermes.tar.gz"
+
+  system("mkdir -p #{hermes_dir} #{download_dir}")
+
+  if(File.exist?(hermes_tag_file))
+    hermes_tag = file_data = File.read(hermes_tag_file).strip
+    hermes_tarball_url = hermes_tarball_base_url + hermes_tag
+  else
+    hermes_tarball_url = hermes_tarball_base_url + "main"
+  end
+
+  system("wget --timestamping -O #{tarball_path} #{hermes_tarball_url}")
+  system("tar -xzf #{tarball_path} --strip-components=1 -C #{hermes_dir}")
+
+  hermes_dir
+end
+
+def locatePathToHermesSource!(react_native_path)
+  return if ENV['BUILD_HERMES_SOURCE'] != '1'
+
+  hermes_source_path = "#{react_native_path}/sdks/hermes"
+
+  if !File.exist?(hermes_source_path)
+    Pod::UI.warn "[Hermes] Error: Hermes source code must be present at #{hermes_source_path} when BUILD_HERMES_SOURCE is enabled."
+    Pod::UI.warn '[Hermes] Verify that the release of React Native that you are using has the Hermes source code included.'
+    exit 1
+  end
+
+  hermes_source_path
 end
 
 # This provides a post_install workaround for build issues related Xcode 12.5 and Apple Silicon (M1) machines.
@@ -648,4 +704,47 @@ def __apply_Xcode_12_5_M1_post_install_workaround(installer)
   # See https://github.com/facebook/flipper/issues/834 for more details.
   time_header = "#{Pod::Config.instance.installation_root.to_s}/Pods/RCT-Folly/folly/portability/Time.h"
   `sed -i -e  $'s/ && (__IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0)//' #{time_header}`
+end
+
+# Monkeypatch of `Pod::Lockfile` to ensure automatic update of dependencies integrated with a local podspec when their version changed.
+# This is necessary because local podspec dependencies must be otherwise manually updated.
+module LocalPodspecPatch
+  # Returns local podspecs whose versions differ from the one in the `react-native` package.
+  def self.pods_to_update(react_native_options)
+    prefix = react_native_options[:path] ||= "../node_modules/react-native"
+    @@local_podspecs = Dir.glob("#{prefix}/third-party-podspecs/*").map { |file| File.basename(file, ".podspec") }
+    @@local_podspecs = @@local_podspecs.select do |podspec_name|
+      # Read local podspec to determine the cached version
+      local_podspec_path = File.join(
+        Dir.pwd, "Pods/Local Podspecs/#{podspec_name}.podspec.json"
+      )
+
+      # Local podspec cannot be outdated if it does not exist, yet
+      next unless File.file?(local_podspec_path)
+
+      local_podspec = File.read(local_podspec_path)
+      local_podspec_json = JSON.parse(local_podspec)
+      local_version = local_podspec_json["version"]
+
+      # Read the version from a podspec from the `react-native` package
+      podspec_path = "#{prefix}/third-party-podspecs/#{podspec_name}.podspec"
+      current_podspec = Pod::Specification.from_file(podspec_path)
+
+      current_version = current_podspec.version.to_s
+      current_version != local_version
+    end
+    @@local_podspecs
+  end
+
+  # Patched `detect_changes_with_podfile` method
+  def detect_changes_with_podfile(podfile)
+    changes = super(podfile)
+    @@local_podspecs.each do |local_podspec|
+      next unless changes[:unchanged].include?(local_podspec)
+
+      changes[:unchanged].delete(local_podspec)
+      changes[:changed] << local_podspec
+    end
+    changes
+  end
 end

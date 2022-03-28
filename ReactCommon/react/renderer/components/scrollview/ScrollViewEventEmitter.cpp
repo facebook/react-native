@@ -86,11 +86,11 @@ void ScrollViewEventEmitter::onMomentumScrollEnd(
 }
 
 void ScrollViewEventEmitter::dispatchScrollViewEvent(
-    const std::string &name,
+    std::string name,
     const ScrollViewMetrics &scrollViewMetrics,
     EventPriority priority) const {
   dispatchEvent(
-      name,
+      std::move(name),
       [scrollViewMetrics](jsi::Runtime &runtime) {
         return scrollViewMetricsPayload(runtime, scrollViewMetrics);
       },

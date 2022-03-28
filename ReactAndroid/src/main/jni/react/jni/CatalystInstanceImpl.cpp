@@ -8,6 +8,7 @@
 #include "CatalystInstanceImpl.h"
 
 #include <condition_variable>
+#include <fstream>
 #include <memory>
 #include <mutex>
 #include <sstream>
@@ -248,6 +249,26 @@ void CatalystInstanceImpl::jniRegisterSegment(
   instance_->registerBundle((uint32_t)segmentId, path);
 }
 
+static ScriptTag getScriptTagFromFile(const char *sourcePath) {
+  std::ifstream bundle_stream(sourcePath, std::ios_base::in);
+  BundleHeader header;
+  if (bundle_stream &&
+      bundle_stream.read(reinterpret_cast<char *>(&header), sizeof(header))) {
+    return parseTypeFromHeader(header);
+  } else {
+    return ScriptTag::String;
+  }
+}
+
+static bool isIndexedRAMBundle(std::unique_ptr<const JSBigString> *script) {
+  BundleHeader header;
+  strncpy(
+      reinterpret_cast<char *>(&header),
+      script->get()->c_str(),
+      sizeof(header));
+  return parseTypeFromHeader(header) == ScriptTag::RAMBundle;
+}
+
 void CatalystInstanceImpl::jniLoadScriptFromAssets(
     jni::alias_ref<JAssetManager::javaobject> assetManager,
     const std::string &assetURL,
@@ -263,7 +284,7 @@ void CatalystInstanceImpl::jniLoadScriptFromAssets(
     instance_->loadRAMBundle(
         std::move(registry), std::move(script), sourceURL, loadSynchronously);
     return;
-  } else if (Instance::isIndexedRAMBundle(&script)) {
+  } else if (isIndexedRAMBundle(&script)) {
     instance_->loadRAMBundleFromString(std::move(script), sourceURL);
   } else {
     instance_->loadScriptFromString(
@@ -276,38 +297,48 @@ void CatalystInstanceImpl::jniLoadScriptFromFile(
     const std::string &sourceURL,
     bool loadSynchronously) {
   auto reactInstance = instance_;
-  if (reactInstance && Instance::isHBCBundle(fileName.c_str())) {
-    std::unique_ptr<const JSBigFileString> script;
-    RecoverableError::runRethrowingAsRecoverable<std::system_error>(
-        [&fileName, &script]() {
-          script = JSBigFileString::fromPath(fileName);
-        });
-    const char *buffer = script->c_str();
-    uint32_t bufferLength = (uint32_t)script->size();
-    uint32_t offset = 8;
-    while (offset < bufferLength) {
-      uint32_t segment = offset + 4;
-      uint32_t moduleLength =
-          bufferLength < segment ? 0 : *(((uint32_t *)buffer) + offset / 4);
+  if (!reactInstance) {
+    return;
+  }
 
-      reactInstance->loadScriptFromString(
-          std::make_unique<const JSBigStdString>(
-              std::string(buffer + segment, buffer + moduleLength + segment)),
-          sourceURL,
-          false);
+  switch (getScriptTagFromFile(fileName.c_str())) {
+    case ScriptTag::MetroHBCBundle: {
+      std::unique_ptr<const JSBigFileString> script;
+      RecoverableError::runRethrowingAsRecoverable<std::system_error>(
+          [&fileName, &script]() {
+            script = JSBigFileString::fromPath(fileName);
+          });
+      const char *buffer = script->c_str();
+      uint32_t bufferLength = (uint32_t)script->size();
+      uint32_t offset = 8;
+      while (offset < bufferLength) {
+        uint32_t segment = offset + 4;
+        uint32_t moduleLength =
+            bufferLength < segment ? 0 : *(((uint32_t *)buffer) + offset / 4);
 
-      offset += ((moduleLength + 3) & ~3) + 4;
+        reactInstance->loadScriptFromString(
+            std::make_unique<const JSBigStdString>(
+                std::string(buffer + segment, buffer + moduleLength + segment)),
+            sourceURL,
+            false);
+
+        offset += ((moduleLength + 3) & ~3) + 4;
+      }
+      break;
     }
-  } else if (Instance::isIndexedRAMBundle(fileName.c_str())) {
-    instance_->loadRAMBundleFromFile(fileName, sourceURL, loadSynchronously);
-  } else {
-    std::unique_ptr<const JSBigFileString> script;
-    RecoverableError::runRethrowingAsRecoverable<std::system_error>(
-        [&fileName, &script]() {
-          script = JSBigFileString::fromPath(fileName);
-        });
-    instance_->loadScriptFromString(
-        std::move(script), sourceURL, loadSynchronously);
+    case ScriptTag::RAMBundle:
+      instance_->loadRAMBundleFromFile(fileName, sourceURL, loadSynchronously);
+      break;
+    case ScriptTag::String:
+    default: {
+      std::unique_ptr<const JSBigFileString> script;
+      RecoverableError::runRethrowingAsRecoverable<std::system_error>(
+          [&fileName, &script]() {
+            script = JSBigFileString::fromPath(fileName);
+          });
+      instance_->loadScriptFromString(
+          std::move(script), sourceURL, loadSynchronously);
+    }
   }
 }
 

@@ -7,12 +7,13 @@
 
 #pragma once
 
-#include <butter/optional.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Geometry.h>
+
 #include <array>
 #include <bitset>
 #include <cmath>
+#include <optional>
 
 namespace facebook {
 namespace react {
@@ -59,6 +60,14 @@ struct ViewEvents {
   }
 };
 
+inline static bool operator==(ViewEvents const &lhs, ViewEvents const &rhs) {
+  return lhs.bits == rhs.bits;
+}
+
+inline static bool operator!=(ViewEvents const &lhs, ViewEvents const &rhs) {
+  return lhs.bits != rhs.bits;
+}
+
 enum class BackfaceVisibility { Auto, Visible, Hidden };
 
 enum class BorderStyle { Solid, Dotted, Dashed };
@@ -66,7 +75,7 @@ enum class BorderStyle { Solid, Dotted, Dashed };
 template <typename T>
 struct CascadedRectangleEdges {
   using Counterpart = RectangleEdges<T>;
-  using OptionalT = butter::optional<T>;
+  using OptionalT = std::optional<T>;
 
   OptionalT left{};
   OptionalT top{};
@@ -127,7 +136,7 @@ struct CascadedRectangleEdges {
 template <typename T>
 struct CascadedRectangleCorners {
   using Counterpart = RectangleCorners<T>;
-  using OptionalT = butter::optional<T>;
+  using OptionalT = std::optional<T>;
 
   OptionalT topLeft{};
   OptionalT topRight{};
@@ -218,6 +227,49 @@ struct BorderMetrics {
     return !(*this == rhs);
   }
 };
+
+#ifdef ANDROID
+
+struct NativeDrawable {
+  enum class Kind {
+    Ripple,
+    ThemeAttr,
+  };
+
+  struct Ripple {
+    std::optional<int32_t> color{};
+    bool borderless{false};
+    std::optional<Float> rippleRadius{};
+
+    bool operator==(const Ripple &rhs) const {
+      return std::tie(this->color, this->borderless, this->rippleRadius) ==
+          std::tie(rhs.color, rhs.borderless, rhs.rippleRadius);
+    }
+  };
+
+  Kind kind;
+  std::string themeAttr;
+  Ripple ripple;
+
+  bool operator==(const NativeDrawable &rhs) const {
+    if (this->kind != rhs.kind)
+      return false;
+    switch (this->kind) {
+      case Kind::ThemeAttr:
+        return this->themeAttr == rhs.themeAttr;
+      case Kind::Ripple:
+        return this->ripple == rhs.ripple;
+    }
+  }
+
+  bool operator!=(const NativeDrawable &rhs) const {
+    return !(*this == rhs);
+  }
+
+  ~NativeDrawable() = default;
+};
+
+#endif
 
 } // namespace react
 } // namespace facebook

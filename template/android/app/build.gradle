@@ -186,6 +186,20 @@ android {
             // preBuild.dependsOn("generateCodegenArtifactsFromSchema")
             preDebugBuild.dependsOn(packageReactNdkDebugLibs)
             preReleaseBuild.dependsOn(packageReactNdkReleaseLibs)
+
+            // Due to a bug inside AGP, we have to explicitly set a dependency
+            // between configureNdkBuild* tasks and the preBuild tasks.
+            // This can be removed once this is solved: https://issuetracker.google.com/issues/207403732
+            configureNdkBuildRelease.dependsOn(preReleaseBuild)
+            configureNdkBuildDebug.dependsOn(preDebugBuild)
+            reactNativeArchitectures().each { architecture ->
+                tasks.findByName("configureNdkBuildDebug[${architecture}]")?.configure {
+                    dependsOn("preDebugBuild")
+                }
+                tasks.findByName("configureNdkBuildRelease[${architecture}]")?.configure {
+                    dependsOn("preReleaseBuild")
+                }
+            }
         }
     }
 

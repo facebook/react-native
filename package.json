@@ -38,7 +38,6 @@
     "README.md",
     "rn-get-polyfills.js",
     "scripts/compose-source-maps.js",
-    "scripts/find-node.sh",
     "scripts/generate-artifacts.js",
     "scripts/generate-provider-cli.js",
     "scripts/generate-specs-cli.js",
@@ -52,6 +51,7 @@
     "scripts/react_native_pods_utils/script_phases.sh",
     "scripts/react_native_pods.rb",
     "scripts/react-native-xcode.sh",
+    "sdks/hermes/utils/build",
     "template.config.js",
     "template",
     "third-party-podspecs"
@@ -92,7 +92,7 @@
   },
   "dependencies": {
     "@jest/create-cache-key-function": "^27.0.1",
-    "@react-native-community/cli": "^7.0.1",
+    "@react-native-community/cli": "^7.0.3",
     "@react-native-community/cli-platform-android": "^7.0.1",
     "@react-native-community/cli-platform-ios": "^7.0.1",
     "@react-native/assets": "1.0.0",
@@ -105,14 +105,14 @@
     "hermes-engine": "~0.11.0",
     "invariant": "^2.2.4",
     "jsc-android": "^250230.2.1",
-    "metro-react-native-babel-transformer": "0.68.0",
-    "metro-runtime": "0.68.0",
-    "metro-source-map": "0.68.0",
+    "metro-react-native-babel-transformer": "0.69.1",
+    "metro-runtime": "0.69.1",
+    "metro-source-map": "0.69.1",
     "nullthrows": "^1.1.1",
     "pretty-format": "^26.5.2",
     "promise": "^8.0.3",
-    "react-devtools-core": "^4.23.0",
-    "react-native-gradle-plugin": "^0.0.4",
+    "react-devtools-core": "4.24.0",
+    "react-native-gradle-plugin": "^0.0.5",
     "react-refresh": "^0.4.0",
     "react-shallow-renderer": "16.14.1",
     "regenerator-runtime": "^0.13.2",
@@ -123,7 +123,7 @@
     "ws": "^6.1.4"
   },
   "devDependencies": {
-    "flow-bin": "^0.171.0",
+    "flow-bin": "^0.174.1",
     "react": "17.0.2"
   },
   "codegenConfig": {

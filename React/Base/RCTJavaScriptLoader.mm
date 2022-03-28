@@ -19,19 +19,7 @@
 
 NSString *const RCTJavaScriptLoaderErrorDomain = @"RCTJavaScriptLoaderErrorDomain";
 
-const UInt32 RCT_BYTECODE_ALIGNMENT = 4;
-UInt32 RCTReadUInt32LE(NSData *script, UInt32 offset)
-{
-  return [script length] < offset + 4 ? 0 : CFSwapInt32LittleToHost(*(((uint32_t *)[script bytes]) + offset / 4));
-}
-
-bool RCTIsBytecodeBundle(NSData *script)
-{
-  static const UInt32 BYTECODE_BUNDLE_MAGIC_NUMBER = 0xffe7c3c3;
-  return (
-      [script length] > 8 && RCTReadUInt32LE(script, 0) == BYTECODE_BUNDLE_MAGIC_NUMBER &&
-      RCTReadUInt32LE(script, 4) > 0);
-}
+const uint32_t RCT_BYTECODE_ALIGNMENT = 4;
 
 @interface RCTSource () {
  @public
@@ -47,12 +35,18 @@ bool RCTIsBytecodeBundle(NSData *script)
 
 static RCTSource *RCTSourceCreate(NSURL *url, NSData *data, int64_t length) NS_RETURNS_RETAINED
 {
+  using facebook::react::ScriptTag;
+  facebook::react::BundleHeader header;
+  [data getBytes:&header length:sizeof(header)];
+
   RCTSource *source = [RCTSource new];
   source->_url = url;
   // Multipart responses may give us an unaligned view into the buffer. This ensures memory is aligned.
-  source->_data = (RCTIsBytecodeBundle(data) && ((long)[data bytes] % RCT_BYTECODE_ALIGNMENT))
-      ? [[NSData alloc] initWithData:data]
-      : data;
+  if (parseTypeFromHeader(header) == ScriptTag::MetroHBCBundle && ((long)[data bytes] % RCT_BYTECODE_ALIGNMENT)) {
+    source->_data = [[NSData alloc] initWithData:data];
+  } else {
+    source->_data = data;
+  }
   source->_length = length;
   source->_filesChangedCount = RCTSourceFilesChangedCountNotBuiltByBundler;
   return source;
@@ -177,7 +171,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
   facebook::react::ScriptTag tag = facebook::react::parseTypeFromHeader(header);
   switch (tag) {
-    case facebook::react::ScriptTag::HBCBundle:
+    case facebook::react::ScriptTag::MetroHBCBundle:
     case facebook::react::ScriptTag::RAMBundle:
       break;
 

@@ -12,7 +12,7 @@ cxx_library(
     compiler_flags = [
         "-Wall",
         "-Werror",
-        "-std=c++14",
+        "-std=c++17",
         "-fexceptions",
         "-fno-data-sections",
     ],

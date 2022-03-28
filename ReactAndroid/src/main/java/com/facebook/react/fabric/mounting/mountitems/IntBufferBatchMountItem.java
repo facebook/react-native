@@ -16,7 +16,6 @@ import com.facebook.common.logging.FLog;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
-import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.fabric.mounting.SurfaceMountingManager;
@@ -102,10 +101,6 @@ public class IntBufferBatchMountItem implements MountItem {
     return obj != null ? (StateWrapper) obj : null;
   }
 
-  private static ReadableMap castToProps(Object obj) {
-    return obj != null ? (ReadableMap) obj : null;
-  }
-
   private static EventEmitterWrapper castToEventEmitter(Object obj) {
     return obj != null ? (EventEmitterWrapper) obj : null;
   }
@@ -141,7 +136,7 @@ public class IntBufferBatchMountItem implements MountItem {
           surfaceMountingManager.createView(
               componentName,
               mIntBuffer[i++],
-              castToProps(mObjBuffer[j++]),
+              mObjBuffer[j++],
               castToState(mObjBuffer[j++]),
               castToEventEmitter(mObjBuffer[j++]),
               mIntBuffer[i++] == 1);
@@ -154,7 +149,7 @@ public class IntBufferBatchMountItem implements MountItem {
         } else if (type == INSTRUCTION_REMOVE) {
           surfaceMountingManager.removeViewAt(mIntBuffer[i++], mIntBuffer[i++], mIntBuffer[i++]);
         } else if (type == INSTRUCTION_UPDATE_PROPS) {
-          surfaceMountingManager.updateProps(mIntBuffer[i++], castToProps(mObjBuffer[j++]));
+          surfaceMountingManager.updateProps(mIntBuffer[i++], mObjBuffer[j++]);
         } else if (type == INSTRUCTION_UPDATE_STATE) {
           surfaceMountingManager.updateState(mIntBuffer[i++], castToState(mObjBuffer[j++]));
         } else if (type == INSTRUCTION_UPDATE_LAYOUT) {
@@ -192,6 +187,8 @@ public class IntBufferBatchMountItem implements MountItem {
         }
       }
     }
+
+    surfaceMountingManager.didUpdateViews();
 
     endMarkers();
   }
@@ -234,10 +231,10 @@ public class IntBufferBatchMountItem implements MountItem {
                 String.format(
                     "REMOVE [%d]->[%d] @%d\n", mIntBuffer[i++], mIntBuffer[i++], mIntBuffer[i++]));
           } else if (type == INSTRUCTION_UPDATE_PROPS) {
-            ReadableMap props = castToProps(mObjBuffer[j++]);
+            Object props = mObjBuffer[j++];
             String propsString =
                 IS_DEVELOPMENT_ENVIRONMENT
-                    ? (props != null ? props.toHashMap().toString() : "<null>")
+                    ? (props != null ? props.toString() : "<null>")
                     : "<hidden>";
             s.append(String.format("UPDATE PROPS [%d]: %s\n", mIntBuffer[i++], propsString));
           } else if (type == INSTRUCTION_UPDATE_STATE) {

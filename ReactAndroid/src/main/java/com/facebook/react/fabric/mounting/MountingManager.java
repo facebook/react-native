@@ -10,7 +10,6 @@ package com.facebook.react.fabric.mounting;
 import static com.facebook.infer.annotation.ThreadConfined.ANY;
 import static com.facebook.infer.annotation.ThreadConfined.UI;
 
-import android.text.Spannable;
 import android.view.View;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
@@ -32,8 +31,6 @@ import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.RootViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import com.facebook.react.views.text.ReactTextViewManagerCallback;
-import com.facebook.react.views.text.TextLayoutManagerMapBuffer;
 import com.facebook.yoga.YogaMeasureMode;
 import java.util.Map;
 import java.util.Queue;
@@ -386,8 +383,8 @@ public class MountingManager {
    *
    * @param context
    * @param componentName
-   * @param attributedString
-   * @param paragraphAttributes
+   * @param localData
+   * @param props
    * @param width
    * @param widthMode
    * @param height
@@ -396,30 +393,30 @@ public class MountingManager {
    * @return
    */
   @AnyThread
-  public long measureTextMapBuffer(
+  public long measureMapBuffer(
       @NonNull ReactContext context,
       @NonNull String componentName,
-      @NonNull ReadableMapBuffer attributedString,
-      @NonNull ReadableMapBuffer paragraphAttributes,
+      @NonNull ReadableMapBuffer localData,
+      @NonNull ReadableMapBuffer props,
+      @Nullable ReadableMapBuffer state,
       float width,
       @NonNull YogaMeasureMode widthMode,
       float height,
       @NonNull YogaMeasureMode heightMode,
       @Nullable float[] attachmentsPositions) {
 
-    return TextLayoutManagerMapBuffer.measureText(
-        context,
-        attributedString,
-        paragraphAttributes,
-        width,
-        widthMode,
-        height,
-        heightMode,
-        new ReactTextViewManagerCallback() {
-          @Override
-          public void onPostProcessSpannable(Spannable text) {}
-        },
-        attachmentsPositions);
+    return mViewManagerRegistry
+        .get(componentName)
+        .measure(
+            context,
+            localData,
+            props,
+            state,
+            width,
+            widthMode,
+            height,
+            heightMode,
+            attachmentsPositions);
   }
 
   public void initializeViewManager(String componentName) {
