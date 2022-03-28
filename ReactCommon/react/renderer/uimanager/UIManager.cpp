@@ -22,6 +22,13 @@
 
 namespace facebook::react {
 
+// Explicitly define destructors here, as they to exist in order to act as a
+// "key function" for the ShadowNodeWrapper class -- this allow for RTTI to work
+// properly across dynamic library boundaries (i.e. dynamic_cast that is used by
+// isHostObject method)
+ShadowNodeWrapper::~ShadowNodeWrapper() = default;
+ShadowNodeListWrapper::~ShadowNodeListWrapper() = default;
+
 static std::unique_ptr<LeakChecker> constructLeakCheckerIfNeeded(
     RuntimeExecutor const &runtimeExecutor) {
 #ifdef REACT_NATIVE_DEBUG
