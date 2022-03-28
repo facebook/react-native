@@ -55,4 +55,26 @@ describe('FormData', function () {
     };
     expect(formData.getParts()[0]).toMatchObject(expectedPart);
   });
+
+  it('should return non blob array', function () {
+    formData.append('array', [
+      true,
+      false,
+      undefined,
+      null,
+      {},
+      [],
+      'string',
+      0,
+    ]);
+
+    const expectedPart = {
+      string: 'true,false,,,[object Object],,string,0',
+      headers: {
+        'content-disposition': 'form-data; name="array"',
+      },
+      fieldName: 'array',
+    };
+    expect(formData.getParts()[0]).toMatchObject(expectedPart);
+  });
 });
