@@ -215,10 +215,6 @@ def reactNativeArchitectures() {
     return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
-def ndkBuildJobs() {
-    return project.findProperty("jobs") ?: Runtime.runtime.availableProcessors()
-}
-
 tasks.register("packageReactNdkLibsForBuck") {
     dependsOn("packageReactNdkDebugLibsForBuck")
 }
@@ -286,19 +282,20 @@ android {
         testInstrumentationRunner("androidx.test.runner.AndroidJUnitRunner")
 
         externalNativeBuild {
-            ndkBuild {
-                arguments "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
-                        "THIRD_PARTY_NDK_DIR=$thirdPartyNdkDir",
-                        "REACT_COMMON_DIR=$projectDir/../ReactCommon",
-                        "REACT_GENERATED_SRC_DIR=$buildDir/generated/source",
-                        "REACT_SRC_DIR=$projectDir/src/main/java/com/facebook/react",
-                        "APP_STL=c++_shared",
-                        "-j${ndkBuildJobs()}"
+            cmake {
+                arguments "-DREACT_COMMON_DIR=${rootProject.projectDir}/ReactCommon",
+                        "-DREACT_ANDROID_DIR=$projectDir",
+                        "-DANDROID_STL=c++_shared",
+                        "-DANDROID_TOOLCHAIN=clang",
+                        "-DANDROID_PLATFORM=android-21"
 
-                if (Os.isFamily(Os.FAMILY_MAC)) {
-                    // This flag will suppress "fcntl(): Bad file descriptor" warnings on local builds.
-                    arguments "--output-sync=none"
-                }
+                targets "reactnativejni",
+                    "jscexecutor",
+                    "jsijniprofiler",
+                    "reactnativeblob",
+                    "reactperfloggerjni",
+                    "turbomodulejsijni",
+                    "fabricjni"
             }
         }
         ndk {
@@ -306,9 +303,27 @@ android {
         }
     }
 
+    buildTypes {
+        debug {
+            externalNativeBuild {
+                cmake {
+                    targets "hermes-executor-debug"
+                }
+            }
+        }
+
+        release {
+            externalNativeBuild {
+                cmake {
+                    targets "hermes-executor-release"
+                }
+            }
+        }
+    }
+
     externalNativeBuild {
-        ndkBuild {
-            path "src/main/jni/react/jni/Android.mk"
+        cmake {
+            path "src/main/jni/CMakeLists.txt"
         }
     }
 
@@ -407,27 +422,6 @@ afterEvaluate {
 
     // Needed as some of the native sources needs to be downloaded
     // before configureNdkBuildDebug could be executed.
-    reactNativeArchitectures().each { architecture ->
-        tasks.findByName("configureNdkBuildDebug[${architecture}]")?.configure { dependsOn(preBuild) }
-        tasks.findByName("configureNdkBuildRelease[${architecture}]")?.configure { dependsOn(preBuild) }
-    }
-    configureNdkBuildDebug.dependsOn(preBuild)
-    configureNdkBuildRelease.dependsOn(preBuild)
-
-    // As we're consuming Hermes via Prefab, we're using the AGP C++ reference feature
-    // which is supposed to work for CMake only, we need to introduce an explicit dependency
-    // on publishing libraries prefab tasks.
-    // See https://developer.android.com/studio/releases/gradle-plugin?buildsystem=ndk-build#cpp-references.
-    // If we don't do this, the `configureNdkBuild*` is flaky and fails if the `prefabDebugPackage`
-    // is not yet executed.
-    // This can be safely removed once we move to CMake or once AGP supports C++ references on ndk-build.
-    configureNdkBuildDebug.dependsOn(":ReactAndroid:hermes-engine:prefabDebugPackage")
-    configureNdkBuildRelease.dependsOn(":ReactAndroid:hermes-engine:prefabReleasePackage")
-    reactNativeArchitectures().each { architecture ->
-        tasks.findByName("configureNdkBuildDebug[${architecture}]")?.configure { dependsOn(":ReactAndroid:hermes-engine:prefabDebugPackage") }
-        tasks.findByName("configureNdkBuildRelease[${architecture}]")?.configure { dependsOn(":ReactAndroid:hermes-engine:prefabReleasePackage") }
-    }
-
     publishing {
         publications {
             release(MavenPublication) {

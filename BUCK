@@ -727,6 +727,7 @@ rn_library(
         "//xplat/js:node_modules__base64_19js",
         "//xplat/js:node_modules__event_19target_19shim",
         "//xplat/js:node_modules__invariant",
+        "//xplat/js:node_modules__memoize_19one",
         "//xplat/js:node_modules__nullthrows",
         "//xplat/js:node_modules__pretty_19format",
         "//xplat/js:node_modules__promise",

@@ -6,7 +6,7 @@
  *
  * @noformat
  * @flow strict
- * @generated SignedSource<<ec11b46a06877b4f7f3f0b6c1f5d46c3>>
+ * @generated SignedSource<<fb8a7e52d219403fad0cf916954e5185>>
  *
  * This file was sync'd from the facebook/react repository.
  */
@@ -76,6 +76,7 @@ export type ViewConfig = $ReadOnly<{
       phasedRegistrationNames: $ReadOnly<{
         captured: string,
         bubbled: string,
+        skipBubbling?: ?boolean,
       }>,
     }>,
     ...,

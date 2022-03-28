@@ -1448,6 +1448,36 @@ it('renders windowSize derived region at bottom', () => {
   expect(component).toMatchSnapshot();
 });
 
+it('calls _onCellLayout properly', () => {
+  const items = [{key: 'i1'}, {key: 'i2'}, {key: 'i3'}];
+  const mock = jest.fn();
+  const component = ReactTestRenderer.create(
+    <VirtualizedList
+      data={items}
+      renderItem={({item}) => <item value={item.key} />}
+      getItem={(data, index) => data[index]}
+      getItemCount={data => data.length}
+    />,
+  );
+  const virtualList: VirtualizedList = component.getInstance();
+  virtualList._onCellLayout = mock;
+  component.update(
+    <VirtualizedList
+      data={[...items, {key: 'i4'}]}
+      renderItem={({item}) => <item value={item.key} />}
+      getItem={(data, index) => data[index]}
+      getItemCount={data => data.length}
+    />,
+  );
+  const cell = virtualList._cellRefs.i4;
+  const event = {
+    nativeEvent: {layout: {x: 0, y: 0, width: 50, height: 50}},
+  };
+  cell._onLayout(event);
+  expect(mock).toHaveBeenCalledWith(event, 'i4', 3);
+  expect(mock).not.toHaveBeenCalledWith(event, 'i3', 2);
+});
+
 function generateItems(count) {
   return Array(count)
     .fill()
