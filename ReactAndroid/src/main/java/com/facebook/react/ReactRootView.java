@@ -660,12 +660,22 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
     // React Native requires that the RootView id be managed entirely by React Native, and will
     // crash in addRootView/startSurface if the native View id isn't set to NO_ID.
+
+    // This behavior can not be guaranteed in hybrid apps that have a native android layer over
+    // which reactRootViews are added and the native views need to have ids on them in order to
+    // work.
+    // Hence this can cause unnecessary crashes at runtime for hybrid apps.
+    // So converting this to a soft exception such that pure react-native devs can still see the
+    // warning while hybrid apps continue to run without crashes
+
     if (getId() != View.NO_ID) {
-      throw new IllegalViewOperationException(
-          "Trying to attach a ReactRootView with an explicit id already set to ["
-              + getId()
-              + "]. React Native uses the id field to track react tags and will overwrite this"
-              + " field. If that is fine, explicitly overwrite the id field to View.NO_ID.");
+      ReactSoftExceptionLogger.logSoftException(
+          TAG,
+          new IllegalViewOperationException(
+              "Trying to attach a ReactRootView with an explicit id already set to ["
+                  + getId()
+                  + "]. React Native uses the id field to track react tags and will overwrite this"
+                  + " field. If that is fine, explicitly overwrite the id field to View.NO_ID."));
     }
 
     try {
