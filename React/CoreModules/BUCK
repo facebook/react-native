@@ -4,6 +4,7 @@ load(
     "@fbsource//xplat/configurations/buck/apple/plugins/sad_xplat_hosted_configurations:react_module_registration.bzl",
     "react_module_plugin_providers",
 )
+load("@fbsource//xplat/pfh/ReactNative/CommonInfrastructurePlaceholde:DEFS.bzl", "ReactNative_CommonInfrastructurePlaceholde")
 
 rn_apple_library(
     name = "CoreModulesApple",
@@ -30,6 +31,7 @@ rn_apple_library(
     ],
     exported_preprocessor_flags = rn_extra_build_flags(),
     extension_api_only = True,
+    feature = ReactNative_CommonInfrastructurePlaceholde,
     frameworks = [
         "Foundation",
         "UIKit",
