@@ -55,10 +55,10 @@ void react_native_assert_fail(
 #define react_native_assert(cond)                           \
   if (!(cond)) {                                            \
     LOG(ERROR) << "react_native_assert failure: " << #cond; \
-    google::FlushLogFiles(google::GLOG_INFO);               \
+    google::FlushLogFiles(google::INFO);               \
     assert(cond);                                           \
   }
 
 #endif // platforms besides __ANDROID__
 
-#endif // REACT_NATIVE_DEBUG
+#endif // REACT_NATIVE_DEBUG 
