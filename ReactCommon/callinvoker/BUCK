@@ -1,3 +1,4 @@
+load("@fbsource//xplat/pfh/ReactNative/CommonInfrastructurePlaceholde:DEFS.bzl", "ReactNative_CommonInfrastructurePlaceholde")
 load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "CXX", "rn_xplat_cxx_library", "subdir_glob")
 
 rn_xplat_cxx_library(
@@ -10,6 +11,7 @@ rn_xplat_cxx_library(
         ],
         prefix = "ReactCommon",
     ),
+    feature = ReactNative_CommonInfrastructurePlaceholde,
     labels = ["supermodule:xplat/default/public.react_native.infra"],
     platforms = (ANDROID, APPLE, CXX),
     preferred_linkage = "static",
