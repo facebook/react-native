@@ -29,7 +29,7 @@
   return [RCTSurfaceHostingComponentState new];
 }
 
-+ (instancetype)newWithSurface:(RCTSurface *)surface options:(RCTSurfaceHostingComponentOptions)options
++ (instancetype)newWithSurface:(id<RCTSurfaceProtocol>)surface options:(RCTSurfaceHostingComponentOptions)options
 {
   CKComponentScope scope(self, surface);
 
@@ -76,9 +76,11 @@
 
   // Just in case of the very first building pass, we give React Native a chance
   // to prepare its internals for coming synchronous measuring.
-  [_surface synchronouslyWaitForStage:RCTSurfaceStageSurfaceDidInitialLayout
+  if ([_surface isKindOfClass:[RCTSurface class]]) {
+    [(RCTSurface *)_surface synchronouslyWaitForStage:RCTSurfaceStageSurfaceDidInitialLayout
                               timeout:_options.synchronousLayoutingTimeout];
-
+  }
+  
   CGSize fittingSize = CGSizeZero;
   if (_surface.stage & RCTSurfaceStageSurfaceDidInitialLayout) {
     fittingSize = [_surface sizeThatFitsMinimumSize:constrainedSize.min

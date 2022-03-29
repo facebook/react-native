@@ -21,7 +21,7 @@
 @end
 
 @implementation RCTSurfaceHostingComponentController {
-  RCTSurface *_surface;
+  id<RCTSurfaceProtocol> _surface;
 }
 
 - (instancetype)initWithComponent:(RCTSurfaceHostingComponent *)component
@@ -64,7 +64,7 @@
 - (void)updateSurfaceWithComponent:(RCTSurfaceHostingComponent *)component
 {
   // Updating `surface`
-  RCTSurface *const surface = component.surface;
+  id<RCTSurfaceProtocol> const surface = component.surface;
   if (surface != _surface) {
     if (_surface.delegate == self) {
       _surface.delegate = nil;

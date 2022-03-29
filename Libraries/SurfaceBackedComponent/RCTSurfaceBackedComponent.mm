@@ -33,11 +33,10 @@
   RCTSurfaceBackedComponentState *state = scope.state();
 
   if (state.surface == nil || ![state.surface.moduleName isEqualToString:moduleName]) {
-    RCTSurface *surface =
-      [[RCTSurface alloc] initWithBridge:bridge
-                              moduleName:moduleName
-                       initialProperties:properties];
-
+    id<RCTSurfaceProtocol> surface = [[RCTSurface alloc] initWithBridge:bridge
+                                moduleName:moduleName
+                         initialProperties:properties];
+    
     [surface start];
 
     state = [RCTSurfaceBackedComponentState newWithSurface:surface];
