@@ -30,7 +30,6 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
 import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
@@ -139,12 +138,10 @@ public class TextLayoutManagerMapBuffer {
                 sb.length(),
                 new TextInlineViewPlaceholderSpan(reactTag, (int) width, (int) height)));
       } else if (end >= start) {
-        if (ReactAccessibilityDelegate.AccessibilityRole.LINK.equals(
-            textAttributes.mAccessibilityRole)) {
-          ops.add(
-              new SetSpanOperation(
-                  start, end, new ReactClickableSpan(reactTag, textAttributes.mColor)));
-        } else if (textAttributes.mIsColorSet) {
+        if (textAttributes.mIsAccessibilityLink) {
+          ops.add(new SetSpanOperation(start, end, new ReactClickableSpan(reactTag)));
+        }
+        if (textAttributes.mIsColorSet) {
           ops.add(
               new SetSpanOperation(
                   start, end, new ReactForegroundColorSpan(textAttributes.mColor)));

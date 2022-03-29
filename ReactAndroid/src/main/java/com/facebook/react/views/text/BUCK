@@ -31,5 +31,6 @@ rn_android_library(
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
         react_native_target("java/com/facebook/react/uimanager/annotations:annotations"),
         react_native_target("java/com/facebook/react/views/view:view"),
+        react_native_target("res:uimanager"),
     ],
 )
