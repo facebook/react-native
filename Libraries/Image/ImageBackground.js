@@ -67,7 +67,7 @@ class ImageBackground extends React.Component<ImageBackgroundProps> {
 
   render(): React.Node {
     const {children, style, imageStyle, imageRef, ...props} = this.props;
-    const flattenedStyle = flattenStyle(style);
+    const flattenedStyle = flattenStyle(imageStyle);
     return (
       <View
         accessibilityIgnoresInvertColors={true}
