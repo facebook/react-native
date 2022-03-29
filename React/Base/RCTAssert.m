@@ -253,9 +253,9 @@ __attribute__((used)) RCT_EXTERN void RCTEnableNewArchitectureValidationReportin
 static BOOL shouldEnforceValidation(RCTNotAllowedValidation type)
 {
   switch (type) {
-    case RCTNotAllowedInFabric:
+    case RCTNotAllowedInAppWideFabric:
       return validationReportingEnabled == RCTNotAllowedInBridgeless ||
-          validationReportingEnabled == RCTNotAllowedInFabric;
+          validationReportingEnabled == RCTNotAllowedInAppWideFabric;
     case RCTNotAllowedInBridgeless:
       return validationReportingEnabled == RCTNotAllowedInBridgeless;
   }
@@ -279,7 +279,7 @@ static NSString *validationMessage(RCTNotAllowedValidation type, id context, NSS
 {
   NSString *notAllowedType;
   switch (type) {
-    case RCTNotAllowedInFabric:
+    case RCTNotAllowedInAppWideFabric:
       notAllowedType = @"Fabric";
       break;
     case RCTNotAllowedInBridgeless:
