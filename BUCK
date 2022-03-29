@@ -1362,6 +1362,7 @@ rn_xplat_cxx_library2(
     visibility = ["PUBLIC"],
     deps = [
         "//fbobjc/Libraries/MobileUI/ComponentKit:ComponentKit",
+        "//xplat/js/react-native-github:RCTFabric",
         "//xplat/js/react-native-github:RCTLinking",
         "//xplat/js/react-native-github:RCTPushNotification",
         "//xplat/js/react-native-github:ReactInternal",
@@ -1397,6 +1398,7 @@ rn_xplat_cxx_library2(
     deps = [
         ":RCTSurfaceHostingComponent",
         "//fbobjc/Libraries/MobileUI/ComponentKit:ComponentKit",
+        "//xplat/js/react-native-github:RCTFabric",
         "//xplat/js/react-native-github:RCTLinking",
         "//xplat/js/react-native-github:RCTPushNotification",
         "//xplat/js/react-native-github:ReactInternal",

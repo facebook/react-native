@@ -13,6 +13,7 @@
 #import <ComponentKit/CKOverlayLayoutComponent.h>
 #import <RCTSurfaceHostingComponent/RCTSurfaceHostingComponent.h>
 #import <React/RCTSurface.h>
+#import <React/RCTFabricSurface.h>
 
 #import "RCTSurfaceBackedComponentState.h"
 
@@ -24,6 +25,7 @@
 }
 
 + (instancetype)newWithBridge:(RCTBridge *)bridge
+             surfacePresenter:(RCTSurfacePresenter *)surfacePresenter
                    moduleName:(NSString *)moduleName
                    properties:(NSDictionary *)properties
                       options:(RCTSurfaceHostingComponentOptions)options
@@ -32,11 +34,21 @@
 
   RCTSurfaceBackedComponentState *state = scope.state();
 
+  // JavaScript entrypoints expects "fabric" key for Fabric surfaces
+  NSMutableDictionary *adjustedProperties = [[NSMutableDictionary alloc] initWithDictionary:properties];
+  adjustedProperties[@"fabric"] = surfacePresenter ? @YES : nil;
+
   if (state.surface == nil || ![state.surface.moduleName isEqualToString:moduleName]) {
-    id<RCTSurfaceProtocol> surface = [[RCTSurface alloc] initWithBridge:bridge
+    id<RCTSurfaceProtocol> surface;
+    if (surfacePresenter) {
+      surface = [[RCTFabricSurface alloc] initWithSurfacePresenter:surfacePresenter
+                                              moduleName:moduleName
+                                              initialProperties:adjustedProperties];
+    } else {
+      surface = [[RCTSurface alloc] initWithBridge:bridge
                                 moduleName:moduleName
-                         initialProperties:properties];
-    
+                         initialProperties:adjustedProperties];
+    }
     [surface start];
 
     state = [RCTSurfaceBackedComponentState newWithSurface:surface];
@@ -44,8 +56,8 @@
     CKComponentScope::replaceState(scope, state);
   }
   else {
-    if (![state.surface.properties isEqualToDictionary:properties]) {
-      state.surface.properties = properties;
+    if (![state.surface.properties isEqualToDictionary:adjustedProperties]) {
+      state.surface.properties = adjustedProperties;
     }
   }
 
