@@ -33,7 +33,7 @@ jobs:
         value: true
     timeoutInMinutes: 90 # how long to run the job before automatically cancelling
     cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
-    dependsOn: 
+    dependsOn:
       - Compliance
     steps:
       - checkout: self # self represents the repo where the initial Pipelines YAML file was found
@@ -130,7 +130,7 @@ jobs:
     timeoutInMinutes: 90 # how long to run the job before automatically cancelling
     cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
     condition: eq(variables['Build.SourceBranchName'], 'main')
-    dependsOn: 
+    dependsOn:
       - Compliance
     steps:
       - checkout: self # self represents the repo where the initial Pipelines YAML file was found
@@ -184,7 +184,8 @@ jobs:
     pool: Azure-Pipelines-EO-Ubuntu20.04-Office
     timeoutInMinutes: 90 # how long to run the job before automatically cancelling
     cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
-    dependsOn: 
+    condition: eq(contains(variables['Build.SourceBranchName'], '-stable'))
+    dependsOn:
       - Compliance
     steps:
       - checkout: self # self represents the repo where the initial Pipelines YAML file was found
