@@ -28,8 +28,6 @@ bool TelemetryController::pullTransaction(
 
   auto transaction = std::move(*optional);
 
-  auto surfaceId = transaction.getSurfaceId();
-  auto number = transaction.getNumber();
   auto telemetry = transaction.getTelemetry();
   auto numberOfMutations = static_cast<int>(transaction.getMutations().size());
 
