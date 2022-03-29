@@ -77,18 +77,34 @@
 
 - (void)setIntrinsicSize:(CGSize)intrinsicSize
 {
-  [self.component updateState:^(RCTSurfaceHostingComponentState *state) {
-    return [RCTSurfaceHostingComponentState newWithStage:state.stage
-                                           intrinsicSize:intrinsicSize];
-  } mode:[self suitableStateUpdateMode]];
+  __weak __typeof(self) weakSelf = self;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    __strong __typeof(self) strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
+    
+    [strongSelf.component updateState:^(RCTSurfaceHostingComponentState *state) {
+      return [RCTSurfaceHostingComponentState newWithStage:state.stage
+                                             intrinsicSize:intrinsicSize];
+    } mode:[strongSelf suitableStateUpdateMode]];
+  });
 }
 
 - (void)setStage:(RCTSurfaceStage)stage
 {
-  [self.component updateState:^(RCTSurfaceHostingComponentState *state) {
-    return [RCTSurfaceHostingComponentState newWithStage:stage
-                                           intrinsicSize:state.intrinsicSize];
-  } mode:[self suitableStateUpdateMode]];
+  __weak __typeof(self) weakSelf = self;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    __strong __typeof(self) strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
+    
+    [strongSelf.component updateState:^(RCTSurfaceHostingComponentState *state) {
+      return [RCTSurfaceHostingComponentState newWithStage:stage
+                                             intrinsicSize:state.intrinsicSize];
+    } mode:[strongSelf suitableStateUpdateMode]];
+  });
 }
 
 - (CKUpdateMode)suitableStateUpdateMode
