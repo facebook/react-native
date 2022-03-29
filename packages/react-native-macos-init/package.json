@@ -35,7 +35,7 @@
     "@types/valid-url": "^1.0.2",
     "@types/yargs": "^15.0.3",
     "beachball": "^1.27.0",
-    "just-scripts": "^0.36.1",
+    "just-scripts": "^1.8.0",
     "typescript": "4.5.4"
   },
   "files": [
