@@ -64,6 +64,8 @@ class ParagraphAttributes : public DebugStringConvertible {
    */
   HyphenationFrequency android_hyphenationFrequency{};
 
+  std::string errorMessageAndroid{};
+
   /*
    * In case of font size adjustment enabled, defines minimum and maximum
    * font sizes.
@@ -99,7 +101,8 @@ struct hash<facebook::react::ParagraphAttributes> {
         attributes.minimumFontSize,
         attributes.maximumFontSize,
         attributes.includeFontPadding,
-        attributes.android_hyphenationFrequency);
+        attributes.android_hyphenationFrequency, 
+        attributes.errorMessageAndroid);
   }
 };
 } // namespace std

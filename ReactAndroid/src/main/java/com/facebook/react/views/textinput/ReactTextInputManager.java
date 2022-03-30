@@ -325,7 +325,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     sb.append(TextTransform.apply(text, TextTransform.UNSET));
 
     return new ReactTextUpdate(
-        sb, mostRecentEventCount, false, 0, 0, 0, 0, Gravity.NO_GRAVITY, 0, 0, start, end, null);
+        sb, mostRecentEventCount, false, 0, 0, 0, 0, Gravity.NO_GRAVITY, 0, 0, start, end);
   }
 
   @Override
@@ -1326,9 +1326,10 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     int textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(paragraphAttributes.getString("textBreakStrategy"));
 
-    @Nullable
-    String errorMessage =
-        props.hasKey("errorMessageAndroid") ? props.getString("errorMessageAndroid") : null;
+    String errorMessageAndroid =
+        paragraphAttributes.hasKey("errorMessageAndroid")
+            ? paragraphAttributes.getString("errorMessageAndroid")
+            : "";
 
     return ReactTextUpdate.buildReactTextUpdateFromState(
         spanned,
@@ -1337,6 +1338,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         textBreakStrategy,
         TextAttributeProps.getJustificationMode(props),
         containsMultipleFragments,
-        errorMessage);
+        errorMessageAndroid);
   }
 }

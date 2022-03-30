@@ -11,7 +11,6 @@ import static com.facebook.react.views.text.TextAttributeProps.UNSET;
 
 import android.text.Layout;
 import android.text.Spannable;
-import javax.annotation.Nullable;
 
 /**
  * Class that contains the data needed for a text update. Used by both <Text/> and <TextInput/>
@@ -31,7 +30,7 @@ public class ReactTextUpdate {
   private final int mSelectionStart;
   private final int mSelectionEnd;
   private final int mJustificationMode;
-  private @Nullable String mErrorMessage;
+  private String mErrorMessage;
 
   public boolean mContainsMultipleFragments;
 
@@ -61,8 +60,7 @@ public class ReactTextUpdate {
         Layout.BREAK_STRATEGY_HIGH_QUALITY,
         Layout.JUSTIFICATION_MODE_NONE,
         -1,
-        -1,
-        null);
+        -1);
   }
 
   public ReactTextUpdate(
@@ -88,8 +86,7 @@ public class ReactTextUpdate {
         textBreakStrategy,
         justificationMode,
         -1,
-        -1,
-        null);
+        -1);
   }
 
   public ReactTextUpdate(
@@ -111,8 +108,7 @@ public class ReactTextUpdate {
         textBreakStrategy,
         justificationMode,
         -1,
-        -1,
-        null);
+        -1);
   }
 
   public ReactTextUpdate(
@@ -127,8 +123,7 @@ public class ReactTextUpdate {
       int textBreakStrategy,
       int justificationMode,
       int selectionStart,
-      int selectionEnd,
-      @Nullable String errorMessage) {
+      int selectionEnd) {
     mText = text;
     mJsEventCounter = jsEventCounter;
     mContainsImages = containsImages;
@@ -141,7 +136,6 @@ public class ReactTextUpdate {
     mSelectionStart = selectionStart;
     mSelectionEnd = selectionEnd;
     mJustificationMode = justificationMode;
-    mErrorMessage = errorMessage;
   }
 
   public static ReactTextUpdate buildReactTextUpdateFromState(
@@ -151,7 +145,7 @@ public class ReactTextUpdate {
       int textBreakStrategy,
       int justificationMode,
       boolean containsMultipleFragments,
-      @Nullable String errorMessage) {
+      String errorMessage) {
 
     ReactTextUpdate reactTextUpdate =
         new ReactTextUpdate(
@@ -161,7 +155,7 @@ public class ReactTextUpdate {
     return reactTextUpdate;
   }
 
-  public @Nullable String getErrorMessage() {
+  public String getErrorMessage() {
     return mErrorMessage;
   }
 

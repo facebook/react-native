@@ -68,6 +68,10 @@ AndroidTextInputProps::AndroidTextInputProps(
           "underlineColorAndroid",
           sourceProps.underlineColorAndroid,
           {})),
+      errorMessageAndroid(convertRawProp(context, rawProps,
+          "errorMessageAndroid",
+          sourceProps.errorMessageAndroid,
+          {})),
       inlineImageLeft(convertRawProp(context, rawProps,
           "inlineImageLeft",
           sourceProps.inlineImageLeft,
@@ -267,6 +271,7 @@ folly::dynamic AndroidTextInputProps::getDynamic() const {
   props["disableFullscreenUI"] = disableFullscreenUI;
   props["textBreakStrategy"] = textBreakStrategy;
   props["underlineColorAndroid"] = toAndroidRepr(underlineColorAndroid);
+  props["errorMessageAndroid"] = errorMessageAndroid;
   props["inlineImageLeft"] = inlineImageLeft;
   props["inlineImagePadding"] = inlineImagePadding;
   props["importantForAutofill"] = importantForAutofill;

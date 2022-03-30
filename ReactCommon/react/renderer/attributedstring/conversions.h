@@ -760,6 +760,12 @@ inline ParagraphAttributes convertRawProp(
       "android_hyphenationFrequency",
       sourceParagraphAttributes.android_hyphenationFrequency,
       defaultParagraphAttributes.android_hyphenationFrequency);
+  paragraphAttributes.errorMessageAndroid = convertRawProp(
+      context,
+      rawProps,
+      "errorMessageAndroid",
+      sourceParagraphAttributes.errorMessageAndroid,
+      defaultParagraphAttributes.errorMessageAndroid);
 
   return paragraphAttributes;
 }
@@ -798,6 +804,9 @@ inline folly::dynamic toDynamic(
   values(
       "android_hyphenationFrequency",
       toString(paragraphAttributes.android_hyphenationFrequency));
+  values(
+      "errorMessageAndroid",
+      toString(paragraphAttributes.errorMessageAndroid));
 
   return values;
 }
