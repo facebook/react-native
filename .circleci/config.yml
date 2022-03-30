@@ -55,15 +55,17 @@ executors:
     docker:
       # Note: Version set separately for Windows builds, see below.
       - image: circleci/node:16
+    resource_class: "xlarge"
   nodeprevlts:
     <<: *defaults
     docker:
       - image: circleci/node:14
+    resource_class: "xlarge"
   reactnativeandroid:
     <<: *defaults
     docker:
       - image: reactnativecommunity/react-native-android:5.4
-    resource_class: "large"
+    resource_class: "xlarge"
     environment:
       - TERM: "dumb"
       - ADB_INSTALL_TIMEOUT: 10
@@ -78,6 +80,7 @@ executors:
     <<: *defaults
     macos:
       xcode: &_XCODE_VERSION "13.0.0"
+    resource_class: macos.x86.medium.gen2
 
 # -------------------------
 #        COMMANDS
@@ -183,12 +186,12 @@ commands:
           keys:
             # The committed lockfile is generated using USE_FRAMEWORKS=0 and USE_HERMES=0 so it could load an outdated cache if a change
             # only affects the frameworks or hermes config. To help prevent this also cache based on the content of Podfile.
-            - v3-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
+            - v5-pods-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
       - steps: << parameters.steps >>
       - save_cache:
           paths:
             - packages/rn-tester/Pods
-          key: v3-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
+          key: v5-pods-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
 
   download_gradle_dependencies:
     steps:
@@ -367,7 +370,7 @@ jobs:
   # -------------------------
   #     JOBS: Test iOS
   # -------------------------
-  test_ios:
+  build_ios:
     executor: reactnativeios
     parameters:
       use_frameworks:
@@ -376,12 +379,134 @@ jobs:
       use_hermes:
         type: boolean
         default: false
+    steps:
+      - checkout
+      - setup_artifacts
+      - setup_ruby
+      - run_yarn
+
+      - run: |
+          cd packages/rn-tester
+          bundle check || bundle install
+
+      - run:
+          name: Configure Environment Variables
+          command: |
+            echo 'export PATH=/usr/local/opt/node@16/bin:$PATH' >> $BASH_ENV
+            source $BASH_ENV
+
+      - with_brew_cache_span:
+          steps:
+            - brew_install:
+                package: watchman cmake ninja
+            - run:
+                name: "Brew: Tap wix/brew"
+                command: brew tap wix/brew >/dev/null
+            - brew_install:
+                package: applesimutils
+
+      - run:
+          name: Configure Watchman
+          command: echo "{}" > .watchmanconfig
+
+      - when:
+          condition: << parameters.use_frameworks >>
+          steps:
+            - run:
+                name: Set USE_FRAMEWORKS=1
+                command: echo "export USE_FRAMEWORKS=1" >> $BASH_ENV
+
+      - when:
+          condition: << parameters.use_hermes >>
+          steps:
+            - run:
+                name: Set USE_HERMES=1
+                command: echo "export USE_HERMES=1" >> $BASH_ENV
+            - run:
+                name: Set BUILD_HERMES_SOURCE=1
+                command: echo "export BUILD_HERMES_SOURCE=1" >> $BASH_ENV
+            - *attach_hermes_workspace
+            - run:
+                name: Copy HermesC to React Native workspace
+                command: |
+                  mkdir -p sdks/hermesc/macos/build_host_hermesc
+                  cp -R /tmp/hermes/hermesc/macos/* sdks/hermesc/macos/build_host_hermesc
+            - with_brew_cache_span:
+                steps:
+                  - brew_install:
+                      package: cmake ninja
+
+      - run:
+          name: Setup the CocoaPods environment
+          command: bundle exec pod setup
+
+      - with_rntester_pods_cache_span:
+          steps:
+            - run:
+                name: Generate RNTesterPods Workspace
+                command: cd packages/rn-tester && bundle exec pod install --verbose
+
+      - run:
+          name: Setup CocoaPods cache
+          # Copy packages/rn-tester/Podfile.lock since it can be changed by pod install
+          command: cp packages/rn-tester/Podfile.lock packages/rn-tester/Podfile.lock.bak
+
+      # -------------------------
+      # Generate RNTesterPods Workspace using JSC Pods Cache
+      # This is a workaround due to not being able to use different cache keys based on USE_HERMES value
+      - when:
+          condition:
+            not: << parameters.use_hermes >>
+          steps:
+            - restore_cache:
+                keys:
+                  # The committed lockfile is generated using USE_FRAMEWORKS=0 and USE_HERMES=0 so it could load an outdated cache if a change
+                  # only affects the frameworks or hermes config. To help prevent this also cache based on the content of Podfile.
+                  - v1-pods-jsc-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
+            - run:
+                name: Generate RNTesterPods Workspace
+                command: cd packages/rn-tester && bundle exec pod install --verbose
+            - save_cache:
+                paths:
+                  - packages/rn-tester/Pods
+                key: v1-pods-jsc-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
+      # -------------------------
+
+      # -------------------------
+      # Generate RNTesterPods Workspace using Hermes Pods Cache
+      # This is a workaround due to not being able to use different cache keys based on USE_HERMES value
+      - when:
+          condition: << parameters.use_hermes >>
+          steps:
+            - restore_cache:
+                keys:
+                  # The committed lockfile is generated using USE_FRAMEWORKS=0 and USE_HERMES=0 so it could load an outdated cache if a change
+                  # only affects the frameworks or hermes config. To help prevent this also cache based on the content of Podfile.
+                  - v1-pods-hermes-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
+            - run:
+                name: Generate RNTesterPods Workspace
+                command: cd packages/rn-tester && bundle exec pod install --verbose
+            - save_cache:
+                paths:
+                  - packages/rn-tester/Pods
+                key: v1-pods-hermes-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
+      # -------------------------
+
+  test_ios_unit:
+    executor: reactnativeios
+    parameters:
       run_unit_tests:
         description: Specifies whether unit tests should run.
         type: boolean
         default: false
       run_disabled_tests:
         description: Specifies whether disabled tests should run. Set this to true to debug failing tests.
+        type: boolean
+        default: false
+      use_frameworks:
+        type: boolean
+        default: false
+      use_hermes:
         type: boolean
         default: false
     environment:
@@ -408,7 +533,7 @@ jobs:
       - with_brew_cache_span:
           steps:
             - brew_install:
-                package: watchman
+                package: watchman cmake ninja
             - run:
                 name: "Brew: Tap wix/brew"
                 command: brew tap wix/brew >/dev/null
@@ -419,29 +544,52 @@ jobs:
           name: Configure Watchman
           command: echo "{}" > .watchmanconfig
 
-      - when:
-          condition: << parameters.use_frameworks >>
-          steps:
-            - run:
-                name: Set USE_FRAMEWORKS=1
-                command: echo "export USE_FRAMEWORKS=1" >> $BASH_ENV
-
-      - when:
-          condition: << parameters.use_hermes >>
-          steps:
-            - run:
-                name: Set USE_HERMES=1
-                command: echo "export USE_HERMES=1" >> $BASH_ENV
-
       - run:
-          name: Setup the CocoaPods environment
-          command: bundle exec pod setup
+          name: Setup CocoaPods cache
+          # Copy packages/rn-tester/Podfile.lock since it can be changed by pod install
+          command: cp packages/rn-tester/Podfile.lock packages/rn-tester/Podfile.lock.bak
 
-      - with_rntester_pods_cache_span:
+      # -------------------------
+      # Generate RNTesterPods Workspace using JSC Pods Cache
+      # This is a workaround due to not being able to use different cache keys based on USE_HERMES value
+      - when:
+          condition:
+            not: << parameters.use_hermes >>
           steps:
+            - restore_cache:
+                keys:
+                  # The committed lockfile is generated using USE_FRAMEWORKS=0 and USE_HERMES=0 so it could load an outdated cache if a change
+                  # only affects the frameworks or hermes config. To help prevent this also cache based on the content of Podfile.
+                  - v1-pods-jsc-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
             - run:
                 name: Generate RNTesterPods Workspace
                 command: cd packages/rn-tester && bundle exec pod install --verbose
+            - save_cache:
+                paths:
+                  - packages/rn-tester/Pods
+                key: v1-pods-jsc-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
+
+      # -------------------------
+
+      # -------------------------
+      # Generate RNTesterPods Workspace using Hermes Pods Cache
+      # This is a workaround due to not being able to use different cache keys based on USE_HERMES value
+      - when:
+          condition: << parameters.use_hermes >>
+          steps:
+            - restore_cache:
+                keys:
+                  # The committed lockfile is generated using USE_FRAMEWORKS=0 and USE_HERMES=0 so it could load an outdated cache if a change
+                  # only affects the frameworks or hermes config. To help prevent this also cache based on the content of Podfile.
+                  - v1-pods-hermes-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
+            - run:
+                name: Generate RNTesterPods Workspace
+                command: cd packages/rn-tester && bundle exec pod install --verbose
+            - save_cache:
+                paths:
+                  - packages/rn-tester/Pods
+                key: v1-pods-hermes-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
+      # -------------------------
 
       # -------------------------
       # Runs iOS unit tests
@@ -665,8 +813,8 @@ jobs:
     executor: reactnativeios
     parameters:
       use_hermes:
-          type: boolean
-          default: false
+        type: boolean
+        default: false
     steps:
       - checkout
       - run_yarn
@@ -677,12 +825,74 @@ jobs:
             - run:
                 name: Set USE_HERMES=1
                 command: echo "export USE_HERMES=1" >> $BASH_ENV
+            - run:
+                name: Set BUILD_HERMES_SOURCE=1
+                command: echo "export BUILD_HERMES_SOURCE=1" >> $BASH_ENV
+            - *attach_hermes_workspace
+            - run:
+                name: Copy HermesC to React Native workspace
+                command: |
+                  mkdir -p sdks/hermesc/macos/build_host_hermesc
+                  cp -R /tmp/hermes/hermesc/macos/* sdks/hermesc/macos/build_host_hermesc
+            - with_brew_cache_span:
+                steps:
+                  - brew_install:
+                      package: cmake ninja
 
       - run:
-          name: Install CocoaPods dependencies
-          command: |
-            rm -rf packages/rn-tester/Pods
-            cd packages/rn-tester && bundle exec pod install
+          name: Clear RNTesterPods Workspace
+          command: rm -rf packages/rn-tester/Pods
+
+      - run:
+          name: Setup CocoaPods cache
+          # Copy packages/rn-tester/Podfile.lock since it can be changed by pod install
+          command: cp packages/rn-tester/Podfile.lock packages/rn-tester/Podfile.lock.bak
+
+      # -------------------------
+      # Generate RNTesterPods Workspace using JSC Pods Cache
+      # This is a workaround due to not being able to use different cache keys based on USE_HERMES value
+      - when:
+          condition:
+            not: << parameters.use_hermes >>
+          steps:
+            - restore_cache:
+                keys:
+                  # The committed lockfile is generated using USE_FRAMEWORKS=0 and USE_HERMES=0 so it could load an outdated cache if a change
+                  # only affects the frameworks or hermes config. To help prevent this also cache based on the content of Podfile.
+                  - v1-pods-jsc-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
+            - run:
+                name: Generate RNTesterPods Workspace
+                command: cd packages/rn-tester && bundle exec pod install --verbose
+            - save_cache:
+                paths:
+                  - packages/rn-tester/Pods
+                key: v1-pods-jsc-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
+      # -------------------------
+
+      # -------------------------
+      # Generate RNTesterPods Workspace using Hermes Pods Cache
+      # This is a workaround due to not being able to use different cache keys based on USE_HERMES value
+      - when:
+          condition: << parameters.use_hermes >>
+          steps:
+            - restore_cache:
+                keys:
+                  # The committed lockfile is generated using USE_FRAMEWORKS=0 and USE_HERMES=0 so it could load an outdated cache if a change
+                  # only affects the frameworks or hermes config. To help prevent this also cache based on the content of Podfile.
+                  - v1-pods-hermes-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
+            - run:
+                name: Generate RNTesterPods Workspace
+                command: cd packages/rn-tester && bundle exec pod install --verbose
+            - save_cache:
+                paths:
+                  - packages/rn-tester/Pods
+                key: v1-pods-hermes-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
+      # -------------------------
+
+      # Free up space
+      - run:
+          name: Delete Simulators
+          command: sudo rm -rf /Library/Developer/CoreSimulator/Profiles/Runtimes/
 
       - run:
           name: Build RNTester
@@ -803,7 +1013,7 @@ jobs:
   # -------------------------
   #      JOBS: Build hermesc
   # -------------------------
-  prepare-hermes-workspace:
+  prepare_hermes_workspace:
     docker:
       - image: debian:buster
     environment:
@@ -841,7 +1051,7 @@ jobs:
             - output
             - hermesversion
 
-  build-hermesc-linux:
+  build_hermesc_linux:
     docker:
       - image: debian:buster
     environment:
@@ -877,9 +1087,8 @@ jobs:
           paths:
             - hermesc/linux
 
-  build-hermesc-macos:
-    macos:
-      xcode: &_XCODE_VERSION "13.0.0"
+  build_hermesc_macos:
+    executor: reactnativeios
     working_directory: ~/hermes
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
@@ -908,7 +1117,7 @@ jobs:
           paths:
             - hermesc/macos
 
-  build-hermesc-windows:
+  build_hermesc_windows:
     executor:
       name: win/default
       shell: powershell.exe
@@ -973,7 +1182,7 @@ jobs:
           paths:
             - hermesc\windows
 
-  store-hermesc:
+  store_hermesc:
     docker:
       - image: debian:buster
     environment:
@@ -1143,26 +1352,26 @@ workflows:
   tests:
     unless: << pipeline.parameters.run_package_release_workflow_only >>
     jobs:
-      - prepare-hermes-workspace
-      - build-hermesc-linux:
+      - prepare_hermes_workspace
+      - build_hermesc_linux:
           requires:
-            - prepare-hermes-workspace
-      - build-hermesc-macos:
+            - prepare_hermes_workspace
+      - build_hermesc_macos:
           requires:
-            - prepare-hermes-workspace
-      - build-hermesc-windows:
+            - prepare_hermes_workspace
+      - build_hermesc_windows:
           requires:
-            - prepare-hermes-workspace
-      - store-hermesc:
+            - prepare_hermes_workspace
+      - store_hermesc:
           requires:
-            - build-hermesc-linux
-            - build-hermesc-macos
-            - build-hermesc-windows
+            - build_hermesc_linux
+            - build_hermesc_macos
+            - build_hermesc_windows
       - build_npm_package:
           # Build a release package on every untagged commit, but do not publish to npm.
           publish_npm_args: --dry-run
           requires:
-            - store-hermesc
+            - store_hermesc
       - test_js:
           run_disabled_tests: false
       - test_android:
@@ -1175,31 +1384,44 @@ workflows:
           requires:
             - build_npm_package
       - test_ios_rntester:
+          name: test_ios_rntester_jsc
+          # TODO: USE_FRAMEWORKS=1 not supported by Flipper and is not being tested on CI
+          # use_frameworks: true
+      - test_ios_rntester:
           name: test_ios_rntester_hermes
           use_hermes: true
-      - test_ios_rntester:
-          name: test_ios_rntester_jsc
-      - test_ios:
+          # TODO: USE_FRAMEWORKS=1 not supported by Flipper and is not being tested on CI
+          # use_frameworks: true
+          requires:
+            - build_hermesc_macos
+      - build_ios:
+          name: build_ios_jsc
+      - build_ios:
+          name: build_ios_hermes
+          use_hermes: true
+          requires:
+            - build_hermesc_macos
+      - test_ios_unit:
           name: test_ios_unit_jsc
-          run_unit_tests: true
-      # DISABLED: USE_FRAMEWORKS=1 not supported by Flipper
-      # - test_ios:
-      #     name: test_ios_unit_frameworks_jsc
-      #     use_frameworks: true
-      #     run_unit_tests: true
-      - test_ios:
+          # TODO(ncor, neildhar) Integration tests for iOS + Hermes are currently
+          # disabled due to an ABI incompatibility introduced by D33830544.
+          # They can be re-enabled as soon as Hermes 0.12.0 is released.
+          run_unit_tests: false
+          # TODO: USE_FRAMEWORKS=1 not supported by Flipper and is not being tested on CI
+          # use_frameworks: true
+          requires:
+            - build_ios_jsc
+      - test_ios_unit:
           name: test_ios_unit_hermes
           use_hermes: true
           # TODO(ncor, neildhar) Integration tests for iOS + Hermes are currently
           # disabled due to an ABI incompatibility introduced by D33830544.
           # They can be re-enabled as soon as Hermes 0.12.0 is released.
           run_unit_tests: false
-      # DISABLED: USE_FRAMEWORKS=1 not supported by Flipper
-      # - test_ios:
-      #     name: test_ios_unit_frameworks_hermes
-      #     use_hermes: true
-      #     use_frameworks: true
-      #     run_unit_tests: true
+          # TODO: USE_FRAMEWORKS=1 not supported by Flipper and is not being tested on CI
+          # use_frameworks: true
+          requires:
+            - build_ios_hermes
       - test_js:
           name: test_js_prev_lts
           executor: nodeprevlts
@@ -1219,22 +1441,22 @@ workflows:
   publish_release:
     unless: << pipeline.parameters.run_package_release_workflow_only >>
     jobs:
-      - prepare-hermes-workspace:
+      - prepare_hermes_workspace:
           filters: *only_release_tags
-      - build-hermesc-linux:
+      - build_hermesc_linux:
           requires:
-            - prepare-hermes-workspace
-      - build-hermesc-macos:
+            - prepare_hermes_workspace
+      - build_hermesc_macos:
           requires:
-            - prepare-hermes-workspace
-      - build-hermesc-windows:
+            - prepare_hermes_workspace
+      - build_hermesc_windows:
           requires:
-            - prepare-hermes-workspace
-      - store-hermesc:
+            - prepare_hermes_workspace
+      - store_hermesc:
           requires:
-            - build-hermesc-linux
-            - build-hermesc-macos
-            - build-hermesc-windows
+            - build_hermesc_linux
+            - build_hermesc_macos
+            - build_hermesc_windows
       # This job will trigger when a version tag is pushed (by package_release)
       - build_npm_package:
           name: build_and_publish_npm_package
@@ -1242,7 +1464,7 @@ workflows:
           publish_npm_args: --release
           filters: *only_release_tags
           requires:
-            - store-hermesc
+            - store_hermesc
 
   analysis:
     unless: << pipeline.parameters.run_package_release_workflow_only >>
@@ -1271,23 +1493,23 @@ workflows:
     jobs:
       - nightly_job
 
-      - prepare-hermes-workspace
-      - build-hermesc-linux:
+      - prepare_hermes_workspace
+      - build_hermesc_linux:
           requires:
-            - prepare-hermes-workspace
-      - build-hermesc-macos:
+            - prepare_hermes_workspace
+      - build_hermesc_macos:
           requires:
-            - prepare-hermes-workspace
-      - build-hermesc-windows:
+            - prepare_hermes_workspace
+      - build_hermesc_windows:
           requires:
-            - prepare-hermes-workspace
-      - store-hermesc:
+            - prepare_hermes_workspace
+      - store_hermesc:
           requires:
-            - build-hermesc-linux
-            - build-hermesc-macos
-            - build-hermesc-windows
+            - build_hermesc_linux
+            - build_hermesc_macos
+            - build_hermesc_windows
 
       - build_npm_package:
           publish_npm_args: --nightly
           requires:
-            - store-hermesc
+            - store_hermesc
