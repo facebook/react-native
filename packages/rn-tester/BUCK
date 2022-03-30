@@ -61,7 +61,10 @@ rn_library(
         ],
     ),
     codegen_components = True,
-    labels = ["supermodule:xplat/default/public.react_native.playground"],
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholde",
+        "supermodule:xplat/default/public.react_native.playground",
+    ],
     native_component_spec_name = "MyNativeViewSpec",
     skip_processors = True,
     visibility = ["PUBLIC"],
@@ -304,6 +307,7 @@ rn_xplat_cxx_library2(
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],
     labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholde",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     plugins = [
