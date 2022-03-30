@@ -173,6 +173,14 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   return [_surfaceRegistry surfaceForRootTag:rootTag];
 }
 
+- (id<RCTSurfaceProtocol>)createFabricSurfaceForModuleName:(NSString *)moduleName
+                                         initialProperties:(NSDictionary *)initialProperties
+{
+  return [[RCTFabricSurface alloc] initWithSurfacePresenter:self
+                                                 moduleName:moduleName
+                                          initialProperties:initialProperties];
+}
+
 - (UIView *)findComponentViewWithTag_DO_NOT_USE_DEPRECATED:(NSInteger)tag
 {
   UIView<RCTComponentViewProtocol> *componentView =

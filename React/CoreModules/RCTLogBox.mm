@@ -13,7 +13,6 @@
 #import <React/RCTLog.h>
 #import <React/RCTRedBoxSetEnabled.h>
 #import <React/RCTSurface.h>
-
 #import "CoreModulesPlugins.h"
 
 #if RCT_DEV_MENU
@@ -23,6 +22,7 @@
 
 @implementation RCTLogBox {
   RCTLogBoxView *_view;
+  __weak id<RCTSurfacePresenterStub> _bridgelessSurfacePresenter;
 }
 
 @synthesize bridge = _bridge;
@@ -32,6 +32,11 @@ RCT_EXPORT_MODULE()
 + (BOOL)requiresMainQueueSetup
 {
   return YES;
+}
+
+- (void)setSurfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter
+{
+  _bridgelessSurfacePresenter = surfacePresenter;
 }
 
 RCT_EXPORT_METHOD(show)
@@ -49,15 +54,19 @@ RCT_EXPORT_METHOD(show)
         return;
       }
 
-      if (strongSelf->_bridge) {
-        if (strongSelf->_bridge.valid) {
+      if (strongSelf->_bridgelessSurfacePresenter) {
+        strongSelf->_view = [[RCTLogBoxView alloc] initWithFrame:RCTKeyWindow().frame
+                                                surfacePresenter:strongSelf->_bridgelessSurfacePresenter];
+      } else if (strongSelf->_bridge && strongSelf->_bridge.valid) {
+        if (strongSelf->_bridge.surfacePresenter) {
+          strongSelf->_view = [[RCTLogBoxView alloc] initWithFrame:RCTKeyWindow().frame
+                                                  surfacePresenter:strongSelf->_bridge.surfacePresenter];
+        } else {
           strongSelf->_view = [[RCTLogBoxView alloc] initWithWindow:RCTKeyWindow() bridge:strongSelf->_bridge];
-          [strongSelf->_view show];
         }
-      } else {
-        NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:strongSelf, @"logbox", nil];
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"CreateLogBoxSurface" object:nil userInfo:userInfo];
       }
+
+      [strongSelf->_view show];
     });
   }
 }
