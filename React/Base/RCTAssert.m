@@ -236,10 +236,10 @@ RCTFatalExceptionHandler RCTGetFatalExceptionHandler(void)
 #if RCT_NEW_ARCHITECTURE
 static RCTNotAllowedValidation validationReportingEnabled = RCTNotAllowedInBridgeless;
 #else
-static RCTNotAllowedValidation validationReportingEnabled = 0;
+static RCTNotAllowedValidation validationReportingEnabled = RCTNotAllowedValidationDisabled;
 #endif
 
-__attribute__((used)) RCT_EXTERN void RCTEnableNewArchitectureValidationReporting(RCTNotAllowedValidation type)
+__attribute__((used)) RCT_EXTERN void RCTNewArchitectureValidationSetEnabled(RCTNotAllowedValidation type)
 {
 #if RCT_NEW_ARCHITECTURE
   // Cannot disable the reporting in this mode.
@@ -258,6 +258,8 @@ static BOOL shouldEnforceValidation(RCTNotAllowedValidation type)
           validationReportingEnabled == RCTNotAllowedInAppWideFabric;
     case RCTNotAllowedInBridgeless:
       return validationReportingEnabled == RCTNotAllowedInBridgeless;
+    case RCTNotAllowedValidationDisabled:
+      return NO;
   }
   return NO;
 }
@@ -279,6 +281,9 @@ static NSString *validationMessage(RCTNotAllowedValidation type, id context, NSS
 {
   NSString *notAllowedType;
   switch (type) {
+    case RCTNotAllowedValidationDisabled:
+      RCTAssert(0, @"RCTNotAllowedValidationDisabled not a validation type.");
+      break;
     case RCTNotAllowedInAppWideFabric:
       notAllowedType = @"Fabric";
       break;

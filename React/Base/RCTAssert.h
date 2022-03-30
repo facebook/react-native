@@ -173,6 +173,7 @@ RCT_EXTERN NSString *RCTFormatStackTrace(NSArray<NSDictionary<NSString *, id> *>
 // MARK: - New Architecture Validation
 
 typedef enum {
+  RCTNotAllowedValidationDisabled = 0,
   RCTNotAllowedInAppWideFabric = 1,
   RCTNotAllowedInBridgeless = 2,
 } RCTNotAllowedValidation;
@@ -189,7 +190,7 @@ typedef enum {
  *
  * Note: enabling this at runtime is not early enough to report issues within ObjC class +load execution.
  */
-__attribute__((used)) RCT_EXTERN void RCTEnableNewArchitectureValidationReporting(RCTNotAllowedValidation type);
+__attribute__((used)) RCT_EXTERN void RCTNewArchitectureValidationSetEnabled(RCTNotAllowedValidation type);
 
 // When new architecture validation reporting is enabled, trigger an assertion and crash.
 __attribute__((used)) RCT_EXTERN void
