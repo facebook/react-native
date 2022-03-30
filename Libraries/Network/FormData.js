@@ -64,6 +64,12 @@ class FormData {
     this._parts.push([key, value]);
   }
 
+  getAll(key: string): Array<FormDataValue> {
+    return this._parts
+      .filter(([name]) => name === key)
+      .map(([, value]) => value);
+  }
+
   getParts(): Array<FormDataPart> {
     return this._parts.map(([name, value]) => {
       const contentDisposition = 'form-data; name="' + name + '"';
