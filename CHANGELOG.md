@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.68.0
+## v0.68.0
 
 ### Breaking Changes
 
@@ -193,7 +193,7 @@
 - Remove RCTUIManagerObserver from RCTNativeAnimatedTurboModule ([e9ed115bab](https://github.com/facebook/react-native/commit/e9ed115babbc82968380dae22fa928d4ce3cd6da) by [@p-sun](https://github.com/p-sun))
 
 
-## 0.67.4
+## v0.67.4
 
 ### Fixed
 
