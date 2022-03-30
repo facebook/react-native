@@ -9,8 +9,15 @@ set -u
 
 THIS_DIR=$(cd -P "$(dirname "$(realpath "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)
 
+SETUP_ENV_VARS_PATH="$BUCK_PROJECT_ROOT/env-utils/setup_env_vars.sh"
+
+# Somehow this path this doesn't work in BUCK1, so falling back to the exisiting path that we use in BUCK1.
+if [ ! -f "${SETUP_ENV_VARS_PATH}" ]; then
+  SETUP_ENV_VARS_PATH="$BUCK_PROJECT_ROOT/xplat/js/env-utils/setup_env_vars.sh"
+fi
+
 # shellcheck source=xplat/js/env-utils/setup_env_vars.sh
-source "$THIS_DIR/../../../../../../env-utils/setup_env_vars.sh"
+source "${SETUP_ENV_VARS_PATH}"
 
 pushd "$JS_DIR" >/dev/null
   "$INSTALL_NODE_MODULES"
