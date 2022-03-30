@@ -1,11 +1,9 @@
-load("@fbsource//xplat/pfh/ReactNative/CommonInfrastructurePlaceholde:DEFS.bzl", "ReactNative_CommonInfrastructurePlaceholde")
 load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "react_native_root_target", "react_native_target", "rn_android_library")
 
 rn_android_library(
     name = "clipboard",
     srcs = glob(["**/*.java"]),
     autoglob = False,
-    feature = ReactNative_CommonInfrastructurePlaceholde,
     labels = ["supermodule:xplat/default/public.react_native.infra"],
     visibility = [
         "PUBLIC",
