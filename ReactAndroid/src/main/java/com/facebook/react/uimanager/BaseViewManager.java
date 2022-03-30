@@ -444,6 +444,61 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   @Override
+  public @Nullable Map<String, Object> getExportedCustomBubblingEventTypeConstants() {
+    Map<String, Object> baseEventTypeConstants = super.getExportedCustomDirectEventTypeConstants();
+    Map<String, Object> eventTypeConstants =
+        baseEventTypeConstants == null ? new HashMap<String, Object>() : baseEventTypeConstants;
+    eventTypeConstants.putAll(
+        MapBuilder.<String, Object>builder()
+            .put(
+                "topPointerCancel",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of(
+                        "bubbled", "onPointerCancel", "captured", "onPointerCancelCapture")))
+            .put(
+                "topPointerDown",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onPointerDown", "captured", "onPointerDownCapture")))
+            .put(
+                "topPointerEnter2",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of(
+                        "bubbled",
+                        "onPointerEnter2",
+                        "captured",
+                        "onPointerEnter2Capture",
+                        "skipBubbling",
+                        true)))
+            .put(
+                "topPointerLeave2",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of(
+                        "bubbled",
+                        "onPointerLeave2",
+                        "captured",
+                        "onPointerLeave2Capture",
+                        "skipBubbling",
+                        true)))
+            .put(
+                "topPointerMove2",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of(
+                        "bubbled", "onPointerMove2", "captured", "onPointerMove2Capture")))
+            .put(
+                "topPointerUp",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onPointerUp", "captured", "onPointerUpCapture")))
+            .build());
+    return eventTypeConstants;
+  }
+
+  @Override
   public @Nullable Map<String, Object> getExportedCustomDirectEventTypeConstants() {
     @Nullable
     Map<String, Object> baseEventTypeConstants = super.getExportedCustomDirectEventTypeConstants();
