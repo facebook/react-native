@@ -36,6 +36,7 @@ project.xcworkspace
 /ReactAndroid/gradlew
 /ReactAndroid/gradlew.bat
 /ReactAndroid/hermes-engine/build/
+/ReactAndroid/hermes-engine/.cxx/
 /template/android/app/build/
 /template/android/build/
 
