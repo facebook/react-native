@@ -18,6 +18,8 @@ import com.facebook.react.uimanager.events.PointerEvent;
 import com.facebook.react.uimanager.events.PointerEventHelper;
 import com.facebook.react.uimanager.events.TouchEvent;
 import com.facebook.react.uimanager.events.TouchEventCoalescingKeyHelper;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * JSPointerDispatcher handles dispatching pointer events to JS from RootViews. If you implement
@@ -33,6 +35,13 @@ public class JSPointerDispatcher {
   private final ViewGroup mRootViewGroup;
   private final TouchEventCoalescingKeyHelper mTouchEventCoalescingKeyHelper =
       new TouchEventCoalescingKeyHelper();
+
+  private static final float ONMOVE_EPSILON = 1f;
+
+  // Set globally for hover interactions, referenced for coalescing hover events
+  private long mHoverInteractionKey = TouchEvent.UNSET;
+  private List<Integer> mLastHitState = Collections.emptyList();
+  private final float[] mLastEventCoordinates = new float[2];
 
   public JSPointerDispatcher(ViewGroup viewGroup) {
     mRootViewGroup = viewGroup;
@@ -70,6 +79,18 @@ public class JSPointerDispatcher {
     int surfaceId = UIManagerHelper.getSurfaceId(mRootViewGroup);
     int action = motionEvent.getActionMasked();
     int targetTag = findTargetTagAndSetCoordinates(motionEvent);
+
+    if (supportsHover) {
+      if (action == MotionEvent.ACTION_HOVER_MOVE) {
+        handleHoverEvent(motionEvent, eventDispatcher, surfaceId);
+        return;
+      }
+
+      // Ignore hover enter/exit because it's handled in `handleHoverEvent`
+      if (action == MotionEvent.ACTION_HOVER_EXIT || action == MotionEvent.ACTION_HOVER_ENTER) {
+        return;
+      }
+    }
 
     // First down pointer
     if (action == MotionEvent.ACTION_DOWN) {
@@ -159,6 +180,101 @@ public class JSPointerDispatcher {
     // This method updates `mTargetCoordinates` with coordinates for the motion event.
     return TouchTargetHelper.findTargetTagAndCoordinatesForTouch(
         ev.getX(), ev.getY(), mRootViewGroup, mTargetCoordinates, null);
+  }
+
+  // called on hover_move motion events only
+  private void handleHoverEvent(
+      MotionEvent motionEvent, EventDispatcher eventDispatcher, int surfaceId) {
+
+    int action = motionEvent.getActionMasked();
+    if (action != MotionEvent.ACTION_HOVER_MOVE) {
+      return;
+    }
+
+    float x = motionEvent.getX();
+    float y = motionEvent.getY();
+
+    boolean qualifiedMove =
+        (Math.abs(mLastEventCoordinates[0] - x) > ONMOVE_EPSILON
+            || Math.abs(mLastEventCoordinates[1] - y) > ONMOVE_EPSILON);
+
+    // Early exit
+    if (!qualifiedMove) {
+      return;
+    }
+
+    // Set the interaction key if unset, to be used as a coalescing key for hover interactions
+    if (mHoverInteractionKey < 0) {
+      mHoverInteractionKey = motionEvent.getEventTime();
+      mTouchEventCoalescingKeyHelper.addCoalescingKey(mHoverInteractionKey);
+    }
+
+    List<Integer> currHitState =
+        TouchTargetHelper.findTargetPathAndCoordinatesForTouch(
+            x, y, mRootViewGroup, mTargetCoordinates);
+
+    // If child is handling, eliminate target tags under handling child
+    if (mChildHandlingNativeGesture > 0) {
+      int index = currHitState.indexOf(mChildHandlingNativeGesture);
+      if (index > 0) {
+        currHitState.subList(0, index).clear();
+      }
+    }
+
+    int targetTag = currHitState.size() > 0 ? currHitState.get(0) : -1;
+    // If targetTag is empty, we should bail?
+    if (targetTag == -1) {
+      return;
+    }
+
+    // hitState is list ordered from inner child -> parent tag
+    // Traverse hitState back-to-front to find the first divergence with mLastHitState
+    // FIXME: this may generate incorrect events when view collapsing changes the hierarchy
+    int firstDivergentIndex = 0;
+    while (firstDivergentIndex < Math.min(currHitState.size(), mLastHitState.size())
+        && currHitState
+            .get(currHitState.size() - 1 - firstDivergentIndex)
+            .equals(mLastHitState.get(mLastHitState.size() - 1 - firstDivergentIndex))) {
+      firstDivergentIndex++;
+    }
+
+    boolean hasDiverged = firstDivergentIndex < Math.max(currHitState.size(), mLastHitState.size());
+
+    // Fire all relevant enter events
+    if (hasDiverged) {
+      // If something has changed in either enter/exit, let's start a new coalescing key
+      mTouchEventCoalescingKeyHelper.incrementCoalescingKey(mHoverInteractionKey);
+
+      List<Integer> enterTargetTags =
+          currHitState.subList(0, currHitState.size() - firstDivergentIndex);
+      if (enterTargetTags.size() > 0) {
+        for (Integer enterTargetTag : enterTargetTags) {
+          eventDispatcher.dispatchEvent(
+              PointerEvent.obtain(
+                  PointerEventHelper.POINTER_ENTER, surfaceId, enterTargetTag, motionEvent));
+        }
+      }
+
+      // Fire all relevant exit events
+      List<Integer> exitTargetTags =
+          mLastHitState.subList(0, mLastHitState.size() - firstDivergentIndex);
+      if (exitTargetTags.size() > 0) {
+        for (Integer exitTargetTag : exitTargetTags) {
+          eventDispatcher.dispatchEvent(
+              PointerEvent.obtain(
+                  PointerEventHelper.POINTER_LEAVE, surfaceId, exitTargetTag, motionEvent));
+        }
+      }
+    }
+
+    int coalescingKey = mTouchEventCoalescingKeyHelper.getCoalescingKey(mHoverInteractionKey);
+    eventDispatcher.dispatchEvent(
+        PointerEvent.obtain(
+            PointerEventHelper.POINTER_MOVE, surfaceId, targetTag, motionEvent, coalescingKey));
+
+    mLastHitState = currHitState;
+    mLastEventCoordinates[0] = x;
+    mLastEventCoordinates[1] = y;
   }
 
   private void dispatchCancelEvent(

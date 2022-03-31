@@ -262,6 +262,12 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   }
 
   @Override
+  public boolean onInterceptHoverEvent(MotionEvent ev) {
+    dispatchJSPointerEvent(ev);
+    return super.onInterceptHoverEvent(ev);
+  }
+
+  @Override
   public boolean onTouchEvent(MotionEvent ev) {
     if (shouldDispatchJSTouchEvent(ev)) {
       dispatchJSTouchEvent(ev);
@@ -271,6 +277,12 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     // In case when there is no children interested in handling touch event, we return true from
     // the root view in order to receive subsequent events related to that gesture
     return true;
+  }
+
+  @Override
+  public boolean onHoverEvent(MotionEvent ev) {
+    dispatchJSPointerEvent(ev);
+    return super.onHoverEvent(ev);
   }
 
   @Override

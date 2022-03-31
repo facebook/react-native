@@ -540,6 +540,22 @@ public class ReactModalHostView extends ViewGroup
     }
 
     @Override
+    public boolean onInterceptHoverEvent(MotionEvent event) {
+      if (mJSPointerDispatcher != null) {
+        mJSPointerDispatcher.handleMotionEvent(event, mEventDispatcher);
+      }
+      return super.onHoverEvent(event);
+    }
+
+    @Override
+    public boolean onHoverEvent(MotionEvent event) {
+      if (mJSPointerDispatcher != null) {
+        mJSPointerDispatcher.handleMotionEvent(event, mEventDispatcher);
+      }
+      return super.onHoverEvent(event);
+    }
+
+    @Override
     public void onChildStartedNativeGesture(MotionEvent ev) {
       this.onChildStartedNativeGesture(null, ev);
     }
