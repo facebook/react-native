@@ -159,6 +159,11 @@ android {
                     targets "helloworld_appmodules"
                 }
             }
+            if (!enableSeparateBuildPerCPUArchitecture) {
+                ndk {
+                    abiFilters (*reactNativeArchitectures())
+                }
+            }
         }
     }
 
