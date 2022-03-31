@@ -7,12 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
-@class RCTSurface;
+@protocol RCTSurfaceProtocol;
 
 @interface RCTSurfaceBackedComponentState: NSObject
 
-@property (atomic, readonly, strong) RCTSurface *surface;
+@property (atomic, readonly, strong) id<RCTSurfaceProtocol> surface;
 
-+ (instancetype)newWithSurface:(RCTSurface *)surface;
++ (instancetype)newWithSurface:(id<RCTSurfaceProtocol>)surface;
 
 @end

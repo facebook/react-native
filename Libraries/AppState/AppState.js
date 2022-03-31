@@ -154,7 +154,7 @@ class AppState {
       case 'focus':
         // $FlowIssue[invalid-tuple-arity] Flow cannot refine handler based on the event type
         // $FlowIssue[incompatible-call]
-        emitter.addListener('appStateFocusChange', listener);
+        emitter.removeListener('appStateFocusChange', listener);
         return;
     }
     throw new Error('Trying to unsubscribe from unknown event: ' + type);

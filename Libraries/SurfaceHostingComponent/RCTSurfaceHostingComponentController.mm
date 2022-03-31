@@ -21,7 +21,7 @@
 @end
 
 @implementation RCTSurfaceHostingComponentController {
-  RCTSurface *_surface;
+  id<RCTSurfaceProtocol> _surface;
 }
 
 - (instancetype)initWithComponent:(RCTSurfaceHostingComponent *)component
@@ -64,7 +64,7 @@
 - (void)updateSurfaceWithComponent:(RCTSurfaceHostingComponent *)component
 {
   // Updating `surface`
-  RCTSurface *const surface = component.surface;
+  id<RCTSurfaceProtocol> const surface = component.surface;
   if (surface != _surface) {
     if (_surface.delegate == self) {
       _surface.delegate = nil;
@@ -77,18 +77,34 @@
 
 - (void)setIntrinsicSize:(CGSize)intrinsicSize
 {
-  [self.component updateState:^(RCTSurfaceHostingComponentState *state) {
-    return [RCTSurfaceHostingComponentState newWithStage:state.stage
-                                           intrinsicSize:intrinsicSize];
-  } mode:[self suitableStateUpdateMode]];
+  __weak __typeof(self) weakSelf = self;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    __strong __typeof(self) strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
+    
+    [strongSelf.component updateState:^(RCTSurfaceHostingComponentState *state) {
+      return [RCTSurfaceHostingComponentState newWithStage:state.stage
+                                             intrinsicSize:intrinsicSize];
+    } mode:[strongSelf suitableStateUpdateMode]];
+  });
 }
 
 - (void)setStage:(RCTSurfaceStage)stage
 {
-  [self.component updateState:^(RCTSurfaceHostingComponentState *state) {
-    return [RCTSurfaceHostingComponentState newWithStage:stage
-                                           intrinsicSize:state.intrinsicSize];
-  } mode:[self suitableStateUpdateMode]];
+  __weak __typeof(self) weakSelf = self;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    __strong __typeof(self) strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
+    
+    [strongSelf.component updateState:^(RCTSurfaceHostingComponentState *state) {
+      return [RCTSurfaceHostingComponentState newWithStage:stage
+                                             intrinsicSize:state.intrinsicSize];
+    } mode:[strongSelf suitableStateUpdateMode]];
+  });
 }
 
 - (CKUpdateMode)suitableStateUpdateMode

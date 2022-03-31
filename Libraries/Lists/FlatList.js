@@ -26,6 +26,7 @@ import type {
 } from './ViewabilityHelper';
 import type {RenderItemType, RenderItemProps} from './VirtualizedList';
 import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';
+import memoizeOne from 'memoize-one';
 
 type RequiredProps<ItemT> = {|
   /**
@@ -141,6 +142,10 @@ type OptionalProps<ItemT> = {|
    * See `ScrollView` for flow type and further documentation.
    */
   fadingEdgeLength?: ?number,
+  /**
+   * Enable an optimization to memoize the item renderer to prevent unnecessary rerenders.
+   */
+  strictMode?: boolean,
 |};
 
 /**
@@ -578,9 +583,14 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     };
   }
 
-  _renderer = () => {
-    const {ListItemComponent, renderItem, columnWrapperStyle} = this.props;
-    const numColumns = numColumnsOrDefault(this.props.numColumns);
+  _renderer = (
+    ListItemComponent: ?(React.ComponentType<any> | React.Element<any>),
+    renderItem: ?RenderItemType<ItemT>,
+    columnWrapperStyle: ?ViewStyleProp,
+    numColumns: ?number,
+    extraData: ?any,
+  ) => {
+    const cols = numColumnsOrDefault(numColumns);
 
     let virtualizedListRenderKey = ListItemComponent
       ? 'ListItemComponent'
@@ -605,7 +615,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
        * This comment suppresses an error found when Flow v0.111 was deployed.
        * To see the error, delete this comment and run Flow. */
       [virtualizedListRenderKey]: (info: RenderItemProps<ItemT>) => {
-        if (numColumns > 1) {
+        if (cols > 1) {
           const {item, index} = info;
           invariant(
             Array.isArray(item),
@@ -616,7 +626,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
               {item.map((it, kk) => {
                 const element = renderer({
                   item: it,
-                  index: index * numColumns + kk,
+                  index: index * cols + kk,
                   separators: info.separators,
                 });
                 return element != null ? (
@@ -632,13 +642,18 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     };
   };
 
+  _memoizedRenderer = memoizeOne(this._renderer);
+
   render(): React.Node {
     const {
       numColumns,
       columnWrapperStyle,
       removeClippedSubviews: _removeClippedSubviews,
+      strictMode = false,
       ...restProps
     } = this.props;
+
+    const renderer = strictMode ? this._memoizedRenderer : this._renderer;
 
     return (
       <VirtualizedList
@@ -651,7 +666,13 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
         removeClippedSubviews={removeClippedSubviewsOrDefault(
           _removeClippedSubviews,
         )}
-        {...this._renderer()}
+        {...renderer(
+          this.props.ListItemComponent,
+          this.props.renderItem,
+          columnWrapperStyle,
+          numColumns,
+          this.props.extraData,
+        )}
       />
     );
   }

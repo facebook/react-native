@@ -120,5 +120,35 @@ auto toJs(
   return Bridging<bridging_t<T>>::toJs(rt, std::forward<T>(value), jsInvoker);
 }
 
+template <typename, typename = jsi::Value, typename = void>
+inline constexpr bool supportsFromJs = false;
+
+template <typename T, typename Arg = jsi::Value>
+inline constexpr bool supportsFromJs<
+    T,
+    Arg,
+    std::void_t<decltype(fromJs<T>(
+        std::declval<jsi::Runtime &>(),
+        std::declval<Arg>(),
+        nullptr))>> = true;
+
+template <typename, typename = jsi::Value, typename = void>
+inline constexpr bool supportsToJs = false;
+
+template <typename T, typename Ret = jsi::Value>
+inline constexpr bool supportsToJs<
+    T,
+    Ret,
+    std::void_t<decltype(toJs(
+        std::declval<jsi::Runtime &>(),
+        std::declval<T>(),
+        nullptr))>> =
+    std::is_convertible_v<
+        decltype(toJs(
+            std::declval<jsi::Runtime &>(),
+            std::declval<T>(),
+            nullptr)),
+        Ret>;
+
 } // namespace bridging
 } // namespace facebook::react

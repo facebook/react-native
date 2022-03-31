@@ -25,6 +25,8 @@ T callFromJs(
     JSArgs &&...args) {
   static_assert(
       sizeof...(Args) == sizeof...(JSArgs), "Incorrect arguments length");
+  static_assert(
+      (supportsFromJs<Args, JSArgs> && ...), "Incompatible arguments");
 
   if constexpr (std::is_void_v<T>) {
     (instance->*method)(
@@ -40,6 +42,8 @@ T callFromJs(
     return jsi::Value();
 
   } else if constexpr (is_jsi_v<T>) {
+    static_assert(supportsToJs<R, T>, "Incompatible return type");
+
     return toJs(
         rt,
         (instance->*method)(
@@ -47,6 +51,8 @@ T callFromJs(
         jsInvoker);
 
   } else {
+    static_assert(std::is_convertible_v<R, T>, "Incompatible return type");
+
     return (instance->*method)(
         rt, fromJs<Args>(rt, std::forward<JSArgs>(args), jsInvoker)...);
   }

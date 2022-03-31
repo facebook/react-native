@@ -9,6 +9,7 @@
 
 #import <React/RCTLog.h>
 #import <React/RCTSurface.h>
+#import <React/RCTSurfaceHostingView.h>
 
 @implementation RCTLogBoxView {
   RCTSurface *_surface;
@@ -32,22 +33,42 @@
   self.rootViewController = _rootViewController;
 }
 
-- (instancetype)initWithFrame:(CGRect)frame bridge:(RCTBridge *)bridge
+- (instancetype)initWithFrame:(CGRect)frame surfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter
 {
-  if ((self = [super initWithFrame:frame])) {
-    self.windowLevel = UIWindowLevelStatusBar - 1;
-    self.backgroundColor = [UIColor clearColor];
+  if (self = [super initWithFrame:frame]) {
+    id<RCTSurfaceProtocol> surface = [surfacePresenter createFabricSurfaceForModuleName:@"LogBox"
+                                                                      initialProperties:@{}];
+    [surface start];
+    RCTSurfaceHostingView *rootView = [[RCTSurfaceHostingView alloc]
+        initWithSurface:surface
+        sizeMeasureMode:RCTSurfaceSizeMeasureModeWidthExact | RCTSurfaceSizeMeasureModeHeightExact];
 
-    _surface = [[RCTSurface alloc] initWithBridge:bridge moduleName:@"LogBox" initialProperties:@{}];
-    [_surface setSize:frame.size];
-    [_surface start];
-
-    if (![_surface synchronouslyWaitForStage:RCTSurfaceStageSurfaceDidInitialMounting timeout:1]) {
-      RCTLogInfo(@"Failed to mount LogBox within 1s");
-    }
-
-    [self createRootViewController:(UIView *)_surface.view];
+    [self createRootViewController:rootView];
   }
+  return self;
+}
+
+- (instancetype)initWithWindow:(UIWindow *)window bridge:(RCTBridge *)bridge
+{
+  RCTErrorNewArchitectureValidation(RCTNotAllowedInAppWideFabric, @"RCTLogBoxView", nil);
+
+  if (@available(iOS 13.0, *)) {
+    self = [super initWithWindowScene:window.windowScene];
+  } else {
+    self = [super initWithFrame:window.frame];
+  }
+
+  self.windowLevel = UIWindowLevelStatusBar - 1;
+  self.backgroundColor = [UIColor clearColor];
+
+  _surface = [[RCTSurface alloc] initWithBridge:bridge moduleName:@"LogBox" initialProperties:@{}];
+  [_surface start];
+
+  if (![_surface synchronouslyWaitForStage:RCTSurfaceStageSurfaceDidInitialMounting timeout:1]) {
+    RCTLogInfo(@"Failed to mount LogBox within 1s");
+  }
+  [self createRootViewController:(UIView *)_surface.view];
+
   return self;
 }
 
