@@ -289,35 +289,19 @@ android {
                         "-DANDROID_TOOLCHAIN=clang",
                         "-DANDROID_PLATFORM=android-21"
 
-                targets "reactnativejni",
+                targets "fabricjni",
+                    "hermes-executor-debug",
+                    "hermes-executor-release",
                     "jscexecutor",
                     "jsijniprofiler",
                     "reactnativeblob",
+                    "reactnativejni",
                     "reactperfloggerjni",
-                    "turbomodulejsijni",
-                    "fabricjni"
+                    "turbomodulejsijni"
             }
         }
         ndk {
             abiFilters (*reactNativeArchitectures())
-        }
-    }
-
-    buildTypes {
-        debug {
-            externalNativeBuild {
-                cmake {
-                    targets "hermes-executor-debug"
-                }
-            }
-        }
-
-        release {
-            externalNativeBuild {
-                cmake {
-                    targets "hermes-executor-release"
-                }
-            }
         }
     }
 

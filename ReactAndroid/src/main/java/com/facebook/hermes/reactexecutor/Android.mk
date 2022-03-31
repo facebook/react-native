@@ -6,47 +6,53 @@
 LOCAL_PATH := $(call my-dir)
 REACT_NATIVE := $(LOCAL_PATH)/../../../../../../../..
 
-ifeq ($(APP_OPTIM),debug)
-  include $(CLEAR_VARS)
+#########################
+# hermes-executor-debug #
+#########################
 
-  LOCAL_MODULE := hermes-executor-debug
-  LOCAL_CFLAGS := -DHERMES_ENABLE_DEBUGGER=1
+include $(CLEAR_VARS)
 
-  LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
+LOCAL_MODULE := hermes-executor-debug
+LOCAL_CFLAGS := -DHERMES_ENABLE_DEBUGGER=1
 
-  LOCAL_C_INCLUDES := $(LOCAL_PATH) $(REACT_NATIVE)/ReactCommon/jsi
+LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
 
-  LOCAL_CPP_FEATURES := exceptions
+LOCAL_C_INCLUDES := $(LOCAL_PATH) $(REACT_NATIVE)/ReactCommon/jsi
 
-  LOCAL_STATIC_LIBRARIES := libjsireact libhermes-executor-common-debug
-  LOCAL_SHARED_LIBRARIES := \
-    libfb \
-    libfbjni \
-    libfolly_runtime \
-    libhermes \
-    libjsi \
-    libreactnativejni
+LOCAL_CPP_FEATURES := exceptions
 
-  include $(BUILD_SHARED_LIBRARY)
-else
-  include $(CLEAR_VARS)
+LOCAL_STATIC_LIBRARIES := libjsireact libhermes-executor-common-debug
+LOCAL_SHARED_LIBRARIES := \
+  libfb \
+  libfbjni \
+  libfolly_runtime \
+  libhermes \
+  libjsi \
+  libreactnativejni
 
-  LOCAL_MODULE := hermes-executor-release
+include $(BUILD_SHARED_LIBRARY)
 
-  LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
+###########################
+# hermes-executor-release #
+###########################
 
-  LOCAL_C_INCLUDES := $(LOCAL_PATH) $(REACT_NATIVE)/ReactCommon/jsi
+include $(CLEAR_VARS)
 
-  LOCAL_CPP_FEATURES := exceptions
+LOCAL_MODULE := hermes-executor-release
 
-  LOCAL_STATIC_LIBRARIES := libjsireact libhermes-executor-common-release
-  LOCAL_SHARED_LIBRARIES := \
-    libfb \
-    libfbjni \
-    libfolly_runtime \
-    libhermes \
-    libjsi \
-    libreactnativejni
+LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
 
-  include $(BUILD_SHARED_LIBRARY)
-endif
+LOCAL_C_INCLUDES := $(LOCAL_PATH) $(REACT_NATIVE)/ReactCommon/jsi
+
+LOCAL_CPP_FEATURES := exceptions
+
+LOCAL_STATIC_LIBRARIES := libjsireact libhermes-executor-common-release
+LOCAL_SHARED_LIBRARIES := \
+  libfb \
+  libfbjni \
+  libfolly_runtime \
+  libhermes \
+  libjsi \
+  libreactnativejni
+
+include $(BUILD_SHARED_LIBRARY)
