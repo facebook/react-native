@@ -132,6 +132,44 @@ const PlatformBaseViewConfig: PartialViewConfigWithoutName =
               bubbled: 'onTouchMove',
             },
           },
+          topPointerCancel: {
+            phasedRegistrationNames: {
+              captured: 'onPointerCancelCapture',
+              bubbled: 'onPointerCancel',
+            },
+          },
+          topPointerDown: {
+            phasedRegistrationNames: {
+              captured: 'onPointerDownCapture',
+              bubbled: 'onPointerDown',
+            },
+          },
+          topPointerEnter2: {
+            phasedRegistrationNames: {
+              captured: 'onPointerEnter2Capture',
+              bubbled: 'onPointerEnter2',
+              skipBubbling: true,
+            },
+          },
+          topPointerLeave2: {
+            phasedRegistrationNames: {
+              captured: 'onPointerLeave2Capture',
+              bubbled: 'onPointerLeave2',
+              skipBubbling: true,
+            },
+          },
+          topPointerMove2: {
+            phasedRegistrationNames: {
+              captured: 'onPointerMove2Capture',
+              bubbled: 'onPointerMove2',
+            },
+          },
+          topPointerUp: {
+            phasedRegistrationNames: {
+              captured: 'onPointerUpCapture',
+              bubbled: 'onPointerUp',
+            },
+          },
         },
         validAttributes: {
           // @ReactProps from BaseViewManager
