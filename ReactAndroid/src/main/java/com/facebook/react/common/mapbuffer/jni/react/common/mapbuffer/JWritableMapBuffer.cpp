@@ -33,7 +33,7 @@ MapBuffer JWritableMapBuffer::getMapBuffer() {
     static const auto integerClass = jni::JInteger::javaClassStatic();
     static const auto doubleClass = jni::JDouble::javaClassStatic();
     static const auto stringClass = jni::JString::javaClassStatic();
-    static const auto readableMapClass = ReadableMapBuffer::javaClassStatic();
+    static const auto readableMapClass = JReadableMapBuffer::javaClassStatic();
     static const auto writableMapClass = JWritableMapBuffer::javaClassStatic();
 
     if (value->isInstanceOf(booleanClass)) {
@@ -50,7 +50,7 @@ MapBuffer JWritableMapBuffer::getMapBuffer() {
       builder.putString(key, element->toStdString());
     } else if (value->isInstanceOf(readableMapClass)) {
       auto element =
-          jni::static_ref_cast<ReadableMapBuffer::jhybridobject>(value);
+          jni::static_ref_cast<JReadableMapBuffer::jhybridobject>(value);
       builder.putMapBuffer(key, MapBuffer(element->cthis()->data()));
     } else if (value->isInstanceOf(writableMapClass)) {
       auto element =

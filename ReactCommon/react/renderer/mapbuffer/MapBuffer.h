@@ -20,7 +20,7 @@
 namespace facebook {
 namespace react {
 
-class ReadableMapBuffer;
+class JReadableMapBuffer;
 
 // clang-format off
 
@@ -96,7 +96,7 @@ class MapBuffer {
 
   /**
    * Data types available for serialization in MapBuffer
-   * Keep in sync with `DataType` enum in `ReadableMapBuffer.java`, which
+   * Keep in sync with `DataType` enum in `JReadableMapBuffer.java`, which
    * expects the same values after reading them through JNI.
    */
   enum DataType : uint16_t {
@@ -144,7 +144,7 @@ class MapBuffer {
 
   int32_t getKeyBucket(MapBuffer::Key key) const;
 
-  friend ReadableMapBuffer;
+  friend JReadableMapBuffer;
 };
 
 } // namespace react

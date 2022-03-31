@@ -8,7 +8,7 @@
 #pragma once
 
 #include <fbjni/fbjni.h>
-#include <react/common/mapbuffer/ReadableMapBuffer.h>
+#include <react/common/mapbuffer/JReadableMapBuffer.h>
 
 namespace facebook::react {
 
