@@ -33,6 +33,10 @@ jni::local_ref<jni::JByteBuffer> ReadableMapBuffer::importByteBuffer() {
       serializedData_.data(), serializedData_.size());
 }
 
+std::vector<uint8_t> ReadableMapBuffer::data() const {
+  return serializedData_;
+}
+
 jni::local_ref<ReadableMapBuffer::jhybridobject>
 ReadableMapBuffer::createWithContents(MapBuffer &&map) {
   return newObjectCxxArgs(std::move(map));

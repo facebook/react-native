@@ -7,6 +7,7 @@
 
 #include <fbjni/fbjni.h>
 
+#include "JWritableMapBuffer.h"
 #include "ReadableMapBuffer.h"
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {

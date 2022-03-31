@@ -30,6 +30,8 @@ class ReadableMapBuffer : public jni::HybridClass<ReadableMapBuffer> {
 
   jni::local_ref<jni::JByteBuffer> importByteBuffer();
 
+  std::vector<uint8_t> data() const;
+
  private:
   std::vector<uint8_t> serializedData_;
 };
