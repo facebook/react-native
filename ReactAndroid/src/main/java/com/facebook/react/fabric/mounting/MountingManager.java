@@ -23,7 +23,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.UiThreadUtil;
-import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
+import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
@@ -396,9 +396,9 @@ public class MountingManager {
   public long measureMapBuffer(
       @NonNull ReactContext context,
       @NonNull String componentName,
-      @NonNull ReadableMapBuffer localData,
-      @NonNull ReadableMapBuffer props,
-      @Nullable ReadableMapBuffer state,
+      @NonNull MapBuffer localData,
+      @NonNull MapBuffer props,
+      @Nullable MapBuffer state,
       float width,
       @NonNull YogaMeasureMode widthMode,
       float height,

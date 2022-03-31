@@ -164,7 +164,7 @@ class WritableMapBuffer : MapBuffer {
 
   companion object {
     init {
-      ReadableMapBufferSoLoader.staticInit()
+      MapBufferSoLoader.staticInit()
     }
   }
 }

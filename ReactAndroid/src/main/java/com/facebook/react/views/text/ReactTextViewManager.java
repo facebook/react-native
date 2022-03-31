@@ -15,7 +15,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
+import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.IViewManagerWithChildren;
@@ -112,7 +112,7 @@ public class ReactTextViewManager
     }
 
     if (ReactFeatureFlags.isMapBufferSerializationEnabled()) {
-      ReadableMapBuffer stateMapBuffer = stateWrapper.getStateDataMapBuffer();
+      MapBuffer stateMapBuffer = stateWrapper.getStateDataMapBuffer();
       if (stateMapBuffer != null) {
         return getReactTextUpdate(view, props, stateMapBuffer);
       }
@@ -142,11 +142,10 @@ public class ReactTextViewManager
         TextAttributeProps.getJustificationMode(props));
   }
 
-  private Object getReactTextUpdate(
-      ReactTextView view, ReactStylesDiffMap props, ReadableMapBuffer state) {
+  private Object getReactTextUpdate(ReactTextView view, ReactStylesDiffMap props, MapBuffer state) {
 
-    ReadableMapBuffer attributedString = state.getMapBuffer(TX_STATE_KEY_ATTRIBUTED_STRING);
-    ReadableMapBuffer paragraphAttributes = state.getMapBuffer(TX_STATE_KEY_PARAGRAPH_ATTRIBUTES);
+    MapBuffer attributedString = state.getMapBuffer(TX_STATE_KEY_ATTRIBUTED_STRING);
+    MapBuffer paragraphAttributes = state.getMapBuffer(TX_STATE_KEY_PARAGRAPH_ATTRIBUTES);
     Spannable spanned =
         TextLayoutManagerMapBuffer.getOrCreateSpannableForText(
             view.getContext(), attributedString, mReactTextViewManagerCallback);
@@ -205,9 +204,9 @@ public class ReactTextViewManager
   @Override
   public long measure(
       Context context,
-      ReadableMapBuffer localData,
-      ReadableMapBuffer props,
-      @Nullable ReadableMapBuffer state,
+      MapBuffer localData,
+      MapBuffer props,
+      @Nullable MapBuffer state,
       float width,
       YogaMeasureMode widthMode,
       float height,
