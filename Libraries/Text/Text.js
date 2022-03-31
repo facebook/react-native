@@ -129,6 +129,7 @@ const Text: React.AbstractComponent<
                 onResponderTerminate(event);
               }
             },
+            onClick: eventHandlers.onClick,
             onResponderTerminationRequest:
               eventHandlers.onResponderTerminationRequest,
             onStartShouldSetResponder: eventHandlers.onStartShouldSetResponder,

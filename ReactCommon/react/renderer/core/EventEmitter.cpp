@@ -76,7 +76,7 @@ void EventEmitter::dispatchEvent(
     const ValueFactory &payloadFactory,
     EventPriority priority,
     RawEvent::Category category) const {
-  SystraceSection s("EventEmitter::dispatchEvent");
+  SystraceSection s("EventEmitter::dispatchEvent", "type", type);
 
   auto eventDispatcher = eventDispatcher_.lock();
   if (!eventDispatcher) {

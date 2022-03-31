@@ -19,11 +19,15 @@ import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.TintContextWrapper;
+import androidx.core.view.AccessibilityDelegateCompat;
+import androidx.core.view.ViewCompat;
+import androidx.customview.widget.ExploreByTouchHelper;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
@@ -550,5 +554,21 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
   public void setLinkifyMask(int mask) {
     mLinkifyMaskType = mask;
+  }
+
+  @Override
+  protected boolean dispatchHoverEvent(MotionEvent event) {
+    // if this view has an accessibility delegate set, and that delegate supports virtual view
+    // children (used for links), pass the hover event along to it so that touching and holding on
+    // this text will properly move focus to the virtual children.
+    if (ViewCompat.hasAccessibilityDelegate(this)) {
+      AccessibilityDelegateCompat delegate = ViewCompat.getAccessibilityDelegate(this);
+      if (delegate instanceof ExploreByTouchHelper) {
+        return ((ExploreByTouchHelper) delegate).dispatchHoverEvent(event)
+            || super.dispatchHoverEvent(event);
+      }
+    }
+
+    return super.dispatchHoverEvent(event);
   }
 }

@@ -219,8 +219,8 @@ afterEvaluate {
     // Needed as some of the native sources needs to be downloaded
     // before configureCMakeRelease/configureCMakeMinSizeRel could be executed.
     reactNativeArchitectures().each { architecture ->
-        tasks.named("configureCMakeMinSizeRel[${architecture}]") { dependsOn(preBuild) }
-        tasks.named("configureCMakeRelease[${architecture}]") { dependsOn(preBuild) }
+        tasks.findByName("configureCMakeMinSizeRel[${architecture}]")?.configure { dependsOn(preBuild) }
+        tasks.findByName("configureCMakeRelease[${architecture}]")?.configure { dependsOn(preBuild) }
     }
     configureCMakeRelease.dependsOn(preBuild)
     configureCMakeMinSizeRel.dependsOn(preBuild)

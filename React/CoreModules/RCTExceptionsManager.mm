@@ -117,15 +117,15 @@ RCT_EXPORT_METHOD(reportException : (JS::NativeExceptionsManager::ExceptionData 
   NSMutableArray<NSDictionary *> *stackArray = [NSMutableArray<NSDictionary *> new];
   for (auto frame : data.stack()) {
     NSMutableDictionary *frameDict = [NSMutableDictionary new];
-    if (frame.column().hasValue()) {
+    if (frame.column().has_value()) {
       frameDict[@"column"] = @(frame.column().value());
     }
     frameDict[@"file"] = frame.file();
-    if (frame.lineNumber().hasValue()) {
+    if (frame.lineNumber().has_value()) {
       frameDict[@"lineNumber"] = @(frame.lineNumber().value());
     }
     frameDict[@"methodName"] = frame.methodName();
-    if (frame.collapse().hasValue()) {
+    if (frame.collapse().has_value()) {
       frameDict[@"collapse"] = @(frame.collapse().value());
     }
     [stackArray addObject:frameDict];

@@ -8,6 +8,10 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 
 add_compile_options(-fexceptions -frtti -std=c++17 -Wall)
 
-add_library(runtimeexecutor INTERFACE)
+file(GLOB_RECURSE runtimeexecutor_SRC CONFIGURE_DEPENDS *.cpp *.h)
 
-target_include_directories(runtimeexecutor INTERFACE .)
+add_library(runtimeexecutor SHARED ${runtimeexecutor_SRC})
+
+target_include_directories(runtimeexecutor PUBLIC .)
+
+target_link_libraries(runtimeexecutor jsi)

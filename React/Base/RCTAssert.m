@@ -231,63 +231,99 @@ RCTFatalExceptionHandler RCTGetFatalExceptionHandler(void)
   return RCTCurrentFatalExceptionHandler;
 }
 
-// -------------------------
-// New architecture section
-// -------------------------
+// MARK: - New Architecture Validation - Enable Reporting
 
 #if RCT_NEW_ARCHITECTURE
-static BOOL newArchitectureViolationReporting = YES;
+static RCTNotAllowedValidation validationReportingEnabled = RCTNotAllowedInBridgeless;
 #else
-static BOOL newArchitectureViolationReporting = NO;
+static RCTNotAllowedValidation validationReportingEnabled = RCTNotAllowedValidationDisabled;
 #endif
 
-void RCTEnableNewArchitectureViolationReporting(BOOL enabled)
+__attribute__((used)) RCT_EXTERN void RCTNewArchitectureValidationSetEnabled(RCTNotAllowedValidation type)
 {
 #if RCT_NEW_ARCHITECTURE
   // Cannot disable the reporting in this mode.
 #else
-  newArchitectureViolationReporting = enabled;
+  validationReportingEnabled = type;
 #endif
 }
 
-static NSString *getNewArchitectureViolationMessage(id context, NSString *extra)
+// MARK: - New Architecture Validation - Private
+
+static BOOL shouldEnforceValidation(RCTNotAllowedValidation type)
 {
-  NSString *tag = @"uncategorized";
+  switch (type) {
+    case RCTNotAllowedInAppWideFabric:
+      return validationReportingEnabled == RCTNotAllowedInBridgeless ||
+          validationReportingEnabled == RCTNotAllowedInAppWideFabric;
+    case RCTNotAllowedInBridgeless:
+      return validationReportingEnabled == RCTNotAllowedInBridgeless;
+    case RCTNotAllowedValidationDisabled:
+      return NO;
+  }
+  return NO;
+}
+
+static NSString *stringDescribingContext(id context)
+{
   if ([context isKindOfClass:NSString.class]) {
-    tag = context;
+    return context;
   } else if (context) {
     Class klass = [context class];
     if (klass) {
-      tag = NSStringFromClass(klass);
+      return NSStringFromClass(klass);
     }
   }
-  NSString *errorMessage = extra ?: @"Unexpectedly reached this code path.";
-  return [NSString stringWithFormat:@"[ReactNative Architecture][%@] %@", tag, errorMessage];
+  return @"uncategorized";
 }
 
-void RCTEnforceNotAllowedForNewArchitecture(id context, NSString *extra)
+static NSString *validationMessage(RCTNotAllowedValidation type, id context, NSString *extra)
 {
-  if (!newArchitectureViolationReporting) {
+  NSString *notAllowedType;
+  switch (type) {
+    case RCTNotAllowedValidationDisabled:
+      RCTAssert(0, @"RCTNotAllowedValidationDisabled not a validation type.");
+      break;
+    case RCTNotAllowedInAppWideFabric:
+      notAllowedType = @"Fabric";
+      break;
+    case RCTNotAllowedInBridgeless:
+      notAllowedType = @"Bridgeless";
+      break;
+  }
+
+  return
+      [NSString stringWithFormat:@"[ReactNative Architecture][NotAllowedIn%@] Unexpectedly reached code path in %@. %@",
+                                 notAllowedType,
+                                 stringDescribingContext(context),
+                                 extra ?: @""];
+}
+
+// MARK: - New Architecture Validation - Public
+
+void RCTEnforceNewArchitectureValidation(RCTNotAllowedValidation type, id context, NSString *extra)
+{
+  if (!shouldEnforceValidation(type)) {
     return;
   }
 
-  RCTAssert(0, @"%@", getNewArchitectureViolationMessage(context, extra));
+  RCTAssert(0, @"%@", validationMessage(type, context, extra));
 }
 
-void RCTErrorNotAllowedForNewArchitecture(id context, NSString *extra)
+void RCTErrorNewArchitectureValidation(RCTNotAllowedValidation type, id context, NSString *extra)
 {
-  if (!newArchitectureViolationReporting) {
+  if (!shouldEnforceValidation(type)) {
     return;
   }
 
-  RCTLogError(@"%@", getNewArchitectureViolationMessage(context, extra));
+  RCTLogError(@"%@", validationMessage(type, context, extra));
 }
 
-void RCTLogNotAllowedForNewArchitecture(id context, NSString *extra)
+void RCTLogNewArchitectureValidation(RCTNotAllowedValidation type, id context, NSString *extra)
 {
-  if (!newArchitectureViolationReporting) {
+  if (!shouldEnforceValidation(type)) {
     return;
   }
 
-  RCTLogInfo(@"%@", getNewArchitectureViolationMessage(context, extra));
+  RCTLogInfo(@"%@", validationMessage(type, context, extra));
 }

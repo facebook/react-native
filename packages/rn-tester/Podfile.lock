@@ -94,7 +94,6 @@ PODS:
   - RCTRequired (1000.0.0)
   - RCTTypeSafety (1000.0.0):
     - FBLazyVector (= 1000.0.0)
-    - RCT-Folly (= 2021.06.28.00-v2)
     - RCTRequired (= 1000.0.0)
     - React-Core (= 1000.0.0)
   - React (1000.0.0):
@@ -908,7 +907,7 @@ SPEC CHECKSUMS:
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
   RCT-Folly: 4d8508a426467c48885f1151029bc15fa5d7b3b8
   RCTRequired: 1c8808cf84569265784a6c33984bbb506ada8c6e
-  RCTTypeSafety: b9e639380265155a5bbdac4a72be1307f9360fc6
+  RCTTypeSafety: b6dcb5036a808864ee8cad66ca15f263c24661cc
   React: 8d809d414723bb5763093ddec7658066a21ccabc
   React-bridging: 1329cdc45834252447f5f4cb8bd19ec78ef0f06e
   React-callinvoker: 5f16202ad4e45f0607b1fae0f6955a8f7c87eef1

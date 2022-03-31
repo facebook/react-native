@@ -70,15 +70,15 @@ function toObjCType(
 ): string {
   const [typeAnnotation, nullable] = unwrapNullable(nullableTypeAnnotation);
   const isRequired = !nullable && !isOptional;
-  const wrapFollyOptional = (type: string) => {
-    return isRequired ? type : `folly::Optional<${type}>`;
+  const wrapOptional = (type: string) => {
+    return isRequired ? type : `std::optional<${type}>`;
   };
 
   switch (typeAnnotation.type) {
     case 'ReservedTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'RootTag':
-          return wrapFollyOptional('double');
+          return wrapOptional('double');
         default:
           (typeAnnotation.name: empty);
           throw new Error(`Unknown prop type, found: ${typeAnnotation.name}"`);
@@ -86,22 +86,22 @@ function toObjCType(
     case 'StringTypeAnnotation':
       return 'NSString *';
     case 'NumberTypeAnnotation':
-      return wrapFollyOptional('double');
+      return wrapOptional('double');
     case 'FloatTypeAnnotation':
-      return wrapFollyOptional('double');
+      return wrapOptional('double');
     case 'Int32TypeAnnotation':
-      return wrapFollyOptional('double');
+      return wrapOptional('double');
     case 'DoubleTypeAnnotation':
-      return wrapFollyOptional('double');
+      return wrapOptional('double');
     case 'BooleanTypeAnnotation':
-      return wrapFollyOptional('bool');
+      return wrapOptional('bool');
     case 'GenericObjectTypeAnnotation':
       return isRequired ? 'id<NSObject> ' : 'id<NSObject> _Nullable';
     case 'ArrayTypeAnnotation':
       if (typeAnnotation.elementType == null) {
         return isRequired ? 'id<NSObject> ' : 'id<NSObject> _Nullable';
       }
-      return wrapFollyOptional(
+      return wrapOptional(
         `facebook::react::LazyVector<${toObjCType(
           hasteModuleName,
           typeAnnotation.elementType,
@@ -113,7 +113,7 @@ function toObjCType(
         hasteModuleName,
         structName,
       );
-      return wrapFollyOptional(namespacedStructName);
+      return wrapOptional(namespacedStructName);
     default:
       (typeAnnotation.type: empty);
       throw new Error(
@@ -190,7 +190,7 @@ function toObjCValue(
       );
 
       return !isRequired
-        ? `(${value} == nil ? folly::none : folly::make_optional(${namespacedStructName}(${value})))`
+        ? `(${value} == nil ? std::nullopt : std::make_optional(${namespacedStructName}(${value})))`
         : `${namespacedStructName}(${value})`;
     default:
       (typeAnnotation.type: empty);

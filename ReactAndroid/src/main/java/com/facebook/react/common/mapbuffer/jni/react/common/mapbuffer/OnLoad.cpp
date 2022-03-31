@@ -7,9 +7,10 @@
 
 #include <fbjni/fbjni.h>
 
-#include "ReadableMapBuffer.h"
+#include "JReadableMapBuffer.h"
+#include "JWritableMapBuffer.h"
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
   return facebook::jni::initialize(
-      vm, [] { facebook::react::ReadableMapBuffer::registerNatives(); });
+      vm, [] { facebook::react::JReadableMapBuffer::registerNatives(); });
 }

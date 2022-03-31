@@ -16,7 +16,7 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
+import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
@@ -102,6 +102,7 @@ public class TextAttributeProps {
 
   protected @Nullable ReactAccessibilityDelegate.AccessibilityRole mAccessibilityRole = null;
   protected boolean mIsAccessibilityRoleSet = false;
+  protected boolean mIsAccessibilityLink = false;
 
   protected int mFontStyle = UNSET;
   protected int mFontWeight = UNSET;
@@ -136,51 +137,48 @@ public class TextAttributeProps {
 
   private TextAttributeProps() {}
 
-  /**
-   * Build a TextAttributeProps using data from the {@link ReadableMapBuffer} received as a
-   * parameter.
-   */
-  public static TextAttributeProps fromReadableMapBuffer(ReadableMapBuffer props) {
+  /** Build a TextAttributeProps using data from the {@link MapBuffer} received as a parameter. */
+  public static TextAttributeProps fromMapBuffer(MapBuffer props) {
     TextAttributeProps result = new TextAttributeProps();
 
     // TODO T83483191: Review constants that are not being set!
-    Iterator<ReadableMapBuffer.MapBufferEntry> iterator = props.iterator();
+    Iterator<MapBuffer.Entry> iterator = props.iterator();
     while (iterator.hasNext()) {
-      ReadableMapBuffer.MapBufferEntry entry = iterator.next();
+      MapBuffer.Entry entry = iterator.next();
       switch (entry.getKey()) {
         case TA_KEY_FOREGROUND_COLOR:
-          result.setColor(entry.getInt());
+          result.setColor(entry.getIntValue());
           break;
         case TA_KEY_BACKGROUND_COLOR:
-          result.setBackgroundColor(entry.getInt());
+          result.setBackgroundColor(entry.getIntValue());
           break;
         case TA_KEY_OPACITY:
           break;
         case TA_KEY_FONT_FAMILY:
-          result.setFontFamily(entry.getString());
+          result.setFontFamily(entry.getStringValue());
           break;
         case TA_KEY_FONT_SIZE:
-          result.setFontSize((float) entry.getDouble());
+          result.setFontSize((float) entry.getDoubleValue());
           break;
         case TA_KEY_FONT_SIZE_MULTIPLIER:
           break;
         case TA_KEY_FONT_WEIGHT:
-          result.setFontWeight(entry.getString());
+          result.setFontWeight(entry.getStringValue());
           break;
         case TA_KEY_FONT_STYLE:
-          result.setFontStyle(entry.getString());
+          result.setFontStyle(entry.getStringValue());
           break;
         case TA_KEY_FONT_VARIANT:
-          result.setFontVariant(entry.getReadableMapBuffer());
+          result.setFontVariant(entry.getMapBufferValue());
           break;
         case TA_KEY_ALLOW_FONT_SCALING:
-          result.setAllowFontScaling(entry.getBoolean());
+          result.setAllowFontScaling(entry.getBooleanValue());
           break;
         case TA_KEY_LETTER_SPACING:
-          result.setLetterSpacing((float) entry.getDouble());
+          result.setLetterSpacing((float) entry.getDoubleValue());
           break;
         case TA_KEY_LINE_HEIGHT:
-          result.setLineHeight((float) entry.getDouble());
+          result.setLineHeight((float) entry.getDoubleValue());
           break;
         case TA_KEY_ALIGNMENT:
           break;
@@ -189,23 +187,23 @@ public class TextAttributeProps {
         case TA_KEY_TEXT_DECORATION_COLOR:
           break;
         case TA_KEY_TEXT_DECORATION_LINE:
-          result.setTextDecorationLine(entry.getString());
+          result.setTextDecorationLine(entry.getStringValue());
           break;
         case TA_KEY_TEXT_DECORATION_STYLE:
           break;
         case TA_KEY_TEXT_SHADOW_RADIUS:
-          result.setTextShadowRadius((float) entry.getDouble());
+          result.setTextShadowRadius((float) entry.getDoubleValue());
           break;
         case TA_KEY_TEXT_SHADOW_COLOR:
-          result.setTextShadowColor(entry.getInt());
+          result.setTextShadowColor(entry.getIntValue());
           break;
         case TA_KEY_IS_HIGHLIGHTED:
           break;
         case TA_KEY_LAYOUT_DIRECTION:
-          result.setLayoutDirection(entry.getString());
+          result.setLayoutDirection(entry.getStringValue());
           break;
         case TA_KEY_ACCESSIBILITY_ROLE:
-          result.setAccessibilityRole(entry.getString());
+          result.setAccessibilityRole(entry.getStringValue());
           break;
       }
     }
@@ -418,17 +416,17 @@ public class TextAttributeProps {
     mFontFeatureSettings = ReactTypefaceUtils.parseFontVariant(fontVariant);
   }
 
-  private void setFontVariant(@Nullable ReadableMapBuffer fontVariant) {
+  private void setFontVariant(@Nullable MapBuffer fontVariant) {
     if (fontVariant == null || fontVariant.getCount() == 0) {
       mFontFeatureSettings = null;
       return;
     }
 
     List<String> features = new ArrayList<>();
-    Iterator<ReadableMapBuffer.MapBufferEntry> iterator = fontVariant.iterator();
+    Iterator<MapBuffer.Entry> iterator = fontVariant.iterator();
     while (iterator.hasNext()) {
-      ReadableMapBuffer.MapBufferEntry entry = iterator.next();
-      String value = entry.getString();
+      MapBuffer.Entry entry = iterator.next();
+      String value = entry.getStringValue();
       if (value != null) {
         switch (value) {
           case "small-caps":
@@ -543,9 +541,11 @@ public class TextAttributeProps {
 
   private void setAccessibilityRole(@Nullable String accessibilityRole) {
     if (accessibilityRole != null) {
-      mIsAccessibilityRoleSet = accessibilityRole != null;
+      mIsAccessibilityRoleSet = true;
       mAccessibilityRole =
           ReactAccessibilityDelegate.AccessibilityRole.fromValue(accessibilityRole);
+      mIsAccessibilityLink =
+          mAccessibilityRole.equals(ReactAccessibilityDelegate.AccessibilityRole.LINK);
     }
   }
 

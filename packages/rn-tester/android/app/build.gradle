@@ -226,11 +226,12 @@ dependencies {
     // Build React Native from source
     implementation project(':ReactAndroid')
 
-    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+    // Consume Hermes as built from source only for the Hermes variant.
+    hermesImplementation(project(":ReactAndroid:hermes-engine")) {
+        exclude group:'com.facebook.fbjni'
+    }
 
-    def hermesPath = '$projectDir/../../../../../node_modules/hermes-engine/android/'
-    hermesDebugImplementation files(hermesPath + "hermes-debug.aar")
-    hermesReleaseImplementation files(hermesPath + "hermes-release.aar")
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'
@@ -300,11 +301,11 @@ if (enableCodegen) {
 
     afterEvaluate {
         reactNativeArchitectures().each { architecture ->
-            tasks.named("configureNdkBuildDebug[${architecture}]") {
+            tasks.findByName("configureNdkBuildDebug[${architecture}]")?.configure {
                 dependsOn("preHermesDebugBuild")
                 dependsOn("preJscDebugBuild")
             }
-            tasks.named("configureNdkBuildRelease[${architecture}]") {
+            tasks.findByName("configureNdkBuildRelease[${architecture}]")?.configure {
                 dependsOn("preHermesReleaseBuild")
                 dependsOn("preJscReleaseBuild")
             }

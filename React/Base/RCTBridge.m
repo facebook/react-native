@@ -55,13 +55,11 @@ NSArray<Class> *RCTGetModuleClasses(void)
 /**
  * Register the given class as a bridge module. All modules must be registered
  * prior to the first bridge initialization.
+ * TODO: (T115656171) Refactor RCTRegisterModule out of Bridge.m since it doesn't use the Bridge.
  */
 void RCTRegisterModule(Class);
 void RCTRegisterModule(Class moduleClass)
 {
-  RCTLogNotAllowedForNewArchitecture(
-      @"RCTRegisterModule()", [NSString stringWithFormat:@"'%@' was registered unexpectedly", moduleClass]);
-
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     RCTModuleClasses = [NSMutableArray new];
@@ -222,7 +220,7 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
                    launchOptions:(NSDictionary *)launchOptions
 {
   if (self = [super init]) {
-    RCTEnforceNotAllowedForNewArchitecture(self, nil);
+    RCTEnforceNewArchitectureValidation(RCTNotAllowedInBridgeless, self, nil);
     _delegate = delegate;
     _bundleURL = bundleURL;
     _moduleProvider = block;

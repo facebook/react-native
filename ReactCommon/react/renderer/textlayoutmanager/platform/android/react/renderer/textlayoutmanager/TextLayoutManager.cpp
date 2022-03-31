@@ -9,7 +9,7 @@
 
 #include <limits>
 
-#include <react/common/mapbuffer/ReadableMapBuffer.h>
+#include <react/common/mapbuffer/JReadableMapBuffer.h>
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/attributedstring/conversions.h>
 #include <react/renderer/core/conversions.h>
@@ -111,9 +111,9 @@ Size measureAndroidComponentMapBuffer(
           ->getMethod<jlong(
               jint,
               jstring,
-              ReadableMapBuffer::javaobject,
-              ReadableMapBuffer::javaobject,
-              ReadableMapBuffer::javaobject,
+              JReadableMapBuffer::javaobject,
+              JReadableMapBuffer::javaobject,
+              JReadableMapBuffer::javaobject,
               jfloat,
               jfloat,
               jfloat,
@@ -121,8 +121,8 @@ Size measureAndroidComponentMapBuffer(
               jfloatArray)>("measureMapBuffer");
 
   auto localDataMap =
-      ReadableMapBuffer::createWithContents(std::move(localData));
-  auto propsMap = ReadableMapBuffer::createWithContents(std::move(props));
+      JReadableMapBuffer::createWithContents(std::move(localData));
+  auto propsMap = JReadableMapBuffer::createWithContents(std::move(props));
 
   auto size = yogaMeassureToSize(measure(
       fabricUIManager,
@@ -287,15 +287,15 @@ LinesMeasurements TextLayoutManager::measureLinesMapBuffer(
   static auto measureLines =
       jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
           ->getMethod<NativeArray::javaobject(
-              ReadableMapBuffer::javaobject,
-              ReadableMapBuffer::javaobject,
+              JReadableMapBuffer::javaobject,
+              JReadableMapBuffer::javaobject,
               jfloat,
               jfloat)>("measureLinesMapBuffer");
 
   auto attributedStringMB =
-      ReadableMapBuffer::createWithContents(toMapBuffer(attributedString));
+      JReadableMapBuffer::createWithContents(toMapBuffer(attributedString));
   auto paragraphAttributesMB =
-      ReadableMapBuffer::createWithContents(toMapBuffer(paragraphAttributes));
+      JReadableMapBuffer::createWithContents(toMapBuffer(paragraphAttributes));
 
   auto array = measureLines(
       fabricUIManager,
