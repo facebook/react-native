@@ -185,7 +185,7 @@ const APIs: Array<RNTesterModuleInfo> = [
   {
     key: 'W3C PointerEvents',
     category: 'Experimental',
-    module: require('../examples/Experimental/W3CPointerEventsExample'),
+    module: require('../examples/Experimental/W3CPointerEventsExample').default,
   },
   {
     key: 'LayoutEventsExample',

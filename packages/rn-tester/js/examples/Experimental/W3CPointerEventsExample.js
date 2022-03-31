@@ -14,6 +14,7 @@ import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTyp
 
 function EventfulView(props: {|
   name: string,
+  emitByDefault?: boolean,
   log: string => void,
   ...ViewProps,
 |}) {
@@ -22,11 +23,11 @@ function EventfulView(props: {|
     // $FlowFixMe[prop-missing] Using private property
     setTag(ref.current?._nativeTag);
   }, [ref]);
-  const [lastEvent, setLastEvent] = React.useState('');
-  const [listen, setListen] = React.useState(false);
-  const [tag, setTag] = React.useState('');
 
-  const {log, name, children, ...restProps} = props;
+  const {log, name, children, emitByDefault, ...restProps} = props;
+  const [lastEvent, setLastEvent] = React.useState('');
+  const [listen, setListen] = React.useState(!!emitByDefault);
+  const [tag, setTag] = React.useState('');
 
   const eventLog = eventName => event => {
     // $FlowFixMe[prop-missing] Using private property
@@ -44,50 +45,78 @@ function EventfulView(props: {|
     : Object.freeze({});
 
   return (
-    <View ref={ref} {...listeners} {...restProps}>
+    <View ref={ref} {...listeners} {...restProps} collapsable={!listen}>
       <View style={styles.row}>
         <Text>
           {props.name}, {tag}, last event: {lastEvent}
         </Text>
-        <Switch value={listen} onValueChange={() => setListen(l => !l)} />
+        <Switch
+          disabled={emitByDefault}
+          value={listen}
+          onValueChange={() => setListen(l => !l)}
+        />
       </View>
       {props.children}
     </View>
   );
 }
 
-function RelativeChildExample() {
-  const [eventsLog, setEventsLog] = React.useState('');
-  const clear = () => setEventsLog('');
-  const log = eventStr => {
-    setEventsLog(currentEventsLog => `${currentEventsLog}\n${eventStr}`);
-  };
+function AbsoluteChildExample({log}: {log: string => void}) {
   return (
-    <ScrollView>
-      <View>
+    <View style={styles.absoluteExampleContainer}>
+      <EventfulView
+        log={log}
+        style={StyleSheet.compose(styles.eventfulView, styles.parent)}
+        name="parent">
         <EventfulView
           log={log}
-          collapsable={false}
-          style={StyleSheet.compose(styles.eventfulView, styles.parent)}
-          name="parent">
+          emitByDefault
+          style={StyleSheet.compose(styles.eventfulView, styles.absoluteChild)}
+          name="childA"
+        />
+      </EventfulView>
+    </View>
+  );
+}
+
+function RelativeChildExample({log}: {log: string => void}) {
+  return (
+    <>
+      <EventfulView
+        log={log}
+        style={StyleSheet.compose(styles.eventfulView, styles.parent)}
+        name="parent">
+        <EventfulView
+          log={log}
+          style={StyleSheet.compose(styles.eventfulView, styles.relativeChild)}
+          name="childA">
           <EventfulView
             log={log}
             style={StyleSheet.compose(
               styles.eventfulView,
               styles.relativeChild,
             )}
-            name="childA">
-            <EventfulView
-              log={log}
-              style={StyleSheet.compose(
-                styles.eventfulView,
-                styles.relativeChild,
-              )}
-              name="childB"
-            />
-          </EventfulView>
+            name="childB"
+          />
         </EventfulView>
-      </View>
+      </EventfulView>
+    </>
+  );
+}
+
+function PointerEventScaffolding({
+  Example,
+}: {
+  Example: React.AbstractComponent<{log: string => void}>,
+}) {
+  const [eventsLog, setEventsLog] = React.useState('');
+  const clear = () => setEventsLog('');
+  const log = eventStr => {
+    setEventsLog(currentEventsLog => `${eventStr}\n${currentEventsLog}`);
+  };
+  return (
+    <ScrollView>
+      <Example log={log} />
       <View>
         <View style={styles.row}>
           <Text>Events Log</Text>
@@ -100,12 +129,14 @@ function RelativeChildExample() {
 }
 
 const styles = StyleSheet.create({
+  absoluteExampleContainer: {
+    height: 200,
+  },
   absoluteChild: {
     position: 'absolute',
-    top: 400,
-    left: 40,
-    height: 100,
-    width: 200,
+    top: 100,
+    height: 50,
+    width: 300,
     borderWidth: 1,
     borderColor: 'red',
   },
@@ -124,14 +155,27 @@ const styles = StyleSheet.create({
   },
 });
 
-exports.title = 'W3C PointerEvents experiment';
-exports.category = 'Experimental';
-exports.description = 'Demonstrate pointer events';
-exports.examples = [
-  {
-    title: 'Relative Child',
-    render(): React.Node {
-      return <RelativeChildExample />;
+export default {
+  title: 'W3C PointerEvents experiment',
+  category: 'Experimental',
+  description: 'Demonstrate pointer events',
+  showIndividualExamples: true,
+  examples: [
+    {
+      name: 'relative',
+      description: 'Children laid out using relative positioning',
+      title: 'Relative Child',
+      render(): React.Node {
+        return <PointerEventScaffolding Example={RelativeChildExample} />;
+      },
     },
-  },
-];
+    {
+      name: 'absolute',
+      description: 'Children laid out using absolute positioning',
+      title: 'Absolute Child',
+      render(): React.Node {
+        return <PointerEventScaffolding Example={AbsoluteChildExample} />;
+      },
+    },
+  ],
+};
