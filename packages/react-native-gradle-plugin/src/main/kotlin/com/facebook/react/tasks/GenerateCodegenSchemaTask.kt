@@ -7,7 +7,7 @@
 
 package com.facebook.react.tasks
 
-import com.facebook.react.utils.windowsAwareYarn
+import com.facebook.react.utils.windowsAwareCommandLine
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFile
 import org.gradle.api.provider.ListProperty
@@ -49,7 +49,7 @@ abstract class GenerateCodegenSchemaTask : Exec() {
 
   internal fun setupCommandLine() {
     commandLine(
-        windowsAwareYarn(
+        windowsAwareCommandLine(
             *nodeExecutableAndArgs.get().toTypedArray(),
             codegenDir
                 .file("lib/cli/combine/combine-js-to-schema-cli.js")
