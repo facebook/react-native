@@ -65,7 +65,7 @@ executors:
     <<: *defaults
     docker:
       - image: reactnativecommunity/react-native-android:5.4
-    resource_class: "large"
+    resource_class: "xlarge"
     environment:
       - TERM: "dumb"
       - ADB_INSTALL_TIMEOUT: 10
