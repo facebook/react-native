@@ -66,6 +66,10 @@ class ParagraphAttributes : public DebugStringConvertible {
    */
   HyphenationFrequency android_hyphenationFrequency{};
 
+  /*
+   * (Android only) String to be read by screenreaders to indicate an error state
+   * of a TextInput. The default is `null`.
+   */
   std::optional<std::string> errorMessageAndroid{};
 
   /*
