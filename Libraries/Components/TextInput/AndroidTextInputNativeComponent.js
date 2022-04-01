@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -17,7 +17,10 @@ import type {
   Int32,
   WithDefault,
 } from '../../Types/CodegenTypes';
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import type {
+  HostComponent,
+  PartialViewConfig,
+} from '../../Renderer/shims/ReactNativeTypes';
 import type {
   TextStyleProp,
   ViewStyleProp,
@@ -25,7 +28,6 @@ import type {
 } from '../../StyleSheet/StyleSheet';
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
 import type {TextInputNativeCommands} from './TextInputNativeCommands';
-import AndroidTextInputViewConfig from './AndroidTextInputViewConfig';
 import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
 
 export type KeyboardType =
@@ -73,42 +75,90 @@ export type NativeProps = $ReadOnly<{|
    * Android props after this
    */
   /**
-   * Determines which content to suggest on auto complete, e.g.`username`.
-   * To disable auto complete, use `off`.
+   * Specifies autocomplete hints for the system, so it can provide autofill. On Android, the system will always attempt to offer autofill by using heuristics to identify the type of content.
+   * To disable autocomplete, set `autoComplete` to `off`.
    *
    * *Android Only*
    *
-   * The following values work on Android only:
+   * Possible values for `autoComplete` are:
    *
-   * - `username`
-   * - `password`
-   * - `email`
-   * - `name`
-   * - `tel`
-   * - `street-address`
-   * - `postal-code`
-   * - `cc-number`
+   * - `birthdate-day`
+   * - `birthdate-full`
+   * - `birthdate-month`
+   * - `birthdate-year`
    * - `cc-csc`
    * - `cc-exp`
+   * - `cc-exp-day`
    * - `cc-exp-month`
    * - `cc-exp-year`
+   * - `cc-number`
+   * - `email`
+   * - `gender`
+   * - `name`
+   * - `name-family`
+   * - `name-given`
+   * - `name-middle`
+   * - `name-middle-initial`
+   * - `name-prefix`
+   * - `name-suffix`
+   * - `password`
+   * - `password-new`
+   * - `postal-address`
+   * - `postal-address-country`
+   * - `postal-address-extended`
+   * - `postal-address-extended-postal-code`
+   * - `postal-address-locality`
+   * - `postal-address-region`
+   * - `postal-code`
+   * - `street-address`
+   * - `sms-otp`
+   * - `tel`
+   * - `tel-country-code`
+   * - `tel-national`
+   * - `tel-device`
+   * - `username`
+   * - `username-new`
    * - `off`
    *
    * @platform android
    */
   autoComplete?: WithDefault<
+    | 'birthdate-day'
+    | 'birthdate-full'
+    | 'birthdate-month'
+    | 'birthdate-year'
     | 'cc-csc'
     | 'cc-exp'
+    | 'cc-exp-day'
     | 'cc-exp-month'
     | 'cc-exp-year'
     | 'cc-number'
     | 'email'
+    | 'gender'
     | 'name'
+    | 'name-family'
+    | 'name-given'
+    | 'name-middle'
+    | 'name-middle-initial'
+    | 'name-prefix'
+    | 'name-suffix'
     | 'password'
+    | 'password-new'
+    | 'postal-address'
+    | 'postal-address-country'
+    | 'postal-address-extended'
+    | 'postal-address-extended-postal-code'
+    | 'postal-address-locality'
+    | 'postal-address-region'
     | 'postal-code'
     | 'street-address'
+    | 'sms-otp'
     | 'tel'
+    | 'tel-country-code'
+    | 'tel-national'
+    | 'tel-device'
     | 'username'
+    | 'username-new'
     | 'off',
     'off',
   >,
@@ -546,9 +596,125 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['focus', 'blur', 'setTextAndSelection'],
 });
 
+export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
+  uiViewClassName: 'AndroidTextInput',
+  bubblingEventTypes: {
+    topBlur: {
+      phasedRegistrationNames: {
+        bubbled: 'onBlur',
+        captured: 'onBlurCapture',
+      },
+    },
+    topEndEditing: {
+      phasedRegistrationNames: {
+        bubbled: 'onEndEditing',
+        captured: 'onEndEditingCapture',
+      },
+    },
+    topFocus: {
+      phasedRegistrationNames: {
+        bubbled: 'onFocus',
+        captured: 'onFocusCapture',
+      },
+    },
+    topKeyPress: {
+      phasedRegistrationNames: {
+        bubbled: 'onKeyPress',
+        captured: 'onKeyPressCapture',
+      },
+    },
+    topSubmitEditing: {
+      phasedRegistrationNames: {
+        bubbled: 'onSubmitEditing',
+        captured: 'onSubmitEditingCapture',
+      },
+    },
+    topTextInput: {
+      phasedRegistrationNames: {
+        bubbled: 'onTextInput',
+        captured: 'onTextInputCapture',
+      },
+    },
+  },
+  directEventTypes: {
+    topScroll: {
+      registrationName: 'onScroll',
+    },
+  },
+  validAttributes: {
+    maxFontSizeMultiplier: true,
+    adjustsFontSizeToFit: true,
+    minimumFontScale: true,
+    autoFocus: true,
+    placeholder: true,
+    inlineImagePadding: true,
+    contextMenuHidden: true,
+    textShadowColor: {process: require('../../StyleSheet/processColor')},
+    maxLength: true,
+    selectTextOnFocus: true,
+    textShadowRadius: true,
+    underlineColorAndroid: {
+      process: require('../../StyleSheet/processColor'),
+    },
+    textDecorationLine: true,
+    blurOnSubmit: true,
+    textAlignVertical: true,
+    fontStyle: true,
+    textShadowOffset: true,
+    selectionColor: {process: require('../../StyleSheet/processColor')},
+    selection: true,
+    placeholderTextColor: {process: require('../../StyleSheet/processColor')},
+    importantForAutofill: true,
+    lineHeight: true,
+    textTransform: true,
+    returnKeyType: true,
+    keyboardType: true,
+    multiline: true,
+    color: {process: require('../../StyleSheet/processColor')},
+    autoComplete: true,
+    numberOfLines: true,
+    letterSpacing: true,
+    returnKeyLabel: true,
+    fontSize: true,
+    onKeyPress: true,
+    cursorColor: {process: require('../../StyleSheet/processColor')},
+    text: true,
+    showSoftInputOnFocus: true,
+    textAlign: true,
+    autoCapitalize: true,
+    autoCorrect: true,
+    caretHidden: true,
+    secureTextEntry: true,
+    textBreakStrategy: true,
+    onScroll: true,
+    onContentSizeChange: true,
+    disableFullscreenUI: true,
+    includeFontPadding: true,
+    fontWeight: true,
+    fontFamily: true,
+    allowFontScaling: true,
+    onSelectionChange: true,
+    mostRecentEventCount: true,
+    inlineImageLeft: true,
+    editable: true,
+    fontVariant: true,
+    borderBottomRightRadius: true,
+    borderBottomColor: {process: require('../../StyleSheet/processColor')},
+    borderRadius: true,
+    borderRightColor: {process: require('../../StyleSheet/processColor')},
+    borderColor: {process: require('../../StyleSheet/processColor')},
+    borderTopRightRadius: true,
+    borderStyle: true,
+    borderBottomLeftRadius: true,
+    borderLeftColor: {process: require('../../StyleSheet/processColor')},
+    borderTopLeftRadius: true,
+    borderTopColor: {process: require('../../StyleSheet/processColor')},
+  },
+};
+
 let AndroidTextInputNativeComponent = NativeComponentRegistry.get<NativeProps>(
   'AndroidTextInput',
-  () => AndroidTextInputViewConfig,
+  () => __INTERNAL_VIEW_CONFIG,
 );
 
 // flowlint-next-line unclear-type:off

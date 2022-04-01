@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -107,24 +107,26 @@ const EmptySectionList = () => (
   </View>
 );
 
-const renderItemComponent = setItemState => ({item, separators}) => {
-  if (isNaN(item.key)) {
-    return;
-  }
-  const onPress = () => {
-    const updatedItem = pressItem(item);
-    setItemState(updatedItem);
-  };
+const renderItemComponent =
+  setItemState =>
+  ({item, separators}) => {
+    if (isNaN(item.key)) {
+      return;
+    }
+    const onPress = () => {
+      const updatedItem = pressItem(item);
+      setItemState(updatedItem);
+    };
 
-  return (
-    <ItemComponent
-      item={item}
-      onPress={onPress}
-      onHideUnderlay={separators.unhighlight}
-      onShowUnderlay={separators.highlight}
-    />
-  );
-};
+    return (
+      <ItemComponent
+        item={item}
+        onPress={onPress}
+        onHideUnderlay={separators.unhighlight}
+        onShowUnderlay={separators.highlight}
+      />
+    );
+  };
 
 const onScrollToIndexFailed = (info: {
   index: number,
@@ -147,7 +149,7 @@ const onScrollToIndexFailed = (info: {
 };
 
 export function SectionList_scrollable(Props: {
-  ...,
+  ...
 }): React.Element<typeof RNTesterPage> {
   const scrollPos = new Animated.Value(0);
   const scrollSinkY = Animated.event(
@@ -344,7 +346,7 @@ const styles = StyleSheet.create({
 export default {
   title: 'SectionList scrollable',
   name: 'SectionList-scrollable',
-  render: function(): React.Element<typeof SectionList_scrollable> {
+  render: function (): React.Element<typeof SectionList_scrollable> {
     return <SectionList_scrollable />;
   },
 };

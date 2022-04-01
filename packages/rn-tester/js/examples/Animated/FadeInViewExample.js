@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -35,7 +35,7 @@ function FadeInView({
   children: React.Node,
 }) {
   //opacity 0
-  const [fadeAnim, setFadeAnim] = React.useState(() => new Animated.Value(0));
+  const [fadeAnim] = React.useState(() => new Animated.Value(0));
   React.useEffect(() => {
     Animated.timing(
       // Uses easing functions

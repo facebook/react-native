@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,13 +7,14 @@
 
 #import "RCTMountingManager.h"
 
-#import <better/map.h>
+#import <butter/map.h>
 
 #import <React/RCTAssert.h>
 #import <React/RCTComponent.h>
 #import <React/RCTFollyConvert.h>
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
+#import <react/config/ReactNativeConfig.h>
 #import <react/renderer/components/root/RootShadowNode.h>
 #import <react/renderer/core/LayoutableShadowNode.h>
 #import <react/renderer/core/RawProps.h>
@@ -155,7 +156,7 @@ static void RCTPerformMountInstructions(
 - (instancetype)init
 {
   if (self = [super init]) {
-    _componentViewRegistry = [[RCTComponentViewRegistry alloc] init];
+    _componentViewRegistry = [RCTComponentViewRegistry new];
   }
 
   return self;
@@ -315,6 +316,11 @@ static void RCTPerformMountInstructions(
   }
   if (props[@"opacity"] && componentView.layer.opacity != (float)newViewProps.opacity) {
     componentView.layer.opacity = newViewProps.opacity;
+  }
+
+  auto reactNativeConfig = _contextContainer->at<std::shared_ptr<ReactNativeConfig const>>("ReactNativeConfig");
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:finalize_updates_on_synchronous_update_view_ios")) {
+    [componentView finalizeUpdates:RNComponentViewUpdateMaskProps];
   }
 }
 

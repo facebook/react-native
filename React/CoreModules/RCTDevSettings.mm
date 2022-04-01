@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -202,20 +202,31 @@ RCT_EXPORT_MODULE()
     // We need this dispatch to the main thread because the bridge is not yet
     // finished with its initialisation. By the time it relinquishes control of
     // the main thread, this operation can be performed.
+    __weak __typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
-      [self.bridge
-          dispatchBlock:^{
-            [RCTInspectorDevServerHelper connectWithBundleURL:self.bundleManager.bundleURL];
-          }
-                  queue:RCTJSThread];
+      __typeof(self) strongSelf = weakSelf;
+      if (!strongSelf) {
+        return;
+      }
+      id dispatchBlock = ^{
+        __typeof(self) strongSelf2 = weakSelf;
+        if (!strongSelf2) {
+          return;
+        }
+        NSURL *url = strongSelf2.bundleManager.bundleURL;
+        [RCTInspectorDevServerHelper connectWithBundleURL:url];
+      };
+      [strongSelf.bridge dispatchBlock:dispatchBlock queue:RCTJSThread];
     });
   } else {
-    [RCTInspectorDevServerHelper connectWithBundleURL:self.bundleManager.bundleURL];
+    NSURL *url = self.bundleManager.bundleURL;
+    [RCTInspectorDevServerHelper connectWithBundleURL:url];
   }
 #endif
 
+  __weak __typeof(self) weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
-    [self _synchronizeAllSettings];
+    [weakSelf _synchronizeAllSettings];
   });
 }
 
@@ -350,8 +361,13 @@ RCT_EXPORT_METHOD(setProfilingEnabled : (BOOL)enabled)
     if (enabled) {
       [self.bridge startProfiling];
     } else {
+      __weak __typeof(self) weakSelf = self;
       [self.bridge stopProfiling:^(NSData *logData) {
-        RCTProfileSendResult(self.bridge, @"systrace", logData);
+        __typeof(self) strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
+        RCTProfileSendResult(strongSelf.bridge, @"systrace", logData);
       }];
     }
   }
@@ -495,16 +511,21 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
   }
 
   _isJSLoaded = YES;
+  __weak __typeof(self) weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
+    __typeof(self) strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
     // update state again after the bridge has finished loading
-    [self _synchronizeAllSettings];
+    [strongSelf _synchronizeAllSettings];
 
     // Inspector can only be shown after JS has loaded
-    if ([self isElementInspectorShown]) {
+    if ([strongSelf isElementInspectorShown]) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-      [[self.moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"toggleElementInspector"
-                                                                                body:nil];
+      [[strongSelf.moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"toggleElementInspector"
+                                                                                      body:nil];
 #pragma clang diagnostic pop
     }
   });

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -159,7 +159,7 @@ public abstract class Event<T extends Event> {
   /**
    * Dispatch this event to JS using the given event emitter. Compatible with old and new renderer.
    * Instead of using this or dispatchModern, it is recommended that you simply override
-   * `getEventData`. In the future
+   * `getEventData`.
    */
   @Deprecated
   public void dispatch(RCTEventEmitter rctEventEmitter) {
@@ -182,31 +182,24 @@ public abstract class Event<T extends Event> {
     return null;
   }
 
+  @EventCategoryDef
+  protected int getEventCategory() {
+    return EventCategoryDef.UNSPECIFIED;
+  }
+
   /**
    * Dispatch this event to JS using a V2 EventEmitter. If surfaceId is not -1 and `getEventData` is
    * non-null, this will use the RCTModernEventEmitter API. Otherwise, it falls back to the
    * old-style dispatch function. For Event classes that need to do something different, this method
    * can always be overridden entirely, but it is not recommended.
+   *
+   * <p>This method additionally allows C++ to coalesce events and detect continuous ones for
+   * concurrent mode (Fabric only).
+   *
+   * @see #dispatch
    */
   @Deprecated
   public void dispatchModern(RCTModernEventEmitter rctEventEmitter) {
-    if (getSurfaceId() != -1) {
-      WritableMap eventData = getEventData();
-      if (eventData != null) {
-        rctEventEmitter.receiveEvent(getSurfaceId(), getViewTag(), getEventName(), getEventData());
-        return;
-      }
-    }
-    dispatch(rctEventEmitter);
-  }
-
-  /**
-   * Dispatch this event to JS using a V2 version of dispatchModern. See all comments from
-   * `dispatchModern` - all still apply. This method additionally allows C++ to coalesce events
-   * (Fabric only). This will ONLY be called in an experimental path, and in Fabric only.
-   */
-  @Deprecated
-  public void dispatchModernV2(RCTModernEventEmitter rctEventEmitter) {
     if (getSurfaceId() != -1) {
       WritableMap eventData = getEventData();
       if (eventData != null) {
@@ -216,7 +209,8 @@ public abstract class Event<T extends Event> {
             getEventName(),
             canCoalesce(),
             getCoalescingKey(),
-            eventData);
+            eventData,
+            getEventCategory());
         return;
       }
     }

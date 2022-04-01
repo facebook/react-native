@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -67,7 +67,9 @@ const styles = StyleSheet.create({
 export default {
   title: 'SectionList On Viewable Items Changed',
   name: 'SectionList_onViewableItemsChanged',
-  render: function(): React.Element<typeof SectionList_onViewableItemsChanged> {
+  render: function (): React.Element<
+    typeof SectionList_onViewableItemsChanged,
+  > {
     return (
       <SectionList_onViewableItemsChanged
         viewabilityConfig={VIEWABILITY_CONFIG}

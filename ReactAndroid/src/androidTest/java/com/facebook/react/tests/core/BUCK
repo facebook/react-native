@@ -14,7 +14,7 @@ rn_android_library(
     is_androidx = True,
     deps = [
         react_native_dep("third-party/android/androidx:test-espresso-core"),
-        react_native_dep("third-party/java/fest:fest"),
+        react_native_dep("third-party/java/assertj:assertj-core"),
         react_native_dep("third-party/java/junit:junit"),
         react_native_dep("third-party/android/androidx:test-rules"),
         react_native_dep("third-party/android/androidx:test-runner"),

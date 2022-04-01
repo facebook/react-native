@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,6 +9,9 @@
  */
 
 'use strict';
+
+import type {AnimatedComponentType} from 'react-native/Libraries/Animated/createAnimatedComponent';
+import typeof FlatListType from 'react-native/Libraries/Lists/FlatList';
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import * as React from 'react';
@@ -83,7 +86,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
     this.setState({filterText});
   };
 
-  _onChangeScrollToIndex = text => {
+  _onChangeScrollToIndex = (text: mixed) => {
     this._listRef.scrollToIndex({viewPosition: 0.5, index: Number(text)});
   };
 
@@ -106,7 +109,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
 
   render(): React.Node {
     const filterRegex = new RegExp(String(this.state.filterText), 'i');
-    const filter = item =>
+    const filter = (item: Item) =>
       filterRegex.test(item.text) || filterRegex.test(item.title);
     const filteredData = this.state.data.filter(filter);
     const flatListItemRendererProps = this._renderItemComponent();
@@ -235,7 +238,14 @@ class FlatListExample extends React.PureComponent<Props, State> {
       </RNTesterPage>
     );
   }
-  _captureRef = ref => {
+  _captureRef = (
+    ref: React.ElementRef<
+      AnimatedComponentType<
+        React.ElementConfig<FlatListType>,
+        React.ElementRef<FlatListType>,
+      >,
+    >,
+  ) => {
     this._listRef = ref;
   };
   _getItemLayout = (data: any, index: number) => {

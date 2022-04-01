@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,7 +16,8 @@ namespace react {
 Props::Props(
     const PropsParserContext &context,
     const Props &sourceProps,
-    const RawProps &rawProps)
+    const RawProps &rawProps,
+    const bool shouldSetRawProps)
     : nativeId(convertRawProp(
           context,
           rawProps,
@@ -26,7 +27,9 @@ Props::Props(
       revision(sourceProps.revision + 1)
 #ifdef ANDROID
       ,
-      rawProps((folly::dynamic)rawProps)
+      rawProps(
+          shouldSetRawProps ? (folly::dynamic)rawProps
+                            : /* null */ folly::dynamic())
 #endif
           {};
 

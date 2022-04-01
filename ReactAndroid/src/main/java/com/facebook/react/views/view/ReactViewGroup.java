@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -44,7 +44,7 @@ import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactClippingProhibitedView;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
-import com.facebook.react.uimanager.ReactOverflowView;
+import com.facebook.react.uimanager.ReactOverflowViewWithInset;
 import com.facebook.react.uimanager.ReactPointerEventsView;
 import com.facebook.react.uimanager.ReactZIndexedViewGroup;
 import com.facebook.react.uimanager.RootView;
@@ -66,11 +66,12 @@ public class ReactViewGroup extends ViewGroup
         ReactPointerEventsView,
         ReactHitSlopView,
         ReactZIndexedViewGroup,
-        ReactOverflowView {
+        ReactOverflowViewWithInset {
 
   private static final int ARRAY_CAPACITY_INCREMENT = 12;
   private static final int DEFAULT_BACKGROUND_COLOR = Color.TRANSPARENT;
   private static final LayoutParams sDefaultLayoutParam = new ViewGroup.LayoutParams(0, 0);
+  private final Rect mOverflowInset = new Rect();
   /* should only be used in {@link #updateClippingToRect} */
   private static final Rect sHelperRect = new Rect();
 
@@ -726,6 +727,16 @@ public class ReactViewGroup extends ViewGroup
     return mOverflow;
   }
 
+  @Override
+  public void setOverflowInset(int left, int top, int right, int bottom) {
+    mOverflowInset.set(left, top, right, bottom);
+  }
+
+  @Override
+  public Rect getOverflowInset() {
+    return mOverflowInset;
+  }
+
   /**
    * Set the background for the view or remove the background. It calls {@link
    * #setBackground(Drawable)} or {@link #setBackgroundDrawable(Drawable)} based on the sdk version.
@@ -766,13 +777,13 @@ public class ReactViewGroup extends ViewGroup
         child.getElevation() > 0 && ReactFeatureFlags.insertZReorderBarriersOnViewGroupChildren;
 
     if (drawWithZ) {
-      CanvasUtil.enableZ(canvas, false);
+      CanvasUtil.enableZ(canvas, true);
     }
 
     boolean result = super.drawChild(canvas, child, drawingTime);
 
     if (drawWithZ) {
-      CanvasUtil.enableZ(canvas, true);
+      CanvasUtil.enableZ(canvas, false);
     }
     return result;
   }
@@ -786,6 +797,7 @@ public class ReactViewGroup extends ViewGroup
           }
           break;
         case ViewProps.HIDDEN:
+        case ViewProps.SCROLL:
           float left = 0f;
           float top = 0f;
           float right = getWidth();

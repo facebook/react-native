@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -30,7 +30,6 @@ import typeof RefreshControl from './Libraries/Components/RefreshControl/Refresh
 import typeof SafeAreaView from './Libraries/Components/SafeAreaView/SafeAreaView';
 import typeof ScrollView from './Libraries/Components/ScrollView/ScrollView';
 import typeof SectionList from './Libraries/Lists/SectionList';
-import typeof SegmentedControlIOS from './Libraries/Components/SegmentedControlIOS/SegmentedControlIOS';
 import typeof Slider from './Libraries/Components/Slider/Slider';
 import typeof StatusBar from './Libraries/Components/StatusBar/StatusBar';
 import typeof Switch from './Libraries/Components/Switch/Switch';
@@ -96,12 +95,6 @@ import typeof processColor from './Libraries/StyleSheet/processColor';
 import typeof RCTDeviceEventEmitter from './Libraries/EventEmitter/RCTDeviceEventEmitter';
 import typeof RCTNativeAppEventEmitter from './Libraries/EventEmitter/RCTNativeAppEventEmitter';
 import typeof {RootTagContext} from './Libraries/ReactNative/RootTag';
-
-// Prop Types
-import typeof DeprecatedColorPropType from './Libraries/DeprecatedPropTypes/DeprecatedColorPropType';
-import typeof DeprecatedEdgeInsetsPropType from './Libraries/DeprecatedPropTypes/DeprecatedEdgeInsetsPropType';
-import typeof DeprecatedPointPropType from './Libraries/DeprecatedPropTypes/DeprecatedPointPropType';
-import typeof DeprecatedViewPropTypes from './Libraries/DeprecatedPropTypes/DeprecatedViewPropTypes';
 
 import type {HostComponent as _HostComponentInternal} from './Libraries/Renderer/shims/ReactNativeTypes';
 
@@ -198,16 +191,6 @@ module.exports = {
   },
   get SectionList(): SectionList {
     return require('./Libraries/Lists/SectionList').default;
-  },
-  // $FlowFixMe[value-as-type]
-  get SegmentedControlIOS(): SegmentedControlIOS {
-    warnOnce(
-      'segmented-control-ios-moved',
-      'SegmentedControlIOS has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-segmented-control/segmented-control' instead of 'react-native'. " +
-        'See https://github.com/react-native-segmented-control/segmented-control',
-    );
-    return require('./Libraries/Components/SegmentedControlIOS/SegmentedControlIOS');
   },
   get Slider(): Slider {
     warnOnce(
@@ -450,19 +433,34 @@ module.exports = {
         'LogBox is enabled by default so there is no need to call unstable_enableLogBox() anymore. This is a no op and will be removed in the next version.',
       );
   },
-  // Prop Types
-  // $FlowFixMe[value-as-type]
-  get ColorPropType(): DeprecatedColorPropType {
-    return require('./Libraries/DeprecatedPropTypes/DeprecatedColorPropType');
+  // Deprecated Prop Types
+  get ColorPropType(): $FlowFixMe {
+    invariant(
+      false,
+      'ColorPropType has been removed from React Native. Migrate to ' +
+        "ColorPropType exported from 'deprecated-react-native-prop-types'.",
+    );
   },
-  get EdgeInsetsPropType(): DeprecatedEdgeInsetsPropType {
-    return require('./Libraries/DeprecatedPropTypes/DeprecatedEdgeInsetsPropType');
+  get EdgeInsetsPropType(): $FlowFixMe {
+    invariant(
+      false,
+      'EdgeInsetsPropType has been removed from React Native. Migrate to ' +
+        "EdgeInsetsPropType exported from 'deprecated-react-native-prop-types'.",
+    );
   },
-  get PointPropType(): DeprecatedPointPropType {
-    return require('./Libraries/DeprecatedPropTypes/DeprecatedPointPropType');
+  get PointPropType(): $FlowFixMe {
+    invariant(
+      false,
+      'PointPropType has been removed from React Native. Migrate to ' +
+        "PointPropType exported from 'deprecated-react-native-prop-types'.",
+    );
   },
-  get ViewPropTypes(): DeprecatedViewPropTypes {
-    return require('./Libraries/DeprecatedPropTypes/DeprecatedViewPropTypes');
+  get ViewPropTypes(): $FlowFixMe {
+    invariant(
+      false,
+      'ViewPropTypes has been removed from React Native. Migrate to ' +
+        "ViewPropTypes exported from 'deprecated-react-native-prop-types'.",
+    );
   },
 };
 
@@ -638,8 +636,8 @@ if (__DEV__) {
       invariant(
         false,
         'ViewPagerAndroid has been removed from React Native. ' +
-          "It can now be installed and imported from '@react-native-community/viewpager' instead of 'react-native'. " +
-          'See https://github.com/callstack/react-native-viewpager',
+          "It can now be installed and imported from 'react-native-pager-view' instead of 'react-native'. " +
+          'See https://github.com/callstack/react-native-pager-view',
       );
     },
   });
@@ -656,6 +654,22 @@ if (__DEV__) {
         'CheckBox has been removed from React Native. ' +
           "It can now be installed and imported from '@react-native-community/checkbox' instead of 'react-native'. " +
           'See https://github.com/react-native-checkbox/react-native-checkbox',
+      );
+    },
+  });
+
+  /* $FlowFixMe[prop-missing] This is intentional: Flow will error when
+   * attempting to access SegmentedControlIOS. */
+  /* $FlowFixMe[invalid-export] This is intentional: Flow will error when
+   * attempting to access SegmentedControlIOS. */
+  Object.defineProperty(module.exports, 'SegmentedControlIOS', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'SegmentedControlIOS has been removed from React Native. ' +
+          "It can now be installed and imported from '@react-native-community/segmented-checkbox' instead of 'react-native'." +
+          'See https://github.com/react-native-segmented-control/segmented-control',
       );
     },
   });

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -93,6 +93,14 @@ RCT_EXPORT_METHOD(createAnimatedNode:(double)tag
 {
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
     [nodesManager createAnimatedNode:[NSNumber numberWithDouble:tag] config:config];
+  }];
+}
+
+RCT_EXPORT_METHOD(updateAnimatedNodeConfig:(double)tag
+                  config:(NSDictionary<NSString *, id> *)config)
+{
+  [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+    [nodesManager updateAnimatedNodeConfig:[NSNumber numberWithDouble:tag] config:config];
   }];
 }
 

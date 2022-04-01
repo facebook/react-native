@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,12 +12,22 @@
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/graphics/Geometry.h>
+#include <react/renderer/uimanager/SurfaceRegistryBinding.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 #include <react/renderer/uimanager/UIManagerCommitHook.h>
 
 #include <glog/logging.h>
 
+#include <utility>
+
 namespace facebook::react {
+
+// Explicitly define destructors here, as they to exist in order to act as a
+// "key function" for the ShadowNodeWrapper class -- this allow for RTTI to work
+// properly across dynamic library boundaries (i.e. dynamic_cast that is used by
+// isHostObject method)
+ShadowNodeWrapper::~ShadowNodeWrapper() = default;
+ShadowNodeListWrapper::~ShadowNodeListWrapper() = default;
 
 static std::unique_ptr<LeakChecker> constructLeakCheckerIfNeeded(
     RuntimeExecutor const &runtimeExecutor) {
@@ -30,11 +40,11 @@ static std::unique_ptr<LeakChecker> constructLeakCheckerIfNeeded(
 
 UIManager::UIManager(
     RuntimeExecutor const &runtimeExecutor,
-    BackgroundExecutor const &backgroundExecutor,
+    BackgroundExecutor backgroundExecutor,
     ContextContainer::Shared contextContainer)
     : runtimeExecutor_(runtimeExecutor),
-      backgroundExecutor_(backgroundExecutor),
-      contextContainer_(contextContainer),
+      backgroundExecutor_(std::move(backgroundExecutor)),
+      contextContainer_(std::move(contextContainer)),
       leakChecker_(constructLeakCheckerIfNeeded(runtimeExecutor)) {}
 
 UIManager::~UIManager() {
@@ -81,7 +91,7 @@ SharedShadowNode UIManager::createNode(
       family);
 
   if (delegate_) {
-    delegate_->uiManagerDidCreateShadowNode(*shadowNode.get());
+    delegate_->uiManagerDidCreateShadowNode(*shadowNode);
   }
   if (leakChecker_) {
     leakChecker_->uiManagerDidCreateShadowNodeFamily(family);
@@ -91,28 +101,27 @@ SharedShadowNode UIManager::createNode(
 }
 
 SharedShadowNode UIManager::cloneNode(
-    const ShadowNode::Shared &shadowNode,
-    const SharedShadowNodeSharedList &children,
-    const RawProps *rawProps) const {
+    ShadowNode const &shadowNode,
+    SharedShadowNodeSharedList const &children,
+    RawProps const *rawProps) const {
   SystraceSection s("UIManager::cloneNode");
 
   PropsParserContext propsParserContext{
-      shadowNode->getFamily().getSurfaceId(), *contextContainer_.get()};
+      shadowNode.getFamily().getSurfaceId(), *contextContainer_.get()};
 
-  auto &componentDescriptor = shadowNode->getComponentDescriptor();
+  auto &componentDescriptor = shadowNode.getComponentDescriptor();
   auto clonedShadowNode = componentDescriptor.cloneShadowNode(
-      *shadowNode,
+      shadowNode,
       {
           /* .props = */
           rawProps ? componentDescriptor.cloneProps(
-                         propsParserContext, shadowNode->getProps(), *rawProps)
+                         propsParserContext, shadowNode.getProps(), *rawProps)
                    : ShadowNodeFragment::propsPlaceholder(),
           /* .children = */ children,
       });
 
   if (delegate_) {
-    delegate_->uiManagerDidCloneShadowNode(
-        *shadowNode.get(), *clonedShadowNode.get());
+    delegate_->uiManagerDidCloneShadowNode(shadowNode, *clonedShadowNode);
   }
 
   return clonedShadowNode;
@@ -169,12 +178,7 @@ void UIManager::startSurface(
 
   runtimeExecutor_([=](jsi::Runtime &runtime) {
     SystraceSection s("UIManager::startSurface::onRuntime");
-    auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
-    if (!uiManagerBinding) {
-      return;
-    }
-
-    uiManagerBinding->startSurface(
+    SurfaceRegistryBinding::startSurface(
         runtime, surfaceId, moduleName, props, displayMode);
   });
 }
@@ -187,12 +191,7 @@ void UIManager::setSurfaceProps(
   SystraceSection s("UIManager::setSurfaceProps");
 
   runtimeExecutor_([=](jsi::Runtime &runtime) {
-    auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
-    if (!uiManagerBinding) {
-      return;
-    }
-
-    uiManagerBinding->setSurfaceProps(
+    SurfaceRegistryBinding::setSurfaceProps(
         runtime, surfaceId, moduleName, props, displayMode);
   });
 }
@@ -212,12 +211,7 @@ ShadowTree::Unique UIManager::stopSurface(SurfaceId surfaceId) const {
   // the JavaScript side will not be able to reference a `ShadowTree` and will
   // fail silently.
   runtimeExecutor_([=](jsi::Runtime &runtime) {
-    auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
-    if (!uiManagerBinding) {
-      return;
-    }
-
-    uiManagerBinding->stopSurface(runtime, surfaceId);
+    SurfaceRegistryBinding::stopSurface(runtime, surfaceId);
   });
 
   if (leakChecker_) {
@@ -333,7 +327,7 @@ void UIManager::updateState(StateUpdate const &stateUpdate) const {
 void UIManager::dispatchCommand(
     const ShadowNode::Shared &shadowNode,
     std::string const &commandName,
-    folly::dynamic const args) const {
+    folly::dynamic const &args) const {
   if (delegate_) {
     delegate_->uiManagerDidDispatchCommand(shadowNode, commandName, args);
   }
@@ -375,7 +369,8 @@ UIManagerDelegate *UIManager::getDelegate() {
 }
 
 void UIManager::visitBinding(
-    std::function<void(UIManagerBinding const &uiManagerBinding)> callback,
+    std::function<void(UIManagerBinding const &uiManagerBinding)> const
+        &callback,
     jsi::Runtime &runtime) const {
   auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
   if (uiManagerBinding) {
@@ -389,7 +384,7 @@ ShadowTreeRegistry const &UIManager::getShadowTreeRegistry() const {
 
 void UIManager::registerCommitHook(
     UIManagerCommitHook const &commitHook) const {
-  std::unique_lock<better::shared_mutex> lock(commitHookMutex_);
+  std::unique_lock<butter::shared_mutex> lock(commitHookMutex_);
   react_native_assert(
       std::find(commitHooks_.begin(), commitHooks_.end(), &commitHook) ==
       commitHooks_.end());
@@ -399,7 +394,7 @@ void UIManager::registerCommitHook(
 
 void UIManager::unregisterCommitHook(
     UIManagerCommitHook const &commitHook) const {
-  std::unique_lock<better::shared_mutex> lock(commitHookMutex_);
+  std::unique_lock<butter::shared_mutex> lock(commitHookMutex_);
   auto iterator =
       std::find(commitHooks_.begin(), commitHooks_.end(), &commitHook);
   react_native_assert(iterator != commitHooks_.end());
@@ -413,7 +408,7 @@ RootShadowNode::Unshared UIManager::shadowTreeWillCommit(
     ShadowTree const &shadowTree,
     RootShadowNode::Shared const &oldRootShadowNode,
     RootShadowNode::Unshared const &newRootShadowNode) const {
-  std::shared_lock<better::shared_mutex> lock(commitHookMutex_);
+  std::shared_lock<butter::shared_mutex> lock(commitHookMutex_);
 
   auto resultRootShadowNode = newRootShadowNode;
   for (auto const *commitHook : commitHooks_) {
@@ -446,13 +441,12 @@ void UIManager::stopSurfaceForAnimationDelegate(SurfaceId surfaceId) const {
   }
 }
 
-void UIManager::animationTick() {
+void UIManager::animationTick() const {
   if (animationDelegate_ != nullptr &&
       animationDelegate_->shouldAnimateFrame()) {
-    shadowTreeRegistry_.enumerate(
-        [&](ShadowTree const &shadowTree, bool &stop) {
-          shadowTree.notifyDelegatesOfUpdates();
-        });
+    shadowTreeRegistry_.enumerate([](ShadowTree const &shadowTree) {
+      shadowTree.notifyDelegatesOfUpdates();
+    });
   }
 }
 

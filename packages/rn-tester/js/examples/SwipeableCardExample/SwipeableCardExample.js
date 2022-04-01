@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -29,9 +29,10 @@ module.exports = {
   examples: [
     {
       title: 'SwipeableCardExample',
-      description: ('This example creates a swipeable card using PanResponder. ' +
-        'Under the hood, JSResponderHandler should prevent scroll when the card is being swiped.': string),
-      render: function(): React.Node {
+      description:
+        ('This example creates a swipeable card using PanResponder. ' +
+          'Under the hood, JSResponderHandler should prevent scroll when the card is being swiped.': string),
+      render: function (): React.Node {
         return <SwipeableCardExample />;
       },
     },

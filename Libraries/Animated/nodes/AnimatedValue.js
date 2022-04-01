@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,6 +15,7 @@ const AnimatedWithChildren = require('./AnimatedWithChildren');
 const InteractionManager = require('../../Interaction/InteractionManager');
 const NativeAnimatedHelper = require('../NativeAnimatedHelper');
 
+import type AnimatedNode from './AnimatedNode';
 import type Animation, {EndCallback} from '../animations/Animation';
 import type {InterpolationConfigType} from './AnimatedInterpolation';
 import type AnimatedTracking from './AnimatedTracking';
@@ -45,7 +46,7 @@ const NativeAnimatedAPI = NativeAnimatedHelper.API;
  */
 function _flush(rootNode: AnimatedValue): void {
   const animatedStyles = new Set();
-  function findAnimatedStyles(node) {
+  function findAnimatedStyles(node: AnimatedValue | AnimatedNode) {
     /* $FlowFixMe[prop-missing] (>=0.68.0 site=react_native_fb) This comment
      * suppresses an error found when Flow v0.68 was deployed. To see the error
      * delete this comment and run Flow. */
@@ -77,7 +78,7 @@ function _executeAsAnimatedBatch(id: string, operation: () => void) {
  * mechanism at a time.  Using a new mechanism (e.g. starting a new animation,
  * or calling `setValue`) will stop any previous ones.
  *
- * See https://reactnative.dev/docs/animatedvalue.html
+ * See https://reactnative.dev/docs/animatedvalue
  */
 class AnimatedValue extends AnimatedWithChildren {
   _value: number;
@@ -99,7 +100,7 @@ class AnimatedValue extends AnimatedWithChildren {
   __detach() {
     if (this.__isNative) {
       NativeAnimatedAPI.getValue(this.__getNativeTag(), value => {
-        this._value = value;
+        this._value = value - this._offset;
       });
     }
     this.stopAnimation();
@@ -114,7 +115,7 @@ class AnimatedValue extends AnimatedWithChildren {
    * Directly set the value.  This will stop any animations running on the value
    * and update all the bound properties.
    *
-   * See https://reactnative.dev/docs/animatedvalue.html#setvalue
+   * See https://reactnative.dev/docs/animatedvalue#setvalue
    */
   setValue(value: number): void {
     if (this._animation) {
@@ -137,7 +138,7 @@ class AnimatedValue extends AnimatedWithChildren {
    * `setValue`, an animation, or `Animated.event`.  Useful for compensating
    * things like the start of a pan gesture.
    *
-   * See https://reactnative.dev/docs/animatedvalue.html#setoffset
+   * See https://reactnative.dev/docs/animatedvalue#setoffset
    */
   setOffset(offset: number): void {
     this._offset = offset;
@@ -150,7 +151,7 @@ class AnimatedValue extends AnimatedWithChildren {
    * Merges the offset value into the base value and resets the offset to zero.
    * The final output of the value is unchanged.
    *
-   * See https://reactnative.dev/docs/animatedvalue.html#flattenoffset
+   * See https://reactnative.dev/docs/animatedvalue#flattenoffset
    */
   flattenOffset(): void {
     this._value += this._offset;
@@ -164,7 +165,7 @@ class AnimatedValue extends AnimatedWithChildren {
    * Sets the offset value to the base value, and resets the base value to zero.
    * The final output of the value is unchanged.
    *
-   * See https://reactnative.dev/docs/animatedvalue.html#extractoffset
+   * See https://reactnative.dev/docs/animatedvalue#extractoffset
    */
   extractOffset(): void {
     this._offset += this._value;
@@ -179,19 +180,25 @@ class AnimatedValue extends AnimatedWithChildren {
    * final value after stopping the animation, which is useful for updating
    * state to match the animation position with layout.
    *
-   * See https://reactnative.dev/docs/animatedvalue.html#stopanimation
+   * See https://reactnative.dev/docs/animatedvalue#stopanimation
    */
   stopAnimation(callback?: ?(value: number) => void): void {
     this.stopTracking();
     this._animation && this._animation.stop();
     this._animation = null;
-    callback && callback(this.__getValue());
+    if (callback) {
+      if (this.__isNative) {
+        NativeAnimatedAPI.getValue(this.__getNativeTag(), callback);
+      } else {
+        callback(this.__getValue());
+      }
+    }
   }
 
   /**
    * Stops any animation and resets the value to its original.
    *
-   * See https://reactnative.dev/docs/animatedvalue.html#resetanimation
+   * See https://reactnative.dev/docs/animatedvalue#resetanimation
    */
   resetAnimation(callback?: ?(value: number) => void): void {
     this.stopAnimation(callback);
@@ -204,7 +211,7 @@ class AnimatedValue extends AnimatedWithChildren {
     }
   }
 
-  _onAnimatedValueUpdateReceived(value: number): void {
+  __onAnimatedValueUpdateReceived(value: number): void {
     this._updateValue(value, false /*flush*/);
   }
 
@@ -220,7 +227,7 @@ class AnimatedValue extends AnimatedWithChildren {
    * Typically only used internally, but could be used by a custom Animation
    * class.
    *
-   * See https://reactnative.dev/docs/animatedvalue.html#animate
+   * See https://reactnative.dev/docs/animatedvalue#animate
    */
   animate(animation: Animation, callback: ?EndCallback): void {
     let handle = null;
@@ -263,6 +270,8 @@ class AnimatedValue extends AnimatedWithChildren {
   track(tracking: AnimatedTracking): void {
     this.stopTracking();
     this._tracking = tracking;
+    // Make sure that the tracking animation starts executing
+    this._tracking && this._tracking.update();
   }
 
   _updateValue(value: number, flush: boolean): void {

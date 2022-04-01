@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -149,7 +149,7 @@ class ScrollViewStickyHeader extends React.Component<Props, State> {
     );
   }
 
-  _onLayout = event => {
+  _onLayout = (event: any) => {
     const layoutY = event.nativeEvent.layout.y;
     const layoutHeight = event.nativeEvent.layout.height;
     const measured = true;
@@ -170,7 +170,9 @@ class ScrollViewStickyHeader extends React.Component<Props, State> {
 
     this.props.onLayout(event);
     const child = React.Children.only(this.props.children);
-    if (child.props.onLayout) {
+    if (child.props.onCellLayout) {
+      child.props.onCellLayout(event, child.props.cellKey, child.props.index);
+    } else if (child.props.onLayout) {
       child.props.onLayout(event);
     }
   };

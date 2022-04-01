@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -17,7 +17,6 @@ import com.facebook.react.utils.detectedCliPath
 import com.facebook.react.utils.detectedEntryFile
 import com.facebook.react.utils.detectedHermesCommand
 import java.io.File
-import java.util.*
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.tasks.Copy
@@ -27,8 +26,7 @@ private const val REACT_GROUP = "react"
 
 @Suppress("SpreadOperator")
 internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactExtension) {
-  val targetName = variant.name.capitalize(Locale.ROOT)
-  val isRelease = variant.isRelease
+  val targetName = variant.name.replaceFirstChar { it.uppercase() }
   val targetPath = variant.dirName
 
   // React js bundle directories
@@ -49,21 +47,20 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactExte
 
   val execCommand = nodeExecutableAndArgs + cliPath
   val enableHermes = config.enableHermesForVariant(variant)
-  val bundleEnabled = variant.checkBundleEnabled(config)
+  val cleanup = config.deleteDebugFilesForVariant(variant)
+  val bundleEnabled = config.bundleForVariant(variant)
 
   val bundleTask =
       tasks.register("createBundle${targetName}JsAndAssets", BundleJsAndAssetsTask::class.java) {
         it.group = REACT_GROUP
         it.description = "create JS bundle and assets for $targetName."
 
-        it.reactRoot = config.reactRoot.get().asFile
+        it.reactRoot = config.root.get().asFile
         it.sources =
-            fileTree(config.reactRoot) { fileTree ->
-              fileTree.setExcludes(config.inputExcludes.get())
-            }
+            fileTree(config.root) { fileTree -> fileTree.setExcludes(config.inputExcludes.get()) }
         it.execCommand = execCommand
         it.bundleCommand = config.bundleCommand.get()
-        it.devEnabled = !(variant.name in config.devDisabledInVariants.get() || isRelease)
+        it.devEnabled = !config.disableDevForVariant(variant)
         it.entryFile = detectedEntryFile(config)
 
         val extraArgs = mutableListOf<String>()
@@ -98,10 +95,9 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactExte
         it.group = REACT_GROUP
         it.description = "bundle hermes resources for $targetName"
 
-        it.reactRoot = config.reactRoot.get().asFile
+        it.reactRoot = config.root.get().asFile
         it.hermesCommand = detectedHermesCommand(config)
-        it.hermesFlags =
-            if (isRelease) config.hermesFlagsRelease.get() else config.hermesFlagsDebug.get()
+        it.hermesFlags = config.hermesFlagsForVariant(variant)
         it.jsBundleFile = jsBundleFile
         it.composeSourceMapsCommand = nodeExecutableAndArgs + config.composeSourceMapsPath.get()
         it.jsPackagerSourceMapFile = jsPackagerSourceMapFile
@@ -130,7 +126,7 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactExte
   // Android configuration
   variant.registerGeneratedResFolders(generatedResFolders)
 
-  val packageTask =
+  val packageTask: TaskProvider<out Task>? =
       when (variant) {
         is ApplicationVariant -> variant.packageApplicationProvider
         is LibraryVariant -> variant.packageLibraryProvider
@@ -158,31 +154,31 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactExte
           it.enabled = bundleEnabled
         }
 
-    packageTask.dependsOn(currentCopyResTask)
+    packageTask?.dependsOn(currentCopyResTask)
     preBundleTask.dependsOn(currentCopyResTask)
   }
 
-  packageTask.configure {
+  packageTask?.configure {
     if (config.enableVmCleanup.get()) {
       val libDir = "$buildDir/intermediates/transforms/"
-      val targetVariant = ".*/transforms/[^/]*/$targetPath/.*".toRegex()
-      it.doFirst { cleanupVMFiles(libDir, targetVariant, enableHermes, isRelease) }
+      val targetVariant = ".*/transforms/[^/]*/${variant.name}/.*".toRegex()
+      it.doFirst { cleanupVMFiles(libDir, targetVariant, enableHermes, cleanup) }
     }
   }
 
   stripDebugSymbolsTask?.configure {
     if (config.enableVmCleanup.get()) {
-      val libDir = "$buildDir/intermediates/stripped_native_libs/${targetPath}/out/lib/"
-      val targetVariant = ".*/stripped_native_libs/$targetPath/out/lib/.*".toRegex()
-      it.doLast { cleanupVMFiles(libDir, targetVariant, enableHermes, isRelease) }
+      val libDir = "$buildDir/intermediates/stripped_native_libs/${variant.name}/out/lib/"
+      val targetVariant = ".*/stripped_native_libs/${variant.name}/out/lib/.*".toRegex()
+      it.doLast { cleanupVMFiles(libDir, targetVariant, enableHermes, cleanup) }
     }
   }
 
   mergeNativeLibsTask?.configure {
     if (config.enableVmCleanup.get()) {
-      val libDir = "$buildDir/intermediates/merged_native_libs/${targetPath}/out/lib/"
-      val targetVariant = ".*/merged_native_libs/$targetPath/out/lib/.*".toRegex()
-      it.doLast { cleanupVMFiles(libDir, targetVariant, enableHermes, isRelease) }
+      val libDir = "$buildDir/intermediates/merged_native_libs/${variant.name}/out/lib/"
+      val targetVariant = ".*/merged_native_libs/${variant.name}/out/lib/.*".toRegex()
+      it.doLast { cleanupVMFiles(libDir, targetVariant, enableHermes, cleanup) }
     }
   }
 
@@ -198,6 +194,8 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactExte
           it.into(jsBundleDirConfigValue.get())
         } else {
           it.into(mergeAssetsTask.map { mergeFoldersTask -> mergeFoldersTask.outputDir.get() })
+          // Workaround for Android Gradle Plugin 7.1 asset directory
+          it.into("$buildDir/intermediates/assets/${variant.name}/merge${targetName}Assets")
         }
 
         it.dependsOn(mergeAssetsTask)
@@ -209,7 +207,7 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactExte
   // from Android plugin 4.1+.
   // This ensures to copy the bundle file before mergeResources task starts
   mergeResourcesTask.dependsOn(currentAssetsCopyTask)
-  packageTask.dependsOn(currentAssetsCopyTask)
+  packageTask?.dependsOn(currentAssetsCopyTask)
   preBundleTask.dependsOn(currentAssetsCopyTask)
 }
 
@@ -217,7 +215,7 @@ private fun Project.cleanupVMFiles(
     libDir: String,
     targetVariant: Regex,
     enableHermes: Boolean,
-    isRelease: Boolean
+    cleanup: Boolean
 ) {
   // Delete the VM related libraries that this build doesn't need.
   // The application can manage this manually by setting 'enableVmCleanup: false'
@@ -230,24 +228,17 @@ private fun Project.cleanupVMFiles(
       // For Hermes, delete all the libjsc* files
       it.include("**/libjsc*.so")
 
-      if (isRelease) {
+      if (cleanup) {
         // Reduce size by deleting the debugger/inspector
-        it.include("**/libhermes-inspector.so")
         it.include("**/libhermes-executor-debug.so")
-        it.include("**/libhermes-executor-common-debug.so")
       } else {
         // Release libs take precedence and must be removed
         // to allow debugging
         it.include("**/libhermes-executor-release.so")
-        it.include("**/libhermes-executor-common-release.so")
       }
     } else {
       // For JSC, delete all the libhermes* files
       it.include("**/libhermes*.so")
-      // Delete the libjscexecutor from release build
-      if (isRelease) {
-        it.include("**/libjscexecutor.so")
-      }
     }
   }
       .visit { visit ->
@@ -258,17 +249,5 @@ private fun Project.cleanupVMFiles(
       }
 }
 
-private fun BaseVariant.checkBundleEnabled(config: ReactExtension): Boolean {
-  if (config.bundleIn.getting(name).isPresent) {
-    return config.bundleIn.getting(name).get()
-  }
-
-  if (config.bundleIn.getting(buildType.name).isPresent) {
-    return config.bundleIn.getting(buildType.name).get()
-  }
-
-  return isRelease
-}
-
-private val BaseVariant.isRelease: Boolean
-  get() = name.toLowerCase(Locale.ROOT).contains("release")
+internal val BaseVariant.isRelease: Boolean
+  get() = name.lowercase().contains("release")

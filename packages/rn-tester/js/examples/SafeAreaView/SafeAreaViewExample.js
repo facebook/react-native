@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -89,9 +89,12 @@ class IsIPhoneXExample extends React.Component<{...}> {
       <View>
         <Text>
           Is this an iPhone X:{' '}
-          {DeviceInfo.getConstants().isIPhoneX_deprecated
-            ? 'Yeah!'
-            : 'Nope. (Or `isIPhoneX_deprecated` was already removed.)'}
+          {
+            // $FlowFixMe[sketchy-null-bool]
+            DeviceInfo.getConstants().isIPhoneX_deprecated
+              ? 'Yeah!'
+              : 'Nope. (Or `isIPhoneX_deprecated` was already removed.)'
+          }
         </Text>
       </View>
     );
@@ -130,10 +133,11 @@ exports.examples = [
   },
   {
     title: 'isIPhoneX_deprecated Example',
-    description: ('`DeviceInfo.isIPhoneX_deprecated` returns true only on iPhone X. ' +
-      'Note: This prop is deprecated and will be removed in a future ' +
-      'release. Please use this only for a quick and temporary solution. ' +
-      'Use <SafeAreaView> instead.': string),
+    description:
+      ('`DeviceInfo.isIPhoneX_deprecated` returns true only on iPhone X. ' +
+        'Note: This prop is deprecated and will be removed in a future ' +
+        'release. Please use this only for a quick and temporary solution. ' +
+        'Use <SafeAreaView> instead.': string),
     render: (): React.Node => <IsIPhoneXExample />,
   },
 ];

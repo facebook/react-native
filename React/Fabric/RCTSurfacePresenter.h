@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -53,6 +53,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)unregisterSurface:(RCTFabricSurface *)surface;
 
 @property (readonly) RCTMountingManager *mountingManager;
+
+/*
+ * Allow callers to initialize a new fabric surface without adding Fabric as a Buck dependency.
+ */
+- (id<RCTSurfaceProtocol>)createFabricSurfaceForModuleName:(NSString *)moduleName
+                                         initialProperties:(NSDictionary *)initialProperties;
 
 - (nullable RCTFabricSurface *)surfaceForRootTag:(ReactTag)rootTag;
 

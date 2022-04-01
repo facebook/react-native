@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -64,6 +64,12 @@ class FormData {
     this._parts.push([key, value]);
   }
 
+  getAll(key: string): Array<FormDataValue> {
+    return this._parts
+      .filter(([name]) => name === key)
+      .map(([, value]) => value);
+  }
+
   getParts(): Array<FormDataPart> {
     return this._parts.map(([name, value]) => {
       const contentDisposition = 'form-data; name="' + name + '"';
@@ -74,7 +80,7 @@ class FormData {
       // an object with a `uri` attribute. Optionally, it can also
       // have a `name` and `type` attribute to specify filename and
       // content type (cf. web Blob interface.)
-      if (typeof value === 'object' && value) {
+      if (typeof value === 'object' && !Array.isArray(value) && value) {
         if (typeof value.name === 'string') {
           headers['content-disposition'] += '; filename="' + value.name + '"';
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -79,13 +79,13 @@ class GenerateCodegenArtifactsTaskTest {
   @Test
   @WithOs(OS.UNIX)
   fun setupCommandLine_withoutJavaGenerator_willSetupCorrectly() {
-    val reactRoot = tempFolder.newFolder("node_modules/react-native/")
+    val reactNativeDir = tempFolder.newFolder("node_modules/react-native/")
     val codegenDir = tempFolder.newFolder("codegen")
     val outputDir = tempFolder.newFolder("output")
 
     val task =
         createTestTask<GenerateCodegenArtifactsTask> {
-          it.reactRoot.set(reactRoot)
+          it.reactNativeDir.set(reactNativeDir)
           it.codegenDir.set(codegenDir)
           it.generatedSrcDir.set(outputDir)
           it.nodeExecutableAndArgs.set(listOf("--verbose"))
@@ -99,11 +99,16 @@ class GenerateCodegenArtifactsTaskTest {
         listOf(
             "yarn",
             "--verbose",
-            File(reactRoot, "scripts/generate-specs-cli.js").toString(),
+            File(reactNativeDir, "scripts/generate-specs-cli.js").toString(),
+            "--platform",
             "android",
+            "--schemaPath",
             File(outputDir, "schema.json").toString(),
+            "--outputDir",
             outputDir.toString(),
+            "--libraryName",
             "example-test",
+            "--javaPackageName",
             "com.example.test",
         ),
         task.commandLine.toMutableList())

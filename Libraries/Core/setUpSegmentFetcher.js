@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -27,8 +27,8 @@ function __fetchSegment(
   }>,
   callback: (?Error) => void,
 ) {
-  const SegmentFetcher = require('./SegmentFetcher/NativeSegmentFetcher')
-    .default;
+  const SegmentFetcher =
+    require('./SegmentFetcher/NativeSegmentFetcher').default;
   SegmentFetcher.fetchSegment(
     segmentId,
     options,
@@ -61,8 +61,8 @@ function __getSegment(
   }>,
   callback: (?Error, ?string) => void,
 ) {
-  const SegmentFetcher = require('./SegmentFetcher/NativeSegmentFetcher')
-    .default;
+  const SegmentFetcher =
+    require('./SegmentFetcher/NativeSegmentFetcher').default;
 
   if (!SegmentFetcher.getSegment) {
     throw new Error('SegmentFetcher.getSegment must be defined');

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,43 +12,54 @@ using namespace facebook::react;
 namespace facebook {
 namespace react {
 
+static inline int32_t bucketOffset(int32_t index) {
+  return sizeof(MapBuffer::Header) + sizeof(MapBuffer::Bucket) * index;
+}
+
+static inline int32_t valueOffset(int32_t bucketIndex) {
+  return bucketOffset(bucketIndex) + offsetof(MapBuffer::Bucket, data);
+}
+
 // TODO T83483191: Extend MapBuffer C++ implementation to support basic random
 // access
-MapBuffer::MapBuffer(uint8_t *const data, int32_t dataSize) {
-  react_native_assert(
-      (data != nullptr) && "Error trying to build an invalid MapBuffer");
+MapBuffer::MapBuffer(std::vector<uint8_t> data) : bytes_(std::move(data)) {
+  auto header = reinterpret_cast<Header const *>(bytes_.data());
+  count_ = header->count;
 
-  // Should we move the memory here or document it?
-  data_ = data;
-
-  count_ = 0;
-  memcpy(
-      reinterpret_cast<uint8_t *>(&count_),
-      reinterpret_cast<const uint8_t *>(data_ + HEADER_COUNT_OFFSET),
-      UINT16_SIZE);
-
-  // TODO T83483191: extract memcpy calls into an inline function to simplify
-  // the code
-  dataSize_ = 0;
-  memcpy(
-      reinterpret_cast<uint8_t *>(&dataSize_),
-      reinterpret_cast<const uint8_t *>(data_ + HEADER_BUFFER_SIZE_OFFSET),
-      INT_SIZE);
-
-  if (dataSize != dataSize_) {
-    LOG(ERROR) << "Error: Data size does not match, expected " << dataSize
-               << " found: " << dataSize_;
+  if (header->bufferSize != bytes_.size()) {
+    LOG(ERROR) << "Error: Data size does not match, expected "
+               << header->bufferSize << " found: " << bytes_.size();
     abort();
   }
 }
 
+int32_t MapBuffer::getKeyBucket(Key key) const {
+  int32_t lo = 0;
+  int32_t hi = count_ - 1;
+  while (lo <= hi) {
+    int32_t mid = (lo + hi) >> 1;
+
+    Key midVal =
+        *reinterpret_cast<Key const *>(bytes_.data() + bucketOffset(mid));
+
+    if (midVal < key) {
+      lo = mid + 1;
+    } else if (midVal > key) {
+      hi = mid - 1;
+    } else {
+      return mid;
+    }
+  }
+
+  return -1;
+}
+
 int32_t MapBuffer::getInt(Key key) const {
-  int32_t value = 0;
-  memcpy(
-      reinterpret_cast<uint8_t *>(&value),
-      reinterpret_cast<const uint8_t *>(data_ + getValueOffset(key)),
-      INT_SIZE);
-  return value;
+  auto bucketIndex = getKeyBucket(key);
+  react_native_assert(bucketIndex != -1 && "Key not found in MapBuffer");
+
+  return *reinterpret_cast<int32_t const *>(
+      bytes_.data() + valueOffset(bucketIndex));
 }
 
 bool MapBuffer::getBool(Key key) const {
@@ -56,42 +67,30 @@ bool MapBuffer::getBool(Key key) const {
 }
 
 double MapBuffer::getDouble(Key key) const {
-  // TODO T83483191: extract this code into a "template method" and reuse it for
-  // other types
-  double value = 0;
-  memcpy(
-      reinterpret_cast<uint8_t *>(&value),
-      reinterpret_cast<const uint8_t *>(data_ + getValueOffset(key)),
-      DOUBLE_SIZE);
-  return value;
+  auto bucketIndex = getKeyBucket(key);
+  react_native_assert(bucketIndex != -1 && "Key not found in MapBuffer");
+
+  return *reinterpret_cast<double const *>(
+      bytes_.data() + valueOffset(bucketIndex));
 }
 
 int32_t MapBuffer::getDynamicDataOffset() const {
-  // The begininig of dynamic data can be calculated as the offset of the next
+  // The start of dynamic data can be calculated as the offset of the next
   // key in the map
-  return getKeyOffset(count_);
+  return bucketOffset(count_);
 }
 
 std::string MapBuffer::getString(Key key) const {
   // TODO T83483191:Add checks to verify that offsets are under the boundaries
   // of the map buffer
   int32_t dynamicDataOffset = getDynamicDataOffset();
-  int32_t stringLength = 0;
   int32_t offset = getInt(key);
-  memcpy(
-      reinterpret_cast<uint8_t *>(&stringLength),
-      reinterpret_cast<const uint8_t *>(data_ + dynamicDataOffset + offset),
-      INT_SIZE);
+  int32_t stringLength = *reinterpret_cast<int32_t const *>(
+      bytes_.data() + dynamicDataOffset + offset);
+  uint8_t const *stringPtr =
+      bytes_.data() + dynamicDataOffset + offset + sizeof(int);
 
-  char *value = new char[stringLength];
-
-  memcpy(
-      reinterpret_cast<char *>(value),
-      reinterpret_cast<const char *>(
-          data_ + dynamicDataOffset + offset + INT_SIZE),
-      stringLength);
-
-  return std::string(value, 0, stringLength);
+  return std::string(stringPtr, stringPtr + stringLength);
 }
 
 MapBuffer MapBuffer::getMapBuffer(Key key) const {
@@ -99,50 +98,30 @@ MapBuffer MapBuffer::getMapBuffer(Key key) const {
   // of the map buffer
   int32_t dynamicDataOffset = getDynamicDataOffset();
 
-  int32_t mapBufferLength = 0;
   int32_t offset = getInt(key);
-  memcpy(
-      reinterpret_cast<uint8_t *>(&mapBufferLength),
-      reinterpret_cast<const uint8_t *>(data_ + dynamicDataOffset + offset),
-      INT_SIZE);
+  int32_t mapBufferLength = *reinterpret_cast<int32_t const *>(
+      bytes_.data() + dynamicDataOffset + offset);
 
-  uint8_t *value = new Byte[mapBufferLength];
+  std::vector<uint8_t> value(mapBufferLength);
 
   memcpy(
-      reinterpret_cast<uint8_t *>(value),
-      reinterpret_cast<const uint8_t *>(
-          data_ + dynamicDataOffset + offset + INT_SIZE),
+      value.data(),
+      bytes_.data() + dynamicDataOffset + offset + sizeof(int32_t),
       mapBufferLength);
 
-  return MapBuffer(value, mapBufferLength);
+  return MapBuffer(std::move(value));
 }
 
-bool MapBuffer::isNull(Key key) const {
-  return getInt(key) == NULL_VALUE;
+size_t MapBuffer::size() const {
+  return bytes_.size();
 }
 
-int32_t MapBuffer::getBufferSize() const {
-  return dataSize_;
+uint8_t const *MapBuffer::data() const {
+  return bytes_.data();
 }
 
-void MapBuffer::copy(uint8_t *output) const {
-  memcpy(output, data_, dataSize_);
-}
-
-uint16_t MapBuffer::getCount() const {
-  uint16_t size = 0;
-
-  memcpy(
-      reinterpret_cast<uint16_t *>(&size),
-      reinterpret_cast<const uint16_t *>(data_ + HEADER_COUNT_OFFSET),
-
-      UINT16_SIZE);
-
-  return size;
-}
-
-MapBuffer::~MapBuffer() {
-  delete[] data_;
+uint16_t MapBuffer::count() const {
+  return count_;
 }
 
 } // namespace react

@@ -42,7 +42,8 @@ The main repository, <https://github.com/facebook/react-native>, contains the Re
 There are a few other repositories you might want to familiarize yourself with:
 
 * **React Native website** which contains the source code for the website, including the documentation, located at <https://github.com/facebook/react-native-website>
-* **Releases** are coordinated through the <https://github.com/react-native-community/releases> repository. This includes important documents such as the Changelog.
+* **Releases**  Conversations for new releases are happening [in this discussion repo](https://github.com/reactwg/react-native-releases/discussions).
+* **Changelog** The changelog can be found [here](https://github.com/facebook/react-native/blob/main/CHANGELOG.md).
 * **Discussions** about the future of React Native take place in the <https://github.com/react-native-community/discussions-and-proposals> repository.
 * **High-quality plugins** for React Native can be found throughout the [React Native Community GitHub Organization](http://github.com/react-native-community/).
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -147,7 +147,8 @@ RCT_EXPORT_MODULE()
 
 - (void)setBridge:(RCTBridge *)bridge
 {
-  RCTEnforceNotAllowedForNewArchitecture(self, @"RCTUIManager must not be initialized for the new architecture");
+  RCTEnforceNewArchitectureValidation(
+      RCTNotAllowedInBridgeless, self, @"RCTUIManager must not be initialized for the new architecture");
 
   RCTAssert(_bridge == nil, @"Should not re-use same UIManager instance");
   _bridge = bridge;

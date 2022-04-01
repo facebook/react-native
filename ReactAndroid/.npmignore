@@ -1,3 +1,7 @@
-# Make sure we never publish ReactAndroid/build (Gradle output) to npm.
-# The folder is huge (> 100MB)!
+# Make sure we never publish ReactAndroid/build (Gradle output)
+# or ReactAndroid/.cxx (CMake output) to npm.
+# Those folders are huge (> 100MB)!
 build/
+.cxx/
+# Exclude buck config/jars for third-party libraries
+src/main/third-party/

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -250,7 +250,7 @@ void StubViewTree::mutate(ShadowViewMutationList const &mutations) {
 
   // For iOS especially: flush logs because some might be lost on iOS if an
   // assert is hit right after this.
-  google::FlushLogFiles(google::INFO);
+  google::FlushLogFiles(google::GLOG_INFO);
 }
 
 bool operator==(StubViewTree const &lhs, StubViewTree const &rhs) {

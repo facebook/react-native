@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -56,10 +56,6 @@ class ExampleBox extends React.Component<ExampleBoxProps, ExampleBoxState> {
         <View
           onTouchEndCapture={this.handleTouchCapture}
           onTouchStart={this.flushReactChanges}>
-          {/* $FlowFixMe[type-as-value] (>=0.53.0 site=react_native_fb,react_
-           * native_oss) This comment suppresses an error when upgrading
-           * Flow's support for React. To see the error delete this comment
-           * and run Flow. */}
           <Component onLog={this.handleLog} />
         </View>
         <View style={styles.logBox}>
@@ -276,7 +272,7 @@ const infoToExample = info => {
   return {
     title: info.title,
     description: info.description,
-    render: function() {
+    render: function () {
       return <ExampleBox key={info.title} Component={info.Component} />;
     },
   };

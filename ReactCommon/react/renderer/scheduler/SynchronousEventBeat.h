@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -25,7 +25,7 @@ class SynchronousEventBeat final : public EventBeat,
   SynchronousEventBeat(
       RunLoopObserver::Unique uiRunLoopObserver,
       RuntimeExecutor runtimeExecutor,
-      std::shared_ptr<RuntimeScheduler> const &runtimeScheduler);
+      std::shared_ptr<RuntimeScheduler> runtimeScheduler);
 
   void induce() const override;
 

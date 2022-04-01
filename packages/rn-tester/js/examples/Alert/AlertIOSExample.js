@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -29,7 +29,7 @@ type State = {|promptValue: ?string|};
 class PromptOptions extends React.Component<Props, State> {
   customButtons: Array<Object>;
 
-  constructor(props) {
+  constructor(props: void | Props) {
     super(props);
 
     /* $FlowFixMe[cannot-write] this seems to be a Flow bug, `saveResponse` is
@@ -137,7 +137,7 @@ class PromptOptions extends React.Component<Props, State> {
     );
   }
 
-  saveResponse(promptValue) {
+  saveResponse(promptValue: any) {
     this.setState({promptValue: JSON.stringify(promptValue)});
   }
 }

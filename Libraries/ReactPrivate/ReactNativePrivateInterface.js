@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -21,6 +21,8 @@ import typeof flattenStyle from '../StyleSheet/flattenStyle';
 import {type DangerouslyImpreciseStyleProp} from '../StyleSheet/StyleSheet';
 import typeof ReactFiberErrorDialog from '../Core/ReactFiberErrorDialog';
 import typeof legacySendAccessibilityEvent from '../Components/AccessibilityInfo/legacySendAccessibilityEvent';
+import typeof RawEventEmitter from '../Core/RawEventEmitter';
+import typeof CustomEvent from '../Events/CustomEvent';
 
 // flowlint unsafe-getters-setters:off
 module.exports = {
@@ -61,5 +63,11 @@ module.exports = {
   },
   get legacySendAccessibilityEvent(): legacySendAccessibilityEvent {
     return require('../Components/AccessibilityInfo/legacySendAccessibilityEvent');
+  },
+  get RawEventEmitter(): RawEventEmitter {
+    return require('../Core/RawEventEmitter').default;
+  },
+  get CustomEvent(): CustomEvent {
+    return require('../Events/CustomEvent').default;
   },
 };

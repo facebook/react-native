@@ -12,7 +12,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "devtools-protocol": "0.0.730699",
+    "devtools-protocol": "0.0.959523",
     "yargs": "^14.2.0"
   },
   "devDependencies": {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,7 +9,7 @@
  */
 
 import * as React from 'react';
-import {View, Text, StyleSheet, Button} from 'react-native';
+import {View, Text, StyleSheet, Button, Platform} from 'react-native';
 import {type RNTesterTheme} from './RNTesterTheme';
 
 function RNTTestDetails({
@@ -45,6 +45,10 @@ function RNTTestDetails({
     <View
       style={StyleSheet.compose(styles.container, {
         borderColor: theme.SeparatorColor,
+        backgroundColor:
+          Platform.OS === 'ios'
+            ? theme.SystemBackgroundColor
+            : theme.BackgroundColor,
       })}>
       <View style={styles.titleRow}>
         <Text

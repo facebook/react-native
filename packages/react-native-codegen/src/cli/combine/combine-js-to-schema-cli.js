@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,13 +13,12 @@
 
 const combine = require('./combine-js-to-schema');
 const fs = require('fs');
-// $FlowFixMe[untyped-import] glob is untyped
 const glob = require('glob');
 const path = require('path');
 
 const [outfile, ...fileList] = process.argv.slice(2);
 
-function filterJSFile(file) {
+function filterJSFile(file: string) {
   return (
     /^(Native.+|.+NativeComponent)/.test(path.basename(file)) &&
     // NativeUIManager will be deprecated by Fabric UIManager.
@@ -36,7 +35,7 @@ const allFiles = [];
 fileList.forEach(file => {
   if (fs.lstatSync(file).isDirectory()) {
     const dirFiles = glob
-      .sync(`${file}/**/*.js`, {
+      .sync(`${file}/**/*.{js,ts,tsx}`, {
         nodir: true,
       })
       .filter(filterJSFile);

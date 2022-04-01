@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -23,7 +23,6 @@ import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.config.ReactFeatureFlags;
 import java.lang.ref.WeakReference;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -91,6 +90,7 @@ public class ReactContext extends ContextWrapper {
 
   /** Initialize message queue threads using a ReactQueueConfiguration. */
   public synchronized void initializeMessageQueueThreads(ReactQueueConfiguration queueConfig) {
+    FLog.w(TAG, "initializeMessageQueueThreads() is called.");
     if (mUiMessageQueueThread != null
         || mNativeModulesMessageQueueThread != null
         || mJSMessageQueueThread != null) {
@@ -254,6 +254,7 @@ public class ReactContext extends ContextWrapper {
   }
 
   /** Should be called by the hosting Fragment in {@link Fragment#onResume} */
+  @ThreadConfined(UI)
   public void onHostResume(@Nullable Activity activity) {
     mLifecycleState = LifecycleState.RESUMED;
     mCurrentActivity = new WeakReference(activity);
@@ -282,6 +283,7 @@ public class ReactContext extends ContextWrapper {
   }
 
   /** Should be called by the hosting Fragment in {@link Fragment#onPause} */
+  @ThreadConfined(UI)
   public void onHostPause() {
     mLifecycleState = LifecycleState.BEFORE_RESUME;
     ReactMarker.logMarker(ReactMarkerConstants.ON_HOST_PAUSE_START);
@@ -319,15 +321,11 @@ public class ReactContext extends ContextWrapper {
     if (mCatalystInstance != null) {
       mCatalystInstance.destroy();
     }
-    if (ReactFeatureFlags.enableReactContextCleanupFix) {
-      mLifecycleEventListeners.clear();
-      mActivityEventListeners.clear();
-      mWindowFocusEventListeners.clear();
-    }
   }
 
   /** Should be called by the hosting Fragment in {@link Fragment#onActivityResult} */
-  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
+  public void onActivityResult(
+      Activity activity, int requestCode, int resultCode, @Nullable Intent data) {
     for (ActivityEventListener listener : mActivityEventListeners) {
       try {
         listener.onActivityResult(activity, requestCode, resultCode, data);
@@ -395,8 +393,8 @@ public class ReactContext extends ContextWrapper {
     return Assertions.assertNotNull(mJSMessageQueueThread).isOnThread();
   }
 
-  public void runOnJSQueueThread(Runnable runnable) {
-    Assertions.assertNotNull(mJSMessageQueueThread).runOnQueue(runnable);
+  public boolean runOnJSQueueThread(Runnable runnable) {
+    return Assertions.assertNotNull(mJSMessageQueueThread).runOnQueue(runnable);
   }
 
   /**

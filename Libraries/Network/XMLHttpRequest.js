@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -136,7 +136,6 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
   _lowerCaseResponseHeaders: Object;
   _method: ?string = null;
   _perfKey: ?string = null;
-  _response: string | ?Object;
   _responseType: ResponseType;
   _response: string = '';
   _sent: boolean;
@@ -423,12 +422,49 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
       // according to the spec, return null if no response has been received
       return null;
     }
-    const headers = this.responseHeaders || {};
-    return Object.keys(headers)
-      .map(headerName => {
-        return headerName + ': ' + headers[headerName];
-      })
-      .join('\r\n');
+
+    // Assign to non-nullable local variable.
+    const responseHeaders = this.responseHeaders;
+
+    const unsortedHeaders: Map<
+      string,
+      {lowerHeaderName: string, upperHeaderName: string, headerValue: string},
+    > = new Map();
+    for (const rawHeaderName of Object.keys(responseHeaders)) {
+      const headerValue = responseHeaders[rawHeaderName];
+      const lowerHeaderName = rawHeaderName.toLowerCase();
+      const header = unsortedHeaders.get(lowerHeaderName);
+      if (header) {
+        header.headerValue += ', ' + headerValue;
+        unsortedHeaders.set(lowerHeaderName, header);
+      } else {
+        unsortedHeaders.set(lowerHeaderName, {
+          lowerHeaderName,
+          upperHeaderName: rawHeaderName.toUpperCase(),
+          headerValue,
+        });
+      }
+    }
+
+    // Sort in ascending order, with a being less than b if a's name is legacy-uppercased-byte less than b's name.
+    const sortedHeaders = [...unsortedHeaders.values()].sort((a, b) => {
+      if (a.upperHeaderName < b.upperHeaderName) {
+        return -1;
+      }
+      if (a.upperHeaderName > b.upperHeaderName) {
+        return 1;
+      }
+      return 0;
+    });
+
+    // Combine into single text response.
+    return (
+      sortedHeaders
+        .map(header => {
+          return header.lowerHeaderName + ': ' + header.headerValue;
+        })
+        .join('\r\n') + '\r\n'
+    );
   }
 
   getResponseHeader(header: string): ?string {

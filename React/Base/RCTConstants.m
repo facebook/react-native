@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -23,19 +23,4 @@ BOOL RCTExperimentGetPreemptiveViewAllocationDisabled()
 void RCTExperimentSetPreemptiveViewAllocationDisabled(BOOL value)
 {
   RCTExperimentPreemptiveViewAllocationDisabled = value;
-}
-
-/*
- * Remove clipped subviews
- */
-static BOOL RCTRemoveClippedSubviewsEnabled = NO;
-
-BOOL RCTGetRemoveClippedSubviewsEnabled(void)
-{
-  return RCTRemoveClippedSubviewsEnabled;
-}
-
-void RCTSetRemoveClippedSubviewsEnabled(BOOL value)
-{
-  RCTRemoveClippedSubviewsEnabled = value;
 }

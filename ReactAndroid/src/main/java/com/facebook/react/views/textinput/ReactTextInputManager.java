@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -75,6 +75,7 @@ import com.facebook.yoga.YogaConstants;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Locale;
 import java.util.Map;
 
 /** Manages instances of TextInput. */
@@ -202,48 +203,62 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @Nullable
   @Override
   public Map<String, Object> getExportedCustomBubblingEventTypeConstants() {
-    return MapBuilder.<String, Object>builder()
-        .put(
-            "topSubmitEditing",
-            MapBuilder.of(
-                "phasedRegistrationNames",
-                MapBuilder.of("bubbled", "onSubmitEditing", "captured", "onSubmitEditingCapture")))
-        .put(
-            "topEndEditing",
-            MapBuilder.of(
-                "phasedRegistrationNames",
-                MapBuilder.of("bubbled", "onEndEditing", "captured", "onEndEditingCapture")))
-        .put(
-            "topTextInput",
-            MapBuilder.of(
-                "phasedRegistrationNames",
-                MapBuilder.of("bubbled", "onTextInput", "captured", "onTextInputCapture")))
-        .put(
-            "topFocus",
-            MapBuilder.of(
-                "phasedRegistrationNames",
-                MapBuilder.of("bubbled", "onFocus", "captured", "onFocusCapture")))
-        .put(
-            "topBlur",
-            MapBuilder.of(
-                "phasedRegistrationNames",
-                MapBuilder.of("bubbled", "onBlur", "captured", "onBlurCapture")))
-        .put(
-            "topKeyPress",
-            MapBuilder.of(
-                "phasedRegistrationNames",
-                MapBuilder.of("bubbled", "onKeyPress", "captured", "onKeyPressCapture")))
-        .build();
+    @Nullable
+    Map<String, Object> baseEventTypeConstants =
+        super.getExportedCustomBubblingEventTypeConstants();
+    Map<String, Object> eventTypeConstants =
+        baseEventTypeConstants == null ? new HashMap<String, Object>() : baseEventTypeConstants;
+    eventTypeConstants.putAll(
+        MapBuilder.<String, Object>builder()
+            .put(
+                "topSubmitEditing",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of(
+                        "bubbled", "onSubmitEditing", "captured", "onSubmitEditingCapture")))
+            .put(
+                "topEndEditing",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onEndEditing", "captured", "onEndEditingCapture")))
+            .put(
+                "topTextInput",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onTextInput", "captured", "onTextInputCapture")))
+            .put(
+                "topFocus",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onFocus", "captured", "onFocusCapture")))
+            .put(
+                "topBlur",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onBlur", "captured", "onBlurCapture")))
+            .put(
+                "topKeyPress",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onKeyPress", "captured", "onKeyPressCapture")))
+            .build());
+    return eventTypeConstants;
   }
 
   @Nullable
   @Override
   public Map<String, Object> getExportedCustomDirectEventTypeConstants() {
-    return MapBuilder.<String, Object>builder()
-        .put(
-            ScrollEventType.getJSEventName(ScrollEventType.SCROLL),
-            MapBuilder.of("registrationName", "onScroll"))
-        .build();
+    @Nullable
+    Map<String, Object> baseEventTypeConstants = super.getExportedCustomDirectEventTypeConstants();
+    Map<String, Object> eventTypeConstants =
+        baseEventTypeConstants == null ? new HashMap<String, Object>() : baseEventTypeConstants;
+    eventTypeConstants.putAll(
+        MapBuilder.<String, Object>builder()
+            .put(
+                ScrollEventType.getJSEventName(ScrollEventType.SCROLL),
+                MapBuilder.of("registrationName", "onScroll"))
+            .build());
+    return eventTypeConstants;
   }
 
   @Override
@@ -288,16 +303,17 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
           return;
         }
 
-        String text = args.getString(1);
-
         int start = args.getInt(2);
         int end = args.getInt(3);
         if (end == UNSET) {
           end = start;
         }
 
-        reactEditText.maybeSetTextFromJS(
-            getReactTextUpdate(text, mostRecentEventCount, start, end));
+        if (!args.isNull(1)) {
+          String text = args.getString(1);
+          reactEditText.maybeSetTextFromJS(
+              getReactTextUpdate(text, mostRecentEventCount, start, end));
+        }
         reactEditText.maybeSetSelection(mostRecentEventCount, start, end);
         break;
     }
@@ -554,7 +570,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   }
 
   private static boolean shouldHideCursorForEmailTextInput() {
-    String manufacturer = Build.MANUFACTURER.toLowerCase();
+    String manufacturer = Build.MANUFACTURER.toLowerCase(Locale.ROOT);
     return (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q && manufacturer.contains("xiaomi"));
   }
 
@@ -621,7 +637,16 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     if (underlineColor == null) {
       drawableToMutate.clearColorFilter();
     } else {
-      drawableToMutate.setColorFilter(underlineColor, PorterDuff.Mode.SRC_IN);
+      // fixes underlineColor transparent not working on API 21
+      // re-sets the TextInput underlineColor https://bit.ly/3M4alr6
+      if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP) {
+        int bottomBorderColor = view.getBorderColor(Spacing.BOTTOM);
+        setBorderColor(view, Spacing.START, underlineColor);
+        drawableToMutate.setColorFilter(underlineColor, PorterDuff.Mode.SRC_IN);
+        setBorderColor(view, Spacing.START, bottomBorderColor);
+      } else {
+        drawableToMutate.setColorFilter(underlineColor, PorterDuff.Mode.SRC_IN);
+      }
     }
   }
 

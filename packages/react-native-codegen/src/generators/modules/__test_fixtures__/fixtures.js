@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -1459,11 +1459,25 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
   },
 };
 
+const SAMPLE_WITH_UPPERCASE_NAME: SchemaType = {
+  modules: {
+    NativeSampleTurboModule: {
+      type: 'NativeModule',
+      aliases: {},
+      spec: {
+        properties: [],
+      },
+      moduleNames: ['SampleTurboModule'],
+    },
+  },
+};
+
 module.exports = {
-  COMPLEX_OBJECTS,
-  TWO_MODULES_DIFFERENT_FILES,
-  EMPTY_NATIVE_MODULES,
-  SIMPLE_NATIVE_MODULES,
-  NATIVE_MODULES_WITH_TYPE_ALIASES,
-  REAL_MODULE_EXAMPLE,
+  complex_objects: COMPLEX_OBJECTS,
+  two_modules_different_files: TWO_MODULES_DIFFERENT_FILES,
+  empty_native_modules: EMPTY_NATIVE_MODULES,
+  simple_native_modules: SIMPLE_NATIVE_MODULES,
+  native_modules_with_type_aliases: NATIVE_MODULES_WITH_TYPE_ALIASES,
+  real_module_example: REAL_MODULE_EXAMPLE,
+  SampleWithUppercaseName: SAMPLE_WITH_UPPERCASE_NAME,
 };

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -33,7 +33,17 @@ if (global.RN$Bridgeless !== true) {
    * Set up timers.
    * You can use this module directly, or just require InitializeCore.
    */
-  const defineLazyTimer = name => {
+  const defineLazyTimer = (
+    name:
+      | $TEMPORARY$string<'cancelAnimationFrame'>
+      | $TEMPORARY$string<'cancelIdleCallback'>
+      | $TEMPORARY$string<'clearInterval'>
+      | $TEMPORARY$string<'clearTimeout'>
+      | $TEMPORARY$string<'requestAnimationFrame'>
+      | $TEMPORARY$string<'requestIdleCallback'>
+      | $TEMPORARY$string<'setInterval'>
+      | $TEMPORARY$string<'setTimeout'>,
+  ) => {
     polyfillGlobal(name, () => require('./Timers/JSTimers')[name]);
   };
   defineLazyTimer('setTimeout');

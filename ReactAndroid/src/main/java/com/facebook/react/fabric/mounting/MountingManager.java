@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,7 +10,6 @@ package com.facebook.react.fabric.mounting;
 import static com.facebook.infer.annotation.ThreadConfined.ANY;
 import static com.facebook.infer.annotation.ThreadConfined.UI;
 
-import android.text.Spannable;
 import android.view.View;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
@@ -24,7 +23,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.UiThreadUtil;
-import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
+import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
@@ -32,8 +31,6 @@ import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.RootViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import com.facebook.react.views.text.ReactTextViewManagerCallback;
-import com.facebook.react.views.text.TextLayoutManagerMapBuffer;
 import com.facebook.yoga.YogaMeasureMode;
 import java.util.Map;
 import java.util.Queue;
@@ -75,27 +72,21 @@ public class MountingManager {
     mMountItemExecutor = mountItemExecutor;
   }
 
-  /** Starts surface and attaches the root view. */
-  @AnyThread
-  public void startSurface(
-      final int surfaceId, @NonNull final View rootView, ThemedReactContext themedReactContext) {
-    SurfaceMountingManager mountingManager = startSurface(surfaceId);
-    mountingManager.attachRootView(rootView, themedReactContext);
-  }
-
   /**
    * Starts surface without attaching the view. All view operations executed against that surface
    * will be queued until the view is attached.
    */
   @AnyThread
-  public SurfaceMountingManager startSurface(final int surfaceId) {
+  public SurfaceMountingManager startSurface(
+      final int surfaceId, ThemedReactContext reactContext, @Nullable View rootView) {
     SurfaceMountingManager surfaceMountingManager =
         new SurfaceMountingManager(
             surfaceId,
             mJSResponderHandler,
             mViewManagerRegistry,
             mRootViewManager,
-            mMountItemExecutor);
+            mMountItemExecutor,
+            reactContext);
 
     // There could technically be a race condition here if addRootView is called twice from
     // different threads, though this is (probably) extremely unlikely, and likely an error.
@@ -111,6 +102,11 @@ public class MountingManager {
     }
 
     mMostRecentSurfaceMountingManager = mSurfaceIdToManager.get(surfaceId);
+
+    if (rootView != null) {
+      surfaceMountingManager.attachRootView(rootView, reactContext);
+    }
+
     return surfaceMountingManager;
   }
 
@@ -314,8 +310,8 @@ public class MountingManager {
   }
 
   /**
-   * Clears the JS Responder specified by {@link #setJSResponder(int, int, int, boolean)}. After
-   * this method is called, all the touch events are going to be handled by JS.
+   * Clears the JS Responder specified by {@link SurfaceMountingManager#setJSResponder}. After this
+   * method is called, all the touch events are going to be handled by JS.
    */
   @UiThread
   public void clearJSResponder() {
@@ -387,8 +383,8 @@ public class MountingManager {
    *
    * @param context
    * @param componentName
-   * @param attributedString
-   * @param paragraphAttributes
+   * @param localData
+   * @param props
    * @param width
    * @param widthMode
    * @param height
@@ -397,30 +393,30 @@ public class MountingManager {
    * @return
    */
   @AnyThread
-  public long measureTextMapBuffer(
+  public long measureMapBuffer(
       @NonNull ReactContext context,
       @NonNull String componentName,
-      @NonNull ReadableMapBuffer attributedString,
-      @NonNull ReadableMapBuffer paragraphAttributes,
+      @NonNull MapBuffer localData,
+      @NonNull MapBuffer props,
+      @Nullable MapBuffer state,
       float width,
       @NonNull YogaMeasureMode widthMode,
       float height,
       @NonNull YogaMeasureMode heightMode,
       @Nullable float[] attachmentsPositions) {
 
-    return TextLayoutManagerMapBuffer.measureText(
-        context,
-        attributedString,
-        paragraphAttributes,
-        width,
-        widthMode,
-        height,
-        heightMode,
-        new ReactTextViewManagerCallback() {
-          @Override
-          public void onPostProcessSpannable(Spannable text) {}
-        },
-        attachmentsPositions);
+    return mViewManagerRegistry
+        .get(componentName)
+        .measure(
+            context,
+            localData,
+            props,
+            state,
+            width,
+            widthMode,
+            height,
+            heightMode,
+            attachmentsPositions);
   }
 
   public void initializeViewManager(String componentName) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include <better/map.h>
+#include <butter/map.h>
 
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/timeline/Timeline.h>
@@ -65,12 +65,12 @@ class TimelineController final : public UIManagerCommitHook {
   /*
    * Protects all the data members.
    */
-  mutable better::shared_mutex timelinesMutex_;
+  mutable butter::shared_mutex timelinesMutex_;
 
   /*
    * Owning collection of all running `Timeline` instances.
    */
-  mutable better::map<SurfaceId, std::unique_ptr<Timeline>> timelines_;
+  mutable butter::map<SurfaceId, std::unique_ptr<Timeline>> timelines_;
 
   mutable UIManager const *uiManager_;
   mutable SurfaceId lastUpdatedSurface_;

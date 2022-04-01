@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,7 +11,7 @@
 import * as React from 'react';
 import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
 
-export type SyntheticEvent<T> = $ReadOnly<{|
+export type SyntheticEvent<+T> = $ReadOnly<{|
   bubbles: ?boolean,
   cancelable: ?boolean,
   currentTarget: number | React.ElementRef<HostComponent<mixed>>,
@@ -80,6 +80,18 @@ export type LayoutEvent = SyntheticEvent<
 export type TextLayoutEvent = SyntheticEvent<
   $ReadOnly<{|
     lines: Array<TextLayout>,
+  |}>,
+>;
+
+export type PointerEvent = ResponderSyntheticEvent<
+  $ReadOnly<{|
+    pointerId: number,
+    pressure: number,
+    pointerType: string,
+    clientX: number,
+    clientY: number,
+    target: ?number,
+    timestamp: number,
   |}>,
 >;
 

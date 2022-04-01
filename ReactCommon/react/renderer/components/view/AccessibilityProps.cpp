@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -43,11 +43,35 @@ AccessibilityProps::AccessibilityProps(
           "accessibilityLabel",
           sourceProps.accessibilityLabel,
           "")),
+      accessibilityLabelledBy(convertRawProp(
+          context,
+          rawProps,
+          "accessibilityLabelledBy",
+          sourceProps.accessibilityLabelledBy,
+          {})),
+      accessibilityLiveRegion(convertRawProp(
+          context,
+          rawProps,
+          "accessibilityLiveRegion",
+          sourceProps.accessibilityLiveRegion,
+          AccessibilityLiveRegion::None)),
+      accessibilityRole(convertRawProp(
+          context,
+          rawProps,
+          "accessibilityRole",
+          sourceProps.accessibilityRole,
+          "")),
       accessibilityHint(convertRawProp(
           context,
           rawProps,
           "accessibilityHint",
           sourceProps.accessibilityHint,
+          "")),
+      accessibilityLanguage(convertRawProp(
+          context,
+          rawProps,
+          "accessibilityLanguage",
+          sourceProps.accessibilityLanguage,
           "")),
       accessibilityValue(convertRawProp(
           context,

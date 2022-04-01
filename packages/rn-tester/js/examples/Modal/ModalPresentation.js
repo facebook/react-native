@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,6 +7,8 @@
  * @flow strict-local
  * @format
  */
+
+/* eslint-disable no-alert */
 
 import * as React from 'react';
 import {Modal, Platform, StyleSheet, Switch, Text, View} from 'react-native';
@@ -39,16 +41,12 @@ function ModalPresentation() {
   const [visible, setVisible] = React.useState(false);
   const [hardwareAccelerated, setHardwareAccelerated] = React.useState(false);
   const [statusBarTranslucent, setStatusBarTranslucent] = React.useState(false);
-  const [presentationStyle, setPresentationStyle] = React.useState(
-    'fullScreen',
-  );
-  const [
-    interactiveDismissEnabled,
-    setInteractiveDismissEnabled,
-  ] = React.useState(false);
-  const [supportedOrientationKey, setSupportedOrientationKey] = React.useState(
-    'Portrait',
-  );
+  const [presentationStyle, setPresentationStyle] =
+    React.useState('fullScreen');
+  const [supportedOrientationKey, setSupportedOrientationKey] =
+    React.useState('Portrait');
+  const [interactiveDismissEnabled, setInteractiveDismissEnabled] =
+    React.useState(false);
   const [currentOrientation, setCurrentOrientation] = React.useState('unknown');
   const [action, setAction] = React.useState('None');
   const actions = Platform.OS === 'ios' ? iOSActions : noniOSActions;

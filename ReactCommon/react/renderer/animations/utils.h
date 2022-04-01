@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,6 +8,7 @@
 #pragma once
 
 #include <react/renderer/animations/primitives.h>
+#include <react/renderer/graphics/Float.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
 
 namespace facebook {
@@ -71,7 +72,7 @@ static inline bool shouldFirstComeBeforeSecondMutation(
   return false;
 }
 
-std::pair<double, double> calculateAnimationProgress(
+std::pair<Float, Float> calculateAnimationProgress(
     uint64_t now,
     LayoutAnimation const &animation,
     AnimationConfig const &mutationConfig);

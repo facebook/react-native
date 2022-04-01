@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,9 +12,9 @@
 #include "TurboModuleManager.h"
 
 void jniEnableCppLogging(
-    jni::alias_ref<jclass> cls,
-    jni::alias_ref<facebook::react::JNativeModulePerfLogger::javaobject>
-        perfLogger) {
+    facebook::jni::alias_ref<jclass> cls,
+    facebook::jni::alias_ref<
+        facebook::react::JNativeModulePerfLogger::javaobject> perfLogger) {
   facebook::react::TurboModulePerfLogger::enableLogging(
       perfLogger->cthis()->get());
 }

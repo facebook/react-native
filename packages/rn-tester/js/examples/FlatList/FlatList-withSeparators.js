@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,26 +14,23 @@ import BaseFlatListExample from './BaseFlatListExample';
 import {StyleSheet, View, Text} from 'react-native';
 import * as React from 'react';
 
-const Separator = (defaultColor, highlightColor) => ({
-  leadingItem,
-  trailingItem,
-  highlighted,
-  hasBeenHighlighted,
-}) => {
-  const text = `Separator for leading ${leadingItem} and trailing ${trailingItem} has ${
-    !hasBeenHighlighted ? 'not ' : ''
-  }been pressed`;
+const Separator =
+  (defaultColor, highlightColor) =>
+  ({leadingItem, trailingItem, highlighted, hasBeenHighlighted}) => {
+    const text = `Separator for leading ${leadingItem} and trailing ${trailingItem} has ${
+      !hasBeenHighlighted ? 'not ' : ''
+    }been pressed`;
 
-  return (
-    <View
-      style={[
-        styles.separator,
-        {backgroundColor: highlighted ? highlightColor : defaultColor},
-      ]}>
-      <Text style={styles.separtorText}>{text}</Text>
-    </View>
-  );
-};
+    return (
+      <View
+        style={[
+          styles.separator,
+          {backgroundColor: highlighted ? highlightColor : defaultColor},
+        ]}>
+        <Text style={styles.separtorText}>{text}</Text>
+      </View>
+    );
+  };
 
 export function FlatList_withSeparators(): React.Node {
   const exampleProps = {

@@ -1,4 +1,4 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -22,15 +22,22 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)
 #   ./../ == react
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../..
 
-LOCAL_CFLAGS += -fexceptions -frtti -Wno-unused-lambda-capture
+LOCAL_CFLAGS += -fexceptions -frtti -Wno-unused-lambda-capture -std=c++17
 
 LOCAL_LDLIBS += -landroid
 
 # The dynamic libraries (.so files) that this module depends on.
-LOCAL_SHARED_LIBRARIES := libfolly_json libfb libfbjni libglog_init libyoga libreact_render_runtimescheduler
+LOCAL_SHARED_LIBRARIES := \
+  libfb \
+  libfbjni \
+  libfolly_runtime \
+  libglog_init \
+  libreact_render_runtimescheduler \
+  libruntimeexecutor \
+  libyoga
 
 # The static libraries (.a files) that this module depends on.
-LOCAL_STATIC_LIBRARIES := libreactnative libcallinvokerholder libruntimeexecutor
+LOCAL_STATIC_LIBRARIES := libreactnative libcallinvokerholder
 
 # Name of this module.
 #
@@ -72,15 +79,24 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)
 #   ./../ == react
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../..
 
-LOCAL_CFLAGS += -fexceptions -frtti -Wno-unused-lambda-capture
+LOCAL_CFLAGS += -fexceptions -frtti -Wno-unused-lambda-capture -std=c++17
 
 LOCAL_LDLIBS += -landroid
 
 # The dynamic libraries (.so files) that this module depends on.
-LOCAL_SHARED_LIBRARIES := libreactnativeutilsjni libfolly_json libfb libfbjni libglog_init libyoga logger libreact_render_runtimescheduler
+LOCAL_SHARED_LIBRARIES := \
+  libfb \
+  libfbjni \
+  libfolly_runtime \
+  libglog_init \
+  libreact_render_runtimescheduler \
+  libreactnativeutilsjni \
+  libruntimeexecutor \
+  libyoga \
+  logger
 
 # The static libraries (.a files) that this module depends on.
-LOCAL_STATIC_LIBRARIES := libreactnative libruntimeexecutor libcallinvokerholder
+LOCAL_STATIC_LIBRARIES := libreactnative libcallinvokerholder
 
 # Name of this module.
 #
@@ -89,7 +105,7 @@ LOCAL_STATIC_LIBRARIES := libreactnative libruntimeexecutor libcallinvokerholder
 LOCAL_MODULE := reactnativejni
 
 # Compile all local c++ files.
-LOCAL_SRC_FILES := $(wildcard *.cpp)
+LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
 
 ifeq ($(APP_OPTIM),debug)
   # Keep symbols by overriding the strip command invoked by ndk-build.
@@ -114,7 +130,7 @@ include $(BUILD_SHARED_LIBRARY)
 #   Whenever you encounter an include <dir>/<module-dir>/Android.mk, you
 #   tell andorid-ndk to compile the module in <dir>/<module-dir> according
 #   to the specification inside <dir>/<module-dir>/Android.mk.
-$(call import-module,better)
+$(call import-module,butter)
 $(call import-module,folly)
 $(call import-module,fb)
 $(call import-module,fbjni)
@@ -127,10 +143,17 @@ $(call import-module,jsiexecutor)
 $(call import-module,logger)
 $(call import-module,callinvoker)
 $(call import-module,reactperflogger)
-$(call import-module,hermes)
 $(call import-module,runtimeexecutor)
 $(call import-module,react/renderer/runtimescheduler)
 $(call import-module,react/nativemodule/core)
+
+# This block is needed only because we build the project on NDK r17 internally.
+ifneq ($(call ndk-major-at-least,21),true)
+    $(call import-add-path,$(NDK_GRADLE_INJECTED_IMPORT_PATH))
+endif
+
+$(call import-module,prefab/hermes-engine)
+
 
 include $(REACT_SRC_DIR)/reactperflogger/jni/Android.mk
 # TODO (T48588859): Restructure this target to align with dir structure: "react/nativemodule/..."

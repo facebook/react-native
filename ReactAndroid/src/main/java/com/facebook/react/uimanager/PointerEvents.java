@@ -1,11 +1,13 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.uimanager;
+
+import java.util.Locale;
 
 /**
  * Possible values for pointer events that a view and its descendants should receive. See
@@ -25,4 +27,20 @@ public enum PointerEvents {
   /** Container and all of its children receive touch events (like pointerEvents is unspecified). */
   AUTO,
   ;
+
+  public static PointerEvents parsePointerEvents(String pointerEventsStr) {
+    if (pointerEventsStr == null) {
+      return PointerEvents.AUTO;
+    } else {
+      return PointerEvents.valueOf(pointerEventsStr.toUpperCase(Locale.US).replace("-", "_"));
+    }
+  }
+
+  public static boolean canBeTouchTarget(PointerEvents pointerEvents) {
+    return pointerEvents == AUTO || pointerEvents == PointerEvents.BOX_ONLY;
+  }
+
+  public static boolean canChildrenBeTouchTarget(PointerEvents pointerEvents) {
+    return pointerEvents == PointerEvents.AUTO || pointerEvents == PointerEvents.BOX_NONE;
+  }
 }

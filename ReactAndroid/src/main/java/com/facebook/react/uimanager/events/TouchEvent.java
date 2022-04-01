@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -181,24 +181,37 @@ public class TouchEvent extends Event<TouchEvent> {
 
   @Override
   public void dispatch(RCTEventEmitter rctEventEmitter) {
-    if (!hasMotionEvent()) {
-      ReactSoftExceptionLogger.logSoftException(
-          TAG,
-          new IllegalStateException(
-              "Cannot dispatch a TouchEvent that has no MotionEvent; the TouchEvent has been recycled"));
-      return;
+    if (verifyMotionEvent()) {
+      TouchesHelper.sendTouchesLegacy(rctEventEmitter, this);
     }
-    TouchesHelper.sendTouchEvent(
-        rctEventEmitter,
-        Assertions.assertNotNull(mTouchEventType),
-        getSurfaceId(),
-        getViewTag(),
-        this);
   }
 
   @Override
   public void dispatchModern(RCTModernEventEmitter rctEventEmitter) {
-    dispatch(rctEventEmitter);
+    if (verifyMotionEvent()) {
+      rctEventEmitter.receiveTouches(this);
+    }
+  }
+
+  @Override
+  protected int getEventCategory() {
+    TouchEventType type = mTouchEventType;
+    if (type == null) {
+      return EventCategoryDef.UNSPECIFIED;
+    }
+
+    switch (type) {
+      case START:
+        return EventCategoryDef.CONTINUOUS_START;
+      case END:
+      case CANCEL:
+        return EventCategoryDef.CONTINUOUS_END;
+      case MOVE:
+        return EventCategoryDef.CONTINUOUS;
+    }
+
+    // Something something smart compiler...
+    return super.getEventCategory();
   }
 
   public MotionEvent getMotionEvent() {
@@ -206,8 +219,19 @@ public class TouchEvent extends Event<TouchEvent> {
     return mMotionEvent;
   }
 
-  private boolean hasMotionEvent() {
-    return mMotionEvent != null;
+  private boolean verifyMotionEvent() {
+    if (mMotionEvent == null) {
+      ReactSoftExceptionLogger.logSoftException(
+          TAG,
+          new IllegalStateException(
+              "Cannot dispatch a TouchEvent that has no MotionEvent; the TouchEvent has been recycled"));
+      return false;
+    }
+    return true;
+  }
+
+  public TouchEventType getTouchEventType() {
+    return Assertions.assertNotNull(mTouchEventType);
   }
 
   public float getViewX() {

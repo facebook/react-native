@@ -4,9 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
+ * @noformat
  * @flow strict
- * @generated SignedSource<<67969011689de134487d7110b6519058>>
+ * @generated SignedSource<<fb8a7e52d219403fad0cf916954e5185>>
  *
  * This file was sync'd from the facebook/react repository.
  */
@@ -76,6 +76,7 @@ export type ViewConfig = $ReadOnly<{
       phasedRegistrationNames: $ReadOnly<{
         captured: string,
         bubbled: string,
+        skipBubbling?: ?boolean,
       }>,
     }>,
     ...,

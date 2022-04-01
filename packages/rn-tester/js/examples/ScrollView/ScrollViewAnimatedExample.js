@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,15 +13,8 @@
 const React = require('react');
 const ReactNative = require('react-native');
 const {Component} = React;
-const {
-  StyleSheet,
-  Text,
-  View,
-  Animated,
-  Easing,
-  TouchableOpacity,
-  Dimensions,
-} = ReactNative;
+const {StyleSheet, Text, View, Animated, Easing, TouchableOpacity, Dimensions} =
+  ReactNative;
 
 class ScrollViewAnimatedExample extends Component<{...}> {
   _scrollViewPos = new Animated.Value(0);
@@ -31,7 +24,6 @@ class ScrollViewAnimatedExample extends Component<{...}> {
     Animated.timing(this._scrollViewPos, {
       toValue: 100,
       duration: 10000,
-      // $FlowFixMe[method-unbinding]
       easing: Easing.linear,
       useNativeDriver: true,
     }).start();
@@ -104,7 +96,7 @@ exports.description = 'Component that is animated when ScrollView is offset.';
 exports.examples = [
   {
     title: 'Animated by scroll view',
-    render: function(): React.Element<typeof ScrollViewAnimatedExample> {
+    render: function (): React.Element<typeof ScrollViewAnimatedExample> {
       return <ScrollViewAnimatedExample />;
     },
   },

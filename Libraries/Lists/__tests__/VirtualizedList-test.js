@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -362,7 +362,7 @@ describe('VirtualizedList', () => {
     const layout = {width: 300, height: 600};
     let data = Array(20)
       .fill()
-      .map((_, key) => ({key: String(key)}));
+      .map((_, index) => ({key: `key-${index}`}));
     const onEndReached = jest.fn();
     const props = {
       data,
@@ -1446,6 +1446,36 @@ it('renders windowSize derived region at bottom', () => {
   // and 20dip above), along with retaining the top initialNumToRenderItems. We
   // seem to actually render 4 at the bottom due to rounding at the moment.
   expect(component).toMatchSnapshot();
+});
+
+it('calls _onCellLayout properly', () => {
+  const items = [{key: 'i1'}, {key: 'i2'}, {key: 'i3'}];
+  const mock = jest.fn();
+  const component = ReactTestRenderer.create(
+    <VirtualizedList
+      data={items}
+      renderItem={({item}) => <item value={item.key} />}
+      getItem={(data, index) => data[index]}
+      getItemCount={data => data.length}
+    />,
+  );
+  const virtualList: VirtualizedList = component.getInstance();
+  virtualList._onCellLayout = mock;
+  component.update(
+    <VirtualizedList
+      data={[...items, {key: 'i4'}]}
+      renderItem={({item}) => <item value={item.key} />}
+      getItem={(data, index) => data[index]}
+      getItemCount={data => data.length}
+    />,
+  );
+  const cell = virtualList._cellRefs.i4;
+  const event = {
+    nativeEvent: {layout: {x: 0, y: 0, width: 50, height: 50}},
+  };
+  cell._onLayout(event);
+  expect(mock).toHaveBeenCalledWith(event, 'i4', 3);
+  expect(mock).not.toHaveBeenCalledWith(event, 'i3', 2);
 });
 
 function generateItems(count) {

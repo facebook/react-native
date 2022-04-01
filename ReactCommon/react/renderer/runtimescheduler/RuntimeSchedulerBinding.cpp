@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,6 +12,7 @@
 #include <react/debug/react_native_assert.h>
 #include <chrono>
 #include <memory>
+#include <utility>
 
 namespace facebook {
 namespace react {
@@ -42,9 +43,27 @@ RuntimeSchedulerBinding::createAndInstallIfNeeded(
   return runtimeSchedulerObject.getHostObject<RuntimeSchedulerBinding>(runtime);
 }
 
+std::shared_ptr<RuntimeSchedulerBinding> RuntimeSchedulerBinding::getBinding(
+    jsi::Runtime &runtime) {
+  auto runtimeSchedulerModuleName = "nativeRuntimeScheduler";
+
+  auto runtimeSchedulerValue =
+      runtime.global().getProperty(runtime, runtimeSchedulerModuleName);
+  if (runtimeSchedulerValue.isUndefined()) {
+    return nullptr;
+  }
+
+  auto runtimeSchedulerObject = runtimeSchedulerValue.asObject(runtime);
+  return runtimeSchedulerObject.getHostObject<RuntimeSchedulerBinding>(runtime);
+}
+
 RuntimeSchedulerBinding::RuntimeSchedulerBinding(
-    std::shared_ptr<RuntimeScheduler> const &runtimeScheduler)
-    : runtimeScheduler_(runtimeScheduler) {}
+    std::shared_ptr<RuntimeScheduler> runtimeScheduler)
+    : runtimeScheduler_(std::move(runtimeScheduler)) {}
+
+bool RuntimeSchedulerBinding::getIsSynchronous() const {
+  return runtimeScheduler_->getIsSynchronous();
+}
 
 jsi::Value RuntimeSchedulerBinding::get(
     jsi::Runtime &runtime,
@@ -81,7 +100,7 @@ jsi::Value RuntimeSchedulerBinding::get(
             jsi::Value const &,
             jsi::Value const *arguments,
             size_t) noexcept -> jsi::Value {
-          runtimeScheduler_->cancelTask(taskFromValue(runtime, arguments[0]));
+          runtimeScheduler_->cancelTask(*taskFromValue(runtime, arguments[0]));
           return jsi::Value::undefined();
         });
   }

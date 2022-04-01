@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -358,6 +358,14 @@ Rect operator*(Rect const &rect, Transform const &transform) {
 
   return Rect::boundingRect(
       transformedA, transformedB, transformedC, transformedD);
+}
+
+EdgeInsets operator*(EdgeInsets const &edgeInsets, Transform const &transform) {
+  return EdgeInsets{
+      edgeInsets.left * transform.matrix[0],
+      edgeInsets.top * transform.matrix[5],
+      edgeInsets.right * transform.matrix[0],
+      edgeInsets.bottom * transform.matrix[5]};
 }
 
 Vector operator*(Transform const &transform, Vector const &vector) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -69,6 +69,14 @@ RCT_EXPORT_MODULE()
                                              object:nil];
 }
 
+- (void)setModuleRegistry:(RCTModuleRegistry *)moduleRegistry
+{
+  if (!moduleRegistry) {
+    RCTAssert(false, @"moduleRegistry should not be nil, _moduleRegistry is nil: %d", _moduleRegistry == nil);
+  }
+  _moduleRegistry = moduleRegistry;
+}
+
 static BOOL RCTIsIPhoneX()
 {
   static BOOL isIPhoneX = NO;
@@ -100,8 +108,9 @@ static NSDictionary *RCTExportedDimensions(RCTModuleRegistry *moduleRegistry)
   RCTAssertMainQueue();
   RCTDimensions dimensions;
   if (moduleRegistry) {
-    dimensions = RCTGetDimensions(
-        ((RCTAccessibilityManager *)[moduleRegistry moduleForName:"AccessibilityManager"]).multiplier ?: 1.0);
+    RCTAccessibilityManager *accessibilityManager =
+        (RCTAccessibilityManager *)[moduleRegistry moduleForName:"AccessibilityManager"];
+    dimensions = RCTGetDimensions(accessibilityManager ? accessibilityManager.multiplier : 1.0);
   } else {
     RCTAssert(false, @"ModuleRegistry must be set to properly init dimensions.");
   }

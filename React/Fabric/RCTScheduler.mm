@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -48,7 +48,7 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
   void schedulerDidDispatchCommand(
       const ShadowView &shadowView,
       const std::string &commandName,
-      const folly::dynamic args) override
+      const folly::dynamic &args) override
   {
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
     [scheduler.delegate schedulerDidDispatchCommand:shadowView commandName:commandName args:args];
@@ -155,7 +155,8 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
   if (_animationDriver) {
     _animationDriver->setLayoutAnimationStatusDelegate(nullptr);
   }
-  _animationDriver = nullptr;
+
+  _scheduler->setDelegate(nullptr);
 }
 
 - (void)registerSurface:(facebook::react::SurfaceHandler const &)surfaceHandler

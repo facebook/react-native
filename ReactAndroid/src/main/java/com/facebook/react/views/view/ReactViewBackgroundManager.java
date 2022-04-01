@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -56,6 +56,10 @@ public class ReactViewBackgroundManager {
 
   public void setBorderColor(int position, float color, float alpha) {
     getOrCreateReactViewBackground().setBorderColor(position, color, alpha);
+  }
+
+  public int getBorderColor(int position) {
+    return getOrCreateReactViewBackground().getBorderColor(position);
   }
 
   public void setBorderRadius(float borderRadius) {

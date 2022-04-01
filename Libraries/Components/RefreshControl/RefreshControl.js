@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -158,13 +158,8 @@ class RefreshControl extends React.Component<RefreshControlProps> {
 
   render(): React.Node {
     if (Platform.OS === 'ios') {
-      const {
-        enabled,
-        colors,
-        progressBackgroundColor,
-        size,
-        ...props
-      } = this.props;
+      const {enabled, colors, progressBackgroundColor, size, ...props} =
+        this.props;
       return (
         <PullToRefreshViewNativeComponent
           {...props}

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -45,6 +45,12 @@ class MultipleCommandsPendingException : public std::runtime_error {
       : std::runtime_error(
             "debugger can't perform " + cmd +
             ": a step or resume is already pending") {}
+};
+
+class UserCallbackException : public std::runtime_error {
+ public:
+  UserCallbackException(const std::exception &e)
+      : std::runtime_error(std::string("callback exception: ") + e.what()) {}
 };
 
 } // namespace inspector

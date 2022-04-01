@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -79,9 +79,7 @@ if [[ $DEV != true && ! -f "$ENTRY_FILE" ]]; then
   exit 2
 fi
 
-# Find path to Node
-# shellcheck source=/dev/null
-source "$REACT_NATIVE_DIR/scripts/find-node.sh"
+NODE_BINARY="$(command -v node)"
 
 # check and assign NODE_BINARY env
 # shellcheck source=/dev/null
@@ -96,7 +94,7 @@ fi
 
 if [[ $USE_HERMES == true && ! -f "$HERMES_CLI_PATH" ]]; then
   echo "error: USE_HERMES is set to true but the hermesc binary could not be " \
-       "found at ${HERMES_CLI_PATH}. Perhaps you need to run pod install or otherwise " \
+       "found at ${HERMES_CLI_PATH}. Perhaps you need to run 'bundle exec pod install' or otherwise " \
        "point the HERMES_CLI_PATH variable to your custom location." >&2
   exit 2
 fi

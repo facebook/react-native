@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -19,6 +19,7 @@ const React = require('react');
 const ReactNative = require('../Renderer/shims/ReactNative');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const View = require('../Components/View/View');
+const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
 
 const invariant = require('invariant');
 
@@ -47,10 +48,7 @@ const renderers = findRenderers();
 // Required for React DevTools to view/edit React Native styles in Flipper.
 // Flipper doesn't inject these values when initializing DevTools.
 hook.resolveRNStyle = require('../StyleSheet/flattenStyle');
-const viewConfig = require('../Components/View/ReactNativeViewViewConfig');
-hook.nativeStyleEditorValidAttributes = Object.keys(
-  viewConfig.validAttributes.style,
-);
+hook.nativeStyleEditorValidAttributes = Object.keys(ReactNativeStyleAttributes);
 
 function findRenderers(): $ReadOnlyArray<ReactRenderer> {
   const allRenderers = Array.from(hook.renderers.values());
@@ -167,7 +165,7 @@ class Inspector extends React.Component<
     }, 100);
   };
 
-  _onAgentShowNativeHighlight = node => {
+  _onAgentShowNativeHighlight = (node: any) => {
     clearTimeout(this._hideTimeoutID);
 
     // Shape of `node` is different in Fabric.

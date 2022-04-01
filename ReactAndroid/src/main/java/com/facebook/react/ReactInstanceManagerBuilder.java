@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,6 +14,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import androidx.annotation.Nullable;
+import com.facebook.hermes.reactexecutor.HermesExecutor;
 import com.facebook.hermes.reactexecutor.HermesExecutorFactory;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSBundleLoader;
@@ -22,16 +23,17 @@ import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
 import com.facebook.react.common.LifecycleState;
+import com.facebook.react.common.SurfaceDelegateFactory;
 import com.facebook.react.devsupport.DefaultDevSupportManagerFactory;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
-import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
+import com.facebook.react.devsupport.interfaces.RedBoxHandler;
+import com.facebook.react.jscexecutor.JSCExecutor;
 import com.facebook.react.jscexecutor.JSCExecutorFactory;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.uimanager.UIImplementationProvider;
-import com.facebook.soloader.SoLoader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +65,7 @@ public class ReactInstanceManagerBuilder {
   private @Nullable JSIModulePackage mJSIModulesPackage;
   private @Nullable Map<String, RequestHandler> mCustomPackagerCommandHandlers;
   private @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
+  private @Nullable SurfaceDelegateFactory mSurfaceDelegateFactory;
 
   /* package protected */ ReactInstanceManagerBuilder() {}
 
@@ -196,6 +199,20 @@ public class ReactInstanceManagerBuilder {
   }
 
   /**
+   * When the {@link SurfaceDelegateFactory} is provided, it will be used for native modules to get
+   * a {@link SurfaceDelegate} to interact with the platform specific surface that they that needs
+   * to be rendered in. For mobile platform this is default to be null so that these modules will
+   * need to provide a default surface delegate. One example of such native module is LogBoxModule,
+   * which is rendered in mobile platform with LogBoxDialog, while in VR platform with custom layer
+   * provided by runtime.
+   */
+  public ReactInstanceManagerBuilder setSurfaceDelegateFactory(
+      @Nullable final SurfaceDelegateFactory surfaceDelegateFactory) {
+    mSurfaceDelegateFactory = surfaceDelegateFactory;
+    return this;
+  }
+
+  /**
    * Sets the initial lifecycle state of the host. For example, if the host is already resumed at
    * creation time, we wouldn't expect an onResume call until we get an onPause call.
    */
@@ -322,7 +339,8 @@ public class ReactInstanceManagerBuilder {
         mMinTimeLeftInFrameForNonBatchedOperationMs,
         mJSIModulesPackage,
         mCustomPackagerCommandHandlers,
-        mTMMDelegateBuilder);
+        mTMMDelegateBuilder,
+        mSurfaceDelegateFactory);
   }
 
   private JavaScriptExecutorFactory getDefaultJSExecutorFactory(
@@ -330,7 +348,7 @@ public class ReactInstanceManagerBuilder {
     try {
       // If JSC is included, use it as normal
       initializeSoLoaderIfNecessary(applicationContext);
-      SoLoader.loadLibrary("jscexecutor");
+      JSCExecutor.loadLibrary();
       return new JSCExecutorFactory(appName, deviceName);
     } catch (UnsatisfiedLinkError jscE) {
       // https://github.com/facebook/hermes/issues/78 shows that
@@ -348,6 +366,7 @@ public class ReactInstanceManagerBuilder {
 
       // Otherwise use Hermes
       try {
+        HermesExecutor.loadLibrary();
         return new HermesExecutorFactory();
       } catch (UnsatisfiedLinkError hermesE) {
         // If we get here, either this is a JSC build, and of course

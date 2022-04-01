@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -72,19 +72,17 @@ class MessageQueue {
     }
 
     // $FlowFixMe[cannot-write]
-    // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-    this.callFunctionReturnFlushedQueue = this.callFunctionReturnFlushedQueue.bind(
-      this,
-    );
+    this.callFunctionReturnFlushedQueue =
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
+      this.callFunctionReturnFlushedQueue.bind(this);
     // $FlowFixMe[cannot-write]
     // $FlowFixMe[method-unbinding] added when improving typing for this parameters
     this.flushedQueue = this.flushedQueue.bind(this);
 
     // $FlowFixMe[cannot-write]
-    // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-    this.invokeCallbackAndReturnFlushedQueue = this.invokeCallbackAndReturnFlushedQueue.bind(
-      this,
-    );
+    this.invokeCallbackAndReturnFlushedQueue =
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
+      this.invokeCallbackAndReturnFlushedQueue.bind(this);
   }
 
   /**

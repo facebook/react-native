@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -17,7 +17,7 @@
 
 RCT_EXPORT_MODULE(RNTesterTestModule)
 
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(echoString:(NSString *)input)
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(echoString : (NSString *)input)
 {
   return input;
 }
@@ -27,9 +27,11 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(methodThatReturnsNil)
   return nil;
 }
 
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(methodThatCallsCallbackWithString:(NSString *)input callback:(RCTResponseSenderBlock)callback)
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(methodThatCallsCallbackWithString
+                                       : (NSString *)input callback
+                                       : (RCTResponseSenderBlock)callback)
 {
-  callback(@[input]);
+  callback(@[ input ]);
   return nil;
 }
 

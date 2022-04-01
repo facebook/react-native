@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -176,7 +176,10 @@ const RNTesterApp = (): React.Node => {
         onBack={activeModule ? handleBackPress : null}
         documentationURL={activeModule?.documentationURL}
       />
-      <View style={styles.container}>
+      <View
+        style={StyleSheet.compose(styles.container, {
+          backgroundColor: theme.GroupedBackgroundColor,
+        })}>
         {activeModule != null ? (
           <RNTesterModuleContainer
             module={activeModule}

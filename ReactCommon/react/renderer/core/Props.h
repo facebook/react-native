@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -33,7 +33,8 @@ class Props : public virtual Sealable, public virtual DebugStringConvertible {
   Props(
       const PropsParserContext &context,
       const Props &sourceProps,
-      RawProps const &rawProps);
+      RawProps const &rawProps,
+      bool shouldSetRawProps = true);
   virtual ~Props() = default;
 
   std::string nativeId;

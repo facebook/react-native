@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -170,20 +170,36 @@ RCT_EXTERN NSString *RCTFormatStackTrace(NSArray<NSDictionary<NSString *, id> *>
 
 #endif
 
+// MARK: - New Architecture Validation
+
+typedef enum {
+  RCTNotAllowedValidationDisabled = 0,
+  RCTNotAllowedInAppWideFabric = 1,
+  RCTNotAllowedInBridgeless = 2,
+} RCTNotAllowedValidation;
+
 /**
- * Controls for ensuring the new architecture runtime assumption holds.
+ * Ensure runtime assumptions holds for the new architecture by reporting when assumptions are violated.
  * Note: this is work in progress.
+ *
+ * When type is RCTNotAllowedInAppWideFabric, validate Fabric assumptions in Bridge or Bridgeless mode.
+ * i.e. Report legacy pre-Fabric call sites that should not be used while Fabric is enabled on all surfaces.
+ *
+ * When type is RCTNotAllowedInBridgeless, validate Bridgeless assumptions, in Bridgeless mode only.
+ * i.e. Report Bridge call sites that should not be used while Bridgeless mode is enabled.
+ *
+ * Note: enabling this at runtime is not early enough to report issues within ObjC class +load execution.
  */
+__attribute__((used)) RCT_EXTERN void RCTNewArchitectureValidationSetEnabled(RCTNotAllowedValidation type);
 
-// Enable reporting of any violation related to the new React Native architecture.
-// If RCT_NEW_ARCHITECTURE is defined, it is already enabled by default, otherwise, no violation will be
-// reported until enabled.
-// Note: enabling this at runtime is not early enough to report issues within ObjC class +load execution.
-__attribute__((used)) RCT_EXTERN void RCTEnableNewArchitectureViolationReporting(BOOL enabled);
-
-// When reporting is enabled, trigger an assertion.
-__attribute__((used)) RCT_EXTERN void RCTEnforceNotAllowedForNewArchitecture(id context, NSString *extra);
-
-// When reporting is enabled, warn about the violation. Use this to prepare a specific callsite
-// for stricter enforcement. When ready, switch it to use the variant above.
-__attribute__((used)) RCT_EXTERN void RCTWarnNotAllowedForNewArchitecture(id context, NSString *extra);
+// When new architecture validation reporting is enabled, trigger an assertion and crash.
+__attribute__((used)) RCT_EXTERN void
+RCTEnforceNewArchitectureValidation(RCTNotAllowedValidation type, id context, NSString *extra);
+// When new architecture validation reporting is enabled, trigger an error but do not crash.
+// When ready, switch to stricter variant above.
+__attribute__((used)) RCT_EXTERN void
+RCTErrorNewArchitectureValidation(RCTNotAllowedValidation type, id context, NSString *extra);
+// When new architecture validation reporting is enabled, log an message.
+// When ready, switch to stricter variant above.
+__attribute__((used)) RCT_EXTERN void
+RCTLogNewArchitectureValidation(RCTNotAllowedValidation type, id context, NSString *extra);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -28,5 +28,8 @@ public interface RCTModernEventEmitter extends RCTEventEmitter {
       String eventName,
       boolean canCoalesceEvent,
       int customCoalesceKey,
-      @Nullable WritableMap event);
+      @Nullable WritableMap event,
+      @EventCategoryDef int category);
+
+  void receiveTouches(TouchEvent event);
 }

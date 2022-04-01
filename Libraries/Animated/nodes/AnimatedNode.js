@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,6 +15,8 @@ const NativeAnimatedHelper = require('../NativeAnimatedHelper');
 const NativeAnimatedAPI = NativeAnimatedHelper.API;
 const invariant = require('invariant');
 
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
+
 type ValueListenerCallback = (state: {value: number, ...}) => mixed;
 
 let _uniqueId = 1;
@@ -23,6 +25,7 @@ let _uniqueId = 1;
 // support them yet
 class AnimatedNode {
   _listeners: {[key: string]: ValueListenerCallback, ...};
+  _platformConfig: ?PlatformConfig;
   __nativeAnimatedValueListener: ?any;
   __attach(): void {}
   __detach(): void {
@@ -50,11 +53,12 @@ class AnimatedNode {
     this._listeners = {};
   }
 
-  __makeNative() {
+  __makeNative(platformConfig: ?PlatformConfig) {
     if (!this.__isNative) {
       throw new Error('This node cannot be made a "native" animated node');
     }
 
+    this._platformConfig = platformConfig;
     if (this.hasListeners()) {
       this._startListeningToNativeValueUpdates();
     }
@@ -65,7 +69,7 @@ class AnimatedNode {
    * animations.  This is useful because there is no way to
    * synchronously read the value because it might be driven natively.
    *
-   * See https://reactnative.dev/docs/animatedvalue.html#addlistener
+   * See https://reactnative.dev/docs/animatedvalue#addlistener
    */
   addListener(callback: (value: any) => mixed): string {
     const id = String(_uniqueId++);
@@ -80,7 +84,7 @@ class AnimatedNode {
    * Unregister a listener. The `id` param shall match the identifier
    * previously returned by `addListener()`.
    *
-   * See https://reactnative.dev/docs/animatedvalue.html#removelistener
+   * See https://reactnative.dev/docs/animatedvalue#removelistener
    */
   removeListener(id: string): void {
     delete this._listeners[id];
@@ -92,7 +96,7 @@ class AnimatedNode {
   /**
    * Remove all registered listeners.
    *
-   * See https://reactnative.dev/docs/animatedvalue.html#removealllisteners
+   * See https://reactnative.dev/docs/animatedvalue#removealllisteners
    */
   removeAllListeners(): void {
     this._listeners = {};
@@ -119,18 +123,19 @@ class AnimatedNode {
     }
 
     NativeAnimatedAPI.startListeningToAnimatedNodeValue(this.__getNativeTag());
-    this.__nativeAnimatedValueListener = NativeAnimatedHelper.nativeEventEmitter.addListener(
-      'onAnimatedValueUpdate',
-      data => {
-        if (data.tag !== this.__getNativeTag()) {
-          return;
-        }
-        this._onAnimatedValueUpdateReceived(data.value);
-      },
-    );
+    this.__nativeAnimatedValueListener =
+      NativeAnimatedHelper.nativeEventEmitter.addListener(
+        'onAnimatedValueUpdate',
+        data => {
+          if (data.tag !== this.__getNativeTag()) {
+            return;
+          }
+          this.__onAnimatedValueUpdateReceived(data.value);
+        },
+      );
   }
 
-  _onAnimatedValueUpdateReceived(value: number) {
+  __onAnimatedValueUpdateReceived(value: number) {
     this.__callListeners(value);
   }
 
@@ -162,10 +167,11 @@ class AnimatedNode {
 
     if (this.__nativeTag == null) {
       this.__nativeTag = nativeTag;
-      NativeAnimatedHelper.API.createAnimatedNode(
-        nativeTag,
-        this.__getNativeConfig(),
-      );
+      const config = this.__getNativeConfig();
+      if (this._platformConfig) {
+        config.platformConfig = this._platformConfig;
+      }
+      NativeAnimatedHelper.API.createAnimatedNode(nativeTag, config);
       this.__shouldUpdateListenersForNewNativeTag = true;
     }
 
@@ -178,6 +184,13 @@ class AnimatedNode {
   }
   toJSON(): any {
     return this.__getValue();
+  }
+
+  __getPlatformConfig(): ?PlatformConfig {
+    return this._platformConfig;
+  }
+  __setPlatformConfig(platformConfig: ?PlatformConfig) {
+    this._platformConfig = platformConfig;
   }
 }
 

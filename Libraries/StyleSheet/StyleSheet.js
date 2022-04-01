@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -74,7 +74,8 @@ export type ImageStyleProp = ____ImageStyleProp_Internal;
  * through to an underlying component. Using this is almost always a mistake
  * and using one of the other more restrictive types is likely the right choice.
  */
-export type DangerouslyImpreciseStyleProp = ____DangerouslyImpreciseStyleProp_Internal;
+export type DangerouslyImpreciseStyleProp =
+  ____DangerouslyImpreciseStyleProp_Internal;
 
 /**
  * Utility type for getting the values for specific style keys.

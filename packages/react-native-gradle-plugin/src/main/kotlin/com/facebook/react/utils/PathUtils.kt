@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,7 +11,6 @@ package com.facebook.react.utils
 
 import com.facebook.react.ReactExtension
 import java.io.File
-import java.util.*
 import org.apache.tools.ant.taskdefs.condition.Os
 
 /**
@@ -25,7 +24,7 @@ import org.apache.tools.ant.taskdefs.condition.Os
  */
 internal fun detectedEntryFile(config: ReactExtension): File =
     detectEntryFile(
-        entryFile = config.entryFile.orNull?.asFile, reactRoot = config.reactRoot.get().asFile)
+        entryFile = config.entryFile.orNull?.asFile, reactRoot = config.root.get().asFile)
 
 /**
  * Computes the CLI location for React Native. The Algo follows this order:
@@ -40,7 +39,7 @@ internal fun detectedCliPath(
 ): String =
     detectCliPath(
         projectDir = projectDir,
-        reactRoot = config.reactRoot.get().asFile,
+        reactRoot = config.root.get().asFile,
         preconfiguredCliPath = config.cliPath.orNull)
 
 /**
@@ -68,7 +67,18 @@ private fun detectCliPath(
 ): String {
   // 1. preconfigured path
   if (preconfiguredCliPath != null) {
-    return File(projectDir, preconfiguredCliPath).toString()
+    val preconfiguredCliJsAbsolute = File(preconfiguredCliPath)
+    if (preconfiguredCliJsAbsolute.exists()) {
+      return preconfiguredCliJsAbsolute.absolutePath
+    }
+    val preconfiguredCliJsRelativeToReactRoot = File(reactRoot, preconfiguredCliPath)
+    if (preconfiguredCliJsRelativeToReactRoot.exists()) {
+      return preconfiguredCliJsRelativeToReactRoot.absolutePath
+    }
+    val preconfiguredCliJsRelativeToProject = File(projectDir, preconfiguredCliPath)
+    if (preconfiguredCliJsRelativeToProject.exists()) {
+      return preconfiguredCliJsRelativeToProject.absolutePath
+    }
   }
 
   // 2. node module path
@@ -82,7 +92,10 @@ private fun detectCliPath(
   val nodeProcessOutput = nodeProcess.inputStream.use { it.bufferedReader().readText().trim() }
 
   if (nodeProcessOutput.isNotEmpty()) {
-    return nodeProcessOutput
+    val nodeModuleCliJs = File(nodeProcessOutput)
+    if (nodeModuleCliJs.exists()) {
+      return nodeModuleCliJs.absolutePath
+    }
   }
 
   // 3. cli.js in the root folder
@@ -93,7 +106,8 @@ private fun detectCliPath(
 
   error(
       "Couldn't determine CLI location. " +
-          "Please set `project.react.cliPath` to the path of the react-native cli.js")
+          "Please set `project.react.cliPath` to the path of the react-native cli.js file. " +
+          "This file typically resides in `node_modules/react-native/cli.js`")
 }
 
 // Make sure not to inspect the Hermes config unless we need it,
@@ -120,5 +134,5 @@ private fun getHermesOSBin(): String {
 internal fun projectPathToLibraryName(projectPath: String): String =
     projectPath
         .split(':', '-', '_', '.')
-        .joinToString("") { it.capitalize(Locale.ROOT) }
+        .joinToString("") { token -> token.replaceFirstChar { it.uppercase() } }
         .plus("Spec")

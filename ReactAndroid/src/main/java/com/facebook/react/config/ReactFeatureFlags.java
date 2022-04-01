@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -64,21 +64,15 @@ public class ReactFeatureFlags {
   /** This feature flag enables logs for Fabric */
   public static boolean enableFabricLogs = false;
 
-  /** Feature flag to configure eager initialization of Fabric */
-  public static boolean eagerInitializeFabric = false;
-
-  /** Enables Static ViewConfig in RN Android native code. */
-  public static boolean enableExperimentalStaticViewConfigs = false;
-
   public static boolean enableRuntimeScheduler = false;
 
   public static boolean enableRuntimeSchedulerInTurboModule = false;
 
-  /** Enables a more aggressive cleanup during destruction of ReactContext */
-  public static boolean enableReactContextCleanupFix = false;
+  /** Feature flag to configure eager attachment of the root view/initialisation of the JS code */
+  public static boolean enableEagerRootViewAttachment = false;
 
-  /** Feature flag to configure eager initialization of MapBuffer So file */
-  public static boolean enableEagerInitializeMapBufferSoFile = false;
+  /** Feature flag to configure synchronized queue access for Animated module */
+  public static boolean enableSynchronizationForAnimated = false;
 
   private static boolean mapBufferSerializationEnabled = false;
 
@@ -91,12 +85,33 @@ public class ReactFeatureFlags {
     return mapBufferSerializationEnabled;
   }
 
-  /** Enables Fabric for LogBox */
-  public static boolean enableFabricInLogBox = false;
+  /** Feature Flag to use overflowInset values provided by Yoga */
+  private static boolean useOverflowInset = false;
+
+  public static void setUseOverflowInset(boolean enabled) {
+    useOverflowInset = enabled;
+  }
+
+  public static boolean doesUseOverflowInset() {
+    return useOverflowInset;
+  }
 
   public static boolean enableLockFreeEventDispatcher = false;
 
   public static boolean enableAggressiveEventEmitterCleanup = false;
 
   public static boolean insertZReorderBarriersOnViewGroupChildren = true;
+
+  public static boolean enableDelayedViewStateDeletion = false;
+
+  /**
+   * Feature Flag to control the size of the cache used by TextLayoutManager in Fabric. Used from
+   * JNI.
+   */
+  public static boolean enableLargeTextMeasureCache = true;
+
+  /** TODO: T113245006 Delete this flag. Enables caching of spannables for text */
+  public static boolean enableSpannableCache = false;
+
+  public static boolean dispatchPointerEvents = false;
 }

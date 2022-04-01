@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -27,6 +27,11 @@
 @property (nonatomic, assign) BOOL interactiveDismissEnabled;
 @property (nonatomic, copy) RCTDirectEventBlock onRequestClose;
 
+// Android only
+@property (nonatomic, assign) BOOL statusBarTranslucent;
+@property (nonatomic, assign) BOOL hardwareAccelerated;
+@property (nonatomic, assign) BOOL animated;
+
 @property (nonatomic, copy) NSNumber *identifier;
 
 @property (nonatomic, weak) id<RCTModalHostViewInteractor> delegate;
@@ -35,7 +40,7 @@
 @property (nonatomic, copy) RCTDirectEventBlock onOrientationChange;
 
 // Fabric only
-@property (nonatomic, copy) RCTBubblingEventBlock onDismiss;
+@property (nonatomic, copy) RCTDirectEventBlock onDismiss;
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 

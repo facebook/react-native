@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -25,7 +25,7 @@ public interface StateWrapper {
    * <p>Unstable API - DO NOT USE.
    */
   @Nullable
-  ReadableMapBuffer getStatDataMapBuffer();
+  ReadableMapBuffer getStateDataMapBuffer();
 
   /**
    * Get a ReadableNativeMap object from the C++ layer, which is a K/V map of string keys to values.

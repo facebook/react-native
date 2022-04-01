@@ -1,5 +1,5 @@
 /**
- * (c) Facebook, Inc. and its affiliates. Confidential and proprietary.
+ * (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
  *
  * @flow strict
  * @format

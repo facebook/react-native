@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -33,7 +33,7 @@ class PathUtilsTest {
   @Test
   fun detectedEntryFile_withAndroidEntryPoint() {
     val extension = TestReactExtension(ProjectBuilder.builder().build())
-    extension.reactRoot.set(tempFolder.root)
+    extension.root.set(tempFolder.root)
     tempFolder.newFile("index.android.js")
 
     val actual = detectedEntryFile(extension)
@@ -44,7 +44,7 @@ class PathUtilsTest {
   @Test
   fun detectedEntryFile_withDefaultEntryPoint() {
     val extension = TestReactExtension(ProjectBuilder.builder().build())
-    extension.reactRoot.set(tempFolder.root)
+    extension.root.set(tempFolder.root)
 
     val actual = detectedEntryFile(extension)
 
@@ -52,10 +52,47 @@ class PathUtilsTest {
   }
 
   @Test
-  fun detectedCliPath_withCliPathFromExtension() {
+  fun detectedCliPath_withCliPathFromExtensionAbsolute() {
     val project = ProjectBuilder.builder().build()
     val extension = TestReactExtension(project)
-    val expected = File(project.projectDir, "fake-cli.sh")
+    val expected =
+        File(project.projectDir, "abs/fake-cli.sh").apply {
+          parentFile.mkdirs()
+          writeText("<!-- nothing to see here -->")
+        }
+    extension.cliPath.set(project.projectDir + "/abs/fake-cli.sh")
+
+    val actual = detectedCliPath(project.projectDir, extension)
+
+    assertEquals(expected.toString(), actual)
+  }
+
+  @Test
+  fun detectedCliPath_withCliPathFromExtensionInReactFolder() {
+    val project = ProjectBuilder.builder().build()
+    val extension = TestReactExtension(project)
+    val expected =
+        File(project.projectDir, "/react-root/fake-cli.sh").apply {
+          parentFile.mkdirs()
+          writeText("<!-- nothing to see here -->")
+        }
+    extension.cliPath.set("fake-cli.sh")
+    extension.reactRoot.set(project.projectDir + "/react-root")
+
+    val actual = detectedCliPath(project.projectDir, extension)
+
+    assertEquals(expected.toString(), actual)
+  }
+
+  @Test
+  fun detectedCliPath_withCliPathFromExtensionInProjectFolder() {
+    val project = ProjectBuilder.builder().build()
+    val extension = TestReactExtension(project)
+    val expected =
+        File(project.projectDir, "fake-cli.sh").apply {
+          parentFile.mkdirs()
+          writeText("<!-- nothing to see here -->")
+        }
     extension.cliPath.set("fake-cli.sh")
 
     val actual = detectedCliPath(project.projectDir, extension)
@@ -80,7 +117,7 @@ class PathUtilsTest {
   fun detectedCliPath_withCliFromNodeModules() {
     val project = ProjectBuilder.builder().build()
     val extension = TestReactExtension(project)
-    extension.reactRoot.set(tempFolder.root)
+    extension.root.set(tempFolder.root)
     val expected =
         File(tempFolder.root, "node_modules/react-native/cli.js").apply {
           parentFile.mkdirs()

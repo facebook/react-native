@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -20,13 +20,17 @@ EventEmitterWrapper::initHybrid(jni::alias_ref<jclass>) {
 
 void EventEmitterWrapper::invokeEvent(
     std::string eventName,
-    NativeMap *payload) {
+    NativeMap *payload,
+    int category) {
   // It is marginal, but possible for this to be constructed without a valid
   // EventEmitter. In those cases, make sure we noop/blackhole events instead of
   // crashing.
   if (eventEmitter != nullptr) {
     eventEmitter->dispatchEvent(
-        eventName, payload->consume(), EventPriority::AsynchronousBatched);
+        eventName,
+        payload->consume(),
+        EventPriority::AsynchronousBatched,
+        static_cast<RawEvent::Category>(category));
   }
 }
 

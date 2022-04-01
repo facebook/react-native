@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -1106,8 +1106,8 @@ public class ReactViewBackgroundDrawable extends Drawable {
             int width = Math.round(borderWidth.left);
             updatePathEffect(width);
             mPaint.setStrokeWidth(width);
-            mPathForSingleBorder.moveTo(left, top - borderWidth.top / 2);
-            mPathForSingleBorder.lineTo(left, bottom + borderWidth.bottom / 2);
+            mPathForSingleBorder.moveTo(left + width / 2, top);
+            mPathForSingleBorder.lineTo(left + width / 2, bottom);
             canvas.drawPath(mPathForSingleBorder, mPaint);
           }
           if (borderTop > 0) {
@@ -1115,8 +1115,8 @@ public class ReactViewBackgroundDrawable extends Drawable {
             int width = Math.round(borderWidth.top);
             updatePathEffect(width);
             mPaint.setStrokeWidth(width);
-            mPathForSingleBorder.moveTo(left, top);
-            mPathForSingleBorder.lineTo(right, top);
+            mPathForSingleBorder.moveTo(left, top + width / 2);
+            mPathForSingleBorder.lineTo(right, top + width / 2);
             canvas.drawPath(mPathForSingleBorder, mPaint);
           }
           if (borderRight > 0) {
@@ -1124,8 +1124,8 @@ public class ReactViewBackgroundDrawable extends Drawable {
             int width = Math.round(borderWidth.right);
             updatePathEffect(width);
             mPaint.setStrokeWidth(width);
-            mPathForSingleBorder.moveTo(right, top - borderWidth.top / 2);
-            mPathForSingleBorder.lineTo(right, bottom + borderWidth.bottom / 2);
+            mPathForSingleBorder.moveTo(right - width / 2, top);
+            mPathForSingleBorder.lineTo(right - width / 2, bottom);
             canvas.drawPath(mPathForSingleBorder, mPaint);
           }
           if (borderBottom > 0) {
@@ -1133,8 +1133,8 @@ public class ReactViewBackgroundDrawable extends Drawable {
             int width = Math.round(borderWidth.bottom);
             updatePathEffect(width);
             mPaint.setStrokeWidth(width);
-            mPathForSingleBorder.moveTo(left, bottom);
-            mPathForSingleBorder.lineTo(right, bottom);
+            mPathForSingleBorder.moveTo(left, bottom - width / 2);
+            mPathForSingleBorder.lineTo(right, bottom - width / 2);
             canvas.drawPath(mPathForSingleBorder, mPaint);
           }
         }
@@ -1259,7 +1259,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
     return !YogaConstants.isUndefined(rgb) && !YogaConstants.isUndefined(alpha);
   }
 
-  private int getBorderColor(int position) {
+  public int getBorderColor(int position) {
     float rgb = mBorderRGB != null ? mBorderRGB.get(position) : DEFAULT_BORDER_RGB;
     float alpha = mBorderAlpha != null ? mBorderAlpha.get(position) : DEFAULT_BORDER_ALPHA;
 

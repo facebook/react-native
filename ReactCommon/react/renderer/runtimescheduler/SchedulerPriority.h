@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -58,6 +58,22 @@ static inline std::chrono::milliseconds timeoutForSchedulerPriority(
       return std::chrono::milliseconds(10'000);
     case SchedulerPriority::IdlePriority:
       return std::chrono::milliseconds::max();
+  }
+}
+
+static inline std::string debugValueForSchedulerPriority(
+    SchedulerPriority schedulerPriority) {
+  switch (schedulerPriority) {
+    case SchedulerPriority::ImmediatePriority:
+      return "SchedulerPriority::ImmediatePriority";
+    case SchedulerPriority::UserBlockingPriority:
+      return "SchedulerPriority::UserBlockingPriority";
+    case SchedulerPriority::NormalPriority:
+      return "SchedulerPriority::NormalPriority";
+    case SchedulerPriority::LowPriority:
+      return "SchedulerPriority::LowPriority";
+    case SchedulerPriority::IdlePriority:
+      return "SchedulerPriority::IdlePriority";
   }
 }
 

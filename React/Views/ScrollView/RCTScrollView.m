@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -17,6 +17,7 @@
 #import "RCTUIManagerObserverCoordinator.h"
 #import "RCTUIManagerUtils.h"
 #import "RCTUtils.h"
+#import "RCTViewUtils.h"
 #import "UIView+Private.h"
 #import "UIView+React.h"
 
@@ -273,15 +274,15 @@
   NSHashTable *_scrollListeners;
 }
 
-- (void)registerKeyboardListener
+- (void)_registerKeyboardListener
 {
   [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(keyboardWillChangeFrame:)
+                                           selector:@selector(_keyboardWillChangeFrame:)
                                                name:UIKeyboardWillChangeFrameNotification
                                              object:nil];
 }
 
-- (void)unregisterKeyboardListener
+- (void)_unregisterKeyboardListener
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillChangeFrameNotification object:nil];
 }
@@ -296,7 +297,7 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   return curve << 16;
 }
 
-- (void)keyboardWillChangeFrame:(NSNotification *)notification
+- (void)_keyboardWillChangeFrame:(NSNotification *)notification
 {
   if (![self automaticallyAdjustKeyboardInsets]) {
     return;
@@ -346,7 +347,7 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   RCTAssertParam(eventDispatcher);
 
   if ((self = [super initWithFrame:CGRectZero])) {
-    [self registerKeyboardListener];
+    [self _registerKeyboardListener];
     _eventDispatcher = eventDispatcher;
 
     _scrollView = [[RCTCustomScrollView alloc] initWithFrame:CGRectZero];
@@ -354,13 +355,10 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
     _scrollView.delegate = self;
     _scrollView.delaysContentTouches = NO;
 
-    // `contentInsetAdjustmentBehavior` is only available since iOS 11.
     // We set the default behavior to "never" so that iOS
     // doesn't do weird things to UIScrollView insets automatically
     // and keeps it as an opt-in behavior.
-    if ([_scrollView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
-      _scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-    }
+    _scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
 
     _automaticallyAdjustContentInsets = YES;
     _contentInset = UIEdgeInsetsZero;
@@ -467,7 +465,7 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
 {
   _scrollView.delegate = nil;
   [_eventDispatcher.bridge.uiManager.observerCoordinator removeObserver:self];
-  [self unregisterKeyboardListener];
+  [self _unregisterKeyboardListener];
 }
 
 - (void)layoutSubviews
@@ -866,7 +864,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
 {
   CGSize viewportSize = self.bounds.size;
   if (_automaticallyAdjustContentInsets) {
-    UIEdgeInsets contentInsets = [RCTView contentInsetsForView:self];
+    UIEdgeInsets contentInsets = RCTContentInsets(self);
     viewportSize = CGSizeMake(
         self.bounds.size.width - contentInsets.left - contentInsets.right,
         self.bounds.size.height - contentInsets.top - contentInsets.bottom);
@@ -1021,12 +1019,9 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIE
 
 - (void)setContentInsetAdjustmentBehavior:(UIScrollViewContentInsetAdjustmentBehavior)behavior
 {
-  // `contentInsetAdjustmentBehavior` is available since iOS 11.
-  if ([_scrollView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
-    CGPoint contentOffset = _scrollView.contentOffset;
-    _scrollView.contentInsetAdjustmentBehavior = behavior;
-    _scrollView.contentOffset = contentOffset;
-  }
+  CGPoint contentOffset = _scrollView.contentOffset;
+  _scrollView.contentInsetAdjustmentBehavior = behavior;
+  _scrollView.contentOffset = contentOffset;
 }
 
 - (void)sendScrollEventWithName:(NSString *)eventName

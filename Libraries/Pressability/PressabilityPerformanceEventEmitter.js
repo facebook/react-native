@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,9 +13,9 @@ import {type PressabilityTouchSignal as TouchSignal} from './PressabilityTypes.j
 export type PressabilityPerformanceEvent = $ReadOnly<{|
   signal: TouchSignal,
   nativeTimestamp: number,
-  touchDelayMs: number,
 |}>;
-export type PressabilityPerformanceEventListener = PressabilityPerformanceEvent => void;
+export type PressabilityPerformanceEventListener =
+  PressabilityPerformanceEvent => void;
 
 class PressabilityPerformanceEventEmitter {
   _listeners: Array<PressabilityPerformanceEventListener> = [];
@@ -43,6 +43,7 @@ class PressabilityPerformanceEventEmitter {
   }
 }
 
-const PressabilityPerformanceEventEmitterSingleton: PressabilityPerformanceEventEmitter = new PressabilityPerformanceEventEmitter();
+const PressabilityPerformanceEventEmitterSingleton: PressabilityPerformanceEventEmitter =
+  new PressabilityPerformanceEventEmitter();
 
 export default PressabilityPerformanceEventEmitterSingleton;

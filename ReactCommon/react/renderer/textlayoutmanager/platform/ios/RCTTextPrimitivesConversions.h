@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -57,43 +57,18 @@ inline static RCTFontVariant RCTFontVariantFromFontVariant(FontVariant fontVaria
   return (RCTFontVariant)fontVariant;
 }
 
-inline static NSUnderlineStyle RCTNSUnderlineStyleFromStyleAndPattern(
-    TextDecorationLineStyle textDecorationLineStyle,
-    TextDecorationLinePattern textDecorationLinePattern)
+inline static NSUnderlineStyle RCTNSUnderlineStyleFromTextDecorationStyle(TextDecorationStyle textDecorationStyle)
 {
-  NSUnderlineStyle style = NSUnderlineStyleNone;
-
-  switch (textDecorationLineStyle) {
-    case TextDecorationLineStyle::Single:
-      style = NSUnderlineStyle(style | NSUnderlineStyleSingle);
-      break;
-    case TextDecorationLineStyle::Thick:
-      style = NSUnderlineStyle(style | NSUnderlineStyleThick);
-      break;
-    case TextDecorationLineStyle::Double:
-      style = NSUnderlineStyle(style | NSUnderlineStyleDouble);
-      break;
+  switch (textDecorationStyle) {
+    case TextDecorationStyle::Solid:
+      return NSUnderlineStyleSingle;
+    case TextDecorationStyle::Double:
+      return NSUnderlineStyleDouble;
+    case TextDecorationStyle::Dashed:
+      return NSUnderlinePatternDash | NSUnderlineStyleSingle;
+    case TextDecorationStyle::Dotted:
+      return NSUnderlinePatternDot | NSUnderlineStyleSingle;
   }
-
-  switch (textDecorationLinePattern) {
-    case TextDecorationLinePattern::Solid:
-      style = NSUnderlineStyle(style | NSUnderlinePatternSolid);
-      break;
-    case TextDecorationLinePattern::Dash:
-      style = NSUnderlineStyle(style | NSUnderlinePatternDash);
-      break;
-    case TextDecorationLinePattern::Dot:
-      style = NSUnderlineStyle(style | NSUnderlinePatternDot);
-      break;
-    case TextDecorationLinePattern::DashDot:
-      style = NSUnderlineStyle(style | NSUnderlinePatternDashDot);
-      break;
-    case TextDecorationLinePattern::DashDotDot:
-      style = NSUnderlineStyle(style | NSUnderlinePatternDashDotDot);
-      break;
-  }
-
-  return style;
 }
 
 inline static UIColor *RCTUIColorFromSharedColor(const SharedColor &sharedColor)

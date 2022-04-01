@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -79,9 +79,26 @@ describe('TextInput tests', () => {
     });
   });
 
-  it('should have support being focused and unfocused', () => {
+  function createTextInput(extraProps) {
     const textInputRef = React.createRef(null);
-    ReactTestRenderer.create(<TextInput ref={textInputRef} value="value1" />);
+    ReactTestRenderer.create(
+      <TextInput ref={textInputRef} value="value1" {...extraProps} />,
+    );
+    return textInputRef;
+  }
+
+  it('focus() should not do anything if the TextInput is not editable', () => {
+    const textInputRef = createTextInput({editable: false});
+    // currentProps is the property actually containing props at runtime
+    textInputRef.current.currentProps = textInputRef.current.props;
+    expect(textInputRef.current.isFocused()).toBe(false);
+
+    TextInput.State.focusTextInput(textInputRef.current);
+    expect(textInputRef.current.isFocused()).toBe(false);
+  });
+
+  it('should have support for being focused and blurred', () => {
+    const textInputRef = createTextInput();
 
     expect(textInputRef.current.isFocused()).toBe(false);
     ReactNative.findNodeHandle = jest.fn().mockImplementation(ref => {
@@ -102,15 +119,10 @@ describe('TextInput tests', () => {
     TextInput.State.focusTextInput(textInputRef.current);
     expect(textInputRef.current.isFocused()).toBe(true);
     expect(TextInput.State.currentlyFocusedInput()).toBe(textInputRef.current);
-    // This function is currently deprecated and will be removed in the future
-    expect(TextInput.State.currentlyFocusedField()).toBe(
-      ReactNative.findNodeHandle(textInputRef.current),
-    );
+
     TextInput.State.blurTextInput(textInputRef.current);
     expect(textInputRef.current.isFocused()).toBe(false);
     expect(TextInput.State.currentlyFocusedInput()).toBe(null);
-    // This function is currently deprecated and will be removed in the future
-    expect(TextInput.State.currentlyFocusedField()).toBe(null);
   });
 
   it('should unfocus when other TextInput is focused', () => {
@@ -144,24 +156,17 @@ describe('TextInput tests', () => {
     expect(textInputRe1.current.isFocused()).toBe(false);
     expect(textInputRe2.current.isFocused()).toBe(false);
 
-    const inputTag1 = ReactNative.findNodeHandle(textInputRe1.current);
-    const inputTag2 = ReactNative.findNodeHandle(textInputRe2.current);
-
     TextInput.State.focusTextInput(textInputRe1.current);
 
     expect(textInputRe1.current.isFocused()).toBe(true);
     expect(textInputRe2.current.isFocused()).toBe(false);
     expect(TextInput.State.currentlyFocusedInput()).toBe(textInputRe1.current);
-    // This function is currently deprecated and will be removed in the future
-    expect(TextInput.State.currentlyFocusedField()).toBe(inputTag1);
 
     TextInput.State.focusTextInput(textInputRe2.current);
 
     expect(textInputRe1.current.isFocused()).toBe(false);
     expect(textInputRe2.current.isFocused()).toBe(true);
     expect(TextInput.State.currentlyFocusedInput()).toBe(textInputRe2.current);
-    // This function is currently deprecated and will be removed in the future
-    expect(TextInput.State.currentlyFocusedField()).toBe(inputTag2);
   });
 
   it('should render as expected', () => {

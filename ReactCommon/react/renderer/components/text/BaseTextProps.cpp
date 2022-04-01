@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,10 +16,10 @@ namespace facebook {
 namespace react {
 
 static TextAttributes convertRawProp(
-    const PropsParserContext &context,
-    const RawProps &rawProps,
-    const TextAttributes sourceTextAttributes,
-    const TextAttributes defaultTextAttributes) {
+    PropsParserContext const &context,
+    RawProps const &rawProps,
+    TextAttributes const &sourceTextAttributes,
+    TextAttributes const &defaultTextAttributes) {
   auto textAttributes = TextAttributes{};
 
   // Color
@@ -131,18 +131,12 @@ static TextAttributes convertRawProp(
       "textDecorationLine",
       sourceTextAttributes.textDecorationLineType,
       defaultTextAttributes.textDecorationLineType);
-  textAttributes.textDecorationLineStyle = convertRawProp(
+  textAttributes.textDecorationStyle = convertRawProp(
       context,
       rawProps,
-      "textDecorationLineStyle",
-      sourceTextAttributes.textDecorationLineStyle,
-      defaultTextAttributes.textDecorationLineStyle);
-  textAttributes.textDecorationLinePattern = convertRawProp(
-      context,
-      rawProps,
-      "textDecorationLinePattern",
-      sourceTextAttributes.textDecorationLinePattern,
-      defaultTextAttributes.textDecorationLinePattern);
+      "textDecorationStyle",
+      sourceTextAttributes.textDecorationStyle,
+      defaultTextAttributes.textDecorationStyle);
 
   // Shadow
   textAttributes.textShadowOffset = convertRawProp(

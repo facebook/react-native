@@ -4,14 +4,12 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
+ * @noformat
  * @flow strict-local
- * @generated SignedSource<<5b2da3e92f44ee2684113b45af052f5d>>
+ * @generated SignedSource<<a5b40ebf1f5b17d6dc83479c1c597566>>
  *
  * This file was sync'd from the facebook/react repository.
  */
-
-/* eslint-disable react-internal/invariant-args */
 
 'use strict';
 
@@ -24,6 +22,7 @@ const customBubblingEventTypes: {
     phasedRegistrationNames: $ReadOnly<{|
       captured: string,
       bubbled: string,
+      skipBubbling?: ?boolean,
     |}>,
   |}>,
   ...,

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -44,7 +44,13 @@ export type PermissionType =
   | 'android.permission.WRITE_EXTERNAL_STORAGE'
   | 'android.permission.BLUETOOTH_CONNECT'
   | 'android.permission.BLUETOOTH_SCAN'
-  | 'android.permission.BLUETOOTH_ADVERTISE';
+  | 'android.permission.BLUETOOTH_ADVERTISE'
+  | 'android.permission.ACCESS_MEDIA_LOCATION'
+  | 'android.permission.ACCEPT_HANDOVER'
+  | 'android.permission.ACTIVITY_RECOGNITION'
+  | 'android.permission.ANSWER_PHONE_CALLS'
+  | 'android.permission.READ_PHONE_NUMBERS'
+  | 'android.permission.UWB_RANGING';
 */
 
 export interface Spec extends TurboModule {

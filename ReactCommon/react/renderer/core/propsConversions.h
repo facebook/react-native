@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,8 @@
 
 #pragma once
 
-#include <better/optional.h>
+#include <optional>
+
 #include <folly/Likely.h>
 #include <folly/dynamic.h>
 #include <react/renderer/core/PropsParserContext.h>
@@ -106,12 +107,12 @@ T convertRawProp(
 }
 
 template <typename T>
-static better::optional<T> convertRawProp(
+static std::optional<T> convertRawProp(
     const PropsParserContext &context,
     RawProps const &rawProps,
     char const *name,
-    better::optional<T> const &sourceValue,
-    better::optional<T> const &defaultValue,
+    std::optional<T> const &sourceValue,
+    std::optional<T> const &defaultValue,
     char const *namePrefix = nullptr,
     char const *nameSuffix = nullptr) {
   const auto *rawValue = rawProps.at(name, namePrefix, nameSuffix);
@@ -128,7 +129,7 @@ static better::optional<T> convertRawProp(
 
   T result;
   fromRawValue(context, *rawValue, result);
-  return better::optional<T>{result};
+  return std::optional<T>{result};
 }
 
 } // namespace react

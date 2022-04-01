@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -475,94 +475,45 @@ inline std::string toString(
 inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
-    TextDecorationLineStyle &result) {
-  react_native_assert(value.hasType<std::string>());
-  if (value.hasType<std::string>()) {
-    auto string = (std::string)value;
-    if (string == "single") {
-      result = TextDecorationLineStyle::Single;
-    } else if (string == "thick") {
-      result = TextDecorationLineStyle::Thick;
-    } else if (string == "double") {
-      result = TextDecorationLineStyle::Double;
-    } else {
-      LOG(ERROR) << "Unsupported TextDecorationLineStyle value: " << string;
-      react_native_assert(false);
-      // sane default for prod
-      result = TextDecorationLineStyle::Single;
-    }
-    return;
-  }
-
-  LOG(ERROR) << "Unsupported TextDecorationLineStyle type";
-  // sane default for prod
-  result = TextDecorationLineStyle::Single;
-}
-
-inline std::string toString(
-    const TextDecorationLineStyle &textDecorationLineStyle) {
-  switch (textDecorationLineStyle) {
-    case TextDecorationLineStyle::Single:
-      return "single";
-    case TextDecorationLineStyle::Thick:
-      return "thick";
-    case TextDecorationLineStyle::Double:
-      return "double";
-  }
-
-  LOG(ERROR) << "Unsupported TextDecorationLineStyle value";
-  react_native_assert(false);
-  // sane default for prod
-  return "single";
-}
-
-inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    TextDecorationLinePattern &result) {
+    TextDecorationStyle &result) {
   react_native_assert(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
     if (string == "solid") {
-      result = TextDecorationLinePattern::Solid;
-    } else if (string == "dot") {
-      result = TextDecorationLinePattern::Dot;
-    } else if (string == "dash") {
-      result = TextDecorationLinePattern::Dash;
-    } else if (string == "dash-dot") {
-      result = TextDecorationLinePattern::DashDot;
-    } else if (string == "dash-dot-dot") {
-      result = TextDecorationLinePattern::DashDotDot;
+      result = TextDecorationStyle::Solid;
+    } else if (string == "double") {
+      result = TextDecorationStyle::Double;
+    } else if (string == "dotted") {
+      result = TextDecorationStyle::Dotted;
+    } else if (string == "dashed") {
+      result = TextDecorationStyle::Dashed;
     } else {
-      LOG(ERROR) << "Unsupported TextDecorationLinePattern value: " << string;
+      LOG(ERROR) << "Unsupported TextDecorationStyle value: " << string;
       react_native_assert(false);
       // sane default for prod
-      result = TextDecorationLinePattern::Solid;
+      result = TextDecorationStyle::Solid;
     }
     return;
   }
 
-  LOG(ERROR) << "Unsupported TextDecorationLineStyle type";
+  LOG(ERROR) << "Unsupported TextDecorationStyle type";
   // sane default for prod
-  result = TextDecorationLinePattern::Solid;
+  result = TextDecorationStyle::Solid;
 }
 
-inline std::string toString(
-    const TextDecorationLinePattern &textDecorationLinePattern) {
-  switch (textDecorationLinePattern) {
-    case TextDecorationLinePattern::Solid:
+inline std::string toString(const TextDecorationStyle &textDecorationStyle) {
+  switch (textDecorationStyle) {
+    case TextDecorationStyle::Solid:
       return "solid";
-    case TextDecorationLinePattern::Dot:
-      return "dot";
-    case TextDecorationLinePattern::Dash:
-      return "dash";
-    case TextDecorationLinePattern::DashDot:
-      return "dash-dot";
-    case TextDecorationLinePattern::DashDotDot:
-      return "dash-dot-dot";
+    case TextDecorationStyle::Double:
+      return "double";
+    case TextDecorationStyle::Dotted:
+      return "dotted";
+    case TextDecorationStyle::Dashed:
+      return "dashed";
   }
 
-  LOG(ERROR) << "Unsupported TextDecorationLinePattern value";
+  LOG(ERROR) << "Unsupported TextDecorationStyle value";
   react_native_assert(false);
   // sane default for prod
   return "solid";
@@ -817,7 +768,7 @@ inline void fromRawValue(
     const PropsParserContext &context,
     RawValue const &value,
     AttributedString::Range &result) {
-  auto map = (better::map<std::string, int>)value;
+  auto map = (butter::map<std::string, int>)value;
 
   auto start = map.find("start");
   if (start != map.end()) {
@@ -876,11 +827,11 @@ inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
   auto _textAttributes = folly::dynamic::object();
   if (textAttributes.foregroundColor) {
     _textAttributes(
-        "foregroundColor", toDynamic(textAttributes.foregroundColor));
+        "foregroundColor", toAndroidRepr(textAttributes.foregroundColor));
   }
   if (textAttributes.backgroundColor) {
     _textAttributes(
-        "backgroundColor", toDynamic(textAttributes.backgroundColor));
+        "backgroundColor", toAndroidRepr(textAttributes.backgroundColor));
   }
   if (!std::isnan(textAttributes.opacity)) {
     _textAttributes("opacity", textAttributes.opacity);
@@ -909,7 +860,7 @@ inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
   if (!std::isnan(textAttributes.letterSpacing)) {
     _textAttributes("letterSpacing", textAttributes.letterSpacing);
   }
-  if (textAttributes.textTransform.hasValue()) {
+  if (textAttributes.textTransform.has_value()) {
     _textAttributes("textTransform", toString(*textAttributes.textTransform));
   }
   if (!std::isnan(textAttributes.lineHeight)) {
@@ -925,21 +876,16 @@ inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
   // Decoration
   if (textAttributes.textDecorationColor) {
     _textAttributes(
-        "textDecorationColor", toDynamic(textAttributes.textDecorationColor));
+        "textDecorationColor",
+        toAndroidRepr(textAttributes.textDecorationColor));
   }
   if (textAttributes.textDecorationLineType.has_value()) {
     _textAttributes(
         "textDecorationLine", toString(*textAttributes.textDecorationLineType));
   }
-  if (textAttributes.textDecorationLineStyle.has_value()) {
+  if (textAttributes.textDecorationStyle.has_value()) {
     _textAttributes(
-        "textDecorationLineStyle",
-        toString(*textAttributes.textDecorationLineStyle));
-  }
-  if (textAttributes.textDecorationLinePattern.has_value()) {
-    _textAttributes(
-        "textDecorationLinePattern",
-        toString(*textAttributes.textDecorationLinePattern));
+        "textDecorationStyle", toString(*textAttributes.textDecorationStyle));
   }
   // Shadow
   // textShadowOffset = textAttributes.textShadowOffset.has_value() ?
@@ -949,7 +895,7 @@ inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
   }
   if (textAttributes.textShadowColor) {
     _textAttributes(
-        "textShadowColor", toDynamic(textAttributes.textShadowColor));
+        "textShadowColor", toAndroidRepr(textAttributes.textShadowColor));
   }
   // Special
   if (textAttributes.isHighlighted.has_value()) {
@@ -1000,51 +946,50 @@ inline folly::dynamic toDynamic(AttributedString::Range const &range) {
 }
 
 // constants for AttributedString serialization
-constexpr static Key AS_KEY_HASH = 0;
-constexpr static Key AS_KEY_STRING = 1;
-constexpr static Key AS_KEY_FRAGMENTS = 2;
-constexpr static Key AS_KEY_CACHE_ID = 3;
+constexpr static MapBuffer::Key AS_KEY_HASH = 0;
+constexpr static MapBuffer::Key AS_KEY_STRING = 1;
+constexpr static MapBuffer::Key AS_KEY_FRAGMENTS = 2;
+constexpr static MapBuffer::Key AS_KEY_CACHE_ID = 3;
 
 // constants for Fragment serialization
-constexpr static Key FR_KEY_STRING = 0;
-constexpr static Key FR_KEY_REACT_TAG = 1;
-constexpr static Key FR_KEY_IS_ATTACHMENT = 2;
-constexpr static Key FR_KEY_WIDTH = 3;
-constexpr static Key FR_KEY_HEIGHT = 4;
-constexpr static Key FR_KEY_TEXT_ATTRIBUTES = 5;
+constexpr static MapBuffer::Key FR_KEY_STRING = 0;
+constexpr static MapBuffer::Key FR_KEY_REACT_TAG = 1;
+constexpr static MapBuffer::Key FR_KEY_IS_ATTACHMENT = 2;
+constexpr static MapBuffer::Key FR_KEY_WIDTH = 3;
+constexpr static MapBuffer::Key FR_KEY_HEIGHT = 4;
+constexpr static MapBuffer::Key FR_KEY_TEXT_ATTRIBUTES = 5;
 
 // constants for Text Attributes serialization
-constexpr static Key TA_KEY_FOREGROUND_COLOR = 0;
-constexpr static Key TA_KEY_BACKGROUND_COLOR = 1;
-constexpr static Key TA_KEY_OPACITY = 2;
-constexpr static Key TA_KEY_FONT_FAMILY = 3;
-constexpr static Key TA_KEY_FONT_SIZE = 4;
-constexpr static Key TA_KEY_FONT_SIZE_MULTIPLIER = 5;
-constexpr static Key TA_KEY_FONT_WEIGHT = 6;
-constexpr static Key TA_KEY_FONT_STYLE = 7;
-constexpr static Key TA_KEY_FONT_VARIANT = 8;
-constexpr static Key TA_KEY_ALLOW_FONT_SCALING = 9;
-constexpr static Key TA_KEY_LETTER_SPACING = 10;
-constexpr static Key TA_KEY_LINE_HEIGHT = 11;
-constexpr static Key TA_KEY_ALIGNMENT = 12;
-constexpr static Key TA_KEY_BEST_WRITING_DIRECTION = 13;
-constexpr static Key TA_KEY_TEXT_DECORATION_COLOR = 14;
-constexpr static Key TA_KEY_TEXT_DECORATION_LINE = 15;
-constexpr static Key TA_KEY_TEXT_DECORATION_LINE_STYLE = 16;
-constexpr static Key TA_KEY_TEXT_DECORATION_LINE_PATTERN = 17;
-constexpr static Key TA_KEY_TEXT_SHADOW_RAIDUS = 18;
-constexpr static Key TA_KEY_TEXT_SHADOW_COLOR = 19;
-constexpr static Key TA_KEY_IS_HIGHLIGHTED = 20;
-constexpr static Key TA_KEY_LAYOUT_DIRECTION = 21;
-constexpr static Key TA_KEY_ACCESSIBILITY_ROLE = 22;
+constexpr static MapBuffer::Key TA_KEY_FOREGROUND_COLOR = 0;
+constexpr static MapBuffer::Key TA_KEY_BACKGROUND_COLOR = 1;
+constexpr static MapBuffer::Key TA_KEY_OPACITY = 2;
+constexpr static MapBuffer::Key TA_KEY_FONT_FAMILY = 3;
+constexpr static MapBuffer::Key TA_KEY_FONT_SIZE = 4;
+constexpr static MapBuffer::Key TA_KEY_FONT_SIZE_MULTIPLIER = 5;
+constexpr static MapBuffer::Key TA_KEY_FONT_WEIGHT = 6;
+constexpr static MapBuffer::Key TA_KEY_FONT_STYLE = 7;
+constexpr static MapBuffer::Key TA_KEY_FONT_VARIANT = 8;
+constexpr static MapBuffer::Key TA_KEY_ALLOW_FONT_SCALING = 9;
+constexpr static MapBuffer::Key TA_KEY_LETTER_SPACING = 10;
+constexpr static MapBuffer::Key TA_KEY_LINE_HEIGHT = 11;
+constexpr static MapBuffer::Key TA_KEY_ALIGNMENT = 12;
+constexpr static MapBuffer::Key TA_KEY_BEST_WRITING_DIRECTION = 13;
+constexpr static MapBuffer::Key TA_KEY_TEXT_DECORATION_COLOR = 14;
+constexpr static MapBuffer::Key TA_KEY_TEXT_DECORATION_LINE = 15;
+constexpr static MapBuffer::Key TA_KEY_TEXT_DECORATION_STYLE = 16;
+constexpr static MapBuffer::Key TA_KEY_TEXT_SHADOW_RADIUS = 18;
+constexpr static MapBuffer::Key TA_KEY_TEXT_SHADOW_COLOR = 19;
+constexpr static MapBuffer::Key TA_KEY_IS_HIGHLIGHTED = 20;
+constexpr static MapBuffer::Key TA_KEY_LAYOUT_DIRECTION = 21;
+constexpr static MapBuffer::Key TA_KEY_ACCESSIBILITY_ROLE = 22;
 
 // constants for ParagraphAttributes serialization
-constexpr static Key PA_KEY_MAX_NUMBER_OF_LINES = 0;
-constexpr static Key PA_KEY_ELLIPSIZE_MODE = 1;
-constexpr static Key PA_KEY_TEXT_BREAK_STRATEGY = 2;
-constexpr static Key PA_KEY_ADJUST_FONT_SIZE_TO_FIT = 3;
-constexpr static Key PA_KEY_INCLUDE_FONT_PADDING = 4;
-constexpr static Key PA_KEY_HYPHENATION_FREQUENCY = 5;
+constexpr static MapBuffer::Key PA_KEY_MAX_NUMBER_OF_LINES = 0;
+constexpr static MapBuffer::Key PA_KEY_ELLIPSIZE_MODE = 1;
+constexpr static MapBuffer::Key PA_KEY_TEXT_BREAK_STRATEGY = 2;
+constexpr static MapBuffer::Key PA_KEY_ADJUST_FONT_SIZE_TO_FIT = 3;
+constexpr static MapBuffer::Key PA_KEY_INCLUDE_FONT_PADDING = 4;
+constexpr static MapBuffer::Key PA_KEY_HYPHENATION_FREQUENCY = 5;
 
 inline MapBuffer toMapBuffer(const ParagraphAttributes &paragraphAttributes) {
   auto builder = MapBufferBuilder();
@@ -1092,11 +1037,11 @@ inline MapBuffer toMapBuffer(const TextAttributes &textAttributes) {
   auto builder = MapBufferBuilder();
   if (textAttributes.foregroundColor) {
     builder.putInt(
-        TA_KEY_FOREGROUND_COLOR, toMapBuffer(textAttributes.foregroundColor));
+        TA_KEY_FOREGROUND_COLOR, toAndroidRepr(textAttributes.foregroundColor));
   }
   if (textAttributes.backgroundColor) {
     builder.putInt(
-        TA_KEY_BACKGROUND_COLOR, toMapBuffer(textAttributes.backgroundColor));
+        TA_KEY_BACKGROUND_COLOR, toAndroidRepr(textAttributes.backgroundColor));
   }
   if (!std::isnan(textAttributes.opacity)) {
     builder.putDouble(TA_KEY_OPACITY, textAttributes.opacity);
@@ -1143,31 +1088,28 @@ inline MapBuffer toMapBuffer(const TextAttributes &textAttributes) {
   if (textAttributes.textDecorationColor) {
     builder.putInt(
         TA_KEY_TEXT_DECORATION_COLOR,
-        toMapBuffer(textAttributes.textDecorationColor));
+        toAndroidRepr(textAttributes.textDecorationColor));
   }
   if (textAttributes.textDecorationLineType.has_value()) {
     builder.putString(
         TA_KEY_TEXT_DECORATION_LINE,
         toString(*textAttributes.textDecorationLineType));
   }
-  if (textAttributes.textDecorationLineStyle.has_value()) {
+  if (textAttributes.textDecorationStyle.has_value()) {
     builder.putString(
-        TA_KEY_TEXT_DECORATION_LINE_STYLE,
-        toString(*textAttributes.textDecorationLineStyle));
+        TA_KEY_TEXT_DECORATION_STYLE,
+        toString(*textAttributes.textDecorationStyle));
   }
-  if (textAttributes.textDecorationLinePattern.has_value()) {
-    builder.putString(
-        TA_KEY_TEXT_DECORATION_LINE_PATTERN,
-        toString(*textAttributes.textDecorationLinePattern));
-  }
+
   // Shadow
   if (!std::isnan(textAttributes.textShadowRadius)) {
     builder.putDouble(
-        TA_KEY_TEXT_SHADOW_RAIDUS, textAttributes.textShadowRadius);
+        TA_KEY_TEXT_SHADOW_RADIUS, textAttributes.textShadowRadius);
   }
   if (textAttributes.textShadowColor) {
     builder.putInt(
-        TA_KEY_TEXT_SHADOW_COLOR, toMapBuffer(textAttributes.textShadowColor));
+        TA_KEY_TEXT_SHADOW_COLOR,
+        toAndroidRepr(textAttributes.textShadowColor));
   }
   // Special
   if (textAttributes.isHighlighted.has_value()) {
