@@ -489,7 +489,11 @@ function ErrorExample(): React.Node {
         onChangeText={newText => {
           setText(newText);
           if (newText === 'error') {
-            setError('this input is invalid');
+            setError('the newText is: ' + newText);
+          } else if (newText === 'empty') {
+            setError('');
+          } else if (newText === 'null') {
+            setError(null);
           } else if (error !== 'onBlur') {
             setError(null);
           }
