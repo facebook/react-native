@@ -1023,12 +1023,16 @@ jobs:
             mkdir -p ~/.ssh
             echo '|1|If6MU203eXTaaWL678YEfWkVMrw=|kqLeIAyTy8pzpj8x8Ae4Fr8Mtlc= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
       - checkout
-      - *attach_hermes_workspace
-      - run:
-          name: Move hermesc binaries to sdks/hermesc
-          command: |
-            mkdir -p ./sdks/hermesc
-            cp -R $HERMES_WS_DIR/hermesc/* ./sdks/hermesc
+      # TODO: (hramos) Filter out unnecessary files before adding Hermes Compiler to package
+      # - *attach_hermes_workspace
+      # - run:
+      #     name: Move hermesc binaries to sdks/hermesc
+      #     command: |
+      #       curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+      #       apt update && apt install -y jq
+      #       mkdir -p ./sdks/hermesc
+      #       cp -R $HERMES_WS_DIR/hermesc/* ./sdks/hermesc
+
       - run_yarn
       - install_buck_tooling
       - download_buck_dependencies
@@ -1161,8 +1165,9 @@ workflows:
       - build_npm_package:
           # Build a release package on every untagged commit, but do not publish to npm.
           publish_npm_args: --dry-run
-          requires:
-            - store-hermesc
+          # TODO: (hramos) Slim down Hermes Compiler files before adding to react-native npm
+          # requires:
+          #   - store-hermesc
       - test_js:
           run_disabled_tests: false
       - test_android:
@@ -1241,8 +1246,9 @@ workflows:
           context: react-native-bot
           publish_npm_args: --release
           filters: *only_release_tags
-          requires:
-            - store-hermesc
+          # TODO: (hramos) Slim down Hermes Compiler files before adding to react-native npm
+          # requires:
+          #   - store-hermesc
 
   analysis:
     unless: << pipeline.parameters.run_package_release_workflow_only >>
@@ -1289,5 +1295,6 @@ workflows:
 
       - build_npm_package:
           publish_npm_args: --nightly
-          requires:
-            - store-hermesc
+          # TODO: (hramos) Slim down Hermes Compiler files before adding to react-native npm
+          # requires:
+          #   - store-hermesc
