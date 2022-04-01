@@ -11,7 +11,7 @@
 #import <butter/map.h>
 #import <butter/set.h>
 
-#import <react/renderer/mounting/MountingTransactionMetadata.h>
+#include <react/renderer/mounting/MountingTransaction.h>
 
 class RCTMountingTransactionObserverCoordinator final {
  public:

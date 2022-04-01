@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import <react/renderer/mounting/MountingTransactionMetadata.h>
+#include <react/renderer/mounting/MountingTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

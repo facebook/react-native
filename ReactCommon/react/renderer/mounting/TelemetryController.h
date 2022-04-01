@@ -11,7 +11,6 @@
 #include <mutex>
 
 #include <react/renderer/mounting/MountingTransaction.h>
-#include <react/renderer/mounting/MountingTransactionMetadata.h>
 #include <react/renderer/telemetry/TransactionTelemetry.h>
 
 namespace facebook {
