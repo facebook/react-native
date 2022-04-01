@@ -664,15 +664,14 @@ def downloadAndConfigureHermesSource(react_native_path)
   end
 
   hermes_tarball_url = hermes_tarball_base_url + hermes_tag
-  # GitHub does not provide a last-modified header, so we cannot rely on wget's --timestamping
   hermes_tag_sha = %x[git ls-remote https://github.com/facebook/hermes #{hermes_tag} | cut -f 1].strip
   hermes_tarball_path = "#{download_dir}/hermes-#{hermes_tag_sha}.tar.gz"
 
   if (!File.exist?(hermes_tarball_path))
-    Pod::UI.puts '[Hermes] Downloading Hermes source code'
-    system("wget -q -O #{hermes_tarball_path} #{hermes_tarball_url}")
+    Pod::UI.puts "[Hermes] Downloading Hermes source code (#{hermes_tarball_url})"
+    system("curl #{hermes_tarball_url} -Lo #{hermes_tarball_path}")
   end
-  system("tar -xzf #{hermes_tarball_path} --strip-components=1 -C #{hermes_dir}")
+  Pod::UI.puts "[Hermes] Extracting Hermes (#{hermes_tag_sha})"
 
   hermesc_macos_path = "#{sdks_dir}/hermesc/macos/build_host_hermesc"
   hermesc_macos_link = "#{hermes_dir}/utils/build_host_hermesc"
