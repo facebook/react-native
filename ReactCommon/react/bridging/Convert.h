@@ -9,6 +9,7 @@
 
 #include <jsi/jsi.h>
 
+#include <optional>
 #include <type_traits>
 
 namespace facebook::react::bridging {
@@ -114,9 +115,29 @@ struct Converter<jsi::Object> : public ConverterBase<jsi::Object> {
   }
 };
 
+template <typename T>
+struct Converter<std::optional<T>> : public ConverterBase<jsi::Value> {
+  Converter(jsi::Runtime &rt, std::optional<T> value)
+      : ConverterBase(rt, value ? std::move(*value) : jsi::Value::null()) {}
+
+  operator std::optional<T>() && {
+    if (value_.isNull() || value_.isUndefined()) {
+      return {};
+    }
+    return std::move(value_);
+  }
+};
+
 template <typename T, std::enable_if_t<is_jsi_v<T>, int> = 0>
 auto convert(jsi::Runtime &rt, T &&value) {
   return Converter<T>(rt, std::forward<T>(value));
+}
+
+template <
+    typename T,
+    std::enable_if_t<is_jsi_v<T> || std::is_scalar_v<T>, int> = 0>
+auto convert(jsi::Runtime &rt, std::optional<T> value) {
+  return Converter<std::optional<T>>(rt, std::move(value));
 }
 
 template <typename T, std::enable_if_t<std::is_scalar_v<T>, int> = 0>

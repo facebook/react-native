@@ -110,19 +110,24 @@ function translatePrimitiveJSTypeToCpp(
   createErrorMessage: (typeName: string) => string,
   resolveAlias: AliasResolver,
 ) {
-  const [typeAnnotation] = unwrapNullable<NativeModuleTypeAnnotation>(
+  const [typeAnnotation, nullable] = unwrapNullable<NativeModuleTypeAnnotation>(
     nullableTypeAnnotation,
   );
+
   let realTypeAnnotation = typeAnnotation;
   if (realTypeAnnotation.type === 'TypeAliasTypeAnnotation') {
     realTypeAnnotation = resolveAlias(realTypeAnnotation.name);
+  }
+
+  function wrap(type) {
+    return nullable ? `std::optional<${type}>` : type;
   }
 
   switch (realTypeAnnotation.type) {
     case 'ReservedTypeAnnotation':
       switch (realTypeAnnotation.name) {
         case 'RootTag':
-          return 'double';
+          return wrap('double');
         default:
           (realTypeAnnotation.name: empty);
           throw new Error(createErrorMessage(realTypeAnnotation.name));
@@ -130,27 +135,27 @@ function translatePrimitiveJSTypeToCpp(
     case 'VoidTypeAnnotation':
       return 'void';
     case 'StringTypeAnnotation':
-      return 'jsi::String';
+      return wrap('jsi::String');
     case 'NumberTypeAnnotation':
-      return 'double';
+      return wrap('double');
     case 'DoubleTypeAnnotation':
-      return 'double';
+      return wrap('double');
     case 'FloatTypeAnnotation':
-      return 'double';
+      return wrap('double');
     case 'Int32TypeAnnotation':
-      return 'int';
+      return wrap('int');
     case 'BooleanTypeAnnotation':
-      return 'bool';
+      return wrap('bool');
     case 'GenericObjectTypeAnnotation':
-      return 'jsi::Object';
+      return wrap('jsi::Object');
     case 'ObjectTypeAnnotation':
-      return 'jsi::Object';
+      return wrap('jsi::Object');
     case 'ArrayTypeAnnotation':
-      return 'jsi::Array';
+      return wrap('jsi::Array');
     case 'FunctionTypeAnnotation':
-      return 'jsi::Function';
+      return wrap('jsi::Function');
     case 'PromiseTypeAnnotation':
-      return 'jsi::Value';
+      return wrap('jsi::Value');
     default:
       (realTypeAnnotation.type: empty);
       throw new Error(createErrorMessage(realTypeAnnotation.type));

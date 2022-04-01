@@ -105,17 +105,24 @@ function serializeArg(
   index: number,
   resolveAlias: AliasResolver,
 ): string {
-  function wrap(suffix) {
-    return `args[${index}]${suffix}`;
-  }
   const {typeAnnotation: nullableTypeAnnotation} = arg;
-  const [typeAnnotation] = unwrapNullable<NativeModuleParamTypeAnnotation>(
-    nullableTypeAnnotation,
-  );
+  const [typeAnnotation, nullable] =
+    unwrapNullable<NativeModuleParamTypeAnnotation>(nullableTypeAnnotation);
 
   let realTypeAnnotation = typeAnnotation;
   if (realTypeAnnotation.type === 'TypeAliasTypeAnnotation') {
     realTypeAnnotation = resolveAlias(realTypeAnnotation.name);
+  }
+
+  function wrap(suffix) {
+    const val = `args[${index}]`;
+    const expression = `${val}${suffix}`;
+
+    if (nullable) {
+      return `${val}.isNull() || ${val}.isUndefined() ? std::nullopt : std::make_optional(${expression})`;
+    }
+
+    return expression;
   }
 
   switch (realTypeAnnotation.type) {

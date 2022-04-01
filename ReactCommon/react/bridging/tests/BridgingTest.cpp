@@ -273,6 +273,16 @@ TEST_F(BridgingTest, promiseTest) {
 TEST_F(BridgingTest, optionalTest) {
   EXPECT_EQ(
       1, bridging::fromJs<std::optional<int>>(rt, jsi::Value(1), invoker));
+  EXPECT_EQ(
+      1,
+      bridging::fromJs<std::optional<int>>(
+          rt, std::make_optional(jsi::Value(1)), invoker));
+  EXPECT_EQ(
+      "hi"s,
+      bridging::fromJs<std::optional<std::string>>(
+          rt,
+          std::make_optional(jsi::String::createFromAscii(rt, "hi")),
+          invoker));
   EXPECT_FALSE(
       bridging::fromJs<std::optional<int>>(rt, jsi::Value::undefined(), invoker)
           .has_value());
