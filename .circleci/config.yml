@@ -184,14 +184,14 @@ commands:
           command: cp packages/rn-tester/Podfile.lock packages/rn-tester/Podfile.lock.bak
       - restore_cache:
           keys:
-            # The committed lockfile is generated using USE_FRAMEWORKS=0 and USE_HERMES=0 so it could load an outdated cache if a change
+            # The committed lockfile is generated using USE_FRAMEWORKS=0 and USE_HERMES=1 so it could load an outdated cache if a change
             # only affects the frameworks or hermes config. To help prevent this also cache based on the content of Podfile.
-            - v3-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
+            - v6-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
       - steps: << parameters.steps >>
       - save_cache:
           paths:
             - packages/rn-tester/Pods
-          key: v3-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
+          key: v6-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
 
   download_gradle_dependencies:
     steps:
@@ -370,13 +370,10 @@ jobs:
   # -------------------------
   #     JOBS: Test iOS
   # -------------------------
-  test_ios:
+  test_ios_unit:
     executor: reactnativeios
     parameters:
       use_frameworks:
-        type: boolean
-        default: false
-      use_hermes:
         type: boolean
         default: false
       run_unit_tests:
@@ -411,7 +408,7 @@ jobs:
       - with_brew_cache_span:
           steps:
             - brew_install:
-                package: watchman
+                package: watchman cmake ninja
             - run:
                 name: "Brew: Tap wix/brew"
                 command: brew tap wix/brew >/dev/null
@@ -429,16 +426,9 @@ jobs:
                 name: Set USE_FRAMEWORKS=1
                 command: echo "export USE_FRAMEWORKS=1" >> $BASH_ENV
 
-      - when:
-          condition: << parameters.use_hermes >>
-          steps:
-            - run:
-                name: Set USE_HERMES=1
-                command: echo "export USE_HERMES=1" >> $BASH_ENV
-            - with_brew_cache_span:
-                steps:
-                  - brew_install:
-                      package: cmake ninja
+      - run:
+          name: Set USE_HERMES=1
+          command: echo "export USE_HERMES=1" >> $BASH_ENV
 
       - run:
           name: Setup the CocoaPods environment
@@ -670,24 +660,18 @@ jobs:
   # -------------------------
   test_ios_rntester:
     executor: reactnativeios
-    parameters:
-      use_hermes:
-          type: boolean
-          default: false
     steps:
       - checkout
       - run_yarn
 
-      - when:
-          condition: << parameters.use_hermes >>
+      - run:
+          name: Set USE_HERMES=1
+          command: echo "export USE_HERMES=1" >> $BASH_ENV
+
+      - with_brew_cache_span:
           steps:
-            - run:
-                name: Set USE_HERMES=1
-                command: echo "export USE_HERMES=1" >> $BASH_ENV
-            - with_brew_cache_span:
-                steps:
-                  - brew_install:
-                      package: cmake ninja
+            - brew_install:
+                package: cmake ninja
 
       - run:
           name: Install CocoaPods dependencies
@@ -1189,30 +1173,15 @@ workflows:
       - test_ios_template:
           requires:
             - build_npm_package
-      - test_ios_rntester:
-          name: test_ios_rntester_hermes
-          use_hermes: true
-      - test_ios_rntester:
-          name: test_ios_rntester_jsc
-      - test_ios:
-          name: test_ios_unit_jsc
-          run_unit_tests: true
-      # DISABLED: USE_FRAMEWORKS=1 not supported by Flipper
-      # - test_ios:
-      #     name: test_ios_unit_frameworks_jsc
-      #     use_frameworks: true
-      #     run_unit_tests: true
-      - test_ios:
-          name: test_ios_unit_hermes
-          use_hermes: true
+      - test_ios_rntester
+      - test_ios_unit:
           # TODO(ncor, neildhar) Integration tests for iOS + Hermes are currently
           # disabled due to an ABI incompatibility introduced by D33830544.
           # They can be re-enabled as soon as Hermes 0.12.0 is released.
           run_unit_tests: false
       # DISABLED: USE_FRAMEWORKS=1 not supported by Flipper
-      # - test_ios:
-      #     name: test_ios_unit_frameworks_hermes
-      #     use_hermes: true
+      # - test_ios_unit:
+      #     name: test_ios_unit_frameworks
       #     use_frameworks: true
       #     run_unit_tests: true
       - test_js:
