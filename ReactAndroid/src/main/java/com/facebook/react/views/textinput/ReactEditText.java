@@ -511,7 +511,7 @@ public class ReactEditText extends AppCompatEditText
    * @param eventCounter
    * @param errorMessage
    */
-  public void maybeSetErrorMessage(int eventCounter, String errorMessage) {
+  public void maybeSetErrorMessage(int eventCounter, @Nullable String errorMessage) {
     if (!canUpdateWithEventCount(eventCounter) || getError() == errorMessage) {
       return;
     }

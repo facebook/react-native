@@ -11,6 +11,7 @@ import static com.facebook.react.views.text.TextAttributeProps.UNSET;
 
 import android.text.Layout;
 import android.text.Spannable;
+import androidx.annotation.Nullable;
 
 /**
  * Class that contains the data needed for a text update. Used by both <Text/> and <TextInput/>
@@ -30,7 +31,7 @@ public class ReactTextUpdate {
   private final int mSelectionStart;
   private final int mSelectionEnd;
   private final int mJustificationMode;
-  private String mErrorMessage;
+  private @Nullable String mErrorMessage;
 
   public boolean mContainsMultipleFragments;
 
@@ -127,7 +128,7 @@ public class ReactTextUpdate {
       int justificationMode,
       int selectionStart,
       int selectionEnd,
-      String error) {
+      @Nullable String errorMessage) {
     mText = text;
     mJsEventCounter = jsEventCounter;
     mContainsImages = containsImages;
@@ -140,7 +141,7 @@ public class ReactTextUpdate {
     mSelectionStart = selectionStart;
     mSelectionEnd = selectionEnd;
     mJustificationMode = justificationMode;
-    mErrorMessage = error;
+    mErrorMessage = errorMessage;
   }
 
   public static ReactTextUpdate buildReactTextUpdateFromState(
@@ -150,7 +151,7 @@ public class ReactTextUpdate {
       int textBreakStrategy,
       int justificationMode,
       boolean containsMultipleFragments,
-      String errorMessage) {
+      @Nullable String errorMessage) {
 
     ReactTextUpdate reactTextUpdate =
         new ReactTextUpdate(
@@ -160,7 +161,7 @@ public class ReactTextUpdate {
     return reactTextUpdate;
   }
 
-  public String getErrorMessage() {
+  public @Nullable String getErrorMessage() {
     return mErrorMessage;
   }
 
