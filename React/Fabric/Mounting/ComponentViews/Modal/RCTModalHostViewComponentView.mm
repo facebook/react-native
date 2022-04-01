@@ -194,12 +194,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 
 - (void)mountingTransactionWillMount:(MountingTransaction const &)transaction
 {
-  for (auto mutation : transaction.getMutations()) {
-    if (mutation.type == ShadowViewMutation::Type::Delete && mutation.parentShadowView.componentName == ModalHostViewComponentName) {
-      _modalContentsSnapshot = [self.viewController.view snapshotViewAfterScreenUpdates:NO];
-      return;
-    }
-  }
+  _modalContentsSnapshot = [self.viewController.view snapshotViewAfterScreenUpdates:NO];
 }
 
 #pragma mark - UIView methods
