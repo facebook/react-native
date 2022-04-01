@@ -50,6 +50,7 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
   private @Nullable String mPlaceholder = null;
   private int mSelectionStart = UNSET;
   private int mSelectionEnd = UNSET;
+  private @Nullable String mErrorMessage = null;
 
   public ReactTextInputShadowNode(
       @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
@@ -193,6 +194,12 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
     return mPlaceholder;
   }
 
+  @ReactProp(name = "errorMessageAndroid")
+  public void setErrorMessage(String error) {
+    mErrorMessage = error;
+    markUpdated();
+  }
+
   @ReactProp(name = PROP_SELECTION)
   public void setSelection(@Nullable ReadableMap selection) {
     mSelectionStart = mSelectionEnd = UNSET;
@@ -246,7 +253,8 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
               mTextBreakStrategy,
               mJustificationMode,
               mSelectionStart,
-              mSelectionEnd);
+              mSelectionEnd,
+              mErrorMessage);
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);
     }
   }

@@ -60,7 +60,8 @@ public class ReactTextUpdate {
         Layout.BREAK_STRATEGY_HIGH_QUALITY,
         Layout.JUSTIFICATION_MODE_NONE,
         -1,
-        -1);
+        -1,
+        null);
   }
 
   public ReactTextUpdate(
@@ -86,7 +87,8 @@ public class ReactTextUpdate {
         textBreakStrategy,
         justificationMode,
         -1,
-        -1);
+        -1,
+        null);
   }
 
   public ReactTextUpdate(
@@ -108,7 +110,8 @@ public class ReactTextUpdate {
         textBreakStrategy,
         justificationMode,
         -1,
-        -1);
+        -1,
+        null);
   }
 
   public ReactTextUpdate(
@@ -123,7 +126,8 @@ public class ReactTextUpdate {
       int textBreakStrategy,
       int justificationMode,
       int selectionStart,
-      int selectionEnd) {
+      int selectionEnd,
+      String error) {
     mText = text;
     mJsEventCounter = jsEventCounter;
     mContainsImages = containsImages;
@@ -136,6 +140,7 @@ public class ReactTextUpdate {
     mSelectionStart = selectionStart;
     mSelectionEnd = selectionEnd;
     mJustificationMode = justificationMode;
+    mErrorMessage = error;
   }
 
   public static ReactTextUpdate buildReactTextUpdateFromState(
