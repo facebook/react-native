@@ -38,6 +38,7 @@
     "README.md",
     "rn-get-polyfills.js",
     "scripts/compose-source-maps.js",
+    "scripts/find-node-for-xcode.sh",
     "scripts/generate-artifacts.js",
     "scripts/generate-provider-cli.js",
     "scripts/generate-specs-cli.js",
