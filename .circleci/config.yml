@@ -80,6 +80,7 @@ executors:
     <<: *defaults
     macos:
       xcode: &_XCODE_VERSION "13.0.0"
+    resource_class: macos.x86.medium.gen2
 
 # -------------------------
 #        COMMANDS
@@ -888,8 +889,7 @@ jobs:
             - hermesc/linux
 
   build-hermesc-macos:
-    macos:
-      xcode: &_XCODE_VERSION "13.0.0"
+    executor: reactnativeios
     working_directory: ~/hermes
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
