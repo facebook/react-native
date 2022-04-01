@@ -432,6 +432,10 @@ jobs:
             - run:
                 name: Set USE_HERMES=1
                 command: echo "export USE_HERMES=1" >> $BASH_ENV
+            - with_brew_cache_span:
+                steps:
+                  - brew_install:
+                      package: cmake ninja
 
       - run:
           name: Setup the CocoaPods environment
@@ -677,6 +681,10 @@ jobs:
             - run:
                 name: Set USE_HERMES=1
                 command: echo "export USE_HERMES=1" >> $BASH_ENV
+            - with_brew_cache_span:
+                steps:
+                  - brew_install:
+                      package: cmake ninja
 
       - run:
           name: Install CocoaPods dependencies
