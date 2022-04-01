@@ -55,10 +55,12 @@ executors:
     docker:
       # Note: Version set separately for Windows builds, see below.
       - image: circleci/node:16
+    resource_class: "xlarge"
   nodeprevlts:
     <<: *defaults
     docker:
       - image: circleci/node:14
+    resource_class: "xlarge"
   reactnativeandroid:
     <<: *defaults
     docker:
