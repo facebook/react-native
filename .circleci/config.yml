@@ -186,12 +186,12 @@ commands:
           keys:
             # The committed lockfile is generated using USE_FRAMEWORKS=0 and USE_HERMES=1 so it could load an outdated cache if a change
             # only affects the frameworks or hermes config. To help prevent this also cache based on the content of Podfile.
-            - v6-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
+            - v1-pods-hermes-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}-{{ checksum "scripts/react_native_pods.rb" }}
       - steps: << parameters.steps >>
       - save_cache:
           paths:
             - packages/rn-tester/Pods
-          key: v6-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
+          key: v1-pods-hermes-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}-{{ checksum "scripts/react_native_pods.rb" }}
 
   download_gradle_dependencies:
     steps:
@@ -403,8 +403,9 @@ jobs:
                 command: echo "export USE_FRAMEWORKS=1" >> $BASH_ENV
 
       - run:
-          name: Set USE_HERMES=1
-          command: echo "export USE_HERMES=1" >> $BASH_ENV
+          name: Set USE_HERMES=1 and BUILD_HERMES_SOURCE=1
+          command: echo "export USE_HERMES=1; export BUILD_HERMES_SOURCE=1; " >> $BASH_ENV
+
       - with_brew_cache_span:
           steps:
             - brew_install:
@@ -480,8 +481,8 @@ jobs:
                 command: echo "export USE_FRAMEWORKS=1" >> $BASH_ENV
 
       - run:
-          name: Set USE_HERMES=1
-          command: echo "export USE_HERMES=1" >> $BASH_ENV
+          name: Set USE_HERMES=1 and BUILD_HERMES_SOURCE=1
+          command: echo "export USE_HERMES=1; export BUILD_HERMES_SOURCE=1; " >> $BASH_ENV
 
       - run:
           name: Setup the CocoaPods environment
@@ -718,8 +719,8 @@ jobs:
       - run_yarn
 
       - run:
-          name: Set USE_HERMES=1
-          command: echo "export USE_HERMES=1" >> $BASH_ENV
+          name: Set USE_HERMES=1 and BUILD_HERMES_SOURCE=1
+          command: echo "export USE_HERMES=1; export BUILD_HERMES_SOURCE=1; " >> $BASH_ENV
 
       - with_brew_cache_span:
           steps:
