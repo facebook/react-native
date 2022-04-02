@@ -674,6 +674,7 @@ def downloadAndConfigureHermesSource(react_native_path)
     system("curl #{hermes_tarball_url} -Lo #{hermes_tarball_path}")
   end
   Pod::UI.puts "[Hermes] Extracting Hermes (#{hermes_tag_sha})"
+  system("tar -xzf #{hermes_tarball_path} --strip-components=1 -C #{hermes_dir}")
 
   hermesc_macos_path = "#{sdks_dir}/hermesc/macos/build_host_hermesc"
   hermesc_macos_link = "#{hermes_dir}/utils/build_host_hermesc"
