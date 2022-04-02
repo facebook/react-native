@@ -683,6 +683,9 @@ def downloadAndConfigureHermesSource(react_native_path)
     system("ln -s #{hermesc_macos_path} #{hermesc_macos_link}")
   end
 
+  # TODO: Integrate this temporary hermes-engine.podspec into the actual one located in facebook/hermes
+  system("cp #{sdks_dir}/hermes-engine.podspec #{hermes_dir}/hermes-engine.podspec")
+
   hermes_dir
 end
 
