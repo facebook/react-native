@@ -111,9 +111,11 @@ def use_react_native! (options={})
   if hermes_enabled
     pod 'React-hermes', :path => "#{prefix}/ReactCommon/hermes"
     if ENV['BUILD_HERMES_SOURCE'] == '1'
+      Pod::UI.puts "[Hermes] Building Hermes from source"
       hermes_source_path = downloadAndConfigureHermesSource(prefix)
       pod 'hermes-engine', :path => "#{hermes_source_path}/hermes-engine.podspec"
     else
+      Pod::UI.warn "[Hermes] Installing Hermes from CocoaPods. The `hermes-engine` pod has been deprecated and will not see future updates."
       pod 'hermes-engine', '~> 0.11.0'
     end
     pod 'libevent', '~> 2.1.12'
