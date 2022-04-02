@@ -2837,6 +2837,53 @@ TEST(ConnectionTests, heapSnapshotRemoteObject) {
   expectNotification<m::debugger::ResumedNotification>(conn);
 }
 
+TEST(ConnectionTests, testBasicProfilerOperation) {
+  TestContext context;
+  AsyncHermesRuntime &asyncRuntime = context.runtime();
+  SamplingProfilerRAII spRegistration(asyncRuntime);
+  SyncConnection &conn = context.conn();
+  int msgId = 1;
+
+  asyncRuntime.executeScriptAsync(R"(
+      while(!shouldStop());
+  )");
+
+  send<m::debugger::EnableRequest>(conn, msgId++);
+  expectExecutionContextCreated(conn);
+  expectNotification<m::debugger::ScriptParsedNotification>(conn);
+
+  // Start the sampling profiler. At this point it is not safe to manipulate the
+  // VM, so...
+  send<m::profiler::StartRequest>(conn, msgId++);
+
+  // Disable the debugger.
+  send<m::debugger::DisableRequest>(conn, msgId++);
+
+  // Keep the profiler running for a small amount of time to allow for some
+  // samples to be collected.
+  std::this_thread::sleep_for(500ms);
+
+  // Finally, re-enable the debugger in order to stop profiling.
+  send<m::debugger::EnableRequest>(conn, msgId++);
+  expectExecutionContextCreated(conn);
+
+  // Being re-attached to the VM, send the stop sampling profile request.
+  {
+    auto resp = send<m::profiler::StopRequest, m::profiler::StopResponse>(
+        conn, msgId++);
+
+    const m::profiler::Profile &profile = resp.profile;
+    EXPECT_GT(profile.nodes.size(), 0);
+    EXPECT_LT(profile.startTime, profile.endTime);
+    ASSERT_TRUE(profile.samples);
+    EXPECT_FALSE(profile.samples->empty());
+    ASSERT_TRUE(profile.timeDeltas);
+    EXPECT_EQ(profile.samples->size(), profile.timeDeltas->size());
+  }
+
+  asyncRuntime.stop();
+}
+
 } // namespace chrome
 } // namespace inspector
 } // namespace hermes
