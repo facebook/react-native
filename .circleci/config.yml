@@ -858,7 +858,7 @@ jobs:
   # -------------------------
   #      JOBS: Build hermesc
   # -------------------------
-  prepare-hermes-workspace:
+  prepare_hermes_workspace:
     docker:
       - image: debian:buster
     environment:
@@ -896,7 +896,7 @@ jobs:
             - output
             - hermesversion
 
-  build-hermesc-linux:
+  build_hermesc_linux:
     docker:
       - image: debian:buster
     environment:
@@ -932,7 +932,7 @@ jobs:
           paths:
             - hermesc/linux
 
-  build-hermesc-macos:
+  build_hermesc_macos:
     executor: reactnativeios
     working_directory: ~/hermes
     environment:
@@ -962,7 +962,7 @@ jobs:
           paths:
             - hermesc/macos
 
-  build-hermesc-windows:
+  build_hermesc_windows:
     executor:
       name: win/default
       shell: powershell.exe
@@ -1027,7 +1027,7 @@ jobs:
           paths:
             - hermesc\windows
 
-  store-hermesc:
+  store_hermesc:
     docker:
       - image: debian:buster
     environment:
@@ -1201,27 +1201,27 @@ workflows:
   tests:
     unless: << pipeline.parameters.run_package_release_workflow_only >>
     jobs:
-      - prepare-hermes-workspace
-      - build-hermesc-linux:
+      - prepare_hermes_workspace
+      - build_hermesc_linux:
           requires:
-            - prepare-hermes-workspace
-      - build-hermesc-macos:
+            - prepare_hermes_workspace
+      - build_hermesc_macos:
           requires:
-            - prepare-hermes-workspace
-      - build-hermesc-windows:
+            - prepare_hermes_workspace
+      - build_hermesc_windows:
           requires:
-            - prepare-hermes-workspace
-      - store-hermesc:
+            - prepare_hermes_workspace
+      - store_hermesc:
           requires:
-            - build-hermesc-linux
-            - build-hermesc-macos
-            - build-hermesc-windows
+            - build_hermesc_linux
+            - build_hermesc_macos
+            - build_hermesc_windows
       - build_npm_package:
           # Build a release package on every untagged commit, but do not publish to npm.
           publish_npm_args: --dry-run
           # TODO: (hramos) Slim down Hermes Compiler files before adding to react-native npm
           # requires:
-          #   - store-hermesc
+          #   - store_hermesc
       - test_js:
           run_disabled_tests: false
       - test_android:
@@ -1271,22 +1271,22 @@ workflows:
   publish_release:
     unless: << pipeline.parameters.run_package_release_workflow_only >>
     jobs:
-      - prepare-hermes-workspace:
+      - prepare_hermes_workspace:
           filters: *only_release_tags
-      - build-hermesc-linux:
+      - build_hermesc_linux:
           requires:
-            - prepare-hermes-workspace
-      - build-hermesc-macos:
+            - prepare_hermes_workspace
+      - build_hermesc_macos:
           requires:
-            - prepare-hermes-workspace
-      - build-hermesc-windows:
+            - prepare_hermes_workspace
+      - build_hermesc_windows:
           requires:
-            - prepare-hermes-workspace
-      - store-hermesc:
+            - prepare_hermes_workspace
+      - store_hermesc:
           requires:
-            - build-hermesc-linux
-            - build-hermesc-macos
-            - build-hermesc-windows
+            - build_hermesc_linux
+            - build_hermesc_macos
+            - build_hermesc_windows
       # This job will trigger when a version tag is pushed (by package_release)
       - build_npm_package:
           name: build_and_publish_npm_package
@@ -1295,7 +1295,7 @@ workflows:
           filters: *only_release_tags
           # TODO: (hramos) Slim down Hermes Compiler files before adding to react-native npm
           # requires:
-          #   - store-hermesc
+          #   - store_hermesc
 
   analysis:
     unless: << pipeline.parameters.run_package_release_workflow_only >>
@@ -1324,24 +1324,24 @@ workflows:
     jobs:
       - nightly_job
 
-      - prepare-hermes-workspace
-      - build-hermesc-linux:
+      - prepare_hermes_workspace
+      - build_hermesc_linux:
           requires:
-            - prepare-hermes-workspace
-      - build-hermesc-macos:
+            - prepare_hermes_workspace
+      - build_hermesc_macos:
           requires:
-            - prepare-hermes-workspace
-      - build-hermesc-windows:
+            - prepare_hermes_workspace
+      - build_hermesc_windows:
           requires:
-            - prepare-hermes-workspace
-      - store-hermesc:
+            - prepare_hermes_workspace
+      - store_hermesc:
           requires:
-            - build-hermesc-linux
-            - build-hermesc-macos
-            - build-hermesc-windows
+            - build_hermesc_linux
+            - build_hermesc_macos
+            - build_hermesc_windows
 
       - build_npm_package:
           publish_npm_args: --nightly
           # TODO: (hramos) Slim down Hermes Compiler files before adding to react-native npm
           # requires:
-          #   - store-hermesc
+          #   - store_hermesc
