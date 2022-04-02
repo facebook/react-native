@@ -368,7 +368,60 @@ jobs:
           path: ./reports/junit
 
   # -------------------------
-  #     JOBS: Test iOS
+  #     JOBS: Build iOS
+  # -------------------------
+  build_ios:
+    executor: reactnativeios
+    parameters:
+      use_frameworks:
+        type: boolean
+        default: false
+    steps:
+      - checkout
+      - setup_ruby
+      - run_yarn
+
+      - run: |
+          cd packages/rn-tester
+          bundle check || bundle install
+
+      - run:
+          name: Configure Environment Variables
+          command: |
+            echo 'export PATH=/usr/local/opt/node@16/bin:$PATH' >> $BASH_ENV
+            source $BASH_ENV
+
+      - run:
+          name: Configure Watchman
+          command: echo "{}" > .watchmanconfig
+
+      - when:
+          condition: << parameters.use_frameworks >>
+          steps:
+            - run:
+                name: Set USE_FRAMEWORKS=1
+                command: echo "export USE_FRAMEWORKS=1" >> $BASH_ENV
+
+      - run:
+          name: Set USE_HERMES=1
+          command: echo "export USE_HERMES=1" >> $BASH_ENV
+      - with_brew_cache_span:
+          steps:
+            - brew_install:
+                package: cmake ninja
+
+      - run:
+          name: Setup the CocoaPods environment
+          command: bundle exec pod setup
+
+      - with_rntester_pods_cache_span:
+          steps:
+            - run:
+                name: Generate RNTesterPods Workspace
+                command: cd packages/rn-tester && bundle exec pod install --verbose
+
+  # -------------------------
+  #     JOBS: iOS Unit Tests
   # -------------------------
   test_ios_unit:
     executor: reactnativeios
@@ -1174,16 +1227,24 @@ workflows:
           requires:
             - build_npm_package
       - test_ios_rntester
+      - build_ios
       - test_ios_unit:
           # TODO(ncor, neildhar) Integration tests for iOS + Hermes are currently
           # disabled due to an ABI incompatibility introduced by D33830544.
           # They can be re-enabled as soon as Hermes 0.12.0 is released.
           run_unit_tests: false
+          requires:
+            - build_ios
       # DISABLED: USE_FRAMEWORKS=1 not supported by Flipper
+      # - build_ios:
+      #     name: build_ios_frameworks
+      #     use_frameworks: true
       # - test_ios_unit:
       #     name: test_ios_unit_frameworks
       #     use_frameworks: true
       #     run_unit_tests: true
+      #     requires:
+      #       - build_ios_frameworks
       - test_js:
           name: test_js_prev_lts
           executor: nodeprevlts
