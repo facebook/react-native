@@ -2293,12 +2293,12 @@ exports[`does not adjust render area with non-zero initialScrollIndex until scro
 >
   <View>
     <View
-      style={
-        Object {
-          "height": 10,
-        }
-      }
-    />
+      style={null}
+    >
+      <MockCellItem
+        value={0}
+      />
+    </View>
     <View
       style={null}
     >
@@ -2335,12 +2335,103 @@ exports[`does not adjust render area with non-zero initialScrollIndex until scro
       />
     </View>
     <View
-      style={
-        Object {
-          "height": 140,
-        }
-      }
-    />
+      style={null}
+    >
+      <MockCellItem
+        value={6}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={7}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={8}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={9}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={10}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={11}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={12}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={13}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={14}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={15}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={16}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={17}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={18}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={19}
+      />
+    </View>
   </View>
 </RCTScrollView>
 `;
@@ -3302,12 +3393,19 @@ exports[`renders new items when data is updated with non-zero initialScrollIndex
       />
     </View>
     <View
-      style={
-        Object {
-          "height": 20,
-        }
-      }
-    />
+      style={null}
+    >
+      <MockCellItem
+        value={2}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={3}
+      />
+    </View>
   </View>
 </RCTScrollView>
 `;
