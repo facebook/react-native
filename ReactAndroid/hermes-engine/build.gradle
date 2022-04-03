@@ -140,7 +140,6 @@ android {
         debug {
             externalNativeBuild {
                 cmake {
-                    arguments "-DHERMES_ENABLE_DEBUGGER=True"
                     // JS developers aren't VM developers.
                     // Therefore we're passing as build type Release, to provide a faster build.
                     // This has the (unlucky) side effect of letting AGP call the build
@@ -152,6 +151,7 @@ android {
         release {
             externalNativeBuild {
                 cmake {
+                    arguments "-DHERMES_ENABLE_DEBUGGER=False"
                     arguments "-DCMAKE_BUILD_TYPE=MinSizeRel"
                 }
             }
