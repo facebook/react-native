@@ -3250,6 +3250,68 @@ exports[`renders items before initialScrollIndex on first batch tick when virtua
 </RCTScrollView>
 `;
 
+exports[`renders new items when data is updated with non-zero initialScrollIndex 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+      },
+    ]
+  }
+  getItem={[Function]}
+  getItemCount={[Function]}
+  getItemLayout={[Function]}
+  initialNumToRender={5}
+  initialScrollIndex={1}
+  maxToRenderPerBatch={10}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={Array []}
+  windowSize={10}
+>
+  <View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={0}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={1}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "height": 20,
+        }
+      }
+    />
+  </View>
+</RCTScrollView>
+`;
+
 exports[`renders no spacers up to initialScrollIndex on first render when virtualization disabled 1`] = `
 <RCTScrollView
   data={

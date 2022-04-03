@@ -928,6 +928,55 @@ it('adjusts render area with non-zero initialScrollIndex after scrolled', () => 
   expect(component).toMatchSnapshot();
 });
 
+it('renders new items when data is updated with non-zero initialScrollIndex', () => {
+  const items = generateItems(2);
+  const ITEM_HEIGHT = 10;
+
+  let component;
+  ReactTestRenderer.act(() => {
+    component = ReactTestRenderer.create(
+      <VirtualizedList
+        initialNumToRender={5}
+        initialScrollIndex={1}
+        windowSize={10}
+        maxToRenderPerBatch={10}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
+
+  ReactTestRenderer.act(() => {
+    simulateLayout(component, {
+      viewport: {width: 10, height: 50},
+      content: {width: 10, height: 200},
+    });
+    performAllBatches();
+  });
+
+  const newItems = generateItems(4);
+
+  ReactTestRenderer.act(() => {
+    component.update(
+      <VirtualizedList
+        initialNumToRender={5}
+        initialScrollIndex={1}
+        windowSize={10}
+        maxToRenderPerBatch={10}
+        {...baseItemProps(newItems)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
+
+  ReactTestRenderer.act(() => {
+    performAllBatches();
+  });
+
+  // We expect all the items to be rendered
+  expect(component).toMatchSnapshot();
+});
+
 it('renders initialNumToRender cells when virtualization disabled', () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
