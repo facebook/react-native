@@ -66,18 +66,12 @@ task unzipHermes(dependsOn: downloadHermes, type: Copy) {
 
 task configureNinjaForHermes(type: Exec) {
     workingDir(hermesDir)
-    commandLine(windowsAwareCommandLine(
-        "python3",
-        "utils/build/configure.py",
-        "--jsidir",
-        jsiDir.absolutePath,
-        "./ninja_build"
-    ))
+    commandLine(windowsAwareCommandLine("cmake", "-S", ".", "-B", "./build", "-DJSI_DIR=" + jsiDir.absolutePath))
 }
 
 task buildNinjaForHermes(dependsOn: configureNinjaForHermes, type: Exec) {
     workingDir(hermesDir)
-    commandLine(windowsAwareCommandLine("cmake", "--build", "./ninja_build", "--target", "hermesc", "-j", ndkBuildJobs))
+    commandLine(windowsAwareCommandLine("cmake", "--build", "./build", "--target", "hermesc", "-j", ndkBuildJobs))
 }
 
 task prepareHeadersForPrefab(type: Copy) {
@@ -120,7 +114,7 @@ android {
                 arguments "-DHERMES_IS_ANDROID=True"
                 arguments "-DANDROID_STL=c++_shared"
                 arguments "-DANDROID_PIE=True"
-                arguments "-DIMPORT_HERMESC=${new File(hermesDir, "ninja_build/ImportHermesc.cmake").toString()}"
+                arguments "-DIMPORT_HERMESC=${new File(hermesDir, "build/ImportHermesc.cmake").toString()}"
                 arguments "-DJSI_DIR=${jsiDir}"
                 arguments "-DHERMES_SLOW_DEBUG=False"
                 arguments "-DHERMES_BUILD_SHARED_JSI=True"
