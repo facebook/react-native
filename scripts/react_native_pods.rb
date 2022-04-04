@@ -111,9 +111,11 @@ def use_react_native! (options={})
   if hermes_enabled
     pod 'React-hermes', :path => "#{prefix}/ReactCommon/hermes"
     if ENV['BUILD_HERMES_SOURCE'] == '1'
+      Pod::UI.puts "[Hermes] Building Hermes from source"
       hermes_source_path = downloadAndConfigureHermesSource(prefix)
       pod 'hermes-engine', :path => "#{hermes_source_path}/hermes-engine.podspec"
     else
+      Pod::UI.warn "[Hermes] Installing Hermes from CocoaPods. The `hermes-engine` pod has been deprecated and will not see future updates."
       pod 'hermes-engine', '~> 0.11.0'
     end
     pod 'libevent', '~> 2.1.12'
@@ -664,15 +666,14 @@ def downloadAndConfigureHermesSource(react_native_path)
   end
 
   hermes_tarball_url = hermes_tarball_base_url + hermes_tag
-  # GitHub does not provide a last-modified header, so we cannot rely on wget's --timestamping
   hermes_tag_sha = %x[git ls-remote https://github.com/facebook/hermes #{hermes_tag} | cut -f 1].strip
   hermes_tarball_path = "#{download_dir}/hermes-#{hermes_tag_sha}.tar.gz"
 
   if (!File.exist?(hermes_tarball_path))
-    Pod::UI.puts '[Hermes] Downloading Hermes source code'
-    system("wget -q -O #{hermes_tarball_path} #{hermes_tarball_url}")
+    Pod::UI.puts "[Hermes] Downloading Hermes source code (#{hermes_tarball_url})"
+    system("curl #{hermes_tarball_url} -Lo #{hermes_tarball_path}")
   end
-  system("tar -xzf #{hermes_tarball_path} --strip-components=1 -C #{hermes_dir}")
+  Pod::UI.puts "[Hermes] Extracting Hermes (#{hermes_tag_sha})"
 
   hermesc_macos_path = "#{sdks_dir}/hermesc/macos/build_host_hermesc"
   hermesc_macos_link = "#{hermes_dir}/utils/build_host_hermesc"
@@ -681,6 +682,9 @@ def downloadAndConfigureHermesSource(react_native_path)
     Pod::UI.puts "[Hermes] Using pre-compiled Hermes Compiler from #{hermesc_macos_path}"
     system("ln -s #{hermesc_macos_path} #{hermesc_macos_link}")
   end
+
+  # TODO: Integrate this temporary hermes-engine.podspec into the actual one located in facebook/hermes
+  system("cp #{sdks_dir}/hermes-engine.podspec #{hermes_dir}/hermes-engine.podspec")
 
   hermes_dir
 end

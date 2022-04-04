@@ -101,6 +101,8 @@ class Connection::Impl : public inspector::InspectorObserver,
   void handle(
       const m::heapProfiler::GetObjectByHeapObjectIdRequest &req) override;
   void handle(const m::heapProfiler::GetHeapObjectIdRequest &req) override;
+  void handle(const m::profiler::StartRequest &req) override;
+  void handle(const m::profiler::StopRequest &req) override;
   void handle(const m::runtime::CallFunctionOnRequest &req) override;
   void handle(const m::runtime::EvaluateRequest &req) override;
   void handle(const m::runtime::GetHeapUsageRequest &req) override;
@@ -134,6 +136,11 @@ class Connection::Impl : public inspector::InspectorObserver,
   void sendResponseToClientViaExecutor(const m::Response &resp);
   void sendNotificationToClientViaExecutor(const m::Notification &note);
   void sendErrorToClientViaExecutor(int id, const std::string &error);
+
+  template <typename C>
+  void runInExecutor(int id, C callback) {
+    folly::via(executor_.get(), [cb = std::move(callback)]() { cb(); });
+  }
 
   std::shared_ptr<RuntimeAdapter> runtimeAdapter_;
   std::string title_;
@@ -719,6 +726,60 @@ void Connection::Impl::handle(
         }
       })
       .thenError<std::exception>(sendErrorToClient(req.id));
+}
+
+void Connection::Impl::handle(const m::profiler::StartRequest &req) {
+  auto *hermesRT = dynamic_cast<HermesRuntime *>(&getRuntime());
+
+  if (!hermesRT) {
+    sendResponseToClientViaExecutor(m::makeErrorResponse(
+        req.id, m::ErrorCode::ServerError, "Unhandled Runtime kind."));
+    return;
+  }
+
+  runInExecutor(req.id, [this, id = req.id]() {
+    HermesRuntime::enableSamplingProfiler();
+    sendResponseToClient(m::makeOkResponse(id));
+  });
+}
+
+void Connection::Impl::handle(const m::profiler::StopRequest &req) {
+  auto *hermesRT = dynamic_cast<HermesRuntime *>(&getRuntime());
+
+  if (!hermesRT) {
+    sendResponseToClientViaExecutor(m::makeErrorResponse(
+        req.id, m::ErrorCode::ServerError, "Unhandled Runtime kind."));
+    return;
+  }
+
+  runInExecutor(req.id, [this, id = req.id, hermesRT]() {
+    HermesRuntime::disableSamplingProfiler();
+
+    std::ostringstream profileStream;
+    // HermesRuntime instance methods are usually unsafe to be called with a
+    // running VM, but sampledTraceToStreamInDevToolsFormat is an exception to
+    // that rule -- it synchronizes access to shared resources so it can be
+    // safely invoked with a running VM.
+    hermesRT->sampledTraceToStreamInDevToolsFormat(profileStream);
+
+    // Hermes can emit the proper format directly, but it still needs to
+    // be parsed into a dynamic.
+    try {
+      m::profiler::StopResponse resp;
+      resp.id = id;
+      // parseJson throws on errors, so make sure we don't crash the app
+      // if somehow the sampling profiler output is borked.
+      resp.profile = m::profiler::Profile(
+          folly::parseJson(std::move(profileStream).str()));
+      sendResponseToClient(resp);
+    } catch (const std::exception &) {
+      LOG(ERROR) << "Failed to parse Sampling Profiler output";
+      sendResponseToClient(m::makeErrorResponse(
+          id,
+          m::ErrorCode::InternalError,
+          "Hermes profile output could not be parsed."));
+    }
+  });
 }
 
 namespace {

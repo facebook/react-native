@@ -41,6 +41,17 @@ struct Bridging<std::optional<T>> {
     return bridging::fromJs<T>(rt, value, jsInvoker);
   }
 
+  template <typename U>
+  static std::optional<T> fromJs(
+      jsi::Runtime &rt,
+      const std::optional<U> &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    if (value) {
+      return bridging::fromJs<T>(rt, *value, jsInvoker);
+    }
+    return {};
+  }
+
   static jsi::Value toJs(
       jsi::Runtime &rt,
       const std::optional<T> &value,

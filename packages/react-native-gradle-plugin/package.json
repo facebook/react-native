@@ -23,8 +23,6 @@
     "src/main",
     "README.md"
   ],
-  "dependencies": {
-    "react-native-codegen": "*"
-  },
+  "dependencies": {},
   "devDependencies": {}
 }

@@ -14,15 +14,12 @@ if USE_FRAMEWORKS
   use_frameworks!
 end
 
-if ENV['USE_HERMES'] == '1'
-  puts "Using Hermes engine"
-end
-
 def pods(options = {})
   project 'RNTesterPods.xcodeproj'
 
   fabric_enabled = true
-  puts "Building RNTester with Fabric #{fabric_enabled ? "enabled" : "disabled"}."
+  hermes_enabled = ENV['USE_HERMES'] == '1'
+  puts "Building RNTester with Fabric #{fabric_enabled ? "enabled" : "disabled"}.#{hermes_enabled ? " Using Hermes engine." : ""}"
 
   prefix_path = "../.."
 
@@ -34,7 +31,7 @@ def pods(options = {})
   use_react_native!(
     path: prefix_path,
     fabric_enabled: fabric_enabled,
-    hermes_enabled: ENV['USE_HERMES'] == '1',
+    hermes_enabled: hermes_enabled,
     app_path: "#{Dir.pwd}",
     config_file_dir: "#{Dir.pwd}/node_modules",
   )
