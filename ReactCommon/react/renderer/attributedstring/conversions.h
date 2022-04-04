@@ -804,10 +804,10 @@ inline folly::dynamic toDynamic(
   values(
       "android_hyphenationFrequency",
       toString(paragraphAttributes.android_hyphenationFrequency));
-  if (paragraphAttributes.errorMessageAndroid) {
+  if (paragraphAttributes.errorMessageAndroid.has_value()) {
     values(
         "errorMessageAndroid",
-        *paragraphAttributes.errorMessageAndroid);
+        paragraphAttributes.errorMessageAndroid.value_or(""));
   }
   
   return values;

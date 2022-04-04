@@ -44,6 +44,7 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
   @VisibleForTesting public static final String PROP_TEXT = "text";
   @VisibleForTesting public static final String PROP_PLACEHOLDER = "placeholder";
   @VisibleForTesting public static final String PROP_SELECTION = "selection";
+  public static final String PROP_ERROR_MESSAGE = "errorMessageAndroid";
 
   // Represents the {@code text} property only, not possible nested content.
   private @Nullable String mText = null;
@@ -194,7 +195,7 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
     return mPlaceholder;
   }
 
-  @ReactProp(name = "errorMessageAndroid")
+  @ReactProp(name = PROP_ERROR_MESSAGE)
   public void setErrorMessage(String error) {
     mErrorMessage = error;
     markUpdated();
