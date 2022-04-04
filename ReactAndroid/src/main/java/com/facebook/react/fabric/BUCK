@@ -1,4 +1,7 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "YOGA_TARGET", "react_native_dep", "react_native_target", "rn_android_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "IS_OSS_BUILD", "YOGA_TARGET", "react_native_android_toplevel_dep", "react_native_dep", "react_native_target", "rn_android_library")
+
+# TODO(T115916830): Remove when Kotlin files are used in this module
+KOTLIN_STDLIB_DEPS = [react_native_android_toplevel_dep("third-party/kotlin:kotlin-stdlib")] if IS_OSS_BUILD else []
 
 rn_android_library(
     name = "fabric",
@@ -47,7 +50,5 @@ rn_android_library(
         react_native_target("java/com/facebook/react/views/view:view"),
         react_native_target("java/com/facebook/react/views/text:text"),
         react_native_target("java/com/facebook/react/touch:touch"),
-    ],
-    exported_deps = [
-    ],
+    ] + KOTLIN_STDLIB_DEPS,
 )

@@ -24,6 +24,7 @@ import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
 import java.lang.ref.WeakReference;
+import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
@@ -165,6 +166,13 @@ public class ReactContext extends ContextWrapper {
       raiseCatalystInstanceMissingException();
     }
     return mCatalystInstance.hasNativeModule(nativeModuleInterface);
+  }
+
+  public Collection<NativeModule> getNativeModules() {
+    if (mCatalystInstance == null) {
+      raiseCatalystInstanceMissingException();
+    }
+    return mCatalystInstance.getNativeModules();
   }
 
   /** @return the instance of the specified module interface associated with this ReactContext. */
