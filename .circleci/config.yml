@@ -469,6 +469,12 @@ jobs:
                 package: applesimutils
 
       - run:
+          name: Configure Node
+          # Sourcing find-node.sh will ensure nvm is set up.
+          # It also helps future invocation of find-node.sh prevent permission issue with nvm.sh.
+          command: source scripts/find-node-for-xcode.sh && nvm install 16 && nvm alias default 16
+
+      - run:
           name: Configure Watchman
           command: echo "{}" > .watchmanconfig
 
