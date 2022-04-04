@@ -1021,7 +1021,7 @@ jobs:
             $Env:PATH += ";$Env:CMAKE_DIR;$Env:MSBUILD_DIR"
             $Env:ICU_ROOT = "$Env:HERMES_WS_DIR\icu"
             cd $Env:HERMES_WS_DIR
-            cmake -S hermes -B build_release -G 'Visual Studio 16 2019' -DCMAKE_BUILD_TYPE=Release -DHERMES_ENABLE_WIN10_ICU_FALLBACK=OFF -DHERMES_GITHUB_RESOURCE_DIR=$Env:HERMES_WS_DIR\deps
+            cmake -S hermes -B build_release -G 'Visual Studio 16 2019' -DCMAKE_BUILD_TYPE=Release -DHERMES_ENABLE_WIN10_ICU_FALLBACK=OFF -DHERMES_GITHUB_RESOURCE_DIR="$Env:HERMES_WS_DIR\deps"
             if (-not $?) { throw "Failed to configure Hermes" }
             cd build_release
             cmake --build . --target github-cli-release --config Release
