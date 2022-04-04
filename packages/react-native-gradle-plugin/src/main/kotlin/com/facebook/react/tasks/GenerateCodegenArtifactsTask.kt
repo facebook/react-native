@@ -8,7 +8,7 @@
 package com.facebook.react.tasks
 
 import com.facebook.react.codegen.generator.JavaGenerator
-import com.facebook.react.utils.windowsAwareYarn
+import com.facebook.react.utils.windowsAwareCommandLine
 import org.gradle.api.GradleException
 import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
@@ -93,7 +93,7 @@ abstract class GenerateCodegenArtifactsTask : Exec() {
 
   internal fun setupCommandLine() {
     commandLine(
-        windowsAwareYarn(
+        windowsAwareCommandLine(
             *nodeExecutableAndArgs.get().toTypedArray(),
             reactNativeDir.file("scripts/generate-specs-cli.js").get().asFile.absolutePath,
             "--platform",
