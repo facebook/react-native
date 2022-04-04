@@ -10,10 +10,10 @@
 
 import NativePlatformConstantsIOS from './NativePlatformConstantsIOS';
 
-export type PlatformSelectSpec<D, N, I> = {
-  default?: D,
-  native?: N,
-  ios?: I,
+export type PlatformSelectSpec<T> = {
+  +default?: T,
+  +native?: T,
+  +ios?: T,
   ...
 };
 
@@ -65,7 +65,7 @@ const Platform = {
     }
     return false;
   },
-  select: <D, N, I>(spec: PlatformSelectSpec<D, N, I>): D | N | I =>
+  select: <T>(spec: PlatformSelectSpec<T>): T =>
     // $FlowFixMe[incompatible-return]
     'ios' in spec ? spec.ios : 'native' in spec ? spec.native : spec.default,
 };
