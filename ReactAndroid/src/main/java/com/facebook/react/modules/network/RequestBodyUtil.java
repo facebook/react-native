@@ -58,6 +58,17 @@ import okio.Source;
       if (fileContentUri.getScheme().startsWith("http")) {
         return getDownloadFileInputStream(context, fileContentUri);
       }
+
+      if (fileContentUriStr.startsWith("data:")) {
+        byte[] decodedDataUrString = Base64.decode(fileContentUriStr.split(",")[1], Base64.DEFAULT);
+        Bitmap bitMap = BitmapFactory.decodeByteArray(decodedDataUrString, 0, decodedDataUrString.length);
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        bitMap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);  
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        InputStream inputStream = new ByteArrayInputStream(bytes.toByteArray());
+        return inputStream;
+      }
+      
       return context.getContentResolver().openInputStream(fileContentUri);
     } catch (Exception e) {
       FLog.e(ReactConstants.TAG, "Could not retrieve file for contentUri " + fileContentUriStr, e);
