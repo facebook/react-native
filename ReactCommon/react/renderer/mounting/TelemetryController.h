@@ -18,6 +18,9 @@ namespace react {
 
 class MountingCoordinator;
 
+using MountingTransactionCallback = std::function<
+    void(MountingTransaction const &transaction, SurfaceTelemetry const &surfaceTelemetry)>;
+
 /*
  * Provides convenient tools for aggregating and accessing telemetry data
  * associated with running Surface.
@@ -42,11 +45,9 @@ class TelemetryController final {
    * Calls `MountingCoordinator::pullTransaction()` and aggregates telemetry.
    */
   bool pullTransaction(
-      std::function<void(MountingTransaction const &transaction)> const
-          &willMount,
-      std::function<void(MountingTransaction const &transaction)> const
-          &doMount,
-      std::function<void(MountingTransaction const &transaction)> const &didMount)
+      MountingTransactionCallback const &willMount,
+      MountingTransactionCallback const &doMount,
+      MountingTransactionCallback const &didMount)
       const;
 
  private:

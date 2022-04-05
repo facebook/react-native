@@ -266,15 +266,15 @@ static void RCTPerformMountInstructions(
   auto surfaceId = mountingCoordinator->getSurfaceId();
 
   mountingCoordinator->getTelemetryController().pullTransaction(
-      [&](MountingTransaction const &transaction) {
+      [&](MountingTransaction const &transaction, SurfaceTelemetry const &surfaceTelemetry) {
         [self.delegate mountingManager:self willMountComponentsWithRootTag:surfaceId];
-        _observerCoordinator.notifyObserversMountingTransactionWillMount(transaction);
+        _observerCoordinator.notifyObserversMountingTransactionWillMount(transaction, surfaceTelemetry);
       },
-      [&](MountingTransaction const &transaction) {
+      [&](MountingTransaction const &transaction, SurfaceTelemetry const &surfaceTelemetry) {
         RCTPerformMountInstructions(transaction.getMutations(), _componentViewRegistry, _observerCoordinator, surfaceId);
       },
-      [&](MountingTransaction const &transaction) {
-        _observerCoordinator.notifyObserversMountingTransactionDidMount(transaction);
+      [&](MountingTransaction const &transaction, SurfaceTelemetry const &surfaceTelemetry) {
+        _observerCoordinator.notifyObserversMountingTransactionDidMount(transaction, surfaceTelemetry);
         [self.delegate mountingManager:self didMountComponentsWithRootTag:surfaceId];
       });
 }

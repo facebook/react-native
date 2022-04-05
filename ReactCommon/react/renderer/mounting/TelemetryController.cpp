@@ -17,9 +17,9 @@ TelemetryController::TelemetryController(
     : mountingCoordinator_(mountingCoordinator) {}
 
 bool TelemetryController::pullTransaction(
-    std::function<void(MountingTransaction const &transaction)> const &willMount,
-    std::function<void(MountingTransaction const &transaction)> const &doMount,
-    std::function<void(MountingTransaction const &transaction)> const &didMount)
+    MountingTransactionCallback const &willMount,
+    MountingTransactionCallback const &doMount,
+    MountingTransactionCallback const &didMount)
     const {
   auto optional = mountingCoordinator_.pullTransaction();
   if (!optional.has_value()) {
@@ -35,15 +35,15 @@ bool TelemetryController::pullTransaction(
   auto compoundTelemetry = compoundTelemetry_;
   mutex_.unlock();
 
-  willMount(transaction);
+  willMount(transaction, compoundTelemetry);
 
   telemetry.willMount();
-  doMount(transaction);
+  doMount(transaction, compoundTelemetry);
   telemetry.didMount();
 
   compoundTelemetry.incorporate(telemetry, numberOfMutations);
 
-  didMount(transaction);
+  didMount(transaction, compoundTelemetry);
 
   mutex_.lock();
   compoundTelemetry_ = compoundTelemetry;
