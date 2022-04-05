@@ -13,8 +13,8 @@
 #include <jsi/jsi.h>
 
 #include <ReactCommon/CallInvoker.h>
-#include <react/bridging/CallbackWrapper.h>
-#include <react/bridging/LongLivedObject.h>
+#include <CallbackWrapper.h>
+#include <LongLivedObject.h>
 
 namespace facebook {
 namespace react {
