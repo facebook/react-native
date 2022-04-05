@@ -61,4 +61,4 @@ void react_native_assert_fail(
 
 #endif // platforms besides __ANDROID__
 
-#endif // REACT_NATIVE_DEBUG 
+#endif // REACT_NATIVE_DEBUG
