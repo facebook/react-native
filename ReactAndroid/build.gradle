@@ -244,13 +244,7 @@ final def extractNativeDependencies = tasks.register('extractNativeDependencies'
 }
 
 task installArchives {
-    dependsOn("publishReleasePublicationToNpmRepository")
-}
-
-// Creating sources with comments
-task androidSourcesJar(type: Jar) {
-  classifier = 'sources'
-  from android.sourceSets.main.java.srcDirs
+    dependsOn("publishAllPublicationsToNpmRepository")
 }
 
 android {
@@ -358,11 +352,18 @@ android {
     configurations {
         extractHeaders
         extractJNI
-        javadocDeps.extendsFrom api
     }
 
     buildFeatures {
         prefab true
+    }
+
+    publishing {
+        multipleVariants {
+            withSourcesJar()
+            withJavadocJar()
+            allVariants()
+        }
     }
 }
 
@@ -389,8 +390,6 @@ dependencies {
     // It's up to the consumer to decide if hermes should be included or not.
     // Therefore hermes-engine is a compileOnly dependency.
     compileOnly(project(":ReactAndroid:hermes-engine"))
-
-    javadocDeps("com.squareup:javapoet:1.13.0")
 
     testImplementation("junit:junit:${JUNIT_VERSION}")
     testImplementation("org.powermock:powermock-api-mockito2:${POWERMOCK_VERSION}")
@@ -431,11 +430,8 @@ afterEvaluate {
     publishing {
         publications {
             release(MavenPublication) {
-                // Applies the component for the release build variant.
-                from components.release
-
-                // Add additional sourcesJar to artifacts
-                artifact(androidSourcesJar)
+                // We do a multi variant release
+                from components.default
 
                 // You can then customize attributes of the publication as shown below.
                 artifactId = POM_ARTIFACT_ID
