@@ -14,6 +14,7 @@ import type {
   BlurEvent,
   FocusEvent,
   MouseEvent,
+  PointerEvent,
   PressEvent,
   Layout,
   LayoutEvent,
@@ -84,8 +85,28 @@ type DirectEventProps = $ReadOnly<{|
 |}>;
 
 type MouseEventProps = $ReadOnly<{|
-  onMouseEnter?: (event: MouseEvent) => void,
-  onMouseLeave?: (event: MouseEvent) => void,
+  onMouseEnter?: ?(event: MouseEvent) => void,
+  onMouseLeave?: ?(event: MouseEvent) => void,
+|}>;
+
+type PointerEventProps = $ReadOnly<{|
+  onPointerEnter?: ?(event: PointerEvent) => void,
+  onPointerLeave?: ?(event: PointerEvent) => void,
+  onPointerMove?: ?(event: PointerEvent) => void,
+  onPointerCancel?: ?(e: PointerEvent) => void,
+  onPointerCancelCapture?: ?(e: PointerEvent) => void,
+  onPointerDown?: ?(e: PointerEvent) => void,
+  onPointerDownCapture?: ?(e: PointerEvent) => void,
+  onPointerUp?: ?(e: PointerEvent) => void,
+  onPointerUpCapture?: ?(e: PointerEvent) => void,
+
+  // FIXME: these events are temporary while we converge pointer event handling
+  onPointerEnter2?: ?(e: PointerEvent) => void,
+  onPointerEnter2Capture?: ?(e: PointerEvent) => void,
+  onPointerLeave2?: ?(e: PointerEvent) => void,
+  onPointerLeave2Capture?: ?(e: PointerEvent) => void,
+  onPointerMove2?: ?(e: PointerEvent) => void,
+  onPointerMove2Capture?: ?(e: PointerEvent) => void,
 |}>;
 
 type TouchEventProps = $ReadOnly<{|
@@ -381,6 +402,7 @@ export type ViewProps = $ReadOnly<{|
   ...DirectEventProps,
   ...GestureResponderEventProps,
   ...MouseEventProps,
+  ...PointerEventProps,
   ...TouchEventProps,
   ...AndroidViewProps,
   ...IOSViewProps,

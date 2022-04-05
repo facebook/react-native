@@ -41,6 +41,7 @@ def rn_codegen_cli():
                 "src/cli/combine/combine_js_to_schema.sh",
                 ":yarn-workspace",
                 "//xplat/js:setup_env",
+                "//xplat/js:setup_env_vars",
             ],
             visibility = ["PUBLIC"],
         )

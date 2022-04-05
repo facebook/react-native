@@ -38,6 +38,7 @@
     "README.md",
     "rn-get-polyfills.js",
     "scripts/compose-source-maps.js",
+    "scripts/find-node-for-xcode.sh",
     "scripts/generate-artifacts.js",
     "scripts/generate-provider-cli.js",
     "scripts/generate-specs-cli.js",
@@ -106,9 +107,9 @@
     "invariant": "^2.2.4",
     "jsc-android": "^250230.2.1",
     "memoize-one": "^5.0.0",
-    "metro-react-native-babel-transformer": "0.69.1",
-    "metro-runtime": "0.69.1",
-    "metro-source-map": "0.69.1",
+    "metro-react-native-babel-transformer": "0.70.0",
+    "metro-runtime": "0.70.0",
+    "metro-source-map": "0.70.0",
     "nullthrows": "^1.1.1",
     "pretty-format": "^26.5.2",
     "promise": "^8.0.3",
@@ -124,7 +125,7 @@
     "ws": "^6.1.4"
   },
   "devDependencies": {
-    "flow-bin": "^0.174.1",
+    "flow-bin": "^0.175.0",
     "react": "17.0.2"
   },
   "codegenConfig": {

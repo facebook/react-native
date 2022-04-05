@@ -9,6 +9,7 @@
 
 #include <jsi/jsi.h>
 
+#include <optional>
 #include <type_traits>
 
 namespace facebook::react::bridging {
@@ -24,13 +25,51 @@ inline constexpr bool is_jsi_v =
     std::is_base_of_v<jsi::Object, remove_cvref_t<T>>;
 
 template <typename T>
+struct Converter;
+
+template <typename T>
 struct ConverterBase {
+  using BaseT = remove_cvref_t<T>;
+
   ConverterBase(jsi::Runtime &rt, T &&value)
       : rt_(rt), value_(std::forward<T>(value)) {}
 
-  operator T() && {
-    return std::forward<T>(this->value_);
+  operator BaseT() && {
+    if constexpr (std::is_lvalue_reference_v<T>) {
+      // Copy the reference into a Value that then can be moved from.
+      auto value = jsi::Value(rt_, value_);
+
+      if constexpr (std::is_same_v<BaseT, jsi::Value>) {
+        return std::move(value);
+      } else if constexpr (std::is_same_v<BaseT, jsi::String>) {
+        return std::move(value).getString(rt_);
+      } else if constexpr (std::is_same_v<BaseT, jsi::Object>) {
+        return std::move(value).getObject(rt_);
+      } else if constexpr (std::is_same_v<BaseT, jsi::Array>) {
+        return std::move(value).getObject(rt_).getArray(rt_);
+      } else if constexpr (std::is_same_v<BaseT, jsi::Function>) {
+        return std::move(value).getObject(rt_).getFunction(rt_);
+      }
+    } else {
+      return std::move(value_);
+    }
   }
+
+  template <
+      typename U,
+      std::enable_if_t<
+          std::is_lvalue_reference_v<T> &&
+              // Ensure non-reference type can be converted to the desired type.
+              std::is_convertible_v<Converter<BaseT>, U>,
+          int> = 0>
+  operator U() && {
+    return Converter<BaseT>(rt_, std::move(*this).operator BaseT());
+  }
+
+  template <
+      typename U,
+      std::enable_if_t<is_jsi_v<T> && std::is_same_v<U, jsi::Value>, int> = 0>
+  operator U() && = delete; // Prevent unwanted upcasting of JSI values.
 
  protected:
   jsi::Runtime &rt_;
@@ -77,32 +116,28 @@ struct Converter<jsi::Object> : public ConverterBase<jsi::Object> {
 };
 
 template <typename T>
-struct Converter<T &> {
-  Converter(jsi::Runtime &rt, T &value) : rt_(rt), value_(value) {}
+struct Converter<std::optional<T>> : public ConverterBase<jsi::Value> {
+  Converter(jsi::Runtime &rt, std::optional<T> value)
+      : ConverterBase(rt, value ? std::move(*value) : jsi::Value::null()) {}
 
-  operator T() && {
-    // Copy the reference into a Value that then can be moved from.
-    return Converter<jsi::Value>(rt_, jsi::Value(rt_, value_));
+  operator std::optional<T>() && {
+    if (value_.isNull() || value_.isUndefined()) {
+      return {};
+    }
+    return std::move(value_);
   }
-
-  template <
-      typename U,
-      // Ensure the non-reference type can be converted to the desired type.
-      std::enable_if_t<
-          std::is_convertible_v<Converter<std::remove_cv_t<T>>, U>,
-          int> = 0>
-  operator U() && {
-    return Converter<jsi::Value>(rt_, jsi::Value(rt_, value_));
-  }
-
- private:
-  jsi::Runtime &rt_;
-  const T &value_;
 };
 
 template <typename T, std::enable_if_t<is_jsi_v<T>, int> = 0>
 auto convert(jsi::Runtime &rt, T &&value) {
   return Converter<T>(rt, std::forward<T>(value));
+}
+
+template <
+    typename T,
+    std::enable_if_t<is_jsi_v<T> || std::is_scalar_v<T>, int> = 0>
+auto convert(jsi::Runtime &rt, std::optional<T> value) {
+  return Converter<std::optional<T>>(rt, std::move(value));
 }
 
 template <typename T, std::enable_if_t<std::is_scalar_v<T>, int> = 0>

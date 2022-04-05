@@ -98,7 +98,7 @@ void UIManagerBinding::dispatchEvent(
     std::string const &type,
     ReactEventPriority priority,
     ValueFactory const &payloadFactory) const {
-  SystraceSection s("UIManagerBinding::dispatchEvent");
+  SystraceSection s("UIManagerBinding::dispatchEvent", "type", type);
 
   auto payload = payloadFactory(runtime);
 

@@ -1,5 +1,5 @@
 // Copyright (c) Meta Platforms, Inc. and affiliates. All Rights Reserved.
-// @generated SignedSource<<130ce3da2ad67004eb7bb91f19028a89>>
+// @generated SignedSource<<f6f9a72f332587809b4e50ab054e0a74>>
 
 #include "MessageTypes.h"
 
@@ -60,6 +60,8 @@ std::unique_ptr<Request> Request::fromJsonThrowOnError(const std::string &str) {
        makeUnique<heapProfiler::StopTrackingHeapObjectsRequest>},
       {"HeapProfiler.takeHeapSnapshot",
        makeUnique<heapProfiler::TakeHeapSnapshotRequest>},
+      {"Profiler.start", makeUnique<profiler::StartRequest>},
+      {"Profiler.stop", makeUnique<profiler::StopRequest>},
       {"Runtime.callFunctionOn", makeUnique<runtime::CallFunctionOnRequest>},
       {"Runtime.evaluate", makeUnique<runtime::EvaluateRequest>},
       {"Runtime.getHeapUsage", makeUnique<runtime::GetHeapUsageRequest>},
@@ -273,6 +275,59 @@ dynamic heapProfiler::SamplingHeapProfile::toDynamic() const {
 
   put(obj, "head", head);
   put(obj, "samples", samples);
+  return obj;
+}
+
+profiler::PositionTickInfo::PositionTickInfo(const dynamic &obj) {
+  assign(line, obj, "line");
+  assign(ticks, obj, "ticks");
+}
+
+dynamic profiler::PositionTickInfo::toDynamic() const {
+  dynamic obj = dynamic::object;
+
+  put(obj, "line", line);
+  put(obj, "ticks", ticks);
+  return obj;
+}
+
+profiler::ProfileNode::ProfileNode(const dynamic &obj) {
+  assign(id, obj, "id");
+  assign(callFrame, obj, "callFrame");
+  assign(hitCount, obj, "hitCount");
+  assign(children, obj, "children");
+  assign(deoptReason, obj, "deoptReason");
+  assign(positionTicks, obj, "positionTicks");
+}
+
+dynamic profiler::ProfileNode::toDynamic() const {
+  dynamic obj = dynamic::object;
+
+  put(obj, "id", id);
+  put(obj, "callFrame", callFrame);
+  put(obj, "hitCount", hitCount);
+  put(obj, "children", children);
+  put(obj, "deoptReason", deoptReason);
+  put(obj, "positionTicks", positionTicks);
+  return obj;
+}
+
+profiler::Profile::Profile(const dynamic &obj) {
+  assign(nodes, obj, "nodes");
+  assign(startTime, obj, "startTime");
+  assign(endTime, obj, "endTime");
+  assign(samples, obj, "samples");
+  assign(timeDeltas, obj, "timeDeltas");
+}
+
+dynamic profiler::Profile::toDynamic() const {
+  dynamic obj = dynamic::object;
+
+  put(obj, "nodes", nodes);
+  put(obj, "startTime", startTime);
+  put(obj, "endTime", endTime);
+  put(obj, "samples", samples);
+  put(obj, "timeDeltas", timeDeltas);
   return obj;
 }
 
@@ -974,6 +1029,44 @@ void heapProfiler::TakeHeapSnapshotRequest::accept(
   handler.handle(*this);
 }
 
+profiler::StartRequest::StartRequest() : Request("Profiler.start") {}
+
+profiler::StartRequest::StartRequest(const dynamic &obj)
+    : Request("Profiler.start") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+}
+
+dynamic profiler::StartRequest::toDynamic() const {
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  return obj;
+}
+
+void profiler::StartRequest::accept(RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
+profiler::StopRequest::StopRequest() : Request("Profiler.stop") {}
+
+profiler::StopRequest::StopRequest(const dynamic &obj)
+    : Request("Profiler.stop") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+}
+
+dynamic profiler::StopRequest::toDynamic() const {
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  return obj;
+}
+
+void profiler::StopRequest::accept(RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
 runtime::CallFunctionOnRequest::CallFunctionOnRequest()
     : Request("Runtime.callFunctionOn") {}
 
@@ -1284,6 +1377,23 @@ heapProfiler::StopSamplingResponse::StopSamplingResponse(const dynamic &obj) {
 }
 
 dynamic heapProfiler::StopSamplingResponse::toDynamic() const {
+  dynamic res = dynamic::object;
+  put(res, "profile", profile);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "result", std::move(res));
+  return obj;
+}
+
+profiler::StopResponse::StopResponse(const dynamic &obj) {
+  assign(id, obj, "id");
+
+  dynamic res = obj.at("result");
+  assign(profile, res, "profile");
+}
+
+dynamic profiler::StopResponse::toDynamic() const {
   dynamic res = dynamic::object;
   put(res, "profile", profile);
 

@@ -433,7 +433,10 @@ void ShadowTree::commitEmptyTree() const {
 
 void ShadowTree::emitLayoutEvents(
     std::vector<LayoutableShadowNode const *> &affectedLayoutableNodes) const {
-  SystraceSection s("ShadowTree::emitLayoutEvents");
+  SystraceSection s(
+      "ShadowTree::emitLayoutEvents",
+      "affectedLayoutableNodes",
+      affectedLayoutableNodes.size());
 
   for (auto const *layoutableNode : affectedLayoutableNodes) {
     // Only instances of `ViewShadowNode` (and subclasses) are supported.

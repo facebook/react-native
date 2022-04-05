@@ -32,12 +32,12 @@ StateWrapperImpl::getStateDataImpl() {
   return readableNativeMap;
 }
 
-jni::local_ref<ReadableMapBuffer::jhybridobject>
+jni::local_ref<JReadableMapBuffer::jhybridobject>
 StateWrapperImpl::getStateMapBufferDataImpl() {
   MapBuffer map = state_->getMapBuffer();
-  auto ReadableMapBuffer =
-      ReadableMapBuffer::createWithContents(std::move(map));
-  return ReadableMapBuffer;
+  auto readableMapBuffer =
+      JReadableMapBuffer::createWithContents(std::move(map));
+  return readableMapBuffer;
 }
 
 void StateWrapperImpl::updateStateImpl(NativeMap *map) {

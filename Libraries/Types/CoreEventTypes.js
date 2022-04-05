@@ -83,6 +83,18 @@ export type TextLayoutEvent = SyntheticEvent<
   |}>,
 >;
 
+export type PointerEvent = ResponderSyntheticEvent<
+  $ReadOnly<{|
+    pointerId: number,
+    pressure: number,
+    pointerType: string,
+    clientX: number,
+    clientY: number,
+    target: ?number,
+    timestamp: number,
+  |}>,
+>;
+
 export type PressEvent = ResponderSyntheticEvent<
   $ReadOnly<{|
     changedTouches: $ReadOnlyArray<$PropertyType<PressEvent, 'nativeEvent'>>,

@@ -34,7 +34,9 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.uimanager.FabricViewStateManager;
+import com.facebook.react.uimanager.JSPointerDispatcher;
 import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.RootView;
@@ -413,9 +415,13 @@ public class ReactModalHostView extends ViewGroup
     private final FabricViewStateManager mFabricViewStateManager = new FabricViewStateManager();
 
     private final JSTouchDispatcher mJSTouchDispatcher = new JSTouchDispatcher(this);
+    @Nullable private JSPointerDispatcher mJSPointerDispatcher;
 
     public DialogRootViewGroup(Context context) {
       super(context);
+      if (ReactFeatureFlags.dispatchPointerEvents) {
+        mJSPointerDispatcher = new JSPointerDispatcher(this);
+      }
     }
 
     private void setEventDispatcher(EventDispatcher eventDispatcher) {
@@ -515,12 +521,18 @@ public class ReactModalHostView extends ViewGroup
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
       mJSTouchDispatcher.handleTouchEvent(event, mEventDispatcher);
+      if (mJSPointerDispatcher != null) {
+        mJSPointerDispatcher.handleMotionEvent(event, mEventDispatcher);
+      }
       return super.onInterceptTouchEvent(event);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
       mJSTouchDispatcher.handleTouchEvent(event, mEventDispatcher);
+      if (mJSPointerDispatcher != null) {
+        mJSPointerDispatcher.handleMotionEvent(event, mEventDispatcher);
+      }
       super.onTouchEvent(event);
       // In case when there is no children interested in handling touch event, we return true from
       // the root view in order to receive subsequent events related to that gesture
@@ -528,18 +540,40 @@ public class ReactModalHostView extends ViewGroup
     }
 
     @Override
+    public boolean onInterceptHoverEvent(MotionEvent event) {
+      if (mJSPointerDispatcher != null) {
+        mJSPointerDispatcher.handleMotionEvent(event, mEventDispatcher);
+      }
+      return super.onHoverEvent(event);
+    }
+
+    @Override
+    public boolean onHoverEvent(MotionEvent event) {
+      if (mJSPointerDispatcher != null) {
+        mJSPointerDispatcher.handleMotionEvent(event, mEventDispatcher);
+      }
+      return super.onHoverEvent(event);
+    }
+
+    @Override
     public void onChildStartedNativeGesture(MotionEvent ev) {
-      mJSTouchDispatcher.onChildStartedNativeGesture(ev, mEventDispatcher);
+      this.onChildStartedNativeGesture(null, ev);
     }
 
     @Override
     public void onChildStartedNativeGesture(View childView, MotionEvent ev) {
       mJSTouchDispatcher.onChildStartedNativeGesture(ev, mEventDispatcher);
+      if (mJSPointerDispatcher != null) {
+        mJSPointerDispatcher.onChildStartedNativeGesture(childView, ev, mEventDispatcher);
+      }
     }
 
     @Override
     public void onChildEndedNativeGesture(View childView, MotionEvent ev) {
       mJSTouchDispatcher.onChildEndedNativeGesture(ev, mEventDispatcher);
+      if (mJSPointerDispatcher != null) {
+        mJSPointerDispatcher.onChildEndedNativeGesture();
+      }
     }
 
     @Override

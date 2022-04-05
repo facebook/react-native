@@ -11,6 +11,7 @@
 #import <UIKit/UIKit.h>
 
 #import <ComponentKit/CKComponentSubclass.h>
+#import <React/RCTFabricSurface.h>
 #import <React/RCTSurface.h>
 #import <React/RCTSurfaceView.h>
 
@@ -29,7 +30,7 @@
   return [RCTSurfaceHostingComponentState new];
 }
 
-+ (instancetype)newWithSurface:(RCTSurface *)surface options:(RCTSurfaceHostingComponentOptions)options
++ (instancetype)newWithSurface:(id<RCTSurfaceProtocol>)surface options:(RCTSurfaceHostingComponentOptions)options
 {
   CKComponentScope scope(self, surface);
 
@@ -76,8 +77,20 @@
 
   // Just in case of the very first building pass, we give React Native a chance
   // to prepare its internals for coming synchronous measuring.
-  [_surface synchronouslyWaitForStage:RCTSurfaceStageSurfaceDidInitialLayout
-                              timeout:_options.synchronousLayoutingTimeout];
+  if ([_surface isKindOfClass:[RCTSurface class]]) {
+    // Legacy Pre-Fabric Surface
+    [(RCTSurface *)_surface synchronouslyWaitForStage:RCTSurfaceStageSurfaceDidInitialLayout
+                                      timeout:_options.synchronousLayoutingTimeout];
+  } else if ([_surface isKindOfClass:[RCTFabricSurface class]]) {
+    // Fabric Surface
+    // Hack: Increase timeout because RCTFabricSurface stage will be RCTSurfaceStageSurfaceDidInitialLayout
+    // before mounting has finished, which can cause sizeThatFitsMinimumSize to return the wrong value.
+    // Safe hack because timeout length can be increased without making the component seem slower.
+    // However if timeout length is less than the time to mount a surface, the size may be incorrect.
+    // TODO (T115399546) Allow RCTFabricSurface synchronouslyWaitFor to wait for mounting completion stage
+    NSTimeInterval timeout = 20;
+    [(RCTFabricSurface *)_surface synchronouslyWaitFor:timeout];
+  }
 
   CGSize fittingSize = CGSizeZero;
   if (_surface.stage & RCTSurfaceStageSurfaceDidInitialLayout) {

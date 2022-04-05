@@ -9,6 +9,7 @@
 
 #import <React/RCTLog.h>
 #import <React/RCTSurface.h>
+#import <React/RCTSurfaceHostingView.h>
 
 @implementation RCTLogBoxView {
   RCTSurface *_surface;
@@ -32,8 +33,25 @@
   self.rootViewController = _rootViewController;
 }
 
+- (instancetype)initWithFrame:(CGRect)frame surfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter
+{
+  if (self = [super initWithFrame:frame]) {
+    id<RCTSurfaceProtocol> surface = [surfacePresenter createFabricSurfaceForModuleName:@"LogBox"
+                                                                      initialProperties:@{}];
+    [surface start];
+    RCTSurfaceHostingView *rootView = [[RCTSurfaceHostingView alloc]
+        initWithSurface:surface
+        sizeMeasureMode:RCTSurfaceSizeMeasureModeWidthExact | RCTSurfaceSizeMeasureModeHeightExact];
+
+    [self createRootViewController:rootView];
+  }
+  return self;
+}
+
 - (instancetype)initWithWindow:(UIWindow *)window bridge:(RCTBridge *)bridge
 {
+  RCTErrorNewArchitectureValidation(RCTNotAllowedInAppWideFabric, @"RCTLogBoxView", nil);
+
   if (@available(iOS 13.0, *)) {
     self = [super initWithWindowScene:window.windowScene];
   } else {

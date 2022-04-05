@@ -7,14 +7,13 @@
 
 #import <ComponentKit/CKComponent.h>
 #import <RCTSurfaceHostingComponent/RCTSurfaceHostingComponentOptions.h>
-
-@class RCTSurface;
+#import <React/RCTSurfaceProtocol.h>
 
 /**
  * ComponentKit component represents given Surface instance.
  */
 @interface RCTSurfaceHostingComponent : CKComponent
 
-+ (instancetype)newWithSurface:(RCTSurface *)surface options:(RCTSurfaceHostingComponentOptions)options;
++ (instancetype)newWithSurface:(id<RCTSurfaceProtocol>)surface options:(RCTSurfaceHostingComponentOptions)options;
 
 @end

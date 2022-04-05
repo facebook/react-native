@@ -20,23 +20,23 @@
 namespace facebook {
 namespace react {
 
-class ReadableMapBuffer;
+class JReadableMapBuffer;
 
 // clang-format off
 
 /**
  * MapBuffer is an optimized sparse array format for transferring props-like
- * between C++ and other VMs. The implementation of this map is optimized to:
+ * objects between C++ and other VMs. The implementation of this map is optimized to:
  * - be compact to optimize space when sparse (sparse is the common case).
  * - be accessible through JNI with zero/minimal copying via ByteBuffer.
- * - Have excellent C++ single-write and many-read performance by maximizing
+ * - have excellent C++ single-write and many-read performance by maximizing
  *   CPU cache performance through compactness, data locality, and fixed offsets
  *   where possible.
  * - be optimized for iteration and intersection against other maps, but with
  *   reasonably good random access as well.
- * - Work recursively for nested maps/arrays.
- * - Supports dynamic types that map to JSON.
- * - Don't require mutability - single-write on creation.
+ * - work recursively for nested maps/arrays.
+ * - support dynamic types that map to JSON.
+ * - don't require mutability/copy - single-write on creation and move semantics.
  * - have minimal APK size and build time impact.
  *
  * MapBuffer data is stored in a continuous chunk of memory (bytes_ field below) with the following layout:
@@ -96,7 +96,7 @@ class MapBuffer {
 
   /**
    * Data types available for serialization in MapBuffer
-   * Keep in sync with `DataType` enum in `ReadableMapBuffer.java`, which
+   * Keep in sync with `DataType` enum in `JReadableMapBuffer.java`, which
    * expects the same values after reading them through JNI.
    */
   enum DataType : uint16_t {
@@ -144,7 +144,7 @@ class MapBuffer {
 
   int32_t getKeyBucket(MapBuffer::Key key) const;
 
-  friend ReadableMapBuffer;
+  friend JReadableMapBuffer;
 };
 
 } // namespace react

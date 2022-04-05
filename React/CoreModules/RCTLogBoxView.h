@@ -6,6 +6,7 @@
  */
 
 #import <React/RCTBridge.h>
+#import <React/RCTSurfacePresenterStub.h>
 #import <React/RCTSurfaceView.h>
 #import <UIKit/UIKit.h>
 
@@ -14,6 +15,8 @@
 - (instancetype)initWithFrame:(CGRect)frame;
 
 - (void)createRootViewController:(UIView *)view;
+
+- (instancetype)initWithFrame:(CGRect)frame surfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter;
 
 - (instancetype)initWithWindow:(UIWindow *)window bridge:(RCTBridge *)bridge;
 
