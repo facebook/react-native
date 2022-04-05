@@ -9,6 +9,9 @@ package com.facebook.react.modules.network;
 
 import android.content.Context;
 import android.net.Uri;
+import android.graphics.Bitmap; 
+import android.graphics.BitmapFactory;
+import android.util.Base64;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.common.ReactConstants;
@@ -18,6 +21,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ByteArrayInputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.nio.channels.Channels;
@@ -68,7 +72,7 @@ import okio.Source;
         InputStream inputStream = new ByteArrayInputStream(bytes.toByteArray());
         return inputStream;
       }
-      
+
       return context.getContentResolver().openInputStream(fileContentUri);
     } catch (Exception e) {
       FLog.e(ReactConstants.TAG, "Could not retrieve file for contentUri " + fileContentUriStr, e);
