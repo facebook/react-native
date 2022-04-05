@@ -98,7 +98,7 @@ rn_xplat_cxx_library2(
     # it's linked in your app, transparently use it".
     labels = [
         "depslint_never_remove",
-        "pfh:ReactNative_CommonInfrastructurePlaceholde",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode() + [
@@ -156,7 +156,7 @@ rn_xplat_cxx_library2(
         "$SDKROOT/System/Library/Frameworks/Foundation.framework",
     ],
     labels = [
-        "pfh:ReactNative_CommonInfrastructurePlaceholde",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode() + ["-DWITH_FBSYSTRACE=1"],
@@ -196,7 +196,7 @@ rn_xplat_cxx_library2(
         "$SDKROOT/System/Library/Frameworks/Foundation.framework",
     ],
     labels = [
-        "pfh:ReactNative_CommonInfrastructurePlaceholde",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode(),
@@ -224,7 +224,7 @@ rn_xplat_cxx_library2(
     contacts = ["oncall+react_native@xmail.facebook.com"],
     fbobjc_enable_exceptions = True,
     labels = [
-        "pfh:ReactNative_CommonInfrastructurePlaceholde",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode(),
@@ -429,7 +429,7 @@ rn_xplat_cxx_library2(
     labels = [
         "depslint_never_add",
         "depslint_never_remove",  # Some old NativeModule still relies on +load unfortunately.
-        "pfh:ReactNative_CommonInfrastructurePlaceholde",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     platform_preprocessor_flags = [(
@@ -520,7 +520,7 @@ rn_xplat_cxx_library2(
     header_path_prefix = "React",
     labels = [
         "disable_plugins_only_validation",
-        "pfh:ReactNative_CommonInfrastructurePlaceholde",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     plugins = [
@@ -604,7 +604,7 @@ rn_apple_library(
     ],
     inherited_buck_flags = get_static_library_ios_flags(),
     labels = [
-        "pfh:ReactNative_CommonInfrastructurePlaceholde",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode(),
@@ -676,7 +676,7 @@ rn_apple_library(
     contacts = ["oncall+react_native@xmail.facebook.com"],
     labels = [
         "disable_plugins_only_validation",
-        "pfh:ReactNative_CommonInfrastructurePlaceholde",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     plugins = [react_fabric_component_plugin_provider("Image", "RCTImageCls")],
@@ -708,7 +708,7 @@ rn_xplat_cxx_library2(
     compiler_flags = ["-Wall"],
     contacts = ["oncall+react_native@xmail.facebook.com"],
     labels = [
-        "pfh:ReactNative_CommonInfrastructurePlaceholde",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     visibility = ["PUBLIC"],
@@ -740,7 +740,7 @@ rn_library(
         ],
     ),
     labels = [
-        "pfh:ReactNative_CommonInfrastructurePlaceholde",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.core",
     ],
     visibility = ["PUBLIC"],
@@ -781,7 +781,7 @@ rn_codegen(
     ios_assume_nonnull = False,
     library_labels = [
         "supermodule:xplat/default/public.react_native.infra",
-        "pfh:ReactNative_CommonInfrastructurePlaceholde",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
     ],
     native_module_spec_name = "FBReactNativeSpec",
     src_prefix = "Libraries/",
@@ -794,7 +794,7 @@ rn_codegen(
     ios_assume_nonnull = False,
     library_labels = [
         "supermodule:xplat/default/public.react_native.infra",
-        "pfh:ReactNative_CommonInfrastructurePlaceholde",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
     ],
     src_prefix = "Libraries/",
 )
@@ -829,7 +829,7 @@ rn_apple_library(
         "depslint_never_remove",  # Some old NativeModule still relies on +load unfortunately.
         "disable_plugins_only_validation",
         "extension_api_allow_unsafe_unavailable_usages",
-        "pfh:ReactNative_CommonInfrastructurePlaceholde",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     plugins =
@@ -879,7 +879,7 @@ rn_apple_library(
     labels = [
         "depslint_never_remove",  # Some old NativeModule still relies on +load unfortunately.
         "disable_plugins_only_validation",
-        "pfh:ReactNative_CommonInfrastructurePlaceholde",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     plugins =
@@ -938,7 +938,7 @@ rn_apple_library(
         "depslint_never_remove",  # Some old NativeModule still relies on +load unfortunately.
         "disable_plugins_only_validation",
         "extension_api_allow_unsafe_unavailable_usages",
-        "pfh:ReactNative_CommonInfrastructurePlaceholde",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     plugins =
@@ -986,7 +986,7 @@ rn_apple_library(
         "depslint_never_remove",  # Some old NativeModule still relies on +load unfortunately.
         "disable_plugins_only_validation",
         "extension_api_allow_unsafe_unavailable_usages",
-        "pfh:ReactNative_CommonInfrastructurePlaceholde",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     plugins =
@@ -1038,7 +1038,7 @@ rn_apple_library(
         "depslint_never_remove",  # Some old NativeModule still relies on +load unfortunately.
         "disable_plugins_only_validation",
         "extension_api_allow_unsafe_unavailable_usages",
-        "pfh:ReactNative_CommonInfrastructurePlaceholde",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     plugins =
@@ -1119,7 +1119,7 @@ rn_apple_library(
         "depslint_never_remove",  # Some old NativeModule still relies on +load unfortunately.
         "disable_plugins_only_validation",
         "extension_api_allow_unsafe_unavailable_usages",
-        "pfh:ReactNative_CommonInfrastructurePlaceholde",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     plugins =
@@ -1253,7 +1253,7 @@ rn_xplat_cxx_library2(
     ],
     labels = [
         "depslint_never_remove",  # Some old NativeModule still relies on +load unfortunately.
-        "pfh:ReactNative_CommonInfrastructurePlaceholde",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode(),
@@ -1286,7 +1286,7 @@ rn_apple_library(
     labels = [
         "depslint_never_remove",
         "disable_plugins_only_validation",
-        "pfh:ReactNative_CommonInfrastructurePlaceholde",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     plugins = react_module_plugin_providers(
@@ -1327,7 +1327,7 @@ rn_xplat_cxx_library2(
     ],
     labels = [
         "depslint_never_remove",  # Some old NativeModule still relies on +load unfortunately.
-        "pfh:ReactNative_CommonInfrastructurePlaceholde",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode(),
@@ -1360,7 +1360,7 @@ rn_xplat_cxx_library2(
     ],
     labels = [
         "depslint_never_remove",
-        "pfh:ReactNative_CommonInfrastructurePlaceholde",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode(),
@@ -1395,7 +1395,7 @@ rn_xplat_cxx_library2(
     ],
     labels = [
         "depslint_never_remove",
-        "pfh:ReactNative_CommonInfrastructurePlaceholde",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode(),
@@ -1431,7 +1431,7 @@ rn_xplat_cxx_library2(
     ],
     labels = [
         "depslint_never_remove",
-        "pfh:ReactNative_CommonInfrastructurePlaceholde",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode(),
@@ -1453,7 +1453,7 @@ rn_xplat_cxx_library2(
         "React/RCTConvert+CoreLocation.h": RCTVIEWS_PATH + "RCTConvert+CoreLocation.h",
     },
     labels = [
-        "pfh:ReactNative_CommonInfrastructurePlaceholde",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     visibility = [
