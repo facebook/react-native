@@ -114,6 +114,7 @@ android {
                 arguments "-DHERMES_IS_ANDROID=True"
                 arguments "-DANDROID_STL=c++_shared"
                 arguments "-DANDROID_PIE=True"
+                arguments "-DANDROID_LD=lld"
                 arguments "-DIMPORT_HERMESC=${new File(hermesDir, "build/ImportHermesc.cmake").toString()}"
                 arguments "-DJSI_DIR=${jsiDir}"
                 arguments "-DHERMES_SLOW_DEBUG=False"
