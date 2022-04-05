@@ -188,7 +188,16 @@ exec('git checkout ReactAndroid/gradle.properties');
 
 echo('Generated artifacts for Maven');
 
-let artifacts = ['.aar', '.pom'].map(suffix => {
+let artifacts = [
+  '.module',
+  '.pom',
+  '-debug.aar',
+  '-release.aar',
+  '-debug-sources.jar',
+  '-release-sources.jar',
+  '-debug-javadoc.jar',
+  '-release-javadoc.jar',
+].map(suffix => {
   return `react-native-${releaseVersion}${suffix}`;
 });
 
@@ -199,7 +208,7 @@ artifacts.forEach(name => {
       `./android/com/facebook/react/react-native/${releaseVersion}/${name}`,
     )
   ) {
-    echo(`file ${name} was not generated`);
+    echo(`Failing as expected file: ${name} was not correctly generated.`);
     exit(1);
   }
 });
