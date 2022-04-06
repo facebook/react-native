@@ -152,33 +152,6 @@ class EventEmitter<EventDefinitions: {...}> {
       }
     }
   }
-
-  /**
-   * @deprecated Use `remove` on the EventSubscription from `addListener`.
-   */
-  removeListener<K: $Keys<EventDefinitions>>(
-    eventType: K,
-    // FIXME: listeners should return void instead of mixed to prevent issues
-    listener: (...$ElementType<EventDefinitions, K>) => mixed,
-  ): void {
-    console.warn(
-      `EventEmitter.removeListener('${eventType}', ...): Method has been ` +
-        'deprecated. Please instead use `remove()` on the subscription ' +
-        'returned by `EventEmitter.addListener`.',
-    );
-    const subscriptions = this._subscriber.getSubscriptionsForType(eventType);
-    if (subscriptions) {
-      for (let i = 0, l = subscriptions.length; i < l; i++) {
-        const subscription = subscriptions[i];
-
-        // The subscription may have been removed during this event loop.
-        // its listener matches the listener in method parameters
-        if (subscription && subscription.listener === listener) {
-          subscription.remove();
-        }
-      }
-    }
-  }
 }
 
 module.exports = EventEmitter;
