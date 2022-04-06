@@ -31,6 +31,20 @@ function processTransform(
   return transform;
 }
 
+function _validateTransforms(transform: Array<Object>): void {
+  transform.forEach((transformation) => {
+    const keys = Object.keys(transformation);
+    invariant(
+      keys.length === 1,
+      'You must specify exactly one property per transform object. Passed properties: %s',
+      stringifySafe(transformation),
+    );
+    const key = keys[0];
+    const value = transformation[key];
+    _validateTransform(key, value, transformation);
+  });
+}
+
 function _validateTransform(
   key:
     | string
