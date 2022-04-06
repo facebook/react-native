@@ -317,14 +317,15 @@ class Button extends React.Component<ButtonProps> {
 
     return (
       <Touchable
+        /*
         accessible={accessible}
         accessibilityActions={accessibilityActions}
         onAccessibilityAction={onAccessibilityAction}
-        accessibilityLabel={accessibilityLabel}
         accessibilityHint={accessibilityHint}
         accessibilityLanguage={accessibilityLanguage}
-        accessibilityRole="button"
         accessibilityState={accessibilityState}
+        */
+        accessibilityRole="button"
         hasTVPreferredFocus={hasTVPreferredFocus}
         nextFocusDown={nextFocusDown}
         nextFocusForward={nextFocusForward}

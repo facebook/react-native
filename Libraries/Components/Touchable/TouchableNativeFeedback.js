@@ -238,6 +238,14 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
   render(): React.Node {
     const element = React.Children.only(this.props.children);
     const children = [element.props.children];
+    let title = '';
+    // if !props.accessibilityLabel
+    React.Children.map(children, child => {
+      if (!child?.props?.accessible && !child?.props?.focusable) {
+        title += ', ' + child.props.children;
+      }
+    });
+    console.log('TouchableNativeFeedback title', title);
     if (__DEV__) {
       if (element.type === View) {
         children.push(
@@ -272,7 +280,7 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
         accessible: this.props.accessible !== false,
         accessibilityHint: this.props.accessibilityHint,
         accessibilityLanguage: this.props.accessibilityLanguage,
-        accessibilityLabel: this.props.accessibilityLabel,
+        accessibilityLabel: title,
         accessibilityRole: this.props.accessibilityRole,
         accessibilityState: accessibilityState,
         accessibilityActions: this.props.accessibilityActions,
