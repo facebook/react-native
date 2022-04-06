@@ -10,6 +10,7 @@ package com.facebook.react.testing;
 import android.annotation.SuppressLint;
 import androidx.annotation.Nullable;
 import com.facebook.react.ReactPackage;
+import com.facebook.react.ReactPackageTurboModuleManagerDelegate;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
@@ -35,6 +36,7 @@ public class ReactInstanceSpecForTest {
   @Nullable private NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler = null;
   @Nullable private FabricUIManagerFactory mFabricUIManagerFactory = null;
   @Nullable private JavaScriptExecutorFactory mJavaScriptExecutorFactory = null;
+  @Nullable private ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder = null;
 
   public ReactInstanceSpecForTest addNativeModule(NativeModule module) {
     mNativeModules.add(module);
@@ -75,6 +77,17 @@ public class ReactInstanceSpecForTest {
   @Nullable
   public FabricUIManagerFactory getFabricUIManagerFactory() {
     return mFabricUIManagerFactory;
+  }
+
+  public ReactInstanceSpecForTest setReactPackageTurboModuleManagerDelegateBuilder(
+      @Nullable ReactPackageTurboModuleManagerDelegate.Builder builder) {
+    mTMMDelegateBuilder = builder;
+    return this;
+  }
+
+  protected @Nullable ReactPackageTurboModuleManagerDelegate.Builder
+      getReactPackageTurboModuleManagerDelegateBuilder() {
+    return mTMMDelegateBuilder;
   }
 
   public ReactInstanceSpecForTest addPackages(List<ReactPackage> reactPackages) {
