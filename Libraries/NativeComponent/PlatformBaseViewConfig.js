@@ -170,6 +170,12 @@ const PlatformBaseViewConfig: PartialViewConfigWithoutName =
               bubbled: 'onPointerUp',
             },
           },
+          topOnFocusChange: {
+            phasedRegistrationNames: {
+              bubbled: 'onFocusChange',
+              captured: 'onFocusChangeCapture',
+            },
+          },
         },
         validAttributes: {
           // @ReactProps from BaseViewManager
