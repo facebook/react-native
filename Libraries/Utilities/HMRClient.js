@@ -292,7 +292,7 @@ function registerBundleEntryPoints(client) {
 
 function flushEarlyLogs(client) {
   try {
-    pendingLogs.forEach(([level: LogLevel, data: Array<mixed>]) => {
+    pendingLogs.forEach(([level, data]) => {
       HMRClient.log(level, data);
     });
   } finally {
