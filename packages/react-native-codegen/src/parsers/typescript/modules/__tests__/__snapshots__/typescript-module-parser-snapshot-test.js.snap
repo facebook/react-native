@@ -34,6 +34,43 @@ exports[`RN Codegen TypeScript Parser can generate fixture ANDROID_ONLY_NATIVE_M
 }"
 `;
 
+exports[`RN Codegen TypeScript Parser can generate fixture CXX_ONLY_NATIVE_MODULE 1`] = `
+"{
+  'modules': {
+    'NativeSampleTurboModule': {
+      'type': 'NativeModule',
+      'aliases': {},
+      'spec': {
+        'properties': [
+          {
+            'name': 'getCallback',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'FunctionTypeAnnotation',
+                'returnTypeAnnotation': {
+                  'type': 'VoidTypeAnnotation'
+                },
+                'params': []
+              },
+              'params': []
+            }
+          }
+        ]
+      },
+      'moduleNames': [
+        'SampleTurboModuleCxx'
+      ],
+      'excludedPlatforms': [
+        'iOS',
+        'android'
+      ]
+    }
+  }
+}"
+`;
+
 exports[`RN Codegen TypeScript Parser can generate fixture EMPTY_NATIVE_MODULE 1`] = `
 "{
   'modules': {

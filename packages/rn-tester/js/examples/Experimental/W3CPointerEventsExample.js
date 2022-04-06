@@ -30,7 +30,7 @@ function EventfulView(props: {|
   const [tag, setTag] = React.useState('');
 
   const eventLog = eventName => event => {
-    // $FlowFixMe[prop-missing] Using private property
+    // $FlowFixMe Using private property
     log(`${name} - ${eventName} - target: ${event.target._nativeTag}`);
     setLastEvent(eventName);
   };

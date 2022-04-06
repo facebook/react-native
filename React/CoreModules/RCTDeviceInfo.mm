@@ -69,14 +69,6 @@ RCT_EXPORT_MODULE()
                                              object:nil];
 }
 
-- (void)setModuleRegistry:(RCTModuleRegistry *)moduleRegistry
-{
-  if (!moduleRegistry) {
-    RCTAssert(false, @"moduleRegistry should not be nil, _moduleRegistry is nil: %d", _moduleRegistry == nil);
-  }
-  _moduleRegistry = moduleRegistry;
-}
-
 static BOOL RCTIsIPhoneX()
 {
   static BOOL isIPhoneX = NO;
