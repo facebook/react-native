@@ -38,7 +38,7 @@ module.exports = {
         sourceType: 'script',
         ...nodeOptions,
         ast: false,
-      }).code;
+      });
     }
 
     const {ast} = transformer.transform({
