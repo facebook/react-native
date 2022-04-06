@@ -111,7 +111,7 @@ module.exports = {
         sourceMaps: true,
       },
       src,
-    ).code;
+    );
   },
 
   getCacheKey: (createCacheKeyFunction([
