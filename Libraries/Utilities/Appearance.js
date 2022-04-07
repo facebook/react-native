@@ -91,12 +91,4 @@ module.exports = {
   addChangeListener(listener: AppearanceListener): EventSubscription {
     return eventEmitter.addListener('change', listener);
   },
-
-  /**
-   * @deprecated Use `remove` on the EventSubscription from `addEventListener`.
-   */
-  removeChangeListener(listener: AppearanceListener): void {
-    // NOTE: This will report a deprecation notice via `console.error`.
-    eventEmitter.removeListener('change', listener);
-  },
 };

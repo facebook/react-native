@@ -38,6 +38,7 @@
     "README.md",
     "rn-get-polyfills.js",
     "scripts/compose-source-maps.js",
+    "scripts/find-node-for-xcode.sh",
     "scripts/generate-artifacts.js",
     "scripts/generate-provider-cli.js",
     "scripts/generate-specs-cli.js",
@@ -119,12 +120,12 @@
     "regenerator-runtime": "^0.13.2",
     "scheduler": "^0.20.2",
     "stacktrace-parser": "^0.1.3",
-    "use-subscription": "^1.0.0",
+    "use-subscription": ">=1.0.0 <1.6.0",
     "whatwg-fetch": "^3.0.0",
     "ws": "^6.1.4"
   },
   "devDependencies": {
-    "flow-bin": "^0.175.0",
+    "flow-bin": "^0.175.1",
     "react": "17.0.2"
   },
   "codegenConfig": {

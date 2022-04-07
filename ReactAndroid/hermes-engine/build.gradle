@@ -64,20 +64,14 @@ task unzipHermes(dependsOn: downloadHermes, type: Copy) {
     into(hermesDir)
 }
 
-task configureNinjaForHermes(type: Exec) {
+task configureBuildForHermes(type: Exec) {
     workingDir(hermesDir)
-    commandLine(windowsAwareCommandLine(
-        "python3",
-        "utils/build/configure.py",
-        "--jsidir",
-        jsiDir.absolutePath,
-        "./ninja_build"
-    ))
+    commandLine(windowsAwareCommandLine("cmake", "-S", ".", "-B", "./build", "-DJSI_DIR=" + jsiDir.absolutePath))
 }
 
-task buildNinjaForHermes(dependsOn: configureNinjaForHermes, type: Exec) {
+task buildHermes(dependsOn: configureBuildForHermes, type: Exec) {
     workingDir(hermesDir)
-    commandLine(windowsAwareCommandLine("cmake", "--build", "./ninja_build", "--target", "hermesc", "-j", ndkBuildJobs))
+    commandLine(windowsAwareCommandLine("cmake", "--build", "./build", "--target", "hermesc", "-j", ndkBuildJobs))
 }
 
 task prepareHeadersForPrefab(type: Copy) {
@@ -120,7 +114,8 @@ android {
                 arguments "-DHERMES_IS_ANDROID=True"
                 arguments "-DANDROID_STL=c++_shared"
                 arguments "-DANDROID_PIE=True"
-                arguments "-DIMPORT_HERMESC=${new File(hermesDir, "ninja_build/ImportHermesc.cmake").toString()}"
+                arguments "-DANDROID_LD=lld"
+                arguments "-DIMPORT_HERMESC=${new File(hermesDir, "build/ImportHermesc.cmake").toString()}"
                 arguments "-DJSI_DIR=${jsiDir}"
                 arguments "-DHERMES_SLOW_DEBUG=False"
                 arguments "-DHERMES_BUILD_SHARED_JSI=True"
@@ -146,7 +141,6 @@ android {
         debug {
             externalNativeBuild {
                 cmake {
-                    arguments "-DHERMES_ENABLE_DEBUGGER=True"
                     // JS developers aren't VM developers.
                     // Therefore we're passing as build type Release, to provide a faster build.
                     // This has the (unlucky) side effect of letting AGP call the build
@@ -158,6 +152,7 @@ android {
         release {
             externalNativeBuild {
                 cmake {
+                    arguments "-DHERMES_ENABLE_DEBUGGER=False"
                     arguments "-DCMAKE_BUILD_TYPE=MinSizeRel"
                 }
             }
@@ -211,10 +206,10 @@ afterEvaluate {
     if (!overrideHermesDir) {
         // If you're not specifying a Hermes Path override, we want to
         // download/unzip Hermes from Github then.
-        configureNinjaForHermes.dependsOn(unzipHermes)
+        configureBuildForHermes.dependsOn(unzipHermes)
         prepareHeadersForPrefab.dependsOn(unzipHermes)
     }
-    preBuild.dependsOn(buildNinjaForHermes)
+    preBuild.dependsOn(buildHermes)
     preBuild.dependsOn(prepareHeadersForPrefab)
     // Needed as some of the native sources needs to be downloaded
     // before configureCMakeRelease/configureCMakeMinSizeRel could be executed.

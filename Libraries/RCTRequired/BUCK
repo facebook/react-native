@@ -11,7 +11,7 @@ fb_apple_library(
     extension_api_only = True,
     frameworks = ["Foundation"],
     labels = [
-        "pfh:ReactNative_CommonInfrastructurePlaceholde",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
 )

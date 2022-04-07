@@ -18,7 +18,7 @@ cxx_library(
     ],
     force_static = True,
     labels = [
-        "pfh:ReactNative_CommonInfrastructurePlaceholde",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     visibility = [

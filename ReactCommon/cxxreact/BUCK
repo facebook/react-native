@@ -15,7 +15,7 @@ rn_xplat_cxx_library(
     fbobjc_compiler_flags = get_apple_compiler_flags(),
     force_static = True,
     labels = [
-        "pfh:ReactNative_CommonInfrastructurePlaceholde",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     visibility = [
@@ -39,7 +39,7 @@ rn_xplat_cxx_library(
     fbobjc_compiler_flags = get_apple_compiler_flags(),
     force_static = True,
     labels = [
-        "pfh:ReactNative_CommonInfrastructurePlaceholde",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     visibility = [
@@ -62,7 +62,7 @@ rn_xplat_cxx_library(
     ],
     fbobjc_compiler_flags = get_apple_compiler_flags(),
     labels = [
-        "pfh:ReactNative_CommonInfrastructurePlaceholde",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     soname = "libxplat_react_module_samplemodule.$(ext)",
@@ -123,7 +123,7 @@ rn_xplat_cxx_library(
     fbobjc_force_static = True,
     fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
     labels = [
-        "pfh:ReactNative_CommonInfrastructurePlaceholde",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     macosx_tests_override = [],
