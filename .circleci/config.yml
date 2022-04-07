@@ -54,12 +54,12 @@ executors:
     <<: *defaults
     docker:
       # Note: Version set separately for Windows builds, see below.
-      - image: circleci/node:16
+      - image: cimg/node:16.14
     resource_class: "xlarge"
   nodeprevlts:
     <<: *defaults
     docker:
-      - image: circleci/node:14
+      - image: cimg/node:14.19
     resource_class: "xlarge"
   reactnativeandroid:
     <<: *defaults
