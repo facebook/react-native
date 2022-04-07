@@ -29,6 +29,7 @@ def AAR_OUTPUT_URL = "file://${projectDir}/../android"
 def customDownloadsDir = System.getenv("REACT_NATIVE_DOWNLOADS_DIR")
 def downloadsDir = customDownloadsDir ? new File(customDownloadsDir) : new File("$buildDir/downloads")
 def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
+def reactNativeRootDir = projectDir.parent
 
 // You need to have following folders in this directory:
 //   - boost_1_63_0
@@ -277,7 +278,7 @@ android {
 
         externalNativeBuild {
             cmake {
-                arguments "-DREACT_COMMON_DIR=${rootProject.projectDir}/ReactCommon",
+                arguments "-DREACT_COMMON_DIR=${reactNativeRootDir}/ReactCommon",
                         "-DREACT_ANDROID_DIR=$projectDir",
                         "-DANDROID_STL=c++_shared",
                         "-DANDROID_TOOLCHAIN=clang",
