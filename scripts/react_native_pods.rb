@@ -656,7 +656,6 @@ def downloadAndConfigureHermesSource(react_native_path)
   sdks_dir = "#{react_native_path}/sdks"
   download_dir = "#{sdks_dir}/download"
   hermes_dir = "#{sdks_dir}/hermes"
-  utils_dir = "#{sdks_dir}/hermes/utils"
   hermes_tag_file = "#{sdks_dir}/.hermesversion"
   system("mkdir -p #{hermes_dir} #{download_dir}")
 
