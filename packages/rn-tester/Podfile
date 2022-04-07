@@ -36,7 +36,6 @@ def pods(options = {})
     config_file_dir: "#{Dir.pwd}/node_modules",
   )
   pod 'ReactCommon/turbomodule/samples', :path => "#{prefix_path}/ReactCommon"
-  pod 'hermes-engine', :path => "../sdks/hermes-engine"
 
   # Additional Pods which aren't included in the default Podfile
   pod 'React-RCTPushNotification', :path => "#{prefix_path}/Libraries/PushNotificationIOS"
