@@ -43,7 +43,11 @@ NSSharingServicePickerDelegate
 
 RCT_EXPORT_MODULE()
 
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
+@synthesize bridge = _bridge;
+#else // TODO(macOS GH#774)
 @synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED;
+#endif // ]TODO(macOS GH#774)
 
 - (dispatch_queue_t)methodQueue
 {
