@@ -656,6 +656,7 @@ def downloadAndConfigureHermesSource(react_native_path)
   sdks_dir = "#{react_native_path}/sdks"
   download_dir = "#{sdks_dir}/download"
   hermes_dir = "#{sdks_dir}/hermes"
+  utils_dir = "#{sdks_dir}/hermes/utils"
   hermes_tag_file = "#{sdks_dir}/.hermesversion"
   system("mkdir -p #{hermes_dir} #{download_dir}")
 
@@ -673,8 +674,8 @@ def downloadAndConfigureHermesSource(react_native_path)
     Pod::UI.puts "[Hermes] Downloading Hermes source code (#{hermes_tarball_url})"
     system("curl #{hermes_tarball_url} -Lo #{hermes_tarball_path}")
   end
-  Pod::UI.puts "[Hermes] Extracting Hermes (#{hermes_tag_sha})"
 
+  
   hermesc_macos_path = "#{sdks_dir}/hermesc/macos/build_host_hermesc"
   hermesc_macos_link = "#{hermes_dir}/utils/build_host_hermesc"
   if (File.exist?(hermesc_macos_path))
@@ -682,9 +683,9 @@ def downloadAndConfigureHermesSource(react_native_path)
     Pod::UI.puts "[Hermes] Using pre-compiled Hermes Compiler from #{hermesc_macos_path}"
     system("ln -s #{hermesc_macos_path} #{hermesc_macos_link}")
   end
-
-  # TODO: Integrate this temporary hermes-engine.podspec into the actual one located in facebook/hermes
-  system("cp #{sdks_dir}/hermes-engine.podspec #{hermes_dir}/hermes-engine.podspec")
+  
+  Pod::UI.puts "[Hermes] Extracting Hermes (#{hermes_tag_sha})"
+  system("tar -zxf #{hermes_tarball_path} --strip-components=1 --directory #{hermes_dir}")
 
   hermes_dir
 end
