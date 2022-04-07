@@ -146,10 +146,13 @@ android {
     buildToolsVersion = "31.0.0"
     compileSdkVersion 31
 
-    // Used to override the NDK path & version on internal CI
-    if (System.getenv("ANDROID_NDK") != null && System.getenv("LOCAL_ANDROID_NDK_VERSION") != null) {
-        ndkPath System.getenv("ANDROID_NDK")
-        ndkVersion System.getenv("LOCAL_ANDROID_NDK_VERSION")
+    // Used to override the NDK path/version on internal CI or by allowing
+    // users to customize the NDK path/version from their root project (e.g. for M1 support)
+    if (rootProject.hasProperty("ndkPath")) {
+        ndkPath rootProject.ext.ndkPath
+    }
+    if (rootProject.hasProperty("ndkVersion")) {
+        ndkVersion rootProject.ext.ndkVersion
     }
 
     flavorDimensions "vm"

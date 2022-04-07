@@ -5,6 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+val ndkPath by extra(System.getenv("ANDROID_NDK"))
+val ndkVersion by extra(System.getenv("ANDROID_NDK_VERSION"))
+
 buildscript {
     repositories {
         google()
