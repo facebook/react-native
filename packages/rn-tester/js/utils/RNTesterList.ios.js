@@ -230,6 +230,11 @@ const APIs: Array<RNTesterModuleInfo> = [
     supportsTVOS: true,
   },
   {
+    key: 'W3C PointerEvents',
+    category: 'Experimental',
+    module: require('../examples/Experimental/W3CPointerEventsExample').default,
+  },
+  {
     key: 'LayoutAnimationExample',
     module: require('../examples/Layout/LayoutAnimationExample'),
     supportsTVOS: true,
