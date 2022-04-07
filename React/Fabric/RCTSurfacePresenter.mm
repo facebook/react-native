@@ -269,6 +269,10 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     RCTExperimentSetPreemptiveViewAllocationDisabled(YES);
   }
 
+  if (reactNativeConfig && reactNativeConfig->getBool("rn_convergence:dispatch_pointer_events")) {
+    RCTSetDispatchW3CPointerEvents(YES);
+  }
+
   auto componentRegistryFactory =
       [factory = wrapManagedObject(_mountingManager.componentViewRegistry.componentViewFactory)](
           EventDispatcher::Weak const &eventDispatcher, ContextContainer::Shared const &contextContainer) {
