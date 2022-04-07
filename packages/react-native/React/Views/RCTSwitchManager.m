@@ -49,7 +49,17 @@ RCT_EXPORT_METHOD(setValue : (nonnull NSNumber *)viewTag toValue : (BOOL)value)
 RCT_EXPORT_VIEW_PROPERTY(onTintColor, UIColor);
 RCT_EXPORT_VIEW_PROPERTY(tintColor, UIColor);
 RCT_EXPORT_VIEW_PROPERTY(thumbTintColor, UIColor);
-RCT_REMAP_VIEW_PROPERTY(value, on, BOOL);
+//RCT_REMAP_VIEW_PROPERTY(value, on, BOOL);
+RCT_CUSTOM_VIEW_PROPERTY(value, BOOL, RCTSwitch)
+{
+    if (json) {
+        BOOL on = [RCTConvert BOOL:json];
+        if (view.wasOn != on) {
+            [(UISwitch *)view setOn:on animated:YES];
+            view.wasOn = on;
+        }
+    }
+}
 RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock);
 RCT_CUSTOM_VIEW_PROPERTY(disabled, BOOL, RCTSwitch)
 {
