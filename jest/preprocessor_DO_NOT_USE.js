@@ -30,7 +30,7 @@ babelRegisterOnly([]);
 
 const transformer = require('metro-react-native-babel-transformer');
 module.exports = {
-  process(src /*: string */, file /*: string */) /*: string */ {
+  process(src /*: string */, file /*: string */) /*: {code: string, ...} */ {
     if (nodeFiles.test(file)) {
       // node specific transforms only
       return babelTransformSync(src, {
