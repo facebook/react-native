@@ -39,4 +39,7 @@
 @end
 
 @interface RCTImageCache : NSObject <RCTImageCache>
+
+RCT_EXTERN void RCTSetImageCacheLimits(NSUInteger maxCachableDecodedImageSizeInBytes, NSUInteger imageCacheTotalCostLimit);
+
 @end
