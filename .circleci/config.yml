@@ -347,7 +347,7 @@ jobs:
       - run_yarn
       - run:
           name: Install rsync
-          command: sudo apt-get install rsync
+          command: sudo apt update && sudo apt install rsync
 
       # -------------------------
       # Run JavaScript tests
