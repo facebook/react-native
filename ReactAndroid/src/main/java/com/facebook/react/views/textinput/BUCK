@@ -29,6 +29,7 @@ rn_android_library(
         react_native_target("java/com/facebook/react/views/scroll:scroll"),
         react_native_target("java/com/facebook/react/views/text:text"),
         react_native_target("java/com/facebook/react/views/view:view"),
+        react_native_target("res:uimanager"),
     ],
     exported_deps = [
         react_native_dep("third-party/android/androidx:appcompat"),
