@@ -483,7 +483,7 @@ function ErrorExample(): React.Node {
         Type error in the below TextInput to display an error message.
       </Text>
       <TextInput
-        errorMessageAndroid={error}
+        android_accessibilityErrorMessage={error}
         onBlur={() => setError('onBlur')}
         onEndEditing={() => setError('onEndEditing')}
         onChangeText={newText => {

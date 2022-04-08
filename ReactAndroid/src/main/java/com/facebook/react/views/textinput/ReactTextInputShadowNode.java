@@ -44,14 +44,16 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
   @VisibleForTesting public static final String PROP_TEXT = "text";
   @VisibleForTesting public static final String PROP_PLACEHOLDER = "placeholder";
   @VisibleForTesting public static final String PROP_SELECTION = "selection";
-  @VisibleForTesting public static final String PROP_ERROR_MESSAGE = "errorMessageAndroid";
+
+  @VisibleForTesting
+  public static final String PROP_ERROR_MESSAGE = "android_accessibilityErrorMessage";
 
   // Represents the {@code text} property only, not possible nested content.
   private @Nullable String mText = null;
   private @Nullable String mPlaceholder = null;
   private int mSelectionStart = UNSET;
   private int mSelectionEnd = UNSET;
-  private @Nullable String mErrorMessage = null;
+  private @Nullable String mAccessibilityErrorMessage = null;
 
   public ReactTextInputShadowNode(
       @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
@@ -197,7 +199,7 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
 
   @ReactProp(name = PROP_ERROR_MESSAGE)
   public void setErrorMessage(String accessibilityErrorMessage) {
-    mErrorMessage = accessibilityErrorMessage;
+    mAccessibilityErrorMessage = accessibilityErrorMessage;
     markUpdated();
   }
 
@@ -255,7 +257,7 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
               mJustificationMode,
               mSelectionStart,
               mSelectionEnd,
-              mErrorMessage);
+              mAccessibilityErrorMessage);
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);
     }
   }

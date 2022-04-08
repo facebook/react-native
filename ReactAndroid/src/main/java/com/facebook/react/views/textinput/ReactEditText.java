@@ -524,16 +524,14 @@ public class ReactEditText extends AppCompatEditText
    * text.
    *
    * @param eventCounter
-   * @param errorMessage
+   * @param accessibilityErrorMessage
    */
-  public void maybeSetErrorMessage(int eventCounter, @Nullable String errorMessage) {
-    if (!canUpdateWithEventCount(eventCounter)) {
+  public void maybeSetErrorMessage(int eventCounter, @Nullable String accessibilityErrorMessage) {
+    if (!canUpdateWithEventCount(eventCounter) || accessibilityErrorMessage == null) {
       return;
     }
-    if (errorMessage != null) {
-      announceForAccessibility("Invalid input " + errorMessage);
-      setTag(R.id.accessibility_error_message, null);
-    }
+    announceForAccessibility("Invalid input " + accessibilityErrorMessage);
+    setTag(R.id.accessibility_error_message, null);
   }
 
   public void maybeSetTextFromJS(ReactTextUpdate reactTextUpdate) {

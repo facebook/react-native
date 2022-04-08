@@ -34,7 +34,6 @@ import androidx.autofill.HintConstants;
 import androidx.core.content.ContextCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.R;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
@@ -372,11 +371,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       view.maybeSetSelection(update.getJsEventCounter(), selectionStart, selectionEnd);
       view.maybeSetErrorMessage(update.getJsEventCounter(), update.getErrorMessage());
     }
-  }
-
-  @ReactProp(name = "errorMessageAndroid")
-  public void setErrorMessage(ReactEditText view, @Nullable String error) {
-    view.setTag(R.id.accessibility_error_message, error);
   }
 
   @ReactProp(name = ViewProps.FONT_SIZE, defaultFloat = ViewDefaults.FONT_SIZE_SP)
@@ -1327,9 +1321,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     int textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(paragraphAttributes.getString("textBreakStrategy"));
 
-    String errorMessageAndroid =
-        paragraphAttributes.hasKey("errorMessageAndroid")
-            ? paragraphAttributes.getString("errorMessageAndroid")
+    String android_accessibilityErrorMessage =
+        paragraphAttributes.hasKey("android_accessibilityErrorMessage")
+            ? paragraphAttributes.getString("android_accessibilityErrorMessage")
             : null;
 
     return ReactTextUpdate.buildReactTextUpdateFromState(
@@ -1339,6 +1333,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         textBreakStrategy,
         TextAttributeProps.getJustificationMode(props),
         containsMultipleFragments,
-        errorMessageAndroid);
+        android_accessibilityErrorMessage);
   }
 }
