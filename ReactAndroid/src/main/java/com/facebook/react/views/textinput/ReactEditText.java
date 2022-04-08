@@ -34,11 +34,12 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
-import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.R;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.common.build.ReactBuildConfig;
@@ -59,6 +60,7 @@ import com.facebook.react.views.text.TextLayoutManager;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * A wrapper around the EditText that lets us better control what happens when an EditText gets
@@ -157,6 +159,19 @@ public class ReactEditText extends AppCompatEditText
     ReactAccessibilityDelegate editTextAccessibilityDelegate =
         new ReactAccessibilityDelegate(
             this, this.isFocusable(), this.getImportantForAccessibility()) {
+          @Override
+          public void onInitializeAccessibilityNodeInfo(
+              View host, AccessibilityNodeInfoCompat info) {
+            super.onInitializeAccessibilityNodeInfo(host, info);
+            final String accessibilityErrorMessage =
+                (String) host.getTag(R.id.accessibility_error_message);
+            boolean contentInvalid = accessibilityErrorMessage == null ? false : true;
+            if (accessibilityErrorMessage != info.getError()) {
+              info.setError(accessibilityErrorMessage);
+              info.setContentInvalid(contentInvalid);
+            }
+          }
+
           @Override
           public boolean performAccessibilityAction(View host, int action, Bundle args) {
             if (action == AccessibilityNodeInfo.ACTION_CLICK) {
@@ -512,10 +527,13 @@ public class ReactEditText extends AppCompatEditText
    * @param errorMessage
    */
   public void maybeSetErrorMessage(int eventCounter, @Nullable String errorMessage) {
-    if (!canUpdateWithEventCount(eventCounter) || getError() == errorMessage) {
+    if (!canUpdateWithEventCount(eventCounter)) {
       return;
     }
-    setError(errorMessage);
+    if (errorMessage != null) {
+      announceForAccessibility("Invalid input " + errorMessage);
+      setTag(R.id.accessibility_error_message, null);
+    }
   }
 
   public void maybeSetTextFromJS(ReactTextUpdate reactTextUpdate) {
