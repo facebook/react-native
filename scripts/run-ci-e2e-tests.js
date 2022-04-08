@@ -62,7 +62,7 @@ try {
     throw Error(exitCode);
   }
 
-  if (exec('npm pack').code) {
+  if (exec('yarn pack').code) {
     echo('Failed to pack react-native');
     exitCode = 1;
     throw Error(exitCode);
@@ -89,13 +89,13 @@ try {
   mv('_bundle', '.bundle');
 
   describe('Install React Native package');
-  exec(`npm install ${REACT_NATIVE_PACKAGE}`);
+  exec(`yarn add ${REACT_NATIVE_PACKAGE}`);
 
   describe('Install node_modules');
   if (
     tryExecNTimes(
       () => {
-        return exec('npm install').code;
+        return exec('yarn').code;
       },
       numberOfRetries,
       () => exec('sleep 10s'),

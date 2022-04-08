@@ -20,4 +20,4 @@ jobs:
           sudo rm -rf /opt/ghc
           sudo rm -rf "$AGENT_TOOLSDIRECTORY"
       - name: Build Docker image with Android test app
-        run: npm run docker-build-android
+        run: yarn docker-build-android

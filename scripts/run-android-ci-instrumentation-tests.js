@@ -18,7 +18,7 @@
  * Available arguments:
  * --path - path to all .java files with tests
  * --package - com.facebook.react.tests
- * --retries [num] - how many times to retry possible flaky commands: npm install and running tests, default 1
+ * --retries [num] - how many times to retry possible flaky commands: yarn install or npm install and running tests, default 1
  */
 
 const {echo, exec, exit, ls} = require('shelljs');

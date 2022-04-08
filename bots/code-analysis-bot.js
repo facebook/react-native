@@ -303,7 +303,7 @@ process.stdin.on('end', function () {
   //
   // In order to generate such stream, here is a sample bash command:
   //
-  //   cat <(echo eslint; npm run lint --silent -- --format=json; echo flow; flow --json) | node code-analysis-bot.js
+  //   cat <(echo eslint; yarn lint --silent -- --format=json; echo flow; flow --json) | node code-analysis-bot.js
 
   const lines = content.trim().split('\n');
   for (let i = 0; i < Math.ceil(lines.length / 2); ++i) {

@@ -118,7 +118,7 @@ init_template_app(){
 
     success "Preparing version $PACKAGE_VERSION"
 
-    npm pack
+    yarn pack
 
     TIMESTAMP=$(date +%s)
     PACKAGE=$(pwd)/react-native-$PACKAGE_VERSION-$TIMESTAMP.tgz
@@ -198,7 +198,7 @@ show_menu(){
 
 handle_menu_input(){
     if [ "$selected_app" == "1" ]; then
-        info "Start the packager in another terminal by running 'npm start' from the root"
+        info "Start the packager in another terminal by running 'yarn start' from the root"
         info "and then press any key."
         info ""
         read -r -n 1

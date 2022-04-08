@@ -91,7 +91,7 @@ function e2e_suite() {
 
     # install CLI
     cd react-native-cli
-    npm pack
+    yarn pack
     cd ..
 
     # can skip cli install for non sudo mode
@@ -195,7 +195,7 @@ function e2e_suite() {
       fi
 
       echo "Starting Metro"
-      npm start >> /dev/null &
+      yarn start >> /dev/null &
       SERVER_PID=$!
       sleep 15
 

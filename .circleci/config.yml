@@ -116,11 +116,11 @@ commands:
             # Skip yarn install on metro bump commits as the package is not yet
             # available on npm
             if [[ $(echo "$GIT_COMMIT_DESC" | grep -c "Bump metro@") -eq 0 ]]; then
-              yarn install --non-interactive --cache-folder ~/.cache/yarn
+              yarn --immutable --check-cache
             fi
       - save_cache:
           paths:
-            - ~/.cache/yarn
+            - .yarn/cache
           key: v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}-{{ arch }}-{{ checksum "yarn.lock" }}
 
   install_buck_tooling:
@@ -146,7 +146,7 @@ commands:
     steps:
       - run:
           name: "Yarn: Install dependencies (GitHub bots)"
-          command: cd bots && yarn install --non-interactive --cache-folder ~/.cache/yarn
+          command: cd bots && yarn
 
   brew_install:
     parameters:
@@ -259,18 +259,9 @@ jobs:
       - run_yarn
 
       - install_github_bot_deps
-
-      # Note: The yarn gpg key needs to be refreshed to work around https://github.com/yarnpkg/yarn/issues/7866
       - run:
           name: Install additional GitHub bot dependencies
-          # TEMP: Added workaround from https://github.com/nodesource/distributions/issues/1266#issuecomment-932583579
-          command: |
-            curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-            apt update && apt install -y shellcheck jq
-            apt-get -y install openssl ca-certificates
-            update-ca-certificates
-            curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-            apt update && apt install -y shellcheck jq
+          command: apt install -y openssl ca-certificates shellcheck jq
 
       - run:
           name: Run linters against modified files (analysis-bot)
@@ -316,14 +307,12 @@ jobs:
 
       - run:
           name: Sanity checks
-          command: |
-            ./scripts/circleci/check_license.sh
-            ./scripts/circleci/validate_yarn_lockfile.sh
+          command: ./scripts/circleci/check_license.sh
           when: always
 
       - run:
           name: Check formatting
-          command: yarn run format-check
+          command: yarn format-check
           when: always
 
       - store_test_results:
@@ -790,18 +779,18 @@ jobs:
 
       - run:
           name: Display Environment info
-          command: npx envinfo@latest
+          command: yarn dlx envinfo@latest
 
       - restore_cache:
           keys:
             - v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
       - run:
           name: "Yarn: Install Dependencies"
-          command: yarn install --frozen-lockfile --non-interactive
+          command: yarn --immutable --check-cache
       - save_cache:
           key: v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
           paths:
-            - C:\Users\circleci\AppData\Local\Yarn
+            - .yarn\cache
 
       # Try to install the SDK up to 3 times, since network flakiness can cause install failures
       # Using a timeout of 9 mins, as circle ci will timeout if there is no output for 10 mins
@@ -1131,7 +1120,7 @@ jobs:
                 name: Build release package as a job artifact
                 command: |
                   mkdir -p build
-                  FILENAME=$(npm pack)
+                  FILENAME=$(yarn pack)
                   mv $FILENAME build/
                   echo $FILENAME > build/react-native-package-version
             - store_artifacts:

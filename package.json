@@ -69,7 +69,7 @@
     "lint-java": "node ./scripts/lint-java.js",
     "shellcheck": "./scripts/circleci/analyze_scripts.sh",
     "clang-format": "clang-format -i --glob=*/**/*.{h,cpp,m,mm}",
-    "format": "npm run prettier && npm run clang-format",
+    "format": "yarn prettier && yarn clang-format",
     "prettier": "prettier --write \"./**/*.{js,md,yml}\"",
     "format-check": "prettier --list-different \"./**/*.{js,md,yml}\"",
     "update-lock": "npx yarn-deduplicate",
@@ -145,5 +145,6 @@
         "jsSrcsDir": "Libraries"
       }
     ]
-  }
+  },
+  "packageManager": "yarn@3.2.0"
 }

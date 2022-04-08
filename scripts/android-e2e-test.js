@@ -17,12 +17,12 @@
 // https://www.npmjs.com/package/wd-android
 //
 // To set up:
-// - npm install --save-dev appium@1.11.1 mocha@2.4.5 wd@1.11.1 colors@1.0.3 pretty-data2@0.40.1
+// - yarn add --dev appium@1.11.1 mocha@2.4.5 wd@1.11.1 colors@1.0.3 pretty-data2@0.40.1
 // - cp <this file> <to app installation path>
 // - keytool -genkey -v -keystore android/app/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
 //
 // To run this test:
-// - npm start
+// - yarn start
 // - node node_modules/.bin/appium
 // - (cd android && ./gradlew :app:copyDownloadableDepsToLibs)
 // - react-native run-android
