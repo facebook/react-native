@@ -68,9 +68,9 @@ AndroidTextInputProps::AndroidTextInputProps(
           "underlineColorAndroid",
           sourceProps.underlineColorAndroid,
           {})),
-      android_accessibilityErrorMessage(convertRawProp(context, rawProps,
-          "android_accessibilityErrorMessage",
-          sourceProps.android_accessibilityErrorMessage,
+      android_accessibilityError(convertRawProp(context, rawProps,
+          "android_accessibilityError",
+          sourceProps.android_accessibilityError,
           {})),
       inlineImageLeft(convertRawProp(context, rawProps,
           "inlineImageLeft",
@@ -271,7 +271,7 @@ folly::dynamic AndroidTextInputProps::getDynamic() const {
   props["disableFullscreenUI"] = disableFullscreenUI;
   props["textBreakStrategy"] = textBreakStrategy;
   props["underlineColorAndroid"] = toAndroidRepr(underlineColorAndroid);
-  props["android_accessibilityErrorMessage"] = android_accessibilityErrorMessage;
+  props["android_accessibilityError"] = android_accessibilityError;
   props["inlineImageLeft"] = inlineImageLeft;
   props["inlineImagePadding"] = inlineImagePadding;
   props["importantForAutofill"] = importantForAutofill;

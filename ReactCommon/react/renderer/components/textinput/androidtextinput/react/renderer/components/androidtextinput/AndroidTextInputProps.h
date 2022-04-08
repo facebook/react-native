@@ -115,7 +115,7 @@ class AndroidTextInputProps final : public ViewProps, public BaseTextProps {
   const bool disableFullscreenUI{false};
   const std::string textBreakStrategy{};
   const SharedColor underlineColorAndroid{};
-  const std::string android_accessibilityErrorMessage{};
+  const std::string android_accessibilityError{};
   const std::string inlineImageLeft{};
   const int inlineImagePadding{0};
   const std::string importantForAutofill{};

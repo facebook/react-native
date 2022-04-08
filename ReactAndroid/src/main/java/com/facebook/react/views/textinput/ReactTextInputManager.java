@@ -1321,9 +1321,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     int textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(paragraphAttributes.getString("textBreakStrategy"));
 
-    String android_accessibilityErrorMessage =
-        paragraphAttributes.hasKey("android_accessibilityErrorMessage")
-            ? paragraphAttributes.getString("android_accessibilityErrorMessage")
+    String android_accessibilityError =
+        paragraphAttributes.hasKey("android_accessibilityError")
+            ? paragraphAttributes.getString("android_accessibilityError")
             : null;
 
     return ReactTextUpdate.buildReactTextUpdateFromState(
@@ -1333,6 +1333,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         textBreakStrategy,
         TextAttributeProps.getJustificationMode(props),
         containsMultipleFragments,
-        android_accessibilityErrorMessage);
+        android_accessibilityError);
   }
 }
