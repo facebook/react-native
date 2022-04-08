@@ -31,7 +31,7 @@ public class ReactTextUpdate {
   private final int mSelectionStart;
   private final int mSelectionEnd;
   private final int mJustificationMode;
-  private @Nullable String mAccessibilityErrorMessage;
+  private @Nullable String mAccessibilityError;
 
   public boolean mContainsMultipleFragments;
 
@@ -128,7 +128,7 @@ public class ReactTextUpdate {
       int justificationMode,
       int selectionStart,
       int selectionEnd,
-      @Nullable String accessibilityErrorMessage) {
+      @Nullable String accessibilityError) {
     mText = text;
     mJsEventCounter = jsEventCounter;
     mContainsImages = containsImages;
@@ -141,7 +141,7 @@ public class ReactTextUpdate {
     mSelectionStart = selectionStart;
     mSelectionEnd = selectionEnd;
     mJustificationMode = justificationMode;
-    mAccessibilityErrorMessage = accessibilityErrorMessage;
+    mAccessibilityError = accessibilityError;
   }
 
   public static ReactTextUpdate buildReactTextUpdateFromState(
@@ -151,18 +151,18 @@ public class ReactTextUpdate {
       int textBreakStrategy,
       int justificationMode,
       boolean containsMultipleFragments,
-      @Nullable String accessibilityErrorMessage) {
+      @Nullable String accessibilityError) {
 
     ReactTextUpdate reactTextUpdate =
         new ReactTextUpdate(
             text, jsEventCounter, false, textAlign, textBreakStrategy, justificationMode);
     reactTextUpdate.mContainsMultipleFragments = containsMultipleFragments;
-    reactTextUpdate.mAccessibilityErrorMessage = accessibilityErrorMessage;
+    reactTextUpdate.mAccessibilityError = accessibilityError;
     return reactTextUpdate;
   }
 
   public @Nullable String getErrorMessage() {
-    return mAccessibilityErrorMessage;
+    return mAccessibilityError;
   }
 
   public Spannable getText() {
