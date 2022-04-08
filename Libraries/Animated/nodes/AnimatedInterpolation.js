@@ -46,20 +46,23 @@ function createInterpolation(
   }
 
   const outputRange: Array<number> = (config.outputRange: any);
-  checkInfiniteRange('outputRange', outputRange);
 
   const inputRange = config.inputRange;
-  checkInfiniteRange('inputRange', inputRange);
-  checkValidInputRange(inputRange);
 
-  invariant(
-    inputRange.length === outputRange.length,
-    'inputRange (' +
-      inputRange.length +
-      ') and outputRange (' +
-      outputRange.length +
-      ') must have the same length',
-  );
+  if (__DEV__) {
+    checkInfiniteRange('outputRange', outputRange);
+    checkInfiniteRange('inputRange', inputRange);
+    checkValidInputRange(inputRange);
+
+    invariant(
+      inputRange.length === outputRange.length,
+      'inputRange (' +
+        inputRange.length +
+        ') and outputRange (' +
+        outputRange.length +
+        ') must have the same length',
+    );
+  }
 
   const easing = config.easing || linear;
 
