@@ -279,12 +279,8 @@ function findRange(input: number, inputRange: $ReadOnlyArray<number>) {
 
 function checkValidInputRange(arr: $ReadOnlyArray<number>) {
   invariant(arr.length >= 2, 'inputRange must have at least 2 elements');
-  /* $FlowFixMe[incompatible-type] (>=0.13.0) - In the addition expression
-   * below this comment, one or both of the operands may be something that
-   * doesn't cleanly convert to a string, like undefined, null, and object,
-   * etc. If you really mean this implicit string conversion, you can do
-   * something like String(myThing) */
-  const message = 'inputRange must be monotonically non-decreasing ' + arr;
+  const message =
+    'inputRange must be monotonically non-decreasing ' + String(arr);
   for (let i = 1; i < arr.length; ++i) {
     invariant(arr[i] >= arr[i - 1], message);
   }
