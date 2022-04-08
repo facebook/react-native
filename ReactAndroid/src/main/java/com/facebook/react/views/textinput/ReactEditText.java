@@ -163,8 +163,7 @@ public class ReactEditText extends AppCompatEditText
           public void onInitializeAccessibilityNodeInfo(
               View host, AccessibilityNodeInfoCompat info) {
             super.onInitializeAccessibilityNodeInfo(host, info);
-            final String accessibilityErrorMessage =
-                (String) host.getTag(R.id.accessibility_error_message);
+            final String accessibilityErrorMessage = (String) host.getTag(R.id.accessibility_error);
             boolean contentInvalid = accessibilityErrorMessage == null ? false : true;
             if (accessibilityErrorMessage != info.getError()) {
               info.setError(accessibilityErrorMessage);
@@ -531,7 +530,7 @@ public class ReactEditText extends AppCompatEditText
       return;
     }
     announceForAccessibility("Invalid input " + accessibilityErrorMessage);
-    setTag(R.id.accessibility_error_message, null);
+    setTag(R.id.accessibility_error, null);
   }
 
   public void maybeSetTextFromJS(ReactTextUpdate reactTextUpdate) {
