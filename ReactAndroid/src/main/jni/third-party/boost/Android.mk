@@ -6,8 +6,8 @@ include $(CLEAR_VARS)
 # They are required for Folly futures to compile successfully.
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/asm/$(TARGET_ARCH_ABI)/*.S)
 
-LOCAL_C_INCLUDES := $(LOCAL_PATH)/boost_1_63_0
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/boost_1_63_0
+LOCAL_C_INCLUDES := $(LOCAL_PATH)/boost_1_76_0
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/boost_1_76_0
 
 LOCAL_MODULE := boost
 

@@ -363,6 +363,32 @@ const PlatformBaseViewConfig: PartialViewConfigWithoutName =
               captured: 'onTouchEndCapture',
             },
           },
+
+          // Pointer Events
+          topPointerCancel: {
+            phasedRegistrationNames: {
+              captured: 'onPointerCancelCapture',
+              bubbled: 'onPointerCancel',
+            },
+          },
+          topPointerDown: {
+            phasedRegistrationNames: {
+              captured: 'onPointerDownCapture',
+              bubbled: 'onPointerDown',
+            },
+          },
+          topPointerMove2: {
+            phasedRegistrationNames: {
+              captured: 'onPointerMove2Capture',
+              bubbled: 'onPointerMove2',
+            },
+          },
+          topPointerUp: {
+            phasedRegistrationNames: {
+              captured: 'onPointerUpCapture',
+              bubbled: 'onPointerUp',
+            },
+          },
         },
         directEventTypes: {
           topAccessibilityAction: {
