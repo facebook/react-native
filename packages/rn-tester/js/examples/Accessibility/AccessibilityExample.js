@@ -1164,7 +1164,7 @@ class DisplayOptionsStatusExample extends React.Component<{}> {
 function DisplayOptionStatusExample({optionName, optionChecker, notification}) {
   const [statusEnabled, setStatusEnabled] = React.useState(false);
   React.useEffect(() => {
-    let listener = AccessibilityInfo.addEventListener(
+    const listener = AccessibilityInfo.addEventListener(
       notification,
       setStatusEnabled,
     );
