@@ -128,6 +128,34 @@ static ActiveTouch CreateTouchWithUITouch(UITouch *uiTouch, UIView *rootComponen
   return activeTouch;
 }
 
+static UIView *FindClosestFabricManagedTouchableView(UIView *componentView)
+{
+  while (componentView) {
+    if ([componentView respondsToSelector:@selector(touchEventEmitterAtPoint:)]) {
+      return componentView;
+    }
+    componentView = componentView.superview;
+  }
+  return nil;
+}
+
+static NSOrderedSet *GetTouchableViewsInPathToRoot(UIView *componentView)
+{
+  NSMutableOrderedSet *results = [NSMutableOrderedSet orderedSet];
+  do {
+    if ([componentView respondsToSelector:@selector(touchEventEmitterAtPoint:)]) {
+      [results addObject:componentView];
+    }
+    componentView = componentView.superview;
+  } while (componentView);
+  return results;
+}
+
+static SharedTouchEventEmitter GetTouchEmitterFromView(UIView *componentView, CGPoint point)
+{
+  return [(id<RCTTouchableComponentViewProtocol>)componentView touchEventEmitterAtPoint:point];
+}
+
 static const char *PointerTypeCStringFromUITouchType(UITouchType type)
 {
   switch (type) {
@@ -154,6 +182,22 @@ static PointerEvent CreatePointerEventFromActiveTouch(ActiveTouch activeTouch)
   event.clientPoint = touch.pagePoint;
   event.target = touch.target;
   event.timestamp = touch.timestamp;
+  return event;
+}
+
+static PointerEvent
+CreatePointerEventFromIncompleteHoverData(UIView *view, CGPoint clientLocation, NSTimeInterval timestamp)
+{
+  PointerEvent event = {};
+  // "touch" events produced from a mouse cursor on iOS always have the ID 0 so
+  // we can just assume that here since these sort of hover events only ever come
+  // from the mouse
+  event.pointerId = 0;
+  event.pressure = 0.0;
+  event.pointerType = "mouse";
+  event.clientPoint = RCTPointFromCGPoint(clientLocation);
+  event.target = (Tag)view.tag;
+  event.timestamp = timestamp;
   return event;
 }
 
@@ -203,6 +247,9 @@ struct PointerHasher {
    */
   __weak UIView *_rootComponentView;
   IdentifierPool<11> _identifierPool;
+
+  UIHoverGestureRecognizer *_hoverRecognizer API_AVAILABLE(ios(13.0));
+  NSOrderedSet *_currentlyHoveredViews;
 }
 
 - (instancetype)init
@@ -217,6 +264,9 @@ struct PointerHasher {
     self.delaysTouchesEnded = NO;
 
     self.delegate = self;
+
+    _hoverRecognizer = nil;
+    _currentlyHoveredViews = [NSOrderedSet orderedSet];
   }
 
   return self;
@@ -230,6 +280,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 
   [view addGestureRecognizer:self];
   _rootComponentView = view;
+
+  if (RCTGetDispatchW3CPointerEvents()) {
+    if (@available(iOS 13.0, *)) {
+      _hoverRecognizer = [[UIHoverGestureRecognizer alloc] initWithTarget:self action:@selector(hovering:)];
+      [view addGestureRecognizer:_hoverRecognizer];
+    }
+  }
 }
 
 - (void)detachFromView:(UIView *)view
@@ -239,6 +296,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 
   [view removeGestureRecognizer:self];
   _rootComponentView = nil;
+
+  if (_hoverRecognizer != nil) {
+    [view removeGestureRecognizer:_hoverRecognizer];
+    _hoverRecognizer = nil;
+  }
 }
 
 - (void)_registerTouches:(NSSet<UITouch *> *)touches
@@ -481,6 +543,47 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 {
   [self setEnabled:NO];
   [self setEnabled:YES];
+}
+
+- (void)hovering:(UIHoverGestureRecognizer *)recognizer API_AVAILABLE(ios(13.0))
+{
+  UIView *listenerView = recognizer.view;
+  CGPoint clientLocation = [recognizer locationInView:listenerView];
+
+  UIView *targetView = [listenerView hitTest:clientLocation withEvent:nil];
+  targetView = FindClosestFabricManagedTouchableView(targetView);
+
+  NSOrderedSet *eventPathViews = GetTouchableViewsInPathToRoot(targetView);
+
+  NSTimeInterval timestamp = CACurrentMediaTime();
+
+  // Entering
+  // root -> child
+  for (UIView *componentView in [eventPathViews reverseObjectEnumerator]) {
+    if (![_currentlyHoveredViews containsObject:componentView]) {
+      SharedTouchEventEmitter eventEmitter =
+          GetTouchEmitterFromView(componentView, [recognizer locationInView:componentView]);
+      if (eventEmitter != nil) {
+        PointerEvent event = CreatePointerEventFromIncompleteHoverData(componentView, clientLocation, timestamp);
+        eventEmitter->onPointerEnter2(event);
+      }
+    }
+  }
+
+  // Leaving
+  // child -> root
+  for (UIView *componentView in _currentlyHoveredViews) {
+    if (![eventPathViews containsObject:componentView]) {
+      SharedTouchEventEmitter eventEmitter =
+          GetTouchEmitterFromView(componentView, [recognizer locationInView:componentView]);
+      if (eventEmitter != nil) {
+        PointerEvent event = CreatePointerEventFromIncompleteHoverData(componentView, clientLocation, timestamp);
+        eventEmitter->onPointerLeave2(event);
+      }
+    }
+  }
+
+  _currentlyHoveredViews = eventPathViews;
 }
 
 @end

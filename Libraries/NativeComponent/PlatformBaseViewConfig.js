@@ -389,6 +389,20 @@ const PlatformBaseViewConfig: PartialViewConfigWithoutName =
               bubbled: 'onPointerUp',
             },
           },
+          topPointerEnter2: {
+            phasedRegistrationNames: {
+              captured: 'onPointerEnter2Capture',
+              bubbled: 'onPointerEnter2',
+              skipBubbling: true,
+            },
+          },
+          topPointerLeave2: {
+            phasedRegistrationNames: {
+              captured: 'onPointerLeave2Capture',
+              bubbled: 'onPointerLeave2',
+              skipBubbling: true,
+            },
+          },
         },
         directEventTypes: {
           topAccessibilityAction: {

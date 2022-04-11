@@ -34,6 +34,8 @@ class TouchEventEmitter : public EventEmitter {
   void onPointerDown(PointerEvent const &event) const;
   void onPointerMove2(PointerEvent const &event) const;
   void onPointerUp(PointerEvent const &event) const;
+  void onPointerEnter2(PointerEvent const &event) const;
+  void onPointerLeave2(PointerEvent const &event) const;
 
  private:
   void dispatchTouchEvent(
