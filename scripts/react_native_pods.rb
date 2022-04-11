@@ -630,9 +630,11 @@ def use_react_native_codegen!(spec, options={})
   system(prepare_command) # Always run prepare_command when a podspec uses the codegen, as CocoaPods may skip invoking this command in certain scenarios. Replace with pre_integrate_hook after updating to CocoaPods 1.11
   spec.prepare_command = prepare_command
 
+  env_files = ["$PODS_ROOT/../.xcode.env.local", "$PODS_ROOT/../.xcode.env"]
+
   spec.script_phase = {
     :name => 'Generate Specs',
-    :input_files => input_files, # This also needs to be relative to Xcode
+    :input_files => input_files + env_files, # This also needs to be relative to Xcode
     :output_files => ["${DERIVED_FILE_DIR}/codegen-#{library_name}.log"].concat(generated_files.map { |filename| "${PODS_TARGET_SRCROOT}/#{filename}"} ),
     # The final generated files will be created when this script is invoked at Xcode build time.
     :script => get_script_phases_no_codegen_discovery(

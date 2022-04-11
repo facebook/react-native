@@ -43,6 +43,7 @@
     "scripts/generate-provider-cli.js",
     "scripts/generate-specs-cli.js",
     "scripts/ios-configure-glog.sh",
+    "scripts/xcode/with-environment.sh",
     "scripts/launchPackager.bat",
     "scripts/launchPackager.command",
     "scripts/node-binary.sh",
