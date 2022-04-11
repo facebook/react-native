@@ -15,7 +15,7 @@
     "@reactions/component": "^2.0.2",
     "@typescript-eslint/eslint-plugin": "4.30.0",
     "@typescript-eslint/parser": "4.30.0",
-    "async": "^2.4.0",
+    "async": "^3.2.2",
     "babel-eslint": "^10.1.0",
     "babel-preset-fbjs": "^3.4.0",
     "clang-format": "^1.2.4",
