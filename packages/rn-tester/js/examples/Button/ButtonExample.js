@@ -41,30 +41,17 @@ function TouchableExample(props) {
       style={{height: 200, width: 400, backgroundColor: 'red'}}
       importantForAccessibility="yes"
       accessibilityRole="button">
-      <View>
-        <Text
-          accessible={false}
-          focusable={false}
-          style={{
-            height: 50,
-            marginLeft: 50,
-            marginTop: 50,
-            backgroundColor: 'white',
-          }}>
-          Text number 1
-        </Text>
-        <Text
-          accessible={false}
-          focusable={false}
-          style={{
-            height: 50,
-            marginLeft: 50,
-            marginTop: 50,
-            backgroundColor: 'white',
-          }}>
-          Text number 2
-        </Text>
-      </View>
+      <Text
+        accessible={false}
+        focusable={false}
+        style={{
+          height: 50,
+          marginLeft: 50,
+          marginTop: 50,
+          backgroundColor: 'white',
+        }}>
+        Text number 1
+      </Text>
     </TouchableNativeFeedback>
   );
 }
