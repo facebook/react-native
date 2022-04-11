@@ -13,16 +13,17 @@ plugins {
     id("maven-publish")
 }
 
+def reactNativeRootDir = project(':ReactAndroid').projectDir.parent;
 def customDownloadDir = System.getenv("REACT_NATIVE_DOWNLOADS_DIR")
-def downloadsDir = customDownloadDir ? new File(customDownloadDir) : rootProject.file("sdks/download")
+def downloadsDir = customDownloadDir ? new File(customDownloadDir) : new File(reactNativeRootDir, "sdks/download")
 
 // By default we are going to download and unzip hermes inside the /sdks/hermes folder
 // but you can provide an override for where the hermes source code is located.
 def overrideHermesDir = System.getenv("REACT_NATIVE_OVERRIDE_HERMES_DIR") != null
-def hermesDir = System.getenv("REACT_NATIVE_OVERRIDE_HERMES_DIR") ?: rootProject.file("sdks/hermes")
+def hermesDir = System.getenv("REACT_NATIVE_OVERRIDE_HERMES_DIR") ?: new File(reactNativeRootDir, "sdks/hermes")
 
 def hermesVersion = "main"
-def hermesVersionFile = rootProject.file("sdks/.hermesversion")
+def hermesVersionFile = new File(reactNativeRootDir, "sdks/.hermesversion")
 if (hermesVersionFile.exists()) {
     hermesVersion = hermesVersionFile.text
 }
@@ -34,7 +35,7 @@ def prefabHeadersDir = new File("$buildDir/prefab-headers")
 def skipPrefabPublishing = System.getenv("REACT_NATIVE_HERMES_SKIP_PREFAB") != null
 
 // We inject the JSI directory used inside the Hermes build with the -DJSI_DIR config.
-def jsiDir = rootProject.file("ReactCommon/jsi")
+def jsiDir = new File(reactNativeRootDir, "ReactCommon/jsi")
 
 // The .aar is placed inside the ./android folder at the top level.
 // There it will be placed alongside the React Android .aar
@@ -100,10 +101,13 @@ android {
     compileSdkVersion 31
     buildToolsVersion = "31.0.0"
 
-    // Used to override the NDK path & version on internal CI
-    if (System.getenv("ANDROID_NDK") != null && System.getenv("LOCAL_ANDROID_NDK_VERSION") != null) {
-        ndkPath System.getenv("ANDROID_NDK")
-        ndkVersion System.getenv("LOCAL_ANDROID_NDK_VERSION")
+    // Used to override the NDK path/version on internal CI or by allowing
+    // users to customize the NDK path/version from their root project (e.g. for M1 support)
+    if (rootProject.hasProperty("ndkPath")) {
+        ndkPath rootProject.ext.ndkPath
+    }
+    if (rootProject.hasProperty("ndkVersion")) {
+        ndkVersion rootProject.ext.ndkVersion
     }
 
     defaultConfig {
