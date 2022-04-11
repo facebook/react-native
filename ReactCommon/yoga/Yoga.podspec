@@ -47,11 +47,25 @@ Pod::Spec.new do |spec|
 
   # Set this environment variable when *not* using the `:path` option to install the pod.
   # E.g. when publishing this spec to a spec repo.
-  source_files = 'yoga/**/*.{cpp,h}'
-  source_files = File.join('ReactCommon/yoga', source_files) if ENV['INSTALL_YOGA_WITHOUT_PATH_OPTION']
+  source_files = 'yoga/**/*.{cpp,h}', 'Yoga-umbrella.h'
+  source_files = source_files.map { |file| File.join('ReactCommon/yoga', file) } if ENV['INSTALL_YOGA_WITHOUT_PATH_OPTION']
   spec.source_files = source_files
 
-  header_files = 'yoga/{Yoga,YGEnums,YGMacros,YGNode,YGStyle,YGValue}.h'
-  header_files = File.join('ReactCommon/yoga', header_files) if ENV['INSTALL_YOGA_WITHOUT_PATH_OPTION']
-  spec.public_header_files = header_files
+  spec.module_map = 'Yoga.modulemap'
+
+  # CocoaPods custom `module_map` + `header_dir` doesn't put the umbrella header in right place.
+  # Ideally, modulemap should be placed with the umbrella header, that would work for both use_frameworks! mode and non use_frameworks! mode.
+  # This script copy the umbrella header back to right place.
+  spec.script_phase = {
+    :name => 'Copy umbrella header',
+    :input_files => ["$PODS_ROOT/Headers/Public/Yoga/yoga/Yoga-umbrella.h"],
+    :output_files => ["$PODS_ROOT/Headers/Private/Yoga/Yoga-umbrella.h"],
+    :execution_position => :before_compile,
+    :shell_path => '/bin/bash',
+
+    # In use_frameworks! mode, the umbrella header will by copied to right place.
+    # This copy command will fail because "$PODS_ROOT/Headers/Public/Yoga/yoga/Yoga-umbrella.h" doesn't exist.
+    # The command is just a no-op in use_frameworks! mode.
+    :script => 'cp -f "$PODS_ROOT/Headers/Public/Yoga/yoga/Yoga-umbrella.h" "$PODS_ROOT/Headers/Private/Yoga/Yoga-umbrella.h" || true',
+  }
 end
