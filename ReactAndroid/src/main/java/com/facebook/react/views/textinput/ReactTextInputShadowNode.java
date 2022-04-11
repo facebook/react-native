@@ -199,7 +199,6 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
   @ReactProp(name = PROP_ERROR_MESSAGE)
   public void setErrorMessage(String accessibilityErrorMessage) {
     mAccessibilityError = accessibilityErrorMessage;
-    markUpdated();
   }
 
   @ReactProp(name = PROP_SELECTION)
