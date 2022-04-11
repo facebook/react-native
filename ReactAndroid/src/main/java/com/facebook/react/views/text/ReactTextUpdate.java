@@ -161,7 +161,7 @@ public class ReactTextUpdate {
     return reactTextUpdate;
   }
 
-  public @Nullable String getErrorMessage() {
+  public @Nullable String getAccessibilityError() {
     return mAccessibilityError;
   }
 

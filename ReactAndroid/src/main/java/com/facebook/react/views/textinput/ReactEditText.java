@@ -519,13 +519,14 @@ public class ReactEditText extends AppCompatEditText
   }
 
   /**
-   * Attempt to set an error message or fail silently. EventCounter is the same one used as with
-   * text.
+   * Attempt to set an accessibility error or fail silently. EventCounter is the same one used as
+   * with text.
    *
    * @param eventCounter
    * @param accessibilityErrorMessage
    */
-  public void maybeSetErrorMessage(int eventCounter, @Nullable String accessibilityErrorMessage) {
+  public void maybeSetAccessibilityError(
+      int eventCounter, @Nullable String accessibilityErrorMessage) {
     if (!canUpdateWithEventCount(eventCounter) || accessibilityErrorMessage == null) {
       return;
     }
