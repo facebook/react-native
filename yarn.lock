@@ -1093,30 +1093,62 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@react-native-community/cli-debugger-ui@^7.0.3":
-  version "7.0.3"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-debugger-ui/-/cli-debugger-ui-7.0.3.tgz#3eeeacc5a43513cbcae56e5e965d77726361bcb4"
-  integrity sha512-G4SA6jFI0j22o+j+kYP8/7sxzbCDqSp2QiHA/X5E0lsGEd2o9qN2zbIjiFr8b8k+VVAYSUONhoC0+uKuINvmkA==
+"@react-native-community/cli-config@^8.0.0-alpha.0":
+  version "8.0.0-alpha.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-config/-/cli-config-8.0.0-alpha.0.tgz#62ea78d5c8cc0a116c64a9df7e837cc682bfbd4c"
+  integrity sha512-qnLmqYQ1jpnigWfPY8WEnpmDp5sPLt+iQfvi48ybLv7VKv7YbHD1M2hptDQBUGL0j1Vx5nalAp5qwlyfdAKzJw==
+  dependencies:
+    "@react-native-community/cli-tools" "^8.0.0-alpha.0"
+    cosmiconfig "^5.1.0"
+    deepmerge "^3.2.0"
+    glob "^7.1.3"
+    joi "^17.2.1"
+
+"@react-native-community/cli-debugger-ui@^8.0.0-alpha.0":
+  version "8.0.0-alpha.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-debugger-ui/-/cli-debugger-ui-8.0.0-alpha.0.tgz#3df51a0280d79e08c89bd22b954c0f6e37ee0ad3"
+  integrity sha512-ixDhO8rcT9artxITrwhYeqIac0xFil0id79z6hgz1yKijETsWOahKfZHtC27jR3AJDFLJbG5TUR8rZ9CzwazjQ==
   dependencies:
     serve-static "^1.13.1"
 
-"@react-native-community/cli-hermes@^6.3.0":
-  version "6.3.0"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-hermes/-/cli-hermes-6.3.0.tgz#92b2f07d08626a60f6893c3e3d57c1538c8fb5a7"
-  integrity sha512-Uhbm9bubyZLZ12vFCIfWbE/Qi3SBTbYIN/TC08EudTLhv/KbPomCQnmFsnJ7AXQFuOZJs73mBxoEAYSbRbwyVA==
+"@react-native-community/cli-doctor@^8.0.0-alpha.0":
+  version "8.0.0-alpha.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-doctor/-/cli-doctor-8.0.0-alpha.0.tgz#d4dc20bdd98b329011f85aaff389570a12c36d94"
+  integrity sha512-HCzuakVxyVFQCJZCo8qW56QDirAYuvp1Hx3ppwzFaJuyiA1nF+7UMceOIqqOYFNBa7hyqMWf8mTEIpggOIgfrQ==
   dependencies:
-    "@react-native-community/cli-platform-android" "^6.3.0"
-    "@react-native-community/cli-tools" "^6.2.0"
+    "@react-native-community/cli-config" "^8.0.0-alpha.0"
+    "@react-native-community/cli-tools" "^8.0.0-alpha.0"
+    chalk "^4.1.2"
+    command-exists "^1.2.8"
+    envinfo "^7.7.2"
+    execa "^1.0.0"
+    hermes-profile-transformer "^0.0.6"
+    ip "^1.1.5"
+    node-stream-zip "^1.9.1"
+    ora "^5.4.1"
+    prompts "^2.4.0"
+    semver "^6.3.0"
+    strip-ansi "^5.2.0"
+    sudo-prompt "^9.0.0"
+    wcwidth "^1.0.1"
+
+"@react-native-community/cli-hermes@^8.0.0-alpha.0":
+  version "8.0.0-alpha.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-hermes/-/cli-hermes-8.0.0-alpha.0.tgz#04260ef58bd4b9e28a06e3d3ec353de5ccb4a9ff"
+  integrity sha512-SnyVi59PDfCa+DLnJZ3Yn70n1benx4QOMg5M5z4q72y/dU3S05AhDdHG5DLNHfqLgKQx+Z02tS+WU5sL9NXcfQ==
+  dependencies:
+    "@react-native-community/cli-platform-android" "^8.0.0-alpha.0"
+    "@react-native-community/cli-tools" "^8.0.0-alpha.0"
     chalk "^4.1.2"
     hermes-profile-transformer "^0.0.6"
     ip "^1.1.5"
 
-"@react-native-community/cli-platform-android@^6.3.0":
-  version "6.3.0"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-android/-/cli-platform-android-6.3.0.tgz#ab7d156bd69a392493323eeaba839a874c0e201f"
-  integrity sha512-d5ufyYcvrZoHznYm5bjBXaiHIJv552t5gYtQpnUsxBhHSQ8QlaNmlLUyeSPRDfOw4ND9b0tPHqs4ufwx6vp/fQ==
+"@react-native-community/cli-platform-android@^8.0.0-alpha.0":
+  version "8.0.0-alpha.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-android/-/cli-platform-android-8.0.0-alpha.0.tgz#8aef774ecd8a8ee5bc61b6cd27e4855d325183ce"
+  integrity sha512-Y+omY0jprHwNfDtpyrO3IU4aqe3GFFevNo77Gi6QpiaSotGX6O0o/DgKR9fnL0NFe6vTx/9hQQkzctmEq61MhA==
   dependencies:
-    "@react-native-community/cli-tools" "^6.2.0"
+    "@react-native-community/cli-tools" "^8.0.0-alpha.0"
     chalk "^4.1.2"
     execa "^1.0.0"
     fs-extra "^8.1.0"
@@ -1125,30 +1157,13 @@
     lodash "^4.17.15"
     logkitty "^0.7.1"
     slash "^3.0.0"
-    xmldoc "^1.1.2"
 
-"@react-native-community/cli-platform-android@^7.0.1":
-  version "7.0.1"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-android/-/cli-platform-android-7.0.1.tgz#d165897edf401f9bceff1f361ef446528133cb52"
-  integrity sha512-nOr0aMkxAymCnbtsQwXBlyoRN2Y+IzC7Qz5T+/zyWwEbTY8SKQI8uV+8+qttUvzSvuXa2PeXsTWluuliOS8KCw==
+"@react-native-community/cli-platform-ios@^8.0.0-alpha.0":
+  version "8.0.0-alpha.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-ios/-/cli-platform-ios-8.0.0-alpha.0.tgz#030e2c0bb16500a82b6ca5ce2aa2c56909d0ed78"
+  integrity sha512-v0B4L1Xaez6oSsU7qXKkXQ+eAxsF0swz24q37XA4NokTUP9l+7QA9pRlqSbbsJPhTKUbQENZx8G8sAE0r+GFUg==
   dependencies:
-    "@react-native-community/cli-tools" "^7.0.1"
-    chalk "^4.1.2"
-    execa "^1.0.0"
-    fs-extra "^8.1.0"
-    glob "^7.1.3"
-    jetifier "^1.6.2"
-    lodash "^4.17.15"
-    logkitty "^0.7.1"
-    slash "^3.0.0"
-    xmldoc "^1.1.2"
-
-"@react-native-community/cli-platform-ios@^7.0.1":
-  version "7.0.1"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-ios/-/cli-platform-ios-7.0.1.tgz#1c27af85229246b7a528e97f093e38859896cc93"
-  integrity sha512-PLRIbzrCzSedmpjuFtQqcqUD45G8q7sEciI1lf5zUbVMXqjIBwJWS7iz8235PyWwj8J4MNHohLC+oyRueFtbGg==
-  dependencies:
-    "@react-native-community/cli-tools" "^7.0.1"
+    "@react-native-community/cli-tools" "^8.0.0-alpha.0"
     chalk "^4.1.2"
     execa "^1.0.0"
     glob "^7.1.3"
@@ -1156,15 +1171,14 @@
     lodash "^4.17.15"
     ora "^5.4.1"
     plist "^3.0.2"
-    xcode "^3.0.0"
 
-"@react-native-community/cli-plugin-metro@^7.0.3":
-  version "7.0.3"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-plugin-metro/-/cli-plugin-metro-7.0.3.tgz#b381ed2f68a0b126e4fa238f1956a44846e1ef8a"
-  integrity sha512-HJrEkFbxv9DNixsGwO+Q0zCcZMghDltyzeB9yQ//D5ZR4ZUEuAIPrRDdEp9xVw0WkBxAIZs6KXLux2/yPMwLhA==
+"@react-native-community/cli-plugin-metro@^8.0.0-alpha.0":
+  version "8.0.0-alpha.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-plugin-metro/-/cli-plugin-metro-8.0.0-alpha.0.tgz#8a663099d5a025ffeadcd6b6ac9c2db124c35f74"
+  integrity sha512-1G/kMjZ0K7Gv5RxE6JmDUsNag+P2r1XwcoOHBFIsWbLDnS6MN7Lbrv/wI6eKlcUhDcY6402jdeg+Cz/2BW28ew==
   dependencies:
-    "@react-native-community/cli-server-api" "^7.0.3"
-    "@react-native-community/cli-tools" "^6.2.0"
+    "@react-native-community/cli-server-api" "^8.0.0-alpha.0"
+    "@react-native-community/cli-tools" "^8.0.0-alpha.0"
     chalk "^4.1.2"
     metro "^0.67.0"
     metro-config "^0.67.0"
@@ -1174,39 +1188,25 @@
     metro-runtime "^0.67.0"
     readline "^1.3.0"
 
-"@react-native-community/cli-server-api@^7.0.3":
-  version "7.0.3"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-server-api/-/cli-server-api-7.0.3.tgz#ba9695a2fdfef22750d141153efd94baf641129b"
-  integrity sha512-JDrLsrkBgNxbG2u3fouoVGL9tKrXUrTsaNwr+oCV+3XyMwbVe42r/OaQ681/iW/7mHXjuVkDnMcp7BMg7e2yJg==
+"@react-native-community/cli-server-api@^8.0.0-alpha.0":
+  version "8.0.0-alpha.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-server-api/-/cli-server-api-8.0.0-alpha.0.tgz#8124a0b97742a5b4396266a968fbdb7572f08dc9"
+  integrity sha512-LHoFVzi97tcnP9HvoE3TlfdTKftwkzTwu8yobe11RJEk1Q3r4J4ERFvo/DQFbpCoyoi8HIWRhdowTXp90qnHlw==
   dependencies:
-    "@react-native-community/cli-debugger-ui" "^7.0.3"
-    "@react-native-community/cli-tools" "^6.2.0"
+    "@react-native-community/cli-debugger-ui" "^8.0.0-alpha.0"
+    "@react-native-community/cli-tools" "^8.0.0-alpha.0"
     compression "^1.7.1"
     connect "^3.6.5"
     errorhandler "^1.5.0"
-    nocache "^2.1.0"
+    nocache "^3.0.1"
     pretty-format "^26.6.2"
     serve-static "^1.13.1"
     ws "^7.5.1"
 
-"@react-native-community/cli-tools@^6.2.0":
-  version "6.2.0"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-tools/-/cli-tools-6.2.0.tgz#8f4adc2d83ab96e5654348533c8fa602742c4fce"
-  integrity sha512-08ssz4GMEnRxC/1FgTTN/Ud7mExQi5xMphItPjfHiTxpZPhrFn+IMx6mya0ncFEhhxQ207wYlJMRLPRRdBZ8oA==
-  dependencies:
-    appdirsjs "^1.2.4"
-    chalk "^4.1.2"
-    lodash "^4.17.15"
-    mime "^2.4.1"
-    node-fetch "^2.6.0"
-    open "^6.2.0"
-    semver "^6.3.0"
-    shell-quote "1.6.1"
-
-"@react-native-community/cli-tools@^7.0.1":
-  version "7.0.1"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-tools/-/cli-tools-7.0.1.tgz#73790d6ca2825e42a70a770c1b403a6777e690d6"
-  integrity sha512-0xra4hKNA5PR2zYVXsDMNiXMGaDNoNRYMY6eTP2aVIxQbqIcVMDWSyCA8wMWX5iOpMWg0cZGaQ6a77f3Rlb34g==
+"@react-native-community/cli-tools@^8.0.0-alpha.0":
+  version "8.0.0-alpha.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-tools/-/cli-tools-8.0.0-alpha.0.tgz#1724fdec1a40497354d3b323f7eedc60f112fb17"
+  integrity sha512-rZ7/4GJJLcANVK5DG00xMcccbJ7uhgwGRGOFX7kqoWZMth1uS895XFvwoNBHaZpdxhVvVEzZU8j/5B+lnHLwEw==
   dependencies:
     appdirsjs "^1.2.4"
     chalk "^4.1.2"
@@ -1218,49 +1218,37 @@
     semver "^6.3.0"
     shell-quote "^1.7.3"
 
-"@react-native-community/cli-types@^6.0.0":
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-types/-/cli-types-6.0.0.tgz#90269fbdc7229d5e3b8f2f3e029a94083551040d"
-  integrity sha512-K493Fk2DMJC0ZM8s8gnfseKxGasIhuDaCUDeLZcoCSFlrjKEuEs1BKKEJiev0CARhKEXKOyyp/uqYM9nWhisNw==
+"@react-native-community/cli-types@^8.0.0-alpha.0":
+  version "8.0.0-alpha.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-types/-/cli-types-8.0.0-alpha.0.tgz#26d4b64e5a8e951db06bee327ce34837a9c0497c"
+  integrity sha512-/E9YwdAbT9z2vAeA93LBuJQs28Ukza09ybfQMR1vTii748CtQ+qBg7t9RFRmYt/qgJJSVpzC1B/asid3k/V1Yw==
   dependencies:
-    ora "^3.4.0"
+    joi "^17.2.1"
 
-"@react-native-community/cli@^7.0.3":
-  version "7.0.3"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-7.0.3.tgz#1addb462d71786fcbbd266fbceb41819b8cf7839"
-  integrity sha512-WyJOA829KAhU1pw2MDQt0YhOS9kyR2KqyqgJyTuQhzFVCBPX4F5aDEkZYYn4jdldaDHCPrLJ3ho3gxYTXy+x7w==
+"@react-native-community/cli@^8.0.0-alpha.0":
+  version "8.0.0-alpha.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-8.0.0-alpha.0.tgz#daa0844b878d4fe8a80923897589b0f0937f5786"
+  integrity sha512-U/K1Fg1wqCyWMXyFSMBSqRvUSce3w17kk7E7z+kikLDn4mVV6627tpeHvSm+FAvMn4mcI+2jpUd5BQ3QvvdgBA==
   dependencies:
-    "@react-native-community/cli-debugger-ui" "^7.0.3"
-    "@react-native-community/cli-hermes" "^6.3.0"
-    "@react-native-community/cli-plugin-metro" "^7.0.3"
-    "@react-native-community/cli-server-api" "^7.0.3"
-    "@react-native-community/cli-tools" "^6.2.0"
-    "@react-native-community/cli-types" "^6.0.0"
-    appdirsjs "^1.2.4"
+    "@react-native-community/cli-config" "^8.0.0-alpha.0"
+    "@react-native-community/cli-debugger-ui" "^8.0.0-alpha.0"
+    "@react-native-community/cli-doctor" "^8.0.0-alpha.0"
+    "@react-native-community/cli-hermes" "^8.0.0-alpha.0"
+    "@react-native-community/cli-plugin-metro" "^8.0.0-alpha.0"
+    "@react-native-community/cli-server-api" "^8.0.0-alpha.0"
+    "@react-native-community/cli-tools" "^8.0.0-alpha.0"
+    "@react-native-community/cli-types" "^8.0.0-alpha.0"
     chalk "^4.1.2"
-    command-exists "^1.2.8"
     commander "^2.19.0"
-    cosmiconfig "^5.1.0"
-    deepmerge "^3.2.0"
-    envinfo "^7.7.2"
     execa "^1.0.0"
     find-up "^4.1.0"
     fs-extra "^8.1.0"
-    glob "^7.1.3"
     graceful-fs "^4.1.3"
-    joi "^17.2.1"
     leven "^3.1.0"
     lodash "^4.17.15"
     minimist "^1.2.0"
-    node-stream-zip "^1.9.1"
-    ora "^3.4.0"
-    pretty-format "^26.6.2"
     prompts "^2.4.0"
     semver "^6.3.0"
-    serve-static "^1.13.1"
-    strip-ansi "^5.2.0"
-    sudo-prompt "^9.0.0"
-    wcwidth "^1.0.1"
 
 "@reactions/component@^2.0.2":
   version "2.0.2"
@@ -1653,11 +1641,6 @@ arr-union@^3.1.0:
   resolved "https://registry.yarnpkg.com/arr-union/-/arr-union-3.1.0.tgz#e39b09aea9def866a8f206e288af63919bae39c4"
   integrity sha1-45sJrqne+Gao8gbiiK9jkZuuOcQ=
 
-array-filter@~0.0.0:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/array-filter/-/array-filter-0.0.1.tgz#7da8cf2e26628ed732803581fd21f67cacd2eeec"
-  integrity sha1-fajPLiZijtcygDWB/SH2fKzS7uw=
-
 array-includes@^3.1.1, array-includes@^3.1.3:
   version "3.1.4"
   resolved "https://registry.yarnpkg.com/array-includes/-/array-includes-3.1.4.tgz#f5b493162c760f3539631f005ba2bb46acb45ba9"
@@ -1668,16 +1651,6 @@ array-includes@^3.1.1, array-includes@^3.1.3:
     es-abstract "^1.19.1"
     get-intrinsic "^1.1.1"
     is-string "^1.0.7"
-
-array-map@~0.0.0:
-  version "0.0.0"
-  resolved "https://registry.yarnpkg.com/array-map/-/array-map-0.0.0.tgz#88a2bab73d1cf7bcd5c1b118a003f66f665fa662"
-  integrity sha1-iKK6tz0c97zVwbEYoAP2b2ZfpmI=
-
-array-reduce@~0.0.0:
-  version "0.0.0"
-  resolved "https://registry.yarnpkg.com/array-reduce/-/array-reduce-0.0.0.tgz#173899d3ffd1c7d9383e4479525dbe278cab5f2b"
-  integrity sha1-FziZ0//Rx9k4PkR5Ul2+J4yrXys=
 
 array-union@^2.1.0:
   version "2.1.0"
@@ -1976,11 +1949,6 @@ bcrypt-pbkdf@^1.0.0:
   dependencies:
     tweetnacl "^0.14.3"
 
-big-integer@1.6.x:
-  version "1.6.51"
-  resolved "https://registry.yarnpkg.com/big-integer/-/big-integer-1.6.51.tgz#0df92a5d9880560d3ff2d5fd20245c889d130686"
-  integrity sha512-GPEid2Y9QU1Exl1rpO9B2IPJGHPSupF5GnVIP0blYvNOMer2bTvSWs1jGOUg04hTmu67nmLsQ9TBo1puaotBHg==
-
 bl@^4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/bl/-/bl-4.1.0.tgz#451535264182bec2fbbc83a62ab98cf11d9f7b3a"
@@ -1989,20 +1957,6 @@ bl@^4.1.0:
     buffer "^5.5.0"
     inherits "^2.0.4"
     readable-stream "^3.4.0"
-
-bplist-creator@0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/bplist-creator/-/bplist-creator-0.1.0.tgz#018a2d1b587f769e379ef5519103730f8963ba1e"
-  integrity sha512-sXaHZicyEEmY86WyueLTQesbeoH/mquvarJaQNbjuOQO+7gbFcDEWqKmcWA4cOTLzFlfgvkiVxolk1k5bBIpmg==
-  dependencies:
-    stream-buffers "2.2.x"
-
-bplist-parser@0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/bplist-parser/-/bplist-parser-0.3.0.tgz#ba50666370f61bbf94881636cd9f7d23c5286090"
-  integrity sha512-zgmaRvT6AN1JpPPV+S0a1/FAtoxSreYDccZGIqEMSvZl9DMe70mJ7MFzpxa1X+gHVdkToE2haRUHHMiW1OdejA==
-  dependencies:
-    big-integer "1.6.x"
 
 brace-expansion@^1.1.7:
   version "1.1.11"
@@ -2150,7 +2104,7 @@ caseless@~0.12.0:
   resolved "https://registry.yarnpkg.com/caseless/-/caseless-0.12.0.tgz#1b681c21ff84033c826543090689420d187151dc"
   integrity sha1-G2gcIf+EAzyCZUMJBolCDRhxUdw=
 
-chalk@^2.0.0, chalk@^2.0.1, chalk@^2.4.2:
+chalk@^2.0.0, chalk@^2.0.1:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.4.2.tgz#cd42541677a54333cf541a49108c1432b44c9424"
   integrity sha512-Mti+f9lpJNcwF4tWV8/OrTTtF1gZi+f8FqlyAdouralcFWFQWF2+NgCHShjkCb+IFBLq9buZwE1xckQU4peSuQ==
@@ -2211,13 +2165,6 @@ class-utils@^0.3.5:
     isobject "^3.0.0"
     static-extend "^0.1.1"
 
-cli-cursor@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/cli-cursor/-/cli-cursor-2.1.0.tgz#b35dac376479facc3e94747d41d0d0f5238ffcb5"
-  integrity sha1-s12sN2R5+sw+lHR9QdDQ9SOP/LU=
-  dependencies:
-    restore-cursor "^2.0.0"
-
 cli-cursor@^3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/cli-cursor/-/cli-cursor-3.1.0.tgz#264305a7ae490d1d03bf0c9ba7c925d1753af307"
@@ -2225,7 +2172,7 @@ cli-cursor@^3.1.0:
   dependencies:
     restore-cursor "^3.1.0"
 
-cli-spinners@^2.0.0, cli-spinners@^2.5.0:
+cli-spinners@^2.5.0:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/cli-spinners/-/cli-spinners-2.6.1.tgz#adc954ebe281c37a6319bfa401e6dd2488ffb70d"
   integrity sha512-x/5fWmGMnbKQAaNwN+UZlV79qBLM9JFnJuJ03gIi5whrob0xV0ofNVHy9DhwGdsMJQc2OKv0oGmLzvaqvAVv+g==
@@ -4727,11 +4674,6 @@ jsonfile@^4.0.0:
   optionalDependencies:
     graceful-fs "^4.1.6"
 
-jsonify@~0.0.0:
-  version "0.0.0"
-  resolved "https://registry.yarnpkg.com/jsonify/-/jsonify-0.0.0.tgz#2c74b6ee41d93ca51b7b5aaee8f503631d252a73"
-  integrity sha1-LHS27kHZPKUbe1qu6PUDYx0lKnM=
-
 jsprim@^1.2.2:
   version "1.4.2"
   resolved "https://registry.yarnpkg.com/jsprim/-/jsprim-1.4.2.tgz#712c65533a15c878ba59e9ed5f0e26d5b77c5feb"
@@ -4873,13 +4815,6 @@ log-driver@^1.2.7:
   version "1.2.7"
   resolved "https://registry.yarnpkg.com/log-driver/-/log-driver-1.2.7.tgz#63b95021f0702fedfa2c9bb0a24e7797d71871d8"
   integrity sha512-U7KCmLdqsGHBLeWqYlFA0V0Sl6P08EE1ZrmA9cxjUE0WVqT9qnyVDPz1kzpFEP0jdJuFnasWIfSd7fsaNXkpbg==
-
-log-symbols@^2.2.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/log-symbols/-/log-symbols-2.2.0.tgz#5740e1c5d6f0dfda4ad9323b5332107ef6b4c40a"
-  integrity sha512-VeIAFslyIerEJLXHziedo2basKbMKtTw3vfn5IzG0XTjhAVEJyNHnL2p7vc+wBDSdQuUpNw3M2u6xb9QsAY5Eg==
-  dependencies:
-    chalk "^2.0.1"
 
 log-symbols@^4.1.0:
   version "4.1.0"
@@ -5376,11 +5311,6 @@ mime@^2.4.1:
   resolved "https://registry.npmjs.org/mime/-/mime-2.4.4.tgz#bd7b91135fc6b01cde3e9bae33d659b63d8857e5"
   integrity sha512-LRxmNwziLPT828z+4YkNzloCFC2YM4wrB99k+AV5ZbEyfGNWfG8SO1FUXLmLDBSo89NrJZ4DIWeLjy1CHGhMGA==
 
-mimic-fn@^1.0.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/mimic-fn/-/mimic-fn-1.2.0.tgz#820c86a39334640e99516928bd03fca88057d022"
-  integrity sha512-jf84uxzwiuiIVKiOLpfYk7N46TSy8ubTonmneY9vrpHNAnp0QBt2BxWV9dO3/j+BoVAb+a5G6YDPW3M5HOdMWQ==
-
 mimic-fn@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/mimic-fn/-/mimic-fn-2.1.0.tgz#7ed2c2ccccaf84d3ffcb7a69b57711fc2083401b"
@@ -5470,10 +5400,10 @@ nice-try@^1.0.4:
   resolved "https://registry.yarnpkg.com/nice-try/-/nice-try-1.0.5.tgz#a3378a7696ce7d223e88fc9b764bd7ef1089e366"
   integrity sha512-1nh45deeb5olNY7eX82BkPO7SSxR5SSYJiPTrTdFUVYwAl8CKMA5N9PjTYkHiRjisVcxcQ1HXdLhx2qxxJzLNQ==
 
-nocache@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/nocache/-/nocache-2.1.0.tgz#120c9ffec43b5729b1d5de88cd71aa75a0ba491f"
-  integrity sha512-0L9FvHG3nfnnmaEQPjT9xhfN4ISk0A8/2j4M37Np4mcDesJjHgEUfgPhdCyZuFI954tjokaIj/A3NdpFNdEh4Q==
+nocache@^3.0.1:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/nocache/-/nocache-3.0.3.tgz#07a3f4094746d5211c298d1938dcb5c1e1e352ca"
+  integrity sha512-bd+lPsDTjbfAuKez+xp8xvp15SrQuOjzajRGqRpCAE06FPB1pJzV/QkyBgFD5KOktv/M/A8M0vY7yatnOUaM5Q==
 
 node-dir@^0.1.17:
   version "0.1.17"
@@ -5682,13 +5612,6 @@ once@^1.3.0, once@^1.3.1, once@^1.4.0:
   dependencies:
     wrappy "1"
 
-onetime@^2.0.0:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/onetime/-/onetime-2.0.1.tgz#067428230fd67443b2794b22bba528b6867962d4"
-  integrity sha1-BnQoIw/WdEOyeUsiu6UotoZ5YtQ=
-  dependencies:
-    mimic-fn "^1.0.0"
-
 onetime@^5.1.0:
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/onetime/-/onetime-5.1.0.tgz#fff0f3c91617fe62bb50189636e99ac8a6df7be5"
@@ -5726,18 +5649,6 @@ optionator@^0.9.1:
     prelude-ls "^1.2.1"
     type-check "^0.4.0"
     word-wrap "^1.2.3"
-
-ora@^3.4.0:
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/ora/-/ora-3.4.0.tgz#bf0752491059a3ef3ed4c85097531de9fdbcd318"
-  integrity sha512-eNwHudNbO1folBP3JsZ19v9azXWtQZjICdr3Q0TDPIaeBQ3mXLrh54wM+er0+hSp+dWKf+Z8KM58CYzEyIYxYg==
-  dependencies:
-    chalk "^2.4.2"
-    cli-cursor "^2.1.0"
-    cli-spinners "^2.0.0"
-    log-symbols "^2.2.0"
-    strip-ansi "^5.2.0"
-    wcwidth "^1.0.1"
 
 ora@^5.4.1:
   version "5.4.1"
@@ -5911,7 +5822,7 @@ pkg-dir@^4.2.0:
   dependencies:
     find-up "^4.0.0"
 
-plist@^3.0.2, plist@^3.0.4:
+plist@^3.0.2:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/plist/-/plist-3.0.4.tgz#a62df837e3aed2bb3b735899d510c4f186019cbe"
   integrity sha512-ksrr8y9+nXOxQB2osVNqrgvX/XQPOXaU4BQMKjYq8PvaY1U18mo+fKgBSwzK+luSyinOuPae956lSVcBwxlAMg==
@@ -6356,14 +6267,6 @@ resolve@^2.0.0-next.3:
     is-core-module "^2.2.0"
     path-parse "^1.0.6"
 
-restore-cursor@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/restore-cursor/-/restore-cursor-2.0.0.tgz#9f7ee287f82fd326d4fd162923d62129eee0dfaf"
-  integrity sha1-n37ih/gv0ybU/RYpI9YhKe7g368=
-  dependencies:
-    onetime "^2.0.0"
-    signal-exit "^3.0.2"
-
 restore-cursor@^3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/restore-cursor/-/restore-cursor-3.1.0.tgz#39f67c54b3a7a58cea5236d95cf0034239631f7e"
@@ -6461,11 +6364,6 @@ sane@^4.0.3:
     micromatch "^3.1.4"
     minimist "^1.1.1"
     walker "~1.0.5"
-
-sax@^1.2.1:
-  version "1.2.4"
-  resolved "https://registry.yarnpkg.com/sax/-/sax-1.2.4.tgz#2816234e2378bddc4e5354fab5caa895df7100d9"
-  integrity sha512-NqVDv9TpANUjFm0N8uM5GxL36UgKi9/atZw+x7YFnQ8ckwFGKrl4xX4yWtrey3UJm5nP1kUbnYgLopqWNSRhWw==
 
 saxes@^5.0.1:
   version "5.0.1"
@@ -6599,16 +6497,6 @@ shebang-regex@^3.0.0:
   resolved "https://registry.yarnpkg.com/shebang-regex/-/shebang-regex-3.0.0.tgz#ae16f1644d873ecad843b0307b143362d4c42172"
   integrity sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==
 
-shell-quote@1.6.1:
-  version "1.6.1"
-  resolved "https://registry.yarnpkg.com/shell-quote/-/shell-quote-1.6.1.tgz#f4781949cce402697127430ea3b3c5476f481767"
-  integrity sha1-9HgZSczkAmlxJ0MOo7PFR29IF2c=
-  dependencies:
-    array-filter "~0.0.0"
-    array-map "~0.0.0"
-    array-reduce "~0.0.0"
-    jsonify "~0.0.0"
-
 shell-quote@^1.6.1, shell-quote@^1.7.3:
   version "1.7.3"
   resolved "https://registry.yarnpkg.com/shell-quote/-/shell-quote-1.7.3.tgz#aa40edac170445b9a431e17bb62c0b881b9c4123"
@@ -6646,15 +6534,6 @@ signedsource@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/signedsource/-/signedsource-1.0.0.tgz#1ddace4981798f93bd833973803d80d52e93ad6a"
   integrity sha1-HdrOSYF5j5O9gzlzgD2A1S6TrWo=
-
-simple-plist@^1.1.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/simple-plist/-/simple-plist-1.3.0.tgz#f451997663eafd8ea6bad353a01caf49ef186d43"
-  integrity sha512-uYWpeGFtZtVt2NhG4AHgpwx323zxD85x42heMJBan1qAiqqozIlaGrwrEt6kRjXWRWIXsuV1VLCvVmZan2B5dg==
-  dependencies:
-    bplist-creator "0.1.0"
-    bplist-parser "0.3.0"
-    plist "^3.0.4"
 
 sisteransi@^1.0.5:
   version "1.0.5"
@@ -6857,11 +6736,6 @@ statuses@~1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.4.0.tgz#bb73d446da2796106efcc1b601a253d6c46bd087"
   integrity sha512-zhSCtt8v2NDrRlPQpCNtw/heZLtfUDqxBM1udqikb/Hbk52LK4nQSwr10u77iopCW5LsyHpuXS0GnEc48mLeew==
-
-stream-buffers@2.2.x:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/stream-buffers/-/stream-buffers-2.2.0.tgz#91d5f5130d1cef96dcfa7f726945188741d09ee4"
-  integrity sha1-kdX1Ew0c75bc+n9yaUUYh0HQnuQ=
 
 string-length@^4.0.1:
   version "4.0.2"
@@ -7352,11 +7226,6 @@ uuid@^3.3.2, uuid@^3.3.3:
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.4.0.tgz#b23e4358afa8a202fe7a100af1f5f883f02007ee"
   integrity sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==
 
-uuid@^7.0.3:
-  version "7.0.3"
-  resolved "https://registry.yarnpkg.com/uuid/-/uuid-7.0.3.tgz#c5c9f2c8cf25dc0a372c4df1441c41f5bd0c680b"
-  integrity sha512-DPSke0pXhTZgoF/d+WSt2QaKMCFSfx7QegxEWT+JOuHF5aWrKEn0G+ztjuJg/gG8/ItK+rbPCD/yNv8yyih6Cg==
-
 uuid@^8.3.0:
   version "8.3.2"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2"
@@ -7547,14 +7416,6 @@ ws@^7, ws@^7.4.6, ws@^7.5.1:
   resolved "https://registry.yarnpkg.com/ws/-/ws-7.5.6.tgz#e59fc509fb15ddfb65487ee9765c5a51dec5fe7b"
   integrity sha512-6GLgCqo2cy2A2rjCNFlxQS6ZljG/coZfZXclldI8FB/1G3CCI36Zd8xy2HrFVACi8tfk5XrgLQEk+P0Tnz9UcA==
 
-xcode@^3.0.0:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/xcode/-/xcode-3.0.1.tgz#3efb62aac641ab2c702458f9a0302696146aa53c"
-  integrity sha512-kCz5k7J7XbJtjABOvkc5lJmkiDh8VhjVCGNiqdKCscmVpdVUpEAyXv1xmCLkQJ5dsHqx3IPO4XW+NTDhU/fatA==
-  dependencies:
-    simple-plist "^1.1.0"
-    uuid "^7.0.3"
-
 xml-name-validator@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/xml-name-validator/-/xml-name-validator-3.0.0.tgz#6ae73e06de4d8c6e47f9fb181f78d648ad457c6a"
@@ -7574,13 +7435,6 @@ xmlchars@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/xmlchars/-/xmlchars-2.2.0.tgz#060fe1bcb7f9c76fe2a17db86a9bc3ab894210cb"
   integrity sha512-JZnDKK8B0RCDw84FNdDAIpZK+JuJw+s7Lz8nksI7SIuU3UXJJslUthsi+uWBUYOwPFwW7W7PRLRfUKpxjtjFCw==
-
-xmldoc@^1.1.2:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/xmldoc/-/xmldoc-1.1.2.tgz#6666e029fe25470d599cd30e23ff0d1ed50466d7"
-  integrity sha512-ruPC/fyPNck2BD1dpz0AZZyrEwMOrWTO5lDdIXS91rs3wtm4j+T8Rp2o+zoOYkkAxJTZRPOSnOGei1egoRmKMQ==
-  dependencies:
-    sax "^1.2.1"
 
 xtend@~4.0.1:
   version "4.0.1"
