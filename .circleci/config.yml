@@ -79,7 +79,7 @@ executors:
   reactnativeios:
     <<: *defaults
     macos:
-      xcode: &_XCODE_VERSION "13.0.0"
+      xcode: &_XCODE_VERSION "13.3.0"
     resource_class: macos.x86.medium.gen2
 
 # -------------------------
@@ -97,7 +97,11 @@ commands:
     steps:
       - restore_cache:
           key: 1-gems-{{ checksum "Gemfile.lock" }}
-      - run: bundle check || bundle install --path vendor/bundle --clean
+      - run:
+          name: Bundle Install
+          command: |
+            source /usr/local/share/chruby/auto.sh
+            bundle check || bundle install --path vendor/bundle --clean
       - save_cache:
           key: 1-gems-{{ checksum "Gemfile.lock" }}
           paths:
