@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "devtools-protocol": "0.0.730699",
-    "yargs": "^14.2.0"
+    "yargs": "^15.3.0"
   },
   "beachball": {
     "shouldPublish": false
