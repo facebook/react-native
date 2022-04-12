@@ -90,7 +90,7 @@
     "repo-config"
   ],
   "peerDependencies": {
-    "react": "17.0.2"
+    "react": "18.0.0"
   },
   "dependencies": {
     "@jest/create-cache-key-function": "^27.0.1",
@@ -119,7 +119,7 @@
     "react-refresh": "^0.4.0",
     "react-shallow-renderer": "16.14.1",
     "regenerator-runtime": "^0.13.2",
-    "scheduler": "^0.20.2",
+    "scheduler": "^0.21.0",
     "stacktrace-parser": "^0.1.3",
     "use-subscription": ">=1.0.0 <1.6.0",
     "whatwg-fetch": "^3.0.0",
@@ -127,7 +127,8 @@
   },
   "devDependencies": {
     "flow-bin": "^0.175.1",
-    "react": "17.0.2"
+    "react": "18.0.0",
+    "react-test-renderer": "^18.0.0"
   },
   "codegenConfig": {
     "libraries": [
