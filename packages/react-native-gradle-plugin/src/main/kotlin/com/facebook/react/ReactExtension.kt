@@ -248,7 +248,7 @@ abstract class ReactExtension @Inject constructor(project: Project) {
    * Please also note that those are the default value and you most likely don't need those at all.
    */
   @Deprecated(
-      "reactRoot was confusing and has been replace with root" +
+      "reactRoot was confusing and has been replace with root " +
           "to point to your root project and reactNativeDir to point to " +
           "the folder of the react-native NPM package",
       replaceWith = ReplaceWith("reactNativeRoot"))
