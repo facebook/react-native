@@ -378,6 +378,23 @@ AttributedStringBox RCTAttributedStringBoxFromNSAttributedString(NSAttributedStr
   return nsAttributedString.length ? AttributedStringBox{wrapManagedObject(nsAttributedString)} : AttributedStringBox{};
 }
 
+static NSString *capitalizeText(NSString *text)
+{
+  NSArray *words = [text componentsSeparatedByString:@" "];
+  NSMutableArray *newWords = [NSMutableArray new];
+  NSNumberFormatter *num = [NSNumberFormatter new];
+  for (NSString *item in words) {
+    NSString *word; 
+    if ([item length] > 0 && [num numberFromString:[item substringWithRange:NSMakeRange(0, 1)]] == nil) {
+      word = [item capitalizedString];
+    } else {
+      word = [item lowercaseString];
+    }
+    [newWords addObject:word];
+  }
+  return [newWords componentsJoinedByString:@" "];
+}
+
 NSString *RCTNSStringFromStringApplyingTextTransform(NSString *string, TextTransform textTransform)
 {
   switch (textTransform) {
@@ -386,7 +403,7 @@ NSString *RCTNSStringFromStringApplyingTextTransform(NSString *string, TextTrans
     case TextTransform::Lowercase:
       return [string lowercaseString];
     case TextTransform::Capitalize:
-      return [string capitalizedString];
+      return capitalizeText(string);
     default:
       return string;
   }
