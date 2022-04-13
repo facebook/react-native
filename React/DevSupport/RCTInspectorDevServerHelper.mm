@@ -110,9 +110,21 @@ static void sendEventToAllConnections(NSString *event)
   }
 
   NSString *key = [inspectorURL absoluteString];
+  // [TODO(macOS GH#774) - safety check to avoid a crash
+  if (key == nil) {
+    RCTLogError(@"failed to get inspector URL");
+    return nil;
+  }
+  // ]TODO(macOS GH#774)
   RCTInspectorPackagerConnection *connection = socketConnections[key];
   if (!connection || !connection.isConnected) {
     connection = [[RCTInspectorPackagerConnection alloc] initWithURL:inspectorURL];
+    // [TODO(macOS GH#774) - safety check to avoid a crash
+    if (connection == nil) {
+      RCTLogError(@"failed to initialize RCTInspectorPackagerConnection");
+      return nil;
+    }
+    // ]TODO(macOS GH#774)
     socketConnections[key] = connection;
     [connection connect];
   }
