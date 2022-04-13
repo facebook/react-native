@@ -138,6 +138,7 @@ class AndroidTextInputProps final : public ViewProps, public BaseTextProps {
   const std::string defaultValue{};
   const bool selectTextOnFocus{false};
   const bool blurOnSubmit{false};
+  const std::string returnKeyAction{};
   const bool caretHidden{false};
   const bool contextMenuHidden{false};
   const SharedColor textShadowColor{};

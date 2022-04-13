@@ -149,6 +149,10 @@ AndroidTextInputProps::AndroidTextInputProps(
           "blurOnSubmit",
           sourceProps.blurOnSubmit,
           {false})),
+      returnKeyAction(convertRawProp(context, rawProps,
+           "returnKeyAction",
+          sourceProps.returnKeyAction,
+          {})),
       caretHidden(convertRawProp(context, rawProps,
           "caretHidden",
           sourceProps.caretHidden,
@@ -290,6 +294,7 @@ folly::dynamic AndroidTextInputProps::getDynamic() const {
   props["defaultValue"] = defaultValue;
   props["selectTextOnFocus"] = selectTextOnFocus;
   props["blurOnSubmit"] = blurOnSubmit;
+  props["returnKeyAction"] = returnKeyAction;
   props["caretHidden"] = caretHidden;
   props["contextMenuHidden"] = contextMenuHidden;
   props["textShadowColor"] = toAndroidRepr(textShadowColor);

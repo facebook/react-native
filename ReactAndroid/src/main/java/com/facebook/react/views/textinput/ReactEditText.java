@@ -96,6 +96,7 @@ public class ReactEditText extends AppCompatEditText
   private int mStagedInputType;
   protected boolean mContainsImages;
   private @Nullable Boolean mBlurOnSubmit;
+  private @Nullable String mReturnKeyAction = null;
   private boolean mDisableFullscreen;
   private @Nullable String mReturnKeyType;
   private @Nullable SelectionWatcher mSelectionWatcher;
@@ -255,7 +256,7 @@ public class ReactEditText extends AppCompatEditText
               inputConnection, reactContext, this, mEventDispatcher);
     }
 
-    if (isMultiline() && getBlurOnSubmit()) {
+    if ((isMultiline() && getBlurOnSubmit()) || getReturnKeyAction() != null) {
       // Remove IME_FLAG_NO_ENTER_ACTION to keep the original IME_OPTION
       outAttrs.imeOptions &= ~EditorInfo.IME_FLAG_NO_ENTER_ACTION;
     }
@@ -394,6 +395,14 @@ public class ReactEditText extends AppCompatEditText
     }
 
     return mBlurOnSubmit;
+  }
+
+  public String getReturnKeyAction() {
+    return mReturnKeyAction;
+  }
+
+  public void setReturnKeyAction(String returnKeyAction) {
+    mReturnKeyAction = returnKeyAction;
   }
 
   public void setDisableFullscreenUI(boolean disableFullscreenUI) {

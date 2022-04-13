@@ -447,6 +447,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setBlurOnSubmit(blurOnSubmit);
   }
 
+  @ReactProp(name = "returnKeyAction")
+  public void setReturnKeyAction(ReactEditText view, String returnKeyAction) {
+    view.setReturnKeyAction(returnKeyAction);
+  }
+
   @ReactProp(name = "onContentSizeChange", defaultBoolean = false)
   public void setOnContentSizeChange(final ReactEditText view, boolean onContentSizeChange) {
     if (onContentSizeChange) {
@@ -1080,36 +1085,51 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
           @Override
           public boolean onEditorAction(TextView v, int actionId, KeyEvent keyEvent) {
             if ((actionId & EditorInfo.IME_MASK_ACTION) != 0 || actionId == EditorInfo.IME_NULL) {
-              boolean blurOnSubmit = editText.getBlurOnSubmit();
               boolean isMultiline = editText.isMultiline();
+              String returnKeyAction = editText.getReturnKeyAction();
+
+              boolean shouldSubmit;
+              boolean shouldBlur;
+              if (returnKeyAction == null) {
+                if (!isMultiline) {
+                  shouldSubmit = true;
+                  shouldBlur = true;
+                } else {
+                  shouldSubmit = false;
+                  shouldBlur = false;
+                }
+              } else {
+                shouldSubmit = returnKeyAction.equals("submit") || returnKeyAction.equals("blurAndSubmit");
+                shouldBlur = returnKeyAction.equals("blur") || returnKeyAction.equals("blurAndSubmit");
+              }
 
               // Motivation:
-              // * blurOnSubmit && isMultiline => Clear focus; prevent default behaviour (return
+              // * shouldSubmit => Clear focus; prevent default behavior (return true);
+              // * shouldBlur => Submit; prevent default behavior (return true);
+              // * !shouldBlur && !shouldSubmit && isMultiline => Perform default behavior (return
+              // false);
+              // * !shouldBlur && !shouldSubmit && !isMultiline => Prevent default behavior (return
               // true);
-              // * blurOnSubmit && !isMultiline => Clear focus; prevent default behaviour (return
-              // true);
-              // * !blurOnSubmit && isMultiline => Perform default behaviour (return false);
-              // * !blurOnSubmit && !isMultiline => Prevent default behaviour (return true).
-              // Additionally we always generate a `submit` event.
-
-              EventDispatcher eventDispatcher = getEventDispatcher(reactContext, editText);
-              eventDispatcher.dispatchEvent(
+              if (shouldSubmit) {
+                EventDispatcher eventDispatcher = getEventDispatcher(reactContext, editText);
+                eventDispatcher.dispatchEvent(
                   new ReactTextInputSubmitEditingEvent(
-                      reactContext.getSurfaceId(),
-                      editText.getId(),
-                      editText.getText().toString()));
+                    reactContext.getSurfaceId(),
+                    editText.getId(),
+                    editText.getText().toString()));
+              }
 
-              if (blurOnSubmit) {
+              if (shouldBlur) {
                 editText.clearFocus();
               }
 
               // Prevent default behavior except when we want it to insert a newline.
-              if (blurOnSubmit || !isMultiline) {
+              if (shouldBlur || shouldSubmit || !isMultiline) {
                 return true;
               }
 
-              // If we've reached this point, it means that the TextInput has 'blurOnSubmit' set to
-              // false and 'multiline' set to true. But it's still possible to get IME_ACTION_NEXT
+              // If we've reached this point, it means that the TextInput has 'returnKeyAction' set
+              // nullish and 'multiline' set to true. But it's still possible to get IME_ACTION_NEXT
               // and IME_ACTION_PREVIOUS here in case if 'disableFullscreenUI' is false and Android
               // decides to render this EditText in the full screen mode (when a phone has the
               // landscape orientation for example). The full screen EditText also renders an action

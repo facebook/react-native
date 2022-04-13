@@ -240,6 +240,70 @@ class BlurOnSubmitExample extends React.Component<{...}> {
   }
 }
 
+class ReturnKeyActionExample extends React.Component<{...}> {
+  ref1 = React.createRef();
+  ref2 = React.createRef();
+  ref3 = React.createRef();
+  ref4 = React.createRef();
+  ref5 = React.createRef();
+  ref6 = React.createRef();
+  ref7 = React.createRef();
+  ref8 = React.createRef();
+
+  render() {
+    return (
+      <View>
+        <TextInput
+          ref={this.ref1}
+          multiline
+          placeholder="multiline submit"
+          returnKeyAction="submit"
+          onSubmitEditing={() => this.ref2.current?.focus()}
+        />
+        <TextInput
+          ref={this.ref2}
+          multiline
+          placeholder="multiline blurAndSubmit"
+          returnKeyAction="blurAndSubmit"
+          onSubmitEditing={() => this.ref3.current?.focus()}
+        />
+        <TextInput
+          ref={this.ref3}
+          multiline
+          placeholder="multiline blur"
+          returnKeyAction="blur"
+        />
+        <TextInput
+          ref={this.ref4}
+          multiline
+          placeholder="multiline default"
+        />
+        <TextInput
+          ref={this.ref5}
+          placeholder="single line submit"
+          returnKeyAction="submit"
+          onSubmitEditing={() => this.ref6.current?.focus()}
+        />
+        <TextInput
+          ref={this.ref6}
+          placeholder="single line blurAndSubmit"
+          returnKeyAction="blurAndSubmit"
+          onSubmitEditing={() => this.ref7.current?.focus()}
+        />
+        <TextInput
+          ref={this.ref7}
+          placeholder="single blur"
+          returnKeyAction="blur"
+        />
+        <TextInput
+          ref={this.ref8}
+          placeholder="single default"
+        />
+      </View>
+    );
+  }
+}
+
 class TextEventsExample extends React.Component<{...}, $FlowFixMeState> {
   state = {
     curText: '<No Event>',
@@ -592,6 +656,12 @@ module.exports = ([
     title: 'Blur on submit',
     render: function (): React.Element<any> {
       return <BlurOnSubmitExample />;
+    },
+  },
+  {
+    title: 'Return key action',
+    render: function (): React.Element<any> {
+      return <ReturnKeyActionExample />;
     },
   },
   {
