@@ -20,7 +20,8 @@
 {
   if (self = [super initWithBridge:bridge]) {
     // `blurOnSubmit` defaults to `false` for <TextInput multiline={true}> by design.
-    self.blurOnSubmit = NO;
+    // There's no need to manually set `self.blurOnSubmit = NO` here because the default `returnKeyAction` takes
+    // care of the default behavior.
 
     _backedTextInputView = [[RCTUITextView alloc] initWithFrame:self.bounds];
     _backedTextInputView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;

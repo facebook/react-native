@@ -100,6 +100,9 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 - (BOOL)textFieldShouldReturn:(__unused UITextField *)textField
 {
+  // Ignore the value of whether we submitted; just make sure the submit
+  // event is called if necessary.
+  [_backedTextInputView.textInputDelegate textInputShouldSubmitOnReturn];
   return [_backedTextInputView.textInputDelegate textInputShouldReturn];
 }
 
@@ -209,9 +212,13 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 {
   // Custom implementation of `textInputShouldReturn` and `textInputDidReturn` pair for `UITextView`.
   if (!_backedTextInputView.textWasPasted && [text isEqualToString:@"\n"]) {
-    if ([_backedTextInputView.textInputDelegate textInputShouldReturn]) {
+    const BOOL shouldSubmit = [_backedTextInputView.textInputDelegate textInputShouldSubmitOnReturn];
+    const BOOL shouldReturn = [_backedTextInputView.textInputDelegate textInputShouldReturn];
+    if (shouldReturn) {
       [_backedTextInputView.textInputDelegate textInputDidReturn];
       [_backedTextInputView endEditing:NO];
+      return NO;
+    } else if (shouldSubmit) {
       return NO;
     }
   }

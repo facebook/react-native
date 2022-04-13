@@ -173,6 +173,8 @@ export type ReturnKeyType =
   | 'route'
   | 'yahoo';
 
+export type ReturnKeyAction = 'blur' | 'submit' | 'blurAndSubmit';
+
 export type AutoCapitalize = 'none' | 'sentences' | 'words' | 'characters';
 
 export type TextContentType =
@@ -768,6 +770,39 @@ export type Props = $ReadOnly<{|
   selectTextOnFocus?: ?boolean,
 
   /**
+   * If `true`, the text field will blur when submitted.
+   * The default value is true for single-line fields and false for
+   * multiline fields. Note that for multiline fields, setting `blurOnSubmit`
+   * to `true` means that pressing return will blur the field and trigger the
+   * `onSubmitEditing` event instead of inserting a newline into the field.
+   *
+   * @deprecated
+   * Note that `returnKeyAction` now takes the place of `blurOnSubmit` and will
+   * override any behavior defined by `blurOnSubmit`.
+   * @see returnKeyAction
+   */
+  blurOnSubmit?: ?boolean,
+
+  /**
+   * When the return key is pressed,
+   *
+   * For single line inputs:
+   *
+   * - `undefined` defaults to `'blurAndSubmit'`
+   *
+   * For multiline inputs:
+   *
+   * - `undefined` defaults to adding a new line
+   *
+   * For both single line and multiline inputs:
+   *
+   * - `'blur'` will only blur the input
+   * - `'submit'` will only send a submit event and not blur the input
+   * - `'blurAndSubmit`' will both blur the input and send a submit event
+   */
+  returnKeyAction?: ?ReturnKeyAction;
+
+  /**
    * Note that not all Text styles are supported, an incomplete list of what is not supported includes:
    *
    * - `borderLeftWidth`
@@ -1177,9 +1212,25 @@ function InternalTextInput(props: Props): React.Node {
 
   let textInput = null;
 
-  // The default value for `blurOnSubmit` is true for single-line fields and
-  // false for multi-line fields.
-  const blurOnSubmit = props.blurOnSubmit ?? !props.multiline;
+  let returnKeyAction: ReturnKeyAction | undefined;
+  if (props.returnKeyAction) {
+    returnKeyAction = props.returnKeyAction;
+  } else if (props.multiline) {
+    if (props.blurOnSubmit) {
+      returnKeyAction = 'blurAndSubmit';
+    } else {
+      returnKeyAction = undefined;
+    }
+  } else {
+    // Single line
+    if (props.blurOnSubmit) {
+      returnKeyAction = 'blurAndSubmit'
+    } else if (props.blurOnSubmit === false) {
+      returnKeyAction = 'submit';
+    } else {
+      returnKeyAction = undefined;
+    }
+  }
 
   const accessible = props.accessible !== false;
   const focusable = props.focusable !== false;
@@ -1238,7 +1289,7 @@ function InternalTextInput(props: Props): React.Node {
         {...props}
         {...eventHandlers}
         accessible={accessible}
-        blurOnSubmit={blurOnSubmit}
+        returnKeyAction={returnKeyAction}
         caretHidden={caretHidden}
         dataDetectorTypes={props.dataDetectorTypes}
         focusable={focusable}
@@ -1286,7 +1337,7 @@ function InternalTextInput(props: Props): React.Node {
         {...eventHandlers}
         accessible={accessible}
         autoCapitalize={autoCapitalize}
-        blurOnSubmit={blurOnSubmit}
+        returnKeyAction={returnKeyAction}
         caretHidden={caretHidden}
         children={children}
         disableFullscreenUI={props.disableFullscreenUI}
