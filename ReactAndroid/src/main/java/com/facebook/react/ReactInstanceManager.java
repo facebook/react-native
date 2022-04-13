@@ -156,12 +156,14 @@ public class ReactInstanceManager {
   /* accessed from any thread */
   private final JavaScriptExecutorFactory mJavaScriptExecutorFactory;
 
+  // See {@code ReactInstanceManagerBuilder} for description of all flags here.
   private @Nullable List<String> mViewManagerNames = null;
   private final @Nullable JSBundleLoader mBundleLoader;
   private final @Nullable String mJSMainModulePath; /* path to JS bundle root on Metro */
   private final List<ReactPackage> mPackages;
   private final DevSupportManager mDevSupportManager;
   private final boolean mUseDeveloperSupport;
+  private final boolean mRequireActivity;
   private @Nullable ComponentNameResolverManager mComponentNameResolverManager;
   private @Nullable RuntimeSchedulerManager mRuntimeSchedulerManager;
   private final @Nullable NotThreadSafeBridgeIdleDebugListener mBridgeIdleDebugListener;
@@ -216,6 +218,7 @@ public class ReactInstanceManager {
       @Nullable String jsMainModulePath,
       List<ReactPackage> packages,
       boolean useDeveloperSupport,
+      boolean requireActivity,
       @Nullable NotThreadSafeBridgeIdleDebugListener bridgeIdleDebugListener,
       LifecycleState initialLifecycleState,
       @Nullable UIImplementationProvider mUIImplementationProvider,
@@ -233,6 +236,7 @@ public class ReactInstanceManager {
 
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(applicationContext);
 
+    // See {@code ReactInstanceManagerBuilder} for description of all flags here.
     mApplicationContext = applicationContext;
     mCurrentActivity = currentActivity;
     mDefaultBackButtonImpl = defaultHardwareBackBtnHandler;
@@ -241,6 +245,7 @@ public class ReactInstanceManager {
     mJSMainModulePath = jsMainModulePath;
     mPackages = new ArrayList<>();
     mUseDeveloperSupport = useDeveloperSupport;
+    mRequireActivity = requireActivity;
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstanceManager.initDevSupportManager");
     mDevSupportManager =
@@ -558,16 +563,20 @@ public class ReactInstanceManager {
    * @param activity the activity being paused
    */
   @ThreadConfined(UI)
-  public void onHostPause(Activity activity) {
-    Assertions.assertNotNull(mCurrentActivity);
-    Assertions.assertCondition(
-        activity == mCurrentActivity,
-        "Pausing an activity that is not the current activity, this is incorrect! "
-            + "Current activity: "
-            + mCurrentActivity.getClass().getSimpleName()
-            + " "
-            + "Paused activity: "
-            + activity.getClass().getSimpleName());
+  public void onHostPause(@Nullable Activity activity) {
+    if (mRequireActivity) {
+      Assertions.assertCondition(mCurrentActivity != null);
+    }
+    if (mCurrentActivity != null) {
+      Assertions.assertCondition(
+          activity == mCurrentActivity,
+          "Pausing an activity that is not the current activity, this is incorrect! "
+              + "Current activity: "
+              + mCurrentActivity.getClass().getSimpleName()
+              + " "
+              + "Paused activity: "
+              + activity.getClass().getSimpleName());
+    }
     onHostPause();
   }
 
@@ -583,7 +592,8 @@ public class ReactInstanceManager {
    *     this instance of {@link ReactInstanceManager}.
    */
   @ThreadConfined(UI)
-  public void onHostResume(Activity activity, DefaultHardwareBackBtnHandler defaultBackButtonImpl) {
+  public void onHostResume(
+      @Nullable Activity activity, DefaultHardwareBackBtnHandler defaultBackButtonImpl) {
     UiThreadUtil.assertOnUiThread();
 
     mDefaultBackButtonImpl = defaultBackButtonImpl;
@@ -592,7 +602,7 @@ public class ReactInstanceManager {
 
   /** Use this method when the activity resumes. */
   @ThreadConfined(UI)
-  public void onHostResume(Activity activity) {
+  public void onHostResume(@Nullable Activity activity) {
     UiThreadUtil.assertOnUiThread();
 
     mCurrentActivity = activity;
@@ -631,8 +641,8 @@ public class ReactInstanceManager {
           // activity is attached to window, we can enable dev support immediately
           mDevSupportManager.setDevSupportEnabled(true);
         }
-      } else {
-        // there is no activity, we can enable dev support
+      } else if (!mRequireActivity) {
+        // there is no activity, but we can enable dev support
         mDevSupportManager.setDevSupportEnabled(true);
       }
     }
@@ -666,7 +676,9 @@ public class ReactInstanceManager {
    * @param activity the activity being destroyed
    */
   @ThreadConfined(UI)
-  public void onHostDestroy(Activity activity) {
+  public void onHostDestroy(@Nullable Activity activity) {
+    // In some cases, Activity may (correctly) be null.
+    // See mRequireActivity flag.
     if (activity == mCurrentActivity) {
       onHostDestroy();
     }
