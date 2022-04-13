@@ -392,7 +392,7 @@ jobs:
       - run:
           name: Configure Environment Variables
           command: |
-            echo 'export PATH=/usr/local/opt/node@12/bin:$PATH' >> $BASH_ENV
+            echo 'export PATH=/usr/local/opt/node@16/bin:$PATH' >> $BASH_ENV
             source $BASH_ENV
 
       - with_brew_cache_span:
@@ -406,6 +406,12 @@ jobs:
                 command: HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew >/dev/null
             - brew_install:
                 package: applesimutils
+
+      - run:
+          name: Configure Node
+          # Sourcing find-node.sh will ensure nvm is set up.
+          # It also helps future invocation of find-node.sh prevent permission issue with nvm.sh.
+          command: source scripts/find-node.sh && nvm install 16 && nvm alias default 16
 
       - run:
           name: Configure Watchman
@@ -622,8 +628,8 @@ jobs:
           name: Install Node
           # Note: Version set separately for non-Windows builds, see above.
           command: |
-            nvm install 14.17.0
-            nvm use 14.17.0
+            nvm install 16
+            nvm use 16
 
       # Setup Dependencies
       - run:
