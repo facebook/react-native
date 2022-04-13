@@ -1,3 +1,5 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
@@ -6,7 +8,15 @@ buildscript {
         minSdkVersion = 21
         compileSdkVersion = 31
         targetSdkVersion = 31
-        ndkVersion = "21.4.7075529"
+        
+        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            // Note: On Windows there are limits on number of character in file paths and command lines
+            // Ref: https://android.googlesource.com/platform/ndk/+/master/docs/BuildSystemMaintainers.md#Path-Length-Limits
+            // NDK r23+ can handle long file paths. But we are still limited by the command line limit on Windows. 
+            ndkVersion = "23.1.7779620"
+        } else {
+            ndkVersion = "21.4.7075529"
+        }
     }
     repositories {
         google()

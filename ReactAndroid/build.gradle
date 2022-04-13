@@ -287,6 +287,10 @@ android {
         ndkVersion System.getenv("LOCAL_ANDROID_NDK_VERSION")
     }
 
+    if (ndkVersion == null && ndkPath == null && rootProject.ext.ndkVersion != null) {
+        ndkVersion rootProject.ext.ndkVersion
+    }
+
     defaultConfig {
         minSdkVersion(21)
         targetSdkVersion(31)
@@ -321,15 +325,9 @@ android {
 
                 // Note: On Windows there are limits on number of character in file paths and in command lines
                 // Ref: https://android.googlesource.com/platform/ndk/+/master/docs/BuildSystemMaintainers.md#Path-Length-Limits
-                // NDK allows circumventing command line limits using response(RSP) files as inputs using NDK_APP_SHORT_COMMANDS flag.
-                // 
-                // Windows can support long file paths if configured through registry or by prefixing all file paths with a special character sequence 
-                // The latter requires changes in NDK. And there are tools in NDK (AR) which is not able to handle long paths (>256) even after setting the registry key.
-                // The new architecutre source tree is too deep, and the object file naming conventions in NDK makes the matters worse, by producing incredibly long file paths.
-                // Other solutions such as symlinking source code etc. didn't work as expected, and makes the build scripts complicated and hard to manage.
-                // This change temporarily works around the issue by placing the temporary build outputs as short a path as possible within the project path.
+                // NDK r23+ can handle long file paths. But we are still limited by the command line limit on Windows.           
                 if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                    arguments "NDK_OUT=${rootProject.projectDir.getParent()}\\.cxx",
+                    arguments "NDK_OUT=${rootProject.projectDir}\\.cxx",
                               "NDK_APP_SHORT_COMMANDS=true"
                 }
             }
