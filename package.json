@@ -107,14 +107,14 @@
     "invariant": "^2.2.4",
     "jsc-android": "^250230.2.1",
     "memoize-one": "^5.0.0",
-    "metro-react-native-babel-transformer": "0.70.0",
-    "metro-runtime": "0.70.0",
-    "metro-source-map": "0.70.0",
+    "metro-react-native-babel-transformer": "0.70.1",
+    "metro-runtime": "0.70.1",
+    "metro-source-map": "0.70.1",
     "nullthrows": "^1.1.1",
     "pretty-format": "^26.5.2",
     "promise": "^8.0.3",
     "react-devtools-core": "4.24.0",
-    "react-native-gradle-plugin": "^0.0.5",
+    "react-native-gradle-plugin": "^0.0.6",
     "react-refresh": "^0.4.0",
     "react-shallow-renderer": "16.14.1",
     "regenerator-runtime": "^0.13.2",
@@ -125,7 +125,7 @@
     "ws": "^6.1.4"
   },
   "devDependencies": {
-    "flow-bin": "^0.175.0",
+    "flow-bin": "^0.175.1",
     "react": "17.0.2"
   },
   "codegenConfig": {

@@ -59,6 +59,11 @@ struct ActiveTouch {
   SharedTouchEventEmitter eventEmitter;
 
   /*
+   * The type of touch received.
+   */
+  UITouchType touchType;
+
+  /*
    * A component view on which the touch was begun.
    */
   __strong UIView<RCTComponentViewProtocol> *componentView = nil;
@@ -98,6 +103,8 @@ static void UpdateActiveTouchWithUITouch(
   if (RCTForceTouchAvailable()) {
     activeTouch.touch.force = RCTZeroIfNaN(uiTouch.force / uiTouch.maximumPossibleForce);
   }
+
+  activeTouch.touchType = uiTouch.type;
 }
 
 static ActiveTouch CreateTouchWithUITouch(UITouch *uiTouch, UIView *rootComponentView, CGPoint rootViewOriginOffset)
@@ -119,6 +126,35 @@ static ActiveTouch CreateTouchWithUITouch(UITouch *uiTouch, UIView *rootComponen
 
   UpdateActiveTouchWithUITouch(activeTouch, uiTouch, rootComponentView, rootViewOriginOffset);
   return activeTouch;
+}
+
+static const char *PointerTypeCStringFromUITouchType(UITouchType type)
+{
+  switch (type) {
+    case UITouchTypeDirect:
+      return "touch";
+    case UITouchTypePencil:
+      return "pen";
+    case UITouchTypeIndirectPointer:
+      return "mouse";
+    case UITouchTypeIndirect:
+    default:
+      return "";
+  }
+}
+
+static PointerEvent CreatePointerEventFromActiveTouch(ActiveTouch activeTouch)
+{
+  Touch touch = activeTouch.touch;
+
+  PointerEvent event = {};
+  event.pointerId = touch.identifier;
+  event.pressure = touch.force;
+  event.pointerType = PointerTypeCStringFromUITouchType(activeTouch.touchType);
+  event.clientPoint = touch.pagePoint;
+  event.target = touch.target;
+  event.timestamp = touch.timestamp;
+  return event;
 }
 
 static BOOL AllTouchesAreCancelledOrEnded(NSSet<UITouch *> *touches)
@@ -273,6 +309,25 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
     changedActiveTouches.insert(activeTouch);
     event.changedTouches.insert(activeTouch.touch);
     uniqueEventEmitters.insert(activeTouch.eventEmitter);
+
+    // emit w3c pointer events
+    if (RCTGetDispatchW3CPointerEvents()) {
+      PointerEvent pointerEvent = CreatePointerEventFromActiveTouch(activeTouch);
+      switch (eventType) {
+        case RCTTouchEventTypeTouchStart:
+          activeTouch.eventEmitter->onPointerDown(pointerEvent);
+          break;
+        case RCTTouchEventTypeTouchMove:
+          activeTouch.eventEmitter->onPointerMove2(pointerEvent);
+          break;
+        case RCTTouchEventTypeTouchEnd:
+          activeTouch.eventEmitter->onPointerUp(pointerEvent);
+          break;
+        case RCTTouchEventTypeTouchCancel:
+          activeTouch.eventEmitter->onPointerCancel(pointerEvent);
+          break;
+      }
+    }
   }
 
   for (const auto &pair : _activeTouches) {
