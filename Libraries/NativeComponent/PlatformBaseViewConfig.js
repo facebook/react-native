@@ -185,7 +185,6 @@ const PlatformBaseViewConfig: PartialViewConfigWithoutName =
           accessibilityLabelledBy: true,
           accessibilityLabel: true,
           accessibilityHint: true,
-          accessibilityLanguage: true,
           accessibilityRole: true,
           accessibilityState: true,
           accessibilityActions: true,
