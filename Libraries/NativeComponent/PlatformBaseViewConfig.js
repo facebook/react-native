@@ -579,6 +579,14 @@ const PlatformBaseViewConfig: PartialViewConfigWithoutName =
             onTouchMove: true,
             onTouchEnd: true,
             onTouchCancel: true,
+
+            // Pointer events
+            onPointerUp: true,
+            onPointerDown: true,
+            onPointerCancel: true,
+            onPointerEnter2: true,
+            onPointerMove2: true,
+            onPointerLeave2: true,
           }),
         },
       };
