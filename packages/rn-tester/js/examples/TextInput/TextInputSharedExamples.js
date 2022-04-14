@@ -248,7 +248,6 @@ class ReturnKeyActionExample extends React.Component<{...}> {
   ref5 = React.createRef();
   ref6 = React.createRef();
   ref7 = React.createRef();
-  ref8 = React.createRef();
 
   render() {
     return (
@@ -270,8 +269,8 @@ class ReturnKeyActionExample extends React.Component<{...}> {
         <TextInput
           ref={this.ref3}
           multiline
-          placeholder="multiline blur"
-          returnKeyAction="blur"
+          placeholder="multiline newline"
+          returnKeyAction="newline"
         />
         <TextInput
           ref={this.ref4}
@@ -292,12 +291,7 @@ class ReturnKeyActionExample extends React.Component<{...}> {
         />
         <TextInput
           ref={this.ref7}
-          placeholder="single blur"
-          returnKeyAction="blur"
-        />
-        <TextInput
-          ref={this.ref8}
-          placeholder="single default"
+          placeholder="single line default"
         />
       </View>
     );

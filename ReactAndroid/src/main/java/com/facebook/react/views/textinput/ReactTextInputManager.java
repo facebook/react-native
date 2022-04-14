@@ -442,13 +442,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
   }
 
-  @ReactProp(name = "blurOnSubmit")
-  public void setBlurOnSubmit(ReactEditText view, @Nullable Boolean blurOnSubmit) {
-    view.setBlurOnSubmit(blurOnSubmit);
-  }
-
   @ReactProp(name = "returnKeyAction")
-  public void setReturnKeyAction(ReactEditText view, String returnKeyAction) {
+  public void setReturnKeyAction(ReactEditText view, @Nullable String returnKeyAction) {
     view.setReturnKeyAction(returnKeyAction);
   }
 
@@ -1088,20 +1083,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
               boolean isMultiline = editText.isMultiline();
               String returnKeyAction = editText.getReturnKeyAction();
 
-              boolean shouldSubmit;
-              boolean shouldBlur;
-              if (returnKeyAction == null) {
-                if (!isMultiline) {
-                  shouldSubmit = true;
-                  shouldBlur = true;
-                } else {
-                  shouldSubmit = false;
-                  shouldBlur = false;
-                }
-              } else {
-                shouldSubmit = returnKeyAction.equals("submit") || returnKeyAction.equals("blurAndSubmit");
-                shouldBlur = returnKeyAction.equals("blur") || returnKeyAction.equals("blurAndSubmit");
-              }
+              boolean shouldSubmit = editText.shouldSubmitOnReturn();
+              boolean shouldBlur = editText.shouldBlurOnReturn();
 
               // Motivation:
               // * shouldSubmit => Clear focus; prevent default behavior (return true);

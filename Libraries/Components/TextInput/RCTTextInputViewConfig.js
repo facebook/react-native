@@ -128,7 +128,7 @@ const RCTTextInputViewConfig = {
     keyboardType: true,
     selection: true,
     returnKeyType: true,
-    blurOnSubmit: true,
+    returnKeyAction: true,
     mostRecentEventCount: true,
     scrollEnabled: true,
     selectionColor: {process: require('../../StyleSheet/processColor')},

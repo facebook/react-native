@@ -42,7 +42,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) NSInteger mostRecentEventCount;
 @property (nonatomic, assign, readonly) NSInteger nativeEventCount;
 @property (nonatomic, assign) BOOL autoFocus;
-@property (nonatomic, assign) BOOL blurOnSubmit;
 @property (nonatomic, copy) NSString *returnKeyAction;
 @property (nonatomic, assign) BOOL selectTextOnFocus;
 @property (nonatomic, assign) BOOL clearTextOnFocus;

@@ -173,7 +173,7 @@ export type ReturnKeyType =
   | 'route'
   | 'yahoo';
 
-export type ReturnKeyAction = 'blur' | 'submit' | 'blurAndSubmit';
+export type ReturnKeyAction =  'submit' | 'blurAndSubmit' | 'newline';
 
 export type AutoCapitalize = 'none' | 'sentences' | 'words' | 'characters';
 
@@ -497,15 +497,6 @@ export type Props = $ReadOnly<{|
   allowFontScaling?: ?boolean,
 
   /**
-   * If `true`, the text field will blur when submitted.
-   * The default value is true for single-line fields and false for
-   * multiline fields. Note that for multiline fields, setting `blurOnSubmit`
-   * to `true` means that pressing return will blur the field and trigger the
-   * `onSubmitEditing` event instead of inserting a newline into the field.
-   */
-  blurOnSubmit?: ?boolean,
-
-  /**
    * If `true`, caret is hidden. The default value is `false`.
    *
    * On Android devices manufactured by Xiaomi with Android Q,
@@ -788,15 +779,16 @@ export type Props = $ReadOnly<{|
    *
    * For single line inputs:
    *
+   * - `'newline`' defaults to `'blurAndSubmit'`
    * - `undefined` defaults to `'blurAndSubmit'`
    *
    * For multiline inputs:
    *
-   * - `undefined` defaults to adding a new line
+   * - `'newline'` adds a newline
+   * - `undefined` defaults to `'newline'`
    *
    * For both single line and multiline inputs:
    *
-   * - `'blur'` will only blur the input
    * - `'submit'` will only send a submit event and not blur the input
    * - `'blurAndSubmit`' will both blur the input and send a submit event
    */
@@ -1212,14 +1204,20 @@ function InternalTextInput(props: Props): React.Node {
 
   let textInput = null;
 
-  let returnKeyAction: ReturnKeyAction | undefined;
+  let returnKeyAction: ReturnKeyAction;
   if (props.returnKeyAction) {
-    returnKeyAction = props.returnKeyAction;
+    // `returnKeyAction` is set explicitly
+    if (!props.multiline && returnKeyAction === 'newline') {
+      // For single line text inputs, `'newline'` is not a valid option
+      returnKeyAction = 'blurAndSubmit';
+    } else {
+      returnKeyAction = props.returnKeyAction;
+    }
   } else if (props.multiline) {
     if (props.blurOnSubmit) {
       returnKeyAction = 'blurAndSubmit';
     } else {
-      returnKeyAction = undefined;
+      returnKeyAction = 'newline';
     }
   } else {
     // Single line
@@ -1228,7 +1226,7 @@ function InternalTextInput(props: Props): React.Node {
     } else if (props.blurOnSubmit === false) {
       returnKeyAction = 'submit';
     } else {
-      returnKeyAction = undefined;
+      returnKeyAction = 'blurAndSubmit';
     }
   }
 

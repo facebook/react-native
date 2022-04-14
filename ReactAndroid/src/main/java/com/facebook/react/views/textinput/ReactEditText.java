@@ -95,7 +95,6 @@ public class ReactEditText extends AppCompatEditText
   private @Nullable TextWatcherDelegator mTextWatcherDelegator;
   private int mStagedInputType;
   protected boolean mContainsImages;
-  private @Nullable Boolean mBlurOnSubmit;
   private @Nullable String mReturnKeyAction = null;
   private boolean mDisableFullscreen;
   private @Nullable String mReturnKeyType;
@@ -137,7 +136,6 @@ public class ReactEditText extends AppCompatEditText
     mDefaultGravityVertical = getGravity() & Gravity.VERTICAL_GRAVITY_MASK;
     mNativeEventCount = 0;
     mIsSettingTextFromJS = false;
-    mBlurOnSubmit = null;
     mDisableFullscreen = false;
     mListeners = null;
     mTextWatcherDelegator = null;
@@ -256,7 +254,7 @@ public class ReactEditText extends AppCompatEditText
               inputConnection, reactContext, this, mEventDispatcher);
     }
 
-    if ((isMultiline() && getBlurOnSubmit()) || getReturnKeyAction() != null) {
+    if (isMultiline() && (shouldBlurOnReturn() || shouldSubmitOnReturn())) {
       // Remove IME_FLAG_NO_ENTER_ACTION to keep the original IME_OPTION
       outAttrs.imeOptions &= ~EditorInfo.IME_FLAG_NO_ENTER_ACTION;
     }
@@ -380,21 +378,44 @@ public class ReactEditText extends AppCompatEditText
     mSelectionWatcher = selectionWatcher;
   }
 
-  public void setBlurOnSubmit(@Nullable Boolean blurOnSubmit) {
-    mBlurOnSubmit = blurOnSubmit;
-  }
-
   public void setOnKeyPress(boolean onKeyPress) {
     mOnKeyPress = onKeyPress;
   }
 
-  public boolean getBlurOnSubmit() {
-    if (mBlurOnSubmit == null) {
-      // Default blurOnSubmit
-      return isMultiline() ? false : true;
+  public boolean shouldBlurOnReturn() {
+    String returnKeyAction = getReturnKeyAction();
+    boolean shouldBlur;
+
+    // Default shouldBlur
+    if (returnKeyAction == null) {
+      if (!isMultiline()) {
+        shouldBlur = true;
+      } else {
+        shouldBlur = false;
+      }
+    } else {
+      shouldBlur = returnKeyAction.equals("blurAndSubmit");
     }
 
-    return mBlurOnSubmit;
+    return shouldBlur;
+  }
+
+  public boolean shouldSubmitOnReturn() {
+    String returnKeyAction = getReturnKeyAction();
+    boolean shouldSubmit;
+
+    // Default shouldSubmit
+    if (returnKeyAction == null) {
+      if (!isMultiline()) {
+        shouldSubmit = true;
+      } else {
+        shouldSubmit = false;
+      }
+    } else {
+      shouldSubmit = returnKeyAction.equals("submit") || returnKeyAction.equals("blurAndSubmit");
+    }
+
+    return shouldSubmit;
   }
 
   public String getReturnKeyAction() {
