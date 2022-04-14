@@ -30,6 +30,7 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
@@ -168,6 +169,14 @@ public class ReactEditText extends AppCompatEditText
             if (accessibilityErrorMessage != info.getError()) {
               info.setError(accessibilityErrorMessage);
               info.setContentInvalid(contentInvalid);
+            }
+          }
+
+          @Override
+          public void onInitializeAccessibilityEvent(View host, AccessibilityEvent event) {
+            super.onInitializeAccessibilityEvent(host, event);
+            if (((View) host).getParent() != null) {
+              ((View) host).getParent().requestSendAccessibilityEvent(host, event);
             }
           }
 
@@ -527,11 +536,12 @@ public class ReactEditText extends AppCompatEditText
    */
   public void maybeSetAccessibilityError(
       int eventCounter, @Nullable String accessibilityErrorMessage) {
-    if (!canUpdateWithEventCount(eventCounter) || accessibilityErrorMessage == null) {
+    if (!canUpdateWithEventCount(eventCounter)) {
       return;
     }
-    announceForAccessibility("Invalid input " + accessibilityErrorMessage);
-    setTag(R.id.accessibility_error, null);
+
+    setTag(R.id.accessibility_error, accessibilityErrorMessage);
+    sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
   }
 
   public void maybeSetTextFromJS(ReactTextUpdate reactTextUpdate) {
