@@ -719,6 +719,7 @@ jobs:
     executor: reactnativeios
     steps:
       - checkout
+      - setup_ruby
       - run_yarn
 
       - run:
