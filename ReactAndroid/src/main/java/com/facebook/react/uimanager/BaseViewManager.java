@@ -10,12 +10,15 @@ package com.facebook.react.uimanager;
 import android.graphics.Color;
 import android.os.Build;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.accessibility.AccessibilityEvent;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.R;
 import com.facebook.react.bridge.Dynamic;
@@ -225,13 +228,39 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
   private void updateViewContentDescription(@NonNull T view) {
     final String accessibilityLabel = (String) view.getTag(R.id.accessibility_label);
+    Log.w("TESTING::BaseViewManager", "accessibilityLabel: " + (accessibilityLabel));
     final ReadableMap accessibilityState = (ReadableMap) view.getTag(R.id.accessibility_state);
     final String accessibilityHint = (String) view.getTag(R.id.accessibility_hint);
     final List<String> contentDescription = new ArrayList<>();
     final ReadableMap accessibilityValue = (ReadableMap) view.getTag(R.id.accessibility_value);
     if (accessibilityLabel != null) {
       contentDescription.add(accessibilityLabel);
+      // logic to get child content
+      final AccessibilityNodeInfoCompat nodeInfo = AccessibilityNodeInfoCompat.obtain();
+      if (view instanceof ViewGroup) {
+        final StringBuilder concatChildDescription = new StringBuilder();
+        final ViewGroup viewGroup = (ViewGroup) view;
+
+        for (int i = 0, count = viewGroup.getChildCount(); i < count; i++) {
+          final View child = viewGroup.getChildAt(i);
+
+          final AccessibilityNodeInfoCompat childNodeInfo = AccessibilityNodeInfoCompat.obtain();
+          ViewCompat.onInitializeAccessibilityNodeInfo(child, childNodeInfo);
+
+          if (AccessibilityEvaluationUtil.isSpeakingNode(childNodeInfo, child)
+              && !AccessibilityEvaluationUtil.isAccessibilityFocusable(childNodeInfo, child)) {
+            CharSequence childNodeDescription = getTalkbackDescription(child);
+            if (!TextUtils.isEmpty(childNodeDescription)) {
+              concatChildDescription.append(childNodeDescription + delimiter);
+            }
+          }
+          childNodeInfo.recycle();
+        }
+
+        return removeFinalDelimiter(concatChildDescription);
+      }
     }
+
     if (accessibilityState != null) {
       final ReadableMapKeySetIterator i = accessibilityState.keySetIterator();
       while (i.hasNextKey()) {

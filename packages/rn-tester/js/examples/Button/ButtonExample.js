@@ -36,23 +36,31 @@ exports.description = 'Simple React Native button component.';
 
 function TouchableExample(props) {
   return (
-    <TouchableNativeFeedback
-      accessible={true}
-      style={{height: 200, width: 400, backgroundColor: 'red'}}
-      importantForAccessibility="yes"
-      accessibilityRole="button">
-      <Text
-        accessible={false}
-        focusable={false}
-        style={{
-          height: 50,
-          marginLeft: 50,
-          marginTop: 50,
-          backgroundColor: 'white',
-        }}>
-        Text number 1
-      </Text>
-    </TouchableNativeFeedback>
+    <>
+      <View
+        style={{backgroundColor: 'red', height: 100, width: 100}}
+        accessibilityLabel="accessibilityLabel for View"
+        focusable={true}
+        accessible={true}></View>
+      <TouchableNativeFeedback
+        accessibilityLabel="testing"
+        accessible={true}
+        style={{height: 200, width: 400, backgroundColor: 'red'}}
+        importantForAccessibility="yes"
+        accessibilityRole="button">
+        <Text
+          accessible={false}
+          focusable={false}
+          style={{
+            height: 50,
+            marginLeft: 50,
+            marginTop: 50,
+            backgroundColor: 'white',
+          }}>
+          Text number 1
+        </Text>
+      </TouchableNativeFeedback>
+    </>
   );
 }
 
