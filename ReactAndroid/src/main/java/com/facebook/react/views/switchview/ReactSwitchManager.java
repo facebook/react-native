@@ -10,14 +10,12 @@ package com.facebook.react.views.switchview;
 
 import android.content.Context;
 import android.view.View;
-import android.widget.CompoundButton;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.LayoutShadowNode;
-import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerHelper;
@@ -26,70 +24,32 @@ import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.viewmanagers.AndroidSwitchManagerDelegate;
 import com.facebook.react.viewmanagers.AndroidSwitchManagerInterface;
-import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureMode;
-import com.facebook.yoga.YogaMeasureOutput;
-import com.facebook.yoga.YogaNode;
+import kotlin.jvm.functions.Function2;
 
 /** View manager for {@link ReactSwitch} components. */
-public class ReactSwitchManager extends SimpleViewManager<ReactSwitch>
-    implements AndroidSwitchManagerInterface<ReactSwitch> {
+public class ReactSwitchManager extends SimpleViewManager<ReactComposeSwitchView>
+    implements AndroidSwitchManagerInterface<ReactComposeSwitchView> {
 
   public static final String REACT_CLASS = "AndroidSwitch";
 
-  static class ReactSwitchShadowNode extends LayoutShadowNode implements YogaMeasureFunction {
+  private static final Function2<ReactComposeSwitchView, Boolean, kotlin.Unit>
+      ON_CHECKED_CHANGE_LISTENER =
+          new Function2<ReactComposeSwitchView, Boolean, kotlin.Unit>() {
+            @Override
+            public kotlin.Unit invoke(ReactComposeSwitchView view, Boolean isChecked) {
+              ReactContext reactContext = (ReactContext) view.getContext();
 
-    private int mWidth;
-    private int mHeight;
-    private boolean mMeasured;
+              int reactTag = view.getId();
+              UIManagerHelper.getEventDispatcherForReactTag(reactContext, reactTag)
+                  .dispatchEvent(
+                      new ReactSwitchEvent(
+                          UIManagerHelper.getSurfaceId(reactContext), reactTag, isChecked));
+              return null;
+            }
+          };
 
-    private ReactSwitchShadowNode() {
-      initMeasureFunction();
-    }
-
-    private void initMeasureFunction() {
-      setMeasureFunction(this);
-    }
-
-    @Override
-    public long measure(
-        YogaNode node,
-        float width,
-        YogaMeasureMode widthMode,
-        float height,
-        YogaMeasureMode heightMode) {
-      if (!mMeasured) {
-        // Create a switch with the default config and measure it; since we don't (currently)
-        // support setting custom switch text, this is fine, as all switches will measure the same
-        // on a specific device/theme/locale combination.
-        ReactSwitch reactSwitch = new ReactSwitch(getThemedContext());
-        reactSwitch.setShowText(false);
-        final int spec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-        reactSwitch.measure(spec, spec);
-        mWidth = reactSwitch.getMeasuredWidth();
-        mHeight = reactSwitch.getMeasuredHeight();
-        mMeasured = true;
-      }
-
-      return YogaMeasureOutput.make(mWidth, mHeight);
-    }
-  }
-
-  private static final CompoundButton.OnCheckedChangeListener ON_CHECKED_CHANGE_LISTENER =
-      new CompoundButton.OnCheckedChangeListener() {
-        @Override
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-          ReactContext reactContext = (ReactContext) buttonView.getContext();
-
-          int reactTag = buttonView.getId();
-          UIManagerHelper.getEventDispatcherForReactTag(reactContext, reactTag)
-              .dispatchEvent(
-                  new ReactSwitchEvent(
-                      UIManagerHelper.getSurfaceId(reactContext), reactTag, isChecked));
-        }
-      };
-
-  private final ViewManagerDelegate<ReactSwitch> mDelegate;
+  private final ViewManagerDelegate<ReactComposeSwitchView> mDelegate;
 
   public ReactSwitchManager() {
     mDelegate = new AndroidSwitchManagerDelegate<>(this);
@@ -102,97 +62,97 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch>
 
   @Override
   public LayoutShadowNode createShadowNodeInstance() {
-    return new ReactSwitchShadowNode();
+    return new LayoutShadowNode();
   }
 
   @Override
   public Class getShadowNodeClass() {
-    return ReactSwitchShadowNode.class;
+    return LayoutShadowNode.class;
   }
 
   @Override
-  protected ReactSwitch createViewInstance(ThemedReactContext context) {
-    ReactSwitch view = new ReactSwitch(context);
-    view.setShowText(false);
-    return view;
+  protected ReactComposeSwitchView createViewInstance(ThemedReactContext context) {
+    return new ReactComposeSwitchView(context);
   }
 
   @Override
   @ReactProp(name = "disabled", defaultBoolean = false)
-  public void setDisabled(ReactSwitch view, boolean disabled) {
-    view.setEnabled(!disabled);
+  public void setDisabled(ReactComposeSwitchView composeView, boolean disabled) {
+    composeView.setSwitchEnabled(!disabled);
   }
 
   @Override
   @ReactProp(name = ViewProps.ENABLED, defaultBoolean = true)
-  public void setEnabled(ReactSwitch view, boolean enabled) {
-    view.setEnabled(enabled);
+  public void setEnabled(ReactComposeSwitchView composeView, boolean enabled) {
+    composeView.setSwitchEnabled(enabled);
   }
 
   @Override
   @ReactProp(name = ViewProps.ON)
-  public void setOn(ReactSwitch view, boolean on) {
-    setValueInternal(view, on);
+  public void setOn(ReactComposeSwitchView view, boolean on) {
+    view.setSwitchChecked(on);
   }
 
   @Override
   @ReactProp(name = "value")
-  public void setValue(ReactSwitch view, boolean value) {
-    setValueInternal(view, value);
+  public void setValue(ReactComposeSwitchView view, boolean value) {
+    view.setSwitchChecked(value);
   }
 
   @Override
   @ReactProp(name = "thumbTintColor", customType = "Color")
-  public void setThumbTintColor(ReactSwitch view, @Nullable Integer color) {
-    this.setThumbColor(view, color);
+  public void setThumbTintColor(ReactComposeSwitchView view, @Nullable Integer color) {
+    //    this.setThumbColor(view, color);
   }
 
   @Override
   @ReactProp(name = "thumbColor", customType = "Color")
-  public void setThumbColor(ReactSwitch view, @Nullable Integer color) {
-    view.setThumbColor(color);
+  public void setThumbColor(ReactComposeSwitchView view, @Nullable Integer color) {
+    //    view.setThumbColor(color);
   }
 
   @Override
   @ReactProp(name = "trackColorForFalse", customType = "Color")
-  public void setTrackColorForFalse(ReactSwitch view, @Nullable Integer color) {
-    view.setTrackColorForFalse(color);
+  public void setTrackColorForFalse(ReactComposeSwitchView view, @Nullable Integer color) {
+    //    view.setTrackColorForFalse(color);
   }
 
   @Override
   @ReactProp(name = "trackColorForTrue", customType = "Color")
-  public void setTrackColorForTrue(ReactSwitch view, @Nullable Integer color) {
-    view.setTrackColorForTrue(color);
+  public void setTrackColorForTrue(ReactComposeSwitchView view, @Nullable Integer color) {
+    //    view.setTrackColorForTrue(color);
   }
 
   @Override
   @ReactProp(name = "trackTintColor", customType = "Color")
-  public void setTrackTintColor(ReactSwitch view, @Nullable Integer color) {
-    view.setTrackColor(color);
+  public void setTrackTintColor(ReactComposeSwitchView view, @Nullable Integer color) {
+    //    view.setTrackColor(color);
   }
 
   @Override
-  public void setNativeValue(ReactSwitch view, boolean value) {
-    setValueInternal(view, value);
+  public void setNativeValue(ReactComposeSwitchView view, boolean value) {
+    view.setSwitchChecked(value);
   }
 
   @Override
   public void receiveCommand(
-      @NonNull ReactSwitch view, String commandId, @Nullable ReadableArray args) {
+      @NonNull ReactComposeSwitchView view, String commandId, @Nullable ReadableArray args) {
     switch (commandId) {
       case "setNativeValue":
-        setValueInternal(view, args != null && args.getBoolean(0));
+        boolean value = args != null && args.getBoolean(0);
+        view.setSwitchChecked(value);
         break;
     }
   }
 
   @Override
-  protected void addEventEmitters(final ThemedReactContext reactContext, final ReactSwitch view) {
+  protected void addEventEmitters(
+      final ThemedReactContext reactContext, final ReactComposeSwitchView view) {
     view.setOnCheckedChangeListener(ON_CHECKED_CHANGE_LISTENER);
   }
 
   @Override
-  protected ViewManagerDelegate<ReactSwitch> getDelegate() {
+  protected ViewManagerDelegate<ReactComposeSwitchView> getDelegate() {
     return mDelegate;
   }
 
@@ -211,16 +171,16 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch>
     view.setShowText(false);
     int measureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
     view.measure(measureSpec, measureSpec);
-    return YogaMeasureOutput.make(
-        PixelUtil.toDIPFromPixel(view.getMeasuredWidth()),
-        PixelUtil.toDIPFromPixel(view.getMeasuredHeight()));
+
+    System.out.println(
+        "View measured to: " + view.getMeasuredWidth() + "x" + view.getMeasuredHeight());
+
+    return ReactComposeSwitchKt.measureInBackground(context);
   }
 
-  private static void setValueInternal(ReactSwitch view, boolean value) {
-    // we set the checked change listener to null and then restore it so that we don't fire an
-    // onChange event to JS when JS itself is updating the value of the switch
-    view.setOnCheckedChangeListener(null);
-    view.setOn(value);
-    view.setOnCheckedChangeListener(ON_CHECKED_CHANGE_LISTENER);
+  @Override
+  protected void onAfterUpdateTransaction(@NonNull ReactComposeSwitchView view) {
+    super.onAfterUpdateTransaction(view);
+    view.updateView();
   }
 }

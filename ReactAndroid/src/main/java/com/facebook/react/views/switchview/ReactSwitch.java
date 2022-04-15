@@ -22,6 +22,7 @@ import androidx.appcompat.widget.SwitchCompat;
  * allow any other changes to that switch until JS sets a value explicitly. This stops the Switch
  * from changing its value multiple times, when those changes have not been processed by JS first.
  */
+// TODO: use Switch
 /*package*/ class ReactSwitch extends SwitchCompat {
 
   private boolean mAllowChange;

@@ -15,6 +15,10 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Callback;
@@ -89,7 +93,22 @@ public class ReactActivityDelegate {
 
   protected void loadApp(String appKey) {
     mReactDelegate.loadApp(appKey);
-    getPlainActivity().setContentView(mReactDelegate.getReactRootView());
+    Context context = getContext();
+    LinearLayout linearLayout = new LinearLayout(context);
+    linearLayout.setLayoutParams(
+        new FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+
+    linearLayout.setOrientation(LinearLayout.VERTICAL);
+    View composeView = com.facebook.react.kotlin.TestComposableKt.getComposeView(context);
+
+    TextView text = new TextView(context);
+    text.setText("This is a text");
+    linearLayout.addView(text);
+    linearLayout.addView(composeView);
+    linearLayout.addView(mReactDelegate.getReactRootView());
+
+    getPlainActivity().setContentView(linearLayout);
   }
 
   protected void onPause() {
