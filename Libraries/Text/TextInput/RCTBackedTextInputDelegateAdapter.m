@@ -100,8 +100,7 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 - (BOOL)textFieldShouldReturn:(__unused UITextField *)textField
 {
-  // Ignore the value of whether we submitted; just make sure the submit
-  // event is called if necessary.
+  // Ignore the value of whether we submitted; just make sure the submit event is called if necessary.
   [_backedTextInputView.textInputDelegate textInputShouldSubmitOnReturn];
   return [_backedTextInputView.textInputDelegate textInputShouldReturn];
 }

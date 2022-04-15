@@ -253,6 +253,7 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
     waitForBridgeAndUIIdle();
 
     assertEquals(1, mRecordingModule.getCalls().size());
+    assertEquals(!returnKeyAction.equals("blurAndSubmit"), reactEditText.isFocused());
   }
 
   /**

@@ -248,50 +248,80 @@ class ReturnKeyActionExample extends React.Component<{...}> {
   ref5 = React.createRef();
   ref6 = React.createRef();
   ref7 = React.createRef();
+  ref8 = React.createRef();
+  ref9 = React.createRef();
+  ref10 = React.createRef();
+  ref11 = React.createRef();
 
   render() {
     return (
       <View>
         <TextInput
           ref={this.ref1}
-          multiline
-          placeholder="multiline submit"
+          placeholder="single line submit"
           returnKeyAction="submit"
           onSubmitEditing={() => this.ref2.current?.focus()}
         />
         <TextInput
           ref={this.ref2}
-          multiline
-          placeholder="multiline blurAndSubmit"
+          placeholder="single line blurAndSubmit"
           returnKeyAction="blurAndSubmit"
           onSubmitEditing={() => this.ref3.current?.focus()}
         />
         <TextInput
           ref={this.ref3}
+          placeholder="single line default"
+          onSubmitEditing={() => this.ref4.current?.focus()}
+        />
+        <TextInput
+          ref={this.ref4}
+          blurOnSubmit
+          placeholder="single line blurOnSubmit true"
+          onSubmitEditing={() => this.ref5.current?.focus()}
+        />
+        <TextInput
+          ref={this.ref5}
+          blurOnSubmit={false}
+          placeholder="single line blurOnSubmit false"
+          onSubmitEditing={() => this.ref6.current?.focus()}
+        />
+        <TextInput
+          ref={this.ref6}
+          multiline
+          placeholder="multiline submit"
+          returnKeyAction="submit"
+          onSubmitEditing={() => this.ref7.current?.focus()}
+        />
+        <TextInput
+          ref={this.ref7}
+          multiline
+          placeholder="multiline blurAndSubmit"
+          returnKeyAction="blurAndSubmit"
+          onSubmitEditing={() => this.ref8.current?.focus()}
+        />
+        <TextInput
+          ref={this.ref8}
+          multiline
+          blurOnSubmit
+          placeholder="multiline blurOnSubmit true"
+          onSubmitEditing={() => this.ref9.current?.focus()}
+        />
+        <TextInput
+          ref={this.ref9}
+          multiline
+          blurOnSubmit={false}
+          placeholder="multiline blurOnSubmit false"
+        />
+        <TextInput
+          ref={this.ref10}
           multiline
           placeholder="multiline newline"
           returnKeyAction="newline"
         />
         <TextInput
-          ref={this.ref4}
+          ref={this.ref11}
           multiline
           placeholder="multiline default"
-        />
-        <TextInput
-          ref={this.ref5}
-          placeholder="single line submit"
-          returnKeyAction="submit"
-          onSubmitEditing={() => this.ref6.current?.focus()}
-        />
-        <TextInput
-          ref={this.ref6}
-          placeholder="single line blurAndSubmit"
-          returnKeyAction="blurAndSubmit"
-          onSubmitEditing={() => this.ref7.current?.focus()}
-        />
-        <TextInput
-          ref={this.ref7}
-          placeholder="single line default"
         />
       </View>
     );

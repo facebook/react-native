@@ -1333,7 +1333,6 @@ function InternalTextInput(props: Props): React.Node {
         ref={_setNativeRef}
         {...props}
         {...eventHandlers}
-        returnKeyAction={returnKeyAction}
         accessible={accessible}
         autoCapitalize={autoCapitalize}
         returnKeyAction={returnKeyAction}

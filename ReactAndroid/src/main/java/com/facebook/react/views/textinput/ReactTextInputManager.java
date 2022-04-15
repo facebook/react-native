@@ -1081,7 +1081,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
           public boolean onEditorAction(TextView v, int actionId, KeyEvent keyEvent) {
             if ((actionId & EditorInfo.IME_MASK_ACTION) != 0 || actionId == EditorInfo.IME_NULL) {
               boolean isMultiline = editText.isMultiline();
-              String returnKeyAction = editText.getReturnKeyAction();
 
               boolean shouldSubmit = editText.shouldSubmitOnReturn();
               boolean shouldBlur = editText.shouldBlurOnReturn();
