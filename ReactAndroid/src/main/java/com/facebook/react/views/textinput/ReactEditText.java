@@ -175,10 +175,8 @@ public class ReactEditText extends AppCompatEditText
           @Override
           public void onInitializeAccessibilityEvent(View host, AccessibilityEvent event) {
             super.onInitializeAccessibilityEvent(host, event);
-            final String accessibilityErrorMessage = (String) host.getTag(R.id.accessibility_error);
             if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED
-                && host.getParent() != null
-                && accessibilityErrorMessage != null) {
+                && host.getParent() != null) {
               try {
                 host.getParent().requestSendAccessibilityEvent(host, event);
               } catch (AbstractMethodError e) {
