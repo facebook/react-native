@@ -546,7 +546,9 @@ public class ReactEditText extends AppCompatEditText
    */
   public void maybeSetAccessibilityError(
       int eventCounter, @Nullable String accessibilityErrorMessage) {
-    if (!canUpdateWithEventCount(eventCounter)) {
+    String previousAccessibilityError = (String) getTag(R.id.accessibility_error);
+    if (!canUpdateWithEventCount(eventCounter)
+        || previousAccessibilityError == accessibilityErrorMessage) {
       return;
     }
 
