@@ -33,12 +33,11 @@ else
 fi
 
 find_node () {
-    # shellcheck disable=SC1091
-    source "$RCT_SCRIPT_RN_DIR/scripts/find-node-for-xcode.sh"
-
     NODE_BINARY="${NODE_BINARY:-$(command -v node || true)}"
     if [ -z "$NODE_BINARY" ]; then
-        error "error: Could not find node. Make sure it is in bash PATH or set the NODE_BINARY environment variable."
+        error "[Error] Could not find node. It looks like that the .xcode.env or .xcode.env.local " \
+"files are misconfigured. Please check that they are exporting a valid NODE_BINARY " \
+"variable, pointing to a node executable."
     fi
 }
 

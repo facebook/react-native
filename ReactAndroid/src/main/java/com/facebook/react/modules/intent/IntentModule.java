@@ -30,6 +30,8 @@ public class IntentModule extends NativeIntentAndroidSpec {
 
   public static final String NAME = "IntentAndroid";
 
+  private static final String EXTRA_MAP_KEY_FOR_VALUE = "value";
+
   public IntentModule(ReactApplicationContext reactContext) {
     super(reactContext);
   }
@@ -184,13 +186,13 @@ public class IntentModule extends NativeIntentAndroidSpec {
     if (extras != null) {
       for (int i = 0; i < extras.size(); i++) {
         ReadableMap map = extras.getMap(i);
-        String name = map.keySetIterator().nextKey();
-        ReadableType type = map.getType(name);
+        String name = map.getString("key");
+        ReadableType type = map.getType(EXTRA_MAP_KEY_FOR_VALUE);
 
         switch (type) {
           case String:
             {
-              intent.putExtra(name, map.getString(name));
+              intent.putExtra(name, map.getString(EXTRA_MAP_KEY_FOR_VALUE));
               break;
             }
           case Number:
@@ -198,13 +200,13 @@ public class IntentModule extends NativeIntentAndroidSpec {
               // We cannot know from JS if is an Integer or Double
               // See: https://github.com/facebook/react-native/issues/4141
               // We might need to find a workaround if this is really an issue
-              Double number = map.getDouble(name);
+              Double number = map.getDouble(EXTRA_MAP_KEY_FOR_VALUE);
               intent.putExtra(name, number);
               break;
             }
           case Boolean:
             {
-              intent.putExtra(name, map.getBoolean(name));
+              intent.putExtra(name, map.getBoolean(EXTRA_MAP_KEY_FOR_VALUE));
               break;
             }
           default:

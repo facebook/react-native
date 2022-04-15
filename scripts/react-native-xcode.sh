@@ -79,10 +79,6 @@ if [[ $DEV != true && ! -f "$ENTRY_FILE" ]]; then
   exit 2
 fi
 
-# Find path to Node
-# shellcheck source=/dev/null
-source "$REACT_NATIVE_DIR/scripts/find-node-for-xcode.sh"
-
 # check and assign NODE_BINARY env
 # shellcheck source=/dev/null
 source "$REACT_NATIVE_DIR/scripts/node-binary.sh"

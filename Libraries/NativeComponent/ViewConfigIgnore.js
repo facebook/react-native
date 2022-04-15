@@ -27,9 +27,10 @@ export function DynamicallyInjectedByGestureHandler<T: {...}>(object: T): T {
  * This annotation allows Static ViewConfigs to insert these entries into
  * iOS but not Android.
  *
- * In the future, we want to remove this platform-inconsistency.
- * This annotation also allows us to safely test this removal by setting
- * global.RN$ViewConfigEventValidAttributesDisabled = true server-side.
+ * In the future, we want to remove this platform-inconsistency. We want
+ * to set RN$ViewConfigEventValidAttributesDisabled = true server-side,
+ * so that iOS does not generate validAttributes from event props in iOS RCTViewManager,
+ * since Android does not generate validAttributes from events props in Android ViewManager.
  *
  * TODO(T110872225): Remove this logic, after achieving platform-consistency
  */
