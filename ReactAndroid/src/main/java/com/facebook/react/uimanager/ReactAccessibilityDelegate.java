@@ -27,6 +27,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.RangeInfoCompat;
+import androidx.core.view.accessibility.AccessibilityNodeProviderCompat;
 import androidx.customview.widget.ExploreByTouchHelper;
 import com.facebook.react.R;
 import com.facebook.react.bridge.Arguments;
@@ -683,5 +684,21 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
       public int end;
       public int id;
     }
+  }
+
+  @Override
+  public @Nullable AccessibilityNodeProviderCompat getAccessibilityNodeProvider(View host) {
+    // Only set a NodeProvider if we have virtual views, otherwise just return null here so that
+    // we fall back to the View class's default behavior. If we don't do this, then Views with
+    // no virtual children will fall back to using ExploreByTouchHelper's onPopulateNodeForHost
+    // method to populate their AccessibilityNodeInfo, which defaults to doing nothing, so no
+    // AccessibilityNodeInfo will be created. Alternatively, we could override
+    // onPopulateNodeForHost instead, and have it create an AccessibilityNodeInfo for the host
+    // but this is what the default View class does by itself, so we may as well defer to it.
+    if (mAccessibilityLinks != null) {
+      return super.getAccessibilityNodeProvider(host);
+    }
+
+    return null;
   }
 }

@@ -54,12 +54,12 @@ executors:
     <<: *defaults
     docker:
       # Note: Version set separately for Windows builds, see below.
-      - image: circleci/node:16
+      - image: cimg/node:16.14
     resource_class: "xlarge"
   nodeprevlts:
     <<: *defaults
     docker:
-      - image: circleci/node:14
+      - image: cimg/node:14.19
     resource_class: "xlarge"
   reactnativeandroid:
     <<: *defaults
@@ -79,7 +79,7 @@ executors:
   reactnativeios:
     <<: *defaults
     macos:
-      xcode: &_XCODE_VERSION "13.0.0"
+      xcode: &_XCODE_VERSION "13.3.0"
     resource_class: macos.x86.medium.gen2
 
 # -------------------------
@@ -97,7 +97,11 @@ commands:
     steps:
       - restore_cache:
           key: 1-gems-{{ checksum "Gemfile.lock" }}
-      - run: bundle check || bundle install --path vendor/bundle --clean
+      - run:
+          name: Bundle Install
+          command: |
+            source /usr/local/share/chruby/auto.sh
+            bundle check || bundle install --path vendor/bundle --clean
       - save_cache:
           key: 1-gems-{{ checksum "Gemfile.lock" }}
           paths:
@@ -347,7 +351,7 @@ jobs:
       - run_yarn
       - run:
           name: Install rsync
-          command: sudo apt-get install rsync
+          command: sudo apt update && sudo apt install rsync
 
       # -------------------------
       # Run JavaScript tests
@@ -467,12 +471,6 @@ jobs:
                 command: brew tap wix/brew >/dev/null
             - brew_install:
                 package: applesimutils
-
-      - run:
-          name: Configure Node
-          # Sourcing find-node.sh will ensure nvm is set up.
-          # It also helps future invocation of find-node.sh prevent permission issue with nvm.sh.
-          command: source scripts/find-node-for-xcode.sh && nvm install 16 && nvm alias default 16
 
       - run:
           name: Configure Watchman

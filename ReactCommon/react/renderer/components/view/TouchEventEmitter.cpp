@@ -161,5 +161,21 @@ void TouchEventEmitter::onPointerUp(const PointerEvent &event) const {
       RawEvent::Category::ContinuousEnd);
 }
 
+void TouchEventEmitter::onPointerEnter2(const PointerEvent &event) const {
+  dispatchPointerEvent(
+      "pointerEnter2",
+      event,
+      EventPriority::AsynchronousBatched,
+      RawEvent::Category::ContinuousStart);
+}
+
+void TouchEventEmitter::onPointerLeave2(const PointerEvent &event) const {
+  dispatchPointerEvent(
+      "pointerLeave2",
+      event,
+      EventPriority::AsynchronousBatched,
+      RawEvent::Category::ContinuousEnd);
+}
+
 } // namespace react
 } // namespace facebook

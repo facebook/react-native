@@ -1116,6 +1116,8 @@ it('retains batch render region when an item is appended', () => {
     performAllBatches();
   });
 
+  jest.runAllTimers();
+
   ReactTestRenderer.act(() => {
     component.update(
       <VirtualizedList
@@ -1365,6 +1367,7 @@ it('renders windowSize derived region at top', () => {
     performAllBatches();
   });
 
+  jest.runAllTimers();
   // A windowSize of 3 means that we should render a viewport's worth of content
   // above and below the current. A 20 dip viewport at the top of the list means
   // we should render the top 4 10-dip items (for the current viewport, and
@@ -1402,6 +1405,7 @@ it('renders windowSize derived region in middle', () => {
     performAllBatches();
   });
 
+  jest.runAllTimers();
   // A windowSize of 3 means that we should render a viewport's worth of content
   // above and below the current. A 20 dip viewport in the top of the list means
   // we should render the 6 10-dip items (for the current viewport, 20 dip above
@@ -1434,12 +1438,12 @@ it('renders windowSize derived region at bottom', () => {
     });
     performAllBatches();
   });
-
   ReactTestRenderer.act(() => {
     simulateScroll(component, {x: 0, y: 80});
     performAllBatches();
   });
 
+  jest.runAllTimers();
   // A windowSize of 3 means that we should render a viewport's worth of content
   // above and below the current. A 20 dip viewport at the bottom of the list
   // means we should render the bottom 4 10-dip items (for the current viewport,
