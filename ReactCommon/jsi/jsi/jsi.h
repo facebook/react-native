@@ -992,7 +992,7 @@ class JSI_EXPORT Value {
 
   /// Copies a Symbol lvalue into a new JS value.
   Value(Runtime& runtime, const Symbol& sym) : Value(SymbolKind) {
-    new (&data_.pointer) Symbol(runtime.cloneSymbol(sym.ptr_));
+    new (&data_.pointer) String(runtime.cloneSymbol(sym.ptr_));
   }
 
   /// Copies a String lvalue into a new JS value.
