@@ -32,16 +32,16 @@ function requireModule<T: TurboModule>(name: string): ?T {
   return null;
 }
 
-export function get<T: TurboModule>(name: string): ?T {
-  return requireModule<T>(name);
-}
-
-export function getEnforcing<T: TurboModule>(name: string): T {
+export function get<T: TurboModule>(name: string): T {
   const module = requireModule<T>(name);
   invariant(
     module != null,
-    `TurboModuleRegistry.getEnforcing(...): '${name}' could not be found. ` +
+    `TurboModuleRegistry.get(...): '${name}' could not be found. ` +
       'Verify that a module by this name is registered in the native binary.',
   );
   return module;
+}
+
+export function getOrNull<T: TurboModule>(name: string): ?T {
+  return requireModule<T>(name);
 }
