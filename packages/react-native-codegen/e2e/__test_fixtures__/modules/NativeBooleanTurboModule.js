@@ -19,6 +19,6 @@ export interface Spec extends TurboModule {
   +getBooleanWithAlias: (arg: Boolean) => AnotherBoolean;
 }
 
-export default (TurboModuleRegistry.getEnforcing<Spec>(
+export default (TurboModuleRegistry.get<<Spec>(
   'SampleTurboModule',
 ): Spec);

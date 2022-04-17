@@ -22,7 +22,7 @@ export interface Spec extends TurboModule {
   ): Promise<string>;
 }
 
-const NativeModule = TurboModuleRegistry.get<Spec>('ScreenshotManager');
+const NativeModule = TurboModuleRegistry.getOrNull<Spec>('ScreenshotManager');
 export function takeScreenshot(
   id: string,
   options: ScreenshotManagerOptions,

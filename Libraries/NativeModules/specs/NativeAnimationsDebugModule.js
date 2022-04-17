@@ -16,4 +16,4 @@ export interface Spec extends TurboModule {
   +stopRecordingFps: (animationStopTimeMs: number) => void;
 }
 
-export default (TurboModuleRegistry.get<Spec>('AnimationsDebugModule'): ?Spec);
+export default (TurboModuleRegistry.getOrNull<Spec>('AnimationsDebugModule'): ?Spec);

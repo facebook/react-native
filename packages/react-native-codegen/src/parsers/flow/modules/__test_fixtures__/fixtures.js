@@ -32,7 +32,7 @@ export interface Spec extends TurboModule {
   // no methods
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
 
 `;
 
@@ -67,7 +67,7 @@ export interface Spec extends TurboModule {
     const1: {const1: boolean},
   |}>;
 }
-export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
 
 `;
 
@@ -103,7 +103,7 @@ export interface Spec extends TurboModule {
   |};
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
 
 `;
 
@@ -130,7 +130,7 @@ export interface Spec extends TurboModule {
   +passStringish: (arg: Stringish) => void;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
 
 `;
 
@@ -171,7 +171,7 @@ export interface Spec extends TurboModule {
   +getStringFromAlias: (a: ObjectAlias) => string;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
 
 `;
 
@@ -206,7 +206,7 @@ export interface Spec extends TurboModule {
   foo2: (x: Foo) => void;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
 
 `;
 
@@ -232,7 +232,7 @@ export interface Spec extends TurboModule {
   +getFloat: (arg: Float) => Float;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
 `;
 
 const NATIVE_MODULE_WITH_SIMPLE_OBJECT = `
@@ -255,7 +255,7 @@ export interface Spec extends TurboModule {
   +getObject: (o: Object) => Object,
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
 
 `;
 
@@ -280,7 +280,7 @@ export interface Spec extends TurboModule {
   +getUnsafeObject: (o: UnsafeObject) => UnsafeObject,
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
 
 `;
 
@@ -304,7 +304,7 @@ export interface Spec extends TurboModule {
   +getRootTag: (rootTag: RootTag) => RootTag,
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
 
 `;
 
@@ -329,7 +329,7 @@ export interface Spec extends TurboModule {
   +voidFunc: (arg: ?string) => void;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
 
 `;
 
@@ -354,7 +354,7 @@ export interface Spec extends TurboModule {
   +getArray: (arg: $ReadOnlyArray<string>) => $ReadOnlyArray<string>;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
 
 `;
 
@@ -391,7 +391,7 @@ export interface Spec extends TurboModule {
   |}>;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
 
 `;
 
@@ -415,7 +415,7 @@ export interface Spec extends TurboModule {
   +getArray: (arg: Array<[string, string]>) => Array<string | number | boolean>;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
 
 `;
 
@@ -441,7 +441,7 @@ export interface Spec extends TurboModule {
   +getArray: (arg: Array<SomeString>) => Array<string>;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
 
 `;
 
@@ -465,7 +465,7 @@ export interface Spec extends TurboModule {
   +getArray: (arg: Array<Array<Array<Array<Array<string>>>>>) => Array<Array<Array<string>>>;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
 
 `;
 
@@ -494,7 +494,7 @@ export interface Spec extends TurboModule {
   +getValueWithPromiseObjDefinedSomewhereElse: () => Promise<SomeObj>;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
 
 `;
 
@@ -521,7 +521,7 @@ export interface Spec extends TurboModule {
   ) => void;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
 
 `;
 
@@ -545,7 +545,7 @@ export interface Spec extends TurboModule {
   // no methods
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModuleAndroid');
+export default TurboModuleRegistry.get<<Spec>('SampleTurboModuleAndroid');
 
 `;
 
@@ -569,7 +569,7 @@ export interface Spec extends TurboModule {
   // no methods
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModuleIOS');
+export default TurboModuleRegistry.get<<Spec>('SampleTurboModuleIOS');
 
 `;
 
@@ -593,7 +593,7 @@ export interface Spec extends TurboModule {
   +getCallback: () => () => void;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModuleCxx');
+export default TurboModuleRegistry.get<<Spec>('SampleTurboModuleCxx');
 
 `;
 

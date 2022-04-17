@@ -21,4 +21,4 @@ export interface Spec extends TurboModule {
   +endScroll: () => void;
 }
 
-export default (TurboModuleRegistry.get<Spec>('FrameRateLogger'): ?Spec);
+export default (TurboModuleRegistry.getOrNull<Spec>('FrameRateLogger'): ?Spec);

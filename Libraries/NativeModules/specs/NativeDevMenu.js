@@ -19,4 +19,4 @@ export interface Spec extends TurboModule {
   +setHotLoadingEnabled: (enabled: boolean) => void;
 }
 
-export default (TurboModuleRegistry.getEnforcing<Spec>('DevMenu'): Spec);
+export default (TurboModuleRegistry.get<<Spec>('DevMenu'): Spec);

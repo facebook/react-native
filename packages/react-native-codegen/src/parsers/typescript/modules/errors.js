@@ -228,7 +228,7 @@ class UnusedModuleTypeScriptInterfaceParserError extends ParserError {
     super(
       hasteModuleName,
       flowInterface,
-      "Unused NativeModule spec. Please load the NativeModule by calling TurboModuleRegistry.get<Spec>('<moduleName>').",
+      "Unused NativeModule spec. Please load the NativeModule by calling TurboModuleRegistry.getOrNull<Spec>('<moduleName>').",
     );
   }
 }

@@ -17,4 +17,4 @@ export interface Spec extends TurboModule {
   +setString: (content: string) => void;
 }
 
-export default (TurboModuleRegistry.getEnforcing<Spec>('Clipboard'): Spec);
+export default (TurboModuleRegistry.get<<Spec>('Clipboard'): Spec);

@@ -58,4 +58,4 @@ export interface Spec extends TurboModule {
   ) => void;
 }
 
-export default (TurboModuleRegistry.get<Spec>('AccessibilityManager'): ?Spec);
+export default (TurboModuleRegistry.getOrNull<Spec>('AccessibilityManager'): ?Spec);

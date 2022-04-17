@@ -27,7 +27,7 @@ import type {UnsafeObject} from 'react-native/Libraries/Types/CodegenTypes';
 export interface Spec extends TurboModule {
   func1(a: string): UnsafeObject,
 }
-export default TurboModuleRegistry.get<Spec>('XYZ');
+export default TurboModuleRegistry.getOrNull<Spec>('XYZ');
     `,
     filename: `${NATIVE_MODULES_DIR}/NativeXYZ.js`,
   },
@@ -41,7 +41,7 @@ import {TurboModuleRegistry, type TurboModule} from 'react-native';
 export interface Spec extends TurboModule {
   func1(a: string): {||},
 }
-export default TurboModuleRegistry.get<Spec>('XYZ');
+export default TurboModuleRegistry.getOrNull<Spec>('XYZ');
       `,
     filename: `${NATIVE_MODULES_DIR}/XYZ.js`,
     errors: [

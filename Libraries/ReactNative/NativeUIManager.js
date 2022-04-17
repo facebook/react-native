@@ -117,4 +117,4 @@ export interface Spec extends TurboModule {
   +dismissPopupMenu: () => void;
 }
 
-export default (TurboModuleRegistry.getEnforcing<Spec>('UIManager'): Spec);
+export default (TurboModuleRegistry.get<<Spec>('UIManager'): Spec);

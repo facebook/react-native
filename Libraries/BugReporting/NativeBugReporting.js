@@ -17,4 +17,4 @@ export interface Spec extends TurboModule {
   +setCategoryID: (categoryID: string) => void;
 }
 
-export default (TurboModuleRegistry.get<Spec>('BugReporting'): ?Spec);
+export default (TurboModuleRegistry.getOrNull<Spec>('BugReporting'): ?Spec);

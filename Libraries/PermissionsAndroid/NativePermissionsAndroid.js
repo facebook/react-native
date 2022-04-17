@@ -64,4 +64,4 @@ export interface Spec extends TurboModule {
   ) => Promise<{[permission: PermissionType]: PermissionStatus, ...}>;
 }
 
-export default (TurboModuleRegistry.get<Spec>('PermissionsAndroid'): ?Spec);
+export default (TurboModuleRegistry.getOrNull<Spec>('PermissionsAndroid'): ?Spec);

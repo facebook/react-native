@@ -44,4 +44,4 @@ export interface Spec extends TurboModule {
   ) => void;
 }
 
-export default (TurboModuleRegistry.get<Spec>('DialogManagerAndroid'): ?Spec);
+export default (TurboModuleRegistry.getOrNull<Spec>('DialogManagerAndroid'): ?Spec);

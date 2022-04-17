@@ -35,4 +35,4 @@ export interface Spec extends TurboModule {
   +removePendingVideo: (url: string) => void;
 }
 
-export default (TurboModuleRegistry.get<Spec>('ImagePickerIOS'): ?Spec);
+export default (TurboModuleRegistry.getOrNull<Spec>('ImagePickerIOS'): ?Spec);

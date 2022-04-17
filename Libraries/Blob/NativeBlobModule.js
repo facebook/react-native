@@ -21,7 +21,7 @@ export interface Spec extends TurboModule {
   +release: (blobId: string) => void;
 }
 
-const NativeModule = TurboModuleRegistry.get<Spec>('BlobModule');
+const NativeModule = TurboModuleRegistry.getOrNull<Spec>('BlobModule');
 
 let constants = null;
 let NativeBlobModule = null;

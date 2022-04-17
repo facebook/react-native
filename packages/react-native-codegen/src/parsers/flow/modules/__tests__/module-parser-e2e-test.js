@@ -84,7 +84,7 @@ describe('Flow Module Parser', () => {
           export interface Spec extends TurboModule {
             +useArg(arg: any): void;
           }
-          export default TurboModuleRegistry.get<Spec>('Foo');
+          export default TurboModuleRegistry.getOrNull<Spec>('Foo');
         `);
 
       expect(parser).toThrow(UnsupportedFlowTypeAnnotationParserError);
@@ -98,7 +98,7 @@ describe('Flow Module Parser', () => {
           export interface Spec extends TurboModule {
             +useArg(boolean): void;
           }
-          export default TurboModuleRegistry.get<Spec>('Foo');
+          export default TurboModuleRegistry.getOrNull<Spec>('Foo');
         `);
 
       expect(parser).toThrow(UnnamedFunctionParamParserError);
@@ -145,7 +145,7 @@ describe('Flow Module Parser', () => {
           export interface Spec extends TurboModule {
             +useArg(${annotateArg(paramName, paramType)}): void;
           }
-          export default TurboModuleRegistry.get<Spec>('Foo');
+          export default TurboModuleRegistry.getOrNull<Spec>('Foo');
         `);
 
         expect(module.spec.properties[0]).not.toBe(null);
@@ -356,7 +356,7 @@ describe('Flow Module Parser', () => {
               export interface Spec extends TurboModule {
                 +useArg(${annotateArg('arg', 'AnimalPointer')}): void;
               }
-              export default TurboModuleRegistry.get<Spec>('Foo');
+              export default TurboModuleRegistry.getOrNull<Spec>('Foo');
             `);
 
             expect(module.spec.properties[0]).not.toBe(null);
@@ -693,7 +693,7 @@ describe('Flow Module Parser', () => {
         export interface Spec extends TurboModule {
           +useArg(): void;
         }
-        export default TurboModuleRegistry.get<Spec>('Foo');
+        export default TurboModuleRegistry.getOrNull<Spec>('Foo');
       `);
 
       expect(module.spec.properties[0]).not.toBe(null);
@@ -727,7 +727,7 @@ describe('Flow Module Parser', () => {
           export interface Spec extends TurboModule {
             +useArg(): ${annotateRet(flowType)};
           }
-          export default TurboModuleRegistry.get<Spec>('Foo');
+          export default TurboModuleRegistry.getOrNull<Spec>('Foo');
         `);
 
         expect(module.spec.properties[0]).not.toBe(null);

@@ -16,4 +16,4 @@ export interface Spec extends TurboModule {
   +notifyTaskRetry: (taskId: number) => Promise<boolean>;
 }
 
-export default (TurboModuleRegistry.get<Spec>('HeadlessJsTaskSupport'): ?Spec);
+export default (TurboModuleRegistry.getOrNull<Spec>('HeadlessJsTaskSupport'): ?Spec);

@@ -15,4 +15,4 @@ export interface Spec extends TurboModule {
   +invokeDefaultBackPressHandler: () => void;
 }
 
-export default (TurboModuleRegistry.get<Spec>('DeviceEventManager'): ?Spec);
+export default (TurboModuleRegistry.getOrNull<Spec>('DeviceEventManager'): ?Spec);

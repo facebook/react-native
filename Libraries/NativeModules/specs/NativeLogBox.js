@@ -16,4 +16,4 @@ export interface Spec extends TurboModule {
   +hide: () => void;
 }
 
-export default (TurboModuleRegistry.get<Spec>('LogBox'): ?Spec);
+export default (TurboModuleRegistry.getOrNull<Spec>('LogBox'): ?Spec);

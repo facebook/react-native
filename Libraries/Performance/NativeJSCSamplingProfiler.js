@@ -15,4 +15,4 @@ export interface Spec extends TurboModule {
   +operationComplete: (token: number, result: ?string, error: ?string) => void;
 }
 
-export default (TurboModuleRegistry.get<Spec>('JSCSamplingProfiler'): ?Spec);
+export default (TurboModuleRegistry.getOrNull<Spec>('JSCSamplingProfiler'): ?Spec);

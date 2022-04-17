@@ -15,4 +15,4 @@ export interface Spec extends TurboModule {
   +loadBundle: (bundlePath: string) => Promise<void>;
 }
 
-export default (TurboModuleRegistry.get<Spec>('DevSplitBundleLoader'): ?Spec);
+export default (TurboModuleRegistry.getOrNull<Spec>('DevSplitBundleLoader'): ?Spec);
