@@ -66,7 +66,7 @@ export type ReturnKeyType =
   | 'route'
   | 'yahoo';
 
-export type ReturnKeyAction =  'submit' | 'blurAndSubmit' | 'newline';
+export type ReturnKeyAction = 'submit' | 'blurAndSubmit' | 'newline';
 
 export type NativeProps = $ReadOnly<{|
   // This allows us to inherit everything from ViewProps except for style (see below)
@@ -548,7 +548,7 @@ export type NativeProps = $ReadOnly<{|
    * - `'submit'` will only send a submit event and not blur the input
    * - `'blurAndSubmit`' will both blur the input and send a submit event
    */
-  returnKeyAction?: ?ReturnKeyAction;
+  returnKeyAction?: ?ReturnKeyAction,
 
   /**
    * Note that not all Text styles are supported, an incomplete list of what is not supported includes:

@@ -232,8 +232,8 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
 
   private void fireEditorActionAndCheckRecording(
       final ReactEditText reactEditText, final int actionId) throws Throwable {
-    fireEditorActionAndCheckRecording(reactEditText, actionId, true);
-    fireEditorActionAndCheckRecording(reactEditText, actionId, false);
+    fireEditorActionAndCheckRecording(reactEditText, actionId, "blurAndSubmit");
+    fireEditorActionAndCheckRecording(reactEditText, actionId, "newline");
   }
 
   private void fireEditorActionAndCheckRecording(

@@ -318,11 +318,7 @@ class ReturnKeyActionExample extends React.Component<{...}> {
           placeholder="multiline newline"
           returnKeyAction="newline"
         />
-        <TextInput
-          ref={this.ref11}
-          multiline
-          placeholder="multiline default"
-        />
+        <TextInput ref={this.ref11} multiline placeholder="multiline default" />
       </View>
     );
   }

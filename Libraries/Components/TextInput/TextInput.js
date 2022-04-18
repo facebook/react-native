@@ -173,7 +173,7 @@ export type ReturnKeyType =
   | 'route'
   | 'yahoo';
 
-export type ReturnKeyAction =  'submit' | 'blurAndSubmit' | 'newline';
+export type ReturnKeyAction = 'submit' | 'blurAndSubmit' | 'newline';
 
 export type AutoCapitalize = 'none' | 'sentences' | 'words' | 'characters';
 
@@ -792,7 +792,7 @@ export type Props = $ReadOnly<{|
    * - `'submit'` will only send a submit event and not blur the input
    * - `'blurAndSubmit`' will both blur the input and send a submit event
    */
-  returnKeyAction?: ?ReturnKeyAction;
+  returnKeyAction?: ?ReturnKeyAction,
 
   /**
    * Note that not all Text styles are supported, an incomplete list of what is not supported includes:
@@ -1204,29 +1204,29 @@ function InternalTextInput(props: Props): React.Node {
 
   let textInput = null;
 
+  const multiline = props.multiline ?? false;
+
   let returnKeyAction: ReturnKeyAction;
-  if (props.returnKeyAction) {
+  if (props.returnKeyAction != null) {
     // `returnKeyAction` is set explicitly
-    if (!props.multiline && returnKeyAction === 'newline') {
+    if (!multiline && props.returnKeyAction === 'newline') {
       // For single line text inputs, `'newline'` is not a valid option
       returnKeyAction = 'blurAndSubmit';
     } else {
       returnKeyAction = props.returnKeyAction;
     }
-  } else if (props.multiline) {
-    if (props.blurOnSubmit) {
+  } else if (multiline) {
+    if (props.blurOnSubmit === true) {
       returnKeyAction = 'blurAndSubmit';
     } else {
       returnKeyAction = 'newline';
     }
   } else {
     // Single line
-    if (props.blurOnSubmit) {
-      returnKeyAction = 'blurAndSubmit'
-    } else if (props.blurOnSubmit === false) {
-      returnKeyAction = 'submit';
-    } else {
+    if (props.blurOnSubmit !== false) {
       returnKeyAction = 'blurAndSubmit';
+    } else {
+      returnKeyAction = 'submit';
     }
   }
 
