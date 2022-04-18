@@ -89,7 +89,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   if (_prevTime == -1) {
     _prevTime = timestamp;
   } else if (timestamp - _prevTime >= 1) {
-    _FPS = round(_frameCount / (timestamp - _prevTime));
+    _FPS = round((double)_frameCount / (timestamp - _prevTime));
     _minFPS = MIN(_minFPS, _FPS);
     _maxFPS = MAX(_maxFPS, _FPS);
 

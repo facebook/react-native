@@ -298,7 +298,7 @@ static NSUInteger RCTDeviceFreeMemory() {
     // Calculate based on current memory, these factors are by experience
     NSUInteger total = RCTDeviceTotalMemory();
     NSUInteger free = RCTDeviceFreeMemory();
-    max = MIN(total * 0.2, free * 0.6);
+    max = MIN((double)total * 0.2, (double)free * 0.6);
   }
 
   NSUInteger maxBufferCount = (double)max / (double)bytes;
