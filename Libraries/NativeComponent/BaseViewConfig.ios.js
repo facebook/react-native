@@ -86,7 +86,7 @@ const bubblingEventTypes = {
     },
   },
 
-  // Pointer Events
+  // Experimental/Work in Progress Pointer Events (not yet ready for use)
   topPointerCancel: {
     phasedRegistrationNames: {
       captured: 'onPointerCancelCapture',
