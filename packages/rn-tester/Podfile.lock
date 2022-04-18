@@ -73,6 +73,7 @@ PODS:
     - FlipperKit/FlipperKitNetworkPlugin
   - fmt (6.2.1)
   - glog (0.3.5)
+  - hermes-engine (1000.0.0)
   - libevent (2.1.12)
   - OpenSSL-Universal (1.1.1100)
   - RCT-Folly (2021.06.28.00-v2):
@@ -91,6 +92,12 @@ PODS:
     - DoubleConversion
     - fmt (~> 6.2.1)
     - glog
+  - RCT-Folly/Futures (2021.06.28.00-v2):
+    - boost
+    - DoubleConversion
+    - fmt (~> 6.2.1)
+    - glog
+    - libevent
   - RCTRequired (1000.0.0)
   - RCTTypeSafety (1000.0.0):
     - FBLazyVector (= 1000.0.0)
@@ -590,6 +597,17 @@ PODS:
   - React-graphics (1000.0.0):
     - RCT-Folly/Fabric (= 2021.06.28.00-v2)
     - React-Core/Default (= 1000.0.0)
+  - React-hermes (1000.0.0):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2021.06.28.00-v2)
+    - RCT-Folly/Futures (= 2021.06.28.00-v2)
+    - React-cxxreact (= 1000.0.0)
+    - React-jsi (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+    - React-jsinspector (= 1000.0.0)
+    - React-perflogger (= 1000.0.0)
   - React-jsi (1000.0.0):
     - boost (= 1.76.0)
     - DoubleConversion
@@ -747,6 +765,8 @@ DEPENDENCIES:
   - FlipperKit/FlipperKitUserDefaultsPlugin (= 0.125.0)
   - FlipperKit/SKIOSNetworkPlugin (= 0.125.0)
   - glog (from `../../third-party-podspecs/glog.podspec`)
+  - hermes-engine (from `../../sdks/hermes/hermes-engine.podspec`)
+  - libevent (~> 2.1.12)
   - OpenSSL-Universal (= 1.1.1100)
   - RCT-Folly (from `../../third-party-podspecs/RCT-Folly.podspec`)
   - RCT-Folly/Fabric (from `../../third-party-podspecs/RCT-Folly.podspec`)
@@ -763,6 +783,7 @@ DEPENDENCIES:
   - React-cxxreact (from `../../ReactCommon/cxxreact`)
   - React-Fabric (from `../../ReactCommon`)
   - React-graphics (from `../../ReactCommon/react/renderer/graphics`)
+  - React-hermes (from `../../ReactCommon/hermes`)
   - React-jsi (from `../../ReactCommon/jsi`)
   - React-jsi/Fabric (from `../../ReactCommon/jsi`)
   - React-jsiexecutor (from `../../ReactCommon/jsiexecutor`)
@@ -817,6 +838,8 @@ EXTERNAL SOURCES:
     :path: "../../React/FBReactNativeSpec"
   glog:
     :podspec: "../../third-party-podspecs/glog.podspec"
+  hermes-engine:
+    :path: "../../sdks/hermes/hermes-engine.podspec"
   RCT-Folly:
     :podspec: "../../third-party-podspecs/RCT-Folly.podspec"
   RCTRequired:
@@ -841,6 +864,8 @@ EXTERNAL SOURCES:
     :path: "../../ReactCommon"
   React-graphics:
     :path: "../../ReactCommon/react/renderer/graphics"
+  React-hermes:
+    :path: "../../ReactCommon/hermes"
   React-jsi:
     :path: "../../ReactCommon/jsi"
   React-jsiexecutor:
@@ -903,6 +928,7 @@ SPEC CHECKSUMS:
   FlipperKit: cbdee19bdd4e7f05472a66ce290f1b729ba3cb86
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 3d02b25ca00c2d456734d0bcff864cbc62f6ae1a
+  hermes-engine: 48af1e9614388202067ffef4df9cb8437e1cbbb9
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
   RCT-Folly: 4d8508a426467c48885f1151029bc15fa5d7b3b8
@@ -917,6 +943,7 @@ SPEC CHECKSUMS:
   React-cxxreact: 6c8298fa64352792a63f358db73f4f24c1317304
   React-Fabric: 7041000207eca7aa25e73731961630623b8f6510
   React-graphics: d4c10577f5e0221d34e65e658e2770842de99d08
+  React-hermes: 1b7d9b9576053d05d91e2207d94732605995483d
   React-jsi: 08fe8a4e9a4a14a215f55ff954bd2fd8812df27b
   React-jsiexecutor: 6f90354b81808e2f408426dfae10ed413df2bada
   React-jsinspector: 7733dd522d044aef87caa39f3eda77593358a7eb
