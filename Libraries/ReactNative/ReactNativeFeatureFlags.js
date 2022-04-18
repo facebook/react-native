@@ -23,11 +23,17 @@ export type FeatureFlags = {|
    * Android -> ReactFeatureFlags.dispatchPointerEvents
    */
   shouldEmitW3CPointerEvents: () => boolean,
+  /**
+   * Function used to enable / disable Pressibility from using W3C Pointer Events
+   * for its hover callbacks
+   */
+  shouldPressibilityUseW3CPointerEventsForHover: () => boolean,
 |};
 
 const ReactNativeFeatureFlags: FeatureFlags = {
   isLayoutAnimationEnabled: () => true,
   shouldEmitW3CPointerEvents: () => false,
+  shouldPressibilityUseW3CPointerEventsForHover: () => false,
 };
 
 module.exports = ReactNativeFeatureFlags;
