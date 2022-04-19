@@ -190,20 +190,25 @@ android {
             // If you wish to add a custom TurboModule or component locally,
             // you should uncomment this line.
             // preBuild.dependsOn("generateCodegenArtifactsFromSchema")
-            preDebugBuild.dependsOn(packageReactNdkDebugLibs)
-            preReleaseBuild.dependsOn(packageReactNdkReleaseLibs)
+            android.applicationVariants.all { def variant ->
+                def targetName = variant.name.capitalize()
+                def preVariantBuildTask = tasks.findByName("pre${targetName}")
 
-            // Due to a bug inside AGP, we have to explicitly set a dependency
-            // between configureNdkBuild* tasks and the preBuild tasks.
-            // This can be removed once this is solved: https://issuetracker.google.com/issues/207403732
-            configureNdkBuildRelease.dependsOn(preReleaseBuild)
-            configureNdkBuildDebug.dependsOn(preDebugBuild)
-            reactNativeArchitectures().each { architecture ->
-                tasks.findByName("configureNdkBuildDebug[${architecture}]")?.configure {
-                    dependsOn("preDebugBuild")
+                // Due to a bug inside AGP, we have to explicitly set a dependency
+                // between configureNdkBuild* tasks and the preBuild tasks.
+                // This can be removed once this is solved: https://issuetracker.google.com/issues/207403732
+                if (targetName.endsWith("DebugBuild")) {
+                    preVariantBuildTask.dependsOn(packageReactNdkDebugLibs)
+                    configureNdkBuildDebug.dependsOn(preVariantBuildTask)
                 }
-                tasks.findByName("configureNdkBuildRelease[${architecture}]")?.configure {
-                    dependsOn("preReleaseBuild")
+                if (targetName.endsWith("ReleaseBuild")) {
+                    preVariantBuildTask.dependsOn(packageReactNdkReleaseLibs)
+                    configureNdkBuildRelease.dependsOn(preVariantBuildTask)
+                }
+                reactNativeArchitectures().each { architecture ->
+                    tasks.findByName("configureNdk${targetName}[${architecture}]")?.configure {
+                        dependsOn(preVariantBuildTask.name)
+                    }
                 }
             }
         }
