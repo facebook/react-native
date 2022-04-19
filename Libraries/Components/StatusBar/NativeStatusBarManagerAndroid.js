@@ -28,7 +28,7 @@ export interface Spec extends TurboModule {
   +setHidden: (hidden: boolean) => void;
 }
 
-const NativeModule = TurboModuleRegistry.get<<Spec>('StatusBarManager');
+const NativeModule = TurboModuleRegistry.get<Spec>('StatusBarManager');
 let constants = null;
 
 const NativeStatusBarManager = {

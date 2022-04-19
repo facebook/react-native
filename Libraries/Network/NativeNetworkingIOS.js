@@ -33,4 +33,4 @@ export interface Spec extends TurboModule {
   +removeListeners: (count: number) => void;
 }
 
-export default (TurboModuleRegistry.get<<Spec>('Networking'): Spec);
+export default (TurboModuleRegistry.get<Spec>('Networking'): Spec);

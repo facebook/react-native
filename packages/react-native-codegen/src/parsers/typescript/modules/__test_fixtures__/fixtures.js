@@ -27,7 +27,7 @@ export interface Spec extends TurboModule {
 
 }
 
-export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<Spec>('SampleTurboModule');
 `;
 
 const NATIVE_MODULE_WITH_COMPLEX_OBJECTS = `
@@ -59,7 +59,7 @@ export interface Spec extends TurboModule {
   }>;
 }
 
-export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<Spec>('SampleTurboModule');
 `;
 
 const NATIVE_MODULE_WITH_COMPLEX_OBJECTS_WITH_NULLABLE_KEY = `
@@ -93,7 +93,7 @@ export interface Spec extends TurboModule {
   };
 }
 
-export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<Spec>('SampleTurboModule');
 `;
 
 const NATIVE_MODULE_WITH_BASIC_PARAM_TYPES = `
@@ -117,7 +117,7 @@ export interface Spec extends TurboModule {
   readonly passStringish: (arg: Stringish) => void;
 }
 
-export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<Spec>('SampleTurboModule');
 
 `;
 
@@ -155,7 +155,7 @@ export interface Spec extends TurboModule {
   readonly getStringFromAlias: (a: ObjectAlias) => string;
 }
 
-export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<Spec>('SampleTurboModule');
 `;
 
 const NATIVE_MODULE_WITH_NESTED_ALIASES = `
@@ -187,7 +187,7 @@ export interface Spec extends TurboModule {
   foo2: (x: Foo) => void;
 }
 
-export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<Spec>('SampleTurboModule');
 
 `;
 
@@ -210,7 +210,7 @@ export interface Spec extends TurboModule {
   readonly getFloat: (arg: Float) => Float;
 }
 
-export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<Spec>('SampleTurboModule');
 `;
 
 const NATIVE_MODULE_WITH_SIMPLE_OBJECT = `
@@ -230,7 +230,7 @@ export interface Spec extends TurboModule {
   readonly getObject: (o: Object) => Object,
 }
 
-export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<Spec>('SampleTurboModule');
 `;
 
 const NATIVE_MODULE_WITH_UNSAFE_OBJECT = `
@@ -251,7 +251,7 @@ export interface Spec extends TurboModule {
   readonly getUnsafeObject: (o: UnsafeObject) => UnsafeObject;
 }
 
-export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<Spec>('SampleTurboModule');
 `;
 
 const NATIVE_MODULE_WITH_ROOT_TAG = `
@@ -274,7 +274,7 @@ export interface Spec extends TurboModule {
   readonly getRootTag: (rootTag: RootTag) => RootTag;
 }
 
-export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<Spec>('SampleTurboModule');
 `;
 
 const NATIVE_MODULE_WITH_NULLABLE_PARAM = `
@@ -294,7 +294,7 @@ export interface Spec extends TurboModule {
   readonly voidFunc: (arg: string | null | void) => void;
 }
 
-export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<Spec>('SampleTurboModule');
 `;
 
 const NATIVE_MODULE_WITH_BASIC_ARRAY = `
@@ -315,7 +315,7 @@ export interface Spec extends TurboModule {
   readonly getArray: (arg: ReadonlyArray<string>) => ReadonlyArray<string>;
 }
 
-export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<Spec>('SampleTurboModule');
 `;
 
 const NATIVE_MODULE_WITH_OBJECT_WITH_OBJECT_DEFINED_IN_FILE_AS_PROPERTY = `
@@ -348,7 +348,7 @@ export interface Spec extends TurboModule {
   }>;
 }
 
-export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<Spec>('SampleTurboModule');
 `;
 
 const NATIVE_MODULE_WITH_ARRAY_WITH_UNION_AND_TOUPLE = `
@@ -370,7 +370,7 @@ export interface Spec extends TurboModule {
   ) => Array<string | number | boolean>;
 }
 
-export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<Spec>('SampleTurboModule');
 `;
 
 const NATIVE_MODULE_WITH_ARRAY_WITH_ALIAS = `
@@ -392,7 +392,7 @@ export interface Spec extends TurboModule {
   readonly getArray: (arg: Array<SomeString>) => Array<string>;
 }
 
-export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<Spec>('SampleTurboModule');
 `;
 
 const NATIVE_MODULE_WITH_COMPLEX_ARRAY = `
@@ -414,7 +414,7 @@ export interface Spec extends TurboModule {
   ) => Array<Array<Array<string>>>;
 }
 
-export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<Spec>('SampleTurboModule');
 `;
 
 const NATIVE_MODULE_WITH_PROMISE = `
@@ -439,7 +439,7 @@ export interface Spec extends TurboModule {
   readonly getValueWithPromiseObjDefinedSomewhereElse: () => Promise<SomeObj>;
 }
 
-export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<Spec>('SampleTurboModule');
 `;
 
 const NATIVE_MODULE_WITH_CALLBACK = `
@@ -461,7 +461,7 @@ export interface Spec extends TurboModule {
   ) => void;
 }
 
-export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<Spec>('SampleTurboModule');
 `;
 
 const ANDROID_ONLY_NATIVE_MODULE = `
@@ -479,7 +479,7 @@ import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboMo
 
 export interface Spec extends TurboModule {}
 
-export default TurboModuleRegistry.get<<Spec>(
+export default TurboModuleRegistry.get<Spec>(
   'SampleTurboModuleAndroid',
 );
 `;
@@ -499,7 +499,7 @@ import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboMo
 
 export interface Spec extends TurboModule {}
 
-export default TurboModuleRegistry.get<<Spec>(
+export default TurboModuleRegistry.get<Spec>(
   'SampleTurboModuleIOS',
 );
 `;
@@ -521,7 +521,7 @@ export interface Spec extends TurboModule {
   readonly getCallback: () => () => void;
 }
 
-export default TurboModuleRegistry.get<<Spec>(
+export default TurboModuleRegistry.get<Spec>(
   'SampleTurboModuleCxx',
 );
 `;

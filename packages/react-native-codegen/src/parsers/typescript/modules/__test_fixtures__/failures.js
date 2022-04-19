@@ -27,7 +27,7 @@ export interface Spec extends TurboModule {
   getString: (arg: string) => Array;
 }
 
-export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<Spec>('SampleTurboModule');
 `;
 
 const NATIVE_MODULES_WITH_ARRAY_WITH_NO_TYPE_FOR_CONTENT_AS_PARAM = `
@@ -47,7 +47,7 @@ export interface Spec extends TurboModule {
   getString: (arg: Array) => string;
 }
 
-export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<Spec>('SampleTurboModule');
 `;
 
 const NATIVE_MODULES_WITH_NOT_ONLY_METHODS = `
@@ -71,7 +71,7 @@ export interface Spec extends TurboModule {
 
 }
 
-export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<Spec>('SampleTurboModule');
 
 `;
 
@@ -92,7 +92,7 @@ export interface Spec extends TurboModule {
   readonly getBool: (boolean) => boolean;
 }
 
-export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<Spec>('SampleTurboModule');
 `;
 
 const NATIVE_MODULES_WITH_PROMISE_WITHOUT_TYPE = `
@@ -113,7 +113,7 @@ export interface Spec extends TurboModule {
 
 }
 
-export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<Spec>('SampleTurboModule');
 
 `;
 
@@ -130,8 +130,8 @@ const TWO_NATIVE_MODULES_EXPORTED_WITH_DEFAULT = `
 import type {TurboModule} from '../RCTExport';
 import * as TurboModuleRegistry from '../TurboModuleRegistry';
 
-export default TurboModuleRegistry.get<<Spec1>('SampleTurboModule1');
-export default TurboModuleRegistry.get<<Spec2>('SampleTurboModule2');
+export default TurboModuleRegistry.get<Spec1>('SampleTurboModule1');
+export default TurboModuleRegistry.get<Spec2>('SampleTurboModule2');
 `;
 
 const TWO_NATIVE_EXTENDING_TURBO_MODULE = `

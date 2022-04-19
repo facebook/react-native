@@ -17,7 +17,7 @@ export interface Spec extends TurboModule {
   |};
 }
 
-const NativeModule = TurboModuleRegistry.get<<Spec>('SourceCode');
+const NativeModule = TurboModuleRegistry.get<Spec>('SourceCode');
 let constants = null;
 
 const NativeSourceCode = {

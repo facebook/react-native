@@ -46,6 +46,6 @@ export interface Spec extends TurboModule {
   ) => void;
 }
 
-export default (TurboModuleRegistry.get<<Spec>(
+export default (TurboModuleRegistry.get<Spec>(
   'ImageEditingManager',
 ): Spec);

@@ -28,6 +28,6 @@ export interface Spec extends TurboModule {
   +removeListeners: (count: number) => void;
 }
 
-export default (TurboModuleRegistry.get<<Spec>(
+export default (TurboModuleRegistry.get<Spec>(
   'WebSocketModule',
 ): Spec);

@@ -19,6 +19,6 @@ export interface Spec extends TurboModule {
   +deleteValues: (values: Array<string>) => void;
 }
 
-export default (TurboModuleRegistry.get<<Spec>(
+export default (TurboModuleRegistry.get<Spec>(
   'SettingsManager',
 ): Spec);

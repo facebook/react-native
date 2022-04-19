@@ -34,4 +34,4 @@ export interface Spec extends TurboModule {
   ) => void;
 }
 
-export default (TurboModuleRegistry.get<<Spec>('ToastAndroid'): Spec);
+export default (TurboModuleRegistry.get<Spec>('ToastAndroid'): Spec);

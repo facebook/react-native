@@ -19,6 +19,6 @@ export interface Spec extends TurboModule {
   +getNumberWithAlias: (arg: Number) => AnotherNumber;
 }
 
-export default (TurboModuleRegistry.get<<Spec>(
+export default (TurboModuleRegistry.get<Spec>(
   'SampleTurboModule',
 ): Spec);

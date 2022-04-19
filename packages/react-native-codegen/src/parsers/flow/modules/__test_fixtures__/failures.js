@@ -32,7 +32,7 @@ export interface Spec extends TurboModule {
   getString: (arg: string) => Array;
 }
 
-export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<Spec>('SampleTurboModule');
 
 `;
 
@@ -56,7 +56,7 @@ export interface Spec extends TurboModule {
   getString: (arg : Array) => string;
 }
 
-export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<Spec>('SampleTurboModule');
 
 `;
 
@@ -80,7 +80,7 @@ export interface Spec extends TurboModule {
   getString: (arg : $ReadOnly<>) => string;
 }
 
-export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<Spec>('SampleTurboModule');
 
 `;
 
@@ -108,7 +108,7 @@ export interface Spec extends TurboModule {
 
 }
 
-export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<Spec>('SampleTurboModule');
 
 `;
 
@@ -133,7 +133,7 @@ export interface Spec extends TurboModule {
 
 }
 
-export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<Spec>('SampleTurboModule');
 
 `;
 
@@ -158,7 +158,7 @@ export interface Spec extends TurboModule {
 
 }
 
-export default TurboModuleRegistry.get<<Spec>('SampleTurboModule');
+export default TurboModuleRegistry.get<Spec>('SampleTurboModule');
 
 `;
 
@@ -179,8 +179,8 @@ import type {TurboModule} from '../RCTExport';
 import * as TurboModuleRegistry from '../TurboModuleRegistry';
 
 
-export default TurboModuleRegistry.get<<Spec1>('SampleTurboModule1');
-export default TurboModuleRegistry.get<<Spec2>('SampleTurboModule2');
+export default TurboModuleRegistry.get<Spec1>('SampleTurboModule1');
+export default TurboModuleRegistry.get<Spec2>('SampleTurboModule2');
 
 `;
 

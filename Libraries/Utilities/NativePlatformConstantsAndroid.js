@@ -33,6 +33,6 @@ export interface Spec extends TurboModule {
   +getAndroidID: () => string;
 }
 
-export default (TurboModuleRegistry.get<<Spec>(
+export default (TurboModuleRegistry.get<Spec>(
   'PlatformConstants',
 ): Spec);
