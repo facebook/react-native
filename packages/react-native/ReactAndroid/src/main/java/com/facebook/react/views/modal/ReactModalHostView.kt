@@ -29,6 +29,8 @@ import androidx.activity.OnBackPressedCallback
 import androidx.annotation.UiThread
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
 import com.facebook.common.logging.FLog
 import com.facebook.react.R
 import com.facebook.react.bridge.GuardedRunnable
@@ -276,6 +278,15 @@ public class ReactModalHostView(context: ThemedReactContext) :
     window.setFlags(
         WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
         WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
+
+    // Enabled Edge to Edge modal when transparent/translucent system UI.
+    if (transparent && statusBarTranslucent) {
+      newDialog.window?.let {
+        it.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        it.navigationBarColor = ContextCompat.getColor(context, android.R.color.transparent);
+        WindowCompat.setDecorFitsSystemWindows(it, false)
+      };
+    }
 
     newDialog.setContentView(contentView)
     updateProperties()
