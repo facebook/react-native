@@ -69,12 +69,6 @@ public class JSPointerDispatcher {
   }
 
   public void handleMotionEvent(MotionEvent motionEvent, EventDispatcher eventDispatcher) {
-
-    // Ignore if child is handling native gesture
-    if (mChildHandlingNativeGesture != -1) {
-      return;
-    }
-
     boolean supportsHover =
         PointerEventHelper.supportsHover(motionEvent.getToolType(motionEvent.getActionIndex()));
 
@@ -101,6 +95,9 @@ public class JSPointerDispatcher {
     // First down pointer
     if (action == MotionEvent.ACTION_DOWN) {
 
+      // Reset mChildHandlingNativeGesture like JSTouchDispatcher does
+      mChildHandlingNativeGesture = -1;
+
       // Start a "down" coalescing key
       mDownStartTime = motionEvent.getEventTime();
       mTouchEventCoalescingKeyHelper.addCoalescingKey(mDownStartTime);
@@ -116,6 +113,12 @@ public class JSPointerDispatcher {
       eventDispatcher.dispatchEvent(
           PointerEvent.obtain(PointerEventHelper.POINTER_DOWN, surfaceId, targetTag, motionEvent));
 
+      return;
+    }
+
+    // If the touch was intercepted by a child, we've already sent a cancel event to JS for this
+    // gesture, so we shouldn't send any more pointer events related to it.
+    if (mChildHandlingNativeGesture != -1) {
       return;
     }
 
