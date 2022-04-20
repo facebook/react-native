@@ -1,4 +1,5 @@
 load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep")
 
 fb_native.prebuilt_jar(
     name = "annotation",
@@ -68,6 +69,7 @@ fb_native.android_library(
     exported_deps = [
         ":annotation",
         ":concurrent-futures-binary",
+        react_native_dep("third-party/java/google:listenablefuture"),
     ],
 )
 
@@ -375,6 +377,7 @@ fb_native.android_library(
     exported_deps = [
         ":core",
         ":work-runtime-binary",
+        react_native_dep("third-party/java/google:listenablefuture"),
     ],
 )
 
