@@ -1,6 +1,7 @@
 load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
+load("//tools/build_defs/oss:rn_defs.bzl", "rn_android_library", "rn_prebuilt_jar")
 
-fb_native.android_library(
+rn_android_library(
     name = "listenablefuture",
     visibility = ["//ReactAndroid/..."],
     exported_deps = [
@@ -8,9 +9,9 @@ fb_native.android_library(
     ],
 )
 
-fb_native.prebuilt_jar(
+rn_prebuilt_jar(
     name = "listenablefuture-binary",
-    binary_jar = "listenablefuture-binary.jar",
+    binary_jar = ":listenablefuture-binary.jar",
 )
 
 fb_native.remote_file(
