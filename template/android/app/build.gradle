@@ -191,23 +191,28 @@ android {
             // you should uncomment this line.
             // preBuild.dependsOn("generateCodegenArtifactsFromSchema")
             android.applicationVariants.all { def variant ->
-                def targetName = variant.name.capitalize()
-                def preVariantBuildTask = tasks.findByName("pre${targetName}")
+                def variantName = variant.name.capitalize()
+                def preVariantBuildTask = tasks.findByName("pre${variantName}Build")
 
                 // Due to a bug inside AGP, we have to explicitly set a dependency
                 // between configureNdkBuild* tasks and the preBuild tasks.
                 // This can be removed once this is solved: https://issuetracker.google.com/issues/207403732
-                if (targetName.endsWith("DebugBuild")) {
+                if (variantName.endsWith("Debug")) {
                     preVariantBuildTask.dependsOn(packageReactNdkDebugLibs)
                     configureNdkBuildDebug.dependsOn(preVariantBuildTask)
+                    reactNativeArchitectures().each { architecture ->
+                        tasks.findByName("configureNdkBuildDebug[${architecture}]")?.configure {
+                            dependsOn(preVariantBuildTask.name)
+                        }
+                    }
                 }
-                if (targetName.endsWith("ReleaseBuild")) {
+                if (variantName.endsWith("Release")) {
                     preVariantBuildTask.dependsOn(packageReactNdkReleaseLibs)
                     configureNdkBuildRelease.dependsOn(preVariantBuildTask)
-                }
-                reactNativeArchitectures().each { architecture ->
-                    tasks.findByName("configureNdk${targetName}[${architecture}]")?.configure {
-                        dependsOn(preVariantBuildTask.name)
+                    reactNativeArchitectures().each { architecture ->
+                        tasks.findByName("configureNdkBuildRelease[${architecture}]")?.configure {
+                            dependsOn(preVariantBuildTask.name)
+                        }
                     }
                 }
             }
