@@ -36,7 +36,7 @@
     "chalk": "^4.0.0",
     "glob": "^7.1.1",
     "invariant": "^2.2.4",
-    "micromatch": "^4.0.2",
+    "micromatch": "^4.0.4",
     "mkdirp": "^0.5.1",
     "prettier": "^2.4.1"
   }
