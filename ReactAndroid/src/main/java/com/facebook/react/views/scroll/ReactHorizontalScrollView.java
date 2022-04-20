@@ -43,6 +43,7 @@ import com.facebook.react.uimanager.ReactOverflowViewWithInset;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.HasFlingAnimator;
+import com.facebook.react.views.scroll.ReactScrollViewHelper.HasScrollEventThrottle;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.HasScrollState;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.ReactScrollViewScrollState;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
@@ -56,7 +57,8 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
         FabricViewStateManager.HasFabricViewStateManager,
         ReactOverflowViewWithInset,
         HasScrollState,
-        HasFlingAnimator {
+        HasFlingAnimator,
+        HasScrollEventThrottle {
 
   private static boolean DEBUG_MODE = false && ReactBuildConfig.DEBUG;
   private static String TAG = ReactHorizontalScrollView.class.getSimpleName();
@@ -103,6 +105,8 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private final ReactScrollViewScrollState mReactScrollViewScrollState;
   private final ValueAnimator DEFAULT_FLING_ANIMATOR = ObjectAnimator.ofInt(this, "scrollX", 0, 0);
   private PointerEvents mPointerEvents = PointerEvents.AUTO;
+  private long mLastScrollDispatchTime = 0;
+  private int mScrollEventThrottle = 0;
 
   private final Rect mTempRect = new Rect();
 
@@ -1271,5 +1275,25 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   public PointerEvents getPointerEvents() {
     return mPointerEvents;
+  }
+
+  @Override
+  public void setScrollEventThrottle(int scrollEventThrottle) {
+    mScrollEventThrottle = scrollEventThrottle;
+  }
+
+  @Override
+  public int getScrollEventThrottle() {
+    return mScrollEventThrottle;
+  }
+
+  @Override
+  public void setLastScrollDispatchTime(long lastScrollDispatchTime) {
+    mLastScrollDispatchTime = lastScrollDispatchTime;
+  }
+
+  @Override
+  public long getLastScrollDispatchTime() {
+    return mLastScrollDispatchTime;
   }
 }
