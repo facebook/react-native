@@ -1754,7 +1754,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           // we'll wipe out the initialNumToRender rendered elements starting at initialScrollIndex.
           // So let's wait until we've scrolled the view to the right place. And until then,
           // we will trust the initialScrollIndex suggestion.
-          if (!this.props.initialScrollIndex || this._scrollMetrics.offset) {
+          if (!this.props.initialScrollIndex || this._hasDoneInitialScroll) {
             newState = computeWindowedRenderLimits(
               this.props.data,
               this.props.getItemCount,
