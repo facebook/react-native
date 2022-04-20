@@ -68,6 +68,7 @@ import okio.Source;
         Bitmap bitMap = BitmapFactory.decodeByteArray(decodedDataUrString, 0, decodedDataUrString.length);
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         bitMap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);  
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
         InputStream inputStream = new ByteArrayInputStream(bytes.toByteArray());
         return inputStream;
       }
