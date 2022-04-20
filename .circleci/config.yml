@@ -409,6 +409,11 @@ jobs:
       - run:
           name: Set USE_HERMES=1
           command: echo "export USE_HERMES=1" >> $BASH_ENV
+
+      - run:
+          name: Set BUILD_HERMES_SOURCE=1
+          command: echo "export BUILD_HERMES_SOURCE=1" >> $BASH_ENV
+
       - with_brew_cache_span:
           steps:
             - brew_install:
@@ -486,6 +491,10 @@ jobs:
       - run:
           name: Set USE_HERMES=1
           command: echo "export USE_HERMES=1" >> $BASH_ENV
+
+      - run:
+          name: Set BUILD_HERMES_SOURCE=1
+          command: echo "export BUILD_HERMES_SOURCE=1" >> $BASH_ENV
 
       - run:
           name: Setup the CocoaPods environment
