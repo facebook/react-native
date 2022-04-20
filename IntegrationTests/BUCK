@@ -18,7 +18,7 @@ rn_library(
         ],
     ),
     labels = [
-        "pfh:ReactNative_CommonInfrastructurePlaceholde",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.tests",
     ],
     skip_processors = True,

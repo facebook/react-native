@@ -5,16 +5,17 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+val ndkPath by extra(System.getenv("ANDROID_NDK"))
+val ndkVersion by extra(System.getenv("ANDROID_NDK_VERSION"))
+
 buildscript {
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        val kotlin_version: String by project
         classpath("com.android.tools.build:gradle:7.1.1")
         classpath("de.undercouch:gradle-download-task:5.0.1")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -44,6 +45,9 @@ tasks.register("cleanAll", Delete::class.java) {
     dependsOn(gradle.includedBuild("react-native-gradle-plugin").task(":clean"))
     delete(allprojects.map { it.buildDir })
     delete(rootProject.file("./ReactAndroid/.cxx"))
+    delete(rootProject.file("./ReactAndroid/hermes-engine/.cxx"))
+    delete(rootProject.file("./sdks/download/"))
+    delete(rootProject.file("./sdks/hermes/"))
     delete(rootProject.file("./ReactAndroid/src/main/jni/prebuilt/lib/arm64-v8a/"))
     delete(rootProject.file("./ReactAndroid/src/main/jni/prebuilt/lib/armeabi-v7a/"))
     delete(rootProject.file("./ReactAndroid/src/main/jni/prebuilt/lib/x86/"))

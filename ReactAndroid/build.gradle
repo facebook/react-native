@@ -8,7 +8,7 @@
 plugins {
     id("com.android.library")
     id("com.facebook.react")
-    id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.android") version "1.6.10"
     id("maven-publish")
     id("de.undercouch.download")
 }
@@ -29,9 +29,10 @@ def AAR_OUTPUT_URL = "file://${projectDir}/../android"
 def customDownloadsDir = System.getenv("REACT_NATIVE_DOWNLOADS_DIR")
 def downloadsDir = customDownloadsDir ? new File(customDownloadsDir) : new File("$buildDir/downloads")
 def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
+def reactNativeRootDir = projectDir.parent
 
 // You need to have following folders in this directory:
-//   - boost_1_63_0
+//   - boost_1_76_0
 //   - double-conversion-1.1.6
 //   - folly-deprecate-dynamic-initializer
 //   - glog-0.3.5
@@ -55,7 +56,7 @@ task createNativeDepsDirectories {
 }
 
 task downloadBoost(dependsOn: createNativeDepsDirectories, type: Download) {
-    src("https://github.com/react-native-community/boost-for-react-native/releases/download/v${BOOST_VERSION.replace("_", ".")}-0/boost_${BOOST_VERSION}.tar.gz")
+    src("https://boostorg.jfrog.io/artifactory/main/release/${BOOST_VERSION.replace("_", ".")}/source/boost_${BOOST_VERSION}.tar.gz")
     onlyIfNewer(true)
     overwrite(false)
     dest(new File(downloadsDir, "boost_${BOOST_VERSION}.tar.gz"))
@@ -244,23 +245,20 @@ final def extractNativeDependencies = tasks.register('extractNativeDependencies'
 }
 
 task installArchives {
-    dependsOn("publishReleasePublicationToNpmRepository")
-}
-
-// Creating sources with comments
-task androidSourcesJar(type: Jar) {
-  classifier = 'sources'
-  from android.sourceSets.main.java.srcDirs
+    dependsOn("publishAllPublicationsToNpmRepository")
 }
 
 android {
     buildToolsVersion = "31.0.0"
     compileSdkVersion 31
 
-    // Used to override the NDK path & version on internal CI
-    if (System.getenv("ANDROID_NDK") != null && System.getenv("LOCAL_ANDROID_NDK_VERSION") != null) {
-        ndkPath System.getenv("ANDROID_NDK")
-        ndkVersion System.getenv("LOCAL_ANDROID_NDK_VERSION")
+    // Used to override the NDK path/version on internal CI or by allowing
+    // users to customize the NDK path/version from their root project (e.g. for M1 support)
+    if (rootProject.hasProperty("ndkPath")) {
+        ndkPath rootProject.ext.ndkPath
+    }
+    if (rootProject.hasProperty("ndkVersion")) {
+        ndkVersion rootProject.ext.ndkVersion
     }
 
     defaultConfig {
@@ -283,7 +281,7 @@ android {
 
         externalNativeBuild {
             cmake {
-                arguments "-DREACT_COMMON_DIR=${rootProject.projectDir}/ReactCommon",
+                arguments "-DREACT_COMMON_DIR=${reactNativeRootDir}/ReactCommon",
                         "-DREACT_ANDROID_DIR=$projectDir",
                         "-DANDROID_STL=c++_shared",
                         "-DANDROID_TOOLCHAIN=clang",
@@ -358,11 +356,18 @@ android {
     configurations {
         extractHeaders
         extractJNI
-        javadocDeps.extendsFrom api
     }
 
     buildFeatures {
         prefab true
+    }
+
+    publishing {
+        multipleVariants {
+            withSourcesJar()
+            withJavadocJar()
+            allVariants()
+        }
     }
 }
 
@@ -389,8 +394,6 @@ dependencies {
     // It's up to the consumer to decide if hermes should be included or not.
     // Therefore hermes-engine is a compileOnly dependency.
     compileOnly(project(":ReactAndroid:hermes-engine"))
-
-    javadocDeps("com.squareup:javapoet:1.13.0")
 
     testImplementation("junit:junit:${JUNIT_VERSION}")
     testImplementation("org.powermock:powermock-api-mockito2:${POWERMOCK_VERSION}")
@@ -431,11 +434,8 @@ afterEvaluate {
     publishing {
         publications {
             release(MavenPublication) {
-                // Applies the component for the release build variant.
-                from components.release
-
-                // Add additional sourcesJar to artifacts
-                artifact(androidSourcesJar)
+                // We do a multi variant release
+                from components.default
 
                 // You can then customize attributes of the publication as shown below.
                 artifactId = POM_ARTIFACT_ID

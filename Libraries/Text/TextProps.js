@@ -12,6 +12,7 @@
 
 import type {
   LayoutEvent,
+  PointerEvent,
   PressEvent,
   TextLayoutEvent,
 } from '../Types/CoreEventTypes';
@@ -31,10 +32,18 @@ export type PressRetentionOffset = $ReadOnly<{|
   right: number,
 |}>;
 
+type PointerEventProps = $ReadOnly<{|
+  onPointerEnter?: (event: PointerEvent) => void,
+  onPointerLeave?: (event: PointerEvent) => void,
+  onPointerMove?: (event: PointerEvent) => void,
+|}>;
+
 /**
  * @see https://reactnative.dev/docs/text#reference
  */
 export type TextProps = $ReadOnly<{|
+  ...PointerEventProps,
+
   /**
    * Indicates whether the view is an accessibility element.
    *

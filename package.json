@@ -43,6 +43,7 @@
     "scripts/generate-provider-cli.js",
     "scripts/generate-specs-cli.js",
     "scripts/ios-configure-glog.sh",
+    "scripts/xcode/with-environment.sh",
     "scripts/launchPackager.bat",
     "scripts/launchPackager.command",
     "scripts/node-binary.sh",
@@ -89,13 +90,13 @@
     "repo-config"
   ],
   "peerDependencies": {
-    "react": "17.0.2"
+    "react": "18.0.0"
   },
   "dependencies": {
     "@jest/create-cache-key-function": "^27.0.1",
-    "@react-native-community/cli": "^7.0.3",
-    "@react-native-community/cli-platform-android": "^7.0.1",
-    "@react-native-community/cli-platform-ios": "^7.0.1",
+    "@react-native-community/cli": "^8.0.0-alpha.0",
+    "@react-native-community/cli-platform-android": "^8.0.0-alpha.0",
+    "@react-native-community/cli-platform-ios": "^8.0.0-alpha.0",
     "@react-native/assets": "1.0.0",
     "@react-native/normalize-color": "2.0.0",
     "@react-native/polyfills": "2.0.0",
@@ -107,26 +108,27 @@
     "invariant": "^2.2.4",
     "jsc-android": "^250230.2.1",
     "memoize-one": "^5.0.0",
-    "metro-react-native-babel-transformer": "0.70.0",
-    "metro-runtime": "0.70.0",
-    "metro-source-map": "0.70.0",
+    "metro-react-native-babel-transformer": "0.70.1",
+    "metro-runtime": "0.70.1",
+    "metro-source-map": "0.70.1",
     "nullthrows": "^1.1.1",
     "pretty-format": "^26.5.2",
     "promise": "^8.0.3",
     "react-devtools-core": "4.24.0",
-    "react-native-gradle-plugin": "^0.0.5",
+    "react-native-gradle-plugin": "^0.0.6",
     "react-refresh": "^0.4.0",
     "react-shallow-renderer": "16.14.1",
     "regenerator-runtime": "^0.13.2",
-    "scheduler": "^0.20.2",
+    "scheduler": "^0.21.0",
     "stacktrace-parser": "^0.1.3",
-    "use-subscription": "^1.0.0",
+    "use-subscription": ">=1.0.0 <1.6.0",
     "whatwg-fetch": "^3.0.0",
     "ws": "^6.1.4"
   },
   "devDependencies": {
-    "flow-bin": "^0.175.0",
-    "react": "17.0.2"
+    "flow-bin": "^0.176.2",
+    "react": "18.0.0",
+    "react-test-renderer": "^18.0.0"
   },
   "codegenConfig": {
     "libraries": [

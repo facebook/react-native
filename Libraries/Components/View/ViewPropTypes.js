@@ -14,6 +14,7 @@ import type {
   BlurEvent,
   FocusEvent,
   MouseEvent,
+  PointerEvent,
   PressEvent,
   Layout,
   LayoutEvent,
@@ -84,8 +85,29 @@ type DirectEventProps = $ReadOnly<{|
 |}>;
 
 type MouseEventProps = $ReadOnly<{|
-  onMouseEnter?: (event: MouseEvent) => void,
-  onMouseLeave?: (event: MouseEvent) => void,
+  onMouseEnter?: ?(event: MouseEvent) => void,
+  onMouseLeave?: ?(event: MouseEvent) => void,
+|}>;
+
+// Experimental/Work in Progress Pointer Event Callbacks (not yet ready for use)
+type PointerEventProps = $ReadOnly<{|
+  onPointerEnter?: ?(event: PointerEvent) => void,
+  onPointerLeave?: ?(event: PointerEvent) => void,
+  onPointerMove?: ?(event: PointerEvent) => void,
+  onPointerCancel?: ?(e: PointerEvent) => void,
+  onPointerCancelCapture?: ?(e: PointerEvent) => void,
+  onPointerDown?: ?(e: PointerEvent) => void,
+  onPointerDownCapture?: ?(e: PointerEvent) => void,
+  onPointerUp?: ?(e: PointerEvent) => void,
+  onPointerUpCapture?: ?(e: PointerEvent) => void,
+
+  // FIXME: these events are temporary while we converge pointer event handling
+  onPointerEnter2?: ?(e: PointerEvent) => void,
+  onPointerEnter2Capture?: ?(e: PointerEvent) => void,
+  onPointerLeave2?: ?(e: PointerEvent) => void,
+  onPointerLeave2Capture?: ?(e: PointerEvent) => void,
+  onPointerMove2?: ?(e: PointerEvent) => void,
+  onPointerMove2Capture?: ?(e: PointerEvent) => void,
 |}>;
 
 type TouchEventProps = $ReadOnly<{|
@@ -97,20 +119,6 @@ type TouchEventProps = $ReadOnly<{|
   onTouchMoveCapture?: ?(e: PressEvent) => void,
   onTouchStart?: ?(e: PressEvent) => void,
   onTouchStartCapture?: ?(e: PressEvent) => void,
-|}>;
-
-type PointerEventCallbackProps = $ReadOnly<{|
-  onPointerCancel?: ?(e: PointerEvent) => void,
-  onPointerCancelCapture?: ?(e: PointerEvent) => void,
-  onPointerDown?: ?(e: PointerEvent) => void,
-  onPointerDownCapture?: ?(e: PointerEvent) => void,
-  onPointerEnter2?: ?(e: PointerEvent) => void,
-  onPointerLeave2?: ?(e: PointerEvent) => void,
-  onPointerEnter2Capture?: ?(e: PointerEvent) => void,
-  onPointerLeave2Capture?: ?(e: PointerEvent) => void,
-  onPointerMove2Capture?: ?(e: PointerEvent) => void,
-  onPointerUp?: ?(e: PointerEvent) => void,
-  onPointerUpCapture?: ?(e: PointerEvent) => void,
 |}>;
 
 /**
@@ -395,8 +403,8 @@ export type ViewProps = $ReadOnly<{|
   ...DirectEventProps,
   ...GestureResponderEventProps,
   ...MouseEventProps,
+  ...PointerEventProps,
   ...TouchEventProps,
-  ...PointerEventCallbackProps,
   ...AndroidViewProps,
   ...IOSViewProps,
 
@@ -455,6 +463,23 @@ export type ViewProps = $ReadOnly<{|
    *
    */
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
+
+  /**
+   *
+   * Node Information of a FlatList, VirtualizedList or SectionList collection item.
+   * A collection item starts at a given row and column in the collection, and spans one or more rows and columns.
+   *
+   * @platform android
+   *
+   */
+  accessibilityCollectionItem?: ?{
+    rowIndex: number,
+    rowSpan: number,
+    columnIndex: number,
+    columnSpan: number,
+    heading: boolean,
+    itemIndex: number,
+  },
 
   /**
    * Specifies the nativeID of the associated label text. When the assistive technology focuses on the component with this props, the text is read aloud.

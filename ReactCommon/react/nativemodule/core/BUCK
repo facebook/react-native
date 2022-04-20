@@ -56,7 +56,7 @@ rn_xplat_cxx_library(
         ],
     ),
     labels = [
-        "pfh:ReactNative_CommonInfrastructurePlaceholde",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     platforms = (ANDROID, APPLE),

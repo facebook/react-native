@@ -30,7 +30,7 @@ function EventfulView(props: {|
   const [tag, setTag] = React.useState('');
 
   const eventLog = eventName => event => {
-    // $FlowFixMe[prop-missing] Using private property
+    // $FlowFixMe Using private property
     log(`${name} - ${eventName} - target: ${event.target._nativeTag}`);
     setLastEvent(eventName);
   };
@@ -38,9 +38,13 @@ function EventfulView(props: {|
   const listeners = listen
     ? {
         onPointerUp: eventLog('up'),
+        onPointerUpCapture: eventLog('up capture'),
         onPointerDown: eventLog('down'),
+        onPointerDownCapture: eventLog('down capture'),
         onPointerLeave2: eventLog('leave'),
+        onPointerLeave2Capture: eventLog('leave capture'),
         onPointerEnter2: eventLog('enter'),
+        onPointerEnter2Capture: eventLog('enter capture'),
       }
     : Object.freeze({});
 

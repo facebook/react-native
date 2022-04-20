@@ -34,7 +34,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := folly_runtime
 LOCAL_SRC_FILES := $(REACT_NDK_EXPORT_DIR)/$(TARGET_ARCH_ABI)/libfolly_runtime.so
 LOCAL_EXPORT_C_INCLUDES := \
-  $(THIRD_PARTY_NDK_DIR)/boost/boost_1_63_0 \
+  $(THIRD_PARTY_NDK_DIR)/boost/boost_1_76_0 \
   $(THIRD_PARTY_NDK_DIR)/double-conversion \
   $(THIRD_PARTY_NDK_DIR)/folly
 # Note: Sync with folly/Android.mk.

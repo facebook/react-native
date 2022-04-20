@@ -52,7 +52,11 @@ static UIScrollViewIndicatorStyle RCTUIScrollViewIndicatorStyleFromProps(ScrollV
   }
 }
 
-static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteger tag)
+// Once Fabric implements proper NativeAnimationDriver, this should be removed.
+// This is just a workaround to allow animations based on onScroll event.
+// This is only used to animate sticky headers in ScrollViews, and only the contentOffset and tag is used.
+// TODO: T116850910 [Fabric][iOS] Make Fabric not use legacy RCTEventDispatcher for native-driven AnimatedEvents
+static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInteger tag)
 {
   static uint16_t coalescingKey = 0;
   RCTScrollEvent *scrollEvent = [[RCTScrollEvent alloc] initWithEventName:@"onScroll"
@@ -64,7 +68,15 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
                                                       scrollViewZoomScale:scrollView.zoomScale
                                                                  userData:nil
                                                             coalescingKey:coalescingKey];
-  [[RCTBridge currentBridge].eventDispatcher sendEvent:scrollEvent];
+  RCTBridge *bridge = [RCTBridge currentBridge];
+  if (bridge) {
+    [bridge.eventDispatcher sendEvent:scrollEvent];
+  } else {
+    NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:scrollEvent, @"event", nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTSendEventToLegacyEventDispatcher"
+                                                        object:nil
+                                                      userInfo:userInfo];
+  }
 }
 
 @interface RCTScrollViewComponentView () <
@@ -403,9 +415,8 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     if (_eventEmitter) {
       std::static_pointer_cast<ScrollViewEventEmitter const>(_eventEmitter)->onScroll([self _scrollViewMetrics]);
     }
-    // Once Fabric implements proper NativeAnimationDriver, this should be removed.
-    // This is just a workaround to allow animations based on onScroll event.
-    RCTSendPaperScrollEvent_DEPRECATED(scrollView, self.tag);
+
+    RCTSendScrollEventForNativeAnimations_DEPRECATED(scrollView, self.tag);
   }
 
   [self _remountChildrenIfNeeded];

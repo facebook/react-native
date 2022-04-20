@@ -12,6 +12,7 @@ import android.test.ActivityInstrumentationTestCase2;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
+import com.facebook.react.ReactPackageTurboModuleManagerDelegate;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.ReactContext;
@@ -95,6 +96,11 @@ public abstract class ReactInstrumentationTest
     return getReactContext().getJSModule(jsInterface);
   }
 
+  protected @Nullable ReactPackageTurboModuleManagerDelegate.Builder
+      getReactPackageTurboModuleManagerDelegateBuilder() {
+    return null;
+  }
+
   /** Override this method to provide extra native modules to be loaded before the app starts */
   protected ReactInstanceSpecForTest createReactInstanceSpecForTest() {
     ReactInstanceSpecForTest reactInstanceSpecForTest =
@@ -105,6 +111,8 @@ public abstract class ReactInstrumentationTest
     if (mFabricUIManagerFactory != null) {
       reactInstanceSpecForTest.setFabricUIManagerFactory(mFabricUIManagerFactory);
     }
+    reactInstanceSpecForTest.setReactPackageTurboModuleManagerDelegateBuilder(
+        getReactPackageTurboModuleManagerDelegateBuilder());
     return reactInstanceSpecForTest;
   }
 

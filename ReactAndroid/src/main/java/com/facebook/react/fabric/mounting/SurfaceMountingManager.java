@@ -1026,13 +1026,14 @@ public class SurfaceMountingManager {
   }
 
   private @Nullable ViewState getNullableViewState(int tag) {
-    if (mTagToViewState == null) {
+    ConcurrentHashMap<Integer, ViewState> viewStates = mTagToViewState;
+    if (viewStates == null) {
       return null;
     }
     if (ReactFeatureFlags.enableDelayedViewStateDeletion) {
       mScheduledForDeletionViewStateTags.remove(tag);
     }
-    return mTagToViewState.get(tag);
+    return viewStates.get(tag);
   }
 
   @SuppressWarnings("unchecked") // prevents unchecked conversion warn of the <ViewGroup> type

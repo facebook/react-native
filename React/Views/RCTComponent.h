@@ -15,6 +15,7 @@
  */
 typedef void (^RCTDirectEventBlock)(NSDictionary *body);
 typedef void (^RCTBubblingEventBlock)(NSDictionary *body);
+typedef void (^RCTCapturingEventBlock)(NSDictionary *body);
 
 /**
  * Logical node in a tree of application components. Both `ShadowView` and

@@ -6,6 +6,14 @@ exports[`FlatList renders all the bells and whistles 1`] = `
   ListEmptyComponent={[Function]}
   ListFooterComponent={[Function]}
   ListHeaderComponent={[Function]}
+  accessibilityCollection={
+    Object {
+      "columnCount": 2,
+      "hierarchical": false,
+      "itemCount": 5,
+      "rowCount": 3,
+    }
+  }
   data={
     Array [
       Object {
@@ -29,6 +37,7 @@ exports[`FlatList renders all the bells and whistles 1`] = `
   getItemCount={[Function]}
   getItemLayout={[Function]}
   keyExtractor={[Function]}
+  numColumns={2}
   onContentSizeChange={[Function]}
   onLayout={[Function]}
   onMomentumScrollBegin={[Function]}
@@ -121,6 +130,14 @@ exports[`FlatList renders all the bells and whistles 1`] = `
 
 exports[`FlatList renders empty list 1`] = `
 <RCTScrollView
+  accessibilityCollection={
+    Object {
+      "columnCount": 1,
+      "hierarchical": false,
+      "itemCount": 0,
+      "rowCount": 0,
+    }
+  }
   data={Array []}
   getItem={[Function]}
   getItemCount={[Function]}
@@ -144,6 +161,14 @@ exports[`FlatList renders empty list 1`] = `
 
 exports[`FlatList renders null list 1`] = `
 <RCTScrollView
+  accessibilityCollection={
+    Object {
+      "columnCount": 1,
+      "hierarchical": false,
+      "itemCount": 0,
+      "rowCount": 0,
+    }
+  }
   getItem={[Function]}
   getItemCount={[Function]}
   keyExtractor={[Function]}
@@ -166,6 +191,14 @@ exports[`FlatList renders null list 1`] = `
 
 exports[`FlatList renders simple list (multiple columns) 1`] = `
 <RCTScrollView
+  accessibilityCollection={
+    Object {
+      "columnCount": 2,
+      "hierarchical": false,
+      "itemCount": 3,
+      "rowCount": 2,
+    }
+  }
   data={
     Array [
       Object {
@@ -182,6 +215,7 @@ exports[`FlatList renders simple list (multiple columns) 1`] = `
   getItem={[Function]}
   getItemCount={[Function]}
   keyExtractor={[Function]}
+  numColumns={2}
   onContentSizeChange={[Function]}
   onLayout={[Function]}
   onMomentumScrollBegin={[Function]}
@@ -237,6 +271,14 @@ exports[`FlatList renders simple list (multiple columns) 1`] = `
 
 exports[`FlatList renders simple list 1`] = `
 <RCTScrollView
+  accessibilityCollection={
+    Object {
+      "columnCount": 1,
+      "hierarchical": false,
+      "itemCount": 3,
+      "rowCount": 3,
+    }
+  }
   data={
     Array [
       Object {
@@ -298,6 +340,14 @@ exports[`FlatList renders simple list 1`] = `
 exports[`FlatList renders simple list using ListItemComponent (multiple columns) 1`] = `
 <RCTScrollView
   ListItemComponent={[Function]}
+  accessibilityCollection={
+    Object {
+      "columnCount": 2,
+      "hierarchical": false,
+      "itemCount": 3,
+      "rowCount": 2,
+    }
+  }
   data={
     Array [
       Object {
@@ -314,6 +364,7 @@ exports[`FlatList renders simple list using ListItemComponent (multiple columns)
   getItem={[Function]}
   getItemCount={[Function]}
   keyExtractor={[Function]}
+  numColumns={2}
   onContentSizeChange={[Function]}
   onLayout={[Function]}
   onMomentumScrollBegin={[Function]}
@@ -369,6 +420,14 @@ exports[`FlatList renders simple list using ListItemComponent (multiple columns)
 exports[`FlatList renders simple list using ListItemComponent 1`] = `
 <RCTScrollView
   ListItemComponent={[Function]}
+  accessibilityCollection={
+    Object {
+      "columnCount": 1,
+      "hierarchical": false,
+      "itemCount": 3,
+      "rowCount": 3,
+    }
+  }
   data={
     Array [
       Object {

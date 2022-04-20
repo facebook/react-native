@@ -284,12 +284,12 @@ def modify_flags_for_new_architecture(installer, cpp_flags)
           config_file.save_as(xcconfig_path)
       end
   end
-  # Add RCT_NEW_ARCH_ENABLED to Pods project xcconfig
-  installer.pods_project.targets.each do |target|
-    # if target.name == 'React-Core'
-    if target.name == 'React-Core'
-      puts "#{target.name}"
-      target.build_configurations.each do |config|
+
+  # Add RCT_NEW_ARCH_ENABLED to generated pod target projects
+  installer.target_installation_results.pod_target_installation_results
+    .each do |pod_name, target_installation_result|
+    if pod_name == 'React-Core'
+      target_installation_result.native_target.build_configurations.each do |config|
         config.build_settings['OTHER_CPLUSPLUSFLAGS'] = cpp_flags
       end
     end
@@ -630,9 +630,11 @@ def use_react_native_codegen!(spec, options={})
   system(prepare_command) # Always run prepare_command when a podspec uses the codegen, as CocoaPods may skip invoking this command in certain scenarios. Replace with pre_integrate_hook after updating to CocoaPods 1.11
   spec.prepare_command = prepare_command
 
+  env_files = ["$PODS_ROOT/../.xcode.env.local", "$PODS_ROOT/../.xcode.env"]
+
   spec.script_phase = {
     :name => 'Generate Specs',
-    :input_files => input_files, # This also needs to be relative to Xcode
+    :input_files => input_files + env_files, # This also needs to be relative to Xcode
     :output_files => ["${DERIVED_FILE_DIR}/codegen-#{library_name}.log"].concat(generated_files.map { |filename| "${PODS_TARGET_SRCROOT}/#{filename}"} ),
     # The final generated files will be created when this script is invoked at Xcode build time.
     :script => get_script_phases_no_codegen_discovery(
@@ -674,6 +676,7 @@ def downloadAndConfigureHermesSource(react_native_path)
     system("curl #{hermes_tarball_url} -Lo #{hermes_tarball_path}")
   end
   Pod::UI.puts "[Hermes] Extracting Hermes (#{hermes_tag_sha})"
+  system("tar -zxf #{hermes_tarball_path} --strip-components=1 --directory #{hermes_dir}")
 
   hermesc_macos_path = "#{sdks_dir}/hermesc/macos/build_host_hermesc"
   hermesc_macos_link = "#{hermes_dir}/utils/build_host_hermesc"

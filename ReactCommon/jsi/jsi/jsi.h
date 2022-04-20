@@ -992,7 +992,7 @@ class JSI_EXPORT Value {
 
   /// Copies a Symbol lvalue into a new JS value.
   Value(Runtime& runtime, const Symbol& sym) : Value(SymbolKind) {
-    new (&data_.pointer) String(runtime.cloneSymbol(sym.ptr_));
+    new (&data_.pointer) Symbol(runtime.cloneSymbol(sym.ptr_));
   }
 
   /// Copies a String lvalue into a new JS value.
@@ -1258,7 +1258,7 @@ class JSI_EXPORT JSIException : public std::exception {
     return what_.c_str();
   }
 
-  virtual ~JSIException();
+  virtual ~JSIException() override;
 
  protected:
   std::string what_;

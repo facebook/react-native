@@ -8,9 +8,9 @@
  * @flow
  */
 
-import type {RNTesterState, ComponentList} from '../types/RNTesterTypes';
+import type {RNTesterNavState, ComponentList} from '../types/RNTesterTypes';
 
-export const RNTesterActionsType = {
+export const RNTesterNavActionsType = {
   INIT_FROM_STORAGE: 'INIT_FROM_STORAGE',
   NAVBAR_PRESS: 'NAVBAR_PRESS',
   BOOKMARK_PRESS: 'BOOKMARK_PRESS',
@@ -67,14 +67,14 @@ const getUpdatedRecentlyUsed = ({
   return updatedRecentlyUsed;
 };
 
-export const RNTesterReducer = (
-  state: RNTesterState,
+export const RNTesterNavReducer = (
+  state: RNTesterNavState,
   action: {type: string, data: any},
-): RNTesterState => {
+): RNTesterNavState => {
   switch (action.type) {
-    case RNTesterActionsType.INIT_FROM_STORAGE:
+    case RNTesterNavActionsType.INIT_FROM_STORAGE:
       return action.data;
-    case RNTesterActionsType.NAVBAR_PRESS:
+    case RNTesterNavActionsType.NAVBAR_PRESS:
       return {
         ...state,
         activeModuleKey: null,
@@ -82,7 +82,7 @@ export const RNTesterReducer = (
         activeModuleExampleKey: null,
         screen: action.data.screen,
       };
-    case RNTesterActionsType.MODULE_CARD_PRESS:
+    case RNTesterNavActionsType.MODULE_CARD_PRESS:
       return {
         ...state,
         activeModuleKey: action.data.key,
@@ -94,12 +94,12 @@ export const RNTesterReducer = (
           recentlyUsed: state.recentlyUsed,
         }),
       };
-    case RNTesterActionsType.EXAMPLE_CARD_PRESS:
+    case RNTesterNavActionsType.EXAMPLE_CARD_PRESS:
       return {
         ...state,
         activeModuleExampleKey: action.data.key,
       };
-    case RNTesterActionsType.BOOKMARK_PRESS:
+    case RNTesterNavActionsType.BOOKMARK_PRESS:
       return {
         ...state,
         bookmarks: getUpdatedBookmarks({
@@ -108,7 +108,7 @@ export const RNTesterReducer = (
           bookmarks: state.bookmarks,
         }),
       };
-    case RNTesterActionsType.BACK_BUTTON_PRESS:
+    case RNTesterNavActionsType.BACK_BUTTON_PRESS:
       // Go back to module or list
       return {
         ...state,

@@ -42,6 +42,7 @@ import com.facebook.react.uimanager.ReactOverflowViewWithInset;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.HasFlingAnimator;
+import com.facebook.react.views.scroll.ReactScrollViewHelper.HasScrollEventThrottle;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.HasScrollState;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.ReactScrollViewScrollState;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
@@ -62,7 +63,8 @@ public class ReactScrollView extends ScrollView
         FabricViewStateManager.HasFabricViewStateManager,
         ReactOverflowViewWithInset,
         HasScrollState,
-        HasFlingAnimator {
+        HasFlingAnimator,
+        HasScrollEventThrottle {
 
   private static @Nullable Field sScrollerField;
   private static boolean sTriedToGetScrollerField = false;
@@ -73,6 +75,7 @@ public class ReactScrollView extends ScrollView
   private final @Nullable OverScroller mScroller;
   private final VelocityHelper mVelocityHelper = new VelocityHelper();
   private final Rect mRect = new Rect(); // for reuse to avoid allocation
+  private final Rect mTempRect = new Rect();
   private final Rect mOverflowInset = new Rect();
 
   private boolean mActivelyScrolling;
@@ -103,6 +106,8 @@ public class ReactScrollView extends ScrollView
       new ReactScrollViewScrollState(ViewCompat.LAYOUT_DIRECTION_LTR);
   private final ValueAnimator DEFAULT_FLING_ANIMATOR = ObjectAnimator.ofInt(this, "scrollY", 0, 0);
   private PointerEvents mPointerEvents = PointerEvents.AUTO;
+  private long mLastScrollDispatchTime = 0;
+  private int mScrollEventThrottle = 0;
 
   public ReactScrollView(Context context) {
     this(context, null);
@@ -116,6 +121,8 @@ public class ReactScrollView extends ScrollView
     mScroller = getOverScrollerFromParent();
     setOnHierarchyChangeListener(this);
     setScrollBarStyle(SCROLLBARS_OUTSIDE_OVERLAY);
+
+    ViewCompat.setAccessibilityDelegate(this, new ReactScrollViewAccessibilityDelegate());
   }
 
   @Override
@@ -185,6 +192,10 @@ public class ReactScrollView extends ScrollView
 
   public void setScrollEnabled(boolean scrollEnabled) {
     mScrollEnabled = scrollEnabled;
+  }
+
+  public boolean getScrollEnabled() {
+    return mScrollEnabled;
   }
 
   public void setPagingEnabled(boolean pagingEnabled) {
@@ -293,6 +304,19 @@ public class ReactScrollView extends ScrollView
       scrollToChild(focused);
     }
     super.requestChildFocus(child, focused);
+  }
+
+  private int getScrollDelta(View descendent) {
+    descendent.getDrawingRect(mTempRect);
+    offsetDescendantRectToMyCoords(descendent, mTempRect);
+    return computeScrollDeltaToGetChildRectOnScreen(mTempRect);
+  }
+
+  /** Returns whether the given descendent is partially scrolled in view */
+  public boolean isPartiallyScrolledInView(View descendent) {
+    int scrollDelta = getScrollDelta(descendent);
+    descendent.getDrawingRect(mTempRect);
+    return scrollDelta != 0 && Math.abs(scrollDelta) < mTempRect.width();
   }
 
   private void scrollToChild(View child) {
@@ -1147,5 +1171,25 @@ public class ReactScrollView extends ScrollView
 
   public PointerEvents getPointerEvents() {
     return mPointerEvents;
+  }
+
+  @Override
+  public void setScrollEventThrottle(int scrollEventThrottle) {
+    mScrollEventThrottle = scrollEventThrottle;
+  }
+
+  @Override
+  public int getScrollEventThrottle() {
+    return mScrollEventThrottle;
+  }
+
+  @Override
+  public void setLastScrollDispatchTime(long lastScrollDispatchTime) {
+    mLastScrollDispatchTime = lastScrollDispatchTime;
+  }
+
+  @Override
+  public long getLastScrollDispatchTime() {
+    return mLastScrollDispatchTime;
   }
 }

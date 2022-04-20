@@ -538,7 +538,7 @@ def rn_codegen_cxx_modules(
     )
 
     if is_running_buck_project():
-        rn_xplat_cxx_library(name = "{}JSI".format(name))
+        rn_xplat_cxx_library(name = "{}JSI".format(name), visibility = ["PUBLIC"])
     else:
         rn_xplat_cxx_library(
             name = "{}JSI".format(name),

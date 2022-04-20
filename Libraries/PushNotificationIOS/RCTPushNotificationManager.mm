@@ -331,7 +331,7 @@ RCT_EXPORT_METHOD(abandonPermissions)
 RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback)
 {
   if (RCTRunningInAppExtension()) {
-    callback(@[RCTSettingsDictForUNNotificationSettings(NO, NO, NO)]);
+    callback(@[RCTSettingsDictForUNNotificationSettings(NO, NO, NO, NO, NO, NO, UNAuthorizationStatusNotDetermined)]);
     return;
   }
 
@@ -343,11 +343,15 @@ RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback)
 static inline NSDictionary *RCTPromiseResolveValueForUNNotificationSettings(UNNotificationSettings* _Nonnull settings) {
   return RCTSettingsDictForUNNotificationSettings(settings.alertSetting == UNNotificationSettingEnabled,
                                                   settings.badgeSetting == UNNotificationSettingEnabled,
-                                                  settings.soundSetting == UNNotificationSettingEnabled);
+                                                  settings.soundSetting == UNNotificationSettingEnabled,
+                                                  settings.criticalAlertSetting == UNNotificationSettingEnabled,
+                                                  settings.lockScreenSetting == UNNotificationSettingEnabled,
+                                                  settings.notificationCenterSetting == UNNotificationSettingEnabled,
+                                                  settings.authorizationStatus);
 }
 
-static inline NSDictionary *RCTSettingsDictForUNNotificationSettings(BOOL alert, BOOL badge, BOOL sound) {
-  return @{@"alert": @(alert), @"badge": @(badge), @"sound": @(sound)};
+static inline NSDictionary *RCTSettingsDictForUNNotificationSettings(BOOL alert, BOOL badge, BOOL sound, BOOL critical, BOOL lockScreen, BOOL notificationCenter, UNAuthorizationStatus authorizationStatus) {
+  return @{@"alert": @(alert), @"badge": @(badge), @"sound": @(sound), @"critical": @(critical), @"lockScreen": @(lockScreen), @"notificationCenter": @(notificationCenter), @"authorizationStatus": @(authorizationStatus)};
 }
 
 RCT_EXPORT_METHOD(presentLocalNotification:(JS::NativePushNotificationManagerIOS::Notification &)notification)
