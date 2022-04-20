@@ -73,6 +73,7 @@ public class ReactScrollView extends ScrollView
   private final @Nullable OverScroller mScroller;
   private final VelocityHelper mVelocityHelper = new VelocityHelper();
   private final Rect mRect = new Rect(); // for reuse to avoid allocation
+  private final Rect mTempRect = new Rect();
   private final Rect mOverflowInset = new Rect();
 
   private boolean mActivelyScrolling;
@@ -116,6 +117,8 @@ public class ReactScrollView extends ScrollView
     mScroller = getOverScrollerFromParent();
     setOnHierarchyChangeListener(this);
     setScrollBarStyle(SCROLLBARS_OUTSIDE_OVERLAY);
+
+    ViewCompat.setAccessibilityDelegate(this, new ReactScrollViewAccessibilityDelegate());
   }
 
   @Override
@@ -185,6 +188,10 @@ public class ReactScrollView extends ScrollView
 
   public void setScrollEnabled(boolean scrollEnabled) {
     mScrollEnabled = scrollEnabled;
+  }
+
+  public boolean getScrollEnabled() {
+    return mScrollEnabled;
   }
 
   public void setPagingEnabled(boolean pagingEnabled) {
@@ -293,6 +300,19 @@ public class ReactScrollView extends ScrollView
       scrollToChild(focused);
     }
     super.requestChildFocus(child, focused);
+  }
+
+  private int getScrollDelta(View descendent) {
+    descendent.getDrawingRect(mTempRect);
+    offsetDescendantRectToMyCoords(descendent, mTempRect);
+    return computeScrollDeltaToGetChildRectOnScreen(mTempRect);
+  }
+
+  /** Returns whether the given descendent is partially scrolled in view */
+  public boolean isPartiallyScrolledInView(View descendent) {
+    int scrollDelta = getScrollDelta(descendent);
+    descendent.getDrawingRect(mTempRect);
+    return scrollDelta != 0 && Math.abs(scrollDelta) < mTempRect.width();
   }
 
   private void scrollToChild(View child) {

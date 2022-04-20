@@ -465,6 +465,23 @@ export type ViewProps = $ReadOnly<{|
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
 
   /**
+   *
+   * Node Information of a FlatList, VirtualizedList or SectionList collection item.
+   * A collection item starts at a given row and column in the collection, and spans one or more rows and columns.
+   *
+   * @platform android
+   *
+   */
+  accessibilityCollectionItem?: ?{
+    rowIndex: number,
+    rowSpan: number,
+    columnIndex: number,
+    columnSpan: number,
+    heading: boolean,
+    itemIndex: number,
+  },
+
+  /**
    * Specifies the nativeID of the associated label text. When the assistive technology focuses on the component with this props, the text is read aloud.
    *
    * @platform android

@@ -122,6 +122,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     TABLIST,
     TIMER,
     LIST,
+    GRID,
     TOOLBAR;
 
     public static String getValue(AccessibilityRole role) {
@@ -152,6 +153,8 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
           return "android.widget.Switch";
         case LIST:
           return "android.widget.AbsListView";
+        case GRID:
+          return "android.widget.GridView";
         case NONE:
         case LINK:
         case SUMMARY:
@@ -242,6 +245,22 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     }
     final ReadableArray accessibilityActions =
         (ReadableArray) host.getTag(R.id.accessibility_actions);
+
+    final ReadableMap accessibilityCollectionItem =
+        (ReadableMap) host.getTag(R.id.accessibility_collection_item);
+    if (accessibilityCollectionItem != null) {
+      int rowIndex = accessibilityCollectionItem.getInt("rowIndex");
+      int columnIndex = accessibilityCollectionItem.getInt("columnIndex");
+      int rowSpan = accessibilityCollectionItem.getInt("rowSpan");
+      int columnSpan = accessibilityCollectionItem.getInt("columnSpan");
+      boolean heading = accessibilityCollectionItem.getBoolean("heading");
+
+      AccessibilityNodeInfoCompat.CollectionItemInfoCompat collectionItemCompat =
+          AccessibilityNodeInfoCompat.CollectionItemInfoCompat.obtain(
+              rowIndex, rowSpan, columnIndex, columnSpan, heading);
+      info.setCollectionItemInfo(collectionItemCompat);
+    }
+
     if (accessibilityActions != null) {
       for (int i = 0; i < accessibilityActions.size(); i++) {
         final ReadableMap action = accessibilityActions.getMap(i);
@@ -466,6 +485,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
             || view.getTag(R.id.accessibility_state) != null
             || view.getTag(R.id.accessibility_actions) != null
             || view.getTag(R.id.react_test_id) != null
+            || view.getTag(R.id.accessibility_collection_item) != null
             || view.getTag(R.id.accessibility_links) != null)) {
       ViewCompat.setAccessibilityDelegate(
           view,
