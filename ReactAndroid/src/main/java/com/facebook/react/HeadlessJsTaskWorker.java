@@ -41,15 +41,19 @@ public abstract class HeadlessJsTaskWorker extends ListenableWorker
   @Override
   public ListenableFuture<Result> startWork() {
     return CallbackToFutureAdapter.getFuture(
-        completer -> {
-          mCompleter = completer;
-          HeadlessJsTaskConfig taskConfig = getTaskConfig(getInputData());
-          if (taskConfig != null) {
-            startTask(taskConfig);
-          } else {
-            completer.set(Result.failure());
+        new CallbackToFutureAdapter.Resolver<Result>() {
+          @Override
+          public Object attachCompleter(
+              @NonNull CallbackToFutureAdapter.Completer<Result> completer) throws Exception {
+            mCompleter = completer;
+            HeadlessJsTaskConfig taskConfig = getTaskConfig(getInputData());
+            if (taskConfig != null) {
+              startTask(taskConfig);
+            } else {
+              completer.set(Result.failure());
+            }
+            return "HeadlessJsTaskWorker.startTask operation";
           }
-          return "HeadlessJsTaskWorker.startTask operation";
         });
   }
 
@@ -91,7 +95,13 @@ public abstract class HeadlessJsTaskWorker extends ListenableWorker
     final HeadlessJsTaskContext headlessJsTaskContext =
         HeadlessJsTaskContext.getInstance(reactContext);
     headlessJsTaskContext.addTaskEventListener(this);
-    UiThreadUtil.runOnUiThread(() -> headlessJsTaskContext.startTask(taskConfig));
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            headlessJsTaskContext.startTask(taskConfig);
+          }
+        });
   }
 
   private void cleanUpTask() {
