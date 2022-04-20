@@ -3,6 +3,9 @@ load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 fb_native.android_library(
     name = "listenablefuture",
     visibility = ["//ReactAndroid/..."],
+    exported_deps = [
+        ":listenablefuture-binary",
+    ],
 )
 
 fb_native.prebuilt_jar(
