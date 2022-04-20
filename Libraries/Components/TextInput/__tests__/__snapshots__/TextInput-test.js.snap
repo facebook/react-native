@@ -4,7 +4,6 @@ exports[`TextInput tests should render as expected: should deep render when mock
 <RCTSinglelineTextInputView
   accessible={true}
   allowFontScaling={true}
-  returnKeyAction="blurAndSubmit"
   focusable={true}
   forwardedRef={null}
   mostRecentEventCount={0}
@@ -23,6 +22,7 @@ exports[`TextInput tests should render as expected: should deep render when mock
   onSelectionChangeShouldSetResponder={[Function]}
   onStartShouldSetResponder={[Function]}
   rejectResponderTermination={true}
+  returnKeyAction="blurAndSubmit"
   selection={null}
   text=""
   underlineColorAndroid="transparent"
@@ -33,7 +33,6 @@ exports[`TextInput tests should render as expected: should deep render when not 
 <RCTSinglelineTextInputView
   accessible={true}
   allowFontScaling={true}
-  returnKeyAction="blurAndSubmit"
   focusable={true}
   forwardedRef={null}
   mostRecentEventCount={0}
@@ -52,6 +51,7 @@ exports[`TextInput tests should render as expected: should deep render when not 
   onSelectionChangeShouldSetResponder={[Function]}
   onStartShouldSetResponder={[Function]}
   rejectResponderTermination={true}
+  returnKeyAction="blurAndSubmit"
   selection={null}
   text=""
   underlineColorAndroid="transparent"

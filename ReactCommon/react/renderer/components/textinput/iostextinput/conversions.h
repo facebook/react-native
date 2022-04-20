@@ -131,10 +131,6 @@ inline void fromRawValue(
     const RawValue &value,
     ReturnKeyAction &result) {
   auto string = (std::string)value;
-  if (string == "default") {
-    result = ReturnKeyAction::Default;
-    return;
-  }
   if (string == "newline") {
     result = ReturnKeyAction::Newline;
     return;
