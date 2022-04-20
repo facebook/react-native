@@ -59,6 +59,7 @@ steps:
       xcode_actions: ${{ parameters.xcode_actions_debug }}
       xcode_useXcpretty: true
       xcode_destination: ${{ parameters.xcode_destination }}
+      xcode_extraArgs: -retry-tests-on-failure -test-iterations 2
 
   - template: apple-xcode-build.yml
     parameters:
