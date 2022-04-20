@@ -109,7 +109,7 @@ const EmptySectionList = () => (
 
 const renderItemComponent =
   setItemState =>
-  ({item, separators, accessibilityCollectionItem}) => {
+  ({item, separators}) => {
     if (isNaN(item.key)) {
       return;
     }
@@ -119,16 +119,12 @@ const renderItemComponent =
     };
 
     return (
-      <View
-        importantForAccessibility="yes"
-        accessibilityCollectionItem={accessibilityCollectionItem}>
-        <ItemComponent
-          item={item}
-          onPress={onPress}
-          onHideUnderlay={separators.unhighlight}
-          onShowUnderlay={separators.highlight}
-        />
-      </View>
+      <ItemComponent
+        item={item}
+        onPress={onPress}
+        onHideUnderlay={separators.unhighlight}
+        onShowUnderlay={separators.highlight}
+      />
     );
   };
 
