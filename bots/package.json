@@ -4,7 +4,7 @@
     "danger": "node ./node_modules/.bin/danger"
   },
   "devDependencies": {
-    "danger": "^7.1.4",
+    "danger": "^11.0.2",
     "lodash.includes": "^4.3.0",
     "minimatch": "^3.0.4"
   },

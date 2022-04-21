@@ -132,7 +132,7 @@
     "@babel/types": "^7.0.0",
     "@react-native-community/eslint-plugin": "*",
     "@reactions/component": "^2.0.2",
-    "async": "^2.4.0",
+    "async": "^3.2.2",
     "babel-eslint": "^10.1.0",
     "babel-preset-fbjs": "^3.4.0",
     "clang-format": "^1.2.4",
@@ -208,5 +208,13 @@
   },
   "beachball": {
     "shouldPublish": false
+  },
+  "resolutions": {
+    "async": "^3.2.2",
+    "es5-ext": "0.10.53"
+  },
+  "_justification": {
+    "async": "Versions of async prior to 3.2.2 are vulnerable to prototype pollution",
+    "es5-ext": "Packages after 0.10.54 and at the moment up until 0.10.59 contain a protest message. A policy prevents us from using packages with protestware, therefore downgrading to the latest release without the message."
   }
 }
