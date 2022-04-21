@@ -5,8 +5,16 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import org.apache.tools.ant.taskdefs.condition.Os
+
 val ndkPath by extra(System.getenv("ANDROID_NDK"))
-val ndkVersion by extra(System.getenv("ANDROID_NDK_VERSION"))
+var ndkVersion by extra(System.getenv("ANDROID_NDK_VERSION"))
+
+if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+    // For Windows Users, we need to use NDK 23, otherwise the build will
+    // fail due to paths longer than the OS limit
+    ndkVersion = "23.1.7779620"
+}
 
 buildscript {
     repositories {

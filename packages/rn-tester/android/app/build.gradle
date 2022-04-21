@@ -10,6 +10,8 @@ plugins {
     id("com.facebook.react")
 }
 
+import org.apache.tools.ant.taskdefs.condition.Os
+
 /**
  * The react.gradle file registers a task for each build variant (e.g. bundleDebugJsAndAssets
  * and bundleReleaseJsAndAssets).
@@ -152,6 +154,12 @@ android {
     }
     if (rootProject.hasProperty("ndkVersion")) {
         ndkVersion rootProject.ext.ndkVersion
+    }
+
+    if (!project["ndkVersion"] && Os.isFamily(Os.FAMILY_WINDOWS)) {
+        // For Windows Users, we need to use NDK 23, otherwise the build will
+        // fail due to paths longer than the OS limit
+        project.ext.ndkVersion = "23.1.7779620"
     }
 
     flavorDimensions "vm"
