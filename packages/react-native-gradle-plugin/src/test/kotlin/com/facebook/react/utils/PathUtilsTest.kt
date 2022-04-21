@@ -8,6 +8,9 @@
 package com.facebook.react.utils
 
 import com.facebook.react.TestReactExtension
+import com.facebook.react.tests.OS
+import com.facebook.react.tests.OsRule
+import com.facebook.react.tests.WithOs
 import java.io.File
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Assert.*
@@ -18,6 +21,7 @@ import org.junit.rules.TemporaryFolder
 class PathUtilsTest {
 
   @get:Rule val tempFolder = TemporaryFolder()
+  @get:Rule val osRule = OsRule()
 
   @Test
   fun detectedEntryFile_withProvidedVariable() {
@@ -60,7 +64,7 @@ class PathUtilsTest {
           parentFile.mkdirs()
           writeText("<!-- nothing to see here -->")
         }
-    extension.cliPath.set(project.projectDir + "/abs/fake-cli.sh")
+    extension.cliPath.set(project.projectDir.toString() + "/abs/fake-cli.sh")
 
     val actual = detectedCliPath(project.projectDir, extension)
 
@@ -77,7 +81,7 @@ class PathUtilsTest {
           writeText("<!-- nothing to see here -->")
         }
     extension.cliPath.set("fake-cli.sh")
-    extension.reactRoot.set(project.projectDir + "/react-root")
+    extension.root.set(File(project.projectDir.toString(), "react-root"))
 
     val actual = detectedCliPath(project.projectDir, extension)
 
@@ -104,6 +108,7 @@ class PathUtilsTest {
   fun detectedCliPath_withCliPathFromExtensionInParentFolder() {
     val rootProject = ProjectBuilder.builder().build()
     val project = ProjectBuilder.builder().withParent(rootProject).build()
+    project.projectDir.mkdirs()
     val extension = TestReactExtension(project)
     val expected = File(rootProject.projectDir, "cli-in-root.sh").apply { writeText("#!/bin/bash") }
     extension.cliPath.set("../cli-in-root.sh")
@@ -148,15 +153,11 @@ class PathUtilsTest {
     assertEquals(expected.toString(), actual)
   }
 
-  @Test
-  fun detectedHermesCommand_withOSSpecificBin() {
+  @Test(expected = IllegalStateException::class)
+  fun detectedHermesCommand_failsIfNotFound() {
     val extension = TestReactExtension(ProjectBuilder.builder().build())
 
     val actual = detectedHermesCommand(extension)
-
-    assertTrue(actual.startsWith("node_modules/hermes-engine/"))
-    assertTrue(actual.endsWith("hermesc"))
-    assertFalse(actual.contains("%OS-BIN%"))
   }
 
   @Test
@@ -177,5 +178,57 @@ class PathUtilsTest {
   @Test
   fun projectPathToLibraryName_withDotsAndUnderscores() {
     assertEquals("SampleAndroidAppSpec", projectPathToLibraryName("sample_android.app"))
+  }
+
+  @Test
+  fun detectOSAwareHermesCommand_withProvidedCommand() {
+    assertEquals(
+        "./my-home/hermes", detectOSAwareHermesCommand(tempFolder.root, "./my-home/hermes"))
+  }
+
+  @Test
+  fun detectOSAwareHermesCommand_withHermescBuiltLocally() {
+    tempFolder.newFolder("node_modules/react-native/sdks/hermes/build/bin/")
+    val expected = tempFolder.newFile("node_modules/react-native/sdks/hermes/build/bin/hermesc")
+
+    assertEquals(expected.toString(), detectOSAwareHermesCommand(tempFolder.root, ""))
+  }
+
+  @Test
+  @WithOs(OS.MAC)
+  fun detectOSAwareHermesCommand_withBundledHermescInsideRN() {
+    tempFolder.newFolder("node_modules/react-native/sdks/hermesc/osx-bin/")
+    val expected = tempFolder.newFile("node_modules/react-native/sdks/hermesc/osx-bin/hermesc")
+
+    assertEquals(expected.toString(), detectOSAwareHermesCommand(tempFolder.root, ""))
+  }
+
+  @Test(expected = IllegalStateException::class)
+  @WithOs(OS.MAC)
+  fun detectOSAwareHermesCommand_failsIfNotFound() {
+    detectOSAwareHermesCommand(tempFolder.root, "")
+  }
+
+  @Test
+  @WithOs(OS.MAC)
+  fun detectOSAwareHermesCommand_withProvidedCommand_takesPrecedence() {
+    tempFolder.newFolder("node_modules/react-native/sdks/hermes/build/bin/")
+    tempFolder.newFile("node_modules/react-native/sdks/hermes/build/bin/hermesc")
+    tempFolder.newFolder("node_modules/react-native/sdks/hermesc/osx-bin/")
+    tempFolder.newFile("node_modules/react-native/sdks/hermesc/osx-bin/hermesc")
+
+    assertEquals(
+        "./my-home/hermes", detectOSAwareHermesCommand(tempFolder.root, "./my-home/hermes"))
+  }
+
+  @Test
+  @WithOs(OS.MAC)
+  fun detectOSAwareHermesCommand_withoutProvidedCommand_builtHermescTakesPrecedence() {
+    tempFolder.newFolder("node_modules/react-native/sdks/hermes/build/bin/")
+    val expected = tempFolder.newFile("node_modules/react-native/sdks/hermes/build/bin/hermesc")
+    tempFolder.newFolder("node_modules/react-native/sdks/hermesc/osx-bin/")
+    tempFolder.newFile("node_modules/react-native/sdks/hermesc/osx-bin/hermesc")
+
+    assertEquals(expected.toString(), detectOSAwareHermesCommand(tempFolder.root, ""))
   }
 }
