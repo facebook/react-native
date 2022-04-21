@@ -40,10 +40,9 @@ void RCTMountingTransactionObserverCoordinator::unregisterViewComponentDescripto
 }
 
 void RCTMountingTransactionObserverCoordinator::notifyObserversMountingTransactionWillMount(
-    MountingTransaction const &transaction,
-    SurfaceTelemetry const &surfaceTelemetry) const
+    MountingTransactionMetadata const &metadata) const
 {
-  auto surfaceId = transaction.getSurfaceId();
+  auto surfaceId = metadata.surfaceId;
   auto surfaceRegistryIterator = registry_.find(surfaceId);
   if (surfaceRegistryIterator == registry_.end()) {
     return;
@@ -51,17 +50,16 @@ void RCTMountingTransactionObserverCoordinator::notifyObserversMountingTransacti
   auto &surfaceRegistry = surfaceRegistryIterator->second;
   for (auto const &componentViewDescriptor : surfaceRegistry) {
     if (componentViewDescriptor.observesMountingTransactionWillMount) {
-      [(id<RCTMountingTransactionObserving>)componentViewDescriptor.view mountingTransactionWillMount:transaction
-                                                                                 withSurfaceTelemetry:surfaceTelemetry];
+      [(id<RCTMountingTransactionObserving>)componentViewDescriptor.view
+          mountingTransactionWillMountWithMetadata:metadata];
     }
   }
 }
 
 void RCTMountingTransactionObserverCoordinator::notifyObserversMountingTransactionDidMount(
-    MountingTransaction const &transaction,
-    SurfaceTelemetry const &surfaceTelemetry) const
+    MountingTransactionMetadata const &metadata) const
 {
-  auto surfaceId = transaction.getSurfaceId();
+  auto surfaceId = metadata.surfaceId;
   auto surfaceRegistryIterator = registry_.find(surfaceId);
   if (surfaceRegistryIterator == registry_.end()) {
     return;
@@ -69,8 +67,8 @@ void RCTMountingTransactionObserverCoordinator::notifyObserversMountingTransacti
   auto &surfaceRegistry = surfaceRegistryIterator->second;
   for (auto const &componentViewDescriptor : surfaceRegistry) {
     if (componentViewDescriptor.observesMountingTransactionDidMount) {
-      [(id<RCTMountingTransactionObserving>)componentViewDescriptor.view mountingTransactionDidMount:transaction
-                                                                                withSurfaceTelemetry:surfaceTelemetry];
+      [(id<RCTMountingTransactionObserving>)componentViewDescriptor.view
+          mountingTransactionDidMountWithMetadata:metadata];
     }
   }
 }

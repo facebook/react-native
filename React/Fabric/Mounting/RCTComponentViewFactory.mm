@@ -95,9 +95,9 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
   {
     .viewClass = viewClass,
     .observesMountingTransactionWillMount =
-        (bool)class_respondsToSelector(viewClass, @selector(mountingTransactionWillMount:withSurfaceTelemetry:)),
+        (bool)class_respondsToSelector(viewClass, @selector(mountingTransactionWillMountWithMetadata:)),
     .observesMountingTransactionDidMount =
-        (bool)class_respondsToSelector(viewClass, @selector(mountingTransactionDidMount:withSurfaceTelemetry:)),
+        (bool)class_respondsToSelector(viewClass, @selector(mountingTransactionDidMountWithMetadata:)),
   };
 #pragma clang diagnostic pop
 }

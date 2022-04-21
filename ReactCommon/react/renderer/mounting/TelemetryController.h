@@ -11,16 +11,13 @@
 #include <mutex>
 
 #include <react/renderer/mounting/MountingTransaction.h>
+#include <react/renderer/mounting/MountingTransactionMetadata.h>
 #include <react/renderer/telemetry/TransactionTelemetry.h>
 
 namespace facebook {
 namespace react {
 
 class MountingCoordinator;
-
-using MountingTransactionCallback = std::function<void(
-    MountingTransaction const &transaction,
-    SurfaceTelemetry const &surfaceTelemetry)>;
 
 /*
  * Provides convenient tools for aggregating and accessing telemetry data
@@ -46,9 +43,12 @@ class TelemetryController final {
    * Calls `MountingCoordinator::pullTransaction()` and aggregates telemetry.
    */
   bool pullTransaction(
-      MountingTransactionCallback const &willMount,
-      MountingTransactionCallback const &doMount,
-      MountingTransactionCallback const &didMount) const;
+      std::function<void(MountingTransactionMetadata metadata)> const
+          &willMount,
+      std::function<void(ShadowViewMutationList const &mutations)> const
+          &doMount,
+      std::function<void(MountingTransactionMetadata metadata)> const &didMount)
+      const;
 
  private:
   MountingCoordinator const &mountingCoordinator_;

@@ -11,7 +11,7 @@
 #import <butter/map.h>
 #import <butter/set.h>
 
-#include <react/renderer/mounting/MountingTransaction.h>
+#import <react/renderer/mounting/MountingTransactionMetadata.h>
 
 class RCTMountingTransactionObserverCoordinator final {
  public:
@@ -31,11 +31,9 @@ class RCTMountingTransactionObserverCoordinator final {
    * To be called from `RCTMountingManager`.
    */
   void notifyObserversMountingTransactionWillMount(
-      facebook::react::MountingTransaction const &transaction,
-      facebook::react::SurfaceTelemetry const &surfaceTelemetry) const;
+      facebook::react::MountingTransactionMetadata const &metadata) const;
   void notifyObserversMountingTransactionDidMount(
-      facebook::react::MountingTransaction const &transaction,
-      facebook::react::SurfaceTelemetry const &surfaceTelemetry) const;
+      facebook::react::MountingTransactionMetadata const &metadata) const;
 
  private:
   facebook::butter::map<

@@ -147,8 +147,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
 #pragma mark - RCTMountingTransactionObserving
 
-- (void)mountingTransactionDidMount:(MountingTransaction const &)transaction
-               withSurfaceTelemetry:(facebook::react::SurfaceTelemetry const &)surfaceTelemetry
+- (void)mountingTransactionDidMountWithMetadata:(MountingTransactionMetadata const &)metadata
 {
   [self _remountChildren];
 }
