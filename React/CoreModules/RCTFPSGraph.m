@@ -106,7 +106,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
     CGMutablePathRef path = CGPathCreateMutable();
     CGPathMoveToPoint(path, NULL, 0, (CGFloat)_height);
     for (NSUInteger i = 0; i < _length; i++) {
-      CGPathAddLineToPoint(path, NULL, (CGFloat)i, _height - _frames[i]);
+      CGPathAddLineToPoint(path, NULL, (CGFloat)i, (double)_height - _frames[i]);
     }
     CGPathAddLineToPoint(path, NULL, (CGFloat)_length - 1, (CGFloat)_height);
 
