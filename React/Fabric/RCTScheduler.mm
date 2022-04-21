@@ -193,4 +193,14 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
   }
 }
 
+- (void)addEventListener:(std::shared_ptr<EventListener> const &)listener
+{
+  return _scheduler->addEventListener(listener);
+}
+
+- (void)removeEventListener:(std::shared_ptr<EventListener> const &)listener
+{
+  return _scheduler->removeEventListener(listener);
+}
+
 @end
