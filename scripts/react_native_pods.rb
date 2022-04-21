@@ -258,7 +258,23 @@ def fix_library_search_paths(installer)
   end
 end
 
-def react_native_post_install(installer)
+def set_node_modules_user_settings(installer, react_native_path)
+  puts "Setting REACT_NATIVE build settings"
+  projects = installer.aggregate_targets
+    .map{ |t| t.user_project }
+    .uniq{ |p| p.path }
+    .push(installer.pods_project)
+
+  projects.each do |project|
+    project.build_configurations.each do |config|
+      config.build_settings["REACT_NATIVE_PATH"] = File.join(Dir.pwd, react_native_path)
+    end
+
+    project.save()
+  end
+end
+
+def react_native_post_install(installer, react_native_path = "../node_modules/react-native")
   if has_pod(installer, 'Flipper')
     flipper_post_install(installer)
   end
@@ -272,6 +288,7 @@ def react_native_post_install(installer)
   end
   modify_flags_for_new_architecture(installer, cpp_flags)
 
+  set_node_modules_user_settings(installer, react_native_path)
 end
 
 def modify_flags_for_new_architecture(installer, cpp_flags)
