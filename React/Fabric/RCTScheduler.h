@@ -16,6 +16,7 @@
 #import <react/renderer/mounting/MountingCoordinator.h>
 #import <react/renderer/scheduler/SchedulerToolbox.h>
 #import <react/renderer/scheduler/SurfaceHandler.h>
+#import <react/renderer/uimanager/UIManager.h>
 #import <react/utils/ContextContainer.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -48,6 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RCTScheduler : NSObject
 
 @property (atomic, weak, nullable) id<RCTSchedulerDelegate> delegate;
+@property (readonly, nullable) facebook::react::UIManager const *uiManager;
 
 - (instancetype)initWithToolbox:(facebook::react::SchedulerToolbox)toolbox;
 
