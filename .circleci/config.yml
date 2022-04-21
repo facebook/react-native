@@ -1253,10 +1253,7 @@ workflows:
       - test_ios_rntester
       - build_ios
       - test_ios_unit:
-          # TODO(ncor, neildhar) Integration tests for iOS + Hermes are currently
-          # disabled due to an ABI incompatibility introduced by D33830544.
-          # They can be re-enabled as soon as Hermes 0.12.0 is released.
-          run_unit_tests: false
+          run_unit_tests: true
           requires:
             - build_ios
       # DISABLED: USE_FRAMEWORKS=1 not supported by Flipper
