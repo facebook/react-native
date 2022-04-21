@@ -16,10 +16,15 @@ import android.os.Message;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ClickableSpan;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
+import android.widget.EditText;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -41,6 +46,7 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
@@ -59,6 +65,8 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
   private static int sCounter = 0x3f000000;
   private static final int TIMEOUT_SEND_ACCESSIBILITY_EVENT = 200;
   private static final int SEND_EVENT = 1;
+  private static final String delimiter = ", ";
+  private static final int delimiterLength = delimiter.length();
 
   public static final HashMap<String, Integer> sActionIdMap = new HashMap<>();
 
@@ -122,6 +130,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     TABLIST,
     TIMER,
     LIST,
+    GRID,
     TOOLBAR;
 
     public static String getValue(AccessibilityRole role) {
@@ -192,6 +201,46 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
   private static final String STATE_SELECTED = "selected";
   private static final String STATE_CHECKED = "checked";
 
+  public static boolean hasNonActionableSpeakingDescendants(
+      @Nullable AccessibilityNodeInfoCompat node, @Nullable View view) {
+
+    if (node == null || view == null || !(view instanceof ViewGroup)) {
+      return false;
+    }
+
+    final ViewGroup viewGroup = (ViewGroup) view;
+    for (int i = 0, count = viewGroup.getChildCount(); i < count; i++) {
+      final View childView = viewGroup.getChildAt(i);
+
+      if (childView == null) {
+        continue;
+      }
+
+      final AccessibilityNodeInfoCompat childNode = AccessibilityNodeInfoCompat.obtain();
+      try {
+        ViewCompat.onInitializeAccessibilityNodeInfo(childView, childNode);
+
+        if (!childNode.isVisibleToUser()) {
+          continue;
+        }
+
+        if (isAccessibilityFocusable(childNode, childView)) {
+          continue;
+        }
+
+        if (isSpeakingNode(childNode, childView)) {
+          return true;
+        }
+      } finally {
+        if (childNode != null) {
+          childNode.recycle();
+        }
+      }
+    }
+
+    return false;
+  }
+
   public ReactAccessibilityDelegate(
       final View view, boolean originalFocus, int originalImportantForAccessibility) {
     super(view);
@@ -217,9 +266,269 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
 
   @Nullable View mAccessibilityLabelledBy;
 
+  public static boolean isSpeakingNode(
+      @Nullable AccessibilityNodeInfoCompat node, @Nullable View view) {
+    if (node == null || view == null) {
+      return false;
+    }
+
+    final int important = ViewCompat.getImportantForAccessibility(view);
+    if (important == ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
+        || (important == ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO && node.getChildCount() <= 0)) {
+      return false;
+    }
+
+    return node.isCheckable() || hasText(node) || hasNonActionableSpeakingDescendants(node, view);
+  }
+
+  public static boolean hasText(@Nullable AccessibilityNodeInfoCompat node) {
+    return node != null
+        && node.getCollectionInfo() == null
+        && (!TextUtils.isEmpty(node.getText()) || !TextUtils.isEmpty(node.getContentDescription()));
+  }
+
+  public static boolean isAccessibilityFocusable(
+      @Nullable AccessibilityNodeInfoCompat node, @Nullable View view) {
+    if (node == null || view == null) {
+      return false;
+    }
+
+    // Never focus invisible nodes.
+    if (!node.isVisibleToUser()) {
+      return false;
+    }
+
+    // Always focus "actionable" nodes.
+    if (isActionableForAccessibility(node)) {
+      return true;
+    }
+
+    // only focus top-level list items with non-actionable speaking children.
+    return isTopLevelScrollItem(node, view) && isSpeakingNode(node, view);
+  }
+
+  public static boolean isActionableForAccessibility(@Nullable AccessibilityNodeInfoCompat node) {
+    if (node == null) {
+      return false;
+    }
+
+    if (node.isClickable() || node.isLongClickable() || node.isFocusable()) {
+      return true;
+    }
+
+    final List actionList = node.getActionList();
+    return actionList.contains(AccessibilityNodeInfoCompat.ACTION_CLICK)
+        || actionList.contains(AccessibilityNodeInfoCompat.ACTION_LONG_CLICK)
+        || actionList.contains(AccessibilityNodeInfoCompat.ACTION_FOCUS);
+  }
+
+  public static AccessibilityRole getRole(View view) {
+    if (view == null) {
+      return AccessibilityRole.NONE;
+    }
+    AccessibilityNodeInfoCompat nodeInfo = AccessibilityNodeInfoCompat.obtain();
+    ViewCompat.onInitializeAccessibilityNodeInfo(view, nodeInfo);
+    AccessibilityRole role = getRole(nodeInfo);
+    nodeInfo.recycle();
+    return role;
+  }
+
+  public static AccessibilityRole getRole(AccessibilityNodeInfo nodeInfo) {
+    return getRole(new AccessibilityNodeInfoCompat(nodeInfo));
+  }
+
+  public static AccessibilityRole getRole(AccessibilityNodeInfoCompat nodeInfo) {
+    AccessibilityRole role = AccessibilityRole.fromValue((String) nodeInfo.getClassName());
+    if (role.equals(AccessibilityRole.IMAGEBUTTON) || role.equals(AccessibilityRole.IMAGE)) {
+      return nodeInfo.isClickable() ? AccessibilityRole.IMAGEBUTTON : AccessibilityRole.IMAGE;
+    }
+
+    if (role.equals(AccessibilityRole.NONE)) {
+      AccessibilityNodeInfoCompat.CollectionInfoCompat collection = nodeInfo.getCollectionInfo();
+      if (collection != null) {
+        // RecyclerView will be classified as a list or grid.
+        if (collection.getRowCount() > 1 && collection.getColumnCount() > 1) {
+          return AccessibilityRole.GRID;
+        } else {
+          return AccessibilityRole.LIST;
+        }
+      }
+    }
+
+    return role;
+  }
+
+  @Nullable
+  public static AccessibilityNodeInfoCompat createNodeInfoFromView(View view) {
+    if (view == null) {
+      return null;
+    }
+
+    final AccessibilityNodeInfoCompat nodeInfo = AccessibilityNodeInfoCompat.obtain();
+
+    // For some unknown reason, Android seems to occasionally throw a NPE from
+    // onInitializeAccessibilityNodeInfo.
+    try {
+      ViewCompat.onInitializeAccessibilityNodeInfo(view, nodeInfo);
+    } catch (NullPointerException e) {
+      if (nodeInfo != null) {
+        nodeInfo.recycle();
+      }
+      return null;
+    }
+
+    return nodeInfo;
+  }
+
+  /*
+  public static String getRoleDescription(View view) {
+    AccessibilityNodeInfoCompat nodeInfo = createNodeInfoFromView(view);
+    String roleDescription = getRoleDescription(nodeInfo);
+    nodeInfo.recycle();
+
+    if (roleDescription == null || roleDescription == "") {
+      AccessibilityRole role = getRole(view);
+      roleDescription = role.getRoleString();
+    }
+
+    return roleDescription;
+  }
+  */
+
+  @Nullable
+  public static CharSequence getTalkbackDescription(View view) {
+    final AccessibilityNodeInfoCompat node = createNodeInfoFromView(view);
+    if (node == null) {
+      return null;
+    }
+    try {
+      final CharSequence contentDescription = node.getContentDescription();
+      final CharSequence nodeText = node.getText();
+      Log.w("TESTING::ReactAccessibilityDelegate", "nodeText: " + (nodeText));
+
+      final boolean hasNodeText = !TextUtils.isEmpty(nodeText);
+      final boolean isEditText = view instanceof EditText;
+
+      StringBuilder talkbackSegments = new StringBuilder();
+      // AccessibilityRole role = getRole(view);
+      // String roleString = getRoleDescription(view);
+      // boolean disabled = isActionableForAccessibility(node) && !node.isEnabled();
+
+      // EditText's prioritize their own text content over a contentDescription so skip this
+      if (!TextUtils.isEmpty(contentDescription) && (!isEditText || !hasNodeText)) {
+
+        // first prepend any status modifiers
+        // addStateSegments(talkbackSegments, node, role);
+
+        // next add content description
+        talkbackSegments.append(contentDescription + delimiter);
+
+        // then role
+        /*
+        if (roleString.length() > 0) {
+          talkbackSegments.append(roleString + delimiter);
+        }
+        */
+
+        return removeFinalDelimiter(talkbackSegments);
+      }
+
+      // EditText
+      if (hasNodeText) {
+        // skipped status checks above for EditText
+
+        // description
+        talkbackSegments.append(nodeText + delimiter);
+
+        return removeFinalDelimiter(talkbackSegments);
+      }
+
+      // If there are child views and no contentDescription the text of all non-focusable children,
+      // comma separated, becomes the description.
+      if (view instanceof ViewGroup) {
+        final StringBuilder concatChildDescription = new StringBuilder();
+        final ViewGroup viewGroup = (ViewGroup) view;
+
+        for (int i = 0, count = viewGroup.getChildCount(); i < count; i++) {
+          final View child = viewGroup.getChildAt(i);
+
+          final AccessibilityNodeInfoCompat childNodeInfo = AccessibilityNodeInfoCompat.obtain();
+          ViewCompat.onInitializeAccessibilityNodeInfo(child, childNodeInfo);
+
+          if (isSpeakingNode(childNodeInfo, child)
+              && !isAccessibilityFocusable(childNodeInfo, child)) {
+            CharSequence childNodeDescription = getTalkbackDescription(child);
+            if (!TextUtils.isEmpty(childNodeDescription)) {
+              concatChildDescription.append(childNodeDescription + delimiter);
+            }
+          }
+          childNodeInfo.recycle();
+        }
+
+        return removeFinalDelimiter(concatChildDescription);
+      }
+
+      return null;
+    } finally {
+      node.recycle();
+    }
+  }
+
+  private static String removeFinalDelimiter(StringBuilder builder) {
+    int end = builder.length();
+    if (end > 0) {
+      builder.delete(end - delimiterLength, end);
+    }
+    return builder.toString();
+  }
+
+  public static boolean isTopLevelScrollItem(
+      @Nullable AccessibilityNodeInfoCompat node, @Nullable View view) {
+    if (node == null || view == null) {
+      return false;
+    }
+
+    final View parent = (View) ViewCompat.getParentForAccessibility(view);
+    if (parent == null) {
+      return false;
+    }
+
+    if (node.isScrollable()) {
+      return true;
+    }
+
+    final List actionList = node.getActionList();
+    if (actionList.contains(AccessibilityNodeInfoCompat.ACTION_SCROLL_FORWARD)
+        || actionList.contains(AccessibilityNodeInfoCompat.ACTION_SCROLL_BACKWARD)) {
+      return true;
+    }
+
+    AccessibilityRole parentRole = AccessibilityRole.BUTTON;
+    return parentRole == AccessibilityRole.LIST || parentRole == AccessibilityRole.GRID;
+  }
+
   @Override
   public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
     super.onInitializeAccessibilityNodeInfo(host, info);
+    final AccessibilityNodeInfoCompat nodeInfo = AccessibilityNodeInfoCompat.obtain();
+    if (host instanceof ViewGroup) {
+      final StringBuilder concatChildDescription = new StringBuilder();
+      final ViewGroup viewGroup = (ViewGroup) host;
+      for (int i = 0, count = viewGroup.getChildCount(); i < count; i++) {
+        final View child = viewGroup.getChildAt(i);
+        final AccessibilityNodeInfoCompat childNodeInfo = AccessibilityNodeInfoCompat.obtain();
+        ViewCompat.onInitializeAccessibilityNodeInfo(child, childNodeInfo);
+        if (isSpeakingNode(childNodeInfo, child)
+            && !isAccessibilityFocusable(childNodeInfo, child)) {
+          CharSequence childNodeDescription = getTalkbackDescription(child);
+          if (!TextUtils.isEmpty(childNodeDescription)) {
+            concatChildDescription.append(childNodeDescription);
+          }
+        }
+        childNodeInfo.recycle();
+      }
+      info.setContentDescription(concatChildDescription);
+    }
     final AccessibilityRole accessibilityRole =
         (AccessibilityRole) host.getTag(R.id.accessibility_role);
     if (accessibilityRole != null) {
