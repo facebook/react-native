@@ -22,7 +22,6 @@ import android.text.style.ClickableSpan;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
-import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -318,12 +317,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     }
 
     // Always focus "actionable" nodes.
-    if (isActionableForAccessibility(node)) {
-      return true;
-    }
-
-    // only focus top-level list items with non-actionable speaking children.
-    return isTopLevelScrollItem(node, view) && isSpeakingNode(node, view);
+    return isActionableForAccessibility(node);
   }
 
   /**
@@ -349,42 +343,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
         || actionList.contains(AccessibilityNodeInfoCompat.ACTION_FOCUS);
   }
 
-  public static AccessibilityRole getRole(View view) {
-    if (view == null) {
-      return AccessibilityRole.NONE;
-    }
-    AccessibilityNodeInfoCompat nodeInfo = AccessibilityNodeInfoCompat.obtain();
-    ViewCompat.onInitializeAccessibilityNodeInfo(view, nodeInfo);
-    AccessibilityRole role = getRole(nodeInfo);
-    nodeInfo.recycle();
-    return role;
-  }
-
-  public static AccessibilityRole getRole(AccessibilityNodeInfo nodeInfo) {
-    return getRole(new AccessibilityNodeInfoCompat(nodeInfo));
-  }
-
-  public static AccessibilityRole getRole(AccessibilityNodeInfoCompat nodeInfo) {
-    AccessibilityRole role = AccessibilityRole.fromValue((String) nodeInfo.getClassName());
-    if (role.equals(AccessibilityRole.IMAGEBUTTON) || role.equals(AccessibilityRole.IMAGE)) {
-      return nodeInfo.isClickable() ? AccessibilityRole.IMAGEBUTTON : AccessibilityRole.IMAGE;
-    }
-
-    if (role.equals(AccessibilityRole.NONE)) {
-      AccessibilityNodeInfoCompat.CollectionInfoCompat collection = nodeInfo.getCollectionInfo();
-      if (collection != null) {
-        // RecyclerView will be classified as a list or grid.
-        if (collection.getRowCount() > 1 && collection.getColumnCount() > 1) {
-          return AccessibilityRole.GRID;
-        } else {
-          return AccessibilityRole.LIST;
-        }
-      }
-    }
-
-    return role;
-  }
-
   @Nullable
   public static AccessibilityNodeInfoCompat createNodeInfoFromView(View view) {
     if (view == null) {
@@ -406,21 +364,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
 
     return nodeInfo;
   }
-
-  /*
-  public static String getRoleDescription(View view) {
-    AccessibilityNodeInfoCompat nodeInfo = createNodeInfoFromView(view);
-    String roleDescription = getRoleDescription(nodeInfo);
-    nodeInfo.recycle();
-
-    if (roleDescription == null || roleDescription == "") {
-      AccessibilityRole role = getRole(view);
-      roleDescription = role.getRoleString();
-    }
-
-    return roleDescription;
-  }
-  */
 
   @Nullable
   public static CharSequence getTalkbackDescription(View view) {
