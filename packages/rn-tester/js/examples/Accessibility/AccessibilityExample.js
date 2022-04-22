@@ -962,150 +962,6 @@ class EnabledExamples extends React.Component<{}> {
     );
   }
 }
-// [TODO(OSS Candidate ISS#2710739)
-type DisplayOptionsStatusExampleState = {
-  highContrastEnabled?: boolean,
-  invertColorsEnabled?: boolean,
-  reduceMotionEnabled?: boolean,
-  reduceTransparencyEnabled?: boolean,
-};
-class DisplayOptionsStatusExample extends React.Component<
-  {},
-  DisplayOptionsStatusExampleState,
-> {
-  state: DisplayOptionsStatusExampleState = {
-    highContrastEnabled: undefined,
-    invertColorsEnabled: undefined,
-    reduceMotionEnabled: undefined,
-    reduceTransparencyEnabled: undefined,
-  };
-
-  componentDidMount() {
-    AccessibilityInfo.addEventListener(
-      'highContrastChanged',
-      this._handleHighContrastToggled,
-    );
-    AccessibilityInfo.isHighContrastEnabled().done(isEnabled => {
-      this.setState({
-        highContrastEnabled: isEnabled,
-      });
-    });
-
-    AccessibilityInfo.addEventListener(
-      'invertColorsChanged',
-      this._handleInvertColorsToggled,
-    );
-    AccessibilityInfo.isInvertColorsEnabled().done(isEnabled => {
-      this.setState({
-        invertColorsEnabled: isEnabled,
-      });
-    });
-
-    AccessibilityInfo.addEventListener(
-      'reduceMotionChanged',
-      this._handleReduceMotionToggled,
-    );
-    AccessibilityInfo.isReduceMotionEnabled().done(isEnabled => {
-      this.setState({
-        reduceMotionEnabled: isEnabled,
-      });
-    });
-
-    AccessibilityInfo.addEventListener(
-      'reduceTransparencyChanged',
-      this._handleReduceTransparencyToggled,
-    );
-    AccessibilityInfo.isReduceTransparencyEnabled().done(isEnabled => {
-      this.setState({
-        reduceTransparencyEnabled: isEnabled,
-      });
-    });
-  }
-
-  componentWillUnmount() {
-    AccessibilityInfo.removeEventListener(
-      'highContrastChanged',
-      this._handleHighContrastToggled,
-    );
-    AccessibilityInfo.removeEventListener(
-      'invertColorsChanged',
-      this._handleInvertColorsToggled,
-    );
-    AccessibilityInfo.removeEventListener(
-      'reduceMotionChanged',
-      this._handleReduceMotionToggled,
-    );
-    AccessibilityInfo.removeEventListener(
-      'reduceTransparencyChanged',
-      this._handleReduceTransparencyToggled,
-    );
-  }
-
-  _handleHighContrastToggled = isEnabled => {
-    this.setState({
-      highContrastEnabled: isEnabled,
-    });
-  };
-
-  _handleInvertColorsToggled = isEnabled => {
-    this.setState({
-      invertColorsEnabled: isEnabled,
-    });
-  };
-
-  _handleReduceMotionToggled = isEnabled => {
-    this.setState({
-      reduceMotionEnabled: isEnabled,
-    });
-  };
-
-  _handleReduceTransparencyToggled = isEnabled => {
-    this.setState({
-      reduceTransparencyEnabled: isEnabled,
-    });
-  };
-
-  // TODO(macOS GH#774) - slight refactoring to allow state to handle undefined values
-  _statusString = isEnabled => {
-    if (isEnabled !== undefined) {
-      return isEnabled ? 'enabled' : 'disabled';
-    } else {
-      return 'unknown';
-    }
-  };
-
-  render(): React.Node {
-    return (
-      <View>
-        <View>
-          <Text>
-            High contrast is{' '}
-            {this._statusString(this.state.highContrastEnabled)}.
-          </Text>
-        </View>
-        <View>
-          <Text>
-            Invert colors is{' '}
-            {this._statusString(this.state.invertColorsEnabled)}.
-          </Text>
-        </View>
-        <View>
-          <Text>
-            Reduce motion is{' '}
-            {this._statusString(this.state.reduceMotionEnabled)}.
-          </Text>
-        </View>
-        <View>
-          <Text>
-            Reduce transparency is{' '}
-            {this._statusString(this.state.reduceTransparencyEnabled)}.
-          </Text>
-        </View>
-      </View>
-    );
-  }
-}
-// ]TODO(OSS Candidate ISS#2710739)
 
 class EnabledExample extends React.Component<
   {
@@ -1174,6 +1030,7 @@ class EnabledExample extends React.Component<
 class DisplayOptionsStatusExample extends React.Component<{}> {
   render(): React.Node {
     const isAndroid = Platform.OS === 'android';
+    const isMacOS = Platform.OS === 'macos'; // TODO(macOS GH#774)
     return (
       <View>
         <DisplayOptionStatusExample
@@ -1198,6 +1055,13 @@ class DisplayOptionsStatusExample extends React.Component<{}> {
               optionChecker={AccessibilityInfo.isGrayscaleEnabled}
               notification={'grayscaleChanged'}
             />
+            {isMacOS ? ( // [TODO(maCOS GH#774)
+              <DisplayOptionStatusExample
+                optionName={'High Contrast'}
+                optionChecker={AccessibilityInfo.isHighContrastEnabled}
+                notification={'highContrastChanged'}
+              />
+            ) : null /* ]TODO(maCOS GH#774) */}
             <DisplayOptionStatusExample
               optionName={'Invert Colors'}
               optionChecker={AccessibilityInfo.isInvertColorsEnabled}
@@ -1265,14 +1129,6 @@ exports.examples = [
       return <SliderAccessibilityExample />;
     },
   },
-  // [TODO(OSS Candidate ISS#2710739)
-  {
-    title: 'Check if the display options are enabled',
-    render(): React.Element<typeof DisplayOptionsStatusExample> {
-      return <DisplayOptionsStatusExample />;
-    },
-  },
-  // ]TODO(OSS Candidate ISS#2710739)
   {
     title: 'Check if the display options are enabled',
     render(): React.Element<typeof DisplayOptionsStatusExample> {
