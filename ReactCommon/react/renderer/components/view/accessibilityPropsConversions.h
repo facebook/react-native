@@ -98,6 +98,10 @@ inline void fromString(const std::string &string, AccessibilityTraits &result) {
     result = AccessibilityTraits::TabBar;
     return;
   }
+  if (string == "progressbar") {
+    result = AccessibilityTraits::UpdatesFrequently;
+    return;
+  }
   result = AccessibilityTraits::None;
 }
 
