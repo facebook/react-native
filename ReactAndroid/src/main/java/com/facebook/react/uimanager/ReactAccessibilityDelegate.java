@@ -199,6 +199,18 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
   private static final String STATE_SELECTED = "selected";
   private static final String STATE_CHECKED = "checked";
 
+  /**
+   * Determines if the supplied {@link View} and {@link AccessibilityNodeInfoCompat} has any
+   * children which are not independently accessibility focusable and also have a spoken
+   * description.
+   *
+   * <p>NOTE: Accessibility services will include these children's descriptions in the closest
+   * focusable ancestor.
+   *
+   * @param view The {@link View} to evaluate
+   * @param node The {@link AccessibilityNodeInfoCompat} to evaluate
+   * @return {@code true} if it has any non-actionable speaking descendants within its subtree
+   */
   public static boolean hasNonActionableSpeakingDescendants(
       @Nullable AccessibilityNodeInfoCompat node, @Nullable View view) {
 
@@ -343,6 +355,15 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
         || actionList.contains(AccessibilityNodeInfoCompat.ACTION_FOCUS);
   }
 
+  /**
+   * Creates a {@link FlipperObject} of useful properties of AccessibilityNodeInfo, to be shown in
+   * the Flipper Layout Inspector accessibility extension. All properties are immutable since they
+   * are all derived from various {@link View} properties. This is a more complete list than
+   * getAccessibilityNodeInfoProperties returns.
+   *
+   * @param view The {@link View} to derive the AccessibilityNodeInfo properties from.
+   * @return {@link FlipperObject} containing the properties.
+   */
   @Nullable
   public static AccessibilityNodeInfoCompat createNodeInfoFromView(View view) {
     if (view == null) {
@@ -365,6 +386,21 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     return nodeInfo;
   }
 
+  /**
+   * Creates the text that Google's TalkBack screen reader will read aloud for a given {@link View}.
+   * This may be any combination of the {@link View}'s {@code text}, {@code contentDescription}, and
+   * the {@code text} and {@code contentDescription} of any ancestor {@link View}.
+   *
+   * <p>This description is generally ported over from Google's TalkBack screen reader, and this
+   * should be kept up to date with their implementation (as much as necessary). Details can be seen
+   * in their source code here:
+   *
+   * <p>https://github.com/google/talkback/compositor/src/main/res/raw/compositor.json - search for
+   * "get_description_for_tree", "append_description_for_tree", "description_for_tree_nodes"
+   *
+   * @param view The {@link View} to evaluate.
+   * @return {@code String} representing what talkback will say when a {@link View} is focused.
+   */
   @Nullable
   public static CharSequence getTalkbackDescription(View view) {
     final AccessibilityNodeInfoCompat node = createNodeInfoFromView(view);
@@ -435,31 +471,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
       builder.delete(end - delimiterLength, end);
     }
     return builder.toString();
-  }
-
-  public static boolean isTopLevelScrollItem(
-      @Nullable AccessibilityNodeInfoCompat node, @Nullable View view) {
-    if (node == null || view == null) {
-      return false;
-    }
-
-    final View parent = (View) ViewCompat.getParentForAccessibility(view);
-    if (parent == null) {
-      return false;
-    }
-
-    if (node.isScrollable()) {
-      return true;
-    }
-
-    final List actionList = node.getActionList();
-    if (actionList.contains(AccessibilityNodeInfoCompat.ACTION_SCROLL_FORWARD)
-        || actionList.contains(AccessibilityNodeInfoCompat.ACTION_SCROLL_BACKWARD)) {
-      return true;
-    }
-
-    AccessibilityRole parentRole = AccessibilityRole.BUTTON;
-    return parentRole == AccessibilityRole.LIST || parentRole == AccessibilityRole.GRID;
   }
 
   @Override
