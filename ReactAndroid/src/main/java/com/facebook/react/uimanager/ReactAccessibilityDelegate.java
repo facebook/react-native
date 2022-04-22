@@ -199,58 +199,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
   private static final String STATE_SELECTED = "selected";
   private static final String STATE_CHECKED = "checked";
 
-  /**
-   * Determines if the supplied {@link View} and {@link AccessibilityNodeInfoCompat} has any
-   * children which are not independently accessibility focusable and also have a spoken
-   * description.
-   *
-   * <p>NOTE: Accessibility services will include these children's descriptions in the closest
-   * focusable ancestor.
-   *
-   * @param view The {@link View} to evaluate
-   * @param node The {@link AccessibilityNodeInfoCompat} to evaluate
-   * @return {@code true} if it has any non-actionable speaking descendants within its subtree
-   */
-  public static boolean hasNonActionableSpeakingDescendants(
-      @Nullable AccessibilityNodeInfoCompat node, @Nullable View view) {
-
-    if (node == null || view == null || !(view instanceof ViewGroup)) {
-      return false;
-    }
-
-    final ViewGroup viewGroup = (ViewGroup) view;
-    for (int i = 0, count = viewGroup.getChildCount(); i < count; i++) {
-      final View childView = viewGroup.getChildAt(i);
-
-      if (childView == null) {
-        continue;
-      }
-
-      final AccessibilityNodeInfoCompat childNode = AccessibilityNodeInfoCompat.obtain();
-      try {
-        ViewCompat.onInitializeAccessibilityNodeInfo(childView, childNode);
-
-        if (!childNode.isVisibleToUser()) {
-          continue;
-        }
-
-        if (isAccessibilityFocusable(childNode, childView)) {
-          continue;
-        }
-
-        if (isSpeakingNode(childNode, childView)) {
-          return true;
-        }
-      } finally {
-        if (childNode != null) {
-          childNode.recycle();
-        }
-      }
-    }
-
-    return false;
-  }
-
   public ReactAccessibilityDelegate(
       final View view, boolean originalFocus, int originalImportantForAccessibility) {
     super(view);
@@ -275,203 +223,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
   }
 
   @Nullable View mAccessibilityLabelledBy;
-
-  /**
-   * Returns whether the supplied {@link View} and {@link AccessibilityNodeInfoCompat} would produce
-   * spoken feedback if it were accessibility focused. NOTE: not all speaking nodes are focusable.
-   *
-   * @param view The {@link View} to evaluate
-   * @param node The {@link AccessibilityNodeInfoCompat} to evaluate
-   * @return {@code true} if it meets the criterion for producing spoken feedback
-   */
-  public static boolean isSpeakingNode(
-      @Nullable AccessibilityNodeInfoCompat node, @Nullable View view) {
-    if (node == null || view == null) {
-      return false;
-    }
-
-    final int important = ViewCompat.getImportantForAccessibility(view);
-    if (important == ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
-        || (important == ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO && node.getChildCount() <= 0)) {
-      return false;
-    }
-
-    return node.isCheckable() || hasText(node) || hasNonActionableSpeakingDescendants(node, view);
-  }
-
-  public static boolean hasText(@Nullable AccessibilityNodeInfoCompat node) {
-    return node != null
-        && node.getCollectionInfo() == null
-        && (!TextUtils.isEmpty(node.getText()) || !TextUtils.isEmpty(node.getContentDescription()));
-  }
-
-  /**
-   * Determines if the provided {@link View} and {@link AccessibilityNodeInfoCompat} meet the
-   * criteria for gaining accessibility focus.
-   *
-   * <p>Note: this is evaluating general focusability by accessibility services, and does not mean
-   * this view will be guaranteed to be focused by specific services such as Talkback. For Talkback
-   * focusability, see {@link #isTalkbackFocusable(View)}
-   *
-   * @param view The {@link View} to evaluate
-   * @param node The {@link AccessibilityNodeInfoCompat} to evaluate
-   * @return {@code true} if it is possible to gain accessibility focus
-   */
-  public static boolean isAccessibilityFocusable(
-      @Nullable AccessibilityNodeInfoCompat node, @Nullable View view) {
-    if (node == null || view == null) {
-      return false;
-    }
-
-    // Never focus invisible nodes.
-    if (!node.isVisibleToUser()) {
-      return false;
-    }
-
-    // Always focus "actionable" nodes.
-    return isActionableForAccessibility(node);
-  }
-
-  /**
-   * Returns whether a node is actionable. That is, the node supports one of {@link
-   * AccessibilityNodeInfoCompat#isClickable()}, {@link AccessibilityNodeInfoCompat#isFocusable()},
-   * or {@link AccessibilityNodeInfoCompat#isLongClickable()}.
-   *
-   * @param node The {@link AccessibilityNodeInfoCompat} to evaluate
-   * @return {@code true} if node is actionable.
-   */
-  public static boolean isActionableForAccessibility(@Nullable AccessibilityNodeInfoCompat node) {
-    if (node == null) {
-      return false;
-    }
-
-    if (node.isClickable() || node.isLongClickable() || node.isFocusable()) {
-      return true;
-    }
-
-    final List actionList = node.getActionList();
-    return actionList.contains(AccessibilityNodeInfoCompat.ACTION_CLICK)
-        || actionList.contains(AccessibilityNodeInfoCompat.ACTION_LONG_CLICK)
-        || actionList.contains(AccessibilityNodeInfoCompat.ACTION_FOCUS);
-  }
-
-  /**
-   * Creates a {@link FlipperObject} of useful properties of AccessibilityNodeInfo, to be shown in
-   * the Flipper Layout Inspector accessibility extension. All properties are immutable since they
-   * are all derived from various {@link View} properties. This is a more complete list than
-   * getAccessibilityNodeInfoProperties returns.
-   *
-   * @param view The {@link View} to derive the AccessibilityNodeInfo properties from.
-   * @return {@link FlipperObject} containing the properties.
-   */
-  @Nullable
-  public static AccessibilityNodeInfoCompat createNodeInfoFromView(View view) {
-    if (view == null) {
-      return null;
-    }
-
-    final AccessibilityNodeInfoCompat nodeInfo = AccessibilityNodeInfoCompat.obtain();
-
-    // For some unknown reason, Android seems to occasionally throw a NPE from
-    // onInitializeAccessibilityNodeInfo.
-    try {
-      ViewCompat.onInitializeAccessibilityNodeInfo(view, nodeInfo);
-    } catch (NullPointerException e) {
-      if (nodeInfo != null) {
-        nodeInfo.recycle();
-      }
-      return null;
-    }
-
-    return nodeInfo;
-  }
-
-  /**
-   * Creates the text that Google's TalkBack screen reader will read aloud for a given {@link View}.
-   * This may be any combination of the {@link View}'s {@code text}, {@code contentDescription}, and
-   * the {@code text} and {@code contentDescription} of any ancestor {@link View}.
-   *
-   * <p>This description is generally ported over from Google's TalkBack screen reader, and this
-   * should be kept up to date with their implementation (as much as necessary). Details can be seen
-   * in their source code here:
-   *
-   * <p>https://github.com/google/talkback/compositor/src/main/res/raw/compositor.json - search for
-   * "get_description_for_tree", "append_description_for_tree", "description_for_tree_nodes"
-   *
-   * @param view The {@link View} to evaluate.
-   * @return {@code String} representing what talkback will say when a {@link View} is focused.
-   */
-  @Nullable
-  public static CharSequence getTalkbackDescription(View view) {
-    final AccessibilityNodeInfoCompat node = createNodeInfoFromView(view);
-    if (node == null) {
-      return null;
-    }
-    try {
-      final CharSequence contentDescription = node.getContentDescription();
-      final CharSequence nodeText = node.getText();
-
-      final boolean hasNodeText = !TextUtils.isEmpty(nodeText);
-      final boolean isEditText = view instanceof EditText;
-
-      StringBuilder talkbackSegments = new StringBuilder();
-
-      // EditText's prioritize their own text content over a contentDescription so skip this
-      if (!TextUtils.isEmpty(contentDescription) && (!isEditText || !hasNodeText)) {
-        // next add content description
-        talkbackSegments.append(contentDescription + delimiter);
-
-        return removeFinalDelimiter(talkbackSegments);
-      }
-
-      // EditText
-      if (hasNodeText) {
-        // skipped status checks above for EditText
-
-        // description
-        talkbackSegments.append(nodeText + delimiter);
-
-        return removeFinalDelimiter(talkbackSegments);
-      }
-
-      // If there are child views and no contentDescription the text of all non-focusable children,
-      // comma separated, becomes the description.
-      if (view instanceof ViewGroup) {
-        final StringBuilder concatChildDescription = new StringBuilder();
-        final ViewGroup viewGroup = (ViewGroup) view;
-
-        for (int i = 0, count = viewGroup.getChildCount(); i < count; i++) {
-          final View child = viewGroup.getChildAt(i);
-
-          final AccessibilityNodeInfoCompat childNodeInfo = AccessibilityNodeInfoCompat.obtain();
-          ViewCompat.onInitializeAccessibilityNodeInfo(child, childNodeInfo);
-
-          if (isSpeakingNode(childNodeInfo, child)
-              && !isAccessibilityFocusable(childNodeInfo, child)) {
-            CharSequence childNodeDescription = getTalkbackDescription(child);
-            if (!TextUtils.isEmpty(childNodeDescription)) {
-              concatChildDescription.append(childNodeDescription + delimiter);
-            }
-          }
-          childNodeInfo.recycle();
-        }
-
-        return removeFinalDelimiter(concatChildDescription);
-      }
-
-      return null;
-    } finally {
-      node.recycle();
-    }
-  }
-
-  private static String removeFinalDelimiter(StringBuilder builder) {
-    int end = builder.length();
-    if (end > 0) {
-      builder.delete(end - delimiterLength, end);
-    }
-    return builder.toString();
-  }
 
   @Override
   public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
@@ -975,5 +726,254 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     }
 
     return null;
+  }
+
+  /**
+   * Determines if the supplied {@link View} and {@link AccessibilityNodeInfoCompat} has any
+   * children which are not independently accessibility focusable and also have a spoken
+   * description.
+   *
+   * <p>NOTE: Accessibility services will include these children's descriptions in the closest
+   * focusable ancestor.
+   *
+   * @param view The {@link View} to evaluate
+   * @param node The {@link AccessibilityNodeInfoCompat} to evaluate
+   * @return {@code true} if it has any non-actionable speaking descendants within its subtree
+   */
+  public static boolean hasNonActionableSpeakingDescendants(
+      @Nullable AccessibilityNodeInfoCompat node, @Nullable View view) {
+
+    if (node == null || view == null || !(view instanceof ViewGroup)) {
+      return false;
+    }
+
+    final ViewGroup viewGroup = (ViewGroup) view;
+    for (int i = 0, count = viewGroup.getChildCount(); i < count; i++) {
+      final View childView = viewGroup.getChildAt(i);
+
+      if (childView == null) {
+        continue;
+      }
+
+      final AccessibilityNodeInfoCompat childNode = AccessibilityNodeInfoCompat.obtain();
+      try {
+        ViewCompat.onInitializeAccessibilityNodeInfo(childView, childNode);
+
+        if (!childNode.isVisibleToUser()) {
+          continue;
+        }
+
+        if (isAccessibilityFocusable(childNode, childView)) {
+          continue;
+        }
+
+        if (isSpeakingNode(childNode, childView)) {
+          return true;
+        }
+      } finally {
+        if (childNode != null) {
+          childNode.recycle();
+        }
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Returns whether the supplied {@link View} and {@link AccessibilityNodeInfoCompat} would produce
+   * spoken feedback if it were accessibility focused. NOTE: not all speaking nodes are focusable.
+   *
+   * @param view The {@link View} to evaluate
+   * @param node The {@link AccessibilityNodeInfoCompat} to evaluate
+   * @return {@code true} if it meets the criterion for producing spoken feedback
+   */
+  public static boolean isSpeakingNode(
+      @Nullable AccessibilityNodeInfoCompat node, @Nullable View view) {
+    if (node == null || view == null) {
+      return false;
+    }
+
+    final int important = ViewCompat.getImportantForAccessibility(view);
+    if (important == ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
+        || (important == ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO && node.getChildCount() <= 0)) {
+      return false;
+    }
+
+    return node.isCheckable() || hasText(node) || hasNonActionableSpeakingDescendants(node, view);
+  }
+
+  public static boolean hasText(@Nullable AccessibilityNodeInfoCompat node) {
+    return node != null
+        && node.getCollectionInfo() == null
+        && (!TextUtils.isEmpty(node.getText()) || !TextUtils.isEmpty(node.getContentDescription()));
+  }
+
+  /**
+   * Determines if the provided {@link View} and {@link AccessibilityNodeInfoCompat} meet the
+   * criteria for gaining accessibility focus.
+   *
+   * <p>Note: this is evaluating general focusability by accessibility services, and does not mean
+   * this view will be guaranteed to be focused by specific services such as Talkback. For Talkback
+   * focusability, see {@link #isTalkbackFocusable(View)}
+   *
+   * @param view The {@link View} to evaluate
+   * @param node The {@link AccessibilityNodeInfoCompat} to evaluate
+   * @return {@code true} if it is possible to gain accessibility focus
+   */
+  public static boolean isAccessibilityFocusable(
+      @Nullable AccessibilityNodeInfoCompat node, @Nullable View view) {
+    if (node == null || view == null) {
+      return false;
+    }
+
+    // Never focus invisible nodes.
+    if (!node.isVisibleToUser()) {
+      return false;
+    }
+
+    // Always focus "actionable" nodes.
+    return isActionableForAccessibility(node);
+  }
+
+  /**
+   * Returns whether a node is actionable. That is, the node supports one of {@link
+   * AccessibilityNodeInfoCompat#isClickable()}, {@link AccessibilityNodeInfoCompat#isFocusable()},
+   * or {@link AccessibilityNodeInfoCompat#isLongClickable()}.
+   *
+   * @param node The {@link AccessibilityNodeInfoCompat} to evaluate
+   * @return {@code true} if node is actionable.
+   */
+  public static boolean isActionableForAccessibility(@Nullable AccessibilityNodeInfoCompat node) {
+    if (node == null) {
+      return false;
+    }
+
+    if (node.isClickable() || node.isLongClickable() || node.isFocusable()) {
+      return true;
+    }
+
+    final List actionList = node.getActionList();
+    return actionList.contains(AccessibilityNodeInfoCompat.ACTION_CLICK)
+        || actionList.contains(AccessibilityNodeInfoCompat.ACTION_LONG_CLICK)
+        || actionList.contains(AccessibilityNodeInfoCompat.ACTION_FOCUS);
+  }
+
+  /**
+   * Creates a {@link FlipperObject} of useful properties of AccessibilityNodeInfo, to be shown in
+   * the Flipper Layout Inspector accessibility extension. All properties are immutable since they
+   * are all derived from various {@link View} properties. This is a more complete list than
+   * getAccessibilityNodeInfoProperties returns.
+   *
+   * @param view The {@link View} to derive the AccessibilityNodeInfo properties from.
+   * @return {@link FlipperObject} containing the properties.
+   */
+  @Nullable
+  public static AccessibilityNodeInfoCompat createNodeInfoFromView(View view) {
+    if (view == null) {
+      return null;
+    }
+
+    final AccessibilityNodeInfoCompat nodeInfo = AccessibilityNodeInfoCompat.obtain();
+
+    // For some unknown reason, Android seems to occasionally throw a NPE from
+    // onInitializeAccessibilityNodeInfo.
+    try {
+      ViewCompat.onInitializeAccessibilityNodeInfo(view, nodeInfo);
+    } catch (NullPointerException e) {
+      if (nodeInfo != null) {
+        nodeInfo.recycle();
+      }
+      return null;
+    }
+
+    return nodeInfo;
+  }
+
+  /**
+   * Creates the text that Google's TalkBack screen reader will read aloud for a given {@link View}.
+   * This may be any combination of the {@link View}'s {@code text}, {@code contentDescription}, and
+   * the {@code text} and {@code contentDescription} of any ancestor {@link View}.
+   *
+   * <p>This description is generally ported over from Google's TalkBack screen reader, and this
+   * should be kept up to date with their implementation (as much as necessary). Details can be seen
+   * in their source code here:
+   *
+   * <p>https://github.com/google/talkback/compositor/src/main/res/raw/compositor.json - search for
+   * "get_description_for_tree", "append_description_for_tree", "description_for_tree_nodes"
+   *
+   * @param view The {@link View} to evaluate.
+   * @return {@code String} representing what talkback will say when a {@link View} is focused.
+   */
+  @Nullable
+  public static CharSequence getTalkbackDescription(View view) {
+    final AccessibilityNodeInfoCompat node = createNodeInfoFromView(view);
+    if (node == null) {
+      return null;
+    }
+    try {
+      final CharSequence contentDescription = node.getContentDescription();
+      final CharSequence nodeText = node.getText();
+
+      final boolean hasNodeText = !TextUtils.isEmpty(nodeText);
+      final boolean isEditText = view instanceof EditText;
+
+      StringBuilder talkbackSegments = new StringBuilder();
+
+      // EditText's prioritize their own text content over a contentDescription so skip this
+      if (!TextUtils.isEmpty(contentDescription) && (!isEditText || !hasNodeText)) {
+        // next add content description
+        talkbackSegments.append(contentDescription + delimiter);
+
+        return removeFinalDelimiter(talkbackSegments);
+      }
+
+      // EditText
+      if (hasNodeText) {
+        // skipped status checks above for EditText
+
+        // description
+        talkbackSegments.append(nodeText + delimiter);
+
+        return removeFinalDelimiter(talkbackSegments);
+      }
+
+      // If there are child views and no contentDescription the text of all non-focusable children,
+      // comma separated, becomes the description.
+      if (view instanceof ViewGroup) {
+        final StringBuilder concatChildDescription = new StringBuilder();
+        final ViewGroup viewGroup = (ViewGroup) view;
+
+        for (int i = 0, count = viewGroup.getChildCount(); i < count; i++) {
+          final View child = viewGroup.getChildAt(i);
+
+          final AccessibilityNodeInfoCompat childNodeInfo = AccessibilityNodeInfoCompat.obtain();
+          ViewCompat.onInitializeAccessibilityNodeInfo(child, childNodeInfo);
+
+          if (isSpeakingNode(childNodeInfo, child)
+              && !isAccessibilityFocusable(childNodeInfo, child)) {
+            CharSequence childNodeDescription = getTalkbackDescription(child);
+            if (!TextUtils.isEmpty(childNodeDescription)) {
+              concatChildDescription.append(childNodeDescription + delimiter);
+            }
+          }
+          childNodeInfo.recycle();
+        }
+
+        return removeFinalDelimiter(concatChildDescription);
+      }
+
+      return null;
+    } finally {
+      node.recycle();
+    }
+  }
+
+  private static String removeFinalDelimiter(StringBuilder builder) {
+    int end = builder.length();
+    if (end > 0) {
+      builder.delete(end - delimiterLength, end);
+    }
+    return builder.toString();
   }
 }
