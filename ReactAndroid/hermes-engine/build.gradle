@@ -13,6 +13,9 @@ plugins {
     id("maven-publish")
 }
 
+group = "com.facebook.react"
+version = parent.publishing_version
+
 def reactNativeRootDir = project(':ReactAndroid').projectDir.parent;
 def customDownloadDir = System.getenv("REACT_NATIVE_DOWNLOADS_DIR")
 def downloadsDir = customDownloadDir ? new File(customDownloadDir) : new File(reactNativeRootDir, "sdks/download")
@@ -123,6 +126,7 @@ android {
                 arguments "-DJSI_DIR=${jsiDir}"
                 arguments "-DHERMES_SLOW_DEBUG=False"
                 arguments "-DHERMES_BUILD_SHARED_JSI=True"
+                arguments "-DHERMES_RELEASE_VERSION=for RN ${version}"
                 // We intentionally build Hermes with Intl support only. This is to simplify
                 // the build setup and to avoid overcomplicating the build-type matrix.
                 arguments "-DHERMES_ENABLE_INTL=True"
@@ -239,6 +243,3 @@ afterEvaluate {
         }
     }
 }
-
-group = "com.facebook.react"
-version = parent.publishing_version
