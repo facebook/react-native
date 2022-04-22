@@ -192,6 +192,9 @@ namespace JS {
               callback:(RCTResponseSenderBlock)callback
                 extras:(NSArray *)extras;
 - (void)getArrays:(JS::NativeSampleTurboModule::SpecGetArraysOptions &)options;
+- (NSDictionary * _Nullable)getNullableObject;
+- (NSDictionary * _Nullable)getNullableGenericObject;
+- (NSArray<id<NSObject>> * _Nullable)getNullableArray;
 
 @end
 namespace facebook {
