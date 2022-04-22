@@ -1683,6 +1683,7 @@
 					"$(inherited)",
 					"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)",
 					"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)",
+					"\"$(SDKROOT)/usr/lib/swift\"",
 				);
 				OTHER_CFLAGS = (
 					"$(inherited)",
