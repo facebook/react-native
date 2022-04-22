@@ -19,7 +19,6 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ClickableSpan;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
@@ -266,6 +265,14 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
 
   @Nullable View mAccessibilityLabelledBy;
 
+  /**
+   * Returns whether the supplied {@link View} and {@link AccessibilityNodeInfoCompat} would produce
+   * spoken feedback if it were accessibility focused. NOTE: not all speaking nodes are focusable.
+   *
+   * @param view The {@link View} to evaluate
+   * @param node The {@link AccessibilityNodeInfoCompat} to evaluate
+   * @return {@code true} if it meets the criterion for producing spoken feedback
+   */
   public static boolean isSpeakingNode(
       @Nullable AccessibilityNodeInfoCompat node, @Nullable View view) {
     if (node == null || view == null) {
@@ -287,6 +294,18 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
         && (!TextUtils.isEmpty(node.getText()) || !TextUtils.isEmpty(node.getContentDescription()));
   }
 
+  /**
+   * Determines if the provided {@link View} and {@link AccessibilityNodeInfoCompat} meet the
+   * criteria for gaining accessibility focus.
+   *
+   * <p>Note: this is evaluating general focusability by accessibility services, and does not mean
+   * this view will be guaranteed to be focused by specific services such as Talkback. For Talkback
+   * focusability, see {@link #isTalkbackFocusable(View)}
+   *
+   * @param view The {@link View} to evaluate
+   * @param node The {@link AccessibilityNodeInfoCompat} to evaluate
+   * @return {@code true} if it is possible to gain accessibility focus
+   */
   public static boolean isAccessibilityFocusable(
       @Nullable AccessibilityNodeInfoCompat node, @Nullable View view) {
     if (node == null || view == null) {
@@ -307,6 +326,14 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     return isTopLevelScrollItem(node, view) && isSpeakingNode(node, view);
   }
 
+  /**
+   * Returns whether a node is actionable. That is, the node supports one of {@link
+   * AccessibilityNodeInfoCompat#isClickable()}, {@link AccessibilityNodeInfoCompat#isFocusable()},
+   * or {@link AccessibilityNodeInfoCompat#isLongClickable()}.
+   *
+   * @param node The {@link AccessibilityNodeInfoCompat} to evaluate
+   * @return {@code true} if node is actionable.
+   */
   public static boolean isActionableForAccessibility(@Nullable AccessibilityNodeInfoCompat node) {
     if (node == null) {
       return false;
@@ -404,31 +431,16 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     try {
       final CharSequence contentDescription = node.getContentDescription();
       final CharSequence nodeText = node.getText();
-      Log.w("TESTING::ReactAccessibilityDelegate", "nodeText: " + (nodeText));
 
       final boolean hasNodeText = !TextUtils.isEmpty(nodeText);
       final boolean isEditText = view instanceof EditText;
 
       StringBuilder talkbackSegments = new StringBuilder();
-      // AccessibilityRole role = getRole(view);
-      // String roleString = getRoleDescription(view);
-      // boolean disabled = isActionableForAccessibility(node) && !node.isEnabled();
 
       // EditText's prioritize their own text content over a contentDescription so skip this
       if (!TextUtils.isEmpty(contentDescription) && (!isEditText || !hasNodeText)) {
-
-        // first prepend any status modifiers
-        // addStateSegments(talkbackSegments, node, role);
-
         // next add content description
         talkbackSegments.append(contentDescription + delimiter);
-
-        // then role
-        /*
-        if (roleString.length() > 0) {
-          talkbackSegments.append(roleString + delimiter);
-        }
-        */
 
         return removeFinalDelimiter(talkbackSegments);
       }
