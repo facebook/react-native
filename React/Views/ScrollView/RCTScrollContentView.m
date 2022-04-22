@@ -61,10 +61,13 @@
       _hasHorizontalScroller = nextHasHorizontalScroller;
       _hasVerticalScroller = nextHasVerticalScroller;
 
+      CGFloat horizontalScrollerHeight = _hasHorizontalScroller ? NSHeight([[platformScrollView horizontalScroller] frame]) : 0;
+      CGFloat verticalScrollerWidth = _hasVerticalScroller ? NSWidth([[platformScrollView verticalScroller] frame]) : 0;
+
       RCTScrollContentLocalData *localData =
         [[RCTScrollContentLocalData alloc]
-          initWithVerticalScroller:[platformScrollView verticalScroller]
-                horizontalScroller:[platformScrollView horizontalScroller]];
+          initWithVerticalScrollerWidth:horizontalScrollerHeight
+               horizontalScrollerHeight:verticalScrollerWidth];
       [[[scrollView bridge] uiManager] setLocalData:localData forView:self];
     }
   }
