@@ -216,23 +216,15 @@ class TextExample extends React.Component<{...}> {
         <RNTesterBlock title="Hyphenation">
           <Text android_hyphenationFrequency="normal">
             <Text style={{color: 'red'}}>Normal: </Text>
-            WillHaveAnHyphenWhenBreakingForNewLine
+            WillHaveAHyphenWhenBreakingForNewLine
           </Text>
           <Text android_hyphenationFrequency="none">
             <Text style={{color: 'red'}}>None: </Text>
-            WillNotHaveAnHyphenWhenBreakingForNewLine
+            WillNotHaveAHyphenWhenBreakingForNewLine
           </Text>
           <Text android_hyphenationFrequency="full">
             <Text style={{color: 'red'}}>Full: </Text>
-            WillHaveAnHyphenWhenBreakingForNewLine
-          </Text>
-          <Text android_hyphenationFrequency="high">
-            <Text style={{color: 'red'}}>High: </Text>
-            WillHaveAnHyphenWhenBreakingForNewLine
-          </Text>
-          <Text android_hyphenationFrequency="balanced">
-            <Text style={{color: 'red'}}>Balanced: </Text>
-            WillHaveAnHyphenWhenBreakingForNewLine
+            WillHaveAHyphenWhenBreakingForNewLine
           </Text>
         </RNTesterBlock>
         <RNTesterBlock title="Padding">
