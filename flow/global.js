@@ -49,6 +49,10 @@ declare var global: {
   +requestIdleCallback: typeof requestIdleCallback,
   +cancelIdleCallback: typeof cancelIdleCallback,
   +setTimeout: typeof setTimeout,
+  // TODO(T97509743): use `typeof` when the next Flow release is available.
+  +queueMicrotask: <TArguments: Array<mixed>>(
+    jobCallback: (...args: TArguments) => mixed,
+  ) => void;
 
   +console: typeof console,
 
