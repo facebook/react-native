@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -28,12 +28,12 @@ extern char const ParagraphComponentName[];
  * containing and displaying text. Text content is represented as nested <Text>
  * and <RawText> components.
  */
-class ParagraphShadowNode : public ConcreteViewShadowNode<
-                                ParagraphComponentName,
-                                ParagraphProps,
-                                ParagraphEventEmitter,
-                                ParagraphState>,
-                            public BaseTextShadowNode {
+class ParagraphShadowNode final : public ConcreteViewShadowNode<
+                                      ParagraphComponentName,
+                                      ParagraphProps,
+                                      ParagraphEventEmitter,
+                                      ParagraphState>,
+                                  public BaseTextShadowNode {
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
@@ -41,6 +41,7 @@ class ParagraphShadowNode : public ConcreteViewShadowNode<
     auto traits = ConcreteViewShadowNode::BaseTraits();
     traits.set(ShadowNodeTraits::Trait::LeafYogaNode);
     traits.set(ShadowNodeTraits::Trait::TextKind);
+    traits.set(ShadowNodeTraits::Trait::MeasurableYogaNode);
 
 #ifdef ANDROID
     // Unsetting `FormsStackingContext` trait is essential on Android where we
@@ -56,7 +57,8 @@ class ParagraphShadowNode : public ConcreteViewShadowNode<
    * `ParagraphShadowNode` uses the manager to measure text content
    * and construct `ParagraphState` objects.
    */
-  void setTextLayoutManager(SharedTextLayoutManager textLayoutManager);
+  void setTextLayoutManager(
+      std::shared_ptr<TextLayoutManager const> textLayoutManager);
 
 #pragma mark - LayoutableShadowNode
 
@@ -95,12 +97,12 @@ class ParagraphShadowNode : public ConcreteViewShadowNode<
    */
   void updateStateIfNeeded(Content const &content);
 
-  SharedTextLayoutManager textLayoutManager_;
+  std::shared_ptr<TextLayoutManager const> textLayoutManager_;
 
   /*
    * Cached content of the subtree started from the node.
    */
-  mutable better::optional<Content> content_{};
+  mutable butter::optional<Content> content_{};
 };
 
 } // namespace react

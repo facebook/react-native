@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -56,6 +56,7 @@ class RN_EXPORT Instance {
       std::unique_ptr<const JSBigString> string,
       std::string sourceURL,
       bool loadSynchronously);
+  static bool isHBCBundle(const char *sourcePath);
   static bool isIndexedRAMBundle(const char *sourcePath);
   static bool isIndexedRAMBundle(std::unique_ptr<const JSBigString> *string);
   void loadRAMBundleFromString(

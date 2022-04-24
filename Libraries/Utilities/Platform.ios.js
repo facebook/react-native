@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,6 @@
  * @format
  * @flow strict
  */
-
-'use strict';
 
 import NativePlatformConstantsIOS from './NativePlatformConstantsIOS';
 
@@ -68,6 +66,7 @@ const Platform = {
     return false;
   },
   select: <D, N, I>(spec: PlatformSelectSpec<D, N, I>): D | N | I =>
+    // $FlowFixMe[incompatible-return]
     'ios' in spec ? spec.ios : 'native' in spec ? spec.native : spec.default,
 };
 

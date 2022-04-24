@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,7 +11,7 @@
 'use strict';
 
 const React = require('react');
-const {Switch, Text, View} = require('react-native');
+const {Switch, Text, View, Platform} = require('react-native');
 
 type OnOffIndicatorProps = $ReadOnly<{|on: boolean, testID: string|}>;
 function OnOffIndicator({on, testID}: OnOffIndicatorProps) {
@@ -135,6 +135,7 @@ class ColorSwitchExample extends React.Component<{...}, $FlowFixMeState> {
     return (
       <View>
         <Switch
+          testID="initial-false-switch"
           onValueChange={value => this.setState({colorFalseSwitchIsOn: value})}
           style={{marginBottom: 10}}
           thumbColor="#0000ff"
@@ -145,6 +146,7 @@ class ColorSwitchExample extends React.Component<{...}, $FlowFixMeState> {
           value={this.state.colorFalseSwitchIsOn}
         />
         <Switch
+          testID="initial-true-switch"
           onValueChange={value => this.setState({colorTrueSwitchIsOn: value})}
           thumbColor="#0000ff"
           trackColor={{
@@ -169,19 +171,24 @@ class EventSwitchExample extends React.Component<{...}, $FlowFixMeState> {
       <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
         <View>
           <Switch
+            testID="event-switch-top"
             onValueChange={value => this.setState({eventSwitchIsOn: value})}
             style={{marginBottom: 10}}
             value={this.state.eventSwitchIsOn}
           />
           <Switch
+            testID="event-switch-bottom"
             onValueChange={value => this.setState({eventSwitchIsOn: value})}
             style={{marginBottom: 10}}
             value={this.state.eventSwitchIsOn}
           />
-          <Text>{this.state.eventSwitchIsOn ? 'On' : 'Off'}</Text>
+          <Text testID="event-switch-indicator">
+            {this.state.eventSwitchIsOn ? 'On' : 'Off'}
+          </Text>
         </View>
         <View>
           <Switch
+            testID="event-switch-regression-top"
             onValueChange={value =>
               this.setState({eventSwitchRegressionIsOn: value})
             }
@@ -189,14 +196,71 @@ class EventSwitchExample extends React.Component<{...}, $FlowFixMeState> {
             value={this.state.eventSwitchRegressionIsOn}
           />
           <Switch
+            testID="event-switch-regression-bottom"
             onValueChange={value =>
               this.setState({eventSwitchRegressionIsOn: value})
             }
             style={{marginBottom: 10}}
             value={this.state.eventSwitchRegressionIsOn}
           />
-          <Text>{this.state.eventSwitchRegressionIsOn ? 'On' : 'Off'}</Text>
+          <Text testID="event-switch-regression-indicator">
+            {this.state.eventSwitchRegressionIsOn ? 'On' : 'Off'}
+          </Text>
         </View>
+      </View>
+    );
+  }
+}
+
+class IOSBackgroundColEx extends React.Component<{...}, $FlowFixMeState> {
+  state = {
+    iosBackgroundColor: '#ffa500',
+  };
+
+  render() {
+    return (
+      <View>
+        <Switch
+          disabled
+          ios_backgroundColor={this.state.iosBackgroundColor}
+          style={{marginBottom: 20}}
+        />
+        <Text>
+          The background color can be seen either when the switch value is false
+          or when the switch is disabled (and the switch is translucent).{' '}
+        </Text>
+      </View>
+    );
+  }
+}
+
+class OnChangeExample extends React.Component<{...}, $FlowFixMeState> {
+  render() {
+    return (
+      <View>
+        <Switch
+          onChange={() => {
+            // eslint-disable-next-line no-alert
+            alert('OnChange Called');
+          }}
+        />
+      </View>
+    );
+  }
+}
+
+class ContainerBackgroundColorStyleExample extends React.Component<
+  {...},
+  $FlowFixMeState,
+> {
+  render() {
+    return (
+      <View>
+        <Switch
+          style={{backgroundColor: 'blue'}}
+          thumbColor="white"
+          value={true}
+        />
       </View>
     );
   }
@@ -210,32 +274,58 @@ exports.description = 'Native boolean input';
 exports.examples = [
   {
     title: 'Switches can be set to true or false',
+    name: 'basic',
     render(): React.Element<any> {
       return <BasicSwitchExample />;
     },
   },
   {
     title: 'Switches can be disabled',
+    name: 'disabled',
     render(): React.Element<any> {
       return <DisabledSwitchExample />;
     },
   },
   {
     title: 'Change events can be detected',
+    name: 'events',
     render(): React.Element<any> {
       return <EventSwitchExample />;
     },
   },
   {
     title: 'Switches are controlled components',
+    name: 'controlled',
     render(): React.Element<any> {
-      return <Switch />;
+      return <Switch testID="controlled-switch" />;
     },
   },
   {
     title: 'Custom colors can be provided',
+    name: 'custom-colors',
     render(): React.Element<any> {
       return <ColorSwitchExample />;
     },
   },
+  {
+    title: 'OnChange receives the change event as an argument',
+    render(): React.Element<any> {
+      return <OnChangeExample />;
+    },
+  },
+  {
+    title: "The container's background color can be set",
+    render(): React.Element<any> {
+      return <ContainerBackgroundColorStyleExample />;
+    },
+  },
 ];
+
+if (Platform.OS === 'ios') {
+  exports.examples.push({
+    title: '[iOS Only] Custom background colors can be set',
+    render(): React.Element<any> {
+      return <IOSBackgroundColEx />;
+    },
+  });
+}

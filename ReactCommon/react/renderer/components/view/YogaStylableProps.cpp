@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -20,10 +20,11 @@ namespace facebook {
 namespace react {
 
 YogaStylableProps::YogaStylableProps(
+    const PropsParserContext &context,
     YogaStylableProps const &sourceProps,
     RawProps const &rawProps)
-    : Props(sourceProps, rawProps),
-      yogaStyle(convertRawProp(rawProps, sourceProps.yogaStyle)){};
+    : Props(context, sourceProps, rawProps),
+      yogaStyle(convertRawProp(context, rawProps, sourceProps.yogaStyle)){};
 
 #pragma mark - DebugStringConvertible
 

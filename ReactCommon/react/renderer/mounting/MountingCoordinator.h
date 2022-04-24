@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,19 +7,16 @@
 
 #pragma once
 
-#include <better/optional.h>
+#include <butter/optional.h>
 #include <chrono>
 
+#include <react/renderer/debug/flags.h>
 #include <react/renderer/mounting/Differentiator.h>
 #include <react/renderer/mounting/MountingOverrideDelegate.h>
 #include <react/renderer/mounting/MountingTransaction.h>
 #include <react/renderer/mounting/ShadowTreeRevision.h>
 #include <react/renderer/mounting/TelemetryController.h>
 #include "ShadowTreeRevision.h"
-
-#ifndef NDEBUG
-#define RN_SHADOW_TREE_INTROSPECTION 1
-#endif
 
 #ifdef RN_SHADOW_TREE_INTROSPECTION
 #include <react/renderer/mounting/stubs.h>
@@ -43,10 +40,7 @@ class MountingCoordinator final {
    * The constructor is meant to be used only inside `ShadowTree`, and it's
    * `public` only to enable using with `std::make_shared<>`.
    */
-  MountingCoordinator(
-      ShadowTreeRevision baseRevision,
-      std::weak_ptr<MountingOverrideDelegate const> delegate,
-      bool enableReparentingDetection = false);
+  MountingCoordinator(ShadowTreeRevision baseRevision);
 
   /*
    * Returns the id of the surface that the coordinator belongs to.
@@ -62,7 +56,7 @@ class MountingCoordinator final {
    * However, a consumer should always call it on the same thread (e.g. on the
    * main thread) or ensure sequentiality of mount transactions separately.
    */
-  better::optional<MountingTransaction> pullTransaction() const;
+  butter::optional<MountingTransaction> pullTransaction() const;
 
   /*
    * Blocks the current thread until a new mounting transaction is available or
@@ -84,6 +78,9 @@ class MountingCoordinator final {
  public:
   void updateBaseRevision(ShadowTreeRevision const &baseRevision) const;
   void resetLatestRevision() const;
+
+  void setMountingOverrideDelegate(
+      std::weak_ptr<MountingOverrideDelegate const> delegate) const;
 
   /*
    * Methods from this section are meant to be used by `ShadowTree` only.
@@ -107,14 +104,13 @@ class MountingCoordinator final {
 
   mutable std::mutex mutex_;
   mutable ShadowTreeRevision baseRevision_;
-  mutable better::optional<ShadowTreeRevision> lastRevision_{};
+  mutable butter::optional<ShadowTreeRevision> lastRevision_{};
   mutable MountingTransaction::Number number_{0};
   mutable std::condition_variable signal_;
-  std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate_;
+  mutable std::weak_ptr<MountingOverrideDelegate const>
+      mountingOverrideDelegate_;
 
   TelemetryController telemetryController_;
-
-  bool enableReparentingDetection_{false}; // temporary
 
 #ifdef RN_SHADOW_TREE_INTROSPECTION
   mutable StubViewTree stubViewTree_; // Protected by `mutex_`.

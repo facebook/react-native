@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -192,6 +192,17 @@ public:
   YGValue getResolvedDimension(int index) const {
     return resolvedDimensions_[index];
   }
+
+  static CompactValue computeEdgeValueForColumn(
+      const YGStyle::Edges& edges,
+      YGEdge edge,
+      CompactValue defaultValue);
+
+  static CompactValue computeEdgeValueForRow(
+      const YGStyle::Edges& edges,
+      YGEdge rowEdge,
+      YGEdge edge,
+      CompactValue defaultValue);
 
   // Methods related to positions, margin, padding and border
   YGFloatOptional getLeadingPosition(

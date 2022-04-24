@@ -1,4 +1,4 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -17,7 +17,7 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)
 
 LOCAL_CFLAGS := -fexceptions -frtti -O3
 
-LOCAL_STATIC_LIBRARIES := libjsi reactnative reactperflogger
-LOCAL_SHARED_LIBRARIES := libfolly_json glog
+LOCAL_STATIC_LIBRARIES := reactnative reactperflogger
+LOCAL_SHARED_LIBRARIES := libfolly_json glog libjsi
 
 include $(BUILD_STATIC_LIBRARY)

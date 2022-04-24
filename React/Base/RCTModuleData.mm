@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,6 +15,7 @@
 
 #import "RCTBridge+Private.h"
 #import "RCTBridge.h"
+#import "RCTInitializing.h"
 #import "RCTLog.h"
 #import "RCTModuleMethod.h"
 #import "RCTProfile.h"
@@ -48,6 +49,11 @@ BOOL RCTIsMainQueueExecutionOfConstantsToExportDisabled()
   RCTBridgeModuleProvider _moduleProvider;
   std::mutex _instanceLock;
   BOOL _setupComplete;
+  RCTModuleRegistry *_moduleRegistry;
+  RCTViewRegistry *_viewRegistry_DEPRECATED;
+  RCTBundleManager *_bundleManager;
+  RCTCallableJSModules *_callableJSModules;
+  BOOL _isInitialized;
 }
 
 @synthesize methods = _methods;
@@ -97,34 +103,60 @@ BOOL RCTIsMainQueueExecutionOfConstantsToExportDisabled()
   }
 }
 
-- (instancetype)initWithModuleClass:(Class)moduleClass bridge:(RCTBridge *)bridge
+- (instancetype)initWithModuleClass:(Class)moduleClass
+                             bridge:(RCTBridge *)bridge
+                     moduleRegistry:(RCTModuleRegistry *)moduleRegistry
+            viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
+                      bundleManager:(RCTBundleManager *)bundleManager
+                  callableJSModules:(RCTCallableJSModules *)callableJSModules
 {
   return [self initWithModuleClass:moduleClass
                     moduleProvider:^id<RCTBridgeModule> {
                       return [moduleClass new];
                     }
-                            bridge:bridge];
+                            bridge:bridge
+                    moduleRegistry:moduleRegistry
+           viewRegistry_DEPRECATED:viewRegistry_DEPRECATED
+                     bundleManager:bundleManager
+                 callableJSModules:callableJSModules];
 }
 
 - (instancetype)initWithModuleClass:(Class)moduleClass
                      moduleProvider:(RCTBridgeModuleProvider)moduleProvider
                              bridge:(RCTBridge *)bridge
+                     moduleRegistry:(RCTModuleRegistry *)moduleRegistry
+            viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
+                      bundleManager:(RCTBundleManager *)bundleManager
+                  callableJSModules:(RCTCallableJSModules *)callableJSModules
 {
   if (self = [super init]) {
     _bridge = bridge;
     _moduleClass = moduleClass;
     _moduleProvider = [moduleProvider copy];
+    _moduleRegistry = moduleRegistry;
+    _viewRegistry_DEPRECATED = viewRegistry_DEPRECATED;
+    _bundleManager = bundleManager;
+    _callableJSModules = callableJSModules;
     [self setUp];
   }
   return self;
 }
 
-- (instancetype)initWithModuleInstance:(id<RCTBridgeModule>)instance bridge:(RCTBridge *)bridge
+- (instancetype)initWithModuleInstance:(id<RCTBridgeModule>)instance
+                                bridge:(RCTBridge *)bridge
+                        moduleRegistry:(RCTModuleRegistry *)moduleRegistry
+               viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
+                         bundleManager:(RCTBundleManager *)bundleManager
+                     callableJSModules:(RCTCallableJSModules *)callableJSModules
 {
   if (self = [super init]) {
     _bridge = bridge;
     _instance = instance;
     _moduleClass = [instance class];
+    _moduleRegistry = moduleRegistry;
+    _viewRegistry_DEPRECATED = viewRegistry_DEPRECATED;
+    _bundleManager = bundleManager;
+    _callableJSModules = callableJSModules;
     [self setUp];
   }
   return self;
@@ -185,9 +217,17 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
       // initialization requires it (View Managers get their queue by calling
       // self.bridge.uiManager.methodQueue)
       [self setBridgeForInstance];
+      [self setModuleRegistryForInstance];
+      [self setViewRegistryForInstance];
+      [self setBundleManagerForInstance];
+      [self setCallableJSModulesForInstance];
     }
 
     [self setUpMethodQueue];
+
+    if (shouldSetup) {
+      [self _initializeModule];
+    }
   }
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 
@@ -228,6 +268,84 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
           self.name);
     }
     RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
+  }
+}
+
+- (void)setModuleRegistryForInstance
+{
+  if ([_instance respondsToSelector:@selector(moduleRegistry)] && _instance.moduleRegistry != _moduleRegistry) {
+    RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setModuleRegistryForInstance]", nil);
+    @try {
+      [(id)_instance setValue:_moduleRegistry forKey:@"moduleRegistry"];
+    } @catch (NSException *exception) {
+      RCTLogError(
+          @"%@ has no setter or ivar for its module registry, which is not "
+           "permitted. You must either @synthesize the moduleRegistry property, "
+           "or provide your own setter method.",
+          self.name);
+    }
+    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
+  }
+}
+
+- (void)setViewRegistryForInstance
+{
+  if ([_instance respondsToSelector:@selector(viewRegistry_DEPRECATED)] &&
+      _instance.viewRegistry_DEPRECATED != _viewRegistry_DEPRECATED) {
+    RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setViewRegistryForInstance]", nil);
+    @try {
+      [(id)_instance setValue:_viewRegistry_DEPRECATED forKey:@"viewRegistry_DEPRECATED"];
+    } @catch (NSException *exception) {
+      RCTLogError(
+          @"%@ has no setter or ivar for its module registry, which is not "
+           "permitted. You must either @synthesize the viewRegistry_DEPRECATED property, "
+           "or provide your own setter method.",
+          self.name);
+    }
+    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
+  }
+}
+
+- (void)setBundleManagerForInstance
+{
+  if ([_instance respondsToSelector:@selector(bundleManager)] && _instance.bundleManager != _bundleManager) {
+    RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setBundleManagerForInstance]", nil);
+    @try {
+      [(id)_instance setValue:_bundleManager forKey:@"bundleManager"];
+    } @catch (NSException *exception) {
+      RCTLogError(
+          @"%@ has no setter or ivar for its module registry, which is not "
+           "permitted. You must either @synthesize the bundleManager property, "
+           "or provide your own setter method.",
+          self.name);
+    }
+    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
+  }
+}
+
+- (void)setCallableJSModulesForInstance
+{
+  if ([_instance respondsToSelector:@selector(callableJSModules)] &&
+      _instance.callableJSModules != _callableJSModules) {
+    RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setCallableJSModulesForInstance]", nil);
+    @try {
+      [(id)_instance setValue:_callableJSModules forKey:@"callableJSModules"];
+    } @catch (NSException *exception) {
+      RCTLogError(
+          @"%@ has no setter or ivar for its module registry, which is not "
+           "permitted. You must either @synthesize the callableJSModules property, "
+           "or provide your own setter method.",
+          self.name);
+    }
+    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
+  }
+}
+
+- (void)_initializeModule
+{
+  if (!_isInitialized && [_instance respondsToSelector:@selector(initialize)]) {
+    _isInitialized = YES;
+    [(id<RCTInitializing>)_instance initialize];
   }
 }
 

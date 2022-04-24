@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,14 +9,15 @@ package com.facebook.react.uiapp;
 
 import android.app.Application;
 import android.content.Context;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.fbreact.specs.SampleTurboModule;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
+import com.facebook.react.ReactPackageTurboModuleManagerDelegate;
 import com.facebook.react.TurboReactPackage;
-import com.facebook.react.bridge.JSIModule;
 import com.facebook.react.bridge.JSIModulePackage;
 import com.facebook.react.bridge.JSIModuleProvider;
 import com.facebook.react.bridge.JSIModuleSpec;
@@ -28,17 +29,20 @@ import com.facebook.react.bridge.UIManager;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.fabric.CoreComponentsRegistry;
+import com.facebook.react.fabric.EmptyReactNativeConfig;
 import com.facebook.react.fabric.FabricJSIModuleProvider;
-import com.facebook.react.fabric.ReactNativeConfig;
 import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.shell.MainReactPackage;
-import com.facebook.react.turbomodule.core.TurboModuleManager;
+import com.facebook.react.uiapp.component.MyNativeViewManager;
+import com.facebook.react.uimanager.ViewManager;
+import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.views.text.ReactFontManager;
 import com.facebook.soloader.SoLoader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -104,7 +108,29 @@ public class RNTesterApplication extends Application implements ReactApplication
                     }
                   };
                 }
+              },
+              new ReactPackage() {
+                @NonNull
+                @Override
+                public List<NativeModule> createNativeModules(
+                    @NonNull ReactApplicationContext reactContext) {
+                  return Collections.emptyList();
+                }
+
+                @NonNull
+                @Override
+                public List<ViewManager> createViewManagers(
+                    @NonNull ReactApplicationContext reactContext) {
+                  return Collections.singletonList(new MyNativeViewManager());
+                }
               });
+        }
+
+        @Nullable
+        @Override
+        protected ReactPackageTurboModuleManagerDelegate.Builder
+            getReactPackageTurboModuleManagerDelegateBuilder() {
+          return new RNTesterTurboModuleManagerDelegate.Builder();
         }
 
         @Nullable
@@ -121,40 +147,6 @@ public class RNTesterApplication extends Application implements ReactApplication
                 final JavaScriptContextHolder jsContext) {
               final List<JSIModuleSpec> specs = new ArrayList<>();
 
-              // Install the new native module system.
-              if (ReactFeatureFlags.useTurboModules) {
-                specs.add(
-                    new JSIModuleSpec() {
-                      @Override
-                      public JSIModuleType getJSIModuleType() {
-                        return JSIModuleType.TurboModuleManager;
-                      }
-
-                      @Override
-                      public JSIModuleProvider getJSIModuleProvider() {
-                        return new JSIModuleProvider() {
-                          @Override
-                          public JSIModule get() {
-                            final ReactInstanceManager reactInstanceManager =
-                                getReactInstanceManager();
-                            final List<ReactPackage> packages = reactInstanceManager.getPackages();
-
-                            return new TurboModuleManager(
-                                jsContext,
-                                new RNTesterTurboModuleManagerDelegate(
-                                    reactApplicationContext, packages),
-                                reactApplicationContext
-                                    .getCatalystInstance()
-                                    .getJSCallInvokerHolder(),
-                                reactApplicationContext
-                                    .getCatalystInstance()
-                                    .getNativeCallInvokerHolder());
-                          }
-                        };
-                      }
-                    });
-              }
-
               // Install the new renderer.
               if (BuildConfig.ENABLE_FABRIC) {
                 specs.add(
@@ -166,33 +158,22 @@ public class RNTesterApplication extends Application implements ReactApplication
 
                       @Override
                       public JSIModuleProvider<UIManager> getJSIModuleProvider() {
-                        final ComponentFactory ComponentFactory = new ComponentFactory();
-                        CoreComponentsRegistry.register(ComponentFactory);
+                        final ComponentFactory componentFactory = new ComponentFactory();
+                        CoreComponentsRegistry.register(componentFactory);
+                        RNTesterComponentsRegistry.register(componentFactory);
+                        final ReactInstanceManager reactInstanceManager = getReactInstanceManager();
+
+                        ViewManagerRegistry viewManagerRegistry =
+                            new ViewManagerRegistry(
+                                reactInstanceManager.getOrCreateViewManagers(
+                                    reactApplicationContext));
+
                         return new FabricJSIModuleProvider(
                             reactApplicationContext,
-                            ComponentFactory,
+                            componentFactory,
                             // TODO: T71362667 add ReactNativeConfig's support in RNTester
-                            new ReactNativeConfig() {
-                              @Override
-                              public boolean getBool(final String s) {
-                                return false;
-                              }
-
-                              @Override
-                              public int getInt64(final String s) {
-                                return 0;
-                              }
-
-                              @Override
-                              public String getString(final String s) {
-                                return "";
-                              }
-
-                              @Override
-                              public double getDouble(final String s) {
-                                return 0;
-                              }
-                            });
+                            new EmptyReactNativeConfig(),
+                            viewManagerRegistry);
                       }
                     });
               }
@@ -205,7 +186,6 @@ public class RNTesterApplication extends Application implements ReactApplication
 
   @Override
   public void onCreate() {
-    // Set `USE_CODEGEN` env var when building RNTester to enable TurboModule.
     ReactFeatureFlags.useTurboModules = BuildConfig.ENABLE_TURBOMODULE;
     ReactFontManager.getInstance().addCustomFont(this, "Rubik", R.font.rubik);
     super.onCreate();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTBridge.h>
-#import <React/RCTJSInvokerModule.h>
 
 /**
  * The threshold at which text inputs will start warning that the JS thread
@@ -80,7 +79,9 @@ typedef NS_ENUM(NSInteger, RCTTextEventType) {
  * This class wraps the -[RCTBridge enqueueJSCall:args:] method, and
  * provides some convenience methods for generating event calls.
  */
-@protocol RCTEventDispatcherProtocol <RCTBridgeModule, RCTJSDispatcherModule, RCTJSInvokerModule>
+@protocol RCTEventDispatcherProtocol <RCTBridgeModule, RCTJSDispatcherModule>
+
+- (void)sendViewEventWithName:(NSString *)name reactTag:(NSNumber *)reactTag;
 
 /**
  * Deprecated, do not use.

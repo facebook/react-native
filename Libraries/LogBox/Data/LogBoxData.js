@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -21,7 +21,7 @@ import type {
   ExtendedExceptionData,
 } from './parseLogBoxLog';
 import parseErrorStack from '../../Core/Devtools/parseErrorStack';
-import type {ExtendedError} from '../../Core/Devtools/parseErrorStack';
+import type {ExtendedError} from '../../Core/ExtendedError';
 import NativeLogBox from '../../NativeModules/specs/NativeLogBox';
 export type LogBoxLogs = Set<LogBoxLog>;
 export type LogData = $ReadOnly<{|
@@ -71,7 +71,7 @@ let updateTimeout = null;
 let _isDisabled = false;
 let _selectedIndex = -1;
 
-let warningFilter: WarningFilter = function(format) {
+let warningFilter: WarningFilter = function (format) {
   return {
     finalFormat: format,
     forceDialogImmediately: false,
@@ -100,7 +100,6 @@ export function reportLogBoxError(
 ): void {
   const ExceptionsManager = require('../../Core/ExceptionsManager');
 
-  error.forceRedbox = true;
   error.message = `${LOGBOX_ERROR_MESSAGE}\n\n${error.message}`;
   if (componentStack != null) {
     error.componentStack = componentStack;
@@ -320,40 +319,40 @@ export function checkWarningFilter(format: string): WarningInfo {
   return warningFilter(format);
 }
 
+export function getIgnorePatterns(): $ReadOnlyArray<IgnorePattern> {
+  return Array.from(ignorePatterns);
+}
+
 export function addIgnorePatterns(
   patterns: $ReadOnlyArray<IgnorePattern>,
 ): void {
+  const existingSize = ignorePatterns.size;
   // The same pattern may be added multiple times, but adding a new pattern
   // can be expensive so let's find only the ones that are new.
-  const newPatterns = patterns.filter((pattern: IgnorePattern) => {
+  patterns.forEach((pattern: IgnorePattern) => {
     if (pattern instanceof RegExp) {
-      for (const existingPattern of ignorePatterns.entries()) {
+      for (const existingPattern of ignorePatterns) {
         if (
           existingPattern instanceof RegExp &&
           existingPattern.toString() === pattern.toString()
         ) {
-          return false;
+          return;
         }
       }
-      return true;
+      ignorePatterns.add(pattern);
     }
-    return !ignorePatterns.has(pattern);
+    ignorePatterns.add(pattern);
   });
-
-  if (newPatterns.length === 0) {
+  if (ignorePatterns.size === existingSize) {
     return;
   }
-  for (const pattern of newPatterns) {
-    ignorePatterns.add(pattern);
-
-    // We need to recheck all of the existing logs.
-    // This allows adding an ignore pattern anywhere in the codebase.
-    // Without this, if you ignore a pattern after the a log is created,
-    // then we would keep showing the log.
-    logs = new Set(
-      Array.from(logs).filter(log => !isMessageIgnored(log.message.content)),
-    );
-  }
+  // We need to recheck all of the existing logs.
+  // This allows adding an ignore pattern anywhere in the codebase.
+  // Without this, if you ignore a pattern after the a log is created,
+  // then we would keep showing the log.
+  logs = new Set(
+    Array.from(logs).filter(log => !isMessageIgnored(log.message.content)),
+  );
   handleUpdate();
 }
 
@@ -407,6 +406,8 @@ export function withSubscription(
     }
 
     componentDidCatch(err: Error, errorInfo: {componentStack: string, ...}) {
+      /* $FlowFixMe[class-object-subtyping] added when improving typing for
+       * this parameters */
       reportLogBoxError(err, errorInfo.componentStack);
     }
 

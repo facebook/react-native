@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,13 +8,10 @@
  * @flow
  */
 
-'use strict';
-
-const Platform = require('../../Utilities/Platform');
-const React = require('react');
-
-const invariant = require('invariant');
-const processColor = require('../../StyleSheet/processColor');
+import * as React from 'react';
+import Platform from '../../Utilities/Platform';
+import invariant from 'invariant';
+import processColor from '../../StyleSheet/processColor';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
 
 import NativeStatusBarManagerAndroid from './NativeStatusBarManagerAndroid';
@@ -130,19 +127,21 @@ function mergePropsStack(
  * and the transition/animation info.
  */
 function createStackEntry(props: any): any {
+  const animated = props.animated ?? false;
+  const showHideTransition = props.showHideTransition ?? 'fade';
   return {
     backgroundColor:
       props.backgroundColor != null
         ? {
             value: props.backgroundColor,
-            animated: props.animated,
+            animated,
           }
         : null,
     barStyle:
       props.barStyle != null
         ? {
             value: props.barStyle,
-            animated: props.animated,
+            animated,
           }
         : null,
     translucent: props.translucent,
@@ -150,8 +149,8 @@ function createStackEntry(props: any): any {
       props.hidden != null
         ? {
             value: props.hidden,
-            animated: props.animated,
-            transition: props.showHideTransition,
+            animated,
+            transition: showHideTransition,
           }
         : null,
     networkActivityIndicatorVisible: props.networkActivityIndicatorVisible,
@@ -224,8 +223,6 @@ class StatusBar extends React.Component<Props> {
   static _propsStack = [];
 
   static _defaultProps = createStackEntry({
-    animated: false,
-    showHideTransition: 'fade',
     backgroundColor:
       Platform.OS === 'android'
         ? NativeStatusBarManagerAndroid.getConstants()
@@ -386,14 +383,6 @@ class StatusBar extends React.Component<Props> {
     StatusBar._updatePropsStack();
     return newEntry;
   }
-
-  static defaultProps: {|
-    animated: boolean,
-    showHideTransition: $TEMPORARY$string<'fade'>,
-  |} = {
-    animated: false,
-    showHideTransition: 'fade',
-  };
 
   _stackEntry = null;
 

@@ -1,13 +1,11 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-'use strict';
-
-import { Type } from '../src/Type.js';
+import {Type} from '../src/Type.js';
 
 test('parses primitive type', () => {
   let obj = {

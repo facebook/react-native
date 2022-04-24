@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <better/small_vector.h>
+#include <butter/small_vector.h>
 
 #include <react/renderer/core/RawPropsKey.h>
 #include <react/renderer/core/RawPropsPrimitives.h>
@@ -55,8 +55,8 @@ class RawPropsKeyMap final {
       Item const &rhs) noexcept;
   static bool hasSameName(Item const &lhs, Item const &rhs) noexcept;
 
-  better::small_vector<Item, kNumberOfExplicitlySpecifedPropsSoftCap> items_{};
-  better::small_vector<RawPropsPropNameLength, kPropNameLengthHardCap>
+  butter::small_vector<Item, kNumberOfExplicitlySpecifedPropsSoftCap> items_{};
+  butter::small_vector<RawPropsPropNameLength, kPropNameLengthHardCap>
       buckets_{};
 };
 

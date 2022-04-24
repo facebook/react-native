@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,6 @@
  * @format
  * @flow strict-local
  */
-
-'use strict';
 
 const DevSettings = require('./DevSettings');
 const invariant = require('invariant');
@@ -18,8 +16,8 @@ const prettyFormat = require('pretty-format');
 
 import getDevServer from '../Core/Devtools/getDevServer';
 import NativeRedBox from '../NativeModules/specs/NativeRedBox';
-import * as LogBoxData from '../LogBox/Data/LogBoxData';
-import type {ExtendedError} from '../Core/Devtools/parseErrorStack';
+import LogBox from '../LogBox/LogBox';
+import type {ExtendedError} from '../Core/ExtendedError';
 
 const pendingEntryPoints = [];
 let hmrClient = null;
@@ -50,6 +48,7 @@ export type HMRClientNativeInterface = {|
     host: string,
     port: number | string,
     isEnabled: boolean,
+    scheme?: string,
   ): void,
 |};
 
@@ -120,6 +119,7 @@ const HMRClient: HMRClientNativeInterface = {
         JSON.stringify({
           type: 'log',
           level,
+          mode: global.RN$Bridgeless === true ? 'NOBRIDGE' : 'BRIDGE',
           data: data.map(item =>
             typeof item === 'string'
               ? item
@@ -147,6 +147,7 @@ const HMRClient: HMRClientNativeInterface = {
     host: string,
     port: number | string,
     isEnabled: boolean,
+    scheme?: string = 'http',
   ) {
     invariant(platform, 'Missing required parameter `platform`');
     invariant(bundleEntry, 'Missing required parameter `bundleEntry`');
@@ -156,8 +157,12 @@ const HMRClient: HMRClientNativeInterface = {
     // Moving to top gives errors due to NativeModules not being initialized
     const LoadingView = require('./LoadingView');
 
-    const wsHost = port !== null && port !== '' ? `${host}:${port}` : host;
-    const client = new MetroHMRClient(`ws://${wsHost}/hot`);
+    const serverHost = port !== null && port !== '' ? `${host}:${port}` : host;
+
+    const serverScheme = scheme;
+
+    const client = new MetroHMRClient(`${serverScheme}://${serverHost}/hot`);
+
     hmrClient = client;
 
     const {fullBundleUrl} = getDevServer();
@@ -166,9 +171,7 @@ const HMRClient: HMRClientNativeInterface = {
       // there are any important URL parameters we can't reconstruct from
       // `setup()`'s arguments.
       fullBundleUrl ??
-        // The ws://.../hot?bundleEntry= format is an alternative to specifying
-        // a regular HTTP bundle URL.
-        `ws://${wsHost}/hot?bundleEntry=${bundleEntry}&platform=${platform}`,
+        `${serverScheme}://${serverHost}/hot?bundleEntry=${bundleEntry}&platform=${platform}`,
     );
 
     client.on('connection-error', e => {
@@ -208,7 +211,7 @@ Error: ${e.message}`;
     client.on('update', ({isInitialUpdate}) => {
       if (client.isEnabled() && !isInitialUpdate) {
         dismissRedbox();
-        LogBoxData.clear();
+        LogBox.clearAllLogs();
       }
     });
 
@@ -305,8 +308,8 @@ function dismissRedbox() {
   ) {
     NativeRedBox.dismiss();
   } else {
-    const NativeExceptionsManager = require('../Core/NativeExceptionsManager')
-      .default;
+    const NativeExceptionsManager =
+      require('../Core/NativeExceptionsManager').default;
     NativeExceptionsManager &&
       NativeExceptionsManager.dismissRedbox &&
       NativeExceptionsManager.dismissRedbox();
@@ -325,6 +328,8 @@ function showCompileError() {
   const message = currentCompileErrorMessage;
   currentCompileErrorMessage = null;
 
+  /* $FlowFixMe[class-object-subtyping] added when improving typing for this
+   * parameters */
   const error: ExtendedError = new Error(message);
   // Symbolicating compile errors is wasted effort
   // because the stack trace is meaningless:

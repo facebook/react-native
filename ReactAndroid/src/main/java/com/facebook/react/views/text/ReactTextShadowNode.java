@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -21,7 +21,7 @@ import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.NativeViewHierarchyOptimizer;
@@ -32,6 +32,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
+import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaMeasureFunction;
@@ -111,12 +112,12 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
                     text, layout, sTextPaintInstance, themedReactContext);
             WritableMap event = Arguments.createMap();
             event.putArray("lines", lines);
-            if (themedReactContext.hasActiveCatalystInstance()) {
+            if (themedReactContext.hasActiveReactInstance()) {
               themedReactContext
                   .getJSModule(RCTEventEmitter.class)
                   .receiveEvent(getReactTag(), "topTextLayout", event);
             } else {
-              ReactSoftException.logSoftException(
+              ReactSoftExceptionLogger.logSoftException(
                   "ReactTextShadowNode",
                   new ReactNoCrashSoftException("Cannot get RCTEventEmitter, no CatalystInstance"));
             }
@@ -159,6 +160,20 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
         }
       };
 
+  private final YogaBaselineFunction mTextBaselineFunction =
+      new YogaBaselineFunction() {
+        @Override
+        public float baseline(YogaNode node, float width, float height) {
+          Spannable text =
+              Assertions.assertNotNull(
+                  mPreparedSpannableText,
+                  "Spannable element has not been prepared in onBeforeLayout");
+
+          Layout layout = measureSpannedText(text, width, YogaMeasureMode.EXACTLY);
+          return layout.getLineBaseline(layout.getLineCount() - 1);
+        }
+      };
+
   public ReactTextShadowNode() {
     this(null);
   }
@@ -171,6 +186,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
   private void initMeasureFunction() {
     if (!isVirtual()) {
       setMeasureFunction(mTextMeasureFunction);
+      setBaselineFunction(mTextBaselineFunction);
     }
   }
 
@@ -231,7 +247,14 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
       // than the width of the text.
       layout =
           BoringLayout.make(
-              text, textPaint, boring.width, alignment, 1.f, 0.f, boring, mIncludeFontPadding);
+              text,
+              textPaint,
+              Math.max(boring.width, 0),
+              alignment,
+              1.f,
+              0.f,
+              boring,
+              mIncludeFontPadding);
     } else {
       // Is used for multiline, boring text and the width is known.
 

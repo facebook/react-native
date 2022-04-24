@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,6 @@
  * @format
  * @flow strict-local
  */
-
-'use strict';
 
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
@@ -39,6 +37,7 @@ type NativeProps = $ReadOnly<{|
   mode?: WithDefault<'date' | 'time' | 'datetime', 'date'>,
   onChange?: ?BubblingEventHandler<Event>,
   timeZoneOffsetInMinutes?: ?Float,
+  pickerStyle?: WithDefault<'compact' | 'spinner' | 'inline', 'spinner'>,
 |}>;
 
 type ComponentType = HostComponent<NativeProps>;

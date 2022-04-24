@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,8 +15,8 @@ import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.CxxModuleWrapper;
 import com.facebook.react.bridge.JSIModule;
-import com.facebook.react.bridge.JavaScriptContextHolder;
-import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.bridge.RuntimeExecutor;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.turbomodule.core.interfaces.TurboModuleRegistry;
@@ -49,18 +49,19 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
   private final HybridData mHybridData;
 
   public TurboModuleManager(
-      JavaScriptContextHolder jsContext,
+      RuntimeExecutor runtimeExecutor,
       @Nullable final TurboModuleManagerDelegate delegate,
       CallInvokerHolder jsCallInvokerHolder,
       CallInvokerHolder nativeCallInvokerHolder) {
     maybeLoadSoLibrary();
     mHybridData =
         initHybrid(
-            jsContext.get(),
+            runtimeExecutor,
             (CallInvokerHolderImpl) jsCallInvokerHolder,
             (CallInvokerHolderImpl) nativeCallInvokerHolder,
             delegate,
-            false);
+            ReactFeatureFlags.useGlobalCallbackCleanupScopeUsingRetainJSCallback,
+            ReactFeatureFlags.useTurboModuleManagerCallbackCleanupScope);
     installJSIBindings();
 
     mEagerInitModuleNames =
@@ -215,7 +216,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
          * NativeModules should be initialized after ReactApplicationContext has been set up.
          * Therefore, we should initialize on the TurboModule now.
          */
-        ((NativeModule) turboModule).initialize();
+        turboModule.initialize();
       }
 
       TurboModulePerfLogger.moduleCreateSetUpEnd(moduleName, moduleHolder.getModuleId());
@@ -289,11 +290,12 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
   }
 
   private native HybridData initHybrid(
-      long jsContext,
+      RuntimeExecutor runtimeExecutor,
       CallInvokerHolderImpl jsCallInvokerHolder,
       CallInvokerHolderImpl nativeCallInvokerHolder,
       TurboModuleManagerDelegate tmmDelegate,
-      boolean enablePromiseAsyncDispatch);
+      boolean useGlobalCallbackCleanupScopeUsingRetainJSCallback,
+      boolean useTurboModuleManagerCallbackCleanupScope);
 
   private native void installJSIBindings();
 
@@ -328,8 +330,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
       final TurboModule turboModule = getModule(moduleName, moduleHolder, false);
 
       if (turboModule != null) {
-        // TODO(T48014458): Rename this to invalidate()
-        ((NativeModule) turboModule).onCatalystInstanceDestroy();
+        turboModule.invalidate();
       }
     }
 

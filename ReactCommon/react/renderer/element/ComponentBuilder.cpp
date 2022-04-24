@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,12 +7,14 @@
 
 #include "ComponentBuilder.h"
 
+#include <utility>
+
 namespace facebook {
 namespace react {
 
 ComponentBuilder::ComponentBuilder(
-    ComponentDescriptorRegistry::Shared const &componentDescriptorRegistry)
-    : componentDescriptorRegistry_(componentDescriptorRegistry){};
+    ComponentDescriptorRegistry::Shared componentDescriptorRegistry)
+    : componentDescriptorRegistry_(std::move(componentDescriptorRegistry)){};
 
 ShadowNode::Unshared ComponentBuilder::build(
     ElementFragment const &elementFragment) const {
@@ -45,9 +47,10 @@ ShadowNode::Unshared ComponentBuilder::build(
         *family, elementFragment.stateCallback());
     constShadowNode = componentDescriptor.cloneShadowNode(
         *constShadowNode,
-        ShadowNodeFragment{ShadowNodeFragment::propsPlaceholder(),
-                           ShadowNodeFragment::childrenPlaceholder(),
-                           newState});
+        ShadowNodeFragment{
+            ShadowNodeFragment::propsPlaceholder(),
+            ShadowNodeFragment::childrenPlaceholder(),
+            newState});
   }
 
   auto shadowNode = std::const_pointer_cast<ShadowNode>(constShadowNode);

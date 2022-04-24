@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,12 +9,13 @@
 #import <RCTTypeSafety/RCTConvertHelpers.h>
 #import <React/RCTNativeAnimatedTurboModule.h>
 #import <React/RCTNativeAnimatedNodesManager.h>
+#import <React/RCTInitializing.h>
 
 #import "RCTAnimationPlugins.h"
 
 typedef void (^AnimatedOperation)(RCTNativeAnimatedNodesManager *nodesManager);
 
-@interface RCTNativeAnimatedTurboModule() <NativeAnimatedModuleSpec>
+@interface RCTNativeAnimatedTurboModule() <NativeAnimatedModuleSpec, RCTInitializing>
 @end
 
 @implementation RCTNativeAnimatedTurboModule
@@ -26,6 +27,8 @@ typedef void (^AnimatedOperation)(RCTNativeAnimatedNodesManager *nodesManager);
   // Operations called before views have been updated.
   NSMutableArray<AnimatedOperation> *_preOperations;
   NSMutableDictionary<NSNumber *, NSNumber *> *_animIdIsManagedByFabric;
+  // A set of nodeIDs managed by Fabric.
+  NSMutableSet<NSNumber *> *_nodeIDsManagedByFabric;
 }
 
 RCT_EXPORT_MODULE();
@@ -41,16 +44,24 @@ RCT_EXPORT_MODULE();
     _operations = [NSMutableArray new];
     _preOperations = [NSMutableArray new];
     _animIdIsManagedByFabric = [NSMutableDictionary new];
+    _nodeIDsManagedByFabric = [NSMutableSet new];
   }
   return self;
+}
+
+- (void)initialize
+{
+  // _surfacePresenter set in setSurfacePresenter:
+  _nodesManager = [[RCTNativeAnimatedNodesManager alloc] initWithBridge:nil surfacePresenter:_surfacePresenter];
+  [_surfacePresenter addObserver:self];
+  [[self.moduleRegistry moduleForName:"EventDispatcher"] addDispatchObserver:self];
 }
 
 - (void)invalidate
 {
   [super invalidate];
   [_nodesManager stopAnimationLoop];
-  [self.bridge.eventDispatcher removeDispatchObserver:self];
-  [self.bridge.uiManager.observerCoordinator removeObserver:self];
+  [[self.moduleRegistry moduleForName:"EventDispatcher"] removeDispatchObserver:self];
   [_surfacePresenter removeObserver:self];
 }
 
@@ -62,16 +73,6 @@ RCT_EXPORT_MODULE();
   return RCTGetUIManagerQueue();
 }
 
-- (void)setBridge:(RCTBridge *)bridge
-{
-  [super setBridge:bridge];
-  _surfacePresenter = bridge.surfacePresenter;
-  _nodesManager = [[RCTNativeAnimatedNodesManager alloc] initWithBridge:self.bridge surfacePresenter:_surfacePresenter];
-  [bridge.eventDispatcher addDispatchObserver:self];
-  [bridge.uiManager.observerCoordinator addObserver:self];
-  [_surfacePresenter addObserver:self];
-}
-
 /*
  * In bridgeless mode, `setBridge` is never called during initializtion. Instead this selector is invoked via
  * BridgelessTurboModuleSetup.
@@ -79,8 +80,6 @@ RCT_EXPORT_MODULE();
 - (void)setSurfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter
 {
   _surfacePresenter = surfacePresenter;
-  _nodesManager = [[RCTNativeAnimatedNodesManager alloc] initWithBridge:self.bridge surfacePresenter:_surfacePresenter];
-  [_surfacePresenter addObserver:self];
 }
 
 #pragma mark -- API
@@ -106,6 +105,9 @@ RCT_EXPORT_METHOD(createAnimatedNode:(double)tag
 RCT_EXPORT_METHOD(connectAnimatedNodes:(double)parentTag
                   childTag:(double)childTag)
 {
+  if ([_nodeIDsManagedByFabric containsObject:@(childTag)]) {
+    [_nodeIDsManagedByFabric addObject:@(parentTag)];
+  }
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
     [nodesManager connectAnimatedNodes:[NSNumber numberWithDouble:parentTag] childTag:[NSNumber numberWithDouble:childTag]];
   }];
@@ -128,16 +130,11 @@ RCT_EXPORT_METHOD(startAnimatingNode:(double)animationId
     [nodesManager startAnimatingNode:[NSNumber numberWithDouble:animationId] nodeTag:[NSNumber numberWithDouble:nodeTag] config:config endCallback:callBack];
   }];
 
- RCTExecuteOnMainQueue(^{
-   if (![self->_nodesManager isNodeManagedByFabric:[NSNumber numberWithDouble:nodeTag]]) {
-     return;
-   }
-
-   RCTExecuteOnUIManagerQueue(^{
-     self->_animIdIsManagedByFabric[[NSNumber numberWithDouble:animationId]] = @YES;
-     [self flushOperationQueues];
-   });
- });
+  BOOL isNodeManagedByFabric = [_nodeIDsManagedByFabric containsObject:@(nodeTag)];
+  if (isNodeManagedByFabric) {
+    self->_animIdIsManagedByFabric[[NSNumber numberWithDouble:animationId]] = @YES;
+    [self flushOperationQueues];
+  }
 }
 
 RCT_EXPORT_METHOD(stopAnimation:(double)animationId)
@@ -156,6 +153,10 @@ RCT_EXPORT_METHOD(setAnimatedNodeValue:(double)nodeTag
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
     [nodesManager setAnimatedNodeValue:[NSNumber numberWithDouble:nodeTag] value:[NSNumber numberWithDouble:value]];
   }];
+  // In Bridge, flushing of native animations is done from RCTCxxBridge batchDidComplete().
+  // Since RCTCxxBridge doesn't exist in Bridgeless, and components are not remounted in Fabric for native animations,
+  // flush here for changes in Animated.Value for Animated.event.
+  [self flushOperationQueues];
 }
 
 RCT_EXPORT_METHOD(setAnimatedNodeOffset:(double)nodeTag
@@ -183,9 +184,12 @@ RCT_EXPORT_METHOD(extractAnimatedNodeOffset:(double)nodeTag)
 RCT_EXPORT_METHOD(connectAnimatedNodeToView:(double)nodeTag
                   viewTag:(double)viewTag)
 {
-  NSString *viewName = [self.bridge.uiManager viewNameForReactTag:[NSNumber numberWithDouble:viewTag]];
+  if (RCTUIManagerTypeForTagIsFabric(@(viewTag))) {
+    [_nodeIDsManagedByFabric addObject:@(nodeTag)];
+  }
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    [nodesManager connectAnimatedNodeToView:[NSNumber numberWithDouble:nodeTag] viewTag:[NSNumber numberWithDouble:viewTag] viewName:viewName];
+    // viewName is not used when node is managed by Fabric, and nodes are always managed by Fabric in Bridgeless.
+    [nodesManager connectAnimatedNodeToView:[NSNumber numberWithDouble:nodeTag] viewTag:[NSNumber numberWithDouble:viewTag] viewName:nil];
   }];
 }
 
@@ -321,33 +325,6 @@ RCT_EXPORT_METHOD(getValue:(double)nodeTag saveValueCallback:(RCTResponseSenderB
       }
     });
   });
-}
-
-#pragma mark - RCTUIManagerObserver
-
-- (void)uiManagerWillPerformMounting:(RCTUIManager *)uiManager
-{
-  if (_preOperations.count == 0 && _operations.count == 0) {
-    return;
-  }
-
-  NSArray<AnimatedOperation> *preOperations = _preOperations;
-  NSArray<AnimatedOperation> *operations = _operations;
-  _preOperations = [NSMutableArray new];
-  _operations = [NSMutableArray new];
-
-  [uiManager prependUIBlock:^(__unused RCTUIManager *manager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-    for (AnimatedOperation operation in preOperations) {
-      operation(self->_nodesManager);
-    }
-  }];
-  [uiManager addUIBlock:^(__unused RCTUIManager *manager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-    for (AnimatedOperation operation in operations) {
-      operation(self->_nodesManager);
-    }
-
-    [self->_nodesManager updateAnimations];
-  }];
 }
 
 #pragma mark -- Events

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,6 @@
  * @format
  * @flow strict
  */
-
-'use strict';
 
 const Platform = require('../Utilities/Platform');
 
@@ -61,20 +59,36 @@ const PERMISSIONS = Object.freeze({
   RECEIVE_MMS: 'android.permission.RECEIVE_MMS',
   READ_EXTERNAL_STORAGE: 'android.permission.READ_EXTERNAL_STORAGE',
   WRITE_EXTERNAL_STORAGE: 'android.permission.WRITE_EXTERNAL_STORAGE',
+  BLUETOOTH_CONNECT: 'android.permission.BLUETOOTH_CONNECT',
+  BLUETOOTH_SCAN: 'android.permission.BLUETOOTH_SCAN',
+  BLUETOOTH_ADVERTISE: 'android.permission.BLUETOOTH_ADVERTISE',
+  ACCESS_MEDIA_LOCATION: 'android.permission.ACCESS_MEDIA_LOCATION',
+  ACCEPT_HANDOVER: 'android.permission.ACCEPT_HANDOVER',
+  ACTIVITY_RECOGNITION: 'android.permission.ACTIVITY_RECOGNITION',
+  ANSWER_PHONE_CALLS: 'android.permission.ANSWER_PHONE_CALLS',
+  READ_PHONE_NUMBERS: 'android.permission.READ_PHONE_NUMBERS',
+  UWB_RANGING: 'android.permission.UWB_RANGING',
 });
 
 /**
  * `PermissionsAndroid` provides access to Android M's new permissions model.
  *
- * See https://reactnative.dev/docs/permissionsandroid.html
+ * See https://reactnative.dev/docs/permissionsandroid
  */
 
 class PermissionsAndroid {
   PERMISSIONS: {|
+    ACCEPT_HANDOVER: string,
     ACCESS_BACKGROUND_LOCATION: string,
     ACCESS_COARSE_LOCATION: string,
     ACCESS_FINE_LOCATION: string,
+    ACCESS_MEDIA_LOCATION: string,
+    ACTIVITY_RECOGNITION: string,
     ADD_VOICEMAIL: string,
+    ANSWER_PHONE_CALLS: string,
+    BLUETOOTH_ADVERTISE: string,
+    BLUETOOTH_CONNECT: string,
+    BLUETOOTH_SCAN: string,
     BODY_SENSORS: string,
     CALL_PHONE: string,
     CAMERA: string,
@@ -84,6 +98,7 @@ class PermissionsAndroid {
     READ_CALL_LOG: string,
     READ_CONTACTS: string,
     READ_EXTERNAL_STORAGE: string,
+    READ_PHONE_NUMBERS: string,
     READ_PHONE_STATE: string,
     READ_SMS: string,
     RECEIVE_MMS: string,
@@ -92,6 +107,7 @@ class PermissionsAndroid {
     RECORD_AUDIO: string,
     SEND_SMS: string,
     USE_SIP: string,
+    UWB_RANGING: string,
     WRITE_CALENDAR: string,
     WRITE_CALL_LOG: string,
     WRITE_CONTACTS: string,
@@ -134,7 +150,7 @@ class PermissionsAndroid {
    * Returns a promise resolving to a boolean value as to whether the specified
    * permissions has been granted
    *
-   * See https://reactnative.dev/docs/permissionsandroid.html#check
+   * See https://reactnative.dev/docs/permissionsandroid#check
    */
   check(permission: PermissionType): Promise<boolean> {
     if (Platform.OS !== 'android') {
@@ -161,7 +177,7 @@ class PermissionsAndroid {
    * If the optional rationale argument is included (which is an object with a
    * `title` and `message`), this function checks with the OS whether it is
    * necessary to show a dialog explaining why the permission is needed
-   * (https://developer.android.com/training/permissions/requesting.html#explain)
+   * (https://developer.android.com/training/permissions/requesting#explain)
    * and then shows the system permission dialog
    *
    * @deprecated
@@ -188,7 +204,7 @@ class PermissionsAndroid {
    * Prompts the user to enable a permission and returns a promise resolving to a
    * string value indicating whether the user allowed or denied the request
    *
-   * See https://reactnative.dev/docs/permissionsandroid.html#request
+   * See https://reactnative.dev/docs/permissionsandroid#request
    */
   async request(
     permission: PermissionType,
@@ -207,9 +223,10 @@ class PermissionsAndroid {
     );
 
     if (rationale) {
-      const shouldShowRationale = await NativePermissionsAndroid.shouldShowRequestPermissionRationale(
-        permission,
-      );
+      const shouldShowRationale =
+        await NativePermissionsAndroid.shouldShowRequestPermissionRationale(
+          permission,
+        );
 
       if (shouldShowRationale && !!NativeDialogManagerAndroid) {
         return new Promise((resolve, reject) => {
@@ -217,9 +234,10 @@ class PermissionsAndroid {
             ...rationale,
           };
           NativeDialogManagerAndroid.showAlert(
-            /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment
-             * suppresses an error found when Flow v0.111 was deployed. To see
-             * the error, delete this comment and run Flow. */
+            /* $FlowFixMe[incompatible-exact] (>=0.111.0 site=react_native_fb)
+             * This comment suppresses an error found when Flow v0.111 was
+             * deployed. To see the error, delete this comment and run Flow.
+             */
             options,
             () => reject(new Error('Error showing rationale')),
             () =>
@@ -236,7 +254,7 @@ class PermissionsAndroid {
    * returns an object with the permissions as keys and strings as values
    * indicating whether the user allowed or denied the request
    *
-   * See https://reactnative.dev/docs/permissionsandroid.html#requestmultiple
+   * See https://reactnative.dev/docs/permissionsandroid#requestmultiple
    */
   requestMultiple(
     permissions: Array<PermissionType>,

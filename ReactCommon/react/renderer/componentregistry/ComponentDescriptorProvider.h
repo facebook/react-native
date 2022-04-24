@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -63,10 +63,11 @@ ComponentDescriptorProvider concreteComponentDescriptorProvider() {
       std::is_base_of<ComponentDescriptor, ComponentDescriptorT>::value,
       "ComponentDescriptorT must be a descendant of ComponentDescriptor");
 
-  return {ComponentDescriptorT::ConcreteShadowNode::Handle(),
-          ComponentDescriptorT::ConcreteShadowNode::Name(),
-          nullptr,
-          &concreteComponentDescriptorConstructor<ComponentDescriptorT>};
+  return {
+      ComponentDescriptorT::ConcreteShadowNode::Handle(),
+      ComponentDescriptorT::ConcreteShadowNode::Name(),
+      nullptr,
+      &concreteComponentDescriptorConstructor<ComponentDescriptorT>};
 }
 
 } // namespace react

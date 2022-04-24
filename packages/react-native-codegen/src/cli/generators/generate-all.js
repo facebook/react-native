@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -19,7 +19,7 @@ const fs = require('fs');
 const mkdirp = require('mkdirp');
 
 const args = process.argv.slice(2);
-if (args.length !== 4) {
+if (args.length < 3) {
   throw new Error(
     `Expected to receive path to schema, library name, output directory and module spec name. Received ${args.join(
       ', ',
@@ -30,8 +30,8 @@ if (args.length !== 4) {
 const schemaPath = args[0];
 const libraryName = args[1];
 const outputDirectory = args[2];
-const moduleSpecName = args[3];
-const packageName = args[4];
+const packageName = args[3];
+const assumeNonnull = args[4] === 'true' || args[4] === 'True';
 
 const schemaText = fs.readFileSync(schemaPath, 'utf-8');
 
@@ -49,7 +49,7 @@ try {
 }
 
 RNCodegen.generate(
-  {libraryName, schema, outputDirectory, moduleSpecName, packageName},
+  {libraryName, schema, outputDirectory, packageName, assumeNonnull},
   {
     generators: [
       'descriptors',

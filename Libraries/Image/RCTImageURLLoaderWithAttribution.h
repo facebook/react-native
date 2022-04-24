@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,7 @@
 
 #import <React/RCTImageURLLoader.h>
 #import <React/RCTImageLoaderProtocol.h>
-#import <React/RCTImageLoaderInstrumentableProtocol.h>
+#import <React/RCTImageLoaderLoggable.h>
 
 // TODO (T61325135): Remove C++ checks
 #ifdef __cplusplus
@@ -17,6 +17,7 @@ namespace react {
 struct ImageURLLoaderAttribution {
   int32_t nativeViewTag = 0;
   int32_t surfaceId = 0;
+  std::string queryRootName;
   NSString *analyticTag;
 };
 
@@ -39,7 +40,7 @@ struct ImageURLLoaderAttribution {
  * Same as the RCTImageURLLoader interface, but allows passing in optional `attribution` information.
  * This is useful for per-app logging and other instrumentation.
  */
-@protocol RCTImageURLLoaderWithAttribution <RCTImageURLLoader, RCTImageLoaderInstrumentableProtocol>
+@protocol RCTImageURLLoaderWithAttribution <RCTImageURLLoader, RCTImageLoaderLoggable>
 
 // TODO (T61325135): Remove C++ checks
 #ifdef __cplusplus

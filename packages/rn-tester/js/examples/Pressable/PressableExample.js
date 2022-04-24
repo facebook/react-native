@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,11 +8,10 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import * as React from 'react';
 import {
   Animated,
+  Image,
   Pressable,
   StyleSheet,
   Text,
@@ -312,6 +311,10 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: 'blue',
   },
+  image: {
+    height: 100,
+    width: 100,
+  },
 });
 
 exports.displayName = (undefined: ?string);
@@ -348,15 +351,16 @@ exports.examples = [
     title: 'Pressable feedback events',
     description: ('<Pressable> components accept onPress, onPressIn, ' +
       'onPressOut, and onLongPress as props.': string),
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <PressableFeedbackEvents />;
     },
   },
   {
     title: 'Pressable with Ripple and Animated child',
-    description: ('Pressable can have an AnimatedComponent as a direct child.': string),
+    description:
+      ('Pressable can have an AnimatedComponent as a direct child.': string),
     platform: 'android',
-    render: function(): React.Node {
+    render: function (): React.Node {
       const mScale = new Animated.Value(1);
       Animated.timing(mScale, {
         toValue: 0.3,
@@ -380,9 +384,10 @@ exports.examples = [
   },
   {
     title: 'Pressable with custom Ripple',
-    description: ("Pressable can specify ripple's radius, color and borderless params": string),
+    description:
+      ("Pressable can specify ripple's radius, color and borderless params": string),
     platform: 'android',
-    render: function(): React.Node {
+    render: function (): React.Node {
       const nativeFeedbackButton = {
         textAlign: 'center',
         margin: 10,
@@ -427,13 +432,29 @@ exports.examples = [
               </Text>
             </View>
           </Pressable>
+
+          <View style={{alignItems: 'center'}}>
+            <Pressable
+              android_ripple={{
+                borderless: false,
+                foreground: true,
+              }}>
+              <Image
+                source={{
+                  uri: 'https://www.facebook.com/ads/pics/successstories.png',
+                }}
+                style={styles.image}
+              />
+            </Pressable>
+            <Text>use foreground</Text>
+          </View>
         </View>
       );
     },
   },
   {
     title: '<Text onPress={fn}> with highlight',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <TextOnPressBox />;
     },
   },
@@ -442,7 +463,7 @@ exports.examples = [
     description: ('<Pressable> also accept delayPressIn, ' +
       'delayPressOut, and delayLongPress as props. These props impact the ' +
       'timing of feedback events.': string),
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <PressableDelayEvents />;
     },
   },
@@ -450,31 +471,34 @@ exports.examples = [
     title: '3D Touch / Force Touch',
     description:
       'iPhone 8 and 8 plus support 3D touch, which adds a force property to touches',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <ForceTouchExample />;
     },
     platform: 'ios',
   },
   {
     title: 'Pressable Hit Slop',
-    description: ('<Pressable> components accept hitSlop prop which extends the touch area ' +
-      'without changing the view bounds.': string),
-    render: function(): React.Node {
+    description:
+      ('<Pressable> components accept hitSlop prop which extends the touch area ' +
+        'without changing the view bounds.': string),
+    render: function (): React.Node {
       return <PressableHitSlop />;
     },
   },
   {
     title: 'Pressable Native Methods',
-    description: ('<Pressable> components expose native methods like `measure`.': string),
-    render: function(): React.Node {
+    description:
+      ('<Pressable> components expose native methods like `measure`.': string),
+    render: function (): React.Node {
       return <PressableNativeMethods />;
     },
   },
   {
     title: 'Disabled Pressable',
-    description: ('<Pressable> components accept disabled prop which prevents ' +
-      'any interaction with component': string),
-    render: function(): React.Node {
+    description:
+      ('<Pressable> components accept disabled prop which prevents ' +
+        'any interaction with component': string),
+    render: function (): React.Node {
       return <PressableDisabled />;
     },
   },

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,6 +8,7 @@
 #include "AndroidTextInputShadowNode.h"
 
 #include <fbjni/fbjni.h>
+#include <react/debug/react_native_assert.h>
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/attributedstring/AttributedStringBox.h>
 #include <react/renderer/attributedstring/TextAttributes.h>
@@ -15,6 +16,8 @@
 #include <react/renderer/core/LayoutConstraints.h>
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/core/conversions.h>
+
+#include <utility>
 
 using namespace facebook::jni;
 
@@ -90,7 +93,7 @@ AttributedString AndroidTextInputShadowNode::getPlaceholderAttributedString()
 void AndroidTextInputShadowNode::setTextLayoutManager(
     SharedTextLayoutManager textLayoutManager) {
   ensureUnsealed();
-  textLayoutManager_ = textLayoutManager;
+  textLayoutManager_ = std::move(textLayoutManager);
 }
 
 AttributedString AndroidTextInputShadowNode::getMostRecentAttributedString()
@@ -118,16 +121,10 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
   auto reactTreeAttributedString = getAttributedString();
   auto const &state = getStateData();
 
-  assert(textLayoutManager_);
-  assert(
-      (!state.layoutManager || state.layoutManager == textLayoutManager_) &&
-      "`StateData` refers to a different `TextLayoutManager`");
-
   // Tree is often out of sync with the value of the TextInput.
   // This is by design - don't change the value of the TextInput in the State,
   // and therefore in Java, unless the tree itself changes.
-  if (state.reactTreeAttributedString == reactTreeAttributedString &&
-      state.layoutManager == textLayoutManager_) {
+  if (state.reactTreeAttributedString == reactTreeAttributedString) {
     return;
   }
 
@@ -155,17 +152,17 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
   // current attributedString unchanged, and pass in zero for the "event count"
   // so no changes are applied There's no way to prevent a state update from
   // flowing to Java, so we just ensure it's a noop in those cases.
-  setStateData(AndroidTextInputState{newEventCount,
-                                     newAttributedString,
-                                     reactTreeAttributedString,
-                                     getConcreteProps().paragraphAttributes,
-                                     defaultTextAttributes,
-                                     ShadowView(*this),
-                                     textLayoutManager_,
-                                     state.defaultThemePaddingStart,
-                                     state.defaultThemePaddingEnd,
-                                     state.defaultThemePaddingTop,
-                                     state.defaultThemePaddingBottom});
+  setStateData(AndroidTextInputState{
+      newEventCount,
+      newAttributedString,
+      reactTreeAttributedString,
+      getConcreteProps().paragraphAttributes,
+      defaultTextAttributes,
+      ShadowView(*this),
+      state.defaultThemePaddingStart,
+      state.defaultThemePaddingEnd,
+      state.defaultThemePaddingTop,
+      state.defaultThemePaddingBottom});
 }
 
 #pragma mark - LayoutableShadowNode

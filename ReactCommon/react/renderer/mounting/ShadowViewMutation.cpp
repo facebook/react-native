@@ -1,11 +1,13 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 #include "ShadowViewMutation.h"
+
+#include <utility>
 
 namespace facebook {
 namespace react {
@@ -15,7 +17,7 @@ ShadowViewMutation ShadowViewMutation::CreateMutation(ShadowView shadowView) {
       /* .type = */ Create,
       /* .parentShadowView = */ {},
       /* .oldChildShadowView = */ {},
-      /* .newChildShadowView = */ shadowView,
+      /* .newChildShadowView = */ std::move(shadowView),
       /* .index = */ -1,
   };
 }
@@ -24,7 +26,7 @@ ShadowViewMutation ShadowViewMutation::DeleteMutation(ShadowView shadowView) {
   return {
       /* .type = */ Delete,
       /* .parentShadowView = */ {},
-      /* .oldChildShadowView = */ shadowView,
+      /* .oldChildShadowView = */ std::move(shadowView),
       /* .newChildShadowView = */ {},
       /* .index = */ -1,
   };
@@ -36,9 +38,9 @@ ShadowViewMutation ShadowViewMutation::InsertMutation(
     int index) {
   return {
       /* .type = */ Insert,
-      /* .parentShadowView = */ parentShadowView,
+      /* .parentShadowView = */ std::move(parentShadowView),
       /* .oldChildShadowView = */ {},
-      /* .newChildShadowView = */ childShadowView,
+      /* .newChildShadowView = */ std::move(childShadowView),
       /* .index = */ index,
   };
 }
@@ -49,26 +51,52 @@ ShadowViewMutation ShadowViewMutation::RemoveMutation(
     int index) {
   return {
       /* .type = */ Remove,
-      /* .parentShadowView = */ parentShadowView,
-      /* .oldChildShadowView = */ childShadowView,
+      /* .parentShadowView = */ std::move(parentShadowView),
+      /* .oldChildShadowView = */ std::move(childShadowView),
       /* .newChildShadowView = */ {},
       /* .index = */ index,
   };
 }
 
 ShadowViewMutation ShadowViewMutation::UpdateMutation(
+    ShadowView oldChildShadowView,
+    ShadowView newChildShadowView) {
+  return {
+      /* .type = */ Update,
+      /* .parentShadowView = */ {},
+      /* .oldChildShadowView = */ std::move(oldChildShadowView),
+      /* .newChildShadowView = */ std::move(newChildShadowView),
+      /* .index = */ -1,
+  };
+}
+
+bool ShadowViewMutation::mutatedViewIsVirtual() const {
+  bool viewIsVirtual = false;
+
+#ifdef ANDROID
+  // Explanation: Even for non-virtual views,
+  //              for "Insert" mutations, oldChildShadowView is always empty.
+  //              for "Remove" mutations, newChildShadowView is always empty.
+  // Thus, to see if a view is virtual, we need to always check both the old and
+  // new View.
+  viewIsVirtual = newChildShadowView.layoutMetrics == EmptyLayoutMetrics &&
+      oldChildShadowView.layoutMetrics == EmptyLayoutMetrics;
+#endif
+
+  return viewIsVirtual;
+}
+
+ShadowViewMutation::ShadowViewMutation(
+    Type type,
     ShadowView parentShadowView,
     ShadowView oldChildShadowView,
     ShadowView newChildShadowView,
-    int index) {
-  return {
-      /* .type = */ Update,
-      /* .parentShadowView = */ parentShadowView,
-      /* .oldChildShadowView = */ oldChildShadowView,
-      /* .newChildShadowView = */ newChildShadowView,
-      /* .index = */ index,
-  };
-}
+    int index)
+    : type(type),
+      parentShadowView(std::move(parentShadowView)),
+      oldChildShadowView(std::move(oldChildShadowView)),
+      newChildShadowView(std::move(newChildShadowView)),
+      index(index) {}
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 

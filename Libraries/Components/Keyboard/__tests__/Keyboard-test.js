@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,41 +9,34 @@
  * @emails oncall+react_native
  */
 
-'use strict';
-
-const NativeModules = require('../../../BatchedBridge/NativeModules');
 const LayoutAnimation = require('../../../LayoutAnimation/LayoutAnimation');
 const dismissKeyboard = require('../../../Utilities/dismissKeyboard');
 const Keyboard = require('../Keyboard');
 
-import NativeEventEmitter from '../../../EventEmitter/NativeEventEmitter';
-
 jest.mock('../../../LayoutAnimation/LayoutAnimation');
+jest.mock('../../../Utilities/dismissKeyboard');
 
 describe('Keyboard', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
-  it('exposes KeyboardEventEmitter methods', () => {
-    const KeyboardObserver = NativeModules.KeyboardObserver;
-    const KeyboardEventEmitter = new NativeEventEmitter(KeyboardObserver);
-
-    // $FlowFixMe
-    expect(Keyboard._subscriber).toBe(KeyboardEventEmitter._subscriber);
-    // $FlowFixMe Cannot access private property
-    expect(Keyboard._nativeModule).toBe(KeyboardEventEmitter._nativeModule);
-  });
-
   it('uses dismissKeyboard utility', () => {
-    expect(Keyboard.dismiss).toBe(dismissKeyboard);
+    Keyboard.dismiss();
+    expect(dismissKeyboard).toHaveBeenCalled();
   });
 
   describe('scheduling layout animation', () => {
     const scheduleLayoutAnimation = (
-      duration: number | null,
-      easing: string | null,
-    ): void => Keyboard.scheduleLayoutAnimation({duration, easing});
+      duration: null | number,
+      easing:
+        | null
+        | $TEMPORARY$string<'linear'>
+        | $TEMPORARY$string<'some-unknown-animation-type'>
+        | $TEMPORARY$string<'spring'>,
+    ): void =>
+      // $FlowFixMe[incompatible-call]
+      Keyboard.scheduleLayoutAnimation({duration, easing});
 
     it('triggers layout animation', () => {
       scheduleLayoutAnimation(12, 'spring');
@@ -67,7 +60,9 @@ describe('Keyboard', () => {
     });
 
     describe('animation update type', () => {
-      const assertAnimationUpdateType = type =>
+      const assertAnimationUpdateType = (
+        type: $TEMPORARY$string<'keyboard'> | $TEMPORARY$string<'linear'>,
+      ) =>
         expect(LayoutAnimation.configureNext).toHaveBeenCalledWith(
           expect.objectContaining({
             duration: expect.anything(),

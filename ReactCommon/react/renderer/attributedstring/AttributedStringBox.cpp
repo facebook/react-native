@@ -1,11 +1,15 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 #include "AttributedStringBox.h"
+
+#include <react/debug/react_native_assert.h>
+
+#include <utility>
 
 namespace facebook {
 namespace react {
@@ -20,24 +24,45 @@ AttributedStringBox::AttributedStringBox(AttributedString const &value)
       value_(std::make_shared<AttributedString const>(value)),
       opaquePointer_({}){};
 
-AttributedStringBox::AttributedStringBox(
-    std::shared_ptr<void> const &opaquePointer)
-    : mode_(Mode::OpaquePointer), value_({}), opaquePointer_(opaquePointer) {}
+AttributedStringBox::AttributedStringBox(std::shared_ptr<void> opaquePointer)
+    : mode_(Mode::OpaquePointer),
+      value_({}),
+      opaquePointer_(std::move(opaquePointer)) {}
+
+AttributedStringBox::AttributedStringBox(AttributedStringBox &&other) noexcept
+    : mode_(other.mode_),
+      value_(std::move(other.value_)),
+      opaquePointer_(std::move(other.opaquePointer_)) {
+  other.mode_ = AttributedStringBox::Mode::Value;
+  other.value_ = std::make_shared<AttributedString const>(AttributedString{});
+}
 
 AttributedStringBox::Mode AttributedStringBox::getMode() const {
   return mode_;
 }
 
 AttributedString const &AttributedStringBox::getValue() const {
-  assert(mode_ == AttributedStringBox::Mode::Value);
-  assert(value_);
+  react_native_assert(mode_ == AttributedStringBox::Mode::Value);
+  react_native_assert(value_);
   return *value_;
 }
 
 std::shared_ptr<void> AttributedStringBox::getOpaquePointer() const {
-  assert(mode_ == AttributedStringBox::Mode::OpaquePointer);
-  assert(opaquePointer_);
+  react_native_assert(mode_ == AttributedStringBox::Mode::OpaquePointer);
+  react_native_assert(opaquePointer_);
   return opaquePointer_;
+}
+
+AttributedStringBox &AttributedStringBox::operator=(
+    AttributedStringBox &&other) noexcept {
+  if (this != &other) {
+    mode_ = other.mode_;
+    value_ = std::move(other.value_);
+    opaquePointer_ = std::move(other.opaquePointer_);
+    other.mode_ = AttributedStringBox::Mode::Value;
+    other.value_ = std::make_shared<AttributedString const>(AttributedString{});
+  }
+  return *this;
 }
 
 bool operator==(
@@ -48,9 +73,9 @@ bool operator==(
   }
 
   switch (lhs.getMode()) {
-    case facebook::react::AttributedStringBox::Mode::Value:
+    case AttributedStringBox::Mode::Value:
       return lhs.getValue() == rhs.getValue();
-    case facebook::react::AttributedStringBox::Mode::OpaquePointer:
+    case AttributedStringBox::Mode::OpaquePointer:
       return lhs.getOpaquePointer() == rhs.getOpaquePointer();
   }
 }

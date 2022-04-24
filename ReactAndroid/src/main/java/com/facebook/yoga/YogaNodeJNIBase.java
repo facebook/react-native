@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -83,6 +83,9 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
   }
 
   public void addChildAt(YogaNode c, int i) {
+    if (!(c instanceof YogaNodeJNIBase)) {
+      return;
+    }
     YogaNodeJNIBase child = (YogaNodeJNIBase) c;
     if (child.mOwner != null) {
       throw new IllegalStateException("Child already has a parent, it must be removed first.");
@@ -105,6 +108,9 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
   }
 
   public void swapChildAt(YogaNode newChild, int position) {
+    if (!(newChild instanceof YogaNodeJNIBase)) {
+      return;
+    }
     YogaNodeJNIBase child = (YogaNodeJNIBase) newChild;
     mChildren.remove(position);
     mChildren.add(position, child);
@@ -116,6 +122,9 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
   public YogaNodeJNIBase cloneWithChildren() {
     try {
       YogaNodeJNIBase clonedYogaNode = (YogaNodeJNIBase) super.clone();
+      if (clonedYogaNode.mChildren != null) {
+        clonedYogaNode.mChildren = new ArrayList<>(clonedYogaNode.mChildren);
+      }
       long clonedNativePointer = YogaNative.jni_YGNodeCloneJNI(mNativePointer);
       clonedYogaNode.mOwner = null;
       clonedYogaNode.mNativePointer = clonedNativePointer;
@@ -188,12 +197,18 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
     long[] nativePointers = null;
     YogaNodeJNIBase[] nodes = null;
 
+    freeze(null);
+
     ArrayList<YogaNodeJNIBase> n = new ArrayList<>();
     n.add(this);
     for (int i = 0; i < n.size(); ++i) {
-      List<YogaNodeJNIBase> children = n.get(i).mChildren;
+      final YogaNodeJNIBase parent = n.get(i);
+      List<YogaNodeJNIBase> children = parent.mChildren;
       if (children != null) {
-        n.addAll(children);
+        for (YogaNodeJNIBase child : children) {
+          child.freeze(parent);
+          n.add(child);
+        }
       }
     }
 
@@ -204,6 +219,13 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
     }
 
     YogaNative.jni_YGNodeCalculateLayoutJNI(mNativePointer, width, height, nativePointers, nodes);
+  }
+
+  private void freeze(YogaNode parent) {
+    Object data = getData();
+    if (data instanceof Inputs) {
+      ((Inputs) data).freeze(this, parent);
+    }
   }
 
   public void dirty() {
@@ -220,6 +242,9 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
 
   @Override
   public void copyStyle(YogaNode srcNode) {
+    if (!(srcNode instanceof YogaNodeJNIBase)) {
+      return;
+    }
     YogaNative.jni_YGNodeCopyStyleJNI(mNativePointer, ((YogaNodeJNIBase) srcNode).mNativePointer);
   }
 

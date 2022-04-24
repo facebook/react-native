@@ -3,6 +3,7 @@ load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "react_native_int
 rn_android_library(
     name = "tests",
     srcs = glob(["*.java"]),
+    autoglob = False,
     is_androidx = True,
     visibility = [
         "PUBLIC",
@@ -24,7 +25,6 @@ rn_android_library(
         react_native_target("java/com/facebook/react/module/annotations:annotations"),
         react_native_target("java/com/facebook/react/modules/appstate:appstate"),
         react_native_target("java/com/facebook/react/modules/core:core"),
-        react_native_target("java/com/facebook/react/modules/datepicker:datepicker"),
         react_native_target("java/com/facebook/react/modules/deviceinfo:deviceinfo"),
         react_native_target("java/com/facebook/react/modules/share:share"),
         react_native_target("java/com/facebook/react/modules/systeminfo:systeminfo"),
@@ -32,7 +32,6 @@ rn_android_library(
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
         react_native_target("java/com/facebook/react/uimanager/annotations:annotations"),
         react_native_target("java/com/facebook/react/uimanager/util:util"),
-        react_native_target("java/com/facebook/react/views/picker:picker"),
         react_native_target("java/com/facebook/react/views/progressbar:progressbar"),
         react_native_target("java/com/facebook/react/views/scroll:scroll"),
         react_native_target("java/com/facebook/react/views/slider:slider"),

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,23 +7,25 @@
 
 #include "ShadowTreeRegistry.h"
 
+#include <react/debug/react_native_assert.h>
+
 namespace facebook {
 namespace react {
 
 ShadowTreeRegistry::~ShadowTreeRegistry() {
-  assert(
+  react_native_assert(
       registry_.empty() && "Deallocation of non-empty `ShadowTreeRegistry`.");
 }
 
 void ShadowTreeRegistry::add(std::unique_ptr<ShadowTree> &&shadowTree) const {
-  std::unique_lock<better::shared_mutex> lock(mutex_);
+  std::unique_lock<butter::shared_mutex> lock(mutex_);
 
   registry_.emplace(shadowTree->getSurfaceId(), std::move(shadowTree));
 }
 
 std::unique_ptr<ShadowTree> ShadowTreeRegistry::remove(
     SurfaceId surfaceId) const {
-  std::unique_lock<better::shared_mutex> lock(mutex_);
+  std::unique_lock<butter::shared_mutex> lock(mutex_);
 
   auto iterator = registry_.find(surfaceId);
   if (iterator == registry_.end()) {
@@ -37,8 +39,8 @@ std::unique_ptr<ShadowTree> ShadowTreeRegistry::remove(
 
 bool ShadowTreeRegistry::visit(
     SurfaceId surfaceId,
-    std::function<void(const ShadowTree &shadowTree)> callback) const {
-  std::shared_lock<better::shared_mutex> lock(mutex_);
+    std::function<void(const ShadowTree &shadowTree)> const &callback) const {
+  std::shared_lock<butter::shared_mutex> lock(mutex_);
 
   auto iterator = registry_.find(surfaceId);
 
@@ -51,15 +53,10 @@ bool ShadowTreeRegistry::visit(
 }
 
 void ShadowTreeRegistry::enumerate(
-    std::function<void(const ShadowTree &shadowTree, bool &stop)> callback)
-    const {
-  std::shared_lock<better::shared_mutex> lock(mutex_);
-  bool stop = false;
+    std::function<void(const ShadowTree &shadowTree)> const &callback) const {
+  std::shared_lock<butter::shared_mutex> lock(mutex_);
   for (auto const &pair : registry_) {
-    callback(*pair.second, stop);
-    if (stop) {
-      break;
-    }
+    callback(*pair.second);
   }
 }
 

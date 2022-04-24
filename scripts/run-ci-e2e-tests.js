@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,9 +18,8 @@
  * --skip-cli-install - to skip react-native-cli global installation (for local debugging)
  * --retries [num] - how many times to retry possible flaky commands: yarn add and running tests, default 1
  */
-/*eslint-disable no-undef */
-require('shelljs/global');
 
+const {cd, cp, echo, exec, exit, mv, rm} = require('shelljs');
 const spawn = require('child_process').spawn;
 const argv = require('yargs').argv;
 const path = require('path');
@@ -56,25 +55,13 @@ try {
     }
   }
 
-  if (argv.js) {
-    describe('Install Flow');
-    if (
-      tryExecNTimes(
-        () => {
-          return exec('npm install --save-dev flow-bin').code;
-        },
-        numberOfRetries,
-        () => exec('sleep 10s'),
-      )
-    ) {
-      echo('Failed to install Flow');
-      echo('Most common reason is npm registry connectivity, try again');
-      exitCode = 1;
-      throw Error(exitCode);
-    }
+  describe('Create react-native package');
+  if (exec('node ./scripts/set-rn-version.js --version 1000.0.0').code) {
+    echo('Failed to set version and update package.json ready for release');
+    exitCode = 1;
+    throw Error(exitCode);
   }
 
-  describe('Create react-native package');
   if (exec('npm pack').code) {
     echo('Failed to pack react-native');
     exitCode = 1;
@@ -99,6 +86,7 @@ try {
   );
   mv('_flowconfig', '.flowconfig');
   mv('_watchmanconfig', '.watchmanconfig');
+  mv('_bundle', '.bundle');
 
   describe('Install React Native package');
   exec(`npm install ${REACT_NATIVE_PACKAGE}`);
@@ -210,7 +198,7 @@ try {
     echo(`Metro is running, ${SERVER_PID}`);
 
     describe('Install CocoaPod dependencies');
-    exec('pod install');
+    exec('bundle exec pod install');
 
     describe('Test: iOS end-to-end test');
     if (
@@ -277,6 +265,9 @@ try {
       throw Error(exitCode);
     }
     describe('Test: Flow check');
+    // The resolve package included a test for a malformed package.json (see https://github.com/browserify/resolve/issues/89)
+    // that is failing the flow check. We're removing it.
+    rm('-rf', './node_modules/resolve/test/resolver/malformed_package_json');
     if (exec(`${ROOT}/node_modules/.bin/flow check`).code) {
       echo('Flow check failed.');
       exitCode = 1;
@@ -299,5 +290,3 @@ try {
   }
 }
 exit(exitCode);
-
-/*eslint-enable no-undef */

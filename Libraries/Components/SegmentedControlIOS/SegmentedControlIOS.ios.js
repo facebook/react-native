@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,6 @@
  * @format
  * @flow strict-local
  */
-
-'use strict';
 
 import * as React from 'react';
 import StyleSheet from '../../StyleSheet/StyleSheet';
@@ -21,6 +19,8 @@ type SegmentedControlIOSProps = $ReadOnly<{|
   ...ViewProps,
   /**
    * The labels for the control's segment buttons, in order.
+   *
+   * The default value is an empty array.
    */
   values?: $ReadOnlyArray<string>,
   /**
@@ -29,6 +29,8 @@ type SegmentedControlIOSProps = $ReadOnly<{|
   selectedIndex?: ?number,
   /**
    * If false the user won't be able to interact with the control.
+   *
+   * The default value is true.
    */
   enabled?: boolean,
   /**
@@ -78,11 +80,6 @@ type Props = $ReadOnly<{|
  */
 
 class SegmentedControlIOS extends React.Component<Props> {
-  static defaultProps = {
-    values: [],
-    enabled: true,
-  };
-
   _onChange = (event: SyntheticEvent<OnChangeEvent>) => {
     this.props.onChange && this.props.onChange(event);
     this.props.onValueChange &&
@@ -90,12 +87,15 @@ class SegmentedControlIOS extends React.Component<Props> {
   };
 
   render() {
-    const {forwardedRef, onValueChange, style, ...props} = this.props;
+    const {enabled, forwardedRef, onValueChange, style, values, ...props} =
+      this.props;
     return (
       <RCTSegmentedControlNativeComponent
         {...props}
         ref={forwardedRef}
         style={[styles.segmentedControl, style]}
+        enabled={enabled !== false}
+        values={values ?? []}
         onChange={this._onChange}
       />
     );
@@ -117,7 +117,7 @@ const SegmentedControlIOSWithRef = React.forwardRef(
   },
 );
 
-/* $FlowFixMe(>=0.89.0 site=react_native_ios_fb) This comment suppresses an
- * error found when Flow v0.89 was deployed. To see the error, delete this
- * comment and run Flow. */
+/* $FlowFixMe[cannot-resolve-name] (>=0.89.0 site=react_native_ios_fb) This
+ * comment suppresses an error found when Flow v0.89 was deployed. To see the
+ * error, delete this comment and run Flow. */
 module.exports = (SegmentedControlIOSWithRef: NativeSegmentedControlIOS);

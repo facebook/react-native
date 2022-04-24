@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,6 @@
  * @flow
  * @format
  */
-
-'use strict';
 
 import Platform from '../../Utilities/Platform';
 import * as React from 'react';
@@ -58,7 +56,7 @@ type Props = $ReadOnly<{|
    * );
    * ```
    */
-  drawerBackgroundColor: ColorValue,
+  drawerBackgroundColor?: ?ColorValue,
 
   /**
    * Specifies the side of the screen from which the drawer will slide in.
@@ -163,20 +161,17 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
 
     return {Left: 'left', Right: 'right'};
   }
-  static defaultProps: {|
-    drawerBackgroundColor: 'white',
-  |} = {
-    drawerBackgroundColor: 'white',
-  };
 
-  _nativeRef = React.createRef<
-    React.ElementRef<typeof AndroidDrawerLayoutNativeComponent>,
-  >();
+  _nativeRef =
+    React.createRef<
+      React.ElementRef<typeof AndroidDrawerLayoutNativeComponent>,
+    >();
 
   state: State = {statusBarBackgroundColor: null};
 
   render(): React.Node {
     const {
+      drawerBackgroundColor = 'white',
       onDrawerStateChanged,
       renderNavigationView,
       onDrawerOpen,
@@ -191,7 +186,7 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
           styles.drawerSubview,
           {
             width: this.props.drawerWidth,
-            backgroundColor: this.props.drawerBackgroundColor,
+            backgroundColor: drawerBackgroundColor,
           },
         ]}
         collapsable={false}>
@@ -222,6 +217,7 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
       <AndroidDrawerLayoutNativeComponent
         {...props}
         ref={this._nativeRef}
+        drawerBackgroundColor={drawerBackgroundColor}
         drawerWidth={this.props.drawerWidth}
         drawerPosition={this.props.drawerPosition}
         drawerLockMode={this.props.drawerLockMode}

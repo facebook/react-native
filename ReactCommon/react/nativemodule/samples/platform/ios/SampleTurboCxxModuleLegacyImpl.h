@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -31,6 +31,7 @@ class SampleTurboCxxModuleLegacyImpl
   std::string getString(const std::string &arg);
   folly::dynamic getArray(const folly::dynamic &arg);
   folly::dynamic getObject(const folly::dynamic &arg);
+  folly::dynamic getUnsafeObject(const folly::dynamic &arg);
   double getRootTag(double arg);
   folly::dynamic
   getValue(double x, const std::string &y, const folly::dynamic &z);

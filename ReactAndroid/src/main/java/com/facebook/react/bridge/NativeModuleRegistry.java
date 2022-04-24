@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,6 +8,7 @@
 package com.facebook.react.bridge;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.systrace.Systrace;
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ public class NativeModuleRegistry {
 
   private final ReactApplicationContext mReactApplicationContext;
   private final Map<String, ModuleHolder> mModules;
+  private final String TAG = NativeModuleRegistry.class.getSimpleName();
 
   public NativeModuleRegistry(
       ReactApplicationContext reactApplicationContext, Map<String, ModuleHolder> modules) {
@@ -40,6 +42,17 @@ public class NativeModuleRegistry {
     ArrayList<JavaModuleWrapper> javaModules = new ArrayList<>();
     for (Map.Entry<String, ModuleHolder> entry : mModules.entrySet()) {
       if (!entry.getValue().isCxxModule()) {
+        if (ReactFeatureFlags.warnOnLegacyNativeModuleSystemUse) {
+          ReactSoftExceptionLogger.logSoftException(
+              TAG,
+              new ReactNoCrashSoftException(
+                  "Registering legacy NativeModule: Java NativeModule (name = \""
+                      + entry.getValue().getName()
+                      + "\", className = "
+                      + entry.getValue().getClassName()
+                      + ")."));
+        }
+
         javaModules.add(new JavaModuleWrapper(jsInstance, entry.getValue()));
       }
     }
@@ -50,6 +63,16 @@ public class NativeModuleRegistry {
     ArrayList<ModuleHolder> cxxModules = new ArrayList<>();
     for (Map.Entry<String, ModuleHolder> entry : mModules.entrySet()) {
       if (entry.getValue().isCxxModule()) {
+        if (ReactFeatureFlags.warnOnLegacyNativeModuleSystemUse) {
+          ReactSoftExceptionLogger.logSoftException(
+              TAG,
+              new ReactNoCrashSoftException(
+                  "Registering legacy NativeModule: Cxx NativeModule (name = \""
+                      + entry.getValue().getName()
+                      + "\", className = "
+                      + entry.getValue().getClassName()
+                      + ")."));
+        }
         cxxModules.add(entry.getValue());
       }
     }

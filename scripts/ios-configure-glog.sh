@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -16,8 +16,29 @@ if [ -z "$CURRENT_ARCH" ] || [ "$CURRENT_ARCH" == "undefined_arch" ]; then
     if [[ "$PLATFORM_NAME" == *"simulator"* ]]; then
         CURRENT_ARCH="x86_64"
     else
-        CURRENT_ARCH="armv7"
+        CURRENT_ARCH="arm64"
     fi
+fi
+
+if [ "$CURRENT_ARCH" == "arm64" ]; then
+    cat <<\EOF >>fix_glog_0.3.5_apple_silicon.patch
+diff --git a/config.sub b/config.sub
+index 1761d8b..43fa2e8 100755
+--- a/config.sub
++++ b/config.sub
+@@ -1096,6 +1096,9 @@ case $basic_machine in
+ 		basic_machine=z8k-unknown
+ 		os=-sim
+ 		;;
++	arm64-*)
++		basic_machine=$(echo $basic_machine | sed 's/arm64/aarch64/')
++		;;
+ 	none)
+ 		basic_machine=none-none
+ 		os=-none
+EOF
+
+    patch -p1 config.sub fix_glog_0.3.5_apple_silicon.patch
 fi
 
 export CC="$(xcrun -find -sdk $PLATFORM_NAME cc) -arch $CURRENT_ARCH -isysroot $(xcrun -sdk $PLATFORM_NAME --show-sdk-path)"
@@ -27,6 +48,10 @@ export CXX="$CC"
 if [ -h "test-driver" ]; then
     rm test-driver
 fi
+
+# Manually disable gflags include to fix issue https://github.com/facebook/react-native/issues/28446
+sed -i '' 's/\@ac_cv_have_libgflags\@/0/' src/glog/logging.h.in
+sed -i '' 's/HAVE_LIB_GFLAGS/HAVE_LIB_GFLAGS_DISABLED/' src/config.h.in
 
 ./configure --host arm-apple-darwin
 

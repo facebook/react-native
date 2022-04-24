@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,18 +8,18 @@
  * @flow strict-local
  */
 
-'use strict';
-
-const Platform = require('../../Utilities/Platform');
+import * as React from 'react';
+import Platform from '../../Utilities/Platform';
 import SliderNativeComponent from './SliderNativeComponent';
-const React = require('react');
-const StyleSheet = require('../../StyleSheet/StyleSheet');
+import StyleSheet, {
+  type ViewStyleProp,
+  type ColorValue,
+} from '../../StyleSheet/StyleSheet';
 
 import type {ImageSource} from '../../Image/ImageSource';
-import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
+import type {AccessibilityState} from '../View/ViewAccessibility';
 
 type Event = SyntheticEvent<
   $ReadOnly<{|
@@ -132,6 +132,11 @@ type Props = $ReadOnly<{|
    * Used to locate this view in UI automation tests.
    */
   testID?: ?string,
+
+  /**
+    Indicates to accessibility services that UI Component is in a specific State.
+   */
+  accessibilityState?: ?AccessibilityState,
 |}>;
 
 /**
@@ -201,7 +206,6 @@ const Slider = (
   const style = StyleSheet.compose(styles.slider, props.style);
 
   const {
-    disabled = false,
     value = 0.5,
     minimumValue = 0,
     maximumValue = 1,
@@ -231,9 +235,16 @@ const Slider = (
       }
     : null;
 
+  const disabled =
+    props.disabled === true || props.accessibilityState?.disabled === true;
+  const accessibilityState = disabled
+    ? {...props.accessibilityState, disabled: true}
+    : props.accessibilityState;
+
   return (
     <SliderNativeComponent
       {...localProps}
+      accessibilityState={accessibilityState}
       // TODO: Reconcile these across the two platforms.
       enabled={!disabled}
       disabled={disabled}

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-#include <better/small_vector.h>
+#include <butter/small_vector.h>
 #include <react/renderer/core/EventEmitter.h>
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/ReactPrimitives.h>
@@ -33,9 +33,8 @@ class ShadowNode;
 // Deprecated: Use ShadowNode::Shared instead
 using SharedShadowNode = std::shared_ptr<const ShadowNode>;
 using WeakShadowNode = std::weak_ptr<const ShadowNode>;
-using UnsharedShadowNode = std::shared_ptr<ShadowNode>;
 using SharedShadowNodeList =
-    better::small_vector<SharedShadowNode, kShadowNodeChildrenSmallVectorSize>;
+    butter::small_vector<SharedShadowNode, kShadowNodeChildrenSmallVectorSize>;
 using SharedShadowNodeSharedList = std::shared_ptr<const SharedShadowNodeList>;
 using SharedShadowNodeUnsharedList = std::shared_ptr<SharedShadowNodeList>;
 
@@ -45,11 +44,14 @@ class ShadowNode : public Sealable, public DebugStringConvertible {
   using Weak = std::weak_ptr<ShadowNode const>;
   using Unshared = std::shared_ptr<ShadowNode>;
   using ListOfShared =
-      better::small_vector<Shared, kShadowNodeChildrenSmallVectorSize>;
+      butter::small_vector<Shared, kShadowNodeChildrenSmallVectorSize>;
+  using ListOfWeak =
+      butter::small_vector<Weak, kShadowNodeChildrenSmallVectorSize>;
   using SharedListOfShared = std::shared_ptr<ListOfShared const>;
   using UnsharedListOfShared = std::shared_ptr<ListOfShared>;
+  using UnsharedListOfWeak = std::shared_ptr<ListOfWeak>;
 
-  using AncestorList = better::small_vector<
+  using AncestorList = butter::small_vector<
       std::pair<
           std::reference_wrapper<ShadowNode const> /* parentNode */,
           int /* childIndex */>,
@@ -78,7 +80,7 @@ class ShadowNode : public Sealable, public DebugStringConvertible {
    */
   ShadowNode(
       ShadowNodeFragment const &fragment,
-      ShadowNodeFamily::Shared const &family,
+      ShadowNodeFamily::Shared family,
       ShadowNodeTraits traits);
 
   /*
@@ -101,7 +103,7 @@ class ShadowNode : public Sealable, public DebugStringConvertible {
   /*
    * Clones the shadow node using stored `cloneFunction`.
    */
-  UnsharedShadowNode clone(const ShadowNodeFragment &fragment) const;
+  ShadowNode::Unshared clone(const ShadowNodeFragment &fragment) const;
 
   /*
    * Clones the node (and partially the tree starting from the node) by
@@ -112,8 +114,8 @@ class ShadowNode : public Sealable, public DebugStringConvertible {
    */
   ShadowNode::Unshared cloneTree(
       ShadowNodeFamily const &shadowNodeFamily,
-      std::function<ShadowNode::Unshared(ShadowNode const &oldShadowNode)>
-          callback) const;
+      std::function<ShadowNode::Unshared(ShadowNode const &oldShadowNode)> const
+          &callback) const;
 
 #pragma mark - Getters
 
@@ -176,8 +178,6 @@ class ShadowNode : public Sealable, public DebugStringConvertible {
    */
   void setMounted(bool mounted) const;
 
-  int getStateRevision() const;
-
 #pragma mark - DebugStringConvertible
 
 #if RN_DEBUG_STRING_CONVERTIBLE
@@ -214,6 +214,12 @@ class ShadowNode : public Sealable, public DebugStringConvertible {
    */
   ShadowNodeFamily::Shared family_;
 
+  mutable std::atomic<bool> hasBeenMounted_{false};
+
+  static SharedProps propsForClonedShadowNode(
+      ShadowNode const &sourceShadowNode,
+      Props::Shared const &props);
+
  protected:
   /*
    * Traits associated with the particular `ShadowNode` class and an instance of
@@ -233,6 +239,10 @@ ShadowNodeReferenceT traitCast(ShadowNode const &shadowNode);
 
 template <typename ShadowNodePointerT>
 ShadowNodePointerT traitCast(ShadowNode const *shadowNode);
+
+template <typename ShadowNodePointerT>
+std::shared_ptr<ShadowNodePointerT const> traitCast(
+    std::shared_ptr<ShadowNode const> shadowNode);
 
 } // namespace react
 } // namespace facebook

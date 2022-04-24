@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -31,9 +31,7 @@
 - (UIView *)paperView
 {
   if (!_paperView) {
-    _paperView = _coordinator.paperView;
-    _paperView.reactTag = [NSNumber numberWithInteger:_tag];
-
+    _paperView = [_coordinator createPaperViewWithTag:_tag];
     __weak __typeof(self) weakSelf = self;
     [_coordinator addObserveForTag:_tag
                         usingBlock:^(std::string eventName, folly::dynamic event) {

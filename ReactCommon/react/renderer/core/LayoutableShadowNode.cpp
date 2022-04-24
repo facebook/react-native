@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,6 +16,19 @@
 
 namespace facebook {
 namespace react {
+
+LayoutableShadowNode::LayoutableShadowNode(
+    ShadowNodeFragment const &fragment,
+    ShadowNodeFamily::Shared const &family,
+    ShadowNodeTraits traits)
+    : ShadowNode(fragment, family, traits), layoutMetrics_({}) {}
+
+LayoutableShadowNode::LayoutableShadowNode(
+    ShadowNode const &sourceShadowNode,
+    ShadowNodeFragment const &fragment)
+    : ShadowNode(sourceShadowNode, fragment),
+      layoutMetrics_(static_cast<LayoutableShadowNode const &>(sourceShadowNode)
+                         .layoutMetrics_) {}
 
 LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
     ShadowNodeFamily const &descendantNodeFamily,
@@ -43,7 +56,7 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
   // Step 1.
   // Creating a list of nodes that form a chain from the descender node to
   // ancestor node inclusively.
-  auto shadowNodeList = better::small_vector<ShadowNode const *, 16>{};
+  auto shadowNodeList = butter::small_vector<ShadowNode const *, 16>{};
 
   // Finding the measured node.
   // The last element in the `AncestorList` is a pair of a parent of the node
@@ -118,19 +131,6 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
   return layoutMetrics;
 }
 
-LayoutableShadowNode::LayoutableShadowNode(
-    ShadowNodeFragment const &fragment,
-    ShadowNodeFamily::Shared const &family,
-    ShadowNodeTraits traits)
-    : ShadowNode(fragment, family, traits), layoutMetrics_({}) {}
-
-LayoutableShadowNode::LayoutableShadowNode(
-    ShadowNode const &sourceShadowNode,
-    ShadowNodeFragment const &fragment)
-    : ShadowNode(sourceShadowNode, fragment),
-      layoutMetrics_(static_cast<LayoutableShadowNode const &>(sourceShadowNode)
-                         .layoutMetrics_) {}
-
 ShadowNodeTraits LayoutableShadowNode::BaseTraits() {
   auto traits = ShadowNodeTraits{};
   traits.set(ShadowNodeTraits::Trait::LayoutableKind);
@@ -157,13 +157,6 @@ Transform LayoutableShadowNode::getTransform() const {
 
 Point LayoutableShadowNode::getContentOriginOffset() const {
   return {0, 0};
-}
-
-LayoutMetrics LayoutableShadowNode::getRelativeLayoutMetrics(
-    LayoutableShadowNode const &ancestorLayoutableShadowNode,
-    LayoutInspectingPolicy policy) const {
-  return computeRelativeLayoutMetrics(
-      getFamily(), ancestorLayoutableShadowNode, policy);
 }
 
 LayoutableShadowNode::UnsharedList
@@ -209,21 +202,11 @@ Float LayoutableShadowNode::lastBaseline(Size size) const {
   return 0;
 }
 
-void LayoutableShadowNode::layoutTree(
-    LayoutContext layoutContext,
-    LayoutConstraints layoutConstraints) {
-  // Default implementation does nothing.
-}
-
-void LayoutableShadowNode::layout(LayoutContext layoutContext) {
-  // Default implementation does nothing.
-}
-
 ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
-    ShadowNode::Shared node,
+    ShadowNode::Shared const &node,
     Point point) {
   auto layoutableShadowNode =
-      dynamic_cast<const LayoutableShadowNode *>(node.get());
+      traitCast<const LayoutableShadowNode *>(node.get());
 
   if (!layoutableShadowNode) {
     return nullptr;

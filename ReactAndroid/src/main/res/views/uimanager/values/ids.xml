@@ -27,4 +27,15 @@
   <!--tag is used to store accessibilityValue tag -->
   <item type="id" name="accessibility_value"/>
 
+  <!--tag is used to store accessibilityLabelledBy tag -->
+  <item type="id" name="labelled_by"/>
+
+  <!-- tag is used to store if a view is subscribed to the pointerenter event -->
+  <item type="id" name="pointer_enter"/>
+
+  <!-- tag is used to store if a view is subscribed to the pointerleave event -->
+  <item type="id" name="pointer_leave"/>
+
+  <!-- tag is used to store if a view is subscribed to the pointermove event -->
+  <item type="id" name="pointer_move"/>
 </resources>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,14 +8,11 @@
  * @format
  */
 
-'use strict';
-
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
-import requireNativeComponent from '../../ReactNative/requireNativeComponent';
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
 import type {TextInputNativeCommands} from './TextInputNativeCommands';
-import RCTSinglelineTextInputViewConfig from './RCTSinglelineTextInputViewConfig';
-const ReactNativeViewConfigRegistry = require('../../Renderer/shims/ReactNativeViewConfigRegistry');
+import RCTTextInputViewConfig from './RCTTextInputViewConfig';
+import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
 
 type NativeType = HostComponent<mixed>;
 
@@ -25,17 +22,11 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['focus', 'blur', 'setTextAndSelection'],
 });
 
-let SinglelineTextInputNativeComponent;
-if (global.RN$Bridgeless) {
-  ReactNativeViewConfigRegistry.register('RCTSinglelineTextInputView', () => {
-    return RCTSinglelineTextInputViewConfig;
-  });
-  SinglelineTextInputNativeComponent = 'RCTSinglelineTextInputView';
-} else {
-  SinglelineTextInputNativeComponent = requireNativeComponent<mixed>(
-    'RCTSinglelineTextInputView',
-  );
-}
+const SinglelineTextInputNativeComponent: HostComponent<mixed> =
+  NativeComponentRegistry.get<mixed>('RCTSinglelineTextInputView', () => ({
+    uiViewClassName: 'RCTSinglelineTextInputView',
+    ...RCTTextInputViewConfig,
+  }));
 
 // flowlint-next-line unclear-type:off
 export default ((SinglelineTextInputNativeComponent: any): HostComponent<mixed>);

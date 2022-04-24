@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,9 +11,9 @@ namespace facebook {
 namespace react {
 
 ImageRequest::ImageRequest(
-    const ImageSource &imageSource,
+    ImageSource imageSource,
     std::shared_ptr<const ImageTelemetry> telemetry)
-    : imageSource_(imageSource), telemetry_(telemetry) {
+    : imageSource_(std::move(imageSource)), telemetry_(std::move(telemetry)) {
   coordinator_ = std::make_shared<ImageResponseObserverCoordinator>();
 }
 
@@ -24,6 +24,7 @@ ImageRequest::ImageRequest(ImageRequest &&other) noexcept
   other.coordinator_ = nullptr;
   other.cancelRequest_ = nullptr;
   other.telemetry_ = nullptr;
+  other.imageSource_ = {};
 }
 
 ImageRequest::~ImageRequest() {
@@ -35,6 +36,10 @@ ImageRequest::~ImageRequest() {
 void ImageRequest::setCancelationFunction(
     std::function<void(void)> cancelationFunction) {
   cancelRequest_ = cancelationFunction;
+}
+
+const ImageSource &ImageRequest::getImageSource() const {
+  return imageSource_;
 }
 
 const std::shared_ptr<const ImageTelemetry> &ImageRequest::getSharedTelemetry()

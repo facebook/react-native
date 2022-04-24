@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,7 +18,7 @@ import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.RetryableMountingLayerException;
@@ -118,7 +118,13 @@ public class UIViewOperationQueue {
         uiManager
             .getEventDispatcher()
             .dispatchEvent(
-                OnLayoutEvent.obtain(mTag, mScreenX, mScreenY, mScreenWidth, mScreenHeight));
+                OnLayoutEvent.obtain(
+                    -1 /* SurfaceId not used in classic renderer */,
+                    mTag,
+                    mScreenX,
+                    mScreenY,
+                    mScreenWidth,
+                    mScreenHeight));
       }
     }
   }
@@ -307,7 +313,7 @@ public class UIViewOperationQueue {
       try {
         mNativeViewHierarchyManager.dispatchCommand(mTag, mCommand, mArgs);
       } catch (Throwable e) {
-        ReactSoftException.logSoftException(
+        ReactSoftExceptionLogger.logSoftException(
             TAG, new RuntimeException("Error dispatching View Command", e));
       }
     }
@@ -348,7 +354,7 @@ public class UIViewOperationQueue {
       try {
         mNativeViewHierarchyManager.dispatchCommand(mTag, mCommand, mArgs);
       } catch (Throwable e) {
-        ReactSoftException.logSoftException(
+        ReactSoftExceptionLogger.logSoftException(
             TAG, new RuntimeException("Error dispatching View Command", e));
       }
     }
@@ -886,11 +892,12 @@ public class UIViewOperationQueue {
                         mViewCommandOperations.add(op);
                       } else {
                         // Retryable exceptions should be logged, but never crash in debug.
-                        ReactSoftException.logSoftException(TAG, new ReactNoCrashSoftException(e));
+                        ReactSoftExceptionLogger.logSoftException(
+                            TAG, new ReactNoCrashSoftException(e));
                       }
                     } catch (Throwable e) {
                       // Non-retryable exceptions should be logged in prod, and crash in Debug.
-                      ReactSoftException.logSoftException(TAG, e);
+                      ReactSoftExceptionLogger.logSoftException(TAG, e);
                     }
                   }
                 }

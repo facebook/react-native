@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -41,7 +41,7 @@ static UIView<RCTBackedTextInputViewProtocol> *_Nullable RCTFindTextInputWithNat
 }
 
 @implementation RCTInputAccessoryComponentView {
-  InputAccessoryShadowNode::ConcreteStateTeller _stateTeller;
+  InputAccessoryShadowNode::ConcreteState::Shared _state;
   RCTInputAccessoryContentView *_contentView;
   RCTSurfaceTouchHandler *_touchHandler;
   UIView<RCTBackedTextInputViewProtocol> __weak *_textInput;
@@ -118,15 +118,16 @@ static UIView<RCTBackedTextInputViewProtocol> *_Nullable RCTFindTextInputWithNat
   self.hidden = true;
 }
 
-- (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
+- (void)updateState:(const facebook::react::State::Shared &)state
+           oldState:(const facebook::react::State::Shared &)oldState
 {
-  _stateTeller.setConcreteState(state);
-  CGSize oldViewportSize = RCTCGSizeFromSize(_stateTeller.getData().value().viewportSize);
+  _state = std::static_pointer_cast<InputAccessoryShadowNode::ConcreteState const>(state);
+  CGSize oldScreenSize = RCTCGSizeFromSize(_state->getData().viewportSize);
   CGSize viewportSize = RCTViewportSize();
   viewportSize.height = std::nan("");
-  if (oldViewportSize.width != viewportSize.width) {
+  if (oldScreenSize.width != viewportSize.width) {
     auto stateData = InputAccessoryState{RCTSizeFromCGSize(viewportSize)};
-    _stateTeller.updateState(std::move(stateData));
+    _state->updateState(std::move(stateData));
   }
 }
 
@@ -141,7 +142,7 @@ static UIView<RCTBackedTextInputViewProtocol> *_Nullable RCTFindTextInputWithNat
 - (void)prepareForRecycle
 {
   [super prepareForRecycle];
-  _stateTeller.invalidate();
+  _state.reset();
   _textInput = nil;
 }
 

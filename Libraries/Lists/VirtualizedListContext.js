@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,6 @@
  * @flow strict-local
  * @format
  */
-
-'use strict';
 
 import type VirtualizedList from './VirtualizedList.js';
 import * as React from 'react';
@@ -66,9 +64,11 @@ type Context = $ReadOnly<{
   debugInfo: ListDebugInfo,
 }>;
 
-export const VirtualizedListContext: React.Context<?Context> = React.createContext(
-  null,
-);
+export const VirtualizedListContext: React.Context<?Context> =
+  React.createContext(null);
+if (__DEV__) {
+  VirtualizedListContext.displayName = 'VirtualizedListContext';
+}
 
 /**
  * Resets the context. Intended for use by portal-like components (e.g. Modal).

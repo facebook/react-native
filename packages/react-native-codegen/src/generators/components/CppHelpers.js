@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,7 +9,7 @@
  */
 
 'use strict';
-import type {PropTypeShape} from '../../CodegenSchema';
+import type {NamedShape, PropTypeAnnotation} from '../../CodegenSchema';
 
 function upperCaseFirst(inString: string): string {
   if (inString.length === 0) {
@@ -20,10 +20,7 @@ function upperCaseFirst(inString: string): string {
 }
 
 function toSafeCppString(input: string): string {
-  return input
-    .split('-')
-    .map(upperCaseFirst)
-    .join('');
+  return input.split('-').map(upperCaseFirst).join('');
 }
 
 function toIntEnumValueName(propName: string, value: number): string {
@@ -55,7 +52,9 @@ function getCppTypeForAnnotation(
   }
 }
 
-function getImports(properties: $ReadOnlyArray<PropTypeShape>): Set<string> {
+function getImports(
+  properties: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
+): Set<string> {
   const imports: Set<string> = new Set();
 
   function addImportsForNativeName(name) {
@@ -91,6 +90,7 @@ function getImports(properties: $ReadOnlyArray<PropTypeShape>): Set<string> {
 
     if (typeAnnotation.type === 'ObjectTypeAnnotation') {
       const objectImports = getImports(typeAnnotation.properties);
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
       objectImports.forEach(imports.add, imports);
     }
   });
@@ -122,7 +122,7 @@ function getEnumMaskName(enumName: string): string {
 
 function convertDefaultTypeToString(
   componentName: string,
-  prop: PropTypeShape,
+  prop: NamedShape<PropTypeAnnotation>,
 ): string {
   const typeAnnotation = prop.typeAnnotation;
   switch (typeAnnotation.type) {

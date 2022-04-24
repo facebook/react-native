@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,6 @@
  * @flow
  * @format
  */
-
-'use strict';
 
 const BatchedBridge = require('../BatchedBridge/BatchedBridge');
 const BugReporting = require('../BugReporting/BugReporting');
@@ -20,9 +18,11 @@ const invariant = require('invariant');
 const renderApplication = require('./renderApplication');
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
 
+import {coerceDisplayMode} from './DisplayMode';
 import createPerformanceLogger from '../Utilities/createPerformanceLogger';
 import NativeHeadlessJsTaskSupport from './NativeHeadlessJsTaskSupport';
 import HeadlessJsTaskError from './HeadlessJsTaskError';
+import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
 
 type Task = (taskData: any) => Promise<void>;
 export type TaskProvider = () => Task;
@@ -52,16 +52,15 @@ export type Registry = {
   runnables: Runnables,
   ...
 };
-export type WrapperComponentProvider = any => React$ComponentType<*>;
+export type WrapperComponentProvider = any => React$ComponentType<any>;
 
 const runnables: Runnables = {};
 let runCount = 1;
 const sections: Runnables = {};
 const taskProviders: Map<string, TaskProvider> = new Map();
 const taskCancelProviders: Map<string, TaskCancelProvider> = new Map();
-let componentProviderInstrumentationHook: ComponentProviderInstrumentationHook = (
-  component: ComponentProvider,
-) => component();
+let componentProviderInstrumentationHook: ComponentProviderInstrumentationHook =
+  (component: ComponentProvider) => component();
 
 let wrapperComponentProvider: ?WrapperComponentProvider;
 let showArchitectureIndicator = false;
@@ -69,7 +68,7 @@ let showArchitectureIndicator = false;
 /**
  * `AppRegistry` is the JavaScript entry point to running all React Native apps.
  *
- * See https://reactnative.dev/docs/appregistry.html
+ * See https://reactnative.dev/docs/appregistry
  */
 const AppRegistry = {
   setWrapperComponentProvider(provider: WrapperComponentProvider) {
@@ -103,7 +102,7 @@ const AppRegistry = {
   /**
    * Registers an app's root component.
    *
-   * See https://reactnative.dev/docs/appregistry.html#registercomponent
+   * See https://reactnative.dev/docs/appregistry#registercomponent
    */
   registerComponent(
     appKey: string,
@@ -113,7 +112,10 @@ const AppRegistry = {
     let scopedPerformanceLogger = createPerformanceLogger();
     runnables[appKey] = {
       componentProvider,
-      run: appParameters => {
+      run: (appParameters, displayMode) => {
+        const concurrentRootEnabled =
+          appParameters.initialProps?.concurrentRoot ||
+          appParameters.concurrentRoot;
         renderApplication(
           componentProviderInstrumentationHook(
             componentProvider,
@@ -126,6 +128,9 @@ const AppRegistry = {
           showArchitectureIndicator,
           scopedPerformanceLogger,
           appKey === 'LogBox',
+          appKey,
+          coerceDisplayMode(displayMode),
+          concurrentRootEnabled,
         );
       },
     };
@@ -178,12 +183,18 @@ const AppRegistry = {
   /**
    * Loads the JavaScript bundle and runs the app.
    *
-   * See https://reactnative.dev/docs/appregistry.html#runapplication
+   * See https://reactnative.dev/docs/appregistry#runapplication
    */
-  runApplication(appKey: string, appParameters: any): void {
+  runApplication(
+    appKey: string,
+    appParameters: any,
+    displayMode?: number,
+  ): void {
     if (appKey !== 'LogBox') {
-      const msg =
-        'Running "' + appKey + '" with ' + JSON.stringify(appParameters);
+      const logParams = __DEV__
+        ? '" with ' + JSON.stringify(appParameters)
+        : '';
+      const msg = 'Running "' + appKey + logParams;
       infoLog(msg);
       BugReporting.addSource(
         'AppRegistry.runApplication' + runCount++,
@@ -199,24 +210,58 @@ const AppRegistry = {
     );
 
     SceneTracker.setActiveScene({name: appKey});
-    runnables[appKey].run(appParameters);
+    runnables[appKey].run(appParameters, displayMode);
+  },
+
+  /**
+   * Update initial props for a surface that's already rendered
+   */
+  setSurfaceProps(
+    appKey: string,
+    appParameters: any,
+    displayMode?: number,
+  ): void {
+    if (appKey !== 'LogBox') {
+      const msg =
+        'Updating props for Surface "' +
+        appKey +
+        '" with ' +
+        JSON.stringify(appParameters);
+      infoLog(msg);
+      BugReporting.addSource(
+        'AppRegistry.setSurfaceProps' + runCount++,
+        () => msg,
+      );
+    }
+    invariant(
+      runnables[appKey] && runnables[appKey].run,
+      `"${appKey}" has not been registered. This can happen if:\n` +
+        '* Metro (the local dev server) is run from the wrong folder. ' +
+        'Check if Metro is running, stop it and restart it in the current project.\n' +
+        "* A module failed to load due to an error and `AppRegistry.registerComponent` wasn't called.",
+    );
+
+    runnables[appKey].run(appParameters, displayMode);
   },
 
   /**
    * Stops an application when a view should be destroyed.
    *
-   * See https://reactnative.dev/docs/appregistry.html#unmountapplicationcomponentatroottag
+   * See https://reactnative.dev/docs/appregistry#unmountapplicationcomponentatroottag
    */
-  unmountApplicationComponentAtRootTag(rootTag: number): void {
+  unmountApplicationComponentAtRootTag(rootTag: RootTag): void {
+    // NOTE: RootTag type
+    // $FlowFixMe[incompatible-call] RootTag: RootTag is incompatible with number, needs an updated synced version of the ReactNativeTypes.js file
     ReactNative.unmountComponentAtNodeAndRemoveContainer(rootTag);
   },
 
   /**
    * Register a headless task. A headless task is a bit of code that runs without a UI.
    *
-   * See https://reactnative.dev/docs/appregistry.html#registerheadlesstask
+   * See https://reactnative.dev/docs/appregistry#registerheadlesstask
    */
   registerHeadlessTask(taskKey: string, taskProvider: TaskProvider): void {
+    // $FlowFixMe[object-this-reference]
     this.registerCancellableHeadlessTask(taskKey, taskProvider, () => () => {
       /* Cancel is no-op */
     });
@@ -225,7 +270,7 @@ const AppRegistry = {
   /**
    * Register a cancellable headless task. A headless task is a bit of code that runs without a UI.
    *
-   * See https://reactnative.dev/docs/appregistry.html#registercancellableheadlesstask
+   * See https://reactnative.dev/docs/appregistry#registercancellableheadlesstask
    */
   registerCancellableHeadlessTask(
     taskKey: string,
@@ -244,7 +289,7 @@ const AppRegistry = {
   /**
    * Only called from native code. Starts a headless task.
    *
-   * See https://reactnative.dev/docs/appregistry.html#startheadlesstask
+   * See https://reactnative.dev/docs/appregistry#startheadlesstask
    */
   startHeadlessTask(taskId: number, taskKey: string, data: any): void {
     const taskProvider = taskProviders.get(taskKey);
@@ -282,7 +327,7 @@ const AppRegistry = {
   /**
    * Only called from native code. Cancels a headless task.
    *
-   * See https://reactnative.dev/docs/appregistry.html#cancelheadlesstask
+   * See https://reactnative.dev/docs/appregistry#cancelheadlesstask
    */
   cancelHeadlessTask(taskId: number, taskKey: string): void {
     const taskCancelProvider = taskCancelProviders.get(taskKey);

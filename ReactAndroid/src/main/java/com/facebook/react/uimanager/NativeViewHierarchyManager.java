@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -30,7 +30,6 @@ import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.build.ReactBuildConfig;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationController;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationListener;
@@ -278,17 +277,10 @@ public class NativeViewHierarchyManager {
     try {
       ViewManager viewManager = mViewManagers.get(className);
 
-      View view = viewManager.createView(themedContext, null, null, mJSResponderHandler);
+      View view =
+          viewManager.createView(tag, themedContext, initialProps, null, mJSResponderHandler);
       mTagsToViews.put(tag, view);
       mTagsToViewManagers.put(tag, viewManager);
-
-      // Use android View id field to store React tag. This is possible since we don't inflate
-      // React views from layout xmls. Thus it is easier to just reuse that field instead of
-      // creating another (potentially much more expensive) mapping from view to React tag
-      view.setId(tag);
-      if (initialProps != null) {
-        viewManager.updateProperties(view, initialProps);
-      }
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_VIEW);
     }
@@ -859,9 +851,8 @@ public class NativeViewHierarchyManager {
               + commandId);
     }
     ViewManager viewManager = resolveViewManager(reactTag);
-    ViewManagerDelegate delegate;
-    if (ReactFeatureFlags.useViewManagerDelegatesForCommands
-        && (delegate = viewManager.getDelegate()) != null) {
+    ViewManagerDelegate delegate = viewManager.getDelegate();
+    if (delegate != null) {
       delegate.receiveCommand(view, commandId, args);
     } else {
       viewManager.receiveCommand(view, commandId, args);

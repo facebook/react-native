@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -160,9 +160,23 @@ RCT_EXTERN void RCTEnableTurboModuleEagerInit(BOOL enabled);
 RCT_EXTERN BOOL RCTTurboModuleSharedMutexInitEnabled(void);
 RCT_EXTERN void RCTEnableTurboModuleSharedMutexInit(BOOL enabled);
 
-// Turn on TurboModule block copy
-RCT_EXTERN BOOL RCTTurboModuleBlockCopyEnabled(void);
-RCT_EXTERN void RCTEnableTurboModuleBlockCopy(BOOL enabled);
+// Turn off TurboModule delegate locking
+RCT_EXTERN BOOL RCTTurboModuleManagerDelegateLockingDisabled(void);
+RCT_EXTERN void RCTDisableTurboModuleManagerDelegateLocking(BOOL enabled);
+
+// Turn off validAttribute: entries inside ViewConfigs for events
+// TODO(109509380): Remove this gating
+RCT_EXTERN BOOL RCTViewConfigEventValidAttributesDisabled(void);
+RCT_EXTERN void RCTDisableViewConfigEventValidAttributes(BOOL disabled);
+
+typedef enum {
+  kRCTGlobalScope,
+  kRCTGlobalScopeUsingRetainJSCallback,
+  kRCTTurboModuleManagerScope,
+} RCTTurboModuleCleanupMode;
+
+RCT_EXTERN RCTTurboModuleCleanupMode RCTGetTurboModuleCleanupMode(void);
+RCT_EXTERN void RCTSetTurboModuleCleanupMode(RCTTurboModuleCleanupMode mode);
 
 /**
  * Async batched bridge used to communicate with the JavaScript application.
@@ -230,6 +244,13 @@ RCT_EXTERN void RCTEnableTurboModuleBlockCopy(BOOL enabled);
  * the TurboModuleRegistry.
  */
 - (void)setRCTTurboModuleRegistry:(id<RCTTurboModuleRegistry>)turboModuleRegistry;
+
+/**
+ * This hook is called by the TurboModule infra with every TurboModule that's created.
+ * It allows the bridge to attach properties to TurboModules that give TurboModules
+ * access to Bridge APIs.
+ */
+- (void)attachBridgeAPIsToTurboModule:(id<RCTTurboModule>)module;
 
 /**
  * Convenience method for retrieving all modules conforming to a given protocol.

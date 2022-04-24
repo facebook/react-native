@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -41,15 +41,16 @@ inline static UIFontWeight RCTUIFontWeightFromInteger(NSInteger fontWeight)
   assert(fontWeight > 50);
   assert(fontWeight < 950);
 
-  static UIFontWeight weights[] = {/* ~100 */ UIFontWeightUltraLight,
-                                   /* ~200 */ UIFontWeightThin,
-                                   /* ~300 */ UIFontWeightLight,
-                                   /* ~400 */ UIFontWeightRegular,
-                                   /* ~500 */ UIFontWeightMedium,
-                                   /* ~600 */ UIFontWeightSemibold,
-                                   /* ~700 */ UIFontWeightBold,
-                                   /* ~800 */ UIFontWeightHeavy,
-                                   /* ~900 */ UIFontWeightBlack};
+  static UIFontWeight weights[] = {
+      /* ~100 */ UIFontWeightUltraLight,
+      /* ~200 */ UIFontWeightThin,
+      /* ~300 */ UIFontWeightLight,
+      /* ~400 */ UIFontWeightRegular,
+      /* ~500 */ UIFontWeightMedium,
+      /* ~600 */ UIFontWeightSemibold,
+      /* ~700 */ UIFontWeightBold,
+      /* ~800 */ UIFontWeightHeavy,
+      /* ~900 */ UIFontWeightBlack};
   // The expression is designed to convert something like 760 or 830 to 7.
   return weights[(fontWeight + 50) / 100 - 1];
 }
@@ -170,9 +171,8 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(T
   if (textAttributes.textDecorationLineType.value_or(TextDecorationLineType::None) != TextDecorationLineType::None) {
     auto textDecorationLineType = textAttributes.textDecorationLineType.value();
 
-    NSUnderlineStyle style = RCTNSUnderlineStyleFromStyleAndPattern(
-        textAttributes.textDecorationLineStyle.value_or(TextDecorationLineStyle::Single),
-        textAttributes.textDecorationLinePattern.value_or(TextDecorationLinePattern::Solid));
+    NSUnderlineStyle style = RCTNSUnderlineStyleFromTextDecorationStyle(
+        textAttributes.textDecorationStyle.value_or(TextDecorationStyle::Solid));
 
     UIColor *textDecorationColor = RCTUIColorFromSharedColor(textAttributes.textDecorationColor);
 
@@ -287,6 +287,9 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(T
       case AccessibilityRole::Tab:
         attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("tab");
         break;
+      case AccessibilityRole::TabBar:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("tabbar");
+        break;
       case AccessibilityRole::Tablist:
         attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("tablist");
         break;
@@ -307,10 +310,10 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedSt
   static UIImage *placeholderImage;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    placeholderImage = [[UIImage alloc] init];
+    placeholderImage = [UIImage new];
   });
 
-  NSMutableAttributedString *nsAttributedString = [[NSMutableAttributedString alloc] init];
+  NSMutableAttributedString *nsAttributedString = [NSMutableAttributedString new];
 
   [nsAttributedString beginEditing];
 
@@ -319,8 +322,9 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedSt
 
     if (fragment.isAttachment()) {
       auto layoutMetrics = fragment.parentShadowView.layoutMetrics;
-      CGRect bounds = {.origin = {.x = layoutMetrics.frame.origin.x, .y = layoutMetrics.frame.origin.y},
-                       .size = {.width = layoutMetrics.frame.size.width, .height = layoutMetrics.frame.size.height}};
+      CGRect bounds = {
+          .origin = {.x = layoutMetrics.frame.origin.x, .y = layoutMetrics.frame.origin.y},
+          .size = {.width = layoutMetrics.frame.size.width, .height = layoutMetrics.frame.size.height}};
 
       NSTextAttachment *attachment = [NSTextAttachment new];
       attachment.image = placeholderImage;
@@ -329,6 +333,11 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedSt
       nsAttributedStringFragment = [[NSMutableAttributedString attributedStringWithAttachment:attachment] mutableCopy];
     } else {
       NSString *string = [NSString stringWithCString:fragment.string.c_str() encoding:NSUTF8StringEncoding];
+
+      if (fragment.textAttributes.textTransform.hasValue()) {
+        auto textTransform = fragment.textAttributes.textTransform.value();
+        string = RCTNSStringFromStringApplyingTextTransform(string, textTransform);
+      }
 
       nsAttributedStringFragment = [[NSMutableAttributedString alloc]
           initWithString:string
@@ -367,4 +376,18 @@ NSAttributedString *RCTNSAttributedStringFromAttributedStringBox(AttributedStrin
 AttributedStringBox RCTAttributedStringBoxFromNSAttributedString(NSAttributedString *nsAttributedString)
 {
   return nsAttributedString.length ? AttributedStringBox{wrapManagedObject(nsAttributedString)} : AttributedStringBox{};
+}
+
+NSString *RCTNSStringFromStringApplyingTextTransform(NSString *string, TextTransform textTransform)
+{
+  switch (textTransform) {
+    case TextTransform::Uppercase:
+      return [string uppercaseString];
+    case TextTransform::Lowercase:
+      return [string lowercaseString];
+    case TextTransform::Capitalize:
+      return [string capitalizedString];
+    default:
+      return string;
+  }
 }

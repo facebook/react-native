@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,8 +8,7 @@
  * @format
  */
 
-'use strict';
-
+import type {UnsafeObject} from '../../Types/CodegenTypes';
 import type {RootTag, TurboModule} from '../RCTExport';
 import * as TurboModuleRegistry from '../TurboModuleRegistry';
 
@@ -26,7 +25,7 @@ export interface Spec extends TurboModule {
   +getString: (arg: string) => string;
   +getArray: (arg: Array<any>) => Array<any>;
   +getObject: (arg: Object) => Object;
-  // eslint-disable-next-line @react-native/codegen/react-native-modules
+  +getUnsafeObject: (arg: UnsafeObject) => UnsafeObject;
   +getRootTag: (arg: RootTag) => RootTag;
   +getValue: (x: number, y: string, z: Object) => Object;
   +getValueWithCallback: (callback: (value: string) => void) => void;

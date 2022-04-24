@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -29,7 +29,7 @@ struct ConcreteSystraceSection {
   template <typename... ConvertsToStringPiece>
   explicit ConcreteSystraceSection(
       const char *name,
-      ConvertsToStringPiece &&... args)
+      ConvertsToStringPiece &&...args)
       : m_section(TRACE_TAG_REACT_CXX_BRIDGE, name, args...) {}
 
  private:
@@ -42,7 +42,7 @@ struct DummySystraceSection {
   template <typename... ConvertsToStringPiece>
   explicit DummySystraceSection(
       __unused const char *name,
-      __unused ConvertsToStringPiece &&... args) {}
+      __unused ConvertsToStringPiece &&...args) {}
 };
 using SystraceSection = DummySystraceSection;
 #endif

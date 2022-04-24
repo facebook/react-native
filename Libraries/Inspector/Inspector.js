@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,10 +14,10 @@ const Dimensions = require('../Utilities/Dimensions');
 const InspectorOverlay = require('./InspectorOverlay');
 const InspectorPanel = require('./InspectorPanel');
 const Platform = require('../Utilities/Platform');
+const PressabilityDebug = require('../Pressability/PressabilityDebug');
 const React = require('react');
 const ReactNative = require('../Renderer/shims/ReactNative');
 const StyleSheet = require('../StyleSheet/StyleSheet');
-const Touchable = require('../Components/Touchable/Touchable');
 const View = require('../Components/View/View');
 
 const invariant = require('invariant');
@@ -167,10 +167,13 @@ class Inspector extends React.Component<
     }, 100);
   };
 
-  _onAgentShowNativeHighlight = node => {
+  _onAgentShowNativeHighlight = (node: any) => {
     clearTimeout(this._hideTimeoutID);
 
-    node.measure((x, y, width, height, left, top) => {
+    // Shape of `node` is different in Fabric.
+    const component = node.canonical ?? node;
+
+    component.measure((x, y, width, height, left, top) => {
       this.setState({
         hierarchy: [],
         inspected: {
@@ -279,7 +282,7 @@ class Inspector extends React.Component<
   }
 
   setTouchTargeting(val: boolean) {
-    Touchable.TOUCH_TARGET_DEBUG = val;
+    PressabilityDebug.setEnabled(val);
     this.props.onRequestRerenderApp(inspectedView => {
       this.setState({inspectedView});
     });
@@ -304,6 +307,7 @@ class Inspector extends React.Component<
         {this.state.inspecting && (
           <InspectorOverlay
             inspected={this.state.inspected}
+            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
             onTouchPoint={this.onTouchPoint.bind(this)}
           />
         )}
@@ -312,15 +316,20 @@ class Inspector extends React.Component<
             devtoolsIsOpen={!!this.state.devtoolsAgent}
             inspecting={this.state.inspecting}
             perfing={this.state.perfing}
+            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
             setPerfing={this.setPerfing.bind(this)}
+            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
             setInspecting={this.setInspecting.bind(this)}
             inspected={this.state.inspected}
             hierarchy={this.state.hierarchy}
             selection={this.state.selection}
+            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
             setSelection={this.setSelection.bind(this)}
-            touchTargeting={Touchable.TOUCH_TARGET_DEBUG}
+            touchTargeting={PressabilityDebug.isEnabled()}
+            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
             setTouchTargeting={this.setTouchTargeting.bind(this)}
             networking={this.state.networking}
+            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
             setNetworking={this.setNetworking.bind(this)}
           />
         </View>

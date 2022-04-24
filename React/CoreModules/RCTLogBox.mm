@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -43,18 +43,22 @@ RCT_EXPORT_METHOD(show)
       if (!strongSelf) {
         return;
       }
-      if (!strongSelf->_view) {
-        if (self->_bridge) {
-          strongSelf->_view = [[RCTLogBoxView alloc] initWithFrame:[UIScreen mainScreen].bounds bridge:self->_bridge];
-        } else {
-          NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:strongSelf, @"logbox", nil];
-          [[NSNotificationCenter defaultCenter] postNotificationName:@"CreateLogBoxSurface"
-                                                              object:nil
-                                                            userInfo:userInfo];
-          return;
-        }
+
+      if (strongSelf->_view) {
+        [strongSelf->_view show];
+        return;
       }
-      [strongSelf->_view show];
+
+      if (strongSelf->_bridge) {
+        if (strongSelf->_bridge.valid) {
+          strongSelf->_view = [[RCTLogBoxView alloc] initWithFrame:[UIScreen mainScreen].bounds
+                                                            bridge:strongSelf->_bridge];
+          [strongSelf->_view show];
+        }
+      } else {
+        NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:strongSelf, @"logbox", nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"CreateLogBoxSurface" object:nil userInfo:userInfo];
+      }
     });
   }
 }
@@ -68,6 +72,7 @@ RCT_EXPORT_METHOD(hide)
       if (!strongSelf) {
         return;
       }
+      [strongSelf->_view setHidden:YES];
       strongSelf->_view = nil;
     });
   }

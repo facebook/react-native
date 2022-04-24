@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,15 +10,30 @@
 
 'use strict';
 
+import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
+import {unstable_hasComponent} from 'react-native/Libraries/NativeComponent/NativeComponentRegistryUnstable';
+
 module.exports = {
   getViewManagerConfig: (viewManagerName: string): mixed => {
     console.warn(
-      'Attempting to get config for view manager: ' + viewManagerName,
+      'getViewManagerConfig is unavailable in Bridgeless, use hasViewManagerConfig instead. viewManagerName: ' +
+        viewManagerName,
     );
     if (viewManagerName === 'RCTVirtualText') {
       return {};
     }
     return null;
+  },
+  hasViewManagerConfig: (viewManagerName: string): boolean => {
+    const staticViewConfigsEnabled = global.__fbStaticViewConfig === true;
+    if (staticViewConfigsEnabled) {
+      return unstable_hasComponent(viewManagerName);
+    } else {
+      return (
+        viewManagerName === 'RCTVirtualText' ||
+        viewManagerName === 'RCTShimmeringView'
+      );
+    }
   },
   getConstants: (): {...} => ({}),
   getConstantsForViewManager: (viewManagerName: string) => {},
@@ -27,7 +42,7 @@ module.exports = {
   createView: (
     reactTag: ?number,
     viewName: string,
-    rootTag: number,
+    rootTag: RootTag,
     props: Object,
   ) => {},
   updateView: (reactTag: number, viewName: string, props: Object) => {},

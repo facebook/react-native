@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,6 @@
  * @flow
  * @format
  */
-
-'use strict';
 
 import type {TurboModule} from '../TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
@@ -30,7 +28,6 @@ export type AnimatingNodeConfig = Object;
 export interface Spec extends TurboModule {
   +startOperationBatch: () => void;
   +finishOperationBatch: () => void;
-  // eslint-disable-next-line @react-native/codegen/react-native-modules
   +createAnimatedNode: (tag: number, config: AnimatedNodeConfig) => void;
   +getValue: (tag: number, saveValueCallback: SaveValueCallback) => void;
   +startListeningToAnimatedNodeValue: (tag: number) => void;

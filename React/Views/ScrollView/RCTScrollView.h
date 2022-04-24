@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -29,18 +29,13 @@
 @property (nonatomic, readonly) UIView *contentView;
 
 /**
- * If the `contentSize` is not specified (or is specified as {0, 0}, then the
- * `contentSize` will automatically be determined by the size of the subview.
- */
-@property (nonatomic, assign) CGSize contentSize;
-
-/**
  * The underlying scrollView (TODO: can we remove this?)
  */
 @property (nonatomic, readonly) UIScrollView *scrollView;
 
 @property (nonatomic, assign) UIEdgeInsets contentInset;
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
+@property (nonatomic, assign) BOOL automaticallyAdjustKeyboardInsets;
 @property (nonatomic, assign) BOOL DEPRECATED_sendUpdatedChildFrames;
 @property (nonatomic, assign) NSTimeInterval scrollEventThrottle;
 @property (nonatomic, assign) BOOL centerContent;
@@ -68,7 +63,7 @@
 
 @interface RCTScrollView (Internal)
 
-- (void)updateContentOffsetIfNeeded;
+- (void)updateContentSizeIfNeeded;
 
 @end
 

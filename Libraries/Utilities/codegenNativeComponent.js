@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,8 +9,6 @@
  */
 
 // TODO: move this file to shims/ReactNative (requires React update and sync)
-
-'use strict';
 
 import requireNativeComponent from '../../Libraries/ReactNative/requireNativeComponent';
 import type {HostComponent} from '../../Libraries/Renderer/shims/ReactNativeTypes';
@@ -45,8 +43,9 @@ function codegenNativeComponent<Props>(
       componentNameInUse = options.paperComponentNameDeprecated;
     } else {
       throw new Error(
-        `Failed to find native component for either ${componentName} or ${options.paperComponentNameDeprecated ??
-          '(unknown)'}`,
+        `Failed to find native component for either ${componentName} or ${
+          options.paperComponentNameDeprecated ?? '(unknown)'
+        }`,
       );
     }
   }

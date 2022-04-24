@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -48,8 +48,7 @@ NativeModuleRegistry buildNativeModuleRegistry();
 NativeModuleRegistry buildNativeModuleRegistry() {
   NativeModuleRegistry nMR;
   nMR.registerModule(
-      "MobileConfig",
-      [&](const std::string &methodName, const folly::dynamic &args) {
+      "MobileConfig", [&](const std::string &, const folly::dynamic &) {
         return mockSimpleTestValue_;
       });
   return nMR;
@@ -57,20 +56,20 @@ NativeModuleRegistry buildNativeModuleRegistry() {
 
 class MockReactNativeConfig : public ReactNativeConfig {
  public:
-  MockReactNativeConfig() {}
+  MockReactNativeConfig() = default;
   bool getBool(const std::string &param) const override {
     return mockSimpleTestValue_;
   }
 
-  std::string getString(const std::string &param) const override {
+  std::string getString(const std::string &) const override {
     return "";
   }
 
-  int64_t getInt64(const std::string &param) const override {
+  int64_t getInt64(const std::string &) const override {
     return 0;
   }
 
-  double getDouble(const std::string &param) const override {
+  double getDouble(const std::string &) const override {
     return 0.0;
   }
 };
@@ -89,8 +88,8 @@ TEST(UITemplateProcessorTest, testSimpleBytecode) {
   auto nativeModuleRegistry = buildNativeModuleRegistry();
 
   auto bytecode = R"delim({"version":0.1,"commands":[
-    ["createNode",2,"RCTView",-1,{"opacity": 0.5, "testId": "root"}],
-    ["createNode",4,"RCTView",2,{"testId": "child"}],
+    ["createNode",2,"RCTView",-1,{"opacity": 0.5, "testID": "root"}],
+    ["createNode",4,"RCTView",2,{"testID": "child"}],
     ["returnRoot",2]
   ]})delim";
 
@@ -124,11 +123,11 @@ TEST(UITemplateProcessorTest, testConditionalBytecode) {
   auto nativeModuleRegistry = buildNativeModuleRegistry();
 
   auto bytecode = R"delim({"version":0.1,"commands":[
-    ["createNode",2,"RCTView",-1,{"testId": "root"}],
+    ["createNode",2,"RCTView",-1,{"testID": "root"}],
     ["loadNativeBool",1,"MobileConfig","getBool",["qe:simple_test"]],
     ["conditional",1,
-      [["createNode",4,"RCTView",2,{"testId": "cond_true"}]],
-      [["createNode",4,"RCTView",2,{"testId": "cond_false"}]]
+      [["createNode",4,"RCTView",2,{"testID": "cond_true"}]],
+      [["createNode",4,"RCTView",2,{"testID": "cond_false"}]]
     ],
     ["returnRoot",2]
   ]})delim";

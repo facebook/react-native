@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,29 +7,38 @@
 
 #include "ComponentDescriptorRegistry.h"
 
+#include "componentNameByReactViewName.h"
+
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
+
+#include <utility>
 
 namespace facebook {
 namespace react {
 
 ComponentDescriptorRegistry::ComponentDescriptorRegistry(
-    ComponentDescriptorParameters const &parameters,
-    ComponentDescriptorProviderRegistry const &providerRegistry)
-    : parameters_(parameters), providerRegistry_(providerRegistry) {}
+    ComponentDescriptorParameters parameters,
+    ComponentDescriptorProviderRegistry const &providerRegistry,
+    ContextContainer::Shared contextContainer)
+    : parameters_(std::move(parameters)),
+      providerRegistry_(providerRegistry),
+      contextContainer_(std::move(contextContainer)) {}
 
 void ComponentDescriptorRegistry::add(
     ComponentDescriptorProvider componentDescriptorProvider) const {
-  std::unique_lock<better::shared_mutex> lock(mutex_);
+  std::unique_lock<butter::shared_mutex> lock(mutex_);
 
   auto componentDescriptor = componentDescriptorProvider.constructor(
       {parameters_.eventDispatcher,
        parameters_.contextContainer,
        componentDescriptorProvider.flavor});
-  assert(
+  react_native_assert(
       componentDescriptor->getComponentHandle() ==
       componentDescriptorProvider.handle);
-  assert(
+  react_native_assert(
       componentDescriptor->getComponentName() ==
       componentDescriptorProvider.name);
 
@@ -49,76 +58,17 @@ void ComponentDescriptorRegistry::registerComponentDescriptor(
   _registryByName[componentName] = componentDescriptor;
 }
 
-static std::string componentNameByReactViewName(std::string viewName) {
-  // We need this function only for the transition period;
-  // eventually, all names will be unified.
-
-  std::string rctPrefix("RCT");
-  if (std::mismatch(rctPrefix.begin(), rctPrefix.end(), viewName.begin())
-          .first == rctPrefix.end()) {
-    // If `viewName` has "RCT" prefix, remove it.
-    viewName.erase(0, rctPrefix.length());
-  }
-
-  // Fabric uses slightly new names for Text components because of differences
-  // in semantic.
-  if (viewName == "Text") {
-    return "Paragraph";
-  }
-
-  // TODO T63839307: remove this condition after deleting TextInlineImage from
-  // Paper
-  if (viewName == "TextInlineImage") {
-    return "Image";
-  }
-  if (viewName == "VirtualText") {
-    return "Text";
-  }
-
-  if (viewName == "ImageView") {
-    return "Image";
-  }
-
-  if (viewName == "AndroidHorizontalScrollView") {
-    return "ScrollView";
-  }
-
-  if (viewName == "RKShimmeringView") {
-    return "ShimmeringView";
-  }
-
-  if (viewName == "RefreshControl") {
-    return "PullToRefreshView";
-  }
-
-  // We need this temporarily for testing purposes until we have proper
-  // implementation of core components.
-  if (viewName == "ScrollContentView" ||
-      viewName == "AndroidHorizontalScrollContentView" // Android
-  ) {
-    return "View";
-  }
-
-  // iOS-only
-  if (viewName == "MultilineTextInputView" ||
-      viewName == "SinglelineTextInputView") {
-    return "TextInput";
-  }
-
-  return viewName;
-}
-
 ComponentDescriptor const &ComponentDescriptorRegistry::at(
     std::string const &componentName) const {
-  std::shared_lock<better::shared_mutex> lock(mutex_);
+  std::shared_lock<butter::shared_mutex> lock(mutex_);
 
   auto unifiedComponentName = componentNameByReactViewName(componentName);
 
   auto it = _registryByName.find(unifiedComponentName);
   if (it == _registryByName.end()) {
-    mutex_.unlock_shared();
+    lock.unlock();
     providerRegistry_.request(unifiedComponentName.c_str());
-    mutex_.lock_shared();
+    lock.lock();
 
     it = _registryByName.find(unifiedComponentName);
 
@@ -147,7 +97,7 @@ ComponentDescriptor const &ComponentDescriptorRegistry::at(
 ComponentDescriptor const *ComponentDescriptorRegistry::
     findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(
         ComponentHandle componentHandle) const {
-  std::shared_lock<better::shared_mutex> lock(mutex_);
+  std::shared_lock<butter::shared_mutex> lock(mutex_);
 
   auto iterator = _registryByHandle.find(componentHandle);
   if (iterator == _registryByHandle.end()) {
@@ -159,14 +109,14 @@ ComponentDescriptor const *ComponentDescriptorRegistry::
 
 ComponentDescriptor const &ComponentDescriptorRegistry::at(
     ComponentHandle componentHandle) const {
-  std::shared_lock<better::shared_mutex> lock(mutex_);
+  std::shared_lock<butter::shared_mutex> lock(mutex_);
 
   return *_registryByHandle.at(componentHandle);
 }
 
 bool ComponentDescriptorRegistry::hasComponentDescriptorAt(
     ComponentHandle componentHandle) const {
-  std::shared_lock<better::shared_mutex> lock(mutex_);
+  std::shared_lock<butter::shared_mutex> lock(mutex_);
 
   auto iterator = _registryByHandle.find(componentHandle);
   if (iterator == _registryByHandle.end()) {
@@ -185,11 +135,13 @@ SharedShadowNode ComponentDescriptorRegistry::createNode(
   auto unifiedComponentName = componentNameByReactViewName(viewName);
   auto const &componentDescriptor = this->at(unifiedComponentName);
 
-  auto family = componentDescriptor.createFamily(
-      ShadowNodeFamilyFragment{tag, surfaceId, nullptr},
-      std::move(eventTarget));
-  auto const props =
-      componentDescriptor.cloneProps(nullptr, RawProps(propsDynamic));
+  auto const fragment = ShadowNodeFamilyFragment{tag, surfaceId, nullptr};
+  auto family =
+      componentDescriptor.createFamily(fragment, std::move(eventTarget));
+  auto const props = componentDescriptor.cloneProps(
+      PropsParserContext{surfaceId, *contextContainer_.get()},
+      nullptr,
+      RawProps(propsDynamic));
   auto const state =
       componentDescriptor.createInitialState(ShadowNodeFragment{props}, family);
 

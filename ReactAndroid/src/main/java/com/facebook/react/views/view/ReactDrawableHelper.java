@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -65,19 +65,11 @@ public class ReactDrawableHelper {
   }
 
   private static Drawable getDefaultThemeDrawable(Context context) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      return context.getResources().getDrawable(sResolveOutValue.resourceId, context.getTheme());
-    } else {
-      return context.getResources().getDrawable(sResolveOutValue.resourceId);
-    }
+    return context.getResources().getDrawable(sResolveOutValue.resourceId, context.getTheme());
   }
 
   private static RippleDrawable getRippleDrawable(
       Context context, ReadableMap drawableDescriptionDict) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-      throw new JSApplicationIllegalArgumentException(
-          "Ripple drawable is not available on android API <21");
-    }
     int color = getColor(context, drawableDescriptionDict);
     Drawable mask = getMask(drawableDescriptionDict);
     ColorStateList colorStateList =

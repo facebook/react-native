@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -20,17 +20,17 @@ RCT_EXTERN BOOL RCTIsMainQueue(void);
  * assert handler through `RCTSetAssertFunction`.
  */
 #ifndef NS_BLOCK_ASSERTIONS
-#define RCTAssert(condition, ...)                                                                      \
-  do {                                                                                                 \
-    if ((condition) == 0) {                                                                            \
-      _RCTAssertFormat(#condition, __FILE__, __LINE__, __func__, __VA_ARGS__);                         \
-      if (RCT_NSASSERT) {                                                                              \
-        [[NSAssertionHandler currentHandler] handleFailureInFunction:(NSString * _Nonnull) @(__func__) \
-                                                                file:(NSString * _Nonnull) @(__FILE__) \
-                                                          lineNumber:__LINE__                          \
-                                                         description:__VA_ARGS__];                     \
-      }                                                                                                \
-    }                                                                                                  \
+#define RCTAssert(condition, ...)                                                                    \
+  do {                                                                                               \
+    if ((condition) == 0) {                                                                          \
+      _RCTAssertFormat(#condition, __FILE__, __LINE__, __func__, __VA_ARGS__);                       \
+      if (RCT_NSASSERT) {                                                                            \
+        [[NSAssertionHandler currentHandler] handleFailureInFunction:(NSString *_Nonnull)@(__func__) \
+                                                                file:(NSString *_Nonnull)@(__FILE__) \
+                                                          lineNumber:__LINE__                        \
+                                                         description:__VA_ARGS__];                   \
+      }                                                                                              \
+    }                                                                                                \
   } while (false)
 #else
 #define RCTAssert(condition, ...) \
@@ -154,13 +154,12 @@ RCT_EXTERN NSString *RCTFormatStackTrace(NSArray<NSDictionary<NSString *, id> *>
  */
 #if DEBUG
 
-#define RCTAssertThread(thread, format...)                                                                          \
-  _Pragma("clang diagnostic push") _Pragma("clang diagnostic ignored \"-Wdeprecated-declarations\"") RCTAssert(     \
-      [(id)thread isKindOfClass:[NSString class]]                                                                   \
-          ? [RCTCurrentThreadName() isEqualToString:(NSString *)thread]                                             \
-          : [(id)thread isKindOfClass:[NSThread class]] ? [NSThread currentThread] == (NSThread *)thread            \
-                                                        : dispatch_get_current_queue() == (dispatch_queue_t)thread, \
-      format);                                                                                                      \
+#define RCTAssertThread(thread, format...)                                                                            \
+  _Pragma("clang diagnostic push") _Pragma("clang diagnostic ignored \"-Wdeprecated-declarations\"") RCTAssert(       \
+      [(id)thread isKindOfClass:[NSString class]]       ? [RCTCurrentThreadName() isEqualToString:(NSString *)thread] \
+          : [(id)thread isKindOfClass:[NSThread class]] ? [NSThread currentThread] == (NSThread *)thread              \
+                                                        : dispatch_get_current_queue() == (dispatch_queue_t)thread,   \
+      format);                                                                                                        \
   _Pragma("clang diagnostic pop")
 
 #else
@@ -170,3 +169,21 @@ RCT_EXTERN NSString *RCTFormatStackTrace(NSArray<NSDictionary<NSString *, id> *>
   } while (0)
 
 #endif
+
+/**
+ * Controls for ensuring the new architecture runtime assumption holds.
+ * Note: this is work in progress.
+ */
+
+// Enable reporting of any violation related to the new React Native architecture.
+// If RCT_NEW_ARCHITECTURE is defined, it is already enabled by default, otherwise, no violation will be
+// reported until enabled.
+// Note: enabling this at runtime is not early enough to report issues within ObjC class +load execution.
+__attribute__((used)) RCT_EXTERN void RCTEnableNewArchitectureViolationReporting(BOOL enabled);
+
+// When reporting is enabled, trigger an assertion.
+__attribute__((used)) RCT_EXTERN void RCTEnforceNotAllowedForNewArchitecture(id context, NSString *extra);
+
+// When reporting is enabled, warn about the violation. Use this to prepare a specific callsite
+// for stricter enforcement. When ready, switch it to use the variant above.
+__attribute__((used)) RCT_EXTERN void RCTWarnNotAllowedForNewArchitecture(id context, NSString *extra);

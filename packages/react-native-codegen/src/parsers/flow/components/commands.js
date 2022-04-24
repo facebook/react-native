@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,14 +10,17 @@
 
 'use strict';
 
-import type {CommandTypeShape} from '../../../CodegenSchema.js';
+import type {
+  NamedShape,
+  CommandTypeAnnotation,
+} from '../../../CodegenSchema.js';
 import type {TypeDeclarationMap} from '../utils.js';
 
 const {getValueFromTypes} = require('../utils.js');
 
 type EventTypeAST = Object;
 
-function buildCommandSchema(property, types: TypeDeclarationMap) {
+function buildCommandSchema(property: EventTypeAST, types: TypeDeclarationMap) {
   const name = property.key.name;
   const optional = property.optional;
   const value = getValueFromTypes(property.value, types);
@@ -49,7 +52,7 @@ function buildCommandSchema(property, types: TypeDeclarationMap) {
     switch (type) {
       case 'RootTag':
         returnType = {
-          type: 'ReservedFunctionValueTypeAnnotation',
+          type: 'ReservedTypeAnnotation',
           name: 'RootTag',
         };
         break;
@@ -73,6 +76,11 @@ function buildCommandSchema(property, types: TypeDeclarationMap) {
           type: 'FloatTypeAnnotation',
         };
         break;
+      case 'StringTypeAnnotation':
+        returnType = {
+          type: 'StringTypeAnnotation',
+        };
+        break;
       default:
         (type: empty);
         throw new Error(
@@ -92,6 +100,9 @@ function buildCommandSchema(property, types: TypeDeclarationMap) {
     typeAnnotation: {
       type: 'FunctionTypeAnnotation',
       params,
+      returnTypeAnnotation: {
+        type: 'VoidTypeAnnotation',
+      },
     },
   };
 }
@@ -99,7 +110,7 @@ function buildCommandSchema(property, types: TypeDeclarationMap) {
 function getCommands(
   commandTypeAST: $ReadOnlyArray<EventTypeAST>,
   types: TypeDeclarationMap,
-): $ReadOnlyArray<CommandTypeShape> {
+): $ReadOnlyArray<NamedShape<CommandTypeAnnotation>> {
   return commandTypeAST
     .filter(property => property.type === 'ObjectTypeProperty')
     .map(property => buildCommandSchema(property, types))

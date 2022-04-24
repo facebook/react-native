@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -17,6 +17,7 @@
 #import "RCTUIManagerObserverCoordinator.h"
 #import "RCTUIManagerUtils.h"
 #import "RCTUtils.h"
+#import "RCTViewUtils.h"
 #import "UIView+Private.h"
 #import "UIView+React.h"
 
@@ -197,10 +198,8 @@
   if (CGSizeEqualToSize(contentSize, CGSizeZero)) {
     self.contentOffset = originalOffset;
   } else {
-    if (@available(iOS 11.0, *)) {
-      if (!UIEdgeInsetsEqualToEdgeInsets(UIEdgeInsetsZero, self.adjustedContentInset)) {
-        contentInset = self.adjustedContentInset;
-      }
+    if (!UIEdgeInsetsEqualToEdgeInsets(UIEdgeInsetsZero, self.adjustedContentInset)) {
+      contentInset = self.adjustedContentInset;
     }
     CGSize boundsSize = self.bounds.size;
     CGFloat xMaxOffset = contentSize.width - boundsSize.width + contentInset.right;
@@ -275,11 +274,80 @@
   NSHashTable *_scrollListeners;
 }
 
+- (void)_registerKeyboardListener
+{
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(_keyboardWillChangeFrame:)
+                                               name:UIKeyboardWillChangeFrameNotification
+                                             object:nil];
+}
+
+- (void)_unregisterKeyboardListener
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillChangeFrameNotification object:nil];
+}
+
+static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCurve curve)
+{
+  // UIViewAnimationCurve #7 is used for keyboard and therefore private - so we can't use switch/case here.
+  // source: https://stackoverflow.com/a/7327374/5281431
+  RCTAssert(
+      UIViewAnimationCurveLinear << 16 == UIViewAnimationOptionCurveLinear,
+      @"Unexpected implementation of UIViewAnimationCurve");
+  return curve << 16;
+}
+
+- (void)_keyboardWillChangeFrame:(NSNotification *)notification
+{
+  if (![self automaticallyAdjustKeyboardInsets]) {
+    return;
+  }
+  if ([self isHorizontal:_scrollView]) {
+    return;
+  }
+
+  double duration = [notification.userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+  UIViewAnimationCurve curve =
+      (UIViewAnimationCurve)[notification.userInfo[UIKeyboardAnimationCurveUserInfoKey] unsignedIntegerValue];
+  CGRect beginFrame = [notification.userInfo[UIKeyboardFrameBeginUserInfoKey] CGRectValue];
+  CGRect endFrame = [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+
+  CGPoint absoluteViewOrigin = [self convertPoint:self.bounds.origin toView:nil];
+  CGFloat scrollViewLowerY = self.inverted ? absoluteViewOrigin.y : absoluteViewOrigin.y + self.bounds.size.height;
+
+  UIEdgeInsets newEdgeInsets = _scrollView.contentInset;
+  CGFloat inset = MAX(scrollViewLowerY - endFrame.origin.y, 0);
+  if (self.inverted) {
+    newEdgeInsets.top = MAX(inset, _contentInset.top);
+  } else {
+    newEdgeInsets.bottom = MAX(inset, _contentInset.bottom);
+  }
+
+  CGPoint newContentOffset = _scrollView.contentOffset;
+  CGFloat contentDiff = endFrame.origin.y - beginFrame.origin.y;
+  if (self.inverted) {
+    newContentOffset.y += contentDiff;
+  } else {
+    newContentOffset.y -= contentDiff;
+  }
+
+  [UIView animateWithDuration:duration
+                        delay:0.0
+                      options:animationOptionsWithCurve(curve)
+                   animations:^{
+                     self->_scrollView.contentInset = newEdgeInsets;
+                     self->_scrollView.scrollIndicatorInsets = newEdgeInsets;
+                     [self scrollToOffset:newContentOffset animated:NO];
+                   }
+                   completion:nil];
+}
+
 - (instancetype)initWithEventDispatcher:(id<RCTEventDispatcherProtocol>)eventDispatcher
 {
   RCTAssertParam(eventDispatcher);
 
   if ((self = [super initWithFrame:CGRectZero])) {
+    [self _registerKeyboardListener];
     _eventDispatcher = eventDispatcher;
 
     _scrollView = [[RCTCustomScrollView alloc] initWithFrame:CGRectZero];
@@ -287,21 +355,13 @@
     _scrollView.delegate = self;
     _scrollView.delaysContentTouches = NO;
 
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
-    // `contentInsetAdjustmentBehavior` is only available since iOS 11.
     // We set the default behavior to "never" so that iOS
     // doesn't do weird things to UIScrollView insets automatically
     // and keeps it as an opt-in behavior.
-    if ([_scrollView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
-      if (@available(iOS 11.0, *)) {
-        _scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-      }
-    }
-#endif
+    _scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
 
     _automaticallyAdjustContentInsets = YES;
     _contentInset = UIEdgeInsetsZero;
-    _contentSize = CGSizeZero;
     _lastClippedToRect = CGRectNull;
 
     _scrollEventThrottle = 0.0;
@@ -381,7 +441,7 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
 - (void)didSetProps:(NSArray<NSString *> *)changedProps
 {
   if ([changedProps containsObject:@"contentSize"]) {
-    [self updateContentOffsetIfNeeded];
+    [self updateContentSizeIfNeeded];
   }
 }
 
@@ -405,6 +465,7 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
 {
   _scrollView.delegate = nil;
   [_eventDispatcher.bridge.uiManager.observerCoordinator removeObserver:self];
+  [self _unregisterKeyboardListener];
 }
 
 - (void)layoutSubviews
@@ -715,9 +776,9 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
     // Pick snap point based on direction and proximity
     CGFloat fractionalIndex = (targetContentOffsetAlongAxis + alignmentOffset) / snapToIntervalF;
 
-    NSInteger snapIndex = velocityAlongAxis > 0.0
-        ? ceil(fractionalIndex)
-        : velocityAlongAxis < 0.0 ? floor(fractionalIndex) : round(fractionalIndex);
+    NSInteger snapIndex = velocityAlongAxis > 0.0 ? ceil(fractionalIndex)
+        : velocityAlongAxis < 0.0                 ? floor(fractionalIndex)
+                                                  : round(fractionalIndex);
     CGFloat newTargetContentOffset = (snapIndex * snapToIntervalF) - alignmentOffset;
 
     // Set new targetContentOffset
@@ -799,13 +860,11 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
   return _contentView;
 }
 
-#pragma mark - Setters
-
 - (CGSize)_calculateViewportSize
 {
   CGSize viewportSize = self.bounds.size;
   if (_automaticallyAdjustContentInsets) {
-    UIEdgeInsets contentInsets = [RCTView contentInsetsForView:self];
+    UIEdgeInsets contentInsets = RCTContentInsets(self);
     viewportSize = CGSizeMake(
         self.bounds.size.width - contentInsets.left - contentInsets.right,
         self.bounds.size.height - contentInsets.top - contentInsets.bottom);
@@ -813,71 +872,16 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
   return viewportSize;
 }
 
-- (CGPoint)calculateOffsetForContentSize:(CGSize)newContentSize
-{
-  CGPoint oldOffset = _scrollView.contentOffset;
-  CGPoint newOffset = oldOffset;
-
-  CGSize oldContentSize = _scrollView.contentSize;
-  CGSize viewportSize = [self _calculateViewportSize];
-
-  BOOL fitsinViewportY = oldContentSize.height <= viewportSize.height && newContentSize.height <= viewportSize.height;
-  if (newContentSize.height < oldContentSize.height && !fitsinViewportY) {
-    CGFloat offsetHeight = oldOffset.y + viewportSize.height;
-    if (oldOffset.y < 0) {
-      // overscrolled on top, leave offset alone
-    } else if (offsetHeight > oldContentSize.height) {
-      // overscrolled on the bottom, preserve overscroll amount
-      newOffset.y = MAX(0, oldOffset.y - (oldContentSize.height - newContentSize.height));
-    } else if (offsetHeight > newContentSize.height) {
-      // offset falls outside of bounds, scroll back to end of list
-      newOffset.y = MAX(0, newContentSize.height - viewportSize.height);
-    }
-  }
-
-  BOOL fitsinViewportX = oldContentSize.width <= viewportSize.width && newContentSize.width <= viewportSize.width;
-  if (newContentSize.width < oldContentSize.width && !fitsinViewportX) {
-    CGFloat offsetHeight = oldOffset.x + viewportSize.width;
-    if (oldOffset.x < 0) {
-      // overscrolled at the beginning, leave offset alone
-    } else if (offsetHeight > oldContentSize.width && newContentSize.width > viewportSize.width) {
-      // overscrolled at the end, preserve overscroll amount as much as possible
-      newOffset.x = MAX(0, oldOffset.x - (oldContentSize.width - newContentSize.width));
-    } else if (offsetHeight > newContentSize.width) {
-      // offset falls outside of bounds, scroll back to end
-      newOffset.x = MAX(0, newContentSize.width - viewportSize.width);
-    }
-  }
-
-  // all other cases, offset doesn't change
-  return newOffset;
-}
-
-/**
- * Once you set the `contentSize`, to a nonzero value, it is assumed to be
- * managed by you, and we'll never automatically compute the size for you,
- * unless you manually reset it back to {0, 0}
- */
 - (CGSize)contentSize
 {
-  if (!CGSizeEqualToSize(_contentSize, CGSizeZero)) {
-    return _contentSize;
-  }
-
   return _contentView.frame.size;
 }
 
-- (void)updateContentOffsetIfNeeded
+- (void)updateContentSizeIfNeeded
 {
   CGSize contentSize = self.contentSize;
   if (!CGSizeEqualToSize(_scrollView.contentSize, contentSize)) {
-    // When contentSize is set manually, ScrollView internals will reset
-    // contentOffset to  {0, 0}. Since we potentially set contentSize whenever
-    // anything in the ScrollView updates, we workaround this issue by manually
-    // adjusting contentOffset whenever this happens
-    CGPoint newOffset = [self calculateOffsetForContentSize:contentSize];
     _scrollView.contentSize = contentSize;
-    _scrollView.contentOffset = newOffset;
   }
 }
 
@@ -898,23 +902,33 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
 - (void)uiManagerWillPerformMounting:(RCTUIManager *)manager
 {
   RCTAssertUIManagerQueue();
-  [manager
-      prependUIBlock:^(__unused RCTUIManager *uiManager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-        BOOL horz = [self isHorizontal:self->_scrollView];
-        NSUInteger minIdx = [self->_maintainVisibleContentPosition[@"minIndexForVisible"] integerValue];
-        for (NSUInteger ii = minIdx; ii < self->_contentView.subviews.count; ++ii) {
-          // Find the first entirely visible view. This must be done after we update the content offset
-          // or it will tend to grab rows that were made visible by the shift in position
-          UIView *subview = self->_contentView.subviews[ii];
-          if ((horz ? subview.frame.origin.x >= self->_scrollView.contentOffset.x
-                    : subview.frame.origin.y >= self->_scrollView.contentOffset.y) ||
-              ii == self->_contentView.subviews.count - 1) {
-            self->_prevFirstVisibleFrame = subview.frame;
-            self->_firstVisibleView = subview;
-            break;
-          }
-        }
-      }];
+
+  [manager prependUIBlock:^(
+               __unused RCTUIManager *uiManager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    BOOL horz = [self isHorizontal:self->_scrollView];
+    NSUInteger minIdx = [self->_maintainVisibleContentPosition[@"minIndexForVisible"] integerValue];
+    for (NSUInteger ii = minIdx; ii < self->_contentView.subviews.count; ++ii) {
+      // Find the first entirely visible view. This must be done after we update the content offset
+      // or it will tend to grab rows that were made visible by the shift in position
+      UIView *subview = self->_contentView.subviews[ii];
+      BOOL hasNewView = NO;
+      if (horz) {
+        CGFloat leftInset = self.inverted ? self->_scrollView.contentInset.right : self->_scrollView.contentInset.left;
+        CGFloat x = self->_scrollView.contentOffset.x + leftInset;
+        hasNewView = subview.frame.origin.x > x;
+      } else {
+        CGFloat bottomInset =
+            self.inverted ? self->_scrollView.contentInset.top : self->_scrollView.contentInset.bottom;
+        CGFloat y = self->_scrollView.contentOffset.y + bottomInset;
+        hasNewView = subview.frame.origin.y > y;
+      }
+      if (hasNewView || ii == self->_contentView.subviews.count - 1) {
+        self->_prevFirstVisibleFrame = subview.frame;
+        self->_firstVisibleView = subview;
+        break;
+      }
+    }
+  }];
   [manager addUIBlock:^(__unused RCTUIManager *uiManager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     if (self->_maintainVisibleContentPosition == nil) {
       return; // The prop might have changed in the previous UIBlocks, so need to abort here.
@@ -924,12 +938,14 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
     if ([self isHorizontal:self->_scrollView]) {
       CGFloat deltaX = self->_firstVisibleView.frame.origin.x - self->_prevFirstVisibleFrame.origin.x;
       if (ABS(deltaX) > 0.1) {
+        CGFloat leftInset = self.inverted ? self->_scrollView.contentInset.right : self->_scrollView.contentInset.left;
+        CGFloat x = self->_scrollView.contentOffset.x + leftInset;
         self->_scrollView.contentOffset =
             CGPointMake(self->_scrollView.contentOffset.x + deltaX, self->_scrollView.contentOffset.y);
         if (autoscrollThreshold != nil) {
           // If the offset WAS within the threshold of the start, animate to the start.
-          if (self->_scrollView.contentOffset.x - deltaX <= [autoscrollThreshold integerValue]) {
-            [self scrollToOffset:CGPointMake(0, self->_scrollView.contentOffset.y) animated:YES];
+          if (x - deltaX <= [autoscrollThreshold integerValue]) {
+            [self scrollToOffset:CGPointMake(-leftInset, self->_scrollView.contentOffset.y) animated:YES];
           }
         }
       }
@@ -937,12 +953,15 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
       CGRect newFrame = self->_firstVisibleView.frame;
       CGFloat deltaY = newFrame.origin.y - self->_prevFirstVisibleFrame.origin.y;
       if (ABS(deltaY) > 0.1) {
+        CGFloat bottomInset =
+            self.inverted ? self->_scrollView.contentInset.top : self->_scrollView.contentInset.bottom;
+        CGFloat y = self->_scrollView.contentOffset.y + bottomInset;
         self->_scrollView.contentOffset =
             CGPointMake(self->_scrollView.contentOffset.x, self->_scrollView.contentOffset.y + deltaY);
         if (autoscrollThreshold != nil) {
           // If the offset WAS within the threshold of the start, animate to the start.
-          if (self->_scrollView.contentOffset.y - deltaY <= [autoscrollThreshold integerValue]) {
-            [self scrollToOffset:CGPointMake(self->_scrollView.contentOffset.x, 0) animated:YES];
+          if (y - deltaY <= [autoscrollThreshold integerValue]) {
+            [self scrollToOffset:CGPointMake(self->_scrollView.contentOffset.x, -bottomInset) animated:YES];
           }
         }
       }
@@ -986,19 +1005,24 @@ RCT_SET_AND_PRESERVE_OFFSET(setShowsVerticalScrollIndicator, showsVerticalScroll
 RCT_SET_AND_PRESERVE_OFFSET(setZoomScale, zoomScale, CGFloat);
 RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIEdgeInsets);
 
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
-- (void)setContentInsetAdjustmentBehavior:(UIScrollViewContentInsetAdjustmentBehavior)behavior API_AVAILABLE(ios(11.0))
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 /* __IPHONE_13_0 */
+- (void)setAutomaticallyAdjustsScrollIndicatorInsets:(BOOL)automaticallyAdjusts API_AVAILABLE(ios(13.0))
 {
-  // `contentInsetAdjustmentBehavior` is available since iOS 11.
-  if ([_scrollView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
-    CGPoint contentOffset = _scrollView.contentOffset;
-    if (@available(iOS 11.0, *)) {
-      _scrollView.contentInsetAdjustmentBehavior = behavior;
+  // `automaticallyAdjustsScrollIndicatorInsets` is available since iOS 13.
+  if ([_scrollView respondsToSelector:@selector(setAutomaticallyAdjustsScrollIndicatorInsets:)]) {
+    if (@available(iOS 13.0, *)) {
+      _scrollView.automaticallyAdjustsScrollIndicatorInsets = automaticallyAdjusts;
     }
-    _scrollView.contentOffset = contentOffset;
   }
 }
 #endif
+
+- (void)setContentInsetAdjustmentBehavior:(UIScrollViewContentInsetAdjustmentBehavior)behavior
+{
+  CGPoint contentOffset = _scrollView.contentOffset;
+  _scrollView.contentInsetAdjustmentBehavior = behavior;
+  _scrollView.contentOffset = contentOffset;
+}
 
 - (void)sendScrollEventWithName:(NSString *)eventName
                      scrollView:(UIScrollView *)scrollView

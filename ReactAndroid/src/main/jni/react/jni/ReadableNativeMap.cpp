@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -64,14 +64,15 @@ local_ref<JArrayClass<jstring>> ReadableNativeMap::importKeys() {
     return JArrayClass<jstring>::newArray(0);
   }
   auto pairs = map_.items();
-  for (auto &pair : pairs) {
-    keys_.value().push_back(pair.first.asString());
-  }
-  jint size = keys_.value().size();
+  jint size = map_.size();
   auto jarray = JArrayClass<jstring>::newArray(size);
-  for (jint ii = 0; ii < size; ii++) {
-    (*jarray)[ii] = make_jstring(keys_.value()[ii].getString());
+  jint i = 0;
+  for (auto &pair : pairs) {
+    auto value = pair.first.asString();
+    keys_.value().push_back(value);
+    (*jarray)[i++] = make_jstring(value);
   }
+
   return jarray;
 }
 

@@ -9,6 +9,7 @@ rn_android_library(
             "network/**/*.java",
         ],
     ),
+    autoglob = False,
     is_androidx = True,
     visibility = [
         "PUBLIC",
@@ -26,7 +27,7 @@ rn_android_library(
         react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_dep("third-party/java/junit:junit"),
         react_native_android_toplevel_dep("third-party/java/mockito2:mockito2"),
-        react_native_dep("third-party/java/testing-support-lib:runner"),
+        react_native_dep("third-party/android/androidx:test-runner"),
         react_native_integration_tests_target("java/com/facebook/react/testing/idledetection:idledetection"),
         react_native_integration_tests_target("java/com/facebook/react/testing/network:network"),
         react_native_target("java/com/facebook/react:react"),

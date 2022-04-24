@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,6 @@
  * @format
  * @flow
  */
-
-'use strict';
 
 import {AsyncStorage} from 'react-native';
 
@@ -27,7 +25,9 @@ export const Screens = {
 };
 
 export const initialState: RNTesterState = {
-  openExample: null,
+  activeModuleKey: null,
+  activeModuleTitle: null,
+  activeModuleExampleKey: null,
   screen: null,
   bookmarks: null,
   recentlyUsed: null,
@@ -58,7 +58,7 @@ export const getExamplesListWithBookmarksAndRecentlyUsed = ({
     return null;
   }
 
-  const components = RNTesterList.ComponentExamples.map(componentExample => ({
+  const components = RNTesterList.Components.map(componentExample => ({
     ...componentExample,
     isBookmarked: bookmarks.components.includes(componentExample.key),
     exampleType: Screens.COMPONENTS,
@@ -74,7 +74,7 @@ export const getExamplesListWithBookmarksAndRecentlyUsed = ({
     component => component.isBookmarked,
   );
 
-  const apis = RNTesterList.APIExamples.map(apiExample => ({
+  const apis = RNTesterList.APIs.map(apiExample => ({
     ...apiExample,
     isBookmarked: bookmarks.apis.includes(apiExample.key),
     exampleType: Screens.APIS,
@@ -135,7 +135,9 @@ export const getInitialStateFromAsyncStorage = async (
 
   if (!initialStateString) {
     return {
-      openExample: null,
+      activeModuleKey: null,
+      activeModuleTitle: null,
+      activeModuleExampleKey: null,
       screen: Screens.COMPONENTS,
       bookmarks: {components: [], apis: []},
       recentlyUsed: {components: [], apis: []},

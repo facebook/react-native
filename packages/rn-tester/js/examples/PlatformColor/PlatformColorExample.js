@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,6 @@
  * @format
  * @flow
  */
-
-'use strict';
 
 const React = require('react');
 const ReactNative = require('react-native');
@@ -112,6 +110,7 @@ function PlatformColorsExample() {
         {label: 'systemGray6', color: PlatformColor('systemGray6')},
         // Transparent Color
         {label: 'clear', color: PlatformColor('clear')},
+        {label: 'customColor', color: PlatformColor('customColor')},
       ];
     } else if (Platform.OS === 'android') {
       colors = [
@@ -235,6 +234,20 @@ function DynamicColorsExample() {
           style={{
             ...styles.colorCell,
             backgroundColor: DynamicColorIOS({light: 'red', dark: 'blue'}),
+          }}
+        />
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.labelCell}>
+          DynamicColorIOS({'{\n'}
+          {'  '}light: 'red', dark: 'blue'{'\n'}
+          {'}'})
+        </Text>
+        <View
+          style={{
+            ...styles.colorCell,
+            borderColor: DynamicColorIOS({light: 'red', dark: 'blue'}),
+            borderWidth: 1,
           }}
         />
       </View>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -64,8 +64,8 @@ class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
  * An app/platform-specific provider function to get an instance of a module
  * given a name.
  */
-using TurboModuleProviderFunctionType = std::function<std::shared_ptr<
-    TurboModule>(const std::string &name, const jsi::Value *schema)>;
+using TurboModuleProviderFunctionType =
+    std::function<std::shared_ptr<TurboModule>(const std::string &name)>;
 
 } // namespace react
 } // namespace facebook

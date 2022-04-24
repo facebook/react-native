@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -94,9 +94,10 @@ struct Rect {
     rightBottomPoint.y = std::max(rightBottomPoint.y, c.y);
     rightBottomPoint.y = std::max(rightBottomPoint.y, d.y);
 
-    return {leftTopPoint,
-            {rightBottomPoint.x - leftTopPoint.x,
-             rightBottomPoint.y - leftTopPoint.y}};
+    return {
+        leftTopPoint,
+        {rightBottomPoint.x - leftTopPoint.x,
+         rightBottomPoint.y - leftTopPoint.y}};
   }
 };
 

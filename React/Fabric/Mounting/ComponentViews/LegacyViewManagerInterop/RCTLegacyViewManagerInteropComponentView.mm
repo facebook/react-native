@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,6 +7,7 @@
 
 #import "RCTLegacyViewManagerInteropComponentView.h"
 
+#import <React/RCTAssert.h>
 #import <React/UIView+React.h>
 #import <react/renderer/components/legacyviewmanagerinterop/LegacyViewManagerInteropComponentDescriptor.h>
 #import <react/renderer/components/legacyviewmanagerinterop/LegacyViewManagerInteropViewProps.h>
@@ -22,12 +23,14 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
   NSMutableArray<NSDictionary *> *_viewsToBeMounted;
   NSMutableArray<UIView *> *_viewsToBeUnmounted;
   RCTLegacyViewManagerInteropCoordinatorAdapter *_adapter;
-  LegacyViewManagerInteropShadowNode::ConcreteStateTeller _stateTeller;
+  LegacyViewManagerInteropShadowNode::ConcreteState::Shared _state;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
+    RCTWarnNotAllowedForNewArchitecture(
+        self, @"ViewManager with interop layer is not allowed in the new architecture.");
     static const auto defaultProps = std::make_shared<const LegacyViewManagerInteropViewProps>();
     _props = defaultProps;
     _viewsToBeMounted = [NSMutableArray new];
@@ -50,8 +53,7 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
 
 + (NSMutableSet<NSString *> *)supportedViewManagers
 {
-  static NSMutableSet<NSString *> *supported = [NSMutableSet setWithObjects:@"Picker",
-                                                                            @"DatePicker",
+  static NSMutableSet<NSString *> *supported = [NSMutableSet setWithObjects:@"DatePicker",
                                                                             @"ProgressView",
                                                                             @"SegmentedControl",
                                                                             @"MaskedView",
@@ -75,9 +77,9 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
 
 - (RCTLegacyViewManagerInteropCoordinator *)coordinator
 {
-  auto data = _stateTeller.getData();
-  if (data.hasValue()) {
-    return unwrapManagedObject(data.value().coordinator);
+  if (_state != nullptr) {
+    const auto &state = _state->getData();
+    return unwrapManagedObject(state.coordinator);
   } else {
     return nil;
   }
@@ -85,7 +87,9 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
 
 - (NSString *)componentViewName_DO_NOT_USE_THIS_IS_BROKEN
 {
-  return self.coordinator.componentViewName;
+  const auto &state = _state->getData();
+  RCTLegacyViewManagerInteropCoordinator *coordinator = unwrapManagedObject(state.coordinator);
+  return coordinator.componentViewName;
 }
 
 #pragma mark - RCTComponentViewProtocol
@@ -95,7 +99,7 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
   _adapter = nil;
   [_viewsToBeMounted removeAllObjects];
   [_viewsToBeUnmounted removeAllObjects];
-  _stateTeller.invalidate();
+  _state.reset();
   self.contentView = nil;
   [super prepareForRecycle];
 }
@@ -124,7 +128,7 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
 
 - (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
 {
-  _stateTeller.setConcreteState(state);
+  _state = std::static_pointer_cast<LegacyViewManagerInteropShadowNode::ConcreteState const>(state);
 }
 
 - (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask

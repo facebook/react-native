@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -35,15 +35,15 @@ class AttributedStringBox final {
    * Custom explicit constructors.
    */
   explicit AttributedStringBox(AttributedString const &value);
-  explicit AttributedStringBox(std::shared_ptr<void> const &opaquePointer);
+  explicit AttributedStringBox(std::shared_ptr<void> opaquePointer);
 
   /*
    * Movable, Copyable, Assignable.
    */
   AttributedStringBox(AttributedStringBox const &other) = default;
-  AttributedStringBox(AttributedStringBox &&other) noexcept = default;
+  AttributedStringBox(AttributedStringBox &&other) noexcept;
   AttributedStringBox &operator=(AttributedStringBox const &other) = default;
-  AttributedStringBox &operator=(AttributedStringBox &&other) = default;
+  AttributedStringBox &operator=(AttributedStringBox &&other) noexcept;
 
   /*
    * Getters.

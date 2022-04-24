@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,32 +13,26 @@
 #import <React/RCTRootView.h>
 #import <React/RCTRootViewDelegate.h>
 
-#define RCT_TEST_DATA_CONFIGURATION_BLOCK(appName, testType, input, block) \
-- (void)DISABLED_test##appName##_##testType##_##input                      \
-{                                                                          \
-  [_runner runTest:_cmd                                                    \
-            module:@#appName                                               \
-      initialProps:@{@#input:@YES}                                         \
-configurationBlock:block];                                                 \
-}
+#define RCT_TEST_DATA_CONFIGURATION_BLOCK(appName, testType, input, block)                             \
+  -(void)DISABLED_test##appName##_##testType##_##input                                                 \
+  {                                                                                                    \
+    [_runner runTest:_cmd module:@ #appName initialProps:@{@ #input : @YES} configurationBlock:block]; \
+  }
 
-#define RCT_TEST_CONFIGURATION_BLOCK(appName, block)  \
-- (void)DISABLED_test##appName                        \
-{                                                     \
-  [_runner runTest:_cmd                               \
-            module:@#appName                          \
-      initialProps:nil                                \
-configurationBlock:block];                            \
-}
+#define RCT_TEST_CONFIGURATION_BLOCK(appName, block)                                    \
+  -(void)DISABLED_test##appName                                                         \
+  {                                                                                     \
+    [_runner runTest:_cmd module:@ #appName initialProps:nil configurationBlock:block]; \
+  }
 
-#define RCTNone   RCTRootViewSizeFlexibilityNone
+#define RCTNone RCTRootViewSizeFlexibilityNone
 #define RCTHeight RCTRootViewSizeFlexibilityHeight
-#define RCTWidth  RCTRootViewSizeFlexibilityWidth
-#define RCTBoth   RCTRootViewSizeFlexibilityWidthAndHeight
+#define RCTWidth RCTRootViewSizeFlexibilityWidth
+#define RCTBoth RCTRootViewSizeFlexibilityWidthAndHeight
 
-typedef void (^ControlBlock)(RCTRootView*);
+typedef void (^ControlBlock)(RCTRootView *);
 
-@interface SizeFlexibilityTestDelegate : NSObject<RCTRootViewDelegate>
+@interface SizeFlexibilityTestDelegate : NSObject <RCTRootViewDelegate>
 @end
 
 @implementation SizeFlexibilityTestDelegate
@@ -48,9 +42,9 @@ typedef void (^ControlBlock)(RCTRootView*);
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
-  [rootView.bridge.eventDispatcher sendAppEventWithName:@"rootViewDidChangeIntrinsicSize"
-                                                   body:@{@"width": @(rootView.intrinsicSize.width),
-                                                          @"height": @(rootView.intrinsicSize.height)}];
+  [rootView.eventDispatcher
+      sendAppEventWithName:@"rootViewDidChangeIntrinsicSize"
+                      body:@{@"width" : @(rootView.intrinsicSize.width), @"height" : @(rootView.intrinsicSize.height)}];
 #pragma clang diagnostic pop
 }
 
@@ -68,7 +62,7 @@ static SizeFlexibilityTestDelegate *sizeFlexibilityDelegate()
 
 static ControlBlock simpleSizeFlexibilityBlock(RCTRootViewSizeFlexibility sizeFlexibility)
 {
-  return ^(RCTRootView *rootView){
+  return ^(RCTRootView *rootView) {
     rootView.delegate = sizeFlexibilityDelegate();
     rootView.sizeFlexibility = sizeFlexibility;
   };
@@ -76,12 +70,8 @@ static ControlBlock simpleSizeFlexibilityBlock(RCTRootViewSizeFlexibility sizeFl
 
 static ControlBlock multipleSizeFlexibilityUpdatesBlock(RCTRootViewSizeFlexibility finalSizeFlexibility)
 {
-  return ^(RCTRootView *rootView){
-
-    NSInteger arr[4] = {RCTNone,
-                        RCTHeight,
-                        RCTWidth,
-                        RCTBoth};
+  return ^(RCTRootView *rootView) {
+    NSInteger arr[4] = {RCTNone, RCTHeight, RCTWidth, RCTBoth};
 
     rootView.delegate = sizeFlexibilityDelegate();
 
@@ -97,7 +87,7 @@ static ControlBlock multipleSizeFlexibilityUpdatesBlock(RCTRootViewSizeFlexibili
 
 static ControlBlock reactContentSizeUpdateBlock(RCTRootViewSizeFlexibility sizeFlexibility)
 {
-  return ^(RCTRootView *rootView){
+  return ^(RCTRootView *rootView) {
     rootView.delegate = sizeFlexibilityDelegate();
     rootView.sizeFlexibility = sizeFlexibility;
   };
@@ -107,8 +97,7 @@ static ControlBlock reactContentSizeUpdateBlock(RCTRootViewSizeFlexibility sizeF
 
 @end
 
-@implementation RCTRootViewIntegrationTests
-{
+@implementation RCTRootViewIntegrationTests {
   RCTTestRunner *_runner;
 }
 
@@ -123,22 +112,43 @@ static ControlBlock reactContentSizeUpdateBlock(RCTRootViewSizeFlexibility sizeF
 
 // Simple size flexibility tests - test if the content is measured properly
 RCT_TEST_DATA_CONFIGURATION_BLOCK(SizeFlexibilityUpdateTest, SingleUpdate, none, simpleSizeFlexibilityBlock(RCTNone));
-RCT_TEST_DATA_CONFIGURATION_BLOCK(SizeFlexibilityUpdateTest, SingleUpdate, height, simpleSizeFlexibilityBlock(RCTHeight));
+RCT_TEST_DATA_CONFIGURATION_BLOCK(
+    SizeFlexibilityUpdateTest,
+    SingleUpdate,
+    height,
+    simpleSizeFlexibilityBlock(RCTHeight));
 RCT_TEST_DATA_CONFIGURATION_BLOCK(SizeFlexibilityUpdateTest, SingleUpdate, width, simpleSizeFlexibilityBlock(RCTWidth));
 RCT_TEST_DATA_CONFIGURATION_BLOCK(SizeFlexibilityUpdateTest, SingleUpdate, both, simpleSizeFlexibilityBlock(RCTBoth));
 
-// Consider multiple size flexibility updates in a row. Test if the view's flexibility mode eventually is set to the expected value
-RCT_TEST_DATA_CONFIGURATION_BLOCK(SizeFlexibilityUpdateTest, MultipleUpdates, none, multipleSizeFlexibilityUpdatesBlock(RCTNone));
-RCT_TEST_DATA_CONFIGURATION_BLOCK(SizeFlexibilityUpdateTest, MultipleUpdates, height, multipleSizeFlexibilityUpdatesBlock(RCTHeight));
-RCT_TEST_DATA_CONFIGURATION_BLOCK(SizeFlexibilityUpdateTest, MultipleUpdates, width, multipleSizeFlexibilityUpdatesBlock(RCTWidth));
-RCT_TEST_DATA_CONFIGURATION_BLOCK(SizeFlexibilityUpdateTest, MultipleUpdates, both, multipleSizeFlexibilityUpdatesBlock(RCTBoth));
+// Consider multiple size flexibility updates in a row. Test if the view's flexibility mode eventually is set to the
+// expected value
+RCT_TEST_DATA_CONFIGURATION_BLOCK(
+    SizeFlexibilityUpdateTest,
+    MultipleUpdates,
+    none,
+    multipleSizeFlexibilityUpdatesBlock(RCTNone));
+RCT_TEST_DATA_CONFIGURATION_BLOCK(
+    SizeFlexibilityUpdateTest,
+    MultipleUpdates,
+    height,
+    multipleSizeFlexibilityUpdatesBlock(RCTHeight));
+RCT_TEST_DATA_CONFIGURATION_BLOCK(
+    SizeFlexibilityUpdateTest,
+    MultipleUpdates,
+    width,
+    multipleSizeFlexibilityUpdatesBlock(RCTWidth));
+RCT_TEST_DATA_CONFIGURATION_BLOCK(
+    SizeFlexibilityUpdateTest,
+    MultipleUpdates,
+    both,
+    multipleSizeFlexibilityUpdatesBlock(RCTBoth));
 
 // Test if the 'rootViewDidChangeIntrinsicSize' delegate method is called after the RN app decides internally to resize
 RCT_TEST_CONFIGURATION_BLOCK(ReactContentSizeUpdateTest, reactContentSizeUpdateBlock(RCTBoth))
 
 // Test if setting 'appProperties' property updates the RN app
 RCT_TEST_CONFIGURATION_BLOCK(PropertiesUpdateTest, ^(RCTRootView *rootView) {
-  rootView.appProperties = @{@"markTestPassed":@YES};
+  rootView.appProperties = @{@"markTestPassed" : @YES};
 })
 
 @end

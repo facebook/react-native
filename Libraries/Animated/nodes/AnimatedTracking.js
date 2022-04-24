@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -17,6 +17,7 @@ const {
   shouldUseNativeDriver,
 } = require('../NativeAnimatedHelper');
 
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type {EndCallback} from '../animations/Animation';
 
 class AnimatedTracking extends AnimatedNode {
@@ -44,11 +45,11 @@ class AnimatedTracking extends AnimatedNode {
     this.__attach();
   }
 
-  __makeNative() {
+  __makeNative(platformConfig: ?PlatformConfig) {
     this.__isNative = true;
-    this._parent.__makeNative();
-    super.__makeNative();
-    this._value.__makeNative();
+    this._parent.__makeNative(platformConfig);
+    super.__makeNative(platformConfig);
+    this._value.__makeNative(platformConfig);
   }
 
   __getValue(): Object {
@@ -63,7 +64,8 @@ class AnimatedTracking extends AnimatedNode {
       // if we don't do this `update` method will get called. At that point it
       // may be too late as it would mean the JS driver has already started
       // updating node values
-      this.__makeNative();
+      let {platformConfig} = this._animationConfig;
+      this.__makeNative(platformConfig);
     }
   }
 

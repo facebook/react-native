@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,6 @@
  * @flow strict-local
  * @format
  */
-
-'use strict';
 
 import Pressability, {
   type PressabilityConfig,
@@ -101,9 +99,7 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
    * Creates a value for the `background` prop that uses the Android theme's
    * default background for selectable elements.
    */
-  static SelectableBackground: (
-    rippleRadius: ?number,
-  ) => $ReadOnly<{|
+  static SelectableBackground: (rippleRadius: ?number) => $ReadOnly<{|
     attribute: 'selectableItemBackground',
     type: 'ThemeAttrAndroid',
     rippleRadius: ?number,
@@ -117,9 +113,7 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
    * Creates a value for the `background` prop that uses the Android theme's
    * default background for borderless selectable elements. Requires API 21+.
    */
-  static SelectableBackgroundBorderless: (
-    rippleRadius: ?number,
-  ) => $ReadOnly<{|
+  static SelectableBackgroundBorderless: (rippleRadius: ?number) => $ReadOnly<{|
     attribute: 'selectableItemBackgroundBorderless',
     type: 'ThemeAttrAndroid',
     rippleRadius: ?number,
@@ -170,7 +164,10 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
   _createPressabilityConfig(): PressabilityConfig {
     return {
       cancelable: !this.props.rejectResponderTermination,
-      disabled: this.props.disabled,
+      disabled:
+        this.props.disabled != null
+          ? this.props.disabled
+          : this.props.accessibilityState?.disabled,
       hitSlop: this.props.hitSlop,
       delayLongPress: this.props.delayLongPress,
       delayPressIn: this.props.delayPressIn,
@@ -182,8 +179,8 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
       onPress: this.props.onPress,
       onPressIn: event => {
         if (Platform.OS === 'android') {
-          this._dispatchPressedStateChange(true);
           this._dispatchHotspotUpdate(event);
+          this._dispatchPressedStateChange(true);
         }
         if (this.props.onPressIn != null) {
           this.props.onPressIn(event);
@@ -251,11 +248,16 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
 
     // BACKWARD-COMPATIBILITY: Focus and blur events were never supported before
     // adopting `Pressability`, so preserve that behavior.
-    const {
-      onBlur,
-      onFocus,
-      ...eventHandlersWithoutBlurAndFocus
-    } = this.state.pressability.getEventHandlers();
+    const {onBlur, onFocus, ...eventHandlersWithoutBlurAndFocus} =
+      this.state.pressability.getEventHandlers();
+
+    const accessibilityState =
+      this.props.disabled != null
+        ? {
+            ...this.props.accessibilityState,
+            disabled: this.props.disabled,
+          }
+        : this.props.accessibilityState;
 
     return React.cloneElement(
       element,
@@ -271,7 +273,7 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
         accessibilityHint: this.props.accessibilityHint,
         accessibilityLabel: this.props.accessibilityLabel,
         accessibilityRole: this.props.accessibilityRole,
-        accessibilityState: this.props.accessibilityState,
+        accessibilityState: accessibilityState,
         accessibilityActions: this.props.accessibilityActions,
         onAccessibilityAction: this.props.onAccessibilityAction,
         accessibilityValue: this.props.accessibilityValue,
@@ -314,5 +316,7 @@ const getBackgroundProp =
           ? {nativeForegroundAndroid: background}
           : {nativeBackgroundAndroid: background}
     : (background, useForeground) => null;
+
+TouchableNativeFeedback.displayName = 'TouchableNativeFeedback';
 
 module.exports = TouchableNativeFeedback;

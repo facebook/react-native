@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -17,6 +17,7 @@ const {StyleSheet, Text, TouchableHighlight} = require('react-native');
 import type {PressEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
 type Props = $ReadOnly<{|
+  testID?: string,
   children?: React.Node,
   onPress?: ?(event: PressEvent) => mixed,
 |}>;
@@ -25,6 +26,7 @@ class RNTesterButton extends React.Component<Props> {
   render(): React.Node {
     return (
       <TouchableHighlight
+        testID={this.props.testID}
         onPress={this.props.onPress}
         style={styles.button}
         underlayColor="grey">

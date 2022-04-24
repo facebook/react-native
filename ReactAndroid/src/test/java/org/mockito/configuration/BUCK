@@ -3,6 +3,7 @@ load("//tools/build_defs/oss:rn_defs.bzl", "react_native_android_toplevel_dep", 
 rn_android_library(
     name = "configuration",
     srcs = glob(["**/*.java"]),
+    autoglob = False,
     visibility = [
         "PUBLIC",
     ],

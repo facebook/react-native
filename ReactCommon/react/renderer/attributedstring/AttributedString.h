@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,7 +11,6 @@
 #include <memory>
 
 #include <folly/Hash.h>
-#include <folly/Optional.h>
 #include <react/renderer/attributedstring/TextAttributes.h>
 #include <react/renderer/core/Sealable.h>
 #include <react/renderer/core/ShadowNode.h>
@@ -57,7 +56,7 @@ class AttributedString : public Sealable, public DebugStringConvertible {
     int length{0};
   };
 
-  using Fragments = better::small_vector<Fragment, 1>;
+  using Fragments = butter::small_vector<Fragment, 1>;
 
   /*
    * Appends and prepends a `fragment` to the string.

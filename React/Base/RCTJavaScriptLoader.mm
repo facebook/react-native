@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -177,6 +177,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
   facebook::react::ScriptTag tag = facebook::react::parseTypeFromHeader(header);
   switch (tag) {
+    case facebook::react::ScriptTag::HBCBundle:
     case facebook::react::ScriptTag::RAMBundle:
       break;
 

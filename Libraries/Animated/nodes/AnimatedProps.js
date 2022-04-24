@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,6 +18,8 @@ const ReactNative = require('../../Renderer/shims/ReactNative');
 
 const invariant = require('invariant');
 
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
+
 class AnimatedProps extends AnimatedNode {
   _props: Object;
   _animatedView: any;
@@ -33,7 +35,6 @@ class AnimatedProps extends AnimatedNode {
     }
     this._props = props;
     this._callback = callback;
-    this.__attach();
   }
 
   __getValue(): Object {
@@ -92,15 +93,21 @@ class AnimatedProps extends AnimatedNode {
     this._callback();
   }
 
-  __makeNative(): void {
+  __makeNative(platformConfig: ?PlatformConfig): void {
     if (!this.__isNative) {
       this.__isNative = true;
       for (const key in this._props) {
         const value = this._props[key];
         if (value instanceof AnimatedNode) {
-          value.__makeNative();
+          value.__makeNative(platformConfig);
         }
       }
+
+      // Since this does not call the super.__makeNative, we need to store the
+      // supplied platformConfig here, before calling __connectAnimatedView
+      // where it will be needed to traverse the graph of attached values.
+      super.__setPlatformConfig(platformConfig);
+
       if (this._animatedView) {
         this.__connectAnimatedView();
       }
@@ -162,7 +169,7 @@ class AnimatedProps extends AnimatedNode {
     for (const propKey in this._props) {
       const value = this._props[propKey];
       if (value instanceof AnimatedNode) {
-        value.__makeNative();
+        value.__makeNative(this.__getPlatformConfig());
         propsConfig[propKey] = value.__getNativeTag();
       }
     }

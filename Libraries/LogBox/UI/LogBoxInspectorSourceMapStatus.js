@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,6 @@
  * @flow strict-local
  * @format
  */
-
-'use strict';
 
 import Animated from '../../Animated/Animated';
 import Easing from '../../Animated/Easing';
@@ -47,9 +45,9 @@ function LogBoxInspectorSourceMapStatus(props: Props): React.Node {
           animation,
           rotate: animated.interpolate({
             inputRange: [0, 1],
-            /* $FlowFixMe(>=0.38.0) - Flow error detected during the deployment
-             * of v0.38.0. To see the error, remove this comment and run flow
-             */
+            /* $FlowFixMe[speculation-ambiguous] (>=0.38.0) - Flow error
+             * detected during the deployment of v0.38.0. To see the error,
+             * remove this comment and run flow */
             outputRange: ['0deg', '360deg'],
           }),
         });

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -35,6 +35,10 @@ function getNativeComponentAttributes(uiViewClassName: string): any {
   // native component that can be either avoided or simplified.
   let {baseModuleName, bubblingEventTypes, directEventTypes} = viewConfig;
   let nativeProps = viewConfig.NativeProps;
+
+  bubblingEventTypes = bubblingEventTypes ?? {};
+  directEventTypes = directEventTypes ?? {};
+
   while (baseModuleName) {
     const baseModule = UIManager.getViewManagerConfig(baseModuleName);
     if (!baseModule) {
@@ -63,8 +67,18 @@ function getNativeComponentAttributes(uiViewClassName: string): any {
     const diff = getDifferForType(typeName);
     const process = getProcessorForType(typeName);
 
+    // If diff or process == null, omit the corresponding property from the Attribute
+    // Why:
+    //  1. Consistency with AttributeType flow type
+    //  2. Consistency with Static View Configs, which omit the null properties
     validAttributes[key] =
-      diff == null && process == null ? true : {diff, process};
+      diff == null
+        ? process == null
+          ? true
+          : {process}
+        : process == null
+        ? {diff}
+        : {diff, process};
   }
 
   // Unfortunately, the current setup declares style properties as top-level
@@ -80,17 +94,11 @@ function getNativeComponentAttributes(uiViewClassName: string): any {
     directEventTypes,
   });
 
-  if (!hasAttachedDefaultEventTypes) {
-    attachDefaultEventTypes(viewConfig);
-    hasAttachedDefaultEventTypes = true;
-  }
+  attachDefaultEventTypes(viewConfig);
 
   return viewConfig;
 }
 
-// TODO: Figure out how this makes sense. We're using a global boolean to only
-// initialize this on the first eagerly initialized native component.
-let hasAttachedDefaultEventTypes = false;
 function attachDefaultEventTypes(viewConfig: any) {
   // This is supported on UIManager platforms (ex: Android),
   // as lazy view managers are not implemented for all platforms.
@@ -154,7 +162,10 @@ function getDifferForType(
     case 'UIEdgeInsets':
       return insetsDiffer;
     // Android Types
-    // (not yet implemented)
+    case 'Point':
+      return pointsDiffer;
+    case 'EdgeInsets':
+      return insetsDiffer;
   }
   return null;
 }
@@ -177,6 +188,8 @@ function getProcessorForType(typeName: string): ?(nextProp: any) => any {
       return processColor;
     case 'ColorArray':
       return processColorArray;
+    case 'ImageSource':
+      return resolveAssetSource;
   }
   return null;
 }

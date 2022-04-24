@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,6 +13,7 @@
 
 @implementation RCTEnhancedScrollView {
   __weak id<UIScrollViewDelegate> _publicDelegate;
+  BOOL _isSetContentOffsetDisabled;
 }
 
 + (BOOL)automaticallyNotifiesObserversForKey:(NSString *)key
@@ -29,12 +30,15 @@
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    if (@available(iOS 11.0, *)) {
-      // We set the default behavior to "never" so that iOS
-      // doesn't do weird things to UIScrollView insets automatically
-      // and keeps it as an opt-in behavior.
-      self.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-    }
+    // We set the default behavior to "never" so that iOS
+    // doesn't do weird things to UIScrollView insets automatically
+    // and keeps it as an opt-in behavior.
+    self.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+
+    // We intentionally force `UIScrollView`s `semanticContentAttribute` to `LTR` here
+    // because this attribute affects a position of vertical scrollbar; we don't want this
+    // scrollbar flip because we also flip it with whole `UIScrollView` flip.
+    self.semanticContentAttribute = UISemanticContentAttributeForceLeftToRight;
 
     __weak __typeof(self) weakSelf = self;
     _delegateSplitter = [[RCTGenericDelegateSplitter alloc] initWithDelegateUpdateBlock:^(id delegate) {
@@ -46,6 +50,17 @@
   return self;
 }
 
+- (void)preserveContentOffsetWithBlock:(void (^)())block
+{
+  if (!block) {
+    return;
+  }
+
+  _isSetContentOffsetDisabled = YES;
+  block();
+  _isSetContentOffsetDisabled = NO;
+}
+
 /*
  * Automatically centers the content such that if the content is smaller than the
  * ScrollView, we force it to be centered, but when you zoom or the content otherwise
@@ -54,6 +69,10 @@
  */
 - (void)setContentOffset:(CGPoint)contentOffset
 {
+  if (_isSetContentOffsetDisabled) {
+    return;
+  }
+
   if (_centerContent && !CGSizeEqualToSize(self.contentSize, CGSizeZero)) {
     CGSize scrollViewSize = self.bounds.size;
     if (self.contentSize.width <= scrollViewSize.width) {
@@ -67,6 +86,15 @@
   super.contentOffset = CGPointMake(
       RCTSanitizeNaNValue(contentOffset.x, @"scrollView.contentOffset.x"),
       RCTSanitizeNaNValue(contentOffset.y, @"scrollView.contentOffset.y"));
+}
+
+- (BOOL)touchesShouldCancelInContentView:(UIView *)view
+{
+  if ([_overridingDelegate respondsToSelector:@selector(touchesShouldCancelInContentView:)]) {
+    return [_overridingDelegate touchesShouldCancelInContentView:view];
+  }
+
+  return [super touchesShouldCancelInContentView:view];
 }
 
 #pragma mark - RCTGenericDelegateSplitter
@@ -215,10 +243,10 @@
     // Pick snap point based on direction and proximity
     CGFloat fractionalIndex = (targetContentOffsetAlongAxis + alignmentOffset) / snapToIntervalF;
 
-    NSInteger snapIndex = velocityAlongAxis > 0.0
-        ? ceil(fractionalIndex)
-        : velocityAlongAxis < 0.0 ? floor(fractionalIndex) : round(fractionalIndex);
-    CGFloat newTargetContentOffset = (snapIndex * snapToIntervalF) - alignmentOffset;
+    NSInteger snapIndex = velocityAlongAxis > 0.0 ? ceil(fractionalIndex)
+        : velocityAlongAxis < 0.0                 ? floor(fractionalIndex)
+                                                  : round(fractionalIndex);
+    CGFloat newTargetContentOffset = ((CGFloat)snapIndex * snapToIntervalF) - alignmentOffset;
 
     // Set new targetContentOffset
     if (isHorizontal) {

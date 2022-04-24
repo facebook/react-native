@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -36,18 +36,6 @@ BOOL RCTImageLoadingPerfInstrumentationEnabled(void)
 void RCTEnableImageLoadingPerfInstrumentation(BOOL enabled)
 {
   imagePerfInstrumentationEnabled = enabled;
-}
-
-static BOOL (^getImagePerfInstrumentationForFabricEnabled)() = (^BOOL () {
-  return NO;
-});
-
-BOOL RCTGetImageLoadingPerfInstrumentationForFabricEnabled() {
-  return getImagePerfInstrumentationForFabricEnabled();
-}
-
-void RCTSetImageLoadingPerfInstrumentationForFabricEnabledBlock(BOOL (^getMobileConfigEnabled)()) {
-  getImagePerfInstrumentationForFabricEnabled = getMobileConfigEnabled;
 }
 
 static NSInteger RCTImageBytesForImage(UIImage *image)
@@ -92,8 +80,8 @@ static uint64_t monotonicTimeGetCurrentNanoseconds(void)
 
 @implementation RCTImageLoader
 {
-  NSArray<id<RCTImageURLLoader>> * (^_loadersProvider)(void);
-  NSArray<id<RCTImageDataDecoder>> * (^_decodersProvider)(void);
+  NSArray<id<RCTImageURLLoader>> * (^_loadersProvider)(RCTModuleRegistry *);
+  NSArray<id<RCTImageDataDecoder>> * (^_decodersProvider)(RCTModuleRegistry *);
   NSArray<id<RCTImageURLLoader>> *_loaders;
   NSArray<id<RCTImageDataDecoder>> *_decoders;
   NSOperationQueue *_imageDecodeQueue;
@@ -109,10 +97,10 @@ static uint64_t monotonicTimeGetCurrentNanoseconds(void)
 }
 
 @synthesize bridge = _bridge;
+@synthesize moduleRegistry = _moduleRegistry;
 @synthesize maxConcurrentLoadingTasks = _maxConcurrentLoadingTasks;
 @synthesize maxConcurrentDecodingTasks = _maxConcurrentDecodingTasks;
 @synthesize maxConcurrentDecodingBytes = _maxConcurrentDecodingBytes;
-@synthesize turboModuleRegistry = _turboModuleRegistry;
 
 RCT_EXPORT_MODULE()
 
@@ -135,8 +123,8 @@ RCT_EXPORT_MODULE()
 }
 
 - (instancetype)initWithRedirectDelegate:(id<RCTImageRedirectProtocol>)redirectDelegate
-                         loadersProvider:(NSArray<id<RCTImageURLLoader>> * (^)(void))getLoaders
-                        decodersProvider:(NSArray<id<RCTImageDataDecoder>> * (^)(void))getHandlers
+                         loadersProvider:(NSArray<id<RCTImageURLLoader>> * (^)(RCTModuleRegistry *))getLoaders
+                        decodersProvider:(NSArray<id<RCTImageDataDecoder>> * (^)(RCTModuleRegistry *))getHandlers
 {
   if (self = [self initWithRedirectDelegate:redirectDelegate]) {
     _loadersProvider = getLoaders;
@@ -187,10 +175,10 @@ RCT_EXPORT_MODULE()
   if (!_loaders) {
     std::unique_lock<std::mutex> guard(_loadersMutex);
     if (!_loaders) {
-      
+
       // Get loaders, sorted in reverse priority order (highest priority first)
       if (_loadersProvider) {
-        _loaders = _loadersProvider();
+        _loaders = _loadersProvider(self.moduleRegistry);
       } else {
         RCTAssert(_bridge, @"Trying to find RCTImageURLLoaders and bridge not set.");
         _loaders = [_bridge modulesConformingToProtocol:@protocol(RCTImageURLLoader)];
@@ -257,7 +245,7 @@ RCT_EXPORT_MODULE()
     // Get decoders, sorted in reverse priority order (highest priority first)
 
     if (_decodersProvider) {
-      _decoders = _decodersProvider();
+      _decoders = _decodersProvider(self.moduleRegistry);
     } else {
       RCTAssert(_bridge, @"Trying to find RCTImageDataDecoders and bridge not set.");
       _decoders = [_bridge modulesConformingToProtocol:@protocol(RCTImageDataDecoder)];
@@ -644,18 +632,12 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                      progressBlock:(RCTImageLoaderProgressBlock)progressHandler
                                    completionBlock:(void (^)(NSError *error, id imageOrData, NSURLResponse *response))completionHandler
 {
-  // Check if networking module is available
-  if (RCT_DEBUG && ![_bridge respondsToSelector:@selector(networking)]
-      && ![_turboModuleRegistry moduleForName:"RCTNetworking"]) {
+  RCTNetworking *networking = [_moduleRegistry moduleForName:"Networking"];
+  if (RCT_DEBUG && !networking) {
     RCTLogError(@"No suitable image URL loader found for %@. You may need to "
                 " import the RCTNetwork library in order to load images.",
                 request.URL.absoluteString);
     return NULL;
-  }
-
-  RCTNetworking *networking = [_bridge networking];
-  if (!networking) {
-    networking = [_turboModuleRegistry moduleForName:"RCTNetworking"];
   }
 
   // Check if networking module can load image
@@ -839,12 +821,12 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   return [[RCTImageURLLoaderRequest alloc] initWithRequestId:loaderRequest.requestId imageURL:imageURLRequest.URL cancellationBlock:cancellationBlock];
 }
 
-- (NSString *)loaderModuleNameForRequestUrl:(NSURL *)url {
+- (BOOL)shouldEnablePerfLoggingForRequestUrl:(NSURL *)url {
   id<RCTImageURLLoader> loadHandler = [self imageURLLoaderForURL:url];
-  if ([loadHandler respondsToSelector:@selector(loaderModuleNameForRequestUrl:)]) {
-    return [(id<RCTImageURLLoaderWithAttribution>)loadHandler loaderModuleNameForRequestUrl:url];
+  if ([loadHandler respondsToSelector:@selector(shouldEnablePerfLogging)]) {
+    return [(id<RCTImageURLLoaderWithAttribution>)loadHandler shouldEnablePerfLogging];
   }
-  return nil;
+  return NO;
 }
 
 - (void)trackURLImageVisibilityForRequest:(RCTImageURLLoaderRequest *)loaderRequest imageView:(UIView *)imageView
@@ -1197,10 +1179,29 @@ RCT_EXPORT_METHOD(prefetchImage:(NSString *)uri
               resolve:(RCTPromiseResolveBlock)resolve
                reject:(RCTPromiseRejectBlock)reject)
 {
+  [self prefetchImageWithMetadata:uri queryRootName:nil rootTag:0 resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(prefetchImageWithMetadata:(NSString *)uri
+                  queryRootName:(NSString *)queryRootName
+                  rootTag:(double)rootTag
+              resolve:(RCTPromiseResolveBlock)resolve
+               reject:(RCTPromiseRejectBlock)reject)
+{
   NSURLRequest *request = [RCTConvert NSURLRequest:uri];
   [self loadImageWithURLRequest:request
-   priority:RCTImageLoaderPriorityPrefetch
-   callback:^(NSError *error, UIImage *image) {
+                           size:CGSizeZero
+                          scale:1
+                        clipped:YES
+                     resizeMode:RCTResizeModeStretch
+                       priority:RCTImageLoaderPriorityPrefetch
+                    attribution:{
+                                  .queryRootName = queryRootName ? [queryRootName UTF8String] : "",
+                                  .surfaceId = (int)rootTag,
+                                }
+                  progressBlock:nil
+               partialLoadBlock:nil
+                       completionBlock:^(NSError *error, UIImage *image, id completionMetadata) {
      if (error) {
        reject(@"E_PREFETCH_FAILURE", nil, error);
        return;

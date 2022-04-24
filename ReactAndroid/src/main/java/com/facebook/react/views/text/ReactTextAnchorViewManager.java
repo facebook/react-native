@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -110,10 +110,6 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
       view.setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NONE);
     } else if (frequency.equals("full")) {
       view.setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_FULL);
-    } else if (frequency.equals("balanced")) {
-      view.setHyphenationFrequency(Layout.BREAK_STRATEGY_BALANCED);
-    } else if (frequency.equals("high")) {
-      view.setHyphenationFrequency(Layout.BREAK_STRATEGY_HIGH_QUALITY);
     } else if (frequency.equals("normal")) {
       view.setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NORMAL);
     } else {

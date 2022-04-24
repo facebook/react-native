@@ -9,22 +9,6 @@ SETUP_ENV_DEPS = [] if IS_OSS_BUILD else [
     "//xplat/js:setup_env",
 ]
 
-fb_native.sh_binary(
-    name = "codegen_rn_modules_tests",
-    main = "src/cli/verify_with_old_codegen.sh",
-    visibility = ["PUBLIC"],
-    resources = [
-        "src/cli/verify_with_old_codegen.js",
-        "src/cli/verify_with_old_codegen.sh",
-    ] + SETUP_ENV_DEPS,
-)
-
-fb_native.sh_test(
-    name = "verify_all_modules_with_old_codegen",
-    test = "src/cli/verify_all_modules_with_old_codegen.sh",
-    visibility = ["PUBLIC"],
-)
-
 fb_native.genrule(
     name = "codegen_tests_schema",
     srcs = glob(
@@ -43,17 +27,18 @@ rn_codegen_components(
 )
 
 rn_codegen_modules(
-    name = "codegen_tests",
-    native_module_spec_name = "FBReactNativeTestSpec",
+    name = "FBReactNativeTestSpec",
+    android_package_name = "com.facebook.fbreact.specs",
+    ios_assume_nonnull = False,
     schema_target = ":codegen_tests_schema",
 )
 
 rn_android_library(
     name = "rn_codegen_library_java",
     srcs = glob(
-        ["**/*.java"],
-        exclude = ["android/gradlePlugin-build/**/*"],
+        ["buck_tests/*.java"],
     ),
+    autoglob = False,
     visibility = [
         "PUBLIC",
     ],
@@ -70,12 +55,6 @@ rn_xplat_cxx_library(
     name = "rn_codegen_library",
     srcs = ["buck_tests/emptyFile.cpp"],
     headers = [],
-    compiler_flags = [
-        "-fexceptions",
-        "-frtti",
-        "-std=c++14",
-        "-Wall",
-    ],
     platforms = (ANDROID, APPLE),
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",
@@ -94,13 +73,7 @@ rn_xplat_cxx_library(
     srcs = ["buck_tests/emptyFile.mm"],
     headers = [],
     apple_sdks = (IOS,),
-    compiler_flags = [
-        "-fexceptions",
-        "-frtti",
-        "-std=c++14",
-        "-Wall",
-    ],
-    platforms = (APPLE),
+    platforms = APPLE,
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",
         "-DWITH_FBSYSTRACE=1",
@@ -109,15 +82,15 @@ rn_xplat_cxx_library(
         "PUBLIC",
     ],
     deps = [
+        ":FBReactNativeTestSpec",
         ":generated_components-codegen_tests",
-        ":generated_objcpp_modules-codegen_tests",
     ],
 )
 
 yarn_workspace(
     name = "yarn-workspace",
     srcs = glob(
-        ["**/*.js"],
+        ["src/**/*.js"],
         exclude = [
             "**/__fixtures__/**",
             "**/__flowtests__/**",

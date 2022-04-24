@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -469,14 +469,15 @@ void RCTProfileInit(RCTBridge *bridge)
     NSArray *orderedThreads =
         @[ @"JS async", @"RCTPerformanceLogger", @"com.facebook.react.JavaScript", @(RCTUIManagerQueueName), @"main" ];
     [orderedThreads enumerateObjectsUsingBlock:^(NSString *thread, NSUInteger idx, __unused BOOL *stop) {
-      RCTProfileAddEvent(kProfileTraceEvents,
-                         @"ph"
-                         : @"M", // metadata event
-                           @"name"
-                         : @"thread_sort_index", @"tid"
-                         : thread, @"args"
-                         :
-                         @{@"sort_index" : @(-1000 + (NSInteger)idx)});
+      RCTProfileAddEvent(
+          kProfileTraceEvents,
+          @"ph"
+          : @"M", // metadata event
+            @"name"
+          : @"thread_sort_index", @"tid"
+          : thread, @"args"
+          :
+          @{@"sort_index" : @(-1000 + (NSInteger)idx)});
     }];
   });
 

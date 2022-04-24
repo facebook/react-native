@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,7 +14,7 @@ namespace xplat {
 namespace detail {
 
 template <typename R, typename M, typename... T>
-R jsArg1(const folly::dynamic &arg, M asFoo, const T &... desc) {
+R jsArg1(const folly::dynamic &arg, M asFoo, const T &...desc) {
   try {
     return (arg.*asFoo)();
   } catch (const folly::TypeError &ex) {
@@ -35,7 +35,7 @@ template <typename R, typename... T>
 R jsArg(
     const folly::dynamic &arg,
     R (folly::dynamic::*asFoo)() const,
-    const T &... desc) {
+    const T &...desc) {
   return detail::jsArg1<R>(arg, asFoo, desc...);
 }
 
@@ -43,7 +43,7 @@ template <typename R, typename... T>
 R jsArg(
     const folly::dynamic &arg,
     R (folly::dynamic::*asFoo)() const &,
-    const T &... desc) {
+    const T &...desc) {
   return detail::jsArg1<R>(arg, asFoo, desc...);
 }
 

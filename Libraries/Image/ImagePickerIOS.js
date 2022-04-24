@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,21 +8,19 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import NativeImagePickerIOS from './NativeImagePickerIOS';
 import invariant from 'invariant';
 
 const ImagePickerIOS = {
-  canRecordVideos: function(callback: (result: boolean) => void): void {
+  canRecordVideos: function (callback: (result: boolean) => void): void {
     invariant(NativeImagePickerIOS, 'ImagePickerIOS is not available');
     return NativeImagePickerIOS.canRecordVideos(callback);
   },
-  canUseCamera: function(callback: (result: boolean) => void): void {
+  canUseCamera: function (callback: (result: boolean) => void): void {
     invariant(NativeImagePickerIOS, 'ImagePickerIOS is not available');
     return NativeImagePickerIOS.canUseCamera(callback);
   },
-  openCameraDialog: function(
+  openCameraDialog: function (
     config: $ReadOnly<{|
       unmirrorFrontFacingCamera?: boolean,
       videoMode?: boolean,
@@ -51,7 +49,7 @@ const ImagePickerIOS = {
       cancelCallback,
     );
   },
-  openSelectDialog: function(
+  openSelectDialog: function (
     config: $ReadOnly<{|
       showImages?: boolean,
       showVideos?: boolean,
@@ -88,7 +86,7 @@ const ImagePickerIOS = {
    * It is safe to call this method for urlsthat aren't video URLs;
    * it will be a no-op.
    */
-  removePendingVideo: function(url: string): void {
+  removePendingVideo: function (url: string): void {
     invariant(NativeImagePickerIOS, 'ImagePickerIOS is not available');
     NativeImagePickerIOS.removePendingVideo(url);
   },
@@ -96,7 +94,7 @@ const ImagePickerIOS = {
    * WARNING: In most cases, removePendingVideo should be used instead because
    * clearAllPendingVideos could clear out pending videos made by other callers.
    */
-  clearAllPendingVideos: function(): void {
+  clearAllPendingVideos: function (): void {
     invariant(NativeImagePickerIOS, 'ImagePickerIOS is not available');
     NativeImagePickerIOS.clearAllPendingVideos();
   },

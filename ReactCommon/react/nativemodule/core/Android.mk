@@ -1,4 +1,4 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -15,14 +15,19 @@ LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/ReactCommon/*.cpp) $(wildcard $(LOCA
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) $(LOCAL_PATH)/platform/android/
 
-LOCAL_SHARED_LIBRARIES := libfbjni libfolly_json libreactnativejni
+LOCAL_SHARED_LIBRARIES := \
+  libfbjni \
+  libfolly_json \
+  libjsi \
+  libreact_debug \
+  libreactnativejni
 
-LOCAL_STATIC_LIBRARIES := libjsi libreactperflogger
+LOCAL_STATIC_LIBRARIES :=  libreactperflogger
 
 LOCAL_CFLAGS := \
   -DLOG_TAG=\"ReactNative\"
 
-LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall
+LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
 
 include $(BUILD_SHARED_LIBRARY)
 

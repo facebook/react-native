@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -20,7 +20,10 @@ const invariant = require('invariant');
 
 const {shouldUseNativeDriver} = require('../NativeAnimatedHelper');
 
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type {AnimationConfig, EndCallback} from './Animation';
+
+import AnimatedColor from '../nodes/AnimatedColor';
 
 export type SpringAnimationConfig = {
   ...AnimationConfig,
@@ -33,6 +36,14 @@ export type SpringAnimationConfig = {
         ...
       }
     | AnimatedValueXY
+    | {
+        r: number,
+        g: number,
+        b: number,
+        a: number,
+        ...
+      }
+    | AnimatedColor
     | AnimatedInterpolation,
   overshootClamping?: boolean,
   restDisplacementThreshold?: number,
@@ -92,6 +103,7 @@ class SpringAnimation extends Animation {
   _onUpdate: (value: number) => void;
   _animationFrame: any;
   _useNativeDriver: boolean;
+  _platformConfig: ?PlatformConfig;
 
   constructor(config: SpringAnimationConfigSingle) {
     super();
@@ -104,6 +116,7 @@ class SpringAnimation extends Animation {
     this._toValue = config.toValue;
     this._delay = config.delay ?? 0;
     this._useNativeDriver = shouldUseNativeDriver(config);
+    this._platformConfig = config.platformConfig;
     this.__isInteraction = config.isInteraction ?? !this._useNativeDriver;
     this.__iterations = config.iterations ?? 1;
 
@@ -162,6 +175,7 @@ class SpringAnimation extends Animation {
     initialVelocity: number,
     iterations: number,
     mass: number,
+    platformConfig: ?PlatformConfig,
     overshootClamping: boolean,
     restDisplacementThreshold: number,
     restSpeedThreshold: number,
@@ -180,6 +194,7 @@ class SpringAnimation extends Animation {
       initialVelocity: this._initialVelocity ?? this._lastVelocity,
       toValue: this._toValue,
       iterations: this.__iterations,
+      platformConfig: this._platformConfig,
     };
   }
 
@@ -344,6 +359,7 @@ class SpringAnimation extends Animation {
       this.__debouncedOnEnd({finished: true});
       return;
     }
+    // $FlowFixMe[method-unbinding] added when improving typing for this parameters
     this._animationFrame = requestAnimationFrame(this.onUpdate.bind(this));
   }
 

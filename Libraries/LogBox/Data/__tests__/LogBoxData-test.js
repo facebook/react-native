@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -418,6 +418,26 @@ describe('LogBoxData', () => {
     expect(logs[0].count).toBe(2);
   });
 
+  it('adding same pattern multiple times', () => {
+    expect(LogBoxData.getIgnorePatterns().length).toBe(0);
+    LogBoxData.addIgnorePatterns(['abc']);
+    expect(LogBoxData.getIgnorePatterns().length).toBe(1);
+    LogBoxData.addIgnorePatterns([/abc/]);
+    expect(LogBoxData.getIgnorePatterns().length).toBe(2);
+    LogBoxData.addIgnorePatterns(['abc']);
+    expect(LogBoxData.getIgnorePatterns().length).toBe(2);
+    LogBoxData.addIgnorePatterns([/abc/]);
+    expect(LogBoxData.getIgnorePatterns().length).toBe(2);
+  });
+
+  it('adding duplicated patterns', () => {
+    expect(LogBoxData.getIgnorePatterns().length).toBe(0);
+    LogBoxData.addIgnorePatterns(['abc', /ab/, /abc/, /abc/, 'abc']);
+    expect(LogBoxData.getIgnorePatterns().length).toBe(3);
+    LogBoxData.addIgnorePatterns([/ab/, /abc/]);
+    expect(LogBoxData.getIgnorePatterns().length).toBe(3);
+  });
+
   it('ignores logs matching patterns (logs)', () => {
     addLogs(['A!', 'B?', 'C!']);
 
@@ -648,30 +668,34 @@ describe('LogBoxData', () => {
 
   it('reportLogBoxError creates a native redbox with a componentStack', () => {
     LogBoxData.reportLogBoxError(
+      /* $FlowFixMe[class-object-subtyping] added when improving typing for
+       * this parameters */
       new Error('Simulated Error'),
       '    in Component (file.js:1)',
     );
 
     const receivedError = ExceptionsManager.handleException.mock.calls[0][0];
     expect(receivedError.componentStack).toBe('    in Component (file.js:1)');
-    expect(receivedError.forceRedbox).toBe(true);
     expect(receivedError.message).toBe(
       'An error was thrown when attempting to render log messages via LogBox.\n\nSimulated Error',
     );
   });
 
   it('reportLogBoxError creates a native redbox without a componentStack', () => {
+    /* $FlowFixMe[class-object-subtyping] added when improving typing for this
+     * parameters */
     LogBoxData.reportLogBoxError(new Error('Simulated Error'));
 
     const receivedError = ExceptionsManager.handleException.mock.calls[0][0];
     expect(receivedError.componentStack).toBeUndefined();
-    expect(receivedError.forceRedbox).toBe(true);
     expect(receivedError.message).toBe(
       'An error was thrown when attempting to render log messages via LogBox.\n\nSimulated Error',
     );
   });
 
   it('reportLogBoxError creates an error message that is also ignored', () => {
+    /* $FlowFixMe[class-object-subtyping] added when improving typing for this
+     * parameters */
     LogBoxData.reportLogBoxError(new Error('Simulated Error'));
 
     const receivedErrorMessage =

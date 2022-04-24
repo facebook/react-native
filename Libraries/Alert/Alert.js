@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,12 +8,8 @@
  * @flow
  */
 
-'use strict';
-
 import Platform from '../Utilities/Platform';
-import NativeDialogManagerAndroid, {
-  type DialogOptions,
-} from '../NativeModules/specs/NativeDialogManagerAndroid';
+import type {DialogOptions} from '../NativeModules/specs/NativeDialogManagerAndroid';
 import RCTAlertManager from './RCTAlertManager';
 
 export type AlertType =
@@ -38,7 +34,7 @@ type Options = {
 /**
  * Launches an alert dialog with the specified title and message.
  *
- * See https://reactnative.dev/docs/alert.html
+ * See https://reactnative.dev/docs/alert
  */
 class Alert {
   static alert(
@@ -50,6 +46,8 @@ class Alert {
     if (Platform.OS === 'ios') {
       Alert.prompt(title, message, buttons, 'default');
     } else if (Platform.OS === 'android') {
+      const NativeDialogManagerAndroid =
+        require('../NativeModules/specs/NativeDialogManagerAndroid').default;
       if (!NativeDialogManagerAndroid) {
         return;
       }

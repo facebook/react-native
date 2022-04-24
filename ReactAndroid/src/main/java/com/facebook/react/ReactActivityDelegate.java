@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,6 +11,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -20,9 +21,9 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.modules.core.PermissionListener;
 
 /**
- * Delegate class for {@link ReactActivity} and {@link ReactFragmentActivity}. You can subclass this
- * to provide custom implementations for e.g. {@link #getReactNativeHost()}, if your Application
- * class doesn't implement {@link ReactApplication}.
+ * Delegate class for {@link ReactActivity}. You can subclass this to provide custom implementations
+ * for e.g. {@link #getReactNativeHost()}, if your Application class doesn't implement {@link
+ * ReactApplication}.
  */
 public class ReactActivityDelegate {
 
@@ -81,7 +82,7 @@ public class ReactActivityDelegate {
             return ReactActivityDelegate.this.createRootView();
           }
         };
-    if (mMainComponentName != null) {
+    if (mainComponentName != null) {
       loadApp(mainComponentName);
     }
   }
@@ -151,6 +152,12 @@ public class ReactActivityDelegate {
   public void onWindowFocusChanged(boolean hasFocus) {
     if (getReactNativeHost().hasInstance()) {
       getReactNativeHost().getReactInstanceManager().onWindowFocusChange(hasFocus);
+    }
+  }
+
+  public void onConfigurationChanged(Configuration newConfig) {
+    if (getReactNativeHost().hasInstance()) {
+      getReactInstanceManager().onConfigurationChanged(getContext(), newConfig);
     }
   }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {GeneratedViewConfig} from '../../Utilities/registerGeneratedViewConfig';
+import type {PartialViewConfig} from '../../Renderer/shims/ReactNativeTypes';
 
 const ScrollViewViewConfig = {
   uiViewClassName: 'RCTScrollView',
@@ -24,19 +24,28 @@ const ScrollViewViewConfig = {
     alwaysBounceHorizontal: true,
     alwaysBounceVertical: true,
     automaticallyAdjustContentInsets: true,
+    automaticallyAdjustKeyboardInsets: true,
+    automaticallyAdjustsScrollIndicatorInsets: true,
     bounces: true,
     bouncesZoom: true,
     canCancelContentTouches: true,
     centerContent: true,
-    contentInset: {diff: require('../../Utilities/differ/pointsDiffer')},
-    contentOffset: {diff: require('../../Utilities/differ/pointsDiffer')},
+    contentInset: {
+      diff: require('../../Utilities/differ/pointsDiffer'),
+    },
+    contentOffset: {
+      diff: require('../../Utilities/differ/pointsDiffer'),
+    },
     contentInsetAdjustmentBehavior: true,
     decelerationRate: true,
     directionalLockEnabled: true,
     disableIntervalMomentum: true,
-    endFillColor: {process: require('../../StyleSheet/processColor')},
+    endFillColor: {
+      process: require('../../StyleSheet/processColor'),
+    },
     fadingEdgeLength: true,
     indicatorStyle: true,
+    inverted: true,
     keyboardDismissMode: true,
     maintainVisibleContentPosition: true,
     maximumZoomScale: true,
@@ -72,4 +81,4 @@ const ScrollViewViewConfig = {
   },
 };
 
-module.exports = (ScrollViewViewConfig: GeneratedViewConfig);
+module.exports = (ScrollViewViewConfig: PartialViewConfig);

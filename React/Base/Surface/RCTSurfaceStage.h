@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -23,17 +23,12 @@ typedef NS_OPTIONS(NSInteger, RCTSurfaceStage) {
   RCTSurfaceStageSurfaceDidStop = 1 << 7, // Surface stopped
 
   // Most of the previously existed stages make no sense in the new architecture;
-  // now Surface exposes only three simple stages:
-  //
-  // Surface object was constructed and still valid.
-  RCTSurfaceStageInitialized = RCTSurfaceStageSurfaceDidInitialize,
-  // Surface was started.
-  RCTSurfaceStageStarted = 1 << 8,
-  // All off-main-thread work is done; we are ready to mount the UI.
-  RCTSurfaceStagePrepared = RCTSurfaceStageBridgeDidLoad | RCTSurfaceStageModuleDidLoad | RCTSurfaceStageSurfaceDidRun |
-      RCTSurfaceStageSurfaceDidInitialRendering | RCTSurfaceStageSurfaceDidInitialLayout,
-  // All main-thread work is done, the UI was mounted.
-  RCTSurfaceStageMounted = RCTSurfaceStageSurfaceDidInitialMounting,
+  // now Surface exposes only two simple stages:
+  RCTSurfaceStagePreparing = RCTSurfaceStageSurfaceDidInitialize | RCTSurfaceStageBridgeDidLoad |
+      RCTSurfaceStageModuleDidLoad,
+  RCTSurfaceStageRunning = RCTSurfaceStagePreparing | RCTSurfaceStageSurfaceDidRun |
+      RCTSurfaceStageSurfaceDidInitialRendering | RCTSurfaceStageSurfaceDidInitialLayout |
+      RCTSurfaceStageSurfaceDidInitialMounting,
 };
 
 /**

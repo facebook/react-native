@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -21,9 +21,14 @@ describe('GenerateModuleHObjCpp', () => {
       const fixture = fixtures[fixtureName];
 
       it(`can generate fixture ${fixtureName}`, () => {
-        const output = generator.generate(fixtureName, fixture, 'SampleSpec');
+        const output = generator.generate(
+          fixtureName,
+          fixture,
+          'com.facebook.fbreact.specs',
+          false,
+        );
         expect(
-          new Map([['SampleSpec.h', output.get('SampleSpec.h')]]),
+          new Map([[`${fixtureName}.h`, output.get(`${fixtureName}.h`)]]),
         ).toMatchSnapshot();
       });
     });

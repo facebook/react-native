@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,7 +15,6 @@ import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -39,11 +38,10 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    *
    * @param viewToUpdate
    * @param props
-   * @param stateWrapper
    */
   public void updateProperties(@NonNull T viewToUpdate, ReactStylesDiffMap props) {
-    final ViewManagerDelegate<T> delegate;
-    if (ReactFeatureFlags.useViewManagerDelegates && (delegate = getDelegate()) != null) {
+    final ViewManagerDelegate<T> delegate = getDelegate();
+    if (delegate != null) {
       ViewManagerPropertyUpdater.updateProps(delegate, viewToUpdate, props);
     } else {
       ViewManagerPropertyUpdater.updateProps(this, viewToUpdate, props);
@@ -68,19 +66,14 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
     return null;
   }
 
-  /** Creates a view and installs event emitters on it. */
-  private final @NonNull T createView(
-      @NonNull ThemedReactContext reactContext, JSResponderHandler jsResponderHandler) {
-    return createView(reactContext, null, null, jsResponderHandler);
-  }
-
   /** Creates a view with knowledge of props and state. */
   public @NonNull T createView(
+      int reactTag,
       @NonNull ThemedReactContext reactContext,
       @Nullable ReactStylesDiffMap props,
       @Nullable StateWrapper stateWrapper,
       JSResponderHandler jsResponderHandler) {
-    T view = createViewInstance(reactContext, props, stateWrapper);
+    T view = createViewInstance(reactTag, reactContext, props, stateWrapper);
     if (view instanceof ReactInterceptingViewGroup) {
       ((ReactInterceptingViewGroup) view).setOnInterceptTouchEventListener(jsResponderHandler);
     }
@@ -128,19 +121,28 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
   /**
    * Subclasses should return a new View instance of the proper type. This is an optional method
    * that will call createViewInstance for you. Override it if you need props upon creation of the
-   * view.
+   * view, or state.
    *
-   * @param reactContext
+   * <p>If you override this method, you *must* guarantee that you you're handling updateProperties,
+   * view.setId, addEventEmitters, and updateState/updateExtraData properly!
+   *
+   * @param reactTag reactTag that should be set as ID of the view instance
+   * @param reactContext ReactContext used to initialize view instance
+   * @param initialProps initial props for the view instance
+   * @param stateWrapper initial state for the view instance
    */
   protected @NonNull T createViewInstance(
+      int reactTag,
       @NonNull ThemedReactContext reactContext,
       @Nullable ReactStylesDiffMap initialProps,
       @Nullable StateWrapper stateWrapper) {
     T view = createViewInstance(reactContext);
+    view.setId(reactTag);
     addEventEmitters(reactContext, view);
     if (initialProps != null) {
       updateProperties(view, initialProps);
     }
+    // Only present in Fabric; but always present in Fabric.
     if (stateWrapper != null) {
       Object extraData = updateState(view, initialProps, stateWrapper);
       if (extraData != null) {

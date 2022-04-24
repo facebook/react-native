@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,6 +15,7 @@
 #import "RCTInspectorDevServerHelper.h"
 #endif
 #import "RCTDevLoadingViewProtocol.h"
+#import "RCTJSThread.h"
 #import "RCTLog.h"
 #import "RCTModuleData.h"
 #import "RCTPerformanceLogger.h"
@@ -58,6 +59,9 @@ NSArray<Class> *RCTGetModuleClasses(void)
 void RCTRegisterModule(Class);
 void RCTRegisterModule(Class moduleClass)
 {
+  RCTWarnNotAllowedForNewArchitecture(
+      @"RCTRegisterModule()", [NSString stringWithFormat:@"'%@' was registered unexpectedly", moduleClass]);
+
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     RCTModuleClasses = [NSMutableArray new];
@@ -135,15 +139,39 @@ void RCTEnableTurboModuleSharedMutexInit(BOOL enabled)
   turboModuleSharedMutexInitEnabled = enabled;
 }
 
-static BOOL turboModuleBlockCopyEnabled = NO;
-BOOL RCTTurboModuleBlockCopyEnabled(void)
+static RCTTurboModuleCleanupMode turboModuleCleanupMode = kRCTGlobalScope;
+RCTTurboModuleCleanupMode RCTGetTurboModuleCleanupMode(void)
 {
-  return turboModuleBlockCopyEnabled;
+  return turboModuleCleanupMode;
 }
 
-void RCTEnableTurboModuleBlockCopy(BOOL enabled)
+void RCTSetTurboModuleCleanupMode(RCTTurboModuleCleanupMode mode)
 {
-  turboModuleBlockCopyEnabled = enabled;
+  turboModuleCleanupMode = mode;
+}
+
+// Turn off TurboModule delegate locking
+static BOOL turboModuleManagerDelegateLockingDisabled = YES;
+BOOL RCTTurboModuleManagerDelegateLockingDisabled(void)
+{
+  return turboModuleManagerDelegateLockingDisabled;
+}
+
+void RCTDisableTurboModuleManagerDelegateLocking(BOOL disabled)
+{
+  turboModuleManagerDelegateLockingDisabled = disabled;
+}
+
+// Turn off TurboModule delegate locking
+static BOOL viewConfigEventValidAttributesDisabled = NO;
+BOOL RCTViewConfigEventValidAttributesDisabled(void)
+{
+  return viewConfigEventValidAttributesDisabled;
+}
+
+void RCTDisableViewConfigEventValidAttributes(BOOL disabled)
+{
+  viewConfigEventValidAttributesDisabled = disabled;
 }
 
 @interface RCTBridge () <RCTReloadListener>
@@ -153,15 +181,9 @@ void RCTEnableTurboModuleBlockCopy(BOOL enabled)
   NSURL *_delegateBundleURL;
 }
 
-dispatch_queue_t RCTJSThread;
-
 + (void)initialize
 {
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    // Set up JS thread
-    RCTJSThread = (id)kCFNull;
-  });
+  _RCTInitializeJSThreadConstantInternal();
 }
 
 static RCTBridge *RCTCurrentBridgeInstance = nil;
@@ -200,6 +222,7 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
                    launchOptions:(NSDictionary *)launchOptions
 {
   if (self = [super init]) {
+    RCTEnforceNotAllowedForNewArchitecture(self, nil);
     _delegate = delegate;
     _bundleURL = bundleURL;
     _moduleProvider = block;
@@ -226,6 +249,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   [self.batchedBridge setRCTTurboModuleRegistry:turboModuleRegistry];
 }
 
+- (void)attachBridgeAPIsToTurboModule:(id<RCTTurboModule>)module
+{
+  [self.batchedBridge attachBridgeAPIsToTurboModule:module];
+}
+
 - (void)didReceiveReloadCommand
 {
 #if RCT_ENABLE_INSPECTOR
@@ -246,6 +274,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
     self->_launchOptions = nil;
     [self setUp];
   });
+}
+
+- (RCTModuleRegistry *)moduleRegistry
+{
+  return self.batchedBridge.moduleRegistry;
 }
 
 - (NSArray<Class> *)moduleClasses

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -26,6 +26,7 @@
 - (NSString *)getString:(NSString *)arg;
 - (NSArray<id<NSObject>> *)getArray:(NSArray *)arg;
 - (NSDictionary *)getObject:(NSDictionary *)arg;
+- (NSDictionary *)getUnsafeObject:(NSDictionary *)arg;
 - (NSNumber *)getRootTag:(double)arg;
 - (NSDictionary *)getValue:(double)x y:(NSString *)y z:(NSDictionary *)z;
 - (void)getValueWithCallback:(RCTResponseSenderBlock)callback;

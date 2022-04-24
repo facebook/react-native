@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -147,25 +147,9 @@ static UIColor *defaultPlaceholderColor()
 
 - (void)setAttributedText:(NSAttributedString *)attributedText
 {
-  // Using `setAttributedString:` while user is typing breaks some internal mechanics
-  // when entering complex input languages such as Chinese, Korean or Japanese.
-  // see: https://github.com/facebook/react-native/issues/19339
-
-  // We try to avoid calling this method as much as we can.
-  // If the text has changed, there is nothing we can do.
-  if (![super.attributedText.string isEqualToString:attributedText.string]) {
-    [super setAttributedText:attributedText];
-  } else {
-  // But if the text is preserved, we just copying the attributes from the source string.
-    if (![super.attributedText isEqualToAttributedString:attributedText]) {
-      [self copyTextAttributesFrom:attributedText];
-    }
-  }
-
+  [super setAttributedText:attributedText];
   [self textDidChange];
 }
-
-#pragma mark - Overrides
 
 - (void)setSelectedTextRange:(UITextRange *)selectedTextRange notifyDelegate:(BOOL)notifyDelegate
 {
@@ -184,12 +168,14 @@ static UIColor *defaultPlaceholderColor()
   _textWasPasted = YES;
 }
 
+// Turn off scroll animation to fix flaky scrolling.
+// This is only necessary for iOS <= 13.
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED < 140000
 - (void)setContentOffset:(CGPoint)contentOffset animated:(__unused BOOL)animated
 {
-  // Turning off scroll animation.
-  // This fixes the problem also known as "flaky scrolling".
   [super setContentOffset:contentOffset animated:NO];
 }
+#endif
 
 - (void)selectAll:(id)sender
 {
@@ -282,6 +268,7 @@ static UIColor *defaultPlaceholderColor()
 - (void)_updatePlaceholder
 {
   _placeholderView.attributedText = [[NSAttributedString alloc] initWithString:_placeholder ?: @"" attributes:[self _placeholderTextAttributes]];
+  [self _invalidatePlaceholderVisibility];
 }
 
 - (NSDictionary<NSAttributedStringKey, id> *)_placeholderTextAttributes
@@ -297,20 +284,17 @@ static UIColor *defaultPlaceholderColor()
   return textAttributes;
 }
 
-#pragma mark - Utility Methods
+#pragma mark - Caret Manipulation
 
-- (void)copyTextAttributesFrom:(NSAttributedString *)sourceString
+- (CGRect)caretRectForPosition:(UITextPosition *)position
 {
-  [self.textStorage beginEditing];
+  if (_caretHidden) {
+    return CGRectZero;
+  }
 
-  NSTextStorage *textStorage = self.textStorage;
-  [sourceString enumerateAttributesInRange:NSMakeRange(0, sourceString.length)
-                                   options:NSAttributedStringEnumerationReverse
-                                usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
-                                  [textStorage setAttributes:attrs range:range];
-                                }];
-
-  [self.textStorage endEditing];
+  return [super caretRectForPosition:position];
 }
+
+#pragma mark - Utility Methods
 
 @end

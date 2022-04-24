@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,8 +11,6 @@
 // This class is responsible for coordinating the "focused" state for
 // TextInputs. All calls relating to the keyboard should be funneled
 // through here.
-
-'use strict';
 
 const React = require('react');
 const Platform = require('../../Utilities/Platform');
@@ -112,7 +110,7 @@ function blurTextInput(textField: ?ComponentRef) {
   if (typeof textField === 'number') {
     if (__DEV__) {
       console.error(
-        'focusTextInput must be called with a host component. Passing a react tag is deprecated.',
+        'blurTextInput must be called with a host component. Passing a react tag is deprecated.',
       );
     }
 

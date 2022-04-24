@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -50,6 +50,9 @@ class JSCRuntime : public jsi::Runtime {
   jsi::Value evaluateJavaScript(
       const std::shared_ptr<const jsi::Buffer> &buffer,
       const std::string &sourceURL) override;
+
+  bool drainMicrotasks(int maxMicrotasksHint = -1) override;
+
   jsi::Object global() override;
 
   std::string description() override;
@@ -430,6 +433,10 @@ jsi::Value JSCRuntime::evaluateJavaScript(
   }
   checkException(res, exc);
   return createValue(res);
+}
+
+bool JSCRuntime::drainMicrotasks(int maxMicrotasksHint) {
+  return true;
 }
 
 jsi::Object JSCRuntime::global() {

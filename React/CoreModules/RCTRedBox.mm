@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -138,8 +138,8 @@
                                       selector:@selector(showExtraDataViewController)
                                          block:nil];
 
-    CGFloat buttonWidth = frame.size.width / (4 + [customButtonTitles count]);
-    CGFloat bottomButtonHeight = frame.size.height - buttonHeight - [self bottomSafeViewHeight];
+    CGFloat buttonWidth = frame.size.width / (CGFloat)(4 + [customButtonTitles count]);
+    CGFloat bottomButtonHeight = frame.size.height - buttonHeight - (CGFloat)[self bottomSafeViewHeight];
     dismissButton.frame = CGRectMake(0, bottomButtonHeight, buttonWidth, buttonHeight);
     reloadButton.frame = CGRectMake(buttonWidth, bottomButtonHeight, buttonWidth, buttonHeight);
     copyButton.frame = CGRectMake(buttonWidth * 2, bottomButtonHeight, buttonWidth, buttonHeight);
@@ -167,8 +167,11 @@
 
     UIView *bottomSafeView = [UIView new];
     bottomSafeView.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
-    bottomSafeView.frame =
-        CGRectMake(0, frame.size.height - [self bottomSafeViewHeight], frame.size.width, [self bottomSafeViewHeight]);
+    bottomSafeView.frame = CGRectMake(
+        0,
+        frame.size.height - (CGFloat)[self bottomSafeViewHeight],
+        frame.size.width,
+        (CGFloat)[self bottomSafeViewHeight]);
 
     [rootView addSubview:bottomSafeView];
   }
@@ -201,20 +204,10 @@
 
 - (NSInteger)bottomSafeViewHeight
 {
-  if (@available(iOS 11.0, *)) {
-    return RCTSharedApplication().delegate.window.safeAreaInsets.bottom;
-  } else {
-    return 0;
-  }
+  return RCTSharedApplication().delegate.window.safeAreaInsets.bottom;
 }
 
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
-
-- (void)dealloc
-{
-  _stackTraceTableView.dataSource = nil;
-  _stackTraceTableView.delegate = nil;
-}
 
 - (NSString *)stripAnsi:(NSString *)text
 {
@@ -455,6 +448,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 }
 
 @synthesize bridge = _bridge;
+@synthesize moduleRegistry = _moduleRegistry;
+@synthesize bundleManager = _bundleManager;
 
 RCT_EXPORT_MODULE()
 
@@ -590,7 +585,8 @@ RCT_EXPORT_MODULE()
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [self->_bridge.eventDispatcher sendDeviceEventWithName:@"collectRedBoxExtraData" body:nil];
+    [[self->_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"collectRedBoxExtraData"
+                                                                                body:nil];
 #pragma clang diagnostic pop
 
     if (!self->_window) {
@@ -640,7 +636,7 @@ RCT_EXPORT_METHOD(dismiss)
 
 - (void)redBoxWindow:(__unused RCTRedBoxWindow *)redBoxWindow openStackFrameInEditor:(RCTJSStackFrame *)stackFrame
 {
-  NSURL *const bundleURL = _overrideBundleURL ?: _bridge.bundleURL;
+  NSURL *const bundleURL = _overrideBundleURL ?: _bundleManager.bundleURL;
   if (![bundleURL.scheme hasPrefix:@"http"]) {
     RCTLogWarn(@"Cannot open stack frame in editor because you're not connected to the packager.");
     return;

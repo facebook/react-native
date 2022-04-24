@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,6 +14,7 @@
 
 const AssetRegistry = require('@react-native/assets/registry');
 const AssetSourceResolver = require('./AssetSourceResolver');
+const {pickScale} = require('./AssetUtils');
 
 import type {ResolvedAssetSource} from './AssetSourceResolver';
 
@@ -105,5 +106,5 @@ function resolveAssetSource(source: any): ?ResolvedAssetSource {
 }
 
 module.exports = resolveAssetSource;
-module.exports.pickScale = AssetSourceResolver.pickScale;
+module.exports.pickScale = pickScale;
 module.exports.setCustomSourceTransformer = setCustomSourceTransformer;

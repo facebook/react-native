@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -24,12 +24,12 @@ extern const char TextInputComponentName[];
 /*
  * `ShadowNode` for <TextInput> component.
  */
-class TextInputShadowNode : public ConcreteViewShadowNode<
-                                TextInputComponentName,
-                                TextInputProps,
-                                TextInputEventEmitter,
-                                TextInputState>,
-                            public BaseTextShadowNode {
+class TextInputShadowNode final : public ConcreteViewShadowNode<
+                                      TextInputComponentName,
+                                      TextInputProps,
+                                      TextInputEventEmitter,
+                                      TextInputState>,
+                                  public BaseTextShadowNode {
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
@@ -37,6 +37,7 @@ class TextInputShadowNode : public ConcreteViewShadowNode<
     auto traits = ConcreteViewShadowNode::BaseTraits();
     traits.set(ShadowNodeTraits::Trait::TextKind);
     traits.set(ShadowNodeTraits::Trait::LeafYogaNode);
+    traits.set(ShadowNodeTraits::Trait::MeasurableYogaNode);
     return traits;
   }
 
@@ -45,7 +46,8 @@ class TextInputShadowNode : public ConcreteViewShadowNode<
    * `TextInputShadowNode` uses the manager to measure text content
    * and construct `TextInputState` objects.
    */
-  void setTextLayoutManager(TextLayoutManager::Shared const &textLayoutManager);
+  void setTextLayoutManager(
+      std::shared_ptr<TextLayoutManager const> textLayoutManager);
 
 #pragma mark - LayoutableShadowNode
 
@@ -74,7 +76,7 @@ class TextInputShadowNode : public ConcreteViewShadowNode<
   AttributedStringBox attributedStringBoxToMeasure(
       LayoutContext const &layoutContext) const;
 
-  TextLayoutManager::Shared textLayoutManager_;
+  std::shared_ptr<TextLayoutManager const> textLayoutManager_;
 };
 
 } // namespace react

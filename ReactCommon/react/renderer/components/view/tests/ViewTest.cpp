@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,7 +14,9 @@
 #include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/components/scrollview/ScrollViewComponentDescriptor.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/element/ComponentBuilder.h>
+
 #include <react/renderer/element/Element.h>
 #include <react/renderer/element/testUtils.h>
 
@@ -62,6 +64,10 @@ class YogaDirtyFlagTest : public ::testing::Test {
                 Element<ScrollViewShadowNode>()
                   .reference(scrollViewShadowNode_)
                   .tag(7)
+                  .children({
+                    Element<ViewShadowNode>()
+                      .tag(8)
+                  })
               })
           });
     // clang-format on
@@ -81,14 +87,17 @@ class YogaDirtyFlagTest : public ::testing::Test {
 };
 
 TEST_F(YogaDirtyFlagTest, cloningPropsWithoutChangingThem) {
+  ContextContainer contextContainer{};
+  PropsParserContext parserContext{-1, contextContainer};
+
   /*
    * Cloning props without changing them must *not* dirty a Yoga node.
    */
   auto newRootShadowNode = rootShadowNode_->cloneTree(
-      innerShadowNode_->getFamily(), [](ShadowNode const &oldShadowNode) {
+      innerShadowNode_->getFamily(), [&](ShadowNode const &oldShadowNode) {
         auto &componentDescriptor = oldShadowNode.getComponentDescriptor();
         auto props = componentDescriptor.cloneProps(
-            oldShadowNode.getProps(), RawProps());
+            parserContext, oldShadowNode.getProps(), RawProps());
         return oldShadowNode.clone(ShadowNodeFragment{props});
       });
 
@@ -208,9 +217,10 @@ TEST_F(YogaDirtyFlagTest, updatingStateForScrollViewMistNotDirtyYogaNode) {
             oldShadowNode.getFamily(),
             std::make_shared<ScrollViewState>(state));
 
-        return oldShadowNode.clone({ShadowNodeFragment::propsPlaceholder(),
-                                    ShadowNodeFragment::childrenPlaceholder(),
-                                    newState});
+        return oldShadowNode.clone(
+            {ShadowNodeFragment::propsPlaceholder(),
+             ShadowNodeFragment::childrenPlaceholder(),
+             newState});
       });
 
   EXPECT_FALSE(

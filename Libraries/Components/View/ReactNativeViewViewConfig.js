@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,16 +8,16 @@
  * @format
  */
 
-'use strict';
+import type {ViewConfig} from '../../Renderer/shims/ReactNativeTypes';
 import ReactNativeViewViewConfigAndroid from './ReactNativeViewViewConfigAndroid';
 import {Platform} from 'react-native';
 
-const ReactNativeViewConfig = {
+const ReactNativeViewConfig: ViewConfig = {
   uiViewClassName: 'RCTView',
   baseModuleName: null,
   Manager: 'ViewManager',
-  Commands: ({}: {...}),
-  Constants: ({}: {...}),
+  Commands: {},
+  Constants: {},
   bubblingEventTypes: {
     ...ReactNativeViewViewConfigAndroid.bubblingEventTypes,
     topBlur: {
@@ -104,6 +104,15 @@ const ReactNativeViewConfig = {
     topMagicTap: {
       registrationName: 'onMagicTap',
     },
+    topPointerEnter: {
+      registrationName: 'pointerenter',
+    },
+    topPointerLeave: {
+      registrationName: 'pointerleave',
+    },
+    topPointerMove: {
+      registrationName: 'pointermove',
+    },
     // Events for react-native-gesture-handler (T45765076)
     // Remove once this library can handle JS View Configs
     onGestureHandlerEvent: {
@@ -122,7 +131,6 @@ const ReactNativeViewConfig = {
     accessibilityLabel: true,
     accessibilityLiveRegion: true,
     accessibilityRole: true,
-    accessibilityStates: true, // TODO: Can be removed after next release
     accessibilityState: true,
     accessibilityValue: true,
     accessibilityViewIsModal: true,
@@ -171,7 +179,7 @@ const ReactNativeViewConfig = {
     flexShrink: true,
     flexWrap: true,
     height: true,
-    hitSlop: {diff: (require('../../Utilities/differ/insetsDiffer'): any)},
+    hitSlop: {diff: require('../../Utilities/differ/insetsDiffer')},
     importantForAccessibility: true,
     justifyContent: true,
     left: true,
@@ -193,6 +201,9 @@ const ReactNativeViewConfig = {
     onAccessibilityAction: true,
     onAccessibilityEscape: true,
     onAccessibilityTap: true,
+    pointerenter: true,
+    pointerleave: true,
+    pointermove: true,
     onLayout: true,
     onMagicTap: true,
     opacity: true,
@@ -322,9 +333,10 @@ const ReactNativeViewConfig = {
       textTransform: true,
       tintColor: {process: require('../../StyleSheet/processColor')},
       top: true,
-      transform: ((Platform.OS === 'ios'
-        ? {diff: require('../../Utilities/differ/matricesDiffer')}
-        : {process: require('../../StyleSheet/processTransform')}): any),
+      transform:
+        Platform.OS === 'ios'
+          ? {diff: require('../../Utilities/differ/matricesDiffer')}
+          : {process: require('../../StyleSheet/processTransform')},
       transformMatrix: true,
       translateX: true,
       translateY: true,
@@ -334,9 +346,10 @@ const ReactNativeViewConfig = {
     },
     testID: true,
     top: true,
-    transform: ((Platform.OS === 'ios'
-      ? {diff: require('../../Utilities/differ/matricesDiffer')}
-      : {process: require('../../StyleSheet/processTransform')}): any),
+    transform:
+      Platform.OS === 'ios'
+        ? {diff: require('../../Utilities/differ/matricesDiffer')}
+        : {process: require('../../StyleSheet/processTransform')},
     translateX: true,
     translateY: true,
     width: true,

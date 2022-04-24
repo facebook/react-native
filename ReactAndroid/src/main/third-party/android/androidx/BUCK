@@ -33,6 +33,15 @@ fb_native.android_library(
 )
 
 fb_native.android_library(
+    name = "autofill",
+    visibility = ["PUBLIC"],
+    exported_deps = [
+        ":autofill-binary",
+        ":core",
+    ],
+)
+
+fb_native.android_library(
     name = "collection",
     visibility = ["PUBLIC"],
     exported_deps = [
@@ -291,6 +300,25 @@ fb_native.android_library(
 )
 
 fb_native.android_library(
+    name = "test-runner",
+    visibility = ["PUBLIC"],
+    exported_deps = [
+        ":annotation",
+        ":test-monitor",
+        ":test-runner-binary",
+    ],
+)
+
+fb_native.android_library(
+    name = "test-rules",
+    visibility = ["PUBLIC"],
+    exported_deps = [
+        ":test-rules-binary",
+        ":test-runner",
+    ],
+)
+
+fb_native.android_library(
     name = "vectordrawable",
     visibility = ["PUBLIC"],
     exported_deps = [
@@ -340,6 +368,11 @@ fb_native.android_prebuilt_aar(
 fb_native.android_prebuilt_aar(
     name = "asynclayoutinflater-binary",
     aar = ":asynclayoutinflater-binary-aar",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "autofill-binary",
+    aar = ":autofill-binary-aar",
 )
 
 fb_native.prebuilt_jar(
@@ -463,6 +496,16 @@ fb_native.android_prebuilt_aar(
 )
 
 fb_native.android_prebuilt_aar(
+    name = "test-rules-binary",
+    aar = ":test-rules-binary-aar",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "test-runner-binary",
+    aar = ":test-runner-binary-aar",
+)
+
+fb_native.android_prebuilt_aar(
     name = "vectordrawable-binary",
     aar = ":vectordrawable-binary-aar",
 )
@@ -499,6 +542,12 @@ fb_native.remote_file(
     name = "asynclayoutinflater-binary-aar",
     sha1 = "5ffa788d19a6863799f25cb50d4fdfb0ec649037",
     url = "mvn:androidx.asynclayoutinflater:asynclayoutinflater:aar:1.0.0",
+)
+
+fb_native.remote_file(
+    name = "autofill-binary-aar",
+    sha1 = "d9cdaa22b9c373ba75a35dcc33ee8871543164e5",
+    url = "mvn:androidx.autofill:autofill:aar:1.1.0",
 )
 
 fb_native.remote_file(
@@ -641,8 +690,20 @@ fb_native.remote_file(
 
 fb_native.remote_file(
     name = "test-monitor-binary-aar",
-    sha1 = "d2f75d117c055f35c8ebbd4f96fabc2137df9e4d",
-    url = "mvn:androidx.test:monitor:aar:1.2.0",
+    sha1 = "4f3c15d0a1e0c943b233b0dc5d8f1e690cfe7c0a",
+    url = "mvn:androidx.test:monitor:aar:1.4.0",
+)
+
+fb_native.remote_file(
+    name = "test-rules-binary-aar",
+    sha1 = "0984e8b5505f08489993c783702236af7a4a18c8",
+    url = "mvn:androidx.test:rules:aar:1.4.0",
+)
+
+fb_native.remote_file(
+    name = "test-runner-binary-aar",
+    sha1 = "44d79420baf7ac208e33b35df8756f0e912ced38",
+    url = "mvn:androidx.test:runner:aar:1.4.0",
 )
 
 fb_native.remote_file(

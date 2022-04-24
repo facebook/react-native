@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,6 +11,7 @@
 'use strict';
 
 const AnimatedValue = require('./nodes/AnimatedValue');
+const AnimatedValueXY = require('./nodes/AnimatedValueXY');
 const NativeAnimatedHelper = require('./NativeAnimatedHelper');
 const ReactNative = require('../Renderer/shims/ReactNative');
 
@@ -18,16 +19,23 @@ const invariant = require('invariant');
 
 const {shouldUseNativeDriver} = require('./NativeAnimatedHelper');
 
-export type Mapping = {[key: string]: Mapping, ...} | AnimatedValue;
+import type {PlatformConfig} from './AnimatedPlatformConfig';
+
+export type Mapping =
+  | {[key: string]: Mapping, ...}
+  | AnimatedValue
+  | AnimatedValueXY;
 export type EventConfig = {
   listener?: ?Function,
   useNativeDriver: boolean,
+  platformConfig?: PlatformConfig,
 };
 
 function attachNativeEvent(
   viewRef: any,
   eventName: string,
   argMapping: $ReadOnlyArray<?Mapping>,
+  platformConfig: ?PlatformConfig,
 ): {detach: () => void} {
   // Find animated values in `argMapping` and create an array representing their
   // key path inside the `nativeEvent` object. Ex.: ['contentOffset', 'x'].
@@ -35,12 +43,15 @@ function attachNativeEvent(
 
   const traverse = (value, path) => {
     if (value instanceof AnimatedValue) {
-      value.__makeNative();
+      value.__makeNative(platformConfig);
 
       eventMappings.push({
         nativeEventPath: path,
         animatedValueTag: value.__getNativeTag(),
       });
+    } else if (value instanceof AnimatedValueXY) {
+      traverse(value.x, path.concat('x'));
+      traverse(value.y, path.concat('y'));
     } else if (typeof value === 'object') {
       for (const key in value) {
         traverse(value[key], path.concat(key));
@@ -74,6 +85,7 @@ function attachNativeEvent(
           NativeAnimatedHelper.API.removeAnimatedEventFromView(
             viewTag,
             eventName,
+            // $FlowFixMe[incompatible-call]
             mapping.animatedValueTag,
           );
         });
@@ -91,6 +103,13 @@ function validateMapping(argMapping, args) {
           key +
           ', should be number but got ' +
           typeof recEvt,
+      );
+      return;
+    }
+    if (recMapping instanceof AnimatedValueXY) {
+      invariant(
+        typeof recEvt.x === 'number' && typeof recEvt.y === 'number',
+        'Bad mapping of event key ' + key + ', should be XY but got ' + recEvt,
       );
       return;
     }
@@ -130,9 +149,9 @@ function validateMapping(argMapping, args) {
 class AnimatedEvent {
   _argMapping: $ReadOnlyArray<?Mapping>;
   _listeners: Array<Function> = [];
-  _callListeners: Function;
   _attachedEvent: ?{detach: () => void, ...};
   __isNative: boolean;
+  __platformConfig: ?PlatformConfig;
 
   constructor(argMapping: $ReadOnlyArray<?Mapping>, config: EventConfig) {
     this._argMapping = argMapping;
@@ -145,9 +164,9 @@ class AnimatedEvent {
     if (config.listener) {
       this.__addListener(config.listener);
     }
-    this._callListeners = this._callListeners.bind(this);
     this._attachedEvent = null;
     this.__isNative = shouldUseNativeDriver(config);
+    this.__platformConfig = config.platformConfig;
   }
 
   __addListener(callback: Function): void {
@@ -168,6 +187,7 @@ class AnimatedEvent {
       viewRef,
       eventName,
       this._argMapping,
+      this.__platformConfig,
     );
   }
 
@@ -203,31 +223,36 @@ class AnimatedEvent {
         validatedMapping = true;
       }
 
-      const traverse = (recMapping, recEvt, key) => {
+      const traverse = (recMapping, recEvt) => {
         if (recMapping instanceof AnimatedValue) {
           if (typeof recEvt === 'number') {
             recMapping.setValue(recEvt);
           }
+        } else if (recMapping instanceof AnimatedValueXY) {
+          if (typeof recEvt === 'object') {
+            traverse(recMapping.x, recEvt.x);
+            traverse(recMapping.y, recEvt.y);
+          }
         } else if (typeof recMapping === 'object') {
           for (const mappingKey in recMapping) {
-            /* $FlowFixMe(>=0.120.0) This comment suppresses an error found
-             * when Flow v0.120 was deployed. To see the error, delete this
-             * comment and run Flow. */
-            traverse(recMapping[mappingKey], recEvt[mappingKey], mappingKey);
+            /* $FlowFixMe[prop-missing] (>=0.120.0) This comment suppresses an
+             * error found when Flow v0.120 was deployed. To see the error,
+             * delete this comment and run Flow. */
+            traverse(recMapping[mappingKey], recEvt[mappingKey]);
           }
         }
       };
       this._argMapping.forEach((mapping, idx) => {
-        traverse(mapping, args[idx], 'arg' + idx);
+        traverse(mapping, args[idx]);
       });
 
       this._callListeners(...args);
     };
   }
 
-  _callListeners(...args: any) {
+  _callListeners = (...args: any) => {
     this._listeners.forEach(listener => listener(...args));
-  }
+  };
 }
 
 module.exports = {AnimatedEvent, attachNativeEvent};

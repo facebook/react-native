@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -21,7 +21,7 @@ class ShadowNodeTraits {
  public:
   /*
    * Underlying type for the traits.
-   * The first 16 bits are reserved for Core.
+   * The first 23 bits are reserved for Core.
    */
   enum Trait : int32_t {
     None = 0,
@@ -54,16 +54,25 @@ class ShadowNodeTraits {
     // Nodes with this trait (and all their descendants) will not produce views.
     Hidden = 1 << 6,
 
+    // Indicates that the `YogaLayoutableShadowNode` must set `isDirty` flag for
+    // Yoga node when a `ShadowNode` is being cloned. `ShadowNode`s that modify
+    // Yoga styles in the constructor (or later) *after* the `ShadowNode`
+    // is cloned must set this trait.
+    // Any Yoga node (not only Leaf ones) can have this trait.
+    DirtyYogaNode = 1 << 9,
+
     // Inherits `YogaLayoutableShadowNode` and enforces that the `YGNode` is a
     // leaf.
     LeafYogaNode = 1 << 10,
 
-    // Inherits `LayoutableShadowNode` and calls `measure()`.
-    HasMeasure = 1 << 11,
+    // Inherits `YogaLayoutableShadowNode` and has a custom measure function.
+    // Only Leaf nodes can have this trait.
+    MeasurableYogaNode = 1 << 11,
 
-    // Indicates that the `ShadowNode` must form a stacking context (a level
-    // of the hierarchy; `ShadowView`s formed by descendants the node will be
-    // descendants of a `ShadowView` formed by the node).
+    // Indicates that the `ShadowNode` must form a stacking context.
+    // A Stacking Context forms a level of a `ShadowView` hierarchy (in contrast
+    // with a level of a `ShadowNode` hierarchy).
+    // See W3C standard for more details: https://www.w3.org/TR/CSS2/zindex.html
     FormsStackingContext = 1 << 13,
 
     // Indicates that the node must form a `ShadowView`.
@@ -73,6 +82,22 @@ class ShadowNodeTraits {
     // Indicates that `children` list is shared between nodes and need
     // to be cloned before the first mutation.
     ChildrenAreShared = 1 << 15,
+
+    // Inherits 'RawTextShadowNode'
+    RawText = 1 << 16,
+
+    // Inherits 'TextShadowNode'
+    Text = 1 << 17,
+
+    // Reserved
+    ReservedTrait1 = 1 << 18,
+    ReservedTrait2 = 1 << 19,
+    ReservedTrait3 = 1 << 20,
+    ReservedTrait4 = 1 << 21,
+    ReservedTrait5 = 1 << 22,
+
+    // Unserved - alias these for local usage
+    UnreservedTrait1 = 1 << 23
   };
 
   /*

@@ -1,13 +1,11 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
- /*global expect*/
-
-'use strict';
+/*global expect*/
 
 // munges string so that it's nice to look at in a test diff
 function strip(str) {

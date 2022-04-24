@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -32,10 +32,63 @@ type ImageSource = $ReadOnly<{|
   uri: string,
 |}>;
 
+type BlobImageState = {|
+  objectURL: ?string,
+|};
+
+type BlobImageProps = $ReadOnly<{|
+  url: string,
+|}>;
+
+class BlobImage extends React.Component<BlobImageProps, BlobImageState> {
+  state = {
+    objectURL: null,
+  };
+
+  UNSAFE_componentWillMount() {
+    (async () => {
+      const result = await fetch(this.props.url);
+      const blob = await result.blob();
+      const objectURL = URL.createObjectURL(blob);
+      this.setState({objectURL});
+    })();
+  }
+
+  render() {
+    return this.state.objectURL !== null ? (
+      <Image source={{uri: this.state.objectURL}} style={styles.base} />
+    ) : (
+      <Text>Object URL not created yet</Text>
+    );
+  }
+}
+
+type BlobImageExampleState = {||};
+
+type BlobImageExampleProps = $ReadOnly<{|
+  urls: string[],
+|}>;
+
+class BlobImageExample extends React.Component<
+  BlobImageExampleProps,
+  BlobImageExampleState,
+> {
+  render() {
+    return (
+      <View style={styles.horizontal}>
+        {this.props.urls.map(url => (
+          <BlobImage key={url} url={url} />
+        ))}
+      </View>
+    );
+  }
+}
+
 type NetworkImageCallbackExampleState = {|
   events: Array<string>,
   startLoadPrefetched: boolean,
   mountTime: number,
+  imageHash: number,
 |};
 
 type NetworkImageCallbackExampleProps = $ReadOnly<{|
@@ -51,6 +104,7 @@ class NetworkImageCallbackExample extends React.Component<
     events: [],
     startLoadPrefetched: false,
     mountTime: Date.now(),
+    imageHash: Date.now(),
   };
 
   UNSAFE_componentWillMount() {
@@ -61,6 +115,10 @@ class NetworkImageCallbackExample extends React.Component<
     this.setState(state => ({
       events: [...state.events, event],
     }));
+  };
+
+  updateLoadingImageHash = () => {
+    this.setState({imageHash: Date.now()});
   };
 
   render() {
@@ -102,8 +160,9 @@ class NetworkImageCallbackExample extends React.Component<
                     const result = map[IMAGE_PREFETCH_URL];
                     if (result) {
                       this._loadEventFired(
-                        `✔ queryCache "${result}" (+${Date.now() -
-                          mountTime}ms)`,
+                        `✔ queryCache "${result}" (+${
+                          Date.now() - mountTime
+                        }ms)`,
                       );
                     } else {
                       this._loadEventFired(
@@ -135,8 +194,9 @@ class NetworkImageCallbackExample extends React.Component<
               if (event.nativeEvent.source) {
                 const url = event.nativeEvent.source.uri;
                 this._loadEventFired(
-                  `✔ (prefetched) onLoad (+${Date.now() -
-                    mountTime}ms) for URL ${url}`,
+                  `✔ (prefetched) onLoad (+${
+                    Date.now() - mountTime
+                  }ms) for URL ${url}`,
                 );
               } else {
                 this._loadEventFired(
@@ -279,16 +339,6 @@ class MultipleSourcesExample extends React.Component<
     });
   };
 
-  increaseImageSize = () => {
-    if (this.state.width >= 100) {
-      return;
-    }
-    this.setState({
-      width: this.state.width + 10,
-      height: this.state.height + 10,
-    });
-  };
-
   decreaseImageSize = () => {
     if (this.state.width <= 10) {
       return;
@@ -323,6 +373,139 @@ class MultipleSourcesExample extends React.Component<
                 height: 38,
               },
               {
+                uri: 'https://www.facebook.com/ads/pics/successstories.png',
+                width: 100,
+                height: 100,
+              },
+            ]}
+          />
+        </View>
+      </View>
+    );
+  }
+}
+
+type LoadingIndicatorSourceExampleState = {|
+  imageHash: number,
+|};
+
+type LoadingIndicatorSourceExampleProps = $ReadOnly<{||}>;
+
+class LoadingIndicatorSourceExample extends React.Component<
+  LoadingIndicatorSourceExampleProps,
+  LoadingIndicatorSourceExampleState,
+> {
+  state = {
+    imageHash: Date.now(),
+  };
+
+  reloadImage = () => {
+    this.setState({
+      imageHash: Date.now(),
+    });
+  };
+
+  loaderGif = {
+    uri: 'https://media1.giphy.com/media/3oEjI6SIIHBdRxXI40/200.gif',
+  };
+
+  render() {
+    const loadingImage = {
+      uri: `https://www.facebook.com/ads/pics/successstories.png?hash=${this.state.imageHash}`,
+    };
+
+    return (
+      <View>
+        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+          <Text style={styles.touchableText} onPress={this.reloadImage}>
+            Refresh Image
+          </Text>
+        </View>
+        <Image
+          loadingIndicatorSource={this.loaderGif}
+          source={loadingImage}
+          style={styles.base}
+        />
+        <Text>Image Hash: {this.state.imageHash}</Text>
+        <Text>Image URI: {loadingImage.uri}</Text>
+      </View>
+    );
+  }
+}
+
+type OnLayoutExampleState = {|
+  width: number,
+  height: number,
+  layoutHandlerMessage: string,
+|};
+
+type OnLayoutExampleProps = $ReadOnly<{||}>;
+
+class OnLayoutExample extends React.Component<
+  OnLayoutExampleProps,
+  OnLayoutExampleState,
+> {
+  state = {
+    width: 30,
+    height: 30,
+    layoutHandlerMessage: 'No Message',
+  };
+
+  onLayoutHandler = event => {
+    this.setState({
+      width: this.state.width,
+      height: this.state.height,
+      layoutHandlerMessage: JSON.stringify(event.nativeEvent),
+    });
+    console.log(event.nativeEvent);
+  };
+
+  increaseImageSize = () => {
+    if (this.state.width >= 100) {
+      return;
+    }
+    this.setState({
+      width: this.state.width + 10,
+      height: this.state.height + 10,
+    });
+  };
+
+  decreaseImageSize = () => {
+    if (this.state.width <= 10) {
+      return;
+    }
+    this.setState({
+      width: this.state.width - 10,
+      height: this.state.height - 10,
+    });
+  };
+
+  render() {
+    return (
+      <View>
+        <Text>Adjust the image size to trigger the OnLayout handler.</Text>
+        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+          <Text style={styles.touchableText} onPress={this.decreaseImageSize}>
+            Decrease image size
+          </Text>
+          <Text style={styles.touchableText} onPress={this.increaseImageSize}>
+            Increase image size
+          </Text>
+        </View>
+        <Text>
+          Container image size: {this.state.width}x{this.state.height}{' '}
+        </Text>
+        <View style={{height: this.state.height, width: this.state.width}}>
+          <Image
+            onLayout={this.onLayoutHandler}
+            style={{flex: 1}}
+            source={[
+              {
+                uri: 'https://www.facebook.com/favicon.ico',
+                width: 38,
+                height: 38,
+              },
+              {
                 uri: 'https://www.facebook.com/favicon.ico',
                 width: 76,
                 height: 76,
@@ -335,12 +518,51 @@ class MultipleSourcesExample extends React.Component<
             ]}
           />
         </View>
+        <Text>Layout Handler Message: {this.state.layoutHandlerMessage}</Text>
       </View>
     );
   }
 }
 
-const fullImage = {
+type OnPartialLoadExampleState = {|
+  hasLoaded: boolean,
+|};
+
+type OnPartialLoadExampleProps = $ReadOnly<{||}>;
+
+class OnPartialLoadExample extends React.Component<
+  OnPartialLoadExampleProps,
+  OnPartialLoadExampleState,
+> {
+  state = {
+    hasLoaded: false,
+  };
+
+  partialLoadHandler = () => {
+    this.setState({
+      hasLoaded: true,
+    });
+  };
+
+  render() {
+    return (
+      <View>
+        <Text>
+          Partial Load Function Executed: {JSON.stringify(this.state.hasLoaded)}
+        </Text>
+        <Image
+          source={{
+            uri: `https://images.pexels.com/photos/671557/pexels-photo-671557.jpeg?&buster=${Math.random()}`,
+          }}
+          onPartialLoad={this.partialLoadHandler}
+          style={styles.base}
+        />
+      </View>
+    );
+  }
+}
+
+const fullImage: ImageSource = {
   uri: 'https://www.facebook.com/ads/pics/successstories.png',
 };
 const smallImage = {
@@ -349,8 +571,9 @@ const smallImage = {
 
 const styles = StyleSheet.create({
   base: {
-    width: 38,
-    height: 38,
+    width: 64,
+    height: 64,
+    margin: 4,
   },
   leftMargin: {
     marginLeft: 10,
@@ -380,9 +603,11 @@ const styles = StyleSheet.create({
   icon: {
     width: 15,
     height: 15,
+    margin: 4,
   },
   horizontal: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
   },
   gif: {
     flex: 1,
@@ -411,15 +636,31 @@ exports.examples = [
     title: 'Plain Network Image',
     description: ('If the `source` prop `uri` property is prefixed with ' +
       '"http", then it will be downloaded from the network.': string),
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <Image source={fullImage} style={styles.base} />;
     },
   },
   {
+    title: 'Plain Blob Image',
+    description: ('If the `source` prop `uri` property is an object URL, ' +
+      'then it will be resolved using `BlobProvider` (Android) or `RCTBlobManager` (iOS).': string),
+    render: function (): React.Node {
+      return (
+        <BlobImageExample
+          urls={[
+            'https://www.facebook.com/favicon.ico',
+            'https://www.facebook.com/ads/pics/successstories.png',
+          ]}
+        />
+      );
+    },
+  },
+  {
     title: 'Plain Static Image',
-    description: ('Static assets should be placed in the source code tree, and ' +
-      'required in the same way as JavaScript modules.': string),
-    render: function(): React.Node {
+    description:
+      ('Static assets should be placed in the source code tree, and ' +
+        'required in the same way as JavaScript modules.': string),
+    render: function (): React.Node {
       return (
         <View style={styles.horizontal}>
           <Image
@@ -444,7 +685,7 @@ exports.examples = [
   },
   {
     title: 'Image Loading Events',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <NetworkImageCallbackExample
           source={{
@@ -457,7 +698,7 @@ exports.examples = [
   },
   {
     title: 'Error Handler',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <NetworkImageExample
           source={{
@@ -469,7 +710,7 @@ exports.examples = [
   },
   {
     title: 'Image Download Progress',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <NetworkImageExample
           source={{
@@ -482,12 +723,14 @@ exports.examples = [
   {
     title: 'defaultSource',
     description: 'Show a placeholder image when a network image is loading',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <Image
           defaultSource={require('../../assets/bunny.png')}
           source={{
-            uri: 'https://origami.design/public/images/bird-logo.png',
+            // Note: Use a large image and bust cache so we can in fact
+            // visualize the `defaultSource` image.
+            uri: fullImage.uri + '?cacheBust=notinCache' + Date.now(),
           }}
           style={styles.base}
         />
@@ -497,10 +740,11 @@ exports.examples = [
   },
   {
     title: 'Cache Policy',
-    description: ('First image has never been loaded before and is instructed not to load unless in cache.' +
-      'Placeholder image from above will stay. Second image is the same but forced to load regardless of' +
-      ' local cache state.': string),
-    render: function(): React.Node {
+    description:
+      ('First image has never been loaded before and is instructed not to load unless in cache.' +
+        'Placeholder image from above will stay. Second image is the same but forced to load regardless of' +
+        ' local cache state.': string),
+    render: function (): React.Node {
       return (
         <View style={styles.horizontal}>
           <Image
@@ -525,25 +769,8 @@ exports.examples = [
     platform: 'ios',
   },
   {
-    title: 'Border Color',
-    render: function(): React.Node {
-      return (
-        <View style={styles.horizontal}>
-          <Image
-            source={smallImage}
-            style={[
-              styles.base,
-              styles.background,
-              {borderWidth: 3, borderColor: '#f099f0'},
-            ]}
-          />
-        </View>
-      );
-    },
-  },
-  {
-    title: 'Border Width',
-    render: function(): React.Node {
+    title: 'Borders',
+    render: function (): React.Node {
       return (
         <View style={styles.horizontal}>
           <Image
@@ -560,24 +787,20 @@ exports.examples = [
   },
   {
     title: 'Border Radius',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View style={styles.horizontal}>
           <Image style={[styles.base, {borderRadius: 5}]} source={fullImage} />
+          <Image style={[styles.base, {borderRadius: 19}]} source={fullImage} />
           <Image
-            style={[styles.base, styles.leftMargin, {borderRadius: 19}]}
-            source={fullImage}
-          />
-          <Image
-            style={[styles.base, styles.leftMargin, {borderTopLeftRadius: 20}]}
+            style={[styles.base, {borderTopLeftRadius: 20}]}
             source={fullImage}
           />
           <Image
             style={[
               styles.base,
-              styles.leftMargin,
               {
-                borderWidth: 10,
+                borderWidth: 4,
                 borderTopLeftRadius: 10,
                 borderBottomRightRadius: 20,
                 borderColor: 'green',
@@ -588,14 +811,49 @@ exports.examples = [
           <Image
             style={[
               styles.base,
-              styles.leftMargin,
               {
-                borderWidth: 5,
+                resizeMode: 'cover',
+                width: 90,
+                borderWidth: 4,
                 borderTopLeftRadius: 10,
                 borderTopRightRadius: 20,
                 borderBottomRightRadius: 30,
                 borderBottomLeftRadius: 40,
                 borderColor: 'red',
+              },
+            ]}
+            source={fullImage}
+          />
+          <Image
+            style={[
+              styles.base,
+              {
+                resizeMode: 'stretch',
+                width: 90,
+                borderWidth: 4,
+                borderTopLeftRadius: 10,
+                borderTopRightRadius: 20,
+                borderBottomRightRadius: 30,
+                borderBottomLeftRadius: 40,
+                borderColor: 'red',
+                backgroundColor: 'yellow',
+              },
+            ]}
+            source={fullImage}
+          />
+          <Image
+            style={[
+              styles.base,
+              {
+                resizeMode: 'contain',
+                width: 90,
+                borderWidth: 4,
+                borderTopLeftRadius: 10,
+                borderTopRightRadius: 20,
+                borderBottomRightRadius: 30,
+                borderBottomLeftRadius: 40,
+                borderColor: 'red',
+                backgroundColor: 'yellow',
               },
             ]}
             source={fullImage}
@@ -606,24 +864,28 @@ exports.examples = [
   },
   {
     title: 'Background Color',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View style={styles.horizontal}>
           <Image source={smallImage} style={styles.base} />
           <Image
+            style={[styles.base, {backgroundColor: 'rgba(0, 0, 100, 0.25)'}]}
+            source={smallImage}
+          />
+          <Image
+            style={[styles.base, {backgroundColor: 'red'}]}
+            source={smallImage}
+          />
+          <Image
             style={[
               styles.base,
-              styles.leftMargin,
-              {backgroundColor: 'rgba(0, 0, 100, 0.25)'},
+              {
+                backgroundColor: 'red',
+                borderColor: 'green',
+                borderWidth: 3,
+                borderRadius: 25,
+              },
             ]}
-            source={smallImage}
-          />
-          <Image
-            style={[styles.base, styles.leftMargin, {backgroundColor: 'red'}]}
-            source={smallImage}
-          />
-          <Image
-            style={[styles.base, styles.leftMargin, {backgroundColor: 'black'}]}
             source={smallImage}
           />
         </View>
@@ -632,37 +894,22 @@ exports.examples = [
   },
   {
     title: 'Opacity',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View style={styles.horizontal}>
           <Image style={[styles.base, {opacity: 1}]} source={fullImage} />
-          <Image
-            style={[styles.base, styles.leftMargin, {opacity: 0.8}]}
-            source={fullImage}
-          />
-          <Image
-            style={[styles.base, styles.leftMargin, {opacity: 0.6}]}
-            source={fullImage}
-          />
-          <Image
-            style={[styles.base, styles.leftMargin, {opacity: 0.4}]}
-            source={fullImage}
-          />
-          <Image
-            style={[styles.base, styles.leftMargin, {opacity: 0.2}]}
-            source={fullImage}
-          />
-          <Image
-            style={[styles.base, styles.leftMargin, {opacity: 0}]}
-            source={fullImage}
-          />
+          <Image style={[styles.base, {opacity: 0.8}]} source={fullImage} />
+          <Image style={[styles.base, {opacity: 0.6}]} source={fullImage} />
+          <Image style={[styles.base, {opacity: 0.4}]} source={fullImage} />
+          <Image style={[styles.base, {opacity: 0.2}]} source={fullImage} />
+          <Image style={[styles.base, {opacity: 0}]} source={fullImage} />
         </View>
       );
     },
   },
   {
     title: 'Nesting content inside <Image> component',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View style={{width: 60, height: 60}}>
           <Image
@@ -676,7 +923,7 @@ exports.examples = [
   },
   {
     title: 'Nesting content inside <ImageBackground> component',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <ImageBackground
           style={{width: 60, height: 60, backgroundColor: 'transparent'}}
@@ -690,7 +937,7 @@ exports.examples = [
     title: 'Tint Color',
     description: ('The `tintColor` style prop changes all the non-alpha ' +
       'pixels to the tint color.': string),
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <View style={styles.horizontal}>
@@ -700,27 +947,15 @@ exports.examples = [
             />
             <Image
               source={require('../../assets/uie_thumb_normal.png')}
-              style={[
-                styles.icon,
-                styles.leftMargin,
-                {borderRadius: 5, tintColor: '#4cd964'},
-              ]}
+              style={[styles.icon, {borderRadius: 5, tintColor: '#4cd964'}]}
             />
             <Image
               source={require('../../assets/uie_thumb_normal.png')}
-              style={[
-                styles.icon,
-                styles.leftMargin,
-                {borderRadius: 5, tintColor: '#ff2d55'},
-              ]}
+              style={[styles.icon, {borderRadius: 5, tintColor: '#ff2d55'}]}
             />
             <Image
               source={require('../../assets/uie_thumb_normal.png')}
-              style={[
-                styles.icon,
-                styles.leftMargin,
-                {borderRadius: 5, tintColor: '#8e8e93'},
-              ]}
+              style={[styles.icon, {borderRadius: 5, tintColor: '#8e8e93'}]}
             />
           </View>
           <Text style={styles.sectionText}>
@@ -733,27 +968,15 @@ exports.examples = [
             />
             <Image
               source={smallImage}
-              style={[
-                styles.base,
-                styles.leftMargin,
-                {borderRadius: 5, tintColor: '#4cd964'},
-              ]}
+              style={[styles.base, {borderRadius: 5, tintColor: '#4cd964'}]}
             />
             <Image
               source={smallImage}
-              style={[
-                styles.base,
-                styles.leftMargin,
-                {borderRadius: 5, tintColor: '#ff2d55'},
-              ]}
+              style={[styles.base, {borderRadius: 5, tintColor: '#ff2d55'}]}
             />
             <Image
               source={smallImage}
-              style={[
-                styles.base,
-                styles.leftMargin,
-                {borderRadius: 5, tintColor: '#8e8e93'},
-              ]}
+              style={[styles.base, {borderRadius: 5, tintColor: '#8e8e93'}]}
             />
           </View>
         </View>
@@ -764,7 +987,7 @@ exports.examples = [
     title: 'Resize Mode',
     description: ('The `resizeMode` style prop controls how the image is ' +
       'rendered within the frame.': string),
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           {[smallImage, fullImage].map((image, index) => {
@@ -772,18 +995,15 @@ exports.examples = [
               <View key={index}>
                 <View style={styles.horizontal}>
                   <View>
-                    <Text style={[styles.resizeModeText]}>Contain</Text>
+                    <Text style={styles.resizeModeText}>Contain</Text>
                     <Image
                       style={styles.resizeMode}
                       resizeMode="contain"
                       source={image}
                     />
                   </View>
-                  {/* $FlowFixMe(>=0.115.0 site=react_native_fb) This comment
-                   * suppresses an error found when Flow v0.115 was deployed.
-                   * To see the error, delete this comment and run Flow. */}
                   <View style={styles.leftMargin}>
-                    <Text style={[styles.resizeModeText]}>Cover</Text>
+                    <Text style={styles.resizeModeText}>Cover</Text>
                     <Image
                       style={styles.resizeMode}
                       resizeMode="cover"
@@ -793,29 +1013,23 @@ exports.examples = [
                 </View>
                 <View style={styles.horizontal}>
                   <View>
-                    <Text style={[styles.resizeModeText]}>Stretch</Text>
+                    <Text style={styles.resizeModeText}>Stretch</Text>
                     <Image
                       style={styles.resizeMode}
                       resizeMode="stretch"
                       source={image}
                     />
                   </View>
-                  {/* $FlowFixMe(>=0.115.0 site=react_native_fb) This comment
-                   * suppresses an error found when Flow v0.115 was deployed.
-                   * To see the error, delete this comment and run Flow. */}
                   <View style={styles.leftMargin}>
-                    <Text style={[styles.resizeModeText]}>Repeat</Text>
+                    <Text style={styles.resizeModeText}>Repeat</Text>
                     <Image
                       style={styles.resizeMode}
                       resizeMode="repeat"
                       source={image}
                     />
                   </View>
-                  {/* $FlowFixMe(>=0.115.0 site=react_native_fb) This comment
-                   * suppresses an error found when Flow v0.115 was deployed.
-                   * To see the error, delete this comment and run Flow. */}
                   <View style={styles.leftMargin}>
-                    <Text style={[styles.resizeModeText]}>Center</Text>
+                    <Text style={styles.resizeModeText}>Center</Text>
                     <Image
                       style={styles.resizeMode}
                       resizeMode="center"
@@ -832,7 +1046,7 @@ exports.examples = [
   },
   {
     title: 'Animated GIF',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <Image
           style={styles.gif}
@@ -844,7 +1058,7 @@ exports.examples = [
   },
   {
     title: 'Base64 image',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <Image style={styles.base64} source={{uri: base64Icon, scale: 3}} />
       );
@@ -853,29 +1067,28 @@ exports.examples = [
   },
   {
     title: 'Cap Insets',
-    description: ('When the image is resized, the corners of the size specified ' +
-      'by capInsets will stay a fixed size, but the center content and ' +
-      'borders of the image will be stretched. This is useful for creating ' +
-      'resizable rounded buttons, shadows, and other resizable assets.': string),
-    render: function(): React.Node {
+    description:
+      ('When the image is resized, the corners of the size specified ' +
+        'by capInsets will stay a fixed size, but the center content and ' +
+        'borders of the image will be stretched. This is useful for creating ' +
+        'resizable rounded buttons, shadows, and other resizable assets.': string),
+    render: function (): React.Node {
       return <ImageCapInsetsExample />;
     },
     platform: 'ios',
   },
   {
     title: 'Image Size',
-    render: function(): React.Node {
-      /* $FlowFixMe(>=0.115.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.115 was deployed. To see the error, delete
-       * this comment and run Flow. */
+    render: function (): React.Node {
       return <ImageSizeExample source={fullImage} />;
     },
   },
   {
     title: 'MultipleSourcesExample',
-    description: ('The `source` prop allows passing in an array of uris, so that native to choose which image ' +
-      'to diplay based on the size of the of the target image': string),
-    render: function(): React.Node {
+    description:
+      ('The `source` prop allows passing in an array of uris, so that native to choose which image ' +
+        'to diplay based on the size of the of the target image': string),
+    render: function (): React.Node {
       return <MultipleSourcesExample />;
     },
   },
@@ -883,14 +1096,14 @@ exports.examples = [
     title: 'Legacy local image',
     description: ('Images shipped with the native bundle, but not managed ' +
       'by the JS packager': string),
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <Image source={{uri: 'legacy_image', width: 120, height: 120}} />;
     },
   },
   {
     title: 'Bundled images',
     description: 'Images shipped in a separate native bundle',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View style={{flexDirection: 'row'}}>
           <Image
@@ -918,37 +1131,79 @@ exports.examples = [
   },
   {
     title: 'Blur Radius',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View style={styles.horizontal}>
-          <Image style={[styles.base]} source={fullImage} blurRadius={0} />
-          <Image
-            style={[styles.base, styles.leftMargin]}
-            source={fullImage}
-            blurRadius={5}
-          />
-          <Image
-            style={[styles.base, styles.leftMargin]}
-            source={fullImage}
-            blurRadius={10}
-          />
-          <Image
-            style={[styles.base, styles.leftMargin]}
-            source={fullImage}
-            blurRadius={15}
-          />
-          <Image
-            style={[styles.base, styles.leftMargin]}
-            source={fullImage}
-            blurRadius={20}
-          />
-          <Image
-            style={[styles.base, styles.leftMargin]}
-            source={fullImage}
-            blurRadius={25}
-          />
+          <Image style={styles.base} source={fullImage} blurRadius={0} />
+          <Image style={styles.base} source={fullImage} blurRadius={5} />
+          <Image style={styles.base} source={fullImage} blurRadius={10} />
+          <Image style={styles.base} source={fullImage} blurRadius={15} />
+          <Image style={styles.base} source={fullImage} blurRadius={20} />
+          <Image style={styles.base} source={fullImage} blurRadius={25} />
         </View>
       );
     },
+  },
+  {
+    title: 'Accessibility',
+    description:
+      ('If the `accessible` (boolean) prop is set to True, the image will be indicated as an accessbility element.': string),
+    render: function (): React.Node {
+      return <Image accessible source={fullImage} style={styles.base} />;
+    },
+  },
+  {
+    title: 'Accessibility Label',
+    description:
+      ('When an element is marked as accessibile (using the accessibility prop), it is good practice to set an accessibilityLabel on the image to provide a description of the element to people who use VoiceOver. VoiceOver will read this string when people select this element.': string),
+    render: function (): React.Node {
+      return (
+        <Image
+          accessible
+          accessibilityLabel="Picture of people standing around a table"
+          source={fullImage}
+          style={styles.base}
+        />
+      );
+    },
+  },
+  {
+    title: 'Fade Duration',
+    description:
+      ('The time (in miliseconds) that an image will fade in for when it appears (default = 300).': string),
+    render: function (): React.Node {
+      return (
+        <>
+          <Image fadeDuration={1500} source={fullImage} style={styles.base} />
+          <Text>This image will fade in over the time of 1.5s.</Text>
+        </>
+      );
+    },
+    platform: 'android',
+  },
+  {
+    title: 'Loading Indicator Source',
+    description:
+      ('This prop is used to set the resource that will be used as the loading indicator for the image (displayed until the image is ready to be displayed).': string),
+    render: function (): React.Node {
+      return <LoadingIndicatorSourceExample />;
+    },
+  },
+  {
+    title: 'On Layout',
+    description:
+      ('This prop is used to set the handler function to be called when the image is mounted or its layout changes. The function receives an event with `{nativeEvent: {layout: {x, y, width, height}}}`': string),
+    render: function (): React.Node {
+      return <OnLayoutExample />;
+    },
+  },
+  {
+    title: 'On Partial Load',
+    description:
+      ('This prop is used to set the handler function to be called when the partial load of the image is complete. This is meant for progressive JPEG loads.': string),
+    render: function (): React.Node {
+      return <OnPartialLoadExample />;
+    },
+    platform: 'ios',
   },
 ];

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -33,8 +33,8 @@ function createAliasResolver(aliasMap: NativeModuleAliasMap): AliasResolver {
 
 function getModules(
   schema: SchemaType,
-): $ReadOnly<{|[hasteModuleName: string]: NativeModuleSchema|}> {
-  return Object.keys(schema.modules).reduce<{|[string]: NativeModuleSchema|}>(
+): $ReadOnly<{[hasteModuleName: string]: NativeModuleSchema}> {
+  return Object.keys(schema.modules).reduce<{[string]: NativeModuleSchema}>(
     (modules, hasteModuleName: string) => {
       const module = schema.modules[hasteModuleName];
       if (module == null || module.type === 'Component') {

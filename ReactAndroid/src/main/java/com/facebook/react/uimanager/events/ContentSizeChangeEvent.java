@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -19,8 +19,13 @@ public class ContentSizeChangeEvent extends Event<ContentSizeChangeEvent> {
   private final int mWidth;
   private final int mHeight;
 
+  @Deprecated
   public ContentSizeChangeEvent(int viewTag, int width, int height) {
-    super(viewTag);
+    this(-1, viewTag, width, height);
+  }
+
+  public ContentSizeChangeEvent(int surfaceId, int viewTag, int width, int height) {
+    super(surfaceId, viewTag);
     mWidth = width;
     mHeight = height;
   }
@@ -31,10 +36,10 @@ public class ContentSizeChangeEvent extends Event<ContentSizeChangeEvent> {
   }
 
   @Override
-  public void dispatch(RCTEventEmitter rctEventEmitter) {
+  protected WritableMap getEventData() {
     WritableMap data = Arguments.createMap();
     data.putDouble("width", PixelUtil.toDIPFromPixel(mWidth));
     data.putDouble("height", PixelUtil.toDIPFromPixel(mHeight));
-    rctEventEmitter.receiveEvent(getViewTag(), EVENT_NAME, data);
+    return data;
   }
 }

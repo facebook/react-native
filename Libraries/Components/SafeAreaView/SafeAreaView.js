@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -42,8 +42,8 @@ if (Platform.OS === 'android') {
     },
   );
 } else {
-  const RCTSafeAreaViewNativeComponent = require('./RCTSafeAreaViewNativeComponent')
-    .default;
+  const RCTSafeAreaViewNativeComponent =
+    require('./RCTSafeAreaViewNativeComponent').default;
 
   exported = React.forwardRef<Props, React.ElementRef<HostComponent<mixed>>>(
     function SafeAreaView(props, forwardedRef) {
@@ -58,4 +58,4 @@ if (Platform.OS === 'android') {
   );
 }
 
-module.exports = exported;
+export default exported;

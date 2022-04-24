@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -39,19 +39,19 @@ SharedShadowNode UITemplateProcessor::runCommand(
     std::vector<folly::dynamic> &registers,
     const ComponentDescriptorRegistry &componentDescriptorRegistry,
     const NativeModuleRegistry &nativeModuleRegistry,
-    const std::shared_ptr<const ReactNativeConfig> reactNativeConfig) {
+    std::shared_ptr<const ReactNativeConfig> const &reactNativeConfig) {
   const std::string &opcode = command[0].asString();
   const int tagOffset = 420000;
   // TODO: change to integer codes and a switch statement
   if (opcode == "createNode") {
-    int tag = command[1].asInt();
+    Tag tag = static_cast<Tag>(command[1].asInt());
     const auto &type = command[2].asString();
     const auto parentTag = command[3].asInt();
     const auto &props = command[4];
     nodes[tag] = componentDescriptorRegistry.createNode(
         tag + tagOffset, type, surfaceId, props, nullptr);
     if (parentTag > -1) { // parentTag == -1 indicates root node
-      auto parentShadowNode = nodes[parentTag];
+      auto parentShadowNode = nodes[static_cast<size_t>(parentTag)];
       auto const &componentDescriptor = componentDescriptorRegistry.at(
           parentShadowNode->getComponentHandle());
       componentDescriptor.appendChild(parentShadowNode, nodes[tag]);
@@ -61,13 +61,13 @@ SharedShadowNode UITemplateProcessor::runCommand(
       LOG(INFO)
           << "(stop) UITemplateProcessor inject serialized 'server rendered' view tree";
     }
-    return nodes[command[1].asInt()];
+    return nodes[static_cast<Tag>(command[1].asInt())];
   } else if (opcode == "loadNativeBool") {
-    int registerNumber = command[1].asInt();
+    auto registerNumber = static_cast<size_t>(command[1].asInt());
     std::string param = command[4][0].asString();
     registers[registerNumber] = reactNativeConfig->getBool(param);
   } else if (opcode == "conditional") {
-    int registerNumber = command[1].asInt();
+    auto registerNumber = static_cast<size_t>(command[1].asInt());
     auto conditionDynamic = registers[registerNumber];
     if (conditionDynamic.isNull()) {
       // TODO: provide original command or command line?
@@ -106,7 +106,7 @@ SharedShadowNode UITemplateProcessor::buildShadowTree(
     const folly::dynamic &params,
     const ComponentDescriptorRegistry &componentDescriptorRegistry,
     const NativeModuleRegistry &nativeModuleRegistry,
-    const std::shared_ptr<const ReactNativeConfig> reactNativeConfig) {
+    std::shared_ptr<const ReactNativeConfig> const &reactNativeConfig) {
   if (DEBUG_FLY) {
     LOG(INFO)
         << "(strt) UITemplateProcessor inject hardcoded 'server rendered' view tree";

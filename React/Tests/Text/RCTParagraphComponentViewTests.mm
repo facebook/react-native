@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -130,6 +130,7 @@ using namespace facebook::react;
                   .props([] {
                     auto sharedProps = std::make_shared<ParagraphProps>();
                     auto &props = *sharedProps;
+                    props.accessible = true;
                     auto &yogaStyle = props.yogaStyle;
                     yogaStyle.positionType() = YGPositionTypeAbsolute;
                     yogaStyle.position()[YGEdgeLeft] = YGValue{0, YGUnitPoint};
@@ -209,6 +210,7 @@ using namespace facebook::react;
                   .props([] {
                     auto sharedProps = std::make_shared<ParagraphProps>();
                     auto &props = *sharedProps;
+                    props.accessible = true;
                     auto &yogaStyle = props.yogaStyle;
                     yogaStyle.positionType() = YGPositionTypeAbsolute;
                     yogaStyle.position()[YGEdgeLeft] = YGValue{0, YGUnitPoint};
@@ -252,6 +254,7 @@ using namespace facebook::react;
                   .props([] {
                     auto sharedProps = std::make_shared<ParagraphProps>();
                     auto &props = *sharedProps;
+                    props.accessible = true;
                     auto &yogaStyle = props.yogaStyle;
                     yogaStyle.positionType() = YGPositionTypeAbsolute;
                     yogaStyle.position()[YGEdgeLeft] = YGValue{0, YGUnitPoint};
@@ -319,15 +322,18 @@ static ParagraphShadowNode::ConcreteState::Shared stateWithShadowNode(
 - (void)testAttributedString
 {
   ParagraphShadowNode::ConcreteState::Shared _stateA = stateWithShadowNode(ParagrahShadowNodeA_);
-  RCTParagraphComponentView *paragraphComponentViewA = [[RCTParagraphComponentView alloc] init];
+  RCTParagraphComponentView *paragraphComponentViewA = [RCTParagraphComponentView new];
+  [paragraphComponentViewA updateProps:ParagrahShadowNodeA_->getProps() oldProps:nullptr];
   [paragraphComponentViewA updateState:_stateA oldState:nil];
 
   ParagraphShadowNode::ConcreteState::Shared _stateB = stateWithShadowNode(ParagrahShadowNodeB_);
-  RCTParagraphComponentView *paragraphComponentViewB = [[RCTParagraphComponentView alloc] init];
+  RCTParagraphComponentView *paragraphComponentViewB = [RCTParagraphComponentView new];
+  [paragraphComponentViewB updateProps:ParagrahShadowNodeB_->getProps() oldProps:nullptr];
   [paragraphComponentViewB updateState:_stateB oldState:nil];
 
   ParagraphShadowNode::ConcreteState::Shared _stateC = stateWithShadowNode(ParagrahShadowNodeC_);
-  RCTParagraphComponentView *paragraphComponentViewC = [[RCTParagraphComponentView alloc] init];
+  RCTParagraphComponentView *paragraphComponentViewC = [RCTParagraphComponentView new];
+  [paragraphComponentViewC updateProps:ParagrahShadowNodeC_->getProps() oldProps:nullptr];
   [paragraphComponentViewC updateState:_stateC oldState:nil];
 
   // Check the correctness of attributedString
@@ -352,7 +358,8 @@ static ParagraphShadowNode::ConcreteState::Shared stateWithShadowNode(
 {
   // initialize the paragraphComponentView to get the accessibilityElements
   ParagraphShadowNode::ConcreteState::Shared _state = stateWithShadowNode(ParagrahShadowNodeA_);
-  RCTParagraphComponentView *paragraphComponentView = [[RCTParagraphComponentView alloc] init];
+  RCTParagraphComponentView *paragraphComponentView = [RCTParagraphComponentView new];
+  [paragraphComponentView updateProps:ParagrahShadowNodeA_->getProps() oldProps:nullptr];
   [paragraphComponentView updateState:_state oldState:nil];
 
   NSArray<UIAccessibilityElement *> *elements = [paragraphComponentView accessibilityElements];
@@ -372,7 +379,8 @@ static ParagraphShadowNode::ConcreteState::Shared stateWithShadowNode(
 - (void)testAccessibilityLinkWrappingMultipleLines
 {
   ParagraphShadowNode::ConcreteState::Shared _state = stateWithShadowNode(ParagrahShadowNodeB_);
-  RCTParagraphComponentView *paragraphComponentView = [[RCTParagraphComponentView alloc] init];
+  RCTParagraphComponentView *paragraphComponentView = [RCTParagraphComponentView new];
+  [paragraphComponentView updateProps:ParagrahShadowNodeB_->getProps() oldProps:nullptr];
   [paragraphComponentView updateState:_state oldState:nil];
 
   NSArray<UIAccessibilityElement *> *elements = [paragraphComponentView accessibilityElements];
@@ -385,7 +393,8 @@ static ParagraphShadowNode::ConcreteState::Shared stateWithShadowNode(
 - (void)testAccessibilityTruncatedText
 {
   ParagraphShadowNode::ConcreteState::Shared _state = stateWithShadowNode(ParagrahShadowNodeC_);
-  RCTParagraphComponentView *paragraphComponentView = [[RCTParagraphComponentView alloc] init];
+  RCTParagraphComponentView *paragraphComponentView = [RCTParagraphComponentView new];
+  [paragraphComponentView updateProps:ParagrahShadowNodeC_->getProps() oldProps:nullptr];
   [paragraphComponentView updateState:_state oldState:nil];
 
   NSArray<UIAccessibilityElement *> *elements = [paragraphComponentView accessibilityElements];
@@ -393,6 +402,69 @@ static ParagraphShadowNode::ConcreteState::Shared stateWithShadowNode(
   XCTAssert(
       elements[1].accessibilityTraits & UIAccessibilityTraitLink,
       @"Expected the second accessibilityElement has link trait");
+}
+
+- (void)testEntireParagraphLink
+{
+  std::shared_ptr<RootShadowNode> rootShadowNode;
+  std::shared_ptr<ParagraphShadowNode> paragrahShadowNode;
+
+  auto element = Element<RootShadowNode>()
+                     .reference(rootShadowNode)
+                     .tag(1)
+                     .props([] {
+                       auto sharedProps = std::make_shared<RootProps>();
+                       auto &props = *sharedProps;
+                       props.layoutConstraints = LayoutConstraints{{0, 0}, {500, 500}};
+                       auto &yogaStyle = props.yogaStyle;
+                       yogaStyle.dimensions()[YGDimensionWidth] = YGValue{200, YGUnitPoint};
+                       yogaStyle.dimensions()[YGDimensionHeight] = YGValue{200, YGUnitPoint};
+                       return sharedProps;
+                     })
+                     .children({
+                         Element<ParagraphShadowNode>()
+                             .reference(paragrahShadowNode)
+                             .props([] {
+                               auto sharedProps = std::make_shared<ParagraphProps>();
+                               auto &props = *sharedProps;
+                               props.accessible = true;
+                               props.accessibilityTraits = AccessibilityTraits::Link;
+                               auto &yogaStyle = props.yogaStyle;
+                               yogaStyle.positionType() = YGPositionTypeAbsolute;
+                               yogaStyle.position()[YGEdgeLeft] = YGValue{0, YGUnitPoint};
+                               yogaStyle.position()[YGEdgeTop] = YGValue{0, YGUnitPoint};
+                               yogaStyle.dimensions()[YGDimensionWidth] = YGValue{200, YGUnitPoint};
+                               yogaStyle.dimensions()[YGDimensionHeight] = YGValue{20, YGUnitPoint};
+                               return sharedProps;
+                             })
+                             .children({
+                                 Element<TextShadowNode>()
+                                     .props([] {
+                                       auto sharedProps = std::make_shared<TextProps>();
+                                       auto &props = *sharedProps;
+                                       props.textAttributes.accessibilityRole = AccessibilityRole::Link;
+                                       return sharedProps;
+                                     })
+                                     .children({Element<RawTextShadowNode>().reference(RawTextShadowNodeABA_).props([] {
+                                       auto sharedProps = std::make_shared<RawTextProps>();
+                                       auto &props = *sharedProps;
+                                       props.text = "A long text that happens to be a link";
+                                       return sharedProps;
+                                     })}),
+                             }),
+                     });
+
+  builder_->build(element);
+  rootShadowNode->layoutIfNeeded();
+
+  ParagraphShadowNode::ConcreteState::Shared _state = stateWithShadowNode(paragrahShadowNode);
+  RCTParagraphComponentView *paragraphComponentView = [RCTParagraphComponentView new];
+  [paragraphComponentView updateProps:paragrahShadowNode->getProps() oldProps:nullptr];
+  [paragraphComponentView updateState:_state oldState:nil];
+
+  NSArray<UIAccessibilityElement *> *elements = paragraphComponentView.accessibilityElements;
+  XCTAssertEqual(elements.count, 1);
+  XCTAssertTrue(elements[0].accessibilityTraits & UIAccessibilityTraitLink);
 }
 
 @end

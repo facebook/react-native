@@ -10,12 +10,13 @@ rn_android_library(
         ["*.java"],
         exclude = STANDARD_TEST_SRCS,
     ),
+    autoglob = False,
     visibility = [
         "PUBLIC",
     ],
     deps = [
         react_native_android_toplevel_dep("third-party/java/mockito2:mockito2"),
-        react_native_dep("third-party/java/robolectric/4.4:robolectric"),
+        react_native_dep("third-party/java/robolectric:robolectric"),
         react_native_target("java/com/facebook/react/bridge:bridge"),
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
         react_native_tests_target("java/org/mockito/configuration:configuration"),
@@ -32,7 +33,7 @@ rn_robolectric_test(
     deps = [
         ":testhelpers",
         react_native_dep("libraries/soloader/java/com/facebook/soloader:soloader"),
-        react_native_dep("third-party/java/fest:fest"),
+        react_native_dep("third-party/java/assertj:assertj-core"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_dep("third-party/java/junit:junit"),
         react_native_target("java/com/facebook/react/bridge:bridge"),

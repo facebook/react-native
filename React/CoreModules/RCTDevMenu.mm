@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -95,6 +95,9 @@ typedef void (^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
 }
 
 @synthesize bridge = _bridge;
+@synthesize moduleRegistry = _moduleRegistry;
+@synthesize callableJSModules = _callableJSModules;
+@synthesize bundleManager = _bundleManager;
 
 RCT_EXPORT_MODULE()
 
@@ -135,14 +138,16 @@ RCT_EXPORT_MODULE()
     [commands registerKeyCommandWithInput:@"i"
                             modifierFlags:UIKeyModifierCommand
                                    action:^(__unused UIKeyCommand *command) {
-                                     [weakSelf.bridge.devSettings toggleElementInspector];
+                                     [(RCTDevSettings *)[weakSelf.moduleRegistry moduleForName:"DevSettings"]
+                                         toggleElementInspector];
                                    }];
 
     // Reload in normal mode
     [commands registerKeyCommandWithInput:@"n"
                             modifierFlags:UIKeyModifierCommand
                                    action:^(__unused UIKeyCommand *command) {
-                                     [weakSelf.bridge.devSettings setIsDebuggingRemotely:NO];
+                                     [(RCTDevSettings *)[weakSelf.moduleRegistry moduleForName:"DevSettings"]
+                                         setIsDebuggingRemotely:NO];
                                    }];
 #endif
   }
@@ -164,8 +169,14 @@ RCT_EXPORT_MODULE()
 
 - (void)showOnShake
 {
-  if ([_bridge.devSettings isShakeToShowDevMenuEnabled]) {
-    [self show];
+  if ([((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]) isShakeToShowDevMenuEnabled]) {
+    for (UIWindow *window in [RCTSharedApplication() windows]) {
+      NSString *recursiveDescription = [window valueForKey:@"recursiveDescription"];
+      if ([recursiveDescription containsString:@"RCTView"]) {
+        [self show];
+        return;
+      }
+    }
   }
 }
 
@@ -199,8 +210,7 @@ RCT_EXPORT_MODULE()
 - (void)setDefaultJSBundle
 {
   [[RCTBundleURLProvider sharedSettings] resetToDefaults];
-  self->_bridge.bundleURL = [[RCTBundleURLProvider sharedSettings] jsBundleURLForFallbackResource:nil
-                                                                                fallbackExtension:nil];
+  self->_bundleManager.bundleURL = [[RCTBundleURLProvider sharedSettings] jsBundleURLForFallbackExtension:nil];
   RCTTriggerReloadCommandListeners(@"Dev menu - reset to default");
 }
 
@@ -209,9 +219,9 @@ RCT_EXPORT_MODULE()
   NSMutableArray<RCTDevMenuItem *> *items = [NSMutableArray new];
 
   // Add built-in items
-  __weak RCTBridge *bridge = _bridge;
-  __weak RCTDevSettings *devSettings = _bridge.devSettings;
+  __weak RCTDevSettings *devSettings = [_moduleRegistry moduleForName:"DevSettings"];
   __weak RCTDevMenu *weakSelf = self;
+  __weak RCTBundleManager *bundleManager = _bundleManager;
 
   [items addObject:[RCTDevMenuItem buttonItemWithTitle:@"Reload"
                                                handler:^{
@@ -224,12 +234,6 @@ RCT_EXPORT_MODULE()
       // For on-device debugging we link out to Flipper.
       // Since we're assuming Flipper is available, also include the DevTools.
       // Note: For parity with the Android code.
-
-      // Reset the old debugger setting so no one gets stuck.
-      // TODO: Remove in a few weeks.
-      if (devSettings.isDebuggingRemotely) {
-        devSettings.isDebuggingRemotely = false;
-      }
       [items addObject:[RCTDevMenuItem
                            buttonItemWithTitleBlock:^NSString * {
                              return @"Open Debugger";
@@ -237,7 +241,7 @@ RCT_EXPORT_MODULE()
                            handler:^{
                              [RCTInspectorDevServerHelper
                                           openURL:@"flipper://null/Hermesdebuggerrn?device=React%20Native"
-                                    withBundleURL:bridge.bundleURL
+                                    withBundleURL:bundleManager.bundleURL
                                  withErrorMessage:@"Failed to open Flipper. Please check that Metro is runnning."];
                            }]];
 
@@ -248,7 +252,7 @@ RCT_EXPORT_MODULE()
                            handler:^{
                              [RCTInspectorDevServerHelper
                                           openURL:@"flipper://null/React?device=React%20Native"
-                                    withBundleURL:bridge.bundleURL
+                                    withBundleURL:bundleManager.bundleURL
                                  withErrorMessage:@"Failed to open Flipper. Please check that Metro is runnning."];
                            }]];
     } else if (devSettings.isRemoteDebuggingAvailable) {
@@ -312,40 +316,6 @@ RCT_EXPORT_MODULE()
                          }]];
   }
 
-  if (devSettings.isLiveReloadAvailable) {
-    [items addObject:[RCTDevMenuItem
-                         buttonItemWithTitleBlock:^NSString * {
-                           return devSettings.isDebuggingRemotely
-                               ? @"Systrace Unavailable"
-                               : devSettings.isProfilingEnabled ? @"Stop Systrace" : @"Start Systrace";
-                         }
-                         handler:^{
-                           if (devSettings.isDebuggingRemotely) {
-                             UIAlertController *alertController =
-                                 [UIAlertController alertControllerWithTitle:@"Systrace Unavailable"
-                                                                     message:@"Stop debugging to enable Systrace."
-                                                              preferredStyle:UIAlertControllerStyleAlert];
-                             __weak __typeof__(alertController) weakAlertController = alertController;
-                             [alertController
-                                 addAction:[UIAlertAction actionWithTitle:@"OK"
-                                                                    style:UIAlertActionStyleDefault
-                                                                  handler:^(__unused UIAlertAction *action) {
-                                                                    [weakAlertController
-                                                                        dismissViewControllerAnimated:YES
-                                                                                           completion:nil];
-                                                                  }]];
-                             [RCTPresentedViewController() presentViewController:alertController
-                                                                        animated:YES
-                                                                      completion:NULL];
-                           } else {
-                             devSettings.isProfilingEnabled = !devSettings.isProfilingEnabled;
-                           }
-                         }]];
-    // "Live reload" which refreshes on every edit was removed in favor of "Fast Refresh".
-    // While native code for "Live reload" is still there, please don't add the option back.
-    // See D15958697 for more context.
-  }
-
   [items
       addObject:[RCTDevMenuItem
                     buttonItemWithTitleBlock:^NSString * {
@@ -379,7 +349,7 @@ RCT_EXPORT_MODULE()
                                                     [weakSelf setDefaultJSBundle];
                                                     return;
                                                   }
-                                                  NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+                                                  NSNumberFormatter *formatter = [NSNumberFormatter new];
                                                   formatter.numberStyle = NSNumberFormatterDecimalStyle;
                                                   NSNumber *portNumber =
                                                       [formatter numberFromString:portTextField.text];
@@ -388,16 +358,14 @@ RCT_EXPORT_MODULE()
                                                   }
                                                   [RCTBundleURLProvider sharedSettings].jsLocation = [NSString
                                                       stringWithFormat:@"%@:%d", ipTextField.text, portNumber.intValue];
-                                                  __strong RCTBridge *strongBridge = bridge;
-                                                  if (strongBridge) {
-                                                    NSURL *bundleURL = bundleRoot.length
-                                                        ? [[RCTBundleURLProvider sharedSettings]
-                                                              jsBundleURLForBundleRoot:bundleRoot
-                                                                      fallbackResource:nil]
-                                                        : [strongBridge.delegate sourceURLForBridge:strongBridge];
-                                                    strongBridge.bundleURL = bundleURL;
-                                                    RCTTriggerReloadCommandListeners(@"Dev menu - apply changes");
+                                                  if (bundleRoot.length == 0) {
+                                                    [bundleManager resetBundleURL];
+                                                  } else {
+                                                    bundleManager.bundleURL = [[RCTBundleURLProvider sharedSettings]
+                                                        jsBundleURLForBundleRoot:bundleRoot];
                                                   }
+
+                                                  RCTTriggerReloadCommandListeners(@"Dev menu - apply changes");
                                                 }]];
                       [alertController addAction:[UIAlertAction actionWithTitle:@"Reset to Default"
                                                                           style:UIAlertActionStyleDefault
@@ -418,7 +386,7 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(show)
 {
-  if (_actionSheet || !_bridge || RCTRunningInAppExtension()) {
+  if (_actionSheet || RCTRunningInAppExtension()) {
     return;
   }
 
@@ -430,9 +398,11 @@ RCT_EXPORT_METHOD(show)
   UIAlertControllerStyle style = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone
       ? UIAlertControllerStyleActionSheet
       : UIAlertControllerStyleAlert;
-  _actionSheet = [UIAlertController alertControllerWithTitle:@"React Native Debug Menu"
-                                                     message:description
-                                              preferredStyle:style];
+
+  NSString *debugMenuType = self.bridge ? @"Bridge" : @"Bridgeless";
+  NSString *debugMenuTitle = [NSString stringWithFormat:@"React Native Debug Menu (%@)", debugMenuType];
+
+  _actionSheet = [UIAlertController alertControllerWithTitle:debugMenuTitle message:description preferredStyle:style];
 
   NSArray<RCTDevMenuItem *> *items = [self _menuItemsToPresent];
   for (RCTDevMenuItem *item in items) {
@@ -448,7 +418,7 @@ RCT_EXPORT_METHOD(show)
   _presentedItems = items;
   [RCTPresentedViewController() presentViewController:_actionSheet animated:YES completion:nil];
 
-  [_bridge enqueueJSCall:@"RCTNativeAppEventEmitter" method:@"emit" args:@[ @"RCTDevMenuShown" ] completion:NULL];
+  [_callableJSModules invokeModule:@"RCTNativeAppEventEmitter" method:@"emit" withArgs:@[ @"RCTDevMenuShown" ]];
 }
 
 - (RCTDevMenuAlertActionHandler)alertActionHandlerForDevItem:(RCTDevMenuItem *__nullable)item
@@ -469,12 +439,12 @@ RCT_EXPORT_METHOD(show)
 
 - (void)setShakeToShow:(BOOL)shakeToShow
 {
-  _bridge.devSettings.isShakeToShowDevMenuEnabled = shakeToShow;
+  ((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]).isShakeToShowDevMenuEnabled = shakeToShow;
 }
 
 - (BOOL)shakeToShow
 {
-  return _bridge.devSettings.isShakeToShowDevMenuEnabled;
+  return ((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]).isShakeToShowDevMenuEnabled;
 }
 
 RCT_EXPORT_METHOD(reload)
@@ -486,29 +456,29 @@ RCT_EXPORT_METHOD(reload)
 RCT_EXPORT_METHOD(debugRemotely : (BOOL)enableDebug)
 {
   WARN_DEPRECATED_DEV_MENU_EXPORT();
-  _bridge.devSettings.isDebuggingRemotely = enableDebug;
+  ((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]).isDebuggingRemotely = enableDebug;
 }
 
 RCT_EXPORT_METHOD(setProfilingEnabled : (BOOL)enabled)
 {
   WARN_DEPRECATED_DEV_MENU_EXPORT();
-  _bridge.devSettings.isProfilingEnabled = enabled;
+  ((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]).isProfilingEnabled = enabled;
 }
 
 - (BOOL)profilingEnabled
 {
-  return _bridge.devSettings.isProfilingEnabled;
+  return ((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]).isProfilingEnabled;
 }
 
 RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
 {
   WARN_DEPRECATED_DEV_MENU_EXPORT();
-  _bridge.devSettings.isHotLoadingEnabled = enabled;
+  ((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]).isHotLoadingEnabled = enabled;
 }
 
 - (BOOL)hotLoadingEnabled
 {
-  return _bridge.devSettings.isHotLoadingEnabled;
+  return ((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]).isHotLoadingEnabled;
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:

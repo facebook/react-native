@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,6 @@
  * @format
  * @flow
  */
-
-'use strict';
 
 const React = require('react');
 const RNTesterListFilters = require('./RNTesterListFilters');
@@ -18,26 +16,26 @@ const {
   View,
   ScrollView,
   Image,
+  Platform,
 } = require('react-native');
 import {RNTesterThemeContext} from './RNTesterTheme';
-import type {RNTesterExample} from '../types/RNTesterTypes';
 
 import type {SectionData} from '../types/RNTesterTypes';
 
-type Props = {
+type Props<T> = {
   filter: Function,
   render: Function,
   disableSearch?: boolean,
   testID?: string,
   hideFilterPills?: boolean,
   page: 'examples_page' | 'components_page' | 'bookmarks_page',
-  sections: SectionData[],
+  sections: $ReadOnlyArray<SectionData<T>>,
   ...
 };
 
 type State = {filter: string, category: string, ...};
 
-class RNTesterExampleFilter extends React.Component<Props, State> {
+class RNTesterExampleFilter<T> extends React.Component<Props<T>, State> {
   state: State = {filter: '', category: ''};
 
   render(): React.Node {
@@ -54,7 +52,7 @@ class RNTesterExampleFilter extends React.Component<Props, State> {
       );
     }
 
-    const filter = example => {
+    const filter = (example: T) => {
       const category = this.state.category;
       return (
         this.props.disableSearch ||
@@ -81,7 +79,11 @@ class RNTesterExampleFilter extends React.Component<Props, State> {
     );
   }
 
-  _renderFilteredSections(filteredSections): ?React.Element<any> {
+  _renderFilteredSections(
+    filteredSections: Array<
+      $TEMPORARY$object<{data: Array<T>, key: string, title: string}>,
+    >,
+  ): ?React.Element<any> {
     if (this.props.page === 'examples_page') {
       return (
         <ScrollView
@@ -108,7 +110,16 @@ class RNTesterExampleFilter extends React.Component<Props, State> {
       <RNTesterThemeContext.Consumer>
         {theme => {
           return (
-            <View style={[styles.searchRow, {backgroundColor: '#F3F8FF'}]}>
+            <View
+              style={[
+                styles.searchRow,
+                {
+                  backgroundColor:
+                    Platform.OS === 'ios'
+                      ? theme.SystemBackgroundColor
+                      : theme.BackgroundColor,
+                },
+              ]}>
               <View style={styles.textInputStyle}>
                 <Image
                   source={require('../assets/search-icon.png')}
@@ -157,7 +168,7 @@ const styles = StyleSheet.create({
   },
   searchRow: {
     paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingVertical: 6,
     alignItems: 'center',
   },
   searchTextInput: {

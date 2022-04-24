@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -299,9 +299,10 @@ void InspectorState::Running::pushPendingEval(
     std::shared_ptr<folly::Promise<debugger::EvalResult>> promise,
     folly::Function<void(const facebook::hermes::debugger::EvalResult &)>
         resultTransformer) {
-  PendingEval pendingEval{debugger::Command::eval(src, frameIndex),
-                          promise,
-                          std::move(resultTransformer)};
+  PendingEval pendingEval{
+      debugger::Command::eval(src, frameIndex),
+      promise,
+      std::move(resultTransformer)};
 
   pendingEvals_.emplace(std::move(pendingEval));
 
@@ -476,9 +477,10 @@ void InspectorState::Paused::pushPendingEval(
     return;
   }
 
-  PendingEval pendingEval{debugger::Command::eval(src, frameIndex),
-                          promise,
-                          std::move(resultTransformer)};
+  PendingEval pendingEval{
+      debugger::Command::eval(src, frameIndex),
+      promise,
+      std::move(resultTransformer)};
   pendingEvals_.emplace(std::move(pendingEval));
   hasPendingWork_.notify_one();
 }

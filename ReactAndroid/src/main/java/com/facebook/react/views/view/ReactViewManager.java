@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,6 +13,7 @@ import android.os.Build;
 import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
@@ -30,7 +31,6 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.yoga.YogaConstants;
-import java.util.Locale;
 import java.util.Map;
 
 /** View manager for AndroidViews (plain React Views). */
@@ -126,34 +126,41 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
   }
 
   @ReactProp(name = "hitSlop")
-  public void setHitSlop(final ReactViewGroup view, @Nullable ReadableMap hitSlop) {
-    if (hitSlop == null) {
-      view.setHitSlopRect(null);
-    } else {
-      view.setHitSlopRect(
-          new Rect(
-              hitSlop.hasKey("left")
-                  ? (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("left"))
-                  : 0,
-              hitSlop.hasKey("top") ? (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("top")) : 0,
-              hitSlop.hasKey("right")
-                  ? (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("right"))
-                  : 0,
-              hitSlop.hasKey("bottom")
-                  ? (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("bottom"))
-                  : 0));
+  public void setHitSlop(final ReactViewGroup view, Dynamic hitSlop) {
+    switch (hitSlop.getType()) {
+      case Null:
+        view.setHitSlopRect(null);
+        break;
+      case Map:
+        ReadableMap hitSlopMap = hitSlop.asMap();
+        view.setHitSlopRect(
+            new Rect(
+                hitSlopMap.hasKey("left")
+                    ? (int) PixelUtil.toPixelFromDIP(hitSlopMap.getDouble("left"))
+                    : 0,
+                hitSlopMap.hasKey("top")
+                    ? (int) PixelUtil.toPixelFromDIP(hitSlopMap.getDouble("top"))
+                    : 0,
+                hitSlopMap.hasKey("right")
+                    ? (int) PixelUtil.toPixelFromDIP(hitSlopMap.getDouble("right"))
+                    : 0,
+                hitSlopMap.hasKey("bottom")
+                    ? (int) PixelUtil.toPixelFromDIP(hitSlopMap.getDouble("bottom"))
+                    : 0));
+        break;
+      case Number:
+        int hitSlopValue = (int) PixelUtil.toPixelFromDIP(hitSlop.asDouble());
+        view.setHitSlopRect(new Rect(hitSlopValue, hitSlopValue, hitSlopValue, hitSlopValue));
+        break;
+      default:
+        throw new JSApplicationIllegalArgumentException(
+            "Invalid type for 'hitSlop' value " + hitSlop.getType());
     }
   }
 
   @ReactProp(name = ViewProps.POINTER_EVENTS)
   public void setPointerEvents(ReactViewGroup view, @Nullable String pointerEventsStr) {
-    if (pointerEventsStr == null) {
-      view.setPointerEvents(PointerEvents.AUTO);
-    } else {
-      PointerEvents pointerEvents =
-          PointerEvents.valueOf(pointerEventsStr.toUpperCase(Locale.US).replace("-", "_"));
-      view.setPointerEvents(pointerEvents);
-    }
+    view.setPointerEvents(PointerEvents.parsePointerEvents(pointerEventsStr));
   }
 
   @ReactProp(name = "nativeBackgroundAndroid")
@@ -239,7 +246,9 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
               if (mEventDispatcher == null) {
                 return;
               }
-              mEventDispatcher.dispatchEvent(new ViewGroupClickEvent(view.getId()));
+              mEventDispatcher.dispatchEvent(
+                  new ViewGroupClickEvent(
+                      UIManagerHelper.getSurfaceId(view.getContext()), view.getId()));
             }
           });
 

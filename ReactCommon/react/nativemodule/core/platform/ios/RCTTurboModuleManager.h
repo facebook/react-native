@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,15 +15,9 @@
 
 @protocol RCTTurboModuleManagerDelegate <NSObject>
 
-// TODO: Move to xplat codegen.
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
-                                                     initParams:
-                                                         (const facebook::react::ObjCTurboModule::InitParams &)params;
 @optional
 - (NSArray<NSString *> *)getEagerInitModuleNames;
 - (NSArray<NSString *> *)getEagerInitMainQueueModuleNames;
-
-@optional
 
 /**
  * Given a module name, return its actual class. If not provided, basic ObjC class lookup is performed.

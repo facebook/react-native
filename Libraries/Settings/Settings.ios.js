@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,6 @@
  * @format
  * @flow
  */
-
-'use strict';
 
 import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
 import NativeSettingsManager from './NativeSettingsManager';
@@ -25,10 +23,12 @@ const Settings = {
     NativeSettingsManager.getConstants().settings: any),
 
   get(key: string): mixed {
+    // $FlowFixMe[object-this-reference]
     return this._settings[key];
   },
 
   set(settings: Object) {
+    // $FlowFixMe[object-this-reference]
     this._settings = Object.assign(this._settings, settings);
     NativeSettingsManager.setValues(settings);
   },
@@ -57,7 +57,9 @@ const Settings = {
   _sendObservations(body: Object) {
     Object.keys(body).forEach(key => {
       const newValue = body[key];
+      // $FlowFixMe[object-this-reference]
       const didChange = this._settings[key] !== newValue;
+      // $FlowFixMe[object-this-reference]
       this._settings[key] = newValue;
 
       if (didChange) {

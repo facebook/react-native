@@ -1,4 +1,4 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -24,7 +24,7 @@ endif()
 if (HERMES_ENABLE_BITCODE)
   list(APPEND jsi_compile_flags "-fembed-bitcode")
 endif ()
-target_compile_options(jsi PUBLIC ${jsi_compile_flags})
+target_compile_options(jsi PRIVATE ${jsi_compile_flags})
 
 install(DIRECTORY "${PROJECT_SOURCE_DIR}/API/jsi/" DESTINATION include
   FILES_MATCHING PATTERN "*.h"

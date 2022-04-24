@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -17,14 +17,14 @@ const {
   Text,
   View,
   Alert,
-  NativeModules,
   findNodeHandle,
 } = require('react-native');
-const ScreenshotManager = NativeModules.ScreenshotManager;
+const ScreenshotManager = require('../../../NativeModuleExample/NativeScreenshotManager');
 
 const BUTTONS = ['Option 0', 'Option 1', 'Option 2', 'Delete', 'Cancel'];
 const DESTRUCTIVE_INDEX = 3;
 const CANCEL_INDEX = 4;
+const DISABLED_BUTTON_INDICES = [1, 2];
 
 type Props = $ReadOnly<{||}>;
 type State = {|clicked: string|};
@@ -92,6 +92,41 @@ class ActionSheetTintExample extends React.Component<
   };
 }
 
+class ActionSheetCancelButtonTintExample extends React.Component<
+  $FlowFixMeProps,
+  $FlowFixMeState,
+> {
+  state = {
+    clicked: 'none',
+  };
+
+  render() {
+    return (
+      <View>
+        <Text onPress={this.showActionSheet} style={style.button}>
+          Click to show the ActionSheet
+        </Text>
+        <Text>Clicked button: {this.state.clicked}</Text>
+      </View>
+    );
+  }
+
+  showActionSheet = () => {
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options: BUTTONS,
+        cancelButtonIndex: CANCEL_INDEX,
+        destructiveButtonIndex: DESTRUCTIVE_INDEX,
+        tintColor: 'green',
+        cancelButtonTintColor: 'brown',
+      },
+      buttonIndex => {
+        this.setState({clicked: BUTTONS[buttonIndex]});
+      },
+    );
+  };
+}
+
 class ActionSheetAnchorExample extends React.Component<
   $FlowFixMeProps,
   $FlowFixMeState,
@@ -130,6 +165,37 @@ class ActionSheetAnchorExample extends React.Component<
         anchor: this.anchorRef.current
           ? findNodeHandle(this.anchorRef.current)
           : undefined,
+      },
+      buttonIndex => {
+        this.setState({clicked: BUTTONS[buttonIndex]});
+      },
+    );
+  };
+}
+
+class ActionSheetDisabledExample extends React.Component<Props, State> {
+  state = {
+    clicked: 'none',
+  };
+
+  render() {
+    return (
+      <View>
+        <Text onPress={this.showActionSheet} style={style.button}>
+          Click to show the ActionSheet
+        </Text>
+        <Text>Clicked button: {this.state.clicked}</Text>
+      </View>
+    );
+  }
+
+  showActionSheet = () => {
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options: BUTTONS,
+        cancelButtonIndex: CANCEL_INDEX,
+        destructiveButtonIndex: DESTRUCTIVE_INDEX,
+        disabledButtonIndices: DISABLED_BUTTON_INDICES,
       },
       buttonIndex => {
         this.setState({clicked: BUTTONS[buttonIndex]});
@@ -311,9 +377,21 @@ exports.examples = [
     },
   },
   {
+    title: 'Show Action Sheet with cancel tinted button',
+    render(): React.Element<any> {
+      return <ActionSheetCancelButtonTintExample />;
+    },
+  },
+  {
     title: 'Show Action Sheet with anchor',
     render(): React.Element<any> {
       return <ActionSheetAnchorExample />;
+    },
+  },
+  {
+    title: 'Show Action Sheet with disabled buttons',
+    render(): React.Element<any> {
+      return <ActionSheetDisabledExample />;
     },
   },
   {

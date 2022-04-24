@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,12 +14,25 @@ const React = require('react');
 
 const {StyleSheet, Text, View} = require('react-native');
 
-class ExampleBox extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
+type ExampleBoxComponentProps = $ReadOnly<{|
+  onLog: (msg: string) => void,
+|}>;
+
+type ExampleBoxProps = $ReadOnly<{|
+  Component: React.ComponentType<ExampleBoxComponentProps>,
+|}>;
+
+type ExampleBoxState = $ReadOnly<{|
+  log: string[],
+|}>;
+
+class ExampleBox extends React.Component<ExampleBoxProps, ExampleBoxState> {
   state = {
     log: [],
   };
 
-  handleLog = msg => {
+  handleLog = (msg: string) => {
+    // $FlowFixMe
     this.state.log = this.state.log.concat([msg]);
   };
 
@@ -32,19 +45,18 @@ class ExampleBox extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
    * happens.
    */
   handleTouchCapture = () => {
+    // $FlowFixMe
     this.state.log = this.state.log.concat(['---']);
   };
 
   render() {
+    const {Component} = this.props;
     return (
       <View>
         <View
           onTouchEndCapture={this.handleTouchCapture}
           onTouchStart={this.flushReactChanges}>
-          {/* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
-           * comment suppresses an error when upgrading Flow's support for
-           * React. To see the error delete this comment and run Flow. */}
-          <this.props.Component onLog={this.handleLog} />
+          <Component onLog={this.handleLog} />
         </View>
         <View style={styles.logBox}>
           <DemoText style={styles.logText}>
@@ -165,6 +177,57 @@ class BoxOnlyExample extends React.Component<$FlowFixMeProps> {
   }
 }
 
+type OverflowExampleProps = $ReadOnly<{|
+  overflow: 'hidden' | 'visible',
+  onLog: (msg: string) => void,
+|}>;
+
+class OverflowExample extends React.Component<OverflowExampleProps> {
+  render() {
+    const {overflow} = this.props;
+    return (
+      <View
+        onTouchStart={() => this.props.onLog(`A overflow ${overflow} touched`)}
+        style={[
+          styles.box,
+          styles.boxWithOverflowSet,
+          {overflow: this.props.overflow},
+        ]}>
+        <DemoText style={styles.text}>A: overflow: {overflow}</DemoText>
+        <View
+          onTouchStart={() => this.props.onLog('B overflowing touched')}
+          style={[styles.box, styles.boxOverflowing]}>
+          <DemoText style={styles.text}>B: overflowing</DemoText>
+        </View>
+        <View
+          onTouchStart={() => this.props.onLog('C fully outside touched')}
+          style={[styles.box, styles.boxFullyOutside]}>
+          <DemoText style={styles.text}>C: fully outside</DemoText>
+          <View
+            onTouchStart={() =>
+              this.props.onLog('D fully outside child touched')
+            }
+            style={[styles.box, styles.boxFullyOutsideChild]}>
+            <DemoText style={styles.text}>D: child of fully outside</DemoText>
+          </View>
+        </View>
+      </View>
+    );
+  }
+}
+
+class OverflowVisibleExample extends React.Component<ExampleBoxComponentProps> {
+  render() {
+    return <OverflowExample {...this.props} overflow="visible" />;
+  }
+}
+
+class OverflowHiddenExample extends React.Component<ExampleBoxComponentProps> {
+  render() {
+    return <OverflowExample {...this.props} overflow="hidden" />;
+  }
+}
+
 type ExampleClass = {
   Component: React.ComponentType<any>,
   title: string,
@@ -191,13 +254,25 @@ const exampleClasses: Array<ExampleClass> = [
     description:
       "`box-only` causes touch events on the container's child components to pass through and will only detect touch events on the container itself.",
   },
+  {
+    Component: OverflowVisibleExample,
+    title: '`overflow: visible`',
+    description:
+      '`overflow: visible` style should allow subelements that are outside of the parent box to be touchable. Tapping the parts of Box B outside Box A should print "B touched" and "A touched", and tapping Box C should also print "C touched" and "A touched".',
+  },
+  {
+    Component: OverflowHiddenExample,
+    title: '`overflow: hidden`',
+    description:
+      '`overflow: hidden` style should only allow subelements within the parent box to be touchable. Tapping just below Box A (where Box B would otherwise extend if it weren\'t cut off) should not trigger any touches or messages. Touching Box D (inside the bounds) should print "D touched" and "A touched".',
+  },
 ];
 
 const infoToExample = info => {
   return {
     title: info.title,
     description: info.description,
-    render: function() {
+    render: function () {
       return <ExampleBox key={info.title} Component={info.Component} />;
     },
   };
@@ -220,6 +295,26 @@ const styles = StyleSheet.create({
   },
   boxPassedThrough: {
     borderColor: '#99bbee',
+  },
+  boxWithOverflowSet: {
+    paddingBottom: 40,
+    marginBottom: 50,
+  },
+  boxOverflowing: {
+    position: 'absolute',
+    top: 30,
+    paddingBottom: 40,
+  },
+  boxFullyOutside: {
+    position: 'absolute',
+    left: 200,
+    top: 65,
+  },
+  boxFullyOutsideChild: {
+    position: 'absolute',
+    left: 0,
+    top: -65,
+    width: 100,
   },
   logText: {
     fontSize: 9,

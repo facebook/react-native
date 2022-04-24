@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -21,7 +21,7 @@ const {
   StyleSheet,
 } = require('react-native');
 
-import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 const styles = StyleSheet.create({
   default: {
@@ -46,13 +46,15 @@ const styles = StyleSheet.create({
   labelContainer: {
     flexDirection: 'row',
     marginVertical: 2,
-    flex: 1,
   },
   label: {
     width: 115,
     alignItems: 'flex-end',
     marginRight: 10,
     paddingTop: 2,
+  },
+  inputContainer: {
+    flex: 1,
   },
   rewriteContainer: {
     flexDirection: 'row',
@@ -79,7 +81,7 @@ class WithLabel extends React.Component<$FlowFixMeProps> {
         <View style={styles.label}>
           <Text>{this.props.label}</Text>
         </View>
-        {this.props.children}
+        <View style={styles.inputContainer}>{this.props.children}</View>
       </View>
     );
   }
@@ -183,49 +185,51 @@ class RewriteInvalidCharactersAndClearExample extends React.Component<
 }
 
 class BlurOnSubmitExample extends React.Component<{...}> {
-  focusNextField = nextField => {
-    this.refs[nextField].focus();
-  };
+  ref1 = React.createRef();
+  ref2 = React.createRef();
+  ref3 = React.createRef();
+  ref4 = React.createRef();
+  ref5 = React.createRef();
 
   render() {
     return (
       <View>
         <TextInput
-          ref="1"
+          ref={this.ref1}
           style={styles.singleLine}
           placeholder="blurOnSubmit = false"
           returnKeyType="next"
           blurOnSubmit={false}
-          onSubmitEditing={() => this.focusNextField('2')}
+          onSubmitEditing={() => this.ref2.current?.focus()}
         />
         <TextInput
-          ref="2"
+          ref={this.ref2}
           style={styles.singleLine}
           keyboardType="email-address"
           placeholder="blurOnSubmit = false"
           returnKeyType="next"
           blurOnSubmit={false}
-          onSubmitEditing={() => this.focusNextField('3')}
+          onSubmitEditing={() => this.ref3.current?.focus()}
         />
         <TextInput
-          ref="3"
+          ref={this.ref3}
           style={styles.singleLine}
           keyboardType="url"
           placeholder="blurOnSubmit = false"
           returnKeyType="next"
           blurOnSubmit={false}
-          onSubmitEditing={() => this.focusNextField('4')}
+          onSubmitEditing={() => this.ref4.current?.focus()}
         />
         <TextInput
-          ref="4"
+          ref={this.ref4}
           style={styles.singleLine}
           keyboardType="numeric"
           placeholder="blurOnSubmit = false"
           blurOnSubmit={false}
-          onSubmitEditing={() => this.focusNextField('5')}
+          onSubmitEditing={() => this.ref5.current?.focus()}
         />
         <TextInput
-          ref="5"
+          ref={this.ref5}
           style={styles.singleLine}
           keyboardType="numbers-and-punctuation"
           placeholder="blurOnSubmit = true"
@@ -335,7 +339,7 @@ class TokenizedTextExample extends React.Component<
     parts = parts.map(text => {
       if (/^#/.test(text)) {
         return (
-          <Text key={text} style={styles.hashtag}>
+          <Text testID="hashtag" key={text} style={styles.hashtag}>
             {text}
           </Text>
         );
@@ -345,8 +349,9 @@ class TokenizedTextExample extends React.Component<
     });
 
     return (
-      <View>
+      <View style={{flexDirection: 'row'}}>
         <TextInput
+          testID="text-input"
           multiline={true}
           style={styles.multiline}
           onChangeText={text => {
@@ -362,7 +367,7 @@ class TokenizedTextExample extends React.Component<
 type SelectionExampleState = {
   selection: $ReadOnly<{|
     start: number,
-    end?: number,
+    end: number,
   |}>,
   value: string,
   ...
@@ -372,7 +377,7 @@ class SelectionExample extends React.Component<
   $FlowFixMeProps,
   SelectionExampleState,
 > {
-  _textInput: any;
+  _textInput: React.ElementRef<typeof TextInput> | null = null;
 
   constructor(props) {
     super(props);
@@ -392,8 +397,11 @@ class SelectionExample extends React.Component<
   }
 
   select(start, end) {
-    this._textInput.focus();
+    this._textInput?.focus();
     this.setState({selection: {start, end}});
+    if (this.props.imperative) {
+      this._textInput?.setSelection(start, end);
+    }
   }
 
   selectRandom() {
@@ -417,25 +425,47 @@ class SelectionExample extends React.Component<
 
     return (
       <View>
-        <TextInput
-          multiline={this.props.multiline}
-          onChangeText={value => this.setState({value})}
-          onSelectionChange={this.onSelectionChange.bind(this)}
-          ref={textInput => (this._textInput = textInput)}
-          selection={this.state.selection}
-          style={this.props.style}
-          value={this.state.value}
-        />
+        <View style={{flexDirection: 'row'}}>
+          <TextInput
+            testID={`${this.props.testID}-text-input`}
+            multiline={this.props.multiline}
+            onChangeText={value => this.setState({value})}
+            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
+            onSelectionChange={this.onSelectionChange.bind(this)}
+            ref={textInput => (this._textInput = textInput)}
+            selection={this.props.imperative ? undefined : this.state.selection}
+            style={this.props.style}
+            value={this.state.value}
+          />
+        </View>
         <View>
-          <Text>selection = {JSON.stringify(this.state.selection)}</Text>
-          <Text onPress={this.placeAt.bind(this, 0)}>
+          <Text testID={`${this.props.testID}-selection`}>
+            selection ={' '}
+            {`{start:${this.state.selection.start},end:${this.state.selection.end}}`}
+          </Text>
+          <Text
+            testID={`${this.props.testID}-cursor-start`}
+            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
+            onPress={this.placeAt.bind(this, 0)}>
             Place at Start (0, 0)
           </Text>
-          <Text onPress={this.placeAt.bind(this, length)}>
+          <Text
+            testID={`${this.props.testID}-cursor-end`}
+            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
+            onPress={this.placeAt.bind(this, length)}>
             Place at End ({length}, {length})
           </Text>
+          {/* $FlowFixMe[method-unbinding] added when improving typing for this
+           * parameters */}
           <Text onPress={this.placeAtRandom.bind(this)}>Place at Random</Text>
-          <Text onPress={this.select.bind(this, 0, length)}>Select All</Text>
+          <Text
+            testID={`${this.props.testID}-select-all`}
+            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
+            onPress={this.select.bind(this, 0, length)}>
+            Select All
+          </Text>
+          {/* $FlowFixMe[method-unbinding] added when improving typing for this
+           * parameters */}
           <Text onPress={this.selectRandom.bind(this)}>Select Random</Text>
         </View>
       </View>
@@ -446,7 +476,7 @@ class SelectionExample extends React.Component<
 module.exports = ([
   {
     title: 'Auto-focus',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <TextInput
           autoFocus={true}
@@ -457,39 +487,58 @@ module.exports = ([
     },
   },
   {
+    name: 'maxLength',
     title: "Live Re-Write (<sp>  ->  '_') + maxLength",
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <RewriteExample />;
     },
   },
   {
     title: 'Live Re-Write (no spaces allowed)',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <RewriteExampleInvalidCharacters />;
     },
   },
   {
+    name: 'clearButton',
     title: 'Live Re-Write (no spaces allowed) and clear',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <RewriteInvalidCharactersAndClearExample />;
     },
   },
   {
     title: 'Auto-capitalize',
-    render: function(): React.Node {
+    name: 'autoCapitalize',
+    render: function (): React.Node {
       return (
         <View>
           <WithLabel label="none">
-            <TextInput autoCapitalize="none" style={styles.default} />
+            <TextInput
+              testID="capitalize-none"
+              autoCapitalize="none"
+              style={styles.default}
+            />
           </WithLabel>
           <WithLabel label="sentences">
-            <TextInput autoCapitalize="sentences" style={styles.default} />
+            <TextInput
+              testID="capitalize-sentences"
+              autoCapitalize="sentences"
+              style={styles.default}
+            />
           </WithLabel>
           <WithLabel label="words">
-            <TextInput autoCapitalize="words" style={styles.default} />
+            <TextInput
+              testID="capitalize-words"
+              autoCapitalize="words"
+              style={styles.default}
+            />
           </WithLabel>
           <WithLabel label="characters">
-            <TextInput autoCapitalize="characters" style={styles.default} />
+            <TextInput
+              testID="capitalize-characters"
+              autoCapitalize="characters"
+              style={styles.default}
+            />
           </WithLabel>
         </View>
       );
@@ -497,7 +546,7 @@ module.exports = ([
   },
   {
     title: 'Auto-correct',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <WithLabel label="true">
@@ -512,7 +561,8 @@ module.exports = ([
   },
   {
     title: 'Keyboard types',
-    render: function(): React.Node {
+    name: 'keyboardTypes',
+    render: function (): React.Node {
       const keyboardTypes = [
         'default',
         'ascii-capable',
@@ -540,19 +590,19 @@ module.exports = ([
   },
   {
     title: 'Blur on submit',
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <BlurOnSubmitExample />;
     },
   },
   {
     title: 'Event handling',
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <TextEventsExample />;
     },
   },
   {
     title: 'fontFamily, fontWeight and fontStyle',
-    render: function(): React.Node {
+    render: function (): React.Node {
       const fontFamilyA = Platform.OS === 'ios' ? 'Cochin' : 'sans-serif';
       const fontFamilyB = Platform.OS === 'ios' ? 'Courier' : 'serif';
 
@@ -593,20 +643,24 @@ module.exports = ([
   },
   {
     title: 'Attributed text',
-    render: function(): React.Node {
+    name: 'attributedText',
+    render: function (): React.Node {
       return <TokenizedTextExample />;
     },
   },
   {
     title: 'Text selection & cursor placement',
-    render: function(): React.Node {
+    name: 'cursorPlacement',
+    render: function (): React.Node {
       return (
         <View>
           <SelectionExample
+            testID="singleline"
             style={styles.default}
             value="text selection can be changed"
           />
           <SelectionExample
+            testID="multiline"
             multiline
             style={styles.multiline}
             value={'multiline text selection\ncan also be changed'}
@@ -615,4 +669,27 @@ module.exports = ([
       );
     },
   },
-]: Array<RNTesterExampleModuleItem>);
+  {
+    title: 'Text selection & cursor placement (imperative)',
+    name: 'cursorPlacementImperative',
+    render: function (): React.Node {
+      return (
+        <View>
+          <SelectionExample
+            testID="singlelineImperative"
+            style={styles.default}
+            value="text selection can be changed imperatively"
+            imperative={true}
+          />
+          <SelectionExample
+            testID="multilineImperative"
+            multiline
+            style={styles.multiline}
+            value={'multiline text selection\ncan also be changed imperatively'}
+            imperative={true}
+          />
+        </View>
+      );
+    },
+  },
+]: Array<RNTesterModuleExample>);

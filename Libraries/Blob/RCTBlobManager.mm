@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -37,13 +37,11 @@ static NSString *const kBlobURIScheme = @"blob";
 RCT_EXPORT_MODULE(BlobModule)
 
 @synthesize bridge = _bridge;
+@synthesize moduleRegistry = _moduleRegistry;
 @synthesize methodQueue = _methodQueue;
-@synthesize turboModuleRegistry = _turboModuleRegistry;
 
-- (void)setBridge:(RCTBridge *)bridge
+- (void)initialize
 {
-  _bridge = bridge;
-
   std::lock_guard<std::mutex> lock(_blobsMutex);
   _blobs = [NSMutableDictionary new];
 
@@ -140,9 +138,9 @@ RCT_EXPORT_MODULE(BlobModule)
 
 RCT_EXPORT_METHOD(addNetworkingHandler)
 {
-  RCTNetworking *const networking = _bridge ? _bridge.networking : [_turboModuleRegistry moduleForName:"RCTNetworking"];
+  RCTNetworking *const networking = [_moduleRegistry moduleForName:"Networking"];
 
-  // TODO(T63516227): Why can methodQueue be nil here? 
+  // TODO(T63516227): Why can methodQueue be nil here?
   // We don't want to do anything when methodQueue is nil.
   if (!networking.methodQueue) {
     return;
@@ -156,23 +154,23 @@ RCT_EXPORT_METHOD(addNetworkingHandler)
 
 RCT_EXPORT_METHOD(addWebSocketHandler:(double)socketID)
 {
-  dispatch_async(_bridge.webSocketModule.methodQueue, ^{
-    [self->_bridge.webSocketModule setContentHandler:self forSocketID:[NSNumber numberWithDouble:socketID]];
+  dispatch_async(((RCTWebSocketModule *)[_moduleRegistry moduleForName:"WebSocketModule"]).methodQueue, ^{
+    [[self->_moduleRegistry moduleForName:"WebSocketModule"] setContentHandler:self forSocketID:[NSNumber numberWithDouble:socketID]];
   });
 }
 
 RCT_EXPORT_METHOD(removeWebSocketHandler:(double)socketID)
 {
-  dispatch_async(_bridge.webSocketModule.methodQueue, ^{
-    [self->_bridge.webSocketModule setContentHandler:nil forSocketID:[NSNumber numberWithDouble:socketID]];
+  dispatch_async(((RCTWebSocketModule *)[_moduleRegistry moduleForName:"WebSocketModule"]).methodQueue, ^{
+    [[self->_moduleRegistry moduleForName:"WebSocketModule"] setContentHandler:nil forSocketID:[NSNumber numberWithDouble:socketID]];
   });
 }
 
 // @lint-ignore FBOBJCUNTYPEDCOLLECTION1
 RCT_EXPORT_METHOD(sendOverSocket:(NSDictionary *)blob socketID:(double)socketID)
 {
-  dispatch_async(_bridge.webSocketModule.methodQueue, ^{
-    [self->_bridge.webSocketModule sendData:[self resolve:blob] forSocketID:[NSNumber numberWithDouble:socketID]];
+  dispatch_async(((RCTWebSocketModule *)[_moduleRegistry moduleForName:"WebSocketModule"]).methodQueue, ^{
+    [[self->_moduleRegistry moduleForName:"WebSocketModule"] sendData:[self resolve:blob] forSocketID:[NSNumber numberWithDouble:socketID]];
   });
 }
 
@@ -264,7 +262,7 @@ RCT_EXPORT_METHOD(release:(NSString *)blobId)
   NSDictionary *blob = [RCTConvert NSDictionary:data[@"blob"]];
 
   NSString *contentType = @"application/octet-stream";
-  NSString *blobType = [RCTConvert NSString:blob[@"type"]];
+  NSString *blobType = [RCTConvert NSString:RCTNilIfNull(blob[@"type"])];
   if (blobType != nil && blobType.length > 0) {
     contentType = blob[@"type"];
   }
