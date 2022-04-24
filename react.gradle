@@ -266,9 +266,18 @@ afterEvaluate {
                 extraArgs.addAll(config.extraPackagerArgs)
             }
 
-            commandLine(*execCommand, bundleCommand, "--platform", "android", "--dev", "${devEnabled}",
-                "--reset-cache", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir,
-                "--sourcemap-output", enableHermes ? jsPackagerSourceMapFile : jsOutputSourceMapFile, *extraArgs)
+            //  --sourcemap-output is externally configured 
+            if (config.extraPackagerArgs?.contains("--sourcemap-output") )  { 
+                jsOutputSourceMapFile =  config.extraPackagerArgs[1 + config.extraPackagerArgs.indexOf("--sourcemap-output")]
+                extraArgs[1 + extraArgs.indexOf("--sourcemap-output")] =  enableHermes ? jsPackagerSourceMapFile : jsOutputSourceMapFile
+            }
+            else {//use internal defaults
+                extraArgs.addAll(["--sourcemap-output", enableHermes ? jsPackagerSourceMapFile : jsOutputSourceMapFile])        
+            }           
+            execCommand.addAll([ bundleCommand, "--platform", "android", "--dev", "${devEnabled}",
+                    "--reset-cache", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir])
+            execCommand.addAll(extraArgs)                       
+            commandLine(*execCommand)  
 
 
             if (enableHermes) {
