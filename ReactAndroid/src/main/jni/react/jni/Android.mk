@@ -47,6 +47,7 @@ LOCAL_MODULE := reactnativeutilsjni
 
 # Compile all local c++ files.
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
+LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 
 ifeq ($(APP_OPTIM),debug)
   # Keep symbols by overriding the strip command invoked by ndk-build.
@@ -106,6 +107,7 @@ LOCAL_MODULE := reactnativejni
 
 # Compile all local c++ files.
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
+LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 
 ifeq ($(APP_OPTIM),debug)
   # Keep symbols by overriding the strip command invoked by ndk-build.

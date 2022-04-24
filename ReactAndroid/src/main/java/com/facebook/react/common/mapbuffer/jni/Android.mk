@@ -10,6 +10,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := mapbufferjni
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/react/common/mapbuffer/*.cpp)
+LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 
 LOCAL_SHARED_LIBRARIES := \
   libfb \
