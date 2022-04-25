@@ -15,10 +15,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)handleSoftJSExceptionWithMessage:(nullable NSString *)message
                                    stack:(nullable NSArray *)stack
-                             exceptionId:(NSNumber *)exceptionId;
+                             exceptionId:(NSNumber *)exceptionId
+                         extraDataAsJSON:(nullable NSString *)extraDataAsJSON;
 - (void)handleFatalJSExceptionWithMessage:(nullable NSString *)message
                                     stack:(nullable NSArray *)stack
-                              exceptionId:(NSNumber *)exceptionId;
+                              exceptionId:(NSNumber *)exceptionId
+                          extraDataAsJSON:(nullable NSString *)extraDataAsJSON;
 
 @optional
 - (void)updateJSExceptionWithMessage:(nullable NSString *)message
