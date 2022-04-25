@@ -136,8 +136,7 @@ internal fun detectOSAwareHermesCommand(projectRoot: File, hermesCommand: String
 
   // 3. If the react-native contains a pre-built hermesc, use it.
   val prebuiltHermesPath =
-      HERMESC_IN_REACT_NATIVE_PATH
-          .replace("%OS-BIN%", getHermesOSBin())
+      HERMESC_IN_REACT_NATIVE_PATH.replace("%OS-BIN%", getHermesOSBin())
           // Execution on Windows fails with / as separator
           .replace('/', File.separatorChar)
 

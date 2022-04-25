@@ -224,23 +224,23 @@ private fun Project.cleanupVMFiles(
   // two separate HermesDebug and HermesRelease AARs, but until then we'll
   // kludge it by deleting the .so files out of the /transforms/ directory.
   fileTree(libDir) {
-    if (enableHermes) {
-      // For Hermes, delete all the libjsc* files
-      it.include("**/libjsc*.so")
+        if (enableHermes) {
+          // For Hermes, delete all the libjsc* files
+          it.include("**/libjsc*.so")
 
-      if (cleanup) {
-        // Reduce size by deleting the debugger/inspector
-        it.include("**/libhermes-executor-debug.so")
-      } else {
-        // Release libs take precedence and must be removed
-        // to allow debugging
-        it.include("**/libhermes-executor-release.so")
+          if (cleanup) {
+            // Reduce size by deleting the debugger/inspector
+            it.include("**/libhermes-executor-debug.so")
+          } else {
+            // Release libs take precedence and must be removed
+            // to allow debugging
+            it.include("**/libhermes-executor-release.so")
+          }
+        } else {
+          // For JSC, delete all the libhermes* files
+          it.include("**/libhermes*.so")
+        }
       }
-    } else {
-      // For JSC, delete all the libhermes* files
-      it.include("**/libhermes*.so")
-    }
-  }
       .visit { visit ->
         val path = visit.file.absolutePath.replace(File.separatorChar, '/')
         if (path.matches(targetVariant) && visit.file.isFile) {
