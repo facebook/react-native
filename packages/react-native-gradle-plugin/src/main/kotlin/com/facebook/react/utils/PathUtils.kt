@@ -129,7 +129,8 @@ internal fun detectOSAwareHermesCommand(projectRoot: File, hermesCommand: String
   }
 
   // 2. If the project is building hermes-engine from source, use hermesc from there
-  val builtHermesc = File(projectRoot, HERMESC_BUILT_FROM_SOURCE_PATH)
+  val builtHermesc =
+      getBuiltHermescFile(projectRoot, System.getenv("REACT_NATIVE_OVERRIDE_HERMES_DIR"))
   if (builtHermesc.exists()) {
     return builtHermesc.absolutePath
   }
@@ -150,6 +151,21 @@ internal fun detectOSAwareHermesCommand(projectRoot: File, hermesCommand: String
           "Please set `react.hermesCommand` to the path of the hermesc binary file. " +
           "node_modules/react-native/sdks/hermesc/%OS-BIN%/hermesc")
 }
+
+/**
+ * Gets the location where Hermesc should be. If nothing is specified, built hermesc is assumed to
+ * be inside [HERMESC_BUILT_FROM_SOURCE_PATH]. Otherwise user can specify an override with
+ * [pathOverride], which is assumed to be an absolute path where Hermes source code is
+ * provided/built.
+ *
+ * @param projectRoot The root of the Project.
+ */
+internal fun getBuiltHermescFile(projectRoot: File, pathOverride: String?) =
+    if (!pathOverride.isNullOrBlank()) {
+      File(pathOverride, "build/bin/hermesc")
+    } else {
+      File(projectRoot, HERMESC_BUILT_FROM_SOURCE_PATH)
+    }
 
 internal fun getHermesOSBin(): String {
   if (Os.isWindows()) return "win64-bin"

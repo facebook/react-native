@@ -231,4 +231,18 @@ class PathUtilsTest {
 
     assertEquals(expected.toString(), detectOSAwareHermesCommand(tempFolder.root, ""))
   }
+
+  @Test
+  fun getBuiltHermescFile_withoutOverride() {
+    assertEquals(
+        File(tempFolder.root, "node_modules/react-native/sdks/hermes/build/bin/hermesc"),
+        getBuiltHermescFile(tempFolder.root, ""))
+  }
+
+  @Test
+  fun getBuiltHermescFile_withOverride() {
+    assertEquals(
+        File("/home/circleci/hermes/build/bin/hermesc"),
+        getBuiltHermescFile(tempFolder.root, "/home/circleci/hermes"))
+  }
 }
