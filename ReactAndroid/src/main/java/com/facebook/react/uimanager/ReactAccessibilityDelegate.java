@@ -227,25 +227,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
   @Override
   public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
     super.onInitializeAccessibilityNodeInfo(host, info);
-    final AccessibilityNodeInfoCompat nodeInfo = AccessibilityNodeInfoCompat.obtain();
-    if (host instanceof ViewGroup) {
-      final StringBuilder concatChildDescription = new StringBuilder();
-      final ViewGroup viewGroup = (ViewGroup) host;
-      for (int i = 0, count = viewGroup.getChildCount(); i < count; i++) {
-        final View child = viewGroup.getChildAt(i);
-        final AccessibilityNodeInfoCompat childNodeInfo = AccessibilityNodeInfoCompat.obtain();
-        ViewCompat.onInitializeAccessibilityNodeInfo(child, childNodeInfo);
-        if (isSpeakingNode(childNodeInfo, child)
-            && !isAccessibilityFocusable(childNodeInfo, child)) {
-          CharSequence childNodeDescription = getTalkbackDescription(child);
-          if (!TextUtils.isEmpty(childNodeDescription)) {
-            concatChildDescription.append(childNodeDescription);
-          }
-        }
-        childNodeInfo.recycle();
-      }
-      info.setContentDescription(concatChildDescription);
-    }
     final AccessibilityRole accessibilityRole =
         (AccessibilityRole) host.getTag(R.id.accessibility_role);
     if (accessibilityRole != null) {
@@ -320,6 +301,34 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     final String testId = (String) host.getTag(R.id.react_test_id);
     if (testId != null) {
       info.setViewIdResourceName(testId);
+    }
+    String accessibilityLabel = (String) host.getTag(R.id.accessibility_label);
+    boolean missingTextOrDescription =
+        info.getText() == null && info.getContentDescription() == null;
+    boolean hasContentToAnnounce =
+        accessibilityActions != null
+            || accessibilityState != null
+            || accessibilityLabelledBy != null
+            || accessibilityRole != null
+            || accessibilityLabel != null;
+    final AccessibilityNodeInfoCompat nodeInfo = AccessibilityNodeInfoCompat.obtain();
+    if (missingTextOrDescription && hasContentToAnnounce && host instanceof ViewGroup) {
+      final StringBuilder concatChildDescription = new StringBuilder();
+      final ViewGroup viewGroup = (ViewGroup) host;
+      for (int i = 0, count = viewGroup.getChildCount(); i < count; i++) {
+        final View child = viewGroup.getChildAt(i);
+        final AccessibilityNodeInfoCompat childNodeInfo = AccessibilityNodeInfoCompat.obtain();
+        ViewCompat.onInitializeAccessibilityNodeInfo(child, childNodeInfo);
+        if (isSpeakingNode(childNodeInfo, child)
+            && !isAccessibilityFocusable(childNodeInfo, child)) {
+          CharSequence childNodeDescription = getTalkbackDescription(child);
+          if (!TextUtils.isEmpty(childNodeDescription)) {
+            concatChildDescription.append(childNodeDescription);
+          }
+        }
+        childNodeInfo.recycle();
+      }
+      info.setContentDescription(concatChildDescription);
     }
   }
 
