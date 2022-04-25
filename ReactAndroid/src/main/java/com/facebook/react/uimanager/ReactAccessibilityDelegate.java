@@ -302,15 +302,13 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     if (testId != null) {
       info.setViewIdResourceName(testId);
     }
-    String accessibilityLabel = (String) host.getTag(R.id.accessibility_label);
     boolean missingTextOrDescription =
         info.getText() == null && info.getContentDescription() == null;
     boolean hasContentToAnnounce =
         accessibilityActions != null
             || accessibilityState != null
             || accessibilityLabelledBy != null
-            || accessibilityRole != null
-            || accessibilityLabel != null;
+            || accessibilityRole != null;
     final AccessibilityNodeInfoCompat nodeInfo = AccessibilityNodeInfoCompat.obtain();
     if (missingTextOrDescription && hasContentToAnnounce && host instanceof ViewGroup) {
       final StringBuilder concatChildDescription = new StringBuilder();
