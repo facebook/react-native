@@ -96,7 +96,7 @@ inline std::string toString(const TextBreakStrategy &textBreakStrategy) {
 
   LOG(ERROR) << "Unsupported TextBreakStrategy value";
   react_native_assert(false);
-  return "simple";
+  return "highQuality";
 }
 
 inline void fromRawValue(
@@ -116,14 +116,14 @@ inline void fromRawValue(
       // sane default
       LOG(ERROR) << "Unsupported TextBreakStrategy value: " << string;
       react_native_assert(false);
-      result = TextBreakStrategy::Simple;
+      result = TextBreakStrategy::HighQuality;
     }
     return;
   }
 
   LOG(ERROR) << "Unsupported TextBreakStrategy type";
   react_native_assert(false);
-  result = TextBreakStrategy::Simple;
+  result = TextBreakStrategy::HighQuality;
 }
 
 inline void fromRawValue(
@@ -1044,6 +1044,7 @@ constexpr static Key PA_KEY_ELLIPSIZE_MODE = 1;
 constexpr static Key PA_KEY_TEXT_BREAK_STRATEGY = 2;
 constexpr static Key PA_KEY_ADJUST_FONT_SIZE_TO_FIT = 3;
 constexpr static Key PA_KEY_INCLUDE_FONT_PADDING = 4;
+constexpr static Key PA_KEY_HYPHENATION_FREQUENCY = 5;
 
 inline MapBuffer toMapBuffer(const ParagraphAttributes &paragraphAttributes) {
   auto builder = MapBufferBuilder();
@@ -1058,6 +1059,9 @@ inline MapBuffer toMapBuffer(const ParagraphAttributes &paragraphAttributes) {
       PA_KEY_ADJUST_FONT_SIZE_TO_FIT, paragraphAttributes.adjustsFontSizeToFit);
   builder.putBool(
       PA_KEY_INCLUDE_FONT_PADDING, paragraphAttributes.includeFontPadding);
+  builder.putString(
+      PA_KEY_HYPHENATION_FREQUENCY,
+      toString(paragraphAttributes.android_hyphenationFrequency));
 
   return builder.build();
 }

@@ -51,8 +51,7 @@ SharedDebugStringConvertibleList ParagraphAttributes::getDebugProps() const {
       debugStringConvertibleItem("maximumFontSize", maximumFontSize),
       debugStringConvertibleItem("includeFontPadding", includeFontPadding),
       debugStringConvertibleItem(
-          "android_hyphenationFrequency",
-          android_hyphenationFrequency)};
+          "android_hyphenationFrequency", android_hyphenationFrequency)};
 }
 #endif
 
