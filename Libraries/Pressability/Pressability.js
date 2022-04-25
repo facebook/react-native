@@ -674,6 +674,7 @@ export default class Pressability {
         PressabilityPerformanceEventEmitter.emitEvent(() => {
           return {
             signal,
+            nativeTimestamp: event.nativeEvent.timestamp,
             touchDelayMs: Date.now() - event.nativeEvent.timestamp,
           };
         });
