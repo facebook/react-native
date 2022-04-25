@@ -27,7 +27,7 @@ bool TelemetryController::pullTransaction(
 
   auto transaction = std::move(*optional);
 
-  auto telemetry = transaction.getTelemetry();
+  auto &telemetry = transaction.getTelemetry();
   auto numberOfMutations = static_cast<int>(transaction.getMutations().size());
 
   mutex_.lock();
