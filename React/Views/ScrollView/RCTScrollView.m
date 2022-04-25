@@ -56,6 +56,7 @@
     self.scrollEnabled = YES;
     self.hasHorizontalScroller = YES;
     self.hasVerticalScroller = YES;
+    self.autohidesScrollers = YES;
     self.panGestureRecognizer = [[NSPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleCustomPan:)];
 #else // ]TODO(macOS GH#774)
     [self.panGestureRecognizer addTarget:self action:@selector(handleCustomPan:)];
@@ -642,11 +643,6 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
     [self react_updateClippedSubviewsWithClipRect:clipRect relativeToView:clipView];
     _lastClippedToRect = bounds;
   }
-
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
-  [[self scrollView] setHasHorizontalScroller:[self isHorizontal:_scrollView]];
-  [[self scrollView] setHasVerticalScroller:[self isVertical:_scrollView]];
-#endif // ]TODO(macOS GH#774)
 }
 
 #if TARGET_OS_OSX // [TODO(macOS GH#774)
