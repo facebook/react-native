@@ -150,10 +150,9 @@ RCT_EXPORT_METHOD(reportException : (JS::NativeExceptionsManager::ExceptionData 
   }
 }
 
-- (void)reportEarlyJsException:(std::string)errorMap
+- (void)reportEarlyJsException:(NSString *)errorStr
 {
-  NSString *errprStr = [NSString stringWithUTF8String:errorMap.c_str()];
-  NSData *jsonData = [errprStr dataUsingEncoding:NSUTF8StringEncoding];
+  NSData *jsonData = [errorStr dataUsingEncoding:NSUTF8StringEncoding];
   NSError *jsonError;
   NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:jsonData
                                                        options:NSJSONWritingPrettyPrinted
