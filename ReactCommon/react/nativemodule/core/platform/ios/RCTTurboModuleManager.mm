@@ -521,6 +521,19 @@ static Class getFallbackClassFromName(const char *name)
       std::lock_guard<std::mutex> delegateGuard(_turboModuleManagerDelegateMutex);
       module = [_delegate getModuleInstanceFromClass:moduleClass];
     }
+
+    /**
+     * If the application is unable to create the TurboModule object from its class:
+     * abort TurboModule creation, and early return nil.
+     */
+    if (!module) {
+      RCTLogWarn(
+          @"TurboModuleManager delegate %@ returned nil TurboModule object for module with name=\"%s\" and class=%@",
+          NSStringFromClass([_delegate class]),
+          moduleName,
+          NSStringFromClass(moduleClass));
+      return nil;
+    }
   } else {
     module = [moduleClass new];
   }
