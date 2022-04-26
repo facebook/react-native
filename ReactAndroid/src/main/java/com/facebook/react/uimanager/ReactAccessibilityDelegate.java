@@ -309,24 +309,8 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
             || accessibilityState != null
             || accessibilityLabelledBy != null
             || accessibilityRole != null;
-    final AccessibilityNodeInfoCompat nodeInfo = AccessibilityNodeInfoCompat.obtain();
-    if (missingTextOrDescription && hasContentToAnnounce && host instanceof ViewGroup) {
-      final StringBuilder concatChildDescription = new StringBuilder();
-      final ViewGroup viewGroup = (ViewGroup) host;
-      for (int i = 0, count = viewGroup.getChildCount(); i < count; i++) {
-        final View child = viewGroup.getChildAt(i);
-        final AccessibilityNodeInfoCompat childNodeInfo = AccessibilityNodeInfoCompat.obtain();
-        ViewCompat.onInitializeAccessibilityNodeInfo(child, childNodeInfo);
-        if (isSpeakingNode(childNodeInfo, child)
-            && !isAccessibilityFocusable(childNodeInfo, child)) {
-          CharSequence childNodeDescription = getTalkbackDescription(child);
-          if (!TextUtils.isEmpty(childNodeDescription)) {
-            concatChildDescription.append(childNodeDescription);
-          }
-        }
-        childNodeInfo.recycle();
-      }
-      info.setContentDescription(concatChildDescription);
+    if (missingTextOrDescription && hasContentToAnnounce) {
+      info.setContentDescription(getTalkbackDescription(host, info));
     }
   }
 
@@ -913,8 +897,9 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
    * @return {@code String} representing what talkback will say when a {@link View} is focused.
    */
   @Nullable
-  public static CharSequence getTalkbackDescription(View view) {
-    final AccessibilityNodeInfoCompat node = createNodeInfoFromView(view);
+  public static CharSequence getTalkbackDescription(
+      View view, @Nullable AccessibilityNodeInfoCompat info) {
+    final AccessibilityNodeInfoCompat node = info == null ? createNodeInfoFromView(view) : info;
     if (node == null) {
       return null;
     }
@@ -959,7 +944,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
 
           if (isSpeakingNode(childNodeInfo, child)
               && !isAccessibilityFocusable(childNodeInfo, child)) {
-            CharSequence childNodeDescription = getTalkbackDescription(child);
+            CharSequence childNodeDescription = getTalkbackDescription(child, null);
             if (!TextUtils.isEmpty(childNodeDescription)) {
               concatChildDescription.append(childNodeDescription + delimiter);
             }
@@ -972,7 +957,9 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
 
       return null;
     } finally {
-      node.recycle();
+      if (info == null) {
+        node.recycle();
+      }
     }
   }
 
