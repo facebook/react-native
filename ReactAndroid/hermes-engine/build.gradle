@@ -16,6 +16,22 @@ plugins {
 group = "com.facebook.react"
 version = parent.publishing_version
 
+def cmakeVersion = "3.18.1"
+/**
+ * We use the bundled version of CMake in the Android SDK if available, to don't force Android
+ * users to install CMake externally.
+ */
+def findCmakePath(cmakeVersion) {
+    if (System.getenv("ANDROID_SDK_ROOT")) {
+        return "${System.getenv("ANDROID_SDK_ROOT")}/cmake/${cmakeVersion}/bin/cmake"
+    }
+    if (System.getenv("ANDROID_HOME")) {
+        return "${System.getenv("ANDROID_HOME")}/cmake/${cmakeVersion}/bin/cmake"
+    }
+    return "cmake"
+}
+logger.error("CMAKE PATH ${findCmakePath(cmakeVersion)}")
+
 def reactNativeRootDir = project(':ReactAndroid').projectDir.parent;
 def customDownloadDir = System.getenv("REACT_NATIVE_DOWNLOADS_DIR")
 def downloadsDir = customDownloadDir ? new File(customDownloadDir) : new File(reactNativeRootDir, "sdks/download")
@@ -70,12 +86,12 @@ task unzipHermes(dependsOn: downloadHermes, type: Copy) {
 
 task configureBuildForHermes(type: Exec) {
     workingDir(hermesDir)
-    commandLine(windowsAwareCommandLine("cmake", "-S", ".", "-B", "./build", "-DJSI_DIR=" + jsiDir.absolutePath))
+    commandLine(windowsAwareCommandLine(findCmakePath(cmakeVersion), "-S", ".", "-B", "./build", "-DJSI_DIR=" + jsiDir.absolutePath))
 }
 
 task buildHermes(dependsOn: configureBuildForHermes, type: Exec) {
     workingDir(hermesDir)
-    commandLine(windowsAwareCommandLine("cmake", "--build", "./build", "--target", "hermesc", "-j", ndkBuildJobs))
+    commandLine(windowsAwareCommandLine(findCmakePath(cmakeVersion), "--build", "./build", "--target", "hermesc", "-j", ndkBuildJobs))
 }
 
 task prepareHeadersForPrefab(type: Copy) {
@@ -140,7 +156,7 @@ android {
 
     externalNativeBuild {
         cmake {
-            version "3.18.1"
+            version cmakeVersion
             path "$hermesDir/CMakeLists.txt"
         }
     }
