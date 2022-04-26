@@ -143,24 +143,6 @@ class PathUtilsTest {
   }
 
   @Test
-  fun detectedHermesCommand_withPathFromExtension() {
-    val extension = TestReactExtension(ProjectBuilder.builder().build())
-    val expected = tempFolder.newFile("hermesc")
-    extension.hermesCommand.set(expected.toString())
-
-    val actual = detectedHermesCommand(extension)
-
-    assertEquals(expected.toString(), actual)
-  }
-
-  @Test(expected = IllegalStateException::class)
-  fun detectedHermesCommand_failsIfNotFound() {
-    val extension = TestReactExtension(ProjectBuilder.builder().build())
-
-    val actual = detectedHermesCommand(extension)
-  }
-
-  @Test
   fun projectPathToLibraryName_withSimplePath() {
     assertEquals("SampleSpec", projectPathToLibraryName(":sample"))
   }
