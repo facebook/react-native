@@ -10,6 +10,7 @@
 
 #import <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #import <react/renderer/core/ComponentDescriptor.h>
+#import <react/renderer/core/EventListener.h>
 #import <react/renderer/core/LayoutConstraints.h>
 #import <react/renderer/core/LayoutContext.h>
 #import <react/renderer/mounting/MountingCoordinator.h>
@@ -63,6 +64,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)onAllAnimationsComplete;
 
 - (void)animationTick;
+
+- (void)addEventListener:(std::shared_ptr<facebook::react::EventListener> const &)listener;
+
+- (void)removeEventListener:(std::shared_ptr<facebook::react::EventListener> const &)listener;
 
 @end
 
