@@ -159,6 +159,8 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
           return "android.widget.Switch";
         case LIST:
           return "android.widget.AbsListView";
+        case GRID:
+          return "android.widget.GridView";
         case NONE:
         case LINK:
         case SUMMARY:
