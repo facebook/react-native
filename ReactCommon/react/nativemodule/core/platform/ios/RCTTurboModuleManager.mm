@@ -527,7 +527,7 @@ static Class getFallbackClassFromName(const char *name)
      * abort TurboModule creation, and early return nil.
      */
     if (!module) {
-      RCTLogWarn(
+      RCTLogError(
           @"TurboModuleManager delegate %@ returned nil TurboModule object for module with name=\"%s\" and class=%@",
           NSStringFromClass([_delegate class]),
           moduleName,
