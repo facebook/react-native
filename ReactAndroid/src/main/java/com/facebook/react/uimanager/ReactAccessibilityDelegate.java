@@ -310,7 +310,8 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
             || accessibilityLabelledBy != null
             || accessibilityRole != null;
     if (missingTextOrDescription && hasContentToAnnounce) {
-      info.setContentDescription(getTalkbackDescription(host, info));
+      CharSequence description = getTalkbackDescription(host, info);
+      if (description != null) info.setContentDescription(description);
     }
   }
 
@@ -894,6 +895,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
    * "get_description_for_tree", "append_description_for_tree", "description_for_tree_nodes"
    *
    * @param view The {@link View} to evaluate.
+   * @param info The default {@link AccessibilityNodeInfoCompat}.
    * @return {@code String} representing what talkback will say when a {@link View} is focused.
    */
   @Nullable
