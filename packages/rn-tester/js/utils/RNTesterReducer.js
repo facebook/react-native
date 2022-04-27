@@ -8,9 +8,9 @@
  * @flow
  */
 
-import type {RNTesterNavState, ComponentList} from '../types/RNTesterTypes';
+import type {RNTesterState, ComponentList} from '../types/RNTesterTypes';
 
-export const RNTesterNavActionsType = {
+export const RNTesterActionsType = {
   INIT_FROM_STORAGE: 'INIT_FROM_STORAGE',
   NAVBAR_PRESS: 'NAVBAR_PRESS',
   BOOKMARK_PRESS: 'BOOKMARK_PRESS',
@@ -67,14 +67,14 @@ const getUpdatedRecentlyUsed = ({
   return updatedRecentlyUsed;
 };
 
-export const RNTesterNavReducer = (
-  state: RNTesterNavState,
+export const RNTesterReducer = (
+  state: RNTesterState,
   action: {type: string, data: any},
-): RNTesterNavState => {
+): RNTesterState => {
   switch (action.type) {
-    case RNTesterNavActionsType.INIT_FROM_STORAGE:
+    case RNTesterActionsType.INIT_FROM_STORAGE:
       return action.data;
-    case RNTesterNavActionsType.NAVBAR_PRESS:
+    case RNTesterActionsType.NAVBAR_PRESS:
       return {
         ...state,
         activeModuleKey: null,
@@ -82,7 +82,7 @@ export const RNTesterNavReducer = (
         activeModuleExampleKey: null,
         screen: action.data.screen,
       };
-    case RNTesterNavActionsType.MODULE_CARD_PRESS:
+    case RNTesterActionsType.MODULE_CARD_PRESS:
       return {
         ...state,
         activeModuleKey: action.data.key,
@@ -94,12 +94,12 @@ export const RNTesterNavReducer = (
           recentlyUsed: state.recentlyUsed,
         }),
       };
-    case RNTesterNavActionsType.EXAMPLE_CARD_PRESS:
+    case RNTesterActionsType.EXAMPLE_CARD_PRESS:
       return {
         ...state,
         activeModuleExampleKey: action.data.key,
       };
-    case RNTesterNavActionsType.BOOKMARK_PRESS:
+    case RNTesterActionsType.BOOKMARK_PRESS:
       return {
         ...state,
         bookmarks: getUpdatedBookmarks({
@@ -108,7 +108,7 @@ export const RNTesterNavReducer = (
           bookmarks: state.bookmarks,
         }),
       };
-    case RNTesterNavActionsType.BACK_BUTTON_PRESS:
+    case RNTesterActionsType.BACK_BUTTON_PRESS:
       // Go back to module or list
       return {
         ...state,

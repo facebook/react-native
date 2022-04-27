@@ -23,29 +23,29 @@ import RNTesterNavBar, {navBarHeight} from './components/RNTesterNavbar';
 import RNTesterList from './utils/RNTesterList';
 import {
   Screens,
-  initialNavState,
+  initialState,
   getExamplesListWithBookmarksAndRecentlyUsed,
+  getInitialStateFromAsyncStorage,
 } from './utils/testerStateUtils';
-import {
-  RNTesterNavReducer,
-  RNTesterNavActionsType,
-} from './utils/RNTesterNavReducer';
+import {useAsyncStorageReducer} from './utils/useAsyncStorageReducer';
+import {RNTesterReducer, RNTesterActionsType} from './utils/RNTesterReducer';
 import {RNTesterThemeContext, themes} from './components/RNTesterTheme';
 import RNTTitleBar from './components/RNTTitleBar';
 import {RNTesterEmptyBookmarksState} from './components/RNTesterEmptyBookmarksState';
-import {RNTesterJsStallsProvider} from './utils/RNTesterJsStallsContext';
 
-// RNTester App currently uses in memory storage for storing navigation state
+const APP_STATE_KEY = 'RNTesterAppState.v3';
+
+// RNTester App currently uses AsyncStorage from react-native for storing navigation state
 // and bookmark items.
-// TODO: Identify/implement solution for async device storage.
+// TODO: Vendor AsyncStorage or create our own.
 LogBox.ignoreLogs([/AsyncStorage has been extracted from react-native/]);
 
 const RNTesterApp = (): React.Node => {
-  const [state, dispatch] = React.useReducer<Function, Object>(
-    RNTesterNavReducer,
-    initialNavState,
+  const [state, dispatch] = useAsyncStorageReducer(
+    RNTesterReducer,
+    initialState,
+    APP_STATE_KEY,
   );
-
   const colorScheme = useColorScheme();
 
   const {
@@ -57,6 +57,17 @@ const RNTesterApp = (): React.Node => {
     recentlyUsed,
   } = state;
 
+  React.useEffect(() => {
+    getInitialStateFromAsyncStorage(APP_STATE_KEY).then(
+      initialStateFromStorage => {
+        dispatch({
+          type: RNTesterActionsType.INIT_FROM_STORAGE,
+          data: initialStateFromStorage,
+        });
+      },
+    );
+  }, [dispatch]);
+
   const examplesList = React.useMemo(
     () =>
       getExamplesListWithBookmarksAndRecentlyUsed({bookmarks, recentlyUsed}),
@@ -65,7 +76,7 @@ const RNTesterApp = (): React.Node => {
 
   const handleBackPress = React.useCallback(() => {
     if (activeModuleKey != null) {
-      dispatch({type: RNTesterNavActionsType.BACK_BUTTON_PRESS});
+      dispatch({type: RNTesterActionsType.BACK_BUTTON_PRESS});
     }
   }, [dispatch, activeModuleKey]);
 
@@ -92,7 +103,7 @@ const RNTesterApp = (): React.Node => {
   const handleModuleCardPress = React.useCallback(
     ({exampleType, key, title}) => {
       dispatch({
-        type: RNTesterNavActionsType.MODULE_CARD_PRESS,
+        type: RNTesterActionsType.MODULE_CARD_PRESS,
         data: {exampleType, key, title},
       });
     },
@@ -102,7 +113,7 @@ const RNTesterApp = (): React.Node => {
   const handleModuleExampleCardPress = React.useCallback(
     exampleName => {
       dispatch({
-        type: RNTesterNavActionsType.EXAMPLE_CARD_PRESS,
+        type: RNTesterActionsType.EXAMPLE_CARD_PRESS,
         data: {key: exampleName},
       });
     },
@@ -112,7 +123,7 @@ const RNTesterApp = (): React.Node => {
   const toggleBookmark = React.useCallback(
     ({exampleType, key}) => {
       dispatch({
-        type: RNTesterNavActionsType.BOOKMARK_PRESS,
+        type: RNTesterActionsType.BOOKMARK_PRESS,
         data: {exampleType, key},
       });
     },
@@ -122,7 +133,7 @@ const RNTesterApp = (): React.Node => {
   const handleNavBarPress = React.useCallback(
     args => {
       dispatch({
-        type: RNTesterNavActionsType.NAVBAR_PRESS,
+        type: RNTesterActionsType.NAVBAR_PRESS,
         data: {screen: args.screen},
       });
     },
@@ -159,42 +170,40 @@ const RNTesterApp = (): React.Node => {
 
   return (
     <RNTesterThemeContext.Provider value={theme}>
-      <RNTesterJsStallsProvider>
-        <RNTTitleBar
-          title={title}
-          theme={theme}
-          onBack={activeModule ? handleBackPress : null}
-          documentationURL={activeModule?.documentationURL}
-        />
-        <View
-          style={StyleSheet.compose(styles.container, {
-            backgroundColor: theme.GroupedBackgroundColor,
-          })}>
-          {activeModule != null ? (
-            <RNTesterModuleContainer
-              module={activeModule}
-              example={activeModuleExample}
-              onExampleCardPress={handleModuleExampleCardPress}
-            />
-          ) : screen === Screens.BOOKMARKS &&
-            examplesList.bookmarks.length === 0 ? (
-            <RNTesterEmptyBookmarksState />
-          ) : (
-            <RNTesterModuleList
-              sections={activeExampleList}
-              toggleBookmark={toggleBookmark}
-              handleModuleCardPress={handleModuleCardPress}
-            />
-          )}
-        </View>
-        <View style={styles.bottomNavbar}>
-          <RNTesterNavBar
-            screen={screen || Screens.COMPONENTS}
-            isExamplePageOpen={!!activeModule}
-            handleNavBarPress={handleNavBarPress}
+      <RNTTitleBar
+        title={title}
+        theme={theme}
+        onBack={activeModule ? handleBackPress : null}
+        documentationURL={activeModule?.documentationURL}
+      />
+      <View
+        style={StyleSheet.compose(styles.container, {
+          backgroundColor: theme.GroupedBackgroundColor,
+        })}>
+        {activeModule != null ? (
+          <RNTesterModuleContainer
+            module={activeModule}
+            example={activeModuleExample}
+            onExampleCardPress={handleModuleExampleCardPress}
           />
-        </View>
-      </RNTesterJsStallsProvider>
+        ) : screen === Screens.BOOKMARKS &&
+          examplesList.bookmarks.length === 0 ? (
+          <RNTesterEmptyBookmarksState />
+        ) : (
+          <RNTesterModuleList
+            sections={activeExampleList}
+            toggleBookmark={toggleBookmark}
+            handleModuleCardPress={handleModuleCardPress}
+          />
+        )}
+      </View>
+      <View style={styles.bottomNavbar}>
+        <RNTesterNavBar
+          screen={screen || Screens.COMPONENTS}
+          isExamplePageOpen={!!activeModule}
+          handleNavBarPress={handleNavBarPress}
+        />
+      </View>
     </RNTesterThemeContext.Provider>
   );
 };
