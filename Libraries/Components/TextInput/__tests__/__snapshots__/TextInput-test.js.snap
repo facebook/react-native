@@ -22,8 +22,8 @@ exports[`TextInput tests should render as expected: should deep render when mock
   onSelectionChangeShouldSetResponder={[Function]}
   onStartShouldSetResponder={[Function]}
   rejectResponderTermination={true}
-  returnKeyAction="blurAndSubmit"
   selection={null}
+  submitBehavior="blurAndSubmit"
   text=""
   underlineColorAndroid="transparent"
 />
@@ -51,8 +51,8 @@ exports[`TextInput tests should render as expected: should deep render when not 
   onSelectionChangeShouldSetResponder={[Function]}
   onStartShouldSetResponder={[Function]}
   rejectResponderTermination={true}
-  returnKeyAction="blurAndSubmit"
   selection={null}
+  submitBehavior="blurAndSubmit"
   text=""
   underlineColorAndroid="transparent"
 />

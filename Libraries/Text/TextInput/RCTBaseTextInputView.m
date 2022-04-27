@@ -352,7 +352,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
 - (BOOL)textInputShouldSubmitOnReturn
 {
-  const BOOL shouldSubmit = [_returnKeyAction isEqualToString:@"blurAndSubmit"] || [_returnKeyAction isEqualToString:@"submit"];
+  const BOOL shouldSubmit = [_submitBehavior isEqualToString:@"blurAndSubmit"] || [_submitBehavior isEqualToString:@"submit"];
   if (shouldSubmit) {
     // We send `submit` event here, in `textInputShouldSubmit`
     // (not in `textInputDidReturn)`, because of semantic of the event:
@@ -370,7 +370,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
 - (BOOL)textInputShouldReturn
 {
-  return [_returnKeyAction isEqualToString:@"blurAndSubmit"];
+  return [_submitBehavior isEqualToString:@"blurAndSubmit"];
 }
 
 - (void)textInputDidReturn

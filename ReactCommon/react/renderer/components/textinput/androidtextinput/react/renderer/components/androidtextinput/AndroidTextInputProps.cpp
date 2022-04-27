@@ -145,9 +145,9 @@ AndroidTextInputProps::AndroidTextInputProps(
           "selectTextOnFocus",
           sourceProps.selectTextOnFocus,
           {false})),
-      returnKeyAction(convertRawProp(context, rawProps,
-           "returnKeyAction",
-          sourceProps.returnKeyAction,
+      submitBehavior(convertRawProp(context, rawProps,
+           "submitBehavior",
+          sourceProps.submitBehavior,
           {})),
       caretHidden(convertRawProp(context, rawProps,
           "caretHidden",
@@ -289,7 +289,7 @@ folly::dynamic AndroidTextInputProps::getDynamic() const {
   props["value"] = value;
   props["defaultValue"] = defaultValue;
   props["selectTextOnFocus"] = selectTextOnFocus;
-  props["returnKeyAction"] = returnKeyAction;
+  props["submitBehavior"] = submitBehavior;
   props["caretHidden"] = caretHidden;
   props["contextMenuHidden"] = contextMenuHidden;
   props["textShadowColor"] = toAndroidRepr(textShadowColor);

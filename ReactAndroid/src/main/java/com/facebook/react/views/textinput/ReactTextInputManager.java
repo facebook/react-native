@@ -442,9 +442,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
   }
 
-  @ReactProp(name = "returnKeyAction")
-  public void setReturnKeyAction(ReactEditText view, @Nullable String returnKeyAction) {
-    view.setReturnKeyAction(returnKeyAction);
+  @ReactProp(name = "submitBehavior")
+  public void setSubmitBehavior(ReactEditText view, @Nullable String submitBehavior) {
+    view.setSubmitBehavior(submitBehavior);
   }
 
   @ReactProp(name = "onContentSizeChange", defaultBoolean = false)
@@ -1110,7 +1110,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
                 return true;
               }
 
-              // If we've reached this point, it means that the TextInput has 'returnKeyAction' set
+              // If we've reached this point, it means that the TextInput has 'submitBehavior' set
               // nullish and 'multiline' set to true. But it's still possible to get IME_ACTION_NEXT
               // and IME_ACTION_PREVIOUS here in case if 'disableFullscreenUI' is false and Android
               // decides to render this EditText in the full screen mode (when a phone has the

@@ -302,8 +302,8 @@ using namespace facebook::react;
 
 - (BOOL)textInputShouldSubmitOnReturn
 {
-  const ReturnKeyAction returnKeyAction = [self getReturnKeyAction];
-  const BOOL shouldSubmit = returnKeyAction == ReturnKeyAction::Submit || returnKeyAction == ReturnKeyAction::BlurAndSubmit;
+  const SubmitBehavior submitBehavior = [self getSubmitBehavior];
+  const BOOL shouldSubmit = submitBehavior == SubmitBehavior::Submit || submitBehavior == SubmitBehavior::BlurAndSubmit;
   // We send `submit` event here, in `textInputShouldSubmitOnReturn`
   // (not in `textInputDidReturn)`, because of semantic of the event:
   // `onSubmitEditing` is called when "Submit" button
@@ -319,7 +319,7 @@ using namespace facebook::react;
 
 - (BOOL)textInputShouldReturn
 {
-  return [self getReturnKeyAction] == ReturnKeyAction::BlurAndSubmit;
+  return [self getSubmitBehavior] == SubmitBehavior::BlurAndSubmit;
 }
 
 - (void)textInputDidReturn
@@ -650,17 +650,17 @@ using namespace facebook::react;
   }
 }
 
-- (ReturnKeyAction)getReturnKeyAction
+- (SubmitBehavior)getSubmitBehavior
 {
   auto const &props = *std::static_pointer_cast<TextInputProps const>(_props);
-  const ReturnKeyAction returnKeyActionDefaultable = props.traits.returnKeyAction;
+  const SubmitBehavior submitBehaviorDefaultable = props.traits.submitBehavior;
 
-  // We should always have a non-default `returnKeyAction`, but in case we don't, set it based on multiline.
-  if (returnKeyActionDefaultable == ReturnKeyAction::Default) {
-    return props.traits.multiline ? ReturnKeyAction::Newline : ReturnKeyAction::BlurAndSubmit;
+  // We should always have a non-default `submitBehavior`, but in case we don't, set it based on multiline.
+  if (submitBehaviorDefaultable == SubmitBehavior::Default) {
+    return props.traits.multiline ? SubmitBehavior::Newline : SubmitBehavior::BlurAndSubmit;
   }
 
-  return returnKeyActionDefaultable;
+  return submitBehaviorDefaultable;
 }
 
 @end

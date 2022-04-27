@@ -49,7 +49,7 @@ enum class ReturnKeyType {
 };
 
 // iOS & Android.
-enum class ReturnKeyAction {
+enum class SubmitBehavior {
   Default,
   Submit,
   BlurAndSubmit,
@@ -180,7 +180,7 @@ class TextInputTraits final {
    * iOS & Android
    * Default value: `Default`.
    */
-  ReturnKeyAction returnKeyAction{ReturnKeyAction::Default};
+  SubmitBehavior submitBehavior{SubmitBehavior::Default};
 
   /*
    * iOS-only (implemented only on iOS for now)

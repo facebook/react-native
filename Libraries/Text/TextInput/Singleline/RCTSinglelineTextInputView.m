@@ -19,8 +19,8 @@
 - (instancetype)initWithBridge:(RCTBridge *)bridge
 {
   if (self = [super initWithBridge:bridge]) {
-    // `returnKeyAction` defaults to `"blurAndSubmit"` for <TextInput multiline={false}> by design.
-    self.returnKeyAction = @"blurAndSubmit";
+    // `submitBehavior` defaults to `"blurAndSubmit"` for <TextInput multiline={false}> by design.
+    self.submitBehavior = @"blurAndSubmit";
 
     _backedTextInputView = [[RCTUITextField alloc] initWithFrame:self.bounds];
     _backedTextInputView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;

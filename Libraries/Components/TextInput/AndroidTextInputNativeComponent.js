@@ -66,7 +66,7 @@ export type ReturnKeyType =
   | 'route'
   | 'yahoo';
 
-export type ReturnKeyAction = 'submit' | 'blurAndSubmit' | 'newline';
+export type SubmitBehavior = 'submit' | 'blurAndSubmit' | 'newline';
 
 export type NativeProps = $ReadOnly<{|
   // This allows us to inherit everything from ViewProps except for style (see below)
@@ -524,9 +524,9 @@ export type NativeProps = $ReadOnly<{|
    * `onSubmitEditing` event instead of inserting a newline into the field.
    *
    * @deprecated
-   * Note that `returnKeyAction` now takes the place of `blurOnSubmit` and will
+   * Note that `submitBehavior` now takes the place of `blurOnSubmit` and will
    * override any behavior defined by `blurOnSubmit`.
-   * @see returnKeyAction
+   * @see submitBehavior
    */
   blurOnSubmit?: ?boolean,
 
@@ -548,7 +548,7 @@ export type NativeProps = $ReadOnly<{|
    * - `'submit'` will only send a submit event and not blur the input
    * - `'blurAndSubmit`' will both blur the input and send a submit event
    */
-  returnKeyAction?: ?ReturnKeyAction,
+  submitBehavior?: ?SubmitBehavior,
 
   /**
    * Note that not all Text styles are supported, an incomplete list of what is not supported includes:
@@ -684,7 +684,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
       process: require('../../StyleSheet/processColor'),
     },
     textDecorationLine: true,
-    returnKeyAction: true,
+    submitBehavior: true,
     textAlignVertical: true,
     fontStyle: true,
     textShadowOffset: true,

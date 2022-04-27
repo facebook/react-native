@@ -129,18 +129,18 @@ inline void fromRawValue(
 inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
-    ReturnKeyAction &result) {
+    SubmitBehavior &result) {
   auto string = (std::string)value;
   if (string == "newline") {
-    result = ReturnKeyAction::Newline;
+    result = SubmitBehavior::Newline;
     return;
   }
   if (string == "submit") {
-    result = ReturnKeyAction::Submit;
+    result = SubmitBehavior::Submit;
     return;
   }
   if (string == "blurAndSubmit") {
-    result = ReturnKeyAction::BlurAndSubmit;
+    result = SubmitBehavior::BlurAndSubmit;
     return;
   }
   abort();

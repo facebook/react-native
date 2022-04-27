@@ -237,7 +237,7 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
   }
 
   private void fireEditorActionAndCheckRecording(
-      final ReactEditText reactEditText, final int actionId, final String returnKeyAction)
+      final ReactEditText reactEditText, final int actionId, final String submitBehavior)
       throws Throwable {
     mRecordingModule.reset();
 
@@ -246,14 +246,14 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
           @Override
           public void run() {
             reactEditText.requestFocusFromJS();
-            reactEditText.setReturnKeyAction(returnKeyAction);
+            reactEditText.setSubmitBehavior(submitBehavior);
             reactEditText.onEditorAction(actionId);
           }
         });
     waitForBridgeAndUIIdle();
 
     assertEquals(1, mRecordingModule.getCalls().size());
-    assertEquals(!returnKeyAction.equals("blurAndSubmit"), reactEditText.isFocused());
+    assertEquals(!submitBehavior.equals("blurAndSubmit"), reactEditText.isFocused());
   }
 
   /**

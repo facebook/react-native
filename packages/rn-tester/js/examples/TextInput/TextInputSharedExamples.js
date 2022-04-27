@@ -240,7 +240,7 @@ class BlurOnSubmitExample extends React.Component<{...}> {
   }
 }
 
-class ReturnKeyActionExample extends React.Component<{...}> {
+class SubmitBehaviorExample extends React.Component<{...}> {
   ref1 = React.createRef();
   ref2 = React.createRef();
   ref3 = React.createRef();
@@ -259,13 +259,13 @@ class ReturnKeyActionExample extends React.Component<{...}> {
         <TextInput
           ref={this.ref1}
           placeholder="single line submit"
-          returnKeyAction="submit"
+          submitBehavior="submit"
           onSubmitEditing={() => this.ref2.current?.focus()}
         />
         <TextInput
           ref={this.ref2}
           placeholder="single line blurAndSubmit"
-          returnKeyAction="blurAndSubmit"
+          submitBehavior="blurAndSubmit"
           onSubmitEditing={() => this.ref3.current?.focus()}
         />
         <TextInput
@@ -289,14 +289,14 @@ class ReturnKeyActionExample extends React.Component<{...}> {
           ref={this.ref6}
           multiline
           placeholder="multiline submit"
-          returnKeyAction="submit"
+          submitBehavior="submit"
           onSubmitEditing={() => this.ref7.current?.focus()}
         />
         <TextInput
           ref={this.ref7}
           multiline
           placeholder="multiline blurAndSubmit"
-          returnKeyAction="blurAndSubmit"
+          submitBehavior="blurAndSubmit"
           onSubmitEditing={() => this.ref8.current?.focus()}
         />
         <TextInput
@@ -316,7 +316,7 @@ class ReturnKeyActionExample extends React.Component<{...}> {
           ref={this.ref10}
           multiline
           placeholder="multiline newline"
-          returnKeyAction="newline"
+          submitBehavior="newline"
         />
         <TextInput ref={this.ref11} multiline placeholder="multiline default" />
       </View>
@@ -679,9 +679,9 @@ module.exports = ([
     },
   },
   {
-    title: 'Return key action',
+    title: 'Submit behavior',
     render: function (): React.Element<any> {
-      return <ReturnKeyActionExample />;
+      return <SubmitBehaviorExample />;
     },
   },
   {

@@ -95,7 +95,7 @@ public class ReactEditText extends AppCompatEditText
   private @Nullable TextWatcherDelegator mTextWatcherDelegator;
   private int mStagedInputType;
   protected boolean mContainsImages;
-  private @Nullable String mReturnKeyAction = null;
+  private @Nullable String mSubmitBehavior = null;
   private boolean mDisableFullscreen;
   private @Nullable String mReturnKeyType;
   private @Nullable SelectionWatcher mSelectionWatcher;
@@ -383,47 +383,47 @@ public class ReactEditText extends AppCompatEditText
   }
 
   public boolean shouldBlurOnReturn() {
-    String returnKeyAction = getReturnKeyAction();
+    String submitBehavior = getSubmitBehavior();
     boolean shouldBlur;
 
     // Default shouldBlur
-    if (returnKeyAction == null) {
+    if (submitBehavior == null) {
       if (!isMultiline()) {
         shouldBlur = true;
       } else {
         shouldBlur = false;
       }
     } else {
-      shouldBlur = returnKeyAction.equals("blurAndSubmit");
+      shouldBlur = submitBehavior.equals("blurAndSubmit");
     }
 
     return shouldBlur;
   }
 
   public boolean shouldSubmitOnReturn() {
-    String returnKeyAction = getReturnKeyAction();
+    String submitBehavior = getSubmitBehavior();
     boolean shouldSubmit;
 
     // Default shouldSubmit
-    if (returnKeyAction == null) {
+    if (submitBehavior == null) {
       if (!isMultiline()) {
         shouldSubmit = true;
       } else {
         shouldSubmit = false;
       }
     } else {
-      shouldSubmit = returnKeyAction.equals("submit") || returnKeyAction.equals("blurAndSubmit");
+      shouldSubmit = submitBehavior.equals("submit") || submitBehavior.equals("blurAndSubmit");
     }
 
     return shouldSubmit;
   }
 
-  public String getReturnKeyAction() {
-    return mReturnKeyAction;
+  public String getSubmitBehavior() {
+    return mSubmitBehavior;
   }
 
-  public void setReturnKeyAction(String returnKeyAction) {
-    mReturnKeyAction = returnKeyAction;
+  public void setSubmitBehavior(String submitBehavior) {
+    mSubmitBehavior = submitBehavior;
   }
 
   public void setDisableFullscreenUI(boolean disableFullscreenUI) {
