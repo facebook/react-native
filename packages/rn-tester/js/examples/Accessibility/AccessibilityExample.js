@@ -21,6 +21,7 @@ const {
   Text,
   View,
   TouchableOpacity,
+  TouchableNativeFeedback,
   TouchableWithoutFeedback,
   Alert,
   StyleSheet,
@@ -211,6 +212,18 @@ class AccessibilityExample extends React.Component<{}> {
               value="Foo"
             />
           </View>
+        </RNTesterBlock>
+
+        <RNTesterBlock title="TouchableNativeFeedback with non-accessible child Texts">
+          <TouchableNativeFeedback
+            accessible={true}
+            importantForAccessibility="yes"
+            accessibilityRole="button">
+            <View accessible={false}>
+              <Text accessible={false}>Text number 1</Text>
+              <Text accessible={false}>Text number 2</Text>
+            </View>
+          </TouchableNativeFeedback>
         </RNTesterBlock>
       </View>
     );
