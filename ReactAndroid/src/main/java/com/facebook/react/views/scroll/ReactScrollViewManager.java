@@ -367,4 +367,9 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
   public void setPointerEvents(ReactScrollView view, @Nullable String pointerEventsStr) {
     view.setPointerEvents(PointerEvents.parsePointerEvents(pointerEventsStr));
   }
+
+  @ReactProp(name = "scrollEventThrottle")
+  public void setScrollEventThrottle(ReactScrollView view, int scrollEventThrottle) {
+    view.setScrollEventThrottle(scrollEventThrottle);
+  }
 }

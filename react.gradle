@@ -30,7 +30,7 @@ def reactRoot = file(config.root ?: "../../")
 def inputExcludes = config.inputExcludes ?: ["android/**", "ios/**"]
 def bundleConfig = config.bundleConfig ? "${reactRoot}/${config.bundleConfig}" : null ;
 def enableVmCleanup = config.enableVmCleanup == null ? true : config.enableVmCleanup
-def hermesCommand = config.hermesCommand ?: "../../node_modules/hermes-engine/%OS-BIN%/hermesc"
+def hermesCommand = config.hermesCommand
 
 /**
  * Detects CLI location in a similar fashion to the React Native CLI
@@ -90,15 +90,39 @@ def getHermesOSBin() {
 // Make sure not to inspect the Hermes config unless we need it,
 // to avoid breaking any JSC-only setups.
 def getHermesCommand = {
-    // If the project specifies a Hermes command, don't second guess it.
-    if (!hermesCommand.contains("%OS-BIN%")) {
-        return hermesCommand
+    // 1. If the project specifies a Hermes command, don't second guess it.
+    if (config.hermesCommand?.trim()) {
+        if (hermesCommand.contains("%OS-BIN%")) {
+            return hermesCommand
+                .replaceAll("%OS-BIN%", getHermesOSBin())
+                .replace('/' as char, File.separatorChar)
+        } else {
+            return hermesCommand
+                .replace('/' as char, File.separatorChar)
+        }
     }
 
-    // Execution on Windows fails with / as separator
-    return hermesCommand
-            .replaceAll("%OS-BIN%", getHermesOSBin())
-            .replace('/' as char, File.separatorChar);
+    // 2. If the project is building hermes-engine from source, use hermesc from there
+    // Also note that user can override the hermes source location with
+    // the `REACT_NATIVE_OVERRIDE_HERMES_DIR` env variable.
+    def hermesOverrideDir = System.getenv("REACT_NATIVE_OVERRIDE_HERMES_DIR")
+    def builtHermesc = hermesOverrideDir ? new File(hermesOverrideDir, "build/bin/hermesc") : new File(reactRoot, "node_modules/react-native/sdks/hermes/build/bin/hermesc")
+    if (builtHermesc.exists()) {
+        return builtHermesc.getAbsolutePath()
+    }
+
+    // 3. If the react-native contains a pre-built hermesc, use it.
+    def prebuiltHermesPath = "node_modules/react-native/sdks/hermesc/%OS-BIN%/hermesc"
+        .replaceAll("%OS-BIN%", getHermesOSBin())
+        .replace('/' as char, File.separatorChar);
+    def prebuiltHermes = new File(reactRoot, prebuiltHermesPath)
+    if (prebuiltHermes.exists()) {
+        return prebuiltHermes.getAbsolutePath()
+    }
+
+    throw new Exception("Couldn't determine Hermesc location. " +
+        "Please set `project.ext.react.hermesCommand` to the path of the hermesc binary file. " +
+        "node_modules/react-native/sdks/hermesc/%OS-BIN%/hermesc");
 }
 
 // Set enableHermesForVariant to a function to configure per variant,

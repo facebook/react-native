@@ -110,14 +110,9 @@ def use_react_native! (options={})
 
   if hermes_enabled
     pod 'React-hermes', :path => "#{prefix}/ReactCommon/hermes"
-    if ENV['BUILD_HERMES_SOURCE'] == '1'
-      Pod::UI.puts "[Hermes] Building Hermes from source"
-      hermes_source_path = downloadAndConfigureHermesSource(prefix)
-      pod 'hermes-engine', :path => "#{hermes_source_path}/hermes-engine.podspec"
-    else
-      Pod::UI.warn "[Hermes] Installing Hermes from CocoaPods. The `hermes-engine` pod has been deprecated and will not see future updates."
-      pod 'hermes-engine', '~> 0.11.0'
-    end
+    Pod::UI.puts "[Hermes] Building Hermes from source"
+    hermes_source_path = downloadAndConfigureHermesSource(prefix)
+    pod 'hermes-engine', :path => "#{hermes_source_path}/hermes-engine.podspec"
     pod 'libevent', '~> 2.1.12'
   end
 
@@ -258,7 +253,23 @@ def fix_library_search_paths(installer)
   end
 end
 
-def react_native_post_install(installer)
+def set_node_modules_user_settings(installer, react_native_path)
+  puts "Setting REACT_NATIVE build settings"
+  projects = installer.aggregate_targets
+    .map{ |t| t.user_project }
+    .uniq{ |p| p.path }
+    .push(installer.pods_project)
+
+  projects.each do |project|
+    project.build_configurations.each do |config|
+      config.build_settings["REACT_NATIVE_PATH"] = File.join("${PODS_ROOT}", "..", react_native_path)
+    end
+
+    project.save()
+  end
+end
+
+def react_native_post_install(installer, react_native_path = "../node_modules/react-native")
   if has_pod(installer, 'Flipper')
     flipper_post_install(installer)
   end
@@ -272,6 +283,7 @@ def react_native_post_install(installer)
   end
   modify_flags_for_new_architecture(installer, cpp_flags)
 
+  set_node_modules_user_settings(installer, react_native_path)
 end
 
 def modify_flags_for_new_architecture(installer, cpp_flags)

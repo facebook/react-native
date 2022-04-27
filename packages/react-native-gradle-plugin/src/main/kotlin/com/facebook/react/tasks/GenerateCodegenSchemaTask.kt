@@ -54,8 +54,7 @@ abstract class GenerateCodegenSchemaTask : Exec() {
             codegenDir
                 .file("lib/cli/combine/combine-js-to-schema-cli.js")
                 .get()
-                .asFile
-                .absolutePath,
+                .asFile.absolutePath,
             generatedSchemaFile.get().asFile.absolutePath,
             jsRootDir.asFile.get().absolutePath,
         ))

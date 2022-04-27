@@ -10,7 +10,9 @@ package com.facebook.react.module.processing;
 import static javax.lang.model.element.Modifier.PUBLIC;
 import static javax.tools.Diagnostic.Kind.ERROR;
 
+import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.SuppressFieldNotInitialized;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.module.annotations.ReactModuleList;
 import com.facebook.react.module.model.ReactModuleInfo;
@@ -87,7 +89,15 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
       }
 
       TypeElement typeElement = (TypeElement) reactModuleListElement;
-      ReactModuleList reactModuleList = typeElement.getAnnotation(ReactModuleList.class);
+
+      ReactModuleList reactModuleList = null;
+      try {
+        reactModuleList = typeElement.getAnnotation(ReactModuleList.class);
+      } catch (Exception ex) {
+        FLog.i(
+            ReactConstants.TAG, "Could not reactModuleList from typeElement.getAnnotation()", ex);
+        throw ex;
+      }
 
       if (reactModuleList == null) {
         continue;

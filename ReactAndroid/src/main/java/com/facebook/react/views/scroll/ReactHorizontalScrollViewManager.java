@@ -325,4 +325,9 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
   public void setPointerEvents(ReactHorizontalScrollView view, @Nullable String pointerEventsStr) {
     view.setPointerEvents(PointerEvents.parsePointerEvents(pointerEventsStr));
   }
+
+  @ReactProp(name = "scrollEventThrottle")
+  public void setScrollEventThrottle(ReactHorizontalScrollView view, int scrollEventThrottle) {
+    view.setScrollEventThrottle(scrollEventThrottle);
+  }
 }

@@ -97,7 +97,7 @@
     const CGFloat buttonHeight = 60;
 
     CGRect detailsFrame = rootView.bounds;
-    detailsFrame.size.height -= buttonHeight + [self bottomSafeViewHeight];
+    detailsFrame.size.height -= buttonHeight + (double)[self bottomSafeViewHeight];
 
     _stackTraceTableView = [[UITableView alloc] initWithFrame:detailsFrame style:UITableViewStylePlain];
     _stackTraceTableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
@@ -155,7 +155,7 @@
                     accessibilityIdentifier:@""
                                    selector:nil
                                       block:customButtonHandlers[i]];
-      button.frame = CGRectMake(buttonWidth * (4 + i), bottomButtonHeight, buttonWidth, buttonHeight);
+      button.frame = CGRectMake(buttonWidth * (double)(4 + i), bottomButtonHeight, buttonWidth, buttonHeight);
       [rootView addSubview:button];
     }
 

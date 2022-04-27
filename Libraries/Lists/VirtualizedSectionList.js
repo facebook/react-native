@@ -338,6 +338,7 @@ class VirtualizedSectionList<
 
   _renderItem =
     (listItemCount: number) =>
+    // eslint-disable-next-line react/no-unstable-nested-components
     ({item, index}: {item: Item, index: number, ...}) => {
       const info = this._subExtractor(index);
       if (!info) {

@@ -19,6 +19,285 @@ const {
   View,
 } = require('react-native');
 
+class ViewBorderStyleExample extends React.Component<
+  $ReadOnly<{||}>,
+  {|showBorder: boolean|},
+> {
+  state = {
+    showBorder: true,
+  };
+
+  render() {
+    return (
+      <TouchableWithoutFeedback onPress={this._handlePress}>
+        <View>
+          <View
+            style={[
+              {
+                borderWidth: 1,
+                padding: 5,
+              },
+              this.state.showBorder
+                ? {
+                    borderStyle: 'dashed',
+                  }
+                : null,
+            ]}>
+            <Text style={{fontSize: 11}}>Dashed border style</Text>
+          </View>
+          <View
+            style={[
+              {
+                marginTop: 5,
+                borderWidth: 1,
+                borderRadius: 5,
+                padding: 5,
+              },
+              this.state.showBorder
+                ? {
+                    borderStyle: 'dotted',
+                  }
+                : null,
+            ]}>
+            <Text style={{fontSize: 11}}>Dotted border style</Text>
+          </View>
+        </View>
+      </TouchableWithoutFeedback>
+    );
+  }
+
+  _handlePress = () => {
+    this.setState({showBorder: !this.state.showBorder});
+  };
+}
+
+const offscreenAlphaCompositingStyles = StyleSheet.create({
+  alphaCompositing: {
+    justifyContent: 'space-around',
+    width: 100,
+    height: 50,
+    borderRadius: 100,
+  },
+});
+
+class OffscreenAlphaCompositing extends React.Component<
+  $ReadOnly<{||}>,
+  {|
+    active: boolean,
+  |},
+> {
+  state = {
+    active: false,
+  };
+
+  render() {
+    return (
+      <TouchableWithoutFeedback onPress={this._handlePress}>
+        <View>
+          <Text style={{paddingBottom: 10}}>Blobs</Text>
+          <View
+            style={{opacity: 1.0, paddingBottom: 30}}
+            needsOffscreenAlphaCompositing={this.state.active}>
+            <View
+              style={[
+                offscreenAlphaCompositingStyles.alphaCompositing,
+                {marginTop: 0, marginLeft: 0, backgroundColor: '#FF6F59'},
+              ]}
+            />
+            <View
+              style={[
+                offscreenAlphaCompositingStyles.alphaCompositing,
+                {
+                  marginTop: -50,
+                  marginLeft: 50,
+                  backgroundColor: '#F7CB15',
+                },
+              ]}
+            />
+          </View>
+          <Text style={{paddingBottom: 10}}>
+            Same blobs, but their shared container have 0.5 opacity
+          </Text>
+          <Text style={{paddingBottom: 10}}>
+            Tap to {this.state.active ? 'activate' : 'deactivate'}{' '}
+            needsOffscreenAlphaCompositing
+          </Text>
+          <View
+            style={{opacity: 0.8}}
+            needsOffscreenAlphaCompositing={this.state.active}>
+            <View
+              style={[
+                offscreenAlphaCompositingStyles.alphaCompositing,
+                {marginTop: 0, marginLeft: 0, backgroundColor: '#FF6F59'},
+              ]}
+            />
+            <View
+              style={[
+                offscreenAlphaCompositingStyles.alphaCompositing,
+                {
+                  marginTop: -50,
+                  marginLeft: 50,
+                  backgroundColor: '#F7CB15',
+                },
+              ]}
+            />
+          </View>
+        </View>
+      </TouchableWithoutFeedback>
+    );
+  }
+
+  _handlePress = () => {
+    this.setState({active: !this.state.active});
+  };
+}
+
+const ZIndexExampleStyles = StyleSheet.create({
+  zIndex: {
+    justifyContent: 'space-around',
+    width: 100,
+    height: 50,
+    marginTop: -10,
+    position: 'relative',
+  },
+});
+
+class ZIndexExample extends React.Component<
+  $ReadOnly<{||}>,
+  {|
+    flipped: boolean,
+  |},
+> {
+  state = {
+    flipped: false,
+  };
+
+  render() {
+    const indices = this.state.flipped ? [-1, 0, 1, 2] : [2, 1, 0, -1];
+    return (
+      <TouchableWithoutFeedback onPress={this._handlePress}>
+        <View>
+          <Text style={{paddingBottom: 10}}>Tap to flip sorting order</Text>
+          <View
+            style={[
+              ZIndexExampleStyles.zIndex,
+              {
+                marginTop: 0,
+                backgroundColor: '#E57373',
+                zIndex: indices[0],
+              },
+            ]}>
+            <Text>ZIndex {indices[0]}</Text>
+          </View>
+          <View
+            style={[
+              ZIndexExampleStyles.zIndex,
+              {
+                marginLeft: 50,
+                backgroundColor: '#FFF176',
+                zIndex: indices[1],
+              },
+            ]}>
+            <Text>ZIndex {indices[1]}</Text>
+          </View>
+          <View
+            style={[
+              ZIndexExampleStyles.zIndex,
+              {
+                marginLeft: 100,
+                backgroundColor: '#81C784',
+                zIndex: indices[2],
+              },
+            ]}>
+            <Text>ZIndex {indices[2]}</Text>
+          </View>
+          <View
+            style={[
+              ZIndexExampleStyles.zIndex,
+              {
+                marginLeft: 150,
+                backgroundColor: '#64B5F6',
+                zIndex: indices[3],
+              },
+            ]}>
+            <Text>ZIndex {indices[3]}</Text>
+          </View>
+        </View>
+      </TouchableWithoutFeedback>
+    );
+  }
+
+  _handlePress = () => {
+    this.setState({flipped: !this.state.flipped});
+  };
+}
+
+class DisplayNoneStyle extends React.Component<
+  $ReadOnly<{||}>,
+  {|
+    index: number,
+  |},
+> {
+  state = {
+    index: 0,
+  };
+
+  render() {
+    return (
+      <TouchableWithoutFeedback onPress={this._handlePress}>
+        <View>
+          <Text style={{paddingBottom: 10}}>
+            Press to toggle `display: none`
+          </Text>
+          <View
+            style={{
+              height: 50,
+              width: 50,
+              backgroundColor: 'red',
+              display: this.state.index % 2 === 0 ? 'none' : 'flex',
+            }}
+          />
+          <View
+            style={{
+              height: 50,
+              width: 50,
+              backgroundColor: 'blue',
+              display: this.state.index % 3 === 0 ? 'none' : 'flex',
+            }}
+          />
+          <View
+            style={{
+              height: 50,
+              width: 50,
+              backgroundColor: 'yellow',
+              display: this.state.index % 5 === 0 ? 'none' : 'flex',
+            }}>
+            <View
+              style={{
+                height: 30,
+                width: 30,
+                backgroundColor: 'salmon',
+                display: this.state.index % 11 === 0 ? 'none' : 'flex',
+              }}
+            />
+          </View>
+          <View
+            style={{
+              height: 50,
+              width: 50,
+              backgroundColor: 'magenta',
+              display: this.state.index % 7 === 0 ? 'none' : 'flex',
+            }}
+          />
+        </View>
+      </TouchableWithoutFeedback>
+    );
+  }
+
+  _handlePress = () => {
+    this.setState({index: this.state.index + 1});
+  };
+}
 exports.title = 'View';
 exports.documentationURL = 'https://reactnative.dev/docs/view';
 exports.category = 'Basic';
@@ -93,59 +372,6 @@ exports.examples = [
   {
     title: 'Border Style',
     render(): React.Node {
-      type Props = $ReadOnly<{||}>;
-      type State = {|
-        showBorder: boolean,
-      |};
-
-      class ViewBorderStyleExample extends React.Component<Props, State> {
-        state = {
-          showBorder: true,
-        };
-
-        render() {
-          return (
-            <TouchableWithoutFeedback onPress={this._handlePress}>
-              <View>
-                <View
-                  style={[
-                    {
-                      borderWidth: 1,
-                      padding: 5,
-                    },
-                    this.state.showBorder
-                      ? {
-                          borderStyle: 'dashed',
-                        }
-                      : null,
-                  ]}>
-                  <Text style={{fontSize: 11}}>Dashed border style</Text>
-                </View>
-                <View
-                  style={[
-                    {
-                      marginTop: 5,
-                      borderWidth: 1,
-                      borderRadius: 5,
-                      padding: 5,
-                    },
-                    this.state.showBorder
-                      ? {
-                          borderStyle: 'dotted',
-                        }
-                      : null,
-                  ]}>
-                  <Text style={{fontSize: 11}}>Dotted border style</Text>
-                </View>
-              </View>
-            </TouchableWithoutFeedback>
-          );
-        }
-
-        _handlePress = () => {
-          this.setState({showBorder: !this.state.showBorder});
-        };
-      }
       return <ViewBorderStyleExample />;
     },
   },
@@ -273,247 +499,18 @@ exports.examples = [
   {
     title: 'Offscreen Alpha Compositing',
     render(): React.Node {
-      type Props = $ReadOnly<{||}>;
-      type State = {|
-        active: boolean,
-      |};
-
-      const styles = StyleSheet.create({
-        alphaCompositing: {
-          justifyContent: 'space-around',
-          width: 100,
-          height: 50,
-          borderRadius: 100,
-        },
-      });
-
-      class OffscreenAlphaCompositing extends React.Component<Props, State> {
-        state = {
-          active: false,
-        };
-
-        render() {
-          return (
-            <TouchableWithoutFeedback onPress={this._handlePress}>
-              <View>
-                <Text style={{paddingBottom: 10}}>Blobs</Text>
-                <View
-                  style={{opacity: 1.0, paddingBottom: 30}}
-                  needsOffscreenAlphaCompositing={this.state.active}>
-                  <View
-                    style={[
-                      styles.alphaCompositing,
-                      {marginTop: 0, marginLeft: 0, backgroundColor: '#FF6F59'},
-                    ]}
-                  />
-                  <View
-                    style={[
-                      styles.alphaCompositing,
-                      {
-                        marginTop: -50,
-                        marginLeft: 50,
-                        backgroundColor: '#F7CB15',
-                      },
-                    ]}
-                  />
-                </View>
-                <Text style={{paddingBottom: 10}}>
-                  Same blobs, but their shared container have 0.5 opacity
-                </Text>
-                <Text style={{paddingBottom: 10}}>
-                  Tap to {this.state.active ? 'activate' : 'deactivate'}{' '}
-                  needsOffscreenAlphaCompositing
-                </Text>
-                <View
-                  style={{opacity: 0.8}}
-                  needsOffscreenAlphaCompositing={this.state.active}>
-                  <View
-                    style={[
-                      styles.alphaCompositing,
-                      {marginTop: 0, marginLeft: 0, backgroundColor: '#FF6F59'},
-                    ]}
-                  />
-                  <View
-                    style={[
-                      styles.alphaCompositing,
-                      {
-                        marginTop: -50,
-                        marginLeft: 50,
-                        backgroundColor: '#F7CB15',
-                      },
-                    ]}
-                  />
-                </View>
-              </View>
-            </TouchableWithoutFeedback>
-          );
-        }
-
-        _handlePress = () => {
-          this.setState({active: !this.state.active});
-        };
-      }
-
       return <OffscreenAlphaCompositing />;
     },
   },
   {
     title: 'ZIndex',
     render(): React.Node {
-      type Props = $ReadOnly<{||}>;
-      type State = {|
-        flipped: boolean,
-      |};
-
-      const styles = StyleSheet.create({
-        zIndex: {
-          justifyContent: 'space-around',
-          width: 100,
-          height: 50,
-          marginTop: -10,
-          position: 'relative',
-        },
-      });
-
-      class ZIndexExample extends React.Component<Props, State> {
-        state = {
-          flipped: false,
-        };
-
-        render() {
-          const indices = this.state.flipped ? [-1, 0, 1, 2] : [2, 1, 0, -1];
-          return (
-            <TouchableWithoutFeedback onPress={this._handlePress}>
-              <View>
-                <Text style={{paddingBottom: 10}}>
-                  Tap to flip sorting order
-                </Text>
-                <View
-                  style={[
-                    styles.zIndex,
-                    {
-                      marginTop: 0,
-                      backgroundColor: '#E57373',
-                      zIndex: indices[0],
-                    },
-                  ]}>
-                  <Text>ZIndex {indices[0]}</Text>
-                </View>
-                <View
-                  style={[
-                    styles.zIndex,
-                    {
-                      marginLeft: 50,
-                      backgroundColor: '#FFF176',
-                      zIndex: indices[1],
-                    },
-                  ]}>
-                  <Text>ZIndex {indices[1]}</Text>
-                </View>
-                <View
-                  style={[
-                    styles.zIndex,
-                    {
-                      marginLeft: 100,
-                      backgroundColor: '#81C784',
-                      zIndex: indices[2],
-                    },
-                  ]}>
-                  <Text>ZIndex {indices[2]}</Text>
-                </View>
-                <View
-                  style={[
-                    styles.zIndex,
-                    {
-                      marginLeft: 150,
-                      backgroundColor: '#64B5F6',
-                      zIndex: indices[3],
-                    },
-                  ]}>
-                  <Text>ZIndex {indices[3]}</Text>
-                </View>
-              </View>
-            </TouchableWithoutFeedback>
-          );
-        }
-
-        _handlePress = () => {
-          this.setState({flipped: !this.state.flipped});
-        };
-      }
       return <ZIndexExample />;
     },
   },
   {
     title: '`display: none` style',
     render(): React.Node {
-      type Props = $ReadOnly<{||}>;
-      type State = {|
-        index: number,
-      |};
-
-      class DisplayNoneStyle extends React.Component<Props, State> {
-        state = {
-          index: 0,
-        };
-
-        render() {
-          return (
-            <TouchableWithoutFeedback onPress={this._handlePress}>
-              <View>
-                <Text style={{paddingBottom: 10}}>
-                  Press to toggle `display: none`
-                </Text>
-                <View
-                  style={{
-                    height: 50,
-                    width: 50,
-                    backgroundColor: 'red',
-                    display: this.state.index % 2 === 0 ? 'none' : 'flex',
-                  }}
-                />
-                <View
-                  style={{
-                    height: 50,
-                    width: 50,
-                    backgroundColor: 'blue',
-                    display: this.state.index % 3 === 0 ? 'none' : 'flex',
-                  }}
-                />
-                <View
-                  style={{
-                    height: 50,
-                    width: 50,
-                    backgroundColor: 'yellow',
-                    display: this.state.index % 5 === 0 ? 'none' : 'flex',
-                  }}>
-                  <View
-                    style={{
-                      height: 30,
-                      width: 30,
-                      backgroundColor: 'salmon',
-                      display: this.state.index % 11 === 0 ? 'none' : 'flex',
-                    }}
-                  />
-                </View>
-                <View
-                  style={{
-                    height: 50,
-                    width: 50,
-                    backgroundColor: 'magenta',
-                    display: this.state.index % 7 === 0 ? 'none' : 'flex',
-                  }}
-                />
-              </View>
-            </TouchableWithoutFeedback>
-          );
-        }
-
-        _handlePress = () => {
-          this.setState({index: this.state.index + 1});
-        };
-      }
-
       return <DisplayNoneStyle />;
     },
   },
