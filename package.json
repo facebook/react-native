@@ -115,7 +115,7 @@
     "pretty-format": "^26.5.2",
     "promise": "^8.0.3",
     "react-devtools-core": "4.24.0",
-    "react-native-gradle-plugin": "^0.0.6",
+    "react-native-gradle-plugin": "^0.0.7",
     "react-refresh": "^0.4.0",
     "react-shallow-renderer": "16.14.1",
     "regenerator-runtime": "^0.13.2",
