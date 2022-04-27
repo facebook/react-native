@@ -854,10 +854,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
   }
 
   /**
-   * Creates a {@link FlipperObject} of useful properties of AccessibilityNodeInfo, to be shown in
-   * the Flipper Layout Inspector accessibility extension. All properties are immutable since they
-   * are all derived from various {@link View} properties. This is a more complete list than
-   * getAccessibilityNodeInfoProperties returns.
+   * Returns a cached instance if such is available otherwise a new one.
    *
    * @param view The {@link View} to derive the AccessibilityNodeInfo properties from.
    * @return {@link FlipperObject} containing the properties.
@@ -903,7 +900,9 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
   @Nullable
   public static CharSequence getTalkbackDescription(
       View view, @Nullable AccessibilityNodeInfoCompat info) {
-    final AccessibilityNodeInfoCompat node = info == null ? createNodeInfoFromView(view) : info;
+    final AccessibilityNodeInfoCompat node =
+        info == null ? createNodeInfoFromView(view) : AccessibilityNodeInfoCompat.obtain(info);
+
     if (node == null) {
       return null;
     }
