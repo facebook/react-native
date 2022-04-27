@@ -226,11 +226,25 @@ class AccessibilityExample extends React.Component<{}> {
           </TouchableNativeFeedback>
         </RNTesterBlock>
 
-        <RNTesterBlock title="Button with non-accessible child Texts">
+        <RNTesterBlock title="TouchableNativeFeedback with non-accessible child Texts">
           <TouchableNativeFeedback
             accessible={true}
             importantForAccessibility="yes"
-            accessibilityRole="button">
+            accessibilityRole="button"
+            accessibilityActions={[
+              {name: 'activate', label: 'activate label'},
+              {name: 'copy', label: 'copy label'},
+            ]}
+            onAccessibilityAction={event => {
+              switch (event.nativeEvent.actionName) {
+                case 'activate':
+                  Alert.alert('Alert', 'Activate accessiblity action');
+                  break;
+                case 'copy':
+                  Alert.alert('Alert', 'copy action success');
+                  break;
+              }
+            }}>
             <View>
               <Text accessible={false}>Text number 1</Text>
               <Text accessible={false}>
