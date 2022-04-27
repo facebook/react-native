@@ -312,7 +312,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
             || accessibilityLabelledBy != null
             || accessibilityRole != null;
     if (missingTextOrDescription && hasContentToAnnounce) {
-      CharSequence description = getTalkbackDescription(host, info);
+      @Nullable CharSequence description = getTalkbackDescription(host, info);
       if (description != null) info.setContentDescription(description);
     }
   }
