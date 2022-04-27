@@ -170,8 +170,10 @@ class PathUtilsTest {
 
   @Test
   fun detectOSAwareHermesCommand_withHermescBuiltLocally() {
-    tempFolder.newFolder("node_modules/react-native/sdks/hermes/build/bin/")
-    val expected = tempFolder.newFile("node_modules/react-native/sdks/hermes/build/bin/hermesc")
+    tempFolder.newFolder("node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/")
+    val expected =
+        tempFolder.newFile(
+            "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc")
 
     assertEquals(expected.toString(), detectOSAwareHermesCommand(tempFolder.root, ""))
   }
@@ -206,8 +208,10 @@ class PathUtilsTest {
   @Test
   @WithOs(OS.MAC)
   fun detectOSAwareHermesCommand_withoutProvidedCommand_builtHermescTakesPrecedence() {
-    tempFolder.newFolder("node_modules/react-native/sdks/hermes/build/bin/")
-    val expected = tempFolder.newFile("node_modules/react-native/sdks/hermes/build/bin/hermesc")
+    tempFolder.newFolder("node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/")
+    val expected =
+        tempFolder.newFile(
+            "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc")
     tempFolder.newFolder("node_modules/react-native/sdks/hermesc/osx-bin/")
     tempFolder.newFile("node_modules/react-native/sdks/hermesc/osx-bin/hermesc")
 
@@ -217,7 +221,9 @@ class PathUtilsTest {
   @Test
   fun getBuiltHermescFile_withoutOverride() {
     assertEquals(
-        File(tempFolder.root, "node_modules/react-native/sdks/hermes/build/bin/hermesc"),
+        File(
+            tempFolder.root,
+            "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"),
         getBuiltHermescFile(tempFolder.root, ""))
   }
 

@@ -83,7 +83,7 @@ react {
     root = rootDir
     inputExcludes = ["android/**", "./**", ".gradle/**"]
     composeSourceMapsPath = "$rootDir/scripts/compose-source-maps.js"
-    hermesCommand = "$rootDir/sdks/hermes/build/bin/hermesc"
+    hermesCommand = "$rootDir/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"
     enableHermesForVariant { def v -> v.name.contains("hermes") }
 
     // Codegen Configs

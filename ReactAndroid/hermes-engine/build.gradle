@@ -30,7 +30,6 @@ def findCmakePath(cmakeVersion) {
     }
     return "cmake"
 }
-logger.error("CMAKE PATH ${findCmakePath(cmakeVersion)}")
 
 def reactNativeRootDir = project(':ReactAndroid').projectDir.parent;
 def customDownloadDir = System.getenv("REACT_NATIVE_DOWNLOADS_DIR")
@@ -40,6 +39,7 @@ def downloadsDir = customDownloadDir ? new File(customDownloadDir) : new File(re
 // but you can provide an override for where the hermes source code is located.
 def overrideHermesDir = System.getenv("REACT_NATIVE_OVERRIDE_HERMES_DIR") != null
 def hermesDir = System.getenv("REACT_NATIVE_OVERRIDE_HERMES_DIR") ?: new File(reactNativeRootDir, "sdks/hermes")
+def hermesBuildDir = new File("$buildDir/hermes")
 
 def hermesVersion = "main"
 def hermesVersionFile = new File(reactNativeRootDir, "sdks/.hermesversion")
@@ -86,12 +86,12 @@ task unzipHermes(dependsOn: downloadHermes, type: Copy) {
 
 task configureBuildForHermes(type: Exec) {
     workingDir(hermesDir)
-    commandLine(windowsAwareCommandLine(findCmakePath(cmakeVersion), "-S", ".", "-B", "./build", "-DJSI_DIR=" + jsiDir.absolutePath))
+    commandLine(windowsAwareCommandLine(findCmakePath(cmakeVersion), "-S", ".", "-B", hermesBuildDir.toString(), "-DJSI_DIR=" + jsiDir.absolutePath))
 }
 
 task buildHermes(dependsOn: configureBuildForHermes, type: Exec) {
     workingDir(hermesDir)
-    commandLine(windowsAwareCommandLine(findCmakePath(cmakeVersion), "--build", "./build", "--target", "hermesc", "-j", ndkBuildJobs))
+    commandLine(windowsAwareCommandLine(findCmakePath(cmakeVersion), "--build", hermesBuildDir.toString(), "--target", "hermesc", "-j", ndkBuildJobs))
 }
 
 task prepareHeadersForPrefab(type: Copy) {
@@ -138,7 +138,7 @@ android {
                 arguments "-DANDROID_STL=c++_shared"
                 arguments "-DANDROID_PIE=True"
                 arguments "-DANDROID_LD=lld"
-                arguments "-DIMPORT_HERMESC=${new File(hermesDir, "build/ImportHermesc.cmake").toString()}"
+                arguments "-DIMPORT_HERMESC=${new File(hermesBuildDir, "ImportHermesc.cmake").toString()}"
                 arguments "-DJSI_DIR=${jsiDir}"
                 arguments "-DHERMES_SLOW_DEBUG=False"
                 arguments "-DHERMES_BUILD_SHARED_JSI=True"

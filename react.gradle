@@ -106,7 +106,10 @@ def getHermesCommand = {
     // Also note that user can override the hermes source location with
     // the `REACT_NATIVE_OVERRIDE_HERMES_DIR` env variable.
     def hermesOverrideDir = System.getenv("REACT_NATIVE_OVERRIDE_HERMES_DIR")
-    def builtHermesc = hermesOverrideDir ? new File(hermesOverrideDir, "build/bin/hermesc") : new File(reactRoot, "node_modules/react-native/sdks/hermes/build/bin/hermesc")
+    def builtHermesc = hermesOverrideDir ?
+        new File(hermesOverrideDir, "build/bin/hermesc") :
+        new File(reactRoot, "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc")
+
     if (builtHermesc.exists()) {
         return builtHermesc.getAbsolutePath()
     }
