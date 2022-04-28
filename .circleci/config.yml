@@ -1273,12 +1273,15 @@ workflows:
       - prepare_hermes_workspace:
           filters: *only_release_tags
       - build_hermesc_linux:
+          filters: *only_release_tags
           requires:
             - prepare_hermes_workspace
       - build_hermesc_macos:
+          filters: *only_release_tags
           requires:
             - prepare_hermes_workspace
       - build_hermesc_windows:
+          filters: *only_release_tags
           requires:
             - prepare_hermes_workspace
       # This job will trigger when a version tag is pushed (by package_release)
