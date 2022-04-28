@@ -24,9 +24,10 @@ const Components: Array<RNTesterModuleInfo> = [
     module: require('../examples/Button/ButtonExample'),
   },
   {
-    key: 'FlatListExample',
+    key: 'FlatListExampleIndex',
+    module: require('../examples/FlatList/FlatListExampleIndex').default,
     category: 'ListView',
-    module: require('../examples/FlatList/FlatListExample'),
+    supportsTVOS: true,
   },
   {
     key: 'FlatList-withSeparators',
@@ -36,11 +37,6 @@ const Components: Array<RNTesterModuleInfo> = [
   {
     key: 'FlatList-onViewableItemsChanged',
     module: require('../examples/FlatList/FlatList-onViewableItemsChanged'),
-    category: 'ListView',
-  },
-  {
-    key: 'FlatList-onEndReached',
-    module: require('../examples/FlatList/FlatList-onEndReached'),
     category: 'ListView',
   },
   {

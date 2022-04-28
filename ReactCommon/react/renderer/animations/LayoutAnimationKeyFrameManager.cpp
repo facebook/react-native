@@ -12,6 +12,8 @@
 #include <react/debug/flags.h>
 #include <react/debug/react_native_assert.h>
 
+#include <react/renderer/animations/conversions.h>
+#include <react/renderer/animations/utils.h>
 #include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/ComponentDescriptor.h>
@@ -69,6 +71,7 @@ void PrintMutationInstruction(
     return stream;
   }(LOG(ERROR));
 }
+
 void PrintMutationInstructionRelative(
     std::string message,
     ShadowViewMutation const &mutation,
@@ -79,200 +82,6 @@ void PrintMutationInstructionRelative(
              << GetMutationInstructionString(relativeMutation);
 }
 #endif
-
-static better::optional<AnimationType> parseAnimationType(std::string param) {
-  if (param == "spring") {
-    return AnimationType::Spring;
-  }
-  if (param == "linear") {
-    return AnimationType::Linear;
-  }
-  if (param == "easeInEaseOut") {
-    return AnimationType::EaseInEaseOut;
-  }
-  if (param == "easeIn") {
-    return AnimationType::EaseIn;
-  }
-  if (param == "easeOut") {
-    return AnimationType::EaseOut;
-  }
-  if (param == "keyboard") {
-    return AnimationType::Keyboard;
-  }
-
-  LOG(ERROR) << "Error parsing animation type: " << param;
-  return {};
-}
-
-static better::optional<AnimationProperty> parseAnimationProperty(
-    std::string param) {
-  if (param == "opacity") {
-    return AnimationProperty::Opacity;
-  }
-  if (param == "scaleX") {
-    return AnimationProperty::ScaleX;
-  }
-  if (param == "scaleY") {
-    return AnimationProperty::ScaleY;
-  }
-  if (param == "scaleXY") {
-    return AnimationProperty::ScaleXY;
-  }
-
-  LOG(ERROR) << "Error parsing animation property: " << param;
-  return {};
-}
-
-static better::optional<AnimationConfig> parseAnimationConfig(
-    folly::dynamic const &config,
-    double defaultDuration,
-    bool parsePropertyType) {
-  if (config.empty() || !config.isObject()) {
-    return AnimationConfig{
-        AnimationType::Linear,
-        AnimationProperty::NotApplicable,
-        defaultDuration,
-        0,
-        0,
-        0};
-  }
-
-  auto const typeIt = config.find("type");
-  if (typeIt == config.items().end()) {
-    LOG(ERROR) << "Error parsing animation config: could not find field `type`";
-    return {};
-  }
-  auto const animationTypeParam = typeIt->second;
-  if (animationTypeParam.empty() || !animationTypeParam.isString()) {
-    LOG(ERROR)
-        << "Error parsing animation config: could not unwrap field `type`";
-    return {};
-  }
-  const auto animationType = parseAnimationType(animationTypeParam.asString());
-  if (!animationType) {
-    LOG(ERROR)
-        << "Error parsing animation config: could not parse field `type`";
-    return {};
-  }
-
-  AnimationProperty animationProperty = AnimationProperty::NotApplicable;
-  if (parsePropertyType) {
-    auto const propertyIt = config.find("property");
-    if (propertyIt == config.items().end()) {
-      LOG(ERROR)
-          << "Error parsing animation config: could not find field `property`";
-      return {};
-    }
-    auto const animationPropertyParam = propertyIt->second;
-    if (animationPropertyParam.empty() || !animationPropertyParam.isString()) {
-      LOG(ERROR)
-          << "Error parsing animation config: could not unwrap field `property`";
-      return {};
-    }
-    const auto animationPropertyParsed =
-        parseAnimationProperty(animationPropertyParam.asString());
-    if (!animationPropertyParsed) {
-      LOG(ERROR)
-          << "Error parsing animation config: could not parse field `property`";
-      return {};
-    }
-    animationProperty = *animationPropertyParsed;
-  }
-
-  double duration = defaultDuration;
-  double delay = 0;
-  double springDamping = 0.5;
-  double initialVelocity = 0;
-
-  auto const durationIt = config.find("duration");
-  if (durationIt != config.items().end()) {
-    if (durationIt->second.isDouble()) {
-      duration = durationIt->second.asDouble();
-    } else {
-      LOG(ERROR)
-          << "Error parsing animation config: field `duration` must be a number";
-      return {};
-    }
-  }
-
-  auto const delayIt = config.find("delay");
-  if (delayIt != config.items().end()) {
-    if (delayIt->second.isDouble()) {
-      delay = delayIt->second.asDouble();
-    } else {
-      LOG(ERROR)
-          << "Error parsing animation config: field `delay` must be a number";
-      return {};
-    }
-  }
-
-  auto const springDampingIt = config.find("springDamping");
-  if (springDampingIt != config.items().end() &&
-      springDampingIt->second.isDouble()) {
-    if (springDampingIt->second.isDouble()) {
-      springDamping = springDampingIt->second.asDouble();
-    } else {
-      LOG(ERROR)
-          << "Error parsing animation config: field `springDamping` must be a number";
-      return {};
-    }
-  }
-
-  auto const initialVelocityIt = config.find("initialVelocity");
-  if (initialVelocityIt != config.items().end()) {
-    if (initialVelocityIt->second.isDouble()) {
-      initialVelocity = initialVelocityIt->second.asDouble();
-    } else {
-      LOG(ERROR)
-          << "Error parsing animation config: field `initialVelocity` must be a number";
-      return {};
-    }
-  }
-
-  return better::optional<AnimationConfig>(AnimationConfig{
-      *animationType,
-      animationProperty,
-      duration,
-      delay,
-      springDamping,
-      initialVelocity});
-}
-
-// Parse animation config from JS
-static better::optional<LayoutAnimationConfig> parseLayoutAnimationConfig(
-    folly::dynamic const &config) {
-  if (config.empty() || !config.isObject()) {
-    return {};
-  }
-
-  const auto durationIt = config.find("duration");
-  if (durationIt == config.items().end() || !durationIt->second.isDouble()) {
-    return {};
-  }
-  const double duration = durationIt->second.asDouble();
-
-  const auto createConfigIt = config.find("create");
-  const auto createConfig = createConfigIt == config.items().end()
-      ? better::optional<AnimationConfig>(AnimationConfig{})
-      : parseAnimationConfig(createConfigIt->second, duration, true);
-
-  const auto updateConfigIt = config.find("update");
-  const auto updateConfig = updateConfigIt == config.items().end()
-      ? better::optional<AnimationConfig>(AnimationConfig{})
-      : parseAnimationConfig(updateConfigIt->second, duration, false);
-
-  const auto deleteConfigIt = config.find("delete");
-  const auto deleteConfig = deleteConfigIt == config.items().end()
-      ? better::optional<AnimationConfig>(AnimationConfig{})
-      : parseAnimationConfig(deleteConfigIt->second, duration, true);
-
-  if (!createConfig || !updateConfig || !deleteConfig) {
-    return {};
-  }
-
-  return better::optional<LayoutAnimationConfig>(LayoutAnimationConfig{
-      duration, *createConfig, *updateConfig, *deleteConfig});
-}
 
 static inline float
 interpolateFloats(float coefficient, float oldValue, float newValue) {
@@ -369,33 +178,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
   uint64_t now = now_();
 
   bool inflightAnimationsExistInitially = !inflightAnimations_.empty();
-
-  // Execute stopSurface on any ongoing animations
-  if (inflightAnimationsExistInitially) {
-    better::set<SurfaceId> surfaceIdsToStop{};
-    {
-      std::lock_guard<std::mutex> lock(surfaceIdsToStopMutex_);
-      surfaceIdsToStop = surfaceIdsToStop_;
-      surfaceIdsToStop_.clear();
-    }
-
-    for (auto it = inflightAnimations_.begin();
-         it != inflightAnimations_.end();) {
-      const auto &animation = *it;
-
-#ifdef LAYOUT_ANIMATION_VERBOSE_LOGGING
-      LOG(ERROR)
-          << "LayoutAnimations: stopping animation due to stopSurface on "
-          << surfaceId;
-#endif
-      if (surfaceIdsToStop.find(animation.surfaceId) !=
-          surfaceIdsToStop.end()) {
-        it = inflightAnimations_.erase(it);
-      } else {
-        it++;
-      }
-    }
-  }
+  deleteAnimationsForStoppedSurfaces();
 
   if (!mutations.empty()) {
 #ifdef RN_SHADOW_TREE_INTROSPECTION
@@ -474,13 +257,12 @@ LayoutAnimationKeyFrameManager::pullTransaction(
       std::lock_guard<std::mutex> lock(currentAnimationMutex_);
       if (currentAnimation_) {
         currentAnimation = std::move(currentAnimation_);
-        currentAnimation_ = {};
+        currentAnimation_.reset();
       }
     }
 
-    if (currentAnimation) {
-      LayoutAnimation animation = std::move(currentAnimation.value());
-      currentAnimation = {};
+    if (currentAnimation.hasValue()) {
+      LayoutAnimation animation = std::move(currentAnimation).value();
       animation.surfaceId = surfaceId;
       animation.startTime = now;
 
@@ -491,23 +273,21 @@ LayoutAnimationKeyFrameManager::pullTransaction(
       // TODO: to prevent this step we could tag Remove/Insert mutations as
       // being moves on the Differ level, since we know that there? We could use
       // TinyMap here, but it's not exposed by Differentiator (yet).
-      std::vector<Tag> insertedTags;
-      std::vector<Tag> deletedTags;
-      std::vector<Tag> reparentedTags; // tags that are deleted and recreated
+      better::set<Tag> insertedTags;
+      better::set<Tag> deletedTags;
+      better::set<Tag> reparentedTags; // tags that are deleted and recreated
       std::unordered_map<Tag, ShadowViewMutation> movedTags;
       for (const auto &mutation : mutations) {
         if (mutation.type == ShadowViewMutation::Type::Insert) {
-          insertedTags.push_back(mutation.newChildShadowView.tag);
+          insertedTags.insert(mutation.newChildShadowView.tag);
         }
         if (mutation.type == ShadowViewMutation::Type::Delete) {
-          deletedTags.push_back(mutation.oldChildShadowView.tag);
+          deletedTags.insert(mutation.oldChildShadowView.tag);
         }
         if (mutation.type == ShadowViewMutation::Type::Create) {
-          if (std::find(
-                  deletedTags.begin(),
-                  deletedTags.end(),
-                  mutation.newChildShadowView.tag) != deletedTags.end()) {
-            reparentedTags.push_back(mutation.newChildShadowView.tag);
+          if (deletedTags.find(mutation.newChildShadowView.tag) !=
+              deletedTags.end()) {
+            reparentedTags.insert(mutation.newChildShadowView.tag);
           }
         }
       }
@@ -547,20 +327,16 @@ LayoutAnimationKeyFrameManager::pullTransaction(
 
         bool isRemoveReinserted =
             mutation.type == ShadowViewMutation::Type::Remove &&
-            std::find(
-                insertedTags.begin(),
-                insertedTags.end(),
-                mutation.oldChildShadowView.tag) != insertedTags.end();
+            insertedTags.find(mutation.oldChildShadowView.tag) !=
+                insertedTags.end();
 
         // Reparenting can result in a node being removed, inserted (moved) and
         // also deleted and created in the same frame, with the same props etc.
         // This should eventually be optimized out of the diffing algorithm, but
         // for now we detect reparenting and prevent the corresponding
         // Delete/Create instructions from being animated.
-        bool isReparented = std::find(
-                                reparentedTags.begin(),
-                                reparentedTags.end(),
-                                baselineShadowView.tag) != reparentedTags.end();
+        bool isReparented =
+            reparentedTags.find(baselineShadowView.tag) != reparentedTags.end();
 
         if (isRemoveReinserted) {
           movedTags.insert({mutation.oldChildShadowView.tag, mutation});
@@ -1313,6 +1089,10 @@ void LayoutAnimationKeyFrameManager::setClockNow(
   now_ = now;
 }
 
+void LayoutAnimationKeyFrameManager::enableSkipInvalidatedKeyFrames() {
+  skipInvalidatedKeyFrames_ = true;
+}
+
 #pragma mark - Protected
 
 bool LayoutAnimationKeyFrameManager::hasComponentDescriptorForShadowView(
@@ -1388,8 +1168,8 @@ LayoutAnimationKeyFrameManager::calculateAnimationProgress(
 
 ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
     double progress,
-    ShadowView startingView,
-    ShadowView finalView) const {
+    ShadowView const &startingView,
+    ShadowView const &finalView) const {
   react_native_assert(startingView.tag > 0);
   react_native_assert(finalView.tag > 0);
   if (!hasComponentDescriptorForShadowView(startingView)) {
@@ -1471,6 +1251,9 @@ void LayoutAnimationKeyFrameManager::queueFinalMutationsForCompletedKeyFrame(
     ShadowViewMutation::List &mutationsList,
     bool interrupted,
     std::string logPrefix) const {
+  if (skipInvalidatedKeyFrames_ && keyframe.invalidated) {
+    return;
+  }
   if (keyframe.finalMutationsForKeyFrame.size() > 0) {
     // TODO: modularize this segment, it is repeated 2x in KeyFrameManager
     // as well.
@@ -1875,6 +1658,38 @@ void LayoutAnimationKeyFrameManager::getAndEraseConflictingAnimations(
   if (!localConflictingMutations.empty()) {
     getAndEraseConflictingAnimations(
         surfaceId, localConflictingMutations, conflictingAnimations);
+  }
+}
+
+void LayoutAnimationKeyFrameManager::deleteAnimationsForStoppedSurfaces()
+    const {
+  bool inflightAnimationsExistInitially = !inflightAnimations_.empty();
+
+  // Execute stopSurface on any ongoing animations
+  if (inflightAnimationsExistInitially) {
+    better::set<SurfaceId> surfaceIdsToStop{};
+    {
+      std::lock_guard<std::mutex> lock(surfaceIdsToStopMutex_);
+      surfaceIdsToStop = surfaceIdsToStop_;
+      surfaceIdsToStop_.clear();
+    }
+
+    for (auto it = inflightAnimations_.begin();
+         it != inflightAnimations_.end();) {
+      const auto &animation = *it;
+
+#ifdef LAYOUT_ANIMATION_VERBOSE_LOGGING
+      LOG(ERROR)
+          << "LayoutAnimations: stopping animation due to stopSurface on "
+          << surfaceId;
+#endif
+      if (surfaceIdsToStop.find(animation.surfaceId) !=
+          surfaceIdsToStop.end()) {
+        it = inflightAnimations_.erase(it);
+      } else {
+        it++;
+      }
+    }
   }
 }
 

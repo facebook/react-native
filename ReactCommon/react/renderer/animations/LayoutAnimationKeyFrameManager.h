@@ -86,6 +86,8 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
 
   void setClockNow(std::function<uint64_t()> now);
 
+  void enableSkipInvalidatedKeyFrames();
+
  protected:
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   mutable better::optional<LayoutAnimation> currentAnimation_{};
@@ -118,8 +120,8 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
    */
   ShadowView createInterpolatedShadowView(
       double progress,
-      ShadowView startingView,
-      ShadowView finalView) const;
+      ShadowView const &startingView,
+      ShadowView const &finalView) const;
 
   void callCallback(const LayoutAnimationCallbackWrapper &callback) const;
 
@@ -144,6 +146,7 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
   mutable LayoutAnimationStatusDelegate *layoutAnimationStatusDelegate_{};
   mutable std::mutex surfaceIdsToStopMutex_;
   mutable better::set<SurfaceId> surfaceIdsToStop_{};
+  bool skipInvalidatedKeyFrames_{false};
 
   // Function that returns current time in milliseconds
   std::function<uint64_t()> now_;
@@ -163,65 +166,12 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
       SurfaceId surfaceId,
       ShadowViewMutationList const &mutations,
       std::vector<AnimationKeyFrame> &conflictingAnimations) const;
+
+  /*
+   * Removes animations from `inflightAnimations_` for stopped surfaces.
+   */
+  void deleteAnimationsForStoppedSurfaces() const;
 };
-
-static inline bool shouldFirstComeBeforeSecondRemovesOnly(
-    ShadowViewMutation const &lhs,
-    ShadowViewMutation const &rhs) noexcept {
-  // Make sure that removes on the same level are sorted - highest indices must
-  // come first.
-  return (lhs.type == ShadowViewMutation::Type::Remove &&
-          lhs.type == rhs.type) &&
-      (lhs.parentShadowView.tag == rhs.parentShadowView.tag) &&
-      (lhs.index > rhs.index);
-}
-
-static inline bool shouldFirstComeBeforeSecondMutation(
-    ShadowViewMutation const &lhs,
-    ShadowViewMutation const &rhs) noexcept {
-  if (lhs.type != rhs.type) {
-    // Deletes always come last
-    if (lhs.type == ShadowViewMutation::Type::Delete) {
-      return false;
-    }
-    if (rhs.type == ShadowViewMutation::Type::Delete) {
-      return true;
-    }
-
-    // Remove comes before insert
-    if (lhs.type == ShadowViewMutation::Type::Remove &&
-        rhs.type == ShadowViewMutation::Type::Insert) {
-      return true;
-    }
-    if (rhs.type == ShadowViewMutation::Type::Remove &&
-        lhs.type == ShadowViewMutation::Type::Insert) {
-      return false;
-    }
-
-    // Create comes before insert
-    if (lhs.type == ShadowViewMutation::Type::Create &&
-        rhs.type == ShadowViewMutation::Type::Insert) {
-      return true;
-    }
-    if (rhs.type == ShadowViewMutation::Type::Create &&
-        lhs.type == ShadowViewMutation::Type::Insert) {
-      return false;
-    }
-  } else {
-    // Make sure that removes on the same level are sorted - highest indices
-    // must come first.
-    if (lhs.type == ShadowViewMutation::Type::Remove &&
-        lhs.parentShadowView.tag == rhs.parentShadowView.tag) {
-      if (lhs.index > rhs.index) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-  }
-
-  return false;
-}
 
 } // namespace react
 } // namespace facebook

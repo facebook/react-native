@@ -10,7 +10,7 @@ package com.facebook.react.modules.core;
 import com.facebook.react.bridge.WritableArray;
 
 /** An interface used by {@link JavaTimerManager} to access and call JS timers from Java. */
-public interface JavaScriptTimerManager {
+public interface JavaScriptTimerExecutor {
 
   /**
    * Calls the JS callback(s) associated with the timer ID(s). Also unregisters the callback if the

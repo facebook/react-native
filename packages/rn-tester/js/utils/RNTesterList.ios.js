@@ -36,8 +36,8 @@ const Components: Array<RNTesterModuleInfo> = [
     module: require('../examples/DatePicker/DatePickerMacOSExample'),
   }, // ]TODO(macOS GH#774)
   {
-    key: 'FlatListExample',
-    module: require('../examples/FlatList/FlatListExample'),
+    key: 'FlatListExampleIndex',
+    module: require('../examples/FlatList/FlatListExampleIndex').default,
     category: 'ListView',
     supportsTVOS: true,
   },
@@ -66,11 +66,6 @@ const Components: Array<RNTesterModuleInfo> = [
   {
     key: 'FlatList-onViewableItemsChanged',
     module: require('../examples/FlatList/FlatList-onViewableItemsChanged'),
-    category: 'ListView',
-  },
-  {
-    key: 'FlatList-onEndReached',
-    module: require('../examples/FlatList/FlatList-onEndReached'),
     category: 'ListView',
   },
   {

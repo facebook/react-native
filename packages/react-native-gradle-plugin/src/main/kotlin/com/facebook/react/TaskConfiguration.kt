@@ -13,6 +13,8 @@ import com.android.build.gradle.api.LibraryVariant
 import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.facebook.react.tasks.BundleJsAndAssetsTask
 import com.facebook.react.tasks.HermesBinaryTask
+import com.facebook.react.utils.detectedCliPath
+import com.facebook.react.utils.detectedEntryFile
 import java.io.File
 import org.gradle.api.Project
 import org.gradle.api.tasks.Copy
@@ -40,7 +42,7 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactAppE
 
   // Additional node and packager commandline arguments
   val nodeExecutableAndArgs = config.nodeExecutableAndArgs
-  val cliPath = config.detectedCliPath
+  val cliPath = detectedCliPath(project.projectDir, config)
 
   val execCommand = nodeExecutableAndArgs + cliPath
   val enableHermes = config.enableHermesForVariant(variant)
@@ -57,7 +59,7 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactAppE
         it.execCommand = execCommand
         it.bundleCommand = config.bundleCommand
         it.devEnabled = !(variant.name in config.devDisabledInVariants || isRelease)
-        it.entryFile = config.detectedEntryFile
+        it.entryFile = detectedEntryFile(config)
 
         val extraArgs = mutableListOf<String>()
 

@@ -9,7 +9,7 @@
  */
 
 'use strict';
-import {FlatList_onViewableItemsChanged} from './FlatListExamples';
+import {FlatList_onViewableItemsChanged} from './BaseFlatListExample';
 const React = require('react');
 
 const VIEWABILITY_CONFIG = {

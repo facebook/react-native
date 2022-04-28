@@ -82,106 +82,13 @@ const Separator = (defaultColor, highlightColor) => ({
   );
 };
 
-export function FlatList_inverted(): React.Node {
-  const [output, setOutput] = React.useState('inverted false');
-  const [exampleProps, setExampleProps] = React.useState({
-    inverted: false,
-  });
-
-  const onTest = () => {
-    setExampleProps({
-      inverted: !exampleProps.inverted,
-    });
-    setOutput(`Is inverted: ${(!exampleProps.inverted).toString()}`);
-  };
-
-  return (
-    <FlatListExampleWithForwardedRef
-      exampleProps={exampleProps}
-      testOutput={output}
-      onTest={onTest}
-      testLabel={exampleProps.inverted ? 'Toggle false' : 'Toggle true'}
-    />
-  );
-}
-
-export function FlatList_contentInset(): React.Node {
-  const [initialContentInset, toggledContentInset] = [44, 88];
-
-  const [output, setOutput] = React.useState(
-    `contentInset top: ${initialContentInset.toString()}`,
-  );
-  const [exampleProps, setExampleProps] = React.useState({
-    automaticallyAdjustContentInsets: false,
-    contentInset: {top: initialContentInset},
-    contentOffset: {y: -initialContentInset, x: 0},
-  });
-
-  const onTest = () => {
-    const newContentInset =
-      exampleProps.contentInset.top === initialContentInset
-        ? toggledContentInset
-        : initialContentInset;
-    setExampleProps({
-      automaticallyAdjustContentInsets: false,
-      contentInset: {top: newContentInset},
-      contentOffset: {y: -newContentInset, x: 0},
-    });
-    setOutput(`contentInset top: ${newContentInset.toString()}`);
-  };
-
-  return (
-    <>
-      <View
-        style={[
-          styles.titleContainer,
-          {height: exampleProps.contentInset.top},
-        ]}>
-        <Text style={styles.titleText}>Menu</Text>
-      </View>
-      <FlatListExampleWithForwardedRef
-        exampleProps={exampleProps}
-        testOutput={output}
-        onTest={onTest}
-        testLabel={'Toggle header size'}
-      />
-    </>
-  );
-}
-export function FlatList_onEndReached(): React.Node {
-  const [output, setOutput] = React.useState('');
-  const exampleProps = {
-    onEndReached: info => setOutput('onEndReached'),
-    onEndReachedThreshold: 0,
-  };
-  const ref = React.useRef(null);
-
-  const onTest = () => {
-    const scrollResponder = ref?.current?.getScrollResponder();
-    if (scrollResponder != null) {
-      scrollResponder.scrollToEnd();
-    }
-  };
-
-  return (
-    <FlatListExampleWithForwardedRef
-      ref={ref}
-      exampleProps={exampleProps}
-      testOutput={output}
-      onTest={onTest}
-    />
-  );
-}
-
 export function FlatList_withSeparators(): React.Node {
   const exampleProps = {
     ItemSeparatorComponent: Separator('lightgreen', 'green'),
   };
   const ref = React.useRef(null);
 
-  return (
-    <FlatListExampleWithForwardedRef ref={ref} exampleProps={exampleProps} />
-  );
+  return <BaseFlatListExample ref={ref} exampleProps={exampleProps} />;
 }
 
 export function FlatList_onViewableItemsChanged(props: {
@@ -217,13 +124,13 @@ export function FlatList_onViewableItemsChanged(props: {
       : null;
 
   return (
-    <FlatListExampleWithForwardedRef
+    <BaseFlatListExample
       ref={ref}
       exampleProps={exampleProps}
       onTest={onTest}
       testOutput={output}>
       {offScreen === true ? <View style={styles.offScreen} /> : null}
-    </FlatListExampleWithForwardedRef>
+    </BaseFlatListExample>
   );
 }
 
@@ -235,38 +142,41 @@ type Props = {
   children?: ?React.Node,
 };
 
-const FlatListExampleWithForwardedRef = React.forwardRef(
-  (props: Props, ref) => {
-    return (
-      <View style={styles.container}>
-        {props.testOutput != null ? (
-          <View testID="test_container" style={styles.testContainer}>
-            <Text style={styles.output} numberOfLines={1} testID="output">
-              {props.testOutput}
-            </Text>
-            {props.onTest != null ? (
-              <Button
-                testID="start_test"
-                onPress={props.onTest}
-                title={props.testLabel ?? 'Test'}
-              />
-            ) : null}
-          </View>
-        ) : null}
-        {props.children}
-        <FlatList
-          {...props.exampleProps}
-          ref={ref}
-          testID="flat_list"
-          data={DATA}
-          keyExtractor={(item, index) => item + index}
-          style={styles.list}
-          renderItem={Item}
-        />
-      </View>
-    );
-  },
-);
+const BaseFlatListExample = React.forwardRef((props: Props, ref) => {
+  return (
+    <View style={styles.container}>
+      {props.testOutput != null ? (
+        <View testID="test_container" style={styles.testContainer}>
+          <Text style={styles.output} numberOfLines={1} testID="output">
+            {props.testOutput}
+          </Text>
+          {props.onTest != null ? (
+            <Button
+              testID="start_test"
+              onPress={props.onTest}
+              title={props.testLabel ?? 'Test'}
+            />
+          ) : null}
+        </View>
+      ) : null}
+      {props.children}
+      <FlatList
+        {...props.exampleProps}
+        ref={ref}
+        testID="flat_list"
+        data={DATA}
+        keyExtractor={(item, index) => item + index}
+        style={styles.list}
+        renderItem={Item}
+      />
+    </View>
+  );
+});
+
+export default (BaseFlatListExample: React.AbstractComponent<
+  Props,
+  FlatList<string>,
+>);
 
 const styles = StyleSheet.create({
   item: {
@@ -305,7 +215,6 @@ const styles = StyleSheet.create({
   },
   output: {
     fontSize: 12,
-    width: '80%',
   },
   separator: {
     height: 12,
