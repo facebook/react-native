@@ -150,6 +150,18 @@ void RCTSetTurboModuleCleanupMode(RCTTurboModuleCleanupMode mode)
   turboModuleCleanupMode = mode;
 }
 
+// Turn off TurboModule delegate locking
+static BOOL turboModuleManagerDelegateLockingDisabled = NO;
+BOOL RCTTurboModuleManagerDelegateLockingDisabled(void)
+{
+  return turboModuleManagerDelegateLockingDisabled;
+}
+
+void RCTDisableTurboModuleManagerDelegateLocking(BOOL disabled)
+{
+  turboModuleManagerDelegateLockingDisabled = disabled;
+}
+
 @interface RCTBridge () <RCTReloadListener>
 @end
 

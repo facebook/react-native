@@ -7,6 +7,7 @@
 
 package com.facebook.react.tasks
 
+import com.facebook.react.utils.windowsAwareCommandLine
 import java.io.File
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.FileTree
@@ -53,26 +54,27 @@ open class BundleJsAndAssetsTask : DefaultTask() {
 
   private fun executeBundleCommand() {
     project.exec {
-      workingDir(reactRoot)
+      it.workingDir(reactRoot)
 
       @Suppress("SpreadOperator")
-      windowsAwareCommandLine(
-          *execCommand.toTypedArray(),
-          bundleCommand,
-          "--platform",
-          "android",
-          "--dev",
-          devEnabled,
-          "--reset-cache",
-          "--entry-file",
-          entryFile,
-          "--bundle-output",
-          jsBundleFile,
-          "--assets-dest",
-          resourcesDir,
-          "--sourcemap-output",
-          jsSourceMapsFile,
-          *extraArgs.toTypedArray())
+      it.commandLine(
+          windowsAwareCommandLine(
+              *execCommand.toTypedArray(),
+              bundleCommand,
+              "--platform",
+              "android",
+              "--dev",
+              devEnabled,
+              "--reset-cache",
+              "--entry-file",
+              entryFile,
+              "--bundle-output",
+              jsBundleFile,
+              "--assets-dest",
+              resourcesDir,
+              "--sourcemap-output",
+              jsSourceMapsFile,
+              *extraArgs.toTypedArray()))
     }
   }
 

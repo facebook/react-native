@@ -20,6 +20,7 @@
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridge.h>
 #import <React/RCTFPSGraph.h>
+#import <React/RCTInitializing.h>
 #import <React/RCTInvalidating.h>
 #import <React/RCTJavaScriptExecutor.h>
 #import <React/RCTPerformanceLogger.h>
@@ -84,8 +85,13 @@ static vm_size_t RCTGetResidentMemorySize(void)
   return memoryUsageInByte;
 }
 
-@interface RCTPerfMonitor
-    : NSObject <RCTBridgeModule, RCTTurboModule, RCTInvalidating, UITableViewDataSource, UITableViewDelegate>
+@interface RCTPerfMonitor : NSObject <
+                                RCTBridgeModule,
+                                RCTTurboModule,
+                                RCTInitializing,
+                                RCTInvalidating,
+                                UITableViewDataSource,
+                                UITableViewDelegate>
 
 #if __has_include(<React/RCTDevMenu.h>)
 @property (nonatomic, strong, readonly) RCTDevMenuItem *devMenuItem;
@@ -150,9 +156,8 @@ RCT_EXPORT_MODULE()
   return dispatch_get_main_queue();
 }
 
-- (void)setModuleRegistry:(RCTModuleRegistry *)moduleRegistry
+- (void)initialize
 {
-  _moduleRegistry = moduleRegistry;
 #if __has_include(<React/RCTDevMenu.h>)
   [(RCTDevMenu *)[_moduleRegistry moduleForName:"DevMenu"] addItem:self.devMenuItem];
 #endif

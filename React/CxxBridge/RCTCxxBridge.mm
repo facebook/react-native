@@ -292,6 +292,18 @@ struct RCTInstanceCallback : public InstanceCallback {
   if ([bridgeModule respondsToSelector:@selector(setCallableJSModules:)]) {
     bridgeModule.callableJSModules = _callableJSModules;
   }
+
+  /**
+   * Attach the RCTModuleRegistry to this TurboModule, which allows this TurboModule
+   * to require other TurboModules/NativeModules.
+   *
+   * Usage: In the TurboModule @implementation, include:
+   *   `@synthesize moduleRegistry = _moduleRegistry`
+   */
+
+  if ([bridgeModule respondsToSelector:@selector(setModuleRegistry:)]) {
+    bridgeModule.moduleRegistry = _objCModuleRegistry;
+  }
 }
 
 - (std::shared_ptr<MessageQueueThread>)jsMessageThread

@@ -7,6 +7,7 @@
 
 package com.facebook.react.tasks
 
+import com.facebook.react.utils.windowsAwareCommandLine
 import java.io.File
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
@@ -45,27 +46,29 @@ open class HermesBinaryTask : DefaultTask() {
   private fun emitHermesBinary(outputFile: File) {
     project.exec {
       @Suppress("SpreadOperator")
-      windowsAwareCommandLine(
-          hermesCommand,
-          "-emit-binary",
-          "-out",
-          outputFile,
-          jsBundleFile,
-          *hermesFlags.toTypedArray())
+      it.commandLine(
+          windowsAwareCommandLine(
+              hermesCommand,
+              "-emit-binary",
+              "-out",
+              outputFile,
+              jsBundleFile,
+              *hermesFlags.toTypedArray()))
     }
   }
 
   private fun composeSourceMaps() {
     project.exec {
-      workingDir(reactRoot)
+      it.workingDir(reactRoot)
 
       @Suppress("SpreadOperator")
-      windowsAwareCommandLine(
-          *composeSourceMapsCommand.toTypedArray(),
-          jsPackagerSourceMapFile,
-          jsCompilerSourceMapFile,
-          "-o",
-          jsOutputSourceMapFile)
+      it.commandLine(
+          windowsAwareCommandLine(
+              *composeSourceMapsCommand.toTypedArray(),
+              jsPackagerSourceMapFile,
+              jsCompilerSourceMapFile,
+              "-o",
+              jsOutputSourceMapFile))
     }
   }
 

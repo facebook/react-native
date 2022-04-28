@@ -49,7 +49,9 @@ static RCTRootViewSizeFlexibility convertToRootViewSizeFlexibility(RCTSurfaceSiz
   }
 }
 
-@implementation RCTSurfaceHostingProxyRootView
+@implementation RCTSurfaceHostingProxyRootView {
+  RCTModuleRegistry *_moduleRegistry;
+}
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
@@ -95,6 +97,17 @@ static RCTRootViewSizeFlexibility convertToRootViewSizeFlexibility(RCTSurfaceSiz
   return [self initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
 }
 
+- (instancetype)initWithSurface:(id<RCTSurfaceProtocol>)surface
+                sizeMeasureMode:(RCTSurfaceSizeMeasureMode)sizeMeasureMode
+                 moduleRegistry:(RCTModuleRegistry *)moduleRegistry
+{
+  if (self = [super initWithSurface:surface sizeMeasureMode:sizeMeasureMode]) {
+    _moduleRegistry = moduleRegistry;
+  }
+
+  return self;
+}
+
 - (BOOL)hasBridge
 {
   return _bridge != nil;
@@ -102,6 +115,11 @@ static RCTRootViewSizeFlexibility convertToRootViewSizeFlexibility(RCTSurfaceSiz
 
 - (RCTModuleRegistry *)moduleRegistry
 {
+  // In bridgeless mode, RCTSurfaceHostingProxyRootView is created with an RCTModuleRegistry
+  if (_moduleRegistry) {
+    return _moduleRegistry;
+  }
+
   return _bridge.moduleRegistry;
 }
 

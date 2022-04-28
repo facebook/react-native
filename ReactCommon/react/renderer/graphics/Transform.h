@@ -117,7 +117,7 @@ struct Transform {
    * @return
    */
   static Transform Interpolate(
-      float animationProgress,
+      Float animationProgress,
       Transform const &lhs,
       Transform const &rhs);
 
