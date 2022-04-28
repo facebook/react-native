@@ -230,7 +230,7 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): any) {
         if (ev.id !== this._socketId) {
           return;
         }
-        let data = ev.data;
+        let data: Blob | BlobData | ArrayBuffer | string = ev.data;
         switch (ev.type) {
           case 'binary':
             data = base64.toByteArray(ev.data).buffer;

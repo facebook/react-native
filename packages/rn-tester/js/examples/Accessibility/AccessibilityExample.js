@@ -228,7 +228,7 @@ class CheckboxExample extends React.Component<
   };
 
   _onCheckboxPress = () => {
-    let checkboxState = false;
+    let checkboxState: boolean | $TEMPORARY$string<'mixed'> = false;
     if (this.state.checkboxState === false) {
       checkboxState = 'mixed';
     } else if (this.state.checkboxState === 'mixed') {
