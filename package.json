@@ -158,7 +158,7 @@
     "jest-junit": "^10.0.0",
     "jscodeshift": "^0.11.0",
     "metro-babel-register": "0.66.2",
-    "metro-transform-plugins": "^0.66.0",
+    "metro-transform-plugins": "^0.66.2",
     "mkdirp": "^0.5.1",
     "prettier": "1.19.1",
     "react": "17.0.2",

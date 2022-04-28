@@ -111,6 +111,7 @@ module.exports = {
     setImmediate: true,
     setInterval: false,
     setTimeout: false,
+    queueMicrotask: true,
     URL: false,
     URLSearchParams: false,
     WebSocket: true,

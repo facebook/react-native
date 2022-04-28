@@ -96,7 +96,7 @@ inline std::string toString(const TextBreakStrategy &textBreakStrategy) {
 
   LOG(ERROR) << "Unsupported TextBreakStrategy value";
   react_native_assert(false);
-  return "simple";
+  return "highQuality";
 }
 
 inline void fromRawValue(
@@ -116,14 +116,14 @@ inline void fromRawValue(
       // sane default
       LOG(ERROR) << "Unsupported TextBreakStrategy value: " << string;
       react_native_assert(false);
-      result = TextBreakStrategy::Simple;
+      result = TextBreakStrategy::HighQuality;
     }
     return;
   }
 
   LOG(ERROR) << "Unsupported TextBreakStrategy type";
   react_native_assert(false);
-  result = TextBreakStrategy::Simple;
+  result = TextBreakStrategy::HighQuality;
 }
 
 inline void fromRawValue(
@@ -712,6 +712,48 @@ inline void fromRawValue(
   result = AccessibilityRole::None;
 }
 
+inline std::string toString(const HyphenationFrequency &hyphenationFrequency) {
+  switch (hyphenationFrequency) {
+    case HyphenationFrequency::None:
+      return "none";
+    case HyphenationFrequency::Normal:
+      return "normal";
+    case HyphenationFrequency::Full:
+      return "full";
+  }
+
+  LOG(ERROR) << "Unsupported HyphenationFrequency value";
+  react_native_assert(false);
+  return "none";
+}
+
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    HyphenationFrequency &result) {
+  react_native_assert(value.hasType<std::string>());
+  if (value.hasType<std::string>()) {
+    auto string = (std::string)value;
+    if (string == "none") {
+      result = HyphenationFrequency::None;
+    } else if (string == "normal") {
+      result = HyphenationFrequency::Normal;
+    } else if (string == "full") {
+      result = HyphenationFrequency::Full;
+    } else {
+      // sane default
+      LOG(ERROR) << "Unsupported HyphenationFrequency value: " << string;
+      react_native_assert(false);
+      result = HyphenationFrequency::None;
+    }
+    return;
+  }
+
+  LOG(ERROR) << "Unsupported HyphenationFrequency type";
+  react_native_assert(false);
+  result = HyphenationFrequency::None;
+}
+
 inline ParagraphAttributes convertRawProp(
     const PropsParserContext &context,
     RawProps const &rawProps,
@@ -761,6 +803,12 @@ inline ParagraphAttributes convertRawProp(
       "includeFontPadding",
       sourceParagraphAttributes.includeFontPadding,
       defaultParagraphAttributes.includeFontPadding);
+  paragraphAttributes.android_hyphenationFrequency = convertRawProp(
+      context,
+      rawProps,
+      "android_hyphenationFrequency",
+      sourceParagraphAttributes.android_hyphenationFrequency,
+      defaultParagraphAttributes.android_hyphenationFrequency);
 
   return paragraphAttributes;
 }
@@ -796,6 +844,9 @@ inline folly::dynamic toDynamic(
   values("textBreakStrategy", toString(paragraphAttributes.textBreakStrategy));
   values("adjustsFontSizeToFit", paragraphAttributes.adjustsFontSizeToFit);
   values("includeFontPadding", paragraphAttributes.includeFontPadding);
+  values(
+      "android_hyphenationFrequency",
+      toString(paragraphAttributes.android_hyphenationFrequency));
 
   return values;
 }
@@ -993,6 +1044,7 @@ constexpr static Key PA_KEY_ELLIPSIZE_MODE = 1;
 constexpr static Key PA_KEY_TEXT_BREAK_STRATEGY = 2;
 constexpr static Key PA_KEY_ADJUST_FONT_SIZE_TO_FIT = 3;
 constexpr static Key PA_KEY_INCLUDE_FONT_PADDING = 4;
+constexpr static Key PA_KEY_HYPHENATION_FREQUENCY = 5;
 
 inline MapBuffer toMapBuffer(const ParagraphAttributes &paragraphAttributes) {
   auto builder = MapBufferBuilder();
@@ -1007,6 +1059,9 @@ inline MapBuffer toMapBuffer(const ParagraphAttributes &paragraphAttributes) {
       PA_KEY_ADJUST_FONT_SIZE_TO_FIT, paragraphAttributes.adjustsFontSizeToFit);
   builder.putBool(
       PA_KEY_INCLUDE_FONT_PADDING, paragraphAttributes.includeFontPadding);
+  builder.putString(
+      PA_KEY_HYPHENATION_FREQUENCY,
+      toString(paragraphAttributes.android_hyphenationFrequency));
 
   return builder.build();
 }

@@ -335,6 +335,11 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedSt
     } else {
       NSString *string = [NSString stringWithCString:fragment.string.c_str() encoding:NSUTF8StringEncoding];
 
+      if (fragment.textAttributes.textTransform.hasValue()) {
+        auto textTransform = fragment.textAttributes.textTransform.value();
+        string = RCTNSStringFromStringApplyingTextTransform(string, textTransform);
+      }
+
       nsAttributedStringFragment = [[NSMutableAttributedString alloc]
           initWithString:string
               attributes:RCTNSTextAttributesFromTextAttributes(fragment.textAttributes)];
@@ -372,4 +377,18 @@ NSAttributedString *RCTNSAttributedStringFromAttributedStringBox(AttributedStrin
 AttributedStringBox RCTAttributedStringBoxFromNSAttributedString(NSAttributedString *nsAttributedString)
 {
   return nsAttributedString.length ? AttributedStringBox{wrapManagedObject(nsAttributedString)} : AttributedStringBox{};
+}
+
+NSString *RCTNSStringFromStringApplyingTextTransform(NSString *string, TextTransform textTransform)
+{
+  switch (textTransform) {
+    case TextTransform::Uppercase:
+      return [string uppercaseString];
+    case TextTransform::Lowercase:
+      return [string lowercaseString];
+    case TextTransform::Capitalize:
+      return [string capitalizedString];
+    default:
+      return string;
+  }
 }

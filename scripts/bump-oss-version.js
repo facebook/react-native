@@ -168,7 +168,7 @@
  packageJson.version = version;
 
  // [MacOS - We do this seperately in a non-destructive way as part of our publish steps
-//  delete packageJson.workspaces;
+//  packageJson.workspaces = packageJson.workspaces.filter(w => w === 'repo-config');
 //  delete packageJson.private;
 
  // Copy dependencies over from repo-config/package.json

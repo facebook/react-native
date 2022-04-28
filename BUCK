@@ -376,6 +376,7 @@ rn_xplat_cxx_library2(
         "$SDKROOT/System/Library/Frameworks/CFNetwork.framework",
         "$SDKROOT/System/Library/Frameworks/CoreGraphics.framework",
         "$SDKROOT/System/Library/Frameworks/CoreLocation.framework",
+        "$SDKROOT/System/Library/Frameworks/CoreText.framework",
         "$SDKROOT/System/Library/Frameworks/Foundation.framework",
         "$SDKROOT/System/Library/Frameworks/MapKit.framework",
         "$SDKROOT/System/Library/Frameworks/QuartzCore.framework",

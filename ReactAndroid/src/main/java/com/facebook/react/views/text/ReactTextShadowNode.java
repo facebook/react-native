@@ -32,6 +32,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
+import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaMeasureFunction;
@@ -159,6 +160,20 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
         }
       };
 
+  private final YogaBaselineFunction mTextBaselineFunction =
+      new YogaBaselineFunction() {
+        @Override
+        public float baseline(YogaNode node, float width, float height) {
+          Spannable text =
+              Assertions.assertNotNull(
+                  mPreparedSpannableText,
+                  "Spannable element has not been prepared in onBeforeLayout");
+
+          Layout layout = measureSpannedText(text, width, YogaMeasureMode.EXACTLY);
+          return layout.getLineBaseline(layout.getLineCount() - 1);
+        }
+      };
+
   public ReactTextShadowNode() {
     this(null);
   }
@@ -171,6 +186,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
   private void initMeasureFunction() {
     if (!isVirtual()) {
       setMeasureFunction(mTextMeasureFunction);
+      setBaselineFunction(mTextBaselineFunction);
     }
   }
 

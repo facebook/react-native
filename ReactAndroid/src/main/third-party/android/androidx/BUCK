@@ -690,20 +690,20 @@ fb_native.remote_file(
 
 fb_native.remote_file(
     name = "test-monitor-binary-aar",
-    sha1 = "d2f75d117c055f35c8ebbd4f96fabc2137df9e4d",
-    url = "mvn:androidx.test:monitor:aar:1.2.0",
+    sha1 = "4f3c15d0a1e0c943b233b0dc5d8f1e690cfe7c0a",
+    url = "mvn:androidx.test:monitor:aar:1.4.0",
 )
 
 fb_native.remote_file(
     name = "test-rules-binary-aar",
-    sha1 = "91904046e724ac82d9b7fe698e5fe92b871c726e",
-    url = "mvn:androidx.test:rules:aar:1.2.0",
+    sha1 = "0984e8b5505f08489993c783702236af7a4a18c8",
+    url = "mvn:androidx.test:rules:aar:1.4.0",
 )
 
 fb_native.remote_file(
     name = "test-runner-binary-aar",
-    sha1 = "237b061c45b3b450f88dd8cde87375ab22b0496a",
-    url = "mvn:androidx.test:runner:aar:1.2.0",
+    sha1 = "44d79420baf7ac208e33b35df8756f0e912ced38",
+    url = "mvn:androidx.test:runner:aar:1.4.0",
 )
 
 fb_native.remote_file(
