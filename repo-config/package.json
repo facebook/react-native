@@ -8,7 +8,7 @@
     "type": "git",
     "url": "git@github.com:facebook/react-native.git"
   },
-  "devDependencies": {
+  "dependencies": {
     "@babel/core": "^7.14.0",
     "@babel/generator": "^7.14.0",
     "@react-native-community/eslint-plugin": "*",
