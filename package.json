@@ -53,6 +53,7 @@
     "scripts/react_native_pods.rb",
     "scripts/react-native-xcode.sh",
     "sdks/hermesc",
+    "sdks/hermes-engine.podspec",
     "template.config.js",
     "template",
     "third-party-podspecs"
