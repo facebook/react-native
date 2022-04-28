@@ -228,7 +228,14 @@ abstract class ReactExtension @Inject constructor(project: Project) {
   val codegenJavaPackageName: Property<String> =
       objects.property(String::class.java).convention("com.facebook.fbreact.specs")
 
-  /** Whether the Java Generator (based on Javapoet) should be used or not. Default: false */
+  /**
+   * Whether the Java Generator (based on Javapoet) should be used or not. Please note that this is
+   * currently deprecated as the Java generator is not supported anymore. Default: false
+   */
+  @Deprecated(
+      level = DeprecationLevel.ERROR,
+      message =
+          "Please note that this is deprecated as the Java generator is not supported and react-native-codegen should be used instead.")
   val useJavaGenerator: Property<Boolean> = objects.property(Boolean::class.java).convention(false)
 
   /**
