@@ -10,6 +10,7 @@
 #import <objc/runtime.h>
 
 #import "RCTAssert.h"
+#import "RCTBridge+Private.h"
 #import "RCTBridge.h"
 #import "RCTLog.h"
 #import "RCTPerformanceLogger.h"
@@ -92,6 +93,21 @@ static RCTRootViewSizeFlexibility convertToRootViewSizeFlexibility(RCTSurfaceSiz
   RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:bundleURL moduleProvider:nil launchOptions:launchOptions];
 
   return [self initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
+}
+
+- (BOOL)hasBridge
+{
+  return _bridge != nil;
+}
+
+- (RCTModuleRegistry *)moduleRegistry
+{
+  return _bridge.moduleRegistry;
+}
+
+- (id<RCTEventDispatcherProtocol>)eventDispatcher
+{
+  return [self.moduleRegistry moduleForName:"EventDispatcher"];
 }
 
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
