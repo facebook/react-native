@@ -8,7 +8,7 @@
  $(call import-module,react/nativemodule/core)
  
  include $(REACT_SRC_DIR)/reactperflogger/jni/Android.mk
-@@ -146,5 +147,6 @@
+@@ -147,5 +148,6 @@
  include $(REACT_SRC_DIR)/../hermes/reactexecutor/Android.mk
  include $(REACT_SRC_DIR)/../hermes/instrumentation/Android.mk
  include $(REACT_SRC_DIR)/modules/blob/jni/Android.mk

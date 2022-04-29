@@ -4,8 +4,8 @@
  LOCAL_LDLIBS += -landroid
  
  # The dynamic libraries (.so files) that this module depends on.
--LOCAL_SHARED_LIBRARIES := libreactnativeutilsjni libfolly_json libfb libfbjni libglog_init libyoga logger
-+LOCAL_SHARED_LIBRARIES := libreactnativejni libfolly_json libfb libfbjni libglog_init libyoga logger
+-LOCAL_SHARED_LIBRARIES := libreactnativeutilsjni libfolly_json libfb libfbjni libglog_init libyoga logger libreact_render_runtimescheduler
++LOCAL_SHARED_LIBRARIES := libreactnativejni libfolly_json libfb libfbjni libglog_init libyoga logger libreact_render_runtimescheduler
  
  # The static libraries (.a files) that this module depends on.
  LOCAL_STATIC_LIBRARIES := libreactnative libruntimeexecutor libcallinvokerholder
