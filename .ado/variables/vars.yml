@@ -1,5 +1,5 @@
 variables:
-  VmImageApple: macOS-11
+  VmImageApple: internal-macos12
   PoolUbuntu: cxe-ubuntu-20-04-small
-  slice_name: 'Xcode_13_1'
-  xcode_version: '/Applications/Xcode_13.1.app'
+  slice_name: 'Xcode_13.3.1'
+  xcode_version: '/Applications/Xcode_13.3.1.app'
