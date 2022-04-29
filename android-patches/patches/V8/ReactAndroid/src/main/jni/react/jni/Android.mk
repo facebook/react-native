@@ -5,9 +5,9 @@
  $(call import-module,hermes)
  $(call import-module,runtimeexecutor)
 +$(call import-module,v8jsi)
+ $(call import-module,react/renderer/runtimescheduler)
  $(call import-module,react/nativemodule/core)
  
- include $(REACT_SRC_DIR)/reactperflogger/jni/Android.mk
 @@ -147,5 +148,6 @@
  include $(REACT_SRC_DIR)/../hermes/reactexecutor/Android.mk
  include $(REACT_SRC_DIR)/../hermes/instrumentation/Android.mk

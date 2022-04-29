@@ -14,8 +14,8 @@
            "getRuntimeExecutor", CatalystInstanceImpl::getRuntimeExecutor),
 +      makeNativeMethod("getPointerOfInstancePointer", CatalystInstanceImpl::getPointerOfInstancePointer),
        makeNativeMethod(
-           "warnOnLegacyNativeModuleSystemUse",
-           CatalystInstanceImpl::warnOnLegacyNativeModuleSystemUse),
+           "getRuntimeScheduler", CatalystInstanceImpl::getRuntimeScheduler),
+       makeNativeMethod(
 @@ -151,6 +153,23 @@
    JNativeRunnable::registerNatives();
  }
