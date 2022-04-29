@@ -112,6 +112,7 @@ package-lock.json
 /packages/react-native-codegen/lib
 /ReactCommon/react/renderer/components/rncore/
 /packages/rn-tester/NativeModuleExample/ScreenshotManagerSpec*
+/packages/rn-tester/NativeModuleExample/react/renderer/components/ScreenshotManagerSpec/
 
 # Visual studio
 .vscode
