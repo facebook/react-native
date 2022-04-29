@@ -15,7 +15,7 @@ LOCAL_SHARED_LIBRARIES := libfolly_json libreact_debug libfb libfbjni libfolly_j
 
 LOCAL_STATIC_LIBRARIES :=
 
-LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../../ $(LOCAL_PATH)/platform/cxx/
+LOCAL_C_INCLUDES := $(LOCAL_PATH)/ $(LOCAL_PATH)/../../../ $(LOCAL_PATH)/platform/cxx/
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../../../ $(LOCAL_PATH)/platform/cxx/
 

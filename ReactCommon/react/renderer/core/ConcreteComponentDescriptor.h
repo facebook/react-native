@@ -11,6 +11,7 @@
 #include <memory>
 
 #include <react/debug/react_native_assert.h>
+#include <react/renderer/components/view/ViewPropsInterpolation.h>
 #include <react/renderer/core/ComponentDescriptor.h>
 #include <react/renderer/core/EventDispatcher.h>
 #include <react/renderer/core/Props.h>
@@ -113,21 +114,28 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     return ShadowNodeT::Props(context, rawProps, props);
   };
 
-  virtual SharedProps interpolateProps(
+  SharedProps interpolateProps(
       const PropsParserContext &context,
       float animationProgress,
       const SharedProps &props,
       const SharedProps &newProps) const override {
-    // By default, this does nothing.
 #ifdef ANDROID
     // On Android only, the merged props should have the same RawProps as the
     // final props struct
-    if (newProps != nullptr) {
-      return cloneProps(context, newProps, newProps->rawProps);
-    }
+    SharedProps interpolatedPropsShared =
+        (newProps != nullptr ? cloneProps(context, newProps, newProps->rawProps)
+                             : cloneProps(context, newProps, {}));
+#else
+    SharedProps interpolatedPropsShared = cloneProps(context, newProps, {});
 #endif
 
-    return cloneProps(context, newProps, {});
+    if (ConcreteShadowNode::BaseTraits().check(
+            ShadowNodeTraits::Trait::ViewKind)) {
+      interpolateViewProps(
+          animationProgress, props, newProps, interpolatedPropsShared);
+    }
+
+    return interpolatedPropsShared;
   };
 
   virtual State::Shared createInitialState(

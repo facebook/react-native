@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<f021bce2048d654b3e2e31276c91433c>>
+ * @generated SignedSource<<a71955225824e1ab165c975361c725ed>>
  */
 
 "use strict";
@@ -3680,11 +3680,58 @@ function updateMutableSource(source, getSnapshot, subscribe) {
   var hook = updateWorkInProgressHook();
   return useMutableSource(hook, source, getSnapshot, subscribe);
 }
+function mountSyncExternalStore(subscribe, getSnapshot) {
+  var hook = mountWorkInProgressHook(),
+    nextSnapshot = getSnapshot();
+  hook.memoizedState = nextSnapshot;
+  var inst = { value: nextSnapshot, getSnapshot: getSnapshot };
+  hook.queue = inst;
+  return useSyncExternalStore(hook, inst, subscribe, getSnapshot, nextSnapshot);
+}
+function useSyncExternalStore(
+  hook,
+  inst,
+  subscribe,
+  getSnapshot,
+  nextSnapshot
+) {
+  var fiber = currentlyRenderingFiber$1;
+  hook = ReactCurrentDispatcher$1.current;
+  hook.useLayoutEffect(
+    function() {
+      inst.value = nextSnapshot;
+      inst.getSnapshot = getSnapshot;
+      checkIfSnapshotChanged(inst) && scheduleUpdateOnFiber(fiber, 1, -1);
+    },
+    [subscribe, nextSnapshot, getSnapshot]
+  );
+  hook.useEffect(
+    function() {
+      function handleStoreChange() {
+        checkIfSnapshotChanged(inst) && scheduleUpdateOnFiber(fiber, 1, -1);
+      }
+      handleStoreChange();
+      return subscribe(handleStoreChange);
+    },
+    [subscribe]
+  );
+  return nextSnapshot;
+}
+function checkIfSnapshotChanged(inst) {
+  var latestGetSnapshot = inst.getSnapshot;
+  inst = inst.value;
+  try {
+    var nextValue = latestGetSnapshot();
+    return !objectIs(inst, nextValue);
+  } catch (error) {
+    return !0;
+  }
+}
 function mountState(initialState) {
   var hook = mountWorkInProgressHook();
   "function" === typeof initialState && (initialState = initialState());
   hook.memoizedState = hook.baseState = initialState;
-  initialState = hook.queue = {
+  initialState = {
     pending: null,
     interleaved: null,
     lanes: 0,
@@ -3692,6 +3739,7 @@ function mountState(initialState) {
     lastRenderedReducer: basicStateReducer,
     lastRenderedState: initialState
   };
+  hook.queue = initialState;
   initialState = initialState.dispatch = dispatchAction.bind(
     null,
     currentlyRenderingFiber$1,
@@ -3901,6 +3949,7 @@ var ContextOnlyDispatcher = {
     useDeferredValue: throwInvalidHookError,
     useTransition: throwInvalidHookError,
     useMutableSource: throwInvalidHookError,
+    useSyncExternalStore: throwInvalidHookError,
     useOpaqueIdentifier: throwInvalidHookError,
     unstable_isNewReconciler: !1
   },
@@ -3938,7 +3987,7 @@ var ContextOnlyDispatcher = {
       var hook = mountWorkInProgressHook();
       initialArg = void 0 !== init ? init(initialArg) : initialArg;
       hook.memoizedState = hook.baseState = initialArg;
-      reducer = hook.queue = {
+      reducer = {
         pending: null,
         interleaved: null,
         lanes: 0,
@@ -3946,6 +3995,7 @@ var ContextOnlyDispatcher = {
         lastRenderedReducer: reducer,
         lastRenderedState: initialArg
       };
+      hook.queue = reducer;
       reducer = reducer.dispatch = dispatchAction.bind(
         null,
         currentlyRenderingFiber$1,
@@ -3994,6 +4044,7 @@ var ContextOnlyDispatcher = {
       };
       return useMutableSource(hook, source, getSnapshot, subscribe);
     },
+    useSyncExternalStore: mountSyncExternalStore,
     useOpaqueIdentifier: function() {
       throw Error("Not yet implemented");
     },
@@ -4037,6 +4088,19 @@ var ContextOnlyDispatcher = {
       return [isPending, start];
     },
     useMutableSource: updateMutableSource,
+    useSyncExternalStore: function(subscribe, getSnapshot) {
+      var hook = updateWorkInProgressHook(),
+        nextSnapshot = getSnapshot();
+      objectIs(hook.memoizedState, nextSnapshot) ||
+        ((hook.memoizedState = nextSnapshot), (didReceiveUpdate = !0));
+      return useSyncExternalStore(
+        hook,
+        hook.queue,
+        subscribe,
+        getSnapshot,
+        nextSnapshot
+      );
+    },
     useOpaqueIdentifier: function() {
       return updateReducer(basicStateReducer)[0];
     },
@@ -4080,6 +4144,7 @@ var ContextOnlyDispatcher = {
       return [isPending, start];
     },
     useMutableSource: updateMutableSource,
+    useSyncExternalStore: mountSyncExternalStore,
     useOpaqueIdentifier: function() {
       return rerenderReducer(basicStateReducer)[0];
     },
@@ -8375,10 +8440,10 @@ batchedUpdatesImpl = function(fn, a) {
   }
 };
 var roots = new Map(),
-  devToolsConfig$jscomp$inline_978 = {
+  devToolsConfig$jscomp$inline_983 = {
     findFiberByHostInstance: getInstanceFromInstance,
     bundleType: 0,
-    version: "18.0.0-bd5bf555e-20210823",
+    version: "18.0.0-95d762e40-20210908",
     rendererPackageName: "react-native-renderer",
     rendererConfig: {
       getInspectorDataForViewTag: function() {
@@ -8393,11 +8458,11 @@ var roots = new Map(),
       }.bind(null, findNodeHandle)
     }
   };
-var internals$jscomp$inline_1239 = {
-  bundleType: devToolsConfig$jscomp$inline_978.bundleType,
-  version: devToolsConfig$jscomp$inline_978.version,
-  rendererPackageName: devToolsConfig$jscomp$inline_978.rendererPackageName,
-  rendererConfig: devToolsConfig$jscomp$inline_978.rendererConfig,
+var internals$jscomp$inline_1244 = {
+  bundleType: devToolsConfig$jscomp$inline_983.bundleType,
+  version: devToolsConfig$jscomp$inline_983.version,
+  rendererPackageName: devToolsConfig$jscomp$inline_983.rendererPackageName,
+  rendererConfig: devToolsConfig$jscomp$inline_983.rendererConfig,
   overrideHookState: null,
   overrideHookStateDeletePath: null,
   overrideHookStateRenamePath: null,
@@ -8413,26 +8478,27 @@ var internals$jscomp$inline_1239 = {
     return null === fiber ? null : fiber.stateNode;
   },
   findFiberByHostInstance:
-    devToolsConfig$jscomp$inline_978.findFiberByHostInstance ||
+    devToolsConfig$jscomp$inline_983.findFiberByHostInstance ||
     emptyFindFiberByHostInstance,
   findHostInstancesForRefresh: null,
   scheduleRefresh: null,
   scheduleRoot: null,
   setRefreshHandler: null,
   getCurrentFiber: null,
-  reconcilerVersion: "18.0.0-bd5bf555e-20210823"
+  getIsStrictMode: null,
+  reconcilerVersion: "18.0.0-95d762e40-20210908"
 };
 if ("undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__) {
-  var hook$jscomp$inline_1240 = __REACT_DEVTOOLS_GLOBAL_HOOK__;
+  var hook$jscomp$inline_1245 = __REACT_DEVTOOLS_GLOBAL_HOOK__;
   if (
-    !hook$jscomp$inline_1240.isDisabled &&
-    hook$jscomp$inline_1240.supportsFiber
+    !hook$jscomp$inline_1245.isDisabled &&
+    hook$jscomp$inline_1245.supportsFiber
   )
     try {
-      (rendererID = hook$jscomp$inline_1240.inject(
-        internals$jscomp$inline_1239
+      (rendererID = hook$jscomp$inline_1245.inject(
+        internals$jscomp$inline_1244
       )),
-        (injectedHook = hook$jscomp$inline_1240);
+        (injectedHook = hook$jscomp$inline_1245);
     } catch (err) {}
 }
 exports.createPortal = function(children, containerTag) {

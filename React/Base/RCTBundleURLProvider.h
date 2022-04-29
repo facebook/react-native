@@ -12,7 +12,7 @@
 RCT_EXTERN NSString *const RCTBundleURLProviderUpdatedNotification;
 RCT_EXTERN const NSUInteger kRCTBundleURLProviderDefaultPort;
 
-#if RCT_DEV_MENU
+#if RCT_DEV_MENU | RCT_PACKAGER_LOADING_FUNCTIONALITY
 /**
  * Allow/disallow accessing the packager server for various runtime scenario.
  * For instance, if a test run should never access the packager, disable it
