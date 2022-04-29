@@ -18,9 +18,6 @@ import {
 } from 'react-native';
 
 import * as React from 'react';
-type FlatListProps = React.ElementProps<typeof FlatList>;
-
-type ViewabilityConfig = $PropertyType<FlatListProps, 'viewabilityConfig'>;
 
 const DATA = [
   'Pizza',
@@ -60,79 +57,6 @@ const Item = ({item, separators}) => {
     </Pressable>
   );
 };
-
-const Separator = (defaultColor, highlightColor) => ({
-  leadingItem,
-  trailingItem,
-  highlighted,
-  hasBeenHighlighted,
-}) => {
-  const text = `Separator for leading ${leadingItem} and trailing ${trailingItem} has ${
-    !hasBeenHighlighted ? 'not ' : ''
-  }been pressed`;
-
-  return (
-    <View
-      style={[
-        styles.separator,
-        {backgroundColor: highlighted ? highlightColor : defaultColor},
-      ]}>
-      <Text style={styles.separtorText}>{text}</Text>
-    </View>
-  );
-};
-
-export function FlatList_withSeparators(): React.Node {
-  const exampleProps = {
-    ItemSeparatorComponent: Separator('lightgreen', 'green'),
-  };
-  const ref = React.useRef(null);
-
-  return <BaseFlatListExample ref={ref} exampleProps={exampleProps} />;
-}
-
-export function FlatList_onViewableItemsChanged(props: {
-  viewabilityConfig: ViewabilityConfig,
-  offScreen?: ?boolean,
-  horizontal?: ?boolean,
-  useScrollRefScroll?: ?boolean,
-}): React.Node {
-  const {viewabilityConfig, offScreen, horizontal, useScrollRefScroll} = props;
-  const [output, setOutput] = React.useState('');
-  const onViewableItemsChanged = React.useCallback(
-    info =>
-      setOutput(
-        info.viewableItems
-          .filter(viewToken => viewToken.index != null && viewToken.isViewable)
-          .map(viewToken => viewToken.item)
-          .join(', '),
-      ),
-    [setOutput],
-  );
-  const exampleProps = {
-    onViewableItemsChanged,
-    viewabilityConfig,
-    horizontal,
-  };
-
-  const ref = React.useRef(null);
-  const onTest =
-    useScrollRefScroll === true
-      ? () => {
-          ref?.current?.getScrollResponder()?.scrollToEnd();
-        }
-      : null;
-
-  return (
-    <BaseFlatListExample
-      ref={ref}
-      exampleProps={exampleProps}
-      onTest={onTest}
-      testOutput={output}>
-      {offScreen === true ? <View style={styles.offScreen} /> : null}
-    </BaseFlatListExample>
-  );
-}
 
 type Props = {
   exampleProps: $Shape<React.ElementConfig<typeof FlatList>>,

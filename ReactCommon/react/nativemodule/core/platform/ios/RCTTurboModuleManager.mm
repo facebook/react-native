@@ -595,7 +595,7 @@ static Class getFallbackClassFromName(const char *name)
       } @catch (NSException *exception) {
         RCTLogError(
             @"%@ has no setter or ivar for its methodQueue, which is not "
-             "permitted. You must either @synthesize the bridge property, "
+             "permitted. You must either @synthesize the methodQueue property, "
              "or provide your own setter method.",
             RCTBridgeModuleNameForClass([module class]));
       }

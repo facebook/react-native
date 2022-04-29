@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<0105b67942f03415395650d296aa846a>>
+ * @generated SignedSource<<1a3cb2d94c0721509af63438d7639b77>>
  */
 
 'use strict';
@@ -32,32 +32,36 @@ var ReactSharedInternals =
 
 function warn(format) {
   {
-    for (
-      var _len = arguments.length,
-        args = new Array(_len > 1 ? _len - 1 : 0),
-        _key = 1;
-      _key < _len;
-      _key++
-    ) {
-      args[_key - 1] = arguments[_key];
-    }
+    {
+      for (
+        var _len = arguments.length,
+          args = new Array(_len > 1 ? _len - 1 : 0),
+          _key = 1;
+        _key < _len;
+        _key++
+      ) {
+        args[_key - 1] = arguments[_key];
+      }
 
-    printWarning("warn", format, args);
+      printWarning("warn", format, args);
+    }
   }
 }
 function error(format) {
   {
-    for (
-      var _len2 = arguments.length,
-        args = new Array(_len2 > 1 ? _len2 - 1 : 0),
-        _key2 = 1;
-      _key2 < _len2;
-      _key2++
-    ) {
-      args[_key2 - 1] = arguments[_key2];
-    }
+    {
+      for (
+        var _len2 = arguments.length,
+          args = new Array(_len2 > 1 ? _len2 - 1 : 0),
+          _key2 = 1;
+        _key2 < _len2;
+        _key2++
+      ) {
+        args[_key2 - 1] = arguments[_key2];
+      }
 
-    printWarning("error", format, args);
+      printWarning("error", format, args);
+    }
   }
 }
 
@@ -5900,7 +5904,7 @@ function flushSyncCallbacks() {
   return null;
 }
 
-var ReactVersion = "18.0.0-bd5bf555e-20210823";
+var ReactVersion = "18.0.0-95d762e40-20210908";
 
 var ReactCurrentBatchConfig = ReactSharedInternals.ReactCurrentBatchConfig;
 var NoTransition = 0;
@@ -6978,12 +6982,12 @@ function getStateFromUpdate(
 
         {
           if (workInProgress.mode & StrictLegacyMode) {
-            disableLogs();
+            setIsStrictModeForDevtools(true);
 
             try {
               payload.call(instance, prevState, nextProps);
             } finally {
-              reenableLogs();
+              setIsStrictModeForDevtools(false);
             }
           }
 
@@ -7016,12 +7020,12 @@ function getStateFromUpdate(
 
         {
           if (workInProgress.mode & StrictLegacyMode) {
-            disableLogs();
+            setIsStrictModeForDevtools(true);
 
             try {
               _payload.call(instance, prevState, nextProps);
             } finally {
-              reenableLogs();
+              setIsStrictModeForDevtools(false);
             }
           }
 
@@ -7368,13 +7372,13 @@ function applyDerivedStateFromProps(
 
   {
     if (workInProgress.mode & StrictLegacyMode) {
-      disableLogs();
+      setIsStrictModeForDevtools(true);
 
       try {
         // Invoke the function an extra time to help detect side-effects.
         partialState = getDerivedStateFromProps(nextProps, prevState);
       } finally {
-        reenableLogs();
+        setIsStrictModeForDevtools(false);
       }
     }
 
@@ -7486,7 +7490,7 @@ function checkShouldComponentUpdate(
 
     {
       if (workInProgress.mode & StrictLegacyMode) {
-        disableLogs();
+        setIsStrictModeForDevtools(true);
 
         try {
           // Invoke the function an extra time to help detect side-effects.
@@ -7496,7 +7500,7 @@ function checkShouldComponentUpdate(
             nextContext
           );
         } finally {
-          reenableLogs();
+          setIsStrictModeForDevtools(false);
         }
       }
 
@@ -7820,12 +7824,12 @@ function constructClassInstance(workInProgress, ctor, props) {
 
   {
     if (workInProgress.mode & StrictLegacyMode) {
-      disableLogs();
+      setIsStrictModeForDevtools(true);
 
       try {
         instance = new ctor(props, context); // eslint-disable-line no-new
       } finally {
-        reenableLogs();
+        setIsStrictModeForDevtools(false);
       }
     }
   }
@@ -9973,6 +9977,7 @@ var ReactCurrentDispatcher$1 = ReactSharedInternals.ReactCurrentDispatcher,
   ReactCurrentBatchConfig$1 = ReactSharedInternals.ReactCurrentBatchConfig;
 var didWarnAboutMismatchedHooksForComponent;
 var didWarnAboutUseOpaqueIdentifier;
+var didWarnUncachedGetSnapshot;
 
 {
   didWarnAboutUseOpaqueIdentifier = {};
@@ -10448,14 +10453,15 @@ function mountReducer(reducer, initialArg, init) {
   }
 
   hook.memoizedState = hook.baseState = initialState;
-  var queue = (hook.queue = {
+  var queue = {
     pending: null,
     interleaved: null,
     lanes: NoLanes,
     dispatch: null,
     lastRenderedReducer: reducer,
     lastRenderedState: initialState
-  });
+  };
+  hook.queue = queue;
   var dispatch = (queue.dispatch = dispatchAction.bind(
     null,
     currentlyRenderingFiber$1,
@@ -10752,9 +10758,9 @@ function readFromUnsubscribedMutableSource(root, source, getSnapshot) {
 
     {
       // eslint-disable-next-line react-internal/no-production-logging
-      if (console.log.__reactDisabledLog) {
-        // If the logs are disabled, this is the dev-only double render. This is
-        // only reachable if there was a mutation during render. Show a helpful
+      if (getIsStrictModeForDevtools()) {
+        // If getIsStrictModeForDevtools is true, this is the dev-only double render
+        // This is only reachable if there was a mutation during render. Show a helpful
         // error message.
         //
         // Something interesting to note: because we only double render in
@@ -10955,6 +10961,135 @@ function updateMutableSource(source, getSnapshot, subscribe) {
   return useMutableSource(hook, source, getSnapshot, subscribe);
 }
 
+function mountSyncExternalStore(subscribe, getSnapshot) {
+  var hook = mountWorkInProgressHook(); // Read the current snapshot from the store on every render. This breaks the
+  // normal rules of React, and only works because store updates are
+  // always synchronous.
+
+  var nextSnapshot = getSnapshot();
+
+  {
+    if (!didWarnUncachedGetSnapshot) {
+      if (nextSnapshot !== getSnapshot()) {
+        error(
+          "The result of getSnapshot should be cached to avoid an infinite loop"
+        );
+
+        didWarnUncachedGetSnapshot = true;
+      }
+    }
+  }
+
+  hook.memoizedState = nextSnapshot;
+  var inst = {
+    value: nextSnapshot,
+    getSnapshot: getSnapshot
+  };
+  hook.queue = inst;
+  return useSyncExternalStore(hook, inst, subscribe, getSnapshot, nextSnapshot);
+}
+
+function updateSyncExternalStore(subscribe, getSnapshot) {
+  var hook = updateWorkInProgressHook(); // Read the current snapshot from the store on every render. This breaks the
+  // normal rules of React, and only works because store updates are
+  // always synchronous.
+
+  var nextSnapshot = getSnapshot();
+
+  {
+    if (!didWarnUncachedGetSnapshot) {
+      if (nextSnapshot !== getSnapshot()) {
+        error(
+          "The result of getSnapshot should be cached to avoid an infinite loop"
+        );
+
+        didWarnUncachedGetSnapshot = true;
+      }
+    }
+  }
+
+  var prevSnapshot = hook.memoizedState;
+
+  if (!objectIs(prevSnapshot, nextSnapshot)) {
+    hook.memoizedState = nextSnapshot;
+    markWorkInProgressReceivedUpdate();
+  }
+
+  var inst = hook.queue;
+  return useSyncExternalStore(hook, inst, subscribe, getSnapshot, nextSnapshot);
+}
+
+function useSyncExternalStore(
+  hook,
+  inst,
+  subscribe,
+  getSnapshot,
+  nextSnapshot
+) {
+  var fiber = currentlyRenderingFiber$1;
+  var dispatcher = ReactCurrentDispatcher$1.current; // Track the latest getSnapshot function with a ref. This needs to be updated
+  // in the layout phase so we can access it during the tearing check that
+  // happens on subscribe.
+  // TODO: Circumvent SSR warning
+
+  dispatcher.useLayoutEffect(
+    function() {
+      inst.value = nextSnapshot;
+      inst.getSnapshot = getSnapshot; // Whenever getSnapshot or subscribe changes, we need to check in the
+      // commit phase if there was an interleaved mutation. In concurrent mode
+      // this can happen all the time, but even in synchronous mode, an earlier
+      // effect may have mutated the store.
+      // TODO: Move the tearing checks to an earlier, pre-commit phase so that the
+      // layout effects always observe a consistent tree.
+
+      if (checkIfSnapshotChanged(inst)) {
+        // Force a re-render.
+        forceStoreRerender(fiber);
+      }
+    },
+    [subscribe, nextSnapshot, getSnapshot]
+  );
+  dispatcher.useEffect(
+    function() {
+      var handleStoreChange = function() {
+        // TODO: Because there is no cross-renderer API for batching updates, it's
+        // up to the consumer of this library to wrap their subscription event
+        // with unstable_batchedUpdates. Should we try to detect when this isn't
+        // the case and print a warning in development?
+        // The store changed. Check if the snapshot changed since the last time we
+        // read from the store.
+        if (checkIfSnapshotChanged(inst)) {
+          // Force a re-render.
+          forceStoreRerender(fiber);
+        }
+      }; // Check for changes right before subscribing. Subsequent changes will be
+      // detected in the subscription handler.
+
+      handleStoreChange(); // Subscribe to the store and return a clean-up function.
+
+      return subscribe(handleStoreChange);
+    },
+    [subscribe]
+  );
+  return nextSnapshot;
+}
+
+function checkIfSnapshotChanged(inst) {
+  var latestGetSnapshot = inst.getSnapshot;
+  var prevValue = inst.value;
+
+  try {
+    var nextValue = latestGetSnapshot();
+    return !objectIs(prevValue, nextValue);
+  } catch (error) {
+    return true;
+  }
+}
+
+function forceStoreRerender(fiber) {
+  scheduleUpdateOnFiber(fiber, SyncLane, NoTimestamp);
+}
+
 function mountState(initialState) {
   var hook = mountWorkInProgressHook();
 
@@ -10964,14 +11099,15 @@ function mountState(initialState) {
   }
 
   hook.memoizedState = hook.baseState = initialState;
-  var queue = (hook.queue = {
+  var queue = {
     pending: null,
     interleaved: null,
     lanes: NoLanes,
     dispatch: null,
     lastRenderedReducer: basicStateReducer,
     lastRenderedState: initialState
-  });
+  };
+  hook.queue = queue;
   var dispatch = (queue.dispatch = dispatchAction.bind(
     null,
     currentlyRenderingFiber$1,
@@ -11559,6 +11695,7 @@ var ContextOnlyDispatcher = {
   useDeferredValue: throwInvalidHookError,
   useTransition: throwInvalidHookError,
   useMutableSource: throwInvalidHookError,
+  useSyncExternalStore: throwInvalidHookError,
   useOpaqueIdentifier: throwInvalidHookError,
   unstable_isNewReconciler: enableNewReconciler
 };
@@ -11685,6 +11822,11 @@ var InvalidNestedHooksDispatcherOnRerenderInDEV = null;
       mountHookTypesDev();
       return mountMutableSource(source, getSnapshot, subscribe);
     },
+    useSyncExternalStore: function(subscribe, getSnapshot) {
+      currentHookNameInDev = "useSyncExternalStore";
+      mountHookTypesDev();
+      return mountSyncExternalStore(subscribe, getSnapshot);
+    },
     useOpaqueIdentifier: function() {
       currentHookNameInDev = "useOpaqueIdentifier";
       mountHookTypesDev();
@@ -11782,6 +11924,11 @@ var InvalidNestedHooksDispatcherOnRerenderInDEV = null;
       currentHookNameInDev = "useMutableSource";
       updateHookTypesDev();
       return mountMutableSource(source, getSnapshot, subscribe);
+    },
+    useSyncExternalStore: function(subscribe, getSnapshot) {
+      currentHookNameInDev = "useSyncExternalStore";
+      updateHookTypesDev();
+      return mountSyncExternalStore(subscribe, getSnapshot);
     },
     useOpaqueIdentifier: function() {
       currentHookNameInDev = "useOpaqueIdentifier";
@@ -11881,6 +12028,11 @@ var InvalidNestedHooksDispatcherOnRerenderInDEV = null;
       updateHookTypesDev();
       return updateMutableSource(source, getSnapshot, subscribe);
     },
+    useSyncExternalStore: function(subscribe, getSnapshot) {
+      currentHookNameInDev = "useSyncExternalStore";
+      updateHookTypesDev();
+      return updateSyncExternalStore(subscribe, getSnapshot);
+    },
     useOpaqueIdentifier: function() {
       currentHookNameInDev = "useOpaqueIdentifier";
       updateHookTypesDev();
@@ -11978,6 +12130,11 @@ var InvalidNestedHooksDispatcherOnRerenderInDEV = null;
       currentHookNameInDev = "useMutableSource";
       updateHookTypesDev();
       return updateMutableSource(source, getSnapshot, subscribe);
+    },
+    useSyncExternalStore: function(subscribe, getSnapshot) {
+      currentHookNameInDev = "useSyncExternalStore";
+      updateHookTypesDev();
+      return updateSyncExternalStore(subscribe, getSnapshot);
     },
     useOpaqueIdentifier: function() {
       currentHookNameInDev = "useOpaqueIdentifier";
@@ -12090,6 +12247,12 @@ var InvalidNestedHooksDispatcherOnRerenderInDEV = null;
       warnInvalidHookAccess();
       mountHookTypesDev();
       return mountMutableSource(source, getSnapshot, subscribe);
+    },
+    useSyncExternalStore: function(subscribe, getSnapshot) {
+      currentHookNameInDev = "useSyncExternalStore";
+      warnInvalidHookAccess();
+      mountHookTypesDev();
+      return mountSyncExternalStore(subscribe, getSnapshot);
     },
     useOpaqueIdentifier: function() {
       currentHookNameInDev = "useOpaqueIdentifier";
@@ -12204,6 +12367,12 @@ var InvalidNestedHooksDispatcherOnRerenderInDEV = null;
       updateHookTypesDev();
       return updateMutableSource(source, getSnapshot, subscribe);
     },
+    useSyncExternalStore: function(subscribe, getSnapshot) {
+      currentHookNameInDev = "useSyncExternalStore";
+      warnInvalidHookAccess();
+      updateHookTypesDev();
+      return updateSyncExternalStore(subscribe, getSnapshot);
+    },
     useOpaqueIdentifier: function() {
       currentHookNameInDev = "useOpaqueIdentifier";
       warnInvalidHookAccess();
@@ -12316,6 +12485,12 @@ var InvalidNestedHooksDispatcherOnRerenderInDEV = null;
       warnInvalidHookAccess();
       updateHookTypesDev();
       return updateMutableSource(source, getSnapshot, subscribe);
+    },
+    useSyncExternalStore: function(subscribe, getSnapshot) {
+      currentHookNameInDev = "useSyncExternalStore";
+      warnInvalidHookAccess();
+      updateHookTypesDev();
+      return updateSyncExternalStore(subscribe, getSnapshot);
     },
     useOpaqueIdentifier: function() {
       currentHookNameInDev = "useOpaqueIdentifier";
@@ -14178,7 +14353,7 @@ function updateForwardRef(
     );
 
     if (workInProgress.mode & StrictLegacyMode) {
-      disableLogs();
+      setIsStrictModeForDevtools(true);
 
       try {
         nextChildren = renderWithHooks(
@@ -14190,7 +14365,7 @@ function updateForwardRef(
           renderLanes
         );
       } finally {
-        reenableLogs();
+        setIsStrictModeForDevtools(false);
       }
     }
 
@@ -14648,7 +14823,7 @@ function updateFunctionComponent(
     );
 
     if (workInProgress.mode & StrictLegacyMode) {
-      disableLogs();
+      setIsStrictModeForDevtools(true);
 
       try {
         nextChildren = renderWithHooks(
@@ -14660,7 +14835,7 @@ function updateFunctionComponent(
           renderLanes
         );
       } finally {
-        reenableLogs();
+        setIsStrictModeForDevtools(false);
       }
     }
 
@@ -14858,12 +15033,12 @@ function finishClassComponent(
       nextChildren = instance.render();
 
       if (workInProgress.mode & StrictLegacyMode) {
-        disableLogs();
+        setIsStrictModeForDevtools(true);
 
         try {
           instance.render();
         } finally {
-          reenableLogs();
+          setIsStrictModeForDevtools(false);
         }
       }
 
@@ -15327,7 +15502,7 @@ function mountIndeterminateComponent(
 
     {
       if (workInProgress.mode & StrictLegacyMode) {
-        disableLogs();
+        setIsStrictModeForDevtools(true);
 
         try {
           value = renderWithHooks(
@@ -15339,7 +15514,7 @@ function mountIndeterminateComponent(
             renderLanes
           );
         } finally {
-          reenableLogs();
+          setIsStrictModeForDevtools(false);
         }
       }
     }
@@ -22371,6 +22546,7 @@ var shouldSuspendImpl = function(fiber) {
 function shouldSuspend(fiber) {
   return shouldSuspendImpl(fiber);
 }
+var isStrictMode = false;
 var overrideHookState = null;
 var overrideHookStateDeletePath = null;
 var overrideHookStateRenamePath = null;
@@ -22593,6 +22769,20 @@ function getCurrentFiberForDevTools() {
   return current;
 }
 
+function getIsStrictModeForDevtools() {
+  return isStrictMode;
+}
+function setIsStrictModeForDevtools(newIsStrictMode) {
+  isStrictMode = newIsStrictMode;
+
+  {
+    if (newIsStrictMode) {
+      disableLogs();
+    } else {
+      reenableLogs();
+    }
+  }
+}
 function injectIntoDevTools(devToolsConfig) {
   var findFiberByHostInstance = devToolsConfig.findFiberByHostInstance;
   var ReactCurrentDispatcher = ReactSharedInternals.ReactCurrentDispatcher;
@@ -22621,6 +22811,7 @@ function injectIntoDevTools(devToolsConfig) {
     setRefreshHandler: setRefreshHandler,
     // Enables DevTools to append owner stacks to error messages in DEV mode.
     getCurrentFiber: getCurrentFiberForDevTools,
+    getIsStrictMode: getIsStrictModeForDevtools,
     // Enables DevTools to detect reconciler version rather than renderer version
     // which may not match for third party renderers.
     reconcilerVersion: ReactVersion

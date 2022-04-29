@@ -9,6 +9,7 @@
  */
 
 'use strict';
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 const RNTesterPage = require('../../components/RNTesterPage');
 const React = require('react');
 
@@ -204,14 +205,9 @@ const styles = StyleSheet.create({
   },
 });
 
-exports.title = 'FlatList - MultiColumn';
-exports.category = 'ListView';
-exports.description = 'Performant, scrollable grid of data.';
-exports.examples = [
-  {
-    title: 'Simple flat list multi column',
-    render: function(): React.Element<typeof MultiColumnExample> {
-      return <MultiColumnExample />;
-    },
-  },
-];
+export default ({
+  title: 'MultiColumn',
+  name: 'multicolumn',
+  description: 'Performant, scrollable grid of data',
+  render: () => <MultiColumnExample />,
+}: RNTesterModuleExample);

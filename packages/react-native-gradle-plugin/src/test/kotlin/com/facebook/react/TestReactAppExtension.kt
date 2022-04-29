@@ -5,12 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        mavenLocal()
-        google()
-    }
-}
+package com.facebook.react
 
-rootProject.name = 'react-native-codegen-android'
+import org.gradle.api.Project
+
+class TestReactAppExtension(project: Project) : ReactAppExtension(project)

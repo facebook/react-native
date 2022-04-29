@@ -34,10 +34,10 @@ abstract class BundleJsAndAssetsTask : Exec() {
   @get:OutputDirectory lateinit var jsSourceMapsDir: File
   @get:OutputFile lateinit var jsSourceMapsFile: File
 
-  @TaskAction
-  fun run() {
+  override fun exec() {
     cleanOutputDirectories()
-    executeBundleCommand()
+    configureBundleCommand()
+    super.exec()
   }
 
   private fun cleanOutputDirectories() {
@@ -47,7 +47,7 @@ abstract class BundleJsAndAssetsTask : Exec() {
     jsSourceMapsDir.recreateDir()
   }
 
-  private fun executeBundleCommand() {
+  private fun configureBundleCommand() {
     workingDir(reactRoot)
 
     @Suppress("SpreadOperator")
@@ -69,7 +69,5 @@ abstract class BundleJsAndAssetsTask : Exec() {
             "--sourcemap-output",
             jsSourceMapsFile,
             *extraArgs.toTypedArray()))
-
-    super.exec()
   }
 }

@@ -187,6 +187,9 @@ static inline std::string toString(const ::_ENUM_MASK_:: &value) {
 `.trim();
 
 function getClassExtendString(component): string {
+  if (component.extendsProps.length === 0) {
+    throw new Error('Invalid: component.extendsProps is empty');
+  }
   const extendString =
     ' : ' +
     component.extendsProps
