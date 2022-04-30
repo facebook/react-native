@@ -283,6 +283,7 @@ android {
             cmake {
                 arguments "-DREACT_COMMON_DIR=${reactNativeRootDir}/ReactCommon",
                         "-DREACT_ANDROID_DIR=$projectDir",
+                        "-DREACT_BUILD_DIR=$buildDir",
                         "-DANDROID_STL=c++_shared",
                         "-DANDROID_TOOLCHAIN=clang",
                         "-DANDROID_PLATFORM=android-21"
