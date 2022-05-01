@@ -24,7 +24,7 @@ const argv = yargs
   .option('o', {
     alias: 'outputDir',
     describe:
-      'DEPRECATED - Path to directory where native code source files should be saved.',
+      'Path to the root directory where native code source files should be saved.',
   })
   .option('n', {
     alias: 'libraryName',
@@ -41,14 +41,6 @@ const argv = yargs
     describe: 'all, components, or modules.',
     default: 'all',
   })
-  .option('c', {
-    alias: 'componentsOutputDir',
-    describe: 'Output directory for the codeGen for Fabric Components',
-  })
-  .option('m', {
-    alias: 'modulesOutputDirs',
-    describe: 'Output directory for the codeGen for TurboModules',
-  })
   .usage('Usage: $0 <args>')
   .demandOption(
     ['platform', 'schemaPath', 'outputDir'],
@@ -63,8 +55,6 @@ function main() {
     argv.libraryName,
     argv.javaPackageName,
     argv.libraryType,
-    argv.componentsOutputDir,
-    argv.modulesOutputDirs,
   );
 }
 
