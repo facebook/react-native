@@ -6,6 +6,7 @@
  */
 
 #import "RCTEventEmitter.h"
+#import <React/RCTConstants.h>
 #import "RCTAssert.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
@@ -83,7 +84,11 @@
  */
 - (BOOL)canSendEvents_DEPRECATED
 {
-  return _callableJSModules != nil;
+  bool canSendEvents = _callableJSModules != nil;
+  if (!canSendEvents && RCTGetValidateCanSendEventInRCTEventEmitter()) {
+    RCTLogError(@"Trying to send event when _callableJSModules is nil.");
+  }
+  return canSendEvents;
 }
 
 - (void)startObserving
