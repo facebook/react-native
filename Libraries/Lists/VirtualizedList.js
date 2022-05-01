@@ -1222,6 +1222,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     timestamp: 0,
     velocity: 0,
     visibleLength: 0,
+    zoomScale: 1,
   };
   _scrollRef: ?React.ElementRef<any> = null;
   _sentEndForContentLength = 0;
@@ -1618,6 +1619,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       );
       this._hasWarned.perf = true;
     }
+
+    const zoomScale = e.nativeEvent.zoomScale;
+
     this._scrollMetrics = {
       contentLength,
       dt,
@@ -1626,6 +1630,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       timestamp,
       velocity,
       visibleLength,
+      zoomScale,
     };
     this._updateViewableItems(this.props.data);
     if (!this.props) {
