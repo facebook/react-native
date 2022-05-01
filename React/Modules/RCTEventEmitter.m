@@ -47,6 +47,8 @@
 
 - (void)sendEventWithName:(NSString *)eventName body:(id)body
 {
+  // Assert that subclasses of RCTEventEmitter does not have `@synthesize _callableJSModules`
+  // which would cause _callableJSModules in the parent RCTEventEmitter to be nil.
   RCTAssert(
       _callableJSModules != nil,
       @"Error when sending event: %@ with body: %@. "
@@ -74,6 +76,14 @@
   } else {
     RCTLogWarn(@"Sending `%@` with no listeners registered.", eventName);
   }
+}
+
+/* TODO: (T118587955) Remove canSendEvents_DEPRECATED and validate RCTEventEmitter does not fail
+ * RCTAssert in _callableJSModules when the React Native instance is invalidated.
+ */
+- (BOOL)canSendEvents_DEPRECATED
+{
+  return _callableJSModules != nil;
 }
 
 - (void)startObserving
