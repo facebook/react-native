@@ -75,7 +75,7 @@ plugins {
  * ]
  */
 
-reactApp {
+react {
     applyAppPlugin = true
     cliPath = "../../../../cli.js"
     bundleAssetName = "RNTesterApp.android.bundle"

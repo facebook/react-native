@@ -10,6 +10,7 @@ package com.facebook.react.utils
 import com.facebook.react.tests.OS
 import com.facebook.react.tests.OsRule
 import com.facebook.react.tests.WithOs
+import com.facebook.react.utils.Os.unixifyPath
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
@@ -34,5 +35,19 @@ class OsTest {
   @WithOs(OS.WIN)
   fun isWindows_onWindows_returnsTrue() {
     assertTrue(Os.isWindows())
+  }
+
+  @Test
+  fun unixifyPath_withAUnixPath_doesNothing() {
+    val aUnixPath = "/just/a/unix/path.sh"
+
+    assertEquals(aUnixPath, aUnixPath.unixifyPath())
+  }
+
+  @Test
+  fun unixifyPath_withAWindowsPath_convertsItCorrectly() {
+    val aWindowsPath = "D:\\just\\a\\windows\\path\\"
+
+    assertEquals("/D/just/a/windows/path/", aWindowsPath.unixifyPath())
   }
 }

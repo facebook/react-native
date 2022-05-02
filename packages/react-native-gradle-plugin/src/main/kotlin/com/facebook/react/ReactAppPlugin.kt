@@ -22,7 +22,7 @@ class ReactAppPlugin : Plugin<Project> {
   }
 
   private fun applyAppPlugin(project: Project) {
-    val config = project.extensions.createOrGet("reactApp", ReactAppExtension::class.java, project)
+    val config = project.extensions.createOrGet("react", ReactExtension::class.java, project)
 
     if (config.applyAppPlugin.getOrElse(false)) {
       project.afterEvaluate {
