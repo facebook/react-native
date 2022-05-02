@@ -37,8 +37,8 @@ else
        "echo 'export NODE_BINARY=$(command -v node)' > .xcode.env " \
        "in the ios folder. This is needed by React Native to work correctly. " \
        "We fallback to the DEPRECATED behavior of finding `node`. This will be REMOVED in a future version. " \
-       "You can read more about this here: <TODO-ADD LINK HERE>" >&2
-    source "../find-node-for-xcode.sh"
+       "You can read more about this here: https://reactnative.dev/docs/environment-setup#optional-configuring-your-environment" >&2
+    source "${REACT_NATIVE_PATH}/scripts/find-node-for-xcode.sh"
 fi
 
 # Execute argument, if present

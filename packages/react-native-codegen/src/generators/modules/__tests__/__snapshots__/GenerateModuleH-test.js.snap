@@ -89,6 +89,9 @@ public:
   virtual void optionals(jsi::Runtime &rt, jsi::Object A) = 0;
   virtual void optionalMethod(jsi::Runtime &rt, jsi::Object options, jsi::Function callback, jsi::Array extras) = 0;
   virtual void getArrays(jsi::Runtime &rt, jsi::Object options) = 0;
+  virtual std::optional<jsi::Object> getNullableObject(jsi::Runtime &rt) = 0;
+  virtual std::optional<jsi::Object> getNullableGenericObject(jsi::Runtime &rt) = 0;
+  virtual std::optional<jsi::Array> getNullableArray(jsi::Runtime &rt) = 0;
 
 };
 
@@ -141,6 +144,30 @@ private:
 
       return bridging::callFromJs<void>(
           rt, &T::getArrays, jsInvoker_, instance_, std::move(options));
+    }
+    std::optional<jsi::Object> getNullableObject(jsi::Runtime &rt) override {
+      static_assert(
+          bridging::getParameterCount(&T::getNullableObject) == 1,
+          \\"Expected getNullableObject(...) to have 1 parameters\\");
+
+      return bridging::callFromJs<std::optional<jsi::Object>>(
+          rt, &T::getNullableObject, jsInvoker_, instance_);
+    }
+    std::optional<jsi::Object> getNullableGenericObject(jsi::Runtime &rt) override {
+      static_assert(
+          bridging::getParameterCount(&T::getNullableGenericObject) == 1,
+          \\"Expected getNullableGenericObject(...) to have 1 parameters\\");
+
+      return bridging::callFromJs<std::optional<jsi::Object>>(
+          rt, &T::getNullableGenericObject, jsInvoker_, instance_);
+    }
+    std::optional<jsi::Array> getNullableArray(jsi::Runtime &rt) override {
+      static_assert(
+          bridging::getParameterCount(&T::getNullableArray) == 1,
+          \\"Expected getNullableArray(...) to have 1 parameters\\");
+
+      return bridging::callFromJs<std::optional<jsi::Array>>(
+          rt, &T::getNullableArray, jsInvoker_, instance_);
     }
 
   private:

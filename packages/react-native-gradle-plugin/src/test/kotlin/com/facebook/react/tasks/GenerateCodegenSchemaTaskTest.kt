@@ -105,7 +105,6 @@ class GenerateCodegenSchemaTaskTest {
 
     assertEquals(
         listOf(
-            "yarn",
             "--verbose",
             File(codegenDir, "lib/cli/combine/combine-js-to-schema-cli.js").toString(),
             File(outputDir, "schema.json").toString(),

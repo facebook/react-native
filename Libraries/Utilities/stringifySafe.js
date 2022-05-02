@@ -43,7 +43,10 @@ export function createStringifySafeWithLimits(limits: {|
       return value;
     }
 
-    let retval = value;
+    let retval:
+      | string
+      | {+[string]: mixed}
+      | $TEMPORARY$object<{'...(truncated keys)...': number}> = value;
     if (Array.isArray(value)) {
       if (stack.length >= maxDepth) {
         retval = `[ ... array with ${value.length} values ... ]`;

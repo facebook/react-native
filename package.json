@@ -54,6 +54,7 @@
     "scripts/react_native_pods.rb",
     "scripts/react-native-xcode.sh",
     "sdks/hermesc",
+    "sdks/hermes-engine.podspec",
     "template.config.js",
     "template",
     "third-party-podspecs"
@@ -94,9 +95,9 @@
   },
   "dependencies": {
     "@jest/create-cache-key-function": "^27.0.1",
-    "@react-native-community/cli": "^8.0.0-alpha.0",
-    "@react-native-community/cli-platform-android": "^8.0.0-alpha.0",
-    "@react-native-community/cli-platform-ios": "^8.0.0-alpha.0",
+    "@react-native-community/cli": "^8.0.0-alpha.4",
+    "@react-native-community/cli-platform-android": "^8.0.0-alpha.3",
+    "@react-native-community/cli-platform-ios": "^8.0.0-alpha.3",
     "@react-native/assets": "1.0.0",
     "@react-native/normalize-color": "2.0.0",
     "@react-native/polyfills": "2.0.0",
@@ -115,7 +116,7 @@
     "pretty-format": "^26.5.2",
     "promise": "^8.0.3",
     "react-devtools-core": "4.24.0",
-    "react-native-gradle-plugin": "^0.0.6",
+    "react-native-gradle-plugin": "^0.0.7",
     "react-refresh": "^0.4.0",
     "react-shallow-renderer": "16.14.1",
     "regenerator-runtime": "^0.13.2",
@@ -126,7 +127,7 @@
     "ws": "^6.1.4"
   },
   "devDependencies": {
-    "flow-bin": "^0.176.1",
+    "flow-bin": "^0.176.3",
     "react": "18.0.0",
     "react-test-renderer": "^18.0.0"
   },

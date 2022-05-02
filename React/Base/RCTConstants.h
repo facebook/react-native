@@ -21,3 +21,15 @@ RCT_EXTERN void RCTExperimentSetPreemptiveViewAllocationDisabled(BOOL value);
  */
 RCT_EXTERN BOOL RCTGetDispatchW3CPointerEvents(void);
 RCT_EXTERN void RCTSetDispatchW3CPointerEvents(BOOL value);
+
+/*
+ * Validate RCTEventEmitter
+ */
+RCT_EXTERN BOOL RCTGetValidateCanSendEventInRCTEventEmitter(void);
+RCT_EXTERN void RCTSetValidateCanSendEventInRCTEventEmitter(BOOL value);
+
+/*
+ * Memory Pressure Unloading Level
+ */
+RCT_EXTERN BOOL RCTGetMemoryPressureUnloadLevel(void);
+RCT_EXTERN void RCTSetMemoryPressureUnloadLevel(int value);

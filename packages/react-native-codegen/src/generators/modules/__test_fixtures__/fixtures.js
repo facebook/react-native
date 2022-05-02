@@ -655,6 +655,49 @@ const COMPLEX_OBJECTS: SchemaType = {
               ],
             },
           },
+          {
+            name: 'getNullableObject',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'NullableTypeAnnotation',
+                typeAnnotation: {
+                  type: 'ObjectTypeAnnotation',
+                  properties: [],
+                },
+              },
+              params: [],
+            },
+          },
+          {
+            name: 'getNullableGenericObject',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'NullableTypeAnnotation',
+                typeAnnotation: {
+                  type: 'GenericObjectTypeAnnotation',
+                },
+              },
+              params: [],
+            },
+          },
+          {
+            name: 'getNullableArray',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'NullableTypeAnnotation',
+                typeAnnotation: {
+                  type: 'ArrayTypeAnnotation',
+                },
+              },
+              params: [],
+            },
+          },
         ],
       },
       moduleNames: ['SampleTurboModule'],

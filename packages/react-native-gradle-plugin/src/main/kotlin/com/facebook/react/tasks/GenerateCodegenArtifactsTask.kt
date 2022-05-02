@@ -7,9 +7,7 @@
 
 package com.facebook.react.tasks
 
-import com.facebook.react.codegen.generator.JavaGenerator
 import com.facebook.react.utils.windowsAwareCommandLine
-import org.gradle.api.GradleException
 import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFile
@@ -27,8 +25,6 @@ abstract class GenerateCodegenArtifactsTask : Exec() {
   @get:Internal abstract val generatedSrcDir: DirectoryProperty
 
   @get:Input abstract val nodeExecutableAndArgs: ListProperty<String>
-
-  @get:Input abstract val useJavaGenerator: Property<Boolean>
 
   @get:Input abstract val codegenJavaPackageName: Property<String>
 
@@ -52,19 +48,6 @@ abstract class GenerateCodegenArtifactsTask : Exec() {
     checkForDeprecatedProperty()
     setupCommandLine()
     super.exec()
-    if (useJavaGenerator.getOrElse(false)) {
-      // Use Java-based generator implementation to produce the source files,
-      // this will override the JS-based generator output (for the Java files only).
-      try {
-        JavaGenerator(
-                generatedSchemaFile.get().asFile,
-                codegenJavaPackageName.get(),
-                generatedSrcDir.get().asFile)
-            .build()
-      } catch (e: Exception) {
-        throw GradleException("Failed to generate Java from schema.", e)
-      }
-    }
   }
 
   private fun checkForDeprecatedProperty() {

@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.uimanager.TouchTargetHelper.ViewTarget;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.PointerEvent;
 import com.facebook.react.uimanager.events.PointerEventHelper;
@@ -40,7 +41,7 @@ public class JSPointerDispatcher {
 
   // Set globally for hover interactions, referenced for coalescing hover events
   private long mHoverInteractionKey = TouchEvent.UNSET;
-  private List<Integer> mLastHitPath = Collections.emptyList();
+  private List<ViewTarget> mLastHitPath = Collections.emptyList();
   private final float[] mLastEventCoordinates = new float[2];
 
   public JSPointerDispatcher(ViewGroup viewGroup) {
@@ -56,7 +57,7 @@ public class JSPointerDispatcher {
       return;
     }
 
-    List<Integer> hitPath =
+    List<ViewTarget> hitPath =
         TouchTargetHelper.findTargetPathAndCoordinatesForTouch(
             motionEvent.getX(), motionEvent.getY(), mRootViewGroup, mTargetCoordinates);
     dispatchCancelEvent(hitPath, motionEvent, eventDispatcher);
@@ -69,22 +70,19 @@ public class JSPointerDispatcher {
   }
 
   public void handleMotionEvent(MotionEvent motionEvent, EventDispatcher eventDispatcher) {
-
-    // Ignore if child is handling native gesture
-    if (mChildHandlingNativeGesture != -1) {
-      return;
-    }
-
     boolean supportsHover =
         PointerEventHelper.supportsHover(motionEvent.getToolType(motionEvent.getActionIndex()));
 
     int surfaceId = UIManagerHelper.getSurfaceId(mRootViewGroup);
     int action = motionEvent.getActionMasked();
-    List<Integer> hitPath =
+    List<ViewTarget> hitPath =
         TouchTargetHelper.findTargetPathAndCoordinatesForTouch(
             motionEvent.getX(), motionEvent.getY(), mRootViewGroup, mTargetCoordinates);
 
-    int targetTag = hitPath.get(0);
+    if (hitPath.isEmpty()) {
+      return;
+    }
+    int targetTag = hitPath.get(0).getViewId();
 
     if (supportsHover) {
       if (action == MotionEvent.ACTION_HOVER_MOVE) {
@@ -101,6 +99,9 @@ public class JSPointerDispatcher {
     // First down pointer
     if (action == MotionEvent.ACTION_DOWN) {
 
+      // Reset mChildHandlingNativeGesture like JSTouchDispatcher does
+      mChildHandlingNativeGesture = -1;
+
       // Start a "down" coalescing key
       mDownStartTime = motionEvent.getEventTime();
       mTouchEventCoalescingKeyHelper.addCoalescingKey(mDownStartTime);
@@ -108,7 +109,7 @@ public class JSPointerDispatcher {
       if (!supportsHover) {
         // Enter root -> child
         for (int i = hitPath.size(); i-- > 0; ) {
-          int tag = hitPath.get(i);
+          int tag = hitPath.get(i).getViewId();
           eventDispatcher.dispatchEvent(
               PointerEvent.obtain(PointerEventHelper.POINTER_ENTER, surfaceId, tag, motionEvent));
         }
@@ -116,6 +117,12 @@ public class JSPointerDispatcher {
       eventDispatcher.dispatchEvent(
           PointerEvent.obtain(PointerEventHelper.POINTER_DOWN, surfaceId, targetTag, motionEvent));
 
+      return;
+    }
+
+    // If the touch was intercepted by a child, we've already sent a cancel event to JS for this
+    // gesture, so we shouldn't send any more pointer events related to it.
+    if (mChildHandlingNativeGesture != -1) {
       return;
     }
 
@@ -158,7 +165,7 @@ public class JSPointerDispatcher {
       if (!supportsHover) {
         // Leave child -> root
         for (int i = 0; i < hitPath.size(); i++) {
-          int tag = hitPath.get(i);
+          int tag = hitPath.get(i).getViewId();
           eventDispatcher.dispatchEvent(
               PointerEvent.obtain(PointerEventHelper.POINTER_LEAVE, surfaceId, tag, motionEvent));
         }
@@ -192,7 +199,7 @@ public class JSPointerDispatcher {
       MotionEvent motionEvent,
       EventDispatcher eventDispatcher,
       int surfaceId,
-      List<Integer> hitPath) {
+      List<ViewTarget> hitPath) {
 
     int action = motionEvent.getActionMasked();
     if (action != MotionEvent.ACTION_HOVER_MOVE) {
@@ -219,13 +226,17 @@ public class JSPointerDispatcher {
 
     // If child is handling, eliminate target tags under handling child
     if (mChildHandlingNativeGesture > 0) {
-      int index = hitPath.indexOf(mChildHandlingNativeGesture);
-      if (index > 0) {
-        hitPath.subList(0, index).clear();
+      int index = 0;
+      for (ViewTarget viewTarget : hitPath) {
+        if (viewTarget.getViewId() == mChildHandlingNativeGesture) {
+          hitPath.subList(0, index).clear();
+          break;
+        }
+        index++;
       }
     }
 
-    int targetTag = hitPath.size() > 0 ? hitPath.get(0) : -1;
+    int targetTag = hitPath.isEmpty() ? -1 : hitPath.get(0).getViewId();
     // If targetTag is empty, we should bail?
     if (targetTag == -1) {
       return;
@@ -249,26 +260,31 @@ public class JSPointerDispatcher {
       // If something has changed in either enter/exit, let's start a new coalescing key
       mTouchEventCoalescingKeyHelper.incrementCoalescingKey(mHoverInteractionKey);
 
-      List<Integer> enterTargetTags = hitPath.subList(0, hitPath.size() - firstDivergentIndex);
-      if (enterTargetTags.size() > 0) {
+      List<ViewTarget> enterViewTargets = hitPath.subList(0, hitPath.size() - firstDivergentIndex);
+      if (enterViewTargets.size() > 0) {
         // root -> child
-        for (int i = enterTargetTags.size(); i-- > 0; ) {
-          int enterTargetTag = enterTargetTags.get(i);
+        for (int i = enterViewTargets.size(); i-- > 0; ) {
           eventDispatcher.dispatchEvent(
               PointerEvent.obtain(
-                  PointerEventHelper.POINTER_ENTER, surfaceId, enterTargetTag, motionEvent));
+                  PointerEventHelper.POINTER_ENTER,
+                  surfaceId,
+                  enterViewTargets.get(i).getViewId(),
+                  motionEvent));
         }
       }
 
       // Fire all relevant exit events
-      List<Integer> exitTargetTags =
+      List<ViewTarget> exitViewTargets =
           mLastHitPath.subList(0, mLastHitPath.size() - firstDivergentIndex);
-      if (exitTargetTags.size() > 0) {
+      if (exitViewTargets.size() > 0) {
         // child -> root
-        for (Integer exitTargetTag : exitTargetTags) {
+        for (ViewTarget exitViewTarget : exitViewTargets) {
           eventDispatcher.dispatchEvent(
               PointerEvent.obtain(
-                  PointerEventHelper.POINTER_LEAVE, surfaceId, exitTargetTag, motionEvent));
+                  PointerEventHelper.POINTER_LEAVE,
+                  surfaceId,
+                  exitViewTarget.getViewId(),
+                  motionEvent));
         }
       }
     }
@@ -284,7 +300,7 @@ public class JSPointerDispatcher {
   }
 
   private void dispatchCancelEvent(
-      List<Integer> hitPath, MotionEvent motionEvent, EventDispatcher eventDispatcher) {
+      List<ViewTarget> hitPath, MotionEvent motionEvent, EventDispatcher eventDispatcher) {
     // This means the gesture has already ended, via some other CANCEL or UP event. This is not
     // expected to happen very often as it would mean some child View has decided to intercept the
     // touch stream and start a native gesture only upon receiving the UP/CANCEL event.
@@ -294,16 +310,19 @@ public class JSPointerDispatcher {
         "Expected to not have already sent a cancel for this gesture");
     int surfaceId = UIManagerHelper.getSurfaceId(mRootViewGroup);
 
-    int targetTag = hitPath.get(0);
-    // Question: Does cancel fire on all in hit path?
-    Assertions.assertNotNull(eventDispatcher)
-        .dispatchEvent(
-            PointerEvent.obtain(
-                PointerEventHelper.POINTER_CANCEL, surfaceId, targetTag, motionEvent));
+    if (!hitPath.isEmpty()) {
+      int targetTag = hitPath.get(0).getViewId();
+      // Question: Does cancel fire on all in hit path?
+      Assertions.assertNotNull(eventDispatcher)
+          .dispatchEvent(
+              PointerEvent.obtain(
+                  PointerEventHelper.POINTER_CANCEL, surfaceId, targetTag, motionEvent));
 
-    for (int tag : hitPath) {
-      eventDispatcher.dispatchEvent(
-          PointerEvent.obtain(PointerEventHelper.POINTER_LEAVE, surfaceId, tag, motionEvent));
+      for (ViewTarget viewTarget : hitPath) {
+        eventDispatcher.dispatchEvent(
+            PointerEvent.obtain(
+                PointerEventHelper.POINTER_LEAVE, surfaceId, viewTarget.getViewId(), motionEvent));
+      }
     }
 
     mTouchEventCoalescingKeyHelper.removeCoalescingKey(mDownStartTime);

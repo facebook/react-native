@@ -1128,7 +1128,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         )}
       </VirtualizedListContextProvider>
     );
-    let ret = innerRet;
+    let ret: React.Node = innerRet;
     if (__DEV__) {
       ret = (
         <ScrollView.Context.Consumer>
@@ -1742,7 +1742,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       return;
     }
     this.setState(state => {
-      let newState;
+      let newState: ?(
+        | {first: number, last: number, ...}
+        | $TEMPORARY$object<{first: number, last: number}>
+      );
       const {contentLength, offset, visibleLength} = this._scrollMetrics;
       if (!isVirtualizationDisabled) {
         // If we run this with bogus data, we'll force-render window {first: 0, last: 0},
@@ -1754,7 +1757,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           // we'll wipe out the initialNumToRender rendered elements starting at initialScrollIndex.
           // So let's wait until we've scrolled the view to the right place. And until then,
           // we will trust the initialScrollIndex suggestion.
-          if (!this.props.initialScrollIndex || this._scrollMetrics.offset) {
+          if (!this.props.initialScrollIndex || this._hasDoneInitialScroll) {
             newState = computeWindowedRenderLimits(
               this.props.data,
               this.props.getItemCount,
@@ -2109,7 +2112,7 @@ function describeNestedLists(childList: {
     `    listKey: ${childList.key}\n` +
     `    cellKey: ${childList.cellKey}`;
 
-  let debugInfo = childList.parentDebugInfo;
+  let debugInfo: ?ListDebugInfo = childList.parentDebugInfo;
   while (debugInfo) {
     trace +=
       `\n  Parent (${debugInfo.horizontal ? 'horizontal' : 'vertical'}):\n` +

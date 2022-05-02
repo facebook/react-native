@@ -114,4 +114,7 @@ public class ReactFeatureFlags {
   public static boolean enableSpannableCache = false;
 
   public static boolean dispatchPointerEvents = false;
+
+  /** Feature Flag to control RN Android scrollEventThrottle prop. */
+  public static boolean enableScrollEventThrottle = false;
 }

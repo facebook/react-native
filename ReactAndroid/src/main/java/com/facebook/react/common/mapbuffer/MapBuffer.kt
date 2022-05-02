@@ -77,7 +77,7 @@ interface MapBuffer : Iterable<MapBuffer.Entry> {
    * Provides parsed [DataType] annotation associated with the given key.
    * @param key key to lookup type for
    * @return data type of the given key.
-   * @throws IllegalArgumentException if the key doesn't exists
+   * @throws IllegalArgumentException if the key doesn't exist
    */
   fun getType(key: Int): DataType
 
@@ -85,7 +85,7 @@ interface MapBuffer : Iterable<MapBuffer.Entry> {
    * Provides parsed [Boolean] value if the entry for given key exists with [DataType.BOOL] type
    * @param key key to lookup [Boolean] value for
    * @return value associated with the requested key
-   * @throws IllegalArgumentException if the key doesn't exists
+   * @throws IllegalArgumentException if the key doesn't exist
    * @throws IllegalStateException if the data type doesn't match
    */
   fun getBoolean(key: Int): Boolean
@@ -94,7 +94,7 @@ interface MapBuffer : Iterable<MapBuffer.Entry> {
    * Provides parsed [Int] value if the entry for given key exists with [DataType.INT] type
    * @param key key to lookup [Int] value for
    * @return value associated with the requested key
-   * @throws IllegalArgumentException if the key doesn't exists
+   * @throws IllegalArgumentException if the key doesn't exist
    * @throws IllegalStateException if the data type doesn't match
    */
   fun getInt(key: Int): Int
@@ -103,7 +103,7 @@ interface MapBuffer : Iterable<MapBuffer.Entry> {
    * Provides parsed [Double] value if the entry for given key exists with [DataType.DOUBLE] type
    * @param key key to lookup [Double] value for
    * @return value associated with the requested key
-   * @throws IllegalArgumentException if the key doesn't exists
+   * @throws IllegalArgumentException if the key doesn't exist
    * @throws IllegalStateException if the data type doesn't match
    */
   fun getDouble(key: Int): Double
@@ -112,7 +112,7 @@ interface MapBuffer : Iterable<MapBuffer.Entry> {
    * Provides parsed [String] value if the entry for given key exists with [DataType.STRING] type
    * @param key key to lookup [String] value for
    * @return value associated with the requested key
-   * @throws IllegalArgumentException if the key doesn't exists
+   * @throws IllegalArgumentException if the key doesn't exist
    * @throws IllegalStateException if the data type doesn't match
    */
   fun getString(key: Int): String
@@ -121,7 +121,7 @@ interface MapBuffer : Iterable<MapBuffer.Entry> {
    * Provides parsed [MapBuffer] value if the entry for given key exists with [DataType.MAP] type
    * @param key key to lookup [MapBuffer] value for
    * @return value associated with the requested key
-   * @throws IllegalArgumentException if the key doesn't exists
+   * @throws IllegalArgumentException if the key doesn't exist
    * @throws IllegalStateException if the data type doesn't match
    */
   fun getMapBuffer(key: Int): MapBuffer

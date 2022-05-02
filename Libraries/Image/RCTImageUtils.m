@@ -370,13 +370,14 @@ UIImage *__nullable RCTTransformImage(UIImage *image,
   }
 
   BOOL opaque = !RCTImageHasAlpha(image.CGImage);
-  UIGraphicsBeginImageContextWithOptions(destSize, opaque, destScale);
-  CGContextRef currentContext = UIGraphicsGetCurrentContext();
-  CGContextConcatCTM(currentContext, transform);
-  [image drawAtPoint:CGPointZero];
-  UIImage *result = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  return result;
+  UIGraphicsImageRendererFormat *const rendererFormat = [UIGraphicsImageRendererFormat defaultFormat];
+  rendererFormat.opaque = opaque;
+  rendererFormat.scale = destScale;
+  UIGraphicsImageRenderer *const renderer = [[UIGraphicsImageRenderer alloc] initWithSize:destSize format:rendererFormat];
+  return [renderer imageWithActions:^(UIGraphicsImageRendererContext *_Nonnull context) {
+    CGContextConcatCTM(context.CGContext, transform);
+    [image drawAtPoint:CGPointZero];
+  }];
 }
 
 BOOL RCTImageHasAlpha(CGImageRef image)
