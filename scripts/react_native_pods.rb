@@ -44,7 +44,7 @@ def use_react_native! (options={})
   pod 'FBLazyVector', :path => "#{prefix}/Libraries/FBLazyVector"
   pod 'FBReactNativeSpec', :path => "#{prefix}/React/FBReactNativeSpec"
   pod 'RCTRequired', :path => "#{prefix}/Libraries/RCTRequired"
-  pod 'RCTTypeSafety', :path => "#{prefix}/Libraries/TypeSafety"
+  pod 'RCTTypeSafety', :path => "#{prefix}/Libraries/TypeSafety", :modular_headers => true
   pod 'React', :path => "#{prefix}/"
   pod 'React-Core', :path => "#{prefix}/"
   pod 'React-CoreModules', :path => "#{prefix}/React/CoreModules"
@@ -72,13 +72,13 @@ def use_react_native! (options={})
   pod 'React-runtimeexecutor', :path => "#{prefix}/ReactCommon/runtimeexecutor"
   pod 'React-perflogger', :path => "#{prefix}/ReactCommon/reactperflogger"
   pod 'React-logger', :path => "#{prefix}/ReactCommon/logger"
-  pod 'ReactCommon/turbomodule/core', :path => "#{prefix}/ReactCommon"
+  pod 'ReactCommon/turbomodule/core', :path => "#{prefix}/ReactCommon", :modular_headers => true
   pod 'Yoga', :path => "#{prefix}/ReactCommon/yoga", :modular_headers => true
 
   pod 'DoubleConversion', :podspec => "#{prefix}/third-party-podspecs/DoubleConversion.podspec"
   pod 'glog', :podspec => "#{prefix}/third-party-podspecs/glog.podspec"
   pod 'boost', :podspec => "#{prefix}/third-party-podspecs/boost.podspec"
-  pod 'RCT-Folly', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec"
+  pod 'RCT-Folly', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec", :modular_headers => true
 
   if ENV['USE_CODEGEN_DISCOVERY'] == '1'
     app_path = options[:app_path]
@@ -96,7 +96,7 @@ def use_react_native! (options={})
     generate_react_codegen_podspec!(react_codegen_spec)
   end
 
-  pod 'React-Codegen', :path => $CODEGEN_OUTPUT_DIR
+  pod 'React-Codegen', :path => $CODEGEN_OUTPUT_DIR, :modular_headers => true
 
   if fabric_enabled
     checkAndGenerateEmptyThirdPartyProvider!(prefix)
@@ -104,7 +104,7 @@ def use_react_native! (options={})
     pod 'React-rncore', :path => "#{prefix}/ReactCommon"
     pod 'React-graphics', :path => "#{prefix}/ReactCommon/react/renderer/graphics"
     pod 'React-jsi/Fabric', :path => "#{prefix}/ReactCommon/jsi"
-    pod 'React-RCTFabric', :path => "#{prefix}/React"
+    pod 'React-RCTFabric', :path => "#{prefix}/React", :modular_headers => true
     pod 'RCT-Folly/Fabric', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec"
   end
 
