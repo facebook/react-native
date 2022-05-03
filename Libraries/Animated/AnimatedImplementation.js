@@ -551,6 +551,19 @@ const event = function (
   }
 };
 
+// All types of animated nodes that represent scalar numbers and can be interpolated (etc)
+type AnimatedNumeric =
+  | AnimatedAddition
+  | AnimatedDiffClamp
+  | AnimatedDivision
+  | AnimatedInterpolation
+  | AnimatedModulo
+  | AnimatedMultiplication
+  | AnimatedSubtraction
+  | AnimatedValue;
+
+export type {AnimatedNumeric as Numeric};
+
 /**
  * The `Animated` library is designed to make animations fluid, powerful, and
  * easy to build and maintain. `Animated` focuses on declarative relationships
