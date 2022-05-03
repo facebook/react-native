@@ -115,6 +115,7 @@ namespace JS {
       folly::Optional<double> cancelButtonIndex() const;
       folly::Optional<double> anchor() const;
       folly::Optional<double> tintColor() const;
+      folly::Optional<double> cancelButtonTintColor() const;
       NSString *userInterfaceStyle() const;
       folly::Optional<facebook::react::LazyVector<double>> disabledButtonIndices() const;
 
@@ -136,6 +137,7 @@ namespace JS {
       NSString *subject() const;
       folly::Optional<double> anchor() const;
       folly::Optional<double> tintColor() const;
+      folly::Optional<double> cancelButtonTintColor() const;
       folly::Optional<facebook::react::LazyVector<NSString *>> excludedActivityTypes() const;
       NSString *userInterfaceStyle() const;
 
@@ -2074,6 +2076,11 @@ inline folly::Optional<double> JS::NativeActionSheetManager::SpecShowActionSheet
   id const p = _v[@"tintColor"];
   return RCTBridgingToOptionalDouble(p);
 }
+inline folly::Optional<double> JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions::cancelButtonTintColor() const
+{
+  id const p = _v[@"cancelButtonTintColor"];
+  return RCTBridgingToOptionalDouble(p);
+}
 inline NSString *JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions::userInterfaceStyle() const
 {
   id const p = _v[@"userInterfaceStyle"];
@@ -2107,6 +2114,11 @@ inline folly::Optional<double> JS::NativeActionSheetManager::SpecShowShareAction
 inline folly::Optional<double> JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions::tintColor() const
 {
   id const p = _v[@"tintColor"];
+  return RCTBridgingToOptionalDouble(p);
+}
+inline folly::Optional<double> JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions::cancelButtonTintColor() const
+{
+  id const p = _v[@"cancelButtonTintColor"];
   return RCTBridgingToOptionalDouble(p);
 }
 inline folly::Optional<facebook::react::LazyVector<NSString *>> JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions::excludedActivityTypes() const

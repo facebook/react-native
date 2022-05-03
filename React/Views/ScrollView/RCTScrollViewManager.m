@@ -104,7 +104,9 @@ RCT_EXPORT_VIEW_PROPERTY(inverted, BOOL)
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 /* __IPHONE_13_0 */
 RCT_EXPORT_VIEW_PROPERTY(automaticallyAdjustsScrollIndicatorInsets, BOOL)
 #endif
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
 RCT_EXPORT_VIEW_PROPERTY(contentInsetAdjustmentBehavior, UIScrollViewContentInsetAdjustmentBehavior)
+#endif // ]TODO(macOS GH#774)
 
 // overflow is used both in css-layout as well as by react-native. In css-layout
 // we always want to treat overflow as scroll but depending on what the overflow
