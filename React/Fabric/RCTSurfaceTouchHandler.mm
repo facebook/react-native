@@ -10,7 +10,6 @@
 #import <React/RCTUtils.h>
 #import <React/RCTViewComponentView.h>
 #import <UIKit/UIGestureRecognizerSubclass.h>
-#import <UIKit/UIKit.h>
 
 #import "RCTConversions.h"
 #import "RCTTouchableComponentViewProtocol.h"
@@ -83,8 +82,7 @@ static void UpdateActiveTouchWithUITouch(
     ActiveTouch &activeTouch,
     UITouch *uiTouch,
     UIView *rootComponentView,
-    CGPoint rootViewOriginOffset,
-    NSTimeInterval unixTimestampBasis)
+    CGPoint rootViewOriginOffset)
 {
   CGPoint offsetPoint = [uiTouch locationInView:activeTouch.componentView];
   CGPoint screenPoint = [uiTouch locationInView:uiTouch.window];
@@ -95,18 +93,14 @@ static void UpdateActiveTouchWithUITouch(
   activeTouch.touch.screenPoint = RCTPointFromCGPoint(screenPoint);
   activeTouch.touch.pagePoint = RCTPointFromCGPoint(pagePoint);
 
-  activeTouch.touch.timestamp = unixTimestampBasis + uiTouch.timestamp;
+  activeTouch.touch.timestamp = uiTouch.timestamp;
 
   if (RCTForceTouchAvailable()) {
     activeTouch.touch.force = RCTZeroIfNaN(uiTouch.force / uiTouch.maximumPossibleForce);
   }
 }
 
-static ActiveTouch CreateTouchWithUITouch(
-    UITouch *uiTouch,
-    UIView *rootComponentView,
-    CGPoint rootViewOriginOffset,
-    NSTimeInterval unixTimestampBasis)
+static ActiveTouch CreateTouchWithUITouch(UITouch *uiTouch, UIView *rootComponentView, CGPoint rootViewOriginOffset)
 {
   ActiveTouch activeTouch = {};
 
@@ -123,7 +117,7 @@ static ActiveTouch CreateTouchWithUITouch(
     componentView = componentView.superview;
   }
 
-  UpdateActiveTouchWithUITouch(activeTouch, uiTouch, rootComponentView, rootViewOriginOffset, unixTimestampBasis);
+  UpdateActiveTouchWithUITouch(activeTouch, uiTouch, rootComponentView, rootViewOriginOffset);
   return activeTouch;
 }
 
@@ -173,12 +167,6 @@ struct PointerHasher {
    */
   __weak UIView *_rootComponentView;
   IdentifierPool<11> _identifierPool;
-
-  /*
-   * See Touch.h and usage. This gives us a time-basis for a monotonic
-   * clock that acts like a timestamp of milliseconds elapsed since UNIX epoch.
-   */
-  NSTimeInterval _unixEpochBasisTime;
 }
 
 - (instancetype)init
@@ -193,8 +181,6 @@ struct PointerHasher {
     self.delaysTouchesEnded = NO;
 
     self.delegate = self;
-
-    _unixEpochBasisTime = [[NSDate date] timeIntervalSince1970] - [NSProcessInfo processInfo].systemUptime;
   }
 
   return self;
@@ -222,7 +208,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 - (void)_registerTouches:(NSSet<UITouch *> *)touches
 {
   for (UITouch *touch in touches) {
-    auto activeTouch = CreateTouchWithUITouch(touch, _rootComponentView, _viewOriginOffset, _unixEpochBasisTime);
+    auto activeTouch = CreateTouchWithUITouch(touch, _rootComponentView, _viewOriginOffset);
     activeTouch.touch.identifier = _identifierPool.dequeue();
     _activeTouches.emplace(touch, activeTouch);
   }
@@ -237,7 +223,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
       continue;
     }
 
-    UpdateActiveTouchWithUITouch(iterator->second, touch, _rootComponentView, _viewOriginOffset, _unixEpochBasisTime);
+    UpdateActiveTouchWithUITouch(iterator->second, touch, _rootComponentView, _viewOriginOffset);
   }
 }
 

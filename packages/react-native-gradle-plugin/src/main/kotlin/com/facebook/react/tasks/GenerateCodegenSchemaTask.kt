@@ -35,11 +35,19 @@ abstract class GenerateCodegenSchemaTask : Exec() {
   val generatedSchemaFile: Provider<RegularFile> = generatedSrcDir.file("schema.json")
 
   override fun exec() {
+    wipeOutputDir()
+    setupCommandLine()
+    super.exec()
+  }
+
+  internal fun wipeOutputDir() {
     generatedSrcDir.asFile.get().apply {
-      delete()
+      deleteRecursively()
       mkdirs()
     }
+  }
 
+  internal fun setupCommandLine() {
     commandLine(
         windowsAwareYarn(
             *nodeExecutableAndArgs.get().toTypedArray(),
@@ -51,6 +59,5 @@ abstract class GenerateCodegenSchemaTask : Exec() {
             generatedSchemaFile.get().asFile.absolutePath,
             jsRootDir.asFile.get().absolutePath,
         ))
-    super.exec()
   }
 }

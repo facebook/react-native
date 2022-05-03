@@ -20,9 +20,9 @@ repositories {
 
 gradlePlugin {
   plugins {
-    create("reactApp") {
+    create("react") {
       id = "com.facebook.react"
-      implementationClass = "com.facebook.react.ReactAppPlugin"
+      implementationClass = "com.facebook.react.ReactPlugin"
     }
   }
 }

@@ -27,10 +27,12 @@ abstract class BuildCodegenCLITask : Exec() {
   @get:Internal abstract val bashWindowsHome: Property<String>
 
   @get:InputFiles
-  val input: FileCollection =
-      codegenDir.files("scripts", "src", "package.json", ".babelrc", ".prettierrc")
+  val input: FileCollection by lazy {
+    codegenDir.get().files("scripts", "src", "package.json", ".babelrc", ".prettierrc")
+  }
 
-  @get:OutputFiles val output: FileCollection = codegenDir.files("lib", "node_modules")
+  @get:OutputDirectories
+  val output: FileCollection by lazy { codegenDir.get().files("lib", "node_modules") }
 
   init {
     // We need this condition as we want a single instance of BuildCodegenCLITask to execute

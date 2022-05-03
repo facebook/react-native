@@ -559,6 +559,32 @@ jobs:
           path: ./reports/junit
 
   # -------------------------
+  #    JOBS: Test Android Template
+  # -------------------------
+  test_android_template:
+    executor: reactnativeandroid
+    steps:
+      - checkout
+      - run_yarn
+
+      - run:
+          name: Setup the Android Template
+          command: |
+            cd template
+            sed -i 's/1000\.0\.0/file\:\.\./g' package.json
+            npm install
+            # react-native-community/cli is needed as the Android template is referencing a .gradle file inside it.
+            npm i @react-native-community/cli
+
+      - run:
+          name: Bundle the latest version of ReactAndroid
+          command: ./gradlew :ReactAndroid:publishReleasePublicationToNpmRepository
+
+      - run:
+          name: Build the template application
+          command: cd template/android/ && ./gradlew assembleDebug
+
+  # -------------------------
   #    JOBS: Test Docker
   # -------------------------
   test_docker_android:
@@ -715,6 +741,19 @@ jobs:
           git config --global user.name "npm Deployment Script"
           echo "machine github.com login react-native-bot password $GITHUB_TOKEN" > ~/.netrc
       - run: node ./scripts/publish-npm.js << parameters.publish_npm_args >>
+      - when:
+          condition:
+            equal: [ --dry-run, << parameters.publish_npm_args >> ]
+          steps:
+            - run:
+                name: Build release package as a job artifact
+                command: |
+                  mkdir -p build
+                  FILENAME=$(npm pack)
+                  mv $FILENAME build/
+            - store_artifacts:
+                path: ~/react-native/build/
+                destination: build
 
   # -------------------------
   #    JOBS: Nightly
@@ -742,6 +781,11 @@ workflows:
               ignore: gh-pages
       - test_android:
           run_disabled_tests: false
+          filters:
+            branches:
+              # TODO(macOS GH#774): disable this test which is redundant to Azure Devops test and it requires a CCI plan with resource-class:large.
+              ignore: /.*/
+      - test_android_template:
           filters:
             branches:
               # TODO(macOS GH#774): disable this test which is redundant to Azure Devops test and it requires a CCI plan with resource-class:large.
@@ -811,6 +855,16 @@ workflows:
             # Only act on version tags.
             tags:
               only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
+      - publish_npm_package:
+          # Build a release package on every untagged commit, but do not publish to npm.
+          name: build_commit_package
+          publish_npm_args: --dry-run
+          filters:
+            branches:
+              only:
+                - main
+            tags:
+              ignore: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
 
   analysis:
     jobs:

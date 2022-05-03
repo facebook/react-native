@@ -96,7 +96,7 @@ public class TouchEvent extends Event<TouchEvent> {
       float viewX,
       float viewY,
       TouchEventCoalescingKeyHelper touchEventCoalescingKeyHelper) {
-    super.init(surfaceId, viewTag);
+    super.init(surfaceId, viewTag, motionEventToCopy.getEventTime());
 
     SoftAssertions.assertCondition(
         gestureStartTime != UNSET, "Gesture start time must be initialized");

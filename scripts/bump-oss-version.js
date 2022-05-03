@@ -53,6 +53,8 @@
 
  const autogenerateVersionNumber = argv.autogenerateVersionNumber;
  const nightlyBuild = argv.nightly;
+ // Nightly builds don't need an update as main will already be up-to-date.
+ const updatePodfileLock = !nightlyBuild;
  let version = argv.toVersion;
 
  if (!version) {
@@ -192,6 +194,15 @@
 
  // Change react-native version in the template's package.json
  exec(`node scripts/set-rn-template-version.js ${version}`);
+
+ if (updatePodfileLock) {
+   echo('Updating RNTester Podfile.lock...');
+   if (exec('source scripts/update_podfile_lock.sh && update_pods').code) {
+     echo('Failed to update RNTester Podfile.lock.');
+     echo('Fix the issue, revert and try again.');
+     exit(1);
+   }
+ }
 
  // Verify that files changed, we just do a git diff and check how many times version is added across files
  const filesToValidate = [

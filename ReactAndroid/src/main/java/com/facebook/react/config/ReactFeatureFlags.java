@@ -72,6 +72,8 @@ public class ReactFeatureFlags {
 
   public static boolean enableRuntimeScheduler = false;
 
+  public static boolean enableRuntimeSchedulerInTurboModule = false;
+
   /** Enables a more aggressive cleanup during destruction of ReactContext */
   public static boolean enableReactContextCleanupFix = false;
 
@@ -95,4 +97,6 @@ public class ReactFeatureFlags {
   public static boolean enableLockFreeEventDispatcher = false;
 
   public static boolean enableAggressiveEventEmitterCleanup = false;
+
+  public static boolean insertZReorderBarriersOnViewGroupChildren = true;
 }

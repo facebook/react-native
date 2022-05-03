@@ -53,9 +53,6 @@ const {exec, echo, exit, test} = require('shelljs');
 const yargs = require('yargs');
 const {parseVersion} = require('./version-utils');
 
-const buildTag = process.env.CIRCLE_TAG;
-const otp = process.env.NPM_CONFIG_OTP;
-
 const argv = yargs
   .option('n', {
     alias: 'nightly',
@@ -69,6 +66,9 @@ const argv = yargs
   }).argv;
 const nightlyBuild = argv.nightly;
 const dryRunBuild = argv.dryRun;
+const buildFromMain = nightlyBuild || dryRunBuild;
+const buildTag = process.env.CIRCLE_TAG;
+const otp = process.env.NPM_CONFIG_OTP;
 
 // 34c034298dc9cad5a4553964a5a324450fda0385
 const currentCommit = exec('git rev-parse HEAD', {
@@ -113,7 +113,7 @@ if (dryRunBuild) {
 
 // Bump version number in various files (package.json, gradle.properties etc)
 // For stable, pre-release releases, we manually call bump-oss-version on release branch
-if (nightlyBuild || dryRunBuild) {
+if (buildFromMain) {
   if (
     exec(
       `node scripts/bump-oss-version.js --nightly --to-version ${releaseVersion}`,
@@ -153,35 +153,41 @@ artifacts.forEach(name => {
 
 if (dryRunBuild) {
   echo('Skipping `npm publish` because --dry-run is set.');
-  exit(0);
-}
-
-// Running to see if this commit has been git tagged as `latest`
-const latestCommit = exec("git rev-list -n 1 'latest'", {
-  silent: true,
-}).stdout.replace('\n', '');
-const isLatest = currentCommit === latestCommit;
-
-const releaseBranch = `${major}.${minor}-stable`;
-
-// Set the right tag for nightly and prerelease builds
-// If a release is not git-tagged as `latest` we use `releaseBranch` to prevent
-// npm from overriding the current `latest` version tag, which it will do if no tag is set.
-const tagFlag = nightlyBuild
-  ? '--tag nightly'
-  : prerelease != null
-  ? '--tag next'
-  : isLatest
-  ? '--tag latest'
-  : `--tag ${releaseBranch}`;
-
-// use otp from envvars if available
-const otpFlag = otp ? `--otp ${otp}` : '';
-
-if (exec(`npm publish ${tagFlag} ${otpFlag}`).code) {
-  echo('Failed to publish package to npm');
-  exit(1);
+  if (exec('mkdir -p build && npm pack --pack-destination build').code) {
+    echo('Failed to build release package.');
+    exit(1);
+  } else {
+    echo('The release was built successfully.');
+    exit(0);
+  }
 } else {
-  echo(`Published to npm ${releaseVersion}`);
-  exit(0);
+  // Running to see if this commit has been git tagged as `latest`
+  const latestCommit = exec("git rev-list -n 1 'latest'", {
+    silent: true,
+  }).stdout.replace('\n', '');
+  const isLatest = currentCommit === latestCommit;
+
+  const releaseBranch = `${major}.${minor}-stable`;
+
+  // Set the right tag for nightly and prerelease builds
+  // If a release is not git-tagged as `latest` we use `releaseBranch` to prevent
+  // npm from overriding the current `latest` version tag, which it will do if no tag is set.
+  const tagFlag = nightlyBuild
+    ? '--tag nightly'
+    : prerelease != null
+    ? '--tag next'
+    : isLatest
+    ? '--tag latest'
+    : `--tag ${releaseBranch}`;
+
+  // use otp from envvars if available
+  const otpFlag = otp ? `--otp ${otp}` : '';
+
+  if (exec(`npm publish ${tagFlag} ${otpFlag}`).code) {
+    echo('Failed to publish package to npm');
+    exit(1);
+  } else {
+    echo(`Published to npm ${releaseVersion}`);
+    exit(0);
+  }
 }

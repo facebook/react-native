@@ -19,7 +19,9 @@ import com.facebook.react.utils.detectedHermesCommand
 import java.io.File
 import java.util.*
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.tasks.Copy
+import org.gradle.api.tasks.TaskProvider
 
 private const val REACT_GROUP = "react"
 
@@ -134,6 +136,8 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactExte
         is LibraryVariant -> variant.packageLibraryProvider
         else -> tasks.named("package$targetName")
       }
+  val stripDebugSymbolsTask: TaskProvider<Task>? = tasks.named("strip${targetName}DebugSymbols")
+  val mergeNativeLibsTask: TaskProvider<Task>? = tasks.named("merge${targetName}NativeLibs")
 
   val mergeResourcesTask = variant.mergeResourcesProvider
   val mergeAssetsTask = variant.mergeAssetsProvider
@@ -160,7 +164,25 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactExte
 
   packageTask.configure {
     if (config.enableVmCleanup.get()) {
-      it.doFirst { cleanupVMFiles(enableHermes, isRelease, targetPath) }
+      val libDir = "$buildDir/intermediates/transforms/"
+      val targetVariant = ".*/transforms/[^/]*/$targetPath/.*".toRegex()
+      it.doFirst { cleanupVMFiles(libDir, targetVariant, enableHermes, isRelease) }
+    }
+  }
+
+  stripDebugSymbolsTask?.configure {
+    if (config.enableVmCleanup.get()) {
+      val libDir = "$buildDir/intermediates/stripped_native_libs/${targetPath}/out/lib/"
+      val targetVariant = ".*/stripped_native_libs/$targetPath/out/lib/.*".toRegex()
+      it.doLast { cleanupVMFiles(libDir, targetVariant, enableHermes, isRelease) }
+    }
+  }
+
+  mergeNativeLibsTask?.configure {
+    if (config.enableVmCleanup.get()) {
+      val libDir = "$buildDir/intermediates/merged_native_libs/${targetPath}/out/lib/"
+      val targetVariant = ".*/merged_native_libs/$targetPath/out/lib/.*".toRegex()
+      it.doLast { cleanupVMFiles(libDir, targetVariant, enableHermes, isRelease) }
     }
   }
 
@@ -191,14 +213,18 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactExte
   preBundleTask.dependsOn(currentAssetsCopyTask)
 }
 
-private fun Project.cleanupVMFiles(enableHermes: Boolean, isRelease: Boolean, targetPath: String) {
+private fun Project.cleanupVMFiles(
+    libDir: String,
+    targetVariant: Regex,
+    enableHermes: Boolean,
+    isRelease: Boolean
+) {
   // Delete the VM related libraries that this build doesn't need.
   // The application can manage this manually by setting 'enableVmCleanup: false'
   //
   // This should really be done by packaging all Hermes related libs into
   // two separate HermesDebug and HermesRelease AARs, but until then we'll
   // kludge it by deleting the .so files out of the /transforms/ directory.
-  val libDir = "$buildDir/intermediates/transforms/"
   fileTree(libDir) {
     if (enableHermes) {
       // For Hermes, delete all the libjsc* files
@@ -208,18 +234,23 @@ private fun Project.cleanupVMFiles(enableHermes: Boolean, isRelease: Boolean, ta
         // Reduce size by deleting the debugger/inspector
         it.include("**/libhermes-inspector.so")
         it.include("**/libhermes-executor-debug.so")
+        it.include("**/libhermes-executor-common-debug.so")
       } else {
         // Release libs take precedence and must be removed
         // to allow debugging
         it.include("**/libhermes-executor-release.so")
+        it.include("**/libhermes-executor-common-release.so")
       }
     } else {
       // For JSC, delete all the libhermes* files
       it.include("**/libhermes*.so")
+      // Delete the libjscexecutor from release build
+      if (isRelease) {
+        it.include("**/libjscexecutor.so")
+      }
     }
   }
       .visit { visit ->
-        val targetVariant = ".*/transforms/[^/]*/$targetPath/.*".toRegex()
         val path = visit.file.absolutePath.replace(File.separatorChar, '/')
         if (path.matches(targetVariant) && visit.file.isFile) {
           visit.file.delete()

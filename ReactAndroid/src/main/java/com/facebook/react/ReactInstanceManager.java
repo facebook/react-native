@@ -219,6 +219,7 @@ public class ReactInstanceManager {
       @Nullable String jsMainModulePath,
       List<ReactPackage> packages,
       boolean useDeveloperSupport,
+      DevSupportManagerFactory devSupportManagerFactory,
       boolean requireActivity,
       @Nullable NotThreadSafeBridgeIdleDebugListener bridgeIdleDebugListener,
       LifecycleState initialLifecycleState,
@@ -250,7 +251,7 @@ public class ReactInstanceManager {
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstanceManager.initDevSupportManager");
     mDevSupportManager =
-        DevSupportManagerFactory.create(
+        devSupportManagerFactory.create(
             applicationContext,
             createDevHelperInterface(),
             mJSMainModulePath,
@@ -1225,7 +1226,8 @@ public class ReactInstanceManager {
     // If we can't get a UIManager something has probably gone horribly wrong
     if (uiManager == null) {
       throw new IllegalStateException(
-          "Unable to attach a rootView to ReactInstance when UIManager is not properly initialized.");
+          "Unable to attach a rootView to ReactInstance when UIManager is not properly"
+              + " initialized.");
     }
 
     @Nullable Bundle initialProperties = reactRoot.getAppProperties();
@@ -1364,10 +1366,6 @@ public class ReactInstanceManager {
       for (String moduleName : registry.getEagerInitModuleNames()) {
         registry.getModule(moduleName);
       }
-    }
-
-    if (ReactFeatureFlags.enableRuntimeScheduler) {
-      catalystInstance.installRuntimeScheduler();
     }
 
     if (mJSIModulePackage != null) {

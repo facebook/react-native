@@ -18,12 +18,12 @@ class JRuntimeScheduler : public jni::HybridClass<JRuntimeScheduler> {
   static auto constexpr kJavaDescriptor =
       "Lcom/facebook/react/bridge/RuntimeScheduler;";
 
-  std::shared_ptr<RuntimeScheduler> get();
+  std::weak_ptr<RuntimeScheduler> get();
 
  private:
   friend HybridBase;
-  JRuntimeScheduler(std::shared_ptr<RuntimeScheduler> const &runtimeScheduler);
-  std::shared_ptr<RuntimeScheduler> runtimeScheduler_;
+  JRuntimeScheduler(std::weak_ptr<RuntimeScheduler> runtimeScheduler);
+  std::weak_ptr<RuntimeScheduler> runtimeScheduler_;
 };
 
 } // namespace react
