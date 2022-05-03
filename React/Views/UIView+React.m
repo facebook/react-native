@@ -320,7 +320,7 @@
   return objc_getAssociatedObject(self, _cmd);
 }
 
-- (NSString *)screenreaderErrorAndroid
+- (NSString *)screenreaderError
 {
   return objc_getAssociatedObject(self, _cmd);
 }

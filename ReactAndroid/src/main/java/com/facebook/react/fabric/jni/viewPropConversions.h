@@ -277,8 +277,8 @@ static inline MapBuffer viewPropsDiff(
     builder.putString(VP_ACCESSIBILITY_LABEL, newProps.accessibilityLabel);
   }
 
-  if (oldProps.screenreaderErrorAndroid != newProps.screenreaderErrorAndroid) {
-    builder.putString(VP_ACCESSIBILITY_LABEL, newProps.screenreaderErrorAndroid);
+  if (oldProps.screenreaderError != newProps.screenreaderError) {
+    builder.putString(VP_ACCESSIBILITY_LABEL, newProps.screenreaderError);
   }
 
   if (oldProps.accessibilityLabelledBy != newProps.accessibilityLabelledBy) {

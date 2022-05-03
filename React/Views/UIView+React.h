@@ -121,7 +121,7 @@
 @property (nonatomic, copy) NSArray<NSDictionary *> *accessibilityActions;
 @property (nonatomic, copy) NSDictionary *accessibilityValueInternal;
 @property (nonatomic, copy) NSString *accessibilityLanguage;
-@property (nonatomic, copy) NSString *screenreaderErrorAndroid;
+@property (nonatomic, copy) NSString *screenreaderError;
 
 /**
  * Used in debugging to get a description of the view hierarchy rooted at

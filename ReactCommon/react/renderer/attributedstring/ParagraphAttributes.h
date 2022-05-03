@@ -70,7 +70,7 @@ class ParagraphAttributes : public DebugStringConvertible {
    * (Android only) String to be read by screenreaders to indicate an error state
    * of a TextInput. The default is `null`.
    */
-  std::optional<std::string> screenreaderErrorAndroid{};
+  std::optional<std::string> screenreaderError{};
 
   /*
    * In case of font size adjustment enabled, defines minimum and maximum
@@ -108,7 +108,7 @@ struct hash<facebook::react::ParagraphAttributes> {
         attributes.maximumFontSize,
         attributes.includeFontPadding,
         attributes.android_hyphenationFrequency, 
-        attributes.screenreaderErrorAndroid);
+        attributes.screenreaderError);
   }
 };
 } // namespace std

@@ -760,12 +760,12 @@ inline ParagraphAttributes convertRawProp(
       "android_hyphenationFrequency",
       sourceParagraphAttributes.android_hyphenationFrequency,
       defaultParagraphAttributes.android_hyphenationFrequency);
-  paragraphAttributes.screenreaderErrorAndroid = convertRawProp(
+  paragraphAttributes.screenreaderError = convertRawProp(
       context,
       rawProps,
-      "screenreaderErrorAndroid",
-      sourceParagraphAttributes.screenreaderErrorAndroid,
-      defaultParagraphAttributes.screenreaderErrorAndroid);
+      "screenreaderError",
+      sourceParagraphAttributes.screenreaderError,
+      defaultParagraphAttributes.screenreaderError);
 
   return paragraphAttributes;
 }
@@ -804,10 +804,10 @@ inline folly::dynamic toDynamic(
   values(
       "android_hyphenationFrequency",
       toString(paragraphAttributes.android_hyphenationFrequency));
-  if (paragraphAttributes.screenreaderErrorAndroid.has_value()) {
+  if (paragraphAttributes.screenreaderError.has_value()) {
     values(
-        "screenreaderErrorAndroid",
-        paragraphAttributes.screenreaderErrorAndroid.value_or(""));
+        "screenreaderError",
+        paragraphAttributes.screenreaderError.value_or(""));
   }
   
   return values;

@@ -45,7 +45,7 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
   @VisibleForTesting public static final String PROP_PLACEHOLDER = "placeholder";
   @VisibleForTesting public static final String PROP_SELECTION = "selection";
 
-  @VisibleForTesting public static final String PROP_ERROR_MESSAGE = "screenreaderErrorAndroid";
+  @VisibleForTesting public static final String PROP_ERROR_MESSAGE = "screenreaderError";
 
   // Represents the {@code text} property only, not possible nested content.
   private @Nullable String mText = null;

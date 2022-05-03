@@ -106,7 +106,7 @@ const RCTTextInputViewConfig = {
     allowFontScaling: true,
     fontStyle: true,
     textTransform: true,
-    screenreaderErrorAndroid: true,
+    screenreaderError: true,
     textAlign: true,
     fontFamily: true,
     lineHeight: true,
