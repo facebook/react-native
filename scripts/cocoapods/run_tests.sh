@@ -21,6 +21,7 @@ do
     echo "require_relative \"${filename}\"" >> "${test_suite}"
 done
 
-ruby "${test_suite}"
-
+ruby -Itest "${test_suite}"
+RES=$?
 rm "${test_suite}"
+exit $RES
