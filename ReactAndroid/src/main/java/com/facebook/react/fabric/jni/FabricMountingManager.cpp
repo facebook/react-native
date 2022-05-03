@@ -28,11 +28,11 @@ using namespace facebook::jni;
 namespace facebook {
 namespace react {
 
-static bool doesUseOverflowInset() {
+static bool getFeatureFlagValue(const char *name) {
   static const auto reactFeatureFlagsJavaDescriptor = jni::findClassStatic(
       FabricMountingManager::ReactFeatureFlagsJavaDescriptor);
-  const auto field = reactFeatureFlagsJavaDescriptor->getStaticField<jboolean>(
-      "useOverflowInset");
+  const auto field =
+      reactFeatureFlagsJavaDescriptor->getStaticField<jboolean>(name);
   return reactFeatureFlagsJavaDescriptor->getStaticFieldValue(field);
 }
 
@@ -46,9 +46,9 @@ FabricMountingManager::FabricMountingManager(
           config->getBool("react_fabric:disabled_view_preallocation_android")),
       disableRevisionCheckForPreallocation_(config->getBool(
           "react_fabric:disable_revision_check_for_preallocation")),
-      useOverflowInset_(doesUseOverflowInset()),
-      shouldRememberAllocatedViews_(config->getBool(
-          "react_native_new_architecture:remember_views_on_mount_android")),
+      useOverflowInset_(getFeatureFlagValue("useOverflowInset")),
+      shouldRememberAllocatedViews_(
+          getFeatureFlagValue("shouldRememberAllocatedViews")),
       useMapBufferForViewProps_(config->getBool(
           "react_native_new_architecture:use_mapbuffer_for_viewprops")) {}
 
