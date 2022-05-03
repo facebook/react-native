@@ -31,10 +31,9 @@ namespace react {
 static bool doesUseOverflowInset() {
   static const auto reactFeatureFlagsJavaDescriptor = jni::findClassStatic(
       FabricMountingManager::ReactFeatureFlagsJavaDescriptor);
-  static const auto doesUseOverflowInset =
-      reactFeatureFlagsJavaDescriptor->getStaticMethod<jboolean()>(
-          "doesUseOverflowInset");
-  return doesUseOverflowInset(reactFeatureFlagsJavaDescriptor);
+  const auto field = reactFeatureFlagsJavaDescriptor->getStaticField<jboolean>(
+      "useOverflowInset");
+  return reactFeatureFlagsJavaDescriptor->getStaticFieldValue(field);
 }
 
 FabricMountingManager::FabricMountingManager(
