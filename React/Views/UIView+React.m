@@ -320,6 +320,11 @@
   return objc_getAssociatedObject(self, _cmd);
 }
 
+- (NSString *)screenreaderErrorAndroid
+{
+  return objc_getAssociatedObject(self, _cmd);
+}
+
 - (void)setAccessibilityLanguage:(NSString *)accessibilityLanguage
 {
   objc_setAssociatedObject(

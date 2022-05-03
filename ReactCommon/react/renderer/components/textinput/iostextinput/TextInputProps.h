@@ -62,6 +62,8 @@ class TextInputProps final : public ViewProps, public BaseTextProps {
 
   std::string const inputAccessoryViewID{};
 
+  std::string screenreaderErrorAndroid{""};
+
   bool onKeyPressSync{false};
   bool onChangeSync{false};
 

@@ -134,6 +134,10 @@ using namespace facebook::react;
     _backedTextInputView.editable = newTextInputProps.traits.editable;
   }
 
+  if (newTextInputProps.screenreaderErrorAndroid != oldTextInputProps.screenreaderErrorAndroid) {
+    self.accessibilityElement.accessibilityValue = RCTNSStringFromString(newTextInputProps.screenreaderErrorAndroid);
+  }
+
   if (newTextInputProps.traits.enablesReturnKeyAutomatically !=
       oldTextInputProps.traits.enablesReturnKeyAutomatically) {
     _backedTextInputView.enablesReturnKeyAutomatically = newTextInputProps.traits.enablesReturnKeyAutomatically;

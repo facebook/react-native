@@ -88,6 +88,12 @@ TextInputProps::TextInputProps(
           "selection",
           sourceProps.selection,
           std::optional<Selection>())),
+      screenreaderErrorAndroid(convertRawProp(
+            context,
+            rawProps,
+            "screenreaderErrorAndroid",
+            sourceProps.screenreaderErrorAndroid,
+            "")),
       inputAccessoryViewID(convertRawProp(
           context,
           rawProps,
