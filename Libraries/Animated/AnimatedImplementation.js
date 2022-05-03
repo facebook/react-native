@@ -556,7 +556,7 @@ type AnimatedNumeric =
   | AnimatedAddition
   | AnimatedDiffClamp
   | AnimatedDivision
-  | AnimatedInterpolation
+  | AnimatedInterpolation<number>
   | AnimatedModulo
   | AnimatedMultiplication
   | AnimatedSubtraction
