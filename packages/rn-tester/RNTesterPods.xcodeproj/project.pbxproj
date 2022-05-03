@@ -913,7 +913,6 @@
 					"-ObjC",
 					"-lc++",
 				);
-				REACT_NATIVE_PATH = "${PODS_ROOT}/../../..";
 				SDKROOT = iphoneos;
 				WARNING_CFLAGS = (
 					"-Wextra",
@@ -990,7 +989,6 @@
 					"-ObjC",
 					"-lc++",
 				);
-				REACT_NATIVE_PATH = "${PODS_ROOT}/../../..";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 				WARNING_CFLAGS = (
