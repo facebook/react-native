@@ -452,8 +452,12 @@ jobs:
       - checkout
       - setup_artifacts
       - setup_ruby
+      - run:
+          name: Run Ruby Tests
+          command: |
+            cd scripts/cocoapods
+            sh run_tests.sh
       - run_yarn
-
       - run: |
           cd packages/rn-tester
           bundle check || bundle install
