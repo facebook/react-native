@@ -12,7 +12,7 @@ THIS_DIR=$(cd -P "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOUR
 RNTESTER_DIR="$THIS_DIR/../packages/rn-tester"
 
 # Note: Keep in sync with FB internal.
-REQUIRED_COCOAPODS_VERSION="1.11.2" # [(macOS) FB was 1.10.1, agents are currently 1.11.2 ]
+REQUIRED_COCOAPODS_VERSION="1.11.2"
 
 validate_env () {
   # Check that CocoaPods is working.

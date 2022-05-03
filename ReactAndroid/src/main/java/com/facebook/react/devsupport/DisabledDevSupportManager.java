@@ -7,11 +7,13 @@
 
 package com.facebook.react.devsupport;
 
+import android.app.Activity;
 import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.common.SurfaceDelegate;
 import com.facebook.react.devsupport.interfaces.BundleLoadCallback;
 import com.facebook.react.devsupport.interfaces.DevOptionHandler;
 import com.facebook.react.devsupport.interfaces.DevSplitBundleCallback;
@@ -174,5 +176,15 @@ public class DisabledDevSupportManager implements DevSupportManager {
   @Override
   public void handleException(Exception e) {
     mDefaultNativeModuleCallExceptionHandler.handleException(e);
+  }
+
+  @Override
+  public @Nullable Activity getCurrentActivity() {
+    return null;
+  }
+
+  @Override
+  public @Nullable SurfaceDelegate createSurfaceDelegate(String moduleName) {
+    return null;
   }
 }

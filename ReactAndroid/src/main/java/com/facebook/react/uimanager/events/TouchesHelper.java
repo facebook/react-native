@@ -20,8 +20,6 @@ public class TouchesHelper {
   public static final String TARGET_KEY = "target";
   public static final String CHANGED_TOUCHES_KEY = "changedTouches";
   public static final String TOUCHES_KEY = "touches";
-  public static final String TOP_TOUCH_END_KEY = "topTouchEnd";
-  public static final String TOP_TOUCH_CANCEL_KEY = "topTouchCancel";
   private static final String PAGE_X_KEY = "pageX";
   private static final String PAGE_Y_KEY = "pageY";
   private static final String TIMESTAMP_KEY = "timestamp";

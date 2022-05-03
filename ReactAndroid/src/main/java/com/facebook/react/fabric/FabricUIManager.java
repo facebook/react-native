@@ -54,6 +54,7 @@ import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.fabric.events.EventBeatManager;
+import com.facebook.react.fabric.events.EventCategoryDef;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.events.FabricEventEmitter;
 import com.facebook.react.fabric.mounting.MountItemDispatcher;
@@ -829,6 +830,23 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     receiveEvent(surfaceId, reactTag, eventName, false, 0, params);
   }
 
+  public void receiveEvent(
+      int surfaceId,
+      int reactTag,
+      String eventName,
+      boolean canCoalesceEvent,
+      int customCoalesceKey,
+      @Nullable WritableMap params) {
+    receiveEvent(
+        surfaceId,
+        reactTag,
+        eventName,
+        canCoalesceEvent,
+        customCoalesceKey,
+        params,
+        EventCategoryDef.UNSPECIFIED);
+  }
+
   /**
    * receiveEvent API that emits an event to C++. If `canCoalesceEvent` is true, that signals that
    * C++ may coalesce the event optionally. Otherwise, coalescing can happen in Java before
@@ -842,6 +860,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
    * @param canCoalesceEvent
    * @param customCoalesceKey
    * @param params
+   * @param eventCategory
    */
   public void receiveEvent(
       int surfaceId,
@@ -849,7 +868,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       String eventName,
       boolean canCoalesceEvent,
       int customCoalesceKey,
-      @Nullable WritableMap params) {
+      @Nullable WritableMap params,
+      @EventCategoryDef int eventCategory) {
     if (ReactBuildConfig.DEBUG && surfaceId == View.NO_ID) {
       FLog.d(TAG, "Emitted event without surfaceId: [%d] %s", reactTag, eventName);
     }
@@ -870,7 +890,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     if (canCoalesceEvent) {
       eventEmitter.invokeUnique(eventName, params, customCoalesceKey);
     } else {
-      eventEmitter.invoke(eventName, params);
+      eventEmitter.invoke(eventName, params, eventCategory);
     }
   }
 

@@ -9,6 +9,7 @@ package com.facebook.react.devsupport;
 
 import android.content.Context;
 import androidx.annotation.Nullable;
+import com.facebook.react.common.SurfaceDelegateFactory;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.packagerconnection.RequestHandler;
@@ -23,5 +24,6 @@ public interface DevSupportManagerFactory {
       @Nullable RedBoxHandler redBoxHandler,
       @Nullable DevBundleDownloadListener devBundleDownloadListener,
       int minNumShakes,
-      @Nullable Map<String, RequestHandler> customPackagerCommandHandlers);
+      @Nullable Map<String, RequestHandler> customPackagerCommandHandlers,
+      @Nullable SurfaceDelegateFactory surfaceDelegateFactory);
 }

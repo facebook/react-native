@@ -77,7 +77,8 @@ class EventEmitter {
   void dispatchEvent(
       const std::string &type,
       const folly::dynamic &payload,
-      EventPriority priority = EventPriority::AsynchronousBatched) const;
+      EventPriority priority = EventPriority::AsynchronousBatched,
+      RawEvent::Category category = RawEvent::Category::Unspecified) const;
 
   void dispatchUniqueEvent(
       const std::string &type,

@@ -371,7 +371,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
         for (int i = 0; i < spans.length; i++) {
           int spanStart = spannedText.getSpanStart(spans[i]);
           int spanEnd = spannedText.getSpanEnd(spans[i]);
-          if (spanEnd > index && (spanEnd - spanStart) <= targetSpanTextLength) {
+          if (spanEnd >= index && (spanEnd - spanStart) <= targetSpanTextLength) {
             target = spans[i].getReactTag();
             targetSpanTextLength = (spanEnd - spanStart);
           }

@@ -16,6 +16,13 @@ def use_react_native! (options={})
   # Include Hermes dependencies
   hermes_enabled = options[:hermes_enabled] ||= false
 
+  if `/usr/sbin/sysctl -n hw.optional.arm64 2>&1`.to_i == 1 && !RUBY_PLATFORM.start_with?('arm64')
+    Pod::UI.warn 'Do not use "pod install" from inside Rosetta2 (x86_64 emulation on arm64).'
+    Pod::UI.warn ' - Emulated x86_64 is slower than native arm64'
+    Pod::UI.warn ' - May result in mixed architectures in rubygems (eg: ffi_c.bundle files may be x86_64 with an arm64 interpreter)'
+    Pod::UI.warn 'Run "env /usr/bin/arch -arm64 /bin/bash --login" then try again.'
+  end
+
   # The Pods which should be included in all projects
   pod 'FBLazyVector', :path => "#{prefix}/Libraries/FBLazyVector"
   pod 'FBReactNativeSpec', :path => "#{prefix}/React/FBReactNativeSpec"
@@ -130,20 +137,49 @@ def exclude_architectures(installer)
     .uniq{ |p| p.path }
     .push(installer.pods_project)
 
-  arm_value = `/usr/sbin/sysctl -n hw.optional.arm64 2>&1`.to_i
-
   # Hermes does not support `i386` architecture
   excluded_archs_default = has_pod(installer, 'hermes-engine') ? "i386" : ""
 
   projects.each do |project|
     project.build_configurations.each do |config|
-      if arm_value == 1 then
-        config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = excluded_archs_default
-      else
-        config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64 " + excluded_archs_default
-      end
+      config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = excluded_archs_default
     end
 
+    project.save()
+  end
+end
+
+def fix_library_search_paths(installer)
+  def fix_config(config)
+    lib_search_paths = config.build_settings["LIBRARY_SEARCH_PATHS"]
+    if lib_search_paths
+      if lib_search_paths.include?("$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)") || lib_search_paths.include?("\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"")
+        # $(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME) causes problem with Xcode 12.5 + arm64 (Apple M1)
+        # since the libraries there are only built for x86_64 and i386.
+        lib_search_paths.delete("$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)")
+        lib_search_paths.delete("\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"")
+        if !(lib_search_paths.include?("$(SDKROOT)/usr/lib/swift") || lib_search_paths.include?("\"$(SDKROOT)/usr/lib/swift\""))
+          # however, $(SDKROOT)/usr/lib/swift is required, at least if user is not running CocoaPods 1.11
+          lib_search_paths.insert(0, "$(SDKROOT)/usr/lib/swift")
+        end
+      end
+    end
+  end
+
+  projects = installer.aggregate_targets
+    .map{ |t| t.user_project }
+    .uniq{ |p| p.path }
+    .push(installer.pods_project)
+
+  projects.each do |project|
+    project.build_configurations.each do |config|
+      fix_config(config)
+    end
+    project.native_targets.each do |target|
+      target.build_configurations.each do |config|
+        fix_config(config)
+      end
+    end
     project.save()
   end
 end
@@ -154,6 +190,7 @@ def react_native_post_install(installer)
   end
 
   exclude_architectures(installer)
+  fix_library_search_paths(installer)
 end
 
 def use_react_native_codegen!(spec, options={})
@@ -340,6 +377,9 @@ end
 # See https://github.com/facebook/react-native/issues/31480#issuecomment-902912841 for more context.
 # Actual fix was authored by https://github.com/mikehardy.
 # New app template will call this for now until the underlying issue is resolved.
+#
+# TODO(macOS GH#774) - This was temporarily removed with 51bf5579489 but reintroduced with 03a09078681 on 2021-10-25.
+# Plus, we still need the fix in folly before v2022.02.07.00. (See https://github.com/facebook/folly/commit/4a8837f)
 def __apply_Xcode_12_5_M1_post_install_workaround(installer)
   # Apple Silicon builds require a library path tweak for Swift library discovery to resolve Swift-related "symbol not found".
   # Note: this was fixed via https://github.com/facebook/react-native/commit/eb938863063f5535735af2be4e706f70647e5b90

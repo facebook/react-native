@@ -7,11 +7,13 @@
 
 package com.facebook.react.devsupport.interfaces;
 
+import android.app.Activity;
 import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.common.SurfaceDelegate;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 import java.io.File;
 
@@ -107,4 +109,16 @@ public interface DevSupportManager extends NativeModuleCallExceptionHandler {
   }
 
   void setPackagerLocationCustomizer(PackagerLocationCustomizer packagerLocationCustomizer);
+
+  @Nullable
+  Activity getCurrentActivity();
+
+  /**
+   * Create the surface delegate that the provided module should use to interact with
+   *
+   * @param moduleName the module name that helps decide which surface it should interact with
+   * @return a {@link SurfaceDelegate} instance
+   */
+  @Nullable
+  SurfaceDelegate createSurfaceDelegate(String moduleName);
 }

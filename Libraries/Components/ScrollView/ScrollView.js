@@ -347,17 +347,6 @@ type IOSProps = $ReadOnly<{|
    */
   showsHorizontalScrollIndicator?: ?boolean,
   /**
-   * When `snapToInterval` is set, `snapToAlignment` will define the relationship
-   * of the snapping to the scroll view.
-   *
-   *   - `'start'` (the default) will align the snap at the left (horizontal) or top (vertical)
-   *   - `'center'` will align the snap in the center
-   *   - `'end'` will align the snap at the right (horizontal) or bottom (vertical)
-   *
-   * @platform ios
-   */
-  snapToAlignment?: ?('start' | 'center' | 'end'),
-  /**
    * The current scale of the scroll view content. The default value is 1.0.
    * @platform ios
    */
@@ -611,6 +600,15 @@ export type Props = $ReadOnly<{|
    * for example when you want your list to have an animated hidable header.
    */
   StickyHeaderComponent?: StickyHeaderComponentType,
+  /**
+   * When `snapToInterval` is set, `snapToAlignment` will define the relationship
+   * of the snapping to the scroll view.
+   *
+   *   - `'start'` (the default) will align the snap at the left (horizontal) or top (vertical)
+   *   - `'center'` will align the snap in the center
+   *   - `'end'` will align the snap at the right (horizontal) or bottom (vertical)
+   */
+  snapToAlignment?: ?('start' | 'center' | 'end'),
   /**
    * When set, causes the scroll view to stop at multiples of the value of
    * `snapToInterval`. This can be used for paginating through children

@@ -7,7 +7,6 @@ exports[`TouchableOpacity renders correctly 1`] = `
   collapsable={false}
   enableFocusRing={true}
   focusable={true}
-  nativeID="animatedComponent"
   onClick={[Function]}
   onKeyDown={[Function]}
   onKeyUp={[Function]}
@@ -41,7 +40,6 @@ exports[`TouchableOpacity renders in disabled state when a disabled prop is pass
   collapsable={false}
   enableFocusRing={false}
   focusable={false}
-  nativeID="animatedComponent"
   onClick={[Function]}
   onKeyDown={[Function]}
   onKeyUp={[Function]}
@@ -75,7 +73,6 @@ exports[`TouchableOpacity renders in disabled state when a key disabled in acces
   collapsable={false}
   enableFocusRing={true}
   focusable={true}
-  nativeID="animatedComponent"
   onClick={[Function]}
   onKeyDown={[Function]}
   onKeyUp={[Function]}

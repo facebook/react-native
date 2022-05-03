@@ -102,5 +102,7 @@ end
 
 post_install do |installer|
   react_native_post_install(installer)
+  # TODO(macOS GH#774) - This was temporarily removed with 51bf5579489 but reintroduced with 03a09078681 on 2021-10-25.
+  # Plus, we still need the fix in folly before v2022.02.07.00. (See https://github.com/facebook/folly/commit/4a8837f)
   __apply_Xcode_12_5_M1_post_install_workaround(installer)
 end

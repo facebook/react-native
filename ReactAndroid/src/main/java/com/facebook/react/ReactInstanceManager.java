@@ -76,6 +76,7 @@ import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.common.SurfaceDelegateFactory;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
@@ -232,7 +233,8 @@ public class ReactInstanceManager {
       int minTimeLeftInFrameForNonBatchedOperationMs,
       @Nullable JSIModulePackage jsiModulePackage,
       @Nullable Map<String, RequestHandler> customPackagerCommandHandlers,
-      @Nullable ReactPackageTurboModuleManagerDelegate.Builder tmmDelegateBuilder) {
+      @Nullable ReactPackageTurboModuleManagerDelegate.Builder tmmDelegateBuilder,
+      @Nullable SurfaceDelegateFactory surfaceDelegateFactory) {
     FLog.d(TAG, "ReactInstanceManager.ctor()");
     initializeSoLoaderIfNecessary(applicationContext);
 
@@ -259,7 +261,8 @@ public class ReactInstanceManager {
             redBoxHandler,
             devBundleDownloadListener,
             minNumShakes,
-            customPackagerCommandHandlers);
+            customPackagerCommandHandlers,
+            surfaceDelegateFactory);
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     mBridgeIdleDebugListener = bridgeIdleDebugListener;
     mLifecycleState = initialLifecycleState;
