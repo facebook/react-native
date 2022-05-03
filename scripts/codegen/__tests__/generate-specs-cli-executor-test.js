@@ -12,16 +12,20 @@
 
 const sut = require('../generate-specs-cli-executor');
 const fixtures = require('../__test_fixtures__/fixtures');
+const path = require('path');
 
 describe('generateSpec', () => {
   it('invokes RNCodegen with the right params', () => {
     const platform = 'ios';
     const libraryType = 'all';
     const schemaPath = './';
-    const componentsOutputDir =
-      'app/ios/build/generated/ios/react/renderer/components/library';
-    const modulesOutputDir = 'app/ios/build/generated/ios/./library';
-    const outputDirectory = 'app/ios/build/generated/ios';
+    const componentsOutputDir = path.normalize(
+      'app/ios/build/generated/ios/react/renderer/components/library',
+    );
+    const modulesOutputDir = path.normalize(
+      'app/ios/build/generated/ios/library',
+    );
+    const outputDirectory = path.normalize('app/ios/build/generated/ios');
     const libraryName = 'library';
     const packageName = 'com.library';
     const generators = ['componentsIOS', 'modulesIOS'];
@@ -38,15 +42,15 @@ describe('generateSpec', () => {
     jest.mock('mkdirp', () => ({
       sync: folder => {
         if (mkdirpSyncInvoked === 0) {
-          expect(folder).toBe(componentsOutputDir);
+          expect(folder).toBe(outputDirectory);
         }
 
         if (mkdirpSyncInvoked === 1) {
-          expect(folder).toBe(modulesOutputDir);
+          expect(folder).toBe(componentsOutputDir);
         }
 
         if (mkdirpSyncInvoked === 2) {
-          expect(folder).toBe(outputDirectory);
+          expect(folder).toBe(modulesOutputDir);
         }
 
         mkdirpSyncInvoked += 1;
@@ -65,8 +69,6 @@ describe('generateSpec', () => {
           expect(libraryConfig.schema).toStrictEqual(fixtures.schema);
           expect(libraryConfig.outputDirectory).toBe(outputDirectory);
           expect(libraryConfig.packageName).toBe(packageName);
-          expect(libraryConfig.componentsOutputDir).toBe(componentsOutputDir);
-          expect(libraryConfig.modulesOutputDir).toBe(modulesOutputDir);
 
           expect(generatorConfigs.generators).toStrictEqual(generators);
           expect(generatorConfigs.test).toBeUndefined();
@@ -81,8 +83,6 @@ describe('generateSpec', () => {
       libraryName,
       packageName,
       libraryType,
-      componentsOutputDir,
-      modulesOutputDir,
     );
 
     expect(mkdirpSyncInvoked).toBe(3);

@@ -30,10 +30,7 @@ const GENERATORS = {
   },
 };
 
-function deprecated_createOutputDirectoryIfNeeded(
-  outputDirectory,
-  libraryName,
-) {
+function createOutputDirectoryIfNeeded(outputDirectory, libraryName) {
   if (!outputDirectory) {
     outputDirectory = path.resolve(__dirname, '..', 'Libraries', libraryName);
   }
@@ -81,16 +78,21 @@ function generateSpec(
   libraryName,
   packageName,
   libraryType,
-  componentsOutputDir,
-  modulesOutputDir,
 ) {
   validateLibraryType(libraryType);
 
   let schema = readAndParseSchema(schemaPath);
 
-  createFolderIfDefined(componentsOutputDir);
-  createFolderIfDefined(modulesOutputDir);
-  deprecated_createOutputDirectoryIfNeeded(outputDirectory, libraryName);
+  createOutputDirectoryIfNeeded(outputDirectory, libraryName);
+  function composePath(intermediate) {
+    return path.join(outputDirectory, intermediate, libraryName);
+  }
+
+  // These are hardcoded and should not be changed.
+  // The codegen creates some C++ code with #include directive
+  // which uses these paths. Those directive are not customizable yet.
+  createFolderIfDefined(composePath('react/renderer/components/'));
+  createFolderIfDefined(composePath('./'));
 
   RNCodegen.generate(
     {
@@ -98,8 +100,6 @@ function generateSpec(
       schema,
       outputDirectory,
       packageName,
-      componentsOutputDir,
-      modulesOutputDir,
     },
     {
       generators: GENERATORS[libraryType][platform],

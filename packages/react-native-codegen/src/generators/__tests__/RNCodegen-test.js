@@ -15,13 +15,17 @@ const rnCodegen = require('../RNCodegen.js');
 const fixture = require('../__test_fixtures__/fixtures.js');
 const path = require('path');
 
-const invalidDirectory = 'invalid/';
+const outputDirectory = 'tmp/out/';
 const packageName = 'na';
-const componentsOutputDir = 'react/renderer/components/library';
-const modulesOutputDir = 'library';
 
 describe('RNCodegen.generate', () => {
-  it('when type `all`', () => {
+  beforeEach(() => {
+    jest.resetModules();
+  });
+  it('when type `all`, with default paths', () => {
+    const componentsOutputDir = 'react/renderer/components/library';
+    const modulesOutputDir = 'library';
+
     const expectedPaths = {
       'library.h': modulesOutputDir,
       'library-generated.mm': modulesOutputDir,
@@ -43,7 +47,10 @@ describe('RNCodegen.generate', () => {
         let receivedDir = path.dirname(location);
         let receivedBasename = path.basename(location);
 
-        let expectedPath = expectedPaths[receivedBasename];
+        let expectedPath = path.join(
+          outputDirectory,
+          expectedPaths[receivedBasename],
+        );
         expect(receivedDir).toEqual(expectedPath);
       },
     }));
@@ -52,11 +59,9 @@ describe('RNCodegen.generate', () => {
       {
         libraryName: 'library',
         schema: fixture.all,
-        outputDirectory: invalidDirectory,
+        outputDirectory: outputDirectory,
         packageName: packageName,
         assumeNonnull: true,
-        componentsOutputDir: componentsOutputDir,
-        modulesOutputDir: modulesOutputDir,
       },
       {
         generators: ['componentsIOS', 'modulesIOS'],

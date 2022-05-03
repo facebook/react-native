@@ -24,38 +24,19 @@ describe('generateCode', () => {
     const rnRoot = path.join(__dirname, '../..');
     const libraryType = 'all';
 
-    const tmpComponentOutDirs = path.join(tmpDir, 'out', 'components');
-    const tmpNativeModulesOutDir = path.join(tmpDir, 'out', 'nativeModules');
-    const iOSComponentOutDirs = path.join(
-      iosOutputDir,
-      'react/renderer/components',
-      library.config.name,
-    );
-    const iOSNativeModulesOutDir = path.join(
-      iosOutputDir,
-      './',
-      library.config.name,
-    );
+    const tmpOutDir = path.join(tmpDir, 'out');
 
     // mock used functions
     let mkdirSyncInvocationCount = 0;
     jest.mock('fs', () => ({
-      readdirSync: dirpath => {
-        return ['test/dir']; //we only require to return something, so that the folder is not empty.
-      },
       mkdirSync: (location, config) => {
         if (mkdirSyncInvocationCount === 0) {
-          expect(location).toEqual(tmpComponentOutDirs);
+          expect(location).toEqual(tmpOutDir);
         }
         if (mkdirSyncInvocationCount === 1) {
-          expect(location).toEqual(tmpNativeModulesOutDir);
+          expect(location).toEqual(iosOutputDir);
         }
-        if (mkdirSyncInvocationCount === 2) {
-          expect(location).toEqual(iOSComponentOutDirs);
-        }
-        if (mkdirSyncInvocationCount === 3) {
-          expect(location).toEqual(iOSNativeModulesOutDir);
-        }
+
         mkdirSyncInvocationCount += 1;
       },
     }));
@@ -70,23 +51,14 @@ describe('generateCode', () => {
           )} \
         --platform ios \
         --schemaPath ${pathToSchema} \
-        --outputDir ${tmpNativeModulesOutDir} \
-        --componentsOutputDir ${tmpComponentOutDirs} \
-        --modulesOutputDirs ${tmpNativeModulesOutDir} \
+        --outputDir ${tmpOutDir} \
         --libraryName ${library.config.name} \
         --libraryType ${libraryType}`;
           expect(command).toEqual(expectedCommand);
         }
 
         if (execSyncInvocationCount === 1) {
-          expect(command).toEqual(
-            `cp -R ${tmpComponentOutDirs}/* ${iOSComponentOutDirs}`,
-          );
-        }
-        if (execSyncInvocationCount === 2) {
-          expect(command).toEqual(
-            `cp -R ${tmpNativeModulesOutDir}/* ${iOSNativeModulesOutDir}`,
-          );
+          expect(command).toEqual(`cp -R ${tmpOutDir}/* ${iosOutputDir}`);
         }
 
         execSyncInvocationCount += 1;
@@ -94,6 +66,6 @@ describe('generateCode', () => {
     }));
 
     underTest._generateCode(iosOutputDir, library, tmpDir, node, pathToSchema);
-    expect(mkdirSyncInvocationCount).toBe(4);
+    expect(mkdirSyncInvocationCount).toBe(2);
   });
 });
