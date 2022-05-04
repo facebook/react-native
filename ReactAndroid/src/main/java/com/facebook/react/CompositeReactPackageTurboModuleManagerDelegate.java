@@ -49,7 +49,7 @@ public class CompositeReactPackageTurboModuleManagerDelegate
         ReactApplicationContext context, List<ReactPackage> packages) {
       List<TurboModuleManagerDelegate> delegates = new ArrayList<>();
       for (ReactPackageTurboModuleManagerDelegate.Builder delegatesBuilder : mDelegatesBuilder) {
-        delegates.add(delegatesBuilder.build(context, Collections.emptyList()));
+        delegates.add(delegatesBuilder.build(context, Collections.<ReactPackage>emptyList()));
       }
       return new CompositeReactPackageTurboModuleManagerDelegate(context, packages, delegates);
     }
