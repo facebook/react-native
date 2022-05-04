@@ -10,4 +10,4 @@
 
 module.exports = require('./local-cli/cli.js');
 console.log("eeeeeeeeeeeeeees6")
-console.log("new commit")
+console.log("new commitddddddd")
