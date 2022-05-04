@@ -356,13 +356,16 @@ public class MountItemDispatcher {
   @Nullable
   private static <E extends MountItem> List<E> drainConcurrentItemQueue(
       ConcurrentLinkedQueue<E> queue) {
+    if (queue.isEmpty()) {
+      return null;
+    }
     List<E> result = new ArrayList<>();
-    while (!queue.isEmpty()) {
+    do {
       E item = queue.poll();
       if (item != null) {
         result.add(item);
       }
-    }
+    } while (!queue.isEmpty());
     if (result.size() == 0) {
       return null;
     }
