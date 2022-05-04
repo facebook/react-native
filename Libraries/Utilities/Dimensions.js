@@ -108,19 +108,6 @@ class Dimensions {
     );
     return eventEmitter.addListener(type, handler);
   }
-
-  /**
-   * @deprecated Use `remove` on the EventSubscription from `addEventListener`.
-   */
-  static removeEventListener(type: 'change', handler: Function) {
-    invariant(
-      type === 'change',
-      'Trying to remove listener for unknown event: "%s"',
-      type,
-    );
-    // NOTE: This will report a deprecation notice via `console.error`.
-    eventEmitter.removeListener(type, handler);
-  }
 }
 
 let initialDims: ?$ReadOnly<DimensionsPayload> =
