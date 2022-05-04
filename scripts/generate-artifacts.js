@@ -81,6 +81,10 @@ function executeNodeScript(script) {
   execSync(`${NODE} ${script}`);
 }
 
+function isDirEmpty(dirPath) {
+  return fs.readdirSync(dirPath).length === 0;
+}
+
 function main(appRootDir, outputPath) {
   if (appRootDir == null) {
     console.error('Missing path to React Native application');
@@ -233,14 +237,19 @@ function main(appRootDir, outputPath) {
         library.libraryPath,
         library.config.jsSrcsDir,
       );
-      const pathToOutputDirIOS = path.join(
-        iosOutputDir,
-        library.config.type === 'components'
-          ? 'react/renderer/components'
-          : './',
-        library.config.name,
-      );
-      const pathToTempOutputDir = path.join(tmpDir, 'out');
+      function composePath(intermediate) {
+        return path.join(iosOutputDir, intermediate, library.config.name);
+      }
+
+      const outputDirsIOS = {
+        components: composePath('react/renderer/components'),
+        nativeModules: composePath('./'),
+      };
+
+      const tempOutputDirs = {
+        components: path.join(tmpDir, 'out', 'components'),
+        nativeModules: path.join(tmpDir, 'out', 'nativeModules'),
+      };
 
       console.log(`\n\n[Codegen] >>>>> Processing ${library.config.name}`);
       // Generate one schema for the entire library...
@@ -259,21 +268,38 @@ function main(appRootDir, outputPath) {
       const libraryTypeArg = library.config.type
         ? `--libraryType ${library.config.type}`
         : '';
-      fs.mkdirSync(pathToTempOutputDir, {recursive: true});
+
+      Object.entries(tempOutputDirs).forEach(([type, dirPath]) => {
+        fs.mkdirSync(dirPath, {recursive: true});
+      });
+
+      const deprecated_outputDir =
+        library.config.type === 'components'
+          ? tempOutputDirs.components
+          : tempOutputDirs.nativeModules;
+
       executeNodeScript(
-        `${path.join(
-          RN_ROOT,
-          'scripts',
-          'generate-specs-cli.js',
-        )} --platform ios --schemaPath ${pathToSchema} --outputDir ${pathToTempOutputDir} --libraryName ${
-          library.config.name
-        } ${libraryTypeArg}`,
+        `${path.join(RN_ROOT, 'scripts', 'generate-specs-cli.js')} \
+        --platform ios \
+        --schemaPath ${pathToSchema} \
+        --outputDir ${deprecated_outputDir} \
+        --componentsOutputDir ${tempOutputDirs.components} \
+        --modulesOutputDirs ${tempOutputDirs.nativeModules} \
+        --libraryName ${library.config.name} \
+        ${libraryTypeArg}`,
       );
 
       // Finally, copy artifacts to the final output directory.
-      fs.mkdirSync(pathToOutputDirIOS, {recursive: true});
-      execSync(`cp -R ${pathToTempOutputDir}/* ${pathToOutputDirIOS}`);
-      console.log(`[Codegen] Generated artifacts: ${pathToOutputDirIOS}`);
+      Object.entries(outputDirsIOS).forEach(([type, dirPath]) => {
+        const outDir = tempOutputDirs[type];
+        if (isDirEmpty(outDir)) {
+          return; // cp fails if we try to copy something empty.
+        }
+
+        fs.mkdirSync(dirPath, {recursive: true});
+        execSync(`cp -R ${outDir}/* ${dirPath}`);
+        console.log(`[Codegen] Generated artifacts: ${dirPath}`);
+      });
 
       // Filter the react native core library out.
       // In the future, core library and third party library should

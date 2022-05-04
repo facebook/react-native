@@ -36,7 +36,7 @@ const argv = yargs
   .option('o', {
     alias: 'outputDir',
     describe:
-      'Path to directory where native code source files should be saved.',
+      'DEPRECATED - Path to directory where native code source files should be saved.',
   })
   .option('n', {
     alias: 'libraryName',
@@ -52,6 +52,14 @@ const argv = yargs
     alias: 'libraryType',
     describe: 'all, components, or modules.',
     default: 'all',
+  })
+  .option('c', {
+    alias: 'componentsOutputDir',
+    describe: 'Output directory for the codeGen for Fabric Components',
+  })
+  .option('m', {
+    alias: 'modulesOutputDirs',
+    describe: 'Output directory for the codeGen for TurboModules',
   })
   .usage('Usage: $0 <args>')
   .demandOption(
@@ -74,6 +82,50 @@ const GENERATORS = {
   },
 };
 
+function deprecated_createOutputDirectoryIfNeeded(
+  outputDirectory,
+  libraryName,
+) {
+  if (!outputDirectory) {
+    outputDirectory = path.resolve(__dirname, '..', 'Libraries', libraryName);
+  }
+  mkdirp.sync(outputDirectory);
+}
+
+function createFolderIfDefined(folder) {
+  if (folder) {
+    mkdirp.sync(folder);
+  }
+}
+
+/**
+ * This function read a JSON schema from a path and parses it.
+ * It throws if the schema don't exists or it can't be parsed.
+ *
+ * @parameter schemaPath: the path to the schema
+ * @return a valid schema
+ * @throw an Error if the schema doesn't exists in a given path or if it can't be parsed.
+ */
+function readAndParseSchema(schemaPath) {
+  const schemaText = fs.readFileSync(schemaPath, 'utf-8');
+
+  if (schemaText == null) {
+    throw new Error(`Can't find schema at ${schemaPath}`);
+  }
+
+  try {
+    return JSON.parse(schemaText);
+  } catch (err) {
+    throw new Error(`Can't parse schema to JSON. ${schemaPath}`);
+  }
+}
+
+function validateLibraryType(libraryType) {
+  if (GENERATORS[libraryType] == null) {
+    throw new Error(`Invalid library type. ${libraryType}`);
+  }
+}
+
 function generateSpec(
   platform,
   schemaPath,
@@ -81,28 +133,16 @@ function generateSpec(
   libraryName,
   packageName,
   libraryType,
+  componentsOutputDir,
+  modulesOutputDirs,
 ) {
-  const schemaText = fs.readFileSync(schemaPath, 'utf-8');
+  validateLibraryType(libraryType);
 
-  if (schemaText == null) {
-    throw new Error(`Can't find schema at ${schemaPath}`);
-  }
+  let schema = readAndParseSchema(schemaPath);
 
-  if (!outputDirectory) {
-    outputDirectory = path.resolve(__dirname, '..', 'Libraries', libraryName);
-  }
-  mkdirp.sync(outputDirectory);
-
-  let schema;
-  try {
-    schema = JSON.parse(schemaText);
-  } catch (err) {
-    throw new Error(`Can't parse schema to JSON. ${schemaPath}`);
-  }
-
-  if (GENERATORS[libraryType] == null) {
-    throw new Error(`Invalid library type. ${libraryType}`);
-  }
+  createFolderIfDefined(componentsOutputDir);
+  createFolderIfDefined(modulesOutputDirs);
+  deprecated_createOutputDirectoryIfNeeded(outputDirectory, libraryName);
 
   RNCodegen.generate(
     {
@@ -110,6 +150,8 @@ function generateSpec(
       schema,
       outputDirectory,
       packageName,
+      componentsOutputDir,
+      modulesOutputDirs,
     },
     {
       generators: GENERATORS[libraryType][platform],
@@ -140,6 +182,8 @@ function main() {
     argv.libraryName,
     argv.javaPackageName,
     argv.libraryType,
+    argv.componentsOutputDir,
+    argv.modulesOutputDirs,
   );
 }
 
