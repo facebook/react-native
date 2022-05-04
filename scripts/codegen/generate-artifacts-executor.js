@@ -38,10 +38,6 @@ function executeNodeScript(node, script) {
   execSync(`${node} ${script}`);
 }
 
-function isDirEmpty(dirPath) {
-  return fs.readdirSync(dirPath).length === 0;
-}
-
 function isAppRootValid(appRootDir) {
   if (appRootDir == null) {
     console.error('Missing path to React Native application');
@@ -212,57 +208,28 @@ function generateSchema(tmpDir, library, node, codegenCliPath) {
 }
 
 function generateCode(iosOutputDir, library, tmpDir, node, pathToSchema) {
-  function composePath(intermediate) {
-    return path.join(iosOutputDir, intermediate, library.config.name);
-  }
-
-  const outputDirsIOS = {
-    components: composePath('react/renderer/components'),
-    nativeModules: composePath('./'),
-  };
-
-  const tempOutputDirs = {
-    components: path.join(tmpDir, 'out', 'components'),
-    nativeModules: path.join(tmpDir, 'out', 'nativeModules'),
-  };
-
   // ...then generate native code artifacts.
   const libraryTypeArg = library.config.type
     ? `--libraryType ${library.config.type}`
     : '';
 
-  Object.entries(tempOutputDirs).forEach(([type, dirPath]) => {
-    fs.mkdirSync(dirPath, {recursive: true});
-  });
-
-  const deprecated_outputDir =
-    library.config.type === 'components'
-      ? tempOutputDirs.components
-      : tempOutputDirs.nativeModules;
+  const tmpOutputDir = path.join(tmpDir, 'out');
+  fs.mkdirSync(tmpOutputDir, {recursive: true});
 
   executeNodeScript(
     node,
     `${path.join(RN_ROOT, 'scripts', 'generate-specs-cli.js')} \
         --platform ios \
         --schemaPath ${pathToSchema} \
-        --outputDir ${deprecated_outputDir} \
-        --componentsOutputDir ${tempOutputDirs.components} \
-        --modulesOutputDirs ${tempOutputDirs.nativeModules} \
+        --outputDir ${tmpOutputDir} \
         --libraryName ${library.config.name} \
         ${libraryTypeArg}`,
   );
 
   // Finally, copy artifacts to the final output directory.
-  Object.entries(outputDirsIOS).forEach(([type, dirPath]) => {
-    const outDir = tempOutputDirs[type];
-    if (isDirEmpty(outDir)) {
-      return; // cp fails if we try to copy something empty.
-    }
-
-    fs.mkdirSync(dirPath, {recursive: true});
-    execSync(`cp -R ${outDir}/* ${dirPath}`);
-    console.log(`[Codegen] Generated artifacts: ${dirPath}`);
-  });
+  fs.mkdirSync(iosOutputDir, {recursive: true});
+  execSync(`cp -R ${tmpOutputDir}/* ${iosOutputDir}`);
+  console.log(`[Codegen] Generated artifacts: ${iosOutputDir}`);
 }
 
 function generateNativeCodegenFiles(

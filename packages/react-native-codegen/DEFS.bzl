@@ -220,14 +220,14 @@ def rn_codegen_modules(
         # iOS Buck build isn't fully working in OSS, so let's skip it for OSS for now.
         fb_native.genrule(
             name = generate_module_hobjcpp_name,
-            cmd = "cp $(location :{})/{}.h $OUT".format(generate_fixtures_rule_name, name),
+            cmd = "cp $(location :{})/{}/{}.h $OUT".format(generate_fixtures_rule_name, name, name),
             out = "{}.h".format(name),
             labels = ["codegen_rule"],
         )
 
         fb_native.genrule(
             name = generate_module_mm_name,
-            cmd = "cp $(location :{})/{}-generated.mm $OUT".format(generate_fixtures_rule_name, name),
+            cmd = "cp $(location :{})/{}/{}-generated.mm $OUT".format(generate_fixtures_rule_name, name, name),
             out = "{}-generated.mm".format(name),
             labels = ["codegen_rule"],
         )

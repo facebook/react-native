@@ -48,8 +48,6 @@ type LibraryOptions = $ReadOnly<{
   outputDirectory: string,
   packageName?: string, // Some platforms have a notion of package, which should be configurable.
   assumeNonnull: boolean,
-  componentsOutputDir?: string, // optional for backward compatibility
-  modulesOutputDir?: string, // optional for backward compatibility
 }>;
 
 type SchemasOptions = $ReadOnly<{
@@ -195,16 +193,21 @@ module.exports = {
       outputDirectory,
       packageName,
       assumeNonnull,
-      componentsOutputDir,
-      modulesOutputDir,
     }: LibraryOptions,
     {generators, test}: LibraryConfig,
   ): boolean {
     schemaValidator.validate(schema);
 
+    function composePath(intermediate) {
+      return path.join(outputDirectory, intermediate, libraryName);
+    }
+
+    const componentIOSOutput = composePath('react/renderer/components/');
+    const modulesIOSOutput = composePath('./');
+
     const outputFoldersForGenerators = {
-      componentsIOS: componentsOutputDir ?? outputDirectory, // fallback for backward compatibility
-      modulesIOS: modulesOutputDir ?? outputDirectory, // fallback for backward compatibility
+      componentsIOS: componentIOSOutput,
+      modulesIOS: modulesIOSOutput,
       descriptors: outputDirectory,
       events: outputDirectory,
       props: outputDirectory,
