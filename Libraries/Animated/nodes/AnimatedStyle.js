@@ -23,7 +23,7 @@ class AnimatedStyle extends AnimatedWithChildren {
 
   constructor(style: any) {
     super();
-    style = flattenStyle(style) || {};
+    style = flattenStyle(style) || ({}: {[string]: any});
     if (style.transform) {
       style = {
         ...style,

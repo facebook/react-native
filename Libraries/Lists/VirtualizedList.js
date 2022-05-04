@@ -1205,7 +1205,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _hasDoneInitialScroll = false;
   _hasInteracted = false;
   _hasMore = false;
-  _hasWarned = {};
+  _hasWarned: {[string]: boolean} = {};
   _headerLength = 0;
   _hiPriInProgress: boolean = false; // flag to prevent infinite hiPri cell limit update
   _highestMeasuredFrameIndex = 0;
