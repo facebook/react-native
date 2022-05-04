@@ -100,7 +100,6 @@ class ReactPlugin : Plugin<Project> {
           it.deprecatedReactRoot.set(extension.reactRoot)
           it.nodeExecutableAndArgs.set(extension.nodeExecutableAndArgs)
           it.codegenDir.set(extension.codegenDir)
-          it.useJavaGenerator.set(extension.useJavaGenerator)
           it.codegenJavaPackageName.set(extension.codegenJavaPackageName)
           it.libraryName.set(extension.libraryName)
           it.generatedSrcDir.set(generatedSrcDir)

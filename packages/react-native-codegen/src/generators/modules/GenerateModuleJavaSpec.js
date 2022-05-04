@@ -212,13 +212,13 @@ function translateFunctionReturnTypeToJavaType(
       return nullable ? 'Boolean' : 'boolean';
     case 'ObjectTypeAnnotation':
       imports.add('com.facebook.react.bridge.WritableMap');
-      return 'WritableMap';
+      return wrapIntoNullableIfNeeded('WritableMap');
     case 'GenericObjectTypeAnnotation':
       imports.add('com.facebook.react.bridge.WritableMap');
-      return 'WritableMap';
+      return wrapIntoNullableIfNeeded('WritableMap');
     case 'ArrayTypeAnnotation':
       imports.add('com.facebook.react.bridge.WritableArray');
-      return 'WritableArray';
+      return wrapIntoNullableIfNeeded('WritableArray');
     default:
       (realTypeAnnotation.type: empty);
       throw new Error(createErrorMessage(realTypeAnnotation.type));

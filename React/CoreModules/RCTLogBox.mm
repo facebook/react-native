@@ -55,12 +55,12 @@ RCT_EXPORT_METHOD(show)
       }
 
       if (strongSelf->_bridgelessSurfacePresenter) {
-        strongSelf->_view = [[RCTLogBoxView alloc] initWithFrame:RCTKeyWindow().frame
-                                                surfacePresenter:strongSelf->_bridgelessSurfacePresenter];
+        strongSelf->_view = [[RCTLogBoxView alloc] initWithWindow:RCTKeyWindow()
+                                                 surfacePresenter:strongSelf->_bridgelessSurfacePresenter];
       } else if (strongSelf->_bridge && strongSelf->_bridge.valid) {
         if (strongSelf->_bridge.surfacePresenter) {
-          strongSelf->_view = [[RCTLogBoxView alloc] initWithFrame:RCTKeyWindow().frame
-                                                  surfacePresenter:strongSelf->_bridge.surfacePresenter];
+          strongSelf->_view = [[RCTLogBoxView alloc] initWithWindow:RCTKeyWindow()
+                                                   surfacePresenter:strongSelf->_bridge.surfacePresenter];
         } else {
           strongSelf->_view = [[RCTLogBoxView alloc] initWithWindow:RCTKeyWindow() bridge:strongSelf->_bridge];
         }

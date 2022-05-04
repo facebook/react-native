@@ -24,7 +24,7 @@ function flattenStyle<+TStyleProp: DangerouslyImpreciseStyleProp>(
     return style;
   }
 
-  const result = {};
+  const result: {[string]: $FlowFixMe} = {};
   for (let i = 0, styleLength = style.length; i < styleLength; ++i) {
     const computedStyle = flattenStyle(style[i]);
     if (computedStyle) {

@@ -359,7 +359,9 @@ function validateStyles(styles: {[key: string]: ?number, ...}): void {
   }
 }
 
-function validateInterpolation(config: InterpolationConfigType): void {
+function validateInterpolation<OutputT: number | string>(
+  config: InterpolationConfigType<OutputT>,
+): void {
   for (const key in config) {
     if (!isSupportedInterpolationParam(key)) {
       throw new Error(

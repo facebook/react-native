@@ -432,7 +432,7 @@ jobs:
   # -------------------------
   #     JOBS: iOS Unit Tests
   # -------------------------
-  test_ios_unit:
+  test_ios:
     executor: reactnativeios
     parameters:
       use_frameworks:
@@ -452,8 +452,12 @@ jobs:
       - checkout
       - setup_artifacts
       - setup_ruby
+      - run:
+          name: Run Ruby Tests
+          command: |
+            cd scripts/cocoapods
+            sh run_tests.sh
       - run_yarn
-
       - run: |
           cd packages/rn-tester
           bundle check || bundle install
@@ -889,7 +893,7 @@ jobs:
             apt-get install -y wget git
       - run:
           name: Set up Hermes workspace
-          command: mkdir -p "$HERMES_WS_DIR/hermes" "$HERMES_WS_DIR/download" "$HERMES_WS_DIR/output"
+          command: mkdir -p "$HERMES_WS_DIR/hermes" "$HERMES_WS_DIR/download"
       - run:
           name: Download Hermes tarball
           command: |
@@ -909,75 +913,74 @@ jobs:
           paths:
             - download
             - hermes
-            - hermesc
-            - output
             - hermesversion
 
   build_hermesc_linux:
     docker:
-      - image: debian:buster
-    environment:
-      - HERMES_WS_DIR: *hermes_workspace_root
-      - TERM: dumb
-      - DEBIAN_FRONTEND: noninteractive
+      - image: debian:bullseye
+    resource_class: "xlarge"
+    working_directory: /root
     steps:
-      - *attach_hermes_workspace
       - run:
           name: Install dependencies
           command: |
-            apt-get update
-            apt-get install -y \
-                sudo git openssh-client cmake ninja-build python \
-                build-essential libreadline-dev libicu-dev
+            apt update
+            apt install -y git openssh-client cmake build-essential \
+                libreadline-dev libicu-dev zip python3
+      - *attach_hermes_workspace
       - run:
           name: Set up workspace
           command: |
-            sudo cp /usr/bin/ninja /usr/bin/ninja.real
-            printf '%s\n' '#!/bin/sh' 'ninja.real -j4 "$@" || ninja.real -j1 "$@"' | sudo tee /usr/bin/ninja
+            mkdir -p /tmp/hermes/linux64-bin
       - run:
-          name: Build Hermes Compiler for Linux
+          name: Build HermesC for Linux
           command: |
-            HERMESC_LINUX_DIR="$HERMES_WS_DIR/hermesc/linux"
-            cd "$HERMES_WS_DIR"
-            cmake -S hermes -B build_release -G Ninja -DHERMES_STATIC_LINK=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-s -DCMAKE_C_FLAGS=-s
-            cd build_release
-            ninja github-cli-release
-            mkdir -p "$HERMESC_LINUX_DIR"
-            mv $HERMES_WS_DIR/build_release/* "$HERMESC_LINUX_DIR"
+            cd /tmp/hermes
+            cmake -S hermes -B build -DHERMES_STATIC_LINK=ON -DCMAKE_BUILD_TYPE=Release \
+              -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=True -DCMAKE_CXX_FLAGS=-s -DCMAKE_C_FLAGS=-s \
+              -DCMAKE_EXE_LINKER_FLAGS="-Wl,--whole-archive -lpthread -Wl,--no-whole-archive"
+            cmake --build build --target check-hermes -j 4
+      - run:
+          name: Package HermesC for Linux
+          command: |
+            cp /tmp/hermes/build/bin/hermesc /tmp/hermes/linux64-bin/.
+      - store_artifacts:
+          path: /tmp/hermes/linux64-bin/
       - persist_to_workspace:
-          root: *hermes_workspace_root
+          root: /tmp/hermes/
           paths:
-            - hermesc/linux
+            - linux64-bin
 
   build_hermesc_macos:
     executor: reactnativeios
-    working_directory: ~/hermes
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
-      - TERM: dumb
-      - HOMEBREW_NO_AUTO_UPDATE: 1
     steps:
       - *attach_hermes_workspace
-      - restore_cache:
-          key: v4-repo-{{ .Environment.CIRCLE_SHA1 }}
+      - run:
+          name: Set up workspace
+          command: |
+            mkdir -p /tmp/hermes/osx-bin
       - run:
           name: Install dependencies
           command: |
             brew install cmake ninja
-            sudo gem install cocoapods
       - run:
-          name: Build Hermes Compiler for macOS
+          name: Build HermesC for macOS
           command: |
-            HERMESC_MACOS_DIR="$HERMES_WS_DIR/hermesc/macos"
-            cd "$HERMES_WS_DIR"
-            cmake -S hermes -B build_host_hermesc -G Ninja -DCMAKE_BUILD_TYPE=Release
-            cmake --build ./build_host_hermesc --target hermesc
-            mkdir -p "$HERMESC_MACOS_DIR"
-            mv $HERMES_WS_DIR/build_host_hermesc/* "$HERMESC_MACOS_DIR"
+            cd "$HERMES_WS_DIR/hermes"
+            ./utils/build-mac-framework.sh
+      - run:
+          name: Package HermesC for macOS
+          command: |
+            cd "$HERMES_WS_DIR/hermes"
+            cp build_macosx/bin/hermesc /tmp/hermes/osx-bin/.
+      - store_artifacts:
+          path: /tmp/hermes/osx-bin/
       - persist_to_workspace:
-          root: *hermes_workspace_root
+          root: /tmp/hermes/
           paths:
-            - hermesc/macos
+            - osx-bin
 
   build_hermesc_windows:
     executor:
@@ -995,9 +998,8 @@ jobs:
           command: |
             New-Item -ItemType Directory $Env:HERMES_WS_DIR
             New-Item -ItemType Directory $Env:HERMES_WS_DIR\icu
-            New-Item -ItemType Directory $Env:HERMES_WS_DIR\output
             New-Item -ItemType Directory $Env:HERMES_WS_DIR\deps
-            New-Item -ItemType Directory $Env:HERMES_WS_DIR\windows
+            New-Item -ItemType Directory $Env:HERMES_WS_DIR\win64-bin
             New-Item -ItemType SymbolicLink -Target tmp\hermes\hermes -Path $Env:HERMES_WS_DIR -Name hermes
       - run:
           name: Download ICU
@@ -1024,38 +1026,30 @@ jobs:
             Copy-Item -Path "c:\windows\system32\msvcp140.dll" -Destination "deps"
             Copy-Item -Path "c:\windows\system32\vcruntime140.dll" -Destination "deps"
             Copy-Item -Path "c:\windows\system32\vcruntime140_1.dll" -Destination "deps"
-
       - run:
-          name: Build Hermes Compiler for Windows
+          name: Build HermesC for Windows
           command: |
-            $HermesCWindowsFolder = "$Env:HERMES_WS_DIR\hermesc\windows"
             $Env:PATH += ";$Env:CMAKE_DIR;$Env:MSBUILD_DIR"
             $Env:ICU_ROOT = "$Env:HERMES_WS_DIR\icu"
             cd $Env:HERMES_WS_DIR
-            cmake -S hermes -B build_release -G 'Visual Studio 16 2019' -DCMAKE_BUILD_TYPE=Release -DHERMES_ENABLE_WIN10_ICU_FALLBACK=OFF -DHERMES_GITHUB_RESOURCE_DIR="$Env:HERMES_WS_DIR\deps"
+            cmake -S hermes -B build_release -G 'Visual Studio 16 2019' -Ax64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=True -DHERMES_ENABLE_WIN10_ICU_FALLBACK=OFF
             if (-not $?) { throw "Failed to configure Hermes" }
             cd build_release
-            cmake --build . --target github-cli-release --config Release
+            cmake --build . --target hermesc --config Release
             if (-not $?) { throw "Failed to build Hermes" }
-            New-Item -ItemType Directory $HermesCWindowsFolder
-            Copy-Item -Path "C:\tmp\hermes\build_release\*" -Destination $HermesCWindowsFolder -Recurse
-      - persist_to_workspace:
-          root: 'C:\tmp\hermes'
-          paths:
-            - hermesc\windows
-
-  store_hermesc:
-    docker:
-      - image: debian:buster
-    environment:
-      - HERMES_WS_DIR: *hermes_workspace_root
-    steps:
-      - *attach_hermes_workspace
-      # Provide a tarball of hermesc binaries as an artifact, for convenience.
-      - run: tar -czvf $HERMES_WS_DIR/hermesc.tar.gz $HERMES_WS_DIR/hermesc
+      - run:
+          name: Package HermesC for Windows
+          command: |
+            cd $Env:HERMES_WS_DIR
+            Copy-Item -Path "build_release\bin\Release\hermesc.exe" -Destination "win64-bin"
+            # Include Windows runtime dependencies
+            Copy-Item -Path "deps\*" -Destination "win64-bin"
       - store_artifacts:
-          path: /tmp/hermes/hermesc.tar.gz
-          destination: hermesc
+          path: c:\tmp\hermes\win64-bin\
+      - persist_to_workspace:
+          root: c:\tmp\hermes\
+          paths:
+            - win64-bin
 
   # -------------------------
   #      JOBS: Releases
@@ -1096,14 +1090,12 @@ jobs:
       - checkout
       - *attach_hermes_workspace
       - run:
-          name: Move hermesc binaries to sdks/hermesc
+          name: Copy HermesC binaries
           command: |
-            mkdir -p ./sdks/hermesc/linux64-bin
-            mkdir -p ./sdks/hermesc/osx-bin
-            mkdir -p ./sdks/hermesc/win64-bin
-            cp $HERMES_WS_DIR/hermesc/linux/bin/hermesc ./sdks/hermesc/linux64-bin/hermesc
-            cp $HERMES_WS_DIR/hermesc/macos/bin/hermesc ./sdks/hermesc/osx-bin/hermesc
-            cp $HERMES_WS_DIR/hermesc/windows/bin/Release/hermesc.exe ./sdks/hermesc/win64-bin/hermesc.exe
+            mkdir -p ./sdks/hermesc ./sdks/hermesc/osx-bin ./sdks/hermesc/win64-bin ./sdks/hermesc/linux64-bin
+            cp -r $HERMES_WS_DIR/osx-bin/* ./sdks/hermesc/osx-bin/.
+            cp -r $HERMES_WS_DIR/win64-bin/* ./sdks/hermesc/win64-bin/.
+            cp -r $HERMES_WS_DIR/linux64-bin/* ./sdks/hermesc/linux64-bin/.
 
       - run_yarn
       - install_buck_tooling
@@ -1229,16 +1221,13 @@ workflows:
       - build_hermesc_windows:
           requires:
             - prepare_hermes_workspace
-      - store_hermesc:
-          requires:
-            - build_hermesc_linux
-            - build_hermesc_macos
-            - build_hermesc_windows
       - build_npm_package:
           # Build a release package on every untagged commit, but do not publish to npm.
           publish_npm_args: --dry-run
           requires:
-            - store_hermesc
+            - build_hermesc_linux
+            - build_hermesc_macos
+            - build_hermesc_windows
       - test_js:
           run_disabled_tests: false
       - test_android:
@@ -1252,7 +1241,7 @@ workflows:
             - build_npm_package
       - test_ios_rntester
       - build_ios
-      - test_ios_unit:
+      - test_ios:
           run_unit_tests: true
           requires:
             - build_ios
@@ -1260,8 +1249,8 @@ workflows:
       # - build_ios:
       #     name: build_ios_frameworks
       #     use_frameworks: true
-      # - test_ios_unit:
-      #     name: test_ios_unit_frameworks
+      # - test_ios:
+      #     name: test_ios_frameworks
       #     use_frameworks: true
       #     run_unit_tests: true
       #     requires:
@@ -1288,19 +1277,17 @@ workflows:
       - prepare_hermes_workspace:
           filters: *only_release_tags
       - build_hermesc_linux:
+          filters: *only_release_tags
           requires:
             - prepare_hermes_workspace
       - build_hermesc_macos:
+          filters: *only_release_tags
           requires:
             - prepare_hermes_workspace
       - build_hermesc_windows:
+          filters: *only_release_tags
           requires:
             - prepare_hermes_workspace
-      - store_hermesc:
-          requires:
-            - build_hermesc_linux
-            - build_hermesc_macos
-            - build_hermesc_windows
       # This job will trigger when a version tag is pushed (by package_release)
       - build_npm_package:
           name: build_and_publish_npm_package
@@ -1308,7 +1295,9 @@ workflows:
           publish_npm_args: --release
           filters: *only_release_tags
           requires:
-            - store_hermesc
+            - build_hermesc_linux
+            - build_hermesc_macos
+            - build_hermesc_windows
 
   analysis:
     unless: << pipeline.parameters.run_package_release_workflow_only >>
@@ -1347,13 +1336,10 @@ workflows:
       - build_hermesc_windows:
           requires:
             - prepare_hermes_workspace
-      - store_hermesc:
-          requires:
-            - build_hermesc_linux
-            - build_hermesc_macos
-            - build_hermesc_windows
 
       - build_npm_package:
           publish_npm_args: --nightly
           requires:
-            - store_hermesc
+            - build_hermesc_linux
+            - build_hermesc_macos
+            - build_hermesc_windows

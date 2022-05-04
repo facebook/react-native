@@ -43,6 +43,8 @@ class Binding : public jni::HybridClass<Binding>,
 
   static void registerNatives();
 
+  std::shared_ptr<Scheduler> getScheduler();
+
  private:
   void setConstraints(
       jint surfaceId,
@@ -133,7 +135,6 @@ class Binding : public jni::HybridClass<Binding>,
   std::shared_ptr<FabricMountingManager> mountingManager_;
   std::shared_ptr<Scheduler> scheduler_;
 
-  std::shared_ptr<Scheduler> getScheduler();
   std::shared_ptr<FabricMountingManager> verifyMountingManager(
       std::string const &locationHint);
 

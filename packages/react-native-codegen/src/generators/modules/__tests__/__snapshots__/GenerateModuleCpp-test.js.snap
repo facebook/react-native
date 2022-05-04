@@ -61,6 +61,15 @@ static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getArrays(jsi
   static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getArrays(rt, args[0].asObject(rt));
   return jsi::Value::undefined();
 }
+static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getNullableObject(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getNullableObject(rt);
+}
+static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getNullableGenericObject(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getNullableGenericObject(rt);
+}
+static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getNullableArray(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getNullableArray(rt);
+}
 
 NativeSampleTurboModuleCxxSpecJSI::NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker)
   : TurboModule(\\"SampleTurboModule\\", jsInvoker) {
@@ -68,6 +77,9 @@ NativeSampleTurboModuleCxxSpecJSI::NativeSampleTurboModuleCxxSpecJSI(std::shared
   methodMap_[\\"optionals\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_optionals};
   methodMap_[\\"optionalMethod\\"] = MethodMetadata {3, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_optionalMethod};
   methodMap_[\\"getArrays\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getArrays};
+  methodMap_[\\"getNullableObject\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getNullableObject};
+  methodMap_[\\"getNullableGenericObject\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getNullableGenericObject};
+  methodMap_[\\"getNullableArray\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getNullableArray};
 }
 
 

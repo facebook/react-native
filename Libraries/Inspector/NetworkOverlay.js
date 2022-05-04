@@ -10,15 +10,15 @@
 
 'use strict';
 
-const FlatList = require('../Lists/FlatList');
-const React = require('react');
 const ScrollView = require('../Components/ScrollView/ScrollView');
-const StyleSheet = require('../StyleSheet/StyleSheet');
-const Text = require('../Text/Text');
 const TouchableHighlight = require('../Components/Touchable/TouchableHighlight');
 const View = require('../Components/View/View');
-const WebSocketInterceptor = require('../WebSocket/WebSocketInterceptor');
+const FlatList = require('../Lists/FlatList');
 const XHRInterceptor = require('../Network/XHRInterceptor');
+const StyleSheet = require('../StyleSheet/StyleSheet');
+const Text = require('../Text/Text');
+const WebSocketInterceptor = require('../WebSocket/WebSocketInterceptor');
+const React = require('react');
 
 const LISTVIEW_CELL_HEIGHT = 15;
 
@@ -100,7 +100,7 @@ class NetworkOverlay extends React.Component<Props, State> {
   };
 
   // Map of `socketId` -> `index in `this.state.requests`.
-  _socketIdMap = {};
+  _socketIdMap: {[string]: number} = {};
   // Map of `xhr._index` -> `index in `this.state.requests`.
   _xhrIdMap: {[key: number]: number, ...} = {};
 

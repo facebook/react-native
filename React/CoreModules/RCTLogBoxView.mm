@@ -33,21 +33,6 @@
   self.rootViewController = _rootViewController;
 }
 
-- (instancetype)initWithFrame:(CGRect)frame surfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter
-{
-  if (self = [super initWithFrame:frame]) {
-    id<RCTSurfaceProtocol> surface = [surfacePresenter createFabricSurfaceForModuleName:@"LogBox"
-                                                                      initialProperties:@{}];
-    [surface start];
-    RCTSurfaceHostingView *rootView = [[RCTSurfaceHostingView alloc]
-        initWithSurface:surface
-        sizeMeasureMode:RCTSurfaceSizeMeasureModeWidthExact | RCTSurfaceSizeMeasureModeHeightExact];
-
-    [self createRootViewController:rootView];
-  }
-  return self;
-}
-
 - (instancetype)initWithWindow:(UIWindow *)window bridge:(RCTBridge *)bridge
 {
   RCTErrorNewArchitectureValidation(RCTNotAllowedInAppWideFabric, @"RCTLogBoxView", nil);
@@ -68,6 +53,24 @@
     RCTLogInfo(@"Failed to mount LogBox within 1s");
   }
   [self createRootViewController:(UIView *)_surface.view];
+
+  return self;
+}
+
+- (instancetype)initWithWindow:(UIWindow *)window surfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter
+{
+  if (@available(iOS 13.0, *)) {
+    self = [super initWithWindowScene:window.windowScene];
+  } else {
+    self = [super initWithFrame:window.frame];
+  }
+
+  id<RCTSurfaceProtocol> surface = [surfacePresenter createFabricSurfaceForModuleName:@"LogBox" initialProperties:@{}];
+  [surface start];
+  RCTSurfaceHostingView *rootView = [[RCTSurfaceHostingView alloc]
+      initWithSurface:surface
+      sizeMeasureMode:RCTSurfaceSizeMeasureModeWidthExact | RCTSurfaceSizeMeasureModeHeightExact];
+  [self createRootViewController:rootView];
 
   return self;
 }

@@ -8,40 +8,39 @@
  * @format
  */
 
-const Batchinator = require('../Interaction/Batchinator');
-const FillRateHelper = require('./FillRateHelper');
-const ReactNative = require('../Renderer/shims/ReactNative');
-const RefreshControl = require('../Components/RefreshControl/RefreshControl');
-const ScrollView = require('../Components/ScrollView/ScrollView');
-const StyleSheet = require('../StyleSheet/StyleSheet');
-const View = require('../Components/View/View');
-const ViewabilityHelper = require('./ViewabilityHelper');
-
-const flattenStyle = require('../StyleSheet/flattenStyle');
-const infoLog = require('../Utilities/infoLog');
-const invariant = require('invariant');
-
-import {
-  keyExtractor as defaultKeyExtractor,
-  computeWindowedRenderLimits,
-} from './VirtualizeUtils';
-
-import * as React from 'react';
 import type {ScrollResponderType} from '../Components/ScrollView/ScrollView';
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
+import type {LayoutEvent} from '../Types/CoreEventTypes';
 import type {
   ViewabilityConfig,
-  ViewToken,
   ViewabilityConfigCallbackPair,
+  ViewToken,
 } from './ViewabilityHelper';
-import type {LayoutEvent} from '../Types/CoreEventTypes';
+
 import {
+  type ChildListState,
+  type ListDebugInfo,
   VirtualizedListCellContextProvider,
   VirtualizedListContext,
   VirtualizedListContextProvider,
-  type ChildListState,
-  type ListDebugInfo,
 } from './VirtualizedListContext.js';
+import {
+  computeWindowedRenderLimits,
+  keyExtractor as defaultKeyExtractor,
+} from './VirtualizeUtils';
+import * as React from 'react';
+
+const RefreshControl = require('../Components/RefreshControl/RefreshControl');
+const ScrollView = require('../Components/ScrollView/ScrollView');
+const View = require('../Components/View/View');
+const Batchinator = require('../Interaction/Batchinator');
+const ReactNative = require('../Renderer/shims/ReactNative');
+const flattenStyle = require('../StyleSheet/flattenStyle');
+const StyleSheet = require('../StyleSheet/StyleSheet');
+const infoLog = require('../Utilities/infoLog');
+const FillRateHelper = require('./FillRateHelper');
+const ViewabilityHelper = require('./ViewabilityHelper');
+const invariant = require('invariant');
 
 type Item = any;
 
@@ -1128,7 +1127,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         )}
       </VirtualizedListContextProvider>
     );
-    let ret = innerRet;
+    let ret: React.Node = innerRet;
     if (__DEV__) {
       ret = (
         <ScrollView.Context.Consumer>
@@ -1192,9 +1191,16 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _averageCellLength = 0;
   // Maps a cell key to the set of keys for all outermost child lists within that cell
   _cellKeysToChildListKeys: Map<string, Set<string>> = new Map();
-  _cellRefs = {};
+  _cellRefs: {[string]: null | CellRenderer} = {};
   _fillRateHelper: FillRateHelper;
-  _frames = {};
+  _frames: {
+    [string]: {
+      inLayout?: boolean,
+      index: number,
+      length: number,
+      offset: number,
+    },
+  } = {};
   _footerLength = 0;
   _hasDoneInitialScroll = false;
   _hasInteracted = false;
@@ -1742,7 +1748,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       return;
     }
     this.setState(state => {
-      let newState;
+      let newState: ?(
+        | {first: number, last: number, ...}
+        | $TEMPORARY$object<{first: number, last: number}>
+      );
       const {contentLength, offset, visibleLength} = this._scrollMetrics;
       if (!isVirtualizationDisabled) {
         // If we run this with bogus data, we'll force-render window {first: 0, last: 0},
@@ -2109,7 +2118,7 @@ function describeNestedLists(childList: {
     `    listKey: ${childList.key}\n` +
     `    cellKey: ${childList.cellKey}`;
 
-  let debugInfo = childList.parentDebugInfo;
+  let debugInfo: ?ListDebugInfo = childList.parentDebugInfo;
   while (debugInfo) {
     trace +=
       `\n  Parent (${debugInfo.horizontal ? 'horizontal' : 'vertical'}):\n` +
