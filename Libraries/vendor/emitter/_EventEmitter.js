@@ -79,19 +79,6 @@ class EventEmitter<EventDefinitions: {...}> {
   }
 
   /**
-   * @deprecated Use `remove` on the EventSubscription from `addListener`.
-   */
-  removeSubscription<K: $Keys<EventDefinitions>>(
-    subscription: EmitterSubscription<EventDefinitions, K>,
-  ): void {
-    console.warn(
-      'EventEmitter.removeSubscription(...): Method has been deprecated. ' +
-        'Please instead use `remove()` on the subscription itself.',
-    );
-    this.__removeSubscription(subscription);
-  }
-
-  /**
    * Called by `EmitterSubscription` to bypass the above deprecation warning.
    */
   __removeSubscription<K: $Keys<EventDefinitions>>(
