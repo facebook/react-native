@@ -125,7 +125,7 @@
     "regenerator-runtime": "^0.13.2",
     "scheduler": "^0.21.0",
     "stacktrace-parser": "^0.1.3",
-    "use-subscription": ">=1.0.0 <1.6.0",
+    "use-sync-external-store": "^1.0.0",
     "whatwg-fetch": "^3.0.0",
     "ws": "^6.1.4"
   },
