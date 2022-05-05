@@ -115,6 +115,7 @@
     "metro-react-native-babel-transformer": "0.70.1",
     "metro-runtime": "0.70.1",
     "metro-source-map": "0.70.1",
+    "mkdirp": "^0.5.1",
     "nullthrows": "^1.1.1",
     "pretty-format": "^26.5.2",
     "promise": "^8.0.3",
