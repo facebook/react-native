@@ -1231,8 +1231,12 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     }
 
     super.scrollTo(x, y);
-    updateStateOnScroll(x, y);
-    setPendingContentOffsets(x, y);
+    // The final scroll position might be different from (x, y). For example, we may need to scroll
+    // to the last item in the list, but that item cannot be move to the start position of the view.
+    final int actualX = getScrollX();
+    final int actualY = getScrollY();
+    updateStateOnScroll(actualX, actualY);
+    setPendingContentOffsets(actualX, actualY);
   }
 
   /**

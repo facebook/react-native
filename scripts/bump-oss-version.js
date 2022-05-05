@@ -215,6 +215,12 @@
    {silent: true},
  ).stdout.trim();
 
+ // Make sure to update ruby version
+ if (exec('scripts/update-ruby.sh').code) {
+   echo('Failed to update Ruby version');
+   exit(1);
+ }
+
  // Release builds should commit the version bumps, and create tags.
  // Nightly builds do not need to do that.
  if (!nightlyBuild) {

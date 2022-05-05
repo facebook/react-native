@@ -99,6 +99,7 @@ try {
   );
   mv('_flowconfig', '.flowconfig');
   mv('_watchmanconfig', '.watchmanconfig');
+  mv('_bundle', '.bundle');
 
   // [TODO(macOS GH#774)
   process.env.REACT_NATIVE_RUNNING_E2E_TESTS = 'true';
@@ -214,7 +215,7 @@ try {
     echo(`Metro is running, ${SERVER_PID}`);
 
     describe('Install CocoaPod dependencies');
-    exec('pod install');
+    exec('bundle exec pod install');
 
     describe('Test: iOS end-to-end test');
     if (

@@ -31,7 +31,13 @@ allprojects {
             url = uri("$rootDir/node_modules/detox/Detox-android")
         }
         google()
-        mavenCentral()
+        mavenCentral {
+            // We don't want to fetch react-native from Maven Central as there are
+            // older versions over there.
+            content {
+                excludeGroup("com.facebook.react")
+            }
+        }
     }
 
     // used to override ndk path/version from env variables on CI

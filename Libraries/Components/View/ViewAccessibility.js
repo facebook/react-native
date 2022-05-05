@@ -91,5 +91,5 @@ export type AccessibilityValue = $ReadOnly<{|
   /**
    * A textual description of this component's value. (will override minimum, current, and maximum if set)
    */
-  text?: string,
+  text?: Stringish,
 |}>;

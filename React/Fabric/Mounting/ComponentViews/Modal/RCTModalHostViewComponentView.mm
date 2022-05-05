@@ -156,9 +156,6 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
                        auto eventEmitter = [self modalEventEmitter];
                        if (eventEmitter) {
                          eventEmitter->onShow(ModalHostViewEventEmitter::OnShow{});
-
-                         // A hack so that EventEmitter.cpp's eventTarget_ does not become null when modal is dismissed
-                         eventEmitter->setEnabled(true);
                        }
                      }];
   }

@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<65d072c3d2937f89a7fadc55450af2f7>>
+ * @generated SignedSource<<d652a63f09b72c44e6b8e592ebfd0790>>
  */
 
 'use strict';
@@ -75,10 +75,10 @@ function printWarning(level, format, args) {
     if (stack !== "") {
       format += "%s";
       args = args.concat([stack]);
-    }
+    } // eslint-disable-next-line react-internal/safe-string-coercion
 
     var argsWithFormat = args.map(function(item) {
-      return "" + item;
+      return String(item);
     }); // Careful: RN currently depends on this prefix
 
     argsWithFormat.unshift("Warning: " + format); // We intentionally don't use spread (or .apply) directly because it
@@ -145,9 +145,15 @@ var invokeGuardedCallbackImpl = invokeGuardedCallbackProd;
       // when we call document.createEvent(). However this can cause confusing
       // errors: https://github.com/facebook/create-react-app/issues/3482
       // So we preemptively throw with a better message instead.
-      if (!(typeof document !== "undefined")) {
-        throw Error(
-          "The `document` global was defined when React was initialized, but is not defined anymore. This can happen in a test environment if a component schedules an update from an asynchronous callback, but the test has already finished running. To solve this, you can either unmount the component at the end of your test (and ensure that any asynchronous operations get canceled in `componentWillUnmount`), or you can change the test itself to be asynchronous."
+      if (typeof document === "undefined") {
+        throw new Error(
+          "The `document` global was defined when React was initialized, but is not " +
+            "defined anymore. This can happen in a test environment if a component " +
+            "schedules an update from an asynchronous callback, but the test has already " +
+            "finished running. To solve this, you can either unmount the component at " +
+            "the end of your test (and ensure that any asynchronous operations get " +
+            "canceled in `componentWillUnmount`), or you can change the test itself " +
+            "to be asynchronous."
         );
       }
 
@@ -253,6 +259,7 @@ var invokeGuardedCallbackImpl = invokeGuardedCallbackProd;
       if (didCall && didError) {
         if (!didSetError) {
           // The callback errored, but the error event never fired.
+          // eslint-disable-next-line react-internal/prod-error-codes
           error = new Error(
             "An error was thrown inside one of your components, but React " +
               "doesn't know what it was. This is likely due to browser " +
@@ -264,6 +271,7 @@ var invokeGuardedCallbackImpl = invokeGuardedCallbackProd;
               "actually an issue with React, please file an issue."
           );
         } else if (isCrossOriginError) {
+          // eslint-disable-next-line react-internal/prod-error-codes
           error = new Error(
             "A cross-origin error was thrown. React doesn't have access to " +
               "the actual error object in development. " +
@@ -376,11 +384,10 @@ function clearCaughtError() {
     caughtError = null;
     return error;
   } else {
-    {
-      throw Error(
-        "clearCaughtError was called but no error was captured. This error is likely caused by a bug in React. Please file an issue."
-      );
-    }
+    throw new Error(
+      "clearCaughtError was called but no error was captured. This error " +
+        "is likely caused by a bug in React. Please file an issue."
+    );
   }
 }
 
@@ -537,8 +544,8 @@ function executeDirectDispatch(event) {
   var dispatchListener = event._dispatchListeners;
   var dispatchInstance = event._dispatchInstances;
 
-  if (!!isArray(dispatchListener)) {
-    throw Error("executeDirectDispatch(...): Invalid `event`.");
+  if (isArray(dispatchListener)) {
+    throw new Error("executeDirectDispatch(...): Invalid `event`.");
   }
 
   event.currentTarget = dispatchListener
@@ -559,6 +566,7 @@ function hasDispatches(event) {
   return !!event._dispatchListeners;
 }
 
+/* eslint valid-typeof: 0 */
 var EVENT_POOL_SIZE = 10;
 /**
  * @interface Event
@@ -885,7 +893,7 @@ function releasePooledEvent(event) {
   var EventConstructor = this;
 
   if (!(event instanceof EventConstructor)) {
-    throw Error(
+    throw new Error(
       "Trying to release an event instance into a pool of a different type."
     );
   }
@@ -994,8 +1002,8 @@ function resetTouchRecord(touchRecord, touch) {
 function getTouchIdentifier(_ref) {
   var identifier = _ref.identifier;
 
-  if (!(identifier != null)) {
-    throw Error("Touch object is missing identifier.");
+  if (identifier == null) {
+    throw new Error("Touch object is missing identifier.");
   }
 
   {
@@ -1153,8 +1161,8 @@ var ResponderTouchHistoryStore = {
  */
 
 function accumulate(current, next) {
-  if (!(next != null)) {
-    throw Error(
+  if (next == null) {
+    throw new Error(
       "accumulate(...): Accumulated items must not be null or undefined."
     );
   }
@@ -1189,8 +1197,8 @@ function accumulate(current, next) {
  */
 
 function accumulateInto(current, next) {
-  if (!(next != null)) {
-    throw Error(
+  if (next == null) {
+    throw new Error(
       "accumulateInto(...): Accumulated items must not be null or undefined."
     );
   }
@@ -1496,8 +1504,8 @@ function getListener(inst, registrationName) {
 
   var listener = props[registrationName];
 
-  if (!(!listener || typeof listener === "function")) {
-    throw Error(
+  if (listener && typeof listener !== "function") {
+    throw new Error(
       "Expected `" +
         registrationName +
         "` listener to be a function, instead got a value of `" +
@@ -2079,11 +2087,10 @@ function recomputePluginOrdering() {
     var pluginModule = namesToPlugins[pluginName];
     var pluginIndex = eventPluginOrder.indexOf(pluginName);
 
-    if (!(pluginIndex > -1)) {
-      throw Error(
-        "EventPluginRegistry: Cannot inject event plugins that do not exist in the plugin ordering, `" +
-          pluginName +
-          "`."
+    if (pluginIndex <= -1) {
+      throw new Error(
+        "EventPluginRegistry: Cannot inject event plugins that do not exist in " +
+          ("the plugin ordering, `" + pluginName + "`.")
       );
     }
 
@@ -2092,10 +2099,9 @@ function recomputePluginOrdering() {
     }
 
     if (!pluginModule.extractEvents) {
-      throw Error(
-        "EventPluginRegistry: Event plugins must implement an `extractEvents` method, but `" +
-          pluginName +
-          "` does not."
+      throw new Error(
+        "EventPluginRegistry: Event plugins must implement an `extractEvents` " +
+          ("method, but `" + pluginName + "` does not.")
       );
     }
 
@@ -2110,7 +2116,7 @@ function recomputePluginOrdering() {
           eventName
         )
       ) {
-        throw Error(
+        throw new Error(
           "EventPluginRegistry: Failed to publish event `" +
             eventName +
             "` for plugin `" +
@@ -2131,11 +2137,10 @@ function recomputePluginOrdering() {
  */
 
 function publishEventForPlugin(dispatchConfig, pluginModule, eventName) {
-  if (!!eventNameDispatchConfigs.hasOwnProperty(eventName)) {
-    throw Error(
-      "EventPluginRegistry: More than one plugin attempted to publish the same event name, `" +
-        eventName +
-        "`."
+  if (eventNameDispatchConfigs.hasOwnProperty(eventName)) {
+    throw new Error(
+      "EventPluginRegistry: More than one plugin attempted to publish the same " +
+        ("event name, `" + eventName + "`.")
     );
   }
 
@@ -2175,11 +2180,10 @@ function publishEventForPlugin(dispatchConfig, pluginModule, eventName) {
  */
 
 function publishRegistrationName(registrationName, pluginModule, eventName) {
-  if (!!registrationNameModules[registrationName]) {
-    throw Error(
-      "EventPluginRegistry: More than one plugin attempted to publish the same registration name, `" +
-        registrationName +
-        "`."
+  if (registrationNameModules[registrationName]) {
+    throw new Error(
+      "EventPluginRegistry: More than one plugin attempted to publish the same " +
+        ("registration name, `" + registrationName + "`.")
     );
   }
 
@@ -2226,9 +2230,10 @@ var registrationNameDependencies = {};
  */
 
 function injectEventPluginOrder(injectedEventPluginOrder) {
-  if (!!eventPluginOrder) {
-    throw Error(
-      "EventPluginRegistry: Cannot inject event plugin ordering more than once. You are likely trying to load more than one copy of React."
+  if (eventPluginOrder) {
+    throw new Error(
+      "EventPluginRegistry: Cannot inject event plugin ordering more than " +
+        "once. You are likely trying to load more than one copy of React."
     );
   } // Clone the ordering so it cannot be dynamically mutated.
 
@@ -2259,11 +2264,10 @@ function injectEventPluginsByName(injectedNamesToPlugins) {
       !namesToPlugins.hasOwnProperty(pluginName) ||
       namesToPlugins[pluginName] !== pluginModule
     ) {
-      if (!!namesToPlugins[pluginName]) {
-        throw Error(
-          "EventPluginRegistry: Cannot inject two different event plugins using the same name, `" +
-            pluginName +
-            "`."
+      if (namesToPlugins[pluginName]) {
+        throw new Error(
+          "EventPluginRegistry: Cannot inject two different event plugins " +
+            ("using the same name, `" + pluginName + "`.")
         );
       }
 
@@ -2294,8 +2298,8 @@ function getListener$1(inst, registrationName) {
 
   var listener = props[registrationName];
 
-  if (!(!listener || typeof listener === "function")) {
-    throw Error(
+  if (listener && typeof listener !== "function") {
+    throw new Error(
       "Expected `" +
         registrationName +
         "` listener to be a function, instead got a value of `" +
@@ -2443,8 +2447,8 @@ var ReactNativeBridgeEventPlugin = {
     var bubbleDispatchConfig = customBubblingEventTypes[topLevelType];
     var directDispatchConfig = customDirectEventTypes[topLevelType];
 
-    if (!(bubbleDispatchConfig || directDispatchConfig)) {
-      throw Error(
+    if (!bubbleDispatchConfig && !directDispatchConfig) {
+      throw new Error( // $FlowFixMe - Flow doesn't like this string coercion because DOMTopLevelEventType is opaque
         'Unsupported top level event type "' + topLevelType + '" dispatched'
       );
     }
@@ -2502,7 +2506,7 @@ function getTagFromInstance(inst) {
   var nativeInstance = inst.stateNode.canonical;
 
   if (!nativeInstance._nativeTag) {
-    throw Error("All native instances should have a tag.");
+    throw new Error("All native instances should have a tag.");
   }
 
   return nativeInstance;
@@ -2849,6 +2853,7 @@ function getComponentNameFromFiber(fiber) {
 
 var enablePersistentOffscreenHostContainer =
   dynamicFlags.enablePersistentOffscreenHostContainer; // The rest of the flags are static for better dead code elimination.
+var enableSchedulingProfiler = false;
 var enableProfilerTimer = true;
 var enableProfilerCommitHooks = true;
 var enableLazyElements = false;
@@ -2888,41 +2893,41 @@ var DidCapture =
   128;
 var Ref =
   /*                          */
-  256;
+  512;
 var Snapshot =
   /*                     */
-  512;
+  1024;
 var Passive =
   /*                      */
-  1024;
+  2048;
 var Hydrating =
   /*                    */
-  2048;
+  4096;
 var HydratingAndUpdate =
   /*           */
   Hydrating | Update;
 var Visibility =
   /*                   */
-  4096;
+  8192;
 var StoreConsistency =
   /*             */
-  8192;
+  16384;
 var LifecycleEffectMask =
   Passive | Update | Callback | Ref | Snapshot | StoreConsistency; // Union of all commit flags (flags with the lifetime of a particular commit)
 
 var HostEffectMask =
   /*               */
-  16383; // These are not really side effects, but we still reuse this field.
+  32767; // These are not really side effects, but we still reuse this field.
 
 var Incomplete =
   /*                   */
-  16384;
+  32768;
 var ShouldCapture =
   /*                */
-  32768;
+  65536;
 var ForceUpdateForLegacySuspense =
   /* */
-  65536;
+  131072;
 // e.g. a fiber uses a passive effect (even if there are no updates on this particular render).
 // This enables us to defer more work in the unmount case,
 // since we can defer traversing the tree during layout to look for Passive effects,
@@ -2930,22 +2935,22 @@ var ForceUpdateForLegacySuspense =
 
 var RefStatic =
   /*                    */
-  524288;
+  1048576;
 var LayoutStatic =
   /*                 */
-  1048576;
+  2097152;
 var PassiveStatic =
   /*                */
-  2097152; // These flags allow us to traverse to fibers that have effects on mount
+  4194304; // These flags allow us to traverse to fibers that have effects on mount
 // without traversing the entire tree after every commit for
 // double invoking
 
 var MountLayoutDev =
   /*               */
-  4194304;
+  8388608;
 var MountPassiveDev =
   /*              */
-  8388608; // Groups of flags that are used in the commit phase to skip over trees that
+  16777216; // Groups of flags that are used in the commit phase to skip over trees that
 // don't contain effects, by checking subtreeFlags.
 
 var BeforeMutationMask = // TODO: Remove Update flag from before mutation phase by re-landing Visibility
@@ -3040,8 +3045,8 @@ function isMounted(component) {
 }
 
 function assertIsMounted(fiber) {
-  if (!(getNearestMountedFiber(fiber) === fiber)) {
-    throw Error("Unable to find node on an unmounted component.");
+  if (getNearestMountedFiber(fiber) !== fiber) {
+    throw new Error("Unable to find node on an unmounted component.");
   }
 }
 
@@ -3052,8 +3057,8 @@ function findCurrentFiberUsingSlowPath(fiber) {
     // If there is no alternate, then we only need to check if it is mounted.
     var nearestMounted = getNearestMountedFiber(fiber);
 
-    if (!(nearestMounted !== null)) {
-      throw Error("Unable to find node on an unmounted component.");
+    if (nearestMounted === null) {
+      throw new Error("Unable to find node on an unmounted component.");
     }
 
     if (nearestMounted !== fiber) {
@@ -3115,9 +3120,7 @@ function findCurrentFiberUsingSlowPath(fiber) {
       } // We should never have an alternate for any mounting node. So the only
       // way this could possibly happen is if this was unmounted, if at all.
 
-      {
-        throw Error("Unable to find node on an unmounted component.");
-      }
+      throw new Error("Unable to find node on an unmounted component.");
     }
 
     if (a.return !== b.return) {
@@ -3177,23 +3180,25 @@ function findCurrentFiberUsingSlowPath(fiber) {
         }
 
         if (!didFindChild) {
-          throw Error(
-            "Child was not found in either parent set. This indicates a bug in React related to the return pointer. Please file an issue."
+          throw new Error(
+            "Child was not found in either parent set. This indicates a bug " +
+              "in React related to the return pointer. Please file an issue."
           );
         }
       }
     }
 
-    if (!(a.alternate === b)) {
-      throw Error(
-        "Return fibers should always be each others' alternates. This error is likely caused by a bug in React. Please file an issue."
+    if (a.alternate !== b) {
+      throw new Error(
+        "Return fibers should always be each others' alternates. " +
+          "This error is likely caused by a bug in React. Please file an issue."
       );
     }
   } // If the root is not a host container, we're in a disconnected tree. I.e.
   // unmounted.
 
-  if (!(a.tag === HostRoot)) {
-    throw Error("Unable to find node on an unmounted component.");
+  if (a.tag !== HostRoot) {
+    throw new Error("Unable to find node on an unmounted component.");
   }
 
   if (a.stateNode.current === a) {
@@ -3791,9 +3796,10 @@ function runEventsInBatch(events) {
 
   forEachAccumulated(processingEventQueue, executeDispatchesAndReleaseTopLevel);
 
-  if (!!eventQueue) {
-    throw Error(
-      "processEventQueue(): Additional events were enqueued while processing an event queue. Support for this has not yet been implemented."
+  if (eventQueue) {
+    throw new Error(
+      "processEventQueue(): Additional events were enqueued while processing " +
+        "an event queue. Support for this has not yet been implemented."
     );
   } // This would be a good time to rethrow if any of the event handlers threw.
 
@@ -3887,6 +3893,103 @@ var ImmediatePriority = Scheduler.unstable_ImmediatePriority;
 var UserBlockingPriority = Scheduler.unstable_UserBlockingPriority;
 var NormalPriority = Scheduler.unstable_NormalPriority;
 var IdlePriority = Scheduler.unstable_IdlePriority;
+
+// Helpers to patch console.logs to avoid logging during side-effect free
+// replaying on render function. This currently only patches the object
+// lazily which won't cover if the log function was extracted eagerly.
+// We could also eagerly patch the method.
+var disabledDepth = 0;
+var prevLog;
+var prevInfo;
+var prevWarn;
+var prevError;
+var prevGroup;
+var prevGroupCollapsed;
+var prevGroupEnd;
+
+function disabledLog() {}
+
+disabledLog.__reactDisabledLog = true;
+function disableLogs() {
+  {
+    if (disabledDepth === 0) {
+      /* eslint-disable react-internal/no-production-logging */
+      prevLog = console.log;
+      prevInfo = console.info;
+      prevWarn = console.warn;
+      prevError = console.error;
+      prevGroup = console.group;
+      prevGroupCollapsed = console.groupCollapsed;
+      prevGroupEnd = console.groupEnd; // https://github.com/facebook/react/issues/19099
+
+      var props = {
+        configurable: true,
+        enumerable: true,
+        value: disabledLog,
+        writable: true
+      }; // $FlowFixMe Flow thinks console is immutable.
+
+      Object.defineProperties(console, {
+        info: props,
+        log: props,
+        warn: props,
+        error: props,
+        group: props,
+        groupCollapsed: props,
+        groupEnd: props
+      });
+      /* eslint-enable react-internal/no-production-logging */
+    }
+
+    disabledDepth++;
+  }
+}
+function reenableLogs() {
+  {
+    disabledDepth--;
+
+    if (disabledDepth === 0) {
+      /* eslint-disable react-internal/no-production-logging */
+      var props = {
+        configurable: true,
+        enumerable: true,
+        writable: true
+      }; // $FlowFixMe Flow thinks console is immutable.
+
+      Object.defineProperties(console, {
+        log: Object.assign({}, props, {
+          value: prevLog
+        }),
+        info: Object.assign({}, props, {
+          value: prevInfo
+        }),
+        warn: Object.assign({}, props, {
+          value: prevWarn
+        }),
+        error: Object.assign({}, props, {
+          value: prevError
+        }),
+        group: Object.assign({}, props, {
+          value: prevGroup
+        }),
+        groupCollapsed: Object.assign({}, props, {
+          value: prevGroupCollapsed
+        }),
+        groupEnd: Object.assign({}, props, {
+          value: prevGroupEnd
+        })
+      });
+      /* eslint-enable react-internal/no-production-logging */
+    }
+
+    if (disabledDepth < 0) {
+      error(
+        "disabledDepth fell below zero. " +
+          "This is a bug in React. Please file an issue."
+      );
+    }
+  }
+}
 
 var rendererID = null;
 var injectedHook = null;
@@ -4036,6 +4139,15 @@ function onCommitUnmount(fiber) {
           error("React instrumentation encountered an error: %s", err);
         }
       }
+    }
+  }
+}
+function setIsStrictModeForDevtools(newIsStrictMode) {
+  {
+    if (newIsStrictMode) {
+      disableLogs();
+    } else {
+      reenableLogs();
     }
   }
 }
@@ -4794,28 +4906,28 @@ function lanesToEventPriority(lanes) {
   return IdleEventPriority;
 }
 
+// Renderers that don't support mutation
 // can re-export everything from this module.
-
 function shim() {
-  {
-    throw Error(
-      "The current renderer does not support mutation. This error is likely caused by a bug in React. Please file an issue."
-    );
-  }
+  throw new Error(
+    "The current renderer does not support mutation. " +
+      "This error is likely caused by a bug in React. " +
+      "Please file an issue."
+  );
 } // Mutation (when unsupported)
 
 var supportsMutation = false;
 var commitMount = shim;
 var clearContainer = shim;
 
+// Renderers that don't support hydration
 // can re-export everything from this module.
-
 function shim$1() {
-  {
-    throw Error(
-      "The current renderer does not support hydration. This error is likely caused by a bug in React. Please file an issue."
-    );
-  }
+  throw new Error(
+    "The current renderer does not support hydration. " +
+      "This error is likely caused by a bug in React. " +
+      "Please file an issue."
+  );
 } // Hydration (when unsupported)
 var isSuspenseInstancePending = shim$1;
 var isSuspenseInstanceFallback = shim$1;
@@ -5195,103 +5307,6 @@ function preparePortalMount(portalInstance) {
   // noop
 }
 
-// Helpers to patch console.logs to avoid logging during side-effect free
-// replaying on render function. This currently only patches the object
-// lazily which won't cover if the log function was extracted eagerly.
-// We could also eagerly patch the method.
-var disabledDepth = 0;
-var prevLog;
-var prevInfo;
-var prevWarn;
-var prevError;
-var prevGroup;
-var prevGroupCollapsed;
-var prevGroupEnd;
-
-function disabledLog() {}
-
-disabledLog.__reactDisabledLog = true;
-function disableLogs() {
-  {
-    if (disabledDepth === 0) {
-      /* eslint-disable react-internal/no-production-logging */
-      prevLog = console.log;
-      prevInfo = console.info;
-      prevWarn = console.warn;
-      prevError = console.error;
-      prevGroup = console.group;
-      prevGroupCollapsed = console.groupCollapsed;
-      prevGroupEnd = console.groupEnd; // https://github.com/facebook/react/issues/19099
-
-      var props = {
-        configurable: true,
-        enumerable: true,
-        value: disabledLog,
-        writable: true
-      }; // $FlowFixMe Flow thinks console is immutable.
-
-      Object.defineProperties(console, {
-        info: props,
-        log: props,
-        warn: props,
-        error: props,
-        group: props,
-        groupCollapsed: props,
-        groupEnd: props
-      });
-      /* eslint-enable react-internal/no-production-logging */
-    }
-
-    disabledDepth++;
-  }
-}
-function reenableLogs() {
-  {
-    disabledDepth--;
-
-    if (disabledDepth === 0) {
-      /* eslint-disable react-internal/no-production-logging */
-      var props = {
-        configurable: true,
-        enumerable: true,
-        writable: true
-      }; // $FlowFixMe Flow thinks console is immutable.
-
-      Object.defineProperties(console, {
-        log: Object.assign({}, props, {
-          value: prevLog
-        }),
-        info: Object.assign({}, props, {
-          value: prevInfo
-        }),
-        warn: Object.assign({}, props, {
-          value: prevWarn
-        }),
-        error: Object.assign({}, props, {
-          value: prevError
-        }),
-        group: Object.assign({}, props, {
-          value: prevGroup
-        }),
-        groupCollapsed: Object.assign({}, props, {
-          value: prevGroupCollapsed
-        }),
-        groupEnd: Object.assign({}, props, {
-          value: prevGroupEnd
-        })
-      });
-      /* eslint-enable react-internal/no-production-logging */
-    }
-
-    if (disabledDepth < 0) {
-      error(
-        "disabledDepth fell below zero. " +
-          "This is a bug in React. Please file an issue."
-      );
-    }
-  }
-}
-
 var ReactCurrentDispatcher = ReactSharedInternals.ReactCurrentDispatcher;
 function describeBuiltInComponentFrame(name, source, ownerFn) {
   {
@@ -5451,6 +5466,7 @@ function checkPropTypes(typeSpecs, values, location, componentName, element) {
           // This is intentionally an invariant that gets caught. It's the same
           // behavior as without this statement except with a better message.
           if (typeof typeSpecs[typeSpecName] !== "function") {
+            // eslint-disable-next-line react-internal/prod-error-codes
             var err = Error(
               (componentName || "React class") +
                 ": " +
@@ -5682,9 +5698,10 @@ function popTopLevelContextObject(fiber) {
 
 function pushTopLevelContextObject(fiber, context, didChange) {
   {
-    if (!(contextStackCursor.current === emptyContextObject)) {
-      throw Error(
-        "Unexpected context found on stack. This error is likely caused by a bug in React. Please file an issue."
+    if (contextStackCursor.current !== emptyContextObject) {
+      throw new Error(
+        "Unexpected context found on stack. " +
+          "This error is likely caused by a bug in React. Please file an issue."
       );
     }
 
@@ -5723,7 +5740,7 @@ function processChildContext(fiber, type, parentContext) {
 
     for (var contextKey in childContext) {
       if (!(contextKey in childContextTypes)) {
-        throw Error(
+        throw new Error(
           (getComponentNameFromFiber(fiber) || "Unknown") +
             '.getChildContext(): key "' +
             contextKey +
@@ -5768,8 +5785,9 @@ function invalidateContextProvider(workInProgress, type, didChange) {
     var instance = workInProgress.stateNode;
 
     if (!instance) {
-      throw Error(
-        "Expected to have an instance by this point. This error is likely caused by a bug in React. Please file an issue."
+      throw new Error(
+        "Expected to have an instance by this point. " +
+          "This error is likely caused by a bug in React. Please file an issue."
       );
     }
 
@@ -5801,9 +5819,10 @@ function findCurrentUnmaskedContext(fiber) {
   {
     // Currently this is only used with renderSubtreeIntoContainer; not sure if it
     // makes sense elsewhere
-    if (!(isFiberMounted(fiber) && fiber.tag === ClassComponent)) {
-      throw Error(
-        "Expected subtree parent to be a mounted class component. This error is likely caused by a bug in React. Please file an issue."
+    if (!isFiberMounted(fiber) || fiber.tag !== ClassComponent) {
+      throw new Error(
+        "Expected subtree parent to be a mounted class component. " +
+          "This error is likely caused by a bug in React. Please file an issue."
       );
     }
 
@@ -5828,11 +5847,10 @@ function findCurrentUnmaskedContext(fiber) {
       node = node.return;
     } while (node !== null);
 
-    {
-      throw Error(
-        "Found unexpected detached subtree parent. This error is likely caused by a bug in React. Please file an issue."
-      );
-    }
+    throw new Error(
+      "Found unexpected detached subtree parent. " +
+        "This error is likely caused by a bug in React. Please file an issue."
+    );
   }
 }
 
@@ -5920,7 +5938,12 @@ function flushSyncCallbacks() {
   return null;
 }
 
-var ReactVersion = "18.0.0-e8feb11b6-20210915";
+var ReactVersion = "18.0.0-afcb9cdc9-20211008";
+
+function markComponentRenderStopped() {}
+function markComponentErrored(fiber, thrownValue, lanes) {}
+
+function markComponentSuspended(fiber, wakeable, lanes) {}
 
 var ReactCurrentBatchConfig = ReactSharedInternals.ReactCurrentBatchConfig;
 var NoTransition = 0;
@@ -6419,6 +6442,105 @@ var ReactStrictModeWarnings = {
   };
 }
 
+/*
+ * The `'' + value` pattern (used in in perf-sensitive code) throws for Symbol
+ * and Temporal.* types. See https://github.com/facebook/react/pull/22064.
+ *
+ * The functions in this module will throw an easier-to-understand,
+ * easier-to-debug exception with a clear errors message message explaining the
+ * problem. (Instead of a confusing exception thrown inside the implementation
+ * of the `value` object).
+ */
+// $FlowFixMe only called in DEV, so void return is not possible.
+
+function typeName(value) {
+  {
+    // toStringTag is needed for namespaced types like Temporal.Instant
+    var hasToStringTag = typeof Symbol === "function" && Symbol.toStringTag;
+    var type =
+      (hasToStringTag && value[Symbol.toStringTag]) ||
+      value.constructor.name ||
+      "Object";
+    return type;
+  }
+} // $FlowFixMe only called in DEV, so void return is not possible.
+
+function willCoercionThrow(value) {
+  {
+    if (
+      value !== null &&
+      typeof value === "object" &&
+      value.$$typeof === REACT_OPAQUE_ID_TYPE
+    ) {
+      // OpaqueID type is expected to throw, so React will handle it. Not sure if
+      // it's expected that string coercion will throw, but we'll assume it's OK.
+      // See https://github.com/facebook/react/issues/20127.
+      return;
+    }
+
+    try {
+      testStringCoercion(value);
+      return false;
+    } catch (e) {
+      return true;
+    }
+  }
+}
+
+function testStringCoercion(value) {
+  // If you ended up here by following an exception call stack, here's what's
+  // happened: you supplied an object or symbol value to React (as a prop, key,
+  // DOM attribute, CSS property, string ref, etc.) and when React tried to
+  // coerce it to a string using `'' + value`, an exception was thrown.
+  //
+  // The most common types that will cause this exception are `Symbol` instances
+  // and Temporal objects like `Temporal.Instant`. But any object that has a
+  // `valueOf` or `[Symbol.toPrimitive]` method that throws will also cause this
+  // exception. (Library authors do this to prevent users from using built-in
+  // numeric operators like `+` or comparison operators like `>=` because custom
+  // methods are needed to perform accurate arithmetic or comparison.)
+  //
+  // To fix the problem, coerce this object or symbol value to a string before
+  // passing it to React. The most reliable way is usually `String(value)`.
+  //
+  // To find which value is throwing, check the browser or debugger console.
+  // Before this exception was thrown, there should be `console.error` output
+  // that shows the type (Symbol, Temporal.PlainDate, etc.) that caused the
+  // problem and how that type was used: key, atrribute, input value prop, etc.
+  // In most cases, this console output also shows the component and its
+  // ancestor components where the exception happened.
+  //
+  // eslint-disable-next-line react-internal/safe-string-coercion
+  return "" + value;
+}
+function checkKeyStringCoercion(value) {
+  {
+    if (willCoercionThrow(value)) {
+      error(
+        "The provided key is an unsupported type %s." +
+          " This value must be coerced to a string before before using it here.",
+        typeName(value)
+      );
+
+      return testStringCoercion(value); // throw (to help callers find troubleshooting comments)
+    }
+  }
+}
+function checkPropStringCoercion(value, propName) {
+  {
+    if (willCoercionThrow(value)) {
+      error(
+        "The provided `%s` prop is an unsupported type %s." +
+          " This value must be coerced to a string before before using it here.",
+        propName,
+        typeName(value)
+      );
+
+      return testStringCoercion(value); // throw (to help callers find troubleshooting comments)
+    }
+  }
+}
+
 function resolveDefaultProps(Component, baseProps) {
   if (Component && Component.defaultProps) {
     // Resolve default props. Taken from ReactElement
@@ -6683,9 +6805,12 @@ function readContext(context) {
     };
 
     if (lastContextDependency === null) {
-      if (!(currentlyRenderingFiber !== null)) {
-        throw Error(
-          "Context can only be read while React is rendering. In classes, you can read it in the render method or getDerivedStateFromProps. In function components, you can read it directly in the function body, but not inside Hooks like useReducer() or useMemo()."
+      if (currentlyRenderingFiber === null) {
+        throw new Error(
+          "Context can only be read while React is rendering. " +
+            "In classes, you can read it in the render method or getDerivedStateFromProps. " +
+            "In function components, you can read it directly in the function body, but not " +
+            "inside Hooks like useReducer() or useMemo()."
         );
       } // This is the first dependency for this component. Create a new list.
 
@@ -7253,10 +7378,10 @@ function processUpdateQueue(workInProgress, props, instance, renderLanes) {
 }
 
 function callCallback(callback, context) {
-  if (!(typeof callback === "function")) {
-    throw Error(
-      "Invalid argument passed as callback. Expected a function. Instead received: " +
-        callback
+  if (typeof callback !== "function") {
+    throw new Error(
+      "Invalid argument passed as callback. Expected a function. Instead " +
+        ("received: " + callback)
     );
   }
 
@@ -7355,11 +7480,14 @@ var didWarnAboutInvalidateContextType;
   Object.defineProperty(fakeInternalInstance, "_processChildContext", {
     enumerable: false,
     value: function() {
-      {
-        throw Error(
-          "_processChildContext is not available in React 16+. This likely means you have multiple copies of React and are attempting to nest a React 15 tree inside a React 16 tree using unstable_renderSubtreeIntoContainer, which isn't supported. Try to make sure you have only one copy of React (and ideally, switch to ReactDOM.createPortal)."
-        );
-      }
+      throw new Error(
+        "_processChildContext is not available in React 16+. This likely " +
+          "means you have multiple copies of React and are attempting to nest " +
+          "a React 15 tree inside a React 16 tree using " +
+          "unstable_renderSubtreeIntoContainer, which isn't supported. Try " +
+          "to make sure you have only one copy of React (and ideally, switch " +
+          "to ReactDOM.createPortal)."
+      );
     }
   });
   Object.freeze(fakeInternalInstance);
@@ -8439,9 +8567,10 @@ var warnForMissingKey = function(child, returnFiber) {};
       return;
     }
 
-    if (!(typeof child._store === "object")) {
-      throw Error(
-        "React Component in warnForMissingKey should have a _store. This error is likely caused by a bug in React. Please file an issue."
+    if (typeof child._store !== "object") {
+      throw new Error(
+        "React Component in warnForMissingKey should have a _store. " +
+          "This error is likely caused by a bug in React. Please file an issue."
       );
     }
 
@@ -8510,9 +8639,12 @@ function coerceRef(returnFiber, current, element) {
       if (owner) {
         var ownerFiber = owner;
 
-        if (!(ownerFiber.tag === ClassComponent)) {
-          throw Error(
-            "Function components cannot have string refs. We recommend using useRef() instead. Learn more about using refs safely here: https://reactjs.org/link/strict-mode-string-ref"
+        if (ownerFiber.tag !== ClassComponent) {
+          throw new Error(
+            "Function components cannot have string refs. " +
+              "We recommend using useRef() instead. " +
+              "Learn more about using refs safely here: " +
+              "https://reactjs.org/link/strict-mode-string-ref"
           );
         }
 
@@ -8520,11 +8652,18 @@ function coerceRef(returnFiber, current, element) {
       }
 
       if (!inst) {
-        throw Error(
+        throw new Error(
           "Missing owner for string ref " +
             mixedRef +
-            ". This error is likely caused by a bug in React. Please file an issue."
+            ". This error is likely caused by a " +
+            "bug in React. Please file an issue."
         );
+      } // Assigning this to a const so Flow knows it won't change in the closure
+
+      var resolvedInst = inst;
+
+      {
+        checkPropStringCoercion(mixedRef, "ref");
       }
 
       var stringRef = "" + mixedRef; // Check if previous string ref matches new string ref
@@ -8539,11 +8678,11 @@ function coerceRef(returnFiber, current, element) {
       }
 
       var ref = function(value) {
-        var refs = inst.refs;
+        var refs = resolvedInst.refs;
 
         if (refs === emptyRefsObject) {
           // This is a lazy pooled frozen object, so we need to initialize.
-          refs = inst.refs = {};
+          refs = resolvedInst.refs = {};
         }
 
         if (value === null) {
@@ -8556,17 +8695,22 @@ function coerceRef(returnFiber, current, element) {
       ref._stringRef = stringRef;
       return ref;
     } else {
-      if (!(typeof mixedRef === "string")) {
-        throw Error(
+      if (typeof mixedRef !== "string") {
+        throw new Error(
           "Expected ref to be a function, a string, an object returned by React.createRef(), or null."
         );
       }
 
       if (!element._owner) {
-        throw Error(
+        throw new Error(
           "Element ref was specified as a string (" +
             mixedRef +
-            ") but no owner was set. This could happen for one of the following reasons:\n1. You may be adding a ref to a function component\n2. You may be adding a ref to a component that was not created inside a component's render method\n3. You have multiple copies of React loaded\nSee https://reactjs.org/link/refs-must-have-owner for more information."
+            ") but no owner was set. This could happen for one of" +
+            " the following reasons:\n" +
+            "1. You may be adding a ref to a function component\n" +
+            "2. You may be adding a ref to a component that was not created inside a component's render method\n" +
+            "3. You have multiple copies of React loaded\n" +
+            "See https://reactjs.org/link/refs-must-have-owner for more information."
         );
       }
     }
@@ -8577,16 +8721,15 @@ function coerceRef(returnFiber, current, element) {
 
 function throwOnInvalidObjectType(returnFiber, newChild) {
   var childString = Object.prototype.toString.call(newChild);
-
-  {
-    throw Error(
-      "Objects are not valid as a React child (found: " +
-        (childString === "[object Object]"
-          ? "object with keys {" + Object.keys(newChild).join(", ") + "}"
-          : childString) +
-        "). If you meant to render a collection of children, use an array instead."
-    );
-  }
+  throw new Error(
+    "Objects are not valid as a React child (found: " +
+      (childString === "[object Object]"
+        ? "object with keys {" + Object.keys(newChild).join(", ") + "}"
+        : childString) +
+      "). " +
+      "If you meant to render a collection of children, use an array " +
+      "instead."
+  );
 }
 
 function warnOnFunctionType(returnFiber) {
@@ -9202,9 +9345,10 @@ function ChildReconciler(shouldTrackSideEffects) {
     // but using the iterator instead.
     var iteratorFn = getIteratorFn(newChildrenIterable);
 
-    if (!(typeof iteratorFn === "function")) {
-      throw Error(
-        "An object is not an iterable. This error is likely caused by a bug in React. Please file an issue."
+    if (typeof iteratorFn !== "function") {
+      throw new Error(
+        "An object is not an iterable. This error is likely caused by a bug in " +
+          "React. Please file an issue."
       );
     }
 
@@ -9256,8 +9400,8 @@ function ChildReconciler(shouldTrackSideEffects) {
 
     var newChildren = iteratorFn.call(newChildrenIterable);
 
-    if (!(newChildren != null)) {
-      throw Error("An iterable object provided no iterator.");
+    if (newChildren == null) {
+      throw new Error("An iterable object provided no iterator.");
     }
 
     var resultingFirstChild = null;
@@ -9634,8 +9778,8 @@ function ChildReconciler(shouldTrackSideEffects) {
 var reconcileChildFibers = ChildReconciler(true);
 var mountChildFibers = ChildReconciler(false);
 function cloneChildFibers(current, workInProgress) {
-  if (!(current === null || workInProgress.child === current.child)) {
-    throw Error("Resuming work not yet implemented.");
+  if (current !== null && workInProgress.child !== current.child) {
+    throw new Error("Resuming work not yet implemented.");
   }
 
   if (workInProgress.child === null) {
@@ -9674,9 +9818,10 @@ var contextFiberStackCursor = createCursor(NO_CONTEXT);
 var rootInstanceStackCursor = createCursor(NO_CONTEXT);
 
 function requiredContext(c) {
-  if (!(c !== NO_CONTEXT)) {
-    throw Error(
-      "Expected host context to exist. This error is likely caused by a bug in React. Please file an issue."
+  if (c === NO_CONTEXT) {
+    throw new Error(
+      "Expected host context to exist. This error is likely caused by a bug " +
+        "in React. Please file an issue."
     );
   }
 
@@ -9893,21 +10038,19 @@ function prepareToHydrateHostInstance(
   hostContext
 ) {
   {
-    {
-      throw Error(
-        "Expected prepareToHydrateHostInstance() to never be called. This error is likely caused by a bug in React. Please file an issue."
-      );
-    }
+    throw new Error(
+      "Expected prepareToHydrateHostInstance() to never be called. " +
+        "This error is likely caused by a bug in React. Please file an issue."
+    );
   }
 }
 
 function prepareToHydrateHostTextInstance(fiber) {
   {
-    {
-      throw Error(
-        "Expected prepareToHydrateHostTextInstance() to never be called. This error is likely caused by a bug in React. Please file an issue."
-      );
-    }
+    throw new Error(
+      "Expected prepareToHydrateHostTextInstance() to never be called. " +
+        "This error is likely caused by a bug in React. Please file an issue."
+    );
   }
   var shouldUpdate = hydrateTextInstance();
 }
@@ -10109,11 +10252,14 @@ function warnOnHookMismatchInDev(currentHookName) {
 }
 
 function throwInvalidHookError() {
-  {
-    throw Error(
-      "Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:\n1. You might have mismatching versions of React and the renderer (such as React DOM)\n2. You might be breaking the Rules of Hooks\n3. You might have more than one copy of React in the same app\nSee https://reactjs.org/link/invalid-hook-call for tips about how to debug and fix this problem."
-    );
-  }
+  throw new Error(
+    "Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for" +
+      " one of the following reasons:\n" +
+      "1. You might have mismatching versions of React and the renderer (such as React DOM)\n" +
+      "2. You might be breaking the Rules of Hooks\n" +
+      "3. You might have more than one copy of React in the same app\n" +
+      "See https://reactjs.org/link/invalid-hook-call for tips about how to debug and fix this problem."
+  );
 }
 
 function areHookInputsEqual(nextDeps, prevDeps) {
@@ -10221,9 +10367,10 @@ function renderWithHooks(
     do {
       didScheduleRenderPhaseUpdateDuringThisPass = false;
 
-      if (!(numberOfReRenders < RE_RENDER_LIMIT)) {
-        throw Error(
-          "Too many re-renders. React limits the number of renders to prevent an infinite loop."
+      if (numberOfReRenders >= RE_RENDER_LIMIT) {
+        throw new Error(
+          "Too many re-renders. React limits the number of renders to prevent " +
+            "an infinite loop."
         );
       }
 
@@ -10289,9 +10436,10 @@ function renderWithHooks(
 
   didScheduleRenderPhaseUpdate = false;
 
-  if (!!didRenderTooFewHooks) {
-    throw Error(
-      "Rendered fewer hooks than expected. This may be caused by an accidental early return statement."
+  if (didRenderTooFewHooks) {
+    throw new Error(
+      "Rendered fewer hooks than expected. This may be caused by an accidental " +
+        "early return statement."
     );
   }
 
@@ -10413,8 +10561,8 @@ function updateWorkInProgressHook() {
     currentHook = nextCurrentHook;
   } else {
     // Clone from the current hook.
-    if (!(nextCurrentHook !== null)) {
-      throw Error("Rendered more hooks than during the previous render.");
+    if (nextCurrentHook === null) {
+      throw new Error("Rendered more hooks than during the previous render.");
     }
 
     currentHook = nextCurrentHook;
@@ -10470,7 +10618,7 @@ function mountReducer(reducer, initialArg, init) {
     lastRenderedState: initialState
   };
   hook.queue = queue;
-  var dispatch = (queue.dispatch = dispatchAction.bind(
+  var dispatch = (queue.dispatch = dispatchReducerAction.bind(
     null,
     currentlyRenderingFiber$1,
     queue
@@ -10482,8 +10630,8 @@ function updateReducer(reducer, initialArg, init) {
   var hook = updateWorkInProgressHook();
   var queue = hook.queue;
 
-  if (!(queue !== null)) {
-    throw Error(
+  if (queue === null) {
+    throw new Error(
       "Should have a queue. This is likely a bug in React. Please file an issue."
     );
   }
@@ -10540,7 +10688,7 @@ function updateReducer(reducer, initialArg, init) {
         var clone = {
           lane: updateLane,
           action: update.action,
-          eagerReducer: update.eagerReducer,
+          hasEagerState: update.hasEagerState,
           eagerState: update.eagerState,
           next: null
         };
@@ -10568,16 +10716,16 @@ function updateReducer(reducer, initialArg, init) {
             // this will never be skipped by the check above.
             lane: NoLane,
             action: update.action,
-            eagerReducer: update.eagerReducer,
+            hasEagerState: update.hasEagerState,
             eagerState: update.eagerState,
             next: null
           };
           newBaseQueueLast = newBaseQueueLast.next = _clone;
         } // Process this update.
 
-        if (update.eagerReducer === reducer) {
-          // If this update was processed eagerly, and its reducer matches the
-          // current reducer, we can use the eagerly computed state.
+        if (update.hasEagerState) {
+          // If this update is a state update (not a reducer) and was processed eagerly,
+          // we can use the eagerly computed state
           newState = update.eagerState;
         } else {
           var action = update.action;
@@ -10635,8 +10783,8 @@ function rerenderReducer(reducer, initialArg, init) {
   var hook = updateWorkInProgressHook();
   var queue = hook.queue;
 
-  if (!(queue !== null)) {
-    throw Error(
+  if (queue === null) {
+    throw new Error(
       "Should have a queue. This is likely a bug in React. Please file an issue."
     );
   }
@@ -10756,56 +10904,20 @@ function readFromUnsubscribedMutableSource(root, source, getSnapshot) {
     // the synchronous retry, it will block interleaved mutations, so we should
     // get a consistent read. Therefore, the following error should never be
     // visible to the user.
-    //
-    // If it were to become visible to the user, it suggests one of two things:
-    // a bug in React, or (more likely), a mutation during the render phase that
-    // caused the second re-render attempt to be different from the first.
-    //
-    // We know it's the second case if the logs are currently disabled. So in
-    // dev, we can present a more accurate error message.
-
-    {
-      // eslint-disable-next-line react-internal/no-production-logging
-      if (getIsStrictModeForDevtools()) {
-        // If getIsStrictModeForDevtools is true, this is the dev-only double render
-        // This is only reachable if there was a mutation during render. Show a helpful
-        // error message.
-        //
-        // Something interesting to note: because we only double render in
-        // development, this error will never happen during production. This is
-        // actually true of all errors that occur during a double render,
-        // because if the first render had thrown, we would have exited the
-        // begin phase without double rendering. We should consider suppressing
-        // any error from a double render (with a warning) to more closely match
-        // the production behavior.
-        var componentName = getComponentNameFromFiber(
-          currentlyRenderingFiber$1
-        );
-
-        {
-          throw Error(
-            "A mutable source was mutated while the " +
-              componentName +
-              " component was rendering. This is not supported. Move any mutations into event handlers or effects."
-          );
-        }
-      }
-    } // We expect this error not to be thrown during the synchronous retry,
+    // We expect this error not to be thrown during the synchronous retry,
     // because we blocked interleaved mutations.
 
-    {
-      throw Error(
-        "Cannot read from mutable source during the current render without tearing. This may be a bug in React. Please file an issue."
-      );
-    }
+    throw new Error(
+      "Cannot read from mutable source during the current render without tearing. This may be a bug in React. Please file an issue."
+    );
   }
 }
 
 function useMutableSource(hook, source, getSnapshot, subscribe) {
   var root = getWorkInProgressRoot();
 
-  if (!(root !== null)) {
-    throw Error(
+  if (root === null) {
+    throw new Error(
       "Expected a work-in-progress root. This is a bug in React. Please file an issue."
     );
   }
@@ -10937,7 +11049,7 @@ function useMutableSource(hook, source, getSnapshot, subscribe) {
       lastRenderedReducer: basicStateReducer,
       lastRenderedState: snapshot
     };
-    newQueue.dispatch = setSnapshot = dispatchAction.bind(
+    newQueue.dispatch = setSnapshot = dispatchSetState.bind(
       null,
       currentlyRenderingFiber$1,
       newQueue
@@ -10969,25 +11081,46 @@ function updateMutableSource(source, getSnapshot, subscribe) {
   return useMutableSource(hook, source, getSnapshot, subscribe);
 }
 
-function mountSyncExternalStore(subscribe, getSnapshot) {
+function mountSyncExternalStore(subscribe, getSnapshot, getServerSnapshot) {
   var fiber = currentlyRenderingFiber$1;
-  var hook = mountWorkInProgressHook(); // Read the current snapshot from the store on every render. This breaks the
-  // normal rules of React, and only works because store updates are
-  // always synchronous.
-
-  var nextSnapshot = getSnapshot();
+  var hook = mountWorkInProgressHook();
+  var nextSnapshot;
 
   {
-    if (!didWarnUncachedGetSnapshot) {
-      if (nextSnapshot !== getSnapshot()) {
-        error(
-          "The result of getSnapshot should be cached to avoid an infinite loop"
-        );
+    nextSnapshot = getSnapshot();
 
-        didWarnUncachedGetSnapshot = true;
+    {
+      if (!didWarnUncachedGetSnapshot) {
+        if (nextSnapshot !== getSnapshot()) {
+          error(
+            "The result of getSnapshot should be cached to avoid an infinite loop"
+          );
+
+          didWarnUncachedGetSnapshot = true;
+        }
       }
+    } // Unless we're rendering a blocking lane, schedule a consistency check.
+    // Right before committing, we will walk the tree and check if any of the
+    // stores were mutated.
+    //
+    // We won't do this if we're hydrating server-rendered content, because if
+    // the content is stale, it's already visible anyway. Instead we'll patch
+    // it up in a passive effect.
+
+    var root = getWorkInProgressRoot();
+
+    if (root === null) {
+      throw new Error(
+        "Expected a work-in-progress root. This is a bug in React. Please file an issue."
+      );
     }
-  }
+
+    if (!includesBlockingLane(root, renderLanes)) {
+      pushStoreConsistencyCheck(fiber, getSnapshot, nextSnapshot);
+    }
+  } // Read the current snapshot from the store on every render. This breaks the
+  // normal rules of React, and only works because store updates are
+  // always synchronous.
 
   hook.memoizedState = nextSnapshot;
   var inst = {
@@ -11010,26 +11143,11 @@ function mountSyncExternalStore(subscribe, getSnapshot) {
     updateStoreInstance.bind(null, fiber, inst, nextSnapshot, getSnapshot),
     undefined,
     null
-  ); // Unless we're rendering a blocking lane, schedule a consistency check. Right
-  // before committing, we will walk the tree and check if any of the stores
-  // were mutated.
-
-  var root = getWorkInProgressRoot();
-
-  if (!(root !== null)) {
-    throw Error(
-      "Expected a work-in-progress root. This is a bug in React. Please file an issue."
-    );
-  }
-
-  if (!includesBlockingLane(root, renderLanes)) {
-    pushStoreConsistencyCheck(fiber, getSnapshot, nextSnapshot);
-  }
-
+  );
   return nextSnapshot;
 }
 
-function updateSyncExternalStore(subscribe, getSnapshot) {
+function updateSyncExternalStore(subscribe, getSnapshot, getServerSnapshot) {
   var fiber = currentlyRenderingFiber$1;
   var hook = updateWorkInProgressHook(); // Read the current snapshot from the store on every render. This breaks the
   // normal rules of React, and only works because store updates are
@@ -11084,8 +11202,8 @@ function updateSyncExternalStore(subscribe, getSnapshot) {
 
     var root = getWorkInProgressRoot();
 
-    if (!(root !== null)) {
-      throw Error(
+    if (root === null) {
+      throw new Error(
         "Expected a work-in-progress root. This is a bug in React. Please file an issue."
       );
     }
@@ -11182,7 +11300,7 @@ function mountState(initialState) {
     lastRenderedState: initialState
   };
   hook.queue = queue;
-  var dispatch = (queue.dispatch = dispatchAction.bind(
+  var dispatch = (queue.dispatch = dispatchSetState.bind(
     null,
     currentlyRenderingFiber$1,
     queue
@@ -11646,7 +11764,7 @@ function rerenderOpaqueIdentifier() {
   return id;
 }
 
-function dispatchAction(fiber, queue, action) {
+function dispatchReducerAction(fiber, queue, action) {
   {
     if (typeof arguments[3] === "function") {
       error(
@@ -11657,65 +11775,54 @@ function dispatchAction(fiber, queue, action) {
     }
   }
 
-  var eventTime = requestEventTime();
   var lane = requestUpdateLane(fiber);
   var update = {
     lane: lane,
     action: action,
-    eagerReducer: null,
+    hasEagerState: false,
     eagerState: null,
     next: null
   };
-  var alternate = fiber.alternate;
 
-  if (
-    fiber === currentlyRenderingFiber$1 ||
-    (alternate !== null && alternate === currentlyRenderingFiber$1)
-  ) {
-    // This is a render phase update. Stash it in a lazily-created map of
-    // queue -> linked list of updates. After this render pass, we'll restart
-    // and apply the stashed updates on top of the work-in-progress hook.
-    didScheduleRenderPhaseUpdateDuringThisPass = didScheduleRenderPhaseUpdate = true;
-    var pending = queue.pending;
-
-    if (pending === null) {
-      // This is the first update. Create a circular list.
-      update.next = update;
-    } else {
-      update.next = pending.next;
-      pending.next = update;
-    }
-
-    queue.pending = update;
+  if (isRenderPhaseUpdate(fiber)) {
+    enqueueRenderPhaseUpdate(queue, update);
   } else {
-    if (isInterleavedUpdate(fiber)) {
-      var interleaved = queue.interleaved;
+    enqueueUpdate$1(fiber, queue, update);
 
-      if (interleaved === null) {
-        // This is the first update. Create a circular list.
-        update.next = update; // At the end of the current render, this queue's interleaved updates will
-        // be transferred to the pending queue.
+    var eventTime = requestEventTime();
+    var root = scheduleUpdateOnFiber(fiber, lane, eventTime);
 
-        pushInterleavedQueue(queue);
-      } else {
-        update.next = interleaved.next;
-        interleaved.next = update;
-      }
-
-      queue.interleaved = update;
-    } else {
-      var _pending = queue.pending;
-
-      if (_pending === null) {
-        // This is the first update. Create a circular list.
-        update.next = update;
-      } else {
-        update.next = _pending.next;
-        _pending.next = update;
-      }
-
-      queue.pending = update;
+    if (root !== null) {
+      entangleTransitionUpdate(root, queue, lane);
     }
+  }
+}
+
+function dispatchSetState(fiber, queue, action) {
+  {
+    if (typeof arguments[3] === "function") {
+      error(
+        "State updates from the useState() and useReducer() Hooks don't support the " +
+          "second callback argument. To execute a side effect after " +
+          "rendering, declare it in the component body with useEffect()."
+      );
+    }
+  }
+
+  var lane = requestUpdateLane(fiber);
+  var update = {
+    lane: lane,
+    action: action,
+    hasEagerState: false,
+    eagerState: null,
+    next: null
+  };
+
+  if (isRenderPhaseUpdate(fiber)) {
+    enqueueRenderPhaseUpdate(queue, update);
+  } else {
+    enqueueUpdate$1(fiber, queue, update);
+    var alternate = fiber.alternate;
 
     if (
       fiber.lanes === NoLanes &&
@@ -11741,7 +11848,7 @@ function dispatchAction(fiber, queue, action) {
           // time we enter the render phase, then the eager state can be used
           // without calling the reducer again.
 
-          update.eagerReducer = lastRenderedReducer;
+          update.hasEagerState = true;
           update.eagerState = eagerState;
 
           if (objectIs(eagerState, currentState)) {
@@ -11761,24 +11868,88 @@ function dispatchAction(fiber, queue, action) {
       }
     }
 
+    var eventTime = requestEventTime();
     var root = scheduleUpdateOnFiber(fiber, lane, eventTime);
 
-    if (isTransitionLane(lane) && root !== null) {
-      var queueLanes = queue.lanes; // If any entangled lanes are no longer pending on the root, then they
-      // must have finished. We can remove them from the shared queue, which
-      // represents a superset of the actually pending lanes. In some cases we
-      // may entangle more than we need to, but that's OK. In fact it's worse if
-      // we *don't* entangle when we should.
-
-      queueLanes = intersectLanes(queueLanes, root.pendingLanes); // Entangle the new transition lane with the other transition lanes.
-
-      var newQueueLanes = mergeLanes(queueLanes, lane);
-      queue.lanes = newQueueLanes; // Even if queue.lanes already include lane, we don't know for certain if
-      // the lane finished since the last time we entangled it. So we need to
-      // entangle it again, just to be sure.
-
-      markRootEntangled(root, newQueueLanes);
+    if (root !== null) {
+      entangleTransitionUpdate(root, queue, lane);
     }
+  }
+}
+
+function isRenderPhaseUpdate(fiber) {
+  var alternate = fiber.alternate;
+  return (
+    fiber === currentlyRenderingFiber$1 ||
+    (alternate !== null && alternate === currentlyRenderingFiber$1)
+  );
+}
+
+function enqueueRenderPhaseUpdate(queue, update) {
+  // This is a render phase update. Stash it in a lazily-created map of
+  // queue -> linked list of updates. After this render pass, we'll restart
+  // and apply the stashed updates on top of the work-in-progress hook.
+  didScheduleRenderPhaseUpdateDuringThisPass = didScheduleRenderPhaseUpdate = true;
+  var pending = queue.pending;
+
+  if (pending === null) {
+    // This is the first update. Create a circular list.
+    update.next = update;
+  } else {
+    update.next = pending.next;
+    pending.next = update;
+  }
+
+  queue.pending = update;
+}
+
+function enqueueUpdate$1(fiber, queue, update, lane) {
+  if (isInterleavedUpdate(fiber)) {
+    var interleaved = queue.interleaved;
+
+    if (interleaved === null) {
+      // This is the first update. Create a circular list.
+      update.next = update; // At the end of the current render, this queue's interleaved updates will
+      // be transferred to the pending queue.
+
+      pushInterleavedQueue(queue);
+    } else {
+      update.next = interleaved.next;
+      interleaved.next = update;
+    }
+
+    queue.interleaved = update;
+  } else {
+    var pending = queue.pending;
+
+    if (pending === null) {
+      // This is the first update. Create a circular list.
+      update.next = update;
+    } else {
+      update.next = pending.next;
+      pending.next = update;
+    }
+
+    queue.pending = update;
+  }
+}
+
+function entangleTransitionUpdate(root, queue, lane) {
+  if (isTransitionLane(lane)) {
+    var queueLanes = queue.lanes; // If any entangled lanes are no longer pending on the root, then they
+    // must have finished. We can remove them from the shared queue, which
+    // represents a superset of the actually pending lanes. In some cases we
+    // may entangle more than we need to, but that's OK. In fact it's worse if
+    // we *don't* entangle when we should.
+
+    queueLanes = intersectLanes(queueLanes, root.pendingLanes); // Entangle the new transition lane with the other transition lanes.
+
+    var newQueueLanes = mergeLanes(queueLanes, lane);
+    queue.lanes = newQueueLanes; // Even if queue.lanes already include lane, we don't know for certain if
+    // the lane finished since the last time we entangled it. So we need to
+    // entangle it again, just to be sure.
+
+    markRootEntangled(root, newQueueLanes);
   }
 }
 
@@ -11931,7 +12102,7 @@ var InvalidNestedHooksDispatcherOnRerenderInDEV = null;
       mountHookTypesDev();
       return mountMutableSource(source, getSnapshot, subscribe);
     },
-    useSyncExternalStore: function(subscribe, getSnapshot) {
+    useSyncExternalStore: function(subscribe, getSnapshot, getServerSnapshot) {
       currentHookNameInDev = "useSyncExternalStore";
       mountHookTypesDev();
       return mountSyncExternalStore(subscribe, getSnapshot);
@@ -12039,7 +12210,7 @@ var InvalidNestedHooksDispatcherOnRerenderInDEV = null;
       updateHookTypesDev();
       return mountMutableSource(source, getSnapshot, subscribe);
     },
-    useSyncExternalStore: function(subscribe, getSnapshot) {
+    useSyncExternalStore: function(subscribe, getSnapshot, getServerSnapshot) {
       currentHookNameInDev = "useSyncExternalStore";
       updateHookTypesDev();
       return mountSyncExternalStore(subscribe, getSnapshot);
@@ -12147,7 +12318,7 @@ var InvalidNestedHooksDispatcherOnRerenderInDEV = null;
       updateHookTypesDev();
       return updateMutableSource(source, getSnapshot, subscribe);
     },
-    useSyncExternalStore: function(subscribe, getSnapshot) {
+    useSyncExternalStore: function(subscribe, getSnapshot, getServerSnapshot) {
       currentHookNameInDev = "useSyncExternalStore";
       updateHookTypesDev();
       return updateSyncExternalStore(subscribe, getSnapshot);
@@ -12255,7 +12426,7 @@ var InvalidNestedHooksDispatcherOnRerenderInDEV = null;
       updateHookTypesDev();
       return updateMutableSource(source, getSnapshot, subscribe);
     },
-    useSyncExternalStore: function(subscribe, getSnapshot) {
+    useSyncExternalStore: function(subscribe, getSnapshot, getServerSnapshot) {
       currentHookNameInDev = "useSyncExternalStore";
       updateHookTypesDev();
       return updateSyncExternalStore(subscribe, getSnapshot);
@@ -12378,7 +12549,7 @@ var InvalidNestedHooksDispatcherOnRerenderInDEV = null;
       mountHookTypesDev();
       return mountMutableSource(source, getSnapshot, subscribe);
     },
-    useSyncExternalStore: function(subscribe, getSnapshot) {
+    useSyncExternalStore: function(subscribe, getSnapshot, getServerSnapshot) {
       currentHookNameInDev = "useSyncExternalStore";
       warnInvalidHookAccess();
       mountHookTypesDev();
@@ -12503,7 +12674,7 @@ var InvalidNestedHooksDispatcherOnRerenderInDEV = null;
       updateHookTypesDev();
       return updateMutableSource(source, getSnapshot, subscribe);
     },
-    useSyncExternalStore: function(subscribe, getSnapshot) {
+    useSyncExternalStore: function(subscribe, getSnapshot, getServerSnapshot) {
       currentHookNameInDev = "useSyncExternalStore";
       warnInvalidHookAccess();
       updateHookTypesDev();
@@ -12628,7 +12799,7 @@ var InvalidNestedHooksDispatcherOnRerenderInDEV = null;
       updateHookTypesDev();
       return updateMutableSource(source, getSnapshot, subscribe);
     },
-    useSyncExternalStore: function(subscribe, getSnapshot) {
+    useSyncExternalStore: function(subscribe, getSnapshot, getServerSnapshot) {
       currentHookNameInDev = "useSyncExternalStore";
       warnInvalidHookAccess();
       updateHookTypesDev();
@@ -12820,12 +12991,10 @@ function createCapturedValue(value, source) {
 }
 
 if (
-  !(
-    typeof ReactNativePrivateInterface.ReactFiberErrorDialog.showErrorDialog ===
-    "function"
-  )
+  typeof ReactNativePrivateInterface.ReactFiberErrorDialog.showErrorDialog !==
+  "function"
 ) {
-  throw Error(
+  throw new Error(
     "Expected ReactFiberErrorDialog.showErrorDialog to be a function."
   );
 }
@@ -13011,40 +13180,248 @@ function createClassErrorUpdate(fiber, errorInfo, lane) {
   return update;
 }
 
-function attachPingListener(root, wakeable, lanes) {
-  // Attach a listener to the promise to "ping" the root and retry. But only if
-  // one does not already exist for the lanes we're currently rendering (which
-  // acts like a "thread ID" here).
-  var pingCache = root.pingCache;
-  var threadIDs;
+function attachWakeableListeners(suspenseBoundary, root, wakeable, lanes) {
+  // Attach a ping listener
+  //
+  // The data might resolve before we have a chance to commit the fallback. Or,
+  // in the case of a refresh, we'll never commit a fallback. So we need to
+  // attach a listener now. When it resolves ("pings"), we can decide whether to
+  // try rendering the tree again.
+  //
+  // Only attach a listener if one does not already exist for the lanes
+  // we're currently rendering (which acts like a "thread ID" here).
+  //
+  // We only need to do this in concurrent mode. Legacy Suspense always
+  // commits fallbacks synchronously, so there are no pings.
+  if (suspenseBoundary.mode & ConcurrentMode) {
+    var pingCache = root.pingCache;
+    var threadIDs;
 
-  if (pingCache === null) {
-    pingCache = root.pingCache = new PossiblyWeakMap$1();
-    threadIDs = new Set();
-    pingCache.set(wakeable, threadIDs);
-  } else {
-    threadIDs = pingCache.get(wakeable);
-
-    if (threadIDs === undefined) {
+    if (pingCache === null) {
+      pingCache = root.pingCache = new PossiblyWeakMap$1();
       threadIDs = new Set();
       pingCache.set(wakeable, threadIDs);
-    }
-  }
+    } else {
+      threadIDs = pingCache.get(wakeable);
 
-  if (!threadIDs.has(lanes)) {
-    // Memoize using the thread ID to prevent redundant listeners.
-    threadIDs.add(lanes);
-    var ping = pingSuspendedRoot.bind(null, root, wakeable, lanes);
-
-    {
-      if (isDevToolsPresent) {
-        // If we have pending work still, restore the original updaters
-        restorePendingUpdaters(root, lanes);
+      if (threadIDs === undefined) {
+        threadIDs = new Set();
+        pingCache.set(wakeable, threadIDs);
       }
     }
 
-    wakeable.then(ping, ping);
+    if (!threadIDs.has(lanes)) {
+      // Memoize using the thread ID to prevent redundant listeners.
+      threadIDs.add(lanes);
+      var ping = pingSuspendedRoot.bind(null, root, wakeable, lanes);
+
+      {
+        if (isDevToolsPresent) {
+          // If we have pending work still, restore the original updaters
+          restorePendingUpdaters(root, lanes);
+        }
+      }
+
+      wakeable.then(ping, ping);
+    }
+  } // Retry listener
+  //
+  // If the fallback does commit, we need to attach a different type of
+  // listener. This one schedules an update on the Suspense boundary to turn
+  // the fallback state off.
+  //
+  // Stash the wakeable on the boundary fiber so we can access it in the
+  // commit phase.
+  //
+  // When the wakeable resolves, we'll attempt to render the boundary
+  // again ("retry").
+
+  var wakeables = suspenseBoundary.updateQueue;
+
+  if (wakeables === null) {
+    var updateQueue = new Set();
+    updateQueue.add(wakeable);
+    suspenseBoundary.updateQueue = updateQueue;
+  } else {
+    wakeables.add(wakeable);
   }
+}
+
+function resetSuspendedComponent(sourceFiber, rootRenderLanes) {
+  // A legacy mode Suspense quirk, only relevant to hook components.
+
+  var tag = sourceFiber.tag;
+
+  if (
+    (sourceFiber.mode & ConcurrentMode) === NoMode &&
+    (tag === FunctionComponent ||
+      tag === ForwardRef ||
+      tag === SimpleMemoComponent)
+  ) {
+    var currentSource = sourceFiber.alternate;
+
+    if (currentSource) {
+      sourceFiber.updateQueue = currentSource.updateQueue;
+      sourceFiber.memoizedState = currentSource.memoizedState;
+      sourceFiber.lanes = currentSource.lanes;
+    } else {
+      sourceFiber.updateQueue = null;
+      sourceFiber.memoizedState = null;
+    }
+  }
+}
+
+function markNearestSuspenseBoundaryShouldCapture(
+  returnFiber,
+  sourceFiber,
+  root,
+  rootRenderLanes
+) {
+  var hasInvisibleParentBoundary = hasSuspenseContext(
+    suspenseStackCursor.current,
+    InvisibleParentSuspenseContext
+  );
+  var node = returnFiber;
+
+  do {
+    if (
+      node.tag === SuspenseComponent &&
+      shouldCaptureSuspense(node, hasInvisibleParentBoundary)
+    ) {
+      // Found the nearest boundary.
+      var suspenseBoundary = node; // This marks a Suspense boundary so that when we're unwinding the stack,
+      // it captures the suspended "exception" and does a second (fallback) pass.
+
+      if ((suspenseBoundary.mode & ConcurrentMode) === NoMode) {
+        // Legacy Mode Suspense
+        //
+        // If the boundary is in legacy mode, we should *not*
+        // suspend the commit. Pretend as if the suspended component rendered
+        // null and keep rendering. When the Suspense boundary completes,
+        // we'll do a second pass to render the fallback.
+        if (suspenseBoundary === returnFiber) {
+          // Special case where we suspended while reconciling the children of
+          // a Suspense boundary's inner Offscreen wrapper fiber. This happens
+          // when a React.lazy component is a direct child of a
+          // Suspense boundary.
+          //
+          // Suspense boundaries are implemented as multiple fibers, but they
+          // are a single conceptual unit. The legacy mode behavior where we
+          // pretend the suspended fiber committed as `null` won't work,
+          // because in this case the "suspended" fiber is the inner
+          // Offscreen wrapper.
+          //
+          // Because the contents of the boundary haven't started rendering
+          // yet (i.e. nothing in the tree has partially rendered) we can
+          // switch to the regular, concurrent mode behavior: mark the
+          // boundary with ShouldCapture and enter the unwind phase.
+          suspenseBoundary.flags |= ShouldCapture;
+        } else {
+          suspenseBoundary.flags |= DidCapture;
+          sourceFiber.flags |= ForceUpdateForLegacySuspense; // We're going to commit this fiber even though it didn't complete.
+          // But we shouldn't call any lifecycle methods or callbacks. Remove
+          // all lifecycle effect tags.
+
+          sourceFiber.flags &= ~(LifecycleEffectMask | Incomplete);
+
+          if (enablePersistentOffscreenHostContainer) {
+            // Another legacy Suspense quirk. In persistent mode, if this is the
+            // initial mount, override the props of the host container to hide
+            // its contents.
+            var currentSuspenseBoundary = suspenseBoundary.alternate;
+
+            if (currentSuspenseBoundary === null) {
+              var offscreenFiber = suspenseBoundary.child;
+              var offscreenContainer = offscreenFiber.child;
+
+              if (offscreenContainer !== null) {
+                var children = offscreenContainer.memoizedProps.children;
+                var containerProps = getOffscreenContainerProps(
+                  "hidden",
+                  children
+                );
+                offscreenContainer.pendingProps = containerProps;
+                offscreenContainer.memoizedProps = containerProps;
+              }
+            }
+          }
+
+          if (sourceFiber.tag === ClassComponent) {
+            var currentSourceFiber = sourceFiber.alternate;
+
+            if (currentSourceFiber === null) {
+              // This is a new mount. Change the tag so it's not mistaken for a
+              // completed class component. For example, we should not call
+              // componentWillUnmount if it is deleted.
+              sourceFiber.tag = IncompleteClassComponent;
+            } else {
+              // When we try rendering again, we should not reuse the current fiber,
+              // since it's known to be in an inconsistent state. Use a force update to
+              // prevent a bail out.
+              var update = createUpdate(NoTimestamp, SyncLane);
+              update.tag = ForceUpdate;
+              enqueueUpdate(sourceFiber, update);
+            }
+          } // The source fiber did not complete. Mark it with Sync priority to
+          // indicate that it still has pending work.
+
+          sourceFiber.lanes = mergeLanes(sourceFiber.lanes, SyncLane);
+        }
+
+        return suspenseBoundary;
+      } // Confirmed that the boundary is in a concurrent mode tree. Continue
+      // with the normal suspend path.
+      //
+      // After this we'll use a set of heuristics to determine whether this
+      // render pass will run to completion or restart or "suspend" the commit.
+      // The actual logic for this is spread out in different places.
+      //
+      // This first principle is that if we're going to suspend when we complete
+      // a root, then we should also restart if we get an update or ping that
+      // might unsuspend it, and vice versa. The only reason to suspend is
+      // because you think you might want to restart before committing. However,
+      // it doesn't make sense to restart only while in the period we're suspended.
+      //
+      // Restarting too aggressively is also not good because it starves out any
+      // intermediate loading state. So we use heuristics to determine when.
+      // Suspense Heuristics
+      //
+      // If nothing threw a Promise or all the same fallbacks are already showing,
+      // then don't suspend/restart.
+      //
+      // If this is an initial render of a new tree of Suspense boundaries and
+      // those trigger a fallback, then don't suspend/restart. We want to ensure
+      // that we can show the initial loading state as quickly as possible.
+      //
+      // If we hit a "Delayed" case, such as when we'd switch from content back into
+      // a fallback, then we should always suspend/restart. Transitions apply
+      // to this case. If none is defined, JND is used instead.
+      //
+      // If we're already showing a fallback and it gets "retried", allowing us to show
+      // another level, but there's still an inner boundary that would show a fallback,
+      // then we suspend/restart for 500ms since the last time we showed a fallback
+      // anywhere in the tree. This effectively throttles progressive loading into a
+      // consistent train of commits. This also gives us an opportunity to restart to
+      // get to the completed state slightly earlier.
+      //
+      // If there's ambiguity due to batching it's resolved in preference of:
+      // 1) "delayed", 2) "initial render", 3) "retry".
+      //
+      // We want to ensure that a "busy" state doesn't get force committed. We want to
+      // ensure that new initial loading states can commit as soon as possible.
+
+      suspenseBoundary.flags |= ShouldCapture; // TODO: I think we can remove this, since we now use `DidCapture` in
+      // the begin phase to prevent an early bailout.
+
+      suspenseBoundary.lanes = rootRenderLanes;
+      return suspenseBoundary;
+    } // This boundary already captured during this render. Continue to the next
+    // boundary.
+
+    node = node.return;
+  } while (node !== null); // Could not find a Suspense boundary capable of capturing.
+
+  return null;
 }
 
 function throwException(
@@ -13069,182 +13446,37 @@ function throwException(
     typeof value === "object" &&
     typeof value.then === "function"
   ) {
+    // This is a wakeable. The component suspended.
     var wakeable = value;
-    // A legacy mode Suspense quirk, only relevant to hook components.
+    resetSuspendedComponent(sourceFiber);
 
-    var tag = sourceFiber.tag;
-
-    if (
-      (sourceFiber.mode & ConcurrentMode) === NoMode &&
-      (tag === FunctionComponent ||
-        tag === ForwardRef ||
-        tag === SimpleMemoComponent)
-    ) {
-      var currentSource = sourceFiber.alternate;
-
-      if (currentSource) {
-        sourceFiber.updateQueue = currentSource.updateQueue;
-        sourceFiber.memoizedState = currentSource.memoizedState;
-        sourceFiber.lanes = currentSource.lanes;
-      } else {
-        sourceFiber.updateQueue = null;
-        sourceFiber.memoizedState = null;
-      }
-    }
-
-    var hasInvisibleParentBoundary = hasSuspenseContext(
-      suspenseStackCursor.current,
-      InvisibleParentSuspenseContext
-    ); // Schedule the nearest Suspense to re-render the timed out view.
-
-    var _workInProgress = returnFiber;
-
-    do {
-      if (
-        _workInProgress.tag === SuspenseComponent &&
-        shouldCaptureSuspense(_workInProgress, hasInvisibleParentBoundary)
-      ) {
-        // Found the nearest boundary.
-        // Stash the promise on the boundary fiber. If the boundary times out, we'll
-        // attach another listener to flip the boundary back to its normal state.
-        var wakeables = _workInProgress.updateQueue;
-
-        if (wakeables === null) {
-          var updateQueue = new Set();
-          updateQueue.add(wakeable);
-          _workInProgress.updateQueue = updateQueue;
-        } else {
-          wakeables.add(wakeable);
-        } // If the boundary is in legacy mode, we should *not*
-        // suspend the commit. Pretend as if the suspended component rendered
-        // null and keep rendering. In the commit phase, we'll schedule a
-        // subsequent synchronous update to re-render the Suspense.
-        //
-        // Note: It doesn't matter whether the component that suspended was
-        // inside a concurrent mode tree. If the Suspense is outside of it, we
-        // should *not* suspend the commit.
-        //
-        // If the suspense boundary suspended itself suspended, we don't have to
-        // do this trick because nothing was partially started. We can just
-        // directly do a second pass over the fallback in this render and
-        // pretend we meant to render that directly.
-
-        if (
-          (_workInProgress.mode & ConcurrentMode) === NoMode &&
-          _workInProgress !== returnFiber
-        ) {
-          _workInProgress.flags |= DidCapture;
-          sourceFiber.flags |= ForceUpdateForLegacySuspense; // We're going to commit this fiber even though it didn't complete.
-          // But we shouldn't call any lifecycle methods or callbacks. Remove
-          // all lifecycle effect tags.
-
-          sourceFiber.flags &= ~(LifecycleEffectMask | Incomplete);
-
-          if (enablePersistentOffscreenHostContainer) {
-            // Another legacy Suspense quirk. In persistent mode, if this is the
-            // initial mount, override the props of the host container to hide
-            // its contents.
-            var currentSuspenseBoundary = _workInProgress.alternate;
-
-            if (currentSuspenseBoundary === null) {
-              var offscreenFiber = _workInProgress.child;
-              var offscreenContainer = offscreenFiber.child;
-
-              if (offscreenContainer !== null) {
-                var children = offscreenContainer.memoizedProps.children;
-                var containerProps = getOffscreenContainerProps(
-                  "hidden",
-                  children
-                );
-                offscreenContainer.pendingProps = containerProps;
-                offscreenContainer.memoizedProps = containerProps;
-              }
-            }
-          }
-
-          if (sourceFiber.tag === ClassComponent) {
-            var _currentSourceFiber = sourceFiber.alternate;
-
-            if (_currentSourceFiber === null) {
-              // This is a new mount. Change the tag so it's not mistaken for a
-              // completed class component. For example, we should not call
-              // componentWillUnmount if it is deleted.
-              sourceFiber.tag = IncompleteClassComponent;
-            } else {
-              // When we try rendering again, we should not reuse the current fiber,
-              // since it's known to be in an inconsistent state. Use a force update to
-              // prevent a bail out.
-              var update = createUpdate(NoTimestamp, SyncLane);
-              update.tag = ForceUpdate;
-              enqueueUpdate(sourceFiber, update);
-            }
-          } // The source fiber did not complete. Mark it with Sync priority to
-          // indicate that it still has pending work.
-
-          sourceFiber.lanes = mergeLanes(sourceFiber.lanes, SyncLane); // Exit without suspending.
-
-          return;
-        } // Confirmed that the boundary is in a concurrent mode tree. Continue
-        // with the normal suspend path.
-        //
-        // After this we'll use a set of heuristics to determine whether this
-        // render pass will run to completion or restart or "suspend" the commit.
-        // The actual logic for this is spread out in different places.
-        //
-        // This first principle is that if we're going to suspend when we complete
-        // a root, then we should also restart if we get an update or ping that
-        // might unsuspend it, and vice versa. The only reason to suspend is
-        // because you think you might want to restart before committing. However,
-        // it doesn't make sense to restart only while in the period we're suspended.
-        //
-        // Restarting too aggressively is also not good because it starves out any
-        // intermediate loading state. So we use heuristics to determine when.
-        // Suspense Heuristics
-        //
-        // If nothing threw a Promise or all the same fallbacks are already showing,
-        // then don't suspend/restart.
-        //
-        // If this is an initial render of a new tree of Suspense boundaries and
-        // those trigger a fallback, then don't suspend/restart. We want to ensure
-        // that we can show the initial loading state as quickly as possible.
-        //
-        // If we hit a "Delayed" case, such as when we'd switch from content back into
-        // a fallback, then we should always suspend/restart. Transitions apply
-        // to this case. If none is defined, JND is used instead.
-        //
-        // If we're already showing a fallback and it gets "retried", allowing us to show
-        // another level, but there's still an inner boundary that would show a fallback,
-        // then we suspend/restart for 500ms since the last time we showed a fallback
-        // anywhere in the tree. This effectively throttles progressive loading into a
-        // consistent train of commits. This also gives us an opportunity to restart to
-        // get to the completed state slightly earlier.
-        //
-        // If there's ambiguity due to batching it's resolved in preference of:
-        // 1) "delayed", 2) "initial render", 3) "retry".
-        //
-        // We want to ensure that a "busy" state doesn't get force committed. We want to
-        // ensure that new initial loading states can commit as soon as possible.
-
-        attachPingListener(root, wakeable, rootRenderLanes);
-        _workInProgress.flags |= ShouldCapture; // TODO: I think we can remove this, since we now use `DidCapture` in
-        // the begin phase to prevent an early bailout.
-
-        _workInProgress.lanes = rootRenderLanes;
-        return;
-      } // This boundary already captured during this render. Continue to the next
-      // boundary.
-
-      _workInProgress = _workInProgress.return;
-    } while (_workInProgress !== null); // No boundary was found. Fallthrough to error mode.
-    // TODO: Use invariant so the message is stripped in prod?
-
-    value = new Error(
-      (getComponentNameFromFiber(sourceFiber) || "A React component") +
-        " suspended while rendering, but no fallback UI was specified.\n" +
-        "\n" +
-        "Add a <Suspense fallback=...> component higher in the tree to " +
-        "provide a loading indicator or placeholder to display."
+    var suspenseBoundary = markNearestSuspenseBoundaryShouldCapture(
+      returnFiber,
+      sourceFiber,
+      root,
+      rootRenderLanes
     );
+
+    if (suspenseBoundary !== null) {
+      attachWakeableListeners(
+        suspenseBoundary,
+        root,
+        wakeable,
+        rootRenderLanes
+      );
+      return;
+    } else {
+      // No boundary was found. Fallthrough to error mode.
+      // TODO: We should never call getComponentNameFromFiber in production.
+      // Log a warning or something to prevent us from accidentally bundling it.
+      value = new Error(
+        (getComponentNameFromFiber(sourceFiber) || "A React component") +
+          " suspended while rendering, but no fallback UI was specified.\n" +
+          "\n" +
+          "Add a <Suspense fallback=...> component higher in the tree to " +
+          "provide a loading indicator or placeholder to display."
+      );
+    }
   } // We didn't find a boundary that could handle this type of exception. Start
   // over and traverse parent path again, this time treating the exception
   // as an error.
@@ -13260,10 +13492,8 @@ function throwException(
         workInProgress.flags |= ShouldCapture;
         var lane = pickArbitraryLane(rootRenderLanes);
         workInProgress.lanes = mergeLanes(workInProgress.lanes, lane);
-
-        var _update = createRootErrorUpdate(workInProgress, _errorInfo, lane);
-
-        enqueueCapturedUpdate(workInProgress, _update);
+        var update = createRootErrorUpdate(workInProgress, _errorInfo, lane);
+        enqueueCapturedUpdate(workInProgress, update);
         return;
       }
 
@@ -13286,13 +13516,13 @@ function throwException(
 
           workInProgress.lanes = mergeLanes(workInProgress.lanes, _lane); // Schedule the error boundary to re-render using updated state
 
-          var _update2 = createClassErrorUpdate(
+          var _update = createClassErrorUpdate(
             workInProgress,
             errorInfo,
             _lane
           );
 
-          enqueueCapturedUpdate(workInProgress, _update2);
+          enqueueCapturedUpdate(workInProgress, _update);
           return;
         }
 
@@ -13863,7 +14093,7 @@ function completeWork(current, workInProgress, renderLanes) {
           // If we hydrated, then we'll need to schedule an update for
           // the commit side-effects on the root.
           markUpdate(workInProgress);
-        } else if (!fiberRoot.hydrate) {
+        } else if (!fiberRoot.isDehydrated) {
           // Schedule an effect to clear this container at the start of the next commit.
           // This handles the case of React rendering into a container with previous children.
           // It's also safe to do for updates too, because current.child would only be null
@@ -13896,9 +14126,10 @@ function completeWork(current, workInProgress, renderLanes) {
         }
       } else {
         if (!newProps) {
-          if (!(workInProgress.stateNode !== null)) {
-            throw Error(
-              "We must have new props for new mounts. This error is likely caused by a bug in React. Please file an issue."
+          if (workInProgress.stateNode === null) {
+            throw new Error(
+              "We must have new props for new mounts. This error is likely " +
+                "caused by a bug in React. Please file an issue."
             );
           } // This can happen when we abort work.
 
@@ -13953,9 +14184,10 @@ function completeWork(current, workInProgress, renderLanes) {
         updateHostText(current, workInProgress, oldText, newText);
       } else {
         if (typeof newText !== "string") {
-          if (!(workInProgress.stateNode !== null)) {
-            throw Error(
-              "We must have new props for new mounts. This error is likely caused by a bug in React. Please file an issue."
+          if (workInProgress.stateNode === null) {
+            throw new Error(
+              "We must have new props for new mounts. This error is likely " +
+                "caused by a bug in React. Please file an issue."
             );
           } // This can happen when we abort work.
         }
@@ -14359,13 +14591,12 @@ function completeWork(current, workInProgress, renderLanes) {
     }
   }
 
-  {
-    throw Error(
-      "Unknown unit of work tag (" +
-        workInProgress.tag +
-        "). This error is likely caused by a bug in React. Please file an issue."
-    );
-  }
+  throw new Error(
+    "Unknown unit of work tag (" +
+      workInProgress.tag +
+      "). This error is likely caused by a bug in " +
+      "React. Please file an issue."
+  );
 }
 
 var ReactCurrentOwner$1 = ReactSharedInternals.ReactCurrentOwner;
@@ -15022,7 +15253,8 @@ function updateClassComponent(
 
       case true: {
         workInProgress.flags |= DidCapture;
-        workInProgress.flags |= ShouldCapture;
+        workInProgress.flags |= ShouldCapture; // eslint-disable-next-line react-internal/prod-error-codes
+
         var error$1 = new Error("Simulated error coming from DevTools");
         var lane = pickArbitraryLane(renderLanes);
         workInProgress.lanes = mergeLanes(workInProgress.lanes, lane); // Schedule the error boundary to re-render using updated state
@@ -15236,9 +15468,11 @@ function updateHostRoot(current, workInProgress, renderLanes) {
   pushHostRootContext(workInProgress);
   var updateQueue = workInProgress.updateQueue;
 
-  if (!(current !== null && updateQueue !== null)) {
-    throw Error(
-      "If the root does not have an updateQueue, we should have already bailed out. This error is likely caused by a bug in React. Please file an issue."
+  if (current === null || updateQueue === null) {
+    throw new Error(
+      "If the root does not have an updateQueue, we should have already " +
+        "bailed out. This error is likely caused by a bug in React. Please " +
+        "file an issue."
     );
   }
 
@@ -15257,7 +15491,7 @@ function updateHostRoot(current, workInProgress, renderLanes) {
     return bailoutOnAlreadyFinishedWork(current, workInProgress, renderLanes);
   }
 
-  if (root.hydrate && enterHydrationState()) {
+  if (root.isDehydrated && enterHydrationState()) {
     var child = mountChildFibers(
       workInProgress,
       null,
@@ -15433,14 +15667,12 @@ function mountLazyComponent(
   // because the fact that it's a separate type of work is an
   // implementation detail.
 
-  {
-    throw Error(
-      "Element type is invalid. Received a promise that resolves to: " +
-        Component +
-        ". Lazy element type must resolve to a class or function." +
-        hint
-    );
-  }
+  throw new Error(
+    "Element type is invalid. Received a promise that resolves to: " +
+      Component +
+      ". " +
+      ("Lazy element type must resolve to a class or function." + hint)
+  );
 }
 
 function mountIncompleteClassComponent(
@@ -16824,6 +17056,7 @@ function remountFiber(current, oldWorkInProgress, newWorkInProgress) {
     var returnFiber = oldWorkInProgress.return;
 
     if (returnFiber === null) {
+      // eslint-disable-next-line react-internal/prod-error-codes
       throw new Error("Cannot swap the root fiber.");
     } // Disconnect from the old current.
     // It will get deleted.
@@ -16842,6 +17075,7 @@ function remountFiber(current, oldWorkInProgress, newWorkInProgress) {
       var prevSibling = returnFiber.child;
 
       if (prevSibling === null) {
+        // eslint-disable-next-line react-internal/prod-error-codes
         throw new Error("Expected parent to have a child.");
       }
 
@@ -16849,6 +17083,7 @@ function remountFiber(current, oldWorkInProgress, newWorkInProgress) {
         prevSibling = prevSibling.sibling;
 
         if (prevSibling === null) {
+          // eslint-disable-next-line react-internal/prod-error-codes
           throw new Error("Expected to find the previous sibling.");
         }
       }
@@ -17318,13 +17553,12 @@ function beginWork(current, workInProgress, renderLanes) {
     }
   }
 
-  {
-    throw Error(
-      "Unknown unit of work tag (" +
-        workInProgress.tag +
-        "). This error is likely caused by a bug in React. Please file an issue."
-    );
-  }
+  throw new Error(
+    "Unknown unit of work tag (" +
+      workInProgress.tag +
+      "). This error is likely caused by a bug in " +
+      "React. Please file an issue."
+  );
 }
 
 function unwindWork(workInProgress, renderLanes) {
@@ -17357,9 +17591,10 @@ function unwindWork(workInProgress, renderLanes) {
       resetWorkInProgressVersions();
       var _flags = workInProgress.flags;
 
-      if (!((_flags & DidCapture) === NoFlags)) {
-        throw Error(
-          "The root failed to unmount after an error. This is likely a bug in React. Please file an issue."
+      if ((_flags & DidCapture) !== NoFlags) {
+        throw new Error(
+          "The root failed to unmount after an error. This is likely a bug in " +
+            "React. Please file an issue."
         );
       }
 
@@ -17711,11 +17946,10 @@ function commitBeforeMutationEffectsOnFiber(finishedWork) {
         break;
 
       default: {
-        {
-          throw Error(
-            "This unit of work tag should not have side-effects. This error is likely caused by a bug in React. Please file an issue."
-          );
-        }
+        throw new Error(
+          "This unit of work tag should not have side-effects. This error is " +
+            "likely caused by a bug in React. Please file an issue."
+        );
       }
     }
 
@@ -18182,11 +18416,11 @@ function commitLayoutEffectOnFiber(
       case LegacyHiddenComponent:
         break;
 
-      default: {
-        throw Error(
-          "This unit of work tag should not have side-effects. This error is likely caused by a bug in React. Please file an issue."
+      default:
+        throw new Error(
+          "This unit of work tag should not have side-effects. This error is " +
+            "likely caused by a bug in React. Please file an issue."
         );
-      }
     }
   }
 
@@ -18498,11 +18732,10 @@ function commitContainer(finishedWork) {
     }
   }
 
-  {
-    throw Error(
-      "This unit of work tag should not have side-effects. This error is likely caused by a bug in React. Please file an issue."
-    );
-  }
+  throw new Error(
+    "This unit of work tag should not have side-effects. This error is " +
+      "likely caused by a bug in React. Please file an issue."
+  );
 }
 
 function commitDeletion(finishedRoot, current, nearestMountedAncestor) {
@@ -19693,8 +19926,8 @@ function performConcurrentWorkOnRoot(root, didTimeout) {
   currentEventTime = NoTimestamp;
   currentEventTransitionLane = NoLanes;
 
-  if (!((executionContext & (RenderContext | CommitContext)) === NoContext)) {
-    throw Error("Should not already be working.");
+  if ((executionContext & (RenderContext | CommitContext)) !== NoContext) {
+    throw new Error("Should not already be working.");
   } // Flush any pending passive effects before deciding which lanes to work on,
   // in case they schedule additional work.
 
@@ -19814,8 +20047,8 @@ function recoverFromConcurrentError(root, errorRetryLanes) {
   executionContext |= RetryAfterError; // If an error occurred during hydration, discard server response and fall
   // back to client side render.
 
-  if (root.hydrate) {
-    root.hydrate = false;
+  if (root.isDehydrated) {
+    root.isDehydrated = false;
 
     {
       errorHydratingContainer(root.containerInfo);
@@ -19833,9 +20066,7 @@ function finishConcurrentRender(root, exitStatus, lanes) {
   switch (exitStatus) {
     case RootIncomplete:
     case RootFatalErrored: {
-      {
-        throw Error("Root did not complete. This is a bug in React.");
-      }
+      throw new Error("Root did not complete. This is a bug in React.");
     }
     // Flow knows about invariant, so it complains if I add a break
     // statement, but eslint doesn't know about invariant, so it complains
@@ -19940,9 +20171,7 @@ function finishConcurrentRender(root, exitStatus, lanes) {
     }
 
     default: {
-      {
-        throw Error("Unknown root exit status.");
-      }
+      throw new Error("Unknown root exit status.");
     }
   }
 }
@@ -20025,8 +20254,8 @@ function performSyncWorkOnRoot(root) {
     syncNestedUpdateFlag();
   }
 
-  if (!((executionContext & (RenderContext | CommitContext)) === NoContext)) {
-    throw Error("Should not already be working.");
+  if ((executionContext & (RenderContext | CommitContext)) !== NoContext) {
+    throw new Error("Should not already be working.");
   }
 
   flushPassiveEffects();
@@ -20045,8 +20274,8 @@ function performSyncWorkOnRoot(root) {
     executionContext |= RetryAfterError; // If an error occurred during hydration,
     // discard server response and fall back to client side render.
 
-    if (root.hydrate) {
-      root.hydrate = false;
+    if (root.isDehydrated) {
+      root.isDehydrated = false;
 
       {
         errorHydratingContainer(root.containerInfo);
@@ -20108,7 +20337,7 @@ function batchedUpdates$1(fn, a) {
 // Warning, this opts-out of checking the function body.
 
 // eslint-disable-next-line no-redeclare
-function flushSyncWithoutWarningIfAlreadyRendering(fn) {
+function flushSync(fn) {
   // In legacy mode, we flush pending passive effects at the beginning of the
   // next event, not at the end of the previous one.
   if (
@@ -20144,22 +20373,6 @@ function flushSyncWithoutWarningIfAlreadyRendering(fn) {
       flushSyncCallbacks();
     }
   }
-} // Overload the definition to the two valid signatures.
-// Warning, this opts-out of checking the function body.
-
-// eslint-disable-next-line no-redeclare
-function flushSync(fn) {
-  {
-    if ((executionContext & (RenderContext | CommitContext)) !== NoContext) {
-      error(
-        "flushSync was called from inside a lifecycle method. React cannot " +
-          "flush when React is already rendering. Consider moving this call to " +
-          "a scheduler task or micro task."
-      );
-    }
-  }
-
-  return flushSyncWithoutWarningIfAlreadyRendering(fn);
 }
 function pushRenderLanes(fiber, lanes) {
   push(subtreeRenderLanesCursor, subtreeRenderLanes, fiber);
@@ -20248,6 +20461,29 @@ function handleError(root, thrownValue) {
         stopProfilerTimerIfRunningAndRecordDelta(erroredWork, true);
       }
 
+      if (enableSchedulingProfiler) {
+        markComponentRenderStopped();
+
+        if (
+          thrownValue !== null &&
+          typeof thrownValue === "object" &&
+          typeof thrownValue.then === "function"
+        ) {
+          var wakeable = thrownValue;
+          markComponentSuspended(
+            erroredWork,
+            wakeable,
+            workInProgressRootRenderLanes
+          );
+        } else {
+          markComponentErrored(
+            erroredWork,
+            thrownValue,
+            workInProgressRootRenderLanes
+          );
+        }
+      }
+
       throwException(
         root,
         erroredWork.return,
@@ -20311,7 +20547,8 @@ function renderDidSuspend() {
 function renderDidSuspendDelayIfPossible() {
   if (
     workInProgressRootExitStatus === RootIncomplete ||
-    workInProgressRootExitStatus === RootSuspended
+    workInProgressRootExitStatus === RootSuspended ||
+    workInProgressRootExitStatus === RootErrored
   ) {
     workInProgressRootExitStatus = RootSuspendedWithDelay;
   } // Check if there are updates that we skipped tree that might have unblocked
@@ -20333,7 +20570,7 @@ function renderDidSuspendDelayIfPossible() {
   }
 }
 function renderDidError() {
-  if (workInProgressRootExitStatus !== RootCompleted) {
+  if (workInProgressRootExitStatus !== RootSuspendedWithDelay) {
     workInProgressRootExitStatus = RootErrored;
   }
 } // Called during render to determine if anything has suspended.
@@ -20386,11 +20623,10 @@ function renderRootSync(root, lanes) {
 
   if (workInProgress !== null) {
     // This is a sync render, so we should have finished the whole tree.
-    {
-      throw Error(
-        "Cannot commit an incomplete root. This error is likely caused by a bug in React. Please file an issue."
-      );
-    }
+    throw new Error(
+      "Cannot commit an incomplete root. This error is likely caused by a " +
+        "bug in React. Please file an issue."
+    );
   }
 
   workInProgressRoot = null;
@@ -20614,8 +20850,8 @@ function commitRootImpl(root, renderPriorityLevel) {
 
   flushRenderPhaseStrictModeWarningsInDEV();
 
-  if (!((executionContext & (RenderContext | CommitContext)) === NoContext)) {
-    throw Error("Should not already be working.");
+  if ((executionContext & (RenderContext | CommitContext)) !== NoContext) {
+    throw new Error("Should not already be working.");
   }
 
   var finishedWork = root.finishedWork;
@@ -20637,9 +20873,10 @@ function commitRootImpl(root, renderPriorityLevel) {
   root.finishedWork = null;
   root.finishedLanes = NoLanes;
 
-  if (!(finishedWork !== root.current)) {
-    throw Error(
-      "Cannot commit the same tree as before. This error is likely caused by a bug in React. Please file an issue."
+  if (finishedWork === root.current) {
+    throw new Error(
+      "Cannot commit the same tree as before. This error is likely caused by " +
+        "a bug in React. Please file an issue."
     );
   } // commitRoot never returns a continuation; it always finishes synchronously.
   // So we can clear these now to allow a new callback to be scheduled.
@@ -20881,8 +21118,8 @@ function flushPassiveEffectsImpl() {
 
   pendingPassiveEffectsLanes = NoLanes;
 
-  if (!((executionContext & (RenderContext | CommitContext)) === NoContext)) {
-    throw Error("Cannot flush passive effects while already rendering.");
+  if ((executionContext & (RenderContext | CommitContext)) !== NoContext) {
+    throw new Error("Cannot flush passive effects while already rendering.");
   }
 
   var prevExecutionContext = executionContext;
@@ -21128,12 +21365,12 @@ function checkForNestedUpdates() {
   if (nestedUpdateCount > NESTED_UPDATE_LIMIT) {
     nestedUpdateCount = 0;
     rootWithNestedUpdates = null;
-
-    {
-      throw Error(
-        "Maximum update depth exceeded. This can happen when a component repeatedly calls setState inside componentWillUpdate or componentDidUpdate. React limits the number of nested updates to prevent infinite loops."
-      );
-    }
+    throw new Error(
+      "Maximum update depth exceeded. This can happen when a component " +
+        "repeatedly calls setState inside componentWillUpdate or " +
+        "componentDidUpdate. React limits the number of nested updates to " +
+        "prevent infinite loops."
+    );
   }
 
   {
@@ -21339,7 +21576,7 @@ var beginWork$1;
           originalError._suppressLogging = true;
         }
       } // We always throw the original error in case the second render pass is not idempotent.
-      // This can happen if a memoized function or CommonJS module doesn't throw after first invokation.
+      // This can happen if a memoized function or CommonJS module doesn't throw after first invocation.
 
       throw originalError;
     }
@@ -21448,6 +21685,7 @@ function shouldForceFlushFallbacksInDEV() {
   return ReactCurrentActQueue.current !== null;
 }
 
+/* eslint-disable react-internal/prod-error-codes */
 var resolveFamily = null; // $FlowFixMe Flow gets confused by a WeakSet feature check below.
 
 var failedBoundaries = null;
@@ -22341,14 +22579,11 @@ function createFiberFromTypeAndProps(
           }
         }
 
-        {
-          throw Error(
-            "Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: " +
-              (type == null ? type : typeof type) +
-              "." +
-              info
-          );
-        }
+        throw new Error(
+          "Element type is invalid: expected a string (for built-in " +
+            "components) or a class/function (for composite components) " +
+            ("but got: " + (type == null ? type : typeof type) + "." + info)
+        );
       }
     }
   }
@@ -22530,7 +22765,7 @@ function FiberRootNode(containerInfo, tag, hydrate) {
   this.timeoutHandle = noTimeout;
   this.context = null;
   this.pendingContext = null;
-  this.hydrate = hydrate;
+  this.isDehydrated = hydrate;
   this.callbackNode = null;
   this.callbackPriority = NoLane;
   this.eventTimes = createLaneMap(NoLanes);
@@ -22561,11 +22796,11 @@ function FiberRootNode(containerInfo, tag, hydrate) {
   {
     switch (tag) {
       case ConcurrentRoot:
-        this._debugRootType = "createRoot()";
+        this._debugRootType = hydrate ? "hydrateRoot()" : "createRoot()";
         break;
 
       case LegacyRoot:
-        this._debugRootType = "createLegacyRoot()";
+        this._debugRootType = hydrate ? "hydrate()" : "render()";
         break;
     }
   }
@@ -22608,6 +22843,11 @@ function createPortal(
 ) {
   var key =
     arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+
+  {
+    checkKeyStringCoercion(key);
+  }
+
   return {
     // This tag allow us to uniquely identify this as a React Portal
     $$typeof: REACT_PORTAL_TYPE,
@@ -22651,16 +22891,12 @@ function findHostInstanceWithWarning(component, methodName) {
 
     if (fiber === undefined) {
       if (typeof component.render === "function") {
-        {
-          throw Error("Unable to find node on an unmounted component.");
-        }
+        throw new Error("Unable to find node on an unmounted component.");
       } else {
-        {
-          throw Error(
-            "Argument appears to not be a ReactComponent. Keys: " +
-              Object.keys(component)
-          );
-        }
+        var keys = Object.keys(component).join(",");
+        throw new Error(
+          "Argument appears to not be a ReactComponent. Keys: " + keys
+        );
       }
     }
 
@@ -22829,7 +23065,6 @@ var shouldSuspendImpl = function(fiber) {
 function shouldSuspend(fiber) {
   return shouldSuspendImpl(fiber);
 }
-var isStrictMode = false;
 var overrideHookState = null;
 var overrideHookStateDeletePath = null;
 var overrideHookStateRenamePath = null;
@@ -23052,20 +23287,6 @@ function getCurrentFiberForDevTools() {
   return current;
 }
 
-function getIsStrictModeForDevtools() {
-  return isStrictMode;
-}
-function setIsStrictModeForDevtools(newIsStrictMode) {
-  isStrictMode = newIsStrictMode;
-
-  {
-    if (newIsStrictMode) {
-      disableLogs();
-    } else {
-      reenableLogs();
-    }
-  }
-}
 function injectIntoDevTools(devToolsConfig) {
   var findFiberByHostInstance = devToolsConfig.findFiberByHostInstance;
   var ReactCurrentDispatcher = ReactSharedInternals.ReactCurrentDispatcher;
@@ -23094,7 +23315,6 @@ function injectIntoDevTools(devToolsConfig) {
     setRefreshHandler: setRefreshHandler,
     // Enables DevTools to append owner stacks to error messages in DEV mode.
     getCurrentFiber: getCurrentFiberForDevTools,
-    getIsStrictMode: getIsStrictModeForDevtools,
     // Enables DevTools to detect reconciler version rather than renderer version
     // which may not match for third party renderers.
     reconcilerVersion: ReactVersion

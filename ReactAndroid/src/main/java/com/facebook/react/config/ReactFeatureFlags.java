@@ -103,4 +103,6 @@ public class ReactFeatureFlags {
   public static boolean enableScrollViewSnapToAlignmentProp = true;
 
   public static boolean useDispatchUniqueForCoalescableEvents = false;
+
+  public static boolean useUpdatedTouchPreprocessing = false;
 }

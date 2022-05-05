@@ -54,7 +54,6 @@ import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.fabric.events.EventBeatManager;
-import com.facebook.react.fabric.events.EventCategoryDef;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.events.FabricEventEmitter;
 import com.facebook.react.fabric.mounting.MountItemDispatcher;
@@ -78,6 +77,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.ViewManagerPropertyUpdater;
 import com.facebook.react.uimanager.ViewManagerRegistry;
+import com.facebook.react.uimanager.events.EventCategoryDef;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcherImpl;
 import com.facebook.react.uimanager.events.LockFreeEventDispatcherImpl;
@@ -628,6 +628,15 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
           public int getSurfaceId() {
             return View.NO_ID;
           }
+
+          @Override
+          public String toString() {
+            String propsString =
+                IS_DEVELOPMENT_ENVIRONMENT
+                    ? (props != null ? props.toHashMap().toString() : "<null>")
+                    : "<hidden>";
+            return String.format("SYNC UPDATE PROPS [%d]: %s", reactTag, propsString);
+          }
         };
 
     // If the reactTag exists, we assume that it might at the end of the next
@@ -1016,6 +1025,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
           public int getSurfaceId() {
             return surfaceId;
           }
+
+          @Override
+          public String toString() {
+            return String.format("SET_JS_RESPONDER [%d] [surface:%d]", reactTag, surfaceId);
+          }
         });
   }
 
@@ -1034,6 +1048,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
           @Override
           public int getSurfaceId() {
             return View.NO_ID;
+          }
+
+          @Override
+          public String toString() {
+            return "CLEAR_JS_RESPONDER";
           }
         });
   }

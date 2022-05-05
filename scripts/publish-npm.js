@@ -96,6 +96,7 @@ try {
   echo(e.message);
   exit(1);
 }
+
 let releaseVersion;
 if (dryRunBuild) {
   releaseVersion = `${version}-${shortCommit}`;

@@ -74,7 +74,7 @@ class UIManagerBinding : public jsi::HostObject {
 
   jsi::Value getInspectorDataForInstance(
       jsi::Runtime &runtime,
-      SharedEventEmitter eventEmitter) const;
+      EventEmitter const &eventEmitter) const;
 
   /*
    * Stops React Native Surface with given id.

@@ -11,33 +11,16 @@
 THIS_DIR=$(cd -P "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)
 RNTESTER_DIR="$THIS_DIR/../packages/rn-tester"
 
-# Note: Keep in sync with FB internal.
-REQUIRED_COCOAPODS_VERSION="1.11.2"
-
+# Keep this separate for FB internal access.
 validate_env () {
-  # Check that CocoaPods is working.
-  if [ -z "$(command -v pod)" ]; then
-    echo "You need to install CocoaPods."
-    echo "See https://guides.cocoapods.org/using/getting-started.html#getting-started for instructions."
-    exit 1
-  fi
-
-  # // [TODO(macOS GH#774) Commenting this out to avoid hitting breaks everytime the agents images are updated
-  # COCOAPODS_VERSION=$(pod --version)
-  # if [[ "$COCOAPODS_VERSION" != "$REQUIRED_COCOAPODS_VERSION" ]];
-  # then
-  #   echo "You must have CocoaPods $REQUIRED_COCOAPODS_VERSION installed; you have $COCOAPODS_VERSION."
-  #   echo "Installing via gem is recommended:"
-  #   echo "  sudo gem install cocoapods -v $REQUIRED_COCOAPODS_VERSION"
-  #   exit 1
-  # fi
-  # // macOS]
+  cd "$RNTESTER_DIR" || exit
+  bundle check || exit
+  cd "$THIS_DIR" || exit
 }
 
 update_pods () {
-  validate_env
-
   cd "$RNTESTER_DIR" || exit
-  pod install
+  bundle check || exit
+  bundle exec pod install
   cd "$THIS_DIR" || exit
 }

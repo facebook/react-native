@@ -32,12 +32,8 @@ rn_xplat_cxx_library(
         ],
         prefix = "react/renderer/core",
     ),
-    compiler_flags = [
-        "-fexceptions",
-        "-frtti",
-        "-std=c++17",
-        "-Wall",
-    ],
+    compiler_flags_enable_exceptions = True,
+    compiler_flags_enable_rtti = True,  # Needed for DebugStringConvertible - need to find a non-RTTI way to do this / enable RTTI for debug builds only
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
     fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
     force_static = True,

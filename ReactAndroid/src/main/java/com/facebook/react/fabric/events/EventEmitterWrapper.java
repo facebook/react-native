@@ -16,6 +16,7 @@ import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.fabric.FabricSoLoader;
+import com.facebook.react.uimanager.events.EventCategoryDef;
 
 /**
  * This class holds reference to the C++ EventEmitter object. Instances of this class are created on

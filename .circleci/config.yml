@@ -65,6 +65,16 @@ commands:
           name: Initial Setup
           command: mkdir -p ./reports/{buck,build,junit,outputs}
 
+  setup_ruby:
+    steps:
+      - restore_cache:
+          key: 1-gems-{{ checksum "Gemfile.lock" }}
+      - run: bundle check || bundle install --path vendor/bundle --clean
+      - save_cache:
+          key: 1-gems-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+
   run_yarn:
     steps:
       - restore_cache:
@@ -223,7 +233,12 @@ jobs:
       # Note: The yarn gpg key needs to be refreshed to work around https://github.com/yarnpkg/yarn/issues/7866
       - run:
           name: Install additional GitHub bot dependencies
+          # TEMP: Added workaround from https://github.com/nodesource/distributions/issues/1266#issuecomment-932583579
           command: |
+            curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+            apt update && apt install -y shellcheck jq
+            apt-get install openssl ca-certificates
+            update-ca-certificates
             curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
             apt update && apt install -y shellcheck jq
 
@@ -352,6 +367,7 @@ jobs:
     steps:
       - checkout
       - setup_artifacts
+      - setup_ruby
       - run_yarn
 
       - run: |
@@ -405,7 +421,7 @@ jobs:
 
       - run:
           name: Setup the CocoaPods environment
-          command: pod setup
+          command: bundle exec pod setup
 
       - with_rntester_pods_cache_span:
           steps:
@@ -585,26 +601,6 @@ jobs:
           command: cd template/android/ && ./gradlew assembleDebug
 
   # -------------------------
-  #    JOBS: Test Docker
-  # -------------------------
-  test_docker_android:
-    machine: true
-    steps:
-      - checkout
-      - run:
-          name: Configure Node
-          command: |
-            source ~/.bashrc
-            nvm i node
-            echo y | npx envinfo@latest
-      - run:
-          name: Pulls down the React Native Community Android Docker image
-          command: npm run docker-setup-android
-      - run:
-          name: Builds the Docker image with a compiled instance of the test app
-          command: npm run docker-build-android
-
-  # -------------------------
   #    JOBS: Windows
   # -------------------------
   test_windows:
@@ -760,12 +756,21 @@ jobs:
             - store_artifacts:
                 path: ~/react-native/build/
                 destination: build
+      - when:
+          condition:
+            matches: { pattern: '^pull\/.*$', value: << pipeline.git.branch >> }
+          steps:
+            - install_github_bot_deps
+            - run:
+                name: Post link to PR build artifacts (pull-bot)
+                command: GITHUB_TOKEN="$PUBLIC_PULLBOT_GITHUB_TOKEN_A""$PUBLIC_PULLBOT_GITHUB_TOKEN_B" scripts/circleci/post-artifacts-link.sh
 
   # -------------------------
   #    JOBS: Nightly
   # -------------------------
   nightly_job:
-    machine: true
+    machine:
+      image: ubuntu-2004:202010-01
     steps:
       - run:
           name: Nightly

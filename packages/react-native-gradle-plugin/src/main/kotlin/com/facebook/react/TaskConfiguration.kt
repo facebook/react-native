@@ -49,6 +49,7 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactExte
 
   val execCommand = nodeExecutableAndArgs + cliPath
   val enableHermes = config.enableHermesForVariant(variant)
+  val cleanup = config.deleteDebugFilesForVariant(variant)
   val bundleEnabled = variant.checkBundleEnabled(config)
 
   val bundleTask =
@@ -100,8 +101,7 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactExte
 
         it.reactRoot = config.reactRoot.get().asFile
         it.hermesCommand = detectedHermesCommand(config)
-        it.hermesFlags =
-            if (isRelease) config.hermesFlagsRelease.get() else config.hermesFlagsDebug.get()
+        it.hermesFlags = config.hermesFlagsForVariant(variant)
         it.jsBundleFile = jsBundleFile
         it.composeSourceMapsCommand = nodeExecutableAndArgs + config.composeSourceMapsPath.get()
         it.jsPackagerSourceMapFile = jsPackagerSourceMapFile
@@ -166,7 +166,7 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactExte
     if (config.enableVmCleanup.get()) {
       val libDir = "$buildDir/intermediates/transforms/"
       val targetVariant = ".*/transforms/[^/]*/$targetPath/.*".toRegex()
-      it.doFirst { cleanupVMFiles(libDir, targetVariant, enableHermes, isRelease) }
+      it.doFirst { cleanupVMFiles(libDir, targetVariant, enableHermes, cleanup) }
     }
   }
 
@@ -174,7 +174,7 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactExte
     if (config.enableVmCleanup.get()) {
       val libDir = "$buildDir/intermediates/stripped_native_libs/${targetPath}/out/lib/"
       val targetVariant = ".*/stripped_native_libs/$targetPath/out/lib/.*".toRegex()
-      it.doLast { cleanupVMFiles(libDir, targetVariant, enableHermes, isRelease) }
+      it.doLast { cleanupVMFiles(libDir, targetVariant, enableHermes, cleanup) }
     }
   }
 
@@ -182,7 +182,7 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactExte
     if (config.enableVmCleanup.get()) {
       val libDir = "$buildDir/intermediates/merged_native_libs/${targetPath}/out/lib/"
       val targetVariant = ".*/merged_native_libs/$targetPath/out/lib/.*".toRegex()
-      it.doLast { cleanupVMFiles(libDir, targetVariant, enableHermes, isRelease) }
+      it.doLast { cleanupVMFiles(libDir, targetVariant, enableHermes, cleanup) }
     }
   }
 
@@ -217,7 +217,7 @@ private fun Project.cleanupVMFiles(
     libDir: String,
     targetVariant: Regex,
     enableHermes: Boolean,
-    isRelease: Boolean
+    cleanup: Boolean
 ) {
   // Delete the VM related libraries that this build doesn't need.
   // The application can manage this manually by setting 'enableVmCleanup: false'
@@ -230,7 +230,7 @@ private fun Project.cleanupVMFiles(
       // For Hermes, delete all the libjsc* files
       it.include("**/libjsc*.so")
 
-      if (isRelease) {
+      if (cleanup) {
         // Reduce size by deleting the debugger/inspector
         it.include("**/libhermes-inspector.so")
         it.include("**/libhermes-executor-debug.so")
@@ -245,7 +245,7 @@ private fun Project.cleanupVMFiles(
       // For JSC, delete all the libhermes* files
       it.include("**/libhermes*.so")
       // Delete the libjscexecutor from release build
-      if (isRelease) {
+      if (cleanup) {
         it.include("**/libjscexecutor.so")
       }
     }
@@ -270,5 +270,5 @@ private fun BaseVariant.checkBundleEnabled(config: ReactExtension): Boolean {
   return isRelease
 }
 
-private val BaseVariant.isRelease: Boolean
+internal val BaseVariant.isRelease: Boolean
   get() = name.toLowerCase(Locale.ROOT).contains("release")

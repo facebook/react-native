@@ -5,13 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.fabric.events;
+package com.facebook.react.uimanager.events;
 
-import static com.facebook.react.fabric.events.EventCategoryDef.CONTINUOUS;
-import static com.facebook.react.fabric.events.EventCategoryDef.CONTINUOUS_END;
-import static com.facebook.react.fabric.events.EventCategoryDef.CONTINUOUS_START;
-import static com.facebook.react.fabric.events.EventCategoryDef.DISCRETE;
-import static com.facebook.react.fabric.events.EventCategoryDef.UNSPECIFIED;
+import static com.facebook.react.uimanager.events.EventCategoryDef.CONTINUOUS;
+import static com.facebook.react.uimanager.events.EventCategoryDef.CONTINUOUS_END;
+import static com.facebook.react.uimanager.events.EventCategoryDef.CONTINUOUS_START;
+import static com.facebook.react.uimanager.events.EventCategoryDef.DISCRETE;
+import static com.facebook.react.uimanager.events.EventCategoryDef.UNSPECIFIED;
 
 import androidx.annotation.IntDef;
 

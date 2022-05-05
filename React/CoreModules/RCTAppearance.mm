@@ -128,7 +128,9 @@ RCT_EXPORT_MODULE(Appearance)
 RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
 {
 #if !TARGET_OS_OSX // [TODO(macOS GH#774)
-  _currentColorScheme = RCTColorSchemePreference(nil);
+  if (_currentColorScheme == nil) {
+    _currentColorScheme = RCTColorSchemePreference(nil);
+  }
 #endif // ]TODO(macOS GH#774)
   return _currentColorScheme;
 }
