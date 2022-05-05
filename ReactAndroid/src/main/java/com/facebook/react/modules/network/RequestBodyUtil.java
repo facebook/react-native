@@ -67,7 +67,7 @@ import okio.Source;
         byte[] decodedDataUrString = Base64.decode(fileContentUriStr.split(",")[1], Base64.DEFAULT);
         Bitmap bitMap = BitmapFactory.decodeByteArray(decodedDataUrString, 0, decodedDataUrString.length);
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        bitMap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);  
+        bitMap.compress(Bitmap.CompressFormat.PNG, 0, bytes);  
         InputStream inputStream = new ByteArrayInputStream(bytes.toByteArray());
         return inputStream;
       }
