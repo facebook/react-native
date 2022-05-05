@@ -10,15 +10,14 @@
 
 'use strict';
 
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
+
+const ReactNative = require('../../Renderer/shims/ReactNative');
 const {AnimatedEvent} = require('../AnimatedEvent');
+const NativeAnimatedHelper = require('../NativeAnimatedHelper');
 const AnimatedNode = require('./AnimatedNode');
 const AnimatedStyle = require('./AnimatedStyle');
-const NativeAnimatedHelper = require('../NativeAnimatedHelper');
-const ReactNative = require('../../Renderer/shims/ReactNative');
-
 const invariant = require('invariant');
-
-import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
 class AnimatedProps extends AnimatedNode {
   _props: Object;
@@ -38,7 +37,7 @@ class AnimatedProps extends AnimatedNode {
   }
 
   __getValue(): Object {
-    const props = {};
+    const props: {[string]: any | ((...args: any) => void)} = {};
     for (const key in this._props) {
       const value = this._props[key];
       if (value instanceof AnimatedNode) {
@@ -57,7 +56,7 @@ class AnimatedProps extends AnimatedNode {
   }
 
   __getAnimatedValue(): Object {
-    const props = {};
+    const props: {[string]: any} = {};
     for (const key in this._props) {
       const value = this._props[key];
       if (value instanceof AnimatedNode) {
@@ -165,7 +164,7 @@ class AnimatedProps extends AnimatedNode {
   }
 
   __getNativeConfig(): Object {
-    const propsConfig = {};
+    const propsConfig: {[string]: number} = {};
     for (const propKey in this._props) {
       const value = this._props[propKey];
       if (value instanceof AnimatedNode) {

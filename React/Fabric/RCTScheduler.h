@@ -10,11 +10,13 @@
 
 #import <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #import <react/renderer/core/ComponentDescriptor.h>
+#import <react/renderer/core/EventListener.h>
 #import <react/renderer/core/LayoutConstraints.h>
 #import <react/renderer/core/LayoutContext.h>
 #import <react/renderer/mounting/MountingCoordinator.h>
 #import <react/renderer/scheduler/SchedulerToolbox.h>
 #import <react/renderer/scheduler/SurfaceHandler.h>
+#import <react/renderer/uimanager/UIManager.h>
 #import <react/utils/ContextContainer.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -47,6 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RCTScheduler : NSObject
 
 @property (atomic, weak, nullable) id<RCTSchedulerDelegate> delegate;
+@property (readonly) std::shared_ptr<facebook::react::UIManager> const uiManager;
 
 - (instancetype)initWithToolbox:(facebook::react::SchedulerToolbox)toolbox;
 
@@ -63,6 +66,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)onAllAnimationsComplete;
 
 - (void)animationTick;
+
+- (void)addEventListener:(std::shared_ptr<facebook::react::EventListener> const &)listener;
+
+- (void)removeEventListener:(std::shared_ptr<facebook::react::EventListener> const &)listener;
 
 @end
 

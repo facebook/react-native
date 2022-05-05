@@ -55,7 +55,7 @@ LOCAL_SHARED_LIBRARIES = libfb libfbjni libreact_nativemodule_core libjsi
 LOCAL_STATIC_LIBRARIES = libcallinvokerholder libreactperfloggerjni
 
 # Compile all local c++ files
-LOCAL_SRC_FILES := $(LOCAL_PATH)/ReactCommon/TurboModuleManager.cpp $(LOCAL_PATH)/ReactCommon/OnLoad.cpp
+LOCAL_SRC_FILES := $(LOCAL_PATH)/ReactCommon/CompositeTurboModuleManagerDelegate.cpp $(LOCAL_PATH)/ReactCommon/OnLoad.cpp $(LOCAL_PATH)/ReactCommon/TurboModuleManager.cpp
 
 # Build the files in this directory as a shared library
 include $(BUILD_SHARED_LIBRARY)

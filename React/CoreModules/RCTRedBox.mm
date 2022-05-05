@@ -155,7 +155,7 @@
                     accessibilityIdentifier:@""
                                    selector:nil
                                       block:customButtonHandlers[i]];
-      button.frame = CGRectMake(buttonWidth * (4 + i), bottomButtonHeight, buttonWidth, buttonHeight);
+      button.frame = CGRectMake(buttonWidth * (double)(4 + i), bottomButtonHeight, buttonWidth, buttonHeight);
       [rootView addSubview:button];
     }
 

@@ -213,7 +213,7 @@ const AsyncStorage = {
       //
       // Is there a way to avoid using the map but fix the bug in this breaking test?
       // https://github.com/facebook/react-native/commit/8dd8ad76579d7feef34c014d387bf02065692264
-      const map = {};
+      const map: {[string]: string} = {};
       result &&
         result.forEach(([key, value]) => {
           map[key] = value;

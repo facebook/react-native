@@ -44,7 +44,7 @@ def use_react_native! (options={})
   pod 'FBLazyVector', :path => "#{prefix}/Libraries/FBLazyVector"
   pod 'FBReactNativeSpec', :path => "#{prefix}/React/FBReactNativeSpec"
   pod 'RCTRequired', :path => "#{prefix}/Libraries/RCTRequired"
-  pod 'RCTTypeSafety', :path => "#{prefix}/Libraries/TypeSafety"
+  pod 'RCTTypeSafety', :path => "#{prefix}/Libraries/TypeSafety", :modular_headers => true
   pod 'React', :path => "#{prefix}/"
   pod 'React-Core', :path => "#{prefix}/"
   pod 'React-CoreModules', :path => "#{prefix}/React/CoreModules"
@@ -72,13 +72,13 @@ def use_react_native! (options={})
   pod 'React-runtimeexecutor', :path => "#{prefix}/ReactCommon/runtimeexecutor"
   pod 'React-perflogger', :path => "#{prefix}/ReactCommon/reactperflogger"
   pod 'React-logger', :path => "#{prefix}/ReactCommon/logger"
-  pod 'ReactCommon/turbomodule/core', :path => "#{prefix}/ReactCommon"
+  pod 'ReactCommon/turbomodule/core', :path => "#{prefix}/ReactCommon", :modular_headers => true
   pod 'Yoga', :path => "#{prefix}/ReactCommon/yoga", :modular_headers => true
 
   pod 'DoubleConversion', :podspec => "#{prefix}/third-party-podspecs/DoubleConversion.podspec"
   pod 'glog', :podspec => "#{prefix}/third-party-podspecs/glog.podspec"
   pod 'boost', :podspec => "#{prefix}/third-party-podspecs/boost.podspec"
-  pod 'RCT-Folly', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec"
+  pod 'RCT-Folly', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec", :modular_headers => true
 
   if ENV['USE_CODEGEN_DISCOVERY'] == '1'
     app_path = options[:app_path]
@@ -96,7 +96,7 @@ def use_react_native! (options={})
     generate_react_codegen_podspec!(react_codegen_spec)
   end
 
-  pod 'React-Codegen', :path => $CODEGEN_OUTPUT_DIR
+  pod 'React-Codegen', :path => $CODEGEN_OUTPUT_DIR, :modular_headers => true
 
   if fabric_enabled
     checkAndGenerateEmptyThirdPartyProvider!(prefix)
@@ -104,20 +104,15 @@ def use_react_native! (options={})
     pod 'React-rncore', :path => "#{prefix}/ReactCommon"
     pod 'React-graphics', :path => "#{prefix}/ReactCommon/react/renderer/graphics"
     pod 'React-jsi/Fabric', :path => "#{prefix}/ReactCommon/jsi"
-    pod 'React-RCTFabric', :path => "#{prefix}/React"
+    pod 'React-RCTFabric', :path => "#{prefix}/React", :modular_headers => true
     pod 'RCT-Folly/Fabric', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec"
   end
 
   if hermes_enabled
     pod 'React-hermes', :path => "#{prefix}/ReactCommon/hermes"
-    if ENV['BUILD_HERMES_SOURCE'] == '1'
-      Pod::UI.puts "[Hermes] Building Hermes from source"
-      hermes_source_path = downloadAndConfigureHermesSource(prefix)
-      pod 'hermes-engine', :path => "#{hermes_source_path}/hermes-engine.podspec"
-    else
-      Pod::UI.warn "[Hermes] Installing Hermes from CocoaPods. The `hermes-engine` pod has been deprecated and will not see future updates."
-      pod 'hermes-engine', '~> 0.11.0'
-    end
+    Pod::UI.puts "[Hermes] Building Hermes from source"
+    hermes_source_path = downloadAndConfigureHermesSource(prefix)
+    pod 'hermes-engine', :path => "#{hermes_source_path}/hermes-engine.podspec"
     pod 'libevent', '~> 2.1.12'
   end
 
@@ -258,7 +253,23 @@ def fix_library_search_paths(installer)
   end
 end
 
-def react_native_post_install(installer)
+def set_node_modules_user_settings(installer, react_native_path)
+  puts "Setting REACT_NATIVE build settings"
+  projects = installer.aggregate_targets
+    .map{ |t| t.user_project }
+    .uniq{ |p| p.path }
+    .push(installer.pods_project)
+
+  projects.each do |project|
+    project.build_configurations.each do |config|
+      config.build_settings["REACT_NATIVE_PATH"] = File.join("${PODS_ROOT}", "..", react_native_path)
+    end
+
+    project.save()
+  end
+end
+
+def react_native_post_install(installer, react_native_path = "../node_modules/react-native")
   if has_pod(installer, 'Flipper')
     flipper_post_install(installer)
   end
@@ -272,6 +283,7 @@ def react_native_post_install(installer)
   end
   modify_flags_for_new_architecture(installer, cpp_flags)
 
+  set_node_modules_user_settings(installer, react_native_path)
 end
 
 def modify_flags_for_new_architecture(installer, cpp_flags)

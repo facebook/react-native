@@ -23,7 +23,7 @@ import type {EndCallback} from './animations/Animation';
 import type {TimingAnimationConfig} from './animations/TimingAnimation';
 import type {DecayAnimationConfig} from './animations/DecayAnimation';
 import type {SpringAnimationConfig} from './animations/SpringAnimation';
-
+import type {Numeric as AnimatedNumeric} from './AnimatedImplementation';
 import AnimatedColor from './nodes/AnimatedColor';
 
 /**
@@ -162,6 +162,8 @@ const loop = function (
 ): CompositeAnimation {
   return emptyAnimation;
 };
+
+export type {AnimatedNumeric as Numeric};
 
 module.exports = {
   Value: AnimatedValue,

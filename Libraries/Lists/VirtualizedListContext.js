@@ -142,10 +142,14 @@ export function VirtualizedListCellContextProvider({
   cellKey: string,
   children: React.Node,
 }): React.Node {
-  const context = useContext(VirtualizedListContext);
+  // Avoid setting a newly created context object if the values are identical.
+  const currContext = useContext(VirtualizedListContext);
+  const context = useMemo(
+    () => (currContext == null ? null : {...currContext, cellKey}),
+    [currContext, cellKey],
+  );
   return (
-    <VirtualizedListContext.Provider
-      value={context == null ? null : {...context, cellKey}}>
+    <VirtualizedListContext.Provider value={context}>
       {children}
     </VirtualizedListContext.Provider>
   );

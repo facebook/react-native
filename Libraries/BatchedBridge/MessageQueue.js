@@ -10,13 +10,12 @@
 
 'use strict';
 
-const ErrorUtils = require('../vendor/core/ErrorUtils');
 const Systrace = require('../Performance/Systrace');
-
 const deepFreezeAndThrowOnMutationInDev = require('../Utilities/deepFreezeAndThrowOnMutationInDev');
-const invariant = require('invariant');
 const stringifySafe = require('../Utilities/stringifySafe').default;
 const warnOnce = require('../Utilities/warnOnce');
+const ErrorUtils = require('../vendor/core/ErrorUtils');
+const invariant = require('invariant');
 
 export type SpyData = {
   type: number,
@@ -199,7 +198,7 @@ class MessageQueue {
           delete this._debugInfo[this._callID - DEBUG_INFO_LIMIT];
         }
         if (this._successCallbacks.size > 500) {
-          const info = {};
+          const info: {[number]: {method: string, module: string}} = {};
           this._successCallbacks.forEach((_, callID) => {
             const debug = this._debugInfo[callID];
             const module = debug && this._remoteModuleTable[debug[0]];

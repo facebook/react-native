@@ -87,12 +87,12 @@ generateCodegenArtifactsFromSchema () {
     describe "Generating codegen artifacts from schema"
     pushd "$RN_DIR" >/dev/null || exit 1
         if [ "$RCT_SCRIPT_LIBRARY_TYPE" = "all" ]; then
-            runSpecCodegen "$TEMP_OUTPUT_DIR/$RCT_SCRIPT_CODEGEN_MODULE_DIR/$RCT_SCRIPT_LIBRARY_NAME" "modules"
-            runSpecCodegen "$TEMP_OUTPUT_DIR/$RCT_SCRIPT_CODEGEN_COMPONENT_DIR/$RCT_SCRIPT_LIBRARY_NAME" "components"
+            runSpecCodegen "$TEMP_OUTPUT_DIR" "modules"
+            runSpecCodegen "$TEMP_OUTPUT_DIR" "components"
         elif [ "$RCT_SCRIPT_LIBRARY_TYPE" = "components" ]; then
-            runSpecCodegen "$TEMP_OUTPUT_DIR/$RCT_SCRIPT_CODEGEN_COMPONENT_DIR/$RCT_SCRIPT_LIBRARY_NAME" "$RCT_SCRIPT_LIBRARY_TYPE"
+            runSpecCodegen "$TEMP_OUTPUT_DIR" "$RCT_SCRIPT_LIBRARY_TYPE"
         elif [ "$RCT_SCRIPT_LIBRARY_TYPE" = "modules" ]; then
-            runSpecCodegen "$TEMP_OUTPUT_DIR/$RCT_SCRIPT_CODEGEN_MODULE_DIR/$RCT_SCRIPT_LIBRARY_NAME" "$RCT_SCRIPT_LIBRARY_TYPE"
+            runSpecCodegen "$TEMP_OUTPUT_DIR" "$RCT_SCRIPT_LIBRARY_TYPE"
         fi
     popd >/dev/null || exit 1
 }
@@ -100,7 +100,7 @@ generateCodegenArtifactsFromSchema () {
 generateArtifacts () {
     describe "Generating codegen artifacts"
     pushd "$RCT_SCRIPT_RN_DIR" >/dev/null || exit 1
-        "$NODE_BINARY" "scripts/generate-artifacts.js" --path "$RCT_SCRIPT_APP_PATH" --outputPath "$TEMP_OUTPUT_DIR" --fabricEnabled "$RCT_SCRIPT_FABRIC_ENABLED" --configFileDir "$RCT_SCRIPT_CONFIG_FILE_DIR"
+        "$NODE_BINARY" "scripts/generate-artifacts.js" --path "$RCT_SCRIPT_APP_PATH" --outputPath "$TEMP_OUTPUT_DIR" --fabricEnabled "$RCT_SCRIPT_FABRIC_ENABLED" --configFileDir "$RCT_SCRIPT_CONFIG_FILE_DIR" --nodeBinary "$NODE_BINARY"
     popd >/dev/null || exit 1
 }
 

@@ -32,6 +32,8 @@
  */
 - (void)sendEventWithName:(NSString *)name body:(id)body;
 
+- (BOOL)canSendEvents_DEPRECATED;
+
 /**
  * These methods will be called when the first observer is added and when the
  * last observer is removed (or when dealloc is called), respectively. These

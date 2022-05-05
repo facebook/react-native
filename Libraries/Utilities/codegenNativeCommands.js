@@ -15,7 +15,7 @@ type Options<T = string> = $ReadOnly<{|
 |}>;
 
 function codegenNativeCommands<T: interface {}>(options: Options<$Keys<T>>): T {
-  const commandObj = {};
+  const commandObj: {[$Keys<T>]: (...$ReadOnlyArray<mixed>) => void} = {};
 
   options.supportedCommands.forEach(command => {
     commandObj[command] = (ref, ...args) => {

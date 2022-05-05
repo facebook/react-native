@@ -133,9 +133,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
 
     @UiThread
     void executeBatch(long maxBatchNumber, NativeAnimatedNodesManager nodesManager) {
-
       List<UIThreadOperation> operations;
-
       if (mSynchronizedAccess) {
         synchronized (this) {
           operations = drainQueueIntoList(maxBatchNumber);
@@ -143,13 +141,19 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
       } else {
         operations = drainQueueIntoList(maxBatchNumber);
       }
-      for (UIThreadOperation operation : operations) {
-        operation.execute(nodesManager);
+      if (operations != null) {
+        for (UIThreadOperation operation : operations) {
+          operation.execute(nodesManager);
+        }
       }
     }
 
     @UiThread
-    private List<UIThreadOperation> drainQueueIntoList(long maxBatchNumber) {
+    private @Nullable List<UIThreadOperation> drainQueueIntoList(long maxBatchNumber) {
+      if (mQueue.isEmpty() && mPeekedOperation == null) {
+        return null;
+      }
+
       List<UIThreadOperation> operations = new ArrayList<>();
       while (true) {
         // Due to a race condition, we manually "carry-over" a polled item from previous batch

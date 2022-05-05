@@ -9,20 +9,8 @@
 
 'use strict';
 
-let RNCodegen;
-try {
-  RNCodegen = require('../packages/react-native-codegen/lib/generators/RNCodegen.js');
-} catch (e) {
-  RNCodegen = require('react-native-codegen/lib/generators/RNCodegen.js');
-  if (!RNCodegen) {
-    throw 'RNCodegen not found.';
-  }
-}
-
-const fs = require('fs');
-const mkdirp = require('mkdirp');
-const path = require('path');
 const yargs = require('yargs');
+const executor = require('./codegen/generate-specs-cli-executor');
 
 const argv = yargs
   .option('p', {
@@ -36,7 +24,7 @@ const argv = yargs
   .option('o', {
     alias: 'outputDir',
     describe:
-      'Path to directory where native code source files should be saved.',
+      'Path to the root directory where native code source files should be saved.',
   })
   .option('n', {
     alias: 'libraryName',
@@ -59,81 +47,8 @@ const argv = yargs
     'Please provide platform, schema path, and output directory.',
   ).argv;
 
-const GENERATORS = {
-  all: {
-    android: ['componentsAndroid', 'modulesAndroid'],
-    ios: ['componentsIOS', 'modulesIOS'],
-  },
-  components: {
-    android: ['componentsAndroid'],
-    ios: ['componentsIOS'],
-  },
-  modules: {
-    android: ['modulesAndroid'],
-    ios: ['modulesIOS'],
-  },
-};
-
-function generateSpec(
-  platform,
-  schemaPath,
-  outputDirectory,
-  libraryName,
-  packageName,
-  libraryType,
-) {
-  const schemaText = fs.readFileSync(schemaPath, 'utf-8');
-
-  if (schemaText == null) {
-    throw new Error(`Can't find schema at ${schemaPath}`);
-  }
-
-  if (!outputDirectory) {
-    outputDirectory = path.resolve(__dirname, '..', 'Libraries', libraryName);
-  }
-  mkdirp.sync(outputDirectory);
-
-  let schema;
-  try {
-    schema = JSON.parse(schemaText);
-  } catch (err) {
-    throw new Error(`Can't parse schema to JSON. ${schemaPath}`);
-  }
-
-  if (GENERATORS[libraryType] == null) {
-    throw new Error(`Invalid library type. ${libraryType}`);
-  }
-
-  RNCodegen.generate(
-    {
-      libraryName,
-      schema,
-      outputDirectory,
-      packageName,
-    },
-    {
-      generators: GENERATORS[libraryType][platform],
-    },
-  );
-
-  if (platform === 'android') {
-    // Move all components C++ files to a structured jni folder for now.
-    // Note: this should've been done by RNCodegen's generators, but:
-    // * the generators don't support platform option yet
-    // * this subdir structure is Android-only, not applicable to iOS
-    const files = fs.readdirSync(outputDirectory);
-    const jniOutputDirectory = `${outputDirectory}/jni/react/renderer/components/${libraryName}`;
-    mkdirp.sync(jniOutputDirectory);
-    files
-      .filter(f => f.endsWith('.h') || f.endsWith('.cpp'))
-      .forEach(f => {
-        fs.renameSync(`${outputDirectory}/${f}`, `${jniOutputDirectory}/${f}`);
-      });
-  }
-}
-
 function main() {
-  generateSpec(
+  executor.execute(
     argv.platform,
     argv.schemaPath,
     argv.outputDir,

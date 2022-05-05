@@ -8,14 +8,16 @@
  * @flow
  */
 
-import RNTesterList from './RNTesterList';
-
 import type {
-  ExamplesList,
-  RNTesterNavState,
-  RNTesterJsStallsState,
   ComponentList,
+  ExamplesList,
+  RNTesterModuleInfo,
+  RNTesterState,
+  SectionData,
 } from '../types/RNTesterTypes';
+
+import RNTesterList from './RNTesterList';
+import {AsyncStorage} from 'react-native';
 
 export const Screens = {
   COMPONENTS: 'components',
@@ -23,24 +25,21 @@ export const Screens = {
   BOOKMARKS: 'bookmarks',
 };
 
-export const initialNavState: RNTesterNavState = {
+export const initialState: RNTesterState = {
   activeModuleKey: null,
   activeModuleTitle: null,
   activeModuleExampleKey: null,
-  screen: Screens.COMPONENTS,
-  bookmarks: {components: [], apis: []},
-  recentlyUsed: {components: [], apis: []},
-};
-
-export const initialJsStallsState: RNTesterJsStallsState = {
-  stallInterval: null,
-  busyTime: null,
-  filteredStall: 0,
-  tracking: false,
+  screen: null,
+  bookmarks: null,
+  recentlyUsed: null,
 };
 
 const filterEmptySections = (examplesList: ExamplesList): any => {
-  const filteredSections = {};
+  const filteredSections: {
+    ['apis' | 'bookmarks' | 'components']: Array<
+      SectionData<RNTesterModuleInfo>,
+    >,
+  } = {};
   const sectionKeys = Object.keys(examplesList);
 
   sectionKeys.forEach(key => {
@@ -132,4 +131,23 @@ export const getExamplesListWithBookmarksAndRecentlyUsed = ({
   };
 
   return filterEmptySections(examplesList);
+};
+
+export const getInitialStateFromAsyncStorage = async (
+  storageKey: string,
+): Promise<RNTesterState> => {
+  const initialStateString = await AsyncStorage.getItem(storageKey);
+
+  if (!initialStateString) {
+    return {
+      activeModuleKey: null,
+      activeModuleTitle: null,
+      activeModuleExampleKey: null,
+      screen: Screens.COMPONENTS,
+      bookmarks: {components: [], apis: []},
+      recentlyUsed: {components: [], apis: []},
+    };
+  } else {
+    return JSON.parse(initialStateString);
+  }
 };

@@ -101,12 +101,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
     for (NSUInteger i = 0; i < _length - 1; i++) {
       _frames[i] = _frames[i + 1];
     }
-    _frames[_length - 1] = _FPS / scale;
+    _frames[_length - 1] = (double)_FPS / scale;
 
     CGMutablePathRef path = CGPathCreateMutable();
     CGPathMoveToPoint(path, NULL, 0, (CGFloat)_height);
     for (NSUInteger i = 0; i < _length; i++) {
-      CGPathAddLineToPoint(path, NULL, (CGFloat)i, _height - _frames[i]);
+      CGPathAddLineToPoint(path, NULL, (CGFloat)i, (double)_height - _frames[i]);
     }
     CGPathAddLineToPoint(path, NULL, (CGFloat)_length - 1, (CGFloat)_height);
 
