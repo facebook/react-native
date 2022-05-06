@@ -94,11 +94,11 @@ class Linking extends NativeEventEmitter<LinkingEventDefinitions> {
    * See https://reactnative.dev/docs/linking#getinitialurl
    */
   getInitialURL(): Promise<?string> {
-    return Platform.OS === 'android'
-      ? InteractionManager.runAfterInteractions().then(() =>
-          nullthrows(NativeIntentAndroid).getInitialURL(),
-        )
-      : nullthrows(NativeLinkingManager).getInitialURL();
+    if (Platform.OS === 'android') {
+      return nullthrows(NativeIntentAndroid).getInitialURL();
+    } else {
+      return nullthrows(NativeLinkingManager).getInitialURL();
+    }
   }
 
   /*
