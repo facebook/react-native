@@ -1166,6 +1166,11 @@ jobs:
       # END: Stables and nightlies
 
       - run: node ./scripts/publish-npm.js << parameters.publish_npm_args >>
+      - run:
+          name: Zip Hermes Native Symbols
+          command: zip -r /tmp/hermes-native-symbols.zip ~/react-native/ReactAndroid/hermes-engine/build/intermediates/cmake/
+      - store_artifacts:
+          path: /tmp/hermes-native-symbols.zip
 
       # START: Commitlies
       # Provide a react-native package for this commit as a Circle CI release artifact.
