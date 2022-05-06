@@ -113,7 +113,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
 
     @AnyThread
     boolean isEmpty() {
-      return mQueue.isEmpty();
+      return mQueue.isEmpty() && mPeekedOperation != null;
     }
 
     void setSynchronizedAccess(boolean isSynchronizedAccess) {
@@ -150,7 +150,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
 
     @UiThread
     private @Nullable List<UIThreadOperation> drainQueueIntoList(long maxBatchNumber) {
-      if (mQueue.isEmpty() && mPeekedOperation == null) {
+      if (isEmpty()) {
         return null;
       }
 
