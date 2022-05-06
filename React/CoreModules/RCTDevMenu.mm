@@ -297,10 +297,10 @@ RCT_EXPORT_MODULE()
           addObject:[RCTDevMenuItem
                         buttonItemWithTitle:@"Debugger Unavailable"
                                     handler:^{
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
                                       NSString *message = RCTTurboModuleEnabled()
                                           ? @"Debugging with Chrome is not supported when TurboModules are enabled."
                                           : @"Include the RCTWebSocket library to enable JavaScript debugging.";
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
                                       UIAlertController *alertController =
                                           [UIAlertController alertControllerWithTitle:@"Debugger Unavailable"
                                                                               message:message
@@ -319,10 +319,10 @@ RCT_EXPORT_MODULE()
                                                                                completion:NULL];
 #else // [TODO(macOS GH#774)
                                       NSAlert *alert = [[NSAlert alloc] init];
-                                      [alert setMessageText:@"Remote JS Debugger Unavailable"];
-                                      [alert setInformativeText:@"You need to include the RCTWebSocket library to enable remote JS debugging"];
+                                      [alert setMessageText:@"Debugger Unavailable"];
+                                      [alert setInformativeText:message];
                                       [alert addButtonWithTitle:@"OK"];
-                                      [alert setAlertStyle:NSWarningAlertStyle];
+                                      [alert setAlertStyle:NSAlertStyleWarning];
                                       [alert beginSheetModalForWindow:[NSApp keyWindow] completionHandler:nil];
 #endif // ]TODO(macOS GH#774)
                                     }]];
