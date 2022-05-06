@@ -25,7 +25,7 @@ extern const int RCT_PACKAGER_CLIENT_PROTOCOL_VERSION;
 @protocol RCTPackagerClientMethod <NSObject>
 
 - (void)handleRequest:(NSDictionary<NSString *, id> *)params withResponder:(RCTPackagerClientResponder *)responder;
-- (void)handlePackageNotification:(NSDictionary<NSString *, id> *)params;
+- (void)handlePackagerNotification:(NSDictionary<NSString *, id> *)params;
 
 @optional
 
