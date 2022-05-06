@@ -13,7 +13,7 @@ module.exports = {
   transform: {
     '^.+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp)$':
       '<rootDir>/jest/assetFileTransformer.js',
-    '.*': './jest/preprocessor_DO_NOT_USE.js',
+    '.*': './jest/private/preprocessor.js',
   },
   setupFiles: ['./jest/setup.js'],
   timers: 'fake',

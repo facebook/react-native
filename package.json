@@ -14,9 +14,6 @@
     "outputName": "js-test-results.xml"
   },
   "files": [
-    "!template/node_modules",
-    "!template/package-lock.json",
-    "!template/yarn.lock",
     "android",
     "cli.js",
     "flow",
@@ -25,6 +22,7 @@
     "interface.js",
     "jest-preset.js",
     "jest",
+    "!jest/private",
     "Libraries",
     "LICENSE",
     "local-cli",
@@ -60,6 +58,9 @@
     "sdks/hermes-engine.podspec",
     "template.config.js",
     "template",
+    "!template/node_modules",
+    "!template/package-lock.json",
+    "!template/yarn.lock",
     "third-party-podspecs"
   ],
   "scripts": {
