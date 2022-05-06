@@ -22,7 +22,7 @@ using namespace facebook::react;
 @interface RCTDevSplitBundleLoader () <NativeDevSplitBundleLoaderSpec>
 @end
 
-#if RCT_DEV_MENU
+#if RCT_DEV_MENU | RCT_PACKAGER_LOADING_FUNCTIONALITY
 
 @implementation RCTDevSplitBundleLoader
 

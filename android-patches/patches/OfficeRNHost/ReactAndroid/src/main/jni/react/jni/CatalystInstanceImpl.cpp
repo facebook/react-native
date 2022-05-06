@@ -1,6 +1,6 @@
 --- ./ReactAndroid/src/main/jni/react/jni/CatalystInstanceImpl.cpp	2022-01-11 17:41:29.000000000 -0800
 +++ /var/folders/vs/8_b205053dddbcv7btj0w0v80000gn/T/update-1h8V3n/merge/OfficeRNHost/ReactAndroid/src/main/jni/react/jni/CatalystInstanceImpl.cpp	2022-01-12 16:43:26.000000000 -0800
-@@ -103,6 +103,7 @@
+@@ -106,6 +106,7 @@
  void CatalystInstanceImpl::registerNatives() {
    registerHybrid({
        makeNativeMethod("initHybrid", CatalystInstanceImpl::initHybrid),
@@ -8,15 +8,15 @@
        makeNativeMethod(
            "initializeBridge", CatalystInstanceImpl::initializeBridge),
        makeNativeMethod(
-@@ -135,6 +136,7 @@
+@@ -138,6 +139,7 @@
            CatalystInstanceImpl::handleMemoryPressure),
        makeNativeMethod(
            "getRuntimeExecutor", CatalystInstanceImpl::getRuntimeExecutor),
 +      makeNativeMethod("getPointerOfInstancePointer", CatalystInstanceImpl::getPointerOfInstancePointer),
        makeNativeMethod(
-           "warnOnLegacyNativeModuleSystemUse",
-           CatalystInstanceImpl::warnOnLegacyNativeModuleSystemUse),
-@@ -143,6 +145,23 @@
+           "getRuntimeScheduler", CatalystInstanceImpl::getRuntimeScheduler),
+       makeNativeMethod(
+@@ -151,6 +153,23 @@
    JNativeRunnable::registerNatives();
  }
  
@@ -40,7 +40,7 @@
  void log(ReactNativeLogLevel level, const char *message) {
    switch (level) {
      case ReactNativeLogLevelInfo:
-@@ -166,19 +185,14 @@
+@@ -175,19 +194,14 @@
      jni::alias_ref<ReactCallback::javaobject> callback,
      // This executor is actually a factory holder.
      JavaScriptExecutorHolder *jseh,
@@ -63,7 +63,7 @@
  
    // This used to be:
    //
-@@ -197,12 +211,13 @@
+@@ -206,12 +220,13 @@
    // don't need jsModuleDescriptions any more, all the way up and down the
    // stack.
  
@@ -82,7 +82,7 @@
    instance_->initializeBridge(
        std::make_unique<JInstanceCallback>(callback, moduleMessageQueue_),
        jseh->getExecutorFactory(),
-@@ -335,6 +350,10 @@
+@@ -344,6 +359,10 @@
    instance_->handleMemoryPressure(pressureLevel);
  }
  

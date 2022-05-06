@@ -12,6 +12,7 @@
 #import <React/RCTAssert.h>
 #import <React/RCTConstants.h>
 #import <React/RCTEventDispatcherProtocol.h>
+#import <React/RCTInitializing.h>
 #import <React/RCTUIKit.h> // TODO(macOS GH#774)
 #import <React/RCTUIUtils.h>
 #import <React/RCTUtils.h>
@@ -21,7 +22,7 @@
 
 using namespace facebook::react;
 
-@interface RCTDeviceInfo () <NativeDeviceInfoSpec>
+@interface RCTDeviceInfo () <NativeDeviceInfoSpec, RCTInitializing>
 @end
 
 @implementation RCTDeviceInfo {
@@ -45,14 +46,13 @@ RCT_EXPORT_MODULE()
   return dispatch_get_main_queue();
 }
 
-- (void)setModuleRegistry:(RCTModuleRegistry *)moduleRegistry
+- (void)initialize
 {
-  _moduleRegistry = moduleRegistry;
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(didReceiveNewContentSizeMultiplier)
                                                name:RCTAccessibilityManagerDidUpdateMultiplierNotification
-                                             object:[moduleRegistry moduleForName:"AccessibilityManager"]];
+                                             object:[_moduleRegistry moduleForName:"AccessibilityManager"]];
 
   _currentInterfaceOrientation = [RCTSharedApplication() statusBarOrientation];
 

@@ -8,10 +8,10 @@
 #pragma once
 
 #include <react/debug/react_native_assert.h>
-#include <react/renderer/core/PropsParserContext.h>
 #include <chrono>
 
-namespace facebook::react {
+namespace facebook {
+namespace react {
 
 enum class SchedulerPriority : int {
   ImmediatePriority = 1,
@@ -61,4 +61,5 @@ static inline std::chrono::milliseconds timeoutForSchedulerPriority(
   }
 }
 
-} // namespace facebook::react
+} // namespace react
+} // namespace facebook

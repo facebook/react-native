@@ -558,6 +558,10 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   public native RuntimeExecutor getRuntimeExecutor();
 
+  public native RuntimeScheduler getRuntimeScheduler();
+
+  public native void installRuntimeScheduler();
+
   @Override
   public void addJSIModules(List<JSIModuleSpec> jsiModules) {
     mJSIModuleRegistry.registerModules(jsiModules);

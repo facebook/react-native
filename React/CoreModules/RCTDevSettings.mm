@@ -35,7 +35,7 @@ static NSString *const kRCTDevSettingSecondClickToShowDevMenu = @"secondClickToS
 
 static NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
 
-#if ENABLE_PACKAGER_CONNECTION
+#if RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION
 #import <React/RCTPackagerClient.h>
 #import <React/RCTPackagerConnection.h>
 #endif
@@ -128,14 +128,14 @@ void RCTDevSettingsSetEnabled(BOOL enabled)
 
 @end
 
-#if ENABLE_PACKAGER_CONNECTION
+#if RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION
 static RCTHandlerToken reloadToken;
 static std::atomic<int> numInitializedModules{0};
 #endif
 
 @interface RCTDevSettings () <RCTBridgeModule, RCTInvalidating, NativeDevSettingsSpec, RCTDevSettingsInspectable> {
   BOOL _isJSLoaded;
-#if ENABLE_PACKAGER_CONNECTION
+#if RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION
   RCTHandlerToken _bridgeExecutorOverrideToken;
 #endif
 }
@@ -192,7 +192,7 @@ RCT_EXPORT_MODULE()
 
 - (void)initialize
 {
-#if DEBUG && ENABLE_PACKAGER_CONNECTION // TODO(OSS Candidate ISS#2710739)
+#if DEBUG && RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION // TODO(OSS Candidate ISS#2710739)
   if (self.bridge) {
     RCTBridge *__weak weakBridge = self.bridge;
     _bridgeExecutorOverrideToken = [[RCTPackagerConnection sharedPackagerConnection]
@@ -245,7 +245,7 @@ RCT_EXPORT_MODULE()
 - (void)invalidate
 {
   [super invalidate];
-#if ENABLE_PACKAGER_CONNECTION
+#if RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION
   if (self.bridge) {
     [[RCTPackagerConnection sharedPackagerConnection] removeHandler:_bridgeExecutorOverrideToken];
   }
@@ -470,7 +470,7 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
 
 - (void)addHandler:(id<RCTPackagerClientMethod>)handler forPackagerMethod:(NSString *)name
 {
-#if ENABLE_PACKAGER_CONNECTION
+#if RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION
   [[RCTPackagerConnection sharedPackagerConnection] addHandler:handler forMethod:name];
 #endif
 }

@@ -7,8 +7,7 @@
 
 plugins {
     id("com.android.application")
-    id("com.facebook.react.codegen")
-    id("com.facebook.react.app")
+    id("com.facebook.react")
 }
 
 /**
@@ -77,7 +76,8 @@ plugins {
  */
 
 reactApp {
-    cliPath = "$rootDir/cli.js"
+    applyAppPlugin = true
+    cliPath = "../../../../cli.js"
     bundleAssetName = "RNTesterApp.android.bundle"
     entryFile = file("../../js/RNTesterApp.android.js")
     reactRoot = rootDir
@@ -85,6 +85,10 @@ reactApp {
     composeSourceMapsPath = "$rootDir/scripts/compose-source-maps.js"
     hermesCommand = "$rootDir/node_modules/hermes-engine/%OS-BIN%/hermesc"
     enableHermesForVariant { def v -> v.name.contains("hermes") }
+
+    // Codegen Configs
+    jsRootDir = file("$rootDir/packages/rn-tester")
+    useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET") ?: false
 }
 
 project.ext.react = [
@@ -247,12 +251,6 @@ dependencies {
     // Use detox test library
     androidTestImplementation('com.wix:detox:+') { transitive = true }
     androidTestImplementation 'junit:junit:4.12'
-}
-
-react {
-    jsRootDir = file("$rootDir/packages/rn-tester")
-    reactNativeRootDir = file("$rootDir")
-    useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET") ?: false
 }
 
 if (enableCodegen) {

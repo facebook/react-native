@@ -7,7 +7,7 @@
 
 plugins {
     id("com.android.library")
-    id("com.facebook.react.codegen")
+    id("com.facebook.react")
     id("maven-publish")
     id("de.undercouch.download")
 }
@@ -536,12 +536,12 @@ dependencies {
     androidTestImplementation("org.mockito:mockito-core:${MOCKITO_CORE_VERSION}")
 }
 
-react {
+reactApp {
     // TODO: The library name is chosen for parity with Fabric components & iOS
     // This should be changed to a more generic name, e.g. `ReactCoreSpec`.
     libraryName = "rncore"
     jsRootDir = file("../Libraries")
-    reactNativeRootDir = file("$projectDir/..")
+    reactRoot = file("$projectDir/..")
     useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET") ?: false
 }
 

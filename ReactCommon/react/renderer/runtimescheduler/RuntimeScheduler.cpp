@@ -7,7 +7,8 @@
 
 #include "RuntimeScheduler.h"
 
-namespace facebook::react {
+namespace facebook {
+namespace react {
 
 #pragma mark - Public
 
@@ -113,4 +114,5 @@ void RuntimeScheduler::startWorkLoop(jsi::Runtime &runtime) const {
   isPerformingWork_ = false;
 }
 
-} // namespace facebook::react
+} // namespace react
+} // namespace facebook
