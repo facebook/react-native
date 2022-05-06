@@ -1,6 +1,6 @@
 --- ./ReactAndroid/src/main/java/com/facebook/react/ReactInstanceManagerBuilder.java	2022-01-11 17:41:29.000000000 -0800
 +++ /var/folders/vs/8_b205053dddbcv7btj0w0v80000gn/T/update-1h8V3n/merge/V8/ReactAndroid/src/main/java/com/facebook/react/ReactInstanceManagerBuilder.java	2022-01-12 15:04:31.000000000 -0800
-@@ -26,6 +26,7 @@
+@@ -29,6 +29,7 @@
  import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
  import com.facebook.react.devsupport.interfaces.DevSupportManager;
  import com.facebook.react.jscexecutor.JSCExecutorFactory;
@@ -8,9 +8,9 @@
  import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
  import com.facebook.react.packagerconnection.RequestHandler;
  import com.facebook.react.uimanager.UIImplementationProvider;
-@@ -60,8 +61,21 @@
-   private @Nullable Map<String, RequestHandler> mCustomPackagerCommandHandlers;
+@@ -66,8 +67,21 @@
    private @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
+   private @Nullable SurfaceDelegateFactory mSurfaceDelegateFactory;
  
 +  public enum JSEngine {
 +    Hermes,
@@ -30,7 +30,7 @@
    /** Sets a provider of {@link UIImplementation}. Uses default provider if null is passed. */
    public ReactInstanceManagerBuilder setUIImplementationProvider(
        @Nullable UIImplementationProvider uiImplementationProvider) {
-@@ -299,40 +313,10 @@
+@@ -345,40 +359,10 @@
  
    private JavaScriptExecutorFactory getDefaultJSExecutorFactory(
        String appName, String deviceName, Context applicationContext) {
