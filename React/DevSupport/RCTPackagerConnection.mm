@@ -210,7 +210,7 @@ static void eraseRegistrationsWithToken(std::vector<Registration<Handler>> &regi
 
   [self
       addNotificationHandler:^(NSDictionary<NSString *, id> *notification) {
-        [handler handlePackageNotification:notification];
+        [handler handlePackagerNotification:notification];
       }
                        queue:queue
                    forMethod:method];
