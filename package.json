@@ -49,6 +49,7 @@
     "scripts/packager.sh",
     "scripts/react_native_pods.rb",
     "scripts/react-native-xcode.sh",
+    "scripts/update-ruby.sh",
     "template.config.js",
     "template",
     "third-party-podspecs",
