@@ -148,6 +148,7 @@ class VirtualizedSectionList<
       viewOffset,
       index,
     };
+    // $FlowFixMe[incompatible-use]
     this._listRef.scrollToIndex(toIndexParams);
   }
 

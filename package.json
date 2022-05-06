@@ -131,7 +131,7 @@
     "ws": "^6.1.4"
   },
   "devDependencies": {
-    "flow-bin": "^0.176.3",
+    "flow-bin": "^0.177.0",
     "react": "18.0.0",
     "react-test-renderer": "^18.0.0"
   },
