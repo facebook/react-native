@@ -877,24 +877,36 @@ jobs:
   # -------------------------
   prepare_hermes_workspace:
     docker:
-      - image: debian:buster
+      - image: debian:bullseye
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
+      - HERMES_VERSION_FILE: "sdks/.hermesversion"
     steps:
-      - checkout
       - run:
           name: Install dependencies
           command: |
-            apt-get update
-            apt-get install -y wget git
+            apt update
+            apt install -y wget git
+      - checkout
       - run:
-          name: Set up Hermes workspace
-          command: mkdir -p "$HERMES_WS_DIR/hermes" "$HERMES_WS_DIR/download"
+          name: Set up Hermes workspace and caching
+          command: |
+            mkdir -p "/tmp/hermes" "/tmp/hermes/download" "/tmp/hermes/hermes"
+
+            if [ -f "$HERMES_VERSION_FILE" ]; then
+              cat $HERMES_VERSION_FILE > /tmp/hermes/hermesversion
+            else
+              HERMES_TAG_SHA=$(git ls-remote https://github.com/facebook/hermes main | cut -f 1 | tr -d '[:space:]')
+              echo $HERMES_TAG_SHA > /tmp/hermes/hermesversion
+            fi
+      - restore_cache:
+          key: v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
       - run:
           name: Download Hermes tarball
           command: |
-            HERMES_VERSION_FILE="sdks/.hermesversion"
             HERMES_TARBALL_URL="https://github.com/facebook/hermes/archive/refs/heads/main.tar.gz"
+            HERMES_TARBALL_PATH="$HERMES_WS_DIR/download/hermes.tar.gz"
+
             if [ -f "$HERMES_VERSION_FILE" ]; then
               HERMES_TAG=$(cat $HERMES_VERSION_FILE | tr -d '[:space:]')
               HERMES_TARBALL_URL="https://github.com/facebook/hermes/archive/refs/tags/$HERMES_TAG.tar.gz"
@@ -902,8 +914,19 @@ jobs:
             else
               echo "Using Hermes latest version from trunk"
             fi
-            wget --timestamping -O "$HERMES_WS_DIR/download/hermes.tar.gz" "$HERMES_TARBALL_URL"
+
+            if [ -f "$HERMES_TARBALL_PATH" ]; then
+              echo "Skipping download; $HERMES_TARBALL_PATH already present."
+            else
+              echo "Downloading Hermes tarball from $HERMES_TARBALL_URL"
+              wget -O "$HERMES_TARBALL_PATH" "$HERMES_TARBALL_URL"
+            fi
             tar -xzf "$HERMES_WS_DIR/download/hermes.tar.gz" --strip-components=1 -C "$HERMES_WS_DIR/hermes"
+      - save_cache:
+          key: v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
+          paths:
+            - /tmp/hermes/download/
+            - /tmp/hermes/hermes/
       - persist_to_workspace:
           root: *hermes_workspace_root
           paths:
@@ -924,6 +947,8 @@ jobs:
             apt install -y git openssh-client cmake build-essential \
                 libreadline-dev libicu-dev zip python3
       - *attach_hermes_workspace
+      - restore_cache:
+          key: v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
       - run:
           name: Set up workspace
           command: |
@@ -931,15 +956,21 @@ jobs:
       - run:
           name: Build HermesC for Linux
           command: |
-            cd /tmp/hermes
-            cmake -S hermes -B build -DHERMES_STATIC_LINK=ON -DCMAKE_BUILD_TYPE=Release \
-              -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=True -DCMAKE_CXX_FLAGS=-s -DCMAKE_C_FLAGS=-s \
-              -DCMAKE_EXE_LINKER_FLAGS="-Wl,--whole-archive -lpthread -Wl,--no-whole-archive"
-            cmake --build build --target check-hermes -j 4
-      - run:
-          name: Package HermesC for Linux
-          command: |
-            cp /tmp/hermes/build/bin/hermesc /tmp/hermes/linux64-bin/.
+            if [ -f /tmp/hermes/linux64-bin/hermesc ]; then
+              echo 'Skipping; Clean "/tmp/hermes/linux64-bin" to rebuild.'
+            else
+              cd /tmp/hermes
+              cmake -S hermes -B build -DHERMES_STATIC_LINK=ON -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=True -DCMAKE_CXX_FLAGS=-s -DCMAKE_C_FLAGS=-s \
+                -DCMAKE_EXE_LINKER_FLAGS="-Wl,--whole-archive -lpthread -Wl,--no-whole-archive"
+              cmake --build build --target check-hermes -j 4
+              cp /tmp/hermes/build/bin/hermesc /tmp/hermes/linux64-bin/.
+            fi
+      - save_cache:
+          key: v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
+          paths:
+            - /tmp/hermes/linux64-bin/
+            - /tmp/hermes/hermes/destroot/
       - store_artifacts:
           path: /tmp/hermes/linux64-bin/
       - persist_to_workspace:
@@ -953,6 +984,8 @@ jobs:
       - HERMES_WS_DIR: *hermes_workspace_root
     steps:
       - *attach_hermes_workspace
+      - restore_cache:
+          key: v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
       - run:
           name: Set up workspace
           command: |
@@ -964,13 +997,20 @@ jobs:
       - run:
           name: Build HermesC for macOS
           command: |
-            cd "$HERMES_WS_DIR/hermes"
-            ./utils/build-mac-framework.sh
-      - run:
-          name: Package HermesC for macOS
-          command: |
-            cd "$HERMES_WS_DIR/hermes"
-            cp build_macosx/bin/hermesc /tmp/hermes/osx-bin/.
+            if [ -f /tmp/hermes/osx-bin/hermesc ]; then
+              echo 'Skipping; Clean "/tmp/hermes/osx-bin" to rebuild.'
+            else
+              cd "$HERMES_WS_DIR/hermes"
+              ./utils/build-mac-framework.sh
+              cp build_macosx/bin/hermesc /tmp/hermes/osx-bin/.
+            fi
+      - save_cache:
+          key: v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
+          paths:
+            - /tmp/hermes/osx-bin/
+            - /tmp/hermes/hermes/destroot/
+            - /tmp/hermes/hermes/build_host_hermesc/
+            - /tmp/hermes/hermes/build_macosx/
       - store_artifacts:
           path: /tmp/hermes/osx-bin/
       - persist_to_workspace:
@@ -989,6 +1029,8 @@ jobs:
       - CMAKE_DIR: 'C:\Program Files\CMake\bin'
     steps:
       - *attach_hermes_workspace
+      - restore_cache:
+          key: v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "tmp/hermes/hermesversion" }}
       - run:
           name: Set up workspace
           command: |
@@ -998,52 +1040,56 @@ jobs:
             New-Item -ItemType Directory $Env:HERMES_WS_DIR\win64-bin
             New-Item -ItemType SymbolicLink -Target tmp\hermes\hermes -Path $Env:HERMES_WS_DIR -Name hermes
       - run:
-          name: Download ICU
-          command: |
-            cd $Env:HERMES_WS_DIR\icu
-            # If Invoke-WebRequest shows a progress bar, it will fail with
-            #   Win32 internal error "Access is denied" 0x5 occurred [...]
-            $progressPreference = 'silentlyContinue'
-            Invoke-WebRequest -Uri "$Env:ICU_URL" -OutFile "icu.zip"
-            Expand-Archive -Path "icu.zip" -DestinationPath "."
-      - run:
-          name: Install dependencies
-          command: |
-            choco install --no-progress cmake --version 3.14.7
-            if (-not $?) { throw "Failed to install CMake" }
-            choco install --no-progress python3
-            if (-not $?) { throw "Failed to install Python" }
-      - run:
-          name: Assemble Windows runtime dependencies
-          command: |
-            cd $Env:HERMES_WS_DIR
-            Copy-Item -Path "icu\bin64\icu*.dll" -Destination "deps"
-            # Include MSVC++ 2015 redistributables
-            Copy-Item -Path "c:\windows\system32\msvcp140.dll" -Destination "deps"
-            Copy-Item -Path "c:\windows\system32\vcruntime140.dll" -Destination "deps"
-            Copy-Item -Path "c:\windows\system32\vcruntime140_1.dll" -Destination "deps"
-      - run:
           name: Build HermesC for Windows
           command: |
-            $Env:PATH += ";$Env:CMAKE_DIR;$Env:MSBUILD_DIR"
-            $Env:ICU_ROOT = "$Env:HERMES_WS_DIR\icu"
-            cd $Env:HERMES_WS_DIR
-            cmake -S hermes -B build_release -G 'Visual Studio 16 2019' -Ax64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=True -DHERMES_ENABLE_WIN10_ICU_FALLBACK=OFF
-            if (-not $?) { throw "Failed to configure Hermes" }
-            cd build_release
-            cmake --build . --target hermesc --config Release
-            if (-not $?) { throw "Failed to build Hermes" }
-      - run:
-          name: Package HermesC for Windows
-          command: |
-            cd $Env:HERMES_WS_DIR
-            Copy-Item -Path "build_release\bin\Release\hermesc.exe" -Destination "win64-bin"
-            # Include Windows runtime dependencies
-            Copy-Item -Path "deps\*" -Destination "win64-bin"
+            if (-not(Test-Path -Path $Env:HERMES_WS_DIR\win64-bin\hermesc.exe)) {
+              choco install --no-progress cmake --version 3.14.7
+              if (-not $?) { throw "Failed to install CMake" }
+              choco install --no-progress python3
+              if (-not $?) { throw "Failed to install Python" }
+
+              cd $Env:HERMES_WS_DIR\icu
+              # If Invoke-WebRequest shows a progress bar, it will fail with
+              #   Win32 internal error "Access is denied" 0x5 occurred [...]
+              $progressPreference = 'silentlyContinue'
+              Invoke-WebRequest -Uri "$Env:ICU_URL" -OutFile "icu.zip"
+              Expand-Archive -Path "icu.zip" -DestinationPath "."
+
+              cd $Env:HERMES_WS_DIR
+              Copy-Item -Path "icu\bin64\icu*.dll" -Destination "deps"
+              # Include MSVC++ 2015 redistributables
+              Copy-Item -Path "c:\windows\system32\msvcp140.dll" -Destination "deps"
+              Copy-Item -Path "c:\windows\system32\vcruntime140.dll" -Destination "deps"
+              Copy-Item -Path "c:\windows\system32\vcruntime140_1.dll" -Destination "deps"
+
+              $Env:PATH += ";$Env:CMAKE_DIR;$Env:MSBUILD_DIR"
+              $Env:ICU_ROOT = "$Env:HERMES_WS_DIR\icu"
+
+              cmake -S hermes -B build_release -G 'Visual Studio 16 2019' -Ax64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=True -DHERMES_ENABLE_WIN10_ICU_FALLBACK=OFF
+              if (-not $?) { throw "Failed to configure Hermes" }
+              cd build_release
+              cmake --build . --target hermesc --config Release
+              if (-not $?) { throw "Failed to build Hermes" }
+
+              cd $Env:HERMES_WS_DIR
+              Copy-Item -Path "build_release\bin\Release\hermesc.exe" -Destination "win64-bin"
+              # Include Windows runtime dependencies
+              Copy-Item -Path "deps\*" -Destination "win64-bin"
+            }
+            else {
+                Write-Host "Skipping; Clean c:\tmp\hermes\win64-bin to rebuild."
+            }
+      - save_cache:
+          key: v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "tmp/hermes/hermesversion" }}
+          paths:
+            - C:\tmp\hermes\win64-bin\
+            - C:\tmp\hermes\hermes\icu\
+            - C:\tmp\hermes\hermes\deps\
+            - C:\tmp\hermes\hermes\build_release\
       - store_artifacts:
-          path: c:\tmp\hermes\win64-bin\
+          path: C:\tmp\hermes\win64-bin\
       - persist_to_workspace:
-          root: c:\tmp\hermes\
+          root: C:\tmp\hermes\
           paths:
             - win64-bin
 
