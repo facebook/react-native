@@ -1875,15 +1875,15 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       'Tried to get frame for out of range index ' + index,
     );
     const item = getItem(data, index);
-    let frame = item && this._frames[this._keyExtractor(item, index)];
+    const frame = item && this._frames[this._keyExtractor(item, index)];
     if (!frame || frame.index !== index) {
       if (getItemLayout) {
-        frame = getItemLayout(data, index);
+        /* $FlowFixMe[prop-missing] (>=0.63.0 site=react_native_fb) This comment
+         * suppresses an error found when Flow v0.63 was deployed. To see the error
+         * delete this comment and run Flow. */
+        return getItemLayout(data, index);
       }
     }
-    /* $FlowFixMe[prop-missing] (>=0.63.0 site=react_native_fb) This comment
-     * suppresses an error found when Flow v0.63 was deployed. To see the error
-     * delete this comment and run Flow. */
     return frame;
   };
 

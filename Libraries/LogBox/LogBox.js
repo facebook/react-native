@@ -39,7 +39,7 @@ if (__DEV__) {
   let originalConsoleError;
   let originalConsoleWarn;
   let consoleErrorImpl;
-  let consoleWarnImpl;
+  let consoleWarnImpl: (...args: Array<mixed>) => void;
 
   let isLogBoxInstalled: boolean = false;
 
