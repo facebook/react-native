@@ -346,6 +346,15 @@ RCT_ENUM_CONVERTER(
     integerValue)
 
 RCT_ENUM_CONVERTER(
+     RCTBorderCurve,
+     (@{
+       @"circular" : @(RCTBorderCurveCircular),
+       @"continuous" : @(RCTBorderCurveContinuous),
+     }),
+     RCTBorderCurveCircular,
+     integerValue)
+
+RCT_ENUM_CONVERTER(
     RCTTextDecorationLineType,
     (@{
       @"none" : @(RCTTextDecorationLineTypeNone),

@@ -181,6 +181,7 @@ const validAttributesForNonEventProps = {
   removeClippedSubviews: true,
   borderRadius: true,
   borderColor: {process: require('../StyleSheet/processColor')},
+  borderCurve: true,
   borderWidth: true,
   borderStyle: true,
   hitSlop: {diff: require('../Utilities/differ/insetsDiffer')},
