@@ -1501,7 +1501,7 @@ RCT_EXPORT_METHOD(clearJSResponder)
 static NSMutableDictionary<NSString *, id> *moduleConstantsForComponent(
     NSMutableDictionary<NSString *, NSDictionary *> *directEvents,
     NSMutableDictionary<NSString *, NSDictionary *> *bubblingEvents,
-    NSMutableDictionary<NSString *, NSString *> *registrationCache,
+    NSMutableDictionary<NSString *, NSString *> *registrationCache, // TODO(macOS GH#774)
     RCTComponentData *componentData)
 {
   NSMutableDictionary<NSString *, id> *moduleConstants = [NSMutableDictionary new];
@@ -1537,9 +1537,9 @@ static NSMutableDictionary<NSString *, id> *moduleConstantsForComponent(
            "direct event",
           componentName,
           eventName,
-          registrationCache[eventName] ?: @"<unknown>");
+          registrationCache[eventName] ?: @"<unknown>"); // TODO(macOS GH#774)
     }
-    registrationCache[eventName] = componentName;
+    registrationCache[eventName] = componentName; // TODO(macOS GH#774)
   }
 
   // Add bubbling events
@@ -1560,9 +1560,9 @@ static NSMutableDictionary<NSString *, id> *moduleConstantsForComponent(
            "bubbling event",
           componentName,
           eventName,
-          registrationCache[eventName] ?: @"<unknown>");
+          registrationCache[eventName] ?: @"<unknown>"); // TODO(macOS GH#774)
     }
-    registrationCache[eventName] = componentName;
+    registrationCache[eventName] = componentName; // TODO(macOS GH#774)
   }
 
   return moduleConstants;
@@ -1578,13 +1578,13 @@ static NSMutableDictionary<NSString *, id> *moduleConstantsForComponent(
   NSMutableDictionary<NSString *, NSDictionary *> *constants = [NSMutableDictionary new];
   NSMutableDictionary<NSString *, NSDictionary *> *directEvents = [NSMutableDictionary new];
   NSMutableDictionary<NSString *, NSDictionary *> *bubblingEvents = [NSMutableDictionary new];
-  NSMutableDictionary<NSString *, NSString *> *registrationCache = [NSMutableDictionary new];
+  NSMutableDictionary<NSString *, NSString *> *registrationCache = [NSMutableDictionary new]; // TODO(macOS GH#774)
 
   [_componentDataByName
       enumerateKeysAndObjectsUsingBlock:^(NSString *name, RCTComponentData *componentData, __unused BOOL *stop) {
         RCTAssert(!constants[name], @"UIManager already has constants for %@", componentData.name);
         NSMutableDictionary<NSString *, id> *moduleConstants =
-            moduleConstantsForComponent(directEvents, bubblingEvents, registrationCache, componentData);
+            moduleConstantsForComponent(directEvents, bubblingEvents, registrationCache, componentData); // TODO(macOS GH#774)
         constants[name] = moduleConstants;
       }];
 
@@ -1631,9 +1631,9 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(lazilyLoadView : (NSString *)name)
   _componentDataByName[componentData.name] = componentData;
   NSMutableDictionary<NSString *, NSDictionary *> *directEvents = [NSMutableDictionary new];
   NSMutableDictionary<NSString *, NSDictionary *> *bubblingEvents = [NSMutableDictionary new];
-  NSMutableDictionary<NSString *, NSString *> *registrationCache = [NSMutableDictionary new];
+  NSMutableDictionary<NSString *, NSString *> *registrationCache = [NSMutableDictionary new]; // TODO(macOS GH#774)
   NSMutableDictionary<NSString *, id> *moduleConstants =
-      moduleConstantsForComponent(directEvents, bubblingEvents, registrationCache, componentData);
+      moduleConstantsForComponent(directEvents, bubblingEvents, registrationCache, componentData); // TODO(macOS GH#774)
   return @{
     @"viewConfig" : moduleConstants,
   };
