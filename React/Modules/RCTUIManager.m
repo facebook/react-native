@@ -1629,9 +1629,9 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(lazilyLoadView : (NSString *)name)
                                                                             bridge:self.bridge
                                                                    eventDispatcher:self.bridge.eventDispatcher];
   _componentDataByName[componentData.name] = componentData;
-  NSMutableDictionary *directEvents = [NSMutableDictionary new];
-  NSMutableDictionary *bubblingEvents = [NSMutableDictionary new];
-  NSMutableDictionary *registrationCache = [NSMutableDictionary new];
+  NSMutableDictionary<NSString *, NSDictionary *> *directEvents = [NSMutableDictionary new];
+  NSMutableDictionary<NSString *, NSDictionary *> *bubblingEvents = [NSMutableDictionary new];
+  NSMutableDictionary<NSString *, NSString *> *registrationCache = [NSMutableDictionary new];
   NSMutableDictionary<NSString *, id> *moduleConstants =
       moduleConstantsForComponent(directEvents, bubblingEvents, registrationCache, componentData);
   return @{
