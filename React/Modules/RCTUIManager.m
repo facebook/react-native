@@ -1533,7 +1533,7 @@ static NSMutableDictionary<NSString *, id> *moduleConstantsForComponent(
     directEventTypes[eventName] = directEvents[eventName];
     if (RCT_DEBUG && bubblingEvents[eventName]) {
       RCTLogError(
-          @"Component '%@' re-registered bubbling event '%@' (originally registered by '%@' as a "
+          @"Component '%@' re-registered bubbling event '%@' (originally registered by '%@') as a "
            "direct event",
           componentName,
           eventName,
@@ -1556,7 +1556,7 @@ static NSMutableDictionary<NSString *, id> *moduleConstantsForComponent(
     bubblingEventTypes[eventName] = bubblingEvents[eventName];
     if (RCT_DEBUG && directEvents[eventName]) {
       RCTLogError(
-          @"Component '%@' re-registered direct event '%@' (originally registered by '%@' as a "
+          @"Component '%@' re-registered direct event '%@' (originally registered by '%@') as a "
            "bubbling event",
           componentName,
           eventName,
