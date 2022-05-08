@@ -15,7 +15,7 @@ std::shared_ptr<ComponentDescriptorProviderRegistry const>
 MainComponentsRegistry::sharedProviderRegistry() {
   auto providerRegistry = CoreComponentsRegistry::sharedProviderRegistry();
 
-  // Providers registered automatically by RN CLI
+  // Autolinked providers registered by RN CLI
   rncli_registerProviders(providerRegistry);
 
   // Custom Fabric Components go here. You can register custom
