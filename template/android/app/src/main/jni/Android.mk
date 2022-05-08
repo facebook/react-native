@@ -7,7 +7,7 @@ include $(REACT_ANDROID_DIR)/Android-prebuilt.mk
 # include $(GENERATED_SRC_DIR)/codegen/jni/Android.mk
 
 # Includes the MK file for autolinked libraries
-+include $(PROJECT_BUILD_DIR)/generated/rncli/src/main/jni/Android-rncli.mk  
+include $(PROJECT_BUILD_DIR)/generated/rncli/src/main/jni/Android-rncli.mk  
 
 include $(CLEAR_VARS)
 
