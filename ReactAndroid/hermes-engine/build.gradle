@@ -71,6 +71,18 @@ task installArchives {
     dependsOn("publishAllPublicationsToNpmRepository")
 }
 
+def replaceContent = '''elseif(CMAKE_HOST_WIN32)
+    set (ABI_NORM \"\")
+    if (ANDROID_ABI STREQUAL \"armeabi-v7a\" )
+      set (ABI_NORM \"arm\")
+    elseif(ANDROID_ABI STREQUAL \"arm64-v8a\" )
+      set (ABI_NORM \"arm64\")
+    else()
+      set (ABI_NORM \"\\${ANDROID_ABI}\")
+    endif()
+    set( value \"\\${ABI_NORM}-unknown-linux-gnu\" )
+  else( MSVC )'''
+
 task unzipHermes(dependsOn: downloadHermes, type: Copy) {
     from(tarTree(downloadHermes.dest)) {
         eachFile { file ->
@@ -79,6 +91,14 @@ task unzipHermes(dependsOn: downloadHermes, type: Copy) {
             if (file.relativePath.segments.size() > 1) {
                 file.relativePath = new org.gradle.api.file.RelativePath(!file.isDirectory(), file.relativePath.segments.drop(1))
             }
+            if(file.getName() == "GetHostTriple.cmake") {
+                // LLVM build scripts embedded into hermes tries to guess the target architecture.  
+                // As Hermes doesn't use LLVM JIT, the guessed value is unused 
+                // TODO: Validate the above statement
+                // TODO2: Move this as a path to Hermes repo
+                // This workaround replaces the call to config.guess bash script with windows friendly code.
+                filter { line -> line.replaceAll('else\\( MSVC \\)', replaceContent) }
+            }
         }
     }
     into(hermesDir)
@@ -86,12 +106,12 @@ task unzipHermes(dependsOn: downloadHermes, type: Copy) {
 
 task configureBuildForHermes(type: Exec) {
     workingDir(hermesDir)
-    commandLine(windowsAwareCommandLine(findCmakePath(cmakeVersion), "-S", ".", "-B", hermesBuildDir.toString(), "-DJSI_DIR=" + jsiDir.absolutePath))
+    commandLine(windowsAwareCommandLine(findCmakePath(cmakeVersion), "-S", ".", "-B", hermesBuildDir.toString(), "-DJSI_DIR=" + jsiDir.absolutePath, "-DCMAKE_BUILD_TYPE=Release"))
 }
 
 task buildHermes(dependsOn: configureBuildForHermes, type: Exec) {
     workingDir(hermesDir)
-    commandLine(windowsAwareCommandLine(findCmakePath(cmakeVersion), "--build", hermesBuildDir.toString(), "--target", "hermesc", "-j", ndkBuildJobs))
+    commandLine(windowsAwareCommandLine(findCmakePath(cmakeVersion), "--build", hermesBuildDir.toString(), "--target", "hermesc", "-j", ndkBuildJobs, "--config", "Release"))
 }
 
 task prepareHeadersForPrefab(type: Copy) {
