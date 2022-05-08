@@ -110,7 +110,6 @@ def use_react_native! (options={})
 
   if hermes_enabled
     pod 'React-hermes', :path => "#{prefix}/ReactCommon/hermes"
-    Pod::UI.puts "[Hermes] Building Hermes from source"
     hermes_source_path = downloadAndConfigureHermesSource(prefix)
     pod 'hermes-engine', :path => "#{hermes_source_path}/hermes-engine.podspec"
     pod 'libevent', '~> 2.1.12'
@@ -684,19 +683,11 @@ def downloadAndConfigureHermesSource(react_native_path)
   hermes_tarball_path = "#{download_dir}/hermes-#{hermes_tag_sha}.tar.gz"
 
   if (!File.exist?(hermes_tarball_path))
-    Pod::UI.puts "[Hermes] Downloading Hermes source code (#{hermes_tarball_url})"
+    Pod::UI.puts "[Hermes] Downloading Hermes source code..."
     system("curl #{hermes_tarball_url} -Lo #{hermes_tarball_path}")
   end
-  Pod::UI.puts "[Hermes] Extracting Hermes (#{hermes_tag_sha})"
+  Pod::UI.puts "[Hermes] Extracting Hermes tarball (#{hermes_tag_sha.slice(0,6)})"
   system("tar -zxf #{hermes_tarball_path} --strip-components=1 --directory #{hermes_dir}")
-
-  hermesc_macos_path = "#{sdks_dir}/hermesc/macos/build_host_hermesc"
-  hermesc_macos_link = "#{hermes_dir}/utils/build_host_hermesc"
-  if (File.exist?(hermesc_macos_path))
-    # If hermesc is present, create a symbolic link in the hermes source directory to avoid re-building hermesc
-    Pod::UI.puts "[Hermes] Using pre-compiled Hermes Compiler from #{hermesc_macos_path}"
-    system("ln -s #{hermesc_macos_path} #{hermesc_macos_link}")
-  end
 
   # TODO: Integrate this temporary hermes-engine.podspec into the actual one located in facebook/hermes
   system("cp #{sdks_dir}/hermes-engine.podspec #{hermes_dir}/hermes-engine.podspec")

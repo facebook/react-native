@@ -759,7 +759,7 @@ rn_library(
         "//xplat/js:node_modules__react_19shallow_19renderer",
         "//xplat/js:node_modules__regenerator_19runtime",
         "//xplat/js:node_modules__stacktrace_19parser",
-        "//xplat/js:node_modules__use_19subscription",
+        "//xplat/js:node_modules__use_19sync_19external_19store",
         "//xplat/js:node_modules__whatwg_19fetch",
         "//xplat/js/RKJSModules/Libraries/Polyfills:Polyfills",
         "//xplat/js/RKJSModules/Libraries/React:React",

@@ -56,12 +56,8 @@ LOCAL_SHARED_LIBRARIES = libfb libfbjni libreact_nativemodule_core libjsi
 LOCAL_STATIC_LIBRARIES = libcallinvokerholder libreactperfloggerjni
 
 # Compile all local c++ files
-<<<<<<< HEAD
-LOCAL_SRC_FILES := $(LOCAL_PATH)/ReactCommon/CompositeTurboModuleManagerDelegate.cpp $(LOCAL_PATH)/ReactCommon/OnLoad.cpp $(LOCAL_PATH)/ReactCommon/TurboModuleManager.cpp
-=======
 LOCAL_SRC_FILES := $(LOCAL_PATH)/ReactCommon/TurboModuleManager.cpp $(LOCAL_PATH)/ReactCommon/OnLoad.cpp
 LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
->>>>>>> 379c1281a1d (This change is extending the changes made by alespergl to reduce the file paths and command lengths of ndk build commands)
 
 # Build the files in this directory as a shared library
 include $(BUILD_SHARED_LIBRARY)

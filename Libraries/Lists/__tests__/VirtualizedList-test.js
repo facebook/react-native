@@ -384,7 +384,7 @@ describe('VirtualizedList', () => {
 
     const instance = component.getInstance();
 
-    instance._onLayout({nativeEvent: {layout}});
+    instance._onLayout({nativeEvent: {layout, zoomScale: 1}});
 
     const initialContentHeight = props.initialNumToRender * ITEM_HEIGHT;
 
@@ -1490,7 +1490,7 @@ it('calls _onCellLayout properly', () => {
   );
   const cell = virtualList._cellRefs.i4;
   const event = {
-    nativeEvent: {layout: {x: 0, y: 0, width: 50, height: 50}},
+    nativeEvent: {layout: {x: 0, y: 0, width: 50, height: 50}, zoomScale: 1},
   };
   cell._onLayout(event);
   expect(mock).toHaveBeenCalledWith(event, 'i4', 3);
@@ -1544,7 +1544,9 @@ function simulateLayout(component, args) {
 
 function simulateViewportLayout(component, dimensions) {
   lastViewportLayout = dimensions;
-  component.getInstance()._onLayout({nativeEvent: {layout: dimensions}});
+  component
+    .getInstance()
+    ._onLayout({nativeEvent: {layout: dimensions}, zoomScale: 1});
 }
 
 function simulateContentLayout(component, dimensions) {
@@ -1558,7 +1560,7 @@ function simulateCellLayout(component, items, itemIndex, dimensions) {
   const instance = component.getInstance();
   const cellKey = instance._keyExtractor(items[itemIndex], itemIndex);
   instance._onCellLayout(
-    {nativeEvent: {layout: dimensions}},
+    {nativeEvent: {layout: dimensions, zoomScale: 1}},
     cellKey,
     itemIndex,
   );
@@ -1570,6 +1572,7 @@ function simulateScroll(component, position) {
       contentOffset: position,
       contentSize: lastContentLayout,
       layoutMeasurement: lastViewportLayout,
+      zoomScale: 1,
     },
   });
 }

@@ -11,9 +11,9 @@
 
 'use strict';
 
-declare module 'use-subscription' {
-  declare export function useSubscription<Value>(subscription: {|
-    getCurrentValue: () => Value,
+declare module 'use-sync-external-store/shim' {
+  declare export function useSyncExternalStore<Value>(
     subscribe: (callback: Function) => () => void,
-  |}): Value;
+    getCurrentValue: () => Value,
+  ): Value;
 }
