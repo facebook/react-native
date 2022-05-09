@@ -5,6 +5,7 @@
 
 require 'pathname'
 require_relative './react_native_pods_utils/script_phases.rb'
+require_relative './cocoapods/flipper.rb'
 
 $CODEGEN_OUTPUT_DIR = 'build/generated/ios'
 $CODEGEN_COMPONENT_DIR = 'react/renderer/components'
@@ -59,9 +60,7 @@ def use_react_native! (options={})
   pod 'React-RCTVibration', :path => "#{prefix}/Libraries/Vibration"
   pod 'React-Core/RCTWebSocket', :path => "#{prefix}/"
 
-  unless production
-    pod 'React-Core/DevSupport', :path => "#{prefix}/"
-  end
+  install_flipper_dependencies(production, prefix)
 
   pod 'React-bridging', :path => "#{prefix}/ReactCommon/react/bridging"
   pod 'React-cxxreact', :path => "#{prefix}/ReactCommon/cxxreact"
@@ -140,63 +139,11 @@ def get_default_flags()
 end
 
 def use_flipper!(versions = {}, configurations: ['Debug'])
-  versions['Flipper'] ||= '0.125.0'
-  versions['Flipper-Boost-iOSX'] ||= '1.76.0.1.11'
-  versions['Flipper-DoubleConversion'] ||= '3.2.0'
-  versions['Flipper-Fmt'] ||= '7.1.7'
-  versions['Flipper-Folly'] ||= '2.6.10'
-  versions['Flipper-Glog'] ||= '0.5.0.4'
-  versions['Flipper-PeerTalk'] ||= '0.0.4'
-  versions['Flipper-RSocket'] ||= '1.4.3'
-  versions['OpenSSL-Universal'] ||= '1.1.1100'
-  pod 'FlipperKit', versions['Flipper'], :configurations => configurations
-  pod 'FlipperKit/FlipperKitLayoutPlugin', versions['Flipper'], :configurations => configurations
-  pod 'FlipperKit/SKIOSNetworkPlugin', versions['Flipper'], :configurations => configurations
-  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', versions['Flipper'], :configurations => configurations
-  pod 'FlipperKit/FlipperKitReactPlugin', versions['Flipper'], :configurations => configurations
-  # List all transitive dependencies for FlipperKit pods
-  # to avoid them being linked in Release builds
-  pod 'Flipper', versions['Flipper'], :configurations => configurations
-  pod 'Flipper-Boost-iOSX', versions['Flipper-Boost-iOSX'], :configurations => configurations
-  pod 'Flipper-DoubleConversion', versions['Flipper-DoubleConversion'], :configurations => configurations
-  pod 'Flipper-Fmt', versions['Flipper-Fmt'], :configurations => configurations
-  pod 'Flipper-Folly', versions['Flipper-Folly'], :configurations => configurations
-  pod 'Flipper-Glog', versions['Flipper-Glog'], :configurations => configurations
-  pod 'Flipper-PeerTalk', versions['Flipper-PeerTalk'], :configurations => configurations
-  pod 'Flipper-RSocket', versions['Flipper-RSocket'], :configurations => configurations
-  pod 'FlipperKit/Core', versions['Flipper'], :configurations => configurations
-  pod 'FlipperKit/CppBridge', versions['Flipper'], :configurations => configurations
-  pod 'FlipperKit/FBCxxFollyDynamicConvert', versions['Flipper'], :configurations => configurations
-  pod 'FlipperKit/FBDefines', versions['Flipper'], :configurations => configurations
-  pod 'FlipperKit/FKPortForwarding', versions['Flipper'], :configurations => configurations
-  pod 'FlipperKit/FlipperKitHighlightOverlay', versions['Flipper'], :configurations => configurations
-  pod 'FlipperKit/FlipperKitLayoutTextSearchable', versions['Flipper'], :configurations => configurations
-  pod 'FlipperKit/FlipperKitNetworkPlugin', versions['Flipper'], :configurations => configurations
-  pod 'OpenSSL-Universal', versions['OpenSSL-Universal'], :configurations => configurations
+  use_flipper_pods(versions, :configurations => configurations)
 end
 
 def has_pod(installer, name)
   installer.pods_project.pod_group(name) != nil
-end
-
-# Post Install processing for Flipper
-def flipper_post_install(installer)
-  installer.pods_project.targets.each do |target|
-    if target.name == 'YogaKit'
-      target.build_configurations.each do |config|
-        config.build_settings['SWIFT_VERSION'] = '4.1'
-      end
-    end
-
-    # Enable flipper for React-Core Debug configuration
-    if target.name == 'React-Core'
-      target.build_configurations.each do |config|
-        if config.name == 'Debug'
-          config.build_settings['OTHER_CFLAGS'] = "$(inherited) -DFB_SONARKIT_ENABLED=1"
-        end
-      end
-    end
-  end
 end
 
 def exclude_architectures(installer)
