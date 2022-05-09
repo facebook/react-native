@@ -20,6 +20,7 @@ LOCAL_MODULE := reactperflogger
 
 # Compile all local c++ files under ./ReactCommon
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/reactperflogger/*.cpp)
+LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 
 # Build the files in this directory as a shared library
 include $(BUILD_STATIC_LIBRARY)

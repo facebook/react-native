@@ -13,6 +13,7 @@ ifeq ($(APP_OPTIM),debug)
   LOCAL_CFLAGS := -DHERMES_ENABLE_DEBUGGER=1
 
   LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
+  LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 
   LOCAL_C_INCLUDES := $(LOCAL_PATH) $(REACT_NATIVE)/ReactCommon/jsi
 
@@ -38,6 +39,8 @@ else
   LOCAL_C_INCLUDES := $(LOCAL_PATH) $(REACT_NATIVE)/ReactCommon/jsi
 
   LOCAL_CPP_FEATURES := exceptions
+  LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
+  LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 
   LOCAL_STATIC_LIBRARIES := libjsireact libhermes-executor-common-release
   LOCAL_SHARED_LIBRARIES := \

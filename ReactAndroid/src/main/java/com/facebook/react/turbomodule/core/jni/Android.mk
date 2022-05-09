@@ -28,6 +28,7 @@ LOCAL_MODULE := callinvokerholder
 
 # Compile all local c++ files
 LOCAL_SRC_FILES := $(LOCAL_PATH)/ReactCommon/CallInvokerHolder.cpp
+LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 
 # Build the files in this directory as a shared library
 include $(BUILD_STATIC_LIBRARY)
@@ -56,6 +57,7 @@ LOCAL_STATIC_LIBRARIES = libcallinvokerholder libreactperfloggerjni
 
 # Compile all local c++ files
 LOCAL_SRC_FILES := $(LOCAL_PATH)/ReactCommon/TurboModuleManager.cpp $(LOCAL_PATH)/ReactCommon/OnLoad.cpp
+LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 
 # Build the files in this directory as a shared library
 include $(BUILD_SHARED_LIBRARY)
