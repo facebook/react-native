@@ -117,7 +117,7 @@
     "use-subscription": ">=1.0.0 <1.6.0",
     "whatwg-fetch": "^3.0.0",
     "ws": "^6.1.4",
-    "react-native-codegen": "^0.0.13"
+    "react-native-codegen": "^0.0.17"
   },
   "devDependencies": {
     "flow-bin": "^0.170.0",
