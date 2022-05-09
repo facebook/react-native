@@ -1521,7 +1521,7 @@ static NSMutableDictionary<NSString *, id> *moduleConstantsForComponent(
   moduleConstants[@"bubblingEventTypes"] = bubblingEventTypes;
   moduleConstants[@"directEventTypes"] = directEventTypes;
 
-  NSString *componentName = componentData.name;
+  NSString *componentName = [componentData name]; // TODO(macOS GH#774)
 
   // Add direct events
   for (NSString *eventName in viewConfig[@"directEvents"]) {
