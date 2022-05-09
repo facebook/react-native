@@ -3,7 +3,7 @@ GEM
   specs:
     CFPropertyList (3.0.5)
       rexml
-    activesupport (6.1.5)
+    activesupport (6.1.5.1)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
