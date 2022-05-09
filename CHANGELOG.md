@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.68.2
+
+### Changed
+
+- Bump used version of react-native-codegen to 0.0.17 ([dfda480a98](https://github.com/facebook/react-native/commit/dfda480a9888d95c542cea40f25e8e783565c1db) by [@cortinico](https://github.com/cortinico))
+- Bump react-native-codegen to 0.0.17 ([a5ddc2e165](https://github.com/facebook/react-native/commit/a5ddc2e16523ea336ffbecf7acfd4820469a29e7) by [@cortinico](https://github.com/cortinico))
+
+### Fixed
+
+#### Android specific
+
+- Working around Long paths limitation on Windows ([62ef6f5fa1](https://github.com/facebook/react-native/commit/62ef6f5fa1ecb918bde130a6024b65afcd34c7e3) by [@mganandraj](https://github.com/mganandraj))
+
 ## v0.68.1
 
 ### Changed
