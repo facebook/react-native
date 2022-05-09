@@ -28,12 +28,6 @@ def use_react_native! (options={})
   # Include Hermes dependencies
   hermes_enabled = options[:hermes_enabled] ||= false
 
-  # Codegen Discovery is required when enabling new architecture.
-  if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
-    Pod::UI.puts 'Setting USE_CODEGEN_DISCOVERY=1'
-    ENV['USE_CODEGEN_DISCOVERY'] = '1'
-  end
-
   if `/usr/sbin/sysctl -n hw.optional.arm64 2>&1`.to_i == 1 && !RUBY_PLATFORM.include?('arm64')
     Pod::UI.warn 'Do not use "pod install" from inside Rosetta2 (x86_64 emulation on arm64).'
     Pod::UI.warn ' - Emulated x86_64 is slower than native arm64'
@@ -79,7 +73,7 @@ def use_react_native! (options={})
   pod 'boost', :podspec => "#{prefix}/third-party-podspecs/boost.podspec"
   pod 'RCT-Folly', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec", :modular_headers => true
 
-  if ENV['USE_CODEGEN_DISCOVERY'] == '1'
+  if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
     app_path = options[:app_path]
     config_file_dir = options[:config_file_dir]
     use_react_native_codegen_discovery!({
@@ -275,7 +269,7 @@ end
 
 # This is a temporary supporting function until we enable use_react_native_codegen_discovery by default.
 def checkAndGenerateEmptyThirdPartyProvider!(react_native_path)
-  return if ENV['USE_CODEGEN_DISCOVERY'] == '1'
+  return if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
 
   relative_installation_root = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
   output_dir = "#{relative_installation_root}/#{$CODEGEN_OUTPUT_DIR}"
@@ -516,7 +510,7 @@ def use_react_native_codegen_discovery!(options={})
 end
 
 def use_react_native_codegen!(spec, options={})
-  return if ENV['USE_CODEGEN_DISCOVERY'] == '1'
+  return if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
   # TODO: Once the new codegen approach is ready for use, we should output a warning here to let folks know to migrate.
 
   # The prefix to react-native
