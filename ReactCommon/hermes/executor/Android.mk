@@ -12,7 +12,8 @@ ifeq ($(APP_OPTIM),debug)
   LOCAL_MODULE := hermes-executor-common-debug
   LOCAL_CFLAGS := -DHERMES_ENABLE_DEBUGGER=1
 
-  LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
+ LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
+ LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 
   LOCAL_C_INCLUDES := $(LOCAL_PATH) $(REACT_NATIVE)/ReactCommon/jsi
   LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
@@ -27,6 +28,7 @@ else
   LOCAL_MODULE := hermes-executor-common-release
 
   LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
+  LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 
   LOCAL_C_INCLUDES := $(LOCAL_PATH) $(REACT_NATIVE)/ReactCommon/jsi
   LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
