@@ -10,6 +10,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := rrc_switch
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/androidswitch/react/renderer/components/androidswitch/*.cpp)
+LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/androidswitch/
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/androidswitch/

@@ -12,6 +12,7 @@ LOCAL_MODULE := react_nativemodule_core
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../../ $(LOCAL_PATH)/ReactCommon $(LOCAL_PATH)/platform/android/ReactCommon
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/ReactCommon/*.cpp) $(wildcard $(LOCAL_PATH)/platform/android/ReactCommon/*.cpp)
+LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) $(LOCAL_PATH)/platform/android/
 

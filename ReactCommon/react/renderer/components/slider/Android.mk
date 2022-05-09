@@ -10,6 +10,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := rrc_slider
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp) $(wildcard $(LOCAL_PATH)/platform/android/react/renderer/components/slider/*.cpp)
+LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/ $(LOCAL_PATH)/platform/android/
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../../../../ $(LOCAL_PATH)/platform/android/

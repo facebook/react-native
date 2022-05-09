@@ -10,6 +10,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := react_render_graphics
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp $(LOCAL_PATH)/platform/cxx/react/renderer/graphics/*.cpp)
+LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 
 LOCAL_SHARED_LIBRARIES := \
   glog \

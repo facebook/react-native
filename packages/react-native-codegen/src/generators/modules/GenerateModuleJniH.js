@@ -77,6 +77,7 @@ LOCAL_MODULE := react_codegen_${libraryName}
 LOCAL_C_INCLUDES := $(LOCAL_PATH)
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp) $(wildcard $(LOCAL_PATH)/react/renderer/components/${libraryName}/*.cpp)
+LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) $(LOCAL_PATH)/react/renderer/components/${libraryName}
 
