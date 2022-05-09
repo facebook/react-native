@@ -119,12 +119,12 @@
     "use-subscription": ">=1.0.0 <1.6.0",
     "whatwg-fetch": "^3.0.0",
     "ws": "^6.1.4",
-    "react-native-codegen": "^0.0.15"
+    "react-native-codegen": "^0.69.0"
   },
   "devDependencies": {
     "flow-bin": "^0.176.3",
-    "react": "17.0.2",
-    "react-test-renderer": "17.0.2",
+    "react": "18.0.0",
+    "react-test-renderer": "18.0.0",
     "@babel/core": "^7.14.0",
     "@babel/generator": "^7.14.0",
     "@babel/plugin-transform-regenerator": "^7.0.0",
