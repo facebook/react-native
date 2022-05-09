@@ -6,8 +6,10 @@
  */
 
 #include "Binding.h"
+
 #include "AsyncEventBeat.h"
 #include "EventEmitterWrapper.h"
+#include "JBackgroundExecutor.h"
 #include "ReactNativeConfigHolder.h"
 #include "StateWrapperImpl.h"
 
@@ -455,8 +457,8 @@ void Binding::installFabricUIManager(
   toolbox.synchronousEventBeatFactory = synchronousBeatFactory;
   toolbox.asynchronousEventBeatFactory = asynchronousBeatFactory;
 
-  backgroundExecutor_ = std::make_unique<JBackgroundExecutor>();
-  toolbox.backgroundExecutor = backgroundExecutor_->get();
+  backgroundExecutor_ = JBackgroundExecutor::create("fabric_bg");
+  toolbox.backgroundExecutor = backgroundExecutor_;
 
   animationDriver_ = std::make_shared<LayoutAnimationDriver>(
       runtimeExecutor, contextContainer, this);
@@ -558,8 +560,7 @@ void Binding::preallocateView(
   };
 
   if (dispatchPreallocationInBackground_) {
-    auto backgroundExecutor = backgroundExecutor_->get();
-    backgroundExecutor(preallocationFunction);
+    backgroundExecutor_(preallocationFunction);
   } else {
     preallocationFunction();
   }
