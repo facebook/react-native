@@ -45,6 +45,13 @@
         "ios": {},
         "android": {},
         "jsSrcsDir": "NativeComponentExample/js"
+      },
+      {
+        "name": "RNLibrarySpec",
+        "type": "all",
+        "ios": {},
+        "android": {},
+        "jsSrcsDir": "library/src"
       }
     ]
   }

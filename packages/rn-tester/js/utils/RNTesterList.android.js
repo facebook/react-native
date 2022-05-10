@@ -126,6 +126,11 @@ const Components: Array<RNTesterModuleInfo> = [
     category: 'UI',
     module: require('../examples/NewArchitecture/NewArchitectureExample'),
   },
+  {
+    key: 'ColoredViewNewArch',
+    category: 'UI',
+    module: require('../examples/ColoredViewNewArch/ColoredViewNewArch'),
+  },
 ];
 
 const APIs: Array<RNTesterModuleInfo> = [
