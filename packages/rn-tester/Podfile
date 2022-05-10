@@ -22,6 +22,7 @@ end
 def pods(options = {})
   project 'RNTesterPods.xcodeproj'
 
+  # [TODO(macOS GH#774) - don't enable Fabric on RNTester by default until it works on macOS
   fabric_enabled = false
 
   # To use fabric: set the environment variable `USE_FABRIC` to 1, like below
@@ -33,6 +34,11 @@ def pods(options = {})
     puts "Building RNTester with Fabric enabled."
     fabric_enabled = true
   end
+  # ]TODO(macOS GH#774)
+
+  # TODO(macOS GH#774) - uncomment once Fabric works on macOS
+  # puts "Building RNTester with Fabric enabled."
+  # fabric_enabled = true
 
   prefix_path = "../.."
   use_react_native!(path: prefix_path, fabric_enabled: fabric_enabled, hermes_enabled: ENV['USE_HERMES'] == '1')
