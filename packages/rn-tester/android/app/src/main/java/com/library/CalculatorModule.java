@@ -7,6 +7,7 @@
 
 package com.library;
 
+import com.facebook.fbreact.specs.NativeCalculatorSpec;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
@@ -14,7 +15,7 @@ import com.facebook.react.bridge.ReactMethod;
 public class CalculatorModule extends NativeCalculatorSpec {
   public static final String NAME = "Calculator";
 
-  CalculatorModule(ReactApplicationContext context) {
+  public CalculatorModule(ReactApplicationContext context) {
     super(context);
   }
 
