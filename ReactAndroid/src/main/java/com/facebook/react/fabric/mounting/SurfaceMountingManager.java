@@ -1017,7 +1017,8 @@ public class SurfaceMountingManager {
   private @NonNull ViewState getViewState(int tag) {
     ViewState viewState = mTagToViewState.get(tag);
     if (viewState == null) {
-      throw new RetryableMountingLayerException("Unable to find viewState for tag " + tag);
+      throw new RetryableMountingLayerException(
+          "Unable to find viewState for tag " + tag + ". Surface stopped: " + isStopped());
     }
     if (ReactFeatureFlags.enableDelayedViewStateDeletion) {
       mScheduledForDeletionViewStateTags.remove(tag);
