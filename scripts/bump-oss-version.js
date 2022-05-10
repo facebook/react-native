@@ -49,6 +49,11 @@
      alias: 'latest',
      type: 'boolean',
      default: false,
+   })
+   .option('S', { // [TODO(macOS GH#1148): Remove this option once version bumping scripts have been refactored
+     alias: 'skip-update-ruby',
+     type: 'boolean',
+     default: false // ]TODO(macOS GH#1148)
    }).argv;
 
  const autogenerateVersionNumber = argv.autogenerateVersionNumber;
@@ -216,7 +221,7 @@
  ).stdout.trim();
 
  // Make sure to update ruby version
- if (exec('scripts/update-ruby.sh').code) {
+ if (!argv.skipUpdateRuby && exec('scripts/update-ruby.sh').code) { // TODO(macOS GH#1148)
    echo('Failed to update Ruby version');
    exit(1);
  }
