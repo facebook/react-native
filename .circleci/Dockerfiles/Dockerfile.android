@@ -40,7 +40,6 @@ ADD Folly /app/Folly
 ADD glog /app/glog
 ADD double-conversion /app/double-conversion
 ADD jsc /app/jsc
-ADD v8 /app/v8
 
 # set workdir
 WORKDIR /app
