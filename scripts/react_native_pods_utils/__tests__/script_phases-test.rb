@@ -5,9 +5,9 @@
 
 require_relative "../script_phases"
 require_relative "./script_phases.snap"
-require 'minitest/autorun'
+require "test/unit"
 
-class TestScriptPhases < Minitest::Test
+class TestScriptPhases < Test::Unit::TestCase
 
     def test_get_script_phases_with_codegen_discovery_with_config_file_dir
       result = get_script_phases_with_codegen_discovery(
@@ -15,7 +15,7 @@ class TestScriptPhases < Minitest::Test
         relative_app_root: '',
         relative_config_file_dir: 'node_modules',
         fabric_enabled: true)
-      assert_equal snap_get_script_phases_with_codegen_discovery_with_config_file_dir, result
+      assert_equal(snap_get_script_phases_with_codegen_discovery_with_config_file_dir, result)
     end
 
     def test_get_script_phases_with_codegen_discovery_without_config_file_dir
@@ -24,7 +24,7 @@ class TestScriptPhases < Minitest::Test
         relative_app_root: '',
         relative_config_file_dir: '',
         fabric_enabled: true)
-      assert_equal snap_get_script_phases_with_codegen_discovery_without_config_file_dir, result
+      assert_equal(snap_get_script_phases_with_codegen_discovery_without_config_file_dir, result)
     end
 
     def test_get_script_phases_no_codegen_discovery()
@@ -39,7 +39,7 @@ class TestScriptPhases < Minitest::Test
             js_srcs_dir: './',
             file_list: '[".//NativeScreenshotManager.js"]'
           )
-        assert_equal snap_get_script_phases_no_codegen_discovery, result
+        assert_equal(snap_get_script_phases_no_codegen_discovery, result)
     end
 
   end

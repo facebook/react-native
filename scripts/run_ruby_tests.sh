@@ -7,6 +7,8 @@
 set -f
 
 basepath=$(dirname "${0}")
+
+# shellcheck disable=SC2207
 files=( $(find . -name '*-test.rb') )
 
 test_suite="${basepath}/all_tests.rb"

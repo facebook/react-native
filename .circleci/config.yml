@@ -455,8 +455,8 @@ jobs:
       - run:
           name: Run Ruby Tests
           command: |
-            cd scripts/cocoapods
-            sh run_tests.sh
+            cd scripts
+            sh run_ruby_tests.sh
       - run_yarn
       - run: |
           cd packages/rn-tester
