@@ -16,7 +16,7 @@ module HermesHelper
   BUILD_TYPE = :release
 end
 
-Pod::UI.puts '[Hermes] Hermes needs to be compiled, installing hermes-engine may take a while...'.yellow
+Pod::UI.puts '[Hermes] Hermes needs to be compiled, installing hermes-engine may take a while...'.yellow if Object.const_defined?("Pod::UI")
 
 Pod::Spec.new do |spec|
   spec.name        = "hermes-engine"
