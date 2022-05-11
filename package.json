@@ -1,6 +1,6 @@
 {
   "name": "react-native",
-  "version": "0.69.0-rc.0",
+  "version": "0.69.0-rc.1",
   "bin": "./cli.js",
   "description": "A framework for building native apps using React",
   "license": "MIT",
@@ -155,7 +155,7 @@
     "jest": "^26.6.3",
     "jest-junit": "^10.0.0",
     "jscodeshift": "^0.13.1",
-    "metro-babel-register": "0.70.1",
+    "metro-babel-register": "0.70.3",
     "mkdirp": "^0.5.1",
     "prettier": "^2.4.1",
     "shelljs": "^0.8.5",
