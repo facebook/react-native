@@ -8,10 +8,10 @@
 $flipper_default_versions = {
     'Flipper' => '0.125.0',
     'Flipper-Boost-iOSX' => '1.76.0.1.11',
-    'Flipper-DoubleConversion' => '3.2.0',
+    'Flipper-DoubleConversion' => '3.2.0.1',
     'Flipper-Fmt' => '7.1.7',
     'Flipper-Folly' => '2.6.10',
-    'Flipper-Glog' => '0.5.0.4',
+    'Flipper-Glog' => '0.5.0.5',
     'Flipper-PeerTalk' => '0.0.4',
     'Flipper-RSocket' => '1.4.3',
     'OpenSSL-Universal' => '1.1.1100',
