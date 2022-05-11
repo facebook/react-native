@@ -27,13 +27,4 @@ Pod::Spec.new do |s|
 
   s.dependency "React-Core"
   s.dependency "RCT-Folly", folly_version
-
-  # s.dependency "..."
-
-  # Enable codegen for this library
-  use_react_native_codegen!(s, {
-    :react_native_path => "../../..",
-    :js_srcs_dir => "./",
-    :library_type => "modules",
-  })
 end
