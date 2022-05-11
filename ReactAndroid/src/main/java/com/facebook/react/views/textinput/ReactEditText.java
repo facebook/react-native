@@ -123,6 +123,8 @@ public class ReactEditText extends AppCompatEditText
   private static final KeyListener sKeyListener = QwertyKeyListener.getInstanceForFullKeyboard();
   private @Nullable EventDispatcher mEventDispatcher;
 
+  private final ReactEditTextClickDetector clickDetector = new ReactEditTextClickDetector(this);
+
   public ReactEditText(Context context) {
     super(context);
     setFocusableInTouchMode(false);
@@ -207,6 +209,21 @@ public class ReactEditText extends AppCompatEditText
         // Disallow parent views to intercept touch events, until we can detect if we should be
         // capturing these touches or not.
         this.getParent().requestDisallowInterceptTouchEvent(true);
+        clickDetector.handleDown(ev);
+        break;
+      case MotionEvent.ACTION_UP:
+        final boolean wasClick = clickDetector.handleUp(ev);
+        if (wasClick && forceShowKeyboardOnClicks() && isEnabled()) {
+          /*
+           It is intentional that we do not return true here.
+           We want to force the keyboard to show, but we still want to allow the user
+           to interact with the view in other ways (like changing the selection).
+          */
+          showSoftKeyboard();
+        }
+        break;
+      case MotionEvent.ACTION_CANCEL:
+        clickDetector.cancelPress();
         break;
       case MotionEvent.ACTION_MOVE:
         if (mDetectScrollMovement) {
@@ -1062,6 +1079,15 @@ public class ReactEditText extends AppCompatEditText
 
   void setEventDispatcher(@Nullable EventDispatcher eventDispatcher) {
     mEventDispatcher = eventDispatcher;
+  }
+
+  /**
+   * There is a bug on Android 7/8/9 where clicking the view while it is already
+   * focused does not show the keyboard. On those API levels, we force showing
+   * the keyboard when we detect a click.
+   */
+  private boolean forceShowKeyboardOnClicks() {
+    return Build.VERSION.SDK_INT <= Build.VERSION_CODES.P;
   }
 
   /**
