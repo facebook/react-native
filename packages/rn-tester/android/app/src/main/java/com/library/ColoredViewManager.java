@@ -27,7 +27,7 @@ public class ColoredViewManager extends SimpleViewManager<ColoredView>
 
   private final ViewManagerDelegate<ColoredView> mDelegate;
 
-  public ColoredViewManager(ReactApplicationContext context) {
+  public ColoredViewManager() {
     mDelegate = new ColoredViewManagerDelegate<>(this);
   }
 
