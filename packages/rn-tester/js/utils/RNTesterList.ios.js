@@ -161,6 +161,12 @@ const Components: Array<RNTesterModuleInfo> = [
     module: require('../examples/NewArchitecture/NewArchitectureExample'),
     supportsTVOS: false,
   },
+  {
+    key: 'ColoredViewNewArch',
+    category: 'UI',
+    module: require('../examples/ColoredViewNewArch/ColoredViewNewArch'),
+    supportsTVOS: false,
+  },
 ];
 
 const APIs: Array<RNTesterModuleInfo> = [
@@ -216,6 +222,11 @@ const APIs: Array<RNTesterModuleInfo> = [
     key: 'BoxShadowExample',
     module: require('../examples/BoxShadow/BoxShadowExample'),
     supportsTVOS: true,
+  },
+  {
+    key: 'Calculator',
+    module: require('../examples/Calculator/CalculatorExample'),
+    supportsTVOS: false,
   },
   {
     key: 'CrashExample',
