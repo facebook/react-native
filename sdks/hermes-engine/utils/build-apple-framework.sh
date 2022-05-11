@@ -10,20 +10,7 @@ else
   BUILD_TYPE="Release"
 fi
 
-function command_exists {
-  command -v "${1}" > /dev/null 2>&1
-}
-
-if command_exists "cmake"; then
-  if command_exists "ninja"; then
-    BUILD_SYSTEM="Ninja"
-  else
-    BUILD_SYSTEM="Unix Makefiles"
-  fi
-else
-  echo >&2 'CMake is required to install Hermes, install it with: brew install cmake'
-  exit 1
-fi
+NUM_CORES=$(sysctl -n hw.ncpu)
 
 function get_release_version {
   ruby -rcocoapods-core -rjson -e "puts Pod::Specification.from_file('hermes-engine.podspec').version"
@@ -40,7 +27,7 @@ function get_mac_deployment_target {
 # Build host hermes compiler for internal bytecode
 function build_host_hermesc {
   cmake -S . -B build_host_hermesc
-  cmake --build ./build_host_hermesc --target hermesc
+  cmake --build ./build_host_hermesc --target hermesc -j ${NUM_CORES}
 }
 
 # Utility function to configure an Apple framework
@@ -58,7 +45,7 @@ function configure_apple_framework {
     build_cli_tools="false"
   fi
 
-  cmake -S . -B "build_$1" -G "$BUILD_SYSTEM" \
+  cmake -S . -B "build_$1" \
     -DHERMES_APPLE_TARGET_PLATFORM:STRING="$1" \
     -DCMAKE_OSX_ARCHITECTURES:STRING="$2" \
     -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING="$3" \
@@ -84,12 +71,7 @@ function build_apple_framework {
   echo "Host hermesc is required to build apple frameworks!"
 
   configure_apple_framework "$1" "$2" "$3"
-
-  if [[ "$BUILD_SYSTEM" == "Ninja" ]]; then
-    (cd "./build_$1" && ninja install/strip)
-  else
-    (cd "./build_$1" && make install/strip)
-  fi
+  cmake --build "./build_$1" --target install/strip -j ${NUM_CORES}
 }
 
 # Accepts an array of frameworks and will place all of

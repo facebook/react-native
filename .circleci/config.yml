@@ -417,7 +417,7 @@ jobs:
       - with_brew_cache_span:
           steps:
             - brew_install:
-                package: cmake ninja
+                package: cmake
 
       - run:
           name: Setup the CocoaPods environment
@@ -474,7 +474,7 @@ jobs:
       - with_brew_cache_span:
           steps:
             - brew_install:
-                package: watchman cmake ninja
+                package: watchman cmake
             - run:
                 name: "Brew: Tap wix/brew"
                 command: brew tap wix/brew >/dev/null
@@ -745,7 +745,7 @@ jobs:
       - with_brew_cache_span:
           steps:
             - brew_install:
-                package: cmake ninja
+                package: cmake
 
       - run:
           name: Install CocoaPods dependencies
@@ -999,7 +999,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            brew install cmake ninja
+            brew install cmake
       - run:
           name: Build HermesC for macOS
           command: |
