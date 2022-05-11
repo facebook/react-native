@@ -20,7 +20,7 @@ class ReactEditTextClickDetector {
   }
 
   void handleDown(final MotionEvent downEvent) {
-    currentDownEvent = new TimestampedMotionEvent(downEvent);
+    currentDownEvent = new TimestampedMotionEvent(System.currentTimeMillis(), downEvent);
   }
 
   void cancelPress() {
@@ -65,13 +65,9 @@ class ReactEditTextClickDetector {
     final long timestamp;
     final MotionEvent motionEvent;
 
-    public TimestampedMotionEvent(final long timestamp, final MotionEvent motionEvent) {
+    TimestampedMotionEvent(final long timestamp, final MotionEvent motionEvent) {
       this.timestamp = timestamp;
       this.motionEvent = motionEvent;
-    }
-
-    public TimestampedMotionEvent(final MotionEvent motionEvent) {
-      this(System.currentTimeMillis(), motionEvent);
     }
   }
 }
