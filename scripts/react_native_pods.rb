@@ -689,8 +689,9 @@ def downloadAndConfigureHermesSource(react_native_path)
   Pod::UI.puts "[Hermes] Extracting Hermes tarball (#{hermes_tag_sha.slice(0,6)})"
   system("tar -zxf #{hermes_tarball_path} --strip-components=1 --directory #{hermes_dir}")
 
-  # TODO: Integrate this temporary hermes-engine.podspec into the actual one located in facebook/hermes
-  system("cp #{sdks_dir}/hermes-engine.podspec #{hermes_dir}/hermes-engine.podspec")
+  # Use React Native's own scripts to build Hermes
+  system("cp #{sdks_dir}/hermes-engine/hermes-engine.podspec #{hermes_dir}/hermes-engine.podspec")
+  system("cp #{sdks_dir}/hermes-engine/utils/* #{hermes_dir}/utils/.")
 
   hermes_dir
 end

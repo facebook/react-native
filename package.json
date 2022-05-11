@@ -52,8 +52,8 @@
     "scripts/react_native_pods_utils/script_phases.sh",
     "scripts/react_native_pods.rb",
     "scripts/react-native-xcode.sh",
+    "sdks/hermes-engine",
     "sdks/hermesc",
-    "sdks/hermes-engine.podspec",
     "template.config.js",
     "template",
     "third-party-podspecs"

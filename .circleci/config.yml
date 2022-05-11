@@ -983,6 +983,7 @@ jobs:
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
     steps:
+      - checkout
       - *attach_hermes_workspace
       - restore_cache:
           key: v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
@@ -990,6 +991,7 @@ jobs:
           name: Set up workspace
           command: |
             mkdir -p /tmp/hermes/osx-bin
+            cp ~/react-native/sdks/hermes-engine/utils/* "$HERMES_WS_DIR/hermes/utils/."
       - run:
           name: Install dependencies
           command: |
