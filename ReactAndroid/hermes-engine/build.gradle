@@ -118,7 +118,6 @@ def reactNativeArchitectures() {
 
 android {
     compileSdkVersion 31
-    buildToolsVersion = "31.0.0"
 
     // Used to override the NDK path/version on internal CI or by allowing
     // users to customize the NDK path/version from their root project (e.g. for M1 support)
