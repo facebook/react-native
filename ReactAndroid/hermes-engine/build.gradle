@@ -60,6 +60,11 @@ def jsiDir = new File(reactNativeRootDir, "ReactCommon/jsi")
 // There it will be placed alongside the React Android .aar
 def AAR_OUTPUT_URL = "file://${rootDir}/android"
 
+// This environment variable can be used to override the python interpreter used during hermes builds.
+// Context: CMake in Android SDK can't find the python installation on Windows after a recent change in hermes build script to use the newer FindPython module (https://github.com/facebook/hermes/commit/5244f819b2f3949ca94a3a1bf75d54a8ed59d94a) 
+// This environment variable will allow us to hint FindPython until we find a better solution
+def pythonOverride = System.getenv("REACT_PYTHON_EXECUTABLE")
+
 task downloadHermes(type: Download) {
     src("https://github.com/facebook/hermes/tarball/${hermesVersion}")
     onlyIfNewer(true)
@@ -86,7 +91,7 @@ task unzipHermes(dependsOn: downloadHermes, type: Copy) {
 
 task configureBuildForHermes(type: Exec) {
     workingDir(hermesDir)
-    commandLine(windowsAwareCommandLine(findCmakePath(cmakeVersion), "-S", ".", "-B", hermesBuildDir.toString(), "-DJSI_DIR=" + jsiDir.absolutePath))
+    commandLine(windowsAwareCommandLine(findCmakePath(cmakeVersion), "-GNinja", "-S", ".", "-B", hermesBuildDir.toString(), "-DJSI_DIR=" + jsiDir.absolutePath, pythonOverride?"-DPython_EXECUTABLE="+pythonOverride:""))
 }
 
 task buildHermes(dependsOn: configureBuildForHermes, type: Exec) {
@@ -147,6 +152,10 @@ android {
                 // the build setup and to avoid overcomplicating the build-type matrix.
                 arguments "-DHERMES_ENABLE_INTL=True"
                 targets "libhermes"
+
+                if (pythonOverride) {
+                    arguments "-DPython_EXECUTABLE="+pythonOverride
+                }
             }
         }
         ndk {
