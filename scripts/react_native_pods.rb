@@ -607,11 +607,14 @@ end
 
 def downloadAndConfigureHermesSource(react_native_path)
   hermes_tarball_base_url = "https://github.com/facebook/hermes/tarball/"
-  sdks_dir = "#{react_native_path}/sdks"
-  download_dir = "#{sdks_dir}/download"
-  hermes_dir = "#{sdks_dir}/hermes"
-  hermes_tag_file = "#{sdks_dir}/.hermesversion"
-  system("mkdir -p #{hermes_dir} #{download_dir}")
+
+  sdks_dir = Pod::Config.instance.installation_root.join(react_native_path, "sdks")
+  download_dir = sdks_dir.join("download")
+  hermes_dir = sdks_dir.join("hermes")
+  hermes_tag_file = sdks_dir.join(".hermesversion")
+
+  hermes_dir.mkpath
+  download_dir.mkpath
 
   if (File.exist?(hermes_tag_file))
     hermes_tag = File.read(hermes_tag_file).strip
@@ -621,20 +624,20 @@ def downloadAndConfigureHermesSource(react_native_path)
 
   hermes_tarball_url = hermes_tarball_base_url + hermes_tag
   hermes_tag_sha = %x[git ls-remote https://github.com/facebook/hermes #{hermes_tag} | cut -f 1].strip
-  hermes_tarball_path = "#{download_dir}/hermes-#{hermes_tag_sha}.tar.gz"
+  hermes_tarball_path = download_dir.join("hermes-#{hermes_tag_sha}.tar.gz")
 
   if (!File.exist?(hermes_tarball_path))
     Pod::UI.puts "[Hermes] Downloading Hermes source code..."
-    system("curl #{hermes_tarball_url} -Lo #{hermes_tarball_path}")
+    system("curl #{hermes_tarball_url} -Lo #{hermes_tarball_path.to_s}")
   end
   Pod::UI.puts "[Hermes] Extracting Hermes tarball (#{hermes_tag_sha.slice(0,6)})"
-  system("tar -zxf #{hermes_tarball_path} --strip-components=1 --directory #{hermes_dir}")
+  system("tar -zxf #{hermes_tarball_path.to_s} --strip-components=1 --directory #{hermes_dir.to_s}")
 
   # Use React Native's own scripts to build Hermes
-  system("cp #{sdks_dir}/hermes-engine/hermes-engine.podspec #{hermes_dir}/hermes-engine.podspec")
-  system("cp #{sdks_dir}/hermes-engine/utils/* #{hermes_dir}/utils/.")
+  FileUtils.cp(sdks_dir.join("hermes-engine", "hermes-engine.podspec"), hermes_dir.join("hermes-engine.podspec"))
+  FileUtils.cp_r(sdks_dir.join("hermes-engine", "utils"), hermes_dir)
 
-  hermes_dir
+  hermes_dir.relative_path_from(Pod::Config.instance.installation_root).to_s
 end
 
 # This provides a post_install workaround for build issues related Xcode 12.5 and Apple Silicon (M1) machines.
