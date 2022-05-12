@@ -59,43 +59,6 @@ module.exports = {
         sourceType: 'unambiguous', // b7 required. detects module vs script mode
       },
       src,
-      plugins: [
-        [require('@babel/plugin-transform-block-scoping')],
-        // the flow strip types plugin must go BEFORE class properties!
-        // there'll be a test case that fails if you don't.
-        [require('@babel/plugin-transform-flow-strip-types')],
-        [
-          require('@babel/plugin-proposal-class-properties'),
-          // use `this.foo = bar` instead of `this.defineProperty('foo', ...)`
-          {loose: true},
-        ],
-        [require('@babel/plugin-transform-computed-properties')],
-        [require('@babel/plugin-transform-destructuring')],
-        [require('@babel/plugin-transform-function-name')],
-        [require('@babel/plugin-transform-literals')],
-        [require('@babel/plugin-transform-parameters')],
-        [require('@babel/plugin-transform-shorthand-properties')],
-        [require('@babel/plugin-transform-react-jsx')],
-        [require('@babel/plugin-transform-regenerator')],
-        [require('@babel/plugin-transform-sticky-regex')],
-        [require('@babel/plugin-transform-unicode-regex')],
-        [
-          require('@babel/plugin-transform-modules-commonjs'),
-          {strict: false, allowTopLevelThis: true},
-        ],
-        [require('@babel/plugin-transform-classes')],
-        [require('@babel/plugin-transform-arrow-functions')],
-        [require('@babel/plugin-transform-spread')],
-        [require('@babel/plugin-proposal-object-rest-spread')],
-        [
-          require('@babel/plugin-transform-template-literals'),
-          {loose: true}, // dont 'a'.concat('b'), just use 'a'+'b'
-        ],
-        [require('@babel/plugin-transform-exponentiation-operator')],
-        [require('@babel/plugin-transform-for-of'), {loose: true}],
-        [require('@babel/plugin-transform-react-display-name')],
-        [require('@babel/plugin-transform-react-jsx-source')],
-      ],
     });
 
     return generate(
