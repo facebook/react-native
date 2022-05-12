@@ -14,6 +14,7 @@
 
 #include <ReactCommon/TurboModule.h>
 #include <ReactCommon/TurboModulePerfLogger.h>
+#include <ReactCommon/TurboModuleUtils.h>
 #include <jsi/JSIDynamic.h>
 #include <react/debug/react_native_assert.h>
 #include <react/jni/NativeMap.h>
@@ -22,10 +23,10 @@
 
 #include "JavaTurboModule.h"
 
-namespace TMPL = facebook::react::TurboModulePerfLogger;
-
 namespace facebook {
 namespace react {
+
+namespace TMPL = TurboModulePerfLogger;
 
 JavaTurboModule::JavaTurboModule(const InitParams &params)
     : TurboModule(params.moduleName, params.jsInvoker),
@@ -54,11 +55,18 @@ JavaTurboModule::~JavaTurboModule() {
 }
 
 namespace {
+
+struct JNIArgs {
+  JNIArgs(size_t count) : args_(count) {}
+  std::vector<jvalue> args_;
+  std::vector<jobject> globalRefs_;
+};
+
 jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
-    JSCallbackRetainer retainJSCallback,
+    const JSCallbackRetainer &retainJSCallback,
     jsi::Function &&function,
     jsi::Runtime &rt,
-    std::shared_ptr<CallInvoker> jsInvoker) {
+    const std::shared_ptr<CallInvoker> &jsInvoker) {
   auto weakWrapper = retainJSCallback != nullptr
       ? retainJSCallback(std::move(function), rt, jsInvoker)
       : react::CallbackWrapper::createWeak(std::move(function), rt, jsInvoker);
@@ -119,13 +127,6 @@ jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
   return JCxxCallbackImpl::newObjectCxxArgs(fn);
 }
 
-template <typename T>
-std::string to_string(T v) {
-  std::ostringstream stream;
-  stream << v;
-  return stream.str();
-}
-
 // This is used for generating short exception strings.
 std::string stringifyJSIValue(const jsi::Value &v, jsi::Runtime *rt = nullptr) {
   if (v.isUndefined()) {
@@ -141,7 +142,7 @@ std::string stringifyJSIValue(const jsi::Value &v, jsi::Runtime *rt = nullptr) {
   }
 
   if (v.isNumber()) {
-    return "a number (" + to_string(v.getNumber()) + ")";
+    return "a number (" + std::to_string(v.getNumber()) + ")";
   }
 
   if (v.isString()) {
@@ -162,7 +163,7 @@ class JavaTurboModuleArgumentConversionException : public std::runtime_error {
       const jsi::Value *arg,
       jsi::Runtime *rt)
       : std::runtime_error(
-            "Expected argument " + to_string(index) + " of method \"" +
+            "Expected argument " + std::to_string(index) + " of method \"" +
             methodName + "\" to be a " + expectedType + ", but got " +
             stringifyJSIValue(*arg, rt)) {}
 };
@@ -175,7 +176,7 @@ class JavaTurboModuleInvalidArgumentTypeException : public std::runtime_error {
       const std::string &methodName)
       : std::runtime_error(
             "Called method \"" + methodName + "\" with unsupported type " +
-            actualType + " at argument " + to_string(argIndex)) {}
+            actualType + " at argument " + std::to_string(argIndex)) {}
 };
 
 class JavaTurboModuleInvalidArgumentCountException : public std::runtime_error {
@@ -186,9 +187,9 @@ class JavaTurboModuleInvalidArgumentCountException : public std::runtime_error {
       int expectedArgCount)
       : std::runtime_error(
             "TurboModule method \"" + methodName + "\" called with " +
-            to_string(actualArgCount) +
+            std::to_string(actualArgCount) +
             " arguments (expected argument count: " +
-            to_string(expectedArgCount) + ").") {}
+            std::to_string(expectedArgCount) + ").") {}
 };
 
 /**
@@ -240,22 +241,20 @@ int32_t getUniqueId() {
   return counter++;
 }
 
-} // namespace
-
-// fnjni already does this conversion, but since we are using plain JNI, this
+// fbjni already does this conversion, but since we are using plain JNI, this
 // needs to be done again
 // TODO (axe) Reuse existing implementation as needed - the exist in
 // MethodInvoker.cpp
-JNIArgs JavaTurboModule::convertJSIArgsToJNIArgs(
+JNIArgs convertJSIArgsToJNIArgs(
     JNIEnv *env,
     jsi::Runtime &rt,
-    std::string methodName,
-    std::vector<std::string> methodArgTypes,
+    const std::string &methodName,
+    const std::vector<std::string> &methodArgTypes,
     const jsi::Value *args,
     size_t count,
-    std::shared_ptr<CallInvoker> jsInvoker,
+    const std::shared_ptr<CallInvoker> &jsInvoker,
     TurboModuleMethodValueKind valueKind,
-    JSCallbackRetainer retainJSCallback) {
+    const JSCallbackRetainer &retainJSCallback) {
   unsigned int expectedArgumentCount = valueKind == PromiseKind
       ? methodArgTypes.size() - 1
       : methodArgTypes.size();
@@ -285,7 +284,7 @@ JNIArgs JavaTurboModule::convertJSIArgsToJNIArgs(
   jclass doubleClass = nullptr;
 
   for (unsigned int argIndex = 0; argIndex < count; argIndex += 1) {
-    std::string type = methodArgTypes.at(argIndex);
+    const std::string &type = methodArgTypes.at(argIndex);
 
     const jsi::Value *arg = &args[argIndex];
     jvalue *jarg = &jargs[argIndex];
@@ -429,6 +428,8 @@ jsi::Value convertFromJMapToValue(JNIEnv *env, jsi::Runtime &rt, jobject arg) {
   auto result = jni::static_ref_cast<NativeMap::jhybridobject>(jResult);
   return jsi::valueFromDynamic(rt, result->cthis()->consume());
 }
+
+} // namespace
 
 jsi::Value JavaTurboModule::invokeJavaMethod(
     jsi::Runtime &runtime,
