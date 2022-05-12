@@ -1,8 +1,11 @@
+parameters:
+  artifact_feed: ''
+
 steps:
   - task: PipAuthenticate@1
     displayName: 'Pip Authenticate to react-native-public'
     inputs:
-      artifactFeeds: 'react-native/react-native-public'
+      artifactFeeds: '${{ parameters.artifact_feed }}'
 
   # Verify depenendencies can be enumerated and downloaded ..
   - task: CmdLine@2
