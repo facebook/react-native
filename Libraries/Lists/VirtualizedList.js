@@ -1202,7 +1202,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     },
   } = {};
   _footerLength = 0;
-  _hasDoneInitialScroll = false;
+  // Used for preventing scrollToIndex from being called multiple times for initialScrollIndex
+  _hasTriggeredInitialScrollToIndex = false;
   _hasInteracted = false;
   _hasMore = false;
   _hasWarned: {[string]: boolean} = {};
@@ -1539,7 +1540,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       height > 0 &&
       this.props.initialScrollIndex != null &&
       this.props.initialScrollIndex > 0 &&
-      !this._hasDoneInitialScroll
+      !this._hasTriggeredInitialScrollToIndex
     ) {
       if (this.props.contentOffset == null) {
         this.scrollToIndex({
@@ -1547,7 +1548,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           index: this.props.initialScrollIndex,
         });
       }
-      this._hasDoneInitialScroll = true;
+      this._hasTriggeredInitialScrollToIndex = true;
     }
     if (this.props.onContentSizeChange) {
       this.props.onContentSizeChange(width, height);
@@ -1758,6 +1759,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         | $TEMPORARY$object<{first: number, last: number}>
       );
       const {contentLength, offset, visibleLength} = this._scrollMetrics;
+      const distanceFromEnd = contentLength - visibleLength - offset;
       if (!isVirtualizationDisabled) {
         // If we run this with bogus data, we'll force-render window {first: 0, last: 0},
         // and wipe out the initialNumToRender rendered elements.
@@ -1768,7 +1770,17 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           // we'll wipe out the initialNumToRender rendered elements starting at initialScrollIndex.
           // So let's wait until we've scrolled the view to the right place. And until then,
           // we will trust the initialScrollIndex suggestion.
-          if (!this.props.initialScrollIndex || this._hasDoneInitialScroll) {
+
+          // Thus, we want to recalculate the windowed render limits if any of the following hold:
+          // - initialScrollIndex is undefined or is 0
+          // - initialScrollIndex > 0 AND scrolling is complete
+          // - initialScrollIndex > 0 AND the end of the list is visible (this handles the case
+          //   where the list is shorter than the visible area)
+          if (
+            !this.props.initialScrollIndex ||
+            this._scrollMetrics.offset ||
+            Math.abs(distanceFromEnd) < Number.EPSILON
+          ) {
             newState = computeWindowedRenderLimits(
               this.props.data,
               this.props.getItemCount,
@@ -1781,7 +1793,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           }
         }
       } else {
-        const distanceFromEnd = contentLength - visibleLength - offset;
         const renderAhead =
           distanceFromEnd < onEndReachedThreshold * visibleLength
             ? maxToRenderPerBatchOrDefault(this.props.maxToRenderPerBatch)
