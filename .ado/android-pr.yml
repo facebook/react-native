@@ -53,16 +53,7 @@ jobs:
 
       - template: templates/prep-android-nuget.yml
 
-      - task: PipAuthenticate@1
-        displayName: 'Pip Authenticate to react-native-public'
-        inputs:
-          artifactFeeds: 'react-native/react-native-public'
-
-      # Verify depenendencies can be enumerated and downloaded ..
-      - task: CmdLine@2
-        displayName: 'Verify Dependencies can be enumerated'
-        inputs:
-          script: pip3 install maven-dependency-utils && python3 .ado/downloadAndroidDependencies.py $(Build.SourcesDirectory) && tree $(Build.SourcesDirectory)/android
+      - template: templates/download-android-dependencies.yml
 
       # Very similar to the default pack task .. but appends 'ndk21' to the nuget pack version
       - task: CmdLine@2
