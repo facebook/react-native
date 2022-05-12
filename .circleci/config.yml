@@ -31,6 +31,22 @@ references:
       at: *hermes_workspace_root
 
   # -------------------------
+  #        Cache Key Anchors
+  # -------------------------
+  # Anchors for the cache keys
+
+  cache_keys:
+    brew_cache_key: &brew_cache_key v4-brew
+    buck_cache_key: &buck_cache_key v3-buck-v2019.01.10.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}}
+    gems_cache_key: &gems_cache_key v1-gems-{{ checksum "Gemfile.lock" }}
+    gradle_cache_key: &gradle_cache_key v1-gradle-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "ReactAndroid/gradle.properties" }}
+    hermes_cache_key: &hermes_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
+    hermes_windows_cache_key: &hermes_windows_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "tmp/hermes/hermesversion" }}
+    pods_cache_key: &pods_cache_key v6-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
+    windows_yarn_cache_key: &windows_yarn_cache_key v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
+    yarn_cache_key: &yarn_cache_key v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}
+
+  # -------------------------
   #        Filters
   # -------------------------
   # CircleCI filters are OR-ed, with all branches triggering by default and tags excluded by default
@@ -96,24 +112,29 @@ commands:
   setup_ruby:
     steps:
       - restore_cache:
-          key: 1-gems-{{ checksum "Gemfile.lock" }}
+          key: *gems_cache_key
       - run:
           name: Bundle Install
           command: |
             source /usr/local/share/chruby/auto.sh
             bundle check || bundle install --path vendor/bundle --clean
       - save_cache:
-          key: 1-gems-{{ checksum "Gemfile.lock" }}
+          key: *gems_cache_key
           paths:
             - vendor/bundle
 
   run_yarn:
+    parameters:
+      yarn_base_cache_key:
+        default: *yarn_cache_key
+        type: string
+
     steps:
       - restore_cache:
           keys:
-            - v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}-{{ arch }}-{{ checksum "yarn.lock" }}
-            - v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}-{{ arch }}
-            - v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}
+            - << parameters.yarn_base_cache_key >>-{{ arch }}-{{ checksum "yarn.lock" }}
+            - << parameters.yarn_base_cache_key >>-{{ arch }}
+            - << parameters.yarn_base_cache_key >>
       - run:
           name: "Yarn: Install Dependencies"
           command: |
@@ -125,13 +146,13 @@ commands:
       - save_cache:
           paths:
             - ~/.cache/yarn
-          key: v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}-{{ arch }}-{{ checksum "yarn.lock" }}
+          key: << parameters.yarn_base_cache_key >>-{{ arch }}-{{ checksum "yarn.lock" }}
 
   install_buck_tooling:
     steps:
       - restore_cache:
           keys:
-            - v3-buck-v2019.01.10.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}}
+            - *buck_cache_key
       - run:
           name: Install BUCK
           command: |
@@ -144,7 +165,7 @@ commands:
           paths:
             - ~/buck
             - ~/okbuck
-          key: v3-buck-v2019.01.10.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}
+          key: *buck_cache_key
 
   install_github_bot_deps:
     steps:
@@ -169,13 +190,13 @@ commands:
     steps:
       - restore_cache:
           keys:
-            - v4-brew
+            - *brew_cache_key
       - steps: << parameters.steps >>
       - save_cache:
           paths:
             - /usr/local/Homebrew
             - ~/Library/Caches/Homebrew
-          key: v4-brew
+          key: *brew_cache_key
 
   with_rntester_pods_cache_span:
     parameters:
@@ -190,18 +211,18 @@ commands:
           keys:
             # The committed lockfile is generated using USE_FRAMEWORKS=0 and USE_HERMES=1 so it could load an outdated cache if a change
             # only affects the frameworks or hermes config. To help prevent this also cache based on the content of Podfile.
-            - v6-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
+            - *pods_cache_key
       - steps: << parameters.steps >>
       - save_cache:
           paths:
             - packages/rn-tester/Pods
-          key: v6-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
+          key: *pods_cache_key
 
   download_gradle_dependencies:
     steps:
       - restore_cache:
           keys:
-            - v1-gradle-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "ReactAndroid/gradle.properties" }}
+            - *gradle_cache_key
       - run:
           name: Download Dependencies Using Gradle
           command: ./scripts/circleci/gradle_download_deps.sh
@@ -210,7 +231,7 @@ commands:
             - ~/.gradle
             - ReactAndroid/build/downloads
             - ReactAndroid/build/third-party-ndk
-          key: v1-gradle-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "ReactAndroid/gradle.properties" }}
+          key: *gradle_cache_key
 
   download_buck_dependencies:
     steps:
@@ -805,12 +826,12 @@ jobs:
 
       - restore_cache:
           keys:
-            - v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
+            - *windows_yarn_cache_key
       - run:
           name: "Yarn: Install Dependencies"
           command: yarn install --frozen-lockfile --non-interactive
       - save_cache:
-          key: v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
+          key: *windows_yarn_cache_key
           paths:
             - C:\Users\circleci\AppData\Local\Yarn
 
@@ -904,7 +925,7 @@ jobs:
               echo $HERMES_TAG_SHA > /tmp/hermes/hermesversion
             fi
       - restore_cache:
-          key: v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
+          key: *hermes_cache_key
       - run:
           name: Download Hermes tarball
           command: |
@@ -927,7 +948,7 @@ jobs:
             fi
             tar -xzf "$HERMES_WS_DIR/download/hermes.tar.gz" --strip-components=1 -C "$HERMES_WS_DIR/hermes"
       - save_cache:
-          key: v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
+          key: *hermes_cache_key
           paths:
             - /tmp/hermes/download/
             - /tmp/hermes/hermes/
@@ -952,7 +973,7 @@ jobs:
                 libreadline-dev libicu-dev zip python3
       - *attach_hermes_workspace
       - restore_cache:
-          key: v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
+          key: *hermes_cache_key
       - run:
           name: Set up workspace
           command: |
@@ -971,7 +992,7 @@ jobs:
               cp /tmp/hermes/build/bin/hermesc /tmp/hermes/linux64-bin/.
             fi
       - save_cache:
-          key: v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
+          key: *hermes_cache_key
           paths:
             - /tmp/hermes/linux64-bin/
             - /tmp/hermes/hermes/destroot/
@@ -990,7 +1011,7 @@ jobs:
       - checkout
       - *attach_hermes_workspace
       - restore_cache:
-          key: v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
+          key: *hermes_cache_key
       - run:
           name: Set up workspace
           command: |
@@ -1011,7 +1032,7 @@ jobs:
               cp build_macosx/bin/hermesc /tmp/hermes/osx-bin/.
             fi
       - save_cache:
-          key: v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
+          key: *hermes_cache_key
           paths:
             - /tmp/hermes/osx-bin/
             - /tmp/hermes/hermes/destroot/
@@ -1036,7 +1057,7 @@ jobs:
     steps:
       - *attach_hermes_workspace
       - restore_cache:
-          key: v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "tmp/hermes/hermesversion" }}
+          key: *hermes_windows_cache_key
       - run:
           name: Set up workspace
           command: |
@@ -1086,7 +1107,7 @@ jobs:
                 Write-Host "Skipping; Clean c:\tmp\hermes\win64-bin to rebuild."
             }
       - save_cache:
-          key: v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "tmp/hermes/hermesversion" }}
+          key: *hermes_windows_cache_key
           paths:
             - C:\tmp\hermes\win64-bin\
             - C:\tmp\hermes\hermes\icu\
