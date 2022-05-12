@@ -2,10 +2,7 @@ load("//tools/build_defs/oss:rn_defs.bzl", "FBJNI_TARGET", "react_native_dep", "
 
 rn_android_library(
     name = "mapbuffer",
-    srcs = glob([
-        "*.java",
-        "*.kt",
-    ]),
+    srcs = glob(["*.kt"]),
     autoglob = False,
     is_androidx = True,
     labels = [
@@ -14,7 +11,7 @@ rn_android_library(
     ],
     language = "KOTLIN",
     provided_deps = [],
-    pure_kotlin = False,
+    pure_kotlin = True,
     required_for_source_only_abi = True,
     visibility = [
         "PUBLIC",

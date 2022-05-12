@@ -174,10 +174,18 @@ def _unique(li):
     return list({x: () for x in li})
 
 # React property preprocessor
-def rn_android_library(name, deps = [], plugins = [], *args, **kwargs):
+def rn_android_library(
+        name,
+        language = "JAVA",
+        srcs = [],
+        deps = [],
+        plugins = [],
+        *args,
+        **kwargs):
     _ = kwargs.pop("autoglob", False)
     _ = kwargs.pop("is_androidx", False)
     _ = kwargs.pop("pure_kotlin", False)
+
     if react_native_target(
         "java/com/facebook/react/uimanager/annotations:annotations",
     ) in deps and name != "processing":
@@ -200,7 +208,12 @@ def rn_android_library(name, deps = [], plugins = [], *args, **kwargs):
 
         plugins = _unique(plugins + react_module_plugins)
 
-    native.android_library(name = name, deps = deps, plugins = plugins, *args, **kwargs)
+    if language == "KOTLIN" and not _has_kotlin_srcs(srcs):
+        kwargs["exported_deps"] = kwargs.pop("exported_deps", []) + [
+            react_native_android_toplevel_dep("third-party/kotlin:kotlin-stdlib"),
+        ]
+
+    native.android_library(name = name, deps = deps, plugins = plugins, language = language, *args, **kwargs)
 
 def rn_android_binary(*args, **kwargs):
     native.android_binary(*args, **kwargs)
@@ -404,6 +417,12 @@ def react_module_plugin_providers(*args, **kwargs):
 
 def react_fabric_component_plugin_provider(name, native_class_func):
     return None
+
+def _has_kotlin_srcs(srcs):
+    for src in srcs:
+        if src.endswith(".kt"):
+            return True
+    return False
 
 HERMES_BYTECODE_VERSION = -1
 
