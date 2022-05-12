@@ -90,9 +90,9 @@ function create_universal_framework {
   done
 
   mkdir universal
-  xcodebuild -create-xcframework $args -output "universal/hermes.xcframework"
+  xcodebuild -create-xcframework "$args" -output "universal/hermes.xcframework"
 
-  for platform in $@; do
+  for platform in "$@"; do
     rm -r "$platform"
   done
 
