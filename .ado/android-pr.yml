@@ -57,7 +57,6 @@ jobs:
         displayName: 'Pip Authenticate to react-native-public'
         inputs:
           artifactFeeds: 'react-native/react-native-public'
-          onlyAddExtraIndex: true
 
       # Verify depenendencies can be enumerated and downloaded ..
       - task: CmdLine@2
