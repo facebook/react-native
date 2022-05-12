@@ -44,6 +44,7 @@ references:
     windows_yarn_cache_key: &windows_yarn_cache_key v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
     hermes_cache_key: &hermes_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
     hermes_windows_cache_key: &hermes_windows_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "tmp/hermes/hermesversion" }}
+    yarn_cache_key: &yarn_cache_key v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}
 
   # -------------------------
   #        Filters
@@ -123,12 +124,17 @@ commands:
             - vendor/bundle
 
   run_yarn:
+    parameters:
+      yarn_base_cache_key:
+        default: *yarn_cache_key
+        type: string
+
     steps:
       - restore_cache:
           keys:
-            - v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}-{{ arch }}-{{ checksum "yarn.lock" }}
-            - v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}-{{ arch }}
-            - v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}
+            - << parameters.yarn_base_cache_key >>-{{ arch }}-{{ checksum "yarn.lock" }}
+            - << parameters.yarn_base_cache_key >>-{{ arch }}
+            - << parameters.yarn_base_cache_key >>
       - run:
           name: "Yarn: Install Dependencies"
           command: |
@@ -140,7 +146,7 @@ commands:
       - save_cache:
           paths:
             - ~/.cache/yarn
-          key: v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}-{{ arch }}-{{ checksum "yarn.lock" }}
+          key: << parameters.yarn_base_cache_key >>-{{ arch }}-{{ checksum "yarn.lock" }}
 
   install_buck_tooling:
     steps:
