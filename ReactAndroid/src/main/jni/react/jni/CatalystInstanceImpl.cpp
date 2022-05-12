@@ -35,7 +35,6 @@
 #include <logger/react_native_log.h>
 
 #include "CxxModuleWrapper.h"
-#include "JNativeRunnable.h"
 #include "JReactCxxErrorHandler.h"
 #include "JReactSoftExceptionLogger.h"
 #include "JavaScriptExecutorHolder.h"
@@ -155,8 +154,6 @@ void CatalystInstanceImpl::registerNatives() {
           "warnOnLegacyNativeModuleSystemUse",
           CatalystInstanceImpl::warnOnLegacyNativeModuleSystemUse),
   });
-
-  JNativeRunnable::registerNatives();
 }
 
 void log(ReactNativeLogLevel level, const char *message) {

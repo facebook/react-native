@@ -221,6 +221,17 @@ static BOOL AnyTouchesChanged(NSSet<UITouch *> *touches)
   return NO;
 }
 
+static BOOL IsViewListeningToEvent(UIView *view, ViewEvents::Offset eventType)
+{
+  if ([view.class conformsToProtocol:@protocol(RCTComponentViewProtocol)]) {
+    auto props = ((id<RCTComponentViewProtocol>)view).props;
+    if (SharedViewProps viewProps = std::dynamic_pointer_cast<ViewProps const>(props)) {
+      return viewProps->events[eventType];
+    }
+  }
+  return NO;
+}
+
 /**
  * Surprisingly, `__unsafe_unretained id` pointers are not regular pointers
  * and `std::hash<>` cannot hash them.
@@ -558,9 +569,19 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
   NSTimeInterval timestamp = CACurrentMediaTime();
 
   // Entering
-  // root -> child
+
+  // We only want to emit events to JS if there is a view that is currently listening to said event
+  // so we only send those event to the JS side if the element which has been entered is itself listening,
+  // or if one of its parents is listening in case those listeners care about the capturing phase. Adding the ability
+  // for native to distingusih between capturing listeners and not could be an optimization to futher reduce the number
+  // of events we send to JS
+  BOOL hasParentEnterListener = NO;
+
   for (UIView *componentView in [eventPathViews reverseObjectEnumerator]) {
-    if (![_currentlyHoveredViews containsObject:componentView]) {
+    BOOL shouldEmitEvent =
+        hasParentEnterListener || IsViewListeningToEvent(componentView, ViewEvents::Offset::PointerEnter2);
+
+    if (shouldEmitEvent && ![_currentlyHoveredViews containsObject:componentView]) {
       SharedTouchEventEmitter eventEmitter =
           GetTouchEmitterFromView(componentView, [recognizer locationInView:componentView]);
       if (eventEmitter != nil) {
@@ -568,18 +589,40 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
         eventEmitter->onPointerEnter2(event);
       }
     }
+
+    if (shouldEmitEvent && !hasParentEnterListener) {
+      hasParentEnterListener = YES;
+    }
   }
 
   // Leaving
-  // child -> root
-  for (UIView *componentView in _currentlyHoveredViews) {
-    if (![eventPathViews containsObject:componentView]) {
-      SharedTouchEventEmitter eventEmitter =
-          GetTouchEmitterFromView(componentView, [recognizer locationInView:componentView]);
-      if (eventEmitter != nil) {
-        PointerEvent event = CreatePointerEventFromIncompleteHoverData(componentView, clientLocation, timestamp);
-        eventEmitter->onPointerLeave2(event);
-      }
+
+  // pointerleave events need to be emited from the deepest target to the root but
+  // we also need to efficiently keep track of if a view has a parent which is listening to the leave events,
+  // so we first iterate from the root to the target, collecting the views which need events fired for, of which
+  // we reverse iterate (now from target to root), actually emitting the events.
+  NSMutableOrderedSet *viewsToEmitLeaveEventsTo = [NSMutableOrderedSet orderedSet];
+
+  BOOL hasParentLeaveListener = NO;
+  for (UIView *componentView in [_currentlyHoveredViews reverseObjectEnumerator]) {
+    BOOL shouldEmitEvent =
+        hasParentLeaveListener || IsViewListeningToEvent(componentView, ViewEvents::Offset::PointerLeave2);
+
+    if (shouldEmitEvent && ![eventPathViews containsObject:componentView]) {
+      [viewsToEmitLeaveEventsTo addObject:componentView];
+    }
+
+    if (shouldEmitEvent && !hasParentLeaveListener) {
+      hasParentLeaveListener = YES;
+    }
+  }
+
+  for (UIView *componentView in [viewsToEmitLeaveEventsTo reverseObjectEnumerator]) {
+    SharedTouchEventEmitter eventEmitter =
+        GetTouchEmitterFromView(componentView, [recognizer locationInView:componentView]);
+    if (eventEmitter != nil) {
+      PointerEvent event = CreatePointerEventFromIncompleteHoverData(componentView, clientLocation, timestamp);
+      eventEmitter->onPointerLeave2(event);
     }
   }
 

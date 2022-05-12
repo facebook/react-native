@@ -5,6 +5,7 @@
 
 require 'pathname'
 require_relative './react_native_pods_utils/script_phases.rb'
+require_relative './cocoapods/flipper.rb'
 
 $CODEGEN_OUTPUT_DIR = 'build/generated/ios'
 $CODEGEN_COMPONENT_DIR = 'react/renderer/components'
@@ -26,12 +27,6 @@ def use_react_native! (options={})
 
   # Include Hermes dependencies
   hermes_enabled = options[:hermes_enabled] ||= false
-
-  # Codegen Discovery is required when enabling new architecture.
-  if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
-    Pod::UI.puts 'Setting USE_CODEGEN_DISCOVERY=1'
-    ENV['USE_CODEGEN_DISCOVERY'] = '1'
-  end
 
   if `/usr/sbin/sysctl -n hw.optional.arm64 2>&1`.to_i == 1 && !RUBY_PLATFORM.include?('arm64')
     Pod::UI.warn 'Do not use "pod install" from inside Rosetta2 (x86_64 emulation on arm64).'
@@ -59,9 +54,7 @@ def use_react_native! (options={})
   pod 'React-RCTVibration', :path => "#{prefix}/Libraries/Vibration"
   pod 'React-Core/RCTWebSocket', :path => "#{prefix}/"
 
-  unless production
-    pod 'React-Core/DevSupport', :path => "#{prefix}/"
-  end
+  install_flipper_dependencies(production, prefix)
 
   pod 'React-bridging', :path => "#{prefix}/ReactCommon/react/bridging"
   pod 'React-cxxreact', :path => "#{prefix}/ReactCommon/cxxreact"
@@ -80,7 +73,7 @@ def use_react_native! (options={})
   pod 'boost', :podspec => "#{prefix}/third-party-podspecs/boost.podspec"
   pod 'RCT-Folly', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec", :modular_headers => true
 
-  if ENV['USE_CODEGEN_DISCOVERY'] == '1'
+  if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
     app_path = options[:app_path]
     config_file_dir = options[:config_file_dir]
     use_react_native_codegen_discovery!({
@@ -140,63 +133,11 @@ def get_default_flags()
 end
 
 def use_flipper!(versions = {}, configurations: ['Debug'])
-  versions['Flipper'] ||= '0.125.0'
-  versions['Flipper-Boost-iOSX'] ||= '1.76.0.1.11'
-  versions['Flipper-DoubleConversion'] ||= '3.2.0'
-  versions['Flipper-Fmt'] ||= '7.1.7'
-  versions['Flipper-Folly'] ||= '2.6.10'
-  versions['Flipper-Glog'] ||= '0.5.0.4'
-  versions['Flipper-PeerTalk'] ||= '0.0.4'
-  versions['Flipper-RSocket'] ||= '1.4.3'
-  versions['OpenSSL-Universal'] ||= '1.1.1100'
-  pod 'FlipperKit', versions['Flipper'], :configurations => configurations
-  pod 'FlipperKit/FlipperKitLayoutPlugin', versions['Flipper'], :configurations => configurations
-  pod 'FlipperKit/SKIOSNetworkPlugin', versions['Flipper'], :configurations => configurations
-  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', versions['Flipper'], :configurations => configurations
-  pod 'FlipperKit/FlipperKitReactPlugin', versions['Flipper'], :configurations => configurations
-  # List all transitive dependencies for FlipperKit pods
-  # to avoid them being linked in Release builds
-  pod 'Flipper', versions['Flipper'], :configurations => configurations
-  pod 'Flipper-Boost-iOSX', versions['Flipper-Boost-iOSX'], :configurations => configurations
-  pod 'Flipper-DoubleConversion', versions['Flipper-DoubleConversion'], :configurations => configurations
-  pod 'Flipper-Fmt', versions['Flipper-Fmt'], :configurations => configurations
-  pod 'Flipper-Folly', versions['Flipper-Folly'], :configurations => configurations
-  pod 'Flipper-Glog', versions['Flipper-Glog'], :configurations => configurations
-  pod 'Flipper-PeerTalk', versions['Flipper-PeerTalk'], :configurations => configurations
-  pod 'Flipper-RSocket', versions['Flipper-RSocket'], :configurations => configurations
-  pod 'FlipperKit/Core', versions['Flipper'], :configurations => configurations
-  pod 'FlipperKit/CppBridge', versions['Flipper'], :configurations => configurations
-  pod 'FlipperKit/FBCxxFollyDynamicConvert', versions['Flipper'], :configurations => configurations
-  pod 'FlipperKit/FBDefines', versions['Flipper'], :configurations => configurations
-  pod 'FlipperKit/FKPortForwarding', versions['Flipper'], :configurations => configurations
-  pod 'FlipperKit/FlipperKitHighlightOverlay', versions['Flipper'], :configurations => configurations
-  pod 'FlipperKit/FlipperKitLayoutTextSearchable', versions['Flipper'], :configurations => configurations
-  pod 'FlipperKit/FlipperKitNetworkPlugin', versions['Flipper'], :configurations => configurations
-  pod 'OpenSSL-Universal', versions['OpenSSL-Universal'], :configurations => configurations
+  use_flipper_pods(versions, :configurations => configurations)
 end
 
 def has_pod(installer, name)
   installer.pods_project.pod_group(name) != nil
-end
-
-# Post Install processing for Flipper
-def flipper_post_install(installer)
-  installer.pods_project.targets.each do |target|
-    if target.name == 'YogaKit'
-      target.build_configurations.each do |config|
-        config.build_settings['SWIFT_VERSION'] = '4.1'
-      end
-    end
-
-    # Enable flipper for React-Core Debug configuration
-    if target.name == 'React-Core'
-      target.build_configurations.each do |config|
-        if config.name == 'Debug'
-          config.build_settings['OTHER_CFLAGS'] = "$(inherited) -DFB_SONARKIT_ENABLED=1"
-        end
-      end
-    end
-  end
 end
 
 def exclude_architectures(installer)
@@ -328,7 +269,7 @@ end
 
 # This is a temporary supporting function until we enable use_react_native_codegen_discovery by default.
 def checkAndGenerateEmptyThirdPartyProvider!(react_native_path)
-  return if ENV['USE_CODEGEN_DISCOVERY'] == '1'
+  return if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
 
   relative_installation_root = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
   output_dir = "#{relative_installation_root}/#{$CODEGEN_OUTPUT_DIR}"
@@ -569,7 +510,7 @@ def use_react_native_codegen_discovery!(options={})
 end
 
 def use_react_native_codegen!(spec, options={})
-  return if ENV['USE_CODEGEN_DISCOVERY'] == '1'
+  return if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
   # TODO: Once the new codegen approach is ready for use, we should output a warning here to let folks know to migrate.
 
   # The prefix to react-native
@@ -689,8 +630,9 @@ def downloadAndConfigureHermesSource(react_native_path)
   Pod::UI.puts "[Hermes] Extracting Hermes tarball (#{hermes_tag_sha.slice(0,6)})"
   system("tar -zxf #{hermes_tarball_path} --strip-components=1 --directory #{hermes_dir}")
 
-  # TODO: Integrate this temporary hermes-engine.podspec into the actual one located in facebook/hermes
-  system("cp #{sdks_dir}/hermes-engine.podspec #{hermes_dir}/hermes-engine.podspec")
+  # Use React Native's own scripts to build Hermes
+  system("cp #{sdks_dir}/hermes-engine/hermes-engine.podspec #{hermes_dir}/hermes-engine.podspec")
+  system("cp #{sdks_dir}/hermes-engine/utils/* #{hermes_dir}/utils/.")
 
   hermes_dir
 end

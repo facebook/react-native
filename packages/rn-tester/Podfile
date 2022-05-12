@@ -22,7 +22,7 @@ def pods(options = {})
   hermes_enabled = ENV['USE_HERMES'] == '1'
   puts "Building RNTester with Fabric #{fabric_enabled ? "enabled" : "disabled"}.#{hermes_enabled ? " Using Hermes engine." : ""}"
 
-  if ENV['USE_CODEGEN_DISCOVERY'] == '1'
+  if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
     # Custom fabric component is only supported when using codegen discovery.
     pod 'MyNativeView', :path => "NativeComponentExample"
   end

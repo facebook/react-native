@@ -16,7 +16,7 @@ module HermesHelper
   BUILD_TYPE = :release
 end
 
-Pod::UI.puts '[Hermes] Hermes needs to be compiled, installing hermes-engine may take a while...'.yellow
+Pod::UI.puts '[Hermes] Hermes needs to be compiled, installing hermes-engine may take a while...'.yellow if Object.const_defined?("Pod::UI")
 
 Pod::Spec.new do |spec|
   spec.name        = "hermes-engine"
@@ -38,7 +38,6 @@ Pod::Spec.new do |spec|
 
   spec.xcconfig            = { "CLANG_CXX_LANGUAGE_STANDARD" => "c++17", "CLANG_CXX_LIBRARY" => "compiler-default", "GCC_PREPROCESSOR_DEFINITIONS" => "HERMES_ENABLE_DEBUGGER=1" }
 
-  # TODO: Consider moving Hermes build scripts to react_native_pods.rb for greater control over when they're executed
   spec.prepare_command = <<-EOS
     # When true, debug build will be used.
     # See `build-apple-framework.sh` for details
