@@ -755,6 +755,14 @@ jobs:
       - checkout
       - run_yarn
 
+      # The macOS machine can run out of storage if Hermes is enabled and built from source.
+      # Since this job does not use the iOS Simulator, deleting it provides a quick way to
+      # free up space.
+      - run:
+          name: Delete iOS Simulators
+          background: true
+          command: sudo rm -rf /Library/Developer/CoreSimulator/Profiles/Runtimes/
+
       - run:
           name: Set USE_HERMES=1
           command: echo "export USE_HERMES=1" >> $BASH_ENV
@@ -773,13 +781,6 @@ jobs:
           command: |
             rm -rf packages/rn-tester/Pods
             cd packages/rn-tester && bundle exec pod install
-
-      # The macOS machine can run out of storage if Hermes is enabled and built from source.
-      # Since this job does not use the iOS Simulator, deleting it provides a quick way to
-      # free up space.
-      - run:
-          name: Delete iOS Simulators
-          command: sudo rm -rf /Library/Developer/CoreSimulator/Profiles/Runtimes/
 
       - run:
           name: Build RNTester
