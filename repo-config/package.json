@@ -40,6 +40,7 @@
     "jest-junit": "^10.0.0",
     "jscodeshift": "^0.13.1",
     "metro-babel-register": "0.70.3",
+    "metro-memory-fs": "0.70.2",
     "mkdirp": "^0.5.1",
     "prettier": "^2.4.1",
     "react": "18.0.0",

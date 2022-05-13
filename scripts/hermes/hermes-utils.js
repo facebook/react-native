@@ -66,7 +66,7 @@ function getHermesTagSHA(hermesTag) {
 
 function getHermesTarballDownloadPath(hermesTag) {
   const hermesTagSHA = getHermesTagSHA(hermesTag);
-  return `${HERMES_TARBALL_DOWNLOAD_DIR}/hermes-${hermesTagSHA}.tgz`;
+  return path.join(HERMES_TARBALL_DOWNLOAD_DIR, `hermes-${hermesTagSHA}.tgz`);
 }
 
 function downloadHermesTarball() {
@@ -117,21 +117,29 @@ function expandHermesTarball() {
 }
 
 function copyBuildScripts() {
+  if (!fs.existsSync(HERMES_DIR)) {
+    echo(
+      '[Hermes] Failed to copy Hermes build scripts, no Hermes source directory found.',
+    );
+    exit(1);
+    return;
+  }
+
   fs.copyFileSync(
-    `${SDKS_DIR}/hermes-engine/hermes-engine.podspec`,
-    `${HERMES_DIR}/hermes-engine.podspec`,
+    path.join(SDKS_DIR, 'hermes-engine', 'hermes-engine.podspec'),
+    path.join(HERMES_DIR, 'hermes-engine.podspec'),
   );
   fs.copyFileSync(
-    `${SDKS_DIR}/hermes-engine/utils/build-apple-framework.sh`,
-    `${HERMES_DIR}/utils/build-apple-framework.sh`,
+    path.join(SDKS_DIR, 'hermes-engine', 'utils', 'build-apple-framework.sh'),
+    path.join(HERMES_DIR, 'utils', 'build-apple-framework.sh'),
   );
   fs.copyFileSync(
-    `${SDKS_DIR}/hermes-engine/utils/build-ios-framework.sh`,
-    `${HERMES_DIR}/utils/build-ios-framework.sh`,
+    path.join(SDKS_DIR, 'hermes-engine', 'utils', 'build-ios-framework.sh'),
+    path.join(HERMES_DIR, 'utils', 'build-ios-framework.sh'),
   );
   fs.copyFileSync(
-    `${SDKS_DIR}/hermes-engine/utils/build-mac-framework.sh`,
-    `${HERMES_DIR}/utils/build-mac-framework.sh`,
+    path.join(SDKS_DIR, 'hermes-engine', 'utils', 'build-mac-framework.sh'),
+    path.join(HERMES_DIR, 'utils', 'build-mac-framework.sh'),
   );
 }
 
