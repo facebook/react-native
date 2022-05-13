@@ -10,15 +10,14 @@ package com.facebook.react;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
-import java.util.List;
+import java.util.Collection;
 
 public interface ViewManagerOnDemandReactPackage {
   /**
    * Provides a list of names of ViewManagers with which these modules can be accessed from JS.
    * Typically, this is ViewManager.getName().
    */
-  @Nullable
-  List<String> getViewManagerNames(ReactApplicationContext reactContext);
+  Collection<String> getViewManagerNames(ReactApplicationContext reactContext);
   /**
    * Creates and returns a ViewManager with a specific name {@param viewManagerName}. It's up to an
    * implementing package how to interpret the name.
