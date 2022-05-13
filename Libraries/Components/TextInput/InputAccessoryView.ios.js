@@ -9,14 +9,12 @@
  */
 
 import * as React from 'react';
-import Platform from '../../Utilities/Platform';
 import StyleSheet, {
   type ViewStyleProp,
   type ColorValue,
 } from '../../StyleSheet/StyleSheet';
 
 import RCTInputAccessoryViewNativeComponent from './RCTInputAccessoryViewNativeComponent';
-import UnimplementedView from '../UnimplementedViews/UnimplementedView';
 
 /**
  * Note: iOS only
@@ -89,15 +87,6 @@ type Props = $ReadOnly<{|
 
 class InputAccessoryView extends React.Component<Props> {
   render(): React.Node {
-    if (Platform.OS !== 'ios') {
-      console.warn('<InputAccessoryView> is only supported on iOS.');
-      return (
-        <UnimplementedView style={this.props.style}>
-          {this.props.children}
-        </UnimplementedView>
-      );
-    }
-
     if (React.Children.count(this.props.children) === 0) {
       return null;
     }
