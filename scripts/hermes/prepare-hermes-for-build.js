@@ -14,11 +14,18 @@
  * iOS build pipeline on macOS.
  */
 const {
+  configureMakeForPrebuiltHermesC,
   copyBuildScripts,
   downloadHermesTarball,
   expandHermesTarball,
+  shouldUsePrebuiltHermesC,
 } = require('./hermes-utils');
 
 downloadHermesTarball();
 expandHermesTarball();
 copyBuildScripts();
+
+if (shouldUsePrebuiltHermesC('macos')) {
+  console.log('[Hermes] Using pre-built HermesC');
+  configureMakeForPrebuiltHermesC();
+}

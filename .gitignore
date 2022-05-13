@@ -115,8 +115,9 @@ package-lock.json
 /packages/rn-tester/NativeModuleExample/ScreenshotManagerSpec*
 
 # Additional SDKs
-/sdks/hermes
 /sdks/download
+/sdks/hermes
+/sdks/hermesc
 
 # Visual studio
 .vscode
