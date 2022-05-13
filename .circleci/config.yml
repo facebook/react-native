@@ -40,6 +40,7 @@ references:
     gems_cache_key: &gems_cache_key v1-gems-{{ checksum "Gemfile.lock" }}
     gradle_cache_key: &gradle_cache_key v1-gradle-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "ReactAndroid/gradle.properties" }}
     hermes_cache_key: &hermes_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
+    hermes_sdk_cache_key: &hermes_sdk_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "sdks/.hermesversion" }}
     hermes_windows_cache_key: &hermes_windows_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "tmp/hermes/hermesversion" }}
     pods_cache_key: &pods_cache_key v6-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
     windows_yarn_cache_key: &windows_yarn_cache_key v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
@@ -251,6 +252,28 @@ commands:
           name: Report size of RNTester.app (analysis-bot)
           command: GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" scripts/circleci/report-bundle-size.sh << parameters.platform >> || true
 
+  with_hermes_sdk_cache_span:
+    parameters:
+      steps:
+        type: steps
+    steps:
+      - run:
+          name: Setup Hermes cache
+          command: |
+            HERMES_VERSION_FILE="sdks/.hermesversion"
+            if [ ! -f "$HERMES_VERSION_FILE" ]; then
+              git ls-remote https://github.com/facebook/hermes main | cut -f 1 > $HERMES_VERSION_FILE
+            fi
+      - restore_cache:
+          keys:
+            - *hermes_sdk_cache_key
+      - steps: << parameters.steps >>
+      - save_cache:
+          key: *hermes_sdk_cache_key
+          paths:
+            - sdks/hermesc
+            - sdks/hermes
+
 # -------------------------
 #          JOBS
 # -------------------------
@@ -426,11 +449,13 @@ jobs:
           name: Setup the CocoaPods environment
           command: bundle exec pod setup
 
-      - with_rntester_pods_cache_span:
+      - with_hermes_sdk_cache_span:
           steps:
-            - run:
-                name: Generate RNTesterPods Workspace
-                command: cd packages/rn-tester && bundle exec pod install --verbose
+            - with_rntester_pods_cache_span:
+                steps:
+                  - run:
+                      name: Generate RNTesterPods Workspace
+                      command: cd packages/rn-tester && bundle exec pod install --verbose
 
   # -------------------------
   #     JOBS: iOS Unit Tests
@@ -503,11 +528,13 @@ jobs:
           name: Setup the CocoaPods environment
           command: bundle exec pod setup
 
-      - with_rntester_pods_cache_span:
+      - with_hermes_sdk_cache_span:
           steps:
-            - run:
-                name: Generate RNTesterPods Workspace
-                command: cd packages/rn-tester && bundle exec pod install --verbose
+            - with_rntester_pods_cache_span:
+                steps:
+                  - run:
+                      name: Generate RNTesterPods Workspace
+                      command: cd packages/rn-tester && bundle exec pod install --verbose
 
       # -------------------------
       # Runs iOS unit tests
@@ -752,11 +779,13 @@ jobs:
       - brew_install:
           package: cmake
 
-      - run:
-          name: Install CocoaPods dependencies
-          command: |
-            rm -rf packages/rn-tester/Pods
-            cd packages/rn-tester && bundle exec pod install
+      - with_hermes_sdk_cache_span:
+          steps:
+            - run:
+                name: Install CocoaPods dependencies
+                command: |
+                  rm -rf packages/rn-tester/Pods
+                  cd packages/rn-tester && bundle exec pod install
 
       - run:
           name: Build RNTester
