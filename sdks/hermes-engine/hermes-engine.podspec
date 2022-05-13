@@ -18,6 +18,8 @@ end
 
 Pod::UI.puts '[Hermes] Hermes needs to be compiled, installing hermes-engine may take a while...'.yellow if Object.const_defined?("Pod::UI")
 
+import_hermesc_path=File.join(__dir__, "../hermesc/osx-bin/ImportHermesc.cmake")
+
 Pod::Spec.new do |spec|
   spec.name        = "hermes-engine"
   spec.version     = "1000.0.0-#{hermes_tag_sha.slice(0,6)}"
@@ -42,6 +44,10 @@ Pod::Spec.new do |spec|
     # When true, debug build will be used.
     # See `build-apple-framework.sh` for details
     DEBUG=#{HermesHelper::BUILD_TYPE == :debug}
+
+    # Set HERMES_OVERRIDE_HERMESC_PATH if pre-built HermesC is available
+    #{File.exist?(import_hermesc_path) ? "export HERMES_OVERRIDE_HERMESC_PATH=#{import_hermesc_path}" : ""}
+    #{File.exist?(import_hermesc_path) ? "echo \"Overriding HermesC path...\"" : ""}
 
     # Build iOS framework
     ./utils/build-ios-framework.sh
