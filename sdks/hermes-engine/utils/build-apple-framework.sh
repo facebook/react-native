@@ -90,7 +90,8 @@ function create_universal_framework {
   done
 
   mkdir universal
-  xcodebuild -create-xcframework "$args" -output "universal/hermes.xcframework"
+  # shellcheck disable=SC2086
+  xcodebuild -create-xcframework $args -output "universal/hermes.xcframework"
 
   for platform in "$@"; do
     rm -r "$platform"
