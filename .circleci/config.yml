@@ -246,6 +246,28 @@ commands:
           name: Report size of RNTester.app (analysis-bot)
           command: GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" scripts/circleci/report-bundle-size.sh << parameters.platform >> || true
 
+  with_hermes_sdk_cache_span:
+    parameters:
+      steps:
+        type: steps
+    steps:
+      - run:
+          name: Setup Hermes cache
+          command: |
+            HERMES_VERSION_FILE="sdks/.hermesversion"
+            if [ ! -f "$HERMES_VERSION_FILE" ]; then
+              git ls-remote https://github.com/facebook/hermes main | cut -f 1 > $HERMES_VERSION_FILE
+            fi
+      - restore_cache:
+          keys:
+            - v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "sdks/.hermesversion" }}
+      - steps: << parameters.steps >>
+      - save_cache:
+          key: v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "sdks/.hermesversion" }}
+          paths:
+            - sdks/hermesc
+            - sdks/hermes
+
 # -------------------------
 #          JOBS
 # -------------------------
@@ -423,11 +445,13 @@ jobs:
           name: Setup the CocoaPods environment
           command: bundle exec pod setup
 
-      - with_rntester_pods_cache_span:
+      - with_hermes_sdk_cache_span:
           steps:
-            - run:
-                name: Generate RNTesterPods Workspace
-                command: cd packages/rn-tester && bundle exec pod install --verbose
+            - with_rntester_pods_cache_span:
+                steps:
+                  - run:
+                      name: Generate RNTesterPods Workspace
+                      command: cd packages/rn-tester && bundle exec pod install --verbose
 
   # -------------------------
   #     JOBS: iOS Unit Tests
@@ -500,11 +524,13 @@ jobs:
           name: Setup the CocoaPods environment
           command: bundle exec pod setup
 
-      - with_rntester_pods_cache_span:
+      - with_hermes_sdk_cache_span:
           steps:
-            - run:
-                name: Generate RNTesterPods Workspace
-                command: cd packages/rn-tester && bundle exec pod install --verbose
+            - with_rntester_pods_cache_span:
+                steps:
+                  - run:
+                      name: Generate RNTesterPods Workspace
+                      command: cd packages/rn-tester && bundle exec pod install --verbose
 
       # -------------------------
       # Runs iOS unit tests
@@ -743,11 +769,13 @@ jobs:
             - brew_install:
                 package: cmake
 
-      - run:
-          name: Install CocoaPods dependencies
-          command: |
-            rm -rf packages/rn-tester/Pods
-            cd packages/rn-tester && bundle exec pod install
+      - with_hermes_sdk_cache_span:
+          steps:
+            - run:
+                name: Install CocoaPods dependencies
+                command: |
+                  rm -rf packages/rn-tester/Pods
+                  cd packages/rn-tester && bundle exec pod install
 
       # The macOS machine can run out of storage if Hermes is enabled and built from source.
       # Since this job does not use the iOS Simulator, deleting it provides a quick way to
