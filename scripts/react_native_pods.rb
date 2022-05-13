@@ -102,9 +102,9 @@ def use_react_native! (options={})
   end
 
   if hermes_enabled
+    system("(cd #{prefix} && node scripts/hermes/prepare-hermes-for-build)")
     pod 'React-hermes', :path => "#{prefix}/ReactCommon/hermes"
-    hermes_source_path = downloadAndConfigureHermesSource(prefix)
-    pod 'hermes-engine', :path => "#{hermes_source_path}/hermes-engine.podspec"
+    pod 'hermes-engine', :path => "#{prefix}/sdks/hermes/hermes-engine.podspec"
     pod 'libevent', '~> 2.1.12'
   end
 
@@ -603,38 +603,6 @@ def use_react_native_codegen!(spec, options={})
     :execution_position => :before_compile,
     :show_env_vars_in_log => true
   }
-end
-
-def downloadAndConfigureHermesSource(react_native_path)
-  hermes_tarball_base_url = "https://github.com/facebook/hermes/tarball/"
-  sdks_dir = "#{react_native_path}/sdks"
-  download_dir = "#{sdks_dir}/download"
-  hermes_dir = "#{sdks_dir}/hermes"
-  hermes_tag_file = "#{sdks_dir}/.hermesversion"
-  system("mkdir -p #{hermes_dir} #{download_dir}")
-
-  if (File.exist?(hermes_tag_file))
-    hermes_tag = File.read(hermes_tag_file).strip
-  else
-    hermes_tag = "main"
-  end
-
-  hermes_tarball_url = hermes_tarball_base_url + hermes_tag
-  hermes_tag_sha = %x[git ls-remote https://github.com/facebook/hermes #{hermes_tag} | cut -f 1].strip
-  hermes_tarball_path = "#{download_dir}/hermes-#{hermes_tag_sha}.tar.gz"
-
-  if (!File.exist?(hermes_tarball_path))
-    Pod::UI.puts "[Hermes] Downloading Hermes source code..."
-    system("curl #{hermes_tarball_url} -Lo #{hermes_tarball_path}")
-  end
-  Pod::UI.puts "[Hermes] Extracting Hermes tarball (#{hermes_tag_sha.slice(0,6)})"
-  system("tar -zxf #{hermes_tarball_path} --strip-components=1 --directory #{hermes_dir}")
-
-  # Use React Native's own scripts to build Hermes
-  system("cp #{sdks_dir}/hermes-engine/hermes-engine.podspec #{hermes_dir}/hermes-engine.podspec")
-  system("cp #{sdks_dir}/hermes-engine/utils/* #{hermes_dir}/utils/.")
-
-  hermes_dir
 end
 
 # This provides a post_install workaround for build issues related Xcode 12.5 and Apple Silicon (M1) machines.
