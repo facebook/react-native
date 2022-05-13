@@ -197,7 +197,7 @@ NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(
 }
 
 std::shared_ptr<TurboModule> SampleTurboModuleSpec_ModuleProvider(
-    const std::string moduleName,
+    const std::string &moduleName,
     const JavaTurboModule::InitParams &params) {
   if (moduleName == "SampleTurboModule") {
     return std::make_shared<NativeSampleTurboModuleSpecJSI>(params);
