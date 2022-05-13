@@ -65,18 +65,16 @@ const API = {
   },
   disableQueue: function (): void {
     invariant(NativeAnimatedModule, 'Native animated module is not available');
-    const queueLength = queue.length;
-    if (queueLength > 0) {
-      if (Platform.OS === 'android') {
-        NativeAnimatedModule.startOperationBatch();
-      }
-      for (let i = 0; i < queueLength; i++) {
-        queue[i]();
-      }
-      queue.length = 0;
-      if (Platform.OS === 'android') {
-        NativeAnimatedModule.finishOperationBatch();
-      }
+
+    if (Platform.OS === 'android') {
+      NativeAnimatedModule.startOperationBatch();
+    }
+    for (let q = 0, l = queue.length; q < l; q++) {
+      queue[q]();
+    }
+    queue.length = 0;
+    if (Platform.OS === 'android') {
+      NativeAnimatedModule.finishOperationBatch();
     }
   },
   queueOperation: (fn: () => void): void => {
