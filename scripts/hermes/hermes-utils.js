@@ -18,6 +18,12 @@ const HERMES_DIR = path.join(SDKS_DIR, 'hermes');
 const HERMES_TAG_FILE_PATH = path.join(SDKS_DIR, '.hermesversion');
 const HERMES_TARBALL_BASE_URL = 'https://github.com/facebook/hermes/tarball/';
 const HERMES_TARBALL_DOWNLOAD_DIR = path.join(SDKS_DIR, 'download');
+const MACOS_BIN_DIR = path.join(SDKS_DIR, 'hermesc', 'osx-bin');
+const MACOS_HERMESC_PATH = path.join(MACOS_BIN_DIR, 'hermesc');
+const MACOS_IMPORT_HERMESC_PATH = path.join(
+  MACOS_BIN_DIR,
+  'ImportHermesc.cmake',
+);
 
 function prepareFileSystem() {
   if (!fs.existsSync(SDKS_DIR)) {
@@ -135,11 +141,31 @@ function copyBuildScripts() {
   );
 }
 
+function shouldUsePrebuiltHermesC(os) {
+  if (os === 'macos') {
+    return fs.existsSync(MACOS_HERMESC_PATH);
+  }
+
+  return false;
+}
+
+function configureMakeForPrebuiltHermesC() {
+  const IMPORT_HERMESC_TEMPLATE = `add_executable(native-hermesc IMPORTED)
+set_target_properties(native-hermesc PROPERTIES
+  IMPORTED_LOCATION "${MACOS_HERMESC_PATH}"
+  )`;
+
+  fs.mkdirSync(MACOS_BIN_DIR, {recursive: true});
+  fs.writeFileSync(MACOS_IMPORT_HERMESC_PATH, IMPORT_HERMESC_TEMPLATE);
+}
+
 module.exports = {
+  configureMakeForPrebuiltHermesC,
   copyBuildScripts,
   downloadHermesTarball,
   expandHermesTarball,
   getHermesTagSHA,
   readHermesTag,
   setHermesTag,
+  shouldUsePrebuiltHermesC,
 };
