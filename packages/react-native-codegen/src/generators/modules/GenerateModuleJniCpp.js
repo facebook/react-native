@@ -114,7 +114,7 @@ namespace react {
 
 ${modules}
 
-std::shared_ptr<TurboModule> ${libraryName}_ModuleProvider(const std::string moduleName, const JavaTurboModule::InitParams &params) {
+std::shared_ptr<TurboModule> ${libraryName}_ModuleProvider(const std::string &moduleName, const JavaTurboModule::InitParams &params) {
 ${moduleLookups.map(ModuleLookupTemplate).join('\n')}
   return nullptr;
 }

@@ -159,7 +159,7 @@ public class ReactInstanceManager {
   private final JavaScriptExecutorFactory mJavaScriptExecutorFactory;
 
   // See {@code ReactInstanceManagerBuilder} for description of all flags here.
-  private @Nullable List<String> mViewManagerNames = null;
+  private @Nullable Collection<String> mViewManagerNames = null;
   private final @Nullable JSBundleLoader mBundleLoader;
   private final @Nullable String mJSMainModulePath; /* path to JS bundle root on Metro */
   private final List<ReactPackage> mPackages;
@@ -962,9 +962,9 @@ public class ReactInstanceManager {
     return null;
   }
 
-  public @Nullable List<String> getViewManagerNames() {
+  public Collection<String> getViewManagerNames() {
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstanceManager.getViewManagerNames");
-    List<String> viewManagerNames = mViewManagerNames;
+    Collection<String> viewManagerNames = mViewManagerNames;
     if (viewManagerNames != null) {
       return viewManagerNames;
     }
@@ -972,7 +972,7 @@ public class ReactInstanceManager {
     synchronized (mReactContextLock) {
       context = (ReactApplicationContext) getCurrentReactContext();
       if (context == null || !context.hasActiveReactInstance()) {
-        return null;
+        return Collections.emptyList();
       }
     }
 
@@ -985,7 +985,7 @@ public class ReactInstanceManager {
               .arg("Package", reactPackage.getClass().getSimpleName())
               .flush();
           if (reactPackage instanceof ViewManagerOnDemandReactPackage) {
-            List<String> names =
+            Collection<String> names =
                 ((ViewManagerOnDemandReactPackage) reactPackage).getViewManagerNames(context);
             if (names != null) {
               uniqueNames.addAll(names);
@@ -994,7 +994,7 @@ public class ReactInstanceManager {
           SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
         }
         Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
-        mViewManagerNames = new ArrayList<>(uniqueNames);
+        mViewManagerNames = uniqueNames;
       }
       return mViewManagerNames;
     }
