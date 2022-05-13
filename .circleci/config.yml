@@ -183,21 +183,6 @@ commands:
           name: "Brew: Install << parameters.package >>"
           command: brew install << parameters.package >> >/dev/null
 
-  with_brew_cache_span:
-    parameters:
-      steps:
-        type: steps
-    steps:
-      - restore_cache:
-          keys:
-            - *brew_cache_key
-      - steps: << parameters.steps >>
-      - save_cache:
-          paths:
-            - /usr/local/Homebrew
-            - ~/Library/Caches/Homebrew
-          key: *brew_cache_key
-
   with_rntester_pods_cache_span:
     parameters:
       steps:
@@ -435,10 +420,8 @@ jobs:
           name: Set BUILD_HERMES_SOURCE=1
           command: echo "export BUILD_HERMES_SOURCE=1" >> $BASH_ENV
 
-      - with_brew_cache_span:
-          steps:
-            - brew_install:
-                package: cmake
+      - brew_install:
+          package: cmake
 
       - run:
           name: Setup the CocoaPods environment
@@ -492,15 +475,13 @@ jobs:
             echo 'export PATH=/usr/local/opt/node@16/bin:$PATH' >> $BASH_ENV
             source $BASH_ENV
 
-      - with_brew_cache_span:
-          steps:
-            - brew_install:
-                package: watchman cmake
-            - run:
-                name: "Brew: Tap wix/brew"
-                command: brew tap wix/brew >/dev/null
-            - brew_install:
-                package: applesimutils
+      - brew_install:
+          package: watchman cmake
+      - run:
+          name: "Brew: Tap wix/brew"
+          command: brew tap wix/brew >/dev/null
+      - brew_install:
+          package: applesimutils
 
       - run:
           name: Configure Watchman
@@ -763,10 +744,8 @@ jobs:
           name: Set BUILD_HERMES_SOURCE=1
           command: echo "export BUILD_HERMES_SOURCE=1" >> $BASH_ENV
 
-      - with_brew_cache_span:
-          steps:
-            - brew_install:
-                package: cmake
+      - brew_install:
+          package: cmake
 
       - run:
           name: Install CocoaPods dependencies
