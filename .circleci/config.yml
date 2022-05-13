@@ -886,8 +886,12 @@ jobs:
           name: Install dependencies
           command: |
             apt update
-            apt install -y wget git
+            apt install -y wget git curl
+            curl -sL https://deb.nodesource.com/setup_16.x | bash -
+            apt install -y nodejs
+            npm install --global yarn
       - checkout
+      - run_yarn
       - run:
           name: Set up Hermes workspace and caching
           command: |
@@ -904,24 +908,9 @@ jobs:
       - run:
           name: Download Hermes tarball
           command: |
-            HERMES_TARBALL_URL="https://github.com/facebook/hermes/archive/refs/heads/main.tar.gz"
-            HERMES_TARBALL_PATH="$HERMES_WS_DIR/download/hermes.tar.gz"
-
-            if [ -f "$HERMES_VERSION_FILE" ]; then
-              HERMES_TAG=$(cat $HERMES_VERSION_FILE | tr -d '[:space:]')
-              HERMES_TARBALL_URL="https://github.com/facebook/hermes/archive/refs/tags/$HERMES_TAG.tar.gz"
-              echo "Using Hermes version tagged $HERMES_TAG"
-            else
-              echo "Using Hermes latest version from trunk"
-            fi
-
-            if [ -f "$HERMES_TARBALL_PATH" ]; then
-              echo "Skipping download; $HERMES_TARBALL_PATH already present."
-            else
-              echo "Downloading Hermes tarball from $HERMES_TARBALL_URL"
-              wget -O "$HERMES_TARBALL_PATH" "$HERMES_TARBALL_URL"
-            fi
-            tar -xzf "$HERMES_WS_DIR/download/hermes.tar.gz" --strip-components=1 -C "$HERMES_WS_DIR/hermes"
+            node scripts/hermes/prepare-hermes-for-build
+            cp sdks/download/* $HERMES_WS_DIR/download/.
+            cp -r sdks/hermes/* $HERMES_WS_DIR/hermes/.
       - save_cache:
           key: v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
           paths:
