@@ -78,7 +78,10 @@ const API = {
     }
   },
   queueOperation: (fn: () => void): void => {
-    if (queueOperations) {
+    // If queueing is explicitly on, *or* the queue has not yet
+    // been flushed, use the queue. This is to prevent operations
+    // from being executed out of order.
+    if (queueOperations || queue.length !== 0) {
       queue.push(fn);
     } else {
       fn();

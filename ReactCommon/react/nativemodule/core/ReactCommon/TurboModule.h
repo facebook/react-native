@@ -37,7 +37,7 @@ enum TurboModuleMethodValueKind {
  */
 class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
  public:
-  TurboModule(const std::string &name, std::shared_ptr<CallInvoker> jsInvoker);
+  TurboModule(std::string name, std::shared_ptr<CallInvoker> jsInvoker);
 
   virtual facebook::jsi::Value get(
       facebook::jsi::Runtime &runtime,

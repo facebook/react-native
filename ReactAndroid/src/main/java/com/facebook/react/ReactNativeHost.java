@@ -74,6 +74,7 @@ public abstract class ReactNativeHost {
             .setDevSupportManagerFactory(getDevSupportManagerFactory())
             .setRequireActivity(getShouldRequireActivity())
             .setSurfaceDelegateFactory(getSurfaceDelegateFactory())
+            .setLazyViewManagersEnabled(getLazyViewManagersEnabled())
             .setRedBoxHandler(getRedBoxHandler())
             .setJavaScriptExecutorFactory(getJavaScriptExecutorFactory())
             .setUIImplementationProvider(getUIImplementationProvider())
@@ -133,6 +134,16 @@ public abstract class ReactNativeHost {
   /** Returns whether or not to treat it as normal if Activity is null. */
   public boolean getShouldRequireActivity() {
     return true;
+  }
+
+  /**
+   * Returns whether view managers should be created lazily. See {@link
+   * ViewManagerOnDemandReactPackage} for details.
+   *
+   * @experimental
+   */
+  public boolean getLazyViewManagersEnabled() {
+    return false;
   }
 
   /**

@@ -9,6 +9,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := sampleturbomodule
 LOCAL_C_INCLUDES := $(LOCAL_PATH)
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/ReactCommon/*.cpp)
+LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
 LOCAL_SHARED_LIBRARIES := \
   libfbjni \

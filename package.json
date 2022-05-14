@@ -53,9 +53,10 @@
     "scripts/react_native_pods_utils/script_phases.rb",
     "scripts/react_native_pods_utils/script_phases.sh",
     "scripts/react_native_pods.rb",
+    "scripts/cocoapods/flipper.rb",
     "scripts/react-native-xcode.sh",
+    "sdks/hermes-engine",
     "sdks/hermesc",
-    "sdks/hermes-engine.podspec",
     "template.config.js",
     "template",
     "!template/node_modules",
@@ -116,6 +117,7 @@
     "metro-react-native-babel-transformer": "0.70.3",
     "metro-runtime": "0.70.3",
     "metro-source-map": "0.70.3",
+    "mkdirp": "^0.5.1",
     "nullthrows": "^1.1.1",
     "pretty-format": "^26.5.2",
     "promise": "^8.0.3",
@@ -131,7 +133,7 @@
     "ws": "^6.1.4"
   },
   "devDependencies": {
-    "flow-bin": "^0.177.0",
+    "flow-bin": "^0.178.0",
     "react": "18.0.0",
     "react-test-renderer": "^18.0.0"
   },

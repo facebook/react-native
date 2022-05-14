@@ -3226,10 +3226,10 @@ flatted@^3.1.0:
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.2.2.tgz#64bfed5cb68fe3ca78b3eb214ad97b63bedce561"
   integrity sha512-JaTY/wtrcSyvXJl4IMFHPKyFur1sE9AUqc0QnhOaJ0CxHtAoIV8pYDzeEfAaNEtGkOfq4gr3LBFmdXW5mOQFnA==
 
-flow-bin@^0.177.0:
-  version "0.177.0"
-  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.177.0.tgz#dd537424dcbdd56f3cc85fd72330840a590e4711"
-  integrity sha512-hEm9VDf07iGcfjiCaxZAbpp/bRcgPf/Q3f7UucWpMotrM0MmyZ2hCBvhw53XCd3M7+fP8eyZKRvUWtrMqEC/Sg==
+flow-bin@^0.178.0:
+  version "0.178.0"
+  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.178.0.tgz#893f32bbb2bea09a5cf53446d99d4c791b2220b2"
+  integrity sha512-D1S8c/oaiHAeKaxNxdJJ6SxjxwetNRgPWc9PI1wCSNfB3o0gAJKE5ic2B84c2QmRcs6dMYw6b9GDelYpWsArfg==
 
 flow-parser@0.*:
   version "0.163.0"
@@ -4973,6 +4973,11 @@ metro-inspector-proxy@0.70.3:
     ws "^7.5.1"
     yargs "^15.3.1"
 
+metro-memory-fs@0.70.2:
+  version "0.70.2"
+  resolved "https://registry.yarnpkg.com/metro-memory-fs/-/metro-memory-fs-0.70.2.tgz#abf175204e37aae7f4eec712a24644af950a4b16"
+  integrity sha512-fLMvoh4vkYRi5SvDDgTJSOCt5PIGL1nhvcxrKSBmE9UZvhjPFMmkBHVrWuVUpmamzP0PCwCWTcabFlCkl4HvUw==
+
 metro-minify-uglify@0.70.3:
   version "0.70.3"
   resolved "https://registry.yarnpkg.com/metro-minify-uglify/-/metro-minify-uglify-0.70.3.tgz#2f28129ca5b8ef958f3e3fcf004c3707c7732e1e"
@@ -5854,7 +5859,7 @@ react-devtools-core@4.24.0:
     shell-quote "^1.6.1"
     ws "^7"
 
-"react-is@^16.12.0 || ^17.0.0", react-is@^17.0.1, react-is@^17.0.2:
+"react-is@^16.12.0 || ^17.0.0", react-is@^17.0.1:
   version "17.0.2"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-17.0.2.tgz#e691d4a8e9c789365655539ab372762b0efb54f0"
   integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
@@ -5882,17 +5887,7 @@ react-shallow-renderer@16.14.1, react-shallow-renderer@^16.13.1:
     object-assign "^4.1.1"
     react-is "^16.12.0 || ^17.0.0"
 
-react-test-renderer@17.0.2:
-  version "17.0.2"
-  resolved "https://registry.yarnpkg.com/react-test-renderer/-/react-test-renderer-17.0.2.tgz#4cd4ae5ef1ad5670fc0ef776e8cc7e1231d9866c"
-  integrity sha512-yaQ9cB89c17PUb0x6UfWRs7kQCorVdHlutU1boVPEsB8IDZH6n9tHxMacc3y0JoXOJUsZb/t/Mb8FUWMKaM7iQ==
-  dependencies:
-    object-assign "^4.1.1"
-    react-is "^17.0.2"
-    react-shallow-renderer "^16.13.1"
-    scheduler "^0.20.2"
-
-react-test-renderer@^18.0.0:
+react-test-renderer@18.0.0, react-test-renderer@^18.0.0:
   version "18.0.0"
   resolved "https://registry.yarnpkg.com/react-test-renderer/-/react-test-renderer-18.0.0.tgz#fa403d625ea9478a70ace43db88833f6c3a5bb4c"
   integrity sha512-SyZTP/FSkwfiKOZuTZiISzsrC8A80KNlQ8PyyoGoOq+VzMAab6Em1POK/CiX3+XyXG6oiJa1C53zYDbdrJu9fw==
@@ -5900,14 +5895,6 @@ react-test-renderer@^18.0.0:
     react-is "^18.0.0"
     react-shallow-renderer "^16.13.1"
     scheduler "^0.21.0"
-
-react@17.0.2:
-  version "17.0.2"
-  resolved "https://registry.yarnpkg.com/react/-/react-17.0.2.tgz#d0b5cc516d29eb3eee383f75b62864cfb6800037"
-  integrity sha512-gnhPt75i/dq/z3/6q/0asP78D0u592D5L1pd7M8P+dck6Fu/jJeL6iVVK23fptSUZj8Vjf++7wXA8UNclGQcbA==
-  dependencies:
-    loose-envify "^1.1.0"
-    object-assign "^4.1.1"
 
 react@18.0.0:
   version "18.0.0"
@@ -6289,14 +6276,6 @@ saxes@^5.0.1:
   integrity sha512-5LBh1Tls8c9xgGjw3QrMwETmTMVk0oFgvrFSvWx62llR2hcEInrKNZ2GZCCuuy2lvWrdl5jhbpeqc5hRYKFOcw==
   dependencies:
     xmlchars "^2.2.0"
-
-scheduler@^0.20.2:
-  version "0.20.2"
-  resolved "https://registry.yarnpkg.com/scheduler/-/scheduler-0.20.2.tgz#4baee39436e34aa93b4874bddcbf0fe8b8b50e91"
-  integrity sha512-2eWfGgAqqWFGqtdMmcL5zCMK1U8KlXv8SQFGglL3CEtd0aDVDWgeF/YoCmvln55m5zSk3J/20hTaSBeSObsQDQ==
-  dependencies:
-    loose-envify "^1.1.0"
-    object-assign "^4.1.1"
 
 scheduler@^0.21.0:
   version "0.21.0"
