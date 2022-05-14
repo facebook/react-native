@@ -580,6 +580,16 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     layer.borderColor = borderColor;
     CGColorRelease(borderColor);
     layer.cornerRadius = (CGFloat)borderMetrics.borderRadii.topLeft;
+    if (@available(iOS 13.0, *)) {
+      switch (borderMetrics.borderCurves.topLeft) {
+          case BorderCurve::Continuous:
+          layer.cornerCurve = kCACornerCurveContinuous;
+          break;
+          case BorderCurve::Circular:
+          layer.cornerCurve = kCACornerCurveCircular;
+          break;
+      }
+    }
     layer.backgroundColor = _backgroundColor.CGColor;
   } else {
     if (!_borderLayer) {

@@ -57,6 +57,13 @@ ViewProps::ViewProps(
           "Color",
           sourceProps.borderColors,
           {})),
+    borderCurves(convertRawProp(
+          context,
+          rawProps,
+          "border",
+          "Curve",
+          sourceProps.borderCurves,
+          {})),
       borderStyles(convertRawProp(
           context,
           rawProps,
@@ -251,6 +258,7 @@ BorderMetrics ViewProps::resolveBorderMetrics(
       /* .borderWidths = */ borderWidths.resolve(isRTL, 0),
       /* .borderRadii = */
       ensureNoOverlap(borderRadii.resolve(isRTL, 0), layoutMetrics.frame.size),
+      /* .borderCurves = */ borderCurves.resolve(isRTL, BorderCurve::Circular),
       /* .borderStyles = */ borderStyles.resolve(isRTL, BorderStyle::Solid),
   };
 }

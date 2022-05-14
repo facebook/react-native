@@ -45,6 +45,7 @@ class ViewProps : public YogaStylableProps, public AccessibilityProps {
   // Borders
   CascadedBorderRadii borderRadii{};
   CascadedBorderColors borderColors{};
+  CascadedBorderCurves borderCurves{};
   CascadedBorderStyles borderStyles{};
 
   // Shadow
