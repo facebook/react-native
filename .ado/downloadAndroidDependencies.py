@@ -164,7 +164,7 @@ def main():
 
     # Download a transitive dependency closure of the ReactAndroid project
     dependencies = get_dependencies(react_native_dir);
-    maven_dependency_utils.download_transitive_closure(dependencies, dependency_dir_maven, 'gradlew')
+    maven_dependency_utils.download_transitive_closure(artifacts=dependencies, output_directory_path=dependency_dir_maven, gradle_path='gradlew', ignore_metadata_redirection=True, resolve_to_single_version=False)
 
     # Extract the native libraries from maven packages
     extract_sos(dependency_dir_maven, dependency_dir_native)
