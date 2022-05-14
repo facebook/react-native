@@ -111,6 +111,9 @@ public class ReactFeatureFlags {
 
   public static boolean dispatchPointerEvents = false;
 
+  /** Feature Flag to enable the pending event queue in fabric before mounting views */
+  public static boolean enableFabricPendingEventQueue = false;
+
   /** Feature Flag to control RN Android scrollEventThrottle prop. */
   public static boolean enableScrollEventThrottle = false;
 }

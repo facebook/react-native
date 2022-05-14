@@ -59,6 +59,7 @@ import com.facebook.react.fabric.events.FabricEventEmitter;
 import com.facebook.react.fabric.mounting.MountItemDispatcher;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.fabric.mounting.SurfaceMountingManager;
+import com.facebook.react.fabric.mounting.SurfaceMountingManager.ViewEvent;
 import com.facebook.react.fabric.mounting.mountitems.DispatchIntCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DispatchStringCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.IntBufferBatchMountItem;
@@ -923,8 +924,18 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     EventEmitterWrapper eventEmitter = mMountingManager.getEventEmitter(surfaceId, reactTag);
 
     if (eventEmitter == null) {
-      // This can happen if the view has disappeared from the screen (because of async events)
-      FLog.d(TAG, "Unable to invoke event: " + eventName + " for reactTag: " + reactTag);
+      if (ReactFeatureFlags.enableFabricPendingEventQueue
+          && mMountingManager.getViewExists(reactTag)) {
+        // The view is preallocated and created. However, it hasn't been mounted yet. We will have
+        // access to the event emitter later when the view is mounted. For now just save the event
+        // in the view state and trigger it later.
+        mMountingManager.enqueuePendingEvent(
+            reactTag,
+            new ViewEvent(eventName, params, eventCategory, canCoalesceEvent, customCoalesceKey));
+      } else {
+        // This can happen if the view has disappeared from the screen (because of async events)
+        FLog.d(TAG, "Unable to invoke event: " + eventName + " for reactTag: " + reactTag);
+      }
       return;
     }
 
