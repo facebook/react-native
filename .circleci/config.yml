@@ -461,10 +461,12 @@ jobs:
           root: .
           paths:
            - packages/rn-tester/Pods
+           - packages/rn-tester/Podfile.lock
            - packages/rn-tester/RNTesterPods.xcodeproj
            - packages/rn-tester/RNTesterPods.xcworkspace
            - packages/rn-tester/build
-           - sdks
+           - sdks/hermesc
+           - sdks/hermes
 
   # -------------------------
   #     JOBS: iOS Unit Tests
