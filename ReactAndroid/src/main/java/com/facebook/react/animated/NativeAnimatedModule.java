@@ -397,8 +397,8 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
 
   /**
    * Given a viewTag, detect if we're running in Fabric or non-Fabric and attach an event listener
-   * to the correct UIManager, if necessary. This is expected to only be called from the JS thread,
-   * and not concurrently.
+   * to the correct UIManager, if necessary. This is expected to only be called from the native
+   * module thread, and not concurrently.
    *
    * @param viewTag
    */
@@ -421,8 +421,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
     }
 
     // Subscribe to UIManager (Fabric or non-Fabric) lifecycle events if we haven't yet
-    if ((mInitializedForFabric && mUIManagerType == UIManagerType.FABRIC)
-        || (mInitializedForNonFabric && mUIManagerType == UIManagerType.DEFAULT)) {
+    if (mUIManagerType == UIManagerType.FABRIC ? mInitializedForFabric : mInitializedForNonFabric) {
       return;
     }
 
