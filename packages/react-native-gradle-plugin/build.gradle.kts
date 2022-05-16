@@ -6,6 +6,7 @@
  */
 
 import org.gradle.api.internal.classpath.ModuleRegistry
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.configurationcache.extensions.serviceOf
 
 plugins {
@@ -53,5 +54,14 @@ java {
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11.majorVersion
+    }
+}
+
+tasks.withType<Test>().configureEach {
+    testLogging {
+        exceptionFormat = TestExceptionFormat.FULL
+        showExceptions = true
+        showCauses = true
+        showStackTraces = true
     }
 }
