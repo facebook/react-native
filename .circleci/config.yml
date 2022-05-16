@@ -400,75 +400,6 @@ jobs:
           path: ./reports/junit
 
   # -------------------------
-  #     JOBS: Build iOS
-  # -------------------------
-  build_ios:
-    executor: reactnativeios
-    parameters:
-      use_frameworks:
-        type: boolean
-        default: false
-    steps:
-      - checkout
-      - setup_ruby
-      - run_yarn
-
-      - run: |
-          cd packages/rn-tester
-          bundle check || bundle install
-
-      - run:
-          name: Configure Environment Variables
-          command: |
-            echo 'export PATH=/usr/local/opt/node@16/bin:$PATH' >> $BASH_ENV
-            source $BASH_ENV
-
-      - run:
-          name: Configure Watchman
-          command: echo "{}" > .watchmanconfig
-
-      - when:
-          condition: << parameters.use_frameworks >>
-          steps:
-            - run:
-                name: Set USE_FRAMEWORKS=1
-                command: echo "export USE_FRAMEWORKS=1" >> $BASH_ENV
-
-      - run:
-          name: Set USE_HERMES=1
-          command: echo "export USE_HERMES=1" >> $BASH_ENV
-
-      - run:
-          name: Set BUILD_HERMES_SOURCE=1
-          command: echo "export BUILD_HERMES_SOURCE=1" >> $BASH_ENV
-
-      - brew_install:
-          package: cmake
-
-      - run:
-          name: Setup the CocoaPods environment
-          command: bundle exec pod setup
-
-      - with_hermes_sdk_cache_span:
-          steps:
-            - with_rntester_pods_cache_span:
-                steps:
-                  - run:
-                      name: Generate RNTesterPods Workspace
-                      command: cd packages/rn-tester && bundle exec pod install --verbose
-
-      - persist_to_workspace:
-          root: .
-          paths:
-           - packages/rn-tester/Pods
-           - packages/rn-tester/Podfile.lock
-           - packages/rn-tester/RNTesterPods.xcodeproj
-           - packages/rn-tester/RNTesterPods.xcworkspace
-           - packages/rn-tester/build
-           - sdks/hermesc
-           - sdks/hermes
-
-  # -------------------------
   #     JOBS: iOS Unit Tests
   # -------------------------
   test_ios:
@@ -489,8 +420,6 @@ jobs:
       - REPORTS_DIR: "./reports/junit"
     steps:
       - checkout
-      - attach_workspace:
-          at: .
       - setup_artifacts
       - setup_ruby
       - run:
@@ -537,6 +466,17 @@ jobs:
           name: Set BUILD_HERMES_SOURCE=1
           command: echo "export BUILD_HERMES_SOURCE=1" >> $BASH_ENV
 
+      - run:
+          name: Setup the CocoaPods environment
+          command: bundle exec pod setup
+
+      - with_hermes_sdk_cache_span:
+          steps:
+            - with_rntester_pods_cache_span:
+                steps:
+                  - run:
+                      name: Generate RNTesterPods Workspace
+                      command: cd packages/rn-tester && bundle exec pod install --verbose
 
       # -------------------------
       # Runs iOS unit tests
@@ -1311,15 +1251,9 @@ workflows:
           requires:
             - build_npm_package
       - test_ios_rntester
-      - build_ios
       - test_ios:
           run_unit_tests: true
-          requires:
-            - build_ios
       # DISABLED: USE_FRAMEWORKS=1 not supported by Flipper
-      # - build_ios:
-      #     name: build_ios_frameworks
-      #     use_frameworks: true
       # - test_ios:
       #     name: test_ios_frameworks
       #     use_frameworks: true
