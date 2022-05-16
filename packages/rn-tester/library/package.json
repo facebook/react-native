@@ -1,0 +1,40 @@
+{
+    "name": "library",
+    "version": "0.0.1",
+    "description": "Turbomodule and Fabric component",
+    "react-native": "src/index",
+    "source": "src/index",
+    "files": [
+        "src",
+        "android",
+        "ios",
+        "library.podspec",
+        "!android/build",
+        "!ios/build",
+        "!**/__tests__",
+        "!**/__fixtures__",
+        "!**/__mocks__"
+    ],
+    "keywords": ["react-native", "ios", "android"],
+    "repository": "https://github.com/<your_github_handle>/library",
+    "author": "<Your Name> <your_email@your_provider.com> (https://github.com/<your_github_handle>)",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/<your_github_handle>/library/issues"
+    },
+    "homepage": "https://github.com/<your_github_handle>/library#readme",
+    "devDependencies": {},
+    "peerDependencies": {
+        "react": "*",
+        "react-native": "*"
+    },
+    "codegenConfig": {
+        "libraries": [
+            {
+            "name": "RNLibrarySpec",
+            "type": "all",
+            "jsSrcsDir": "src"
+            }
+        ]
+    }
+}

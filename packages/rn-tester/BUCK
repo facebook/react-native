@@ -51,6 +51,7 @@ rn_library(
             "js",
             "NativeModuleExample",
             "NativeComponentExample",
+            "library",
             "RCTTest",
         ],
         excludes = [
