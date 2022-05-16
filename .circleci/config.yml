@@ -464,7 +464,7 @@ jobs:
            - packages/rn-tester/RNTesterPods.xcodeproj
            - packages/rn-tester/RNTesterPods.xcworkspace
            - packages/rn-tester/build
-           - packages/rn-tester/sdks
+           - sdks
 
   # -------------------------
   #     JOBS: iOS Unit Tests
