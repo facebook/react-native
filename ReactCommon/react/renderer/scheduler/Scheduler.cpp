@@ -12,7 +12,6 @@
 
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
-#include <react/renderer/core/Constants.h>
 #include <react/renderer/core/EventQueueProcessor.h>
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/debug/SystraceSection.h>
@@ -119,8 +118,6 @@ Scheduler::Scheduler(
 #ifdef ANDROID
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_android");
-  Constants::setPropsForwardingEnabled(reactNativeConfig_->getBool(
-      "react_fabric:enable_props_forwarding_android"));
 #else
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_ios");
@@ -190,7 +187,7 @@ void Scheduler::registerSurface(
 }
 
 InspectorData Scheduler::getInspectorDataForInstance(
-    SharedEventEmitter eventEmitter) const noexcept {
+    EventEmitter const &eventEmitter) const noexcept {
   return executeSynchronouslyOnSameThread_CAN_DEADLOCK<InspectorData>(
       runtimeExecutor_, [=](jsi::Runtime &runtime) -> InspectorData {
         auto uiManagerBinding = UIManagerBinding::getBinding(runtime);

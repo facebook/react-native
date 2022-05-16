@@ -11,12 +11,8 @@ rn_xplat_cxx_library(
         ],
         prefix = "react/fabric",
     ),
-    compiler_flags = [
-        "-fexceptions",
-        "-frtti",
-        "-std=c++17",
-        "-Wall",
-    ],
+    compiler_flags_enable_exceptions = True,
+    compiler_flags_enable_rtti = True,  # dynamic_cast used within Binding.cpp
     fbandroid_allow_jni_merging = True,
     labels = ["supermodule:xplat/default/public.react_native.infra"],
     platforms = ANDROID,

@@ -115,6 +115,11 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
     view.setSnapOffsets(offsets);
   }
 
+  @ReactProp(name = "snapToAlignment")
+  public void setSnapToAlignment(ReactScrollView view, String alignment) {
+    view.setSnapToAlignment(ReactScrollViewHelper.parseSnapToAlignment(alignment));
+  }
+
   @ReactProp(name = "snapToStart")
   public void setSnapToStart(ReactScrollView view, boolean snapToStart) {
     view.setSnapToStart(snapToStart);

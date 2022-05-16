@@ -12,6 +12,12 @@ Before running the app, make sure you ran:
 
 ### Running on iOS
 
+If you are testing non-fabric component, modify [the fabric_enabled flag in RNTester's Podfile](https://github.com/facebook/react-native/blob/main/packages/rn-tester/Podfile#L21).
+
+```ruby
+fabric_enabled = false
+```
+
 Both macOS and Xcode are required.
 - `cd packages/rn-tester`
 - Install [Bundler](https://bundler.io/): `gem install bundler`. We use bundler to install the right version of [CocoaPods](https://cocoapods.org/) locally.

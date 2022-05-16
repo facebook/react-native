@@ -62,6 +62,7 @@ const PERMISSIONS = Object.freeze({
   BLUETOOTH_CONNECT: 'android.permission.BLUETOOTH_CONNECT',
   BLUETOOTH_SCAN: 'android.permission.BLUETOOTH_SCAN',
   BLUETOOTH_ADVERTISE: 'android.permission.BLUETOOTH_ADVERTISE',
+  ACCESS_MEDIA_LOCATION: 'android.permission.ACCESS_MEDIA_LOCATION',
 });
 
 /**
@@ -75,6 +76,7 @@ class PermissionsAndroid {
     ACCESS_BACKGROUND_LOCATION: string,
     ACCESS_COARSE_LOCATION: string,
     ACCESS_FINE_LOCATION: string,
+    ACCESS_MEDIA_LOCATION: string,
     ADD_VOICEMAIL: string,
     BLUETOOTH_ADVERTISE: string,
     BLUETOOTH_CONNECT: string,

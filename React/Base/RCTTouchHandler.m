@@ -41,10 +41,6 @@
 
   __weak RCTUIView *_cachedRootView; // TODO(macOS GH#774)
 
-  // See Touch.h and usage. This gives us a time-basis for a monotonic
-  // clock that acts like a timestamp of milliseconds elapsed since UNIX epoch.
-  NSTimeInterval _unixEpochBasisTime;
-
   uint16_t _coalescingKey;
 #if TARGET_OS_OSX// [TODO(macOS GH#774)
   BOOL _shouldSendMouseUpOnSystemBehalf;
@@ -61,9 +57,6 @@
     _nativeTouches = [NSMutableOrderedSet new];
     _reactTouches = [NSMutableArray new];
     _touchViews = [NSMutableArray new];
-
-    // Get a UNIX epoch basis time:
-    _unixEpochBasisTime = [[NSDate date] timeIntervalSince1970] - [NSProcessInfo processInfo].systemUptime;
 
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
     // `cancelsTouchesInView` and `delaysTouches*` are needed in order to be used as a top level
@@ -236,7 +229,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
   reactTouch[@"pageY"] = @(RCTSanitizeNaNValue(rootViewLocation.y, @"touchEvent.pageY"));
   reactTouch[@"locationX"] = @(RCTSanitizeNaNValue(touchViewLocation.x, @"touchEvent.locationX"));
   reactTouch[@"locationY"] = @(RCTSanitizeNaNValue(touchViewLocation.y, @"touchEvent.locationY"));
-  reactTouch[@"timestamp"] = @((_unixEpochBasisTime + nativeTouch.timestamp) * 1000); // in ms, for JS
+  reactTouch[@"timestamp"] = @(nativeTouch.timestamp * 1000); // in ms, for JS
 
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
   // TODO: force for a 'normal' touch is usually 1.0;

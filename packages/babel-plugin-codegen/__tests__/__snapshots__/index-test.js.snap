@@ -22,7 +22,7 @@ interface NativeCommands {
   +scrollTo: (viewRef: React.ElementRef<NativeType>, y: Int32, animated: boolean) => void,
 }
 
-const NativeComponentRegistry = require('NativeComponentRegistry');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 const {
   dispatchCommand
@@ -84,7 +84,7 @@ interface NativeCommands {
   +scrollTo: (viewRef: React.ElementRef<NativeType>, y: Int32, animated: boolean) => void,
 }
 
-const NativeComponentRegistry = require('NativeComponentRegistry');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 const {
   dispatchCommand

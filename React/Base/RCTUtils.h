@@ -40,6 +40,9 @@ RCT_EXTERN void RCTExecuteOnMainQueue(dispatch_block_t block);
 // Please do not use this unless you know what you're doing.
 RCT_EXTERN void RCTUnsafeExecuteOnMainQueueSync(dispatch_block_t block);
 
+// Get screen scale, can be only used on main
+RCT_EXTERN void RCTComputeScreenScale(void);
+
 // Get screen metrics in a thread-safe way
 RCT_EXTERN CGFloat RCTScreenScale(void);
 RCT_EXTERN CGFloat RCTFontSizeMultiplier(void);

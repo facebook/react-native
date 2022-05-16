@@ -22,6 +22,7 @@ end
 def pods(options = {})
   project 'RNTesterPods.xcodeproj'
 
+  # [TODO(macOS GH#774) - don't enable Fabric on RNTester by default until it works on macOS
   fabric_enabled = false
 
   # To use fabric: set the environment variable `USE_FABRIC` to 1, like below
@@ -33,6 +34,11 @@ def pods(options = {})
     puts "Building RNTester with Fabric enabled."
     fabric_enabled = true
   end
+  # ]TODO(macOS GH#774)
+
+  # TODO(macOS GH#774) - uncomment once Fabric works on macOS
+  # puts "Building RNTester with Fabric enabled."
+  # fabric_enabled = true
 
   prefix_path = "../.."
   use_react_native!(path: prefix_path, fabric_enabled: fabric_enabled, hermes_enabled: ENV['USE_HERMES'] == '1')
@@ -102,5 +108,7 @@ end
 
 post_install do |installer|
   react_native_post_install(installer)
+  # TODO(macOS GH#774) - This was temporarily removed with 51bf5579489 but reintroduced with 03a09078681 on 2021-10-25.
+  # Plus, we still need the fix in folly before v2022.02.07.00. (See https://github.com/facebook/folly/commit/4a8837f)
   __apply_Xcode_12_5_M1_post_install_workaround(installer)
 end

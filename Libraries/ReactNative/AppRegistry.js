@@ -189,8 +189,10 @@ const AppRegistry = {
     displayMode?: number,
   ): void {
     if (appKey !== 'LogBox') {
-      const msg =
-        'Running "' + appKey + '" with ' + JSON.stringify(appParameters);
+      const logParams = __DEV__
+        ? '" with ' + JSON.stringify(appParameters)
+        : '';
+      const msg = 'Running "' + appKey + logParams;
       infoLog(msg);
       BugReporting.addSource(
         'AppRegistry.runApplication' + runCount++,

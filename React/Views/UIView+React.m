@@ -47,21 +47,18 @@
 
 - (BOOL)shouldAccessibilityIgnoresInvertColors
 {
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
-  if (@available(iOS 11.0, *)) {
-    return self.accessibilityIgnoresInvertColors;
-  }
-#endif
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
+  return self.accessibilityIgnoresInvertColors;
+#else // TODO(macOS GH#774)
   return NO;
+#endif // ]TODO(macOS GH#774)
 }
 
 - (void)setShouldAccessibilityIgnoresInvertColors:(BOOL)shouldAccessibilityIgnoresInvertColors
 {
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
-  if (@available(iOS 11.0, *)) {
-    self.accessibilityIgnoresInvertColors = shouldAccessibilityIgnoresInvertColors;
-  }
-#endif
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
+  self.accessibilityIgnoresInvertColors = shouldAccessibilityIgnoresInvertColors;
+#endif // ]TODO(macOS GH#774)
 }
 
 - (BOOL)isReactRootView

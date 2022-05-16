@@ -155,7 +155,7 @@ public class JSTouchDispatcher {
               mTargetCoordinates[1],
               mTouchEventCoalescingKeyHelper));
     } else if (action == MotionEvent.ACTION_POINTER_UP) {
-      // Exactly onw of the pointers goes up
+      // Exactly one of the pointers goes up
       eventDispatcher.dispatchEvent(
           TouchEvent.obtain(
               getSurfaceId(),

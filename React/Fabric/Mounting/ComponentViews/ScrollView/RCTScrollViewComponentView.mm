@@ -133,15 +133,6 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   [self.scrollViewDelegateSplitter removeAllDelegates];
 }
 
-- (void)layoutSubviews
-{
-  [super layoutSubviews];
-
-  if (_subviewClippingEnabled) {
-    [self _remountChildren];
-  }
-}
-
 - (RCTGenericDelegateSplitter<id<UIScrollViewDelegate>> *)scrollViewDelegateSplitter
 {
   return ((RCTEnhancedScrollView *)_scrollView).delegateSplitter;
@@ -508,6 +499,11 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
 {
+  [self _handleFinishedScrolling:scrollView];
+}
+
+- (void)_handleFinishedScrolling:(UIScrollView *)scrollView
+{
   [self _forceDispatchNextScrollEvent];
   [self scrollViewDidScroll:scrollView];
 
@@ -610,6 +606,11 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 }
 
 #pragma mark - Child views mounting
+
+- (void)updateClippedSubviewsWithClipRect:(CGRect)clipRect relativeToView:(UIView *)clipView
+{
+  // Do nothing. ScrollView manages its subview clipping individually in `_remountChildren`.
+}
 
 - (void)_remountChildrenIfNeeded
 {
@@ -714,6 +715,12 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   }
 
   [_scrollView setContentOffset:offset animated:animated];
+
+  if (!animated) {
+    // When not animated, the expected workflow in ``scrollViewDidEndScrollingAnimation`` after scrolling is not going
+    // to get triggered. We will need to manually execute here.
+    [self _handleFinishedScrolling:_scrollView];
+  }
 }
 
 - (void)zoomToRect:(CGRect)rect animated:(BOOL)animated

@@ -61,15 +61,10 @@ public class ReactEventEmitter implements RCTModernEventEmitter {
 
   @Override
   public void receiveEvent(
-      int surfaceId,
-      int targetTag,
-      String eventName,
-      boolean canCoalesceEvent,
-      int customCoalesceKey,
-      @Nullable WritableMap event) {
+      int surfaceId, int targetTag, String eventName, @Nullable WritableMap event) {
     // The two additional params here, `canCoalesceEvent` and `customCoalesceKey`, have no
     // meaning outside of Fabric.
-    receiveEvent(surfaceId, targetTag, eventName, event);
+    receiveEvent(surfaceId, targetTag, eventName, false, 0, event, EventCategoryDef.UNSPECIFIED);
   }
 
   @Override
@@ -120,10 +115,23 @@ public class ReactEventEmitter implements RCTModernEventEmitter {
 
   @Override
   public void receiveEvent(
-      int surfaceId, int targetReactTag, String eventName, @Nullable WritableMap event) {
+      int surfaceId,
+      int targetReactTag,
+      String eventName,
+      boolean canCoalesceEvent,
+      int customCoalesceKey,
+      @Nullable WritableMap event,
+      @EventCategoryDef int category) {
     @UIManagerType int uiManagerType = ViewUtil.getUIManagerType(targetReactTag);
     if (uiManagerType == UIManagerType.FABRIC && mFabricEventEmitter != null) {
-      mFabricEventEmitter.receiveEvent(surfaceId, targetReactTag, eventName, event);
+      mFabricEventEmitter.receiveEvent(
+          surfaceId,
+          targetReactTag,
+          eventName,
+          canCoalesceEvent,
+          customCoalesceKey,
+          event,
+          category);
     } else if (uiManagerType == UIManagerType.DEFAULT && getEventEmitter(targetReactTag) != null) {
       mRCTEventEmitter.receiveEvent(targetReactTag, eventName, event);
     } else {

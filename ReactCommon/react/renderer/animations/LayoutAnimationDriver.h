@@ -18,8 +18,12 @@ class LayoutAnimationDriver : public LayoutAnimationKeyFrameManager {
  public:
   LayoutAnimationDriver(
       RuntimeExecutor runtimeExecutor,
+      ContextContainer::Shared &contextContainer,
       LayoutAnimationStatusDelegate *delegate)
-      : LayoutAnimationKeyFrameManager(runtimeExecutor, delegate) {}
+      : LayoutAnimationKeyFrameManager(
+            runtimeExecutor,
+            contextContainer,
+            delegate) {}
 
  protected:
   virtual void animationMutationsForFrame(

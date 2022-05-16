@@ -276,10 +276,8 @@
     self.contentOffset = originalOffset;
   } else {
 #if !TARGET_OS_OSX // [TODO(macOS GH#774)
-    if (@available(iOS 11.0, *)) {
-      if (!UIEdgeInsetsEqualToEdgeInsets(UIEdgeInsetsZero, self.adjustedContentInset)) {
-        contentInset = self.adjustedContentInset;
-      }
+    if (!UIEdgeInsetsEqualToEdgeInsets(UIEdgeInsetsZero, self.adjustedContentInset)) {
+      contentInset = self.adjustedContentInset;
     }
 #endif // [TODO(macOS GH#774)
     CGSize boundsSize = self.bounds.size;
@@ -409,17 +407,15 @@
 
 #pragma clang diagnostic push // TODO(OSS Candidate ISS#2710739)
 #pragma clang diagnostic ignored "-Wunguarded-availability" // TODO(OSS Candidate ISS#2710739)
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
     // `contentInsetAdjustmentBehavior` is only available since iOS 11.
     // We set the default behavior to "never" so that iOS
     // doesn't do weird things to UIScrollView insets automatically
     // and keeps it as an opt-in behavior.
     if ([_scrollView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
-      if (@available(iOS 11.0, *)) {
-        _scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-      }
+      _scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     }
-#endif
+#endif // ]TODO(macOS GH#774)
 #pragma clang diagnostic pop // TODO(OSS Candidate ISS#2710739)
 
     _automaticallyAdjustContentInsets = YES;
@@ -1302,19 +1298,17 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIE
 }
 #endif
 
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
-- (void)setContentInsetAdjustmentBehavior:(UIScrollViewContentInsetAdjustmentBehavior)behavior API_AVAILABLE(ios(11.0))
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
+- (void)setContentInsetAdjustmentBehavior:(UIScrollViewContentInsetAdjustmentBehavior)behavior
 {
   // `contentInsetAdjustmentBehavior` is available since iOS 11.
   if ([_scrollView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
     CGPoint contentOffset = _scrollView.contentOffset;
-    if (@available(iOS 11.0, *)) {
-      _scrollView.contentInsetAdjustmentBehavior = behavior;
-    }
+    _scrollView.contentInsetAdjustmentBehavior = behavior;
     _scrollView.contentOffset = contentOffset;
   }
 }
-#endif
+#endif // ]TODO(macOS GH#774)
 #pragma clang diagnostic pop // TODO(OSS Candidate ISS#2710739)
 
 - (void)sendScrollEventWithName:(NSString *)eventName

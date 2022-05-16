@@ -34,12 +34,6 @@ rn_xplat_cxx_library(
         ],
         prefix = "react/utils",
     ),
-    compiler_flags = [
-        "-fexceptions",
-        "-frtti",
-        "-std=c++17",
-        "-Wall",
-    ],
     fbandroid_deps = [
         react_native_target("java/com/facebook/react/common/mapbuffer/jni:jni"),
         react_native_xplat_target("react/renderer/mapbuffer:mapbuffer"),

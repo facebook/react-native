@@ -7,6 +7,7 @@
 
 #include "Binding.h"
 #include "AsyncEventBeat.h"
+#include "AsyncEventBeatV2.h"
 #include "EventEmitterWrapper.h"
 #include "ReactNativeConfigHolder.h"
 #include "StateWrapperImpl.h"
@@ -242,8 +243,9 @@ Binding::getInspectorDataForInstance(
   }
 
   EventEmitterWrapper *cEventEmitter = cthis(eventEmitterWrapper);
-  InspectorData data =
-      scheduler->getInspectorDataForInstance(cEventEmitter->eventEmitter);
+  InspectorData data = scheduler->getInspectorDataForInstance(
+      enableEventEmitterRawPointer_ ? *cEventEmitter->eventEmitterPointer
+                                    : *cEventEmitter->eventEmitter);
 
   folly::dynamic result = folly::dynamic::object;
   result["fileName"] = data.fileName;
@@ -496,7 +498,6 @@ void Binding::installFabricUIManager(
     jni::alias_ref<JRuntimeScheduler::javaobject> runtimeSchedulerHolder,
     jni::alias_ref<jobject> javaUIManager,
     EventBeatManager *eventBeatManager,
-    jni::alias_ref<JavaMessageQueueThread::javaobject> jsMessageQueueThread,
     ComponentFactory *componentsRegistry,
     jni::alias_ref<jobject> reactNativeConfig) {
   SystraceSection s("FabricUIManagerBinding::installFabricUIManager");
@@ -506,6 +507,12 @@ void Binding::installFabricUIManager(
 
   enableFabricLogs_ =
       config->getBool("react_fabric:enabled_android_fabric_logs");
+
+  disableRevisionCheckForPreallocation_ =
+      config->getBool("react_fabric:disable_revision_check_for_preallocation");
+
+  enableEventEmitterRawPointer_ =
+      config->getBool("react_fabric:enable_event_emitter_wrapper_raw_pointer");
 
   if (enableFabricLogs_) {
     LOG(WARNING) << "Binding::installFabricUIManager() was called (address: "
@@ -524,12 +531,10 @@ void Binding::installFabricUIManager(
   ContextContainer::Shared contextContainer =
       std::make_shared<ContextContainer>();
 
-  auto sharedJSMessageQueueThread =
-      std::make_shared<JMessageQueueThread>(jsMessageQueueThread);
   auto runtimeExecutor = runtimeExecutorHolder->cthis()->get();
 
   if (runtimeSchedulerHolder) {
-    auto runtimeScheduler = runtimeSchedulerHolder->cthis()->get();
+    auto runtimeScheduler = runtimeSchedulerHolder->cthis()->get().lock();
     if (runtimeScheduler) {
       runtimeScheduler->setEnableYielding(config->getBool(
           "react_native_new_architecture:runtimescheduler_enable_yielding_android"));
@@ -541,22 +546,39 @@ void Binding::installFabricUIManager(
     }
   }
 
+  auto enableV2AsynchronousEventBeat =
+      config->getBool("react_fabric:enable_asynchronous_event_beat_v2_android");
+
   // TODO: T31905686 Create synchronous Event Beat
   jni::global_ref<jobject> localJavaUIManager = javaUIManager_;
   EventBeat::Factory synchronousBeatFactory =
-      [eventBeatManager, runtimeExecutor, localJavaUIManager](
-          EventBeat::SharedOwnerBox const &ownerBox)
+      [eventBeatManager,
+       runtimeExecutor,
+       localJavaUIManager,
+       enableV2AsynchronousEventBeat](EventBeat::SharedOwnerBox const &ownerBox)
       -> std::unique_ptr<EventBeat> {
-    return std::make_unique<AsyncEventBeat>(
-        ownerBox, eventBeatManager, runtimeExecutor, localJavaUIManager);
+    if (enableV2AsynchronousEventBeat) {
+      return std::make_unique<AsyncEventBeatV2>(
+          ownerBox, eventBeatManager, runtimeExecutor, localJavaUIManager);
+    } else {
+      return std::make_unique<AsyncEventBeat>(
+          ownerBox, eventBeatManager, runtimeExecutor, localJavaUIManager);
+    }
   };
 
   EventBeat::Factory asynchronousBeatFactory =
-      [eventBeatManager, runtimeExecutor, localJavaUIManager](
-          EventBeat::SharedOwnerBox const &ownerBox)
+      [eventBeatManager,
+       runtimeExecutor,
+       localJavaUIManager,
+       enableV2AsynchronousEventBeat](EventBeat::SharedOwnerBox const &ownerBox)
       -> std::unique_ptr<EventBeat> {
-    return std::make_unique<AsyncEventBeat>(
-        ownerBox, eventBeatManager, runtimeExecutor, localJavaUIManager);
+    if (enableV2AsynchronousEventBeat) {
+      return std::make_unique<AsyncEventBeatV2>(
+          ownerBox, eventBeatManager, runtimeExecutor, localJavaUIManager);
+    } else {
+      return std::make_unique<AsyncEventBeat>(
+          ownerBox, eventBeatManager, runtimeExecutor, localJavaUIManager);
+    }
   };
 
   contextContainer->insert("ReactNativeConfig", config);
@@ -587,8 +609,8 @@ void Binding::installFabricUIManager(
     toolbox.backgroundExecutor = backgroundExecutor_->get();
   }
 
-  animationDriver_ =
-      std::make_shared<LayoutAnimationDriver>(runtimeExecutor, this);
+  animationDriver_ = std::make_shared<LayoutAnimationDriver>(
+      runtimeExecutor, contextContainer, this);
   scheduler_ = std::make_shared<Scheduler>(
       toolbox, (animationDriver_ ? animationDriver_.get() : nullptr), this);
 }
@@ -624,16 +646,19 @@ inline local_ref<ReadableArray::javaobject> castReadableArray(
 
 // TODO: this method will be removed when binding for components are code-gen
 local_ref<JString> getPlatformComponentName(const ShadowView &shadowView) {
-  local_ref<JString> componentName;
-  auto newViewProps =
-      std::dynamic_pointer_cast<const ScrollViewProps>(shadowView.props);
+  static std::string scrollViewComponentName = std::string("ScrollView");
 
-  if (newViewProps &&
-      newViewProps->getProbablyMoreHorizontalThanVertical_DEPRECATED()) {
-    componentName = make_jstring("AndroidHorizontalScrollView");
-  } else {
-    componentName = make_jstring(shadowView.componentName);
+  local_ref<JString> componentName;
+  if (scrollViewComponentName.compare(shadowView.componentName) == 0) {
+    auto newViewProps =
+        std::static_pointer_cast<const ScrollViewProps>(shadowView.props);
+    if (newViewProps->getProbablyMoreHorizontalThanVertical_DEPRECATED()) {
+      componentName = make_jstring("AndroidHorizontalScrollView");
+      return componentName;
+    }
   }
+
+  componentName = make_jstring(shadowView.componentName);
   return componentName;
 }
 
@@ -899,8 +924,11 @@ void Binding::schedulerDidFinishTransaction(
           mountItem.newChildShadowView.eventEmitter;
       auto javaEventEmitter = EventEmitterWrapper::newObjectJavaArgs();
       EventEmitterWrapper *cEventEmitter = cthis(javaEventEmitter);
-      cEventEmitter->eventEmitter = eventEmitter;
-
+      if (enableEventEmitterRawPointer_) {
+        cEventEmitter->eventEmitterPointer = eventEmitter.get();
+      } else {
+        cEventEmitter->eventEmitter = eventEmitter;
+      }
       temp[0] = mountItem.newChildShadowView.tag;
       temp[1] = isLayoutable;
       env->SetIntArrayRegion(intBufferArray, intBufferPosition, 2, temp);
@@ -1050,7 +1078,11 @@ void Binding::schedulerDidFinishTransaction(
       // Do not hold a reference to javaEventEmitter from the C++ side.
       auto javaEventEmitter = EventEmitterWrapper::newObjectJavaArgs();
       EventEmitterWrapper *cEventEmitter = cthis(javaEventEmitter);
-      cEventEmitter->eventEmitter = eventEmitter;
+      if (enableEventEmitterRawPointer_) {
+        cEventEmitter->eventEmitterPointer = eventEmitter.get();
+      } else {
+        cEventEmitter->eventEmitter = eventEmitter;
+      }
 
       (*objBufferArray)[objBufferPosition++] = javaEventEmitter.get();
     }
@@ -1177,7 +1209,11 @@ void Binding::preallocateShadowView(
     if (eventEmitter != nullptr) {
       javaEventEmitter = EventEmitterWrapper::newObjectJavaArgs();
       EventEmitterWrapper *cEventEmitter = cthis(javaEventEmitter);
-      cEventEmitter->eventEmitter = eventEmitter;
+      if (enableEventEmitterRawPointer_) {
+        cEventEmitter->eventEmitterPointer = eventEmitter.get();
+      } else {
+        cEventEmitter->eventEmitter = eventEmitter;
+      }
     }
   }
 
@@ -1224,11 +1260,13 @@ void Binding::schedulerDidCloneShadowNode(
   // 1. The revision is exactly 1
   // 2. At revision 0 (the old node), View Preallocation would have been skipped
 
-  if (newShadowNode.getProps()->revision != 1) {
-    return;
-  }
-  if (oldShadowNode.getProps()->revision != 0) {
-    return;
+  if (!disableRevisionCheckForPreallocation_) {
+    if (newShadowNode.getProps()->revision != 1) {
+      return;
+    }
+    if (oldShadowNode.getProps()->revision != 0) {
+      return;
+    }
   }
 
   // If the new node is concrete and the old wasn't, we can preallocate

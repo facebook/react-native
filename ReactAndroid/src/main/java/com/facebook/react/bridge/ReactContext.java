@@ -91,6 +91,7 @@ public class ReactContext extends ContextWrapper {
 
   /** Initialize message queue threads using a ReactQueueConfiguration. */
   public synchronized void initializeMessageQueueThreads(ReactQueueConfiguration queueConfig) {
+    FLog.w(TAG, "initializeMessageQueueThreads() is called.");
     if (mUiMessageQueueThread != null
         || mNativeModulesMessageQueueThread != null
         || mJSMessageQueueThread != null) {

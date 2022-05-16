@@ -13,6 +13,7 @@ import androidx.core.util.Pools;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.SoftAssertions;
+import com.facebook.react.config.ReactFeatureFlags;
 
 /**
  * An event representing the start, end or movement of a touch. Corresponds to a single {@link
@@ -96,7 +97,7 @@ public class TouchEvent extends Event<TouchEvent> {
       float viewX,
       float viewY,
       TouchEventCoalescingKeyHelper touchEventCoalescingKeyHelper) {
-    super.init(surfaceId, viewTag);
+    super.init(surfaceId, viewTag, motionEventToCopy.getEventTime());
 
     SoftAssertions.assertCondition(
         gestureStartTime != UNSET, "Gesture start time must be initialized");
@@ -188,17 +189,47 @@ public class TouchEvent extends Event<TouchEvent> {
               "Cannot dispatch a TouchEvent that has no MotionEvent; the TouchEvent has been recycled"));
       return;
     }
-    TouchesHelper.sendTouchEvent(
-        rctEventEmitter,
-        Assertions.assertNotNull(mTouchEventType),
-        getSurfaceId(),
-        getViewTag(),
-        this);
+
+    TouchesHelper.sendTouchEvent(rctEventEmitter, this);
   }
 
   @Override
   public void dispatchModern(RCTModernEventEmitter rctEventEmitter) {
-    dispatch(rctEventEmitter);
+    if (ReactFeatureFlags.useUpdatedTouchPreprocessing) {
+      TouchesHelper.sendTouchEventModern(rctEventEmitter, this, /* useDispatchV2 */ false);
+    } else {
+      dispatch(rctEventEmitter);
+    }
+  }
+
+  @Override
+  public void dispatchModernV2(RCTModernEventEmitter rctEventEmitter) {
+    if (ReactFeatureFlags.useUpdatedTouchPreprocessing) {
+      TouchesHelper.sendTouchEventModern(rctEventEmitter, this, /* useDispatchV2 */ true);
+    } else {
+      dispatch(rctEventEmitter);
+    }
+  }
+
+  @Override
+  protected int getEventCategory() {
+    TouchEventType type = mTouchEventType;
+    if (type == null) {
+      return EventCategoryDef.UNSPECIFIED;
+    }
+
+    switch (type) {
+      case START:
+        return EventCategoryDef.CONTINUOUS_START;
+      case END:
+      case CANCEL:
+        return EventCategoryDef.CONTINUOUS_END;
+      case MOVE:
+        return EventCategoryDef.CONTINUOUS;
+    }
+
+    // Something something smart compiler...
+    return super.getEventCategory();
   }
 
   public MotionEvent getMotionEvent() {
@@ -208,6 +239,10 @@ public class TouchEvent extends Event<TouchEvent> {
 
   private boolean hasMotionEvent() {
     return mMotionEvent != null;
+  }
+
+  public TouchEventType getTouchEventType() {
+    return Assertions.assertNotNull(mTouchEventType);
   }
 
   public float getViewX() {

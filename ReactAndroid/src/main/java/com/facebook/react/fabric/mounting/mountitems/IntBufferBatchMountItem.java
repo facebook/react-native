@@ -226,8 +226,12 @@ public class IntBufferBatchMountItem implements MountItem {
                     : "<hidden>";
             s.append(String.format("UPDATE PROPS [%d]: %s\n", mIntBuffer[i++], propsString));
           } else if (type == INSTRUCTION_UPDATE_STATE) {
-            j += 1;
-            s.append(String.format("UPDATE STATE [%d]\n", mIntBuffer[i++]));
+            StateWrapper state = castToState(mObjBuffer[j++]);
+            String stateString =
+                IS_DEVELOPMENT_ENVIRONMENT
+                    ? (state != null ? state.getStateData().toString() : "<null>")
+                    : "<hidden>";
+            s.append(String.format("UPDATE STATE [%d]: %s\n", mIntBuffer[i++], stateString));
           } else if (type == INSTRUCTION_UPDATE_LAYOUT) {
             s.append(
                 String.format(

@@ -128,10 +128,6 @@ type ButtonProps = $ReadOnly<{|
     Text to display for blindness accessibility features.
    */
   accessibilityLabel?: ?string,
-  /**
-   * Hint text to display blindness accessibility features
-   */
-  accessibilityHint?: ?string, // TODO(OSS Candidate ISS#2710739)
 
   // TODO(OSS Candidate ISS#2710739)
   /**
@@ -203,6 +199,7 @@ type ButtonProps = $ReadOnly<{|
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
   accessibilityState?: ?AccessibilityState,
+  accessibilityHint?: ?string,
 |}>;
 
 /**
@@ -340,7 +337,7 @@ class Button extends React.Component<ButtonProps> {
       tooltip,
       accessible,
       accessibilityActions,
-      accessibilityHint, // TODO(OSS Candidate ISS#2710739)
+      accessibilityHint,
       accessibilityRole, // TODO(OSS Candidate ISS#2710739)
       onAccessibilityAction,
     } = this.props;
@@ -387,7 +384,7 @@ class Button extends React.Component<ButtonProps> {
         accessibilityActions={accessibilityActions}
         onAccessibilityAction={onAccessibilityAction}
         accessibilityLabel={accessibilityLabel}
-        accessibilityHint={accessibilityHint} // TODO(OSS Candidate ISS#2710739)
+        accessibilityHint={accessibilityHint}
         accessibilityRole={accessibilityRole || 'button'} // TODO(OSS Candidate ISS#2710739)
         accessibilityState={accessibilityState}
         hasTVPreferredFocus={hasTVPreferredFocus}

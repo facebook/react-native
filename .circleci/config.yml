@@ -52,7 +52,7 @@ executors:
   reactnativeios:
     <<: *defaults
     macos:
-      xcode: &_XCODE_VERSION "12.5.0"
+      xcode: &_XCODE_VERSION "13.3.1"
 
 # -------------------------
 #        COMMANDS
@@ -64,6 +64,16 @@ commands:
       - run:
           name: Initial Setup
           command: mkdir -p ./reports/{buck,build,junit,outputs}
+
+  setup_ruby:
+    steps:
+      - restore_cache:
+          key: 1-gems-{{ checksum "Gemfile.lock" }}
+      - run: bundle check || bundle install --path vendor/bundle --clean
+      - save_cache:
+          key: 1-gems-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
 
   run_yarn:
     steps:
@@ -223,7 +233,12 @@ jobs:
       # Note: The yarn gpg key needs to be refreshed to work around https://github.com/yarnpkg/yarn/issues/7866
       - run:
           name: Install additional GitHub bot dependencies
+          # TEMP: Added workaround from https://github.com/nodesource/distributions/issues/1266#issuecomment-932583579
           command: |
+            curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+            apt update && apt install -y shellcheck jq
+            apt-get install openssl ca-certificates
+            update-ca-certificates
             curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
             apt update && apt install -y shellcheck jq
 
@@ -352,6 +367,7 @@ jobs:
     steps:
       - checkout
       - setup_artifacts
+      - setup_ruby
       - run_yarn
 
       - run: |
@@ -387,7 +403,7 @@ jobs:
 
       - run:
           name: Configure Watchman
-          command: touch .watchmanconfig
+          command: echo "{}" > .watchmanconfig
 
       - when:
           condition: << parameters.use_frameworks >>
@@ -405,13 +421,13 @@ jobs:
 
       - run:
           name: Setup the CocoaPods environment
-          command: pod setup
+          command: bundle exec pod setup
 
       - with_rntester_pods_cache_span:
           steps:
             - run:
                 name: Generate RNTesterPods Workspace
-                command: cd packages/rn-tester && USE_FABRIC=1 bundle exec pod install --verbose
+                command: cd packages/rn-tester && bundle exec pod install --verbose
 
       # -------------------------
       # Runs iOS unit tests
@@ -559,24 +575,30 @@ jobs:
           path: ./reports/junit
 
   # -------------------------
-  #    JOBS: Test Docker
+  #    JOBS: Test Android Template
   # -------------------------
-  test_docker_android:
-    machine: true
+  test_android_template:
+    executor: reactnativeandroid
     steps:
       - checkout
+      - run_yarn
+
       - run:
-          name: Configure Node
+          name: Setup the Android Template
           command: |
-            source ~/.bashrc
-            nvm i node
-            echo y | npx envinfo@latest
+            cd template
+            sed -i 's/1000\.0\.0/file\:\.\./g' package.json
+            npm install
+            # react-native-community/cli is needed as the Android template is referencing a .gradle file inside it.
+            npm i @react-native-community/cli
+
       - run:
-          name: Pulls down the React Native Community Android Docker image
-          command: npm run docker-setup-android
+          name: Bundle the latest version of ReactAndroid
+          command: ./gradlew :ReactAndroid:publishReleasePublicationToNpmRepository
+
       - run:
-          name: Builds the Docker image with a compiled instance of the test app
-          command: npm run docker-build-android
+          name: Build the template application
+          command: cd template/android/ && ./gradlew assembleDebug
 
   # -------------------------
   #    JOBS: Windows
@@ -691,12 +713,11 @@ jobs:
   # -------------------------
   #      JOBS: Releases
   # -------------------------
-  # Publishes a new version onto npm
-  publish_npm_package:
+  build_npm_package:
     parameters:
       publish_npm_args:
         type: string
-        default: --nonightly
+        default: --dry-run
     executor: reactnativeandroid
     steps:
       - run:
@@ -709,18 +730,47 @@ jobs:
       - install_buck_tooling
       - download_buck_dependencies
       - download_gradle_dependencies
-      - run: echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
-      - run: |
-          git config --global user.email "react-native-bot@users.noreply.github.com"
-          git config --global user.name "npm Deployment Script"
-          echo "machine github.com login react-native-bot password $GITHUB_TOKEN" > ~/.netrc
+      # Only tagged releases and nightlies should be able to publish to npm
+      - when:
+          condition:
+            or:
+              - equal: [ --release, << parameters.publish_npm_args >> ]
+              - equal: [ --nightly, << parameters.publish_npm_args >> ]
+          steps:
+            - run: echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
+            - run: |
+                git config --global user.email "react-native-bot@users.noreply.github.com"
+                git config --global user.name "npm Deployment Script"
+                echo "machine github.com login react-native-bot password $GITHUB_TOKEN" > ~/.netrc
       - run: node ./scripts/publish-npm.js << parameters.publish_npm_args >>
+      - when:
+          condition:
+            equal: [ --dry-run, << parameters.publish_npm_args >> ]
+          steps:
+            - run:
+                name: Build release package as a job artifact
+                command: |
+                  mkdir -p build
+                  FILENAME=$(npm pack)
+                  mv $FILENAME build/
+            - store_artifacts:
+                path: ~/react-native/build/
+                destination: build
+      - when:
+          condition:
+            matches: { pattern: '^pull\/.*$', value: << pipeline.git.branch >> }
+          steps:
+            - install_github_bot_deps
+            - run:
+                name: Post link to PR build artifacts (pull-bot)
+                command: GITHUB_TOKEN="$PUBLIC_PULLBOT_GITHUB_TOKEN_A""$PUBLIC_PULLBOT_GITHUB_TOKEN_B" scripts/circleci/post-artifacts-link.sh
 
   # -------------------------
   #    JOBS: Nightly
   # -------------------------
   nightly_job:
-    machine: true
+    machine:
+      image: ubuntu-2004:202010-01
     steps:
       - run:
           name: Nightly
@@ -742,6 +792,11 @@ workflows:
               ignore: gh-pages
       - test_android:
           run_disabled_tests: false
+          filters:
+            branches:
+              # TODO(macOS GH#774): disable this test which is redundant to Azure Devops test and it requires a CCI plan with resource-class:large.
+              ignore: /.*/
+      - test_android_template:
           filters:
             branches:
               # TODO(macOS GH#774): disable this test which is redundant to Azure Devops test and it requires a CCI plan with resource-class:large.
@@ -802,7 +857,9 @@ workflows:
 
   releases:
     jobs:
-      - publish_npm_package:
+      - build_npm_package:
+          name: build_and_publish_npm_package
+          publish_npm_args: --release
           filters:
             # Both of the following conditions must be included!
             # Ignore any commit on any branch by default.
@@ -811,6 +868,17 @@ workflows:
             # Only act on version tags.
             tags:
               only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
+      - build_npm_package:
+          # Build a release package on every untagged commit, but do not publish to npm.
+          publish_npm_args: --dry-run
+          filters:
+            branches:
+              only:
+                - main
+                - /^pull\/.*$/
+                - /^(\d+)\.(\d+)-stable$/
+            tags:
+              ignore: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
 
   analysis:
     jobs:
@@ -847,5 +915,5 @@ workflows:
     jobs:
       - nightly_job
 
-      - publish_npm_package:
+      - build_npm_package:
           publish_npm_args: --nightly

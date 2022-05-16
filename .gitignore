@@ -98,6 +98,10 @@ package-lock.json
 /React/FBReactNativeSpec/**/*.xcodeproj
 /packages/react-native-codegen/**/*.xcodeproj
 
+# Ruby Gems (Bundler)
+/vendor
+/template/vendor
+
 # CocoaPods
 /template/ios/Pods/
 /template/ios/Podfile.lock

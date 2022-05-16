@@ -13,4 +13,13 @@ object Os {
 
   fun isWindows(): Boolean =
       System.getProperty("os.name")?.toLowerCase(Locale.ROOT)?.contains("windows") ?: false
+
+  fun String.unixifyPath() =
+      this.replace('\\', '/').replace(":", "").let {
+        if (!it.startsWith("/")) {
+          "/$it"
+        } else {
+          it
+        }
+      }
 }

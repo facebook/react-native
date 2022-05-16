@@ -76,6 +76,7 @@ import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.common.SurfaceDelegateFactory;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
@@ -184,6 +185,7 @@ public class ReactInstanceManager {
   private final @Nullable JSIModulePackage mJSIModulePackage;
   private final @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
   private List<ViewManager> mViewManagers;
+  private boolean mUseFallbackBundle = false;
 
   private class ReactContextInitParams {
     private final JavaScriptExecutorFactory mJsExecutorFactory;
@@ -218,6 +220,7 @@ public class ReactInstanceManager {
       @Nullable String jsMainModulePath,
       List<ReactPackage> packages,
       boolean useDeveloperSupport,
+      DevSupportManagerFactory devSupportManagerFactory,
       boolean requireActivity,
       @Nullable NotThreadSafeBridgeIdleDebugListener bridgeIdleDebugListener,
       LifecycleState initialLifecycleState,
@@ -230,7 +233,8 @@ public class ReactInstanceManager {
       int minTimeLeftInFrameForNonBatchedOperationMs,
       @Nullable JSIModulePackage jsiModulePackage,
       @Nullable Map<String, RequestHandler> customPackagerCommandHandlers,
-      @Nullable ReactPackageTurboModuleManagerDelegate.Builder tmmDelegateBuilder) {
+      @Nullable ReactPackageTurboModuleManagerDelegate.Builder tmmDelegateBuilder,
+      @Nullable SurfaceDelegateFactory surfaceDelegateFactory) {
     FLog.d(TAG, "ReactInstanceManager.ctor()");
     initializeSoLoaderIfNecessary(applicationContext);
 
@@ -249,7 +253,7 @@ public class ReactInstanceManager {
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstanceManager.initDevSupportManager");
     mDevSupportManager =
-        DevSupportManagerFactory.create(
+        devSupportManagerFactory.create(
             applicationContext,
             createDevHelperInterface(),
             mJSMainModulePath,
@@ -257,7 +261,8 @@ public class ReactInstanceManager {
             redBoxHandler,
             devBundleDownloadListener,
             minNumShakes,
-            customPackagerCommandHandlers);
+            customPackagerCommandHandlers,
+            surfaceDelegateFactory);
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     mBridgeIdleDebugListener = bridgeIdleDebugListener;
     mLifecycleState = initialLifecycleState;
@@ -348,6 +353,10 @@ public class ReactInstanceManager {
         }
       }
     };
+  }
+
+  public synchronized void setUseFallbackBundle(boolean useFallbackBundle) {
+    mUseFallbackBundle = useFallbackBundle;
   }
 
   private JavaScriptExecutorFactory getJSExecutorFactory() {
@@ -452,7 +461,8 @@ public class ReactInstanceManager {
                           if (packagerIsRunning) {
                             mDevSupportManager.handleReloadJS();
                           } else if (mDevSupportManager.hasUpToDateJSBundleInCache()
-                              && !devSettings.isRemoteJSDebugEnabled()) {
+                              && !devSettings.isRemoteJSDebugEnabled()
+                              && !mUseFallbackBundle) {
                             // If there is a up-to-date bundle downloaded from server,
                             // with remote JS debugging disabled, always use that.
                             onJSBundleLoadedFromServer();
@@ -1219,7 +1229,8 @@ public class ReactInstanceManager {
     // If we can't get a UIManager something has probably gone horribly wrong
     if (uiManager == null) {
       throw new IllegalStateException(
-          "Unable to attach a rootView to ReactInstance when UIManager is not properly initialized.");
+          "Unable to attach a rootView to ReactInstance when UIManager is not properly"
+              + " initialized.");
     }
 
     @Nullable Bundle initialProperties = reactRoot.getAppProperties();
@@ -1358,10 +1369,6 @@ public class ReactInstanceManager {
       for (String moduleName : registry.getEagerInitModuleNames()) {
         registry.getModule(moduleName);
       }
-    }
-
-    if (ReactFeatureFlags.enableRuntimeScheduler) {
-      catalystInstance.installRuntimeScheduler();
     }
 
     if (mJSIModulePackage != null) {
