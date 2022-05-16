@@ -559,6 +559,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     SurfaceMountingManager surfaceMountingManager =
         mMountingManager.getSurfaceManagerEnforced(surfaceId, "getThemeData");
     ThemedReactContext themedReactContext = surfaceMountingManager.getContext();
+
+    if (themedReactContext == null) {
+      FLog.w(TAG, "\"themedReactContext\" is null when call \"getThemeData\"");
+      return false;
+    }
     float[] defaultTextInputPaddingForTheme =
         UIManagerHelper.getDefaultTextInputPadding(themedReactContext);
     defaultTextInputPadding[0] = defaultTextInputPaddingForTheme[PADDING_START_INDEX];

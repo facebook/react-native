@@ -47,8 +47,7 @@ public class TextAttributeProps {
   public static final short TA_KEY_BEST_WRITING_DIRECTION = 13;
   public static final short TA_KEY_TEXT_DECORATION_COLOR = 14;
   public static final short TA_KEY_TEXT_DECORATION_LINE = 15;
-  public static final short TA_KEY_TEXT_DECORATION_LINE_STYLE = 16;
-  public static final short TA_KEY_TEXT_DECORATION_LINE_PATTERN = 17;
+  public static final short TA_KEY_TEXT_DECORATION_STYLE = 16;
   public static final short TA_KEY_TEXT_SHADOW_RAIDUS = 18;
   public static final short TA_KEY_TEXT_SHADOW_COLOR = 19;
   public static final short TA_KEY_IS_HIGHLIGHTED = 20;
@@ -192,9 +191,7 @@ public class TextAttributeProps {
         case TA_KEY_TEXT_DECORATION_LINE:
           result.setTextDecorationLine(entry.getString());
           break;
-        case TA_KEY_TEXT_DECORATION_LINE_STYLE:
-          break;
-        case TA_KEY_TEXT_DECORATION_LINE_PATTERN:
+        case TA_KEY_TEXT_DECORATION_STYLE:
           break;
         case TA_KEY_TEXT_SHADOW_RAIDUS:
           result.setTextShadowRadius(entry.getInt(1));

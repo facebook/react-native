@@ -25,7 +25,7 @@ const datastore = require('./datastore');
 const {createOrUpdateComment} = require('./make-comment');
 
 /**
- * Generates and submits a comment. If this is run on main branch, data is
+ * Generates and submits a comment. If this is run on the main or release branch, data is
  * committed to the store instead.
  * @param {{
       'android-hermes-arm64-v8a'?: number;
@@ -47,7 +47,7 @@ async function reportSizeStats(stats, replacePattern) {
   );
   const collection = datastore.getBinarySizesCollection(store);
 
-  if (GITHUB_REF === 'main') {
+  if (GITHUB_REF === 'main' || GITHUB_REF.endsWith('-stable')) {
     // Ensure we only store numbers greater than zero.
     const validatedStats = Object.keys(stats).reduce((validated, key) => {
       const value = stats[key];
@@ -58,61 +58,83 @@ async function reportSizeStats(stats, replacePattern) {
       validated[key] = value;
       return validated;
     }, {});
+
     if (Object.keys(validatedStats).length > 0) {
+      // Print out the new stats
+      const document =
+        (await datastore.getLatestDocument(collection, GITHUB_REF)) || {};
+      const formattedStats = formatBundleStats(document, validatedStats);
+      console.log(formattedStats);
+
       await datastore.createOrUpdateDocument(
         collection,
         GITHUB_SHA,
         validatedStats,
+        GITHUB_REF,
       );
     }
   } else {
-    const document = await datastore.getLatestDocument(collection);
-
-    const diffFormatter = new Intl.NumberFormat('en', {signDisplay: 'always'});
-    const sizeFormatter = new Intl.NumberFormat('en', {});
-
-    // | Platform | Engine | Arch        | Size (bytes) | Diff |
-    // |:---------|:-------|:------------|-------------:|-----:|
-    // | android  | hermes | arm64-v8a   |      9437184 |   ±0 |
-    // | android  | hermes | armeabi-v7a |      9015296 |   ±0 |
-    // | android  | hermes | x86         |      9498624 |   ±0 |
-    // | android  | hermes | x86_64      |      9965568 |   ±0 |
-    // | android  | jsc    | arm64-v8a   |      9236480 |   ±0 |
-    // | android  | jsc    | armeabi-v7a |      8814592 |   ±0 |
-    // | android  | jsc    | x86         |      9297920 |   ±0 |
-    // | android  | jsc    | x86_64      |      9764864 |   ±0 |
-    // | android  | jsc    | x86_64      |      9764864 |   ±0 |
-    // | ios      | -      | universal   |     10715136 |   ±0 |
-    const comment = [
-      '| Platform | Engine | Arch | Size (bytes) | Diff |',
-      '|:---------|:-------|:-----|-------------:|-----:|',
-      ...Object.keys(stats).map(identifier => {
-        const [size, diff] = (() => {
-          const statSize = stats[identifier];
-          if (!statSize) {
-            return ['n/a', '--'];
-          } else if (!(identifier in document)) {
-            return [statSize, 'n/a'];
-          } else {
-            return [
-              sizeFormatter.format(statSize),
-              diffFormatter.format(statSize - document[identifier]),
-            ];
-          }
-        })();
-
-        const [platform, engineOrArch, ...archParts] = identifier.split('-');
-        const arch = archParts.join('-') || engineOrArch;
-        const engine = arch === engineOrArch ? '-' : engineOrArch; // e.g. 'ios-universal'
-        return `| ${platform} | ${engine} | ${arch} | ${size} | ${diff} |`;
-      }),
-      '',
-      `Base commit: ${document.commit}`,
-    ].join('\n');
+    // For PRs, always compare vs main.
+    const document =
+      (await datastore.getLatestDocument(collection, 'main')) || {};
+    const comment = formatBundleStats(document, stats);
     createOrUpdateComment(comment, replacePattern);
   }
 
   await datastore.terminateStore(store);
+}
+
+/**
+ * Format the new bundle stats as compared to the latest stored entry.
+ * @param {firebase.firestore.DocumentData} document the latest entry to compare against
+ * @param {firebase.firestore.UpdateData} stats The stats to be formatted
+ * @returns {string}
+ */
+function formatBundleStats(document, stats) {
+  const diffFormatter = new Intl.NumberFormat('en', {signDisplay: 'always'});
+  const sizeFormatter = new Intl.NumberFormat('en', {});
+
+  // | Platform | Engine | Arch        | Size (bytes) | Diff |
+  // |:---------|:-------|:------------|-------------:|-----:|
+  // | android  | hermes | arm64-v8a   |      9437184 |   ±0 |
+  // | android  | hermes | armeabi-v7a |      9015296 |   ±0 |
+  // | android  | hermes | x86         |      9498624 |   ±0 |
+  // | android  | hermes | x86_64      |      9965568 |   ±0 |
+  // | android  | jsc    | arm64-v8a   |      9236480 |   ±0 |
+  // | android  | jsc    | armeabi-v7a |      8814592 |   ±0 |
+  // | android  | jsc    | x86         |      9297920 |   ±0 |
+  // | android  | jsc    | x86_64      |      9764864 |   ±0 |
+  // | android  | jsc    | x86_64      |      9764864 |   ±0 |
+  // | ios      | -      | universal   |     10715136 |   ±0 |
+  const formatted = [
+    '| Platform | Engine | Arch | Size (bytes) | Diff |',
+    '|:---------|:-------|:-----|-------------:|-----:|',
+    ...Object.keys(stats).map(identifier => {
+      const [size, diff] = (() => {
+        const statSize = stats[identifier];
+        if (!statSize) {
+          return ['n/a', '--'];
+        } else if (!(identifier in document)) {
+          return [statSize, 'n/a'];
+        } else {
+          return [
+            sizeFormatter.format(statSize),
+            diffFormatter.format(statSize - document[identifier]),
+          ];
+        }
+      })();
+
+      const [platform, engineOrArch, ...archParts] = identifier.split('-');
+      const arch = archParts.join('-') || engineOrArch;
+      const engine = arch === engineOrArch ? '-' : engineOrArch; // e.g. 'ios-universal'
+      return `| ${platform} | ${engine} | ${arch} | ${size} | ${diff} |`;
+    }),
+    '',
+    `Base commit: ${document.commit || '<unknown>'}`,
+    `Branch: ${document.branch || '<unknown>'}`,
+  ].join('\n');
+
+  return formatted;
 }
 
 /**

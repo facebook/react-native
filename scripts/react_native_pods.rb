@@ -3,6 +3,8 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+$CODEGEN_TEMP_DIR = 'build/generated'
+
 def use_react_native! (options={})
   # The prefix to react-native
   prefix = options[:path] ||= "../node_modules/react-native"
@@ -192,6 +194,65 @@ def react_native_post_install(installer)
   exclude_architectures(installer)
   fix_library_search_paths(installer)
 end
+
+
+def generate_temp_pod_spec_for_codegen!()
+  output_dir = "#{Pod::Config.instance.installation_root}/#{$CODEGEN_TEMP_DIR}"
+  Pod::Executable.execute_command("mkdir", ["-p", output_dir]);
+
+  package = JSON.parse(File.read(File.join(__dir__, "..", "package.json")))
+  version = package['version']
+
+  folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
+  folly_version = '2021.06.28.00'
+  boost_version = '1.76.0'
+  boost_compiler_flags = '-Wno-documentation'
+
+  spec = {
+    'name' => "ReactNative-Codegen",
+    'version' => version,
+    'summary' => 'Temp pod for generated files for React Native',
+    'homepage' => 'https://facebook.com/',
+    'license' => 'Unlicense',
+    'authors' => 'Facebook',
+    'compiler_flags'  => "#{folly_compiler_flags} #{boost_compiler_flags} -Wno-nullability-completeness",
+    'source' => { :git => '' },
+    'platforms' => {
+      'ios' => '11.0',
+    },
+    'source_files' => "**/*.{h,mm,cpp}",
+    'pod_target_xcconfig' => { "HEADER_SEARCH_PATHS" =>
+      [
+        "\"$(PODS_ROOT)/boost\"",
+        "\"$(PODS_ROOT)/RCT-Folly\"",
+        "\"$(PODS_ROOT)/Headers/Private/React-Fabric\""
+      ].join(' ')
+    },
+    'dependencies': {
+      "React-graphics":  [version],
+      "React-jsiexecutor":  [version],
+      "RCT-Folly": [folly_version],
+      "RCTRequired": [version],
+      "RCTTypeSafety": [version],
+      "React-Core": [version],
+      "React-jsi": [version],
+      "ReactCommon/turbomodule/core": [version]
+    }
+  }
+  podspec_path = File.join(output_dir, 'ReactNative-Codegen.podspec.json')
+  Pod::UI.puts "[Codegene] Generating #{podspec_path}"
+
+  File.open(podspec_path, 'w') do |f|
+    f.write(spec.to_json)
+    f.fsync
+  end
+
+  return {
+    "spec" => spec,
+    "path" => output_dir,
+  }
+end
+
 
 def use_react_native_codegen!(spec, options={})
   return if ENV['DISABLE_CODEGEN'] == '1'

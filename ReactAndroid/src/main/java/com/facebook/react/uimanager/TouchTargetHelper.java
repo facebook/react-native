@@ -7,6 +7,7 @@
 
 package com.facebook.react.uimanager;
 
+import android.annotation.SuppressLint;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.graphics.Rect;
@@ -107,6 +108,7 @@ public class TouchTargetHelper {
    * @return If a target was found, returns a path through the view tree of all react tags that are
    *     a container for the touch target, ordered from target to root (last element)
    */
+  @SuppressLint("ResourceType")
   public static List<Integer> findTargetPathAndCoordinatesForTouch(
       float eventX, float eventY, ViewGroup viewGroup, float[] viewCoords) {
     UiThreadUtil.assertOnUiThread();
@@ -119,9 +121,21 @@ public class TouchTargetHelper {
     View targetView = findTouchTargetViewWithPointerEvents(viewCoords, viewGroup, pathAccumulator);
 
     if (targetView != null) {
-      View reactTargetView = findClosestReactAncestor(targetView);
-      int targetTag = getTouchTargetForView(reactTargetView, viewCoords[0], viewCoords[1]);
-      if (targetTag != pathAccumulator.get(0)) {
+      View reactTargetView = targetView;
+      int firstReactAncestor = 0;
+      // Same logic as findClosestReactAncestor but also track the index
+      while (reactTargetView != null && reactTargetView.getId() <= 0) {
+        reactTargetView = (View) reactTargetView.getParent();
+        firstReactAncestor++;
+      }
+
+      if (firstReactAncestor > 0) {
+        // Drop non-React views from the path trace
+        pathAccumulator = pathAccumulator.subList(firstReactAncestor, pathAccumulator.size());
+      }
+
+      int targetTag = getTouchTargetForView(reactTargetView, eventX, eventY);
+      if (targetTag != reactTargetView.getId()) {
         pathAccumulator.add(0, targetTag);
       }
     }
@@ -129,6 +143,7 @@ public class TouchTargetHelper {
     return pathAccumulator;
   }
 
+  @SuppressLint("ResourceType")
   private static View findClosestReactAncestor(View view) {
     while (view != null && view.getId() <= 0) {
       view = (View) view.getParent();

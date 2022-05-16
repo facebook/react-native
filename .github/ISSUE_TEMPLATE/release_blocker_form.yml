@@ -1,5 +1,5 @@
 name: Release Candidate Blocker
-description: File an issue against the current release candidate.
+description: If you are testing a release candidate (0.XX.0-rc.Y) and run into an issue.
 labels: ["Needs: Triage :mag:", "pre-release"]
 body:
   - type: markdown
