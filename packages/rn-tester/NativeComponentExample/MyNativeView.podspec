@@ -37,12 +37,4 @@ Pod::Spec.new do |s|
   s.dependency "RCTRequired"
   s.dependency "RCTTypeSafety"
   s.dependency "ReactCommon/turbomodule/core"
-
-  # Enable codegen for this library
-  use_react_native_codegen!(s, {
-    :library_name => "MyNativeViewSpec",
-    :react_native_path => "../../../",
-    :js_srcs_dir => "./js",
-    :library_type => "components"
-  })
 end
