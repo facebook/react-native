@@ -175,6 +175,11 @@ const APIs: Array<RNTesterModuleInfo> = [
     module: require('../examples/Border/BorderExample'),
   },
   {
+    key: 'Calculator',
+    module: require('../examples/Calculator/CalculatorExample'),
+    supportsTVOS: false,
+  },
+  {
     key: 'CrashExample',
     category: 'Basic',
     module: require('../examples/Crash/CrashExample'),

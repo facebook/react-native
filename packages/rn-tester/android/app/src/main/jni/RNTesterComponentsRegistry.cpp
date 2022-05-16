@@ -26,6 +26,8 @@ RNTesterComponentsRegistry::sharedProviderRegistry() {
 
   providerRegistry->add(concreteComponentDescriptorProvider<
                         RNTMyNativeViewComponentDescriptor>());
+  providerRegistry->add(
+      concreteComponentDescriptorProvider<ColoredViewComponentDescriptor>());
 
   return providerRegistry;
 }

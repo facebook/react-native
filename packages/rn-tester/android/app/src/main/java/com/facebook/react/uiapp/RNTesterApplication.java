@@ -39,6 +39,8 @@ import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.views.text.ReactFontManager;
 import com.facebook.soloader.SoLoader;
+import com.library.CalculatorModule;
+import com.library.ColoredViewManager;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -81,6 +83,10 @@ public class RNTesterApplication extends Application implements ReactApplication
                     return new SampleTurboModule(reactContext);
                   }
 
+                  if (CalculatorModule.NAME.equals(name)) {
+                    return new CalculatorModule(reactContext);
+                  }
+
                   return null;
                 }
 
@@ -97,6 +103,17 @@ public class RNTesterApplication extends Application implements ReactApplication
                             new ReactModuleInfo(
                                 SampleTurboModule.NAME,
                                 "SampleTurboModule",
+                                false, // canOverrideExistingModule
+                                false, // needsEagerInit
+                                true, // hasConstants
+                                false, // isCxxModule
+                                true // isTurboModule
+                                ));
+                        moduleInfos.put(
+                            CalculatorModule.NAME,
+                            new ReactModuleInfo(
+                                CalculatorModule.NAME,
+                                "CalculatorModule",
                                 false, // canOverrideExistingModule
                                 false, // needsEagerInit
                                 true, // hasConstants
@@ -121,7 +138,10 @@ public class RNTesterApplication extends Application implements ReactApplication
                 @Override
                 public List<ViewManager> createViewManagers(
                     @NonNull ReactApplicationContext reactContext) {
-                  return Collections.singletonList(new MyNativeViewManager());
+                  ArrayList<ViewManager> list = new ArrayList<ViewManager>();
+                  list.add(new MyNativeViewManager());
+                  list.add(new ColoredViewManager());
+                  return list;
                 }
               });
         }
