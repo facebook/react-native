@@ -14,6 +14,7 @@ import com.facebook.react.tests.WithOs
 import java.io.File
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Assert.*
+import org.junit.Assume.assumeTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -170,6 +171,10 @@ class PathUtilsTest {
 
   @Test
   fun detectOSAwareHermesCommand_withHermescBuiltLocally() {
+    // As we can't mock env variables, we skip this test if an override of the Hermes
+    // path has been provided.
+    assumeTrue(System.getenv("REACT_NATIVE_OVERRIDE_HERMES_DIR") == null)
+
     tempFolder.newFolder("node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/")
     val expected =
         tempFolder.newFile(
@@ -208,6 +213,10 @@ class PathUtilsTest {
   @Test
   @WithOs(OS.MAC)
   fun detectOSAwareHermesCommand_withoutProvidedCommand_builtHermescTakesPrecedence() {
+    // As we can't mock env variables, we skip this test if an override of the Hermes
+    // path has been provided.
+    assumeTrue(System.getenv("REACT_NATIVE_OVERRIDE_HERMES_DIR") == null)
+
     tempFolder.newFolder("node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/")
     val expected =
         tempFolder.newFile(
