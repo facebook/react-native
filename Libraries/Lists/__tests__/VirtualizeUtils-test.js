@@ -65,8 +65,20 @@ describe('elementsThatOverlapOffsets', function () {
       elementsThatOverlapOffsets(offsets, frames.length, ii => frames[ii], 1),
     ).toEqual([1, 1, 3]);
   });
+  it('handles frame boundaries', function () {
+    const offsets = [0, 100, 200, 300];
+    function getFrameMetrics(index: number) {
+      return {
+        length: 100,
+        offset: 100 * index,
+      };
+    }
+    expect(
+      elementsThatOverlapOffsets(offsets, 100, getFrameMetrics, 1),
+    ).toEqual([0, 0, 1, 2]);
+  });
   it('handles out of bounds', function () {
-    const offsets = [150, 900];
+    const offsets = [-100, 150, 900];
     const frames = [
       {offset: 0, length: 50},
       {offset: 50, length: 150},
@@ -74,17 +86,6 @@ describe('elementsThatOverlapOffsets', function () {
     ];
     expect(
       elementsThatOverlapOffsets(offsets, frames.length, ii => frames[ii], 1),
-    ).toEqual([1]);
-  });
-  it('errors on non-increasing offsets', function () {
-    const offsets = [150, 50];
-    const frames = [
-      {offset: 0, length: 50},
-      {offset: 50, length: 150},
-      {offset: 250, length: 100},
-    ];
-    expect(() => {
-      elementsThatOverlapOffsets(offsets, frames.length, ii => frames[ii], 1);
-    }).toThrowErrorMatchingSnapshot();
+    ).toEqual([undefined, 1]);
   });
 });

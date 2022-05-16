@@ -27,27 +27,36 @@ export function elementsThatOverlapOffsets(
   },
   zoomScale: number = 1,
 ): Array<number> {
-  const out = [];
-  let outLength = 0;
-  for (let ii = 0; ii < itemCount; ii++) {
-    const frame = getFrameMetrics(ii);
-    const trailingOffset = (frame.offset + frame.length) * zoomScale;
-    for (let kk = 0; kk < offsets.length; kk++) {
-      if (out[kk] == null && trailingOffset >= offsets[kk]) {
-        out[kk] = ii;
-        outLength++;
-        if (kk === offsets.length - 1) {
-          invariant(
-            outLength === offsets.length,
-            'bad offsets input, should be in increasing order: %s',
-            JSON.stringify(offsets),
-          );
-          return out;
-        }
+  const result = [];
+  for (let offsetIndex = 0; offsetIndex < offsets.length; offsetIndex++) {
+    const currentOffset = offsets[offsetIndex];
+    let left = 0;
+    let right = itemCount - 1;
+
+    while (left <= right) {
+      // eslint-disable-next-line no-bitwise
+      const mid = left + ((right - left) >>> 1);
+      const frame = getFrameMetrics(mid);
+      const scaledOffsetStart = frame.offset * zoomScale;
+      const scaledOffsetEnd = (frame.offset + frame.length) * zoomScale;
+
+      // We want the first frame that contains the offset, with inclusive bounds. Thus, for the
+      // first frame the scaledOffsetStart is inclusive, while for other frames it is exclusive.
+      if (
+        (mid === 0 && currentOffset < scaledOffsetStart) ||
+        (mid !== 0 && currentOffset <= scaledOffsetStart)
+      ) {
+        right = mid - 1;
+      } else if (currentOffset > scaledOffsetEnd) {
+        left = mid + 1;
+      } else {
+        result[offsetIndex] = mid;
+        break;
       }
     }
   }
-  return out;
+
+  return result;
 }
 
 /**
