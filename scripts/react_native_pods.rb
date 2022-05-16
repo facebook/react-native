@@ -409,10 +409,21 @@ def get_react_codegen_script_phases(options={})
   app_package_path = File.join(app_path, 'package.json')
   app_codegen_config = get_codegen_config_from_file(app_package_path, config_key)
   file_list = []
-  app_codegen_config['libraries'].each do |library|
-    library_dir = File.join(app_path, library['jsSrcsDir'])
-    file_list.concat (`find #{library_dir} -type f \\( -name "Native*.js" -or -name "*NativeComponent.js" \\)`.split("\n").sort)
+
+  if app_codegen_config['libraries'] then
+    Pod::UI.warn '[Deprecated] You are using the old `libraries` array to list all your codegen.\nThis method will be removed in the future.\nUpdate your `package.json` with a single object.'
+    app_codegen_config['libraries'].each do |library|
+      library_dir = File.join(app_path, library['jsSrcsDir'])
+      file_list.concat (`find #{library_dir} -type f \\( -name "Native*.js" -or -name "*NativeComponent.js" \\)`.split("\n").sort)
+    end
+  elsif app_codegen_config['jsSrcsDir'] then
+    codegen_dir = File.join(app_path, app_codegen_config['jsSrcsDir'])
+    file_list.concat (`find #{codegen_dir} -type f \\( -name "Native*.js" -or -name "*NativeComponent.js" \\)`.split("\n").sort)
+  else
+    Pod::UI.warn '[Error] Codegen not properly configured. Please add the `codegenConf` entry to your `package.json`'
+    exit 1
   end
+
   input_files = file_list.map { |filename| "${PODS_ROOT}/../#{Pathname.new(filename).realpath().relative_path_from(Pod::Config.instance.installation_root)}" }
 
   # Add a script phase to trigger generate artifact.

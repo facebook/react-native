@@ -66,7 +66,7 @@ rn_library(
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.playground",
     ],
-    native_component_spec_name = "MyNativeViewSpec",
+    native_component_spec_name = "AppSpecs",
     skip_processors = True,
     visibility = ["PUBLIC"],
     deps = [
@@ -318,7 +318,7 @@ rn_xplat_cxx_library2(
     reexport_all_header_dependencies = False,
     visibility = ["PUBLIC"],
     deps = [
-        ":generated_components-MyNativeViewSpec",
+        ":generated_components-AppSpecs",
         "//xplat/js/react-native-github:RCTFabricComponentViewsBase",
     ],
 )

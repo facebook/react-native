@@ -15,8 +15,6 @@ import {useState, useEffect} from 'react';
 import {Text} from 'react-native';
 import {add} from '../../../library/src/NativeCalculator';
 
-console.log(add);
-
 const MyCalc = () => {
   const [result, setResult] = useState<number | null>(null);
   useEffect(() => {

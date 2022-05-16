@@ -6,7 +6,7 @@
  */
 
 #import "RNCalculator.h"
-#import "RNLibrarySpec.h"
+#import "AppSpecs.h"
 
 @implementation RNCalculator
 

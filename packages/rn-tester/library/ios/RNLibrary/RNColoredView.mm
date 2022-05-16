@@ -7,10 +7,10 @@
 
 #import "RNColoredView.h"
 
-#import <react/renderer/components/RNLibrarySpec/ComponentDescriptors.h>
-#import <react/renderer/components/RNLibrarySpec/EventEmitters.h>
-#import <react/renderer/components/RNLibrarySpec/Props.h>
-#import <react/renderer/components/RNLibrarySpec/RCTComponentViewHelpers.h>
+#import <react/renderer/components/AppSpecs/ComponentDescriptors.h>
+#import <react/renderer/components/AppSpecs/EventEmitters.h>
+#import <react/renderer/components/AppSpecs/Props.h>
+#import <react/renderer/components/AppSpecs/RCTComponentViewHelpers.h>
 
 #import "RCTFabricComponentsPlugins.h"
 

@@ -10,6 +10,48 @@
 
 'use-strict';
 
+const SINGLE_LIBRARY_CODEGEN_CONFIG = {
+  codegenConfig: {
+    libraries: [
+      {
+        name: 'react-native',
+        type: 'all',
+        jsSrcsDir: '.',
+      },
+    ],
+  },
+};
+
+const MULTIPLE_LIBRARIES_CODEGEN_CONFIG = {
+  codegenConfig: {
+    libraries: [
+      {
+        name: 'react-native',
+        type: 'all',
+        jsSrcsDir: '.',
+      },
+      {
+        name: 'my-component',
+        type: 'components',
+        jsSrcsDir: 'component/js',
+      },
+      {
+        name: 'my-module',
+        type: 'module',
+        jsSrcsDir: 'module/js',
+      },
+    ],
+  },
+};
+
+const NO_LIBRARIES_CONFIG_FILE = {
+  codegenConfig: {
+    name: 'AppModules',
+    type: 'all',
+    jsSrcsDir: '.',
+  },
+};
+
 const SCHEMA_TEXT = `
     {
   "modules": {
@@ -84,4 +126,7 @@ const SCHEMA = JSON.parse(SCHEMA_TEXT);
 module.exports = {
   schemaText: SCHEMA_TEXT,
   schema: SCHEMA,
+  noLibrariesConfigFile: NO_LIBRARIES_CONFIG_FILE,
+  singleLibraryCodegenConfig: SINGLE_LIBRARY_CODEGEN_CONFIG,
+  multipleLibrariesCodegenConfig: MULTIPLE_LIBRARIES_CODEGEN_CONFIG,
 };
