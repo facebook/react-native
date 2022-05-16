@@ -457,6 +457,11 @@ jobs:
                       name: Generate RNTesterPods Workspace
                       command: cd packages/rn-tester && bundle exec pod install --verbose
 
+      - persist_to_workspace:
+          root: .
+          paths:
+           - packages/rn-tester/Pods
+
   # -------------------------
   #     JOBS: iOS Unit Tests
   # -------------------------
@@ -478,6 +483,8 @@ jobs:
       - REPORTS_DIR: "./reports/junit"
     steps:
       - checkout
+      - attach_workspace:
+          at: .
       - setup_artifacts
       - setup_ruby
       - run:
@@ -524,17 +531,6 @@ jobs:
           name: Set BUILD_HERMES_SOURCE=1
           command: echo "export BUILD_HERMES_SOURCE=1" >> $BASH_ENV
 
-      - run:
-          name: Setup the CocoaPods environment
-          command: bundle exec pod setup
-
-      - with_hermes_sdk_cache_span:
-          steps:
-            - with_rntester_pods_cache_span:
-                steps:
-                  - run:
-                      name: Generate RNTesterPods Workspace
-                      command: cd packages/rn-tester && bundle exec pod install --verbose
 
       # -------------------------
       # Runs iOS unit tests
