@@ -1,4 +1,4 @@
-name: Upgrade - Build Regression
+name: ⬆️ Upgrade - Build Regression
 description: If you are upgrading to a new React Native version (stable or pre-release) and encounter a build regression.
 labels: ["Needs: Triage :mag:", "Type: Upgrade Issue"]
 body:
