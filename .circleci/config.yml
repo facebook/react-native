@@ -461,6 +461,8 @@ jobs:
           root: .
           paths:
            - packages/rn-tester/Pods
+           - RNTesterPods.xcodeproj
+           - RNTesterPods.xcworkspace
 
   # -------------------------
   #     JOBS: iOS Unit Tests
