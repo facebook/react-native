@@ -53,7 +53,7 @@
    .option('S', { // [TODO(macOS GH#1148): Remove this option once version bumping scripts have been refactored
      alias: 'skip-update-ruby',
      type: 'boolean',
-     default: false // ]TODO(macOS GH#1148)
+     default: false, // ]TODO(macOS GH#1148)
    }).argv;
 
  const autogenerateVersionNumber = argv.autogenerateVersionNumber;
