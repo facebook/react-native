@@ -32,6 +32,12 @@ export type FeatureFlags = {|
    * Enables an experimental flush-queue debouncing in Animated.js.
    */
   animatedShouldDebounceQueueFlush: () => boolean,
+  /**
+   * Enables an experimental mega-operation for Animated.js that replaces
+   * many calls to native with a single call into native, to reduce JSI/JNI
+   * traffic.
+   */
+  animatedShouldUseSingleOp: () => boolean,
 |};
 
 const ReactNativeFeatureFlags: FeatureFlags = {
@@ -39,6 +45,7 @@ const ReactNativeFeatureFlags: FeatureFlags = {
   shouldEmitW3CPointerEvents: () => false,
   shouldPressibilityUseW3CPointerEventsForHover: () => false,
   animatedShouldDebounceQueueFlush: () => false,
+  animatedShouldUseSingleOp: () => false,
 };
 
 module.exports = ReactNativeFeatureFlags;
