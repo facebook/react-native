@@ -103,6 +103,18 @@ executors:
 # -------------------------
 commands:
 
+  checkout_code:
+    - restore_cache:
+          keys:
+            - repo-source-{{ .Branch }}-{{ .Revision }}
+            - repo-source-{{ .Branch }}-
+            - repo-source-
+    - checkout
+    - save_cache:
+        key: repo-source-{{ .Branch }}-{{ .Revision }}
+        paths:
+          - ".git"
+
   setup_artifacts:
     steps:
       - run:
@@ -287,7 +299,7 @@ jobs:
   analyze_pr:
     executor: reactnativeandroid
     steps:
-      - checkout
+      - checkout_code
       - run_yarn
 
       - install_github_bot_deps
@@ -322,7 +334,7 @@ jobs:
   analyze_code:
     executor: reactnativeandroid
     steps:
-      - checkout
+      - checkout_code
       - setup_artifacts
       - run_yarn
 
@@ -374,7 +386,7 @@ jobs:
         default: false
     executor: << parameters.executor >>
     steps:
-      - checkout
+      - checkout_code
       - setup_artifacts
       - run_yarn
       - run:
@@ -409,7 +421,7 @@ jobs:
         type: boolean
         default: false
     steps:
-      - checkout
+      - checkout_code
       - setup_ruby
       - run_yarn
 
@@ -477,7 +489,7 @@ jobs:
     environment:
       - REPORTS_DIR: "./reports/junit"
     steps:
-      - checkout
+      - checkout_code
       - setup_artifacts
       - setup_ruby
       - run:
@@ -582,7 +594,7 @@ jobs:
     environment:
       KOTLIN_HOME=third-party/kotlin
     steps:
-      - checkout
+      - checkout_code
       - setup_artifacts
       - run_yarn
 
@@ -687,7 +699,7 @@ jobs:
   test_android_template:
     executor: reactnativeandroid
     steps:
-      - checkout
+      - checkout_code
       - run_yarn
       - attach_workspace:
           at: .
@@ -715,7 +727,7 @@ jobs:
       - PROJECT_NAME: "iOSTemplateProject"
 
     steps:
-      - checkout
+      - checkout_code
       - run_yarn
       - attach_workspace:
           at: .
@@ -745,7 +757,7 @@ jobs:
   test_ios_rntester:
     executor: reactnativeios
     steps:
-      - checkout
+      - checkout_code
       - run_yarn
 
       # The macOS machine can run out of storage if Hermes is enabled and built from source.
@@ -800,7 +812,7 @@ jobs:
       - ANDROID_TOOLS_VERSION: 31.0.0
       - GRADLE_OPTS: -Dorg.gradle.daemon=false
     steps:
-      - checkout
+      - checkout_code
 
       - run:
           name: Install Node
@@ -878,7 +890,7 @@ jobs:
       - CI_BUILD_NUMBER: $CIRCLE_BUILD_NUM
       - CI_BUILD_URL: $CIRCLE_BUILD_URL
     steps:
-      - checkout
+      - checkout_code
       - setup_artifacts
       - run_yarn
       - run:
@@ -909,7 +921,7 @@ jobs:
             curl -sL https://deb.nodesource.com/setup_16.x | bash -
             apt install -y nodejs
             npm install --global yarn
-      - checkout
+      - checkout_code
       - run_yarn
       - run:
           name: Set up Hermes workspace and caching
@@ -991,7 +1003,7 @@ jobs:
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
     steps:
-      - checkout
+      - checkout_code
       - *attach_hermes_workspace
       - restore_cache:
           key: *hermes_cache_key
@@ -1115,7 +1127,7 @@ jobs:
         default: false
     executor: reactnativeios
     steps:
-      - checkout
+      - checkout_code
       - run_yarn
       - add_ssh_keys:
           fingerprints:
@@ -1139,7 +1151,7 @@ jobs:
           command: |
             mkdir -p ~/.ssh
             echo '|1|If6MU203eXTaaWL678YEfWkVMrw=|kqLeIAyTy8pzpj8x8Ae4Fr8Mtlc= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
-      - checkout
+      - checkout_code
       - *attach_hermes_workspace
       - run:
           name: Copy HermesC binaries
