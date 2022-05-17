@@ -37,6 +37,7 @@ references:
 
   cache_keys:
     buck_cache_key: &buck_cache_key v3-buck-v2019.01.10.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}}
+    checkout_cache_key: &checkout_cache_key v1-chekcout-{{ arch }}
     gems_cache_key: &gems_cache_key v1-gems-{{ checksum "Gemfile.lock" }}
     gradle_cache_key: &gradle_cache_key v1-gradle-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "ReactAndroid/gradle.properties" }}
     hermes_cache_key: &hermes_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
@@ -104,15 +105,19 @@ executors:
 commands:
 
   checkout_code:
+    parameters:
+      checkout_base_cache_key:
+        default: *checkout_cache_key
+        type: string
     steps:
       - restore_cache:
             keys:
-              - repo-source-{{ .Branch }}-{{ .Revision }}
-              - repo-source-{{ .Branch }}-
-              - repo-source-
+              - << parameters.checkout_base_cache_key >>-{{ .Branch }}-{{ .Revision }}
+              - << parameters.checkout_base_cache_key >>-{{ .Branch }}-
+              - << parameters.checkout_base_cache_key >>
       - checkout
       - save_cache:
-          key: repo-source-{{ .Branch }}-{{ .Revision }}
+          key: << parameters.checkout_base_cache_key >>-{{ .Branch }}-{{ .Revision }}
           paths:
             - ".git"
 
