@@ -37,7 +37,7 @@ references:
 
   cache_keys:
     buck_cache_key: &buck_cache_key v3-buck-v2019.01.10.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}}
-    checkout_cache_key: &checkout_cache_key v1-chekcout-{{ arch }}
+    checkout_cache_key: &checkout_cache_key v1-checkout
     gems_cache_key: &gems_cache_key v1-gems-{{ checksum "Gemfile.lock" }}
     gradle_cache_key: &gradle_cache_key v1-gradle-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "ReactAndroid/gradle.properties" }}
     hermes_cache_key: &hermes_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
@@ -305,7 +305,7 @@ jobs:
   analyze_pr:
     executor: reactnativeandroid
     steps:
-      - checkout_code
+      - checkout
       - run_yarn
 
       - install_github_bot_deps
@@ -340,7 +340,7 @@ jobs:
   analyze_code:
     executor: reactnativeandroid
     steps:
-      - checkout_code
+      - checkout
       - setup_artifacts
       - run_yarn
 
@@ -392,7 +392,7 @@ jobs:
         default: false
     executor: << parameters.executor >>
     steps:
-      - checkout_code
+      - checkout
       - setup_artifacts
       - run_yarn
       - run:
@@ -733,7 +733,7 @@ jobs:
       - PROJECT_NAME: "iOSTemplateProject"
 
     steps:
-      - checkout_code
+      - checkout_code_with_cache
       - run_yarn
       - attach_workspace:
           at: .
@@ -763,7 +763,7 @@ jobs:
   test_ios_rntester:
     executor: reactnativeios
     steps:
-      - checkout_code
+      - checkout_code_with_cache
       - run_yarn
 
       # The macOS machine can run out of storage if Hermes is enabled and built from source.
@@ -818,7 +818,7 @@ jobs:
       - ANDROID_TOOLS_VERSION: 31.0.0
       - GRADLE_OPTS: -Dorg.gradle.daemon=false
     steps:
-      - checkout_code
+      - checkout_code_with_cache
 
       - run:
           name: Install Node
@@ -896,7 +896,7 @@ jobs:
       - CI_BUILD_NUMBER: $CIRCLE_BUILD_NUM
       - CI_BUILD_URL: $CIRCLE_BUILD_URL
     steps:
-      - checkout_code
+      - checkout
       - setup_artifacts
       - run_yarn
       - run:
@@ -1133,7 +1133,7 @@ jobs:
         default: false
     executor: reactnativeios
     steps:
-      - checkout_code
+      - checkout_code_with_cache
       - run_yarn
       - add_ssh_keys:
           fingerprints:
