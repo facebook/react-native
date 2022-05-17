@@ -114,7 +114,7 @@
     "pretty-format": "^26.5.2",
     "promise": "^8.0.3",
     "prop-types": "^15.7.2",
-    "react-devtools-core": "4.20.0",
+    "react-devtools-core": "4.20.1",
     "react-native-codegen": "^0.0.7",
     "react-refresh": "^0.4.0",
     "regenerator-runtime": "^0.13.2",
