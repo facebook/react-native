@@ -28,12 +28,17 @@ export type FeatureFlags = {|
    * for its hover callbacks
    */
   shouldPressibilityUseW3CPointerEventsForHover: () => boolean,
+  /**
+   * Enables an experimental flush-queue debouncing in Animated.js.
+   */
+  animatedShouldDebounceQueueFlush: () => boolean,
 |};
 
 const ReactNativeFeatureFlags: FeatureFlags = {
   isLayoutAnimationEnabled: () => true,
   shouldEmitW3CPointerEvents: () => false,
   shouldPressibilityUseW3CPointerEventsForHover: () => false,
+  animatedShouldDebounceQueueFlush: () => false,
 };
 
 module.exports = ReactNativeFeatureFlags;

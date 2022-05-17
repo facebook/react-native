@@ -20,6 +20,7 @@ import type {
 } from './NativeAnimatedModule';
 import type {AnimationConfig, EndCallback} from './animations/Animation';
 import type {InterpolationConfigType} from './nodes/AnimatedInterpolation';
+import ReactNativeFeatureFlags from '../ReactNative/ReactNativeFeatureFlags';
 import invariant from 'invariant';
 
 // TODO T69437152 @petetheheat - Delete this fork when Fabric ships to 100%.
@@ -36,6 +37,8 @@ let nativeEventEmitter;
 let waitingForQueuedOperations = new Set();
 let queueOperations = false;
 let queue: Array<() => void> = [];
+
+let flushQueueTimeout = null;
 
 /**
  * Simple wrappers around NativeAnimatedModule to provide flow and autocomplete support for
@@ -54,6 +57,12 @@ const API = {
   setWaitingForIdentifier: function (id: string): void {
     waitingForQueuedOperations.add(id);
     queueOperations = true;
+    if (
+      ReactNativeFeatureFlags.animatedShouldDebounceQueueFlush() &&
+      flushQueueTimeout
+    ) {
+      clearTimeout(flushQueueTimeout);
+    }
   },
   unsetWaitingForIdentifier: function (id: string): void {
     waitingForQueuedOperations.delete(id);
@@ -66,15 +75,23 @@ const API = {
   disableQueue: function (): void {
     invariant(NativeAnimatedModule, 'Native animated module is not available');
 
+    if (ReactNativeFeatureFlags.animatedShouldDebounceQueueFlush()) {
+      clearTimeout(flushQueueTimeout);
+      flushQueueTimeout = setTimeout(API.flushQueue, 1);
+    } else {
+      API.flushQueue();
+    }
+  },
+  flushQueue: function (): void {
     if (Platform.OS === 'android') {
-      NativeAnimatedModule.startOperationBatch();
+      NativeAnimatedModule?.startOperationBatch?.();
     }
     for (let q = 0, l = queue.length; q < l; q++) {
       queue[q]();
     }
     queue.length = 0;
     if (Platform.OS === 'android') {
-      NativeAnimatedModule.finishOperationBatch();
+      NativeAnimatedModule?.finishOperationBatch?.();
     }
   },
   queueOperation: (fn: () => void): void => {
