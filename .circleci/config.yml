@@ -427,7 +427,7 @@ jobs:
         type: boolean
         default: false
     steps:
-      - checkout_code
+      - checkout_code_with_cache
       - setup_ruby
       - run_yarn
 
@@ -495,7 +495,7 @@ jobs:
     environment:
       - REPORTS_DIR: "./reports/junit"
     steps:
-      - checkout_code
+      - checkout_code_with_cache
       - setup_artifacts
       - setup_ruby
       - run:
