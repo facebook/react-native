@@ -144,7 +144,7 @@ def hermesFlagsForVariant = config.hermesFlagsForVariant ?: {
             hermesFlags = config.hermesFlagsRelease
             if (hermesFlags == null) hermesFlags = ["-O", "-output-source-map"]
         } else {
-            hermesFlags = config.hermesFlagsDebug
+            hermesFlags = config."hermesFlags${targetName}"
             if (hermesFlags == null) hermesFlags = []
         }
         return hermesFlags
