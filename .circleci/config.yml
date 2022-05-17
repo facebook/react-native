@@ -555,14 +555,23 @@ jobs:
 
       # Build and compile
       - run:
-          name: Build Android App
+          name: Build & Test React Native using Buck
           command: |
             buck build ReactAndroid/src/main/java/com/facebook/react
             buck build ReactAndroid/src/main/java/com/facebook/react/shell
+
+      - run:
+          name: Build & Test React Native using Gradle
+          command: ./gradlew buildAll
+
       - run:
           name: Compile Native Libs for Unit and Integration Tests
           command: ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=$BUILD_THREADS
           no_output_timeout: 30m
+
+      - run:
+          name: Build RN Tester for Release using Gradle
+          command: ./gradlew packages:rn-tester:android:app:assembleRelease
 
       # Build JavaScript Bundle for instrumentation tests
       - run:
@@ -574,17 +583,13 @@ jobs:
           name: Wait for Android Virtual Device
           command: source scripts/android-setup.sh && waitForAVD
 
-      - run:
-          name: Assemble RNTester App
-          command: ./gradlew packages:rn-tester:android:app:assembleRelease
-
       # -------------------------
       # Run Android tests
       - run:
-          name: "Run Tests: Android Unit Tests"
+          name: Run Tests - Android Unit Tests with Buck
           command: buck test ReactAndroid/src/test/... --config build.threads=$BUILD_THREADS --xml ./reports/buck/all-results-raw.xml
       - run:
-          name: "Build Tests: Android Instrumentation Tests"
+          name: Build Tests - Android Instrumentation Tests with Buck
           # Here, just build the instrumentation tests. There is a known issue with installing the APK to android-21+ emulator.
           command: |
             if [[ ! -e ReactAndroid/src/androidTest/assets/AndroidTestBundle.js ]]; then
@@ -642,23 +647,6 @@ jobs:
       - run:
           name: Build the template application
           command: cd template/android/ && ./gradlew assembleDebug
-
-  # -------------------------
-  #    JOBS: Test Android RNTester
-  # -------------------------
-  test_android_rntester:
-    executor: reactnativeandroid
-    steps:
-      - checkout
-      - run_yarn
-
-      - run:
-          name: Generate artifacts for Maven
-          command: ./gradlew :ReactAndroid:installArchives
-
-      - run:
-          name: Assemble RNTester
-          command: ./gradlew :packages:rn-tester:android:app:assembleDebug
 
   # -------------------------
   #    JOBS: Test iOS Template
@@ -1246,7 +1234,6 @@ workflows:
       - test_android_template:
           requires:
             - build_npm_package
-      - test_android_rntester
       - test_ios_template:
           requires:
             - build_npm_package

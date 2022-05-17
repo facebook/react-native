@@ -14,7 +14,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:7.1.1")
+        classpath("com.android.tools.build:gradle:7.2.0")
         classpath("de.undercouch:gradle-download-task:5.0.1")
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -54,4 +54,15 @@ tasks.register("cleanAll", Delete::class.java) {
     delete(rootProject.file("./ReactAndroid/src/main/jni/prebuilt/lib/x86_64/"))
     delete(rootProject.file("./packages/react-native-codegen/lib"))
     delete(rootProject.file("./packages/rn-tester/android/app/.cxx"))
+}
+
+tasks.register("buildAll") {
+    description = "Build and test all the React Native relevant projects."
+    dependsOn(gradle.includedBuild("react-native-gradle-plugin").task(":build"))
+    // This builds both the React Native framework for both debug and release
+    dependsOn(":ReactAndroid:assemble")
+    // This creates all the Maven artifacts and makes them available in the /android folder
+    dependsOn(":ReactAndroid:installArchives")
+    // This builds RN Tester for Hermes/JSC for debug only
+    dependsOn(":packages:rn-tester:android:app:assembleDebug")
 }

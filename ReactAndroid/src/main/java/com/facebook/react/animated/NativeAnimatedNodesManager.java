@@ -76,36 +76,27 @@ import java.util.Queue;
 
   /**
    * Initialize event listeners for Fabric UIManager or non-Fabric UIManager, exactly once. Once
-   * Fabric is the only UIManager, this logic can be simplified. This is only called on the JS
-   * thread.
+   * Fabric is the only UIManager, this logic can be simplified. This is expected to only be called
+   * from the native module thread.
    *
    * @param uiManagerType
    */
-  @UiThread
   public void initializeEventListenerForUIManagerType(@UIManagerType final int uiManagerType) {
-    if ((uiManagerType == UIManagerType.FABRIC && mEventListenerInitializedForFabric)
-        || (uiManagerType == UIManagerType.DEFAULT && mEventListenerInitializedForNonFabric)) {
+    if (uiManagerType == UIManagerType.FABRIC
+        ? mEventListenerInitializedForFabric
+        : mEventListenerInitializedForNonFabric) {
       return;
     }
 
-    final NativeAnimatedNodesManager self = this;
-    mReactApplicationContext.runOnUiQueueThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            UIManager uiManager =
-                UIManagerHelper.getUIManager(mReactApplicationContext, uiManagerType);
-            if (uiManager != null) {
-              uiManager.<EventDispatcher>getEventDispatcher().addListener(self);
-
-              if (uiManagerType == UIManagerType.FABRIC) {
-                mEventListenerInitializedForFabric = true;
-              } else {
-                mEventListenerInitializedForNonFabric = true;
-              }
-            }
-          }
-        });
+    UIManager uiManager = UIManagerHelper.getUIManager(mReactApplicationContext, uiManagerType);
+    if (uiManager != null) {
+      uiManager.<EventDispatcher>getEventDispatcher().addListener(this);
+      if (uiManagerType == UIManagerType.FABRIC) {
+        mEventListenerInitializedForFabric = true;
+      } else {
+        mEventListenerInitializedForNonFabric = true;
+      }
+    }
   }
 
   /*package*/ @Nullable
@@ -524,7 +515,6 @@ import java.util.Queue;
     }
   }
 
-  @UiThread
   @Override
   public void onEventDispatch(final Event event) {
     // Events can be dispatched from any thread so we have to make sure handleEvent is run from the
