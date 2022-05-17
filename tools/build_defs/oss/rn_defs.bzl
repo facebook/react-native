@@ -80,7 +80,7 @@ def get_react_native_preprocessor_flags():
     return []
 
 # Building is not supported in OSS right now
-def rn_xplat_cxx_library(name, compiler_flags_enable_exceptions = True, compiler_flags_enable_rtti = True, **kwargs):
+def rn_xplat_cxx_library(name, compiler_flags_enable_exceptions = False, compiler_flags_enable_rtti = False, **kwargs):
     visibility = kwargs.get("visibility", [])
     kwargs = {
         k: v
@@ -97,17 +97,31 @@ def rn_xplat_cxx_library(name, compiler_flags_enable_exceptions = True, compiler
     # or being overridden in compiler_flags, it's very likely that the flag is set
     # app-wide or that we're otherwise in some special mode.
     kwargs["compiler_flags"] = kwargs.get("compiler_flags", [])
+    kwargs["fbobjc_compiler_flags"] = kwargs.get("fbobjc_compiler_flags", [])
+    kwargs["fbandroid_compiler_flags"] = kwargs.get("fbandroid_compiler_flags", [])
+    kwargs["windows_compiler_flags"] = kwargs.get("windows_compiler_flags", [])
     kwargs["compiler_flags"] = ["-std=c++17"] + kwargs["compiler_flags"]
     kwargs["compiler_flags"] = ["-Wall"] + kwargs["compiler_flags"]
     kwargs["compiler_flags"] = ["-Werror"] + kwargs["compiler_flags"]
+
+    # RTTI and exceptions allowed for ObjC/iOS, macos, Windows unconditionally for now
+    kwargs["fbobjc_compiler_flags"] = ["-fexceptions"] + kwargs["fbobjc_compiler_flags"]
+    kwargs["windows_compiler_flags"] = ["-fno-exceptions"] + kwargs["windows_compiler_flags"]
+    kwargs["fbobjc_compiler_flags"] = ["-frtti"] + kwargs["fbobjc_compiler_flags"]
+    kwargs["windows_compiler_flags"] = ["-frtti"] + kwargs["windows_compiler_flags"]
+
+    # For now, we allow turning off RTTI and exceptions for android builds only
     if compiler_flags_enable_exceptions:
-        kwargs["compiler_flags"] = ["-fexceptions"] + kwargs["compiler_flags"]
+        kwargs["fbandroid_compiler_flags"] = ["-fexceptions"] + kwargs["fbandroid_compiler_flags"]
     else:
-        kwargs["compiler_flags"] = ["-fno-exceptions"] + kwargs["compiler_flags"]
+        # TODO: fbjni currently DOES NOT WORK with -fno-exceptions, which breaks MOST RN Android modules
+        kwargs["fbandroid_compiler_flags"] = ["-fexceptions"] + kwargs["fbandroid_compiler_flags"]
+        #kwargs["fbandroid_compiler_flags"] = ["-fno-exceptions"] + kwargs["fbandroid_compiler_flags"]
+
     if compiler_flags_enable_rtti:
-        kwargs["compiler_flags"] = ["-frtti"] + kwargs["compiler_flags"]
+        kwargs["fbandroid_compiler_flags"] = ["-frtti"] + kwargs["fbandroid_compiler_flags"]
     else:
-        kwargs["compiler_flags"] = ["-fno-rtti"] + kwargs["compiler_flags"]
+        kwargs["fbandroid_compiler_flags"] = ["-fno-rtti"] + kwargs["fbandroid_compiler_flags"]
 
     native.cxx_library(
         name = name,
