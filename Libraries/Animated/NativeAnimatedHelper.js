@@ -116,14 +116,6 @@ const API = {
   flushQueue: function (): void {
     flushQueueTimeout = null;
 
-    // Early returns before calling any APIs
-    if (useSingleOpBatching && singleOpQueue.length === 0) {
-      return;
-    }
-    if (!useSingleOpBatching && queue.length === 0) {
-      return;
-    }
-
     if (Platform.OS === 'android') {
       NativeAnimatedModule?.startOperationBatch?.();
     }
