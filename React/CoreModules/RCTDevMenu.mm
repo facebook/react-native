@@ -382,7 +382,7 @@ RCT_EXPORT_MODULE()
                                                     [weakSelf setDefaultJSBundle];
                                                     return;
                                                   }
-                                                  NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+                                                  NSNumberFormatter *formatter = [NSNumberFormatter new];
                                                   formatter.numberStyle = NSNumberFormatterDecimalStyle;
                                                   NSNumber *portNumber =
                                                       [formatter numberFromString:portTextField.text];

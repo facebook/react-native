@@ -363,9 +363,11 @@ task installArchives {
 
 android {
     compileSdkVersion 30
-    ndkVersion ANDROID_NDK_VERSION
-    if (ANDROID_NDK_PATH != null) {
-        ndkPath ANDROID_NDK_PATH
+    if (project.hasProperty("ANDROID_NDK_VERSION")) {
+        ndkVersion project.property("ANDROID_NDK_VERSION")
+    }
+    if (project.hasProperty("ANDROID_NDK_PATH")) {
+        ndkPath project.property("ANDROID_NDK_PATH")
     }
 
     defaultConfig {
@@ -458,7 +460,10 @@ react {
     libraryName = "rncore"
     jsRootDir = file("../Libraries")
     reactRoot = file("$projectDir/..")
-    useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET") ?: false
+    useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET")?.toBoolean() ?: false
+    // We search for the codegen in either one of the `node_modules` folder or in the
+    // root packages folder (that's for when we build from source without calling `yarn install`).
+    codegenDir = file(findNodeModulePath(projectDir, "react-native-codegen") ?: "../packages/react-native-codegen/")
 }
 
 afterEvaluate {

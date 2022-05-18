@@ -310,10 +310,10 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedSt
   static UIImage *placeholderImage;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    placeholderImage = [[UIImage alloc] init];
+    placeholderImage = [UIImage new];
   });
 
-  NSMutableAttributedString *nsAttributedString = [[NSMutableAttributedString alloc] init];
+  NSMutableAttributedString *nsAttributedString = [NSMutableAttributedString new];
 
   [nsAttributedString beginEditing];
 

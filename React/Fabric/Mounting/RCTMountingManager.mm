@@ -155,7 +155,7 @@ static void RCTPerformMountInstructions(
 - (instancetype)init
 {
   if (self = [super init]) {
-    _componentViewRegistry = [[RCTComponentViewRegistry alloc] init];
+    _componentViewRegistry = [RCTComponentViewRegistry new];
   }
 
   return self;

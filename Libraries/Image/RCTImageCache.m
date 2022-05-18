@@ -40,7 +40,7 @@ static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat sc
     _decodedImageCache = [NSCache new];
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
     _decodedImageCache.totalCostLimit = 20 * 1024 * 1024; // 20 MB
-    _cacheStaleTimes = [[NSMutableDictionary alloc] init];
+    _cacheStaleTimes = [NSMutableDictionary new];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(clearCache)
@@ -155,7 +155,7 @@ static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat sc
   static NSDateFormatter *formatter;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    formatter = [[NSDateFormatter alloc] init];
+    formatter = [NSDateFormatter new];
     formatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
     formatter.dateFormat = @"EEE',' dd MMM yyyy HH':'mm':'ss 'GMT'";
     formatter.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];

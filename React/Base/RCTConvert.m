@@ -928,7 +928,7 @@ static RCTUIColor *RCTColorFromSemanticColorName(NSString *semanticColorName)
  */
 static NSString *RCTSemanticColorNames()
 {
-  NSMutableString *names = [[NSMutableString alloc] init];
+  NSMutableString *names = [NSMutableString new];
   NSDictionary<NSString *, NSDictionary *> *colorMap = RCTSemanticColorsMap();
   NSArray *allKeys = [[[colorMap allKeys] mutableCopy] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
 

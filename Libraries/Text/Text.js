@@ -18,7 +18,6 @@ import {NativeText, NativeVirtualText} from './TextNativeComponent';
 import {type TextProps} from './TextProps';
 import * as React from 'react';
 import {useContext, useMemo, useState} from 'react';
-import invariant from 'invariant';
 
 /**
  * Text is the fundamental component for displaying text.

@@ -110,7 +110,6 @@ class PanResponderExample extends React.Component<Props, State> {
             }}
             style={[
               styles.circle,
-              // $FlowFixMe[incompatible-type]
               {
                 transform: [
                   {translateX: this.state.left},

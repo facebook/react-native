@@ -89,12 +89,12 @@ using namespace facebook::react;
 
 #pragma mark - Life-cycle management
 
-- (BOOL)start
+- (void)start
 {
   std::lock_guard<std::mutex> lock(_surfaceMutex);
 
   if (_surfaceHandler->getStatus() != SurfaceHandler::Status::Registered) {
-    return NO;
+    return;
   }
 
   // We need to register a root view component here synchronously because right after
@@ -108,15 +108,14 @@ using namespace facebook::react;
   [self _propagateStageChange];
 
   [_surfacePresenter setupAnimationDriverWithSurfaceHandler:*_surfaceHandler];
-  return YES;
 }
 
-- (BOOL)stop
+- (void)stop
 {
   std::lock_guard<std::mutex> lock(_surfaceMutex);
 
   if (_surfaceHandler->getStatus() != SurfaceHandler::Status::Running) {
-    return NO;
+    return;
   }
 
   _surfaceHandler->stop();
@@ -126,8 +125,6 @@ using namespace facebook::react;
     [self->_surfacePresenter.mountingManager detachSurfaceFromView:self.view
                                                          surfaceId:self->_surfaceHandler->getSurfaceId()];
   });
-
-  return YES;
 }
 
 #pragma mark - Immutable Properties (no need to enforce synchronization)

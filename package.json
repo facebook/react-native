@@ -215,5 +215,25 @@
   "_justification": {
     "async": "Versions of async prior to 3.2.2 are vulnerable to prototype pollution",
     "es5-ext": "Packages after 0.10.54 and at the moment up until 0.10.59 contain a protest message. A policy prevents us from using packages with protestware, therefore downgrading to the latest release without the message."
+  },
+  "codegenConfig": {
+    "libraries": [
+      {
+        "name": "FBReactNativeSpec",
+        "ios": {
+          "_outputDir": "React/FBReactNativeSpec"
+        },
+        "android": {},
+        "jsSrcsDir": "Libraries"
+      },
+      {
+        "name": "rncore",
+        "ios": {
+          "_outputDir": "ReactCommon"
+        },
+        "android": {},
+        "jsSrcsDir": "Libraries"
+      }
+    ]
   }
 }

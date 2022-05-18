@@ -69,7 +69,7 @@
   NSMutableArray<RCTGIFCoderFrame *> *frames = [NSMutableArray array];
 
   for (size_t i = 0; i < frameCount; i++) {
-    RCTGIFCoderFrame *frame = [[RCTGIFCoderFrame alloc] init];
+    RCTGIFCoderFrame *frame = [RCTGIFCoderFrame new];
     frame.index = i;
     frame.duration = [self frameDurationAtIndex:i source:imageSource];
     [frames addObject:frame];

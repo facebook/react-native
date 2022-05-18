@@ -105,16 +105,16 @@ def rn_xplat_cxx_library(name, compiler_flags_enable_exceptions = False, compile
 
     # For now, we allow turning off RTTI and exceptions for android builds only
     if compiler_flags_enable_exceptions:
-        kwargs["compiler_flags"] = ["-fexceptions"] + kwargs["fbandroid_compiler_flags"]
+        kwargs["compiler_flags"] = ["-fexceptions"] + kwargs["compiler_flags"]
     else:
         # TODO: fbjni currently DOES NOT WORK with -fno-exceptions, which breaks MOST RN Android modules
-        kwargs["compiler_flags"] = ["-fexceptions"] + kwargs["fbandroid_compiler_flags"]
-        kwargs["compiler_flags"] = ["-fno-exceptions"] + kwargs["fbandroid_compiler_flags"]
+        kwargs["compiler_flags"] = ["-fexceptions"] + kwargs["compiler_flags"]
+        kwargs["compiler_flags"] = ["-fno-exceptions"] + kwargs["compiler_flags"]
 
     if compiler_flags_enable_rtti:
-        kwargs["compiler_flags"] = ["-frtti"] + kwargs["fbandroid_compiler_flags"]
+        kwargs["compiler_flags"] = ["-frtti"] + kwargs["compiler_flags"]
     else:
-        kwargs["compiler_flags"] = ["-fno-rtti"] + kwargs["fbandroid_compiler_flags"]
+        kwargs["compiler_flags"] = ["-fno-rtti"] + kwargs["compiler_flags"]
 
     native.cxx_library(
         name = name,

@@ -418,7 +418,6 @@ const TouchableMixin = {
    * @param {SyntheticEvent} e Synthetic event from event system.
    *
    */
-  // $FlowFixMe[signature-verification-failure]
   touchableHandleResponderGrant: function(e: PressEvent) {
     const dispatchID = e.currentTarget;
     // Since e is used in a callback invoked on another event loop
@@ -460,7 +459,6 @@ const TouchableMixin = {
   /**
    * Place as callback for a DOM element's `onResponderRelease` event.
    */
-  // $FlowFixMe[signature-verification-failure]
   touchableHandleResponderRelease: function(e: PressEvent) {
     this.pressInLocation = null;
     this._receiveSignal(Signals.RESPONDER_RELEASE, e);
@@ -469,7 +467,6 @@ const TouchableMixin = {
   /**
    * Place as callback for a DOM element's `onResponderTerminate` event.
    */
-  // $FlowFixMe[signature-verification-failure]
   touchableHandleResponderTerminate: function(e: PressEvent) {
     this.pressInLocation = null;
     this._receiveSignal(Signals.RESPONDER_TERMINATED, e);
@@ -478,7 +475,6 @@ const TouchableMixin = {
   /**
    * Place as callback for a DOM element's `onResponderMove` event.
    */
-  // $FlowFixMe[signature-verification-failure]
   touchableHandleResponderMove: function(e: PressEvent) {
     // Measurement may not have returned yet.
     if (!this.state.touchable.positionOnActivate) {
@@ -564,7 +560,6 @@ const TouchableMixin = {
    * element that was blurred just prior to this. This can be overridden when
    * using `Touchable.Mixin.withoutDefaultFocusAndBlur`.
    */
-  // $FlowFixMe[signature-verification-failure]
   touchableHandleFocus: function(e: Event) {
     this.props.onFocus && this.props.onFocus(e);
   },
@@ -577,7 +572,6 @@ const TouchableMixin = {
    * This can be overridden when using
    * `Touchable.Mixin.withoutDefaultFocusAndBlur`.
    */
-  // $FlowFixMe[signature-verification-failure]
   touchableHandleBlur: function(e: Event) {
     this.props.onBlur && this.props.onBlur(e);
   },
@@ -671,7 +665,6 @@ const TouchableMixin = {
     }
   },
 
-  // $FlowFixMe[signature-verification-failure]
   _handleQueryLayout: function(
     l: number,
     t: number,
@@ -698,13 +691,11 @@ const TouchableMixin = {
     );
   },
 
-  // $FlowFixMe[signature-verification-failure]
   _handleDelay: function(e: PressEvent) {
     this.touchableDelayTimeout = null;
     this._receiveSignal(Signals.DELAY, e);
   },
 
-  // $FlowFixMe[signature-verification-failure]
   _handleLongDelay: function(e: PressEvent) {
     this.longPressDelayTimeout = null;
     const curState = this.state.touchable.touchState;
@@ -724,7 +715,6 @@ const TouchableMixin = {
    * @throws Error if invalid state transition or unrecognized signal.
    * @sideeffects
    */
-  // $FlowFixMe[signature-verification-failure]
   _receiveSignal: function(signal: Signal, e: PressEvent) {
     const responderID = this.state.touchable.responderID;
     const curState = this.state.touchable.touchState;
@@ -776,7 +766,6 @@ const TouchableMixin = {
     );
   },
 
-  // $FlowFixMe[signature-verification-failure]
   _savePressInLocation: function(e: PressEvent) {
     const touch = extractSingleTouch(e.nativeEvent);
     const pageX = touch && touch.pageX;
@@ -808,7 +797,6 @@ const TouchableMixin = {
    * @param {Event} e Native event.
    * @sideeffects
    */
-  // $FlowFixMe[signature-verification-failure]
   _performSideEffectsForTransition: function(
     curState: State,
     nextState: State,
@@ -870,13 +858,11 @@ const TouchableMixin = {
     this.touchableDelayTimeout = null;
   },
 
-  // $FlowFixMe[signature-verification-failure]
   _startHighlight: function(e: PressEvent) {
     this._savePressInLocation(e);
     this.touchableHandleActivePressIn && this.touchableHandleActivePressIn(e);
   },
 
-  // $FlowFixMe[signature-verification-failure]
   _endHighlight: function(e: PressEvent) {
     if (this.touchableHandleActivePressOut) {
       if (

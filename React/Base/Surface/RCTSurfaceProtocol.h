@@ -68,13 +68,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (atomic, assign, readonly) CGSize intrinsicSize;
 
 #pragma mark - Start & Stop
-
 /**
  * Starts or stops the Surface.
  * Those methods are a no-op for regular RCTSurface (for now), but all call sites must call them appropriately.
  */
-- (BOOL)start;
-- (BOOL)stop;
+- (void)start;
+- (void)stop;
 
 @end
 

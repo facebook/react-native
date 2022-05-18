@@ -21,7 +21,6 @@ const shallowRenderer = new ShallowRenderer();
 
 import type {ReactTestRenderer as ReactTestRendererType} from 'react-test-renderer';
 
-// $FlowFixMe[value-as-type]
 export type ReactTestInstance = $PropertyType<ReactTestRendererType, 'root'>;
 
 export type Predicate = (node: ReactTestInstance) => boolean;
@@ -87,7 +86,6 @@ function enter(instance: ReactTestInstance, text: string) {
 
 // Returns null if there is no error, otherwise returns an error message string.
 function maximumDepthError(
-  // $FlowFixMe[value-as-type]
   tree: ReactTestRendererType,
   maxDepthLimit: number,
 ): ?string {
@@ -179,7 +177,6 @@ function renderAndEnforceStrictMode(element: React.Node): any {
   return renderWithStrictMode(element);
 }
 
-// $FlowFixMe[value-as-type]
 function renderWithStrictMode(element: React.Node): ReactTestRendererType {
   const WorkAroundBugWithStrictModeInTestRenderer = prps => prps.children;
   const StrictMode = (React: $FlowFixMe).StrictMode;
