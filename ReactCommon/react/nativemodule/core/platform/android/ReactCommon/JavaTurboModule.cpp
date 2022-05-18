@@ -389,7 +389,8 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
     const std::string &methodNameStr,
     const std::string &methodSignature,
     const jsi::Value *args,
-    size_t argCount) {
+    size_t argCount,
+    jmethodID &methodID) {
   const char *methodName = methodNameStr.c_str();
   const char *moduleName = name_.c_str();
 
@@ -438,12 +439,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
    */
   jni::JniLocalScope scope(env, estimatedLocalRefCount);
 
-  jclass cls = env->GetObjectClass(instance);
-  jmethodID methodID =
-      env->GetMethodID(cls, methodName, methodSignature.c_str());
-
-  auto checkJNIErrorForMethodCall =
-      [methodName, moduleName, isMethodSync]() -> void {
+  auto checkJNIErrorForMethodCall = [&]() -> void {
     try {
       FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
     } catch (...) {
@@ -456,9 +452,14 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
     }
   };
 
-  // If the method signature doesn't match, show a redbox here instead of
-  // crashing later.
-  checkJNIErrorForMethodCall();
+  if (!methodID) {
+    jclass cls = env->GetObjectClass(instance);
+    methodID = env->GetMethodID(cls, methodName, methodSignature.c_str());
+
+    // If the method signature doesn't match, show a redbox here instead of
+    // crashing later.
+    checkJNIErrorForMethodCall();
+  }
 
   // TODO(T43933641): Refactor to remove this special-casing
   if (methodNameStr == "getConstants") {
