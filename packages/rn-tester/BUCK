@@ -51,6 +51,7 @@ rn_library(
             "js",
             "NativeModuleExample",
             "NativeComponentExample",
+            "NewFabricComponentExample",
             "RCTTest",
         ],
         excludes = [
@@ -85,6 +86,7 @@ fb_native.filegroup(
         ],
         exclude = [
             "NativeComponentExample/**/*",
+            "NewFabricComponentExample/**/*",
         ],
     ),
     visibility = ["PUBLIC"],
@@ -318,6 +320,44 @@ rn_xplat_cxx_library2(
     visibility = ["PUBLIC"],
     deps = [
         ":generated_components-MyNativeViewSpec",
+        "//xplat/js/react-native-github:RCTFabricComponentViewsBase",
+    ],
+)
+
+rn_xplat_cxx_library2(
+    name = "NewFabricComponentExample",
+    plugins_only = True,
+    srcs = glob(
+        [
+            "NewFabricComponentExample/ios/*.m",
+            "NewFabricComponentExample/ios/*.mm",
+        ],
+    ),
+    headers = glob(
+        [
+            "NewFabricComponentExample/ios/*.h",
+        ],
+    ),
+    header_namespace = "",
+    compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+        "-std=c++17",
+        "-Wall",
+    ],
+    contacts = ["oncall+react_native@xmail.facebook.com"],
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+        "supermodule:xplat/default/public.react_native.infra",
+    ],
+    plugins = [
+        react_fabric_component_plugin_provider("RNTNewFabricComponentExampleView", "RNTNewFabricComponentExampleViewCls"),
+    ],
+    plugins_header = "RCTFabricComponentsPlugins.h",
+    reexport_all_header_dependencies = False,
+    visibility = ["PUBLIC"],
+    deps = [
+        ":generated_components-NewFabricComponentSpec",
         "//xplat/js/react-native-github:RCTFabricComponentViewsBase",
     ],
 )

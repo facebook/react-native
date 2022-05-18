@@ -45,6 +45,13 @@
         "ios": {},
         "android": {},
         "jsSrcsDir": "NativeComponentExample/js"
+      },
+      {
+        "name": "NewFabricComponentSpec",
+        "type": "components",
+        "ios": {},
+        "android": {},
+        "jsSrcsDir": "NewFabricComponentExample/js"
       }
     ]
   }

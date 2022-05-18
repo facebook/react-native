@@ -161,6 +161,11 @@ const Components: Array<RNTesterModuleInfo> = [
     module: require('../examples/NewArchitecture/NewArchitectureExample'),
     supportsTVOS: false,
   },
+  {
+    key: 'NewFabricComponentExample',
+    module: require('../examples/NewFabricComponentExample/NewFabricComponentExample'),
+    supportsTVOS: false,
+  },
 ];
 
 const APIs: Array<RNTesterModuleInfo> = [
