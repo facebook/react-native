@@ -1627,7 +1627,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this._hasWarned.perf = true;
     }
 
-    const zoomScale = e.nativeEvent.zoomScale;
+    // e.nativeEvent.zoomScale is -1 in RTL so take absolute
+    const zoomScale = Math.abs(e.nativeEvent.zoomScale);
 
     this._scrollMetrics = {
       contentLength,

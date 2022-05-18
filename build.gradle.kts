@@ -66,3 +66,13 @@ tasks.register("buildAll") {
     // This builds RN Tester for Hermes/JSC for debug only
     dependsOn(":packages:rn-tester:android:app:assembleDebug")
 }
+
+tasks.register("downloadAll") {
+    description = "Download all the depedencies needed locally so they can be cached on CI."
+    dependsOn(gradle.includedBuild("react-native-gradle-plugin").task(":dependencies"))
+    dependsOn(":ReactAndroid:downloadNdkBuildDependencies")
+    dependsOn(":ReactAndroid:dependencies")
+    dependsOn(":ReactAndroid:androidDependencies")
+    dependsOn(":ReactAndroid:hermes-engine:dependencies")
+    dependsOn(":ReactAndroid:hermes-engine:androidDependencies")
+}

@@ -228,7 +228,7 @@ commands:
             - *gradle_cache_key
       - run:
           name: Download Dependencies Using Gradle
-          command: ./scripts/circleci/gradle_download_deps.sh
+          command: ./gradlew downloadAll
       - save_cache:
           paths:
             - ~/.gradle
