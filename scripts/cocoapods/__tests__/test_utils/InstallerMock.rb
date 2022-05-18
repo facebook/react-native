@@ -38,9 +38,11 @@
 
 class InstallerMock
     attr_reader :pods_project
+    attr_reader :aggregate_targets
 
-    def initialize(pods_project = PodsProjectMock.new)
+    def initialize(pods_project = PodsProjectMock.new, aggregate_targets = [AggregatedProjectMock.new])
         @pods_project = pods_project
+        @aggregate_targets = aggregate_targets
     end
 
     def target_with_name(name)
@@ -58,13 +60,46 @@ class PodsProjectMock
     end
 end
 
+class AggregatedProjectMock
+    attr_reader :user_project
+
+    def initialize(user_project = UserProjectMock.new)
+        @user_project = user_project
+    end
+end
+
+class UserProjectMock
+    attr_reader :path
+    attr_reader :build_configurations
+
+    def initialize(path = "/test/path.xcproj", build_configurations = [])
+        @path = path
+        @build_configurations = build_configurations
+    end
+
+    def save()
+    end
+end
+
+ReceivedCommonResolvedBuildSettings = Struct.new(:key, :resolve_against_xcconfig)
+
 class TargetMock
     attr_reader :name
     attr_reader :build_configurations
 
+    attr_reader :received_common_resolved_build_setting_parameters
+
     def initialize(name, build_configurations = [])
         @name = name
         @build_configurations = build_configurations
+        @received_common_resolved_build_setting_parameters = ReceivedCommonResolvedBuildSettings.new
+    end
+
+    def common_resolved_build_setting(key, resolve_against_xcconfig: false)
+        received_common_resolved_build_setting_parameters.key = key
+        received_common_resolved_build_setting_parameters.resolve_against_xcconfig = resolve_against_xcconfig
+
+        return build_configurations[0].build_settings[key]
     end
 end
 
