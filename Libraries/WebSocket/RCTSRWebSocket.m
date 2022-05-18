@@ -498,8 +498,29 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   _outputStream = CFBridgingRelease(writeStream);
   _inputStream = CFBridgingRelease(readStream);
-
-
+    ///增加代理功能，解决测试服Socket 连不上的问题
+#if DEBUG || TEST
+    CFDictionaryRef proxySettings = CFNetworkCopySystemProxySettings();
+    CFStringRef httpProxyKey = CFStringCreateWithCString(CFAllocatorGetDefault(), "HTTPSProxy", kCFStringEncodingUTF8);
+    CFStringRef proxyIp = CFDictionaryGetValue(proxySettings, httpProxyKey);
+    if (proxyIp != NULL) {
+        CFDictionaryRef  proxyDict = CFDictionaryCreateMutableCopy(CFAllocatorGetDefault(), 0, proxySettings);
+        CFStringRef socketProxyKey = CFStringCreateWithCString(CFAllocatorGetDefault(), "SOCKSProxy", kCFStringEncodingUTF8);
+        CFStringRef socketSPort = CFStringCreateWithCString(CFAllocatorGetDefault(), "SOCKSPort", kCFStringEncodingUTF8);
+        CFStringRef socketEnable = CFStringCreateWithCString(CFAllocatorGetDefault(), "SOCKSEnable", kCFStringEncodingUTF8);
+        CFDictionarySetValue(proxyDict, socketProxyKey, proxyIp);
+        CFDictionarySetValue(proxyDict, socketSPort, (__bridge CFNumberRef)[NSNumber numberWithInt:8889]);
+        CFDictionarySetValue(proxyDict, socketEnable, (__bridge CFNumberRef)[NSNumber numberWithBool:true]);
+        CFReadStreamSetProperty((CFReadStreamRef)_inputStream, kCFStreamPropertySOCKSProxy, (CFTypeRef)proxyDict);
+        CFWriteStreamSetProperty((CFWriteStreamRef)_outputStream, kCFStreamPropertySOCKSProxy, (CFTypeRef)proxyDict);
+        CFRelease(socketProxyKey);
+        CFRelease(socketSPort);
+        CFRelease(socketEnable);
+        CFRelease(proxyDict);
+    }
+    CFRelease(proxySettings);
+    CFRelease(httpProxyKey);
+#endif
   if (_secure) {
     NSMutableDictionary<NSString *, id> *SSLOptions = [NSMutableDictionary new];
 
