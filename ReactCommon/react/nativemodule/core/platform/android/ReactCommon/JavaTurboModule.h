@@ -50,7 +50,8 @@ class JSI_EXPORT JavaTurboModule : public TurboModule {
       const std::string &methodName,
       const std::string &methodSignature,
       const jsi::Value *args,
-      size_t argCount);
+      size_t argCount,
+      jmethodID &cachedMethodID);
 
  private:
   jni::global_ref<JTurboModule> instance_;

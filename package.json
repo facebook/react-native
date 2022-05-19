@@ -53,6 +53,8 @@
     "scripts/react_native_pods_utils/script_phases.rb",
     "scripts/react_native_pods_utils/script_phases.sh",
     "scripts/react_native_pods.rb",
+    "scripts/cocoapods/codegen.rb",
+    "scripts/cocoapods/fabric.rb",
     "scripts/cocoapods/flipper.rb",
     "scripts/cocoapods/new_architecture.rb",
     "scripts/react-native-xcode.sh",

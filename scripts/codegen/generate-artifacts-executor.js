@@ -52,6 +52,97 @@ function readPackageJSON(appRootDir) {
 }
 
 // Reading Libraries
+function extractLibrariesFromConfigurationArray(
+  configFile,
+  codegenConfigKey,
+  libraries,
+  dependency,
+  dependencyPath,
+) {
+  console.log(`[Codegen] Found ${dependency}`);
+  configFile[codegenConfigKey].libraries.forEach(config => {
+    const libraryConfig = {
+      library: dependency,
+      config,
+      libraryPath: dependencyPath,
+    };
+    libraries.push(libraryConfig);
+  });
+}
+
+function extractLibrariesFromJSON(
+  configFile,
+  libraries,
+  codegenConfigKey,
+  dependency,
+  dependencyPath,
+) {
+  var isBlocking = false;
+  if (dependency == null) {
+    dependency = REACT_NATIVE_DEPENDENCY_NAME;
+    dependencyPath = RN_ROOT;
+    // If we are exploring the ReactNative libraries, we want to raise an error
+    // if the codegen is not properly configured.
+    isBlocking = true;
+  }
+
+  if (configFile[codegenConfigKey] == null) {
+    if (isBlocking) {
+      throw `[Codegen] Error: Could not find codegen config for ${dependency} .`;
+    }
+    return;
+  }
+
+  if (configFile[codegenConfigKey].libraries == null) {
+    console.log(`[Codegen] Found ${dependency}`);
+    var config = configFile[codegenConfigKey];
+    libraries.push({
+      library: dependency,
+      config,
+      libraryPath: dependencyPath,
+    });
+  } else {
+    console.log(`[Codegen] CodegenConfig Deprecated Setup for ${dependency}.
+      The configuration file still contains the codegen in the libraries array.
+      If possible, replace it with a single object.
+    `);
+    console.debug(`BEFORE:
+      {
+        // ...
+        "codegenConfig": {
+          "libraries": [
+            {
+              "name": "libName1",
+              "type": "all|components|modules",
+              "jsSrcsRoot": "libName1/js"
+            },
+            {
+              "name": "libName2",
+              "type": "all|components|modules",
+              "jsSrcsRoot": "libName2/src"
+            }
+          ]
+        }
+      }
+
+      AFTER:
+      {
+        "codegenConfig": {
+          "name": "libraries",
+          "type": "all",
+          "jsSrcsRoot": "."
+        }
+      }
+    `);
+    extractLibrariesFromConfigurationArray(
+      configFile,
+      codegenConfigKey,
+      libraries,
+      dependency,
+      dependencyPath,
+    );
+  }
+}
 
 function handleReactNativeCodeLibraries(
   libraries,
@@ -66,21 +157,7 @@ function handleReactNativeCodeLibraries(
     throw '[Codegen] Error: Could not find config file for react-native.';
   }
   const reactNativeConfigFile = JSON.parse(fs.readFileSync(reactNativePkgJson));
-  if (
-    reactNativeConfigFile[codegenConfigKey] == null ||
-    reactNativeConfigFile[codegenConfigKey].libraries == null
-  ) {
-    throw '[Codegen] Error: Could not find codegen config for react-native.';
-  }
-  console.log('[Codegen] Found react-native');
-  reactNativeConfigFile[codegenConfigKey].libraries.forEach(config => {
-    const libraryConfig = {
-      library: REACT_NATIVE_DEPENDENCY_NAME,
-      config,
-      libraryPath: RN_ROOT,
-    };
-    libraries.push(libraryConfig);
-  });
+  extractLibrariesFromJSON(reactNativeConfigFile, libraries, codegenConfigKey);
 }
 
 function handleThirdPartyLibraries(
@@ -109,20 +186,13 @@ function handleThirdPartyLibraries(
     );
     if (fs.existsSync(configFilePath)) {
       const configFile = JSON.parse(fs.readFileSync(configFilePath));
-      if (
-        configFile[codegenConfigKey] != null &&
-        configFile[codegenConfigKey].libraries != null
-      ) {
-        console.log(`[Codegen] Found ${dependency}`);
-        configFile[codegenConfigKey].libraries.forEach(config => {
-          const libraryConfig = {
-            library: dependency,
-            config,
-            libraryPath: codegenConfigFileDir,
-          };
-          libraries.push(libraryConfig);
-        });
-      }
+      extractLibrariesFromJSON(
+        configFile,
+        libraries,
+        codegenConfigKey,
+        dependency,
+        codegenConfigFileDir,
+      );
     }
   });
 }
@@ -137,21 +207,13 @@ function handleInAppLibraries(
     '\n\n[Codegen] >>>>> Searching for codegen-enabled libraries in the app',
   );
 
-  // Handle in-app libraries
-  if (
-    pkgJson[codegenConfigKey] != null &&
-    pkgJson[codegenConfigKey].libraries != null
-  ) {
-    console.log(`[Codegen] Found ${pkgJson.name}`);
-    pkgJson[codegenConfigKey].libraries.forEach(config => {
-      const libraryConfig = {
-        library: pkgJson.name,
-        config,
-        libraryPath: appRootDir,
-      };
-      libraries.push(libraryConfig);
-    });
-  }
+  extractLibrariesFromJSON(
+    pkgJson,
+    libraries,
+    codegenConfigKey,
+    pkgJson.name,
+    appRootDir,
+  );
 }
 
 // CodeGen
@@ -377,6 +439,8 @@ function execute(
 
 module.exports = {
   execute: execute,
-  _executeNodeScript: executeNodeScript, // exported for testing purposes only
-  _generateCode: generateCode, // exported for testing purposes only
+  // exported for testing purposes only:
+  _extractLibrariesFromJSON: extractLibrariesFromJSON,
+  _executeNodeScript: executeNodeScript,
+  _generateCode: generateCode,
 };

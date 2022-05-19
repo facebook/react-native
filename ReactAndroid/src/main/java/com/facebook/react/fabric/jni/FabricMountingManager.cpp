@@ -421,20 +421,23 @@ void FabricMountingManager::executeMount(
             // are updated in the view. This is necessary to ensure that events
             // (resulting from layout changes) are dispatched with the correct
             // padding information.
-            cppUpdatePaddingMountItems.push_back(
-                CppMountItem::UpdatePaddingMountItem(
-                    mutation.newChildShadowView));
+            if (newChildShadowView.layoutMetrics.contentInsets !=
+                EdgeInsets::ZERO) {
+              cppUpdatePaddingMountItems.push_back(
+                  CppMountItem::UpdatePaddingMountItem(newChildShadowView));
+            }
 
             // Layout
             cppUpdateLayoutMountItems.push_back(
-                CppMountItem::UpdateLayoutMountItem(
-                    mutation.newChildShadowView));
+                CppMountItem::UpdateLayoutMountItem(newChildShadowView));
 
             // OverflowInset: This is the values indicating boundaries including
             // children of the current view. The layout of current view may not
             // change, and we separate this part from layout mount items to not
             // pack too much data there.
-            if (useOverflowInset_) {
+            if (useOverflowInset_ &&
+                newChildShadowView.layoutMetrics.overflowInset !=
+                    EdgeInsets::ZERO) {
               cppUpdateOverflowInsetMountItems.push_back(
                   CppMountItem::UpdateOverflowInsetMountItem(
                       newChildShadowView));

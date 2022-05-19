@@ -6,6 +6,8 @@
 require 'pathname'
 require_relative './react_native_pods_utils/script_phases.rb'
 require_relative './cocoapods/flipper.rb'
+require_relative './cocoapods/fabric.rb'
+require_relative './cocoapods/codegen.rb'
 
 $CODEGEN_OUTPUT_DIR = 'build/generated/ios'
 $CODEGEN_COMPONENT_DIR = 'react/renderer/components'
@@ -21,6 +23,9 @@ def use_react_native! (options={})
 
   # Include Fabric dependencies
   fabric_enabled = options[:fabric_enabled] ||= false
+
+  # New arch enabled
+  new_arch_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'
 
   # Include DevSupport dependency
   production = options[:production] ||= false
@@ -73,7 +78,7 @@ def use_react_native! (options={})
   pod 'boost', :podspec => "#{prefix}/third-party-podspecs/boost.podspec"
   pod 'RCT-Folly', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec", :modular_headers => true
 
-  if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
+  if new_arch_enabled
     app_path = options[:app_path]
     config_file_dir = options[:config_file_dir]
     use_react_native_codegen_discovery!({
@@ -92,13 +97,8 @@ def use_react_native! (options={})
   pod 'React-Codegen', :path => $CODEGEN_OUTPUT_DIR, :modular_headers => true
 
   if fabric_enabled
-    checkAndGenerateEmptyThirdPartyProvider!(prefix)
-    pod 'React-Fabric', :path => "#{prefix}/ReactCommon"
-    pod 'React-rncore', :path => "#{prefix}/ReactCommon"
-    pod 'React-graphics', :path => "#{prefix}/ReactCommon/react/renderer/graphics"
-    pod 'React-jsi/Fabric', :path => "#{prefix}/ReactCommon/jsi"
-    pod 'React-RCTFabric', :path => "#{prefix}/React", :modular_headers => true
-    pod 'RCT-Folly/Fabric', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec"
+    checkAndGenerateEmptyThirdPartyProvider!(prefix, new_arch_enabled, $CODEGEN_OUTPUT_DIR)
+    setup_fabric!(prefix)
   end
 
   if hermes_enabled
@@ -248,59 +248,6 @@ def modify_flags_for_new_architecture(installer, cpp_flags)
   end
 end
 
-def build_codegen!(react_native_path)
-  relative_installation_root = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
-  codegen_repo_path = "#{relative_installation_root}/#{react_native_path}/packages/react-native-codegen";
-  codegen_npm_path = "#{relative_installation_root}/#{react_native_path}/../react-native-codegen";
-  codegen_cli_path = ""
-  if Dir.exist?(codegen_repo_path)
-    codegen_cli_path = codegen_repo_path
-  elsif Dir.exist?(codegen_npm_path)
-    codegen_cli_path = codegen_npm_path
-  else
-    raise "[codegen] Couldn't not find react-native-codegen."
-  end
-
-  if !Dir.exist?("#{codegen_cli_path}/lib")
-    Pod::UI.puts "[Codegen] building #{codegen_cli_path}."
-    system("#{codegen_cli_path}/scripts/oss/build.sh")
-  end
-end
-
-# This is a temporary supporting function until we enable use_react_native_codegen_discovery by default.
-def checkAndGenerateEmptyThirdPartyProvider!(react_native_path)
-  return if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
-
-  relative_installation_root = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
-  output_dir = "#{relative_installation_root}/#{$CODEGEN_OUTPUT_DIR}"
-
-  provider_h_path = "#{output_dir}/RCTThirdPartyFabricComponentsProvider.h"
-  provider_cpp_path ="#{output_dir}/RCTThirdPartyFabricComponentsProvider.cpp"
-
-  if(!File.exist?(provider_h_path) || !File.exist?(provider_cpp_path))
-    # build codegen
-    build_codegen!(react_native_path)
-
-    # Just use a temp empty schema list.
-    temp_schema_list_path = "#{output_dir}/tmpSchemaList.txt"
-    File.open(temp_schema_list_path, 'w') do |f|
-      f.write('[]')
-      f.fsync
-    end
-
-    Pod::UI.puts '[Codegen] generating an empty RCTThirdPartyFabricComponentsProvider'
-    Pod::Executable.execute_command(
-      'node',
-      [
-        "#{relative_installation_root}/#{react_native_path}/scripts/generate-provider-cli.js",
-        "--platform", 'ios',
-        "--schemaListPath", temp_schema_list_path,
-        "--outputDir", "#{output_dir}"
-      ])
-    File.delete(temp_schema_list_path) if File.exist?(temp_schema_list_path)
-  end
-end
-
 def get_react_codegen_spec(options={})
   fabric_enabled = options[:fabric_enabled] ||= false
   script_phases = options[:script_phases] ||= nil
@@ -409,10 +356,20 @@ def get_react_codegen_script_phases(options={})
   app_package_path = File.join(app_path, 'package.json')
   app_codegen_config = get_codegen_config_from_file(app_package_path, config_key)
   file_list = []
-  app_codegen_config['libraries'].each do |library|
-    library_dir = File.join(app_path, library['jsSrcsDir'])
-    file_list.concat (`find #{library_dir} -type f \\( -name "Native*.js" -or -name "*NativeComponent.js" \\)`.split("\n").sort)
+  if app_codegen_config['libraries'] then
+    Pod::UI.warn '[Deprecated] You are using the old `libraries` array to list all your codegen.\nThis method will be removed in the future.\nUpdate your `package.json` with a single object.'
+    app_codegen_config['libraries'].each do |library|
+      library_dir = File.join(app_path, library['jsSrcsDir'])
+      file_list.concat (`find #{library_dir} -type f \\( -name "Native*.js" -or -name "*NativeComponent.js" \\)`.split("\n").sort)
+    end
+  elsif app_codegen_config['jsSrcsDir'] then
+    codegen_dir = File.join(app_path, app_codegen_config['jsSrcsDir'])
+    file_list.concat (`find #{codegen_dir} -type f \\( -name "Native*.js" -or -name "*NativeComponent.js" \\)`.split("\n").sort)
+  else
+    Pod::UI.warn '[Error] Codegen not properly configured. Please add the `codegenConf` entry to your `package.json`'
+    exit 1
   end
+
   input_files = file_list.map { |filename| "${PODS_ROOT}/../#{Pathname.new(filename).realpath().relative_path_from(Pod::Config.instance.installation_root)}" }
 
   # Add a script phase to trigger generate artifact.

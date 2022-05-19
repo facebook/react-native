@@ -37,6 +37,7 @@ references:
 
   cache_keys:
     buck_cache_key: &buck_cache_key v3-buck-v2019.01.10.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}}
+    checkout_cache_key: &checkout_cache_key v1-checkout
     gems_cache_key: &gems_cache_key v1-gems-{{ checksum "Gemfile.lock" }}
     gradle_cache_key: &gradle_cache_key v1-gradle-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "ReactAndroid/gradle.properties" }}
     hermes_cache_key: &hermes_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
@@ -102,6 +103,23 @@ executors:
 #        COMMANDS
 # -------------------------
 commands:
+  # Checkout with cache, on machines that are using Docker the cache is ignored
+  checkout_code_with_cache:
+    parameters:
+      checkout_base_cache_key:
+        default: *checkout_cache_key
+        type: string
+    steps:
+      - restore_cache:
+            keys:
+              - << parameters.checkout_base_cache_key >>-{{ .Branch }}-{{ .Revision }}
+              - << parameters.checkout_base_cache_key >>-{{ .Branch }}-
+              - << parameters.checkout_base_cache_key >>
+      - checkout
+      - save_cache:
+          key: << parameters.checkout_base_cache_key >>-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ".git"
 
   setup_artifacts:
     steps:
@@ -210,7 +228,7 @@ commands:
             - *gradle_cache_key
       - run:
           name: Download Dependencies Using Gradle
-          command: ./scripts/circleci/gradle_download_deps.sh
+          command: ./gradlew downloadAll
       - save_cache:
           paths:
             - ~/.gradle
@@ -419,7 +437,7 @@ jobs:
     environment:
       - REPORTS_DIR: "./reports/junit"
     steps:
-      - checkout
+      - checkout_code_with_cache
       - setup_artifacts
       - setup_ruby
       - run:
@@ -657,7 +675,7 @@ jobs:
       - PROJECT_NAME: "iOSTemplateProject"
 
     steps:
-      - checkout
+      - checkout_code_with_cache
       - run_yarn
       - attach_workspace:
           at: .
@@ -687,7 +705,7 @@ jobs:
   test_ios_rntester:
     executor: reactnativeios
     steps:
-      - checkout
+      - checkout_code_with_cache
       - run_yarn
 
       # The macOS machine can run out of storage if Hermes is enabled and built from source.
@@ -742,7 +760,7 @@ jobs:
       - ANDROID_TOOLS_VERSION: 31.0.0
       - GRADLE_OPTS: -Dorg.gradle.daemon=false
     steps:
-      - checkout
+      - checkout_code_with_cache
 
       - run:
           name: Install Node
@@ -933,7 +951,7 @@ jobs:
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
     steps:
-      - checkout
+      - checkout_code_with_cache
       - *attach_hermes_workspace
       - restore_cache:
           key: *hermes_cache_key
@@ -1057,7 +1075,7 @@ jobs:
         default: false
     executor: reactnativeios
     steps:
-      - checkout
+      - checkout_code_with_cache
       - run_yarn
       - add_ssh_keys:
           fingerprints:
