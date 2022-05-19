@@ -27,7 +27,7 @@ const RNTesterBlock = ({description, title, children}: Props): React.Node => {
         [styles.container],
         {
           borderColor: theme.SeparatorColor,
-          backgroundColor: theme.SystemBackgroundColor,
+          backgroundColor: theme.SecondaryGroupedBackgroundColor,
         },
       ]}>
       <View style={[styles.titleContainer]}>
