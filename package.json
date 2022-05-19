@@ -56,6 +56,7 @@
     "scripts/cocoapods/codegen.rb",
     "scripts/cocoapods/fabric.rb",
     "scripts/cocoapods/flipper.rb",
+    "scripts/cocoapods/new_architecture.rb",
     "scripts/react-native-xcode.sh",
     "sdks/hermes-engine",
     "sdks/hermesc",
