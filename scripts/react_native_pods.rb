@@ -438,23 +438,7 @@ end
 # See https://github.com/facebook/react-native/issues/31480#issuecomment-902912841 for more context.
 # Actual fix was authored by https://github.com/mikehardy.
 # New app template will call this for now until the underlying issue is resolved.
-#
-# TODO(macOS GH#774) - This was temporarily removed with 51bf5579489 but reintroduced with 03a09078681 on 2021-10-25.
-# Plus, we still need the fix in folly before v2022.02.07.00. (See https://github.com/facebook/folly/commit/4a8837f)
 def __apply_Xcode_12_5_M1_post_install_workaround(installer)
-  # Apple Silicon builds require a library path tweak for Swift library discovery to resolve Swift-related "symbol not found".
-  # Note: this was fixed via https://github.com/facebook/react-native/commit/eb938863063f5535735af2be4e706f70647e5b90
-  # Keeping this logic here but commented out for future reference.
-  #
-  # installer.aggregate_targets.each do |aggregate_target|
-  #   aggregate_target.user_project.native_targets.each do |target|
-  #     target.build_configurations.each do |config|
-  #       config.build_settings['LIBRARY_SEARCH_PATHS'] = ['$(SDKROOT)/usr/lib/swift', '$(inherited)']
-  #     end
-  #   end
-  #   aggregate_target.user_project.save
-  # end
-
   # Flipper podspecs are still targeting an older iOS deployment target, and may cause an error like:
   #   "error: thread-local storage is not supported for the current target"
   # The most reliable known workaround is to bump iOS deployment target to match react-native (iOS 11 now).
