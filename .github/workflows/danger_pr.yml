@@ -11,7 +11,6 @@ jobs:
       - uses: actions/checkout@v3
       - run: cd bots && yarn install
       - name: Danger
-        run: |
-          PUBLIC_PULLBOT_GITHUB_TOKEN_A="a6edf8e8d40ce4e8b11a"
-          PUBLIC_PULLBOT_GITHUB_TOKEN_B="150e1341f4dd9c944d2a"
-          DANGER_GITHUB_API_TOKEN="$PUBLIC_PULLBOT_GITHUB_TOKEN_A$PUBLIC_PULLBOT_GITHUB_TOKEN_B" cd bots && yarn danger ci --use-github-checks --failOnErrors --id danger_pr
+        run: cd bots && yarn danger ci --use-github-checks --failOnErrors --id danger_pr
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
