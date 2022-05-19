@@ -101,12 +101,6 @@ import typeof RCTDeviceEventEmitter from './Libraries/EventEmitter/RCTDeviceEven
 import typeof RCTNativeAppEventEmitter from './Libraries/EventEmitter/RCTNativeAppEventEmitter';
 import typeof {RootTagContext} from './Libraries/ReactNative/RootTag';
 
-// Prop Types
-import typeof DeprecatedColorPropType from './Libraries/DeprecatedPropTypes/DeprecatedColorPropType';
-import typeof DeprecatedEdgeInsetsPropType from './Libraries/DeprecatedPropTypes/DeprecatedEdgeInsetsPropType';
-import typeof DeprecatedPointPropType from './Libraries/DeprecatedPropTypes/DeprecatedPointPropType';
-import typeof DeprecatedViewPropTypes from './Libraries/DeprecatedPropTypes/DeprecatedViewPropTypes';
-
 import type {HostComponent as _HostComponentInternal} from './Libraries/Renderer/shims/ReactNativeTypes';
 
 export type HostComponent<T> = _HostComponentInternal<T>;
@@ -485,19 +479,34 @@ module.exports = {
         'LogBox is enabled by default so there is no need to call unstable_enableLogBox() anymore. This is a no op and will be removed in the next version.',
       );
   },
-  // Prop Types
-  // $FlowFixMe[value-as-type]
-  get ColorPropType(): DeprecatedColorPropType {
-    return require('./Libraries/DeprecatedPropTypes/DeprecatedColorPropType');
+  // Deprecated Prop Types
+  get ColorPropType(): $FlowFixMe {
+    console.warn(
+      'ColorPropType will be removed from React Native. Migrate to ' +
+        "ColorPropType exported from 'deprecated-react-native-prop-types'.",
+    );
+    return require('deprecated-react-native-prop-types').ColorPropType;
   },
-  get EdgeInsetsPropType(): DeprecatedEdgeInsetsPropType {
-    return require('./Libraries/DeprecatedPropTypes/DeprecatedEdgeInsetsPropType');
+  get EdgeInsetsPropType(): $FlowFixMe {
+    console.warn(
+      'EdgeInsetsPropType will be removed from React Native. Migrate to ' +
+        "EdgeInsetsPropType exported from 'deprecated-react-native-prop-types'.",
+    );
+    return require('deprecated-react-native-prop-types').EdgeInsetsPropType;
   },
-  get PointPropType(): DeprecatedPointPropType {
-    return require('./Libraries/DeprecatedPropTypes/DeprecatedPointPropType');
+  get PointPropType(): $FlowFixMe {
+    console.warn(
+      'PointPropType will be removed from React Native. Migrate to ' +
+        "PointPropType exported from 'deprecated-react-native-prop-types'.",
+    );
+    return require('deprecated-react-native-prop-types').PointPropType;
   },
-  get ViewPropTypes(): DeprecatedViewPropTypes {
-    return require('./Libraries/DeprecatedPropTypes/DeprecatedViewPropTypes');
+  get ViewPropTypes(): $FlowFixMe {
+    console.warn(
+      'ViewPropTypes will be removed from React Native. Migrate to ' +
+        "ViewPropTypes exported from 'deprecated-react-native-prop-types'.",
+    );
+    return require('deprecated-react-native-prop-types').ViewPropTypes;
   },
 };
 

@@ -10,8 +10,6 @@
 
 import * as React from 'react';
 
-import DeprecatedTextInputPropTypes from '../../DeprecatedPropTypes/DeprecatedTextInputPropTypes';
-
 import Platform from '../../Utilities/Platform';
 import StyleSheet, {
   type TextStyleProp,
@@ -34,7 +32,6 @@ import type {
   PressEvent,
 } from '../../Types/CoreEventTypes';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
-import type {TextInputNativeCommands} from './TextInputNativeCommands';
 
 const {useLayoutEffect, useRef, useState} = React;
 
@@ -1281,8 +1278,11 @@ const ExportedForwardRef: React.AbstractComponent<
   );
 });
 
-// TODO: Deprecate this
-ExportedForwardRef.propTypes = DeprecatedTextInputPropTypes;
+/**
+ * Switch to `deprecated-react-native-prop-types` for compatibility with future
+ * releases. This is deprecated and will be removed in the future.
+ */
+ExportedForwardRef.propTypes = require('deprecated-react-native-prop-types').TextInputPropTypes;
 
 // $FlowFixMe[prop-missing]
 ExportedForwardRef.State = {
@@ -1300,7 +1300,6 @@ type TextInputComponentStatics = $ReadOnly<{|
     focusTextInput: typeof TextInputState.focusTextInput,
     blurTextInput: typeof TextInputState.blurTextInput,
   |}>,
-  propTypes: typeof DeprecatedTextInputPropTypes,
 |}>;
 
 const styles = StyleSheet.create({
