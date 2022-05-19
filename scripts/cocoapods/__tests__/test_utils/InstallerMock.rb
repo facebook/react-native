@@ -92,12 +92,11 @@ class TargetMock
     def initialize(name, build_configurations = [])
         @name = name
         @build_configurations = build_configurations
-        @received_common_resolved_build_setting_parameters = ReceivedCommonResolvedBuildSettings.new
+        @received_common_resolved_build_setting_parameters = []
     end
 
     def common_resolved_build_setting(key, resolve_against_xcconfig: false)
-        received_common_resolved_build_setting_parameters.key = key
-        received_common_resolved_build_setting_parameters.resolve_against_xcconfig = resolve_against_xcconfig
+        received_common_resolved_build_setting_parameters.append(ReceivedCommonResolvedBuildSettings.new(key, resolve_against_xcconfig))
 
         return build_configurations[0].build_settings[key]
     end

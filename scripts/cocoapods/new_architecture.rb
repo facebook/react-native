@@ -3,6 +3,8 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+require "cocoapods"
+
 def set_clang_cxx_language_standard_if_needed(installer)
     language_standard = nil
 
@@ -18,7 +20,7 @@ def set_clang_cxx_language_standard_if_needed(installer)
             .uniq{ |p| p.path }
 
         projects.each do |project|
-            puts("Setting CLANG_CXX_LANGUAGE_STANDARD to #{ language_standard } on #{ project.path }")
+            Pod::UI.puts("Setting CLANG_CXX_LANGUAGE_STANDARD to #{ language_standard } on #{ project.path }")
 
             project.build_configurations.each do |config|
                 config.build_settings["CLANG_CXX_LANGUAGE_STANDARD"] = language_standard

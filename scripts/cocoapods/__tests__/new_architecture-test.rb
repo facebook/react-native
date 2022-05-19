@@ -14,8 +14,7 @@ class NewArchitectureTests < Test::Unit::TestCase
 
         assert_equal(installer.aggregate_targets[0].user_project.build_configurations[0].build_settings["CLANG_CXX_LANGUAGE_STANDARD"], "c++17")
         assert_equal(installer.aggregate_targets[1].user_project.build_configurations[0].build_settings["CLANG_CXX_LANGUAGE_STANDARD"], "c++17")
-        assert_equal(installer.pods_project.targets[1].received_common_resolved_build_setting_parameters.key, "CLANG_CXX_LANGUAGE_STANDARD")
-        assert_equal(installer.pods_project.targets[1].received_common_resolved_build_setting_parameters.resolve_against_xcconfig, true)
+        assert_equal(installer.pods_project.targets[1].received_common_resolved_build_setting_parameters, [ReceivedCommonResolvedBuildSettings.new("CLANG_CXX_LANGUAGE_STANDARD", true)])
     end
 
     def test_setClangCxxLanguageStandardIfNeeded_whenReactCoreIsNotPresent
@@ -24,8 +23,7 @@ class NewArchitectureTests < Test::Unit::TestCase
 
         assert_equal(installer.aggregate_targets[0].user_project.build_configurations[0].build_settings["CLANG_CXX_LANGUAGE_STANDARD"], nil)
         assert_equal(installer.aggregate_targets[1].user_project.build_configurations[0].build_settings["CLANG_CXX_LANGUAGE_STANDARD"], nil)
-        assert_equal(installer.pods_project.targets[1].received_common_resolved_build_setting_parameters.key, "CLANG_CXX_LANGUAGE_STANDARD")
-        assert_equal(installer.pods_project.targets[1].received_common_resolved_build_setting_parameters.resolve_against_xcconfig, false)
+        assert_equal(installer.pods_project.targets[0].received_common_resolved_build_setting_parameters, [])
     end
 end
 
