@@ -282,11 +282,11 @@ static void RCTPerformMountInstructions(
 
 - (void)setIsJSResponder:(BOOL)isJSResponder
     blockNativeResponder:(BOOL)blockNativeResponder
-           forShadowView:(facebook::react::ShadowView)shadowView
+           forShadowView:(facebook::react::ShadowView const &)shadowView
 {
+  ReactTag reactTag = shadowView.tag;
   RCTExecuteOnMainQueue(^{
-    UIView<RCTComponentViewProtocol> *componentView =
-        [self->_componentViewRegistry findComponentViewWithTag:shadowView.tag];
+    UIView<RCTComponentViewProtocol> *componentView = [self->_componentViewRegistry findComponentViewWithTag:reactTag];
     [componentView setIsJSResponder:isJSResponder];
   });
 }
