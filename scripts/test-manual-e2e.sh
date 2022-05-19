@@ -151,4 +151,4 @@ open "/tmp/${project_name}/ios/${project_name}.xcworkspace"
 cd "$repo_root" || exit
 
 info "Next steps:"
-info "   - https://github.com/facebook/react-native/blob/HEAD/Releases.md"
+info "https://github.com/facebook/react-native/wiki/Release-Process"
