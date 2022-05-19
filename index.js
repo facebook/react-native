@@ -138,6 +138,7 @@ module.exports = {
   get ImageBackground(): ImageBackground {
     return require('./Libraries/Image/ImageBackground');
   },
+  // $FlowFixMe[value-as-type]
   get InputAccessoryView(): InputAccessoryView {
     return require('./Libraries/Components/TextInput/InputAccessoryView');
   },
