@@ -327,13 +327,6 @@ jobs:
           command: GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" yarn lint-ci
           when: always
 
-      - run:
-          name: Analyze Pull Request (pull-bot)
-          command: |
-            cd bots
-            DANGER_GITHUB_API_TOKEN="$PUBLIC_PULLBOT_GITHUB_TOKEN_A""$PUBLIC_PULLBOT_GITHUB_TOKEN_B" yarn danger ci --use-github-checks --failOnErrors
-          when: always
-
   # -------------------------
   #    JOBS: Analyze Code
   # -------------------------
