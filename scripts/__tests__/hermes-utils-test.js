@@ -26,6 +26,8 @@ const hermesTagSha = '5244f819b2f3949ca94a3a1bf75d54a8ed59d94a';
 const ROOT_DIR = path.normalize(path.join(__dirname, '..', '..'));
 const SDKS_DIR = path.join(ROOT_DIR, 'sdks');
 
+const MemoryFs = require('metro-memory-fs');
+
 let execCalls;
 let fs;
 let shelljs;
@@ -103,7 +105,13 @@ describe('hermes-utils', () => {
   beforeEach(() => {
     jest.resetModules();
 
-    jest.mock('fs', () => new (require('metro-memory-fs'))());
+    jest.mock(
+      'fs',
+      () =>
+        new MemoryFs({
+          platform: process.platform === 'win32' ? 'win32' : 'posix',
+        }),
+    );
     fs = require('fs');
     fs.reset();
 
