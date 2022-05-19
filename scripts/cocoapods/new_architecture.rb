@@ -3,8 +3,6 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-require "cocoapods"
-
 def set_clang_cxx_language_standard_if_needed(installer)
     language_standard = nil
 
