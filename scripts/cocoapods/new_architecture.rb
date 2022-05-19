@@ -10,7 +10,7 @@ def set_clang_cxx_language_standard_if_needed(installer)
 
     installer.pods_project.targets.each do |target|
         if target.name == 'React-Core'
-            language_standard = target.common_resolved_build_setting("CLANG_CXX_LANGUAGE_STANDARD", resolve_against_xcconfig: true)
+            language_standard = target.resolved_build_setting("CLANG_CXX_LANGUAGE_STANDARD", resolve_against_xcconfig: true).values[0]
         end
     end
 

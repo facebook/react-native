@@ -87,18 +87,18 @@ class TargetMock
     attr_reader :name
     attr_reader :build_configurations
 
-    attr_reader :received_common_resolved_build_setting_parameters
+    attr_reader :received_resolved_build_setting_parameters
 
     def initialize(name, build_configurations = [])
         @name = name
         @build_configurations = build_configurations
-        @received_common_resolved_build_setting_parameters = []
+        @received_resolved_build_setting_parameters = []
     end
 
-    def common_resolved_build_setting(key, resolve_against_xcconfig: false)
-        received_common_resolved_build_setting_parameters.append(ReceivedCommonResolvedBuildSettings.new(key, resolve_against_xcconfig))
+    def resolved_build_setting(key, resolve_against_xcconfig: false)
+        received_resolved_build_setting_parameters.append(ReceivedCommonResolvedBuildSettings.new(key, resolve_against_xcconfig))
 
-        return build_configurations[0].build_settings[key]
+        return {name: build_configurations[0].build_settings[key]}
     end
 end
 

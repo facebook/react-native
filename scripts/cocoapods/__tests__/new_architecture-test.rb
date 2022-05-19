@@ -14,7 +14,7 @@ class NewArchitectureTests < Test::Unit::TestCase
 
         assert_equal(installer.aggregate_targets[0].user_project.build_configurations[0].build_settings["CLANG_CXX_LANGUAGE_STANDARD"], "c++17")
         assert_equal(installer.aggregate_targets[1].user_project.build_configurations[0].build_settings["CLANG_CXX_LANGUAGE_STANDARD"], "c++17")
-        assert_equal(installer.pods_project.targets[1].received_common_resolved_build_setting_parameters, [ReceivedCommonResolvedBuildSettings.new("CLANG_CXX_LANGUAGE_STANDARD", true)])
+        assert_equal(installer.pods_project.targets[1].received_resolved_build_setting_parameters, [ReceivedCommonResolvedBuildSettings.new("CLANG_CXX_LANGUAGE_STANDARD", true)])
     end
 
     def test_setClangCxxLanguageStandardIfNeeded_whenReactCoreIsNotPresent
@@ -23,7 +23,16 @@ class NewArchitectureTests < Test::Unit::TestCase
 
         assert_equal(installer.aggregate_targets[0].user_project.build_configurations[0].build_settings["CLANG_CXX_LANGUAGE_STANDARD"], nil)
         assert_equal(installer.aggregate_targets[1].user_project.build_configurations[0].build_settings["CLANG_CXX_LANGUAGE_STANDARD"], nil)
-        assert_equal(installer.pods_project.targets[0].received_common_resolved_build_setting_parameters, [])
+        assert_equal(installer.pods_project.targets[0].received_resolved_build_setting_parameters, [])
+    end
+
+    def test_setClangCxxLanguageStandardIfNeeded_whenThereAreDifferentValuesForLanguageStandard_takesTheFirstValue
+        installer = prepare_mocked_installer_with_react_core_and_different_language_standards
+        set_clang_cxx_language_standard_if_needed(installer)
+
+        assert_equal(installer.aggregate_targets[0].user_project.build_configurations[0].build_settings["CLANG_CXX_LANGUAGE_STANDARD"], "c++17")
+        assert_equal(installer.aggregate_targets[1].user_project.build_configurations[0].build_settings["CLANG_CXX_LANGUAGE_STANDARD"], "c++17")
+        assert_equal(installer.pods_project.targets[1].received_resolved_build_setting_parameters, [ReceivedCommonResolvedBuildSettings.new("CLANG_CXX_LANGUAGE_STANDARD", true)])
     end
 end
 
@@ -42,6 +51,36 @@ def prepare_mocked_installer_with_react_core
                     [
                         BuildConfigurationMock.new("Debug", { "CLANG_CXX_LANGUAGE_STANDARD" => "c++17" }),
                         BuildConfigurationMock.new("Release", { "CLANG_CXX_LANGUAGE_STANDARD" => "c++17" }),
+                    ]
+                )
+            ]
+        ),
+        [
+            AggregatedProjectMock.new(
+                UserProjectMock.new("/test/path.xcproj", [BuildConfigurationMock.new("Debug")])
+            ),
+            AggregatedProjectMock.new(
+                UserProjectMock.new("/test/path2.xcproj", [BuildConfigurationMock.new("Debug")])
+            ),
+        ]
+    )
+end
+
+def prepare_mocked_installer_with_react_core_and_different_language_standards
+    return InstallerMock.new(
+        PodsProjectMock.new([
+                TargetMock.new(
+                    "YogaKit",
+                    [
+                        BuildConfigurationMock.new("Debug"),
+                        BuildConfigurationMock.new("Release"),
+                    ]
+                ),
+                TargetMock.new(
+                    "React-Core",
+                    [
+                        BuildConfigurationMock.new("Debug", { "CLANG_CXX_LANGUAGE_STANDARD" => "c++17" }),
+                        BuildConfigurationMock.new("Release", { "CLANG_CXX_LANGUAGE_STANDARD" => "new" }),
                     ]
                 )
             ]
