@@ -3,7 +3,10 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-$CODEGEN_TEMP_DIR = 'build/generated'
+require 'pathname'
+
+$CODEGEN_OUTPUT_DIR = 'build/generated/ios'
+$CODEGEN_LIBRARY_DIR = 'react/renderer/components'
 
 def use_react_native! (options={})
   # The prefix to react-native
@@ -66,6 +69,10 @@ def use_react_native! (options={})
 
   # TODO(macOS GH#214)
   pod 'boost-for-react-native', :podspec => "#{prefix}/third-party-podspecs/boost-for-react-native.podspec"
+
+  # Generate a podspec file for generated files.
+  temp_podinfo = generate_temp_pod_spec_for_codegen!(fabric_enabled)
+  pod temp_podinfo['spec']['name'], :path => temp_podinfo['path']
 
   if fabric_enabled
     pod 'React-Fabric', :path => "#{prefix}/ReactCommon"
@@ -196,20 +203,30 @@ def react_native_post_install(installer)
 end
 
 
-def generate_temp_pod_spec_for_codegen!()
-  output_dir = "#{Pod::Config.instance.installation_root}/#{$CODEGEN_TEMP_DIR}"
+def generate_temp_pod_spec_for_codegen!(fabric_enabled)
+  relative_installation_root = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
+  output_dir = "#{relative_installation_root}/#{$CODEGEN_OUTPUT_DIR}"
   Pod::Executable.execute_command("mkdir", ["-p", output_dir]);
 
   package = JSON.parse(File.read(File.join(__dir__, "..", "package.json")))
   version = package['version']
 
+  source = { :git => 'https://github.com/facebook/react-native.git' }
+  if version == '1000.0.0'
+    # This is an unpublished version, use the latest commit hash of the react-native repo, which we’re presumably in.
+    source[:commit] = `git rev-parse HEAD`.strip if system("git rev-parse --git-dir > /dev/null 2>&1")
+  else
+    source[:tag] = "v#{version}"
+  end
+
+
   folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
-  folly_version = '2021.06.28.00'
+  folly_version = '2021.06.28.00-v2'
   boost_version = '1.76.0'
   boost_compiler_flags = '-Wno-documentation'
 
   spec = {
-    'name' => "ReactNative-Codegen",
+    'name' => "React-Codegen",
     'version' => version,
     'summary' => 'Temp pod for generated files for React Native',
     'homepage' => 'https://facebook.com/',
@@ -217,19 +234,22 @@ def generate_temp_pod_spec_for_codegen!()
     'authors' => 'Facebook',
     'compiler_flags'  => "#{folly_compiler_flags} #{boost_compiler_flags} -Wno-nullability-completeness",
     'source' => { :git => '' },
+    'header_mappings_dir' => './',
     'platforms' => {
       'ios' => '11.0',
+      'osx' => '10.15', # TODO(macOS GH#774)
     },
     'source_files' => "**/*.{h,mm,cpp}",
     'pod_target_xcconfig' => { "HEADER_SEARCH_PATHS" =>
       [
         "\"$(PODS_ROOT)/boost\"",
         "\"$(PODS_ROOT)/RCT-Folly\"",
+        "\"${PODS_ROOT}/Headers/Public/React-Codegen/react/renderer/components\"",
         "\"$(PODS_ROOT)/Headers/Private/React-Fabric\""
       ].join(' ')
     },
     'dependencies': {
-      "React-graphics":  [version],
+      "FBReactNativeSpec":  [version],
       "React-jsiexecutor":  [version],
       "RCT-Folly": [folly_version],
       "RCTRequired": [version],
@@ -239,8 +259,13 @@ def generate_temp_pod_spec_for_codegen!()
       "ReactCommon/turbomodule/core": [version]
     }
   }
-  podspec_path = File.join(output_dir, 'ReactNative-Codegen.podspec.json')
-  Pod::UI.puts "[Codegene] Generating #{podspec_path}"
+
+  if fabric_enabled
+    spec[:'dependencies'].merge!({'React-graphics': [version]});
+  end
+
+  podspec_path = File.join(output_dir, 'React-Codegen.podspec.json')
+  Pod::UI.puts "[Codegen] Generating #{podspec_path}"
 
   File.open(podspec_path, 'w') do |f|
     f.write(spec.to_json)
@@ -264,13 +289,13 @@ def use_react_native_codegen!(spec, options={})
   library_name = options[:library_name] ||= "#{spec.name.gsub('_','-').split('-').collect(&:capitalize).join}Spec"
 
   # Output dir, relative to podspec that invoked this method
-  output_dir = options[:output_dir] ||= "#{library_name}"
-  components_output_dir = "#{output_dir}/react/renderer/components/#{library_name}"
+  output_dir = options[:output_dir] ||= "#{Pod::Config.instance.installation_root}/#{$CODEGEN_OUTPUT_DIR}/#{$CODEGEN_LIBRARY_DIR}"
+  library_output_dir = "#{output_dir}/#{library_name}"
 
   codegen_config = {
     "modules" => {
       :js_srcs_pattern => "Native*.js",
-      :generated_dir => output_dir,
+      :generated_dir => library_output_dir,
       :generated_files => [
         "#{library_name}.h",
         "#{library_name}-generated.mm"
@@ -278,7 +303,7 @@ def use_react_native_codegen!(spec, options={})
     },
     "components" => {
       :js_srcs_pattern => "*NativeComponent.js",
-      :generated_dir => components_output_dir,
+      :generated_dir => library_output_dir,
       :generated_files => [
         "ComponentDescriptors.h",
         "EventEmitters.cpp",
@@ -332,6 +357,9 @@ def use_react_native_codegen!(spec, options={})
     :script => %{set -o pipefail
 set -e
 
+pushd "${PODS_ROOT}/../" > /dev/null
+PROJECT_DIR=$(pwd)
+popd >/dev/null
 RN_DIR=$(cd "$\{PODS_TARGET_SRCROOT\}/#{prefix}" && pwd)
 
 GENERATED_SRCS_DIR="$\{DERIVED_FILE_DIR\}/generated/source/codegen"
@@ -339,11 +367,13 @@ GENERATED_SCHEMA_FILE="$GENERATED_SRCS_DIR/schema.json"
 TEMP_OUTPUT_DIR="$GENERATED_SRCS_DIR/out"
 
 LIBRARY_NAME="#{library_name}"
-OUTPUT_DIR="$\{PODS_TARGET_SRCROOT\}/#{output_dir}"
+OUTPUT_DIR="$PROJECT_DIR/#{$CODEGEN_OUTPUT_DIR}/#{$CODEGEN_LIBRARY_DIR}/#{library_name}"
 
 CODEGEN_REPO_PATH="$RN_DIR/packages/react-native-codegen"
 CODEGEN_NPM_PATH="$RN_DIR/../react-native-codegen"
 CODEGEN_CLI_PATH=""
+
+LIBRARY_TYPE="#{library_type ? library_type : 'all'}"
 
 # Determine path to react-native-codegen
 if [ -d "$CODEGEN_REPO_PATH" ]; then
@@ -406,7 +436,7 @@ generateCodegenSchemaFromJavaScript () {
 generateCodegenArtifactsFromSchema () {
   describe "Generating codegen artifacts from schema"
   pushd "$RN_DIR" >/dev/null || exit 1
-    "$NODE_BINARY" "scripts/generate-specs-cli.js" ios "$GENERATED_SCHEMA_FILE" "$TEMP_OUTPUT_DIR" "$LIBRARY_NAME"
+    "$NODE_BINARY" "scripts/generate-specs-cli.js" ios "$GENERATED_SCHEMA_FILE" "$TEMP_OUTPUT_DIR" "$LIBRARY_NAME" "" "$LIBRARY_TYPE"
   popd >/dev/null || exit 1
 }
 
