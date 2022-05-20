@@ -18,7 +18,7 @@ class FlipperTests < Test::Unit::TestCase
     # =========================== #
     def test_installFlipperDependencies_installDependencies
         # Act
-        install_flipper_dependencies(false, '../..')
+        install_flipper_dependencies('../..')
 
         # Assert
         assert_equal($podInvocationCount, 1)
