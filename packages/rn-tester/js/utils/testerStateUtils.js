@@ -8,15 +8,16 @@
  * @flow
  */
 
-import {AsyncStorage} from 'react-native';
+import type {
+  ComponentList,
+  ExamplesList,
+  RNTesterModuleInfo,
+  RNTesterState,
+  SectionData,
+} from '../types/RNTesterTypes';
 
 import RNTesterList from './RNTesterList';
-
-import type {
-  ExamplesList,
-  RNTesterState,
-  ComponentList,
-} from '../types/RNTesterTypes';
+import {AsyncStorage} from 'react-native';
 
 export const Screens = {
   COMPONENTS: 'components',
@@ -34,7 +35,11 @@ export const initialState: RNTesterState = {
 };
 
 const filterEmptySections = (examplesList: ExamplesList): any => {
-  const filteredSections = {};
+  const filteredSections: {
+    ['apis' | 'bookmarks' | 'components']: Array<
+      SectionData<RNTesterModuleInfo>,
+    >,
+  } = {};
   const sectionKeys = Object.keys(examplesList);
 
   sectionKeys.forEach(key => {

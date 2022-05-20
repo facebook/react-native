@@ -457,9 +457,11 @@ public class ReactContext extends ContextWrapper {
    */
   public boolean startActivityForResult(Intent intent, int code, Bundle bundle) {
     Activity activity = getCurrentActivity();
-    Assertions.assertNotNull(activity);
-    activity.startActivityForResult(intent, code, bundle);
-    return true;
+    if (activity != null) {
+      activity.startActivityForResult(intent, code, bundle);
+      return true;
+    }
+    return false;
   }
 
   /**

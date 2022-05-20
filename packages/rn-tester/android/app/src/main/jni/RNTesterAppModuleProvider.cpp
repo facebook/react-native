@@ -15,7 +15,7 @@ namespace facebook {
 namespace react {
 
 std::shared_ptr<TurboModule> RNTesterAppModuleProvider(
-    const std::string moduleName,
+    const std::string &moduleName,
     const JavaTurboModule::InitParams &params) {
   auto module = rntester_ModuleProvider(moduleName, params);
   if (module != nullptr) {

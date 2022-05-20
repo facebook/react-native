@@ -492,6 +492,20 @@ static inline ViewEvents convertRawProp(
       sourceValue[Offset::PointerLeave],
       defaultValue[Offset::PointerLeave]);
 
+  // Experimental W3C Pointer callbacks
+  result[Offset::PointerEnter2] = convertRawProp(
+      context,
+      rawProps,
+      "onPointerEnter2",
+      sourceValue[Offset::PointerEnter2],
+      defaultValue[Offset::PointerEnter2]);
+  result[Offset::PointerLeave2] = convertRawProp(
+      context,
+      rawProps,
+      "onPointerLeave2",
+      sourceValue[Offset::PointerLeave2],
+      defaultValue[Offset::PointerLeave2]);
+
   // PanResponder callbacks
   result[Offset::MoveShouldSetResponder] = convertRawProp(
       context,

@@ -61,17 +61,14 @@ class GenerateCodegenArtifactsTaskTest {
     val task =
         createTestTask<GenerateCodegenArtifactsTask> {
           it.nodeExecutableAndArgs.set(listOf("npm", "help"))
-          it.useJavaGenerator.set(true)
           it.codegenJavaPackageName.set("com.example.test")
           it.libraryName.set("example-test")
         }
 
     assertEquals(listOf("npm", "help"), task.nodeExecutableAndArgs.get())
-    assertEquals(true, task.useJavaGenerator.get())
     assertEquals("com.example.test", task.codegenJavaPackageName.get())
     assertEquals("example-test", task.libraryName.get())
     assertTrue(task.inputs.properties.containsKey("nodeExecutableAndArgs"))
-    assertTrue(task.inputs.properties.containsKey("useJavaGenerator"))
     assertTrue(task.inputs.properties.containsKey("codegenJavaPackageName"))
     assertTrue(task.inputs.properties.containsKey("libraryName"))
   }

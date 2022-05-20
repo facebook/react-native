@@ -693,7 +693,7 @@ public class ReactEditText extends AppCompatEditText
   // This is hacked in for Fabric. When we delete non-Fabric code, we might be able to simplify or
   // clean this up a bit.
   private void addSpansForMeasurement(Spannable spannable) {
-    if (!mFabricViewStateManager.hasStateWrapper()) {
+    if (mFabricViewStateManager != null && !mFabricViewStateManager.hasStateWrapper()) {
       return;
     }
 

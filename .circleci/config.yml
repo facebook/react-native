@@ -31,6 +31,22 @@ references:
       at: *hermes_workspace_root
 
   # -------------------------
+  #        Cache Key Anchors
+  # -------------------------
+  # Anchors for the cache keys
+
+  cache_keys:
+    buck_cache_key: &buck_cache_key v3-buck-v2019.01.10.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}}
+    gems_cache_key: &gems_cache_key v1-gems-{{ checksum "Gemfile.lock" }}
+    gradle_cache_key: &gradle_cache_key v1-gradle-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "ReactAndroid/gradle.properties" }}
+    hermes_cache_key: &hermes_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
+    hermes_sdk_cache_key: &hermes_sdk_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "sdks/.hermesversion" }}
+    hermes_windows_cache_key: &hermes_windows_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "tmp/hermes/hermesversion" }}
+    pods_cache_key: &pods_cache_key v6-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
+    windows_yarn_cache_key: &windows_yarn_cache_key v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
+    yarn_cache_key: &yarn_cache_key v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}
+
+  # -------------------------
   #        Filters
   # -------------------------
   # CircleCI filters are OR-ed, with all branches triggering by default and tags excluded by default
@@ -96,24 +112,29 @@ commands:
   setup_ruby:
     steps:
       - restore_cache:
-          key: 1-gems-{{ checksum "Gemfile.lock" }}
+          key: *gems_cache_key
       - run:
           name: Bundle Install
           command: |
             source /usr/local/share/chruby/auto.sh
             bundle check || bundle install --path vendor/bundle --clean
       - save_cache:
-          key: 1-gems-{{ checksum "Gemfile.lock" }}
+          key: *gems_cache_key
           paths:
             - vendor/bundle
 
   run_yarn:
+    parameters:
+      yarn_base_cache_key:
+        default: *yarn_cache_key
+        type: string
+
     steps:
       - restore_cache:
           keys:
-            - v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}-{{ arch }}-{{ checksum "yarn.lock" }}
-            - v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}-{{ arch }}
-            - v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}
+            - << parameters.yarn_base_cache_key >>-{{ arch }}-{{ checksum "yarn.lock" }}
+            - << parameters.yarn_base_cache_key >>-{{ arch }}
+            - << parameters.yarn_base_cache_key >>
       - run:
           name: "Yarn: Install Dependencies"
           command: |
@@ -125,13 +146,13 @@ commands:
       - save_cache:
           paths:
             - ~/.cache/yarn
-          key: v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}-{{ arch }}-{{ checksum "yarn.lock" }}
+          key: << parameters.yarn_base_cache_key >>-{{ arch }}-{{ checksum "yarn.lock" }}
 
   install_buck_tooling:
     steps:
       - restore_cache:
           keys:
-            - v3-buck-v2019.01.10.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}}
+            - *buck_cache_key
       - run:
           name: Install BUCK
           command: |
@@ -144,7 +165,7 @@ commands:
           paths:
             - ~/buck
             - ~/okbuck
-          key: v3-buck-v2019.01.10.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}
+          key: *buck_cache_key
 
   install_github_bot_deps:
     steps:
@@ -162,21 +183,6 @@ commands:
           name: "Brew: Install << parameters.package >>"
           command: brew install << parameters.package >> >/dev/null
 
-  with_brew_cache_span:
-    parameters:
-      steps:
-        type: steps
-    steps:
-      - restore_cache:
-          keys:
-            - v4-brew
-      - steps: << parameters.steps >>
-      - save_cache:
-          paths:
-            - /usr/local/Homebrew
-            - ~/Library/Caches/Homebrew
-          key: v4-brew
-
   with_rntester_pods_cache_span:
     parameters:
       steps:
@@ -190,27 +196,27 @@ commands:
           keys:
             # The committed lockfile is generated using USE_FRAMEWORKS=0 and USE_HERMES=1 so it could load an outdated cache if a change
             # only affects the frameworks or hermes config. To help prevent this also cache based on the content of Podfile.
-            - v6-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
+            - *pods_cache_key
       - steps: << parameters.steps >>
       - save_cache:
           paths:
             - packages/rn-tester/Pods
-          key: v6-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
+          key: *pods_cache_key
 
   download_gradle_dependencies:
     steps:
       - restore_cache:
           keys:
-            - v1-gradle-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "ReactAndroid/gradle.properties" }}
+            - *gradle_cache_key
       - run:
           name: Download Dependencies Using Gradle
-          command: ./scripts/circleci/gradle_download_deps.sh
+          command: ./gradlew downloadAll
       - save_cache:
           paths:
             - ~/.gradle
             - ReactAndroid/build/downloads
             - ReactAndroid/build/third-party-ndk
-          key: v1-gradle-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "ReactAndroid/gradle.properties" }}
+          key: *gradle_cache_key
 
   download_buck_dependencies:
     steps:
@@ -245,6 +251,28 @@ commands:
       - run:
           name: Report size of RNTester.app (analysis-bot)
           command: GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" scripts/circleci/report-bundle-size.sh << parameters.platform >> || true
+
+  with_hermes_sdk_cache_span:
+    parameters:
+      steps:
+        type: steps
+    steps:
+      - run:
+          name: Setup Hermes cache
+          command: |
+            HERMES_VERSION_FILE="sdks/.hermesversion"
+            if [ ! -f "$HERMES_VERSION_FILE" ]; then
+              git ls-remote https://github.com/facebook/hermes main | cut -f 1 > $HERMES_VERSION_FILE
+            fi
+      - restore_cache:
+          keys:
+            - *hermes_sdk_cache_key
+      - steps: << parameters.steps >>
+      - save_cache:
+          key: *hermes_sdk_cache_key
+          paths:
+            - sdks/hermesc
+            - sdks/hermes
 
 # -------------------------
 #          JOBS
@@ -372,64 +400,6 @@ jobs:
           path: ./reports/junit
 
   # -------------------------
-  #     JOBS: Build iOS
-  # -------------------------
-  build_ios:
-    executor: reactnativeios
-    parameters:
-      use_frameworks:
-        type: boolean
-        default: false
-    steps:
-      - checkout
-      - setup_ruby
-      - run_yarn
-
-      - run: |
-          cd packages/rn-tester
-          bundle check || bundle install
-
-      - run:
-          name: Configure Environment Variables
-          command: |
-            echo 'export PATH=/usr/local/opt/node@16/bin:$PATH' >> $BASH_ENV
-            source $BASH_ENV
-
-      - run:
-          name: Configure Watchman
-          command: echo "{}" > .watchmanconfig
-
-      - when:
-          condition: << parameters.use_frameworks >>
-          steps:
-            - run:
-                name: Set USE_FRAMEWORKS=1
-                command: echo "export USE_FRAMEWORKS=1" >> $BASH_ENV
-
-      - run:
-          name: Set USE_HERMES=1
-          command: echo "export USE_HERMES=1" >> $BASH_ENV
-
-      - run:
-          name: Set BUILD_HERMES_SOURCE=1
-          command: echo "export BUILD_HERMES_SOURCE=1" >> $BASH_ENV
-
-      - with_brew_cache_span:
-          steps:
-            - brew_install:
-                package: cmake ninja
-
-      - run:
-          name: Setup the CocoaPods environment
-          command: bundle exec pod setup
-
-      - with_rntester_pods_cache_span:
-          steps:
-            - run:
-                name: Generate RNTesterPods Workspace
-                command: cd packages/rn-tester && bundle exec pod install --verbose
-
-  # -------------------------
   #     JOBS: iOS Unit Tests
   # -------------------------
   test_ios:
@@ -452,8 +422,12 @@ jobs:
       - checkout
       - setup_artifacts
       - setup_ruby
+      - run:
+          name: Run Ruby Tests
+          command: |
+            cd scripts
+            sh run_ruby_tests.sh
       - run_yarn
-
       - run: |
           cd packages/rn-tester
           bundle check || bundle install
@@ -467,15 +441,11 @@ jobs:
             echo 'export PATH=/usr/local/opt/node@16/bin:$PATH' >> $BASH_ENV
             source $BASH_ENV
 
-      - with_brew_cache_span:
-          steps:
-            - brew_install:
-                package: watchman cmake ninja
-            - run:
-                name: "Brew: Tap wix/brew"
-                command: brew tap wix/brew >/dev/null
-            - brew_install:
-                package: applesimutils
+      - run:
+          name: "Brew: Tap wix/brew"
+          command: brew tap wix/brew >/dev/null
+      - brew_install:
+          package: applesimutils watchman cmake
 
       - run:
           name: Configure Watchman
@@ -500,11 +470,13 @@ jobs:
           name: Setup the CocoaPods environment
           command: bundle exec pod setup
 
-      - with_rntester_pods_cache_span:
+      - with_hermes_sdk_cache_span:
           steps:
-            - run:
-                name: Generate RNTesterPods Workspace
-                command: cd packages/rn-tester && bundle exec pod install --verbose
+            - with_rntester_pods_cache_span:
+                steps:
+                  - run:
+                      name: Generate RNTesterPods Workspace
+                      command: cd packages/rn-tester && bundle exec pod install --verbose
 
       # -------------------------
       # Runs iOS unit tests
@@ -583,14 +555,23 @@ jobs:
 
       # Build and compile
       - run:
-          name: Build Android App
+          name: Build & Test React Native using Buck
           command: |
             buck build ReactAndroid/src/main/java/com/facebook/react
             buck build ReactAndroid/src/main/java/com/facebook/react/shell
+
+      - run:
+          name: Build & Test React Native using Gradle
+          command: ./gradlew buildAll
+
       - run:
           name: Compile Native Libs for Unit and Integration Tests
           command: ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=$BUILD_THREADS
           no_output_timeout: 30m
+
+      - run:
+          name: Build RN Tester for Release using Gradle
+          command: ./gradlew packages:rn-tester:android:app:assembleRelease
 
       # Build JavaScript Bundle for instrumentation tests
       - run:
@@ -602,17 +583,13 @@ jobs:
           name: Wait for Android Virtual Device
           command: source scripts/android-setup.sh && waitForAVD
 
-      - run:
-          name: Assemble RNTester App
-          command: ./gradlew packages:rn-tester:android:app:assembleRelease
-
       # -------------------------
       # Run Android tests
       - run:
-          name: "Run Tests: Android Unit Tests"
+          name: Run Tests - Android Unit Tests with Buck
           command: buck test ReactAndroid/src/test/... --config build.threads=$BUILD_THREADS --xml ./reports/buck/all-results-raw.xml
       - run:
-          name: "Build Tests: Android Instrumentation Tests"
+          name: Build Tests - Android Instrumentation Tests with Buck
           # Here, just build the instrumentation tests. There is a known issue with installing the APK to android-21+ emulator.
           command: |
             if [[ ! -e ReactAndroid/src/androidTest/assets/AndroidTestBundle.js ]]; then
@@ -672,23 +649,6 @@ jobs:
           command: cd template/android/ && ./gradlew assembleDebug
 
   # -------------------------
-  #    JOBS: Test Android RNTester
-  # -------------------------
-  test_android_rntester:
-    executor: reactnativeandroid
-    steps:
-      - checkout
-      - run_yarn
-
-      - run:
-          name: Generate artifacts for Maven
-          command: ./gradlew :ReactAndroid:installArchives
-
-      - run:
-          name: Assemble RNTester
-          command: ./gradlew :packages:rn-tester:android:app:assembleDebug
-
-  # -------------------------
   #    JOBS: Test iOS Template
   # -------------------------
   test_ios_template:
@@ -730,6 +690,14 @@ jobs:
       - checkout
       - run_yarn
 
+      # The macOS machine can run out of storage if Hermes is enabled and built from source.
+      # Since this job does not use the iOS Simulator, deleting it provides a quick way to
+      # free up space.
+      - run:
+          name: Delete iOS Simulators
+          background: true
+          command: sudo rm -rf /Library/Developer/CoreSimulator/Profiles/Runtimes/
+
       - run:
           name: Set USE_HERMES=1
           command: echo "export USE_HERMES=1" >> $BASH_ENV
@@ -738,23 +706,16 @@ jobs:
           name: Set BUILD_HERMES_SOURCE=1
           command: echo "export BUILD_HERMES_SOURCE=1" >> $BASH_ENV
 
-      - with_brew_cache_span:
+      - brew_install:
+          package: cmake
+
+      - with_hermes_sdk_cache_span:
           steps:
-            - brew_install:
-                package: cmake ninja
-
-      - run:
-          name: Install CocoaPods dependencies
-          command: |
-            rm -rf packages/rn-tester/Pods
-            cd packages/rn-tester && bundle exec pod install
-
-      # The macOS machine can run out of storage if Hermes is enabled and built from source.
-      # Since this job does not use the iOS Simulator, deleting it provides a quick way to
-      # free up space.
-      - run:
-          name: Delete iOS Simulators
-          command: sudo rm -rf /Library/Developer/CoreSimulator/Profiles/Runtimes/
+            - run:
+                name: Install CocoaPods dependencies
+                command: |
+                  rm -rf packages/rn-tester/Pods
+                  cd packages/rn-tester && bundle exec pod install
 
       - run:
           name: Build RNTester
@@ -801,12 +762,12 @@ jobs:
 
       - restore_cache:
           keys:
-            - v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
+            - *windows_yarn_cache_key
       - run:
           name: "Yarn: Install Dependencies"
           command: yarn install --frozen-lockfile --non-interactive
       - save_cache:
-          key: v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
+          key: *windows_yarn_cache_key
           paths:
             - C:\Users\circleci\AppData\Local\Yarn
 
@@ -877,33 +838,45 @@ jobs:
   # -------------------------
   prepare_hermes_workspace:
     docker:
-      - image: debian:buster
+      - image: debian:bullseye
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
+      - HERMES_VERSION_FILE: "sdks/.hermesversion"
     steps:
-      - checkout
       - run:
           name: Install dependencies
           command: |
-            apt-get update
-            apt-get install -y wget git
+            apt update
+            apt install -y wget git curl
+            curl -sL https://deb.nodesource.com/setup_16.x | bash -
+            apt install -y nodejs
+            npm install --global yarn
+      - checkout
+      - run_yarn
       - run:
-          name: Set up Hermes workspace
-          command: mkdir -p "$HERMES_WS_DIR/hermes" "$HERMES_WS_DIR/download"
+          name: Set up Hermes workspace and caching
+          command: |
+            mkdir -p "/tmp/hermes" "/tmp/hermes/download" "/tmp/hermes/hermes"
+
+            if [ -f "$HERMES_VERSION_FILE" ]; then
+              cat $HERMES_VERSION_FILE > /tmp/hermes/hermesversion
+            else
+              HERMES_TAG_SHA=$(git ls-remote https://github.com/facebook/hermes main | cut -f 1 | tr -d '[:space:]')
+              echo $HERMES_TAG_SHA > /tmp/hermes/hermesversion
+            fi
+      - restore_cache:
+          key: *hermes_cache_key
       - run:
           name: Download Hermes tarball
           command: |
-            HERMES_VERSION_FILE="sdks/.hermesversion"
-            HERMES_TARBALL_URL="https://github.com/facebook/hermes/archive/refs/heads/main.tar.gz"
-            if [ -f "$HERMES_VERSION_FILE" ]; then
-              HERMES_TAG=$(cat $HERMES_VERSION_FILE | tr -d '[:space:]')
-              HERMES_TARBALL_URL="https://github.com/facebook/hermes/archive/refs/tags/$HERMES_TAG.tar.gz"
-              echo "Using Hermes version tagged $HERMES_TAG"
-            else
-              echo "Using Hermes latest version from trunk"
-            fi
-            wget --timestamping -O "$HERMES_WS_DIR/download/hermes.tar.gz" "$HERMES_TARBALL_URL"
-            tar -xzf "$HERMES_WS_DIR/download/hermes.tar.gz" --strip-components=1 -C "$HERMES_WS_DIR/hermes"
+            node scripts/hermes/prepare-hermes-for-build
+            cp sdks/download/* $HERMES_WS_DIR/download/.
+            cp -r sdks/hermes/* $HERMES_WS_DIR/hermes/.
+      - save_cache:
+          key: *hermes_cache_key
+          paths:
+            - /tmp/hermes/download/
+            - /tmp/hermes/hermes/
       - persist_to_workspace:
           root: *hermes_workspace_root
           paths:
@@ -924,6 +897,8 @@ jobs:
             apt install -y git openssh-client cmake build-essential \
                 libreadline-dev libicu-dev zip python3
       - *attach_hermes_workspace
+      - restore_cache:
+          key: *hermes_cache_key
       - run:
           name: Set up workspace
           command: |
@@ -931,15 +906,21 @@ jobs:
       - run:
           name: Build HermesC for Linux
           command: |
-            cd /tmp/hermes
-            cmake -S hermes -B build -DHERMES_STATIC_LINK=ON -DCMAKE_BUILD_TYPE=Release \
-              -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=True -DCMAKE_CXX_FLAGS=-s -DCMAKE_C_FLAGS=-s \
-              -DCMAKE_EXE_LINKER_FLAGS="-Wl,--whole-archive -lpthread -Wl,--no-whole-archive"
-            cmake --build build --target check-hermes -j 4
-      - run:
-          name: Package HermesC for Linux
-          command: |
-            cp /tmp/hermes/build/bin/hermesc /tmp/hermes/linux64-bin/.
+            if [ -f /tmp/hermes/linux64-bin/hermesc ]; then
+              echo 'Skipping; Clean "/tmp/hermes/linux64-bin" to rebuild.'
+            else
+              cd /tmp/hermes
+              cmake -S hermes -B build -DHERMES_STATIC_LINK=ON -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=True -DCMAKE_CXX_FLAGS=-s -DCMAKE_C_FLAGS=-s \
+                -DCMAKE_EXE_LINKER_FLAGS="-Wl,--whole-archive -lpthread -Wl,--no-whole-archive"
+              cmake --build build --target check-hermes -j 4
+              cp /tmp/hermes/build/bin/hermesc /tmp/hermes/linux64-bin/.
+            fi
+      - save_cache:
+          key: *hermes_cache_key
+          paths:
+            - /tmp/hermes/linux64-bin/
+            - /tmp/hermes/hermes/destroot/
       - store_artifacts:
           path: /tmp/hermes/linux64-bin/
       - persist_to_workspace:
@@ -952,25 +933,36 @@ jobs:
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
     steps:
+      - checkout
       - *attach_hermes_workspace
+      - restore_cache:
+          key: *hermes_cache_key
       - run:
           name: Set up workspace
           command: |
             mkdir -p /tmp/hermes/osx-bin
+            cp ~/react-native/sdks/hermes-engine/utils/* "$HERMES_WS_DIR/hermes/utils/."
       - run:
           name: Install dependencies
           command: |
-            brew install cmake ninja
+            brew install cmake
       - run:
           name: Build HermesC for macOS
           command: |
-            cd "$HERMES_WS_DIR/hermes"
-            ./utils/build-mac-framework.sh
-      - run:
-          name: Package HermesC for macOS
-          command: |
-            cd "$HERMES_WS_DIR/hermes"
-            cp build_macosx/bin/hermesc /tmp/hermes/osx-bin/.
+            if [ -f /tmp/hermes/osx-bin/hermesc ]; then
+              echo 'Skipping; Clean "/tmp/hermes/osx-bin" to rebuild.'
+            else
+              cd "$HERMES_WS_DIR/hermes"
+              ./utils/build-mac-framework.sh
+              cp build_macosx/bin/hermesc /tmp/hermes/osx-bin/.
+            fi
+      - save_cache:
+          key: *hermes_cache_key
+          paths:
+            - /tmp/hermes/osx-bin/
+            - /tmp/hermes/hermes/destroot/
+            - /tmp/hermes/hermes/build_host_hermesc/
+            - /tmp/hermes/hermes/build_macosx/
       - store_artifacts:
           path: /tmp/hermes/osx-bin/
       - persist_to_workspace:
@@ -989,6 +981,8 @@ jobs:
       - CMAKE_DIR: 'C:\Program Files\CMake\bin'
     steps:
       - *attach_hermes_workspace
+      - restore_cache:
+          key: *hermes_windows_cache_key
       - run:
           name: Set up workspace
           command: |
@@ -998,52 +992,56 @@ jobs:
             New-Item -ItemType Directory $Env:HERMES_WS_DIR\win64-bin
             New-Item -ItemType SymbolicLink -Target tmp\hermes\hermes -Path $Env:HERMES_WS_DIR -Name hermes
       - run:
-          name: Download ICU
-          command: |
-            cd $Env:HERMES_WS_DIR\icu
-            # If Invoke-WebRequest shows a progress bar, it will fail with
-            #   Win32 internal error "Access is denied" 0x5 occurred [...]
-            $progressPreference = 'silentlyContinue'
-            Invoke-WebRequest -Uri "$Env:ICU_URL" -OutFile "icu.zip"
-            Expand-Archive -Path "icu.zip" -DestinationPath "."
-      - run:
-          name: Install dependencies
-          command: |
-            choco install --no-progress cmake --version 3.14.7
-            if (-not $?) { throw "Failed to install CMake" }
-            choco install --no-progress python3
-            if (-not $?) { throw "Failed to install Python" }
-      - run:
-          name: Assemble Windows runtime dependencies
-          command: |
-            cd $Env:HERMES_WS_DIR
-            Copy-Item -Path "icu\bin64\icu*.dll" -Destination "deps"
-            # Include MSVC++ 2015 redistributables
-            Copy-Item -Path "c:\windows\system32\msvcp140.dll" -Destination "deps"
-            Copy-Item -Path "c:\windows\system32\vcruntime140.dll" -Destination "deps"
-            Copy-Item -Path "c:\windows\system32\vcruntime140_1.dll" -Destination "deps"
-      - run:
           name: Build HermesC for Windows
           command: |
-            $Env:PATH += ";$Env:CMAKE_DIR;$Env:MSBUILD_DIR"
-            $Env:ICU_ROOT = "$Env:HERMES_WS_DIR\icu"
-            cd $Env:HERMES_WS_DIR
-            cmake -S hermes -B build_release -G 'Visual Studio 16 2019' -Ax64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=True -DHERMES_ENABLE_WIN10_ICU_FALLBACK=OFF
-            if (-not $?) { throw "Failed to configure Hermes" }
-            cd build_release
-            cmake --build . --target hermesc --config Release
-            if (-not $?) { throw "Failed to build Hermes" }
-      - run:
-          name: Package HermesC for Windows
-          command: |
-            cd $Env:HERMES_WS_DIR
-            Copy-Item -Path "build_release\bin\Release\hermesc.exe" -Destination "win64-bin"
-            # Include Windows runtime dependencies
-            Copy-Item -Path "deps\*" -Destination "win64-bin"
+            if (-not(Test-Path -Path $Env:HERMES_WS_DIR\win64-bin\hermesc.exe)) {
+              choco install --no-progress cmake --version 3.14.7
+              if (-not $?) { throw "Failed to install CMake" }
+              choco install --no-progress python3
+              if (-not $?) { throw "Failed to install Python" }
+
+              cd $Env:HERMES_WS_DIR\icu
+              # If Invoke-WebRequest shows a progress bar, it will fail with
+              #   Win32 internal error "Access is denied" 0x5 occurred [...]
+              $progressPreference = 'silentlyContinue'
+              Invoke-WebRequest -Uri "$Env:ICU_URL" -OutFile "icu.zip"
+              Expand-Archive -Path "icu.zip" -DestinationPath "."
+
+              cd $Env:HERMES_WS_DIR
+              Copy-Item -Path "icu\bin64\icu*.dll" -Destination "deps"
+              # Include MSVC++ 2015 redistributables
+              Copy-Item -Path "c:\windows\system32\msvcp140.dll" -Destination "deps"
+              Copy-Item -Path "c:\windows\system32\vcruntime140.dll" -Destination "deps"
+              Copy-Item -Path "c:\windows\system32\vcruntime140_1.dll" -Destination "deps"
+
+              $Env:PATH += ";$Env:CMAKE_DIR;$Env:MSBUILD_DIR"
+              $Env:ICU_ROOT = "$Env:HERMES_WS_DIR\icu"
+
+              cmake -S hermes -B build_release -G 'Visual Studio 16 2019' -Ax64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=True -DHERMES_ENABLE_WIN10_ICU_FALLBACK=OFF
+              if (-not $?) { throw "Failed to configure Hermes" }
+              cd build_release
+              cmake --build . --target hermesc --config Release
+              if (-not $?) { throw "Failed to build Hermes" }
+
+              cd $Env:HERMES_WS_DIR
+              Copy-Item -Path "build_release\bin\Release\hermesc.exe" -Destination "win64-bin"
+              # Include Windows runtime dependencies
+              Copy-Item -Path "deps\*" -Destination "win64-bin"
+            }
+            else {
+                Write-Host "Skipping; Clean c:\tmp\hermes\win64-bin to rebuild."
+            }
+      - save_cache:
+          key: *hermes_windows_cache_key
+          paths:
+            - C:\tmp\hermes\win64-bin\
+            - C:\tmp\hermes\hermes\icu\
+            - C:\tmp\hermes\hermes\deps\
+            - C:\tmp\hermes\hermes\build_release\
       - store_artifacts:
-          path: c:\tmp\hermes\win64-bin\
+          path: C:\tmp\hermes\win64-bin\
       - persist_to_workspace:
-          root: c:\tmp\hermes\
+          root: C:\tmp\hermes\
           paths:
             - win64-bin
 
@@ -1116,6 +1114,11 @@ jobs:
       # END: Stables and nightlies
 
       - run: node ./scripts/publish-npm.js << parameters.publish_npm_args >>
+      - run:
+          name: Zip Hermes Native Symbols
+          command: zip -r /tmp/hermes-native-symbols.zip ~/react-native/ReactAndroid/hermes-engine/build/intermediates/cmake/
+      - store_artifacts:
+          path: /tmp/hermes-native-symbols.zip
 
       # START: Commitlies
       # Provide a react-native package for this commit as a Circle CI release artifact.
@@ -1231,20 +1234,13 @@ workflows:
       - test_android_template:
           requires:
             - build_npm_package
-      - test_android_rntester
       - test_ios_template:
           requires:
             - build_npm_package
       - test_ios_rntester
-      - build_ios
       - test_ios:
           run_unit_tests: true
-          requires:
-            - build_ios
       # DISABLED: USE_FRAMEWORKS=1 not supported by Flipper
-      # - build_ios:
-      #     name: build_ios_frameworks
-      #     use_frameworks: true
       # - test_ios:
       #     name: test_ios_frameworks
       #     use_frameworks: true

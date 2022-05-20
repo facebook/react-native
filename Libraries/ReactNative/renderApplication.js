@@ -38,7 +38,7 @@ function renderApplication<Props: Object>(
 
   const performanceLogger = scopedPerformanceLogger ?? GlobalPerformanceLogger;
 
-  let renderable = (
+  let renderable: React.MixedElement = (
     <PerformanceLoggerContext.Provider value={performanceLogger}>
       <AppContainer
         rootTag={rootTag}

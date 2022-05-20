@@ -219,7 +219,9 @@ class AnimatedValue extends AnimatedWithChildren {
    * Interpolates the value before updating the property, e.g. mapping 0-1 to
    * 0-10.
    */
-  interpolate(config: InterpolationConfigType): AnimatedInterpolation {
+  interpolate<OutputT: number | string>(
+    config: InterpolationConfigType<OutputT>,
+  ): AnimatedInterpolation<OutputT> {
     return new AnimatedInterpolation(this, config);
   }
 

@@ -7,15 +7,13 @@
 
 #include "TurboModule.h"
 
-using namespace facebook;
-
 namespace facebook {
 namespace react {
 
 TurboModule::TurboModule(
-    const std::string &name,
+    std::string name,
     std::shared_ptr<CallInvoker> jsInvoker)
-    : name_(name), jsInvoker_(jsInvoker) {}
+    : name_(std::move(name)), jsInvoker_(std::move(jsInvoker)) {}
 
 } // namespace react
 } // namespace facebook

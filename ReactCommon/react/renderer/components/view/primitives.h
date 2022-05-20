@@ -49,6 +49,10 @@ struct ViewEvents {
     TouchMove = 17,
     TouchEnd = 18,
     TouchCancel = 19,
+
+    // W3C Pointer Events
+    PointerEnter2 = 20,
+    PointerLeave2 = 21,
   };
 
   constexpr bool operator[](const Offset offset) const {

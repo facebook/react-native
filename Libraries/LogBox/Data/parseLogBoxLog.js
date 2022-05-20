@@ -316,7 +316,7 @@ export function parseLogBoxLog(args: $ReadOnlyArray<mixed>): {|
 |} {
   const message = args[0];
   let argsWithoutComponentStack = [];
-  let componentStack = [];
+  let componentStack: ComponentStack = [];
 
   // Extract component stack from warnings like "Some warning%s".
   if (

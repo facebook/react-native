@@ -10,16 +10,15 @@
 
 'use strict';
 
-import {type EventSubscription} from '../vendor/emitter/EventEmitter';
-
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
 
+import {type EventSubscription} from '../vendor/emitter/EventEmitter';
+
 const BlobManager = require('../Blob/BlobManager');
-const EventTarget = require('event-target-shim');
 const GlobalPerformanceLogger = require('../Utilities/GlobalPerformanceLogger');
 const RCTNetworking = require('./RCTNetworking');
-
 const base64 = require('base64-js');
+const EventTarget = require('event-target-shim');
 const invariant = require('invariant');
 
 const DEBUG_NETWORK_SEND_DELAY: false = false; // Set to a number of milliseconds when debugging
@@ -625,13 +624,12 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
   setResponseHeaders(responseHeaders: ?Object): void {
     this.responseHeaders = responseHeaders || null;
     const headers = responseHeaders || {};
-    this._lowerCaseResponseHeaders = Object.keys(headers).reduce(
-      (lcaseHeaders, headerName) => {
-        lcaseHeaders[headerName.toLowerCase()] = headers[headerName];
-        return lcaseHeaders;
-      },
-      {},
-    );
+    this._lowerCaseResponseHeaders = Object.keys(headers).reduce<{
+      [string]: any,
+    }>((lcaseHeaders, headerName) => {
+      lcaseHeaders[headerName.toLowerCase()] = headers[headerName];
+      return lcaseHeaders;
+    }, {});
   }
 
   setReadyState(newState: number): void {

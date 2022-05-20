@@ -191,12 +191,6 @@ type IOSProps = $ReadOnly<{|
    */
   contentInset?: ?EdgeInsetsProp,
   /**
-   * Used to manually set the starting scroll offset.
-   * The default value is `{x: 0, y: 0}`.
-   * @platform ios
-   */
-  contentOffset?: ?PointProp,
-  /**
    * When true, the scroll view bounces when it reaches the end of the
    * content if the content is larger then the scroll view along the axis of
    * the scroll direction. When false, it disables all bouncing even if
@@ -457,6 +451,11 @@ export type Props = $ReadOnly<{|
    * ```
    */
   contentContainerStyle?: ?ViewStyleProp,
+  /**
+   * Used to manually set the starting scroll offset.
+   * The default value is `{x: 0, y: 0}`.
+   */
+  contentOffset?: ?PointProp,
   /**
    * When true, the scroll view stops on the next index (in relation to scroll
    * position at release) regardless of how fast the gesture is. This can be
@@ -1519,6 +1518,7 @@ class ScrollView extends React.Component<Props, State> {
       keyboardNeverPersistTaps &&
       this._keyboardIsDismissible() &&
       e.target != null &&
+      // $FlowFixMe[incompatible-call]
       !TextInputState.isTextInput(e.target)
     ) {
       return true;
