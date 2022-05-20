@@ -58,6 +58,8 @@
     "scripts/cocoapods/flipper.rb",
     "scripts/cocoapods/new_architecture.rb",
     "scripts/react-native-xcode.sh",
+    "scripts/hermes/hermes-utils.js",
+    "scripts/hermes/prepare-hermes-for-build.js",
     "sdks/hermes-engine",
     "sdks/hermesc",
     "template.config.js",
