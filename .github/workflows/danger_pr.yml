@@ -9,8 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: cd bots && yarn install
+      - run: yarn install
+        working-directory: bots
       - name: Danger
-        run: cd bots && yarn danger ci --use-github-checks --failOnErrors --id danger_pr
+        run: yarn danger ci --use-github-checks --failOnErrors --id danger_pr
+        working-directory: bots
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
