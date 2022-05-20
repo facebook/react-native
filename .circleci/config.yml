@@ -278,9 +278,9 @@ commands:
       - run:
           name: Setup Hermes cache
           command: |
-            HERMES_VERSION_FILE="sdks/.hermesversion"
-            if [ ! -f "$HERMES_VERSION_FILE" ]; then
-              git ls-remote https://github.com/facebook/hermes main | cut -f 1 > $HERMES_VERSION_FILE
+            HERMES_CACHE_KEY_FILE="sdks/.hermes-cache-key-file"
+            if [ ! -f "$HERMES_CACHE_KEY_FILE" ]; then
+              git ls-remote https://github.com/facebook/hermes main | cut -f 1 > $HERMES_CACHE_KEY_FILE
             fi
       - restore_cache:
           keys:
@@ -959,6 +959,7 @@ jobs:
           name: Set up workspace
           command: |
             mkdir -p /tmp/hermes/osx-bin
+            mkdir -p ~/react-native/sdks/hermes
             cp -r $HERMES_WS_DIR/hermes/* ~/react-native/sdks/hermes/.
       - run:
           name: Install dependencies
@@ -982,6 +983,7 @@ jobs:
             . ./utils/build-apple-framework.sh
 
             mkdir -p /tmp/cocoapods-package-root/destroot
+            mkdir -p /tmp/hermes/output
             cp -R ./destroot /tmp/cocoapods-package-root
             cp hermes-engine.podspec LICENSE /tmp/cocoapods-package-root
 
