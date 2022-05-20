@@ -945,6 +945,19 @@ class EnabledExamples extends React.Component<{}> {
           </>
         ) : null}
 
+        {Platform.OS === 'android' ? (
+          <RNTesterBlock
+            title="isAccessibilityServiceEnabled()"
+            description={
+              'Event emitted whenever an accessibility service is enabled. This includes TalkBack as well as assistive technologies such as "Select to Speak".'
+            }>
+            <EnabledExample
+              test="any accessibility service"
+              eventListener="accessibilityServiceChanged"
+            />
+          </RNTesterBlock>
+        ) : null}
+
         <RNTesterBlock title="isReduceMotionEnabled()">
           <EnabledExample
             test="reduce motion"
@@ -972,7 +985,8 @@ class EnabledExample extends React.Component<
       | 'invertColorsChanged'
       | 'reduceTransparencyChanged'
       | 'reduceMotionChanged'
-      | 'screenReaderChanged',
+      | 'screenReaderChanged'
+      | 'accessibilityServiceChanged',
     test: string,
   },
   {
@@ -992,6 +1006,10 @@ class EnabledExample extends React.Component<
     switch (this.props.eventListener) {
       case 'reduceMotionChanged':
         return AccessibilityInfo.isReduceMotionEnabled().then(state => {
+          this.setState({isEnabled: state});
+        });
+      case 'accessibilityServiceChanged':
+        return AccessibilityInfo.isAccessibilityServiceEnabled().then(state => {
           this.setState({isEnabled: state});
         });
       default:

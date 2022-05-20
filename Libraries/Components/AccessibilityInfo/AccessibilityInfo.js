@@ -19,6 +19,11 @@ import NativeAccessibilityManagerApple from './NativeAccessibilityManager';
 import legacySendAccessibilityEvent from './legacySendAccessibilityEvent';
 import type {ElementRef} from 'react';
 
+// Events that are only supported on Android.
+type AccessibilityEventDefinitionsAndroid = {
+  accessibilityServiceChanged: [boolean],
+};
+
 // Events that are only supported on iOS.
 type AccessibilityEventDefinitionsIOS = {
   announcementFinished: [{announcement: string, success: boolean}],
@@ -29,6 +34,7 @@ type AccessibilityEventDefinitionsIOS = {
 };
 
 type AccessibilityEventDefinitions = {
+  ...AccessibilityEventDefinitionsAndroid,
   ...AccessibilityEventDefinitionsIOS,
   highContrastChanged: [boolean], // TODO(macOS GH#774) - highContrastChanged is used on macOS
   change: [boolean], // screenReaderChanged
@@ -45,6 +51,7 @@ const EventNames: Map<$Keys<AccessibilityEventDefinitions>, string> =
         ['change', 'touchExplorationDidChange'],
         ['reduceMotionChanged', 'reduceMotionDidChange'],
         ['screenReaderChanged', 'touchExplorationDidChange'],
+        ['accessibilityServiceChanged', 'accessibilityServiceDidChange'],
       ])
     : new Map([
         ['announcementFinished', 'announcementFinished'],
@@ -252,6 +259,33 @@ const AccessibilityInfo = {
         } else {
           reject(null);
         }
+      }
+    });
+  },
+
+  /**
+   * Query whether Accessibility Service is currently enabled.
+   *
+   * Returns a promise which resolves to a boolean.
+   * The result is `true` when any service is enabled and `false` otherwise.
+   *
+   * @platform android
+   *
+   * See https://reactnative.dev/docs/accessibilityinfo/#isaccessibilityserviceenabled-android
+   */
+  isAccessibilityServiceEnabled(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (Platform.OS === 'android') {
+        if (
+          NativeAccessibilityInfoAndroid != null &&
+          NativeAccessibilityInfoAndroid.isAccessibilityServiceEnabled != null
+        ) {
+          NativeAccessibilityInfoAndroid.isAccessibilityServiceEnabled(resolve);
+        } else {
+          reject(null);
+        }
+      } else {
+        reject(null);
       }
     });
   },

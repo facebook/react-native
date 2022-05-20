@@ -75,27 +75,21 @@ public class MountingManager {
     mMountItemExecutor = mountItemExecutor;
   }
 
-  /** Starts surface and attaches the root view. */
-  @AnyThread
-  public void startSurface(
-      final int surfaceId, @NonNull final View rootView, ThemedReactContext themedReactContext) {
-    SurfaceMountingManager mountingManager = startSurface(surfaceId);
-    mountingManager.attachRootView(rootView, themedReactContext);
-  }
-
   /**
    * Starts surface without attaching the view. All view operations executed against that surface
    * will be queued until the view is attached.
    */
   @AnyThread
-  public SurfaceMountingManager startSurface(final int surfaceId) {
+  public SurfaceMountingManager startSurface(
+      final int surfaceId, ThemedReactContext reactContext, @Nullable View rootView) {
     SurfaceMountingManager surfaceMountingManager =
         new SurfaceMountingManager(
             surfaceId,
             mJSResponderHandler,
             mViewManagerRegistry,
             mRootViewManager,
-            mMountItemExecutor);
+            mMountItemExecutor,
+            reactContext);
 
     // There could technically be a race condition here if addRootView is called twice from
     // different threads, though this is (probably) extremely unlikely, and likely an error.
@@ -111,6 +105,11 @@ public class MountingManager {
     }
 
     mMostRecentSurfaceMountingManager = mSurfaceIdToManager.get(surfaceId);
+
+    if (rootView != null) {
+      surfaceMountingManager.attachRootView(rootView, reactContext);
+    }
+
     return surfaceMountingManager;
   }
 
@@ -314,8 +313,8 @@ public class MountingManager {
   }
 
   /**
-   * Clears the JS Responder specified by {@link #setJSResponder(int, int, int, boolean)}. After
-   * this method is called, all the touch events are going to be handled by JS.
+   * Clears the JS Responder specified by {@link SurfaceMountingManager#setJSResponder}. After this
+   * method is called, all the touch events are going to be handled by JS.
    */
   @UiThread
   public void clearJSResponder() {

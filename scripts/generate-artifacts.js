@@ -178,7 +178,9 @@ function main(appRootDir) {
           RN_ROOT,
           'scripts',
           'generate-specs-cli.js',
-        )} ios ${pathToSchema} ${pathToTempOutputDir} ${library.config.name}`,
+        )} --platform ios --schemaPath ${pathToSchema} --outputDir ${pathToTempOutputDir} --libraryName ${
+          library.config.name
+        }`,
       );
       fs.mkdirSync(pathToOutputDirIOS, {recursive: true});
       execSync(`cp -R ${pathToTempOutputDir}/* ${pathToOutputDirIOS}`);

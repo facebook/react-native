@@ -85,7 +85,7 @@ RCT_EXTERN inline void RCT::_COMPONENT_NAME_::HandleCommand(
 
 const template = `
 /**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* ${'C'}opyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.

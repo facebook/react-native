@@ -36,7 +36,7 @@ def pods(options = {})
   # ]TODO(macOS GH#774)
 
   # TODO(macOS GH#774) - uncomment once Fabric works on macOS
-  # puts "Building RNTester with Fabric enabled."
+  # puts "Building RNTester with Fabric #{fabric_enabled ? "enabled" : "disabled"}."
   # fabric_enabled = true
 
   prefix_path = "../.."

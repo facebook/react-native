@@ -102,7 +102,18 @@ def hermesFlagsForVariant = config.hermesFlagsForVariant ?: {
 // Set disableDevForVariant to a function to configure per variant,
 // defaults to `devDisabledIn${targetName}` or True for Release variants and False for debug variants
 def disableDevForVariant = config.disableDevForVariant ?: {
-    def variant -> config."devDisabledIn${variant.name.capitalize()}" || variant.name.toLowerCase().contains("release")
+    def variant ->
+      config."devDisabledIn${variant.name.capitalize()}" ||
+      variant.name.toLowerCase().contains("release")
+}
+
+// Set bundleForVariant to a function to configure per variant,
+// defaults to `bundleIn${targetName}` or True for Release variants and False for debug variants
+def bundleForVariant = config.bundleForVariant ?: {
+    def variant ->
+      config."bundleIn${variant.name.capitalize()}" ||
+      config."bundleIn${variant.buildType.name.capitalize()}" ||
+      variant.name.toLowerCase().contains("release")
 }
 
 // Set deleteDebugFilesForVariant to a function to configure per variant,
@@ -238,11 +249,7 @@ afterEvaluate {
                 }
             }
 
-            enabled config."bundleIn${targetName}" != null
-                ? config."bundleIn${targetName}"
-                : config."bundleIn${variant.buildType.name.capitalize()}" != null
-                    ? config."bundleIn${variant.buildType.name.capitalize()}"
-                    : targetName.toLowerCase().contains("release")
+            enabled bundleForVariant(variant)
         }
 
         // Expose a minimal interface on the application variant and the task itself:
