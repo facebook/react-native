@@ -31,41 +31,40 @@ end
 #
 # @parameter versions: a dictionary to specify a version of a dependencies. Default versions will be used if not specified
 # @parameter configurations: an array of configurations to install the flipper dependencies. Defaults to ['Debug'].
-def use_flipper_pods()
-    versions = {}
-    versions['Flipper'] = $flipper_default_versions['Flipper']
-    versions['Flipper-Boost-iOSX'] = $flipper_default_versions['Flipper-Boost-iOSX']
-    versions['Flipper-DoubleConversion'] = $flipper_default_versions['Flipper-DoubleConversion']
-    versions['Flipper-Fmt'] = $flipper_default_versions['Flipper-Fmt']
-    versions['Flipper-Folly'] = $flipper_default_versions['Flipper-Folly']
-    versions['Flipper-Glog'] = $flipper_default_versions['Flipper-Glog']
-    versions['Flipper-PeerTalk'] = $flipper_default_versions['Flipper-PeerTalk']
-    versions['Flipper-RSocket'] = $flipper_default_versions['Flipper-RSocket']
-    versions['OpenSSL-Universal'] = $flipper_default_versions['OpenSSL-Universal']
-    pod 'FlipperKit', versions['Flipper']
-    pod 'FlipperKit/FlipperKitLayoutPlugin', versions['Flipper']
-    pod 'FlipperKit/SKIOSNetworkPlugin', versions['Flipper']
-    pod 'FlipperKit/FlipperKitUserDefaultsPlugin', versions['Flipper']
-    pod 'FlipperKit/FlipperKitReactPlugin', versions['Flipper']
+def use_flipper_pods(versions = {}, configurations: ['Debug'])
+    versions['Flipper'] ||= $flipper_default_versions['Flipper']
+    versions['Flipper-Boost-iOSX'] ||= $flipper_default_versions['Flipper-Boost-iOSX']
+    versions['Flipper-DoubleConversion'] ||= $flipper_default_versions['Flipper-DoubleConversion']
+    versions['Flipper-Fmt'] ||= $flipper_default_versions['Flipper-Fmt']
+    versions['Flipper-Folly'] ||= $flipper_default_versions['Flipper-Folly']
+    versions['Flipper-Glog'] ||= $flipper_default_versions['Flipper-Glog']
+    versions['Flipper-PeerTalk'] ||= $flipper_default_versions['Flipper-PeerTalk']
+    versions['Flipper-RSocket'] ||= $flipper_default_versions['Flipper-RSocket']
+    versions['OpenSSL-Universal'] ||= $flipper_default_versions['OpenSSL-Universal']
+    pod 'FlipperKit', versions['Flipper'], :configurations => configurations
+    pod 'FlipperKit/FlipperKitLayoutPlugin', versions['Flipper'], :configurations => configurations
+    pod 'FlipperKit/SKIOSNetworkPlugin', versions['Flipper'], :configurations => configurations
+    pod 'FlipperKit/FlipperKitUserDefaultsPlugin', versions['Flipper'], :configurations => configurations
+    pod 'FlipperKit/FlipperKitReactPlugin', versions['Flipper'], :configurations => configurations
     # List all transitive dependencies for FlipperKit pods
     # to avoid them being linked in Release builds
-    pod 'Flipper', versions['Flipper']
-    pod 'Flipper-Boost-iOSX', versions['Flipper-Boost-iOSX']
-    pod 'Flipper-DoubleConversion', versions['Flipper-DoubleConversion']
-    pod 'Flipper-Fmt', versions['Flipper-Fmt']
-    pod 'Flipper-Folly', versions['Flipper-Folly']
-    pod 'Flipper-Glog', versions['Flipper-Glog']
-    pod 'Flipper-PeerTalk', versions['Flipper-PeerTalk']
-    pod 'Flipper-RSocket', versions['Flipper-RSocket']
-    pod 'FlipperKit/Core', versions['Flipper']
-    pod 'FlipperKit/CppBridge', versions['Flipper']
-    pod 'FlipperKit/FBCxxFollyDynamicConvert', versions['Flipper']
-    pod 'FlipperKit/FBDefines', versions['Flipper']
-    pod 'FlipperKit/FKPortForwarding', versions['Flipper']
-    pod 'FlipperKit/FlipperKitHighlightOverlay', versions['Flipper']
-    pod 'FlipperKit/FlipperKitLayoutTextSearchable', versions['Flipper']
-    pod 'FlipperKit/FlipperKitNetworkPlugin', versions['Flipper']
-    pod 'OpenSSL-Universal', versions['OpenSSL-Universal']
+    pod 'Flipper', versions['Flipper'], :configurations => configurations
+    pod 'Flipper-Boost-iOSX', versions['Flipper-Boost-iOSX'], :configurations => configurations
+    pod 'Flipper-DoubleConversion', versions['Flipper-DoubleConversion'], :configurations => configurations
+    pod 'Flipper-Fmt', versions['Flipper-Fmt'], :configurations => configurations
+    pod 'Flipper-Folly', versions['Flipper-Folly'], :configurations => configurations
+    pod 'Flipper-Glog', versions['Flipper-Glog'], :configurations => configurations
+    pod 'Flipper-PeerTalk', versions['Flipper-PeerTalk'], :configurations => configurations
+    pod 'Flipper-RSocket', versions['Flipper-RSocket'], :configurations => configurations
+    pod 'FlipperKit/Core', versions['Flipper'], :configurations => configurations
+    pod 'FlipperKit/CppBridge', versions['Flipper'], :configurations => configurations
+    pod 'FlipperKit/FBCxxFollyDynamicConvert', versions['Flipper'], :configurations => configurations
+    pod 'FlipperKit/FBDefines', versions['Flipper'], :configurations => configurations
+    pod 'FlipperKit/FKPortForwarding', versions['Flipper'], :configurations => configurations
+    pod 'FlipperKit/FlipperKitHighlightOverlay', versions['Flipper'], :configurations => configurations
+    pod 'FlipperKit/FlipperKitLayoutTextSearchable', versions['Flipper'], :configurations => configurations
+    pod 'FlipperKit/FlipperKitNetworkPlugin', versions['Flipper'], :configurations => configurations
+    pod 'OpenSSL-Universal', versions['OpenSSL-Universal'], :configurations => configurations
 end
 
 # Applies some changes to some pods of the project:
@@ -89,5 +88,25 @@ def flipper_post_install(installer)
                 end
             end
         end
+    end
+end
+
+class FlipperConfiguation
+    attr_reader :flipper_enabled
+    attr_reader :configurations
+    attr_reader :versions
+
+    def initialize(flipper_enabled, configurations, versions)
+        @flipper_enabled = flipper_enabled
+        @configurations = configurations
+        @versions = versions
+    end
+
+    def self.enabled(configurations = ["Debug"], versions = {})
+        return FlipperConfiguation.new(true, configurations, versions)
+    end
+
+    def self.disabled
+        return FlipperConfiguation.new(false, [], {})
     end
 end

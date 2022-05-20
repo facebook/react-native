@@ -33,7 +33,7 @@ def use_react_native! (options={})
   # Include Hermes dependencies
   hermes_enabled = options[:hermes_enabled] ||= false
 
-  use_flipper = (options[:flipper_enabled] ||= false)  && !production
+  flipper_configuration = options[:flipper_configuration] ||= FlipperConfiguation.disabled
 
   if `/usr/sbin/sysctl -n hw.optional.arm64 2>&1`.to_i == 1 && !RUBY_PLATFORM.include?('arm64')
     Pod::UI.warn 'Do not use "pod install" from inside Rosetta2 (x86_64 emulation on arm64).'
@@ -108,9 +108,9 @@ def use_react_native! (options={})
     pod 'libevent', '~> 2.1.12'
   end
 
-  if use_flipper
+  if flipper_configuration.flipper_enabled
     install_flipper_dependencies(prefix)
-    use_flipper_pods()
+    use_flipper_pods(flipper_configuration.versions, :configurations => flipper_configuration.configurations)
   end
 
   pods_to_update = LocalPodspecPatch.pods_to_update(options)
@@ -127,6 +127,7 @@ def get_default_flags()
   flags = {
     :fabric_enabled => false,
     :hermes_enabled => false,
+    :flipper_configuration => FlipperConfiguation.disabled
   }
 
   if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
