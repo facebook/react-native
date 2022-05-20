@@ -3,6 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+require 'json'
 require 'pathname'
 require_relative './react_native_pods_utils/script_phases.rb'
 require_relative './cocoapods/flipper.rb'
@@ -102,10 +103,23 @@ def use_react_native! (options={})
   end
 
   if hermes_enabled
-    system("(cd #{prefix} && node scripts/hermes/prepare-hermes-for-build)")
     pod 'React-hermes', :path => "#{prefix}/ReactCommon/hermes"
-    pod 'hermes-engine', :path => "#{prefix}/sdks/hermes/hermes-engine.podspec"
     pod 'libevent', '~> 2.1.12'
+
+    sdks_dir = Pod::Config.instance.installation_root.join(prefix, "sdks")
+    hermes_tag_file = sdks_dir.join(".hermesversion")
+
+    if (File.exist?(hermes_tag_file))
+      # Use published pod with pre-builts.
+      package = JSON.parse(File.read(File.join(__dir__, "..", "package.json")))
+      hermes_version = package['version']
+      pod 'hermes-engine', hermes_version
+    else
+      # Use local podspec and build from source.
+      system("(cd #{relative_path_from(Pod::Config.instance.installation_root).to_s} && node scripts/hermes/prepare-hermes-for-build)")
+      pod 'hermes-engine', :path => "#{prefix}/sdks/hermes/hermes-engine.podspec"
+    end
+
   end
 
   pods_to_update = LocalPodspecPatch.pods_to_update(options)
