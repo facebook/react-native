@@ -72,18 +72,20 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
     // `beginRefreshing` must be called after the animation is done. This is why it is impossible
     // to use `setContentOffset` with `animated:YES`.
-    [UIView animateWithDuration:0.25
-        delay:0
-        options:UIViewAnimationOptionBeginFromCurrentState
-        animations:^(void) {
-          [scrollView setContentOffset:offset];
-        }
-        completion:^(__unused BOOL finished) {
-          if (beginRefreshingTimestamp == self->_currentRefreshingStateTimestamp) {
-            [super beginRefreshing];
-            [self setCurrentRefreshingState:super.refreshing];
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [UIView animateWithDuration:0.25
+          delay:0
+          options:UIViewAnimationOptionBeginFromCurrentState
+          animations:^(void) {
+            [scrollView setContentOffset:offset];
           }
-        }];
+          completion:^(__unused BOOL finished) {
+            if (beginRefreshingTimestamp == self->_currentRefreshingStateTimestamp) {
+              [super beginRefreshing];
+              [self setCurrentRefreshingState:super.refreshing];
+            }
+          }];
+    });
   } else if (beginRefreshingTimestamp == self->_currentRefreshingStateTimestamp) {
     [super beginRefreshing];
     [self setCurrentRefreshingState:super.refreshing];
@@ -98,18 +100,20 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   if (scrollView && _refreshingProgrammatically && scrollView.contentOffset.y < -scrollView.contentInset.top) {
     UInt64 endRefreshingTimestamp = _currentRefreshingStateTimestamp;
     CGPoint offset = {scrollView.contentOffset.x, -scrollView.contentInset.top};
-    [UIView animateWithDuration:0.25
-        delay:0
-        options:UIViewAnimationOptionBeginFromCurrentState
-        animations:^(void) {
-          [scrollView setContentOffset:offset];
-        }
-        completion:^(__unused BOOL finished) {
-          if (endRefreshingTimestamp == self->_currentRefreshingStateTimestamp) {
-            [super endRefreshing];
-            [self setCurrentRefreshingState:super.refreshing];
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [UIView animateWithDuration:0.25
+          delay:0
+          options:UIViewAnimationOptionBeginFromCurrentState
+          animations:^(void) {
+            [scrollView setContentOffset:offset];
           }
-        }];
+          completion:^(__unused BOOL finished) {
+            if (endRefreshingTimestamp == self->_currentRefreshingStateTimestamp) {
+              [super endRefreshing];
+              [self setCurrentRefreshingState:super.refreshing];
+            }
+          }];
+    });
   } else {
     [super endRefreshing];
   }
