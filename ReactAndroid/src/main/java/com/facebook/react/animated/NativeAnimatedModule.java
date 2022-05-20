@@ -1184,7 +1184,8 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
                 case OP_CODE_REMOVE_ANIMATED_EVENT_FROM_VIEW:
                   viewTag = opsAndArgs.getInt(i++);
                   decrementInFlightAnimationsForViewTag(viewTag);
-                  animatedNodesManager.dropAnimatedNode(viewTag);
+                  animatedNodesManager.removeAnimatedEventFromView(
+                      viewTag, opsAndArgs.getString(i++), opsAndArgs.getInt(i++));
                   break;
                 case OP_CODE_ADD_LISTENER:
                 case OP_CODE_REMOVE_LISTENERS:

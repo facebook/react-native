@@ -51,6 +51,8 @@ suppress_type=$FlowFixMeProps
 suppress_type=$FlowFixMeState
 suppress_type=$FlowFixMeEmpty
 
+experimental.env_mode=constrain_writes
+
 [lints]
 sketchy-null-number=warn
 sketchy-null-mixed=warn

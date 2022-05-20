@@ -13,15 +13,79 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Queue;
+
+class LongStreamingStats {
+  private Queue<Long> minHeap = new PriorityQueue<>(Comparator.naturalOrder());
+  private Queue<Long> maxHeap = new PriorityQueue<>(Comparator.reverseOrder());
+  private double streamingAverage = 0.0;
+  private int len = 0;
+  private long max = 0;
+
+  LongStreamingStats() {}
+
+  public void add(long n) {
+    // To make medians more useful, we discard all zero values
+    // This isn't perfect and certainly makes this a totally invalid median, but, alas...
+    if (n != 0) {
+      if (minHeap.size() == maxHeap.size()) {
+        maxHeap.offer(n);
+        minHeap.offer(maxHeap.poll());
+      } else {
+        minHeap.offer(n);
+        maxHeap.offer(minHeap.poll());
+      }
+    }
+
+    len++;
+    if (len == 1) {
+      streamingAverage = n;
+    } else {
+      streamingAverage = (streamingAverage / (len / (len - 1))) + (n / len);
+    }
+
+    max = (n > max ? n : max);
+  }
+
+  public double getMedian() {
+    if (minHeap.size() == 0 && maxHeap.size() == 0) {
+      return 0;
+    }
+
+    long median;
+    if (minHeap.size() > maxHeap.size()) {
+      median = minHeap.peek();
+    } else {
+      median = (minHeap.peek() + maxHeap.peek()) / 2;
+    }
+    return median;
+  }
+
+  public double getAverage() {
+    return streamingAverage;
+  }
+
+  public long getMax() {
+    return max;
+  }
+}
 
 public class DevToolsReactPerfLogger implements ReactMarker.FabricMarkerListener {
 
   private final Map<Integer, FabricCommitPoint> mFabricCommitMarkers = new HashMap<>();
   private final List<DevToolsReactPerfLoggerListener> mDevToolsReactPerfLoggerListeners =
       new ArrayList<>();
+
+  public static final LongStreamingStats mStreamingCommitStats = new LongStreamingStats();
+  public static final LongStreamingStats mStreamingLayoutStats = new LongStreamingStats();
+  public static final LongStreamingStats mStreamingDiffStats = new LongStreamingStats();
+  public static final LongStreamingStats mStreamingTransactionEndStats = new LongStreamingStats();
+  public static final LongStreamingStats mStreamingBatchExecutionStats = new LongStreamingStats();
 
   public interface DevToolsReactPerfLoggerListener {
 
@@ -95,6 +159,27 @@ public class DevToolsReactPerfLogger implements ReactMarker.FabricMarkerListener
 
     public long getUpdateUIMainThreadEnd() {
       return getValue(FABRIC_UPDATE_UI_MAIN_THREAD_END);
+    }
+
+    // Duration calcuations
+    public long getCommitDuration() {
+      return getCommitEnd() - getCommitStart();
+    }
+
+    public long getLayoutDuration() {
+      return getLayoutEnd() - getLayoutStart();
+    }
+
+    public long getDiffDuration() {
+      return getDiffEnd() - getDiffStart();
+    }
+
+    public long getTransactionEndDuration() {
+      return getFinishTransactionEnd() - getFinishTransactionStart();
+    }
+
+    public long getBatchExecutionDuration() {
+      return getBatchExecutionEnd() - getBatchExecutionStart();
     }
   }
 

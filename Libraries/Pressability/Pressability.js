@@ -935,16 +935,15 @@ const getTouchFromPressEvent = (event: PressEvent) => {
 };
 
 function convertPointerEventToMouseEvent(input: PointerEvent): MouseEvent {
-  const {touchHistory: _, ...synthEvent} = input;
-  const {clientX, clientY, timestamp} = input.nativeEvent;
+  const {clientX, clientY} = input.nativeEvent;
   return {
-    ...synthEvent,
+    ...input,
     nativeEvent: {
       clientX,
       clientY,
       pageX: clientX,
       pageY: clientY,
-      timestamp,
+      timestamp: input.timeStamp,
     },
   };
 }
