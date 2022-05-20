@@ -2,7 +2,7 @@ name: Run Danger on PR
 
 on:
   pull_request:
-    types: [opened, edited, reopened]
+    types: [opened, edited, reopened, synchronize]
 
 jobs:
   danger:
