@@ -19,6 +19,8 @@
 
 - (instancetype)initWithFrame:(CGRect)frame bridge:(RCTBridge *)bridge;
 
+- (void)hide; // TODO(macOS GH#774)
+
 - (void)show;
 
 @end
