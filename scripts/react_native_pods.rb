@@ -33,6 +33,8 @@ def use_react_native! (options={})
   # Include Hermes dependencies
   hermes_enabled = options[:hermes_enabled] ||= false
 
+  use_flipper = (options[:flipper_enabled] ||= false)  && !production
+
   if `/usr/sbin/sysctl -n hw.optional.arm64 2>&1`.to_i == 1 && !RUBY_PLATFORM.include?('arm64')
     Pod::UI.warn 'Do not use "pod install" from inside Rosetta2 (x86_64 emulation on arm64).'
     Pod::UI.warn ' - Emulated x86_64 is slower than native arm64'
@@ -58,8 +60,6 @@ def use_react_native! (options={})
   pod 'React-RCTText', :path => "#{prefix}/Libraries/Text"
   pod 'React-RCTVibration', :path => "#{prefix}/Libraries/Vibration"
   pod 'React-Core/RCTWebSocket', :path => "#{prefix}/"
-
-  install_flipper_dependencies(production, prefix)
 
   pod 'React-bridging', :path => "#{prefix}/ReactCommon/react/bridging"
   pod 'React-cxxreact', :path => "#{prefix}/ReactCommon/cxxreact"
@@ -106,6 +106,11 @@ def use_react_native! (options={})
     pod 'React-hermes', :path => "#{prefix}/ReactCommon/hermes"
     pod 'hermes-engine', :path => "#{prefix}/sdks/hermes/hermes-engine.podspec"
     pod 'libevent', '~> 2.1.12'
+  end
+
+  if use_flipper
+    install_flipper_dependencies(prefix)
+    use_flipper_pods()
   end
 
   pods_to_update = LocalPodspecPatch.pods_to_update(options)

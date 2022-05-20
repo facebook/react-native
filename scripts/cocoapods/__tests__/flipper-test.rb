@@ -16,22 +16,13 @@ class FlipperTests < Test::Unit::TestCase
     # =========================== #
     # TEST - Install Dependencies #
     # =========================== #
-    def test_installFlipperDependencies_whenProductionIsFalse_installDependencies
+    def test_installFlipperDependencies_installDependencies
         # Act
-        install_flipper_dependencies(false, '../..')
+        install_flipper_dependencies('../..')
 
         # Assert
         assert_equal($podInvocationCount, 1)
         assert_equal($podInvocation['React-Core/DevSupport'][:path], "../../" )
-    end
-
-    def test_installFlipperDependencies_whenProductionIsTrue_skipDependencies
-        # Act
-        install_flipper_dependencies(true, '../..')
-
-        # Assert
-        assert_equal($podInvocationCount, 0)
-        assert_true($podInvocation.empty?)
     end
 
     # ======================= #
@@ -39,38 +30,11 @@ class FlipperTests < Test::Unit::TestCase
     # ======================= #
 
     def test_UseFlipperPods_WithDefaultValues_InstallsPods
-        # Arrange
-        configurations = ['Debug']
-
         # Act
         use_flipper_pods()
 
         # Assert
-        check_all_flipper_pods($flipper_default_versions, configurations)
-        # the number of times the `pod` function has been invoked to install a dependency
-        assert_equal($podInvocationCount, 22)
-    end
-
-    def test_UseFlipperPods_WithCustomValues_InstallsPods
-        # Arrange
-        versions = {
-            "Flipper" => "1.0.0",
-            "Flipper-Boost-iOSX" => "1.1.0",
-            "Flipper-DoubleConversion" => "1.1.1",
-            "Flipper-Fmt" => "1.2.1",
-            "Flipper-Folly" => "2.1.1",
-            "Flipper-Glog" => "0.1.2",
-            "Flipper-PeerTalk" => "0.0.1",
-            "Flipper-RSocket" => "0.1.4",
-            "OpenSSL-Universal" => "2.2.2200",
-        }
-        configurations = ['Debug', 'CI']
-
-        # Act
-        use_flipper_pods(versions, :configurations => configurations)
-
-        # Assert
-        check_all_flipper_pods(versions, configurations)
+        check_all_flipper_pods($flipper_default_versions)
         # the number of times the `pod` function has been invoked to install a dependency
         assert_equal($podInvocationCount, 22)
     end
@@ -106,35 +70,34 @@ class FlipperTests < Test::Unit::TestCase
     # HELPERS #
     # ======= #
 
-    def check_all_flipper_pods(versions, configurations)
-        check_flipper_pod('Flipper', versions['Flipper'], configurations)
-        check_flipper_pod('FlipperKit', versions['Flipper'], configurations)
-        check_flipper_pod('FlipperKit/FlipperKitLayoutPlugin', versions['Flipper'], configurations)
-        check_flipper_pod('FlipperKit/SKIOSNetworkPlugin', versions['Flipper'], configurations)
-        check_flipper_pod('FlipperKit/FlipperKitUserDefaultsPlugin', versions['Flipper'], configurations)
-        check_flipper_pod('FlipperKit/FlipperKitReactPlugin', versions['Flipper'], configurations)
-        check_flipper_pod('FlipperKit/Core', versions['Flipper'], configurations)
-        check_flipper_pod('FlipperKit/CppBridge', versions['Flipper'], configurations)
-        check_flipper_pod('FlipperKit/FBCxxFollyDynamicConvert', versions['Flipper'], configurations)
-        check_flipper_pod('FlipperKit/FBDefines', versions['Flipper'], configurations)
-        check_flipper_pod('FlipperKit/FKPortForwarding', versions['Flipper'], configurations)
-        check_flipper_pod('FlipperKit/FlipperKitHighlightOverlay', versions['Flipper'], configurations)
-        check_flipper_pod('FlipperKit/FlipperKitLayoutTextSearchable', versions['Flipper'], configurations)
-        check_flipper_pod('FlipperKit/FlipperKitNetworkPlugin', versions['Flipper'], configurations)
-        check_flipper_pod('Flipper-Boost-iOSX', versions['Flipper-Boost-iOSX'], configurations)
-        check_flipper_pod('Flipper-DoubleConversion', versions['Flipper-DoubleConversion'], configurations)
-        check_flipper_pod('Flipper-Fmt', versions['Flipper-Fmt'], configurations)
-        check_flipper_pod('Flipper-Folly', versions['Flipper-Folly'], configurations)
-        check_flipper_pod('Flipper-Glog', versions['Flipper-Glog'], configurations)
-        check_flipper_pod('Flipper-PeerTalk', versions['Flipper-PeerTalk'], configurations)
-        check_flipper_pod('Flipper-RSocket', versions['Flipper-RSocket'], configurations)
-        check_flipper_pod('OpenSSL-Universal', versions['OpenSSL-Universal'], configurations)
+    def check_all_flipper_pods(versions)
+        check_flipper_pod('Flipper', versions['Flipper'])
+        check_flipper_pod('FlipperKit', versions['Flipper'])
+        check_flipper_pod('FlipperKit/FlipperKitLayoutPlugin', versions['Flipper'])
+        check_flipper_pod('FlipperKit/SKIOSNetworkPlugin', versions['Flipper'])
+        check_flipper_pod('FlipperKit/FlipperKitUserDefaultsPlugin', versions['Flipper'])
+        check_flipper_pod('FlipperKit/FlipperKitReactPlugin', versions['Flipper'])
+        check_flipper_pod('FlipperKit/Core', versions['Flipper'])
+        check_flipper_pod('FlipperKit/CppBridge', versions['Flipper'])
+        check_flipper_pod('FlipperKit/FBCxxFollyDynamicConvert', versions['Flipper'])
+        check_flipper_pod('FlipperKit/FBDefines', versions['Flipper'])
+        check_flipper_pod('FlipperKit/FKPortForwarding', versions['Flipper'])
+        check_flipper_pod('FlipperKit/FlipperKitHighlightOverlay', versions['Flipper'])
+        check_flipper_pod('FlipperKit/FlipperKitLayoutTextSearchable', versions['Flipper'])
+        check_flipper_pod('FlipperKit/FlipperKitNetworkPlugin', versions['Flipper'])
+        check_flipper_pod('Flipper-Boost-iOSX', versions['Flipper-Boost-iOSX'])
+        check_flipper_pod('Flipper-DoubleConversion', versions['Flipper-DoubleConversion'])
+        check_flipper_pod('Flipper-Fmt', versions['Flipper-Fmt'])
+        check_flipper_pod('Flipper-Folly', versions['Flipper-Folly'])
+        check_flipper_pod('Flipper-Glog', versions['Flipper-Glog'])
+        check_flipper_pod('Flipper-PeerTalk', versions['Flipper-PeerTalk'])
+        check_flipper_pod('Flipper-RSocket', versions['Flipper-RSocket'])
+        check_flipper_pod('OpenSSL-Universal', versions['OpenSSL-Universal'])
     end
 
-    def check_flipper_pod(name, expectedVersion, expectedConfigurations)
+    def check_flipper_pod(name, expectedVersion)
         params = $podInvocation[name]
         assert_equal(params[:version], expectedVersion)
-        assert_equal(params[:configurations], expectedConfigurations)
     end
 
     def prepare_mocked_installer
