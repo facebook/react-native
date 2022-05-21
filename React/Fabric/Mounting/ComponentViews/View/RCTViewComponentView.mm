@@ -516,6 +516,16 @@ static void RCTReleaseRCTBorderColors(RCTBorderColors borderColors)
   CGColorRelease(borderColors.right);
 }
 
+static CALayerCornerCurve CornerCurveFromBorderCurve(BorderCurve borderCurve)
+{
+  switch (borderCurve) {
+    case BorderCurve::Continuous:
+      return kCACornerCurveContinuous;
+    case BorderCurve::Circular:
+      return kCACornerCurveCircular;
+  }
+}
+
 static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
 {
   switch (borderStyle) {
@@ -581,14 +591,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     CGColorRelease(borderColor);
     layer.cornerRadius = (CGFloat)borderMetrics.borderRadii.topLeft;
     if (@available(iOS 13.0, *)) {
-      switch (borderMetrics.borderCurves.topLeft) {
-          case BorderCurve::Continuous:
-          layer.cornerCurve = kCACornerCurveContinuous;
-          break;
-          case BorderCurve::Circular:
-          layer.cornerCurve = kCACornerCurveCircular;
-          break;
-      }
+        layer.cornerCurve = CornerCurveFromBorderCurve(borderMetrics.borderCurves.topLeft);
     }
     layer.backgroundColor = _backgroundColor.CGColor;
   } else {
