@@ -45,7 +45,7 @@ exports.examples = [
     title: 'Long List of TextInputs with key props',
     description:
       '100 TextInputs are added every 3 seconds to the View. #29452 avoids a NPE Runtime Error. If you want to trigger the Runtime, change 101 to 1001 in RNTester/TextInputKeyProp.js and use an Emulator with 8GB of RAM. This example is only meant to verify no RuntimeError is triggered. To test TextInput functionalities use the <TextInput> example.',
-    render: function (): React.Node {
+    render: function(): React.Node {
       return <TextInputKeyProp />;
     },
   },

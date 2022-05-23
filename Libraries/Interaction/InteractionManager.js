@@ -86,7 +86,9 @@ const InteractionManager = {
    * Schedule a function to run after all interactions have completed. Returns a cancellable
    * "promise".
    */
-  runAfterInteractions(task: ?Task): {
+  runAfterInteractions(
+    task: ?Task,
+  ): {
     then: <U>(
       onFulfill?: ?(void) => ?(Promise<U> | U),
       onReject?: ?(error: mixed) => ?(Promise<U> | U),
@@ -120,7 +122,7 @@ const InteractionManager = {
           );
         }
       },
-      cancel: function () {
+      cancel: function() {
         _taskQueue.cancelTasks(tasks);
       },
     };

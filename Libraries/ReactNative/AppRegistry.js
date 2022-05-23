@@ -59,8 +59,9 @@ let runCount = 1;
 const sections: Runnables = {};
 const taskProviders: Map<string, TaskProvider> = new Map();
 const taskCancelProviders: Map<string, TaskCancelProvider> = new Map();
-let componentProviderInstrumentationHook: ComponentProviderInstrumentationHook =
-  (component: ComponentProvider) => component();
+let componentProviderInstrumentationHook: ComponentProviderInstrumentationHook = (
+  component: ComponentProvider,
+) => component();
 
 let wrapperComponentProvider: ?WrapperComponentProvider;
 let showArchitectureIndicator = false;

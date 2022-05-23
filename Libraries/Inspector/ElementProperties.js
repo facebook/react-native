@@ -51,7 +51,8 @@ class ElementProperties extends React.Component<Props> {
       openFileButton = (
         <TouchableHighlight
           style={styles.openButton}
-          onPress={openFileInEditor.bind(null, fileName, lineNumber)}>
+          onPress={openFileInEditor.bind(null, fileName, lineNumber)}
+        >
           <Text style={styles.openButtonTitle} numberOfLines={1}>
             {fileNameShort}:{lineNumber}
           </Text>
@@ -71,7 +72,8 @@ class ElementProperties extends React.Component<Props> {
                   key={'item-' + i}
                   style={[styles.breadItem, i === selection && styles.selected]}
                   // $FlowFixMe[not-a-function] found when converting React.createClass to ES6
-                  onPress={() => this.props.setSelection(i)}>
+                  onPress={() => this.props.setSelection(i)}
+                >
                   <Text style={styles.breadItemText}>{hierarchyItem.name}</Text>
                 </TouchableHighlight>
               ),

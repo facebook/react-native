@@ -275,7 +275,12 @@ class NetworkAgent extends InspectorAgent {
     this._interceptor = null;
   }
 
-  getResponseBody({requestId}: {requestId: RequestId, ...}): {
+  getResponseBody({
+    requestId,
+  }: {
+    requestId: RequestId,
+    ...
+  }): {
     body: ?string,
     base64Encoded: boolean,
     ...

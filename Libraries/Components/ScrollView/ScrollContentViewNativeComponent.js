@@ -12,12 +12,14 @@ import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
 import type {ViewProps as Props} from '../View/ViewPropTypes';
 
-const ScrollContentViewNativeComponent: HostComponent<Props> =
-  NativeComponentRegistry.get<Props>('RCTScrollContentView', () => ({
+const ScrollContentViewNativeComponent: HostComponent<Props> = NativeComponentRegistry.get<Props>(
+  'RCTScrollContentView',
+  () => ({
     uiViewClassName: 'RCTScrollContentView',
     bubblingEventTypes: {},
     directEventTypes: {},
     validAttributes: {},
-  }));
+  }),
+);
 
 export default ScrollContentViewNativeComponent;

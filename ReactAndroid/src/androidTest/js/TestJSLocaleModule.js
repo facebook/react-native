@@ -15,10 +15,10 @@ const BatchedBridge = require('react-native/Libraries/BatchedBridge/BatchedBridg
 const {Recording} = NativeModules;
 
 const TestJSLocaleModule = {
-  toUpper: function (s) {
+  toUpper: function(s) {
     Recording.record(s.toUpperCase());
   },
-  toLower: function (s) {
+  toLower: function(s) {
     Recording.record(s.toLowerCase());
   },
 };

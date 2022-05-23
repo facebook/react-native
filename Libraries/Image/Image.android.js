@@ -43,12 +43,12 @@ function getSize(
   failure?: (error: any) => void,
 ): any {
   return NativeImageLoaderAndroid.getSize(url)
-    .then(function (sizes) {
+    .then(function(sizes) {
       success(sizes.width, sizes.height);
     })
     .catch(
       failure ||
-        function () {
+        function() {
           console.warn('Failed to get size for image: ' + url);
         },
     );
@@ -67,12 +67,12 @@ function getSizeWithHeaders(
   failure?: (error: any) => void,
 ): any {
   return NativeImageLoaderAndroid.getSizeWithHeaders(url, headers)
-    .then(function (sizes) {
+    .then(function(sizes) {
       success(sizes.width, sizes.height);
     })
     .catch(
       failure ||
-        function () {
+        function() {
           console.warn('Failed to get size for image: ' + url);
         },
     );

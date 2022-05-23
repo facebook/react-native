@@ -19,8 +19,9 @@ import type {IPerformanceLogger} from './createPerformanceLogger';
  * should be available in every component.
  * See React docs about using Context: https://reactjs.org/docs/context.html
  */
-const PerformanceLoggerContext: React.Context<IPerformanceLogger> =
-  React.createContext(GlobalPerformanceLogger);
+const PerformanceLoggerContext: React.Context<IPerformanceLogger> = React.createContext(
+  GlobalPerformanceLogger,
+);
 if (__DEV__) {
   PerformanceLoggerContext.displayName = 'PerformanceLoggerContext';
 }

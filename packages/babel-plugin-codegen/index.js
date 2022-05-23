@@ -53,7 +53,7 @@ function isCodegenDeclaration(declaration) {
   return false;
 }
 
-module.exports = function ({parse, types: t}) {
+module.exports = function({parse, types: t}) {
   return {
     pre(state) {
       this.code = state.code;

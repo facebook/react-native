@@ -26,7 +26,8 @@ type NativeProps = $ReadOnly<{|
   testIdentifier?: ?string,
 |}>;
 
-const RCTSnapshotNativeComponent: HostComponent<NativeProps> =
-  requireNativeComponent<NativeProps>('RCTSnapshot');
+const RCTSnapshotNativeComponent: HostComponent<NativeProps> = requireNativeComponent<NativeProps>(
+  'RCTSnapshot',
+);
 
 module.exports = RCTSnapshotNativeComponent;

@@ -55,13 +55,15 @@ export default function RNTPressableRow({
           ? {backgroundColor: theme.SecondarySystemFillColor}
           : {backgroundColor: theme.SecondaryGroupedBackgroundColor},
       ]}
-      onPress={onPress}>
+      onPress={onPress}
+    >
       <View style={styles.topRowStyle}>
         <RNTesterComponentTitle>{title}</RNTesterComponentTitle>
         {rightAddOn}
       </View>
       <Text
-        style={[styles.descriptionText, {color: theme.SecondaryLabelColor}]}>
+        style={[styles.descriptionText, {color: theme.SecondaryLabelColor}]}
+      >
         {description}
       </Text>
       {bottomAddOn}

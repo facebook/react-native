@@ -30,8 +30,8 @@ const assertQueue = (flushedQueue, index, moduleID, methodID, params) => {
 //
 // [ ] Local modules that throw exceptions are gracefully caught. In that case
 // local callbacks stored by IDs are cleaned up.
-describe('MessageQueue', function () {
-  beforeEach(function () {
+describe('MessageQueue', function() {
+  beforeEach(function() {
     jest.resetModules();
     MessageQueue = require('../MessageQueue');
     MessageQueueTestModule = require('../__mocks__/MessageQueueTestModule');
@@ -141,7 +141,7 @@ describe('MessageQueue', function () {
 
   it('should check if the global error handler is not overridden by the DebuggerInternal object', () => {
     const dummyModule = {
-      dummy: function () {},
+      dummy: function() {},
     };
     const name = 'emptyModuleName';
     const factory = jest.fn(() => dummyModule);
@@ -153,7 +153,7 @@ describe('MessageQueue', function () {
 
   it('should check if the global error handler is overridden by the DebuggerInternal object', () => {
     const dummyModule = {
-      dummy: function () {},
+      dummy: function() {},
     };
     const name = 'emptyModuleName';
     const factory = jest.fn(() => dummyModule);

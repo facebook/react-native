@@ -27,7 +27,8 @@ class ClippingSample1 extends React.Component {
         <ClippableView
           clippableViewID="outer"
           style={sample1Styles.outer}
-          removeClippedSubviews={true}>
+          removeClippedSubviews={true}
+        >
           <ClippableView
             clippableViewID="inner1"
             style={[sample1Styles.inner, sample1Styles.inner1]}
@@ -95,11 +96,13 @@ class ClippingSample2 extends React.Component {
         <ClippableView
           clippableViewID="outer"
           style={sample2Styles.outer}
-          removeClippedSubviews={true}>
+          removeClippedSubviews={true}
+        >
           <ClippableView
             clippableViewID="complexInner"
             style={sample2Styles.complexInner}
-            removeClippedSubviews={true}>
+            removeClippedSubviews={true}
+          >
             <ClippableView
               clippableViewID="inner1"
               style={[sample2Styles.inner, sample2Styles.inner1]}
@@ -178,7 +181,8 @@ class UpdatingSample1 extends React.Component {
         <ClippableView
           clippableViewID="outer"
           style={updating1Styles.outer}
-          removeClippedSubviews={true}>
+          removeClippedSubviews={true}
+        >
           <ClippableView clippableViewID="inner1" style={inner1Styles} />
           <ClippableView clippableViewID="inner2" style={inner2Styles} />
         </ClippableView>
@@ -223,7 +227,8 @@ class UpdatingSample2 extends React.Component {
         <ClippableView
           clippableViewID="outer"
           style={outerStyles}
-          removeClippedSubviews={true}>
+          removeClippedSubviews={true}
+        >
           <ClippableView
             clippableViewID="inner"
             style={updating2Styles.inner}
@@ -268,7 +273,8 @@ class ScrollViewTest extends React.Component {
           key={i}
           style={scrollTestStyles.complex}
           clippableViewID={viewID}
-          removeClippedSubviews={true}>
+          removeClippedSubviews={true}
+        >
           <ClippableView
             style={scrollTestStyles.inner}
             clippableViewID={viewID + '.1'}
@@ -285,7 +291,8 @@ class ScrollViewTest extends React.Component {
       <ScrollView
         removeClippedSubviews={true}
         style={scrollTestStyles.scrollView}
-        testID="scroll_view">
+        testID="scroll_view"
+      >
         {children}
       </ScrollView>
     );
@@ -342,21 +349,21 @@ class SubviewsClippingTestApp extends React.Component {
 
 const SubviewsClippingTestModule = {
   App: SubviewsClippingTestApp,
-  renderClippingSample1: function () {
+  renderClippingSample1: function() {
     appInstance.setComponent(<ClippingSample1 />);
   },
-  renderClippingSample2: function () {
+  renderClippingSample2: function() {
     appInstance.setComponent(<ClippingSample2 />);
   },
-  renderUpdatingSample1: function (update1, update2) {
+  renderUpdatingSample1: function(update1, update2) {
     appInstance.setComponent(
       <UpdatingSample1 update1={update1} update2={update2} />,
     );
   },
-  renderUpdatingSample2: function (update) {
+  renderUpdatingSample2: function(update) {
     appInstance.setComponent(<UpdatingSample2 update={update} />);
   },
-  renderScrollViewTest: function () {
+  renderScrollViewTest: function() {
     appInstance.setComponent(<ScrollViewTest />);
   },
 };

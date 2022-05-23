@@ -12,8 +12,9 @@ import * as React from 'react';
 
 type ContextType = ?string;
 
-const Context: React.Context<ContextType> =
-  React.createContext<ContextType>(null);
+const Context: React.Context<ContextType> = React.createContext<ContextType>(
+  null,
+);
 
 if (__DEV__) {
   Context.displayName = 'ImageAnalyticsTagContext';

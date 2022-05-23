@@ -21,8 +21,8 @@ describe('resolveAssetSource', () => {
 
     AssetRegistry = require('@react-native/assets/registry');
     resolveAssetSource = require('../resolveAssetSource');
-    NativeSourceCode =
-      require('../../NativeModules/specs/NativeSourceCode').default;
+    NativeSourceCode = require('../../NativeModules/specs/NativeSourceCode')
+      .default;
     Platform = require('../../Utilities/Platform');
   });
 
@@ -81,7 +81,8 @@ describe('resolveAssetSource', () => {
           __packager_asset: true,
           width: 100,
           height: 200,
-          uri: 'http://10.0.0.1:8081/assets/module/a/logo.png?platform=ios&hash=5b6f00f',
+          uri:
+            'http://10.0.0.1:8081/assets/module/a/logo.png?platform=ios&hash=5b6f00f',
           scale: 1,
         },
       );
@@ -104,7 +105,8 @@ describe('resolveAssetSource', () => {
           __packager_asset: true,
           width: 100,
           height: 200,
-          uri: 'http://10.0.0.1:8081/assets/module/a/logo@2x.png?platform=ios&hash=5b6f00f',
+          uri:
+            'http://10.0.0.1:8081/assets/module/a/logo@2x.png?platform=ios&hash=5b6f00f',
           scale: 2,
         },
       );
@@ -246,7 +248,8 @@ describe('resolveAssetSource', () => {
           __packager_asset: true,
           width: 100,
           height: 200,
-          uri: 'file:///sdcard/Path/To/Simulator/drawable-mdpi/awesomemodule_subdir_logo1_.png',
+          uri:
+            'file:///sdcard/Path/To/Simulator/drawable-mdpi/awesomemodule_subdir_logo1_.png',
           scale: 1,
         },
       );
@@ -278,7 +281,8 @@ describe('resolveAssetSource', () => {
           __packager_asset: true,
           width: 100,
           height: 200,
-          uri: 'file:///sdcard/Path/To/Simulator/drawable-mdpi/awesomemodule_subdir_logo1_.png',
+          uri:
+            'file:///sdcard/Path/To/Simulator/drawable-mdpi/awesomemodule_subdir_logo1_.png',
           scale: 1,
         },
       );

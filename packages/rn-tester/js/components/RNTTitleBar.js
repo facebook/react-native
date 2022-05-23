@@ -34,7 +34,8 @@ const HeaderIOS = ({
   return (
     <SafeAreaView>
       <View
-        style={[styles.header, {backgroundColor: theme.SystemBackgroundColor}]}>
+        style={[styles.header, {backgroundColor: theme.SystemBackgroundColor}]}
+      >
         <View style={styles.headerCenter}>
           <Text style={{...styles.title, ...{color: theme.LabelColor}}}>
             {title}

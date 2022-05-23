@@ -36,8 +36,9 @@ type Props = $ReadOnly<{
   loadingIndicatorSrc?: ?string,
 }>;
 
-const ImageViewNativeComponent: HostComponent<Props> =
-  NativeComponentRegistry.get<Props>('RCTImageView', () => ({
+const ImageViewNativeComponent: HostComponent<Props> = NativeComponentRegistry.get<Props>(
+  'RCTImageView',
+  () => ({
     uiViewClassName: 'RCTImageView',
     bubblingEventTypes: {},
     directEventTypes: {
@@ -92,6 +93,7 @@ const ImageViewNativeComponent: HostComponent<Props> =
         process: require('../StyleSheet/processColor'),
       },
     },
-  }));
+  }),
+);
 
 export default ImageViewNativeComponent;

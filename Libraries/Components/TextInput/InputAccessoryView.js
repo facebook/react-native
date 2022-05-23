@@ -100,7 +100,8 @@ class InputAccessoryView extends React.Component<Props> {
       <RCTInputAccessoryViewNativeComponent
         style={[this.props.style, styles.container]}
         nativeID={this.props.nativeID}
-        backgroundColor={this.props.backgroundColor}>
+        backgroundColor={this.props.backgroundColor}
+      >
         {this.props.children}
       </RCTInputAccessoryViewNativeComponent>
     );

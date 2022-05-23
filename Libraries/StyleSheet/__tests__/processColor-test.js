@@ -13,12 +13,12 @@
 const {OS} = require('../../Utilities/Platform');
 const processColor = require('../processColor');
 
-const PlatformColorIOS =
-  require('../PlatformColorValueTypes.ios').PlatformColor;
-const DynamicColorIOS =
-  require('../PlatformColorValueTypesIOS.ios').DynamicColorIOS;
-const PlatformColorAndroid =
-  require('../PlatformColorValueTypes.android').PlatformColor;
+const PlatformColorIOS = require('../PlatformColorValueTypes.ios')
+  .PlatformColor;
+const DynamicColorIOS = require('../PlatformColorValueTypesIOS.ios')
+  .DynamicColorIOS;
+const PlatformColorAndroid = require('../PlatformColorValueTypes.android')
+  .PlatformColor;
 
 const platformSpecific =
   OS === 'android'

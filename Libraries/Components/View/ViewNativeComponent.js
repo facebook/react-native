@@ -16,12 +16,13 @@ import ReactNativeViewViewConfigAndroid from './ReactNativeViewViewConfigAndroid
 import {type ViewProps as Props} from './ViewPropTypes';
 import * as React from 'react';
 
-const ViewNativeComponent: HostComponent<Props> =
-  NativeComponentRegistry.get<Props>('RCTView', () =>
+const ViewNativeComponent: HostComponent<Props> = NativeComponentRegistry.get<Props>(
+  'RCTView',
+  () =>
     Platform.OS === 'android'
       ? ReactNativeViewViewConfigAndroid
       : {uiViewClassName: 'RCTView'},
-  );
+);
 
 interface NativeCommands {
   +hotspotUpdate: (

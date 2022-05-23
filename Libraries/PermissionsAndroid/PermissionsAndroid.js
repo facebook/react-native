@@ -223,10 +223,9 @@ class PermissionsAndroid {
     );
 
     if (rationale) {
-      const shouldShowRationale =
-        await NativePermissionsAndroid.shouldShowRequestPermissionRationale(
-          permission,
-        );
+      const shouldShowRationale = await NativePermissionsAndroid.shouldShowRequestPermissionRationale(
+        permission,
+      );
 
       if (shouldShowRationale && !!NativeDialogManagerAndroid) {
         return new Promise((resolve, reject) => {

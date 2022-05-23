@@ -14,8 +14,7 @@ export type PressabilityPerformanceEvent = $ReadOnly<{|
   signal: TouchSignal,
   nativeTimestamp: number,
 |}>;
-export type PressabilityPerformanceEventListener =
-  PressabilityPerformanceEvent => void;
+export type PressabilityPerformanceEventListener = PressabilityPerformanceEvent => void;
 
 class PressabilityPerformanceEventEmitter {
   _listeners: Array<PressabilityPerformanceEventListener> = [];
@@ -43,7 +42,6 @@ class PressabilityPerformanceEventEmitter {
   }
 }
 
-const PressabilityPerformanceEventEmitterSingleton: PressabilityPerformanceEventEmitter =
-  new PressabilityPerformanceEventEmitter();
+const PressabilityPerformanceEventEmitterSingleton: PressabilityPerformanceEventEmitter = new PressabilityPerformanceEventEmitter();
 
 export default PressabilityPerformanceEventEmitterSingleton;

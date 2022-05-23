@@ -55,7 +55,8 @@ export default function RNTesterModuleContainer(props: Props): React.Node {
       <RNTesterBlock
         key={i}
         title={getExampleTitle(title, platform)}
-        description={description}>
+        description={description}
+      >
         <ExampleComponent />
       </RNTesterBlock>
     );
@@ -130,7 +131,8 @@ function Header(props: {
               ? props.theme.SystemBackgroundColor
               : props.theme.BackgroundColor,
         },
-      ]}>
+      ]}
+    >
       <Text style={styles.headerDescription}>{props.description}</Text>
     </View>
   );

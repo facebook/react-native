@@ -24,13 +24,15 @@ class ViewFocusRingExample extends React.Component<{}> {
             <View
               style={styles.keyView}
               focusable={true}
-              enableFocusRing={true}>
+              enableFocusRing={true}
+            >
               <Text>Enabled</Text>
             </View>
             <View
               style={styles.keyView}
               focusable={true}
-              enableFocusRing={false}>
+              enableFocusRing={false}
+            >
               <Text>Disabled</Text>
             </View>
             <View style={styles.keyView} focusable={true}>
@@ -42,7 +44,8 @@ class ViewFocusRingExample extends React.Component<{}> {
             <View
               style={styles.keyView}
               focusable={true}
-              enableFocusRing={true}>
+              enableFocusRing={true}
+            >
               <Text>Enabled</Text>
             </View>
           </View>

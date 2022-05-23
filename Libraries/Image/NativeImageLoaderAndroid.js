@@ -14,7 +14,9 @@ import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 export interface Spec extends TurboModule {
   +abortRequest: (requestId: number) => void;
   +getConstants: () => {||};
-  +getSize: (uri: string) => Promise<
+  +getSize: (
+    uri: string,
+  ) => Promise<
     $ReadOnly<{
       width: number,
       height: number,

@@ -71,66 +71,66 @@ function shouldNotCallThisCallback() {
 
 const MeasureLayoutTestModule = {
   MeasureLayoutTestApp: MeasureLayoutTestApp,
-  verifyMeasureOnViewA: function () {
-    UIManager.measure(A, function (a, b, width, height, x, y) {
+  verifyMeasureOnViewA: function() {
+    UIManager.measure(A, function(a, b, width, height, x, y) {
       assertEquals(500, width);
       assertEquals(500, height);
       assertEquals(0, x);
       assertEquals(0, y);
     });
   },
-  verifyMeasureOnViewC: function () {
-    UIManager.measure(C, function (a, b, width, height, x, y) {
+  verifyMeasureOnViewC: function() {
+    UIManager.measure(C, function(a, b, width, height, x, y) {
       assertEquals(50, width);
       assertEquals(150, height);
       assertEquals(150, x);
       assertEquals(150, y);
     });
   },
-  verifyMeasureLayoutCRelativeToA: function () {
-    UIManager.measureLayout(
-      C,
-      A,
-      shouldNotCallThisCallback,
-      function (x, y, width, height) {
-        assertEquals(50, width);
-        assertEquals(150, height);
-        assertEquals(150, x);
-        assertEquals(150, y);
-      },
-    );
+  verifyMeasureLayoutCRelativeToA: function() {
+    UIManager.measureLayout(C, A, shouldNotCallThisCallback, function(
+      x,
+      y,
+      width,
+      height,
+    ) {
+      assertEquals(50, width);
+      assertEquals(150, height);
+      assertEquals(150, x);
+      assertEquals(150, y);
+    });
   },
-  verifyMeasureLayoutCRelativeToB: function () {
-    UIManager.measureLayout(
-      C,
-      B,
-      shouldNotCallThisCallback,
-      function (x, y, width, height) {
-        assertEquals(50, width);
-        assertEquals(150, height);
-        assertEquals(100, x);
-        assertEquals(70, y);
-      },
-    );
+  verifyMeasureLayoutCRelativeToB: function() {
+    UIManager.measureLayout(C, B, shouldNotCallThisCallback, function(
+      x,
+      y,
+      width,
+      height,
+    ) {
+      assertEquals(50, width);
+      assertEquals(150, height);
+      assertEquals(100, x);
+      assertEquals(70, y);
+    });
   },
-  verifyMeasureLayoutCRelativeToSelf: function () {
-    UIManager.measureLayout(
-      C,
-      C,
-      shouldNotCallThisCallback,
-      function (x, y, width, height) {
-        assertEquals(50, width);
-        assertEquals(150, height);
-        assertEquals(0, x);
-        assertEquals(0, y);
-      },
-    );
+  verifyMeasureLayoutCRelativeToSelf: function() {
+    UIManager.measureLayout(C, C, shouldNotCallThisCallback, function(
+      x,
+      y,
+      width,
+      height,
+    ) {
+      assertEquals(50, width);
+      assertEquals(150, height);
+      assertEquals(0, x);
+      assertEquals(0, y);
+    });
   },
-  verifyMeasureLayoutRelativeToParentOnViewA: function () {
+  verifyMeasureLayoutRelativeToParentOnViewA: function() {
     UIManager.measureLayoutRelativeToParent(
       A,
       shouldNotCallThisCallback,
-      function (x, y, width, height) {
+      function(x, y, width, height) {
         assertEquals(500, width);
         assertEquals(500, height);
         assertEquals(0, x);
@@ -138,11 +138,11 @@ const MeasureLayoutTestModule = {
       },
     );
   },
-  verifyMeasureLayoutRelativeToParentOnViewB: function () {
+  verifyMeasureLayoutRelativeToParentOnViewB: function() {
     UIManager.measureLayoutRelativeToParent(
       B,
       shouldNotCallThisCallback,
-      function (x, y, width, height) {
+      function(x, y, width, height) {
         assertEquals(200, width);
         assertEquals(300, height);
         assertEquals(50, x);
@@ -150,11 +150,11 @@ const MeasureLayoutTestModule = {
       },
     );
   },
-  verifyMeasureLayoutRelativeToParentOnViewC: function () {
+  verifyMeasureLayoutRelativeToParentOnViewC: function() {
     UIManager.measureLayoutRelativeToParent(
       C,
       shouldNotCallThisCallback,
-      function (x, y, width, height) {
+      function(x, y, width, height) {
         assertEquals(50, width);
         assertEquals(150, height);
         assertEquals(100, x);
@@ -162,40 +162,40 @@ const MeasureLayoutTestModule = {
       },
     );
   },
-  verifyMeasureLayoutDRelativeToB: function () {
+  verifyMeasureLayoutDRelativeToB: function() {
     UIManager.measureLayout(
       D,
       B,
-      function () {
+      function() {
         assertEquals(true, true);
       },
       shouldNotCallThisCallback,
     );
   },
-  verifyMeasureLayoutNonExistentTag: function () {
+  verifyMeasureLayoutNonExistentTag: function() {
     UIManager.measureLayout(
       192,
       A,
-      function () {
+      function() {
         assertEquals(true, true);
       },
       shouldNotCallThisCallback,
     );
   },
-  verifyMeasureLayoutNonExistentAncestor: function () {
+  verifyMeasureLayoutNonExistentAncestor: function() {
     UIManager.measureLayout(
       B,
       192,
-      function () {
+      function() {
         assertEquals(true, true);
       },
       shouldNotCallThisCallback,
     );
   },
-  verifyMeasureLayoutRelativeToParentNonExistentTag: function () {
+  verifyMeasureLayoutRelativeToParentNonExistentTag: function() {
     UIManager.measureLayoutRelativeToParent(
       192,
-      function () {
+      function() {
         assertEquals(true, true);
       },
       shouldNotCallThisCallback,

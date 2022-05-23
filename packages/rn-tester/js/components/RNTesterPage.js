@@ -44,7 +44,8 @@ class RNTesterPage extends React.Component<Props> {
               style={[
                 styles.container,
                 {backgroundColor: theme.SecondarySystemBackgroundColor},
-              ]}>
+              ]}
+            >
               {title}
               <ContentWrapper style={styles.wrapper} {...wrapperProps}>
                 {this.props.children}

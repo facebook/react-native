@@ -56,7 +56,8 @@ function FadeInView({
     <Animated.View // Special animatable View
       style={{
         opacity: fadeAnim, // Binds
-      }}>
+      }}
+    >
       {children}
     </Animated.View>
   );

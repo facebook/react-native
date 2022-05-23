@@ -22,10 +22,10 @@ it('forwards calls to @react-native/normalize-color', () => {
 
 describe('iOS', () => {
   if (OS === 'ios') {
-    const PlatformColor =
-      require('../PlatformColorValueTypes.ios').PlatformColor;
-    const DynamicColorIOS =
-      require('../PlatformColorValueTypesIOS.ios').DynamicColorIOS;
+    const PlatformColor = require('../PlatformColorValueTypes.ios')
+      .PlatformColor;
+    const DynamicColorIOS = require('../PlatformColorValueTypesIOS.ios')
+      .DynamicColorIOS;
 
     it('should normalize iOS PlatformColor colors', () => {
       const color = PlatformColor('systemRedColor');
@@ -79,8 +79,8 @@ describe('iOS', () => {
 
 describe('Android', () => {
   if (OS === 'android') {
-    const PlatformColor =
-      require('../PlatformColorValueTypes.android').PlatformColor;
+    const PlatformColor = require('../PlatformColorValueTypes.android')
+      .PlatformColor;
 
     it('should normalize Android PlatformColor colors', () => {
       const color = PlatformColor('?attr/colorPrimary');

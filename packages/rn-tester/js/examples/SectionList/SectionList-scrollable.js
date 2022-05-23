@@ -96,7 +96,8 @@ const CustomSeparatorComponent = ({highlighted, text}) => (
     style={[
       styles.customSeparator,
       highlighted && {backgroundColor: 'rgb(217, 217, 217)'},
-    ]}>
+    ]}
+  >
     <Text style={styles.separatorText}>{text}</Text>
   </View>
 );
@@ -107,26 +108,24 @@ const EmptySectionList = () => (
   </View>
 );
 
-const renderItemComponent =
-  setItemState =>
-  ({item, separators}) => {
-    if (isNaN(item.key)) {
-      return;
-    }
-    const onPress = () => {
-      const updatedItem = pressItem(item);
-      setItemState(updatedItem);
-    };
-
-    return (
-      <ItemComponent
-        item={item}
-        onPress={onPress}
-        onHideUnderlay={separators.unhighlight}
-        onShowUnderlay={separators.highlight}
-      />
-    );
+const renderItemComponent = setItemState => ({item, separators}) => {
+  if (isNaN(item.key)) {
+    return;
+  }
+  const onPress = () => {
+    const updatedItem = pressItem(item);
+    setItemState(updatedItem);
   };
+
+  return (
+    <ItemComponent
+      item={item}
+      onPress={onPress}
+      onHideUnderlay={separators.unhighlight}
+      onShowUnderlay={separators.highlight}
+    />
+  );
+};
 
 const onScrollToIndexFailed = (info: {
   index: number,
@@ -149,7 +148,7 @@ const onScrollToIndexFailed = (info: {
 };
 
 export function SectionList_scrollable(Props: {
-  ...
+  ...,
 }): React.Element<typeof RNTesterPage> {
   const scrollPos = new Animated.Value(0);
   const scrollSinkY = Animated.event(
@@ -346,7 +345,7 @@ const styles = StyleSheet.create({
 export default {
   title: 'SectionList scrollable',
   name: 'SectionList-scrollable',
-  render: function (): React.Element<typeof SectionList_scrollable> {
+  render: function(): React.Element<typeof SectionList_scrollable> {
     return <SectionList_scrollable />;
   },
 };

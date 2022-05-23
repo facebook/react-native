@@ -25,7 +25,7 @@ describe('stringifySafe', () => {
   });
 
   it('stringifySafe stringifies function values', () => {
-    expect(stringifySafe(function () {})).toEqual('function () {}');
+    expect(stringifySafe(function() {})).toEqual('function () {}');
   });
 
   it('stringifySafe stringifies non-circular objects', () => {

@@ -27,7 +27,8 @@ function ExampleRow({children}: ExampleRowProps) {
         justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: 10,
-      }}>
+      }}
+    >
       {children}
     </View>
   );

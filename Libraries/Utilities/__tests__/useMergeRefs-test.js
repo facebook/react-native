@@ -66,11 +66,9 @@ function mockRefRegistry<T>(): {
 } {
   const registry = [];
   return {
-    mockCallbackRef:
-      (name: string): (T => mixed) =>
-      current => {
-        registry.push({[name]: TestViewInstance.fromValue(current)});
-      },
+    mockCallbackRef: (name: string): (T => mixed) => current => {
+      registry.push({[name]: TestViewInstance.fromValue(current)});
+    },
     mockObjectRef: (name: string): {current: T, ...} => ({
       // $FlowIgnore[unsafe-getters-setters] - Intentional.
       set current(current) {

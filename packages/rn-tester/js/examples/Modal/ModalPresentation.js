@@ -39,10 +39,12 @@ function ModalPresentation() {
   const [visible, setVisible] = React.useState(false);
   const [hardwareAccelerated, setHardwareAccelerated] = React.useState(false);
   const [statusBarTranslucent, setStatusBarTranslucent] = React.useState(false);
-  const [presentationStyle, setPresentationStyle] =
-    React.useState('fullScreen');
-  const [supportedOrientationKey, setSupportedOrientationKey] =
-    React.useState('Portrait');
+  const [presentationStyle, setPresentationStyle] = React.useState(
+    'fullScreen',
+  );
+  const [supportedOrientationKey, setSupportedOrientationKey] = React.useState(
+    'Portrait',
+  );
   const [currentOrientation, setCurrentOrientation] = React.useState('unknown');
   const [action, setAction] = React.useState('None');
   const actions = Platform.OS === 'ios' ? iOSActions : noniOSActions;
@@ -82,13 +84,12 @@ function ModalPresentation() {
         supportedOrientations={supportedOrientations[supportedOrientationKey]}
         onOrientationChange={onOrientationChange}
         onDismiss={onDismiss}
-        onShow={onShow}>
+        onShow={onShow}
+      >
         <View style={[styles.modalContainer, modalBackgroundStyle]}>
           <View
-            style={[
-              styles.modalInnerContainer,
-              innerContainerTransparentStyle,
-            ]}>
+            style={[styles.modalInnerContainer, innerContainerTransparentStyle]}
+          >
             <Text>
               This modal was presented with animationType: '{animationType}'
             </Text>

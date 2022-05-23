@@ -36,7 +36,7 @@ function getSize(
     .then(([width, height]) => success(width, height))
     .catch(
       failure ||
-        function () {
+        function() {
           console.warn('Failed to get size for image ' + uri);
         },
     );
@@ -49,12 +49,12 @@ function getSizeWithHeaders(
   failure?: (error: any) => void,
 ): any {
   return NativeImageLoaderIOS.getSizeWithHeaders(uri, headers)
-    .then(function (sizes) {
+    .then(function(sizes) {
       success(sizes.width, sizes.height);
     })
     .catch(
       failure ||
-        function () {
+        function() {
           console.warn('Failed to get size for image: ' + uri);
         },
     );

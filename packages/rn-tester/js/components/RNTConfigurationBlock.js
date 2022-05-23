@@ -29,7 +29,8 @@ export default function RNTConfigurationBlock(props: Props): React.Node {
       style={StyleSheet.compose(styles.container, {
         borderColor: theme.SeparatorColor,
       })}
-      testID={props.testID}>
+      testID={props.testID}
+    >
       {props.children}
     </View>
   );

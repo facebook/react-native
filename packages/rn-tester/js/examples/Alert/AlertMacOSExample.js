@@ -37,7 +37,8 @@ exports.examples = ([
         <View>
           <TouchableHighlight
             style={styles.wrapper}
-            onPress={() => AlertMacOS.prompt('Plain Text Entry')}>
+            onPress={() => AlertMacOS.prompt('Plain Text Entry')}
+          >
             <View style={styles.button}>
               <Text>plain-text</Text>
             </View>
@@ -46,7 +47,8 @@ exports.examples = ([
             style={styles.wrapper}
             onPress={() =>
               AlertMacOS.prompt('Secure Text', null, null, 'secure-text')
-            }>
+            }
+          >
             <View style={styles.button}>
               <Text>secure-text</Text>
             </View>
@@ -64,7 +66,8 @@ exports.examples = ([
                   {default: '', placeholder: 'Password'},
                 ],
               )
-            }>
+            }
+          >
             <View style={styles.button}>
               <Text>login-password</Text>
             </View>
@@ -89,7 +92,8 @@ exports.examples = ([
                 [{default: '', placeholder: ''}],
                 false,
               )
-            }>
+            }
+          >
             <View style={styles.button}>
               <Text>Default sheet</Text>
             </View>
@@ -105,7 +109,8 @@ exports.examples = ([
                 [{default: '', placeholder: ''}],
                 true,
               )
-            }>
+            }
+          >
             <View style={styles.button}>
               <Text>Modal</Text>
             </View>
@@ -123,7 +128,8 @@ exports.examples = ([
             style={styles.wrapper}
             onPress={() =>
               AlertMacOS.prompt('Default warning style', null, null, 'default')
-            }>
+            }
+          >
             <View style={styles.button}>
               <Text>Default warning style</Text>
             </View>
@@ -140,7 +146,8 @@ exports.examples = ([
                 false,
                 true,
               )
-            }>
+            }
+          >
             <View style={styles.button}>
               <Text>Critical</Text>
             </View>
@@ -191,7 +198,8 @@ class PromptOptions extends React.Component<$FlowFixMeProps, any> {
             AlertMacOS.prompt('Type a value', null, value =>
               this.saveResponse(value),
             )
-          }>
+          }
+        >
           <View style={styles.button}>
             <Text>prompt with title & callback</Text>
           </View>
@@ -201,7 +209,8 @@ class PromptOptions extends React.Component<$FlowFixMeProps, any> {
           style={styles.wrapper}
           onPress={() =>
             AlertMacOS.prompt('Type a value', null, this.customButtons)
-          }>
+          }
+        >
           <View style={styles.button}>
             <Text>prompt with title & custom buttons</Text>
           </View>
@@ -217,7 +226,8 @@ class PromptOptions extends React.Component<$FlowFixMeProps, any> {
               undefined,
               [{default: 'Default value', placeholder: ''}],
             )
-          }>
+          }
+        >
           <View style={styles.button}>
             <Text>prompt with title, callback & default inputs</Text>
           </View>
@@ -236,7 +246,8 @@ class PromptOptions extends React.Component<$FlowFixMeProps, any> {
                 {default: '', placeholder: 'password'},
               ],
             )
-          }>
+          }
+        >
           <View style={styles.button}>
             <Text>
               prompt with title, custom buttons, login/password & default inputs

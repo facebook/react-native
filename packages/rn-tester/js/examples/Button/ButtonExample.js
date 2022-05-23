@@ -29,7 +29,7 @@ exports.description = 'Simple React Native button component.';
 exports.examples = [
   {
     title: 'Button with default styling',
-    render: function (): React.Node {
+    render: function(): React.Node {
       return (
         <Button
           onPress={() => onButtonPress('submitted')}
@@ -42,10 +42,9 @@ exports.examples = [
   },
   {
     title: 'Button with color="red"',
-    description:
-      ('Note: On iOS, the color prop controls the color of the text. On ' +
-        'Android, the color adjusts the background color of the button.': string),
-    render: function (): React.Node {
+    description: ('Note: On iOS, the color prop controls the color of the text. On ' +
+      'Android, the color adjusts the background color of the button.': string),
+    render: function(): React.Node {
       return (
         <RNTesterThemeContext.Consumer>
           {theme => {
@@ -65,10 +64,9 @@ exports.examples = [
   },
   {
     title: 'Two Buttons with Flexbox layout',
-    description:
-      ('Two buttons wrapped inside view with justifyContent: spaceBetween,' +
-        'This layout strategy lets the title define the width of the button': string),
-    render: function (): React.Node {
+    description: ('Two buttons wrapped inside view with justifyContent: spaceBetween,' +
+      'This layout strategy lets the title define the width of the button': string),
+    render: function(): React.Node {
       return (
         <RNTesterThemeContext.Consumer>
           {theme => {
@@ -97,7 +95,7 @@ exports.examples = [
   },
   {
     title: 'Three Buttons with Flexbox layout',
-    render: function (): React.Node {
+    render: function(): React.Node {
       return (
         <RNTesterThemeContext.Consumer>
           {theme => {
@@ -135,7 +133,7 @@ exports.examples = [
     title: 'Button with disabled={true}',
     description:
       'By passing disabled={true} all interactions for the button are disabled.',
-    render: function (): React.Node {
+    render: function(): React.Node {
       return (
         <RNTesterThemeContext.Consumer>
           {theme => {
@@ -158,7 +156,7 @@ exports.examples = [
     title: 'Button with accessibilityLabel="label"',
     description: ('Note: This prop changes the text that a screen ' +
       'reader announces (there are no visual differences).': string),
-    render: function (): React.Node {
+    render: function(): React.Node {
       return (
         <RNTesterThemeContext.Consumer>
           {theme => {
@@ -178,10 +176,9 @@ exports.examples = [
   },
   {
     title: 'Button with accessibilityState={{disabled: true}}',
-    description:
-      ('Note: This prop will announce on TalkBack that the button is disabled. ' +
-        'The "disabled" prop has higher precedence on the state of the component': string),
-    render: function (): React.Node {
+    description: ('Note: This prop will announce on TalkBack that the button is disabled. ' +
+      'The "disabled" prop has higher precedence on the state of the component': string),
+    render: function(): React.Node {
       return (
         <RNTesterThemeContext.Consumer>
           {theme => {

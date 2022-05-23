@@ -64,7 +64,8 @@ class FocusEventExample extends React.Component<{}, State> {
                 this.setState(prevState => ({
                   eventStream: prevState.eventStream + '\nView Blur',
                 }));
-              }}>
+              }}
+            >
               <Text>Focusable View</Text>
             </View>
           ) : null}
@@ -83,7 +84,8 @@ class FocusEventExample extends React.Component<{}, State> {
                   prevState.eventStream +
                   '\nNested Singleline TextInput Parent Blur',
               }));
-            }}>
+            }}
+          >
             <TextInput
               onFocus={() => {
                 this.setState(prevState => ({
@@ -122,7 +124,8 @@ class FocusEventExample extends React.Component<{}, State> {
                     eventStream:
                       prevState.eventStream + '\nDescendent Button Blur',
                   }));
-                }}>
+                }}
+              >
                 <View>
                   <Button
                     title="Button whose ancestor has onFocus/onBlur"
@@ -142,7 +145,8 @@ class FocusEventExample extends React.Component<{}, State> {
                     eventStream:
                       prevState.eventStream + '\nDescendent Button Blur',
                   }));
-                }}>
+                }}
+              >
                 <View>
                   <Button
                     title="Button with onFocus/onBlur and ancestor has onFocus/onBlur"
@@ -172,7 +176,8 @@ class FocusEventExample extends React.Component<{}, State> {
                     eventStream:
                       prevState.eventStream + '\nDescendent Text Blur',
                   }));
-                }}>
+                }}
+              >
                 <View>
                   <Text selectable={true}>Selectable text</Text>
                 </View>
@@ -189,7 +194,8 @@ class FocusEventExample extends React.Component<{}, State> {
                     eventStream:
                       prevState.eventStream + '\nNested View Parent Blur',
                   }));
-                }}>
+                }}
+              >
                 <View
                   focusable={true}
                   onFocus={() => {
@@ -202,7 +208,8 @@ class FocusEventExample extends React.Component<{}, State> {
                     this.setState(prevState => ({
                       eventStream: prevState.eventStream + '\nNested View Blur',
                     }));
-                  }}>
+                  }}
+                >
                   <Text>Nested Focusable View</Text>
                 </View>
               </View>
@@ -223,7 +230,8 @@ class FocusEventExample extends React.Component<{}, State> {
                   prevState.eventStream +
                   '\nNested Multiline TextInput Parent Blur',
               }));
-            }}>
+            }}
+          >
             <TextInput
               onFocus={() => {
                 this.setState(prevState => ({

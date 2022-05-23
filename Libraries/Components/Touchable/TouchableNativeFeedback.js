@@ -113,7 +113,9 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
    * Creates a value for the `background` prop that uses the Android theme's
    * default background for selectable elements.
    */
-  static SelectableBackground: (rippleRadius: ?number) => $ReadOnly<{|
+  static SelectableBackground: (
+    rippleRadius: ?number,
+  ) => $ReadOnly<{|
     attribute: 'selectableItemBackground',
     type: 'ThemeAttrAndroid',
     rippleRadius: ?number,
@@ -127,7 +129,9 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
    * Creates a value for the `background` prop that uses the Android theme's
    * default background for borderless selectable elements. Requires API 21+.
    */
-  static SelectableBackgroundBorderless: (rippleRadius: ?number) => $ReadOnly<{|
+  static SelectableBackgroundBorderless: (
+    rippleRadius: ?number,
+  ) => $ReadOnly<{|
     attribute: 'selectableItemBackgroundBorderless',
     type: 'ThemeAttrAndroid',
     rippleRadius: ?number,
@@ -262,8 +266,11 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
 
     // BACKWARD-COMPATIBILITY: Focus and blur events were never supported before
     // adopting `Pressability`, so preserve that behavior.
-    const {onBlur, onFocus, ...eventHandlersWithoutBlurAndFocus} =
-      this.state.pressability.getEventHandlers();
+    const {
+      onBlur,
+      onFocus,
+      ...eventHandlersWithoutBlurAndFocus
+    } = this.state.pressability.getEventHandlers();
 
     const accessibilityState =
       this.props.disabled != null

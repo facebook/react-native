@@ -58,7 +58,8 @@ function FooterButton(props: ButtonProps): React.Node {
         pressed: LogBoxStyle.getBackgroundDarkColor(),
       }}
       onPress={props.onPress}
-      style={buttonStyles.safeArea}>
+      style={buttonStyles.safeArea}
+    >
       <View style={buttonStyles.content}>
         <Text style={buttonStyles.label}>{props.text}</Text>
       </View>

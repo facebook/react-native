@@ -138,10 +138,11 @@ module.exports = {
 
         const traversedProperties = properties
           .map(prop => {
-            const [propTypeAnnotation] =
-              unwrapNullable<NativeModuleFunctionTypeAnnotation>(
-                prop.typeAnnotation,
-              );
+            const [
+              propTypeAnnotation,
+            ] = unwrapNullable<NativeModuleFunctionTypeAnnotation>(
+              prop.typeAnnotation,
+            );
             const traversedArgs = propTypeAnnotation.params
               .map(param => {
                 const translatedParam = translatePrimitiveJSTypeToCpp(

@@ -63,7 +63,8 @@ class ImageBackground extends React.Component<ImageBackgroundProps> {
       <View
         accessibilityIgnoresInvertColors={true}
         style={style}
-        ref={this._captureRef}>
+        ref={this._captureRef}
+      >
         <Image
           {...props}
           style={[

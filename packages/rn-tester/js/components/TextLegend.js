@@ -23,7 +23,8 @@ const PANGRAMS = {
   hebrew: 'דג סקרן שט בים מאוכזב ולפתע מצא חברה',
   hindi:
     'ऋषियों को सताने वाले दुष्ट राक्षसों के राजा रावण का सर्वनाश करने वाले विष्णुवतार भगवान श्रीराम, अयोध्या के महाराज दशरथ के बड़े सपुत्र थे।',
-  igbo: 'Nne, nna, wepụ he’l’ụjọ dum n’ime ọzụzụ ụmụ, vufesi obi nye Chukwu, ṅụrịanụ, gbakọọnụ kpaa, kwee ya ka o guzoshie ike; ọ ghaghị ito, nwapụta ezi agwa',
+  igbo:
+    'Nne, nna, wepụ he’l’ụjọ dum n’ime ọzụzụ ụmụ, vufesi obi nye Chukwu, ṅụrịanụ, gbakọọnụ kpaa, kwee ya ka o guzoshie ike; ọ ghaghị ito, nwapụta ezi agwa',
   irish: 'D’fhuascail Íosa Úrmhac na hÓighe Beannaithe pór Éava agus Ádhaimh',
   japanese:
     '色は匂へど 散りぬるを 我が世誰ぞ 常ならむ 有為の奥山 今日越えて 浅き夢見じ 酔ひもせず',
@@ -34,7 +35,8 @@ const PANGRAMS = {
   romanian: 'Muzicologă în bej vând whisky și tequila, preț fix.',
   russian: 'Эх, чужак, общий съём цен шляп (юфть) – вдрызг!',
   swedish: 'Yxskaftbud, ge vår WC-zonmö IQ-hjälp.',
-  thai: 'เป็นมนุษย์สุดประเสริฐเลิศคุณค่า กว่าบรรดาฝูงสัตว์เดรัจฉาน จงฝ่าฟันพัฒนาวิชาการ อย่าล้างผลาญฤๅเข่นฆ่าบีฑาใคร ไม่ถือโทษโกรธแช่งซัดฮึดฮัดด่า หัดอภัยเหมือนกีฬาอัชฌาสัย ปฏิบัติประพฤติกฎกำหนดใจ พูดจาให้จ๊ะๆ จ๋าๆ น่าฟังเอยฯ',
+  thai:
+    'เป็นมนุษย์สุดประเสริฐเลิศคุณค่า กว่าบรรดาฝูงสัตว์เดรัจฉาน จงฝ่าฟันพัฒนาวิชาการ อย่าล้างผลาญฤๅเข่นฆ่าบีฑาใคร ไม่ถือโทษโกรธแช่งซัดฮึดฮัดด่า หัดอภัยเหมือนกีฬาอัชฌาสัย ปฏิบัติประพฤติกฎกำหนดใจ พูดจาให้จ๊ะๆ จ๋าๆ น่าฟังเอยฯ',
 };
 
 export default function TextLegend(): React.Node {
@@ -82,7 +84,8 @@ export default function TextLegend(): React.Node {
                   right: 0,
                   position: 'absolute',
                   color: 'red',
-                }}>
+                }}
+              >
                 Baseline
               </Text>,
               <View
@@ -103,7 +106,8 @@ export default function TextLegend(): React.Node {
                   right: 0,
                   position: 'absolute',
                   color: 'green',
-                }}>
+                }}
+              >
                 Capheight
               </Text>,
               <View
@@ -124,7 +128,8 @@ export default function TextLegend(): React.Node {
                   right: 0,
                   position: 'absolute',
                   color: 'blue',
-                }}>
+                }}
+              >
                 X-height
               </Text>,
               <View
@@ -145,7 +150,8 @@ export default function TextLegend(): React.Node {
                   right: 0,
                   position: 'absolute',
                   color: 'orange',
-                }}>
+                }}
+              >
                 Descender
               </Text>,
               <View
@@ -166,7 +172,8 @@ export default function TextLegend(): React.Node {
                   left: x + width + 5,
                   position: 'absolute',
                   color: 'brown',
-                }}>
+                }}
+              >
                 End of text
               </Text>,
               <View
@@ -187,7 +194,8 @@ export default function TextLegend(): React.Node {
                   left: x + 5,
                   position: 'absolute',
                   color: 'brown',
-                }}>
+                }}
+              >
                 Start of text
               </Text>,
             ];
@@ -200,7 +208,8 @@ export default function TextLegend(): React.Node {
           style={{
             fontSize: fontSize,
             textAlign: alignment,
-          }}>
+          }}
+        >
           {PANGRAMS[language]}
         </Text>
       </View>

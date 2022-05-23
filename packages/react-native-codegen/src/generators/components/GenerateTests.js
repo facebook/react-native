@@ -202,7 +202,10 @@ module.exports = {
       .filter(Boolean)
       .join('');
 
-    const imports = Array.from(allImports).sort().join('\n').trim();
+    const imports = Array.from(allImports)
+      .sort()
+      .join('\n')
+      .trim();
 
     const replacedTemplate = FileTemplate({
       imports,

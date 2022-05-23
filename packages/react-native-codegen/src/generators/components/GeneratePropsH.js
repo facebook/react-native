@@ -660,7 +660,7 @@ function generateStructs(
         elementProperties,
         nameParts.concat([prop.name]),
       );
-      nestedStructs.forEach(function (value, key) {
+      nestedStructs.forEach(function(value, key) {
         structs.set(key, value);
       });
 
@@ -684,7 +684,7 @@ function generateStructs(
         elementProperties,
         nameParts.concat([prop.name]),
       );
-      nestedStructs.forEach(function (value, key) {
+      nestedStructs.forEach(function(value, key) {
         structs.set(key, value);
       });
 
@@ -725,7 +725,7 @@ function generateStructs(
         elementProperties,
         nameParts.concat([prop.name]),
       );
-      nestedStructs.forEach(function (value, key) {
+      nestedStructs.forEach(function(value, key) {
         structs.set(key, value);
       });
 
@@ -906,7 +906,9 @@ module.exports = {
 
     const replacedTemplate = FileTemplate({
       componentClasses,
-      imports: Array.from(allImports).sort().join('\n'),
+      imports: Array.from(allImports)
+        .sort()
+        .join('\n'),
     });
 
     return new Map([[fileName, replacedTemplate]]);

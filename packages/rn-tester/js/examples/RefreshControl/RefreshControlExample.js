@@ -88,7 +88,8 @@ class RefreshControlExample extends React.Component {
             colors={['#ff0000', '#00ff00', '#0000ff']}
             progressBackgroundColor="#ffff00"
           />
-        }>
+        }
+      >
         {rows}
       </ScrollView>
     );
@@ -121,7 +122,7 @@ exports.description = 'Adds pull-to-refresh support to a scrollview.';
 exports.examples = [
   {
     title: 'Simple refresh',
-    render: function (): React.Element<typeof RefreshControlExample> {
+    render: function(): React.Element<typeof RefreshControlExample> {
       return <RefreshControlExample />;
     },
   },

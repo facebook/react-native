@@ -65,7 +65,8 @@ exports.examples = [
       return (
         <TouchableHighlight
           style={styles.wrapper}
-          onPress={() => Vibration.vibrate()}>
+          onPress={() => Vibration.vibrate()}
+        >
           <View style={styles.button}>
             <Text>Vibrate</Text>
           </View>
@@ -79,7 +80,8 @@ exports.examples = [
       return (
         <TouchableHighlight
           style={styles.wrapper}
-          onPress={() => Vibration.vibrate(pattern)}>
+          onPress={() => Vibration.vibrate(pattern)}
+        >
           <View style={styles.button}>
             <Text>Vibrate once</Text>
           </View>
@@ -93,7 +95,8 @@ exports.examples = [
       return (
         <TouchableHighlight
           style={styles.wrapper}
-          onPress={() => Vibration.vibrate(pattern, true)}>
+          onPress={() => Vibration.vibrate(pattern, true)}
+        >
           <View style={styles.button}>
             <Text>Vibrate until cancel</Text>
           </View>
@@ -107,7 +110,8 @@ exports.examples = [
       return (
         <TouchableHighlight
           style={styles.wrapper}
-          onPress={() => Vibration.cancel()}>
+          onPress={() => Vibration.cancel()}
+        >
           <View style={styles.button}>
             <Text>Cancel</Text>
           </View>

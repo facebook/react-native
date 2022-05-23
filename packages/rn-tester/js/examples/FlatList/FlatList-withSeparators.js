@@ -14,23 +14,27 @@ import BaseFlatListExample from './BaseFlatListExample';
 import {StyleSheet, View, Text} from 'react-native';
 import * as React from 'react';
 
-const Separator =
-  (defaultColor, highlightColor) =>
-  ({leadingItem, trailingItem, highlighted, hasBeenHighlighted}) => {
-    const text = `Separator for leading ${leadingItem} and trailing ${trailingItem} has ${
-      !hasBeenHighlighted ? 'not ' : ''
-    }been pressed`;
+const Separator = (defaultColor, highlightColor) => ({
+  leadingItem,
+  trailingItem,
+  highlighted,
+  hasBeenHighlighted,
+}) => {
+  const text = `Separator for leading ${leadingItem} and trailing ${trailingItem} has ${
+    !hasBeenHighlighted ? 'not ' : ''
+  }been pressed`;
 
-    return (
-      <View
-        style={[
-          styles.separator,
-          {backgroundColor: highlighted ? highlightColor : defaultColor},
-        ]}>
-        <Text style={styles.separtorText}>{text}</Text>
-      </View>
-    );
-  };
+  return (
+    <View
+      style={[
+        styles.separator,
+        {backgroundColor: highlighted ? highlightColor : defaultColor},
+      ]}
+    >
+      <Text style={styles.separtorText}>{text}</Text>
+    </View>
+  );
+};
 
 export function FlatList_withSeparators(): React.Node {
   const exampleProps = {

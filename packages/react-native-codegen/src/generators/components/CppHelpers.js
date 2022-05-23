@@ -20,7 +20,10 @@ function upperCaseFirst(inString: string): string {
 }
 
 function toSafeCppString(input: string): string {
-  return input.split('-').map(upperCaseFirst).join('');
+  return input
+    .split('-')
+    .map(upperCaseFirst)
+    .join('');
 }
 
 function toIntEnumValueName(propName: string, value: number): string {

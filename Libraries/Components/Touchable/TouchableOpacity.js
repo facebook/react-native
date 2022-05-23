@@ -298,7 +298,8 @@ class TouchableOpacity extends React.Component<Props, State> {
         draggedTypes={this.props.draggedTypes}
         // ]TODO(macOS/win GH#774)
         ref={this.props.hostRef}
-        {...eventHandlersWithoutBlurAndFocus}>
+        {...eventHandlersWithoutBlurAndFocus}
+      >
         {this.props.children}
         {__DEV__ ? (
           <PressabilityDebugView color="cyan" hitSlop={this.props.hitSlop} />

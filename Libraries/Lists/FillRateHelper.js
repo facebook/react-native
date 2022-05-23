@@ -54,7 +54,9 @@ class FillRateHelper {
   _mostlyBlankStartTime = (null: ?number);
   _samplesStartTime = (null: ?number);
 
-  static addListener(callback: FillRateInfo => void): {
+  static addListener(
+    callback: FillRateInfo => void,
+  ): {
     remove: () => void,
     ...
   } {

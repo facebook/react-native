@@ -114,7 +114,7 @@ exports.description =
 exports.examples = [
   {
     title: 'Simple view with sticky input',
-    render: function (): React.Node {
+    render: function(): React.Node {
       return <InputAccessoryViewExample />;
     },
   },

@@ -479,9 +479,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     );
     invariant(
       index < getItemCount(data),
-      `scrollToIndex out of range: requested index ${index} is out of 0 to ${
-        getItemCount(data) - 1
-      }`,
+      `scrollToIndex out of range: requested index ${index} is out of 0 to ${getItemCount(
+        data,
+      ) - 1}`,
     );
     if (!getItemLayout && index > this._highestMeasuredFrameIndex) {
       invariant(
@@ -945,8 +945,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         );
       }
     }
-    const {ListEmptyComponent, ListFooterComponent, ListHeaderComponent} =
-      this.props;
+    const {
+      ListEmptyComponent,
+      ListFooterComponent,
+      ListHeaderComponent,
+    } = this.props;
     const {data, horizontal} = this.props;
     const isVirtualizationDisabled = this._isVirtualizationDisabled();
     const inversionStyle = this.props.inverted
@@ -971,13 +974,15 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       cells.push(
         <VirtualizedListCellContextProvider
           cellKey={this._getCellKey() + '-header'}
-          key="$header">
+          key="$header"
+        >
           <View
             onLayout={this._onLayoutHeader}
             style={StyleSheet.compose(
               inversionStyle,
               this.props.ListHeaderComponentStyle,
-            )}>
+            )}
+          >
             {
               // $FlowFixMe[incompatible-type] - Typing ReactNativeComponent revealed errors
               element
@@ -1116,13 +1121,15 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       cells.push(
         <VirtualizedListCellContextProvider
           cellKey={this._getFooterCellKey()}
-          key="$footer">
+          key="$footer"
+        >
           <View
             onLayout={this._onLayoutFooter}
             style={StyleSheet.compose(
               inversionStyle,
               this.props.ListFooterComponentStyle,
-            )}>
+            )}
+          >
             {
               // $FlowFixMe[incompatible-type] - Typing ReactNativeComponent revealed errors
               element
@@ -1167,7 +1174,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           registerAsNestedChild: this._registerAsNestedChild,
           unregisterAsNestedChild: this._unregisterAsNestedChild,
           debugInfo: this._getDebugInfo(),
-        }}>
+        }}
+      >
         {React.cloneElement(
           (
             this.props.renderScrollComponent ||
@@ -1658,8 +1666,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   _maybeCallOnEndReached() {
-    const {data, getItemCount, onEndReached, onEndReachedThreshold} =
-      this.props;
+    const {
+      data,
+      getItemCount,
+      onEndReached,
+      onEndReachedThreshold,
+    } = this.props;
     const {contentLength, visibleLength, offset} = this._scrollMetrics;
     const distanceFromEnd = contentLength - visibleLength - offset;
     const threshold =
@@ -1746,11 +1758,15 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         // know our offset from our offset from our parent
         return;
       }
-      ({visibleLength, contentLength, offset, dOffset} =
-        this._convertParentScrollMetrics({
-          visibleLength,
-          offset,
-        }));
+      ({
+        visibleLength,
+        contentLength,
+        offset,
+        dOffset,
+      } = this._convertParentScrollMetrics({
+        visibleLength,
+        offset,
+      }));
     }
 
     const dt = this._scrollMetrics.timestamp
@@ -2241,7 +2257,8 @@ class CellRenderer extends React.Component<
       <CellRendererComponent
         {...this.props}
         style={cellStyle}
-        onLayout={onLayout}>
+        onLayout={onLayout}
+      >
         {element}
         {itemSeparator}
       </CellRendererComponent>

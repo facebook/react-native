@@ -38,7 +38,8 @@ class ToggleDefaultPaddingExample extends React.Component<
       <View>
         <TextInput style={this.state.hasPadding ? {padding: 0} : null} />
         <Text
-          onPress={() => this.setState({hasPadding: !this.state.hasPadding})}>
+          onPress={() => this.setState({hasPadding: !this.state.hasPadding})}
+        >
           Toggle padding
         </Text>
       </View>
@@ -152,7 +153,7 @@ exports.examples = ([
   ...TextInputSharedExamples,
   {
     title: 'Colors and text inputs',
-    render: function (): React.Node {
+    render: function(): React.Node {
       return (
         <View>
           <TextInput
@@ -186,7 +187,8 @@ exports.examples = ([
             style={[
               styles.singleLine,
               {backgroundColor: 'rgba(100, 100, 100, 0.3)'},
-            ]}>
+            ]}
+          >
             <Text style={{backgroundColor: 'rgba(100, 100, 100, 0.3)'}}>
               Darker backgroundColor
             </Text>
@@ -202,7 +204,7 @@ exports.examples = ([
   },
   {
     title: 'Font Weight',
-    render: function (): React.Node {
+    render: function(): React.Node {
       return (
         <View>
           <TextInput
@@ -234,7 +236,7 @@ exports.examples = ([
   },
   {
     title: 'Text input, themes and heights',
-    render: function (): React.Node {
+    render: function(): React.Node {
       return (
         <TextInput
           placeholder="If you set height, beware of padding set from themes"
@@ -245,7 +247,7 @@ exports.examples = ([
   },
   {
     title: 'letterSpacing',
-    render: function (): React.Node {
+    render: function(): React.Node {
       return (
         <View>
           <TextInput
@@ -270,7 +272,7 @@ exports.examples = ([
   },
   {
     title: 'Passwords',
-    render: function (): React.Node {
+    render: function(): React.Node {
       return (
         <View>
           <TextInput
@@ -290,7 +292,7 @@ exports.examples = ([
   },
   {
     title: 'Editable',
-    render: function (): React.Node {
+    render: function(): React.Node {
       return (
         <TextInput
           defaultValue="Can't touch this! (>'-')> ^(' - ')^ <('-'<) (>'-')> ^(' - ')^"
@@ -302,7 +304,7 @@ exports.examples = ([
   },
   {
     title: 'Multiline',
-    render: function (): React.Node {
+    render: function(): React.Node {
       return (
         <View>
           <TextInput
@@ -332,7 +334,8 @@ exports.examples = ([
               styles.multiline,
               {color: 'blue'},
               {textAlign: 'right', textAlignVertical: 'bottom'},
-            ]}>
+            ]}
+          >
             <Text style={styles.multiline}>
               multiline with children, aligned bottom-right
             </Text>
@@ -344,7 +347,7 @@ exports.examples = ([
   {
     title: 'Fixed number of lines',
     platform: 'android',
-    render: function (): React.Node {
+    render: function(): React.Node {
       return (
         <View>
           <TextInput
@@ -363,14 +366,15 @@ exports.examples = ([
   },
   {
     title: 'Auto-expanding',
-    render: function (): React.Node {
+    render: function(): React.Node {
       return (
         <View>
           <AutogrowingTextInputExample
             enablesReturnKeyAutomatically={true}
             returnKeyType="done"
             multiline={true}
-            style={{maxHeight: 400, minHeight: 20, backgroundColor: '#eeeeee'}}>
+            style={{maxHeight: 400, minHeight: 20, backgroundColor: '#eeeeee'}}
+          >
             generic generic generic
             <Text style={{fontSize: 6, color: 'red'}}>
               small small small small small small
@@ -387,7 +391,7 @@ exports.examples = ([
   },
   {
     title: 'Return key',
-    render: function (): React.Node {
+    render: function(): React.Node {
       const returnKeyTypes = [
         'none',
         'go',
@@ -428,7 +432,7 @@ exports.examples = ([
   },
   {
     title: 'Inline Images',
-    render: function (): React.Node {
+    render: function(): React.Node {
       return (
         <View>
           <TextInput
@@ -452,7 +456,7 @@ exports.examples = ([
   },
   {
     title: 'Toggle Default Padding',
-    render: function (): React.Node {
+    render: function(): React.Node {
       return <ToggleDefaultPaddingExample />;
     },
   },

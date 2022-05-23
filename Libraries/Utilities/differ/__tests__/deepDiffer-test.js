@@ -12,7 +12,7 @@
 
 const deepDiffer = require('../deepDiffer');
 
-describe('deepDiffer', function () {
+describe('deepDiffer', function() {
   it('should diff primitives of the same type', () => {
     expect(deepDiffer(1, 2)).toBe(true);
     expect(deepDiffer(42, 42)).toBe(false);

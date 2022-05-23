@@ -13,8 +13,8 @@
 'use strict';
 
 const babelRegisterOnly = require('metro-babel-register');
-const createCacheKeyFunction =
-  require('@jest/create-cache-key-function').default;
+const createCacheKeyFunction = require('@jest/create-cache-key-function')
+  .default;
 
 const {transformSync: babelTransformSync} = require('@babel/core');
 const generate = require('@babel/generator').default;

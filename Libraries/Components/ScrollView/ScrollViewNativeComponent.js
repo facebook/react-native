@@ -12,8 +12,9 @@ import type {ScrollViewNativeProps as Props} from './ScrollViewNativeComponentTy
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
 
-const ScrollViewNativeComponent: HostComponent<Props> =
-  NativeComponentRegistry.get<Props>('RCTScrollView', () => ({
+const ScrollViewNativeComponent: HostComponent<Props> = NativeComponentRegistry.get<Props>(
+  'RCTScrollView',
+  () => ({
     uiViewClassName: 'RCTScrollView',
     bubblingEventTypes: {},
     directEventTypes: {
@@ -79,6 +80,7 @@ const ScrollViewNativeComponent: HostComponent<Props> =
       snapToStart: true,
       zoomScale: true,
     },
-  }));
+  }),
+);
 
 export default ScrollViewNativeComponent;

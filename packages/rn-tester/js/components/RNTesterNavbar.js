@@ -24,9 +24,11 @@ const BookmarkTab = ({handleNavBarPress, isBookmarkActive, theme}) => (
     <View style={styles.floatContainer}>
       <Pressable
         testID="bookmarks-tab"
-        onPress={() => handleNavBarPress({screen: 'bookmarks'})}>
+        onPress={() => handleNavBarPress({screen: 'bookmarks'})}
+      >
         <View
-          style={[styles.floatingButton, {backgroundColor: theme.BorderColor}]}>
+          style={[styles.floatingButton, {backgroundColor: theme.BorderColor}]}
+        >
           <Image
             style={styles.bookmarkIcon}
             source={
@@ -54,10 +56,12 @@ const NavbarButton = ({
   <Pressable
     testID={testID}
     onPress={handlePress}
-    style={[styles.navButton, {backgroundColor: theme.BackgroundColor}]}>
+    style={[styles.navButton, {backgroundColor: theme.BackgroundColor}]}
+  >
     <View
       style={[styles.pressableContent, isActive ? styles.activeBar : null]}
-      collapsable={false}>
+      collapsable={false}
+    >
       <Image
         style={iconStyle}
         source={isActive ? activeImage : inactiveImage}

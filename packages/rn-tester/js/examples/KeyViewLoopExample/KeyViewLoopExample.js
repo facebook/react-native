@@ -39,7 +39,8 @@ class KeyViewLoopExample extends React.Component<{}> {
                   this.firstViewRef.current?.setNativeProps({
                     nextKeyViewTag: findNodeHandle(this.secondViewRef.current),
                   });
-                }}>
+                }}
+              >
                 <Text>First View</Text>
               </View>
               <View
@@ -50,7 +51,8 @@ class KeyViewLoopExample extends React.Component<{}> {
                   this.thirdViewRef.current?.setNativeProps({
                     nextKeyViewTag: findNodeHandle(this.fourthViewRef.current),
                   });
-                }}>
+                }}
+              >
                 <Text>Third View</Text>
               </View>
               <View
@@ -61,7 +63,8 @@ class KeyViewLoopExample extends React.Component<{}> {
                   this.secondViewRef.current?.setNativeProps({
                     nextKeyViewTag: findNodeHandle(this.thirdViewRef.current),
                   });
-                }}>
+                }}
+              >
                 <Text>Second View</Text>
               </View>
               <Button

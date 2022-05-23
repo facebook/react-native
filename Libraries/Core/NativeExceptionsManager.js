@@ -57,8 +57,9 @@ export interface Spec extends TurboModule {
 
 const Platform = require('../Utilities/Platform');
 
-const NativeModule =
-  TurboModuleRegistry.getEnforcing<Spec>('ExceptionsManager');
+const NativeModule = TurboModuleRegistry.getEnforcing<Spec>(
+  'ExceptionsManager',
+);
 
 const ExceptionsManager = {
   reportFatalException(

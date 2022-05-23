@@ -119,16 +119,15 @@ class AnimatedNode {
     }
 
     NativeAnimatedAPI.startListeningToAnimatedNodeValue(this.__getNativeTag());
-    this.__nativeAnimatedValueListener =
-      NativeAnimatedHelper.nativeEventEmitter.addListener(
-        'onAnimatedValueUpdate',
-        data => {
-          if (data.tag !== this.__getNativeTag()) {
-            return;
-          }
-          this._onAnimatedValueUpdateReceived(data.value);
-        },
-      );
+    this.__nativeAnimatedValueListener = NativeAnimatedHelper.nativeEventEmitter.addListener(
+      'onAnimatedValueUpdate',
+      data => {
+        if (data.tag !== this.__getNativeTag()) {
+          return;
+        }
+        this._onAnimatedValueUpdateReceived(data.value);
+      },
+    );
   }
 
   _onAnimatedValueUpdateReceived(value: number) {

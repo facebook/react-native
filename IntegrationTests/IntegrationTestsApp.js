@@ -13,8 +13,14 @@
 require('react-native/Libraries/Core/InitializeCore');
 const React = require('react');
 const ReactNative = require('react-native');
-const {AppRegistry, ScrollView, StyleSheet, Text, TouchableOpacity, View} =
-  ReactNative;
+const {
+  AppRegistry,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} = ReactNative;
 
 // Keep this list in sync with RNTesterIntegrationTests.m
 const TESTS = [
@@ -78,7 +84,8 @@ class IntegrationTestsApp extends React.Component<{...}, $FlowFixMeState> {
                * This comment suppresses an error found when Flow v0.115 was
                * deployed. To see the error, delete this comment and run Flow.
                */
-              style={styles.row}>
+              style={styles.row}
+            >
               <Text style={styles.testName}>{test.displayName}</Text>
             </TouchableOpacity>,
             <View style={styles.separator} />,

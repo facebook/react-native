@@ -79,10 +79,8 @@ class LayoutExample extends React.Component<$FlowFixMeProps> {
             {fiveColoredCircles}
           </CircleBlock>
           <View
-            style={[
-              styles.overlay,
-              {position: 'absolute', top: 15, left: 160},
-            ]}>
+            style={[styles.overlay, {position: 'absolute', top: 15, left: 160}]}
+          >
             <Text>{'top: 15, left: 160'}</Text>
           </View>
         </RNTesterBlock>
@@ -200,7 +198,7 @@ exports.displayName = 'LayoutExample';
 exports.examples = [
   {
     title: 'Simple layout using flexbox',
-    render: function (): React.Element<typeof LayoutExample> {
+    render: function(): React.Element<typeof LayoutExample> {
       return <LayoutExample />;
     },
   },

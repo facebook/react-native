@@ -21,8 +21,9 @@ type NativeTextProps = $ReadOnly<{
   selectionColor?: ?ProcessedColorValue,
 }>;
 
-export const NativeText: HostComponent<NativeTextProps> =
-  (createReactNativeComponentClass('RCTText', () => ({
+export const NativeText: HostComponent<NativeTextProps> = (createReactNativeComponentClass(
+  'RCTText',
+  () => ({
     validAttributes: {
       ...ReactNativeViewAttributes.UIView,
       isHighlighted: true,
@@ -51,7 +52,8 @@ export const NativeText: HostComponent<NativeTextProps> =
       },
     },
     uiViewClassName: 'RCTText',
-  })): any);
+  }),
+): any);
 
 export const NativeVirtualText: HostComponent<NativeTextProps> =
   !global.RN$Bridgeless && !UIManager.hasViewManagerConfig('RCTVirtualText')

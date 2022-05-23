@@ -54,25 +54,29 @@ class TimePickerAndroidExample extends React.Component {
       <RNTesterPage title="TimePickerAndroid">
         <RNTesterBlock title="Simple time picker">
           <TouchableWithoutFeedback
-            onPress={this.showPicker.bind(this, 'simple', {})}>
+            onPress={this.showPicker.bind(this, 'simple', {})}
+          >
             <Text style={styles.text}>{this.state.simpleText}</Text>
           </TouchableWithoutFeedback>
         </RNTesterBlock>
         <RNTesterBlock title="Simple clock time picker">
           <TouchableWithoutFeedback
-            onPress={this.showPicker.bind(this, 'clock', {mode: 'clock'})}>
+            onPress={this.showPicker.bind(this, 'clock', {mode: 'clock'})}
+          >
             <Text style={styles.text}>{this.state.clockText}</Text>
           </TouchableWithoutFeedback>
         </RNTesterBlock>
         <RNTesterBlock title="Simple spinner time picker">
           <TouchableWithoutFeedback
-            onPress={this.showPicker.bind(this, 'spinner', {mode: 'spinner'})}>
+            onPress={this.showPicker.bind(this, 'spinner', {mode: 'spinner'})}
+          >
             <Text style={styles.text}>{this.state.spinnerText}</Text>
           </TouchableWithoutFeedback>
         </RNTesterBlock>
         <RNTesterBlock title="Simple default time picker">
           <TouchableWithoutFeedback
-            onPress={this.showPicker.bind(this, 'default', {mode: 'default'})}>
+            onPress={this.showPicker.bind(this, 'default', {mode: 'default'})}
+          >
             <Text style={styles.text}>{this.state.defaultText}</Text>
           </TouchableWithoutFeedback>
         </RNTesterBlock>
@@ -81,7 +85,8 @@ class TimePickerAndroidExample extends React.Component {
             onPress={this.showPicker.bind(this, 'preset', {
               hour: this.state.presetHour,
               minute: this.state.presetMinute,
-            })}>
+            })}
+          >
             <Text style={styles.text}>{this.state.presetText}</Text>
           </TouchableWithoutFeedback>
         </RNTesterBlock>
@@ -91,7 +96,8 @@ class TimePickerAndroidExample extends React.Component {
               hour: this.state.isoFormatHour,
               minute: this.state.isoFormatMinute,
               is24Hour: true,
-            })}>
+            })}
+          >
             <Text style={styles.text}>{this.state.isoFormatText}</Text>
           </TouchableWithoutFeedback>
         </RNTesterBlock>

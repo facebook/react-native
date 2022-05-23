@@ -70,7 +70,7 @@ function configureNext(
       config,
       onAnimationComplete,
       onAnimationDidFail ??
-        function () {} /* this will only be called if configuration parsing fails */,
+        function() {} /* this will only be called if configuration parsing fails */,
     );
     return;
   }
@@ -81,9 +81,9 @@ function configureNext(
   if (UIManager?.configureNextLayoutAnimation) {
     UIManager.configureNextLayoutAnimation(
       config,
-      onAnimationComplete ?? function () {},
+      onAnimationComplete ?? function() {},
       onAnimationDidFail ??
-        function () {} /* this should never be called in Non-Fabric */,
+        function() {} /* this should never be called in Non-Fabric */,
     );
   }
 }

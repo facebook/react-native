@@ -39,8 +39,9 @@ type Props = $ReadOnly<{
   internal_analyticTag?: ?string,
 }>;
 
-const TextInlineImage: HostComponent<Props> =
-  NativeComponentRegistry.get<Props>('RCTTextInlineImage', () => ({
+const TextInlineImage: HostComponent<Props> = NativeComponentRegistry.get<Props>(
+  'RCTTextInlineImage',
+  () => ({
     uiViewClassName: 'RCTImageView',
     bubblingEventTypes: {},
     directEventTypes: {
@@ -95,6 +96,7 @@ const TextInlineImage: HostComponent<Props> =
         process: require('../StyleSheet/processColor'),
       },
     },
-  }));
+  }),
+);
 
 module.exports = TextInlineImage;

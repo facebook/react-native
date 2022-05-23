@@ -19,7 +19,8 @@ type Props = $ReadOnly<{|
 const RNTesterDocumentationURL = ({documentationURL}: Props): React.Node => (
   <TouchableOpacity
     style={styles.container}
-    onPress={() => openURLInBrowser(documentationURL)}>
+    onPress={() => openURLInBrowser(documentationURL)}
+  >
     <Image
       source={require('../assets/documentation.png')}
       style={styles.icon}

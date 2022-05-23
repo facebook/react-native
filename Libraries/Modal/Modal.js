@@ -265,12 +265,14 @@ class Modal extends React.Component<Props> {
         // $FlowFixMe[method-unbinding] added when improving typing for this parameters
         onStartShouldSetResponder={this._shouldSetResponder}
         supportedOrientations={this.props.supportedOrientations}
-        onOrientationChange={this.props.onOrientationChange}>
+        onOrientationChange={this.props.onOrientationChange}
+      >
         <VirtualizedListContextResetter>
           <ScrollView.Context.Provider value={null}>
             <View
               style={[styles.container, containerStyles]}
-              collapsable={false}>
+              collapsable={false}
+            >
               {innerChildren}
             </View>
           </ScrollView.Context.Provider>

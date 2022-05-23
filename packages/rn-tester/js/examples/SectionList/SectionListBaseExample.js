@@ -57,7 +57,8 @@ const Item = ({item, section, separators}) => {
           backgroundColor: pressed ? 'red' : 'pink',
         },
       ]}
-      testID={item}>
+      testID={item}
+    >
       <Text style={styles.title}>{item}</Text>
     </Pressable>
   );

@@ -18,7 +18,7 @@ import invariant from 'invariant';
  * the Class itself, not an instance. If any others are needed, simply add them
  * here, or in their own files.
  */
-const oneArgumentPooler = function (copyFieldsFrom) {
+const oneArgumentPooler = function(copyFieldsFrom) {
   const Klass = this;
   if (Klass.instancePool.length) {
     const instance = Klass.instancePool.pop();
@@ -29,7 +29,7 @@ const oneArgumentPooler = function (copyFieldsFrom) {
   }
 };
 
-const twoArgumentPooler = function (a1, a2) {
+const twoArgumentPooler = function(a1, a2) {
   const Klass = this;
   if (Klass.instancePool.length) {
     const instance = Klass.instancePool.pop();
@@ -40,7 +40,7 @@ const twoArgumentPooler = function (a1, a2) {
   }
 };
 
-const threeArgumentPooler = function (a1, a2, a3) {
+const threeArgumentPooler = function(a1, a2, a3) {
   const Klass = this;
   if (Klass.instancePool.length) {
     const instance = Klass.instancePool.pop();
@@ -51,7 +51,7 @@ const threeArgumentPooler = function (a1, a2, a3) {
   }
 };
 
-const fourArgumentPooler = function (a1, a2, a3, a4) {
+const fourArgumentPooler = function(a1, a2, a3, a4) {
   const Klass = this;
   if (Klass.instancePool.length) {
     const instance = Klass.instancePool.pop();
@@ -62,7 +62,7 @@ const fourArgumentPooler = function (a1, a2, a3, a4) {
   }
 };
 
-const standardReleaser = function (instance) {
+const standardReleaser = function(instance) {
   const Klass = this;
   invariant(
     instance instanceof Klass,
@@ -88,7 +88,7 @@ type Pooler = any;
  * @param {Function} CopyConstructor Constructor that can be used to reset.
  * @param {Function} pooler Customizable pooler.
  */
-const addPoolingTo = function <T>(
+const addPoolingTo = function<T>(
   CopyConstructor: Class<T>,
   pooler: Pooler,
 ): Class<T> & {

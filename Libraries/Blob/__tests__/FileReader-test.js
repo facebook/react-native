@@ -18,7 +18,7 @@ jest.unmock('event-target-shim').setMock('../../BatchedBridge/NativeModules', {
 const Blob = require('../Blob');
 const FileReader = require('../FileReader');
 
-describe('FileReader', function () {
+describe('FileReader', function() {
   it('should read blob as text', async () => {
     const e = await new Promise((resolve, reject) => {
       const reader = new FileReader();

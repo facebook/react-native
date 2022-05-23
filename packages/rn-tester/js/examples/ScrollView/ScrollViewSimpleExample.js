@@ -53,7 +53,8 @@ class ScrollViewSimpleExample extends React.Component<{...}> {
         key={'scrollViewSnap'}
         horizontal
         snapToInterval={210.0}
-        pagingEnabled>
+        pagingEnabled
+      >
         {this.makeItems(NUM_ITEMS, [
           styles.itemWrapper,
           styles.horizontalItemWrapper,
@@ -66,7 +67,8 @@ class ScrollViewSimpleExample extends React.Component<{...}> {
         key={'scrollViewSnapStart'}
         horizontal
         snapToAlignment={'start'}
-        pagingEnabled>
+        pagingEnabled
+      >
         {this.makeItems(NUM_ITEMS, [
           styles.itemWrapper,
           styles.horizontalItemWrapper,
@@ -79,7 +81,8 @@ class ScrollViewSimpleExample extends React.Component<{...}> {
         key={'scrollViewSnapCenter'}
         horizontal
         snapToAlignment={'center'}
-        pagingEnabled>
+        pagingEnabled
+      >
         {this.makeItems(NUM_ITEMS, [
           styles.itemWrapper,
           styles.horizontalItemWrapper,
@@ -92,7 +95,8 @@ class ScrollViewSimpleExample extends React.Component<{...}> {
         key={'scrollViewSnapEnd'}
         horizontal
         snapToAlignment={'end'}
-        pagingEnabled>
+        pagingEnabled
+      >
         {this.makeItems(NUM_ITEMS, [
           styles.itemWrapper,
           styles.horizontalItemWrapper,
@@ -138,7 +142,7 @@ exports.description =
 exports.examples = [
   {
     title: 'Simple scroll view',
-    render: function (): React.Element<typeof ScrollViewSimpleExample> {
+    render: function(): React.Element<typeof ScrollViewSimpleExample> {
       return <ScrollViewSimpleExample />;
     },
   },
