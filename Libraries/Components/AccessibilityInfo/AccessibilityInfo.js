@@ -60,7 +60,7 @@ const EventNames: Map<
       ['boldTextChanged', 'boldTextChanged'],
       ['change', 'screenReaderChanged'],
       ['grayscaleChanged', 'grayscaleChanged'],
-      ['highContrastChanged', 'highContrastChanged'],
+      ['highContrastChanged', 'highContrastChanged'], // TODO(macOS GH#774)
       ['invertColorsChanged', 'invertColorsChanged'],
       ['reduceMotionChanged', 'reduceMotionChanged'],
       ['reduceTransparencyChanged', 'reduceTransparencyChanged'],
