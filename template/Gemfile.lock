@@ -45,7 +45,7 @@ GEM
       public_suffix (~> 4.0)
       typhoeus (~> 1.0)
     cocoapods-deintegrate (1.0.5)
-    cocoapods-downloader (1.5.1)
+    cocoapods-downloader (1.6.3)
     cocoapods-plugins (1.0.0)
       nap
     cocoapods-search (1.0.1)
@@ -88,7 +88,9 @@ GEM
     zeitwerk (2.5.1)
 
 PLATFORMS
+  arm64-darwin-20
   ruby
+  x86_64-linux
 
 DEPENDENCIES
   cocoapods (~> 1.11, >= 1.11.2)

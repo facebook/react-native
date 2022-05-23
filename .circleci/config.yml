@@ -69,7 +69,11 @@ commands:
     steps:
       - restore_cache:
           key: 1-gems-{{ checksum "Gemfile.lock" }}
-      - run: bundle check || bundle install --path vendor/bundle --clean
+      - run:
+          name: Bundle Install
+          command: |
+            source /usr/local/share/chruby/auto.sh
+            bundle check || bundle install --path vendor/bundle --clean
       - save_cache:
           key: 1-gems-{{ checksum "Gemfile.lock" }}
           paths:
@@ -599,6 +603,23 @@ jobs:
       - run:
           name: Build the template application
           command: cd template/android/ && ./gradlew assembleDebug
+
+  # -------------------------
+  #    JOBS: Test Docker
+  # -------------------------
+  test_docker:
+    machine: true
+    steps:
+      - checkout
+      - run:
+          name: Build Docker container for Android RNTester App
+          command: |
+            source ~/.bashrc
+            nvm i node
+            npm i -g yarn
+            echo y | npx envinfo@latest
+            yarn run docker-setup-android
+            yarn run docker-build-android
 
   # -------------------------
   #    JOBS: Test iOS Template
