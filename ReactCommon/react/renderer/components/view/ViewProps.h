@@ -52,7 +52,6 @@ class ViewProps : public YogaStylableProps, public AccessibilityProps {
   Size shadowOffset{0, -3};
   Float shadowOpacity{};
   Float shadowRadius{3};
-  std::string screenreaderError{};
 
   // Transform
   Transform transform{};
