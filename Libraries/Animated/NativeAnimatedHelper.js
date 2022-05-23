@@ -150,9 +150,6 @@ const API = {
     invariant(NativeAnimatedModule, 'Native animated module is not available');
     flushQueueTimeout = null;
 
-    if (Platform.OS === 'android') {
-      NativeAnimatedModule.startOperationBatch?.();
-    }
     if (useSingleOpBatching) {
       // Set up event listener for callbacks if it's not set up
       if (
@@ -168,13 +165,13 @@ const API = {
       NativeAnimatedModule.queueAndExecuteBatchedOperations?.(singleOpQueue);
       singleOpQueue.length = 0;
     } else {
+      Platform.OS === 'android' && NativeAnimatedModule.startOperationBatch?.();
       for (let q = 0, l = queue.length; q < l; q++) {
         queue[q]();
       }
       queue.length = 0;
-    }
-    if (Platform.OS === 'android') {
-      NativeAnimatedModule.finishOperationBatch?.();
+      Platform.OS === 'android' &&
+        NativeAnimatedModule.finishOperationBatch?.();
     }
   },
   queueOperation: <Args: $ReadOnlyArray<mixed>, Fn: (...Args) => void>(
