@@ -47,7 +47,6 @@ const useSingleOpBatching =
   !!NativeAnimatedModule?.queueAndExecuteBatchedOperations &&
   ReactNativeFeatureFlags.animatedShouldUseSingleOp();
 let flushQueueTimeout = null;
-let forceFlushQueueTimeout = null;
 
 const eventListenerGetValueCallbacks = {};
 const eventListenerAnimationFinishedCallbacks = {};
@@ -130,18 +129,8 @@ const API = {
 
     if (ReactNativeFeatureFlags.animatedShouldDebounceQueueFlush()) {
       const prevTimeout = flushQueueTimeout;
-      clearTimeout(prevTimeout);
-      flushQueueTimeout = setTimeout(API.flushQueue, 1);
-
-      // Force flushing within one frame, in case there are repeated re-renders
-      if (prevTimeout && !forceFlushQueueTimeout) {
-        forceFlushQueueTimeout = setTimeout(() => {
-          forceFlushQueueTimeout = null;
-          clearTimeout(flushQueueTimeout);
-          flushQueueTimeout = null;
-          API.flushQueue();
-        }, 8);
-      }
+      clearImmediate(prevTimeout);
+      flushQueueTimeout = setImmediate(API.flushQueue);
     } else {
       API.flushQueue();
     }
