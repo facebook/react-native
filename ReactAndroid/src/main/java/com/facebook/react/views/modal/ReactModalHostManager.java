@@ -166,7 +166,7 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
 
   @Override
   public Object updateState(
-      ReactModalHostView view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
+      ReactModalHostView view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
     view.getFabricViewStateManager().setStateWrapper(stateWrapper);
     Point modalSize = ModalHostHelper.getModalHostSize(view.getContext());
     view.updateState(modalSize.x, modalSize.y);

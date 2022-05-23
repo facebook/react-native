@@ -1282,17 +1282,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @Override
   public Object updateState(
-      ReactEditText view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
-
+      ReactEditText view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
     if (ReactEditText.DEBUG_MODE) {
       FLog.e(TAG, "updateState: [" + view.getId() + "]");
     }
 
     view.getFabricViewStateManager().setStateWrapper(stateWrapper);
-
-    if (stateWrapper == null) {
-      return null;
-    }
 
     ReadableNativeMap state = stateWrapper.getStateData();
 
