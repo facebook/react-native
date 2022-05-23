@@ -114,8 +114,7 @@ public class ReactEditText extends AppCompatEditText
 
   private ReactViewBackgroundManager mReactBackgroundManager;
 
-  private final @Nullable FabricViewStateManager mFabricViewStateManager =
-      new FabricViewStateManager();
+  private final FabricViewStateManager mFabricViewStateManager = new FabricViewStateManager();
   protected boolean mDisableTextDiffing = false;
 
   protected boolean mIsSettingTextFromState = false;
@@ -642,7 +641,7 @@ public class ReactEditText extends AppCompatEditText
   // This is hacked in for Fabric. When we delete non-Fabric code, we might be able to simplify or
   // clean this up a bit.
   private void addSpansForMeasurement(Spannable spannable) {
-    if (mFabricViewStateManager != null && !mFabricViewStateManager.hasStateWrapper()) {
+    if (!mFabricViewStateManager.hasStateWrapper()) {
       return;
     }
 
@@ -748,9 +747,7 @@ public class ReactEditText extends AppCompatEditText
     // view, we don't need to construct one or apply it at all - it provides no use in Fabric.
     ReactContext reactContext = getReactContext(this);
 
-    if (mFabricViewStateManager != null
-        && !mFabricViewStateManager.hasStateWrapper()
-        && !reactContext.isBridgeless()) {
+    if (!mFabricViewStateManager.hasStateWrapper() && !reactContext.isBridgeless()) {
       final ReactTextInputLocalData localData = new ReactTextInputLocalData(this);
       UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
       if (uiManager != null) {
@@ -986,7 +983,7 @@ public class ReactEditText extends AppCompatEditText
    */
   private void updateCachedSpannable(boolean resetStyles) {
     // Noops in non-Fabric
-    if (mFabricViewStateManager != null && !mFabricViewStateManager.hasStateWrapper()) {
+    if (!mFabricViewStateManager.hasStateWrapper()) {
       return;
     }
     // If this view doesn't have an ID yet, we don't have a cache key, so bail here
