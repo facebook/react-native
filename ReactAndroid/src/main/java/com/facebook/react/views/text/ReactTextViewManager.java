@@ -106,11 +106,7 @@ public class ReactTextViewManager
 
   @Override
   public Object updateState(
-      ReactTextView view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
-    if (stateWrapper == null) {
-      return null;
-    }
-
+      ReactTextView view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
     if (ReactFeatureFlags.isMapBufferSerializationEnabled()) {
       MapBuffer stateMapBuffer = stateWrapper.getStateDataMapBuffer();
       if (stateMapBuffer != null) {
