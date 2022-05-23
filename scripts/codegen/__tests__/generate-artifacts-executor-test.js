@@ -201,3 +201,227 @@ describe('extractLibrariesFromJSON', () => {
     });
   });
 });
+
+describe('delete empty files and folders', () => {
+  beforeEach(() => {
+    jest.resetModules();
+  });
+
+  it('when path is empty file, deletes it', () => {
+    const targetFilepath = 'my-file.txt';
+    let statSyncInvocationCount = 0;
+    let rmInvocationCount = 0;
+    let rmdirSyncInvocationCount = 0;
+    jest.mock('fs', () => ({
+      statSync: filepath => {
+        statSyncInvocationCount += 1;
+        expect(filepath).toBe(targetFilepath);
+        return {
+          isFile: () => {
+            return true;
+          },
+          size: 0,
+        };
+      },
+      rmSync: filepath => {
+        rmInvocationCount += 1;
+        expect(filepath).toBe(targetFilepath);
+      },
+      rmdirSync: filepath => {
+        rmdirSyncInvocationCount += 1;
+      },
+    }));
+
+    underTest._cleanupFolders(targetFilepath);
+    expect(statSyncInvocationCount).toBe(1);
+    expect(rmInvocationCount).toBe(1);
+    expect(rmdirSyncInvocationCount).toBe(0);
+  });
+
+  it('when path is not an empty file, does nothing', () => {
+    const targetFilepath = 'my-file.txt';
+    const size = 128;
+
+    let statSyncInvocationCount = 0;
+    let rmInvocationCount = 0;
+    let rmdirSyncInvocationCount = 0;
+
+    jest.mock('fs', () => ({
+      statSync: filepath => {
+        statSyncInvocationCount += 1;
+        expect(filepath).toBe(targetFilepath);
+        return {
+          isFile: () => {
+            return true;
+          },
+          size: size,
+        };
+      },
+      rmSync: filepath => {
+        rmInvocationCount += 1;
+      },
+      rmdirSync: filepath => {
+        rmdirSyncInvocationCount += 1;
+      },
+    }));
+
+    underTest._cleanupFolders(targetFilepath);
+    expect(statSyncInvocationCount).toBe(1);
+    expect(rmInvocationCount).toBe(0);
+    expect(rmdirSyncInvocationCount).toBe(0);
+  });
+
+  it("when path is folder and it's empty, removes it", () => {
+    const targetFolder = 'build/';
+    const content = [];
+
+    let statSyncInvocationCount = 0;
+    let readdirInvocationCount = 0;
+    let rmInvocationCount = 0;
+    let rmdirSyncInvocationCount = 0;
+
+    jest.mock('fs', () => ({
+      statSync: filepath => {
+        statSyncInvocationCount += 1;
+        expect(filepath).toBe(targetFolder);
+        return {
+          isFile: () => {
+            return false;
+          },
+        };
+      },
+      rmSync: filepath => {
+        rmInvocationCount += 1;
+      },
+      rmdirSync: filepath => {
+        rmdirSyncInvocationCount += 1;
+        expect(filepath).toBe(targetFolder);
+      },
+      readdirSync: filepath => {
+        readdirInvocationCount += 1;
+        return content;
+      },
+    }));
+
+    underTest._cleanupFolders(targetFolder);
+    expect(statSyncInvocationCount).toBe(1);
+    expect(readdirInvocationCount).toBe(2);
+    expect(rmInvocationCount).toBe(0);
+    expect(rmdirSyncInvocationCount).toBe(1);
+  });
+
+  it("when path is folder and it's not empty, removes only empty folders and files", () => {
+    const targetFolder = 'build/';
+    const content = ['emptyFolder', 'emptyFile', 'notEmptyFile'];
+
+    const files = ['build/emptyFile', 'build/notEmptyFile'];
+
+    const emptyContent = [];
+    const fileSizes = {
+      'build/emptyFile': 0,
+      'build/notEmptyFile': 32,
+    };
+
+    let statSyncInvocation = [];
+    let rmInvocation = [];
+    let rmdirSyncInvocation = [];
+    let readdirInvocation = [];
+
+    jest.mock('fs', () => ({
+      statSync: filepath => {
+        statSyncInvocation.push(filepath);
+
+        return {
+          isFile: () => {
+            return files.includes(filepath);
+          },
+          size: fileSizes[filepath],
+        };
+      },
+      rmSync: filepath => {
+        rmInvocation.push(filepath);
+      },
+      rmdirSync: filepath => {
+        rmdirSyncInvocation.push(filepath);
+      },
+      readdirSync: filepath => {
+        readdirInvocation.push(filepath);
+        return filepath === targetFolder ? content : emptyContent;
+      },
+    }));
+
+    underTest._cleanupFolders(targetFolder);
+    expect(statSyncInvocation).toEqual([
+      'build/',
+      'build/emptyFolder',
+      'build/emptyFile',
+      'build/notEmptyFile',
+    ]);
+    expect(readdirInvocation).toEqual([
+      'build/',
+      'build/emptyFolder',
+      'build/emptyFolder',
+      'build/',
+    ]);
+    expect(rmInvocation).toEqual(['build/emptyFile']);
+    expect(rmdirSyncInvocation).toEqual(['build/emptyFolder']);
+  });
+
+  it('when path is folder and it contains only empty folders, removes everything', () => {
+    const targetFolder = 'build/';
+    const content = ['emptyFolder1', 'emptyFolder2'];
+    const emptyContent = [];
+
+    let statSyncInvocation = [];
+    let rmInvocation = [];
+    let rmdirSyncInvocation = [];
+    let readdirInvocation = [];
+
+    jest.mock('fs', () => ({
+      statSync: filepath => {
+        statSyncInvocation.push(filepath);
+
+        return {
+          isFile: () => {
+            return false;
+          },
+        };
+      },
+      rmSync: filepath => {
+        rmInvocation.push(filepath);
+      },
+      rmdirSync: filepath => {
+        rmdirSyncInvocation.push(filepath);
+      },
+      readdirSync: filepath => {
+        readdirInvocation.push(filepath);
+        return filepath === targetFolder
+          ? content.filter(
+              el => !rmdirSyncInvocation.includes(path.join(targetFolder, el)),
+            )
+          : emptyContent;
+      },
+    }));
+
+    underTest._cleanupFolders(targetFolder);
+    expect(statSyncInvocation).toEqual([
+      'build/',
+      'build/emptyFolder1',
+      'build/emptyFolder2',
+    ]);
+    expect(readdirInvocation).toEqual([
+      'build/',
+      'build/emptyFolder1',
+      'build/emptyFolder1',
+      'build/emptyFolder2',
+      'build/emptyFolder2',
+      'build/',
+    ]);
+    expect(rmInvocation).toEqual([]);
+    expect(rmdirSyncInvocation).toEqual([
+      'build/emptyFolder1',
+      'build/emptyFolder2',
+      'build/',
+    ]);
+  });
+});

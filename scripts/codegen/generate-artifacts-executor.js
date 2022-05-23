@@ -355,6 +355,31 @@ function createComponentProvider(
   }
 }
 
+function cleanupFolders(filepath) {
+  const stats = fs.statSync(filepath);
+
+  if (stats.isFile() && stats.size === 0) {
+    fs.rmSync(filepath);
+    return;
+  } else if (stats.isFile()) {
+    return;
+  }
+
+  const dirContent = fs.readdirSync(filepath);
+  dirContent.forEach(contentPath =>
+    cleanupFolders(path.join(filepath, contentPath)),
+  );
+
+  // The original folder may be filled with empty folders
+  // if that the case, we would like also to remove the parent.
+  // Hence, we need to read the folder again.
+  const newContent = fs.readdirSync(filepath);
+  if (newContent.length === 0) {
+    fs.rmdirSync(filepath);
+    return;
+  }
+}
+
 // Execute
 
 /**
@@ -428,6 +453,7 @@ function execute(
     );
 
     createComponentProvider(fabricEnabled, schemaPaths, node, iosOutputDir);
+    cleanupFolders(iosOutputDir);
   } catch (err) {
     console.error(err);
     process.exitCode = 1;
@@ -443,4 +469,5 @@ module.exports = {
   _extractLibrariesFromJSON: extractLibrariesFromJSON,
   _executeNodeScript: executeNodeScript,
   _generateCode: generateCode,
+  _cleanupFolders: cleanupFolders,
 };
