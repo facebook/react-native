@@ -18,7 +18,7 @@
  * @param {MatrixMath.Matrix} two Second matrix.
  * @return {boolean} Whether or not the two matrices differ.
  */
-const matricesDiffer = function(one, two) {
+const matricesDiffer = function (one, two) {
   if (one === two) {
     return false;
   }

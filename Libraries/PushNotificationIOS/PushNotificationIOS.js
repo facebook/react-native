@@ -37,13 +37,14 @@ type NativePushNotificationIOSEventDefinitions = {
   localNotificationReceived: [{...}],
 };
 
-const PushNotificationEmitter = new NativeEventEmitter<NativePushNotificationIOSEventDefinitions>(
-  // T88715063: NativeEventEmitter only used this parameter on iOS. Now it uses it on all platforms, so this code was modified automatically to preserve its behavior
-  // If you want to use the native module on other platforms, please remove this condition and test its behavior
-  Platform.OS !== 'ios' && Platform.OS !== 'macos' // TODO(macOS GH#774): Also use this parameter on macOS
-    ? null
-    : NativePushNotificationManagerIOS,
-);
+const PushNotificationEmitter =
+  new NativeEventEmitter<NativePushNotificationIOSEventDefinitions>(
+    // T88715063: NativeEventEmitter only used this parameter on iOS. Now it uses it on all platforms, so this code was modified automatically to preserve its behavior
+    // If you want to use the native module on other platforms, please remove this condition and test its behavior
+    Platform.OS !== 'ios' && Platform.OS !== 'macos' // TODO(macOS GH#774): Also use this parameter on macOS
+      ? null
+      : NativePushNotificationManagerIOS,
+  );
 
 const _notifHandlers = new Map();
 

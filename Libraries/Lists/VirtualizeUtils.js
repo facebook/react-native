@@ -20,9 +20,7 @@ import invariant from 'invariant';
 export function elementsThatOverlapOffsets(
   offsets: Array<number>,
   itemCount: number,
-  getFrameMetrics: (
-    index: number,
-  ) => {
+  getFrameMetrics: (index: number) => {
     length: number,
     offset: number,
     ...
@@ -96,9 +94,7 @@ export function computeWindowedRenderLimits(
     last: number,
     ...
   },
-  getFrameMetricsApprox: (
-    index: number,
-  ) => {
+  getFrameMetricsApprox: (index: number) => {
     length: number,
     offset: number,
     ...

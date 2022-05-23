@@ -947,13 +947,13 @@ exports.description = 'Base component for rendering styled text.';
 exports.examples = [
   {
     title: 'Basic text',
-    render: function(): React.Element<typeof TextExample> {
+    render: function (): React.Element<typeof TextExample> {
       return <TextExample />;
     },
   },
   {
     title: "Text `alignItems: 'baseline'` style",
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <TextBaseLineLayoutExample />;
     },
   },

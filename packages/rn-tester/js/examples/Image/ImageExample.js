@@ -161,8 +161,9 @@ class NetworkImageCallbackExample extends React.Component<
                     const result = map[IMAGE_PREFETCH_URL];
                     if (result) {
                       this._loadEventFired(
-                        `✔ queryCache "${result}" (+${Date.now() -
-                          mountTime}ms)`,
+                        `✔ queryCache "${result}" (+${
+                          Date.now() - mountTime
+                        }ms)`,
                       );
                     } else {
                       this._loadEventFired(
@@ -194,8 +195,9 @@ class NetworkImageCallbackExample extends React.Component<
               if (event.nativeEvent.source) {
                 const url = event.nativeEvent.source.uri;
                 this._loadEventFired(
-                  `✔ (prefetched) onLoad (+${Date.now() -
-                    mountTime}ms) for URL ${url}`,
+                  `✔ (prefetched) onLoad (+${
+                    Date.now() - mountTime
+                  }ms) for URL ${url}`,
                 );
               } else {
                 this._loadEventFired(
@@ -657,7 +659,7 @@ exports.examples = [
     title: 'Plain Network Image',
     description: ('If the `source` prop `uri` property is prefixed with ' +
       '"http", then it will be downloaded from the network.': string),
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <Image source={fullImage} style={styles.base} />;
     },
   },
@@ -665,7 +667,7 @@ exports.examples = [
     title: 'Plain Blob Image',
     description: ('If the `source` prop `uri` property is an object URL, ' +
       'then it will be resolved using `BlobProvider` (Android) or `RCTBlobManager` (iOS).': string),
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <BlobImageExample
           urls={[
@@ -678,9 +680,10 @@ exports.examples = [
   },
   {
     title: 'Plain Static Image',
-    description: ('Static assets should be placed in the source code tree, and ' +
-      'required in the same way as JavaScript modules.': string),
-    render: function(): React.Node {
+    description:
+      ('Static assets should be placed in the source code tree, and ' +
+        'required in the same way as JavaScript modules.': string),
+    render: function (): React.Node {
       return (
         <View style={styles.horizontal}>
           <Image
@@ -705,7 +708,7 @@ exports.examples = [
   },
   {
     title: 'Image Loading Events',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <NetworkImageCallbackExample
           source={{
@@ -718,7 +721,7 @@ exports.examples = [
   },
   {
     title: 'Error Handler',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <NetworkImageExample
           source={{
@@ -730,7 +733,7 @@ exports.examples = [
   },
   {
     title: 'Image Download Progress',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <NetworkImageExample
           source={{
@@ -743,7 +746,7 @@ exports.examples = [
   {
     title: 'defaultSource',
     description: 'Show a placeholder image when a network image is loading',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <Image
           defaultSource={require('../../assets/bunny.png')}
@@ -760,10 +763,11 @@ exports.examples = [
   },
   {
     title: 'Cache Policy',
-    description: ('First image has never been loaded before and is instructed not to load unless in cache.' +
-      'Placeholder image from above will stay. Second image is the same but forced to load regardless of' +
-      ' local cache state.': string),
-    render: function(): React.Node {
+    description:
+      ('First image has never been loaded before and is instructed not to load unless in cache.' +
+        'Placeholder image from above will stay. Second image is the same but forced to load regardless of' +
+        ' local cache state.': string),
+    render: function (): React.Node {
       return (
         <View style={styles.horizontal}>
           <Image
@@ -789,7 +793,7 @@ exports.examples = [
   },
   {
     title: 'Border Color',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View style={styles.horizontal}>
           <Image
@@ -806,7 +810,7 @@ exports.examples = [
   },
   {
     title: 'Border Width',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View style={styles.horizontal}>
           <Image
@@ -823,7 +827,7 @@ exports.examples = [
   },
   {
     title: 'Border Radius',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View style={styles.horizontal}>
           <Image style={[styles.base, {borderRadius: 5}]} source={fullImage} />
@@ -869,7 +873,7 @@ exports.examples = [
   },
   {
     title: 'Background Color',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View style={styles.horizontal}>
           <Image source={smallImage} style={styles.base} />
@@ -895,7 +899,7 @@ exports.examples = [
   },
   {
     title: 'Opacity',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View style={styles.horizontal}>
           <Image style={[styles.base, {opacity: 1}]} source={fullImage} />
@@ -925,7 +929,7 @@ exports.examples = [
   },
   {
     title: 'Nesting content inside <Image> component',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View style={{width: 60, height: 60}}>
           <Image
@@ -939,7 +943,7 @@ exports.examples = [
   },
   {
     title: 'Nesting content inside <ImageBackground> component',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <ImageBackground
           style={{width: 60, height: 60, backgroundColor: 'transparent'}}
@@ -953,7 +957,7 @@ exports.examples = [
     title: 'Tint Color',
     description: ('The `tintColor` style prop changes all the non-alpha ' +
       'pixels to the tint color.': string),
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <View style={styles.horizontal}>
@@ -1027,7 +1031,7 @@ exports.examples = [
     title: 'Resize Mode',
     description: ('The `resizeMode` style prop controls how the image is ' +
       'rendered within the frame.': string),
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           {[smallImage, fullImage].map((image, index) => {
@@ -1098,7 +1102,7 @@ exports.examples = [
   },
   {
     title: 'Animated GIF',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <Image
           style={styles.gif}
@@ -1110,7 +1114,7 @@ exports.examples = [
   },
   {
     title: 'Base64 image',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <Image style={styles.base64} source={{uri: base64Icon, scale: 3}} />
       );
@@ -1119,18 +1123,19 @@ exports.examples = [
   },
   {
     title: 'Cap Insets',
-    description: ('When the image is resized, the corners of the size specified ' +
-      'by capInsets will stay a fixed size, but the center content and ' +
-      'borders of the image will be stretched. This is useful for creating ' +
-      'resizable rounded buttons, shadows, and other resizable assets.': string),
-    render: function(): React.Node {
+    description:
+      ('When the image is resized, the corners of the size specified ' +
+        'by capInsets will stay a fixed size, but the center content and ' +
+        'borders of the image will be stretched. This is useful for creating ' +
+        'resizable rounded buttons, shadows, and other resizable assets.': string),
+    render: function (): React.Node {
       return <ImageCapInsetsExample />;
     },
     platform: 'ios',
   },
   {
     title: 'Image Size',
-    render: function(): React.Node {
+    render: function (): React.Node {
       /* $FlowFixMe[prop-missing] (>=0.115.0 site=react_native_fb) This comment
        * suppresses an error found when Flow v0.115 was deployed. To see the
        * error, delete this comment and run Flow. */
@@ -1142,9 +1147,10 @@ exports.examples = [
   },
   {
     title: 'MultipleSourcesExample',
-    description: ('The `source` prop allows passing in an array of uris, so that native to choose which image ' +
-      'to diplay based on the size of the of the target image': string),
-    render: function(): React.Node {
+    description:
+      ('The `source` prop allows passing in an array of uris, so that native to choose which image ' +
+        'to diplay based on the size of the of the target image': string),
+    render: function (): React.Node {
       return <MultipleSourcesExample />;
     },
   },
@@ -1152,14 +1158,14 @@ exports.examples = [
     title: 'Legacy local image',
     description: ('Images shipped with the native bundle, but not managed ' +
       'by the JS packager': string),
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <Image source={{uri: 'legacy_image', width: 120, height: 120}} />;
     },
   },
   {
     title: 'Bundled images',
     description: 'Images shipped in a separate native bundle',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View style={{flexDirection: 'row'}}>
           <Image
@@ -1189,7 +1195,7 @@ exports.examples = [
   },
   {
     title: 'Blur Radius',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View style={styles.horizontal}>
           <Image style={[styles.base]} source={fullImage} blurRadius={0} />
@@ -1224,15 +1230,17 @@ exports.examples = [
   },
   {
     title: 'Accessibility',
-    description: ('If the `accessible` (boolean) prop is set to True, the image will be indicated as an accessbility element.': string),
-    render: function(): React.Node {
+    description:
+      ('If the `accessible` (boolean) prop is set to True, the image will be indicated as an accessbility element.': string),
+    render: function (): React.Node {
       return <Image accessible source={fullImage} style={styles.base} />;
     },
   },
   {
     title: 'Accessibility Label',
-    description: ('When an element is marked as accessibile (using the accessibility prop), it is good practice to set an accessibilityLabel on the image to provide a description of the element to people who use VoiceOver. VoiceOver will read this string when people select this element.': string),
-    render: function(): React.Node {
+    description:
+      ('When an element is marked as accessibile (using the accessibility prop), it is good practice to set an accessibilityLabel on the image to provide a description of the element to people who use VoiceOver. VoiceOver will read this string when people select this element.': string),
+    render: function (): React.Node {
       return (
         <Image
           accessible
@@ -1245,8 +1253,9 @@ exports.examples = [
   },
   {
     title: 'Fade Duration',
-    description: ('The time (in miliseconds) that an image will fade in for when it appears (default = 300).': string),
-    render: function(): React.Node {
+    description:
+      ('The time (in miliseconds) that an image will fade in for when it appears (default = 300).': string),
+    render: function (): React.Node {
       return (
         <>
           <Image fadeDuration={1500} source={fullImage} style={styles.base} />
@@ -1258,22 +1267,25 @@ exports.examples = [
   },
   {
     title: 'Loading Indicator Source',
-    description: ('This prop is used to set the resource that will be used as the loading indicator for the image (displayed until the image is ready to be displayed).': string),
-    render: function(): React.Node {
+    description:
+      ('This prop is used to set the resource that will be used as the loading indicator for the image (displayed until the image is ready to be displayed).': string),
+    render: function (): React.Node {
       return <LoadingIndicatorSourceExample />;
     },
   },
   {
     title: 'On Layout',
-    description: ('This prop is used to set the handler function to be called when the image is mounted or its layout changes. The function receives an event with `{nativeEvent: {layout: {x, y, width, height}}}`': string),
-    render: function(): React.Node {
+    description:
+      ('This prop is used to set the handler function to be called when the image is mounted or its layout changes. The function receives an event with `{nativeEvent: {layout: {x, y, width, height}}}`': string),
+    render: function (): React.Node {
       return <OnLayoutExample />;
     },
   },
   {
     title: 'On Partial Load',
-    description: ('This prop is used to set the handler function to be called when the partial load of the image is complete. This is meant for progressive JPEG loads.': string),
-    render: function(): React.Node {
+    description:
+      ('This prop is used to set the handler function to be called when the partial load of the image is complete. This is meant for progressive JPEG loads.': string),
+    render: function (): React.Node {
       return <OnPartialLoadExample />;
     },
     platform: 'ios',

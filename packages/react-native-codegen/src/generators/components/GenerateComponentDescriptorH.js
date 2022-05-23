@@ -15,7 +15,13 @@ import type {SchemaType} from '../../CodegenSchema';
 // File path -> contents
 type FilesOutput = Map<string, string>;
 
-const template = `
+const FileTemplate = ({
+  componentDescriptors,
+  libraryName,
+}: {
+  componentDescriptors: string,
+  libraryName: string,
+}) => `
 /**
  * ${'C'}opyright (c) Facebook, Inc. and its affiliates.
  *
@@ -27,20 +33,21 @@ const template = `
 
 #pragma once
 
-#include <react/renderer/components/::_LIBRARY_::/ShadowNodes.h>
+#include <react/renderer/components/${libraryName}/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
 namespace facebook {
 namespace react {
 
-::_COMPONENT_DESCRIPTORS_::
+${componentDescriptors}
 
 } // namespace react
 } // namespace facebook
 `;
 
-const componentTemplate = `
-using ::_CLASSNAME_::ComponentDescriptor = ConcreteComponentDescriptor<::_CLASSNAME_::ShadowNode>;
+const ComponentTemplate = ({className}: {className: string}) =>
+  `
+using ${className}ComponentDescriptor = ConcreteComponentDescriptor<${className}ShadowNode>;
 `.trim();
 
 module.exports = {
@@ -70,16 +77,18 @@ module.exports = {
             if (components[componentName].interfaceOnly === true) {
               return;
             }
-            return componentTemplate.replace(/::_CLASSNAME_::/g, componentName);
+
+            return ComponentTemplate({className: componentName});
           })
           .join('\n');
       })
       .filter(Boolean)
       .join('\n');
 
-    const replacedTemplate = template
-      .replace(/::_COMPONENT_DESCRIPTORS_::/g, componentDescriptors)
-      .replace('::_LIBRARY_::', libraryName);
+    const replacedTemplate = FileTemplate({
+      componentDescriptors,
+      libraryName,
+    });
 
     return new Map([[fileName, replacedTemplate]]);
   },

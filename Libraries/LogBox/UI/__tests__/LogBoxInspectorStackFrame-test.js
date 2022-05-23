@@ -12,8 +12,8 @@
 'use strict';
 
 const React = require('react');
-const LogBoxInspectorStackFrame = require('../LogBoxInspectorStackFrame')
-  .default;
+const LogBoxInspectorStackFrame =
+  require('../LogBoxInspectorStackFrame').default;
 const render = require('../../../../jest/renderer');
 
 describe('LogBoxInspectorStackFrame', () => {

@@ -200,7 +200,7 @@ exports.displayName = 'LayoutExample';
 exports.examples = [
   {
     title: 'Simple layout using flexbox',
-    render: function(): React.Element<typeof LayoutExample> {
+    render: function (): React.Element<typeof LayoutExample> {
       return <LayoutExample />;
     },
   },

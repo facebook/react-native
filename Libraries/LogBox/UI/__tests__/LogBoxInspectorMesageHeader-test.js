@@ -12,8 +12,8 @@
 'use strict';
 
 const React = require('react');
-const LogBoxInspectorMessageHeader = require('../LogBoxInspectorMessageHeader')
-  .default;
+const LogBoxInspectorMessageHeader =
+  require('../LogBoxInspectorMessageHeader').default;
 const render = require('../../../../jest/renderer');
 
 describe('LogBoxInspectorMessageHeader', () => {

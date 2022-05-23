@@ -25,7 +25,7 @@ body:
     id: react-native-info
     attributes:
       label: Output of `react-native info`
-      description: Run `react-native info` in your terminal and copy the results here.
+      description: Run `react-native info` in your terminal, copy and paste the results here.
     validations:
       required: true
   - type: textarea

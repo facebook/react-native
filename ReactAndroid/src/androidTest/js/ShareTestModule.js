@@ -23,7 +23,7 @@ class ShareTestApp extends React.Component {
 
 const ShareTestModule = {
   ShareTestApp: ShareTestApp,
-  showShareDialog: function(content, options) {
+  showShareDialog: function (content, options) {
     Share.share(content, options).then(
       () => RecordingModule.recordOpened(),
       ({code, message}) => RecordingModule.recordError(),

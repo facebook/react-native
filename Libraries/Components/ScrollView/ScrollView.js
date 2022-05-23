@@ -736,10 +736,8 @@ class ScrollView extends React.Component<Props, State> {
 
   _scrollAnimatedValue: AnimatedImplementation.Value;
   _scrollAnimatedValueAttachment: ?{detach: () => void, ...} = null;
-  _stickyHeaderRefs: Map<
-    string,
-    React.ElementRef<StickyHeaderComponentType>,
-  > = new Map();
+  _stickyHeaderRefs: Map<string, React.ElementRef<StickyHeaderComponentType>> =
+    new Map();
   _headerLayoutYs: Map<string, number> = new Map();
 
   _keyboardWillOpenTo: ?KeyboardEvent = null;
@@ -861,7 +859,8 @@ class ScrollView extends React.Component<Props, State> {
         ref.scrollToEnd = this.scrollToEnd;
         ref.flashScrollIndicators = this.flashScrollIndicators;
         ref.scrollResponderZoomTo = this.scrollResponderZoomTo;
-        ref.scrollResponderScrollNativeHandleToKeyboard = this.scrollResponderScrollNativeHandleToKeyboard;
+        ref.scrollResponderScrollNativeHandleToKeyboard =
+          this.scrollResponderScrollNativeHandleToKeyboard;
       }
     },
   });
@@ -1131,11 +1130,12 @@ class ScrollView extends React.Component<Props, State> {
       this.props.stickyHeaderIndices &&
       this.props.stickyHeaderIndices.length > 0
     ) {
-      this._scrollAnimatedValueAttachment = AnimatedImplementation.attachNativeEvent(
-        this._scrollViewRef,
-        'onScroll',
-        [{nativeEvent: {contentOffset: {y: this._scrollAnimatedValue}}}],
-      );
+      this._scrollAnimatedValueAttachment =
+        AnimatedImplementation.attachNativeEvent(
+          this._scrollViewRef,
+          'onScroll',
+          [{nativeEvent: {contentOffset: {y: this._scrollAnimatedValue}}}],
+        );
     }
   }
 
@@ -1822,8 +1822,8 @@ class ScrollView extends React.Component<Props, State> {
       onScrollEndDrag: this._handleScrollEndDrag,
       onScrollShouldSetResponder: this._handleScrollShouldSetResponder,
       onStartShouldSetResponder: this._handleStartShouldSetResponder,
-      onStartShouldSetResponderCapture: this
-        ._handleStartShouldSetResponderCapture,
+      onStartShouldSetResponderCapture:
+        this._handleStartShouldSetResponderCapture,
       onTouchEnd: this._handleTouchEnd,
       onTouchMove: this._handleTouchMove,
       onTouchStart: this._handleTouchStart,

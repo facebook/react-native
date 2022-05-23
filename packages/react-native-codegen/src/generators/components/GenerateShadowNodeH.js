@@ -15,7 +15,15 @@ import type {SchemaType} from '../../CodegenSchema';
 // File path -> contents
 type FilesOutput = Map<string, string>;
 
-const template = `
+const FileTemplate = ({
+  imports,
+  libraryName,
+  componentClasses,
+}: {
+  imports: string,
+  libraryName: string,
+  componentClasses: string,
+}) => `
 /**
  * ${'C'}opyright (c) Facebook, Inc. and its affiliates.
  *
@@ -27,27 +35,34 @@ const template = `
 
 #pragma once
 
-::_IMPORTS_::#include <react/renderer/components/::_LIBRARY_::/Props.h>
+${imports}#include <react/renderer/components/${libraryName}/Props.h>
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 
 namespace facebook {
 namespace react {
 
-::_COMPONENT_CLASSES_::
+${componentClasses}
 
 } // namespace react
 } // namespace facebook
 `;
 
-const componentTemplate = `
-extern const char ::_CLASSNAME_::ComponentName[];
+const ComponentTemplate = ({
+  className,
+  eventEmitter,
+}: {
+  className: string,
+  eventEmitter: string,
+}) =>
+  `
+extern const char ${className}ComponentName[];
 
 /*
- * \`ShadowNode\` for <::_CLASSNAME_::> component.
+ * \`ShadowNode\` for <${className}> component.
  */
-using ::_CLASSNAME_::ShadowNode = ConcreteViewShadowNode<
-    ::_CLASSNAME_::ComponentName,
-    ::_CLASSNAME_::Props::_EVENT_EMITTER_::>;
+using ${className}ShadowNode = ConcreteViewShadowNode<
+    ${className}ComponentName,
+    ${className}Props${eventEmitter}>;
 `.trim();
 
 module.exports = {
@@ -91,9 +106,10 @@ module.exports = {
               ? `,\n${componentName}EventEmitter`
               : '';
 
-            const replacedTemplate = componentTemplate
-              .replace(/::_CLASSNAME_::/g, componentName)
-              .replace('::_EVENT_EMITTER_::', eventEmitter);
+            const replacedTemplate = ComponentTemplate({
+              className: componentName,
+              eventEmitter,
+            });
 
             return replacedTemplate;
           })
@@ -104,10 +120,11 @@ module.exports = {
 
     const eventEmitterImport = `#include <react/renderer/components/${libraryName}/EventEmitters.h>\n`;
 
-    const replacedTemplate = template
-      .replace(/::_COMPONENT_CLASSES_::/g, moduleResults)
-      .replace('::_LIBRARY_::', libraryName)
-      .replace('::_IMPORTS_::', hasAnyEvents ? eventEmitterImport : '');
+    const replacedTemplate = FileTemplate({
+      componentClasses: moduleResults,
+      libraryName,
+      imports: hasAnyEvents ? eventEmitterImport : '',
+    });
 
     return new Map([[fileName, replacedTemplate]]);
   },

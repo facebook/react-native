@@ -18,11 +18,8 @@ const i18nConstants: {|
 
 function getI18nManagerConstants() {
   if (NativeI18nManager) {
-    const {
-      isRTL,
-      doLeftAndRightSwapInRTL,
-      localeIdentifier,
-    } = NativeI18nManager.getConstants();
+    const {isRTL, doLeftAndRightSwapInRTL, localeIdentifier} =
+      NativeI18nManager.getConstants();
     return {isRTL, doLeftAndRightSwapInRTL, localeIdentifier};
   }
 

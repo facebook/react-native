@@ -82,8 +82,8 @@ class AppContainer extends React.Component<Props, State> {
         !global.__RCTProfileIsProfiling &&
         !this.props.internal_excludeLogBox
       ) {
-        const LogBoxNotificationContainer = require('../LogBox/LogBoxNotificationContainer')
-          .default;
+        const LogBoxNotificationContainer =
+          require('../LogBox/LogBoxNotificationContainer').default;
         logBox = <LogBoxNotificationContainer />;
       }
     }

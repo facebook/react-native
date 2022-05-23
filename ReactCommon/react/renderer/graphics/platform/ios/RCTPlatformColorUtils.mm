@@ -187,16 +187,14 @@ static inline facebook::react::ColorComponents _ColorComponentsFromUIColor(UICol
 facebook::react::ColorComponents RCTPlatformColorComponentsFromSemanticItems(std::vector<std::string> &semanticItems)
 {
   for (const auto &semanticCString : semanticItems) {
-    if (@available(iOS 11.0, *)) {
-      NSString *semanticNSString = _NSStringFromCString(semanticCString);
-      UIColor *uiColor = [UIColor colorNamed:semanticNSString];
-      if (uiColor != nil) {
-        return _ColorComponentsFromUIColor(uiColor);
-      }
-      uiColor = _UIColorFromSemanticString(semanticNSString);
-      if (uiColor != nil) {
-        return _ColorComponentsFromUIColor(uiColor);
-      }
+    NSString *semanticNSString = _NSStringFromCString(semanticCString);
+    UIColor *uiColor = [UIColor colorNamed:semanticNSString];
+    if (uiColor != nil) {
+      return _ColorComponentsFromUIColor(uiColor);
+    }
+    uiColor = _UIColorFromSemanticString(semanticNSString);
+    if (uiColor != nil) {
+      return _ColorComponentsFromUIColor(uiColor);
     }
   }
 

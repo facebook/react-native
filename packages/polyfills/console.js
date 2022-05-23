@@ -6,7 +6,7 @@
  *
  * @polyfill
  * @nolint
- * @format
+ * @noformat
  */
 
 /* eslint-disable no-shadow, eqeqeq, curly, no-unused-vars, no-void, no-control-regex  */
