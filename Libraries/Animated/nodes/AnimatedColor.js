@@ -21,6 +21,9 @@ import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {NativeColorValue} from '../../StyleSheet/PlatformColorValueTypes';
 import type {ProcessedColorValue} from '../../StyleSheet/processColor';
 
+export type AnimatedColorConfig = $ReadOnly<{
+  useNativeDriver: boolean,
+}>;
 type ColorListenerCallback = (value: string) => mixed;
 export type RgbaValue = {
   +r: number,
@@ -116,7 +119,10 @@ export default class AnimatedColor extends AnimatedWithChildren {
     ...
   } = {};
 
-  constructor(valueIn?: ?(RgbaValue | RgbaAnimatedValue | ColorValue)) {
+  constructor(
+    valueIn?: ?(RgbaValue | RgbaAnimatedValue | ColorValue),
+    config?: ?AnimatedColorConfig,
+  ) {
     super();
     let value: RgbaValue | RgbaAnimatedValue | ColorValue =
       valueIn ?? defaultColor;
@@ -144,12 +150,9 @@ export default class AnimatedColor extends AnimatedWithChildren {
       this.g = new AnimatedValue(initColor.g);
       this.b = new AnimatedValue(initColor.b);
       this.a = new AnimatedValue(initColor.a);
-
-      if (this.nativeColor) {
-        if (!this.__isNative) {
-          this.__makeNative();
-        }
-      }
+    }
+    if (this.nativeColor || (config && config.useNativeDriver)) {
+      this.__makeNative();
     }
   }
 

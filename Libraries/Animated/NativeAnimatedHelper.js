@@ -42,7 +42,7 @@ let queue: Array<() => void> = [];
 // $FlowFixMe
 let singleOpQueue: Array<any> = [];
 
-let useSingleOpBatching =
+const useSingleOpBatching =
   Platform.OS === 'android' &&
   !!NativeAnimatedModule?.queueAndExecuteBatchedOperations &&
   ReactNativeFeatureFlags.animatedShouldUseSingleOp();
@@ -54,25 +54,58 @@ const eventListenerAnimationFinishedCallbacks = {};
 let globalEventEmitterGetValueListener: ?EventSubscription = null;
 let globalEventEmitterAnimationFinishedListener: ?EventSubscription = null;
 
+const nativeOps: ?typeof NativeAnimatedModule = useSingleOpBatching
+  ? ((function () {
+      const apis = [
+        'createAnimatedNode', // 1
+        'updateAnimatedNodeConfig', // 2
+        'getValue', // 3
+        'startListeningToAnimatedNodeValue', // 4
+        'stopListeningToAnimatedNodeValue', // 5
+        'connectAnimatedNodes', // 6
+        'disconnectAnimatedNodes', // 7
+        'startAnimatingNode', // 8
+        'stopAnimation', // 9
+        'setAnimatedNodeValue', // 10
+        'setAnimatedNodeOffset', // 11
+        'flattenAnimatedNodeOffset', // 12
+        'extractAnimatedNodeOffset', // 13
+        'connectAnimatedNodeToView', // 14
+        'disconnectAnimatedNodeFromView', // 15
+        'restoreDefaultValues', // 16
+        'dropAnimatedNode', // 17
+        'addAnimatedEventToView', // 18
+        'removeAnimatedEventFromView', // 19
+        'addListener', // 20
+        'removeListener', // 21
+      ];
+      return apis.reduce((acc, functionName, i) => {
+        // These indices need to be kept in sync with the indices in native (see NativeAnimatedModule in Java, or the equivalent for any other native platform).
+        acc[functionName] = i + 1;
+        return acc;
+      }, {});
+    })(): $FlowFixMe)
+  : NativeAnimatedModule;
+
 /**
- * Simple wrappers around NativeAnimatedModule to provide flow and autocomplete support for
- * the native module methods
+ * Wrappers around NativeAnimatedModule to provide flow and autocomplete support for
+ * the native module methods, and automatic queue management on Android
  */
 const API = {
   getValue: function (
     tag: number,
     saveValueCallback: (value: number) => void,
   ): void {
-    invariant(NativeAnimatedModule, 'Native animated module is not available');
-    const args = [tag];
+    invariant(nativeOps, 'Native animated module is not available');
     if (useSingleOpBatching) {
       if (saveValueCallback) {
         eventListenerGetValueCallbacks[tag] = saveValueCallback;
       }
+      // $FlowFixMe
+      API.queueOperation(nativeOps.getValue, tag);
     } else {
-      args.push(saveValueCallback);
+      API.queueOperation(nativeOps.getValue, tag, saveValueCallback);
     }
-    API.queueOperation(API.operationMap.getValue, args);
   },
   setWaitingForIdentifier: function (id: string): void {
     waitingForQueuedOperations.add(id);
@@ -93,7 +126,7 @@ const API = {
     }
   },
   disableQueue: function (): void {
-    invariant(NativeAnimatedModule, 'Native animated module is not available');
+    invariant(nativeOps, 'Native animated module is not available');
 
     if (ReactNativeFeatureFlags.animatedShouldDebounceQueueFlush()) {
       const prevTimeout = flushQueueTimeout;
@@ -114,10 +147,11 @@ const API = {
     }
   },
   flushQueue: function (): void {
+    invariant(NativeAnimatedModule, 'Native animated module is not available');
     flushQueueTimeout = null;
 
     if (Platform.OS === 'android') {
-      NativeAnimatedModule?.startOperationBatch?.();
+      NativeAnimatedModule.startOperationBatch?.();
     }
     if (useSingleOpBatching) {
       // Set up event listener for callbacks if it's not set up
@@ -131,9 +165,7 @@ const API = {
       // use RCTDeviceEventEmitter. This reduces overhead of sending lots of
       // JSI functions across to native code; but also, TM infrastructure currently
       // does not support packing a function into native arrays.
-      NativeAnimatedModule?.queueAndExecuteBatchedOperations?.(
-        singleOpQueue.filter(x => typeof x !== 'function'),
-      );
+      NativeAnimatedModule.queueAndExecuteBatchedOperations?.(singleOpQueue);
       singleOpQueue.length = 0;
     } else {
       for (let q = 0, l = queue.length; q < l; q++) {
@@ -142,18 +174,17 @@ const API = {
       queue.length = 0;
     }
     if (Platform.OS === 'android') {
-      NativeAnimatedModule?.finishOperationBatch?.();
+      NativeAnimatedModule.finishOperationBatch?.();
     }
   },
-  queueOperation: (
-    // $FlowFixMe
-    fn: (mode: 'immediate' | 'batch', ...args: Array<any>) => number,
-    // $FlowFixMe
-    args: Array<any>,
+  queueOperation: <Args: $ReadOnlyArray<mixed>, Fn: (...Args) => void>(
+    fn: Fn,
+    ...args: Args
   ): void => {
     if (useSingleOpBatching) {
       // Get the command ID from the queued function, and push that ID and any arguments needed to execute the operation
-      singleOpQueue.push(fn('batch'), ...args);
+      // $FlowFixMe: surprise, fn is actually a number
+      singleOpQueue.push(fn, ...args);
       return;
     }
 
@@ -161,57 +192,42 @@ const API = {
     // been flushed, use the queue. This is to prevent operations
     // from being executed out of order.
     if (queueOperations || queue.length !== 0) {
-      queue.push(() => {
-        fn('immediate', ...args);
-      });
+      queue.push(() => fn(...args));
     } else {
-      fn('immediate', ...args);
+      fn(...args);
     }
   },
   createAnimatedNode: function (tag: number, config: AnimatedNodeConfig): void {
-    invariant(NativeAnimatedModule, 'Native animated module is not available');
-    API.queueOperation(API.operationMap.createAnimatedNode, [tag, config]);
+    invariant(nativeOps, 'Native animated module is not available');
+    API.queueOperation(nativeOps.createAnimatedNode, tag, config);
   },
   updateAnimatedNodeConfig: function (
     tag: number,
     config: AnimatedNodeConfig,
   ): void {
-    invariant(NativeAnimatedModule, 'Native animated module is not available');
-    if (typeof NativeAnimatedModule.updateAnimatedNodeConfig === 'function') {
-      API.queueOperation(API.operationMap.updateAnimatedNodeConfig, [
-        tag,
-        config,
-      ]);
+    invariant(nativeOps, 'Native animated module is not available');
+    if (nativeOps.updateAnimatedNodeConfig) {
+      API.queueOperation(nativeOps.updateAnimatedNodeConfig, tag, config);
     }
   },
   startListeningToAnimatedNodeValue: function (tag: number) {
-    invariant(NativeAnimatedModule, 'Native animated module is not available');
-    API.queueOperation(API.operationMap.startListeningToAnimatedNodeValue, [
-      tag,
-    ]);
+    invariant(nativeOps, 'Native animated module is not available');
+    API.queueOperation(nativeOps.startListeningToAnimatedNodeValue, tag);
   },
   stopListeningToAnimatedNodeValue: function (tag: number) {
-    invariant(NativeAnimatedModule, 'Native animated module is not available');
-    API.queueOperation(API.operationMap.stopListeningToAnimatedNodeValue, [
-      tag,
-    ]);
+    invariant(nativeOps, 'Native animated module is not available');
+    API.queueOperation(nativeOps.stopListeningToAnimatedNodeValue, tag);
   },
   connectAnimatedNodes: function (parentTag: number, childTag: number): void {
-    invariant(NativeAnimatedModule, 'Native animated module is not available');
-    API.queueOperation(API.operationMap.connectAnimatedNodes, [
-      parentTag,
-      childTag,
-    ]);
+    invariant(nativeOps, 'Native animated module is not available');
+    API.queueOperation(nativeOps.connectAnimatedNodes, parentTag, childTag);
   },
   disconnectAnimatedNodes: function (
     parentTag: number,
     childTag: number,
   ): void {
-    invariant(NativeAnimatedModule, 'Native animated module is not available');
-    API.queueOperation(API.operationMap.disconnectAnimatedNodes, [
-      parentTag,
-      childTag,
-    ]);
+    invariant(nativeOps, 'Native animated module is not available');
+    API.queueOperation(nativeOps.disconnectAnimatedNodes, parentTag, childTag);
   },
   startAnimatingNode: function (
     animationId: number,
@@ -219,133 +235,100 @@ const API = {
     config: AnimatingNodeConfig,
     endCallback: EndCallback,
   ): void {
-    invariant(NativeAnimatedModule, 'Native animated module is not available');
-    const args = [animationId, nodeTag, config];
+    invariant(nativeOps, 'Native animated module is not available');
     if (useSingleOpBatching) {
       if (endCallback) {
         eventListenerAnimationFinishedCallbacks[animationId] = endCallback;
       }
+      // $FlowFixMe
+      API.queueOperation(
+        nativeOps.startAnimatingNode,
+        animationId,
+        nodeTag,
+        config,
+      );
     } else {
-      args.push(endCallback);
+      API.queueOperation(
+        nativeOps.startAnimatingNode,
+        animationId,
+        nodeTag,
+        config,
+        endCallback,
+      );
     }
-    API.queueOperation(API.operationMap.startAnimatingNode, args);
   },
   stopAnimation: function (animationId: number) {
-    invariant(NativeAnimatedModule, 'Native animated module is not available');
-    API.queueOperation(API.operationMap.stopAnimation, [animationId]);
+    invariant(nativeOps, 'Native animated module is not available');
+    API.queueOperation(nativeOps.stopAnimation, animationId);
   },
   setAnimatedNodeValue: function (nodeTag: number, value: number): void {
-    invariant(NativeAnimatedModule, 'Native animated module is not available');
-    API.queueOperation(API.operationMap.setAnimatedNodeValue, [nodeTag, value]);
+    invariant(nativeOps, 'Native animated module is not available');
+    API.queueOperation(nativeOps.setAnimatedNodeValue, nodeTag, value);
   },
   setAnimatedNodeOffset: function (nodeTag: number, offset: number): void {
-    invariant(NativeAnimatedModule, 'Native animated module is not available');
-    API.queueOperation(API.operationMap.setAnimatedNodeOffset, [
-      nodeTag,
-      offset,
-    ]);
+    invariant(nativeOps, 'Native animated module is not available');
+    API.queueOperation(nativeOps.setAnimatedNodeOffset, nodeTag, offset);
   },
   flattenAnimatedNodeOffset: function (nodeTag: number): void {
-    invariant(NativeAnimatedModule, 'Native animated module is not available');
-    API.queueOperation(API.operationMap.flattenAnimatedNodeOffset, [nodeTag]);
+    invariant(nativeOps, 'Native animated module is not available');
+    API.queueOperation(nativeOps.flattenAnimatedNodeOffset, nodeTag);
   },
   extractAnimatedNodeOffset: function (nodeTag: number): void {
-    invariant(NativeAnimatedModule, 'Native animated module is not available');
-    API.queueOperation(API.operationMap.extractAnimatedNodeOffset, [nodeTag]);
+    invariant(nativeOps, 'Native animated module is not available');
+    API.queueOperation(nativeOps.extractAnimatedNodeOffset, nodeTag);
   },
   connectAnimatedNodeToView: function (nodeTag: number, viewTag: number): void {
-    invariant(NativeAnimatedModule, 'Native animated module is not available');
-    API.queueOperation(API.operationMap.connectAnimatedNodeToView, [
-      nodeTag,
-      viewTag,
-    ]);
+    invariant(nativeOps, 'Native animated module is not available');
+    API.queueOperation(nativeOps.connectAnimatedNodeToView, nodeTag, viewTag);
   },
   disconnectAnimatedNodeFromView: function (
     nodeTag: number,
     viewTag: number,
   ): void {
-    invariant(NativeAnimatedModule, 'Native animated module is not available');
-    API.queueOperation(API.operationMap.disconnectAnimatedNodeFromView, [
+    invariant(nativeOps, 'Native animated module is not available');
+    API.queueOperation(
+      nativeOps.disconnectAnimatedNodeFromView,
       nodeTag,
       viewTag,
-    ]);
+    );
   },
   restoreDefaultValues: function (nodeTag: number): void {
-    invariant(NativeAnimatedModule, 'Native animated module is not available');
+    invariant(nativeOps, 'Native animated module is not available');
     // Backwards compat with older native runtimes, can be removed later.
-    if (NativeAnimatedModule.restoreDefaultValues != null) {
-      API.queueOperation(API.operationMap.restoreDefaultValues, [nodeTag]);
+    if (nativeOps.restoreDefaultValues != null) {
+      API.queueOperation(nativeOps.restoreDefaultValues, nodeTag);
     }
   },
   dropAnimatedNode: function (tag: number): void {
-    invariant(NativeAnimatedModule, 'Native animated module is not available');
-    API.queueOperation(API.operationMap.dropAnimatedNode, [tag]);
+    invariant(nativeOps, 'Native animated module is not available');
+    API.queueOperation(nativeOps.dropAnimatedNode, tag);
   },
   addAnimatedEventToView: function (
     viewTag: number,
     eventName: string,
     eventMapping: EventMapping,
   ) {
-    invariant(NativeAnimatedModule, 'Native animated module is not available');
-    API.queueOperation(API.operationMap.addAnimatedEventToView, [
+    invariant(nativeOps, 'Native animated module is not available');
+    API.queueOperation(
+      nativeOps.addAnimatedEventToView,
       viewTag,
       eventName,
       eventMapping,
-    ]);
+    );
   },
   removeAnimatedEventFromView(
     viewTag: number,
     eventName: string,
     animatedNodeTag: number,
   ) {
-    invariant(NativeAnimatedModule, 'Native animated module is not available');
-    API.queueOperation(API.operationMap.removeAnimatedEventFromView, [
+    invariant(nativeOps, 'Native animated module is not available');
+    API.queueOperation(
+      nativeOps.removeAnimatedEventFromView,
       viewTag,
       eventName,
       animatedNodeTag,
-    ]);
+    );
   },
-  // $FlowFixMe
-  operationMap: (function () {
-    const apis = [
-      'createAnimatedNode', // 1
-      'updateAnimatedNodeConfig', // 2
-      'getValue', // 3
-      'startListeningToAnimatedNodeValue', // 4
-      'stopListeningToAnimatedNodeValue', // 5
-      'connectAnimatedNodes', // 6
-      'disconnectAnimatedNodes', // 7
-      'startAnimatingNode', // 8
-      'stopAnimation', // 9
-      'setAnimatedNodeValue', // 10
-      'setAnimatedNodeOffset', // 11
-      'flattenAnimatedNodeOffset', // 12
-      'extractAnimatedNodeOffset', // 13
-      'connectAnimatedNodeToView', // 14
-      'disconnectAnimatedNodeFromView', // 15
-      'restoreDefaultValues', // 16
-      'dropAnimatedNode', // 17
-      'addAnimatedEventToView', // 18
-      'removeAnimatedEventFromView', // 19
-      'addListener', // 20
-      'removeListener', // 21
-    ];
-    return apis.reduce((acc, functionName, i) => {
-      acc[functionName] = function (
-        mode: 'batch' | 'immediate',
-        // $FlowFixMe
-        ...args: Array<any>
-      ): number {
-        if (mode === 'immediate') {
-          // $FlowFixMe
-          NativeAnimatedModule?.[functionName](...args);
-        }
-        // These indices need to be kept in sync with the indices in native (see NativeAnimatedModule in Java, or the equivalent for any other native platform).
-        return i + 1;
-      };
-      return acc;
-    }, {});
-  })(),
 };
 
 function setupGlobalEventEmitterListeners() {

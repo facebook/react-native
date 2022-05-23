@@ -20,6 +20,10 @@ import type Animation, {EndCallback} from '../animations/Animation';
 import type {InterpolationConfigType} from './AnimatedInterpolation';
 import type AnimatedTracking from './AnimatedTracking';
 
+export type AnimatedValueConfig = $ReadOnly<{
+  useNativeDriver: boolean,
+}>;
+
 const NativeAnimatedAPI = NativeAnimatedHelper.API;
 
 /**
@@ -87,7 +91,7 @@ class AnimatedValue extends AnimatedWithChildren {
   _animation: ?Animation;
   _tracking: ?AnimatedTracking;
 
-  constructor(value: number) {
+  constructor(value: number, config?: ?AnimatedValueConfig) {
     super();
     if (typeof value !== 'number') {
       throw new Error('AnimatedValue: Attempting to set value to undefined');
@@ -95,6 +99,9 @@ class AnimatedValue extends AnimatedWithChildren {
     this._startingValue = this._value = value;
     this._offset = 0;
     this._animation = null;
+    if (config && config.useNativeDriver) {
+      this.__makeNative();
+    }
   }
 
   __detach() {
