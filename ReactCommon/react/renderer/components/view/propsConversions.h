@@ -499,12 +499,36 @@ static inline ViewEvents convertRawProp(
       "onPointerEnter2",
       sourceValue[Offset::PointerEnter2],
       defaultValue[Offset::PointerEnter2]);
+  result[Offset::PointerEnter2Capture] = convertRawProp(
+      context,
+      rawProps,
+      "onPointerEnter2Capture",
+      sourceValue[Offset::PointerEnter2Capture],
+      defaultValue[Offset::PointerEnter2Capture]);
+  result[Offset::PointerMove2] = convertRawProp(
+      context,
+      rawProps,
+      "onPointerMove2",
+      sourceValue[Offset::PointerMove2],
+      defaultValue[Offset::PointerMove2]);
+  result[Offset::PointerMove2Capture] = convertRawProp(
+      context,
+      rawProps,
+      "onPointerMove2Capture",
+      sourceValue[Offset::PointerMove2Capture],
+      defaultValue[Offset::PointerMove2Capture]);
   result[Offset::PointerLeave2] = convertRawProp(
       context,
       rawProps,
       "onPointerLeave2",
       sourceValue[Offset::PointerLeave2],
       defaultValue[Offset::PointerLeave2]);
+  result[Offset::PointerLeave2Capture] = convertRawProp(
+      context,
+      rawProps,
+      "onPointerLeave2Capture",
+      sourceValue[Offset::PointerLeave2Capture],
+      defaultValue[Offset::PointerLeave2Capture]);
 
   // PanResponder callbacks
   result[Offset::MoveShouldSetResponder] = convertRawProp(

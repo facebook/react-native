@@ -8,6 +8,11 @@
 package com.facebook.react.uimanager.events;
 
 import android.view.MotionEvent;
+import android.view.View;
+import androidx.annotation.Nullable;
+import com.facebook.common.logging.FLog;
+import com.facebook.react.R;
+import com.facebook.react.common.ReactConstants;
 
 /** Class responsible for generating catalyst touch events based on android {@link MotionEvent}. */
 public class PointerEventHelper {
@@ -17,12 +22,48 @@ public class PointerEventHelper {
   public static final String POINTER_TYPE_MOUSE = "mouse";
   public static final String POINTER_TYPE_UNKNOWN = "";
 
+  public static enum EVENT {
+    CANCEL,
+    CANCEL_CAPTURE,
+    DOWN,
+    DOWN_CAPTURE,
+    ENTER,
+    ENTER_CAPTURE,
+    LEAVE,
+    LEAVE_CAPTURE,
+    MOVE,
+    MOVE_CAPTURE,
+    UP,
+    UP_CAPTURE,
+  };
+
   public static final String POINTER_CANCEL = "topPointerCancel";
   public static final String POINTER_DOWN = "topPointerDown";
   public static final String POINTER_ENTER = "topPointerEnter2";
   public static final String POINTER_LEAVE = "topPointerLeave2";
   public static final String POINTER_MOVE = "topPointerMove2";
   public static final String POINTER_UP = "topPointerUp";
+
+  /** We don't dispatch capture events from native; that's currently handled by JS. */
+  public static @Nullable String getDispatchableEventName(EVENT event) {
+    switch (event) {
+      case LEAVE:
+        return PointerEventHelper.POINTER_LEAVE;
+      case DOWN:
+        return PointerEventHelper.POINTER_DOWN;
+      case MOVE:
+        return PointerEventHelper.POINTER_MOVE;
+      case ENTER:
+        return PointerEventHelper.POINTER_ENTER;
+      case CANCEL:
+        return PointerEventHelper.POINTER_CANCEL;
+      case UP:
+        return PointerEventHelper.POINTER_UP;
+      default:
+        FLog.e(ReactConstants.TAG, "No dispatchable event name for type: " + event);
+        return null;
+    }
+  }
 
   public static String getW3CPointerType(final int toolType) {
     // https://www.w3.org/TR/pointerevents3/#dom-pointerevent-pointertype
@@ -37,6 +78,50 @@ public class PointerEventHelper {
         return POINTER_TYPE_MOUSE;
     }
     return POINTER_TYPE_UNKNOWN;
+  }
+
+  public static boolean isListening(@Nullable View view, EVENT event) {
+    if (view == null) {
+      return false;
+    }
+
+    Object value = null;
+    switch (event) {
+      case DOWN:
+      case DOWN_CAPTURE:
+      case UP:
+      case UP_CAPTURE:
+      case CANCEL:
+      case CANCEL_CAPTURE:
+        return true;
+      case ENTER:
+        value = view.getTag(R.id.pointer_enter2);
+        break;
+      case ENTER_CAPTURE:
+        value = view.getTag(R.id.pointer_enter2_capture);
+        break;
+      case LEAVE:
+        value = view.getTag(R.id.pointer_leave2);
+        break;
+      case LEAVE_CAPTURE:
+        value = view.getTag(R.id.pointer_leave2_capture);
+        break;
+      case MOVE:
+        value = view.getTag(R.id.pointer_move2);
+        break;
+      case MOVE_CAPTURE:
+        value = view.getTag(R.id.pointer_move2_capture);
+        break;
+    }
+
+    if (value == null) {
+      return false;
+    }
+
+    if (value instanceof Boolean) {
+      return (Boolean) value;
+    }
+    return false;
   }
 
   public static int getEventCategory(String pointerEventType) {
