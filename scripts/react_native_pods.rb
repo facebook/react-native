@@ -108,7 +108,7 @@ def use_react_native! (options={})
     pod 'libevent', '~> 2.1.12'
   end
 
-  if flipper_configuration.flipper_enabled
+  if flipper_configuration.flipper_enabled && !production
     install_flipper_dependencies(prefix)
     use_flipper_pods(flipper_configuration.versions, :configurations => flipper_configuration.configurations)
   end
