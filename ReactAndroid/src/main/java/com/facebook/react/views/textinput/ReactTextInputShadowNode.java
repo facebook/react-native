@@ -52,7 +52,7 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
   private @Nullable String mPlaceholder = null;
   private int mSelectionStart = UNSET;
   private int mSelectionEnd = UNSET;
-  private @Nullable String mAccessibilityError = null;
+  private @Nullable String mScreenreaderError = null;
 
   public ReactTextInputShadowNode(
       @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
@@ -197,8 +197,8 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
   }
 
   @ReactProp(name = PROP_ERROR_MESSAGE)
-  public void setErrorMessage(String accessibilityErrorMessage) {
-    mAccessibilityError = accessibilityErrorMessage;
+  public void setScreenreaderError(String screenreaderError) {
+    mScreenreaderError = screenreaderError;
   }
 
   @ReactProp(name = PROP_SELECTION)
@@ -255,7 +255,7 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
               mJustificationMode,
               mSelectionStart,
               mSelectionEnd,
-              mAccessibilityError);
+              mScreenreaderError);
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);
     }
   }

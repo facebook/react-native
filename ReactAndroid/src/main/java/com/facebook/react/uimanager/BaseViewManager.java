@@ -176,8 +176,8 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   @ReactProp(name = "screenreaderError")
-  public void setAccessibilityError(@NonNull T view, @Nullable String errorMessage) {
-    view.setTag(R.id.accessibility_error, errorMessage);
+  public void setScreenreaderError(@NonNull T view, @Nullable String screenreaderError) {
+    view.setTag(R.id.screenreader_error, screenreaderError);
   }
 
   @Override

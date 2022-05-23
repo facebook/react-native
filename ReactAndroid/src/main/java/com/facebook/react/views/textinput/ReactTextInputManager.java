@@ -369,7 +369,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
       view.maybeSetTextFromState(update);
       view.maybeSetSelection(update.getJsEventCounter(), selectionStart, selectionEnd);
-      view.maybeSetAccessibilityError(update.getJsEventCounter(), update.getAccessibilityError());
+      view.maybeSetAccessibilityError(update.getJsEventCounter(), update.getScreenreaderError());
     }
   }
 
