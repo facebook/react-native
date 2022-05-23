@@ -91,7 +91,7 @@ def flipper_post_install(installer)
     end
 end
 
-class FlipperConfiguation
+class FlipperConfiguration
     attr_reader :flipper_enabled
     attr_reader :configurations
     attr_reader :versions
@@ -103,10 +103,10 @@ class FlipperConfiguation
     end
 
     def self.enabled(configurations = ["Debug"], versions = {})
-        return FlipperConfiguation.new(true, configurations, versions)
+        return FlipperConfiguration.new(true, configurations, versions)
     end
 
     def self.disabled
-        return FlipperConfiguation.new(false, [], {})
+        return FlipperConfiguration.new(false, [], {})
     end
 end

@@ -33,7 +33,7 @@ def use_react_native! (options={})
   # Include Hermes dependencies
   hermes_enabled = options[:hermes_enabled] ||= false
 
-  flipper_configuration = options[:flipper_configuration] ||= FlipperConfiguation.disabled
+  flipper_configuration = options[:flipper_configuration] ||= FlipperConfiguration.disabled
 
   if `/usr/sbin/sysctl -n hw.optional.arm64 2>&1`.to_i == 1 && !RUBY_PLATFORM.include?('arm64')
     Pod::UI.warn 'Do not use "pod install" from inside Rosetta2 (x86_64 emulation on arm64).'
@@ -127,7 +127,7 @@ def get_default_flags()
   flags = {
     :fabric_enabled => false,
     :hermes_enabled => false,
-    :flipper_configuration => FlipperConfiguation.disabled
+    :flipper_configuration => FlipperConfiguration.disabled
   }
 
   if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
