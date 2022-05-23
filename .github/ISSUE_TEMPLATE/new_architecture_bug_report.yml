@@ -1,4 +1,4 @@
-name: 💫 New Architecture: Bug Report
+name: 💫 New Architecture - Bug Report
 description: Report a reproducible bug or a build issue when using the New Architecture (Fabric & TurboModules) in React Native.
 labels: ["Needs: Triage :mag:", "Type: New Architecture"]
 body:
