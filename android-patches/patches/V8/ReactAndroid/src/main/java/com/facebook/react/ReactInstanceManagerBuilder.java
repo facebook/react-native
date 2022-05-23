@@ -1,14 +1,14 @@
 --- ./ReactAndroid/src/main/java/com/facebook/react/ReactInstanceManagerBuilder.java	2022-01-11 17:41:29.000000000 -0800
 +++ /var/folders/vs/8_b205053dddbcv7btj0w0v80000gn/T/update-1h8V3n/merge/V8/ReactAndroid/src/main/java/com/facebook/react/ReactInstanceManagerBuilder.java	2022-01-12 15:04:31.000000000 -0800
-@@ -29,6 +29,7 @@
- import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
+@@ -31,6 +31,7 @@
  import com.facebook.react.devsupport.interfaces.DevSupportManager;
+ import com.facebook.react.jscexecutor.JSCExecutor;
  import com.facebook.react.jscexecutor.JSCExecutorFactory;
 +import com.facebook.react.v8executor.V8ExecutorFactory;
  import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
  import com.facebook.react.packagerconnection.RequestHandler;
  import com.facebook.react.uimanager.UIImplementationProvider;
-@@ -66,8 +67,21 @@
+@@ -67,8 +68,21 @@
    private @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
    private @Nullable SurfaceDelegateFactory mSurfaceDelegateFactory;
  
@@ -30,14 +30,14 @@
    /** Sets a provider of {@link UIImplementation}. Uses default provider if null is passed. */
    public ReactInstanceManagerBuilder setUIImplementationProvider(
        @Nullable UIImplementationProvider uiImplementationProvider) {
-@@ -345,40 +359,10 @@
+@@ -345,41 +359,11 @@
  
    private JavaScriptExecutorFactory getDefaultJSExecutorFactory(
        String appName, String deviceName, Context applicationContext) {
 -    try {
 -      // If JSC is included, use it as normal
 -      initializeSoLoaderIfNecessary(applicationContext);
--      SoLoader.loadLibrary("jscexecutor");
+-      JSCExecutor.loadLibrary();
 -      return new JSCExecutorFactory(appName, deviceName);
 -    } catch (UnsatisfiedLinkError jscE) {
 -      // https://github.com/facebook/hermes/issues/78 shows that
@@ -58,6 +58,7 @@
 +      if(mJSEngine == JSEngine.V8) {
 +        return new V8ExecutorFactory(appName, deviceName);
 +      } else {
+         HermesExecutor.loadLibrary();
          return new HermesExecutorFactory();
 -      } catch (UnsatisfiedLinkError hermesE) {
 -        // If we get here, either this is a JSC build, and of course
