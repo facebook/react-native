@@ -36,7 +36,6 @@ class AccessibilityProps {
   std::string accessibilityRole{""};
   std::string accessibilityHint{""};
   std::string accessibilityLanguage{""};
-  std::string screenreaderError{};
   AccessibilityValue accessibilityValue;
   std::vector<AccessibilityAction> accessibilityActions{};
   bool accessibilityViewIsModal{false};
