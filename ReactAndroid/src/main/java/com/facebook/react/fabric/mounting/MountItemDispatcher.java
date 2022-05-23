@@ -206,8 +206,7 @@ public class MountItemDispatcher {
     if (viewCommandMountItemsToDispatch != null) {
       Systrace.beginSection(
           Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-          "FabricUIManager::mountViews viewCommandMountItems to execute: "
-              + viewCommandMountItemsToDispatch.size());
+          "FabricUIManager::mountViews viewCommandMountItems");
       for (DispatchCommandMountItem command : viewCommandMountItemsToDispatch) {
         if (ENABLE_FABRIC_LOGS) {
           printMountItem(command, "dispatchMountItems: Executing viewCommandMountItem");
@@ -250,9 +249,7 @@ public class MountItemDispatcher {
 
     if (preMountItemsToDispatch != null) {
       Systrace.beginSection(
-          Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-          "FabricUIManager::mountViews preMountItems to execute: "
-              + preMountItemsToDispatch.size());
+          Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricUIManager::mountViews preMountItems");
 
       for (PreAllocateViewMountItem preMountItem : preMountItemsToDispatch) {
         executeOrEnqueue(preMountItem);
@@ -264,7 +261,7 @@ public class MountItemDispatcher {
     if (mountItemsToDispatch != null) {
       Systrace.beginSection(
           Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-          "FabricUIManager::mountViews mountItems to execute: " + mountItemsToDispatch.size());
+          "FabricUIManager::mountViews mountItems to execute");
 
       long batchedExecutionStartTime = SystemClock.uptimeMillis();
 
