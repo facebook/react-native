@@ -1033,11 +1033,16 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
    */
   @Override
   public void queueAndExecuteBatchedOperations(final ReadableArray opsAndArgs) {
+    final int opBufferSize = opsAndArgs.size();
+
+    if (ANIMATED_MODULE_DEBUG) {
+      FLog.e(NAME, "queueAndExecuteBatchedOperations: opBufferSize: " + opBufferSize);
+    }
+
     // This block of code is unfortunate and should be refactored - we just want to
     // extract the ViewTags in the ReadableArray to mark animations on views as being enabled.
     // We only do this for initializing animations on views - disabling animations on views
     // happens later, when the disconnect/stop operations are actually executed.
-    final int opBufferSize = opsAndArgs.size();
     for (int i = 0; i < opBufferSize; ) {
       BatchExecutionOpCodes command = BatchExecutionOpCodes.fromId(opsAndArgs.getInt(i++));
       switch (command) {
