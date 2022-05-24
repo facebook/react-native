@@ -21,7 +21,7 @@ def use_react_native! (options={})
   # Include Hermes dependencies
   hermes_enabled = options[:hermes_enabled] ||= false
 
-  if `/usr/sbin/sysctl -n hw.optional.arm64 2>&1`.to_i == 1 && !RUBY_PLATFORM.start_with?('arm64')
+  if `/usr/sbin/sysctl -n hw.optional.arm64 2>&1`.to_i == 1 && !RUBY_PLATFORM.include?('arm64')
     Pod::UI.warn 'Do not use "pod install" from inside Rosetta2 (x86_64 emulation on arm64).'
     Pod::UI.warn ' - Emulated x86_64 is slower than native arm64'
     Pod::UI.warn ' - May result in mixed architectures in rubygems (eg: ffi_c.bundle files may be x86_64 with an arm64 interpreter)'
@@ -96,7 +96,7 @@ def use_flipper!(versions = {}, configurations: ['Debug'])
   versions['Flipper-DoubleConversion'] ||= '3.1.7'
   versions['Flipper-Fmt'] ||= '7.1.7'
   versions['Flipper-Folly'] ||= '2.6.7'
-  versions['Flipper-Glog'] ||= '0.3.6'
+  versions['Flipper-Glog'] ||= '0.3.9'
   versions['Flipper-PeerTalk'] ||= '0.0.4'
   versions['Flipper-RSocket'] ||= '1.4.3'
   versions['OpenSSL-Universal'] ||= '1.1.180'
@@ -283,14 +283,30 @@ def generate_temp_pod_spec_for_codegen!(fabric_enabled)
 end
 
 
-def use_react_native_codegen!(spec, options={})
+def use_react_native_codegen_discovery!(options={})
   return if ENV['DISABLE_CODEGEN'] == '1'
+
+  Pod::UI.warn '[Codegen] warn: using experimental new codegen integration'
+  react_native_path = options[:react_native_path] ||= "../node_modules/react-native"
+  app_path = options[:app_path]
+  if app_path
+    Pod::Executable.execute_command('node', ["#{react_native_path}/scripts/generate-artifacts.js", "-p", "#{app_path}", "-o", Pod::Config.instance.installation_root])
+  else
+    Pod::UI.warn '[Codegen] error: no app_path was provided'
+    exit 1
+  end
+end
+
+def use_react_native_codegen!(spec, options={})
+  return if ENV['USE_CODEGEN_DISCOVERY'] == '1'
+  # TODO: Once the new codegen approach is ready for use, we should output a warning here to let folks know to migrate.
 
   # The prefix to react-native
   prefix = options[:react_native_path] ||= "../.."
 
   # Library name (e.g. FBReactNativeSpec)
   library_name = options[:library_name] ||= "#{spec.name.gsub('_','-').split('-').collect(&:capitalize).join}Spec"
+  Pod::UI.puts "[Codegen] Found #{library_name}"
 
   # Output dir, relative to podspec that invoked this method
   output_dir = options[:output_dir] ||= "#{Pod::Config.instance.installation_root}/#{$CODEGEN_OUTPUT_DIR}/#{$CODEGEN_LIBRARY_DIR}"

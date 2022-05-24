@@ -27,6 +27,10 @@ const argv = yargs
     alias: 'path',
     description: 'Path to React Native application',
   })
+  .option('o', {
+    alias: 'outputPath',
+    description: 'Path where generated artifacts will be output to',
+  })
   .option('f', {
     alias: 'configFilename',
     default: 'package.json',
@@ -47,7 +51,7 @@ const CODEGEN_CONFIG_KEY = argv.k;
 const CODEGEN_REPO_PATH = `${RN_ROOT}/packages/react-native-codegen`;
 const CODEGEN_NPM_PATH = `${RN_ROOT}/../react-native-codegen`;
 
-function main(appRootDir) {
+function main(appRootDir, outputPath) {
   if (appRootDir == null) {
     console.error('Missing path to React Native application');
     process.exitCode = 1;
@@ -64,7 +68,9 @@ function main(appRootDir) {
     const dependencies = {...pkgJson.dependencies, ...pkgJson.devDependencies};
 
     // 3. Determine which of these are codegen-enabled libraries
-    console.log('\n\n>>>>> Searching for codegen-enabled libraries...');
+    console.log(
+      `\n\n[Codegen] >>>>> Searching for codegen-enabled libraries in ${appRootDir}`,
+    );
     const libraries = [];
 
     // Handle react-native and third-party libraries
@@ -84,7 +90,7 @@ function main(appRootDir) {
           configFile[CODEGEN_CONFIG_KEY] != null &&
           configFile[CODEGEN_CONFIG_KEY].libraries != null
         ) {
-          console.log(dependency);
+          console.log(`[Codegen] Found ${dependency}`);
           configFile[CODEGEN_CONFIG_KEY].libraries.forEach(config => {
             const libraryConfig = {
               library: dependency,
@@ -102,7 +108,7 @@ function main(appRootDir) {
       pkgJson[CODEGEN_CONFIG_KEY] != null &&
       pkgJson[CODEGEN_CONFIG_KEY].libraries != null
     ) {
-      console.log(pkgJson.name);
+      console.log(`[Codegen] Found ${pkgJson.name}`);
       pkgJson[CODEGEN_CONFIG_KEY].libraries.forEach(config => {
         const libraryConfig = {
           library: pkgJson.name,
@@ -114,7 +120,7 @@ function main(appRootDir) {
     }
 
     if (libraries.length === 0) {
-      console.log('No codegen-enabled libraries found.');
+      console.log('[Codegen] No codegen-enabled libraries found.');
       return;
     }
 
@@ -124,7 +130,9 @@ function main(appRootDir) {
       codegenCliPath = CODEGEN_REPO_PATH;
 
       if (!fs.existsSync(path.join(CODEGEN_REPO_PATH, 'lib'))) {
-        console.log('\n\n>>>>> Building react-native-codegen package');
+        console.log(
+          '\n\n[Codegen] >>>>> Building react-native-codegen package',
+        );
         execSync('yarn install', {
           cwd: codegenCliPath,
           stdio: 'inherit',
@@ -151,15 +159,15 @@ function main(appRootDir) {
         library.config.jsSrcsDir,
       );
       const pathToOutputDirIOS = path.join(
-        library.libraryPath,
-        library.config.ios._outputDir,
+        outputPath ? outputPath : appRootDir,
+        'build/generated/ios',
+        library.config.name,
+        'react/renderer/components',
       );
       const pathToTempOutputDir = path.join(tmpDir, 'out');
 
-      console.log(`\n\n>>>>> Processing ${library.config.name}`);
+      console.log(`\n\n[Codegen] >>>>> Processing ${library.config.name}`);
       // Generate one schema for the entire library...
-      // TODO: We should use a glob here to grab modules or components -only sources, as with react_native_pods.rb.
-      // Otherwise, we'll generate unnecessary artifacts.
       execSync(
         `node ${path.join(
           codegenCliPath,
@@ -169,9 +177,12 @@ function main(appRootDir) {
           'combine-js-to-schema-cli.js',
         )} ${pathToSchema} ${pathToJavaScriptSources}`,
       );
-      console.log(`Generated schema: ${pathToSchema}`);
+      console.log(`[Codegen] Generated schema: ${pathToSchema}`);
 
       // ...then generate native code artifacts.
+      const libraryTypeArg = library.config.type
+        ? `--libraryType ${library.config.type}`
+        : '';
       fs.mkdirSync(pathToTempOutputDir, {recursive: true});
       execSync(
         `node ${path.join(
@@ -180,11 +191,13 @@ function main(appRootDir) {
           'generate-specs-cli.js',
         )} --platform ios --schemaPath ${pathToSchema} --outputDir ${pathToTempOutputDir} --libraryName ${
           library.config.name
-        }`,
+        } ${libraryTypeArg}`,
       );
+
+      // Finally, copy artifacts to the final output directory.
       fs.mkdirSync(pathToOutputDirIOS, {recursive: true});
       execSync(`cp -R ${pathToTempOutputDir}/* ${pathToOutputDirIOS}`);
-      console.log(`Generated artifacts: ${pathToOutputDirIOS}`);
+      console.log(`[Codegen] Generated artifacts: ${pathToOutputDirIOS}`);
     });
   } catch (err) {
     console.error(err);
@@ -192,9 +205,10 @@ function main(appRootDir) {
   }
 
   // 5. Done!
-  console.log('\n\nDone.');
+  console.log('\n\n[Codegen] Done.');
   return;
 }
 
 const appRoot = argv.path;
-main(appRoot);
+const outputPath = argv.outputPath;
+main(appRoot, outputPath);

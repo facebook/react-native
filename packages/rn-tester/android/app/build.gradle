@@ -135,9 +135,10 @@ def useIntlJsc = false
 /**
  * Architectures to build native code for.
  */
-def nativeArchitectures = project.getProperties().get("reactNativeArchitectures") ?
-                          project.getProperties().get("reactNativeArchitectures").split(",")
-                          : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+def reactNativeArchitectures() {
+    def value = project.getProperties().get("reactNativeArchitectures")
+    return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+}
 
 android {
     compileSdkVersion 29
@@ -185,7 +186,7 @@ android {
             enable enableSeparateBuildPerCPUArchitecture
             universalApk false
             reset()
-            include (*nativeArchitectures)
+            include (*reactNativeArchitectures())
         }
     }
     buildTypes {
@@ -286,9 +287,16 @@ if (enableCodegen) {
         }
     }
 
-    def packageReactNdkLibs = tasks.register("packageReactNdkLibs", Copy) {
+    def packageReactDebugNdkLibs = tasks.register("packageReactDebugNdkLibs", Copy) {
         // TODO: handle extracting .so from prebuilt :ReactAndroid.
-        dependsOn(":ReactAndroid:packageReactNdkLibsForBuck")
+        dependsOn(":ReactAndroid:packageReactNdkDebugLibsForBuck")
+        dependsOn("generateCodegenSchemaFromJavaScript")
+        from("$reactAndroidProjectDir/src/main/jni/prebuilt/lib")
+        into("$buildDir/react-ndk/exported")
+    }
+    def packageReactReleaseNdkLibs = tasks.register("packageReactReleaseNdkLibs", Copy) {
+        // TODO: handle extracting .so from prebuilt :ReactAndroid.
+        dependsOn(":ReactAndroid:packageReactNdkReleaseLibsForBuck")
         dependsOn("generateCodegenSchemaFromJavaScript")
         from("$reactAndroidProjectDir/src/main/jni/prebuilt/lib")
         into("$buildDir/react-ndk/exported")
@@ -308,7 +316,10 @@ if (enableCodegen) {
     }
 
     afterEvaluate {
-        preBuild.dependsOn(packageReactNdkLibs)
+        preHermesReleaseBuild.dependsOn(packageReactReleaseNdkLibs)
+        preJscReleaseBuild.dependsOn(packageReactReleaseNdkLibs)
+        preHermesDebugBuild.dependsOn(packageReactDebugNdkLibs)
+        preJscDebugBuild.dependsOn(packageReactDebugNdkLibs)
         clean.dependsOn(cleanProjectNdkBuild)
     }
 }

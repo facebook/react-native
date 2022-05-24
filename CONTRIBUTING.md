@@ -70,7 +70,8 @@ git remote -v
 For each bug or task you complete, it is recommended that you start with a fresh branch. If you have any lingering changes in your current branch that you want to save, go ahead and commit them. If you are just beginning, then you are good to go. On github, navigate to your repository which should be forked from **microsoft/react-native-macos** as described in the above sections. Above the list of files is a dropdown that should say master. Use the dropdown to create a new branch and name is according to what you will be working on. (I.e. DropdownHighlight, CleanUpExamples, etc). Now you have created a new branch. 
 
 * **React Native website** which contains the source code for the website, including the documentation, located at <https://github.com/facebook/react-native-website>
-* **Releases** are coordinated through the <https://github.com/react-native-community/releases> repository. This includes important documents such as the Changelog.
+* **Releases**  Conversations for new releases are happening [in this discussion repo](https://github.com/reactwg/react-native-releases/discussions).
+* **Changelog** The changelog can be found [here](https://github.com/facebook/react-native/blob/main/CHANGELOG.md).
 * **Discussions** about the future of React Native take place in the <https://github.com/react-native-community/discussions-and-proposals> repository.
 * **High-quality plugins** for React Native can be found throughout the [React Native Community GitHub Organization](http://github.com/react-native-community/).
 

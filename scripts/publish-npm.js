@@ -53,6 +53,9 @@ const {exec, echo, exit, test} = require('shelljs');
 const yargs = require('yargs');
 const {parseVersion} = require('./version-utils');
 
+const buildTag = process.env.CIRCLE_TAG;
+const otp = process.env.NPM_CONFIG_OTP;
+
 const argv = yargs
   .option('n', {
     alias: 'nightly',
@@ -66,9 +69,6 @@ const argv = yargs
   }).argv;
 const nightlyBuild = argv.nightly;
 const dryRunBuild = argv.dryRun;
-const buildFromMain = nightlyBuild || dryRunBuild;
-const buildTag = process.env.CIRCLE_TAG;
-const otp = process.env.NPM_CONFIG_OTP;
 
 // 34c034298dc9cad5a4553964a5a324450fda0385
 const currentCommit = exec('git rev-parse HEAD', {
@@ -114,7 +114,7 @@ if (dryRunBuild) {
 
 // Bump version number in various files (package.json, gradle.properties etc)
 // For stable, pre-release releases, we manually call bump-oss-version on release branch
-if (buildFromMain) {
+if (nightlyBuild || dryRunBuild) {
   if (
     exec(
       `node scripts/bump-oss-version.js --nightly --to-version ${releaseVersion}`,

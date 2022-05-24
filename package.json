@@ -222,17 +222,15 @@
     "libraries": [
       {
         "name": "FBReactNativeSpec",
-        "ios": {
-          "_outputDir": "React/FBReactNativeSpec"
-        },
+        "type": "modules",
+        "ios": {},
         "android": {},
         "jsSrcsDir": "Libraries"
       },
       {
         "name": "rncore",
-        "ios": {
-          "_outputDir": "ReactCommon"
-        },
+        "type": "components",
+        "ios": {},
         "android": {},
         "jsSrcsDir": "Libraries"
       }
