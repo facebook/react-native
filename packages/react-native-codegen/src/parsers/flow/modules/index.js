@@ -71,8 +71,11 @@ function translateTypeAnnotation(
   aliasMap: {...NativeModuleAliasMap},
   tryParse: ParserErrorCapturer,
 ): Nullable<NativeModuleTypeAnnotation> {
-  const {nullable, typeAnnotation, typeAliasResolutionStatus} =
-    resolveTypeAnnotation(flowTypeAnnotation, types);
+  const {
+    nullable,
+    typeAnnotation,
+    typeAliasResolutionStatus,
+  } = resolveTypeAnnotation(flowTypeAnnotation, types);
 
   switch (typeAnnotation.type) {
     case 'GenericTypeAnnotation': {
@@ -231,16 +234,18 @@ function translateTypeAnnotation(
 
                 const {optional, key} = property;
 
-                const [propertyTypeAnnotation, isPropertyNullable] =
-                  unwrapNullable(
-                    translateTypeAnnotation(
-                      hasteModuleName,
-                      property.value,
-                      types,
-                      aliasMap,
-                      tryParse,
-                    ),
-                  );
+                const [
+                  propertyTypeAnnotation,
+                  isPropertyNullable,
+                ] = unwrapNullable(
+                  translateTypeAnnotation(
+                    hasteModuleName,
+                    property.value,
+                    types,
+                    aliasMap,
+                    tryParse,
+                  ),
+                );
 
                 if (propertyTypeAnnotation.type === 'FunctionTypeAnnotation') {
                   throw new UnsupportedObjectPropertyValueTypeAnnotationParserError(
@@ -412,16 +417,18 @@ function translateFunctionTypeAnnotation(
       }
 
       const paramName = flowParam.name.name;
-      const [paramTypeAnnotation, isParamTypeAnnotationNullable] =
-        unwrapNullable(
-          translateTypeAnnotation(
-            hasteModuleName,
-            flowParam.typeAnnotation,
-            types,
-            aliasMap,
-            tryParse,
-          ),
-        );
+      const [
+        paramTypeAnnotation,
+        isParamTypeAnnotationNullable,
+      ] = unwrapNullable(
+        translateTypeAnnotation(
+          hasteModuleName,
+          flowParam.typeAnnotation,
+          types,
+          aliasMap,
+          tryParse,
+        ),
+      );
 
       if (paramTypeAnnotation.type === 'VoidTypeAnnotation') {
         throw new UnsupportedFunctionParamTypeAnnotationParserError(
