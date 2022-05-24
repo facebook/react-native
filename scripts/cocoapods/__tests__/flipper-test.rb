@@ -16,22 +16,13 @@ class FlipperTests < Test::Unit::TestCase
     # =========================== #
     # TEST - Install Dependencies #
     # =========================== #
-    def test_installFlipperDependencies_whenProductionIsFalse_installDependencies
+    def test_installFlipperDependencies_installDependencies
         # Act
-        install_flipper_dependencies(false, '../..')
+        install_flipper_dependencies('../..')
 
         # Assert
         assert_equal($podInvocationCount, 1)
         assert_equal($podInvocation['React-Core/DevSupport'][:path], "../../" )
-    end
-
-    def test_installFlipperDependencies_whenProductionIsTrue_skipDependencies
-        # Act
-        install_flipper_dependencies(true, '../..')
-
-        # Assert
-        assert_equal($podInvocationCount, 0)
-        assert_true($podInvocation.empty?)
     end
 
     # ======================= #
