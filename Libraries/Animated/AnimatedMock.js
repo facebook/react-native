@@ -99,7 +99,8 @@ const spring = function(
       // [TODO(macOS GH#774) - setValue can't handle AnimatedNodes
       if (config.toValue instanceof AnimatedNode) {
         anyValue.setValue(config.toValue.__getValue());
-      } else { // ]TODO(macOS GH#774)
+      } else {
+        // ]TODO(macOS GH#774)
         anyValue.setValue(config.toValue);
       }
       callback?.({finished: true});

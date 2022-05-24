@@ -8,9 +8,6 @@
  * @format
  */
 
-// TODO(macOS GH#774) - Keep this here because deprecated-react-native-prop-types doesn't support macOS types
-import DeprecatedTextPropTypes from '../DeprecatedPropTypes/DeprecatedTextPropTypes';
-
 import * as PressabilityDebug from '../Pressability/PressabilityDebug';
 import usePressability from '../Pressability/usePressability';
 import StyleSheet from '../StyleSheet/StyleSheet';
@@ -190,8 +187,11 @@ const Text: React.AbstractComponent<
 
 Text.displayName = 'Text';
 
-// TODO(macOS GH#774) - Keep this here because deprecated-react-native-prop-types doesn't support macOS types
-Text.propTypes = DeprecatedTextPropTypes;
+/**
+ * Switch to `deprecated-react-native-prop-types` for compatibility with future
+ * releases. This is deprecated and will be removed in the future.
+ */
+Text.propTypes = require('deprecated-react-native-prop-types').TextPropTypes;
 
 /**
  * Returns false until the first time `newValue` is true, after which this will

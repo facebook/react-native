@@ -8,9 +8,6 @@
  * @format
  */
 
-// TODO(macOS GH#774) - Keep this here because deprecated-react-native-prop-types doesn't support macOS types
-import DeprecatedImagePropType from '../DeprecatedPropTypes/DeprecatedImagePropType';
-
 import * as React from 'react';
 import StyleSheet from '../StyleSheet/StyleSheet';
 
@@ -96,8 +93,6 @@ type ImageComponentStatics = $ReadOnly<{|
   prefetchWithMetadata: typeof prefetchWithMetadata,
   queryCache: typeof queryCache,
   resolveAssetSource: typeof resolveAssetSource,
-  // TODO(macOS GH#774) - Keep this here because deprecated-react-native-prop-types doesn't support macOS types
-  propTypes: typeof DeprecatedImagePropType,
 |}>;
 
 /**
@@ -240,8 +235,11 @@ Image.queryCache = queryCache;
  * delete this comment and run Flow. */
 Image.resolveAssetSource = resolveAssetSource;
 
-// TODO(macOS GH#774) - Keep this here because deprecated-react-native-prop-types doesn't support macOS types
-Image.propTypes = DeprecatedImagePropType;
+/**
+ * Switch to `deprecated-react-native-prop-types` for compatibility with future
+ * releases. This is deprecated and will be removed in the future.
+ */
+Image.propTypes = require('deprecated-react-native-prop-types').ImagePropTypes;
 
 const styles = StyleSheet.create({
   base: {
