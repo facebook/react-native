@@ -11,7 +11,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const {echo, exec, exit} = require('shelljs');
+const {execSync} = require('child_process');
 
 const SDKS_DIR = path.normalize(path.join(__dirname, '..', '..', 'sdks'));
 const HERMES_DIR = path.join(SDKS_DIR, 'hermes');
@@ -41,14 +41,21 @@ function prepareFileSystem() {
 
 function readHermesTag() {
   if (fs.existsSync(HERMES_TAG_FILE_PATH)) {
-    const data = fs.readFileSync(HERMES_TAG_FILE_PATH, {
-      encoding: 'utf8',
-      flag: 'r',
-    });
-    return data.trim();
-  } else {
-    return 'main';
+    const data = fs
+      .readFileSync(HERMES_TAG_FILE_PATH, {
+        encoding: 'utf8',
+        flag: 'r',
+      })
+      .trim();
+
+    if (data.length > 0) {
+      return data;
+    } else {
+      throw new Error('[Hermes] .hermesversion file is empty.');
+    }
   }
+
+  return 'main';
 }
 
 function setHermesTag(hermesTag) {
@@ -64,10 +71,11 @@ function setHermesTag(hermesTag) {
 }
 
 function getHermesTagSHA(hermesTag) {
-  return exec(
+  return execSync(
     `git ls-remote https://github.com/facebook/hermes ${hermesTag} | cut -f 1`,
-    {silent: true},
-  ).trim();
+  )
+    .toString()
+    .trim();
 }
 
 function getHermesTarballDownloadPath(hermesTag) {
@@ -87,11 +95,13 @@ function downloadHermesTarball() {
     return;
   }
 
-  echo(`[Hermes] Downloading Hermes source code for commit ${hermesTagSHA}`);
-  if (exec(`curl ${hermesTarballUrl} -Lo ${hermesTarballDownloadPath}`).code) {
-    echo('[Hermes] Failed to download Hermes tarball.');
-    exit(1);
-    return;
+  console.info(
+    `[Hermes] Downloading Hermes source code for commit ${hermesTagSHA}`,
+  );
+  try {
+    execSync(`curl ${hermesTarballUrl} -Lo ${hermesTarballDownloadPath}`);
+  } catch (error) {
+    throw new Error(`[Hermes] Failed to download Hermes tarball. ${error}`);
   }
 }
 
@@ -103,26 +113,26 @@ function expandHermesTarball() {
   prepareFileSystem();
 
   if (!fs.existsSync(hermesTarballDownloadPath)) {
-    echo(
-      `[Hermes] Failed to expand Hermes tarball, no file found at ${hermesTarballDownloadPath}.`,
-    );
-    exit(1);
-    return;
+    throw new Error(`[Hermes] Failed to expand Hermes tarball.`);
   }
 
-  echo(`[Hermes] Expanding Hermes tarball for commit ${hermesTagSHA}`);
-  if (
-    exec(
+  console.info(`[Hermes] Expanding Hermes tarball for commit ${hermesTagSHA}`);
+  try {
+    execSync(
       `tar -zxf ${hermesTarballDownloadPath} --strip-components=1 --directory ${HERMES_DIR}`,
-    ).code
-  ) {
-    echo('[Hermes] Failed to expand Hermes tarball.');
-    exit(1);
-    return;
+    );
+  } catch (error) {
+    throw new Error('[Hermes] Failed to expand Hermes tarball.');
   }
 }
 
 function copyBuildScripts() {
+  if (!fs.existsSync(HERMES_DIR)) {
+    throw new Error(
+      '[Hermes] Failed to copy Hermes build scripts, no Hermes source directory found.',
+    );
+  }
+
   fs.copyFileSync(
     `${SDKS_DIR}/hermes-engine/hermes-engine.podspec`,
     `${HERMES_DIR}/hermes-engine.podspec`,
@@ -155,8 +165,14 @@ set_target_properties(native-hermesc PROPERTIES
   IMPORTED_LOCATION "${MACOS_HERMESC_PATH}"
   )`;
 
-  fs.mkdirSync(MACOS_BIN_DIR, {recursive: true});
-  fs.writeFileSync(MACOS_IMPORT_HERMESC_PATH, IMPORT_HERMESC_TEMPLATE);
+  try {
+    fs.mkdirSync(MACOS_BIN_DIR, {recursive: true});
+    fs.writeFileSync(MACOS_IMPORT_HERMESC_PATH, IMPORT_HERMESC_TEMPLATE);
+  } catch (error) {
+    console.warn(
+      `[Hermes] Re-compiling hermesc. Unable to configure make: ${error}`,
+    );
+  }
 }
 
 module.exports = {
