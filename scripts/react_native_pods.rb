@@ -128,6 +128,10 @@ def use_react_native! (options={})
 
   end
 
+  # CocoaPods configurations avoid prevents CocoaPods the framework if the current configuration is not in the array of passed configurations,
+  # but those dependencies are still built.
+  # Flipper doesn't currently compile for release https://github.com/facebook/react-native/issues/33764
+  # Setting the production flag to true when build for production will fix that issue.
   if flipper_configuration.flipper_enabled && !production
     install_flipper_dependencies(prefix)
     use_flipper_pods(flipper_configuration.versions, :configurations => flipper_configuration.configurations)
