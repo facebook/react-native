@@ -26,6 +26,7 @@ using namespace facebook::react;
 @implementation RCTDeviceInfo {
   UIInterfaceOrientation _currentInterfaceOrientation;
   NSDictionary *_currentInterfaceDimensions;
+  BOOL _isFullscreen;
 }
 
 @synthesize bridge = _bridge;
@@ -60,7 +61,7 @@ RCT_EXPORT_MODULE()
   _currentInterfaceDimensions = RCTExportedDimensions(_moduleRegistry, _bridge);
 
   [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(interfaceFrameDidChange)
+                                           selector:@selector(interfaceOrientationDidChange)
                                                name:UIApplicationDidBecomeActiveNotification
                                              object:nil];
 
@@ -174,21 +175,25 @@ static NSDictionary *RCTExportedDimensions(RCTModuleRegistry *moduleRegistry, RC
 - (void)_interfaceOrientationDidChange
 {
   UIInterfaceOrientation nextOrientation = [RCTSharedApplication() statusBarOrientation];
-
+  UIApplicationState appState = [RCTSharedApplication() applicationState];
+  BOOL isRunningInFullScreen = CGRectEqualToRect([UIApplication sharedApplication].delegate.window.frame, [UIApplication sharedApplication].delegate.window.screen.bounds);
+    
   // Update when we go from portrait to landscape, or landscape to portrait
-  if ((UIInterfaceOrientationIsPortrait(_currentInterfaceOrientation) &&
+  if ((((UIInterfaceOrientationIsPortrait(_currentInterfaceOrientation) &&
        !UIInterfaceOrientationIsPortrait(nextOrientation)) ||
       (UIInterfaceOrientationIsLandscape(_currentInterfaceOrientation) &&
-       !UIInterfaceOrientationIsLandscape(nextOrientation))) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [[_moduleRegistry moduleForName:"EventDispatcher"]
-        sendDeviceEventWithName:@"didUpdateDimensions"
-                           body:RCTExportedDimensions(_moduleRegistry, _bridge)];
-#pragma clang diagnostic pop
+       !UIInterfaceOrientationIsLandscape(nextOrientation)) || (isRunningInFullScreen != _isFullscreen || !isRunningInFullScreen)))
+      && appState == UIApplicationStateActive) {
+      #pragma clang diagnostic push
+      #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+          [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"didUpdateDimensions"
+                                                                                body:RCTExportedDimensions(_moduleRegistry, _bridge)];
+            _currentInterfaceOrientation = nextOrientation;
+            _isFullscreen = isRunningInFullScreen;
+      #pragma clang diagnostic pop
   }
 
-  _currentInterfaceOrientation = nextOrientation;
+  
 }
 
 - (void)interfaceFrameDidChange
@@ -202,16 +207,16 @@ static NSDictionary *RCTExportedDimensions(RCTModuleRegistry *moduleRegistry, RC
 - (void)_interfaceFrameDidChange
 {
   NSDictionary *nextInterfaceDimensions = RCTExportedDimensions(_moduleRegistry, _bridge);
-
-  if (!([nextInterfaceDimensions isEqual:_currentInterfaceDimensions])) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"didUpdateDimensions"
-                                                                          body:nextInterfaceDimensions];
-#pragma clang diagnostic pop
+    UIApplicationState appState = [RCTSharedApplication() applicationState];
+    
+  if (!([nextInterfaceDimensions isEqual:_currentInterfaceDimensions]) && appState == UIApplicationStateActive) {
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"didUpdateDimensions"
+                                                                              body:nextInterfaceDimensions];
+          _currentInterfaceDimensions = nextInterfaceDimensions;
+    #pragma clang diagnostic pop
   }
-
-  _currentInterfaceDimensions = nextInterfaceDimensions;
 }
 
 - (std::shared_ptr<TurboModule>)getTurboModule:(const ObjCTurboModule::InitParams &)params
