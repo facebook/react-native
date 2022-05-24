@@ -18,7 +18,7 @@
     "async": "^3.2.2",
     "babel-eslint": "^10.1.0",
     "babel-preset-fbjs": "^3.4.0",
-    "clang-format": "^1.8.0",
+    "clang-format": "^1.2.4",
     "connect": "^3.6.5",
     "coveralls": "^3.0.2",
     "detox": "18.10.0",
