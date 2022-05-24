@@ -3,8 +3,12 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+require 'json'
 require 'pathname'
 require_relative './react_native_pods_utils/script_phases.rb'
+require_relative './cocoapods/flipper.rb'
+require_relative './cocoapods/fabric.rb'
+require_relative './cocoapods/codegen.rb'
 
 $CODEGEN_OUTPUT_DIR = 'build/generated/ios'
 $CODEGEN_COMPONENT_DIR = 'react/renderer/components'
@@ -14,6 +18,8 @@ $REACT_CODEGEN_DISCOVERY_DONE = false
 DEFAULT_OTHER_CPLUSPLUSFLAGS = '$(inherited)'
 NEW_ARCH_OTHER_CPLUSPLUSFLAGS = '$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1'
 
+$START_TIME = Time.now.to_i
+
 def use_react_native! (options={})
   # The prefix to react-native
   prefix = options[:path] ||= "../node_modules/react-native"
@@ -21,17 +27,14 @@ def use_react_native! (options={})
   # Include Fabric dependencies
   fabric_enabled = options[:fabric_enabled] ||= false
 
+  # New arch enabled
+  new_arch_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'
+
   # Include DevSupport dependency
   production = options[:production] ||= false
 
   # Include Hermes dependencies
   hermes_enabled = options[:hermes_enabled] ||= false
-
-  # Codegen Discovery is required when enabling new architecture.
-  if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
-    Pod::UI.puts 'Setting USE_CODEGEN_DISCOVERY=1'
-    ENV['USE_CODEGEN_DISCOVERY'] = '1'
-  end
 
   if `/usr/sbin/sysctl -n hw.optional.arm64 2>&1`.to_i == 1 && !RUBY_PLATFORM.include?('arm64')
     Pod::UI.warn 'Do not use "pod install" from inside Rosetta2 (x86_64 emulation on arm64).'
@@ -44,7 +47,7 @@ def use_react_native! (options={})
   pod 'FBLazyVector', :path => "#{prefix}/Libraries/FBLazyVector"
   pod 'FBReactNativeSpec', :path => "#{prefix}/React/FBReactNativeSpec"
   pod 'RCTRequired', :path => "#{prefix}/Libraries/RCTRequired"
-  pod 'RCTTypeSafety', :path => "#{prefix}/Libraries/TypeSafety"
+  pod 'RCTTypeSafety', :path => "#{prefix}/Libraries/TypeSafety", :modular_headers => true
   pod 'React', :path => "#{prefix}/"
   pod 'React-Core', :path => "#{prefix}/"
   pod 'React-CoreModules', :path => "#{prefix}/React/CoreModules"
@@ -59,9 +62,7 @@ def use_react_native! (options={})
   pod 'React-RCTVibration', :path => "#{prefix}/Libraries/Vibration"
   pod 'React-Core/RCTWebSocket', :path => "#{prefix}/"
 
-  unless production
-    pod 'React-Core/DevSupport', :path => "#{prefix}/"
-  end
+  install_flipper_dependencies(production, prefix)
 
   pod 'React-bridging', :path => "#{prefix}/ReactCommon/react/bridging"
   pod 'React-cxxreact', :path => "#{prefix}/ReactCommon/cxxreact"
@@ -72,15 +73,15 @@ def use_react_native! (options={})
   pod 'React-runtimeexecutor', :path => "#{prefix}/ReactCommon/runtimeexecutor"
   pod 'React-perflogger', :path => "#{prefix}/ReactCommon/reactperflogger"
   pod 'React-logger', :path => "#{prefix}/ReactCommon/logger"
-  pod 'ReactCommon/turbomodule/core', :path => "#{prefix}/ReactCommon"
+  pod 'ReactCommon/turbomodule/core', :path => "#{prefix}/ReactCommon", :modular_headers => true
   pod 'Yoga', :path => "#{prefix}/ReactCommon/yoga", :modular_headers => true
 
   pod 'DoubleConversion', :podspec => "#{prefix}/third-party-podspecs/DoubleConversion.podspec"
   pod 'glog', :podspec => "#{prefix}/third-party-podspecs/glog.podspec"
   pod 'boost', :podspec => "#{prefix}/third-party-podspecs/boost.podspec"
-  pod 'RCT-Folly', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec"
+  pod 'RCT-Folly', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec", :modular_headers => true
 
-  if ENV['USE_CODEGEN_DISCOVERY'] == '1'
+  if new_arch_enabled
     app_path = options[:app_path]
     config_file_dir = options[:config_file_dir]
     use_react_native_codegen_discovery!({
@@ -96,24 +97,35 @@ def use_react_native! (options={})
     generate_react_codegen_podspec!(react_codegen_spec)
   end
 
-  pod 'React-Codegen', :path => $CODEGEN_OUTPUT_DIR
+  pod 'React-Codegen', :path => $CODEGEN_OUTPUT_DIR, :modular_headers => true
 
   if fabric_enabled
-    checkAndGenerateEmptyThirdPartyProvider!(prefix)
-    pod 'React-Fabric', :path => "#{prefix}/ReactCommon"
-    pod 'React-rncore', :path => "#{prefix}/ReactCommon"
-    pod 'React-graphics', :path => "#{prefix}/ReactCommon/react/renderer/graphics"
-    pod 'React-jsi/Fabric', :path => "#{prefix}/ReactCommon/jsi"
-    pod 'React-RCTFabric', :path => "#{prefix}/React"
-    pod 'RCT-Folly/Fabric', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec"
+    checkAndGenerateEmptyThirdPartyProvider!(prefix, new_arch_enabled, $CODEGEN_OUTPUT_DIR)
+    setup_fabric!(prefix)
   end
 
   if hermes_enabled
     pod 'React-hermes', :path => "#{prefix}/ReactCommon/hermes"
-    Pod::UI.puts "[Hermes] Building Hermes from source"
-    hermes_source_path = downloadAndConfigureHermesSource(prefix)
-    pod 'hermes-engine', :path => "#{hermes_source_path}/hermes-engine.podspec"
     pod 'libevent', '~> 2.1.12'
+
+    sdks_dir = Pod::Config.instance.installation_root.join(prefix, "sdks")
+    hermes_tag_file = sdks_dir.join(".hermesversion")
+
+    if (File.exist?(hermes_tag_file))
+      # Use published pod with pre-builts.
+      Pod::UI.puts "[Hermes] Tag file exists at path: #{hermes_tag_file}"
+      package = JSON.parse(File.read(File.join(__dir__, "..", "package.json")))
+      hermes_version = package['version']
+      Pod::UI.puts "[Hermes] Loading version: #{hermes_version}"
+      pod 'hermes-engine', hermes_version
+    else
+      # Use local podspec and build from source.
+      path_to_hermes = "#{prefix}/sdks/hermes/hermes-engine.podspec"
+      Pod::UI.puts "[Hermes] Use local version from #{path_to_hermes}"
+      system("(cd #{prefix} && node scripts/hermes/prepare-hermes-for-build)")
+      pod 'hermes-engine', :path => path_to_hermes
+    end
+
   end
 
   pods_to_update = LocalPodspecPatch.pods_to_update(options)
@@ -141,63 +153,11 @@ def get_default_flags()
 end
 
 def use_flipper!(versions = {}, configurations: ['Debug'])
-  versions['Flipper'] ||= '0.125.0'
-  versions['Flipper-Boost-iOSX'] ||= '1.76.0.1.11'
-  versions['Flipper-DoubleConversion'] ||= '3.2.0'
-  versions['Flipper-Fmt'] ||= '7.1.7'
-  versions['Flipper-Folly'] ||= '2.6.10'
-  versions['Flipper-Glog'] ||= '0.5.0.4'
-  versions['Flipper-PeerTalk'] ||= '0.0.4'
-  versions['Flipper-RSocket'] ||= '1.4.3'
-  versions['OpenSSL-Universal'] ||= '1.1.1100'
-  pod 'FlipperKit', versions['Flipper'], :configurations => configurations
-  pod 'FlipperKit/FlipperKitLayoutPlugin', versions['Flipper'], :configurations => configurations
-  pod 'FlipperKit/SKIOSNetworkPlugin', versions['Flipper'], :configurations => configurations
-  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', versions['Flipper'], :configurations => configurations
-  pod 'FlipperKit/FlipperKitReactPlugin', versions['Flipper'], :configurations => configurations
-  # List all transitive dependencies for FlipperKit pods
-  # to avoid them being linked in Release builds
-  pod 'Flipper', versions['Flipper'], :configurations => configurations
-  pod 'Flipper-Boost-iOSX', versions['Flipper-Boost-iOSX'], :configurations => configurations
-  pod 'Flipper-DoubleConversion', versions['Flipper-DoubleConversion'], :configurations => configurations
-  pod 'Flipper-Fmt', versions['Flipper-Fmt'], :configurations => configurations
-  pod 'Flipper-Folly', versions['Flipper-Folly'], :configurations => configurations
-  pod 'Flipper-Glog', versions['Flipper-Glog'], :configurations => configurations
-  pod 'Flipper-PeerTalk', versions['Flipper-PeerTalk'], :configurations => configurations
-  pod 'Flipper-RSocket', versions['Flipper-RSocket'], :configurations => configurations
-  pod 'FlipperKit/Core', versions['Flipper'], :configurations => configurations
-  pod 'FlipperKit/CppBridge', versions['Flipper'], :configurations => configurations
-  pod 'FlipperKit/FBCxxFollyDynamicConvert', versions['Flipper'], :configurations => configurations
-  pod 'FlipperKit/FBDefines', versions['Flipper'], :configurations => configurations
-  pod 'FlipperKit/FKPortForwarding', versions['Flipper'], :configurations => configurations
-  pod 'FlipperKit/FlipperKitHighlightOverlay', versions['Flipper'], :configurations => configurations
-  pod 'FlipperKit/FlipperKitLayoutTextSearchable', versions['Flipper'], :configurations => configurations
-  pod 'FlipperKit/FlipperKitNetworkPlugin', versions['Flipper'], :configurations => configurations
-  pod 'OpenSSL-Universal', versions['OpenSSL-Universal'], :configurations => configurations
+  use_flipper_pods(versions, :configurations => configurations)
 end
 
 def has_pod(installer, name)
   installer.pods_project.pod_group(name) != nil
-end
-
-# Post Install processing for Flipper
-def flipper_post_install(installer)
-  installer.pods_project.targets.each do |target|
-    if target.name == 'YogaKit'
-      target.build_configurations.each do |config|
-        config.build_settings['SWIFT_VERSION'] = '4.1'
-      end
-    end
-
-    # Enable flipper for React-Core Debug configuration
-    if target.name == 'React-Core'
-      target.build_configurations.each do |config|
-        if config.name == 'Debug'
-          config.build_settings['OTHER_CFLAGS'] = "$(inherited) -DFB_SONARKIT_ENABLED=1"
-        end
-      end
-    end
-  end
 end
 
 def exclude_architectures(installer)
@@ -284,6 +244,8 @@ def react_native_post_install(installer, react_native_path = "../node_modules/re
   modify_flags_for_new_architecture(installer, cpp_flags)
 
   set_node_modules_user_settings(installer, react_native_path)
+
+  puts "Pod install took #{Time.now.to_i - $START_TIME} [s] to run"
 end
 
 def modify_flags_for_new_architecture(installer, cpp_flags)
@@ -305,59 +267,6 @@ def modify_flags_for_new_architecture(installer, cpp_flags)
         config.build_settings['OTHER_CPLUSPLUSFLAGS'] = cpp_flags
       end
     end
-  end
-end
-
-def build_codegen!(react_native_path)
-  relative_installation_root = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
-  codegen_repo_path = "#{relative_installation_root}/#{react_native_path}/packages/react-native-codegen";
-  codegen_npm_path = "#{relative_installation_root}/#{react_native_path}/../react-native-codegen";
-  codegen_cli_path = ""
-  if Dir.exist?(codegen_repo_path)
-    codegen_cli_path = codegen_repo_path
-  elsif Dir.exist?(codegen_npm_path)
-    codegen_cli_path = codegen_npm_path
-  else
-    raise "[codegen] Couldn't not find react-native-codegen."
-  end
-
-  if !Dir.exist?("#{codegen_cli_path}/lib")
-    Pod::UI.puts "[Codegen] building #{codegen_cli_path}."
-    system("#{codegen_cli_path}/scripts/oss/build.sh")
-  end
-end
-
-# This is a temporary supporting function until we enable use_react_native_codegen_discovery by default.
-def checkAndGenerateEmptyThirdPartyProvider!(react_native_path)
-  return if ENV['USE_CODEGEN_DISCOVERY'] == '1'
-
-  relative_installation_root = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
-  output_dir = "#{relative_installation_root}/#{$CODEGEN_OUTPUT_DIR}"
-
-  provider_h_path = "#{output_dir}/RCTThirdPartyFabricComponentsProvider.h"
-  provider_cpp_path ="#{output_dir}/RCTThirdPartyFabricComponentsProvider.cpp"
-
-  if(!File.exist?(provider_h_path) || !File.exist?(provider_cpp_path))
-    # build codegen
-    build_codegen!(react_native_path)
-
-    # Just use a temp empty schema list.
-    temp_schema_list_path = "#{output_dir}/tmpSchemaList.txt"
-    File.open(temp_schema_list_path, 'w') do |f|
-      f.write('[]')
-      f.fsync
-    end
-
-    Pod::UI.puts '[Codegen] generating an empty RCTThirdPartyFabricComponentsProvider'
-    Pod::Executable.execute_command(
-      'node',
-      [
-        "#{relative_installation_root}/#{react_native_path}/scripts/generate-provider-cli.js",
-        "--platform", 'ios',
-        "--schemaListPath", temp_schema_list_path,
-        "--outputDir", "#{output_dir}"
-      ])
-    File.delete(temp_schema_list_path) if File.exist?(temp_schema_list_path)
   end
 end
 
@@ -469,10 +378,20 @@ def get_react_codegen_script_phases(options={})
   app_package_path = File.join(app_path, 'package.json')
   app_codegen_config = get_codegen_config_from_file(app_package_path, config_key)
   file_list = []
-  app_codegen_config['libraries'].each do |library|
-    library_dir = File.join(app_path, library['jsSrcsDir'])
-    file_list.concat (`find #{library_dir} -type f \\( -name "Native*.js" -or -name "*NativeComponent.js" \\)`.split("\n").sort)
+  if app_codegen_config['libraries'] then
+    Pod::UI.warn '[Deprecated] You are using the old `libraries` array to list all your codegen.\nThis method will be removed in the future.\nUpdate your `package.json` with a single object.'
+    app_codegen_config['libraries'].each do |library|
+      library_dir = File.join(app_path, library['jsSrcsDir'])
+      file_list.concat (`find #{library_dir} -type f \\( -name "Native*.js" -or -name "*NativeComponent.js" \\)`.split("\n").sort)
+    end
+  elsif app_codegen_config['jsSrcsDir'] then
+    codegen_dir = File.join(app_path, app_codegen_config['jsSrcsDir'])
+    file_list.concat (`find #{codegen_dir} -type f \\( -name "Native*.js" -or -name "*NativeComponent.js" \\)`.split("\n").sort)
+  else
+    Pod::UI.warn '[Error] Codegen not properly configured. Please add the `codegenConf` entry to your `package.json`'
+    exit 1
   end
+
   input_files = file_list.map { |filename| "${PODS_ROOT}/../#{Pathname.new(filename).realpath().relative_path_from(Pod::Config.instance.installation_root)}" }
 
   # Add a script phase to trigger generate artifact.
@@ -570,7 +489,7 @@ def use_react_native_codegen_discovery!(options={})
 end
 
 def use_react_native_codegen!(spec, options={})
-  return if ENV['USE_CODEGEN_DISCOVERY'] == '1'
+  return if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
   # TODO: Once the new codegen approach is ready for use, we should output a warning here to let folks know to migrate.
 
   # The prefix to react-native
@@ -663,45 +582,6 @@ def use_react_native_codegen!(spec, options={})
     :execution_position => :before_compile,
     :show_env_vars_in_log => true
   }
-end
-
-def downloadAndConfigureHermesSource(react_native_path)
-  hermes_tarball_base_url = "https://github.com/facebook/hermes/tarball/"
-  sdks_dir = "#{react_native_path}/sdks"
-  download_dir = "#{sdks_dir}/download"
-  hermes_dir = "#{sdks_dir}/hermes"
-  hermes_tag_file = "#{sdks_dir}/.hermesversion"
-  system("mkdir -p #{hermes_dir} #{download_dir}")
-
-  if (File.exist?(hermes_tag_file))
-    hermes_tag = File.read(hermes_tag_file).strip
-  else
-    hermes_tag = "main"
-  end
-
-  hermes_tarball_url = hermes_tarball_base_url + hermes_tag
-  hermes_tag_sha = %x[git ls-remote https://github.com/facebook/hermes #{hermes_tag} | cut -f 1].strip
-  hermes_tarball_path = "#{download_dir}/hermes-#{hermes_tag_sha}.tar.gz"
-
-  if (!File.exist?(hermes_tarball_path))
-    Pod::UI.puts "[Hermes] Downloading Hermes source code (#{hermes_tarball_url})"
-    system("curl #{hermes_tarball_url} -Lo #{hermes_tarball_path}")
-  end
-  Pod::UI.puts "[Hermes] Extracting Hermes (#{hermes_tag_sha})"
-  system("tar -zxf #{hermes_tarball_path} --strip-components=1 --directory #{hermes_dir}")
-
-  hermesc_macos_path = "#{sdks_dir}/hermesc/macos/build_host_hermesc"
-  hermesc_macos_link = "#{hermes_dir}/utils/build_host_hermesc"
-  if (File.exist?(hermesc_macos_path))
-    # If hermesc is present, create a symbolic link in the hermes source directory to avoid re-building hermesc
-    Pod::UI.puts "[Hermes] Using pre-compiled Hermes Compiler from #{hermesc_macos_path}"
-    system("ln -s #{hermesc_macos_path} #{hermesc_macos_link}")
-  end
-
-  # TODO: Integrate this temporary hermes-engine.podspec into the actual one located in facebook/hermes
-  system("cp #{sdks_dir}/hermes-engine.podspec #{hermes_dir}/hermes-engine.podspec")
-
-  hermes_dir
 end
 
 # This provides a post_install workaround for build issues related Xcode 12.5 and Apple Silicon (M1) machines.

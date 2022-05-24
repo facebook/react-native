@@ -14,6 +14,7 @@ import com.facebook.react.tests.WithOs
 import java.io.File
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Assert.*
+import org.junit.Assume.assumeTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -170,8 +171,14 @@ class PathUtilsTest {
 
   @Test
   fun detectOSAwareHermesCommand_withHermescBuiltLocally() {
-    tempFolder.newFolder("node_modules/react-native/sdks/hermes/build/bin/")
-    val expected = tempFolder.newFile("node_modules/react-native/sdks/hermes/build/bin/hermesc")
+    // As we can't mock env variables, we skip this test if an override of the Hermes
+    // path has been provided.
+    assumeTrue(System.getenv("REACT_NATIVE_OVERRIDE_HERMES_DIR") == null)
+
+    tempFolder.newFolder("node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/")
+    val expected =
+        tempFolder.newFile(
+            "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc")
 
     assertEquals(expected.toString(), detectOSAwareHermesCommand(tempFolder.root, ""))
   }
@@ -206,8 +213,14 @@ class PathUtilsTest {
   @Test
   @WithOs(OS.MAC)
   fun detectOSAwareHermesCommand_withoutProvidedCommand_builtHermescTakesPrecedence() {
-    tempFolder.newFolder("node_modules/react-native/sdks/hermes/build/bin/")
-    val expected = tempFolder.newFile("node_modules/react-native/sdks/hermes/build/bin/hermesc")
+    // As we can't mock env variables, we skip this test if an override of the Hermes
+    // path has been provided.
+    assumeTrue(System.getenv("REACT_NATIVE_OVERRIDE_HERMES_DIR") == null)
+
+    tempFolder.newFolder("node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/")
+    val expected =
+        tempFolder.newFile(
+            "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc")
     tempFolder.newFolder("node_modules/react-native/sdks/hermesc/osx-bin/")
     tempFolder.newFile("node_modules/react-native/sdks/hermesc/osx-bin/hermesc")
 
@@ -217,7 +230,9 @@ class PathUtilsTest {
   @Test
   fun getBuiltHermescFile_withoutOverride() {
     assertEquals(
-        File(tempFolder.root, "node_modules/react-native/sdks/hermes/build/bin/hermesc"),
+        File(
+            tempFolder.root,
+            "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"),
         getBuiltHermescFile(tempFolder.root, ""))
   }
 

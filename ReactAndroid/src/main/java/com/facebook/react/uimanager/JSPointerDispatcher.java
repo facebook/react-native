@@ -17,6 +17,7 @@ import com.facebook.react.uimanager.TouchTargetHelper.ViewTarget;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.PointerEvent;
 import com.facebook.react.uimanager.events.PointerEventHelper;
+import com.facebook.react.uimanager.events.PointerEventHelper.EVENT;
 import com.facebook.react.uimanager.events.TouchEvent;
 import com.facebook.react.uimanager.events.TouchEventCoalescingKeyHelper;
 import java.util.Collections;
@@ -37,7 +38,7 @@ public class JSPointerDispatcher {
   private final TouchEventCoalescingKeyHelper mTouchEventCoalescingKeyHelper =
       new TouchEventCoalescingKeyHelper();
 
-  private static final float ONMOVE_EPSILON = 1f;
+  private static final float ONMOVE_EPSILON = 0.1f;
 
   // Set globally for hover interactions, referenced for coalescing hover events
   private long mHoverInteractionKey = TouchEvent.UNSET;
@@ -82,7 +83,9 @@ public class JSPointerDispatcher {
     if (hitPath.isEmpty()) {
       return;
     }
-    int targetTag = hitPath.get(0).getViewId();
+
+    TouchTargetHelper.ViewTarget activeViewTarget = hitPath.get(0);
+    int activeTargetTag = activeViewTarget.getViewId();
 
     if (supportsHover) {
       if (action == MotionEvent.ACTION_HOVER_MOVE) {
@@ -107,15 +110,17 @@ public class JSPointerDispatcher {
       mTouchEventCoalescingKeyHelper.addCoalescingKey(mDownStartTime);
 
       if (!supportsHover) {
-        // Enter root -> child
-        for (int i = hitPath.size(); i-- > 0; ) {
-          int tag = hitPath.get(i).getViewId();
-          eventDispatcher.dispatchEvent(
-              PointerEvent.obtain(PointerEventHelper.POINTER_ENTER, surfaceId, tag, motionEvent));
-        }
+        dispatchNonBubblingEventForPathWhenListened(
+            EVENT.ENTER, EVENT.ENTER_CAPTURE, hitPath, eventDispatcher, surfaceId, motionEvent);
       }
-      eventDispatcher.dispatchEvent(
-          PointerEvent.obtain(PointerEventHelper.POINTER_DOWN, surfaceId, targetTag, motionEvent));
+
+      boolean listeningForDown =
+          isAnyoneListeningForBubblingEvent(hitPath, EVENT.DOWN, EVENT.DOWN_CAPTURE);
+      if (listeningForDown) {
+        eventDispatcher.dispatchEvent(
+            PointerEvent.obtain(
+                PointerEventHelper.POINTER_DOWN, surfaceId, activeTargetTag, motionEvent));
+      }
 
       return;
     }
@@ -129,25 +134,47 @@ public class JSPointerDispatcher {
     // New pointer goes down, this can only happen after ACTION_DOWN is sent for the first pointer
     if (action == MotionEvent.ACTION_POINTER_DOWN) {
       mTouchEventCoalescingKeyHelper.incrementCoalescingKey(mDownStartTime);
-      eventDispatcher.dispatchEvent(
-          PointerEvent.obtain(PointerEventHelper.POINTER_DOWN, surfaceId, targetTag, motionEvent));
+
+      boolean listeningForDown =
+          isAnyoneListeningForBubblingEvent(hitPath, EVENT.DOWN, EVENT.DOWN_CAPTURE);
+      if (listeningForDown) {
+        eventDispatcher.dispatchEvent(
+            PointerEvent.obtain(
+                PointerEventHelper.POINTER_DOWN, surfaceId, activeTargetTag, motionEvent));
+      }
 
       return;
     }
 
     if (action == MotionEvent.ACTION_MOVE) {
       int coalescingKey = mTouchEventCoalescingKeyHelper.getCoalescingKey(mDownStartTime);
-      eventDispatcher.dispatchEvent(
-          PointerEvent.obtain(
-              PointerEventHelper.POINTER_MOVE, surfaceId, targetTag, motionEvent, coalescingKey));
+
+      boolean listeningForMove =
+          isAnyoneListeningForBubblingEvent(hitPath, EVENT.MOVE, EVENT.MOVE_CAPTURE);
+      if (listeningForMove) {
+        eventDispatcher.dispatchEvent(
+            PointerEvent.obtain(
+                PointerEventHelper.POINTER_MOVE,
+                surfaceId,
+                activeTargetTag,
+                motionEvent,
+                coalescingKey));
+      }
+
       return;
     }
 
     // Exactly one of the pointers goes up, not the last one
     if (action == MotionEvent.ACTION_POINTER_UP) {
       mTouchEventCoalescingKeyHelper.incrementCoalescingKey(mDownStartTime);
-      eventDispatcher.dispatchEvent(
-          PointerEvent.obtain(PointerEventHelper.POINTER_UP, surfaceId, targetTag, motionEvent));
+
+      boolean listeningForUp =
+          isAnyoneListeningForBubblingEvent(hitPath, EVENT.UP, EVENT.UP_CAPTURE);
+      if (listeningForUp) {
+        eventDispatcher.dispatchEvent(
+            PointerEvent.obtain(
+                PointerEventHelper.POINTER_UP, surfaceId, activeTargetTag, motionEvent));
+      }
 
       return;
     }
@@ -159,16 +186,17 @@ public class JSPointerDispatcher {
       mTouchEventCoalescingKeyHelper.removeCoalescingKey(mDownStartTime);
       mDownStartTime = TouchEvent.UNSET;
 
-      eventDispatcher.dispatchEvent(
-          PointerEvent.obtain(PointerEventHelper.POINTER_UP, surfaceId, targetTag, motionEvent));
+      boolean listeningForUp =
+          isAnyoneListeningForBubblingEvent(hitPath, EVENT.UP, EVENT.UP_CAPTURE);
+      if (listeningForUp) {
+        eventDispatcher.dispatchEvent(
+            PointerEvent.obtain(
+                PointerEventHelper.POINTER_UP, surfaceId, activeTargetTag, motionEvent));
+      }
 
       if (!supportsHover) {
-        // Leave child -> root
-        for (int i = 0; i < hitPath.size(); i++) {
-          int tag = hitPath.get(i).getViewId();
-          eventDispatcher.dispatchEvent(
-              PointerEvent.obtain(PointerEventHelper.POINTER_LEAVE, surfaceId, tag, motionEvent));
-        }
+        dispatchNonBubblingEventForPathWhenListened(
+            EVENT.LEAVE, EVENT.LEAVE_CAPTURE, hitPath, eventDispatcher, surfaceId, motionEvent);
       }
       return;
     }
@@ -183,15 +211,54 @@ public class JSPointerDispatcher {
         "Warning : Motion Event was ignored. Action="
             + action
             + " Target="
-            + targetTag
+            + activeTargetTag
             + " Supports Hover="
             + supportsHover);
   }
 
-  private int findTargetTagAndSetCoordinates(MotionEvent ev) {
-    // This method updates `mTargetCoordinates` with coordinates for the motion event.
-    return TouchTargetHelper.findTargetTagAndCoordinatesForTouch(
-        ev.getX(), ev.getY(), mRootViewGroup, mTargetCoordinates, null);
+  private static boolean isAnyoneListeningForBubblingEvent(
+      List<ViewTarget> hitPath, EVENT event, EVENT captureEvent) {
+    for (ViewTarget viewTarget : hitPath) {
+      if (PointerEventHelper.isListening(viewTarget.getView(), event)
+          || PointerEventHelper.isListening(viewTarget.getView(), captureEvent)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /*
+  Dispatch event only if ancestor is listening to relevant event.
+  This should only be relevant for ENTER/LEAVE events.
+  @param hitPath - ordered from inner target to root
+   */
+
+  /** Dispatch non-bubbling event along the hit path only when relevant listeners */
+  private static void dispatchNonBubblingEventForPathWhenListened(
+      EVENT event,
+      EVENT captureEvent,
+      List<ViewTarget> hitPath,
+      EventDispatcher dispatcher,
+      int surfaceId,
+      MotionEvent motionEvent) {
+
+    boolean ancestorListening = false;
+    String eventName = PointerEventHelper.getDispatchableEventName(event);
+    if (eventName == null) {
+      return;
+    }
+
+    // iterate through hitPath from ancestor -> target
+    for (int i = hitPath.size() - 1; i >= 0; i--) {
+      View view = hitPath.get(i).getView();
+      int viewId = hitPath.get(i).getViewId();
+      if (ancestorListening
+          || (i == 0 && PointerEventHelper.isListening(view, event))
+          || PointerEventHelper.isListening(view, captureEvent)) {
+        dispatcher.dispatchEvent(PointerEvent.obtain(eventName, surfaceId, viewId, motionEvent));
+        ancestorListening = true;
+      }
+    }
   }
 
   // called on hover_move motion events only
@@ -311,21 +378,21 @@ public class JSPointerDispatcher {
     int surfaceId = UIManagerHelper.getSurfaceId(mRootViewGroup);
 
     if (!hitPath.isEmpty()) {
-      int targetTag = hitPath.get(0).getViewId();
-      // Question: Does cancel fire on all in hit path?
-      Assertions.assertNotNull(eventDispatcher)
-          .dispatchEvent(
-              PointerEvent.obtain(
-                  PointerEventHelper.POINTER_CANCEL, surfaceId, targetTag, motionEvent));
-
-      for (ViewTarget viewTarget : hitPath) {
-        eventDispatcher.dispatchEvent(
-            PointerEvent.obtain(
-                PointerEventHelper.POINTER_LEAVE, surfaceId, viewTarget.getViewId(), motionEvent));
+      boolean listeningForCancel =
+          isAnyoneListeningForBubblingEvent(hitPath, EVENT.CANCEL, EVENT.CANCEL_CAPTURE);
+      if (listeningForCancel) {
+        int targetTag = hitPath.get(0).getViewId();
+        Assertions.assertNotNull(eventDispatcher)
+            .dispatchEvent(
+                PointerEvent.obtain(
+                    PointerEventHelper.POINTER_CANCEL, surfaceId, targetTag, motionEvent));
       }
-    }
 
-    mTouchEventCoalescingKeyHelper.removeCoalescingKey(mDownStartTime);
-    mDownStartTime = TouchEvent.UNSET;
+      dispatchNonBubblingEventForPathWhenListened(
+          EVENT.LEAVE, EVENT.LEAVE_CAPTURE, hitPath, eventDispatcher, surfaceId, motionEvent);
+
+      mTouchEventCoalescingKeyHelper.removeCoalescingKey(mDownStartTime);
+      mDownStartTime = TouchEvent.UNSET;
+    }
   }
 }

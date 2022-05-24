@@ -560,6 +560,16 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   }
 
   @Override
+  public boolean dispatchGenericPointerEvent(MotionEvent ev) {
+    // We do not dispatch the pointer event if its children are not supposed to receive it
+    if (!PointerEvents.canChildrenBeTouchTarget(mPointerEvents)) {
+      return false;
+    }
+
+    return super.dispatchGenericPointerEvent(ev);
+  }
+
+  @Override
   public boolean executeKeyEvent(KeyEvent event) {
     int eventKeyCode = event.getKeyCode();
     if (!mScrollEnabled

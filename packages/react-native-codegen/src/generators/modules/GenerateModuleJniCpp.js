@@ -47,7 +47,8 @@ const HostFunctionTemplate = ({
   jsReturnType: JSReturnType,
 }>) => {
   return `static facebook::jsi::Value __hostFunction_${hasteModuleName}SpecJSI_${propertyName}(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, ${jsReturnType}, "${propertyName}", "${jniSignature}", args, count);
+  static jmethodID cachedMethodId = nullptr;
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, ${jsReturnType}, "${propertyName}", "${jniSignature}", args, count, cachedMethodId);
 }`;
 };
 
@@ -114,7 +115,7 @@ namespace react {
 
 ${modules}
 
-std::shared_ptr<TurboModule> ${libraryName}_ModuleProvider(const std::string moduleName, const JavaTurboModule::InitParams &params) {
+std::shared_ptr<TurboModule> ${libraryName}_ModuleProvider(const std::string &moduleName, const JavaTurboModule::InitParams &params) {
 ${moduleLookups.map(ModuleLookupTemplate).join('\n')}
   return nullptr;
 }

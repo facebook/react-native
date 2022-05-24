@@ -33,7 +33,7 @@ describe('stringifySafe', () => {
   });
 
   it('stringifySafe stringifies circular objects with toString', () => {
-    const arg = {};
+    const arg: {arg?: {...}} = {...null};
     arg.arg = arg;
     const result = stringifySafe(arg);
     expect(result).toEqual('[object Object]');

@@ -8,8 +8,9 @@
  * @flow
  */
 
-import Platform from '../Utilities/Platform';
 import type {DialogOptions} from '../NativeModules/specs/NativeDialogManagerAndroid';
+
+import Platform from '../Utilities/Platform';
 import RCTAlertManager from './RCTAlertManager';
 
 export type AlertType =
@@ -124,7 +125,7 @@ class Alert {
             destructiveButtonKey = String(index);
           }
           if (btn.text || index < (callbackOrButtons || []).length - 1) {
-            const btnDef = {};
+            const btnDef: {[number]: string} = {};
             btnDef[index] = btn.text || '';
             buttons.push(btnDef);
           }

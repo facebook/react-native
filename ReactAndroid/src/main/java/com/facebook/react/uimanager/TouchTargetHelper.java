@@ -192,7 +192,7 @@ public class TouchTargetHelper {
           // If the touch point is outside of the overflowinset for the view, we can safely ignore
           // it.
           if (ViewUtil.getUIManagerType(view.getId()) == FABRIC
-              && ReactFeatureFlags.doesUseOverflowInset()
+              && ReactFeatureFlags.useOverflowInset
               && !isTouchPointInViewWithOverflowInset(eventCoords[0], eventCoords[1], view)) {
             return null;
           }

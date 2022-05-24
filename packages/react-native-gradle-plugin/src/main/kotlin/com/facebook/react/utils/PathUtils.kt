@@ -193,4 +193,4 @@ internal fun projectPathToLibraryName(projectPath: String): String =
 private const val HERMESC_IN_REACT_NATIVE_PATH =
     "node_modules/react-native/sdks/hermesc/%OS-BIN%/hermesc"
 private const val HERMESC_BUILT_FROM_SOURCE_PATH =
-    "node_modules/react-native/sdks/hermes/build/bin/hermesc"
+    "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"

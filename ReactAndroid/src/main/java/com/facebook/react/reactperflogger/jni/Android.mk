@@ -26,6 +26,7 @@ LOCAL_MODULE := reactperfloggerjni
 
 # Compile all local c++ files
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/reactperflogger/*.cpp)
+LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 
 # Build the files in this directory as a shared library
 include $(BUILD_SHARED_LIBRARY)

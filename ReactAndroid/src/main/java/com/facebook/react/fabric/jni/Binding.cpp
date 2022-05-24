@@ -6,8 +6,10 @@
  */
 
 #include "Binding.h"
+
 #include "AsyncEventBeat.h"
 #include "EventEmitterWrapper.h"
+#include "JBackgroundExecutor.h"
 #include "ReactNativeConfigHolder.h"
 #include "StateWrapperImpl.h"
 
@@ -76,11 +78,11 @@ Binding::getInspectorDataForInstance(
   return ReadableNativeMap::newObjectCxxArgs(result);
 }
 
-bool isLargeTextMeasureCacheEnabled() {
+bool getFeatureFlagValue(const char *name) {
   static const auto reactFeatureFlagsJavaDescriptor =
       jni::findClassStatic(Binding::ReactFeatureFlagsJavaDescriptor);
-  const auto field = reactFeatureFlagsJavaDescriptor->getStaticField<jboolean>(
-      "enableLargeTextMeasureCache");
+  const auto field =
+      reactFeatureFlagsJavaDescriptor->getStaticField<jboolean>(name);
   return reactFeatureFlagsJavaDescriptor->getStaticFieldValue(field);
 }
 
@@ -375,8 +377,8 @@ void Binding::installFabricUIManager(
   disableRevisionCheckForPreallocation_ =
       config->getBool("react_fabric:disable_revision_check_for_preallocation");
 
-  disablePreallocationOnClone_ = config->getBool(
-      "react_native_new_architecture:disable_preallocation_on_clone_android");
+  disablePreallocationOnClone_ =
+      getFeatureFlagValue("disablePreallocationOnClone");
 
   if (enableFabricLogs_) {
     LOG(WARNING) << "Binding::installFabricUIManager() was called (address: "
@@ -445,7 +447,8 @@ void Binding::installFabricUIManager(
       "react_native_new_architecture:dispatch_preallocation_in_bg");
 
   contextContainer->insert(
-      "EnableLargeTextMeasureCache", isLargeTextMeasureCacheEnabled());
+      "EnableLargeTextMeasureCache",
+      getFeatureFlagValue("enableLargeTextMeasureCache"));
 
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = contextContainer;
@@ -454,8 +457,8 @@ void Binding::installFabricUIManager(
   toolbox.synchronousEventBeatFactory = synchronousBeatFactory;
   toolbox.asynchronousEventBeatFactory = asynchronousBeatFactory;
 
-  backgroundExecutor_ = std::make_unique<JBackgroundExecutor>();
-  toolbox.backgroundExecutor = backgroundExecutor_->get();
+  backgroundExecutor_ = JBackgroundExecutor::create("fabric_bg");
+  toolbox.backgroundExecutor = backgroundExecutor_;
 
   animationDriver_ = std::make_shared<LayoutAnimationDriver>(
       runtimeExecutor, contextContainer, this);
@@ -557,8 +560,7 @@ void Binding::preallocateView(
   };
 
   if (dispatchPreallocationInBackground_) {
-    auto backgroundExecutor = backgroundExecutor_->get();
-    backgroundExecutor(preallocationFunction);
+    backgroundExecutor_(preallocationFunction);
   } else {
     preallocationFunction();
   }

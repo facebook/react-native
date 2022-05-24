@@ -15,9 +15,10 @@ LOCAL_PATH := $(THIS_DIR)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := rntester_appmodules
-# Note: Build the react-native-codegen output along with other app-specific C++ files.
+# Note: We are linking against react_codegen_AppSpecs hence no need to built the react-native-codegen output.
 LOCAL_C_INCLUDES := $(LOCAL_PATH) $(GENERATED_SRC_DIR)/codegen/jni
-LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp) $(wildcard $(GENERATED_SRC_DIR)/codegen/jni/*.cpp)
+LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
+LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) $(GENERATED_SRC_DIR)/codegen/jni
 LOCAL_SHARED_LIBRARIES := \
   libfabricjni \
@@ -25,7 +26,7 @@ LOCAL_SHARED_LIBRARIES := \
   libfolly_runtime \
   libglog \
   libreact_codegen_rncore \
-  libreact_codegen_rntester \
+  libreact_codegen_AppSpecs \
   libreact_debug \
   libreact_nativemodule_core \
   libreact_render_componentregistry \

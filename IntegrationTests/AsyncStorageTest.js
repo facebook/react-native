@@ -207,7 +207,7 @@ class AsyncStorageTest extends React.Component<{...}, $FlowFixMeState> {
       this.setState({done: true}, () => {
         TestModule.markTestCompleted();
       });
-    updateMessage = msg => {
+    updateMessage = (msg: string) => {
       this.setState({messages: this.state.messages.concat('\n' + msg)});
       DEBUG && console.log(msg);
     };

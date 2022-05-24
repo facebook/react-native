@@ -37,7 +37,7 @@ import com.facebook.react.shell.MainReactPackage;
 import com.facebook.react.testing.idledetection.ReactBridgeIdleSignaler;
 import com.facebook.react.testing.idledetection.ReactIdleDetectionUtil;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -250,7 +250,8 @@ public class ReactAppTestActivity extends FragmentActivity
               public List<JSIModuleSpec> getJSIModules(
                   final ReactApplicationContext reactApplicationContext,
                   final JavaScriptContextHolder jsContext) {
-                return Arrays.<JSIModuleSpec>asList(
+                List<JSIModuleSpec> packages = new ArrayList<>();
+                packages.add(
                     new JSIModuleSpec() {
                       @Override
                       public JSIModuleType getJSIModuleType() {
@@ -276,6 +277,10 @@ public class ReactAppTestActivity extends FragmentActivity
                         };
                       }
                     });
+                if (spec.getJSIModuleBuilder() != null) {
+                  packages.addAll(spec.getJSIModuleBuilder().build(reactApplicationContext));
+                }
+                return packages;
               }
             });
 

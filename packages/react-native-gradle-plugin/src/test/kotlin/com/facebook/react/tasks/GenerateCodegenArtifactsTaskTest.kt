@@ -58,27 +58,27 @@ class GenerateCodegenArtifactsTaskTest {
 
   @Test
   fun generateCodegenSchema_simpleProperties_areInsideInput() {
+    val packageJsonFile = tempFolder.newFile("package.json")
+
     val task =
         createTestTask<GenerateCodegenArtifactsTask> {
           it.nodeExecutableAndArgs.set(listOf("npm", "help"))
-          it.useJavaGenerator.set(true)
           it.codegenJavaPackageName.set("com.example.test")
           it.libraryName.set("example-test")
+          it.packageJsonFile.set(packageJsonFile)
         }
 
     assertEquals(listOf("npm", "help"), task.nodeExecutableAndArgs.get())
-    assertEquals(true, task.useJavaGenerator.get())
     assertEquals("com.example.test", task.codegenJavaPackageName.get())
     assertEquals("example-test", task.libraryName.get())
     assertTrue(task.inputs.properties.containsKey("nodeExecutableAndArgs"))
-    assertTrue(task.inputs.properties.containsKey("useJavaGenerator"))
     assertTrue(task.inputs.properties.containsKey("codegenJavaPackageName"))
     assertTrue(task.inputs.properties.containsKey("libraryName"))
   }
 
   @Test
   @WithOs(OS.UNIX)
-  fun setupCommandLine_withoutJavaGenerator_willSetupCorrectly() {
+  fun setupCommandLine_willSetupCorrectly() {
     val reactNativeDir = tempFolder.newFolder("node_modules/react-native/")
     val codegenDir = tempFolder.newFolder("codegen")
     val outputDir = tempFolder.newFolder("output")
@@ -89,11 +89,9 @@ class GenerateCodegenArtifactsTaskTest {
           it.codegenDir.set(codegenDir)
           it.generatedSrcDir.set(outputDir)
           it.nodeExecutableAndArgs.set(listOf("--verbose"))
-          it.codegenJavaPackageName.set("com.example.test")
-          it.libraryName.set("example-test")
         }
 
-    task.setupCommandLine()
+    task.setupCommandLine("example-test", "com.example.test")
 
     assertEquals(
         listOf(
@@ -111,5 +109,80 @@ class GenerateCodegenArtifactsTaskTest {
             "com.example.test",
         ),
         task.commandLine.toMutableList())
+  }
+
+  @Test
+  fun resolveTaskParameters_withConfigInPackageJson_usesIt() {
+    val packageJsonFile =
+        tempFolder.newFile("package.json").apply {
+          // language=JSON
+          writeText(
+              """
+        {
+            "name": "@a/libray",
+            "codegenConfig": {
+                "name": "an-awesome-library",
+                "android": {
+                  "javaPackageName": "com.awesome.package"
+                }
+            }
+        }
+        """.trimIndent())
+        }
+
+    val task =
+        createTestTask<GenerateCodegenArtifactsTask> {
+          it.packageJsonFile.set(packageJsonFile)
+          it.codegenJavaPackageName.set("com.example.ignored")
+          it.libraryName.set("a-library-name-that-is-ignored")
+        }
+
+    val (libraryName, javaPackageName) = task.resolveTaskParameters()
+
+    assertEquals("an-awesome-library", libraryName)
+    assertEquals("com.awesome.package", javaPackageName)
+  }
+
+  @Test
+  fun resolveTaskParameters_withConfigMissingInPackageJson_usesGradleOne() {
+    val packageJsonFile =
+        tempFolder.newFile("package.json").apply {
+          // language=JSON
+          writeText(
+              """
+        {
+            "name": "@a/libray",
+            "codegenConfig": {
+            }
+        }
+        """.trimIndent())
+        }
+
+    val task =
+        createTestTask<GenerateCodegenArtifactsTask> {
+          it.packageJsonFile.set(packageJsonFile)
+          it.codegenJavaPackageName.set("com.example.test")
+          it.libraryName.set("a-library-name-from-gradle")
+        }
+
+    val (libraryName, javaPackageName) = task.resolveTaskParameters()
+
+    assertEquals("a-library-name-from-gradle", libraryName)
+    assertEquals("com.example.test", javaPackageName)
+  }
+
+  @Test
+  fun resolveTaskParameters_withMissingPackageJson_usesGradleOne() {
+    val task =
+        createTestTask<GenerateCodegenArtifactsTask> {
+          it.packageJsonFile.set(File(tempFolder.root, "package.json"))
+          it.codegenJavaPackageName.set("com.example.test")
+          it.libraryName.set("a-library-name-from-gradle")
+        }
+
+    val (libraryName, javaPackageName) = task.resolveTaskParameters()
+
+    assertEquals("a-library-name-from-gradle", libraryName)
+    assertEquals("com.example.test", javaPackageName)
   }
 }

@@ -10,6 +10,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := react_render_textlayoutmanager
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp $(LOCAL_PATH)/platform/android/react/renderer/textlayoutmanager/*.cpp)
+LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 
 LOCAL_SHARED_LIBRARIES := \
   glog \
