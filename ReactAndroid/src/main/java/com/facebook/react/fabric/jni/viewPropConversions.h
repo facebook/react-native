@@ -55,6 +55,12 @@ constexpr MapBuffer::Key VP_SHADOW_COLOR = 31;
 constexpr MapBuffer::Key VP_TEST_ID = 32;
 constexpr MapBuffer::Key VP_TRANSFORM = 33;
 constexpr MapBuffer::Key VP_ZINDEX = 34;
+constexpr MapBuffer::Key VP_POINTER_ENTER2 = 35;
+constexpr MapBuffer::Key VP_POINTER_LEAVE2 = 36;
+constexpr MapBuffer::Key VP_POINTER_MOVE2 = 37;
+constexpr MapBuffer::Key VP_POINTER_ENTER2_CAPTURE = 38;
+constexpr MapBuffer::Key VP_POINTER_LEAVE2_CAPTURE = 39;
+constexpr MapBuffer::Key VP_POINTER_MOVE2_CAPTURE = 40;
 
 // Yoga values
 constexpr MapBuffer::Key YG_BORDER_WIDTH = 100;
@@ -462,6 +468,22 @@ static inline MapBuffer viewPropsDiff(
         VP_POINTER_LEAVE, newProps.events[ViewEvents::Offset::PointerLeave]);
     builder.putBool(
         VP_POINTER_MOVE, newProps.events[ViewEvents::Offset::PointerMove]);
+
+    builder.putBool(
+        VP_POINTER_ENTER2, newProps.events[ViewEvents::Offset::PointerEnter2]);
+    builder.putBool(
+        VP_POINTER_ENTER2_CAPTURE,
+        newProps.events[ViewEvents::Offset::PointerEnter2Capture]);
+    builder.putBool(
+        VP_POINTER_LEAVE2, newProps.events[ViewEvents::Offset::PointerLeave2]);
+    builder.putBool(
+        VP_POINTER_LEAVE2_CAPTURE,
+        newProps.events[ViewEvents::Offset::PointerLeave2Capture]);
+    builder.putBool(
+        VP_POINTER_MOVE2, newProps.events[ViewEvents::Offset::PointerMove2]);
+    builder.putBool(
+        VP_POINTER_MOVE2_CAPTURE,
+        newProps.events[ViewEvents::Offset::PointerMove2Capture]);
   }
 
   if (oldProps.removeClippedSubviews != newProps.removeClippedSubviews) {

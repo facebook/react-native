@@ -37,10 +37,11 @@ references:
 
   cache_keys:
     buck_cache_key: &buck_cache_key v3-buck-v2019.01.10.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}}
+    checkout_cache_key: &checkout_cache_key v1-checkout
     gems_cache_key: &gems_cache_key v1-gems-{{ checksum "Gemfile.lock" }}
     gradle_cache_key: &gradle_cache_key v1-gradle-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "ReactAndroid/gradle.properties" }}
     hermes_cache_key: &hermes_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
-    hermes_sdk_cache_key: &hermes_sdk_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "sdks/.hermesversion" }}
+    hermes_sdk_cache_key: &hermes_sdk_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "sdks/.hermes-cache-key-file" }}
     hermes_windows_cache_key: &hermes_windows_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "tmp/hermes/hermesversion" }}
     pods_cache_key: &pods_cache_key v6-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
     windows_yarn_cache_key: &windows_yarn_cache_key v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
@@ -102,6 +103,23 @@ executors:
 #        COMMANDS
 # -------------------------
 commands:
+  # Checkout with cache, on machines that are using Docker the cache is ignored
+  checkout_code_with_cache:
+    parameters:
+      checkout_base_cache_key:
+        default: *checkout_cache_key
+        type: string
+    steps:
+      - restore_cache:
+            keys:
+              - << parameters.checkout_base_cache_key >>-{{ .Branch }}-{{ .Revision }}
+              - << parameters.checkout_base_cache_key >>-{{ .Branch }}-
+              - << parameters.checkout_base_cache_key >>
+      - checkout
+      - save_cache:
+          key: << parameters.checkout_base_cache_key >>-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ".git"
 
   setup_artifacts:
     steps:
@@ -260,9 +278,9 @@ commands:
       - run:
           name: Setup Hermes cache
           command: |
-            HERMES_VERSION_FILE="sdks/.hermesversion"
-            if [ ! -f "$HERMES_VERSION_FILE" ]; then
-              git ls-remote https://github.com/facebook/hermes main | cut -f 1 > $HERMES_VERSION_FILE
+            HERMES_CACHE_KEY_FILE="sdks/.hermes-cache-key-file"
+            if [ ! -f "$HERMES_CACHE_KEY_FILE" ]; then
+              git ls-remote https://github.com/facebook/hermes main | cut -f 1 > $HERMES_CACHE_KEY_FILE
             fi
       - restore_cache:
           keys:
@@ -307,13 +325,6 @@ jobs:
       - run:
           name: Run linters against modified files (analysis-bot)
           command: GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" yarn lint-ci
-          when: always
-
-      - run:
-          name: Analyze Pull Request (pull-bot)
-          command: |
-            cd bots
-            DANGER_GITHUB_API_TOKEN="$PUBLIC_PULLBOT_GITHUB_TOKEN_A""$PUBLIC_PULLBOT_GITHUB_TOKEN_B" yarn danger ci --use-github-checks
           when: always
 
   # -------------------------
@@ -419,7 +430,7 @@ jobs:
     environment:
       - REPORTS_DIR: "./reports/junit"
     steps:
-      - checkout
+      - checkout_code_with_cache
       - setup_artifacts
       - setup_ruby
       - run:
@@ -657,7 +668,7 @@ jobs:
       - PROJECT_NAME: "iOSTemplateProject"
 
     steps:
-      - checkout
+      - checkout_code_with_cache
       - run_yarn
       - attach_workspace:
           at: .
@@ -687,7 +698,7 @@ jobs:
   test_ios_rntester:
     executor: reactnativeios
     steps:
-      - checkout
+      - checkout_code_with_cache
       - run_yarn
 
       # The macOS machine can run out of storage if Hermes is enabled and built from source.
@@ -742,7 +753,7 @@ jobs:
       - ANDROID_TOOLS_VERSION: 31.0.0
       - GRADLE_OPTS: -Dorg.gradle.daemon=false
     steps:
-      - checkout
+      - checkout_code_with_cache
 
       - run:
           name: Install Node
@@ -928,12 +939,12 @@ jobs:
           paths:
             - linux64-bin
 
-  build_hermesc_macos:
+  build_hermes_macos:
     executor: reactnativeios
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
     steps:
-      - checkout
+      - checkout_code_with_cache
       - *attach_hermes_workspace
       - restore_cache:
           key: *hermes_cache_key
@@ -941,28 +952,46 @@ jobs:
           name: Set up workspace
           command: |
             mkdir -p /tmp/hermes/osx-bin
-            cp ~/react-native/sdks/hermes-engine/utils/* "$HERMES_WS_DIR/hermes/utils/."
+            mkdir -p ~/react-native/sdks/hermes
+            cp -r $HERMES_WS_DIR/hermes/* ~/react-native/sdks/hermes/.
       - run:
           name: Install dependencies
           command: |
             brew install cmake
       - run:
-          name: Build HermesC for macOS
+          name: Build the Hermes iOS frameworks
           command: |
-            if [ -f /tmp/hermes/osx-bin/hermesc ]; then
-              echo 'Skipping; Clean "/tmp/hermes/osx-bin" to rebuild.'
-            else
-              cd "$HERMES_WS_DIR/hermes"
-              ./utils/build-mac-framework.sh
-              cp build_macosx/bin/hermesc /tmp/hermes/osx-bin/.
-            fi
+            cd ~/react-native/sdks/hermes
+            ./utils/build-ios-framework.sh
+      - run:
+          name: Build the Hermes Mac frameworks
+          command: |
+            cd ~/react-native/sdks/hermes
+            ./utils/build-mac-framework.sh
+            cp build_macosx/bin/hermesc /tmp/hermes/osx-bin/.
+      - run:
+          name: Package the Hermes Apple frameworks
+          command: |
+            cd ~/react-native/sdks/hermes
+            . ./utils/build-apple-framework.sh
+
+            mkdir -p /tmp/cocoapods-package-root/destroot
+            mkdir -p /tmp/hermes/output
+            cp -R ./destroot /tmp/cocoapods-package-root
+            cp hermes-engine.podspec LICENSE /tmp/cocoapods-package-root
+
+            tar -C /tmp/cocoapods-package-root/ -czvf /tmp/hermes/output/hermes-runtime-darwin-v$(get_release_version).tar.gz .
       - save_cache:
           key: *hermes_cache_key
           paths:
-            - /tmp/hermes/osx-bin/
-            - /tmp/hermes/hermes/destroot/
-            - /tmp/hermes/hermes/build_host_hermesc/
-            - /tmp/hermes/hermes/build_macosx/
+            - ~/react-native/hermes/build_host_hermesc
+            - ~/react-native/hermes/build_iphoneos
+            - ~/react-native/hermes/build_catalyst
+            - ~/react-native/hermes/build_iphonesimulator
+            - ~/react-native/hermes/build_macosx
+            - ~/react-native/hermes/destroot
+      - store_artifacts:
+          path: /tmp/hermes/output/
       - store_artifacts:
           path: /tmp/hermes/osx-bin/
       - persist_to_workspace:
@@ -1057,7 +1086,7 @@ jobs:
         default: false
     executor: reactnativeios
     steps:
-      - checkout
+      - checkout_code_with_cache
       - run_yarn
       - add_ssh_keys:
           fingerprints:
@@ -1214,7 +1243,7 @@ workflows:
       - build_hermesc_linux:
           requires:
             - prepare_hermes_workspace
-      - build_hermesc_macos:
+      - build_hermes_macos:
           requires:
             - prepare_hermes_workspace
       - build_hermesc_windows:
@@ -1225,7 +1254,7 @@ workflows:
           publish_npm_args: --dry-run
           requires:
             - build_hermesc_linux
-            - build_hermesc_macos
+            - build_hermes_macos
             - build_hermesc_windows
       - test_js:
           run_disabled_tests: false
@@ -1272,7 +1301,7 @@ workflows:
           filters: *only_release_tags
           requires:
             - prepare_hermes_workspace
-      - build_hermesc_macos:
+      - build_hermes_macos:
           filters: *only_release_tags
           requires:
             - prepare_hermes_workspace
@@ -1288,7 +1317,7 @@ workflows:
           filters: *only_release_tags
           requires:
             - build_hermesc_linux
-            - build_hermesc_macos
+            - build_hermes_macos
             - build_hermesc_windows
 
   analysis:
@@ -1297,11 +1326,8 @@ workflows:
       # Run lints on every commit
       - analyze_code
 
-      # Run code checks on PRs from forks
-      - analyze_pr:
-          filters:
-            branches:
-              only: /^pull\/.*$/
+      # Run code checks on PRs
+      - analyze_pr
 
       # Gather coverage
       - js_coverage
@@ -1322,16 +1348,15 @@ workflows:
       - build_hermesc_linux:
           requires:
             - prepare_hermes_workspace
-      - build_hermesc_macos:
+      - build_hermes_macos:
           requires:
             - prepare_hermes_workspace
       - build_hermesc_windows:
           requires:
             - prepare_hermes_workspace
-
       - build_npm_package:
           publish_npm_args: --nightly
           requires:
             - build_hermesc_linux
-            - build_hermesc_macos
+            - build_hermes_macos
             - build_hermesc_windows

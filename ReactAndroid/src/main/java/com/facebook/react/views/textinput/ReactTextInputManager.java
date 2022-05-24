@@ -27,7 +27,6 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.autofill.HintConstants;
@@ -973,12 +972,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     return UIManagerHelper.getEventDispatcherForReactTag(reactContext, editText.getId());
   }
 
-  private class ReactTextInputTextWatcher implements TextWatcher {
-
-    private EventDispatcher mEventDispatcher;
-    private ReactEditText mEditText;
+  private final class ReactTextInputTextWatcher implements TextWatcher {
+    private final ReactEditText mEditText;
+    private final EventDispatcher mEventDispatcher;
+    private final int mSurfaceId;
     private String mPreviousText;
-    private int mSurfaceId;
 
     public ReactTextInputTextWatcher(
         final ReactContext reactContext, final ReactEditText editText) {
@@ -1014,24 +1012,23 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         return;
       }
 
-      if (mEditText.getFabricViewStateManager().hasStateWrapper()) {
+      FabricViewStateManager stateManager = mEditText.getFabricViewStateManager();
+      if (stateManager.hasStateWrapper()) {
         // Fabric: communicate to C++ layer that text has changed
         // We need to call `incrementAndGetEventCounter` here explicitly because this
         // update may race with other updates.
         // We simply pass in the cache ID, which never changes, but UpdateState will still be called
         // on the native side, triggering a measure.
-        mEditText
-            .getFabricViewStateManager()
-            .setState(
-                new FabricViewStateManager.StateUpdateCallback() {
-                  @Override
-                  public WritableMap getStateUpdate() {
-                    WritableMap map = new WritableNativeMap();
-                    map.putInt("mostRecentEventCount", mEditText.incrementAndGetEventCounter());
-                    map.putInt("opaqueCacheId", mEditText.getId());
-                    return map;
-                  }
-                });
+        stateManager.setState(
+            new FabricViewStateManager.StateUpdateCallback() {
+              @Override
+              public WritableMap getStateUpdate() {
+                WritableMap map = new WritableNativeMap();
+                map.putInt("mostRecentEventCount", mEditText.incrementAndGetEventCounter());
+                map.putInt("opaqueCacheId", mEditText.getId());
+                return map;
+              }
+            });
       }
 
       // The event that contains the event counter and updates it must be sent first.
@@ -1127,11 +1124,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   }
 
   private static class ReactContentSizeWatcher implements ContentSizeWatcher {
-    private ReactEditText mEditText;
-    private @Nullable EventDispatcher mEventDispatcher;
+    private final ReactEditText mEditText;
+    private final EventDispatcher mEventDispatcher;
+    private final int mSurfaceId;
     private int mPreviousContentWidth = 0;
     private int mPreviousContentHeight = 0;
-    private int mSurfaceId;
 
     public ReactContentSizeWatcher(ReactEditText editText) {
       mEditText = editText;
@@ -1175,17 +1172,15 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
   }
 
-  private class ReactSelectionWatcher implements SelectionWatcher {
-
-    private ReactEditText mReactEditText;
-    private EventDispatcher mEventDispatcher;
+  private static class ReactSelectionWatcher implements SelectionWatcher {
+    private final ReactEditText mReactEditText;
+    private final EventDispatcher mEventDispatcher;
+    private final int mSurfaceId;
     private int mPreviousSelectionStart;
     private int mPreviousSelectionEnd;
-    private int mSurfaceId;
 
     public ReactSelectionWatcher(ReactEditText editText) {
       mReactEditText = editText;
-
       ReactContext reactContext = getReactContext(editText);
       mEventDispatcher = getEventDispatcher(reactContext, editText);
       mSurfaceId = UIManagerHelper.getSurfaceId(reactContext);
@@ -1214,12 +1209,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   }
 
   private static class ReactScrollWatcher implements ScrollWatcher {
-
-    private ReactEditText mReactEditText;
-    private EventDispatcher mEventDispatcher;
+    private final ReactEditText mReactEditText;
+    private final EventDispatcher mEventDispatcher;
+    private final int mSurfaceId;
     private int mPreviousHoriz;
     private int mPreviousVert;
-    private int mSurfaceId;
 
     public ReactScrollWatcher(ReactEditText editText) {
       mReactEditText = editText;
@@ -1273,40 +1267,25 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setPadding(left, top, right, bottom);
   }
 
-  /**
-   * May be overridden by subclasses that would like to provide their own instance of the internal
-   * {@code EditText} this class uses to determine the expected size of the view.
-   */
-  protected EditText createInternalEditText(ThemedReactContext themedReactContext) {
-    return new EditText(themedReactContext);
-  }
-
   @Override
   public Object updateState(
-      ReactEditText view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
-
+      ReactEditText view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
     if (ReactEditText.DEBUG_MODE) {
       FLog.e(TAG, "updateState: [" + view.getId() + "]");
     }
 
     view.getFabricViewStateManager().setStateWrapper(stateWrapper);
 
-    if (stateWrapper == null) {
-      return null;
-    }
-
     ReadableNativeMap state = stateWrapper.getStateData();
-
     if (state == null) {
       return null;
     }
-
     if (!state.hasKey("attributedString")) {
       return null;
     }
+
     ReadableMap attributedString = state.getMap("attributedString");
     ReadableMap paragraphAttributes = state.getMap("paragraphAttributes");
-
     if (attributedString == null || paragraphAttributes == null) {
       throw new IllegalArgumentException("Invalid TextInput State was received as a parameters");
     }

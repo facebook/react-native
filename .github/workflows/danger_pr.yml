@@ -1,0 +1,18 @@
+name: Run Danger on PR
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+
+jobs:
+  danger:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: yarn install
+        working-directory: bots
+      - name: Danger
+        run: yarn danger ci --use-github-checks --failOnErrors --id danger_pr
+        working-directory: bots
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

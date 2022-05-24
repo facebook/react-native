@@ -224,7 +224,7 @@ public class ReactViewGroup extends ViewGroup
       return true;
     }
     // We intercept the touch event if the children are not supposed to receive it.
-    if (mPointerEvents == PointerEvents.NONE || mPointerEvents == PointerEvents.BOX_ONLY) {
+    if (!PointerEvents.canChildrenBeTouchTarget(mPointerEvents)) {
       return true;
     }
     return super.onInterceptTouchEvent(ev);
@@ -233,7 +233,7 @@ public class ReactViewGroup extends ViewGroup
   @Override
   public boolean onTouchEvent(MotionEvent ev) {
     // We do not accept the touch event if this view is not supposed to receive it.
-    if (mPointerEvents == PointerEvents.NONE || mPointerEvents == PointerEvents.BOX_NONE) {
+    if (!PointerEvents.canBeTouchTarget(mPointerEvents)) {
       return false;
     }
     // The root view always assumes any view that was tapped wants the touch
@@ -242,6 +242,16 @@ public class ReactViewGroup extends ViewGroup
     // For an explanation of bubbling and capturing, see
     // http://javascript.info/tutorial/bubbling-and-capturing#capturing
     return true;
+  }
+
+  @Override
+  public boolean dispatchGenericPointerEvent(MotionEvent ev) {
+    // We do not dispatch the pointer event if its children are not supposed to receive it
+    if (!PointerEvents.canChildrenBeTouchTarget(mPointerEvents)) {
+      return false;
+    }
+
+    return super.dispatchGenericPointerEvent(ev);
   }
 
   /**

@@ -31,21 +31,11 @@
     "ws": "^6.1.4"
   },
   "codegenConfig": {
-    "libraries": [
-      {
-        "name": "ScreenshotManagerSpec",
-        "type": "modules",
-        "ios": {},
-        "android": {},
-        "jsSrcsDir": "NativeModuleExample"
-      },
-      {
-        "name": "MyNativeViewSpec",
-        "type": "components",
-        "ios": {},
-        "android": {},
-        "jsSrcsDir": "NativeComponentExample/js"
-      }
-    ]
+    "name": "AppSpecs",
+    "type": "all",
+    "jsSrcsDir": ".",
+    "android": {
+      "javaPackageName": "com.facebook.fbreact.specs"
+    }
   }
 }
