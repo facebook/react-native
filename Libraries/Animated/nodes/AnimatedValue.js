@@ -134,9 +134,9 @@ class AnimatedValue extends AnimatedWithChildren {
       !this.__isNative /* don't perform a flush for natively driven values */,
     );
     if (this.__isNative) {
-      _executeAsAnimatedBatch(this.__getNativeTag().toString(), () => {
-        NativeAnimatedAPI.setAnimatedNodeValue(this.__getNativeTag(), value);
-      });
+      _executeAsAnimatedBatch(this.__getNativeTag().toString(), () =>
+        NativeAnimatedAPI.setAnimatedNodeValue(this.__getNativeTag(), value),
+      );
     }
   }
 

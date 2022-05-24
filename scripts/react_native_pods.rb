@@ -3,6 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+require 'json'
 require 'pathname'
 require_relative './react_native_pods_utils/script_phases.rb'
 require_relative './cocoapods/flipper.rb'
@@ -16,6 +17,8 @@ $REACT_CODEGEN_PODSPEC_GENERATED = false
 $REACT_CODEGEN_DISCOVERY_DONE = false
 DEFAULT_OTHER_CPLUSPLUSFLAGS = '$(inherited)'
 NEW_ARCH_OTHER_CPLUSPLUSFLAGS = '$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1'
+
+$START_TIME = Time.now.to_i
 
 def use_react_native! (options={})
   # The prefix to react-native
@@ -102,10 +105,27 @@ def use_react_native! (options={})
   end
 
   if hermes_enabled
-    system("(cd #{prefix} && node scripts/hermes/prepare-hermes-for-build)")
     pod 'React-hermes', :path => "#{prefix}/ReactCommon/hermes"
-    pod 'hermes-engine', :path => "#{prefix}/sdks/hermes/hermes-engine.podspec"
     pod 'libevent', '~> 2.1.12'
+
+    sdks_dir = Pod::Config.instance.installation_root.join(prefix, "sdks")
+    hermes_tag_file = sdks_dir.join(".hermesversion")
+
+    if (File.exist?(hermes_tag_file))
+      # Use published pod with pre-builts.
+      Pod::UI.puts "[Hermes] Tag file exists at path: #{hermes_tag_file}"
+      package = JSON.parse(File.read(File.join(__dir__, "..", "package.json")))
+      hermes_version = package['version']
+      Pod::UI.puts "[Hermes] Loading version: #{hermes_version}"
+      pod 'hermes-engine', hermes_version
+    else
+      # Use local podspec and build from source.
+      path_to_hermes = "#{prefix}/sdks/hermes/hermes-engine.podspec"
+      Pod::UI.puts "[Hermes] Use local version from #{path_to_hermes}"
+      system("(cd #{prefix} && node scripts/hermes/prepare-hermes-for-build)")
+      pod 'hermes-engine', :path => path_to_hermes
+    end
+
   end
 
   if flipper_configuration.flipper_enabled && !production
@@ -231,6 +251,8 @@ def react_native_post_install(installer, react_native_path = "../node_modules/re
   modify_flags_for_new_architecture(installer, cpp_flags)
 
   set_node_modules_user_settings(installer, react_native_path)
+
+  puts "Pod install took #{Time.now.to_i - $START_TIME} [s] to run"
 end
 
 def modify_flags_for_new_architecture(installer, cpp_flags)

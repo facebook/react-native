@@ -80,17 +80,15 @@ react {
     cliPath = "../../../../cli.js"
     bundleAssetName = "RNTesterApp.android.bundle"
     entryFile = file("../../js/RNTesterApp.android.js")
-    root = rootDir
+    root = file("../../")
     inputExcludes = ["android/**", "./**", ".gradle/**"]
     composeSourceMapsPath = "$rootDir/scripts/compose-source-maps.js"
     hermesCommand = "$rootDir/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"
     enableHermesForVariant { def v -> v.name.contains("hermes") }
 
     // Codegen Configs
-    jsRootDir = file("$rootDir/packages/rn-tester")
     reactNativeDir = rootDir
-    libraryName = "rntester"
-    useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET")?.toBoolean() ?: false
+    codegenDir = new File(rootDir, "node_modules/react-native-codegen")
 }
 
 project.ext.react = [
