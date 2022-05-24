@@ -774,6 +774,44 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
   }
 
   /**
+   * Returns whether the node has valid RangeInfo.
+   *
+   * @param node The node to check.
+   * @return Whether the node has valid RangeInfo.
+   */
+  public static boolean hasValidRangeInfo(@Nullable AccessibilityNodeInfoCompat node) {
+    if (node == null) {
+      return false;
+    }
+
+    @Nullable final RangeInfoCompat rangeInfo = node.getRangeInfo();
+    if (rangeInfo == null) {
+      return false;
+    }
+
+    final float maxProgress = rangeInfo.getMax();
+    final float minProgress = rangeInfo.getMin();
+    final float currentProgress = rangeInfo.getCurrent();
+    final float diffProgress = maxProgress - minProgress;
+    return (diffProgress > 0.0f)
+        && (currentProgress >= minProgress)
+        && (currentProgress <= maxProgress);
+  }
+
+  /**
+   * Returns whether the specified node has state description.
+   *
+   * @param node The node to check.
+   * @return {@code true} if the node has state description.
+   */
+  private static boolean hasStateDescription(@Nullable AccessibilityNodeInfoCompat node) {
+    return node != null
+        && (!TextUtils.isEmpty(node.getStateDescription())
+            || node.isCheckable()
+            || hasValidRangeInfo(node));
+  }
+
+  /**
    * Returns whether the supplied {@link View} and {@link AccessibilityNodeInfoCompat} would produce
    * spoken feedback if it were accessibility focused. NOTE: not all speaking nodes are focusable.
    *
@@ -793,7 +831,10 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
       return false;
     }
 
-    return node.isCheckable() || hasText(node) || hasNonActionableSpeakingDescendants(node, view);
+    return hasText(node)
+        || hasStateDescription(node)
+        || node.isCheckable()
+        || hasNonActionableSpeakingDescendants(node, view);
   }
 
   public static boolean hasText(@Nullable AccessibilityNodeInfoCompat node) {
