@@ -135,13 +135,10 @@ using namespace facebook::react;
   }
 
   if (newTextInputProps.screenreaderError != oldTextInputProps.screenreaderError) {
-    NSString *error = RCTNSStringFromString(newTextInputProps.screenreaderError);
     NSString *errorWithText = RCTNSStringFromString(newTextInputProps.screenreaderError);
     NSString *text = RCTNSStringFromString(newTextInputProps.text);
     if ([text length] != 0) {
-      errorWithText = [NSString stringWithFormat: @"%@ %@", text, error];
-    } else {
-      errorWithText = error;
+      errorWithText = [NSString stringWithFormat: @"%@ %@", text, errorWithText];
     }
     self.accessibilityElement.accessibilityValue = errorWithText;
     UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, errorWithText);
