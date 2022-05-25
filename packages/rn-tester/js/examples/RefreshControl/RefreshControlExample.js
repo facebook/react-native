@@ -88,7 +88,8 @@ class RefreshControlExample extends React.Component {
             colors={['#ff0000', '#00ff00', '#0000ff']}
             progressBackgroundColor="#ffff00"
           />
-        }>
+        }
+      >
         {rows}
       </ScrollView>
     );

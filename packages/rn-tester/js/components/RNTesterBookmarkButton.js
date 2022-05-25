@@ -35,7 +35,8 @@ class RNTesterBookmarkButton extends React.Component<Props> {
             borderRadius: Math.floor(size + 5 / 2),
           },
         ]}
-        onPress={onPress}>
+        onPress={onPress}
+      >
         <Image
           style={{height: size, width: size}}
           source={

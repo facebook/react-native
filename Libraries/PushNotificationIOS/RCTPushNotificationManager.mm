@@ -88,7 +88,7 @@ RCT_ENUM_CONVERTER(NSCalendarUnit,
   
   NSCalendarUnit calendarUnit = [RCTConvert NSCalendarUnit:details[@"repeatInterval"]];
   if (calendarUnit > 0) {
-    NSDateComponents *dateComponents = [[NSDateComponents alloc] init];
+    NSDateComponents *dateComponents = [NSDateComponents new];
     [dateComponents setValue:1 forComponent:calendarUnit];
     notification.deliveryRepeatInterval = dateComponents;
   }

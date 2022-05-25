@@ -121,10 +121,11 @@ def jscFlavor = 'org.webkit:android-jsc:+'
 def enableHermes = project.ext.react.get("enableHermes", false);
 
 /**
- * Architectures to build native code for in debug.
+ * Architectures to build native code for.
  */
-def nativeArchitectures = project.getProperties().get("reactNativeDebugArchitectures")
-
+def nativeArchitectures = project.getProperties().get("reactNativeArchitectures") ?
+                          project.getProperties().get("reactNativeArchitectures").split(",")
+                          : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 android {
     ndkVersion rootProject.ext.ndkVersion
 
@@ -142,7 +143,7 @@ android {
             reset()
             enable enableSeparateBuildPerCPUArchitecture
             universalApk false  // If true, also generate a universal APK
-            include "armeabi-v7a", "x86", "arm64-v8a", "x86_64"
+            include (*nativeArchitectures)
         }
     }
     signingConfigs {
@@ -156,11 +157,6 @@ android {
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
-            if (nativeArchitectures) {
-                ndk {
-                    abiFilters nativeArchitectures.split(',')
-                }
-            }
         }
         release {
             // Caution! In production, you need to generate your own keystore file.
@@ -185,6 +181,11 @@ android {
             }
 
         }
+    }
+
+    packagingOptions {
+        pickFirst '**/libhermes.so'
+        pickFirst '**/libjsc.so'
     }
 }
 

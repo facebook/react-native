@@ -928,7 +928,7 @@ static RCTUIColor *RCTColorFromSemanticColorName(NSString *semanticColorName)
  */
 static NSString *RCTSemanticColorNames()
 {
-  NSMutableString *names = [[NSMutableString alloc] init];
+  NSMutableString *names = [NSMutableString new];
   NSDictionary<NSString *, NSDictionary *> *colorMap = RCTSemanticColorsMap();
   NSArray *allKeys = [[[colorMap allKeys] mutableCopy] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
 
@@ -1227,7 +1227,7 @@ RCT_JSON_ARRAY_CONVERTER(NSNumber)
   if ([json isKindOfClass:[NSString class]]) {
     return [RCTConvert NSPasteboardType:json];
   } else if ([json isKindOfClass:[NSArray class]]) {
-    NSMutableArray *mutablePastboardTypes = [[NSMutableArray alloc] init];
+    NSMutableArray *mutablePastboardTypes = [NSMutableArray new];
     for (NSString *type in json) {
       [mutablePastboardTypes addObjectsFromArray:[RCTConvert NSPasteboardType:type]];
       return mutablePastboardTypes.copy;

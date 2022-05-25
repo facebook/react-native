@@ -89,7 +89,7 @@ LOCAL_STATIC_LIBRARIES := libreactnative libruntimeexecutor libcallinvokerholder
 LOCAL_MODULE := reactnativejni
 
 # Compile all local c++ files.
-LOCAL_SRC_FILES := $(wildcard *.cpp)
+LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
 
 ifeq ($(APP_OPTIM),debug)
   # Keep symbols by overriding the strip command invoked by ndk-build.

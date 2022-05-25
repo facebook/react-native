@@ -79,10 +79,8 @@ class LayoutExample extends React.Component<$FlowFixMeProps> {
             {fiveColoredCircles}
           </CircleBlock>
           <View
-            style={[
-              styles.overlay,
-              {position: 'absolute', top: 15, left: 160},
-            ]}>
+            style={[styles.overlay, {position: 'absolute', top: 15, left: 160}]}
+          >
             <Text>{'top: 15, left: 160'}</Text>
           </View>
         </RNTesterBlock>

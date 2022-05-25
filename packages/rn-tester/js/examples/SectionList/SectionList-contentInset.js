@@ -41,10 +41,8 @@ export function SectionList_contentInset(): React.Node {
   return (
     <>
       <View
-        style={[
-          styles.titleContainer,
-          {height: exampleProps.contentInset.top},
-        ]}>
+        style={[styles.titleContainer, {height: exampleProps.contentInset.top}]}
+      >
         <Text style={styles.titleText}>Menu</Text>
       </View>
       <SectionListBaseExample

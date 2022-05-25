@@ -578,7 +578,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     layer.backgroundColor = _backgroundColor.CGColor;
   } else {
     if (!_borderLayer) {
-      _borderLayer = [[CALayer alloc] init];
+      _borderLayer = [CALayer new];
       _borderLayer.zPosition = -1024.0f;
       _borderLayer.frame = layer.bounds;
       _borderLayer.magnificationFilter = kCAFilterNearest;

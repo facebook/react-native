@@ -118,7 +118,8 @@ class ScrollViewTestApp extends React.Component<Props, State> {
         onScroll={onScroll}
         onScrollBeginDrag={onScrollBeginDrag}
         onScrollEndDrag={onScrollEndDrag}
-        ref={this.scrollView}>
+        ref={this.scrollView}
+      >
         {children}
       </ScrollView>
     );

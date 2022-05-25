@@ -131,18 +131,12 @@ static TextAttributes convertRawProp(
       "textDecorationLine",
       sourceTextAttributes.textDecorationLineType,
       defaultTextAttributes.textDecorationLineType);
-  textAttributes.textDecorationLineStyle = convertRawProp(
+  textAttributes.textDecorationStyle = convertRawProp(
       context,
       rawProps,
-      "textDecorationLineStyle",
-      sourceTextAttributes.textDecorationLineStyle,
-      defaultTextAttributes.textDecorationLineStyle);
-  textAttributes.textDecorationLinePattern = convertRawProp(
-      context,
-      rawProps,
-      "textDecorationLinePattern",
-      sourceTextAttributes.textDecorationLinePattern,
-      defaultTextAttributes.textDecorationLinePattern);
+      "textDecorationStyle",
+      sourceTextAttributes.textDecorationStyle,
+      defaultTextAttributes.textDecorationStyle);
 
   // Shadow
   textAttributes.textShadowOffset = convertRawProp(

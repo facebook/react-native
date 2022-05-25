@@ -38,7 +38,8 @@ class ToggleDefaultPaddingExample extends React.Component<
       <View>
         <TextInput style={this.state.hasPadding ? {padding: 0} : null} />
         <Text
-          onPress={() => this.setState({hasPadding: !this.state.hasPadding})}>
+          onPress={() => this.setState({hasPadding: !this.state.hasPadding})}
+        >
           Toggle padding
         </Text>
       </View>
@@ -186,7 +187,8 @@ exports.examples = ([
             style={[
               styles.singleLine,
               {backgroundColor: 'rgba(100, 100, 100, 0.3)'},
-            ]}>
+            ]}
+          >
             <Text style={{backgroundColor: 'rgba(100, 100, 100, 0.3)'}}>
               Darker backgroundColor
             </Text>
@@ -332,7 +334,8 @@ exports.examples = ([
               styles.multiline,
               {color: 'blue'},
               {textAlign: 'right', textAlignVertical: 'bottom'},
-            ]}>
+            ]}
+          >
             <Text style={styles.multiline}>
               multiline with children, aligned bottom-right
             </Text>
@@ -370,7 +373,8 @@ exports.examples = ([
             enablesReturnKeyAutomatically={true}
             returnKeyType="done"
             multiline={true}
-            style={{maxHeight: 400, minHeight: 20, backgroundColor: '#eeeeee'}}>
+            style={{maxHeight: 400, minHeight: 20, backgroundColor: '#eeeeee'}}
+          >
             generic generic generic
             <Text style={{fontSize: 6, color: 'red'}}>
               small small small small small small

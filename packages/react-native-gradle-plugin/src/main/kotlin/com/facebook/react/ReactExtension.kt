@@ -115,12 +115,31 @@ abstract class ReactExtension @Inject constructor(project: Project) {
       objects.listProperty(String::class.java).convention(emptyList())
 
   /**
+   * Functional interface to disable dev mode only on specific [BaseVariant] Default: will check
+   * [devDisabledInVariants] or return True for Release variants and False for Debug variants.
+   */
+  var disableDevForVariant: (BaseVariant) -> Boolean = { variant ->
+    variant.name in devDisabledInVariants.get() || variant.isRelease
+  }
+
+  /**
    * Variant Name to Boolean map that allows to toggle the bundle command for a specific variant.
    * Default: {}
    */
   // todo maybe lambda as for hermes?
   val bundleIn: MapProperty<String, Boolean> =
       objects.mapProperty(String::class.java, Boolean::class.java).convention(emptyMap())
+
+  /**
+   * Functional interface to toggle the bundle command only on specific [BaseVariant] Default: will
+   * check [bundleIn] or return True for Release variants and False for Debug variants.
+   */
+  var bundleForVariant: (BaseVariant) -> Boolean = { variant ->
+    if (bundleIn.getting(variant.name).isPresent) bundleIn.getting(variant.name).get()
+    else if (bundleIn.getting(variant.buildType.name).isPresent)
+        bundleIn.getting(variant.buildType.name).get()
+    else variant.isRelease
+  }
 
   /** Hermes Config */
 
@@ -173,10 +192,10 @@ abstract class ReactExtension @Inject constructor(project: Project) {
   /**
    * The path to the react-native-codegen folder.
    *
-   * Default: $projectDir/../../packages/react-native-codegen
+   * Default: $projectDir/../../node_modules/react-native-codegen
    */
   val codegenDir: DirectoryProperty =
-      objects.directoryProperty().convention(reactRoot.dir("packages/react-native-codegen"))
+      objects.directoryProperty().convention(reactRoot.dir("node_modules/react-native-codegen"))
 
   /**
    * The root directory for all JS files for the app.

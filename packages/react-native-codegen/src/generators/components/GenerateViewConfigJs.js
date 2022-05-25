@@ -17,9 +17,15 @@ import type {SchemaType} from '../../CodegenSchema';
 // File path -> contents
 type FilesOutput = Map<string, string>;
 
-const template = `
+const FileTemplate = ({
+  imports,
+  componentConfig,
+}: {
+  imports: string,
+  componentConfig: string,
+}) => `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * ${'C'}opyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -31,9 +37,9 @@ const template = `
 
 'use strict';
 
-::_IMPORTS_::
+${imports}
 
-::_COMPONENT_CONFIG_::
+${componentConfig}
 `;
 
 // We use this to add to a set. Need to make sure we aren't importing
@@ -54,14 +60,17 @@ function getReactDiffProcessValue(typeAnnotation) {
     case 'ReservedPropTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'ColorPrimitive':
-          return j.template.expression`{ process: require('processColor') }`;
+          return j.template
+            .expression`{ process: require('react-native/Libraries/StyleSheet/processColor') }`;
         case 'ImageSourcePrimitive':
           return j.template
-            .expression`{ process: require('resolveAssetSource') }`;
+            .expression`{ process: require('react-native/Libraries/Image/resolveAssetSource') }`;
         case 'PointPrimitive':
-          return j.template.expression`{ diff: require('pointsDiffer') }`;
+          return j.template
+            .expression`{ diff: require('react-native/Libraries/Utilities/differ/pointsDiffer') }`;
         case 'EdgeInsetsPrimitive':
-          return j.template.expression`{ diff: require('insetsDiffer') }`;
+          return j.template
+            .expression`{ diff: require('react-native/Libraries/Utilities/differ/insetsDiffer') }`;
         default:
           (typeAnnotation.name: empty);
           throw new Error(
@@ -73,7 +82,7 @@ function getReactDiffProcessValue(typeAnnotation) {
         switch (typeAnnotation.elementType.name) {
           case 'ColorPrimitive':
             return j.template
-              .expression`{ process: require('processColorArray') }`;
+              .expression`{ process: require('react-native/Libraries/StyleSheet/processColorArray') }`;
           case 'ImageSourcePrimitive':
             return j.literal(true);
           case 'PointPrimitive':
@@ -93,19 +102,45 @@ function getReactDiffProcessValue(typeAnnotation) {
   }
 }
 
-const componentTemplate = `
-let nativeComponentName = '::_COMPONENT_NAME_WITH_COMPAT_SUPPORT_::';
-::_DEPRECATION_CHECK_::
+const ComponentTemplate = ({
+  componentName,
+  paperComponentName,
+  paperComponentNameDeprecated,
+}: {
+  componentName: string,
+  paperComponentName: ?string,
+  paperComponentNameDeprecated: ?string,
+}) => {
+  const nativeComponentName = paperComponentName ?? componentName;
+
+  return `
+let nativeComponentName = '${nativeComponentName}';
+${
+  paperComponentNameDeprecated != null
+    ? DeprecatedComponentNameCheckTemplate({
+        componentName,
+        paperComponentNameDeprecated,
+      })
+    : ''
+}
 export default NativeComponentRegistry.get(nativeComponentName, () => VIEW_CONFIG);
 `.trim();
+};
 
-const deprecatedComponentTemplate = `
-if (UIManager.getViewManagerConfig('::_COMPONENT_NAME_::')) {
-  nativeComponentName = '::_COMPONENT_NAME_::';
-} else if (UIManager.getViewManagerConfig('::_COMPONENT_NAME_DEPRECATED_::')) {
-  nativeComponentName = '::_COMPONENT_NAME_DEPRECATED_::';
+const DeprecatedComponentNameCheckTemplate = ({
+  componentName,
+  paperComponentNameDeprecated,
+}: {
+  componentName: string,
+  paperComponentNameDeprecated: string,
+}) =>
+  `
+if (UIManager.getViewManagerConfig('${componentName}')) {
+  nativeComponentName = '${componentName}';
+} else if (UIManager.getViewManagerConfig('${paperComponentNameDeprecated}')) {
+  nativeComponentName = '${paperComponentNameDeprecated}';
 } else {
-  throw new Error('Failed to find native component for either "::_COMPONENT_NAME_::" or "::_COMPONENT_NAME_DEPRECATED_::"');
+  throw new Error('Failed to find native component for either "${componentName}" or "${paperComponentNameDeprecated}"');
 }
 `.trim();
 
@@ -342,32 +377,21 @@ module.exports = {
             .map((componentName: string) => {
               const component = components[componentName];
 
-              const paperComponentName = component.paperComponentName
-                ? component.paperComponentName
-                : componentName;
-
               if (component.paperComponentNameDeprecated) {
                 imports.add(UIMANAGER_IMPORT);
               }
 
-              const deprecatedCheckBlock = component.paperComponentNameDeprecated
-                ? deprecatedComponentTemplate
-                    .replace(/::_COMPONENT_NAME_::/g, componentName)
-                    .replace(
-                      /::_COMPONENT_NAME_DEPRECATED_::/g,
-                      component.paperComponentNameDeprecated || '',
-                    )
-                : '';
-
-              const replacedTemplate = componentTemplate
-                .replace(/::_COMPONENT_NAME_::/g, componentName)
-                .replace(
-                  /::_COMPONENT_NAME_WITH_COMPAT_SUPPORT_::/g,
-                  paperComponentName,
-                )
-                .replace(/::_DEPRECATION_CHECK_::/, deprecatedCheckBlock);
+              const replacedTemplate = ComponentTemplate({
+                componentName,
+                paperComponentName: component.paperComponentName,
+                paperComponentNameDeprecated:
+                  component.paperComponentNameDeprecated,
+              });
 
               const replacedSourceRoot = j.withParser('flow')(replacedTemplate);
+
+              const paperComponentName =
+                component.paperComponentName ?? componentName;
 
               replacedSourceRoot
                 .find(j.Identifier, {
@@ -406,14 +430,12 @@ module.exports = {
         .filter(Boolean)
         .join('\n\n');
 
-      const replacedTemplate = template
-        .replace(/::_COMPONENT_CONFIG_::/g, moduleResults)
-        .replace(
-          '::_IMPORTS_::',
-          Array.from(imports)
-            .sort()
-            .join('\n'),
-        );
+      const replacedTemplate = FileTemplate({
+        componentConfig: moduleResults,
+        imports: Array.from(imports)
+          .sort()
+          .join('\n'),
+      });
 
       return new Map([[fileName, replacedTemplate]]);
     } catch (error) {

@@ -56,7 +56,10 @@ class FillRateHelper {
 
   static addListener(
     callback: FillRateInfo => void,
-  ): {remove: () => void, ...} {
+  ): {
+    remove: () => void,
+    ...
+  } {
     if (_sampleRate === null) {
       console.warn('Call `FillRateHelper.setSampleRate` before `addListener`.');
     }

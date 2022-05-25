@@ -61,8 +61,7 @@ class TextAttributes : public DebugStringConvertible {
   // Decoration
   SharedColor textDecorationColor{};
   better::optional<TextDecorationLineType> textDecorationLineType{};
-  better::optional<TextDecorationLineStyle> textDecorationLineStyle{};
-  better::optional<TextDecorationLinePattern> textDecorationLinePattern{};
+  better::optional<TextDecorationStyle> textDecorationStyle{};
 
   // Shadow
   // TODO: Use `Point` type instead of `Size` for `textShadowOffset` attribute.
@@ -124,8 +123,7 @@ struct hash<facebook::react::TextAttributes> {
         textAttributes.baseWritingDirection,
         textAttributes.textDecorationColor,
         textAttributes.textDecorationLineType,
-        textAttributes.textDecorationLineStyle,
-        textAttributes.textDecorationLinePattern,
+        textAttributes.textDecorationStyle,
         textAttributes.textShadowOffset,
         textAttributes.textShadowRadius,
         textAttributes.textShadowColor,

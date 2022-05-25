@@ -139,7 +139,8 @@ class SemanticColorsExample extends React.Component<{}> {
               flex: 1,
               alignItems: 'stretch',
               color: PlatformColor('labelColor'),
-            }}>
+            }}
+          >
             {color}
           </Text>
           <View

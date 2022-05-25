@@ -180,7 +180,8 @@ class Circle extends React.Component<any, any> {
           animatedStyle,
           this.state.isActive ? styles.open : null,
         ]}
-        {...handlers}>
+        {...handlers}
+      >
         <Animated.View style={[styles.circle, innerOpenStyle]}>
           <AnExSet
             containerLayout={this.props.containerLayout}
@@ -290,7 +291,8 @@ class AnExApp extends React.Component<any, any> {
       <View style={styles.container}>
         <View
           style={styles.grid}
-          onLayout={e => this.setState({layout: e.nativeEvent.layout})}>
+          onLayout={e => this.setState({layout: e.nativeEvent.layout})}
+        >
           {circles}
         </View>
       </View>

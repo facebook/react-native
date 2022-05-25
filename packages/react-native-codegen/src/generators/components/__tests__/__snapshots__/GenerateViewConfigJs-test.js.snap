@@ -30,7 +30,7 @@ export default NativeComponentRegistry.get(nativeComponentName, () => ({
     radii: true,
 
     colors: {
-      process: require('processColorArray'),
+      process: require('react-native/Libraries/StyleSheet/processColorArray'),
     },
 
     srcs: true,
@@ -132,7 +132,7 @@ export default NativeComponentRegistry.get(nativeComponentName, () => ({
 
   validAttributes: {
     tintColor: {
-      process: require('processColor'),
+      process: require('react-native/Libraries/StyleSheet/processColor'),
     },
   },
 }));
@@ -534,7 +534,7 @@ export default NativeComponentRegistry.get(nativeComponentName, () => ({
 
   validAttributes: {
     thumbImage: {
-      process: require('resolveAssetSource'),
+      process: require('react-native/Libraries/Image/resolveAssetSource'),
     },
   },
 }));
@@ -567,7 +567,7 @@ export default NativeComponentRegistry.get(nativeComponentName, () => ({
 
   validAttributes: {
     contentInset: {
-      diff: require('insetsDiffer'),
+      diff: require('react-native/Libraries/Utilities/differ/insetsDiffer'),
     },
   },
 }));
@@ -705,19 +705,19 @@ export default NativeComponentRegistry.get(nativeComponentName, () => ({
 
   validAttributes: {
     thumbImage: {
-      process: require('resolveAssetSource'),
+      process: require('react-native/Libraries/Image/resolveAssetSource'),
     },
 
     color: {
-      process: require('processColor'),
+      process: require('react-native/Libraries/StyleSheet/processColor'),
     },
 
     thumbTintColor: {
-      process: require('processColor'),
+      process: require('react-native/Libraries/StyleSheet/processColor'),
     },
 
     point: {
-      diff: require('pointsDiffer'),
+      diff: require('react-native/Libraries/Utilities/differ/pointsDiffer'),
     },
   },
 }));
@@ -809,7 +809,7 @@ export default NativeComponentRegistry.get(nativeComponentName, () => ({
 
   validAttributes: {
     startPoint: {
-      diff: require('pointsDiffer'),
+      diff: require('react-native/Libraries/Utilities/differ/pointsDiffer'),
     },
   },
 }));

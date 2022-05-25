@@ -29,7 +29,8 @@ class RNTesterButton extends React.Component<Props> {
         testID={this.props.testID}
         onPress={this.props.onPress}
         style={styles.button}
-        underlayColor="grey">
+        underlayColor="grey"
+      >
         <Text>{this.props.children}</Text>
       </TouchableHighlight>
     );

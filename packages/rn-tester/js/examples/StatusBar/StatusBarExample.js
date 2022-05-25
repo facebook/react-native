@@ -68,14 +68,16 @@ class StatusBarHiddenExample extends React.Component<{...}, $FlowFixMeState> {
         />
         <TouchableHighlight
           style={styles.wrapper}
-          onPress={this._onChangeHidden}>
+          onPress={this._onChangeHidden}
+        >
           <View style={styles.button}>
             <Text>hidden: {this.state.hidden ? 'true' : 'false'}</Text>
           </View>
         </TouchableHighlight>
         <TouchableHighlight
           style={styles.wrapper}
-          onPress={this._onChangeAnimated}>
+          onPress={this._onChangeAnimated}
+        >
           <View style={styles.button}>
             <Text>
               animated (ios only): {this.state.animated ? 'true' : 'false'}
@@ -84,7 +86,8 @@ class StatusBarHiddenExample extends React.Component<{...}, $FlowFixMeState> {
         </TouchableHighlight>
         <TouchableHighlight
           style={styles.wrapper}
-          onPress={this._onChangeTransition}>
+          onPress={this._onChangeTransition}
+        >
           <View style={styles.button}>
             <Text>
               showHideTransition (ios only): '
@@ -124,14 +127,16 @@ class StatusBarStyleExample extends React.Component<{...}, $FlowFixMeState> {
         />
         <TouchableHighlight
           style={styles.wrapper}
-          onPress={this._onChangeBarStyle}>
+          onPress={this._onChangeBarStyle}
+        >
           <View style={styles.button}>
             <Text>style: '{getValue(barStyles, this._barStyleIndex)}'</Text>
           </View>
         </TouchableHighlight>
         <TouchableHighlight
           style={styles.wrapper}
-          onPress={this._onChangeAnimated}>
+          onPress={this._onChangeAnimated}
+        >
           <View style={styles.button}>
             <Text>animated: {this.state.animated ? 'true' : 'false'}</Text>
           </View>
@@ -166,7 +171,8 @@ class StatusBarNetworkActivityExample extends React.Component<
         />
         <TouchableHighlight
           style={styles.wrapper}
-          onPress={this._onChangeNetworkIndicatorVisible}>
+          onPress={this._onChangeNetworkIndicatorVisible}
+        >
           <View style={styles.button}>
             <Text>
               networkActivityIndicatorVisible:
@@ -208,14 +214,16 @@ class StatusBarBackgroundColorExample extends React.Component<
         />
         <TouchableHighlight
           style={styles.wrapper}
-          onPress={this._onChangeBackgroundColor}>
+          onPress={this._onChangeBackgroundColor}
+        >
           <View style={styles.button}>
             <Text>backgroundColor: '{getValue(colors, this._colorIndex)}'</Text>
           </View>
         </TouchableHighlight>
         <TouchableHighlight
           style={styles.wrapper}
-          onPress={this._onChangeAnimated}>
+          onPress={this._onChangeAnimated}
+        >
           <View style={styles.button}>
             <Text>animated: {this.state.animated ? 'true' : 'false'}</Text>
           </View>
@@ -245,7 +253,8 @@ class StatusBarTranslucentExample extends React.Component<
         <StatusBar translucent={this.state.translucent} />
         <TouchableHighlight
           style={styles.wrapper}
-          onPress={this._onChangeTranslucent}>
+          onPress={this._onChangeTranslucent}
+        >
           <View style={styles.button}>
             <Text>
               translucent: {this.state.translucent ? 'true' : 'false'}
@@ -265,7 +274,8 @@ class StatusBarStaticIOSExample extends React.Component<{...}> {
           style={styles.wrapper}
           onPress={() => {
             StatusBar.setHidden(true, 'slide');
-          }}>
+          }}
+        >
           <View style={styles.button}>
             <Text>setHidden(true, 'slide')</Text>
           </View>
@@ -274,7 +284,8 @@ class StatusBarStaticIOSExample extends React.Component<{...}> {
           style={styles.wrapper}
           onPress={() => {
             StatusBar.setHidden(false, 'fade');
-          }}>
+          }}
+        >
           <View style={styles.button}>
             <Text>setHidden(false, 'fade')</Text>
           </View>
@@ -283,7 +294,8 @@ class StatusBarStaticIOSExample extends React.Component<{...}> {
           style={styles.wrapper}
           onPress={() => {
             StatusBar.setBarStyle('default', true);
-          }}>
+          }}
+        >
           <View style={styles.button}>
             <Text>setBarStyle('default', true)</Text>
           </View>
@@ -292,7 +304,8 @@ class StatusBarStaticIOSExample extends React.Component<{...}> {
           style={styles.wrapper}
           onPress={() => {
             StatusBar.setBarStyle('light-content', true);
-          }}>
+          }}
+        >
           <View style={styles.button}>
             <Text>setBarStyle('light-content', true)</Text>
           </View>
@@ -301,7 +314,8 @@ class StatusBarStaticIOSExample extends React.Component<{...}> {
           style={styles.wrapper}
           onPress={() => {
             StatusBar.setNetworkActivityIndicatorVisible(true);
-          }}>
+          }}
+        >
           <View style={styles.button}>
             <Text>setNetworkActivityIndicatorVisible(true)</Text>
           </View>
@@ -310,7 +324,8 @@ class StatusBarStaticIOSExample extends React.Component<{...}> {
           style={styles.wrapper}
           onPress={() => {
             StatusBar.setNetworkActivityIndicatorVisible(false);
-          }}>
+          }}
+        >
           <View style={styles.button}>
             <Text>setNetworkActivityIndicatorVisible(false)</Text>
           </View>
@@ -328,7 +343,8 @@ class StatusBarStaticAndroidExample extends React.Component<{...}> {
           style={styles.wrapper}
           onPress={() => {
             StatusBar.setHidden(true);
-          }}>
+          }}
+        >
           <View style={styles.button}>
             <Text>setHidden(true)</Text>
           </View>
@@ -337,7 +353,8 @@ class StatusBarStaticAndroidExample extends React.Component<{...}> {
           style={styles.wrapper}
           onPress={() => {
             StatusBar.setHidden(false);
-          }}>
+          }}
+        >
           <View style={styles.button}>
             <Text>setHidden(false)</Text>
           </View>
@@ -346,7 +363,8 @@ class StatusBarStaticAndroidExample extends React.Component<{...}> {
           style={styles.wrapper}
           onPress={() => {
             StatusBar.setBackgroundColor('#ff00ff', true);
-          }}>
+          }}
+        >
           <View style={styles.button}>
             <Text>setBackgroundColor('#ff00ff', true)</Text>
           </View>
@@ -355,7 +373,8 @@ class StatusBarStaticAndroidExample extends React.Component<{...}> {
           style={styles.wrapper}
           onPress={() => {
             StatusBar.setBackgroundColor('#00ff00', true);
-          }}>
+          }}
+        >
           <View style={styles.button}>
             <Text>setBackgroundColor('#00ff00', true)</Text>
           </View>
@@ -365,7 +384,8 @@ class StatusBarStaticAndroidExample extends React.Component<{...}> {
           onPress={() => {
             StatusBar.setTranslucent(true);
             StatusBar.setBackgroundColor('rgba(0, 0, 0, 0.4)', true);
-          }}>
+          }}
+        >
           <View style={styles.button}>
             <Text>
               setTranslucent(true) and setBackgroundColor('rgba(0, 0, 0, 0.4)',
@@ -378,7 +398,8 @@ class StatusBarStaticAndroidExample extends React.Component<{...}> {
           onPress={() => {
             StatusBar.setTranslucent(false);
             StatusBar.setBackgroundColor('black', true);
-          }}>
+          }}
+        >
           <View style={styles.button}>
             <Text>
               setTranslucent(false) and setBackgroundColor('black', true)
@@ -404,7 +425,8 @@ class ModalExample extends React.Component<{...}, $FlowFixMeState> {
       <View>
         <TouchableHighlight
           style={styles.wrapper}
-          onPress={this._onChangeModalVisible}>
+          onPress={this._onChangeModalVisible}
+        >
           <View style={styles.button}>
             <Text>modal visible: {this.state.hidden ? 'true' : 'false'}</Text>
           </View>
@@ -412,13 +434,15 @@ class ModalExample extends React.Component<{...}, $FlowFixMeState> {
         <Modal
           visible={this.state.modalVisible}
           transparent={true}
-          onRequestClose={this._onChangeModalVisible}>
+          onRequestClose={this._onChangeModalVisible}
+        >
           <View style={[styles.container]}>
             <View style={[styles.innerContainer]}>
               <Text>This modal was presented!</Text>
               <TouchableHighlight
                 onPress={this._onChangeModalVisible}
-                style={styles.modalButton}>
+                style={styles.modalButton}
+              >
                 <View style={styles.button}>
                   <Text>Close</Text>
                 </View>

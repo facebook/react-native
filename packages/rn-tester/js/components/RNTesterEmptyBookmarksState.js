@@ -10,30 +10,35 @@
 
 import * as React from 'react';
 import {View, Image, Text, StyleSheet} from 'react-native';
+import {RNTesterThemeContext} from './RNTesterTheme';
 
-export const RNTesterEmptyBookmarksState = (): React.Node => (
-  <View style={styles.emptyContainer}>
-    <View style={styles.emptyContainerInner}>
-      <Image
-        source={require('../assets/empty.png')}
-        resizeMode="contain"
-        style={styles.emptyImage}
-      />
-      <View>
-        <Text style={styles.heading}>Bookmarks are empty</Text>
-        <Text style={styles.subheading}>
-          Please tap the{' '}
-          <Image
-            source={require('../assets/bookmark-outline-gray.png')}
-            resizeMode="contain"
-            style={styles.bookmarkIcon}
-          />{' '}
-          icon to bookmark examples.
-        </Text>
+export const RNTesterEmptyBookmarksState = (): React.Node => {
+  const theme = React.useContext(RNTesterThemeContext);
+  return (
+    <View
+      style={StyleSheet.compose(styles.emptyContainer, {
+        backgroundColor: theme.GroupedBackgroundColor,
+      })}
+    >
+      <View style={styles.emptyContainerInner}>
+        <View>
+          <Text style={[styles.heading, {color: theme.LabelColor}]}>
+            Bookmarks are empty
+          </Text>
+          <Text style={[styles.subheading, {color: theme.SecondaryLabelColor}]}>
+            Please tap the{' '}
+            <Image
+              source={require('../assets/bookmark-outline-gray.png')}
+              resizeMode="contain"
+              style={styles.bookmarkIcon}
+            />{' '}
+            icon to bookmark examples.
+          </Text>
+        </View>
       </View>
     </View>
-  </View>
-);
+  );
+};
 
 const styles = StyleSheet.create({
   emptyContainer: {
@@ -41,7 +46,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'white',
   },
   emptyContainerInner: {
     marginTop: -150,

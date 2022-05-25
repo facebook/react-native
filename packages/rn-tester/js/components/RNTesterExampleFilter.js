@@ -16,6 +16,7 @@ const {
   View,
   ScrollView,
   Image,
+  Platform,
 } = require('react-native');
 import {RNTesterThemeContext} from './RNTesterTheme';
 
@@ -83,7 +84,8 @@ class RNTesterExampleFilter<T> extends React.Component<Props<T>, State> {
       return (
         <ScrollView
           keyboardShouldPersistTaps="handled"
-          keyboardDismissMode="interactive">
+          keyboardDismissMode="interactive"
+        >
           {this.props.render({filteredSections})}
           {/**
            * This is a fake list item. It is needed to provide the ScrollView some bottom padding.
@@ -108,8 +110,14 @@ class RNTesterExampleFilter<T> extends React.Component<Props<T>, State> {
             <View
               style={[
                 styles.searchRow,
-                {backgroundColor: theme.BackgroundColor},
-              ]}>
+                {
+                  backgroundColor:
+                    Platform.OS === 'ios'
+                      ? theme.SystemBackgroundColor
+                      : theme.BackgroundColor,
+                },
+              ]}
+            >
               <View style={styles.textInputStyle}>
                 <Image
                   source={require('../assets/search-icon.png')}

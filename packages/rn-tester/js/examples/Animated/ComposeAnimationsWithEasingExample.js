@@ -106,7 +106,8 @@ function CompositeAnimationsWithEasingExample(): React.Node {
               ),
             ),
           ]).start();
-        }}>
+        }}
+      >
         Press to Animate
       </RNTesterButton>
       {['Composite', 'Easing', 'Animations!'].map((text, ii) => (
@@ -117,7 +118,8 @@ function CompositeAnimationsWithEasingExample(): React.Node {
             {
               left: anims[ii],
             },
-          ]}>
+          ]}
+        >
           <Text>{text}</Text>
         </Animated.View>
       ))}

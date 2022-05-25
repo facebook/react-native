@@ -52,16 +52,18 @@ export default function RNTPressableRow({
         styles.row,
         typeof style === 'function' ? style(pressed) : style,
         pressed
-          ? styles.pressed
-          : {backgroundColor: theme.SystemBackgroundColor},
+          ? {backgroundColor: theme.SecondarySystemFillColor}
+          : {backgroundColor: theme.SecondaryGroupedBackgroundColor},
       ]}
-      onPress={onPress}>
+      onPress={onPress}
+    >
       <View style={styles.topRowStyle}>
         <RNTesterComponentTitle>{title}</RNTesterComponentTitle>
         {rightAddOn}
       </View>
       <Text
-        style={[styles.descriptionText, {color: theme.SecondaryLabelColor}]}>
+        style={[styles.descriptionText, {color: theme.SecondaryLabelColor}]}
+      >
         {description}
       </Text>
       {bottomAddOn}
@@ -86,7 +88,6 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   pressed: {
-    backgroundColor: 'rgb(242,242,242)',
     elevation: 3,
   },
   topRowStyle: {

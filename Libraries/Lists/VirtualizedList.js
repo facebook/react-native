@@ -974,13 +974,15 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       cells.push(
         <VirtualizedListCellContextProvider
           cellKey={this._getCellKey() + '-header'}
-          key="$header">
+          key="$header"
+        >
           <View
             onLayout={this._onLayoutHeader}
             style={StyleSheet.compose(
               inversionStyle,
               this.props.ListHeaderComponentStyle,
-            )}>
+            )}
+          >
             {
               // $FlowFixMe[incompatible-type] - Typing ReactNativeComponent revealed errors
               element
@@ -1119,13 +1121,15 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       cells.push(
         <VirtualizedListCellContextProvider
           cellKey={this._getFooterCellKey()}
-          key="$footer">
+          key="$footer"
+        >
           <View
             onLayout={this._onLayoutFooter}
             style={StyleSheet.compose(
               inversionStyle,
               this.props.ListFooterComponentStyle,
-            )}>
+            )}
+          >
             {
               // $FlowFixMe[incompatible-type] - Typing ReactNativeComponent revealed errors
               element
@@ -1170,7 +1174,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           registerAsNestedChild: this._registerAsNestedChild,
           unregisterAsNestedChild: this._unregisterAsNestedChild,
           debugInfo: this._getDebugInfo(),
-        }}>
+        }}
+      >
         {React.cloneElement(
           (
             this.props.renderScrollComponent ||
@@ -1967,7 +1972,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
             }
           }
           if (someChildHasMore) {
-            // $FlowFixMe[incompatible-use]
             newState.last = ii;
             break;
           }
@@ -2253,7 +2257,8 @@ class CellRenderer extends React.Component<
       <CellRendererComponent
         {...this.props}
         style={cellStyle}
-        onLayout={onLayout}>
+        onLayout={onLayout}
+      >
         {element}
         {itemSeparator}
       </CellRendererComponent>

@@ -171,9 +171,8 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(T
   if (textAttributes.textDecorationLineType.value_or(TextDecorationLineType::None) != TextDecorationLineType::None) {
     auto textDecorationLineType = textAttributes.textDecorationLineType.value();
 
-    NSUnderlineStyle style = RCTNSUnderlineStyleFromStyleAndPattern(
-        textAttributes.textDecorationLineStyle.value_or(TextDecorationLineStyle::Single),
-        textAttributes.textDecorationLinePattern.value_or(TextDecorationLinePattern::Solid));
+    NSUnderlineStyle style = RCTNSUnderlineStyleFromTextDecorationStyle(
+        textAttributes.textDecorationStyle.value_or(TextDecorationStyle::Solid));
 
     UIColor *textDecorationColor = RCTUIColorFromSharedColor(textAttributes.textDecorationColor);
 
@@ -311,10 +310,10 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedSt
   static UIImage *placeholderImage;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    placeholderImage = [[UIImage alloc] init];
+    placeholderImage = [UIImage new];
   });
 
-  NSMutableAttributedString *nsAttributedString = [[NSMutableAttributedString alloc] init];
+  NSMutableAttributedString *nsAttributedString = [NSMutableAttributedString new];
 
   [nsAttributedString beginEditing];
 

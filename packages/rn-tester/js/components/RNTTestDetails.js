@@ -9,7 +9,7 @@
  */
 
 import * as React from 'react';
-import {View, Text, StyleSheet, Button} from 'react-native';
+import {View, Text, StyleSheet, Button, Platform} from 'react-native';
 import {type RNTesterTheme} from './RNTesterTheme';
 
 function RNTTestDetails({
@@ -45,11 +45,17 @@ function RNTTestDetails({
     <View
       style={StyleSheet.compose(styles.container, {
         borderColor: theme.SeparatorColor,
-      })}>
+        backgroundColor:
+          Platform.OS === 'ios'
+            ? theme.SystemBackgroundColor
+            : theme.BackgroundColor,
+      })}
+    >
       <View style={styles.titleRow}>
         <Text
           numberOfLines={1}
-          style={StyleSheet.compose(styles.title, {color: theme.LabelColor})}>
+          style={StyleSheet.compose(styles.title, {color: theme.LabelColor})}
+        >
           {title}
         </Text>
         {content != null && (

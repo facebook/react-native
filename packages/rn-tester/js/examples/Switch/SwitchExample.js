@@ -27,7 +27,8 @@ function ExampleRow({children}: ExampleRowProps) {
         justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: 10,
-      }}>
+      }}
+    >
       {children}
     </View>
   );
@@ -244,6 +245,23 @@ class OnChangeExample extends React.Component<{...}, $FlowFixMeState> {
   }
 }
 
+class ContainerBackgroundColorStyleExample extends React.Component<
+  {...},
+  $FlowFixMeState,
+> {
+  render() {
+    return (
+      <View>
+        <Switch
+          style={{backgroundColor: 'blue'}}
+          thumbColor="white"
+          value={true}
+        />
+      </View>
+    );
+  }
+}
+
 exports.title = 'Switch';
 exports.documentationURL = 'https://reactnative.dev/docs/switch';
 exports.category = 'UI';
@@ -289,6 +307,12 @@ exports.examples = [
     title: 'OnChange receives the change event as an argument',
     render(): React.Element<any> {
       return <OnChangeExample />;
+    },
+  },
+  {
+    title: "The container's background color can be set",
+    render(): React.Element<any> {
+      return <ContainerBackgroundColorStyleExample />;
     },
   },
 ];

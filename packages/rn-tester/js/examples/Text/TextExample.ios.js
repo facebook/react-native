@@ -130,12 +130,14 @@ class AttributeToggler extends React.Component<{...}, $FlowFixMeState> {
         </Text>
         <Text
           style={{backgroundColor: '#ffaaaa', marginTop: 5}}
-          onPress={this.toggleWeight}>
+          onPress={this.toggleWeight}
+        >
           Toggle Weight
         </Text>
         <Text
           style={{backgroundColor: '#aaaaff', marginTop: 5}}
-          onPress={this.increaseSize}>
+          onPress={this.increaseSize}
+        >
           Increase Size
         </Text>
       </View>
@@ -199,27 +201,31 @@ class AdjustingFontSize extends React.Component<
         <Text
           ellipsizeMode="tail"
           numberOfLines={1}
-          style={{fontSize: 36, marginVertical: 6}}>
+          style={{fontSize: 36, marginVertical: 6}}
+        >
           Truncated text is baaaaad.
         </Text>
         <Text
           numberOfLines={1}
           adjustsFontSizeToFit={true}
-          style={{fontSize: 40, marginVertical: 6}}>
+          style={{fontSize: 40, marginVertical: 6}}
+        >
           Shrinking to fit available space is much better!
         </Text>
 
         <Text
           adjustsFontSizeToFit={true}
           numberOfLines={1}
-          style={{fontSize: 30, marginVertical: 6}}>
+          style={{fontSize: 30, marginVertical: 6}}
+        >
           {'Add text to me to watch me shrink!' + ' ' + this.state.dynamicText}
         </Text>
 
         <Text
           adjustsFontSizeToFit={true}
           numberOfLines={4}
-          style={{fontSize: 20, marginVertical: 6}}>
+          style={{fontSize: 20, marginVertical: 6}}
+        >
           {'Multiline text component shrinking is supported, watch as this reeeeaaaally loooooong teeeeeeext grooooows and then shriiiinks as you add text to me! ioahsdia soady auydoa aoisyd aosdy ' +
             ' ' +
             this.state.dynamicText}
@@ -227,7 +233,8 @@ class AdjustingFontSize extends React.Component<
 
         <Text
           adjustsFontSizeToFit={true}
-          style={{fontSize: 20, marginVertical: 6, maxHeight: 50}}>
+          style={{fontSize: 20, marginVertical: 6, maxHeight: 50}}
+        >
           {'Text limited by height, watch as this reeeeaaaally loooooong teeeeeeext grooooows and then shriiiinks as you add text to me! ioahsdia soady auydoa aoisyd aosdy ' +
             ' ' +
             this.state.dynamicText}
@@ -236,7 +243,8 @@ class AdjustingFontSize extends React.Component<
         <Text
           adjustsFontSizeToFit={true}
           numberOfLines={1}
-          style={{marginVertical: 6}}>
+          style={{marginVertical: 6}}
+        >
           <Text style={{fontSize: 14}}>
             {'Differently sized nested elements will shrink together. '}
           </Text>
@@ -251,7 +259,8 @@ class AdjustingFontSize extends React.Component<
             justifyContent: 'space-around',
             marginTop: 5,
             marginVertical: 6,
-          }}>
+          }}
+        >
           <Text style={{backgroundColor: '#ffaaaa'}} onPress={this.reset}>
             Reset
           </Text>
@@ -312,7 +321,8 @@ class TextBaseLineLayoutExample extends React.Component<{}, mixed> {
                 flexDirection: 'row',
                 alignItems: 'baseline',
                 backgroundColor: '#eee',
-              }}>
+              }}
+            >
               {marker}
               <Text>Text inside View.</Text>
               {marker}
@@ -331,7 +341,8 @@ class TextBaseLineLayoutExample extends React.Component<{}, mixed> {
             <View
               style={{
                 backgroundColor: 'yellow',
-              }}>
+              }}
+            >
               <Text>mauris eu commodo maximus</Text>
             </View>{' '}
             , ante arcu vestibulum ligula, et scelerisque diam.
@@ -432,7 +443,8 @@ class TextRenderInfoExample extends React.Component<
               if (lines.length > 0) {
                 this.setState({textMetrics: lines[lines.length - 1]});
               }
-            }}>
+            }}
+          >
             {new Array(this.state.numberOfTextBlocks)
               .fill('A tiny block of text.')
               .join(' ')}
@@ -443,15 +455,18 @@ class TextRenderInfoExample extends React.Component<
             this.setState({
               numberOfTextBlocks: this.state.numberOfTextBlocks + 1,
             })
-          }>
+          }
+        >
           More text
         </Text>
         <Text
-          onPress={() => this.setState({fontSize: this.state.fontSize + 1})}>
+          onPress={() => this.setState({fontSize: this.state.fontSize + 1})}
+        >
           Increase size
         </Text>
         <Text
-          onPress={() => this.setState({fontSize: this.state.fontSize - 1})}>
+          onPress={() => this.setState({fontSize: this.state.fontSize - 1})}
+        >
           Decrease size
         </Text>
       </View>
@@ -507,7 +522,8 @@ class TextWithCapBaseBox extends React.Component<
             marginBottom: Math.ceil(-this.state.textMetrics.descender),
           },
           this.props.style,
-        ]}>
+        ]}
+      >
         {this.props.children}
       </Text>
     );
@@ -627,7 +643,8 @@ exports.examples = [
             style={{
               fontFamily: Platform.isTV ? 'Times' : 'Cochin',
               fontWeight: 'bold',
-            }}>
+            }}
+          >
             Cochin bold
           </Text>
           <Text style={{fontFamily: 'Helvetica'}}>Helvetica</Text>
@@ -641,7 +658,8 @@ exports.examples = [
             style={{
               fontFamily: Platform.isTV ? 'Courier' : 'Verdana',
               fontWeight: 'bold',
-            }}>
+            }}
+          >
             Verdana bold
           </Text>
         </View>
@@ -723,7 +741,8 @@ exports.examples = [
             style={{
               textDecorationLine: 'underline',
               textDecorationStyle: 'solid',
-            }}>
+            }}
+          >
             Solid underline
           </Text>
           <Text
@@ -731,7 +750,8 @@ exports.examples = [
               textDecorationLine: 'underline',
               textDecorationStyle: 'double',
               textDecorationColor: '#ff0000',
-            }}>
+            }}
+          >
             Double underline with custom color
           </Text>
           <Text
@@ -739,7 +759,8 @@ exports.examples = [
               textDecorationLine: 'underline',
               textDecorationStyle: 'dashed',
               textDecorationColor: '#9CDC40',
-            }}>
+            }}
+          >
             Dashed underline with custom color
           </Text>
           <Text
@@ -747,7 +768,8 @@ exports.examples = [
               textDecorationLine: 'underline',
               textDecorationStyle: 'dotted',
               textDecorationColor: 'blue',
-            }}>
+            }}
+          >
             Dotted underline with custom color
           </Text>
           <Text style={{textDecorationLine: 'none'}}>None textDecoration</Text>
@@ -755,7 +777,8 @@ exports.examples = [
             style={{
               textDecorationLine: 'line-through',
               textDecorationStyle: 'solid',
-            }}>
+            }}
+          >
             Solid line-through
           </Text>
           <Text
@@ -763,7 +786,8 @@ exports.examples = [
               textDecorationLine: 'line-through',
               textDecorationStyle: 'double',
               textDecorationColor: '#ff0000',
-            }}>
+            }}
+          >
             Double line-through with custom color
           </Text>
           <Text
@@ -771,7 +795,8 @@ exports.examples = [
               textDecorationLine: 'line-through',
               textDecorationStyle: 'dashed',
               textDecorationColor: '#9CDC40',
-            }}>
+            }}
+          >
             Dashed line-through with custom color
           </Text>
           <Text
@@ -779,7 +804,8 @@ exports.examples = [
               textDecorationLine: 'line-through',
               textDecorationStyle: 'dotted',
               textDecorationColor: 'blue',
-            }}>
+            }}
+          >
             Dotted line-through with custom color
           </Text>
           <Text style={{textDecorationLine: 'underline line-through'}}>
@@ -881,7 +907,8 @@ exports.examples = [
                 letterSpacing: 2,
                 backgroundColor: 'fuchsia',
                 marginTop: 5,
-              }}>
+              }}
+            >
               With size and background color
             </Text>
           </View>
@@ -893,7 +920,8 @@ exports.examples = [
               letterSpacing: 3,
               backgroundColor: '#dddddd',
               marginTop: 5,
-            }}>
+            }}
+          >
             [letterSpacing = 3]
             <Text style={{letterSpacing: 0, backgroundColor: '#bbbbbb'}}>
               [Nested letterSpacing = 0]
@@ -1004,7 +1032,8 @@ exports.examples = [
                 textDecorationLine: 'underline',
                 color: 'blue',
               }}
-              onPress={() => null}>
+              onPress={() => null}
+            >
               consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
               labore et dolore magna aliqua. Ut enim ad minim veniam, quis
               nostrud
@@ -1075,7 +1104,8 @@ exports.examples = [
               textShadowOffset: {width: 2, height: 2},
               textShadowRadius: 1,
               textShadowColor: '#00cccc',
-            }}>
+            }}
+          >
             Demo text shadow
           </Text>
         </View>
@@ -1113,14 +1143,16 @@ exports.examples = [
             style={{
               fontFamily: Platform.isTV ? 'Times' : 'Hoefler Text',
               fontVariant: ['oldstyle-nums'],
-            }}>
+            }}
+          >
             Old Style nums 0123456789{'\n'}
           </Text>
           <Text
             style={{
               fontFamily: Platform.isTV ? 'Times' : 'Hoefler Text',
               fontVariant: ['lining-nums'],
-            }}>
+            }}
+          >
             Lining nums 0123456789{'\n'}
           </Text>
           <Text style={{fontVariant: ['tabular-nums']}}>

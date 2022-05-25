@@ -84,13 +84,12 @@ function ModalPresentation() {
         supportedOrientations={supportedOrientations[supportedOrientationKey]}
         onOrientationChange={onOrientationChange}
         onDismiss={onDismiss}
-        onShow={onShow}>
+        onShow={onShow}
+      >
         <View style={[styles.modalContainer, modalBackgroundStyle]}>
           <View
-            style={[
-              styles.modalInnerContainer,
-              innerContainerTransparentStyle,
-            ]}>
+            style={[styles.modalInnerContainer, innerContainerTransparentStyle]}
+          >
             <Text>
               This modal was presented with animationType: '{animationType}'
             </Text>

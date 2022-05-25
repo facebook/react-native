@@ -24,9 +24,10 @@ class RNTesterTitle extends React.Component<$FlowFixMeProps> {
                 styles.container,
                 {
                   borderColor: theme.SeparatorColor,
-                  backgroundColor: theme.SystemBackgroundColor,
+                  backgroundColor: theme.TertiaryGroupedBackgroundColor,
                 },
-              ]}>
+              ]}
+            >
               <Text style={[styles.text, {color: theme.LabelColor}]}>
                 {this.props.title}
               </Text>

@@ -29,7 +29,8 @@ const Separator = (defaultColor, highlightColor) => ({
       style={[
         styles.separator,
         {backgroundColor: highlighted ? highlightColor : defaultColor},
-      ]}>
+      ]}
+    >
       <Text style={styles.separtorText}>{text}</Text>
     </View>
   );

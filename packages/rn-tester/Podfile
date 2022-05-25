@@ -3,9 +3,8 @@ require_relative '../../scripts/react_native_pods'
 source 'https://cdn.cocoapods.org/'
 platform :ios, '11.0'
 
-# TODO(macOS GH#214)
-# Otherwise duplicate UUIDs are being generated between the iOS and macOS targets.
-# FIXME: https://github.com/microsoft/react-native/issues/210
+# Temporary solution to suppress duplicated GUID error.
+# Can be removed once we move to generate files outside pod install.
 install! 'cocoapods', :deterministic_uuids => false
 
 USE_FRAMEWORKS = ENV['USE_FRAMEWORKS'] == '1'
@@ -37,7 +36,7 @@ def pods(options = {})
   # ]TODO(macOS GH#774)
 
   # TODO(macOS GH#774) - uncomment once Fabric works on macOS
-  # puts "Building RNTester with Fabric enabled."
+  # puts "Building RNTester with Fabric #{fabric_enabled ? "enabled" : "disabled"}."
   # fabric_enabled = true
 
   prefix_path = "../.."
@@ -108,7 +107,5 @@ end
 
 post_install do |installer|
   react_native_post_install(installer)
-  # TODO(macOS GH#774) - This was temporarily removed with 51bf5579489 but reintroduced with 03a09078681 on 2021-10-25.
-  # Plus, we still need the fix in folly before v2022.02.07.00. (See https://github.com/facebook/folly/commit/4a8837f)
   __apply_Xcode_12_5_M1_post_install_workaround(installer)
 end

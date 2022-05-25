@@ -53,7 +53,7 @@
    .option('S', { // [TODO(macOS GH#1148): Remove this option once version bumping scripts have been refactored
      alias: 'skip-update-ruby',
      type: 'boolean',
-     default: false // ]TODO(macOS GH#1148)
+     default: false, // ]TODO(macOS GH#1148)
    }).argv;
 
  const autogenerateVersionNumber = argv.autogenerateVersionNumber;
@@ -70,9 +70,7 @@
      }).stdout.trim();
      version = `0.0.0-${currentCommit.slice(0, 9)}`;
    } else {
-     echo(
-       'You must specify a version using -v',
-     );
+     echo('You must specify a version using -v');
      exit(1);
    }
  }
@@ -180,7 +178,10 @@
 
  // Copy dependencies over from repo-config/package.json
 //  const repoConfigJson = JSON.parse(cat('repo-config/package.json'));
-//  packageJson.devDependencies = {...packageJson.devDependencies, ...repoConfigJson.dependencies};
+//  packageJson.devDependencies = {
+//    ...packageJson.devDependencies,
+//    ...repoConfigJson.dependencies,
+//  };
 // macOS]
  fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2), 'utf-8');
 

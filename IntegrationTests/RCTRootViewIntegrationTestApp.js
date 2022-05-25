@@ -57,7 +57,8 @@ class RCTRootViewIntegrationTestApp extends React.Component {
           {TESTS.map(test => [
             <TouchableOpacity
               onPress={() => this.setState({test})}
-              style={styles.row}>
+              style={styles.row}
+            >
               <Text style={styles.testName}>{test.displayName}</Text>
             </TouchableOpacity>,
             <View style={styles.separator} />,

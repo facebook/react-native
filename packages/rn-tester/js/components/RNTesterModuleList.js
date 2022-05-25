@@ -45,7 +45,8 @@ const ExampleModuleRow = ({
           exampleType: item.exampleType,
           key: item.key,
         })
-      }>
+      }
+    >
       <Image
         style={styles.imageStyle}
         source={
@@ -75,14 +76,16 @@ const ExampleModuleRow = ({
               style={{
                 color: onIos ? '#787878' : theme.SeparatorColor,
                 fontWeight: onIos ? '500' : '300',
-              }}>
+              }}
+            >
               iOS
             </Text>
             <Text
               style={{
                 color: onAndroid ? '#787878' : theme.SeparatorColor,
                 fontWeight: onAndroid ? '500' : '300',
-              }}>
+              }}
+            >
               Android
             </Text>
           </View>
@@ -110,7 +113,8 @@ const renderSectionHeader = ({section}) => (
               color: theme.SecondaryLabelColor,
               backgroundColor: theme.GroupedBackgroundColor,
             },
-          ]}>
+          ]}
+        >
           {section.title}
         </Text>
       );
@@ -120,8 +124,6 @@ const renderSectionHeader = ({section}) => (
 
 const RNTesterModuleList: React$AbstractComponent<any, void> = React.memo(
   ({sections, toggleBookmark, handleModuleCardPress}) => {
-    const theme = React.useContext(RNTesterThemeContext);
-
     const filter = ({example, filterRegex, category}) =>
       filterRegex.test(example.module.title) &&
       (!category || example.category === category) &&
@@ -141,11 +143,7 @@ const RNTesterModuleList: React$AbstractComponent<any, void> = React.memo(
     };
 
     return (
-      <View
-        style={[
-          styles.listContainer,
-          {backgroundColor: theme.SecondaryGroupedBackgroundColor},
-        ]}>
+      <View style={styles.listContainer}>
         <RNTesterExampleFilter
           testID="explorer_search"
           page="components_page"
@@ -157,7 +155,6 @@ const RNTesterModuleList: React$AbstractComponent<any, void> = React.memo(
               sections={filteredSections}
               extraData={filteredSections}
               renderItem={renderListItem}
-              ItemSeparatorComponent={ItemSeparator}
               keyboardShouldPersistTaps="handled"
               focusable={true} // TODO(macOS GH#774)
               enableSelectionOnKeyPress={true} // TODO(macOS GH#774)
@@ -173,46 +170,9 @@ const RNTesterModuleList: React$AbstractComponent<any, void> = React.memo(
   },
 );
 
-const ItemSeparator = ({highlighted}) => (
-  <RNTesterThemeContext.Consumer>
-    {theme => {
-      return (
-        <View
-          style={
-            highlighted
-              ? [
-                  styles.separatorHighlighted,
-                  {backgroundColor: theme.OpaqueSeparatorColor},
-                ]
-              : [styles.separator, {backgroundColor: theme.SeparatorColor}]
-          }
-        />
-      );
-    }}
-  </RNTesterThemeContext.Consumer>
-);
-
 const styles = StyleSheet.create({
   listContainer: {
     flex: 1,
-  },
-  list: {
-    ...Platform.select({
-      // [TODO(macOS GH#774)
-      macos: {
-        backgroundColor: PlatformColor('controlBackgroundColor'),
-      },
-      ios: {
-        backgroundColor: PlatformColor('systemBackgroundColor'),
-      },
-      default: {
-        // ]TODO(macOS GH#774)
-        backgroundColor: '#eeeeee',
-      }, // [TODO(macOS GH#774)
-    }), // ]TODO(macOS GH#774)
-  },
-  listItem: {
-    backgroundColor: Platform.select({ios: '#FFFFFF', android: '#F3F8FF'}),
   },
   sectionHeader: {
     ...Platform.select({
@@ -247,57 +207,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 15,
     overflow: 'hidden',
     elevation: 5,
-  },
-  selectedRow: {
-    // [TODO(macOS GH#774)
-    backgroundColor: '#DDECF8',
-    justifyContent: 'center',
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-  }, // ]TODO(macOS GH#774)
-  separator: {
-    height: Platform.select({ios: StyleSheet.hairlineWidth, android: 0}),
-    marginHorizontal: Platform.select({ios: 15, android: 0}),
-    ...Platform.select({
-      // [TODO(macOS GH#774)
-      macos: {
-        backgroundColor: PlatformColor('separatorColor'),
-      },
-      ios: {
-        backgroundColor: PlatformColor('separatorColor'),
-      },
-      default: {
-        // ]TODO(macOS GH#774)
-        backgroundColor: '#bbbbbb',
-      }, // [TODO(macOS GH#774)
-    }), // ]TODO(macOS GH#774)
-  },
-  separatorHighlighted: {
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: 'rgb(217, 217, 217)',
-  },
-  sectionListContentContainer: Platform.select({
-    // [TODO(macOS GH#774)
-    macos: {backgroundColor: PlatformColor('separatorColor')},
-    ios: {backgroundColor: PlatformColor('separatorColor')},
-    default: {backgroundColor: 'white'},
-  }), // ]TODO(macOS GH#774)
-  rowTitleText: {
-    fontSize: 17,
-    fontWeight: '500',
-    ...Platform.select({
-      // [TODO(macOS GH#774)
-      macos: {
-        color: PlatformColor('controlTextColor'),
-      },
-      ios: {
-        color: PlatformColor('labelColor'),
-      },
-      default: {
-        // ]TODO(macOS GH#774)
-        color: 'black',
-      }, // [TODO(macOS GH#774)
-    }), // ]TODO(macOS GH#774)
   },
   topRowStyle: {
     flexDirection: 'row',

@@ -339,7 +339,8 @@ class NetworkOverlay extends React.Component<Props, State> {
       <TouchableHighlight
         onPress={() => {
           this._pressRow(index);
-        }}>
+        }}
+      >
         <View>
           <View style={tableRowViewStyle}>
             <View style={urlCellViewStyle}>
@@ -380,14 +381,16 @@ class NetworkOverlay extends React.Component<Props, State> {
       <View>
         <TouchableHighlight
           style={styles.closeButton}
-          onPress={this._closeButtonClicked}>
+          onPress={this._closeButtonClicked}
+        >
           <View>
             <Text style={styles.closeButtonText}>v</Text>
           </View>
         </TouchableHighlight>
         <ScrollView
           style={styles.detailScrollView}
-          ref={scrollRef => (this._detailScrollView = scrollRef)}>
+          ref={scrollRef => (this._detailScrollView = scrollRef)}
+        >
           {details}
         </ScrollView>
       </View>

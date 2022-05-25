@@ -48,12 +48,9 @@ abstract class GenerateCodegenArtifactsTask : Exec() {
   override fun exec() {
     setupCommandLine()
     super.exec()
-  }
-
-  internal fun setupCommandLine() {
     if (useJavaGenerator.getOrElse(false)) {
       // Use Java-based generator implementation to produce the source files,
-      // instead of using the JS-based generator.
+      // this will override the JS-based generator output (for the Java files only).
       try {
         JavaGenerator(
                 generatedSchemaFile.get().asFile,
@@ -63,17 +60,23 @@ abstract class GenerateCodegenArtifactsTask : Exec() {
       } catch (e: Exception) {
         throw GradleException("Failed to generate Java from schema.", e)
       }
-      commandLine("echo", "Used JavaGenerator to generate files instead of generate-specs-cli.js")
-    } else {
-      commandLine(
-          windowsAwareYarn(
-              *nodeExecutableAndArgs.get().toTypedArray(),
-              reactRoot.file("scripts/generate-specs-cli.js").get().asFile.absolutePath,
-              "android",
-              generatedSchemaFile.get().asFile.absolutePath,
-              generatedSrcDir.get().asFile.absolutePath,
-              libraryName.get(),
-              codegenJavaPackageName.get()))
     }
+  }
+
+  internal fun setupCommandLine() {
+    commandLine(
+        windowsAwareYarn(
+            *nodeExecutableAndArgs.get().toTypedArray(),
+            reactRoot.file("scripts/generate-specs-cli.js").get().asFile.absolutePath,
+            "--platform",
+            "android",
+            "--schemaPath",
+            generatedSchemaFile.get().asFile.absolutePath,
+            "--outputDir",
+            generatedSrcDir.get().asFile.absolutePath,
+            "--libraryName",
+            libraryName.get(),
+            "--javaPackageName",
+            codegenJavaPackageName.get()))
   }
 }

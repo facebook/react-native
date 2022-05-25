@@ -59,6 +59,11 @@
   [RCTSharedApplication().delegate.window makeKeyWindow];
 }
 
+- (void)hide // [TODO(macOS GH#774)
+{
+  [self setHidden:YES];
+} // ]TODO(macOS GH#774)
+
 - (void)show
 {
   [self becomeFirstResponder];

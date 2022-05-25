@@ -162,6 +162,10 @@ RCT_EXPORT_METHOD(setAnimatedNodeValue:(double)nodeTag
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
     [nodesManager setAnimatedNodeValue:[NSNumber numberWithDouble:nodeTag] value:[NSNumber numberWithDouble:value]];
   }];
+  // In Bridge, flushing of native animations is done from RCTCxxBridge batchDidComplete().
+  // Since RCTCxxBridge doesn't exist in Bridgeless, and components are not remounted in Fabric for native animations,
+  // flush here for changes in Animated.Value for Animated.event.
+  [self flushOperationQueues];
 }
 
 RCT_EXPORT_METHOD(setAnimatedNodeOffset:(double)nodeTag

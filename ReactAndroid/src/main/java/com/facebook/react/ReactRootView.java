@@ -184,7 +184,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   }
 
   @Override
-  public void onChildStartedNativeGesture(MotionEvent androidEvent) {
+  public void onChildStartedNativeGesture(MotionEvent ev) {
     if (mReactInstanceManager == null
         || !mIsAttachedToInstance
         || mReactInstanceManager.getCurrentReactContext() == null) {
@@ -200,8 +200,13 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
     if (uiManager != null) {
       EventDispatcher eventDispatcher = uiManager.getEventDispatcher();
-      mJSTouchDispatcher.onChildStartedNativeGesture(androidEvent, eventDispatcher);
+      mJSTouchDispatcher.onChildStartedNativeGesture(ev, eventDispatcher);
     }
+  }
+
+  @Override
+  public void onChildStartedNativeGesture(View childView, MotionEvent ev) {
+    onChildStartedNativeGesture(ev);
   }
 
   @Override

@@ -76,9 +76,7 @@ RCT_EXPORT_METHOD(hide)
       if (!strongSelf) {
         return;
       }
-#if TARGET_OS_OSX // TODO(macOS GH#774)
-      [strongSelf->_window hide];
-#endif // TODO(macOS GH#774)
+      [strongSelf->_window hide]; // TODO(macOS GH#774) setHidden: -> hide
       strongSelf->_window = nil;
     });
   }

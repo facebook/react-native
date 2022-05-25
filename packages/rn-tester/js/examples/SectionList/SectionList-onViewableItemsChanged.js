@@ -53,7 +53,8 @@ export function SectionList_onViewableItemsChanged(props: {
       ref={ref}
       exampleProps={exampleProps}
       onTest={onTest}
-      testOutput={output}>
+      testOutput={output}
+    >
       {offScreen === true ? <View style={styles.offScreen} /> : null}
     </SectionListBaseExample>
   );

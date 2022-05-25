@@ -330,7 +330,7 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
     if (attributedPlaceholderString) {
       NSTextStorage *textStorage = [[NSTextStorage alloc] initWithAttributedString:attributedPlaceholderString];
       NSTextContainer *textContainer = [[NSTextContainer alloc] initWithContainerSize:self.textContainer.containerSize];
-      NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init];
+      NSLayoutManager *layoutManager = [NSLayoutManager new];
       
       textContainer.lineFragmentPadding = self.textContainer.lineFragmentPadding;
       [layoutManager addTextContainer:textContainer];

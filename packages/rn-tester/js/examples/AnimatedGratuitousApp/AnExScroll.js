@@ -37,7 +37,8 @@ class AnExScroll extends React.Component<$FlowFixMeProps, any> {
           )}
           contentContainerStyle={{flex: 1, padding: 10}}
           pagingEnabled={true}
-          horizontal={true}>
+          horizontal={true}
+        >
           <View style={[styles.page, {width}]}>
             <Image style={{width: 180, height: 180}} source={HAWK_PIC} />
             <Text style={styles.text}>

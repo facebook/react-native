@@ -24,7 +24,7 @@ const http = require('http');
 
 const app = connect();
 
-app.use(function(req, res) {
+app.use(function (req, res) {
   console.log('received request');
   res.setHeader('Set-Cookie', ['wstest=OK; Path=/']);
   res.end('Cookie has been set!\n');

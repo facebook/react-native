@@ -29,7 +29,8 @@ describe('LogBoxInspectorSection', () => {
     const output = render.shallowRender(
       <LogBoxInspectorSection
         heading="Test Section"
-        action={<Text>Right</Text>}>
+        action={<Text>Right</Text>}
+      >
         <Text>Child</Text>
       </LogBoxInspectorSection>,
     );

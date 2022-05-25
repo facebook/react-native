@@ -28,7 +28,10 @@ const SceneTracker = {
 
   addActiveSceneChangedListener(
     callback: (scene: Scene) => void,
-  ): {remove: () => void, ...} {
+  ): {
+    remove: () => void,
+    ...
+  } {
     _listeners.push(callback);
     return {
       remove: () => {

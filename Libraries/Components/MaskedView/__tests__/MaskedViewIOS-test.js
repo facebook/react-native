@@ -28,7 +28,8 @@ describe('<MaskedViewIOS />', () => {
             <View>
               <Text>Basic Mask</Text>
             </View>
-          }>
+          }
+        >
           <View />
         </MaskedViewIOS>
       ),

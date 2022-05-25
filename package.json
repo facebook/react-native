@@ -103,6 +103,7 @@
     "abort-controller": "^3.0.0",
     "anser": "^1.4.9",
     "base64-js": "^1.1.2",
+    "deprecated-react-native-prop-types": "^2.3.0",
     "event-target-shim": "^5.0.1",
     "hermes-engine": "~0.9.0",
     "invariant": "^2.2.4",
@@ -114,8 +115,8 @@
     "pretty-format": "^26.5.2",
     "promise": "^8.0.3",
     "prop-types": "^15.7.2",
-    "react-devtools-core": "4.19.1",
-    "react-native-codegen": "^0.0.7",
+    "react-devtools-core": "4.21.0",
+    "react-native-codegen": "^0.0.8",
     "react-refresh": "^0.4.0",
     "regenerator-runtime": "^0.13.2",
     "scheduler": "^0.20.2",
@@ -152,7 +153,7 @@
     "eslint-plugin-react-hooks": "^4.2.0",
     "eslint-plugin-react-native": "^3.11.0",
     "eslint-plugin-relay": "1.8.1",
-    "flow-bin": "^0.162.0",
+    "flow-bin": "^0.163.0",
     "jest": "^26.6.3",
     "jest-junit": "^10.0.0",
     "jscodeshift": "^0.11.0",
@@ -217,5 +218,25 @@
     "async": "Versions of async prior to 3.2.2 are vulnerable to prototype pollution",
     "es5-ext": "Packages after 0.10.54 and at the moment up until 0.10.59 contain a protest message. A policy prevents us from using packages with protestware, therefore downgrading to the latest release without the message.",
     "workspace-tools": "Versions prior to 0.18.4 are vulnerable to command injection and prototype pollution attacks"
+  },
+  "codegenConfig": {
+    "libraries": [
+      {
+        "name": "FBReactNativeSpec",
+        "ios": {
+          "_outputDir": "React/FBReactNativeSpec"
+        },
+        "android": {},
+        "jsSrcsDir": "Libraries"
+      },
+      {
+        "name": "rncore",
+        "ios": {
+          "_outputDir": "ReactCommon"
+        },
+        "android": {},
+        "jsSrcsDir": "Libraries"
+      }
+    ]
   }
 }

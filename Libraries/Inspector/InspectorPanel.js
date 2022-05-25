@@ -124,7 +124,8 @@ class InspectorPanelButton extends React.Component<InspectorPanelButtonProps> {
     return (
       <TouchableHighlight
         onPress={() => this.props.onClick(!this.props.pressed)}
-        style={[styles.button, this.props.pressed && styles.buttonPressed]}>
+        style={[styles.button, this.props.pressed && styles.buttonPressed]}
+      >
         <Text style={styles.buttonText}>{this.props.title}</Text>
       </TouchableHighlight>
     );

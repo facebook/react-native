@@ -46,11 +46,13 @@ class SafeAreaViewExample extends React.Component<
           visible={this.state.modalVisible}
           onRequestClose={() => this._setModalVisible(false)}
           animationType="slide"
-          supportedOrientations={['portrait', 'landscape']}>
+          supportedOrientations={['portrait', 'landscape']}
+        >
           <View style={styles.modal}>
             <SafeAreaView
               style={styles.safeArea}
-              emulateUnlessSupported={this.state.emulateUnlessSupported}>
+              emulateUnlessSupported={this.state.emulateUnlessSupported}
+            >
               <View style={styles.safeAreaContent}>
                 <Button
                   onPress={this._setModalVisible.bind(this, false)}

@@ -100,7 +100,8 @@ function LogBoxInspectorHeaderButton(
     <LogBoxButton
       backgroundColor={backgroundForLevel(props.level)}
       onPress={props.disabled ? null : props.onPress}
-      style={headerStyles.button}>
+      style={headerStyles.button}
+    >
       {props.disabled ? null : (
         <Image source={props.image} style={headerStyles.buttonImage} />
       )}

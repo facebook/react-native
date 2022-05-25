@@ -105,7 +105,7 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     static const auto defaultProps = std::make_shared<const ScrollViewProps>();
     _props = defaultProps;
 
-    _childComponentViews = [[NSMutableArray alloc] init];
+    _childComponentViews = [NSMutableArray new];
 
     _scrollView = [[RCTEnhancedScrollView alloc] initWithFrame:self.bounds];
     _scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
@@ -258,18 +258,16 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     }
   }
 
-  if (@available(iOS 11.0, *)) {
-    if (oldScrollViewProps.contentInsetAdjustmentBehavior != newScrollViewProps.contentInsetAdjustmentBehavior) {
-      auto const contentInsetAdjustmentBehavior = newScrollViewProps.contentInsetAdjustmentBehavior;
-      if (contentInsetAdjustmentBehavior == ContentInsetAdjustmentBehavior::Never) {
-        scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-      } else if (contentInsetAdjustmentBehavior == ContentInsetAdjustmentBehavior::Automatic) {
-        scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAutomatic;
-      } else if (contentInsetAdjustmentBehavior == ContentInsetAdjustmentBehavior::ScrollableAxes) {
-        scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAutomatic;
-      } else if (contentInsetAdjustmentBehavior == ContentInsetAdjustmentBehavior::Always) {
-        scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAlways;
-      }
+  if (oldScrollViewProps.contentInsetAdjustmentBehavior != newScrollViewProps.contentInsetAdjustmentBehavior) {
+    auto const contentInsetAdjustmentBehavior = newScrollViewProps.contentInsetAdjustmentBehavior;
+    if (contentInsetAdjustmentBehavior == ContentInsetAdjustmentBehavior::Never) {
+      scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    } else if (contentInsetAdjustmentBehavior == ContentInsetAdjustmentBehavior::Automatic) {
+      scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAutomatic;
+    } else if (contentInsetAdjustmentBehavior == ContentInsetAdjustmentBehavior::ScrollableAxes) {
+      scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAutomatic;
+    } else if (contentInsetAdjustmentBehavior == ContentInsetAdjustmentBehavior::Always) {
+      scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAlways;
     }
   }
 

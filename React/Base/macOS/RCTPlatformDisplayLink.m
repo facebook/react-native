@@ -35,7 +35,7 @@
 
 + (RCTPlatformDisplayLink *)displayLinkWithTarget:(id)target selector:(SEL)sel
 {
-  RCTPlatformDisplayLink *displayLink = [[self.class alloc] init];
+  RCTPlatformDisplayLink *displayLink = [self.class new];
   displayLink->_target = target;
   displayLink->_selector = sel;
   return displayLink;

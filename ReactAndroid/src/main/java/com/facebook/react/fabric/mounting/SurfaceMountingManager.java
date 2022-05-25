@@ -76,13 +76,15 @@ public class SurfaceMountingManager {
       @NonNull JSResponderHandler jsResponderHandler,
       @NonNull ViewManagerRegistry viewManagerRegistry,
       @NonNull RootViewManager rootViewManager,
-      @NonNull MountItemExecutor mountItemExecutor) {
+      @NonNull MountItemExecutor mountItemExecutor,
+      @NonNull ThemedReactContext reactContext) {
     mSurfaceId = surfaceId;
 
     mJSResponderHandler = jsResponderHandler;
     mViewManagerRegistry = viewManagerRegistry;
     mRootViewManager = rootViewManager;
     mMountItemExecutor = mountItemExecutor;
+    mThemedReactContext = reactContext;
   }
 
   public boolean isStopped() {

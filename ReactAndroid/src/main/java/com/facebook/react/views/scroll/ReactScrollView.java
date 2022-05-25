@@ -17,6 +17,7 @@ import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -34,7 +35,6 @@ import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.ReactConstants;
@@ -114,11 +114,11 @@ public class ReactScrollView extends ScrollView
   private int mLastStateUpdateScrollX = -1;
   private int mLastStateUpdateScrollY = -1;
 
-  public ReactScrollView(ReactContext context) {
+  public ReactScrollView(Context context) {
     this(context, null);
   }
 
-  public ReactScrollView(ReactContext context, @Nullable FpsListener fpsListener) {
+  public ReactScrollView(Context context, @Nullable FpsListener fpsListener) {
     super(context);
     mFpsListener = fpsListener;
     mReactBackgroundManager = new ReactViewBackgroundManager(this);
@@ -766,7 +766,7 @@ public class ReactScrollView extends ScrollView
                 maximumOffset);
       } else {
         ViewGroup contentView = (ViewGroup) getContentView();
-        for (int i = 1; i < contentView.getChildCount(); i++) {
+        for (int i = 0; i < contentView.getChildCount(); i++) {
           View item = contentView.getChildAt(i);
           int itemStartOffset;
           switch (mSnapToAlignment) {

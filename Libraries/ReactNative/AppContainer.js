@@ -96,7 +96,8 @@ class AppContainer extends React.Component<Props, State> {
         style={styles.appContainer}
         ref={ref => {
           this._mainRef = ref;
-        }}>
+        }}
+      >
         {this.props.children}
       </View>
     );
@@ -109,7 +110,8 @@ class AppContainer extends React.Component<Props, State> {
           fabric={this.props.fabric === true}
           showArchitectureIndicator={
             this.props.showArchitectureIndicator === true
-          }>
+          }
+        >
           {innerView}
         </Wrapper>
       );

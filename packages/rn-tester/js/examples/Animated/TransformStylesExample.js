@@ -64,7 +64,8 @@ function AnimatedView({
         onPress={() => {
           animation.reset();
           animation.start();
-        }}>
+        }}
+      >
         Apply Selected Transforms
       </RNTesterButton>
       <Animated.View

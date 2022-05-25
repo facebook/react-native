@@ -67,7 +67,7 @@ using namespace facebook::react;
     _props = defaultProps;
     auto &props = *defaultProps;
 
-    _backedTextInputView = props.traits.multiline ? [[RCTUITextView alloc] init] : [[RCTUITextField alloc] init];
+    _backedTextInputView = props.traits.multiline ? [RCTUITextView new] : [RCTUITextField new];
     _backedTextInputView.textInputDelegate = self;
     _ignoreNextTextInputCall = NO;
     _comingFromJS = NO;
@@ -465,7 +465,7 @@ using namespace facebook::react;
   }
 
   if (shouldHaveInputAccesoryView) {
-    UIToolbar *toolbarView = [[UIToolbar alloc] init];
+    UIToolbar *toolbarView = [UIToolbar new];
     [toolbarView sizeToFit];
     UIBarButtonItem *flexibleSpace =
         [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
@@ -565,8 +565,7 @@ using namespace facebook::react;
 - (void)_setMultiline:(BOOL)multiline
 {
   [_backedTextInputView removeFromSuperview];
-  UIView<RCTBackedTextInputViewProtocol> *backedTextInputView =
-      multiline ? [[RCTUITextView alloc] init] : [[RCTUITextField alloc] init];
+  UIView<RCTBackedTextInputViewProtocol> *backedTextInputView = multiline ? [RCTUITextView new] : [RCTUITextField new];
   backedTextInputView.frame = _backedTextInputView.frame;
   RCTCopyBackedTextInput(_backedTextInputView, backedTextInputView);
   _backedTextInputView = backedTextInputView;

@@ -57,11 +57,7 @@ function createContainer<Props: Object, State>(
     _passSetState = (stateLamda: (state: State) => State): void => {
       this.setState(state => {
         const value = stateLamda(state.value);
-        AsyncStorage.setItem(
-          this._cacheKey,
-          // $FlowFixMe[incompatible-call] Error surfaced when typing AsyncStorage
-          JSON.stringify(value),
-        );
+        AsyncStorage.setItem(this._cacheKey, JSON.stringify(value));
         return {value};
       });
     };

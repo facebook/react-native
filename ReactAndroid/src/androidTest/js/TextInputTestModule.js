@@ -76,7 +76,8 @@ class TokenizedTextExample extends React.Component {
           style={styles.multiline}
           onChangeText={text => {
             this.setState({text});
-          }}>
+          }}
+        >
           <Text>{parts}</Text>
         </TextInput>
       </View>

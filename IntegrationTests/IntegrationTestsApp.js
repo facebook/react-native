@@ -84,7 +84,8 @@ class IntegrationTestsApp extends React.Component<{...}, $FlowFixMeState> {
                * This comment suppresses an error found when Flow v0.115 was
                * deployed. To see the error, delete this comment and run Flow.
                */
-              style={styles.row}>
+              style={styles.row}
+            >
               <Text style={styles.testName}>{test.displayName}</Text>
             </TouchableOpacity>,
             <View style={styles.separator} />,

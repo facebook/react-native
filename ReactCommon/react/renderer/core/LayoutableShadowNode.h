@@ -70,7 +70,7 @@ class LayoutableShadowNode : public ShadowNode {
    */
   virtual void layoutTree(
       LayoutContext layoutContext,
-      LayoutConstraints layoutConstraints);
+      LayoutConstraints layoutConstraints) = 0;
 
   /*
    * Measures the node (and node content, probably recursively) with
@@ -101,7 +101,7 @@ class LayoutableShadowNode : public ShadowNode {
    * - Calculate and assign `LayoutMetrics` for the children;
    * - Call itself recursively on every child if needed.
    */
-  virtual void layout(LayoutContext layoutContext);
+  virtual void layout(LayoutContext layoutContext) = 0;
 
   /*
    * Returns layout metrics computed during previous layout pass.

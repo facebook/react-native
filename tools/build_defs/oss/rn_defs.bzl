@@ -80,7 +80,7 @@ def get_react_native_preprocessor_flags():
     return []
 
 # Building is not supported in OSS right now
-def rn_xplat_cxx_library(name, compiler_flags_enable_exceptions = True, compiler_flags_enable_rtti = True, **kwargs):
+def rn_xplat_cxx_library(name, compiler_flags_enable_exceptions = False, compiler_flags_enable_rtti = False, **kwargs):
     visibility = kwargs.get("visibility", [])
     kwargs = {
         k: v
@@ -96,14 +96,21 @@ def rn_xplat_cxx_library(name, compiler_flags_enable_exceptions = True, compiler
     # For all of these, we PREPEND to compiler_flags: if these are already set
     # or being overridden in compiler_flags, it's very likely that the flag is set
     # app-wide or that we're otherwise in some special mode.
+    # OSS builds cannot have platform-specific flags here, so these are the same
+    # for all platforms.
     kwargs["compiler_flags"] = kwargs.get("compiler_flags", [])
     kwargs["compiler_flags"] = ["-std=c++17"] + kwargs["compiler_flags"]
     kwargs["compiler_flags"] = ["-Wall"] + kwargs["compiler_flags"]
     kwargs["compiler_flags"] = ["-Werror"] + kwargs["compiler_flags"]
+
+    # For now, we allow turning off RTTI and exceptions for android builds only
     if compiler_flags_enable_exceptions:
         kwargs["compiler_flags"] = ["-fexceptions"] + kwargs["compiler_flags"]
     else:
+        # TODO: fbjni currently DOES NOT WORK with -fno-exceptions, which breaks MOST RN Android modules
+        kwargs["compiler_flags"] = ["-fexceptions"] + kwargs["compiler_flags"]
         kwargs["compiler_flags"] = ["-fno-exceptions"] + kwargs["compiler_flags"]
+
     if compiler_flags_enable_rtti:
         kwargs["compiler_flags"] = ["-frtti"] + kwargs["compiler_flags"]
     else:

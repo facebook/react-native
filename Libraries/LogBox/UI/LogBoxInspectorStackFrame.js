@@ -42,14 +42,16 @@ function LogBoxInspectorStackFrame(props: Props): React.Node {
           pressed: onPress ? LogBoxStyle.getBackgroundColor(1) : 'transparent',
         }}
         onPress={onPress}
-        style={styles.frame}>
+        style={styles.frame}
+      >
         <Text style={[styles.name, frame.collapse === true && styles.dim]}>
           {frame.methodName}
         </Text>
         <Text
           ellipsizeMode="middle"
           numberOfLines={1}
-          style={[styles.location, frame.collapse === true && styles.dim]}>
+          style={[styles.location, frame.collapse === true && styles.dim]}
+        >
           {location}
         </Text>
       </LogBoxButton>

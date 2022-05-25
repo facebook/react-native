@@ -33,9 +33,7 @@ const easingSections = [
   {
     title: 'Predefined animations',
     data: [
-      // $FlowFixMe[method-unbinding]
       {title: 'Bounce', easing: Easing.bounce},
-      // $FlowFixMe[method-unbinding]
       {title: 'Ease', easing: Easing.ease},
       {title: 'Elastic', easing: Easing.elastic(4)},
     ],
@@ -43,11 +41,8 @@ const easingSections = [
   {
     title: 'Standard functions',
     data: [
-      // $FlowFixMe[method-unbinding]
       {title: 'Linear', easing: Easing.linear},
-      // $FlowFixMe[method-unbinding]
       {title: 'Quad', easing: Easing.quad},
-      // $FlowFixMe[method-unbinding]
       {title: 'Cubic', easing: Easing.cubic},
     ],
   },
@@ -58,11 +53,8 @@ const easingSections = [
         title: 'Bezier',
         easing: Easing.bezier(0, 2, 1, -1),
       },
-      // $FlowFixMe[method-unbinding]
       {title: 'Circle', easing: Easing.circle},
-      // $FlowFixMe[method-unbinding]
       {title: 'Sin', easing: Easing.sin},
-      // $FlowFixMe[method-unbinding]
       {title: 'Exp', easing: Easing.exp},
     ],
   },
@@ -120,7 +112,8 @@ function EasingItem({
           onPress={() => {
             opacityAndScale.current.setValue(0);
             animation.current.start();
-          }}>
+          }}
+        >
           Animate
         </RNTesterButton>
       </View>

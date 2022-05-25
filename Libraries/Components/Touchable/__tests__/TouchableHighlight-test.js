@@ -59,7 +59,8 @@ describe('TouchableHighlight with disabled state', () => {
       render.create(
         <TouchableHighlight
           disabled={true}
-          accessibilityState={{checked: true}}>
+          accessibilityState={{checked: true}}
+        >
           <View />
         </TouchableHighlight>,
       ),
@@ -71,7 +72,8 @@ describe('TouchableHighlight with disabled state', () => {
       render.create(
         <TouchableHighlight
           disabled={true}
-          accessibilityState={{disabled: false}}>
+          accessibilityState={{disabled: false}}
+        >
           <View />
         </TouchableHighlight>,
       ),

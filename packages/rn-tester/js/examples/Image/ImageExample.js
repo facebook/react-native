@@ -943,7 +943,8 @@ exports.examples = [
       return (
         <ImageBackground
           style={{width: 60, height: 60, backgroundColor: 'transparent'}}
-          source={fullImage}>
+          source={fullImage}
+        >
           <Text style={styles.nestedText}>React</Text>
         </ImageBackground>
       );

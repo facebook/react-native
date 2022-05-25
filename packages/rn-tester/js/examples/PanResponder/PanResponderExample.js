@@ -102,7 +102,8 @@ class PanResponderExample extends React.Component<Props, State> {
       <RNTesterPage
         noSpacer={true}
         noScroll={true}
-        title="Basic gesture handling">
+        title="Basic gesture handling"
+      >
         <View style={styles.container}>
           <View
             ref={circle => {
@@ -110,7 +111,6 @@ class PanResponderExample extends React.Component<Props, State> {
             }}
             style={[
               styles.circle,
-              // $FlowFixMe[incompatible-type]
               {
                 transform: [
                   {translateX: this.state.left},

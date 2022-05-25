@@ -403,7 +403,8 @@ class Button extends React.Component<ButtonProps> {
         validKeysDown={validKeysDown}
         validKeysUp={validKeysUp}
         tooltip={tooltip}
-        touchSoundDisabled={touchSoundDisabled}>
+        touchSoundDisabled={touchSoundDisabled}
+      >
         <View style={buttonStyles}>
           <Text style={textStyles} disabled={disabled}>
             {formattedTitle}

@@ -327,9 +327,7 @@ class TokenizedTextExample extends React.Component<
         index = 1;
       }
       parts.push(_text.substr(0, index));
-      // $FlowFixMe[incompatible-use]
       parts.push(token[0]);
-      // $FlowFixMe[incompatible-use]
       index = index + token[0].length;
       _text = _text.slice(index);
     }
@@ -356,7 +354,8 @@ class TokenizedTextExample extends React.Component<
           style={styles.multiline}
           onChangeText={text => {
             this.setState({text});
-          }}>
+          }}
+        >
           <Text>{parts}</Text>
         </TextInput>
       </View>
@@ -443,13 +442,15 @@ class SelectionExample extends React.Component<
           <Text
             testID={`${this.props.testID}-cursor-start`}
             // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-            onPress={this.placeAt.bind(this, 0)}>
+            onPress={this.placeAt.bind(this, 0)}
+          >
             Place at Start (0, 0)
           </Text>
           <Text
             testID={`${this.props.testID}-cursor-end`}
             // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-            onPress={this.placeAt.bind(this, length)}>
+            onPress={this.placeAt.bind(this, length)}
+          >
             Place at End ({length}, {length})
           </Text>
           {/* $FlowFixMe[method-unbinding] added when improving typing for this
@@ -458,7 +459,8 @@ class SelectionExample extends React.Component<
           <Text
             testID={`${this.props.testID}-select-all`}
             // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-            onPress={this.select.bind(this, 0, length)}>
+            onPress={this.select.bind(this, 0, length)}
+          >
             Select All
           </Text>
           {/* $FlowFixMe[method-unbinding] added when improving typing for this

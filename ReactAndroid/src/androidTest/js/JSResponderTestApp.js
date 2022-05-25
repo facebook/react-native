@@ -42,7 +42,8 @@ class JSResponderTestApp extends React.Component {
       <View
         style={styles.container}
         {...this.panGesture.panHandlers}
-        collapsable={false}>
+        collapsable={false}
+      >
         <ScrollView style={styles.scrollview} testID="scroll_view">
           {views}
         </ScrollView>

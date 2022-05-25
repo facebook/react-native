@@ -49,7 +49,8 @@ exports.examples = [
         <View
           style={styles.container}
           {..._gesture.panHandlers}
-          collapsable={false}>
+          collapsable={false}
+        >
           <ScrollView style={styles.scrollview} testID="scroll_view">
             {views}
           </ScrollView>

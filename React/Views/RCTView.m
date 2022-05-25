@@ -299,8 +299,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
     return nil;
   }
 
-  accessibilityActionsNameMap = [[NSMutableDictionary alloc] init];
-  accessibilityActionsLabelMap = [[NSMutableDictionary alloc] init];
+  accessibilityActionsNameMap = [NSMutableDictionary new];
+  accessibilityActionsLabelMap = [NSMutableDictionary new];
   NSMutableArray *actions = [NSMutableArray array];
   for (NSDictionary *action in self.accessibilityActions) {
     if (action[@"name"]) {
@@ -1456,7 +1456,7 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
     return;
   }
   
-  NSMutableDictionary *body = [[NSMutableDictionary alloc] init];
+  NSMutableDictionary *body = [NSMutableDictionary new];
   
   if (modifierFlags & NSEventModifierFlagShift) {
     body[@"shiftKey"] = @YES;

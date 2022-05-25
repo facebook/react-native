@@ -146,7 +146,8 @@ export function VirtualizedListCellContextProvider({
   const context = useContext(VirtualizedListContext);
   return (
     <VirtualizedListContext.Provider
-      value={context == null ? null : {...context, cellKey}}>
+      value={context == null ? null : {...context, cellKey}}
+    >
       {children}
     </VirtualizedListContext.Provider>
   );

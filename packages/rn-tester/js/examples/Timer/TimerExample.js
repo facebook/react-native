@@ -358,7 +358,8 @@ exports.examples = [
                 type="setInterval"
               />
               <RNTesterButton
-                onPress={() => this._timerTester && this._timerTester.clear()}>
+                onPress={() => this._timerTester && this._timerTester.clear()}
+              >
                 Clear interval
               </RNTesterButton>
             </View>

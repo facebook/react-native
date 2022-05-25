@@ -92,12 +92,14 @@ function getBinarySizesCollection(db) {
  * @param {firebase.firestore.CollectionReference<firebase.firestore.DocumentData>} collection
  * @param {string} sha The Git SHA used to identify the entry
  * @param {firebase.firestore.UpdateData} data The data to be inserted/updated
+ * @param {string} branch The Git branch where this data was computed for
  * @returns {Promise<void>}
  */
-function createOrUpdateDocument(collectionRef, sha, data) {
+function createOrUpdateDocument(collectionRef, sha, data, branch) {
   const stampedData = {
     ...data,
     timestamp: firestore.Timestamp.now(),
+    branch,
   };
   const docRef = firestore.doc(collectionRef, sha);
   return firestore.updateDoc(docRef, stampedData).catch(async error => {
@@ -115,14 +117,16 @@ function createOrUpdateDocument(collectionRef, sha, data) {
  * Returns the latest document in collection.
  *
  * @param {firebase.firestore.CollectionReference<firebase.firestore.DocumentData>} collection
+ * @param {string} branch The Git branch for the data
  * @returns {Promise<firebase.firestore.DocumentData | undefined>}
  */
-async function getLatestDocument(collectionRef) {
+async function getLatestDocument(collectionRef, branch) {
   try {
     const querySnapshot = await firestore.getDocs(
       firestore.query(
         collectionRef,
         firestore.orderBy('timestamp', 'desc'),
+        firestore.where('branch', '==', branch),
         firestore.limit(1),
       ),
     );

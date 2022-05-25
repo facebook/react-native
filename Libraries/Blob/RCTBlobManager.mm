@@ -262,7 +262,7 @@ RCT_EXPORT_METHOD(release:(NSString *)blobId)
   NSDictionary *blob = [RCTConvert NSDictionary:data[@"blob"]];
 
   NSString *contentType = @"application/octet-stream";
-  NSString *blobType = [RCTConvert NSString:blob[@"type"]];
+  NSString *blobType = [RCTConvert NSString:RCTNilIfNull(blob[@"type"])];
   if (blobType != nil && blobType.length > 0) {
     contentType = blob[@"type"];
   }

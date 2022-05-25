@@ -158,10 +158,11 @@ public class TouchesHelper {
         break;
     }
 
-    WritableArray touchesArray = getWritableArray(touches);
-    WritableArray changedTouchesArray = getWritableArray(/* copyObjects */ true, changedTouches);
+    for (WritableMap touchData : changedTouches) {
+      WritableMap eventData = touchData.copy();
+      WritableArray changedTouchesArray = getWritableArray(/* copyObjects */ true, changedTouches);
+      WritableArray touchesArray = getWritableArray(/* copyObjects */ true, touches);
 
-    for (WritableMap eventData : changedTouches) {
       eventData.putArray(CHANGED_TOUCHES_KEY, changedTouchesArray);
       eventData.putArray(TOUCHES_KEY, touchesArray);
 

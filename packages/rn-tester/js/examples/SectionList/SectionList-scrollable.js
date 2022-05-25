@@ -96,7 +96,8 @@ const CustomSeparatorComponent = ({highlighted, text}) => (
     style={[
       styles.customSeparator,
       highlighted && {backgroundColor: 'rgb(217, 217, 217)'},
-    ]}>
+    ]}
+  >
     <Text style={styles.separatorText}>{text}</Text>
   </View>
 );

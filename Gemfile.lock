@@ -56,7 +56,7 @@ GEM
     colored2 (3.1.2)
     concurrent-ruby (1.1.10)
     escape (0.0.4)
-    ethon (0.14.0)
+    ethon (0.15.0)
       ffi (>= 1.15.0)
     ffi (1.15.5)
     fourflusher (2.3.1)
@@ -85,7 +85,7 @@ GEM
       colored2 (~> 3.1)
       nanaimo (~> 0.3.0)
       rexml (~> 3.2.4)
-    zeitwerk (2.4.2)
+    zeitwerk (2.5.1)
 
 PLATFORMS
   ruby

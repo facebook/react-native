@@ -56,7 +56,8 @@ class KeyEventExample extends React.Component<{}, State> {
               validKeysDown={['g', 'Tab', 'Esc', 'Enter', 'ArrowLeft']}
               onKeyDown={this.onKeyDownEvent}
               validKeysUp={['c', 'd']}
-              onKeyUp={this.onKeyUpEvent}>
+              onKeyUp={this.onKeyUpEvent}
+            >
               <Button
                 title={'Test button'}
                 onKeyDown={this.onKeyDownEvent}

@@ -129,7 +129,8 @@ function SwipeableCard(props: {
         style={{
           transform: [{translateX: movementX}, {rotateZ: rotation}],
           flex: 1,
-        }}>
+        }}
+      >
         <Card color={props.color} />
       </Animated.View>
     </View>
@@ -169,7 +170,8 @@ function CardSection(props: {index: number, color: string}) {
     <View
       style={StyleSheet.compose(styles.sectionBg, {
         backgroundColor: props.color,
-      })}>
+      })}
+    >
       <Text style={styles.sectionText}>Section #{props.index}</Text>
     </View>
   );

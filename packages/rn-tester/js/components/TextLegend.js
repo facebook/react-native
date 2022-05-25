@@ -84,7 +84,8 @@ export default function TextLegend(): React.Node {
                   right: 0,
                   position: 'absolute',
                   color: 'red',
-                }}>
+                }}
+              >
                 Baseline
               </Text>,
               <View
@@ -105,7 +106,8 @@ export default function TextLegend(): React.Node {
                   right: 0,
                   position: 'absolute',
                   color: 'green',
-                }}>
+                }}
+              >
                 Capheight
               </Text>,
               <View
@@ -126,7 +128,8 @@ export default function TextLegend(): React.Node {
                   right: 0,
                   position: 'absolute',
                   color: 'blue',
-                }}>
+                }}
+              >
                 X-height
               </Text>,
               <View
@@ -147,7 +150,8 @@ export default function TextLegend(): React.Node {
                   right: 0,
                   position: 'absolute',
                   color: 'orange',
-                }}>
+                }}
+              >
                 Descender
               </Text>,
               <View
@@ -168,7 +172,8 @@ export default function TextLegend(): React.Node {
                   left: x + width + 5,
                   position: 'absolute',
                   color: 'brown',
-                }}>
+                }}
+              >
                 End of text
               </Text>,
               <View
@@ -189,7 +194,8 @@ export default function TextLegend(): React.Node {
                   left: x + 5,
                   position: 'absolute',
                   color: 'brown',
-                }}>
+                }}
+              >
                 Start of text
               </Text>,
             ];
@@ -202,7 +208,8 @@ export default function TextLegend(): React.Node {
           style={{
             fontSize: fontSize,
             textAlign: alignment,
-          }}>
+          }}
+        >
           {PANGRAMS[language]}
         </Text>
       </View>
