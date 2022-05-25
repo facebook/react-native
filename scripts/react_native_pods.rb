@@ -113,6 +113,8 @@ def use_react_native! (options={})
     pod 'React-hermes', :path => "#{prefix}/ReactCommon/hermes"
     pod 'hermes-engine', :path => "#{prefix}/sdks/hermes/hermes-engine.podspec"
     pod 'libevent', '~> 2.1.12'
+    system("(cd #{prefix} && node scripts/hermes/prepare-hermes-for-build)")
+    pod 'hermes-engine', :path => "#{prefix}/sdks/hermes/hermes-engine.podspec"
   end
 
   pods_to_update = LocalPodspecPatch.pods_to_update(options)
