@@ -1456,7 +1456,7 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
     return;
   }
   
-  NSMutableDictionary *body = [[NSMutableDictionary alloc] init];
+  NSMutableDictionary *body = [NSMutableDictionary new];
   
   if (modifierFlags & NSEventModifierFlagShift) {
     body[@"shiftKey"] = @YES;

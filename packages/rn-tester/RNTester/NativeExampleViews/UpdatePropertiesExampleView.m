@@ -64,7 +64,7 @@ RCT_EXPORT_MODULE();
                 action:@selector(changeColor)
       forControlEvents:UIControlEventTouchUpInside];
 #else // [TODO(macOS GH#774)
-    _button = [[NSButton alloc] init];
+    _button = [NSButton new];
     [_button setTitle:@"Native Button"];
     [_button setTarget:self];
     [_button setAction:@selector(changeColor)];

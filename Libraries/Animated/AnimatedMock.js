@@ -96,10 +96,11 @@ const spring = function(
   return {
     ...emptyAnimation,
     start: mockAnimationStart((callback?: ?EndCallback): void => {
-      // TODO(macOS GH#774) - setValue can't handle AnimatedNodes
+      // [TODO(macOS GH#774) - setValue can't handle AnimatedNodes
       if (config.toValue instanceof AnimatedNode) {
         anyValue.setValue(config.toValue.__getValue());
       } else {
+        // ]TODO(macOS GH#774)
         anyValue.setValue(config.toValue);
       }
       callback?.({finished: true});

@@ -206,7 +206,7 @@ RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::NativeArgs &)args cal
   });
 #else // [TODO(macOS GH#774)
   
-  NSAlert *alert = [[NSAlert alloc] init];
+  NSAlert *alert = [NSAlert new];
   if (title.length > 0) {
     alert.messageText = title;
   }

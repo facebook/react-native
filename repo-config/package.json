@@ -21,6 +21,7 @@
     "clang-format": "^1.2.4",
     "connect": "^3.6.5",
     "coveralls": "^3.0.2",
+    "deprecated-react-native-prop-types": "^2.3.0",
     "detox": "18.10.0",
     "eslint": "^7.32.0",
     "eslint-config-fb-strict": "^26.0.0",

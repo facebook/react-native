@@ -318,7 +318,7 @@ RCT_EXPORT_MODULE()
                                                                                  animated:YES
                                                                                completion:NULL];
 #else // [TODO(macOS GH#774)
-                                      NSAlert *alert = [[NSAlert alloc] init];
+                                      NSAlert *alert = [NSAlert new];
                                       [alert setMessageText:@"Debugger Unavailable"];
                                       [alert setInformativeText:message];
                                       [alert addButtonWithTitle:@"OK"];
@@ -413,7 +413,7 @@ RCT_EXPORT_MODULE()
                                                                         }]];
                       [RCTPresentedViewController() presentViewController:alertController animated:YES completion:NULL];
 #else // [TODO(macOS GH#774)
-                      NSAlert *alert = [[NSAlert alloc] init];
+                      NSAlert *alert = [NSAlert new];
                       [alert setMessageText:@"Change packager location"];
                       [alert setInformativeText:@"Input packager IP, port and entrypoint"];
                       [alert addButtonWithTitle:@"Use bundled JS"];
@@ -483,11 +483,11 @@ RCT_EXPORT_METHOD(show)
       }
       NSString *title = [NSString stringWithFormat:@"React Native: Development\n(%@)", desc];
 
-      menu = [[NSMenu alloc] init];
+      menu = [NSMenu new];
 
       NSMutableAttributedString *attributedTitle = [[NSMutableAttributedString alloc]initWithString:title];
       [attributedTitle setAttributes: @{ NSFontAttributeName : [NSFont menuFontOfSize:0] } range: NSMakeRange(0, [attributedTitle length])];
-      NSMenuItem *titleItem = [[NSMenuItem alloc] init];
+      NSMenuItem *titleItem = [NSMenuItem new];
       [titleItem setAttributedTitle:attributedTitle];
       [menu addItem:titleItem];
 

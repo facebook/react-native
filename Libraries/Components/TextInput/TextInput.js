@@ -10,9 +10,6 @@
 
 import * as React from 'react';
 
-// TODO(macOS GH#774) - Keep this here because deprecated-react-native-prop-types doesn't support macOS types
-import DeprecatedTextInputPropTypes from '../../DeprecatedPropTypes/DeprecatedTextInputPropTypes';
-
 import Platform from '../../Utilities/Platform';
 import StyleSheet, {
   type TextStyleProp,
@@ -1281,8 +1278,7 @@ const ExportedForwardRef: React.AbstractComponent<
   );
 });
 
-// TODO(macOS GH#774) - Keep this here because deprecated-react-native-prop-types doesn't support macOS types
-ExportedForwardRef.propTypes = DeprecatedTextInputPropTypes;
+ExportedForwardRef.propTypes = require('deprecated-react-native-prop-types').TextInputPropTypes;
 
 // $FlowFixMe[prop-missing]
 ExportedForwardRef.State = {
