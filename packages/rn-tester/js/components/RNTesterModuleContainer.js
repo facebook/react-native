@@ -127,7 +127,7 @@ function Header(props: {
         props.noBottomPadding === true ? styles.headerNoBottomPadding : null,
         {
           backgroundColor:
-            Platform.OS === 'ios'
+            Platform.OS === 'ios' || Platform.OS === 'macos' // TODO(macOS GH#774)
               ? props.theme.SystemBackgroundColor
               : props.theme.BackgroundColor,
         },
