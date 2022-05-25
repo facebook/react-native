@@ -30,11 +30,9 @@ const MemoryFs = require('metro-memory-fs');
 
 let execCalls;
 let fs;
-let shelljs;
 
-jest.mock('shelljs', () => ({
-  echo: jest.fn(),
-  exec: jest.fn(command => {
+jest.mock('child_process', () => ({
+  execSync: jest.fn(command => {
     if (command.startsWith('curl')) {
       fs.writeFileSync(
         path.join(SDKS_DIR, 'download', `hermes-${hermesTagSha}.tgz`),
@@ -58,7 +56,6 @@ jest.mock('shelljs', () => ({
       return {code: 0};
     }
   }),
-  exit: jest.fn(),
 }));
 
 function populateMockFilesystem() {
@@ -118,11 +115,16 @@ describe('hermes-utils', () => {
     populateMockFilesystem();
 
     execCalls = Object.create(null);
-    shelljs = require('shelljs');
   });
   describe('readHermesTag', () => {
     it('should return main if .hermesversion does not exist', () => {
       expect(readHermesTag()).toEqual('main');
+    });
+    it('should fail if hermes tag is empty', () => {
+      fs.writeFileSync(path.join(SDKS_DIR, '.hermesversion'), '');
+      expect(() => {
+        readHermesTag();
+      }).toThrow('[Hermes] .hermesversion file is empty.');
     });
     it('should return tag from .hermesversion if file exists', () => {
       fs.writeFileSync(path.join(SDKS_DIR, '.hermesversion'), hermesTag);
@@ -152,6 +154,7 @@ describe('hermes-utils', () => {
   });
   describe('downloadHermesTarball', () => {
     it('should download Hermes tarball to download dir', () => {
+      fs.writeFileSync(path.join(SDKS_DIR, '.hermesversion'), hermesTag);
       downloadHermesTarball();
       expect(execCalls.curl).toBeTruthy();
       expect(
@@ -188,9 +191,10 @@ describe('hermes-utils', () => {
       expect(fs.existsSync(path.join(SDKS_DIR, 'hermes'))).toBeTruthy();
     });
     it('should fail if Hermes tarball does not exist', () => {
-      expandHermesTarball();
+      expect(() => {
+        expandHermesTarball();
+      }).toThrow('[Hermes] Failed to expand Hermes tarball.');
       expect(execCalls.tar).toBeUndefined();
-      expect(shelljs.exit.mock.calls.length).toBeGreaterThan(0);
     });
   });
   describe('copyBuildScripts', () => {

@@ -156,6 +156,8 @@ function translatePrimitiveJSTypeToCpp(
       return wrap('jsi::Function');
     case 'PromiseTypeAnnotation':
       return wrap('jsi::Value');
+    case 'MixedTypeAnnotation':
+      return wrap('jsi::Value');
     default:
       (realTypeAnnotation.type: empty);
       throw new Error(createErrorMessage(realTypeAnnotation.type));

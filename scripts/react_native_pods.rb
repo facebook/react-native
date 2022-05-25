@@ -36,6 +36,8 @@ def use_react_native! (options={})
   # Include Hermes dependencies
   hermes_enabled = options[:hermes_enabled] ||= false
 
+  flipper_configuration = options[:flipper_configuration] ||= FlipperConfiguration.disabled
+
   if `/usr/sbin/sysctl -n hw.optional.arm64 2>&1`.to_i == 1 && !RUBY_PLATFORM.include?('arm64')
     Pod::UI.warn 'Do not use "pod install" from inside Rosetta2 (x86_64 emulation on arm64).'
     Pod::UI.warn ' - Emulated x86_64 is slower than native arm64'
@@ -61,8 +63,6 @@ def use_react_native! (options={})
   pod 'React-RCTText', :path => "#{prefix}/Libraries/Text"
   pod 'React-RCTVibration', :path => "#{prefix}/Libraries/Vibration"
   pod 'React-Core/RCTWebSocket', :path => "#{prefix}/"
-
-  install_flipper_dependencies(production, prefix)
 
   pod 'React-bridging', :path => "#{prefix}/ReactCommon/react/bridging"
   pod 'React-cxxreact', :path => "#{prefix}/ReactCommon/cxxreact"
@@ -128,6 +128,11 @@ def use_react_native! (options={})
 
   end
 
+  if flipper_configuration.flipper_enabled && !production
+    install_flipper_dependencies(prefix)
+    use_flipper_pods(flipper_configuration.versions, :configurations => flipper_configuration.configurations)
+  end
+
   pods_to_update = LocalPodspecPatch.pods_to_update(options)
   if !pods_to_update.empty?
     if Pod::Lockfile.public_instance_methods.include?(:detect_changes_with_podfile)
@@ -142,6 +147,7 @@ def get_default_flags()
   flags = {
     :fabric_enabled => false,
     :hermes_enabled => false,
+    :flipper_configuration => FlipperConfiguration.disabled
   }
 
   if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
@@ -153,6 +159,7 @@ def get_default_flags()
 end
 
 def use_flipper!(versions = {}, configurations: ['Debug'])
+  Pod::UI.warn "use_flipper is deprecated, use the flipper_configuration option in the use_react_native function"
   use_flipper_pods(versions, :configurations => configurations)
 end
 
