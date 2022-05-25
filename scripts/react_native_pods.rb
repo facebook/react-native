@@ -107,25 +107,8 @@ def use_react_native! (options={})
   if hermes_enabled
     pod 'React-hermes', :path => "#{prefix}/ReactCommon/hermes"
     pod 'libevent', '~> 2.1.12'
-
-    sdks_dir = Pod::Config.instance.installation_root.join(prefix, "sdks")
-    hermes_tag_file = sdks_dir.join(".hermesversion")
-
-    if (File.exist?(hermes_tag_file))
-      # Use published pod with pre-builts.
-      Pod::UI.puts "[Hermes] Tag file exists at path: #{hermes_tag_file}"
-      package = JSON.parse(File.read(File.join(__dir__, "..", "package.json")))
-      hermes_version = package['version']
-      Pod::UI.puts "[Hermes] Loading version: #{hermes_version}"
-      pod 'hermes-engine', hermes_version
-    else
-      # Use local podspec and build from source.
-      path_to_hermes = "#{prefix}/sdks/hermes/hermes-engine.podspec"
-      Pod::UI.puts "[Hermes] Use local version from #{path_to_hermes}"
-      system("(cd #{prefix} && node scripts/hermes/prepare-hermes-for-build)")
-      pod 'hermes-engine', :path => path_to_hermes
-    end
-
+    system("(cd #{prefix} && node scripts/hermes/prepare-hermes-for-build)")
+    pod 'hermes-engine', :path => "#{prefix}/sdks/hermes/hermes-engine.podspec"
   end
 
   if flipper_configuration.flipper_enabled && !production
