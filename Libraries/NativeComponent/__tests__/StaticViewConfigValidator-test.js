@@ -74,13 +74,13 @@ test('passes for identical configs', () => {
     },
   };
 
-  expect(
-    StaticViewConfigValidator.validate(
-      name,
-      nativeViewConfig,
-      staticViewConfig,
-    ),
-  ).toBe(null);
+  const validationResult = StaticViewConfigValidator.validate(
+    name,
+    nativeViewConfig,
+    staticViewConfig,
+  );
+
+  expect(validationResult.type).toBe('valid');
 });
 
 test('fails for mismatched names', () => {
@@ -98,13 +98,10 @@ test('fails for mismatched names', () => {
     },
   };
 
-  expect(
-    StaticViewConfigValidator.validate(
-      name,
-      nativeViewConfig,
-      staticViewConfig,
-    ),
-  ).toBe(
+  expectSVCToNotMatchNVC(
+    name,
+    nativeViewConfig,
+    staticViewConfig,
     `
 StaticViewConfigValidator: Invalid static view config for 'RCTView'.
 
@@ -130,13 +127,10 @@ test('fails for unequal attributes', () => {
     },
   };
 
-  expect(
-    StaticViewConfigValidator.validate(
-      name,
-      nativeViewConfig,
-      staticViewConfig,
-    ),
-  ).toBe(
+  expectSVCToNotMatchNVC(
+    name,
+    nativeViewConfig,
+    staticViewConfig,
     `
 StaticViewConfigValidator: Invalid static view config for 'RCTView'.
 
@@ -165,13 +159,10 @@ test('fails for missing attributes', () => {
     },
   };
 
-  expect(
-    StaticViewConfigValidator.validate(
-      name,
-      nativeViewConfig,
-      staticViewConfig,
-    ),
-  ).toBe(
+  expectSVCToNotMatchNVC(
+    name,
+    nativeViewConfig,
+    staticViewConfig,
     `
 StaticViewConfigValidator: Invalid static view config for 'RCTView'.
 
@@ -203,13 +194,10 @@ test('fails for unexpected attributes', () => {
     },
   };
 
-  expect(
-    StaticViewConfigValidator.validate(
-      name,
-      nativeViewConfig,
-      staticViewConfig,
-    ),
-  ).toBe(
+  expectSVCToNotMatchNVC(
+    name,
+    nativeViewConfig,
+    staticViewConfig,
     `
 StaticViewConfigValidator: Invalid static view config for 'RCTView'.
 
@@ -220,3 +208,26 @@ StaticViewConfigValidator: Invalid static view config for 'RCTView'.
 `.trimStart(),
   );
 });
+
+function expectSVCToNotMatchNVC(
+  name,
+  nativeViewConfig,
+  staticViewConfig,
+  message,
+) {
+  const validationResult = StaticViewConfigValidator.validate(
+    name,
+    nativeViewConfig,
+    staticViewConfig,
+  );
+
+  expect(validationResult.type).toBe('invalid');
+  if (validationResult.type === 'invalid') {
+    expect(
+      StaticViewConfigValidator.stringifyValidationResult(
+        name,
+        validationResult,
+      ),
+    ).toBe(message);
+  }
+}

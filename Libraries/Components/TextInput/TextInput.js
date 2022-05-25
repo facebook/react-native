@@ -1064,9 +1064,9 @@ function InternalTextInput(props: Props): React.Node {
   });
 
   const _onChange = (event: ChangeEvent) => {
-    const text = event.nativeEvent.text;
+    const currentText = event.nativeEvent.text;
     props.onChange && props.onChange(event);
-    props.onChangeText && props.onChangeText(text);
+    props.onChangeText && props.onChangeText(currentText);
 
     if (inputRef.current == null) {
       // calling `props.onChange` or `props.onChangeText`
@@ -1074,7 +1074,7 @@ function InternalTextInput(props: Props): React.Node {
       return;
     }
 
-    setLastNativeText(text);
+    setLastNativeText(currentText);
     // This must happen last, after we call setLastNativeText.
     // Different ordering can cause bugs when editing AndroidTextInputs
     // with multiple Fragments.

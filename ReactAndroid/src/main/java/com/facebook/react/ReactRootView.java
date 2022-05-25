@@ -185,14 +185,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
   @Override
   public void onChildStartedNativeGesture(MotionEvent ev) {
-    if (mReactInstanceManager == null
-        || !mIsAttachedToInstance
-        || mReactInstanceManager.getCurrentReactContext() == null) {
-      FLog.w(TAG, "Unable to dispatch touch to JS as the catalyst instance has not been attached");
-      return;
-    }
-    if (mJSTouchDispatcher == null) {
-      FLog.w(TAG, "Unable to dispatch touch to JS before the dispatcher is available");
+    if (!isDispatcherReady()) {
       return;
     }
     ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
@@ -207,6 +200,35 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   @Override
   public void onChildStartedNativeGesture(View childView, MotionEvent ev) {
     onChildStartedNativeGesture(ev);
+  }
+
+  @Override
+  public void onChildEndedNativeGesture(View childView, MotionEvent ev) {
+    if (!isDispatcherReady()) {
+      return;
+    }
+    ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
+    UIManager uiManager = UIManagerHelper.getUIManager(reactContext, getUIManagerType());
+
+    if (uiManager != null) {
+      EventDispatcher eventDispatcher = uiManager.getEventDispatcher();
+      mJSTouchDispatcher.onChildEndedNativeGesture(ev, eventDispatcher);
+    }
+  }
+
+  private boolean isDispatcherReady() {
+    if (mReactInstanceManager == null
+        || !mIsAttachedToInstance
+        || mReactInstanceManager.getCurrentReactContext() == null) {
+      FLog.w(TAG, "Unable to dispatch touch to JS as the catalyst instance has not been attached");
+      return false;
+    }
+    if (mJSTouchDispatcher == null) {
+      FLog.w(TAG, "Unable to dispatch touch to JS before the dispatcher is available");
+      return false;
+    }
+
+    return true;
   }
 
   @Override

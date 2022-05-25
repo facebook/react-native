@@ -22,5 +22,11 @@ public interface RootView {
   /** @deprecated */
   void onChildStartedNativeGesture(MotionEvent ev);
 
+  /**
+   * Called when a child ends a native gesture. Should be called from the child's onTouchIntercepted
+   * implementation.
+   */
+  void onChildEndedNativeGesture(View childView, MotionEvent ev);
+
   void handleException(Throwable t);
 }

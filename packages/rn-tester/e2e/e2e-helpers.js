@@ -8,7 +8,7 @@
  * @format
  */
 
-/* global element, by, expect */
+/* global element, by */
 
 // Will open a component example from the root list
 // by filtering by component and then tapping on the label

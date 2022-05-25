@@ -239,7 +239,12 @@ class OnChangeExample extends React.Component<{...}, $FlowFixMeState> {
   render() {
     return (
       <View>
-        <Switch onChange={() => alert('OnChange Called')} />
+        <Switch
+          onChange={() => {
+            // eslint-disable-next-line no-alert
+            alert('OnChange Called');
+          }}
+        />
       </View>
     );
   }

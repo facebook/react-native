@@ -4,9 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
+ * @noformat
  * @flow strict-local
- * @generated SignedSource<<435ec24b3531c66986fe5d529795713b>>
+ * @generated SignedSource<<4f1549884fbe8fc2aea495692e3f665d>>
  *
  * This file was sync'd from the facebook/react repository.
  */

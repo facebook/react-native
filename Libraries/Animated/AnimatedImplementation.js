@@ -18,7 +18,6 @@ const AnimatedInterpolation = require('./nodes/AnimatedInterpolation');
 const AnimatedModulo = require('./nodes/AnimatedModulo');
 const AnimatedMultiplication = require('./nodes/AnimatedMultiplication');
 const AnimatedNode = require('./nodes/AnimatedNode');
-const AnimatedProps = require('./nodes/AnimatedProps');
 const AnimatedSubtraction = require('./nodes/AnimatedSubtraction');
 const AnimatedTracking = require('./nodes/AnimatedTracking');
 const AnimatedValue = require('./nodes/AnimatedValue');

@@ -70,33 +70,30 @@ export function get<Config>(
       : createViewConfig(viewConfigProvider());
 
     if (verify) {
+      const nativeViewConfig = native
+        ? viewConfig
+        : getNativeComponentAttributes(name);
+      const staticViewConfig = native
+        ? createViewConfig(viewConfigProvider())
+        : viewConfig;
+
       if (strict) {
-        const results = native
-          ? StaticViewConfigValidator.validate(
+        const validationOutput = StaticViewConfigValidator.validate(
+          name,
+          nativeViewConfig,
+          staticViewConfig,
+        );
+
+        if (validationOutput.type === 'invalid') {
+          console.error(
+            StaticViewConfigValidator.stringifyValidationResult(
               name,
-              viewConfig,
-              createViewConfig(viewConfigProvider()),
-            )
-          : StaticViewConfigValidator.validate(
-              name,
-              getNativeComponentAttributes(name),
-              viewConfig,
-            );
-        if (results != null) {
-          console.error(results);
+              validationOutput,
+            ),
+          );
         }
       } else {
-        if (native) {
-          verifyComponentAttributeEquivalence(
-            viewConfig,
-            createViewConfig(viewConfigProvider()),
-          );
-        } else {
-          verifyComponentAttributeEquivalence(
-            getNativeComponentAttributes(name),
-            viewConfig,
-          );
-        }
+        verifyComponentAttributeEquivalence(nativeViewConfig, staticViewConfig);
       }
     }
 

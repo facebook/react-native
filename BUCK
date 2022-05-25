@@ -307,6 +307,7 @@ REACT_PUBLIC_HEADERS = {
     "React/RCTVersion.h": RCTBASE_PATH + "RCTVersion.h",
     "React/RCTView.h": RCTVIEWS_PATH + "RCTView.h",
     "React/RCTViewManager.h": RCTVIEWS_PATH + "RCTViewManager.h",
+    "React/RCTViewUtils.h": RCTVIEWS_PATH + "RCTViewUtils.h",
     "React/RCTWeakProxy.h": RCTBASE_PATH + "RCTWeakProxy.h",
     "React/RCTWeakViewHolder.h": RCTVIEWS_PATH + "RCTWeakViewHolder.h",
     "React/RCTWrapperViewController.h": RCTVIEWS_PATH + "RCTWrapperViewController.h",

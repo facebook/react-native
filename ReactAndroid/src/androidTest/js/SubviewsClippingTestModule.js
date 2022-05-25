@@ -334,7 +334,7 @@ class SubviewsClippingTestApp extends React.Component {
   state = {};
 
   UNSAFE_componentWillMount() {
-    appInstance = this;
+    appInstance = this; // eslint-disable-line consistent-this
   }
 
   setComponent = component => {

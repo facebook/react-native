@@ -36,6 +36,7 @@ async function updateComment(octokit, issueParams, body, replacePattern) {
   const authedUserId = authenticatedUser.data.id;
   const pattern = new RegExp(replacePattern, 'g');
   const comment = comments.data.find(
+    // eslint-disable-next-line no-shadow
     ({user, body}) => user.id === authedUserId && pattern.test(body),
   );
   if (!comment) {

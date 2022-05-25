@@ -7,13 +7,10 @@
 
 package com.facebook.react.uimanager.events;
 
-import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.IllegalViewOperationException;
-import com.facebook.react.uimanager.ReactRoot;
-import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.common.UIManagerType;
 
 /**
@@ -42,23 +39,6 @@ public abstract class Event<T extends Event> {
   private int mViewTag;
   private long mTimestampMs;
   private int mUniqueID = sUniqueID++;
-
-  /**
-   * This surfaceId should be a valid SurfaceId in Fabric, and should ALWAYS return -1 in
-   * non-Fabric.
-   */
-  public static int getSurfaceIdForView(@Nullable View view) {
-    if (view != null
-        && view instanceof ReactRoot
-        && ((ReactRoot) view).getUIManagerType() == UIManagerType.FABRIC) {
-      if (view.getContext() instanceof ThemedReactContext) {
-        ThemedReactContext context = (ThemedReactContext) view.getContext();
-        return context.getSurfaceId();
-      }
-      return ((ReactRoot) view).getRootViewTag();
-    }
-    return -1;
-  }
 
   protected Event() {}
 

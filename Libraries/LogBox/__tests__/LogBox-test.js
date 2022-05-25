@@ -30,20 +30,20 @@ function mockFilterResult(returnValues) {
 }
 
 describe('LogBox', () => {
-  const {error, warn} = console;
-  let consoleError;
-  let consoleWarn;
+  const {error, log, warn} = console;
 
   beforeEach(() => {
     jest.resetModules();
-    console.error = consoleError = jest.fn();
-    console.warn = consoleWarn = jest.fn();
+    console.error = jest.fn();
+    console.log = jest.fn();
+    console.warn = jest.fn();
     console.disableYellowBox = false;
   });
 
   afterEach(() => {
     LogBox.uninstall();
     console.error = error;
+    console.log = log;
     console.warn = warn;
   });
 
@@ -329,6 +329,8 @@ describe('LogBox', () => {
   });
 
   it('preserves decorations of console.error after installing/uninstalling', () => {
+    const consoleError = console.error;
+
     LogBox.install();
 
     const originalConsoleError = console.error;
@@ -356,6 +358,8 @@ describe('LogBox', () => {
   });
 
   it('preserves decorations of console.warn after installing/uninstalling', () => {
+    const consoleWarn = console.warn;
+
     LogBox.install();
 
     const originalConsoleWarn = console.warn;
