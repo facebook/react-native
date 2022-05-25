@@ -111,7 +111,13 @@ public class JSPointerDispatcher {
 
       if (!supportsHover) {
         dispatchNonBubblingEventForPathWhenListened(
-            EVENT.ENTER, EVENT.ENTER_CAPTURE, hitPath, eventDispatcher, surfaceId, motionEvent);
+            EVENT.ENTER,
+            EVENT.ENTER_CAPTURE,
+            hitPath,
+            eventDispatcher,
+            surfaceId,
+            motionEvent,
+            false);
       }
 
       boolean listeningForDown =
@@ -196,7 +202,13 @@ public class JSPointerDispatcher {
 
       if (!supportsHover) {
         dispatchNonBubblingEventForPathWhenListened(
-            EVENT.LEAVE, EVENT.LEAVE_CAPTURE, hitPath, eventDispatcher, surfaceId, motionEvent);
+            EVENT.LEAVE,
+            EVENT.LEAVE_CAPTURE,
+            hitPath,
+            eventDispatcher,
+            surfaceId,
+            motionEvent,
+            false);
       }
       return;
     }
@@ -227,22 +239,28 @@ public class JSPointerDispatcher {
     return false;
   }
 
-  /*
-  Dispatch event only if ancestor is listening to relevant event.
-  This should only be relevant for ENTER/LEAVE events.
-  @param hitPath - ordered from inner target to root
+  /**
+   * Dispatch event only if ancestor is listening to relevant capture event. This should only be
+   * relevant for ENTER/LEAVE events that need to be dispatched along every relevant view in the hit
+   * path.
+   *
+   * @param pointerEventType - Should only be ENTER/LEAVE events
+   * @param hitPath - ViewTargets ordered from target -> root
+   * @param dispatcher
+   * @param surfaceId
+   * @param motionEvent
+   * @param forceDispatch - Ignore if ancestor is listening and force the event to be dispatched
    */
-
-  /** Dispatch non-bubbling event along the hit path only when relevant listeners */
   private static void dispatchNonBubblingEventForPathWhenListened(
       EVENT event,
       EVENT captureEvent,
       List<ViewTarget> hitPath,
       EventDispatcher dispatcher,
       int surfaceId,
-      MotionEvent motionEvent) {
+      MotionEvent motionEvent,
+      boolean forceDispatch) {
 
-    boolean ancestorListening = false;
+    boolean ancestorListening = forceDispatch;
     String eventName = PointerEventHelper.getDispatchableEventName(event);
     if (eventName == null) {
       return;
@@ -312,54 +330,72 @@ public class JSPointerDispatcher {
     // hitState is list ordered from inner child -> parent tag
     // Traverse hitState back-to-front to find the first divergence with mLastHitState
     // FIXME: this may generate incorrect events when view collapsing changes the hierarchy
-    int firstDivergentIndex = 0;
-    while (firstDivergentIndex < Math.min(hitPath.size(), mLastHitPath.size())
+    boolean nonDivergentListeningToEnter = false;
+    boolean nonDivergentListeningToLeave = false;
+    int firstDivergentIndexFromBack = 0;
+    while (firstDivergentIndexFromBack < Math.min(hitPath.size(), mLastHitPath.size())
         && hitPath
-            .get(hitPath.size() - 1 - firstDivergentIndex)
-            .equals(mLastHitPath.get(mLastHitPath.size() - 1 - firstDivergentIndex))) {
-      firstDivergentIndex++;
+            .get(hitPath.size() - 1 - firstDivergentIndexFromBack)
+            .equals(mLastHitPath.get(mLastHitPath.size() - 1 - firstDivergentIndexFromBack))) {
+
+      // Track if any non-diverging views are listening to enter/leave
+      View nonDivergentViewTargetView =
+          hitPath.get(hitPath.size() - 1 - firstDivergentIndexFromBack).getView();
+      if (!nonDivergentListeningToEnter
+          && PointerEventHelper.isListening(nonDivergentViewTargetView, EVENT.ENTER_CAPTURE)) {
+        nonDivergentListeningToEnter = true;
+      }
+      if (!nonDivergentListeningToLeave
+          && PointerEventHelper.isListening(nonDivergentViewTargetView, EVENT.LEAVE_CAPTURE)) {
+        nonDivergentListeningToLeave = true;
+      }
+
+      firstDivergentIndexFromBack++;
     }
 
-    boolean hasDiverged = firstDivergentIndex < Math.max(hitPath.size(), mLastHitPath.size());
+    boolean hasDiverged =
+        firstDivergentIndexFromBack < Math.max(hitPath.size(), mLastHitPath.size());
 
-    // Fire all relevant enter events
     if (hasDiverged) {
       // If something has changed in either enter/exit, let's start a new coalescing key
       mTouchEventCoalescingKeyHelper.incrementCoalescingKey(mHoverInteractionKey);
 
-      List<ViewTarget> enterViewTargets = hitPath.subList(0, hitPath.size() - firstDivergentIndex);
+      List<ViewTarget> enterViewTargets =
+          hitPath.subList(0, hitPath.size() - firstDivergentIndexFromBack);
       if (enterViewTargets.size() > 0) {
-        // root -> child
-        for (int i = enterViewTargets.size(); i-- > 0; ) {
-          eventDispatcher.dispatchEvent(
-              PointerEvent.obtain(
-                  PointerEventHelper.POINTER_ENTER,
-                  surfaceId,
-                  enterViewTargets.get(i).getViewId(),
-                  motionEvent));
-        }
+        dispatchNonBubblingEventForPathWhenListened(
+            EVENT.ENTER,
+            EVENT.ENTER_CAPTURE,
+            enterViewTargets,
+            eventDispatcher,
+            surfaceId,
+            motionEvent,
+            nonDivergentListeningToEnter);
       }
 
-      // Fire all relevant exit events
       List<ViewTarget> exitViewTargets =
-          mLastHitPath.subList(0, mLastHitPath.size() - firstDivergentIndex);
+          mLastHitPath.subList(0, mLastHitPath.size() - firstDivergentIndexFromBack);
       if (exitViewTargets.size() > 0) {
         // child -> root
-        for (ViewTarget exitViewTarget : exitViewTargets) {
-          eventDispatcher.dispatchEvent(
-              PointerEvent.obtain(
-                  PointerEventHelper.POINTER_LEAVE,
-                  surfaceId,
-                  exitViewTarget.getViewId(),
-                  motionEvent));
-        }
+        dispatchNonBubblingEventForPathWhenListened(
+            EVENT.LEAVE,
+            EVENT.LEAVE_CAPTURE,
+            enterViewTargets,
+            eventDispatcher,
+            surfaceId,
+            motionEvent,
+            nonDivergentListeningToLeave);
       }
     }
 
     int coalescingKey = mTouchEventCoalescingKeyHelper.getCoalescingKey(mHoverInteractionKey);
-    eventDispatcher.dispatchEvent(
-        PointerEvent.obtain(
-            PointerEventHelper.POINTER_MOVE, surfaceId, targetTag, motionEvent, coalescingKey));
+    boolean listeningToMove =
+        isAnyoneListeningForBubblingEvent(hitPath, EVENT.MOVE, EVENT.MOVE_CAPTURE);
+    if (listeningToMove) {
+      eventDispatcher.dispatchEvent(
+          PointerEvent.obtain(
+              PointerEventHelper.POINTER_MOVE, surfaceId, targetTag, motionEvent, coalescingKey));
+    }
 
     mLastHitPath = hitPath;
     mLastEventCoordinates[0] = x;
@@ -389,7 +425,13 @@ public class JSPointerDispatcher {
       }
 
       dispatchNonBubblingEventForPathWhenListened(
-          EVENT.LEAVE, EVENT.LEAVE_CAPTURE, hitPath, eventDispatcher, surfaceId, motionEvent);
+          EVENT.LEAVE,
+          EVENT.LEAVE_CAPTURE,
+          hitPath,
+          eventDispatcher,
+          surfaceId,
+          motionEvent,
+          false);
 
       mTouchEventCoalescingKeyHelper.removeCoalescingKey(mDownStartTime);
       mDownStartTime = TouchEvent.UNSET;
