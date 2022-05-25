@@ -53,8 +53,8 @@ public class IntBufferBatchMountItem implements MountItem {
   private final int mSurfaceId;
   private final int mCommitNumber;
 
-  @NonNull private final int[] mIntBuffer;
-  @NonNull private final Object[] mObjBuffer;
+  private final @NonNull int[] mIntBuffer;
+  private final @NonNull Object[] mObjBuffer;
 
   private final int mIntBufferLen;
   private final int mObjBufferLen;
