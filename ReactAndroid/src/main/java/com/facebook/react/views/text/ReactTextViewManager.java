@@ -107,7 +107,7 @@ public class ReactTextViewManager
   @Override
   public Object updateState(
       ReactTextView view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
-    if (ReactFeatureFlags.isMapBufferSerializationEnabled()) {
+    if (ReactFeatureFlags.mapBufferSerializationEnabled) {
       MapBuffer stateMapBuffer = stateWrapper.getStateDataMapBuffer();
       if (stateMapBuffer != null) {
         return getReactTextUpdate(view, props, stateMapBuffer);

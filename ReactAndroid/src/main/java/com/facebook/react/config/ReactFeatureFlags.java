@@ -74,16 +74,8 @@ public class ReactFeatureFlags {
   /** Feature flag to configure synchronized queue access for Animated module */
   public static boolean enableSynchronizationForAnimated = false;
 
-  private static boolean mapBufferSerializationEnabled = false;
-
   /** Enables or disables MapBuffer Serialization */
-  public static void setMapBufferSerializationEnabled(boolean enabled) {
-    mapBufferSerializationEnabled = enabled;
-  }
-
-  public static boolean isMapBufferSerializationEnabled() {
-    return mapBufferSerializationEnabled;
-  }
+  public static boolean mapBufferSerializationEnabled = false;
 
   /** Feature Flag to use overflowInset values provided by Yoga */
   public static boolean useOverflowInset = false;
