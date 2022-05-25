@@ -25,6 +25,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)sendData:(NSData *)data forSocketID:(nonnull NSNumber *)socketID;
 
+// Blocking call that waits until there are no more remaining actions on the queue
+- (void)flush;
+
 @end
 
 @interface RCTBridge (RCTWebSocketModule)
