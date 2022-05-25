@@ -24,13 +24,16 @@ namespace react {
 
 TurboModuleBinding::TurboModuleBinding(
     const TurboModuleProviderFunctionType &&moduleProvider,
+    TurboModuleBindingMode bindingMode,
     std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection)
     : moduleProvider_(std::move(moduleProvider)),
-      longLivedObjectCollection_(std::move(longLivedObjectCollection)) {}
+      longLivedObjectCollection_(std::move(longLivedObjectCollection)),
+      bindingMode_(bindingMode) {}
 
 void TurboModuleBinding::install(
     jsi::Runtime &runtime,
     const TurboModuleProviderFunctionType &&moduleProvider,
+    TurboModuleBindingMode bindingMode,
     std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection) {
   runtime.global().setProperty(
       runtime,
@@ -41,6 +44,7 @@ void TurboModuleBinding::install(
           1,
           [binding = TurboModuleBinding(
                std::move(moduleProvider),
+               bindingMode,
                std::move(longLivedObjectCollection))](
               jsi::Runtime &rt,
               const jsi::Value &thisVal,
@@ -76,7 +80,33 @@ jsi::Value TurboModuleBinding::getModule(
     module = moduleProvider_(moduleName);
   }
   if (module) {
-    return jsi::Object::createFromHostObject(runtime, std::move(module));
+    // Default behaviour
+    if (bindingMode_ == TurboModuleBindingMode::HostObject) {
+      return jsi::Object::createFromHostObject(runtime, std::move(module));
+    }
+
+    auto &jsRepresentation = module->jsRepresentation_;
+    if (!jsRepresentation) {
+      jsRepresentation = std::make_unique<jsi::Object>(runtime);
+      if (bindingMode_ == TurboModuleBindingMode::Prototype) {
+        // Option 1: create plain object, with it's prototype mapped back to the
+        // hostobject. Any properties accessed are stored on the plain object
+        auto hostObject =
+            jsi::Object::createFromHostObject(runtime, std::move(module));
+        jsRepresentation->setProperty(
+            runtime, "__proto__", std::move(hostObject));
+      } else {
+        // Option 2: eagerly install all hostfunctions at this point, avoids
+        // prototype
+        for (auto it = module->methodMap_.cbegin();
+             it != module->methodMap_.cend();
+             ++it) {
+          auto propName = jsi::PropNameID::forUtf8(runtime, it->first);
+          module->get(runtime, propName, it->second);
+        }
+      }
+    }
+    return jsi::Value(runtime, *jsRepresentation);
   } else {
     return jsi::Value::null();
   }

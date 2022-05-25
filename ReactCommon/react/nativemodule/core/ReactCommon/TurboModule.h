@@ -53,16 +53,7 @@ class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
         // Method was not found, let JS decide what to do.
         return facebook::jsi::Value::undefined();
       } else {
-        MethodMetadata meta = p->second;
-        return facebook::jsi::Function::createFromHostFunction(
-            runtime,
-            propName,
-            static_cast<unsigned int>(meta.argCount),
-            [this, meta](
-                jsi::Runtime &rt,
-                const jsi::Value &thisVal,
-                const jsi::Value *args,
-                size_t count) { return meta.invoker(rt, *this, args, count); });
+        return get(runtime, propName, p->second);
       }
     }
   }
@@ -80,7 +71,16 @@ class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
         size_t count);
   };
 
+  facebook::jsi::Value get(
+      facebook::jsi::Runtime &runtime,
+      const facebook::jsi::PropNameID &propName,
+      const MethodMetadata &meta);
+
   std::unordered_map<std::string, MethodMetadata> methodMap_;
+
+ private:
+  friend class TurboModuleBinding;
+  std::unique_ptr<jsi::Object> jsRepresentation_;
 };
 
 /**
