@@ -173,14 +173,18 @@ function translateTypeAnnotation(
             typeAnnotation,
           );
 
-          return translateTypeAnnotation(
-            hasteModuleName,
-            typeAnnotation.typeParameters.params[0],
-            types,
-            aliasMap,
-            tryParse,
-            cxxOnly,
+          const [paramType, isParamNullable] = unwrapNullable(
+            translateTypeAnnotation(
+              hasteModuleName,
+              typeAnnotation.typeParameters.params[0],
+              types,
+              aliasMap,
+              tryParse,
+              cxxOnly,
+            ),
           );
+
+          return wrapNullable(nullable || isParamNullable, paramType);
         }
         case 'Stringish': {
           return wrapNullable(nullable, {

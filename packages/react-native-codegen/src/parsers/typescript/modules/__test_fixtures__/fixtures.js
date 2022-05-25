@@ -146,6 +146,7 @@ export type ObjectAlias = {
   label: string;
   truthy: boolean;
 };
+export type ReadOnlyAlias = Readonly<ObjectAlias>;
 
 export interface Spec extends TurboModule {
   // Exported methods.
@@ -153,6 +154,9 @@ export interface Spec extends TurboModule {
   readonly getVoid: () => Void;
   readonly getArray: (a: Array<A>) => {a: B};
   readonly getStringFromAlias: (a: ObjectAlias) => string;
+  readonly getStringFromNullableAlias: (a: ObjectAlias | null) => string;
+  readonly getStringFromReadOnlyAlias: (a: ReadOnlyAlias) => string;
+  readonly getStringFromNullableReadOnlyAlias: (a: ReadOnlyAlias | null) => string;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');

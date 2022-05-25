@@ -208,6 +208,7 @@ protected:
 
 public:
   virtual jsi::Value getMixed(jsi::Runtime &rt, jsi::Value arg) = 0;
+  virtual std::optional<double> getNullableNumberFromNullableAlias(jsi::Runtime &rt, std::optional<jsi::Object> a) = 0;
 
 };
 
@@ -236,6 +237,14 @@ private:
 
       return bridging::callFromJs<jsi::Value>(
           rt, &T::getMixed, jsInvoker_, instance_, std::move(arg));
+    }
+    std::optional<double> getNullableNumberFromNullableAlias(jsi::Runtime &rt, std::optional<jsi::Object> a) override {
+      static_assert(
+          bridging::getParameterCount(&T::getNullableNumberFromNullableAlias) == 2,
+          \\"Expected getNullableNumberFromNullableAlias(...) to have 2 parameters\\");
+
+      return bridging::callFromJs<std::optional<double>>(
+          rt, &T::getNullableNumberFromNullableAlias, jsInvoker_, instance_, std::move(a));
     }
 
   private:
