@@ -9,8 +9,9 @@
 
 #import "UIView+React.h"
 
-UIEdgeInsets RCTContentInsets(UIView *view)
+UIEdgeInsets RCTContentInsets(RCTPlatformView *view) // TODO(macOS GH#774)
 {
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
   while (view) {
     UIViewController *controller = view.reactViewController;
     if (controller) {
@@ -18,5 +19,6 @@ UIEdgeInsets RCTContentInsets(UIView *view)
     }
     view = view.superview;
   }
+#endif // ]TODO(macOS GH#774)
   return UIEdgeInsetsZero;
 }
