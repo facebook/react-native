@@ -103,10 +103,10 @@ class FlipperConfiguration
     end
 
     def self.enabled(configurations = ["Debug"], versions = {})
-        return FlipperConfiguration.new(true, configurations, versions)
+        FlipperConfiguration.new(true, configurations, versions)
     end
 
     def self.disabled
-        return FlipperConfiguration.new(false, [], {})
+        FlipperConfiguration.new(false, [], {})
     end
 end

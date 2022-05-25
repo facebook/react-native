@@ -111,6 +111,10 @@ def use_react_native! (options={})
     pod 'hermes-engine', :path => "#{prefix}/sdks/hermes/hermes-engine.podspec"
   end
 
+  # CocoaPods `configurations` option ensures that the target is copied only for the specified configurations,
+  # but those dependencies are still built.
+  # Flipper doesn't currently compile for release https://github.com/facebook/react-native/issues/33764
+  # Setting the production flag to true when build for production make sure that we don't install Flipper in the app in the first place.
   if flipper_configuration.flipper_enabled && !production
     install_flipper_dependencies(prefix)
     use_flipper_pods(flipper_configuration.versions, :configurations => flipper_configuration.configurations)
