@@ -56,6 +56,25 @@ exports[`RN Codegen TypeScript Parser can generate fixture CXX_ONLY_NATIVE_MODUL
               },
               'params': []
             }
+          },
+          {
+            'name': 'getMixed',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'MixedTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'arg',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'MixedTypeAnnotation'
+                  }
+                }
+              ]
+            }
           }
         ]
       },

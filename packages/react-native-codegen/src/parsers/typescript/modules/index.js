@@ -363,6 +363,14 @@ function translateTypeAnnotation(
         ),
       );
     }
+    case 'TSUnknownKeyword': {
+      if (cxxOnly) {
+        return wrapNullable(nullable, {
+          type: 'MixedTypeAnnotation',
+        });
+      }
+      // Fallthrough
+    }
     default: {
       throw new UnsupportedTypeScriptTypeAnnotationParserError(
         hasteModuleName,

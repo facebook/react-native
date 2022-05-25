@@ -591,6 +591,7 @@ import * as TurboModuleRegistry from '../TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
   +getCallback: () => () => void;
+  +getMixed: (arg: mixed) => mixed;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModuleCxx');

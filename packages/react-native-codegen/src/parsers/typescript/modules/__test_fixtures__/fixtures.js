@@ -519,6 +519,7 @@ import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboMo
 
 export interface Spec extends TurboModule {
   readonly getCallback: () => () => void;
+  readonly getMixed: (arg: unknown) => unknown;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>(

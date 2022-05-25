@@ -363,6 +363,14 @@ function translateTypeAnnotation(
         ),
       );
     }
+    case 'MixedTypeAnnotation': {
+      if (cxxOnly) {
+        return wrapNullable(nullable, {
+          type: 'MixedTypeAnnotation',
+        });
+      }
+      // Fallthrough
+    }
     default: {
       throw new UnsupportedFlowTypeAnnotationParserError(
         hasteModuleName,

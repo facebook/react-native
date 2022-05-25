@@ -58,6 +58,25 @@ exports[`RN Codegen Flow Parser can generate fixture CXX_ONLY_NATIVE_MODULE 1`] 
               },
               'params': []
             }
+          },
+          {
+            'name': 'getMixed',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'MixedTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'arg',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'MixedTypeAnnotation'
+                  }
+                }
+              ]
+            }
           }
         ]
       },
