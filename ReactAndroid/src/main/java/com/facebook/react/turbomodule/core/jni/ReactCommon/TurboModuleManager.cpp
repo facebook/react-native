@@ -169,12 +169,8 @@ void TurboModuleManager::installJSIBindings() {
       return nullptr;
     };
 
-    if (longLivedObjectCollection_) {
-      TurboModuleBinding::install(
-          runtime, std::move(turboModuleProvider), longLivedObjectCollection_);
-    } else {
-      TurboModuleBinding::install(runtime, std::move(turboModuleProvider));
-    }
+    TurboModuleBinding::install(
+        runtime, std::move(turboModuleProvider), longLivedObjectCollection_);
   });
 }
 

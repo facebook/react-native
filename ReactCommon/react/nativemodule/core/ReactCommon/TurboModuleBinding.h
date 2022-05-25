@@ -29,29 +29,20 @@ class TurboModuleBinding {
    */
   static void install(
       jsi::Runtime &runtime,
-      const TurboModuleProviderFunctionType &&moduleProvider);
-  static void install(
-      jsi::Runtime &runtime,
       const TurboModuleProviderFunctionType &&moduleProvider,
       std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection);
 
-  TurboModuleBinding(const TurboModuleProviderFunctionType &&moduleProvider);
+ private:
   TurboModuleBinding(
       const TurboModuleProviderFunctionType &&moduleProvider,
       std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection);
   virtual ~TurboModuleBinding();
 
   /**
-   * Get an TurboModule instance for the given module name.
-   */
-  std::shared_ptr<TurboModule> getModule(const std::string &name);
-
- private:
-  /**
    * A lookup function exposed to JS to get an instance of a TurboModule
    * for the given name.
    */
-  jsi::Value jsProxy(
+  jsi::Value getModule(
       jsi::Runtime &runtime,
       const jsi::Value &thisVal,
       const jsi::Value *args,
@@ -59,7 +50,6 @@ class TurboModuleBinding {
 
   TurboModuleProviderFunctionType moduleProvider_;
   std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection_;
-  bool disableGlobalLongLivedObjectCollection_;
 };
 
 } // namespace react

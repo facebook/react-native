@@ -776,7 +776,7 @@ static Class getFallbackClassFromName(const char *name)
   if (RCTGetTurboModuleCleanupMode() == kRCTGlobalScope ||
       RCTGetTurboModuleCleanupMode() == kRCTGlobalScopeUsingRetainJSCallback) {
     runtimeExecutor([turboModuleProvider = std::move(turboModuleProvider)](jsi::Runtime &runtime) {
-      react::TurboModuleBinding::install(runtime, std::move(turboModuleProvider));
+      react::TurboModuleBinding::install(runtime, std::move(turboModuleProvider), nullptr);
     });
   } else if (RCTGetTurboModuleCleanupMode() == kRCTTurboModuleManagerScope) {
     runtimeExecutor([turboModuleProvider = std::move(turboModuleProvider),
