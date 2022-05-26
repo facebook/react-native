@@ -100,6 +100,8 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setRight(0);
     view.setElevation(0);
     view.setAnimationMatrix(null);
+
+    // setShadowColor
     view.setOutlineAmbientShadowColor(Color.BLACK);
     view.setOutlineSpotShadowColor(Color.BLACK);
 

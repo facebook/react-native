@@ -9,6 +9,7 @@ package com.facebook.react.views.text;
 
 import android.content.Context;
 import android.text.Spannable;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.react.R;
 import com.facebook.react.bridge.ReadableMap;
@@ -44,7 +45,36 @@ public class ReactTextViewManager
 
   @VisibleForTesting public static final String REACT_CLASS = "RCTText";
 
+  private ReactTextView mDefaultViewForRecycling = null;
+
   protected @Nullable ReactTextViewManagerCallback mReactTextViewManagerCallback;
+
+  public ReactTextViewManager() {
+    super();
+
+    enableViewRecycling();
+  }
+
+  @Override
+  protected ReactTextView prepareToRecycleView(
+      @NonNull ThemedReactContext reactContext, ReactTextView view) {
+    // TODO: use context as key
+    if (mDefaultViewForRecycling == null) {
+      mDefaultViewForRecycling = createViewInstance(reactContext);
+    }
+
+    // BaseViewManager
+    super.prepareToRecycleView(reactContext, view);
+
+    // Resets background and borders
+    view.recycleView(mDefaultViewForRecycling);
+
+    // Defaults from ReactTextAnchorViewManager
+    setSelectionColor(view, null);
+    setAndroidHyphenationFrequency(view, null);
+
+    return view;
+  }
 
   @Override
   public String getName() {

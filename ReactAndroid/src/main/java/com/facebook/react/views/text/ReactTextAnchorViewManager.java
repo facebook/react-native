@@ -193,24 +193,25 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
 
   @ReactProp(name = "dataDetectorType")
   public void setDataDetectorType(ReactTextView view, @Nullable String type) {
-    switch (type) {
-      case "phoneNumber":
-        view.setLinkifyMask(Linkify.PHONE_NUMBERS);
-        break;
-      case "link":
-        view.setLinkifyMask(Linkify.WEB_URLS);
-        break;
-      case "email":
-        view.setLinkifyMask(Linkify.EMAIL_ADDRESSES);
-        break;
-      case "all":
-        view.setLinkifyMask(Linkify.ALL);
-        break;
-      case "none":
-      default:
-        view.setLinkifyMask(0);
-        break;
+    if (type != null) {
+      switch (type) {
+        case "phoneNumber":
+          view.setLinkifyMask(Linkify.PHONE_NUMBERS);
+          return;
+        case "link":
+          view.setLinkifyMask(Linkify.WEB_URLS);
+          return;
+        case "email":
+          view.setLinkifyMask(Linkify.EMAIL_ADDRESSES);
+          return;
+        case "all":
+          view.setLinkifyMask(Linkify.ALL);
+          return;
+      }
     }
+
+    // "none" case, default, and null type are equivalent.
+    view.setLinkifyMask(0);
   }
 
   @ReactProp(name = "onInlineViewLayout")
