@@ -25,6 +25,12 @@ public class ReactViewBackgroundManager {
     this.mView = view;
   }
 
+  public void cleanup() {
+    ViewCompat.setBackground(mView, null);
+    this.mView = null;
+    this.mReactBackgroundDrawable = null;
+  }
+
   private ReactViewBackgroundDrawable getOrCreateReactViewBackground() {
     if (mReactBackgroundDrawable == null) {
       mReactBackgroundDrawable = new ReactViewBackgroundDrawable(mView.getContext());

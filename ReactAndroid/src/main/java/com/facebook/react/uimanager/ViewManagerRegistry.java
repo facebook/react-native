@@ -7,7 +7,10 @@
 
 package com.facebook.react.uimanager;
 
+import android.content.ComponentCallbacks2;
+import android.content.res.Configuration;
 import androidx.annotation.Nullable;
+import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.MapBuilder;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +23,7 @@ public final class ViewManagerRegistry {
 
   private final Map<String, ViewManager> mViewManagers;
   private final @Nullable ViewManagerResolver mViewManagerResolver;
+  private final MemoryTrimCallback mMemoryTrimCallback = new MemoryTrimCallback();
 
   public ViewManagerRegistry(ViewManagerResolver viewManagerResolver) {
     mViewManagers = MapBuilder.newHashMap();
@@ -40,6 +44,40 @@ public final class ViewManagerRegistry {
     mViewManagers =
         viewManagerMap != null ? viewManagerMap : MapBuilder.<String, ViewManager>newHashMap();
     mViewManagerResolver = null;
+  }
+
+  /**
+   * Trim View Recycling memory aggressively. Whenever the system is running even slightly low on
+   * memory or is backgrounded, we immediately flush all recyclable Views. GC and memory swaps cause
+   * intense CPU pressure, so we always favor low memory usage over View recycling, even if there is
+   * only "moderate" pressure.
+   */
+  private class MemoryTrimCallback implements ComponentCallbacks2 {
+    @Override
+    public void onTrimMemory(int level) {
+      Runnable runnable =
+          new Runnable() {
+            @Override
+            public void run() {
+              for (Map.Entry<String, ViewManager> entry : mViewManagers.entrySet()) {
+                entry.getValue().trimMemory();
+              }
+            }
+          };
+      if (UiThreadUtil.isOnUiThread()) {
+        runnable.run();
+      } else {
+        UiThreadUtil.runOnUiThread(runnable);
+      }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {}
+
+    @Override
+    public void onLowMemory() {
+      this.onTrimMemory(0);
+    }
   }
 
   /**
@@ -90,5 +128,23 @@ public final class ViewManagerRegistry {
       return getViewManagerFromResolver(className);
     }
     return null;
+  }
+
+  /** Send lifecycle signal to all ViewManagers that StopSurface has been called. */
+  public void onSurfaceStopped(int surfaceId) {
+    Runnable runnable =
+        new Runnable() {
+          @Override
+          public void run() {
+            for (Map.Entry<String, ViewManager> entry : mViewManagers.entrySet()) {
+              entry.getValue().onSurfaceStopped(surfaceId);
+            }
+          }
+        };
+    if (UiThreadUtil.isOnUiThread()) {
+      runnable.run();
+    } else {
+      UiThreadUtil.runOnUiThread(runnable);
+    }
   }
 }

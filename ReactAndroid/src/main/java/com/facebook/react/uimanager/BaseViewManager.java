@@ -65,6 +65,48 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   private static final String STATE_MIXED = "mixed";
 
   @Override
+  protected T prepareToRecycleView(@NonNull ThemedReactContext reactContext, T view) {
+    // Reset tags
+    view.setTag(R.id.pointer_enter, null);
+    view.setTag(R.id.pointer_leave, null);
+    view.setTag(R.id.pointer_move, null);
+    view.setTag(R.id.react_test_id, null);
+    view.setTag(R.id.view_tag_native_id, null);
+    view.setTag(R.id.labelled_by, null);
+    view.setTag(R.id.accessibility_label, null);
+    view.setTag(R.id.accessibility_hint, null);
+    view.setTag(R.id.accessibility_role, null);
+    view.setTag(R.id.accessibility_state, null);
+    view.setTag(R.id.accessibility_actions, null);
+    view.setTag(R.id.accessibility_value, null);
+
+    // This indirectly calls (and resets):
+    // setTranslationX
+    // setTranslationY
+    // setRotation
+    // setRotationX
+    // setRotationY
+    // setScaleX
+    // setScaleY
+    // setCameraDistance
+    setTransform(view, null);
+
+    // RenderNode params not covered by setTransform above
+    view.setPivotX(0);
+    view.setPivotY(0);
+    view.setTop(0);
+    view.setBottom(0);
+    view.setLeft(0);
+    view.setRight(0);
+    view.setElevation(0);
+    view.setAnimationMatrix(null);
+    view.setOutlineAmbientShadowColor(Color.BLACK);
+    view.setOutlineSpotShadowColor(Color.BLACK);
+
+    return view;
+  }
+
+  @Override
   @ReactProp(
       name = ViewProps.BACKGROUND_COLOR,
       defaultInt = Color.TRANSPARENT,
