@@ -960,9 +960,8 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
       // EditText's prioritize their own text content over a contentDescription so skip this
       if (!TextUtils.isEmpty(contentDescription) && (!isEditText || !hasNodeText)) {
         // next add content description
-        talkbackSegments.append(contentDescription + delimiter);
-
-        return removeFinalDelimiter(talkbackSegments);
+        talkbackSegments.append(contentDescription);
+        return talkbackSegments;
       }
 
       // EditText
@@ -970,9 +969,8 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
         // skipped status checks above for EditText
 
         // description
-        talkbackSegments.append(nodeText + delimiter);
-
-        return removeFinalDelimiter(talkbackSegments);
+        talkbackSegments.append(nodeText);
+        return talkbackSegments;
       }
 
       // If there are child views and no contentDescription the text of all non-focusable children,
