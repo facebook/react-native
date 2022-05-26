@@ -20,7 +20,8 @@
         removeAtIndices:(NSArray *)removeAtIndices
                registry:(NSDictionary<NSNumber *, id<RCTComponent>> *)registry;
 
-@property (nonatomic, copy, readonly) NSMutableDictionary<NSNumber *, RCTUIView *> *viewRegistry; // TODO(macOS ISS#3536887)
+@property (nonatomic, copy, readonly)
+    NSMutableDictionary<NSNumber *, RCTUIView *> *viewRegistry; // TODO(macOS ISS#3536887)
 
 @end
 
@@ -51,8 +52,8 @@
   RCTUIView *containerView = _uiManager.viewRegistry[@20]; // TODO(macOS ISS#3536887)
   NSMutableArray *addedViews = [NSMutableArray array];
 
-  NSArray *tagsToAdd = @[@1, @2, @3, @4, @5];
-  NSArray *addAtIndices = @[@0, @1, @2, @3, @4];
+  NSArray *tagsToAdd = @[ @1, @2, @3, @4, @5 ];
+  NSArray *addAtIndices = @[ @0, @1, @2, @3, @4 ];
   for (NSNumber *tag in tagsToAdd) {
     [addedViews addObject:_uiManager.viewRegistry[tag]];
   }
@@ -68,12 +69,14 @@
 
   [containerView didUpdateReactSubviews];
 
-  XCTAssertTrue([[containerView reactSubviews] count] == 5,
-               @"Expect to have 5 react subviews after calling manage children \
-               with 5 tags to add, instead have %lu", (unsigned long)[[containerView reactSubviews] count]);
+  XCTAssertTrue(
+      [[containerView reactSubviews] count] == 5,
+      @"Expect to have 5 react subviews after calling manage children \
+               with 5 tags to add, instead have %lu",
+      (unsigned long)[[containerView reactSubviews] count]);
   for (RCTUIView *view in addedViews) { // TODO(macOS ISS#3536887)
-    XCTAssertTrue([view reactSuperview] == containerView,
-                  @"Expected to have manage children successfully add children");
+    XCTAssertTrue(
+        [view reactSuperview] == containerView, @"Expected to have manage children successfully add children");
     [view removeFromSuperview];
   }
 }
@@ -83,7 +86,7 @@
   RCTUIView *containerView = _uiManager.viewRegistry[@20]; // TODO(macOS ISS#3536887)
   NSMutableArray *removedViews = [NSMutableArray array];
 
-  NSArray *removeAtIndices = @[@0, @4, @8, @12, @16];
+  NSArray *removeAtIndices = @[ @0, @4, @8, @12, @16 ];
   for (NSNumber *index in removeAtIndices) {
     NSNumber *reactTag = @(index.integerValue + 2);
     [removedViews addObject:_uiManager.viewRegistry[reactTag]];
@@ -104,21 +107,24 @@
 
   [containerView didUpdateReactSubviews];
 
-  XCTAssertEqual(containerView.reactSubviews.count, (NSUInteger)13,
-               @"Expect to have 13 react subviews after calling manage children\
+  XCTAssertEqual(
+      containerView.reactSubviews.count,
+      (NSUInteger)13,
+      @"Expect to have 13 react subviews after calling manage children\
                with 5 tags to remove and 18 prior children, instead have %zd",
-               containerView.reactSubviews.count);
+      containerView.reactSubviews.count);
   for (RCTUIView *view in removedViews) { // TODO(macOS ISS#3536887)
-    XCTAssertTrue([view reactSuperview] == nil,
-                 @"Expected to have manage children successfully remove children");
+    XCTAssertTrue([view reactSuperview] == nil, @"Expected to have manage children successfully remove children");
     // After removing views are unregistered - we need to reregister
     _uiManager.viewRegistry[view.reactTag] = view;
   }
   for (NSInteger i = 2; i < 20; i++) {
     RCTUIView *view = _uiManager.viewRegistry[@(i)]; // TODO(macOS ISS#3536887)
     if (![removedViews containsObject:view]) {
-      XCTAssertTrue([view superview] == containerView,
-                   @"Should not have removed view with react tag %ld during delete but did", (long)i);
+      XCTAssertTrue(
+          [view superview] == containerView,
+          @"Should not have removed view with react tag %ld during delete but did",
+          (long)i);
       [view removeFromSuperview];
     }
   }
@@ -136,11 +142,11 @@
 {
   RCTUIView *containerView = _uiManager.viewRegistry[@20]; // TODO(macOS ISS#3536887)
 
-  NSArray *removeAtIndices = @[@2, @3, @5, @8];
-  NSArray *addAtIndices = @[@0, @6];
-  NSArray *tagsToAdd = @[@11, @12];
-  NSArray *moveFromIndices = @[@4, @9];
-  NSArray *moveToIndices = @[@1, @7];
+  NSArray *removeAtIndices = @[ @2, @3, @5, @8 ];
+  NSArray *addAtIndices = @[ @0, @6 ];
+  NSArray *tagsToAdd = @[ @11, @12 ];
+  NSArray *moveFromIndices = @[ @4, @9 ];
+  NSArray *moveToIndices = @[ @1, @7 ];
 
   // We need to keep these in array to keep them around
   NSMutableArray *viewsToRemove = [NSMutableArray array];
@@ -165,15 +171,21 @@
 
   [containerView didUpdateReactSubviews];
 
-  XCTAssertTrue([[containerView reactSubviews] count] == 8,
-               @"Expect to have 8 react subviews after calling manage children,\
-               instead have the following subviews %@", [containerView reactSubviews]);
+  XCTAssertTrue(
+      [[containerView reactSubviews] count] == 8,
+      @"Expect to have 8 react subviews after calling manage children,\
+               instead have the following subviews %@",
+      [containerView reactSubviews]);
 
-  NSArray *expectedReactTags = @[@11, @5, @1, @2, @7, @8, @12, @10];
+  NSArray *expectedReactTags = @[ @11, @5, @1, @2, @7, @8, @12, @10 ];
   for (NSUInteger i = 0; i < containerView.subviews.count; i++) {
-    XCTAssertEqualObjects([[containerView reactSubviews][i] reactTag], expectedReactTags[i],
-                 @"Expected subview at index %ld to have react tag #%@ but has tag #%@",
-                         (long)i, expectedReactTags[i], [[containerView reactSubviews][i] reactTag]);
+    XCTAssertEqualObjects(
+        [[containerView reactSubviews][i] reactTag],
+        expectedReactTags[i],
+        @"Expected subview at index %ld to have react tag #%@ but has tag #%@",
+        (long)i,
+        expectedReactTags[i],
+        [[containerView reactSubviews][i] reactTag]);
   }
 
   // Clean up after ourselves

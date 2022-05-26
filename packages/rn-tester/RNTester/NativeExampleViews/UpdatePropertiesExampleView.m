@@ -31,8 +31,7 @@ RCT_EXPORT_MODULE();
 
 @end
 
-@implementation UpdatePropertiesExampleView
-{
+@implementation UpdatePropertiesExampleView {
   RCTRootView *_rootView;
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
   UIButton *_button;
@@ -52,7 +51,7 @@ RCT_EXPORT_MODULE();
 
     _rootView = [[RCTRootView alloc] initWithBridge:appDelegate.bridge
                                          moduleName:@"SetPropertiesExampleApp"
-                                  initialProperties:@{@"color":@"beige"}];
+                                  initialProperties:@{@"color" : @"beige"}];
 
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
     _button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
@@ -60,9 +59,7 @@ RCT_EXPORT_MODULE();
     [_button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [_button setBackgroundColor:[UIColor grayColor]];
 
-    [_button addTarget:self
-                action:@selector(changeColor)
-      forControlEvents:UIControlEventTouchUpInside];
+    [_button addTarget:self action:@selector(changeColor) forControlEvents:UIControlEventTouchUpInside];
 #else // [TODO(macOS GH#774)
     _button = [NSButton new];
     [_button setTitle:@"Native Button"];
@@ -90,7 +87,7 @@ RCT_EXPORT_MODULE();
 - (void)changeColor
 {
   _beige = !_beige;
-  [_rootView setAppProperties:@{@"color":_beige ? @"beige" : @"purple"}];
+  [_rootView setAppProperties:@{@"color" : _beige ? @"beige" : @"purple"}];
 }
 
 - (NSArray<RCTUIView<RCTComponent> *> *)reactSubviews // TODO(macOS GH#774)

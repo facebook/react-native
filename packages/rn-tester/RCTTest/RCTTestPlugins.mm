@@ -16,9 +16,10 @@
 #import <string>
 #import <unordered_map>
 
-Class RCTTestClassProvider(const char *name) {
+Class RCTTestClassProvider(const char *name)
+{
   static std::unordered_map<std::string, Class (*)(void)> sCoreModuleClassMap = {
-    {"TestModule", RCTTestModuleCls},
+      {"TestModule", RCTTestModuleCls},
   };
 
   auto p = sCoreModuleClassMap.find(name);

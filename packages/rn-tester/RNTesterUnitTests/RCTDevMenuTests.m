@@ -11,7 +11,7 @@
 #import <React/RCTBridge.h>
 #import <React/RCTDevMenu.h>
 
-typedef void(^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
+typedef void (^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
 
 @interface RCTDevMenu ()
 
@@ -23,8 +23,7 @@ typedef void(^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
 
 @end
 
-@implementation RCTDevMenuTests
-{
+@implementation RCTDevMenuTests {
   RCTBridge *_bridge;
 }
 

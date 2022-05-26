@@ -62,8 +62,8 @@
 #endif
 #endif
 
-#import <ReactCommon/RCTTurboModuleManager.h>
 #import <React/RCTTextAttributes.h> // TODO(OSS Candidate ISS#2710739)
+#import <ReactCommon/RCTTurboModuleManager.h>
 
 #import "RNTesterTurboModuleProvider.h"
 
@@ -216,20 +216,21 @@
   // Set up the default RCTImageLoader and RCTNetworking modules.
   if (moduleClass == RCTImageLoader.class) {
     return [[moduleClass alloc] initWithRedirectDelegate:nil
-        loadersProvider:^NSArray<id<RCTImageURLLoader>> *(RCTModuleRegistry * moduleRegistry) {
-          return @ [[RCTLocalAssetImageLoader new]];
+        loadersProvider:^NSArray<id<RCTImageURLLoader>> *(RCTModuleRegistry *moduleRegistry) {
+          return @[ [RCTLocalAssetImageLoader new] ];
         }
-        decodersProvider:^NSArray<id<RCTImageDataDecoder>> *(RCTModuleRegistry * moduleRegistry) {
-          return @ [[RCTGIFImageDecoder new]];
+        decodersProvider:^NSArray<id<RCTImageDataDecoder>> *(RCTModuleRegistry *moduleRegistry) {
+          return @[ [RCTGIFImageDecoder new] ];
         }];
   } else if (moduleClass == RCTNetworking.class) {
-    return [[moduleClass alloc] initWithHandlersProvider:^NSArray<id<RCTURLRequestHandler>> *(RCTModuleRegistry * moduleRegistry) {
-      return @[
-        [RCTHTTPRequestHandler new],
-        [RCTDataRequestHandler new],
-        [RCTFileRequestHandler new],
-      ];
-    }];
+    return [[moduleClass alloc]
+        initWithHandlersProvider:^NSArray<id<RCTURLRequestHandler>> *(RCTModuleRegistry *moduleRegistry) {
+          return @[
+            [RCTHTTPRequestHandler new],
+            [RCTDataRequestHandler new],
+            [RCTFileRequestHandler new],
+          ];
+        }];
   }
   // No custom initializer here.
   return [moduleClass new];

@@ -12,28 +12,38 @@
 namespace facebook {
 namespace react {
 
-jni::local_ref<RNTesterTurboModuleManagerDelegate::jhybriddata> RNTesterTurboModuleManagerDelegate::initHybrid(jni::alias_ref<jhybridobject>) {
+jni::local_ref<RNTesterTurboModuleManagerDelegate::jhybriddata>
+RNTesterTurboModuleManagerDelegate::initHybrid(jni::alias_ref<jhybridobject>) {
   return makeCxxInstance();
 }
 
 void RNTesterTurboModuleManagerDelegate::registerNatives() {
   registerHybrid({
-    makeNativeMethod("initHybrid", RNTesterTurboModuleManagerDelegate::initHybrid),
-    makeNativeMethod("canCreateTurboModule", RNTesterTurboModuleManagerDelegate::canCreateTurboModule),
+      makeNativeMethod(
+          "initHybrid", RNTesterTurboModuleManagerDelegate::initHybrid),
+      makeNativeMethod(
+          "canCreateTurboModule",
+          RNTesterTurboModuleManagerDelegate::canCreateTurboModule),
   });
 }
 
-std::shared_ptr<TurboModule> RNTesterTurboModuleManagerDelegate::getTurboModule(const std::string name, const std::shared_ptr<CallInvoker> jsInvoker) {
+std::shared_ptr<TurboModule> RNTesterTurboModuleManagerDelegate::getTurboModule(
+    const std::string name,
+    const std::shared_ptr<CallInvoker> jsInvoker) {
   // Not implemented yet: provide pure-C++ NativeModules here.
   return nullptr;
 }
 
-std::shared_ptr<TurboModule> RNTesterTurboModuleManagerDelegate::getTurboModule(const std::string name, const JavaTurboModule::InitParams &params) {
+std::shared_ptr<TurboModule> RNTesterTurboModuleManagerDelegate::getTurboModule(
+    const std::string name,
+    const JavaTurboModule::InitParams &params) {
   return RNTesterAppModuleProvider(name, params);
 }
 
-bool RNTesterTurboModuleManagerDelegate::canCreateTurboModule(std::string name) {
-  return getTurboModule(name, nullptr) != nullptr || getTurboModule(name, {.moduleName = name}) != nullptr;
+bool RNTesterTurboModuleManagerDelegate::canCreateTurboModule(
+    std::string name) {
+  return getTurboModule(name, nullptr) != nullptr ||
+      getTurboModule(name, {.moduleName = name}) != nullptr;
 }
 
 } // namespace react

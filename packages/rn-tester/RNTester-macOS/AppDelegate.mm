@@ -36,8 +36,7 @@ NSString *kBundleNameJS = @"RNTesterApp";
 
 @end
 
-@implementation AppDelegate
-{
+@implementation AppDelegate {
   NSMutableArray *_mainWindows;
   RCTTurboModuleManager *_turboModuleManager;
   std::shared_ptr<winrt::Microsoft::ReactNative::TurboModulesProvider> _turboModulesProvider;
@@ -49,8 +48,7 @@ NSString *kBundleNameJS = @"RNTesterApp";
 
   RCTEnableTurboModule(YES);
 
-  _bridge = [[RCTBridge alloc] initWithDelegate:self
-																	launchOptions:nil];
+  _bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:nil];
 
   // Optionally set the global `fontSmoothing` setting.
   // If not explicitly set, the default is subpixel-antialiased
@@ -60,24 +58,24 @@ NSString *kBundleNameJS = @"RNTesterApp";
 - (void)applicationWillFinishLaunching:(NSNotification *)__unused aNotification
 {
   [NSUserNotificationCenter defaultUserNotificationCenter].delegate = self;
-  
-	// initialize the url event listeners for Linking module
-	// note that you will need to add a URL type to your app’s info.plist
-	// this sample registers the rntester scheme
-	[[NSAppleEventManager sharedAppleEventManager] setEventHandler:[RCTLinkingManager class]
+
+  // initialize the url event listeners for Linking module
+  // note that you will need to add a URL type to your app’s info.plist
+  // this sample registers the rntester scheme
+  [[NSAppleEventManager sharedAppleEventManager] setEventHandler:[RCTLinkingManager class]
                                                      andSelector:@selector(getUrlEventHandler:withReplyEvent:)
                                                    forEventClass:kInternetEventClass
                                                       andEventID:kAEGetURL];
-
 }
 
--(IBAction)newDocument:(id)__unused sender
+- (IBAction)newDocument:(id)__unused sender
 {
   if (_mainWindows == nil) {
     _mainWindows = [NSMutableArray new];
   }
-  
-  NSWindowController *windowController = [[NSStoryboard storyboardWithName:@"Main" bundle:nil] instantiateControllerWithIdentifier:@"MainWindow"];
+
+  NSWindowController *windowController =
+      [[NSStoryboard storyboardWithName:@"Main" bundle:nil] instantiateControllerWithIdentifier:@"MainWindow"];
   [_mainWindows addObject:windowController];
   [windowController showWindow:self];
 }
@@ -86,9 +84,8 @@ NSString *kBundleNameJS = @"RNTesterApp";
 
 - (NSURL *)sourceURLForBridge:(__unused RCTBridge *)bridge
 {
-	NSString *jsBundlePath = [NSString stringWithFormat:@"packages/rn-tester/js/%@.macos",kBundleNameJS];
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:jsBundlePath
-                                                        fallbackResource:nil];
+  NSString *jsBundlePath = [NSString stringWithFormat:@"packages/rn-tester/js/%@.macos", kBundleNameJS];
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:jsBundlePath fallbackResource:nil];
 }
 
 #pragma mark - RCTCxxBridgeDelegate Methods
@@ -110,19 +107,17 @@ NSString *kBundleNameJS = @"RNTesterApp";
 
   __weak __typeof(self) weakSelf = self;
   return std::make_unique<facebook::react::JSCExecutorFactory>(
-    facebook::react::RCTJSIExecutorRuntimeInstaller([weakSelf, bridge](facebook::jsi::Runtime &runtime) {
-      if (!bridge) {
-        return;
-      }
-      __typeof(self) strongSelf = weakSelf;
-      if (strongSelf) {
-        facebook::react::RuntimeExecutor syncRuntimeExecutor = [&](std::function<void(facebook::jsi::Runtime &runtime_)> &&callback) {
-          callback(runtime);
-        };
-        [strongSelf->_turboModuleManager installJSBindingWithRuntimeExecutor:syncRuntimeExecutor];
-      }
-    })
-  );
+      facebook::react::RCTJSIExecutorRuntimeInstaller([weakSelf, bridge](facebook::jsi::Runtime &runtime) {
+        if (!bridge) {
+          return;
+        }
+        __typeof(self) strongSelf = weakSelf;
+        if (strongSelf) {
+          facebook::react::RuntimeExecutor syncRuntimeExecutor =
+              [&](std::function<void(facebook::jsi::Runtime & runtime_)> &&callback) { callback(runtime); };
+          [strongSelf->_turboModuleManager installJSBindingWithRuntimeExecutor:syncRuntimeExecutor];
+        }
+      }));
 }
 
 #pragma mark RCTTurboModuleManagerDelegate Methods
@@ -145,7 +140,8 @@ NSString *kBundleNameJS = @"RNTesterApp";
   return _turboModulesProvider->getModule(name, jsInvoker);
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
 {
   return nullptr;
 }
@@ -154,25 +150,28 @@ NSString *kBundleNameJS = @"RNTesterApp";
 {
   // Set up the default RCTImageLoader and RCTNetworking modules.
   if (moduleClass == RCTImageLoader.class) {
-    return [[moduleClass alloc] initWithRedirectDelegate:nil loadersProvider:^NSArray<id<RCTImageURLLoader>> *(__unused RCTModuleRegistry * moduleRegistry) {
-      return @[[RCTLocalAssetImageLoader new]];
-    } decodersProvider:^NSArray<id<RCTImageDataDecoder>> *(__unused RCTModuleRegistry * moduleRegistry) {
-      return @[[RCTGIFImageDecoder new]];
-    }];
+    return [[moduleClass alloc] initWithRedirectDelegate:nil
+        loadersProvider:^NSArray<id<RCTImageURLLoader>> *(__unused RCTModuleRegistry *moduleRegistry) {
+          return @[ [RCTLocalAssetImageLoader new] ];
+        }
+        decodersProvider:^NSArray<id<RCTImageDataDecoder>> *(__unused RCTModuleRegistry *moduleRegistry) {
+          return @[ [RCTGIFImageDecoder new] ];
+        }];
   } else if (moduleClass == RCTNetworking.class) {
-    return [[moduleClass alloc] initWithHandlersProvider:^NSArray<id<RCTURLRequestHandler>> *(__unused RCTModuleRegistry * moduleRegistry) {
-      return @[
-        [RCTHTTPRequestHandler new],
-        [RCTDataRequestHandler new],
-        [RCTFileRequestHandler new],
-      ];
-    }];
+    return [[moduleClass alloc]
+        initWithHandlersProvider:^NSArray<id<RCTURLRequestHandler>> *(__unused RCTModuleRegistry *moduleRegistry) {
+          return @[
+            [RCTHTTPRequestHandler new],
+            [RCTDataRequestHandler new],
+            [RCTFileRequestHandler new],
+          ];
+        }];
   }
   // No custom initializer here.
   return [moduleClass new];
 }
 
-# pragma mark - Push Notifications
+#pragma mark - Push Notifications
 
 // Required for the remoteNotificationsRegistered event.
 - (void)application:(NSApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
@@ -187,22 +186,24 @@ NSString *kBundleNameJS = @"RNTesterApp";
 }
 
 // Required for the remoteNotificationReceived event.
-- (void)application:(NSApplication *)application didReceiveRemoteNotification:(NSDictionary<NSString *,id> *)userInfo
+- (void)application:(NSApplication *)application didReceiveRemoteNotification:(NSDictionary<NSString *, id> *)userInfo
 {
   [RCTPushNotificationManager didReceiveRemoteNotification:userInfo];
 }
 
-- (void)userNotificationCenter:(NSUserNotificationCenter *)center didDeliverNotification:(NSUserNotification *)notification
+- (void)userNotificationCenter:(NSUserNotificationCenter *)center
+        didDeliverNotification:(NSUserNotification *)notification
 {
-  
 }
 
-- (void)userNotificationCenter:(NSUserNotificationCenter *)center didActivateNotification:(NSUserNotification *)notification
+- (void)userNotificationCenter:(NSUserNotificationCenter *)center
+       didActivateNotification:(NSUserNotification *)notification
 {
   [RCTPushNotificationManager didReceiveUserNotification:notification];
 }
 
-- (BOOL)userNotificationCenter:(NSUserNotificationCenter *)center shouldPresentNotification:(NSUserNotification *)notification
+- (BOOL)userNotificationCenter:(NSUserNotificationCenter *)center
+     shouldPresentNotification:(NSUserNotification *)notification
 {
   return YES;
 }

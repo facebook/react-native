@@ -9,13 +9,13 @@
 
 #import <React/RCTAssert.h>
 #import <React/RCTBridge+Private.h>
+#import <React/RCTBundleURLProvider.h> // TODO(macOS GH#774)
 #import <React/RCTDevSettings.h>
+#import <React/RCTImageLoader.h> // TODO(OSS Candidate ISS#2710739)
 #import <React/RCTLog.h>
 #import <React/RCTRootView.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTUtils.h>
-#import <React/RCTBundleURLProvider.h> // TODO(macOS GH#774)
-#import <React/RCTImageLoader.h> // TODO(OSS Candidate ISS#2710739)
 
 #import "FBSnapshotTestController.h"
 #import "RCTTestModule.h"
@@ -62,7 +62,7 @@ static const NSTimeInterval kTestTimeoutSeconds = 120;
   RCTAssertParam(referenceDirectory);
 
   // TODO(macOS GH#774): uncomment to record snapshot images
-//  referenceDirectory = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
+  //  referenceDirectory = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
   // Search for `_runner.recordMode = ` and change instances to YES
 
   if ((self = [super init])) {
@@ -93,8 +93,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 - (NSURL *)defaultScriptURL
 {
   if (getenv("CI_USE_PACKAGER") || _useBundler) {
-    NSString *bundlePrefix = [[[NSBundle mainBundle] infoDictionary] valueForKey:@"RN_BUNDLE_PREFIX"] ?: @""; // TODO(macOS GH#774)
-    return [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@%@.bundle?platform=%@&dev=true", bundlePrefix, _appPath, kRCTPlatformName]]; // TODO(macOS GH#774)
+    NSString *bundlePrefix =
+        [[[NSBundle mainBundle] infoDictionary] valueForKey:@"RN_BUNDLE_PREFIX"] ?: @""; // TODO(macOS GH#774)
+    return [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@%@.bundle?platform=%@&dev=true",
+                                                           bundlePrefix,
+                                                           _appPath,
+                                                           kRCTPlatformName]]; // TODO(macOS GH#774)
   } else {
     return [[NSBundle bundleForClass:[RCTBridge class]] URLForResource:@"main" withExtension:@"jsbundle"];
   }
@@ -224,7 +228,9 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
       RCTImageLoader *imageLoader = [bridge moduleForClass:[RCTImageLoader class]]; // TODO(OSS Candidate ISS#2710739)
 
       NSDate *date = [NSDate dateWithTimeIntervalSinceNow:kTestTimeoutSeconds];
-      while (date.timeIntervalSinceNow > 0 && (testModule.status == RCTTestStatusPending || [imageLoader activeTasks] > 0) && errors == nil) { // TODO(OSS Candidate ISS#2710739)
+      while (date.timeIntervalSinceNow > 0 &&
+             (testModule.status == RCTTestStatusPending || [imageLoader activeTasks] > 0) &&
+             errors == nil) { // TODO(OSS Candidate ISS#2710739)
         [[NSRunLoop mainRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
         [[NSRunLoop mainRunLoop] runMode:NSRunLoopCommonModes beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
       }
@@ -257,9 +263,14 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
     if (expectErrorBlock) {
       RCTAssert(expectErrorBlock(errors[0]), @"Expected an error but the first one was missing or did not match.");
     } else {
-      // [TODO(OSS Candidate ISS#2710739): xcpretty formats the test failure output to show only one line of the assert string followed by a snippet of source code including the assert statement and the lines just before and after.
-      // Convert the `errors` array into a single line string delimited by \n so that CI logs contain meaningful information.
-      RCTAssert(errors == nil, @"RedBox errors: %@", [[errors valueForKey:@"description"] componentsJoinedByString:@"\\n"]); // ]TODO(OSS Candidate ISS#2710739)
+      // [TODO(OSS Candidate ISS#2710739): xcpretty formats the test failure output to show only one line of the assert
+      // string followed by a snippet of source code including the assert statement and the lines just before and after.
+      // Convert the `errors` array into a single line string delimited by \n so that CI logs contain meaningful
+      // information.
+      RCTAssert(
+          errors == nil,
+          @"RedBox errors: %@",
+          [[errors valueForKey:@"description"] componentsJoinedByString:@"\\n"]); // ]TODO(OSS Candidate ISS#2710739)
       RCTAssert(
           testModule.status != RCTTestStatusPending, @"Test didn't finish within %0.f seconds", kTestTimeoutSeconds);
       RCTAssert(testModule.status == RCTTestStatusPassed, @"Test failed");

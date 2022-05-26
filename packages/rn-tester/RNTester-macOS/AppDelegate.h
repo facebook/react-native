@@ -16,4 +16,3 @@ extern NSString *kBundleNameJS;
 @property (nonatomic, readonly) RCTBridge *bridge;
 
 @end
-
