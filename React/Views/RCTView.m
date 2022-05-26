@@ -7,14 +7,14 @@
 
 #import "RCTView.h"
 
+#import <QuartzCore/QuartzCore.h> // TODO(macOS GH#774) - import needed on macOS to prevent compiler error on invocation of CAShapeLayer further down
+
 #import "RCTAutoInsetsProtocol.h"
 #import "RCTBorderDrawing.h"
 #import "RCTFocusChangeEvent.h" // TODO(OSS Candidate ISS#2710739)
-#import "RCTConvert.h"
 #import "RCTI18nUtil.h"
 #import "RCTLog.h"
 #import "RCTRootContentView.h" // TODO(macOS GH#774)
-#import "RCTUtils.h"
 #import "UIView+React.h"
 #import "RCTViewKeyboardEvent.h"
 #if TARGET_OS_OSX // [TODO(macOS GH#774)

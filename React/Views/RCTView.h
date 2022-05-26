@@ -18,8 +18,6 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 
 @protocol RCTAutoInsetsProtocol;
 
-@class RCTView;
-
 @interface RCTView : RCTUIView // TODO(macOS ISS#3536887)
 
 // [TODO(OSS Candidate ISS#2710739)
