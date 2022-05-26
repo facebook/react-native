@@ -138,6 +138,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
 - (void)didMoveToSuperview
 {
   [super didMoveToSuperview];
+
+  // In the case where there is a LayoutAnimation, we will be reinserted into the view hierarchy but only for aesthetic
+  // purposes. In such a case, we should NOT represent the <Modal>.
+  if (!self.userInteractionEnabled && ![self.superview.reactSubviews containsObject:self]) {
+    return;
+  }
+
   [self ensurePresentedOnlyIfNeeded];
 }
 
