@@ -840,7 +840,9 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
   public static boolean hasText(@Nullable AccessibilityNodeInfoCompat node) {
     return node != null
         && node.getCollectionInfo() == null
-        && (!TextUtils.isEmpty(node.getText()) || !TextUtils.isEmpty(node.getContentDescription()));
+        && (!TextUtils.isEmpty(node.getText())
+            || !TextUtils.isEmpty(node.getContentDescription())
+            || !TextUtils.isEmpty(node.getHintText()));
   }
 
   /**
@@ -867,7 +869,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     }
 
     // Always focus "actionable" nodes.
-    return isActionableForAccessibility(node);
+    return node.isScreenReaderFocusable() || isActionableForAccessibility(node);
   }
 
   /**
