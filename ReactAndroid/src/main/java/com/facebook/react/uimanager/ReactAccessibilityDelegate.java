@@ -923,6 +923,46 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     return nodeInfo;
   }
 
+  private static boolean supportsAction(AccessibilityNodeInfoCompat node, int action) {
+    if (node != null) {
+      final int supportedActions = node.getActions();
+
+      if ((supportedActions & action) == action) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Adds the state segments of Talkback's response to a given list. This should be kept up to date
+   * as much as necessary. Details can be seen in the source code here :
+   *
+   * <p>https://github.com/google/talkback/compositor/src/main/res/raw/compositor.json - search for
+   * "description_for_tree_status", "get_switch_state"
+   *
+   * <p>https://github.com/google/talkback/compositor/src/main/res/values/strings.xml
+   */
+  private static void addStateSegments(
+      StringBuilder talkbackSegments, AccessibilityNodeInfoCompat node) {
+    // selected status is always prepended
+    if (node.isSelected()) {
+      talkbackSegments.append("selected" + delimiter);
+    }
+
+    // documented in reactnative accessibilityState
+    // https://reactnative.dev/docs/accessibility#accessibilitystate
+    // next check collapse/expand/checked status
+    if (supportsAction(node, AccessibilityNodeInfoCompat.ACTION_EXPAND)) {
+      talkbackSegments.append("collapsed" + delimiter);
+    }
+
+    if (supportsAction(node, AccessibilityNodeInfoCompat.ACTION_COLLAPSE)) {
+      talkbackSegments.append("expanded" + delimiter);
+    }
+  }
+
   /**
    * Creates the text that Google's TalkBack screen reader will read aloud for a given {@link View}.
    * This may be any combination of the {@link View}'s {@code text}, {@code contentDescription}, and
@@ -954,14 +994,29 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
 
       final boolean hasNodeText = !TextUtils.isEmpty(nodeText);
       final boolean isEditText = view instanceof EditText;
+      boolean disabled = isActionableForAccessibility(node) && !node.isEnabled();
 
       StringBuilder talkbackSegments = new StringBuilder();
 
       // EditText's prioritize their own text content over a contentDescription so skip this
       if (!TextUtils.isEmpty(contentDescription) && (!isEditText || !hasNodeText)) {
+
+        // first prepend any status modifiers
+        addStateSegments(talkbackSegments, node);
+
         // next add content description
         talkbackSegments.append(contentDescription);
-        return talkbackSegments;
+        // then role
+        //
+        //
+        //
+
+        // lastly disabled is appended if applicable
+        if (disabled) {
+          talkbackSegments.append("disabled" + delimiter);
+        }
+
+        return removeFinalDelimiter(talkbackSegments);
       }
 
       // EditText
