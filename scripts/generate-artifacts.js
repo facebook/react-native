@@ -42,14 +42,26 @@ const argv = yargs
     description:
       'The key that contains the codegen configuration in the config file.',
   })
+  .option('e', {
+    alias: 'fabricEnabled',
+    default: true,
+    description: 'A flag to control whether to generate fabric components.',
+    boolean: 'e',
+  })
   .usage('Usage: $0 -p [path to app]')
   .demandOption(['p']).argv;
 
 const RN_ROOT = path.join(__dirname, '..');
 const CODEGEN_CONFIG_FILENAME = argv.f;
 const CODEGEN_CONFIG_KEY = argv.k;
+const CODEGEN_FABRIC_ENABLED = argv.e;
 const CODEGEN_REPO_PATH = `${RN_ROOT}/packages/react-native-codegen`;
 const CODEGEN_NPM_PATH = `${RN_ROOT}/../react-native-codegen`;
+const CORE_LIBRARIES = new Set(['rncore', 'FBReactNativeSpec']);
+
+function isReactNativeCoreLibrary(libraryName) {
+  return CORE_LIBRARIES.has(libraryName);
+}
 
 function main(appRootDir, outputPath) {
   if (appRootDir == null) {
@@ -148,8 +160,13 @@ function main(appRootDir, outputPath) {
       throw "error: Could not determine react-native-codegen location. Try running 'yarn install' or 'npm install' in your project root.";
     }
 
+    const schemaPaths = {};
+
     // 5. For each codegen-enabled library, generate the native code spec files
     libraries.forEach(library => {
+      if (!CODEGEN_FABRIC_ENABLED && library.config.type === 'components') {
+        return;
+      }
       const tmpDir = fs.mkdtempSync(
         path.join(os.tmpdir(), library.config.name),
       );
@@ -161,8 +178,10 @@ function main(appRootDir, outputPath) {
       const pathToOutputDirIOS = path.join(
         outputPath ? outputPath : appRootDir,
         'build/generated/ios',
+        library.config.type === 'components'
+          ? 'react/renderer/components'
+          : './',
         library.config.name,
-        'react/renderer/components',
       );
       const pathToTempOutputDir = path.join(tmpDir, 'out');
 
@@ -198,7 +217,39 @@ function main(appRootDir, outputPath) {
       fs.mkdirSync(pathToOutputDirIOS, {recursive: true});
       execSync(`cp -R ${pathToTempOutputDir}/* ${pathToOutputDirIOS}`);
       console.log(`[Codegen] Generated artifacts: ${pathToOutputDirIOS}`);
+
+      // Filter the react native core library out.
+      // In the future, core library and third party library should
+      // use the same way to generate/register the fabric components.
+      if (!isReactNativeCoreLibrary(library.config.name)) {
+        schemaPaths[library.config.name] = pathToSchema;
+      }
     });
+
+    console.log('\n\n>>>>> Creating component provider');
+    // Save the list of spec paths to a temp file.
+    const schemaListTmpPath = `${os.tmpdir()}/rn-tmp-schema-list.json`;
+    const fd = fs.openSync(schemaListTmpPath, 'w');
+    fs.writeSync(fd, JSON.stringify(schemaPaths));
+    fs.closeSync(fd);
+    console.log(`Generated schema list: ${schemaListTmpPath}`);
+
+    // Generate FabricComponentProvider.
+    // Only for iOS at this moment.
+    const providerOutputPathIOS = path.join(
+      appRootDir,
+      'build',
+      'generated',
+      'ios',
+    );
+    execSync(
+      `node ${path.join(
+        RN_ROOT,
+        'scripts',
+        'generate-provider-cli.js',
+      )} --platform ios --schemaListPath "${schemaListTmpPath}" --outputDir ${providerOutputPathIOS}`,
+    );
+    console.log(`Generated provider in: ${providerOutputPathIOS}`);
   } catch (err) {
     console.error(err);
     process.exitCode = 1;

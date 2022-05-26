@@ -32,7 +32,7 @@ def detectCliPath(config) {
         return "${projectDir}/../../node_modules/react-native/cli.js"
     }
     throw new Exception("Couldn't determine CLI location. " +
-             "Please set `project.ext.react.cliPath` to the path of the react-native cli.js");
+             "Please set `project.ext.react.cliPath` to the path of the react-native cli.js file. This file typically resides in `node_modules/react-native/cli.js`");
 }
 
 def composeSourceMapsPath = config.composeSourceMapsPath ?: "node_modules/react-native/scripts/compose-source-maps.js"

@@ -133,7 +133,9 @@ function StackFrameList(props) {
   );
 }
 
-function StackFrameFooter(props) {
+function StackFrameFooter(
+  props: $TEMPORARY$object<{message: string, onPress: () => void}>,
+) {
   return (
     <View style={stackStyles.collapseContainer}>
       <LogBoxButton

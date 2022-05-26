@@ -10,6 +10,7 @@
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {CompositeAnimation} from 'react-native/Libraries/Animated/AnimatedMock';
+import type AnimatedValue from 'react-native/Libraries/Animated/nodes/AnimatedValue';
 import * as React from 'react';
 import RNTesterButton from '../../components/RNTesterButton';
 import ToggleNativeDriver from './utils/ToggleNativeDriver';
@@ -39,7 +40,10 @@ const items = [
   {
     title: 'Parallel',
     description: 'Starts a number of animations at the same time',
-    compositeAnimation: (values, useNativeDriver) =>
+    compositeAnimation: (
+      values: Array<AnimatedValue>,
+      useNativeDriver: boolean,
+    ) =>
       Animated.sequence([
         Animated.parallel(
           values.map(value =>
@@ -57,7 +61,10 @@ const items = [
     title: 'Sequence',
     description:
       'Starts the animations in order, waiting for each to complete before starting the next',
-    compositeAnimation: (values, useNativeDriver) =>
+    compositeAnimation: (
+      values: Array<AnimatedValue>,
+      useNativeDriver: boolean,
+    ) =>
       Animated.sequence([
         Animated.sequence(
           values.map(value =>
@@ -75,7 +82,10 @@ const items = [
     title: 'Stagger',
     description:
       'Starts animations in order and in parallel, but with successive delays',
-    compositeAnimation: (values, useNativeDriver) =>
+    compositeAnimation: (
+      values: Array<AnimatedValue>,
+      useNativeDriver: boolean,
+    ) =>
       Animated.sequence([
         Animated.stagger(
           150,
@@ -94,7 +104,10 @@ const items = [
   {
     title: 'Delay',
     description: 'Starts an animation after a given delay',
-    compositeAnimation: (values, useNativeDriver) =>
+    compositeAnimation: (
+      values: Array<AnimatedValue>,
+      useNativeDriver: boolean,
+    ) =>
       Animated.sequence([
         Animated.delay(2000),
         Animated.parallel(

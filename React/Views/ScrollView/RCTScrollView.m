@@ -16,6 +16,7 @@
 #import "RCTUIManagerObserverCoordinator.h"
 #import "RCTUIManagerUtils.h"
 #import "RCTUtils.h"
+#import "RCTViewUtils.h"
 #import "UIView+Private.h"
 #import "UIView+React.h"
 
@@ -1075,10 +1076,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
 {
   CGSize viewportSize = self.bounds.size;
   if (_automaticallyAdjustContentInsets) {
-    UIEdgeInsets contentInsets = UIEdgeInsetsZero;
-#if !TARGET_OS_OSX // [TODO(macOS GH#774)
-    contentInsets = [RCTView contentInsetsForView:self];
-#endif // ]TODO(macOS GH#774)
+    UIEdgeInsets contentInsets = RCTContentInsets(self);
     viewportSize = CGSizeMake(
         self.bounds.size.width - contentInsets.left - contentInsets.right,
         self.bounds.size.height - contentInsets.top - contentInsets.bottom);

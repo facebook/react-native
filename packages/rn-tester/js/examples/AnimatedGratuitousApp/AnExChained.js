@@ -10,6 +10,9 @@
 
 'use strict';
 
+import type {PressEvent} from 'react-native/Libraries/Types/CoreEventTypes';
+import type {GestureState} from 'react-native/Libraries/Interaction/PanResponder';
+
 const React = require('react');
 
 const {Animated, PanResponder, StyleSheet, View} = require('react-native');
@@ -34,7 +37,7 @@ class AnExChained extends React.Component<Object, any> {
       }).start();
       this.state.stickers.push(sticker); // push on the followers
     }
-    const releaseChain = (e, gestureState) => {
+    const releaseChain = (e: PressEvent, gestureState: GestureState) => {
       this.state.stickers[0].flattenOffset(); // merges offset into value and resets
       Animated.sequence([
         // spring to start after decay finishes

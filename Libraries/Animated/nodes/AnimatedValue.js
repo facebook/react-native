@@ -15,6 +15,7 @@ const AnimatedWithChildren = require('./AnimatedWithChildren');
 const InteractionManager = require('../../Interaction/InteractionManager');
 const NativeAnimatedHelper = require('../NativeAnimatedHelper');
 
+import type AnimatedNode from './AnimatedNode';
 import type Animation, {EndCallback} from '../animations/Animation';
 import type {InterpolationConfigType} from './AnimatedInterpolation';
 import type AnimatedTracking from './AnimatedTracking';
@@ -45,7 +46,7 @@ const NativeAnimatedAPI = NativeAnimatedHelper.API;
  */
 function _flush(rootNode: AnimatedValue): void {
   const animatedStyles = new Set();
-  function findAnimatedStyles(node) {
+  function findAnimatedStyles(node: AnimatedValue | AnimatedNode) {
     /* $FlowFixMe[prop-missing] (>=0.68.0 site=react_native_fb) This comment
      * suppresses an error found when Flow v0.68 was deployed. To see the error
      * delete this comment and run Flow. */

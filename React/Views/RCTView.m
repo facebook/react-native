@@ -15,6 +15,7 @@
 #import "RCTI18nUtil.h"
 #import "RCTLog.h"
 #import "RCTRootContentView.h" // TODO(macOS GH#774)
+#import "RCTViewUtils.h"
 #import "UIView+React.h"
 #import "RCTViewKeyboardEvent.h"
 #if TARGET_OS_OSX // [TODO(macOS GH#774)
@@ -787,7 +788,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
 
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
   if (parentView.automaticallyAdjustContentInsets) {
-    UIEdgeInsets autoInset = [self contentInsetsForView:parentView];
+    UIEdgeInsets autoInset = RCTContentInsets(parentView);
     baseInset.top += autoInset.top;
     baseInset.bottom += autoInset.bottom;
     baseInset.left += autoInset.left;
@@ -809,20 +810,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
     }
   }
 }
-
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
-+ (UIEdgeInsets)contentInsetsForView:(UIView *)view
-{
-  while (view) {
-    UIViewController *controller = view.reactViewController;
-    if (controller) {
-      return controller.view.safeAreaInsets;
-    }
-    view = view.superview;
-  }
-  return UIEdgeInsetsZero;
-}
-#endif // TODO(macOS GH#774)
 
 #pragma mark - View Unmounting
 

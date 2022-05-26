@@ -708,10 +708,12 @@ void Binding::schedulerDidFinishTransaction(
 
     bool isVirtual = mutation.mutatedViewIsVirtual();
 
+    bool noRevisionCheck =
+        disablePreallocateViews_ || disableRevisionCheckForPreallocation_;
+
     switch (mutationType) {
       case ShadowViewMutation::Create: {
-        if (disablePreallocateViews_ ||
-            newChildShadowView.props->revision > 1) {
+        if (noRevisionCheck || newChildShadowView.props->revision > 1) {
           cppCommonMountItems.push_back(
               CppMountItem::CreateMountItem(newChildShadowView));
         }
@@ -772,8 +774,7 @@ void Binding::schedulerDidFinishTransaction(
           cppCommonMountItems.push_back(CppMountItem::InsertMountItem(
               parentShadowView, newChildShadowView, index));
 
-          if (disablePreallocateViews_ ||
-              newChildShadowView.props->revision > 1) {
+          if (noRevisionCheck || newChildShadowView.props->revision > 1) {
             cppUpdatePropsMountItems.push_back(
                 CppMountItem::UpdatePropsMountItem(newChildShadowView));
           }

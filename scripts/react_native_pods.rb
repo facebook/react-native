@@ -6,7 +6,8 @@
 require 'pathname'
 
 $CODEGEN_OUTPUT_DIR = 'build/generated/ios'
-$CODEGEN_LIBRARY_DIR = 'react/renderer/components'
+$CODEGEN_COMPONENT_DIR = 'react/renderer/components'
+$CODEGEN_MODULE_DIR = '.'
 
 def use_react_native! (options={})
   # The prefix to react-native
@@ -289,8 +290,9 @@ def use_react_native_codegen_discovery!(options={})
   Pod::UI.warn '[Codegen] warn: using experimental new codegen integration'
   react_native_path = options[:react_native_path] ||= "../node_modules/react-native"
   app_path = options[:app_path]
+  fabric_enabled = options[:fabric_enabled] ||= false
   if app_path
-    Pod::Executable.execute_command('node', ["#{react_native_path}/scripts/generate-artifacts.js", "-p", "#{app_path}", "-o", Pod::Config.instance.installation_root])
+    Pod::Executable.execute_command('node', ["#{react_native_path}/scripts/generate-artifacts.js", "-p", "#{app_path}", "-o", Pod::Config.instance.installation_root, "-e", "#{fabric_enabled}"])
   else
     Pod::UI.warn '[Codegen] error: no app_path was provided'
     exit 1
@@ -308,14 +310,14 @@ def use_react_native_codegen!(spec, options={})
   library_name = options[:library_name] ||= "#{spec.name.gsub('_','-').split('-').collect(&:capitalize).join}Spec"
   Pod::UI.puts "[Codegen] Found #{library_name}"
 
-  # Output dir, relative to podspec that invoked this method
-  output_dir = options[:output_dir] ||= "#{Pod::Config.instance.installation_root}/#{$CODEGEN_OUTPUT_DIR}/#{$CODEGEN_LIBRARY_DIR}"
-  library_output_dir = "#{output_dir}/#{library_name}"
+  output_dir = options[:output_dir] ||= $CODEGEN_OUTPUT_DIR
+  output_dir_module = "#{output_dir}/#{$CODEGEN_MODULE_DIR}"
+  output_dir_component = "#{output_dir}/#{$CODEGEN_COMPONENT_DIR}"
 
   codegen_config = {
     "modules" => {
       :js_srcs_pattern => "Native*.js",
-      :generated_dir => library_output_dir,
+      :generated_dir => "#{Pod::Config.instance.installation_root}/#{output_dir_module}/#{library_name}",
       :generated_files => [
         "#{library_name}.h",
         "#{library_name}-generated.mm"
@@ -323,7 +325,7 @@ def use_react_native_codegen!(spec, options={})
     },
     "components" => {
       :js_srcs_pattern => "*NativeComponent.js",
-      :generated_dir => library_output_dir,
+      :generated_dir => "#{Pod::Config.instance.installation_root}/#{output_dir_component}/#{library_name}",
       :generated_files => [
         "ComponentDescriptors.h",
         "EventEmitters.cpp",
@@ -387,7 +389,7 @@ GENERATED_SCHEMA_FILE="$GENERATED_SRCS_DIR/schema.json"
 TEMP_OUTPUT_DIR="$GENERATED_SRCS_DIR/out"
 
 LIBRARY_NAME="#{library_name}"
-OUTPUT_DIR="$PROJECT_DIR/#{$CODEGEN_OUTPUT_DIR}/#{$CODEGEN_LIBRARY_DIR}/#{library_name}"
+OUTPUT_DIR="$PROJECT_DIR/#{$CODEGEN_OUTPUT_DIR}"
 
 CODEGEN_REPO_PATH="$RN_DIR/packages/react-native-codegen"
 CODEGEN_NPM_PATH="$RN_DIR/../react-native-codegen"
@@ -453,10 +455,21 @@ generateCodegenSchemaFromJavaScript () {
   "$NODE_BINARY" "$CODEGEN_CLI_PATH/lib/cli/combine/combine-js-to-schema-cli.js" "$GENERATED_SCHEMA_FILE" $JS_SRCS
 }
 
+runSpecCodegen () {
+  "$NODE_BINARY" "scripts/generate-specs-cli.js" --platform ios --schemaPath "$GENERATED_SCHEMA_FILE" --outputDir "$1" --libraryName "$LIBRARY_NAME" --libraryType "$2"
+}
+
 generateCodegenArtifactsFromSchema () {
   describe "Generating codegen artifacts from schema"
   pushd "$RN_DIR" >/dev/null || exit 1
-    "$NODE_BINARY" "scripts/generate-specs-cli.js" --platform ios --schemaPath "$GENERATED_SCHEMA_FILE" --outputDir "$TEMP_OUTPUT_DIR" --libraryName "$LIBRARY_NAME" --libraryType "$LIBRARY_TYPE"
+    if [ "$LIBRARY_TYPE" = "all" ]; then
+      runSpecCodegen "$TEMP_OUTPUT_DIR/#{$CODEGEN_MODULE_DIR}/#{library_name}" "modules"
+      runSpecCodegen "$TEMP_OUTPUT_DIR/#{$CODEGEN_COMPONENT_DIR}/#{library_name}" "components"
+    elif [ "$LIBRARY_TYPE" = "components" ]; then
+      runSpecCodegen "$TEMP_OUTPUT_DIR/#{$CODEGEN_COMPONENT_DIR}/#{library_name}" "$LIBRARY_TYPE"
+    elif [ "$LIBRARY_TYPE" = "modules" ]; then
+      runSpecCodegen "$TEMP_OUTPUT_DIR/#{$CODEGEN_MODULE_DIR}/#{library_name}" "$LIBRARY_TYPE"
+    fi
   popd >/dev/null || exit 1
 }
 

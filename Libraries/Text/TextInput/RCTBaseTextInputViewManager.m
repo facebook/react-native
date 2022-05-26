@@ -142,7 +142,9 @@ RCT_EXPORT_METHOD(setTextAndSelection : (nonnull NSNumber *)viewTag
     }
     RCTExecuteOnUIManagerQueue(^{
       RCTBaseTextInputShadowView *shadowView = (RCTBaseTextInputShadowView *)[self.bridge.uiManager shadowViewForReactTag:viewTag];
-      [shadowView setText:value];
+      if (value) {
+        [shadowView setText:value];
+      }
       [self.bridge.uiManager setNeedsLayout];
       RCTExecuteOnMainQueue(^{
         [view setSelectionStart:start selectionEnd:end];
