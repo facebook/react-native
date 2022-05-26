@@ -119,4 +119,9 @@ public class ReactFeatureFlags {
    * </ul>
    */
   public static int turboModuleBindingMode = 0;
+
+  /**
+   * Feature Flag to enable View Recycling. When enabled, individual ViewManagers must still opt-in.
+   */
+  public static boolean enableViewRecycling = false;
 }

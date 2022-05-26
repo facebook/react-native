@@ -116,26 +116,93 @@ public class ReactViewGroup extends ViewGroup
   // whenever the option is set. We also override {@link ViewGroup#getChildAt} and
   // {@link ViewGroup#getChildCount} so those methods may return views that are not attached.
   // This is risky but allows us to perform a correct cleanup in {@link NativeViewHierarchyManager}.
-  private boolean mRemoveClippedSubviews = false;
-  private @Nullable View[] mAllChildren = null;
+  private boolean mRemoveClippedSubviews;
+  private @Nullable View[] mAllChildren;
   private int mAllChildrenCount;
   private @Nullable Rect mClippingRect;
   private @Nullable Rect mHitSlopRect;
   private @Nullable String mOverflow;
-  private PointerEvents mPointerEvents = PointerEvents.AUTO;
+  private PointerEvents mPointerEvents;
   private @Nullable ChildrenLayoutChangeListener mChildrenLayoutChangeListener;
   private @Nullable ReactViewBackgroundDrawable mReactBackgroundDrawable;
   private @Nullable OnInterceptTouchEventListener mOnInterceptTouchEventListener;
-  private boolean mNeedsOffscreenAlphaCompositing = false;
-  private @Nullable ViewGroupDrawingOrderHelper mDrawingOrderHelper = null;
+  private boolean mNeedsOffscreenAlphaCompositing;
+  private @Nullable ViewGroupDrawingOrderHelper mDrawingOrderHelper;
   private @Nullable Path mPath;
   private int mLayoutDirection;
-  private float mBackfaceOpacity = 1.f;
-  private String mBackfaceVisibility = "visible";
+  private float mBackfaceOpacity;
+  private String mBackfaceVisibility;
 
   public ReactViewGroup(Context context) {
     super(context);
+    initView();
+  }
+
+  /**
+   * Set all default values here as opposed to in the constructor or field defaults. It is important
+   * that these properties are set during the constructor, but also on-demand whenever an existing
+   * ReactTextView is recycled.
+   */
+  private void initView() {
     setClipChildren(false);
+
+    mRemoveClippedSubviews = false;
+    mAllChildren = null;
+    mAllChildrenCount = 0;
+    mClippingRect = null;
+    mHitSlopRect = null;
+    mOverflow = null;
+    mPointerEvents = PointerEvents.AUTO;
+    mChildrenLayoutChangeListener = null;
+    mReactBackgroundDrawable = null;
+    mOnInterceptTouchEventListener = null;
+    mNeedsOffscreenAlphaCompositing = false;
+    mDrawingOrderHelper = null;
+    mPath = null;
+    mLayoutDirection = 0; // set when background is created
+    mBackfaceOpacity = 1.f;
+    mBackfaceVisibility = "visible";
+  }
+
+  /* package */ void recycleView() {
+    // Set default field values
+    initView();
+    mOverflowInset.setEmpty();
+    sHelperRect.setEmpty();
+
+    // Remove any children
+    removeAllViews();
+
+    // Reset background, borders
+    updateBackgroundDrawable(null);
+
+    setForeground(null);
+
+    // This is possibly subject to change and overrideable per-platform, but these
+    // are the default view flags in View.java:
+    // https://android.googlesource.com/platform/frameworks/base/+/a175a5b/core/java/android/view/View.java#2712
+    // `mViewFlags = SOUND_EFFECTS_ENABLED | HAPTIC_FEEDBACK_ENABLED | LAYOUT_DIRECTION_INHERIT`
+    // Therefore we set the following options as such:
+    setFocusable(false);
+    setFocusableInTouchMode(false);
+
+    // Focus IDs
+    // Also see in AOSP source:
+    // https://android.googlesource.com/platform/frameworks/base/+/a175a5b/core/java/android/view/View.java#4493
+    setNextFocusDownId(View.NO_ID);
+    setNextFocusForwardId(View.NO_ID);
+    setNextFocusRightId(View.NO_ID);
+    setNextFocusUpId(View.NO_ID);
+
+    // Predictable, alpha defaults to 1:
+    // https://android.googlesource.com/platform/frameworks/base/+/a175a5b/core/java/android/view/View.java#2186
+    // This accounts for resetting mBackfaceOpacity and mBackfaceVisibility
+    setAlpha(1);
+
+    // https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-mainline-12.0.0_r96/core/java/android/view/View.java#5491
+    setElevation(0);
+
+    resetPointerEvents();
   }
 
   private ViewGroupDrawingOrderHelper getDrawingOrderHelper() {
@@ -553,6 +620,10 @@ public class ReactViewGroup extends ViewGroup
     mPointerEvents = pointerEvents;
   }
 
+  /*package*/ void resetPointerEvents() {
+    mPointerEvents = PointerEvents.AUTO;
+  }
+
   /*package*/ int getAllChildrenCount() {
     return mAllChildrenCount;
   }
@@ -696,7 +767,7 @@ public class ReactViewGroup extends ViewGroup
     return DEFAULT_BACKGROUND_COLOR;
   }
 
-  private ReactViewBackgroundDrawable getOrCreateReactViewBackground() {
+  /* package */ ReactViewBackgroundDrawable getOrCreateReactViewBackground() {
     if (mReactBackgroundDrawable == null) {
       mReactBackgroundDrawable = new ReactViewBackgroundDrawable(getContext());
       Drawable backgroundDrawable = getBackground();
@@ -742,6 +813,11 @@ public class ReactViewGroup extends ViewGroup
     mOverflowInset.set(left, top, right, bottom);
   }
 
+  public void setOverflowInset(Rect overflowInset) {
+    mOverflowInset.set(
+        overflowInset.left, overflowInset.top, overflowInset.right, overflowInset.bottom);
+  }
+
   @Override
   public Rect getOverflowInset() {
     return mOverflowInset;
@@ -754,7 +830,7 @@ public class ReactViewGroup extends ViewGroup
    * @param drawable {@link Drawable} The Drawable to use as the background, or null to remove the
    *     background
    */
-  private void updateBackgroundDrawable(Drawable drawable) {
+  /* package */ void updateBackgroundDrawable(Drawable drawable) {
     super.setBackground(drawable);
   }
 

@@ -304,6 +304,10 @@ public class SurfaceMountingManager {
             mRootViewManager = null;
             mMountItemExecutor = null;
             mOnViewAttachItems.clear();
+
+            if (ReactFeatureFlags.enableViewRecycling) {
+              mViewManagerRegistry.onSurfaceStopped(mSurfaceId);
+            }
           }
         };
 
