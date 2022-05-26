@@ -4,6 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 
 require 'json'
+require 'open3'
 require 'pathname'
 require_relative './react_native_pods_utils/script_phases.rb'
 require_relative './cocoapods/flipper.rb'
@@ -105,9 +106,14 @@ def use_react_native! (options={})
   end
 
   if hermes_enabled
+    prepare_hermes = 'node scripts/hermes/prepare-hermes-for-build'
+    react_native_dir = Pod::Config.instance.installation_root.join(prefix)
+    prep_output, prep_status = Open3.capture2e(prepare_hermes, :chdir => react_native_dir)
+    prep_output.split("\n").each { |line| Pod::UI.info line }
+    abort unless prep_status == 0
+
     pod 'React-hermes', :path => "#{prefix}/ReactCommon/hermes"
     pod 'libevent', '~> 2.1.12'
-    system("(cd #{prefix} && node scripts/hermes/prepare-hermes-for-build)")
     pod 'hermes-engine', :path => "#{prefix}/sdks/hermes/hermes-engine.podspec"
   end
 
