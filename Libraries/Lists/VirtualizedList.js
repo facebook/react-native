@@ -1269,6 +1269,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           refreshControl={
             props.refreshControl == null ? (
               <RefreshControl
+                // $FlowFixMe[incompatible-type]
                 refreshing={props.refreshing}
                 onRefresh={onRefresh}
                 progressViewOffset={props.progressViewOffset}

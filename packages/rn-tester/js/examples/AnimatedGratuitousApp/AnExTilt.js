@@ -21,6 +21,7 @@ class AnExTilt extends React.Component<Object, any> {
       opacity: new Animated.Value(1),
       burns: new Animated.Value(1.15),
     };
+    // $FlowFixMe[prop-missing]
     this.state.tiltPanResponder = PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onPanResponderGrant: () => {
