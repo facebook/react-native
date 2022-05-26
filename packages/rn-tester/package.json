@@ -10,7 +10,7 @@
     "directory": "packages/rn-tester"
   },
   "scripts": {
-    "start": "../../scripts/packager.sh",
+    "start": "../react-native/scripts/packager.sh",
     "install-android-jsc": "../../gradlew :packages:rn-tester:android:app:installJscDebug",
     "install-android-hermes": "../../gradlew :packages:rn-tester:android:app:installHermesDebug",
     "clean-android": "rm -rf android/app/build",

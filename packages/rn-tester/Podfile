@@ -1,5 +1,5 @@
-require_relative '../../scripts/react_native_pods'
-require_relative '../../scripts/cocoapods/new_architecture'
+require_relative '../react-native/scripts/react_native_pods'
+require_relative '../react-native/scripts/cocoapods/new_architecture'
 
 source 'https://cdn.cocoapods.org/'
 platform :ios, '12.4'
@@ -9,7 +9,7 @@ platform :ios, '12.4'
 install! 'cocoapods', :deterministic_uuids => false
 
 USE_FRAMEWORKS = ENV['USE_FRAMEWORKS'] == '1'
-@prefix_path = "../.."
+@prefix_path = "../react-native"
 
 if USE_FRAMEWORKS
   puts "Installing pods with use_frameworks!"
