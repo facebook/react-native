@@ -264,8 +264,9 @@ class AccessibilityExample extends React.Component<{}> {
               <Text
                 accessible={false}
                 accessibilityLabel="this is my label"
+                accessibilityRole="text"
                 accessibilityState={{disabled: true}}
-                accessibilityValue={{text: 'this is the accessibilityValue'}}>
+                accessibilityValue={{text: 'this is the accessibility value'}}>
                 Text number 2<Text accessible={false}>Text number 3</Text>
               </Text>
             </View>
