@@ -7,20 +7,38 @@
 
 package com.facebook.react.views.scroll;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
+import android.animation.ValueAnimator;
 import android.content.Context;
+import android.graphics.Point;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.OverScroller;
 import androidx.annotation.Nullable;
+import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.uimanager.FabricViewStateManager;
+import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIManagerHelper;
+import com.facebook.react.uimanager.common.UIManagerType;
+import com.facebook.react.uimanager.common.ViewUtil;
 import java.util.Collections;
 import java.util.Set;
 import java.util.WeakHashMap;
 
 /** Helper class that deals with emitting Scroll Events. */
 public class ReactScrollViewHelper {
+  private static String TAG = ReactHorizontalScrollView.class.getSimpleName();
+  private static boolean DEBUG_MODE = false && ReactBuildConfig.DEBUG;
+  private static final String CONTENT_OFFSET_LEFT = "contentOffsetLeft";
+  private static final String CONTENT_OFFSET_TOP = "contentOffsetTop";
+  private static final String SCROLL_AWAY_PADDING_TOP = "scrollAwayPaddingTop";
 
   public static final long MOMENTUM_DELAY = 20;
   public static final String OVER_SCROLL_ALWAYS = "always";
@@ -31,6 +49,8 @@ public class ReactScrollViewHelper {
   public static final int SNAP_ALIGNMENT_START = 1;
   public static final int SNAP_ALIGNMENT_CENTER = 2;
   public static final int SNAP_ALIGNMENT_END = 3;
+
+  private static @Nullable ValueAnimator sScrollAnimator;
 
   public interface ScrollListener {
     void onScroll(
@@ -197,5 +217,211 @@ public class ReactScrollViewHelper {
 
   public static void removeScrollListener(ScrollListener listener) {
     sScrollListeners.remove(listener);
+  }
+
+  public static class ReactScrollViewScrollState {
+    private final int mLayoutDirection;
+    private final Point mFinalAnimatedPositionScroll = new Point();
+    private int mScrollAwayPaddingTop = 0;
+    private final Point mLastStateUpdateScroll = new Point(-1, -1);
+
+    public ReactScrollViewScrollState(final int layoutDirection) {
+      mLayoutDirection = layoutDirection;
+    }
+
+    /**
+     * Get the layout direction. Can be either scrollView.LAYOUT_DIRECTION_RTL (1) or
+     * scrollView.LAYOUT_DIRECTION_LTR (0). If the value is -1, it means unknown layout.
+     */
+    public int getLayoutDirection() {
+      return mLayoutDirection;
+    }
+
+    /** Get the position after current animation is finished */
+    public Point getFinalAnimatedPositionScroll() {
+      return mFinalAnimatedPositionScroll;
+    }
+
+    /** Set the final scroll position after scrolling animation is finished */
+    public ReactScrollViewScrollState setFinalAnimatedPositionScroll(
+        int finalAnimatedPositionScrollX, int finalAnimatedPositionScrollY) {
+      mFinalAnimatedPositionScroll.set(finalAnimatedPositionScrollX, finalAnimatedPositionScrollY);
+      return this;
+    }
+
+    /** Get the Fabric state of last scroll position */
+    public Point getLastStateUpdateScroll() {
+      return mLastStateUpdateScroll;
+    }
+
+    /** Set the Fabric state of last scroll position */
+    public ReactScrollViewScrollState setLastStateUpdateScroll(
+        int lastStateUpdateScrollX, int lastStateUpdateScrollY) {
+      mLastStateUpdateScroll.set(lastStateUpdateScrollX, lastStateUpdateScrollY);
+      return this;
+    }
+
+    /** Get the padding on the top for nav bar */
+    public int getScrollAwayPaddingTop() {
+      return mScrollAwayPaddingTop;
+    }
+
+    /** Set the padding on the top for nav bar */
+    public ReactScrollViewScrollState setScrollAwayPaddingTop(int scrollAwayPaddingTop) {
+      mScrollAwayPaddingTop = scrollAwayPaddingTop;
+      return this;
+    }
+  }
+
+  public static <
+          T extends ViewGroup & FabricViewStateManager.HasFabricViewStateManager & HasScrollState>
+      void smoothScrollTo(final T scrollView, final int x, final int y) {
+    if (DEBUG_MODE) {
+      FLog.i(TAG, "smoothScrollTo[%d] x %d y %d", scrollView.getId(), x, y);
+    }
+
+    // `smoothScrollTo` contains some logic that, if called multiple times in a short amount of
+    // time, will treat all calls as part of the same animation and will not lengthen the duration
+    // of the animation. This means that, for example, if the user is scrolling rapidly, multiple
+    // pages could be considered part of one animation, causing some page animations to be animated
+    // very rapidly - looking like they're not animated at all.
+    if (sScrollAnimator != null) {
+      sScrollAnimator.cancel();
+    }
+
+    final ReactScrollViewScrollState scrollState = scrollView.getReactScrollViewScrollState();
+    scrollState.setFinalAnimatedPositionScroll(x, y);
+    PropertyValuesHolder scrollX =
+        PropertyValuesHolder.ofInt("scrollX", scrollView.getScrollX(), x);
+    PropertyValuesHolder scrollY =
+        PropertyValuesHolder.ofInt("scrollY", scrollView.getScrollY(), y);
+    sScrollAnimator = ObjectAnimator.ofPropertyValuesHolder(scrollX, scrollY);
+    sScrollAnimator.setDuration(getDefaultScrollAnimationDuration(scrollView.getContext()));
+    sScrollAnimator.addUpdateListener(
+        new ValueAnimator.AnimatorUpdateListener() {
+          @Override
+          public void onAnimationUpdate(ValueAnimator valueAnimator) {
+            int scrollValueX = (Integer) valueAnimator.getAnimatedValue("scrollX");
+            int scrollValueY = (Integer) valueAnimator.getAnimatedValue("scrollY");
+            scrollView.scrollTo(scrollValueX, scrollValueY);
+          }
+        });
+    sScrollAnimator.addListener(
+        new Animator.AnimatorListener() {
+          @Override
+          public void onAnimationStart(Animator animator) {}
+
+          @Override
+          public void onAnimationEnd(Animator animator) {
+            scrollState.setFinalAnimatedPositionScroll(-1, -1);
+            sScrollAnimator = null;
+            updateStateOnScroll(scrollView);
+          }
+
+          @Override
+          public void onAnimationCancel(Animator animator) {}
+
+          @Override
+          public void onAnimationRepeat(Animator animator) {}
+        });
+    sScrollAnimator.start();
+    updateStateOnScroll(scrollView, x, y);
+  }
+
+  /** Get current (x, y) position or position after current animation finishes, if any. */
+  public static <
+          T extends ViewGroup & FabricViewStateManager.HasFabricViewStateManager & HasScrollState>
+      Point getPostAnimationScroll(final T scrollView) {
+    return sScrollAnimator != null && sScrollAnimator.isRunning()
+        ? scrollView.getReactScrollViewScrollState().getFinalAnimatedPositionScroll()
+        : new Point(scrollView.getScrollX(), scrollView.getScrollY());
+  }
+
+  public static <
+          T extends ViewGroup & FabricViewStateManager.HasFabricViewStateManager & HasScrollState>
+      boolean updateStateOnScroll(final T scrollView) {
+    return updateStateOnScroll(scrollView, scrollView.getScrollX(), scrollView.getScrollY());
+  }
+
+  /**
+   * Called on any stabilized onScroll change to propagate content offset value to a Shadow Node.
+   */
+  public static <
+          T extends ViewGroup & FabricViewStateManager.HasFabricViewStateManager & HasScrollState>
+      boolean updateStateOnScroll(final T scrollView, final int scrollX, final int scrollY) {
+    if (DEBUG_MODE) {
+      FLog.i(
+          TAG,
+          "updateStateOnScroll[%d] scrollX %d scrollY %d",
+          scrollView.getId(),
+          scrollX,
+          scrollY);
+    }
+
+    if (ViewUtil.getUIManagerType(scrollView.getId()) == UIManagerType.DEFAULT) {
+      return false;
+    }
+
+    final ReactScrollViewScrollState scrollState = scrollView.getReactScrollViewScrollState();
+    // Dedupe events to reduce JNI traffic
+    if (scrollState.getLastStateUpdateScroll().equals(scrollX, scrollY)) {
+      return false;
+    }
+
+    scrollState.setLastStateUpdateScroll(scrollX, scrollY);
+    forceUpdateState(scrollView);
+    return true;
+  }
+
+  public static <
+          T extends ViewGroup & FabricViewStateManager.HasFabricViewStateManager & HasScrollState>
+      void forceUpdateState(final T scrollView) {
+    final ReactScrollViewScrollState scrollState = scrollView.getReactScrollViewScrollState();
+    final int scrollAwayPaddingTop = scrollState.getScrollAwayPaddingTop();
+    final Point scrollPos = scrollState.getLastStateUpdateScroll();
+    final int scrollX = scrollPos.x;
+    final int scrollY = scrollPos.y;
+    final int fabricScrollX;
+    int layoutDirection = scrollState.getLayoutDirection();
+
+    if (layoutDirection == scrollView.LAYOUT_DIRECTION_RTL) {
+      // getScrollX returns offset from left even when layout direction is RTL.
+      // The following line calculates offset from right.
+      View child = scrollView.getChildAt(0);
+      int contentWidth = child != null ? child.getWidth() : 0;
+      fabricScrollX = -(contentWidth - scrollX - scrollView.getWidth());
+    } else {
+      fabricScrollX = scrollX;
+    }
+
+    if (DEBUG_MODE) {
+      FLog.i(
+          TAG,
+          "updateStateOnScroll[%d] scrollX %d scrollY %d fabricScrollX",
+          scrollView.getId(),
+          scrollX,
+          scrollY,
+          fabricScrollX);
+    }
+
+    scrollView
+        .getFabricViewStateManager()
+        .setState(
+            new FabricViewStateManager.StateUpdateCallback() {
+              @Override
+              public WritableMap getStateUpdate() {
+                WritableMap map = new WritableNativeMap();
+                map.putDouble(CONTENT_OFFSET_LEFT, PixelUtil.toDIPFromPixel(scrollX));
+                map.putDouble(CONTENT_OFFSET_TOP, PixelUtil.toDIPFromPixel(scrollY));
+                map.putDouble(
+                    SCROLL_AWAY_PADDING_TOP, PixelUtil.toDIPFromPixel(scrollAwayPaddingTop));
+                return map;
+              }
+            });
+  }
+
+  public interface HasScrollState {
+    /** Get the scroll state for the current ScrollView */
+    ReactScrollViewScrollState getReactScrollViewScrollState();
   }
 }

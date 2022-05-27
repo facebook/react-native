@@ -9,6 +9,7 @@ include $(REACT_ANDROID_DIR)/Android-prebuilt.mk
 
 # SampleNativeModule
 include $(REACT_COMMON_DIR)/react/nativemodule/samples/platform/android/Android.mk
+include $(GENERATED_SRC_DIR)/codegen/jni/Android.mk
 
 LOCAL_PATH := $(THIS_DIR)
 
@@ -18,8 +19,9 @@ LOCAL_MODULE := rntester_appmodules
 LOCAL_C_INCLUDES := $(LOCAL_PATH) $(GENERATED_SRC_DIR)/codegen/jni
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp) $(wildcard $(GENERATED_SRC_DIR)/codegen/jni/*.cpp)
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) $(GENERATED_SRC_DIR)/codegen/jni
-LOCAL_SHARED_LIBRARIES := libfbjni libglog libfolly_json libyoga libreact_nativemodule_core libturbomodulejsijni librrc_view libreact_render_core libreact_render_graphics libreact_codegen_rncore
+LOCAL_SHARED_LIBRARIES := libfbjni libglog libfolly_json libfolly_futures libyoga libreact_nativemodule_core libturbomodulejsijni librrc_view libreact_render_core libreact_render_graphics libreact_codegen_rncore libfabricjni libreact_render_componentregistry libruntimeexecutor libreact_debug libreact_render_debug libreact_codegen_rntester
 LOCAL_STATIC_LIBRARIES := libsampleturbomodule
+
 LOCAL_CFLAGS := \
   -DLOG_TAG=\"ReactNative\"
 LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall

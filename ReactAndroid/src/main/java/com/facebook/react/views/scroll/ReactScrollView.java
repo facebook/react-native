@@ -13,13 +13,10 @@ import static com.facebook.react.views.scroll.ReactScrollViewHelper.SNAP_ALIGNME
 import static com.facebook.react.views.scroll.ReactScrollViewHelper.SNAP_ALIGNMENT_END;
 import static com.facebook.react.views.scroll.ReactScrollViewHelper.SNAP_ALIGNMENT_START;
 
-import android.animation.Animator;
-import android.animation.ObjectAnimator;
-import android.animation.PropertyValuesHolder;
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -35,19 +32,16 @@ import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.FabricViewStateManager;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
-import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.uimanager.ReactOverflowView;
 import com.facebook.react.uimanager.ViewProps;
-import com.facebook.react.uimanager.common.UIManagerType;
-import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
+import com.facebook.react.views.scroll.ReactScrollViewHelper.HasScrollState;
+import com.facebook.react.views.scroll.ReactScrollViewHelper.ReactScrollViewScrollState;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.lang.reflect.Field;
 import java.util.List;
@@ -64,13 +58,11 @@ public class ReactScrollView extends ScrollView
         ViewGroup.OnHierarchyChangeListener,
         View.OnLayoutChangeListener,
         FabricViewStateManager.HasFabricViewStateManager,
-        ReactOverflowView {
+        ReactOverflowView,
+        HasScrollState {
 
   private static @Nullable Field sScrollerField;
   private static boolean sTriedToGetScrollerField = false;
-  private static final String CONTENT_OFFSET_LEFT = "contentOffsetLeft";
-  private static final String CONTENT_OFFSET_TOP = "contentOffsetTop";
-  private static final String SCROLL_AWAY_PADDING_TOP = "scrollAwayPaddingTop";
 
   private static final int UNSET_CONTENT_OFFSET = -1;
 
@@ -104,15 +96,8 @@ public class ReactScrollView extends ScrollView
   private int pendingContentOffsetX = UNSET_CONTENT_OFFSET;
   private int pendingContentOffsetY = UNSET_CONTENT_OFFSET;
   private final FabricViewStateManager mFabricViewStateManager = new FabricViewStateManager();
-
-  private @Nullable ValueAnimator mScrollAnimator;
-  private int mFinalAnimatedPositionScrollX;
-  private int mFinalAnimatedPositionScrollY;
-
-  private int mScrollAwayPaddingTop = 0;
-
-  private int mLastStateUpdateScrollX = -1;
-  private int mLastStateUpdateScrollY = -1;
+  private final ReactScrollViewScrollState mReactScrollViewScrollState =
+      new ReactScrollViewScrollState(ViewCompat.LAYOUT_DIRECTION_LTR);
 
   public ReactScrollView(Context context) {
     this(context, null);
@@ -324,7 +309,7 @@ public class ReactScrollView extends ScrollView
       // when JS processes the scroll event, the C++ ShadowNode representation will have a
       // "more correct" scroll position. It will frequently be /incorrect/ but this decreases
       // the error as much as possible.
-      updateStateOnScroll();
+      ReactScrollViewHelper.updateStateOnScroll(this);
 
       ReactScrollViewHelper.emitScrollEvent(
           this,
@@ -366,7 +351,7 @@ public class ReactScrollView extends ScrollView
     mVelocityHelper.calculateVelocity(ev);
     int action = ev.getAction() & MotionEvent.ACTION_MASK;
     if (action == MotionEvent.ACTION_UP && mDragging) {
-      updateStateOnScroll();
+      ReactScrollViewHelper.updateStateOnScroll(this);
 
       float velocityX = mVelocityHelper.getXVelocity();
       float velocityY = mVelocityHelper.getYVelocity();
@@ -565,7 +550,7 @@ public class ReactScrollView extends ScrollView
               mRunning = true;
             } else {
               // There has not been a scroll update since the last time this Runnable executed.
-              updateStateOnScroll();
+              ReactScrollViewHelper.updateStateOnScroll(ReactScrollView.this);
 
               // We keep checking for updates until the ScrollView has "stabilized" and hasn't
               // scrolled for N consecutive frames. This number is arbitrary: big enough to catch
@@ -606,20 +591,6 @@ public class ReactScrollView extends ScrollView
         this, mPostTouchRunnable, ReactScrollViewHelper.MOMENTUM_DELAY);
   }
 
-  /** Get current X position or position after current animation finishes, if any. */
-  private int getPostAnimationScrollX() {
-    return mScrollAnimator != null && mScrollAnimator.isRunning()
-        ? mFinalAnimatedPositionScrollX
-        : getScrollX();
-  }
-
-  /** Get current X position or position after current animation finishes, if any. */
-  private int getPostAnimationScrollY() {
-    return mScrollAnimator != null && mScrollAnimator.isRunning()
-        ? mFinalAnimatedPositionScrollY
-        : getScrollY();
-  }
-
   private int predictFinalScrollPosition(int velocityY) {
     // ScrollView can *only* scroll for 250ms when using smoothScrollTo and there's
     // no way to customize the scroll duration. So, we create a temporary OverScroller
@@ -630,9 +601,10 @@ public class ReactScrollView extends ScrollView
     // predict where a fling would end up so we can scroll to the nearest snap offset
     int maximumOffset = getMaxScrollY();
     int height = getHeight() - getPaddingBottom() - getPaddingTop();
+    Point postAnimationScroll = ReactScrollViewHelper.getPostAnimationScroll(this);
     scroller.fling(
-        getPostAnimationScrollX(), // startX
-        getPostAnimationScrollY(), // startY
+        postAnimationScroll.x, // startX
+        postAnimationScroll.y, // startY
         0, // velocityX
         velocityY, // velocityY
         0, // minX
@@ -656,7 +628,7 @@ public class ReactScrollView extends ScrollView
    */
   private void smoothScrollAndSnap(int velocity) {
     double interval = (double) getSnapInterval();
-    double currentOffset = (double) getPostAnimationScrollY();
+    double currentOffset = (double) (ReactScrollViewHelper.getPostAnimationScroll(this).y);
     double targetOffset = (double) predictFinalScrollPosition(velocity);
 
     int previousPage = (int) Math.floor(currentOffset / interval);
@@ -945,52 +917,7 @@ public class ReactScrollView extends ScrollView
    * scroll view and state. Calling raw `smoothScrollTo` doesn't update state.
    */
   public void reactSmoothScrollTo(int x, int y) {
-    // `smoothScrollTo` contains some logic that, if called multiple times in a short amount of
-    // time, will treat all calls as part of the same animation and will not lengthen the duration
-    // of the animation. This means that, for example, if the user is scrolling rapidly, multiple
-    // pages could be considered part of one animation, causing some page animations to be animated
-    // very rapidly - looking like they're not animated at all.
-    if (mScrollAnimator != null) {
-      mScrollAnimator.cancel();
-    }
-
-    mFinalAnimatedPositionScrollX = x;
-    mFinalAnimatedPositionScrollY = y;
-    PropertyValuesHolder scrollX = PropertyValuesHolder.ofInt("scrollX", getScrollX(), x);
-    PropertyValuesHolder scrollY = PropertyValuesHolder.ofInt("scrollY", getScrollY(), y);
-    mScrollAnimator = ObjectAnimator.ofPropertyValuesHolder(scrollX, scrollY);
-    mScrollAnimator.setDuration(
-        ReactScrollViewHelper.getDefaultScrollAnimationDuration(getContext()));
-    mScrollAnimator.addUpdateListener(
-        new ValueAnimator.AnimatorUpdateListener() {
-          @Override
-          public void onAnimationUpdate(ValueAnimator valueAnimator) {
-            int scrollValueX = (Integer) valueAnimator.getAnimatedValue("scrollX");
-            int scrollValueY = (Integer) valueAnimator.getAnimatedValue("scrollY");
-            scrollTo(scrollValueX, scrollValueY);
-          }
-        });
-    mScrollAnimator.addListener(
-        new Animator.AnimatorListener() {
-          @Override
-          public void onAnimationStart(Animator animator) {}
-
-          @Override
-          public void onAnimationEnd(Animator animator) {
-            mFinalAnimatedPositionScrollX = -1;
-            mFinalAnimatedPositionScrollY = -1;
-            mScrollAnimator = null;
-            updateStateOnScroll();
-          }
-
-          @Override
-          public void onAnimationCancel(Animator animator) {}
-
-          @Override
-          public void onAnimationRepeat(Animator animator) {}
-        });
-    mScrollAnimator.start();
-    updateStateOnScroll(x, y);
+    ReactScrollViewHelper.smoothScrollTo(this, x, y);
     setPendingContentOffsets(x, y);
   }
 
@@ -1010,7 +937,7 @@ public class ReactScrollView extends ScrollView
     // to the last item in the list, but that item cannot be move to the start position of the view.
     final int actualX = getScrollX();
     final int actualY = getScrollY();
-    updateStateOnScroll(actualX, actualY);
+    ReactScrollViewHelper.updateStateOnScroll(this, actualX, actualY);
     setPendingContentOffsets(actualX, actualY);
   }
 
@@ -1119,61 +1046,18 @@ public class ReactScrollView extends ScrollView
     setRemoveClippedSubviews(mRemoveClippedSubviews);
   }
 
-  /**
-   * Called on any stabilized onScroll change to propagate content offset value to a Shadow Node.
-   */
-  private boolean updateStateOnScroll(final int scrollX, final int scrollY) {
-    if (ViewUtil.getUIManagerType(getId()) == UIManagerType.DEFAULT) {
-      return false;
-    }
-
-    // Dedupe events to reduce JNI traffic
-    if (scrollX == mLastStateUpdateScrollX && scrollY == mLastStateUpdateScrollY) {
-      return false;
-    }
-
-    mLastStateUpdateScrollX = scrollX;
-    mLastStateUpdateScrollY = scrollY;
-
-    forceUpdateState();
-
-    return true;
-  }
-
-  private boolean updateStateOnScroll() {
-    return updateStateOnScroll(getScrollX(), getScrollY());
-  }
-
   private void updateScrollAwayState(int scrollAwayPaddingTop) {
-    if (mScrollAwayPaddingTop == scrollAwayPaddingTop) {
-      return;
-    }
-
-    mScrollAwayPaddingTop = scrollAwayPaddingTop;
-
-    forceUpdateState();
-  }
-
-  private void forceUpdateState() {
-    final int scrollX = mLastStateUpdateScrollX;
-    final int scrollY = mLastStateUpdateScrollY;
-    final int scrollAwayPaddingTop = mScrollAwayPaddingTop;
-
-    mFabricViewStateManager.setState(
-        new FabricViewStateManager.StateUpdateCallback() {
-          @Override
-          public WritableMap getStateUpdate() {
-            WritableMap map = new WritableNativeMap();
-            map.putDouble(CONTENT_OFFSET_LEFT, PixelUtil.toDIPFromPixel(scrollX));
-            map.putDouble(CONTENT_OFFSET_TOP, PixelUtil.toDIPFromPixel(scrollY));
-            map.putDouble(SCROLL_AWAY_PADDING_TOP, PixelUtil.toDIPFromPixel(scrollAwayPaddingTop));
-            return map;
-          }
-        });
+    getReactScrollViewScrollState().setScrollAwayPaddingTop(scrollAwayPaddingTop);
+    ReactScrollViewHelper.forceUpdateState(this);
   }
 
   @Override
   public FabricViewStateManager getFabricViewStateManager() {
     return mFabricViewStateManager;
+  }
+
+  @Override
+  public ReactScrollViewScrollState getReactScrollViewScrollState() {
+    return mReactScrollViewScrollState;
   }
 }

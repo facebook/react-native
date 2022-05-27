@@ -462,4 +462,19 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   private void logUnsupportedPropertyWarning(String propName) {
     FLog.w(ReactConstants.TAG, "%s doesn't support property '%s'", getName(), propName);
   }
+
+  @ReactProp(name = "pointerenter")
+  public void setPointerEnter(@NonNull T view, @Nullable boolean value) {
+    view.setTag(R.id.pointer_enter, value);
+  }
+
+  @ReactProp(name = "pointerleave")
+  public void setPointerLeave(@NonNull T view, @Nullable boolean value) {
+    view.setTag(R.id.pointer_leave, value);
+  }
+
+  @ReactProp(name = "pointermove")
+  public void setPointerMove(@NonNull T view, @Nullable boolean value) {
+    view.setTag(R.id.pointer_move, value);
+  }
 }

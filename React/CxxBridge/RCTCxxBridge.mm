@@ -77,7 +77,7 @@ using namespace facebook::react;
 /**
  * Must be kept in sync with `MessageQueue.js`.
  */
-typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
+typedef NS_ENUM(NSInteger, RCTBridgeFields) {
   RCTBridgeFieldRequestModuleIDs = 0,
   RCTBridgeFieldMethodIDs,
   RCTBridgeFieldParams,
@@ -137,8 +137,7 @@ static void notifyAboutModuleSetup(RCTPerformanceLogger *performanceLogger, cons
 static void mapReactMarkerToPerformanceLogger(
     const ReactMarker::ReactMarkerId markerId,
     RCTPerformanceLogger *performanceLogger,
-    const char *tag,
-    int instanceKey)
+    const char *tag)
 {
   switch (markerId) {
     case ReactMarker::RUN_JS_BUNDLE_START:
@@ -178,13 +177,8 @@ static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogg
 {
   __weak RCTPerformanceLogger *weakPerformanceLogger = performanceLogger;
   ReactMarker::logTaggedMarker = [weakPerformanceLogger](const ReactMarker::ReactMarkerId markerId, const char *tag) {
-    mapReactMarkerToPerformanceLogger(markerId, weakPerformanceLogger, tag, 0);
+    mapReactMarkerToPerformanceLogger(markerId, weakPerformanceLogger, tag);
   };
-
-  ReactMarker::logTaggedMarkerWithInstanceKey =
-      [weakPerformanceLogger](const ReactMarker::ReactMarkerId markerId, const char *tag, const int instanceKey) {
-        mapReactMarkerToPerformanceLogger(markerId, weakPerformanceLogger, tag, instanceKey);
-      };
 }
 
 @interface RCTCxxBridge ()

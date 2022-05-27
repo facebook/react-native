@@ -88,6 +88,7 @@ react {
 
     // Codegen Configs
     jsRootDir = file("$rootDir/packages/rn-tester")
+    libraryName = "rntester"
     useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET")?.toBoolean() ?: false
 }
 
@@ -141,7 +142,7 @@ def reactNativeArchitectures() {
 }
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 31
     if (project.hasProperty("ANDROID_NDK_VERSION")) {
         ndkVersion project.property("ANDROID_NDK_VERSION")
     }
@@ -149,9 +150,6 @@ android {
         ndkPath project.property("ANDROID_NDK_PATH")
     }
 
-    dexOptions {
-        javaMaxHeapSize "4g"
-    }
     flavorDimensions "vm"
     productFlavors {
         hermes {
@@ -165,7 +163,7 @@ android {
     defaultConfig {
         applicationId "com.facebook.react.uiapp"
         minSdkVersion 21
-        targetSdkVersion 29
+        targetSdkVersion 31
         versionCode 1
         versionName "1.0"
         testBuildType System.getProperty('testBuildType', 'debug')  // This will later be used to control the test apk build type
@@ -275,7 +273,7 @@ if (enableCodegen) {
                             "REACT_ANDROID_DIR=$reactAndroidProjectDir",
                             "REACT_ANDROID_BUILD_DIR=$reactAndroidBuildDir"
                     cFlags "-Wall", "-Werror", "-fexceptions", "-frtti", "-DWITH_INSPECTOR=1"
-                    cppFlags "-std=c++1y"
+                    cppFlags "-std=c++17"
                     targets "rntester_appmodules"
                 }
             }
@@ -290,14 +288,14 @@ if (enableCodegen) {
     def packageReactDebugNdkLibs = tasks.register("packageReactDebugNdkLibs", Copy) {
         // TODO: handle extracting .so from prebuilt :ReactAndroid.
         dependsOn(":ReactAndroid:packageReactNdkDebugLibsForBuck")
-        dependsOn("generateCodegenSchemaFromJavaScript")
+        dependsOn("generateCodegenArtifactsFromSchema")
         from("$reactAndroidProjectDir/src/main/jni/prebuilt/lib")
         into("$buildDir/react-ndk/exported")
     }
     def packageReactReleaseNdkLibs = tasks.register("packageReactReleaseNdkLibs", Copy) {
         // TODO: handle extracting .so from prebuilt :ReactAndroid.
         dependsOn(":ReactAndroid:packageReactNdkReleaseLibsForBuck")
-        dependsOn("generateCodegenSchemaFromJavaScript")
+        dependsOn("generateCodegenArtifactsFromSchema")
         from("$reactAndroidProjectDir/src/main/jni/prebuilt/lib")
         into("$buildDir/react-ndk/exported")
     }
@@ -316,8 +314,10 @@ if (enableCodegen) {
     }
 
     afterEvaluate {
+        configureNdkBuildRelease.dependsOn(packageReactReleaseNdkLibs)
         preHermesReleaseBuild.dependsOn(packageReactReleaseNdkLibs)
         preJscReleaseBuild.dependsOn(packageReactReleaseNdkLibs)
+        configureNdkBuildDebug.dependsOn(packageReactDebugNdkLibs)
         preHermesDebugBuild.dependsOn(packageReactDebugNdkLibs)
         preJscDebugBuild.dependsOn(packageReactDebugNdkLibs)
         clean.dependsOn(cleanProjectNdkBuild)

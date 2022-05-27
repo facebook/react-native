@@ -19,8 +19,8 @@ LOCAL_CFLAGS := \
 
 LOCAL_CFLAGS += -fexceptions -frtti -Wno-unused-lambda-capture
 
-LOCAL_STATIC_LIBRARIES := boost jsi callinvoker reactperflogger runtimeexecutor
-LOCAL_SHARED_LIBRARIES := jsinspector libfolly_json glog logger
+LOCAL_STATIC_LIBRARIES := boost jsi callinvoker reactperflogger
+LOCAL_SHARED_LIBRARIES := jsinspector libfolly_json glog logger libruntimeexecutor
 
 include $(BUILD_STATIC_LIBRARY)
 

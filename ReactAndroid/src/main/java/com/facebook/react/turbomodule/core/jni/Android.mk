@@ -19,9 +19,9 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
 
 LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
 
-LOCAL_SHARED_LIBRARIES = libfb libfbjni libreactnativeutilsjni
+LOCAL_SHARED_LIBRARIES = libfb libfbjni libreactnativeutilsjni libruntimeexecutor
 
-LOCAL_STATIC_LIBRARIES = libcallinvoker libreactperfloggerjni libruntimeexecutor
+LOCAL_STATIC_LIBRARIES = libcallinvoker libreactperfloggerjni
 
 # Name of this module.
 LOCAL_MODULE := callinvokerholder

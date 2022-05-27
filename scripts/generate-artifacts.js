@@ -48,11 +48,18 @@ const argv = yargs
     description: 'A flag to control whether to generate fabric components.',
     boolean: 'e',
   })
+  .option('c', {
+    alias: 'configFileDir',
+    default: '',
+    description:
+      'Path where codegen config files are located (e.g. node_modules dir).',
+  })
   .usage('Usage: $0 -p [path to app]')
   .demandOption(['p']).argv;
 
 const RN_ROOT = path.join(__dirname, '..');
 const CODEGEN_CONFIG_FILENAME = argv.f;
+const CODEGEN_CONFIG_FILE_DIR = argv.c;
 const CODEGEN_CONFIG_KEY = argv.k;
 const CODEGEN_FABRIC_ENABLED = argv.e;
 const CODEGEN_REPO_PATH = `${RN_ROOT}/packages/react-native-codegen`;
@@ -80,18 +87,15 @@ function main(appRootDir, outputPath) {
     const dependencies = {...pkgJson.dependencies, ...pkgJson.devDependencies};
 
     // 3. Determine which of these are codegen-enabled libraries
+    const confifDir = CODEGEN_CONFIG_FILE_DIR || path.join(RN_ROOT, '..');
     console.log(
-      `\n\n[Codegen] >>>>> Searching for codegen-enabled libraries in ${appRootDir}`,
+      `\n\n[Codegen] >>>>> Searching for codegen-enabled libraries in ${confifDir}`,
     );
     const libraries = [];
 
     // Handle react-native and third-party libraries
     Object.keys(dependencies).forEach(dependency => {
-      const codegenConfigFileDir = path.join(
-        appRootDir,
-        'node_modules',
-        dependency,
-      );
+      const codegenConfigFileDir = path.join(confifDir, dependency);
       const configFilePath = path.join(
         codegenConfigFileDir,
         CODEGEN_CONFIG_FILENAME,
@@ -165,6 +169,9 @@ function main(appRootDir, outputPath) {
     // 5. For each codegen-enabled library, generate the native code spec files
     libraries.forEach(library => {
       if (!CODEGEN_FABRIC_ENABLED && library.config.type === 'components') {
+        console.log(
+          `[Codegen] ${library.config.name} skipped because fabric is not enabled.`,
+        );
         return;
       }
       const tmpDir = fs.mkdtempSync(

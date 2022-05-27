@@ -394,6 +394,15 @@ using namespace facebook::react;
   }
 }
 
+#pragma mark - RCTBackedTextInputDelegate (UIScrollViewDelegate)
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+  if (_eventEmitter) {
+    std::static_pointer_cast<TextInputEventEmitter const>(_eventEmitter)->onScroll([self _textInputMetrics]);
+  }
+}
+
 #pragma mark - Native Commands
 
 - (void)handleCommand:(const NSString *)commandName args:(const NSArray *)args
@@ -499,6 +508,22 @@ using namespace facebook::react;
   metrics.text = RCTStringFromNSString(_backedTextInputView.attributedText.string);
   metrics.selectionRange = [self _selectionRange];
   metrics.eventCount = _mostRecentEventCount;
+
+  CGPoint contentOffset = _backedTextInputView.contentOffset;
+  metrics.contentOffset = {contentOffset.x, contentOffset.y};
+
+  UIEdgeInsets contentInset = _backedTextInputView.contentInset;
+  metrics.contentInset = {contentInset.left, contentInset.top, contentInset.right, contentInset.bottom};
+
+  CGSize contentSize = _backedTextInputView.contentSize;
+  metrics.contentSize = {contentSize.width, contentSize.height};
+
+  CGSize layoutMeasurement = _backedTextInputView.bounds.size;
+  metrics.layoutMeasurement = {layoutMeasurement.width, layoutMeasurement.height};
+
+  CGFloat zoomScale = _backedTextInputView.zoomScale;
+  metrics.zoomScale = zoomScale;
+
   return metrics;
 }
 

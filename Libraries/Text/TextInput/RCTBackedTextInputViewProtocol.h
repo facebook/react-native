@@ -56,6 +56,10 @@ NS_ASSUME_NONNULL_BEGIN
 #endif // TODO(macOS GH#774)
 @property (nonatomic, getter=isScrollEnabled) BOOL scrollEnabled;
 @property (nonatomic, strong, nullable) NSString *inputAccessoryViewID;
+@property (nonatomic, assign, readonly) CGFloat zoomScale;
+@property (nonatomic, assign, readonly) CGPoint contentOffset;
+@property (nonatomic, assign, readonly) UIEdgeInsets contentInset;
+
 
 // This protocol disallows direct access to `selectedTextRange` property because
 // unwise usage of it can break the `delegate` behavior. So, we always have to

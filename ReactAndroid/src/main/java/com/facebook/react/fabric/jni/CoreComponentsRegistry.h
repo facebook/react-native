@@ -25,11 +25,11 @@ class CoreComponentsRegistry
 
   CoreComponentsRegistry(ComponentFactory *delegate);
 
- private:
-  friend HybridBase;
-
   static std::shared_ptr<ComponentDescriptorProviderRegistry const>
   sharedProviderRegistry();
+
+ private:
+  friend HybridBase;
 
   const ComponentFactory *delegate_;
 

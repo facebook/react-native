@@ -19,7 +19,7 @@ type NativeImageSourceSpec = $ReadOnly<{|
   default?: string,
 
   // For more details on width and height, see
-  // https://reactnative.dev/docs/images.html#why-not-automatically-size-everything
+  // https://reactnative.dev/docs/images#why-not-automatically-size-everything
   height: number,
   width: number,
 |}>;
@@ -37,7 +37,7 @@ type NativeImageSourceSpec = $ReadOnly<{|
  * automates measurements and allows adding new images without rebuilding the
  * native app. For more details visit:
  *
- *   https://reactnative.dev/docs/images.html
+ *   https://reactnative.dev/docs/images
  *
  */
 function nativeImageSource(spec: NativeImageSourceSpec): ImageURISource {

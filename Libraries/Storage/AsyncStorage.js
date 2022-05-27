@@ -35,7 +35,7 @@ type GetRequest = {
  * storage system that is global to the app.  It should be used instead of
  * LocalStorage.
  *
- * See https://reactnative.dev/docs/asyncstorage.html
+ * See https://reactnative.dev/docs/asyncstorage
  */
 const AsyncStorage = {
   _getRequests: ([]: Array<GetRequest>),
@@ -45,7 +45,7 @@ const AsyncStorage = {
   /**
    * Fetches an item for a `key` and invokes a callback upon completion.
    *
-   * See https://reactnative.dev/docs/asyncstorage.html#getitem
+   * See https://reactnative.dev/docs/asyncstorage#getitem
    */
   getItem: function(
     key: string,
@@ -70,7 +70,7 @@ const AsyncStorage = {
   /**
    * Sets the value for a `key` and invokes a callback upon completion.
    *
-   * See https://reactnative.dev/docs/asyncstorage.html#setitem
+   * See https://reactnative.dev/docs/asyncstorage#setitem
    */
   setItem: function(
     key: string,
@@ -94,7 +94,7 @@ const AsyncStorage = {
   /**
    * Removes an item for a `key` and invokes a callback upon completion.
    *
-   * See https://reactnative.dev/docs/asyncstorage.html#removeitem
+   * See https://reactnative.dev/docs/asyncstorage#removeitem
    */
   removeItem: function(
     key: string,
@@ -120,7 +120,7 @@ const AsyncStorage = {
    *
    * **NOTE:** This is not supported by all native implementations.
    *
-   * See https://reactnative.dev/docs/asyncstorage.html#mergeitem
+   * See https://reactnative.dev/docs/asyncstorage#mergeitem
    */
   mergeItem: function(
     key: string,
@@ -146,7 +146,7 @@ const AsyncStorage = {
    * don't want to call this; use `removeItem` or `multiRemove` to clear only
    * your app's keys.
    *
-   * See https://reactnative.dev/docs/asyncstorage.html#clear
+   * See https://reactnative.dev/docs/asyncstorage#clear
    */
   clear: function(callback?: ?(error: ?Error) => void): Promise<void> {
     invariant(RCTAsyncStorage, 'RCTAsyncStorage not available');
@@ -165,7 +165,7 @@ const AsyncStorage = {
   /**
    * Gets *all* keys known to your app; for all callers, libraries, etc.
    *
-   * See https://reactnative.dev/docs/asyncstorage.html#getallkeys
+   * See https://reactnative.dev/docs/asyncstorage#getallkeys
    */
   getAllKeys: function(
     callback?: ?(error: ?Error, keys: ?Array<string>) => void,
@@ -196,7 +196,7 @@ const AsyncStorage = {
   /**
    * Flushes any pending requests using a single batch call to get the data.
    *
-   * See https://reactnative.dev/docs/asyncstorage.html#flushgetrequests
+   * See https://reactnative.dev/docs/asyncstorage#flushgetrequests
    * */
   flushGetRequests: function(): void {
     const getRequests = this._getRequests;
@@ -235,7 +235,7 @@ const AsyncStorage = {
    * inputs. Your callback will be invoked with an array of corresponding
    * key-value pairs found.
    *
-   * See https://reactnative.dev/docs/asyncstorage.html#multiget
+   * See https://reactnative.dev/docs/asyncstorage#multiget
    */
   multiGet: function(
     keys: Array<string>,
@@ -270,7 +270,7 @@ const AsyncStorage = {
    * Use this as a batch operation for storing multiple key-value pairs. When
    * the operation completes you'll get a single callback with any errors.
    *
-   * See https://reactnative.dev/docs/asyncstorage.html#multiset
+   * See https://reactnative.dev/docs/asyncstorage#multiset
    */
   multiSet: function(
     keyValuePairs: Array<Array<string>>,
@@ -293,7 +293,7 @@ const AsyncStorage = {
   /**
    * Call this to batch the deletion of all keys in the `keys` array.
    *
-   * See https://reactnative.dev/docs/asyncstorage.html#multiremove
+   * See https://reactnative.dev/docs/asyncstorage#multiremove
    */
   multiRemove: function(
     keys: Array<string>,
@@ -319,7 +319,7 @@ const AsyncStorage = {
    *
    * **NOTE**: This is not supported by all native implementations.
    *
-   * See https://reactnative.dev/docs/asyncstorage.html#multimerge
+   * See https://reactnative.dev/docs/asyncstorage#multimerge
    */
   multiMerge: function(
     keyValuePairs: Array<Array<string>>,

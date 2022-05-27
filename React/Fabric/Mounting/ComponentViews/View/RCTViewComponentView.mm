@@ -193,8 +193,7 @@ using namespace facebook::react;
     needsInvalidateLayer = YES;
   }
 
-  if (RCTGetRemoveClippedSubviewsEnabled() &&
-      oldViewProps.removeClippedSubviews != newViewProps.removeClippedSubviews) {
+  if (oldViewProps.removeClippedSubviews != newViewProps.removeClippedSubviews) {
     _removeClippedSubviews = newViewProps.removeClippedSubviews;
     if (_removeClippedSubviews && self.subviews.count > 0) {
       _reactSubviews = [NSMutableArray arrayWithArray:self.subviews];

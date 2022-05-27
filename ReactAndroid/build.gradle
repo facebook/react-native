@@ -238,6 +238,7 @@ tasks.register("packageReactNdkLibsForBuck") {
 
 tasks.register("packageReactNdkDebugLibsForBuck", Copy) {
     dependsOn("mergeDebugNativeLibs")
+    // Shared libraries (.so) are copied from the merged_native_libs folder instead
     from("$buildDir/intermediates/merged_native_libs/debug/out/lib/")
     exclude("**/libjsc.so")
     exclude("**/libhermes.so")
@@ -246,6 +247,7 @@ tasks.register("packageReactNdkDebugLibsForBuck", Copy) {
 
 tasks.register("packageReactNdkReleaseLibsForBuck", Copy) {
     dependsOn("mergeReleaseNativeLibs")
+    // Shared libraries (.so) are copied from the merged_native_libs folder instead
     from("$buildDir/intermediates/merged_native_libs/release/out/lib/")
     exclude("**/libjsc.so")
     exclude("**/libhermes.so")
@@ -271,7 +273,7 @@ task installArchives {
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
     if (project.hasProperty("ANDROID_NDK_VERSION")) {
         ndkVersion project.property("ANDROID_NDK_VERSION")
     }
@@ -281,7 +283,7 @@ android {
 
     defaultConfig {
         minSdkVersion(21)
-        targetSdkVersion(28)
+        targetSdkVersion(31)
         versionCode(1)
         versionName("1.0")
 
@@ -400,6 +402,12 @@ react {
 }
 
 afterEvaluate {
+
+    // Needed as some of the native sources needs to be downloaded
+    // before configureNdkBuildDebug could be executed.
+    configureNdkBuildDebug.dependsOn(preBuild)
+    configureNdkBuildRelease.dependsOn(preBuild)
+
     publishing {
         publications {
             release(MavenPublication) {

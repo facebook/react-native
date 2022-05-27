@@ -50,3 +50,9 @@ elif [[ -x "$(command -v brew)" && -f "$(brew --prefix asdf)/asdf.sh" ]]; then
   # shellcheck source=/dev/null
   . "$(brew --prefix asdf)/asdf.sh"
 fi
+
+# Set up volta if present
+if [[ -x "$HOME/.volta/bin/node" ]]; then
+  export VOLTA_HOME="$HOME/.volta"
+  export PATH="$VOLTA_HOME/bin:$PATH"
+fi

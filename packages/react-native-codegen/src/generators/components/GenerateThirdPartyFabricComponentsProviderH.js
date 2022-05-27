@@ -15,7 +15,7 @@ import type {SchemaType} from '../../CodegenSchema';
 // File path -> contents
 type FilesOutput = Map<string, string>;
 
-const template = `
+const FileTemplate = ({lookupFuncs}: {lookupFuncs: string}) => `
 /*
  * ${'C'}opyright (c) Facebook, Inc. and its affiliates.
  *
@@ -36,7 +36,7 @@ extern "C" {
 
 Class<RCTComponentViewProtocol> RCTThirdPartyFabricComponentsProvider(const char *name);
 
-::_LOOKUP_FUNCS_::
+${lookupFuncs}
 
 #ifdef __cplusplus
 }
@@ -46,8 +46,15 @@ Class<RCTComponentViewProtocol> RCTThirdPartyFabricComponentsProvider(const char
 
 `;
 
-const lookupFuncTemplate = `
-Class<RCTComponentViewProtocol> ::_CLASSNAME_::Cls(void) __attribute__((used)); // ::_LIBRARY_NAME_::
+const LookupFuncTemplate = ({
+  className,
+  libraryName,
+}: {
+  className: string,
+  libraryName: string,
+}) =>
+  `
+Class<RCTComponentViewProtocol> ${className}Cls(void) __attribute__((used)); // ${libraryName}
 `.trim();
 
 module.exports = {
@@ -84,9 +91,10 @@ module.exports = {
                   return;
                 }
 
-                return lookupFuncTemplate
-                  .replace(/::_LIBRARY_NAME_::/g, libraryName)
-                  .replace(/::_CLASSNAME_::/g, componentName);
+                return LookupFuncTemplate({
+                  className: componentName,
+                  libraryName,
+                });
               })
               .join('\n');
           })
@@ -95,10 +103,9 @@ module.exports = {
       })
       .join('\n');
 
-    const replacedTemplate = template.replace(
-      /::_LOOKUP_FUNCS_::/g,
+    const replacedTemplate = FileTemplate({
       lookupFuncs,
-    );
+    });
 
     return new Map([[fileName, replacedTemplate]]);
   },

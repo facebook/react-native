@@ -323,8 +323,18 @@ def use_react_native_codegen_discovery!(options={})
   react_native_path = options[:react_native_path] ||= "../node_modules/react-native"
   app_path = options[:app_path]
   fabric_enabled = options[:fabric_enabled] ||= false
+  config_file_dir = options[:config_file_dir] ||= ''
   if app_path
-    Pod::Executable.execute_command('node', ["#{react_native_path}/scripts/generate-artifacts.js", "-p", "#{app_path}", "-o", Pod::Config.instance.installation_root, "-e", "#{fabric_enabled}"])
+    out = Pod::Executable.execute_command(
+      'node',
+      [
+        "#{react_native_path}/scripts/generate-artifacts.js",
+        "-p", "#{app_path}",
+        "-o", Pod::Config.instance.installation_root,
+        "-e", "#{fabric_enabled}",
+        "-c", "#{config_file_dir}",
+      ])
+    Pod::UI.puts out;
   else
     Pod::UI.warn '[Codegen] error: no app_path was provided'
     exit 1
