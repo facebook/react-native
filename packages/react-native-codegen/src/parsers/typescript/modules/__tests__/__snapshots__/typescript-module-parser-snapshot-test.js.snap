@@ -56,6 +56,25 @@ exports[`RN Codegen TypeScript Parser can generate fixture CXX_ONLY_NATIVE_MODUL
               },
               'params': []
             }
+          },
+          {
+            'name': 'getMixed',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'MixedTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'arg',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'MixedTypeAnnotation'
+                  }
+                }
+              ]
+            }
           }
         ]
       },
@@ -226,6 +245,72 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_AL
                   'typeAnnotation': {
                     'type': 'TypeAliasTypeAnnotation',
                     'name': 'ObjectAlias'
+                  }
+                }
+              ]
+            }
+          },
+          {
+            'name': 'getStringFromNullableAlias',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'StringTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'a',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'NullableTypeAnnotation',
+                    'typeAnnotation': {
+                      'type': 'TypeAliasTypeAnnotation',
+                      'name': 'ObjectAlias'
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            'name': 'getStringFromReadOnlyAlias',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'StringTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'a',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'TypeAliasTypeAnnotation',
+                    'name': 'ObjectAlias'
+                  }
+                }
+              ]
+            }
+          },
+          {
+            'name': 'getStringFromNullableReadOnlyAlias',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'StringTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'a',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'NullableTypeAnnotation',
+                    'typeAnnotation': {
+                      'type': 'TypeAliasTypeAnnotation',
+                      'name': 'ObjectAlias'
+                    }
                   }
                 }
               ]

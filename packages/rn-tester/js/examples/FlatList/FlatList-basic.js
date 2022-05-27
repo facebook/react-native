@@ -18,6 +18,7 @@ import * as React from 'react';
 import {
   Alert,
   Animated,
+  I18nManager,
   Platform,
   StyleSheet,
   TextInput,
@@ -63,7 +64,10 @@ type State = {|
   fadingEdgeLength: number,
   onPressDisabled: boolean,
   textSelectable: boolean,
+  isRTL: boolean,
 |};
+
+const IS_RTL = I18nManager.isRTL;
 
 class FlatListExample extends React.PureComponent<Props, State> {
   state: State = {
@@ -80,6 +84,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
     fadingEdgeLength: 0,
     onPressDisabled: false,
     textSelectable: true,
+    isRTL: IS_RTL,
   };
 
   _onChangeFilterText = filterText => {
@@ -106,6 +111,17 @@ class FlatListExample extends React.PureComponent<Props, State> {
 
   _setBooleanValue: string => boolean => void = key => value =>
     this.setState({[key]: value});
+
+  _setIsRTL: boolean => void = value => {
+    I18nManager.forceRTL(value);
+    this.setState({isRTL: value});
+    Alert.alert(
+      'Reload this page',
+      'Please reload this page to change the UI direction! ' +
+        'All examples in this app will be affected. ' +
+        'Check them out to see what they look like in RTL layout.',
+    );
+  };
 
   render(): React.Node {
     const filterRegex = new RegExp(String(this.state.filterText), 'i');
@@ -181,6 +197,11 @@ class FlatListExample extends React.PureComponent<Props, State> {
                 'Use FlatListItemComponent',
                 this.state.useFlatListItemComponent,
                 this._setBooleanValue('useFlatListItemComponent'),
+              )}
+              {renderSmallSwitchOption(
+                'Is RTL',
+                this.state.isRTL,
+                this._setIsRTL,
               )}
               {Platform.OS === 'android' && (
                 <View>

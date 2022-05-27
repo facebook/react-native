@@ -11,6 +11,7 @@ import * as path from 'path';
 
 const {
   copyBuildScripts,
+  copyPodSpec,
   downloadHermesTarball,
   expandHermesTarball,
   getHermesTagSHA,
@@ -30,11 +31,9 @@ const MemoryFs = require('metro-memory-fs');
 
 let execCalls;
 let fs;
-let shelljs;
 
-jest.mock('shelljs', () => ({
-  echo: jest.fn(),
-  exec: jest.fn(command => {
+jest.mock('child_process', () => ({
+  execSync: jest.fn(command => {
     if (command.startsWith('curl')) {
       fs.writeFileSync(
         path.join(SDKS_DIR, 'download', `hermes-${hermesTagSha}.tgz`),
@@ -58,7 +57,6 @@ jest.mock('shelljs', () => ({
       return {code: 0};
     }
   }),
-  exit: jest.fn(),
 }));
 
 function populateMockFilesystem() {
@@ -118,11 +116,16 @@ describe('hermes-utils', () => {
     populateMockFilesystem();
 
     execCalls = Object.create(null);
-    shelljs = require('shelljs');
   });
   describe('readHermesTag', () => {
     it('should return main if .hermesversion does not exist', () => {
       expect(readHermesTag()).toEqual('main');
+    });
+    it('should fail if hermes tag is empty', () => {
+      fs.writeFileSync(path.join(SDKS_DIR, '.hermesversion'), '');
+      expect(() => {
+        readHermesTag();
+      }).toThrow('[Hermes] .hermesversion file is empty.');
     });
     it('should return tag from .hermesversion if file exists', () => {
       fs.writeFileSync(path.join(SDKS_DIR, '.hermesversion'), hermesTag);
@@ -152,6 +155,7 @@ describe('hermes-utils', () => {
   });
   describe('downloadHermesTarball', () => {
     it('should download Hermes tarball to download dir', () => {
+      fs.writeFileSync(path.join(SDKS_DIR, '.hermesversion'), hermesTag);
       downloadHermesTarball();
       expect(execCalls.curl).toBeTruthy();
       expect(
@@ -188,46 +192,44 @@ describe('hermes-utils', () => {
       expect(fs.existsSync(path.join(SDKS_DIR, 'hermes'))).toBeTruthy();
     });
     it('should fail if Hermes tarball does not exist', () => {
-      expandHermesTarball();
+      expect(() => {
+        expandHermesTarball();
+      }).toThrow('[Hermes] Could not locate Hermes tarball.');
       expect(execCalls.tar).toBeUndefined();
-      expect(shelljs.exit.mock.calls.length).toBeGreaterThan(0);
     });
   });
   describe('copyBuildScripts', () => {
     it('should copy React Native Hermes build scripts to Hermes source directory', () => {
-      fs.mkdirSync(path.join(SDKS_DIR, 'hermes', 'utils'), {
-        recursive: true,
-      });
       copyBuildScripts();
-      expect(
-        fs.readFileSync(
-          path.join(
-            ROOT_DIR,
-            'sdks',
-            'hermes',
-            'utils',
-            'build-mac-framework.sh',
+
+      [
+        'build-apple-framework.sh',
+        'build-ios-framework.sh',
+        'build-mac-framework.sh',
+      ].forEach(buildScript => {
+        expect(
+          fs.readFileSync(
+            path.join(ROOT_DIR, 'sdks', 'hermes', 'utils', buildScript),
+            {
+              encoding: 'utf8',
+              flag: 'r',
+            },
           ),
-          {
-            encoding: 'utf8',
-            flag: 'r',
-          },
-        ),
-      ).toEqual(
-        fs.readFileSync(
-          path.join(
-            ROOT_DIR,
-            'sdks',
-            'hermes-engine',
-            'utils',
-            'build-mac-framework.sh',
+        ).toEqual(
+          fs.readFileSync(
+            path.join(ROOT_DIR, 'sdks', 'hermes-engine', 'utils', buildScript),
+            {
+              encoding: 'utf8',
+              flag: 'r',
+            },
           ),
-          {
-            encoding: 'utf8',
-            flag: 'r',
-          },
-        ),
-      );
+        );
+      });
+    });
+  });
+  describe('copyPodSpec', () => {
+    it('should copy React Native Hermes Podspec to Hermes source directory', () => {
+      copyPodSpec();
       expect(
         fs.readFileSync(
           path.join(SDKS_DIR, 'hermes', 'hermes-engine.podspec'),

@@ -272,7 +272,7 @@ describe('delete empty files and folders', () => {
   });
 
   it("when path is folder and it's empty, removes it", () => {
-    const targetFolder = 'build/';
+    const targetFolder = 'build';
     const content = [];
 
     let statSyncInvocationCount = 0;
@@ -311,16 +311,18 @@ describe('delete empty files and folders', () => {
   });
 
   it("when path is folder and it's not empty, removes only empty folders and files", () => {
-    const targetFolder = 'build/';
+    const targetFolder = 'build';
     const content = ['emptyFolder', 'emptyFile', 'notEmptyFile'];
 
-    const files = ['build/emptyFile', 'build/notEmptyFile'];
+    const files = [
+      path.normalize('build/emptyFile'),
+      path.normalize('build/notEmptyFile'),
+    ];
 
     const emptyContent = [];
-    const fileSizes = {
-      'build/emptyFile': 0,
-      'build/notEmptyFile': 32,
-    };
+    let fileSizes = {};
+    fileSizes[path.normalize('build/emptyFile')] = 0;
+    fileSizes[path.normalize('build/notEmptyFile')] = 32;
 
     let statSyncInvocation = [];
     let rmSyncInvocation = [];
@@ -352,23 +354,23 @@ describe('delete empty files and folders', () => {
 
     underTest._cleanupEmptyFilesAndFolders(targetFolder);
     expect(statSyncInvocation).toEqual([
-      'build/',
-      'build/emptyFolder',
-      'build/emptyFile',
-      'build/notEmptyFile',
+      path.normalize('build'),
+      path.normalize('build/emptyFolder'),
+      path.normalize('build/emptyFile'),
+      path.normalize('build/notEmptyFile'),
     ]);
     expect(readdirInvocation).toEqual([
-      'build/',
-      'build/emptyFolder',
-      'build/emptyFolder',
-      'build/',
+      path.normalize('build'),
+      path.normalize('build/emptyFolder'),
+      path.normalize('build/emptyFolder'),
+      path.normalize('build'),
     ]);
-    expect(rmSyncInvocation).toEqual(['build/emptyFile']);
-    expect(rmdirSyncInvocation).toEqual(['build/emptyFolder']);
+    expect(rmSyncInvocation).toEqual([path.normalize('build/emptyFile')]);
+    expect(rmdirSyncInvocation).toEqual([path.normalize('build/emptyFolder')]);
   });
 
   it('when path is folder and it contains only empty folders, removes everything', () => {
-    const targetFolder = 'build/';
+    const targetFolder = 'build';
     const content = ['emptyFolder1', 'emptyFolder2'];
     const emptyContent = [];
 
@@ -406,23 +408,23 @@ describe('delete empty files and folders', () => {
 
     underTest._cleanupEmptyFilesAndFolders(targetFolder);
     expect(statSyncInvocation).toEqual([
-      'build/',
-      'build/emptyFolder1',
-      'build/emptyFolder2',
+      path.normalize('build'),
+      path.normalize('build/emptyFolder1'),
+      path.normalize('build/emptyFolder2'),
     ]);
     expect(readdirInvocation).toEqual([
-      'build/',
-      'build/emptyFolder1',
-      'build/emptyFolder1',
-      'build/emptyFolder2',
-      'build/emptyFolder2',
-      'build/',
+      path.normalize('build'),
+      path.normalize('build/emptyFolder1'),
+      path.normalize('build/emptyFolder1'),
+      path.normalize('build/emptyFolder2'),
+      path.normalize('build/emptyFolder2'),
+      path.normalize('build'),
     ]);
     expect(rmSyncInvocation).toEqual([]);
     expect(rmdirSyncInvocation).toEqual([
-      'build/emptyFolder1',
-      'build/emptyFolder2',
-      'build/',
+      path.normalize('build/emptyFolder1'),
+      path.normalize('build/emptyFolder2'),
+      path.normalize('build'),
     ]);
   });
 });

@@ -5,9 +5,6 @@
 
 require "json"
 
-# sdks/.hermesversion
-hermes_tag_file = File.join(__dir__, "..", ".hermesversion")
-
 # sdks/hermesc/osx-bin/ImportHermesc.cmake
 import_hermesc_file=File.join(__dir__, "..", "hermesc", "osx-bin", "ImportHermesc.cmake")
 
@@ -18,28 +15,18 @@ version = package['version']
 
 source = {}
 git = "https://github.com/facebook/hermes.git"
-building_from_source = false
 
-if ENV['hermes-artifact-url'] then
-  source[:http] = ENV['hermes-artifact-url']
-elsif File.exist?(hermes_tag_file) then
-  building_from_source = true
+if version == '1000.0.0'
+  Pod::UI.puts '[Hermes] Hermes needs to be compiled, installing hermes-engine may take a while...'.yellow if Object.const_defined?("Pod::UI")
   source[:git] = git
-  source[:tag] = File.read(hermes_tag_file)
+  source[:commit] = `git ls-remote https://github.com/facebook/hermes main | cut -f 1`.strip
 else
-  building_from_source = true
-  source[:git] = git
-  hermes_commit_sha = `git ls-remote https://github.com/facebook/hermes main | cut -f 1`.strip
-  source[:commit] = hermes_commit_sha
+  source[:http] = `https://github.com/facebook/react-native/releases/download/v#{version}/hermes-runtime-darwin-v#{version}.tar.gz`
 end
 
 module HermesHelper
   # BUILD_TYPE = :debug
   BUILD_TYPE = :release
-end
-
-if building_from_source
-  Pod::UI.puts '[Hermes] Hermes needs to be compiled, installing hermes-engine may take a while...'.yellow if Object.const_defined?("Pod::UI")
 end
 
 Pod::Spec.new do |spec|
@@ -48,7 +35,7 @@ Pod::Spec.new do |spec|
   spec.summary     = "Hermes is a small and lightweight JavaScript engine optimized for running React Native."
   spec.description = "Hermes is a JavaScript engine optimized for fast start-up of React Native apps. It features ahead-of-time static optimization and compact bytecode."
   spec.homepage    = "https://hermesengine.dev"
-  spec.license     = { type: "MIT", file: "LICENSE" }
+  spec.license     = package["license"]
   spec.author      = "Facebook"
   spec.source      = source
   spec.platforms   = { :osx => "10.13", :ios => "11.0" }
@@ -62,7 +49,7 @@ Pod::Spec.new do |spec|
 
   spec.xcconfig            = { "CLANG_CXX_LANGUAGE_STANDARD" => "c++17", "CLANG_CXX_LIBRARY" => "compiler-default", "GCC_PREPROCESSOR_DEFINITIONS" => "HERMES_ENABLE_DEBUGGER=1" }
 
-  unless ENV['hermes-artifact-url']
+  if source[:git] then
     spec.prepare_command = <<-EOS
       # When true, debug build will be used.
       # See `build-apple-framework.sh` for details

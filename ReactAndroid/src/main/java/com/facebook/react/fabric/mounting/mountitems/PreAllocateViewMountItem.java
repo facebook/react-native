@@ -21,7 +21,7 @@ import com.facebook.react.uimanager.StateWrapper;
 /** {@link MountItem} that is used to pre-allocate views for JS components. */
 public class PreAllocateViewMountItem implements MountItem {
 
-  @NonNull private final String mComponent;
+  private final @NonNull String mComponent;
   private final int mSurfaceId;
   private final int mReactTag;
   private final @Nullable Object mProps;

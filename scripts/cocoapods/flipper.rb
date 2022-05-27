@@ -22,10 +22,8 @@ $flipper_default_versions = {
 #
 # @parameter production: a boolean that indicates whether we are in production or not.
 # @parameter pathToReactNative: the path to the React Native installation
-def install_flipper_dependencies(production, pathToReactNative)
-    unless production
-        pod 'React-Core/DevSupport', :path => "#{pathToReactNative}/"
-    end
+def install_flipper_dependencies(pathToReactNative)
+    pod 'React-Core/DevSupport', :path => "#{pathToReactNative}/"
 end
 
 
@@ -90,5 +88,25 @@ def flipper_post_install(installer)
                 end
             end
         end
+    end
+end
+
+class FlipperConfiguration
+    attr_reader :flipper_enabled
+    attr_reader :configurations
+    attr_reader :versions
+
+    def initialize(flipper_enabled, configurations, versions)
+        @flipper_enabled = flipper_enabled
+        @configurations = configurations
+        @versions = versions
+    end
+
+    def self.enabled(configurations = ["Debug"], versions = {})
+        FlipperConfiguration.new(true, configurations, versions)
+    end
+
+    def self.disabled
+        FlipperConfiguration.new(false, [], {})
     end
 end

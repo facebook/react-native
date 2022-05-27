@@ -12,6 +12,8 @@ import {Button, StyleSheet, ScrollView, View, Text} from 'react-native';
 import * as React from 'react';
 import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
 
+import PointerEventAttributesHoverablePointers from './W3CPointerEventPlatformTests/PointerEventAttributesHoverablePointers';
+
 function EventfulView(props: {|
   name: string,
   emitByDefault?: boolean,
@@ -221,6 +223,14 @@ export default {
       title: 'Absolute Child',
       render(): React.Node {
         return <PointerEventScaffolding Example={AbsoluteChildExample} />;
+      },
+    },
+    {
+      name: 'pointerevent_attributes_hoverable_pointers',
+      description: '',
+      title: 'Pointer Events hoverable pointer attributes test',
+      render(): React.Node {
+        return <PointerEventAttributesHoverablePointers />;
       },
     },
   ],

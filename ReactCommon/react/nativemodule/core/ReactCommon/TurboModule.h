@@ -32,6 +32,8 @@ enum TurboModuleMethodValueKind {
   PromiseKind,
 };
 
+class TurboModuleBinding;
+
 /**
  * Base HostObject class for every module to be exposed to JS
  */
@@ -39,25 +41,21 @@ class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
  public:
   TurboModule(std::string name, std::shared_ptr<CallInvoker> jsInvoker);
 
-  virtual facebook::jsi::Value get(
+  // Note: keep this method declared inline to avoid conflicts
+  // between RTTI and non-RTTI compilation units
+  facebook::jsi::Value get(
       facebook::jsi::Runtime &runtime,
       const facebook::jsi::PropNameID &propName) override {
-    std::string propNameUtf8 = propName.utf8(runtime);
-    auto p = methodMap_.find(propNameUtf8);
-    if (p == methodMap_.end()) {
-      // Method was not found, let JS decide what to do.
-      return jsi::Value::undefined();
+    {
+      std::string propNameUtf8 = propName.utf8(runtime);
+      auto p = methodMap_.find(propNameUtf8);
+      if (p == methodMap_.end()) {
+        // Method was not found, let JS decide what to do.
+        return facebook::jsi::Value::undefined();
+      } else {
+        return get(runtime, propName, p->second);
+      }
     }
-    MethodMetadata meta = p->second;
-    return jsi::Function::createFromHostFunction(
-        runtime,
-        propName,
-        static_cast<unsigned int>(meta.argCount),
-        [this, meta](
-            facebook::jsi::Runtime &rt,
-            const facebook::jsi::Value &thisVal,
-            const facebook::jsi::Value *args,
-            size_t count) { return meta.invoker(rt, *this, args, count); });
   }
 
   const std::string name_;
@@ -73,7 +71,16 @@ class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
         size_t count);
   };
 
+  facebook::jsi::Value get(
+      facebook::jsi::Runtime &runtime,
+      const facebook::jsi::PropNameID &propName,
+      const MethodMetadata &meta);
+
   std::unordered_map<std::string, MethodMetadata> methodMap_;
+
+ private:
+  friend class TurboModuleBinding;
+  std::unique_ptr<jsi::Object> jsRepresentation_;
 };
 
 /**
