@@ -1026,10 +1026,27 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
       // EditText
       if (hasNodeText) {
         // skipped status checks above for EditText
+        //
+        // password
+        if (node.isPassword()) {
+          talkbackSegments.append("password" + delimiter);
+        }
 
         // description
-        talkbackSegments.append(nodeText);
-        return talkbackSegments;
+        talkbackSegments.append(nodeText + delimiter);
+
+        // role
+        if (roleDescription != null) {
+          String roleString = roleDescription.toString();
+          talkbackSegments.append(roleString + delimiter);
+        }
+
+        // disabled
+        if (disabled) {
+          talkbackSegments.append("disabled" + delimiter);
+        }
+
+        return removeFinalDelimiter(talkbackSegments);
       }
 
       // If there are child views and no contentDescription the text of all non-focusable children,
