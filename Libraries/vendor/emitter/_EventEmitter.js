@@ -31,8 +31,7 @@ const sparseFilterPredicate = () => true;
  * more advanced emitter may use an EventHolder and EventFactory.
  */
 class EventEmitter<EventDefinitions: {...}> {
-  _subscriber: EventSubscriptionVendor<EventDefinitions> =
-    new EventSubscriptionVendor<EventDefinitions>();
+  _subscriber: EventSubscriptionVendor<EventDefinitions> = new EventSubscriptionVendor<EventDefinitions>();
 
   /**
    * @constructor
