@@ -107,9 +107,9 @@
 /* TODO(OSS Candidate ISS#2710739): crashes in XCode 11
 - (void)testNotUTF8Convertible
 {
-  //see https://gist.github.com/0xced/56035d2f57254cf518b5
+  // see https://gist.github.com/0xced/56035d2f57254cf518b5
   NSString *string = [[NSString alloc] initWithBytes:"\xd8\x00" length:2 encoding:NSUTF16StringEncoding];
-  NSDictionary<NSString *, id> *obj = @{@"foo": string};
+  NSDictionary<NSString *, id> *obj = @{@"foo" : string};
   NSString *json = @"{\"foo\":null}";
   XCTAssertEqualObjects(json, RCTJSONStringify(obj, NULL));
 }
