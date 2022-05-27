@@ -994,7 +994,10 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
 
       final boolean hasNodeText = !TextUtils.isEmpty(nodeText);
       final boolean isEditText = view instanceof EditText;
-      boolean disabled = isActionableForAccessibility(node) && !node.isEnabled();
+      CharSequence roleDescription = node.getRoleDescription();
+      // The original flipper implementation would check isActionableForAccessibility
+      // The check was removed for this reason https://bit.ly/3wPnmPE
+      boolean disabled = !node.isEnabled();
 
       StringBuilder talkbackSegments = new StringBuilder();
 
@@ -1005,11 +1008,12 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
         addStateSegments(talkbackSegments, node);
 
         // next add content description
-        talkbackSegments.append(contentDescription);
+        talkbackSegments.append(contentDescription + delimiter);
         // then role
-        //
-        //
-        //
+        if (roleDescription != null) {
+          String roleString = roleDescription.toString();
+          talkbackSegments.append(roleString + delimiter);
+        }
 
         // lastly disabled is appended if applicable
         if (disabled) {
