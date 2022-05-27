@@ -279,6 +279,22 @@ class AccessibilityExample extends React.Component<{}> {
             </View>
           </View>
         </RNTesterBlock>
+
+        <RNTesterBlock title="TouchableNativeFeedback with non-accessible child Texts, one of them is an EditText">
+          <TouchableNativeFeedback
+            accessible={true}
+            importantForAccessibility="yes"
+            accessibilityRole="button">
+            <TextInput
+              accessible={false}
+              style={styles.default}
+              placeholder="this is the placeholder"
+              accessibilityRole="text"
+              secureTextEntry={true}>
+              <Text>Don't read this</Text>
+            </TextInput>
+          </TouchableNativeFeedback>
+        </RNTesterBlock>
       </View>
     );
   }
