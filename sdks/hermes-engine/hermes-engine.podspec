@@ -13,11 +13,18 @@ package_file = File.join(__dir__, "..", "..", "package.json")
 package = JSON.parse(File.read(package_file))
 version = package['version']
 
+currentbranch = `git rev-parse --abbrev-ref HEAD`.strip
+currentremote = `git config --get remote.origin.url`.strip
+
 source = {}
 git = "https://github.com/facebook/hermes.git"
 
 if version == '1000.0.0'
   Pod::UI.puts '[Hermes] Hermes needs to be compiled, installing hermes-engine may take a while...'.yellow if Object.const_defined?("Pod::UI")
+  source[:git] = git
+  source[:commit] = `git ls-remote https://github.com/facebook/hermes main | cut -f 1`.strip
+elsif currentremote.end_with?("facebook/react-native.git") and currentbranch.end_with?("-stable")
+  Pod::UI.puts '[Hermes] Detected that you are on a React Native release branch, building Hermes from source...'.yellow if Object.const_defined?("Pod::UI")
   source[:git] = git
   source[:commit] = `git ls-remote https://github.com/facebook/hermes main | cut -f 1`.strip
 else
@@ -56,8 +63,8 @@ Pod::Spec.new do |spec|
       DEBUG=#{HermesHelper::BUILD_TYPE == :debug}
 
       # Set HERMES_OVERRIDE_HERMESC_PATH if pre-built HermesC is available
-      #{File.exist?(import_hermesc_path) ? "export HERMES_OVERRIDE_HERMESC_PATH=#{import_hermesc_path}" : ""}
-      #{File.exist?(import_hermesc_path) ? "echo \"Overriding HermesC path...\"" : ""}
+      #{File.exist?(import_hermesc_file) ? "export HERMES_OVERRIDE_HERMESC_PATH=#{import_hermesc_file}" : ""}
+      #{File.exist?(import_hermesc_file) ? "echo \"Overriding HermesC path...\"" : ""}
 
       # Build iOS framework
       ./utils/build-ios-framework.sh
