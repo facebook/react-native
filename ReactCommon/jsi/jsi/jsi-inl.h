@@ -167,7 +167,7 @@ inline Function Object::getFunction(Runtime& runtime) && {
 template <typename T>
 inline bool Object::isHostObject(Runtime& runtime) const {
   return runtime.isHostObject(*this) &&
-      std::dynamic_pointer_cast<T>(runtime.getHostObject(*this));
+      std::static_pointer_cast<T>(runtime.getHostObject(*this));
 }
 
 template <>
