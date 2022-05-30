@@ -171,9 +171,27 @@ function isOnAReleaseBranch() {
   );
 }
 
+function isOnAReleaseTag() {
+  try {
+    // If on a named tag, this method will return the tag name.
+    // If not, it will throw as the return code is not 0.
+    execSync('git describe --exact-match HEAD', {stdio: 'ignore'});
+  } catch (error) {
+    return false;
+  }
+  let currentRemote = execSync('git config --get remote.origin.url')
+    .toString()
+    .trim();
+  return currentRemote.endsWith('facebook/react-native.git');
+}
+
 function shouldBuildHermesFromSource() {
   const hermesTag = readHermesTag();
-  return isOnAReleaseBranch() || hermesTag === DEFAULT_HERMES_TAG;
+  return (
+    isOnAReleaseBranch() ||
+    isOnAReleaseTag() ||
+    hermesTag === DEFAULT_HERMES_TAG
+  );
 }
 
 function shouldUsePrebuiltHermesC(os) {
