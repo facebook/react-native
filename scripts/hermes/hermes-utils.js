@@ -158,9 +158,15 @@ function copyPodSpec() {
   );
 }
 
+function isOnAReleaseBranch() {
+  let currentBranch = execSync(`git rev-parse --abbrev-ref HEAD`).toString().trim();
+  let currentRemote = execSync(`git config --get remote.origin.url`).toString().trim();
+  return currentBranch.endsWith('-stable') && currentRemote.endsWith('facebook/react-native.git');
+}
+
 function shouldBuildHermesFromSource() {
   const hermesTag = readHermesTag();
-  return hermesTag === DEFAULT_HERMES_TAG;
+  return isOnAReleaseBranch() || hermesTag === DEFAULT_HERMES_TAG;
 }
 
 function shouldUsePrebuiltHermesC(os) {
