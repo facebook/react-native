@@ -289,10 +289,7 @@ class AccessibilityExample extends React.Component<{}> {
               accessible={false}
               style={styles.default}
               placeholder="this is the placeholder"
-              accessibilityRole="text"
-              secureTextEntry={true}>
-              <Text>Don't read this</Text>
-            </TextInput>
+            />
           </TouchableNativeFeedback>
         </RNTesterBlock>
       </View>
