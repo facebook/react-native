@@ -55,7 +55,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
       return null;
     }
     if (!mRecyclableViews.containsKey(surfaceId)) {
-      mRecyclableViews.put(surfaceId, new Stack<>());
+      mRecyclableViews.put(surfaceId, new Stack<T>());
     }
     return mRecyclableViews.get(surfaceId);
   }

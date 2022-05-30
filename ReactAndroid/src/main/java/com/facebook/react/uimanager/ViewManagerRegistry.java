@@ -131,7 +131,7 @@ public final class ViewManagerRegistry {
   }
 
   /** Send lifecycle signal to all ViewManagers that StopSurface has been called. */
-  public void onSurfaceStopped(int surfaceId) {
+  public void onSurfaceStopped(final int surfaceId) {
     Runnable runnable =
         new Runnable() {
           @Override
