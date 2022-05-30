@@ -533,10 +533,8 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
       });
     } else if (!std::atomic_load(cancelled.get())) {
         if (response && error && [response isKindOfClass: [NSHTTPURLResponse class]]) {
-            if ([response isKindOfClass: [NSHTTPURLResponse class]]) {
-                NSHTTPURLResponse* _httpResp = (NSHTTPURLResponse*)response;
-                error = addResponseHeadersToError(error, _httpResp);
-            }
+            NSHTTPURLResponse* _httpResp = (NSHTTPURLResponse*)response;
+            error = addResponseHeadersToError(error, _httpResp);
         }
       completionBlock(error, imageOrData, imageMetadata, cacheResult, response);
     }
