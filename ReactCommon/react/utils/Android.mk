@@ -20,7 +20,11 @@ LOCAL_CFLAGS := \
 LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
 
 LOCAL_STATIC_LIBRARIES :=
-LOCAL_SHARED_LIBRARIES := libreact_debug libreact_render_mapbuffer libglog libglog_init
+LOCAL_SHARED_LIBRARIES := \
+  libglog \
+  libglog_init \
+  libreact_debug \
+  libreact_render_mapbuffer
 
 include $(BUILD_SHARED_LIBRARY)
 

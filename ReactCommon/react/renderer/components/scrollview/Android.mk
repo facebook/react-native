@@ -21,9 +21,21 @@ LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
 
 LOCAL_STATIC_LIBRARIES :=
 
-LOCAL_SHARED_LIBRARIES := libjsi libyoga libfolly_futures glog libfolly_json libglog_init libreact_render_core libreact_render_debug libreact_render_graphics librrc_view libreact_debug libreact_render_mapbuffer
+LOCAL_SHARED_LIBRARIES := \
+  glog \
+  libfolly_futures \
+  libfolly_json \
+  libglog_init \
+  libjsi \
+  libreact_debug \
+  libreact_render_core \
+  libreact_render_debug \
+  libreact_render_graphics \
+  libreact_render_mapbuffer \
+  librrc_view \
+  libyoga
 
-include $(BUILD_SHARED_LIBRARY)
+include $(BUILD_STATIC_LIBRARY)
 
 $(call import-module,glog)
 $(call import-module,folly)

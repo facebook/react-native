@@ -196,6 +196,32 @@ rn_xplat_cxx_library2(
     ],
 )
 
+rn_xplat_cxx_library2(
+    name = "RCTCxxLogUtils",
+    srcs = glob([
+        "React/CxxLogUtils/*.mm",
+    ]),
+    header_namespace = "",
+    exported_headers = subdir_glob(
+        [
+            (
+                "React/CxxLogUtils",
+                "*.h",
+            ),
+        ],
+        prefix = "React",
+    ),
+    contacts = ["oncall+react_native@xmail.facebook.com"],
+    fbobjc_enable_exceptions = True,
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
+    preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode(),
+    visibility = ["PUBLIC"],
+    deps = [
+        "//xplat/js/react-native-github:ReactInternal",
+        react_native_xplat_target("logger:logger"),
+    ],
+)
+
 RCTLIB_PATH = "Libraries/"
 
 RCTBASE_PATH = "React/Base/"
@@ -507,6 +533,7 @@ rn_xplat_cxx_library2(
         ":RCTFabricComponentViewsBase",
         "//fbobjc/Libraries/FBReactKit/RCTFabricComponent/RCTFabricComponentPlugin:RCTFabricComponentPlugin",
         "//xplat/js/react-native-github:RCTCxxBridge",
+        "//xplat/js/react-native-github:RCTCxxLogUtils",
         "//xplat/js/react-native-github:RCTCxxUtils",
         "//xplat/js/react-native-github:RCTImage",
         "//xplat/js/react-native-github:RCTPushNotification",

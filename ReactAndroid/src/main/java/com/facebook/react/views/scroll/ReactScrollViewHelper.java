@@ -8,8 +8,6 @@
 package com.facebook.react.views.scroll;
 
 import android.animation.Animator;
-import android.animation.ObjectAnimator;
-import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Point;
@@ -49,8 +47,6 @@ public class ReactScrollViewHelper {
   public static final int SNAP_ALIGNMENT_START = 1;
   public static final int SNAP_ALIGNMENT_CENTER = 2;
   public static final int SNAP_ALIGNMENT_END = 3;
-
-  private static @Nullable ValueAnimator sScrollAnimator;
 
   public interface ScrollListener {
     void onScroll(
@@ -224,6 +220,8 @@ public class ReactScrollViewHelper {
     private final Point mFinalAnimatedPositionScroll = new Point();
     private int mScrollAwayPaddingTop = 0;
     private final Point mLastStateUpdateScroll = new Point(-1, -1);
+    private boolean mIsCanceled = false;
+    private boolean mIsFinished = true;
 
     public ReactScrollViewScrollState(final int layoutDirection) {
       mLayoutDirection = layoutDirection;
@@ -271,88 +269,112 @@ public class ReactScrollViewHelper {
       mScrollAwayPaddingTop = scrollAwayPaddingTop;
       return this;
     }
+
+    /** Get true if the previous animation was canceled */
+    public boolean getIsCanceled() {
+      return mIsCanceled;
+    }
+
+    /** Set the state of current animation is canceled or not */
+    public ReactScrollViewScrollState setIsCanceled(boolean isCanceled) {
+      mIsCanceled = isCanceled;
+      return this;
+    }
+
+    /** Get true if previous animation was finished */
+    public boolean getIsFinished() {
+      return mIsFinished;
+    }
+
+    /** Set the state of current animation is finished or not */
+    public ReactScrollViewScrollState setIsFinished(boolean isFinished) {
+      mIsFinished = isFinished;
+      return this;
+    }
   }
 
+  /**
+   * Scroll the given view to the location (x, y), with provided initial velocity. This method works
+   * by calculate the "would be" initial velocity with internal friction to move to the point (x,
+   * y), then apply that to the animator.
+   */
   public static <
-          T extends ViewGroup & FabricViewStateManager.HasFabricViewStateManager & HasScrollState>
+          T extends
+              ViewGroup & FabricViewStateManager.HasFabricViewStateManager & HasScrollState
+                  & HasFlingAnimator>
       void smoothScrollTo(final T scrollView, final int x, final int y) {
     if (DEBUG_MODE) {
       FLog.i(TAG, "smoothScrollTo[%d] x %d y %d", scrollView.getId(), x, y);
     }
 
-    // `smoothScrollTo` contains some logic that, if called multiple times in a short amount of
-    // time, will treat all calls as part of the same animation and will not lengthen the duration
-    // of the animation. This means that, for example, if the user is scrolling rapidly, multiple
-    // pages could be considered part of one animation, causing some page animations to be animated
-    // very rapidly - looking like they're not animated at all.
-    if (sScrollAnimator != null) {
-      sScrollAnimator.cancel();
+    // Register the listeners for the fling animator if there isn't any
+    final ValueAnimator flingAnimator = scrollView.getFlingAnimator();
+    if (flingAnimator.getListeners() == null || flingAnimator.getListeners().size() == 0) {
+      registerFlingAnimator(scrollView);
     }
 
     final ReactScrollViewScrollState scrollState = scrollView.getReactScrollViewScrollState();
     scrollState.setFinalAnimatedPositionScroll(x, y);
-    PropertyValuesHolder scrollX =
-        PropertyValuesHolder.ofInt("scrollX", scrollView.getScrollX(), x);
-    PropertyValuesHolder scrollY =
-        PropertyValuesHolder.ofInt("scrollY", scrollView.getScrollY(), y);
-    sScrollAnimator = ObjectAnimator.ofPropertyValuesHolder(scrollX, scrollY);
-    sScrollAnimator.setDuration(getDefaultScrollAnimationDuration(scrollView.getContext()));
-    sScrollAnimator.addUpdateListener(
-        new ValueAnimator.AnimatorUpdateListener() {
-          @Override
-          public void onAnimationUpdate(ValueAnimator valueAnimator) {
-            int scrollValueX = (Integer) valueAnimator.getAnimatedValue("scrollX");
-            int scrollValueY = (Integer) valueAnimator.getAnimatedValue("scrollY");
-            scrollView.scrollTo(scrollValueX, scrollValueY);
-          }
-        });
-    sScrollAnimator.addListener(
-        new Animator.AnimatorListener() {
-          @Override
-          public void onAnimationStart(Animator animator) {}
 
-          @Override
-          public void onAnimationEnd(Animator animator) {
-            scrollState.setFinalAnimatedPositionScroll(-1, -1);
-            sScrollAnimator = null;
-            updateStateOnScroll(scrollView);
-          }
+    final int scrollX = scrollView.getScrollX();
+    final int scrollY = scrollView.getScrollY();
+    // Only one fling animator will be started. For the horizontal scroll view, scrollY will always
+    // be the same to y. This is the same to the vertical scroll view.
+    if (scrollX != x) {
+      scrollView.startFlingAnimator(scrollX, x);
+    }
+    if (scrollY != y) {
+      scrollView.startFlingAnimator(scrollY, y);
+    }
 
-          @Override
-          public void onAnimationCancel(Animator animator) {}
-
-          @Override
-          public void onAnimationRepeat(Animator animator) {}
-        });
-    sScrollAnimator.start();
-    updateStateOnScroll(scrollView, x, y);
+    updateFabricScrollState(scrollView, x, y);
   }
 
-  /** Get current (x, y) position or position after current animation finishes, if any. */
+  /** Get current position or position after current animation finishes, if any. */
   public static <
-          T extends ViewGroup & FabricViewStateManager.HasFabricViewStateManager & HasScrollState>
-      Point getPostAnimationScroll(final T scrollView) {
-    return sScrollAnimator != null && sScrollAnimator.isRunning()
-        ? scrollView.getReactScrollViewScrollState().getFinalAnimatedPositionScroll()
-        : new Point(scrollView.getScrollX(), scrollView.getScrollY());
+          T extends
+              ViewGroup & FabricViewStateManager.HasFabricViewStateManager & HasScrollState
+                  & HasFlingAnimator>
+      int getNextFlingStartValue(
+          final T scrollView,
+          final int currentValue,
+          final int postAnimationValue,
+          final boolean isPositiveVelocity) {
+    final ReactScrollViewScrollState scrollState = scrollView.getReactScrollViewScrollState();
+    final int velocityDirectionMask = isPositiveVelocity ? 1 : -1;
+    final boolean isMovingTowardsAnimatedValue =
+        velocityDirectionMask * (postAnimationValue - currentValue) > 0;
+
+    // When the fling animation is not finished, or it was canceled and now we are moving towards
+    // the final animated value, we will return the final animated value. This is because follow up
+    // animation should consider the "would be" animated location, so that previous quick small
+    // scrolls are still working.
+    return !scrollState.getIsFinished()
+            || (scrollState.getIsCanceled() && isMovingTowardsAnimatedValue)
+        ? postAnimationValue
+        : currentValue;
   }
 
   public static <
-          T extends ViewGroup & FabricViewStateManager.HasFabricViewStateManager & HasScrollState>
-      boolean updateStateOnScroll(final T scrollView) {
-    return updateStateOnScroll(scrollView, scrollView.getScrollX(), scrollView.getScrollY());
+          T extends
+              ViewGroup & FabricViewStateManager.HasFabricViewStateManager & HasScrollState
+                  & HasFlingAnimator>
+      boolean updateFabricScrollState(final T scrollView) {
+    return updateFabricScrollState(scrollView, scrollView.getScrollX(), scrollView.getScrollY());
   }
 
   /**
    * Called on any stabilized onScroll change to propagate content offset value to a Shadow Node.
    */
   public static <
-          T extends ViewGroup & FabricViewStateManager.HasFabricViewStateManager & HasScrollState>
-      boolean updateStateOnScroll(final T scrollView, final int scrollX, final int scrollY) {
+          T extends
+              ViewGroup & FabricViewStateManager.HasFabricViewStateManager & HasScrollState
+                  & HasFlingAnimator>
+      boolean updateFabricScrollState(final T scrollView, final int scrollX, final int scrollY) {
     if (DEBUG_MODE) {
       FLog.i(
           TAG,
-          "updateStateOnScroll[%d] scrollX %d scrollY %d",
+          "updateFabricScrollState[%d] scrollX %d scrollY %d",
           scrollView.getId(),
           scrollX,
           scrollY);
@@ -374,7 +396,9 @@ public class ReactScrollViewHelper {
   }
 
   public static <
-          T extends ViewGroup & FabricViewStateManager.HasFabricViewStateManager & HasScrollState>
+          T extends
+              ViewGroup & FabricViewStateManager.HasFabricViewStateManager & HasScrollState
+                  & HasFlingAnimator>
       void forceUpdateState(final T scrollView) {
     final ReactScrollViewScrollState scrollState = scrollView.getReactScrollViewScrollState();
     final int scrollAwayPaddingTop = scrollState.getScrollAwayPaddingTop();
@@ -397,7 +421,7 @@ public class ReactScrollViewHelper {
     if (DEBUG_MODE) {
       FLog.i(
           TAG,
-          "updateStateOnScroll[%d] scrollX %d scrollY %d fabricScrollX",
+          "updateFabricScrollState[%d] scrollX %d scrollY %d fabricScrollX",
           scrollView.getId(),
           scrollX,
           scrollY,
@@ -420,8 +444,66 @@ public class ReactScrollViewHelper {
             });
   }
 
+  public static <
+          T extends
+              ViewGroup & FabricViewStateManager.HasFabricViewStateManager & HasScrollState
+                  & HasFlingAnimator>
+      void updateStateOnScrollChanged(
+          final T scrollView, final float xVelocity, final float yVelocity) {
+    // Race an UpdateState with every onScroll. This makes it more likely that, in Fabric,
+    // when JS processes the scroll event, the C++ ShadowNode representation will have a
+    // "more correct" scroll position. It will frequently be /incorrect/ but this decreases
+    // the error as much as possible.
+    updateFabricScrollState(scrollView);
+    emitScrollEvent(scrollView, xVelocity, yVelocity);
+  }
+
+  public static <
+          T extends
+              ViewGroup & FabricViewStateManager.HasFabricViewStateManager & HasScrollState
+                  & HasFlingAnimator>
+      void registerFlingAnimator(final T scrollView) {
+    scrollView
+        .getFlingAnimator()
+        .addListener(
+            new Animator.AnimatorListener() {
+              @Override
+              public void onAnimationStart(Animator animator) {
+                final ReactScrollViewScrollState scrollState =
+                    scrollView.getReactScrollViewScrollState();
+                scrollState.setIsCanceled(false);
+                scrollState.setIsFinished(false);
+              }
+
+              @Override
+              public void onAnimationEnd(Animator animator) {
+                scrollView.getReactScrollViewScrollState().setIsFinished(true);
+                updateFabricScrollState(scrollView);
+              }
+
+              @Override
+              public void onAnimationCancel(Animator animator) {
+                scrollView.getReactScrollViewScrollState().setIsCanceled(true);
+              }
+
+              @Override
+              public void onAnimationRepeat(Animator animator) {}
+            });
+  }
+
   public interface HasScrollState {
     /** Get the scroll state for the current ScrollView */
     ReactScrollViewScrollState getReactScrollViewScrollState();
+  }
+
+  public interface HasFlingAnimator {
+    /**
+     * Start the fling animator that the ScrollView has to go from the start position to end
+     * position.
+     */
+    void startFlingAnimator(int start, int end);
+
+    /** Get the fling animator that is reused for the ScrollView to handle fling animation. */
+    ValueAnimator getFlingAnimator();
   }
 }

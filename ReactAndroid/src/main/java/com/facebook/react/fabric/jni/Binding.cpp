@@ -596,6 +596,9 @@ void Binding::installFabricUIManager(
   enableEarlyEventEmitterUpdate_ = reactNativeConfig_->getBool(
       "react_fabric:enable_early_event_emitter_update");
 
+  dispatchPreallocationInBackground_ = reactNativeConfig_->getBool(
+      "react_native_new_architecture:dispatch_preallocation_in_bg");
+
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = contextContainer;
   toolbox.componentRegistryFactory = componentsRegistry->buildRegistryFunction;
@@ -1246,7 +1249,14 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
     return;
   }
 
-  preallocateShadowView(surfaceId, shadowView);
+  if (dispatchPreallocationInBackground_) {
+    auto backgroundExecutor = backgroundExecutor_->get();
+    backgroundExecutor([this, surfaceId, shadowView = std::move(shadowView)] {
+      preallocateShadowView(surfaceId, shadowView);
+    });
+  } else {
+    preallocateShadowView(surfaceId, shadowView);
+  }
 }
 
 void Binding::schedulerDidCloneShadowNode(
@@ -1274,7 +1284,14 @@ void Binding::schedulerDidCloneShadowNode(
   if (!oldShadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView) &&
       newShadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView)) {
     auto shadowView = ShadowView(newShadowNode);
-    preallocateShadowView(surfaceId, shadowView);
+    if (dispatchPreallocationInBackground_) {
+      auto backgroundExecutor = backgroundExecutor_->get();
+      backgroundExecutor([this, surfaceId, shadowView = std::move(shadowView)] {
+        preallocateShadowView(surfaceId, shadowView);
+      });
+    } else {
+      preallocateShadowView(surfaceId, shadowView);
+    }
   }
 }
 

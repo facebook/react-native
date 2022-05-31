@@ -29,7 +29,10 @@ gradlePlugin {
 
 dependencies {
   implementation(gradleApi())
-  implementation("com.android.tools.build:gradle:4.2.2")
+  implementation("com.android.tools.build:gradle:7.0.1")
+  implementation("com.google.code.gson:gson:2.8.9")
+  implementation("com.google.guava:guava:31.0.1-jre")
+  implementation("com.squareup:javapoet:1.13.0")
 
   testImplementation("junit:junit:4.13.2")
 
@@ -38,4 +41,15 @@ dependencies {
       serviceOf<ModuleRegistry>().getModule("gradle-tooling-api-builders").classpath.asFiles.first()
     )
   )
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_11.majorVersion
+    }
 }

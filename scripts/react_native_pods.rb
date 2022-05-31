@@ -87,7 +87,7 @@ def use_react_native! (options={})
 
   if hermes_enabled
     pod 'React-hermes', :path => "#{prefix}/ReactCommon/hermes"
-    pod 'hermes-engine', '~> 0.9.0'
+    pod 'hermes-engine', '~> 0.10.0'
     pod 'libevent', '~> 2.1.12'
   end
 end
@@ -205,6 +205,24 @@ def react_native_post_install(installer)
   fix_library_search_paths(installer)
 end
 
+def build_codegen!(react_native_path)
+  codegen_repo_path = "#{react_native_path}/packages/react-native-codegen";
+  codegen_npm_path = "#{react_native_path}/../react-native-codegen";
+  codegen_cli_path = ""
+  if Dir.exist?(codegen_repo_path)
+    codegen_cli_path = codegen_repo_path
+  elsif Dir.exist?(codegen_npm_path)
+    codegen_cli_path = codegen_npm_path
+  else
+    raise "[codegen] Couldn't not find react-native-codegen."
+  end
+
+  if !Dir.exist?("#{codegen_cli_path}/lib")
+    Pod::UI.puts "[Codegen] building #{codegen_cli_path}."
+    system("#{codegen_cli_path}/scripts/oss/build.sh")
+  end
+end
+
 # This is a temporary supporting function until we enable use_react_native_codegen_discovery by default.
 def checkAndGenerateEmptyThirdPartyProvider!(react_native_path)
   return if ENV['USE_CODEGEN_DISCOVERY'] == '1'
@@ -216,6 +234,9 @@ def checkAndGenerateEmptyThirdPartyProvider!(react_native_path)
   provider_cpp_path ="#{output_dir}/RCTThirdPartyFabricComponentsProvider.cpp"
 
   if(!File.exist?(provider_h_path) || !File.exist?(provider_cpp_path))
+    # build codegen
+    build_codegen!(react_native_path)
+
     # Just use a temp empty schema list.
     temp_schema_list_path = "#{output_dir}/tmpSchemaList.txt"
     File.open(temp_schema_list_path, 'w') do |f|
@@ -552,8 +573,15 @@ def __apply_Xcode_12_5_M1_post_install_workaround(installer)
   # The most reliable known workaround is to bump iOS deployment target to match react-native (iOS 11 now).
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|
-      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '11.0'
+      # ensure IPHONEOS_DEPLOYMENT_TARGET is at least 11.0
+      # [TODO(macOS GH#774) - skip this step for macOS targets
+      ios_deployment_target = config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] 
+      should_upgrade = ios_deployment_target != nil && ios_deployment_target.split('.')[0].to_i < 11
+      # ]TODO(macOS GH#774)
+      if should_upgrade
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '11.0'
       end
+    end
   end
 
   # But... doing so caused another issue in Flipper:

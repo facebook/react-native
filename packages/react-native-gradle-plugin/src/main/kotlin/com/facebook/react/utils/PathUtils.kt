@@ -121,5 +121,5 @@ private fun getHermesOSBin(): String {
 internal fun projectPathToLibraryName(projectPath: String): String =
     projectPath
         .split(':', '-', '_', '.')
-        .joinToString("") { it.capitalize(Locale.ROOT) }
+        .joinToString("") { token -> token.replaceFirstChar { it.uppercase() } }
         .plus("Spec")

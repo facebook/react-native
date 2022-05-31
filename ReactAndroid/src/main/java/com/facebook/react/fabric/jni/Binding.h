@@ -201,6 +201,7 @@ class Binding : public jni::HybridClass<Binding>,
   bool enableEarlyEventEmitterUpdate_{false};
   bool disableRevisionCheckForPreallocation_{false};
   bool enableEventEmitterRawPointer_{false};
+  bool dispatchPreallocationInBackground_{false};
 };
 
 } // namespace react
