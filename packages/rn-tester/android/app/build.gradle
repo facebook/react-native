@@ -263,24 +263,22 @@ if (enableCodegen) {
     android {
         defaultConfig {
             externalNativeBuild {
-                ndkBuild {
-                    arguments "APP_PLATFORM=android-21",
-                            "APP_STL=c++_shared",
-                            "NDK_TOOLCHAIN_VERSION=clang",
-                            // The following paths assume building React Native from source.
-                            "GENERATED_SRC_DIR=$buildDir/generated/source",
-                            "PROJECT_BUILD_DIR=$buildDir",
-                            "REACT_ANDROID_DIR=$reactAndroidProjectDir",
-                            "REACT_ANDROID_BUILD_DIR=$reactAndroidBuildDir"
-                    cFlags "-Wall", "-Werror", "-fexceptions", "-frtti", "-DWITH_INSPECTOR=1"
-                    cppFlags "-std=c++17"
+                cmake {
+                    arguments "-DGENERATED_SRC_DIR=$buildDir/generated/source",
+                        "-DPROJECT_BUILD_DIR=$buildDir",
+                        "-DREACT_ANDROID_DIR=$reactAndroidProjectDir",
+                        "-DREACT_ANDROID_BUILD_DIR=$reactAndroidBuildDir",
+                        "-DANDROID_STL=c++_shared",
+                        "-DANDROID_TOOLCHAIN=clang",
+                        "-DANDROID_PLATFORM=android-21"
+
                     targets "rntester_appmodules"
                 }
             }
         }
         externalNativeBuild {
-            ndkBuild {
-                path "$projectDir/src/main/jni/Android.mk"
+            cmake {
+                path "src/main/jni/CMakeLists.txt"
             }
         }
     }
@@ -302,19 +300,19 @@ if (enableCodegen) {
 
     afterEvaluate {
         reactNativeArchitectures().each { architecture ->
-            tasks.findByName("configureNdkBuildDebug[${architecture}]")?.configure {
+            tasks.findByName("configureCMakeDebug[${architecture}]")?.configure {
                 dependsOn("preHermesDebugBuild")
                 dependsOn("preJscDebugBuild")
             }
-            tasks.findByName("configureNdkBuildRelease[${architecture}]")?.configure {
+            tasks.findByName("configureCMakeRelWithDebInfo[${architecture}]")?.configure {
                 dependsOn("preHermesReleaseBuild")
                 dependsOn("preJscReleaseBuild")
             }
         }
-        configureNdkBuildRelease.dependsOn(packageReactReleaseNdkLibs)
+        configureCMakeRelWithDebInfo.dependsOn(packageReactReleaseNdkLibs)
         preHermesReleaseBuild.dependsOn(packageReactReleaseNdkLibs)
         preJscReleaseBuild.dependsOn(packageReactReleaseNdkLibs)
-        configureNdkBuildDebug.dependsOn(packageReactDebugNdkLibs)
+        configureCMakeDebug.dependsOn(packageReactDebugNdkLibs)
         preHermesDebugBuild.dependsOn(packageReactDebugNdkLibs)
         preJscDebugBuild.dependsOn(packageReactDebugNdkLibs)
     }
