@@ -21,7 +21,7 @@ if version == '1000.0.0'
   source[:git] = git
   source[:commit] = `git ls-remote https://github.com/facebook/hermes main | cut -f 1`.strip
 else
-  source[:http] = `https://github.com/facebook/react-native/releases/download/v#{version}/hermes-runtime-darwin-v#{version}.tar.gz`
+  source[:http] = "https://github.com/facebook/react-native/releases/download/v#{version}/hermes-runtime-darwin-v#{version}.tar.gz"
 end
 
 module HermesHelper
