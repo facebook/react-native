@@ -38,7 +38,7 @@ Pod::Spec.new do |spec|
   spec.license     = package["license"]
   spec.author      = "Facebook"
   spec.source      = source
-  spec.platforms   = { :osx => "10.13", :ios => "11.0" }
+  spec.platforms   = { :osx => "10.13", :ios => "12.4" }
 
   spec.preserve_paths      = ["destroot/bin/*"].concat(HermesHelper::BUILD_TYPE == :debug ? ["**/*.{h,c,cpp}"] : [])
   spec.source_files        = "destroot/include/**/*.h"
