@@ -159,16 +159,21 @@ function copyPodSpec() {
 }
 
 function isOnAReleaseBranch() {
-  let currentBranch = execSync('git rev-parse --abbrev-ref HEAD')
-    .toString()
-    .trim();
-  let currentRemote = execSync('git config --get remote.origin.url')
-    .toString()
-    .trim();
-  return (
-    currentBranch.endsWith('-stable') &&
-    currentRemote.endsWith('facebook/react-native.git')
-  );
+  try {
+    let currentBranch = execSync('git rev-parse --abbrev-ref HEAD')
+      .toString()
+      .trim();
+    let currentRemote = execSync('git config --get remote.origin.url')
+      .toString()
+      .trim();
+    return (
+      currentBranch.endsWith('-stable') &&
+      currentRemote.endsWith('facebook/react-native.git')
+    );
+  } catch (error) {
+    // If not inside a git repo, we're going to fail here and return.
+    return false;
+  }
 }
 
 function isOnAReleaseTag() {
