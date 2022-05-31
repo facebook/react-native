@@ -41,13 +41,21 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * null signals that View Recycling is disabled. `enableViewRecycling` must be explicitly called
    * in a concrete constructor to enable View Recycling per ViewManager.
    */
-  private HashMap<Integer, Stack<T>> mRecyclableViews = null;
+  @Nullable private HashMap<Integer, Stack<T>> mRecyclableViews = null;
+
+  private int mRecyclableViewsBufferSize = 1024;
 
   /** Call in constructor of concrete ViewManager class to enable. */
-  protected void enableViewRecycling() {
+  protected void setupViewRecycling() {
     if (ReactFeatureFlags.enableViewRecycling) {
       mRecyclableViews = new HashMap<>();
     }
+  }
+
+  /** Call in constructor of concrete ViewManager class to enable. */
+  protected void setupViewRecycling(int bufferSize) {
+    mRecyclableViewsBufferSize = bufferSize;
+    setupViewRecycling();
   }
 
   private @Nullable Stack<T> getRecyclableViewStack(int surfaceId) {
@@ -191,12 +199,16 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * {@link ViewManager} subclass.
    */
   public void onDropViewInstance(@NonNull T view) {
-    @Nullable
-    Stack<T> recyclableViews =
-        getRecyclableViewStack(((ThemedReactContext) view.getContext()).getSurfaceId());
-    // By default we treat views as recyclable
-    if (recyclableViews != null) {
-      recyclableViews.push(prepareToRecycleView((ThemedReactContext) view.getContext(), view));
+    // View recycling
+    ThemedReactContext themedReactContext = (ThemedReactContext) view.getContext();
+    int surfaceId = themedReactContext.getSurfaceId();
+    @Nullable Stack<T> recyclableViews = getRecyclableViewStack(surfaceId);
+
+    // Any max buffer size <0 results in an infinite buffer size
+    if (recyclableViews != null
+        && (mRecyclableViewsBufferSize < 0
+            || recyclableViews.size() < mRecyclableViewsBufferSize)) {
+      recyclableViews.push(prepareToRecycleView(themedReactContext, view));
     }
   }
 

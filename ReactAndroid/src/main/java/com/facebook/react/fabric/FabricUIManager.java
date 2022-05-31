@@ -166,6 +166,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @NonNull private final MountingManager mMountingManager;
   @NonNull private final EventDispatcher mEventDispatcher;
   @NonNull private final MountItemDispatcher mMountItemDispatcher;
+  @NonNull private final ViewManagerRegistry mViewManagerRegistry;
 
   @NonNull private final EventBeatManager mEventBeatManager;
 
@@ -226,6 +227,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mShouldDeallocateEventDispatcher = false;
     mEventBeatManager = eventBeatManager;
     mReactApplicationContext.addLifecycleEventListener(this);
+
+    mViewManagerRegistry = viewManagerRegistry;
+    mReactApplicationContext.registerComponentCallbacks(viewManagerRegistry);
   }
 
   public FabricUIManager(
@@ -244,6 +248,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mShouldDeallocateEventDispatcher = true;
     mEventBeatManager = eventBeatManager;
     mReactApplicationContext.addLifecycleEventListener(this);
+
+    mViewManagerRegistry = viewManagerRegistry;
+    mReactApplicationContext.registerComponentCallbacks(viewManagerRegistry);
   }
 
   // TODO (T47819352): Rename this to startSurface for consistency with xplat/iOS
@@ -450,6 +457,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
     mEventDispatcher.removeBatchEventDispatchedListener(mEventBeatManager);
     mEventDispatcher.unregisterEventEmitter(FABRIC);
+
+    mReactApplicationContext.unregisterComponentCallbacks(mViewManagerRegistry);
 
     // Remove lifecycle listeners (onHostResume, onHostPause) since the FabricUIManager is going
     // away. Then stop the mDispatchUIFrameCallback false will cause the choreographer
