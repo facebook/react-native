@@ -105,6 +105,36 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setOutlineAmbientShadowColor(Color.BLACK);
     view.setOutlineSpotShadowColor(Color.BLACK);
 
+    // Focus IDs
+    // Also see in AOSP source:
+    // https://android.googlesource.com/platform/frameworks/base/+/a175a5b/core/java/android/view/View.java#4493
+    view.setNextFocusDownId(View.NO_ID);
+    view.setNextFocusForwardId(View.NO_ID);
+    view.setNextFocusRightId(View.NO_ID);
+    view.setNextFocusUpId(View.NO_ID);
+
+    // This is possibly subject to change and overrideable per-platform, but these
+    // are the default view flags in View.java:
+    // https://android.googlesource.com/platform/frameworks/base/+/a175a5b/core/java/android/view/View.java#2712
+    // `mViewFlags = SOUND_EFFECTS_ENABLED | HAPTIC_FEEDBACK_ENABLED | LAYOUT_DIRECTION_INHERIT`
+    // Therefore we set the following options as such:
+    view.setFocusable(false);
+    view.setFocusableInTouchMode(false);
+
+    // https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-mainline-12.0.0_r96/core/java/android/view/View.java#5491
+    view.setElevation(0);
+
+    // Predictably, alpha defaults to 1:
+    // https://android.googlesource.com/platform/frameworks/base/+/a175a5b/core/java/android/view/View.java#2186
+    // This accounts for resetting mBackfaceOpacity and mBackfaceVisibility
+    view.setAlpha(1);
+
+    // setPadding is a noop for most View types, but it is not for Text
+    setPadding(view, 0, 0, 0, 0);
+
+    // Other stuff
+    view.setForeground(null);
+
     return view;
   }
 

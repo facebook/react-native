@@ -45,33 +45,25 @@ public class ReactTextViewManager
 
   @VisibleForTesting public static final String REACT_CLASS = "RCTText";
 
-  private ReactTextView mDefaultViewForRecycling = null;
-
   protected @Nullable ReactTextViewManagerCallback mReactTextViewManagerCallback;
 
   public ReactTextViewManager() {
     super();
 
-    enableViewRecycling();
+    setupViewRecycling();
   }
 
   @Override
   protected ReactTextView prepareToRecycleView(
       @NonNull ThemedReactContext reactContext, ReactTextView view) {
-    // TODO: use context as key
-    if (mDefaultViewForRecycling == null) {
-      mDefaultViewForRecycling = createViewInstance(reactContext);
-    }
-
     // BaseViewManager
     super.prepareToRecycleView(reactContext, view);
 
     // Resets background and borders
-    view.recycleView(mDefaultViewForRecycling);
+    view.recycleView();
 
     // Defaults from ReactTextAnchorViewManager
     setSelectionColor(view, null);
-    setAndroidHyphenationFrequency(view, null);
 
     return view;
   }

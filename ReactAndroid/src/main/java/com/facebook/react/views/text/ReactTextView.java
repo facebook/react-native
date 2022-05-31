@@ -96,16 +96,18 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     mSpanned = null;
   }
 
-  /* package */ void recycleView(ReactTextView defaultView) {
+  /* package */ void recycleView() {
     // Set default field values
     initView();
 
-    setForeground(null);
+    // Defaults for these fields:
+    // https://github.com/aosp-mirror/platform_frameworks_base/blob/master/core/java/android/widget/TextView.java#L1061
+    setBreakStrategy(Layout.BREAK_STRATEGY_SIMPLE);
+    setMovementMethod(getDefaultMovementMethod());
+    setJustificationMode(Layout.JUSTIFICATION_MODE_NONE);
 
     // reset text
     setLayoutParams(EMPTY_LAYOUT_PARAMS);
-    setMovementMethod(defaultView.getMovementMethod());
-    setBreakStrategy(defaultView.getBreakStrategy());
     super.setText(null);
 
     // Call setters to ensure that any super setters are called
@@ -124,20 +126,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     // reset data detectors
     setLinkifyMask(0);
 
-    setJustificationMode(defaultView.getJustificationMode());
-
     setEllipsizeLocation(mEllipsizeLocation);
-
-    // Focus IDs
-    // Also see in AOSP source:
-    // https://android.googlesource.com/platform/frameworks/base/+/a175a5b/core/java/android/view/View.java#4493
-    setNextFocusDownId(View.NO_ID);
-    setNextFocusForwardId(View.NO_ID);
-    setNextFocusRightId(View.NO_ID);
-    setNextFocusUpId(View.NO_ID);
-
-    // https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-mainline-12.0.0_r96/core/java/android/view/View.java#5491
-    setElevation(0);
 
     // View flags - defaults are here:
     // https://android.googlesource.com/platform/frameworks/base/+/98e54bb941cb6feb07127b75da37833281951d52/core/java/android/view/View.java#5311
@@ -146,8 +135,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     setEnabled(true);
     setFocusable(View.FOCUSABLE_AUTO);
 
-    // Things that could be set as a result of updateText/setText
-    setPadding(0, 0, 0, 0);
+    setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NONE);
 
     updateView(); // call after changing ellipsizeLocation in particular
   }

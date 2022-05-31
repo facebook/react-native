@@ -207,6 +207,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   @Override
   public void initialize() {
     getReactApplicationContext().registerComponentCallbacks(mMemoryTrimCallback);
+    getReactApplicationContext().registerComponentCallbacks(mViewManagerRegistry);
     mEventDispatcher.registerEventEmitter(
         DEFAULT, getReactApplicationContext().getJSModule(RCTEventEmitter.class));
   }
@@ -234,6 +235,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
 
     ReactApplicationContext reactApplicationContext = getReactApplicationContext();
     reactApplicationContext.unregisterComponentCallbacks(mMemoryTrimCallback);
+    reactApplicationContext.unregisterComponentCallbacks(mViewManagerRegistry);
     YogaNodePool.get().clear();
     ViewManagerPropertyUpdater.clear();
   }
