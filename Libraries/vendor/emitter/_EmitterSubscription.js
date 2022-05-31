@@ -20,8 +20,7 @@ import {type EventSubscription} from './EventSubscription';
  */
 class EmitterSubscription<EventDefinitions: {...}, K: $Keys<EventDefinitions>>
   extends _EventSubscription<EventDefinitions, K>
-  implements EventSubscription
-{
+  implements EventSubscription {
   emitter: EventEmitter<EventDefinitions>;
   listener: ?(...$ElementType<EventDefinitions, K>) => mixed;
   context: ?$FlowFixMe;

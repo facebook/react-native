@@ -23,7 +23,7 @@ class EventSubscriptionVendor<EventDefinitions: {...}> {
     [type: $Keys<EventDefinitions>]: Array<
       EventSubscription<EventDefinitions, $FlowFixMe>,
     >,
-    ...
+    ...,
   };
 
   constructor() {
