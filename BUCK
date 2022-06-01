@@ -165,7 +165,7 @@ rn_xplat_cxx_library2(
         ":RCTCxxUtils",
         ":ReactInternal",
         "//xplat/fbsystrace:fbsystrace",
-        "//xplat/folly:headers_only",
+        "//xplat/folly:headers_only_do_not_use",
         react_native_xplat_target("cxxreact:module"),
         react_native_xplat_target("cxxreact:bridge"),
         react_native_xplat_target("reactperflogger:reactperflogger"),
