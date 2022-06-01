@@ -286,6 +286,7 @@ class AccessibilityExample extends React.Component<{}> {
             importantForAccessibility="yes"
             accessibilityRole="button">
             <TextInput
+              value="this is the value"
               accessible={false}
               style={styles.default}
               placeholder="this is the placeholder"
