@@ -255,18 +255,10 @@ class AccessibilityExample extends React.Component<{}> {
         </RNTesterBlock>
 
         <RNTesterBlock title="TouchableNativeFeedback with non-accessible child Texts, one of them have the accessibilityLabel (contentDescription)">
-          <View
-            style={{height: 100, width: 100, backgroundColor: 'blue'}}
-            accessible={true}
-            accessibilityRole="button">
+          <View accessible={true} accessibilityRole="button">
             <View>
               <Text accessible={false}>Text number 1</Text>
               <TouchableNativeFeedback
-                style={{
-                  height: 100,
-                  width: 100,
-                  backgroundColor: 'yellow',
-                }}
                 focusable={true}
                 onPress={() => console.warn('onPress child')}
                 accessible={false}
