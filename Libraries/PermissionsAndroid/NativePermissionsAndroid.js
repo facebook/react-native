@@ -35,6 +35,7 @@ export type PermissionType =
   | 'android.permission.USE_SIP'
   | 'android.permission.PROCESS_OUTGOING_CALLS'
   | 'android.permission.BODY_SENSORS'
+  | 'android.permission.BODY_SENSORS_BACKGROUND'
   | 'android.permission.SEND_SMS'
   | 'android.permission.RECEIVE_SMS'
   | 'android.permission.READ_SMS'
