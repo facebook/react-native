@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.OverScroller;
 import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
@@ -222,6 +223,7 @@ public class ReactScrollViewHelper {
     private final Point mLastStateUpdateScroll = new Point(-1, -1);
     private boolean mIsCanceled = false;
     private boolean mIsFinished = true;
+    private float mDecelerationRate = 0.985f;
 
     public ReactScrollViewScrollState(final int layoutDirection) {
       mLayoutDirection = layoutDirection;
@@ -291,6 +293,17 @@ public class ReactScrollViewHelper {
       mIsFinished = isFinished;
       return this;
     }
+
+    /** Get true if previous animation was finished */
+    public float getDecelerationRate() {
+      return mDecelerationRate;
+    }
+
+    /** Set the state of current animation is finished or not */
+    public ReactScrollViewScrollState setDecelerationRate(float decelerationRate) {
+      mDecelerationRate = decelerationRate;
+      return this;
+    }
   }
 
   /**
@@ -339,9 +352,9 @@ public class ReactScrollViewHelper {
           final T scrollView,
           final int currentValue,
           final int postAnimationValue,
-          final boolean isPositiveVelocity) {
+          final int velocity) {
     final ReactScrollViewScrollState scrollState = scrollView.getReactScrollViewScrollState();
-    final int velocityDirectionMask = isPositiveVelocity ? 1 : -1;
+    final int velocityDirectionMask = velocity != 0 ? velocity / Math.abs(velocity) : 0;
     final boolean isMovingTowardsAnimatedValue =
         velocityDirectionMask * (postAnimationValue - currentValue) > 0;
 
@@ -489,6 +502,54 @@ public class ReactScrollViewHelper {
               @Override
               public void onAnimationRepeat(Animator animator) {}
             });
+  }
+
+  public static <
+          T extends
+              ViewGroup & FabricViewStateManager.HasFabricViewStateManager & HasScrollState
+                  & HasFlingAnimator>
+      Point predictFinalScrollPosition(
+          final T scrollView,
+          int velocityX,
+          int velocityY,
+          int maximumOffsetX,
+          int maximumOffsetY) {
+    final ReactScrollViewScrollState scrollState = scrollView.getReactScrollViewScrollState();
+    // ScrollView can *only* scroll for 250ms when using smoothScrollTo and there's
+    // no way to customize the scroll duration. So, we create a temporary OverScroller
+    // so we can predict where a fling would land and snap to nearby that point.
+    OverScroller scroller = new OverScroller(scrollView.getContext());
+    scroller.setFriction(1.0f - scrollState.getDecelerationRate());
+
+    // predict where a fling would end up so we can scroll to the nearest snap offset
+    int width =
+        scrollView.getWidth()
+            - ViewCompat.getPaddingStart(scrollView)
+            - ViewCompat.getPaddingEnd(scrollView);
+    int height =
+        scrollView.getHeight() - scrollView.getPaddingBottom() - scrollView.getPaddingTop();
+    Point finalAnimatedPositionScroll = scrollState.getFinalAnimatedPositionScroll();
+    scroller.fling(
+        getNextFlingStartValue(
+            scrollView,
+            scrollView.getScrollX(),
+            finalAnimatedPositionScroll.x,
+            velocityX), // startX
+        getNextFlingStartValue(
+            scrollView,
+            scrollView.getScrollY(),
+            finalAnimatedPositionScroll.y,
+            velocityY), // startY
+        velocityX, // velocityX
+        velocityY, // velocityY
+        0, // minX
+        maximumOffsetX, // maxX
+        0, // minY
+        maximumOffsetY, // maxY
+        width / 2, // overX
+        height / 2 // overY
+        );
+    return new Point(scroller.getFinalX(), scroller.getFinalY());
   }
 
   public interface HasScrollState {

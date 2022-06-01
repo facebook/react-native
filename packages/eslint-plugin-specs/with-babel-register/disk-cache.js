@@ -24,7 +24,7 @@ const packageJson = JSON.parse(
 
 const FILENAME = path.join(
   os.tmpdir(),
-  `.eslint-plugin-codegen.${packageJson.version}.disk-cache.json`,
+  `.eslint-plugin-specs.${packageJson.version}.disk-cache.json`,
 );
 
 let data = {};

@@ -89,7 +89,6 @@ public class ReactScrollView extends ScrollView
   private int mEndFillColor = Color.TRANSPARENT;
   private boolean mDisableIntervalMomentum = false;
   private int mSnapInterval = 0;
-  private float mDecelerationRate = 0.985f;
   private @Nullable List<Integer> mSnapOffsets;
   private boolean mSnapToStart = true;
   private boolean mSnapToEnd = true;
@@ -191,10 +190,10 @@ public class ReactScrollView extends ScrollView
   }
 
   public void setDecelerationRate(float decelerationRate) {
-    mDecelerationRate = decelerationRate;
+    getReactScrollViewScrollState().setDecelerationRate(decelerationRate);
 
     if (mScroller != null) {
-      mScroller.setFriction(1.0f - mDecelerationRate);
+      mScroller.setFriction(1.0f - decelerationRate);
     }
   }
 
@@ -591,32 +590,9 @@ public class ReactScrollView extends ScrollView
   }
 
   private int predictFinalScrollPosition(int velocityY) {
-    // ScrollView can *only* scroll for 250ms when using smoothScrollTo and there's
-    // no way to customize the scroll duration. So, we create a temporary OverScroller
-    // so we can predict where a fling would land and snap to nearby that point.
-    OverScroller scroller = new OverScroller(getContext());
-    scroller.setFriction(1.0f - mDecelerationRate);
-
     // predict where a fling would end up so we can scroll to the nearest snap offset
-    int maximumOffset = getMaxScrollY();
-    int height = getHeight() - getPaddingBottom() - getPaddingTop();
-    scroller.fling(
-        getScrollX(), // startX
-        ReactScrollViewHelper.getNextFlingStartValue(
-            this,
-            getScrollY(),
-            getReactScrollViewScrollState().getFinalAnimatedPositionScroll().y,
-            velocityY > 0), // startY
-        0, // velocityX
-        velocityY, // velocityY
-        0, // minX
-        0, // maxX
-        0, // minY
-        maximumOffset, // maxY
-        0, // overX
-        height / 2 // overY
-        );
-    return scroller.getFinalY();
+    return ReactScrollViewHelper.predictFinalScrollPosition(this, 0, velocityY, 0, getMaxScrollY())
+        .y;
   }
 
   private View getContentView() {
@@ -636,7 +612,7 @@ public class ReactScrollView extends ScrollView
                 this,
                 getScrollY(),
                 getReactScrollViewScrollState().getFinalAnimatedPositionScroll().y,
-                velocity > 0));
+                velocity));
     double targetOffset = (double) predictFinalScrollPosition(velocity);
 
     int previousPage = (int) Math.floor(currentOffset / interval);
@@ -747,6 +723,8 @@ public class ReactScrollView extends ScrollView
                 maximumOffset);
       } else {
         ViewGroup contentView = (ViewGroup) getContentView();
+        int smallerChildOffset = largerOffset;
+        int largerChildOffset = smallerOffset;
         for (int i = 0; i < contentView.getChildCount(); i++) {
           View item = contentView.getChildAt(i);
           int itemStartOffset;
@@ -774,7 +752,16 @@ public class ReactScrollView extends ScrollView
               largerOffset = itemStartOffset;
             }
           }
+
+          smallerChildOffset = Math.min(smallerChildOffset, itemStartOffset);
+          largerChildOffset = Math.max(largerChildOffset, itemStartOffset);
         }
+
+        // For Recycler ViewGroup, the maximumOffset can be much larger than the total heights of
+        // items in the layout. In this case snapping is not possible beyond the currently rendered
+        // children.
+        smallerOffset = Math.max(smallerOffset, smallerChildOffset);
+        largerOffset = Math.min(largerOffset, largerChildOffset);
       }
     } else {
       double interval = (double) getSnapInterval();
@@ -785,7 +772,9 @@ public class ReactScrollView extends ScrollView
 
     // Calculate the nearest offset
     int nearestOffset =
-        targetOffset - smallerOffset < largerOffset - targetOffset ? smallerOffset : largerOffset;
+        Math.abs(targetOffset - smallerOffset) < Math.abs(largerOffset - targetOffset)
+            ? smallerOffset
+            : largerOffset;
 
     // if scrolling after the last snap offset and snapping to the
     // end of the list is disabled, then we allow free scrolling

@@ -6,7 +6,7 @@
   ],
 
   "plugins": [
-    "@react-native/eslint-plugin-codegen"
+    "@react-native/eslint-plugin-specs"
   ],
 
   "overrides": [
@@ -18,7 +18,7 @@
         "@react-native-community/no-haste-imports": 2,
         "@react-native-community/error-subclass-name": 2,
         "@react-native-community/platform-colors": 2,
-        "@react-native/codegen/react-native-modules": 2
+        "@react-native/specs/react-native-modules": 2
       }
     },
     {

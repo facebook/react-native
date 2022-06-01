@@ -65,6 +65,7 @@ const CODEGEN_FABRIC_ENABLED = argv.e;
 const CODEGEN_REPO_PATH = `${RN_ROOT}/packages/react-native-codegen`;
 const CODEGEN_NPM_PATH = `${RN_ROOT}/../react-native-codegen`;
 const CORE_LIBRARIES = new Set(['rncore', 'FBReactNativeSpec']);
+const REACT_NATIVE_DEPENDENCY_NAME = 'react-native';
 
 function isReactNativeCoreLibrary(libraryName) {
   return CORE_LIBRARIES.has(libraryName);
@@ -78,23 +79,54 @@ function main(appRootDir, outputPath) {
   }
 
   try {
-    // 1. Get app package.json
+    // Get app package.json
     const pkgJson = JSON.parse(
       fs.readFileSync(path.join(appRootDir, 'package.json')),
     );
 
-    // 2. Get dependencies for the app
+    // Get dependencies for the app
     const dependencies = {...pkgJson.dependencies, ...pkgJson.devDependencies};
 
-    // 3. Determine which of these are codegen-enabled libraries
+    const libraries = [];
+
+    // Handle react-native core libraries.
+    // This is required when react-native is outside of node_modules.
+    console.log('[Codegen] Processing react-native core libraries');
+    const reactNativePkgJson = path.join(RN_ROOT, CODEGEN_CONFIG_FILENAME);
+    if (!fs.existsSync(reactNativePkgJson)) {
+      throw '[Codegen] Error: Could not find config file for react-native.';
+    }
+    const reactNativeConfigFile = JSON.parse(
+      fs.readFileSync(reactNativePkgJson),
+    );
+    if (
+      reactNativeConfigFile[CODEGEN_CONFIG_KEY] == null ||
+      reactNativeConfigFile[CODEGEN_CONFIG_KEY].libraries == null
+    ) {
+      throw '[Codegen] Error: Could not find codegen config for react-native.';
+    }
+    console.log('[Codegen] Found react-native');
+    reactNativeConfigFile[CODEGEN_CONFIG_KEY].libraries.forEach(config => {
+      const libraryConfig = {
+        library: REACT_NATIVE_DEPENDENCY_NAME,
+        config,
+        libraryPath: RN_ROOT,
+      };
+      libraries.push(libraryConfig);
+    });
+
+    // Determine which of these are codegen-enabled libraries
     const confifDir = CODEGEN_CONFIG_FILE_DIR || path.join(RN_ROOT, '..');
     console.log(
       `\n\n[Codegen] >>>>> Searching for codegen-enabled libraries in ${confifDir}`,
     );
-    const libraries = [];
 
-    // Handle react-native and third-party libraries
+    // Handle third-party libraries
     Object.keys(dependencies).forEach(dependency => {
+      if (dependency === REACT_NATIVE_DEPENDENCY_NAME) {
+        // react-native should already be added.
+        return;
+      }
       const codegenConfigFileDir = path.join(confifDir, dependency);
       const configFilePath = path.join(
         codegenConfigFileDir,
@@ -118,6 +150,10 @@ function main(appRootDir, outputPath) {
         }
       }
     });
+
+    console.log(
+      '\n\n[Codegen] >>>>> Searching for codegen-enabled libraries in the app',
+    );
 
     // Handle in-app libraries
     if (

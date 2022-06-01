@@ -446,7 +446,7 @@ void UIManager::stopSurfaceForAnimationDelegate(SurfaceId surfaceId) const {
   }
 }
 
-void UIManager::animationTick() {
+void UIManager::animationTick() const {
   if (animationDelegate_ != nullptr &&
       animationDelegate_->shouldAnimateFrame()) {
     shadowTreeRegistry_.enumerate([](ShadowTree const &shadowTree) {

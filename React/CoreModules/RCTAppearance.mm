@@ -30,6 +30,11 @@ void RCTOverrideAppearancePreference(NSString *const colorSchemeOverride)
   sColorSchemeOverride = colorSchemeOverride;
 }
 
+NSString *RCTCurrentOverrideAppearancePreference()
+{
+  return sColorSchemeOverride;
+}
+
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
 NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
 {

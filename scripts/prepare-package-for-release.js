@@ -11,6 +11,7 @@
 
 /**
  * This script prepares a release package to be pushed to npm
+ * It is run by CircleCI on a push to a release branch
  * It will:
  *    * It updates the version in json/gradle files and makes sure they are consistent between each other (set-rn-version)
  *    * Updates podfile for RNTester
@@ -22,6 +23,7 @@ const yargs = require('yargs');
 const {
   isReleaseBranch,
   isTaggedLatest,
+  isTaggedVersion,
   getNextVersionFromTags,
 } = require('./version-utils');
 
@@ -33,13 +35,22 @@ const argv = yargs.option('r', {
   default: 'origin',
 }).argv;
 
+// We do this check to prevent a loop of commit in this script to trigger the job again.
+// I haven't figured out a way for CircleCI to filter out commits from CircleCI jobs
+if (isTaggedVersion(currentCommit)) {
+  console.log(
+    'Skip running prepare-package-for-release as this job was triggered from previous run of this script.',
+  );
+  exit(0);
+}
+
 if (!isReleaseBranch(branch)) {
   console.error('This needs to be on a release branch');
   exit(1);
 }
 
 // Progress the version by 1 using existing git tags
-const {version} = getNextVersionFromTags(branch);
+const version = getNextVersionFromTags(branch);
 
 if (exec(`node scripts/set-rn-version.js --to-version ${version}`).code) {
   echo(`Failed to set React Native version to ${version}`);

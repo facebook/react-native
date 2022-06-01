@@ -287,9 +287,7 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     return std::make_unique<MainRunLoopObserver>(activities, owner);
   };
 
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_background_executor_ios")) {
-    toolbox.backgroundExecutor = RCTGetBackgroundExecutor();
-  }
+  toolbox.backgroundExecutor = RCTGetBackgroundExecutor();
 
   toolbox.synchronousEventBeatFactory =
       [runtimeExecutor, runtimeScheduler = runtimeScheduler](EventBeat::SharedOwnerBox const &ownerBox) {
