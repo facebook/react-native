@@ -60,6 +60,7 @@
     "scripts/cocoapods/flipper.rb",
     "scripts/cocoapods/new_architecture.rb",
     "scripts/react-native-xcode.sh",
+    "sdks/.hermesversion",
     "sdks/hermes-engine",
     "sdks/hermesc",
     "template.config.js",
