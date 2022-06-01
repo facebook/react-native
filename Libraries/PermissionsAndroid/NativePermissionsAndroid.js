@@ -41,6 +41,9 @@ export type PermissionType =
   | 'android.permission.RECEIVE_WAP_PUSH'
   | 'android.permission.RECEIVE_MMS'
   | 'android.permission.READ_EXTERNAL_STORAGE'
+  | 'android.permission.READ_MEDIA_IMAGES',
+  | 'android.permission.READ_MEDIA_VIDEO',
+  | 'android.permission.READ_MEDIA_AUDIO',
   | 'android.permission.WRITE_EXTERNAL_STORAGE'
   | 'android.permission.BLUETOOTH_CONNECT'
   | 'android.permission.BLUETOOTH_SCAN'
