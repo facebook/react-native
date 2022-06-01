@@ -304,8 +304,11 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     if (testId != null) {
       info.setViewIdResourceName(testId);
     }
-    boolean missingTextOrDescription =
-        info.getText() == null && info.getContentDescription() == null;
+    // need to check that string length is not == 0
+    boolean missingContentDescription = TextUtils.isEmpty(info.getContentDescription());
+    boolean missingText = TextUtils.isEmpty(info.getText());
+    boolean missingTextOrDescription = missingContentDescription && missingText;
+    // add check on placeholder
     boolean hasContentToAnnounce =
         accessibilityActions != null
             || accessibilityState != null
