@@ -1034,7 +1034,7 @@ jobs:
             mkdir -p /tmp/cocoapods-package-root/destroot
             mkdir -p /tmp/hermes/output
             cp -R ./destroot /tmp/cocoapods-package-root
-            cp hermes-engine.podspec LICENSE /tmp/cocoapods-package-root
+            cp LICENSE /tmp/cocoapods-package-root
 
             tar -C /tmp/cocoapods-package-root/ -czvf /tmp/hermes/output/hermes-runtime-darwin-v$(get_release_version).tar.gz .
       - save_cache:

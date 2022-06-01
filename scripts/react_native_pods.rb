@@ -118,7 +118,7 @@ def use_react_native! (options={})
     abort unless prep_status == 0
 
     pod 'React-hermes', :path => "#{prefix}/ReactCommon/hermes"
-    pod 'hermes-engine', :path => "#{prefix}/sdks/hermes/hermes-engine.podspec"
+    pod 'hermes-engine', :podspec => "#{prefix}/sdks/hermes/hermes-engine.podspec"
     pod 'libevent', '~> 2.1.12'
   end
 
