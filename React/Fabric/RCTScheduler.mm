@@ -155,7 +155,8 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
   if (_animationDriver) {
     _animationDriver->setLayoutAnimationStatusDelegate(nullptr);
   }
-  _animationDriver = nullptr;
+
+  _scheduler->setDelegate(nullptr);
 }
 
 - (void)registerSurface:(facebook::react::SurfaceHandler const &)surfaceHandler
