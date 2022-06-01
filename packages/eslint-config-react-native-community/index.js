@@ -36,7 +36,7 @@ module.exports = {
   overrides: [
     {
       files: ['*.js'],
-      parser: 'babel-eslint',
+      parser: '@babel/eslint-parser',
       plugins: ['flowtype'],
       rules: {
         // Flow Plugin
