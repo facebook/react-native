@@ -32,6 +32,12 @@ public class ReactFeatureFlags {
   public static volatile boolean enableFabricRenderer = false;
 
   /**
+   * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable
+   * the following flags: `useTurboModules` & `enableFabricRenderer`.
+   */
+  public static boolean enableBridgelessArchitecture = false;
+
+  /**
    * After TurboModules and Fabric are enabled, we need to ensure that the legacy NativeModule isn't
    * isn't used. So, turn this flag on to trigger warnings whenever the legacy NativeModule system
    * is used.
