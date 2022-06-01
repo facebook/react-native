@@ -19,11 +19,10 @@ import java.util.Map;
  * Class that stores the mapping between native view name used in JS and the corresponding instance
  * of {@link ViewManager}.
  */
-public final class ViewManagerRegistry {
+public final class ViewManagerRegistry implements ComponentCallbacks2 {
 
   private final Map<String, ViewManager> mViewManagers;
   private final @Nullable ViewManagerResolver mViewManagerResolver;
-  private final MemoryTrimCallback mMemoryTrimCallback = new MemoryTrimCallback();
 
   public ViewManagerRegistry(ViewManagerResolver viewManagerResolver) {
     mViewManagers = MapBuilder.newHashMap();
@@ -44,40 +43,6 @@ public final class ViewManagerRegistry {
     mViewManagers =
         viewManagerMap != null ? viewManagerMap : MapBuilder.<String, ViewManager>newHashMap();
     mViewManagerResolver = null;
-  }
-
-  /**
-   * Trim View Recycling memory aggressively. Whenever the system is running even slightly low on
-   * memory or is backgrounded, we immediately flush all recyclable Views. GC and memory swaps cause
-   * intense CPU pressure, so we always favor low memory usage over View recycling, even if there is
-   * only "moderate" pressure.
-   */
-  private class MemoryTrimCallback implements ComponentCallbacks2 {
-    @Override
-    public void onTrimMemory(int level) {
-      Runnable runnable =
-          new Runnable() {
-            @Override
-            public void run() {
-              for (Map.Entry<String, ViewManager> entry : mViewManagers.entrySet()) {
-                entry.getValue().trimMemory();
-              }
-            }
-          };
-      if (UiThreadUtil.isOnUiThread()) {
-        runnable.run();
-      } else {
-        UiThreadUtil.runOnUiThread(runnable);
-      }
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {}
-
-    @Override
-    public void onLowMemory() {
-      this.onTrimMemory(0);
-    }
   }
 
   /**
@@ -131,7 +96,7 @@ public final class ViewManagerRegistry {
   }
 
   /** Send lifecycle signal to all ViewManagers that StopSurface has been called. */
-  public void onSurfaceStopped(int surfaceId) {
+  public void onSurfaceStopped(final int surfaceId) {
     Runnable runnable =
         new Runnable() {
           @Override
@@ -146,5 +111,34 @@ public final class ViewManagerRegistry {
     } else {
       UiThreadUtil.runOnUiThread(runnable);
     }
+  }
+
+  /** ComponentCallbacks2 method. */
+  @Override
+  public void onTrimMemory(int level) {
+    Runnable runnable =
+        new Runnable() {
+          @Override
+          public void run() {
+            for (Map.Entry<String, ViewManager> entry : mViewManagers.entrySet()) {
+              entry.getValue().trimMemory();
+            }
+          }
+        };
+    if (UiThreadUtil.isOnUiThread()) {
+      runnable.run();
+    } else {
+      UiThreadUtil.runOnUiThread(runnable);
+    }
+  }
+
+  /** ComponentCallbacks2 method. */
+  @Override
+  public void onConfigurationChanged(Configuration newConfig) {}
+
+  /** ComponentCallbacks2 method. */
+  @Override
+  public void onLowMemory() {
+    this.onTrimMemory(0);
   }
 }

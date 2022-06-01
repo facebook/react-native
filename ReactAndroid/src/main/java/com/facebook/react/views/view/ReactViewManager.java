@@ -52,12 +52,10 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
   private static final int CMD_SET_PRESSED = 2;
   private static final String HOTSPOT_UPDATE_KEY = "hotspotUpdate";
 
-  private ReactViewGroup mDefaultViewForRecycling = null;
-
   public ReactViewManager() {
     super();
 
-    enableViewRecycling();
+    setupViewRecycling();
   }
 
   @Override

@@ -10,6 +10,7 @@
 import * as path from 'path';
 
 const {
+  configureMakeForPrebuiltHermesC,
   copyBuildScripts,
   copyPodSpec,
   downloadHermesTarball,
@@ -17,11 +18,13 @@ const {
   getHermesTagSHA,
   readHermesTag,
   setHermesTag,
+  shouldUsePrebuiltHermesC,
 } = require('../hermes/hermes-utils');
 
 const hermesTag =
   'hermes-2022-04-28-RNv0.69.0-15d07c2edd29a4ea0b8f15ab0588a0c1adb1200f';
 const tarballContents = 'dummy string';
+const hermescContents = 'dummy string';
 const hermesTagSha = '5244f819b2f3949ca94a3a1bf75d54a8ed59d94a';
 
 const ROOT_DIR = path.normalize(path.join(__dirname, '..', '..'));
@@ -150,14 +153,14 @@ describe('hermes-utils', () => {
   describe('getHermesTagSHA', () => {
     it('should return trimmed commit SHA for Hermes tag', () => {
       expect(getHermesTagSHA(hermesTag)).toEqual(hermesTagSha);
-      expect(execCalls.git).toBeTruthy();
+      expect(execCalls.git).toBe(true);
     });
   });
   describe('downloadHermesTarball', () => {
     it('should download Hermes tarball to download dir', () => {
       fs.writeFileSync(path.join(SDKS_DIR, '.hermesversion'), hermesTag);
       downloadHermesTarball();
-      expect(execCalls.curl).toBeTruthy();
+      expect(execCalls.curl).toBe(true);
       expect(
         fs.readFileSync(
           path.join(SDKS_DIR, 'download', `hermes-${hermesTagSha}.tgz`),
@@ -189,7 +192,7 @@ describe('hermes-utils', () => {
       expect(fs.existsSync(path.join(SDKS_DIR, 'hermes'))).toBeFalsy();
       expandHermesTarball();
       expect(execCalls.tar).toBe(true);
-      expect(fs.existsSync(path.join(SDKS_DIR, 'hermes'))).toBeTruthy();
+      expect(fs.existsSync(path.join(SDKS_DIR, 'hermes'))).toBe(true);
     });
     it('should fail if Hermes tarball does not exist', () => {
       expect(() => {
@@ -247,6 +250,38 @@ describe('hermes-utils', () => {
           },
         ),
       );
+    });
+  });
+  describe('shouldUsePrebuiltHermesC', () => {
+    it('returns false if path to osx hermesc does not exist', () => {
+      expect(shouldUsePrebuiltHermesC('macos')).toBeFalsy();
+    });
+    it('returns false for non-macOS', () => {
+      expect(shouldUsePrebuiltHermesC('windows')).toBeFalsy();
+    });
+    it('return true only if path to hermesc exists', () => {
+      fs.mkdirSync(path.join(SDKS_DIR, 'hermesc', 'osx-bin'), {
+        recursive: true,
+      });
+      fs.writeFileSync(
+        path.join(SDKS_DIR, 'hermesc', 'osx-bin', 'hermesc'),
+        hermescContents,
+      );
+      expect(shouldUsePrebuiltHermesC('macos')).toBe(true);
+    });
+  });
+
+  describe('configureMakeForPrebuiltHermesC', () => {
+    it('creates ImportHermesC file', () => {
+      fs.mkdirSync(path.join(SDKS_DIR, 'hermesc', 'osx-bin'), {
+        recursive: true,
+      });
+      configureMakeForPrebuiltHermesC();
+      expect(
+        fs.existsSync(
+          path.join(SDKS_DIR, 'hermesc', 'osx-bin', 'ImportHermesc.cmake'),
+        ),
+      ).toBe(true);
     });
   });
 });

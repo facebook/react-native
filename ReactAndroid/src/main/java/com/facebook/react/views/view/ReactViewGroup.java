@@ -176,32 +176,6 @@ public class ReactViewGroup extends ViewGroup
     // Reset background, borders
     updateBackgroundDrawable(null);
 
-    setForeground(null);
-
-    // This is possibly subject to change and overrideable per-platform, but these
-    // are the default view flags in View.java:
-    // https://android.googlesource.com/platform/frameworks/base/+/a175a5b/core/java/android/view/View.java#2712
-    // `mViewFlags = SOUND_EFFECTS_ENABLED | HAPTIC_FEEDBACK_ENABLED | LAYOUT_DIRECTION_INHERIT`
-    // Therefore we set the following options as such:
-    setFocusable(false);
-    setFocusableInTouchMode(false);
-
-    // Focus IDs
-    // Also see in AOSP source:
-    // https://android.googlesource.com/platform/frameworks/base/+/a175a5b/core/java/android/view/View.java#4493
-    setNextFocusDownId(View.NO_ID);
-    setNextFocusForwardId(View.NO_ID);
-    setNextFocusRightId(View.NO_ID);
-    setNextFocusUpId(View.NO_ID);
-
-    // Predictable, alpha defaults to 1:
-    // https://android.googlesource.com/platform/frameworks/base/+/a175a5b/core/java/android/view/View.java#2186
-    // This accounts for resetting mBackfaceOpacity and mBackfaceVisibility
-    setAlpha(1);
-
-    // https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-mainline-12.0.0_r96/core/java/android/view/View.java#5491
-    setElevation(0);
-
     resetPointerEvents();
   }
 
@@ -811,11 +785,6 @@ public class ReactViewGroup extends ViewGroup
   @Override
   public void setOverflowInset(int left, int top, int right, int bottom) {
     mOverflowInset.set(left, top, right, bottom);
-  }
-
-  public void setOverflowInset(Rect overflowInset) {
-    mOverflowInset.set(
-        overflowInset.left, overflowInset.top, overflowInset.right, overflowInset.bottom);
   }
 
   @Override
