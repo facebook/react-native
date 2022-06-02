@@ -389,6 +389,7 @@
   NSHashTable *_scrollListeners;
 }
 
+#if !TARGET_OS_OSX // [TODO(macOS GH#774) - UIKeyboard notifications not needed on macOS
 - (void)_registerKeyboardListener
 {
   [[NSNotificationCenter defaultCenter] addObserver:self
@@ -456,13 +457,16 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
                    }
                    completion:nil];
 }
+#endif // ]TODO(macOS GH#774)
 
 - (instancetype)initWithEventDispatcher:(id<RCTEventDispatcherProtocol>)eventDispatcher
 {
   RCTAssertParam(eventDispatcher);
 
   if ((self = [super initWithFrame:CGRectZero])) {
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
     [self _registerKeyboardListener];
+#endif // ]TODO(macOS GH#774)
     _eventDispatcher = eventDispatcher;
 
     _scrollView = [[RCTCustomScrollView alloc] initWithFrame:CGRectZero];
@@ -653,7 +657,9 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
   _scrollView.delegate = nil;
 #endif // TODO(macOS GH#774)
   [_eventDispatcher.bridge.uiManager.observerCoordinator removeObserver:self];
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
   [self _unregisterKeyboardListener];
+#endif // ]TODO(macOS GH#774)
 }
 
 - (void)layoutSubviews
