@@ -67,7 +67,7 @@ type State = {|
   isRTL: boolean,
 |};
 
-const IS_RTL = I18nManager.isRTL;
+const IS_RTL = I18nManager.getConstants().isRTL;
 
 class FlatListExample extends React.PureComponent<Props, State> {
   state: State = {

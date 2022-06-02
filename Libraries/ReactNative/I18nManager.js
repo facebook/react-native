@@ -10,13 +10,11 @@
 
 import NativeI18nManager from './NativeI18nManager';
 
-const i18nConstants: {|
+function getI18nManagerConstants(): {|
   doLeftAndRightSwapInRTL: boolean,
   isRTL: boolean,
-  localeIdentifier?: ?string,
-|} = getI18nManagerConstants();
-
-function getI18nManagerConstants() {
+  localeIdentifier: ?string,
+|} {
   if (NativeI18nManager) {
     const {isRTL, doLeftAndRightSwapInRTL, localeIdentifier} =
       NativeI18nManager.getConstants();
@@ -26,6 +24,7 @@ function getI18nManagerConstants() {
   return {
     isRTL: false,
     doLeftAndRightSwapInRTL: true,
+    localeIdentifier: undefined,
   };
 }
 
@@ -35,7 +34,7 @@ module.exports = {
     isRTL: boolean,
     localeIdentifier: ?string,
   |} => {
-    return i18nConstants;
+    return getI18nManagerConstants();
   },
 
   allowRTL: (shouldAllow: boolean) => {
@@ -61,7 +60,4 @@ module.exports = {
 
     NativeI18nManager.swapLeftAndRightInRTL(flipStyles);
   },
-
-  isRTL: i18nConstants.isRTL,
-  doLeftAndRightSwapInRTL: i18nConstants.doLeftAndRightSwapInRTL,
 };

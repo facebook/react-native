@@ -41,7 +41,7 @@ const SCALE = PixelRatio.get();
 const IMAGE_DIMENSION = 100 * SCALE;
 const IMAGE_SIZE = [IMAGE_DIMENSION, IMAGE_DIMENSION];
 
-const IS_RTL = I18nManager.isRTL;
+const IS_RTL = I18nManager.getConstants().isRTL;
 
 function ListItem(props) {
   return (
