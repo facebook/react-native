@@ -202,6 +202,11 @@ function main(appRootDir, outputPath) {
 
     const schemaPaths = {};
 
+    const iosOutputDir = path.join(
+      outputPath ? outputPath : appRootDir,
+      'build/generated/ios',
+    );
+
     // 5. For each codegen-enabled library, generate the native code spec files
     libraries.forEach(library => {
       if (!CODEGEN_FABRIC_ENABLED && library.config.type === 'components') {
@@ -219,8 +224,7 @@ function main(appRootDir, outputPath) {
         library.config.jsSrcsDir,
       );
       const pathToOutputDirIOS = path.join(
-        outputPath ? outputPath : appRootDir,
-        'build/generated/ios',
+        iosOutputDir,
         library.config.type === 'components'
           ? 'react/renderer/components'
           : './',
@@ -279,20 +283,14 @@ function main(appRootDir, outputPath) {
 
     // Generate FabricComponentProvider.
     // Only for iOS at this moment.
-    const providerOutputPathIOS = path.join(
-      appRootDir,
-      'build',
-      'generated',
-      'ios',
-    );
     execSync(
       `node ${path.join(
         RN_ROOT,
         'scripts',
         'generate-provider-cli.js',
-      )} --platform ios --schemaListPath "${schemaListTmpPath}" --outputDir ${providerOutputPathIOS}`,
+      )} --platform ios --schemaListPath "${schemaListTmpPath}" --outputDir ${iosOutputDir}`,
     );
-    console.log(`Generated provider in: ${providerOutputPathIOS}`);
+    console.log(`Generated provider in: ${iosOutputDir}`);
   } catch (err) {
     console.error(err);
     process.exitCode = 1;

@@ -161,6 +161,7 @@ export type ScrollViewImperativeMethods = $ReadOnly<{|
   >,
 |}>;
 
+export type DecelerationRateType = 'fast' | 'normal' | number;
 export type ScrollResponderType = ScrollViewImperativeMethods;
 
 type IOSProps = $ReadOnly<{|
@@ -171,6 +172,12 @@ type IOSProps = $ReadOnly<{|
    * @platform ios
    */
   automaticallyAdjustContentInsets?: ?boolean,
+  /**
+   * Controls whether the ScrollView should automatically adjust it's contentInset
+   * and scrollViewInsets when the Keyboard changes it's size. The default value is false.
+   * @platform ios
+   */
+  automaticallyAdjustKeyboardInsets?: ?boolean,
   /**
    * Controls whether iOS should automatically adjust the scroll indicator
    * insets. The default value is true. Available on iOS 13 and later.
@@ -481,7 +488,7 @@ export type Props = $ReadOnly<{|
    *   - `'normal'`: 0.998 on iOS, 0.985 on Android (the default)
    *   - `'fast'`: 0.99 on iOS, 0.9 on Android
    */
-  decelerationRate?: ?('fast' | 'normal' | number),
+  decelerationRate?: ?DecelerationRateType,
   /**
    * When true, the scroll view's children are arranged horizontally in a row
    * instead of vertically in a column. The default value is false.

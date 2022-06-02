@@ -58,6 +58,10 @@ bool RuntimeScheduler::getShouldYield() const noexcept {
   return shouldYield_;
 }
 
+bool RuntimeScheduler::getIsSynchronous() const noexcept {
+  return isSynchronous_;
+}
+
 void RuntimeScheduler::cancelTask(const std::shared_ptr<Task> &task) noexcept {
   task->callback.reset();
 }
@@ -75,14 +79,31 @@ void RuntimeScheduler::setEnableYielding(bool enableYielding) {
 }
 
 void RuntimeScheduler::executeNowOnTheSameThread(
-    std::function<void(jsi::Runtime &runtime)> callback) const {
+    std::function<void(jsi::Runtime &runtime)> callback) {
   shouldYield_ = true;
   executeSynchronouslyOnSameThread_CAN_DEADLOCK(
       runtimeExecutor_,
-      [callback = std::move(callback)](jsi::Runtime &runtime) {
-        callback(runtime);
+      [this, callback = std::move(callback)](jsi::Runtime &runtime) {
+        shouldYield_ = false;
+        auto task = jsi::Function::createFromHostFunction(
+            runtime,
+            jsi::PropNameID::forUtf8(runtime, ""),
+            3,
+            [callback = std::move(callback)](
+                jsi::Runtime &runtime,
+                jsi::Value const &,
+                jsi::Value const *arguments,
+                size_t) -> jsi::Value {
+              callback(runtime);
+              return jsi::Value::undefined();
+            });
+        assert(!isPerformingWork_);
+        this->scheduleTask(
+            SchedulerPriority::ImmediatePriority, std::move(task));
+        isSynchronous_ = true;
+        startWorkLoop(runtime);
+        isSynchronous_ = false;
       });
-  shouldYield_ = false;
 }
 
 #pragma mark - Private

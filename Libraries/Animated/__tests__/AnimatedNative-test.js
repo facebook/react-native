@@ -134,6 +134,28 @@ describe('Native Animated', () => {
       expect(opacity.__getValue()).toBe(1);
     });
 
+    it('should deduct offset when saving value on unmount', () => {
+      NativeAnimatedModule.getValue = jest.fn((tag, saveCallback) => {
+        // Assume current raw value of value node is 0.5, the NativeAnimated
+        // getValue API returns the sum of raw value and offset, so return 1.
+        saveCallback(1);
+      });
+      const opacity = new Animated.Value(0);
+      opacity.setOffset(0.5);
+      opacity.__makeNative();
+
+      const root = TestRenderer.create(<Animated.View style={{opacity}} />);
+      const tag = opacity.__getNativeTag();
+
+      root.unmount();
+
+      expect(NativeAnimatedModule.getValue).toBeCalledWith(
+        tag,
+        expect.any(Function),
+      );
+      expect(opacity.__getValue()).toBe(1);
+    });
+
     it('should extract offset', () => {
       const opacity = new Animated.Value(0);
       opacity.__makeNative();
@@ -913,6 +935,30 @@ describe('Native Animated', () => {
 
       animation.stop();
       expect(NativeAnimatedModule.stopAnimation).toBeCalledWith(animationId);
+    });
+
+    it('calls stopAnimation callback with native value', () => {
+      NativeAnimatedModule.getValue = jest.fn((tag, saveCallback) => {
+        saveCallback(1);
+      });
+
+      const anim = new Animated.Value(0);
+      Animated.timing(anim, {
+        duration: 1000,
+        useNativeDriver: true,
+      }).start();
+
+      const tag = anim.__getNativeTag();
+
+      let currentValue = 0;
+      anim.stopAnimation(value => (currentValue = value));
+
+      expect(NativeAnimatedModule.getValue).toBeCalledWith(
+        tag,
+        expect.any(Function),
+      );
+
+      expect(currentValue).toEqual(1);
     });
   });
 

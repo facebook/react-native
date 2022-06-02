@@ -156,7 +156,7 @@ class Binding : public jni::HybridClass<Binding>,
   void schedulerDidDispatchCommand(
       const ShadowView &shadowView,
       std::string const &commandName,
-      folly::dynamic const args) override;
+      folly::dynamic const &args) override;
 
   void schedulerDidSendAccessibilityEvent(
       const ShadowView &shadowView,

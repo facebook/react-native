@@ -315,7 +315,7 @@ void Scheduler::uiManagerDidCloneShadowNode(
 void Scheduler::uiManagerDidDispatchCommand(
     const ShadowNode::Shared &shadowNode,
     std::string const &commandName,
-    folly::dynamic const args) {
+    folly::dynamic const &args) {
   SystraceSection s("Scheduler::uiManagerDispatchCommand");
 
   if (delegate_) {

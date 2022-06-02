@@ -24,6 +24,7 @@
 #import <React/RCTInvalidating.h>
 #import <React/RCTJavaScriptExecutor.h>
 #import <React/RCTPerformanceLogger.h>
+#import <React/RCTPerformanceLoggerLabels.h>
 #import <React/RCTRootView.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTUtils.h>
@@ -39,6 +40,8 @@ static CGFloat const RCTPerfMonitorBarHeight = 50;
 static CGFloat const RCTPerfMonitorExpandHeight = 250;
 
 typedef BOOL (*RCTJSCSetOptionType)(const char *);
+
+NSArray<NSString *> *LabelsForRCTPerformanceLoggerTags();
 
 static BOOL RCTJSCSetOption(const char *option)
 {
@@ -515,7 +518,7 @@ RCT_EXPORT_MODULE()
   NSMutableArray<NSString *> *data = [NSMutableArray new];
   RCTPerformanceLogger *performanceLogger = [_bridge performanceLogger];
   NSArray<NSNumber *> *values = [performanceLogger valuesForTags];
-  for (NSString *label in [performanceLogger labelsForTags]) {
+  for (NSString *label in LabelsForRCTPerformanceLoggerTags()) {
     long long value = values[i + 1].longLongValue - values[i].longLongValue;
     NSString *unit = @"ms";
     if ([label hasSuffix:@"Size"]) {
@@ -571,6 +574,15 @@ RCT_EXPORT_MODULE()
 }
 
 @end
+
+NSArray<NSString *> *LabelsForRCTPerformanceLoggerTags()
+{
+  NSMutableArray<NSString *> *labels = [NSMutableArray new];
+  for (int i = 0; i < RCTPLSize; i++) {
+    [labels addObject:RCTPLLabelForTag((RCTPLTag)i)];
+  }
+  return labels;
+}
 
 #endif
 

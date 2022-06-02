@@ -40,12 +40,12 @@ class TextInputEventEmitter : public ViewEventEmitter {
   void onFocus(TextInputMetrics const &textInputMetrics) const;
   void onBlur(TextInputMetrics const &textInputMetrics) const;
   void onChange(TextInputMetrics const &textInputMetrics) const;
-  void onChangeText(TextInputMetrics const &textInputMetrics) const;
   void onContentSizeChange(TextInputMetrics const &textInputMetrics) const;
   void onSelectionChange(TextInputMetrics const &textInputMetrics) const;
   void onEndEditing(TextInputMetrics const &textInputMetrics) const;
   void onSubmitEditing(TextInputMetrics const &textInputMetrics) const;
   void onKeyPress(KeyPressMetrics const &textInputMetrics) const;
+  void onKeyPressSync(KeyPressMetrics const &textInputMetrics) const;
   void onScroll(TextInputMetrics const &textInputMetrics) const;
 
  private:

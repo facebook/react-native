@@ -12,6 +12,7 @@
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/debug/SystraceSection.h>
+#include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 #include <react/renderer/uimanager/primitives.h>
 
 namespace facebook::react {
@@ -543,33 +544,47 @@ jsi::Value UIManagerBinding::get(
             jsi::Value const &thisValue,
             jsi::Value const *arguments,
             size_t count) noexcept -> jsi::Value {
+          auto runtimeSchedulerBinding =
+              RuntimeSchedulerBinding::getBinding(runtime);
           auto surfaceId = surfaceIdFromValue(runtime, arguments[0]);
-          auto weakShadowNodeList =
-              weakShadowNodeListFromValue(runtime, arguments[1]);
-          static std::atomic_uint_fast8_t completeRootEventCounter{0};
-          static std::atomic_uint_fast32_t mostRecentSurfaceId{0};
-          completeRootEventCounter += 1;
-          mostRecentSurfaceId = surfaceId;
-          uiManager->backgroundExecutor_(
-              [weakUIManager,
-               weakShadowNodeList,
-               surfaceId,
-               eventCount = completeRootEventCounter.load()] {
-                auto shouldYield = [=]() -> bool {
-                  // If `completeRootEventCounter` was incremented, another
-                  // `completeSurface` call has been scheduled and current
-                  // `completeSurface` should yield to it.
-                  return completeRootEventCounter > eventCount &&
-                      mostRecentSurfaceId == surfaceId;
-                };
-                auto shadowNodeList =
-                    shadowNodeListFromWeakList(weakShadowNodeList);
-                auto strongUIManager = weakUIManager.lock();
-                if (shadowNodeList && strongUIManager) {
-                  strongUIManager->completeSurface(
-                      surfaceId, shadowNodeList, {true, shouldYield});
-                }
-              });
+
+          if (runtimeSchedulerBinding &&
+              runtimeSchedulerBinding->getIsSynchronous()) {
+            auto weakShadowNodeList =
+                weakShadowNodeListFromValue(runtime, arguments[1]);
+            auto shadowNodeList =
+                shadowNodeListFromWeakList(weakShadowNodeList);
+            if (shadowNodeList) {
+              uiManager->completeSurface(surfaceId, shadowNodeList, {true});
+            }
+          } else {
+            auto weakShadowNodeList =
+                weakShadowNodeListFromValue(runtime, arguments[1]);
+            static std::atomic_uint_fast8_t completeRootEventCounter{0};
+            static std::atomic_uint_fast32_t mostRecentSurfaceId{0};
+            completeRootEventCounter += 1;
+            mostRecentSurfaceId = surfaceId;
+            uiManager->backgroundExecutor_(
+                [weakUIManager,
+                 weakShadowNodeList,
+                 surfaceId,
+                 eventCount = completeRootEventCounter.load()] {
+                  auto shouldYield = [=]() -> bool {
+                    // If `completeRootEventCounter` was incremented, another
+                    // `completeSurface` call has been scheduled and current
+                    // `completeSurface` should yield to it.
+                    return completeRootEventCounter > eventCount &&
+                        mostRecentSurfaceId == surfaceId;
+                  };
+                  auto shadowNodeList =
+                      shadowNodeListFromWeakList(weakShadowNodeList);
+                  auto strongUIManager = weakUIManager.lock();
+                  if (shadowNodeList && strongUIManager) {
+                    strongUIManager->completeSurface(
+                        surfaceId, shadowNodeList, {true, shouldYield});
+                  }
+                });
+          }
 
           return jsi::Value::undefined();
         });

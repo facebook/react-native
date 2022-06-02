@@ -803,7 +803,16 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private int predictFinalScrollPosition(int velocityX) {
     // predict where a fling would end up so we can scroll to the nearest snap offset
     final int maximumOffset = Math.max(0, computeHorizontalScrollRange() - getWidth());
-    return ReactScrollViewHelper.predictFinalScrollPosition(this, velocityX, 0, maximumOffset, 0).x;
+    // TODO(T106335409): Existing prediction still uses overscroller. Consider change this to use
+    // fling animator instead.
+    return getFlingAnimator() == DEFAULT_FLING_ANIMATOR
+        ? ReactScrollViewHelper.predictFinalScrollPosition(this, velocityX, 0, maximumOffset, 0).x
+        : ReactScrollViewHelper.getNextFlingStartValue(
+                this,
+                getScrollX(),
+                getReactScrollViewScrollState().getFinalAnimatedPositionScroll().x,
+                velocityX)
+            + getFlingExtrapolatedDistance(velocityX);
   }
 
   /**
@@ -1223,5 +1232,14 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   @Override
   public ValueAnimator getFlingAnimator() {
     return DEFAULT_FLING_ANIMATOR;
+  }
+
+  @Override
+  public int getFlingExtrapolatedDistance(int velocityX) {
+    // The DEFAULT_FLING_ANIMATOR uses AccelerateDecelerateInterpolator, which is not depending on
+    // the init velocity. We use the overscroller to decide the fling distance.
+    return ReactScrollViewHelper.predictFinalScrollPosition(
+            this, velocityX, 0, Math.max(0, computeHorizontalScrollRange() - getWidth()), 0)
+        .x;
   }
 }
