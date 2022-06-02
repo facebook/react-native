@@ -148,6 +148,13 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
           | InputType.TYPE_TEXT_FLAG_CAP_WORDS
           | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS;
+  private static final int INPUT_TYPE_CLEAR =
+      InputType.TYPE_MASK_CLASS
+          | InputType.TYPE_NUMBER_FLAG_SIGNED
+          | InputType.TYPE_NUMBER_FLAG_DECIMAL
+          | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+          | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+          | InputType.TYPE_TEXT_VARIATION_URI;
 
   private static final String KEYBOARD_TYPE_EMAIL_ADDRESS = "email-address";
   private static final String KEYBOARD_TYPE_NUMERIC = "numeric";
@@ -855,7 +862,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       flagsToSet = InputType.TYPE_TEXT_VARIATION_URI;
     }
 
-    updateStagedInputTypeFlag(view, InputType.TYPE_MASK_CLASS, flagsToSet);
+    updateStagedInputTypeFlag(view, INPUT_TYPE_CLEAR, flagsToSet);
     checkPasswordType(view);
   }
 
