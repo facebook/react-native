@@ -10,6 +10,12 @@
 
 import NativeI18nManager from './NativeI18nManager';
 
+const initialI18nConstants: {|
+  doLeftAndRightSwapInRTL: boolean,
+  isRTL: boolean,
+  localeIdentifier?: ?string,
+|} = getI18nManagerConstants();
+
 function getI18nManagerConstants(): {|
   doLeftAndRightSwapInRTL: boolean,
   isRTL: boolean,
@@ -60,4 +66,7 @@ module.exports = {
 
     NativeI18nManager.swapLeftAndRightInRTL(flipStyles);
   },
+
+  isRTL: initialI18nConstants.isRTL,
+  doLeftAndRightSwapInRTL: initialI18nConstants.doLeftAndRightSwapInRTL,
 };
