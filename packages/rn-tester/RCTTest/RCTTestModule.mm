@@ -26,52 +26,64 @@
 @end
 
 namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'TestModule'
-     */
+namespace react {
+/**
+ * ObjC++ class for module 'TestModule'
+ */
 
-    class JSI_EXPORT NativeTestModuleSpecJSI : public ObjCTurboModule {
-    public:
-      NativeTestModuleSpecJSI(const ObjCTurboModule::InitParams &params);
-
-    };
-  } // namespace react
+class JSI_EXPORT NativeTestModuleSpecJSI : public ObjCTurboModule {
+ public:
+  NativeTestModuleSpecJSI(const ObjCTurboModule::InitParams &params);
+};
+} // namespace react
 } // namespace facebook
 
 namespace facebook {
-  namespace react {
+namespace react {
 
+static facebook::jsi::Value __hostFunction_NativeTestModuleSpecJSI_markTestCompleted(
+    facebook::jsi::Runtime &rt,
+    TurboModule &turboModule,
+    const facebook::jsi::Value *args,
+    size_t count)
+{
+  return static_cast<ObjCTurboModule &>(turboModule)
+      .invokeObjCMethod(rt, VoidKind, "markTestCompleted", @selector(markTestCompleted), args, count);
+}
 
-  static facebook::jsi::Value __hostFunction_NativeTestModuleSpecJSI_markTestCompleted(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-    return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "markTestCompleted", @selector(markTestCompleted), args, count);
-  }
+static facebook::jsi::Value __hostFunction_NativeTestModuleSpecJSI_markTestPassed(
+    facebook::jsi::Runtime &rt,
+    TurboModule &turboModule,
+    const facebook::jsi::Value *args,
+    size_t count)
+{
+  return static_cast<ObjCTurboModule &>(turboModule)
+      .invokeObjCMethod(rt, VoidKind, "markTestPassed", @selector(markTestPassed:), args, count);
+}
 
-  static facebook::jsi::Value __hostFunction_NativeTestModuleSpecJSI_markTestPassed(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-    return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "markTestPassed", @selector(markTestPassed:), args, count);
-  }
+static facebook::jsi::Value __hostFunction_NativeTestModuleSpecJSI_verifySnapshot(
+    facebook::jsi::Runtime &rt,
+    TurboModule &turboModule,
+    const facebook::jsi::Value *args,
+    size_t count)
+{
+  return static_cast<ObjCTurboModule &>(turboModule)
+      .invokeObjCMethod(rt, VoidKind, "verifySnapshot", @selector(verifySnapshot:), args, count);
+}
 
-  static facebook::jsi::Value __hostFunction_NativeTestModuleSpecJSI_verifySnapshot(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-    return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "verifySnapshot", @selector(verifySnapshot:), args, count);
-  }
+NativeTestModuleSpecJSI::NativeTestModuleSpecJSI(const ObjCTurboModule::InitParams &params) : ObjCTurboModule(params)
+{
+  methodMap_["markTestCompleted"] = MethodMetadata{0, __hostFunction_NativeTestModuleSpecJSI_markTestCompleted};
 
+  methodMap_["markTestPassed"] = MethodMetadata{1, __hostFunction_NativeTestModuleSpecJSI_markTestPassed};
 
-  NativeTestModuleSpecJSI::NativeTestModuleSpecJSI(const ObjCTurboModule::InitParams &params)
-    : ObjCTurboModule(params) {
+  methodMap_["verifySnapshot"] = MethodMetadata{1, __hostFunction_NativeTestModuleSpecJSI_verifySnapshot};
+}
 
-      methodMap_["markTestCompleted"] = MethodMetadata {0, __hostFunction_NativeTestModuleSpecJSI_markTestCompleted};
-
-
-      methodMap_["markTestPassed"] = MethodMetadata {1, __hostFunction_NativeTestModuleSpecJSI_markTestPassed};
-
-
-      methodMap_["verifySnapshot"] = MethodMetadata {1, __hostFunction_NativeTestModuleSpecJSI_verifySnapshot};
-  }
-
-  } // namespace react
+} // namespace react
 } // namespace facebook
 
-@interface RCTTestModule() <NativeTestModuleSpec>
+@interface RCTTestModule () <NativeTestModuleSpec>
 @end
 
 @implementation RCTTestModule {
@@ -88,11 +100,13 @@ RCT_EXPORT_MODULE()
   return _bridge.uiManager.methodQueue;
 }
 
-RCT_EXPORT_METHOD(verifySnapshot:(RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(verifySnapshot : (RCTResponseSenderBlock)callback)
 {
   RCTAssert(_controller != nil, @"No snapshot controller configured.");
 
-  [_bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry) { // TODO(macOS ISS#3536887)
+  [_bridge.uiManager addUIBlock:^(
+                         RCTUIManager *uiManager,
+                         NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry) { // TODO(macOS ISS#3536887)
     NSString *testName = NSStringFromSelector(self->_testSelector);
     if (!self->_snapshotCounter) {
       self->_snapshotCounter = [NSMutableDictionary new];
@@ -113,11 +127,11 @@ RCT_EXPORT_METHOD(verifySnapshot:(RCTResponseSenderBlock)callback)
     if (!success) {
       RCTLogInfo(@"Failed to verify snapshot %@ (error: %@)", identifier, error);
     }
-    callback(@[@(success)]);
+    callback(@[ @(success) ]);
   }];
 }
 
-RCT_EXPORT_METHOD(sendAppEvent:(NSString *)name body:(nullable id)body)
+RCT_EXPORT_METHOD(sendAppEvent : (NSString *)name body : (nullable id)body)
 {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
@@ -125,12 +139,16 @@ RCT_EXPORT_METHOD(sendAppEvent:(NSString *)name body:(nullable id)body)
 #pragma clang diagnostic pop
 }
 
-RCT_REMAP_METHOD(shouldResolve, shouldResolve_resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
+RCT_REMAP_METHOD(shouldResolve, shouldResolve_resolve
+                 : (RCTPromiseResolveBlock)resolve reject
+                 : (RCTPromiseRejectBlock)reject)
 {
   resolve(@1);
 }
 
-RCT_REMAP_METHOD(shouldReject, shouldReject_resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
+RCT_REMAP_METHOD(shouldReject, shouldReject_resolve
+                 : (RCTPromiseResolveBlock)resolve reject
+                 : (RCTPromiseRejectBlock)reject)
 {
   reject(nil, nil, nil);
 }
@@ -140,20 +158,25 @@ RCT_EXPORT_METHOD(markTestCompleted)
   [self markTestPassed:YES];
 }
 
-RCT_EXPORT_METHOD(markTestPassed:(BOOL)success)
+RCT_EXPORT_METHOD(markTestPassed : (BOOL)success)
 {
-  [_bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, __unused NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry) { // TODO(macOS ISS#3536887)
-    self->_status = success ? RCTTestStatusPassed : RCTTestStatusFailed;
-  }];
+  [_bridge.uiManager
+      addUIBlock:^(
+          __unused RCTUIManager *uiManager,
+          __unused NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry) { // TODO(macOS ISS#3536887)
+        self->_status = success ? RCTTestStatusPassed : RCTTestStatusFailed;
+      }];
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
 {
   return std::make_shared<facebook::react::NativeTestModuleSpecJSI>(params);
 }
 
 @end
 
-Class RCTTestModuleCls(void) {
+Class RCTTestModuleCls(void)
+{
   return RCTTestModule.class;
 }

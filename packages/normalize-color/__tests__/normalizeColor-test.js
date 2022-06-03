@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @emails oncall+react_native
- * @flow stroct
+ * @flow strict
  * @format
  */
 

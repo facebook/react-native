@@ -8,7 +8,6 @@
  * @format
  */
 
-import ReactNativeViewViewConfig from '../../Components/View/ReactNativeViewViewConfig';
 import type {PartialViewConfig} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 
 const AndroidTextInputViewConfig = {
@@ -53,8 +52,6 @@ const AndroidTextInputViewConfig = {
   },
   directEventTypes: {},
   validAttributes: {
-    ...ReactNativeViewViewConfig.validAttributes,
-
     maxFontSizeMultiplier: true,
     adjustsFontSizeToFit: true,
     minimumFontScale: true,

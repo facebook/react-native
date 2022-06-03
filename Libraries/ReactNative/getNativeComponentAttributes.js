@@ -35,6 +35,10 @@ function getNativeComponentAttributes(uiViewClassName: string): any {
   // native component that can be either avoided or simplified.
   let {baseModuleName, bubblingEventTypes, directEventTypes} = viewConfig;
   let nativeProps = viewConfig.NativeProps;
+
+  bubblingEventTypes = bubblingEventTypes ?? {};
+  directEventTypes = directEventTypes ?? {};
+
   while (baseModuleName) {
     const baseModule = UIManager.getViewManagerConfig(baseModuleName);
     if (!baseModule) {

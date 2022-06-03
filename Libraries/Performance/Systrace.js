@@ -87,7 +87,14 @@ const userTimingPolyfill = __DEV__
     }
   : null;
 
-function installPerformanceHooks(polyfill) {
+function installPerformanceHooks(
+  polyfill: null | $TEMPORARY$object<{
+    clearMarks(markName: string): void,
+    clearMeasures(): void,
+    mark(markName: string): void,
+    measure(measureName: string, startMark: ?string, endMark: ?string): void,
+  }>,
+) {
   if (polyfill) {
     if (global.performance === undefined) {
       global.performance = {};

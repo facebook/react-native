@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @flow
- * @noformat
+ * @format
  */
 
 /* eslint-env jest */
@@ -26,13 +26,14 @@ export type ReactTestInstance = $PropertyType<ReactTestRendererType, 'root'>;
 export type Predicate = (node: ReactTestInstance) => boolean;
 
 type $ReturnType<Fn> = $Call<<Ret, A>((...A) => Ret) => Ret, Fn>;
-/* $FlowFixMe[prop-missing] (>=0.125.1 site=react_native_fb) This comment
- * suppresses an error found when Flow v0.125.1 was deployed. To see the error,
- * delete this comment and run Flow. */
 /* $FlowFixMe[value-as-type] (>=0.125.1 site=react_native_fb) This comment
  * suppresses an error found when Flow v0.125.1 was deployed. To see the error,
  * delete this comment and run Flow. */
-export type ReactTestRendererJSON = $ReturnType<ReactTestRenderer.create.toJSON>;
+export type ReactTestRendererJSON =
+  /* $FlowFixMe[prop-missing] (>=0.125.1 site=react_native_fb) This comment
+   * suppresses an error found when Flow v0.125.1 was deployed. To see the error,
+   * delete this comment and run Flow. */
+  $ReturnType<ReactTestRenderer.create.toJSON>;
 
 const {
   Switch,

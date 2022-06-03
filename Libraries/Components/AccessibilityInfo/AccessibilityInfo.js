@@ -72,7 +72,7 @@ const EventNames: Map<$Keys<AccessibilityEventDefinitions>, string> =
  * well as to register to be notified when the state of the screen reader
  * changes.
  *
- * See https://reactnative.dev/docs/accessibilityinfo.html
+ * See https://reactnative.dev/docs/accessibilityinfo
  */
 const AccessibilityInfo = {
   /**
@@ -81,7 +81,7 @@ const AccessibilityInfo = {
    * Returns a promise which resolves to a boolean.
    * The result is `true` when bold text is enabled and `false` otherwise.
    *
-   * See https://reactnative.dev/docs/accessibilityinfo.html#isBoldTextEnabled
+   * See https://reactnative.dev/docs/accessibilityinfo#isBoldTextEnabled
    */
   isBoldTextEnabled(): Promise<boolean> {
     // [TODO(macOS GH#774) - rework logic to return Promise.resolve(false) on macOS
@@ -108,7 +108,7 @@ const AccessibilityInfo = {
    * Returns a promise which resolves to a boolean.
    * The result is `true` when grayscale is enabled and `false` otherwise.
    *
-   * See https://reactnative.dev/docs/accessibilityinfo.html#isGrayscaleEnabled
+   * See https://reactnative.dev/docs/accessibilityinfo#isGrayscaleEnabled
    */
   isGrayscaleEnabled(): Promise<boolean> {
     // [TODO(macOS GH#774) - rework logic to return Promise.resolve(false) on macOS
@@ -157,7 +157,7 @@ const AccessibilityInfo = {
    * Returns a promise which resolves to a boolean.
    * The result is `true` when invert color is enabled and `false` otherwise.
    *
-   * See https://reactnative.dev/docs/accessibilityinfo.html#isInvertColorsEnabled
+   * See https://reactnative.dev/docs/accessibilityinfo#isInvertColorsEnabled
    */
   isInvertColorsEnabled(): Promise<boolean> {
     // [TODO(macOS GH#774) - rework logic to return Promise.resolve(false) on macOS
@@ -184,7 +184,7 @@ const AccessibilityInfo = {
    * Returns a promise which resolves to a boolean.
    * The result is `true` when a reduce motion is enabled and `false` otherwise.
    *
-   * See https://reactnative.dev/docs/accessibilityinfo.html#isReduceMotionEnabled
+   * See https://reactnative.dev/docs/accessibilityinfo#isReduceMotionEnabled
    */
   isReduceMotionEnabled(): Promise<boolean> {
     return new Promise((resolve, reject) => {
@@ -213,7 +213,7 @@ const AccessibilityInfo = {
    * Returns a promise which resolves to a boolean.
    * The result is `true` when a reduce transparency is enabled and `false` otherwise.
    *
-   * See https://reactnative.dev/docs/accessibilityinfo.html#isReduceTransparencyEnabled
+   * See https://reactnative.dev/docs/accessibilityinfo#isReduceTransparencyEnabled
    */
   isReduceTransparencyEnabled(): Promise<boolean> {
     // [TODO(macOS GH#774) - rework logic to return Promise.resolve(false) on macOS
@@ -240,7 +240,7 @@ const AccessibilityInfo = {
    * Returns a promise which resolves to a boolean.
    * The result is `true` when a screen reader is enabled and `false` otherwise.
    *
-   * See https://reactnative.dev/docs/accessibilityinfo.html#isScreenReaderEnabled
+   * See https://reactnative.dev/docs/accessibilityinfo#isScreenReaderEnabled
    */
   isScreenReaderEnabled(): Promise<boolean> {
     return new Promise((resolve, reject) => {
@@ -322,7 +322,7 @@ const AccessibilityInfo = {
    *     - `success`: A boolean indicating whether the announcement was
    *       successfully made.
    *
-   * See https://reactnative.dev/docs/accessibilityinfo.html#addeventlistener
+   * See https://reactnative.dev/docs/accessibilityinfo#addeventlistener
    */
   addEventListener<K: $Keys<AccessibilityEventDefinitions>>(
     eventName: K,
@@ -337,7 +337,7 @@ const AccessibilityInfo = {
   /**
    * Set accessibility focus to a React component.
    *
-   * See https://reactnative.dev/docs/accessibilityinfo.html#setaccessibilityfocus
+   * See https://reactnative.dev/docs/accessibilityinfo#setaccessibilityfocus
    */
   setAccessibilityFocus(reactTag: number): void {
     legacySendAccessibilityEvent(reactTag, 'focus');
@@ -361,7 +361,7 @@ const AccessibilityInfo = {
   /**
    * Post a string to be announced by the screen reader.
    *
-   * See https://reactnative.dev/docs/accessibilityinfo.html#announceforaccessibility
+   * See https://reactnative.dev/docs/accessibilityinfo#announceforaccessibility
    */
   announceForAccessibility(announcement: string): void {
     if (Platform.OS === 'android') {
@@ -393,7 +393,7 @@ const AccessibilityInfo = {
   /**
    * Get the recommended timeout for changes to the UI needed by this user.
    *
-   * See https://reactnative.dev/docs/accessibilityinfo.html#getrecommendedtimeoutmillis
+   * See https://reactnative.dev/docs/accessibilityinfo#getrecommendedtimeoutmillis
    */
   getRecommendedTimeoutMillis(originalTimeout: number): Promise<number> {
     if (Platform.OS === 'android') {

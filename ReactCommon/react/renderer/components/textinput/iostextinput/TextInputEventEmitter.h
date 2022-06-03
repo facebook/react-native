@@ -23,6 +23,8 @@ class TextInputMetrics {
   EdgeInsets contentInset;
   Size containerSize;
   int eventCount;
+  Size layoutMeasurement;
+  float zoomScale;
 };
 
 class KeyPressMetrics {
@@ -44,6 +46,7 @@ class TextInputEventEmitter : public ViewEventEmitter {
   void onEndEditing(TextInputMetrics const &textInputMetrics) const;
   void onSubmitEditing(TextInputMetrics const &textInputMetrics) const;
   void onKeyPress(KeyPressMetrics const &textInputMetrics) const;
+  void onScroll(TextInputMetrics const &textInputMetrics) const;
 
  private:
   void dispatchTextInputEvent(

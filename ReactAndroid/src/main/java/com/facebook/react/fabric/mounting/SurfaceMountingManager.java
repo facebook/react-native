@@ -19,7 +19,6 @@ import androidx.annotation.UiThread;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
-import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -543,16 +542,12 @@ public class SurfaceMountingManager {
     }
     // We treat this as a perf problem and not a logical error. View Preallocation or unexpected
     // changes to Differ or C++ Binding could cause some redundant Create instructions.
-    // This is a NoCrash soft exception because we know there are cases where preallocation happens
-    // and a node is recreated: if a node is preallocated and then committed with revision 2+,
-    // an extra CREATE instruction will be generated.
+    // There are cases where preallocation happens and a node is recreated: if a node is
+    // preallocated and then committed with revision 2+, an extra CREATE instruction will be
+    // generated.
     // This represents a perf issue only, not a correctness issue. In the future we need to
     // refactor View preallocation to correct the currently incorrect assumptions.
     if (getNullableViewState(reactTag) != null) {
-      ReactSoftExceptionLogger.logSoftException(
-          TAG,
-          new ReactNoCrashSoftException(
-              "Cannot CREATE view with tag [" + reactTag + "], already exists."));
       return;
     }
 

@@ -9,6 +9,8 @@
  */
 
 'use strict';
+import type {CommandOptions} from './options';
+import type {TypeDeclarationMap} from '../utils';
 
 import type {ComponentSchemaBuilderConfig} from './schema.js';
 const {getCommands} = require('./commands');
@@ -119,7 +121,11 @@ function findComponentConfig(ast) {
   };
 }
 
-function getCommandProperties(commandTypeName, types, commandOptions) {
+function getCommandProperties(
+  commandTypeName,
+  types: TypeDeclarationMap,
+  commandOptions: ?CommandOptions,
+) {
   if (commandTypeName == null) {
     return [];
   }

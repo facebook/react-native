@@ -105,7 +105,7 @@ class ScrollViewTestApp extends React.Component<Props, State> {
   }
 
   render(): React.Node {
-    scrollViewApp = this;
+    scrollViewApp = this; // eslint-disable-line consistent-this
     const children = this.state.data.map((item, index) => (
       <Item
         key={index}
@@ -140,7 +140,7 @@ class HorizontalScrollViewTestApp extends React.Component<Props, State> {
   }
 
   render(): React.Node {
-    scrollViewApp = this;
+    scrollViewApp = this; // eslint-disable-line consistent-this
     const children = this.state.data.map((item, index) => (
       <Item
         key={index}

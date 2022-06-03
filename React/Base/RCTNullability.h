@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-typedef NS_ENUM(NSUInteger, RCTNullability) {
+typedef NS_ENUM(NSInteger, RCTNullability) {
   RCTNullabilityUnspecified,
   RCTNullable,
   RCTNonnullable,

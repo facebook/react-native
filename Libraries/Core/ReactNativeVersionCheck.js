@@ -38,7 +38,16 @@ exports.checkVersions = function checkVersions(): void {
   }
 };
 
-function _formatVersion(version): string {
+function _formatVersion(
+  version:
+    | {major: number, minor: number, patch: number, prerelease: ?number}
+    | $TEMPORARY$object<{
+        major: number,
+        minor: number,
+        patch: number,
+        prerelease: null,
+      }>,
+): string {
   return (
     `${version.major}.${version.minor}.${version.patch}` +
     // eslint-disable-next-line eqeqeq

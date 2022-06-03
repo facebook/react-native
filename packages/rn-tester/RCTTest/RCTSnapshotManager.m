@@ -30,7 +30,6 @@
 
 @end
 
-
 @implementation RCTSnapshotManager
 
 RCT_EXPORT_MODULE()

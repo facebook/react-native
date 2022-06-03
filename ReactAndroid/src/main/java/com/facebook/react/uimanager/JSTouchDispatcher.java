@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.TouchEvent;
 import com.facebook.react.uimanager.events.TouchEventCoalescingKeyHelper;
@@ -51,6 +50,11 @@ public class JSTouchDispatcher {
     mTargetTag = -1;
   }
 
+  public void onChildEndedNativeGesture(MotionEvent androidEvent, EventDispatcher eventDispatcher) {
+    // There should be only one child gesture at any given time. We can safely turn off the flag.
+    mChildIsHandlingNativeGesture = false;
+  }
+
   /**
    * Main catalyst view is responsible for collecting and sending touch events to JS. This method
    * reacts for an incoming android native touch events ({@link MotionEvent}) and calls into {@link
@@ -75,7 +79,7 @@ public class JSTouchDispatcher {
       mTargetTag = findTargetTagAndSetCoordinates(ev);
       eventDispatcher.dispatchEvent(
           TouchEvent.obtain(
-              Event.getSurfaceIdForView(mRootViewGroup),
+              UIManagerHelper.getSurfaceId(mRootViewGroup),
               mTargetTag,
               TouchEventType.START,
               ev,
@@ -100,7 +104,7 @@ public class JSTouchDispatcher {
       findTargetTagAndSetCoordinates(ev);
       eventDispatcher.dispatchEvent(
           TouchEvent.obtain(
-              Event.getSurfaceIdForView(mRootViewGroup),
+              UIManagerHelper.getSurfaceId(mRootViewGroup),
               mTargetTag,
               TouchEventType.END,
               ev,
@@ -115,7 +119,7 @@ public class JSTouchDispatcher {
       findTargetTagAndSetCoordinates(ev);
       eventDispatcher.dispatchEvent(
           TouchEvent.obtain(
-              Event.getSurfaceIdForView(mRootViewGroup),
+              UIManagerHelper.getSurfaceId(mRootViewGroup),
               mTargetTag,
               TouchEventType.MOVE,
               ev,
@@ -127,7 +131,7 @@ public class JSTouchDispatcher {
       // New pointer goes down, this can only happen after ACTION_DOWN is sent for the first pointer
       eventDispatcher.dispatchEvent(
           TouchEvent.obtain(
-              Event.getSurfaceIdForView(mRootViewGroup),
+              UIManagerHelper.getSurfaceId(mRootViewGroup),
               mTargetTag,
               TouchEventType.START,
               ev,
@@ -139,7 +143,7 @@ public class JSTouchDispatcher {
       // Exactly one of the pointers goes up
       eventDispatcher.dispatchEvent(
           TouchEvent.obtain(
-              Event.getSurfaceIdForView(mRootViewGroup),
+              UIManagerHelper.getSurfaceId(mRootViewGroup),
               mTargetTag,
               TouchEventType.END,
               ev,
@@ -188,7 +192,7 @@ public class JSTouchDispatcher {
     Assertions.assertNotNull(eventDispatcher)
         .dispatchEvent(
             TouchEvent.obtain(
-                Event.getSurfaceIdForView(mRootViewGroup),
+                UIManagerHelper.getSurfaceId(mRootViewGroup),
                 mTargetTag,
                 TouchEventType.CANCEL,
                 androidEvent,

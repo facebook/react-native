@@ -17,7 +17,7 @@ describe('AssetUtils', () => {
   });
 
   it('should return empty string and warn once if no cacheBreaker set (DEV)', () => {
-    const mockWarn = jest.spyOn(console, 'warn');
+    const mockWarn = jest.spyOn(console, 'warn').mockReturnValue(undefined);
     global.__DEV__ = true;
     expect(getUrlCacheBreaker()).toEqual('');
     expect(getUrlCacheBreaker()).toEqual('');

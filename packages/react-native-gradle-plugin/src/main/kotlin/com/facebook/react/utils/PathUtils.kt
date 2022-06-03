@@ -93,7 +93,8 @@ private fun detectCliPath(
 
   error(
       "Couldn't determine CLI location. " +
-          "Please set `project.react.cliPath` to the path of the react-native cli.js")
+          "Please set `project.react.cliPath` to the path of the react-native cli.js file. " +
+          "This file typically resides in `node_modules/react-native/cli.js`")
 }
 
 // Make sure not to inspect the Hermes config unless we need it,

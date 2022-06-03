@@ -13,14 +13,57 @@ exports[`<ScrollView /> should render as expected: should deep render when mocke
 `;
 
 exports[`<ScrollView /> should render as expected: should deep render when not mocked (please verify output manually) 1`] = `
-<RCTScrollView>
-  <View>
+<RCTScrollView
+  alwaysBounceVertical={true}
+  onContentSizeChange={null}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onPreferredScrollerStyleDidChange={[Function]}
+  onResponderGrant={[Function]}
+  onResponderReject={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  onScrollKeyDown={[Function]}
+  onScrollShouldSetResponder={[Function]}
+  onStartShouldSetResponder={[Function]}
+  onStartShouldSetResponderCapture={[Function]}
+  onTouchCancel={[Function]}
+  onTouchEnd={[Function]}
+  onTouchMove={[Function]}
+  onTouchStart={[Function]}
+  pagingEnabled={false}
+  scrollViewRef={null}
+  sendMomentumEvents={false}
+  snapToEnd={true}
+  snapToStart={true}
+  style={
+    Object {
+      "flexDirection": "column",
+      "flexGrow": 1,
+      "flexShrink": 1,
+      "overflow": "scroll",
+    }
+  }
+>
+  <RCTScrollContentView
+    collapsable={false}
+    style={
+      Array [
+        false,
+        undefined,
+      ]
+    }
+  >
     <View>
       <Text>
         Hello World!
       </Text>
     </View>
-  </View>
+  </RCTScrollContentView>
 </RCTScrollView>
 `;
 

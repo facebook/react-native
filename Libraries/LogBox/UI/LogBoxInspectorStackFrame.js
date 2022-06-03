@@ -59,7 +59,7 @@ function LogBoxInspectorStackFrame(props: Props): React.Node {
   );
 }
 
-function getFileName(file) {
+function getFileName(file: ?string) {
   if (file == null) {
     return '<unknown>';
   }

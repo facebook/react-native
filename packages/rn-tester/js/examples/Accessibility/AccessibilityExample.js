@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {PressEvent} from 'react-native/Libraries/Types/CoreEventTypes';
+
 const React = require('react');
 const {
   AccessibilityInfo,
@@ -1061,7 +1063,7 @@ class EnabledExample extends React.Component<
     this._subscription?.remove();
   }
 
-  _handleToggled = isEnabled => {
+  _handleToggled = (isEnabled: void | PressEvent | boolean) => {
     if (!this.state.isEnabled) {
       this.setState({isEnabled: true});
     } else {

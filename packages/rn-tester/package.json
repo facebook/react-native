@@ -26,9 +26,8 @@
     "libraries": [
       {
         "name": "ScreenshotManagerSpec",
-        "ios": {
-          "_outputDir": "NativeModuleExample"
-        },
+        "type": "modules",
+        "ios": {},
         "android": {},
         "jsSrcsDir": "NativeModuleExample"
       }

@@ -15,7 +15,9 @@ import * as React from 'react';
 import StyleSheet from '../StyleSheet/StyleSheet';
 import flattenStyle from '../StyleSheet/flattenStyle';
 import View from '../Components/View/View';
+import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
 import type {ImageBackgroundProps} from './ImageProps';
+import type {ViewProps} from '../Components/View/ViewPropTypes';
 
 /**
  * Very simple drop-in replacement for <Image> which supports nesting views.
@@ -52,7 +54,14 @@ class ImageBackground extends React.Component<ImageBackgroundProps> {
 
   _viewRef: ?React.ElementRef<typeof View> = null;
 
-  _captureRef = ref => {
+  _captureRef = (
+    ref: null | React$ElementRef<
+      React$AbstractComponent<
+        ViewProps,
+        React.ElementRef<HostComponent<ViewProps>>,
+      >,
+    >,
+  ) => {
     this._viewRef = ref;
   };
 

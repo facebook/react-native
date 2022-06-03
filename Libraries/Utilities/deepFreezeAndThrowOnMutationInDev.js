@@ -70,7 +70,7 @@ function deepFreezeAndThrowOnMutationInDev<T: {...} | Array<mixed>>(
   return object;
 }
 
-function throwOnImmutableMutation(key, value) {
+function throwOnImmutableMutation(key: empty, value) {
   throw Error(
     'You attempted to set the key `' +
       key +
@@ -81,7 +81,7 @@ function throwOnImmutableMutation(key, value) {
   );
 }
 
-function identity(value) {
+function identity(value: mixed) {
   return value;
 }
 

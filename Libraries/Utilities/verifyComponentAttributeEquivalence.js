@@ -63,7 +63,7 @@ export default function verifyComponentAttributeEquivalence(
 export function lefthandObjectDiff(leftObj: Object, rightObj: Object): Object {
   const differentKeys = {};
 
-  function compare(leftItem, rightItem, key) {
+  function compare(leftItem: any, rightItem: any, key: string) {
     if (typeof leftItem !== typeof rightItem && leftItem != null) {
       differentKeys[key] = rightItem;
       return;

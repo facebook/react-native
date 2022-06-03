@@ -200,13 +200,13 @@ class JSI_EXPORT Runtime {
   /// Hosts may call this function again to resume the draining if it was
   /// suspended due to either exceptions or the \p maxMicrotasksHint bound.
   /// E.g. a host may repetitively invoke this function until the queue is
-  /// drained to implement the "microtask checkpint" defined in WHATWG HTML
+  /// drained to implement the "microtask checkpoint" defined in WHATWG HTML
   /// event loop: https://html.spec.whatwg.org/C#perform-a-microtask-checkpoint.
   ///
   /// Note that error propagation is only a concern if a host needs to implement
-  /// `queueMicrotask`, a recent API that allows enqueueing aribitary functions
+  /// `queueMicrotask`, a recent API that allows enqueueing arbitrary functions
   /// (hence may throw) as microtasks. Exceptions from ECMA-262 Promise Jobs are
-  /// handled internally to VMs and are never propagrated to hosts.
+  /// handled internally to VMs and are never propagated to hosts.
   ///
   /// This API offers some queue management to hosts at its best effort due to
   /// different behaviors and limitations imposed by different VMs and APIs. By
@@ -680,7 +680,7 @@ class JSI_EXPORT Object : public Pointer {
   std::shared_ptr<T> getHostObject(Runtime& runtime) const;
 
   /// \return a shared_ptr<T> which refers to the same underlying
-  /// \c HostObject that was used to crete this object. If \c isHostObject<T>
+  /// \c HostObject that was used to create this object. If \c isHostObject<T>
   /// is false, this will throw.
   template <typename T = HostObject>
   std::shared_ptr<T> asHostObject(Runtime& runtime) const;

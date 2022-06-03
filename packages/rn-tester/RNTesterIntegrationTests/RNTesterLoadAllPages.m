@@ -16,8 +16,7 @@
 
 #import <objc/runtime.h>
 
-@interface RNTesterLoadAllPages : XCTestCase
-{
+@interface RNTesterLoadAllPages : XCTestCase {
   RCTTestRunner *_runner;
   NSString *_testName;
 }
@@ -31,7 +30,8 @@
   _runner = RCTInitRunnerForApp(@"packages/rn-tester/js/RNTesterApp", nil, nil);
 }
 
-- (id)initWithName:(NSString *)testName {
+- (id)initWithName:(NSString *)testName
+{
   // This method for dynamically adding tests borrowed from:
   // https://github.com/google/google-toolbox-for-mac/blob/master/UnitTesting/GTMGoogleTestRunner.mm
   // Xcode 6.1 started taking the testName from the selector instead of calling -name.
@@ -44,11 +44,9 @@
   const char *encoding = method_getTypeEncoding(method);
   // We may be called more than once for the same testName. Check before adding new method to avoid
   // failure from adding multiple methods with the same name.
-  if (!class_getInstanceMethod(cls, selector) &&
-      !class_addMethod(cls, selector, implementation, encoding)) {
+  if (!class_getInstanceMethod(cls, selector) && !class_addMethod(cls, selector, implementation, encoding)) {
     // If we can't add a method, we should blow up here.
-    [NSException raise:NSInternalInconsistencyException
-                format:@"Unable to add %@ to %@.", testName, cls];
+    [NSException raise:NSInternalInconsistencyException format:@"Unable to add %@ to %@.", testName, cls];
   }
   if ((self = [super initWithSelector:selector])) {
     _testName = testName;
@@ -56,26 +54,30 @@
   return self;
 }
 
-- (NSString *)name {
+- (NSString *)name
+{
   return _testName;
 }
 
-+ (XCTestSuite*)defaultTestSuite {
++ (XCTestSuite *)defaultTestSuite
+{
   RCTTestRunner *runner = RCTInitRunnerForApp(@"packages/rn-tester/js/RNTesterApp", nil, nil);
 
   __block NSMutableArray<NSString *> *testNames = [NSMutableArray new];
 
   RCTLogFunction defaultLogFunction = RCTGetLogFunction();
-  RCTSetLogFunction(^(RCTLogLevel level, RCTLogSource source, NSString *fileName, NSNumber *lineNumber, NSString *message) {
-    defaultLogFunction(level, source, fileName, lineNumber, message);
-    if (level == RCTLogLevelTrace) {
-      // message string is in the format:
-      // 'ActivityIndicatorExample', '\n    in EnumerateExamplePages (at renderApplication.js:46)'
-      NSArray *items = [message componentsSeparatedByString:@","];
-      NSString *testName = [items[0] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"'"]];
-      [testNames addObject:testName];
-    }
-  });
+  RCTSetLogFunction(
+      ^(RCTLogLevel level, RCTLogSource source, NSString *fileName, NSNumber *lineNumber, NSString *message) {
+        defaultLogFunction(level, source, fileName, lineNumber, message);
+        if (level == RCTLogLevelTrace) {
+          // message string is in the format:
+          // 'ActivityIndicatorExample', '\n    in EnumerateExamplePages (at renderApplication.js:46)'
+          NSArray *items = [message componentsSeparatedByString:@","];
+          NSString *testName =
+              [items[0] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"'"]];
+          [testNames addObject:testName];
+        }
+      });
 
   [runner runTest:_cmd module:@"EnumerateExamplePages"];
 
@@ -87,7 +89,7 @@
     XCTestCase *testCase = [[self alloc] initWithName:testName];
     [suite addTest:testCase];
   }
-  
+
   return suite;
 }
 

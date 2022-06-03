@@ -288,16 +288,17 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
           return;
         }
 
-        String text = args.getString(1);
-
         int start = args.getInt(2);
         int end = args.getInt(3);
         if (end == UNSET) {
           end = start;
         }
 
-        reactEditText.maybeSetTextFromJS(
-            getReactTextUpdate(text, mostRecentEventCount, start, end));
+        if (!args.isNull(1)) {
+          String text = args.getString(1);
+          reactEditText.maybeSetTextFromJS(
+              getReactTextUpdate(text, mostRecentEventCount, start, end));
+        }
         reactEditText.maybeSetSelection(mostRecentEventCount, start, end);
         break;
     }

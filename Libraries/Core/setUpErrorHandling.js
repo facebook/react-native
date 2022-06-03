@@ -19,7 +19,7 @@ ExceptionsManager.installConsoleErrorReporter();
 
 // Set up error handler
 if (!global.__fbDisableExceptionsManager) {
-  const handleError = (e, isFatal) => {
+  const handleError = (e: mixed, isFatal: boolean) => {
     try {
       ExceptionsManager.handleException(e, isFatal);
     } catch (ee) {

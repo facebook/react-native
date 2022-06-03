@@ -10,11 +10,7 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTDefines.h>
 
-typedef NS_ENUM(NSInteger, RCTTestStatus) {
-  RCTTestStatusPending = 0,
-  RCTTestStatusPassed,
-  RCTTestStatusFailed
-};
+typedef NS_ENUM(NSInteger, RCTTestStatus) { RCTTestStatusPending = 0, RCTTestStatusPassed, RCTTestStatusFailed };
 
 @class FBSnapshotTestController;
 

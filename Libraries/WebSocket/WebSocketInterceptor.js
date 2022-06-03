@@ -17,8 +17,8 @@ const originalRCTWebSocketSend = NativeWebSocketModule.send;
 const originalRCTWebSocketSendBinary = NativeWebSocketModule.sendBinary;
 const originalRCTWebSocketClose = NativeWebSocketModule.close;
 
-let eventEmitter: NativeEventEmitter;
-let subscriptions: Array<EventSubscription>;
+let eventEmitter;
+let subscriptions;
 
 let closeCallback;
 let sendCallback;

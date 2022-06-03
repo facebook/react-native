@@ -31,16 +31,22 @@
 
   __block NSString *errorMessage = nil;
   RCTLogFunction defaultLogFunction = RCTGetLogFunction();
-  RCTSetLogFunction(^(__unused RCTLogLevel level, __unused RCTLogSource source, __unused NSString *fileName, __unused NSNumber *lineNumber, NSString *message) {
-    errorMessage = message;
-  });
+  RCTSetLogFunction(
+      ^(__unused RCTLogLevel level,
+        __unused RCTLogSource source,
+        __unused NSString *fileName,
+        __unused NSNumber *lineNumber,
+        NSString *message) {
+        errorMessage = message;
+      });
 
   NSColor *value = [RCTConvert UIColor:json];
 
   RCTSetLogFunction(defaultLogFunction);
 
   XCTAssertEqualObjects(value, nil);
-  XCTAssertTrue([errorMessage containsString:@"labelColor"]); // the RedBox message will contain a list of the valid color names.
+  XCTAssertTrue(
+      [errorMessage containsString:@"labelColor"]); // the RedBox message will contain a list of the valid color names.
 }
 
 - (void)testFallbackColor
@@ -105,14 +111,19 @@
 
 - (void)testCompositeDynamicColor
 {
-  id json = RCTJSONParse(@"{ \"dynamic\": { \"light\": { \"semantic\": \"systemRedColor\" }, \"dark\":{ \"semantic\": \"systemBlueColor\" } } }", nil);
+  id json = RCTJSONParse(
+      @"{ \"dynamic\": { \"light\": { \"semantic\": \"systemRedColor\" }, \"dark\":{ \"semantic\": \"systemBlueColor\" } } }",
+      nil);
   NSColor *value = [RCTConvert UIColor:json];
   CGFloat r1, g1, b1, a1;
   CGFloat r2, g2, b2, a2;
 
   [NSAppearance setCurrentAppearance:[NSAppearance appearanceNamed:NSAppearanceNameAqua]];
   [[value colorUsingColorSpaceName:NSCalibratedRGBColorSpace] getRed:&r1 green:&g1 blue:&b1 alpha:&a1];
-  [[[NSColor systemRedColor] colorUsingColorSpaceName:NSCalibratedRGBColorSpace] getRed:&r2 green:&g2 blue:&b2 alpha:&a2];
+  [[[NSColor systemRedColor] colorUsingColorSpaceName:NSCalibratedRGBColorSpace] getRed:&r2
+                                                                                  green:&g2
+                                                                                   blue:&b2
+                                                                                  alpha:&a2];
   XCTAssertEqual(r1, r2);
   XCTAssertEqual(g1, g2);
   XCTAssertEqual(b1, b2);
@@ -120,7 +131,10 @@
 
   [NSAppearance setCurrentAppearance:[NSAppearance appearanceNamed:NSAppearanceNameDarkAqua]];
   [[value colorUsingColorSpaceName:NSCalibratedRGBColorSpace] getRed:&r1 green:&g1 blue:&b1 alpha:&a1];
-  [[[NSColor systemBlueColor] colorUsingColorSpaceName:NSCalibratedRGBColorSpace] getRed:&r2 green:&g2 blue:&b2 alpha:&a2];
+  [[[NSColor systemBlueColor] colorUsingColorSpaceName:NSCalibratedRGBColorSpace] getRed:&r2
+                                                                                   green:&g2
+                                                                                    blue:&b2
+                                                                                   alpha:&a2];
   XCTAssertEqual(r1, r2);
   XCTAssertEqual(g1, g2);
   XCTAssertEqual(b1, b2);

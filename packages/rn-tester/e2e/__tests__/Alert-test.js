@@ -7,7 +7,7 @@
  * @format
  */
 
-/* global device, element, by, expect, waitFor */
+/* global element, by, expect */
 const {openExampleWithTitle} = require('../e2e-helpers');
 
 describe('Alert', () => {

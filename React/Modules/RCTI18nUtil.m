@@ -18,7 +18,6 @@
   dispatch_once(&onceToken, ^{
     sharedInstance = [self new];
     [sharedInstance swapLeftAndRightInRTL:true];
-    [sharedInstance allowRTL:true];
   });
 
   return sharedInstance;
@@ -39,6 +38,53 @@
     return YES;
   }
   return NO;
+}
+
+/**
+ * Should be used very early during app start up
+ * Before the bridge is initialized
+ * @return whether the app allows RTL layout, default is true
+ */
+- (BOOL)isRTLAllowed
+{
+  NSNumber *value = [[NSUserDefaults standardUserDefaults] objectForKey:@"RCTI18nUtil_allowRTL"];
+  if (value == nil) {
+    return YES;
+  }
+  return [value boolValue];
+}
+
+- (void)allowRTL:(BOOL)rtlStatus
+{
+  [[NSUserDefaults standardUserDefaults] setBool:rtlStatus forKey:@"RCTI18nUtil_allowRTL"];
+  [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+/**
+ * Could be used to test RTL layout with English
+ * Used for development and testing purpose
+ */
+- (BOOL)isRTLForced
+{
+  BOOL rtlStatus = [[NSUserDefaults standardUserDefaults] boolForKey:@"RCTI18nUtil_forceRTL"];
+  return rtlStatus;
+}
+
+- (void)forceRTL:(BOOL)rtlStatus
+{
+  [[NSUserDefaults standardUserDefaults] setBool:rtlStatus forKey:@"RCTI18nUtil_forceRTL"];
+  [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (BOOL)doLeftAndRightSwapInRTL
+{
+  return [[NSUserDefaults standardUserDefaults] boolForKey:@"RCTI18nUtil_makeRTLFlipLeftAndRightStyles"];
+}
+
+- (void)swapLeftAndRightInRTL:(BOOL)value
+{
+  [[NSUserDefaults standardUserDefaults] setBool:value forKey:@"RCTI18nUtil_makeRTLFlipLeftAndRightStyles"];
+  [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 // Check if the current device language is RTL

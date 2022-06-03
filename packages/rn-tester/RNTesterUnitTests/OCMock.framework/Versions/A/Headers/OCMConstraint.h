@@ -16,8 +16,7 @@
 
 #import <Foundation/Foundation.h>
 
-
-@interface OCMConstraint : NSObject 
+@interface OCMConstraint : NSObject
 
 + (instancetype)constraint;
 - (BOOL)evaluate:(id)value;
@@ -28,7 +27,6 @@
 
 + (instancetype)constraintWithSelector:(SEL)aSelector onObject:(id)anObject;
 + (instancetype)constraintWithSelector:(SEL)aSelector onObject:(id)anObject withValue:(id)aValue;
-
 
 @end
 
@@ -41,31 +39,27 @@
 @interface OCMIsNotNilConstraint : OCMConstraint
 @end
 
-@interface OCMIsNotEqualConstraint : OCMConstraint
-{
-	@public
-	id testValue;
+@interface OCMIsNotEqualConstraint : OCMConstraint {
+ @public
+  id testValue;
 }
 
 @end
 
-@interface OCMInvocationConstraint : OCMConstraint
-{
-	@public
-	NSInvocation *invocation;
+@interface OCMInvocationConstraint : OCMConstraint {
+ @public
+  NSInvocation *invocation;
 }
 
 @end
 
-@interface OCMBlockConstraint : OCMConstraint
-{
-	BOOL (^block)(id);
+@interface OCMBlockConstraint : OCMConstraint {
+  BOOL (^block)(id);
 }
 
 - (instancetype)initWithConstraintBlock:(BOOL (^)(id))block;
 
 @end
-
 
 #define CONSTRAINT(aSelector) [OCMConstraint constraintWithSelector:aSelector onObject:self]
 #define CONSTRAINTV(aSelector, aValue) [OCMConstraint constraintWithSelector:aSelector onObject:self withValue:(aValue)]

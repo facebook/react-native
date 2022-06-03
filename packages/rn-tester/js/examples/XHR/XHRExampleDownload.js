@@ -71,7 +71,7 @@ class XHRExampleDownload extends React.Component<{...}, Object> {
         });
       }
     };
-    const onprogress = event => {
+    const onprogress = (event: ProgressEvent) => {
       this.setState({
         progressTotal: event.total,
         progressLoaded: event.loaded,

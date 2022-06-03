@@ -6,7 +6,7 @@
 # This configuration provides access to most common React Native prebuilt .so files
 # to avoid recompiling each of the libraries outside of ReactAndroid NDK compilation.
 # Hosting app's/library's Android.mk can include this Android-prebuilt.mk file to
-# get access to those .so to depend on.
+# get access to those libraries to depend on.
 # NOTES:
 # * Currently, it assumes building React Native from source.
 # * Not every .so is listed here (yet).
@@ -19,7 +19,7 @@ THIRD_PARTY_NDK_DIR := $(REACT_ANDROID_BUILD_DIR)/third-party-ndk
 REACT_ANDROID_SRC_DIR := $(REACT_ANDROID_DIR)/src/main
 REACT_COMMON_DIR := $(REACT_ANDROID_DIR)/../ReactCommon
 REACT_GENERATED_SRC_DIR := $(REACT_ANDROID_BUILD_DIR)/generated/source
-# Note: this only have .so, not .a
+# Note: this have only .so files
 REACT_NDK_EXPORT_DIR := $(PROJECT_BUILD_DIR)/react-ndk/exported
 
 # fb
@@ -165,6 +165,22 @@ LOCAL_EXPORT_C_INCLUDES := \
   $(REACT_COMMON_DIR)/react/renderer/components/view
 include $(PREBUILT_SHARED_LIBRARY)
 
+# fabricjni
+include $(CLEAR_VARS)
+LOCAL_MODULE := fabricjni
+LOCAL_SRC_FILES := $(REACT_NDK_EXPORT_DIR)/$(TARGET_ARCH_ABI)/libfabricjni.so
+LOCAL_EXPORT_C_INCLUDES := \
+  $(REACT_ANDROID_SRC_DIR)/java/com/facebook/react/fabric/jni
+include $(PREBUILT_SHARED_LIBRARY)
+
+# react_render_componentregistry
+include $(CLEAR_VARS)
+LOCAL_MODULE := react_render_componentregistry
+LOCAL_SRC_FILES := $(REACT_NDK_EXPORT_DIR)/$(TARGET_ARCH_ABI)/libreact_render_componentregistry.so
+LOCAL_EXPORT_C_INCLUDES := \
+  $(REACT_COMMON_DIR)/react/renderer/componentregistry
+include $(PREBUILT_SHARED_LIBRARY)
+
 # jsi
 include $(CLEAR_VARS)
 LOCAL_MODULE := jsi
@@ -179,6 +195,14 @@ LOCAL_MODULE := react_codegen_rncore
 LOCAL_SRC_FILES := $(REACT_NDK_EXPORT_DIR)/$(TARGET_ARCH_ABI)/libreact_codegen_rncore.so
 LOCAL_EXPORT_C_INCLUDES := \
   $(REACT_GENERATED_SRC_DIR)/codegen/jni
+include $(PREBUILT_SHARED_LIBRARY)
+
+# runtimeexecutor
+include $(CLEAR_VARS)
+LOCAL_MODULE := runtimeexecutor
+LOCAL_SRC_FILES := $(REACT_NDK_EXPORT_DIR)/$(TARGET_ARCH_ABI)/libruntimeexecutor.so
+LOCAL_C_INCLUDES := $(REACT_COMMON_DIR)/runtimeexecutor
+LOCAL_EXPORT_C_INCLUDES := $(REACT_COMMON_DIR)/runtimeexecutor
 include $(PREBUILT_SHARED_LIBRARY)
 
 # fbjni

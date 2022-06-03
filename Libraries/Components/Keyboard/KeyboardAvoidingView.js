@@ -22,7 +22,7 @@ import type {
   ViewLayout,
   ViewLayoutEvent,
 } from '../View/ViewPropTypes';
-import type {KeyboardEvent} from './Keyboard';
+import type {KeyboardEvent, KeyboardEventCoordinates} from './Keyboard';
 
 type Props = $ReadOnly<{|
   ...ViewProps,
@@ -71,7 +71,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
     this.viewRef = React.createRef();
   }
 
-  _relativeKeyboardHeight(keyboardFrame): number {
+  _relativeKeyboardHeight(keyboardFrame: KeyboardEventCoordinates): number {
     const frame = this._frame;
     if (!frame || !keyboardFrame) {
       return 0;
@@ -100,6 +100,10 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
 
     if (wasFrameNull) {
       this._updateBottomIfNecesarry();
+    }
+
+    if (this.props.onLayout) {
+      this.props.onLayout(event);
     }
   };
 
@@ -157,6 +161,8 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
       // eslint-disable-next-line no-unused-vars
       keyboardVerticalOffset = 0,
       style,
+      // eslint-disable-next-line no-unused-vars
+      onLayout,
       ...props
     } = this.props;
     const bottomHeight = enabled === true ? this.state.bottom : 0;

@@ -14,8 +14,6 @@ jest.unmock('../NativeModules');
 
 let BatchedBridge;
 let NativeModules;
-let fs;
-let parseErrorStack;
 
 const MODULE_IDS = 0;
 const METHOD_IDS = 1;
@@ -45,8 +43,6 @@ describe('MessageQueue', function() {
     global.__fbBatchedBridgeConfig = require('../__mocks__/MessageQueueTestConfig');
     BatchedBridge = require('../BatchedBridge');
     NativeModules = require('../NativeModules');
-    fs = require('fs');
-    parseErrorStack = require('../../Core/Devtools/parseErrorStack');
   });
 
   it('should generate native modules', () => {

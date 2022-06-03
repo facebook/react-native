@@ -4,8 +4,8 @@
  
  LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
  
--LOCAL_SHARED_LIBRARIES = libfb libfbjni libreactnativeutilsjni
-+LOCAL_SHARED_LIBRARIES = libfb libfbjni libreactnativejni
+-LOCAL_SHARED_LIBRARIES = libfb libfbjni libreactnativeutilsjni libruntimeexecutor
++LOCAL_SHARED_LIBRARIES = libfb libfbjni libreactnativejni libruntimeexecutor
  
- LOCAL_STATIC_LIBRARIES = libcallinvoker libreactperfloggerjni libruntimeexecutor
+ LOCAL_STATIC_LIBRARIES = libcallinvoker libreactperfloggerjni
  

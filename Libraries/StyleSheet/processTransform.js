@@ -154,7 +154,26 @@ function _validateTransforms(transform: Array<Object>): void {
   });
 }
 
-function _validateTransform(key, value, transformation) {
+function _validateTransform(
+  key:
+    | string
+    | $TEMPORARY$string<'matrix'>
+    | $TEMPORARY$string<'perspective'>
+    | $TEMPORARY$string<'rotate'>
+    | $TEMPORARY$string<'rotateX'>
+    | $TEMPORARY$string<'rotateY'>
+    | $TEMPORARY$string<'rotateZ'>
+    | $TEMPORARY$string<'scale'>
+    | $TEMPORARY$string<'scaleX'>
+    | $TEMPORARY$string<'scaleY'>
+    | $TEMPORARY$string<'skewX'>
+    | $TEMPORARY$string<'skewY'>
+    | $TEMPORARY$string<'translate'>
+    | $TEMPORARY$string<'translateX'>
+    | $TEMPORARY$string<'translateY'>,
+  value: any | number | string,
+  transformation: any,
+) {
   invariant(
     !value.getValue,
     'You passed an Animated.Value to a normal component. ' +

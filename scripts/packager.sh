@@ -21,4 +21,4 @@ then
 fi
 # Start packager from PROJECT_ROOT
 cd "$PROJECT_ROOT" || exit
-"$NODE_BINARY" "$REACT_NATIVE_ROOT/cli.js" start "$@"
+"$NODE_BINARY" "$REACT_NATIVE_ROOT/cli.js" start --custom-log-reporter-path "$THIS_DIR/packager-reporter.js" "$@"

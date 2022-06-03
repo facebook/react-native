@@ -18,7 +18,6 @@ const AnimatedInterpolation = require('./nodes/AnimatedInterpolation');
 const AnimatedModulo = require('./nodes/AnimatedModulo');
 const AnimatedMultiplication = require('./nodes/AnimatedMultiplication');
 const AnimatedNode = require('./nodes/AnimatedNode');
-const AnimatedProps = require('./nodes/AnimatedProps');
 const AnimatedSubtraction = require('./nodes/AnimatedSubtraction');
 const AnimatedTracking = require('./nodes/AnimatedTracking');
 const AnimatedValue = require('./nodes/AnimatedValue');
@@ -532,33 +531,33 @@ const event = function(
  * If additional transforms are added, be sure to include them in
  * AnimatedMock.js as well.
  *
- * See https://reactnative.dev/docs/animated.html
+ * See https://reactnative.dev/docs/animated
  */
 module.exports = {
   /**
    * Standard value class for driving animations.  Typically initialized with
    * `new Animated.Value(0);`
    *
-   * See https://reactnative.dev/docs/animated.html#value
+   * See https://reactnative.dev/docs/animated#value
    */
   Value: AnimatedValue,
   /**
    * 2D value class for driving 2D animations, such as pan gestures.
    *
-   * See https://reactnative.dev/docs/animatedvaluexy.html
+   * See https://reactnative.dev/docs/animatedvaluexy
    */
   ValueXY: AnimatedValueXY,
   /**
    * Exported to use the Interpolation type in flow.
    *
-   * See https://reactnative.dev/docs/animated.html#interpolation
+   * See https://reactnative.dev/docs/animated#interpolation
    */
   Interpolation: AnimatedInterpolation,
   /**
    * Exported for ease of type checking. All animated values derive from this
    * class.
    *
-   * See https://reactnative.dev/docs/animated.html#node
+   * See https://reactnative.dev/docs/animated#node
    */
   Node: AnimatedNode,
 
@@ -566,21 +565,21 @@ module.exports = {
    * Animates a value from an initial velocity to zero based on a decay
    * coefficient.
    *
-   * See https://reactnative.dev/docs/animated.html#decay
+   * See https://reactnative.dev/docs/animated#decay
    */
   decay,
   /**
    * Animates a value along a timed easing curve. The Easing module has tons of
    * predefined curves, or you can use your own function.
    *
-   * See https://reactnative.dev/docs/animated.html#timing
+   * See https://reactnative.dev/docs/animated#timing
    */
   timing,
   /**
    * Animates a value according to an analytical spring model based on
    * damped harmonic oscillation.
    *
-   * See https://reactnative.dev/docs/animated.html#spring
+   * See https://reactnative.dev/docs/animated#spring
    */
   spring,
 
@@ -588,7 +587,7 @@ module.exports = {
    * Creates a new Animated value composed from two Animated values added
    * together.
    *
-   * See https://reactnative.dev/docs/animated.html#add
+   * See https://reactnative.dev/docs/animated#add
    */
   add,
 
@@ -596,7 +595,7 @@ module.exports = {
    * Creates a new Animated value composed by subtracting the second Animated
    * value from the first Animated value.
    *
-   * See https://reactnative.dev/docs/animated.html#subtract
+   * See https://reactnative.dev/docs/animated#subtract
    */
   subtract,
 
@@ -604,7 +603,7 @@ module.exports = {
    * Creates a new Animated value composed by dividing the first Animated value
    * by the second Animated value.
    *
-   * See https://reactnative.dev/docs/animated.html#divide
+   * See https://reactnative.dev/docs/animated#divide
    */
   divide,
 
@@ -612,7 +611,7 @@ module.exports = {
    * Creates a new Animated value composed from two Animated values multiplied
    * together.
    *
-   * See https://reactnative.dev/docs/animated.html#multiply
+   * See https://reactnative.dev/docs/animated#multiply
    */
   multiply,
 
@@ -620,7 +619,7 @@ module.exports = {
    * Creates a new Animated value that is the (non-negative) modulo of the
    * provided Animated value.
    *
-   * See https://reactnative.dev/docs/animated.html#modulo
+   * See https://reactnative.dev/docs/animated#modulo
    */
   modulo,
 
@@ -629,14 +628,14 @@ module.exports = {
    * difference between the last value so even if the value is far from the
    * bounds it will start changing when the value starts getting closer again.
    *
-   * See https://reactnative.dev/docs/animated.html#diffclamp
+   * See https://reactnative.dev/docs/animated#diffclamp
    */
   diffClamp,
 
   /**
    * Starts an animation after the given delay.
    *
-   * See https://reactnative.dev/docs/animated.html#delay
+   * See https://reactnative.dev/docs/animated#delay
    */
   delay,
   /**
@@ -644,7 +643,7 @@ module.exports = {
    * before starting the next. If the current running animation is stopped, no
    * following animations will be started.
    *
-   * See https://reactnative.dev/docs/animated.html#sequence
+   * See https://reactnative.dev/docs/animated#sequence
    */
   sequence,
   /**
@@ -652,21 +651,21 @@ module.exports = {
    * of the animations is stopped, they will all be stopped. You can override
    * this with the `stopTogether` flag.
    *
-   * See https://reactnative.dev/docs/animated.html#parallel
+   * See https://reactnative.dev/docs/animated#parallel
    */
   parallel,
   /**
    * Array of animations may run in parallel (overlap), but are started in
    * sequence with successive delays.  Nice for doing trailing effects.
    *
-   * See https://reactnative.dev/docs/animated.html#stagger
+   * See https://reactnative.dev/docs/animated#stagger
    */
   stagger,
   /**
    * Loops a given animation continuously, so that each time it reaches the
    * end, it resets and begins again from the start.
    *
-   * See https://reactnative.dev/docs/animated.html#loop
+   * See https://reactnative.dev/docs/animated#loop
    */
   loop,
 
@@ -674,14 +673,14 @@ module.exports = {
    * Takes an array of mappings and extracts values from each arg accordingly,
    * then calls `setValue` on the mapped outputs.
    *
-   * See https://reactnative.dev/docs/animated.html#event
+   * See https://reactnative.dev/docs/animated#event
    */
   event,
 
   /**
    * Make any React component Animatable.  Used to create `Animated.View`, etc.
    *
-   * See https://reactnative.dev/docs/animated.html#createanimatedcomponent
+   * See https://reactnative.dev/docs/animated#createanimatedcomponent
    */
   createAnimatedComponent,
 
@@ -689,7 +688,7 @@ module.exports = {
    * Imperative API to attach an animated value to an event on a view. Prefer
    * using `Animated.event` with `useNativeDrive: true` if possible.
    *
-   * See https://reactnative.dev/docs/animated.html#attachnativeevent
+   * See https://reactnative.dev/docs/animated#attachnativeevent
    */
   attachNativeEvent,
 
@@ -697,7 +696,7 @@ module.exports = {
    * Advanced imperative API for snooping on animated events that are passed in
    * through props. Use values directly where possible.
    *
-   * See https://reactnative.dev/docs/animated.html#forkevent
+   * See https://reactnative.dev/docs/animated#forkevent
    */
   forkEvent,
   unforkEvent,

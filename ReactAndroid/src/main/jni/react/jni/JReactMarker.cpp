@@ -18,8 +18,8 @@ void JReactMarker::setLogPerfMarkerIfNeeded() {
   static std::once_flag flag{};
   std::call_once(flag, []() {
     ReactMarker::logTaggedMarker = JReactMarker::logPerfMarker;
-    ReactMarker::logTaggedMarkerWithInstanceKey =
-        JReactMarker::logPerfMarkerWithInstanceKey;
+    ReactMarker::logTaggedMarkerBridgeless =
+        JReactMarker::logPerfMarkerBridgeless;
   });
 }
 
@@ -51,7 +51,15 @@ void JReactMarker::logMarker(
 void JReactMarker::logPerfMarker(
     const ReactMarker::ReactMarkerId markerId,
     const char *tag) {
-  logPerfMarkerWithInstanceKey(markerId, tag, 0);
+  const int bridgeInstanceKey = 0;
+  logPerfMarkerWithInstanceKey(markerId, tag, bridgeInstanceKey);
+}
+
+void JReactMarker::logPerfMarkerBridgeless(
+    const ReactMarker::ReactMarkerId markerId,
+    const char *tag) {
+  const int bridgelessInstanceKey = 1;
+  logPerfMarkerWithInstanceKey(markerId, tag, bridgelessInstanceKey);
 }
 
 void JReactMarker::logPerfMarkerWithInstanceKey(

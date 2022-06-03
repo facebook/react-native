@@ -67,7 +67,9 @@
       [weakSelf updateJSDisplayLinkState];
     } else {
       CFRunLoopPerformBlock(cfRunLoop, kCFRunLoopDefaultMode, ^{
-        [weakSelf updateJSDisplayLinkState];
+        @autoreleasepool {
+          [weakSelf updateJSDisplayLinkState];
+        }
       });
       CFRunLoopWakeUp(cfRunLoop);
     }
@@ -78,7 +80,9 @@
   // start receiving updates anyway.
   if (![observer isPaused] && _runLoop) {
     CFRunLoopPerformBlock([_runLoop getCFRunLoop], kCFRunLoopDefaultMode, ^{
-      [self updateJSDisplayLinkState];
+      @autoreleasepool {
+        [self updateJSDisplayLinkState];
+      }
     });
   }
 }

@@ -18,7 +18,7 @@ import type {ProcessedColorValue} from '../StyleSheet/processColor';
 /**
  * Display action sheets and share sheets on iOS.
  *
- * See https://reactnative.dev/docs/actionsheetios.html
+ * See https://reactnative.dev/docs/actionsheetios
  */
 const ActionSheetIOS = {
   /**
@@ -36,7 +36,7 @@ const ActionSheetIOS = {
    * The 'callback' function takes one parameter, the zero-based index
    * of the selected item.
    *
-   * See https://reactnative.dev/docs/actionsheetios.html#showactionsheetwithoptions
+   * See https://reactnative.dev/docs/actionsheetios#showactionsheetwithoptions
    */
   showActionSheetWithOptions(
     options: {|
@@ -117,7 +117,7 @@ const ActionSheetIOS = {
    * - a boolean value signifying success or failure
    * - a string that, in the case of success, indicates the method of sharing
    *
-   * See https://reactnative.dev/docs/actionsheetios.html#showshareactionsheetwithoptions
+   * See https://reactnative.dev/docs/actionsheetios#showshareactionsheetwithoptions
    */
   showShareActionSheetWithOptions(
     options: Object,

@@ -9,11 +9,11 @@
 
 'use strict';
 
-const React = require('react');
-const {StyleSheet, UIManager, View, findNodeHandle} = require('react-native');
-const BatchedBridge = require('react-native/Libraries/BatchedBridge/BatchedBridge');
-
-const assertEquals = require('./Asserts').assertEquals;
+import * as React from 'react';
+import {useEffect, useRef} from 'react';
+import {StyleSheet, UIManager, View, findNodeHandle} from 'react-native';
+import BatchedBridge from 'react-native/Libraries/BatchedBridge/BatchedBridge';
+import {assertEquals} from './Asserts';
 
 const styles = StyleSheet.create({
   A: {
@@ -45,24 +45,27 @@ const styles = StyleSheet.create({
 
 let A, B, C, D;
 
-class MeasureLayoutTestApp extends React.Component {
-  componentDidMount() {
-    A = findNodeHandle(this.refs.A);
-    B = findNodeHandle(this.refs.B);
-    C = findNodeHandle(this.refs.C);
-    D = findNodeHandle(this.refs.D);
-  }
+function MeasureLayoutTestApp() {
+  const refA = useRef(null);
+  const refB = useRef(null);
+  const refC = useRef(null);
+  const refD = useRef(null);
 
-  render() {
-    return (
-      <View ref="A" style={styles.A} collapsable={false}>
-        <View ref="B" style={styles.B} collapsable={false}>
-          <View ref="C" style={styles.C} collapsable={false} />
-        </View>
-        <View ref="D" style={styles.D} collapsable={false} />
+  useEffect(() => {
+    A = findNodeHandle(refA.current);
+    B = findNodeHandle(refB.current);
+    C = findNodeHandle(refC.current);
+    D = findNodeHandle(refD.current);
+  });
+
+  return (
+    <View ref={refA} style={styles.A} collapsable={false}>
+      <View ref={refB} style={styles.B} collapsable={false}>
+        <View ref={refC} style={styles.C} collapsable={false} />
       </View>
-    );
-  }
+      <View ref={refD} style={styles.D} collapsable={false} />
+    </View>
+  );
 }
 
 function shouldNotCallThisCallback() {
@@ -70,7 +73,7 @@ function shouldNotCallThisCallback() {
 }
 
 const MeasureLayoutTestModule = {
-  MeasureLayoutTestApp: MeasureLayoutTestApp,
+  MeasureLayoutTestApp,
   verifyMeasureOnViewA: function() {
     UIManager.measure(A, function(a, b, width, height, x, y) {
       assertEquals(500, width);

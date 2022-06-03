@@ -57,14 +57,7 @@ SurfaceHandlerBinding::initHybrid(
     jni::alias_ref<jclass>,
     jint surfaceId,
     jni::alias_ref<jstring> moduleName) {
-  auto env = jni::Environment::current();
-
-  const char *moduleNameValue =
-      env->GetStringUTFChars(moduleName.get(), JNI_FALSE);
-  auto instance = makeCxxInstance(surfaceId, moduleNameValue);
-  env->ReleaseStringUTFChars(moduleName.get(), moduleNameValue);
-
-  return instance;
+  return makeCxxInstance(surfaceId, moduleName->toStdString());
 }
 
 void SurfaceHandlerBinding::setLayoutConstraints(

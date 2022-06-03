@@ -1,5 +1,26 @@
 # Changelog
 
+## v0.66.3
+
+### Changed
+
+- Rename deprecated `Keyboard.removeEventListener` to `Keyboard.removeListener`. ([8880c09076](https://github.com/facebook/react-native/commit/8880c09076e4727768ace26a74766cbe6f64021c) by [@yungsters](https://github.com/yungsters))
+
+### Fixed
+
+- Revert changes in Jest preprocessor to fix tests in external projects ([142090a5f3fa7](https://github.com/facebook/react-native/commit/142090a5f3fa7c3ab2ed4c536792e3f26582bd3b) by [@rubennorte](https://github.com/rubennorte))
+
+## v0.66.2
+
+### Fixed
+
+- Add a function `getIgnorePatterns` in `LogBoxData.js` for tests or other usecases. ([a950634424](https://github.com/facebook/react-native/commit/a950634424cddf31c0adb6c9799adf1cc5f83bf0))
+- Reintroduce generated codegen files ([7382f556d3](https://github.com/facebook/react-native/commit/7382f556d327d51bd09456efda83edec7e05ecd2) by [@kelset](https://github.com/kelset))
+
+#### iOS specific
+
+- Hide the logbox window explicitly. New behavior in iOS SDK appears to retain UIWindow while visible. ([72ea0e111f](https://github.com/facebook/react-native/commit/72ea0e111fccd99456abf3f974439432145585e3) by [@paddlefish](https://github.com/paddlefish))
+
 ## v0.66.1
 
 ### Fixed
@@ -139,6 +160,12 @@
 - Avoid re-encoding images when uploading local files ([f78526ce3d](https://github.com/facebook/react-native/commit/f78526ce3d4004eb4bf8ca5178ca7e2c1c9abc1a) by [@arthuralee](https://github.com/arthuralee))
 - <TextInput> content is reset when emoji is entered at the max length ([f3b8d4976f](https://github.com/facebook/react-native/commit/f3b8d4976f8608c2cda1f071923f14b6d4538967))
 - Use `actionName` in accessibility event callback ([fed6ad5bad](https://github.com/facebook/react-native/commit/fed6ad5badb4196a1895370fc81c522572cb34b4) by [@ShikaSD](https://github.com/ShikaSD))
+
+## v0.65.2
+
+### Fixed
+
+- For Android, general fixes to Appearance API and also fixes AppCompatDelegate.setDefaultNightMode(). For iOS, now works correctly when setting window.overrideUserInterfaceStyle ([25a2c608f7](https://github.com/facebook/react-native/commit/25a2c608f790f42cbc4bb0a90fc06cc7bbbc9b95) by [@mrbrentkelly](https://github.com/mrbrentkelly))
 
 ## v0.65.1
 
@@ -372,6 +399,12 @@
 - Fix(hermes): fixed hermes build on iOS ([59abb5f378](https://github.com/facebook/react-native/commit/59abb5f378e116288cdea2f619de0c128bb0b0eb) by [@Titozzz](https://github.com/Titozzz))
 - Fix builds on Xcode 12.5 ([36b58a824e](https://github.com/facebook/react-native/commit/36b58a824ea20daa22fe7c528a3bf0ff4e6a4cb5) by [@PeteTheHeat](https://github.com/PeteTheHeat))
 - Fix running React Native project with Xcode 12 in Release on iPhone Simulator ([fdcacd7f76](https://github.com/facebook/react-native/commit/fdcacd7f76ea8ca6dafda32ac431c8adc7bdad00) by [@grabbou](https://github.com/grabbou))
+
+## v0.64.3
+
+### Fixed
+
+- For Android, general fixes to Appearance API and also fixes AppCompatDelegate.setDefaultNightMode(). For iOS, now works correctly when setting window.overrideUserInterfaceStyle ([25a2c608f7](https://github.com/facebook/react-native/commit/25a2c608f790f42cbc4bb0a90fc06cc7bbbc9b95) by [@mrbrentkelly](https://github.com/mrbrentkelly))
 
 ## v0.64.2
 

@@ -538,6 +538,11 @@ public class ReactModalHostView extends ViewGroup
     }
 
     @Override
+    public void onChildEndedNativeGesture(View childView, MotionEvent ev) {
+      mJSTouchDispatcher.onChildEndedNativeGesture(ev, mEventDispatcher);
+    }
+
+    @Override
     public void requestDisallowInterceptTouchEvent(boolean disallowIntercept) {
       // No-op - override in order to still receive events to onInterceptTouchEvent
       // even when some other view disallow that

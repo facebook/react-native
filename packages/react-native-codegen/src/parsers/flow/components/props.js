@@ -29,7 +29,12 @@ function getPropProperties(
   }
 }
 
-function getTypeAnnotationForArray(name, typeAnnotation, defaultValue, types) {
+function getTypeAnnotationForArray(
+  name: string,
+  typeAnnotation: $FlowFixMe,
+  defaultValue: $FlowFixMe | null,
+  types: TypeDeclarationMap,
+) {
   const extractedTypeAnnotation = getValueFromTypes(typeAnnotation, types);
   if (extractedTypeAnnotation.type === 'NullableTypeAnnotation') {
     throw new Error(
@@ -171,11 +176,11 @@ function getTypeAnnotationForArray(name, typeAnnotation, defaultValue, types) {
 }
 
 function getTypeAnnotation(
-  name,
+  name: string,
   annotation,
-  defaultValue,
-  withNullDefault,
-  types,
+  defaultValue: $FlowFixMe | null,
+  withNullDefault: boolean,
+  types: TypeDeclarationMap,
 ) {
   const typeAnnotation = getValueFromTypes(annotation, types);
 
@@ -325,7 +330,7 @@ function getTypeAnnotation(
 }
 
 function buildPropSchema(
-  property,
+  property: PropAST,
   types: TypeDeclarationMap,
 ): ?NamedShape<PropTypeAnnotation> {
   const name = property.key.name;

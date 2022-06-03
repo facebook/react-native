@@ -6,7 +6,8 @@
 require 'pathname'
 
 $CODEGEN_OUTPUT_DIR = 'build/generated/ios'
-$CODEGEN_LIBRARY_DIR = 'react/renderer/components'
+$CODEGEN_COMPONENT_DIR = 'react/renderer/components'
+$CODEGEN_MODULE_DIR = '.'
 
 def use_react_native! (options={})
   # The prefix to react-native
@@ -21,7 +22,7 @@ def use_react_native! (options={})
   # Include Hermes dependencies
   hermes_enabled = options[:hermes_enabled] ||= false
 
-  if `/usr/sbin/sysctl -n hw.optional.arm64 2>&1`.to_i == 1 && !RUBY_PLATFORM.start_with?('arm64')
+  if `/usr/sbin/sysctl -n hw.optional.arm64 2>&1`.to_i == 1 && !RUBY_PLATFORM.include?('arm64')
     Pod::UI.warn 'Do not use "pod install" from inside Rosetta2 (x86_64 emulation on arm64).'
     Pod::UI.warn ' - Emulated x86_64 is slower than native arm64'
     Pod::UI.warn ' - May result in mixed architectures in rubygems (eg: ffi_c.bundle files may be x86_64 with an arm64 interpreter)'
@@ -75,6 +76,7 @@ def use_react_native! (options={})
   pod temp_podinfo['spec']['name'], :path => temp_podinfo['path']
 
   if fabric_enabled
+    checkAndGenerateEmptyThirdPartyProvider!(prefix)
     pod 'React-Fabric', :path => "#{prefix}/ReactCommon"
     pod 'React-rncore', :path => "#{prefix}/ReactCommon"
     pod 'React-graphics', :path => "#{prefix}/ReactCommon/react/renderer/graphics"
@@ -96,7 +98,7 @@ def use_flipper!(versions = {}, configurations: ['Debug'])
   versions['Flipper-DoubleConversion'] ||= '3.1.7'
   versions['Flipper-Fmt'] ||= '7.1.7'
   versions['Flipper-Folly'] ||= '2.6.7'
-  versions['Flipper-Glog'] ||= '0.3.6'
+  versions['Flipper-Glog'] ||= '0.3.9'
   versions['Flipper-PeerTalk'] ||= '0.0.4'
   versions['Flipper-RSocket'] ||= '1.4.3'
   versions['OpenSSL-Universal'] ||= '1.1.180'
@@ -203,6 +205,36 @@ def react_native_post_install(installer)
   fix_library_search_paths(installer)
 end
 
+# This is a temporary supporting function until we enable use_react_native_codegen_discovery by default.
+def checkAndGenerateEmptyThirdPartyProvider!(react_native_path)
+  return if ENV['USE_CODEGEN_DISCOVERY'] == '1'
+
+  relative_installation_root = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
+  output_dir = "#{relative_installation_root}/#{$CODEGEN_OUTPUT_DIR}"
+
+  provider_h_path = "#{output_dir}/RCTThirdPartyFabricComponentsProvider.h"
+  provider_cpp_path ="#{output_dir}/RCTThirdPartyFabricComponentsProvider.cpp"
+
+  if(!File.exist?(provider_h_path) || !File.exist?(provider_cpp_path))
+    # Just use a temp empty schema list.
+    temp_schema_list_path = "#{output_dir}/tmpSchemaList.txt"
+    File.open(temp_schema_list_path, 'w') do |f|
+      f.write('[]')
+      f.fsync
+    end
+
+    Pod::UI.puts '[Codegen] generating an empty RCTThirdPartyFabricComponentsProvider'
+    Pod::Executable.execute_command(
+      'node',
+      [
+        "#{react_native_path}/scripts/generate-provider-cli.js",
+        "--platform", 'ios',
+        "--schemaListPath", temp_schema_list_path,
+        "--outputDir", "#{output_dir}"
+      ])
+    File.delete(temp_schema_list_path) if File.exist?(temp_schema_list_path)
+  end
+end
 
 def generate_temp_pod_spec_for_codegen!(fabric_enabled)
   relative_installation_root = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
@@ -246,7 +278,8 @@ def generate_temp_pod_spec_for_codegen!(fabric_enabled)
         "\"$(PODS_ROOT)/boost\"",
         "\"$(PODS_ROOT)/RCT-Folly\"",
         "\"${PODS_ROOT}/Headers/Public/React-Codegen/react/renderer/components\"",
-        "\"$(PODS_ROOT)/Headers/Private/React-Fabric\""
+        "\"$(PODS_ROOT)/Headers/Private/React-Fabric\"",
+        "\"$(PODS_ROOT)/Headers/Private/React-RCTFabric\"",
       ].join(' ')
     },
     'dependencies': {
@@ -283,23 +316,50 @@ def generate_temp_pod_spec_for_codegen!(fabric_enabled)
 end
 
 
-def use_react_native_codegen!(spec, options={})
+def use_react_native_codegen_discovery!(options={})
   return if ENV['DISABLE_CODEGEN'] == '1'
+
+  Pod::UI.warn '[Codegen] warn: using experimental new codegen integration'
+  react_native_path = options[:react_native_path] ||= "../node_modules/react-native"
+  app_path = options[:app_path]
+  fabric_enabled = options[:fabric_enabled] ||= false
+  config_file_dir = options[:config_file_dir] ||= ''
+  if app_path
+    out = Pod::Executable.execute_command(
+      'node',
+      [
+        "#{react_native_path}/scripts/generate-artifacts.js",
+        "-p", "#{app_path}",
+        "-o", Pod::Config.instance.installation_root,
+        "-e", "#{fabric_enabled}",
+        "-c", "#{config_file_dir}",
+      ])
+    Pod::UI.puts out;
+  else
+    Pod::UI.warn '[Codegen] error: no app_path was provided'
+    exit 1
+  end
+end
+
+def use_react_native_codegen!(spec, options={})
+  return if ENV['USE_CODEGEN_DISCOVERY'] == '1'
+  # TODO: Once the new codegen approach is ready for use, we should output a warning here to let folks know to migrate.
 
   # The prefix to react-native
   prefix = options[:react_native_path] ||= "../.."
 
   # Library name (e.g. FBReactNativeSpec)
   library_name = options[:library_name] ||= "#{spec.name.gsub('_','-').split('-').collect(&:capitalize).join}Spec"
+  Pod::UI.puts "[Codegen] Found #{library_name}"
 
-  # Output dir, relative to podspec that invoked this method
-  output_dir = options[:output_dir] ||= "#{Pod::Config.instance.installation_root}/#{$CODEGEN_OUTPUT_DIR}/#{$CODEGEN_LIBRARY_DIR}"
-  library_output_dir = "#{output_dir}/#{library_name}"
+  output_dir = options[:output_dir] ||= $CODEGEN_OUTPUT_DIR
+  output_dir_module = "#{output_dir}/#{$CODEGEN_MODULE_DIR}"
+  output_dir_component = "#{output_dir}/#{$CODEGEN_COMPONENT_DIR}"
 
   codegen_config = {
     "modules" => {
       :js_srcs_pattern => "Native*.js",
-      :generated_dir => library_output_dir,
+      :generated_dir => "#{Pod::Config.instance.installation_root}/#{output_dir_module}/#{library_name}",
       :generated_files => [
         "#{library_name}.h",
         "#{library_name}-generated.mm"
@@ -307,7 +367,7 @@ def use_react_native_codegen!(spec, options={})
     },
     "components" => {
       :js_srcs_pattern => "*NativeComponent.js",
-      :generated_dir => library_output_dir,
+      :generated_dir => "#{Pod::Config.instance.installation_root}/#{output_dir_component}/#{library_name}",
       :generated_files => [
         "ComponentDescriptors.h",
         "EventEmitters.cpp",
@@ -371,7 +431,7 @@ GENERATED_SCHEMA_FILE="$GENERATED_SRCS_DIR/schema.json"
 TEMP_OUTPUT_DIR="$GENERATED_SRCS_DIR/out"
 
 LIBRARY_NAME="#{library_name}"
-OUTPUT_DIR="$PROJECT_DIR/#{$CODEGEN_OUTPUT_DIR}/#{$CODEGEN_LIBRARY_DIR}/#{library_name}"
+OUTPUT_DIR="$PROJECT_DIR/#{$CODEGEN_OUTPUT_DIR}"
 
 CODEGEN_REPO_PATH="$RN_DIR/packages/react-native-codegen"
 CODEGEN_NPM_PATH="$RN_DIR/../react-native-codegen"
@@ -437,10 +497,21 @@ generateCodegenSchemaFromJavaScript () {
   "$NODE_BINARY" "$CODEGEN_CLI_PATH/lib/cli/combine/combine-js-to-schema-cli.js" "$GENERATED_SCHEMA_FILE" $JS_SRCS
 }
 
+runSpecCodegen () {
+  "$NODE_BINARY" "scripts/generate-specs-cli.js" --platform ios --schemaPath "$GENERATED_SCHEMA_FILE" --outputDir "$1" --libraryName "$LIBRARY_NAME" --libraryType "$2"
+}
+
 generateCodegenArtifactsFromSchema () {
   describe "Generating codegen artifacts from schema"
   pushd "$RN_DIR" >/dev/null || exit 1
-    "$NODE_BINARY" "scripts/generate-specs-cli.js" --platform ios --schemaPath "$GENERATED_SCHEMA_FILE" --outputDir "$TEMP_OUTPUT_DIR" --libraryName "$LIBRARY_NAME" --libraryType "$LIBRARY_TYPE"
+    if [ "$LIBRARY_TYPE" = "all" ]; then
+      runSpecCodegen "$TEMP_OUTPUT_DIR/#{$CODEGEN_MODULE_DIR}/#{library_name}" "modules"
+      runSpecCodegen "$TEMP_OUTPUT_DIR/#{$CODEGEN_COMPONENT_DIR}/#{library_name}" "components"
+    elif [ "$LIBRARY_TYPE" = "components" ]; then
+      runSpecCodegen "$TEMP_OUTPUT_DIR/#{$CODEGEN_COMPONENT_DIR}/#{library_name}" "$LIBRARY_TYPE"
+    elif [ "$LIBRARY_TYPE" = "modules" ]; then
+      runSpecCodegen "$TEMP_OUTPUT_DIR/#{$CODEGEN_MODULE_DIR}/#{library_name}" "$LIBRARY_TYPE"
+    fi
   popd >/dev/null || exit 1
 }
 

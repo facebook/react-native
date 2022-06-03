@@ -63,7 +63,7 @@ class Tester extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
             {this.props.children(this.state.native)}
           </View>
           <View>
-            <Text>JavaScript:</Text>
+            <Text>JavaScript{':'}</Text>
           </View>
           <View style={styles.row}>{this.props.children(this.state.js)}</View>
         </View>
@@ -343,7 +343,7 @@ class TrackingExample extends React.Component<
             {this.renderBlock(this.state.native, this.state.toNative)}
           </View>
           <View>
-            <Text>JavaScript:</Text>
+            <Text>JavaScript{':'}</Text>
           </View>
           <View style={styles.row}>
             {this.renderBlock(this.state.js, this.state.toJS)}

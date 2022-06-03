@@ -39,7 +39,7 @@ static NSString *const kRCTEnableMinificationKey = @"RCT_enableMinification";
 {
   self = [super init];
   if (self) {
-    [self setDefaults];
+    [self _setDefaults];
   }
   return self;
 }
@@ -57,17 +57,12 @@ static NSString *const kRCTEnableMinificationKey = @"RCT_enableMinification";
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTBundleURLProviderUpdatedNotification object:self];
 }
 
-- (void)setDefaults
-{
-  [[NSUserDefaults standardUserDefaults] registerDefaults:[self defaults]];
-}
-
 - (void)resetToDefaults
 {
   for (NSString *key in [[self defaults] allKeys]) {
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
   }
-  [self setDefaults];
+  [self _setDefaults];
   [self settingsUpdated];
 }
 
@@ -259,26 +254,11 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
 {
   return [self jsBundleURLForBundleRoot:bundleRoot
                            packagerHost:packagerHost
+                         packagerScheme:nil
                               enableDev:enableDev
                      enableMinification:enableMinification
                             modulesOnly:NO
                               runModule:YES];
-}
-
-+ (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
-                       packagerHost:(NSString *)packagerHost
-                          enableDev:(BOOL)enableDev
-                 enableMinification:(BOOL)enableMinification
-                        modulesOnly:(BOOL)modulesOnly
-                          runModule:(BOOL)runModule
-{
-  return [[self class] jsBundleURLForBundleRoot:bundleRoot
-                                   packagerHost:packagerHost
-                                 packagerScheme:nil
-                                      enableDev:enableDev
-                             enableMinification:enableMinification
-                                    modulesOnly:modulesOnly
-                                      runModule:runModule];
 }
 
 + (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
@@ -310,11 +290,6 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
     query = [NSString stringWithFormat:@"%@&app=%@", query, bundleID];
   }
   return [[self class] resourceURLForResourcePath:path packagerHost:packagerHost scheme:scheme query:query];
-}
-
-+ (NSURL *)resourceURLForResourcePath:(NSString *)path packagerHost:(NSString *)packagerHost query:(NSString *)query
-{
-  return [[self class] resourceURLForResourcePath:path packagerHost:packagerHost scheme:nil query:query];
 }
 
 + (NSURL *)resourceURLForResourcePath:(NSString *)path
@@ -390,6 +365,13 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
     sharedInstance = [RCTBundleURLProvider new];
   });
   return sharedInstance;
+}
+
+#pragma mark - Private helpers
+
+- (void)_setDefaults
+{
+  [[NSUserDefaults standardUserDefaults] registerDefaults:[self defaults]];
 }
 
 @end

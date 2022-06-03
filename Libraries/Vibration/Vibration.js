@@ -15,7 +15,7 @@ const Platform = require('../Utilities/Platform');
 /**
  * Vibration API
  *
- * See https://reactnative.dev/docs/vibration.html
+ * See https://reactnative.dev/docs/vibration
  */
 
 let _vibrating: boolean = false;
@@ -68,7 +68,7 @@ const Vibration = {
   /**
    * Trigger a vibration with specified `pattern`.
    *
-   * See https://reactnative.dev/docs/vibration.html#vibrate
+   * See https://reactnative.dev/docs/vibration#vibrate
    */
   vibrate: function(
     pattern: number | Array<number> = _default_vibration_length,
@@ -98,7 +98,7 @@ const Vibration = {
   /**
    * Stop vibration
    *
-   * See https://reactnative.dev/docs/vibration.html#cancel
+   * See https://reactnative.dev/docs/vibration#cancel
    */
   cancel: function() {
     if (Platform.OS === 'ios') {
