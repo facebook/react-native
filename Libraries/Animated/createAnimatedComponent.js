@@ -55,6 +55,7 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
     _prevComponent: any;
     _propsAnimated: AnimatedProps;
     _eventDetachers: Array<Function> = [];
+    _isInitialRender: boolean = true;
 
     // Only to be used in this file, and only in Fabric.
     _animatedComponentId: string = `${animatedComponentNextId++}:animatedComponent`;
@@ -200,7 +201,8 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
     });
 
     render() {
-      const {style = {}, ...props} = this._propsAnimated.__getValue() || {};
+      const {style = {}, ...props} =
+        this._propsAnimated.__getValue(this._isInitialRender) || {};
       const {style: passthruStyle = {}, ...passthruProps} =
         this.props.passthroughAnimatedPropExplicitValues || {};
       const mergedStyle = {...style, ...passthruStyle};
@@ -232,6 +234,7 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
       this._propsAnimated.setNativeView(this._component);
       this._attachNativeEvents();
       this._markUpdateComplete();
+      this._isInitialRender = false;
     }
 
     UNSAFE_componentWillReceiveProps(newProps: any) {
