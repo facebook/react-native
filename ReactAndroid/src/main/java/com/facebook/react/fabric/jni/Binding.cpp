@@ -223,13 +223,13 @@ jni::local_ref<Binding::jhybriddata> Binding::initHybrid(
 
 // Thread-safe getter
 jni::global_ref<jobject> Binding::getJavaUIManager() {
-  std::lock_guard<std::mutex> uiManagerLock(javaUIManagerMutex_);
+  std::shared_lock<better::shared_mutex> lock(installMutex_);
   return javaUIManager_;
 }
 
 // Thread-safe getter
 std::shared_ptr<Scheduler> Binding::getScheduler() {
-  std::lock_guard<std::mutex> lock(schedulerMutex_);
+  std::shared_lock<better::shared_mutex> lock(installMutex_);
   return scheduler_;
 }
 
@@ -521,10 +521,7 @@ void Binding::installFabricUIManager(
 
   // Use std::lock and std::adopt_lock to prevent deadlocks by locking mutexes
   // at the same time
-  std::lock(schedulerMutex_, javaUIManagerMutex_);
-  std::lock_guard<std::mutex> schedulerLock(schedulerMutex_, std::adopt_lock);
-  std::lock_guard<std::mutex> uiManagerLock(
-      javaUIManagerMutex_, std::adopt_lock);
+  std::unique_lock<better::shared_mutex> lock(installMutex_);
 
   javaUIManager_ = make_global(javaUIManager);
 
@@ -625,13 +622,8 @@ void Binding::uninstallFabricUIManager() {
     LOG(WARNING) << "Binding::uninstallFabricUIManager() was called (address: "
                  << this << ").";
   }
-  // Use std::lock and std::adopt_lock to prevent deadlocks by locking mutexes
-  // at the same time
-  std::lock(schedulerMutex_, javaUIManagerMutex_);
-  std::lock_guard<std::mutex> schedulerLock(schedulerMutex_, std::adopt_lock);
-  std::lock_guard<std::mutex> uiManagerLock(
-      javaUIManagerMutex_, std::adopt_lock);
 
+  std::unique_lock<better::shared_mutex> lock(installMutex_);
   animationDriver_ = nullptr;
   scheduler_ = nullptr;
   javaUIManager_ = nullptr;

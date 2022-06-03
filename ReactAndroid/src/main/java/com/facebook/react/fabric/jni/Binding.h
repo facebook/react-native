@@ -178,17 +178,15 @@ class Binding : public jni::HybridClass<Binding>,
   void uninstallFabricUIManager();
 
   // Private member variables
+  better::shared_mutex installMutex_;
   jni::global_ref<jobject> javaUIManager_;
-  std::mutex javaUIManagerMutex_;
+  std::shared_ptr<Scheduler> scheduler_;
 
   // LayoutAnimations
   void onAnimationStarted() override;
   void onAllAnimationsComplete() override;
   std::shared_ptr<LayoutAnimationDriver> animationDriver_;
   std::unique_ptr<JBackgroundExecutor> backgroundExecutor_;
-
-  std::shared_ptr<Scheduler> scheduler_;
-  std::mutex schedulerMutex_;
 
   better::map<SurfaceId, SurfaceHandler> surfaceHandlerRegistry_{};
   better::shared_mutex

@@ -244,8 +244,8 @@ void CxxNativeModule::lazyInit() {
   module_ = provider_();
   provider_ = nullptr;
   if (module_) {
-    methods_ = module_->getMethods();
     module_->setInstance(instance_);
+    methods_ = module_->getMethods();
   }
 }
 

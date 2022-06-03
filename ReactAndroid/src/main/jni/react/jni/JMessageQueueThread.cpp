@@ -69,7 +69,7 @@ void JMessageQueueThread::runOnQueue(std::function<void()> &&runnable) {
   jni::ThreadScope guard;
   static auto method =
       JavaMessageQueueThread::javaClassStatic()
-          ->getMethod<void(Runnable::javaobject)>("runOnQueue");
+          ->getMethod<jboolean(Runnable::javaobject)>("runOnQueue");
   method(
       m_jobj,
       JNativeRunnable::newObjectCxxArgs(wrapRunnable(std::move(runnable)))

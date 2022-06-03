@@ -55,15 +55,17 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
    */
   @DoNotStrip
   @Override
-  public void runOnQueue(Runnable runnable) {
+  public boolean runOnQueue(Runnable runnable) {
     if (mIsFinished) {
       FLog.w(
           ReactConstants.TAG,
           "Tried to enqueue runnable on already finished thread: '"
               + getName()
               + "... dropping Runnable.");
+      return false;
     }
     mHandler.post(runnable);
+    return true;
   }
 
   @DoNotStrip
