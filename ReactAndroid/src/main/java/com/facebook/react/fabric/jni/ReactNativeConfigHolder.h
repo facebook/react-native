@@ -22,7 +22,7 @@ namespace react {
  */
 class ReactNativeConfigHolder : public ReactNativeConfig {
  public:
-  ReactNativeConfigHolder(jni::alias_ref<jobject> reactNativeConfig)
+  explicit ReactNativeConfigHolder(jni::alias_ref<jobject> reactNativeConfig)
       : reactNativeConfig_(make_global(reactNativeConfig)){};
 
   bool getBool(const std::string &param) const override;

@@ -51,7 +51,7 @@ SurfaceHandler &SurfaceHandler::operator=(SurfaceHandler &&other) noexcept {
 
 void SurfaceHandler::setContextContainer(
     ContextContainer::Shared contextContainer) const noexcept {
-  parameters_.contextContainer = contextContainer;
+  parameters_.contextContainer = std::move(contextContainer);
 }
 
 Status SurfaceHandler::getStatus() const noexcept {

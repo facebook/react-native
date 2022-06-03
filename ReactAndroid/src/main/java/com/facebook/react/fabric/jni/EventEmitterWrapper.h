@@ -26,9 +26,10 @@ class EventEmitterWrapper : public jni::HybridClass<EventEmitterWrapper> {
   SharedEventEmitter eventEmitter;
   EventEmitter const *eventEmitterPointer;
 
-  void invokeEvent(std::string eventName, NativeMap *params, int category);
+  void
+  invokeEvent(std::string const &eventName, NativeMap *params, int category);
   void invokeUniqueEvent(
-      std::string eventName,
+      std::string const &eventName,
       NativeMap *params,
       int customCoalesceKey);
 

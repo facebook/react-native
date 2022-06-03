@@ -31,7 +31,7 @@ namespace facebook {
 namespace react {
 
 Scheduler::Scheduler(
-    SchedulerToolbox schedulerToolbox,
+    SchedulerToolbox const &schedulerToolbox,
     UIManagerAnimationDelegate *animationDelegate,
     SchedulerDelegate *delegate) {
   runtimeExecutor_ = schedulerToolbox.runtimeExecutor;
@@ -104,7 +104,7 @@ Scheduler::Scheduler(
   commitHooks_ = schedulerToolbox.commitHooks;
   uiManager_ = uiManager;
 
-  for (auto commitHook : commitHooks_) {
+  for (auto const &commitHook : commitHooks_) {
     uiManager->registerCommitHook(*commitHook);
   }
 
@@ -127,7 +127,7 @@ Scheduler::~Scheduler() {
   LOG(WARNING) << "Scheduler::~Scheduler() was called (address: " << this
                << ").";
 
-  for (auto commitHook : commitHooks_) {
+  for (auto const &commitHook : commitHooks_) {
     uiManager_->unregisterCommitHook(*commitHook);
   }
 
@@ -206,10 +206,10 @@ InspectorData Scheduler::getInspectorDataForInstance(
         // TODO T97216348: remove folly::dynamic from InspectorData struct
         result.props = dynamic["props"];
         auto hierarchy = dynamic["hierarchy"];
-        for (size_t i = 0; i < hierarchy.size(); i++) {
-          auto viewHierarchyValue = hierarchy[i]["name"];
+        for (auto &i : hierarchy) {
+          auto viewHierarchyValue = i["name"];
           if (!viewHierarchyValue.isNull()) {
-            result.hierarchy.push_back(viewHierarchyValue.c_str());
+            result.hierarchy.emplace_back(viewHierarchyValue.c_str());
           }
         }
         return result;

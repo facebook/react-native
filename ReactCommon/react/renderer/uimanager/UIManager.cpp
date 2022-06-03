@@ -34,7 +34,7 @@ UIManager::UIManager(
     ContextContainer::Shared contextContainer)
     : runtimeExecutor_(runtimeExecutor),
       backgroundExecutor_(backgroundExecutor),
-      contextContainer_(contextContainer),
+      contextContainer_(std::move(contextContainer)),
       leakChecker_(constructLeakCheckerIfNeeded(runtimeExecutor)) {}
 
 UIManager::~UIManager() {
@@ -81,7 +81,7 @@ SharedShadowNode UIManager::createNode(
       family);
 
   if (delegate_) {
-    delegate_->uiManagerDidCreateShadowNode(*shadowNode.get());
+    delegate_->uiManagerDidCreateShadowNode(*shadowNode);
   }
   if (leakChecker_) {
     leakChecker_->uiManagerDidCreateShadowNodeFamily(family);
@@ -112,7 +112,7 @@ SharedShadowNode UIManager::cloneNode(
 
   if (delegate_) {
     delegate_->uiManagerDidCloneShadowNode(
-        *shadowNode.get(), *clonedShadowNode.get());
+        *shadowNode.get(), *clonedShadowNode);
   }
 
   return clonedShadowNode;
@@ -375,7 +375,8 @@ UIManagerDelegate *UIManager::getDelegate() {
 }
 
 void UIManager::visitBinding(
-    std::function<void(UIManagerBinding const &uiManagerBinding)> callback,
+    std::function<void(UIManagerBinding const &uiManagerBinding)> const
+        &callback,
     jsi::Runtime &runtime) const {
   auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
   if (uiManagerBinding) {

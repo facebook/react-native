@@ -28,9 +28,6 @@ class SurfaceHandlerBinding : public jni::HybridClass<SurfaceHandlerBinding> {
 
   void setDisplayMode(jint mode);
 
-  void registerScheduler(std::shared_ptr<Scheduler> scheduler);
-  void unregisterScheduler(std::shared_ptr<Scheduler> scheduler);
-
   jint getSurfaceId();
   void setSurfaceId(jint surfaceId);
   jni::local_ref<jstring> getModuleName();
