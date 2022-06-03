@@ -191,15 +191,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
       }
       throw new IllegalArgumentException("Invalid accessibility role value: " + value);
     }
-
-    public static @Nullable String fromAnyValue(@Nullable String value) {
-      for (AccessibilityRole role : AccessibilityRole.values()) {
-        if (getValue(role).equalsIgnoreCase(value)) {
-          return role.toString();
-        }
-      }
-      return null;
-    }
   }
 
   private final HashMap<Integer, String> mAccessibilityActionsMap;
@@ -973,20 +964,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     }
   }
 
-  public static @Nullable String getRoleDescription(AccessibilityNodeInfoCompat node) {
-    CharSequence role = node.getRoleDescription();
-    String roleDescription;
-
-    if (role == null || role == "") {
-      roleDescription =
-          ReactAccessibilityDelegate.AccessibilityRole.fromAnyValue((String) node.getClassName());
-    } else {
-      roleDescription = role.toString();
-    }
-
-    return roleDescription;
-  }
-
   /**
    * Creates the text that Google's TalkBack screen reader will read aloud for a given {@link View}.
    * This may be any combination of the {@link View}'s {@code text}, {@code contentDescription}, and
@@ -1018,7 +995,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
 
       final boolean hasNodeText = !TextUtils.isEmpty(nodeText);
       final boolean isEditText = view instanceof EditText;
-      String role = getRoleDescription(node);
       // The original flipper implementation would check isActionableForAccessibility
       // The check was removed for this reason https://bit.ly/3wPnmPE
       boolean disabled = !node.isEnabled();
@@ -1053,12 +1029,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
 
         // description
         talkbackSegments.append(nodeText + delimiter);
-
-        // role
-        if (role != null) {
-          String roleDescription = role.toString();
-          talkbackSegments.append(roleDescription + delimiter);
-        }
 
         // disabled
         if (disabled) {
