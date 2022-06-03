@@ -599,6 +599,11 @@ void Binding::installFabricUIManager(
   dispatchPreallocationInBackground_ = reactNativeConfig_->getBool(
       "react_native_new_architecture:dispatch_preallocation_in_bg");
 
+  contextContainer->insert(
+      "EnableLargeTextMeasureCache",
+      reactNativeConfig_->getBool(
+          "react_fabric:enable_large_text_measure_cache_android"));
+
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = contextContainer;
   toolbox.componentRegistryFactory = componentsRegistry->buildRegistryFunction;

@@ -345,7 +345,7 @@ def get_react_codegen_spec(options={})
 end
 
 def get_codegen_config_from_file(config_path, config_key)
-  empty = {'libraries': []}
+  empty = {'libraries' => []}
   if !File.exist?(config_path)
     return empty
   end
@@ -366,7 +366,7 @@ def get_react_codegen_script_phases(options={})
 
   config_file_dir = options[:config_file_dir] ||= ''
   relative_config_file_dir = ''
-  if config_file_dir
+  if config_file_dir != ''
     relative_config_file_dir = Pathname.new(config_file_dir).relative_path_from(Pod::Config.instance.installation_root)
   end
 

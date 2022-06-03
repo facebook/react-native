@@ -27,7 +27,11 @@ using SharedTextLayoutManager = std::shared_ptr<const TextLayoutManager>;
 class TextLayoutManager {
  public:
   TextLayoutManager(const ContextContainer::Shared &contextContainer)
-      : contextContainer_(contextContainer) {
+      : contextContainer_(contextContainer),
+        measureCache_{
+            contextContainer->at<bool>("EnableLargeTextMeasureCache")
+                ? 1024
+                : kSimpleThreadSafeCacheSizeCap} {
     static auto value =
         contextContainer->at<bool>("MapBufferSerializationEnabled");
     mapBufferSerializationEnabled_ = value;
@@ -85,7 +89,7 @@ class TextLayoutManager {
   void *self_;
   ContextContainer::Shared contextContainer_;
   bool mapBufferSerializationEnabled_;
-  TextMeasureCache measureCache_{};
+  TextMeasureCache measureCache_;
 };
 
 } // namespace react
