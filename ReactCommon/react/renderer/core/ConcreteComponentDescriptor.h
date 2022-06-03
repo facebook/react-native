@@ -19,6 +19,7 @@
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/core/State.h>
+#include <react/renderer/graphics/Float.h>
 
 namespace facebook {
 namespace react {
@@ -113,7 +114,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
 
   SharedProps interpolateProps(
       const PropsParserContext &context,
-      float animationProgress,
+      Float animationProgress,
       const SharedProps &props,
       const SharedProps &newProps) const override {
 #ifdef ANDROID

@@ -115,8 +115,8 @@ static inline better::optional<AnimationConfig> parseAnimationConfig(
 
   double duration = defaultDuration;
   double delay = 0;
-  double springDamping = 0.5;
-  double initialVelocity = 0;
+  Float springDamping = 0.5;
+  Float initialVelocity = 0;
 
   auto const durationIt = config.find("duration");
   if (durationIt != config.items().end()) {
@@ -144,7 +144,7 @@ static inline better::optional<AnimationConfig> parseAnimationConfig(
   if (springDampingIt != config.items().end() &&
       springDampingIt->second.isDouble()) {
     if (springDampingIt->second.isDouble()) {
-      springDamping = springDampingIt->second.asDouble();
+      springDamping = (Float)springDampingIt->second.asDouble();
     } else {
       LOG(ERROR)
           << "Error parsing animation config: field `springDamping` must be a number";
@@ -155,7 +155,7 @@ static inline better::optional<AnimationConfig> parseAnimationConfig(
   auto const initialVelocityIt = config.find("initialVelocity");
   if (initialVelocityIt != config.items().end()) {
     if (initialVelocityIt->second.isDouble()) {
-      initialVelocity = initialVelocityIt->second.asDouble();
+      initialVelocity = (Float)initialVelocityIt->second.asDouble();
     } else {
       LOG(ERROR)
           << "Error parsing animation config: field `initialVelocity` must be a number";

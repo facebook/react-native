@@ -43,38 +43,9 @@ class UIManagerBinding : public jsi::HostObject {
 
   ~UIManagerBinding();
 
-  /*
-   * Starts React Native Surface with given id, moduleName, and props.
-   * Thread synchronization must be enforced externally.
-   */
-  void startSurface(
-      jsi::Runtime &runtime,
-      SurfaceId surfaceId,
-      std::string const &moduleName,
-      folly::dynamic const &initalProps,
-      DisplayMode displayMode) const;
-
-  /*
-   * Updates the React Native Surface identified with surfaceId and moduleName
-   * with the given props.
-   * Thread synchronization must be enforced externally.
-   */
-  void setSurfaceProps(
-      jsi::Runtime &runtime,
-      SurfaceId surfaceId,
-      std::string const &moduleName,
-      folly::dynamic const &props,
-      DisplayMode displayMode) const;
-
   jsi::Value getInspectorDataForInstance(
       jsi::Runtime &runtime,
       EventEmitter const &eventEmitter) const;
-
-  /*
-   * Stops React Native Surface with given id.
-   * Thread synchronization must be enforced externally.
-   */
-  void stopSurface(jsi::Runtime &runtime, SurfaceId surfaceId) const;
 
   /*
    * Delivers raw event data to JavaScript.

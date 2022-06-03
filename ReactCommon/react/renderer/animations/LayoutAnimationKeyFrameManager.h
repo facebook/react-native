@@ -120,7 +120,7 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
    * @return
    */
   ShadowView createInterpolatedShadowView(
-      double progress,
+      Float progress,
       ShadowView const &startingView,
       ShadowView const &finalView) const;
 
