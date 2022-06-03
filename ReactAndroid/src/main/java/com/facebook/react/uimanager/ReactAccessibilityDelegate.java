@@ -312,7 +312,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     boolean missingContentDescription = TextUtils.isEmpty(info.getContentDescription());
     boolean missingText = TextUtils.isEmpty(info.getText());
     boolean missingTextOrDescription = missingContentDescription && missingText;
-    if (missingContentDescription && hasContentToAnnounce) {
+    if (missingTextOrDescription && hasContentToAnnounce) {
       info.setContentDescription(getTalkbackDescription(host, info));
     }
   }
