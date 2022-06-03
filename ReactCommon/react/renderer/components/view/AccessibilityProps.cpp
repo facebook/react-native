@@ -25,12 +25,6 @@ AccessibilityProps::AccessibilityProps(
           "accessible",
           sourceProps.accessible,
           false)),
-      accessibilityTraits(convertRawProp(
-          context,
-          rawProps,
-          "accessibilityRole",
-          sourceProps.accessibilityTraits,
-          AccessibilityTraits::None)),
       accessibilityState(convertRawProp(
           context,
           rawProps,
@@ -55,12 +49,6 @@ AccessibilityProps::AccessibilityProps(
           "accessibilityLiveRegion",
           sourceProps.accessibilityLiveRegion,
           AccessibilityLiveRegion::None)),
-      accessibilityRole(convertRawProp(
-          context,
-          rawProps,
-          "accessibilityRole",
-          sourceProps.accessibilityRole,
-          "")),
       accessibilityHint(convertRawProp(
           context,
           rawProps,
@@ -135,6 +123,26 @@ AccessibilityProps::AccessibilityProps(
           ImportantForAccessibility::Auto)),
       testId(
           convertRawProp(context, rawProps, "testID", sourceProps.testId, "")) {
+  // It is a (severe!) perf deoptimization to request props out-of-order.
+  // Thus, since we need to request the same prop twice here
+  // (accessibilityRole) we "must" do them subsequently here to prevent
+  // a regression. It is reasonable to ask if the `at` function can be improved;
+  // it probably can, but this is a fairly rare edge-case that (1) is easy-ish
+  // to work around here, and (2) would require very careful work to address
+  // this case and not regress the more common cases.
+  const auto *rawPropValue = rawProps.at("accessibilityRole", nullptr, nullptr);
+  AccessibilityTraits traits;
+  std::string roleString;
+  if (rawPropValue == nullptr || !rawPropValue->hasValue()) {
+    traits = AccessibilityTraits::None;
+    roleString = "";
+  } else {
+    fromRawValue(context, *rawPropValue, traits);
+    fromRawValue(context, *rawPropValue, roleString);
+  }
+
+  accessibilityTraits = traits;
+  accessibilityRole = roleString;
 }
 
 #pragma mark - DebugStringConvertible

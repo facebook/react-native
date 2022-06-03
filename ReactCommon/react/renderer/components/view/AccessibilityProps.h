@@ -27,12 +27,12 @@ class AccessibilityProps {
 #pragma mark - Props
 
   bool accessible{false};
-  AccessibilityTraits accessibilityTraits{AccessibilityTraits::None};
   AccessibilityState accessibilityState;
   std::string accessibilityLabel{""};
   AccessibilityLabelledBy accessibilityLabelledBy{};
   AccessibilityLiveRegion accessibilityLiveRegion{
       AccessibilityLiveRegion::None};
+  AccessibilityTraits accessibilityTraits{AccessibilityTraits::None};
   std::string accessibilityRole{""};
   std::string accessibilityHint{""};
   std::string accessibilityLanguage{""};
