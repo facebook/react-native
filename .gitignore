@@ -103,7 +103,8 @@ package-lock.json
 /vendor
 /template/vendor
 
-# CocoaPods
+# iOS / CocoaPods
+/template/ios/build/
 /template/ios/Pods/
 /template/ios/Podfile.lock
 /packages/rn-tester/Gemfile.lock

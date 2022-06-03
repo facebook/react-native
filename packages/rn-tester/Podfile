@@ -41,21 +41,18 @@ def pods(options = {})
 
   prefix_path = "../.."
 
-  if options[:use_codegen_discovery]
-    Pod::UI.puts "[Codegen] Building target with codegen library discovery enabled."
-    pre_install do |installer|
-      use_react_native_codegen_discovery!({
-        react_native_path: prefix_path,
-        app_path: "#{Dir.pwd}",
-        fabric_enabled: fabric_enabled,
-        config_file_dir: "#{Dir.pwd}/node_modules",
-      })
-    end
+  if ENV['USE_CODEGEN_DISCOVERY'] == '1'
     # Custom fabric component is only supported when using codegen discovery.
     pod 'MyNativeView', :path => "NativeComponentExample"
   end
 
-  use_react_native!(path: prefix_path, fabric_enabled: fabric_enabled, hermes_enabled: ENV['USE_HERMES'] == '1')
+  use_react_native!(
+    path: prefix_path,
+    fabric_enabled: fabric_enabled,
+    hermes_enabled: ENV['USE_HERMES'] == '1',
+    app_path: "#{Dir.pwd}",
+    config_file_dir: "#{Dir.pwd}/node_modules",
+  )
   pod 'ReactCommon/turbomodule/samples', :path => "#{prefix_path}/ReactCommon"
 
   # Additional Pods which aren't included in the default Podfile
@@ -70,7 +67,7 @@ def pods(options = {})
 end
 
 target 'RNTester' do
-  pods({ :use_codegen_discovery => ENV['USE_CODEGEN_DISCOVERY'] == '1' })
+  pods()
   if !USE_FRAMEWORKS
     use_flipper!
   end

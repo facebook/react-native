@@ -86,12 +86,11 @@ Scheduler::Scheduler(
   uiManager->setDelegate(this);
   uiManager->setComponentDescriptorRegistry(componentDescriptorRegistry_);
 
-  runtimeExecutor_([uiManager,
-                    runtimeExecutor = runtimeExecutor_](jsi::Runtime &runtime) {
-    auto uiManagerBinding =
-        UIManagerBinding::createAndInstallIfNeeded(runtime, runtimeExecutor);
-    uiManagerBinding->attach(uiManager);
-  });
+  runtimeExecutor_(
+      [uiManager, runtimeExecutor = runtimeExecutor_](jsi::Runtime &runtime) {
+        UIManagerBinding::createAndInstallIfNeeded(
+            runtime, runtimeExecutor, uiManager);
+      });
 
   auto componentDescriptorRegistryKey =
       "ComponentDescriptorRegistry_DO_NOT_USE_PRETTY_PLEASE";

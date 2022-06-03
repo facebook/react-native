@@ -71,6 +71,19 @@ def use_react_native! (options={})
   # TODO(macOS GH#214)
   pod 'boost-for-react-native', :podspec => "#{prefix}/third-party-podspecs/boost-for-react-native.podspec"
 
+  if ENV['USE_CODEGEN_DISCOVERY'] == '1'
+    Pod::UI.puts "[Codegen] Building target with codegen library discovery enabled."
+    # TODO: Make sure this is run only once per execution.
+    app_path = options[:app_path]
+    config_file_dir = options[:config_file_dir]
+    use_react_native_codegen_discovery!({
+      react_native_path: prefix,
+      app_path: app_path,
+      fabric_enabled: fabric_enabled,
+      config_file_dir: config_file_dir,
+    })
+  end
+
   # Generate a podspec file for generated files.
   temp_podinfo = generate_temp_pod_spec_for_codegen!(fabric_enabled)
   pod temp_podinfo['spec']['name'], :path => temp_podinfo['path']
@@ -358,6 +371,7 @@ def use_react_native_codegen_discovery!(options={})
     Pod::UI.puts out;
   else
     Pod::UI.warn '[Codegen] error: no app_path was provided'
+    Pod::UI.warn '[Codegen] If you are calling use_react_native_codegen_discovery! in your Podfile, please remove the call and pass `app_path` and/or `config_file_dir` to `use_react_native!`.'
     exit 1
   end
 end
