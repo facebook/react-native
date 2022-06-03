@@ -52,8 +52,8 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
       new ViewGroup.LayoutParams(0, 0);
 
   private boolean mContainsImages;
-  private int mDefaultGravityHorizontal;
-  private int mDefaultGravityVertical;
+  private final int mDefaultGravityHorizontal;
+  private final int mDefaultGravityVertical;
   private int mTextAlign;
   private int mNumberOfLines;
   private TextUtils.TruncateAt mEllipsizeLocation;
@@ -67,6 +67,12 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
   public ReactTextView(Context context) {
     super(context);
+
+    // Get these defaults only during the constructor - these should never be set otherwise
+    mDefaultGravityHorizontal =
+        getGravity() & (Gravity.HORIZONTAL_GRAVITY_MASK | Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK);
+    mDefaultGravityVertical = getGravity() & Gravity.VERTICAL_GRAVITY_MASK;
+
     initView();
   }
 
@@ -82,9 +88,6 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     }
 
     mReactBackgroundManager = new ReactViewBackgroundManager(this);
-    mDefaultGravityHorizontal =
-        getGravity() & (Gravity.HORIZONTAL_GRAVITY_MASK | Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK);
-    mDefaultGravityVertical = getGravity() & Gravity.VERTICAL_GRAVITY_MASK;
 
     mTextAlign = Gravity.NO_GRAVITY;
     mNumberOfLines = ViewDefaults.NUMBER_OF_LINES;
