@@ -6,6 +6,7 @@
  *
  * @flow strict-local
  * @format
+ * @lint-ignore-every LICENSELINT
  */
 
 'use strict';
@@ -101,7 +102,7 @@ export interface Spec extends TurboModule {
   |};
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('PlatformConstants');
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 `;
 
@@ -467,7 +468,8 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 `;
 
-const NATIVE_MODULE_WITH_PROMISE = `/**
+const NATIVE_MODULE_WITH_PROMISE = `
+/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
