@@ -449,7 +449,6 @@ rn_xplat_cxx_library2(
         "//fbobjc/Libraries/FBiOSSecurityUtils/...",
         "//fbobjc/Libraries/RCTPrerendering/...",
         "//fbobjc/VendorLib/react-native-maps:react-native-maps",
-        "//xplat/ar/libraries/...",
         "//xplat/js:",
         "//xplat/js/react-native-github/React/...",
         "//xplat/js/react-native-github/ReactCommon/react/nativemodule/core:",
