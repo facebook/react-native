@@ -191,6 +191,15 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
       }
       throw new IllegalArgumentException("Invalid accessibility role value: " + value);
     }
+
+    public static @Nullable String fromAnyValue(@Nullable String value) {
+      for (AccessibilityRole role : AccessibilityRole.values()) {
+        if (getValue(role).equalsIgnoreCase(value)) {
+          return role.toString();
+        }
+      }
+      return null;
+    }
   }
 
   private final HashMap<Integer, String> mAccessibilityActionsMap;
@@ -309,7 +318,10 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
             || accessibilityState != null
             || accessibilityLabelledBy != null
             || accessibilityRole != null;
-    if (!hasText(info) && hasContentToAnnounce) {
+    boolean missingContentDescription = TextUtils.isEmpty(info.getContentDescription());
+    boolean missingText = TextUtils.isEmpty(info.getText());
+    boolean missingTextOrDescription = missingContentDescription && missingText;
+    if (missingContentDescription && hasContentToAnnounce) {
       info.setContentDescription(getTalkbackDescription(host, info));
     }
   }
@@ -961,6 +973,20 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     }
   }
 
+  public static @Nullable String getRoleDescription(AccessibilityNodeInfoCompat node) {
+    CharSequence role = node.getRoleDescription();
+    String roleDescription;
+
+    if (role == null || role == "") {
+      roleDescription =
+          ReactAccessibilityDelegate.AccessibilityRole.fromAnyValue((String) node.getClassName());
+    } else {
+      roleDescription = role.toString();
+    }
+
+    return roleDescription;
+  }
+
   /**
    * Creates the text that Google's TalkBack screen reader will read aloud for a given {@link View}.
    * This may be any combination of the {@link View}'s {@code text}, {@code contentDescription}, and
@@ -992,7 +1018,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
 
       final boolean hasNodeText = !TextUtils.isEmpty(nodeText);
       final boolean isEditText = view instanceof EditText;
-      CharSequence roleDescription = node.getRoleDescription();
+      String role = getRoleDescription(node);
       // The original flipper implementation would check isActionableForAccessibility
       // The check was removed for this reason https://bit.ly/3wPnmPE
       boolean disabled = !node.isEnabled();
@@ -1007,11 +1033,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
 
         // next add content description
         talkbackSegments.append(contentDescription + delimiter);
-        // then role
-        if (roleDescription != null) {
-          String roleString = roleDescription.toString();
-          talkbackSegments.append(roleString + delimiter);
-        }
 
         // lastly disabled is appended if applicable
         if (disabled) {
@@ -1034,9 +1055,9 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
         talkbackSegments.append(nodeText + delimiter);
 
         // role
-        if (roleDescription != null) {
-          String roleString = roleDescription.toString();
-          talkbackSegments.append(roleString + delimiter);
+        if (role != null) {
+          String roleDescription = role.toString();
+          talkbackSegments.append(roleDescription + delimiter);
         }
 
         // disabled
