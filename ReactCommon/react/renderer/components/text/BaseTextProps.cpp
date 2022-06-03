@@ -22,25 +22,13 @@ static TextAttributes convertRawProp(
     TextAttributes const &defaultTextAttributes) {
   auto textAttributes = TextAttributes{};
 
-  // Color
+  // Color (not accessed by ViewProps)
   textAttributes.foregroundColor = convertRawProp(
       context,
       rawProps,
       "color",
       sourceTextAttributes.foregroundColor,
       defaultTextAttributes.foregroundColor);
-  textAttributes.backgroundColor = convertRawProp(
-      context,
-      rawProps,
-      "backgroundColor",
-      sourceTextAttributes.backgroundColor,
-      defaultTextAttributes.backgroundColor);
-  textAttributes.opacity = convertRawProp(
-      context,
-      rawProps,
-      "opacity",
-      sourceTextAttributes.opacity,
-      defaultTextAttributes.opacity);
 
   // Font
   textAttributes.fontFamily = convertRawProp(
@@ -166,12 +154,36 @@ static TextAttributes convertRawProp(
       sourceTextAttributes.isHighlighted,
       defaultTextAttributes.isHighlighted);
 
+  // In general, we want this class to access props in the same order
+  // that ViewProps accesses them in, so that RawPropParser can optimize
+  // accesses. This is both theoretical, and ParagraphProps takes advantage
+  // of this.
+  // In particular: accessibilityRole, opacity, and backgroundColor also
+  // are parsed first by ViewProps (and indirectly AccessibilityProps).
+  // However, since RawPropsParser will always store these props /before/
+  // the unique BaseTextProps props, it is most efficient to parse these, in
+  // order, /after/ all of the other BaseTextProps, so that the RawPropsParser
+  // index rolls over only once instead of twice.
   textAttributes.accessibilityRole = convertRawProp(
       context,
       rawProps,
       "accessibilityRole",
       sourceTextAttributes.accessibilityRole,
       defaultTextAttributes.accessibilityRole);
+
+  // Color (accessed in this order by ViewProps)
+  textAttributes.opacity = convertRawProp(
+      context,
+      rawProps,
+      "opacity",
+      sourceTextAttributes.opacity,
+      defaultTextAttributes.opacity);
+  textAttributes.backgroundColor = convertRawProp(
+      context,
+      rawProps,
+      "backgroundColor",
+      sourceTextAttributes.backgroundColor,
+      defaultTextAttributes.backgroundColor);
 
   return textAttributes;
 }
