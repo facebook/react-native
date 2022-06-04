@@ -52,7 +52,7 @@ references:
     gems_cache_key: &gems_cache_key v1-gems-{{ checksum "Gemfile.lock" }}
     gradle_cache_key: &gradle_cache_key v1-gradle-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "ReactAndroid/gradle.properties" }}
     hermes_cache_key: &hermes_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
-    hermes_sdk_cache_key: &hermes_sdk_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "sdks/.hermes-cache-key-file" }}
+    hermes_sdk_cache_key: &hermes_sdk_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/react-native/sdks/.hermes-cache-key-file" }}
     hermes_windows_cache_key: &hermes_windows_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "tmp/hermes/hermesversion" }}
     pods_cache_key: &pods_cache_key v6-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
     windows_yarn_cache_key: &windows_yarn_cache_key v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
@@ -289,7 +289,7 @@ commands:
       - run:
           name: Setup Hermes cache
           command: |
-            HERMES_CACHE_KEY_FILE="sdks/.hermes-cache-key-file"
+            HERMES_CACHE_KEY_FILE="packages/react-native/sdks/.hermes-cache-key-file"
             if [ ! -f "$HERMES_CACHE_KEY_FILE" ]; then
               git ls-remote https://github.com/facebook/hermes main | cut -f 1 > $HERMES_CACHE_KEY_FILE
             fi
@@ -300,8 +300,8 @@ commands:
       - save_cache:
           key: *hermes_sdk_cache_key
           paths:
-            - sdks/hermesc
-            - sdks/hermes
+            - packages/react-native/sdks/hermesc
+            - packages/react-native/sdks/hermes
 
 # -------------------------
 #          JOBS
@@ -863,7 +863,7 @@ jobs:
       - image: debian:bullseye
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
-      - HERMES_VERSION_FILE: "sdks/.hermesversion"
+      - HERMES_VERSION_FILE: "packages/react-native/sdks/.hermesversion"
     steps:
       - run:
           name: Install dependencies
@@ -892,8 +892,8 @@ jobs:
           name: Download Hermes tarball
           command: |
             node scripts/hermes/prepare-hermes-for-build
-            cp sdks/download/* $HERMES_WS_DIR/download/.
-            cp -r sdks/hermes/* $HERMES_WS_DIR/hermes/.
+            cp packages/react-native/sdks/download/* $HERMES_WS_DIR/download/.
+            cp -r packages/react-native/sdks/hermes/* $HERMES_WS_DIR/hermes/.
       - save_cache:
           key: *hermes_cache_key
           paths:
@@ -963,8 +963,8 @@ jobs:
           name: Set up workspace
           command: |
             mkdir -p /tmp/hermes/osx-bin
-            mkdir -p ~/react-native/sdks/hermes
-            cp -r $HERMES_WS_DIR/hermes/* ~/react-native/sdks/hermes/.
+            mkdir -p ~/react-native/packages/react-native/sdks/hermes
+            cp -r $HERMES_WS_DIR/hermes/* ~/react-native/packages/react-native/sdks/hermes/.
       - run:
           name: Install dependencies
           command: |
@@ -972,18 +972,18 @@ jobs:
       - run:
           name: Build the Hermes iOS frameworks
           command: |
-            cd ~/react-native/sdks/hermes
+            cd ~/react-native/packages/react-native/sdks/hermes
             ./utils/build-ios-framework.sh
       - run:
           name: Build the Hermes Mac frameworks
           command: |
-            cd ~/react-native/sdks/hermes
+            cd ~/react-native/packages/react-native/sdks/hermes
             ./utils/build-mac-framework.sh
             cp build_macosx/bin/hermesc /tmp/hermes/osx-bin/.
       - run:
           name: Package the Hermes Apple frameworks
           command: |
-            cd ~/react-native/sdks/hermes
+            cd ~/react-native/packages/react-native/sdks/hermes
             . ./utils/build-apple-framework.sh
 
             mkdir -p /tmp/cocoapods-package-root/destroot
@@ -1126,10 +1126,10 @@ jobs:
       - run:
           name: Copy HermesC binaries
           command: |
-            mkdir -p ./sdks/hermesc ./sdks/hermesc/osx-bin ./sdks/hermesc/win64-bin ./sdks/hermesc/linux64-bin
-            cp -r $HERMES_WS_DIR/osx-bin/* ./sdks/hermesc/osx-bin/.
-            cp -r $HERMES_WS_DIR/win64-bin/* ./sdks/hermesc/win64-bin/.
-            cp -r $HERMES_WS_DIR/linux64-bin/* ./sdks/hermesc/linux64-bin/.
+            mkdir -p ./packages/react-native/sdks/hermesc ./packages/react-native/sdks/hermesc/osx-bin ./packages/react-native/sdks/hermesc/win64-bin ./packages/react-native/sdks/hermesc/linux64-bin
+            cp -r $HERMES_WS_DIR/osx-bin/* ./packages/react-native/sdks/hermesc/osx-bin/.
+            cp -r $HERMES_WS_DIR/win64-bin/* ./packages/react-native/sdks/hermesc/win64-bin/.
+            cp -r $HERMES_WS_DIR/linux64-bin/* ./packages/react-native/sdks/hermesc/linux64-bin/.
 
       - run_yarn
       - install_buck_tooling

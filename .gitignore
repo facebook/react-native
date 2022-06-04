@@ -31,23 +31,23 @@ project.xcworkspace
 /packages/rn-tester/android/app/gradle/
 /packages/rn-tester/android/app/gradlew
 /packages/rn-tester/android/app/gradlew.bat
-/ReactAndroid/build/
-/ReactAndroid/.cxx/
-/ReactAndroid/gradle/
-/ReactAndroid/gradlew
-/ReactAndroid/gradlew.bat
-/ReactAndroid/hermes-engine/build/
-/ReactAndroid/hermes-engine/.cxx/
-/template/android/app/build/
-/template/android/build/
+/packages/react-native/ReactAndroid/build/
+/packages/react-native/ReactAndroid/.cxx/
+/packages/react-native/ReactAndroid/gradle/
+/packages/react-native/ReactAndroid/gradlew
+/packages/react-native/ReactAndroid/gradlew.bat
+/packages/react-native/ReactAndroid/hermes-engine/build/
+/packages/react-native/ReactAndroid/hermes-engine/.cxx/
+/packages/react-native/template/android/app/build/
+/packages/react-native/template/android/build/
 
 # Buck
 .buckd
 buck-out
 /.lsp.buckd
 /.lsp-buck-out
-/ReactAndroid/src/main/jni/prebuilt/lib/
-/ReactAndroid/src/main/gen
+/packages/react-native/ReactAndroid/src/main/jni/prebuilt/lib/
+/packages/react-native/ReactAndroid/src/main/gen
 
 # Android Studio
 .project
@@ -75,7 +75,7 @@ package-lock.json
 .DS_Store
 
 # Test generated files
-/ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
+/packages/react-native/ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
 *.js.meta
 
 /coverage
@@ -85,23 +85,23 @@ package-lock.json
 /*.xcodeproj
 
 # ReactCommon subdir shouldn't have Xcode project
-/ReactCommon/**/*.xcodeproj
+/packages/react-native/ReactCommon/**/*.xcodeproj
 
 # Libs that shouldn't have Xcode project
-/Libraries/FBLazyVector/**/*.xcodeproj
-/Libraries/RCTRequired/**/*.xcodeproj
-/React/CoreModules/**/*.xcodeproj
-/React/FBReactNativeSpec/**/*.xcodeproj
+/packages/react-native/Libraries/FBLazyVector/**/*.xcodeproj
+/packages/react-native/Libraries/RCTRequired/**/*.xcodeproj
+/packages/react-native/React/CoreModules/**/*.xcodeproj
+/packages/react-native/React/FBReactNativeSpec/**/*.xcodeproj
 /packages/react-native-codegen/**/*.xcodeproj
 
 # Ruby Gems (Bundler)
 /vendor
-/template/vendor
+/packages/react-native/template/vendor
 
 # iOS / CocoaPods
-/template/ios/build/
-/template/ios/Pods/
-/template/ios/Podfile.lock
+/packages/react-native/template/ios/build/
+/packages/react-native/template/ios/Pods/
+/packages/react-native/template/ios/Podfile.lock
 /packages/rn-tester/Gemfile.lock
 
 # Ignore RNTester specific Pods, but keep the __offline_mirrors__ here.
@@ -109,15 +109,15 @@ package-lock.json
 !/packages/rn-tester/Pods/__offline_mirrors__
 
 # react-native-codegen
-/React/FBReactNativeSpec/FBReactNativeSpec
+/packages/react-native/React/FBReactNativeSpec/FBReactNativeSpec
 /packages/react-native-codegen/lib
-/ReactCommon/react/renderer/components/rncore/
+/packages/react-native/ReactCommon/react/renderer/components/rncore/
 /packages/rn-tester/NativeModuleExample/ScreenshotManagerSpec*
 
 # Additional SDKs
-/sdks/download
-/sdks/hermes
-/sdks/hermesc
+/packages/react-native/sdks/download
+/packages/react-native/sdks/hermes
+/packages/react-native/sdks/hermesc
 
 # Visual studio
 .vscode

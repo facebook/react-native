@@ -83,11 +83,11 @@ react {
     root = file("../../")
     inputExcludes = ["android/**", "./**", ".gradle/**"]
     composeSourceMapsPath = "$rootDir/scripts/compose-source-maps.js"
-    hermesCommand = "$rootDir/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"
+    hermesCommand = "$rootDir/packages/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"
     enableHermesForVariant { def v -> v.name.contains("hermes") }
 
     // Codegen Configs
-    reactNativeDir = rootDir
+    reactNativeDir = new File(rootDir, "node_modules/react-native")
     codegenDir = new File(rootDir, "node_modules/react-native-codegen")
 }
 

@@ -12,7 +12,7 @@
   "overrides": [
     {
       "files": [
-        "Libraries/**/*.js",
+        "packages/react-native/Libraries/**/*.js",
       ],
       "rules": {
         "@react-native-community/no-haste-imports": 2,
@@ -23,7 +23,7 @@
     },
     {
       "files": [
-        "flow-typed/**/*.js",
+        "packages/react-native/flow-typed/**/*.js",
       ],
       "rules": {
         quotes: 0
@@ -34,7 +34,7 @@
         "**/__fixtures__/**/*.js",
         "**/__mocks__/**/*.js",
         "**/__tests__/**/*.js",
-        "jest/**/*.js",
+        "packages/react-native/jest/**/*.js",
         "packages/rn-tester/**/*.js",
       ],
       "globals": {

@@ -34,3 +34,6 @@ plugins {
 if (File("./gradle/gradle-enterprise.gradle.kts").exists()) {
     apply(from = "./gradle/gradle-enterprise.gradle.kts")
 }
+
+project(":ReactAndroid").projectDir = file("./packages/react-native/ReactAndroid")
+project(":ReactAndroid:hermes-engine").projectDir = file("./packages/react-native/ReactAndroid/hermes-engine")

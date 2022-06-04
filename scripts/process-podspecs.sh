@@ -7,7 +7,7 @@
 set -ex
 
 SCRIPTS="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT="$(dirname "$SCRIPTS")"
+ROOT="$(dirname "$SCRIPTS/../packages/react-native")"
 
 # Specify `SPEC_REPO` as an env variable if you want to push to a specific spec repo.
 # Defaults to `react-test`, which is meant to be a dummy repo used to test that the specs fully lint.

@@ -10,7 +10,7 @@
 
 'use strict';
 
-const getPolyfills = require('./rn-get-polyfills');
+const getPolyfills = require('react-native/rn-get-polyfills');
 
 /**
  * This cli config is needed for development purposes, e.g. for running
