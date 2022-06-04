@@ -247,7 +247,7 @@ try {
     describe('Test: Verify packager can generate an Android bundle');
     if (
       exec(
-        'yarn react-native bundle --verbose --entry-file index.js --platform android --dev true --bundle-output android-bundle.js --max-workers 1',
+        'yarn react-native bundle --verbose --entry-file packages/react-native/index.js --platform android --dev true --bundle-output android-bundle.js --max-workers 1',
       ).code
     ) {
       echo('Could not build Android bundle');
@@ -257,7 +257,7 @@ try {
     describe('Test: Verify packager can generate an iOS bundle');
     if (
       exec(
-        'yarn react-native bundle --entry-file index.js --platform ios --dev true --bundle-output ios-bundle.js --max-workers 1',
+        'yarn react-native bundle --entry-file packages/react-native/index.js --platform ios --dev true --bundle-output ios-bundle.js --max-workers 1',
       ).code
     ) {
       echo('Could not build iOS bundle');
