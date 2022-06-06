@@ -1310,7 +1310,7 @@ exports.examples = [
   },
   {
     title: 'Automatic Content Grouping',
-    render(): React.Element<typeof AccessibilityExample> {
+    render(): React.Element<typeof AutomaticContentGrouping> {
       return <AutomaticContentGrouping />;
     },
   },
