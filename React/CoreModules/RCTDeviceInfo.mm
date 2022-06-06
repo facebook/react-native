@@ -178,16 +178,22 @@ static NSDictionary *RCTExportedDimensions(RCTModuleRegistry *moduleRegistry, RC
   UIApplicationState appState = [RCTSharedApplication() applicationState];
   BOOL isRunningInFullScreen = CGRectEqualToRect([UIApplication sharedApplication].delegate.window.frame, [UIApplication sharedApplication].delegate.window.screen.bounds);
     
+  
+  BOOL isActive = appState == UIApplicationStateActive;
+  BOOL isChangingFullscreen = (isRunningInFullScreen != _isFullscreen || !isRunningInFullScreen);
+  BOOL isOrientationChanging = (UIInterfaceOrientationIsPortrait(_currentInterfaceOrientation) &&
+       !UIInterfaceOrientationIsPortrait(nextOrientation)) || (UIInterfaceOrientationIsLandscape(_currentInterfaceOrientation) &&
+       !UIInterfaceOrientationIsLandscape(nextOrientation));
+
   // Update when we go from portrait to landscape, or landscape to portrait
-  if ((((UIInterfaceOrientationIsPortrait(_currentInterfaceOrientation) &&
-       !UIInterfaceOrientationIsPortrait(nextOrientation)) ||
-      (UIInterfaceOrientationIsLandscape(_currentInterfaceOrientation) &&
-       !UIInterfaceOrientationIsLandscape(nextOrientation)) || (isRunningInFullScreen != _isFullscreen || !isRunningInFullScreen)))
-      && appState == UIApplicationStateActive) {
+  // also update when the fullscreen statea changes (multitasking) and only when the app is in active state
+  if ((isOrientationChanging || isChangingFullscreen) && isActive) {
       #pragma clang diagnostic push
       #pragma clang diagnostic ignored "-Wdeprecated-declarations"
           [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"didUpdateDimensions"
                                                                                 body:RCTExportedDimensions(_moduleRegistry, _bridge)];
+            // We only want to track the current _currentInterfaceOrientation and _isFullscreen only 
+            // when it happens and only when it is published, thus it has to happen inside the if condition.
             _currentInterfaceOrientation = nextOrientation;
             _isFullscreen = isRunningInFullScreen;
       #pragma clang diagnostic pop
@@ -207,13 +213,17 @@ static NSDictionary *RCTExportedDimensions(RCTModuleRegistry *moduleRegistry, RC
 - (void)_interfaceFrameDidChange
 {
   NSDictionary *nextInterfaceDimensions = RCTExportedDimensions(_moduleRegistry, _bridge);
-    UIApplicationState appState = [RCTSharedApplication() applicationState];
+  UIApplicationState appState = [RCTSharedApplication() applicationState];
     
-  if (!([nextInterfaceDimensions isEqual:_currentInterfaceDimensions]) && appState == UIApplicationStateActive) {
+  BOOL isActive = appState == UIApplicationStateActive;
+  // update and publish the even only when the app is in active state
+  if (!([nextInterfaceDimensions isEqual:_currentInterfaceDimensions]) && isActive) {
     #pragma clang diagnostic push
     #pragma clang diagnostic ignored "-Wdeprecated-declarations"
         [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"didUpdateDimensions"
                                                                               body:nextInterfaceDimensions];
+          // We only want to track the current _currentInterfaceOrientation and _isFullscreen only 
+          // when it happens and only when it is published, thus it has to happen inside the if condition.
           _currentInterfaceDimensions = nextInterfaceDimensions;
     #pragma clang diagnostic pop
   }
