@@ -213,8 +213,16 @@ class AccessibilityExample extends React.Component<{}> {
             />
           </View>
         </RNTesterBlock>
+      </View>
+    );
+  }
+}
 
-        <RNTesterBlock title="TouchableNativeFeedback with non-accessible child Texts - basic example">
+class AutomaticContentGrouping extends React.Component<{}> {
+  render(): React.Node {
+    return (
+      <View>
+        <RNTesterBlock title="Parent and children have different role">
           <TouchableNativeFeedback
             accessible={true}
             importantForAccessibility="yes"
@@ -228,7 +236,7 @@ class AccessibilityExample extends React.Component<{}> {
           </TouchableNativeFeedback>
         </RNTesterBlock>
 
-        <RNTesterBlock title="TouchableNativeFeedback with non-accessible child Texts">
+        <RNTesterBlock title="Parent has accessibilityAction activate and copy">
           <TouchableNativeFeedback
             accessible={true}
             importantForAccessibility="yes"
@@ -256,7 +264,7 @@ class AccessibilityExample extends React.Component<{}> {
           </TouchableNativeFeedback>
         </RNTesterBlock>
 
-        <RNTesterBlock title="TouchableNativeFeedback with non-accessible child Texts, one of them have the accessibilityLabel (contentDescription)">
+        <RNTesterBlock title="One of the child has accessibilityLabel, role, state, and accValue">
           <View accessible={true} accessibilityRole="button">
             <View>
               <Text accessible={false}>Text number 1</Text>
@@ -274,7 +282,7 @@ class AccessibilityExample extends React.Component<{}> {
           </View>
         </RNTesterBlock>
 
-        <RNTesterBlock title="TouchableNativeFeedback with non-accessible child Texts, one of them is an EditText">
+        <RNTesterBlock title="With child TextInput">
           <TouchableNativeFeedback
             accessible={true}
             importantForAccessibility="yes"
@@ -1256,6 +1264,12 @@ exports.examples = [
     title: 'Accessibility elements',
     render(): React.Element<typeof AccessibilityExample> {
       return <AccessibilityExample />;
+    },
+  },
+  {
+    title: 'Automatic Content Grouping',
+    render(): React.Element<typeof AccessibilityExample> {
+      return <AutomaticContentGrouping />;
     },
   },
   {
