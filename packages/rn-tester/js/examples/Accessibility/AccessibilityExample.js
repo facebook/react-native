@@ -295,6 +295,63 @@ class AutomaticContentGrouping extends React.Component<{}> {
             />
           </TouchableNativeFeedback>
         </RNTesterBlock>
+
+        <RNTesterBlock title="Three levels of nested Components">
+          <TouchableNativeFeedback
+            accessible={true}
+            importantForAccessibility="yes"
+            accessibilityRole="button">
+            <Text accessible={false}>
+              Text number 2
+              <Text accessible={false}>
+                Text number 3<Text accessible={false}>Text number 4</Text>
+              </Text>
+            </Text>
+          </TouchableNativeFeedback>
+        </RNTesterBlock>
+
+        <RNTesterBlock title="The child is not TextInput, the contentDescription is not empty and does not have nodeText">
+          <TouchableNativeFeedback
+            onPress={() => console.warn('onPress child')}
+            accessible={true}
+            accessibilityRole="button">
+            <View>
+              <Text
+                accessibilityLabel="this is the child Text accessibilityLabel"
+                accessible={false}
+              />
+            </View>
+          </TouchableNativeFeedback>
+        </RNTesterBlock>
+
+        <RNTesterBlock title="The child is not TextInput, the contentDescription is not empty and does not have nodeText">
+          <TouchableNativeFeedback
+            onPress={() => console.warn('onPress child')}
+            accessible={true}
+            accessibilityRole="button">
+            <View>
+              <Text
+                accessibilityLabel="this is the child Text accessibilityLabel"
+                accessible={false}
+              />
+            </View>
+          </TouchableNativeFeedback>
+        </RNTesterBlock>
+
+        <RNTesterBlock title="The child is TextInput, the contentDescription is empty and has a nodeText">
+          <TouchableNativeFeedback
+            onPress={() => console.warn('onPress child')}
+            accessible={true}
+            accessibilityRole="button">
+            <View>
+              <Text accessible={false}>This is text number 1</Text>
+              <TextInput
+                accessible={false}
+                accessibilityLabel="this is the child Text accessibilityLabel"
+              />
+            </View>
+          </TouchableNativeFeedback>
+        </RNTesterBlock>
       </View>
     );
   }
