@@ -32,6 +32,8 @@ export type PermissionType =
   | 'android.permission.READ_CALL_LOG'
   | 'android.permission.WRITE_CALL_LOG'
   | 'com.android.voicemail.permission.ADD_VOICEMAIL'
+  | 'com.android.voicemail.permission.READ_VOICEMAIL'
+  | 'com.android.voicemail.permission.WRITE_VOICEMAIL'
   | 'android.permission.USE_SIP'
   | 'android.permission.PROCESS_OUTGOING_CALLS'
   | 'android.permission.BODY_SENSORS'
