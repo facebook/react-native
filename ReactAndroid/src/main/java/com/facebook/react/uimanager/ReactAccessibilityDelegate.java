@@ -306,13 +306,13 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     }
     boolean missingContentDescription = TextUtils.isEmpty(info.getContentDescription());
     boolean missingText = TextUtils.isEmpty(info.getText());
-    boolean missingTextOrDescription = missingContentDescription && missingText;
+    boolean missingTextAndDescription = missingContentDescription && missingText;
     boolean hasContentToAnnounce =
         accessibilityActions != null
             || accessibilityState != null
             || accessibilityLabelledBy != null
             || accessibilityRole != null;
-    if (missingTextOrDescription && hasContentToAnnounce) {
+    if (missingTextAndDescription && hasContentToAnnounce) {
       info.setContentDescription(getTalkbackDescription(host, info));
     }
   }

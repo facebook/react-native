@@ -337,21 +337,6 @@ class AutomaticContentGrouping extends React.Component<{}> {
             </View>
           </TouchableNativeFeedback>
         </RNTesterBlock>
-
-        <RNTesterBlock title="The child is TextInput, the contentDescription is empty and has a nodeText">
-          <TouchableNativeFeedback
-            onPress={() => console.warn('onPress child')}
-            accessible={true}
-            accessibilityRole="button">
-            <View>
-              <Text accessible={false}>This is text number 1</Text>
-              <TextInput
-                accessible={false}
-                accessibilityLabel="this is the child Text accessibilityLabel"
-              />
-            </View>
-          </TouchableNativeFeedback>
-        </RNTesterBlock>
       </View>
     );
   }
