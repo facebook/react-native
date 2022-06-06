@@ -1092,6 +1092,12 @@ public class SurfaceMountingManager {
   public void enqueuePendingEvent(int reactTag, ViewEvent viewEvent) {
     UiThreadUtil.assertOnUiThread();
 
+    // When the surface stopped we will reset the view state map. We are not going to enqueue
+    // pending events as they are not expected to be dispatched anyways.
+    if (mTagToViewState == null) {
+      return;
+    }
+
     ViewState viewState = mTagToViewState.get(reactTag);
     if (viewState == null) {
       // Cannot queue event without view state. Do nothing here.
