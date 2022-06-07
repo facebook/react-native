@@ -31,15 +31,22 @@ id convertFollyDynamicToId(const folly::dynamic &dyn)
       return [[NSString alloc] initWithBytes:dyn.c_str() length:dyn.size() encoding:NSUTF8StringEncoding];
     case folly::dynamic::ARRAY: {
       NSMutableArray *array = [[NSMutableArray alloc] initWithCapacity:dyn.size()];
-      for (auto &elem : dyn) {
-        [array addObject:convertFollyDynamicToId(elem)];
+      for (const auto &elem : dyn) {
+        id value = convertFollyDynamicToId(elem);
+        if (value) {
+          [array addObject:value];
+        }
       }
       return array;
     }
     case folly::dynamic::OBJECT: {
       NSMutableDictionary *dict = [[NSMutableDictionary alloc] initWithCapacity:dyn.size()];
-      for (auto &elem : dyn.items()) {
-        dict[convertFollyDynamicToId(elem.first)] = convertFollyDynamicToId(elem.second);
+      for (const auto &elem : dyn.items()) {
+        id key = convertFollyDynamicToId(elem.first);
+        id value = convertFollyDynamicToId(elem.second);
+        if (key && value) {
+          dict[key] = value;
+        }
       }
       return dict;
     }

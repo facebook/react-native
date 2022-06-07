@@ -41,11 +41,7 @@ class AnimatedProps extends AnimatedNode {
     for (const key in this._props) {
       const value = this._props[key];
       if (value instanceof AnimatedNode) {
-        if (!value.__isNative || value instanceof AnimatedStyle) {
-          // We cannot use value of natively driven nodes this way as the value we have access from
-          // JS may not be up to date.
-          props[key] = value.__getValue();
-        }
+        props[key] = value.__getValue();
       } else if (value instanceof AnimatedEvent) {
         props[key] = value.__getHandler();
       } else {

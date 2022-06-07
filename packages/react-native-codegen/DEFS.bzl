@@ -427,7 +427,7 @@ def rn_codegen_components(
                 deps = [
                     "//third-party/glog:glog",
                     "//xplat/fbsystrace:fbsystrace",
-                    "//xplat/folly:headers_only",
+                    "//xplat/folly:headers_only_do_not_use",
                     "//xplat/folly:memory",
                     "//xplat/folly:molly",
                     YOGA_CXX_TARGET,

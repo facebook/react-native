@@ -404,15 +404,22 @@ class MessageQueue {
       this.__spy({type: TO_JS, module, method, args});
     }
     const moduleMethods = this.getCallableModule(module);
-    invariant(
-      !!moduleMethods,
-      `Module ${module} is not a registered callable module (calling ${method}). A frequent cause of the error is that the application entry file path is incorrect.
-      This can also happen when the JS bundle is corrupt or there is an early initialization error when loading React Native.`,
-    );
-    invariant(
-      !!moduleMethods[method],
-      `Method ${method} does not exist on module ${module}`,
-    );
+    if (!moduleMethods) {
+      const callableModuleNames = Object.keys(this._lazyCallableModules);
+      const n = callableModuleNames.length;
+      const callableModuleNameList = callableModuleNames.join(', ');
+      invariant(
+        false,
+        `Failed to call into JavaScript module method ${module}.${method}(). Module has not been registered as callable. Registered callable JavaScript modules (n = ${n}): ${callableModuleNameList}.
+        A frequent cause of the error is that the application entry file path is incorrect. This can also happen when the JS bundle is corrupt or there is an early initialization error when loading React Native.`,
+      );
+    }
+    if (!moduleMethods[method]) {
+      invariant(
+        false,
+        `Failed to call into JavaScript module method ${module}.${method}(). Module exists, but the method is undefined.`,
+      );
+    }
     moduleMethods[method].apply(moduleMethods, args);
     Systrace.endEvent();
   }

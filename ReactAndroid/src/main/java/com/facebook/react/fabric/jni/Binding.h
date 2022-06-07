@@ -38,9 +38,6 @@ class Binding : public jni::HybridClass<Binding>,
   constexpr static const char *const kJavaDescriptor =
       "Lcom/facebook/react/fabric/Binding;";
 
-  constexpr static auto ReactFeatureFlagsJavaDescriptor =
-      "com/facebook/react/config/ReactFeatureFlags";
-
   static void registerNatives();
 
   std::shared_ptr<Scheduler> getScheduler();

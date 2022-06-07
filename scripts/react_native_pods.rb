@@ -4,6 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 
 require 'json'
+require 'open3'
 require 'pathname'
 require_relative './react_native_pods_utils/script_phases.rb'
 require_relative './cocoapods/flipper.rb'
@@ -105,29 +106,21 @@ def use_react_native! (options={})
   end
 
   if hermes_enabled
+    prepare_hermes = 'node scripts/hermes/prepare-hermes-for-build'
+    react_native_dir = Pod::Config.instance.installation_root.join(prefix)
+    prep_output, prep_status = Open3.capture2e(prepare_hermes, :chdir => react_native_dir)
+    prep_output.split("\n").each { |line| Pod::UI.info line }
+    abort unless prep_status == 0
+
     pod 'React-hermes', :path => "#{prefix}/ReactCommon/hermes"
     pod 'libevent', '~> 2.1.12'
-
-    sdks_dir = Pod::Config.instance.installation_root.join(prefix, "sdks")
-    hermes_tag_file = sdks_dir.join(".hermesversion")
-
-    if (File.exist?(hermes_tag_file))
-      # Use published pod with pre-builts.
-      Pod::UI.puts "[Hermes] Tag file exists at path: #{hermes_tag_file}"
-      package = JSON.parse(File.read(File.join(__dir__, "..", "package.json")))
-      hermes_version = package['version']
-      Pod::UI.puts "[Hermes] Loading version: #{hermes_version}"
-      pod 'hermes-engine', hermes_version
-    else
-      # Use local podspec and build from source.
-      path_to_hermes = "#{prefix}/sdks/hermes/hermes-engine.podspec"
-      Pod::UI.puts "[Hermes] Use local version from #{path_to_hermes}"
-      system("(cd #{prefix} && node scripts/hermes/prepare-hermes-for-build)")
-      pod 'hermes-engine', :path => path_to_hermes
-    end
-
+    pod 'hermes-engine', :path => "#{prefix}/sdks/hermes/hermes-engine.podspec"
   end
 
+  # CocoaPods `configurations` option ensures that the target is copied only for the specified configurations,
+  # but those dependencies are still built.
+  # Flipper doesn't currently compile for release https://github.com/facebook/react-native/issues/33764
+  # Setting the production flag to true when build for production make sure that we don't install Flipper in the app in the first place.
   if flipper_configuration.flipper_enabled && !production
     install_flipper_dependencies(prefix)
     use_flipper_pods(flipper_configuration.versions, :configurations => flipper_configuration.configurations)

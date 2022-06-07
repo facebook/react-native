@@ -139,6 +139,14 @@ const API = {
     invariant(NativeAnimatedModule, 'Native animated module is not available');
     flushQueueTimeout = null;
 
+    // Early returns before calling any APIs
+    if (useSingleOpBatching && singleOpQueue.length === 0) {
+      return;
+    }
+    if (!useSingleOpBatching && queue.length === 0) {
+      return;
+    }
+
     if (useSingleOpBatching) {
       // Set up event listener for callbacks if it's not set up
       if (

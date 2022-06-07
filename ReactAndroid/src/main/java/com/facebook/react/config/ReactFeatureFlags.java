@@ -32,6 +32,12 @@ public class ReactFeatureFlags {
   public static volatile boolean enableFabricRenderer = false;
 
   /**
+   * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable
+   * the following flags: `useTurboModules` & `enableFabricRenderer`.
+   */
+  public static boolean enableBridgelessArchitecture = false;
+
+  /**
    * After TurboModules and Fabric are enabled, we need to ensure that the legacy NativeModule isn't
    * isn't used. So, turn this flag on to trigger warnings whenever the legacy NativeModule system
    * is used.
@@ -74,16 +80,8 @@ public class ReactFeatureFlags {
   /** Feature flag to configure synchronized queue access for Animated module */
   public static boolean enableSynchronizationForAnimated = false;
 
-  private static boolean mapBufferSerializationEnabled = false;
-
   /** Enables or disables MapBuffer Serialization */
-  public static void setMapBufferSerializationEnabled(boolean enabled) {
-    mapBufferSerializationEnabled = enabled;
-  }
-
-  public static boolean isMapBufferSerializationEnabled() {
-    return mapBufferSerializationEnabled;
-  }
+  public static boolean mapBufferSerializationEnabled = false;
 
   /** Feature Flag to use overflowInset values provided by Yoga */
   public static boolean useOverflowInset = false;
@@ -116,4 +114,20 @@ public class ReactFeatureFlags {
 
   /** Feature Flag to control RN Android scrollEventThrottle prop. */
   public static boolean enableScrollEventThrottle = false;
+
+  /**
+   * Feature flag that controls how turbo modules are exposed to JS
+   *
+   * <ul>
+   *   <li>0 = as a HostObject
+   *   <li>1 = as a plain object, backed with a HostObject as prototype
+   *   <li>2 = as a plain object, with all methods eagerly configured
+   * </ul>
+   */
+  public static int turboModuleBindingMode = 0;
+
+  /**
+   * Feature Flag to enable View Recycling. When enabled, individual ViewManagers must still opt-in.
+   */
+  public static boolean enableViewRecycling = false;
 }

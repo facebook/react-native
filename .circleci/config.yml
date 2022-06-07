@@ -31,6 +31,17 @@ references:
       at: *hermes_workspace_root
 
   # -------------------------
+  #        Dependency Anchors
+  # -------------------------
+  dependency_versions:
+    # The Xcode version used on CircleCI OSS tests must be kept in sync with
+    # the Xcode version used on Sandcastle OSS tests. See _XCODE_VERSION in
+    # tools/utd/migrated_nbtd_jobs/react_native_oss.td
+    xcode_version: &xcode_version "13.3.1"
+    nodelts_image: &nodelts_image "cimg/node:16.14"
+    nodeprevlts_image: &nodeprevlts_image "cimg/node:14.19"
+
+  # -------------------------
   #        Cache Key Anchors
   # -------------------------
   # Anchors for the cache keys
@@ -71,12 +82,12 @@ executors:
     <<: *defaults
     docker:
       # Note: Version set separately for Windows builds, see below.
-      - image: cimg/node:16.14
+      - image: *nodelts_image
     resource_class: "xlarge"
   nodeprevlts:
     <<: *defaults
     docker:
-      - image: cimg/node:14.19
+      - image: *nodeprevlts_image
     resource_class: "xlarge"
   reactnativeandroid:
     <<: *defaults
@@ -96,7 +107,7 @@ executors:
   reactnativeios:
     <<: *defaults
     macos:
-      xcode: &_XCODE_VERSION "13.3.0"
+      xcode: *xcode_version
     resource_class: macos.x86.medium.gen2
 
 # -------------------------

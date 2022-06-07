@@ -4,9 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 
 require "json"
-
-# sdks/.hermesversion
-hermes_tag_file = File.join(__dir__, "..", ".hermesversion")
+require "open3"
 
 # sdks/hermesc/osx-bin/ImportHermesc.cmake
 import_hermesc_file=File.join(__dir__, "..", "hermesc", "osx-bin", "ImportHermesc.cmake")
@@ -16,30 +14,29 @@ package_file = File.join(__dir__, "..", "..", "package.json")
 package = JSON.parse(File.read(package_file))
 version = package['version']
 
+# We need to check the current git branch/remote to verify if
+# we're on a React Native release branch to actually build Hermes.
+currentbranch, err = Open3.capture3("git rev-parse --abbrev-ref HEAD")
+currentremote, err = Open3.capture3("git config --get remote.origin.url")
+
 source = {}
 git = "https://github.com/facebook/hermes.git"
-building_from_source = false
 
-if ENV['hermes-artifact-url'] then
-  source[:http] = ENV['hermes-artifact-url']
-elsif File.exist?(hermes_tag_file) then
-  building_from_source = true
+if version == '1000.0.0'
+  Pod::UI.puts '[Hermes] Hermes needs to be compiled, installing hermes-engine may take a while...'.yellow if Object.const_defined?("Pod::UI")
   source[:git] = git
-  source[:tag] = File.read(hermes_tag_file)
+  source[:commit] = `git ls-remote https://github.com/facebook/hermes main | cut -f 1`.strip
+elsif currentremote.strip.end_with?("facebook/react-native.git") and currentbranch.strip.end_with?("-stable")
+  Pod::UI.puts '[Hermes] Detected that you are on a React Native release branch, building Hermes from source...'.yellow if Object.const_defined?("Pod::UI")
+  source[:git] = git
+  source[:commit] = `git ls-remote https://github.com/facebook/hermes main | cut -f 1`.strip
 else
-  building_from_source = true
-  source[:git] = git
-  hermes_commit_sha = `git ls-remote https://github.com/facebook/hermes main | cut -f 1`.strip
-  source[:commit] = hermes_commit_sha
+  source[:http] = "https://github.com/facebook/react-native/releases/download/v#{version}/hermes-runtime-darwin-v#{version}.tar.gz"
 end
 
 module HermesHelper
   # BUILD_TYPE = :debug
   BUILD_TYPE = :release
-end
-
-if building_from_source
-  Pod::UI.puts '[Hermes] Hermes needs to be compiled, installing hermes-engine may take a while...'.yellow if Object.const_defined?("Pod::UI")
 end
 
 Pod::Spec.new do |spec|
@@ -48,10 +45,10 @@ Pod::Spec.new do |spec|
   spec.summary     = "Hermes is a small and lightweight JavaScript engine optimized for running React Native."
   spec.description = "Hermes is a JavaScript engine optimized for fast start-up of React Native apps. It features ahead-of-time static optimization and compact bytecode."
   spec.homepage    = "https://hermesengine.dev"
-  spec.license     = { type: "MIT", file: "LICENSE" }
+  spec.license     = package["license"]
   spec.author      = "Facebook"
   spec.source      = source
-  spec.platforms   = { :osx => "10.13", :ios => "11.0" }
+  spec.platforms   = { :osx => "10.13", :ios => "12.4" }
 
   spec.preserve_paths      = ["destroot/bin/*"].concat(HermesHelper::BUILD_TYPE == :debug ? ["**/*.{h,c,cpp}"] : [])
   spec.source_files        = "destroot/include/**/*.h"
@@ -62,7 +59,7 @@ Pod::Spec.new do |spec|
 
   spec.xcconfig            = { "CLANG_CXX_LANGUAGE_STANDARD" => "c++17", "CLANG_CXX_LIBRARY" => "compiler-default", "GCC_PREPROCESSOR_DEFINITIONS" => "HERMES_ENABLE_DEBUGGER=1" }
 
-  unless ENV['hermes-artifact-url']
+  if source[:git] then
     spec.prepare_command = <<-EOS
       # When true, debug build will be used.
       # See `build-apple-framework.sh` for details

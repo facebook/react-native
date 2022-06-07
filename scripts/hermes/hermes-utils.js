@@ -15,6 +15,7 @@ const {execSync} = require('child_process');
 
 const SDKS_DIR = path.normalize(path.join(__dirname, '..', '..', 'sdks'));
 const HERMES_DIR = path.join(SDKS_DIR, 'hermes');
+const DEFAULT_HERMES_TAG = 'main';
 const HERMES_TAG_FILE_PATH = path.join(SDKS_DIR, '.hermesversion');
 const HERMES_TARBALL_BASE_URL = 'https://github.com/facebook/hermes/tarball/';
 const HERMES_TARBALL_DOWNLOAD_DIR = path.join(SDKS_DIR, 'download');
@@ -24,20 +25,6 @@ const MACOS_IMPORT_HERMESC_PATH = path.join(
   MACOS_BIN_DIR,
   'ImportHermesc.cmake',
 );
-
-function prepareFileSystem() {
-  if (!fs.existsSync(SDKS_DIR)) {
-    fs.mkdirSync(SDKS_DIR, {recursive: true});
-  }
-
-  if (!fs.existsSync(HERMES_DIR)) {
-    fs.mkdirSync(HERMES_DIR, {recursive: true});
-  }
-
-  if (!fs.existsSync(HERMES_TARBALL_DOWNLOAD_DIR)) {
-    fs.mkdirSync(HERMES_TARBALL_DOWNLOAD_DIR, {recursive: true});
-  }
-}
 
 function readHermesTag() {
   if (fs.existsSync(HERMES_TAG_FILE_PATH)) {
@@ -64,8 +51,9 @@ function setHermesTag(hermesTag) {
     return;
   }
 
-  prepareFileSystem();
-
+  if (!fs.existsSync(SDKS_DIR)) {
+    fs.mkdirSync(SDKS_DIR, {recursive: true});
+  }
   fs.writeFileSync(HERMES_TAG_FILE_PATH, hermesTag.trim());
   console.log('Hermes tag has been updated. Please commit your changes.');
 }
@@ -89,10 +77,12 @@ function downloadHermesTarball() {
   const hermesTarballDownloadPath = getHermesTarballDownloadPath(hermesTag);
   let hermesTarballUrl = HERMES_TARBALL_BASE_URL + hermesTag;
 
-  prepareFileSystem();
-
   if (fs.existsSync(hermesTarballDownloadPath)) {
     return;
+  }
+
+  if (!fs.existsSync(HERMES_TARBALL_DOWNLOAD_DIR)) {
+    fs.mkdirSync(HERMES_TARBALL_DOWNLOAD_DIR, {recursive: true});
   }
 
   console.info(
@@ -110,12 +100,13 @@ function expandHermesTarball() {
   const hermesTagSHA = getHermesTagSHA(hermesTag);
   const hermesTarballDownloadPath = getHermesTarballDownloadPath(hermesTag);
 
-  prepareFileSystem();
-
   if (!fs.existsSync(hermesTarballDownloadPath)) {
-    throw new Error(`[Hermes] Failed to expand Hermes tarball.`);
+    throw new Error('[Hermes] Could not locate Hermes tarball.');
   }
 
+  if (!fs.existsSync(HERMES_DIR)) {
+    fs.mkdirSync(HERMES_DIR, {recursive: true});
+  }
   console.info(`[Hermes] Expanding Hermes tarball for commit ${hermesTagSHA}`);
   try {
     execSync(
@@ -127,16 +118,16 @@ function expandHermesTarball() {
 }
 
 function copyBuildScripts() {
-  if (!fs.existsSync(HERMES_DIR)) {
+  if (!fs.existsSync(SDKS_DIR)) {
     throw new Error(
-      '[Hermes] Failed to copy Hermes build scripts, no Hermes source directory found.',
+      '[Hermes] Failed to copy Hermes build scripts, no SDKs directory found.',
     );
   }
 
-  fs.copyFileSync(
-    path.join(SDKS_DIR, 'hermes-engine', 'hermes-engine.podspec'),
-    path.join(HERMES_DIR, 'hermes-engine.podspec'),
-  );
+  if (!fs.existsSync(HERMES_DIR)) {
+    fs.mkdirSync(path.join(HERMES_DIR, 'utils'), {recursive: true});
+  }
+
   fs.copyFileSync(
     path.join(SDKS_DIR, 'hermes-engine', 'utils', 'build-apple-framework.sh'),
     path.join(HERMES_DIR, 'utils', 'build-apple-framework.sh'),
@@ -148,6 +139,63 @@ function copyBuildScripts() {
   fs.copyFileSync(
     path.join(SDKS_DIR, 'hermes-engine', 'utils', 'build-mac-framework.sh'),
     path.join(HERMES_DIR, 'utils', 'build-mac-framework.sh'),
+  );
+}
+
+function copyPodSpec() {
+  if (!fs.existsSync(SDKS_DIR)) {
+    throw new Error(
+      '[Hermes] Failed to copy Hermes Podspec, no SDKs directory found.',
+    );
+  }
+
+  if (!fs.existsSync(HERMES_DIR)) {
+    fs.mkdirSync(HERMES_DIR, {recursive: true});
+  }
+  fs.copyFileSync(
+    path.join(SDKS_DIR, 'hermes-engine', 'hermes-engine.podspec'),
+    path.join(HERMES_DIR, 'hermes-engine.podspec'),
+  );
+}
+
+function isOnAReleaseBranch() {
+  try {
+    let currentBranch = execSync('git rev-parse --abbrev-ref HEAD')
+      .toString()
+      .trim();
+    let currentRemote = execSync('git config --get remote.origin.url')
+      .toString()
+      .trim();
+    return (
+      currentBranch.endsWith('-stable') &&
+      currentRemote.endsWith('facebook/react-native.git')
+    );
+  } catch (error) {
+    // If not inside a git repo, we're going to fail here and return.
+    return false;
+  }
+}
+
+function isOnAReleaseTag() {
+  try {
+    // If on a named tag, this method will return the tag name.
+    // If not, it will throw as the return code is not 0.
+    execSync('git describe --exact-match HEAD', {stdio: 'ignore'});
+  } catch (error) {
+    return false;
+  }
+  let currentRemote = execSync('git config --get remote.origin.url')
+    .toString()
+    .trim();
+  return currentRemote.endsWith('facebook/react-native.git');
+}
+
+function shouldBuildHermesFromSource() {
+  const hermesTag = readHermesTag();
+  return (
+    isOnAReleaseBranch() ||
+    isOnAReleaseTag() ||
+    hermesTag === DEFAULT_HERMES_TAG
   );
 }
 
@@ -178,10 +226,12 @@ set_target_properties(native-hermesc PROPERTIES
 module.exports = {
   configureMakeForPrebuiltHermesC,
   copyBuildScripts,
+  copyPodSpec,
   downloadHermesTarball,
   expandHermesTarball,
   getHermesTagSHA,
   readHermesTag,
   setHermesTag,
+  shouldBuildHermesFromSource,
   shouldUsePrebuiltHermesC,
 };

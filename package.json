@@ -60,8 +60,6 @@
     "scripts/cocoapods/flipper.rb",
     "scripts/cocoapods/new_architecture.rb",
     "scripts/react-native-xcode.sh",
-    "scripts/hermes/hermes-utils.js",
-    "scripts/hermes/prepare-hermes-for-build.js",
     "sdks/hermes-engine",
     "sdks/hermesc",
     "template.config.js",
@@ -134,14 +132,13 @@
     "react-shallow-renderer": "16.14.1",
     "regenerator-runtime": "^0.13.2",
     "scheduler": "^0.21.0",
-    "shelljs": "^0.8.5",
     "stacktrace-parser": "^0.1.3",
     "use-sync-external-store": "^1.0.0",
     "whatwg-fetch": "^3.0.0",
     "ws": "^6.1.4"
   },
   "devDependencies": {
-    "flow-bin": "^0.178.0",
+    "flow-bin": "^0.178.1",
     "react": "18.0.0",
     "react-test-renderer": "^18.0.0"
   },

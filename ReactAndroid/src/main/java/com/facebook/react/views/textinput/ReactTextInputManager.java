@@ -1274,7 +1274,16 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       FLog.e(TAG, "updateState: [" + view.getId() + "]");
     }
 
-    view.getFabricViewStateManager().setStateWrapper(stateWrapper);
+    FabricViewStateManager stateManager = view.getFabricViewStateManager();
+    if (!stateManager.hasStateWrapper()) {
+      // HACK: In Fabric, we assume all components start off with zero padding, which is
+      // not true for TextInput components. We expose the theme's default padding via
+      // AndroidTextInputComponentDescriptor, which will be applied later though setPadding.
+      // TODO T58784068: move this constructor once Fabric is shipped
+      view.setPadding(0, 0, 0, 0);
+    }
+
+    stateManager.setStateWrapper(stateWrapper);
 
     ReadableNativeMap state = stateWrapper.getStateData();
     if (state == null) {

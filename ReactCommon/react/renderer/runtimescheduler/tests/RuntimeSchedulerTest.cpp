@@ -43,7 +43,6 @@ class RuntimeSchedulerTest : public testing::Test {
 
     runtimeScheduler_ =
         std::make_unique<RuntimeScheduler>(runtimeExecutor, stubNow);
-    runtimeScheduler_->setEnableYielding(true);
   }
 
   jsi::Function createHostFunctionFromLambda(
@@ -315,24 +314,6 @@ TEST_F(RuntimeSchedulerTest, getCurrentPriorityLevel) {
   EXPECT_EQ(
       runtimeScheduler_->getCurrentPriorityLevel(),
       SchedulerPriority::NormalPriority);
-}
-
-TEST_F(RuntimeSchedulerTest, scheduleWork) {
-  runtimeScheduler_->setEnableYielding(false);
-  bool wasCalled = false;
-  runtimeScheduler_->scheduleWork(
-      [&](jsi::Runtime const &) { wasCalled = true; });
-
-  EXPECT_FALSE(wasCalled);
-
-  EXPECT_FALSE(runtimeScheduler_->getShouldYield());
-
-  EXPECT_EQ(stubQueue_->size(), 1);
-
-  stubQueue_->tick();
-
-  EXPECT_TRUE(wasCalled);
-  EXPECT_EQ(stubQueue_->size(), 0);
 }
 
 TEST_F(RuntimeSchedulerTest, scheduleWorkWithYielding) {
