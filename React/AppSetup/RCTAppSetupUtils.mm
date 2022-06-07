@@ -55,7 +55,7 @@ void RCTAppSetupPrepareApp(UIApplication *application)
 #endif
 }
 
-UIView *RCTAppSetupDefaultRootView(RCTBridge *bridge, NSString *moduleName, NSDictionary *initialProperties)
+RCTUIView *RCTAppSetupDefaultRootView(RCTBridge *bridge, NSString *moduleName, NSDictionary *initialProperties) // TODO(macOS GH#774)
 {
 #if RCT_NEW_ARCH_ENABLED
   return [[RCTFabricSurfaceHostingProxyRootView alloc] initWithBridge:bridge

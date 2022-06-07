@@ -31,7 +31,7 @@
 RCT_EXTERN_C_BEGIN
 
 void RCTAppSetupPrepareApp(UIApplication *application);
-UIView *RCTAppSetupDefaultRootView(RCTBridge *bridge, NSString *moduleName, NSDictionary *initialProperties);
+RCTUIView *RCTAppSetupDefaultRootView(RCTBridge *bridge, NSString *moduleName, NSDictionary *initialProperties); // TODO(macOS GH#774)
 
 #if RCT_NEW_ARCH_ENABLED
 id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(Class moduleClass);
