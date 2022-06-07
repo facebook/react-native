@@ -410,19 +410,6 @@ type AndroidProps = $ReadOnly<{|
    */
   disableFullscreenUI?: ?boolean,
 
-  /**
-   * String to be read by screenreaders to indicate an error state. The acceptable parameters
-   * of accessibilityErrorMessage is a string. Setting accessibilityInvalid to true activates
-   * the error message. Setting accessibilityInvalid to false removes the error message.
-   */
-  accessibilityErrorMessage?: ?Stringish,
-
-  /**
-   * Setting accessibilityInvalid to true activates the error message. Setting accessibilityInvalid
-   * to false removes the error message.
-   */
-  accessibilityInvalid: ?boolean,
-
   importantForAutofill?: ?(
     | 'auto'
     | 'no'
@@ -487,6 +474,19 @@ export type Props = $ReadOnly<{|
   ...$Diff<ViewProps, $ReadOnly<{|style: ?ViewStyleProp|}>>,
   ...IOSProps,
   ...AndroidProps,
+
+  /**
+   * String to be read by screenreaders to indicate an error state. The acceptable parameters
+   * of accessibilityErrorMessage is a string. Setting accessibilityInvalid to true activates
+   * the error message. Setting accessibilityInvalid to false removes the error message.
+   */
+  accessibilityErrorMessage?: ?Stringish,
+
+  /**
+   * Setting accessibilityInvalid to true activates the error message. Setting accessibilityInvalid
+   * to false removes the error message.
+   */
+  accessibilityInvalid: ?boolean,
 
   /**
    * Can tell `TextInput` to automatically capitalize certain characters.
