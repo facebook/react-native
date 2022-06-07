@@ -485,8 +485,9 @@ export type Props = $ReadOnly<{|
   /**
    * Setting accessibilityInvalid to true activates the error message. Setting accessibilityInvalid
    * to false removes the error message.
+   * The default value is `false`.
    */
-  accessibilityInvalid: ?boolean,
+  accessibilityInvalid?: ?boolean,
 
   /**
    * Can tell `TextInput` to automatically capitalize certain characters.
@@ -1238,10 +1239,10 @@ function InternalTextInput(props: Props): React.Node {
   // so omitting onBlur and onFocus pressability handlers here.
   const {onBlur, onFocus, ...eventHandlers} = usePressability(config) || {};
 
-  let screenreaderError = props.accessibilityErrorMessage;
-  if (!props.accessibilityInvalid) {
-    screenreaderError = null;
-  }
+  const screenreaderError =
+    props.accessibilityInvalid === true
+      ? props.accessibilityErrorMessage
+      : null;
 
   if (Platform.OS === 'ios') {
     const RCTTextInputView =
