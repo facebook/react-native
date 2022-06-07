@@ -4,6 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 
 require 'pathname'
+require_relative './react_native_pods_utils/script_phases.rb'
 
 $CODEGEN_OUTPUT_DIR = 'build/generated/ios'
 $CODEGEN_COMPONENT_DIR = 'react/renderer/components'
@@ -396,96 +397,12 @@ def get_react_codegen_script_phases(options={})
     'input_files' => input_files,
     'show_env_vars_in_log': true,
     'output_files': ["${DERIVED_FILE_DIR}/react-codegen.log"],
-    'script': %{set -o pipefail
-set -e
-
-pushd "${PODS_ROOT}/../" > /dev/null
-POD_INSTALLATION_ROOT=$(pwd)
-popd >/dev/null
-RN_DIR=$(cd "$POD_INSTALLATION_ROOT/#{react_native_path}" && pwd)
-
-GENERATED_SRCS_DIR="$\{DERIVED_FILE_DIR\}/generated/source/codegen-discovery"
-TEMP_OUTPUT_DIR="$GENERATED_SRCS_DIR/out"
-
-APP_PATH="$POD_INSTALLATION_ROOT/#{$relative_app_root}"
-CONFIG_FILE_DIR="#{relative_config_file_dir ? "$POD_INSTALLATION_ROOT/#{relative_config_file_dir}" : ''}"
-OUTPUT_DIR="$POD_INSTALLATION_ROOT"
-FABRIC_ENABLED="#{fabric_enabled}"
-
-CODEGEN_REPO_PATH="$RN_DIR/packages/react-native-codegen"
-CODEGEN_NPM_PATH="$RN_DIR/../react-native-codegen"
-CODEGEN_CLI_PATH=""
-
-# Determine path to react-native-codegen
-if [ -d "$CODEGEN_REPO_PATH" ]; then
-  CODEGEN_CLI_PATH=$(cd "$CODEGEN_REPO_PATH" && pwd)
-elif [ -d "$CODEGEN_NPM_PATH" ]; then
-  CODEGEN_CLI_PATH=$(cd "$CODEGEN_NPM_PATH" && pwd)
-else
-  echo "error: Could not determine react-native-codegen location. Try running 'yarn install' or 'npm install' in your project root." >> "${SCRIPT_OUTPUT_FILE_0}" 2>&1
-  exit 1
-fi
-
-find_node () {
-  source "$RN_DIR/scripts/find-node.sh"
-
-  NODE_BINARY="${NODE_BINARY:-$(command -v node || true)}"
-  if [ -z "$NODE_BINARY" ]; then
-    echo "error: Could not find node. Make sure it is in bash PATH or set the NODE_BINARY environment variable." >> "${SCRIPT_OUTPUT_FILE_0}" 2>&1
-    exit 1
-  fi
-}
-
-setup_dirs () {
-  set +e
-  rm -rf "$GENERATED_SRCS_DIR"
-  set -e
-
-  mkdir -p "$GENERATED_SRCS_DIR" "$TEMP_OUTPUT_DIR"
-
-  # Clear output files
-  > "${SCRIPT_OUTPUT_FILE_0}"
-}
-
-describe () {
-  printf "\\n\\n>>>>> %s\\n\\n\\n" "$1" >> "${SCRIPT_OUTPUT_FILE_0}" 2>&1
-}
-
-buildCodegenCLI () {
-  if [ ! -d "$CODEGEN_CLI_PATH/lib" ]; then
-    describe "Building react-native-codegen package"
-    bash "$CODEGEN_CLI_PATH/scripts/oss/build.sh"
-  fi
-}
-
-generateArtifacts () {
-  describe "Generating codegen artifacts"
-  pushd "$RN_DIR" >/dev/null || exit 1
-CONFIG_FILE_DIR="$POD_INSTALLATION_ROOT/#{$relative_config_file_dir}"
-    "$NODE_BINARY" "scripts/generate-artifacts.js" --path "$APP_PATH" --outputPath "$OUTPUT_DIR" --fabricEnabled "$FABRIC_ENABLED" --configFileDir "$CONFIG_FILE_DIR"
-  popd >/dev/null || exit 1
-}
-
-moveOutputs () {
-  mkdir -p "$OUTPUT_DIR"
-
-  # Copy all output to output_dir
-  cp -R "$TEMP_OUTPUT_DIR/" "$OUTPUT_DIR" || exit 1
-  echo "Output has been written to $OUTPUT_DIR:" >> "${SCRIPT_OUTPUT_FILE_0}" 2>&1
-  ls -1 "$OUTPUT_DIR" >> "${SCRIPT_OUTPUT_FILE_0}" 2>&1
-}
-
-main () {
-  setup_dirs
-  find_node
-  buildCodegenCLI
-  generateArtifacts
-  moveOutputs
-}
-
-main "$@"
-echo 'Done.' >> "${SCRIPT_OUTPUT_FILE_0}" 2>&1
-    },
+    'script': get_script_phases_with_codegen_discovery(
+      react_native_path: react_native_path,
+      relative_app_root: relative_app_root,
+      relative_config_file_dir: relative_config_file_dir,
+      fabric_enabled: fabric_enabled
+    ),
   }
 
 end
@@ -570,7 +487,7 @@ def use_react_native_codegen!(spec, options={})
   # TODO: Once the new codegen approach is ready for use, we should output a warning here to let folks know to migrate.
 
   # The prefix to react-native
-  prefix = options[:react_native_path] ||= "../.."
+  react_native_path = options[:react_native_path] ||= "../.."
 
   # Library name (e.g. FBReactNativeSpec)
   library_name = options[:library_name] ||= "#{spec.name.gsub('_','-').split('-').collect(&:capitalize).join}Spec"
@@ -642,124 +559,17 @@ def use_react_native_codegen!(spec, options={})
     :input_files => input_files, # This also needs to be relative to Xcode
     :output_files => ["${DERIVED_FILE_DIR}/codegen-#{library_name}.log"].concat(generated_files.map { |filename| " ${PODS_TARGET_SRCROOT}/#{filename}"} ),
     # The final generated files will be created when this script is invoked at Xcode build time.
-    :script => %{set -o pipefail
-set -e
-
-pushd "${PODS_ROOT}/../" > /dev/null
-POD_INSTALLATION_ROOT=$(pwd)
-popd >/dev/null
-RN_DIR=$(cd "$\{PODS_TARGET_SRCROOT\}/#{prefix}" && pwd)
-
-GENERATED_SRCS_DIR="$\{DERIVED_FILE_DIR\}/generated/source/codegen"
-GENERATED_SCHEMA_FILE="$GENERATED_SRCS_DIR/schema.json"
-TEMP_OUTPUT_DIR="$GENERATED_SRCS_DIR/out"
-
-LIBRARY_NAME="#{library_name}"
-OUTPUT_DIR="$POD_INSTALLATION_ROOT/#{$CODEGEN_OUTPUT_DIR}"
-
-CODEGEN_REPO_PATH="$RN_DIR/packages/react-native-codegen"
-CODEGEN_NPM_PATH="$RN_DIR/../react-native-codegen"
-CODEGEN_CLI_PATH=""
-
-LIBRARY_TYPE="#{library_type ? library_type : 'all'}"
-
-# Determine path to react-native-codegen
-if [ -d "$CODEGEN_REPO_PATH" ]; then
-  CODEGEN_CLI_PATH=$(cd "$CODEGEN_REPO_PATH" && pwd)
-elif [ -d "$CODEGEN_NPM_PATH" ]; then
-  CODEGEN_CLI_PATH=$(cd "$CODEGEN_NPM_PATH" && pwd)
-else
-  echo "error: Could not determine react-native-codegen location. Try running 'yarn install' or 'npm install' in your project root." >> "${SCRIPT_OUTPUT_FILE_0}" 2>&1
-  exit 1
-fi
-
-find_node () {
-  source "$RN_DIR/scripts/find-node.sh"
-
-  NODE_BINARY="${NODE_BINARY:-$(command -v node || true)}"
-  if [ -z "$NODE_BINARY" ]; then
-    echo "error: Could not find node. Make sure it is in bash PATH or set the NODE_BINARY environment variable." >> "${SCRIPT_OUTPUT_FILE_0}" 2>&1
-    exit 1
-  fi
-}
-
-setup_dirs () {
-  set +e
-  rm -rf "$GENERATED_SRCS_DIR"
-  set -e
-
-  mkdir -p "$GENERATED_SRCS_DIR" "$TEMP_OUTPUT_DIR"
-
-  # Clear output files
-  > "${SCRIPT_OUTPUT_FILE_0}"
-}
-
-describe () {
-  printf "\\n\\n>>>>> %s\\n\\n\\n" "$1" >> "${SCRIPT_OUTPUT_FILE_0}" 2>&1
-}
-
-buildCodegenCLI () {
-  if [ ! -d "$CODEGEN_CLI_PATH/lib" ]; then
-    describe "Building react-native-codegen package"
-    bash "$CODEGEN_CLI_PATH/scripts/oss/build.sh"
-  fi
-}
-
-generateCodegenSchemaFromJavaScript () {
-  describe "Generating codegen schema from JavaScript"
-
-  SRCS_PATTERN="#{js_srcs_pattern}"
-  SRCS_DIR="#{js_srcs_dir}"
-  if [ $SRCS_PATTERN ]; then
-    JS_SRCS=$(find "$\{PODS_TARGET_SRCROOT\}"/$SRCS_DIR -type f -name "$SRCS_PATTERN" -print0 | xargs -0)
-    echo "#{file_list}" >> "${SCRIPT_OUTPUT_FILE_0}" 2>&1
-  else
-    JS_SRCS="$\{PODS_TARGET_SRCROOT\}/$SRCS_DIR"
-    echo "#{js_srcs_dir}" >> "${SCRIPT_OUTPUT_FILE_0}" 2>&1
-  fi
-
-  "$NODE_BINARY" "$CODEGEN_CLI_PATH/lib/cli/combine/combine-js-to-schema-cli.js" "$GENERATED_SCHEMA_FILE" $JS_SRCS
-}
-
-runSpecCodegen () {
-  "$NODE_BINARY" "scripts/generate-specs-cli.js" --platform ios --schemaPath "$GENERATED_SCHEMA_FILE" --outputDir "$1" --libraryName "$LIBRARY_NAME" --libraryType "$2"
-}
-
-generateCodegenArtifactsFromSchema () {
-  describe "Generating codegen artifacts from schema"
-  pushd "$RN_DIR" >/dev/null || exit 1
-    if [ "$LIBRARY_TYPE" = "all" ]; then
-      runSpecCodegen "$TEMP_OUTPUT_DIR/#{$CODEGEN_MODULE_DIR}/#{library_name}" "modules"
-      runSpecCodegen "$TEMP_OUTPUT_DIR/#{$CODEGEN_COMPONENT_DIR}/#{library_name}" "components"
-    elif [ "$LIBRARY_TYPE" = "components" ]; then
-      runSpecCodegen "$TEMP_OUTPUT_DIR/#{$CODEGEN_COMPONENT_DIR}/#{library_name}" "$LIBRARY_TYPE"
-    elif [ "$LIBRARY_TYPE" = "modules" ]; then
-      runSpecCodegen "$TEMP_OUTPUT_DIR/#{$CODEGEN_MODULE_DIR}/#{library_name}" "$LIBRARY_TYPE"
-    fi
-  popd >/dev/null || exit 1
-}
-
-moveOutputs () {
-  mkdir -p "$OUTPUT_DIR"
-
-  # Copy all output to output_dir
-  cp -R "$TEMP_OUTPUT_DIR/" "$OUTPUT_DIR" || exit 1
-  echo "$LIBRARY_NAME output has been written to $OUTPUT_DIR:" >> "${SCRIPT_OUTPUT_FILE_0}" 2>&1
-  ls -1 "$OUTPUT_DIR" >> "${SCRIPT_OUTPUT_FILE_0}" 2>&1
-}
-
-main () {
-  setup_dirs
-  find_node
-  buildCodegenCLI
-  generateCodegenSchemaFromJavaScript
-  generateCodegenArtifactsFromSchema
-  moveOutputs
-}
-
-main "$@"
-echo 'Done.' >> "${SCRIPT_OUTPUT_FILE_0}" 2>&1
-    },
+    :script => get_script_phases_no_codegen_discovery(
+      react_native_path: react_native_path,
+      codegen_output_dir: $CODEGEN_OUTPUT_DIR,
+      codegen_module_dir: $CODEGEN_MODULE_DIR,
+      codegen_component_dir: $CODEGEN_COMPONENT_DIR,
+      library_name: library_name,
+      library_type: library_type,
+      js_srcs_pattern: js_srcs_pattern,
+      js_srcs_dir: js_srcs_dir,
+      file_list: file_list
+    ),
     :execution_position => :before_compile,
     :show_env_vars_in_log => true
   }
