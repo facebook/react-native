@@ -164,15 +164,16 @@ export type NativeProps = $ReadOnly<{|
   >,
 
   /**
-   * String to be read by screenreaders to indicate an error state. If this value is
-   * not null, an error will be announced. You can use onChangeText or onBlur to
-   * detect an error and set this prop. Once the error is gone, set this to null
-   * to clear the error
-   *
-   * @platform android
+   * String to be read by screenreaders to indicate an error state. The acceptable parameters
+   * of accessibilityErrorMessage is a string. Setting accessibilityInvalid to true activates
+   * the error message. Setting accessibilityInvalid to false removes the error message.
    */
   accessibilityErrorMessage?: ?Stringish,
 
+  /**
+   * Setting accessibilityInvalid to true activates the error message. Setting accessibilityInvalid
+   * to false removes the error message.
+   */
   accessibilityInvalid?: ?boolean,
 
   /**

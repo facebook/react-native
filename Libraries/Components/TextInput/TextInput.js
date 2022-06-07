@@ -411,16 +411,16 @@ type AndroidProps = $ReadOnly<{|
   disableFullscreenUI?: ?boolean,
 
   /**
-   * String to be read by screenreaders to indicate an error state. If this value is
-   * not null, an error will be announced. You can use onChangeText or onBlur to
-   * detect an error and set this prop. Once the error is gone, set this to null
-   * to clear the error
-   *
-   * @platform android
+   * String to be read by screenreaders to indicate an error state. The acceptable parameters
+   * of accessibilityErrorMessage is a string. Setting accessibilityInvalid to true activates
+   * the error message. Setting accessibilityInvalid to false removes the error message.
    */
   accessibilityErrorMessage?: ?Stringish,
 
-  /** add description **/
+  /**
+   * Setting accessibilityInvalid to true activates the error message. Setting accessibilityInvalid
+   * to false removes the error message.
+   */
   accessibilityInvalid: ?boolean,
 
   importantForAutofill?: ?(
@@ -1238,6 +1238,11 @@ function InternalTextInput(props: Props): React.Node {
   // so omitting onBlur and onFocus pressability handlers here.
   const {onBlur, onFocus, ...eventHandlers} = usePressability(config) || {};
 
+  let screenreaderError = props.accessibilityErrorMessage;
+  if (!props.accessibilityInvalid) {
+    screenreaderError = null;
+  }
+
   if (Platform.OS === 'ios') {
     const RCTTextInputView =
       props.multiline === true
@@ -1259,6 +1264,7 @@ function InternalTextInput(props: Props): React.Node {
         {...props}
         {...eventHandlers}
         accessible={accessible}
+        accessibilityErrorMessage={screenreaderError}
         blurOnSubmit={blurOnSubmit}
         caretHidden={caretHidden}
         dataDetectorTypes={props.dataDetectorTypes}
@@ -1292,10 +1298,6 @@ function InternalTextInput(props: Props): React.Node {
       children = <Text>{children}</Text>;
     }
 
-    let screenreaderError = props.accessibilityErrorMessage;
-    if (!props.accessibilityInvalid) {
-      screenreaderError = null;
-    }
     textInput = (
       /* $FlowFixMe[prop-missing] the types for AndroidTextInput don't match up
        * exactly with the props for TextInput. This will need to get fixed */
@@ -1310,6 +1312,7 @@ function InternalTextInput(props: Props): React.Node {
         {...props}
         {...eventHandlers}
         accessible={accessible}
+        accessibilityErrorMessage={screenreaderError}
         autoCapitalize={autoCapitalize}
         blurOnSubmit={blurOnSubmit}
         caretHidden={caretHidden}
@@ -1333,7 +1336,6 @@ function InternalTextInput(props: Props): React.Node {
         style={style}
         text={text}
         textBreakStrategy={props.textBreakStrategy}
-        accessibilityErrorMessage={screenreaderError}
       />
     );
   }
