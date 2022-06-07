@@ -1,6 +1,6 @@
---- ./ReactAndroid/src/main/java/com/facebook/react/views/view/ReactViewManager.java	2022-01-11 17:41:29.000000000 -0800
-+++ /var/folders/vs/8_b205053dddbcv7btj0w0v80000gn/T/update-1h8V3n/merge/Focus/ReactAndroid/src/main/java/com/facebook/react/views/view/ReactViewManager.java	2022-01-12 15:04:31.000000000 -0800
-@@ -25,6 +25,7 @@
+--- ".\\react-native-macos\\ReactAndroid\\src\\main\\java\\com\\facebook\\react\\views\\view\\ReactViewManager.java"	2022-06-03 10:43:46.680561400 -0700
++++ ".\\react-native-macos2\\ReactAndroid\\src\\main\\java\\com\\facebook\\react\\views\\view\\ReactViewManager.java"	2022-06-03 10:36:55.352465500 -0700
+@@ -26,6 +26,7 @@
  import com.facebook.react.uimanager.Spacing;
  import com.facebook.react.uimanager.ThemedReactContext;
  import com.facebook.react.uimanager.UIManagerHelper;
@@ -8,7 +8,7 @@
  import com.facebook.react.uimanager.ViewProps;
  import com.facebook.react.uimanager.annotations.ReactProp;
  import com.facebook.react.uimanager.annotations.ReactPropGroup;
-@@ -48,8 +49,13 @@
+@@ -49,8 +50,13 @@
      Spacing.START,
      Spacing.END,
    };
@@ -24,7 +24,7 @@
    private static final String HOTSPOT_UPDATE_KEY = "hotspotUpdate";
  
    @ReactProp(name = "accessible")
-@@ -120,6 +126,36 @@
+@@ -121,6 +127,36 @@
      }
    }
  
@@ -61,7 +61,7 @@
    @ReactProp(name = "borderStyle")
    public void setBorderStyle(ReactViewGroup view, @Nullable String borderStyle) {
      view.setBorderStyle(borderStyle);
-@@ -289,7 +325,7 @@
+@@ -303,7 +339,7 @@
  
    @Override
    public Map<String, Integer> getCommandsMap() {
@@ -70,7 +70,7 @@
    }
  
    @Override
-@@ -305,6 +341,16 @@
+@@ -319,6 +355,16 @@
            handleSetPressed(root, args);
            break;
          }
@@ -87,7 +87,7 @@
      }
    }
  
-@@ -321,6 +367,16 @@
+@@ -335,6 +381,16 @@
            handleSetPressed(root, args);
            break;
          }
