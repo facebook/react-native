@@ -100,6 +100,9 @@ def use_react_native! (options={})
     pod 'React-jsi/Fabric', :path => "#{prefix}/ReactCommon/jsi"
     pod 'React-RCTFabric', :path => "#{prefix}/React"
     pod 'RCT-Folly/Fabric', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec"
+  else
+    # TODO(macOS GH#774) - Even without Fabric, we still need to build react-native-codegen
+    build_codegen!(prefix)
   end
 
   if hermes_enabled
