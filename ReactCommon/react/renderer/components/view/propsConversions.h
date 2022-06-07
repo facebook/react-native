@@ -529,6 +529,18 @@ static inline ViewEvents convertRawProp(
       "onPointerLeave2Capture",
       sourceValue[Offset::PointerLeave2Capture],
       defaultValue[Offset::PointerLeave2Capture]);
+  result[Offset::PointerOver] = convertRawProp(
+      context,
+      rawProps,
+      "onPointerOver",
+      sourceValue[Offset::PointerOver],
+      defaultValue[Offset::PointerOver]);
+  result[Offset::PointerOut] = convertRawProp(
+      context,
+      rawProps,
+      "onPointerOut",
+      sourceValue[Offset::PointerOut],
+      defaultValue[Offset::PointerOut]);
 
   // PanResponder callbacks
   result[Offset::MoveShouldSetResponder] = convertRawProp(
