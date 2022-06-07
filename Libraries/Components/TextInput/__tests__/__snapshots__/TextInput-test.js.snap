@@ -2,6 +2,7 @@
 
 exports[`TextInput tests should render as expected: should deep render when mocked (please verify output manually) 1`] = `
 <RCTSinglelineTextInputView
+  accessibilityErrorMessage={null}
   accessible={true}
   allowFontScaling={true}
   blurOnSubmit={true}
@@ -31,6 +32,7 @@ exports[`TextInput tests should render as expected: should deep render when mock
 
 exports[`TextInput tests should render as expected: should deep render when not mocked (please verify output manually) 1`] = `
 <RCTSinglelineTextInputView
+  accessibilityErrorMessage={null}
   accessible={true}
   allowFontScaling={true}
   blurOnSubmit={true}
