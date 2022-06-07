@@ -1,11 +1,12 @@
 --- /dev/code/rnm-66-fresh/ReactAndroid/src/main/java/com/facebook/react/fabric/jni/Android.mk	2022-02-13 19:54:48.571686475 -0800
 +++ /dev/code/react-native-macos/ReactAndroid/src/main/java/com/facebook/react/fabric/jni/Android.mk	2022-02-13 19:52:50.350473816 -0800
-@@ -11,7 +11,7 @@
- 
- LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
- 
--LOCAL_SHARED_LIBRARIES := libjsi libreactconfig librrc_slider librrc_progressbar librrc_switch librrc_modal libyoga libglog libfb libfbjni libglog_init libfolly_json libfolly_futures libreact_render_mounting libreactnativeutilsjni libreact_utils libreact_render_debug libreact_render_graphics libreact_render_core react_render_componentregistry librrc_view librrc_unimplementedview librrc_root librrc_scrollview libbetter libreact_render_attributedstring libreact_render_uimanager libreact_render_templateprocessor libreact_render_scheduler libreact_render_animations libreact_render_imagemanager libreact_render_textlayoutmanager libreact_codegen_rncore rrc_text librrc_image librrc_textinput libreact_debug libreact_render_mapbuffer libmapbufferjni libreact_render_telemetry libreact_render_runtimescheduler
-+LOCAL_SHARED_LIBRARIES := libjsi libreactconfig librrc_slider librrc_progressbar librrc_switch librrc_modal libyoga libglog libfb libfbjni libglog_init libfolly_json libfolly_futures libreact_render_mounting libreactnativejni libreact_utils libreact_render_debug libreact_render_graphics libreact_render_core react_render_componentregistry librrc_view librrc_unimplementedview librrc_root librrc_scrollview libbetter libreact_render_attributedstring libreact_render_uimanager libreact_render_templateprocessor libreact_render_scheduler libreact_render_animations libreact_render_imagemanager libreact_render_textlayoutmanager libreact_codegen_rncore rrc_text librrc_image librrc_textinput libreact_debug libreact_render_mapbuffer libmapbufferjni libreact_render_telemetry libreact_render_runtimescheduler
- 
- LOCAL_STATIC_LIBRARIES :=
+@@ -39,7 +39,7 @@
+   libreact_render_uimanager \
+   libreact_utils \
+   libreact_config \
+-  libreactnativeutilsjni \
++  libreactnativejni \
+   librrc_image \
+   librrc_root \
+   librrc_unimplementedview \
  
