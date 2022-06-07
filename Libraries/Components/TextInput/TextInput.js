@@ -418,7 +418,7 @@ type AndroidProps = $ReadOnly<{|
    *
    * @platform android
    */
-  screenreaderError?: ?Stringish,
+  accessibilityErrorMessage?: string,
 
   importantForAutofill?: ?(
     | 'auto'

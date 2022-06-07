@@ -31,7 +31,7 @@
   <item type="id" name="accessibility_links"/>
 
   <!--tag is used to store screenreaderError tag to announce TextInput errors -->
-  <item type="id" name="screenreader_error"/>
+  <item type="id" name="accessibility_error_message"/>
 
   <!--tag is used to store accessibilityLabelledBy tag -->
   <item type="id" name="labelled_by"/>

@@ -62,7 +62,7 @@ class TextInputProps final : public ViewProps, public BaseTextProps {
 
   std::string const inputAccessoryViewID{};
 
-  std::string screenreaderError{""};
+  std::string accessibilityErrorMessage{""};
 
   bool onKeyPressSync{false};
   bool onChangeSync{false};

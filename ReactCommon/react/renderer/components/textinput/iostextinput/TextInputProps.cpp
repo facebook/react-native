@@ -88,11 +88,11 @@ TextInputProps::TextInputProps(
           "selection",
           sourceProps.selection,
           std::optional<Selection>())),
-      screenreaderError(convertRawProp(
+      accessibilityErrorMessage(convertRawProp(
             context,
             rawProps,
-            "screenreaderError",
-            sourceProps.screenreaderError,
+            "accessibilityErrorMessage",
+            sourceProps.accessibilityErrorMessage,
             "")),
       inputAccessoryViewID(convertRawProp(
           context,

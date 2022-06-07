@@ -45,14 +45,15 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
   @VisibleForTesting public static final String PROP_PLACEHOLDER = "placeholder";
   @VisibleForTesting public static final String PROP_SELECTION = "selection";
 
-  @VisibleForTesting public static final String PROP_SCREENREADER_ERROR = "screenreaderError";
+  @VisibleForTesting
+  public static final String PROP_SCREENREADER_ERROR = "accessibilityErrorMessage";
 
   // Represents the {@code text} property only, not possible nested content.
   private @Nullable String mText = null;
   private @Nullable String mPlaceholder = null;
   private int mSelectionStart = UNSET;
   private int mSelectionEnd = UNSET;
-  private @Nullable String mScreenreaderError = null;
+  private @Nullable String mAccessibilityErrorMessage = null;
 
   public ReactTextInputShadowNode(
       @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
@@ -197,8 +198,8 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
   }
 
   @ReactProp(name = PROP_SCREENREADER_ERROR)
-  public void setScreenreaderError(String screenreaderError) {
-    mScreenreaderError = screenreaderError;
+  public void setScreenreaderError(String accessibilityErrorMessage) {
+    mAccessibilityErrorMessage = accessibilityErrorMessage;
   }
 
   @ReactProp(name = PROP_SELECTION)
@@ -255,7 +256,7 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
               mJustificationMode,
               mSelectionStart,
               mSelectionEnd,
-              mScreenreaderError);
+              mAccessibilityErrorMessage);
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);
     }
   }

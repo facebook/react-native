@@ -171,7 +171,7 @@ export type NativeProps = $ReadOnly<{|
    *
    * @platform android
    */
-  screenreaderError?: ?Stringish,
+  accessibilityErrorMessage?: ?Stringish,
 
   /**
    * Sets the return key to the label. Use it instead of `returnKeyType`.
@@ -708,7 +708,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
     inlineImageLeft: true,
     editable: true,
     fontVariant: true,
-    screenreaderError: true,
+    accessibilityErrorMessage: true,
     borderBottomRightRadius: true,
     borderBottomColor: {process: require('../../StyleSheet/processColor')},
     borderRadius: true,

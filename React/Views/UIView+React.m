@@ -320,7 +320,7 @@
   return objc_getAssociatedObject(self, _cmd);
 }
 
-- (NSString *)screenreaderError
+- (NSString *)accessibilityErrorMessage
 {
   return objc_getAssociatedObject(self, _cmd);
 }

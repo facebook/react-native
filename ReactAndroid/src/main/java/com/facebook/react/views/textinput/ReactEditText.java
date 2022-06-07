@@ -9,6 +9,7 @@ package com.facebook.react.views.textinput;
 
 import static com.facebook.react.uimanager.UIManagerHelper.getReactContext;
 import static com.facebook.react.views.text.TextAttributeProps.UNSET;
+
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -162,10 +163,11 @@ public class ReactEditText extends AppCompatEditText
           public void onInitializeAccessibilityNodeInfo(
               View host, AccessibilityNodeInfoCompat info) {
             super.onInitializeAccessibilityNodeInfo(host, info);
-            final String screenreaderError = (String) host.getTag(R.id.screenreader_error);
-            boolean contentInvalid = screenreaderError == null ? false : true;
-            if (screenreaderError != info.getError()) {
-              info.setError(screenreaderError);
+            final String accessibilityErrorMessage =
+                (String) host.getTag(R.id.accessibility_error_message);
+            boolean contentInvalid = accessibilityErrorMessage == null ? false : true;
+            if (accessibilityErrorMessage != info.getError()) {
+              info.setError(accessibilityErrorMessage);
               info.setContentInvalid(contentInvalid);
             }
           }
@@ -539,17 +541,17 @@ public class ReactEditText extends AppCompatEditText
    * with text.
    *
    * @param eventCounter
-   * @param screenreaderError
+   * @param accessibilityErrorMessage
    */
   public void maybeSetAccessibilityError(
-      int eventCounter, @Nullable String screenreaderError) {
-    String previousScreenreaderError = (String) getTag(R.id.screenreader_error);
+      int eventCounter, @Nullable String accessibilityErrorMessage) {
+    String previousScreenreaderError = (String) getTag(R.id.accessibility_error_message);
     if (!canUpdateWithEventCount(eventCounter)
-        || previousScreenreaderError == screenreaderError) {
+        || previousScreenreaderError == accessibilityErrorMessage) {
       return;
     }
 
-    setTag(R.id.screenreader_error, screenreaderError);
+    setTag(R.id.accessibility_error_message, accessibilityErrorMessage);
     sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
   }
 
