@@ -35,7 +35,7 @@ static inline YGStyle::Dimensions convertRawProp(
       rawProps,
       heightName,
       sourceValue[YGDimensionHeight],
-      defaultValue[YGDimensionWidth]);
+      defaultValue[YGDimensionHeight]);
   return dimensions;
 }
 
