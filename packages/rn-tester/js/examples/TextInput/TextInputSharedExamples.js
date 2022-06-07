@@ -476,6 +476,7 @@ class SelectionExample extends React.Component<
 function ErrorExample(): React.Node {
   const [text, setText] = React.useState('');
   const [error, setError] = React.useState(null);
+  const [accessibilityInvalid, setAccessibilityInvalid] = React.useState(false);
   return (
     <>
       <Button onPress={() => setError('button')} title="Press to set error" />
@@ -484,18 +485,17 @@ function ErrorExample(): React.Node {
       </Text>
       <TextInput
         accessibilityErrorMessage={error}
+        accessibilityInvalid={accessibilityInvalid}
         onBlur={() => setError('onBlur')}
         onEndEditing={() => setError('onEndEditing')}
         onChangeText={newText => {
           setText(newText);
           if (newText === 'Error') {
             setError('the newText is: ' + newText);
-          } else if (newText === 'empty') {
+            setAccessibilityInvalid(true);
+          } else {
             setError('');
-          } else if (newText === 'null') {
-            setError(null);
-          } else if (error !== 'onBlur') {
-            setError(null);
+            setAccessibilityInvalid(false);
           }
         }}
         value={text}
