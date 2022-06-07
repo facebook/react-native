@@ -223,7 +223,7 @@ static NSDictionary *RCTExportedDimensions(RCTModuleRegistry *moduleRegistry, RC
         [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"didUpdateDimensions"
                                                                               body:nextInterfaceDimensions];
           // We only want to track the current _currentInterfaceOrientation and _isFullscreen only 
-          // when it happens and only when it is published, thus it has to happen inside the if condition.
+          // when it happens and only when it is published.
           _currentInterfaceDimensions = nextInterfaceDimensions;
     #pragma clang diagnostic pop
   }
