@@ -418,7 +418,10 @@ type AndroidProps = $ReadOnly<{|
    *
    * @platform android
    */
-  accessibilityErrorMessage?: string,
+  accessibilityErrorMessage?: ?Stringish,
+
+  /** add description **/
+  accessibilityInvalid: ?boolean,
 
   importantForAutofill?: ?(
     | 'auto'
@@ -1289,6 +1292,10 @@ function InternalTextInput(props: Props): React.Node {
       children = <Text>{children}</Text>;
     }
 
+    let screenreaderError = props.accessibilityErrorMessage;
+    if (!props.accessibilityInvalid) {
+      screenreaderError = null;
+    }
     textInput = (
       /* $FlowFixMe[prop-missing] the types for AndroidTextInput don't match up
        * exactly with the props for TextInput. This will need to get fixed */
@@ -1326,6 +1333,7 @@ function InternalTextInput(props: Props): React.Node {
         style={style}
         text={text}
         textBreakStrategy={props.textBreakStrategy}
+        accessibilityErrorMessage={screenreaderError}
       />
     );
   }
