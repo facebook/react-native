@@ -186,7 +186,7 @@ static NSDictionary *RCTExportedDimensions(RCTModuleRegistry *moduleRegistry, RC
        !UIInterfaceOrientationIsLandscape(nextOrientation));
 
   // Update when we go from portrait to landscape, or landscape to portrait
-  // also update when the fullscreen statea changes (multitasking) and only when the app is in active state
+  // Also update when the fullscreen state changes (multitasking) and only when the app is in active state.
   if ((isOrientationChanging || isChangingFullscreen) && isActive) {
       #pragma clang diagnostic push
       #pragma clang diagnostic ignored "-Wdeprecated-declarations"
