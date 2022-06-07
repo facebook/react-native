@@ -180,14 +180,18 @@ static NSDictionary *RCTExportedDimensions(RCTModuleRegistry *moduleRegistry, RC
     
   
   BOOL isActive = appState == UIApplicationStateActive;
-  BOOL isChangingFullscreen = (isRunningInFullScreen != _isFullscreen || !isRunningInFullScreen);
+  // We are catching here two situations for multitasking view:
+  // a) The app is in Split View and the container gets resized -> !isRunningInFullScreen
+  // b) The app changes to/from fullscreen example: App runs in slide over mode and goes into fullscreen-> isRunningInFullScreen != _isFullscreen
+  // The above two cases a || b can be shortened to !isRunningInFullScreen || !_isFullscreen;
+  BOOL isResizingOrChangingToFullscreen = !isRunningInFullScreen || !_isFullscreen;
   BOOL isOrientationChanging = (UIInterfaceOrientationIsPortrait(_currentInterfaceOrientation) &&
        !UIInterfaceOrientationIsPortrait(nextOrientation)) || (UIInterfaceOrientationIsLandscape(_currentInterfaceOrientation) &&
        !UIInterfaceOrientationIsLandscape(nextOrientation));
 
   // Update when we go from portrait to landscape, or landscape to portrait
   // Also update when the fullscreen state changes (multitasking) and only when the app is in active state.
-  if ((isOrientationChanging || isChangingFullscreen) && isActive) {
+  if ((isOrientationChanging || isResizingOrChangingToFullscreen) && isActive) {
       #pragma clang diagnostic push
       #pragma clang diagnostic ignored "-Wdeprecated-declarations"
           [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"didUpdateDimensions"
@@ -222,7 +226,7 @@ static NSDictionary *RCTExportedDimensions(RCTModuleRegistry *moduleRegistry, RC
     #pragma clang diagnostic ignored "-Wdeprecated-declarations"
         [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"didUpdateDimensions"
                                                                               body:nextInterfaceDimensions];
-          // We only want to track the current _currentInterfaceOrientation and _isFullscreen only 
+          // We only want to track the current _currentInterfaceOrientation only 
           // when it happens and only when it is published.
           _currentInterfaceDimensions = nextInterfaceDimensions;
     #pragma clang diagnostic pop
