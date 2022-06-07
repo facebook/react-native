@@ -46,7 +46,7 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
   @VisibleForTesting public static final String PROP_SELECTION = "selection";
 
   @VisibleForTesting
-  public static final String PROP_SCREENREADER_ERROR = "accessibilityErrorMessage";
+  public static final String PROP_ACCESSIBILITY_ERROR_MESSAGE = "accessibilityErrorMessage";
 
   // Represents the {@code text} property only, not possible nested content.
   private @Nullable String mText = null;
@@ -197,7 +197,7 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
     return mPlaceholder;
   }
 
-  @ReactProp(name = PROP_SCREENREADER_ERROR)
+  @ReactProp(name = PROP_ACCESSIBILITY_ERROR_MESSAGE)
   public void setScreenreaderError(String accessibilityErrorMessage) {
     mAccessibilityErrorMessage = accessibilityErrorMessage;
   }
