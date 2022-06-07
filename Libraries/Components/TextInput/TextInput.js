@@ -1204,6 +1204,12 @@ function InternalTextInput(props: Props): React.Node {
   const blurOnSubmit = props.blurOnSubmit ?? !props.multiline;
 
   const accessible = props.accessible !== false;
+
+  const accessibilityErrorMessage =
+    props.accessibilityInvalid === true
+      ? props.accessibilityErrorMessage
+      : null;
+
   const focusable = props.focusable !== false;
 
   const config = React.useMemo(
@@ -1239,11 +1245,6 @@ function InternalTextInput(props: Props): React.Node {
   // so omitting onBlur and onFocus pressability handlers here.
   const {onBlur, onFocus, ...eventHandlers} = usePressability(config) || {};
 
-  const screenreaderError =
-    props.accessibilityInvalid === true
-      ? props.accessibilityErrorMessage
-      : null;
-
   if (Platform.OS === 'ios') {
     const RCTTextInputView =
       props.multiline === true
@@ -1265,7 +1266,7 @@ function InternalTextInput(props: Props): React.Node {
         {...props}
         {...eventHandlers}
         accessible={accessible}
-        accessibilityErrorMessage={screenreaderError}
+        accessibilityErrorMessage={accessibilityErrorMessage}
         blurOnSubmit={blurOnSubmit}
         caretHidden={caretHidden}
         dataDetectorTypes={props.dataDetectorTypes}
@@ -1313,7 +1314,7 @@ function InternalTextInput(props: Props): React.Node {
         {...props}
         {...eventHandlers}
         accessible={accessible}
-        accessibilityErrorMessage={screenreaderError}
+        accessibilityErrorMessage={accessibilityErrorMessage}
         autoCapitalize={autoCapitalize}
         blurOnSubmit={blurOnSubmit}
         caretHidden={caretHidden}
