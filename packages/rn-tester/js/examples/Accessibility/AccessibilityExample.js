@@ -241,25 +241,29 @@ class AutomaticContentGrouping extends React.Component<{}> {
           </TouchableNativeFeedback>
         </RNTesterBlock>
 
-        <RNTesterBlock title="Parent has accessibilityAction activate and copy">
+        <RNTesterBlock title="Parent has accessibilityAction cut, copy and paste">
           <TouchableNativeFeedback
             accessible={true}
             importantForAccessibility="yes"
-            accessibilityRole="button"
             accessibilityActions={[
-              {name: 'activate', label: 'activate label'},
+              {name: 'cut', label: 'cut label'},
               {name: 'copy', label: 'copy label'},
+              {name: 'paste', label: 'paste label'},
             ]}
             onAccessibilityAction={event => {
               switch (event.nativeEvent.actionName) {
-                case 'activate':
-                  Alert.alert('Alert', 'Activate accessiblity action');
+                case 'cut':
+                  Alert.alert('Alert', 'cut action success');
                   break;
                 case 'copy':
                   Alert.alert('Alert', 'copy action success');
                   break;
+                case 'paste':
+                  Alert.alert('Alert', 'paste action success');
+                  break;
               }
-            }}>
+            }}
+            accessibilityRole="button">
             <View>
               <Text accessible={false}>Text number 1</Text>
               <Text accessible={false}>
@@ -322,6 +326,7 @@ class AutomaticContentGrouping extends React.Component<{}> {
             accessibilityRole="button">
             <View>
               <Text
+                style={styles.smallRedSquare}
                 accessibilityLabel="this is the child Text accessibilityLabel"
                 accessible={false}
               />
@@ -336,6 +341,7 @@ class AutomaticContentGrouping extends React.Component<{}> {
             accessibilityRole="button">
             <View>
               <Text
+                style={styles.smallRedSquare}
                 accessibilityLabel="this is the child Text accessibilityLabel"
                 accessible={false}
               />
