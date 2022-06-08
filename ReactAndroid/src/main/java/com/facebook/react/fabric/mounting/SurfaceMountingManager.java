@@ -1103,6 +1103,10 @@ public class SurfaceMountingManager {
       // Cannot queue event without view state. Do nothing here.
       return;
     }
+    Assertions.assertCondition(
+        viewState.mEventEmitter == null,
+        "Only queue pending events when event emitter is null for the given view state");
+
     if (viewState.mPendingEventQueue == null) {
       viewState.mPendingEventQueue = new LinkedList<>();
     }
