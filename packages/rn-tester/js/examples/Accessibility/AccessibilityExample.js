@@ -341,50 +341,18 @@ class AutomaticContentGrouping extends React.Component<{}> {
 
         <RNTesterBlock title="One of the child has accessibilityState (hasStateDescription triggers the announcement)">
           <View accessible={true} accessibilityRole="button">
-            <View>
-              <Text accessible={false}>Text number 1</Text>
-              <Image
-                source={{
-                  uri: 'https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png',
-                }}
-                style={{height: 50, width: 50}}
-              />
-            </View>
-          </View>
-        </RNTesterBlock>
-
-        <RNTesterBlock title="One of the child has accessibilityState (hasStateDescription triggers the announcement)">
-          <View
-            accessible={true}
-            accessibilityHint="this is parent hint"
-            accessibilityState={{
-              checked: true,
-              selected: true,
-              disabled: true,
-              busy: true,
-              expanded: true,
-            }}>
-            <View
-              accessibilityState={{
-                checked: true,
-                selected: true,
-                disabled: true,
-                busy: true,
-                expanded: true,
-              }}>
-              <Text
-                accessibilityState={{
-                  checked: true,
-                  selected: true,
-                  disabled: true,
-                  busy: true,
-                  expanded: true,
-                }}
-                accessibilityState={{checked: true}}
-                accessible={false}>
-                Text number 1
-              </Text>
-            </View>
+            <Text
+              accessible={false}
+              accessibilityLabel="label for text number 1">
+              Text number 1
+            </Text>
+            <Text
+              style={{backgroundColor: 'red', height: 40, width: 40}}
+              accessible={false}
+              accessibilityState={{checked: true}}
+              accessibilityLabel="label for last child"
+              accessibilityRole="image"
+            />
           </View>
         </RNTesterBlock>
       </View>
