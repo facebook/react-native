@@ -86,7 +86,7 @@ class FlipperTests < Test::Unit::TestCase
         reactCore_target = installer.target_with_name("React-Core")
         reactCore_target.build_configurations.each do |config|
             if config.name == 'Debug' then
-                assert_equal(config.build_settings['OTHER_CFLAGS'], "$(inherited) -DFB_SONARKIT_ENABLED=1")
+                assert_equal(config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'], ['$(inherited)', 'FB_SONARKIT_ENABLED=1'])
             else
                 assert_true(config.build_settings.empty?)
             end
