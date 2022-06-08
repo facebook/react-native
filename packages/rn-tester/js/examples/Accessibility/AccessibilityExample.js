@@ -69,6 +69,11 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'space-between',
   },
+  smallRedSquare: {
+    backgroundColor: 'red',
+    height: 40,
+    width: 40,
+  },
 });
 
 class AccessibilityExample extends React.Component<{}> {
@@ -341,17 +346,23 @@ class AutomaticContentGrouping extends React.Component<{}> {
 
         <RNTesterBlock title="One of the child has accessibilityState (hasStateDescription triggers the announcement)">
           <View accessible={true} accessibilityRole="button">
+            <Text accessible={false}>Text number 1</Text>
             <Text
-              accessible={false}
-              accessibilityLabel="label for text number 1">
-              Text number 1
-            </Text>
-            <Text
-              style={{backgroundColor: 'red', height: 40, width: 40}}
+              style={styles.smallRedSquare}
               accessible={false}
               accessibilityState={{checked: true}}
-              accessibilityLabel="label for last child"
+              accessibilityLabel="this child Text does not have text, but has state and should be announced by TalkBack"
               accessibilityRole="image"
+            />
+          </View>
+        </RNTesterBlock>
+
+        <RNTesterBlock title="One of the child has accessibilityHint (hasText triggers the announcement)">
+          <View accessible={true} accessibilityRole="button">
+            <Text
+              style={styles.smallRedSquare}
+              accessible={false}
+              accessibilityHint="this child Text does not have text, but has hint and should be announced by TalkBack"
             />
           </View>
         </RNTesterBlock>
