@@ -134,14 +134,16 @@ using namespace facebook::react;
     _backedTextInputView.editable = newTextInputProps.traits.editable;
   }
 
+  NSString *text = RCTNSStringFromString(newTextInputProps.text);
   if (newTextInputProps.accessibilityErrorMessage != oldTextInputProps.accessibilityErrorMessage) {
     NSString *errorWithText = RCTNSStringFromString(newTextInputProps.accessibilityErrorMessage);
-    NSString *text = RCTNSStringFromString(newTextInputProps.text);
     if ([text length] != 0) {
       errorWithText = [NSString stringWithFormat: @"%@ %@", text, errorWithText];
     }
     self.accessibilityElement.accessibilityValue = errorWithText;
     UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, errorWithText);
+  } else if (self.accessibilityElement.accessibilityValue != text) {
+    self.accessibilityElement.accessibilityValue = text;
   }
 
   if (newTextInputProps.traits.enablesReturnKeyAutomatically !=
