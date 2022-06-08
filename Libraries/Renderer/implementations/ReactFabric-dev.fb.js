@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<86bcbed641a7044e773a303487a93758>>
+ * @generated SignedSource<<4b47cfe3313108f4cdeb2cfc4dfea2e5>>
  */
 
 'use strict';
@@ -156,7 +156,7 @@ var invokeGuardedCallbackImpl = invokeGuardedCallbackProd;
       // when we call document.createEvent(). However this can cause confusing
       // errors: https://github.com/facebook/create-react-app/issues/3482
       // So we preemptively throw with a better message instead.
-      if (typeof document === "undefined") {
+      if (typeof document === "undefined" || document === null) {
         throw new Error(
           "The `document` global was defined when React was initialized, but is not " +
             "defined anymore. This can happen in a test environment if a component " +
@@ -2868,6 +2868,7 @@ var enableProfilerCommitHooks = true;
 var enableLazyElements = false;
 var warnAboutStringRefs = false;
 var warnOnSubscriptionInsideStartTransition = false;
+var enableSuspenseAvoidThisFallback = false;
 var enableNewReconciler = false;
 var enableLazyContextPropagation = false;
 
@@ -6008,7 +6009,7 @@ function flushSyncCallbacks() {
   return null;
 }
 
-var ReactVersion = "18.0.0-c0c71a868-20211112";
+var ReactVersion = "18.0.0-rc.0-a049aa015-20211213";
 
 var SCHEDULING_PROFILER_VERSION = 1;
 
@@ -9441,7 +9442,10 @@ function ChildReconciler(shouldTrackSideEffects) {
   }
 
   function createChild(returnFiber, newChild, lanes) {
-    if (typeof newChild === "string" || typeof newChild === "number") {
+    if (
+      (typeof newChild === "string" && newChild !== "") ||
+      typeof newChild === "number"
+    ) {
       // Text nodes don't have keys. If the previous node is implicitly keyed
       // we can continue to replace it without aborting even if it is not a text
       // node.
@@ -9504,7 +9508,10 @@ function ChildReconciler(shouldTrackSideEffects) {
     // Update the fiber if the keys match, otherwise return null.
     var key = oldFiber !== null ? oldFiber.key : null;
 
-    if (typeof newChild === "string" || typeof newChild === "number") {
+    if (
+      (typeof newChild === "string" && newChild !== "") ||
+      typeof newChild === "number"
+    ) {
       // Text nodes don't have keys. If the previous node is implicitly keyed
       // we can continue to replace it without aborting even if it is not a text
       // node.
@@ -9561,7 +9568,10 @@ function ChildReconciler(shouldTrackSideEffects) {
     newChild,
     lanes
   ) {
-    if (typeof newChild === "string" || typeof newChild === "number") {
+    if (
+      (typeof newChild === "string" && newChild !== "") ||
+      typeof newChild === "number"
+    ) {
       // Text nodes don't have keys, so we neither have to check the old nor
       // new node for the key. If both are text nodes, they match.
       var matchedFiber = existingChildren.get(newIdx) || null;
@@ -10246,7 +10256,10 @@ function ChildReconciler(shouldTrackSideEffects) {
       throwOnInvalidObjectType(returnFiber, newChild);
     }
 
-    if (typeof newChild === "string" || typeof newChild === "number") {
+    if (
+      (typeof newChild === "string" && newChild !== "") ||
+      typeof newChild === "number"
+    ) {
       return placeSingleChild(
         reconcileSingleTextNode(
           returnFiber,
@@ -10436,16 +10449,9 @@ function shouldCaptureSuspense(workInProgress, hasInvisibleParent) {
 
   var props = workInProgress.memoizedProps; // Regular boundaries always capture.
 
-  if (props.unstable_avoidThisFallback !== true) {
+  {
     return true;
   } // If it's a boundary we should avoid, then we prefer to bubble up to the
-  // parent boundary if it is currently invisible.
-
-  if (hasInvisibleParent) {
-    return false;
-  } // If the parent is not able to handle it, we must handle it.
-
-  return true;
 }
 function findFirstSuspended(row) {
   var node = row;
@@ -12194,12 +12200,19 @@ function getIsUpdatingOpaqueValueInRenderPhaseInDEV() {
 
 function mountId() {
   var hook = mountWorkInProgressHook();
+  var root = getWorkInProgressRoot(); // TODO: In Fizz, id generation is specific to each server config. Maybe we
+  // should do this in Fiber, too? Deferring this decision for now because
+  // there's no other place to store the prefix except for an internal field on
+  // the public createRoot object, which the fiber tree does not currently have
+  // a reference to.
+
+  var identifierPrefix = root.identifierPrefix;
   var id;
 
   {
     // Use a lowercase r prefix for client-generated ids.
     var globalClientId = globalClientIdCounter++;
-    id = "r:" + globalClientId.toString(32);
+    id = identifierPrefix + "r:" + globalClientId.toString(32);
   }
 
   hook.memoizedState = id;
@@ -13730,16 +13743,9 @@ function resetSuspendedComponent(sourceFiber, rootRenderLanes) {
 
 function getNearestSuspenseBoundaryToCapture(returnFiber) {
   var node = returnFiber;
-  var hasInvisibleParentBoundary = hasSuspenseContext(
-    suspenseStackCursor.current,
-    InvisibleParentSuspenseContext
-  );
 
   do {
-    if (
-      node.tag === SuspenseComponent &&
-      shouldCaptureSuspense(node, hasInvisibleParentBoundary)
-    ) {
+    if (node.tag === SuspenseComponent && shouldCaptureSuspense(node)) {
       return node;
     } // This boundary already captured during this render. Continue to the next
     // boundary.
@@ -14562,7 +14568,7 @@ function completeWork(current, workInProgress, renderLanes) {
           // Schedule an effect to clear this container at the start of the next commit.
           // This handles the case of React rendering into a container with previous children.
           // It's also safe to do for updates too, because current.child would only be null
-          // if the previous render was null (so the the container would already be empty).
+          // if the previous render was null (so the container would already be empty).
           workInProgress.flags |= Snapshot;
         }
       }
@@ -14731,7 +14737,8 @@ function completeWork(current, workInProgress, renderLanes) {
           // should be able to immediately restart from within throwException.
           var hasInvisibleChildContext =
             current === null &&
-            workInProgress.memoizedProps.unstable_avoidThisFallback !== true;
+            (workInProgress.memoizedProps.unstable_avoidThisFallback !== true ||
+              !enableSuspenseAvoidThisFallback);
 
           if (
             hasInvisibleChildContext ||
@@ -16554,7 +16561,7 @@ function updateSuspenseComponent(current, workInProgress, renderLanes) {
       // Mark this subtree context as having at least one invisible parent that could
       // handle the fallback state.
       // Avoided boundaries are not considered since they cannot handle preferred fallback states.
-      if (nextProps.unstable_avoidThisFallback !== true) {
+      {
         suspenseContext = addSubtreeSuspenseContext(
           suspenseContext,
           InvisibleParentSuspenseContext
@@ -20817,7 +20824,7 @@ function finishConcurrentRender(root, exitStatus, lanes) {
 
 function isRenderConsistentWithExternalStores(finishedWork) {
   // Search the rendered tree for external store reads, and check whether the
-  // stores were mutated in a concurrent event. Intentionally using a iterative
+  // stores were mutated in a concurrent event. Intentionally using an iterative
   // loop instead of recursion so we can exit early.
   var node = finishedWork;
 
@@ -23519,7 +23526,7 @@ function assignFiberPropertiesInDEV(target, source) {
   return target;
 }
 
-function FiberRootNode(containerInfo, tag, hydrate) {
+function FiberRootNode(containerInfo, tag, hydrate, identifierPrefix) {
   this.tag = tag;
   this.containerInfo = containerInfo;
   this.pendingChildren = null;
@@ -23542,6 +23549,7 @@ function FiberRootNode(containerInfo, tag, hydrate) {
   this.finishedLanes = NoLanes;
   this.entangledLanes = NoLanes;
   this.entanglements = createLaneMap(NoLanes);
+  this.identifierPrefix = identifierPrefix;
 
   {
     this.effectDuration = 0;
@@ -23576,9 +23584,10 @@ function createFiberRoot(
   hydrate,
   hydrationCallbacks,
   isStrictMode,
-  concurrentUpdatesByDefaultOverride
+  concurrentUpdatesByDefaultOverride,
+  identifierPrefix
 ) {
-  var root = new FiberRootNode(containerInfo, tag, hydrate);
+  var root = new FiberRootNode(containerInfo, tag, hydrate, identifierPrefix);
   // stateNode is any.
 
   var uninitializedFiber = createHostRootFiber(
@@ -23725,7 +23734,8 @@ function createContainer(
   hydrate,
   hydrationCallbacks,
   isStrictMode,
-  concurrentUpdatesByDefaultOverride
+  concurrentUpdatesByDefaultOverride,
+  identifierPrefix
 ) {
   return createFiberRoot(
     containerInfo,
@@ -23733,7 +23743,8 @@ function createContainer(
     hydrate,
     hydrationCallbacks,
     isStrictMode,
-    concurrentUpdatesByDefaultOverride
+    concurrentUpdatesByDefaultOverride,
+    identifierPrefix
   );
 }
 function updateContainer(element, container, parentComponent, callback) {
@@ -24527,7 +24538,8 @@ function render(element, containerTag, callback, concurrentRoot) {
       false,
       null,
       false,
-      null
+      null,
+      ""
     );
     roots.set(containerTag, root);
   }

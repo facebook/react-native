@@ -35,7 +35,8 @@ class EventBeatManager : public jni::HybridClass<EventBeatManager> {
 
   static void registerNatives();
 
-  EventBeatManager(jni::alias_ref<EventBeatManager::jhybriddata> jhybridobject);
+  explicit EventBeatManager(
+      jni::alias_ref<EventBeatManager::jhybriddata> jhybridobject);
 
   /*
    * Adds (or removes) observers.

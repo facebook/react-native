@@ -105,10 +105,9 @@ public class ReactFeatureFlags {
 
   public static boolean enableScrollViewSnapToAlignmentProp = true;
 
-  public static boolean useDispatchUniqueForCoalescableEvents = false;
-
-  public static boolean useUpdatedTouchPreprocessing = false;
-
   /** TODO: T103427072 Delete ReactFeatureFlags.enableNestedTextOnPressEventFix */
   public static boolean enableNestedTextOnPressEventFix = true;
+
+  /** TODO: T107492383 Delete this flag. Enables postprocessor for rounded corners for Image */
+  public static boolean enableRoundedCornerPostprocessing = false;
 }

@@ -7,6 +7,9 @@
     "url": "git@github.com:facebook/react-native.git",
     "directory": "packages/babel-plugin-codegen"
   },
+  "files": [
+    "index.js"
+  ],
   "dependencies": {
     "react-native-codegen": "*"
   },

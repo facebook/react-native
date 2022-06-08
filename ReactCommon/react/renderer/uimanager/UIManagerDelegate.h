@@ -47,7 +47,7 @@ class UIManagerDelegate {
   virtual void uiManagerDidDispatchCommand(
       const ShadowNode::Shared &shadowNode,
       std::string const &commandName,
-      folly::dynamic const args) = 0;
+      folly::dynamic const &args) = 0;
 
   /*
    * Called when UIManager wants to dispatch some accessibility event

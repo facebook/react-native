@@ -4060,10 +4060,10 @@ flatted@^3.1.0:
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.2.2.tgz#64bfed5cb68fe3ca78b3eb214ad97b63bedce561"
   integrity sha512-JaTY/wtrcSyvXJl4IMFHPKyFur1sE9AUqc0QnhOaJ0CxHtAoIV8pYDzeEfAaNEtGkOfq4gr3LBFmdXW5mOQFnA==
 
-flow-bin@^0.165.0:
-  version "0.165.0"
-  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.165.0.tgz#e0bca35901761acdab3ad179697d34a0ca1541ba"
-  integrity sha512-1X9b2NA7SOdXyhCniIg6ViiA02FGspmLuqu5Ti0NsWDKmquRccgpoQ3Vob5EC5gRpnuuwlqdfFlLOvlnsecgVg==
+flow-bin@^0.167.1:
+  version "0.167.1"
+  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.167.1.tgz#c2cfc2ca326ca16fbf9bf6ab273bb865b26b528b"
+  integrity sha512-YL3sy3YEa5do5O/dBmUFHqzsWGIj2Yhx3+FzNTQsmfimX5DTlUj9uC0LFmuG+c5pDtVo/d/1e38Vgd1o0fgh9g==
 
 flow-parser@0.*:
   version "0.163.0"
@@ -7231,10 +7231,10 @@ react-is@^16.13.1, react-is@^16.8.4:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
   integrity sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==
 
-react-native-codegen@^0.0.8:
-  version "0.0.8"
-  resolved "https://registry.yarnpkg.com/react-native-codegen/-/react-native-codegen-0.0.8.tgz#b7796a54074139d956fff2862cf1285db43c891b"
-  integrity sha512-k/944+0XD+8l7zDaiKfYabyEKmAmyZgS1mj+4LcSRPyHnrjgCHKrh/Y6jM6kucQ6xU1+1uyMmF/dSkikxK8i+Q==
+react-native-codegen@^0.0.11:
+  version "0.0.11"
+  resolved "https://registry.yarnpkg.com/react-native-codegen/-/react-native-codegen-0.0.11.tgz#5411f1e57a3fe5ca2243287ec54c5a43301cf61c"
+  integrity sha512-xxIF/oyJKDiplM6cnHIr6bWwvDRWghWaKGOgg5Cq6k39oRq0cAkdPCa5OTGrx8giR9CymmDi0TEr6rp+qApiiA==
   dependencies:
     flow-parser "^0.121.0"
     jscodeshift "^0.11.0"
@@ -8944,7 +8944,12 @@ ws@^6.1.4:
   dependencies:
     async-limiter "~1.0.0"
 
-ws@^7, ws@^7.4.3, ws@^7.4.6:
+ws@^7:
+  version "7.5.6"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-7.5.6.tgz#e59fc509fb15ddfb65487ee9765c5a51dec5fe7b"
+  integrity sha512-6GLgCqo2cy2A2rjCNFlxQS6ZljG/coZfZXclldI8FB/1G3CCI36Zd8xy2HrFVACi8tfk5XrgLQEk+P0Tnz9UcA==
+
+ws@^7.4.3, ws@^7.4.6:
   version "7.5.7"
   resolved "https://registry.yarnpkg.com/ws/-/ws-7.5.7.tgz#9e0ac77ee50af70d58326ecff7e85eb3fa375e67"
   integrity sha512-KMvVuFzpKBuiIXW3E4u3mySRO2/mCHSyZDJQM5NQ9Q9KHWHWh0NHgfbRMLLrceUK5qAL4ytALJbpRMjixFZh8A==

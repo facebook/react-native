@@ -47,10 +47,10 @@ void LayoutAnimationDriver::animationMutationsForFrame(
                       : layoutAnimationConfig.updateConfig));
 
       // Interpolate
-      std::pair<double, double> progress =
+      auto progress =
           calculateAnimationProgress(now, animation, mutationConfig);
-      double animationTimeProgressLinear = progress.first;
-      double animationInterpolationFactor = progress.second;
+      auto animationTimeProgressLinear = progress.first;
+      auto animationInterpolationFactor = progress.second;
 
       auto mutatedShadowView = createInterpolatedShadowView(
           animationInterpolationFactor, baselineShadowView, finalShadowView);

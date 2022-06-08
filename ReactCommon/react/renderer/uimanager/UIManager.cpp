@@ -12,6 +12,7 @@
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/graphics/Geometry.h>
+#include <react/renderer/uimanager/SurfaceRegistryBinding.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 #include <react/renderer/uimanager/UIManagerCommitHook.h>
 
@@ -34,7 +35,7 @@ UIManager::UIManager(
     ContextContainer::Shared contextContainer)
     : runtimeExecutor_(runtimeExecutor),
       backgroundExecutor_(backgroundExecutor),
-      contextContainer_(contextContainer),
+      contextContainer_(std::move(contextContainer)),
       leakChecker_(constructLeakCheckerIfNeeded(runtimeExecutor)) {}
 
 UIManager::~UIManager() {
@@ -81,7 +82,7 @@ SharedShadowNode UIManager::createNode(
       family);
 
   if (delegate_) {
-    delegate_->uiManagerDidCreateShadowNode(*shadowNode.get());
+    delegate_->uiManagerDidCreateShadowNode(*shadowNode);
   }
   if (leakChecker_) {
     leakChecker_->uiManagerDidCreateShadowNodeFamily(family);
@@ -112,7 +113,7 @@ SharedShadowNode UIManager::cloneNode(
 
   if (delegate_) {
     delegate_->uiManagerDidCloneShadowNode(
-        *shadowNode.get(), *clonedShadowNode.get());
+        *shadowNode.get(), *clonedShadowNode);
   }
 
   return clonedShadowNode;
@@ -169,12 +170,7 @@ void UIManager::startSurface(
 
   runtimeExecutor_([=](jsi::Runtime &runtime) {
     SystraceSection s("UIManager::startSurface::onRuntime");
-    auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
-    if (!uiManagerBinding) {
-      return;
-    }
-
-    uiManagerBinding->startSurface(
+    SurfaceRegistryBinding::startSurface(
         runtime, surfaceId, moduleName, props, displayMode);
   });
 }
@@ -187,12 +183,7 @@ void UIManager::setSurfaceProps(
   SystraceSection s("UIManager::setSurfaceProps");
 
   runtimeExecutor_([=](jsi::Runtime &runtime) {
-    auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
-    if (!uiManagerBinding) {
-      return;
-    }
-
-    uiManagerBinding->setSurfaceProps(
+    SurfaceRegistryBinding::setSurfaceProps(
         runtime, surfaceId, moduleName, props, displayMode);
   });
 }
@@ -212,12 +203,7 @@ ShadowTree::Unique UIManager::stopSurface(SurfaceId surfaceId) const {
   // the JavaScript side will not be able to reference a `ShadowTree` and will
   // fail silently.
   runtimeExecutor_([=](jsi::Runtime &runtime) {
-    auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
-    if (!uiManagerBinding) {
-      return;
-    }
-
-    uiManagerBinding->stopSurface(runtime, surfaceId);
+    SurfaceRegistryBinding::stopSurface(runtime, surfaceId);
   });
 
   if (leakChecker_) {
@@ -333,7 +319,7 @@ void UIManager::updateState(StateUpdate const &stateUpdate) const {
 void UIManager::dispatchCommand(
     const ShadowNode::Shared &shadowNode,
     std::string const &commandName,
-    folly::dynamic const args) const {
+    folly::dynamic const &args) const {
   if (delegate_) {
     delegate_->uiManagerDidDispatchCommand(shadowNode, commandName, args);
   }
@@ -375,7 +361,8 @@ UIManagerDelegate *UIManager::getDelegate() {
 }
 
 void UIManager::visitBinding(
-    std::function<void(UIManagerBinding const &uiManagerBinding)> callback,
+    std::function<void(UIManagerBinding const &uiManagerBinding)> const
+        &callback,
     jsi::Runtime &runtime) const {
   auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
   if (uiManagerBinding) {
@@ -446,13 +433,12 @@ void UIManager::stopSurfaceForAnimationDelegate(SurfaceId surfaceId) const {
   }
 }
 
-void UIManager::animationTick() {
+void UIManager::animationTick() const {
   if (animationDelegate_ != nullptr &&
       animationDelegate_->shouldAnimateFrame()) {
-    shadowTreeRegistry_.enumerate(
-        [&](ShadowTree const &shadowTree, bool &stop) {
-          shadowTree.notifyDelegatesOfUpdates();
-        });
+    shadowTreeRegistry_.enumerate([](ShadowTree const &shadowTree) {
+      shadowTree.notifyDelegatesOfUpdates();
+    });
   }
 }
 

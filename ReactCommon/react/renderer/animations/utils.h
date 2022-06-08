@@ -8,6 +8,7 @@
 #pragma once
 
 #include <react/renderer/animations/primitives.h>
+#include <react/renderer/graphics/Float.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
 
 namespace facebook {
@@ -71,7 +72,7 @@ static inline bool shouldFirstComeBeforeSecondMutation(
   return false;
 }
 
-std::pair<double, double> calculateAnimationProgress(
+std::pair<Float, Float> calculateAnimationProgress(
     uint64_t now,
     LayoutAnimation const &animation,
     AnimationConfig const &mutationConfig);

@@ -25,8 +25,8 @@ class AsyncEventBeat final : public EventBeat, public EventBeatManagerObserver {
       jni::global_ref<jobject> javaUIManager)
       : EventBeat(ownerBox),
         eventBeatManager_(eventBeatManager),
-        runtimeExecutor_(runtimeExecutor),
-        javaUIManager_(javaUIManager) {
+        runtimeExecutor_(std::move(runtimeExecutor)),
+        javaUIManager_(std::move(javaUIManager)) {
     eventBeatManager->addObserver(*this);
   }
 

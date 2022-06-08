@@ -27,7 +27,14 @@ LOCAL_CFLAGS += -fexceptions -frtti -Wno-unused-lambda-capture
 LOCAL_LDLIBS += -landroid
 
 # The dynamic libraries (.so files) that this module depends on.
-LOCAL_SHARED_LIBRARIES := libfolly_json libfb libfbjni libglog_init libyoga libreact_render_runtimescheduler libruntimeexecutor
+LOCAL_SHARED_LIBRARIES := \
+  libfb \
+  libfbjni \
+  libfolly_json \
+  libglog_init \
+  libreact_render_runtimescheduler \
+  libruntimeexecutor \
+  libyoga
 
 # The static libraries (.a files) that this module depends on.
 LOCAL_STATIC_LIBRARIES := libreactnative libcallinvokerholder
@@ -77,7 +84,16 @@ LOCAL_CFLAGS += -fexceptions -frtti -Wno-unused-lambda-capture
 LOCAL_LDLIBS += -landroid
 
 # The dynamic libraries (.so files) that this module depends on.
-LOCAL_SHARED_LIBRARIES := libreactnativeutilsjni libfolly_json libfb libfbjni libglog_init libyoga logger libreact_render_runtimescheduler libruntimeexecutor
+LOCAL_SHARED_LIBRARIES := \
+  libfb \
+  libfbjni \
+  libfolly_json \
+  libglog_init \
+  libreact_render_runtimescheduler \
+  libreactnativeutilsjni \
+  libruntimeexecutor \
+  libyoga \
+  logger
 
 # The static libraries (.a files) that this module depends on.
 LOCAL_STATIC_LIBRARIES := libreactnative libcallinvokerholder

@@ -192,6 +192,14 @@ const Components: Array<RNTesterModuleInfo> = [
     category: 'Basic',
     supportsTVOS: true,
   },
+  /* [TODO(macOS GH#774) - NewArchitectureExample depends on Fabric, which we don't have on macOS yet
+  {
+    key: 'NewArchitectureExample',
+    category: 'UI',
+    module: require('../examples/NewArchitecture/NewArchitectureExample'),
+    supportsTVOS: false,
+  },
+  ]TODO(macOS GH#774) */
 ];
 
 const APIs: Array<RNTesterModuleInfo> = [

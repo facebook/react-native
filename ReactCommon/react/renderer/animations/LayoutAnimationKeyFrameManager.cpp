@@ -85,8 +85,8 @@ void PrintMutationInstructionRelative(
 }
 #endif
 
-static inline float
-interpolateFloats(float coefficient, float oldValue, float newValue) {
+static inline Float
+interpolateFloats(Float coefficient, Float oldValue, Float newValue) {
   return oldValue + (newValue - oldValue) * coefficient;
 }
 
@@ -1114,7 +1114,7 @@ LayoutAnimationKeyFrameManager::getComponentDescriptorForShadowView(
 }
 
 ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
-    double progress,
+    Float progress,
     ShadowView const &startingView,
     ShadowView const &finalView) const {
   react_native_assert(startingView.tag > 0);

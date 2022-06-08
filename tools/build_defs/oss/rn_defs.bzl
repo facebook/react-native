@@ -68,6 +68,9 @@ JNI_TARGET = "//ReactAndroid/src/main/jni/first-party/jni-hack:jni-hack"
 
 KEYSTORE_TARGET = "//keystores:debug"
 
+# Minimum supported iOS version for RN
+REACT_NATIVE_TARGET_IOS_SDK = "11.0"
+
 def get_apple_inspector_flags():
     return []
 
@@ -78,6 +81,9 @@ def get_react_native_preprocessor_flags():
     # TODO: use this to define the compiler flag REACT_NATIVE_DEBUG in debug/dev mode builds only.
     # This is a replacement for NDEBUG since NDEBUG is always defined in Buck on all Android builds.
     return []
+
+def get_react_native_ios_target_sdk_version():
+    return REACT_NATIVE_TARGET_IOS_SDK
 
 # Building is not supported in OSS right now
 def rn_xplat_cxx_library(name, compiler_flags_enable_exceptions = False, compiler_flags_enable_rtti = False, **kwargs):
@@ -210,7 +216,7 @@ def rn_android_prebuilt_aar(*args, **kwargs):
 def rn_apple_library(*args, **kwargs):
     kwargs.setdefault("link_whole", True)
     kwargs.setdefault("enable_exceptions", True)
-    kwargs.setdefault("target_sdk_version", "11.0")
+    kwargs.setdefault("target_sdk_version", get_react_native_ios_target_sdk_version())
 
     fb_apple_library(*args, **kwargs)
 
@@ -274,8 +280,7 @@ def rn_robolectric_test(name, srcs, vm_args = None, *args, **kwargs):
         **kwargs
     )
 
-def cxx_library(allow_jni_merging = None, **kwargs):
-    _ignore = allow_jni_merging
+def cxx_library(**kwargs):
     args = {
         k: v
         for k, v in kwargs.items()

@@ -884,7 +884,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_
         ]
       },
       'moduleNames': [
-        'PlatformConstants'
+        'SampleTurboModule'
       ]
     }
   }

@@ -60,6 +60,7 @@ rn_xplat_cxx_library(
         react_native_xplat_target("react/renderer/componentregistry:componentregistry"),
         react_native_xplat_target("react/renderer/debug:debug"),
         react_native_xplat_target("runtimeexecutor:runtimeexecutor"),
+        react_native_xplat_target("react/renderer/runtimescheduler:runtimescheduler"),
     ],
 )
 

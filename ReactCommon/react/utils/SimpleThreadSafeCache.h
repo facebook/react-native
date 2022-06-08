@@ -22,6 +22,7 @@ template <typename KeyT, typename ValueT, int maxSize>
 class SimpleThreadSafeCache {
  public:
   SimpleThreadSafeCache() : map_{maxSize} {}
+  SimpleThreadSafeCache(unsigned long size) : map_{size} {}
 
   /*
    * Returns a value from the map with a given key.

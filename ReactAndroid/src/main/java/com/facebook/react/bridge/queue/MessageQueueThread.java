@@ -19,7 +19,7 @@ public interface MessageQueueThread {
    * if it is being submitted from the same queue Thread.
    */
   @DoNotStrip
-  void runOnQueue(Runnable runnable);
+  boolean runOnQueue(Runnable runnable);
 
   /**
    * Runs the given Callable on this Thread. It will be submitted to the end of the event queue even

@@ -648,6 +648,21 @@ export type Props = $ReadOnly<{|
   onKeyPress?: ?(e: KeyPressEvent) => mixed,
 
   /**
+   * DANGER: this API is not stable and will change in the future.
+   *
+   * Callback will be called on the main thread and may result in dropped frames.
+   *
+   * Callback that is called when a key is pressed.
+   * This will be called with `{ nativeEvent: { key: keyValue } }`
+   * where `keyValue` is `'Enter'` or `'Backspace'` for respective keys and
+   * the typed-in character otherwise including `' '` for space.
+   * Fires before `onChange` callbacks.
+   *
+   * Only available in Fabric on iOS.
+   */
+  unstable_onKeyPressSync?: ?(e: KeyPressEvent) => mixed,
+
+  /**
    * Called when a touch is engaged.
    */
   onPressIn?: ?(event: PressEvent) => mixed,
@@ -787,6 +802,7 @@ type ImperativeMethods = $ReadOnly<{|
   clear: () => void,
   isFocused: () => boolean,
   getNativeRef: () => ?React.ElementRef<HostComponent<mixed>>,
+  setSelection: (start: number, end: number) => void,
 |}>;
 
 const emptyFunctionThatReturnsTrue = () => true;
@@ -1043,6 +1059,18 @@ function InternalTextInput(props: Props): React.Node {
     }
   }
 
+  function setSelection(start: number, end: number): void {
+    if (inputRef.current != null) {
+      viewCommands.setTextAndSelection(
+        inputRef.current,
+        mostRecentEventCount,
+        null,
+        start,
+        end,
+      );
+    }
+  }
+
   // TODO: Fix this returning true on null === null, when no input is focused
   function isFocused(): boolean {
     return TextInputState.currentlyFocusedInput() === inputRef.current;
@@ -1083,6 +1111,7 @@ function InternalTextInput(props: Props): React.Node {
         ref.clear = clear;
         ref.isFocused = isFocused;
         ref.getNativeRef = getNativeRef;
+        ref.setSelection = setSelection;
       }
     },
   });
@@ -1207,6 +1236,7 @@ function InternalTextInput(props: Props): React.Node {
         focusable={focusable}
         mostRecentEventCount={mostRecentEventCount}
         onBlur={_onBlur}
+        onKeyPressSync={props.unstable_onKeyPressSync}
         onChange={_onChange}
         onContentSizeChange={props.onContentSizeChange}
         onFocus={_onFocus}

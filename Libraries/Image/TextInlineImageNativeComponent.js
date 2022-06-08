@@ -42,7 +42,7 @@ type Props = $ReadOnly<{
 const TextInlineImage: HostComponent<Props> = NativeComponentRegistry.get<Props>(
   'RCTTextInlineImage',
   () => ({
-    uiViewClassName: 'RCTImageView',
+    uiViewClassName: 'RCTTextInlineImage',
     bubblingEventTypes: {},
     directEventTypes: {
       topLoadStart: {

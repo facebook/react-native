@@ -19,12 +19,12 @@ EventEmitterWrapper::initHybrid(jni::alias_ref<jclass>) {
 }
 
 void EventEmitterWrapper::invokeEvent(
-    std::string eventName,
+    std::string const &eventName,
     NativeMap *payload,
     int category) {
   if (eventEmitterPointer) {
     eventEmitterPointer->dispatchEvent(
-        std::move(eventName),
+        eventName,
         payload->consume(),
         EventPriority::AsynchronousBatched,
         static_cast<RawEvent::Category>(category));
@@ -44,12 +44,11 @@ void EventEmitterWrapper::invokeEvent(
 }
 
 void EventEmitterWrapper::invokeUniqueEvent(
-    std::string eventName,
+    std::string const &eventName,
     NativeMap *payload,
     int customCoalesceKey) {
   if (eventEmitterPointer) {
-    eventEmitterPointer->dispatchUniqueEvent(
-        std::move(eventName), payload->consume());
+    eventEmitterPointer->dispatchUniqueEvent(eventName, payload->consume());
     return;
   }
   // TODO: customCoalesceKey currently unused

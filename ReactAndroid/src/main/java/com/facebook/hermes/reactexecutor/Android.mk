@@ -18,7 +18,13 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH) $(REACT_NATIVE)/ReactCommon/jsi $(call find-no
 LOCAL_CPP_FEATURES := exceptions
 
 LOCAL_STATIC_LIBRARIES := libjsireact libhermes-executor-common-release
-LOCAL_SHARED_LIBRARIES := libfolly_json libfb libfbjni libreactnativejni libhermes libjsi
+LOCAL_SHARED_LIBRARIES := \
+  libfb \
+  libfbjni \
+  libfolly_json \
+  libhermes \
+  libjsi \
+  libreactnativejni
 
 include $(BUILD_SHARED_LIBRARY)
 
@@ -34,7 +40,13 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH) $(REACT_NATIVE)/ReactCommon/jsi $(call find-no
 
 LOCAL_CPP_FEATURES := exceptions
 
-LOCAL_STATIC_LIBRARIES := libjsireact libhermes-executor-common-debug libhermes-inspector
-LOCAL_SHARED_LIBRARIES := libfolly_json libfb libfbjni libreactnativejni libhermes libjsi
+LOCAL_STATIC_LIBRARIES := libjsireact libhermes-executor-common-debug
+LOCAL_SHARED_LIBRARIES := \
+  libfb \
+  libfbjni \
+  libfolly_json \
+  libhermes \
+  libjsi \
+  libreactnativejni
 
 include $(BUILD_SHARED_LIBRARY)

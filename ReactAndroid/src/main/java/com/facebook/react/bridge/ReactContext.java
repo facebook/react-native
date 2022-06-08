@@ -396,8 +396,8 @@ public class ReactContext extends ContextWrapper {
     return Assertions.assertNotNull(mJSMessageQueueThread).isOnThread();
   }
 
-  public void runOnJSQueueThread(Runnable runnable) {
-    Assertions.assertNotNull(mJSMessageQueueThread).runOnQueue(runnable);
+  public boolean runOnJSQueueThread(Runnable runnable) {
+    return Assertions.assertNotNull(mJSMessageQueueThread).runOnQueue(runnable);
   }
 
   /**

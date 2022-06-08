@@ -162,6 +162,7 @@ const Text: React.AbstractComponent<
       {...restProps}
       {...eventHandlersForText}
       isHighlighted={isHighlighted}
+      isPressable={isPressable}
       numberOfLines={numberOfLines}
       selectionColor={selectionColor}
       style={style}

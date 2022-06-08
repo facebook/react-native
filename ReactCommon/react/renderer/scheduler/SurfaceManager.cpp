@@ -87,7 +87,7 @@ void SurfaceManager::constraintSurfaceLayout(
 
 void SurfaceManager::visit(
     SurfaceId surfaceId,
-    std::function<void(SurfaceHandler const &surfaceHandler)> callback)
+    std::function<void(SurfaceHandler const &surfaceHandler)> const &callback)
     const noexcept {
   std::shared_lock<better::shared_mutex> lock(mutex_);
 

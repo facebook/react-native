@@ -14,7 +14,8 @@ import * as React from 'react';
 import MyNativeView from '../../../NativeComponentExample/js/MyNativeView';
 
 exports.title = 'New Architecture Examples';
-exports.description = 'Test a component in the New Architecture';
+exports.description =
+  'Codegen discovery must be enabled for iOS. See Podfile for more details. Simple component using the new architecture.';
 exports.examples = [
   {
     title: 'New Architecture Renderer',

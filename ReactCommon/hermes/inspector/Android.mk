@@ -21,6 +21,14 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_ROOT)
 
 LOCAL_CPP_FEATURES := exceptions
 
-LOCAL_SHARED_LIBRARIES := jsinspector libfb libfbjni libfolly_futures libfolly_json libhermes libjsi libglog
+LOCAL_SHARED_LIBRARIES := \
+  jsinspector \
+  libfb \
+  libfbjni \
+  libfolly_futures \
+  libfolly_json \
+  libglog \
+  libhermes \
+  libjsi
 
-include $(BUILD_SHARED_LIBRARY)
+include $(BUILD_STATIC_LIBRARY)

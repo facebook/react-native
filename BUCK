@@ -17,6 +17,7 @@ load(
     "RCT_IMAGE_URL_LOADER_SOCKET",
     "RCT_URL_REQUEST_HANDLER_SOCKET",
     "YOGA_CXX_TARGET",
+    "get_react_native_ios_target_sdk_version",
     "react_fabric_component_plugin_provider",
     "react_module_plugin_providers",
     "react_native_root_target",
@@ -196,6 +197,32 @@ rn_xplat_cxx_library2(
     ],
 )
 
+rn_xplat_cxx_library2(
+    name = "RCTCxxLogUtils",
+    srcs = glob([
+        "React/CxxLogUtils/*.mm",
+    ]),
+    header_namespace = "",
+    exported_headers = subdir_glob(
+        [
+            (
+                "React/CxxLogUtils",
+                "*.h",
+            ),
+        ],
+        prefix = "React",
+    ),
+    contacts = ["oncall+react_native@xmail.facebook.com"],
+    fbobjc_enable_exceptions = True,
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
+    preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode(),
+    visibility = ["PUBLIC"],
+    deps = [
+        "//xplat/js/react-native-github:ReactInternal",
+        react_native_xplat_target("logger:logger"),
+    ],
+)
+
 RCTLIB_PATH = "Libraries/"
 
 RCTBASE_PATH = "React/Base/"
@@ -261,9 +288,11 @@ REACT_PUBLIC_HEADERS = {
     "React/RCTModuleMethod.h": RCTBASE_PATH + "RCTModuleMethod.h",
     "React/RCTMultipartStreamReader.h": RCTBASE_PATH + "RCTMultipartStreamReader.h",
     "React/RCTNullability.h": RCTBASE_PATH + "RCTNullability.h",
+    "React/RCTPLTag.h": RCTBASE_PATH + "RCTPLTag.h",
     "React/RCTPackagerClient.h": RCTDEVSUPPORT_PATH + "RCTPackagerClient.h",
     "React/RCTPackagerConnection.h": RCTDEVSUPPORT_PATH + "RCTPackagerConnection.h",
     "React/RCTPerformanceLogger.h": RCTBASE_PATH + "RCTPerformanceLogger.h",
+    "React/RCTPerformanceLoggerLabels.h": RCTBASE_PATH + "RCTPerformanceLoggerLabels.h",
     "React/RCTPointerEvents.h": RCTVIEWS_PATH + "RCTPointerEvents.h",
     "React/RCTProfile.h": "React/Profiler/RCTProfile.h",
     "React/RCTPushNotificationManager.h": RCTLIB_PATH + "PushNotificationIOS/RCTPushNotificationManager.h",
@@ -468,7 +497,7 @@ rn_xplat_cxx_library2(
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],
     fbobjc_enable_exceptions = True,
-    fbobjc_target_sdk_version = "11.0",
+    fbobjc_target_sdk_version = get_react_native_ios_target_sdk_version(),
     frameworks = [
         "$SDKROOT/System/Library/Frameworks/Foundation.framework",
         "$SDKROOT/System/Library/Frameworks/QuartzCore.framework",
@@ -507,6 +536,7 @@ rn_xplat_cxx_library2(
         ":RCTFabricComponentViewsBase",
         "//fbobjc/Libraries/FBReactKit/RCTFabricComponent/RCTFabricComponentPlugin:RCTFabricComponentPlugin",
         "//xplat/js/react-native-github:RCTCxxBridge",
+        "//xplat/js/react-native-github:RCTCxxLogUtils",
         "//xplat/js/react-native-github:RCTCxxUtils",
         "//xplat/js/react-native-github:RCTImage",
         "//xplat/js/react-native-github:RCTPushNotification",

@@ -15,7 +15,15 @@ LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../../../../
 
-LOCAL_SHARED_LIBRARIES := libjsi libfolly_futures libfolly_json libreact_render_core libreact_render_debug libreact_utils libglog_init libreact_debug
+LOCAL_SHARED_LIBRARIES := \
+  libfolly_futures \
+  libfolly_json \
+  libglog_init \
+  libjsi \
+  libreact_debug \
+  libreact_render_core \
+  libreact_render_debug \
+  libreact_utils
 
 LOCAL_CFLAGS := \
   -DLOG_TAG=\"Fabric\"

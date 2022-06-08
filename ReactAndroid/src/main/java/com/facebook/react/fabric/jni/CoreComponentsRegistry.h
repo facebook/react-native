@@ -23,7 +23,7 @@ class CoreComponentsRegistry
 
   static void registerNatives();
 
-  CoreComponentsRegistry(ComponentFactory *delegate);
+  explicit CoreComponentsRegistry(ComponentFactory *delegate);
 
   static std::shared_ptr<ComponentDescriptorProviderRegistry const>
   sharedProviderRegistry();

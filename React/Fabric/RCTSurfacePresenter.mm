@@ -287,9 +287,7 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     return std::make_unique<MainRunLoopObserver>(activities, owner);
   };
 
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_background_executor_ios")) {
-    toolbox.backgroundExecutor = RCTGetBackgroundExecutor();
-  }
+  toolbox.backgroundExecutor = RCTGetBackgroundExecutor();
 
   toolbox.synchronousEventBeatFactory =
       [runtimeExecutor, runtimeScheduler = runtimeScheduler](EventBeat::SharedOwnerBox const &ownerBox) {
@@ -340,7 +338,7 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 
 - (void)schedulerDidDispatchCommand:(ShadowView const &)shadowView
                         commandName:(std::string const &)commandName
-                               args:(folly::dynamic const)args
+                               args:(folly::dynamic const &)args
 {
   ReactTag tag = shadowView.tag;
   NSString *commandStr = [[NSString alloc] initWithUTF8String:commandName.c_str()];

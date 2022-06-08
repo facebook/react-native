@@ -16,7 +16,7 @@
  * in a CODEGEN_CONFIG_FILENAME file.
  */
 
-const {execSync} = require('child_process');
+const {execSync, execFileSync} = require('child_process');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
@@ -65,6 +65,7 @@ const CODEGEN_FABRIC_ENABLED = argv.e;
 const CODEGEN_REPO_PATH = `${RN_ROOT}/packages/react-native-codegen`;
 const CODEGEN_NPM_PATH = `${RN_ROOT}/../react-native-codegen`;
 const CORE_LIBRARIES = new Set(['rncore', 'FBReactNativeSpec']);
+const REACT_NATIVE_DEPENDENCY_NAME = 'react-native';
 
 function isReactNativeCoreLibrary(libraryName) {
   return CORE_LIBRARIES.has(libraryName);
@@ -78,23 +79,54 @@ function main(appRootDir, outputPath) {
   }
 
   try {
-    // 1. Get app package.json
+    // Get app package.json
     const pkgJson = JSON.parse(
       fs.readFileSync(path.join(appRootDir, 'package.json')),
     );
 
-    // 2. Get dependencies for the app
+    // Get dependencies for the app
     const dependencies = {...pkgJson.dependencies, ...pkgJson.devDependencies};
 
-    // 3. Determine which of these are codegen-enabled libraries
+    const libraries = [];
+
+    // Handle react-native core libraries.
+    // This is required when react-native is outside of node_modules.
+    console.log('[Codegen] Processing react-native core libraries');
+    const reactNativePkgJson = path.join(RN_ROOT, CODEGEN_CONFIG_FILENAME);
+    if (!fs.existsSync(reactNativePkgJson)) {
+      throw '[Codegen] Error: Could not find config file for react-native.';
+    }
+    const reactNativeConfigFile = JSON.parse(
+      fs.readFileSync(reactNativePkgJson),
+    );
+    if (
+      reactNativeConfigFile[CODEGEN_CONFIG_KEY] == null ||
+      reactNativeConfigFile[CODEGEN_CONFIG_KEY].libraries == null
+    ) {
+      throw '[Codegen] Error: Could not find codegen config for react-native.';
+    }
+    console.log('[Codegen] Found react-native');
+    reactNativeConfigFile[CODEGEN_CONFIG_KEY].libraries.forEach(config => {
+      const libraryConfig = {
+        library: REACT_NATIVE_DEPENDENCY_NAME,
+        config,
+        libraryPath: RN_ROOT,
+      };
+      libraries.push(libraryConfig);
+    });
+
+    // Determine which of these are codegen-enabled libraries
     const confifDir = CODEGEN_CONFIG_FILE_DIR || path.join(RN_ROOT, '..');
     console.log(
       `\n\n[Codegen] >>>>> Searching for codegen-enabled libraries in ${confifDir}`,
     );
-    const libraries = [];
 
-    // Handle react-native and third-party libraries
+    // Handle third-party libraries
     Object.keys(dependencies).forEach(dependency => {
+      if (dependency === REACT_NATIVE_DEPENDENCY_NAME) {
+        // react-native should already be added.
+        return;
+      }
       const codegenConfigFileDir = path.join(confifDir, dependency);
       const configFilePath = path.join(
         codegenConfigFileDir,
@@ -118,6 +150,10 @@ function main(appRootDir, outputPath) {
         }
       }
     });
+
+    console.log(
+      '\n\n[Codegen] >>>>> Searching for codegen-enabled libraries in the app',
+    );
 
     // Handle in-app libraries
     if (
@@ -166,6 +202,11 @@ function main(appRootDir, outputPath) {
 
     const schemaPaths = {};
 
+    const iosOutputDir = path.join(
+      outputPath ? outputPath : appRootDir,
+      'build/generated/ios',
+    );
+
     // 5. For each codegen-enabled library, generate the native code spec files
     libraries.forEach(library => {
       if (!CODEGEN_FABRIC_ENABLED && library.config.type === 'components') {
@@ -183,8 +224,7 @@ function main(appRootDir, outputPath) {
         library.config.jsSrcsDir,
       );
       const pathToOutputDirIOS = path.join(
-        outputPath ? outputPath : appRootDir,
-        'build/generated/ios',
+        iosOutputDir,
         library.config.type === 'components'
           ? 'react/renderer/components'
           : './',
@@ -194,15 +234,19 @@ function main(appRootDir, outputPath) {
 
       console.log(`\n\n[Codegen] >>>>> Processing ${library.config.name}`);
       // Generate one schema for the entire library...
-      execSync(
-        `node ${path.join(
+      // [TODO(macOS GH#774) - use execFileSync to help keep shell commands clean
+      execFileSync(
+        'node',
+        path.join(
           codegenCliPath,
           'lib',
           'cli',
           'combine',
           'combine-js-to-schema-cli.js',
-        )} ${pathToSchema} ${pathToJavaScriptSources}`,
-      );
+        ),
+        pathToSchema,
+        pathToJavaScriptSources,
+      ); // ]TODO(macOS GH#774)
       console.log(`[Codegen] Generated schema: ${pathToSchema}`);
 
       // ...then generate native code artifacts.
@@ -210,19 +254,25 @@ function main(appRootDir, outputPath) {
         ? `--libraryType ${library.config.type}`
         : '';
       fs.mkdirSync(pathToTempOutputDir, {recursive: true});
-      execSync(
-        `node ${path.join(
-          RN_ROOT,
-          'scripts',
-          'generate-specs-cli.js',
-        )} --platform ios --schemaPath ${pathToSchema} --outputDir ${pathToTempOutputDir} --libraryName ${
-          library.config.name
-        } ${libraryTypeArg}`,
-      );
+      // [TODO(macOS GH#774) - use execFileSync to help keep shell commands clean
+      execFileSync(
+        'node',
+        path.join(RN_ROOT, 'scripts', 'generate-specs-cli.js'),
+        '--platform',
+        'ios',
+        '--schemaPath',
+        pathToSchema,
+        '--outputDir',
+        pathToTempOutputDir,
+        '--libraryName',
+        library.config.name,
+        libraryTypeArg,
+      ); // ]TODO(macOS GH#774)
 
       // Finally, copy artifacts to the final output directory.
       fs.mkdirSync(pathToOutputDirIOS, {recursive: true});
-      execSync(`cp -R ${pathToTempOutputDir}/* ${pathToOutputDirIOS}`);
+      // [TODO(macOS GH#774) - use execFileSync to help keep shell commands clean
+      execFileSync('cp', '-R', `${pathToTempOutputDir}/*`, pathToOutputDirIOS); // ]TODO(macOS GH#774)
       console.log(`[Codegen] Generated artifacts: ${pathToOutputDirIOS}`);
 
       // Filter the react native core library out.
@@ -233,30 +283,30 @@ function main(appRootDir, outputPath) {
       }
     });
 
-    console.log('\n\n>>>>> Creating component provider');
-    // Save the list of spec paths to a temp file.
-    const schemaListTmpPath = `${os.tmpdir()}/rn-tmp-schema-list.json`;
-    const fd = fs.openSync(schemaListTmpPath, 'w');
-    fs.writeSync(fd, JSON.stringify(schemaPaths));
-    fs.closeSync(fd);
-    console.log(`Generated schema list: ${schemaListTmpPath}`);
+    if (CODEGEN_FABRIC_ENABLED) {
+      console.log('\n\n>>>>> Creating component provider');
+      // Save the list of spec paths to a temp file.
+      const schemaListTmpPath = `${os.tmpdir()}/rn-tmp-schema-list.json`;
+      const fd = fs.openSync(schemaListTmpPath, 'w');
+      fs.writeSync(fd, JSON.stringify(schemaPaths));
+      fs.closeSync(fd);
+      console.log(`Generated schema list: ${schemaListTmpPath}`);
 
-    // Generate FabricComponentProvider.
-    // Only for iOS at this moment.
-    const providerOutputPathIOS = path.join(
-      appRootDir,
-      'build',
-      'generated',
-      'ios',
-    );
-    execSync(
-      `node ${path.join(
-        RN_ROOT,
-        'scripts',
-        'generate-provider-cli.js',
-      )} --platform ios --schemaListPath "${schemaListTmpPath}" --outputDir ${providerOutputPathIOS}`,
-    );
-    console.log(`Generated provider in: ${providerOutputPathIOS}`);
+      // Generate FabricComponentProvider.
+      // Only for iOS at this moment.
+      // [TODO(macOS GH#774) - use execFileSync to help keep shell commands clean
+      execFileSync(
+        'node',
+        path.join(RN_ROOT, 'scripts', 'generate-provider-cli.js'),
+        '--platform',
+        'ios',
+        '--schemaListPast',
+        schemaListTmpPath,
+        '--outputDir',
+        iosOutputDir,
+      ); // ]TODO(macOS GH#774)
+      console.log(`Generated provider in: ${iosOutputDir}`);
+    }
   } catch (err) {
     console.error(err);
     process.exitCode = 1;

@@ -7,12 +7,10 @@
 
 package com.facebook.react.utils
 
-import java.util.*
-
 object Os {
 
   fun isWindows(): Boolean =
-      System.getProperty("os.name")?.toLowerCase(Locale.ROOT)?.contains("windows") ?: false
+      System.getProperty("os.name")?.lowercase()?.contains("windows") ?: false
 
   fun String.unixifyPath() =
       this.replace('\\', '/').replace(":", "").let {

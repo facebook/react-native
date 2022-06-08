@@ -27,7 +27,7 @@ private const val REACT_GROUP = "react"
 
 @Suppress("SpreadOperator")
 internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactExtension) {
-  val targetName = variant.name.capitalize(Locale.ROOT)
+  val targetName = variant.name.replaceFirstChar { it.uppercase() }
   val targetPath = variant.dirName
 
   // React js bundle directories
@@ -231,14 +231,11 @@ private fun Project.cleanupVMFiles(
 
       if (cleanup) {
         // Reduce size by deleting the debugger/inspector
-        it.include("**/libhermes-inspector.so")
         it.include("**/libhermes-executor-debug.so")
-        it.include("**/libhermes-executor-common-debug.so")
       } else {
         // Release libs take precedence and must be removed
         // to allow debugging
         it.include("**/libhermes-executor-release.so")
-        it.include("**/libhermes-executor-common-release.so")
       }
     } else {
       // For JSC, delete all the libhermes* files
@@ -258,4 +255,4 @@ private fun Project.cleanupVMFiles(
 }
 
 internal val BaseVariant.isRelease: Boolean
-  get() = name.toLowerCase(Locale.ROOT).contains("release")
+  get() = name.lowercase().contains("release")

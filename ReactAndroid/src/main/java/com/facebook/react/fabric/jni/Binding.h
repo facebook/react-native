@@ -31,17 +31,21 @@ class Instance;
 
 struct CppMountItem final {
 #pragma mark - Designated Initializers
-  static CppMountItem CreateMountItem(ShadowView shadowView);
-  static CppMountItem DeleteMountItem(ShadowView shadowView);
-  static CppMountItem
-  InsertMountItem(ShadowView parentView, ShadowView shadowView, int index);
-  static CppMountItem
-  RemoveMountItem(ShadowView parentView, ShadowView shadowView, int index);
-  static CppMountItem UpdatePropsMountItem(ShadowView shadowView);
-  static CppMountItem UpdateStateMountItem(ShadowView shadowView);
-  static CppMountItem UpdateLayoutMountItem(ShadowView shadowView);
-  static CppMountItem UpdateEventEmitterMountItem(ShadowView shadowView);
-  static CppMountItem UpdatePaddingMountItem(ShadowView shadowView);
+  static CppMountItem CreateMountItem(ShadowView const &shadowView);
+  static CppMountItem DeleteMountItem(ShadowView const &shadowView);
+  static CppMountItem InsertMountItem(
+      ShadowView const &parentView,
+      ShadowView const &shadowView,
+      int index);
+  static CppMountItem RemoveMountItem(
+      ShadowView const &parentView,
+      ShadowView const &shadowView,
+      int index);
+  static CppMountItem UpdatePropsMountItem(ShadowView const &shadowView);
+  static CppMountItem UpdateStateMountItem(ShadowView const &shadowView);
+  static CppMountItem UpdateLayoutMountItem(ShadowView const &shadowView);
+  static CppMountItem UpdateEventEmitterMountItem(ShadowView const &shadowView);
+  static CppMountItem UpdatePaddingMountItem(ShadowView const &shadowView);
 
 #pragma mark - Type
 
@@ -156,7 +160,7 @@ class Binding : public jni::HybridClass<Binding>,
   void schedulerDidDispatchCommand(
       const ShadowView &shadowView,
       std::string const &commandName,
-      folly::dynamic const args) override;
+      folly::dynamic const &args) override;
 
   void schedulerDidSendAccessibilityEvent(
       const ShadowView &shadowView,
@@ -174,18 +178,15 @@ class Binding : public jni::HybridClass<Binding>,
   void uninstallFabricUIManager();
 
   // Private member variables
+  better::shared_mutex installMutex_;
   jni::global_ref<jobject> javaUIManager_;
-  std::mutex javaUIManagerMutex_;
+  std::shared_ptr<Scheduler> scheduler_;
 
   // LayoutAnimations
-  virtual void onAnimationStarted() override;
-  virtual void onAllAnimationsComplete() override;
-  LayoutAnimationDriver *getAnimationDriver();
+  void onAnimationStarted() override;
+  void onAllAnimationsComplete() override;
   std::shared_ptr<LayoutAnimationDriver> animationDriver_;
   std::unique_ptr<JBackgroundExecutor> backgroundExecutor_;
-
-  std::shared_ptr<Scheduler> scheduler_;
-  std::mutex schedulerMutex_;
 
   better::map<SurfaceId, SurfaceHandler> surfaceHandlerRegistry_{};
   better::shared_mutex
@@ -201,6 +202,7 @@ class Binding : public jni::HybridClass<Binding>,
   bool enableEarlyEventEmitterUpdate_{false};
   bool disableRevisionCheckForPreallocation_{false};
   bool enableEventEmitterRawPointer_{false};
+  bool dispatchPreallocationInBackground_{false};
 };
 
 } // namespace react

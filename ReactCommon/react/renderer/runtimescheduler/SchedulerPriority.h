@@ -61,5 +61,21 @@ static inline std::chrono::milliseconds timeoutForSchedulerPriority(
   }
 }
 
+static inline std::string debugValueForSchedulerPriority(
+    SchedulerPriority schedulerPriority) {
+  switch (schedulerPriority) {
+    case SchedulerPriority::ImmediatePriority:
+      return "SchedulerPriority::ImmediatePriority";
+    case SchedulerPriority::UserBlockingPriority:
+      return "SchedulerPriority::UserBlockingPriority";
+    case SchedulerPriority::NormalPriority:
+      return "SchedulerPriority::NormalPriority";
+    case SchedulerPriority::LowPriority:
+      return "SchedulerPriority::LowPriority";
+    case SchedulerPriority::IdlePriority:
+      return "SchedulerPriority::IdlePriority";
+  }
+}
+
 } // namespace react
 } // namespace facebook

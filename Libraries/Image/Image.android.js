@@ -106,7 +106,7 @@ async function queryCache(
   return await NativeImageLoaderAndroid.queryCache(urls);
 }
 
-type ImageComponentStatics = $ReadOnly<{|
+export type ImageComponentStatics = $ReadOnly<{|
   getSize: typeof getSize,
   getSizeWithHeaders: typeof getSizeWithHeaders,
   prefetch: typeof prefetch,

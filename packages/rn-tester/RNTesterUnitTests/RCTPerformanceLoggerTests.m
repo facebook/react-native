@@ -15,10 +15,4 @@
 
 @implementation RCTPerformanceLoggerTests
 
-- (void)testLabelCountInSyncWithRCTPLTag
-{
-  RCTPerformanceLogger *logger = [RCTPerformanceLogger new];
-  XCTAssertEqual([logger labelsForTags].count, RCTPLSize);
-}
-
 @end

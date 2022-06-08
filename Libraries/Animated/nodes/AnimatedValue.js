@@ -100,7 +100,7 @@ class AnimatedValue extends AnimatedWithChildren {
   __detach() {
     if (this.__isNative) {
       NativeAnimatedAPI.getValue(this.__getNativeTag(), value => {
-        this._value = value;
+        this._value = value - this._offset;
       });
     }
     this.stopAnimation();
@@ -186,7 +186,13 @@ class AnimatedValue extends AnimatedWithChildren {
     this.stopTracking();
     this._animation && this._animation.stop();
     this._animation = null;
-    callback && callback(this.__getValue());
+    if (callback) {
+      if (this.__isNative) {
+        NativeAnimatedAPI.getValue(this.__getNativeTag(), callback);
+      } else {
+        callback(this.__getValue());
+      }
+    }
   }
 
   /**

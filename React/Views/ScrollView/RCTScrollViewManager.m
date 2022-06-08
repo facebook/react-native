@@ -68,6 +68,7 @@ RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(canCancelContentTouches, BOOL) // TODO(macOS GH
 RCT_EXPORT_VIEW_PROPERTY(centerContent, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(maintainVisibleContentPosition, NSDictionary)
 RCT_EXPORT_VIEW_PROPERTY(automaticallyAdjustContentInsets, BOOL)
+RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(automaticallyAdjustKeyboardInsets, BOOL) // TODO(macOS GH#774)
 RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(decelerationRate, CGFloat) // TODO(macOS GH#774)
 RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(directionalLockEnabled, BOOL) // TODO(macOS GH#774)
 RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(indicatorStyle, UIScrollViewIndicatorStyle) // TODO(macOS GH#774)

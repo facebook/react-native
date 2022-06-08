@@ -48,61 +48,61 @@ struct JMountItem : public JavaClass<JMountItem> {
 
 } // namespace
 
-CppMountItem CppMountItem::CreateMountItem(ShadowView shadowView) {
+CppMountItem CppMountItem::CreateMountItem(ShadowView const &shadowView) {
   return {CppMountItem::Type::Create, {}, {}, shadowView, -1};
 }
-CppMountItem CppMountItem::DeleteMountItem(ShadowView shadowView) {
+CppMountItem CppMountItem::DeleteMountItem(ShadowView const &shadowView) {
   return {CppMountItem::Type::Delete, {}, shadowView, {}, -1};
 }
 CppMountItem CppMountItem::InsertMountItem(
-    ShadowView parentView,
-    ShadowView shadowView,
+    ShadowView const &parentView,
+    ShadowView const &shadowView,
     int index) {
   return {CppMountItem::Type::Insert, parentView, {}, shadowView, index};
 }
 CppMountItem CppMountItem::RemoveMountItem(
-    ShadowView parentView,
-    ShadowView shadowView,
+    ShadowView const &parentView,
+    ShadowView const &shadowView,
     int index) {
   return {CppMountItem::Type::Remove, parentView, shadowView, {}, index};
 }
-CppMountItem CppMountItem::UpdatePropsMountItem(ShadowView shadowView) {
+CppMountItem CppMountItem::UpdatePropsMountItem(ShadowView const &shadowView) {
   return {CppMountItem::Type::UpdateProps, {}, {}, shadowView, -1};
 }
-CppMountItem CppMountItem::UpdateStateMountItem(ShadowView shadowView) {
+CppMountItem CppMountItem::UpdateStateMountItem(ShadowView const &shadowView) {
   return {CppMountItem::Type::UpdateState, {}, {}, shadowView, -1};
 }
-CppMountItem CppMountItem::UpdateLayoutMountItem(ShadowView shadowView) {
+CppMountItem CppMountItem::UpdateLayoutMountItem(ShadowView const &shadowView) {
   return {CppMountItem::Type::UpdateLayout, {}, {}, shadowView, -1};
 }
-CppMountItem CppMountItem::UpdateEventEmitterMountItem(ShadowView shadowView) {
+CppMountItem CppMountItem::UpdateEventEmitterMountItem(
+    ShadowView const &shadowView) {
   return {CppMountItem::Type::UpdateEventEmitter, {}, {}, shadowView, -1};
 }
-CppMountItem CppMountItem::UpdatePaddingMountItem(ShadowView shadowView) {
+CppMountItem CppMountItem::UpdatePaddingMountItem(
+    ShadowView const &shadowView) {
   return {CppMountItem::Type::UpdatePadding, {}, {}, shadowView, -1};
 }
 
 static inline int getIntBufferSizeForType(CppMountItem::Type mountItemType) {
-  if (mountItemType == CppMountItem::Type::Create) {
-    return 2; // tag, isLayoutable
-  } else if (mountItemType == CppMountItem::Type::Insert) {
-    return 3; // tag, parentTag, index
-  } else if (mountItemType == CppMountItem::Type::Remove) {
-    return 3; // tag, parentTag, index
-  } else if (mountItemType == CppMountItem::Type::Delete) {
-    return 1; // tag
-  } else if (mountItemType == CppMountItem::Type::UpdateProps) {
-    return 1; // tag
-  } else if (mountItemType == CppMountItem::Type::UpdateState) {
-    return 1; // tag
-  } else if (mountItemType == CppMountItem::Type::UpdatePadding) {
-    return 5; // tag, top, left, bottom, right
-  } else if (mountItemType == CppMountItem::Type::UpdateLayout) {
-    return 6; // tag, x, y, w, h, DisplayType
-  } else if (mountItemType == CppMountItem::Type::UpdateEventEmitter) {
-    return 1; // tag
-  } else {
-    return -1;
+  switch (mountItemType) {
+    case CppMountItem::Type::Create:
+      return 2; // tag, isLayoutable
+    case CppMountItem::Type::Insert:
+    case CppMountItem::Type::Remove:
+      return 3; // tag, parentTag, index
+    case CppMountItem::Type::Delete:
+    case CppMountItem::Type::UpdateProps:
+    case CppMountItem::Type::UpdateState:
+    case CppMountItem::Type::UpdateEventEmitter:
+      return 1; // tag
+    case CppMountItem::Type::UpdatePadding:
+      return 5; // tag, top, left, bottom, right
+    case CppMountItem::Type::UpdateLayout:
+      return 6; // tag, x, y, w, h, DisplayType
+    case CppMountItem::Undefined:
+    case CppMountItem::Multiple:
+      return -1;
   }
 }
 
@@ -223,13 +223,13 @@ jni::local_ref<Binding::jhybriddata> Binding::initHybrid(
 
 // Thread-safe getter
 jni::global_ref<jobject> Binding::getJavaUIManager() {
-  std::lock_guard<std::mutex> uiManagerLock(javaUIManagerMutex_);
+  std::shared_lock<better::shared_mutex> lock(installMutex_);
   return javaUIManager_;
 }
 
 // Thread-safe getter
 std::shared_ptr<Scheduler> Binding::getScheduler() {
-  std::lock_guard<std::mutex> lock(schedulerMutex_);
+  std::shared_lock<better::shared_mutex> lock(installMutex_);
   return scheduler_;
 }
 
@@ -254,7 +254,7 @@ Binding::getInspectorDataForInstance(
   result["selectedIndex"] = data.selectedIndex;
   result["props"] = data.props;
   auto hierarchy = folly::dynamic::array();
-  for (auto hierarchyItem : data.hierarchy) {
+  for (const auto &hierarchyItem : data.hierarchy) {
     hierarchy.push_back(hierarchyItem);
   }
   result["hierarchy"] = hierarchy;
@@ -521,10 +521,7 @@ void Binding::installFabricUIManager(
 
   // Use std::lock and std::adopt_lock to prevent deadlocks by locking mutexes
   // at the same time
-  std::lock(schedulerMutex_, javaUIManagerMutex_);
-  std::lock_guard<std::mutex> schedulerLock(schedulerMutex_, std::adopt_lock);
-  std::lock_guard<std::mutex> uiManagerLock(
-      javaUIManagerMutex_, std::adopt_lock);
+  std::unique_lock<better::shared_mutex> lock(installMutex_);
 
   javaUIManager_ = make_global(javaUIManager);
 
@@ -596,6 +593,14 @@ void Binding::installFabricUIManager(
   enableEarlyEventEmitterUpdate_ = reactNativeConfig_->getBool(
       "react_fabric:enable_early_event_emitter_update");
 
+  dispatchPreallocationInBackground_ = reactNativeConfig_->getBool(
+      "react_native_new_architecture:dispatch_preallocation_in_bg");
+
+  contextContainer->insert(
+      "EnableLargeTextMeasureCache",
+      reactNativeConfig_->getBool(
+          "react_fabric:enable_large_text_measure_cache_android"));
+
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = contextContainer;
   toolbox.componentRegistryFactory = componentsRegistry->buildRegistryFunction;
@@ -603,11 +608,8 @@ void Binding::installFabricUIManager(
   toolbox.synchronousEventBeatFactory = synchronousBeatFactory;
   toolbox.asynchronousEventBeatFactory = asynchronousBeatFactory;
 
-  if (reactNativeConfig_->getBool(
-          "react_fabric:enable_background_executor_android")) {
-    backgroundExecutor_ = std::make_unique<JBackgroundExecutor>();
-    toolbox.backgroundExecutor = backgroundExecutor_->get();
-  }
+  backgroundExecutor_ = std::make_unique<JBackgroundExecutor>();
+  toolbox.backgroundExecutor = backgroundExecutor_->get();
 
   animationDriver_ = std::make_shared<LayoutAnimationDriver>(
       runtimeExecutor, contextContainer, this);
@@ -620,13 +622,8 @@ void Binding::uninstallFabricUIManager() {
     LOG(WARNING) << "Binding::uninstallFabricUIManager() was called (address: "
                  << this << ").";
   }
-  // Use std::lock and std::adopt_lock to prevent deadlocks by locking mutexes
-  // at the same time
-  std::lock(schedulerMutex_, javaUIManagerMutex_);
-  std::lock_guard<std::mutex> schedulerLock(schedulerMutex_, std::adopt_lock);
-  std::lock_guard<std::mutex> uiManagerLock(
-      javaUIManagerMutex_, std::adopt_lock);
 
+  std::unique_lock<better::shared_mutex> lock(installMutex_);
   animationDriver_ = nullptr;
   scheduler_ = nullptr;
   javaUIManager_ = nullptr;
@@ -634,12 +631,12 @@ void Binding::uninstallFabricUIManager() {
 }
 
 inline local_ref<ReadableMap::javaobject> castReadableMap(
-    local_ref<ReadableNativeMap::javaobject> nativeMap) {
+    local_ref<ReadableNativeMap::javaobject> const &nativeMap) {
   return make_local(reinterpret_cast<ReadableMap::javaobject>(nativeMap.get()));
 }
 
 inline local_ref<ReadableArray::javaobject> castReadableArray(
-    local_ref<ReadableNativeArray::javaobject> nativeArray) {
+    local_ref<ReadableNativeArray::javaobject> const &nativeArray) {
   return make_local(
       reinterpret_cast<ReadableArray::javaobject>(nativeArray.get()));
 }
@@ -649,7 +646,7 @@ local_ref<JString> getPlatformComponentName(const ShadowView &shadowView) {
   static std::string scrollViewComponentName = std::string("ScrollView");
 
   local_ref<JString> componentName;
-  if (scrollViewComponentName.compare(shadowView.componentName) == 0) {
+  if (scrollViewComponentName == shadowView.componentName) {
     auto newViewProps =
         std::static_pointer_cast<const ScrollViewProps>(shadowView.props);
     if (newViewProps->getProbablyMoreHorizontalThanVertical_DEPRECATED()) {
@@ -956,7 +953,7 @@ void Binding::schedulerDidFinishTransaction(
       LOG(ERROR) << "Unexpected CppMountItem type";
     }
   }
-  if (cppUpdatePropsMountItems.size() > 0) {
+  if (!cppUpdatePropsMountItems.empty()) {
     writeIntBufferTypePreamble(
         CppMountItem::Type::UpdateProps,
         cppUpdatePropsMountItems.size(),
@@ -975,7 +972,7 @@ void Binding::schedulerDidFinishTransaction(
       (*objBufferArray)[objBufferPosition++] = newPropsReadableMap.get();
     }
   }
-  if (cppUpdateStateMountItems.size() > 0) {
+  if (!cppUpdateStateMountItems.empty()) {
     writeIntBufferTypePreamble(
         CppMountItem::Type::UpdateState,
         cppUpdateStateMountItems.size(),
@@ -1003,7 +1000,7 @@ void Binding::schedulerDidFinishTransaction(
           (javaStateWrapper != nullptr ? javaStateWrapper.get() : nullptr);
     }
   }
-  if (cppUpdatePaddingMountItems.size() > 0) {
+  if (!cppUpdatePaddingMountItems.empty()) {
     writeIntBufferTypePreamble(
         CppMountItem::Type::UpdatePadding,
         cppUpdatePaddingMountItems.size(),
@@ -1030,7 +1027,7 @@ void Binding::schedulerDidFinishTransaction(
       intBufferPosition += 5;
     }
   }
-  if (cppUpdateLayoutMountItems.size() > 0) {
+  if (!cppUpdateLayoutMountItems.empty()) {
     writeIntBufferTypePreamble(
         CppMountItem::Type::UpdateLayout,
         cppUpdateLayoutMountItems.size(),
@@ -1043,10 +1040,10 @@ void Binding::schedulerDidFinishTransaction(
       auto pointScaleFactor = layoutMetrics.pointScaleFactor;
       auto frame = layoutMetrics.frame;
 
-      int x = round(scale(frame.origin.x, pointScaleFactor));
-      int y = round(scale(frame.origin.y, pointScaleFactor));
-      int w = round(scale(frame.size.width, pointScaleFactor));
-      int h = round(scale(frame.size.height, pointScaleFactor));
+      int x = (int)round(scale(frame.origin.x, pointScaleFactor));
+      int y = (int)round(scale(frame.origin.y, pointScaleFactor));
+      int w = (int)round(scale(frame.size.width, pointScaleFactor));
+      int h = (int)round(scale(frame.size.height, pointScaleFactor));
       int displayType =
           toInt(mountItem.newChildShadowView.layoutMetrics.displayType);
 
@@ -1060,7 +1057,7 @@ void Binding::schedulerDidFinishTransaction(
       intBufferPosition += 6;
     }
   }
-  if (cppUpdateEventEmitterMountItems.size() > 0) {
+  if (!cppUpdateEventEmitterMountItems.empty()) {
     writeIntBufferTypePreamble(
         CppMountItem::Type::UpdateEventEmitter,
         cppUpdateEventEmitterMountItems.size(),
@@ -1094,7 +1091,7 @@ void Binding::schedulerDidFinishTransaction(
   // requires that the differ never produces "DELETE...CREATE" in that order for
   // the same tag. It's nice to be able to batch all similar operations together
   // for space efficiency.
-  if (cppDeleteMountItems.size() > 0) {
+  if (!cppDeleteMountItems.empty()) {
     writeIntBufferTypePreamble(
         CppMountItem::Type::Delete,
         cppDeleteMountItems.size(),
@@ -1246,7 +1243,14 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
     return;
   }
 
-  preallocateShadowView(surfaceId, shadowView);
+  if (dispatchPreallocationInBackground_) {
+    auto backgroundExecutor = backgroundExecutor_->get();
+    backgroundExecutor([this, surfaceId, shadowView = std::move(shadowView)] {
+      preallocateShadowView(surfaceId, shadowView);
+    });
+  } else {
+    preallocateShadowView(surfaceId, shadowView);
+  }
 }
 
 void Binding::schedulerDidCloneShadowNode(
@@ -1274,14 +1278,21 @@ void Binding::schedulerDidCloneShadowNode(
   if (!oldShadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView) &&
       newShadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView)) {
     auto shadowView = ShadowView(newShadowNode);
-    preallocateShadowView(surfaceId, shadowView);
+    if (dispatchPreallocationInBackground_) {
+      auto backgroundExecutor = backgroundExecutor_->get();
+      backgroundExecutor([this, surfaceId, shadowView = std::move(shadowView)] {
+        preallocateShadowView(surfaceId, shadowView);
+      });
+    } else {
+      preallocateShadowView(surfaceId, shadowView);
+    }
   }
 }
 
 void Binding::schedulerDidDispatchCommand(
     const ShadowView &shadowView,
     std::string const &commandName,
-    folly::dynamic const args) {
+    folly::dynamic const &args) {
   jni::global_ref<jobject> localJavaUIManager = getJavaUIManager();
   if (!localJavaUIManager) {
     LOG(ERROR)

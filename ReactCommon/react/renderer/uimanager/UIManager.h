@@ -62,7 +62,7 @@ class UIManager final : public ShadowTreeDelegate {
    */
   void stopSurfaceForAnimationDelegate(SurfaceId surfaceId) const;
 
-  void animationTick();
+  void animationTick() const;
 
   /*
    * Provides access to a UIManagerBindging.
@@ -71,7 +71,8 @@ class UIManager final : public ShadowTreeDelegate {
    * The callback is called synchronously on the same thread.
    */
   void visitBinding(
-      std::function<void(UIManagerBinding const &uiManagerBinding)> callback,
+      std::function<void(UIManagerBinding const &uiManagerBinding)> const
+          &callback,
       jsi::Runtime &runtime) const;
 
   /*
@@ -167,7 +168,7 @@ class UIManager final : public ShadowTreeDelegate {
   void dispatchCommand(
       const ShadowNode::Shared &shadowNode,
       std::string const &commandName,
-      folly::dynamic const args) const;
+      folly::dynamic const &args) const;
 
   void sendAccessibilityEvent(
       const ShadowNode::Shared &shadowNode,

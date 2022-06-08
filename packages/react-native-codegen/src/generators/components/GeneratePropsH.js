@@ -817,10 +817,10 @@ function generateStruct(
 
   const fromCases = properties
     .map(property => {
-      const variable = property.name;
+      const variable = 'tmp_' + property.name;
       return `auto ${variable} = map.find("${property.name}");
   if (${variable} != map.end()) {
-    fromRawValue(context, ${variable}->second, result.${variable});
+    fromRawValue(context, ${variable}->second, result.${property.name});
   }`;
     })
     .join('\n  ');

@@ -21,7 +21,19 @@ LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
 
 LOCAL_STATIC_LIBRARIES :=
 
-LOCAL_SHARED_LIBRARIES := libbetter libyoga libfolly_futures glog libfolly_json libglog_init libreact_render_core libreact_render_debug librrc_view librrc_root libreact_utils libreact_debug
+LOCAL_SHARED_LIBRARIES := \
+  glog \
+  libbetter \
+  libfolly_futures \
+  libfolly_json \
+  libglog_init \
+  libreact_debug \
+  libreact_render_core \
+  libreact_render_debug \
+  libreact_utils \
+  librrc_root \
+  librrc_view \
+  libyoga
 
 include $(BUILD_SHARED_LIBRARY)
 

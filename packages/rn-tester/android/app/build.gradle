@@ -94,7 +94,7 @@ react {
 
 project.ext.react = [
     enableCodegen: true, // Keep this here until it's sync'ed to Android template.
-    enableFabric: (System.getenv('USE_FABRIC') ?: '0').toBoolean()
+    enableFabric: (System.getenv('USE_FABRIC') ?: 'true').toBoolean()
 ]
 
 //apply from: "../../../../react.gradle"
@@ -300,19 +300,6 @@ if (enableCodegen) {
         into("$buildDir/react-ndk/exported")
     }
 
-    def cleanProjectNdkBuild = tasks.register("cleanProjectNdkBuild", Exec) {
-        ignoreExitValue(true)
-        tasks.forEach {
-            t ->
-                if (t.name.startsWith("externalNativeBuildClean")) {
-                    dependsOn(t);
-                }
-        }
-        // This .cxx folder may cause stale ndkBuild configuration.
-        // See https://stackoverflow.com/a/58288851.
-        commandLine("rm", "-rf", "$projectDir/.cxx")
-    }
-
     afterEvaluate {
         configureNdkBuildRelease.dependsOn(packageReactReleaseNdkLibs)
         preHermesReleaseBuild.dependsOn(packageReactReleaseNdkLibs)
@@ -320,6 +307,5 @@ if (enableCodegen) {
         configureNdkBuildDebug.dependsOn(packageReactDebugNdkLibs)
         preHermesDebugBuild.dependsOn(packageReactDebugNdkLibs)
         preJscDebugBuild.dependsOn(packageReactDebugNdkLibs)
-        clean.dependsOn(cleanProjectNdkBuild)
     }
 }
