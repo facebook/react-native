@@ -85,7 +85,7 @@ NSString *kBundleNameJS = @"RNTesterApp";
 - (NSURL *)sourceURLForBridge:(__unused RCTBridge *)bridge
 {
   NSString *jsBundlePath = [NSString stringWithFormat:@"packages/rn-tester/js/%@.macos", kBundleNameJS];
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:jsBundlePath fallbackResource:nil];
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:jsBundlePath];
 }
 
 #pragma mark - RCTCxxBridgeDelegate Methods
