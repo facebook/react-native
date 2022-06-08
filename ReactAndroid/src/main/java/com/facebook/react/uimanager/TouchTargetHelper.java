@@ -179,6 +179,23 @@ public class TouchTargetHelper {
     if (allowReturnTouchTargetTypes.contains(TouchTargetReturnType.CHILD)
         && view instanceof ViewGroup) {
       ViewGroup viewGroup = (ViewGroup) view;
+      if (!isTouchPointInView(eventCoords[0], eventCoords[1], view)) {
+        // We don't allow touches on views that are outside the bounds of an `overflow: hidden` and
+        // `overflow: scroll` View.
+        if (view instanceof ReactOverflowView) {
+          @Nullable String overflow = ((ReactOverflowView) view).getOverflow();
+          if (ViewProps.HIDDEN.equals(overflow) || ViewProps.SCROLL.equals(overflow)) {
+            return null;
+          }
+        }
+
+        // We don't allow touches on views that are outside the bounds and has clipChildren set to
+        // true.
+        if (viewGroup.getClipChildren()) {
+          return null;
+        }
+      }
+
       int childrenCount = viewGroup.getChildCount();
       // Consider z-index when determining the touch target.
       ReactZIndexedViewGroup zIndexedViewGroup =
@@ -198,22 +215,7 @@ public class TouchTargetHelper {
         eventCoords[1] = childPoint.y;
         View targetView = findTouchTargetViewWithPointerEvents(eventCoords, child, pathAccumulator);
         if (targetView != null) {
-          // We don't allow touches on views that are outside the bounds of an `overflow: hidden`
-          // View
-          boolean inOverflowBounds = true;
-          if (viewGroup instanceof ReactOverflowView) {
-            @Nullable String overflow = ((ReactOverflowView) viewGroup).getOverflow();
-            if ((ViewProps.HIDDEN.equals(overflow) || ViewProps.SCROLL.equals(overflow))
-                && !isTouchPointInView(restoreX, restoreY, view)) {
-              inOverflowBounds = false;
-            }
-          }
-          if (inOverflowBounds) {
-            return targetView;
-          } else if (pathAccumulator != null) {
-            // Not a hit, reset the path found so far
-            pathAccumulator.clear();
-          }
+          return targetView;
         }
         eventCoords[0] = restoreX;
         eventCoords[1] = restoreY;

@@ -128,8 +128,7 @@
 
 - (NSURL *)sourceURLForBridge:(__unused RCTBridge *)bridge
 {
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"packages/rn-tester/js/RNTesterApp.ios"
-                                                        fallbackResource:nil];
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"packages/rn-tester/js/RNTesterApp.ios"];
 }
 
 - (void)initializeFlipper:(UIApplication *)application

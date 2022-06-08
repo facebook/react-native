@@ -33,11 +33,12 @@ RCT_EXTERN_C_BEGIN
 void RCTAppSetupPrepareApp(UIApplication *application);
 RCTUIView *RCTAppSetupDefaultRootView(RCTBridge *bridge, NSString *moduleName, NSDictionary *initialProperties); // TODO(macOS GH#774)
 
+RCT_EXTERN_C_END
+
 #if RCT_NEW_ARCH_ENABLED
-id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(Class moduleClass);
-std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupDefaultJsexecutorFactory(
+RCT_EXTERN id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(Class moduleClass);
+
+std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupDefaultJsExecutorFactory(
     RCTBridge *bridge,
     RCTTurboModuleManager *turboModuleManager);
 #endif
-
-RCT_EXTERN_C_END

@@ -7,7 +7,7 @@
 
 package com.facebook.react.views.text;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import android.graphics.Paint;
 import org.junit.Test;

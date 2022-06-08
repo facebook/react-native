@@ -82,7 +82,7 @@ commands:
     steps:
       - restore_cache:
           keys:
-            - v4-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
+            - v5-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
       - run:
           name: "Yarn: Install Dependencies"
           command: |
@@ -94,7 +94,7 @@ commands:
       - save_cache:
           paths:
             - ~/.cache/yarn
-          key: v4-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
+          key: v5-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
 
   install_buck_tooling:
     steps:
@@ -955,7 +955,8 @@ workflows:
 
   releases:
     jobs:
-      # This job will trigger on pushes to release branch and commit a version tag to trigger `build_npm_package` for release
+      # This job will trigger on relevant `publish...` tags.
+      # It prepares the package and triggers `build_npm_package` for release
       - prepare_package_for_release:
           name: prepare_package_for_release
           filters:

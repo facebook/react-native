@@ -11,6 +11,8 @@ $CODEGEN_COMPONENT_DIR = 'react/renderer/components'
 $CODEGEN_MODULE_DIR = '.'
 $REACT_CODEGEN_PODSPEC_GENERATED = false
 $REACT_CODEGEN_DISCOVERY_DONE = false
+DEFAULT_OTHER_CPLUSPLUSFLAGS = '$(inherited)'
+NEW_ARCH_OTHER_CPLUSPLUSFLAGS = '$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1'
 
 def use_react_native! (options={})
   # The prefix to react-native
@@ -24,6 +26,12 @@ def use_react_native! (options={})
 
   # Include Hermes dependencies
   hermes_enabled = options[:hermes_enabled] ||= false
+
+  # Codegen Discovery is required when enabling new architecture.
+  if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
+    Pod::UI.puts 'Setting USE_CODEGEN_DISCOVERY=1'
+    ENV['USE_CODEGEN_DISCOVERY'] = '1'
+  end
 
   if `/usr/sbin/sysctl -n hw.optional.arm64 2>&1`.to_i == 1 && !RUBY_PLATFORM.include?('arm64')
     Pod::UI.warn 'Do not use "pod install" from inside Rosetta2 (x86_64 emulation on arm64).'
@@ -110,6 +118,20 @@ def use_react_native! (options={})
     pod 'hermes-engine', '~> 0.10.0'
     pod 'libevent', '~> 2.1.12'
   end
+end
+
+def get_default_flags()
+  flags = {
+    :fabric_enabled => false,
+    :hermes_enabled => false,
+  }
+
+  if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
+    flags[:fabric_enabled] = true
+    flags[:hermes_enabled] = true
+  end
+
+  return flags
 end
 
 def use_flipper!(versions = {}, configurations: ['Debug'])
@@ -223,6 +245,35 @@ def react_native_post_install(installer)
 
   exclude_architectures(installer)
   fix_library_search_paths(installer)
+
+  cpp_flags = DEFAULT_OTHER_CPLUSPLUSFLAGS
+  if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
+    cpp_flags = NEW_ARCH_OTHER_CPLUSPLUSFLAGS
+  end
+  modify_flags_for_new_architecture(installer, cpp_flags)
+
+end
+
+def modify_flags_for_new_architecture(installer, cpp_flags)
+  # Add RCT_NEW_ARCH_ENABLED to Target pods xcconfig
+  installer.aggregate_targets.each do |aggregate_target|
+      aggregate_target.xcconfigs.each do |config_name, config_file|
+          config_file.attributes['OTHER_CPLUSPLUSFLAGS'] = cpp_flags
+          xcconfig_path = aggregate_target.xcconfig_path(config_name)
+          Pod::UI.puts xcconfig_path
+          config_file.save_as(xcconfig_path)
+      end
+  end
+  # Add RCT_NEW_ARCH_ENABLED to Pods project xcconfig
+  installer.pods_project.targets.each do |target|
+    # if target.name == 'React-Core'
+    if target.name == 'React-Core'
+      puts "#{target.name}"
+      target.build_configurations.each do |config|
+        config.build_settings['OTHER_CPLUSPLUSFLAGS'] = cpp_flags
+      end
+    end
+  end
 end
 
 def build_codegen!(react_native_path)

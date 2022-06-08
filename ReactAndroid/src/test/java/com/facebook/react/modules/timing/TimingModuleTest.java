@@ -7,7 +7,7 @@
 
 package com.facebook.react.modules.timing;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 import com.facebook.react.bridge.Arguments;

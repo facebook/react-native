@@ -7,8 +7,8 @@
 
 package com.facebook.react.uimanager;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.fest.assertions.api.Assertions.offset;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.offset;
 
 import android.graphics.drawable.ColorDrawable;
 import android.view.View;

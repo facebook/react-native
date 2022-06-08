@@ -7,7 +7,7 @@
 
 package com.facebook.react.uimanager;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.facebook.react.R;
 import com.facebook.react.bridge.Arguments;
