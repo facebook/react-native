@@ -693,9 +693,6 @@ jobs:
           command: |
             echo "export HERMES_ENGINE_TARBALL_PATH=$(ls -AU $HERMES_WS_DIR/hermes-runtime-darwin/hermes-runtime-darwin-*.tar.gz | head -1)" >> $BASH_ENV
       - run:
-          name: Set RCT_VERBOSE_POD_INSTALL=1
-          command: echo "export RCT_VERBOSE_POD_INSTALL=1" >> $BASH_ENV
-      - run:
           name: Create iOS template project
           command: |
             REPO_ROOT=$(pwd)
