@@ -8,6 +8,7 @@
  * @format
  */
 
+import Platform from '../Utilities/Platform';
 import * as PressabilityDebug from '../Pressability/PressabilityDebug';
 import usePressability from '../Pressability/usePressability';
 import StyleSheet from '../StyleSheet/StyleSheet';
@@ -168,6 +169,11 @@ const Text: React.AbstractComponent<
 
   const hasTextAncestor = useContext(TextAncestor);
 
+  const _accessible = Platform.select({
+    ios: accessible !== false,
+    default: accessible,
+  });
+
   return hasTextAncestor ? (
     <NativeVirtualText
       {...restProps}
@@ -185,7 +191,7 @@ const Text: React.AbstractComponent<
         {...restProps}
         {...eventHandlersForText}
         disabled={_disabled}
-        accessible={accessible !== false}
+        accessible={_accessible}
         accessibilityState={_accessibilityState}
         allowFontScaling={allowFontScaling !== false}
         ellipsizeMode={ellipsizeMode ?? 'tail'}
