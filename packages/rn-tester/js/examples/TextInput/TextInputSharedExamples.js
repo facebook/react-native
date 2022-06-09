@@ -497,7 +497,7 @@ function ErrorExample(): React.Node {
             setError(newText);
             setAccessibilityInvalid(true);
           } else if (newText === 'null') {
-            setError(newText);
+            setError('');
             setAccessibilityInvalid(false);
           } else {
             setError(newText);
