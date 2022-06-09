@@ -8,7 +8,7 @@
  * @flow
  */
 
-import {useState, useCallback, useMemo} from 'react';
+import {useState, useCallback, useMemo, useRef} from 'react';
 
 import type {
   PlatformTestResult,
@@ -37,6 +37,36 @@ export default function usePlatformTestHarness(): PlatformTestHarnessHookResult 
     $ReadOnlyArray<PlatformTestResult>,
   >([]);
 
+  // Since updaing the test results array can get expensive at larger sizes
+  // we use a basic debouncing logic to minimize the number of re-renders
+  // caused by adding test results
+  const resultQueueRef = useRef<Array<PlatformTestResult>>([]);
+  const schedulerTimeoutIdRef = useRef(null);
+
+  const commitResults = useCallback(() => {
+    const queuedResults = resultQueueRef.current;
+    if (queuedResults.length > 0) {
+      updateTestResults(prev => [...prev, ...queuedResults]);
+      resultQueueRef.current = [];
+    }
+  }, []);
+
+  const scheduleResultsCommit = useCallback(() => {
+    const schedulerTimeoutId = schedulerTimeoutIdRef.current;
+    if (schedulerTimeoutId != null) {
+      clearTimeout(schedulerTimeoutId);
+    }
+    schedulerTimeoutIdRef.current = setTimeout(() => commitResults(), 500);
+  }, [commitResults]);
+
+  const addTestResult = useCallback(
+    (newResult: PlatformTestResult) => {
+      resultQueueRef.current.push(newResult);
+      scheduleResultsCommit();
+    },
+    [scheduleResultsCommit],
+  );
+
   // When reseting the test results we should also re-mount the
   // so we apply a key to that component which we can increment
   // to ensure it re-mounts
@@ -45,10 +75,6 @@ export default function usePlatformTestHarness(): PlatformTestHarnessHookResult 
   const reset = useCallback(() => {
     updateTestResults([]);
     setTestElementKey(k => k + 1);
-  }, []);
-
-  const addTestResult = useCallback((newResult: PlatformTestResult) => {
-    updateTestResults(prev => [...prev, newResult]);
   }, []);
 
   const testFunction: PlatformTestHarness['test'] = useCallback(

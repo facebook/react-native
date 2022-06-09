@@ -19,13 +19,63 @@ import type {
 
 import * as React from 'react';
 import {useMemo} from 'react';
-import {Button, View, Text, StyleSheet} from 'react-native';
+import {Button, View, Text, StyleSheet, FlatList} from 'react-native';
 
 const DISPLAY_STATUS_MAPPING: {[PlatformTestResultStatus]: string} = {
   PASS: 'Pass',
   FAIL: 'Fail',
   ERROR: 'Error',
 };
+
+function TableHeader() {
+  return (
+    <View style={styles.tableRow}>
+      <View style={[styles.tableHeaderColumn, styles.tableResultColumn]}>
+        <Text style={styles.tableHeader}>Result</Text>
+      </View>
+      <View style={[styles.tableHeaderColumn, styles.tableTestNameColumn]}>
+        <Text style={styles.tableHeader}>Test Name</Text>
+      </View>
+      <View style={[styles.tableHeaderColumn, styles.tableMessageColumn]}>
+        <Text style={styles.tableHeader}>Message</Text>
+      </View>
+    </View>
+  );
+}
+
+const TableRow = React.memo(
+  ({testResult}: {testResult: PlatformTestResult}) => {
+    return (
+      <View style={styles.tableRow}>
+        <View style={styles.tableResultColumn}>
+          <Text style={STATUS_TEXT_STYLE_MAPPING[testResult.status]}>
+            {DISPLAY_STATUS_MAPPING[testResult.status]}
+          </Text>
+        </View>
+        <View style={styles.tableTestNameColumn}>
+          <Text>{testResult.name}</Text>
+        </View>
+        <View style={styles.tableMessageColumn}>
+          {testResult.assertions.map((assertion, assertionIdx) => {
+            if (assertion.passing) {
+              return null;
+            }
+            return (
+              <Text key={assertionIdx}>
+                {assertion.name}: {assertion.description}{' '}
+                {assertion.failureMessage}
+              </Text>
+            );
+          })}
+        </View>
+      </View>
+    );
+  },
+);
+
+function renderTableRow({item}) {
+  return <TableRow testResult={item} />;
+}
 
 type Props = $ReadOnly<{|
   reset: () => void,
@@ -81,47 +131,8 @@ export default function RNTesterPlatformTestResultView(
       </Text>
 
       <View style={styles.table}>
-        {/* Table Heading Row */}
-        <View style={styles.tableRow}>
-          <View style={[styles.tableHeaderColumn, styles.tableResultColumn]}>
-            <Text style={styles.tableHeader}>Result</Text>
-          </View>
-          <View style={[styles.tableHeaderColumn, styles.tableTestNameColumn]}>
-            <Text style={styles.tableHeader}>Test Name</Text>
-          </View>
-          <View style={[styles.tableHeaderColumn, styles.tableMessageColumn]}>
-            <Text style={styles.tableHeader}>Message</Text>
-          </View>
-        </View>
-
-        {/* Table Contents */}
-        {results.map((testResult, resultIdx) => {
-          return (
-            <View key={resultIdx} style={styles.tableRow}>
-              <View style={styles.tableResultColumn}>
-                <Text style={STATUS_TEXT_STYLE_MAPPING[testResult.status]}>
-                  {DISPLAY_STATUS_MAPPING[testResult.status]}
-                </Text>
-              </View>
-              <View style={styles.tableTestNameColumn}>
-                <Text>{testResult.name}</Text>
-              </View>
-              <View style={styles.tableMessageColumn}>
-                {testResult.assertions.map((assertion, assertionIdx) => {
-                  if (assertion.passing) {
-                    return null;
-                  }
-                  return (
-                    <Text key={assertionIdx}>
-                      {assertion.name}: {assertion.description}{' '}
-                      {assertion.failureMessage}
-                    </Text>
-                  );
-                })}
-              </View>
-            </View>
-          );
-        })}
+        <TableHeader />
+        <FlatList data={results} renderItem={renderTableRow} />
       </View>
     </View>
   );
@@ -137,7 +148,9 @@ const styles = StyleSheet.create({
   passText: {
     color: 'green',
   },
-  table: {},
+  table: {
+    flex: 1,
+  },
   tableHeader: {
     fontSize: 16,
     fontWeight: '700',
