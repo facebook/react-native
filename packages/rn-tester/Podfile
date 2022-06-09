@@ -29,7 +29,7 @@ def pods(options = {}, use_flipper: false)
     # Custom fabric component is only supported when using codegen discovery.
     pod 'MyNativeView', :path => "NativeComponentExample"
   end
-  
+
   use_react_native!(
     path: @prefix_path,
     fabric_enabled: fabric_enabled,
@@ -66,6 +66,5 @@ end
 
 post_install do |installer|
   react_native_post_install(installer, @prefix_path)
-  __apply_Xcode_12_5_M1_post_install_workaround(installer)
   set_clang_cxx_language_standard_if_needed(installer)
 end

@@ -497,34 +497,6 @@ def use_react_native_codegen!(spec, options={})
   }
 end
 
-# This provides a post_install workaround for build issues related Xcode 12.5 and Apple Silicon (M1) machines.
-# Call this in the app's main Podfile's post_install hook.
-# See https://github.com/facebook/react-native/issues/31480#issuecomment-902912841 for more context.
-# Actual fix was authored by https://github.com/mikehardy.
-# New app template will call this for now until the underlying issue is resolved.
-def __apply_Xcode_12_5_M1_post_install_workaround(installer)
-  # Flipper podspecs are still targeting an older iOS deployment target, and may cause an error like:
-  #   "error: thread-local storage is not supported for the current target"
-  # The most reliable known workaround is to bump iOS deployment target to match react-native (iOS 11 now).
-  installer.pods_project.targets.each do |target|
-    target.build_configurations.each do |config|
-      # ensure IPHONEOS_DEPLOYMENT_TARGET is at least 11.0
-      deployment_target = config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'].to_f
-      should_upgrade = deployment_target < 11.0 && deployment_target != 0.0
-      if should_upgrade
-        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '11.0'
-      end
-    end
-  end
-
-  # But... doing so caused another issue in Flipper:
-  #   "Time.h:52:17: error: typedef redefinition with different types"
-  # We need to make a patch to RCT-Folly - remove the `__IPHONE_OS_VERSION_MIN_REQUIRED` check.
-  # See https://github.com/facebook/flipper/issues/834 for more details.
-  time_header = "#{Pod::Config.instance.installation_root.to_s}/Pods/RCT-Folly/folly/portability/Time.h"
-  `sed -i -e  $'s/ && (__IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0)//' #{time_header}`
-end
-
 # Monkeypatch of `Pod::Lockfile` to ensure automatic update of dependencies integrated with a local podspec when their version changed.
 # This is necessary because local podspec dependencies must be otherwise manually updated.
 module LocalPodspecPatch
