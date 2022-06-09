@@ -71,8 +71,11 @@ function translateTypeAnnotation(
   aliasMap: {...NativeModuleAliasMap},
   tryParse: ParserErrorCapturer,
 ): Nullable<NativeModuleTypeAnnotation> {
-  const {nullable, typeAnnotation, typeAliasResolutionStatus} =
-    resolveTypeAnnotation(typeScriptTypeAnnotation, types);
+  const {
+    nullable,
+    typeAnnotation,
+    typeAliasResolutionStatus,
+  } = resolveTypeAnnotation(typeScriptTypeAnnotation, types);
 
   switch (typeAnnotation.type) {
     case 'TSTypeReference': {
@@ -231,16 +234,18 @@ function translateTypeAnnotation(
 
                 const {optional = false, key} = property;
 
-                const [propertyTypeAnnotation, isPropertyNullable] =
-                  unwrapNullable(
-                    translateTypeAnnotation(
-                      hasteModuleName,
-                      property.typeAnnotation.typeAnnotation,
-                      types,
-                      aliasMap,
-                      tryParse,
-                    ),
-                  );
+                const [
+                  propertyTypeAnnotation,
+                  isPropertyNullable,
+                ] = unwrapNullable(
+                  translateTypeAnnotation(
+                    hasteModuleName,
+                    property.typeAnnotation.typeAnnotation,
+                    types,
+                    aliasMap,
+                    tryParse,
+                  ),
+                );
 
                 if (propertyTypeAnnotation.type === 'FunctionTypeAnnotation') {
                   throw new UnsupportedObjectPropertyValueTypeAnnotationParserError(
@@ -415,16 +420,18 @@ function translateFunctionTypeAnnotation(
       }
 
       const paramName = typeScriptParam.name;
-      const [paramTypeAnnotation, isParamTypeAnnotationNullable] =
-        unwrapNullable(
-          translateTypeAnnotation(
-            hasteModuleName,
-            typeScriptParam.typeAnnotation.typeAnnotation,
-            types,
-            aliasMap,
-            tryParse,
-          ),
-        );
+      const [
+        paramTypeAnnotation,
+        isParamTypeAnnotationNullable,
+      ] = unwrapNullable(
+        translateTypeAnnotation(
+          hasteModuleName,
+          typeScriptParam.typeAnnotation.typeAnnotation,
+          types,
+          aliasMap,
+          tryParse,
+        ),
+      );
 
       if (paramTypeAnnotation.type === 'VoidTypeAnnotation') {
         throw new UnsupportedFunctionParamTypeAnnotationParserError(
