@@ -54,9 +54,22 @@ end
 
 class PodsProjectMock
     attr_reader :targets
+    attr_reader :path
+    attr_reader :build_configurations
+    @pod_group
 
-    def initialize(targets = [])
+    def initialize(targets = [], pod_group = {}, path = "test/path-pod.xcodeproj", build_configurations = [])
         @targets = targets
+        @pod_group = pod_group
+        @path = path
+        @build_configurations = build_configurations
+    end
+
+    def pod_group(name)
+        return @pod_group[name]
+    end
+
+    def save()
     end
 end
 
