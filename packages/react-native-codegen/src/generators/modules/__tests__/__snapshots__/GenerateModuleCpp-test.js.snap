@@ -62,13 +62,16 @@ static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getArrays(jsi
   return jsi::Value::undefined();
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getNullableObject(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getNullableObject(rt);
+  auto result = static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getNullableObject(rt);
+  return result ? jsi::Value(std::move(*result)) : jsi::Value::null();
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getNullableGenericObject(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getNullableGenericObject(rt);
+  auto result = static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getNullableGenericObject(rt);
+  return result ? jsi::Value(std::move(*result)) : jsi::Value::null();
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getNullableArray(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getNullableArray(rt);
+  auto result = static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getNullableArray(rt);
+  return result ? jsi::Value(std::move(*result)) : jsi::Value::null();
 }
 
 NativeSampleTurboModuleCxxSpecJSI::NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker)
@@ -109,7 +112,8 @@ static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getMixed(jsi:
   return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getMixed(rt, jsi::Value(rt, args[0]));
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getNullableNumberFromNullableAlias(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getNullableNumberFromNullableAlias(rt, args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asObject(rt)));
+  auto result = static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getNullableNumberFromNullableAlias(rt, args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asObject(rt)));
+  return result ? jsi::Value(std::move(*result)) : jsi::Value::null();
 }
 
 NativeSampleTurboModuleCxxSpecJSI::NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker)
