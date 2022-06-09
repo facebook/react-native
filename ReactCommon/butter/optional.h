@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include <better/better.h>
+#include <butter/butter.h>
 
-#if defined(BETTER_USE_FOLLY_CONTAINERS) || __cplusplus < 202000L
+#if defined(BUTTER_USE_FOLLY_CONTAINERS) || __cplusplus < 202000L
 
 #include <folly/Optional.h>
 
@@ -20,9 +20,9 @@
 #endif
 
 namespace facebook {
-namespace better {
+namespace butter {
 
-#if defined(BETTER_USE_FOLLY_CONTAINERS) || __cplusplus < 202000L
+#if defined(BUTTER_USE_FOLLY_CONTAINERS) || __cplusplus < 202000L
 
 template <typename Value>
 using optional = folly::Optional<Value>;
@@ -34,5 +34,5 @@ using optional = std::optional<Value>;
 
 #endif
 
-} // namespace better
+} // namespace butter
 } // namespace facebook

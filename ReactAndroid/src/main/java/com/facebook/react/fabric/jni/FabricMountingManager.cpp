@@ -43,6 +43,8 @@ static inline int getIntBufferSizeForType(CppMountItem::Type mountItemType) {
       return 5; // tag, top, left, bottom, right
     case CppMountItem::Type::UpdateLayout:
       return 6; // tag, x, y, w, h, DisplayType
+    case CppMountItem::Type::UpdateOverflowInset:
+      return 5; // tag, left, top, right, bottom
     case CppMountItem::Undefined:
     case CppMountItem::Multiple:
       return -1;
@@ -84,6 +86,7 @@ static inline void computeBufferSizes(
     std::vector<CppMountItem> &cppUpdateStateMountItems,
     std::vector<CppMountItem> &cppUpdatePaddingMountItems,
     std::vector<CppMountItem> &cppUpdateLayoutMountItems,
+    std::vector<CppMountItem> &cppUpdateOverflowInsetMountItems,
     std::vector<CppMountItem> &cppUpdateEventEmitterMountItems) {
   CppMountItem::Type lastType = CppMountItem::Type::Undefined;
   int numSameType = 0;
@@ -126,6 +129,11 @@ static inline void computeBufferSizes(
   updateBufferSizes(
       CppMountItem::Type::UpdateLayout,
       cppUpdateLayoutMountItems.size(),
+      batchMountItemIntsSize,
+      batchMountItemObjectsSize);
+  updateBufferSizes(
+      CppMountItem::Type::UpdateOverflowInset,
+      cppUpdateOverflowInsetMountItems.size(),
       batchMountItemIntsSize,
       batchMountItemObjectsSize);
   updateBufferSizes(
@@ -232,6 +240,7 @@ void FabricMountingManager::executeMount(
   std::vector<CppMountItem> cppUpdateStateMountItems;
   std::vector<CppMountItem> cppUpdatePaddingMountItems;
   std::vector<CppMountItem> cppUpdateLayoutMountItems;
+  std::vector<CppMountItem> cppUpdateOverflowInsetMountItems;
   std::vector<CppMountItem> cppUpdateEventEmitterMountItems;
 
   for (const auto &mutation : mutations) {
@@ -293,6 +302,17 @@ void FabricMountingManager::executeMount(
                 CppMountItem::UpdateLayoutMountItem(
                     mutation.newChildShadowView));
           }
+
+          // OverflowInset: This is the values indicating boundaries including
+          // children of the current view. The layout of current view may not
+          // change, and we separate this part from layout mount items to not
+          // pack too much data there.
+          if (useOverflowInset_ &&
+              (oldChildShadowView.layoutMetrics.overflowInset !=
+               newChildShadowView.layoutMetrics.overflowInset)) {
+            cppUpdateOverflowInsetMountItems.push_back(
+                CppMountItem::UpdateOverflowInsetMountItem(newChildShadowView));
+          }
         }
 
         if (oldChildShadowView.eventEmitter !=
@@ -331,6 +351,15 @@ void FabricMountingManager::executeMount(
           // Layout
           cppUpdateLayoutMountItems.push_back(
               CppMountItem::UpdateLayoutMountItem(mutation.newChildShadowView));
+
+          // OverflowInset: This is the values indicating boundaries including
+          // children of the current view. The layout of current view may not
+          // change, and we separate this part from layout mount items to not
+          // pack too much data there.
+          if (useOverflowInset_) {
+            cppUpdateOverflowInsetMountItems.push_back(
+                CppMountItem::UpdateOverflowInsetMountItem(newChildShadowView));
+          }
         }
 
         // EventEmitter
@@ -359,6 +388,7 @@ void FabricMountingManager::executeMount(
       cppUpdateStateMountItems,
       cppUpdatePaddingMountItems,
       cppUpdateLayoutMountItems,
+      cppUpdateOverflowInsetMountItems,
       cppUpdateEventEmitterMountItems);
 
   static auto createMountItemsIntBufferBatchContainer =
@@ -407,7 +437,7 @@ void FabricMountingManager::executeMount(
   int intBufferPosition = 0;
   int objBufferPosition = 0;
   int prevMountItemType = -1;
-  jint temp[7];
+  jint temp[6];
   for (int i = 0; i < cppCommonMountItems.size(); i++) {
     const auto &mountItem = cppCommonMountItems[i];
     const auto &mountItemType = mountItem.type;
@@ -592,6 +622,36 @@ void FabricMountingManager::executeMount(
       temp[5] = displayType;
       env->SetIntArrayRegion(intBufferArray, intBufferPosition, 6, temp);
       intBufferPosition += 6;
+    }
+  }
+  if (!cppUpdateOverflowInsetMountItems.empty()) {
+    writeIntBufferTypePreamble(
+        CppMountItem::Type::UpdateOverflowInset,
+        cppUpdateOverflowInsetMountItems.size(),
+        env,
+        intBufferArray,
+        intBufferPosition);
+
+    for (const auto &mountItem : cppUpdateOverflowInsetMountItems) {
+      auto layoutMetrics = mountItem.newChildShadowView.layoutMetrics;
+      auto pointScaleFactor = layoutMetrics.pointScaleFactor;
+      auto overflowInset = layoutMetrics.overflowInset;
+
+      int overflowInsetLeft =
+          round(scale(overflowInset.left, pointScaleFactor));
+      int overflowInsetTop = round(scale(overflowInset.top, pointScaleFactor));
+      int overflowInsetRight =
+          round(scale(overflowInset.right, pointScaleFactor));
+      int overflowInsetBottom =
+          round(scale(overflowInset.bottom, pointScaleFactor));
+
+      temp[0] = mountItem.newChildShadowView.tag;
+      temp[1] = overflowInsetLeft;
+      temp[2] = overflowInsetTop;
+      temp[3] = overflowInsetRight;
+      temp[4] = overflowInsetBottom;
+      env->SetIntArrayRegion(intBufferArray, intBufferPosition, 5, temp);
+      intBufferPosition += 5;
     }
   }
   if (!cppUpdateEventEmitterMountItems.empty()) {
@@ -803,6 +863,15 @@ void FabricMountingManager::onAllAnimationsComplete() {
   allAnimationsCompleteJNI(javaUIManager_);
 }
 
+bool doesUseOverflowInset() {
+  static const auto reactFeatureFlagsJavaDescriptor = jni::findClassStatic(
+      FabricMountingManager::ReactFeatureFlagsJavaDescriptor);
+  static const auto doesUseOverflowInset =
+      reactFeatureFlagsJavaDescriptor->getStaticMethod<jboolean()>(
+          "doesUseOverflowInset");
+  return doesUseOverflowInset(reactFeatureFlagsJavaDescriptor);
+}
+
 FabricMountingManager::FabricMountingManager(
     std::shared_ptr<const ReactNativeConfig> &config,
     global_ref<jobject> &javaUIManager)
@@ -815,6 +884,7 @@ FabricMountingManager::FabricMountingManager(
       config->getBool("react_fabric:disabled_view_preallocation_android");
   disableRevisionCheckForPreallocation_ =
       config->getBool("react_fabric:disable_revision_check_for_preallocation");
+  useOverflowInset_ = doesUseOverflowInset();
 }
 
 } // namespace react

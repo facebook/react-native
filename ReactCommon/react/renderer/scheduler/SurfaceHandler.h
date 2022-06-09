@@ -195,13 +195,13 @@ class SurfaceHandler {
   /*
    * `link_` and `linkMutex_` pair.
    */
-  mutable better::shared_mutex linkMutex_;
+  mutable butter::shared_mutex linkMutex_;
   mutable Link link_;
 
   /*
    * `parameters_` and `parametersMutex_` pair.
    */
-  mutable better::shared_mutex parametersMutex_;
+  mutable butter::shared_mutex parametersMutex_;
   mutable Parameters parameters_;
 };
 

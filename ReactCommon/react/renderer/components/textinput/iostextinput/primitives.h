@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include <better/optional.h>
+#include <butter/optional.h>
 
 namespace facebook {
 namespace react {
@@ -106,7 +106,7 @@ class TextInputTraits final {
    * iOS & Android
    * Default value: `empty` (`null`).
    */
-  better::optional<bool> autoCorrect{};
+  butter::optional<bool> autoCorrect{};
 
   /*
    * iOS & Android
@@ -141,7 +141,7 @@ class TextInputTraits final {
    * Can be empty (`null` in JavaScript) which means `default`.
    * Default value: `empty` (`null`).
    */
-  better::optional<bool> spellCheck{};
+  butter::optional<bool> spellCheck{};
 
   /*
    * iOS & Android

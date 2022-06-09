@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <better/map.h>
+#include <butter/map.h>
 #include <mutex>
 
 #include <react/renderer/core/LayoutConstraints.h>
@@ -59,8 +59,8 @@ class SurfaceManager final {
       const noexcept;
 
   Scheduler const &scheduler_;
-  mutable better::shared_mutex mutex_; // Protects `registry_`.
-  mutable better::map<SurfaceId, SurfaceHandler> registry_{};
+  mutable butter::shared_mutex mutex_; // Protects `registry_`.
+  mutable butter::map<SurfaceId, SurfaceHandler> registry_{};
 };
 
 } // namespace react

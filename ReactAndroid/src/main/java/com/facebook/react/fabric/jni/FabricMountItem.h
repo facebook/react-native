@@ -45,6 +45,9 @@ struct CppMountItem final {
 
   static CppMountItem UpdatePaddingMountItem(ShadowView const &shadowView);
 
+  static CppMountItem UpdateOverflowInsetMountItem(
+      ShadowView const &shadowView);
+
 #pragma mark - Type
 
   enum Type {
@@ -58,7 +61,8 @@ struct CppMountItem final {
     UpdateState = 64,
     UpdateLayout = 128,
     UpdateEventEmitter = 256,
-    UpdatePadding = 512
+    UpdatePadding = 512,
+    UpdateOverflowInset = 1024
   };
 
 #pragma mark - Fields

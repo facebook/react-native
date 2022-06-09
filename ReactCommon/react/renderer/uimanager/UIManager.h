@@ -194,7 +194,7 @@ class UIManager final : public ShadowTreeDelegate {
   BackgroundExecutor const backgroundExecutor_{};
   ContextContainer::Shared contextContainer_;
 
-  mutable better::shared_mutex commitHookMutex_;
+  mutable butter::shared_mutex commitHookMutex_;
   mutable std::vector<UIManagerCommitHook const *> commitHooks_;
 
   std::unique_ptr<LeakChecker> leakChecker_;

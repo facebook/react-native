@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <better/optional.h>
+#include <butter/optional.h>
 #include <cinttypes>
 #include <string>
 
@@ -50,7 +50,7 @@ constexpr enum AccessibilityTraits operator&(
 
 struct AccessibilityAction {
   std::string name{""};
-  better::optional<std::string> label{};
+  butter::optional<std::string> label{};
 };
 
 struct AccessibilityState {
@@ -76,10 +76,10 @@ constexpr bool operator!=(
 }
 
 struct AccessibilityValue {
-  better::optional<int> min;
-  better::optional<int> max;
-  better::optional<int> now;
-  better::optional<std::string> text{};
+  butter::optional<int> min;
+  butter::optional<int> max;
+  butter::optional<int> now;
+  butter::optional<std::string> text{};
 };
 
 constexpr bool operator==(

@@ -149,8 +149,8 @@ inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
     Selection &result) {
-  if (value.hasType<better::map<std::string, int>>()) {
-    auto map = (better::map<std::string, int>)value;
+  if (value.hasType<butter::map<std::string, int>>()) {
+    auto map = (butter::map<std::string, int>)value;
     for (const auto &pair : map) {
       if (pair.first == "start") {
         result.start = pair.second;

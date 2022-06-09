@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <better/optional.h>
+#include <butter/optional.h>
 
 #include <react/renderer/components/root/RootShadowNode.h>
 #include <react/renderer/mounting/MountingOverrideDelegate.h>

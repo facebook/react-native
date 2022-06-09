@@ -7,8 +7,8 @@
 
 #include "Differentiator.h"
 
-#include <better/map.h>
-#include <better/small_vector.h>
+#include <butter/map.h>
+#include <butter/small_vector.h>
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/debug/SystraceSection.h>
@@ -168,7 +168,7 @@ class TinyMap final {
     erasedAtFront_ = 0;
   }
 
-  better::small_vector<Pair, DefaultSize> vector_;
+  butter::small_vector<Pair, DefaultSize> vector_;
   size_t numErased_{0};
   size_t erasedAtFront_{0};
 };

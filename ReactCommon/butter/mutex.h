@@ -12,9 +12,9 @@
 #include <shared_mutex>
 
 namespace facebook {
-namespace better {
+namespace butter {
 
 using shared_mutex = folly::SharedMutex;
 
-} // namespace better
+} // namespace butter
 } // namespace facebook

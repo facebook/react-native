@@ -56,7 +56,7 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
   // Step 1.
   // Creating a list of nodes that form a chain from the descender node to
   // ancestor node inclusively.
-  auto shadowNodeList = better::small_vector<ShadowNode const *, 16>{};
+  auto shadowNodeList = butter::small_vector<ShadowNode const *, 16>{};
 
   // Finding the measured node.
   // The last element in the `AncestorList` is a pair of a parent of the node

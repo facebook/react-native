@@ -10,9 +10,9 @@
 #import <React/RCTAssert.h>
 #import <React/RCTConversions.h>
 
-#import <better/map.h>
-#import <better/mutex.h>
-#import <better/set.h>
+#import <butter/map.h>
+#import <butter/mutex.h>
+#import <butter/set.h>
 
 #import <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #import <react/renderer/componentregistry/componentNameByReactViewName.h>
@@ -56,10 +56,10 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
 }
 
 @implementation RCTComponentViewFactory {
-  better::map<ComponentHandle, RCTComponentViewClassDescriptor> _componentViewClasses;
-  better::set<std::string> _registeredComponentsNames;
+  butter::map<ComponentHandle, RCTComponentViewClassDescriptor> _componentViewClasses;
+  butter::set<std::string> _registeredComponentsNames;
   ComponentDescriptorProviderRegistry _providerRegistry;
-  better::shared_mutex _mutex;
+  butter::shared_mutex _mutex;
 }
 
 + (RCTComponentViewFactory *)currentComponentViewFactory
@@ -149,7 +149,7 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
 - (void)registerComponentViewClass:(Class<RCTComponentViewProtocol>)componentViewClass
 {
   RCTAssert(componentViewClass, @"RCTComponentViewFactory: Provided `componentViewClass` is `nil`.");
-  std::unique_lock<better::shared_mutex> lock(_mutex);
+  std::unique_lock<butter::shared_mutex> lock(_mutex);
 
   auto componentDescriptorProvider = [componentViewClass componentDescriptorProvider];
   _componentViewClasses[componentDescriptorProvider.handle] =
@@ -171,7 +171,7 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
 - (RCTComponentViewDescriptor)createComponentViewWithComponentHandle:(facebook::react::ComponentHandle)componentHandle
 {
   RCTAssertMainQueue();
-  std::shared_lock<better::shared_mutex> lock(_mutex);
+  std::shared_lock<butter::shared_mutex> lock(_mutex);
 
   auto iterator = _componentViewClasses.find(componentHandle);
   RCTAssert(
@@ -192,7 +192,7 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
 - (facebook::react::ComponentDescriptorRegistry::Shared)createComponentDescriptorRegistryWithParameters:
     (facebook::react::ComponentDescriptorParameters)parameters
 {
-  std::shared_lock<better::shared_mutex> lock(_mutex);
+  std::shared_lock<butter::shared_mutex> lock(_mutex);
 
   return _providerRegistry.createComponentDescriptorRegistry(parameters);
 }

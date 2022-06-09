@@ -28,6 +28,9 @@ class FabricMountingManager {
   constexpr static auto UIManagerJavaDescriptor =
       "com/facebook/react/fabric/FabricUIManager";
 
+  constexpr static auto ReactFeatureFlagsJavaDescriptor =
+      "com/facebook/react/config/ReactFeatureFlags";
+
   FabricMountingManager(
       std::shared_ptr<const ReactNativeConfig> &config,
       jni::global_ref<jobject> &javaUIManager);
@@ -65,6 +68,7 @@ class FabricMountingManager {
   bool enableEarlyEventEmitterUpdate_{false};
   bool disablePreallocateViews_{false};
   bool disableRevisionCheckForPreallocation_{false};
+  bool useOverflowInset_{false};
 };
 
 } // namespace react

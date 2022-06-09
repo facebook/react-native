@@ -157,7 +157,7 @@ const StructTemplate = ({
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ${structName} &result) {
-  auto map = (better::map<std::string, RawValue>)value;
+  auto map = (butter::map<std::string, RawValue>)value;
 
   ${fromCases}
 }

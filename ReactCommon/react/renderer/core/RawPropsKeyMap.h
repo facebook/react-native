@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <better/small_vector.h>
+#include <butter/small_vector.h>
 
 #include <react/renderer/core/RawPropsKey.h>
 #include <react/renderer/core/RawPropsPrimitives.h>
@@ -55,8 +55,8 @@ class RawPropsKeyMap final {
       Item const &rhs) noexcept;
   static bool hasSameName(Item const &lhs, Item const &rhs) noexcept;
 
-  better::small_vector<Item, kNumberOfExplicitlySpecifedPropsSoftCap> items_{};
-  better::small_vector<RawPropsPropNameLength, kPropNameLengthHardCap>
+  butter::small_vector<Item, kNumberOfExplicitlySpecifedPropsSoftCap> items_{};
+  butter::small_vector<RawPropsPropNameLength, kPropNameLengthHardCap>
       buckets_{};
 };
 

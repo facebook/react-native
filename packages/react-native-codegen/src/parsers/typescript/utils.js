@@ -13,12 +13,7 @@
 const {ParserError} = require('./errors');
 
 /**
- * This FlowFixMe is supposed to refer to an InterfaceDeclaration or TypeAlias
- * declaration type. Unfortunately, we don't have those types, because flow-parser
- * generates them, and flow-parser is not type-safe. In the future, we should find
- * a way to get these types from our flow parser library.
- *
- * TODO(T71778680): Flow type AST Nodes
+ * TODO(T108222691): Use flow-types for @babel/parser
  */
 export type TypeDeclarationMap = {[declarationName: string]: $FlowFixMe};
 
@@ -26,22 +21,23 @@ function getTypes(ast: $FlowFixMe): TypeDeclarationMap {
   return ast.body.reduce((types, node) => {
     if (node.type === 'ExportNamedDeclaration' && node.exportKind === 'type') {
       if (
-        node.declaration.type === 'TypeAlias' ||
-        node.declaration.type === 'InterfaceDeclaration'
+        node.declaration.type === 'TSTypeAliasDeclaration' ||
+        node.declaration.type === 'TSInterfaceDeclaration'
       ) {
         types[node.declaration.id.name] = node.declaration;
       }
     } else if (
-      node.type === 'TypeAlias' ||
-      node.type === 'InterfaceDeclaration'
+      node.type === 'TSTypeAliasDeclaration' ||
+      node.type === 'TSInterfaceDeclaration'
     ) {
       types[node.id.name] = node;
     }
+
     return types;
   }, {});
 }
 
-// $FlowFixMe[unclear-type] there's no flowtype for ASTs
+// $FlowFixMe[unclear-type] Use flow-types for @babel/parser
 export type ASTNode = Object;
 
 const invariant = require('invariant');
@@ -56,7 +52,7 @@ type TypeAliasResolutionStatus =
     }>;
 
 function resolveTypeAnnotation(
-  // TODO(T71778680): This is an Flow TypeAnnotation. Flow-type this
+  // TODO(T108222691): Use flow-types for @babel/parser
   typeAnnotation: $FlowFixMe,
   types: TypeDeclarationMap,
 ): {
@@ -69,32 +65,43 @@ function resolveTypeAnnotation(
     'resolveTypeAnnotation(): typeAnnotation cannot be null',
   );
 
-  let node = typeAnnotation;
+  let node =
+    typeAnnotation.type === 'TSTypeAnnotation'
+      ? typeAnnotation.typeAnnotation
+      : typeAnnotation;
   let nullable = false;
   let typeAliasResolutionStatus: TypeAliasResolutionStatus = {
     successful: false,
   };
 
   for (;;) {
-    if (node.type === 'NullableTypeAnnotation') {
+    // Check for optional type in union e.g. T | null | void
+    if (
+      node.type === 'TSUnionType' &&
+      node.types.some(
+        t => t.type === 'TSNullKeyword' || t.type === 'TSVoidKeyword',
+      )
+    ) {
+      node = node.types.filter(
+        t => t.type !== 'TSNullKeyword' && t.type !== 'TSVoidKeyword',
+      )[0];
       nullable = true;
-      node = node.typeAnnotation;
-    } else if (node.type === 'GenericTypeAnnotation') {
+    } else if (node.type === 'TSTypeReference') {
       typeAliasResolutionStatus = {
         successful: true,
-        aliasName: node.id.name,
+        aliasName: node.typeName.name,
       };
-      const resolvedTypeAnnotation = types[node.id.name];
+      const resolvedTypeAnnotation = types[node.typeName.name];
       if (resolvedTypeAnnotation == null) {
         break;
       }
 
       invariant(
-        resolvedTypeAnnotation.type === 'TypeAlias',
-        `GenericTypeAnnotation '${node.id.name}' must resolve to a TypeAlias. Instead, it resolved to a '${resolvedTypeAnnotation.type}'`,
+        resolvedTypeAnnotation.type === 'TSTypeAliasDeclaration',
+        `GenericTypeAnnotation '${node.typeName.name}' must resolve to a TSTypeAliasDeclaration. Instead, it resolved to a '${resolvedTypeAnnotation.type}'`,
       );
 
-      node = resolvedTypeAnnotation.right;
+      node = resolvedTypeAnnotation.typeAnnotation;
     } else {
       break;
     }
@@ -108,9 +115,14 @@ function resolveTypeAnnotation(
 }
 
 function getValueFromTypes(value: ASTNode, types: TypeDeclarationMap): ASTNode {
-  if (value.type === 'GenericTypeAnnotation' && types[value.id.name]) {
-    return getValueFromTypes(types[value.id.name].right, types);
+  if (value.type === 'TSTypeReference' && types[value.typeName.name]) {
+    return getValueFromTypes(types[value.typeName.name], types);
   }
+
+  if (value.type === 'TSTypeAliasDeclaration') {
+    return value.typeAnnotation;
+  }
+
   return value;
 }
 
@@ -137,7 +149,7 @@ function createParserErrorCapturer(): [
   return [errors, guard];
 }
 
-// TODO(T71778680): Flow-type ASTNodes.
+// TODO(T108222691): Use flow-types for @babel/parser
 function visit(
   astNode: $FlowFixMe,
   visitor: {
@@ -166,7 +178,7 @@ function visit(
   }
 }
 
-// TODO(T71778680): Flow-type ASTNodes.
+// TODO(T108222691): Use flow-types for @babel/parser
 function isModuleRegistryCall(node: $FlowFixMe): boolean {
   if (node.type !== 'CallExpression') {
     return false;
@@ -197,6 +209,11 @@ function isModuleRegistryCall(node: $FlowFixMe): boolean {
   ) {
     return false;
   }
+
+  if (memberExpression.computed) {
+    return false;
+  }
+
   return true;
 }
 

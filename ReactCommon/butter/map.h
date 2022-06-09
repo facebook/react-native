@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include <better/better.h>
+#include <butter/butter.h>
 
-#ifdef BETTER_USE_FOLLY_CONTAINERS
+#ifdef BUTTER_USE_FOLLY_CONTAINERS
 
 #include <folly/container/F14Map.h>
 
@@ -20,16 +20,16 @@
 #endif
 
 namespace facebook {
-namespace better {
+namespace butter {
 
 /*
- * Note: In Better, `map` aliases to `unorderd_map` because everyone agrees that
+ * Note: In Butter, `map` aliases to `unorderd_map` because everyone agrees that
  * an *ordered* map is nonsense and was a huge mistake for standardization. If
  * you need an *ordered* map, feel free to introduce that as
- * `better::ordered_map`.
+ * `butter::ordered_map`.
  */
 
-#ifdef BETTER_USE_FOLLY_CONTAINERS
+#ifdef BUTTER_USE_FOLLY_CONTAINERS
 
 template <typename... Ts>
 using map = folly::F14FastMap<Ts...>;
@@ -41,5 +41,5 @@ using map = std::unordered_map<Ts...>;
 
 #endif
 
-} // namespace better
+} // namespace butter
 } // namespace facebook

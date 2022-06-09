@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <better/map.h>
+#include <butter/map.h>
 #include <folly/dynamic.h>
 #include <glog/logging.h>
 #include <react/debug/react_native_assert.h>
@@ -30,8 +30,8 @@ inline void fromRawValue(
     return;
   }
 
-  if (value.hasType<better::map<std::string, RawValue>>()) {
-    auto items = (better::map<std::string, RawValue>)value;
+  if (value.hasType<butter::map<std::string, RawValue>>()) {
+    auto items = (butter::map<std::string, RawValue>)value;
     result = {};
 
     result.type = ImageSource::Type::Remote;

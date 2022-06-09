@@ -23,7 +23,7 @@ LOCAL_STATIC_LIBRARIES :=
 
 LOCAL_SHARED_LIBRARIES := \
   glog \
-  libbetter \
+  libbutter \
   libfolly_futures \
   libfolly_json \
   libglog_init \
@@ -40,7 +40,7 @@ LOCAL_SHARED_LIBRARIES := \
 
 include $(BUILD_SHARED_LIBRARY)
 
-$(call import-module,better)
+$(call import-module,butter)
 $(call import-module,glog)
 $(call import-module,folly)
 $(call import-module,fbgloginit)

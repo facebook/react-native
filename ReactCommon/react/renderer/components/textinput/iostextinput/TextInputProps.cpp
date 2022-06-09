@@ -87,7 +87,7 @@ TextInputProps::TextInputProps(
           rawProps,
           "selection",
           sourceProps.selection,
-          better::optional<Selection>())),
+          butter::optional<Selection>())),
       inputAccessoryViewID(convertRawProp(
           context,
           rawProps,

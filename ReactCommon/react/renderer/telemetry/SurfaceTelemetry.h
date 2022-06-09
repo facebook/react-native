@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <better/small_vector.h>
+#include <butter/small_vector.h>
 #include <vector>
 
 #include <react/renderer/telemetry/TransactionTelemetry.h>
@@ -60,7 +60,7 @@ class SurfaceTelemetry final {
   int numberOfTextMeasurements_{};
   int lastRevisionNumber_{};
 
-  better::
+  butter::
       small_vector<TransactionTelemetry, kMaxNumberOfRecordedCommitTelemetries>
           recentTransactionTelemetries_{};
 };

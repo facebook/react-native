@@ -51,7 +51,7 @@ void RCTCopyBackedTextInput(
   [toTextInput setSelectedTextRange:fromTextInput.selectedTextRange notifyDelegate:NO];
 }
 
-UITextAutocorrectionType RCTUITextAutocorrectionTypeFromOptionalBool(facebook::better::optional<bool> autoCorrect)
+UITextAutocorrectionType RCTUITextAutocorrectionTypeFromOptionalBool(facebook::butter::optional<bool> autoCorrect)
 {
   return autoCorrect.has_value() ? (*autoCorrect ? UITextAutocorrectionTypeYes : UITextAutocorrectionTypeNo)
                                  : UITextAutocorrectionTypeDefault;
@@ -84,7 +84,7 @@ UIKeyboardAppearance RCTUIKeyboardAppearanceFromKeyboardAppearance(KeyboardAppea
   }
 }
 
-UITextSpellCheckingType RCTUITextSpellCheckingTypeFromOptionalBool(facebook::better::optional<bool> spellCheck)
+UITextSpellCheckingType RCTUITextSpellCheckingTypeFromOptionalBool(facebook::butter::optional<bool> spellCheck)
 {
   return spellCheck.has_value() ? (*spellCheck ? UITextSpellCheckingTypeYes : UITextSpellCheckingTypeNo)
                                 : UITextSpellCheckingTypeDefault;

@@ -9,9 +9,9 @@
 
 #include <limits>
 
-#include <better/map.h>
-#include <better/optional.h>
-#include <better/small_vector.h>
+#include <butter/map.h>
+#include <butter/optional.h>
+#include <butter/small_vector.h>
 
 #include <folly/dynamic.h>
 #include <jsi/JSIDynamic.h>
@@ -125,10 +125,10 @@ class RawProps final {
    * Parsed artefacts:
    * To be used by `RawPropParser`.
    */
-  mutable better::
+  mutable butter::
       small_vector<RawPropsValueIndex, kNumberOfPropsPerComponentSoftCap>
           keyIndexToValueIndex_;
-  mutable better::
+  mutable butter::
       small_vector<RawValue, kNumberOfExplicitlySpecifedPropsSoftCap>
           values_;
 };

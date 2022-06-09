@@ -42,7 +42,7 @@ import com.facebook.react.uimanager.FabricViewStateManager;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
-import com.facebook.react.uimanager.ReactOverflowView;
+import com.facebook.react.uimanager.ReactOverflowViewWithInset;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.HasFlingAnimator;
@@ -57,7 +57,7 @@ import java.util.List;
 public class ReactHorizontalScrollView extends HorizontalScrollView
     implements ReactClippingViewGroup,
         FabricViewStateManager.HasFabricViewStateManager,
-        ReactOverflowView,
+        ReactOverflowViewWithInset,
         HasScrollState,
         HasFlingAnimator {
 
@@ -77,6 +77,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private final @Nullable OverScroller mScroller;
   private final VelocityHelper mVelocityHelper = new VelocityHelper();
   private final Rect mRect = new Rect();
+  private final Rect mOverflowInset = new Rect();
 
   private boolean mActivelyScrolling;
   private @Nullable Rect mClippingRect;
@@ -254,6 +255,16 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   @Override
   public @Nullable String getOverflow() {
     return mOverflow;
+  }
+
+  @Override
+  public void setOverflowInset(int left, int top, int right, int bottom) {
+    mOverflowInset.set(left, top, right, bottom);
+  }
+
+  @Override
+  public Rect getOverflowInset() {
+    return mOverflowInset;
   }
 
   @Override

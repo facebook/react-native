@@ -35,7 +35,7 @@ const allFiles = [];
 fileList.forEach(file => {
   if (fs.lstatSync(file).isDirectory()) {
     const dirFiles = glob
-      .sync(`${file}/**/*.js`, {
+      .sync(`${file}/**/*.{js,ts,tsx}`, {
         nodir: true,
       })
       .filter(filterJSFile);

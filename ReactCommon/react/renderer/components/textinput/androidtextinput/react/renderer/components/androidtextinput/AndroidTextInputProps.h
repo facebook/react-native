@@ -37,7 +37,7 @@ static inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
     AndroidTextInputSelectionStruct &result) {
-  auto map = (better::map<std::string, RawValue>)value;
+  auto map = (butter::map<std::string, RawValue>)value;
 
   auto start = map.find("start");
   if (start != map.end()) {
@@ -63,7 +63,7 @@ static inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
     AndroidTextInputTextShadowOffsetStruct &result) {
-  auto map = (better::map<std::string, RawValue>)value;
+  auto map = (butter::map<std::string, RawValue>)value;
 
   auto width = map.find("width");
   if (width != map.end()) {

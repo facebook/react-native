@@ -125,7 +125,7 @@ class Scheduler final : public UIManagerDelegate {
    * parts that need to have ownership (and only ownership) of that, and then
    * fill the optional.
    */
-  std::shared_ptr<better::optional<EventDispatcher const>> eventDispatcher_;
+  std::shared_ptr<butter::optional<EventDispatcher const>> eventDispatcher_;
 
   /**
    * Hold onto ContextContainer. See SchedulerToolbox.
