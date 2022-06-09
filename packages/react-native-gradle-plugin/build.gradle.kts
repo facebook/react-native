@@ -40,28 +40,28 @@ dependencies {
   testImplementation("junit:junit:4.13.2")
 
   testRuntimeOnly(
-    files(
-      serviceOf<ModuleRegistry>().getModule("gradle-tooling-api-builders").classpath.asFiles.first()
-    )
-  )
+      files(
+          serviceOf<ModuleRegistry>()
+              .getModule("gradle-tooling-api-builders")
+              .classpath
+              .asFiles
+              .first()))
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+  sourceCompatibility = JavaVersion.VERSION_1_8
+  targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.majorVersion
-    }
+  kotlinOptions { jvmTarget = JavaVersion.VERSION_11.majorVersion }
 }
 
 tasks.withType<Test>().configureEach {
-    testLogging {
-        exceptionFormat = TestExceptionFormat.FULL
-        showExceptions = true
-        showCauses = true
-        showStackTraces = true
-    }
+  testLogging {
+    exceptionFormat = TestExceptionFormat.FULL
+    showExceptions = true
+    showCauses = true
+    showStackTraces = true
+  }
 }
