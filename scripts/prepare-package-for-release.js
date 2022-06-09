@@ -27,13 +27,13 @@ const {
   getPublishTag,
 } = require('./version-utils');
 
-const branch = process.env.CIRCLE_BRANCH;
-const currentCommit = process.env.CIRCLE_SHA1;
-
 const argv = yargs.option('r', {
   alias: 'remote',
   default: 'origin',
 }).argv;
+
+const currentCommit = process.env.CIRCLE_SHA1;
+const branch = process.env.CIRCLE_BRANCH;
 const remote = argv.remote;
 
 const tag = getPublishTag();
@@ -45,7 +45,7 @@ if (tag == null) {
 }
 
 if (!isReleaseBranch(branch)) {
-  console.error('This needs to be on a release branch');
+  console.error(`This needs to be on a release branch. On branch: ${branch}`);
   exit(1);
 }
 
@@ -85,7 +85,7 @@ if (exec(`git commit -a -m "[${version}] Bump version numbers"`).code) {
 }
 
 // Add tag v0.21.0-rc.1
-if (exec(`git tag v${version}`).code) {
+if (exec(`git tag -a v${version} -m "v${version}"`).code) {
   echo(
     `failed to tag the commit with v${version}, are you sure this release wasn't made earlier?`,
   );
@@ -103,11 +103,8 @@ if (isLatest) {
   exec(`git push ${remote} :latest`);
 
   // This will be pushed with the `--follow-tags`
-  exec('git tag latest');
+  exec('git tag -a latest -m "latest"');
 }
-
-// Push newly created tag
-exec(`git push ${remote} v${version}`);
 
 exec(`git push ${remote} ${branch} --follow-tags`);
 
