@@ -41,17 +41,27 @@ module Pod
     class UI
 
         @@collected_messages = []
+        @@collected_warns = []
 
         def self.puts(message)
             @@collected_messages.push(message)
+        end
+
+        def self.warn(warn)
+            @@collected_warns.push(warn)
         end
 
         def self.collected_messages()
             return @@collected_messages
         end
 
+        def self.collected_warns()
+            return @@collected_warns
+        end
+
         def self.reset()
             @@collected_messages = []
+            @@collected_warns = []
         end
     end
 

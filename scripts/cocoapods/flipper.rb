@@ -109,4 +109,10 @@ class FlipperConfiguration
     def self.disabled
         FlipperConfiguration.new(false, [], {})
     end
+
+    def == (other)
+        return @flipper_enabled == other.flipper_enabled &&
+            @configurations == other.configurations &&
+            @versions == other.versions
+    end
 end
