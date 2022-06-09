@@ -131,10 +131,8 @@ class UtilsTests < Test::Unit::TestCase
     # ============================ #
     def test_excludeArchitectures_whenHermesEngineIsNotIncluded_excludeNothing
         # Arrange
-        user_project_mock = UserProjectMock.new("a/path", [
-            BuildConfigurationMock.new("Debug"),
-            BuildConfigurationMock.new("Release"),
-        ])
+        user_project_mock = prepare_empty_user_project_mock()
+        pods_projects_mock = PodsProjectMock.new()
         installer = InstallerMock.new(PodsProjectMock.new(), [
             AggregatedProjectMock.new(user_project_mock)
         ])
@@ -146,16 +144,15 @@ class UtilsTests < Test::Unit::TestCase
         user_project_mock.build_configurations.each do |config|
             assert_equal(config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"], "")
         end
-
+        assert_equal(user_project_mock.save_invocation_count, 1)
+        assert_equal(pods_projects_mock.save_invocation_count, 0)
     end
 
     def test_excludeArchitectures_whenHermesEngineIsIncluded_excludeI386
         # Arrange
-        user_project_mock = UserProjectMock.new("a/path", [
-            BuildConfigurationMock.new("Debug"),
-            BuildConfigurationMock.new("Release"),
-        ])
-        installer = InstallerMock.new(PodsProjectMock.new([], {"hermes-engine" => {}}), [
+        user_project_mock = prepare_empty_user_project_mock()
+        pods_projects_mock = PodsProjectMock.new([], {"hermes-engine" => {}})
+        installer = InstallerMock.new(pods_projects_mock, [
             AggregatedProjectMock.new(user_project_mock)
         ])
 
@@ -166,6 +163,169 @@ class UtilsTests < Test::Unit::TestCase
         user_project_mock.build_configurations.each do |config|
             assert_equal(config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"], "i386")
         end
+
+        assert_equal(user_project_mock.save_invocation_count, 1)
+        assert_equal(pods_projects_mock.save_invocation_count, 1)
     end
 
+    # ================= #
+    # Test - Fix Config #
+    # ================= #
+
+    def test_fixConfig_whenThereIsNoSearchPaths_doNothing
+        # Arrange
+        buildConfig = BuildConfigurationMock.new("Debug")
+
+        # Act
+        ReactNativePodsUtils.fix_config(buildConfig)
+
+        # Assert
+        assert_nil(buildConfig.build_settings["LIBRARY_SEARCH_PATHS"])
+    end
+
+    def test_fixConfig_whenThereAreSearchPathsAndSwiftUnescaped_removesSwift5_5
+        # Arrange
+        buildConfig = BuildConfigurationMock.new("Debug", {"LIBRARY_SEARCH_PATHS" => [
+            "$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)",
+            "\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"",
+            "$(SDKROOT)/usr/lib/swift"
+        ]})
+
+        # Act
+        ReactNativePodsUtils.fix_config(buildConfig)
+
+        # Assert
+        assert_equal(buildConfig.build_settings["LIBRARY_SEARCH_PATHS"], ["$(SDKROOT)/usr/lib/swift"])
+    end
+
+    def test_fixConfig_whenThereAreSearchPathsAndSwiftEscaped_removesSwift5_5
+        # Arrange
+        buildConfig = BuildConfigurationMock.new("Debug", {"LIBRARY_SEARCH_PATHS" => [
+            "$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)",
+            "\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"",
+            "Another/path",
+            "\"$(SDKROOT)/usr/lib/swift\""
+        ]})
+
+        # Act
+        ReactNativePodsUtils.fix_config(buildConfig)
+
+        # Assert
+        assert_equal(buildConfig.build_settings["LIBRARY_SEARCH_PATHS"], ["Another/path", "\"$(SDKROOT)/usr/lib/swift\""])
+    end
+
+    def test_fixConfig_whenThereAreSearchPathsAndNoSwift_removesSwift5_5AndAddsSwiftAsFirst
+        # Arrange
+        buildConfig = BuildConfigurationMock.new("Debug", {"LIBRARY_SEARCH_PATHS" => [
+            "Another/path"
+        ]})
+
+        # Act
+        ReactNativePodsUtils.fix_config(buildConfig)
+
+        # Assert
+        assert_equal(buildConfig.build_settings["LIBRARY_SEARCH_PATHS"], ["$(SDKROOT)/usr/lib/swift", "Another/path"])
+    end
+
+    # ============================== #
+    # Test - Fix Library Search Path #
+    # ============================== #
+
+    def test_fixLibrarySearchPaths_correctlySetsTheSearchPathsForAllProjects
+        firstTarget = prepare_target("FirstTarget")
+        secondTarget = prepare_target("SecondTarget")
+        thirdTarget = prepare_target("ThirdTarget")
+        user_project_mock = UserProjectMock.new("a/path", [
+                prepare_config("Debug"),
+                prepare_config("Release"),
+            ],
+            :native_targets => [
+                firstTarget,
+                secondTarget
+            ]
+        )
+        pods_projects_mock = PodsProjectMock.new([], {"hermes-engine" => {}}, :native_targets => [
+            thirdTarget
+        ])
+        installer = InstallerMock.new(pods_projects_mock, [
+            AggregatedProjectMock.new(user_project_mock)
+        ])
+
+        # Act
+        ReactNativePodsUtils.fix_library_search_paths(installer)
+
+        # Assert
+        user_project_mock.build_configurations.each do |config|
+            assert_equal(config.build_settings["LIBRARY_SEARCH_PATHS"], [
+                "$(SDKROOT)/usr/lib/swift", "Another/path"
+            ])
+        end
+
+        user_project_mock.native_targets.each do |target|
+            target.build_configurations.each do |config|
+                assert_equal(config.build_settings["LIBRARY_SEARCH_PATHS"], [
+                    "$(SDKROOT)/usr/lib/swift", "Another/path"
+                ])
+            end
+        end
+
+        pods_projects_mock.native_targets.each do |target|
+            target.build_configurations.each do |config|
+                assert_equal(config.build_settings["LIBRARY_SEARCH_PATHS"], [
+                    "$(SDKROOT)/usr/lib/swift", "Another/path"
+                ])
+            end
+        end
+
+        assert_equal(user_project_mock.save_invocation_count, 1)
+        assert_equal(pods_projects_mock.save_invocation_count, 1)
+    end
+
+    # ==================================== #
+    # Test - Set Node_Modules User Setting #
+    # ==================================== #
+
+    def test_setNodeModulesUserSettings_addTheUserSetting
+        # Arrange
+        react_native_path = "react_native/node_modules"
+        user_project_mock = prepare_empty_user_project_mock()
+        pods_projects_mock = PodsProjectMock.new([], {"hermes-engine" => {}})
+        installer = InstallerMock.new(pods_projects_mock, [
+            AggregatedProjectMock.new(user_project_mock)
+        ])
+
+        # Act
+        ReactNativePodsUtils.set_node_modules_user_settings(installer, react_native_path)
+
+        # Assert
+        user_project_mock.build_configurations.each do |config|
+            assert_equal(config.build_settings["REACT_NATIVE_PATH"], "${PODS_ROOT}/../#{react_native_path}")
+        end
+
+        assert_equal(user_project_mock.save_invocation_count, 1)
+        assert_equal(pods_projects_mock.save_invocation_count, 1)
+        assert_equal(Pod::UI.collected_messages, ["Setting REACT_NATIVE build settings"])
+    end
+end
+
+def prepare_empty_user_project_mock
+    return UserProjectMock.new("a/path", [
+        BuildConfigurationMock.new("Debug"),
+        BuildConfigurationMock.new("Release"),
+    ])
+end
+
+def prepare_config(config_name)
+    return BuildConfigurationMock.new(config_name, {"LIBRARY_SEARCH_PATHS" => [
+        "$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)",
+        "\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"",
+        "Another/path",
+    ]})
+end
+
+def prepare_target(name)
+    return TargetMock.new(name, [
+        prepare_config("Debug"),
+        prepare_config("Release")
+    ])
 end
