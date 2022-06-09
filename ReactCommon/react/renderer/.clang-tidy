@@ -1,5 +1,10 @@
 ---
+InheritParentConfig: true
 Checks: '>
 clang-diagnostic-*,
+modernize-avoid-bind,
+modernize-avoid-c-arrays,
+modernize-deprecated-headers,
+modernize-deprecated-ios-base-aliases,
 '
 ...

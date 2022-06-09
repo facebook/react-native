@@ -8,6 +8,7 @@
 #include "RawProps.h"
 
 #include <react/debug/react_native_assert.h>
+#include <react/renderer/core/RawPropsKey.h>
 #include <react/renderer/core/RawPropsParser.h>
 
 namespace facebook {

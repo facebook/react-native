@@ -64,8 +64,7 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
   PropsParserContext parserContext{-1, *contextContainer};
 
   // Create a RuntimeExecutor
-  RuntimeExecutor runtimeExecutor =
-      [](std::function<void(jsi::Runtime & runtime)> fn) {};
+  RuntimeExecutor runtimeExecutor = [](std::function<void(jsi::Runtime &)>) {};
 
   // Create component descriptor registry for animation driver
   auto providerRegistry =

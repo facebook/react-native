@@ -73,7 +73,7 @@ class EventBeat {
    * Sets the beat callback function.
    * The callback is must be called on the proper thread.
    */
-  void setBeatCallback(const BeatCallback &beatCallback);
+  void setBeatCallback(BeatCallback beatCallback);
 
  protected:
   /*

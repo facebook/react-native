@@ -17,7 +17,6 @@
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
 #include <react/renderer/core/PropsParserContext.h>
-#include <react/renderer/core/RawPropsKey.h>
 #include <react/renderer/core/RawPropsPrimitives.h>
 #include <react/renderer/core/RawValue.h>
 #include <vector>
