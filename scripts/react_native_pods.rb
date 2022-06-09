@@ -148,6 +148,10 @@ def get_default_flags()
     flags[:hermes_enabled] = true
   end
 
+  if ENV['USE_HERMES'] == '1'
+    flags[:hermes_enabled] = true
+  end
+
   return flags
 end
 
