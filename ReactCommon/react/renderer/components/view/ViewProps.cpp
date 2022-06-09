@@ -275,8 +275,6 @@ SharedDebugStringConvertibleList ViewProps::getDebugProps() const {
       YogaStylableProps::getDebugProps() +
       SharedDebugStringConvertibleList{
           debugStringConvertibleItem(
-              "zIndex", zIndex, defaultViewProps.zIndex.value_or(0)),
-          debugStringConvertibleItem(
               "opacity", opacity, defaultViewProps.opacity),
           debugStringConvertibleItem(
               "foregroundColor",
@@ -286,6 +284,8 @@ SharedDebugStringConvertibleList ViewProps::getDebugProps() const {
               "backgroundColor",
               backgroundColor,
               defaultViewProps.backgroundColor),
+          debugStringConvertibleItem(
+              "zIndex", zIndex, defaultViewProps.zIndex.value_or(0)),
       };
 }
 #endif

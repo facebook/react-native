@@ -7,6 +7,8 @@
 
 #pragma once
 
+#ifdef __cplusplus
+
 #include "YGValue.h"
 #include "YGMacros.h"
 #include <cmath>
@@ -182,3 +184,5 @@ constexpr bool operator!=(CompactValue a, CompactValue b) noexcept {
 } // namespace detail
 } // namespace yoga
 } // namespace facebook
+
+#endif

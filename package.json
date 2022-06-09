@@ -60,6 +60,7 @@
     "scripts/cocoapods/flipper.rb",
     "scripts/cocoapods/new_architecture.rb",
     "scripts/react-native-xcode.sh",
+    "sdks/.hermesversion",
     "sdks/hermes-engine",
     "sdks/hermesc",
     "template.config.js",
@@ -101,7 +102,7 @@
     "repo-config"
   ],
   "peerDependencies": {
-    "react": "18.0.0"
+    "react": "18.1.0"
   },
   "dependencies": {
     "@jest/create-cache-key-function": "^27.0.1",
@@ -129,18 +130,18 @@
     "react-devtools-core": "4.24.0",
     "react-native-gradle-plugin": "^0.0.7",
     "react-refresh": "^0.4.0",
-    "react-shallow-renderer": "16.14.1",
+    "react-shallow-renderer": "^16.15.0",
     "regenerator-runtime": "^0.13.2",
-    "scheduler": "^0.21.0",
+    "scheduler": "^0.22.0",
     "stacktrace-parser": "^0.1.3",
     "use-sync-external-store": "^1.0.0",
     "whatwg-fetch": "^3.0.0",
     "ws": "^6.1.4"
   },
   "devDependencies": {
-    "flow-bin": "^0.178.1",
-    "react": "18.0.0",
-    "react-test-renderer": "^18.0.0"
+    "flow-bin": "^0.179.0",
+    "react": "18.1.0",
+    "react-test-renderer": "^18.1.0"
   },
   "codegenConfig": {
     "libraries": [

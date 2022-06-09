@@ -6,7 +6,7 @@ namespace facebook {
 namespace react {
 
 std::shared_ptr<TurboModule> MainApplicationModuleProvider(
-    const std::string moduleName,
+    const std::string &moduleName,
     const JavaTurboModule::InitParams &params) {
   // Here you can provide your own module provider for TurboModules coming from
   // either your application or from external libraries. The approach to follow
