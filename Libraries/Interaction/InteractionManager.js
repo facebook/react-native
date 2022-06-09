@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -91,7 +91,6 @@ const InteractionManager = {
       onFulfill?: ?(void) => ?(Promise<U> | U),
       onReject?: ?(error: mixed) => ?(Promise<U> | U),
     ) => Promise<U>,
-    done: () => void,
     cancel: () => void,
     ...
   } {
@@ -110,16 +109,6 @@ const InteractionManager = {
     return {
       // $FlowFixMe[method-unbinding] added when improving typing for this parameters
       then: promise.then.bind(promise),
-      done: (...args) => {
-        // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-        if (promise.done) {
-          return promise.done(...args);
-        } else {
-          console.warn(
-            'Tried to call done when not supported by current Promise implementation.',
-          );
-        }
-      },
       cancel: function () {
         _taskQueue.cancelTasks(tasks);
       },
@@ -165,7 +154,7 @@ const _interactionSet = new Set();
 const _addInteractionSet = new Set();
 const _deleteInteractionSet = new Set();
 const _taskQueue = new TaskQueue({onMoreTasks: _scheduleUpdate});
-let _nextUpdateHandle = 0;
+let _nextUpdateHandle: $FlowFixMe | TimeoutID = 0;
 let _inc = 0;
 let _deadline = -1;
 

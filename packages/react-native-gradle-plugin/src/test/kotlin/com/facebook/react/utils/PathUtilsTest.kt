@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,9 +8,13 @@
 package com.facebook.react.utils
 
 import com.facebook.react.TestReactExtension
+import com.facebook.react.tests.OS
+import com.facebook.react.tests.OsRule
+import com.facebook.react.tests.WithOs
 import java.io.File
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Assert.*
+import org.junit.Assume.assumeTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -18,6 +22,7 @@ import org.junit.rules.TemporaryFolder
 class PathUtilsTest {
 
   @get:Rule val tempFolder = TemporaryFolder()
+  @get:Rule val osRule = OsRule()
 
   @Test
   fun detectedEntryFile_withProvidedVariable() {
@@ -33,7 +38,7 @@ class PathUtilsTest {
   @Test
   fun detectedEntryFile_withAndroidEntryPoint() {
     val extension = TestReactExtension(ProjectBuilder.builder().build())
-    extension.reactRoot.set(tempFolder.root)
+    extension.root.set(tempFolder.root)
     tempFolder.newFile("index.android.js")
 
     val actual = detectedEntryFile(extension)
@@ -44,7 +49,7 @@ class PathUtilsTest {
   @Test
   fun detectedEntryFile_withDefaultEntryPoint() {
     val extension = TestReactExtension(ProjectBuilder.builder().build())
-    extension.reactRoot.set(tempFolder.root)
+    extension.root.set(tempFolder.root)
 
     val actual = detectedEntryFile(extension)
 
@@ -52,10 +57,47 @@ class PathUtilsTest {
   }
 
   @Test
-  fun detectedCliPath_withCliPathFromExtension() {
+  fun detectedCliPath_withCliPathFromExtensionAbsolute() {
     val project = ProjectBuilder.builder().build()
     val extension = TestReactExtension(project)
-    val expected = File(project.projectDir, "fake-cli.sh")
+    val expected =
+        File(project.projectDir, "abs/fake-cli.sh").apply {
+          parentFile.mkdirs()
+          writeText("<!-- nothing to see here -->")
+        }
+    extension.cliPath.set(project.projectDir.toString() + "/abs/fake-cli.sh")
+
+    val actual = detectedCliPath(project.projectDir, extension)
+
+    assertEquals(expected.toString(), actual)
+  }
+
+  @Test
+  fun detectedCliPath_withCliPathFromExtensionInReactFolder() {
+    val project = ProjectBuilder.builder().build()
+    val extension = TestReactExtension(project)
+    val expected =
+        File(project.projectDir, "/react-root/fake-cli.sh").apply {
+          parentFile.mkdirs()
+          writeText("<!-- nothing to see here -->")
+        }
+    extension.cliPath.set("fake-cli.sh")
+    extension.root.set(File(project.projectDir.toString(), "react-root"))
+
+    val actual = detectedCliPath(project.projectDir, extension)
+
+    assertEquals(expected.toString(), actual)
+  }
+
+  @Test
+  fun detectedCliPath_withCliPathFromExtensionInProjectFolder() {
+    val project = ProjectBuilder.builder().build()
+    val extension = TestReactExtension(project)
+    val expected =
+        File(project.projectDir, "fake-cli.sh").apply {
+          parentFile.mkdirs()
+          writeText("<!-- nothing to see here -->")
+        }
     extension.cliPath.set("fake-cli.sh")
 
     val actual = detectedCliPath(project.projectDir, extension)
@@ -67,6 +109,7 @@ class PathUtilsTest {
   fun detectedCliPath_withCliPathFromExtensionInParentFolder() {
     val rootProject = ProjectBuilder.builder().build()
     val project = ProjectBuilder.builder().withParent(rootProject).build()
+    project.projectDir.mkdirs()
     val extension = TestReactExtension(project)
     val expected = File(rootProject.projectDir, "cli-in-root.sh").apply { writeText("#!/bin/bash") }
     extension.cliPath.set("../cli-in-root.sh")
@@ -80,7 +123,7 @@ class PathUtilsTest {
   fun detectedCliPath_withCliFromNodeModules() {
     val project = ProjectBuilder.builder().build()
     val extension = TestReactExtension(project)
-    extension.reactRoot.set(tempFolder.root)
+    extension.root.set(tempFolder.root)
     val expected =
         File(tempFolder.root, "node_modules/react-native/cli.js").apply {
           parentFile.mkdirs()
@@ -101,28 +144,6 @@ class PathUtilsTest {
   }
 
   @Test
-  fun detectedHermesCommand_withPathFromExtension() {
-    val extension = TestReactExtension(ProjectBuilder.builder().build())
-    val expected = tempFolder.newFile("hermesc")
-    extension.hermesCommand.set(expected.toString())
-
-    val actual = detectedHermesCommand(extension)
-
-    assertEquals(expected.toString(), actual)
-  }
-
-  @Test
-  fun detectedHermesCommand_withOSSpecificBin() {
-    val extension = TestReactExtension(ProjectBuilder.builder().build())
-
-    val actual = detectedHermesCommand(extension)
-
-    assertTrue(actual.startsWith("node_modules/hermes-engine/"))
-    assertTrue(actual.endsWith("hermesc"))
-    assertFalse(actual.contains("%OS-BIN%"))
-  }
-
-  @Test
   fun projectPathToLibraryName_withSimplePath() {
     assertEquals("SampleSpec", projectPathToLibraryName(":sample"))
   }
@@ -140,5 +161,85 @@ class PathUtilsTest {
   @Test
   fun projectPathToLibraryName_withDotsAndUnderscores() {
     assertEquals("SampleAndroidAppSpec", projectPathToLibraryName("sample_android.app"))
+  }
+
+  @Test
+  fun detectOSAwareHermesCommand_withProvidedCommand() {
+    assertEquals(
+        "./my-home/hermes", detectOSAwareHermesCommand(tempFolder.root, "./my-home/hermes"))
+  }
+
+  @Test
+  fun detectOSAwareHermesCommand_withHermescBuiltLocally() {
+    // As we can't mock env variables, we skip this test if an override of the Hermes
+    // path has been provided.
+    assumeTrue(System.getenv("REACT_NATIVE_OVERRIDE_HERMES_DIR") == null)
+
+    tempFolder.newFolder("node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/")
+    val expected =
+        tempFolder.newFile(
+            "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc")
+
+    assertEquals(expected.toString(), detectOSAwareHermesCommand(tempFolder.root, ""))
+  }
+
+  @Test
+  @WithOs(OS.MAC)
+  fun detectOSAwareHermesCommand_withBundledHermescInsideRN() {
+    tempFolder.newFolder("node_modules/react-native/sdks/hermesc/osx-bin/")
+    val expected = tempFolder.newFile("node_modules/react-native/sdks/hermesc/osx-bin/hermesc")
+
+    assertEquals(expected.toString(), detectOSAwareHermesCommand(tempFolder.root, ""))
+  }
+
+  @Test(expected = IllegalStateException::class)
+  @WithOs(OS.MAC)
+  fun detectOSAwareHermesCommand_failsIfNotFound() {
+    detectOSAwareHermesCommand(tempFolder.root, "")
+  }
+
+  @Test
+  @WithOs(OS.MAC)
+  fun detectOSAwareHermesCommand_withProvidedCommand_takesPrecedence() {
+    tempFolder.newFolder("node_modules/react-native/sdks/hermes/build/bin/")
+    tempFolder.newFile("node_modules/react-native/sdks/hermes/build/bin/hermesc")
+    tempFolder.newFolder("node_modules/react-native/sdks/hermesc/osx-bin/")
+    tempFolder.newFile("node_modules/react-native/sdks/hermesc/osx-bin/hermesc")
+
+    assertEquals(
+        "./my-home/hermes", detectOSAwareHermesCommand(tempFolder.root, "./my-home/hermes"))
+  }
+
+  @Test
+  @WithOs(OS.MAC)
+  fun detectOSAwareHermesCommand_withoutProvidedCommand_builtHermescTakesPrecedence() {
+    // As we can't mock env variables, we skip this test if an override of the Hermes
+    // path has been provided.
+    assumeTrue(System.getenv("REACT_NATIVE_OVERRIDE_HERMES_DIR") == null)
+
+    tempFolder.newFolder("node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/")
+    val expected =
+        tempFolder.newFile(
+            "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc")
+    tempFolder.newFolder("node_modules/react-native/sdks/hermesc/osx-bin/")
+    tempFolder.newFile("node_modules/react-native/sdks/hermesc/osx-bin/hermesc")
+
+    assertEquals(expected.toString(), detectOSAwareHermesCommand(tempFolder.root, ""))
+  }
+
+  @Test
+  fun getBuiltHermescFile_withoutOverride() {
+    assertEquals(
+        File(
+            tempFolder.root,
+            "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"),
+        getBuiltHermescFile(tempFolder.root, ""))
+  }
+
+  @Test
+  fun getBuiltHermescFile_withOverride() {
+    assertEquals(
+        File("/home/circleci/hermes/build/bin/hermesc"),
+        getBuiltHermescFile(tempFolder.root, "/home/circleci/hermes"))
   }
 }

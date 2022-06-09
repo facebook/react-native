@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -33,7 +33,7 @@ abstract class PrepareGlogTask : DefaultTask() {
     project.copy {
       it.from(glogPath)
       it.from(project.file("src/main/jni/third-party/glog/"))
-      it.include("glog-${glogVersion.get()}/src/**/*", "Android.mk", "config.h")
+      it.include("glog-${glogVersion.get()}/src/**/*", "Android.mk", "CMakeLists.txt", "config.h")
       it.duplicatesStrategy = DuplicatesStrategy.WARN
       it.includeEmptyDirs = false
       it.filesMatching("**/*.h.in") { matchedFile ->

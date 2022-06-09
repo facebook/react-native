@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -55,13 +55,11 @@ NSArray<Class> *RCTGetModuleClasses(void)
 /**
  * Register the given class as a bridge module. All modules must be registered
  * prior to the first bridge initialization.
+ * TODO: (T115656171) Refactor RCTRegisterModule out of Bridge.m since it doesn't use the Bridge.
  */
 void RCTRegisterModule(Class);
 void RCTRegisterModule(Class moduleClass)
 {
-  RCTWarnNotAllowedForNewArchitecture(
-      @"RCTRegisterModule()", [NSString stringWithFormat:@"'%@' was registered unexpectedly", moduleClass]);
-
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     RCTModuleClasses = [NSMutableArray new];
@@ -162,6 +160,18 @@ void RCTDisableTurboModuleManagerDelegateLocking(BOOL disabled)
   turboModuleManagerDelegateLockingDisabled = disabled;
 }
 
+// Turn off TurboModule delegate locking
+static BOOL viewConfigEventValidAttributesDisabled = NO;
+BOOL RCTViewConfigEventValidAttributesDisabled(void)
+{
+  return viewConfigEventValidAttributesDisabled;
+}
+
+void RCTDisableViewConfigEventValidAttributes(BOOL disabled)
+{
+  viewConfigEventValidAttributesDisabled = disabled;
+}
+
 @interface RCTBridge () <RCTReloadListener>
 @end
 
@@ -210,7 +220,7 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
                    launchOptions:(NSDictionary *)launchOptions
 {
   if (self = [super init]) {
-    RCTEnforceNotAllowedForNewArchitecture(self, nil);
+    RCTEnforceNewArchitectureValidation(RCTNotAllowedInBridgeless, self, nil);
     _delegate = delegate;
     _bundleURL = bundleURL;
     _moduleProvider = block;

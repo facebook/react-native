@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -170,7 +170,8 @@ const SwitchWithForwardedRef: React.AbstractComponent<
     // that the update should be ignored and we should stick with the value
     // that we have in JS.
     const jsValue = value === true;
-    const shouldUpdateNativeSwitch = native.value !== jsValue;
+    const shouldUpdateNativeSwitch =
+      native.value != null && native.value !== jsValue;
     if (
       shouldUpdateNativeSwitch &&
       nativeSwitchRef.current?.setNativeProps != null
@@ -184,8 +185,18 @@ const SwitchWithForwardedRef: React.AbstractComponent<
   }, [value, native]);
 
   if (Platform.OS === 'android') {
+    const {accessibilityState} = restProps;
+    const _disabled =
+      disabled != null ? disabled : accessibilityState?.disabled;
+
+    const _accessibilityState =
+      _disabled !== accessibilityState?.disabled
+        ? {...accessibilityState, disabled: _disabled}
+        : accessibilityState;
+
     const platformProps = {
-      enabled: disabled !== true,
+      accessibilityState: _accessibilityState,
+      enabled: _disabled !== true,
       on: value === true,
       style,
       thumbTintColor: thumbColor,

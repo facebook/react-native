@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -191,6 +191,21 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
   if (_uiRunLoopObserver) {
     _uiRunLoopObserver->disable();
   }
+}
+
+- (void)addEventListener:(std::shared_ptr<EventListener> const &)listener
+{
+  return _scheduler->addEventListener(listener);
+}
+
+- (void)removeEventListener:(std::shared_ptr<EventListener> const &)listener
+{
+  return _scheduler->removeEventListener(listener);
+}
+
+- (std::shared_ptr<facebook::react::UIManager> const)uiManager
+{
+  return _scheduler->getUIManager();
 }
 
 @end

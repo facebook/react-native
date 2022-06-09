@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -49,7 +49,7 @@ class YogaDirtyFlagTest : public ::testing::Test {
                     /*
                      * Some non-default props.
                      */
-                    auto mutableViewProps = std::make_shared<ViewProps>();
+                    auto mutableViewProps = std::make_shared<ViewShadowNodeProps>();
                     auto &props = *mutableViewProps;
                     props.nativeId = "native Id";
                     props.opacity = 0.5;
@@ -111,7 +111,7 @@ TEST_F(YogaDirtyFlagTest, changingNonLayoutSubPropsMustNotDirtyYogaNode) {
    */
   auto newRootShadowNode = rootShadowNode_->cloneTree(
       innerShadowNode_->getFamily(), [](ShadowNode const &oldShadowNode) {
-        auto viewProps = std::make_shared<ViewProps>();
+        auto viewProps = std::make_shared<ViewShadowNodeProps>();
         auto &props = *viewProps;
 
         props.nativeId = "some new native Id";
@@ -135,7 +135,7 @@ TEST_F(YogaDirtyFlagTest, changingLayoutSubPropsMustDirtyYogaNode) {
    */
   auto newRootShadowNode = rootShadowNode_->cloneTree(
       innerShadowNode_->getFamily(), [](ShadowNode const &oldShadowNode) {
-        auto viewProps = std::make_shared<ViewProps>();
+        auto viewProps = std::make_shared<ViewShadowNodeProps>();
         auto &props = *viewProps;
 
         props.yogaStyle.alignContent() = YGAlignBaseline;

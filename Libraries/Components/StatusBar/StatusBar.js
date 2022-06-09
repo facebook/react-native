@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -112,14 +112,17 @@ function mergePropsStack(
   propsStack: Array<Object>,
   defaultValues: Object,
 ): Object {
-  return propsStack.reduce((prev, cur) => {
-    for (const prop in cur) {
-      if (cur[prop] != null) {
-        prev[prop] = cur[prop];
+  return propsStack.reduce(
+    (prev, cur) => {
+      for (const prop in cur) {
+        if (cur[prop] != null) {
+          prev[prop] = cur[prop];
+        }
       }
-    }
-    return prev;
-  }, Object.assign({}, defaultValues));
+      return prev;
+    },
+    {...defaultValues},
+  );
 }
 
 /**
@@ -471,7 +474,12 @@ class StatusBar extends React.Component<Props> {
         if (!oldProps || oldProps.hidden.value !== mergedProps.hidden.value) {
           NativeStatusBarManagerAndroid.setHidden(mergedProps.hidden.value);
         }
-        if (!oldProps || oldProps.translucent !== mergedProps.translucent) {
+        // Activities are not translucent by default, so always set if true.
+        if (
+          !oldProps ||
+          oldProps.translucent !== mergedProps.translucent ||
+          mergedProps.translucent
+        ) {
           NativeStatusBarManagerAndroid.setTranslucent(mergedProps.translucent);
         }
       }

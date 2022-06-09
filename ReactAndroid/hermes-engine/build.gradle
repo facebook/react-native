@@ -1,0 +1,260 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+import org.apache.tools.ant.taskdefs.condition.Os
+
+plugins {
+    id("de.undercouch.download")
+    id("com.android.library")
+    id("maven-publish")
+}
+
+group = "com.facebook.react"
+version = parent.publishing_version
+
+def cmakeVersion = "3.18.1"
+/**
+ * We use the bundled version of CMake in the Android SDK if available, to don't force Android
+ * users to install CMake externally.
+ */
+def findCmakePath(cmakeVersion) {
+    if (System.getenv("ANDROID_SDK_ROOT")) {
+        return "${System.getenv("ANDROID_SDK_ROOT")}/cmake/${cmakeVersion}/bin/cmake"
+    }
+    if (System.getenv("ANDROID_HOME")) {
+        return "${System.getenv("ANDROID_HOME")}/cmake/${cmakeVersion}/bin/cmake"
+    }
+    return "cmake"
+}
+
+def reactNativeRootDir = project(':ReactAndroid').projectDir.parent;
+def customDownloadDir = System.getenv("REACT_NATIVE_DOWNLOADS_DIR")
+def downloadsDir = customDownloadDir ? new File(customDownloadDir) : new File(reactNativeRootDir, "sdks/download")
+
+// By default we are going to download and unzip hermes inside the /sdks/hermes folder
+// but you can provide an override for where the hermes source code is located.
+def overrideHermesDir = System.getenv("REACT_NATIVE_OVERRIDE_HERMES_DIR") != null
+def hermesDir = System.getenv("REACT_NATIVE_OVERRIDE_HERMES_DIR") ?: new File(reactNativeRootDir, "sdks/hermes")
+def hermesBuildDir = new File("$buildDir/hermes")
+
+def hermesVersion = "main"
+def hermesVersionFile = new File(reactNativeRootDir, "sdks/.hermesversion")
+if (hermesVersionFile.exists()) {
+    hermesVersion = hermesVersionFile.text
+}
+def ndkBuildJobs = Runtime.runtime.availableProcessors().toString()
+def prefabHeadersDir = new File("$buildDir/prefab-headers")
+
+// By setting REACT_NATIVE_HERMES_SKIP_PREFAB you can skip prefab publishing, to
+// reduce the size of the Hermes published .AAR.
+def skipPrefabPublishing = System.getenv("REACT_NATIVE_HERMES_SKIP_PREFAB") != null
+
+// We inject the JSI directory used inside the Hermes build with the -DJSI_DIR config.
+def jsiDir = new File(reactNativeRootDir, "ReactCommon/jsi")
+
+// The .aar is placed inside the ./android folder at the top level.
+// There it will be placed alongside the React Android .aar
+def AAR_OUTPUT_URL = "file://${rootDir}/android"
+
+task downloadHermes(type: Download) {
+    src("https://github.com/facebook/hermes/tarball/${hermesVersion}")
+    onlyIfNewer(true)
+    overwrite(false)
+    dest(new File(downloadsDir, "hermes.tar.gz"))
+}
+
+task installArchives {
+    dependsOn("publishAllPublicationsToNpmRepository")
+}
+
+task unzipHermes(dependsOn: downloadHermes, type: Copy) {
+    from(tarTree(downloadHermes.dest)) {
+        eachFile { file ->
+            // We flatten the unzip as the tarball contains a `facebook-hermes-<SHA>`
+            // folder at the top level.
+            if (file.relativePath.segments.size() > 1) {
+                file.relativePath = new org.gradle.api.file.RelativePath(!file.isDirectory(), file.relativePath.segments.drop(1))
+            }
+        }
+    }
+    into(hermesDir)
+}
+
+task configureBuildForHermes(type: Exec) {
+    workingDir(hermesDir)
+    commandLine(windowsAwareCommandLine(findCmakePath(cmakeVersion), "-S", ".", "-B", hermesBuildDir.toString(), "-DJSI_DIR=" + jsiDir.absolutePath))
+}
+
+task buildHermes(dependsOn: configureBuildForHermes, type: Exec) {
+    workingDir(hermesDir)
+    commandLine(windowsAwareCommandLine(findCmakePath(cmakeVersion), "--build", hermesBuildDir.toString(), "--target", "hermesc", "-j", ndkBuildJobs))
+}
+
+task prepareHeadersForPrefab(type: Copy) {
+    from("$hermesDir/API")
+    from("$hermesDir/public")
+    include("**/*.h")
+    exclude("jsi/**")
+    into(prefabHeadersDir)
+}
+
+static def windowsAwareCommandLine(String... commands) {
+    def newCommands = []
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        newCommands = ['cmd', '/c']
+    }
+    newCommands.addAll(commands)
+    return newCommands
+}
+
+def reactNativeArchitectures() {
+    def value = project.getProperties().get("reactNativeArchitectures")
+    return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+}
+
+android {
+    compileSdkVersion 31
+    buildToolsVersion = "31.0.0"
+
+    // Used to override the NDK path/version on internal CI or by allowing
+    // users to customize the NDK path/version from their root project (e.g. for M1 support)
+    if (rootProject.hasProperty("ndkPath")) {
+        ndkPath rootProject.ext.ndkPath
+    }
+    if (rootProject.hasProperty("ndkVersion")) {
+        ndkVersion rootProject.ext.ndkVersion
+    }
+
+    defaultConfig {
+        minSdkVersion 21
+
+        externalNativeBuild {
+            cmake {
+                arguments "-DHERMES_IS_ANDROID=True"
+                arguments "-DANDROID_STL=c++_shared"
+                arguments "-DANDROID_PIE=True"
+                arguments "-DANDROID_LD=lld"
+                arguments "-DIMPORT_HERMESC=${new File(hermesBuildDir, "ImportHermesc.cmake").toString()}"
+                arguments "-DJSI_DIR=${jsiDir}"
+                arguments "-DHERMES_SLOW_DEBUG=False"
+                arguments "-DHERMES_BUILD_SHARED_JSI=True"
+                arguments "-DHERMES_RELEASE_VERSION=for RN ${version}"
+                // We intentionally build Hermes with Intl support only. This is to simplify
+                // the build setup and to avoid overcomplicating the build-type matrix.
+                arguments "-DHERMES_ENABLE_INTL=True"
+                targets "libhermes"
+            }
+        }
+        ndk {
+            abiFilters (*reactNativeArchitectures())
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            version cmakeVersion
+            path "$hermesDir/CMakeLists.txt"
+        }
+    }
+
+    buildTypes {
+        debug {
+            externalNativeBuild {
+                cmake {
+                    // JS developers aren't VM developers.
+                    // Therefore we're passing as build type Release, to provide a faster build.
+                    // This has the (unlucky) side effect of letting AGP call the build
+                    // tasks `configureCMakeRelease` while is actually building the debug flavor.
+                    arguments "-DCMAKE_BUILD_TYPE=Release"
+                }
+            }
+        }
+        release {
+            externalNativeBuild {
+                cmake {
+                    arguments "-DHERMES_ENABLE_DEBUGGER=False"
+                    arguments "-DCMAKE_BUILD_TYPE=MinSizeRel"
+                }
+            }
+        }
+    }
+
+    sourceSets {
+        main {
+            manifest.srcFile "$hermesDir/android/hermes/src/main/AndroidManifest.xml"
+            java.srcDirs = [
+                "$hermesDir/lib/Platform/Intl/java"
+            ]
+        }
+    }
+
+    buildFeatures {
+        prefab true
+        prefabPublishing !skipPrefabPublishing
+    }
+
+    dependencies {
+        implementation("com.facebook.fbjni:fbjni:0.2.2")
+        implementation("com.facebook.soloader:soloader:0.10.3")
+        implementation("com.facebook.yoga:proguard-annotations:1.19.0")
+        implementation("androidx.annotation:annotation:1.3.0")
+    }
+
+    packagingOptions {
+        exclude "**/libc++_shared.so"
+        exclude "**/libjsi.so"
+        exclude "**/libfbjni.so"
+    }
+
+    publishing {
+        multipleVariants {
+            withSourcesJar()
+            allVariants()
+        }
+    }
+
+    prefab {
+        libhermes {
+            headers prefabHeadersDir.absolutePath
+            libraryName "libhermes"
+        }
+    }
+}
+
+afterEvaluate {
+    if (!overrideHermesDir) {
+        // If you're not specifying a Hermes Path override, we want to
+        // download/unzip Hermes from Github then.
+        configureBuildForHermes.dependsOn(unzipHermes)
+        prepareHeadersForPrefab.dependsOn(unzipHermes)
+    }
+    preBuild.dependsOn(buildHermes)
+    preBuild.dependsOn(prepareHeadersForPrefab)
+    // Needed as some of the native sources needs to be downloaded
+    // before configureCMakeRelease/configureCMakeMinSizeRel could be executed.
+    reactNativeArchitectures().each { architecture ->
+        tasks.findByName("configureCMakeMinSizeRel[${architecture}]")?.configure { dependsOn(preBuild) }
+        tasks.findByName("configureCMakeRelease[${architecture}]")?.configure { dependsOn(preBuild) }
+    }
+    configureCMakeRelease.dependsOn(preBuild)
+    configureCMakeMinSizeRel.dependsOn(preBuild)
+
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.default
+                artifactId = "hermes-engine"
+            }
+        }
+        repositories {
+            maven {
+                name = "npm"
+                url = AAR_OUTPUT_URL
+            }
+        }
+    }
+}

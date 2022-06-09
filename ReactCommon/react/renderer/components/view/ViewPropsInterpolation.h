@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -44,10 +44,12 @@ static inline void interpolateViewProps(
   // mounting layer. Once we can remove this, we should change `rawProps` to
   // be const again.
 #ifdef ANDROID
-  interpolatedProps->rawProps["opacity"] = interpolatedProps->opacity;
+  if (!interpolatedProps->rawProps.isNull()) {
+    interpolatedProps->rawProps["opacity"] = interpolatedProps->opacity;
 
-  interpolatedProps->rawProps["transform"] =
-      (folly::dynamic)interpolatedProps->transform;
+    interpolatedProps->rawProps["transform"] =
+        (folly::dynamic)interpolatedProps->transform;
+  }
 #endif
 }
 

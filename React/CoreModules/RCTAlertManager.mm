@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -28,6 +28,20 @@ RCT_ENUM_CONVERTER(
       @"login-password" : @(RCTAlertViewStyleLoginAndPasswordInput),
     }),
     RCTAlertViewStyleDefault,
+    integerValue)
+
+@end
+
+@implementation RCTConvert (UIUserInterfaceStyle)
+
+RCT_ENUM_CONVERTER(
+    UIUserInterfaceStyle,
+    (@{
+      @"unspecified" : @(UIUserInterfaceStyleUnspecified),
+      @"light" : @(UIUserInterfaceStyleLight),
+      @"dark" : @(UIUserInterfaceStyleDark),
+    }),
+    UIUserInterfaceStyleUnspecified,
     integerValue)
 
 @end
@@ -103,6 +117,15 @@ RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::Args &)args callback 
   RCTAlertController *alertController = [RCTAlertController alertControllerWithTitle:title
                                                                              message:nil
                                                                       preferredStyle:UIAlertControllerStyleAlert];
+
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
+    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
+  if (@available(iOS 13.0, *)) {
+    UIUserInterfaceStyle userInterfaceStyle = [RCTConvert UIUserInterfaceStyle:args.userInterfaceStyle()];
+    alertController.overrideUserInterfaceStyle = userInterfaceStyle;
+  }
+#endif
+
   switch (type) {
     case RCTAlertViewStylePlainTextInput: {
       [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {

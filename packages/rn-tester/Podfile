@@ -1,48 +1,49 @@
 require_relative '../../scripts/react_native_pods'
+require_relative '../../scripts/cocoapods/new_architecture'
 
 source 'https://cdn.cocoapods.org/'
-platform :ios, '11.0'
+platform :ios, '12.4'
 
 # Temporary solution to suppress duplicated GUID error.
 # Can be removed once we move to generate files outside pod install.
 install! 'cocoapods', :deterministic_uuids => false
 
 USE_FRAMEWORKS = ENV['USE_FRAMEWORKS'] == '1'
+IN_CI = ENV['CI'] == 'true'
+
+@prefix_path = "../.."
 
 if USE_FRAMEWORKS
   puts "Installing pods with use_frameworks!"
   use_frameworks!
 end
 
-if ENV['USE_HERMES'] == '1'
-  puts "Using Hermes engine"
-end
-
-def pods(options = {})
+def pods(options = {}, use_flipper: false)
   project 'RNTesterPods.xcodeproj'
 
   fabric_enabled = true
-  puts "Building RNTester with Fabric #{fabric_enabled ? "enabled" : "disabled"}."
+  hermes_enabled = ENV['USE_HERMES'] == '1'
+  puts "Building RNTester with Fabric #{fabric_enabled ? "enabled" : "disabled"}.#{hermes_enabled ? " Using Hermes engine." : ""}"
 
-  prefix_path = "../.."
-
-  if ENV['USE_CODEGEN_DISCOVERY'] == '1'
+  if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
     # Custom fabric component is only supported when using codegen discovery.
     pod 'MyNativeView', :path => "NativeComponentExample"
   end
-
+  
   use_react_native!(
-    path: prefix_path,
+    path: @prefix_path,
     fabric_enabled: fabric_enabled,
-    hermes_enabled: ENV['USE_HERMES'] == '1',
+    hermes_enabled: hermes_enabled,
+    flipper_configuration: use_flipper ? FlipperConfiguration.enabled : FlipperConfiguration.disabled,
     app_path: "#{Dir.pwd}",
     config_file_dir: "#{Dir.pwd}/node_modules",
+    production: !ENV['PRODUCTION'].nil?
   )
-  pod 'ReactCommon/turbomodule/samples', :path => "#{prefix_path}/ReactCommon"
+  pod 'ReactCommon/turbomodule/samples', :path => "#{@prefix_path}/ReactCommon"
 
   # Additional Pods which aren't included in the default Podfile
-  pod 'React-RCTPushNotification', :path => "#{prefix_path}/Libraries/PushNotificationIOS"
-  pod 'Yoga', :path => "#{prefix_path}/ReactCommon/yoga", :modular_headers => true
+  pod 'React-RCTPushNotification', :path => "#{@prefix_path}/Libraries/PushNotificationIOS"
+  pod 'Yoga', :path => "#{@prefix_path}/ReactCommon/yoga", :modular_headers => true
   # Additional Pods which are classed as unstable
 
   # RNTester native modules and components
@@ -50,10 +51,7 @@ def pods(options = {})
 end
 
 target 'RNTester' do
-  pods()
-  if !USE_FRAMEWORKS
-    use_flipper!
-  end
+  pods({}, :use_flipper => !IN_CI && !USE_FRAMEWORKS)
 end
 
 target 'RNTesterUnitTests' do
@@ -67,6 +65,7 @@ target 'RNTesterIntegrationTests' do
 end
 
 post_install do |installer|
-  react_native_post_install(installer)
+  react_native_post_install(installer, @prefix_path)
   __apply_Xcode_12_5_M1_post_install_workaround(installer)
+  set_clang_cxx_language_standard_if_needed(installer)
 end

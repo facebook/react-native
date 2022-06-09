@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,8 +8,9 @@
  * @flow
  */
 
-import Platform from '../Utilities/Platform';
 import type {DialogOptions} from '../NativeModules/specs/NativeDialogManagerAndroid';
+
+import Platform from '../Utilities/Platform';
 import RCTAlertManager from './RCTAlertManager';
 
 export type AlertType =
@@ -27,6 +28,7 @@ export type Buttons = Array<{
 
 type Options = {
   cancelable?: ?boolean,
+  userInterfaceStyle?: 'unspecified' | 'light' | 'dark',
   onDismiss?: ?() => void,
   ...
 };
@@ -44,7 +46,15 @@ class Alert {
     options?: Options,
   ): void {
     if (Platform.OS === 'ios') {
-      Alert.prompt(title, message, buttons, 'default');
+      Alert.prompt(
+        title,
+        message,
+        buttons,
+        'default',
+        undefined,
+        undefined,
+        options,
+      );
     } else if (Platform.OS === 'android') {
       const NativeDialogManagerAndroid =
         require('../NativeModules/specs/NativeDialogManagerAndroid').default;
@@ -107,6 +117,7 @@ class Alert {
     type?: ?AlertType = 'plain-text',
     defaultValue?: string,
     keyboardType?: string,
+    options?: Options,
   ): void {
     if (Platform.OS === 'ios') {
       let callbacks = [];
@@ -124,7 +135,7 @@ class Alert {
             destructiveButtonKey = String(index);
           }
           if (btn.text || index < (callbackOrButtons || []).length - 1) {
-            const btnDef = {};
+            const btnDef: {[number]: string} = {};
             btnDef[index] = btn.text || '';
             buttons.push(btnDef);
           }
@@ -141,6 +152,7 @@ class Alert {
           cancelButtonKey,
           destructiveButtonKey,
           keyboardType,
+          userInterfaceStyle: options?.userInterfaceStyle || undefined,
         },
         (id, value) => {
           const cb = callbacks[id];

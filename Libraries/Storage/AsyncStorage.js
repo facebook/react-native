@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -213,7 +213,7 @@ const AsyncStorage = {
       //
       // Is there a way to avoid using the map but fix the bug in this breaking test?
       // https://github.com/facebook/react-native/commit/8dd8ad76579d7feef34c014d387bf02065692264
-      const map = {};
+      const map: {[string]: string} = {};
       result &&
         result.forEach(([key, value]) => {
           map[key] = value;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,11 +13,11 @@
 'use strict';
 
 const React = require('react');
-const Modal = require('../Libraries/Modal/Modal');
+import typeof Modal from '../Libraries/Modal/Modal';
 
 function mockModal(BaseComponent: $FlowFixMe) {
   class ModalMock extends BaseComponent {
-    render(): React.Element<typeof Modal> {
+    render(): React.Element<Modal> {
       return (
         <BaseComponent {...this.props}>
           {this.props.visible !== true ? null : this.props.children}

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -29,6 +29,7 @@ export interface Spec extends TurboModule {
   +startOperationBatch: () => void;
   +finishOperationBatch: () => void;
   +createAnimatedNode: (tag: number, config: AnimatedNodeConfig) => void;
+  +updateAnimatedNodeConfig?: (tag: number, config: AnimatedNodeConfig) => void;
   +getValue: (tag: number, saveValueCallback: SaveValueCallback) => void;
   +startListeningToAnimatedNodeValue: (tag: number) => void;
   +stopListeningToAnimatedNodeValue: (tag: number) => void;
@@ -63,6 +64,9 @@ export interface Spec extends TurboModule {
   // Events
   +addListener: (eventName: string) => void;
   +removeListeners: (count: number) => void;
+
+  // All of the above in a batched mode
+  +queueAndExecuteBatchedOperations?: (operationsAndArgs: Array<any>) => void;
 }
 
 export default (TurboModuleRegistry.get<Spec>('NativeAnimatedModule'): ?Spec);

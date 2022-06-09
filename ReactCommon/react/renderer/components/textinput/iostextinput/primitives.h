@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,9 +7,8 @@
 
 #pragma once
 
+#include <optional>
 #include <string>
-
-#include <better/optional.h>
 
 namespace facebook {
 namespace react {
@@ -106,7 +105,7 @@ class TextInputTraits final {
    * iOS & Android
    * Default value: `empty` (`null`).
    */
-  better::optional<bool> autoCorrect{};
+  std::optional<bool> autoCorrect{};
 
   /*
    * iOS & Android
@@ -141,7 +140,7 @@ class TextInputTraits final {
    * Can be empty (`null` in JavaScript) which means `default`.
    * Default value: `empty` (`null`).
    */
-  better::optional<bool> spellCheck{};
+  std::optional<bool> spellCheck{};
 
   /*
    * iOS & Android

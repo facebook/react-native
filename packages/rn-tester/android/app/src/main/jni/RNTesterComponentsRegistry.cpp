@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,8 +10,8 @@
 #include <CoreComponentsRegistry.h>
 #include <fbjni/fbjni.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <react/renderer/components/AppSpecs/ComponentDescriptors.h>
 #include <react/renderer/components/rncore/ComponentDescriptors.h>
-#include <react/renderer/components/rntester/ComponentDescriptors.h>
 
 namespace facebook {
 namespace react {

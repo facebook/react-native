@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,6 +9,7 @@ package com.facebook.react.uimanager.events;
 
 import android.view.MotionEvent;
 import android.view.View;
+import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.RootViewUtil;
 
 /** Utilities for native Views that interpret native gestures (e.g. ScrollView, ViewPager, etc.). */
@@ -35,6 +36,9 @@ public class NativeGestureUtil {
    * @param event the MotionEvent that caused the gesture to be ended
    */
   public static void notifyNativeGestureEnded(View view, MotionEvent event) {
-    RootViewUtil.getRootView(view).onChildEndedNativeGesture(view, event);
+    RootView rootView = RootViewUtil.getRootView(view);
+    if (rootView != null) {
+      rootView.onChildEndedNativeGesture(view, event);
+    }
   }
 }

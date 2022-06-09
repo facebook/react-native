@@ -5,7 +5,10 @@ rn_xplat_cxx_library(
     srcs = glob(["*.cpp"]),
     headers = glob(["*.h"]),
     header_namespace = "",
-    labels = ["supermodule:xplat/default/public.react_native.infra"],
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+        "supermodule:xplat/default/public.react_native.infra",
+    ],
     platforms = ANDROID,
     soname = "libreactnativeblob.$(ext)",
     visibility = ["PUBLIC"],

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -143,9 +143,7 @@ public abstract class LazyReactPackage implements ReactPackage {
     List<NativeModule> modules = new ArrayList<>();
     for (ModuleSpec holder : getNativeModules(reactContext)) {
       NativeModule nativeModule;
-      SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "createNativeModule")
-          .arg("module", holder.getType())
-          .flush();
+      SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "createNativeModule").flush();
       ReactMarker.logMarker(ReactMarkerConstants.CREATE_MODULE_START, holder.getName());
       try {
         nativeModule = holder.getProvider().get();

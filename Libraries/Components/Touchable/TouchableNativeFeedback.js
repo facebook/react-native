@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -271,6 +271,7 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
         ),
         accessible: this.props.accessible !== false,
         accessibilityHint: this.props.accessibilityHint,
+        accessibilityLanguage: this.props.accessibilityLanguage,
         accessibilityLabel: this.props.accessibilityLabel,
         accessibilityRole: this.props.accessibilityRole,
         accessibilityState: accessibilityState,

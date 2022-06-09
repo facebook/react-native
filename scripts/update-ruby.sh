@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -53,17 +53,16 @@ echo "$VERSION" > template/_ruby-version
 sed_i -e "s/^\(ruby '\)[^']*\('.*\)$/\1$VERSION\2/" Gemfile
 sed_i -e "s/^\(ruby '\)[^']*\('.*\)$/\1$VERSION\2/" template/Gemfile
 
-rm -f Gemfile.lock template/Gemfile.lock
+rm -f Gemfile.lock
 
 export BUNDLE_APP_CONFIG="$ROOT/.bundle"
 cp "$BUNDLE_APP_CONFIG/"* template/_bundle # sync!
 
 bundle lock
-(cd template && bundle lock)
 
 git add \
     .ruby-version \
     Gemfile \
+    Gemfile.lock \
     template/_ruby-version \
-    template/Gemfile \
-    template/Gemfile.lock
+    template/Gemfile

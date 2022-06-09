@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -102,5 +102,17 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
  *  Insets used when hit testing inside this view.
  */
 @property (nonatomic, assign) UIEdgeInsets hitTestEdgeInsets;
+
+/**
+ * (Experimental and unused for Paper) Pointer event handlers.
+ */
+@property (nonatomic, assign) RCTBubblingEventBlock onPointerCancel;
+@property (nonatomic, assign) RCTBubblingEventBlock onPointerDown;
+@property (nonatomic, assign) RCTBubblingEventBlock onPointerMove2;
+@property (nonatomic, assign) RCTBubblingEventBlock onPointerUp;
+@property (nonatomic, assign) RCTCapturingEventBlock onPointerEnter2;
+@property (nonatomic, assign) RCTCapturingEventBlock onPointerLeave2;
+@property (nonatomic, assign) RCTBubblingEventBlock onPointerOver;
+@property (nonatomic, assign) RCTBubblingEventBlock onPointerOut;
 
 @end

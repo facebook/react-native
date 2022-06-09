@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,11 +8,13 @@
  * @format
  */
 
+// @licenselint-loose-mode
+
 'use strict';
 
 const EMPTY_NATIVE_MODULE = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -36,7 +38,7 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 const NATIVE_MODULE_WITH_COMPLEX_OBJECTS = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -71,7 +73,7 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 const NATIVE_MODULE_WITH_COMPLEX_OBJECTS_WITH_NULLABLE_KEY = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -101,13 +103,13 @@ export interface Spec extends TurboModule {
   |};
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('PlatformConstants');
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 `;
 
 const NATIVE_MODULE_WITH_BASIC_PARAM_TYPES = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -134,7 +136,7 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 const NATIVE_MODULE_WITH_ALIASES = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -159,7 +161,8 @@ export type ObjectAlias = {|
   y: number,
   label: string,
   truthy: boolean,
-|}
+|};
+export type ReadOnlyAlias = $ReadOnly<ObjectAlias>;
 
 export interface Spec extends TurboModule {
   // Exported methods.
@@ -167,6 +170,9 @@ export interface Spec extends TurboModule {
   +getVoid: () => Void;
   +getArray: (a: Array<A>) => {| a: B |};
   +getStringFromAlias: (a: ObjectAlias) => string;
+  +getStringFromNullableAlias: (a: ?ObjectAlias) => string;
+  +getStringFromReadOnlyAlias: (a: ReadOnlyAlias) => string;
+  +getStringFromNullableReadOnlyAlias: (a: ?ReadOnlyAlias) => string;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
@@ -175,7 +181,7 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 const NATIVE_MODULE_WITH_NESTED_ALIASES = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -210,7 +216,7 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 const NATIVE_MODULE_WITH_FLOAT_AND_INT32 = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -235,7 +241,7 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 const NATIVE_MODULE_WITH_SIMPLE_OBJECT = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -259,7 +265,7 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 const NATIVE_MODULE_WITH_UNSAFE_OBJECT = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -284,7 +290,7 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 const NATIVE_MODULE_WITH_ROOT_TAG = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -308,7 +314,7 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 const NATIVE_MODULE_WITH_NULLABLE_PARAM = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -333,7 +339,7 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 const NATIVE_MODULE_WITH_BASIC_ARRAY = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -358,7 +364,7 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 const NATIVE_MODULE_WITH_OBJECT_WITH_OBJECT_DEFINED_IN_FILE_AS_PROPERTY = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -395,7 +401,7 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 const NATIVE_MODULE_WITH_ARRAY_WITH_UNION_AND_TOUPLE = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -419,7 +425,7 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 const NATIVE_MODULE_WITH_ARRAY_WITH_ALIAS = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -445,7 +451,7 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 const NATIVE_MODULE_WITH_COMPLEX_ARRAY = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -467,8 +473,9 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 `;
 
-const NATIVE_MODULE_WITH_PROMISE = `/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+const NATIVE_MODULE_WITH_PROMISE = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -497,7 +504,7 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 const NATIVE_MODULE_WITH_CALLBACK = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -524,7 +531,7 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 const ANDROID_ONLY_NATIVE_MODULE = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -548,7 +555,7 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModuleAndroid'
 
 const IOS_ONLY_NATIVE_MODULE = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -567,6 +574,31 @@ export interface Spec extends TurboModule {
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModuleIOS');
+
+`;
+
+const CXX_ONLY_NATIVE_MODULE = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow strict-local
+ * @format
+ */
+
+'use strict';
+
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+
+export interface Spec extends TurboModule {
+  +getCallback: () => () => void;
+  +getMixed: (arg: mixed) => mixed;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModuleCxx');
 
 `;
 
@@ -591,4 +623,5 @@ module.exports = {
   EMPTY_NATIVE_MODULE,
   ANDROID_ONLY_NATIVE_MODULE,
   IOS_ONLY_NATIVE_MODULE,
+  CXX_ONLY_NATIVE_MODULE,
 };

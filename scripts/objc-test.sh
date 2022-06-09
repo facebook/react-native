@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -55,6 +55,24 @@ waitForPackager() {
   echo "Packager is ready!"
 }
 
+waitForWebSocketServer() {
+  local -i max_attempts=60
+  local -i attempt_num=1
+
+  until curl -s http://localhost:5555 | grep "Upgrade Required" -q; do
+    if (( attempt_num == max_attempts )); then
+      echo "WebSocket Server did not respond in time. No more attempts left."
+      exit 1
+    else
+      (( attempt_num++ ))
+      echo "WebSocket Server did not respond. Retrying for attempt number $attempt_num..."
+      sleep 1
+    fi
+  done
+
+  echo "WebSocket Server is ready!"
+}
+
 runTests() {
   # shellcheck disable=SC1091
   source "./scripts/.tests.env"
@@ -78,7 +96,7 @@ xcprettyFormat() {
     # Circle CI expects JUnit reports to be available here
     REPORTS_DIR="$HOME/react-native/reports/junit"
   else
-    THIS_DIR=$(cd -P "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)
+    THIS_DIR=$(cd -P "$(dirname "$(realpath "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)
 
     # Write reports to the react-native root dir
     REPORTS_DIR="$THIS_DIR/../build/reports"
@@ -102,11 +120,13 @@ main() {
   # Otherwise, just build RNTester and exit
   if [ "$1" = "test" ]; then
 
+    # Start the WebSocket test server
+    echo "Launch WebSocket Server"
+    sh "./IntegrationTests/launchWebSocketServer.sh" &
+    waitForWebSocketServer
+
     # Start the packager
     yarn start --max-workers=1 || echo "Can't start packager automatically" &
-    # Start the WebSocket test server
-    open "./IntegrationTests/launchWebSocketServer.command" || echo "Can't start web socket server automatically"
-
     waitForPackager
     preloadBundles
 

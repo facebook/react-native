@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -48,11 +48,20 @@ const Text: React.AbstractComponent<
 
   const [isHighlighted, setHighlighted] = useState(false);
 
+  const _disabled =
+    restProps.disabled != null
+      ? restProps.disabled
+      : props.accessibilityState?.disabled;
+  const _accessibilityState =
+    _disabled !== props.accessibilityState?.disabled
+      ? {...props.accessibilityState, disabled: _disabled}
+      : props.accessibilityState;
+
   const isPressable =
     (onPress != null ||
       onLongPress != null ||
       onStartShouldSetResponder != null) &&
-    restProps.disabled !== true;
+    _disabled !== true;
 
   const initialized = useLazyInitialization(isPressable);
   const config = useMemo(
@@ -120,6 +129,7 @@ const Text: React.AbstractComponent<
                 onResponderTerminate(event);
               }
             },
+            onClick: eventHandlers.onClick,
             onResponderTerminationRequest:
               eventHandlers.onResponderTerminationRequest,
             onStartShouldSetResponder: eventHandlers.onStartShouldSetResponder,
@@ -174,7 +184,9 @@ const Text: React.AbstractComponent<
       <NativeText
         {...restProps}
         {...eventHandlersForText}
+        disabled={_disabled}
         accessible={accessible !== false}
+        accessibilityState={_accessibilityState}
         allowFontScaling={allowFontScaling !== false}
         ellipsizeMode={ellipsizeMode ?? 'tail'}
         isHighlighted={isHighlighted}
@@ -188,12 +200,6 @@ const Text: React.AbstractComponent<
 });
 
 Text.displayName = 'Text';
-
-/**
- * Switch to `deprecated-react-native-prop-types` for compatibility with future
- * releases. This is deprecated and will be removed in the future.
- */
-Text.propTypes = require('deprecated-react-native-prop-types').TextPropTypes;
 
 /**
  * Returns false until the first time `newValue` is true, after which this will

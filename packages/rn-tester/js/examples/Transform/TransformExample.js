@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -38,9 +38,6 @@ function AnimateTansformSingleProp() {
               {
                 rotate: theta.interpolate({
                   inputRange: [0, 100],
-                  /* $FlowFixMe[speculation-ambiguous] (>=0.38.0) - Flow error
-                   * detected during the deployment of v0.38.0. To see the
-                   * error, remove this comment and run flow */
                   outputRange: ['0deg', '360deg'],
                 }),
               },
@@ -79,9 +76,6 @@ function Flip() {
               {
                 rotateX: theta.interpolate({
                   inputRange: [0, 180],
-                  /* $FlowFixMe[speculation-ambiguous] (>=0.38.0) - Flow error
-                   * detected during the deployment of v0.38.0. To see the
-                   * error, remove this comment and run flow */
                   outputRange: ['0deg', '180deg'],
                 }),
               },
@@ -100,9 +94,6 @@ function Flip() {
               {
                 rotateX: theta.interpolate({
                   inputRange: [0, 180],
-                  /* $FlowFixMe[speculation-ambiguous] (>=0.38.0) - Flow error
-                   * detected during the deployment of v0.38.0. To see the
-                   * error, remove this comment and run flow */
                   outputRange: ['180deg', '360deg'],
                 }),
               },

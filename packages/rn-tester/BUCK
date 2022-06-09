@@ -61,8 +61,11 @@ rn_library(
         ],
     ),
     codegen_components = True,
-    labels = ["supermodule:xplat/default/public.react_native.playground"],
-    native_component_spec_name = "MyNativeViewSpec",
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+        "supermodule:xplat/default/public.react_native.playground",
+    ],
+    native_component_spec_name = "AppSpecs",
     skip_processors = True,
     visibility = ["PUBLIC"],
     deps = [
@@ -304,6 +307,7 @@ rn_xplat_cxx_library2(
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],
     labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     plugins = [
@@ -313,7 +317,7 @@ rn_xplat_cxx_library2(
     reexport_all_header_dependencies = False,
     visibility = ["PUBLIC"],
     deps = [
-        ":generated_components-MyNativeViewSpec",
+        ":generated_components-AppSpecs",
         "//xplat/js/react-native-github:RCTFabricComponentViewsBase",
     ],
 )

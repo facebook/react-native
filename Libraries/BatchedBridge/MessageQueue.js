@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,13 +10,12 @@
 
 'use strict';
 
-const ErrorUtils = require('../vendor/core/ErrorUtils');
 const Systrace = require('../Performance/Systrace');
-
 const deepFreezeAndThrowOnMutationInDev = require('../Utilities/deepFreezeAndThrowOnMutationInDev');
-const invariant = require('invariant');
 const stringifySafe = require('../Utilities/stringifySafe').default;
 const warnOnce = require('../Utilities/warnOnce');
+const ErrorUtils = require('../vendor/core/ErrorUtils');
+const invariant = require('invariant');
 
 export type SpyData = {
   type: number,
@@ -199,7 +198,7 @@ class MessageQueue {
           delete this._debugInfo[this._callID - DEBUG_INFO_LIMIT];
         }
         if (this._successCallbacks.size > 500) {
-          const info = {};
+          const info: {[number]: {method: string, module: string}} = {};
           this._successCallbacks.forEach((_, callID) => {
             const debug = this._debugInfo[callID];
             const module = debug && this._remoteModuleTable[debug[0]];
@@ -405,15 +404,22 @@ class MessageQueue {
       this.__spy({type: TO_JS, module, method, args});
     }
     const moduleMethods = this.getCallableModule(module);
-    invariant(
-      !!moduleMethods,
-      `Module ${module} is not a registered callable module (calling ${method}). A frequent cause of the error is that the application entry file path is incorrect.
-      This can also happen when the JS bundle is corrupt or there is an early initialization error when loading React Native.`,
-    );
-    invariant(
-      !!moduleMethods[method],
-      `Method ${method} does not exist on module ${module}`,
-    );
+    if (!moduleMethods) {
+      const callableModuleNames = Object.keys(this._lazyCallableModules);
+      const n = callableModuleNames.length;
+      const callableModuleNameList = callableModuleNames.join(', ');
+      invariant(
+        false,
+        `Failed to call into JavaScript module method ${module}.${method}(). Module has not been registered as callable. Registered callable JavaScript modules (n = ${n}): ${callableModuleNameList}.
+        A frequent cause of the error is that the application entry file path is incorrect. This can also happen when the JS bundle is corrupt or there is an early initialization error when loading React Native.`,
+      );
+    }
+    if (!moduleMethods[method]) {
+      invariant(
+        false,
+        `Failed to call into JavaScript module method ${module}.${method}(). Module exists, but the method is undefined.`,
+      );
+    }
     moduleMethods[method].apply(moduleMethods, args);
     Systrace.endEvent();
   }

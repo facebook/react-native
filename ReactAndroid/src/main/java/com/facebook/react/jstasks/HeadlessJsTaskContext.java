@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -61,9 +61,15 @@ public class HeadlessJsTaskContext {
     mReactContext = new WeakReference<ReactContext>(reactContext);
   }
 
-  /** Register a task lifecycle event listener. */
-  public void addTaskEventListener(HeadlessJsTaskEventListener listener) {
+  /**
+   * Register a task lifecycle event listener. Synchronized in order to prevent race conditions with
+   * finishTask, as the listener will be invoked for already running tasks.
+   */
+  public synchronized void addTaskEventListener(HeadlessJsTaskEventListener listener) {
     mHeadlessJsTaskEventListeners.add(listener);
+    for (Integer activeTaskId : mActiveTasks) {
+      listener.onHeadlessJsTaskStart(activeTaskId);
+    }
   }
 
   /** Unregister a task lifecycle event listener. */

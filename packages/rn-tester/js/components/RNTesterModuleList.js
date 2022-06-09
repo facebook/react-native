@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -153,6 +153,7 @@ const RNTesterModuleList: React$AbstractComponent<any, void> = React.memo(
               automaticallyAdjustContentInsets={false}
               keyboardDismissMode="on-drag"
               renderSectionHeader={renderSectionHeader}
+              // eslint-disable-next-line react/no-unstable-nested-components
               ListFooterComponent={() => <View style={{height: 80}} />}
             />
           )}

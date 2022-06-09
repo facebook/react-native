@@ -24,8 +24,8 @@ body:
   - type: textarea
     id: react-native-info
     attributes:
-      label: Output of `react-native info`
-      description: Run `react-native info` in your terminal, copy and paste the results here.
+      label: Output of `npx react-native info`
+      description: Run `npx react-native info` in your terminal, copy and paste the results here.
     validations:
       required: true
   - type: textarea
@@ -43,5 +43,6 @@ body:
         Please provide a Snack (https://snack.expo.io/), a link to a repository on GitHub, or provide a minimal code example that reproduces the problem.
         You may provide a screenshot of the application if you think it is relevant to your bug report.
         Here are some tips for providing a minimal example: https://stackoverflow.com/help/mcve
+        Please note that a reproducer is mandatory. Issues without reproducer are more likely to stall and will be closed.
     validations:
-      required: false
+      required: true

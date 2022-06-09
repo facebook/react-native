@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -29,7 +29,7 @@ if (!danger.github.pr.body || danger.github.pr.body.length < 50) {
     'Can you add a Summary? ' +
     'To do so, add a "## Summary" section to your PR description. ' +
     'This is a good place to explain the motivation for making this change.';
-  message(`${title} - <i>${idea}</i>`);
+  warn(`${title} - <i>${idea}</i>`);
 }
 
 // Warns if there are changes to package.json, and tags the team.
@@ -53,7 +53,7 @@ if (!includesTestPlan && !isFromPhabricator) {
     'Can you add a Test Plan? ' +
     'To do so, add a "## Test Plan" section to your PR description. ' +
     'A Test Plan lets us know how these changes were tested.';
-  message(`${title} - <i>${idea}</i>`);
+  warn(`${title} - <i>${idea}</i>`);
 }
 
 // Regex looks for given categories, types, a file/framework/component, and a message - broken into 4 capture groups
@@ -80,20 +80,35 @@ if (!includesChangelog) {
     'Can you add a Changelog? ' +
     'To do so, add a "## Changelog" section to your PR description. ' +
     changelogInstructions;
-  message(`${title} - <i>${idea}</i>`);
+  fail(`${title} - <i>${idea}</i>`);
 } else if (!correctlyFormattedChangelog && !containsInternalChangelog) {
   const title = ':clipboard: Verify Changelog Format';
   const idea = changelogInstructions;
-  message(`${title} - <i>${idea}</i>`);
+  fail(`${title} - <i>${idea}</i>`);
 }
 
 // Warns if the PR is opened against stable, as commits need to be cherry picked and tagged by a release maintainer.
 // Fails if the PR is opened against anything other than `main` or `-stable`.
-const isMergeRefMaster = danger.github.pr.base.ref === 'main';
+const isMergeRefMain = danger.github.pr.base.ref === 'main';
 const isMergeRefStable = danger.github.pr.base.ref.indexOf('-stable') !== -1;
-if (!isMergeRefMaster && !isMergeRefStable) {
+if (!isMergeRefMain && !isMergeRefStable) {
   const title = ':exclamation: Base Branch';
   const idea =
     'The base branch for this PR is something other than `main` or a `-stable` branch. [Are you sure you want to target something other than the `main` branch?](https://reactnative.dev/docs/contributing#pull-requests)';
   fail(`${title} - <i>${idea}</i>`);
+}
+
+// If the PR is opened against stable should add `Pick Request` label
+if (isMergeRefStable) {
+  const {owner, repo, number: issueNumber} = danger.github.thisPR;
+
+  danger.github.api.request(
+    'POST /repos/{owner}/{repo}/issues/{issueNumber}/labels',
+    {
+      owner,
+      repo,
+      issueNumber,
+      labels: ['Pick Request'],
+    },
+  );
 }

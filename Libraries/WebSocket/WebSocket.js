@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -101,9 +101,10 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): any) {
       protocols = [protocols];
     }
 
-    const {headers = {}, ...unrecognized} = options || {};
+    const {headers = {}, ...unrecognized} = options || {...null};
 
     // Preserve deprecated backwards compatibility for the 'origin' option
+    // $FlowFixMe[prop-missing]
     if (unrecognized && typeof unrecognized.origin === 'string') {
       console.warn(
         'Specifying `origin` as a WebSocket connection option is deprecated. Include it under `headers` instead.',
@@ -230,7 +231,7 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): any) {
         if (ev.id !== this._socketId) {
           return;
         }
-        let data = ev.data;
+        let data: Blob | BlobData | ArrayBuffer | string = ev.data;
         switch (ev.type) {
           case 'binary':
             data = base64.toByteArray(ev.data).buffer;

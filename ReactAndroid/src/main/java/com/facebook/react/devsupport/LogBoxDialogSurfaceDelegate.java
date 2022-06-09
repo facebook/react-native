@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -55,7 +55,7 @@ public class LogBoxDialogSurfaceDelegate implements SurfaceDelegate {
 
   @Override
   public void show() {
-    if (isSurfaceVisible() || !isContentViewReady()) {
+    if (isShowing() || !isContentViewReady()) {
       return;
     }
 
@@ -74,7 +74,7 @@ public class LogBoxDialogSurfaceDelegate implements SurfaceDelegate {
 
   @Override
   public void hide() {
-    if (!isSurfaceVisible()) {
+    if (!isShowing()) {
       return;
     }
 
@@ -86,7 +86,8 @@ public class LogBoxDialogSurfaceDelegate implements SurfaceDelegate {
     mDialog = null;
   }
 
-  private boolean isSurfaceVisible() {
-    return mDialog != null;
+  @Override
+  public boolean isShowing() {
+    return mDialog != null && mDialog.isShowing();
   }
 }

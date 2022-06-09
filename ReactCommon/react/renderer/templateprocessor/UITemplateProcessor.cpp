@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -39,7 +39,7 @@ SharedShadowNode UITemplateProcessor::runCommand(
     std::vector<folly::dynamic> &registers,
     const ComponentDescriptorRegistry &componentDescriptorRegistry,
     const NativeModuleRegistry &nativeModuleRegistry,
-    const std::shared_ptr<const ReactNativeConfig> reactNativeConfig) {
+    std::shared_ptr<const ReactNativeConfig> const &reactNativeConfig) {
   const std::string &opcode = command[0].asString();
   const int tagOffset = 420000;
   // TODO: change to integer codes and a switch statement
@@ -106,7 +106,7 @@ SharedShadowNode UITemplateProcessor::buildShadowTree(
     const folly::dynamic &params,
     const ComponentDescriptorRegistry &componentDescriptorRegistry,
     const NativeModuleRegistry &nativeModuleRegistry,
-    const std::shared_ptr<const ReactNativeConfig> reactNativeConfig) {
+    std::shared_ptr<const ReactNativeConfig> const &reactNativeConfig) {
   if (DEBUG_FLY) {
     LOG(INFO)
         << "(strt) UITemplateProcessor inject hardcoded 'server rendered' view tree";

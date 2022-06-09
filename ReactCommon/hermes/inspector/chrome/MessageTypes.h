@@ -1,5 +1,5 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
-// @generated SignedSource<<a541d174394c8959b9fb6a7c575e7040>>
+// Copyright (c) Meta Platforms, Inc. and affiliates. All Rights Reserved.
+// @generated SignedSource<<fcbcfeecbc72ca30c8ed005ad47839bb>>
 
 #pragma once
 
@@ -48,7 +48,10 @@ struct StepOverRequest;
 } // namespace debugger
 
 namespace runtime {
+struct CallArgument;
 struct CallFrame;
+struct CallFunctionOnRequest;
+struct CallFunctionOnResponse;
 struct ConsoleAPICalledNotification;
 struct EvaluateRequest;
 struct EvaluateResponse;
@@ -56,6 +59,8 @@ struct ExceptionDetails;
 struct ExecutionContextCreatedNotification;
 struct ExecutionContextDescription;
 using ExecutionContextId = int;
+struct GetHeapUsageRequest;
+struct GetHeapUsageResponse;
 struct GetPropertiesRequest;
 struct GetPropertiesResponse;
 struct InternalPropertyDescriptor;
@@ -91,6 +96,15 @@ struct StopTrackingHeapObjectsRequest;
 struct TakeHeapSnapshotRequest;
 } // namespace heapProfiler
 
+namespace profiler {
+struct PositionTickInfo;
+struct Profile;
+struct ProfileNode;
+struct StartRequest;
+struct StopRequest;
+struct StopResponse;
+} // namespace profiler
+
 /// RequestHandler handles requests via the visitor pattern.
 struct RequestHandler {
   virtual ~RequestHandler() = default;
@@ -122,7 +136,11 @@ struct RequestHandler {
   virtual void handle(
       const heapProfiler::StopTrackingHeapObjectsRequest &req) = 0;
   virtual void handle(const heapProfiler::TakeHeapSnapshotRequest &req) = 0;
+  virtual void handle(const profiler::StartRequest &req) = 0;
+  virtual void handle(const profiler::StopRequest &req) = 0;
+  virtual void handle(const runtime::CallFunctionOnRequest &req) = 0;
   virtual void handle(const runtime::EvaluateRequest &req) = 0;
+  virtual void handle(const runtime::GetHeapUsageRequest &req) = 0;
   virtual void handle(const runtime::GetPropertiesRequest &req) = 0;
   virtual void handle(const runtime::RunIfWaitingForDebuggerRequest &req) = 0;
 };
@@ -156,7 +174,11 @@ struct NoopRequestHandler : public RequestHandler {
   void handle(
       const heapProfiler::StopTrackingHeapObjectsRequest &req) override {}
   void handle(const heapProfiler::TakeHeapSnapshotRequest &req) override {}
+  void handle(const profiler::StartRequest &req) override {}
+  void handle(const profiler::StopRequest &req) override {}
+  void handle(const runtime::CallFunctionOnRequest &req) override {}
   void handle(const runtime::EvaluateRequest &req) override {}
+  void handle(const runtime::GetHeapUsageRequest &req) override {}
   void handle(const runtime::GetPropertiesRequest &req) override {}
   void handle(const runtime::RunIfWaitingForDebuggerRequest &req) override {}
 };
@@ -281,6 +303,50 @@ struct heapProfiler::SamplingHeapProfile : public Serializable {
   std::vector<heapProfiler::SamplingHeapProfileSample> samples;
 };
 
+struct profiler::PositionTickInfo : public Serializable {
+  PositionTickInfo() = default;
+  explicit PositionTickInfo(const folly::dynamic &obj);
+  folly::dynamic toDynamic() const override;
+
+  int line{};
+  int ticks{};
+};
+
+struct profiler::ProfileNode : public Serializable {
+  ProfileNode() = default;
+  explicit ProfileNode(const folly::dynamic &obj);
+  folly::dynamic toDynamic() const override;
+
+  int id{};
+  runtime::CallFrame callFrame{};
+  folly::Optional<int> hitCount;
+  folly::Optional<std::vector<int>> children;
+  folly::Optional<std::string> deoptReason;
+  folly::Optional<std::vector<profiler::PositionTickInfo>> positionTicks;
+};
+
+struct profiler::Profile : public Serializable {
+  Profile() = default;
+  explicit Profile(const folly::dynamic &obj);
+  folly::dynamic toDynamic() const override;
+
+  std::vector<profiler::ProfileNode> nodes;
+  double startTime{};
+  double endTime{};
+  folly::Optional<std::vector<int>> samples;
+  folly::Optional<std::vector<int>> timeDeltas;
+};
+
+struct runtime::CallArgument : public Serializable {
+  CallArgument() = default;
+  explicit CallArgument(const folly::dynamic &obj);
+  folly::dynamic toDynamic() const override;
+
+  folly::Optional<folly::dynamic> value;
+  folly::Optional<runtime::UnserializableValue> unserializableValue;
+  folly::Optional<runtime::RemoteObjectId> objectId;
+};
+
 struct runtime::ExecutionContextDescription : public Serializable {
   ExecutionContextDescription() = default;
   explicit ExecutionContextDescription(const folly::dynamic &obj);
@@ -385,6 +451,8 @@ struct debugger::ResumeRequest : public Request {
 
   folly::dynamic toDynamic() const override;
   void accept(RequestHandler &handler) const override;
+
+  folly::Optional<bool> terminateOnResume;
 };
 
 struct debugger::SetBreakpointRequest : public Request {
@@ -533,6 +601,7 @@ struct heapProfiler::StopTrackingHeapObjectsRequest : public Request {
 
   folly::Optional<bool> reportProgress;
   folly::Optional<bool> treatGlobalObjectsAsRoots;
+  folly::Optional<bool> captureNumericValue;
 };
 
 struct heapProfiler::TakeHeapSnapshotRequest : public Request {
@@ -544,6 +613,41 @@ struct heapProfiler::TakeHeapSnapshotRequest : public Request {
 
   folly::Optional<bool> reportProgress;
   folly::Optional<bool> treatGlobalObjectsAsRoots;
+  folly::Optional<bool> captureNumericValue;
+};
+
+struct profiler::StartRequest : public Request {
+  StartRequest();
+  explicit StartRequest(const folly::dynamic &obj);
+
+  folly::dynamic toDynamic() const override;
+  void accept(RequestHandler &handler) const override;
+};
+
+struct profiler::StopRequest : public Request {
+  StopRequest();
+  explicit StopRequest(const folly::dynamic &obj);
+
+  folly::dynamic toDynamic() const override;
+  void accept(RequestHandler &handler) const override;
+};
+
+struct runtime::CallFunctionOnRequest : public Request {
+  CallFunctionOnRequest();
+  explicit CallFunctionOnRequest(const folly::dynamic &obj);
+
+  folly::dynamic toDynamic() const override;
+  void accept(RequestHandler &handler) const override;
+
+  std::string functionDeclaration;
+  folly::Optional<runtime::RemoteObjectId> objectId;
+  folly::Optional<std::vector<runtime::CallArgument>> arguments;
+  folly::Optional<bool> silent;
+  folly::Optional<bool> returnByValue;
+  folly::Optional<bool> userGesture;
+  folly::Optional<bool> awaitPromise;
+  folly::Optional<runtime::ExecutionContextId> executionContextId;
+  folly::Optional<std::string> objectGroup;
 };
 
 struct runtime::EvaluateRequest : public Request {
@@ -561,6 +665,14 @@ struct runtime::EvaluateRequest : public Request {
   folly::Optional<bool> returnByValue;
   folly::Optional<bool> userGesture;
   folly::Optional<bool> awaitPromise;
+};
+
+struct runtime::GetHeapUsageRequest : public Request {
+  GetHeapUsageRequest();
+  explicit GetHeapUsageRequest(const folly::dynamic &obj);
+
+  folly::dynamic toDynamic() const override;
+  void accept(RequestHandler &handler) const override;
 };
 
 struct runtime::GetPropertiesRequest : public Request {
@@ -658,6 +770,23 @@ struct heapProfiler::StopSamplingResponse : public Response {
   heapProfiler::SamplingHeapProfile profile{};
 };
 
+struct profiler::StopResponse : public Response {
+  StopResponse() = default;
+  explicit StopResponse(const folly::dynamic &obj);
+  folly::dynamic toDynamic() const override;
+
+  profiler::Profile profile{};
+};
+
+struct runtime::CallFunctionOnResponse : public Response {
+  CallFunctionOnResponse() = default;
+  explicit CallFunctionOnResponse(const folly::dynamic &obj);
+  folly::dynamic toDynamic() const override;
+
+  runtime::RemoteObject result{};
+  folly::Optional<runtime::ExceptionDetails> exceptionDetails;
+};
+
 struct runtime::EvaluateResponse : public Response {
   EvaluateResponse() = default;
   explicit EvaluateResponse(const folly::dynamic &obj);
@@ -665,6 +794,15 @@ struct runtime::EvaluateResponse : public Response {
 
   runtime::RemoteObject result{};
   folly::Optional<runtime::ExceptionDetails> exceptionDetails;
+};
+
+struct runtime::GetHeapUsageResponse : public Response {
+  GetHeapUsageResponse() = default;
+  explicit GetHeapUsageResponse(const folly::dynamic &obj);
+  folly::dynamic toDynamic() const override;
+
+  double usedSize{};
+  double totalSize{};
 };
 
 struct runtime::GetPropertiesResponse : public Response {

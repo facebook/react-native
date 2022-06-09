@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -19,6 +19,10 @@ import type AnimatedNode from './AnimatedNode';
 import type Animation, {EndCallback} from '../animations/Animation';
 import type {InterpolationConfigType} from './AnimatedInterpolation';
 import type AnimatedTracking from './AnimatedTracking';
+
+export type AnimatedValueConfig = $ReadOnly<{
+  useNativeDriver: boolean,
+}>;
 
 const NativeAnimatedAPI = NativeAnimatedHelper.API;
 
@@ -87,7 +91,7 @@ class AnimatedValue extends AnimatedWithChildren {
   _animation: ?Animation;
   _tracking: ?AnimatedTracking;
 
-  constructor(value: number) {
+  constructor(value: number, config?: ?AnimatedValueConfig) {
     super();
     if (typeof value !== 'number') {
       throw new Error('AnimatedValue: Attempting to set value to undefined');
@@ -95,6 +99,9 @@ class AnimatedValue extends AnimatedWithChildren {
     this._startingValue = this._value = value;
     this._offset = 0;
     this._animation = null;
+    if (config && config.useNativeDriver) {
+      this.__makeNative();
+    }
   }
 
   __detach() {
@@ -127,9 +134,9 @@ class AnimatedValue extends AnimatedWithChildren {
       !this.__isNative /* don't perform a flush for natively driven values */,
     );
     if (this.__isNative) {
-      _executeAsAnimatedBatch(this.__getNativeTag().toString(), () => {
-        NativeAnimatedAPI.setAnimatedNodeValue(this.__getNativeTag(), value);
-      });
+      _executeAsAnimatedBatch(this.__getNativeTag().toString(), () =>
+        NativeAnimatedAPI.setAnimatedNodeValue(this.__getNativeTag(), value),
+      );
     }
   }
 
@@ -211,7 +218,7 @@ class AnimatedValue extends AnimatedWithChildren {
     }
   }
 
-  _onAnimatedValueUpdateReceived(value: number): void {
+  __onAnimatedValueUpdateReceived(value: number): void {
     this._updateValue(value, false /*flush*/);
   }
 
@@ -219,7 +226,9 @@ class AnimatedValue extends AnimatedWithChildren {
    * Interpolates the value before updating the property, e.g. mapping 0-1 to
    * 0-10.
    */
-  interpolate(config: InterpolationConfigType): AnimatedInterpolation {
+  interpolate<OutputT: number | string>(
+    config: InterpolationConfigType<OutputT>,
+  ): AnimatedInterpolation<OutputT> {
     return new AnimatedInterpolation(this, config);
   }
 
@@ -270,6 +279,8 @@ class AnimatedValue extends AnimatedWithChildren {
   track(tracking: AnimatedTracking): void {
     this.stopTracking();
     this._tracking = tracking;
+    // Make sure that the tracking animation starts executing
+    this._tracking && this._tracking.update();
   }
 
   _updateValue(value: number, flush: boolean): void {

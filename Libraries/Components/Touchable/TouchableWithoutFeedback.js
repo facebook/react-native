@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -33,6 +33,7 @@ type Props = $ReadOnly<{|
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
   accessibilityElementsHidden?: ?boolean,
   accessibilityHint?: ?Stringish,
+  accessibilityLanguage?: ?Stringish,
   accessibilityIgnoresInvertColors?: ?boolean,
   accessibilityLabel?: ?Stringish,
   accessibilityLiveRegion?: ?('none' | 'polite' | 'assertive'),
@@ -72,6 +73,7 @@ const PASSTHROUGH_PROPS = [
   'accessibilityActions',
   'accessibilityElementsHidden',
   'accessibilityHint',
+  'accessibilityLanguage',
   'accessibilityIgnoresInvertColors',
   'accessibilityLabel',
   'accessibilityLiveRegion',

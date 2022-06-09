@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,7 +12,7 @@
 const invariant = require('invariant');
 
 import EmitterSubscription from './_EmitterSubscription';
-import {type EventSubscription} from './EventSubscription';
+import type {EventSubscription} from './EventSubscription';
 import EventSubscriptionVendor from './_EventSubscriptionVendor';
 
 const sparseFilterPredicate = () => true;
@@ -79,19 +79,6 @@ class EventEmitter<EventDefinitions: {...}> {
   }
 
   /**
-   * @deprecated Use `remove` on the EventSubscription from `addListener`.
-   */
-  removeSubscription<K: $Keys<EventDefinitions>>(
-    subscription: EmitterSubscription<EventDefinitions, K>,
-  ): void {
-    console.warn(
-      'EventEmitter.removeSubscription(...): Method has been deprecated. ' +
-        'Please instead use `remove()` on the subscription itself.',
-    );
-    this.__removeSubscription(subscription);
-  }
-
-  /**
    * Called by `EmitterSubscription` to bypass the above deprecation warning.
    */
   __removeSubscription<K: $Keys<EventDefinitions>>(
@@ -148,33 +135,6 @@ class EventEmitter<EventDefinitions: {...}> {
         // The subscription may have been removed during this event loop.
         if (subscription && subscription.listener) {
           subscription.listener.apply(subscription.context, args);
-        }
-      }
-    }
-  }
-
-  /**
-   * @deprecated Use `remove` on the EventSubscription from `addListener`.
-   */
-  removeListener<K: $Keys<EventDefinitions>>(
-    eventType: K,
-    // FIXME: listeners should return void instead of mixed to prevent issues
-    listener: (...$ElementType<EventDefinitions, K>) => mixed,
-  ): void {
-    console.warn(
-      `EventEmitter.removeListener('${eventType}', ...): Method has been ` +
-        'deprecated. Please instead use `remove()` on the subscription ' +
-        'returned by `EventEmitter.addListener`.',
-    );
-    const subscriptions = this._subscriber.getSubscriptionsForType(eventType);
-    if (subscriptions) {
-      for (let i = 0, l = subscriptions.length; i < l; i++) {
-        const subscription = subscriptions[i];
-
-        // The subscription may have been removed during this event loop.
-        // its listener matches the listener in method parameters
-        if (subscription && subscription.listener === listener) {
-          subscription.remove();
         }
       }
     }

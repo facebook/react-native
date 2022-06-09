@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -29,8 +29,8 @@ import com.facebook.react.bridge.UIManager;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.fabric.CoreComponentsRegistry;
-import com.facebook.react.fabric.EmptyReactNativeConfig;
 import com.facebook.react.fabric.FabricJSIModuleProvider;
+import com.facebook.react.fabric.ReactNativeConfig;
 import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.shell.MainReactPackage;
@@ -171,8 +171,7 @@ public class RNTesterApplication extends Application implements ReactApplication
                         return new FabricJSIModuleProvider(
                             reactApplicationContext,
                             componentFactory,
-                            // TODO: T71362667 add ReactNativeConfig's support in RNTester
-                            new EmptyReactNativeConfig(),
+                            ReactNativeConfig.DEFAULT_CONFIG,
                             viewManagerRegistry);
                       }
                     });

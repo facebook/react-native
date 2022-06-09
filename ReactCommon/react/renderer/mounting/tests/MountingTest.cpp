@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -43,7 +43,7 @@ static SharedViewProps nonFlattenedDefaultProps(
 static ShadowNode::Shared makeNode(
     ComponentDescriptor const &componentDescriptor,
     int tag,
-    ShadowNode::ListOfShared children,
+    const ShadowNode::ListOfShared &children,
     bool flattened = false) {
   auto props = flattened ? generateDefaultProps(componentDescriptor)
                          : nonFlattenedDefaultProps(componentDescriptor);
@@ -358,9 +358,9 @@ TEST(MountingTest, testReorderingInstructionGeneration) {
   // The actual nodes that should be created in this transaction have a tag >
   // 105.
   EXPECT_TRUE(mutations6.size() == 25);
-  for (int i = 0; i < mutations6.size(); i++) {
-    if (mutations6[i].type == ShadowViewMutation::Create) {
-      EXPECT_TRUE(mutations6[i].newChildShadowView.tag > 105);
+  for (auto &i : mutations6) {
+    if (i.type == ShadowViewMutation::Create) {
+      EXPECT_TRUE(i.newChildShadowView.tag > 105);
     }
   }
 }

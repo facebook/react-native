@@ -1,29 +1,33 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        google()
-    }
+  repositories {
+    mavenCentral()
+    google()
+    gradlePluginPortal()
+  }
 }
 
 include(
     ":ReactAndroid",
+    ":ReactAndroid:hermes-engine",
     ":packages:react-native-codegen:android",
-    ":packages:rn-tester:android:app"
-)
+    ":packages:rn-tester:android:app")
 
 // Include this to enable codegen Gradle plugin.
 includeBuild("packages/react-native-gradle-plugin/")
 
-// Include this to build the Android template as well and make sure is not broken.
-if (File("template/node_modules/").exists()) {
-    includeBuild("template/android/") {
-        name = "template-android"
-    }
+rootProject.name = "react-native-github"
+
+plugins { id("com.gradle.enterprise").version("3.7.1") }
+
+// If you specify a file inside gradle/gradle-enterprise.gradle.kts
+// you can configure your custom Gradle Enterprise instance
+if (File("./gradle/gradle-enterprise.gradle.kts").exists()) {
+  apply(from = "./gradle/gradle-enterprise.gradle.kts")
 }

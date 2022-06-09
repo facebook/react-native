@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -56,7 +56,12 @@ inline PropNameID&& toPropNameID(Runtime&, PropNameID&& name) {
   return std::move(name);
 }
 
-void throwJSError(Runtime&, const char* msg);
+/// Helper to throw while still compiling with exceptions turned off.
+template <typename E, typename... Args>
+[[noreturn]] inline void throwOrDie(Args&&... args) {
+  std::rethrow_exception(
+      std::make_exception_ptr(E{std::forward<Args>(args)...}));
+}
 
 } // namespace detail
 
@@ -184,7 +189,8 @@ inline std::shared_ptr<T> Object::getHostObject(Runtime& runtime) const {
 template <typename T>
 inline std::shared_ptr<T> Object::asHostObject(Runtime& runtime) const {
   if (!isHostObject<T>(runtime)) {
-    detail::throwJSError(runtime, "Object is not a HostObject of desired type");
+    detail::throwOrDie<JSError>(
+        runtime, "Object is not a HostObject of desired type");
   }
   return std::static_pointer_cast<T>(runtime.getHostObject(*this));
 }

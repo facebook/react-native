@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,11 +14,12 @@ import type {
   BlurEvent,
   FocusEvent,
   MouseEvent,
+  PointerEvent,
   PressEvent,
   Layout,
   LayoutEvent,
 } from '../../Types/CoreEventTypes';
-import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
+import type {EdgeInsetsOrSizeProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {Node} from 'react';
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {
@@ -84,8 +85,29 @@ type DirectEventProps = $ReadOnly<{|
 |}>;
 
 type MouseEventProps = $ReadOnly<{|
-  onMouseEnter?: (event: MouseEvent) => void,
-  onMouseLeave?: (event: MouseEvent) => void,
+  onMouseEnter?: ?(event: MouseEvent) => void,
+  onMouseLeave?: ?(event: MouseEvent) => void,
+|}>;
+
+// Experimental/Work in Progress Pointer Event Callbacks (not yet ready for use)
+type PointerEventProps = $ReadOnly<{|
+  onPointerEnter?: ?(event: PointerEvent) => void,
+  onPointerLeave?: ?(event: PointerEvent) => void,
+  onPointerMove?: ?(event: PointerEvent) => void,
+  onPointerCancel?: ?(e: PointerEvent) => void,
+  onPointerCancelCapture?: ?(e: PointerEvent) => void,
+  onPointerDown?: ?(e: PointerEvent) => void,
+  onPointerDownCapture?: ?(e: PointerEvent) => void,
+  onPointerUp?: ?(e: PointerEvent) => void,
+  onPointerUpCapture?: ?(e: PointerEvent) => void,
+
+  // FIXME: these events are temporary while we converge pointer event handling
+  onPointerEnter2?: ?(e: PointerEvent) => void,
+  onPointerEnter2Capture?: ?(e: PointerEvent) => void,
+  onPointerLeave2?: ?(e: PointerEvent) => void,
+  onPointerLeave2Capture?: ?(e: PointerEvent) => void,
+  onPointerMove2?: ?(e: PointerEvent) => void,
+  onPointerMove2Capture?: ?(e: PointerEvent) => void,
 |}>;
 
 type TouchEventProps = $ReadOnly<{|
@@ -381,6 +403,7 @@ export type ViewProps = $ReadOnly<{|
   ...DirectEventProps,
   ...GestureResponderEventProps,
   ...MouseEventProps,
+  ...PointerEventProps,
   ...TouchEventProps,
   ...AndroidViewProps,
   ...IOSViewProps,
@@ -416,6 +439,15 @@ export type ViewProps = $ReadOnly<{|
   accessibilityHint?: ?Stringish,
 
   /**
+   * Indicates to the accessibility services that the UI component is in
+   * a specific language. The provided string should be formatted following
+   * the BCP 47 specification (https://www.rfc-editor.org/info/bcp47).
+   *
+   * @platform ios
+   */
+  accessibilityLanguage?: ?Stringish,
+
+  /**
    * Indicates to accessibility services to treat UI component like a specific role.
    */
   accessibilityRole?: ?AccessibilityRole,
@@ -431,6 +463,13 @@ export type ViewProps = $ReadOnly<{|
    *
    */
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
+
+  /**
+   * Specifies the nativeID of the associated label text. When the assistive technology focuses on the component with this props, the text is read aloud.
+   *
+   * @platform android
+   */
+  accessibilityLabelledBy?: ?string | ?Array<string>,
 
   /**
    * Views that are only used to layout their children or otherwise don't draw
@@ -474,7 +513,7 @@ export type ViewProps = $ReadOnly<{|
    *
    * See https://reactnative.dev/docs/view#hitslop
    */
-  hitSlop?: ?EdgeInsetsProp,
+  hitSlop?: ?EdgeInsetsOrSizeProp,
 
   /**
    * Controls whether the `View` can be the target of touch events.

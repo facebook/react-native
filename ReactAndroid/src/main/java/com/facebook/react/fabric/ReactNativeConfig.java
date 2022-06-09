@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -22,6 +22,9 @@ import com.facebook.proguard.annotations.DoNotStrip;
  */
 @DoNotStrip
 public interface ReactNativeConfig {
+
+  ReactNativeConfig DEFAULT_CONFIG = new EmptyReactNativeConfig();
+
   /**
    * Get a boolean param by string name. Default should be false.
    *
@@ -31,12 +34,12 @@ public interface ReactNativeConfig {
   boolean getBool(@NonNull String param);
 
   /**
-   * Get an integer param by string name. Default should be 0.
+   * Get a Long param by string name. Default should be 0.
    *
    * @param param The string name of the parameter being requested.
    */
   @DoNotStrip
-  int getInt64(@NonNull String param);
+  long getInt64(@NonNull String param);
 
   /**
    * Get a string param by string name. Default should be "", empty string.

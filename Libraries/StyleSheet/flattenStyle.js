@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -24,7 +24,7 @@ function flattenStyle<+TStyleProp: DangerouslyImpreciseStyleProp>(
     return style;
   }
 
-  const result = {};
+  const result: {[string]: $FlowFixMe} = {};
   for (let i = 0, styleLength = style.length; i < styleLength; ++i) {
     const computedStyle = flattenStyle(style[i]);
     if (computedStyle) {

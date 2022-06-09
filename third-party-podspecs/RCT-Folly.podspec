@@ -1,4 +1,4 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -91,7 +91,11 @@ Pod::Spec.new do |spec|
                           'folly/concurrency/CacheLocality.cpp',
                           'folly/detail/Futex.cpp',
                           'folly/synchronization/ParkingLot.cpp',
-                          'folly/portability/Malloc.cpp'
+                          'folly/portability/Malloc.cpp',
+                          'folly/concurrency/CacheLocality.h',
+                          'folly/synchronization/ParkingLot.h',
+                          'folly/synchronization/SanitizeThread.h',
+                          'folly/system/ThreadId.h'
 
     fabric.preserve_paths = 'folly/concurrency/CacheLocality.h',
                             'folly/synchronization/ParkingLot.h',

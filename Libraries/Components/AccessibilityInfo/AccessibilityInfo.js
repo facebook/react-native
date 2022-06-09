@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,7 +12,6 @@ import RCTDeviceEventEmitter from '../../EventEmitter/RCTDeviceEventEmitter';
 import {sendAccessibilityEvent} from '../../Renderer/shims/ReactNative';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import Platform from '../../Utilities/Platform';
-import type EventEmitter from '../../vendor/emitter/EventEmitter';
 import type {EventSubscription} from '../../vendor/emitter/EventEmitter';
 import NativeAccessibilityInfoAndroid from './NativeAccessibilityInfo';
 import NativeAccessibilityManagerIOS from './NativeAccessibilityManager';
@@ -362,25 +361,6 @@ const AccessibilityInfo = {
       } else {
         NativeAccessibilityManagerIOS?.announceForAccessibility(announcement);
       }
-    }
-  },
-
-  /**
-   * @deprecated Use `remove` on the EventSubscription from `addEventListener`.
-   */
-  removeEventListener<K: $Keys<AccessibilityEventDefinitions>>(
-    eventName: K,
-    handler: (...$ElementType<AccessibilityEventDefinitions, K>) => void,
-  ): void {
-    // NOTE: This will report a deprecation notice via `console.error`.
-    const deviceEventName = EventNames.get(eventName);
-    if (deviceEventName != null) {
-      // $FlowIgnore[incompatible-cast]
-      (RCTDeviceEventEmitter: EventEmitter<$FlowFixMe>).removeListener(
-        'deviceEventName',
-        // $FlowFixMe[invalid-tuple-arity]
-        handler,
-      );
     }
   },
 

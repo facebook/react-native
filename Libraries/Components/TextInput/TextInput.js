@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -393,6 +393,14 @@ type AndroidProps = $ReadOnly<{|
   ),
 
   /**
+   * When provided it will set the color of the cursor (or "caret") in the component.
+   * Unlike the behavior of `selectionColor` the cursor color will be set independently
+   * from the color of the text selection box.
+   * @platform android
+   */
+  cursorColor?: ?ColorValue,
+
+  /**
    * When `false`, if there is a small amount of space available around a text input
    * (e.g. landscape orientation on a phone), the OS may choose to have the user edit
    * the text inside of a full screen text input mode. When `true`, this feature is
@@ -599,10 +607,31 @@ export type Props = $ReadOnly<{|
   onChange?: ?(e: ChangeEvent) => mixed,
 
   /**
+   * DANGER: this API is not stable and will change in the future.
+   *
+   * Callback will be called on the main thread and may result in dropped frames.
+   * Callback that is called when the text input's text changes.
+   *
+   * @platform ios
+   */
+  unstable_onChangeSync?: ?(e: ChangeEvent) => mixed,
+
+  /**
    * Callback that is called when the text input's text changes.
    * Changed text is passed as an argument to the callback handler.
    */
   onChangeText?: ?(text: string) => mixed,
+
+  /**
+   * DANGER: this API is not stable and will change in the future.
+   *
+   * Callback will be called on the main thread and may result in dropped frames.
+   * Callback that is called when the text input's text changes.
+   * Changed text is passed as an argument to the callback handler.
+   *
+   * @platform ios
+   */
+  unstable_onChangeTextSync?: ?(text: string) => mixed,
 
   /**
    * Callback that is called when the text input's content size changes.
@@ -643,7 +672,7 @@ export type Props = $ReadOnly<{|
    * the typed-in character otherwise including `' '` for space.
    * Fires before `onChange` callbacks.
    *
-   * Only available in Fabric on iOS.
+   * @platform ios
    */
   unstable_onKeyPressSync?: ?(e: KeyPressEvent) => mixed,
 
@@ -955,7 +984,7 @@ function InternalTextInput(props: Props): React.Node {
   // that the update should be ignored and we should stick with the value
   // that we have in JS.
   useLayoutEffect(() => {
-    const nativeUpdate = {};
+    const nativeUpdate: {text?: string, selection?: Selection} = {...null};
 
     if (lastNativeText !== props.value && typeof props.value === 'string') {
       nativeUpdate.text = props.value;
@@ -1101,6 +1130,26 @@ function InternalTextInput(props: Props): React.Node {
     setMostRecentEventCount(event.nativeEvent.eventCount);
   };
 
+  const _onChangeSync = (event: ChangeEvent) => {
+    const currentText = event.nativeEvent.text;
+    props.unstable_onChangeSync && props.unstable_onChangeSync(event);
+    props.unstable_onChangeTextSync &&
+      props.unstable_onChangeTextSync(currentText);
+
+    if (inputRef.current == null) {
+      // calling `props.onChange` or `props.onChangeText`
+      // may clean up the input itself. Exits here.
+      return;
+    }
+
+    setLastNativeText(currentText);
+    // This must happen last, after we call setLastNativeText.
+    // Different ordering can cause bugs when editing AndroidTextInputs
+    // with multiple Fragments.
+    // We must update this so that controlled input updates work.
+    setMostRecentEventCount(event.nativeEvent.eventCount);
+  };
+
   const _onSelectionChange = (event: SelectionChangeEvent) => {
     props.onSelectionChange && props.onSelectionChange(event);
 
@@ -1184,8 +1233,12 @@ function InternalTextInput(props: Props): React.Node {
 
     const style =
       props.multiline === true
-        ? [styles.multilineInput, props.style]
+        ? StyleSheet.flatten([styles.multilineInput, props.style])
         : props.style;
+
+    const useOnChangeSync =
+      (props.unstable_onChangeSync || props.unstable_onChangeTextSync) &&
+      !(props.onChange || props.onChangeText);
 
     textInput = (
       <RCTTextInputView
@@ -1201,6 +1254,7 @@ function InternalTextInput(props: Props): React.Node {
         onBlur={_onBlur}
         onKeyPressSync={props.unstable_onKeyPressSync}
         onChange={_onChange}
+        onChangeSync={useOnChangeSync === true ? _onChangeSync : null}
         onContentSizeChange={props.onContentSizeChange}
         onFocus={_onFocus}
         onScroll={_onScroll}
@@ -1295,13 +1349,6 @@ const ExportedForwardRef: React.AbstractComponent<
   );
 });
 
-/**
- * Switch to `deprecated-react-native-prop-types` for compatibility with future
- * releases. This is deprecated and will be removed in the future.
- */
-ExportedForwardRef.propTypes =
-  require('deprecated-react-native-prop-types').TextInputPropTypes;
-
 // $FlowFixMe[prop-missing]
 ExportedForwardRef.State = {
   currentlyFocusedInput: TextInputState.currentlyFocusedInput,
@@ -1311,7 +1358,7 @@ ExportedForwardRef.State = {
   blurTextInput: TextInputState.blurTextInput,
 };
 
-type TextInputComponentStatics = $ReadOnly<{|
+export type TextInputComponentStatics = $ReadOnly<{|
   State: $ReadOnly<{|
     currentlyFocusedInput: typeof TextInputState.currentlyFocusedInput,
     currentlyFocusedField: typeof TextInputState.currentlyFocusedField,

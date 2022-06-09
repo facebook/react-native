@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -38,7 +38,7 @@ function renderApplication<Props: Object>(
 
   const performanceLogger = scopedPerformanceLogger ?? GlobalPerformanceLogger;
 
-  let renderable = (
+  let renderable: React.MixedElement = (
     <PerformanceLoggerContext.Provider value={performanceLogger}>
       <AppContainer
         rootTag={rootTag}
@@ -64,6 +64,10 @@ function renderApplication<Props: Object>(
   }
 
   performanceLogger.startTimespan('renderApplication_React_render');
+  performanceLogger.setExtra(
+    'usedReactConcurrentRoot',
+    useConcurrentRoot ? '1' : '0',
+  );
   performanceLogger.setExtra('usedReactFabric', fabric ? '1' : '0');
   if (fabric) {
     require('../Renderer/shims/ReactFabric').render(

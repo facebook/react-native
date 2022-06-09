@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -271,9 +271,11 @@ export function SectionList_scrollable(Props: {
         ref={ref}
         ListHeaderComponent={HeaderComponent}
         ListFooterComponent={FooterComponent}
+        // eslint-disable-next-line react/no-unstable-nested-components
         SectionSeparatorComponent={info => (
           <CustomSeparatorComponent {...info} text="SECTION SEPARATOR" />
         )}
+        // eslint-disable-next-line react/no-unstable-nested-components
         ItemSeparatorComponent={info => (
           <CustomSeparatorComponent {...info} text="ITEM SEPARATOR" />
         )}

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -70,24 +70,19 @@ const addLogs = (logs, options) => {
 
 const addSoftErrors = (errors, options) => {
   errors.forEach(error => {
-    LogBoxData.addException(
-      Object.assign(
-        {},
-        {
-          message: '',
-          isComponentError: false,
-          originalMessage: '',
-          name: 'console.error',
-          componentStack: '',
-          stack: [],
-          id: 0,
-          isFatal: false,
-        },
-        typeof error === 'string'
-          ? {message: error, originalMessage: error}
-          : error,
-      ),
-    );
+    LogBoxData.addException({
+      message: '',
+      isComponentError: false,
+      originalMessage: '',
+      name: 'console.error',
+      componentStack: '',
+      stack: [],
+      id: 0,
+      isFatal: false,
+      ...(typeof error === 'string'
+        ? {message: error, originalMessage: error}
+        : error),
+    });
     if (options == null || options.flush !== false) {
       jest.runOnlyPendingTimers();
     }
@@ -96,24 +91,19 @@ const addSoftErrors = (errors, options) => {
 
 const addFatalErrors = (errors, options) => {
   errors.forEach(error => {
-    LogBoxData.addException(
-      Object.assign(
-        {},
-        {
-          message: '',
-          isComponentError: false,
-          originalMessage: '',
-          name: 'console.error',
-          componentStack: '',
-          stack: [],
-          id: 0,
-          isFatal: true,
-        },
-        typeof error === 'string'
-          ? {message: error, originalMessage: error}
-          : error,
-      ),
-    );
+    LogBoxData.addException({
+      message: '',
+      isComponentError: false,
+      originalMessage: '',
+      name: 'console.error',
+      componentStack: '',
+      stack: [],
+      id: 0,
+      isFatal: true,
+      ...(typeof error === 'string'
+        ? {message: error, originalMessage: error}
+        : error),
+    });
     if (options == null || options.flush !== false) {
       // Errors include two timers, the second is for optimistic symbolication.
       jest.runOnlyPendingTimers();

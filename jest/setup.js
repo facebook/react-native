@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -355,6 +355,10 @@ jest
     '../Libraries/Utilities/verifyComponentAttributeEquivalence',
     () => function () {},
   )
+  .mock('../Libraries/Vibration/Vibration', () => ({
+    vibrate: jest.fn(),
+    cancel: jest.fn(),
+  }))
   .mock('../Libraries/Components/View/ViewNativeComponent', () => {
     const React = require('react');
     const Component = class extends React.Component {

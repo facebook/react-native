@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -325,23 +325,14 @@ typedef NS_ENUM(NSInteger, FBTestSnapshotFileNameType) {
   NSAssert1(CGRectGetWidth(bounds), @"Zero width for view %@", view);
   NSAssert1(CGRectGetHeight(bounds), @"Zero height for view %@", view);
 
-  UIGraphicsBeginImageContextWithOptions(bounds.size, NO, 0);
-  CGContextRef context = UIGraphicsGetCurrentContext();
-  NSAssert1(context, @"Could not generate context for view %@", view);
+  UIGraphicsImageRendererFormat *const rendererFormat = [UIGraphicsImageRendererFormat defaultFormat];
+  UIGraphicsImageRenderer *const renderer = [[UIGraphicsImageRenderer alloc] initWithSize:bounds.size
+                                                                                   format:rendererFormat];
 
-  UIGraphicsPushContext(context);
-  CGContextSaveGState(context);
-  {
+  return [renderer imageWithActions:^(UIGraphicsImageRendererContext *_Nonnull context) {
     BOOL success = [view drawViewHierarchyInRect:bounds afterScreenUpdates:YES];
     NSAssert1(success, @"Could not create snapshot for view %@", view);
-  }
-  CGContextRestoreGState(context);
-  UIGraphicsPopContext();
-
-  UIImage *snapshot = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-
-  return snapshot;
+  }];
 }
 
 @end

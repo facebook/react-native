@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -437,6 +437,8 @@ typedef NSURL * (^RCTBridgelessBundleURLGetter)(void);
 
 typedef UIView * (^RCTBridgelessComponentViewProvider)(NSNumber *);
 
+typedef void (^RCTViewRegistryUIBlock)(RCTViewRegistry *viewRegistry);
+
 /**
  * A class that allows NativeModules to query for views, given React Tags.
  */
@@ -445,6 +447,7 @@ typedef UIView * (^RCTBridgelessComponentViewProvider)(NSNumber *);
 - (void)setBridgelessComponentViewProvider:(RCTBridgelessComponentViewProvider)bridgelessComponentViewProvider;
 
 - (UIView *)viewForReactTag:(NSNumber *)reactTag;
+- (void)addUIBlock:(RCTViewRegistryUIBlock)block;
 @end
 
 typedef void (^RCTBridgelessJSModuleMethodInvoker)(

@@ -1,4 +1,4 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -28,23 +28,21 @@ load(
     "rn_apple_library",
     "rn_xplat_cxx_library",
 )
+load("//tools/build_defs/third_party:yarn_defs.bzl", "yarn_workspace_binary")
 
 # Call this in the react-native-codegen/BUCK file
 def rn_codegen_cli():
     if not IS_OSS_BUILD:
         # FB Internal Setup
-        fb_native.sh_binary(
+        yarn_workspace_binary(
             name = "write_to_json",
-            main = "src/cli/combine/combine_js_to_schema.sh",
-            resources = [
-                "src/cli/combine/combine-js-to-schema.js",
-                "src/cli/combine/combine_js_to_schema.sh",
+            main = "src/cli/combine/combine-js-to-schema-cli.js",
+            root = "//xplat/js:workspace",
+            deps = [
                 ":yarn-workspace",
-                "//xplat/js:setup_env",
             ],
             visibility = ["PUBLIC"],
         )
-
         fb_native.sh_binary(
             name = "generate_all_from_schema",
             main = "src/cli/generators/generate-all.sh",
@@ -127,7 +125,7 @@ def rn_codegen_modules(
             ios_assume_nonnull = ios_assume_nonnull,
         ),
         out = "codegenfiles-{}".format(name),
-        labels = ["codegen_rule"],
+        labels = ["codegen_rule", "uses_local_filesystem_abspaths"],
     )
 
     ##################
@@ -219,14 +217,14 @@ def rn_codegen_modules(
         # iOS Buck build isn't fully working in OSS, so let's skip it for OSS for now.
         fb_native.genrule(
             name = generate_module_hobjcpp_name,
-            cmd = "cp $(location :{})/{}.h $OUT".format(generate_fixtures_rule_name, name),
+            cmd = "cp $(location :{})/{}/{}.h $OUT".format(generate_fixtures_rule_name, name, name),
             out = "{}.h".format(name),
             labels = ["codegen_rule"],
         )
 
         fb_native.genrule(
             name = generate_module_mm_name,
-            cmd = "cp $(location :{})/{}-generated.mm $OUT".format(generate_fixtures_rule_name, name),
+            cmd = "cp $(location :{})/{}/{}-generated.mm $OUT".format(generate_fixtures_rule_name, name, name),
             out = "{}-generated.mm".format(name),
             labels = ["codegen_rule"],
         )
@@ -282,7 +280,7 @@ def rn_codegen_components(
         srcs = native.glob(["src/generators/**/*.js"]),
         cmd = "$(exe {}) $(location {}) {} $OUT".format(react_native_root_target("packages/react-native-codegen:generate_all_from_schema"), schema_target, name),
         out = "codegenfiles-{}".format(name),
-        labels = ["codegen_rule"],
+        labels = ["codegen_rule", "uses_local_filesystem_abspaths"],
     )
 
     fb_native.genrule(
@@ -429,7 +427,7 @@ def rn_codegen_components(
                 deps = [
                     "//third-party/glog:glog",
                     "//xplat/fbsystrace:fbsystrace",
-                    "//xplat/folly:headers_only",
+                    "//xplat/folly:headers_only_do_not_use",
                     "//xplat/folly:memory",
                     "//xplat/folly:molly",
                     YOGA_CXX_TARGET,
@@ -454,7 +452,7 @@ def rn_codegen_components(
             compiler_flags = [
                 "-fexceptions",
                 "-frtti",
-                "-std=c++14",
+                "-std=c++17",
                 "-Wall",
             ],
             contacts = ["oncall+react_native@xmail.facebook.com"],
@@ -485,7 +483,7 @@ def rn_codegen_components(
             deps = [
                 react_native_dep("third-party/android/androidx:annotation"),
                 react_native_target("java/com/facebook/react/bridge:bridge"),
-                react_native_target("java/com/facebook/react/uimanager/interfaces:interfaces"),
+                react_native_target("java/com/facebook/react/uimanager:interfaces"),
             ],
         )
 
@@ -508,7 +506,8 @@ def rn_codegen_components(
 
 def rn_codegen_cxx_modules(
         name = "",
-        schema_target = ""):
+        schema_target = "",
+        library_labels = []):
     generate_fixtures_rule_name = "generate_fixtures_cxx-{}".format(name)
     generate_module_h_name = "generate_module_h-{}".format(name)
     generate_module_cpp_name = "generate_module_cpp-{}".format(name)
@@ -523,37 +522,36 @@ def rn_codegen_cxx_modules(
 
     fb_native.genrule(
         name = generate_module_h_name,
-        cmd = "cp $(location :{})/NativeModules.h $OUT".format(generate_fixtures_rule_name),
-        out = "NativeModules.h",
+        cmd = "cp $(location :{})/{}JSI.h $OUT".format(generate_fixtures_rule_name, name),
+        out = "{}JSI.h".format(name),
         labels = ["codegen_rule"],
     )
 
     fb_native.genrule(
         name = generate_module_cpp_name,
-        cmd = "cp $(location :{})/NativeModules.cpp $OUT".format(generate_fixtures_rule_name),
-        out = "NativeModules.cpp",
+        cmd = "cp $(location :{})/{}JSI-generated.cpp $OUT".format(generate_fixtures_rule_name, name),
+        out = "{}JSI-generated.cpp".format(name),
         labels = ["codegen_rule"],
     )
 
     if is_running_buck_project():
-        rn_xplat_cxx_library(name = "generated_cxx_modules-{}".format(name))
+        rn_xplat_cxx_library(name = "{}JSI".format(name), visibility = ["PUBLIC"])
     else:
         rn_xplat_cxx_library(
-            name = "generated_cxx_modules-{}".format(name),
+            name = "{}JSI".format(name),
             srcs = [
                 ":{}".format(generate_module_cpp_name),
             ],
             headers = [
                 ":{}".format(generate_module_h_name),
             ],
-            header_namespace = "react/modules/{}".format(name),
+            header_namespace = "",
             exported_headers = {
-                "NativeModules.cpp": ":{}".format(generate_module_cpp_name),
-                "NativeModules.h": ":{}".format(generate_module_h_name),
+                "{}/{}JSI.h".format(name, name): ":{}".format(generate_module_h_name),
             },
             fbobjc_compiler_flags = get_apple_compiler_flags(),
             fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
-            labels = ["codegen_rule"],
+            labels = library_labels + ["codegen_rule"],
             platforms = (ANDROID, APPLE),
             preprocessor_flags = [
                 "-DLOG_TAG=\"ReactNative\"",

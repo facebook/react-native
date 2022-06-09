@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,6 +9,7 @@
 
 #include <react/renderer/animations/LayoutAnimationCallbackWrapper.h>
 #include <react/renderer/core/ReactPrimitives.h>
+#include <react/renderer/graphics/Float.h>
 #include <react/renderer/mounting/ShadowView.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
 #include <vector>
@@ -43,8 +44,8 @@ struct AnimationConfig {
       0; // these are perhaps better represented as uint64_t, but they
   // come from JS as doubles
   double delay = 0;
-  double springDamping = 0;
-  double initialVelocity = 0;
+  Float springDamping = 0;
+  Float initialVelocity = 0;
 };
 
 // This corresponds exactly with JS.

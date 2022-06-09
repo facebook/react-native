@@ -8,7 +8,7 @@ rn_robolectric_test(
         "PUBLIC",
     ],
     deps = [
-        react_native_dep("third-party/java/fest:fest"),
+        react_native_dep("third-party/java/assertj:assertj-core"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_dep("third-party/java/junit:junit"),
         react_native_dep("third-party/java/okhttp:okhttp3"),

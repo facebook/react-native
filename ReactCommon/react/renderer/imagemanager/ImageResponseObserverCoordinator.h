@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,7 +10,7 @@
 #include <react/renderer/imagemanager/ImageResponse.h>
 #include <react/renderer/imagemanager/ImageResponseObserver.h>
 
-#include <better/small_vector.h>
+#include <butter/small_vector.h>
 #include <mutex>
 #include <vector>
 
@@ -59,7 +59,7 @@ class ImageResponseObserverCoordinator {
    * List of observers.
    * Mutable: protected by mutex_.
    */
-  mutable better::small_vector<ImageResponseObserver const *, 1> observers_;
+  mutable butter::small_vector<ImageResponseObserver const *, 1> observers_;
 
   /*
    * Current status of image loading.

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -27,6 +27,166 @@ import {useState, useCallback} from 'react';
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import ScrollViewPressableStickyHeaderExample from './ScrollViewPressableStickyHeaderExample';
+
+class EnableDisableList extends React.Component<{}, {scrollEnabled: boolean}> {
+  state = {
+    scrollEnabled: true,
+  };
+  render() {
+    return (
+      <View>
+        <ScrollView
+          automaticallyAdjustContentInsets={false}
+          style={styles.scrollView}
+          scrollEnabled={this.state.scrollEnabled}>
+          {ITEMS.map(createItemRow)}
+        </ScrollView>
+        <Text>
+          {'Scrolling enabled = ' + this.state.scrollEnabled.toString()}
+        </Text>
+        <Button
+          label="Disable Scrolling"
+          onPress={() => {
+            this.setState({scrollEnabled: false});
+          }}
+        />
+        <Button
+          label="Enable Scrolling"
+          onPress={() => {
+            this.setState({scrollEnabled: true});
+          }}
+        />
+      </View>
+    );
+  }
+}
+
+let AppendingListItemCount = 6;
+class AppendingList extends React.Component<
+  {},
+  {items: Array<React.Element<typeof Item>>},
+> {
+  state = {
+    items: [...Array(AppendingListItemCount)].map((_, ii) => (
+      <Item msg={`Item ${ii}`} />
+    )),
+  };
+  render() {
+    return (
+      <View>
+        <ScrollView
+          automaticallyAdjustContentInsets={false}
+          maintainVisibleContentPosition={{
+            minIndexForVisible: 1,
+            autoscrollToTopThreshold: 10,
+          }}
+          style={styles.scrollView}>
+          {this.state.items.map(item =>
+            React.cloneElement(item, {key: item.props.msg}),
+          )}
+        </ScrollView>
+        <ScrollView
+          horizontal={true}
+          automaticallyAdjustContentInsets={false}
+          maintainVisibleContentPosition={{
+            minIndexForVisible: 1,
+            autoscrollToTopThreshold: 10,
+          }}
+          style={[styles.scrollView, styles.horizontalScrollView]}>
+          {this.state.items.map(item =>
+            React.cloneElement(item, {key: item.props.msg, style: null}),
+          )}
+        </ScrollView>
+        <View style={styles.row}>
+          <Button
+            label="Add to top"
+            onPress={() => {
+              this.setState(state => {
+                const idx = AppendingListItemCount++;
+                return {
+                  items: [
+                    <Item style={{paddingTop: idx * 5}} msg={`Item ${idx}`} />,
+                  ].concat(state.items),
+                };
+              });
+            }}
+          />
+          <Button
+            label="Remove top"
+            onPress={() => {
+              this.setState(state => ({
+                items: state.items.slice(1),
+              }));
+            }}
+          />
+          <Button
+            label="Change height top"
+            onPress={() => {
+              this.setState(state => ({
+                items: [
+                  React.cloneElement(state.items[0], {
+                    style: {paddingBottom: Math.random() * 40},
+                  }),
+                ].concat(state.items.slice(1)),
+              }));
+            }}
+          />
+        </View>
+        <View style={styles.row}>
+          <Button
+            label="Add to end"
+            onPress={() => {
+              this.setState(state => ({
+                items: state.items.concat(
+                  <Item msg={`Item ${AppendingListItemCount++}`} />,
+                ),
+              }));
+            }}
+          />
+          <Button
+            label="Remove end"
+            onPress={() => {
+              this.setState(state => ({
+                items: state.items.slice(0, -1),
+              }));
+            }}
+          />
+          <Button
+            label="Change height end"
+            onPress={() => {
+              this.setState(state => ({
+                items: state.items.slice(0, -1).concat(
+                  React.cloneElement(state.items[state.items.length - 1], {
+                    style: {paddingBottom: Math.random() * 40},
+                  }),
+                ),
+              }));
+            }}
+          />
+        </View>
+      </View>
+    );
+  }
+}
+
+function CenterContentList(): React.Node {
+  return (
+    <ScrollView style={styles.scrollView} centerContent={true}>
+      <Text>This should be in center.</Text>
+    </ScrollView>
+  );
+}
+
+function ContentOffsetList(): React.Node {
+  return (
+    <ScrollView
+      style={[styles.scrollView, {height: 100}]}
+      horizontal={true}
+      contentOffset={{x: 100, y: 0}}>
+      {ITEMS.map(createItemRow)}
+    </ScrollView>
+  );
+}
 
 exports.displayName = 'ScrollViewExample';
 exports.title = 'ScrollView';
@@ -112,41 +272,6 @@ const examples = ([
     title: '<ScrollView> enable & disable\n',
     description: 'ScrollView scrolling behaviour can be disabled and enabled',
     render: function (): React.Node {
-      class EnableDisableList extends React.Component<
-        {},
-        {scrollEnabled: boolean},
-      > {
-        state = {
-          scrollEnabled: true,
-        };
-        render() {
-          return (
-            <View>
-              <ScrollView
-                automaticallyAdjustContentInsets={false}
-                style={styles.scrollView}
-                scrollEnabled={this.state.scrollEnabled}>
-                {ITEMS.map(createItemRow)}
-              </ScrollView>
-              <Text>
-                {'Scrolling enabled = ' + this.state.scrollEnabled.toString()}
-              </Text>
-              <Button
-                label="Disable Scrolling"
-                onPress={() => {
-                  this.setState({scrollEnabled: false});
-                }}
-              />
-              <Button
-                label="Enable Scrolling"
-                onPress={() => {
-                  this.setState({scrollEnabled: true});
-                }}
-              />
-            </View>
-          );
-        }
-      }
       return <EnableDisableList />;
     },
   },
@@ -266,6 +391,13 @@ const examples = ([
       return <SnapToOptions />;
     },
   },
+  {
+    title: '<ScrollView> (contentOffset = {x: 100, y: 0})\n',
+    description: 'Initial contentOffset can be set on ScrollView.',
+    render: function (): React.Node {
+      return <ContentOffsetList />;
+    },
+  },
 ]: Array<RNTesterModuleExample>);
 
 if (Platform.OS === 'ios') {
@@ -275,119 +407,6 @@ if (Platform.OS === 'ios') {
       'The `maintainVisibleContentPosition` prop allows insertions to either end of the content ' +
       'without causing the visible content to jump. Re-ordering is not supported.',
     render: function () {
-      let itemCount = 6;
-      class AppendingList extends React.Component<
-        {},
-        {items: Array<React.Element<typeof Item>>},
-      > {
-        state = {
-          items: [...Array(itemCount)].map((_, ii) => (
-            <Item msg={`Item ${ii}`} />
-          )),
-        };
-        render() {
-          return (
-            <View>
-              <ScrollView
-                automaticallyAdjustContentInsets={false}
-                maintainVisibleContentPosition={{
-                  minIndexForVisible: 1,
-                  autoscrollToTopThreshold: 10,
-                }}
-                style={styles.scrollView}>
-                {this.state.items.map(item =>
-                  React.cloneElement(item, {key: item.props.msg}),
-                )}
-              </ScrollView>
-              <ScrollView
-                horizontal={true}
-                automaticallyAdjustContentInsets={false}
-                maintainVisibleContentPosition={{
-                  minIndexForVisible: 1,
-                  autoscrollToTopThreshold: 10,
-                }}
-                style={[styles.scrollView, styles.horizontalScrollView]}>
-                {this.state.items.map(item =>
-                  React.cloneElement(item, {key: item.props.msg, style: null}),
-                )}
-              </ScrollView>
-              <View style={styles.row}>
-                <Button
-                  label="Add to top"
-                  onPress={() => {
-                    this.setState(state => {
-                      const idx = itemCount++;
-                      return {
-                        items: [
-                          <Item
-                            style={{paddingTop: idx * 5}}
-                            msg={`Item ${idx}`}
-                          />,
-                        ].concat(state.items),
-                      };
-                    });
-                  }}
-                />
-                <Button
-                  label="Remove top"
-                  onPress={() => {
-                    this.setState(state => ({
-                      items: state.items.slice(1),
-                    }));
-                  }}
-                />
-                <Button
-                  label="Change height top"
-                  onPress={() => {
-                    this.setState(state => ({
-                      items: [
-                        React.cloneElement(state.items[0], {
-                          style: {paddingBottom: Math.random() * 40},
-                        }),
-                      ].concat(state.items.slice(1)),
-                    }));
-                  }}
-                />
-              </View>
-              <View style={styles.row}>
-                <Button
-                  label="Add to end"
-                  onPress={() => {
-                    this.setState(state => ({
-                      items: state.items.concat(
-                        <Item msg={`Item ${itemCount++}`} />,
-                      ),
-                    }));
-                  }}
-                />
-                <Button
-                  label="Remove end"
-                  onPress={() => {
-                    this.setState(state => ({
-                      items: state.items.slice(0, -1),
-                    }));
-                  }}
-                />
-                <Button
-                  label="Change height end"
-                  onPress={() => {
-                    this.setState(state => ({
-                      items: state.items.slice(0, -1).concat(
-                        React.cloneElement(
-                          state.items[state.items.length - 1],
-                          {
-                            style: {paddingBottom: Math.random() * 40},
-                          },
-                        ),
-                      ),
-                    }));
-                  }}
-                />
-              </View>
-            </View>
-          );
-        }
-      }
       return <AppendingList />;
     },
   });
@@ -396,30 +415,6 @@ if (Platform.OS === 'ios') {
     description:
       'ScrollView puts its content in the center if the content is smaller than scroll view',
     render: function (): React.Node {
-      function CenterContentList(): React.Node {
-        return (
-          <ScrollView style={styles.scrollView} centerContent={true}>
-            <Text>This should be in center.</Text>
-          </ScrollView>
-        );
-      }
-      return <CenterContentList />;
-    },
-  });
-  examples.push({
-    title: '<ScrollView> (contentOffset = {x: 100, y: 0})\n',
-    description: 'Initial contentOffset can be set on ScrollView.',
-    render: function (): React.Node {
-      function CenterContentList(): React.Node {
-        return (
-          <ScrollView
-            style={[styles.scrollView, {height: 100}]}
-            horizontal={true}
-            contentOffset={{x: 100, y: 0}}>
-            {ITEMS.map(createItemRow)}
-          </ScrollView>
-        );
-      }
       return <CenterContentList />;
     },
   });

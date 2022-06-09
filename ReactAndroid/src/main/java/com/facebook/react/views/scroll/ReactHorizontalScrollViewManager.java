@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,14 +8,13 @@
 package com.facebook.react.views.scroll;
 
 import android.graphics.Color;
-import android.util.DisplayMetrics;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.module.annotations.ReactModule;
-import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.Spacing;
@@ -67,9 +66,7 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
 
   @Override
   public Object updateState(
-      ReactHorizontalScrollView view,
-      ReactStylesDiffMap props,
-      @Nullable StateWrapper stateWrapper) {
+      ReactHorizontalScrollView view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
     view.getFabricViewStateManager().setStateWrapper(stateWrapper);
     return null;
   }
@@ -98,8 +95,8 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
   @ReactProp(name = "snapToInterval")
   public void setSnapToInterval(ReactHorizontalScrollView view, float snapToInterval) {
     // snapToInterval needs to be exposed as a float because of the Javascript interface.
-    DisplayMetrics screenDisplayMetrics = DisplayMetricsHolder.getScreenDisplayMetrics();
-    view.setSnapInterval((int) (snapToInterval * screenDisplayMetrics.density));
+    float density = PixelUtil.getDisplayMetricDensity();
+    view.setSnapInterval((int) (snapToInterval * density));
   }
 
   @ReactProp(name = "snapToAlignment")
@@ -110,15 +107,15 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
   @ReactProp(name = "snapToOffsets")
   public void setSnapToOffsets(
       ReactHorizontalScrollView view, @Nullable ReadableArray snapToOffsets) {
-    if (snapToOffsets == null) {
+    if (snapToOffsets == null || snapToOffsets.size() == 0) {
       view.setSnapOffsets(null);
       return;
     }
 
-    DisplayMetrics screenDisplayMetrics = DisplayMetricsHolder.getScreenDisplayMetrics();
+    float density = PixelUtil.getDisplayMetricDensity();
     List<Integer> offsets = new ArrayList<Integer>();
     for (int i = 0; i < snapToOffsets.size(); i++) {
-      offsets.add((int) (snapToOffsets.getDouble(i) * screenDisplayMetrics.density));
+      offsets.add((int) (snapToOffsets.getDouble(i) * density));
     }
     view.setSnapOffsets(offsets);
   }
@@ -320,5 +317,15 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
     } else {
       view.scrollTo(0, 0);
     }
+  }
+
+  @ReactProp(name = ViewProps.POINTER_EVENTS)
+  public void setPointerEvents(ReactHorizontalScrollView view, @Nullable String pointerEventsStr) {
+    view.setPointerEvents(PointerEvents.parsePointerEvents(pointerEventsStr));
+  }
+
+  @ReactProp(name = "scrollEventThrottle")
+  public void setScrollEventThrottle(ReactHorizontalScrollView view, int scrollEventThrottle) {
+    view.setScrollEventThrottle(scrollEventThrottle);
   }
 }

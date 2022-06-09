@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -90,13 +90,5 @@ module.exports = {
    */
   addChangeListener(listener: AppearanceListener): EventSubscription {
     return eventEmitter.addListener('change', listener);
-  },
-
-  /**
-   * @deprecated Use `remove` on the EventSubscription from `addEventListener`.
-   */
-  removeChangeListener(listener: AppearanceListener): void {
-    // NOTE: This will report a deprecation notice via `console.error`.
-    eventEmitter.removeListener('change', listener);
   },
 };

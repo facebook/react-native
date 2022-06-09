@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -500,6 +500,16 @@ class TextExample extends React.Component<{...}> {
           <Text style={{fontSize: 12}}>
             <Entity>Entity Name</Entity>
           </Text>
+          <Text style={{fontSize: 8}}>
+            Nested text with size 8,{' '}
+            <Text style={{fontSize: 23}}>size 23, </Text>
+            and size 8 again
+          </Text>
+          <Text style={{color: 'red'}}>
+            Nested text with red color,{' '}
+            <Text style={{color: 'blue'}}>blue color, </Text>
+            and red color again
+          </Text>
         </RNTesterBlock>
         <RNTesterBlock title="Text Align">
           <Text>auto (default) - english LTR</Text>
@@ -797,6 +807,18 @@ class TextExample extends React.Component<{...}> {
           </Text>
           <Text style={{textTransform: 'capitalize'}}>
             This text should be CAPITALIZED.
+          </Text>
+          <Text>
+            Capitalize a date:
+            <Text style={{textTransform: 'capitalize'}}>
+              the 9th of november, 1998
+            </Text>
+          </Text>
+          <Text>
+            Capitalize a 2 digit date:
+            <Text style={{textTransform: 'capitalize'}}>
+              the 25th of december
+            </Text>
           </Text>
           <Text style={{textTransform: 'capitalize'}}>
             Mixed: <Text style={{textTransform: 'uppercase'}}>uppercase </Text>

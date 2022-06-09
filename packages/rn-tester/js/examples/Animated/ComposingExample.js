@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -160,7 +160,7 @@ function ComposingExampleItem({
         {boxIndexes.map(boxIndex => {
           const translateX = xTranslations.current[boxIndex].interpolate({
             inputRange: [0, 1],
-            outputRange: ([0, maxXTranslation]: [number, number]),
+            outputRange: [0, maxXTranslation],
           });
 
           return (

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -21,8 +21,9 @@ namespace react {
 ViewProps::ViewProps(
     const PropsParserContext &context,
     ViewProps const &sourceProps,
-    RawProps const &rawProps)
-    : YogaStylableProps(context, sourceProps, rawProps),
+    RawProps const &rawProps,
+    bool shouldSetRawProps)
+    : YogaStylableProps(context, sourceProps, rawProps, shouldSetRawProps),
       AccessibilityProps(context, sourceProps, rawProps),
       opacity(convertRawProp(
           context,
@@ -125,24 +126,7 @@ ViewProps::ViewProps(
           "onLayout",
           sourceProps.onLayout,
           {})),
-      pointerEnter(convertRawProp(
-          context,
-          rawProps,
-          "pointerenter",
-          sourceProps.pointerEnter,
-          {})),
-      pointerLeave(convertRawProp(
-          context,
-          rawProps,
-          "pointerleave",
-          sourceProps.pointerLeave,
-          {})),
-      pointerMove(convertRawProp(
-          context,
-          rawProps,
-          "pointermove",
-          sourceProps.pointerMove,
-          {})),
+      events(convertRawProp(context, rawProps, sourceProps.events, {})),
       collapsable(convertRawProp(
           context,
           rawProps,
@@ -154,13 +138,53 @@ ViewProps::ViewProps(
           rawProps,
           "removeClippedSubviews",
           sourceProps.removeClippedSubviews,
-          false)),
+          false))
+#ifdef ANDROID
+      ,
       elevation(convertRawProp(
           context,
           rawProps,
           "elevation",
           sourceProps.elevation,
-          {})){};
+          {})),
+      nativeBackground(convertRawProp(
+          context,
+          rawProps,
+          "nativeBackgroundAndroid",
+          sourceProps.nativeBackground,
+          {})),
+      nativeForeground(convertRawProp(
+          context,
+          rawProps,
+          "nativeForegroundAndroid",
+          sourceProps.nativeForeground,
+          {})),
+      focusable(convertRawProp(
+          context,
+          rawProps,
+          "focusable",
+          sourceProps.focusable,
+          {})),
+      hasTVPreferredFocus(convertRawProp(
+          context,
+          rawProps,
+          "hasTVPreferredFocus",
+          sourceProps.hasTVPreferredFocus,
+          {})),
+      needsOffscreenAlphaCompositing(convertRawProp(
+          context,
+          rawProps,
+          "needsOffscreenAlphaCompositing",
+          sourceProps.needsOffscreenAlphaCompositing,
+          {})),
+      renderToHardwareTextureAndroid(convertRawProp(
+          context,
+          rawProps,
+          "renderToHardwareTextureAndroid",
+          sourceProps.renderToHardwareTextureAndroid,
+          {}))
+#endif
+          {};
 
 #pragma mark - Convenience Methods
 
@@ -251,8 +275,6 @@ SharedDebugStringConvertibleList ViewProps::getDebugProps() const {
       YogaStylableProps::getDebugProps() +
       SharedDebugStringConvertibleList{
           debugStringConvertibleItem(
-              "zIndex", zIndex, defaultViewProps.zIndex.value_or(0)),
-          debugStringConvertibleItem(
               "opacity", opacity, defaultViewProps.opacity),
           debugStringConvertibleItem(
               "foregroundColor",
@@ -262,6 +284,8 @@ SharedDebugStringConvertibleList ViewProps::getDebugProps() const {
               "backgroundColor",
               backgroundColor,
               defaultViewProps.backgroundColor),
+          debugStringConvertibleItem(
+              "zIndex", zIndex, defaultViewProps.zIndex.value_or(0)),
       };
 }
 #endif

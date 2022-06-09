@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -381,7 +381,13 @@ using namespace facebook::react;
   [self _updateState];
 
   if (_eventEmitter) {
-    std::static_pointer_cast<TextInputEventEmitter const>(_eventEmitter)->onChange([self _textInputMetrics]);
+    auto const &textInputEventEmitter = *std::static_pointer_cast<TextInputEventEmitter const>(_eventEmitter);
+    auto const &props = *std::static_pointer_cast<TextInputProps const>(_props);
+    if (props.onChangeSync) {
+      textInputEventEmitter.onChangeSync([self _textInputMetrics]);
+    } else {
+      textInputEventEmitter.onChange([self _textInputMetrics]);
+    }
   }
 }
 
@@ -560,8 +566,8 @@ using namespace facebook::react;
 
 - (void)_restoreTextSelection
 {
-  const auto selection = std::dynamic_pointer_cast<TextInputProps const>(_props)->selection.get_pointer();
-  if (selection == nullptr) {
+  auto const selection = std::dynamic_pointer_cast<TextInputProps const>(_props)->selection;
+  if (!selection.has_value()) {
     return;
   }
   auto start = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
@@ -611,8 +617,9 @@ using namespace facebook::react;
   // the settings on a dictation.
   // Similarly, when the user is in the middle of inputting some text in Japanese/Chinese, there will be styling on the
   // text that we should disregard. See
-  // https://developer.apple.com/documentation/uikit/uitextinput/1614489-markedtextrange?language=objc for more info. If
-  // the user added an emoji, the system adds a font attribute for the emoji and stores the original font in
+  // https://developer.apple.com/documentation/uikit/uitextinput/1614489-markedtextrange?language=objc for more info.
+  // Also, updating the attributed text while inputting Korean language will break input mechanism.
+  // If the user added an emoji, the system adds a font attribute for the emoji and stores the original font in
   // NSOriginalFont. Lastly, when entering a password, etc., there will be additional styling on the field as the native
   // text view handles showing the last character for a split second.
   __block BOOL fontHasBeenUpdatedBySystem = false;
@@ -627,6 +634,7 @@ using namespace facebook::react;
 
   BOOL shouldFallbackToBareTextComparison =
       [_backedTextInputView.textInputMode.primaryLanguage isEqualToString:@"dictation"] ||
+      [_backedTextInputView.textInputMode.primaryLanguage isEqualToString:@"ko-KR"] ||
       _backedTextInputView.markedTextRange || _backedTextInputView.isSecureTextEntry || fontHasBeenUpdatedBySystem;
 
   if (shouldFallbackToBareTextComparison) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -338,7 +338,7 @@ function getReturnObjCType(
     case 'GenericObjectTypeAnnotation':
       return wrapIntoNullableIfNeeded('NSDictionary *');
     default:
-      (typeAnnotation.type: empty);
+      (typeAnnotation.type: 'MixedTypeAnnotation');
       throw new Error(
         `Unsupported return type for ${methodName}. Found: ${typeAnnotation.type}`,
       );
@@ -378,7 +378,7 @@ function getReturnJSType(
     case 'GenericObjectTypeAnnotation':
       return 'ObjectKind';
     default:
-      (typeAnnotation.type: empty);
+      (typeAnnotation.type: 'MixedTypeAnnotation');
       throw new Error(
         `Unsupported return type for ${methodName}. Found: ${typeAnnotation.type}`,
       );

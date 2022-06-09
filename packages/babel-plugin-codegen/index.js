@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -86,6 +86,7 @@ module.exports = function ({parse, types: t}) {
 
           if (firstDeclaration.type === 'VariableDeclarator') {
             if (
+              firstDeclaration.init &&
               firstDeclaration.init.type === 'CallExpression' &&
               firstDeclaration.init.callee.type === 'Identifier' &&
               firstDeclaration.init.callee.name === 'codegenNativeCommands'

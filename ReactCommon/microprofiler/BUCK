@@ -12,12 +12,15 @@ cxx_library(
     compiler_flags = [
         "-Wall",
         "-Werror",
-        "-std=c++14",
+        "-std=c++17",
         "-fexceptions",
         "-fno-data-sections",
     ],
     force_static = True,
-    labels = ["supermodule:xplat/default/public.react_native.infra"],
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+        "supermodule:xplat/default/public.react_native.infra",
+    ],
     visibility = [
         "PUBLIC",
     ],

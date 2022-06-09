@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,25 +9,157 @@
 
 #include <limits>
 
+#include <react/common/mapbuffer/JReadableMapBuffer.h>
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/attributedstring/conversions.h>
 #include <react/renderer/core/conversions.h>
+#include <react/renderer/mapbuffer/MapBuffer.h>
+#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #include <react/renderer/telemetry/TransactionTelemetry.h>
-#include <react/utils/LayoutManager.h>
 
 using namespace facebook::jni;
 
 namespace facebook {
 namespace react {
 
-TextLayoutManager::~TextLayoutManager() {}
+Size measureAndroidComponent(
+    ContextContainer::Shared const &contextContainer,
+    Tag rootTag,
+    std::string const &componentName,
+    folly::dynamic localData,
+    folly::dynamic props,
+    folly::dynamic state,
+    float minWidth,
+    float maxWidth,
+    float minHeight,
+    float maxHeight,
+    jfloatArray attachmentPositions) {
+  const jni::global_ref<jobject> &fabricUIManager =
+      contextContainer->at<jni::global_ref<jobject>>("FabricUIManager");
+
+  static auto measure =
+      jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
+          ->getMethod<jlong(
+              jint,
+              jstring,
+              ReadableMap::javaobject,
+              ReadableMap::javaobject,
+              ReadableMap::javaobject,
+              jfloat,
+              jfloat,
+              jfloat,
+              jfloat,
+              jfloatArray)>("measure");
+
+  auto componentNameRef = make_jstring(componentName);
+  local_ref<ReadableNativeMap::javaobject> localDataRNM =
+      ReadableNativeMap::newObjectCxxArgs(std::move(localData));
+  local_ref<ReadableNativeMap::javaobject> propsRNM =
+      ReadableNativeMap::newObjectCxxArgs(std::move(props));
+  local_ref<ReadableNativeMap::javaobject> stateRNM =
+      ReadableNativeMap::newObjectCxxArgs(std::move(state));
+
+  local_ref<ReadableMap::javaobject> localDataRM =
+      make_local(reinterpret_cast<ReadableMap::javaobject>(localDataRNM.get()));
+  local_ref<ReadableMap::javaobject> propsRM =
+      make_local(reinterpret_cast<ReadableMap::javaobject>(propsRNM.get()));
+  local_ref<ReadableMap::javaobject> stateRM =
+      make_local(reinterpret_cast<ReadableMap::javaobject>(stateRNM.get()));
+
+  auto size = yogaMeassureToSize(measure(
+      fabricUIManager,
+      rootTag,
+      componentNameRef.get(),
+      localDataRM.get(),
+      propsRM.get(),
+      stateRM.get(),
+      minWidth,
+      maxWidth,
+      minHeight,
+      maxHeight,
+      attachmentPositions));
+
+  // Explicitly release smart pointers to free up space faster in JNI tables
+  componentNameRef.reset();
+  localDataRM.reset();
+  localDataRNM.reset();
+  propsRM.reset();
+  propsRNM.reset();
+  stateRM.reset();
+  stateRNM.reset();
+
+  return size;
+}
+
+Size measureAndroidComponentMapBuffer(
+    const ContextContainer::Shared &contextContainer,
+    Tag rootTag,
+    std::string const &componentName,
+    MapBuffer localData,
+    MapBuffer props,
+    float minWidth,
+    float maxWidth,
+    float minHeight,
+    float maxHeight,
+    jfloatArray attachmentPositions) {
+  const jni::global_ref<jobject> &fabricUIManager =
+      contextContainer->at<jni::global_ref<jobject>>("FabricUIManager");
+  auto componentNameRef = make_jstring(componentName);
+
+  static auto measure =
+      jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
+          ->getMethod<jlong(
+              jint,
+              jstring,
+              JReadableMapBuffer::javaobject,
+              JReadableMapBuffer::javaobject,
+              JReadableMapBuffer::javaobject,
+              jfloat,
+              jfloat,
+              jfloat,
+              jfloat,
+              jfloatArray)>("measureMapBuffer");
+
+  auto localDataMap =
+      JReadableMapBuffer::createWithContents(std::move(localData));
+  auto propsMap = JReadableMapBuffer::createWithContents(std::move(props));
+
+  auto size = yogaMeassureToSize(measure(
+      fabricUIManager,
+      rootTag,
+      componentNameRef.get(),
+      localDataMap.get(),
+      propsMap.get(),
+      nullptr,
+      minWidth,
+      maxWidth,
+      minHeight,
+      maxHeight,
+      attachmentPositions));
+
+  // Explicitly release smart pointers to free up space faster in JNI tables
+  componentNameRef.reset();
+  localDataMap.reset();
+  propsMap.reset();
+  return size;
+}
+
+TextLayoutManager::TextLayoutManager(
+    const ContextContainer::Shared &contextContainer)
+    : contextContainer_(contextContainer),
+      mapBufferSerializationEnabled_(
+          contextContainer->at<bool>("MapBufferSerializationEnabled")),
+      measureCache_(
+          contextContainer->at<bool>("EnableLargeTextMeasureCache")
+              ? 1024
+              : kSimpleThreadSafeCacheSizeCap) {}
 
 void *TextLayoutManager::getNativeTextLayoutManager() const {
   return self_;
 }
 
 TextMeasurement TextLayoutManager::measure(
-    AttributedStringBox attributedStringBox,
+    AttributedStringBox const &attributedStringBox,
     ParagraphAttributes paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
   auto &attributedString = attributedStringBox.getValue();
@@ -59,7 +191,7 @@ TextMeasurement TextLayoutManager::measure(
 
 TextMeasurement TextLayoutManager::measureCachedSpannableById(
     int64_t cacheId,
-    ParagraphAttributes paragraphAttributes,
+    ParagraphAttributes const &paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
   auto env = Environment::current();
   auto attachmentPositions = env->NewFloatArray(0);
@@ -73,7 +205,7 @@ TextMeasurement TextLayoutManager::measureCachedSpannableById(
       contextContainer_,
       -1, // TODO: we should pass rootTag in
       "RCTText",
-      cacheIdMap,
+      std::move(cacheIdMap),
       toDynamic(paragraphAttributes),
       nullptr,
       minimumSize.width,
@@ -93,8 +225,8 @@ TextMeasurement TextLayoutManager::measureCachedSpannableById(
 }
 
 LinesMeasurements TextLayoutManager::measureLines(
-    AttributedString attributedString,
-    ParagraphAttributes paragraphAttributes,
+    AttributedString const &attributedString,
+    ParagraphAttributes const &paragraphAttributes,
     Size size) const {
   if (mapBufferSerializationEnabled_) {
     return measureLinesMapBuffer(attributedString, paragraphAttributes, size);
@@ -147,23 +279,23 @@ LinesMeasurements TextLayoutManager::measureLines(
 }
 
 LinesMeasurements TextLayoutManager::measureLinesMapBuffer(
-    AttributedString attributedString,
-    ParagraphAttributes paragraphAttributes,
+    AttributedString const &attributedString,
+    ParagraphAttributes const &paragraphAttributes,
     Size size) const {
   const jni::global_ref<jobject> &fabricUIManager =
       contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
   static auto measureLines =
       jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
           ->getMethod<NativeArray::javaobject(
-              ReadableMapBuffer::javaobject,
-              ReadableMapBuffer::javaobject,
+              JReadableMapBuffer::javaobject,
+              JReadableMapBuffer::javaobject,
               jfloat,
               jfloat)>("measureLinesMapBuffer");
 
   auto attributedStringMB =
-      ReadableMapBuffer::createWithContents(toMapBuffer(attributedString));
+      JReadableMapBuffer::createWithContents(toMapBuffer(attributedString));
   auto paragraphAttributesMB =
-      ReadableMapBuffer::createWithContents(toMapBuffer(paragraphAttributes));
+      JReadableMapBuffer::createWithContents(toMapBuffer(paragraphAttributes));
 
   auto array = measureLines(
       fabricUIManager,
@@ -189,12 +321,12 @@ LinesMeasurements TextLayoutManager::measureLinesMapBuffer(
 
 TextMeasurement TextLayoutManager::doMeasure(
     AttributedString attributedString,
-    ParagraphAttributes paragraphAttributes,
+    ParagraphAttributes const &paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
   layoutConstraints.maximumSize.height = std::numeric_limits<Float>::infinity();
 
   int attachmentsCount = 0;
-  for (auto fragment : attributedString.getFragments()) {
+  for (auto const &fragment : attributedString.getFragments()) {
     if (fragment.isAttachment()) {
       attachmentsCount++;
     }
@@ -219,19 +351,21 @@ TextMeasurement TextLayoutManager::doMeasure(
       maximumSize.height,
       attachmentPositions);
 
-  jfloat *attachmentData = env->GetFloatArrayElements(attachmentPositions, 0);
+  jfloat *attachmentData =
+      env->GetFloatArrayElements(attachmentPositions, nullptr);
 
   auto attachments = TextMeasurement::Attachments{};
   if (attachmentsCount > 0) {
-    folly::dynamic fragments = serializedAttributedString["fragments"];
+    folly::dynamic const &fragments = serializedAttributedString["fragments"];
     int attachmentIndex = 0;
-    for (int i = 0; i < fragments.size(); i++) {
-      folly::dynamic fragment = fragments[i];
-      if (fragment["isAttachment"] == true) {
+    for (auto const &fragment : fragments) {
+      auto isAttachment = fragment.find("isAttachment");
+      if (isAttachment != fragment.items().end() &&
+          isAttachment->second.getBool()) {
         float top = attachmentData[attachmentIndex * 2];
         float left = attachmentData[attachmentIndex * 2 + 1];
-        float width = (float)fragment["width"].getDouble();
-        float height = (float)fragment["height"].getDouble();
+        auto width = (float)fragment["width"].getDouble();
+        auto height = (float)fragment["height"].getDouble();
 
         auto rect = facebook::react::Rect{
             {left, top}, facebook::react::Size{width, height}};
@@ -251,12 +385,12 @@ TextMeasurement TextLayoutManager::doMeasure(
 
 TextMeasurement TextLayoutManager::doMeasureMapBuffer(
     AttributedString attributedString,
-    ParagraphAttributes paragraphAttributes,
+    ParagraphAttributes const &paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
   layoutConstraints.maximumSize.height = std::numeric_limits<Float>::infinity();
 
   int attachmentsCount = 0;
-  for (auto fragment : attributedString.getFragments()) {
+  for (auto const &fragment : attributedString.getFragments()) {
     if (fragment.isAttachment()) {
       attachmentsCount++;
     }
@@ -274,20 +408,21 @@ TextMeasurement TextLayoutManager::doMeasureMapBuffer(
       contextContainer_,
       -1, // TODO: we should pass rootTag in
       "RCTText",
-      attributedStringMap,
-      paragraphAttributesMap,
+      std::move(attributedStringMap),
+      std::move(paragraphAttributesMap),
       minimumSize.width,
       maximumSize.width,
       minimumSize.height,
       maximumSize.height,
       attachmentPositions);
 
-  jfloat *attachmentData = env->GetFloatArrayElements(attachmentPositions, 0);
+  jfloat *attachmentData =
+      env->GetFloatArrayElements(attachmentPositions, nullptr);
 
   auto attachments = TextMeasurement::Attachments{};
   if (attachmentsCount > 0) {
     int attachmentIndex = 0;
-    for (auto fragment : attributedString.getFragments()) {
+    for (const auto &fragment : attributedString.getFragments()) {
       if (fragment.isAttachment()) {
         float top = attachmentData[attachmentIndex * 2];
         float left = attachmentData[attachmentIndex * 2 + 1];

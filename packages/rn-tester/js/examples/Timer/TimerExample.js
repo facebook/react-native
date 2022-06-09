@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -264,6 +264,50 @@ class TimerTester extends React.Component<TimerTesterProps> {
   };
 }
 
+class IntervalExample extends React.Component<
+  $ReadOnly<{||}>,
+  {|
+    showTimer: boolean,
+  |},
+> {
+  state = {
+    showTimer: true,
+  };
+
+  _timerTester: ?React.ElementRef<typeof TimerTester>;
+
+  render() {
+    return (
+      <View>
+        {this.state.showTimer && this._renderTimer()}
+        <RNTesterButton onPress={this._toggleTimer}>
+          {this.state.showTimer ? 'Unmount timer' : 'Mount new timer'}
+        </RNTesterButton>
+      </View>
+    );
+  }
+
+  _renderTimer = () => {
+    return (
+      <View>
+        <TimerTester
+          ref={ref => (this._timerTester = ref)}
+          dt={25}
+          type="setInterval"
+        />
+        <RNTesterButton
+          onPress={() => this._timerTester && this._timerTester.clear()}>
+          Clear interval
+        </RNTesterButton>
+      </View>
+    );
+  };
+
+  _toggleTimer = () => {
+    this.setState({showTimer: !this.state.showTimer});
+  };
+}
+
 exports.framework = 'React';
 exports.title = 'Timers';
 exports.category = 'UI';
@@ -323,53 +367,6 @@ exports.examples = [
     description: ('Execute function fn every t milliseconds until cancelled ' +
       'or component is unmounted.': string),
     render: function (): React.Node {
-      type IntervalExampleProps = $ReadOnly<{||}>;
-      type IntervalExampleState = {|
-        showTimer: boolean,
-      |};
-
-      class IntervalExample extends React.Component<
-        IntervalExampleProps,
-        IntervalExampleState,
-      > {
-        state = {
-          showTimer: true,
-        };
-
-        _timerTester: ?React.ElementRef<typeof TimerTester>;
-
-        render() {
-          return (
-            <View>
-              {this.state.showTimer && this._renderTimer()}
-              <RNTesterButton onPress={this._toggleTimer}>
-                {this.state.showTimer ? 'Unmount timer' : 'Mount new timer'}
-              </RNTesterButton>
-            </View>
-          );
-        }
-
-        _renderTimer = () => {
-          return (
-            <View>
-              <TimerTester
-                ref={ref => (this._timerTester = ref)}
-                dt={25}
-                type="setInterval"
-              />
-              <RNTesterButton
-                onPress={() => this._timerTester && this._timerTester.clear()}>
-                Clear interval
-              </RNTesterButton>
-            </View>
-          );
-        };
-
-        _toggleTimer = () => {
-          this.setState({showTimer: !this.state.showTimer});
-        };
-      }
-
       return <IntervalExample />;
     },
   },

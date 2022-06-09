@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,7 +9,7 @@
 #include <memory>
 #include <mutex>
 
-#include <better/mutex.h>
+#include <butter/mutex.h>
 
 namespace facebook {
 namespace react {
@@ -31,7 +31,7 @@ class SharedFunction {
   struct Pair {
     Pair(std::function<T> &&function) : function(std::move(function)) {}
     std::function<T> function;
-    better::shared_mutex mutex{};
+    butter::shared_mutex mutex{};
   };
 
  public:
@@ -45,12 +45,12 @@ class SharedFunction {
   SharedFunction &operator=(SharedFunction &&other) noexcept = default;
 
   void assign(std::function<T> function) const {
-    std::unique_lock<better::shared_mutex> lock(pair_->mutex);
+    std::unique_lock<butter::shared_mutex> lock(pair_->mutex);
     pair_->function = function;
   }
 
   ReturnT operator()(ArgumentT... args) const {
-    std::shared_lock<better::shared_mutex> lock(pair_->mutex);
+    std::shared_lock<butter::shared_mutex> lock(pair_->mutex);
     return pair_->function(args...);
   }
 

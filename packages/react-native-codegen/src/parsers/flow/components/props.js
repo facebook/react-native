@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -166,7 +166,7 @@ function getTypeAnnotationForArray(
         );
       } else {
         throw new Error(
-          `Unsupported union type for "${name}", recieved "${unionType}"`,
+          `Unsupported union type for "${name}", received "${unionType}"`,
         );
       }
     default:
@@ -319,6 +319,10 @@ function getTypeAnnotation(
           `Unsupported union type for "${name}", received "${unionType}"`,
         );
       }
+    case 'ObjectTypeAnnotation':
+      throw new Error(
+        `Cannot use "${type}" type annotation for "${name}": object types must be declared using $ReadOnly<>`,
+      );
     case 'NumberTypeAnnotation':
       throw new Error(
         `Cannot use "${type}" type annotation for "${name}": must use a specific numeric type like Int32, Double, or Float`,

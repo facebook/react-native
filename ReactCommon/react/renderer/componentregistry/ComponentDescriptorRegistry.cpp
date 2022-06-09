@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,20 +14,22 @@
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
 
+#include <utility>
+
 namespace facebook {
 namespace react {
 
 ComponentDescriptorRegistry::ComponentDescriptorRegistry(
-    ComponentDescriptorParameters const &parameters,
+    ComponentDescriptorParameters parameters,
     ComponentDescriptorProviderRegistry const &providerRegistry,
     ContextContainer::Shared contextContainer)
-    : parameters_(parameters),
+    : parameters_(std::move(parameters)),
       providerRegistry_(providerRegistry),
-      contextContainer_(contextContainer) {}
+      contextContainer_(std::move(contextContainer)) {}
 
 void ComponentDescriptorRegistry::add(
     ComponentDescriptorProvider componentDescriptorProvider) const {
-  std::unique_lock<better::shared_mutex> lock(mutex_);
+  std::unique_lock<butter::shared_mutex> lock(mutex_);
 
   auto componentDescriptor = componentDescriptorProvider.constructor(
       {parameters_.eventDispatcher,
@@ -58,7 +60,7 @@ void ComponentDescriptorRegistry::registerComponentDescriptor(
 
 ComponentDescriptor const &ComponentDescriptorRegistry::at(
     std::string const &componentName) const {
-  std::shared_lock<better::shared_mutex> lock(mutex_);
+  std::shared_lock<butter::shared_mutex> lock(mutex_);
 
   auto unifiedComponentName = componentNameByReactViewName(componentName);
 
@@ -95,7 +97,7 @@ ComponentDescriptor const &ComponentDescriptorRegistry::at(
 ComponentDescriptor const *ComponentDescriptorRegistry::
     findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(
         ComponentHandle componentHandle) const {
-  std::shared_lock<better::shared_mutex> lock(mutex_);
+  std::shared_lock<butter::shared_mutex> lock(mutex_);
 
   auto iterator = _registryByHandle.find(componentHandle);
   if (iterator == _registryByHandle.end()) {
@@ -107,14 +109,14 @@ ComponentDescriptor const *ComponentDescriptorRegistry::
 
 ComponentDescriptor const &ComponentDescriptorRegistry::at(
     ComponentHandle componentHandle) const {
-  std::shared_lock<better::shared_mutex> lock(mutex_);
+  std::shared_lock<butter::shared_mutex> lock(mutex_);
 
   return *_registryByHandle.at(componentHandle);
 }
 
 bool ComponentDescriptorRegistry::hasComponentDescriptorAt(
     ComponentHandle componentHandle) const {
-  std::shared_lock<better::shared_mutex> lock(mutex_);
+  std::shared_lock<butter::shared_mutex> lock(mutex_);
 
   auto iterator = _registryByHandle.find(componentHandle);
   if (iterator == _registryByHandle.end()) {

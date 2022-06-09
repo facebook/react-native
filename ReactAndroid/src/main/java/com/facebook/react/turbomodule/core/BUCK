@@ -9,7 +9,10 @@ rn_android_library(
         exclude = ["CallInvokerHolderImpl.java"],
     ),
     autoglob = False,
-    labels = ["supermodule:xplat/default/public.react_native.infra"],
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+        "supermodule:xplat/default/public.react_native.infra",
+    ],
     required_for_source_only_abi = True,
     visibility = [
         "PUBLIC",
@@ -41,7 +44,10 @@ rn_android_library(
     name = "callinvokerholder",
     srcs = ["CallInvokerHolderImpl.java"],
     autoglob = False,
-    labels = ["supermodule:xplat/default/public.react_native.infra"],
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+        "supermodule:xplat/default/public.react_native.infra",
+    ],
     required_for_source_only_abi = True,
     visibility = [
         "PUBLIC",

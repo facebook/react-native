@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,10 +7,10 @@
 
 #import "RNTMyNativeViewComponentView.h"
 
-#import <react/renderer/components/MyNativeViewSpec/ComponentDescriptors.h>
-#import <react/renderer/components/MyNativeViewSpec/EventEmitters.h>
-#import <react/renderer/components/MyNativeViewSpec/Props.h>
-#import <react/renderer/components/MyNativeViewSpec/RCTComponentViewHelpers.h>
+#import <react/renderer/components/AppSpecs/ComponentDescriptors.h>
+#import <react/renderer/components/AppSpecs/EventEmitters.h>
+#import <react/renderer/components/AppSpecs/Props.h>
+#import <react/renderer/components/AppSpecs/RCTComponentViewHelpers.h>
 
 #import "RCTFabricComponentsPlugins.h"
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -37,7 +37,12 @@ describe('iOS', () => {
     it('should normalize iOS Dynamic colors with named colors', () => {
       const color = DynamicColorIOS({light: 'black', dark: 'white'});
       const normalizedColor = normalizeColor(color);
-      const expectedColor = {dynamic: {light: 'black', dark: 'white'}};
+      const expectedColor = {
+        dynamic: {
+          light: normalizeColor('black'),
+          dark: normalizeColor('white'),
+        },
+      };
       expect(normalizedColor).toEqual(expectedColor);
     });
 
@@ -51,10 +56,10 @@ describe('iOS', () => {
       const normalizedColor = normalizeColor(color);
       const expectedColor = {
         dynamic: {
-          light: 'black',
-          dark: 'white',
-          highContrastLight: 'red',
-          highContrastDark: 'blue',
+          light: normalizeColor('black'),
+          dark: normalizeColor('white'),
+          highContrastLight: normalizeColor('red'),
+          highContrastDark: normalizeColor('blue'),
         },
       };
       expect(normalizedColor).toEqual(expectedColor);

@@ -1,11 +1,13 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 #include "ShadowViewMutation.h"
+
+#include <utility>
 
 namespace facebook {
 namespace react {
@@ -15,7 +17,7 @@ ShadowViewMutation ShadowViewMutation::CreateMutation(ShadowView shadowView) {
       /* .type = */ Create,
       /* .parentShadowView = */ {},
       /* .oldChildShadowView = */ {},
-      /* .newChildShadowView = */ shadowView,
+      /* .newChildShadowView = */ std::move(shadowView),
       /* .index = */ -1,
   };
 }
@@ -24,7 +26,7 @@ ShadowViewMutation ShadowViewMutation::DeleteMutation(ShadowView shadowView) {
   return {
       /* .type = */ Delete,
       /* .parentShadowView = */ {},
-      /* .oldChildShadowView = */ shadowView,
+      /* .oldChildShadowView = */ std::move(shadowView),
       /* .newChildShadowView = */ {},
       /* .index = */ -1,
   };
@@ -36,9 +38,9 @@ ShadowViewMutation ShadowViewMutation::InsertMutation(
     int index) {
   return {
       /* .type = */ Insert,
-      /* .parentShadowView = */ parentShadowView,
+      /* .parentShadowView = */ std::move(parentShadowView),
       /* .oldChildShadowView = */ {},
-      /* .newChildShadowView = */ childShadowView,
+      /* .newChildShadowView = */ std::move(childShadowView),
       /* .index = */ index,
   };
 }
@@ -49,8 +51,8 @@ ShadowViewMutation ShadowViewMutation::RemoveMutation(
     int index) {
   return {
       /* .type = */ Remove,
-      /* .parentShadowView = */ parentShadowView,
-      /* .oldChildShadowView = */ childShadowView,
+      /* .parentShadowView = */ std::move(parentShadowView),
+      /* .oldChildShadowView = */ std::move(childShadowView),
       /* .newChildShadowView = */ {},
       /* .index = */ index,
   };
@@ -62,8 +64,8 @@ ShadowViewMutation ShadowViewMutation::UpdateMutation(
   return {
       /* .type = */ Update,
       /* .parentShadowView = */ {},
-      /* .oldChildShadowView = */ oldChildShadowView,
-      /* .newChildShadowView = */ newChildShadowView,
+      /* .oldChildShadowView = */ std::move(oldChildShadowView),
+      /* .newChildShadowView = */ std::move(newChildShadowView),
       /* .index = */ -1,
   };
 }
@@ -91,9 +93,9 @@ ShadowViewMutation::ShadowViewMutation(
     ShadowView newChildShadowView,
     int index)
     : type(type),
-      parentShadowView(parentShadowView),
-      oldChildShadowView(oldChildShadowView),
-      newChildShadowView(newChildShadowView),
+      parentShadowView(std::move(parentShadowView)),
+      oldChildShadowView(std::move(oldChildShadowView)),
+      newChildShadowView(std::move(newChildShadowView)),
       index(index) {}
 
 #if RN_DEBUG_STRING_CONVERTIBLE

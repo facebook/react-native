@@ -1,4 +1,4 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -19,12 +19,13 @@ Pod::Spec.new do |s|
   s.description     = "my-native-view"
   s.homepage        = "https://github.com/sota000/my-native-view.git"
   s.license         = "MIT"
-  s.platforms       = { :ios => "11.0", :tvos => "11.0" }
+  s.platforms       = { :ios => "12.4", :tvos => "12.4" }
   s.compiler_flags  = folly_compiler_flags + ' ' + boost_compiler_flags + ' -Wno-nullability-completeness'
   s.author          = "Facebook, Inc. and its affiliates"
   s.source          = { :git => "https://github.com/facebook/my-native-view.git", :tag => "#{s.version}" }
   s.pod_target_xcconfig    = {
-    "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/boost\""
+    "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/boost\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Codegen/React_Codegen.framework/Headers\"",
+    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17"
   }
 
   s.source_files    = "ios/**/*.{h,m,mm,cpp}"

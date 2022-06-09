@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -25,7 +25,7 @@ extern const int RCT_PACKAGER_CLIENT_PROTOCOL_VERSION;
 @protocol RCTPackagerClientMethod <NSObject>
 
 - (void)handleRequest:(NSDictionary<NSString *, id> *)params withResponder:(RCTPackagerClientResponder *)responder;
-- (void)handleNotification:(NSDictionary<NSString *, id> *)params;
+- (void)handlePackageNotification:(NSDictionary<NSString *, id> *)params;
 
 @optional
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -41,16 +41,16 @@ public class WritableNativeMap extends ReadableNativeMap implements WritableMap 
   @Override
   public void putMap(@NonNull String key, @Nullable ReadableMap value) {
     Assertions.assertCondition(
-        value == null || value instanceof WritableNativeMap, "Illegal type provided");
-    putNativeMap(key, (WritableNativeMap) value);
+        value == null || value instanceof ReadableNativeMap, "Illegal type provided");
+    putNativeMap(key, (ReadableNativeMap) value);
   }
 
   // Note: this consumes the map so do not reuse it.
   @Override
   public void putArray(@NonNull String key, @Nullable ReadableArray value) {
     Assertions.assertCondition(
-        value == null || value instanceof WritableNativeArray, "Illegal type provided");
-    putNativeArray(key, (WritableNativeArray) value);
+        value == null || value instanceof ReadableNativeArray, "Illegal type provided");
+    putNativeArray(key, (ReadableNativeArray) value);
   }
 
   // Note: this **DOES NOT** consume the source map
@@ -73,9 +73,9 @@ public class WritableNativeMap extends ReadableNativeMap implements WritableMap 
 
   private static native HybridData initHybrid();
 
-  private native void putNativeMap(String key, WritableNativeMap value);
+  private native void putNativeMap(String key, ReadableNativeMap value);
 
-  private native void putNativeArray(String key, WritableNativeArray value);
+  private native void putNativeArray(String key, ReadableNativeArray value);
 
   private native void mergeNativeMap(ReadableNativeMap source);
 }

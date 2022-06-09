@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -42,6 +42,11 @@ class DimensionsSubscription extends React.Component<
   }
 }
 
+const DimensionsViaHook = () => {
+  const dims = useWindowDimensions();
+  return <Text>{JSON.stringify(dims, null, 2)}</Text>;
+};
+
 exports.title = 'Dimensions';
 exports.category = 'UI';
 exports.documentationURL = 'https://reactnative.dev/docs/dimensions';
@@ -50,10 +55,6 @@ exports.examples = [
   {
     title: 'useWindowDimensions hook',
     render(): React.Node {
-      const DimensionsViaHook = () => {
-        const dims = useWindowDimensions();
-        return <Text>{JSON.stringify(dims, null, 2)}</Text>;
-      };
       return <DimensionsViaHook />;
     },
   },

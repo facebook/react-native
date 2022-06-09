@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,7 +18,7 @@ import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.SurfaceDelegate;
 import com.facebook.react.common.SurfaceDelegateFactory;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
-import com.facebook.react.devsupport.RedBoxHandler;
+import com.facebook.react.devsupport.interfaces.RedBoxHandler;
 import com.facebook.react.uimanager.UIImplementationProvider;
 import java.util.List;
 
@@ -74,6 +74,7 @@ public abstract class ReactNativeHost {
             .setDevSupportManagerFactory(getDevSupportManagerFactory())
             .setRequireActivity(getShouldRequireActivity())
             .setSurfaceDelegateFactory(getSurfaceDelegateFactory())
+            .setLazyViewManagersEnabled(getLazyViewManagersEnabled())
             .setRedBoxHandler(getRedBoxHandler())
             .setJavaScriptExecutorFactory(getJavaScriptExecutorFactory())
             .setUIImplementationProvider(getUIImplementationProvider())
@@ -133,6 +134,16 @@ public abstract class ReactNativeHost {
   /** Returns whether or not to treat it as normal if Activity is null. */
   public boolean getShouldRequireActivity() {
     return true;
+  }
+
+  /**
+   * Returns whether view managers should be created lazily. See {@link
+   * ViewManagerOnDemandReactPackage} for details.
+   *
+   * @experimental
+   */
+  public boolean getLazyViewManagersEnabled() {
+    return false;
   }
 
   /**

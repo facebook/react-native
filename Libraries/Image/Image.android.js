@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -106,7 +106,7 @@ async function queryCache(
   return await NativeImageLoaderAndroid.queryCache(urls);
 }
 
-type ImageComponentStatics = $ReadOnly<{|
+export type ImageComponentStatics = $ReadOnly<{|
   getSize: typeof getSize,
   getSizeWithHeaders: typeof getSizeWithHeaders,
   prefetch: typeof prefetch,
@@ -123,7 +123,7 @@ type ImageComponentStatics = $ReadOnly<{|
  *
  * See https://reactnative.dev/docs/image
  */
-let Image = (props: ImagePropsType, forwardedRef) => {
+const BaseImage = (props: ImagePropsType, forwardedRef) => {
   let source = resolveAssetSource(props.source);
   const defaultSource = resolveAssetSource(props.defaultSource);
   const loadingIndicatorSource = resolveAssetSource(
@@ -198,13 +198,22 @@ let Image = (props: ImagePropsType, forwardedRef) => {
             : nativeProps;
         return (
           <TextAncestor.Consumer>
-            {hasTextAncestor =>
-              hasTextAncestor ? (
-                <TextInlineImageNativeComponent {...nativePropsWithAnalytics} />
-              ) : (
-                <ImageViewNativeComponent {...nativePropsWithAnalytics} />
-              )
-            }
+            {hasTextAncestor => {
+              if (hasTextAncestor) {
+                let src = Array.isArray(sources) ? sources : [sources];
+                return (
+                  <TextInlineImageNativeComponent
+                    style={style}
+                    resizeMode={props.resizeMode}
+                    headers={nativeProps.headers}
+                    src={src}
+                    ref={forwardedRef}
+                  />
+                );
+              }
+
+              return <ImageViewNativeComponent {...nativePropsWithAnalytics} />;
+            }}
           </TextAncestor.Consumer>
         );
       }}
@@ -212,11 +221,11 @@ let Image = (props: ImagePropsType, forwardedRef) => {
   );
 };
 
-Image = React.forwardRef<
+let Image = React.forwardRef<
   ImagePropsType,
   | React.ElementRef<typeof TextInlineImageNativeComponent>
   | React.ElementRef<typeof ImageViewNativeComponent>,
->(Image);
+>(BaseImage);
 
 if (ImageInjection.unstable_createImageComponent != null) {
   Image = ImageInjection.unstable_createImageComponent(Image);
@@ -296,12 +305,6 @@ Image.queryCache = queryCache;
  * error found when Flow v0.89 was deployed. To see the error, delete this
  * comment and run Flow. */
 Image.resolveAssetSource = resolveAssetSource;
-
-/**
- * Switch to `deprecated-react-native-prop-types` for compatibility with future
- * releases. This is deprecated and will be removed in the future.
- */
-Image.propTypes = require('deprecated-react-native-prop-types').ImagePropTypes;
 
 const styles = StyleSheet.create({
   base: {

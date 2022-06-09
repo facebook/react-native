@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -100,7 +100,7 @@ function parseLine(line: string): ?HermesStackEntry {
 
 module.exports = function parseHermesStack(stack: string): HermesParsedStack {
   const lines = stack.split(/\n/);
-  let entries = [];
+  let entries: Array<HermesStackEntryFrame | HermesStackEntrySkipped> = [];
   let lastMessageLine = -1;
   for (let i = 0; i < lines.length; ++i) {
     const line = lines[i];

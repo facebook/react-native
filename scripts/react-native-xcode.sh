@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -73,10 +73,6 @@ elif [[ -s "index.ios.js" ]]; then
 else
   ENTRY_FILE=${1:-index.js}
 fi
-
-# Find path to Node
-# shellcheck source=/dev/null
-source "$REACT_NATIVE_DIR/scripts/find-node.sh"
 
 # check and assign NODE_BINARY env
 # shellcheck source=/dev/null

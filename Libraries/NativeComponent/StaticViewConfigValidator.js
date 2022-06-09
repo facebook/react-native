@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,8 +9,9 @@
  */
 
 import {type ViewConfig} from '../Renderer/shims/ReactNativeTypes';
+import {isIgnored} from './ViewConfigIgnore';
 
-type Difference =
+export type Difference =
   | {
       type: 'missing',
       path: Array<string>,
@@ -28,7 +29,7 @@ type Difference =
       staticValue: mixed,
     };
 
-type ValidationResult = ValidResult | InvalidResult;
+export type ValidationResult = ValidResult | InvalidResult;
 type ValidResult = {
   type: 'valid',
 };
@@ -144,7 +145,10 @@ function accumulateDifferences(
   }
 
   for (const staticKey in staticObject) {
-    if (!nativeObject.hasOwnProperty(staticKey)) {
+    if (
+      !nativeObject.hasOwnProperty(staticKey) &&
+      !isIgnored(staticObject[staticKey])
+    ) {
       differences.push({
         path: [...path, staticKey],
         type: 'unexpected',

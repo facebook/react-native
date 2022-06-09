@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,6 +18,7 @@ import {
   Platform,
   View,
 } from 'react-native';
+import ReactNativeFeatureFlags from 'react-native/Libraries/ReactNative/ReactNativeFeatureFlags';
 
 const {useEffect, useRef, useState} = React;
 
@@ -166,6 +167,7 @@ function ForceTouchExample() {
           style={styles.wrapper}
           testID="pressable_3dtouch_button"
           onStartShouldSetResponder={() => true}
+          // $FlowFixMe[sketchy-null-number]
           onResponderMove={event => setForce(event.nativeEvent?.force || 1)}
           onResponderRelease={event => setForce(0)}>
           <Text style={styles.button}>Press Me</Text>
@@ -249,6 +251,25 @@ function PressableDisabled() {
   );
 }
 
+function PressableHoverStyle() {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <View style={styles.row}>
+      <Pressable
+        style={[
+          {
+            backgroundColor: hovered ? 'rgb(210, 230, 255)' : 'white',
+          },
+          styles.wrapperCustom,
+        ]}
+        onHoverIn={() => setHovered(true)}
+        onHoverOut={() => setHovered(false)}>
+        <Text style={styles.text}>Hover Me</Text>
+      </Pressable>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   row: {
     justifyContent: 'center',
@@ -322,7 +343,8 @@ exports.description = 'Component for making views pressable.';
 exports.title = 'Pressable';
 exports.category = 'UI';
 exports.documentationURL = 'https://reactnative.dev/docs/pressable';
-exports.examples = [
+
+const examples = [
   {
     title: 'Change content based on Press',
     render(): React.Node {
@@ -503,3 +525,14 @@ exports.examples = [
     },
   },
 ];
+
+if (ReactNativeFeatureFlags.shouldPressibilityUseW3CPointerEventsForHover()) {
+  examples.push({
+    title: 'Change style based on Hover',
+    render(): React.Node {
+      return <PressableHoverStyle />;
+    },
+  });
+}
+
+exports.examples = examples;

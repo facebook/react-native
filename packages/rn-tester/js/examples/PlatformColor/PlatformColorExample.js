@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,7 +15,7 @@ const {DynamicColorIOS, PlatformColor, StyleSheet, Text, View} = ReactNative;
 
 function PlatformColorsExample() {
   function createTable() {
-    let colors = [];
+    let colors: Array<{color: $Call<typeof PlatformColor>, label: string}> = [];
     if (Platform.OS === 'ios') {
       colors = [
         // https://developer.apple.com/documentation/uikit/uicolor/ui_element_colors

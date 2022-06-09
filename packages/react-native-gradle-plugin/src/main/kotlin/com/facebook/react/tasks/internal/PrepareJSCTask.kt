@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -42,6 +42,7 @@ abstract class PrepareJSCTask : DefaultTask() {
       it.from(soFiles)
       it.from(headerFiles)
       it.from(project.file("src/main/jni/third-party/jsc/Android.mk"))
+      it.from(project.file("src/main/jni/third-party/jsc/CMakeLists.txt"))
       it.filesMatching("**/*.h") { it.path = "JavaScriptCore/${it.name}" }
       it.includeEmptyDirs = false
       it.into(outputDir)

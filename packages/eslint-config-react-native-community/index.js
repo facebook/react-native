@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -59,6 +59,8 @@ module.exports = {
         'no-shadow': 'off',
         '@typescript-eslint/no-shadow': 1,
         'no-undef': 'off',
+        'func-call-spacing': 'off',
+        '@typescript-eslint/func-call-spacing': 1,
       },
     },
     {
@@ -257,7 +259,7 @@ module.exports = {
     'no-empty-character-class': 1, // disallow the use of empty character classes in regular expressions
     'no-lonely-if': 0, // disallow if as the only statement in an else block (off by default)
     'no-new-object': 1, // disallow use of the Object constructor
-    'no-spaced-func': 1, // disallow space between function identifier and application
+    'func-call-spacing': 1, // disallow space between function identifier and application
     'no-ternary': 0, // disallow the use of ternary operators (off by default)
     'no-trailing-spaces': 1, // disallow trailing whitespace at the end of lines
     'no-underscore-dangle': 0, // disallow dangling underscores in identifiers
@@ -300,6 +302,7 @@ module.exports = {
     'react/no-multi-comp': 0,
     'react/no-string-refs': 1,
     'react/no-unknown-property': 0,
+    'react/no-unstable-nested-components': 1,
     'react/prop-types': 0,
     'react/react-in-jsx-scope': 1,
     'react/self-closing-comp': 1,
@@ -307,8 +310,8 @@ module.exports = {
 
     // React-Hooks Plugin
     // The following rules are made available via `eslint-plugin-react-hooks`
-    'react-hooks/rules-of-hooks': 'error',
-    'react-hooks/exhaustive-deps': 'error',
+    'react-hooks/rules-of-hooks': 2,
+    'react-hooks/exhaustive-deps': 2,
 
     // React-Native Plugin
     // The following rules are made available via `eslint-plugin-react-native`

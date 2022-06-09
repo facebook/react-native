@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -32,17 +32,31 @@ enum TurboModuleMethodValueKind {
   PromiseKind,
 };
 
+class TurboModuleBinding;
+
 /**
  * Base HostObject class for every module to be exposed to JS
  */
 class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
  public:
-  TurboModule(const std::string &name, std::shared_ptr<CallInvoker> jsInvoker);
-  virtual ~TurboModule();
+  TurboModule(std::string name, std::shared_ptr<CallInvoker> jsInvoker);
 
-  virtual facebook::jsi::Value get(
+  // Note: keep this method declared inline to avoid conflicts
+  // between RTTI and non-RTTI compilation units
+  facebook::jsi::Value get(
       facebook::jsi::Runtime &runtime,
-      const facebook::jsi::PropNameID &propName) override;
+      const facebook::jsi::PropNameID &propName) override {
+    {
+      std::string propNameUtf8 = propName.utf8(runtime);
+      auto p = methodMap_.find(propNameUtf8);
+      if (p == methodMap_.end()) {
+        // Method was not found, let JS decide what to do.
+        return facebook::jsi::Value::undefined();
+      } else {
+        return get(runtime, propName, p->second);
+      }
+    }
+  }
 
   const std::string name_;
   std::shared_ptr<CallInvoker> jsInvoker_;
@@ -57,7 +71,16 @@ class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
         size_t count);
   };
 
+  facebook::jsi::Value get(
+      facebook::jsi::Runtime &runtime,
+      const facebook::jsi::PropNameID &propName,
+      const MethodMetadata &meta);
+
   std::unordered_map<std::string, MethodMetadata> methodMap_;
+
+ private:
+  friend class TurboModuleBinding;
+  std::unique_ptr<jsi::Object> jsRepresentation_;
 };
 
 /**

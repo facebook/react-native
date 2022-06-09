@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -808,19 +808,19 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     super.setShouldNotifyOnLayout(shouldNotifyOnLayout);
   }
 
-  @ReactProp(name = "pointerenter")
+  @ReactProp(name = "onPointerEnter")
   public void setShouldNotifyPointerEnter(boolean value) {
     // This method exists to inject Native View configs in RN Android VR
     // DO NOTHING
   }
 
-  @ReactProp(name = "pointerleave")
+  @ReactProp(name = "onPointerLeave")
   public void setShouldNotifyPointerLeave(boolean value) {
     // This method exists to inject Native View configs in RN Android VR
     // DO NOTHING
   }
 
-  @ReactProp(name = "pointermove")
+  @ReactProp(name = "onPointerMove")
   public void setShouldNotifyPointerMove(boolean value) {
     // This method exists to inject Native View configs in RN Android VR
     // DO NOTHING

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -54,7 +54,7 @@ const ToastWithCenterGravity = () => {
     <Pressable
       onPress={() =>
         ToastAndroid.showWithGravity(
-          'A problem has been occured while submitting your data.',
+          'A problem has been occurred while submitting your data.',
           ToastAndroid.SHORT,
           ToastAndroid.CENTER,
         )

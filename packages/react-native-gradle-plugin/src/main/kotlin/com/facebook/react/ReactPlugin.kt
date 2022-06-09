@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,16 +14,38 @@ import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.facebook.react.tasks.BuildCodegenCLITask
 import com.facebook.react.tasks.GenerateCodegenArtifactsTask
 import com.facebook.react.tasks.GenerateCodegenSchemaTask
+import com.facebook.react.utils.JsonUtils
 import java.io.File
+import kotlin.system.exitProcess
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.internal.jvm.Jvm
 
 class ReactPlugin : Plugin<Project> {
   override fun apply(project: Project) {
+    checkJvmVersion(project)
     val extension = project.extensions.create("react", ReactExtension::class.java, project)
     applyAppPlugin(project, extension)
     applyCodegenPlugin(project, extension)
+  }
+
+  private fun checkJvmVersion(project: Project) {
+    val jvmVersion = Jvm.current()?.javaVersion?.majorVersion
+    if ((jvmVersion?.toIntOrNull() ?: 0) <= 8) {
+      project.logger.error(
+          """
+      
+      ********************************************************************************
+      
+      ERROR: requires JDK11 or higher.
+      Incompatible major version detected: '$jvmVersion'
+      
+      ********************************************************************************
+      
+      """.trimIndent())
+      exitProcess(1)
+    }
   }
 
   private fun applyAppPlugin(project: Project, config: ReactExtension) {
@@ -46,10 +68,10 @@ class ReactPlugin : Plugin<Project> {
 
   /**
    * A plugin to enable react-native-codegen in Gradle environment. See the Gradle API docs for more
-   * information: https://docs.gradle.org/6.5.1/javadoc/org/gradle/api/Project.html
+   * information: https://docs.gradle.org/current/javadoc/org/gradle/api/Project.html
    */
   private fun applyCodegenPlugin(project: Project, extension: ReactExtension) {
-    // 1. Set up build dir.
+    // First, we set up the output dir for the codegen.
     val generatedSrcDir = File(project.buildDir, "generated/source/codegen")
 
     val buildCodegenTask =
@@ -59,32 +81,48 @@ class ReactPlugin : Plugin<Project> {
           it.bashWindowsHome.set(bashWindowsHome)
         }
 
-    // 2. Task: produce schema from JS files.
+    // We create the task to produce schema from JS files.
     val generateCodegenSchemaTask =
         project.tasks.register(
-            "generateCodegenSchemaFromJavaScript", GenerateCodegenSchemaTask::class.java) {
+            "generateCodegenSchemaFromJavaScript", GenerateCodegenSchemaTask::class.java) { it ->
           it.dependsOn(buildCodegenTask)
-          it.jsRootDir.set(extension.jsRootDir)
           it.nodeExecutableAndArgs.set(extension.nodeExecutableAndArgs)
           it.codegenDir.set(extension.codegenDir)
           it.generatedSrcDir.set(generatedSrcDir)
+
+          // We're reading the package.json at configuration time to properly feed
+          // the `jsRootDir` @Input property of this task. Therefore, the
+          // parsePackageJson should be invoked here.
+          val parsedPackageJson =
+              extension.root.file("package.json").orNull?.asFile?.let {
+                JsonUtils.fromCodegenJson(it)
+              }
+
+          val parsedJsRootDir =
+              parsedPackageJson?.codegenConfig?.jsSrcsDir?.let { relativePath ->
+                extension.root.dir(relativePath)
+              }
+                  ?: extension.jsRootDir
+
+          it.jsRootDir.set(parsedJsRootDir)
         }
 
-    // 3. Task: generate Java code from schema.
+    // We create the task to generate Java code from schema.
     val generateCodegenArtifactsTask =
         project.tasks.register(
             "generateCodegenArtifactsFromSchema", GenerateCodegenArtifactsTask::class.java) {
           it.dependsOn(generateCodegenSchemaTask)
-          it.reactRoot.set(extension.reactRoot)
+          it.reactNativeDir.set(extension.reactNativeDir)
+          it.deprecatedReactRoot.set(extension.reactRoot)
           it.nodeExecutableAndArgs.set(extension.nodeExecutableAndArgs)
           it.codegenDir.set(extension.codegenDir)
-          it.useJavaGenerator.set(extension.useJavaGenerator)
+          it.generatedSrcDir.set(generatedSrcDir)
+          it.packageJsonFile.set(extension.root.file("package.json"))
           it.codegenJavaPackageName.set(extension.codegenJavaPackageName)
           it.libraryName.set(extension.libraryName)
-          it.generatedSrcDir.set(generatedSrcDir)
         }
 
-    // 4. Add dependencies & generated sources to the project.
+    // We add dependencies & generated sources to the project.
     // Note: This last step needs to happen after the project has been evaluated.
     project.afterEvaluate {
 

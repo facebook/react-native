@@ -1,17 +1,17 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 #include "utils.h"
-#include <math.h>
+#include <cmath>
 
 namespace facebook {
 namespace react {
 
-std::pair<double, double> calculateAnimationProgress(
+std::pair<Float, Float> calculateAnimationProgress(
     uint64_t now,
     LayoutAnimation const &animation,
     AnimationConfig const &mutationConfig) {
@@ -20,8 +20,8 @@ std::pair<double, double> calculateAnimationProgress(
   }
 
   uint64_t startTime = animation.startTime;
-  uint64_t delay = mutationConfig.delay;
-  uint64_t endTime = startTime + delay + mutationConfig.duration;
+  auto delay = (uint64_t)mutationConfig.delay;
+  uint64_t endTime = startTime + delay + (uint64_t)mutationConfig.duration;
 
   if (now >= endTime) {
     return {1, 1};

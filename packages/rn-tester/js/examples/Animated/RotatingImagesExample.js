@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -56,22 +56,22 @@ function RotatingImagesView({useNativeDriver}: {useNativeDriver: boolean}) {
               {
                 scale: anim.interpolate({
                   inputRange: [0, 1],
-                  outputRange: ([1, 10]: $ReadOnlyArray<number>),
+                  outputRange: [1, 10],
                 }),
               },
               {
                 translateX: anim.interpolate({
                   inputRange: [0, 1],
-                  outputRange: ([0, 100]: $ReadOnlyArray<number>),
+                  outputRange: [0, 100],
                 }),
               },
               {
                 rotate: anim.interpolate({
                   inputRange: [0, 1],
-                  outputRange: ([
+                  outputRange: [
                     '0deg',
                     '360deg', // 'deg' or 'rad'
-                  ]: $ReadOnlyArray<string>),
+                  ],
                 }),
               },
             ],

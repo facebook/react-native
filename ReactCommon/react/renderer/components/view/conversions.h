@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,7 @@
 
 #pragma once
 
-#include <better/map.h>
-#include <better/optional.h>
+#include <butter/map.h>
 #include <folly/Conv.h>
 #include <folly/dynamic.h>
 #include <glog/logging.h>
@@ -23,6 +22,7 @@
 #include <yoga/YGNode.h>
 #include <yoga/Yoga.h>
 #include <cmath>
+#include <optional>
 
 namespace facebook {
 namespace react {
@@ -98,9 +98,9 @@ inline YGValue yogaStyleValueFromFloat(
   return {(float)value, unit};
 }
 
-inline better::optional<Float> optionalFloatFromYogaValue(
+inline std::optional<Float> optionalFloatFromYogaValue(
     const YGValue value,
-    better::optional<Float> base = {}) {
+    std::optional<Float> base = {}) {
   switch (value.unit) {
     case YGUnitUndefined:
       return {};
@@ -108,9 +108,8 @@ inline better::optional<Float> optionalFloatFromYogaValue(
       return floatFromYogaFloat(value.value);
     case YGUnitPercent:
       return base.has_value()
-          ? better::optional<Float>(
-                base.value() * floatFromYogaFloat(value.value))
-          : better::optional<Float>();
+          ? std::optional<Float>(base.value() * floatFromYogaFloat(value.value))
+          : std::optional<Float>();
     case YGUnitAuto:
       return {};
   }
@@ -444,14 +443,14 @@ inline void fromRawValue(
   auto configurations = static_cast<std::vector<RawValue>>(value);
 
   for (const auto &configuration : configurations) {
-    if (!configuration.hasType<better::map<std::string, RawValue>>()) {
+    if (!configuration.hasType<butter::map<std::string, RawValue>>()) {
       // TODO: The following checks have to be removed after codegen is shipped.
       // See T45151459.
       continue;
     }
 
     auto configurationPair =
-        static_cast<better::map<std::string, RawValue>>(configuration);
+        static_cast<butter::map<std::string, RawValue>>(configuration);
     auto pair = configurationPair.begin();
     auto operation = pair->first;
     auto &parameters = pair->second;

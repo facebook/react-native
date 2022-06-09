@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -31,7 +31,6 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.yoga.YogaConstants;
-import java.util.Locale;
 import java.util.Map;
 
 /** View manager for AndroidViews (plain React Views). */
@@ -52,6 +51,23 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
   private static final int CMD_HOTSPOT_UPDATE = 1;
   private static final int CMD_SET_PRESSED = 2;
   private static final String HOTSPOT_UPDATE_KEY = "hotspotUpdate";
+
+  public ReactViewManager() {
+    super();
+
+    setupViewRecycling();
+  }
+
+  @Override
+  protected ReactViewGroup prepareToRecycleView(
+      @NonNull ThemedReactContext reactContext, ReactViewGroup view) {
+    // BaseViewManager
+    super.prepareToRecycleView(reactContext, view);
+
+    view.recycleView();
+
+    return view;
+  }
 
   @ReactProp(name = "accessible")
   public void setAccessible(ReactViewGroup view, boolean accessible) {
@@ -161,13 +177,7 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
 
   @ReactProp(name = ViewProps.POINTER_EVENTS)
   public void setPointerEvents(ReactViewGroup view, @Nullable String pointerEventsStr) {
-    if (pointerEventsStr == null) {
-      view.setPointerEvents(PointerEvents.AUTO);
-    } else {
-      PointerEvents pointerEvents =
-          PointerEvents.valueOf(pointerEventsStr.toUpperCase(Locale.US).replace("-", "_"));
-      view.setPointerEvents(pointerEvents);
-    }
+    view.setPointerEvents(PointerEvents.parsePointerEvents(pointerEventsStr));
   }
 
   @ReactProp(name = "nativeBackgroundAndroid")

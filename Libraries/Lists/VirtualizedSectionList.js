@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,11 +8,12 @@
  * @format
  */
 
-import invariant from 'invariant';
 import type {ViewToken} from './ViewabilityHelper';
+
 import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';
-import {View, VirtualizedList} from 'react-native';
+import invariant from 'invariant';
 import * as React from 'react';
+import {View, VirtualizedList} from 'react-native';
 
 type Item = any;
 
@@ -137,8 +138,7 @@ class VirtualizedSectionList<
       return;
     }
     if (params.itemIndex > 0 && this.props.stickySectionHeadersEnabled) {
-      // $FlowFixMe[prop-missing] Cannot access private property
-      const frame = this._listRef._getFrameMetricsApprox(
+      const frame = this._listRef.__getFrameMetricsApprox(
         index - params.itemIndex,
       );
       viewOffset += frame.length;
@@ -148,6 +148,7 @@ class VirtualizedSectionList<
       viewOffset,
       index,
     };
+    // $FlowFixMe[incompatible-use]
     this._listRef.scrollToIndex(toIndexParams);
   }
 
@@ -339,6 +340,7 @@ class VirtualizedSectionList<
 
   _renderItem =
     (listItemCount: number) =>
+    // eslint-disable-next-line react/no-unstable-nested-components
     ({item, index}: {item: Item, index: number, ...}) => {
       const info = this._subExtractor(index);
       if (!info) {
@@ -444,8 +446,8 @@ class VirtualizedSectionList<
     return null;
   }
 
-  _updateHighlightMap = {};
-  _updatePropsMap = {};
+  _updateHighlightMap: {[string]: (boolean) => void} = {};
+  _updatePropsMap: {[string]: void | (boolean => void)} = {};
   _listRef: ?React.ElementRef<typeof VirtualizedList>;
   _captureRef = ref => {
     this._listRef = ref;

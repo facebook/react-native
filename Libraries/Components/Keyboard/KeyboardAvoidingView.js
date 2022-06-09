@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -87,7 +87,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
 
   _onKeyboardChange = (event: ?KeyboardEvent) => {
     this._keyboardEvent = event;
-    this._updateBottomIfNecesarry();
+    this._updateBottomIfNecessary();
   };
 
   _onLayout = (event: ViewLayoutEvent) => {
@@ -99,7 +99,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
     }
 
     if (wasFrameNull) {
-      this._updateBottomIfNecesarry();
+      this._updateBottomIfNecessary();
     }
 
     if (this.props.onLayout) {
@@ -107,7 +107,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
     }
   };
 
-  _updateBottomIfNecesarry = () => {
+  _updateBottomIfNecessary = () => {
     if (this._keyboardEvent == null) {
       this.setState({bottom: 0});
       return;
@@ -161,7 +161,6 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
       // eslint-disable-next-line no-unused-vars
       keyboardVerticalOffset = 0,
       style,
-      // eslint-disable-next-line no-unused-vars
       onLayout,
       ...props
     } = this.props;

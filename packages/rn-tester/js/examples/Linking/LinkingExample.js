@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -33,7 +33,13 @@ class OpenURLButton extends React.Component<Props> {
       if (supported) {
         Linking.openURL(this.props.url);
       } else {
-        console.log("Don't know how to open URI: " + this.props.url);
+        console.log(
+          `Don't know how to open URI: ${
+            this.props.url
+          }, ensure you have an app installed that handles the "${
+            this.props.url.split(':')?.[0]
+          }" scheme`,
+        );
       }
     });
   };
@@ -134,6 +140,8 @@ exports.description = 'Shows how to use Linking to open URLs.';
 exports.examples = [
   {
     title: 'Open external URLs',
+    description:
+      'Custom schemes may require specific apps to be installed on the device. Note: Phone app is not supported in the simulator.',
     render: function (): React.Element<typeof IntentAndroidExample> {
       return <IntentAndroidExample />;
     },

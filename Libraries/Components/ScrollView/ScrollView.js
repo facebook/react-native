@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -173,8 +173,8 @@ type IOSProps = $ReadOnly<{|
    */
   automaticallyAdjustContentInsets?: ?boolean,
   /**
-   * Controls whether the ScrollView should automatically adjust it's contentInset
-   * and scrollViewInsets when the Keyboard changes it's size. The default value is false.
+   * Controls whether the ScrollView should automatically adjust its `contentInset`
+   * and `scrollViewInsets` when the Keyboard changes its size. The default value is false.
    * @platform ios
    */
   automaticallyAdjustKeyboardInsets?: ?boolean,
@@ -190,12 +190,6 @@ type IOSProps = $ReadOnly<{|
    * @platform ios
    */
   contentInset?: ?EdgeInsetsProp,
-  /**
-   * Used to manually set the starting scroll offset.
-   * The default value is `{x: 0, y: 0}`.
-   * @platform ios
-   */
-  contentOffset?: ?PointProp,
   /**
    * When true, the scroll view bounces when it reaches the end of the
    * content if the content is larger then the scroll view along the axis of
@@ -458,6 +452,11 @@ export type Props = $ReadOnly<{|
    */
   contentContainerStyle?: ?ViewStyleProp,
   /**
+   * Used to manually set the starting scroll offset.
+   * The default value is `{x: 0, y: 0}`.
+   */
+  contentOffset?: ?PointProp,
+  /**
    * When true, the scroll view stops on the next index (in relation to scroll
    * position at release) regardless of how fast the gesture is. This can be
    * used for pagination when the page is less than the width of the
@@ -675,7 +674,7 @@ type State = {|
 
 const IS_ANIMATING_TOUCH_START_THRESHOLD_MS = 16;
 
-type ScrollViewComponentStatics = $ReadOnly<{|
+export type ScrollViewComponentStatics = $ReadOnly<{|
   Context: typeof ScrollViewContext,
 |}>;
 
@@ -1519,6 +1518,7 @@ class ScrollView extends React.Component<Props, State> {
       keyboardNeverPersistTaps &&
       this._keyboardIsDismissible() &&
       e.target != null &&
+      // $FlowFixMe[incompatible-call]
       !TextInputState.isTextInput(e.target)
     ) {
       return true;

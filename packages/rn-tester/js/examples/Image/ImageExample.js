@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -339,16 +339,6 @@ class MultipleSourcesExample extends React.Component<
     });
   };
 
-  increaseImageSize = () => {
-    if (this.state.width >= 100) {
-      return;
-    }
-    this.setState({
-      width: this.state.width + 10,
-      height: this.state.height + 10,
-    });
-  };
-
   decreaseImageSize = () => {
     if (this.state.width <= 10) {
       return;
@@ -468,16 +458,6 @@ class OnLayoutExample extends React.Component<
       layoutHandlerMessage: JSON.stringify(event.nativeEvent),
     });
     console.log(event.nativeEvent);
-  };
-
-  increaseImageSize = () => {
-    if (this.state.width >= 100) {
-      return;
-    }
-    this.setState({
-      width: this.state.width + 10,
-      height: this.state.height + 10,
-    });
   };
 
   increaseImageSize = () => {

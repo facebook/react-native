@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -370,13 +370,14 @@ UIImage *__nullable RCTTransformImage(UIImage *image,
   }
 
   BOOL opaque = !RCTImageHasAlpha(image.CGImage);
-  UIGraphicsBeginImageContextWithOptions(destSize, opaque, destScale);
-  CGContextRef currentContext = UIGraphicsGetCurrentContext();
-  CGContextConcatCTM(currentContext, transform);
-  [image drawAtPoint:CGPointZero];
-  UIImage *result = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  return result;
+  UIGraphicsImageRendererFormat *const rendererFormat = [UIGraphicsImageRendererFormat defaultFormat];
+  rendererFormat.opaque = opaque;
+  rendererFormat.scale = destScale;
+  UIGraphicsImageRenderer *const renderer = [[UIGraphicsImageRenderer alloc] initWithSize:destSize format:rendererFormat];
+  return [renderer imageWithActions:^(UIGraphicsImageRendererContext *_Nonnull context) {
+    CGContextConcatCTM(context.CGContext, transform);
+    [image drawAtPoint:CGPointZero];
+  }];
 }
 
 BOOL RCTImageHasAlpha(CGImageRef image)

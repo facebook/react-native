@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,6 +12,7 @@
 
 import type {
   LayoutEvent,
+  PointerEvent,
   PressEvent,
   TextLayoutEvent,
 } from '../Types/CoreEventTypes';
@@ -31,10 +32,18 @@ export type PressRetentionOffset = $ReadOnly<{|
   right: number,
 |}>;
 
+type PointerEventProps = $ReadOnly<{|
+  onPointerEnter?: (event: PointerEvent) => void,
+  onPointerLeave?: (event: PointerEvent) => void,
+  onPointerMove?: (event: PointerEvent) => void,
+|}>;
+
 /**
  * @see https://reactnative.dev/docs/text#reference
  */
 export type TextProps = $ReadOnly<{|
+  ...PointerEventProps,
+
   /**
    * Indicates whether the view is an accessibility element.
    *
@@ -44,6 +53,7 @@ export type TextProps = $ReadOnly<{|
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
   accessibilityHint?: ?Stringish,
+  accessibilityLanguage?: ?Stringish,
   accessibilityLabel?: ?Stringish,
   accessibilityRole?: ?AccessibilityRole,
   accessibilityState?: ?AccessibilityState,

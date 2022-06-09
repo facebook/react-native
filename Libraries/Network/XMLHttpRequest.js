@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,16 +10,15 @@
 
 'use strict';
 
-import {type EventSubscription} from '../vendor/emitter/EventEmitter';
-
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
 
+import {type EventSubscription} from '../vendor/emitter/EventEmitter';
+
 const BlobManager = require('../Blob/BlobManager');
-const EventTarget = require('event-target-shim');
 const GlobalPerformanceLogger = require('../Utilities/GlobalPerformanceLogger');
 const RCTNetworking = require('./RCTNetworking');
-
 const base64 = require('base64-js');
+const EventTarget = require('event-target-shim');
 const invariant = require('invariant');
 
 const DEBUG_NETWORK_SEND_DELAY: false = false; // Set to a number of milliseconds when debugging
@@ -136,7 +135,6 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
   _lowerCaseResponseHeaders: Object;
   _method: ?string = null;
   _perfKey: ?string = null;
-  _response: string | ?Object;
   _responseType: ResponseType;
   _response: string = '';
   _sent: boolean;
@@ -626,13 +624,12 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
   setResponseHeaders(responseHeaders: ?Object): void {
     this.responseHeaders = responseHeaders || null;
     const headers = responseHeaders || {};
-    this._lowerCaseResponseHeaders = Object.keys(headers).reduce(
-      (lcaseHeaders, headerName) => {
-        lcaseHeaders[headerName.toLowerCase()] = headers[headerName];
-        return lcaseHeaders;
-      },
-      {},
-    );
+    this._lowerCaseResponseHeaders = Object.keys(headers).reduce<{
+      [string]: any,
+    }>((lcaseHeaders, headerName) => {
+      lcaseHeaders[headerName.toLowerCase()] = headers[headerName];
+      return lcaseHeaders;
+    }, {});
   }
 
   setReadyState(newState: number): void {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -266,12 +266,25 @@ export function emitRequestDef(stream: Writable, command: Command) {
     assign(method, obj, "method");\n\n`);
 
   if (props.length > 0) {
-    stream.write('dynamic params = obj.at("params");\n');
+    const optionalParams = props.every(p => p.optional);
+    if (optionalParams) {
+      stream.write(`
+        auto it = obj.find("params");
+        if (it != obj.items().end()) {
+          dynamic params = it->second;
+      `);
+    } else {
+      stream.write('dynamic params = obj.at("params");\n');
+    }
 
     for (const prop of props) {
       const id = prop.getCppIdentifier();
       const name = prop.name;
       stream.write(`assign(${id}, params, "${name}");\n`);
+    }
+
+    if (optionalParams) {
+      stream.write('}');
     }
   }
 

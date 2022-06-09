@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -23,7 +23,7 @@ const {
 
 const colors = ['#ff0000', '#00ff00', '#0000ff', 'rgba(0, 0, 0, 0.4)'];
 
-const barStyles = ['default', 'light-content'];
+const barStyles = ['default', 'light-content', 'dark-content'];
 
 const showHideTransitions = ['fade', 'slide'];
 
@@ -129,11 +129,16 @@ class StatusBarStyleExample extends React.Component<{...}, $FlowFixMeState> {
             <Text>style: '{getValue(barStyles, this._barStyleIndex)}'</Text>
           </View>
         </TouchableHighlight>
+        <View style={styles.wrapper}>
+          <Text>(default is dark for iOS, light for Android)</Text>
+        </View>
         <TouchableHighlight
           style={styles.wrapper}
           onPress={this._onChangeAnimated}>
           <View style={styles.button}>
-            <Text>animated: {this.state.animated ? 'true' : 'false'}</Text>
+            <Text>
+              animated (ios only): {this.state.animated ? 'true' : 'false'}
+            </Text>
           </View>
         </TouchableHighlight>
       </View>
@@ -288,6 +293,9 @@ class StatusBarStaticIOSExample extends React.Component<{...}> {
             <Text>setBarStyle('default', true)</Text>
           </View>
         </TouchableHighlight>
+        <View style={styles.wrapper}>
+          <Text>(default is dark for iOS, light for Android)</Text>
+        </View>
         <TouchableHighlight
           style={styles.wrapper}
           onPress={() => {
@@ -342,6 +350,36 @@ class StatusBarStaticAndroidExample extends React.Component<{...}> {
             <Text>setHidden(false)</Text>
           </View>
         </TouchableHighlight>
+        <TouchableHighlight
+          style={styles.wrapper}
+          onPress={() => {
+            StatusBar.setBarStyle('light-content');
+          }}>
+          <View style={styles.button}>
+            <Text>setBarStyle('light-content')</Text>
+          </View>
+        </TouchableHighlight>
+        <TouchableHighlight
+          style={styles.wrapper}
+          onPress={() => {
+            StatusBar.setBarStyle('dark-content');
+          }}>
+          <View style={styles.button}>
+            <Text>setBarStyle('dark-content')</Text>
+          </View>
+        </TouchableHighlight>
+        <TouchableHighlight
+          style={styles.wrapper}
+          onPress={() => {
+            StatusBar.setBarStyle('default');
+          }}>
+          <View style={styles.button}>
+            <Text>setBarStyle('default')</Text>
+          </View>
+        </TouchableHighlight>
+        <View style={styles.wrapper}>
+          <Text>(default is dark for iOS, light for Android)</Text>
+        </View>
         <TouchableHighlight
           style={styles.wrapper}
           onPress={() => {
@@ -448,7 +486,6 @@ exports.examples = [
     render(): React.Node {
       return <StatusBarStyleExample />;
     },
-    platform: 'ios',
   },
   {
     title: 'StatusBar network activity indicator',

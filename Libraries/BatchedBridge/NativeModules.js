@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,11 +10,10 @@
 
 'use strict';
 
-const BatchedBridge = require('./BatchedBridge');
-
-const invariant = require('invariant');
-
 import type {ExtendedError} from '../Core/ExtendedError';
+
+const BatchedBridge = require('./BatchedBridge');
+const invariant = require('invariant');
 
 export type ModuleConfig = [
   string /* name */,
@@ -51,7 +50,7 @@ function genModule(
     return {name: moduleName};
   }
 
-  const module = {};
+  const module: {[string]: mixed} = {};
   methods &&
     methods.forEach((methodName, methodID) => {
       const isPromise =

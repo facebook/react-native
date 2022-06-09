@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -194,6 +194,24 @@ class AccessibilityExample extends React.Component<{}> {
             <Text>Accessible view with label, hint, role, and state</Text>
           </View>
         </RNTesterBlock>
+
+        <RNTesterBlock title="TextInput with accessibilityLabelledBy attribute">
+          <View>
+            <Text nativeID="formLabel1">Mail Address</Text>
+            <TextInput
+              accessibilityLabel="input test1"
+              accessibilityLabelledBy="formLabel1"
+              style={styles.default}
+            />
+            <Text nativeID="formLabel2">First Name</Text>
+            <TextInput
+              accessibilityLabel="input test2"
+              accessibilityLabelledBy={['formLabel2', 'formLabel3']}
+              style={styles.default}
+              value="Foo"
+            />
+          </View>
+        </RNTesterBlock>
       </View>
     );
   }
@@ -210,7 +228,7 @@ class CheckboxExample extends React.Component<
   };
 
   _onCheckboxPress = () => {
-    let checkboxState = false;
+    let checkboxState: boolean | $TEMPORARY$string<'mixed'> = false;
     if (this.state.checkboxState === false) {
       checkboxState = 'mixed';
     } else if (this.state.checkboxState === 'mixed') {
@@ -933,37 +951,24 @@ class AnnounceForAccessibility extends React.Component<{}> {
   }
 }
 
-class SetAccessibilityFocusExample extends React.Component<{}> {
-  render(): React.Node {
-    const myRef: {current: React.ElementRef<any> | null} = createRef();
+function SetAccessibilityFocusExample(props: {}): React.Node {
+  const myRef = React.useRef<?React.ElementRef<typeof Text>>(null);
 
-    const onClose = () => {
-      if (myRef && myRef.current) {
-        AccessibilityInfo.sendAccessibilityEvent_unstable(
-          myRef.current,
-          'focus',
-        );
-      }
-    };
+  const onPress = () => {
+    if (myRef && myRef.current) {
+      AccessibilityInfo.sendAccessibilityEvent_unstable(myRef.current, 'focus');
+    }
+  };
 
-    return (
-      <View>
-        <Text>SetAccessibilityFocus on native element</Text>
-        <Button
-          ref={myRef}
-          title={'Click'}
-          onPress={() => {
-            Alert.alert(
-              'Set Accessibility Focus',
-              'Press okay to proceed',
-              [{text: 'Okay', onPress: onClose}],
-              {cancelable: true},
-            );
-          }}
-        />
-      </View>
-    );
-  }
+  return (
+    <View>
+      <Text ref={myRef}>
+        SetAccessibilityFocus on native element. This should get focus after
+        clicking the button!
+      </Text>
+      <Button title={'Click'} onPress={onPress} />
+    </View>
+  );
 }
 
 class EnabledExamples extends React.Component<{}> {
@@ -1112,7 +1117,7 @@ class DisplayOptionsStatusExample extends React.Component<{}> {
         <DisplayOptionStatusExample
           optionName={'Screen Reader'}
           optionChecker={AccessibilityInfo.isScreenReaderEnabled}
-          notification={'reduceMotionChanged'}
+          notification={'screenReaderChanged'}
         />
         {isAndroid ? null : (
           <>
@@ -1146,12 +1151,15 @@ class DisplayOptionsStatusExample extends React.Component<{}> {
 function DisplayOptionStatusExample({optionName, optionChecker, notification}) {
   const [statusEnabled, setStatusEnabled] = React.useState(false);
   React.useEffect(() => {
-    AccessibilityInfo.addEventListener(notification, setStatusEnabled);
+    const listener = AccessibilityInfo.addEventListener(
+      notification,
+      setStatusEnabled,
+    );
     optionChecker().then(isEnabled => {
       setStatusEnabled(isEnabled);
     });
     return function cleanup() {
-      AccessibilityInfo.removeEventListener(notification, setStatusEnabled);
+      listener.remove();
     };
   }, [optionChecker, notification]);
   return (

@@ -12,7 +12,10 @@ rn_xplat_cxx_library(
         prefix = "react/common/mapbuffer",
     ),
     fbandroid_allow_jni_merging = True,
-    labels = ["supermodule:xplat/default/public.react_native.infra"],
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+        "supermodule:xplat/default/public.react_native.infra",
+    ],
     platforms = ANDROID,
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",
