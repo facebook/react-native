@@ -1173,6 +1173,89 @@ function DisplayOptionStatusExample({optionName, optionChecker, notification}) {
   );
 }
 
+function AccessibilityErrorWithButtons(): React.Node {
+  const [text, setText] = React.useState('');
+  const [error, setError] = React.useState(null);
+  const [accessibilityInvalid, setAccessibilityInvalid] = React.useState(false);
+  return (
+    <View>
+      <RNTesterBlock>
+        <TextInput
+          accessibilityErrorMessage={error}
+          accessibilityInvalid={accessibilityInvalid}
+          onChangeText={newText => {
+            setText(newText);
+            setError('the newText is: ' + newText);
+            if (newText === 'Error') {
+              setAccessibilityInvalid(true);
+            } else if (newText === 'empty') {
+              setError(newText);
+              setAccessibilityInvalid(true);
+            } else if (newText === 'null') {
+              setError('');
+              setAccessibilityInvalid(false);
+            }
+          }}
+          value={text}
+          style={styles.default}
+        />
+        <Button
+          onPress={() => {
+            setError('This error is set with Button onPress callback');
+          }}
+          title="Press to set an accessibilityErrorMessage to a non-empty value"
+        />
+        <Button
+          onPress={() => setAccessibilityInvalid(!accessibilityInvalid)}
+          title={`Press to set accessibilityInvalid to ${
+            accessibilityInvalid ? 'false' : 'true'
+          }`}
+        />
+        <Button
+          onPress={() => setError('')}
+          title={`Press to set an empty error message`}
+        />
+      </RNTesterBlock>
+    </View>
+  );
+}
+
+function AccessibilityErrorDoesNotClear(): React.Node {
+  const [text, setText] = React.useState('');
+  const [error, setError] = React.useState('');
+  const [accessibilityInvalid, setAccessibilityInvalid] = React.useState(false);
+  return (
+    <View>
+      <RNTesterBlock title="TextView without label">
+        <Text>Set an error, change textinput value and then announce it.</Text>
+        <TextInput
+          accessibilityErrorMessage={error}
+          accessibilityInvalid={accessibilityInvalid}
+          value={text}
+          onChangeText={newText => setText(newText)}
+          style={[styles.default, {height: 100}]}
+        />
+        <Text>
+          The value of the accessibilityErrorMessage prop is{' '}
+          {error.length > 0 ? error : 'empty error'}
+        </Text>
+        <Button
+          onPress={() => {
+            setError('This is an error');
+          }}
+          title="sets accessibilityErrorMessage to 'This is an error'"
+        />
+        <Button
+          onPress={() => setAccessibilityInvalid(!accessibilityInvalid)}
+          title={`Press to set accessibilityInvalid to ${
+            accessibilityInvalid ? 'false' : 'true'
+          }`}
+        />
+      </RNTesterBlock>
+    </View>
+  );
+}
+
 exports.title = 'Accessibility';
 exports.documentationURL = 'https://reactnative.dev/docs/accessibilityinfo';
 exports.description = 'Examples of using Accessibility APIs.';
@@ -1244,6 +1327,18 @@ exports.examples = [
           style={styles.disabledImage}
         />
       );
+    },
+  },
+  {
+    title: 'accessibilityErrorMessage onChangeText or Button onPress',
+    render: function (): React.Node {
+      return <AccessibilityErrorWithButtons />;
+    },
+  },
+  {
+    title: 'accessibilityErrorMessage does not clear with text change',
+    render: function (): React.Node {
+      return <AccessibilityErrorDoesNotClear />;
     },
   },
 ];

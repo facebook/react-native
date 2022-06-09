@@ -19,6 +19,7 @@ const {
   TextInput,
   View,
   StyleSheet,
+  KeyboardAvoidingView,
 } = require('react-native');
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
@@ -473,44 +474,6 @@ class SelectionExample extends React.Component<
   }
 }
 
-function ErrorExample(): React.Node {
-  const [text, setText] = React.useState('');
-  const [error, setError] = React.useState(null);
-  const [accessibilityInvalid, setAccessibilityInvalid] = React.useState(false);
-  return (
-    <>
-      <Button onPress={() => setError('button')} title="Press to set error" />
-      <Text>
-        Type error in the below TextInput to display an error message.
-      </Text>
-      <TextInput
-        accessibilityErrorMessage={error}
-        accessibilityInvalid={accessibilityInvalid}
-        onBlur={() => setError('onBlur')}
-        onEndEditing={() => setError('onEndEditing')}
-        onChangeText={newText => {
-          setText(newText);
-          if (newText === 'Error') {
-            setError('the newText is: ' + newText);
-            setAccessibilityInvalid(true);
-          } else if (newText === 'empty') {
-            setError(newText);
-            setAccessibilityInvalid(true);
-          } else if (newText === 'null') {
-            setError('');
-            setAccessibilityInvalid(false);
-          } else {
-            setError(newText);
-            setAccessibilityInvalid(false);
-          }
-        }}
-        value={text}
-        style={styles.default}
-      />
-    </>
-  );
-}
-
 module.exports = ([
   {
     title: 'Auto-focus',
@@ -728,12 +691,6 @@ module.exports = ([
           />
         </View>
       );
-    },
-  },
-  {
-    title: 'Error Message',
-    render: function (): React.Node {
-      return <ErrorExample />;
     },
   },
 ]: Array<RNTesterModuleExample>);
