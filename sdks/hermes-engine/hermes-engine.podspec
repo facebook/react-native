@@ -22,7 +22,10 @@ currentremote, err = Open3.capture3("git config --get remote.origin.url")
 source = {}
 git = "https://github.com/facebook/hermes.git"
 
-if version == '1000.0.0'
+if ENV.has_key?('HERMES_ENGINE_TARBALL_PATH')
+  Pod::UI.puts '[Hermes] Using pre-built Hermes binaries from local path.' if Object.const_defined?("Pod::UI")
+  source[:http] = "file://#{ENV['HERMES_ENGINE_TARBALL_PATH']}"
+elsif version == '1000.0.0'
   Pod::UI.puts '[Hermes] Hermes needs to be compiled, installing hermes-engine may take a while...'.yellow if Object.const_defined?("Pod::UI")
   source[:git] = git
   source[:commit] = `git ls-remote https://github.com/facebook/hermes main | cut -f 1`.strip
