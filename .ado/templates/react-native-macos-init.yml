@@ -57,9 +57,9 @@ steps:
     displayName: Add npm user to verdaccio
 
   - task: CmdLine@2
-    displayName: Bump package version
+    displayName: Set package version
     inputs:
-      script: node scripts/bump-oss-version.js --nightly -v 0.0.1000
+      script: node scripts/set-rn-version.js --nightly -v 0.0.1000
 
   # Publish will fail if package.json is marked as private
   - task: CmdLine@2

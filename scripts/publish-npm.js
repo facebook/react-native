@@ -65,7 +65,7 @@ const rawVersion =
     : // For nightly we continue to use 0.0.0 for clarity for npm
     nightlyBuild
     ? '0.0.0'
-    : // For pre-release and stable releases, we use the git tag of the version we're releasing (set in bump-oss-version)
+    : // For pre-release and stable releases, we use the git tag of the version we're releasing (set in set-rn-version)
       buildTag;
 
 let version,
