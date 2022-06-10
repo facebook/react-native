@@ -83,6 +83,9 @@ public class ReactFeatureFlags {
   /** Enables or disables MapBuffer Serialization */
   public static boolean mapBufferSerializationEnabled = false;
 
+  /** Feature Flag to use overflowInset values provided by Yoga */
+  public static boolean useOverflowInset = false;
+
   public static boolean enableLockFreeEventDispatcher = false;
 
   public static boolean enableAggressiveEventEmitterCleanup = false;

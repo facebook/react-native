@@ -72,6 +72,7 @@ class FabricMountingManager final {
   bool const enableEarlyEventEmitterUpdate_{false};
   bool const disablePreallocateViews_{false};
   bool const disableRevisionCheckForPreallocation_{false};
+  bool const useOverflowInset_{false};
   bool const shouldRememberAllocatedViews_{false};
   bool const useMapBufferForViewProps_{false};
 
