@@ -57,4 +57,62 @@ class ReactNativePodsUtils
             project.save()
         end
     end
+
+    def self.set_node_modules_user_settings(installer, react_native_path)
+        Pod::UI.puts("Setting REACT_NATIVE build settings")
+        projects = installer.aggregate_targets
+            .map{ |t| t.user_project }
+            .uniq{ |p| p.path }
+            .push(installer.pods_project)
+
+        projects.each do |project|
+            project.build_configurations.each do |config|
+                config.build_settings["REACT_NATIVE_PATH"] = File.join("${PODS_ROOT}", "..", react_native_path)
+            end
+
+            project.save()
+        end
+    end
+
+    def self.fix_library_search_paths(installer)
+        projects = installer.aggregate_targets
+            .map{ |t| t.user_project }
+            .uniq{ |p| p.path }
+            .push(installer.pods_project)
+
+        projects.each do |project|
+            project.build_configurations.each do |config|
+                ReactNativePodsUtils.fix_library_search_path(config)
+            end
+            project.native_targets.each do |target|
+                target.build_configurations.each do |config|
+                    ReactNativePodsUtils.fix_library_search_path(config)
+                end
+            end
+            project.save()
+        end
+    end
+
+    private
+
+    def self.fix_library_search_path(config)
+        lib_search_paths = config.build_settings["LIBRARY_SEARCH_PATHS"]
+
+        if lib_search_paths == nil
+            # No search paths defined, return immediately
+            return
+        end
+
+        # $(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME) causes problem with Xcode 12.5 + arm64 (Apple M1)
+        # since the libraries there are only built for x86_64 and i386.
+        lib_search_paths.delete("$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)")
+        lib_search_paths.delete("\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"")
+
+        if !(lib_search_paths.include?("$(SDKROOT)/usr/lib/swift") || lib_search_paths.include?("\"$(SDKROOT)/usr/lib/swift\""))
+            # however, $(SDKROOT)/usr/lib/swift is required, at least if user is not running CocoaPods 1.11
+            lib_search_paths.insert(0, "$(SDKROOT)/usr/lib/swift")
+        end
+    end
+
+
 end

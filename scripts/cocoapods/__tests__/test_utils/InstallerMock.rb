@@ -54,15 +54,19 @@ end
 
 class PodsProjectMock
     attr_reader :targets
+    attr_reader :native_targets
     attr_reader :path
     attr_reader :build_configurations
     @pod_group
+    attr_reader :save_invocation_count
 
-    def initialize(targets = [], pod_group = {}, path = "test/path-pod.xcodeproj", build_configurations = [])
+    def initialize(targets = [], pod_group = {}, path = "test/path-pod.xcodeproj", build_configurations = [], native_targets: [])
         @targets = targets
         @pod_group = pod_group
         @path = path
         @build_configurations = build_configurations
+        @save_invocation_count = 0
+        @native_targets = native_targets
     end
 
     def pod_group(name)
@@ -70,6 +74,7 @@ class PodsProjectMock
     end
 
     def save()
+        @save_invocation_count += 1
     end
 end
 
@@ -84,13 +89,20 @@ end
 class UserProjectMock
     attr_reader :path
     attr_reader :build_configurations
+    attr_reader :native_targets
 
-    def initialize(path = "/test/path.xcproj", build_configurations = [])
+    attr_reader :save_invocation_count
+
+
+    def initialize(path = "/test/path.xcproj", build_configurations = [], native_targets: [])
         @path = path
         @build_configurations = build_configurations
+        @native_targets = native_targets
+        @save_invocation_count = 0
     end
 
     def save()
+        @save_invocation_count += 1
     end
 end
 
