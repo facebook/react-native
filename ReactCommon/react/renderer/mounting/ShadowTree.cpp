@@ -110,8 +110,8 @@ static ShadowNode::Unshared progressState(
 
   // Stage 1: Aligned part.
   for (index = 0; index < childrenSize && index < baseChildrenSize; index++) {
-    const auto &childNode = *children.at(index);
-    const auto &baseChildNode = *baseChildren.at(index);
+    auto const &childNode = *children[index];
+    auto const &baseChildNode = *baseChildren[index];
 
     if (&childNode == &baseChildNode) {
       // Nodes are identical, skipping.
@@ -136,7 +136,7 @@ static ShadowNode::Unshared progressState(
 
   // Stage 2: Misaligned part.
   for (; index < childrenSize; index++) {
-    auto newChildNode = progressState(*children.at(index));
+    auto newChildNode = progressState(*children[index]);
     if (newChildNode) {
       if (!areChildrenChanged) {
         // Making a copy before the first mutation.
@@ -335,7 +335,7 @@ CommitStatus ShadowTree::tryCommit(
     oldRevision = currentRevision_;
   }
 
-  auto oldRootShadowNode = oldRevision.rootShadowNode;
+  auto const &oldRootShadowNode = oldRevision.rootShadowNode;
   auto newRootShadowNode = transaction(*oldRevision.rootShadowNode);
 
   if (!newRootShadowNode ||
@@ -345,7 +345,7 @@ CommitStatus ShadowTree::tryCommit(
 
   if (commitOptions.enableStateReconciliation) {
     auto updatedNewRootShadowNode =
-        progressState(*newRootShadowNode, *oldRevision.rootShadowNode);
+        progressState(*newRootShadowNode, *oldRootShadowNode);
     if (updatedNewRootShadowNode) {
       newRootShadowNode =
           std::static_pointer_cast<RootShadowNode>(updatedNewRootShadowNode);

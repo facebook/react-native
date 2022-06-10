@@ -39,7 +39,7 @@ std::unique_ptr<ShadowTree> ShadowTreeRegistry::remove(
 
 bool ShadowTreeRegistry::visit(
     SurfaceId surfaceId,
-    std::function<void(const ShadowTree &shadowTree)> callback) const {
+    std::function<void(const ShadowTree &shadowTree)> const &callback) const {
   std::shared_lock<butter::shared_mutex> lock(mutex_);
 
   auto iterator = registry_.find(surfaceId);
@@ -53,7 +53,7 @@ bool ShadowTreeRegistry::visit(
 }
 
 void ShadowTreeRegistry::enumerate(
-    std::function<void(const ShadowTree &shadowTree)> callback) const {
+    std::function<void(const ShadowTree &shadowTree)> const &callback) const {
   std::shared_lock<butter::shared_mutex> lock(mutex_);
   for (auto const &pair : registry_) {
     callback(*pair.second);

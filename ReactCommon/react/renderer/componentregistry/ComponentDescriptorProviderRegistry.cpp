@@ -46,7 +46,8 @@ void ComponentDescriptorProviderRegistry::setComponentDescriptorProviderRequest(
     ComponentDescriptorProviderRequest componentDescriptorProviderRequest)
     const {
   std::shared_lock<butter::shared_mutex> lock(mutex_);
-  componentDescriptorProviderRequest_ = componentDescriptorProviderRequest;
+  componentDescriptorProviderRequest_ =
+      std::move(componentDescriptorProviderRequest);
 }
 
 void ComponentDescriptorProviderRegistry::request(

@@ -10,11 +10,13 @@
 'use strict';
 
 import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
+import {unstable_hasComponent} from 'react-native/Libraries/NativeComponent/NativeComponentRegistryUnstable';
 
 module.exports = {
   getViewManagerConfig: (viewManagerName: string): mixed => {
     console.warn(
-      'Attempting to get config for view manager: ' + viewManagerName,
+      'getViewManagerConfig is unavailable in Bridgeless, use hasViewManagerConfig instead. viewManagerName: ' +
+        viewManagerName,
     );
     if (viewManagerName === 'RCTVirtualText') {
       return {};
@@ -22,10 +24,15 @@ module.exports = {
     return null;
   },
   hasViewManagerConfig: (viewManagerName: string): boolean => {
-    return (
-      viewManagerName === 'RCTVirtualText' ||
-      viewManagerName === 'RCTShimmeringView'
-    );
+    const staticViewConfigsEnabled = global.__fbStaticViewConfig === true;
+    if (staticViewConfigsEnabled) {
+      return unstable_hasComponent(viewManagerName);
+    } else {
+      return (
+        viewManagerName === 'RCTVirtualText' ||
+        viewManagerName === 'RCTShimmeringView'
+      );
+    }
   },
   getConstants: (): {...} => ({}),
   getConstantsForViewManager: (viewManagerName: string) => {},

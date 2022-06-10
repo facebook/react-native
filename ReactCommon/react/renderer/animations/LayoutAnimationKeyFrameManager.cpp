@@ -1075,7 +1075,7 @@ void LayoutAnimationKeyFrameManager::setLayoutAnimationStatusDelegate(
 
 void LayoutAnimationKeyFrameManager::setClockNow(
     std::function<uint64_t()> now) {
-  now_ = now;
+  now_ = std::move(now);
 }
 
 void LayoutAnimationKeyFrameManager::enableSkipInvalidatedKeyFrames() {
@@ -1309,7 +1309,7 @@ void LayoutAnimationKeyFrameManager::
 
   // First, collect all final mutations that could impact this immediate
   // mutation.
-  std::vector<ShadowViewMutation *> candidateMutations{};
+  std::vector<ShadowViewMutation const *> candidateMutations{};
 
   for (auto inflightAnimationIt =
            inflightAnimations_.rbegin() + (skipLastAnimation ? 1 : 0);
@@ -1323,7 +1323,7 @@ void LayoutAnimationKeyFrameManager::
       continue;
     }
 
-    for (auto &animatedKeyFrame : inflightAnimation.keyFrames) {
+    for (auto const &animatedKeyFrame : inflightAnimation.keyFrames) {
       if (animatedKeyFrame.invalidated) {
         continue;
       }
@@ -1334,7 +1334,8 @@ void LayoutAnimationKeyFrameManager::
         continue;
       }
 
-      for (auto &delayedMutation : animatedKeyFrame.finalMutationsForKeyFrame) {
+      for (auto const &delayedMutation :
+           animatedKeyFrame.finalMutationsForKeyFrame) {
         if (delayedMutation.type != ShadowViewMutation::Type::Remove) {
           continue;
         }
@@ -1372,7 +1373,7 @@ void LayoutAnimationKeyFrameManager::
             candidateMutations.begin(),
             candidateMutations.end(),
             [&changed, &mutation, &adjustedDelta, &isRemoveMutation](
-                ShadowViewMutation *candidateMutation) {
+                ShadowViewMutation const *candidateMutation) {
               bool indexConflicts =
                   (candidateMutation->index < mutation.index ||
                    (isRemoveMutation &&

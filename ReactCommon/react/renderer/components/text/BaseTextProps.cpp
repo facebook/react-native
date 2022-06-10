@@ -16,10 +16,10 @@ namespace facebook {
 namespace react {
 
 static TextAttributes convertRawProp(
-    const PropsParserContext &context,
-    const RawProps &rawProps,
-    const TextAttributes sourceTextAttributes,
-    const TextAttributes defaultTextAttributes) {
+    PropsParserContext const &context,
+    RawProps const &rawProps,
+    TextAttributes const &sourceTextAttributes,
+    TextAttributes const &defaultTextAttributes) {
   auto textAttributes = TextAttributes{};
 
   // Color

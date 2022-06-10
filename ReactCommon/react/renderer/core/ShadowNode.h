@@ -114,8 +114,8 @@ class ShadowNode : public Sealable, public DebugStringConvertible {
    */
   ShadowNode::Unshared cloneTree(
       ShadowNodeFamily const &shadowNodeFamily,
-      std::function<ShadowNode::Unshared(ShadowNode const &oldShadowNode)>
-          callback) const;
+      std::function<ShadowNode::Unshared(ShadowNode const &oldShadowNode)> const
+          &callback) const;
 
 #pragma mark - Getters
 

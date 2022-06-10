@@ -133,7 +133,7 @@ class LayoutableShadowNode : public ShadowNode {
    * parameter.
    */
   static ShadowNode::Shared findNodeAtPoint(
-      ShadowNode::Shared node,
+      ShadowNode::Shared const &node,
       Point point);
 
   /*

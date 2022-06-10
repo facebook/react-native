@@ -54,7 +54,7 @@ std::shared_ptr<void> AttributedStringBox::getOpaquePointer() const {
 }
 
 AttributedStringBox &AttributedStringBox::operator=(
-    AttributedStringBox &&other) {
+    AttributedStringBox &&other) noexcept {
   if (this != &other) {
     mode_ = other.mode_;
     value_ = std::move(other.value_);

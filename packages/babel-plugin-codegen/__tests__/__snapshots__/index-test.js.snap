@@ -45,9 +45,7 @@ export default NativeComponentRegistry.get(nativeComponentName, () => ({
     }
   },
   validAttributes: {
-    boolean_default_true_optional_both: true,
-    onDirectEventDefinedInlineNull: true,
-    onBubblingEventDefinedInlineNull: true
+    boolean_default_true_optional_both: true
   }
 }));
 export const Commands = {
@@ -107,9 +105,7 @@ export default NativeComponentRegistry.get(nativeComponentName, () => ({
     }
   },
   validAttributes: {
-    boolean_default_true_optional_both: true,
-    onDirectEventDefinedInlineNull: true,
-    onBubblingEventDefinedInlineNull: true
+    boolean_default_true_optional_both: true
   }
 }));
 export const Commands = {

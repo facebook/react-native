@@ -43,7 +43,7 @@ static SharedViewProps nonFlattenedDefaultProps(
 static ShadowNode::Shared makeNode(
     ComponentDescriptor const &componentDescriptor,
     int tag,
-    ShadowNode::ListOfShared children,
+    const ShadowNode::ListOfShared &children,
     bool flattened = false) {
   auto props = flattened ? generateDefaultProps(componentDescriptor)
                          : nonFlattenedDefaultProps(componentDescriptor);

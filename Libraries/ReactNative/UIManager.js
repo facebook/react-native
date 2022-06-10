@@ -8,11 +8,10 @@
  * @format
  */
 
-import UIManagerInjection from './UIManagerInjection';
 import type {Spec} from './NativeUIManager';
 import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
 
-interface UIManagerJSInterface extends Spec {
+export interface UIManagerJSInterface extends Spec {
   +getViewManagerConfig: (viewManagerName: string) => Object;
   +hasViewManagerConfig: (viewManagerName: string) => boolean;
   +createView: (
@@ -32,11 +31,15 @@ interface UIManagerJSInterface extends Spec {
   ) => void;
 }
 
-const UIManager: UIManagerJSInterface =
-  global.RN$Bridgeless === true
-    ? require('./DummyUIManager') // No UIManager in bridgeless mode
-    : UIManagerInjection.unstable_UIManager == null
-    ? require('./PaperUIManager')
-    : UIManagerInjection.unstable_UIManager;
+var UIManager: UIManagerJSInterface;
+if (global.RN$Bridgeless === true) {
+  // $FlowExpectedError[incompatible-type]
+  UIManager = require('./DummyUIManager');
+} else {
+  const {unstable_UIManager} = require('./UIManagerInjection');
+  UIManager = unstable_UIManager
+    ? unstable_UIManager
+    : require('./PaperUIManager');
+}
 
 module.exports = UIManager;

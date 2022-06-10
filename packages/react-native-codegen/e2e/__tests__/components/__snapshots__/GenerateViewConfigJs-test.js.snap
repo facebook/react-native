@@ -202,7 +202,6 @@ export default NativeComponentRegistry.get(nativeComponentName, () => ({
 
   validAttributes: {
     disabled: true,
-    onChange: true,
   },
 }));
 ",
@@ -293,12 +292,6 @@ export default NativeComponentRegistry.get(nativeComponentName, () => ({
 
   validAttributes: {
     disabled: true,
-    onChange: true,
-    onEventDirect: true,
-    onEventDirectWithPaperName: true,
-    onOrientationChange: true,
-    onEnd: true,
-    onEventBubblingWithPaperName: true,
   },
 }));
 ",
@@ -442,7 +435,6 @@ export default NativeComponentRegistry.get(nativeComponentName, () => ({
 
   validAttributes: {
     title: true,
-    onChange: true,
   },
 }));
 ",

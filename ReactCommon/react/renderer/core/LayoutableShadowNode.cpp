@@ -203,7 +203,7 @@ Float LayoutableShadowNode::lastBaseline(Size size) const {
 }
 
 ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
-    ShadowNode::Shared node,
+    ShadowNode::Shared const &node,
     Point point) {
   auto layoutableShadowNode =
       traitCast<const LayoutableShadowNode *>(node.get());

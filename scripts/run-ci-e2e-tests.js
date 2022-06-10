@@ -19,7 +19,7 @@
  * --retries [num] - how many times to retry possible flaky commands: yarn add and running tests, default 1
  */
 
-const {cd, cp, echo, exec, exit, mv} = require('shelljs');
+const {cd, cp, echo, exec, exit, mv, rm} = require('shelljs');
 const spawn = require('child_process').spawn;
 const argv = require('yargs').argv;
 const path = require('path');
@@ -269,6 +269,9 @@ try {
       throw Error(exitCode);
     }
     describe('Test: Flow check');
+    // The resolve package included a test for a malformed package.json (see https://github.com/browserify/resolve/issues/89)
+    // that is failing the flow check. We're removing it.
+    rm('-rf', './node_modules/resolve/test/resolver/malformed_package_json');
     if (exec(`${ROOT}/node_modules/.bin/flow check`).code) {
       echo('Flow check failed.');
       exitCode = 1;

@@ -180,7 +180,7 @@ void ShadowNode::sealRecursive() const {
 
   props_->seal();
 
-  for (auto child : *children_) {
+  for (auto const &child : *children_) {
     child->sealRecursive();
   }
 }
@@ -255,8 +255,8 @@ ShadowNodeFamily const &ShadowNode::getFamily() const {
 
 ShadowNode::Unshared ShadowNode::cloneTree(
     ShadowNodeFamily const &shadowNodeFamily,
-    std::function<ShadowNode::Unshared(ShadowNode const &oldShadowNode)>
-        callback) const {
+    std::function<ShadowNode::Unshared(ShadowNode const &oldShadowNode)> const
+        &callback) const {
   auto ancestors = shadowNodeFamily.getAncestors(*this);
 
   if (ancestors.empty()) {
@@ -308,7 +308,7 @@ std::string ShadowNode::getDebugValue() const {
 SharedDebugStringConvertibleList ShadowNode::getDebugChildren() const {
   auto debugChildren = SharedDebugStringConvertibleList{};
 
-  for (auto child : *children_) {
+  for (auto const &child : *children_) {
     auto debugChild =
         std::dynamic_pointer_cast<const DebugStringConvertible>(child);
     if (debugChild) {

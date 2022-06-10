@@ -430,10 +430,18 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
 
     if ([type isEqualToString:@"RCTBubblingEventBlock"]) {
       [bubblingEvents addObject:RCTNormalizeInputEventName(name)];
-      propTypes[name] = @"BOOL";
+
+      // TODO(109509380): Remove this gating
+      if (!RCTViewConfigEventValidAttributesDisabled()) {
+        propTypes[name] = @"BOOL";
+      }
     } else if ([type isEqualToString:@"RCTDirectEventBlock"]) {
       [directEvents addObject:RCTNormalizeInputEventName(name)];
-      propTypes[name] = @"BOOL";
+
+      // TODO(109509380): Remove this gating
+      if (!RCTViewConfigEventValidAttributesDisabled()) {
+        propTypes[name] = @"BOOL";
+      }
     } else {
       propTypes[name] = type;
     }

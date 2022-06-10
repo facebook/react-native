@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<91162956144e0110fdc5f76b4de6f80e>>
+ * @generated SignedSource<<a896eacc9a9dcf1699836dec923115b1>>
  */
 
 "use strict";
@@ -1819,11 +1819,6 @@ function lanesToEventPriority(lanes) {
         : 536870912
       : 4
     : 1;
-}
-function shim() {
-  throw Error(
-    "The current renderer does not support mutation. This error is likely caused by a bug in React. Please file an issue."
-  );
 }
 function shim$1() {
   throw Error(
@@ -6176,7 +6171,10 @@ function commitLayoutEffects(finishedWork) {
                   }
                   break;
                 case 5:
-                  null === current && firstChild.flags & 4 && shim();
+                  if (null === current && firstChild.flags & 4)
+                    throw Error(
+                      "The current renderer does not support mutation. This error is likely caused by a bug in React. Please file an issue."
+                    );
                   break;
                 case 6:
                   break;
@@ -6564,7 +6562,7 @@ function performConcurrentWorkOnRoot(root, didTimeout) {
 function recoverFromConcurrentError(root, errorRetryLanes) {
   var prevExecutionContext = executionContext;
   executionContext |= 8;
-  root.isDehydrated && ((root.isDehydrated = !1), shim(root.containerInfo));
+  root.isDehydrated && (root.isDehydrated = !1);
   for (
     var exitStatus, i = 0;
     50 > i &&
@@ -8165,7 +8163,7 @@ var roots = new Map(),
   devToolsConfig$jscomp$inline_925 = {
     findFiberByHostInstance: getInstanceFromInstance,
     bundleType: 0,
-    version: "18.0.0-rc.0-a049aa015-20211213",
+    version: "18.0.0-rc.0-fe905f152-20220107",
     rendererPackageName: "react-native-renderer",
     rendererConfig: {
       getInspectorDataForViewTag: function() {
@@ -8207,7 +8205,7 @@ var internals$jscomp$inline_1178 = {
   scheduleRoot: null,
   setRefreshHandler: null,
   getCurrentFiber: null,
-  reconcilerVersion: "18.0.0-rc.0-a049aa015-20211213"
+  reconcilerVersion: "18.0.0-rc.0-fe905f152-20220107"
 };
 if ("undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__) {
   var hook$jscomp$inline_1179 = __REACT_DEVTOOLS_GLOBAL_HOOK__;

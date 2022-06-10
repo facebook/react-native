@@ -43,7 +43,7 @@ class AttributedStringBox final {
   AttributedStringBox(AttributedStringBox const &other) = default;
   AttributedStringBox(AttributedStringBox &&other) noexcept;
   AttributedStringBox &operator=(AttributedStringBox const &other) = default;
-  AttributedStringBox &operator=(AttributedStringBox &&other);
+  AttributedStringBox &operator=(AttributedStringBox &&other) noexcept;
 
   /*
    * Getters.

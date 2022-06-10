@@ -18,7 +18,7 @@ namespace react {
 
 Size AndroidProgressBarMeasurementsManager::measure(
     SurfaceId surfaceId,
-    AndroidProgressBarProps props,
+    AndroidProgressBarProps const &props,
     LayoutConstraints layoutConstraints) const {
   {
     std::lock_guard<std::mutex> lock(mutex_);

@@ -291,7 +291,6 @@ export default NativeComponentRegistry.get(nativeComponentName, () => ({
 
   validAttributes: {
     disabled: true,
-    onChange: true,
   },
 }));
 ",
@@ -349,10 +348,6 @@ export default NativeComponentRegistry.get(nativeComponentName, () => ({
 
   validAttributes: {
     disabled: true,
-    onChange: true,
-    onEventDirect: true,
-    onOrientationChange: true,
-    onEnd: true,
   },
 }));
 ",
@@ -408,10 +403,7 @@ export default NativeComponentRegistry.get(nativeComponentName, () => ({
     },
   },
 
-  validAttributes: {
-    onChange: true,
-    onDire tChange: true,
-  },
+  validAttributes: {},
 }));
 ",
 }
@@ -673,7 +665,6 @@ export default NativeComponentRegistry.get(nativeComponentName, () => ({
 
   validAttributes: {
     accessibilityHint: true,
-    onChange: true,
   },
 }));
 ",
@@ -982,12 +973,23 @@ const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/
 const {UIManager} = require(\\"react-native\\")
 
 let nativeComponentName = 'NativeComponentName';
-if (UIManager.getViewManagerConfig('NativeComponentName')) {
-  nativeComponentName = 'NativeComponentName';
-} else if (UIManager.getViewManagerConfig('DeprecatedNativeComponentName')) {
-  nativeComponentName = 'DeprecatedNativeComponentName';
+const staticViewConfigsEnabled = global.__fbStaticViewConfig === true;
+if (staticViewConfigsEnabled) {
+  if (UIManager.hasViewManagerConfig('NativeComponentName')) {
+    nativeComponentName = 'NativeComponentName';
+  } else if (UIManager.hasViewManagerConfig('DeprecatedNativeComponentName')) {
+    nativeComponentName = 'DeprecatedNativeComponentName';
+  } else {
+    throw new Error('Failed to find native component for either \\"NativeComponentName\\" or \\"DeprecatedNativeComponentName\\", with SVC enabled.');
+  }
 } else {
-  throw new Error('Failed to find native component for either \\"NativeComponentName\\" or \\"DeprecatedNativeComponentName\\"');
+  if (UIManager.getViewManagerConfig('NativeComponentName')) {
+    nativeComponentName = 'NativeComponentName';
+  } else if (UIManager.getViewManagerConfig('DeprecatedNativeComponentName')) {
+    nativeComponentName = 'DeprecatedNativeComponentName';
+  } else {
+    throw new Error('Failed to find native component for either \\"NativeComponentName\\" or \\"DeprecatedNativeComponentName\\", with SVC disabled.');
+  }
 }
 export default NativeComponentRegistry.get(nativeComponentName, () => ({
   uiViewClassName: 'NativeComponentName',

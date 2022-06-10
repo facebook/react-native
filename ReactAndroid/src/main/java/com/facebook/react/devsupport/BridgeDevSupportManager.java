@@ -99,11 +99,7 @@ public final class BridgeDevSupportManager extends DevSupportManagerBase {
     }
 
     addCustomDevOption(
-        mIsSamplingProfilerEnabled
-            ? applicationContext.getString(
-                com.facebook.react.R.string.catalyst_sample_profiler_disable)
-            : applicationContext.getString(
-                com.facebook.react.R.string.catalyst_sample_profiler_enable),
+        mIsSamplingProfilerEnabled ? "Disable Sampling Profiler" : "Enable Sampling Profiler",
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
