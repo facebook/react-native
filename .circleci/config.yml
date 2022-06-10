@@ -592,7 +592,8 @@ jobs:
           name: Setup the Android Template
           command: |
             cd template
-            sed -i 's/1000\.0\.0/file\:\.\./g' package.json
+            # We replace the "react-native" dependency version with file:.. so we use it from source.
+            sed -i 's/\"react-native\"\:.*/\"react-native\"\: \"file\:\.\.\"/g' package.json
             npm install
             # react-native-community/cli is needed as the Android template is referencing a .gradle file inside it.
             npm i @react-native-community/cli
@@ -671,7 +672,6 @@ jobs:
       - ANDROID_BUILD_VERSION: 31
       - ANDROID_TOOLS_VERSION: 31.0.0
       - GRADLE_OPTS: -Dorg.gradle.daemon=false
-      - NDK_VERSION: 21.4.7075529
     steps:
       - checkout
 
@@ -717,7 +717,6 @@ jobs:
             sdkmanager "build-tools;%ANDROID_TOOLS_VERSION%"
             sdkmanager "add-ons;addon-google_apis-google-23"
             sdkmanager "extras;android;m2repository"
-            sdkmanager "ndk;%NDK_VERSION%"
 
       # -------------------------
       # Run Tests

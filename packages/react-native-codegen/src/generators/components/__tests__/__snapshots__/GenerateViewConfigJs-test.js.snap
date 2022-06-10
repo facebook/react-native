@@ -384,21 +384,10 @@ export default NativeComponentRegistry.get(nativeComponentName, () => ({
         bubbled: 'onChange',
       },
     },
-
-    topChange: {
-      phasedRegistrationNames: {
-        captured: 'onChangeCapture',
-        bubbled: 'onChange',
-      },
-    },
   },
 
   directEventTypes: {
     paperDirectChange: {
-      registrationName: 'onDire tChange',
-    },
-
-    topDire tChange: {
       registrationName: 'onDire tChange',
     },
   },

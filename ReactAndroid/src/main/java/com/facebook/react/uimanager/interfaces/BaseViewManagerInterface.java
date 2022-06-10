@@ -9,6 +9,7 @@ package com.facebook.react.uimanager;
 
 import android.view.View;
 import androidx.annotation.Nullable;
+import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 
@@ -48,6 +49,8 @@ public interface BaseViewManagerInterface<T extends View> {
   void setImportantForAccessibility(T view, @Nullable String importantForAccessibility);
 
   void setNativeId(T view, @Nullable String nativeId);
+
+  void setAccessibilityLabelledBy(T view, @Nullable Dynamic nativeId);
 
   void setOpacity(T view, float opacity);
 

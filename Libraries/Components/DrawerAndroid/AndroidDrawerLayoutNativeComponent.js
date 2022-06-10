@@ -92,12 +92,12 @@ type NativeProps = $ReadOnly<{|
   /**
    * Function called whenever the navigation view has been opened.
    */
-  onDrawerOpen?: ?DirectEventHandler<null, 'topDrawerOpened'>,
+  onDrawerOpen?: ?DirectEventHandler<null>,
 
   /**
    * Function called whenever the navigation view has been closed.
    */
-  onDrawerClose?: ?DirectEventHandler<null, 'topDrawerClosed'>,
+  onDrawerClose?: ?DirectEventHandler<null>,
 
   /**
    * Make the drawer take the entire screen and draw the background of the

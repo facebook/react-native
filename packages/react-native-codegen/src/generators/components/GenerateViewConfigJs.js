@@ -254,8 +254,9 @@ function buildViewConfig(
         bubblingEvents.push(
           generateBubblingEventInfo(event, event.paperTopLevelNameDeprecated),
         );
+      } else {
+        bubblingEvents.push(generateBubblingEventInfo(event));
       }
-      bubblingEvents.push(generateBubblingEventInfo(event));
       return bubblingEvents;
     }, []);
 
@@ -278,8 +279,9 @@ function buildViewConfig(
         directEvents.push(
           generateDirectEventInfo(event, event.paperTopLevelNameDeprecated),
         );
+      } else {
+        directEvents.push(generateDirectEventInfo(event));
       }
-      directEvents.push(generateDirectEventInfo(event));
       return directEvents;
     }, []);
 
