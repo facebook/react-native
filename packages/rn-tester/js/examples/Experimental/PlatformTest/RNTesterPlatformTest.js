@@ -11,7 +11,7 @@
 import type {PlatformTestComponentBaseProps} from './RNTesterPlatformTestTypes';
 
 import * as React from 'react';
-import {StyleSheet, View, Text, ScrollView} from 'react-native';
+import {StyleSheet, View, Text} from 'react-native';
 
 import RNTesterPlatformTestInstructions from './RNTesterPlatformTestInstructions';
 import usePlatformTestHarness from './usePlatformTestHarness';
@@ -35,22 +35,22 @@ export default function RNTesterPlatformTest(props: Props): React.MixedElement {
   const {harness, reset, results, testKey} = usePlatformTestHarness();
 
   return (
-    <ScrollView style={styles.root}>
+    <View style={styles.root}>
       <Text style={[styles.textBlock, styles.title]}>{title}</Text>
       <Text style={[styles.textBlock, styles.description]}>{description}</Text>
       <RNTesterPlatformTestInstructions
         instructions={instructions}
-        style={styles.block}
+        style={[styles.instructions, styles.block]}
       />
-      <View style={styles.block}>
+      <View style={[styles.testContainer, styles.block]}>
         <UnderTestComponent key={testKey} harness={harness} />
       </View>
       <RNTesterPlatformTestResultView
         reset={reset}
         results={results}
-        style={styles.block}
+        style={styles.results}
       />
-    </ScrollView>
+    </View>
   );
 }
 
@@ -61,11 +61,26 @@ const styles = StyleSheet.create({
   description: {
     fontSize: 16,
   },
+  instructions: {
+    flexGrow: 0,
+    flexShrink: 0,
+  },
   textBlock: {
     marginBottom: 8,
+    flexGrow: 0,
+    flexShrink: 0,
+  },
+  results: {
+    flex: 1,
   },
   root: {
     padding: 8,
+    paddingBottom: 0,
+    flex: 1,
+  },
+  testContainer: {
+    flexGrow: 0,
+    flexShrink: 0,
   },
   title: {
     fontSize: 32,

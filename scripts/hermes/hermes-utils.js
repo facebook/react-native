@@ -158,7 +158,11 @@ function copyPodSpec() {
   );
 }
 
-function isOnAReleaseBranch() {
+function isTestingAgainstLocalHermesTarball() {
+  return 'HERMES_ENGINE_TARBALL_PATH' in process.env;
+}
+
+function isOnAReactNativeReleaseBranch() {
   try {
     let currentBranch = execSync('git rev-parse --abbrev-ref HEAD')
       .toString()
@@ -176,7 +180,7 @@ function isOnAReleaseBranch() {
   }
 }
 
-function isOnAReleaseTag() {
+function isOnAReactNativeReleaseTag() {
   try {
     // If on a named tag, this method will return the tag name.
     // If not, it will throw as the return code is not 0.
@@ -190,12 +194,17 @@ function isOnAReleaseTag() {
   return currentRemote.endsWith('facebook/react-native.git');
 }
 
-function shouldBuildHermesFromSource() {
+function isRequestingLatestCommitFromHermesMainBranch() {
   const hermesTag = readHermesTag();
+  return hermesTag === DEFAULT_HERMES_TAG;
+}
+
+function shouldBuildHermesFromSource() {
   return (
-    isOnAReleaseBranch() ||
-    isOnAReleaseTag() ||
-    hermesTag === DEFAULT_HERMES_TAG
+    !isTestingAgainstLocalHermesTarball() &&
+    (isOnAReactNativeReleaseBranch() ||
+      isOnAReactNativeReleaseTag() ||
+      isRequestingLatestCommitFromHermesMainBranch())
   );
 }
 
