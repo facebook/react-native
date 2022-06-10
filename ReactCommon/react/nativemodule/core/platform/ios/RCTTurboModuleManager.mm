@@ -437,10 +437,15 @@ static Class getFallbackClassFromName(const char *name)
     __block id<RCTTurboModule> module = nil;
 
     if ([moduleClass conformsToProtocol:@protocol(RCTTurboModule)]) {
+      __weak __typeof(self) weakSelf = self;
       dispatch_block_t work = ^{
-        module = [self _createAndSetUpRCTTurboModule:moduleClass
-                                          moduleName:moduleName
-                                            moduleId:moduleHolder->getModuleId()];
+        auto strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
+        module = [strongSelf _createAndSetUpRCTTurboModule:moduleClass
+                                                moduleName:moduleName
+                                                  moduleId:moduleHolder->getModuleId()];
       };
 
       if ([self _requiresMainQueueSetup:moduleClass]) {
