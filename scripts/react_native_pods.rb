@@ -10,6 +10,7 @@ require_relative './react_native_pods_utils/script_phases.rb'
 require_relative './cocoapods/flipper.rb'
 require_relative './cocoapods/fabric.rb'
 require_relative './cocoapods/codegen.rb'
+require_relative './cocoapods/utils.rb'
 
 $CODEGEN_OUTPUT_DIR = 'build/generated/ios'
 $CODEGEN_COMPONENT_DIR = 'react/renderer/components'
@@ -39,12 +40,7 @@ def use_react_native! (options={})
 
   flipper_configuration = options[:flipper_configuration] ||= FlipperConfiguration.disabled
 
-  if `/usr/sbin/sysctl -n hw.optional.arm64 2>&1`.to_i == 1 && !RUBY_PLATFORM.include?('arm64')
-    Pod::UI.warn 'Do not use "pod install" from inside Rosetta2 (x86_64 emulation on arm64).'
-    Pod::UI.warn ' - Emulated x86_64 is slower than native arm64'
-    Pod::UI.warn ' - May result in mixed architectures in rubygems (eg: ffi_c.bundle files may be x86_64 with an arm64 interpreter)'
-    Pod::UI.warn 'Run "env /usr/bin/arch -arm64 /bin/bash --login" then try again.'
-  end
+  ReactNativePodsUtils.warn_if_not_on_arm64()
 
   # The Pods which should be included in all projects
   pod 'FBLazyVector', :path => "#{prefix}/Libraries/FBLazyVector"
@@ -137,49 +133,12 @@ def use_react_native! (options={})
 end
 
 def get_default_flags()
-  flags = {
-    :fabric_enabled => false,
-    :hermes_enabled => false,
-    :flipper_configuration => FlipperConfiguration.disabled
-  }
-
-  if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
-    flags[:fabric_enabled] = true
-    flags[:hermes_enabled] = true
-  end
-
-  if ENV['USE_HERMES'] == '1'
-    flags[:hermes_enabled] = true
-  end
-
-  return flags
+  return ReactNativePodsUtils.get_default_flags()
 end
 
 def use_flipper!(versions = {}, configurations: ['Debug'])
   Pod::UI.warn "use_flipper is deprecated, use the flipper_configuration option in the use_react_native function"
   use_flipper_pods(versions, :configurations => configurations)
-end
-
-def has_pod(installer, name)
-  installer.pods_project.pod_group(name) != nil
-end
-
-def exclude_architectures(installer)
-  projects = installer.aggregate_targets
-    .map{ |t| t.user_project }
-    .uniq{ |p| p.path }
-    .push(installer.pods_project)
-
-  # Hermes does not support `i386` architecture
-  excluded_archs_default = has_pod(installer, 'hermes-engine') ? "i386" : ""
-
-  projects.each do |project|
-    project.build_configurations.each do |config|
-      config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = excluded_archs_default
-    end
-
-    project.save()
-  end
 end
 
 def fix_library_search_paths(installer)
@@ -234,11 +193,11 @@ def set_node_modules_user_settings(installer, react_native_path)
 end
 
 def react_native_post_install(installer, react_native_path = "../node_modules/react-native")
-  if has_pod(installer, 'Flipper')
+  if ReactNativePodsUtils.has_pod(installer, 'Flipper')
     flipper_post_install(installer)
   end
 
-  exclude_architectures(installer)
+  ReactNativePodsUtils.exclude_i386_architecture_while_using_hermes(installer)
   fix_library_search_paths(installer)
 
   cpp_flags = DEFAULT_OTHER_CPLUSPLUSFLAGS
