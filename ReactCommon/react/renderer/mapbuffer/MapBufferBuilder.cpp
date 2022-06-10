@@ -17,8 +17,7 @@ MapBufferBuilder::MapBufferBuilder()
     : MapBufferBuilder::MapBufferBuilder(INITIAL_KEY_VALUE_SIZE) {}
 
 MapBuffer MapBufferBuilder::EMPTY() {
-  static auto emptyMap = MapBufferBuilder().build();
-  return emptyMap;
+  return MapBufferBuilder().build();
 }
 
 MapBufferBuilder::MapBufferBuilder(uint16_t initialSize) {
@@ -126,7 +125,7 @@ void MapBufferBuilder::ensureDynamicDataSpace(int32_t size) {
   }
 }
 
-void MapBufferBuilder::putString(Key key, std::string value) {
+void MapBufferBuilder::putString(Key key, std::string const &value) {
   int32_t strLength = static_cast<int32_t>(value.length());
   const char *cstring = getCstring(&value);
 
@@ -149,7 +148,7 @@ void MapBufferBuilder::putString(Key key, std::string value) {
   dynamicDataOffset_ += sizeOfDynamicData;
 }
 
-void MapBufferBuilder::putMapBuffer(Key key, MapBuffer &map) {
+void MapBufferBuilder::putMapBuffer(Key key, MapBuffer const &map) {
   int32_t mapBufferSize = map.getBufferSize();
 
   // format [lenght of buffer (int)] + [bytes of MapBuffer]
@@ -181,16 +180,18 @@ MapBuffer MapBufferBuilder::build() {
   // Copy header at the beginning of "keyValues_"
   memcpy(keyValues_, &_header, HEADER_SIZE);
 
-  uint8_t *buffer = new Byte[bufferSize];
+  std::vector<uint8_t> buffer(bufferSize);
 
-  memcpy(buffer, keyValues_, keyValuesOffset_);
+  memcpy(buffer.data(), keyValues_, keyValuesOffset_);
 
   if (dynamicDataValues_ != nullptr) {
-    memcpy(buffer + keyValuesOffset_, dynamicDataValues_, dynamicDataOffset_);
+    memcpy(
+        buffer.data() + keyValuesOffset_,
+        dynamicDataValues_,
+        dynamicDataOffset_);
   }
 
-  // TODO T83483191: should we use std::move here?
-  auto map = MapBuffer(buffer, bufferSize);
+  auto map = MapBuffer(std::move(buffer));
 
   // TODO T83483191: we should invalidate the class once the build() method is
   // called.

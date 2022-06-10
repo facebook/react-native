@@ -55,6 +55,7 @@ public class ReadableMapBuffer implements Iterable<ReadableMapBuffer.MapBufferEn
   @SuppressWarnings("unused")
   private short mCount = 0;
 
+  @DoNotStrip
   private ReadableMapBuffer(HybridData hybridData) {
     mHybridData = hybridData;
   }
@@ -64,22 +65,12 @@ public class ReadableMapBuffer implements Iterable<ReadableMapBuffer.MapBufferEn
     readHeader();
   }
 
-  private native ByteBuffer importByteBufferAllocateDirect();
-
   private native ByteBuffer importByteBuffer();
 
   @SuppressWarnings("unused")
   @DoNotStrip
   @Nullable
   private HybridData mHybridData;
-
-  @Override
-  protected void finalize() throws Throwable {
-    super.finalize();
-    if (mHybridData != null) {
-      mHybridData.resetNative();
-    }
-  }
 
   private int getKeyOffsetForBucketIndex(int bucketIndex) {
     return HEADER_SIZE + BUCKET_SIZE * bucketIndex;

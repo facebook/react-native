@@ -42,7 +42,7 @@ let requestIdleCallbacks: Array<number> = [];
 const requestIdleCallbackTimeouts: {[number]: number, ...} = {};
 
 let GUID = 1;
-let errors: ?Array<Error> = null;
+const errors: Array<Error> = [];
 
 let hasEmittedTimeDriftWarning = false;
 
@@ -130,11 +130,7 @@ function _callTimer(timerID: number, frameTime: number, didTimeout: ?boolean) {
     }
   } catch (e) {
     // Don't rethrow so that we can run all timers.
-    if (!errors) {
-      errors = [e];
-    } else {
-      errors.push(e);
-    }
+    errors.push(e);
   }
 
   if (__DEV__) {
@@ -352,14 +348,13 @@ const JSTimers = {
       'Cannot call `callTimers` with an empty list of IDs.',
     );
 
-    errors = (null: ?Array<Error>);
+    errors.length = 0;
     for (let i = 0; i < timersToCall.length; i++) {
       _callTimer(timersToCall[i], 0);
     }
 
-    if (errors) {
-      // $FlowFixMe[incompatible-use]
-      const errorCount = errors.length;
+    const errorCount = errors.length;
+    if (errorCount > 0) {
       if (errorCount > 1) {
         // Throw all the other errors in a setTimeout, which will throw each
         // error one at a time
@@ -367,13 +362,11 @@ const JSTimers = {
           JSTimers.setTimeout(
             (error => {
               throw error;
-              // $FlowFixMe[incompatible-use]
             }).bind(null, errors[ii]),
             0,
           );
         }
       }
-      // $FlowFixMe[incompatible-use]
       throw errors[0];
     }
   },
@@ -386,7 +379,7 @@ const JSTimers = {
       return;
     }
 
-    errors = (null: ?Array<Error>);
+    errors.length = 0;
     if (requestIdleCallbacks.length > 0) {
       const passIdleCallbacks = requestIdleCallbacks;
       requestIdleCallbacks = [];
@@ -400,13 +393,11 @@ const JSTimers = {
       setSendIdleEvents(false);
     }
 
-    if (errors) {
-      errors.forEach(error =>
-        JSTimers.setTimeout(() => {
-          throw error;
-        }, 0),
-      );
-    }
+    errors.forEach(error =>
+      JSTimers.setTimeout(() => {
+        throw error;
+      }, 0),
+    );
   },
 
   /**
@@ -414,15 +405,13 @@ const JSTimers = {
    * before we hand control back to native.
    */
   callReactNativeMicrotasks() {
-    errors = (null: ?Array<Error>);
+    errors.length = 0;
     while (_callReactNativeMicrotasksPass()) {}
-    if (errors) {
-      errors.forEach(error =>
-        JSTimers.setTimeout(() => {
-          throw error;
-        }, 0),
-      );
-    }
+    errors.forEach(error =>
+      JSTimers.setTimeout(() => {
+        throw error;
+      }, 0),
+    );
   },
 
   /**

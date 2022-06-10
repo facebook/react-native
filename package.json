@@ -123,6 +123,7 @@
     "react-devtools-core": "4.22.1",
     "react-native-codegen": "^0.0.11",
     "react-refresh": "^0.4.0",
+    "react-shallow-renderer": "16.14.1",
     "regenerator-runtime": "^0.13.2",
     "scheduler": "^0.20.2",
     "stacktrace-parser": "^0.1.3",

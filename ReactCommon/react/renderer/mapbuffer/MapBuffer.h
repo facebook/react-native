@@ -10,11 +10,12 @@
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/mapbuffer/primitives.h>
 
-#include <stdlib.h>
 #include <limits>
 
 namespace facebook {
 namespace react {
+
+class ReadableMapBuffer;
 
 /**
  * MapBuffer is an optimized map format for transferring data like props between
@@ -32,12 +33,11 @@ namespace react {
  * - have minimal APK size and build time impact.
  */
 class MapBuffer {
+  friend ReadableMapBuffer;
+
  private:
   // Buffer and its size
-  const uint8_t *data_ = nullptr;
-
-  // amount of bytes in the MapBuffer
-  int32_t dataSize_ = 0;
+  std::vector<uint8_t> const bytes_;
 
   // amount of items in the MapBuffer
   uint16_t count_ = 0;
@@ -46,9 +46,13 @@ class MapBuffer {
   int32_t getDynamicDataOffset() const;
 
  public:
-  MapBuffer(uint8_t *const data, int32_t dataSize);
+  explicit MapBuffer(std::vector<uint8_t> data);
 
-  ~MapBuffer();
+  MapBuffer(MapBuffer const &buffer) = delete;
+
+  MapBuffer &operator=(MapBuffer other) = delete;
+
+  MapBuffer(MapBuffer &&buffer) = default;
 
   int32_t getInt(Key key) const;
 

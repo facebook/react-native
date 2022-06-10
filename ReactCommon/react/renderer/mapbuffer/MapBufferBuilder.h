@@ -82,9 +82,9 @@ class MapBufferBuilder {
 
   void putNull(Key key);
 
-  void putString(Key key, std::string value);
+  void putString(Key key, std::string const &value);
 
-  void putMapBuffer(Key key, MapBuffer &map);
+  void putMapBuffer(Key key, MapBuffer const &map);
 
   // TODO T83483191: This should return MapBuffer!
   MapBuffer build();
