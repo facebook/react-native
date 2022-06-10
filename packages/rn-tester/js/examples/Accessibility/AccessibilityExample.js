@@ -1233,7 +1233,7 @@ function AccessibilityErrorDoesNotClear(): React.Node {
           accessibilityInvalid={accessibilityInvalid}
           value={text}
           onChangeText={newText => setText(newText)}
-          style={[styles.default, {height: 100}]}
+          style={styles.default}
         />
         <Text>
           The value of the accessibilityErrorMessage prop is{' '}

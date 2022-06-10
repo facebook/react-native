@@ -137,10 +137,7 @@ using namespace facebook::react;
   NSString *error = RCTNSStringFromString(newTextInputProps.accessibilityErrorMessage);
   NSString *text = RCTNSStringFromString(newTextInputProps.text);
   if (newTextInputProps.accessibilityErrorMessage != oldTextInputProps.accessibilityErrorMessage || newTextInputProps.text != oldTextInputProps.text) {
-    NSString *errorWithText = RCTNSStringFromString(newTextInputProps.accessibilityErrorMessage);
-    if ([text length] != 0) {
-      errorWithText = [NSString stringWithFormat: @"%@ %@", text, errorWithText];
-    }
+    NSString *errorWithText = [text length] == 0 ? error : [NSString stringWithFormat: @"%@ %@", text, error];
     self.accessibilityElement.accessibilityValue = errorWithText;
     if ([error length] != 0) {
       UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, errorWithText);
