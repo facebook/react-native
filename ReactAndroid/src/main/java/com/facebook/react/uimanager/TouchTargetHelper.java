@@ -1,11 +1,13 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.uimanager;
+
+import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 
 import android.annotation.SuppressLint;
 import android.graphics.Matrix;
@@ -19,6 +21,7 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.touch.ReactHitSlopView;
+import com.facebook.react.uimanager.common.ViewUtil;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -186,7 +189,8 @@ public class TouchTargetHelper {
         if (view instanceof ReactOverflowViewWithInset) {
           // If the touch point is outside of the overflowinset for the view, we can safely ignore
           // it.
-          if (ReactFeatureFlags.doesUseOverflowInset()
+          if (ViewUtil.getUIManagerType(view.getId()) == FABRIC
+              && ReactFeatureFlags.doesUseOverflowInset()
               && !isTouchPointInViewWithOverflowInset(eventCoords[0], eventCoords[1], view)) {
             return null;
           }

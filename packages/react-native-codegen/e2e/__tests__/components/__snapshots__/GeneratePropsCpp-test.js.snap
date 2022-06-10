@@ -4,7 +4,7 @@ exports[`GeneratePropsCpp can generate for 'ArrayPropsNativeComponent.js' 1`] = 
 Object {
   "Props.cpp": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -46,7 +46,7 @@ exports[`GeneratePropsCpp can generate for 'BooleanPropNativeComponent.js' 1`] =
 Object {
   "Props.cpp": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -80,7 +80,7 @@ exports[`GeneratePropsCpp can generate for 'ColorPropNativeComponent.js' 1`] = `
 Object {
   "Props.cpp": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -113,7 +113,7 @@ exports[`GeneratePropsCpp can generate for 'EdgeInsetsPropNativeComponent.js' 1`
 Object {
   "Props.cpp": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -146,7 +146,7 @@ exports[`GeneratePropsCpp can generate for 'EnumPropNativeComponent.js' 1`] = `
 Object {
   "Props.cpp": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -180,7 +180,7 @@ exports[`GeneratePropsCpp can generate for 'EventNestedObjectPropsNativeComponen
 Object {
   "Props.cpp": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -213,7 +213,7 @@ exports[`GeneratePropsCpp can generate for 'EventPropsNativeComponent.js' 1`] = 
 Object {
   "Props.cpp": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -246,7 +246,7 @@ exports[`GeneratePropsCpp can generate for 'FloatPropsNativeComponent.js' 1`] = 
 Object {
   "Props.cpp": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -285,7 +285,7 @@ exports[`GeneratePropsCpp can generate for 'ImagePropNativeComponent.js' 1`] = `
 Object {
   "Props.cpp": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -319,7 +319,7 @@ exports[`GeneratePropsCpp can generate for 'IntegerPropNativeComponent.js' 1`] =
 Object {
   "Props.cpp": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -354,7 +354,7 @@ exports[`GeneratePropsCpp can generate for 'InterfaceOnlyNativeComponent.js' 1`]
 Object {
   "Props.cpp": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -387,7 +387,7 @@ exports[`GeneratePropsCpp can generate for 'MultiNativePropNativeComponent.js' 1
 Object {
   "Props.cpp": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -424,7 +424,7 @@ exports[`GeneratePropsCpp can generate for 'NoPropsNoEventsNativeComponent.js' 1
 Object {
   "Props.cpp": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -457,7 +457,7 @@ exports[`GeneratePropsCpp can generate for 'ObjectPropsNativeComponent.js' 1`] =
 Object {
   "Props.cpp": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -493,7 +493,7 @@ exports[`GeneratePropsCpp can generate for 'PointPropNativeComponent.js' 1`] = `
 Object {
   "Props.cpp": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -526,7 +526,7 @@ exports[`GeneratePropsCpp can generate for 'StringPropNativeComponent.js' 1`] = 
 Object {
   "Props.cpp": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.

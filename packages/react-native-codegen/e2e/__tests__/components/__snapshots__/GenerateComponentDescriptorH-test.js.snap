@@ -4,7 +4,7 @@ exports[`GenerateComponentDescriptorH can generate for 'ArrayPropsNativeComponen
 Object {
   "ComponentDescriptors.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -32,7 +32,7 @@ exports[`GenerateComponentDescriptorH can generate for 'BooleanPropNativeCompone
 Object {
   "ComponentDescriptors.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -60,7 +60,7 @@ exports[`GenerateComponentDescriptorH can generate for 'ColorPropNativeComponent
 Object {
   "ComponentDescriptors.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -88,7 +88,7 @@ exports[`GenerateComponentDescriptorH can generate for 'EdgeInsetsPropNativeComp
 Object {
   "ComponentDescriptors.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -116,7 +116,7 @@ exports[`GenerateComponentDescriptorH can generate for 'EnumPropNativeComponent.
 Object {
   "ComponentDescriptors.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -144,7 +144,7 @@ exports[`GenerateComponentDescriptorH can generate for 'EventNestedObjectPropsNa
 Object {
   "ComponentDescriptors.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -172,7 +172,7 @@ exports[`GenerateComponentDescriptorH can generate for 'EventPropsNativeComponen
 Object {
   "ComponentDescriptors.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -200,7 +200,7 @@ exports[`GenerateComponentDescriptorH can generate for 'FloatPropsNativeComponen
 Object {
   "ComponentDescriptors.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -228,7 +228,7 @@ exports[`GenerateComponentDescriptorH can generate for 'ImagePropNativeComponent
 Object {
   "ComponentDescriptors.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -256,7 +256,7 @@ exports[`GenerateComponentDescriptorH can generate for 'IntegerPropNativeCompone
 Object {
   "ComponentDescriptors.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -284,7 +284,7 @@ exports[`GenerateComponentDescriptorH can generate for 'InterfaceOnlyNativeCompo
 Object {
   "ComponentDescriptors.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -312,7 +312,7 @@ exports[`GenerateComponentDescriptorH can generate for 'MultiNativePropNativeCom
 Object {
   "ComponentDescriptors.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -340,7 +340,7 @@ exports[`GenerateComponentDescriptorH can generate for 'NoPropsNoEventsNativeCom
 Object {
   "ComponentDescriptors.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -368,7 +368,7 @@ exports[`GenerateComponentDescriptorH can generate for 'ObjectPropsNativeCompone
 Object {
   "ComponentDescriptors.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -396,7 +396,7 @@ exports[`GenerateComponentDescriptorH can generate for 'PointPropNativeComponent
 Object {
   "ComponentDescriptors.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -424,7 +424,7 @@ exports[`GenerateComponentDescriptorH can generate for 'StringPropNativeComponen
 Object {
   "ComponentDescriptors.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,6 +18,8 @@
 
 #include <glog/logging.h>
 
+#include <utility>
+
 namespace facebook::react {
 
 static std::unique_ptr<LeakChecker> constructLeakCheckerIfNeeded(
@@ -31,10 +33,10 @@ static std::unique_ptr<LeakChecker> constructLeakCheckerIfNeeded(
 
 UIManager::UIManager(
     RuntimeExecutor const &runtimeExecutor,
-    BackgroundExecutor const &backgroundExecutor,
+    BackgroundExecutor backgroundExecutor,
     ContextContainer::Shared contextContainer)
     : runtimeExecutor_(runtimeExecutor),
-      backgroundExecutor_(backgroundExecutor),
+      backgroundExecutor_(std::move(backgroundExecutor)),
       contextContainer_(std::move(contextContainer)),
       leakChecker_(constructLeakCheckerIfNeeded(runtimeExecutor)) {}
 

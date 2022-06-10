@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,6 +12,7 @@
 #include <react/debug/react_native_assert.h>
 #include <chrono>
 #include <memory>
+#include <utility>
 
 namespace facebook {
 namespace react {
@@ -57,8 +58,8 @@ std::shared_ptr<RuntimeSchedulerBinding> RuntimeSchedulerBinding::getBinding(
 }
 
 RuntimeSchedulerBinding::RuntimeSchedulerBinding(
-    std::shared_ptr<RuntimeScheduler> const &runtimeScheduler)
-    : runtimeScheduler_(runtimeScheduler) {}
+    std::shared_ptr<RuntimeScheduler> runtimeScheduler)
+    : runtimeScheduler_(std::move(runtimeScheduler)) {}
 
 bool RuntimeSchedulerBinding::getIsSynchronous() const {
   return runtimeScheduler_->getIsSynchronous();

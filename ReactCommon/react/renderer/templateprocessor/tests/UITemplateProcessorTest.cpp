@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -56,7 +56,7 @@ NativeModuleRegistry buildNativeModuleRegistry() {
 
 class MockReactNativeConfig : public ReactNativeConfig {
  public:
-  MockReactNativeConfig() {}
+  MockReactNativeConfig() = default;
   bool getBool(const std::string &param) const override {
     return mockSimpleTestValue_;
   }

@@ -4,7 +4,7 @@ exports[`GenerateViewConfigJs can generate fixture ARRAY_PROPS 1`] = `
 Map {
   "ARRAY_PROPSNativeViewConfig.js" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -49,7 +49,7 @@ exports[`GenerateViewConfigJs can generate fixture ARRAY_PROPS_WITH_NESTED_OBJEC
 Map {
   "ARRAY_PROPS_WITH_NESTED_OBJECTNativeViewConfig.js" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -80,7 +80,7 @@ exports[`GenerateViewConfigJs can generate fixture BOOLEAN_PROP 1`] = `
 Map {
   "BOOLEAN_PROPNativeViewConfig.js" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -111,7 +111,7 @@ exports[`GenerateViewConfigJs can generate fixture COLOR_PROP 1`] = `
 Map {
   "COLOR_PROPNativeViewConfig.js" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -144,7 +144,7 @@ exports[`GenerateViewConfigJs can generate fixture COMMANDS 1`] = `
 Map {
   "COMMANDSNativeViewConfig.js" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -183,7 +183,7 @@ exports[`GenerateViewConfigJs can generate fixture COMMANDS_AND_PROPS 1`] = `
 Map {
   "COMMANDS_AND_PROPSNativeViewConfig.js" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -225,7 +225,7 @@ exports[`GenerateViewConfigJs can generate fixture DOUBLE_PROPS 1`] = `
 Map {
   "DOUBLE_PROPSNativeViewConfig.js" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -261,7 +261,7 @@ exports[`GenerateViewConfigJs can generate fixture EVENT_NESTED_OBJECT_PROPS 1`]
 Map {
   "EVENT_NESTED_OBJECT_PROPSNativeViewConfig.js" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -302,7 +302,7 @@ exports[`GenerateViewConfigJs can generate fixture EVENT_PROPS 1`] = `
 Map {
   "EVENT_PROPSNativeViewConfig.js" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -363,7 +363,7 @@ exports[`GenerateViewConfigJs can generate fixture EVENTS_WITH_PAPER_NAME 1`] = 
 Map {
   "EVENTS_WITH_PAPER_NAMENativeViewConfig.js" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -421,7 +421,7 @@ exports[`GenerateViewConfigJs can generate fixture EXCLUDE_ANDROID 1`] = `
 Map {
   "EXCLUDE_ANDROIDNativeViewConfig.js" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -449,7 +449,7 @@ exports[`GenerateViewConfigJs can generate fixture EXCLUDE_ANDROID_IOS 1`] = `
 Map {
   "EXCLUDE_ANDROID_IOSNativeViewConfig.js" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -477,7 +477,7 @@ exports[`GenerateViewConfigJs can generate fixture FLOAT_PROPS 1`] = `
 Map {
   "FLOAT_PROPSNativeViewConfig.js" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -513,7 +513,7 @@ exports[`GenerateViewConfigJs can generate fixture IMAGE_PROP 1`] = `
 Map {
   "IMAGE_PROPNativeViewConfig.js" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -546,7 +546,7 @@ exports[`GenerateViewConfigJs can generate fixture INSETS_PROP 1`] = `
 Map {
   "INSETS_PROPNativeViewConfig.js" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -579,7 +579,7 @@ exports[`GenerateViewConfigJs can generate fixture INT32_ENUM_PROP 1`] = `
 Map {
   "INT32_ENUM_PROPNativeViewConfig.js" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -610,7 +610,7 @@ exports[`GenerateViewConfigJs can generate fixture INTEGER_PROPS 1`] = `
 Map {
   "INTEGER_PROPSNativeViewConfig.js" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -643,7 +643,7 @@ exports[`GenerateViewConfigJs can generate fixture INTERFACE_ONLY 1`] = `
 Map {
   "INTERFACE_ONLYNativeViewConfig.js" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -684,7 +684,7 @@ exports[`GenerateViewConfigJs can generate fixture MULTI_NATIVE_PROP 1`] = `
 Map {
   "MULTI_NATIVE_PROPNativeViewConfig.js" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -729,7 +729,7 @@ exports[`GenerateViewConfigJs can generate fixture NO_PROPS_NO_EVENTS 1`] = `
 Map {
   "NO_PROPS_NO_EVENTSNativeViewConfig.js" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -757,7 +757,7 @@ exports[`GenerateViewConfigJs can generate fixture OBJECT_PROPS 1`] = `
 Map {
   "OBJECT_PROPSNativeViewConfig.js" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -788,7 +788,7 @@ exports[`GenerateViewConfigJs can generate fixture POINT_PROP 1`] = `
 Map {
   "POINT_PROPNativeViewConfig.js" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -821,7 +821,7 @@ exports[`GenerateViewConfigJs can generate fixture STRING_ENUM_PROP 1`] = `
 Map {
   "STRING_ENUM_PROPNativeViewConfig.js" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -852,7 +852,7 @@ exports[`GenerateViewConfigJs can generate fixture STRING_PROP 1`] = `
 Map {
   "STRING_PROPNativeViewConfig.js" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -884,7 +884,7 @@ exports[`GenerateViewConfigJs can generate fixture TWO_COMPONENTS_DIFFERENT_FILE
 Map {
   "TWO_COMPONENTS_DIFFERENT_FILESNativeViewConfig.js" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -925,7 +925,7 @@ exports[`GenerateViewConfigJs can generate fixture TWO_COMPONENTS_SAME_FILE 1`] 
 Map {
   "TWO_COMPONENTS_SAME_FILENativeViewConfig.js" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -966,7 +966,7 @@ exports[`GenerateViewConfigJs can generate fixture with a deprecated view config
 Map {
   "DEPRECATED_VIEW_CONFIG_NAMENativeViewConfig.js" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,6 +8,7 @@
 #include "LayoutAnimationKeyFrameManager.h"
 
 #include <algorithm>
+#include <utility>
 
 #include <react/debug/flags.h>
 #include <react/debug/react_native_assert.h>
@@ -96,7 +97,7 @@ LayoutAnimationKeyFrameManager::LayoutAnimationKeyFrameManager(
     RuntimeExecutor runtimeExecutor,
     ContextContainer::Shared &contextContainer,
     LayoutAnimationStatusDelegate *delegate)
-    : runtimeExecutor_(runtimeExecutor),
+    : runtimeExecutor_(std::move(runtimeExecutor)),
       contextContainer_(contextContainer),
       layoutAnimationStatusDelegate_(delegate),
       now_([]() {
@@ -1322,11 +1323,7 @@ void LayoutAnimationKeyFrameManager::
       continue;
     }
 
-    for (auto it = inflightAnimation.keyFrames.begin();
-         it != inflightAnimation.keyFrames.end();
-         it++) {
-      auto &animatedKeyFrame = *it;
-
+    for (auto &animatedKeyFrame : inflightAnimation.keyFrames) {
       if (animatedKeyFrame.invalidated) {
         continue;
       }
@@ -1430,11 +1427,7 @@ void LayoutAnimationKeyFrameManager::adjustDelayedMutationIndicesForMutation(
       continue;
     }
 
-    for (auto it = inflightAnimation.keyFrames.begin();
-         it != inflightAnimation.keyFrames.end();
-         it++) {
-      auto &animatedKeyFrame = *it;
-
+    for (auto &animatedKeyFrame : inflightAnimation.keyFrames) {
       if (animatedKeyFrame.invalidated) {
         continue;
       }

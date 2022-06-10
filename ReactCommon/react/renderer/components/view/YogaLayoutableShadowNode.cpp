@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -33,7 +33,7 @@ static int FabricDefaultYogaLog(
   va_copy(args_copy, args);
 
   // Adding 1 to add space for terminating null character.
-  int size_s = vsnprintf(NULL, 0, format, args);
+  int size_s = vsnprintf(nullptr, 0, format, args);
   auto size = static_cast<size_t>(size_s);
   std::vector<char> buffer(size);
 

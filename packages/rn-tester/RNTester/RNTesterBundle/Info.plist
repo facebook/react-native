@@ -21,7 +21,7 @@
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>NSHumanReadableCopyright</key>
-	<string>Copyright © Facebook, Inc. and its affiliates.</string>
+	<string>Copyright © Meta Platforms, Inc. and affiliates.</string>
 	<key>NSPrincipalClass</key>
 	<string></string>
 </dict>

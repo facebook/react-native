@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -20,7 +20,7 @@ using namespace facebook::jni;
 namespace facebook {
 namespace react {
 
-TextLayoutManager::~TextLayoutManager() {}
+TextLayoutManager::~TextLayoutManager() = default;
 
 void *TextLayoutManager::getNativeTextLayoutManager() const {
   return self_;
@@ -219,19 +219,21 @@ TextMeasurement TextLayoutManager::doMeasure(
       maximumSize.height,
       attachmentPositions);
 
-  jfloat *attachmentData = env->GetFloatArrayElements(attachmentPositions, 0);
+  jfloat *attachmentData =
+      env->GetFloatArrayElements(attachmentPositions, nullptr);
 
   auto attachments = TextMeasurement::Attachments{};
   if (attachmentsCount > 0) {
     folly::dynamic fragments = serializedAttributedString["fragments"];
     int attachmentIndex = 0;
-    for (int i = 0; i < fragments.size(); i++) {
-      folly::dynamic fragment = fragments[i];
-      if (fragment["isAttachment"] == true) {
+    for (auto const &fragment : fragments) {
+      auto isAttachment = fragment.find("isAttachment");
+      if (isAttachment != fragment.items().end() &&
+          isAttachment->second.getBool()) {
         float top = attachmentData[attachmentIndex * 2];
         float left = attachmentData[attachmentIndex * 2 + 1];
-        float width = (float)fragment["width"].getDouble();
-        float height = (float)fragment["height"].getDouble();
+        auto width = (float)fragment["width"].getDouble();
+        auto height = (float)fragment["height"].getDouble();
 
         auto rect = facebook::react::Rect{
             {left, top}, facebook::react::Size{width, height}};
@@ -282,7 +284,8 @@ TextMeasurement TextLayoutManager::doMeasureMapBuffer(
       maximumSize.height,
       attachmentPositions);
 
-  jfloat *attachmentData = env->GetFloatArrayElements(attachmentPositions, 0);
+  jfloat *attachmentData =
+      env->GetFloatArrayElements(attachmentPositions, nullptr);
 
   auto attachments = TextMeasurement::Attachments{};
   if (attachmentsCount > 0) {

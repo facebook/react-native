@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -381,7 +381,13 @@ using namespace facebook::react;
   [self _updateState];
 
   if (_eventEmitter) {
-    std::static_pointer_cast<TextInputEventEmitter const>(_eventEmitter)->onChange([self _textInputMetrics]);
+    auto const &textInputEventEmitter = *std::static_pointer_cast<TextInputEventEmitter const>(_eventEmitter);
+    auto const &props = *std::static_pointer_cast<TextInputProps const>(_props);
+    if (props.onChangeSync) {
+      textInputEventEmitter.onChangeSync([self _textInputMetrics]);
+    } else {
+      textInputEventEmitter.onChange([self _textInputMetrics]);
+    }
   }
 }
 

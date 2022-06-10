@@ -3,7 +3,7 @@
 exports[`GeneratePropsJavaDelegate can generate for 'ArrayPropsNativeComponent.js' 1`] = `
 Object {
   "java/com/facebook/react/viewmanagers/ArrayPropsNativeComponentViewManagerDelegate.java": "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -65,7 +65,7 @@ public class ArrayPropsNativeComponentViewManagerDelegate<T extends View, U exte
 exports[`GeneratePropsJavaDelegate can generate for 'BooleanPropNativeComponent.js' 1`] = `
 Object {
   "java/com/facebook/react/viewmanagers/BooleanPropNativeComponentViewManagerDelegate.java": "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -105,7 +105,7 @@ public class BooleanPropNativeComponentViewManagerDelegate<T extends View, U ext
 exports[`GeneratePropsJavaDelegate can generate for 'ColorPropNativeComponent.js' 1`] = `
 Object {
   "java/com/facebook/react/viewmanagers/ColorPropNativeComponentViewManagerDelegate.java": "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -143,7 +143,7 @@ public class ColorPropNativeComponentViewManagerDelegate<T extends View, U exten
 exports[`GeneratePropsJavaDelegate can generate for 'EdgeInsetsPropNativeComponent.js' 1`] = `
 Object {
   "java/com/facebook/react/viewmanagers/EdgeInsetsPropNativeComponentViewManagerDelegate.java": "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -174,7 +174,7 @@ public class EdgeInsetsPropNativeComponentViewManagerDelegate<T extends View, U 
 exports[`GeneratePropsJavaDelegate can generate for 'EnumPropNativeComponent.js' 1`] = `
 Object {
   "java/com/facebook/react/viewmanagers/EnumPropNativeComponentViewManagerDelegate.java": "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -214,7 +214,7 @@ public class EnumPropNativeComponentViewManagerDelegate<T extends View, U extend
 exports[`GeneratePropsJavaDelegate can generate for 'EventNestedObjectPropsNativeComponent.js' 1`] = `
 Object {
   "java/com/facebook/react/viewmanagers/EventNestedObjectPropsNativeComponentViewManagerDelegate.java": "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -251,7 +251,7 @@ public class EventNestedObjectPropsNativeComponentViewManagerDelegate<T extends 
 exports[`GeneratePropsJavaDelegate can generate for 'EventPropsNativeComponent.js' 1`] = `
 Object {
   "java/com/facebook/react/viewmanagers/EventPropsNativeComponentViewManagerDelegate.java": "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -288,7 +288,7 @@ public class EventPropsNativeComponentViewManagerDelegate<T extends View, U exte
 exports[`GeneratePropsJavaDelegate can generate for 'FloatPropsNativeComponent.js' 1`] = `
 Object {
   "java/com/facebook/react/viewmanagers/FloatPropsNativeComponentViewManagerDelegate.java": "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -343,7 +343,7 @@ public class FloatPropsNativeComponentViewManagerDelegate<T extends View, U exte
 exports[`GeneratePropsJavaDelegate can generate for 'ImagePropNativeComponent.js' 1`] = `
 Object {
   "java/com/facebook/react/viewmanagers/ImagePropNativeComponentViewManagerDelegate.java": "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -381,7 +381,7 @@ public class ImagePropNativeComponentViewManagerDelegate<T extends View, U exten
 exports[`GeneratePropsJavaDelegate can generate for 'IntegerPropNativeComponent.js' 1`] = `
 Object {
   "java/com/facebook/react/viewmanagers/IntegerPropNativeComponentViewManagerDelegate.java": "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -424,7 +424,7 @@ public class IntegerPropNativeComponentViewManagerDelegate<T extends View, U ext
 exports[`GeneratePropsJavaDelegate can generate for 'InterfaceOnlyNativeComponent.js' 1`] = `
 Object {
   "java/com/facebook/react/viewmanagers/InterfaceOnlyNativeComponentViewManagerDelegate.java": "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -461,7 +461,7 @@ public class InterfaceOnlyNativeComponentViewManagerDelegate<T extends View, U e
 exports[`GeneratePropsJavaDelegate can generate for 'MultiNativePropNativeComponent.js' 1`] = `
 Object {
   "java/com/facebook/react/viewmanagers/MultiNativePropNativeComponentViewManagerDelegate.java": "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -509,7 +509,7 @@ public class MultiNativePropNativeComponentViewManagerDelegate<T extends View, U
 exports[`GeneratePropsJavaDelegate can generate for 'NoPropsNoEventsNativeComponent.js' 1`] = `
 Object {
   "java/com/facebook/react/viewmanagers/NoPropsNoEventsNativeComponentViewManagerDelegate.java": "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -540,7 +540,7 @@ public class NoPropsNoEventsNativeComponentViewManagerDelegate<T extends View, U
 exports[`GeneratePropsJavaDelegate can generate for 'ObjectPropsNativeComponent.js' 1`] = `
 Object {
   "java/com/facebook/react/viewmanagers/ObjectPropsNativeComponentManagerDelegate.java": "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -584,7 +584,7 @@ public class ObjectPropsNativeComponentManagerDelegate<T extends View, U extends
 exports[`GeneratePropsJavaDelegate can generate for 'PointPropNativeComponent.js' 1`] = `
 Object {
   "java/com/facebook/react/viewmanagers/PointPropNativeComponentViewManagerDelegate.java": "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -622,7 +622,7 @@ public class PointPropNativeComponentViewManagerDelegate<T extends View, U exten
 exports[`GeneratePropsJavaDelegate can generate for 'StringPropNativeComponent.js' 1`] = `
 Object {
   "java/com/facebook/react/viewmanagers/StringPropNativeComponentViewManagerDelegate.java": "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.

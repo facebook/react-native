@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,8 +18,7 @@ namespace react {
  */
 class RuntimeSchedulerBinding : public jsi::HostObject {
  public:
-  RuntimeSchedulerBinding(
-      std::shared_ptr<RuntimeScheduler> const &runtimeScheduler);
+  RuntimeSchedulerBinding(std::shared_ptr<RuntimeScheduler> runtimeScheduler);
 
   /*
    * Installs RuntimeSchedulerBinding into JavaScript runtime if needed.

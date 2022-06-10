@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,6 +16,8 @@
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
+
+#include <utility>
 
 namespace facebook {
 namespace react {
@@ -58,7 +60,7 @@ bool ShadowNode::sameFamily(const ShadowNode &first, const ShadowNode &second) {
 
 ShadowNode::ShadowNode(
     ShadowNodeFragment const &fragment,
-    ShadowNodeFamily::Shared const &family,
+    ShadowNodeFamily::Shared family,
     ShadowNodeTraits traits)
     :
 #if RN_DEBUG_STRING_CONVERTIBLE
@@ -70,7 +72,7 @@ ShadowNode::ShadowNode(
                             : emptySharedShadowNodeSharedList()),
       state_(fragment.state),
       orderIndex_(0),
-      family_(family),
+      family_(std::move(family)),
       traits_(traits) {
   react_native_assert(props_);
   react_native_assert(children_);

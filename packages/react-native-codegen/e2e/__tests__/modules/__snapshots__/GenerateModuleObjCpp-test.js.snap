@@ -2,7 +2,7 @@
 
 exports[`GenerateModuleObjCpp can generate a header file NativeModule specs 1`] = `
 "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -1192,7 +1192,7 @@ inline JS::NativeSampleTurboModuleOptional::Constants::Builder::Builder(Constant
 
 exports[`GenerateModuleObjCpp can generate a header file NativeModule specs with assume nonnull enabled 1`] = `
 "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -2385,7 +2385,7 @@ NS_ASSUME_NONNULL_END
 
 exports[`GenerateModuleObjCpp can generate an implementation file NativeModule specs 1`] = `
 "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.

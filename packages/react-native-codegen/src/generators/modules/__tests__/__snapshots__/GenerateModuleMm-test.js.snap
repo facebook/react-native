@@ -3,7 +3,7 @@
 exports[`GenerateModuleMm can generate fixture SampleWithUppercaseName 1`] = `
 Map {
   "SampleWithUppercaseName-generated.mm" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -35,7 +35,7 @@ namespace facebook {
 exports[`GenerateModuleMm can generate fixture complex_objects 1`] = `
 Map {
   "complex_objects-generated.mm" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -128,7 +128,7 @@ namespace facebook {
 exports[`GenerateModuleMm can generate fixture empty_native_modules 1`] = `
 Map {
   "empty_native_modules-generated.mm" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -160,7 +160,7 @@ namespace facebook {
 exports[`GenerateModuleMm can generate fixture native_modules_with_type_aliases 1`] = `
 Map {
   "native_modules_with_type_aliases-generated.mm" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -220,7 +220,7 @@ namespace facebook {
 exports[`GenerateModuleMm can generate fixture real_module_example 1`] = `
 Map {
   "real_module_example-generated.mm" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -352,7 +352,7 @@ namespace facebook {
 exports[`GenerateModuleMm can generate fixture simple_native_modules 1`] = `
 Map {
   "simple_native_modules-generated.mm" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -459,7 +459,7 @@ namespace facebook {
 exports[`GenerateModuleMm can generate fixture two_modules_different_files 1`] = `
 Map {
   "two_modules_different_files-generated.mm" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.

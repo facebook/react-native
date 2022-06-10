@@ -1,11 +1,13 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 #include "ShadowViewMutation.h"
+
+#include <utility>
 
 namespace facebook {
 namespace react {
@@ -91,9 +93,9 @@ ShadowViewMutation::ShadowViewMutation(
     ShadowView newChildShadowView,
     int index)
     : type(type),
-      parentShadowView(parentShadowView),
-      oldChildShadowView(oldChildShadowView),
-      newChildShadowView(newChildShadowView),
+      parentShadowView(std::move(parentShadowView)),
+      oldChildShadowView(std::move(oldChildShadowView)),
+      newChildShadowView(std::move(newChildShadowView)),
       index(index) {}
 
 #if RN_DEBUG_STRING_CONVERTIBLE

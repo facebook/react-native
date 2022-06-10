@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -837,9 +837,7 @@ describe('TypeScript Module Parser', () => {
             describe('Primitive Element Types', () => {
               PRIMITIVES.forEach(([FLOW_TYPE, PARSED_TYPE_NAME]) => {
                 it(`should parse methods that have ${RETURN_TYPE_DESCRIPTION} return of type 'Array<${FLOW_TYPE}>'`, () => {
-                  const [elementType, module] = parseArrayElementReturnType(
-                    FLOW_TYPE,
-                  );
+                  const [elementType] = parseArrayElementReturnType(FLOW_TYPE);
                   expect(elementType.type).toBe(PARSED_TYPE_NAME);
                 });
               });

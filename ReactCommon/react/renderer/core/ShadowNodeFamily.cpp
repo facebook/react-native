@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,6 +12,8 @@
 #include <react/renderer/core/ComponentDescriptor.h>
 #include <react/renderer/core/State.h>
 
+#include <utility>
+
 namespace facebook {
 namespace react {
 
@@ -21,7 +23,7 @@ ShadowNodeFamily::ShadowNodeFamily(
     ShadowNodeFamilyFragment const &fragment,
     EventDispatcher::Weak eventDispatcher,
     ComponentDescriptor const &componentDescriptor)
-    : eventDispatcher_(eventDispatcher),
+    : eventDispatcher_(std::move(eventDispatcher)),
       tag_(fragment.tag),
       surfaceId_(fragment.surfaceId),
       eventEmitter_(fragment.eventEmitter),
@@ -78,7 +80,7 @@ AncestorList ShadowNodeFamily::getAncestors(
     auto childIndex = 0;
     for (const auto &childNode : *parentNode->children_) {
       if (childNode->family_.get() == childFamily) {
-        ancestors.push_back({*parentNode, childIndex});
+        ancestors.emplace_back(*parentNode, childIndex);
         parentNode = childNode.get();
         found = true;
         break;

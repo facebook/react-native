@@ -3,7 +3,7 @@
 exports[`GeneratePropsJavaInterface can generate for 'ArrayPropsNativeComponent.js' 1`] = `
 Object {
   "java/com/facebook/react/viewmanagers/ArrayPropsNativeComponentViewManagerInterface.java": "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -35,7 +35,7 @@ public interface ArrayPropsNativeComponentViewManagerInterface<T extends View> {
 exports[`GeneratePropsJavaInterface can generate for 'BooleanPropNativeComponent.js' 1`] = `
 Object {
   "java/com/facebook/react/viewmanagers/BooleanPropNativeComponentViewManagerInterface.java": "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -59,7 +59,7 @@ public interface BooleanPropNativeComponentViewManagerInterface<T extends View> 
 exports[`GeneratePropsJavaInterface can generate for 'ColorPropNativeComponent.js' 1`] = `
 Object {
   "java/com/facebook/react/viewmanagers/ColorPropNativeComponentViewManagerInterface.java": "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -82,7 +82,7 @@ public interface ColorPropNativeComponentViewManagerInterface<T extends View> {
 exports[`GeneratePropsJavaInterface can generate for 'EdgeInsetsPropNativeComponent.js' 1`] = `
 Object {
   "java/com/facebook/react/viewmanagers/EdgeInsetsPropNativeComponentViewManagerInterface.java": "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -104,7 +104,7 @@ public interface EdgeInsetsPropNativeComponentViewManagerInterface<T extends Vie
 exports[`GeneratePropsJavaInterface can generate for 'EnumPropNativeComponent.js' 1`] = `
 Object {
   "java/com/facebook/react/viewmanagers/EnumPropNativeComponentViewManagerInterface.java": "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -128,7 +128,7 @@ public interface EnumPropNativeComponentViewManagerInterface<T extends View> {
 exports[`GeneratePropsJavaInterface can generate for 'EventNestedObjectPropsNativeComponent.js' 1`] = `
 Object {
   "java/com/facebook/react/viewmanagers/EventNestedObjectPropsNativeComponentViewManagerInterface.java": "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -150,7 +150,7 @@ public interface EventNestedObjectPropsNativeComponentViewManagerInterface<T ext
 exports[`GeneratePropsJavaInterface can generate for 'EventPropsNativeComponent.js' 1`] = `
 Object {
   "java/com/facebook/react/viewmanagers/EventPropsNativeComponentViewManagerInterface.java": "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -172,7 +172,7 @@ public interface EventPropsNativeComponentViewManagerInterface<T extends View> {
 exports[`GeneratePropsJavaInterface can generate for 'FloatPropsNativeComponent.js' 1`] = `
 Object {
   "java/com/facebook/react/viewmanagers/FloatPropsNativeComponentViewManagerInterface.java": "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -201,7 +201,7 @@ public interface FloatPropsNativeComponentViewManagerInterface<T extends View> {
 exports[`GeneratePropsJavaInterface can generate for 'ImagePropNativeComponent.js' 1`] = `
 Object {
   "java/com/facebook/react/viewmanagers/ImagePropNativeComponentViewManagerInterface.java": "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -225,7 +225,7 @@ public interface ImagePropNativeComponentViewManagerInterface<T extends View> {
 exports[`GeneratePropsJavaInterface can generate for 'IntegerPropNativeComponent.js' 1`] = `
 Object {
   "java/com/facebook/react/viewmanagers/IntegerPropNativeComponentViewManagerInterface.java": "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -249,7 +249,7 @@ public interface IntegerPropNativeComponentViewManagerInterface<T extends View> 
 exports[`GeneratePropsJavaInterface can generate for 'InterfaceOnlyNativeComponent.js' 1`] = `
 Object {
   "java/com/facebook/react/viewmanagers/InterfaceOnlyNativeComponentViewManagerInterface.java": "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -272,7 +272,7 @@ public interface InterfaceOnlyNativeComponentViewManagerInterface<T extends View
 exports[`GeneratePropsJavaInterface can generate for 'MultiNativePropNativeComponent.js' 1`] = `
 Object {
   "java/com/facebook/react/viewmanagers/MultiNativePropNativeComponentViewManagerInterface.java": "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -299,7 +299,7 @@ public interface MultiNativePropNativeComponentViewManagerInterface<T extends Vi
 exports[`GeneratePropsJavaInterface can generate for 'NoPropsNoEventsNativeComponent.js' 1`] = `
 Object {
   "java/com/facebook/react/viewmanagers/NoPropsNoEventsNativeComponentViewManagerInterface.java": "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -321,7 +321,7 @@ public interface NoPropsNoEventsNativeComponentViewManagerInterface<T extends Vi
 exports[`GeneratePropsJavaInterface can generate for 'ObjectPropsNativeComponent.js' 1`] = `
 Object {
   "java/com/facebook/react/viewmanagers/ObjectPropsNativeComponentManagerInterface.java": "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -347,7 +347,7 @@ public interface ObjectPropsNativeComponentManagerInterface<T extends View> {
 exports[`GeneratePropsJavaInterface can generate for 'PointPropNativeComponent.js' 1`] = `
 Object {
   "java/com/facebook/react/viewmanagers/PointPropNativeComponentViewManagerInterface.java": "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -371,7 +371,7 @@ public interface PointPropNativeComponentViewManagerInterface<T extends View> {
 exports[`GeneratePropsJavaInterface can generate for 'StringPropNativeComponent.js' 1`] = `
 Object {
   "java/com/facebook/react/viewmanagers/StringPropNativeComponentViewManagerInterface.java": "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.

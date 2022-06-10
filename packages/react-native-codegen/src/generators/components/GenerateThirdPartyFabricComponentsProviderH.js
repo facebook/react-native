@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -17,7 +17,7 @@ type FilesOutput = Map<string, string>;
 
 const FileTemplate = ({lookupFuncs}: {lookupFuncs: string}) => `
 /*
- * ${'C'}opyright (c) Facebook, Inc. and its affiliates.
+ * ${'C'}opyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -86,8 +86,6 @@ module.exports = {
                 );
               })
               .map(componentName => {
-                const component = components[componentName];
-
                 return LookupFuncTemplate({
                   className: componentName,
                   libraryName,

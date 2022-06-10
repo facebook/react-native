@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,9 +18,8 @@
  * --skip-cli-install - to skip react-native-cli global installation (for local debugging)
  * --retries [num] - how many times to retry possible flaky commands: yarn add and running tests, default 1
  */
-/*eslint-disable no-undef */
-require('shelljs/global');
 
+const {cd, cp, echo, exec, exit, mv} = require('shelljs');
 const spawn = require('child_process').spawn;
 const argv = require('yargs').argv;
 const path = require('path');
@@ -292,5 +291,3 @@ try {
   }
 }
 exit(exitCode);
-
-/*eslint-enable no-undef */

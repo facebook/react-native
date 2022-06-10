@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -35,7 +35,11 @@ class FabricMountingManager {
       std::shared_ptr<const ReactNativeConfig> &config,
       jni::global_ref<jobject> &javaUIManager);
 
-  void preallocateShadowView(SurfaceId surfaceId, const ShadowView &shadowView);
+  void onSurfaceStart(SurfaceId surfaceId);
+
+  void onSurfaceStop(SurfaceId surfaceId);
+
+  void preallocateShadowView(SurfaceId surfaceId, ShadowView const &shadowView);
 
   void executeMount(MountingCoordinator::Shared const &mountingCoordinator);
 
@@ -64,11 +68,15 @@ class FabricMountingManager {
 
   std::recursive_mutex commitMutex_;
 
+  butter::map<SurfaceId, butter::set<Tag>> allocatedViewRegistry_{};
+  std::recursive_mutex allocatedViewsMutex_;
+
   bool enableEventEmitterRawPointer_{false};
   bool enableEarlyEventEmitterUpdate_{false};
   bool disablePreallocateViews_{false};
   bool disableRevisionCheckForPreallocation_{false};
   bool useOverflowInset_{false};
+  bool shouldRememberAllocatedViews_{false};
 };
 
 } // namespace react
