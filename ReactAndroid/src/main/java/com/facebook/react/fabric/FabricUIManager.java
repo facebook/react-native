@@ -529,11 +529,16 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   }
 
   @SuppressWarnings("unused")
-  public int getColor(int surfaceId, ReadableMap platformColor) {
+  public int getColor(int surfaceId, String[] resourcePaths) {
     ThemedReactContext context =
         mMountingManager.getSurfaceManagerEnforced(surfaceId, "getColor").getContext();
-    Integer color = ColorPropConverter.getColor(platformColor, context);
-    return color != null ? color : 0;
+    for (String resourcePath : resourcePaths) {
+      Integer color = ColorPropConverter.resolveResourcePath(context, resourcePath);
+      if (color != null) {
+        return color;
+      }
+    }
+    return 0;
   }
 
   @SuppressWarnings("unused")
