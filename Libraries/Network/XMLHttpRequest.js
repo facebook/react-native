@@ -136,7 +136,6 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
   _lowerCaseResponseHeaders: Object;
   _method: ?string = null;
   _perfKey: ?string = null;
-  _response: string | ?Object;
   _responseType: ResponseType;
   _response: string = '';
   _sent: boolean;

@@ -19,6 +19,8 @@ const NativeAnimatedHelper = require('../NativeAnimatedHelper');
 const invariant = require('invariant');
 const normalizeColor = require('../../StyleSheet/normalizeColor');
 
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
+
 type ExtrapolateType = 'extend' | 'identity' | 'clamp';
 
 export type InterpolationConfigType = {
@@ -317,9 +319,9 @@ class AnimatedInterpolation extends AnimatedWithChildren {
     this._interpolation = createInterpolation(config);
   }
 
-  __makeNative() {
-    this._parent.__makeNative();
-    super.__makeNative();
+  __makeNative(platformConfig: ?PlatformConfig) {
+    this._parent.__makeNative(platformConfig);
+    super.__makeNative(platformConfig);
   }
 
   __getValue(): number | string {

@@ -17,6 +17,7 @@ const Animation = require('./Animation');
 
 const {shouldUseNativeDriver} = require('../NativeAnimatedHelper');
 
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type {AnimationConfig, EndCallback} from './Animation';
 
 export type TimingAnimationConfig = {
@@ -65,6 +66,7 @@ class TimingAnimation extends Animation {
   _animationFrame: any;
   _timeout: any;
   _useNativeDriver: boolean;
+  _platformConfig: ?PlatformConfig;
 
   constructor(config: TimingAnimationConfigSingle) {
     super();
@@ -74,6 +76,7 @@ class TimingAnimation extends Animation {
     this._delay = config.delay ?? 0;
     this.__iterations = config.iterations ?? 1;
     this._useNativeDriver = shouldUseNativeDriver(config);
+    this._platformConfig = config.platformConfig;
     this.__isInteraction = config.isInteraction ?? !this._useNativeDriver;
   }
 
@@ -90,6 +93,7 @@ class TimingAnimation extends Animation {
       frames,
       toValue: this._toValue,
       iterations: this.__iterations,
+      platformConfig: this._platformConfig,
     };
   }
 

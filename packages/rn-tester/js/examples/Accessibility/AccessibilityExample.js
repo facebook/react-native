@@ -1174,7 +1174,7 @@ class DisplayOptionsStatusExample extends React.Component<{}> {
         <DisplayOptionStatusExample
           optionName={'Screen Reader'}
           optionChecker={AccessibilityInfo.isScreenReaderEnabled}
-          notification={'reduceMotionChanged'}
+          notification={'screenReaderChanged'}
         />
         {isAndroid ? null : (
           <>

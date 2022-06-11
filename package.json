@@ -86,8 +86,6 @@
     "test-android-instrumentation": "yarn run docker-build-android && yarn run test-android-run-instrumentation",
     "test-android-unit": "yarn run docker-build-android && yarn run test-android-run-unit",
     "test-android-e2e": "yarn run docker-build-android && yarn run test-android-run-e2e",
-    "build-ios-e2e": "detox build -c ios.sim.release",
-    "test-ios-e2e": "detox test -c ios.sim.release packages/rn-tester/e2e",
     "test-ios": "./scripts/objc-test.sh test"
   },
   "workspaces": [
@@ -162,7 +160,7 @@
     "flow-bin": "^0.168.0",
     "jest": "^26.6.3",
     "jest-junit": "^10.0.0",
-    "jscodeshift": "^0.11.0",
+    "jscodeshift": "^0.13.1",
     "metro-babel-register": "0.66.2",
     "metro-transform-plugins": "^0.66.2",
     "mkdirp": "^0.5.1",
@@ -174,43 +172,6 @@
     "signedsource": "^1.0.0",
     "ws": "^6.1.4",
     "yargs": "^15.3.1"
-  },
-  "detox": {
-    "test-runner": "jest",
-    "runner-config": "packages/rn-tester/e2e/config.json",
-    "specs": "",
-    "configurations": {
-      "android.emu.release": {
-        "binaryPath": "packages/rn-tester/android/app/build/outputs/apk/hermes/release/app-hermes-x86-release.apk",
-        "testBinaryPath": "packages/rn-tester/android/app/build/outputs/apk/androidTest/hermes/release/app-hermes-release-androidTest.apk",
-        "build": "./gradlew :packages:rn-tester:android:app:assembleRelease :packages:rn-tester:android:app:assembleAndroidTest -DtestBuildType=release",
-        "type": "android.emulator",
-        "device": {
-          "avdName": "Nexus_6_API_29"
-        }
-      },
-      "android.emu.debug": {
-        "binaryPath": "packages/rn-tester/android/app/build/outputs/apk/hermes/debug/app-hermes-x86-debug.apk",
-        "testBinaryPath": "packages/rn-tester/android/app/build/outputs/apk/androidTest/hermes/debug/app-hermes-debug-androidTest.apk",
-        "build": "./gradlew :packages:rn-tester:android:app:assembleDebug :packages:rn-tester:android:app:assembleAndroidTest -DtestBuildType=debug",
-        "type": "android.emulator",
-        "device": {
-          "avdName": "Nexus_6_API_29"
-        }
-      },
-      "ios.sim.release": {
-        "binaryPath": "packages/rn-tester/build/Build/Products/Release-iphonesimulator/RNTester.app/",
-        "build": "xcodebuild -workspace packages/rn-tester/RNTesterPods.xcworkspace -scheme RNTester -configuration Release -sdk iphonesimulator -derivedDataPath packages/rn-tester/build -UseModernBuildSystem=NO -quiet",
-        "type": "ios.simulator",
-        "name": "iPhone 8"
-      },
-      "ios.sim.debug": {
-        "binaryPath": "packages/rn-tester/build/Build/Products/Debug-iphonesimulator/RNTester.app/",
-        "build": "xcodebuild -workspace packages/rn-tester/RNTesterPods.xcworkspace -scheme RNTester -configuration Debug -sdk iphonesimulator -derivedDataPath packages/rn-tester/build -UseModernBuildSystem=NO -quiet",
-        "type": "ios.simulator",
-        "name": "iPhone 8"
-      }
-    }
   },
   "beachball": {
     "shouldPublish": false
