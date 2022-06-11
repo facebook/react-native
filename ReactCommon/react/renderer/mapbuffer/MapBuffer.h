@@ -65,14 +65,13 @@ class MapBuffer {
   // TODO T83483191: review this declaration
   MapBuffer getMapBuffer(Key key) const;
 
-  int32_t getBufferSize() const;
-
-  // TODO T83483191: review parameters of copy method
-  void copy(uint8_t *output) const;
-
   bool isNull(Key key) const;
 
-  uint16_t getCount() const;
+  uint32_t size() const;
+
+  uint8_t const *data() const;
+
+  uint16_t count() const;
 };
 
 } // namespace react

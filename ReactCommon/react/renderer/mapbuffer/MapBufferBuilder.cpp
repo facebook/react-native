@@ -12,42 +12,18 @@ using namespace facebook::react;
 namespace facebook {
 namespace react {
 
-// TODO T83483191: Add asserts to check overflowing on additions
-MapBufferBuilder::MapBufferBuilder()
-    : MapBufferBuilder::MapBufferBuilder(INITIAL_KEY_VALUE_SIZE) {}
-
 MapBuffer MapBufferBuilder::EMPTY() {
-  return MapBufferBuilder().build();
+  return MapBufferBuilder(0).build();
 }
 
-MapBufferBuilder::MapBufferBuilder(uint16_t initialSize) {
-  keyValuesSize_ = initialSize;
-  keyValues_ = new Byte[keyValuesSize_];
-  // First Key should be written right after the header.
-  keyValuesOffset_ = HEADER_SIZE;
-
-  dynamicDataSize_ = 0;
-  dynamicDataValues_ = nullptr;
-  dynamicDataOffset_ = 0;
-}
-
-void MapBufferBuilder::ensureKeyValueSpace() {
-  int32_t oldKeyValuesSize = keyValuesSize_;
-  react_native_assert(
-      (keyValuesSize_ < std::numeric_limits<uint16_t>::max() / 2) &&
-      "Error trying to assign a value beyond the capacity of uint16_t: ");
-  keyValuesSize_ *= 2;
-  uint8_t *newKeyValues = new Byte[keyValuesSize_];
-  uint8_t *oldKeyValues = keyValues_;
-  memcpy(newKeyValues, keyValues_, oldKeyValuesSize);
-  keyValues_ = newKeyValues;
-  delete[] oldKeyValues;
+MapBufferBuilder::MapBufferBuilder(uint32_t initialSize) {
+  buckets_.reserve(initialSize);
 }
 
 void MapBufferBuilder::storeKeyValue(
     Key key,
-    uint8_t *value,
-    int32_t valueSize) {
+    uint8_t const *value,
+    uint32_t valueSize) {
   if (key < minKeyToStore_) {
     LOG(ERROR) << "Error: key out of order - key: " << key;
     abort();
@@ -58,24 +34,15 @@ void MapBufferBuilder::storeKeyValue(
     abort();
   }
 
-  // TODO T83483191: header.count points to the next index
-  // TODO T83483191: add test to verify storage of sparse keys
-  int32_t keyOffset = getKeyOffset(_header.count);
-  int32_t valueOffset = keyOffset + KEY_SIZE;
+  uint64_t data = 0;
+  auto *dataPtr = reinterpret_cast<uint8_t *>(&data);
+  memcpy(dataPtr, value, valueSize);
 
-  int32_t nextKeyValueOffset = keyOffset + BUCKET_SIZE;
-  if (nextKeyValueOffset >= keyValuesSize_) {
-    ensureKeyValueSpace();
-  }
+  buckets_.emplace_back(key, data);
 
-  memcpy(keyValues_ + keyOffset, &key, KEY_SIZE);
-  memcpy(keyValues_ + valueOffset, value, valueSize);
-
-  _header.count++;
+  header_.count++;
 
   minKeyToStore_ = key + 1;
-  // Move keyValuesOffset_ to the next available [key, value] position
-  keyValuesOffset_ = std::max(nextKeyValueOffset, keyValuesOffset_);
 }
 
 void MapBufferBuilder::putBool(Key key, bool value) {
@@ -83,7 +50,7 @@ void MapBufferBuilder::putBool(Key key, bool value) {
 }
 
 void MapBufferBuilder::putDouble(Key key, double value) {
-  uint8_t *bytePointer = reinterpret_cast<uint8_t *>(&value);
+  auto const *bytePointer = reinterpret_cast<uint8_t *>(&value);
   storeKeyValue(key, bytePointer, DOUBLE_SIZE);
 }
 
@@ -92,135 +59,57 @@ void MapBufferBuilder::putNull(Key key) {
 }
 
 void MapBufferBuilder::putInt(Key key, int32_t value) {
-  uint8_t *bytePointer = reinterpret_cast<uint8_t *>(&(value));
+  auto const *bytePointer = reinterpret_cast<uint8_t *>(&(value));
   storeKeyValue(key, bytePointer, INT_SIZE);
 }
 
-void MapBufferBuilder::ensureDynamicDataSpace(int32_t size) {
-  if (dynamicDataValues_ == nullptr) {
-    dynamicDataSize_ = size;
-    dynamicDataValues_ = new Byte[dynamicDataSize_];
-    dynamicDataOffset_ = 0;
-    return;
-  }
-
-  if (dynamicDataOffset_ + size >= dynamicDataSize_) {
-    int32_t oldDynamicDataSize = dynamicDataSize_;
-    react_native_assert(
-        (dynamicDataSize_ < std::numeric_limits<int32_t>::max() / 2) &&
-        "Error: trying to assign a value beyond the capacity of int");
-    dynamicDataSize_ *= dynamicDataSize_;
-
-    react_native_assert(
-        (dynamicDataSize_ < std::numeric_limits<int32_t>::max() - size) &&
-        "Error: trying to assign a value beyond the capacity of int");
-
-    // sum size to ensure that the size always fit into newDynamicDataValues
-    dynamicDataSize_ += size;
-    uint8_t *newDynamicDataValues = new Byte[dynamicDataSize_];
-    uint8_t *oldDynamicDataValues = dynamicDataValues_;
-    memcpy(newDynamicDataValues, dynamicDataValues_, oldDynamicDataSize);
-    dynamicDataValues_ = newDynamicDataValues;
-    delete[] oldDynamicDataValues;
-  }
-}
-
 void MapBufferBuilder::putString(Key key, std::string const &value) {
-  int32_t strLength = static_cast<int32_t>(value.length());
-  const char *cstring = getCstring(&value);
+  int32_t strSize = value.size();
+  const char *strData = value.data();
 
-  // format [lenght of string (int)] + [Array of Characters in the string]
-  int32_t sizeOfLength = INT_SIZE;
-  // TODO T83483191: review if map.getBufferSize() should be an int32_t or long
+  auto offset = dynamicData_.size();
+  // format [length of string (int)] + [Array of Characters in the string]
+  // TODO T83483191: review if map.size() should be an int32_t or long
   // instead of an int16 (because strings can be longer than int16);
-
-  int32_t sizeOfDynamicData = sizeOfLength + strLength;
-  ensureDynamicDataSpace(sizeOfDynamicData);
-  memcpy(dynamicDataValues_ + dynamicDataOffset_, &strLength, sizeOfLength);
-  memcpy(
-      dynamicDataValues_ + dynamicDataOffset_ + sizeOfLength,
-      cstring,
-      strLength);
+  dynamicData_.resize(offset + INT_SIZE + strSize, 0);
+  memcpy(dynamicData_.data() + offset, &strSize, INT_SIZE);
+  memcpy(dynamicData_.data() + offset + INT_SIZE, strData, strSize);
 
   // Store Key and pointer to the string
-  putInt(key, dynamicDataOffset_);
-
-  dynamicDataOffset_ += sizeOfDynamicData;
+  putInt(key, offset);
 }
 
 void MapBufferBuilder::putMapBuffer(Key key, MapBuffer const &map) {
-  int32_t mapBufferSize = map.getBufferSize();
+  int32_t mapBufferSize = map.size();
 
-  // format [lenght of buffer (int)] + [bytes of MapBuffer]
-  int32_t sizeOfDynamicData = mapBufferSize + INT_SIZE;
+  auto offset = dynamicData_.size();
 
-  // format [Array of bytes of the mapBuffer]
-  ensureDynamicDataSpace(sizeOfDynamicData);
-
-  memcpy(dynamicDataValues_ + dynamicDataOffset_, &mapBufferSize, INT_SIZE);
-  // Copy the content of the map into dynamicDataValues_
-  map.copy(dynamicDataValues_ + dynamicDataOffset_ + INT_SIZE);
+  // format [length of buffer (int)] + [bytes of MapBuffer]
+  dynamicData_.resize(offset + INT_SIZE + mapBufferSize, 0);
+  memcpy(dynamicData_.data() + offset, &mapBufferSize, INT_SIZE);
+  // Copy the content of the map into dynamicData_
+  memcpy(dynamicData_.data() + offset + INT_SIZE, map.data(), mapBufferSize);
 
   // Store Key and pointer to the string
-  putInt(key, dynamicDataOffset_);
-
-  dynamicDataOffset_ += sizeOfDynamicData;
+  putInt(key, offset);
 }
 
 MapBuffer MapBufferBuilder::build() {
-  react_native_assert(
-      (keyValues_ != nullptr) &&
-      "Error when building mapbuffer with invalid datastructures.");
-
   // Create buffer: [header] + [key, values] + [dynamic data]
-  int32_t bufferSize = keyValuesOffset_ + dynamicDataOffset_;
+  auto bucketSize = buckets_.size() * BUCKET_SIZE;
+  uint32_t bufferSize = HEADER_SIZE + bucketSize + dynamicData_.size();
 
-  _header.bufferSize = bufferSize;
-
-  // Copy header at the beginning of "keyValues_"
-  memcpy(keyValues_, &_header, HEADER_SIZE);
+  header_.bufferSize = bufferSize;
 
   std::vector<uint8_t> buffer(bufferSize);
+  memcpy(buffer.data(), &header_, HEADER_SIZE);
+  memcpy(buffer.data() + HEADER_SIZE, buckets_.data(), bucketSize);
+  memcpy(
+      buffer.data() + HEADER_SIZE + bucketSize,
+      dynamicData_.data(),
+      dynamicData_.size());
 
-  memcpy(buffer.data(), keyValues_, keyValuesOffset_);
-
-  if (dynamicDataValues_ != nullptr) {
-    memcpy(
-        buffer.data() + keyValuesOffset_,
-        dynamicDataValues_,
-        dynamicDataOffset_);
-  }
-
-  auto map = MapBuffer(std::move(buffer));
-
-  // TODO T83483191: we should invalidate the class once the build() method is
-  // called.
-
-  if (keyValues_ != nullptr) {
-    delete[] keyValues_;
-  }
-  keyValues_ = nullptr;
-  keyValuesSize_ = 0;
-  keyValuesOffset_ = 0;
-
-  if (dynamicDataValues_ != nullptr) {
-    delete[] dynamicDataValues_;
-    dynamicDataValues_ = nullptr;
-  }
-  dynamicDataSize_ = 0;
-  dynamicDataOffset_ = 0;
-  _header = {ALIGNMENT, 0, 0};
-
-  return map;
-}
-
-MapBufferBuilder::~MapBufferBuilder() {
-  if (keyValues_ != nullptr) {
-    delete[] keyValues_;
-  }
-  if (dynamicDataValues_ != nullptr) {
-    delete[] dynamicDataValues_;
-  }
+  return MapBuffer(std::move(buffer));
 }
 
 } // namespace react

@@ -585,7 +585,24 @@ RCT_CUSTOM_CONVERTER(CGFloat, CGFloat, [self double:json])
 RCT_CGSTRUCT_CONVERTER(CGPoint, (@[ @"x", @"y" ]))
 RCT_CGSTRUCT_CONVERTER(CGSize, (@[ @"width", @"height" ]))
 RCT_CGSTRUCT_CONVERTER(CGRect, (@[ @"x", @"y", @"width", @"height" ]))
-RCT_CGSTRUCT_CONVERTER(UIEdgeInsets, (@[ @"top", @"left", @"bottom", @"right" ]))
+
++ (UIEdgeInsets)UIEdgeInsets:(id)json
+{
+  static NSArray *fields;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    fields = @[ @"top", @"left", @"bottom", @"right" ];
+  });
+
+  if ([json isKindOfClass:[NSNumber class]]) {
+    CGFloat value = [json doubleValue];
+    return UIEdgeInsetsMake(value, value, value, value);
+  } else {
+    UIEdgeInsets result;
+    convertCGStruct("UIEdgeInsets", fields, (CGFloat *)&result, json);
+    return result;
+  }
+}
 
 RCT_ENUM_CONVERTER(
     CGLineJoin,

@@ -117,7 +117,7 @@ public class TextLayoutManagerMapBuffer {
       SpannableStringBuilder sb,
       List<SetSpanOperation> ops) {
 
-    for (short i = 0, length = fragments.getCount(); i < length; i++) {
+    for (int i = 0, length = fragments.getCount(); i < length; i++) {
       ReadableMapBuffer fragment = fragments.getMapBuffer(i);
       int start = sb.length();
 
