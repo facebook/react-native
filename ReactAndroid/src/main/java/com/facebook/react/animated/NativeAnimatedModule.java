@@ -411,7 +411,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
    * @return {@link NativeAnimatedNodesManager}
    */
   @Nullable
-  private NativeAnimatedNodesManager getNodesManager() {
+  public NativeAnimatedNodesManager getNodesManager() {
     if (mNodesManager.get() == null) {
       ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
