@@ -7,7 +7,7 @@
 
 package com.facebook.react.views.image;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.facebook.drawee.drawable.ScalingUtils;
 import org.junit.Rule;

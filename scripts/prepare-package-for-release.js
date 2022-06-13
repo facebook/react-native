@@ -23,34 +23,47 @@ const yargs = require('yargs');
 const {
   isReleaseBranch,
   isTaggedLatest,
-  isTaggedVersion,
-  getNextVersionFromTags,
+  getPublishVersion,
+  getPublishTag,
 } = require('./version-utils');
-
-const branch = process.env.CIRCLE_BRANCH;
-const currentCommit = process.env.CIRCLE_SHA1;
 
 const argv = yargs.option('r', {
   alias: 'remote',
   default: 'origin',
 }).argv;
 
-// We do this check to prevent a loop of commit in this script to trigger the job again.
-// I haven't figured out a way for CircleCI to filter out commits from CircleCI jobs
-if (isTaggedVersion(currentCommit)) {
+const currentCommit = process.env.CIRCLE_SHA1;
+const branch = process.env.CIRCLE_BRANCH;
+const remote = argv.remote;
+
+const tag = getPublishTag();
+if (tag == null) {
   console.log(
-    'Skip running prepare-package-for-release as this job was triggered from previous run of this script.',
+    'No publish tag set. Not publishing this release.\nCircleCI cannot filter workflows on both branch and tag so we do this check in prepare-package-for-release',
   );
   exit(0);
 }
 
 if (!isReleaseBranch(branch)) {
-  console.error('This needs to be on a release branch');
+  console.error(`This needs to be on a release branch. On branch: ${branch}`);
   exit(1);
 }
 
-// Progress the version by 1 using existing git tags
-const version = getNextVersionFromTags(branch);
+// Get the version we're publishing from the publish tag
+// Tag of the form `publish-v{versionStr}`
+const versionInfo = getPublishVersion(tag);
+if (versionInfo == null) {
+  console.error(
+    `Invalid tag provided: ${tag}, needs to be of form 'publish-v{major}.{minor}.{patch}'`,
+  );
+  exit(1);
+}
+
+// Clean up tag now that we're publishing the release.
+exec(`git tag -d ${tag}`);
+exec(`git push ${remote} :${tag}`);
+
+const {version} = versionInfo;
 
 if (exec(`node scripts/set-rn-version.js --to-version ${version}`).code) {
   echo(`Failed to set React Native version to ${version}`);
@@ -65,26 +78,14 @@ if (exec('source scripts/update_podfile_lock.sh && update_pods').code) {
   exit(1);
 }
 
-// Check if this release has been tagged as latest
-const isLatest = isTaggedLatest(currentCommit);
-
 // Make commit [0.21.0-rc] Bump version numbers
 if (exec(`git commit -a -m "[${version}] Bump version numbers"`).code) {
   echo('failed to commit');
   exit(1);
 }
 
-// Since we just committed, if `isLatest`, move the tag to commit we just made
-// This tag will also update npm release as `latest`
-if (isLatest) {
-  exec('git tag -d latest');
-  exec(`git push ${remote} :latest`);
-  exec('git tag latest');
-  exec(`git push ${remote} latest`);
-}
-
 // Add tag v0.21.0-rc.1
-if (exec(`git tag v${version}`).code) {
+if (exec(`git tag -a v${version} -m "v${version}"`).code) {
   echo(
     `failed to tag the commit with v${version}, are you sure this release wasn't made earlier?`,
   );
@@ -93,9 +94,17 @@ if (exec(`git tag v${version}`).code) {
   exit(1);
 }
 
-// Push newly created tag
-let remote = argv.remote;
-exec(`git push ${remote} v${version}`);
+// See if `latest` was set on the commit that triggered this script
+// If yes, move the tag to commit we just made
+// This tag will also update npm release as `latest`
+const isLatest = isTaggedLatest(currentCommit);
+if (isLatest) {
+  exec('git tag -d latest');
+  exec(`git push ${remote} :latest`);
+
+  // This will be pushed with the `--follow-tags`
+  exec('git tag -a latest -m "latest"');
+}
 
 exec(`git push ${remote} ${branch} --follow-tags`);
 

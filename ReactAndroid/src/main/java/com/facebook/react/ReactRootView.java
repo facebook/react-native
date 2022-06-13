@@ -19,6 +19,7 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.DisplayCutout;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -443,11 +444,24 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       // if in this experiment, we initialize the root earlier in startReactApplication
       // instead of waiting for the initial measure
       if (ReactFeatureFlags.enableEagerRootViewAttachment) {
+        if (!mWasMeasured) {
+          // Ideally, those values will be used by default, but we only update them here to scope
+          // this change to `enableEagerRootViewAttachment` experiment.
+          setSurfaceConstraintsToScreenSize();
+        }
         attachToReactInstanceManager();
       }
     } finally {
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     }
+  }
+
+  private void setSurfaceConstraintsToScreenSize() {
+    DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+    mWidthMeasureSpec =
+        MeasureSpec.makeMeasureSpec(displayMetrics.widthPixels, MeasureSpec.AT_MOST);
+    mHeightMeasureSpec =
+        MeasureSpec.makeMeasureSpec(displayMetrics.heightPixels, MeasureSpec.AT_MOST);
   }
 
   @Override

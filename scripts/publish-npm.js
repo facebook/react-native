@@ -13,45 +13,27 @@
  * This script prepares a release version of react-native and may publish to NPM.
  * It is supposed to run in CI environment, not on a developer's machine.
  *
- * To make it easier for developers it uses some logic to identify with which
- * version to publish the package.
+ * For a dry run (commitly), this script will:
+ *  * Version the commitly of the form `1000.0.0-<commitSha>`
+ *  * Create Android artifacts
+ *  * It will not publish to npm
  *
- * To cut a branch (and release RC):
- * - Developer: `git checkout -b 0.XY-stable`
- * - Developer: `./scripts/bump-oss-version.js -v v0.XY.0-rc.0`
- * - CI: test and deploy to npm (run this script) with version `0.XY.0-rc.0`
- *   with tag "next"
+ * For a nightly run, this script will:
+ *  * Version the nightly release of the form `0.0.0-<dateIdentifier>-<commitSha>`
+ *  * Create Android artifacts
+ *  * Publish to npm using `nightly` tag
  *
- * To update RC release:
- * - Developer: `git checkout 0.XY-stable`
- * - Developer: cherry-pick whatever changes needed
- * - Developer: `./scripts/bump-oss-version.js -v v0.XY.0-rc.1`
- * - CI: test and deploy to npm (run this script) with version `0.XY.0-rc.1`
- *   with tag "next"
- *
- * To publish a release:
- * - Developer: `git checkout 0.XY-stable`
- * - Developer: cherry-pick whatever changes needed
- * - Developer: `./scripts/bump-oss-version.js -v v0.XY.0`
- * - CI: test and deploy to npm (run this script) with version `0.XY.0`
- *   and no tag ("latest" is implied by npm)
- *
- * To patch old release:
- * - Developer: `git checkout 0.XY-stable`
- * - Developer: cherry-pick whatever changes needed
- * - Developer: `git tag v0.XY.Z`
- * - Developer: `git push` to git@github.com:facebook/react-native.git (or merge as pull request)
- * - CI: test and deploy to npm (run this script) with version 0.XY.Z with no tag, npm will not mark it as latest if
- * there is a version higher than XY
- *
- * Important tags:
- * If tag v0.XY.0-rc.Z is present on the commit then publish to npm with version 0.XY.0-rc.Z and tag next
- * If tag v0.XY.Z is present on the commit then publish to npm with version 0.XY.Z and no tag (npm will consider it latest)
+ * For a release run, this script will:
+ *  * Version the release by the tag version that triggered CI
+ *  * Create Android artifacts
+ *  * Publish to npm
+ *     * using `latest` tag if commit is currently tagged `latest`
+ *     * or otherwise `{major}.{minor}-stable`
  */
 
 const {exec, echo, exit, test} = require('shelljs');
 const yargs = require('yargs');
-const {parseVersion} = require('./version-utils');
+const {parseVersion, isTaggedLatest} = require('./version-utils');
 
 const buildTag = process.env.CIRCLE_TAG;
 const otp = process.env.NPM_CONFIG_OTP;
@@ -83,7 +65,7 @@ const rawVersion =
     : // For nightly we continue to use 0.0.0 for clarity for npm
     nightlyBuild
     ? '0.0.0'
-    : // For pre-release and stable releases, we use the git tag of the version we're releasing (set in bump-oss-version)
+    : // For pre-release and stable releases, we use the git tag of the version we're releasing (set in set-rn-version)
       buildTag;
 
 let version,
@@ -113,12 +95,12 @@ if (dryRunBuild) {
 }
 
 // Bump version number in various files (package.json, gradle.properties etc)
-// For stable, pre-release releases, we manually call bump-oss-version on release branch
+// For stable, pre-release releases, we rely on CircleCI job `prepare_package_for_release` to handle this
 if (nightlyBuild || dryRunBuild) {
   if (
     exec(`node scripts/set-rn-version.js --to-version ${releaseVersion}`).code
   ) {
-    echo('Failed to bump version number');
+    echo(`Failed to set version number to ${releaseVersion}`);
     exit(1);
   }
 }
@@ -161,10 +143,7 @@ if (dryRunBuild) {
   }
 } else {
   // Running to see if this commit has been git tagged as `latest`
-  const latestCommit = exec("git rev-list -n 1 'latest'", {
-    silent: true,
-  }).stdout.replace('\n', '');
-  const isLatest = currentCommit === latestCommit;
+  const isLatest = isTaggedLatest(currentCommit);
 
   const releaseBranch = `${major}.${minor}-stable`;
 

@@ -7,7 +7,7 @@
 
 package com.facebook.react.uimanager;
 
-import static org.fest.assertions.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;

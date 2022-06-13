@@ -23,7 +23,7 @@ steps:
     inputs:
       script: yarn install --frozen-lockfile
 
-  # scripts/bump-oss-version.js
+  # scripts/set-rn-version.js
   #
   # update the following files to the commit id.
   # package.json (-> npm package version)
@@ -39,12 +39,12 @@ steps:
   # --nightly --autogenerateVersionNumber => version = `0.0.0-${currentCommit.slice(0, 9)}`;
   # When on main branch or non-stable branch.
   - task: CmdLine@2
-    displayName: Bump canary package version
+    displayName: Set canary package version
     inputs:
-      script: node scripts/bump-oss-version.js --nightly --autogenerateVersionNumber --skipUpdateRuby # TODO(macOS GH#1148): Remove --skipUpdateRuby flag once we clean up version update scripts
+      script: node scripts/set-rn-version.js --nightly --autogenerateVersionNumber --skipUpdateRuby # TODO(macOS GH#1148): Remove --skipUpdateRuby flag once we clean up version update scripts
     condition: or(eq(variables['Build.SourceBranchName'], 'main'), not(contains(variables['Build.SourceBranchName'], '-stable')))
 
-  # TODO: We don't seem to be running bump-oss-version.js for stable branches, hence we would end up publishing using the values in the repository.
+  # TODO: We don't seem to be running set-rn-version.js for stable branches, hence we would end up publishing using the values in the repository.
 
   - task: CmdLine@2
     displayName: nuget restore

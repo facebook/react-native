@@ -82,7 +82,7 @@ commands:
     steps:
       - restore_cache:
           keys:
-            - v4-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
+            - v5-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
       - run:
           name: "Yarn: Install Dependencies"
           command: |
@@ -94,7 +94,7 @@ commands:
       - save_cache:
           paths:
             - ~/.cache/yarn
-          key: v4-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
+          key: v5-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
 
   install_buck_tooling:
     steps:
@@ -955,9 +955,12 @@ workflows:
 
   releases:
     jobs:
-      # This job will trigger on pushes to release branch and commit a version tag to trigger `build_npm_package` for release
+      # This job will trigger on relevant release branch pushes.
+      # It prepares the package and triggers `build_npm_package` for release
       - prepare_package_for_release:
           name: prepare_package_for_release
+          # Since CircleCI does not support branch AND tag filters, we manually check in job
+          # and no-op if there is no `publish-v{version}` tag set.
           filters:
             branches:
               only:
@@ -968,6 +971,9 @@ workflows:
           name: build_and_publish_npm_package
           context: react-native-bot
           publish_npm_args: --release
+          # CircleCI filters are OR-ed, with all branches triggering by default and tags excluded by default
+          # CircleCI env-vars are only set with the branch OR tag that triggered the job, not both.
+          # In this case, CIRCLE_BRANCH is unset, but CIRCLE_TAG is set
           filters:
             # Both of the following conditions must be included!
             # Ignore any commit on any branch by default.

@@ -43,13 +43,7 @@ std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
       std::make_shared<Task>(priority, std::move(callback), expirationTime);
   taskQueue_.push(task);
 
-  if (!isCallbackScheduled_ && !isPerformingWork_) {
-    isCallbackScheduled_ = true;
-    runtimeExecutor_([this](jsi::Runtime &runtime) {
-      isCallbackScheduled_ = false;
-      startWorkLoop(runtime);
-    });
-  }
+  scheduleWorkLoopIfNecessary();
 
   return task;
 }
@@ -97,16 +91,36 @@ void RuntimeScheduler::executeNowOnTheSameThread(
               callback(runtime);
               return jsi::Value::undefined();
             });
-        assert(!isPerformingWork_);
+
+        // We are about to trigger work loop. Setting `isCallbackScheduled_` to
+        // true prevents unnecessary call to `runtimeExecutor`.
+        isWorkLoopScheduled_ = true;
         this->scheduleTask(
             SchedulerPriority::ImmediatePriority, std::move(task));
+        isWorkLoopScheduled_ = false;
+
         isSynchronous_ = true;
         startWorkLoop(runtime);
         isSynchronous_ = false;
       });
+
+  // Resume work loop if needed. In synchronous mode
+  // only expired tasks are executed. Tasks with lower priority
+  // might be still in the queue.
+  scheduleWorkLoopIfNecessary();
 }
 
 #pragma mark - Private
+
+void RuntimeScheduler::scheduleWorkLoopIfNecessary() const {
+  if (!isWorkLoopScheduled_ && !isPerformingWork_) {
+    isWorkLoopScheduled_ = true;
+    runtimeExecutor_([this](jsi::Runtime &runtime) {
+      isWorkLoopScheduled_ = false;
+      startWorkLoop(runtime);
+    });
+  }
+}
 
 void RuntimeScheduler::startWorkLoop(jsi::Runtime &runtime) const {
   auto previousPriority = currentPriority_;
@@ -117,8 +131,15 @@ void RuntimeScheduler::startWorkLoop(jsi::Runtime &runtime) const {
       auto now = now_();
       auto didUserCallbackTimeout = topPriorityTask->expirationTime <= now;
 
-      if (!didUserCallbackTimeout && shouldYield_) {
-        // This task hasn't expired and we need to yield.
+      // This task hasn't expired and we need to yield.
+      auto shouldBreakBecauseYield = !didUserCallbackTimeout && shouldYield_;
+
+      // This task hasn't expired but we are in synchronous mode and need to
+      // only execute the necessary minimum.
+      auto shouldBreakBecauseSynchronous =
+          !didUserCallbackTimeout && isSynchronous_;
+
+      if (shouldBreakBecauseYield || shouldBreakBecauseSynchronous) {
         break;
       }
       currentPriority_ = topPriorityTask->priority;

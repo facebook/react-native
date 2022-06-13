@@ -232,8 +232,7 @@ RCT_EXPORT_MODULE()
 - (void)setDefaultJSBundle
 {
   [[RCTBundleURLProvider sharedSettings] resetToDefaults];
-  self->_bundleManager.bundleURL = [[RCTBundleURLProvider sharedSettings] jsBundleURLForFallbackResource:nil
-                                                                                       fallbackExtension:nil];
+  self->_bundleManager.bundleURL = [[RCTBundleURLProvider sharedSettings] jsBundleURLForFallbackExtension:nil];
   RCTTriggerReloadCommandListeners(@"Dev menu - reset to default");
 }
 
@@ -395,8 +394,7 @@ RCT_EXPORT_MODULE()
                                                     [bundleManager resetBundleURL];
                                                   } else {
                                                     bundleManager.bundleURL = [[RCTBundleURLProvider sharedSettings]
-                                                        jsBundleURLForBundleRoot:bundleRoot
-                                                                fallbackResource:nil];
+                                                        jsBundleURLForBundleRoot:bundleRoot];
                                                   }
 
                                                   RCTTriggerReloadCommandListeners(@"Dev menu - apply changes");
