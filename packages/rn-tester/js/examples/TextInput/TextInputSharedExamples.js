@@ -19,7 +19,6 @@ const {
   TextInput,
   View,
   StyleSheet,
-  KeyboardAvoidingView,
 } = require('react-native');
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
