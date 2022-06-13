@@ -100,7 +100,7 @@ jsi::Value RuntimeSchedulerBinding::get(
             jsi::Value const &,
             jsi::Value const *arguments,
             size_t) noexcept -> jsi::Value {
-          runtimeScheduler_->cancelTask(taskFromValue(runtime, arguments[0]));
+          runtimeScheduler_->cancelTask(*taskFromValue(runtime, arguments[0]));
           return jsi::Value::undefined();
         });
   }

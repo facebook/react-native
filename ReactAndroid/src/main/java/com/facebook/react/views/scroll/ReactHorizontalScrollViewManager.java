@@ -325,10 +325,6 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
 
   @ReactProp(name = ViewProps.POINTER_EVENTS)
   public void setPointerEvents(ReactHorizontalScrollView view, @Nullable String pointerEventsStr) {
-    if (pointerEventsStr == null) {
-      view.setPointerEvents(PointerEvents.AUTO);
-    } else {
-      view.setPointerEvents(PointerEvents.parsePointerEvents(pointerEventsStr));
-    }
+    view.setPointerEvents(PointerEvents.parsePointerEvents(pointerEventsStr));
   }
 }

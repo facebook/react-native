@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <condition_variable>
 #include <queue>
 
 class StubQueue {

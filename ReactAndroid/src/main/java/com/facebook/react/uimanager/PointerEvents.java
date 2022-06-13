@@ -29,7 +29,11 @@ public enum PointerEvents {
   ;
 
   public static PointerEvents parsePointerEvents(String pointerEventsStr) {
-    return PointerEvents.valueOf(pointerEventsStr.toUpperCase(Locale.US).replace("-", "_"));
+    if (pointerEventsStr == null) {
+      return PointerEvents.AUTO;
+    } else {
+      return PointerEvents.valueOf(pointerEventsStr.toUpperCase(Locale.US).replace("-", "_"));
+    }
   }
 
   public static boolean canBeTouchTarget(PointerEvents pointerEvents) {

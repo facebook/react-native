@@ -159,7 +159,7 @@ TEST_F(RuntimeSchedulerTest, taskExpiration) {
 }
 
 TEST_F(RuntimeSchedulerTest, scheduleTwoTasksWithSamePriority) {
-  uint firstTaskCallOrder;
+  uint firstTaskCallOrder = 0;
   auto callbackOne =
       createHostFunctionFromLambda([this, &firstTaskCallOrder](bool) {
         firstTaskCallOrder = hostFunctionCallCount_;
@@ -192,7 +192,7 @@ TEST_F(RuntimeSchedulerTest, scheduleTwoTasksWithSamePriority) {
 }
 
 TEST_F(RuntimeSchedulerTest, scheduleTwoTasksWithDifferentPriorities) {
-  uint lowPriorityTaskCallOrder;
+  uint lowPriorityTaskCallOrder = 0;
   auto callbackOne =
       createHostFunctionFromLambda([this, &lowPriorityTaskCallOrder](bool) {
         lowPriorityTaskCallOrder = hostFunctionCallCount_;
@@ -237,7 +237,7 @@ TEST_F(RuntimeSchedulerTest, cancelTask) {
   EXPECT_FALSE(didRunTask);
   EXPECT_EQ(stubQueue_->size(), 1);
 
-  runtimeScheduler_->cancelTask(task);
+  runtimeScheduler_->cancelTask(*task);
 
   stubQueue_->tick();
 
@@ -323,7 +323,7 @@ TEST_F(RuntimeSchedulerTest, scheduleWork) {
 
   EXPECT_FALSE(wasCalled);
 
-  EXPECT_FALSE(runtimeScheduler_->getShouldYield());
+  EXPECT_TRUE(runtimeScheduler_->getShouldYield());
 
   EXPECT_EQ(stubQueue_->size(), 1);
 
@@ -334,7 +334,6 @@ TEST_F(RuntimeSchedulerTest, scheduleWork) {
 }
 
 TEST_F(RuntimeSchedulerTest, scheduleWorkWithYielding) {
-  runtimeScheduler_->setEnableYielding(true);
   bool wasCalled = false;
   runtimeScheduler_->scheduleWork(
       [&](jsi::Runtime const &) { wasCalled = true; });
@@ -353,8 +352,6 @@ TEST_F(RuntimeSchedulerTest, scheduleWorkWithYielding) {
 }
 
 TEST_F(RuntimeSchedulerTest, normalTaskYieldsToPlatformEvent) {
-  runtimeScheduler_->setEnableYielding(true);
-
   bool didRunJavaScriptTask = false;
   bool didRunPlatformWork = false;
 
@@ -382,8 +379,6 @@ TEST_F(RuntimeSchedulerTest, normalTaskYieldsToPlatformEvent) {
 }
 
 TEST_F(RuntimeSchedulerTest, expiredTaskDoesntYieldToPlatformEvent) {
-  runtimeScheduler_->setEnableYielding(true);
-
   bool didRunJavaScriptTask = false;
   bool didRunPlatformWork = false;
 
@@ -412,8 +407,6 @@ TEST_F(RuntimeSchedulerTest, expiredTaskDoesntYieldToPlatformEvent) {
 }
 
 TEST_F(RuntimeSchedulerTest, immediateTaskDoesntYieldToPlatformEvent) {
-  runtimeScheduler_->setEnableYielding(true);
-
   bool didRunJavaScriptTask = false;
   bool didRunPlatformWork = false;
 
