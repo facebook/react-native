@@ -123,7 +123,10 @@ ${
       })
     : ''
 }
-export default NativeComponentRegistry.get(nativeComponentName, () => VIEW_CONFIG);
+
+export const __INTERNAL_VIEW_CONFIG = VIEW_CONFIG;
+
+export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 `.trim();
 };
 

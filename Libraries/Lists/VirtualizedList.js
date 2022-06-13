@@ -760,12 +760,14 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           onViewableItemsChanged: pair.onViewableItemsChanged,
         }),
       );
-    } else if (this.props.onViewableItemsChanged) {
-      this._viewabilityTuples.push({
-        viewabilityHelper: new ViewabilityHelper(this.props.viewabilityConfig),
-        // $FlowFixMe[incompatible-call]
-        onViewableItemsChanged: this.props.onViewableItemsChanged,
-      });
+    } else {
+      const {onViewableItemsChanged, viewabilityConfig} = this.props;
+      if (onViewableItemsChanged) {
+        this._viewabilityTuples.push({
+          viewabilityHelper: new ViewabilityHelper(viewabilityConfig),
+          onViewableItemsChanged: onViewableItemsChanged,
+        });
+      }
     }
 
     let initialState = {

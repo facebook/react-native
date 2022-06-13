@@ -1,0 +1,16 @@
+name: Apply version label to issue
+
+on:
+  issues:
+    types: [opened, edited]
+
+jobs:
+  add-version-label-issue:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+      - uses: gabrieldonadel/actions-apply-version-label@v0.0.2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          required-label: "Type: Upgrade Issue"

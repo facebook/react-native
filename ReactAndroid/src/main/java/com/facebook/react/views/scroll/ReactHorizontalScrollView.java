@@ -40,6 +40,7 @@ import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.FabricViewStateManager;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
+import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.uimanager.ReactOverflowViewWithInset;
@@ -105,6 +106,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private final FabricViewStateManager mFabricViewStateManager = new FabricViewStateManager();
   private final ReactScrollViewScrollState mReactScrollViewScrollState;
   private final ValueAnimator DEFAULT_FLING_ANIMATOR = ObjectAnimator.ofInt(this, "scrollX", 0, 0);
+  private PointerEvents mPointerEvents = PointerEvents.AUTO;
 
   private final Rect mTempRect = new Rect();
 
@@ -452,6 +454,11 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
       return false;
     }
 
+    // We intercept the touch event if the children are not supposed to receive it.
+    if (!PointerEvents.canChildrenBeTouchTarget(mPointerEvents)) {
+      return true;
+    }
+
     try {
       if (super.onInterceptTouchEvent(ev)) {
         NativeGestureUtil.notifyNativeGestureStarted(this, ev);
@@ -516,6 +523,11 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   @Override
   public boolean onTouchEvent(MotionEvent ev) {
     if (!mScrollEnabled) {
+      return false;
+    }
+
+    // We do not accept the touch event if this view is not supposed to receive it.
+    if (!PointerEvents.canBeTouchTarget(mPointerEvents)) {
       return false;
     }
 
@@ -1252,5 +1264,13 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     return ReactScrollViewHelper.predictFinalScrollPosition(
             this, velocityX, 0, Math.max(0, computeHorizontalScrollRange() - getWidth()), 0)
         .x;
+  }
+
+  public void setPointerEvents(PointerEvents pointerEvents) {
+    mPointerEvents = pointerEvents;
+  }
+
+  public PointerEvents getPointerEvents() {
+    return mPointerEvents;
   }
 }

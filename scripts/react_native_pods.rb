@@ -135,15 +135,15 @@ def get_default_flags()
 end
 
 def use_flipper!(versions = {}, configurations: ['Debug'])
-  versions['Flipper'] ||= '0.99.0'
+  versions['Flipper'] ||= '0.125.0'
   versions['Flipper-Boost-iOSX'] ||= '1.76.0.1.11'
   versions['Flipper-DoubleConversion'] ||= '3.1.7'
   versions['Flipper-Fmt'] ||= '7.1.7'
-  versions['Flipper-Folly'] ||= '2.6.7'
+  versions['Flipper-Folly'] ||= '2.6.10'
   versions['Flipper-Glog'] ||= '0.3.9'
   versions['Flipper-PeerTalk'] ||= '0.0.4'
   versions['Flipper-RSocket'] ||= '1.4.3'
-  versions['OpenSSL-Universal'] ||= '1.1.180'
+  versions['OpenSSL-Universal'] ||= '1.1.1100'
   pod 'FlipperKit', versions['Flipper'], :configurations => configurations
   pod 'FlipperKit/FlipperKitLayoutPlugin', versions['Flipper'], :configurations => configurations
   pod 'FlipperKit/SKIOSNetworkPlugin', versions['Flipper'], :configurations => configurations
@@ -653,5 +653,6 @@ def __apply_Xcode_12_5_M1_post_install_workaround(installer)
   #   "Time.h:52:17: error: typedef redefinition with different types"
   # We need to make a patch to RCT-Folly - remove the `__IPHONE_OS_VERSION_MIN_REQUIRED` check.
   # See https://github.com/facebook/flipper/issues/834 for more details.
-  `sed -i -e  $'s/VERSION_MIN_REQUIRED </VERSION_MIN_REQUIRED >=/' #{installer.sandbox.root}/RCT-Folly/folly/portability/Time.h`
+  time_header = "#{Pod::Config.instance.installation_root.to_s}/Pods/RCT-Folly/folly/portability/Time.h"
+  `sed -i -e  $'s/VERSION_MIN_REQUIRED </VERSION_MIN_REQUIRED >=/' #{time_header}`
 end

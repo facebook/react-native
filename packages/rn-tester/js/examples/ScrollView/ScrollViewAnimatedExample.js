@@ -31,7 +31,6 @@ class ScrollViewAnimatedExample extends Component<{...}> {
     Animated.timing(this._scrollViewPos, {
       toValue: 100,
       duration: 10000,
-      // $FlowFixMe[method-unbinding]
       easing: Easing.linear,
       useNativeDriver: true,
     }).start();
