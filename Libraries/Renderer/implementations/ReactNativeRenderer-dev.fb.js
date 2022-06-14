@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<b669579a231fa2a949698a91b71718b9>>
+ * @generated SignedSource<<6b9c0ba969139d6ee3eb09f15762393c>>
  */
 
 'use strict';
@@ -6242,7 +6242,7 @@ function flushSyncCallbacks() {
   return null;
 }
 
-var ReactVersion = "18.0.0-rc.0-a049aa015-20211213";
+var ReactVersion = "18.0.0-rc.0-fe905f152-20220107";
 
 var SCHEDULING_PROFILER_VERSION = 1;
 
@@ -21095,8 +21095,6 @@ function recoverFromConcurrentError(root, errorRetryLanes) {
     {
       errorHydratingContainer(root.containerInfo);
     }
-
-    clearContainer(root.containerInfo);
   }
 
   var exitStatus;

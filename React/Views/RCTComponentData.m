@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -430,10 +430,18 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
 
     if ([type isEqualToString:@"RCTBubblingEventBlock"]) {
       [bubblingEvents addObject:RCTNormalizeInputEventName(name)];
-      propTypes[name] = @"BOOL";
+
+      // TODO(109509380): Remove this gating
+      if (!RCTViewConfigEventValidAttributesDisabled()) {
+        propTypes[name] = @"BOOL";
+      }
     } else if ([type isEqualToString:@"RCTDirectEventBlock"]) {
       [directEvents addObject:RCTNormalizeInputEventName(name)];
-      propTypes[name] = @"BOOL";
+
+      // TODO(109509380): Remove this gating
+      if (!RCTViewConfigEventValidAttributesDisabled()) {
+        propTypes[name] = @"BOOL";
+      }
     } else {
       propTypes[name] = type;
     }

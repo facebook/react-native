@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -335,9 +335,13 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     // No-op in non-Fabric since UIManagerModule handles actually laying out children.
 
     // In Fabric, update LayoutSpecs just so we update the offsetX and offsetY.
-    if (mWasMeasured && getUIManagerType() == FABRIC) {
+    if (mWasMeasured && isFabric()) {
       updateRootLayoutSpecs(false, mWidthMeasureSpec, mHeightMeasureSpec);
     }
+  }
+
+  private boolean isFabric() {
+    return getUIManagerType() == FABRIC;
   }
 
   @Override
@@ -509,7 +513,8 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     }
     // In Fabric we cannot call `updateRootLayoutSpecs` until a SurfaceId has been set.
     // Sometimes,
-    if (getUIManagerType() == FABRIC && !isRootViewTagSet()) {
+    boolean isFabricEnabled = isFabric();
+    if (isFabricEnabled && !isRootViewTagSet()) {
       ReactMarker.logMarker(ReactMarkerConstants.ROOT_VIEW_UPDATE_LAYOUT_SPECS_END);
       FLog.e(TAG, "Unable to update root layout specs for ReactRootView: no rootViewTag set yet");
       return;
@@ -526,7 +531,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
         // In Fabric only, get position of view within screen
         int offsetX = 0;
         int offsetY = 0;
-        if (getUIManagerType() == FABRIC) {
+        if (isFabricEnabled) {
           Point viewportOffset = RootViewUtil.getViewportOffset(this);
           offsetX = viewportOffset.x;
           offsetY = viewportOffset.y;
@@ -561,7 +566,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     // all the views in the hierarchy.
     if (mReactInstanceManager != null) {
       final ReactContext reactApplicationContext = mReactInstanceManager.getCurrentReactContext();
-      if (reactApplicationContext != null && getUIManagerType() == FABRIC) {
+      if (reactApplicationContext != null && isFabric()) {
         @Nullable
         UIManager uiManager =
             UIManagerHelper.getUIManager(reactApplicationContext, getUIManagerType());

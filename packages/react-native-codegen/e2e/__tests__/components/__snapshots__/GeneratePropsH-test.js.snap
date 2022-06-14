@@ -4,7 +4,7 @@ exports[`GeneratePropsH can generate for 'ArrayPropsNativeComponent.js' 1`] = `
 Object {
   "Props.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -84,7 +84,7 @@ struct ArrayPropsNativeComponentViewObjectStruct {
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentViewObjectStruct &result) {
-  auto map = (better::map<std::string, RawValue>)value;
+  auto map = (butter::map<std::string, RawValue>)value;
 
   auto tmp_prop = map.find(\\"prop\\");
   if (tmp_prop != map.end()) {
@@ -133,7 +133,7 @@ exports[`GeneratePropsH can generate for 'BooleanPropNativeComponent.js' 1`] = `
 Object {
   "Props.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -169,7 +169,7 @@ exports[`GeneratePropsH can generate for 'ColorPropNativeComponent.js' 1`] = `
 Object {
   "Props.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -205,7 +205,7 @@ exports[`GeneratePropsH can generate for 'EdgeInsetsPropNativeComponent.js' 1`] 
 Object {
   "Props.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -240,7 +240,7 @@ exports[`GeneratePropsH can generate for 'EnumPropNativeComponent.js' 1`] = `
 Object {
   "Props.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -324,7 +324,7 @@ exports[`GeneratePropsH can generate for 'EventNestedObjectPropsNativeComponent.
 Object {
   "Props.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -359,7 +359,7 @@ exports[`GeneratePropsH can generate for 'EventPropsNativeComponent.js' 1`] = `
 Object {
   "Props.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -394,7 +394,7 @@ exports[`GeneratePropsH can generate for 'FloatPropsNativeComponent.js' 1`] = `
 Object {
   "Props.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -435,7 +435,7 @@ exports[`GeneratePropsH can generate for 'ImagePropNativeComponent.js' 1`] = `
 Object {
   "Props.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -471,7 +471,7 @@ exports[`GeneratePropsH can generate for 'IntegerPropNativeComponent.js' 1`] = `
 Object {
   "Props.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -508,7 +508,7 @@ exports[`GeneratePropsH can generate for 'InterfaceOnlyNativeComponent.js' 1`] =
 Object {
   "Props.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -543,7 +543,7 @@ exports[`GeneratePropsH can generate for 'MultiNativePropNativeComponent.js' 1`]
 Object {
   "Props.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -584,7 +584,7 @@ exports[`GeneratePropsH can generate for 'NoPropsNoEventsNativeComponent.js' 1`]
 Object {
   "Props.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -619,7 +619,7 @@ exports[`GeneratePropsH can generate for 'ObjectPropsNativeComponent.js' 1`] = `
 Object {
   "Props.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -687,7 +687,7 @@ struct ObjectPropsNativeComponentObjectPropStruct {
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsNativeComponentObjectPropStruct &result) {
-  auto map = (better::map<std::string, RawValue>)value;
+  auto map = (butter::map<std::string, RawValue>)value;
 
   auto tmp_stringProp = map.find(\\"stringProp\\");
   if (tmp_stringProp != map.end()) {
@@ -724,7 +724,7 @@ struct ObjectPropsNativeComponentObjectArrayPropStruct {
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsNativeComponentObjectArrayPropStruct &result) {
-  auto map = (better::map<std::string, RawValue>)value;
+  auto map = (butter::map<std::string, RawValue>)value;
 
   auto tmp_array = map.find(\\"array\\");
   if (tmp_array != map.end()) {
@@ -743,7 +743,7 @@ struct ObjectPropsNativeComponentObjectPrimitiveRequiredPropStruct {
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsNativeComponentObjectPrimitiveRequiredPropStruct &result) {
-  auto map = (better::map<std::string, RawValue>)value;
+  auto map = (butter::map<std::string, RawValue>)value;
 
   auto tmp_image = map.find(\\"image\\");
   if (tmp_image != map.end()) {
@@ -784,7 +784,7 @@ exports[`GeneratePropsH can generate for 'PointPropNativeComponent.js' 1`] = `
 Object {
   "Props.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -820,7 +820,7 @@ exports[`GeneratePropsH can generate for 'StringPropNativeComponent.js' 1`] = `
 Object {
   "Props.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include <better/better.h>
+#include <butter/butter.h>
 
-#ifdef BETTER_USE_FOLLY_CONTAINERS
+#ifdef BUTTER_USE_FOLLY_CONTAINERS
 
 #include <folly/container/F14Set.h>
 
@@ -20,9 +20,9 @@
 #endif
 
 namespace facebook {
-namespace better {
+namespace butter {
 
-#ifdef BETTER_USE_FOLLY_CONTAINERS
+#ifdef BUTTER_USE_FOLLY_CONTAINERS
 
 template <typename... Ts>
 using set = folly::F14FastSet<Ts...>;
@@ -34,5 +34,5 @@ using set = std::unordered_set<Ts...>;
 
 #endif
 
-} // namespace better
+} // namespace butter
 } // namespace facebook

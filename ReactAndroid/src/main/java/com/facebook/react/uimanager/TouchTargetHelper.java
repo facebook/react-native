@@ -1,11 +1,13 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.uimanager;
+
+import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 
 import android.annotation.SuppressLint;
 import android.graphics.Matrix;
@@ -17,7 +19,9 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.touch.ReactHitSlopView;
+import com.facebook.react.uimanager.common.ViewUtil;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -182,8 +186,16 @@ public class TouchTargetHelper {
       if (!isTouchPointInView(eventCoords[0], eventCoords[1], view)) {
         // We don't allow touches on views that are outside the bounds of an `overflow: hidden` and
         // `overflow: scroll` View.
-        if (view instanceof ReactOverflowView) {
-          @Nullable String overflow = ((ReactOverflowView) view).getOverflow();
+        if (view instanceof ReactOverflowViewWithInset) {
+          // If the touch point is outside of the overflowinset for the view, we can safely ignore
+          // it.
+          if (ViewUtil.getUIManagerType(view.getId()) == FABRIC
+              && ReactFeatureFlags.doesUseOverflowInset()
+              && !isTouchPointInViewWithOverflowInset(eventCoords[0], eventCoords[1], view)) {
+            return null;
+          }
+
+          @Nullable String overflow = ((ReactOverflowViewWithInset) view).getOverflow();
           if (ViewProps.HIDDEN.equals(overflow) || ViewProps.SCROLL.equals(overflow)) {
             return null;
           }
@@ -251,6 +263,16 @@ public class TouchTargetHelper {
 
       return false;
     }
+  }
+
+  private static boolean isTouchPointInViewWithOverflowInset(float x, float y, View view) {
+    if (!(view instanceof ReactOverflowViewWithInset)) {
+      return false;
+    }
+
+    final Rect overflowInset = ((ReactOverflowViewWithInset) view).getOverflowInset();
+    return (x >= -overflowInset.left && x < view.getWidth() - overflowInset.right)
+        && (y >= -overflowInset.top && y < view.getHeight() - overflowInset.bottom);
   }
 
   /**

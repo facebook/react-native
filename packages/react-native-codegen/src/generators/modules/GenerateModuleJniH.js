@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -35,7 +35,7 @@ const HeaderFileTemplate = ({
 }: $ReadOnly<{modules: string, libraryName: string}>) => {
   return `
 /**
- * ${'C'}opyright (c) Facebook, Inc. and its affiliates.
+ * ${'C'}opyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -63,7 +63,7 @@ std::shared_ptr<TurboModule> ${libraryName}_ModuleProvider(const std::string mod
 
 // Note: this Android.mk template includes dependencies for both NativeModule and components.
 const AndroidMkTemplate = ({libraryName}: $ReadOnly<{libraryName: string}>) => {
-  return `# Copyright (c) Facebook, Inc. and its affiliates.
+  return `# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.

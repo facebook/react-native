@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -34,7 +34,7 @@ class UIManager final : public ShadowTreeDelegate {
  public:
   UIManager(
       RuntimeExecutor const &runtimeExecutor,
-      BackgroundExecutor const &backgroundExecutor,
+      BackgroundExecutor backgroundExecutor,
       ContextContainer::Shared contextContainer);
 
   ~UIManager();
@@ -194,7 +194,7 @@ class UIManager final : public ShadowTreeDelegate {
   BackgroundExecutor const backgroundExecutor_{};
   ContextContainer::Shared contextContainer_;
 
-  mutable better::shared_mutex commitHookMutex_;
+  mutable butter::shared_mutex commitHookMutex_;
   mutable std::vector<UIManagerCommitHook const *> commitHooks_;
 
   std::unique_ptr<LeakChecker> leakChecker_;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -32,6 +32,7 @@ import com.facebook.react.fabric.mounting.MountingManager.MountItemExecutor;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.IllegalViewOperationException;
+import com.facebook.react.uimanager.ReactOverflowViewWithInset;
 import com.facebook.react.uimanager.ReactRoot;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.RootView;
@@ -756,6 +757,35 @@ public class SurfaceMountingManager {
 
     //noinspection unchecked
     viewManager.setPadding(viewToUpdate, left, top, right, bottom);
+  }
+
+  @UiThread
+  public void updateOverflowInset(
+      int reactTag,
+      int overflowInsetLeft,
+      int overflowInsetTop,
+      int overflowInsetRight,
+      int overflowInsetBottom) {
+    if (isStopped()) {
+      return;
+    }
+
+    ViewState viewState = getViewState(reactTag);
+    // Do not layout Root Views
+    if (viewState.mIsRoot) {
+      return;
+    }
+
+    View viewToUpdate = viewState.mView;
+    if (viewToUpdate == null) {
+      throw new IllegalStateException("Unable to find View for tag: " + reactTag);
+    }
+
+    if (viewToUpdate instanceof ReactOverflowViewWithInset) {
+      ((ReactOverflowViewWithInset) viewToUpdate)
+          .setOverflowInset(
+              overflowInsetLeft, overflowInsetTop, overflowInsetRight, overflowInsetBottom);
+    }
   }
 
   @UiThread

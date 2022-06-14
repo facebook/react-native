@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -61,7 +61,7 @@ class SharedColor {
 
 bool isColorMeaningful(SharedColor const &color) noexcept;
 SharedColor colorFromComponents(ColorComponents components);
-ColorComponents colorComponentsFromColor(SharedColor color);
+ColorComponents colorComponentsFromColor(SharedColor const &color);
 
 SharedColor clearColor();
 SharedColor blackColor();

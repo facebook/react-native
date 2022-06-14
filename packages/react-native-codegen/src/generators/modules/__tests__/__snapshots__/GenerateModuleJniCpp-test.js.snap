@@ -4,7 +4,7 @@ exports[`GenerateModuleJniCpp can generate fixture SampleWithUppercaseName 1`] =
 Map {
   "jni/SampleWithUppercaseName-generated.cpp" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -41,7 +41,7 @@ exports[`GenerateModuleJniCpp can generate fixture complex_objects 1`] = `
 Map {
   "jni/complex_objects-generated.cpp" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -95,7 +95,7 @@ exports[`GenerateModuleJniCpp can generate fixture empty_native_modules 1`] = `
 Map {
   "jni/empty_native_modules-generated.cpp" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -132,7 +132,7 @@ exports[`GenerateModuleJniCpp can generate fixture native_modules_with_type_alia
 Map {
   "jni/native_modules_with_type_aliases-generated.cpp" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -173,7 +173,7 @@ exports[`GenerateModuleJniCpp can generate fixture real_module_example 1`] = `
 Map {
   "jni/real_module_example-generated.cpp" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -255,7 +255,7 @@ exports[`GenerateModuleJniCpp can generate fixture simple_native_modules 1`] = `
 Map {
   "jni/simple_native_modules-generated.cpp" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -344,7 +344,7 @@ exports[`GenerateModuleJniCpp can generate fixture two_modules_different_files 1
 Map {
   "jni/two_modules_different_files-generated.cpp" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.

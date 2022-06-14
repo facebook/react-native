@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<7638d79ef666eac85302b8ce3706cab0>>
+ * @generated SignedSource<<c99237d947c4c9b464cbc2fb01bfa5cc>>
  */
 
 
@@ -1892,11 +1892,6 @@ function lanesToEventPriority(lanes) {
         : 536870912
       : 4
     : 1;
-}
-function shim() {
-  throw Error(
-    "The current renderer does not support mutation. This error is likely caused by a bug in React. Please file an issue."
-  );
 }
 function shim$1() {
   throw Error(
@@ -6638,7 +6633,10 @@ function commitLayoutEffects(finishedWork, root, committedLanes) {
                   }
                   break;
                 case 5:
-                  null === current && committedLanes.flags & 4 && shim();
+                  if (null === current && committedLanes.flags & 4)
+                    throw Error(
+                      "The current renderer does not support mutation. This error is likely caused by a bug in React. Please file an issue."
+                    );
                   break;
                 case 6:
                   break;
@@ -7087,7 +7085,7 @@ function performConcurrentWorkOnRoot(root, didTimeout) {
 function recoverFromConcurrentError(root, errorRetryLanes) {
   var prevExecutionContext = executionContext;
   executionContext |= 8;
-  root.isDehydrated && ((root.isDehydrated = !1), shim(root.containerInfo));
+  root.isDehydrated && (root.isDehydrated = !1);
   for (
     var exitStatus, i = 0;
     50 > i &&
@@ -7610,7 +7608,7 @@ function commitRootImpl(root, renderPriorityLevel) {
     lanes = root.finishedLanes;
   supportsUserTimingV3 &&
     (markAndClear("--commit-start-" + lanes),
-    markAndClear("--react-version-18.0.0-rc.0-a049aa015-20211213"),
+    markAndClear("--react-version-18.0.0-rc.0-fe905f152-20220107"),
     markAndClear("--profiler-version-1"),
     getLaneLabels(),
     markAndClear("--react-lane-labels-" + laneLabels.join(",")),
@@ -8867,7 +8865,7 @@ var roots = new Map(),
   devToolsConfig$jscomp$inline_1020 = {
     findFiberByHostInstance: getInstanceFromInstance,
     bundleType: 0,
-    version: "18.0.0-rc.0-a049aa015-20211213",
+    version: "18.0.0-rc.0-fe905f152-20220107",
     rendererPackageName: "react-native-renderer",
     rendererConfig: {
       getInspectorDataForViewTag: function() {
@@ -8909,7 +8907,7 @@ var internals$jscomp$inline_1307 = {
   scheduleRoot: null,
   setRefreshHandler: null,
   getCurrentFiber: null,
-  reconcilerVersion: "18.0.0-rc.0-a049aa015-20211213"
+  reconcilerVersion: "18.0.0-rc.0-fe905f152-20220107"
 };
 if ("undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__) {
   var hook$jscomp$inline_1308 = __REACT_DEVTOOLS_GLOBAL_HOOK__;

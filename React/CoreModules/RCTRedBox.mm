@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -143,8 +143,8 @@
                                       selector:@selector(showExtraDataViewController)
                                          block:nil];
 
-    CGFloat buttonWidth = frame.size.width / (4 + [customButtonTitles count]);
-    CGFloat bottomButtonHeight = frame.size.height - buttonHeight - [self bottomSafeViewHeight];
+    CGFloat buttonWidth = frame.size.width / (CGFloat)(4 + [customButtonTitles count]);
+    CGFloat bottomButtonHeight = frame.size.height - buttonHeight - (CGFloat)[self bottomSafeViewHeight];
     dismissButton.frame = CGRectMake(0, bottomButtonHeight, buttonWidth, buttonHeight);
     reloadButton.frame = CGRectMake(buttonWidth, bottomButtonHeight, buttonWidth, buttonHeight);
     copyButton.frame = CGRectMake(buttonWidth * 2, bottomButtonHeight, buttonWidth, buttonHeight);
@@ -172,8 +172,11 @@
 
     UIView *bottomSafeView = [UIView new];
     bottomSafeView.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
-    bottomSafeView.frame =
-        CGRectMake(0, frame.size.height - [self bottomSafeViewHeight], frame.size.width, [self bottomSafeViewHeight]);
+    bottomSafeView.frame = CGRectMake(
+        0,
+        frame.size.height - (CGFloat)[self bottomSafeViewHeight],
+        frame.size.width,
+        (CGFloat)[self bottomSafeViewHeight]);
 
     [rootView addSubview:bottomSafeView];
   }

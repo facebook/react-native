@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,13 +9,15 @@
 #include "DynamicPropsUtilities.h"
 #include "ShadowNodeFragment.h"
 
-#include <better/small_vector.h>
+#include <butter/small_vector.h>
 
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/ComponentDescriptor.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
+
+#include <utility>
 
 namespace facebook {
 namespace react {
@@ -58,7 +60,7 @@ bool ShadowNode::sameFamily(const ShadowNode &first, const ShadowNode &second) {
 
 ShadowNode::ShadowNode(
     ShadowNodeFragment const &fragment,
-    ShadowNodeFamily::Shared const &family,
+    ShadowNodeFamily::Shared family,
     ShadowNodeTraits traits)
     :
 #if RN_DEBUG_STRING_CONVERTIBLE
@@ -70,7 +72,7 @@ ShadowNode::ShadowNode(
                             : emptySharedShadowNodeSharedList()),
       state_(fragment.state),
       orderIndex_(0),
-      family_(family),
+      family_(std::move(family)),
       traits_(traits) {
   react_native_assert(props_);
   react_native_assert(children_);
@@ -178,7 +180,7 @@ void ShadowNode::sealRecursive() const {
 
   props_->seal();
 
-  for (auto child : *children_) {
+  for (auto const &child : *children_) {
     child->sealRecursive();
   }
 }
@@ -253,8 +255,8 @@ ShadowNodeFamily const &ShadowNode::getFamily() const {
 
 ShadowNode::Unshared ShadowNode::cloneTree(
     ShadowNodeFamily const &shadowNodeFamily,
-    std::function<ShadowNode::Unshared(ShadowNode const &oldShadowNode)>
-        callback) const {
+    std::function<ShadowNode::Unshared(ShadowNode const &oldShadowNode)> const
+        &callback) const {
   auto ancestors = shadowNodeFamily.getAncestors(*this);
 
   if (ancestors.empty()) {
@@ -306,7 +308,7 @@ std::string ShadowNode::getDebugValue() const {
 SharedDebugStringConvertibleList ShadowNode::getDebugChildren() const {
   auto debugChildren = SharedDebugStringConvertibleList{};
 
-  for (auto child : *children_) {
+  for (auto const &child : *children_) {
     auto debugChild =
         std::dynamic_pointer_cast<const DebugStringConvertible>(child);
     if (debugChild) {

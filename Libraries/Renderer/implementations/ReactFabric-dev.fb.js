@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<4b47cfe3313108f4cdeb2cfc4dfea2e5>>
+ * @generated SignedSource<<c25a06061e121dbc12cecb2884507dfa>>
  */
 
 'use strict';
@@ -4990,7 +4990,6 @@ function shim() {
 
 var supportsMutation = false;
 var commitMount = shim;
-var clearContainer = shim;
 
 // Renderers that don't support hydration
 // can re-export everything from this module.
@@ -6009,7 +6008,7 @@ function flushSyncCallbacks() {
   return null;
 }
 
-var ReactVersion = "18.0.0-rc.0-a049aa015-20211213";
+var ReactVersion = "18.0.0-rc.0-fe905f152-20220107";
 
 var SCHEDULING_PROFILER_VERSION = 1;
 
@@ -20680,8 +20679,6 @@ function recoverFromConcurrentError(root, errorRetryLanes) {
     {
       errorHydratingContainer(root.containerInfo);
     }
-
-    clearContainer(root.containerInfo);
   }
 
   var exitStatus;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,7 +18,7 @@ namespace react {
 
 Size AndroidProgressBarMeasurementsManager::measure(
     SurfaceId surfaceId,
-    AndroidProgressBarProps props,
+    AndroidProgressBarProps const &props,
     LayoutConstraints layoutConstraints) const {
   {
     std::lock_guard<std::mutex> lock(mutex_);

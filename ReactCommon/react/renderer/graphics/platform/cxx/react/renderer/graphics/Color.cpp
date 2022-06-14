@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -27,7 +27,7 @@ SharedColor colorFromComponents(ColorComponents components) {
       ((int)round(components.blue * ratio) & 0xff));
 }
 
-ColorComponents colorComponentsFromColor(SharedColor sharedColor) {
+ColorComponents colorComponentsFromColor(SharedColor const &sharedColor) {
   float ratio = 255;
   Color color = *sharedColor;
   return ColorComponents{

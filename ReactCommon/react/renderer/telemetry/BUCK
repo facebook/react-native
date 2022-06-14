@@ -50,7 +50,7 @@ rn_xplat_cxx_library(
         "//xplat/folly:headers_only",
         "//xplat/folly:memory",
         "//xplat/folly:molly",
-        react_native_xplat_target("better:better"),
+        react_native_xplat_target("butter:butter"),
         react_native_xplat_target("react/debug:debug"),
         react_native_xplat_target("react/utils:utils"),
     ],

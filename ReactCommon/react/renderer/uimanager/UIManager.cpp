@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,6 +18,8 @@
 
 #include <glog/logging.h>
 
+#include <utility>
+
 namespace facebook::react {
 
 static std::unique_ptr<LeakChecker> constructLeakCheckerIfNeeded(
@@ -31,10 +33,10 @@ static std::unique_ptr<LeakChecker> constructLeakCheckerIfNeeded(
 
 UIManager::UIManager(
     RuntimeExecutor const &runtimeExecutor,
-    BackgroundExecutor const &backgroundExecutor,
+    BackgroundExecutor backgroundExecutor,
     ContextContainer::Shared contextContainer)
     : runtimeExecutor_(runtimeExecutor),
-      backgroundExecutor_(backgroundExecutor),
+      backgroundExecutor_(std::move(backgroundExecutor)),
       contextContainer_(std::move(contextContainer)),
       leakChecker_(constructLeakCheckerIfNeeded(runtimeExecutor)) {}
 
@@ -376,7 +378,7 @@ ShadowTreeRegistry const &UIManager::getShadowTreeRegistry() const {
 
 void UIManager::registerCommitHook(
     UIManagerCommitHook const &commitHook) const {
-  std::unique_lock<better::shared_mutex> lock(commitHookMutex_);
+  std::unique_lock<butter::shared_mutex> lock(commitHookMutex_);
   react_native_assert(
       std::find(commitHooks_.begin(), commitHooks_.end(), &commitHook) ==
       commitHooks_.end());
@@ -386,7 +388,7 @@ void UIManager::registerCommitHook(
 
 void UIManager::unregisterCommitHook(
     UIManagerCommitHook const &commitHook) const {
-  std::unique_lock<better::shared_mutex> lock(commitHookMutex_);
+  std::unique_lock<butter::shared_mutex> lock(commitHookMutex_);
   auto iterator =
       std::find(commitHooks_.begin(), commitHooks_.end(), &commitHook);
   react_native_assert(iterator != commitHooks_.end());
@@ -400,7 +402,7 @@ RootShadowNode::Unshared UIManager::shadowTreeWillCommit(
     ShadowTree const &shadowTree,
     RootShadowNode::Shared const &oldRootShadowNode,
     RootShadowNode::Unshared const &newRootShadowNode) const {
-  std::shared_lock<better::shared_mutex> lock(commitHookMutex_);
+  std::shared_lock<butter::shared_mutex> lock(commitHookMutex_);
 
   auto resultRootShadowNode = newRootShadowNode;
   for (auto const *commitHook : commitHooks_) {

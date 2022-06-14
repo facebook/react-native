@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -49,6 +49,7 @@ public class IntBufferBatchMountItem implements MountItem {
   static final int INSTRUCTION_UPDATE_LAYOUT = 128;
   static final int INSTRUCTION_UPDATE_EVENT_EMITTER = 256;
   static final int INSTRUCTION_UPDATE_PADDING = 512;
+  static final int INSTRUCTION_UPDATE_OVERFLOW_INSET = 1024;
 
   private final int mSurfaceId;
   private final int mCommitNumber;
@@ -163,11 +164,25 @@ public class IntBufferBatchMountItem implements MountItem {
           int width = mIntBuffer[i++];
           int height = mIntBuffer[i++];
           int displayType = mIntBuffer[i++];
+
           surfaceMountingManager.updateLayout(reactTag, x, y, width, height, displayType);
 
         } else if (type == INSTRUCTION_UPDATE_PADDING) {
           surfaceMountingManager.updatePadding(
               mIntBuffer[i++], mIntBuffer[i++], mIntBuffer[i++], mIntBuffer[i++], mIntBuffer[i++]);
+        } else if (type == INSTRUCTION_UPDATE_OVERFLOW_INSET) {
+          int reactTag = mIntBuffer[i++];
+          int overflowInsetLeft = mIntBuffer[i++];
+          int overflowInsetTop = mIntBuffer[i++];
+          int overflowInsetRight = mIntBuffer[i++];
+          int overflowInsetBottom = mIntBuffer[i++];
+
+          surfaceMountingManager.updateOverflowInset(
+              reactTag,
+              overflowInsetLeft,
+              overflowInsetTop,
+              overflowInsetRight,
+              overflowInsetBottom);
         } else if (type == INSTRUCTION_UPDATE_EVENT_EMITTER) {
           surfaceMountingManager.updateEventEmitter(
               mIntBuffer[i++], castToEventEmitter(mObjBuffer[j++]));
@@ -246,6 +261,15 @@ public class IntBufferBatchMountItem implements MountItem {
             s.append(
                 String.format(
                     "UPDATE PADDING [%d]: top:%d right:%d bottom:%d left:%d\n",
+                    mIntBuffer[i++],
+                    mIntBuffer[i++],
+                    mIntBuffer[i++],
+                    mIntBuffer[i++],
+                    mIntBuffer[i++]));
+          } else if (type == INSTRUCTION_UPDATE_OVERFLOW_INSET) {
+            s.append(
+                String.format(
+                    "UPDATE OVERFLOWINSET [%d]: left:%d top:%d right:%d bottom:%d\n",
                     mIntBuffer[i++],
                     mIntBuffer[i++],
                     mIntBuffer[i++],

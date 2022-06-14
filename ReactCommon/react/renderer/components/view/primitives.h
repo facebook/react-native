@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <better/optional.h>
+#include <butter/optional.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Geometry.h>
 #include <array>
@@ -25,7 +25,7 @@ enum class BorderStyle { Solid, Dotted, Dashed };
 template <typename T>
 struct CascadedRectangleEdges {
   using Counterpart = RectangleEdges<T>;
-  using OptionalT = better::optional<T>;
+  using OptionalT = butter::optional<T>;
 
   OptionalT left{};
   OptionalT top{};
@@ -86,7 +86,7 @@ struct CascadedRectangleEdges {
 template <typename T>
 struct CascadedRectangleCorners {
   using Counterpart = RectangleCorners<T>;
-  using OptionalT = better::optional<T>;
+  using OptionalT = butter::optional<T>;
 
   OptionalT topLeft{};
   OptionalT topRight{};

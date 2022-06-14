@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,10 +7,10 @@
 
 #pragma once
 
-#include <better/better.h>
+#include <butter/butter.h>
 
 // `folly::small_vector` is broken on some versions of Android.
-#if defined(BETTER_USE_FOLLY_CONTAINERS) && !defined(ANDROID)
+#if defined(BUTTER_USE_FOLLY_CONTAINERS) && !defined(ANDROID)
 
 #include <folly/small_vector.h>
 
@@ -21,9 +21,9 @@
 #endif
 
 namespace facebook {
-namespace better {
+namespace butter {
 
-#if defined(BETTER_USE_FOLLY_CONTAINERS) && !defined(ANDROID)
+#if defined(BUTTER_USE_FOLLY_CONTAINERS) && !defined(ANDROID)
 
 template <typename T, std::size_t Size, typename... Ts>
 using small_vector = folly::small_vector<T, Size, Ts...>;
@@ -35,5 +35,5 @@ using small_vector = std::vector<T, Ts...>;
 
 #endif
 
-} // namespace better
+} // namespace butter
 } // namespace facebook

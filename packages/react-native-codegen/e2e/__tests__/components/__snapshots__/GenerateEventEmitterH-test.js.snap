@@ -4,7 +4,7 @@ exports[`GenerateEventEmitterH can generate for 'ArrayPropsNativeComponent.js' 1
 Object {
   "EventEmitters.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -30,7 +30,7 @@ exports[`GenerateEventEmitterH can generate for 'BooleanPropNativeComponent.js' 
 Object {
   "EventEmitters.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -56,7 +56,7 @@ exports[`GenerateEventEmitterH can generate for 'ColorPropNativeComponent.js' 1`
 Object {
   "EventEmitters.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -82,7 +82,7 @@ exports[`GenerateEventEmitterH can generate for 'EdgeInsetsPropNativeComponent.j
 Object {
   "EventEmitters.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -108,7 +108,7 @@ exports[`GenerateEventEmitterH can generate for 'EnumPropNativeComponent.js' 1`]
 Object {
   "EventEmitters.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -134,7 +134,7 @@ exports[`GenerateEventEmitterH can generate for 'EventNestedObjectPropsNativeCom
 Object {
   "EventEmitters.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -179,7 +179,7 @@ exports[`GenerateEventEmitterH can generate for 'EventPropsNativeComponent.js' 1
 Object {
   "EventEmitters.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -259,7 +259,7 @@ exports[`GenerateEventEmitterH can generate for 'FloatPropsNativeComponent.js' 1
 Object {
   "EventEmitters.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -285,7 +285,7 @@ exports[`GenerateEventEmitterH can generate for 'ImagePropNativeComponent.js' 1`
 Object {
   "EventEmitters.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -311,7 +311,7 @@ exports[`GenerateEventEmitterH can generate for 'IntegerPropNativeComponent.js' 
 Object {
   "EventEmitters.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -337,7 +337,7 @@ exports[`GenerateEventEmitterH can generate for 'InterfaceOnlyNativeComponent.js
 Object {
   "EventEmitters.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -372,7 +372,7 @@ exports[`GenerateEventEmitterH can generate for 'MultiNativePropNativeComponent.
 Object {
   "EventEmitters.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -398,7 +398,7 @@ exports[`GenerateEventEmitterH can generate for 'NoPropsNoEventsNativeComponent.
 Object {
   "EventEmitters.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -424,7 +424,7 @@ exports[`GenerateEventEmitterH can generate for 'ObjectPropsNativeComponent.js' 
 Object {
   "EventEmitters.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -450,7 +450,7 @@ exports[`GenerateEventEmitterH can generate for 'PointPropNativeComponent.js' 1`
 Object {
   "EventEmitters.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -476,7 +476,7 @@ exports[`GenerateEventEmitterH can generate for 'StringPropNativeComponent.js' 1
 Object {
   "EventEmitters.h": "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.

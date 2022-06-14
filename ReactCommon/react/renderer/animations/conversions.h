@@ -1,11 +1,11 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <better/optional.h>
+#include <butter/optional.h>
 #include <react/renderer/animations/primitives.h>
 
 #include <glog/logging.h>
@@ -13,7 +13,7 @@
 namespace facebook {
 namespace react {
 
-static inline better::optional<AnimationType> parseAnimationType(
+static inline butter::optional<AnimationType> parseAnimationType(
     std::string param) {
   if (param == "spring") {
     return AnimationType::Spring;
@@ -38,7 +38,7 @@ static inline better::optional<AnimationType> parseAnimationType(
   return {};
 }
 
-static inline better::optional<AnimationProperty> parseAnimationProperty(
+static inline butter::optional<AnimationProperty> parseAnimationProperty(
     std::string param) {
   if (param == "opacity") {
     return AnimationProperty::Opacity;
@@ -57,7 +57,7 @@ static inline better::optional<AnimationProperty> parseAnimationProperty(
   return {};
 }
 
-static inline better::optional<AnimationConfig> parseAnimationConfig(
+static inline butter::optional<AnimationConfig> parseAnimationConfig(
     folly::dynamic const &config,
     double defaultDuration,
     bool parsePropertyType) {
@@ -163,7 +163,7 @@ static inline better::optional<AnimationConfig> parseAnimationConfig(
     }
   }
 
-  return better::optional<AnimationConfig>(AnimationConfig{
+  return butter::optional<AnimationConfig>(AnimationConfig{
       *animationType,
       animationProperty,
       duration,
@@ -173,7 +173,7 @@ static inline better::optional<AnimationConfig> parseAnimationConfig(
 }
 
 // Parse animation config from JS
-static inline better::optional<LayoutAnimationConfig>
+static inline butter::optional<LayoutAnimationConfig>
 parseLayoutAnimationConfig(folly::dynamic const &config) {
   if (config.empty() || !config.isObject()) {
     return {};
@@ -187,17 +187,17 @@ parseLayoutAnimationConfig(folly::dynamic const &config) {
 
   const auto createConfigIt = config.find("create");
   const auto createConfig = createConfigIt == config.items().end()
-      ? better::optional<AnimationConfig>(AnimationConfig{})
+      ? butter::optional<AnimationConfig>(AnimationConfig{})
       : parseAnimationConfig(createConfigIt->second, duration, true);
 
   const auto updateConfigIt = config.find("update");
   const auto updateConfig = updateConfigIt == config.items().end()
-      ? better::optional<AnimationConfig>(AnimationConfig{})
+      ? butter::optional<AnimationConfig>(AnimationConfig{})
       : parseAnimationConfig(updateConfigIt->second, duration, false);
 
   const auto deleteConfigIt = config.find("delete");
   const auto deleteConfig = deleteConfigIt == config.items().end()
-      ? better::optional<AnimationConfig>(AnimationConfig{})
+      ? butter::optional<AnimationConfig>(AnimationConfig{})
       : parseAnimationConfig(deleteConfigIt->second, duration, true);
 
   if (!createConfig || !updateConfig || !deleteConfig) {

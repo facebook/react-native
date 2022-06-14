@@ -4,7 +4,7 @@ exports[`GeneratePropsH can generate fixture ARRAY_PROPS 1`] = `
 Map {
   "Props.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -84,7 +84,7 @@ struct ArrayPropsNativeComponentObjectStruct {
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentObjectStruct &result) {
-  auto map = (better::map<std::string, RawValue>)value;
+  auto map = (butter::map<std::string, RawValue>)value;
 
   auto tmp_stringProp = map.find(\\"stringProp\\");
   if (tmp_stringProp != map.end()) {
@@ -111,7 +111,7 @@ struct ArrayPropsNativeComponentArrayObjectStruct {
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentArrayObjectStruct &result) {
-  auto map = (better::map<std::string, RawValue>)value;
+  auto map = (butter::map<std::string, RawValue>)value;
 
   auto tmp_stringProp = map.find(\\"stringProp\\");
   if (tmp_stringProp != map.end()) {
@@ -138,7 +138,7 @@ struct ArrayPropsNativeComponentArrayStruct {
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentArrayStruct &result) {
-  auto map = (better::map<std::string, RawValue>)value;
+  auto map = (butter::map<std::string, RawValue>)value;
 
   auto tmp_object = map.find(\\"object\\");
   if (tmp_object != map.end()) {
@@ -165,7 +165,7 @@ struct ArrayPropsNativeComponentArrayOfArrayOfObjectStruct {
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentArrayOfArrayOfObjectStruct &result) {
-  auto map = (better::map<std::string, RawValue>)value;
+  auto map = (butter::map<std::string, RawValue>)value;
 
   auto tmp_stringProp = map.find(\\"stringProp\\");
   if (tmp_stringProp != map.end()) {
@@ -220,7 +220,7 @@ exports[`GeneratePropsH can generate fixture ARRAY_PROPS_WITH_NESTED_OBJECT 1`] 
 Map {
   "Props.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -247,7 +247,7 @@ struct ArrayPropsNativeComponentNativePrimitivesStruct {
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentNativePrimitivesStruct &result) {
-  auto map = (better::map<std::string, RawValue>)value;
+  auto map = (butter::map<std::string, RawValue>)value;
 
   auto tmp_colors = map.find(\\"colors\\");
   if (tmp_colors != map.end()) {
@@ -296,7 +296,7 @@ exports[`GeneratePropsH can generate fixture BOOLEAN_PROP 1`] = `
 Map {
   "Props.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -331,7 +331,7 @@ exports[`GeneratePropsH can generate fixture COLOR_PROP 1`] = `
 Map {
   "Props.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -367,7 +367,7 @@ exports[`GeneratePropsH can generate fixture COMMANDS 1`] = `
 Map {
   "Props.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -402,7 +402,7 @@ exports[`GeneratePropsH can generate fixture COMMANDS_AND_PROPS 1`] = `
 Map {
   "Props.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -437,7 +437,7 @@ exports[`GeneratePropsH can generate fixture DOUBLE_PROPS 1`] = `
 Map {
   "Props.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -477,7 +477,7 @@ exports[`GeneratePropsH can generate fixture EVENT_NESTED_OBJECT_PROPS 1`] = `
 Map {
   "Props.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -512,7 +512,7 @@ exports[`GeneratePropsH can generate fixture EVENT_PROPS 1`] = `
 Map {
   "Props.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -547,7 +547,7 @@ exports[`GeneratePropsH can generate fixture EVENTS_WITH_PAPER_NAME 1`] = `
 Map {
   "Props.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -582,7 +582,7 @@ exports[`GeneratePropsH can generate fixture EXCLUDE_ANDROID 1`] = `
 Map {
   "Props.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -617,7 +617,7 @@ exports[`GeneratePropsH can generate fixture EXCLUDE_ANDROID_IOS 1`] = `
 Map {
   "Props.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -643,7 +643,7 @@ exports[`GeneratePropsH can generate fixture FLOAT_PROPS 1`] = `
 Map {
   "Props.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -683,7 +683,7 @@ exports[`GeneratePropsH can generate fixture IMAGE_PROP 1`] = `
 Map {
   "Props.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -719,7 +719,7 @@ exports[`GeneratePropsH can generate fixture INSETS_PROP 1`] = `
 Map {
   "Props.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -755,7 +755,7 @@ exports[`GeneratePropsH can generate fixture INT32_ENUM_PROP 1`] = `
 Map {
   "Props.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -817,7 +817,7 @@ exports[`GeneratePropsH can generate fixture INTEGER_PROPS 1`] = `
 Map {
   "Props.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -854,7 +854,7 @@ exports[`GeneratePropsH can generate fixture INTERFACE_ONLY 1`] = `
 Map {
   "Props.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -889,7 +889,7 @@ exports[`GeneratePropsH can generate fixture MULTI_NATIVE_PROP 1`] = `
 Map {
   "Props.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -930,7 +930,7 @@ exports[`GeneratePropsH can generate fixture NO_PROPS_NO_EVENTS 1`] = `
 Map {
   "Props.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -965,7 +965,7 @@ exports[`GeneratePropsH can generate fixture OBJECT_PROPS 1`] = `
 Map {
   "Props.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -1022,7 +1022,7 @@ struct ObjectPropsObjectPropObjectArrayPropStruct {
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropObjectArrayPropStruct &result) {
-  auto map = (better::map<std::string, RawValue>)value;
+  auto map = (butter::map<std::string, RawValue>)value;
 
   auto tmp_array = map.find(\\"array\\");
   if (tmp_array != map.end()) {
@@ -1041,7 +1041,7 @@ struct ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct {
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct &result) {
-  auto map = (better::map<std::string, RawValue>)value;
+  auto map = (butter::map<std::string, RawValue>)value;
 
   auto tmp_image = map.find(\\"image\\");
   if (tmp_image != map.end()) {
@@ -1066,7 +1066,7 @@ struct ObjectPropsObjectPropNestedPropANestedPropBStruct {
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropNestedPropANestedPropBStruct &result) {
-  auto map = (better::map<std::string, RawValue>)value;
+  auto map = (butter::map<std::string, RawValue>)value;
 
   auto tmp_nestedPropC = map.find(\\"nestedPropC\\");
   if (tmp_nestedPropC != map.end()) {
@@ -1083,7 +1083,7 @@ struct ObjectPropsObjectPropNestedPropAStruct {
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropNestedPropAStruct &result) {
-  auto map = (better::map<std::string, RawValue>)value;
+  auto map = (butter::map<std::string, RawValue>)value;
 
   auto tmp_nestedPropB = map.find(\\"nestedPropB\\");
   if (tmp_nestedPropB != map.end()) {
@@ -1100,7 +1100,7 @@ struct ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct {
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct &result) {
-  auto map = (better::map<std::string, RawValue>)value;
+  auto map = (butter::map<std::string, RawValue>)value;
 
   auto tmp_stringProp = map.find(\\"stringProp\\");
   if (tmp_stringProp != map.end()) {
@@ -1127,7 +1127,7 @@ struct ObjectPropsObjectPropNestedArrayAsPropertyStruct {
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropNestedArrayAsPropertyStruct &result) {
-  auto map = (better::map<std::string, RawValue>)value;
+  auto map = (butter::map<std::string, RawValue>)value;
 
   auto tmp_arrayProp = map.find(\\"arrayProp\\");
   if (tmp_arrayProp != map.end()) {
@@ -1153,7 +1153,7 @@ struct ObjectPropsObjectPropStruct {
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropStruct &result) {
-  auto map = (better::map<std::string, RawValue>)value;
+  auto map = (butter::map<std::string, RawValue>)value;
 
   auto tmp_stringProp = map.find(\\"stringProp\\");
   if (tmp_stringProp != map.end()) {
@@ -1220,7 +1220,7 @@ exports[`GeneratePropsH can generate fixture POINT_PROP 1`] = `
 Map {
   "Props.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -1256,7 +1256,7 @@ exports[`GeneratePropsH can generate fixture STRING_ENUM_PROP 1`] = `
 Map {
   "Props.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -1309,7 +1309,7 @@ exports[`GeneratePropsH can generate fixture STRING_PROP 1`] = `
 Map {
   "Props.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -1345,7 +1345,7 @@ exports[`GeneratePropsH can generate fixture TWO_COMPONENTS_DIFFERENT_FILES 1`] 
 Map {
   "Props.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -1390,7 +1390,7 @@ exports[`GeneratePropsH can generate fixture TWO_COMPONENTS_SAME_FILE 1`] = `
 Map {
   "Props.h" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.

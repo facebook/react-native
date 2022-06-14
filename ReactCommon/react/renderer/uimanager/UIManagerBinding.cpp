@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,6 +14,8 @@
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 #include <react/renderer/uimanager/primitives.h>
+
+#include <utility>
 
 #include "bindingUtils.h"
 
@@ -53,9 +55,10 @@ std::shared_ptr<UIManagerBinding> UIManagerBinding::getBinding(
 }
 
 UIManagerBinding::UIManagerBinding(
-    std::shared_ptr<UIManager> const &uiManager,
-    RuntimeExecutor const &runtimeExecutor)
-    : uiManager_(uiManager), runtimeExecutor_(runtimeExecutor) {}
+    std::shared_ptr<UIManager> uiManager,
+    RuntimeExecutor runtimeExecutor)
+    : uiManager_(std::move(uiManager)),
+      runtimeExecutor_(std::move(runtimeExecutor)) {}
 
 UIManagerBinding::~UIManagerBinding() {
   LOG(WARNING) << "UIManagerBinding::~UIManagerBinding() was called (address: "

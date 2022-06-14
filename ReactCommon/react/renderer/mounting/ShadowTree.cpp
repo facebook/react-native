@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -110,8 +110,8 @@ static ShadowNode::Unshared progressState(
 
   // Stage 1: Aligned part.
   for (index = 0; index < childrenSize && index < baseChildrenSize; index++) {
-    const auto &childNode = *children.at(index);
-    const auto &baseChildNode = *baseChildren.at(index);
+    auto const &childNode = *children[index];
+    auto const &baseChildNode = *baseChildren[index];
 
     if (&childNode == &baseChildNode) {
       // Nodes are identical, skipping.
@@ -136,7 +136,7 @@ static ShadowNode::Unshared progressState(
 
   // Stage 2: Misaligned part.
   for (; index < childrenSize; index++) {
-    auto newChildNode = progressState(*children.at(index));
+    auto newChildNode = progressState(*children[index]);
     if (newChildNode) {
       if (!areChildrenChanged) {
         // Making a copy before the first mutation.
@@ -270,7 +270,7 @@ void ShadowTree::setCommitMode(CommitMode commitMode) const {
   auto revision = ShadowTreeRevision{};
 
   {
-    std::unique_lock<better::shared_mutex> lock(commitMutex_);
+    std::unique_lock<butter::shared_mutex> lock(commitMutex_);
     if (commitMode_ == commitMode) {
       return;
     }
@@ -287,7 +287,7 @@ void ShadowTree::setCommitMode(CommitMode commitMode) const {
 }
 
 CommitMode ShadowTree::getCommitMode() const {
-  std::shared_lock<better::shared_mutex> lock(commitMutex_);
+  std::shared_lock<butter::shared_mutex> lock(commitMutex_);
   return commitMode_;
 }
 
@@ -330,12 +330,12 @@ CommitStatus ShadowTree::tryCommit(
 
   {
     // Reading `currentRevision_` in shared manner.
-    std::shared_lock<better::shared_mutex> lock(commitMutex_);
+    std::shared_lock<butter::shared_mutex> lock(commitMutex_);
     commitMode = commitMode_;
     oldRevision = currentRevision_;
   }
 
-  auto oldRootShadowNode = oldRevision.rootShadowNode;
+  auto const &oldRootShadowNode = oldRevision.rootShadowNode;
   auto newRootShadowNode = transaction(*oldRevision.rootShadowNode);
 
   if (!newRootShadowNode ||
@@ -345,7 +345,7 @@ CommitStatus ShadowTree::tryCommit(
 
   if (commitOptions.enableStateReconciliation) {
     auto updatedNewRootShadowNode =
-        progressState(*newRootShadowNode, *oldRevision.rootShadowNode);
+        progressState(*newRootShadowNode, *oldRootShadowNode);
     if (updatedNewRootShadowNode) {
       newRootShadowNode =
           std::static_pointer_cast<RootShadowNode>(updatedNewRootShadowNode);
@@ -367,7 +367,7 @@ CommitStatus ShadowTree::tryCommit(
 
   {
     // Updating `currentRevision_` in unique manner if it hasn't changed.
-    std::unique_lock<better::shared_mutex> lock(commitMutex_);
+    std::unique_lock<butter::shared_mutex> lock(commitMutex_);
 
     if (currentRevision_.number != oldRevision.number) {
       return CommitStatus::Failed;
@@ -410,7 +410,7 @@ CommitStatus ShadowTree::tryCommit(
 }
 
 ShadowTreeRevision ShadowTree::getCurrentRevision() const {
-  std::shared_lock<better::shared_mutex> lock(commitMutex_);
+  std::shared_lock<butter::shared_mutex> lock(commitMutex_);
   return currentRevision_;
 }
 

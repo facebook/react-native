@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -56,7 +56,7 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
   // Step 1.
   // Creating a list of nodes that form a chain from the descender node to
   // ancestor node inclusively.
-  auto shadowNodeList = better::small_vector<ShadowNode const *, 16>{};
+  auto shadowNodeList = butter::small_vector<ShadowNode const *, 16>{};
 
   // Finding the measured node.
   // The last element in the `AncestorList` is a pair of a parent of the node
@@ -203,7 +203,7 @@ Float LayoutableShadowNode::lastBaseline(Size size) const {
 }
 
 ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
-    ShadowNode::Shared node,
+    ShadowNode::Shared const &node,
     Point point) {
   auto layoutableShadowNode =
       traitCast<const LayoutableShadowNode *>(node.get());

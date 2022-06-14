@@ -3,7 +3,7 @@
 exports[`GenerateTests can generate fixture ARRAY_PROPS 1`] = `
 Map {
   "Tests.cpp" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -39,7 +39,7 @@ TEST(ArrayPropsNativeComponentProps_DoesNotDie, etc) {
 exports[`GenerateTests can generate fixture ARRAY_PROPS_WITH_NESTED_OBJECT 1`] = `
 Map {
   "Tests.cpp" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -74,7 +74,7 @@ TEST(ArrayPropsNativeComponentProps_DoesNotDie, etc) {
 exports[`GenerateTests can generate fixture BOOLEAN_PROP 1`] = `
 Map {
   "Tests.cpp" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -122,7 +122,7 @@ TEST(BooleanPropNativeComponentProps_disabled, etc) {
 exports[`GenerateTests can generate fixture COLOR_PROP 1`] = `
 Map {
   "Tests.cpp" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -170,7 +170,7 @@ TEST(ColorPropNativeComponentProps_tintColor, etc) {
 exports[`GenerateTests can generate fixture COMMANDS 1`] = `
 Map {
   "Tests.cpp" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -205,7 +205,7 @@ TEST(CommandNativeComponentProps_DoesNotDie, etc) {
 exports[`GenerateTests can generate fixture COMMANDS_AND_PROPS 1`] = `
 Map {
   "Tests.cpp" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -253,7 +253,7 @@ TEST(CommandNativeComponentProps_accessibilityHint, etc) {
 exports[`GenerateTests can generate fixture DOUBLE_PROPS 1`] = `
 Map {
   "Tests.cpp" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -288,7 +288,7 @@ TEST(DoublePropNativeComponentProps_DoesNotDie, etc) {
 exports[`GenerateTests can generate fixture EVENT_NESTED_OBJECT_PROPS 1`] = `
 Map {
   "Tests.cpp" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -336,7 +336,7 @@ TEST(EventsNestedObjectNativeComponentProps_disabled, etc) {
 exports[`GenerateTests can generate fixture EVENT_PROPS 1`] = `
 Map {
   "Tests.cpp" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -384,7 +384,7 @@ TEST(EventsNativeComponentProps_disabled, etc) {
 exports[`GenerateTests can generate fixture EVENTS_WITH_PAPER_NAME 1`] = `
 Map {
   "Tests.cpp" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -419,7 +419,7 @@ TEST(InterfaceOnlyComponentProps_DoesNotDie, etc) {
 exports[`GenerateTests can generate fixture EXCLUDE_ANDROID 1`] = `
 Map {
   "Tests.cpp" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -454,7 +454,7 @@ TEST(ExcludedAndroidComponentProps_DoesNotDie, etc) {
 exports[`GenerateTests can generate fixture EXCLUDE_ANDROID_IOS 1`] = `
 Map {
   "Tests.cpp" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -489,7 +489,7 @@ TEST(ExcludedAndroidIosComponentProps_DoesNotDie, etc) {
 exports[`GenerateTests can generate fixture FLOAT_PROPS 1`] = `
 Map {
   "Tests.cpp" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -602,7 +602,7 @@ TEST(FloatPropNativeComponentProps_blurRadius6, etc) {
 exports[`GenerateTests can generate fixture IMAGE_PROP 1`] = `
 Map {
   "Tests.cpp" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -651,7 +651,7 @@ TEST(ImagePropNativeComponentProps_thumbImage, etc) {
 exports[`GenerateTests can generate fixture INSETS_PROP 1`] = `
 Map {
   "Tests.cpp" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -686,7 +686,7 @@ TEST(InsetsPropNativeComponentProps_DoesNotDie, etc) {
 exports[`GenerateTests can generate fixture INT32_ENUM_PROP 1`] = `
 Map {
   "Tests.cpp" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -721,7 +721,7 @@ TEST(Int32EnumPropsNativeComponentProps_DoesNotDie, etc) {
 exports[`GenerateTests can generate fixture INTEGER_PROPS 1`] = `
 Map {
   "Tests.cpp" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -756,7 +756,7 @@ TEST(IntegerPropNativeComponentProps_DoesNotDie, etc) {
 exports[`GenerateTests can generate fixture INTERFACE_ONLY 1`] = `
 Map {
   "Tests.cpp" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -804,7 +804,7 @@ TEST(InterfaceOnlyComponentProps_accessibilityHint, etc) {
 exports[`GenerateTests can generate fixture MULTI_NATIVE_PROP 1`] = `
 Map {
   "Tests.cpp" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -892,7 +892,7 @@ TEST(ImageColorPropNativeComponentProps_point, etc) {
 exports[`GenerateTests can generate fixture NO_PROPS_NO_EVENTS 1`] = `
 Map {
   "Tests.cpp" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -927,7 +927,7 @@ TEST(NoPropsNoEventsComponentProps_DoesNotDie, etc) {
 exports[`GenerateTests can generate fixture OBJECT_PROPS 1`] = `
 Map {
   "Tests.cpp" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -963,7 +963,7 @@ TEST(ObjectPropsProps_DoesNotDie, etc) {
 exports[`GenerateTests can generate fixture POINT_PROP 1`] = `
 Map {
   "Tests.cpp" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -1011,7 +1011,7 @@ TEST(PointPropNativeComponentProps_startPoint, etc) {
 exports[`GenerateTests can generate fixture STRING_ENUM_PROP 1`] = `
 Map {
   "Tests.cpp" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -1085,7 +1085,7 @@ TEST(StringEnumPropsNativeComponentProps_alignment_BottomRight, etc) {
 exports[`GenerateTests can generate fixture STRING_PROP 1`] = `
 Map {
   "Tests.cpp" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -1146,7 +1146,7 @@ TEST(StringPropComponentProps_accessibilityRole, etc) {
 exports[`GenerateTests can generate fixture TWO_COMPONENTS_DIFFERENT_FILES 1`] = `
 Map {
   "Tests.cpp" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -1220,7 +1220,7 @@ TEST(MultiFile2NativeComponentProps_disabled, etc) {
 exports[`GenerateTests can generate fixture TWO_COMPONENTS_SAME_FILE 1`] = `
 Map {
   "Tests.cpp" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.

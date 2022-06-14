@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -75,11 +75,11 @@ void MountingCoordinator::resetLatestRevision() const {
   lastRevision_.reset();
 }
 
-better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
+butter::optional<MountingTransaction> MountingCoordinator::pullTransaction()
     const {
   std::lock_guard<std::mutex> lock(mutex_);
 
-  auto transaction = better::optional<MountingTransaction>{};
+  auto transaction = butter::optional<MountingTransaction>{};
 
   // Base case
   if (lastRevision_.has_value()) {
@@ -183,7 +183,7 @@ TelemetryController const &MountingCoordinator::getTelemetryController() const {
 void MountingCoordinator::setMountingOverrideDelegate(
     std::weak_ptr<MountingOverrideDelegate const> delegate) const {
   std::lock_guard<std::mutex> lock(mutex_);
-  mountingOverrideDelegate_ = delegate;
+  mountingOverrideDelegate_ = std::move(delegate);
 }
 
 } // namespace react

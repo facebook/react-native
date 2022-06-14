@@ -1,4 +1,4 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -23,7 +23,7 @@ LOCAL_STATIC_LIBRARIES :=
 
 LOCAL_SHARED_LIBRARIES := \
   glog \
-  libbetter \
+  libbutter \
   libfolly_futures \
   libfolly_json \
   libglog_init \
@@ -37,7 +37,7 @@ LOCAL_SHARED_LIBRARIES := \
 
 include $(BUILD_SHARED_LIBRARY)
 
-$(call import-module,better)
+$(call import-module,butter)
 $(call import-module,glog)
 $(call import-module,folly)
 $(call import-module,react/utils)

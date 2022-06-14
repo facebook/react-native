@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<62369d90367239846ffa76aa77ae7e87>>
+ * @generated SignedSource<<d4064fad3b33bb1c794350386dd674a4>>
  */
 
 
@@ -7689,7 +7689,7 @@ function commitRootImpl(root, renderPriorityLevel) {
     lanes = root.finishedLanes;
   supportsUserTimingV3 &&
     (markAndClear("--commit-start-" + lanes),
-    markAndClear("--react-version-18.0.0-rc.0-a049aa015-20211213"),
+    markAndClear("--react-version-18.0.0-rc.0-fe905f152-20220107"),
     markAndClear("--profiler-version-1"),
     getLaneLabels(),
     markAndClear("--react-lane-labels-" + laneLabels.join(",")),
@@ -8946,7 +8946,7 @@ var roots = new Map(),
   devToolsConfig$jscomp$inline_1061 = {
     findFiberByHostInstance: getInstanceFromTag,
     bundleType: 0,
-    version: "18.0.0-rc.0-a049aa015-20211213",
+    version: "18.0.0-rc.0-fe905f152-20220107",
     rendererPackageName: "react-native-renderer",
     rendererConfig: {
       getInspectorDataForViewTag: function() {
@@ -8988,7 +8988,7 @@ var internals$jscomp$inline_1358 = {
   scheduleRoot: null,
   setRefreshHandler: null,
   getCurrentFiber: null,
-  reconcilerVersion: "18.0.0-rc.0-a049aa015-20211213"
+  reconcilerVersion: "18.0.0-rc.0-fe905f152-20220107"
 };
 if ("undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__) {
   var hook$jscomp$inline_1359 = __REACT_DEVTOOLS_GLOBAL_HOOK__;

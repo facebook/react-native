@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -43,7 +43,7 @@ Scheduler::Scheduler(
 
   // Creating a container for future `EventDispatcher` instance.
   eventDispatcher_ =
-      std::make_shared<better::optional<EventDispatcher const>>();
+      std::make_shared<butter::optional<EventDispatcher const>>();
 
   auto uiManager = std::make_shared<UIManager>(
       runtimeExecutor_, schedulerToolbox.backgroundExecutor, contextContainer_);

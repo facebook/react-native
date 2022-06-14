@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -25,7 +25,7 @@ const FileTemplate = ({
   componentConfig: string,
 }) => `
 /**
- * ${'C'}opyright (c) Facebook, Inc. and its affiliates.
+ * ${'C'}opyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -127,6 +127,10 @@ export default NativeComponentRegistry.get(nativeComponentName, () => VIEW_CONFI
 `.trim();
 };
 
+// If static view configs are enabled, get whether the native component exists
+// in the app binary using hasViewManagerConfig() instead of getViewManagerConfig().
+// Old getViewManagerConfig() checks for the existance of the native Paper view manager.
+// New hasViewManagerConfig() queries Fabric’s native component registry directly.
 const DeprecatedComponentNameCheckTemplate = ({
   componentName,
   paperComponentNameDeprecated,
@@ -135,12 +139,23 @@ const DeprecatedComponentNameCheckTemplate = ({
   paperComponentNameDeprecated: string,
 }) =>
   `
-if (UIManager.getViewManagerConfig('${componentName}')) {
-  nativeComponentName = '${componentName}';
-} else if (UIManager.getViewManagerConfig('${paperComponentNameDeprecated}')) {
-  nativeComponentName = '${paperComponentNameDeprecated}';
+const staticViewConfigsEnabled = global.__fbStaticViewConfig === true;
+if (staticViewConfigsEnabled) {
+  if (UIManager.hasViewManagerConfig('${componentName}')) {
+    nativeComponentName = '${componentName}';
+  } else if (UIManager.hasViewManagerConfig('${paperComponentNameDeprecated}')) {
+    nativeComponentName = '${paperComponentNameDeprecated}';
+  } else {
+    throw new Error('Failed to find native component for either "${componentName}" or "${paperComponentNameDeprecated}", with SVC enabled.');
+  }
 } else {
-  throw new Error('Failed to find native component for either "${componentName}" or "${paperComponentNameDeprecated}"');
+  if (UIManager.getViewManagerConfig('${componentName}')) {
+    nativeComponentName = '${componentName}';
+  } else if (UIManager.getViewManagerConfig('${paperComponentNameDeprecated}')) {
+    nativeComponentName = '${paperComponentNameDeprecated}';
+  } else {
+    throw new Error('Failed to find native component for either "${componentName}" or "${paperComponentNameDeprecated}", with SVC disabled.');
+  }
 }
 `.trim();
 
@@ -153,13 +168,6 @@ function normalizeInputEventName(name) {
   }
 
   return name;
-}
-
-// Replicates the behavior of viewConfig in RCTComponentData.m
-function getValidAttributesForEvents(events) {
-  return events.map(eventType => {
-    return j.property('init', j.identifier(eventType.name), j.literal(true));
-  });
 }
 
 function generateBubblingEventInfo(event, nameOveride) {
@@ -234,7 +242,6 @@ function buildViewConfig(
         getReactDiffProcessValue(schemaProp.typeAnnotation),
       );
     }),
-    ...getValidAttributesForEvents(componentEvents),
   ]);
 
   const bubblingEventNames = component.events

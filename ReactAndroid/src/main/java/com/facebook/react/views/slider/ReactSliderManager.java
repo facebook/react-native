@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -37,6 +37,7 @@ import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.yoga.YogaNode;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -246,9 +247,15 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider>
 
   @Override
   public Map getExportedCustomDirectEventTypeConstants() {
-    return MapBuilder.of(
-        ReactSlidingCompleteEvent.EVENT_NAME,
-        MapBuilder.of("registrationName", "onSlidingComplete"));
+    @Nullable
+    Map<String, Object> baseEventTypeConstants = super.getExportedCustomDirectEventTypeConstants();
+    Map<String, Object> eventTypeConstants =
+        baseEventTypeConstants == null ? new HashMap<String, Object>() : baseEventTypeConstants;
+    eventTypeConstants.putAll(
+        MapBuilder.of(
+            ReactSlidingCompleteEvent.EVENT_NAME,
+            MapBuilder.of("registrationName", "onSlidingComplete")));
+    return eventTypeConstants;
   }
 
   @Override

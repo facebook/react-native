@@ -4,7 +4,7 @@ exports[`GenerateThirdPartyFabricComponentsProviderObjCpp can generate fixtures 
 Map {
   "RCTThirdPartyFabricComponentsProvider.mm" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -24,6 +24,7 @@ Class<RCTComponentViewProtocol> RCTThirdPartyFabricComponentsProvider(const char
 
     {\\"NoPropsNoEventsComponent\\", NoPropsNoEventsComponentCls}, // NO_PROPS_NO_EVENTS
 
+    {\\"InterfaceOnlyComponent\\", InterfaceOnlyComponentCls}, // INTERFACE_ONLY
 
     {\\"BooleanPropNativeComponent\\", BooleanPropNativeComponentCls}, // BOOLEAN_PROP
 
@@ -57,6 +58,7 @@ Class<RCTComponentViewProtocol> RCTThirdPartyFabricComponentsProvider(const char
 
     {\\"EventsNativeComponent\\", EventsNativeComponentCls}, // EVENT_PROPS
 
+    {\\"InterfaceOnlyComponent\\", InterfaceOnlyComponentCls}, // EVENTS_WITH_PAPER_NAME
 
     {\\"EventsNestedObjectNativeComponent\\", EventsNestedObjectNativeComponentCls}, // EVENT_NESTED_OBJECT_PROPS
 

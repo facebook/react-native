@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -94,17 +94,11 @@ function getNativeComponentAttributes(uiViewClassName: string): any {
     directEventTypes,
   });
 
-  if (!hasAttachedDefaultEventTypes) {
-    attachDefaultEventTypes(viewConfig);
-    hasAttachedDefaultEventTypes = true;
-  }
+  attachDefaultEventTypes(viewConfig);
 
   return viewConfig;
 }
 
-// TODO: Figure out how this makes sense. We're using a global boolean to only
-// initialize this on the first eagerly initialized native component.
-let hasAttachedDefaultEventTypes = false;
 function attachDefaultEventTypes(viewConfig: any) {
   // This is supported on UIManager platforms (ex: Android),
   // as lazy view managers are not implemented for all platforms.

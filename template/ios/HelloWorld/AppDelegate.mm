@@ -9,10 +9,10 @@
 #if RCT_NEW_ARCH_ENABLED
 #import <React/CoreModulesPlugins.h>
 #import <React/RCTCxxBridgeDelegate.h>
-#import <ReactCommon/RCTTurboModuleManager.h>
 #import <React/RCTFabricSurfaceHostingProxyRootView.h>
 #import <React/RCTSurfacePresenter.h>
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
+#import <ReactCommon/RCTTurboModuleManager.h>
 
 #import <react/config/ReactNativeConfig.h>
 
@@ -44,9 +44,9 @@
   UIView *rootView = RCTAppSetupDefaultRootView(bridge, @"HelloWorld", nil);
 
   if (@available(iOS 13.0, *)) {
-      rootView.backgroundColor = [UIColor systemBackgroundColor];
+    rootView.backgroundColor = [UIColor systemBackgroundColor];
   } else {
-      rootView.backgroundColor = [UIColor whiteColor];
+    rootView.backgroundColor = [UIColor whiteColor];
   }
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
@@ -92,7 +92,8 @@
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
-                                                     initParams:(const facebook::react::ObjCTurboModule::InitParams &)params
+                                                     initParams:
+                                                         (const facebook::react::ObjCTurboModule::InitParams &)params
 {
   return nullptr;
 }

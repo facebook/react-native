@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,9 +18,8 @@
  * --skip-cli-install - to skip react-native-cli global installation (for local debugging)
  * --retries [num] - how many times to retry possible flaky commands: yarn add and running tests, default 1
  */
-/*eslint-disable no-undef */
-require('shelljs/global');
 
+const {cd, cp, echo, exec, exit, mv, rm} = require('shelljs');
 const spawn = require('child_process').spawn;
 const argv = require('yargs').argv;
 const path = require('path');
@@ -270,6 +269,9 @@ try {
       throw Error(exitCode);
     }
     describe('Test: Flow check');
+    // The resolve package included a test for a malformed package.json (see https://github.com/browserify/resolve/issues/89)
+    // that is failing the flow check. We're removing it.
+    rm('-rf', './node_modules/resolve/test/resolver/malformed_package_json');
     if (exec(`${ROOT}/node_modules/.bin/flow check`).code) {
       echo('Flow check failed.');
       exitCode = 1;
@@ -292,5 +294,3 @@ try {
   }
 }
 exit(exitCode);
-
-/*eslint-enable no-undef */

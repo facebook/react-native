@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -768,7 +768,7 @@ inline void fromRawValue(
     const PropsParserContext &context,
     RawValue const &value,
     AttributedString::Range &result) {
-  auto map = (better::map<std::string, int>)value;
+  auto map = (butter::map<std::string, int>)value;
 
   auto start = map.find("start");
   if (start != map.end()) {

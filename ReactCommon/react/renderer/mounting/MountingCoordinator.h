@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <better/optional.h>
+#include <butter/optional.h>
 #include <chrono>
 
 #include <react/renderer/debug/flags.h>
@@ -56,7 +56,7 @@ class MountingCoordinator final {
    * However, a consumer should always call it on the same thread (e.g. on the
    * main thread) or ensure sequentiality of mount transactions separately.
    */
-  better::optional<MountingTransaction> pullTransaction() const;
+  butter::optional<MountingTransaction> pullTransaction() const;
 
   /*
    * Blocks the current thread until a new mounting transaction is available or
@@ -104,7 +104,7 @@ class MountingCoordinator final {
 
   mutable std::mutex mutex_;
   mutable ShadowTreeRevision baseRevision_;
-  mutable better::optional<ShadowTreeRevision> lastRevision_{};
+  mutable butter::optional<ShadowTreeRevision> lastRevision_{};
   mutable MountingTransaction::Number number_{0};
   mutable std::condition_variable signal_;
   mutable std::weak_ptr<MountingOverrideDelegate const>

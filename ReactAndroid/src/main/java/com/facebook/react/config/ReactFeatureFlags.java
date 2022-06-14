@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -92,6 +92,17 @@ public class ReactFeatureFlags {
 
   public static boolean isMapBufferSerializationEnabled() {
     return mapBufferSerializationEnabled;
+  }
+
+  /** Feature Flag to use overflowInset values provided by Yoga */
+  private static boolean useOverflowInset = false;
+
+  public static void setUseOverflowInset(boolean enabled) {
+    useOverflowInset = enabled;
+  }
+
+  public static boolean doesUseOverflowInset() {
+    return useOverflowInset;
   }
 
   /** Enables Fabric for LogBox */

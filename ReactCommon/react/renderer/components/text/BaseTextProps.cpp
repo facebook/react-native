@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,10 +16,10 @@ namespace facebook {
 namespace react {
 
 static TextAttributes convertRawProp(
-    const PropsParserContext &context,
-    const RawProps &rawProps,
-    const TextAttributes sourceTextAttributes,
-    const TextAttributes defaultTextAttributes) {
+    PropsParserContext const &context,
+    RawProps const &rawProps,
+    TextAttributes const &sourceTextAttributes,
+    TextAttributes const &defaultTextAttributes) {
   auto textAttributes = TextAttributes{};
 
   // Color

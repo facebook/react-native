@@ -3,7 +3,7 @@
 exports[`GenerateModuleH can generate fixture SampleWithUppercaseName 1`] = `
 Map {
   "NativeModules.h" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -35,7 +35,7 @@ public:
 exports[`GenerateModuleH can generate fixture complex_objects 1`] = `
 Map {
   "NativeModules.h" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -70,7 +70,7 @@ virtual void getArrays(jsi::Runtime &rt, const jsi::Object &options) = 0;
 exports[`GenerateModuleH can generate fixture empty_native_modules 1`] = `
 Map {
   "NativeModules.h" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -102,7 +102,7 @@ public:
 exports[`GenerateModuleH can generate fixture native_modules_with_type_aliases 1`] = `
 Map {
   "NativeModules.h" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -135,7 +135,7 @@ virtual void cropImage(jsi::Runtime &rt, const jsi::Object &cropData) = 0;
 exports[`GenerateModuleH can generate fixture real_module_example 1`] = `
 Map {
   "NativeModules.h" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -190,7 +190,7 @@ virtual void dismissRedbox(jsi::Runtime &rt) = 0;
 exports[`GenerateModuleH can generate fixture simple_native_modules 1`] = `
 Map {
   "NativeModules.h" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -232,7 +232,7 @@ virtual jsi::Value getValueWithPromise(jsi::Runtime &rt, bool error) = 0;
 exports[`GenerateModuleH can generate fixture two_modules_different_files 1`] = `
 Map {
   "NativeModules.h" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
