@@ -100,7 +100,10 @@
 
 - (void)setAccessibilityErrorMessage:(NSString *)accessibilityErrorMessage
 {
-  self.accessibilityValue = accessibilityErrorMessage;
+  NSString *error = !accessibilityErrorMessage ? @"" : accessibilityErrorMessage;
+  NSString *errorWithText = [self.attributedText.string length] == 0 ? error : [NSString stringWithFormat: @"%@ %@", self.attributedText.string, error];
+  self.accessibilityValue = errorWithText;
+  UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, errorWithText);
 }
 
 - (void)setSecureTextEntry:(BOOL)secureTextEntry
