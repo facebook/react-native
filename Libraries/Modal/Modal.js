@@ -15,7 +15,6 @@ import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import NativeModalManager from './NativeModalManager';
 const Platform = require('../Utilities/Platform');
 const React = require('react');
-const PropTypes = require('prop-types');
 const ScrollView = require('../Components/ScrollView/ScrollView');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const View = require('../Components/View/View');

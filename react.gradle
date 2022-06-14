@@ -372,10 +372,6 @@ afterEvaluate {
                 } else {
                     // For JSC, delete all the libhermes* files
                     include "**/libhermes*.so"
-                    // Delete the libjscexecutor from release build
-                    if (cleanup) {
-                        include "**/libjscexecutor.so"
-                    }
                 }
             }.visit { details ->
                 def targetVariant1 = ".*/transforms/[^/]*/${variant.name}/.*"

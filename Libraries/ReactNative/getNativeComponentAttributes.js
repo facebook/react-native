@@ -164,6 +164,8 @@ function getDifferForType(
     // Android Types
     case 'Point':
       return pointsDiffer;
+    case 'EdgeInsets':
+      return insetsDiffer;
   }
   return null;
 }
@@ -186,6 +188,8 @@ function getProcessorForType(typeName: string): ?(nextProp: any) => any {
       return processColor;
     case 'ColorArray':
       return processColorArray;
+    case 'ImageSource':
+      return resolveAssetSource;
   }
   return null;
 }

@@ -10,6 +10,7 @@
 
 'use strict';
 
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
 const AnimatedNode = require('./AnimatedNode');
 const NativeAnimatedHelper = require('../NativeAnimatedHelper');
 
@@ -21,18 +22,18 @@ class AnimatedWithChildren extends AnimatedNode {
     this._children = [];
   }
 
-  __makeNative() {
+  __makeNative(platformConfig: ?PlatformConfig) {
     if (!this.__isNative) {
       this.__isNative = true;
       for (const child of this._children) {
-        child.__makeNative();
+        child.__makeNative(platformConfig);
         NativeAnimatedHelper.API.connectAnimatedNodes(
           this.__getNativeTag(),
           child.__getNativeTag(),
         );
       }
     }
-    super.__makeNative();
+    super.__makeNative(platformConfig);
   }
 
   __addChild(child: AnimatedNode): void {
@@ -42,7 +43,7 @@ class AnimatedWithChildren extends AnimatedNode {
     this._children.push(child);
     if (this.__isNative) {
       // Only accept "native" animated nodes as children
-      child.__makeNative();
+      child.__makeNative(this.__getPlatformConfig());
       NativeAnimatedHelper.API.connectAnimatedNodes(
         this.__getNativeTag(),
         child.__getNativeTag(),

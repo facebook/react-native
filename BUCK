@@ -729,7 +729,6 @@ rn_library(
         "//xplat/js:node_modules__nullthrows",
         "//xplat/js:node_modules__pretty_19format",
         "//xplat/js:node_modules__promise",
-        "//xplat/js:node_modules__prop_19types",
         "//xplat/js:node_modules__react_19devtools_19core",
         "//xplat/js:node_modules__react_19refresh",
         "//xplat/js:node_modules__react_19shallow_19renderer",

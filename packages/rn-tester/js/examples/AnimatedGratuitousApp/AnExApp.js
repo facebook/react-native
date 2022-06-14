@@ -28,12 +28,8 @@ const NUM_CIRCLES = 30;
 class Circle extends React.Component<any, any> {
   longTimer: number;
 
-  _onLongPress: () => void;
-  _toggleIsActive: () => void;
   constructor(props: Object): void {
     super();
-    this._onLongPress = this._onLongPress.bind(this);
-    this._toggleIsActive = this._toggleIsActive.bind(this);
     this.state = {
       isActive: false,
       pan: new Animated.ValueXY(), // Vectors reduce boilerplate.  (step1: uncomment)
@@ -41,7 +37,7 @@ class Circle extends React.Component<any, any> {
     };
   }
 
-  _onLongPress(): void {
+  _onLongPress = (): void => {
     const config = {tension: 40, friction: 3};
     this.state.pan.addListener(value => {
       // Async listener for state changes  (step1: uncomment)
@@ -90,7 +86,7 @@ class Circle extends React.Component<any, any> {
         this.props.onActivate();
       },
     );
-  }
+  };
 
   render(): React.Node {
     let handlers;
@@ -194,7 +190,7 @@ class Circle extends React.Component<any, any> {
       </Animated.View>
     );
   }
-  _toggleIsActive(velocity) {
+  _toggleIsActive = velocity => {
     const config = {tension: 30, friction: 7};
     if (this.state.isActive) {
       Animated.spring(this.props.openVal, {
@@ -216,11 +212,10 @@ class Circle extends React.Component<any, any> {
         }).start(); // (step4: uncomment)
       });
     }
-  }
+  };
 }
 
 class AnExApp extends React.Component<any, any> {
-  _onMove: (position: Point) => void;
   constructor(props: any): void {
     super(props);
     const keys = [];
@@ -232,7 +227,6 @@ class AnExApp extends React.Component<any, any> {
       restLayouts: [],
       openVal: new Animated.Value(0),
     };
-    this._onMove = this._onMove.bind(this);
   }
 
   render(): React.Node {
@@ -299,13 +293,13 @@ class AnExApp extends React.Component<any, any> {
     );
   }
 
-  _onMove(position: Point): void {
+  _onMove = (position: Point): void => {
     const newKeys = moveToClosest(this.state, position);
     if (newKeys !== this.state.keys) {
       LayoutAnimation.easeInEaseOut(); // animates layout update as one batch (step3: uncomment)
       this.setState({keys: newKeys});
     }
-  }
+  };
 }
 
 type Point = {

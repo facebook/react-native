@@ -24,6 +24,8 @@ import type {TimingAnimationConfig} from './animations/TimingAnimation';
 import type {DecayAnimationConfig} from './animations/DecayAnimation';
 import type {SpringAnimationConfig} from './animations/SpringAnimation';
 
+import AnimatedColor from './nodes/AnimatedColor';
+
 /**
  * Animations are a source of flakiness in snapshot testing. This mock replaces
  * animation functions from AnimatedImplementation with empty animations for
@@ -89,7 +91,7 @@ const mockCompositeAnimation = (
 });
 
 const spring = function(
-  value: AnimatedValue | AnimatedValueXY,
+  value: AnimatedValue | AnimatedValueXY | AnimatedColor,
   config: SpringAnimationConfig,
 ): CompositeAnimation {
   const anyValue: any = value;
@@ -109,7 +111,7 @@ const spring = function(
 };
 
 const timing = function(
-  value: AnimatedValue | AnimatedValueXY,
+  value: AnimatedValue | AnimatedValueXY | AnimatedColor,
   config: TimingAnimationConfig,
 ): CompositeAnimation {
   const anyValue: any = value;
@@ -123,7 +125,7 @@ const timing = function(
 };
 
 const decay = function(
-  value: AnimatedValue | AnimatedValueXY,
+  value: AnimatedValue | AnimatedValueXY | AnimatedColor,
   config: DecayAnimationConfig,
 ): CompositeAnimation {
   return emptyAnimation;
@@ -170,6 +172,7 @@ const loop = function(
 module.exports = {
   Value: AnimatedValue,
   ValueXY: AnimatedValueXY,
+  Color: AnimatedColor,
   Interpolation: AnimatedInterpolation,
   Node: AnimatedNode,
   decay,

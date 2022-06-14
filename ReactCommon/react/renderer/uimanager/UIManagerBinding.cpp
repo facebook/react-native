@@ -124,6 +124,10 @@ void UIManagerBinding::dispatchEvent(
     }()
     : jsi::Value::null();
 
+  if (instanceHandle.isNull()) {
+    LOG(WARNING) << "instanceHandle is null, event will be dropped";
+  }
+
   auto &eventHandlerWrapper =
       static_cast<EventHandlerWrapper const &>(*eventHandler_);
 

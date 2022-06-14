@@ -9,7 +9,7 @@ import org.gradle.api.internal.classpath.ModuleRegistry
 import org.gradle.configurationcache.extensions.serviceOf
 
 plugins {
-  kotlin("jvm") version "1.5.31"
+  kotlin("jvm") version "1.6.10"
   id("java-gradle-plugin")
 }
 
@@ -26,6 +26,8 @@ gradlePlugin {
     }
   }
 }
+
+group = "com.facebook.react"
 
 dependencies {
   implementation(gradleApi())

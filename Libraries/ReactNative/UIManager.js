@@ -31,15 +31,10 @@ export interface UIManagerJSInterface extends Spec {
   ) => void;
 }
 
-var UIManager: UIManagerJSInterface;
-if (global.RN$Bridgeless === true) {
-  // $FlowExpectedError[incompatible-type]
-  UIManager = require('./DummyUIManager');
-} else {
-  const {unstable_UIManager} = require('./UIManagerInjection');
-  UIManager = unstable_UIManager
-    ? unstable_UIManager
-    : require('./PaperUIManager');
-}
+const UIManager: UIManagerJSInterface =
+  global.RN$Bridgeless === true
+    ? require('./DummyUIManager')
+    : require('./UIManagerInjection').default.unstable_UIManager ??
+      require('./PaperUIManager');
 
 module.exports = UIManager;

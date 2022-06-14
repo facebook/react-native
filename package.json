@@ -86,8 +86,6 @@
     "test-android-instrumentation": "yarn run docker-build-android && yarn run test-android-run-instrumentation",
     "test-android-unit": "yarn run docker-build-android && yarn run test-android-run-unit",
     "test-android-e2e": "yarn run docker-build-android && yarn run test-android-run-e2e",
-    "build-ios-e2e": "detox build -c ios.sim.release",
-    "test-ios-e2e": "detox test -c ios.sim.release packages/rn-tester/e2e",
     "test-ios": "./scripts/objc-test.sh test"
   },
   "workspaces": [
@@ -110,19 +108,19 @@
     "base64-js": "^1.1.2",
     "deprecated-react-native-prop-types": "^2.3.0",
     "event-target-shim": "^5.0.1",
-    "hermes-engine": "~0.10.0",
+    "hermes-engine": "~0.11.0",
     "invariant": "^2.2.4",
     "jsc-android": "^250230.2.1",
-    "metro-react-native-babel-transformer": "0.66.2",
-    "metro-runtime": "0.66.2",
-    "metro-source-map": "0.66.2",
+    "metro-react-native-babel-transformer": "0.67.0",
+    "metro-runtime": "0.67.0",
+    "metro-source-map": "0.67.0",
     "nullthrows": "^1.1.1",
     "pretty-format": "^26.5.2",
     "promise": "^8.0.3",
-    "prop-types": "^15.7.2",
-    "react-devtools-core": "4.22.1",
+    "react-devtools-core": "^4.23.0",
     "react-native-codegen": "^0.0.11",
     "react-refresh": "^0.4.0",
+    "react-shallow-renderer": "16.14.1",
     "regenerator-runtime": "^0.13.2",
     "scheduler": "^0.20.2",
     "stacktrace-parser": "^0.1.3",
@@ -158,10 +156,10 @@
     "eslint-plugin-react-hooks": "^4.2.0",
     "eslint-plugin-react-native": "^3.11.0",
     "eslint-plugin-relay": "1.8.1",
-    "flow-bin": "^0.168.0",
+    "flow-bin": "^0.170.0",
     "jest": "^26.6.3",
     "jest-junit": "^10.0.0",
-    "jscodeshift": "^0.11.0",
+    "jscodeshift": "^0.13.1",
     "metro-babel-register": "0.66.2",
     "metro-transform-plugins": "^0.66.2",
     "mkdirp": "^0.5.1",
@@ -173,43 +171,6 @@
     "signedsource": "^1.0.0",
     "ws": "^6.1.4",
     "yargs": "^15.3.1"
-  },
-  "detox": {
-    "test-runner": "jest",
-    "runner-config": "packages/rn-tester/e2e/config.json",
-    "specs": "",
-    "configurations": {
-      "android.emu.release": {
-        "binaryPath": "packages/rn-tester/android/app/build/outputs/apk/hermes/release/app-hermes-x86-release.apk",
-        "testBinaryPath": "packages/rn-tester/android/app/build/outputs/apk/androidTest/hermes/release/app-hermes-release-androidTest.apk",
-        "build": "./gradlew :packages:rn-tester:android:app:assembleRelease :packages:rn-tester:android:app:assembleAndroidTest -DtestBuildType=release",
-        "type": "android.emulator",
-        "device": {
-          "avdName": "Nexus_6_API_29"
-        }
-      },
-      "android.emu.debug": {
-        "binaryPath": "packages/rn-tester/android/app/build/outputs/apk/hermes/debug/app-hermes-x86-debug.apk",
-        "testBinaryPath": "packages/rn-tester/android/app/build/outputs/apk/androidTest/hermes/debug/app-hermes-debug-androidTest.apk",
-        "build": "./gradlew :packages:rn-tester:android:app:assembleDebug :packages:rn-tester:android:app:assembleAndroidTest -DtestBuildType=debug",
-        "type": "android.emulator",
-        "device": {
-          "avdName": "Nexus_6_API_29"
-        }
-      },
-      "ios.sim.release": {
-        "binaryPath": "packages/rn-tester/build/Build/Products/Release-iphonesimulator/RNTester.app/",
-        "build": "xcodebuild -workspace packages/rn-tester/RNTesterPods.xcworkspace -scheme RNTester -configuration Release -sdk iphonesimulator -derivedDataPath packages/rn-tester/build -UseModernBuildSystem=NO -quiet",
-        "type": "ios.simulator",
-        "name": "iPhone 8"
-      },
-      "ios.sim.debug": {
-        "binaryPath": "packages/rn-tester/build/Build/Products/Debug-iphonesimulator/RNTester.app/",
-        "build": "xcodebuild -workspace packages/rn-tester/RNTesterPods.xcworkspace -scheme RNTester -configuration Debug -sdk iphonesimulator -derivedDataPath packages/rn-tester/build -UseModernBuildSystem=NO -quiet",
-        "type": "ios.simulator",
-        "name": "iPhone 8"
-      }
-    }
   },
   "beachball": {
     "shouldPublish": false

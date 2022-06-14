@@ -11,8 +11,8 @@
 #include <folly/dynamic.h>
 #include <folly/json.h>
 
+#include "ReadableNativeArray.h"
 #include "ReadableNativeMap.h"
-#include "WritableNativeArray.h"
 
 namespace facebook {
 namespace react {
@@ -37,8 +37,8 @@ struct WritableNativeMap
   void putDouble(std::string key, double val);
   void putInt(std::string key, int val);
   void putString(std::string key, jni::alias_ref<jstring> val);
-  void putNativeArray(std::string key, WritableNativeArray *val);
-  void putNativeMap(std::string key, WritableNativeMap *val);
+  void putNativeArray(std::string key, ReadableNativeArray *val);
+  void putNativeMap(std::string key, ReadableNativeMap *val);
   void mergeNativeMap(ReadableNativeMap *other);
 
   static void registerNatives();

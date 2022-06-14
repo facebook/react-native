@@ -35,6 +35,7 @@ import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import java.util.HashMap;
 
 /**
@@ -191,6 +192,8 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
         };
   }
 
+  @Nullable View mAccessibilityLabelledBy;
+
   @Override
   public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
     super.onInitializeAccessibilityNodeInfo(host, info);
@@ -198,6 +201,15 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
         (AccessibilityRole) host.getTag(R.id.accessibility_role);
     if (accessibilityRole != null) {
       setRole(info, accessibilityRole, host.getContext());
+    }
+
+    final Object accessibilityLabelledBy = host.getTag(R.id.labelled_by);
+    if (accessibilityLabelledBy != null) {
+      mAccessibilityLabelledBy =
+          ReactFindViewUtil.findView(host.getRootView(), (String) accessibilityLabelledBy);
+      if (mAccessibilityLabelledBy != null) {
+        info.setLabeledBy(mAccessibilityLabelledBy);
+      }
     }
 
     // state is changeable.

@@ -12,8 +12,7 @@
 
 const React = require('react');
 const {Alert, Image, StyleSheet, Text, View} = require('react-native');
-
-import {NativeModule as ScreenshotManager} from '../../../NativeModuleExample/NativeScreenshotManager';
+const ScreenshotManager = require('../../../NativeModuleExample/NativeScreenshotManager');
 
 class ScreenshotExample extends React.Component<{...}, $FlowFixMeState> {
   state = {
@@ -22,7 +21,7 @@ class ScreenshotExample extends React.Component<{...}, $FlowFixMeState> {
 
   render() {
     return (
-      <View>
+      <View style={style.container}>
         <Text onPress={this.takeScreenshot} style={style.button}>
           Click to take a screenshot
         </Text>
@@ -49,13 +48,15 @@ class ScreenshotExample extends React.Component<{...}, $FlowFixMeState> {
 }
 
 const style = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   button: {
     marginBottom: 10,
     fontWeight: '500',
   },
   image: {
     flex: 1,
-    height: 300,
     resizeMode: 'contain',
     backgroundColor: 'black',
   },

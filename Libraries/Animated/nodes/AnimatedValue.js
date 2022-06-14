@@ -270,6 +270,8 @@ class AnimatedValue extends AnimatedWithChildren {
   track(tracking: AnimatedTracking): void {
     this.stopTracking();
     this._tracking = tracking;
+    // Make sure that the tracking animation starts executing
+    this._tracking && this._tracking.update();
   }
 
   _updateValue(value: number, flush: boolean): void {

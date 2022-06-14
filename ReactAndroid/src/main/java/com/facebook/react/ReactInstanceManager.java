@@ -336,7 +336,7 @@ public class ReactInstanceManager {
         Activity currentActivity = getCurrentActivity();
         if (currentActivity != null) {
           ReactRootView rootView = new ReactRootView(currentActivity);
-          rootView.setIsFabric(ReactFeatureFlags.enableFabricInLogBox);
+          rootView.setIsFabric(ReactFeatureFlags.enableFabricRenderer);
           rootView.startReactApplication(ReactInstanceManager.this, appKey, null);
           return rootView;
         }
@@ -1103,14 +1103,22 @@ public class ReactInstanceManager {
                 // create
                 mHasStartedCreatingInitialContext = true;
 
+                final ReactApplicationContext reactApplicationContext;
                 try {
                   Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
                   ReactMarker.logMarker(VM_INIT);
-                  final ReactApplicationContext reactApplicationContext =
+                  reactApplicationContext =
                       createReactContext(
                           initParams.getJsExecutorFactory().create(),
                           initParams.getJsBundleLoader());
-
+                } catch (Exception e) {
+                  // Reset state and bail out. This lets us try again later.
+                  mHasStartedCreatingInitialContext = false;
+                  mCreateReactContextThread = null;
+                  mDevSupportManager.handleException(e);
+                  return;
+                }
+                try {
                   mCreateReactContextThread = null;
                   ReactMarker.logMarker(PRE_SETUP_REACT_CONTEXT_START);
                   final Runnable maybeRecreateReactContextRunnable =
@@ -1382,7 +1390,7 @@ public class ReactInstanceManager {
           mJSIModulePackage.getJSIModules(
               reactContext, catalystInstance.getJavaScriptContextHolder()));
     }
-    if (ReactFeatureFlags.eagerInitializeFabric) {
+    if (ReactFeatureFlags.enableFabricRenderer) {
       catalystInstance.getJSIModule(JSIModuleType.UIManager);
     }
     if (mBridgeIdleDebugListener != null) {

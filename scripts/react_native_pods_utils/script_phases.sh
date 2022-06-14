@@ -75,7 +75,7 @@ generateCodegenSchemaFromJavaScript () {
         JS_SRCS=$(find "$PODS_TARGET_SRCROOT/$SRCS_DIR" -type f -name "$SRCS_PATTERN" -print0 | xargs -0)
         echo "$RCT_SCRIPT_FILE_LIST" >> "${SCRIPT_OUTPUT_FILE_0}" 2>&1
     else
-        JS_SRCS="$\{PODS_TARGET_SRCROOT\}/$SRCS_DIR"
+        JS_SRCS="$PODS_TARGET_SRCROOT/$SRCS_DIR"
         echo "$RCT_SCRIPT_JS_SRCS_DIR" >> "${SCRIPT_OUTPUT_FILE_0}" 2>&1
     fi
 

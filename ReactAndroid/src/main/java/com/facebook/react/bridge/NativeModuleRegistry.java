@@ -107,9 +107,6 @@ public class NativeModuleRegistry {
       for (ModuleHolder module : mModules.values()) {
         module.destroy();
       }
-      if (ReactFeatureFlags.enableReactContextCleanupFix) {
-        mModules.clear();
-      }
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }

@@ -231,6 +231,7 @@ async function main(messages, owner, repo, pull_number) {
   const {Octokit} = require('@octokit/rest');
   const octokit = new Octokit({
     auth: process.env.GITHUB_TOKEN,
+    userAgent: 'react-native-code-analysis-bot',
   });
 
   const opts = {

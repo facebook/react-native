@@ -203,6 +203,24 @@ class AccessibilityExample extends React.Component<{}> {
             <Text>Accessible view with label, hint, role, and state</Text>
           </View>
         </RNTesterBlock>
+
+        <RNTesterBlock title="TextInput with accessibilityLabelledBy attribute">
+          <View>
+            <Text nativeID="formLabel1">Mail Address</Text>
+            <TextInput
+              accessibilityLabel="input test1"
+              accessibilityLabelledBy="formLabel1"
+              style={styles.default}
+            />
+            <Text nativeID="formLabel2">First Name</Text>
+            <TextInput
+              accessibilityLabel="input test2"
+              accessibilityLabelledBy={['formLabel2', 'formLabel3']}
+              style={styles.default}
+              value="Foo"
+            />
+          </View>
+        </RNTesterBlock>
       </View>
     );
   }
@@ -1156,7 +1174,7 @@ class DisplayOptionsStatusExample extends React.Component<{}> {
         <DisplayOptionStatusExample
           optionName={'Screen Reader'}
           optionChecker={AccessibilityInfo.isScreenReaderEnabled}
-          notification={'reduceMotionChanged'}
+          notification={'screenReaderChanged'}
         />
         {isAndroid ? null : (
           <>

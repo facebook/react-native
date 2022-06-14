@@ -198,13 +198,22 @@ let Image = (props: ImagePropsType, forwardedRef) => {
             : nativeProps;
         return (
           <TextAncestor.Consumer>
-            {hasTextAncestor =>
-              hasTextAncestor ? (
-                <TextInlineImageNativeComponent {...nativePropsWithAnalytics} />
-              ) : (
-                <ImageViewNativeComponent {...nativePropsWithAnalytics} />
-              )
-            }
+            {hasTextAncestor => {
+              if (hasTextAncestor) {
+                let src = Array.isArray(sources) ? sources : [sources];
+                return (
+                  <TextInlineImageNativeComponent
+                    style={style}
+                    resizeMode={props.resizeMode}
+                    headers={nativeProps.headers}
+                    src={src}
+                    ref={forwardedRef}
+                  />
+                );
+              }
+
+              return <ImageViewNativeComponent {...nativePropsWithAnalytics} />;
+            }}
           </TextAncestor.Consumer>
         );
       }}

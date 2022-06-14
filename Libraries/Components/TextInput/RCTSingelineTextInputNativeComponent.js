@@ -24,7 +24,10 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
 
 const SinglelineTextInputNativeComponent: HostComponent<mixed> = NativeComponentRegistry.get<mixed>(
   'RCTSinglelineTextInputView',
-  () => RCTTextInputViewConfig,
+  () => ({
+    uiViewClassName: 'RCTSinglelineTextInputView',
+    ...RCTTextInputViewConfig,
+  }),
 );
 
 // flowlint-next-line unclear-type:off

@@ -17,10 +17,9 @@ const {
   Text,
   View,
   Alert,
-  NativeModules,
   findNodeHandle,
 } = require('react-native');
-const ScreenshotManager = NativeModules.ScreenshotManager;
+const ScreenshotManager = require('../../../NativeModuleExample/NativeScreenshotManager');
 
 const BUTTONS = ['Option 0', 'Option 1', 'Option 2', 'Delete', 'Cancel'];
 const DESTRUCTIVE_INDEX = 3;
