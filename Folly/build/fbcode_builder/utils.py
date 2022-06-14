@@ -62,7 +62,11 @@ def read_fbcode_builder_config(filename):
     scope = {'read_fbcode_builder_config': _inner_read_config}
     with open(filename) as config_file:
         code = compile(config_file.read(), filename, mode='exec')
-    exec(code, scope)
+    # Exec is generally unsafe. See B102 (exec_used). https://bandit.readthedocs.io/en/latest/plugins/b102_exec_used.html
+    # This is not shipping code, but build code that is part of folly.
+    # After reviewing the code in tis repo, this is only called with config files that are part of this repo, 
+    # so no 3rd party code is evaluated.
+    exec(code, scope) # nosec
     return scope['config']
 
 
