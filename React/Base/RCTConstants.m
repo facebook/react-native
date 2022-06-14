@@ -41,18 +41,18 @@ void RCTSetDispatchW3CPointerEvents(BOOL value)
 }
 
 /*
- * Memory Pressure Unloading
+ * Validate RCTEventEmitter. For experimentation only.
  */
-static BOOL RCTDisableBridgeMemoryPressureUnload = NO;
+static BOOL RCTValidateCanSendEventInRCTEventEmitter = NO;
 
-BOOL RCTGetDisableBridgeMemoryPressureUnload()
+BOOL RCTGetValidateCanSendEventInRCTEventEmitter()
 {
-  return RCTDisableBridgeMemoryPressureUnload;
+  return RCTValidateCanSendEventInRCTEventEmitter;
 }
 
-void RCTSetDisableBridgeMemoryPressureUnload(BOOL value)
+void RCTSetValidateCanSendEventInRCTEventEmitter(BOOL value)
 {
-  RCTDisableBridgeMemoryPressureUnload = value;
+  RCTValidateCanSendEventInRCTEventEmitter = value;
 }
 
 /*

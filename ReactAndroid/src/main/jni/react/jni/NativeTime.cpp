@@ -12,8 +12,14 @@ namespace facebook {
 namespace react {
 
 double reactAndroidNativePerformanceNowHook() {
-  auto time = std::chrono::system_clock::now().time_since_epoch();
-  return std::chrono::duration_cast<std::chrono::milliseconds>(time).count();
+  auto time = std::chrono::steady_clock::now();
+  auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                      time.time_since_epoch())
+                      .count();
+
+  constexpr double NANOSECONDS_IN_MILLISECOND = 1000000.0;
+
+  return duration / NANOSECONDS_IN_MILLISECOND;
 }
 
 } // namespace react

@@ -228,7 +228,7 @@ class CheckboxExample extends React.Component<
   };
 
   _onCheckboxPress = () => {
-    let checkboxState = false;
+    let checkboxState: boolean | $TEMPORARY$string<'mixed'> = false;
     if (this.state.checkboxState === false) {
       checkboxState = 'mixed';
     } else if (this.state.checkboxState === 'mixed') {
@@ -1151,12 +1151,15 @@ class DisplayOptionsStatusExample extends React.Component<{}> {
 function DisplayOptionStatusExample({optionName, optionChecker, notification}) {
   const [statusEnabled, setStatusEnabled] = React.useState(false);
   React.useEffect(() => {
-    AccessibilityInfo.addEventListener(notification, setStatusEnabled);
+    const listener = AccessibilityInfo.addEventListener(
+      notification,
+      setStatusEnabled,
+    );
     optionChecker().then(isEnabled => {
       setStatusEnabled(isEnabled);
     });
     return function cleanup() {
-      AccessibilityInfo.removeEventListener(notification, setStatusEnabled);
+      listener.remove();
     };
   }, [optionChecker, notification]);
   return (

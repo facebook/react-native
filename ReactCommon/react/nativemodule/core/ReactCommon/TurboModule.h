@@ -32,38 +32,47 @@ enum TurboModuleMethodValueKind {
   PromiseKind,
 };
 
+class TurboCxxModule;
+class TurboModuleBinding;
+
 /**
  * Base HostObject class for every module to be exposed to JS
  */
 class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
  public:
-  TurboModule(const std::string &name, std::shared_ptr<CallInvoker> jsInvoker);
+  TurboModule(std::string name, std::shared_ptr<CallInvoker> jsInvoker);
 
-  virtual facebook::jsi::Value get(
+  // Note: keep this method declared inline to avoid conflicts
+  // between RTTI and non-RTTI compilation units
+  facebook::jsi::Value get(
       facebook::jsi::Runtime &runtime,
       const facebook::jsi::PropNameID &propName) override {
-    std::string propNameUtf8 = propName.utf8(runtime);
-    auto p = methodMap_.find(propNameUtf8);
-    if (p == methodMap_.end()) {
-      // Method was not found, let JS decide what to do.
-      return jsi::Value::undefined();
+    {
+      std::string propNameUtf8 = propName.utf8(runtime);
+      auto p = methodMap_.find(propNameUtf8);
+      if (p == methodMap_.end()) {
+        // Method was not found, let JS decide what to do.
+        return facebook::jsi::Value::undefined();
+      } else {
+        return get(runtime, propName, p->second);
+      }
     }
-    MethodMetadata meta = p->second;
-    return jsi::Function::createFromHostFunction(
-        runtime,
-        propName,
-        static_cast<unsigned int>(meta.argCount),
-        [this, meta](
-            facebook::jsi::Runtime &rt,
-            const facebook::jsi::Value &thisVal,
-            const facebook::jsi::Value *args,
-            size_t count) { return meta.invoker(rt, *this, args, count); });
   }
 
+  std::vector<facebook::jsi::PropNameID> getPropertyNames(
+      facebook::jsi::Runtime &runtime) override {
+    std::vector<jsi::PropNameID> result;
+    result.reserve(methodMap_.size());
+    for (auto it = methodMap_.cbegin(); it != methodMap_.cend(); ++it) {
+      result.push_back(jsi::PropNameID::forUtf8(runtime, it->first));
+    }
+    return result;
+  }
+
+ protected:
   const std::string name_;
   std::shared_ptr<CallInvoker> jsInvoker_;
 
- protected:
   struct MethodMetadata {
     size_t argCount;
     facebook::jsi::Value (*invoker)(
@@ -72,8 +81,17 @@ class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
         const facebook::jsi::Value *args,
         size_t count);
   };
-
   std::unordered_map<std::string, MethodMetadata> methodMap_;
+
+ private:
+  friend class TurboCxxModule;
+  friend class TurboModuleBinding;
+  std::unique_ptr<jsi::Object> jsRepresentation_;
+
+  facebook::jsi::Value get(
+      facebook::jsi::Runtime &runtime,
+      const facebook::jsi::PropNameID &propName,
+      const MethodMetadata &meta);
 };
 
 /**

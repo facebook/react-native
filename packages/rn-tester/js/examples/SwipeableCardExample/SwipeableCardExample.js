@@ -119,7 +119,7 @@ function SwipeableCard(props: {
   const {width} = useWindowDimensions();
   const rotation = movementX.interpolate({
     inputRange: [-width / 2, 0, width / 2],
-    outputRange: (['-5deg', '0deg', '5deg']: $ReadOnlyArray<string>),
+    outputRange: ['-5deg', '0deg', '5deg'],
     extrapolate: 'clamp',
   });
 

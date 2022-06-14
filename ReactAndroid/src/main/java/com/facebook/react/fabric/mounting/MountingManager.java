@@ -26,6 +26,7 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
+import com.facebook.react.fabric.mounting.SurfaceMountingManager.ViewEvent;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.RootViewManager;
@@ -421,5 +422,15 @@ public class MountingManager {
 
   public void initializeViewManager(String componentName) {
     mViewManagerRegistry.get(componentName);
+  }
+
+  public void enqueuePendingEvent(int reactTag, ViewEvent viewEvent) {
+    @Nullable SurfaceMountingManager smm = getSurfaceManagerForView(reactTag);
+    if (smm == null) {
+      // Cannot queue event without valid surface mountng manager. Do nothing here.
+      return;
+    }
+
+    smm.enqueuePendingEvent(reactTag, viewEvent);
   }
 }

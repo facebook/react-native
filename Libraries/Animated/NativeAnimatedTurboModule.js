@@ -64,6 +64,9 @@ export interface Spec extends TurboModule {
   // Events
   +addListener: (eventName: string) => void;
   +removeListeners: (count: number) => void;
+
+  // All of the above in a batched mode
+  +queueAndExecuteBatchedOperations?: (operationsAndArgs: Array<any>) => void;
 }
 
 export default (TurboModuleRegistry.get<Spec>(

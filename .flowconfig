@@ -51,6 +51,8 @@ suppress_type=$FlowFixMeProps
 suppress_type=$FlowFixMeState
 suppress_type=$FlowFixMeEmpty
 
+experimental.env_mode=ssa
+
 [lints]
 sketchy-null-number=warn
 sketchy-null-mixed=warn
@@ -71,4 +73,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.176.3
+^0.180.0

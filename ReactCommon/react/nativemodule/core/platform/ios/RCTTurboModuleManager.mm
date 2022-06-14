@@ -776,12 +776,14 @@ static Class getFallbackClassFromName(const char *name)
   if (RCTGetTurboModuleCleanupMode() == kRCTGlobalScope ||
       RCTGetTurboModuleCleanupMode() == kRCTGlobalScopeUsingRetainJSCallback) {
     runtimeExecutor([turboModuleProvider = std::move(turboModuleProvider)](jsi::Runtime &runtime) {
-      react::TurboModuleBinding::install(runtime, std::move(turboModuleProvider));
+      react::TurboModuleBinding::install(
+          runtime, std::move(turboModuleProvider), TurboModuleBindingMode::HostObject, nullptr);
     });
   } else if (RCTGetTurboModuleCleanupMode() == kRCTTurboModuleManagerScope) {
     runtimeExecutor([turboModuleProvider = std::move(turboModuleProvider),
                      longLivedObjectCollection = _longLivedObjectCollection](jsi::Runtime &runtime) {
-      react::TurboModuleBinding::install(runtime, std::move(turboModuleProvider), longLivedObjectCollection);
+      react::TurboModuleBinding::install(
+          runtime, std::move(turboModuleProvider), TurboModuleBindingMode::HostObject, longLivedObjectCollection);
     });
   }
 }

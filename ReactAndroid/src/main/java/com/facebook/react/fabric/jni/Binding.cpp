@@ -6,8 +6,10 @@
  */
 
 #include "Binding.h"
+
 #include "AsyncEventBeat.h"
 #include "EventEmitterWrapper.h"
+#include "JBackgroundExecutor.h"
 #include "ReactNativeConfigHolder.h"
 #include "StateWrapperImpl.h"
 
@@ -76,23 +78,15 @@ Binding::getInspectorDataForInstance(
   return ReadableNativeMap::newObjectCxxArgs(result);
 }
 
-bool isLargeTextMeasureCacheEnabled() {
-  static const auto reactFeatureFlagsJavaDescriptor =
-      jni::findClassStatic(Binding::ReactFeatureFlagsJavaDescriptor);
-  const auto field = reactFeatureFlagsJavaDescriptor->getStaticField<jboolean>(
-      "enableLargeTextMeasureCache");
-  return reactFeatureFlagsJavaDescriptor->getStaticFieldValue(field);
-}
+constexpr static auto ReactFeatureFlagsJavaDescriptor =
+    "com/facebook/react/config/ReactFeatureFlags";
 
-bool isMapBufferSerializationEnabled() {
+static bool getFeatureFlagValue(const char *name) {
   static const auto reactFeatureFlagsJavaDescriptor =
-      jni::findClassStatic(Binding::ReactFeatureFlagsJavaDescriptor);
-  static const auto isMapBufferSerializationEnabledMethod =
-      reactFeatureFlagsJavaDescriptor->getStaticMethod<jboolean()>(
-          "isMapBufferSerializationEnabled");
-  bool value =
-      isMapBufferSerializationEnabledMethod(reactFeatureFlagsJavaDescriptor);
-  return value;
+      jni::findClassStatic(ReactFeatureFlagsJavaDescriptor);
+  const auto field =
+      reactFeatureFlagsJavaDescriptor->getStaticField<jboolean>(name);
+  return reactFeatureFlagsJavaDescriptor->getStaticFieldValue(field);
 }
 
 void Binding::setPixelDensity(float pointScaleFactor) {
@@ -375,8 +369,8 @@ void Binding::installFabricUIManager(
   disableRevisionCheckForPreallocation_ =
       config->getBool("react_fabric:disable_revision_check_for_preallocation");
 
-  disablePreallocationOnClone_ = config->getBool(
-      "react_native_new_architecture:disable_preallocation_on_clone_android");
+  disablePreallocationOnClone_ =
+      getFeatureFlagValue("disablePreallocationOnClone");
 
   if (enableFabricLogs_) {
     LOG(WARNING) << "Binding::installFabricUIManager() was called (address: "
@@ -399,8 +393,6 @@ void Binding::installFabricUIManager(
   if (runtimeSchedulerHolder) {
     auto runtimeScheduler = runtimeSchedulerHolder->cthis()->get().lock();
     if (runtimeScheduler) {
-      runtimeScheduler->setEnableYielding(config->getBool(
-          "react_native_new_architecture:runtimescheduler_enable_yielding_android"));
       runtimeExecutor =
           [runtimeScheduler](
               std::function<void(jsi::Runtime & runtime)> &&callback) {
@@ -436,7 +428,8 @@ void Binding::installFabricUIManager(
   reactNativeConfig_ = config;
 
   contextContainer->insert(
-      "MapBufferSerializationEnabled", isMapBufferSerializationEnabled());
+      "MapBufferSerializationEnabled",
+      getFeatureFlagValue("mapBufferSerializationEnabled"));
 
   disablePreallocateViews_ = reactNativeConfig_->getBool(
       "react_fabric:disabled_view_preallocation_android");
@@ -445,7 +438,8 @@ void Binding::installFabricUIManager(
       "react_native_new_architecture:dispatch_preallocation_in_bg");
 
   contextContainer->insert(
-      "EnableLargeTextMeasureCache", isLargeTextMeasureCacheEnabled());
+      "EnableLargeTextMeasureCache",
+      getFeatureFlagValue("enableLargeTextMeasureCache"));
 
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = contextContainer;
@@ -454,8 +448,8 @@ void Binding::installFabricUIManager(
   toolbox.synchronousEventBeatFactory = synchronousBeatFactory;
   toolbox.asynchronousEventBeatFactory = asynchronousBeatFactory;
 
-  backgroundExecutor_ = std::make_unique<JBackgroundExecutor>();
-  toolbox.backgroundExecutor = backgroundExecutor_->get();
+  backgroundExecutor_ = JBackgroundExecutor::create("fabric_bg");
+  toolbox.backgroundExecutor = backgroundExecutor_;
 
   animationDriver_ = std::make_shared<LayoutAnimationDriver>(
       runtimeExecutor, contextContainer, this);
@@ -557,8 +551,7 @@ void Binding::preallocateView(
   };
 
   if (dispatchPreallocationInBackground_) {
-    auto backgroundExecutor = backgroundExecutor_->get();
-    backgroundExecutor(preallocationFunction);
+    backgroundExecutor_(preallocationFunction);
   } else {
     preallocationFunction();
   }

@@ -16,8 +16,12 @@ function(add_react_android_subdir relative_path)
   add_subdirectory(${REACT_ANDROID_DIR}/${relative_path} ReactAndroid/${relative_path})
 endfunction()
 
+function(add_react_build_subdir relative_path)
+  add_subdirectory(${REACT_BUILD_DIR}/${relative_path} build/${relative_path})
+endfunction()
+
 function(add_react_third_party_ndk_subdir relative_path)
-  add_react_android_subdir(build/third-party-ndk/${relative_path})
+  add_react_build_subdir(third-party-ndk/${relative_path})
 endfunction()
 
 function(add_react_common_subdir relative_path)
@@ -84,7 +88,7 @@ add_react_common_subdir(react/renderer/mapbuffer)
 add_react_common_subdir(react/nativemodule/core)
 
 # ReactAndroid JNI targets
-add_react_android_subdir(build/generated/source/codegen/jni)
+add_react_build_subdir(generated/source/codegen/jni)
 add_react_android_subdir(src/main/java/com/facebook/hermes/reactexecutor)
 add_react_android_subdir(src/main/jni/first-party/fbjni)
 add_react_android_subdir(src/main/jni/first-party/fb)

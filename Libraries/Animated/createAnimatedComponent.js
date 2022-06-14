@@ -55,6 +55,7 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
     _prevComponent: any;
     _propsAnimated: AnimatedProps;
     _eventDetachers: Array<Function> = [];
+    _initialAnimatedProps: Object;
 
     // Only to be used in this file, and only in Fabric.
     _animatedComponentId: string = `${animatedComponentNextId++}:animatedComponent`;
@@ -200,10 +201,16 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
     });
 
     render() {
-      const {style = {}, ...props} = this._propsAnimated.__getValue() || {};
+      const animatedProps =
+        this._propsAnimated.__getValue(this._initialAnimatedProps) || {};
+      const {style = {}, ...props} = animatedProps;
       const {style: passthruStyle = {}, ...passthruProps} =
         this.props.passthroughAnimatedPropExplicitValues || {};
       const mergedStyle = {...style, ...passthruStyle};
+
+      if (!this._initialAnimatedProps) {
+        this._initialAnimatedProps = animatedProps;
+      }
 
       // Force `collapsable` to be false so that native view is not flattened.
       // Flattened views cannot be accurately referenced by a native driver.

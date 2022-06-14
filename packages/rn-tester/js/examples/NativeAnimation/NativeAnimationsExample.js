@@ -145,9 +145,6 @@ class LoopExample extends React.Component<{...}, $FlowFixMeState> {
             {
               opacity: this.state.value.interpolate({
                 inputRange: [0, 0.5, 1],
-                /* $FlowFixMe[speculation-ambiguous] (>=0.38.0) - Flow error
-                 * detected during the deployment of v0.38.0. To see the error,
-                 * remove this comment and run flow */
                 outputRange: [0, 1, 0],
               }),
             },
@@ -243,9 +240,6 @@ class EventExample extends React.Component<{...}, $FlowFixMeState> {
                 {
                   rotate: this.state.anim.interpolate({
                     inputRange: [0, 1],
-                    /* $FlowFixMe[speculation-ambiguous] (>=0.38.0) - Flow
-                     * error detected during the deployment of v0.38.0. To see
-                     * the error, remove this comment and run flow */
                     outputRange: ['0deg', '1deg'],
                   }),
                 },

@@ -391,6 +391,13 @@ const examples = ([
       return <SnapToOptions />;
     },
   },
+  {
+    title: '<ScrollView> (contentOffset = {x: 100, y: 0})\n',
+    description: 'Initial contentOffset can be set on ScrollView.',
+    render: function (): React.Node {
+      return <ContentOffsetList />;
+    },
+  },
 ]: Array<RNTesterModuleExample>);
 
 if (Platform.OS === 'ios') {
@@ -409,13 +416,6 @@ if (Platform.OS === 'ios') {
       'ScrollView puts its content in the center if the content is smaller than scroll view',
     render: function (): React.Node {
       return <CenterContentList />;
-    },
-  });
-  examples.push({
-    title: '<ScrollView> (contentOffset = {x: 100, y: 0})\n',
-    description: 'Initial contentOffset can be set on ScrollView.',
-    render: function (): React.Node {
-      return <ContentOffsetList />;
     },
   });
   examples.push({
