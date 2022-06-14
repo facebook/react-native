@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) NSDictionary<NSAttributedStringKey,id> *defaultTextAttributes;
 @property (nonatomic, assign) BOOL contextMenuHidden;
 @property (nonatomic, assign, getter=isEditable) BOOL editable;
+@property (nonatomic, assign, nullable) NSString *accessibilityErrorMessage;
 @property (nonatomic, assign) BOOL caretHidden;
 @property (nonatomic, assign) BOOL enablesReturnKeyAutomatically;
 @property (nonatomic, assign) UITextFieldViewMode clearButtonMode;

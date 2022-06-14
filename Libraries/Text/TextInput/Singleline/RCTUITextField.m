@@ -98,6 +98,11 @@
   self.enabled = editable;
 }
 
+- (void)setAccessibilityErrorMessage:(NSString *)accessibilityErrorMessage
+{
+  self.accessibilityValue = accessibilityErrorMessage;
+}
+
 - (void)setSecureTextEntry:(BOOL)secureTextEntry
 {
   if (self.secureTextEntry == secureTextEntry) {
