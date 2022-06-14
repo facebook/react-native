@@ -279,7 +279,6 @@ type IOSProps = $ReadOnly<{|
    * visibility. Occlusion, transforms, and other complexity won't be taken into account as to
    * whether content is "visible" or not.
    *
-   * @platform ios
    */
   maintainVisibleContentPosition?: ?$ReadOnly<{|
     minIndexForVisible: number,
