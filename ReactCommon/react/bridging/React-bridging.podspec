@@ -5,7 +5,7 @@
 
 require "json"
 
-package = JSON.parse(File.read(File.join(__dir__, "..", "..", "..", "package.json")))
+package = JSON.parse(File.read(File.join(__dir__, "..", "package.json")))
 version = package['version']
 
 source = { :git => 'https://github.com/facebook/react-native.git' }
@@ -28,9 +28,10 @@ Pod::Spec.new do |s|
   s.author                 = "Facebook, Inc. and its affiliates"
   s.platforms              = { :ios => "12.4" }
   s.source                 = source
-  s.source_files           = "**/*.{cpp,h}"
-  s.exclude_files          = "tests"
+  s.source_files           = "react/bridging/**/*.{cpp,h}"
+  s.exclude_files          = "react/bridging/tests"
   s.header_dir             = "react/bridging"
+  s.header_mappings_dir    = "."
   s.compiler_flags         = folly_compiler_flags
   s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/RCT-Folly\"",
                                "USE_HEADERMAP" => "YES",
