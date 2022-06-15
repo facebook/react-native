@@ -6,14 +6,6 @@
 
 - Remove console.disableYellowBox support ([b633cc1305](https://github.com/facebook/react-native/commit/b633cc130533f0731b2577123282c4530e4f0abe) by [@GijsWeterings](https://github.com/GijsWeterings))
 
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
 ### Added
 
 - Add Hermes scripts to package ([004b8609d9](https://github.com/facebook/react-native/commit/004b8609d97b14a6d5cb8c9e63afdbe343c500da) by [@hramos](https://github.com/hramos))
@@ -142,10 +134,6 @@
 - Deprecate the use of `react-native/jest/preprocessor.js` by external projects ([c1e9aa9a27](https://github.com/facebook/react-native/commit/c1e9aa9a272aed3cba60c4aeff783eeb8bffce68) by [@motiz88](https://github.com/motiz88))
 - Deprecate the Promise.prototype.done method and log a warning when it's called in development. ([35800962c1](https://github.com/facebook/react-native/commit/35800962c16a33eb8e9ff1adfd428cf00bb670d3) by [@motiz88](https://github.com/motiz88))
 
-#### Android specific
-
-
-
 #### iOS specific
 
 - Deprecating support for iOS/tvOS SDK 11.0, 12.4+ is now required ([5f2835b14d](https://github.com/facebook/react-native/commit/5f2835b14d35681c268dd64
@@ -161,10 +149,6 @@ d6ec284ea5f053be3) by [@philIip](https://github.com/philIip))
 - Removed `deprecated-react-native-props` as a package dependency. ([cdfddb4dad](https://github.com/facebook/react-native/commit/cdfddb4dad7c69904850d7e5f089a32a1d3445d1) by [@yungsters](https://github.com/yungsters))
 - Removed `Image.propTypes`, `Text.propTypes`, and `TextInput.propTypes`. ([3e229f27bc](https://github.com/facebook/react-native/commit/3e229f27bc9c7556876ff776abf70147289d544b) by [@yungsters](https://github.com/yungsters))
 - Removed `ColorPropType`, `EdgeInsetsPropType`, `PointPropType`, and `ViewPropTypes`. ([10199b1581](https://github.com/facebook/react-native/commit/10199b158138b8645550b5579df87e654213fe42) by [@yungsters](https://github.com/yungsters))
-
-#### Android specific
-
-
 
 #### iOS specific
 
