@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,8 +15,11 @@
 #include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/core/ComponentDescriptor.h>
+#include <react/renderer/core/EventEmitter.h>
+#include <react/renderer/core/EventListener.h>
 #include <react/renderer/core/LayoutConstraints.h>
 #include <react/renderer/mounting/MountingOverrideDelegate.h>
+#include <react/renderer/scheduler/InspectorData.h>
 #include <react/renderer/scheduler/SchedulerDelegate.h>
 #include <react/renderer/scheduler/SchedulerToolbox.h>
 #include <react/renderer/scheduler/SurfaceHandler.h>
@@ -34,7 +37,7 @@ namespace react {
 class Scheduler final : public UIManagerDelegate {
  public:
   Scheduler(
-      SchedulerToolbox schedulerToolbox,
+      SchedulerToolbox const &schedulerToolbox,
       UIManagerAnimationDelegate *animationDelegate,
       SchedulerDelegate *delegate);
   ~Scheduler();
@@ -48,6 +51,9 @@ class Scheduler final : public UIManagerDelegate {
    */
   void registerSurface(SurfaceHandler const &surfaceHandler) const noexcept;
   void unregisterSurface(SurfaceHandler const &surfaceHandler) const noexcept;
+
+  InspectorData getInspectorDataForInstance(
+      EventEmitter const &eventEmitter) const noexcept;
 
   void renderTemplateToSurface(
       SurfaceId surfaceId,
@@ -83,12 +89,14 @@ class Scheduler final : public UIManagerDelegate {
 
   void uiManagerDidFinishTransaction(
       MountingCoordinator::Shared const &mountingCoordinator) override;
-  void uiManagerDidCreateShadowNode(
-      const ShadowNode::Shared &shadowNode) override;
+  void uiManagerDidCreateShadowNode(const ShadowNode &shadowNode) override;
+  void uiManagerDidCloneShadowNode(
+      const ShadowNode &oldShadowNode,
+      const ShadowNode &newShadowNode) override;
   void uiManagerDidDispatchCommand(
       const ShadowNode::Shared &shadowNode,
       std::string const &commandName,
-      folly::dynamic const args) override;
+      folly::dynamic const &args) override;
   void uiManagerDidSendAccessibilityEvent(
       const ShadowNode::Shared &shadowNode,
       std::string const &eventType) override;
@@ -96,6 +104,17 @@ class Scheduler final : public UIManagerDelegate {
       ShadowNode::Shared const &shadowView,
       bool isJSResponder,
       bool blockNativeResponder) override;
+
+#pragma mark - ContextContainer
+  ContextContainer::Shared getContextContainer() const;
+
+#pragma mark - UIManager
+  std::shared_ptr<UIManager> getUIManager() const;
+
+#pragma mark - Event listeners
+  void addEventListener(const std::shared_ptr<EventListener const> &listener);
+  void removeEventListener(
+      const std::shared_ptr<EventListener const> &listener);
 
  private:
   friend class SurfaceHandler;
@@ -115,7 +134,13 @@ class Scheduler final : public UIManagerDelegate {
    * parts that need to have ownership (and only ownership) of that, and then
    * fill the optional.
    */
-  std::shared_ptr<better::optional<EventDispatcher const>> eventDispatcher_;
+  std::shared_ptr<std::optional<EventDispatcher const>> eventDispatcher_;
+
+  /**
+   * Hold onto ContextContainer. See SchedulerToolbox.
+   * Must not be nullptr.
+   */
+  ContextContainer::Shared contextContainer_;
 
   /*
    * Temporary flags.

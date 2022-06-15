@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,64 +7,29 @@
 
 #pragma once
 
+#include "FabricMountingManager.h"
+
+#include <memory>
+#include <mutex>
+
 #include <fbjni/fbjni.h>
-#include <react/jni/JMessageQueueThread.h>
 #include <react/jni/JRuntimeExecutor.h>
+#include <react/jni/JRuntimeScheduler.h>
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/animations/LayoutAnimationDriver.h>
 #include <react/renderer/scheduler/Scheduler.h>
 #include <react/renderer/scheduler/SchedulerDelegate.h>
 #include <react/renderer/uimanager/LayoutAnimationStatusDelegate.h>
-#include <memory>
-#include <mutex>
+
 #include "ComponentFactory.h"
 #include "EventBeatManager.h"
-#include "JBackgroundExecutor.h"
+#include "EventEmitterWrapper.h"
 #include "SurfaceHandlerBinding.h"
 
 namespace facebook {
 namespace react {
 
 class Instance;
-
-struct CppMountItem final {
-#pragma mark - Designated Initializers
-  static CppMountItem CreateMountItem(ShadowView shadowView);
-  static CppMountItem DeleteMountItem(ShadowView shadowView);
-  static CppMountItem
-  InsertMountItem(ShadowView parentView, ShadowView shadowView, int index);
-  static CppMountItem
-  RemoveMountItem(ShadowView parentView, ShadowView shadowView, int index);
-  static CppMountItem UpdatePropsMountItem(ShadowView shadowView);
-  static CppMountItem UpdateStateMountItem(ShadowView shadowView);
-  static CppMountItem UpdateLayoutMountItem(ShadowView shadowView);
-  static CppMountItem UpdateEventEmitterMountItem(ShadowView shadowView);
-  static CppMountItem UpdatePaddingMountItem(ShadowView shadowView);
-
-#pragma mark - Type
-
-  enum Type {
-    Undefined = -1,
-    Multiple = 1,
-    Create = 2,
-    Delete = 4,
-    Insert = 8,
-    Remove = 16,
-    UpdateProps = 32,
-    UpdateState = 64,
-    UpdateLayout = 128,
-    UpdateEventEmitter = 256,
-    UpdatePadding = 512
-  };
-
-#pragma mark - Fields
-
-  Type type = {Create};
-  ShadowView parentShadowView = {};
-  ShadowView oldChildShadowView = {};
-  ShadowView newChildShadowView = {};
-  int index = {};
-};
 
 class Binding : public jni::HybridClass<Binding>,
                 public SchedulerDelegate,
@@ -73,15 +38,11 @@ class Binding : public jni::HybridClass<Binding>,
   constexpr static const char *const kJavaDescriptor =
       "Lcom/facebook/react/fabric/Binding;";
 
-  constexpr static auto UIManagerJavaDescriptor =
-      "com/facebook/react/fabric/FabricUIManager";
-
   static void registerNatives();
 
- private:
-  jni::global_ref<jobject> getJavaUIManager();
   std::shared_ptr<Scheduler> getScheduler();
 
+ private:
   void setConstraints(
       jint surfaceId,
       jfloat minWidth,
@@ -93,13 +54,16 @@ class Binding : public jni::HybridClass<Binding>,
       jboolean isRTL,
       jboolean doLeftAndRightSwapInRTL);
 
+  jni::local_ref<ReadableNativeMap::jhybridobject> getInspectorDataForInstance(
+      jni::alias_ref<EventEmitterWrapper::javaobject> eventEmitterWrapper);
+
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
 
   void installFabricUIManager(
       jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutorHolder,
+      jni::alias_ref<JRuntimeScheduler::javaobject> runtimeSchedulerHolder,
       jni::alias_ref<jobject> javaUIManager,
       EventBeatManager *eventBeatManager,
-      jni::alias_ref<JavaMessageQueueThread::javaobject> jsMessageQueueThread,
       ComponentFactory *componentsRegistry,
       jni::alias_ref<jobject> reactNativeConfig);
 
@@ -134,12 +98,17 @@ class Binding : public jni::HybridClass<Binding>,
 
   void schedulerDidRequestPreliminaryViewAllocation(
       const SurfaceId surfaceId,
-      const ShadowView &shadowView) override;
+      const ShadowNode &shadowNode) override;
+
+  void schedulerDidCloneShadowNode(
+      SurfaceId surfaceId,
+      const ShadowNode &oldShadowNode,
+      const ShadowNode &newShadowNode) override;
 
   void schedulerDidDispatchCommand(
       const ShadowView &shadowView,
       std::string const &commandName,
-      folly::dynamic const args) override;
+      folly::dynamic const &args) override;
 
   void schedulerDidSendAccessibilityEvent(
       const ShadowView &shadowView,
@@ -150,6 +119,8 @@ class Binding : public jni::HybridClass<Binding>,
       bool isJSResponder,
       bool blockNativeResponder) override;
 
+  void preallocateView(SurfaceId surfaceId, ShadowNode const &shadowNode);
+
   void setPixelDensity(float pointScaleFactor);
 
   void driveCxxAnimations();
@@ -157,31 +128,33 @@ class Binding : public jni::HybridClass<Binding>,
   void uninstallFabricUIManager();
 
   // Private member variables
-  jni::global_ref<jobject> javaUIManager_;
-  std::mutex javaUIManagerMutex_;
+  butter::shared_mutex installMutex_;
+  std::shared_ptr<FabricMountingManager> mountingManager_;
+  std::shared_ptr<Scheduler> scheduler_;
+
+  std::shared_ptr<FabricMountingManager> verifyMountingManager(
+      std::string const &locationHint);
 
   // LayoutAnimations
-  virtual void onAnimationStarted() override;
-  virtual void onAllAnimationsComplete() override;
-  LayoutAnimationDriver *getAnimationDriver();
+  void onAnimationStarted() override;
+  void onAllAnimationsComplete() override;
+
   std::shared_ptr<LayoutAnimationDriver> animationDriver_;
-  std::unique_ptr<JBackgroundExecutor> backgroundExecutor_;
 
-  std::shared_ptr<Scheduler> scheduler_;
-  std::mutex schedulerMutex_;
+  BackgroundExecutor backgroundExecutor_;
 
-  better::map<SurfaceId, SurfaceHandler> surfaceHandlerRegistry_{};
-  better::shared_mutex
+  butter::map<SurfaceId, SurfaceHandler> surfaceHandlerRegistry_{};
+  butter::shared_mutex
       surfaceHandlerRegistryMutex_; // Protects `surfaceHandlerRegistry_`.
-
-  std::recursive_mutex commitMutex_;
 
   float pointScaleFactor_ = 1;
 
   std::shared_ptr<const ReactNativeConfig> reactNativeConfig_{nullptr};
   bool disablePreallocateViews_{false};
-  bool disableVirtualNodePreallocation_{false};
   bool enableFabricLogs_{false};
+  bool disableRevisionCheckForPreallocation_{false};
+  bool dispatchPreallocationInBackground_{false};
+  bool disablePreallocationOnClone_{false};
 };
 
 } // namespace react

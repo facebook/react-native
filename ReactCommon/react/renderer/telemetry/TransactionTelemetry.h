@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,6 +9,7 @@
 
 #include <chrono>
 #include <cstdint>
+#include <functional>
 
 #include <react/utils/Telemetry.h>
 
@@ -25,6 +26,10 @@ class TransactionTelemetry final {
    * Thread-local Telemetry instance
    */
   static TransactionTelemetry *threadLocalTelemetry();
+
+  TransactionTelemetry();
+  TransactionTelemetry(std::function<TelemetryTimePoint()> now);
+
   void setAsThreadLocal();
   void unsetAsThreadLocal();
 
@@ -75,6 +80,7 @@ class TransactionTelemetry final {
 
   int numberOfTextMeasurements_{0};
   int revisionNumber_{0};
+  std::function<TelemetryTimePoint()> now_;
 };
 
 } // namespace react

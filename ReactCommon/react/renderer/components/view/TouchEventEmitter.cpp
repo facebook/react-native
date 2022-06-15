@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -59,20 +59,54 @@ static jsi::Value touchEventPayload(
   return object;
 }
 
+static jsi::Value pointerEventPayload(
+    jsi::Runtime &runtime,
+    PointerEvent const &event) {
+  auto object = jsi::Object(runtime);
+  object.setProperty(runtime, "pointerId", event.pointerId);
+  object.setProperty(runtime, "pressure", event.pressure);
+  object.setProperty(runtime, "pointerType", event.pointerType);
+  object.setProperty(runtime, "clientX", event.clientPoint.x);
+  object.setProperty(runtime, "clientY", event.clientPoint.y);
+  object.setProperty(runtime, "target", event.target);
+  object.setProperty(runtime, "timestamp", event.timestamp * 1000);
+  return object;
+}
+
 void TouchEventEmitter::dispatchTouchEvent(
-    std::string const &type,
+    std::string type,
     TouchEvent const &event,
-    EventPriority const &priority) const {
+    EventPriority priority,
+    RawEvent::Category category) const {
   dispatchEvent(
-      type,
+      std::move(type),
       [event](jsi::Runtime &runtime) {
         return touchEventPayload(runtime, event);
       },
-      priority);
+      priority,
+      category);
+}
+
+void TouchEventEmitter::dispatchPointerEvent(
+    std::string type,
+    PointerEvent const &event,
+    EventPriority priority,
+    RawEvent::Category category) const {
+  dispatchEvent(
+      std::move(type),
+      [event](jsi::Runtime &runtime) {
+        return pointerEventPayload(runtime, event);
+      },
+      priority,
+      category);
 }
 
 void TouchEventEmitter::onTouchStart(TouchEvent const &event) const {
-  dispatchTouchEvent("touchStart", event, EventPriority::AsynchronousBatched);
+  dispatchTouchEvent(
+      "touchStart",
+      event,
+      EventPriority::AsynchronousBatched,
+      RawEvent::Category::ContinuousStart);
 }
 
 void TouchEventEmitter::onTouchMove(TouchEvent const &event) const {
@@ -82,11 +116,81 @@ void TouchEventEmitter::onTouchMove(TouchEvent const &event) const {
 }
 
 void TouchEventEmitter::onTouchEnd(TouchEvent const &event) const {
-  dispatchTouchEvent("touchEnd", event, EventPriority::AsynchronousBatched);
+  dispatchTouchEvent(
+      "touchEnd",
+      event,
+      EventPriority::AsynchronousBatched,
+      RawEvent::Category::ContinuousEnd);
 }
 
 void TouchEventEmitter::onTouchCancel(TouchEvent const &event) const {
-  dispatchTouchEvent("touchCancel", event, EventPriority::AsynchronousBatched);
+  dispatchTouchEvent(
+      "touchCancel",
+      event,
+      EventPriority::AsynchronousBatched,
+      RawEvent::Category::ContinuousEnd);
+}
+
+void TouchEventEmitter::onPointerCancel(const PointerEvent &event) const {
+  dispatchPointerEvent(
+      "pointerCancel",
+      event,
+      EventPriority::AsynchronousBatched,
+      RawEvent::Category::ContinuousEnd);
+}
+
+void TouchEventEmitter::onPointerDown(const PointerEvent &event) const {
+  dispatchPointerEvent(
+      "pointerDown",
+      event,
+      EventPriority::AsynchronousBatched,
+      RawEvent::Category::ContinuousStart);
+}
+
+void TouchEventEmitter::onPointerMove2(const PointerEvent &event) const {
+  dispatchUniqueEvent("pointerMove2", [event](jsi::Runtime &runtime) {
+    return pointerEventPayload(runtime, event);
+  });
+}
+
+void TouchEventEmitter::onPointerUp(const PointerEvent &event) const {
+  dispatchPointerEvent(
+      "pointerUp",
+      event,
+      EventPriority::AsynchronousBatched,
+      RawEvent::Category::ContinuousEnd);
+}
+
+void TouchEventEmitter::onPointerEnter2(const PointerEvent &event) const {
+  dispatchPointerEvent(
+      "pointerEnter2",
+      event,
+      EventPriority::AsynchronousBatched,
+      RawEvent::Category::ContinuousStart);
+}
+
+void TouchEventEmitter::onPointerLeave2(const PointerEvent &event) const {
+  dispatchPointerEvent(
+      "pointerLeave2",
+      event,
+      EventPriority::AsynchronousBatched,
+      RawEvent::Category::ContinuousEnd);
+}
+
+void TouchEventEmitter::onPointerOver(const PointerEvent &event) const {
+  dispatchPointerEvent(
+      "pointerOver",
+      event,
+      EventPriority::AsynchronousBatched,
+      RawEvent::Category::ContinuousStart);
+}
+
+void TouchEventEmitter::onPointerOut(const PointerEvent &event) const {
+  dispatchPointerEvent(
+      "pointerOut",
+      event,
+      EventPriority::AsynchronousBatched,
+      RawEvent::Category::ContinuousStart);
 }
 
 } // namespace react

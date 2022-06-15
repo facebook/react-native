@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -76,7 +76,7 @@ RCT_ENUM_CONVERTER(UIBackgroundFetchResult, (@{
 
 @end
 #else
-@interface RCTPushNotificationManager () <NativePushNotificationManagerIOS>
+@interface RCTPushNotificationManager () <NativePushNotificationManagerIOSSpec>
 @end
 #endif // TARGET_OS_UIKITFORMAC
 
@@ -103,7 +103,6 @@ static NSDictionary *RCTFormatLocalNotification(UILocalNotification *notificatio
   return formattedLocalNotification;
 }
 
-API_AVAILABLE(ios(10.0))
 static NSDictionary *RCTFormatUNNotification(UNNotification *notification)
 {
   NSMutableDictionary *formattedNotification = [NSMutableDictionary dictionary];
@@ -314,10 +313,12 @@ RCT_EXPORT_METHOD(requestPermissions:(JS::NativePushNotificationManagerIOS::Spec
     if (error != NULL) {
       reject(@"-1", @"Error - Push authorization request failed.", error);
     } else {
-      [RCTSharedApplication() registerForRemoteNotifications];
-      [UNUserNotificationCenter.currentNotificationCenter getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings * _Nonnull settings) {
-         resolve(RCTPromiseResolveValueForUNNotificationSettings(settings));
-      }];
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [RCTSharedApplication() registerForRemoteNotifications];
+        [UNUserNotificationCenter.currentNotificationCenter getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings * _Nonnull settings) {
+           resolve(RCTPromiseResolveValueForUNNotificationSettings(settings));
+        }];
+      });
     }
   }];
 }
@@ -330,7 +331,7 @@ RCT_EXPORT_METHOD(abandonPermissions)
 RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback)
 {
   if (RCTRunningInAppExtension()) {
-    callback(@[RCTSettingsDictForUNNotificationSettings(NO, NO, NO)]);
+    callback(@[RCTSettingsDictForUNNotificationSettings(NO, NO, NO, NO, NO, NO, UNAuthorizationStatusNotDetermined)]);
     return;
   }
 
@@ -342,11 +343,15 @@ RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback)
 static inline NSDictionary *RCTPromiseResolveValueForUNNotificationSettings(UNNotificationSettings* _Nonnull settings) {
   return RCTSettingsDictForUNNotificationSettings(settings.alertSetting == UNNotificationSettingEnabled,
                                                   settings.badgeSetting == UNNotificationSettingEnabled,
-                                                  settings.soundSetting == UNNotificationSettingEnabled);
+                                                  settings.soundSetting == UNNotificationSettingEnabled,
+                                                  settings.criticalAlertSetting == UNNotificationSettingEnabled,
+                                                  settings.lockScreenSetting == UNNotificationSettingEnabled,
+                                                  settings.notificationCenterSetting == UNNotificationSettingEnabled,
+                                                  settings.authorizationStatus);
 }
 
-static inline NSDictionary *RCTSettingsDictForUNNotificationSettings(BOOL alert, BOOL badge, BOOL sound) {
-  return @{@"alert": @(alert), @"badge": @(badge), @"sound": @(sound)};
+static inline NSDictionary *RCTSettingsDictForUNNotificationSettings(BOOL alert, BOOL badge, BOOL sound, BOOL critical, BOOL lockScreen, BOOL notificationCenter, UNAuthorizationStatus authorizationStatus) {
+  return @{@"alert": @(alert), @"badge": @(badge), @"sound": @(sound), @"critical": @(critical), @"lockScreen": @(lockScreen), @"notificationCenter": @(notificationCenter), @"authorizationStatus": @(authorizationStatus)};
 }
 
 RCT_EXPORT_METHOD(presentLocalNotification:(JS::NativePushNotificationManagerIOS::Notification &)notification)
@@ -366,6 +371,9 @@ RCT_EXPORT_METHOD(presentLocalNotification:(JS::NativePushNotificationManagerIOS
   }
   if (notification.isSilent()) {
     notificationDict[@"isSilent"] = @(*notification.isSilent());
+    if ([notificationDict[@"isSilent"] isEqualToNumber:@(NO)]) {
+      notificationDict[@"soundName"] = notification.soundName();
+    }
   }
   [RCTSharedApplication() presentLocalNotificationNow:[RCTConvert UILocalNotification:notificationDict]];
 }
@@ -387,6 +395,9 @@ RCT_EXPORT_METHOD(scheduleLocalNotification:(JS::NativePushNotificationManagerIO
   }
   if (notification.isSilent()) {
     notificationDict[@"isSilent"] = @(*notification.isSilent());
+    if ([notificationDict[@"isSilent"] isEqualToNumber:@(NO)]) {
+      notificationDict[@"soundName"] = notification.soundName();
+    }
   }
   [RCTSharedApplication() scheduleLocalNotification:[RCTConvert UILocalNotification:notificationDict]];
 }

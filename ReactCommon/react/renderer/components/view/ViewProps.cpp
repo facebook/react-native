@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,83 +18,173 @@
 namespace facebook {
 namespace react {
 
-ViewProps::ViewProps(ViewProps const &sourceProps, RawProps const &rawProps)
-    : YogaStylableProps(sourceProps, rawProps),
-      AccessibilityProps(sourceProps, rawProps),
-      opacity(
-          convertRawProp(rawProps, "opacity", sourceProps.opacity, (Float)1.0)),
+ViewProps::ViewProps(
+    const PropsParserContext &context,
+    ViewProps const &sourceProps,
+    RawProps const &rawProps,
+    bool shouldSetRawProps)
+    : YogaStylableProps(context, sourceProps, rawProps, shouldSetRawProps),
+      AccessibilityProps(context, sourceProps, rawProps),
+      opacity(convertRawProp(
+          context,
+          rawProps,
+          "opacity",
+          sourceProps.opacity,
+          (Float)1.0)),
       foregroundColor(convertRawProp(
+          context,
           rawProps,
           "foregroundColor",
           sourceProps.foregroundColor,
           {})),
       backgroundColor(convertRawProp(
+          context,
           rawProps,
           "backgroundColor",
           sourceProps.backgroundColor,
           {})),
       borderRadii(convertRawProp(
+          context,
           rawProps,
           "border",
           "Radius",
           sourceProps.borderRadii,
           {})),
       borderColors(convertRawProp(
+          context,
           rawProps,
           "border",
           "Color",
           sourceProps.borderColors,
           {})),
       borderStyles(convertRawProp(
+          context,
           rawProps,
           "border",
           "Style",
           sourceProps.borderStyles,
           {})),
-      shadowColor(
-          convertRawProp(rawProps, "shadowColor", sourceProps.shadowColor, {})),
+      shadowColor(convertRawProp(
+          context,
+          rawProps,
+          "shadowColor",
+          sourceProps.shadowColor,
+          {})),
       shadowOffset(convertRawProp(
+          context,
           rawProps,
           "shadowOffset",
           sourceProps.shadowOffset,
           {})),
       shadowOpacity(convertRawProp(
+          context,
           rawProps,
           "shadowOpacity",
           sourceProps.shadowOpacity,
           {})),
       shadowRadius(convertRawProp(
+          context,
           rawProps,
           "shadowRadius",
           sourceProps.shadowRadius,
           {})),
-      transform(
-          convertRawProp(rawProps, "transform", sourceProps.transform, {})),
+      transform(convertRawProp(
+          context,
+          rawProps,
+          "transform",
+          sourceProps.transform,
+          {})),
       backfaceVisibility(convertRawProp(
+          context,
           rawProps,
           "backfaceVisibility",
           sourceProps.backfaceVisibility,
           {})),
       shouldRasterize(convertRawProp(
+          context,
           rawProps,
           "shouldRasterize",
           sourceProps.shouldRasterize,
           {})),
-      zIndex(convertRawProp(rawProps, "zIndex", sourceProps.zIndex, {})),
+      zIndex(
+          convertRawProp(context, rawProps, "zIndex", sourceProps.zIndex, {})),
       pointerEvents(convertRawProp(
+          context,
           rawProps,
           "pointerEvents",
           sourceProps.pointerEvents,
           {})),
-      hitSlop(convertRawProp(rawProps, "hitSlop", sourceProps.hitSlop, {})),
-      onLayout(convertRawProp(rawProps, "onLayout", sourceProps.onLayout, {})),
+      hitSlop(convertRawProp(
+          context,
+          rawProps,
+          "hitSlop",
+          sourceProps.hitSlop,
+          {})),
+      onLayout(convertRawProp(
+          context,
+          rawProps,
+          "onLayout",
+          sourceProps.onLayout,
+          {})),
+      events(convertRawProp(context, rawProps, sourceProps.events, {})),
       collapsable(convertRawProp(
+          context,
           rawProps,
           "collapsable",
           sourceProps.collapsable,
           true)),
-      elevation(
-          convertRawProp(rawProps, "elevation", sourceProps.elevation, {})){};
+      removeClippedSubviews(convertRawProp(
+          context,
+          rawProps,
+          "removeClippedSubviews",
+          sourceProps.removeClippedSubviews,
+          false))
+#ifdef ANDROID
+      ,
+      elevation(convertRawProp(
+          context,
+          rawProps,
+          "elevation",
+          sourceProps.elevation,
+          {})),
+      nativeBackground(convertRawProp(
+          context,
+          rawProps,
+          "nativeBackgroundAndroid",
+          sourceProps.nativeBackground,
+          {})),
+      nativeForeground(convertRawProp(
+          context,
+          rawProps,
+          "nativeForegroundAndroid",
+          sourceProps.nativeForeground,
+          {})),
+      focusable(convertRawProp(
+          context,
+          rawProps,
+          "focusable",
+          sourceProps.focusable,
+          {})),
+      hasTVPreferredFocus(convertRawProp(
+          context,
+          rawProps,
+          "hasTVPreferredFocus",
+          sourceProps.hasTVPreferredFocus,
+          {})),
+      needsOffscreenAlphaCompositing(convertRawProp(
+          context,
+          rawProps,
+          "needsOffscreenAlphaCompositing",
+          sourceProps.needsOffscreenAlphaCompositing,
+          {})),
+      renderToHardwareTextureAndroid(convertRawProp(
+          context,
+          rawProps,
+          "renderToHardwareTextureAndroid",
+          sourceProps.renderToHardwareTextureAndroid,
+          {}))
+#endif
+          {};
 
 #pragma mark - Convenience Methods
 
@@ -185,8 +275,6 @@ SharedDebugStringConvertibleList ViewProps::getDebugProps() const {
       YogaStylableProps::getDebugProps() +
       SharedDebugStringConvertibleList{
           debugStringConvertibleItem(
-              "zIndex", zIndex, defaultViewProps.zIndex.value_or(0)),
-          debugStringConvertibleItem(
               "opacity", opacity, defaultViewProps.opacity),
           debugStringConvertibleItem(
               "foregroundColor",
@@ -196,6 +284,8 @@ SharedDebugStringConvertibleList ViewProps::getDebugProps() const {
               "backgroundColor",
               backgroundColor,
               defaultViewProps.backgroundColor),
+          debugStringConvertibleItem(
+              "zIndex", zIndex, defaultViewProps.zIndex.value_or(0)),
       };
 }
 #endif

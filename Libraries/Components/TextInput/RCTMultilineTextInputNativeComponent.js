@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,12 +8,14 @@
  * @format
  */
 
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
-import requireNativeComponent from '../../ReactNative/requireNativeComponent';
+import type {
+  HostComponent,
+  PartialViewConfig,
+} from '../../Renderer/shims/ReactNativeTypes';
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
 import type {TextInputNativeCommands} from './TextInputNativeCommands';
 import RCTTextInputViewConfig from './RCTTextInputViewConfig';
-const ReactNativeViewConfigRegistry = require('../../Renderer/shims/ReactNativeViewConfigRegistry');
+import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
 
 type NativeType = HostComponent<mixed>;
 
@@ -23,17 +25,20 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['focus', 'blur', 'setTextAndSelection'],
 });
 
-let MultilineTextInputNativeComponent;
-if (global.RN$Bridgeless) {
-  ReactNativeViewConfigRegistry.register('RCTMultilineTextInputView', () => {
-    return RCTTextInputViewConfig;
-  });
-  MultilineTextInputNativeComponent = 'RCTMultilineTextInputView';
-} else {
-  MultilineTextInputNativeComponent = requireNativeComponent<mixed>(
+export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
+  uiViewClassName: 'RCTMultilineTextInputView',
+  ...RCTTextInputViewConfig,
+  validAttributes: {
+    ...RCTTextInputViewConfig.validAttributes,
+    dataDetectorTypes: true,
+  },
+};
+
+const MultilineTextInputNativeComponent: HostComponent<mixed> =
+  NativeComponentRegistry.get<mixed>(
     'RCTMultilineTextInputView',
+    () => __INTERNAL_VIEW_CONFIG,
   );
-}
 
 // flowlint-next-line unclear-type:off
 export default ((MultilineTextInputNativeComponent: any): HostComponent<mixed>);

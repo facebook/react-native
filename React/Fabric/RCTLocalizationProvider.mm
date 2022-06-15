@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -26,15 +26,21 @@ void setLocalizationLanguagePack(NSDictionary<NSString *, NSString *> *pack)
 
 + (NSString *)RCTLocalizedString:(NSString *)oldString withDescription:(NSString *)description
 {
+  NSString *candidate = nil;
+
   if (_delegate != nil) {
-    return [_delegate localizedString:oldString withDescription:description];
+    candidate = [_delegate localizedString:oldString withDescription:description];
   }
 
-  if (_languagePack != nil) {
-    return _languagePack[oldString];
+  if (candidate == nil && _languagePack != nil) {
+    candidate = _languagePack[oldString];
   }
 
-  return oldString;
+  if (candidate == nil) {
+    candidate = oldString;
+  }
+
+  return candidate;
 }
 
 @end

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -50,6 +50,9 @@ class JSCRuntime : public jsi::Runtime {
   jsi::Value evaluateJavaScript(
       const std::shared_ptr<const jsi::Buffer> &buffer,
       const std::string &sourceURL) override;
+
+  bool drainMicrotasks(int maxMicrotasksHint = -1) override;
+
   jsi::Object global() override;
 
   std::string description() override;
@@ -148,6 +151,7 @@ class JSCRuntime : public jsi::Runtime {
   jsi::PropNameID createPropNameIDFromUtf8(const uint8_t *utf8, size_t length)
       override;
   jsi::PropNameID createPropNameIDFromString(const jsi::String &str) override;
+  jsi::PropNameID createPropNameIDFromSymbol(const jsi::Symbol &sym) override;
   std::string utf8(const jsi::PropNameID &) override;
   bool compare(const jsi::PropNameID &, const jsi::PropNameID &) override;
 
@@ -432,6 +436,10 @@ jsi::Value JSCRuntime::evaluateJavaScript(
   return createValue(res);
 }
 
+bool JSCRuntime::drainMicrotasks(int maxMicrotasksHint) {
+  return true;
+}
+
 jsi::Object JSCRuntime::global() {
   return createObject(JSContextGetGlobalObject(ctx_));
 }
@@ -644,6 +652,13 @@ jsi::PropNameID JSCRuntime::createPropNameIDFromUtf8(
 
 jsi::PropNameID JSCRuntime::createPropNameIDFromString(const jsi::String &str) {
   return createPropNameID(stringRef(str));
+}
+
+jsi::PropNameID JSCRuntime::createPropNameIDFromSymbol(const jsi::Symbol &sym) {
+  // TODO: Support for symbols through the native API in JSC is very limited.
+  // While we could construct a PropNameID here, we would not be able to get a
+  // symbol property through the C++ API.
+  throw std::logic_error("Not implemented");
 }
 
 std::string JSCRuntime::utf8(const jsi::PropNameID &sym) {

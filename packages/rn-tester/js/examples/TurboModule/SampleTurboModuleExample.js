@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -17,7 +17,7 @@ import {
   FlatList,
   Platform,
   TouchableOpacity,
-  unstable_RootTagContext,
+  RootTagContext,
 } from 'react-native';
 import * as React from 'react';
 
@@ -28,12 +28,12 @@ type State = {|
       value: mixed,
       ...
     },
-    ...,
+    ...
   },
 |};
 
 class SampleTurboModuleExample extends React.Component<{||}, State> {
-  static contextType: React$Context<RootTag> = unstable_RootTagContext;
+  static contextType: React$Context<RootTag> = RootTagContext;
 
   state: State = {
     testResults: {},

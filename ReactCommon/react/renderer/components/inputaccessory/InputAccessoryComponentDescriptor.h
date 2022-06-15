@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -22,14 +22,10 @@ class InputAccessoryComponentDescriptor final
  public:
   using ConcreteComponentDescriptor::ConcreteComponentDescriptor;
 
-  void adopt(UnsharedShadowNode shadowNode) const override {
-    react_native_assert(
-        std::dynamic_pointer_cast<InputAccessoryShadowNode>(shadowNode));
+  void adopt(ShadowNode::Unshared const &shadowNode) const override {
     auto concreteShadowNode =
         std::static_pointer_cast<InputAccessoryShadowNode>(shadowNode);
 
-    react_native_assert(std::dynamic_pointer_cast<YogaLayoutableShadowNode>(
-        concreteShadowNode));
     auto layoutableShadowNode =
         std::static_pointer_cast<YogaLayoutableShadowNode>(concreteShadowNode);
 

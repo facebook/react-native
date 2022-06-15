@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -37,27 +37,30 @@ void TextAttributes::apply(TextAttributes textAttributes) {
   fontSizeMultiplier = !std::isnan(textAttributes.fontSizeMultiplier)
       ? textAttributes.fontSizeMultiplier
       : fontSizeMultiplier;
-  fontWeight = textAttributes.fontWeight.hasValue() ? textAttributes.fontWeight
-                                                    : fontWeight;
-  fontStyle = textAttributes.fontStyle.hasValue() ? textAttributes.fontStyle
-                                                  : fontStyle;
-  fontVariant = textAttributes.fontVariant.hasValue()
+  fontWeight = textAttributes.fontWeight.has_value() ? textAttributes.fontWeight
+                                                     : fontWeight;
+  fontStyle = textAttributes.fontStyle.has_value() ? textAttributes.fontStyle
+                                                   : fontStyle;
+  fontVariant = textAttributes.fontVariant.has_value()
       ? textAttributes.fontVariant
       : fontVariant;
-  allowFontScaling = textAttributes.allowFontScaling.hasValue()
+  allowFontScaling = textAttributes.allowFontScaling.has_value()
       ? textAttributes.allowFontScaling
       : allowFontScaling;
   letterSpacing = !std::isnan(textAttributes.letterSpacing)
       ? textAttributes.letterSpacing
       : letterSpacing;
+  textTransform = textAttributes.textTransform.has_value()
+      ? textAttributes.textTransform
+      : textTransform;
 
   // Paragraph Styles
   lineHeight = !std::isnan(textAttributes.lineHeight)
       ? textAttributes.lineHeight
       : lineHeight;
-  alignment = textAttributes.alignment.hasValue() ? textAttributes.alignment
-                                                  : alignment;
-  baseWritingDirection = textAttributes.baseWritingDirection.hasValue()
+  alignment = textAttributes.alignment.has_value() ? textAttributes.alignment
+                                                   : alignment;
+  baseWritingDirection = textAttributes.baseWritingDirection.has_value()
       ? textAttributes.baseWritingDirection
       : baseWritingDirection;
 
@@ -65,19 +68,15 @@ void TextAttributes::apply(TextAttributes textAttributes) {
   textDecorationColor = textAttributes.textDecorationColor
       ? textAttributes.textDecorationColor
       : textDecorationColor;
-  textDecorationLineType = textAttributes.textDecorationLineType.hasValue()
+  textDecorationLineType = textAttributes.textDecorationLineType.has_value()
       ? textAttributes.textDecorationLineType
       : textDecorationLineType;
-  textDecorationLineStyle = textAttributes.textDecorationLineStyle.hasValue()
-      ? textAttributes.textDecorationLineStyle
-      : textDecorationLineStyle;
-  textDecorationLinePattern =
-      textAttributes.textDecorationLinePattern.hasValue()
-      ? textAttributes.textDecorationLinePattern
-      : textDecorationLinePattern;
+  textDecorationStyle = textAttributes.textDecorationStyle.has_value()
+      ? textAttributes.textDecorationStyle
+      : textDecorationStyle;
 
   // Shadow
-  textShadowOffset = textAttributes.textShadowOffset.hasValue()
+  textShadowOffset = textAttributes.textShadowOffset.has_value()
       ? textAttributes.textShadowOffset.value()
       : textShadowOffset;
   textShadowRadius = !std::isnan(textAttributes.textShadowRadius)
@@ -88,13 +87,13 @@ void TextAttributes::apply(TextAttributes textAttributes) {
       : textShadowColor;
 
   // Special
-  isHighlighted = textAttributes.isHighlighted.hasValue()
+  isHighlighted = textAttributes.isHighlighted.has_value()
       ? textAttributes.isHighlighted
       : isHighlighted;
-  layoutDirection = textAttributes.layoutDirection.hasValue()
+  layoutDirection = textAttributes.layoutDirection.has_value()
       ? textAttributes.layoutDirection
       : layoutDirection;
-  accessibilityRole = textAttributes.accessibilityRole.hasValue()
+  accessibilityRole = textAttributes.accessibilityRole.has_value()
       ? textAttributes.accessibilityRole
       : accessibilityRole;
 }
@@ -114,13 +113,13 @@ bool TextAttributes::operator==(const TextAttributes &rhs) const {
              baseWritingDirection,
              textDecorationColor,
              textDecorationLineType,
-             textDecorationLineStyle,
-             textDecorationLinePattern,
+             textDecorationStyle,
              textShadowOffset,
              textShadowColor,
              isHighlighted,
              layoutDirection,
-             accessibilityRole) ==
+             accessibilityRole,
+             textTransform) ==
       std::tie(
              rhs.foregroundColor,
              rhs.backgroundColor,
@@ -133,13 +132,13 @@ bool TextAttributes::operator==(const TextAttributes &rhs) const {
              rhs.baseWritingDirection,
              rhs.textDecorationColor,
              rhs.textDecorationLineType,
-             rhs.textDecorationLineStyle,
-             rhs.textDecorationLinePattern,
+             rhs.textDecorationStyle,
              rhs.textShadowOffset,
              rhs.textShadowColor,
              rhs.isHighlighted,
              rhs.layoutDirection,
-             rhs.accessibilityRole) &&
+             rhs.accessibilityRole,
+             rhs.textTransform) &&
       floatEquality(opacity, rhs.opacity) &&
       floatEquality(fontSize, rhs.fontSize) &&
       floatEquality(fontSizeMultiplier, rhs.fontSizeMultiplier) &&
@@ -194,10 +193,7 @@ SharedDebugStringConvertibleList TextAttributes::getDebugProps() const {
       debugStringConvertibleItem("textDecorationColor", textDecorationColor),
       debugStringConvertibleItem(
           "textDecorationLineType", textDecorationLineType),
-      debugStringConvertibleItem(
-          "textDecorationLineStyle", textDecorationLineStyle),
-      debugStringConvertibleItem(
-          "textDecorationLinePattern", textDecorationLinePattern),
+      debugStringConvertibleItem("textDecorationStyle", textDecorationStyle),
 
       // Shadow
       debugStringConvertibleItem("textShadowOffset", textShadowOffset),

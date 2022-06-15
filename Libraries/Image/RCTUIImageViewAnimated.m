@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -130,7 +130,7 @@ static NSUInteger RCTDeviceFreeMemory() {
 - (NSOperationQueue *)fetchQueue
 {
   if (!_fetchQueue) {
-    _fetchQueue = [[NSOperationQueue alloc] init];
+    _fetchQueue = [NSOperationQueue new];
     _fetchQueue.maxConcurrentOperationCount = 1;
   }
   return _fetchQueue;
@@ -298,7 +298,7 @@ static NSUInteger RCTDeviceFreeMemory() {
     // Calculate based on current memory, these factors are by experience
     NSUInteger total = RCTDeviceTotalMemory();
     NSUInteger free = RCTDeviceFreeMemory();
-    max = MIN(total * 0.2, free * 0.6);
+    max = MIN((double)total * 0.2, (double)free * 0.6);
   }
 
   NSUInteger maxBufferCount = (double)max / (double)bytes;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -183,14 +183,14 @@ TransformOperation Transform::DefaultTransformOperation(
 }
 
 Transform Transform::Interpolate(
-    float animationProgress,
+    Float animationProgress,
     Transform const &lhs,
     Transform const &rhs) {
   // Iterate through operations and reconstruct an interpolated resulting
   // transform If at any point we hit an "Arbitrary" Transform, return at that
   // point
   Transform result = Transform::Identity();
-  for (int i = 0, j = 0;
+  for (size_t i = 0, j = 0;
        i < lhs.operations.size() || j < rhs.operations.size();) {
     bool haveLHS = i < lhs.operations.size();
     bool haveRHS = j < rhs.operations.size();
@@ -358,6 +358,14 @@ Rect operator*(Rect const &rect, Transform const &transform) {
 
   return Rect::boundingRect(
       transformedA, transformedB, transformedC, transformedD);
+}
+
+EdgeInsets operator*(EdgeInsets const &edgeInsets, Transform const &transform) {
+  return EdgeInsets{
+      edgeInsets.left * transform.matrix[0],
+      edgeInsets.top * transform.matrix[5],
+      edgeInsets.right * transform.matrix[0],
+      edgeInsets.bottom * transform.matrix[5]};
 }
 
 Vector operator*(Transform const &transform, Vector const &vector) {

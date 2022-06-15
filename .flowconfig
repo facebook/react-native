@@ -14,6 +14,8 @@
 ; Flow doesn't support platforms
 .*/Libraries/Utilities/LoadingView.js
 
+.*/node_modules/resolve/test/resolver/malformed_package_json/package\.json$
+
 [untyped]
 .*/node_modules/@react-native-community/cli/.*/.*
 
@@ -31,6 +33,8 @@ emoji=true
 
 exact_by_default=true
 
+format.bracket_spacing=false
+
 module.file_ext=.js
 module.file_ext=.json
 module.file_ext=.ios.js
@@ -47,16 +51,17 @@ suppress_type=$FlowFixMeProps
 suppress_type=$FlowFixMeState
 suppress_type=$FlowFixMeEmpty
 
+experimental.env_mode=ssa
+
 [lints]
 sketchy-null-number=warn
 sketchy-null-mixed=warn
 sketchy-number=warn
 untyped-type-import=warn
 nonstrict-import=warn
-deprecated-type=warn
+deprecated-type=error
 unsafe-getters-setters=warn
 unnecessary-invariant=warn
-signature-verification-failure=warn
 
 [strict]
 deprecated-type
@@ -68,4 +73,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.148.0
+^0.180.0

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,6 +13,7 @@ import static com.facebook.react.fabric.FabricUIManager.ENABLE_FABRIC_LOGS;
 import static com.facebook.react.fabric.FabricUIManager.IS_DEVELOPMENT_ENVIRONMENT;
 
 import android.os.SystemClock;
+import android.view.View;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,7 +22,7 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.react.bridge.ReactIgnorableMountingException;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
@@ -30,6 +31,7 @@ import com.facebook.systrace.Systrace;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class MountItemDispatcher {
@@ -124,13 +126,15 @@ public class MountItemDispatcher {
       mInDispatch = false;
     }
 
+    // We call didDispatchMountItems regardless of whether we actually dispatched anything, since
+    // NativeAnimatedModule relies on this for executing any animations that may have been scheduled
     mItemDispatchListener.didDispatchMountItems();
 
     // Decide if we want to try reentering
     if (mReDispatchCounter < 10 && didDispatchItems) {
       // Executing twice in a row is normal. Only log after that point.
       if (mReDispatchCounter > 2) {
-        ReactSoftException.logSoftException(
+        ReactSoftExceptionLogger.logSoftException(
             TAG,
             new ReactNoCrashSoftException(
                 "Re-dispatched "
@@ -143,6 +147,32 @@ public class MountItemDispatcher {
     }
     mReDispatchCounter = 0;
     return didDispatchItems;
+  }
+
+  @UiThread
+  @ThreadConfined(UI)
+  public void dispatchMountItems(Queue<MountItem> mountItems) {
+    while (!mountItems.isEmpty()) {
+      MountItem item = mountItems.poll();
+      try {
+        item.execute(mMountingManager);
+      } catch (RetryableMountingLayerException e) {
+        if (item instanceof DispatchCommandMountItem) {
+          // Only DispatchCommandMountItem supports retries
+          DispatchCommandMountItem mountItem = (DispatchCommandMountItem) item;
+          // Retrying exactly once
+          if (mountItem.getRetries() == 0) {
+            mountItem.incrementRetries();
+            // In case we haven't retried executing this item yet, execute in the next batch of
+            // items
+            dispatchCommandMountItem(mountItem);
+          }
+        } else {
+          printMountItem(
+              item, "dispatchExternalMountItems: mounting failed with " + e.getMessage());
+        }
+      }
+    }
   }
 
   @UiThread
@@ -176,14 +206,13 @@ public class MountItemDispatcher {
     if (viewCommandMountItemsToDispatch != null) {
       Systrace.beginSection(
           Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-          "FabricUIManager::mountViews viewCommandMountItems to execute: "
-              + viewCommandMountItemsToDispatch.size());
+          "FabricUIManager::mountViews viewCommandMountItems");
       for (DispatchCommandMountItem command : viewCommandMountItemsToDispatch) {
         if (ENABLE_FABRIC_LOGS) {
           printMountItem(command, "dispatchMountItems: Executing viewCommandMountItem");
         }
         try {
-          command.execute(mMountingManager);
+          executeOrEnqueue(command);
         } catch (RetryableMountingLayerException e) {
           // If the exception is marked as Retryable, we retry the viewcommand exactly once, after
           // the current batch of mount items has finished executing.
@@ -197,14 +226,14 @@ public class MountItemDispatcher {
             // exception but never crash in debug.
             // It's not clear that logging this is even useful, because these events are very
             // common, mundane, and there's not much we can do about them currently.
-            ReactSoftException.logSoftException(
+            ReactSoftExceptionLogger.logSoftException(
                 TAG,
                 new ReactNoCrashSoftException(
                     "Caught exception executing ViewCommand: " + command.toString(), e));
           }
         } catch (Throwable e) {
           // Non-Retryable exceptions are logged as soft exceptions in prod, but crash in Debug.
-          ReactSoftException.logSoftException(
+          ReactSoftExceptionLogger.logSoftException(
               TAG,
               new RuntimeException(
                   "Caught exception executing ViewCommand: " + command.toString(), e));
@@ -220,12 +249,10 @@ public class MountItemDispatcher {
 
     if (preMountItemsToDispatch != null) {
       Systrace.beginSection(
-          Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-          "FabricUIManager::mountViews preMountItems to execute: "
-              + preMountItemsToDispatch.size());
+          Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricUIManager::mountViews preMountItems");
 
       for (PreAllocateViewMountItem preMountItem : preMountItemsToDispatch) {
-        preMountItem.execute(mMountingManager);
+        executeOrEnqueue(preMountItem);
       }
 
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
@@ -234,7 +261,7 @@ public class MountItemDispatcher {
     if (mountItemsToDispatch != null) {
       Systrace.beginSection(
           Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-          "FabricUIManager::mountViews mountItems to execute: " + mountItemsToDispatch.size());
+          "FabricUIManager::mountViews mountItems to execute");
 
       long batchedExecutionStartTime = SystemClock.uptimeMillis();
 
@@ -244,16 +271,23 @@ public class MountItemDispatcher {
         }
 
         try {
-          mountItem.execute(mMountingManager);
+          executeOrEnqueue(mountItem);
         } catch (Throwable e) {
           // If there's an exception, we want to log diagnostics in prod and rethrow.
-          FLog.e(TAG, "dispatchMountItems: caught exception, displaying all MountItems", e);
+          FLog.e(TAG, "dispatchMountItems: caught exception, displaying mount state", e);
           for (MountItem m : mountItemsToDispatch) {
             printMountItem(m, "dispatchMountItems: mountItem");
           }
+          if (mountItem.getSurfaceId() != View.NO_ID) {
+            SurfaceMountingManager surfaceManager =
+                mMountingManager.getSurfaceManager(mountItem.getSurfaceId());
+            if (surfaceManager != null) {
+              surfaceManager.printSurfaceState();
+            }
+          }
 
           if (ReactIgnorableMountingException.isIgnorable(e)) {
-            ReactSoftException.logSoftException(TAG, e);
+            ReactSoftExceptionLogger.logSoftException(TAG, e);
           } else {
             throw e;
           }
@@ -282,13 +316,18 @@ public class MountItemDispatcher {
         }
 
         PreAllocateViewMountItem preMountItemToDispatch = mPreMountItems.poll();
-
         // If list is empty, `poll` will return null, or var will never be set
         if (preMountItemToDispatch == null) {
           break;
         }
 
-        preMountItemToDispatch.execute(mMountingManager);
+        if (ENABLE_FABRIC_LOGS) {
+          printMountItem(
+              preMountItemToDispatch,
+              "dispatchPreMountItems: Dispatching PreAllocateViewMountItem");
+        }
+
+        executeOrEnqueue(preMountItemToDispatch);
       }
     } finally {
       mInDispatch = false;
@@ -297,16 +336,35 @@ public class MountItemDispatcher {
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
   }
 
+  private void executeOrEnqueue(MountItem item) {
+    if (mMountingManager.isWaitingForViewAttach(item.getSurfaceId())) {
+      if (ENABLE_FABRIC_LOGS) {
+        FLog.e(
+            TAG,
+            "executeOrEnqueue: Item execution delayed, surface %s is not ready yet",
+            item.getSurfaceId());
+      }
+      SurfaceMountingManager surfaceMountingManager =
+          mMountingManager.getSurfaceManager(item.getSurfaceId());
+      surfaceMountingManager.executeOnViewAttach(item);
+    } else {
+      item.execute(mMountingManager);
+    }
+  }
+
   @Nullable
   private static <E extends MountItem> List<E> drainConcurrentItemQueue(
       ConcurrentLinkedQueue<E> queue) {
+    if (queue.isEmpty()) {
+      return null;
+    }
     List<E> result = new ArrayList<>();
-    while (!queue.isEmpty()) {
+    do {
       E item = queue.poll();
       if (item != null) {
         result.add(item);
       }
-    }
+    } while (!queue.isEmpty());
     if (result.size() == 0) {
       return null;
     }

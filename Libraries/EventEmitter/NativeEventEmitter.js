@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,20 +10,18 @@
 
 'use strict';
 
-import {
-  type EventSubscription,
-  type IEventEmitter,
+import type {
+  EventSubscription,
+  IEventEmitter,
 } from '../vendor/emitter/EventEmitter';
 import Platform from '../Utilities/Platform';
 import RCTDeviceEventEmitter from './RCTDeviceEventEmitter';
 import invariant from 'invariant';
 
-type NativeModule = $ReadOnly<
-  interface {
-    addListener: (eventType: string) => void,
-    removeListeners: (count: number) => void,
-  },
->;
+interface NativeModule {
+  addListener(eventType: string): void;
+  removeListeners(count: number): void;
+}
 
 export type {EventSubscription};
 
@@ -38,7 +36,8 @@ export type {EventSubscription};
  * can theoretically listen to `RCTDeviceEventEmitter` (although discouraged).
  */
 export default class NativeEventEmitter<TEventToArgsMap: {...}>
-  implements IEventEmitter<TEventToArgsMap> {
+  implements IEventEmitter<TEventToArgsMap>
+{
   _nativeModule: ?NativeModule;
 
   constructor(nativeModule: ?NativeModule) {
@@ -47,7 +46,28 @@ export default class NativeEventEmitter<TEventToArgsMap: {...}>
         nativeModule != null,
         '`new NativeEventEmitter()` requires a non-null argument.',
       );
+    }
+
+    const hasAddListener =
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
+      !!nativeModule && typeof nativeModule.addListener === 'function';
+    const hasRemoveListeners =
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
+      !!nativeModule && typeof nativeModule.removeListeners === 'function';
+
+    if (nativeModule && hasAddListener && hasRemoveListeners) {
       this._nativeModule = nativeModule;
+    } else if (nativeModule != null) {
+      if (!hasAddListener) {
+        console.warn(
+          '`new NativeEventEmitter()` was called with a non-null argument without the required `addListener` method.',
+        );
+      }
+      if (!hasRemoveListeners) {
+        console.warn(
+          '`new NativeEventEmitter()` was called with a non-null argument without the required `removeListeners` method.',
+        );
+      }
     }
   }
 
@@ -73,19 +93,6 @@ export default class NativeEventEmitter<TEventToArgsMap: {...}>
         }
       },
     };
-  }
-
-  /**
-   * @deprecated Use `remove` on the EventSubscription from `addListener`.
-   */
-  removeListener<TEvent: $Keys<TEventToArgsMap>>(
-    eventType: TEvent,
-    listener: (...args: $ElementType<TEventToArgsMap, TEvent>) => mixed,
-  ): void {
-    this._nativeModule?.removeListeners(1);
-    // NOTE: This will report a deprecation notice via `console.error`.
-    // $FlowFixMe[prop-missing] - `removeListener` exists but is deprecated.
-    RCTDeviceEventEmitter.removeListener(eventType, listener);
   }
 
   emit<TEvent: $Keys<TEventToArgsMap>>(

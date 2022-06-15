@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -17,9 +17,9 @@ TelemetryController::TelemetryController(
     : mountingCoordinator_(mountingCoordinator) {}
 
 bool TelemetryController::pullTransaction(
-    std::function<void(MountingTransactionMetadata metadata)> willMount,
-    std::function<void(ShadowViewMutationList const &mutations)> doMount,
-    std::function<void(MountingTransactionMetadata metadata)> didMount) const {
+    MountingTransactionCallback const &willMount,
+    MountingTransactionCallback const &doMount,
+    MountingTransactionCallback const &didMount) const {
   auto optional = mountingCoordinator_.pullTransaction();
   if (!optional.has_value()) {
     return false;
@@ -27,24 +27,22 @@ bool TelemetryController::pullTransaction(
 
   auto transaction = std::move(*optional);
 
-  auto surfaceId = transaction.getSurfaceId();
-  auto number = transaction.getNumber();
-  auto telemetry = transaction.getTelemetry();
-  auto numberOfMutations = transaction.getMutations().size();
+  auto &telemetry = transaction.getTelemetry();
+  auto numberOfMutations = static_cast<int>(transaction.getMutations().size());
 
   mutex_.lock();
   auto compoundTelemetry = compoundTelemetry_;
   mutex_.unlock();
 
-  willMount({surfaceId, number, telemetry, compoundTelemetry});
+  willMount(transaction, compoundTelemetry);
 
   telemetry.willMount();
-  doMount(std::move(transaction.getMutations()));
+  doMount(transaction, compoundTelemetry);
   telemetry.didMount();
 
   compoundTelemetry.incorporate(telemetry, numberOfMutations);
 
-  didMount({surfaceId, number, telemetry, compoundTelemetry});
+  didMount(transaction, compoundTelemetry);
 
   mutex_.lock();
   compoundTelemetry_ = compoundTelemetry;

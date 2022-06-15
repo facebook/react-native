@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -131,10 +131,13 @@ class ReactEditTextInputConnectionWrapper extends InputConnectionWrapper {
   @Override
   public boolean sendKeyEvent(KeyEvent event) {
     if (event.getAction() == KeyEvent.ACTION_DOWN) {
+      boolean isNumberKey = event.getUnicodeChar() < 58 && event.getUnicodeChar() > 47;
       if (event.getKeyCode() == KeyEvent.KEYCODE_DEL) {
         dispatchKeyEvent(BACKSPACE_KEY_VALUE);
       } else if (event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
         dispatchKeyEvent(ENTER_KEY_VALUE);
+      } else if (isNumberKey) {
+        dispatchKeyEvent(String.valueOf(event.getNumber()));
       }
     }
     return super.sendKeyEvent(event);

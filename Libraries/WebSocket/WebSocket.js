@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,6 +13,7 @@ import type {BlobData} from '../Blob/BlobTypes';
 import BlobManager from '../Blob/BlobManager';
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import binaryToBase64 from '../Utilities/binaryToBase64';
+import Platform from '../Utilities/Platform';
 import type {EventSubscription} from '../vendor/emitter/EventEmitter';
 import NativeWebSocketModule from './NativeWebSocketModule';
 import WebSocketEvent from './WebSocketEvent';
@@ -100,9 +101,10 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): any) {
       protocols = [protocols];
     }
 
-    const {headers = {}, ...unrecognized} = options || {};
+    const {headers = {}, ...unrecognized} = options || {...null};
 
     // Preserve deprecated backwards compatibility for the 'origin' option
+    // $FlowFixMe[prop-missing]
     if (unrecognized && typeof unrecognized.origin === 'string') {
       console.warn(
         'Specifying `origin` as a WebSocket connection option is deprecated. Include it under `headers` instead.',
@@ -131,7 +133,11 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): any) {
       protocols = null;
     }
 
-    this._eventEmitter = new NativeEventEmitter(NativeWebSocketModule);
+    this._eventEmitter = new NativeEventEmitter(
+      // T88715063: NativeEventEmitter only used this parameter on iOS. Now it uses it on all platforms, so this code was modified automatically to preserve its behavior
+      // If you want to use the native module on other platforms, please remove this condition and test its behavior
+      Platform.OS !== 'ios' ? null : NativeWebSocketModule,
+    );
     this._socketId = nextWebSocketId++;
     this._registerEvents();
     NativeWebSocketModule.connect(url, protocols, {headers}, this._socketId);
@@ -225,7 +231,7 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): any) {
         if (ev.id !== this._socketId) {
           return;
         }
-        let data = ev.data;
+        let data: Blob | BlobData | ArrayBuffer | string = ev.data;
         switch (ev.type) {
           case 'binary':
             data = base64.toByteArray(ev.data).buffer;

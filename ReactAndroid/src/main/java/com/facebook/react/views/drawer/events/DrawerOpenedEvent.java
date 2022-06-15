@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -32,11 +32,5 @@ public class DrawerOpenedEvent extends Event<DrawerOpenedEvent> {
   @Override
   protected WritableMap getEventData() {
     return Arguments.createMap();
-  }
-
-  @Override
-  public short getCoalescingKey() {
-    // All events for a given view can be coalesced.
-    return 0;
   }
 }

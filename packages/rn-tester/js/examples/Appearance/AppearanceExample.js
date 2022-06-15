@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -77,6 +77,70 @@ const ThemedText = props => (
   </RNTesterThemeContext.Consumer>
 );
 
+const AppearanceViaHook = () => {
+  const colorScheme = useColorScheme();
+  return (
+    <RNTesterThemeContext.Provider
+      value={colorScheme === 'dark' ? themes.dark : themes.light}>
+      <ThemedContainer>
+        <ThemedText>useColorScheme(): {colorScheme}</ThemedText>
+      </ThemedContainer>
+    </RNTesterThemeContext.Provider>
+  );
+};
+
+const ColorShowcase = props => (
+  <RNTesterThemeContext.Consumer>
+    {theme => {
+      return (
+        <View
+          style={{
+            marginVertical: 20,
+            backgroundColor: theme.SystemBackgroundColor,
+          }}>
+          <Text style={{fontWeight: '700', color: theme.LabelColor}}>
+            {props.themeName}
+          </Text>
+          {Object.keys(theme).map(key => (
+            <View style={{flexDirection: 'row'}} key={key}>
+              <View
+                style={{
+                  width: 50,
+                  height: 50,
+                  paddingHorizontal: 8,
+                  paddingVertical: 2,
+                  backgroundColor: theme[key],
+                }}
+              />
+              <View>
+                <Text
+                  style={{
+                    paddingHorizontal: 16,
+                    paddingVertical: 2,
+                    color: theme.LabelColor,
+                    fontWeight: '600',
+                  }}>
+                  {key}
+                </Text>
+                <Text
+                  style={{
+                    paddingHorizontal: 16,
+                    paddingVertical: 2,
+                    color: theme.LabelColor,
+                  }}>
+                  {typeof theme[key] === 'string'
+                    ? theme[key]
+                    : JSON.stringify(theme[key])}
+                </Text>
+              </View>
+            </View>
+          ))}
+        </View>
+      );
+    }}
+  </RNTesterThemeContext.Consumer>
+);
+
 exports.title = 'Appearance';
 exports.category = 'UI';
 exports.documentationURL = 'https://reactnative.dev/docs/appearance';
@@ -85,17 +149,6 @@ exports.examples = [
   {
     title: 'useColorScheme hook',
     render(): React.Node {
-      const AppearanceViaHook = () => {
-        const colorScheme = useColorScheme();
-        return (
-          <RNTesterThemeContext.Provider
-            value={colorScheme === 'dark' ? themes.dark : themes.light}>
-            <ThemedContainer>
-              <ThemedText>useColorScheme(): {colorScheme}</ThemedText>
-            </ThemedContainer>
-          </RNTesterThemeContext.Provider>
-        );
-      };
       return <AppearanceViaHook />;
     },
   },
@@ -155,58 +208,6 @@ exports.examples = [
     title: 'RNTester App Colors',
     description: 'A light and a dark theme based on standard iOS 13 colors.',
     render(): React.Element<any> {
-      const ColorShowcase = props => (
-        <RNTesterThemeContext.Consumer>
-          {theme => {
-            return (
-              <View
-                style={{
-                  marginVertical: 20,
-                  backgroundColor: theme.SystemBackgroundColor,
-                }}>
-                <Text style={{fontWeight: '700', color: theme.LabelColor}}>
-                  {props.themeName}
-                </Text>
-                {Object.keys(theme).map(key => (
-                  <View style={{flexDirection: 'row'}} key={key}>
-                    <View
-                      style={{
-                        width: 50,
-                        height: 50,
-                        paddingHorizontal: 8,
-                        paddingVertical: 2,
-                        backgroundColor: theme[key],
-                      }}
-                    />
-                    <View>
-                      <Text
-                        style={{
-                          paddingHorizontal: 16,
-                          paddingVertical: 2,
-                          color: theme.LabelColor,
-                          fontWeight: '600',
-                        }}>
-                        {key}
-                      </Text>
-                      <Text
-                        style={{
-                          paddingHorizontal: 16,
-                          paddingVertical: 2,
-                          color: theme.LabelColor,
-                        }}>
-                        {typeof theme[key] === 'string'
-                          ? theme[key]
-                          : JSON.stringify(theme[key])}
-                      </Text>
-                    </View>
-                  </View>
-                ))}
-              </View>
-            );
-          }}
-        </RNTesterThemeContext.Consumer>
-      );
-
       return (
         <View>
           <RNTesterThemeContext.Provider value={themes.light}>

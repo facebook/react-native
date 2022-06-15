@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -148,7 +148,7 @@ static NSString *RCTGenerateFormBoundary()
   NSMutableDictionary<NSNumber *, RCTNetworkTask *> *_tasksByRequestID;
   std::mutex _handlersLock;
   NSArray<id<RCTURLRequestHandler>> *_handlers;
-  NSArray<id<RCTURLRequestHandler>> * (^_handlersProvider)(void);
+  NSArray<id<RCTURLRequestHandler>> * (^_handlersProvider)(RCTModuleRegistry *);
   NSMutableArray<id<RCTNetworkingRequestHandler>> *_requestHandlers;
   NSMutableArray<id<RCTNetworkingResponseHandler>> *_responseHandlers;
 }
@@ -167,7 +167,7 @@ RCT_EXPORT_MODULE()
   return [super initWithDisabledObservation];
 }
 
-- (instancetype)initWithHandlersProvider:(NSArray<id<RCTURLRequestHandler>> * (^)(void))getHandlers
+- (instancetype)initWithHandlersProvider:(NSArray<id<RCTURLRequestHandler>> * (^)(RCTModuleRegistry *moduleRegistry))getHandlers
 {
   if (self = [super initWithDisabledObservation]) {
     _handlersProvider = getHandlers;
@@ -178,6 +178,8 @@ RCT_EXPORT_MODULE()
 - (void)invalidate
 {
   [super invalidate];
+
+  std::lock_guard<std::mutex> lock(_handlersLock);
 
   for (NSNumber *requestID in _tasksByRequestID) {
     [_tasksByRequestID[requestID] cancel];
@@ -203,37 +205,13 @@ RCT_EXPORT_MODULE()
   if (!request.URL) {
     return nil;
   }
-
-  {
-    std::lock_guard<std::mutex> lock(_handlersLock);
-
-    if (!_handlers) {
-      if (_handlersProvider) {
-        _handlers = _handlersProvider();
-      } else {
-        _handlers = [self.bridge modulesConformingToProtocol:@protocol(RCTURLRequestHandler)];
-      }
-
-      // Get handlers, sorted in reverse priority order (highest priority first)
-      _handlers = [_handlers sortedArrayUsingComparator:^NSComparisonResult(id<RCTURLRequestHandler> a, id<RCTURLRequestHandler> b) {
-        float priorityA = [a respondsToSelector:@selector(handlerPriority)] ? [a handlerPriority] : 0;
-        float priorityB = [b respondsToSelector:@selector(handlerPriority)] ? [b handlerPriority] : 0;
-        if (priorityA > priorityB) {
-          return NSOrderedAscending;
-        } else if (priorityA < priorityB) {
-          return NSOrderedDescending;
-        } else {
-          return NSOrderedSame;
-        }
-      }];
-    }
-  }
-
+  NSArray<id<RCTURLRequestHandler>> *handlers = [self prioritizedHandlers];
+  
   if (RCT_DEBUG) {
     // Check for handler conflicts
     float previousPriority = 0;
     id<RCTURLRequestHandler> previousHandler = nil;
-    for (id<RCTURLRequestHandler> handler in _handlers) {
+    for (id<RCTURLRequestHandler> handler in handlers) {
       float priority = [handler respondsToSelector:@selector(handlerPriority)] ? [handler handlerPriority] : 0;
       if (previousHandler && priority < previousPriority) {
         return previousHandler;
@@ -256,12 +234,40 @@ RCT_EXPORT_MODULE()
   }
 
   // Normal code path
-  for (id<RCTURLRequestHandler> handler in _handlers) {
+  for (id<RCTURLRequestHandler> handler in handlers) {
     if ([handler canHandleRequest:request]) {
       return handler;
     }
   }
   return nil;
+}
+
+- (NSArray<id<RCTURLRequestHandler>> *)prioritizedHandlers
+{
+  std::lock_guard<std::mutex> lock(_handlersLock);
+  if (_handlers) {
+    return _handlers;
+  }
+  
+  NSArray<id<RCTURLRequestHandler>> *newHandlers = _handlersProvider
+    ? _handlersProvider(self.moduleRegistry)
+    : [self.bridge modulesConformingToProtocol:@protocol(RCTURLRequestHandler)];
+
+  // Get handlers, sorted in reverse priority order (highest priority first)
+  newHandlers = [newHandlers sortedArrayUsingComparator:^NSComparisonResult(id<RCTURLRequestHandler> a, id<RCTURLRequestHandler> b) {
+    float priorityA = [a respondsToSelector:@selector(handlerPriority)] ? [a handlerPriority] : 0;
+    float priorityB = [b respondsToSelector:@selector(handlerPriority)] ? [b handlerPriority] : 0;
+    if (priorityA > priorityB) {
+      return NSOrderedAscending;
+    } else if (priorityA < priorityB) {
+      return NSOrderedDescending;
+    } else {
+      return NSOrderedSame;
+    }
+  }];
+  
+  _handlers = newHandlers;
+  return newHandlers;
 }
 
 - (NSDictionary<NSString *, id> *)stripNullsInRequestHeaders:(NSDictionary<NSString *, id> *)headers

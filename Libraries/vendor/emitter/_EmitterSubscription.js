@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,14 +13,15 @@
 import type EventEmitter from './EventEmitter';
 import _EventSubscription from './_EventSubscription';
 import type EventSubscriptionVendor from './_EventSubscriptionVendor';
-import {type EventSubscription} from './EventSubscription';
+import type {EventSubscription} from './EventSubscription';
 
 /**
  * EmitterSubscription represents a subscription with listener and context data.
  */
 class EmitterSubscription<EventDefinitions: {...}, K: $Keys<EventDefinitions>>
   extends _EventSubscription<EventDefinitions, K>
-  implements EventSubscription {
+  implements EventSubscription
+{
   emitter: EventEmitter<EventDefinitions>;
   listener: ?(...$ElementType<EventDefinitions, K>) => mixed;
   context: ?$FlowFixMe;
@@ -54,7 +55,7 @@ class EmitterSubscription<EventDefinitions: {...}, K: $Keys<EventDefinitions>>
    * for removing the subscription lies with the EventEmitter.
    */
   remove(): void {
-    this.emitter.removeSubscription(this);
+    this.emitter.__removeSubscription(this);
   }
 }
 

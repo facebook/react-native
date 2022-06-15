@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,6 +14,7 @@ NSString *const RCTJSRawStackTraceKey = @"RCTJSRawStackTraceKey";
 NSString *const RCTObjCStackTraceKey = @"RCTObjCStackTraceKey";
 NSString *const RCTFatalExceptionName = @"RCTFatalException";
 NSString *const RCTUntruncatedMessageKey = @"RCTUntruncatedMessageKey";
+NSString *const RCTJSExtraDataKey = @"RCTJSExtraDataKey";
 
 static NSString *const RCTAssertFunctionStack = @"RCTAssertFunctionStack";
 
@@ -229,4 +230,101 @@ void RCTSetFatalExceptionHandler(RCTFatalExceptionHandler fatalExceptionHandler)
 RCTFatalExceptionHandler RCTGetFatalExceptionHandler(void)
 {
   return RCTCurrentFatalExceptionHandler;
+}
+
+// MARK: - New Architecture Validation - Enable Reporting
+
+#if RCT_NEW_ARCHITECTURE
+static RCTNotAllowedValidation validationReportingEnabled = RCTNotAllowedInBridgeless;
+#else
+static RCTNotAllowedValidation validationReportingEnabled = RCTNotAllowedValidationDisabled;
+#endif
+
+__attribute__((used)) RCT_EXTERN void RCTNewArchitectureValidationSetEnabled(RCTNotAllowedValidation type)
+{
+#if RCT_NEW_ARCHITECTURE
+  // Cannot disable the reporting in this mode.
+#else
+  validationReportingEnabled = type;
+#endif
+}
+
+// MARK: - New Architecture Validation - Private
+
+static BOOL shouldEnforceValidation(RCTNotAllowedValidation type)
+{
+  switch (type) {
+    case RCTNotAllowedInAppWideFabric:
+      return validationReportingEnabled == RCTNotAllowedInBridgeless ||
+          validationReportingEnabled == RCTNotAllowedInAppWideFabric;
+    case RCTNotAllowedInBridgeless:
+      return validationReportingEnabled == RCTNotAllowedInBridgeless;
+    case RCTNotAllowedValidationDisabled:
+      return NO;
+  }
+  return NO;
+}
+
+static NSString *stringDescribingContext(id context)
+{
+  if ([context isKindOfClass:NSString.class]) {
+    return context;
+  } else if (context) {
+    Class klass = [context class];
+    if (klass) {
+      return NSStringFromClass(klass);
+    }
+  }
+  return @"uncategorized";
+}
+
+static NSString *validationMessage(RCTNotAllowedValidation type, id context, NSString *extra)
+{
+  NSString *notAllowedType;
+  switch (type) {
+    case RCTNotAllowedValidationDisabled:
+      RCTAssert(0, @"RCTNotAllowedValidationDisabled not a validation type.");
+      break;
+    case RCTNotAllowedInAppWideFabric:
+      notAllowedType = @"Fabric";
+      break;
+    case RCTNotAllowedInBridgeless:
+      notAllowedType = @"Bridgeless";
+      break;
+  }
+
+  return
+      [NSString stringWithFormat:@"[ReactNative Architecture][NotAllowedIn%@] Unexpectedly reached code path in %@. %@",
+                                 notAllowedType,
+                                 stringDescribingContext(context),
+                                 extra ?: @""];
+}
+
+// MARK: - New Architecture Validation - Public
+
+void RCTEnforceNewArchitectureValidation(RCTNotAllowedValidation type, id context, NSString *extra)
+{
+  if (!shouldEnforceValidation(type)) {
+    return;
+  }
+
+  RCTAssert(0, @"%@", validationMessage(type, context, extra));
+}
+
+void RCTErrorNewArchitectureValidation(RCTNotAllowedValidation type, id context, NSString *extra)
+{
+  if (!shouldEnforceValidation(type)) {
+    return;
+  }
+
+  RCTLogError(@"%@", validationMessage(type, context, extra));
+}
+
+void RCTLogNewArchitectureValidation(RCTNotAllowedValidation type, id context, NSString *extra)
+{
+  if (!shouldEnforceValidation(type)) {
+    return;
+  }
+
+  RCTLogInfo(@"%@", validationMessage(type, context, extra));
 }

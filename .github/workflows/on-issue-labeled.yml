@@ -9,7 +9,7 @@ jobs:
     name: Respond to Issue Based on Label
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Respond to Issue Based on Label
         uses: hramos/respond-to-issue-based-on-label@v2
         with:

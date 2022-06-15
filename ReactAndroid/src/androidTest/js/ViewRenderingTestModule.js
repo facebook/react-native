@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -64,19 +64,19 @@ class TransformSampleApp extends React.Component {
 }
 
 const ViewRenderingTestModule = {
-  renderViewApplication: function(rootTag) {
+  renderViewApplication: function (rootTag) {
     renderApplication(ViewSampleApp, {}, rootTag);
   },
-  renderMarginApplication: function(rootTag) {
+  renderMarginApplication: function (rootTag) {
     renderApplication(MarginSampleApp, {}, rootTag);
   },
-  renderBorderApplication: function(rootTag) {
+  renderBorderApplication: function (rootTag) {
     renderApplication(BorderSampleApp, {}, rootTag);
   },
-  renderTransformApplication: function(rootTag) {
+  renderTransformApplication: function (rootTag) {
     renderApplication(TransformSampleApp, {}, rootTag);
   },
-  updateMargins: function() {
+  updateMargins: function () {
     updateMargins();
   },
 };

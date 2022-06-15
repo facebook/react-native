@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,9 +10,9 @@
 
 'use strict';
 
-const Platform = require('../Utilities/Platform');
-const React = require('react');
-const VirtualizedSectionList = require('./VirtualizedSectionList');
+import Platform from '../Utilities/Platform';
+import * as React from 'react';
+import VirtualizedSectionList from './VirtualizedSectionList';
 
 import type {ScrollResponderType} from '../Components/ScrollView/ScrollView';
 import type {
@@ -27,7 +27,7 @@ export type SectionBase<SectionItemT> = _SectionBase<SectionItemT>;
 
 type RequiredProps<SectionT: SectionBase<any>> = {|
   /**
-   * The actual data to render, akin to the `data` prop in [`<FlatList>`](https://reactnative.dev/docs/flatlist.html).
+   * The actual data to render, akin to the `data` prop in [`<FlatList>`](https://reactnative.dev/docs/flatlist).
    *
    * General shape:
    *
@@ -116,12 +116,6 @@ export type Props<SectionT> = {|
   ...OptionalProps<SectionT>,
 |};
 
-const defaultProps = {
-  stickySectionHeadersEnabled: Platform.OS === 'ios',
-};
-
-type DefaultProps = typeof defaultProps;
-
 /**
  * A performant interface for rendering sectioned lists, supporting the most handy features:
  *
@@ -137,7 +131,7 @@ type DefaultProps = typeof defaultProps;
  *  - Scroll loading.
  *
  * If you don't need section support and want a simpler interface, use
- * [`<FlatList>`](https://reactnative.dev/docs/flatlist.html).
+ * [`<FlatList>`](https://reactnative.dev/docs/flatlist).
  *
  * Simple Examples:
  *
@@ -159,7 +153,7 @@ type DefaultProps = typeof defaultProps;
  *       ]}
  *     />
  *
- * This is a convenience wrapper around [`<VirtualizedList>`](docs/virtualizedlist.html),
+ * This is a convenience wrapper around [`<VirtualizedList>`](docs/virtualizedlist),
  * and thus inherits its props (as well as those of `ScrollView`) that aren't explicitly listed
  * here, along with the following caveats:
  *
@@ -177,12 +171,10 @@ type DefaultProps = typeof defaultProps;
  *   Alternatively, you can provide a custom `keyExtractor` prop.
  *
  */
-class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
-  Props<SectionT>,
-  void,
-> {
+export default class SectionList<
+  SectionT: SectionBase<any>,
+> extends React.PureComponent<Props<SectionT>, void> {
   props: Props<SectionT>;
-  static defaultProps: DefaultProps = defaultProps;
 
   /**
    * Scrolls to the item at the specified `sectionIndex` and `itemIndex` (within the section)
@@ -245,9 +237,16 @@ class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
   }
 
   render(): React.Node {
+    const {
+      stickySectionHeadersEnabled: _stickySectionHeadersEnabled,
+      ...restProps
+    } = this.props;
+    const stickySectionHeadersEnabled =
+      _stickySectionHeadersEnabled ?? Platform.OS === 'ios';
     return (
       <VirtualizedSectionList
-        {...this.props}
+        {...restProps}
+        stickySectionHeadersEnabled={stickySectionHeadersEnabled}
         ref={this._captureRef}
         getItemCount={items => items.length}
         getItem={(items, index) => items[index]}
@@ -260,5 +259,3 @@ class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
     this._wrapperListRef = ref;
   };
 }
-
-module.exports = SectionList;

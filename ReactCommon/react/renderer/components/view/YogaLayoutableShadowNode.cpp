@@ -1,11 +1,12 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 #include "YogaLayoutableShadowNode.h"
+#include <logger/react_native_log.h>
 #include <react/debug/flags.h>
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/components/view/ViewProps.h>
@@ -22,6 +23,41 @@
 namespace facebook {
 namespace react {
 
+static int FabricDefaultYogaLog(
+    const YGConfigRef,
+    const YGNodeRef,
+    YGLogLevel level,
+    const char *format,
+    va_list args) {
+  va_list args_copy;
+  va_copy(args_copy, args);
+
+  // Adding 1 to add space for terminating null character.
+  int size_s = vsnprintf(nullptr, 0, format, args);
+  auto size = static_cast<size_t>(size_s);
+  std::vector<char> buffer(size);
+
+  vsnprintf(buffer.data(), size, format, args_copy);
+  switch (level) {
+    case YGLogLevelError:
+      react_native_log_error(buffer.data());
+      break;
+    case YGLogLevelFatal:
+      react_native_log_fatal(buffer.data());
+      break;
+    case YGLogLevelWarn:
+      react_native_log_warn(buffer.data());
+      break;
+    case YGLogLevelInfo:
+    case YGLogLevelDebug:
+    case YGLogLevelVerbose:
+    default:
+      react_native_log_info(buffer.data());
+  }
+
+  return size_s;
+}
+
 thread_local LayoutContext threadLocalLayoutContext;
 
 ShadowNodeTraits YogaLayoutableShadowNode::BaseTraits() {
@@ -35,7 +71,7 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
     ShadowNodeFamily::Shared const &family,
     ShadowNodeTraits traits)
     : LayoutableShadowNode(fragment, family, traits),
-      yogaConfig_(nullptr),
+      yogaConfig_(FabricDefaultYogaLog),
       yogaNode_(&initializeYogaConfig(yogaConfig_)) {
   yogaNode_.setContext(this);
 
@@ -61,7 +97,7 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
     ShadowNode const &sourceShadowNode,
     ShadowNodeFragment const &fragment)
     : LayoutableShadowNode(sourceShadowNode, fragment),
-      yogaConfig_(nullptr),
+      yogaConfig_(FabricDefaultYogaLog),
       yogaNode_(
           static_cast<YogaLayoutableShadowNode const &>(sourceShadowNode)
               .yogaNode_,
@@ -209,20 +245,26 @@ void YogaLayoutableShadowNode::appendChild(
   yogaNode_.setDirty(true);
 
   // All children of a non-leaf `YogaLayoutableShadowNode` must be a
-  // `YogaLayoutableShadowNode`s.
-  react_native_assert(
-      traitCast<YogaLayoutableShadowNode const *>(childNode.get()));
+  // `YogaLayoutableShadowNode`s to be appended. This happens when invalid
+  // string/numeric child is passed which is not YogaLayoutableShadowNode
+  // (e.g. RCTRawText). This used to throw an error, but we are ignoring it
+  // because we want core library components to be fault-tolerant and degrade
+  // gracefully. A soft error will be emitted from JavaScript.
+  if (traitCast<YogaLayoutableShadowNode const *>(childNode.get())) {
+    // Appending the Yoga node.
+    appendYogaChild(*childNode);
 
-  // Appending the Yoga node.
-  appendYogaChild(*childNode);
+    ensureYogaChildrenLookFine();
+    ensureYogaChildrenAlighment();
 
-  ensureYogaChildrenLookFine();
-  ensureYogaChildrenAlighment();
+    // Adopting the Yoga node.
+    adoptYogaChild(getChildren().size() - 1);
 
-  // Adopting the Yoga node.
-  adoptYogaChild(getChildren().size() - 1);
-
-  ensureConsistency();
+    ensureConsistency();
+  } else {
+    react_native_log_error(
+        "Text strings must be rendered within a <Text> component.");
+  }
 }
 
 bool YogaLayoutableShadowNode::doesOwn(
@@ -405,7 +447,6 @@ void YogaLayoutableShadowNode::layoutTree(
 
   {
     SystraceSection s("YogaLayoutableShadowNode::YGNodeCalculateLayout");
-
     YGNodeCalculateLayout(&yogaNode_, ownerWidth, ownerHeight, direction);
   }
 
@@ -438,7 +479,6 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
   react_native_assert(!yogaNode_.isDirty());
 
   auto contentFrame = Rect{};
-
   for (auto childYogaNode : yogaNode_.getChildren()) {
     auto &childNode =
         *static_cast<YogaLayoutableShadowNode *>(childYogaNode->getContext());
@@ -480,13 +520,34 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
 
     auto layoutMetricsWithOverflowInset = childNode.getLayoutMetrics();
     if (layoutMetricsWithOverflowInset.displayType != DisplayType::None) {
+      // The contentFrame should always union with existing child node layout +
+      // overflowInset. The transform may in a deferred animation and not
+      // applied yet.
       contentFrame.unionInPlace(insetBy(
           layoutMetricsWithOverflowInset.frame,
           layoutMetricsWithOverflowInset.overflowInset));
+
+      auto childTransform = childNode.getTransform();
+      if (childTransform != Transform::Identity()) {
+        // The child node's transform matrix will affect the parent node's
+        // contentFrame. We need to union with child node's after transform
+        // layout here.
+        contentFrame.unionInPlace(insetBy(
+            layoutMetricsWithOverflowInset.frame * childTransform,
+            layoutMetricsWithOverflowInset.overflowInset * childTransform));
+      }
     }
   }
 
   if (yogaNode_.getStyle().overflow() == YGOverflowVisible) {
+    // Note that the parent node's overflow layout is NOT affected by its
+    // transform matrix. That transform matrix is applied on the parent node as
+    // well as all of its child nodes, which won't cause changes on the
+    // overflowInset values. A special note on the scale transform -- the scaled
+    // layout may look like it's causing overflowInset changes, but it's purely
+    // cosmetic and will be handled by pixel density conversion logic later when
+    // render the view. The actual overflowInset value is not changed as if the
+    // transform is not happening here.
     layoutMetrics_.overflowInset =
         calculateOverflowInset(layoutMetrics_.frame, contentFrame);
   } else {
@@ -565,28 +626,12 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
       yogaFloatFromFloat(size.width), yogaFloatFromFloat(size.height)};
 }
 
-#ifdef RN_DEBUG_YOGA_LOGGER
-static int YogaLog(
-    const YGConfigRef config,
-    const YGNodeRef node,
-    YGLogLevel level,
-    const char *format,
-    va_list args) {
-  int result = vsnprintf(NULL, 0, format, args);
-  std::vector<char> buffer(1 + result);
-  vsnprintf(buffer.data(), buffer.size(), format, args);
-  LOG(ERROR) << "RNYogaLogger " << buffer.data();
-  return result;
-}
-#endif
-
 YGConfig &YogaLayoutableShadowNode::initializeYogaConfig(YGConfig &config) {
   config.setCloneNodeCallback(
       YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector);
   config.useLegacyStretchBehaviour = true;
 #ifdef RN_DEBUG_YOGA_LOGGER
   config.printTree = true;
-  config.setLogger(&YogaLog);
 #endif
   return config;
 }
@@ -656,44 +701,44 @@ void YogaLayoutableShadowNode::swapLeftAndRightInViewProps(
   auto &props = const_cast<ViewProps &>(typedCasting);
 
   // Swap border node values, borderRadii, borderColors and borderStyles.
-  if (props.borderRadii.topLeft.hasValue()) {
+  if (props.borderRadii.topLeft.has_value()) {
     props.borderRadii.topStart = props.borderRadii.topLeft;
-    props.borderRadii.topLeft.clear();
+    props.borderRadii.topLeft.reset();
   }
 
-  if (props.borderRadii.bottomLeft.hasValue()) {
+  if (props.borderRadii.bottomLeft.has_value()) {
     props.borderRadii.bottomStart = props.borderRadii.bottomLeft;
-    props.borderRadii.bottomLeft.clear();
+    props.borderRadii.bottomLeft.reset();
   }
 
-  if (props.borderRadii.topRight.hasValue()) {
+  if (props.borderRadii.topRight.has_value()) {
     props.borderRadii.topEnd = props.borderRadii.topRight;
-    props.borderRadii.topRight.clear();
+    props.borderRadii.topRight.reset();
   }
 
-  if (props.borderRadii.bottomRight.hasValue()) {
+  if (props.borderRadii.bottomRight.has_value()) {
     props.borderRadii.bottomEnd = props.borderRadii.bottomRight;
-    props.borderRadii.bottomRight.clear();
+    props.borderRadii.bottomRight.reset();
   }
 
-  if (props.borderColors.left.hasValue()) {
+  if (props.borderColors.left.has_value()) {
     props.borderColors.start = props.borderColors.left;
-    props.borderColors.left.clear();
+    props.borderColors.left.reset();
   }
 
-  if (props.borderColors.right.hasValue()) {
+  if (props.borderColors.right.has_value()) {
     props.borderColors.end = props.borderColors.right;
-    props.borderColors.right.clear();
+    props.borderColors.right.reset();
   }
 
-  if (props.borderStyles.left.hasValue()) {
+  if (props.borderStyles.left.has_value()) {
     props.borderStyles.start = props.borderStyles.left;
-    props.borderStyles.left.clear();
+    props.borderStyles.left.reset();
   }
 
-  if (props.borderStyles.right.hasValue()) {
+  if (props.borderStyles.right.has_value()) {
     props.borderStyles.end = props.borderStyles.right;
-    props.borderStyles.right.clear();
+    props.borderStyles.right.reset();
   }
 
   YGStyle::Edges const &border = props.yogaStyle.border();

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,12 +16,10 @@ module.exports = {
   commands: [...ios.commands, ...android.commands],
   platforms: {
     ios: {
-      linkConfig: ios.linkConfig,
       projectConfig: ios.projectConfig,
       dependencyConfig: ios.dependencyConfig,
     },
     android: {
-      linkConfig: android.linkConfig,
       projectConfig: android.projectConfig,
       dependencyConfig: android.dependencyConfig,
     },
@@ -32,7 +30,7 @@ module.exports = {
   reactNativePath: '.',
   project: {
     ios: {
-      project: './packages/rn-tester/RNTesterPods.xcworkspace',
+      sourceDir: './packages/rn-tester',
     },
     android: {
       sourceDir: './packages/rn-tester',

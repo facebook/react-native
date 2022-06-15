@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,6 +15,8 @@
 
 #import "RCTBridge+Private.h"
 #import "RCTBridge.h"
+#import "RCTBridgeModuleDecorator.h"
+#import "RCTInitializing.h"
 #import "RCTLog.h"
 #import "RCTModuleMethod.h"
 #import "RCTProfile.h"
@@ -50,6 +52,9 @@ BOOL RCTIsMainQueueExecutionOfConstantsToExportDisabled()
   BOOL _setupComplete;
   RCTModuleRegistry *_moduleRegistry;
   RCTViewRegistry *_viewRegistry_DEPRECATED;
+  RCTBundleManager *_bundleManager;
+  RCTCallableJSModules *_callableJSModules;
+  BOOL _isInitialized;
 }
 
 @synthesize methods = _methods;
@@ -103,6 +108,8 @@ BOOL RCTIsMainQueueExecutionOfConstantsToExportDisabled()
                              bridge:(RCTBridge *)bridge
                      moduleRegistry:(RCTModuleRegistry *)moduleRegistry
             viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
+                      bundleManager:(RCTBundleManager *)bundleManager
+                  callableJSModules:(RCTCallableJSModules *)callableJSModules
 {
   return [self initWithModuleClass:moduleClass
                     moduleProvider:^id<RCTBridgeModule> {
@@ -110,7 +117,9 @@ BOOL RCTIsMainQueueExecutionOfConstantsToExportDisabled()
                     }
                             bridge:bridge
                     moduleRegistry:moduleRegistry
-           viewRegistry_DEPRECATED:viewRegistry_DEPRECATED];
+           viewRegistry_DEPRECATED:viewRegistry_DEPRECATED
+                     bundleManager:bundleManager
+                 callableJSModules:callableJSModules];
 }
 
 - (instancetype)initWithModuleClass:(Class)moduleClass
@@ -118,6 +127,8 @@ BOOL RCTIsMainQueueExecutionOfConstantsToExportDisabled()
                              bridge:(RCTBridge *)bridge
                      moduleRegistry:(RCTModuleRegistry *)moduleRegistry
             viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
+                      bundleManager:(RCTBundleManager *)bundleManager
+                  callableJSModules:(RCTCallableJSModules *)callableJSModules
 {
   if (self = [super init]) {
     _bridge = bridge;
@@ -125,6 +136,8 @@ BOOL RCTIsMainQueueExecutionOfConstantsToExportDisabled()
     _moduleProvider = [moduleProvider copy];
     _moduleRegistry = moduleRegistry;
     _viewRegistry_DEPRECATED = viewRegistry_DEPRECATED;
+    _bundleManager = bundleManager;
+    _callableJSModules = callableJSModules;
     [self setUp];
   }
   return self;
@@ -134,6 +147,8 @@ BOOL RCTIsMainQueueExecutionOfConstantsToExportDisabled()
                                 bridge:(RCTBridge *)bridge
                         moduleRegistry:(RCTModuleRegistry *)moduleRegistry
                viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
+                         bundleManager:(RCTBundleManager *)bundleManager
+                     callableJSModules:(RCTCallableJSModules *)callableJSModules
 {
   if (self = [super init]) {
     _bridge = bridge;
@@ -141,6 +156,8 @@ BOOL RCTIsMainQueueExecutionOfConstantsToExportDisabled()
     _moduleClass = [instance class];
     _moduleRegistry = moduleRegistry;
     _viewRegistry_DEPRECATED = viewRegistry_DEPRECATED;
+    _bundleManager = bundleManager;
+    _callableJSModules = callableJSModules;
     [self setUp];
   }
   return self;
@@ -201,11 +218,20 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
       // initialization requires it (View Managers get their queue by calling
       // self.bridge.uiManager.methodQueue)
       [self setBridgeForInstance];
-      [self setModuleRegistryForInstance];
-      [self setViewRegistryForInstance];
+
+      RCTBridgeModuleDecorator *moduleDecorator =
+          [[RCTBridgeModuleDecorator alloc] initWithViewRegistry:_viewRegistry_DEPRECATED
+                                                  moduleRegistry:_moduleRegistry
+                                                   bundleManager:_bundleManager
+                                               callableJSModules:_callableJSModules];
+      [moduleDecorator attachInteropAPIsToModule:_instance];
     }
 
     [self setUpMethodQueue];
+
+    if (shouldSetup) {
+      [self _initializeModule];
+    }
   }
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 
@@ -249,38 +275,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
   }
 }
 
-- (void)setModuleRegistryForInstance
+- (void)_initializeModule
 {
-  if ([_instance respondsToSelector:@selector(moduleRegistry)] && _instance.moduleRegistry != _moduleRegistry) {
-    RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setModuleRegistryForInstance]", nil);
-    @try {
-      [(id)_instance setValue:_moduleRegistry forKey:@"moduleRegistry"];
-    } @catch (NSException *exception) {
-      RCTLogError(
-          @"%@ has no setter or ivar for its module registry, which is not "
-           "permitted. You must either @synthesize the moduleRegistry property, "
-           "or provide your own setter method.",
-          self.name);
-    }
-    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
-  }
-}
-
-- (void)setViewRegistryForInstance
-{
-  if ([_instance respondsToSelector:@selector(viewRegistry_DEPRECATED)] &&
-      _instance.viewRegistry_DEPRECATED != _viewRegistry_DEPRECATED) {
-    RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setViewRegistryForInstance]", nil);
-    @try {
-      [(id)_instance setValue:_viewRegistry_DEPRECATED forKey:@"viewRegistry_DEPRECATED"];
-    } @catch (NSException *exception) {
-      RCTLogError(
-          @"%@ has no setter or ivar for its module registry, which is not "
-           "permitted. You must either @synthesize the viewRegistry_DEPRECATED property, "
-           "or provide your own setter method.",
-          self.name);
-    }
-    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
+  if (!_isInitialized && [_instance respondsToSelector:@selector(initialize)]) {
+    _isInitialized = YES;
+    [(id<RCTInitializing>)_instance initialize];
   }
 }
 

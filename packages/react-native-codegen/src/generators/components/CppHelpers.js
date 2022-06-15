@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -20,10 +20,7 @@ function upperCaseFirst(inString: string): string {
 }
 
 function toSafeCppString(input: string): string {
-  return input
-    .split('-')
-    .map(upperCaseFirst)
-    .join('');
+  return input.split('-').map(upperCaseFirst).join('');
 }
 
 function toIntEnumValueName(propName: string, value: number): string {
@@ -93,6 +90,7 @@ function getImports(
 
     if (typeAnnotation.type === 'ObjectTypeAnnotation') {
       const objectImports = getImports(typeAnnotation.properties);
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
       objectImports.forEach(imports.add, imports);
     }
   });

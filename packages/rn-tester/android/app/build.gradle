@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,7 @@
 
 plugins {
     id("com.android.application")
-    id("com.facebook.react.codegen")
-    id("com.facebook.react.app")
+    id("com.facebook.react")
 }
 
 /**
@@ -76,20 +75,25 @@ plugins {
  * ]
  */
 
-reactApp {
-    cliPath = "$rootDir/cli.js"
+react {
+    applyAppPlugin = true
+    cliPath = "../../../../cli.js"
     bundleAssetName = "RNTesterApp.android.bundle"
     entryFile = file("../../js/RNTesterApp.android.js")
-    reactRoot = rootDir
+    root = file("../../")
     inputExcludes = ["android/**", "./**", ".gradle/**"]
     composeSourceMapsPath = "$rootDir/scripts/compose-source-maps.js"
-    hermesCommand = "$rootDir/node_modules/hermes-engine/%OS-BIN%/hermesc"
+    hermesCommand = "$rootDir/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"
     enableHermesForVariant { def v -> v.name.contains("hermes") }
+
+    // Codegen Configs
+    reactNativeDir = rootDir
+    codegenDir = new File(rootDir, "node_modules/react-native-codegen")
 }
 
 project.ext.react = [
     enableCodegen: true, // Keep this here until it's sync'ed to Android template.
-    enableFabric: (System.getenv('USE_FABRIC') ?: '0').toBoolean()
+    enableFabric: (System.getenv('USE_FABRIC') ?: 'true').toBoolean()
 ]
 
 //apply from: "../../../../react.gradle"
@@ -128,16 +132,27 @@ def enableFabric = project.ext.react.enableFabric
  */
 def useIntlJsc = false
 
+/**
+ * Architectures to build native code for.
+ */
+def reactNativeArchitectures() {
+    def value = project.getProperties().get("reactNativeArchitectures")
+    return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+}
+
 android {
-    compileSdkVersion 29
-    ndkVersion ANDROID_NDK_VERSION
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+    buildToolsVersion = "31.0.0"
+    compileSdkVersion 31
+
+    // Used to override the NDK path/version on internal CI or by allowing
+    // users to customize the NDK path/version from their root project (e.g. for M1 support)
+    if (rootProject.hasProperty("ndkPath")) {
+        ndkPath rootProject.ext.ndkPath
     }
-    dexOptions {
-        javaMaxHeapSize "4g"
+    if (rootProject.hasProperty("ndkVersion")) {
+        ndkVersion rootProject.ext.ndkVersion
     }
+
     flavorDimensions "vm"
     productFlavors {
         hermes {
@@ -151,7 +166,7 @@ android {
     defaultConfig {
         applicationId "com.facebook.react.uiapp"
         minSdkVersion 21
-        targetSdkVersion 29
+        targetSdkVersion 31
         versionCode 1
         versionName "1.0"
         testBuildType System.getProperty('testBuildType', 'debug')  // This will later be used to control the test apk build type
@@ -172,7 +187,7 @@ android {
             enable enableSeparateBuildPerCPUArchitecture
             universalApk false
             reset()
-            include "armeabi-v7a", "x86", "x86_64", "arm64-v8a"
+            include (*reactNativeArchitectures())
         }
     }
     buildTypes {
@@ -185,8 +200,6 @@ android {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
-            // Detox-specific additions to pro-guard
-            proguardFile "${rootProject.projectDir}/../node_modules/detox/android/detox/proguard-rules-app.pro"
         }
     }
     sourceSets.main {
@@ -196,6 +209,10 @@ android {
                 "$rootDir/ReactCommon/react/nativemodule/samples/platform/android",
             ]
         }
+    }
+    packagingOptions {
+        pickFirst '**/libhermes.so'
+        pickFirst '**/libjsc.so'
     }
 }
 
@@ -210,11 +227,12 @@ dependencies {
     // Build React Native from source
     implementation project(':ReactAndroid')
 
-    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+    // Consume Hermes as built from source only for the Hermes variant.
+    hermesImplementation(project(":ReactAndroid:hermes-engine")) {
+        exclude group:'com.facebook.fbjni'
+    }
 
-    def hermesPath = '$projectDir/../../../../../node_modules/hermes-engine/android/'
-    hermesDebugImplementation files(hermesPath + "hermes-debug.aar")
-    hermesReleaseImplementation files(hermesPath + "hermes-release.aar")
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'
@@ -234,15 +252,7 @@ dependencies {
         jscImplementation 'org.webkit:android-jsc:+'
     }
 
-    // Use detox test library
-    androidTestImplementation('com.wix:detox:+') { transitive = true }
     androidTestImplementation 'junit:junit:4.12'
-}
-
-react {
-    jsRootDir = file("$rootDir/packages/rn-tester")
-    reactNativeRootDir = file("$rootDir")
-    useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET") ?: false
 }
 
 if (enableCodegen) {
@@ -253,51 +263,55 @@ if (enableCodegen) {
     android {
         defaultConfig {
             externalNativeBuild {
-                ndkBuild {
-                    abiFilters "armeabi-v7a", "x86", "x86_64", "arm64-v8a"
-                    arguments "APP_PLATFORM=android-21",
-                            "APP_STL=c++_shared",
-                            "NDK_TOOLCHAIN_VERSION=clang",
-                            // The following paths assume building React Native from source.
-                            "GENERATED_SRC_DIR=$buildDir/generated/source",
-                            "PROJECT_BUILD_DIR=$buildDir",
-                            "REACT_ANDROID_DIR=$reactAndroidProjectDir",
-                            "REACT_ANDROID_BUILD_DIR=$reactAndroidBuildDir"
-                    cFlags "-Wall", "-Werror", "-fexceptions", "-frtti", "-DWITH_INSPECTOR=1"
-                    cppFlags "-std=c++1y"
+                cmake {
+                    arguments "-DGENERATED_SRC_DIR=$buildDir/generated/source",
+                        "-DPROJECT_BUILD_DIR=$buildDir",
+                        "-DREACT_ANDROID_DIR=$reactAndroidProjectDir",
+                        "-DREACT_ANDROID_BUILD_DIR=$reactAndroidBuildDir",
+                        "-DANDROID_STL=c++_shared"
+
                     targets "rntester_appmodules"
                 }
             }
         }
         externalNativeBuild {
-            ndkBuild {
-                path "$projectDir/src/main/jni/Android.mk"
+            cmake {
+                path "src/main/jni/CMakeLists.txt"
             }
         }
     }
 
-    def packageReactNdkLibs = tasks.register("packageReactNdkLibs", Copy) {
+    def packageReactDebugNdkLibs = tasks.register("packageReactDebugNdkLibs", Copy) {
         // TODO: handle extracting .so from prebuilt :ReactAndroid.
-        dependsOn(":ReactAndroid:packageReactNdkLibs")
-        from("$reactAndroidBuildDir/react-ndk/exported")
+        dependsOn(":ReactAndroid:packageReactNdkDebugLibsForBuck")
+        dependsOn("generateCodegenArtifactsFromSchema")
+        from("$reactAndroidProjectDir/src/main/jni/prebuilt/lib")
+        into("$buildDir/react-ndk/exported")
+    }
+    def packageReactReleaseNdkLibs = tasks.register("packageReactReleaseNdkLibs", Copy) {
+        // TODO: handle extracting .so from prebuilt :ReactAndroid.
+        dependsOn(":ReactAndroid:packageReactNdkReleaseLibsForBuck")
+        dependsOn("generateCodegenArtifactsFromSchema")
+        from("$reactAndroidProjectDir/src/main/jni/prebuilt/lib")
         into("$buildDir/react-ndk/exported")
     }
 
-    def cleanProjectNdkBuild = tasks.register("cleanProjectNdkBuild", Exec) {
-        ignoreExitValue(true)
-        tasks.forEach {
-            t ->
-                if (t.name.startsWith("externalNativeBuildClean")) {
-                    dependsOn(t);
-                }
-        }
-        // This .cxx folder may cause stale ndkBuild configuration.
-        // See https://stackoverflow.com/a/58288851.
-        commandLine("rm", "-rf", "$projectDir/.cxx")
-    }
-
     afterEvaluate {
-        preBuild.dependsOn(packageReactNdkLibs)
-        clean.dependsOn(cleanProjectNdkBuild)
+        reactNativeArchitectures().each { architecture ->
+            tasks.findByName("configureCMakeDebug[${architecture}]")?.configure {
+                dependsOn("preHermesDebugBuild")
+                dependsOn("preJscDebugBuild")
+            }
+            tasks.findByName("configureCMakeRelWithDebInfo[${architecture}]")?.configure {
+                dependsOn("preHermesReleaseBuild")
+                dependsOn("preJscReleaseBuild")
+            }
+        }
+        configureCMakeRelWithDebInfo.dependsOn(packageReactReleaseNdkLibs)
+        preHermesReleaseBuild.dependsOn(packageReactReleaseNdkLibs)
+        preJscReleaseBuild.dependsOn(packageReactReleaseNdkLibs)
+        configureCMakeDebug.dependsOn(packageReactDebugNdkLibs)
+        preHermesDebugBuild.dependsOn(packageReactDebugNdkLibs)
+        preJscDebugBuild.dependsOn(packageReactDebugNdkLibs)
     }
 }

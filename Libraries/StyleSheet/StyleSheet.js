@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,7 +12,6 @@
 
 const PixelRatio = require('../Utilities/PixelRatio');
 const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
-const StyleSheetValidation = require('./StyleSheetValidation');
 
 const flatten = require('./flattenStyle');
 
@@ -75,7 +74,8 @@ export type ImageStyleProp = ____ImageStyleProp_Internal;
  * through to an underlying component. Using this is almost always a mistake
  * and using one of the other more restrictive types is likely the right choice.
  */
-export type DangerouslyImpreciseStyleProp = ____DangerouslyImpreciseStyleProp_Internal;
+export type DangerouslyImpreciseStyleProp =
+  ____DangerouslyImpreciseStyleProp_Internal;
 
 /**
  * Utility type for getting the values for specific style keys.
@@ -339,9 +339,9 @@ module.exports = {
     let value;
 
     if (ReactNativeStyleAttributes[property] === true) {
-      value = {};
+      value = {process};
     } else if (typeof ReactNativeStyleAttributes[property] === 'object') {
-      value = ReactNativeStyleAttributes[property];
+      value = {...ReactNativeStyleAttributes[property], process};
     } else {
       console.error(`${property} is not a valid style attribute`);
       return;
@@ -351,7 +351,7 @@ module.exports = {
       console.warn(`Overwriting ${property} style attribute preprocessor`);
     }
 
-    ReactNativeStyleAttributes[property] = {...value, process};
+    ReactNativeStyleAttributes[property] = value;
   },
 
   /**
@@ -363,7 +363,6 @@ module.exports = {
     // return value as a number (even though it was opaque).
     if (__DEV__) {
       for (const key in obj) {
-        StyleSheetValidation.validateStyle(key, obj);
         if (obj[key]) {
           Object.freeze(obj[key]);
         }

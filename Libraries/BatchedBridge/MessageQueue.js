@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,13 +10,12 @@
 
 'use strict';
 
-const ErrorUtils = require('../vendor/core/ErrorUtils');
 const Systrace = require('../Performance/Systrace');
-
 const deepFreezeAndThrowOnMutationInDev = require('../Utilities/deepFreezeAndThrowOnMutationInDev');
-const invariant = require('invariant');
 const stringifySafe = require('../Utilities/stringifySafe').default;
 const warnOnce = require('../Utilities/warnOnce');
+const ErrorUtils = require('../vendor/core/ErrorUtils');
+const invariant = require('invariant');
 
 export type SpyData = {
   type: number,
@@ -47,7 +46,7 @@ class MessageQueue {
   _callID: number;
   _lastFlush: number;
   _eventLoopStartTime: number;
-  _immediatesCallback: ?() => void;
+  _reactNativeMicrotasksCallback: ?() => void;
 
   _debugInfo: {[number]: [number, number], ...};
   _remoteModuleTable: {[number]: string, ...};
@@ -63,7 +62,7 @@ class MessageQueue {
     this._callID = 0;
     this._lastFlush = 0;
     this._eventLoopStartTime = Date.now();
-    this._immediatesCallback = null;
+    this._reactNativeMicrotasksCallback = null;
 
     if (__DEV__) {
       this._debugInfo = {};
@@ -72,16 +71,17 @@ class MessageQueue {
     }
 
     // $FlowFixMe[cannot-write]
-    this.callFunctionReturnFlushedQueue = this.callFunctionReturnFlushedQueue.bind(
-      this,
-    );
+    this.callFunctionReturnFlushedQueue =
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
+      this.callFunctionReturnFlushedQueue.bind(this);
     // $FlowFixMe[cannot-write]
+    // $FlowFixMe[method-unbinding] added when improving typing for this parameters
     this.flushedQueue = this.flushedQueue.bind(this);
 
     // $FlowFixMe[cannot-write]
-    this.invokeCallbackAndReturnFlushedQueue = this.invokeCallbackAndReturnFlushedQueue.bind(
-      this,
-    );
+    this.invokeCallbackAndReturnFlushedQueue =
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
+      this.invokeCallbackAndReturnFlushedQueue.bind(this);
   }
 
   /**
@@ -129,7 +129,7 @@ class MessageQueue {
 
   flushedQueue(): null | [Array<number>, Array<number>, Array<mixed>, number] {
     this.__guard(() => {
-      this.__callImmediates();
+      this.__callReactNativeMicrotasks();
     });
 
     const queue = this._queue;
@@ -153,6 +153,8 @@ class MessageQueue {
         module = getValue();
         getValue = null;
       }
+      /* $FlowFixMe[class-object-subtyping] added when improving typing for
+       * this parameters */
       return module;
     };
   }
@@ -196,7 +198,7 @@ class MessageQueue {
           delete this._debugInfo[this._callID - DEBUG_INFO_LIMIT];
         }
         if (this._successCallbacks.size > 500) {
-          const info = {};
+          const info: {[number]: {method: string, module: string}} = {};
           this._successCallbacks.forEach((_, callID) => {
             const debug = this._debugInfo[callID];
             const module = debug && this._remoteModuleTable[debug[0]];
@@ -349,8 +351,8 @@ class MessageQueue {
   // For JSTimers to register its callback. Otherwise a circular dependency
   // between modules is introduced. Note that only one callback may be
   // registered at a time.
-  setImmediatesCallback(fn: () => void) {
-    this._immediatesCallback = fn;
+  setReactNativeMicrotasksCallback(fn: () => void) {
+    this._reactNativeMicrotasksCallback = fn;
   }
 
   /**
@@ -382,10 +384,10 @@ class MessageQueue {
     );
   }
 
-  __callImmediates() {
-    Systrace.beginEvent('JSTimers.callImmediates()');
-    if (this._immediatesCallback != null) {
-      this._immediatesCallback();
+  __callReactNativeMicrotasks() {
+    Systrace.beginEvent('JSTimers.callReactNativeMicrotasks()');
+    if (this._reactNativeMicrotasksCallback != null) {
+      this._reactNativeMicrotasksCallback();
     }
     Systrace.endEvent();
   }
@@ -402,15 +404,22 @@ class MessageQueue {
       this.__spy({type: TO_JS, module, method, args});
     }
     const moduleMethods = this.getCallableModule(module);
-    invariant(
-      !!moduleMethods,
-      `Module ${module} is not a registered callable module (calling ${method}). A frequent cause of the error is that the application entry file path is incorrect. 
-      This can also happen when the JS bundle is corrupt or there is an early initialization error when loading React Native.`,
-    );
-    invariant(
-      !!moduleMethods[method],
-      `Method ${method} does not exist on module ${module}`,
-    );
+    if (!moduleMethods) {
+      const callableModuleNames = Object.keys(this._lazyCallableModules);
+      const n = callableModuleNames.length;
+      const callableModuleNameList = callableModuleNames.join(', ');
+      invariant(
+        false,
+        `Failed to call into JavaScript module method ${module}.${method}(). Module has not been registered as callable. Registered callable JavaScript modules (n = ${n}): ${callableModuleNameList}.
+        A frequent cause of the error is that the application entry file path is incorrect. This can also happen when the JS bundle is corrupt or there is an early initialization error when loading React Native.`,
+      );
+    }
+    if (!moduleMethods[method]) {
+      invariant(
+        false,
+        `Failed to call into JavaScript module method ${module}.${method}(). Module exists, but the method is undefined.`,
+      );
+    }
     moduleMethods[method].apply(moduleMethods, args);
     Systrace.endEvent();
   }

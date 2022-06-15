@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,17 +16,20 @@ SurfaceHandlerBinding::SurfaceHandlerBinding(
     std::string const &moduleName)
     : surfaceHandler_(moduleName, surfaceId) {}
 
-void SurfaceHandlerBinding::start() {
-  std::unique_lock<better::shared_mutex> lock(lifecycleMutex_);
+void SurfaceHandlerBinding::setDisplayMode(jint mode) {
+  surfaceHandler_.setDisplayMode(static_cast<DisplayMode>(mode));
+}
 
-  surfaceHandler_.setDisplayMode(SurfaceHandler::DisplayMode::Visible);
+void SurfaceHandlerBinding::start() {
+  std::unique_lock<butter::shared_mutex> lock(lifecycleMutex_);
+
   if (surfaceHandler_.getStatus() != SurfaceHandler::Status::Running) {
     surfaceHandler_.start();
   }
 }
 
 void SurfaceHandlerBinding::stop() {
-  std::unique_lock<better::shared_mutex> lock(lifecycleMutex_);
+  std::unique_lock<butter::shared_mutex> lock(lifecycleMutex_);
 
   if (surfaceHandler_.getStatus() == SurfaceHandler::Status::Running) {
     surfaceHandler_.stop();
@@ -54,22 +57,7 @@ SurfaceHandlerBinding::initHybrid(
     jni::alias_ref<jclass>,
     jint surfaceId,
     jni::alias_ref<jstring> moduleName) {
-  auto env = jni::Environment::current();
-  const char *moduleNameValue =
-      env->GetStringUTFChars(moduleName.get(), JNI_FALSE);
-  env->ReleaseStringUTFChars(moduleName.get(), moduleNameValue);
-
-  return makeCxxInstance(surfaceId, moduleNameValue);
-}
-
-void SurfaceHandlerBinding::registerScheduler(
-    std::shared_ptr<Scheduler> scheduler) {
-  scheduler->registerSurface(surfaceHandler_);
-}
-
-void SurfaceHandlerBinding::unregisterScheduler(
-    std::shared_ptr<Scheduler> scheduler) {
-  scheduler->unregisterSurface(surfaceHandler_);
+  return makeCxxInstance(surfaceId, moduleName->toStdString());
 }
 
 void SurfaceHandlerBinding::setLayoutConstraints(
@@ -100,6 +88,10 @@ void SurfaceHandlerBinding::setProps(NativeMap *props) {
   surfaceHandler_.setProps(props->consume());
 }
 
+SurfaceHandler const &SurfaceHandlerBinding::getSurfaceHandler() {
+  return surfaceHandler_;
+}
+
 void SurfaceHandlerBinding::registerNatives() {
   registerHybrid({
       makeNativeMethod("initHybrid", SurfaceHandlerBinding::initHybrid),
@@ -116,6 +108,8 @@ void SurfaceHandlerBinding::registerNatives() {
           "setLayoutConstraintsNative",
           SurfaceHandlerBinding::setLayoutConstraints),
       makeNativeMethod("setPropsNative", SurfaceHandlerBinding::setProps),
+      makeNativeMethod(
+          "setDisplayModeNative", SurfaceHandlerBinding::setDisplayMode),
   });
 }
 

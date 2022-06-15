@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,7 +18,13 @@
 
 #import <React/RCTImageUtils.h>
 
-static const NSUInteger RCTMaxCachableDecodedImageSizeInBytes = 2097152; // 2 MB
+static NSUInteger RCTMaxCachableDecodedImageSizeInBytes = 2*1024*1024;
+static NSUInteger RCTImageCacheTotalCostLimit = 20*1024*1024;
+
+void RCTSetImageCacheLimits(NSUInteger maxCachableDecodedImageSizeInBytes, NSUInteger imageCacheTotalCostLimit) {
+  RCTMaxCachableDecodedImageSizeInBytes = maxCachableDecodedImageSizeInBytes;
+  RCTImageCacheTotalCostLimit = imageCacheTotalCostLimit;
+}
 
 static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat scale,
                                      RCTResizeMode resizeMode)
@@ -38,8 +44,8 @@ static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat sc
 {
   if (self = [super init]) {
     _decodedImageCache = [NSCache new];
-    _decodedImageCache.totalCostLimit = 20 * 1024 * 1024; // 20 MB
-    _cacheStaleTimes = [[NSMutableDictionary alloc] init];
+    _decodedImageCache.totalCostLimit = RCTImageCacheTotalCostLimit;
+    _cacheStaleTimes = [NSMutableDictionary new];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(clearCache)
@@ -151,7 +157,7 @@ static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat sc
   static NSDateFormatter *formatter;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    formatter = [[NSDateFormatter alloc] init];
+    formatter = [NSDateFormatter new];
     formatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
     formatter.dateFormat = @"EEE',' dd MMM yyyy HH':'mm':'ss 'GMT'";
     formatter.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];

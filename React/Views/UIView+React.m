@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -47,21 +47,12 @@
 
 - (BOOL)shouldAccessibilityIgnoresInvertColors
 {
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
-  if (@available(iOS 11.0, *)) {
-    return self.accessibilityIgnoresInvertColors;
-  }
-#endif
-  return NO;
+  return self.accessibilityIgnoresInvertColors;
 }
 
 - (void)setShouldAccessibilityIgnoresInvertColors:(BOOL)shouldAccessibilityIgnoresInvertColors
 {
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
-  if (@available(iOS 11.0, *)) {
-    self.accessibilityIgnoresInvertColors = shouldAccessibilityIgnoresInvertColors;
-  }
-#endif
+  self.accessibilityIgnoresInvertColors = shouldAccessibilityIgnoresInvertColors;
 }
 
 - (BOOL)isReactRootView
@@ -322,6 +313,17 @@
 {
   objc_setAssociatedObject(
       self, @selector(accessibilityActions), accessibilityActions, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (NSString *)accessibilityLanguage
+{
+  return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setAccessibilityLanguage:(NSString *)accessibilityLanguage
+{
+  objc_setAssociatedObject(
+      self, @selector(accessibilityLanguage), accessibilityLanguage, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 - (NSString *)accessibilityRole

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -78,8 +78,8 @@ Content ParagraphShadowNode::getContentWithMeasuredAttachments(
         laytableShadowNode->measure(layoutContext, localLayoutConstraints);
 
     // Rounding to *next* value on the pixel grid.
-    size.width += 0.01;
-    size.height += 0.01;
+    size.width += 0.01f;
+    size.height += 0.01f;
     size = roundToPixel<&ceil>(size, layoutContext.pointScaleFactor);
 
     auto fragmentLayoutMetrics = LayoutMetrics{};
@@ -93,9 +93,9 @@ Content ParagraphShadowNode::getContentWithMeasuredAttachments(
 }
 
 void ParagraphShadowNode::setTextLayoutManager(
-    SharedTextLayoutManager textLayoutManager) {
+    std::shared_ptr<TextLayoutManager const> textLayoutManager) {
   ensureUnsealed();
-  textLayoutManager_ = textLayoutManager;
+  textLayoutManager_ = std::move(textLayoutManager);
 }
 
 void ParagraphShadowNode::updateStateIfNeeded(Content const &content) {
@@ -186,7 +186,7 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
   react_native_assert(
       content.attachments.size() == measurement.attachments.size());
 
-  for (auto i = 0; i < content.attachments.size(); i++) {
+  for (size_t i = 0; i < content.attachments.size(); i++) {
     auto &attachment = content.attachments.at(i);
 
     if (!traitCast<LayoutableShadowNode const *>(attachment.shadowNode)) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,9 +10,11 @@
 
 'use strict';
 
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
+
+const NativeAnimatedHelper = require('../NativeAnimatedHelper');
 const AnimatedNode = require('./AnimatedNode');
 const AnimatedWithChildren = require('./AnimatedWithChildren');
-const NativeAnimatedHelper = require('../NativeAnimatedHelper');
 
 class AnimatedTransform extends AnimatedWithChildren {
   _transforms: $ReadOnlyArray<Object>;
@@ -22,21 +24,21 @@ class AnimatedTransform extends AnimatedWithChildren {
     this._transforms = transforms;
   }
 
-  __makeNative() {
+  __makeNative(platformConfig: ?PlatformConfig) {
     this._transforms.forEach(transform => {
       for (const key in transform) {
         const value = transform[key];
         if (value instanceof AnimatedNode) {
-          value.__makeNative();
+          value.__makeNative(platformConfig);
         }
       }
     });
-    super.__makeNative();
+    super.__makeNative(platformConfig);
   }
 
   __getValue(): $ReadOnlyArray<Object> {
     return this._transforms.map(transform => {
-      const result = {};
+      const result: {[string]: any} = {};
       for (const key in transform) {
         const value = transform[key];
         if (value instanceof AnimatedNode) {
@@ -51,7 +53,7 @@ class AnimatedTransform extends AnimatedWithChildren {
 
   __getAnimatedValue(): $ReadOnlyArray<Object> {
     return this._transforms.map(transform => {
-      const result = {};
+      const result: {[string]: any} = {};
       for (const key in transform) {
         const value = transform[key];
         if (value instanceof AnimatedNode) {

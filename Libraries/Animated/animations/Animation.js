@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,7 +11,7 @@
 'use strict';
 
 const NativeAnimatedHelper = require('../NativeAnimatedHelper');
-
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type AnimatedValue from '../nodes/AnimatedValue';
 
 export type EndResult = {finished: boolean, ...};
@@ -20,6 +20,7 @@ export type EndCallback = (result: EndResult) => void;
 export type AnimationConfig = {
   isInteraction?: boolean,
   useNativeDriver: boolean,
+  platformConfig?: PlatformConfig,
   onComplete?: ?EndCallback,
   iterations?: number,
 };
@@ -65,12 +66,14 @@ class Animation {
       startNativeAnimationWaitId,
     );
     try {
-      animatedValue.__makeNative();
+      const config = this.__getNativeAnimationConfig();
+      animatedValue.__makeNative(config.platformConfig);
       this.__nativeId = NativeAnimatedHelper.generateNewAnimationId();
       NativeAnimatedHelper.API.startAnimatingNode(
         this.__nativeId,
         animatedValue.__getNativeTag(),
-        this.__getNativeAnimationConfig(),
+        config,
+        // $FlowFixMe[method-unbinding] added when improving typing for this parameters
         this.__debouncedOnEnd.bind(this),
       );
     } catch (e) {

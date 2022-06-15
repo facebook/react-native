@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -38,21 +38,9 @@ void RCTEnableImageLoadingPerfInstrumentation(BOOL enabled)
   imagePerfInstrumentationEnabled = enabled;
 }
 
-static BOOL (^getImagePerfInstrumentationForFabricEnabled)() = (^BOOL () {
-  return NO;
-});
-
-BOOL RCTGetImageLoadingPerfInstrumentationForFabricEnabled() {
-  return getImagePerfInstrumentationForFabricEnabled();
-}
-
-void RCTSetImageLoadingPerfInstrumentationForFabricEnabledBlock(BOOL (^getMobileConfigEnabled)()) {
-  getImagePerfInstrumentationForFabricEnabled = getMobileConfigEnabled;
-}
-
 static NSInteger RCTImageBytesForImage(UIImage *image)
 {
-  NSInteger singleImageBytes = image.size.width * image.size.height * image.scale * image.scale * 4;
+  NSInteger singleImageBytes = (NSInteger)(image.size.width * image.size.height * image.scale * image.scale * 4);
   return image.images ? image.images.count * singleImageBytes : singleImageBytes;
 }
 
@@ -66,6 +54,15 @@ static uint64_t monotonicTimeGetCurrentNanoseconds(void)
   });
 
   return (mach_absolute_time() * tb_info.numer) / tb_info.denom;
+}
+
+static NSError* addResponseHeadersToError(NSError* originalError, NSHTTPURLResponse* response) {
+    NSMutableDictionary<NSString*, id>* _userInfo =  (NSMutableDictionary<NSString*, id>*)originalError.userInfo.mutableCopy;
+    _userInfo[@"httpStatusCode"] = [NSNumber numberWithInt:response.statusCode];
+    _userInfo[@"httpResponseHeaders"] = response.allHeaderFields;
+    NSError *error = [NSError errorWithDomain:originalError.domain code:originalError.code userInfo:_userInfo];
+    
+    return error;
 }
 
 @interface RCTImageLoader() <NativeImageLoaderIOSSpec, RCTImageLoaderWithAttributionProtocol>
@@ -92,8 +89,8 @@ static uint64_t monotonicTimeGetCurrentNanoseconds(void)
 
 @implementation RCTImageLoader
 {
-  NSArray<id<RCTImageURLLoader>> * (^_loadersProvider)(void);
-  NSArray<id<RCTImageDataDecoder>> * (^_decodersProvider)(void);
+  NSArray<id<RCTImageURLLoader>> * (^_loadersProvider)(RCTModuleRegistry *);
+  NSArray<id<RCTImageDataDecoder>> * (^_decodersProvider)(RCTModuleRegistry *);
   NSArray<id<RCTImageURLLoader>> *_loaders;
   NSArray<id<RCTImageDataDecoder>> *_decoders;
   NSOperationQueue *_imageDecodeQueue;
@@ -135,8 +132,8 @@ RCT_EXPORT_MODULE()
 }
 
 - (instancetype)initWithRedirectDelegate:(id<RCTImageRedirectProtocol>)redirectDelegate
-                         loadersProvider:(NSArray<id<RCTImageURLLoader>> * (^)(void))getLoaders
-                        decodersProvider:(NSArray<id<RCTImageDataDecoder>> * (^)(void))getHandlers
+                         loadersProvider:(NSArray<id<RCTImageURLLoader>> * (^)(RCTModuleRegistry *))getLoaders
+                        decodersProvider:(NSArray<id<RCTImageDataDecoder>> * (^)(RCTModuleRegistry *))getHandlers
 {
   if (self = [self initWithRedirectDelegate:redirectDelegate]) {
     _loadersProvider = getLoaders;
@@ -190,7 +187,7 @@ RCT_EXPORT_MODULE()
 
       // Get loaders, sorted in reverse priority order (highest priority first)
       if (_loadersProvider) {
-        _loaders = _loadersProvider();
+        _loaders = _loadersProvider(self.moduleRegistry);
       } else {
         RCTAssert(_bridge, @"Trying to find RCTImageURLLoaders and bridge not set.");
         _loaders = [_bridge modulesConformingToProtocol:@protocol(RCTImageURLLoader)];
@@ -257,7 +254,7 @@ RCT_EXPORT_MODULE()
     // Get decoders, sorted in reverse priority order (highest priority first)
 
     if (_decodersProvider) {
-      _decoders = _decodersProvider();
+      _decoders = _decodersProvider(self.moduleRegistry);
     } else {
       RCTAssert(_bridge, @"Trying to find RCTImageDataDecoders and bridge not set.");
       _decoders = [_bridge modulesConformingToProtocol:@protocol(RCTImageDataDecoder)];
@@ -504,6 +501,16 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   BOOL cacheResult = [loadHandler respondsToSelector:@selector(shouldCacheLoadedImages)] ?
   [loadHandler shouldCacheLoadedImages] : YES;
 
+  if (cacheResult && partialLoadHandler) {
+    UIImage *image = [[self imageCache] imageForUrl:request.URL.absoluteString
+                                               size:size
+                                              scale:scale
+                                         resizeMode:resizeMode];
+    if (image) {
+      partialLoadHandler(image);
+    }
+  }
+
   auto cancelled = std::make_shared<std::atomic<int>>(0);
   __block dispatch_block_t cancelLoad = nil;
   __block NSLock *cancelLoadLock = [NSLock new];
@@ -525,6 +532,10 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
         }
       });
     } else if (!std::atomic_load(cancelled.get())) {
+        if (response && error && [response isKindOfClass: [NSHTTPURLResponse class]]) {
+            NSHTTPURLResponse* _httpResp = (NSHTTPURLResponse*)response;
+            error = addResponseHeadersToError(error, _httpResp);
+        }
       completionBlock(error, imageOrData, imageMetadata, cacheResult, response);
     }
   };
@@ -626,7 +637,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   });
 
   return [[RCTImageURLLoaderRequest alloc] initWithRequestId:requestId imageURL:request.URL cancellationBlock:^{
-    BOOL alreadyCancelled = atomic_fetch_or(cancelled.get(), 1);
+    BOOL alreadyCancelled = atomic_fetch_or(cancelled.get(), 1) ? YES : NO;
     if (alreadyCancelled) {
       return;
     }
@@ -766,7 +777,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   __block dispatch_block_t cancelLoad = nil;
   __block NSLock *cancelLoadLock = [NSLock new];
   dispatch_block_t cancellationBlock = ^{
-    BOOL alreadyCancelled = atomic_fetch_or(cancelled.get(), 1);
+    BOOL alreadyCancelled = atomic_fetch_or(cancelled.get(), 1) ? YES : NO;
     if (alreadyCancelled) {
       return;
     }
@@ -916,7 +927,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   } else {
     dispatch_block_t decodeBlock = ^{
       // Calculate the size, in bytes, that the decompressed image will require
-      NSInteger decodedImageBytes = (size.width * scale) * (size.height * scale) * 4;
+      NSInteger decodedImageBytes = (NSInteger)((size.width * scale) * (size.height * scale) * 4);
 
       // Mark these bytes as in-use
       self->_activeBytes += decodedImageBytes;

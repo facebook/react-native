@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,15 +8,16 @@
  * @format
  */
 
-const NativeModules = require('../BatchedBridge/NativeModules');
-const Platform = require('../Utilities/Platform');
-const UIManagerProperties = require('./UIManagerProperties');
-
-const defineLazyObjectProperty = require('../Utilities/defineLazyObjectProperty');
+import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
 
 import NativeUIManager from './NativeUIManager';
 
-const viewManagerConfigs = {};
+const NativeModules = require('../BatchedBridge/NativeModules');
+const defineLazyObjectProperty = require('../Utilities/defineLazyObjectProperty');
+const Platform = require('../Utilities/Platform');
+const UIManagerProperties = require('./UIManagerProperties');
+
+const viewManagerConfigs: {[string]: any | null} = {};
 
 const triedLoadingConfig = new Set();
 
@@ -33,12 +34,12 @@ function getConstants(): Object {
 function getViewManagerConfig(viewManagerName: string): any {
   if (
     viewManagerConfigs[viewManagerName] === undefined &&
+    global.nativeCallSyncHook && // If we're in the Chrome Debugger, let's not even try calling the sync method
     NativeUIManager.getConstantsForViewManager
   ) {
     try {
-      viewManagerConfigs[
-        viewManagerName
-      ] = NativeUIManager.getConstantsForViewManager(viewManagerName);
+      viewManagerConfigs[viewManagerName] =
+        NativeUIManager.getConstantsForViewManager(viewManagerName);
     } catch (e) {
       console.error(
         "NativeUIManager.getConstantsForViewManager('" +
@@ -84,7 +85,7 @@ const UIManagerJS = {
   createView(
     reactTag: ?number,
     viewName: string,
-    rootTag: number,
+    rootTag: RootTag,
     props: Object,
   ): void {
     if (Platform.OS === 'ios' && viewManagerConfigs[viewName] === undefined) {
@@ -120,7 +121,7 @@ function lazifyViewManagerConfig(viewName) {
     defineLazyObjectProperty(viewConfig, 'Constants', {
       get: () => {
         const viewManager = NativeModules[viewConfig.Manager];
-        const constants = {};
+        const constants: {[string]: mixed} = {};
         viewManager &&
           Object.keys(viewManager).forEach(key => {
             const value = viewManager[key];
@@ -134,7 +135,7 @@ function lazifyViewManagerConfig(viewName) {
     defineLazyObjectProperty(viewConfig, 'Commands', {
       get: () => {
         const viewManager = NativeModules[viewConfig.Manager];
-        const commands = {};
+        const commands: {[string]: number} = {};
         let index = 0;
         viewManager &&
           Object.keys(viewManager).forEach(key => {

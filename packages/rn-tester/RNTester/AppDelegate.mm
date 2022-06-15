@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,7 +8,7 @@
 #import "AppDelegate.h"
 
 #ifndef RCT_USE_HERMES
-#if __has_include(<hermes/hermes.h>)
+#if __has_include(<reacthermes/HermesExecutorFactory.h>)
 #define RCT_USE_HERMES 1
 #else
 #define RCT_USE_HERMES 0
@@ -77,6 +77,8 @@
 }
 @end
 
+static NSString *const kRNConcurrentRoot = @"concurrentRoot";
+
 @implementation AppDelegate
 
 - (BOOL)application:(__unused UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -86,12 +88,7 @@
   _bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
 
   // Appetizer.io params check
-  NSDictionary *initProps = @{};
-  NSString *_routeUri = [[NSUserDefaults standardUserDefaults] stringForKey:@"route"];
-  if (_routeUri) {
-    initProps =
-        @{@"exampleFromAppetizeParams" : [NSString stringWithFormat:@"rntester://example/%@Example", _routeUri]};
-  }
+  NSDictionary *initProps = [self prepareInitialProps];
 
 #ifdef RN_FABRIC_ENABLED
   _contextContainer = std::make_shared<facebook::react::ContextContainer const>();
@@ -119,10 +116,31 @@
   return YES;
 }
 
+- (BOOL)concurrentRootEnabled
+{
+  // Switch this bool to turn on and off the concurrent root
+  return true;
+}
+
+- (NSDictionary *)prepareInitialProps
+{
+  NSMutableDictionary *initProps = [NSMutableDictionary new];
+
+  NSString *_routeUri = [[NSUserDefaults standardUserDefaults] stringForKey:@"route"];
+  if (_routeUri) {
+    initProps[@"exampleFromAppetizeParams"] = [NSString stringWithFormat:@"rntester://example/%@Example", _routeUri];
+  }
+
+#ifdef RCT_NEW_ARCH_ENABLED
+  initProps[kRNConcurrentRoot] = @([self concurrentRootEnabled]);
+#endif
+
+  return initProps;
+}
+
 - (NSURL *)sourceURLForBridge:(__unused RCTBridge *)bridge
 {
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"packages/rn-tester/js/RNTesterApp.ios"
-                                                        fallbackResource:nil];
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"packages/rn-tester/js/RNTesterApp.ios"];
 }
 
 - (void)initializeFlipper:(UIApplication *)application
@@ -204,31 +222,26 @@
   return facebook::react::RNTesterTurboModuleProvider(name, jsInvoker);
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
-                                                     initParams:
-                                                         (const facebook::react::ObjCTurboModule::InitParams &)params
-{
-  return facebook::react::RNTesterTurboModuleProvider(name, params);
-}
-
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
 {
+  // Set up the default RCTImageLoader and RCTNetworking modules.
   if (moduleClass == RCTImageLoader.class) {
     return [[moduleClass alloc] initWithRedirectDelegate:nil
-        loadersProvider:^NSArray<id<RCTImageURLLoader>> * {
-          return @ [[RCTLocalAssetImageLoader new]];
+        loadersProvider:^NSArray<id<RCTImageURLLoader>> *(RCTModuleRegistry *moduleRegistry) {
+          return @[ [RCTLocalAssetImageLoader new] ];
         }
-        decodersProvider:^NSArray<id<RCTImageDataDecoder>> * {
-          return @ [[RCTGIFImageDecoder new]];
+        decodersProvider:^NSArray<id<RCTImageDataDecoder>> *(RCTModuleRegistry *moduleRegistry) {
+          return @[ [RCTGIFImageDecoder new] ];
         }];
   } else if (moduleClass == RCTNetworking.class) {
-    return [[moduleClass alloc] initWithHandlersProvider:^NSArray<id<RCTURLRequestHandler>> * {
-      return @[
-        [RCTHTTPRequestHandler new],
-        [RCTDataRequestHandler new],
-        [RCTFileRequestHandler new],
-      ];
-    }];
+    return [[moduleClass alloc]
+        initWithHandlersProvider:^NSArray<id<RCTURLRequestHandler>> *(RCTModuleRegistry *moduleRegistry) {
+          return @[
+            [RCTHTTPRequestHandler new],
+            [RCTDataRequestHandler new],
+            [RCTFileRequestHandler new],
+          ];
+        }];
   }
   // No custom initializer here.
   return [moduleClass new];

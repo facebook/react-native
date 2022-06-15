@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -154,6 +154,7 @@ class RefProperty extends Property {
   constructor(domain: string, obj: any) {
     super(domain, obj);
     this.$ref = obj.$ref;
+    this.recursive = obj.recursive;
   }
 
   getRefDebuggerName(): ?string {
@@ -194,7 +195,7 @@ class ArrayProperty extends Property {
 
   getFullCppType(): string {
     let elemType: string = 'folly::dynamic';
-    let recursive = false;
+    let recursive: ?(false | boolean) = false;
 
     if (this.items) {
       if (this.items.type) {

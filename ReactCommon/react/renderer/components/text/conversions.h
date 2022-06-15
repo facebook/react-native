@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -27,11 +27,11 @@ inline folly::dynamic toDynamic(ParagraphState const &paragraphState) {
 }
 
 // constants for Text State serialization
-constexpr static Key TX_STATE_KEY_ATTRIBUTED_STRING = 0;
-constexpr static Key TX_STATE_KEY_PARAGRAPH_ATTRIBUTES = 1;
+constexpr static MapBuffer::Key TX_STATE_KEY_ATTRIBUTED_STRING = 0;
+constexpr static MapBuffer::Key TX_STATE_KEY_PARAGRAPH_ATTRIBUTES = 1;
 // Used for TextInput
-constexpr static Key TX_STATE_KEY_HASH = 2;
-constexpr static Key TX_STATE_KEY_MOST_RECENT_EVENT_COUNT = 3;
+constexpr static MapBuffer::Key TX_STATE_KEY_HASH = 2;
+constexpr static MapBuffer::Key TX_STATE_KEY_MOST_RECENT_EVENT_COUNT = 3;
 
 inline MapBuffer toMapBuffer(ParagraphState const &paragraphState) {
   auto builder = MapBufferBuilder();

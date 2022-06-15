@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -33,6 +33,7 @@ type Props = $ReadOnly<{|
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
   accessibilityElementsHidden?: ?boolean,
   accessibilityHint?: ?Stringish,
+  accessibilityLanguage?: ?Stringish,
   accessibilityIgnoresInvertColors?: ?boolean,
   accessibilityLabel?: ?Stringish,
   accessibilityLiveRegion?: ?('none' | 'polite' | 'assertive'),
@@ -72,11 +73,11 @@ const PASSTHROUGH_PROPS = [
   'accessibilityActions',
   'accessibilityElementsHidden',
   'accessibilityHint',
+  'accessibilityLanguage',
   'accessibilityIgnoresInvertColors',
   'accessibilityLabel',
   'accessibilityLiveRegion',
   'accessibilityRole',
-  'accessibilityState',
   'accessibilityValue',
   'accessibilityViewIsModal',
   'hitSlop',
@@ -107,15 +108,19 @@ class TouchableWithoutFeedback extends React.Component<Props, State> {
 
     // BACKWARD-COMPATIBILITY: Focus and blur events were never supported before
     // adopting `Pressability`, so preserve that behavior.
-    const {
-      onBlur,
-      onFocus,
-      ...eventHandlersWithoutBlurAndFocus
-    } = this.state.pressability.getEventHandlers();
+    const {onBlur, onFocus, ...eventHandlersWithoutBlurAndFocus} =
+      this.state.pressability.getEventHandlers();
 
     const elementProps: {[string]: mixed, ...} = {
       ...eventHandlersWithoutBlurAndFocus,
       accessible: this.props.accessible !== false,
+      accessibilityState:
+        this.props.disabled != null
+          ? {
+              ...this.props.accessibilityState,
+              disabled: this.props.disabled,
+            }
+          : this.props.accessibilityState,
       focusable:
         this.props.focusable !== false && this.props.onPress !== undefined,
     };
@@ -140,7 +145,10 @@ class TouchableWithoutFeedback extends React.Component<Props, State> {
 function createPressabilityConfig(props: Props): PressabilityConfig {
   return {
     cancelable: !props.rejectResponderTermination,
-    disabled: props.disabled,
+    disabled:
+      props.disabled !== null
+        ? props.disabled
+        : props.accessibilityState?.disabled,
     hitSlop: props.hitSlop,
     delayLongPress: props.delayLongPress,
     delayPressIn: props.delayPressIn,

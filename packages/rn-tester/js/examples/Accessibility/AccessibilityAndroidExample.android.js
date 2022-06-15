@@ -1,24 +1,25 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
  * @format
+ * @flow strict-local
  */
 
 'use strict';
 
 const React = require('react');
-const {
+import RNTesterBlock from '../../components/RNTesterBlock';
+import RNTesterPage from '../../components/RNTesterPage';
+import {
+  Alert,
   StyleSheet,
   Text,
   View,
   TouchableWithoutFeedback,
-} = require('react-native');
-
-const RNTesterBlock = require('../../components/RNTesterBlock');
-const RNTesterPage = require('../../components/RNTesterPage');
+} from 'react-native';
 
 const importantForAccessibilityValues = [
   'auto',
@@ -27,8 +28,17 @@ const importantForAccessibilityValues = [
   'no-hide-descendants',
 ];
 
-class AccessibilityAndroidExample extends React.Component {
-  state = {
+type AccessibilityAndroidExampleState = {
+  count: number,
+  backgroundImportantForAcc: number,
+  forgroundImportantForAcc: number,
+};
+
+class AccessibilityAndroidExample extends React.Component<
+  {},
+  AccessibilityAndroidExampleState,
+> {
+  state: AccessibilityAndroidExampleState = {
     count: 0,
     backgroundImportantForAcc: 0,
     forgroundImportantForAcc: 0,
@@ -52,7 +62,7 @@ class AccessibilityAndroidExample extends React.Component {
     });
   };
 
-  render() {
+  render(): React.Node {
     return (
       <RNTesterPage title={'Accessibility Android APIs'}>
         <RNTesterBlock title="LiveRegion">
@@ -61,22 +71,14 @@ class AccessibilityAndroidExample extends React.Component {
               <Text>Click me</Text>
             </View>
           </TouchableWithoutFeedback>
-          <Text accessibilityLiveRegion="polite">
-            Clicked {this.state.count} times
-          </Text>
+          <View accessibilityLiveRegion="polite">
+            <Text>Clicked {this.state.count} times</Text>
+          </View>
         </RNTesterBlock>
 
         <RNTesterBlock title="Overlapping views and importantForAccessibility property">
           <View style={styles.container}>
             <TouchableWithoutFeedback
-              style={{
-                position: 'absolute',
-                left: 10,
-                top: 10,
-                right: 10,
-                height: 100,
-                backgroundColor: 'green',
-              }}
               accessible={true}
               accessibilityLabel="First layout"
               importantForAccessibility={
@@ -84,7 +86,7 @@ class AccessibilityAndroidExample extends React.Component {
                   this.state.backgroundImportantForAcc
                 ]
               }>
-              <View accessible={true}>
+              <View accessible={true} style={styles.touchableContainer}>
                 <Text style={{fontSize: 25}}>Hello</Text>
               </View>
             </TouchableWithoutFeedback>
@@ -147,12 +149,91 @@ class AccessibilityAndroidExample extends React.Component {
             </Text>
           </View>
         </RNTesterBlock>
+        <RNTesterBlock title="Links">
+          <Text style={styles.paragraph}>
+            In the following example, the words "test", "inline links", "another
+            link", and "link that spans multiple lines because the text is so
+            long", should each be independantly focusable elements, announced as
+            their content followed by ", Link".
+          </Text>
+          <Text style={styles.paragraph}>
+            They should be focused in order from top to bottom *after* the
+            contents of the entire paragraph.
+          </Text>
+          <Text style={styles.paragraph}>
+            Focusing on the paragraph itself should also announce that there are
+            "links avaialable", and opening Talkback's links menu should show
+            these same links.
+          </Text>
+          <Text style={styles.paragraph}>
+            Clicking on each link, or selecting the link From Talkback's links
+            menu should trigger an alert.
+          </Text>
+          <Text style={styles.paragraph}>
+            The links that wraps to multiple lines will intentionally only draw
+            a focus outline around the first line, but using the "explore by
+            touch" tap-and-drag gesture should move focus to this link even if
+            the second line is touched.
+          </Text>
+          <Text style={styles.paragraph}>
+            Using the "Explore by touch" gesture and touching an area that is
+            *not* a link should move focus to the entire paragraph.
+          </Text>
+          <Text style={styles.exampleTitle}>Example</Text>
+          <Text style={styles.paragraph} accessible={true}>
+            This is a{' '}
+            <Text
+              style={styles.link}
+              accessibilityRole="link"
+              onPress={() => {
+                Alert.alert('pressed test');
+              }}>
+              test
+            </Text>{' '}
+            of{' '}
+            <Text
+              style={styles.link}
+              accessibilityRole="link"
+              onPress={() => {
+                Alert.alert('pressed Inline Links');
+              }}>
+              inline links
+            </Text>{' '}
+            in React Native. Here's{' '}
+            <Text
+              style={styles.link}
+              accessibilityRole="link"
+              onPress={() => {
+                Alert.alert('pressed another link');
+              }}>
+              another link
+            </Text>
+            . Here is a{' '}
+            <Text
+              style={styles.link}
+              accessibilityRole="link"
+              onPress={() => {
+                Alert.alert('pressed long link');
+              }}>
+              link that spans multiple lines because the text is so long.
+            </Text>
+            This sentence has no links in it.
+          </Text>
+        </RNTesterBlock>
       </RNTesterPage>
     );
   }
 }
 
 const styles = StyleSheet.create({
+  touchableContainer: {
+    position: 'absolute',
+    left: 10,
+    top: 10,
+    right: 10,
+    height: 100,
+    backgroundColor: 'green',
+  },
   embedded: {
     backgroundColor: 'yellow',
     padding: 10,
@@ -162,6 +243,17 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     padding: 10,
     height: 150,
+  },
+  paragraph: {
+    paddingBottom: 10,
+  },
+  link: {
+    color: 'blue',
+    fontWeight: 'bold',
+  },
+  exampleTitle: {
+    fontWeight: 'bold',
+    fontSize: 20,
   },
 });
 

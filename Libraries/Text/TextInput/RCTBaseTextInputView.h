@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -35,6 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nullable) RCTDirectEventBlock onContentSizeChange;
 @property (nonatomic, copy, nullable) RCTDirectEventBlock onSelectionChange;
 @property (nonatomic, copy, nullable) RCTDirectEventBlock onChange;
+@property (nonatomic, copy, nullable) RCTDirectEventBlock onChangeSync;
 @property (nonatomic, copy, nullable) RCTDirectEventBlock onTextInput;
 @property (nonatomic, copy, nullable) RCTDirectEventBlock onScroll;
 

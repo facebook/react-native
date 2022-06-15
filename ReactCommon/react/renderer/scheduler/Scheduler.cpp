@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,11 +12,12 @@
 
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
-#include <react/renderer/core/Constants.h>
+#include <react/renderer/core/EventQueueProcessor.h>
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/mounting/MountingOverrideDelegate.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
+#include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #include <react/renderer/templateprocessor/UITemplateProcessor.h>
 #include <react/renderer/uimanager/UIManager.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
@@ -30,37 +31,55 @@ namespace facebook {
 namespace react {
 
 Scheduler::Scheduler(
-    SchedulerToolbox schedulerToolbox,
+    SchedulerToolbox const &schedulerToolbox,
     UIManagerAnimationDelegate *animationDelegate,
     SchedulerDelegate *delegate) {
   runtimeExecutor_ = schedulerToolbox.runtimeExecutor;
+  contextContainer_ = schedulerToolbox.contextContainer;
 
   reactNativeConfig_ =
-      schedulerToolbox.contextContainer
-          ->at<std::shared_ptr<const ReactNativeConfig>>("ReactNativeConfig");
+      contextContainer_->at<std::shared_ptr<const ReactNativeConfig>>(
+          "ReactNativeConfig");
 
   // Creating a container for future `EventDispatcher` instance.
-  eventDispatcher_ =
-      std::make_shared<better::optional<EventDispatcher const>>();
+  eventDispatcher_ = std::make_shared<std::optional<EventDispatcher const>>();
 
   auto uiManager = std::make_shared<UIManager>(
-      runtimeExecutor_,
-      schedulerToolbox.backgroundExecutor,
-      schedulerToolbox.garbageCollectionTrigger);
+      runtimeExecutor_, schedulerToolbox.backgroundExecutor, contextContainer_);
   auto eventOwnerBox = std::make_shared<EventBeat::OwnerBox>();
   eventOwnerBox->owner = eventDispatcher_;
 
-  auto eventPipe = [uiManager](
+#ifdef ANDROID
+  auto enableCallImmediates = reactNativeConfig_->getBool(
+      "react_native_new_architecture:enable_call_immediates_android");
+#else
+  auto enableCallImmediates = reactNativeConfig_->getBool(
+      "react_native_new_architecture:enable_call_immediates_ios");
+#endif
+
+  auto weakRuntimeScheduler =
+      contextContainer_->find<std::weak_ptr<RuntimeScheduler>>(
+          "RuntimeScheduler");
+  auto runtimeScheduler =
+      (enableCallImmediates && weakRuntimeScheduler.has_value())
+      ? weakRuntimeScheduler.value().lock()
+      : nullptr;
+
+  auto eventPipe = [uiManager, runtimeScheduler = runtimeScheduler.get()](
                        jsi::Runtime &runtime,
                        const EventTarget *eventTarget,
                        const std::string &type,
+                       ReactEventPriority priority,
                        const ValueFactory &payloadFactory) {
     uiManager->visitBinding(
         [&](UIManagerBinding const &uiManagerBinding) {
           uiManagerBinding.dispatchEvent(
-              runtime, eventTarget, type, payloadFactory);
+              runtime, eventTarget, type, priority, payloadFactory);
         },
         runtime);
+    if (runtimeScheduler) {
+      runtimeScheduler->callExpiredTasks(runtime);
+    }
   };
 
   auto statePipe = [uiManager](StateUpdate const &stateUpdate) {
@@ -70,8 +89,7 @@ Scheduler::Scheduler(
   // Creating an `EventDispatcher` instance inside the already allocated
   // container (inside the optional).
   eventDispatcher_->emplace(
-      eventPipe,
-      statePipe,
+      EventQueueProcessor(eventPipe, statePipe),
       schedulerToolbox.synchronousEventBeatFactory,
       schedulerToolbox.asynchronousEventBeatFactory,
       eventOwnerBox);
@@ -81,20 +99,21 @@ Scheduler::Scheduler(
       EventDispatcher::Shared{eventDispatcher_, &eventDispatcher_->value()};
 
   componentDescriptorRegistry_ = schedulerToolbox.componentRegistryFactory(
-      eventDispatcher, schedulerToolbox.contextContainer);
+      eventDispatcher, contextContainer_);
 
   uiManager->setDelegate(this);
   uiManager->setComponentDescriptorRegistry(componentDescriptorRegistry_);
 
-  runtimeExecutor_([=](jsi::Runtime &runtime) {
-    auto uiManagerBinding = UIManagerBinding::createAndInstallIfNeeded(runtime);
-    uiManagerBinding->attach(uiManager);
-  });
+  runtimeExecutor_(
+      [uiManager, runtimeExecutor = runtimeExecutor_](jsi::Runtime &runtime) {
+        UIManagerBinding::createAndInstallIfNeeded(
+            runtime, runtimeExecutor, uiManager);
+      });
 
   auto componentDescriptorRegistryKey =
       "ComponentDescriptorRegistry_DO_NOT_USE_PRETTY_PLEASE";
-  schedulerToolbox.contextContainer->erase(componentDescriptorRegistryKey);
-  schedulerToolbox.contextContainer->insert(
+  contextContainer_->erase(componentDescriptorRegistryKey);
+  contextContainer_->insert(
       componentDescriptorRegistryKey,
       std::weak_ptr<ComponentDescriptorRegistry const>(
           componentDescriptorRegistry_));
@@ -103,7 +122,7 @@ Scheduler::Scheduler(
   commitHooks_ = schedulerToolbox.commitHooks;
   uiManager_ = uiManager;
 
-  for (auto commitHook : commitHooks_) {
+  for (auto const &commitHook : commitHooks_) {
     uiManager->registerCommitHook(*commitHook);
   }
 
@@ -114,24 +133,18 @@ Scheduler::Scheduler(
   uiManager_->setAnimationDelegate(animationDelegate);
 
 #ifdef ANDROID
-  removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
-      "react_fabric:remove_outstanding_surfaces_on_destruction_android");
-  Constants::setPropsForwardingEnabled(reactNativeConfig_->getBool(
-      "react_fabric:enable_props_forwarding_android"));
+  removeOutstandingSurfacesOnDestruction_ = true;
 #else
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_ios");
 #endif
-
-  uiManager->extractUIManagerBindingOnDemand_ = reactNativeConfig_->getBool(
-      "react_fabric:extract_uimanagerbinding_on_demand");
 }
 
 Scheduler::~Scheduler() {
   LOG(WARNING) << "Scheduler::~Scheduler() was called (address: " << this
                << ").";
 
-  for (auto commitHook : commitHooks_) {
+  for (auto const &commitHook : commitHooks_) {
     uiManager_->unregisterCommitHook(*commitHook);
   }
 
@@ -146,13 +159,14 @@ Scheduler::~Scheduler() {
   // Then, let's verify that the requirement was satisfied.
   auto surfaceIds = std::vector<SurfaceId>{};
   uiManager_->getShadowTreeRegistry().enumerate(
-      [&](ShadowTree const &shadowTree, bool &stop) {
+      [&surfaceIds](ShadowTree const &shadowTree) {
         surfaceIds.push_back(shadowTree.getSurfaceId());
       });
 
-  react_native_assert(
-      surfaceIds.empty() &&
-      "Scheduler was destroyed with outstanding Surfaces.");
+  // TODO(T88046056): Fix Android memory leak before uncommenting changes
+  //  react_native_assert(
+  //      surfaceIds.empty() &&
+  //      "Scheduler was destroyed with outstanding Surfaces.");
 
   if (surfaceIds.empty()) {
     return;
@@ -184,7 +198,39 @@ Scheduler::~Scheduler() {
 
 void Scheduler::registerSurface(
     SurfaceHandler const &surfaceHandler) const noexcept {
+  surfaceHandler.setContextContainer(getContextContainer());
   surfaceHandler.setUIManager(uiManager_.get());
+}
+
+InspectorData Scheduler::getInspectorDataForInstance(
+    EventEmitter const &eventEmitter) const noexcept {
+  return executeSynchronouslyOnSameThread_CAN_DEADLOCK<InspectorData>(
+      runtimeExecutor_, [=](jsi::Runtime &runtime) -> InspectorData {
+        auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
+        auto value = uiManagerBinding->getInspectorDataForInstance(
+            runtime, eventEmitter);
+
+        // TODO T97216348: avoid transforming jsi into folly::dynamic
+        auto dynamic = jsi::dynamicFromValue(runtime, value);
+        auto source = dynamic["source"];
+
+        InspectorData result = {};
+        result.fileName =
+            source["fileName"].isNull() ? "" : source["fileName"].c_str();
+        result.lineNumber = (int)source["lineNumber"].getDouble();
+        result.columnNumber = (int)source["columnNumber"].getDouble();
+        result.selectedIndex = (int)dynamic["selectedIndex"].getDouble();
+        // TODO T97216348: remove folly::dynamic from InspectorData struct
+        result.props = dynamic["props"];
+        auto hierarchy = dynamic["hierarchy"];
+        for (auto &i : hierarchy) {
+          auto viewHierarchyValue = i["name"];
+          if (!viewHierarchyValue.isNull()) {
+            result.hierarchy.emplace_back(viewHierarchyValue.c_str());
+          }
+        }
+        return result;
+      });
 }
 
 void Scheduler::unregisterSurface(
@@ -262,21 +308,30 @@ void Scheduler::uiManagerDidFinishTransaction(
     delegate_->schedulerDidFinishTransaction(mountingCoordinator);
   }
 }
-void Scheduler::uiManagerDidCreateShadowNode(
-    const ShadowNode::Shared &shadowNode) {
+void Scheduler::uiManagerDidCreateShadowNode(const ShadowNode &shadowNode) {
   SystraceSection s("Scheduler::uiManagerDidCreateShadowNode");
 
   if (delegate_) {
-    auto shadowView = ShadowView(*shadowNode);
     delegate_->schedulerDidRequestPreliminaryViewAllocation(
-        shadowNode->getSurfaceId(), shadowView);
+        shadowNode.getSurfaceId(), shadowNode);
+  }
+}
+
+void Scheduler::uiManagerDidCloneShadowNode(
+    const ShadowNode &oldShadowNode,
+    const ShadowNode &newShadowNode) {
+  SystraceSection s("Scheduler::uiManagerDidCloneShadowNode");
+
+  if (delegate_) {
+    delegate_->schedulerDidCloneShadowNode(
+        newShadowNode.getSurfaceId(), oldShadowNode, newShadowNode);
   }
 }
 
 void Scheduler::uiManagerDidDispatchCommand(
     const ShadowNode::Shared &shadowNode,
     std::string const &commandName,
-    folly::dynamic const args) {
+    folly::dynamic const &args) {
   SystraceSection s("Scheduler::uiManagerDispatchCommand");
 
   if (delegate_) {
@@ -306,6 +361,28 @@ void Scheduler::uiManagerDidSetIsJSResponder(
   if (delegate_) {
     delegate_->schedulerDidSetIsJSResponder(
         ShadowView(*shadowNode), isJSResponder, blockNativeResponder);
+  }
+}
+
+ContextContainer::Shared Scheduler::getContextContainer() const {
+  return contextContainer_;
+}
+
+std::shared_ptr<UIManager> Scheduler::getUIManager() const {
+  return uiManager_;
+}
+
+void Scheduler::addEventListener(
+    const std::shared_ptr<EventListener const> &listener) {
+  if (eventDispatcher_->has_value()) {
+    eventDispatcher_->value().addListener(listener);
+  }
+}
+
+void Scheduler::removeEventListener(
+    const std::shared_ptr<EventListener const> &listener) {
+  if (eventDispatcher_->has_value()) {
+    eventDispatcher_->value().removeListener(listener);
   }
 }
 

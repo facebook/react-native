@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,10 +14,11 @@ namespace facebook {
 namespace react {
 
 RawTextProps::RawTextProps(
+    const PropsParserContext &context,
     const RawTextProps &sourceProps,
     const RawProps &rawProps)
-    : Props(sourceProps, rawProps),
-      text(convertRawProp(rawProps, "text", sourceProps.text, {})){};
+    : Props(context, sourceProps, rawProps),
+      text(convertRawProp(context, rawProps, "text", sourceProps.text, {})){};
 
 #pragma mark - DebugStringConvertible
 

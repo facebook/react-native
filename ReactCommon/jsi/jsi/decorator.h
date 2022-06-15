@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -126,6 +126,9 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
       const std::shared_ptr<const PreparedJavaScript>& js) override {
     return plain().evaluatePreparedJavaScript(js);
   }
+  bool drainMicrotasks(int maxMicrotasksHint) override {
+    return plain().drainMicrotasks(maxMicrotasksHint);
+  }
   Object global() override {
     return plain().global();
   }
@@ -172,6 +175,9 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
   };
   PropNameID createPropNameIDFromString(const String& str) override {
     return plain_.createPropNameIDFromString(str);
+  };
+  PropNameID createPropNameIDFromSymbol(const Symbol& sym) override {
+    return plain_.createPropNameIDFromSymbol(sym);
   };
   std::string utf8(const PropNameID& id) override {
     return plain_.utf8(id);
@@ -490,6 +496,10 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
       const std::shared_ptr<const PreparedJavaScript>& js) override {
     Around around{with_};
     return RD::evaluatePreparedJavaScript(js);
+  }
+  bool drainMicrotasks(int maxMicrotasksHint) override {
+    Around around{with_};
+    return RD::drainMicrotasks(maxMicrotasksHint);
   }
   Object global() override {
     Around around{with_};

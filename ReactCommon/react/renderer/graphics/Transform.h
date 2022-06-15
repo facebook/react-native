@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -117,7 +117,7 @@ struct Transform {
    * @return
    */
   static Transform Interpolate(
-      float animationProgress,
+      Float animationProgress,
       Transform const &lhs,
       Transform const &rhs);
 
@@ -165,20 +165,26 @@ struct Transform {
 };
 
 /*
- * Applies tranformation to the given point.
+ * Applies transformation to the given point.
  */
 Point operator*(Point const &point, Transform const &transform);
 
 /*
- * Applies tranformation to the given size.
+ * Applies transformation to the given size.
  */
 Size operator*(Size const &size, Transform const &transform);
 
 /*
- * Applies tranformation to the given rect.
+ * Applies transformation to the given rect.
  * ONLY SUPPORTS scale and translation transformation.
  */
 Rect operator*(Rect const &rect, Transform const &transform);
+
+/*
+ * Applies tranformation to the given EdgeInsets.
+ * ONLY SUPPORTS scale transformation.
+ */
+EdgeInsets operator*(EdgeInsets const &edgeInsets, Transform const &transform);
 
 Vector operator*(Transform const &transform, Vector const &vector);
 

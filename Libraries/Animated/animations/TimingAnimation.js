@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -17,9 +17,13 @@ const Animation = require('./Animation');
 
 const {shouldUseNativeDriver} = require('../NativeAnimatedHelper');
 
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type {AnimationConfig, EndCallback} from './Animation';
+import type {RgbaValue} from '../nodes/AnimatedColor';
 
-export type TimingAnimationConfig = {
+import AnimatedColor from '../nodes/AnimatedColor';
+
+export type TimingAnimationConfig = $ReadOnly<{
   ...AnimationConfig,
   toValue:
     | number
@@ -30,19 +34,21 @@ export type TimingAnimationConfig = {
         ...
       }
     | AnimatedValueXY
-    | AnimatedInterpolation,
+    | RgbaValue
+    | AnimatedColor
+    | AnimatedInterpolation<number>,
   easing?: (value: number) => number,
   duration?: number,
   delay?: number,
-};
+}>;
 
-export type TimingAnimationConfigSingle = {
+export type TimingAnimationConfigSingle = $ReadOnly<{
   ...AnimationConfig,
-  toValue: number | AnimatedValue | AnimatedInterpolation,
+  toValue: number,
   easing?: (value: number) => number,
   duration?: number,
   delay?: number,
-};
+}>;
 
 let _easeInOut;
 function easeInOut() {
@@ -56,7 +62,7 @@ function easeInOut() {
 class TimingAnimation extends Animation {
   _startTime: number;
   _fromValue: number;
-  _toValue: any;
+  _toValue: number;
   _duration: number;
   _delay: number;
   _easing: (value: number) => number;
@@ -64,6 +70,7 @@ class TimingAnimation extends Animation {
   _animationFrame: any;
   _timeout: any;
   _useNativeDriver: boolean;
+  _platformConfig: ?PlatformConfig;
 
   constructor(config: TimingAnimationConfigSingle) {
     super();
@@ -73,6 +80,7 @@ class TimingAnimation extends Animation {
     this._delay = config.delay ?? 0;
     this.__iterations = config.iterations ?? 1;
     this._useNativeDriver = shouldUseNativeDriver(config);
+    this._platformConfig = config.platformConfig;
     this.__isInteraction = config.isInteraction ?? !this._useNativeDriver;
   }
 
@@ -89,6 +97,7 @@ class TimingAnimation extends Animation {
       frames,
       toValue: this._toValue,
       iterations: this.__iterations,
+      platformConfig: this._platformConfig,
     };
   }
 
@@ -117,6 +126,7 @@ class TimingAnimation extends Animation {
           this.__startNativeAnimation(animatedValue);
         } else {
           this._animationFrame = requestAnimationFrame(
+            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
             this.onUpdate.bind(this),
           );
         }
@@ -149,6 +159,7 @@ class TimingAnimation extends Animation {
           (this._toValue - this._fromValue),
     );
     if (this.__active) {
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
       this._animationFrame = requestAnimationFrame(this.onUpdate.bind(this));
     }
   }

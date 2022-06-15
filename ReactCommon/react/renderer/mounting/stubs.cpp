@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -26,7 +26,8 @@ static bool shouldFirstPairComesBeforeSecondOne(
 /*
  * Reorders pairs in-place based on `orderIndex` using a stable sort algorithm.
  */
-static void reorderInPlaceIfNeeded(ShadowViewNodePair::List &pairs) noexcept {
+static void reorderInPlaceIfNeeded(
+    ShadowViewNodePair::OwningList &pairs) noexcept {
   // This is a simplified version of the function intentionally copied from
   // `Differentiator.cpp`.
   std::stable_sort(
@@ -42,17 +43,17 @@ static void reorderInPlaceIfNeeded(ShadowViewNodePair::List &pairs) noexcept {
 static void calculateShadowViewMutationsForNewTree(
     ShadowViewMutation::List &mutations,
     ShadowView const &parentShadowView,
-    ShadowViewNodePair::List newChildPairs) {
+    ShadowViewNodePair::OwningList newChildPairs) {
   // Sorting pairs based on `orderIndex` if needed.
   reorderInPlaceIfNeeded(newChildPairs);
 
-  for (auto index = 0; index < newChildPairs.size(); index++) {
+  for (size_t index = 0; index < newChildPairs.size(); index++) {
     auto const &newChildPair = newChildPairs[index];
 
     mutations.push_back(
         ShadowViewMutation::CreateMutation(newChildPair.shadowView));
     mutations.push_back(ShadowViewMutation::InsertMutation(
-        parentShadowView, newChildPair.shadowView, index));
+        parentShadowView, newChildPair.shadowView, static_cast<int>(index)));
 
     auto newGrandChildPairs =
         sliceChildShadowNodeViewPairsLegacy(*newChildPair.shadowNode);

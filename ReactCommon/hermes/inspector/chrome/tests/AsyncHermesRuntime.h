@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -95,6 +95,16 @@ class AsyncHermesRuntime {
    */
   std::string getLastThrownExceptionMessage();
 
+  /**
+   * registers the runtime for profiling in the executor thread.
+   */
+  void registerForProfilingInExecutor();
+
+  /**
+   * unregisters the runtime for profiling in the executor thread.
+   */
+  void unregisterForProfilingInExecutor();
+
  private:
   jsi::Value shouldStop(
       jsi::Runtime &runtime,
@@ -115,6 +125,23 @@ class AsyncHermesRuntime {
   std::vector<std::string> thrownExceptions_;
 };
 
+/// RAII-style class dealing with sampling profiler registration in tests. This
+/// is especially important in tests -- if any test failure is caused by an
+/// uncaught exception, stack unwinding will destroy a VM registered for
+/// profiling in a thread that's not the one where registration happened, which
+/// will lead to a hermes fatal error. Using this RAII class ensure that the
+/// proper test failure cause is reported.
+struct SamplingProfilerRAII {
+  explicit SamplingProfilerRAII(AsyncHermesRuntime &rt) : runtime_(rt) {
+    runtime_.registerForProfilingInExecutor();
+  }
+
+  ~SamplingProfilerRAII() {
+    runtime_.unregisterForProfilingInExecutor();
+  }
+
+  AsyncHermesRuntime &runtime_;
+};
 } // namespace chrome
 } // namespace inspector
 } // namespace hermes

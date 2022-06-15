@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -68,7 +68,7 @@ static inline double telemetryTimePointToSteadyClockSeconds(
   auto nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(
                          timePoint.time_since_epoch())
                          .count();
-  return nanoseconds / 1.0e9;
+  return (double)nanoseconds / 1.0e9;
 }
 
 /*
@@ -96,7 +96,7 @@ static inline double telemetryTimePointToSecondsSinceEpoch(
   auto systemClockTimePoint =
       clockCast<std::chrono::system_clock::time_point, TelemetryTimePoint>(
           timePoint);
-  return std::chrono::duration_cast<std::chrono::microseconds>(
+  return (double)std::chrono::duration_cast<std::chrono::microseconds>(
              systemClockTimePoint.time_since_epoch())
              .count() /
       1000000.0;

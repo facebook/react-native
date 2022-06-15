@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -27,16 +27,16 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
+import androidx.autofill.HintConstants;
 import androidx.core.content.ContextCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
@@ -72,7 +72,9 @@ import com.facebook.react.views.text.TextLayoutManager;
 import com.facebook.react.views.text.TextTransform;
 import com.facebook.yoga.YogaConstants;
 import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Locale;
 import java.util.Map;
 
 /** Manages instances of TextInput. */
@@ -84,6 +86,51 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   private static final int[] SPACING_TYPES = {
     Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,
   };
+  private static final Map<String, String> REACT_PROPS_AUTOFILL_HINTS_MAP =
+      new HashMap<String, String>() {
+        {
+          put("birthdate-day", HintConstants.AUTOFILL_HINT_BIRTH_DATE_DAY);
+          put("birthdate-full", HintConstants.AUTOFILL_HINT_BIRTH_DATE_FULL);
+          put("birthdate-month", HintConstants.AUTOFILL_HINT_BIRTH_DATE_MONTH);
+          put("birthdate-year", HintConstants.AUTOFILL_HINT_BIRTH_DATE_YEAR);
+          put("cc-csc", HintConstants.AUTOFILL_HINT_CREDIT_CARD_SECURITY_CODE);
+          put("cc-exp", HintConstants.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_DATE);
+          put("cc-exp-day", HintConstants.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_DAY);
+          put("cc-exp-month", HintConstants.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_MONTH);
+          put("cc-exp-year", HintConstants.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_YEAR);
+          put("cc-number", HintConstants.AUTOFILL_HINT_CREDIT_CARD_NUMBER);
+          put("email", HintConstants.AUTOFILL_HINT_EMAIL_ADDRESS);
+          put("gender", HintConstants.AUTOFILL_HINT_GENDER);
+          put("name", HintConstants.AUTOFILL_HINT_PERSON_NAME);
+          put("name-family", HintConstants.AUTOFILL_HINT_PERSON_NAME_FAMILY);
+          put("name-given", HintConstants.AUTOFILL_HINT_PERSON_NAME_GIVEN);
+          put("name-middle", HintConstants.AUTOFILL_HINT_PERSON_NAME_MIDDLE);
+          put("name-middle-initial", HintConstants.AUTOFILL_HINT_PERSON_NAME_MIDDLE_INITIAL);
+          put("name-prefix", HintConstants.AUTOFILL_HINT_PERSON_NAME_PREFIX);
+          put("name-suffix", HintConstants.AUTOFILL_HINT_PERSON_NAME_SUFFIX);
+          put("password", HintConstants.AUTOFILL_HINT_PASSWORD);
+          put("password-new", HintConstants.AUTOFILL_HINT_NEW_PASSWORD);
+          put("postal-address", HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS);
+          put("postal-address-country", HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_COUNTRY);
+          put(
+              "postal-address-extended",
+              HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_EXTENDED_ADDRESS);
+          put(
+              "postal-address-extended-postal-code",
+              HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_EXTENDED_POSTAL_CODE);
+          put("postal-address-locality", HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_LOCALITY);
+          put("postal-address-region", HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_REGION);
+          put("postal-code", HintConstants.AUTOFILL_HINT_POSTAL_CODE);
+          put("street-address", HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_STREET_ADDRESS);
+          put("sms-otp", HintConstants.AUTOFILL_HINT_SMS_OTP);
+          put("tel", HintConstants.AUTOFILL_HINT_PHONE_NUMBER);
+          put("tel-country-code", HintConstants.AUTOFILL_HINT_PHONE_COUNTRY_CODE);
+          put("tel-national", HintConstants.AUTOFILL_HINT_PHONE_NATIONAL);
+          put("tel-device", HintConstants.AUTOFILL_HINT_PHONE_NUMBER_DEVICE);
+          put("username", HintConstants.AUTOFILL_HINT_USERNAME);
+          put("username-new", HintConstants.AUTOFILL_HINT_NEW_USERNAME);
+        }
+      };
 
   private static final int FOCUS_TEXT_INPUT = 1;
   private static final int BLUR_TEXT_INPUT = 2;
@@ -108,8 +155,18 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   private static final String KEYBOARD_TYPE_NUMBER_PAD = "number-pad";
   private static final String KEYBOARD_TYPE_PHONE_PAD = "phone-pad";
   private static final String KEYBOARD_TYPE_VISIBLE_PASSWORD = "visible-password";
+  private static final String KEYBOARD_TYPE_URI = "url";
   private static final InputFilter[] EMPTY_FILTERS = new InputFilter[0];
   private static final int UNSET = -1;
+  private static final String[] DRAWABLE_FIELDS = {
+    "mCursorDrawable", "mSelectHandleLeft", "mSelectHandleRight", "mSelectHandleCenter"
+  };
+  private static final String[] DRAWABLE_RESOURCES = {
+    "mCursorDrawableRes",
+    "mTextSelectHandleLeftRes",
+    "mTextSelectHandleRightRes",
+    "mTextSelectHandleRes"
+  };
 
   protected @Nullable ReactTextViewManagerCallback mReactTextViewManagerCallback;
 
@@ -145,48 +202,62 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @Nullable
   @Override
   public Map<String, Object> getExportedCustomBubblingEventTypeConstants() {
-    return MapBuilder.<String, Object>builder()
-        .put(
-            "topSubmitEditing",
-            MapBuilder.of(
-                "phasedRegistrationNames",
-                MapBuilder.of("bubbled", "onSubmitEditing", "captured", "onSubmitEditingCapture")))
-        .put(
-            "topEndEditing",
-            MapBuilder.of(
-                "phasedRegistrationNames",
-                MapBuilder.of("bubbled", "onEndEditing", "captured", "onEndEditingCapture")))
-        .put(
-            "topTextInput",
-            MapBuilder.of(
-                "phasedRegistrationNames",
-                MapBuilder.of("bubbled", "onTextInput", "captured", "onTextInputCapture")))
-        .put(
-            "topFocus",
-            MapBuilder.of(
-                "phasedRegistrationNames",
-                MapBuilder.of("bubbled", "onFocus", "captured", "onFocusCapture")))
-        .put(
-            "topBlur",
-            MapBuilder.of(
-                "phasedRegistrationNames",
-                MapBuilder.of("bubbled", "onBlur", "captured", "onBlurCapture")))
-        .put(
-            "topKeyPress",
-            MapBuilder.of(
-                "phasedRegistrationNames",
-                MapBuilder.of("bubbled", "onKeyPress", "captured", "onKeyPressCapture")))
-        .build();
+    @Nullable
+    Map<String, Object> baseEventTypeConstants =
+        super.getExportedCustomBubblingEventTypeConstants();
+    Map<String, Object> eventTypeConstants =
+        baseEventTypeConstants == null ? new HashMap<String, Object>() : baseEventTypeConstants;
+    eventTypeConstants.putAll(
+        MapBuilder.<String, Object>builder()
+            .put(
+                "topSubmitEditing",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of(
+                        "bubbled", "onSubmitEditing", "captured", "onSubmitEditingCapture")))
+            .put(
+                "topEndEditing",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onEndEditing", "captured", "onEndEditingCapture")))
+            .put(
+                "topTextInput",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onTextInput", "captured", "onTextInputCapture")))
+            .put(
+                "topFocus",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onFocus", "captured", "onFocusCapture")))
+            .put(
+                "topBlur",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onBlur", "captured", "onBlurCapture")))
+            .put(
+                "topKeyPress",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onKeyPress", "captured", "onKeyPressCapture")))
+            .build());
+    return eventTypeConstants;
   }
 
   @Nullable
   @Override
   public Map<String, Object> getExportedCustomDirectEventTypeConstants() {
-    return MapBuilder.<String, Object>builder()
-        .put(
-            ScrollEventType.getJSEventName(ScrollEventType.SCROLL),
-            MapBuilder.of("registrationName", "onScroll"))
-        .build();
+    @Nullable
+    Map<String, Object> baseEventTypeConstants = super.getExportedCustomDirectEventTypeConstants();
+    Map<String, Object> eventTypeConstants =
+        baseEventTypeConstants == null ? new HashMap<String, Object>() : baseEventTypeConstants;
+    eventTypeConstants.putAll(
+        MapBuilder.<String, Object>builder()
+            .put(
+                ScrollEventType.getJSEventName(ScrollEventType.SCROLL),
+                MapBuilder.of("registrationName", "onScroll"))
+            .build());
+    return eventTypeConstants;
   }
 
   @Override
@@ -231,16 +302,17 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
           return;
         }
 
-        String text = args.getString(1);
-
         int start = args.getInt(2);
         int end = args.getInt(3);
         if (end == UNSET) {
           end = start;
         }
 
-        reactEditText.maybeSetTextFromJS(
-            getReactTextUpdate(text, mostRecentEventCount, start, end));
+        if (!args.isNull(1)) {
+          String text = args.getString(1);
+          reactEditText.maybeSetTextFromJS(
+              getReactTextUpdate(text, mostRecentEventCount, start, end));
+        }
         reactEditText.maybeSetSelection(mostRecentEventCount, start, end);
         break;
     }
@@ -280,9 +352,22 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         Spannable spannable = update.getText();
         TextInlineImageSpan.possiblyUpdateInlineImageSpans(spannable, view);
       }
+
+      // Ensure that selection is handled correctly on text update
+      boolean isCurrentSelectionEmpty = view.getSelectionStart() == view.getSelectionEnd();
+      int selectionStart = update.getSelectionStart();
+      int selectionEnd = update.getSelectionEnd();
+      if ((selectionStart == UNSET || selectionEnd == UNSET) && isCurrentSelectionEmpty) {
+        // if selection is not set by state, shift current selection to ensure constant gap to
+        // text end
+        int textLength = view.getText() == null ? 0 : view.getText().length();
+        int selectionOffset = textLength - view.getSelectionStart();
+        selectionStart = update.getText().length() - selectionOffset;
+        selectionEnd = selectionStart;
+      }
+
       view.maybeSetTextFromState(update);
-      view.maybeSetSelection(
-          update.getJsEventCounter(), update.getSelectionStart(), update.getSelectionEnd());
+      view.maybeSetSelection(update.getJsEventCounter(), selectionStart, selectionEnd);
     }
   }
 
@@ -398,7 +483,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   }
 
   @ReactProp(name = "placeholder")
-  public void setPlaceholder(ReactEditText view, @Nullable String placeholder) {
+  public void setPlaceholder(ReactEditText view, String placeholder) {
     view.setHint(placeholder);
   }
 
@@ -446,39 +531,45 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
 
     // The evil code that follows uses reflection to achieve this on Android 8.1 and below.
-    // Based on
-    // http://stackoverflow.com/questions/25996032/how-to-change-programatically-edittext-cursor-color-in-android.
-    try {
-      // Get the original cursor drawable resource.
-      Field cursorDrawableResField = TextView.class.getDeclaredField("mCursorDrawableRes");
-      cursorDrawableResField.setAccessible(true);
-      int drawableResId = cursorDrawableResField.getInt(view);
+    // Based on https://tinyurl.com/3vff8lyu https://tinyurl.com/vehggzs9
+    for (int i = 0; i < DRAWABLE_RESOURCES.length; i++) {
+      try {
+        Field drawableResourceField = TextView.class.getDeclaredField(DRAWABLE_RESOURCES[i]);
+        drawableResourceField.setAccessible(true);
+        int resourceId = drawableResourceField.getInt(view);
 
-      // The view has no cursor drawable.
-      if (drawableResId == 0) {
-        return;
+        // The view has no cursor drawable.
+        if (resourceId == 0) {
+          return;
+        }
+
+        Drawable drawable = ContextCompat.getDrawable(view.getContext(), resourceId);
+
+        Drawable drawableCopy = drawable.mutate();
+        drawableCopy.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+
+        Field editorField = TextView.class.getDeclaredField("mEditor");
+        editorField.setAccessible(true);
+        Object editor = editorField.get(view);
+
+        Field cursorDrawableField = editor.getClass().getDeclaredField(DRAWABLE_FIELDS[i]);
+        cursorDrawableField.setAccessible(true);
+        if (DRAWABLE_RESOURCES[i] == "mCursorDrawableRes") {
+          Drawable[] drawables = {drawableCopy, drawableCopy};
+          cursorDrawableField.set(editor, drawables);
+        } else {
+          cursorDrawableField.set(editor, drawableCopy);
+        }
+      } catch (NoSuchFieldException ex) {
+        // Ignore errors to avoid crashing if these private fields don't exist on modified
+        // or future android versions.
+      } catch (IllegalAccessException ex) {
       }
-
-      Drawable drawable = ContextCompat.getDrawable(view.getContext(), drawableResId);
-      drawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
-      Drawable[] drawables = {drawable, drawable};
-
-      // Update the current cursor drawable with the new one.
-      Field editorField = TextView.class.getDeclaredField("mEditor");
-      editorField.setAccessible(true);
-      Object editor = editorField.get(view);
-      Field cursorDrawableField = editor.getClass().getDeclaredField("mCursorDrawable");
-      cursorDrawableField.setAccessible(true);
-      cursorDrawableField.set(editor, drawables);
-    } catch (NoSuchFieldException ex) {
-      // Ignore errors to avoid crashing if these private fields don't exist on modified
-      // or future android versions.
-    } catch (IllegalAccessException ex) {
     }
   }
 
   private static boolean shouldHideCursorForEmailTextInput() {
-    String manufacturer = Build.MANUFACTURER.toLowerCase();
+    String manufacturer = Build.MANUFACTURER.toLowerCase(Locale.ROOT);
     return (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q && manufacturer.contains("xiaomi"));
   }
 
@@ -517,7 +608,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         view.setTextColor(defaultContextTextColor);
       } else {
         Context c = view.getContext();
-        ReactSoftException.logSoftException(
+        ReactSoftExceptionLogger.logSoftException(
             TAG,
             new IllegalStateException(
                 "Could not get default text color from View Context: "
@@ -545,7 +636,16 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     if (underlineColor == null) {
       drawableToMutate.clearColorFilter();
     } else {
-      drawableToMutate.setColorFilter(underlineColor, PorterDuff.Mode.SRC_IN);
+      // fixes underlineColor transparent not working on API 21
+      // re-sets the TextInput underlineColor https://bit.ly/3M4alr6
+      if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP) {
+        int bottomBorderColor = view.getBorderColor(Spacing.BOTTOM);
+        setBorderColor(view, Spacing.START, underlineColor);
+        drawableToMutate.setColorFilter(underlineColor, PorterDuff.Mode.SRC_IN);
+        setBorderColor(view, Spacing.START, bottomBorderColor);
+      } else {
+        drawableToMutate.setColorFilter(underlineColor, PorterDuff.Mode.SRC_IN);
+      }
     }
   }
 
@@ -654,39 +754,16 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setFilters(newFilters);
   }
 
-  @ReactProp(name = "autoCompleteType")
-  public void setTextContentType(ReactEditText view, @Nullable String autoCompleteType) {
-    if (autoCompleteType == null) {
+  @ReactProp(name = "autoComplete")
+  public void setTextContentType(ReactEditText view, @Nullable String autoComplete) {
+    if (autoComplete == null) {
       setImportantForAutofill(view, View.IMPORTANT_FOR_AUTOFILL_NO);
-    } else if ("username".equals(autoCompleteType)) {
-      setAutofillHints(view, View.AUTOFILL_HINT_USERNAME);
-    } else if ("password".equals(autoCompleteType)) {
-      setAutofillHints(view, View.AUTOFILL_HINT_PASSWORD);
-    } else if ("email".equals(autoCompleteType)) {
-      setAutofillHints(view, View.AUTOFILL_HINT_EMAIL_ADDRESS);
-    } else if ("name".equals(autoCompleteType)) {
-      setAutofillHints(view, View.AUTOFILL_HINT_NAME);
-    } else if ("tel".equals(autoCompleteType)) {
-      setAutofillHints(view, View.AUTOFILL_HINT_PHONE);
-    } else if ("street-address".equals(autoCompleteType)) {
-      setAutofillHints(view, View.AUTOFILL_HINT_POSTAL_ADDRESS);
-    } else if ("postal-code".equals(autoCompleteType)) {
-      setAutofillHints(view, View.AUTOFILL_HINT_POSTAL_CODE);
-    } else if ("cc-number".equals(autoCompleteType)) {
-      setAutofillHints(view, View.AUTOFILL_HINT_CREDIT_CARD_NUMBER);
-    } else if ("cc-csc".equals(autoCompleteType)) {
-      setAutofillHints(view, View.AUTOFILL_HINT_CREDIT_CARD_SECURITY_CODE);
-    } else if ("cc-exp".equals(autoCompleteType)) {
-      setAutofillHints(view, View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_DATE);
-    } else if ("cc-exp-month".equals(autoCompleteType)) {
-      setAutofillHints(view, View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_MONTH);
-    } else if ("cc-exp-year".equals(autoCompleteType)) {
-      setAutofillHints(view, View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_YEAR);
-    } else if ("off".equals(autoCompleteType)) {
+    } else if ("off".equals(autoComplete)) {
       setImportantForAutofill(view, View.IMPORTANT_FOR_AUTOFILL_NO);
+    } else if (REACT_PROPS_AUTOFILL_HINTS_MAP.containsKey(autoComplete)) {
+      setAutofillHints(view, REACT_PROPS_AUTOFILL_HINTS_MAP.get(autoComplete));
     } else {
-      throw new JSApplicationIllegalArgumentException(
-          "Invalid autoCompleteType: " + autoCompleteType);
+      throw new JSApplicationIllegalArgumentException("Invalid autoComplete: " + autoComplete);
     }
   }
 
@@ -774,6 +851,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       // This will supercede secureTextEntry={false}. If it doesn't, due to the way
       //  the flags work out, the underlying field will end up a URI-type field.
       flagsToSet = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;
+    } else if (KEYBOARD_TYPE_URI.equalsIgnoreCase(keyboardType)) {
+      flagsToSet = InputType.TYPE_TEXT_VARIATION_URI;
     }
 
     updateStagedInputTypeFlag(view, InputType.TYPE_MASK_CLASS, flagsToSet);
@@ -892,12 +971,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     return UIManagerHelper.getEventDispatcherForReactTag(reactContext, editText.getId());
   }
 
-  private class ReactTextInputTextWatcher implements TextWatcher {
-
-    private EventDispatcher mEventDispatcher;
-    private ReactEditText mEditText;
+  private final class ReactTextInputTextWatcher implements TextWatcher {
+    private final ReactEditText mEditText;
+    private final EventDispatcher mEventDispatcher;
+    private final int mSurfaceId;
     private String mPreviousText;
-    private int mSurfaceId;
 
     public ReactTextInputTextWatcher(
         final ReactContext reactContext, final ReactEditText editText) {
@@ -933,24 +1011,23 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         return;
       }
 
-      if (mEditText.getFabricViewStateManager().hasStateWrapper()) {
+      FabricViewStateManager stateManager = mEditText.getFabricViewStateManager();
+      if (stateManager.hasStateWrapper()) {
         // Fabric: communicate to C++ layer that text has changed
         // We need to call `incrementAndGetEventCounter` here explicitly because this
         // update may race with other updates.
         // We simply pass in the cache ID, which never changes, but UpdateState will still be called
         // on the native side, triggering a measure.
-        mEditText
-            .getFabricViewStateManager()
-            .setState(
-                new FabricViewStateManager.StateUpdateCallback() {
-                  @Override
-                  public WritableMap getStateUpdate() {
-                    WritableMap map = new WritableNativeMap();
-                    map.putInt("mostRecentEventCount", mEditText.incrementAndGetEventCounter());
-                    map.putInt("opaqueCacheId", mEditText.getId());
-                    return map;
-                  }
-                });
+        stateManager.setState(
+            new FabricViewStateManager.StateUpdateCallback() {
+              @Override
+              public WritableMap getStateUpdate() {
+                WritableMap map = new WritableNativeMap();
+                map.putInt("mostRecentEventCount", mEditText.incrementAndGetEventCounter());
+                map.putInt("opaqueCacheId", mEditText.getId());
+                return map;
+              }
+            });
       }
 
       // The event that contains the event counter and updates it must be sent first.
@@ -1046,11 +1123,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   }
 
   private static class ReactContentSizeWatcher implements ContentSizeWatcher {
-    private ReactEditText mEditText;
-    private @Nullable EventDispatcher mEventDispatcher;
+    private final ReactEditText mEditText;
+    private final EventDispatcher mEventDispatcher;
+    private final int mSurfaceId;
     private int mPreviousContentWidth = 0;
     private int mPreviousContentHeight = 0;
-    private int mSurfaceId;
 
     public ReactContentSizeWatcher(ReactEditText editText) {
       mEditText = editText;
@@ -1094,17 +1171,15 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
   }
 
-  private class ReactSelectionWatcher implements SelectionWatcher {
-
-    private ReactEditText mReactEditText;
-    private EventDispatcher mEventDispatcher;
+  private static class ReactSelectionWatcher implements SelectionWatcher {
+    private final ReactEditText mReactEditText;
+    private final EventDispatcher mEventDispatcher;
+    private final int mSurfaceId;
     private int mPreviousSelectionStart;
     private int mPreviousSelectionEnd;
-    private int mSurfaceId;
 
     public ReactSelectionWatcher(ReactEditText editText) {
       mReactEditText = editText;
-
       ReactContext reactContext = getReactContext(editText);
       mEventDispatcher = getEventDispatcher(reactContext, editText);
       mSurfaceId = UIManagerHelper.getSurfaceId(reactContext);
@@ -1133,12 +1208,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   }
 
   private static class ReactScrollWatcher implements ScrollWatcher {
-
-    private ReactEditText mReactEditText;
-    private EventDispatcher mEventDispatcher;
+    private final ReactEditText mReactEditText;
+    private final EventDispatcher mEventDispatcher;
+    private final int mSurfaceId;
     private int mPreviousHoriz;
     private int mPreviousVert;
-    private int mSurfaceId;
 
     public ReactScrollWatcher(ReactEditText editText) {
       mReactEditText = editText;
@@ -1192,40 +1266,34 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setPadding(left, top, right, bottom);
   }
 
-  /**
-   * May be overridden by subclasses that would like to provide their own instance of the internal
-   * {@code EditText} this class uses to determine the expected size of the view.
-   */
-  protected EditText createInternalEditText(ThemedReactContext themedReactContext) {
-    return new EditText(themedReactContext);
-  }
-
   @Override
   public Object updateState(
-      ReactEditText view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
-
+      ReactEditText view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
     if (ReactEditText.DEBUG_MODE) {
       FLog.e(TAG, "updateState: [" + view.getId() + "]");
     }
 
-    view.getFabricViewStateManager().setStateWrapper(stateWrapper);
-
-    if (stateWrapper == null) {
-      return null;
+    FabricViewStateManager stateManager = view.getFabricViewStateManager();
+    if (!stateManager.hasStateWrapper()) {
+      // HACK: In Fabric, we assume all components start off with zero padding, which is
+      // not true for TextInput components. We expose the theme's default padding via
+      // AndroidTextInputComponentDescriptor, which will be applied later though setPadding.
+      // TODO T58784068: move this constructor once Fabric is shipped
+      view.setPadding(0, 0, 0, 0);
     }
 
-    ReadableNativeMap state = stateWrapper.getStateData();
+    stateManager.setStateWrapper(stateWrapper);
 
+    ReadableNativeMap state = stateWrapper.getStateData();
     if (state == null) {
       return null;
     }
-
     if (!state.hasKey("attributedString")) {
       return null;
     }
+
     ReadableMap attributedString = state.getMap("attributedString");
     ReadableMap paragraphAttributes = state.getMap("paragraphAttributes");
-
     if (attributedString == null || paragraphAttributes == null) {
       throw new IllegalArgumentException("Invalid TextInput State was received as a parameters");
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -258,7 +258,7 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
   }
 
   /**
-   * May be overriden by subclasses that would like to provide their own instance of the internal
+   * May be overridden by subclasses that would like to provide their own instance of the internal
    * {@code EditText} this class uses to determine the expected size of the view.
    */
   protected EditText createInternalEditText() {

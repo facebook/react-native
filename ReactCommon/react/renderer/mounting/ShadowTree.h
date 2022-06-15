@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <better/mutex.h>
+#include <butter/mutex.h>
 #include <memory>
 
 #include <react/renderer/components/root/RootComponentDescriptor.h>
@@ -18,6 +18,7 @@
 #include <react/renderer/mounting/MountingCoordinator.h>
 #include <react/renderer/mounting/ShadowTreeDelegate.h>
 #include <react/renderer/mounting/ShadowTreeRevision.h>
+#include <react/utils/ContextContainer.h>
 #include "MountingOverrideDelegate.h"
 
 namespace facebook {
@@ -70,7 +71,8 @@ class ShadowTree final {
       SurfaceId surfaceId,
       LayoutConstraints const &layoutConstraints,
       LayoutContext const &layoutContext,
-      ShadowTreeDelegate const &delegate);
+      ShadowTreeDelegate const &delegate,
+      ContextContainer const &contextContainer);
 
   ~ShadowTree();
 
@@ -124,6 +126,8 @@ class ShadowTree final {
   MountingCoordinator::Shared getMountingCoordinator() const;
 
  private:
+  constexpr static ShadowTreeRevision::Number INITIAL_REVISION{0};
+
   void mount(ShadowTreeRevision const &revision) const;
 
   void emitLayoutEvents(
@@ -131,7 +135,7 @@ class ShadowTree final {
 
   SurfaceId const surfaceId_;
   ShadowTreeDelegate const &delegate_;
-  mutable better::shared_mutex commitMutex_;
+  mutable butter::shared_mutex commitMutex_;
   mutable CommitMode commitMode_{
       CommitMode::Normal}; // Protected by `commitMutex_`.
   mutable ShadowTreeRevision currentRevision_; // Protected by `commitMutex_`.

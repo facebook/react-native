@@ -1,18 +1,17 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 #import <React/RCTBridge.h>
-#import <React/RCTJSInvokerModule.h>
 
 /**
  * RCTEventEmitter is an abstract base class to be used for modules that emit
  * events to be observed by JS.
  */
-@interface RCTEventEmitter : NSObject <RCTBridgeModule, RCTJSInvokerModule, RCTInvalidating>
+@interface RCTEventEmitter : NSObject <RCTBridgeModule, RCTInvalidating>
 
 @property (nonatomic, weak) RCTBridge *bridge;
 @property (nonatomic, weak) RCTModuleRegistry *moduleRegistry;
@@ -32,6 +31,8 @@
  * or data update notification.
  */
 - (void)sendEventWithName:(NSString *)name body:(id)body;
+
+- (BOOL)canSendEvents_DEPRECATED;
 
 /**
  * These methods will be called when the first observer is added and when the

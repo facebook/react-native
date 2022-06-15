@@ -31,12 +31,6 @@ rn_xplat_cxx_library(
         ],
         prefix = "react/renderer/imagemanager",
     ),
-    compiler_flags = [
-        "-fexceptions",
-        "-frtti",
-        "-std=c++17",
-        "-Wall",
-    ],
     contacts = ["oncall+react_native@xmail.facebook.com"],
     fbandroid_exported_headers = subdir_glob(
         [
@@ -64,8 +58,8 @@ rn_xplat_cxx_library(
     ],
     force_static = True,
     ios_deps = [
-        "//xplat/js:RCTImage",
         "//xplat/js/react-native-github:RCTCxxBridge",
+        "//xplat/js/react-native-github:RCTImage",
     ],
     ios_exported_headers = subdir_glob(
         [
@@ -92,7 +86,10 @@ rn_xplat_cxx_library(
             "platform/ios/**/*.mm",
         ],
     ),
-    labels = ["supermodule:xplat/default/public.react_native.infra"],
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+        "supermodule:xplat/default/public.react_native.infra",
+    ],
     macosx_tests_override = [],
     platforms = (ANDROID, APPLE, CXX),
     preprocessor_flags = [
@@ -102,7 +99,7 @@ rn_xplat_cxx_library(
     tests = [":tests"],
     visibility = ["PUBLIC"],
     deps = [
-        "//xplat/folly:headers_only",
+        "//xplat/folly:headers_only_do_not_use",
         "//xplat/folly:molly",
         YOGA_CXX_TARGET,
         react_native_xplat_target("react/debug:debug"),

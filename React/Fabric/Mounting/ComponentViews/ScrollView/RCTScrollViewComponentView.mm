@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -52,7 +52,11 @@ static UIScrollViewIndicatorStyle RCTUIScrollViewIndicatorStyleFromProps(ScrollV
   }
 }
 
-static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteger tag)
+// Once Fabric implements proper NativeAnimationDriver, this should be removed.
+// This is just a workaround to allow animations based on onScroll event.
+// This is only used to animate sticky headers in ScrollViews, and only the contentOffset and tag is used.
+// TODO: T116850910 [Fabric][iOS] Make Fabric not use legacy RCTEventDispatcher for native-driven AnimatedEvents
+static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInteger tag)
 {
   static uint16_t coalescingKey = 0;
   RCTScrollEvent *scrollEvent = [[RCTScrollEvent alloc] initWithEventName:@"onScroll"
@@ -64,7 +68,15 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
                                                       scrollViewZoomScale:scrollView.zoomScale
                                                                  userData:nil
                                                             coalescingKey:coalescingKey];
-  [[RCTBridge currentBridge].eventDispatcher sendEvent:scrollEvent];
+  RCTBridge *bridge = [RCTBridge currentBridge];
+  if (bridge) {
+    [bridge.eventDispatcher sendEvent:scrollEvent];
+  } else {
+    NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:scrollEvent, @"event", nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTSendEventToLegacyEventDispatcher"
+                                                        object:nil
+                                                      userInfo:userInfo];
+  }
 }
 
 @interface RCTScrollViewComponentView () <
@@ -85,10 +97,9 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   // This helps to only update state from `scrollViewDidScroll` in case
   // some other part of the system scrolls scroll view.
   BOOL _isUserTriggeredScrolling;
+  BOOL _shouldUpdateContentInsetAdjustmentBehavior;
 
-  BOOL _isOnDemandViewMountingEnabled;
   CGPoint _contentOffsetWhenClipped;
-  NSMutableArray<UIView<RCTComponentViewProtocol> *> *_childComponentViews;
 }
 
 + (RCTScrollViewComponentView *_Nullable)findScrollViewComponentViewForView:(UIView *)view
@@ -105,14 +116,12 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     static const auto defaultProps = std::make_shared<const ScrollViewProps>();
     _props = defaultProps;
 
-    _isOnDemandViewMountingEnabled = RCTExperimentGetOnDemandViewMounting();
-    _childComponentViews = [[NSMutableArray alloc] init];
-
     _scrollView = [[RCTEnhancedScrollView alloc] initWithFrame:self.bounds];
     _scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     _scrollView.delaysContentTouches = NO;
     ((RCTEnhancedScrollView *)_scrollView).overridingDelegate = self;
     _isUserTriggeredScrolling = NO;
+    _shouldUpdateContentInsetAdjustmentBehavior = YES;
     [self addSubview:_scrollView];
 
     _containerView = [[UIView alloc] initWithFrame:CGRectZero];
@@ -140,7 +149,8 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 
 #pragma mark - RCTMountingTransactionObserving
 
-- (void)mountingTransactionDidMountWithMetadata:(MountingTransactionMetadata const &)metadata
+- (void)mountingTransactionDidMount:(MountingTransaction const &)transaction
+               withSurfaceTelemetry:(facebook::react::SurfaceTelemetry const &)surfaceTelemetry
 {
   [self _remountChildren];
 }
@@ -250,19 +260,27 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     scrollView.snapToOffsets = snapToOffsets;
   }
 
-  if (@available(iOS 11.0, *)) {
-    if (oldScrollViewProps.contentInsetAdjustmentBehavior != newScrollViewProps.contentInsetAdjustmentBehavior) {
-      auto const contentInsetAdjustmentBehavior = newScrollViewProps.contentInsetAdjustmentBehavior;
-      if (contentInsetAdjustmentBehavior == ContentInsetAdjustmentBehavior::Never) {
-        scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-      } else if (contentInsetAdjustmentBehavior == ContentInsetAdjustmentBehavior::Automatic) {
-        scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAutomatic;
-      } else if (contentInsetAdjustmentBehavior == ContentInsetAdjustmentBehavior::ScrollableAxes) {
-        scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAutomatic;
-      } else if (contentInsetAdjustmentBehavior == ContentInsetAdjustmentBehavior::Always) {
-        scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAlways;
-      }
+  if (@available(iOS 13.0, *)) {
+    if (oldScrollViewProps.automaticallyAdjustsScrollIndicatorInsets !=
+        newScrollViewProps.automaticallyAdjustsScrollIndicatorInsets) {
+      scrollView.automaticallyAdjustsScrollIndicatorInsets =
+          newScrollViewProps.automaticallyAdjustsScrollIndicatorInsets;
     }
+  }
+
+  if ((oldScrollViewProps.contentInsetAdjustmentBehavior != newScrollViewProps.contentInsetAdjustmentBehavior) ||
+      _shouldUpdateContentInsetAdjustmentBehavior) {
+    auto const contentInsetAdjustmentBehavior = newScrollViewProps.contentInsetAdjustmentBehavior;
+    if (contentInsetAdjustmentBehavior == ContentInsetAdjustmentBehavior::Never) {
+      scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    } else if (contentInsetAdjustmentBehavior == ContentInsetAdjustmentBehavior::Automatic) {
+      scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAutomatic;
+    } else if (contentInsetAdjustmentBehavior == ContentInsetAdjustmentBehavior::ScrollableAxes) {
+      scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAutomatic;
+    } else if (contentInsetAdjustmentBehavior == ContentInsetAdjustmentBehavior::Always) {
+      scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAlways;
+    }
+    _shouldUpdateContentInsetAdjustmentBehavior = NO;
   }
 
   MAP_SCROLL_VIEW_PROP(disableIntervalMomentum);
@@ -318,27 +336,12 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 
 - (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
-  if (_isOnDemandViewMountingEnabled) {
-    [_childComponentViews insertObject:childComponentView atIndex:index];
-  } else {
-    [_containerView insertSubview:childComponentView atIndex:index];
-  }
+  [_containerView insertSubview:childComponentView atIndex:index];
 }
 
 - (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
-  if (_isOnDemandViewMountingEnabled) {
-    RCTAssert(
-        [_childComponentViews objectAtIndex:index] == childComponentView,
-        @"Attempt to unmount improperly mounted component view.");
-    [_childComponentViews removeObjectAtIndex:index];
-    // In addition to removing a view from `_childComponentViews`,
-    // we have to unmount views immediately to not mess with recycling.
-    [childComponentView removeFromSuperview];
-  } else {
-    RCTAssert(childComponentView.superview == _containerView, @"Attempt to unmount improperly mounted component view.");
-    [childComponentView removeFromSuperview];
-  }
+  [childComponentView removeFromSuperview];
 }
 
 /*
@@ -391,6 +394,11 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 {
   const auto &props = *std::static_pointer_cast<const ScrollViewProps>(_props);
   _scrollView.contentOffset = RCTCGPointFromPoint(props.contentOffset);
+  // We set the default behavior to "never" so that iOS
+  // doesn't do weird things to UIScrollView insets automatically
+  // and keeps it as an opt-in behavior.
+  _scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+  _shouldUpdateContentInsetAdjustmentBehavior = YES;
   _state.reset();
   _isUserTriggeredScrolling = NO;
   [super prepareForRecycle];
@@ -417,9 +425,8 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     if (_eventEmitter) {
       std::static_pointer_cast<ScrollViewEventEmitter const>(_eventEmitter)->onScroll([self _scrollViewMetrics]);
     }
-    // Once Fabric implements proper NativeAnimationDriver, this should be removed.
-    // This is just a workaround to allow animations based on onScroll event.
-    RCTSendPaperScrollEvent_DEPRECATED(scrollView, self.tag);
+
+    RCTSendScrollEventForNativeAnimations_DEPRECATED(scrollView, self.tag);
   }
 
   [self _remountChildrenIfNeeded];
@@ -493,6 +500,11 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
 {
+  [self _handleFinishedScrolling:scrollView];
+}
+
+- (void)_handleFinishedScrolling:(UIScrollView *)scrollView
+{
   [self _forceDispatchNextScrollEvent];
   [self scrollViewDidScroll:scrollView];
 
@@ -554,31 +566,29 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 - (void)scrollTo:(double)x y:(double)y animated:(BOOL)animated
 {
   CGPoint offset = CGPointMake(x, y);
-  if (!CGPointEqualToPoint(_scrollView.contentOffset, offset)) {
-    CGRect maxRect = CGRectMake(
-        fmin(-_scrollView.contentInset.left, 0),
-        fmin(-_scrollView.contentInset.top, 0),
-        fmax(
-            _scrollView.contentSize.width - _scrollView.bounds.size.width + _scrollView.contentInset.right +
-                fmax(_scrollView.contentInset.left, 0),
-            0.01),
-        fmax(
-            _scrollView.contentSize.height - _scrollView.bounds.size.height + _scrollView.contentInset.bottom +
-                fmax(_scrollView.contentInset.top, 0),
-            0.01)); // Make width and height greater than 0
+  CGRect maxRect = CGRectMake(
+      fmin(-_scrollView.contentInset.left, 0),
+      fmin(-_scrollView.contentInset.top, 0),
+      fmax(
+          _scrollView.contentSize.width - _scrollView.bounds.size.width + _scrollView.contentInset.right +
+              fmax(_scrollView.contentInset.left, 0),
+          0.01),
+      fmax(
+          _scrollView.contentSize.height - _scrollView.bounds.size.height + _scrollView.contentInset.bottom +
+              fmax(_scrollView.contentInset.top, 0),
+          0.01)); // Make width and height greater than 0
 
-    const auto &props = *std::static_pointer_cast<const ScrollViewProps>(_props);
-    if (!CGRectContainsPoint(maxRect, offset) && !props.scrollToOverflowEnabled) {
-      CGFloat localX = fmax(offset.x, CGRectGetMinX(maxRect));
-      localX = fmin(localX, CGRectGetMaxX(maxRect));
-      CGFloat localY = fmax(offset.y, CGRectGetMinY(maxRect));
-      localY = fmin(localY, CGRectGetMaxY(maxRect));
-      offset = CGPointMake(localX, localY);
-    }
-
-    [self _forceDispatchNextScrollEvent];
-    [_scrollView setContentOffset:offset animated:animated];
+  const auto &props = *std::static_pointer_cast<const ScrollViewProps>(_props);
+  if (!CGRectContainsPoint(maxRect, offset) && !props.scrollToOverflowEnabled) {
+    CGFloat localX = fmax(offset.x, CGRectGetMinX(maxRect));
+    localX = fmin(localX, CGRectGetMaxX(maxRect));
+    CGFloat localY = fmax(offset.y, CGRectGetMinY(maxRect));
+    localY = fmin(localY, CGRectGetMaxY(maxRect));
+    offset = CGPointMake(localX, localY);
   }
+
+  [self _forceDispatchNextScrollEvent];
+  [self scrollToOffset:offset animated:animated];
 }
 
 - (void)scrollToEnd:(BOOL)animated
@@ -593,17 +603,18 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     offset = CGPointMake(0, fmax(offsetY, 0));
   }
 
-  [_scrollView setContentOffset:offset animated:animated];
+  [self scrollToOffset:offset animated:animated];
 }
 
 #pragma mark - Child views mounting
 
+- (void)updateClippedSubviewsWithClipRect:(CGRect)clipRect relativeToView:(UIView *)clipView
+{
+  // Do nothing. ScrollView manages its subview clipping individually in `_remountChildren`.
+}
+
 - (void)_remountChildrenIfNeeded
 {
-  if (!_isOnDemandViewMountingEnabled) {
-    return;
-  }
-
   CGPoint contentOffset = _scrollView.contentOffset;
 
   if (std::abs(_contentOffsetWhenClipped.x - contentOffset.x) < kClippingLeeway &&
@@ -618,67 +629,8 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 
 - (void)_remountChildren
 {
-  if (!_isOnDemandViewMountingEnabled) {
-    return;
-  }
-
-  CGRect visibleFrame = CGRect{_scrollView.contentOffset, _scrollView.bounds.size};
-  visibleFrame = CGRectInset(visibleFrame, -kClippingLeeway, -kClippingLeeway);
-
-  CGFloat scale = 1.0 / _scrollView.zoomScale;
-  visibleFrame.origin.x *= scale;
-  visibleFrame.origin.y *= scale;
-  visibleFrame.size.width *= scale;
-  visibleFrame.size.height *= scale;
-
-#ifndef NDEBUG
-  NSMutableArray<UIView<RCTComponentViewProtocol> *> *expectedSubviews = [NSMutableArray new];
-#endif
-
-  NSInteger mountedIndex = 0;
-  for (UIView *componentView in _childComponentViews) {
-    BOOL shouldBeMounted = YES;
-    BOOL isMounted = componentView.superview != nil;
-
-    // It's simpler and faster to not mess with views that are not `RCTViewComponentView` subclasses.
-    if ([componentView isKindOfClass:[RCTViewComponentView class]]) {
-      RCTViewComponentView *viewComponentView = (RCTViewComponentView *)componentView;
-      auto layoutMetrics = viewComponentView->_layoutMetrics;
-
-      if (layoutMetrics.overflowInset == EdgeInsets{}) {
-        shouldBeMounted = CGRectIntersectsRect(visibleFrame, componentView.frame);
-      }
-    }
-
-    if (shouldBeMounted != isMounted) {
-      if (shouldBeMounted) {
-        [_containerView insertSubview:componentView atIndex:mountedIndex];
-      } else {
-        [componentView removeFromSuperview];
-      }
-    }
-
-    if (shouldBeMounted) {
-      mountedIndex++;
-    }
-
-#ifndef NDEBUG
-    if (shouldBeMounted) {
-      [expectedSubviews addObject:componentView];
-    }
-#endif
-  }
-
-#ifndef NDEBUG
-  RCTAssert(
-      _containerView.subviews.count == expectedSubviews.count,
-      @"-[RCTScrollViewComponentView _remountChildren]: Inconsistency detected.");
-  for (NSInteger i = 0; i < expectedSubviews.count; i++) {
-    RCTAssert(
-        [_containerView.subviews objectAtIndex:i] == [expectedSubviews objectAtIndex:i],
-        @"-[RCTScrollViewComponentView _remountChildren]: Inconsistency detected.");
-  }
-#endif
+  [_scrollView updateClippedSubviewsWithClipRect:CGRectInset(_scrollView.bounds, -kClippingLeeway, -kClippingLeeway)
+                                  relativeToView:_scrollView];
 }
 
 #pragma mark - RCTScrollableProtocol
@@ -697,7 +649,19 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 - (void)scrollToOffset:(CGPoint)offset animated:(BOOL)animated
 {
   [self _forceDispatchNextScrollEvent];
-  [self.scrollView setContentOffset:offset animated:animated];
+
+  if (_layoutMetrics.layoutDirection == LayoutDirection::RightToLeft) {
+    // Adjusting offset.x in right to left layout direction.
+    offset.x = self.contentSize.width - _scrollView.frame.size.width - offset.x;
+  }
+
+  [_scrollView setContentOffset:offset animated:animated];
+
+  if (!animated) {
+    // When not animated, the expected workflow in ``scrollViewDidEndScrollingAnimation`` after scrolling is not going
+    // to get triggered. We will need to manually execute here.
+    [self _handleFinishedScrolling:_scrollView];
+  }
 }
 
 - (void)zoomToRect:(CGRect)rect animated:(BOOL)animated

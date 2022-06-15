@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,86 +7,52 @@
 
 #pragma once
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/primitives.h>
-#include <stdlib.h>
 
 namespace facebook {
 namespace react {
 
-// Default initial size for _keyValues array
-// 106 = 10 entries = 10*10 + 6 sizeof(header)
-constexpr uint16_t INITIAL_KEY_VALUE_SIZE = 106;
-
-// Default initial size for _dynamicDataValues array
-constexpr int INITIAL_DYNAMIC_DATA_SIZE = 200;
+// Default reserved size for buckets_ vector
+constexpr uint32_t INITIAL_BUCKETS_SIZE = 10;
 
 /**
  * MapBufferBuilder is a builder class for MapBuffer
  */
 class MapBufferBuilder {
- private:
-  Header _header = {ALIGNMENT, 0, 0};
-
-  void ensureKeyValueSpace();
-
-  void ensureDynamicDataSpace(int size);
-
-  void storeKeyValue(Key key, uint8_t *value, int valueSize);
-
-  // Array of [key,value] map entries:
-  // - Key is represented in 2 bytes
-  // - Value is stored into 8 bytes. The 8 bytes of the value will contain the
-  // actual value for the key or a pointer to the actual value (based on the
-  // type)
-  uint8_t *keyValues_;
-
-  // Amount of bytes allocated on _keyValues
-  uint16_t keyValuesSize_;
-
-  // Relative offset on the _keyValues array.
-  // This represents the first byte that can be written in _keyValues array
-  int keyValuesOffset_;
-
-  // This array contains data for dynamic values in the MapBuffer.
-  // A dynamic value is a String or another MapBuffer.
-  uint8_t *dynamicDataValues_;
-
-  // Amount of bytes allocated on _dynamicDataValues
-  uint16_t dynamicDataSize_;
-
-  // Relative offset on the _dynamicDataValues array.
-  // This represents the first byte that can be written in _dynamicDataValues
-  // array
-  int dynamicDataOffset_;
-
-  // Minimmum key to store in the MapBuffer (this is used to guarantee
-  // consistency)
-  uint16_t minKeyToStore_ = 0;
-
  public:
-  MapBufferBuilder();
-
-  MapBufferBuilder(uint16_t initialSize);
-
-  ~MapBufferBuilder();
+  MapBufferBuilder(uint32_t initialSize = INITIAL_BUCKETS_SIZE);
 
   static MapBuffer EMPTY();
 
-  void putInt(Key key, int value);
+  void putInt(MapBuffer::Key key, int32_t value);
 
-  void putBool(Key key, bool value);
+  void putBool(MapBuffer::Key key, bool value);
 
-  void putDouble(Key key, double value);
+  void putDouble(MapBuffer::Key key, double value);
 
-  void putNull(Key key);
+  void putString(MapBuffer::Key key, std::string const &value);
 
-  void putString(Key key, std::string value);
+  void putMapBuffer(MapBuffer::Key key, MapBuffer const &map);
 
-  void putMapBuffer(Key key, MapBuffer &map);
-
-  // TODO This should return MapBuffer!
   MapBuffer build();
+
+ private:
+  MapBuffer::Header header_;
+
+  std::vector<MapBuffer::Bucket> buckets_{};
+
+  std::vector<uint8_t> dynamicData_{};
+
+  uint16_t lastKey_{0};
+
+  bool needsSort_{false};
+
+  void storeKeyValue(
+      MapBuffer::Key key,
+      MapBuffer::DataType type,
+      uint8_t const *value,
+      uint32_t valueSize);
 };
 
 } // namespace react

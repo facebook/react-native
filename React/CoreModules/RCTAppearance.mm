@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -28,6 +28,11 @@ static NSString *sColorSchemeOverride = nil;
 void RCTOverrideAppearancePreference(NSString *const colorSchemeOverride)
 {
   sColorSchemeOverride = colorSchemeOverride;
+}
+
+NSString *RCTCurrentOverrideAppearancePreference()
+{
+  return sColorSchemeOverride;
 }
 
 NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
@@ -89,7 +94,9 @@ RCT_EXPORT_MODULE(Appearance)
 
 RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
 {
-  _currentColorScheme = RCTColorSchemePreference(nil);
+  if (_currentColorScheme == nil) {
+    _currentColorScheme = RCTColorSchemePreference(nil);
+  }
   return _currentColorScheme;
 }
 

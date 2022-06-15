@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -17,11 +17,11 @@ const invariant = require('invariant');
  * matrices, which are reusable.
  */
 const MatrixMath = {
-  createIdentityMatrix: function() {
+  createIdentityMatrix: function () {
     return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
   },
 
-  createCopy: function(m) {
+  createCopy: function (m) {
     return [
       m[0],
       m[1],
@@ -42,7 +42,7 @@ const MatrixMath = {
     ];
   },
 
-  createOrthographic: function(left, right, bottom, top, near, far) {
+  createOrthographic: function (left, right, bottom, top, near, far) {
     const a = 2 / (right - left);
     const b = 2 / (top - bottom);
     const c = -2 / (far - near);
@@ -54,7 +54,7 @@ const MatrixMath = {
     return [a, 0, 0, 0, 0, b, 0, 0, 0, 0, c, 0, tx, ty, tz, 1];
   },
 
-  createFrustum: function(left, right, bottom, top, near, far) {
+  createFrustum: function (left, right, bottom, top, near, far) {
     const r_width = 1 / (right - left);
     const r_height = 1 / (top - bottom);
     const r_depth = 1 / (near - far);
@@ -71,9 +71,9 @@ const MatrixMath = {
    * This create a perspective projection towards negative z
    * Clipping the z range of [-near, -far]
    *
-   * @param fovInRadians - field of view in randians
+   * @param fovInRadians - field of view in radians
    */
-  createPerspective: function(fovInRadians, aspect, near, far) {
+  createPerspective: function (fovInRadians, aspect, near, far) {
     const h = 1 / Math.tan(fovInRadians / 2);
     const r_depth = 1 / (near - far);
     const C = (far + near) * r_depth;
@@ -81,41 +81,41 @@ const MatrixMath = {
     return [h / aspect, 0, 0, 0, 0, h, 0, 0, 0, 0, C, -1, 0, 0, D, 0];
   },
 
-  createTranslate2d: function(x, y) {
+  createTranslate2d: function (x, y) {
     const mat = MatrixMath.createIdentityMatrix();
     MatrixMath.reuseTranslate2dCommand(mat, x, y);
     return mat;
   },
 
-  reuseTranslate2dCommand: function(matrixCommand, x, y) {
+  reuseTranslate2dCommand: function (matrixCommand, x, y) {
     matrixCommand[12] = x;
     matrixCommand[13] = y;
   },
 
-  reuseTranslate3dCommand: function(matrixCommand, x, y, z) {
+  reuseTranslate3dCommand: function (matrixCommand, x, y, z) {
     matrixCommand[12] = x;
     matrixCommand[13] = y;
     matrixCommand[14] = z;
   },
 
-  createScale: function(factor) {
+  createScale: function (factor) {
     const mat = MatrixMath.createIdentityMatrix();
     MatrixMath.reuseScaleCommand(mat, factor);
     return mat;
   },
 
-  reuseScaleCommand: function(matrixCommand, factor) {
+  reuseScaleCommand: function (matrixCommand, factor) {
     matrixCommand[0] = factor;
     matrixCommand[5] = factor;
   },
 
-  reuseScale3dCommand: function(matrixCommand, x, y, z) {
+  reuseScale3dCommand: function (matrixCommand, x, y, z) {
     matrixCommand[0] = x;
     matrixCommand[5] = y;
     matrixCommand[10] = z;
   },
 
-  reusePerspectiveCommand: function(matrixCommand, p) {
+  reusePerspectiveCommand: function (matrixCommand, p) {
     matrixCommand[11] = -1 / p;
   },
 
@@ -131,14 +131,14 @@ const MatrixMath = {
     matrixCommand[10] = factor;
   },
 
-  reuseRotateXCommand: function(matrixCommand, radians) {
+  reuseRotateXCommand: function (matrixCommand, radians) {
     matrixCommand[5] = Math.cos(radians);
     matrixCommand[6] = Math.sin(radians);
     matrixCommand[9] = -Math.sin(radians);
     matrixCommand[10] = Math.cos(radians);
   },
 
-  reuseRotateYCommand: function(matrixCommand, amount) {
+  reuseRotateYCommand: function (matrixCommand, amount) {
     matrixCommand[0] = Math.cos(amount);
     matrixCommand[2] = -Math.sin(amount);
     matrixCommand[8] = Math.sin(amount);
@@ -146,28 +146,28 @@ const MatrixMath = {
   },
 
   // http://www.w3.org/TR/css3-transforms/#recomposing-to-a-2d-matrix
-  reuseRotateZCommand: function(matrixCommand, radians) {
+  reuseRotateZCommand: function (matrixCommand, radians) {
     matrixCommand[0] = Math.cos(radians);
     matrixCommand[1] = Math.sin(radians);
     matrixCommand[4] = -Math.sin(radians);
     matrixCommand[5] = Math.cos(radians);
   },
 
-  createRotateZ: function(radians) {
+  createRotateZ: function (radians) {
     const mat = MatrixMath.createIdentityMatrix();
     MatrixMath.reuseRotateZCommand(mat, radians);
     return mat;
   },
 
-  reuseSkewXCommand: function(matrixCommand, radians) {
+  reuseSkewXCommand: function (matrixCommand, radians) {
     matrixCommand[4] = Math.tan(radians);
   },
 
-  reuseSkewYCommand: function(matrixCommand, radians) {
+  reuseSkewYCommand: function (matrixCommand, radians) {
     matrixCommand[1] = Math.tan(radians);
   },
 
-  multiplyInto: function(out, a, b) {
+  multiplyInto: function (out, a, b) {
     const a00 = a[0],
       a01 = a[1],
       a02 = a[2],

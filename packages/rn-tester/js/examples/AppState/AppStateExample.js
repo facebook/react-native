@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,6 +9,8 @@
  */
 
 'use strict';
+
+import type {AppStateValues} from 'react-native/Libraries/AppState/AppState';
 
 const React = require('react');
 
@@ -65,7 +67,7 @@ class AppStateSubscription extends React.Component<
     this.setState({eventsDetected});
   };
 
-  _handleAppStateChange = appState => {
+  _handleAppStateChange = (appState: AppStateValues) => {
     const previousAppStates = this.state.previousAppStates.slice();
     previousAppStates.push(this.state.appState);
     this.setState({

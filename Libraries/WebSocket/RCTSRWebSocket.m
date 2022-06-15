@@ -782,6 +782,10 @@ static inline BOOL closeCodeIsValid(int closeCode)
 
 - (void)_handleFrameWithData:(NSData *)frameData opCode:(NSInteger)opcode
 {
+  // copy frameData before handling,
+  // to avoid concurrent updates to the value at the pointer
+  frameData = [frameData copy];
+
   // Check that the current data is valid UTF8
 
   BOOL isControlFrame = (opcode == RCTSROpCodePing || opcode == RCTSROpCodePong || opcode == RCTSROpCodeConnectionClose);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,7 +8,7 @@
  * @format
  */
 
-import DeprecatedTextPropTypes from '../DeprecatedPropTypes/DeprecatedTextPropTypes';
+import Platform from '../Utilities/Platform';
 import * as PressabilityDebug from '../Pressability/PressabilityDebug';
 import usePressability from '../Pressability/usePressability';
 import StyleSheet from '../StyleSheet/StyleSheet';
@@ -22,7 +22,7 @@ import {useContext, useMemo, useState} from 'react';
 /**
  * Text is the fundamental component for displaying text.
  *
- * @see https://reactnative.dev/docs/text.html
+ * @see https://reactnative.dev/docs/text
  */
 const Text: React.AbstractComponent<
   TextProps,
@@ -34,6 +34,8 @@ const Text: React.AbstractComponent<
     ellipsizeMode,
     onLongPress,
     onPress,
+    onPressIn,
+    onPressOut,
     onResponderGrant,
     onResponderMove,
     onResponderRelease,
@@ -47,11 +49,20 @@ const Text: React.AbstractComponent<
 
   const [isHighlighted, setHighlighted] = useState(false);
 
+  const _disabled =
+    restProps.disabled != null
+      ? restProps.disabled
+      : props.accessibilityState?.disabled;
+  const _accessibilityState =
+    _disabled !== props.accessibilityState?.disabled
+      ? {...props.accessibilityState, disabled: _disabled}
+      : props.accessibilityState;
+
   const isPressable =
     (onPress != null ||
       onLongPress != null ||
       onStartShouldSetResponder != null) &&
-    restProps.disabled !== true;
+    _disabled !== true;
 
   const initialized = useLazyInitialization(isPressable);
   const config = useMemo(
@@ -64,11 +75,14 @@ const Text: React.AbstractComponent<
             onPress,
             onPressIn(event) {
               setHighlighted(!suppressHighlighting);
+              onPressIn?.(event);
             },
             onPressOut(event) {
               setHighlighted(false);
+              onPressOut?.(event);
             },
-            onResponderTerminationRequest_DEPRECATED: onResponderTerminationRequest,
+            onResponderTerminationRequest_DEPRECATED:
+              onResponderTerminationRequest,
             onStartShouldSetResponder_DEPRECATED: onStartShouldSetResponder,
           }
         : null,
@@ -78,6 +92,8 @@ const Text: React.AbstractComponent<
       pressRetentionOffset,
       onLongPress,
       onPress,
+      onPressIn,
+      onPressOut,
       onResponderTerminationRequest,
       onStartShouldSetResponder,
       suppressHighlighting,
@@ -114,6 +130,7 @@ const Text: React.AbstractComponent<
                 onResponderTerminate(event);
               }
             },
+            onClick: eventHandlers.onClick,
             onResponderTerminationRequest:
               eventHandlers.onResponderTerminationRequest,
             onStartShouldSetResponder: eventHandlers.onStartShouldSetResponder,
@@ -142,13 +159,28 @@ const Text: React.AbstractComponent<
     }
   }
 
+  let numberOfLines = restProps.numberOfLines;
+  if (numberOfLines != null && !(numberOfLines >= 0)) {
+    console.error(
+      `'numberOfLines' in <Text> must be a non-negative number, received: ${numberOfLines}. The value will be set to 0.`,
+    );
+    numberOfLines = 0;
+  }
+
   const hasTextAncestor = useContext(TextAncestor);
+
+  const _accessible = Platform.select({
+    ios: accessible !== false,
+    default: accessible,
+  });
 
   return hasTextAncestor ? (
     <NativeVirtualText
       {...restProps}
       {...eventHandlersForText}
       isHighlighted={isHighlighted}
+      isPressable={isPressable}
+      numberOfLines={numberOfLines}
       selectionColor={selectionColor}
       style={style}
       ref={forwardedRef}
@@ -158,10 +190,13 @@ const Text: React.AbstractComponent<
       <NativeText
         {...restProps}
         {...eventHandlersForText}
-        accessible={accessible !== false}
+        disabled={_disabled}
+        accessible={_accessible}
+        accessibilityState={_accessibilityState}
         allowFontScaling={allowFontScaling !== false}
         ellipsizeMode={ellipsizeMode ?? 'tail'}
         isHighlighted={isHighlighted}
+        numberOfLines={numberOfLines}
         selectionColor={selectionColor}
         style={style}
         ref={forwardedRef}
@@ -171,9 +206,6 @@ const Text: React.AbstractComponent<
 });
 
 Text.displayName = 'Text';
-
-// TODO: Delete this.
-Text.propTypes = DeprecatedTextPropTypes;
 
 /**
  * Returns false until the first time `newValue` is true, after which this will
@@ -188,8 +220,4 @@ function useLazyInitialization(newValue: boolean): boolean {
   return oldValue;
 }
 
-// $FlowFixMe[incompatible-cast] - No good way to type a React.AbstractComponent with statics.
-module.exports = (Text: typeof Text &
-  $ReadOnly<{
-    propTypes: typeof DeprecatedTextPropTypes,
-  }>);
+module.exports = Text;

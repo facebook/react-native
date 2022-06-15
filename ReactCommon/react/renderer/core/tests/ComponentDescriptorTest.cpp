@@ -1,11 +1,13 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 #include <gtest/gtest.h>
+
+#include <react/renderer/core/PropsParserContext.h>
 
 #include "TestComponent.h"
 
@@ -21,8 +23,11 @@ TEST(ComponentDescriptorTest, createShadowNode) {
   EXPECT_STREQ(descriptor->getComponentName(), TestShadowNode::Name());
   EXPECT_STREQ(descriptor->getComponentName(), "Test");
 
+  ContextContainer contextContainer{};
+  PropsParserContext parserContext{-1, contextContainer};
+
   const auto &raw = RawProps(folly::dynamic::object("nativeID", "abc"));
-  SharedProps props = descriptor->cloneProps(nullptr, raw);
+  SharedProps props = descriptor->cloneProps(parserContext, nullptr, raw);
 
   auto family = descriptor->createFamily(
       ShadowNodeFamilyFragment{
@@ -52,8 +57,11 @@ TEST(ComponentDescriptorTest, cloneShadowNode) {
       std::make_shared<TestComponentDescriptor>(
           ComponentDescriptorParameters{eventDispatcher, nullptr, nullptr});
 
+  ContextContainer contextContainer{};
+  PropsParserContext parserContext{-1, contextContainer};
+
   const auto &raw = RawProps(folly::dynamic::object("nativeID", "abc"));
-  SharedProps props = descriptor->cloneProps(nullptr, raw);
+  SharedProps props = descriptor->cloneProps(parserContext, nullptr, raw);
   auto family = descriptor->createFamily(
       ShadowNodeFamilyFragment{
           /* .tag = */ 9,
@@ -73,7 +81,8 @@ TEST(ComponentDescriptorTest, cloneShadowNode) {
   EXPECT_EQ(cloned->getSurfaceId(), 1);
   EXPECT_STREQ(cloned->getProps()->nativeId.c_str(), "abc");
 
-  auto clonedButSameProps = descriptor->cloneProps(props, RawProps());
+  auto clonedButSameProps =
+      descriptor->cloneProps(parserContext, props, RawProps());
   EXPECT_NE(clonedButSameProps, props);
 }
 
@@ -83,8 +92,11 @@ TEST(ComponentDescriptorTest, appendChild) {
       std::make_shared<TestComponentDescriptor>(
           ComponentDescriptorParameters{eventDispatcher, nullptr, nullptr});
 
+  ContextContainer contextContainer{};
+  PropsParserContext parserContext{-1, contextContainer};
+
   const auto &raw = RawProps(folly::dynamic::object("nativeID", "abc"));
-  SharedProps props = descriptor->cloneProps(nullptr, raw);
+  SharedProps props = descriptor->cloneProps(parserContext, nullptr, raw);
   auto family1 = descriptor->createFamily(
       ShadowNodeFamilyFragment{
           /* .tag = */ 1,

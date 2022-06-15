@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -137,7 +137,7 @@ class TouchableOpacity extends React.Component<Props, State> {
   _createPressabilityConfig(): PressabilityConfig {
     return {
       cancelable: !this.props.rejectResponderTermination,
-      disabled: this.props.disabled,
+      disabled: this.props.disabled ?? this.props.accessibilityState?.disabled,
       hitSlop: this.props.hitSlop,
       delayLongPress: this.props.delayLongPress,
       delayPressIn: this.props.delayPressIn,
@@ -209,19 +209,25 @@ class TouchableOpacity extends React.Component<Props, State> {
   render(): React.Node {
     // BACKWARD-COMPATIBILITY: Focus and blur events were never supported before
     // adopting `Pressability`, so preserve that behavior.
-    const {
-      onBlur,
-      onFocus,
-      ...eventHandlersWithoutBlurAndFocus
-    } = this.state.pressability.getEventHandlers();
+    const {onBlur, onFocus, ...eventHandlersWithoutBlurAndFocus} =
+      this.state.pressability.getEventHandlers();
+
+    const accessibilityState =
+      this.props.disabled != null
+        ? {
+            ...this.props.accessibilityState,
+            disabled: this.props.disabled,
+          }
+        : this.props.accessibilityState;
 
     return (
       <Animated.View
         accessible={this.props.accessible !== false}
         accessibilityLabel={this.props.accessibilityLabel}
         accessibilityHint={this.props.accessibilityHint}
+        accessibilityLanguage={this.props.accessibilityLanguage}
         accessibilityRole={this.props.accessibilityRole}
-        accessibilityState={this.props.accessibilityState}
+        accessibilityState={accessibilityState}
         accessibilityActions={this.props.accessibilityActions}
         onAccessibilityAction={this.props.onAccessibilityAction}
         accessibilityValue={this.props.accessibilityValue}
@@ -255,7 +261,12 @@ class TouchableOpacity extends React.Component<Props, State> {
 
   componentDidUpdate(prevProps: Props, prevState: State) {
     this.state.pressability.configure(this._createPressabilityConfig());
-    if (this.props.disabled !== prevProps.disabled) {
+    if (
+      this.props.disabled !== prevProps.disabled ||
+      (flattenStyle(prevProps.style)?.opacity !==
+        flattenStyle(this.props.style)?.opacity) !==
+        undefined
+    ) {
       this._opacityInactive(250);
     }
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -29,13 +29,15 @@ class JSI_EXPORT TurboCxxModule : public TurboModule {
       std::unique_ptr<facebook::xplat::module::CxxModule> cxxModule,
       std::shared_ptr<CallInvoker> jsInvoker);
 
-  virtual facebook::jsi::Value get(
+  facebook::jsi::Value get(
       facebook::jsi::Runtime &runtime,
       const facebook::jsi::PropNameID &propName) override;
 
+  std::vector<facebook::jsi::PropNameID> getPropertyNames(
+      facebook::jsi::Runtime &runtime) override;
+
   jsi::Value invokeMethod(
       jsi::Runtime &runtime,
-      TurboModuleMethodValueKind valueKind,
       const std::string &methodName,
       const jsi::Value *args,
       size_t count);

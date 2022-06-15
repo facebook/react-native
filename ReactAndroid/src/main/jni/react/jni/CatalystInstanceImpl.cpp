@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,6 +8,7 @@
 #include "CatalystInstanceImpl.h"
 
 #include <condition_variable>
+#include <fstream>
 #include <memory>
 #include <mutex>
 #include <sstream>
@@ -26,9 +27,16 @@
 #include <fb/log.h>
 #include <fbjni/ByteBuffer.h>
 #include <folly/dynamic.h>
+#include <glog/logging.h>
+#include <react/renderer/runtimescheduler/RuntimeScheduler.h>
+#include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
+#include <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
+
+#include <logger/react_native_log.h>
 
 #include "CxxModuleWrapper.h"
-#include "JNativeRunnable.h"
+#include "JReactCxxErrorHandler.h"
+#include "JReactSoftExceptionLogger.h"
 #include "JavaScriptExecutorHolder.h"
 #include "JniJSModulesUnbundle.h"
 #include "NativeArray.h"
@@ -85,12 +93,25 @@ class JInstanceCallback : public InstanceCallback {
 } // namespace
 
 jni::local_ref<CatalystInstanceImpl::jhybriddata>
-CatalystInstanceImpl::initHybrid(jni::alias_ref<jclass>) {
-  return makeCxxInstance();
+CatalystInstanceImpl::initHybrid(
+    jni::alias_ref<jclass>,
+    bool enableRuntimeScheduler,
+    bool enableRuntimeSchedulerInTurboModule) {
+  return makeCxxInstance(
+      enableRuntimeScheduler, enableRuntimeSchedulerInTurboModule);
 }
 
-CatalystInstanceImpl::CatalystInstanceImpl()
-    : instance_(std::make_unique<Instance>()) {}
+CatalystInstanceImpl::CatalystInstanceImpl(
+    bool enableRuntimeScheduler,
+    bool enableRuntimeSchedulerInTurboModule)
+    : instance_(std::make_unique<Instance>()),
+      enableRuntimeScheduler_(enableRuntimeScheduler),
+      enableRuntimeSchedulerInTurboModule_(
+          enableRuntimeScheduler && enableRuntimeSchedulerInTurboModule) {}
+
+void CatalystInstanceImpl::warnOnLegacyNativeModuleSystemUse() {
+  CxxNativeModule::setShouldWarnOnUse(true);
+}
 
 void CatalystInstanceImpl::registerNatives() {
   registerHybrid({
@@ -127,9 +148,32 @@ void CatalystInstanceImpl::registerNatives() {
           CatalystInstanceImpl::handleMemoryPressure),
       makeNativeMethod(
           "getRuntimeExecutor", CatalystInstanceImpl::getRuntimeExecutor),
+      makeNativeMethod(
+          "getRuntimeScheduler", CatalystInstanceImpl::getRuntimeScheduler),
+      makeNativeMethod(
+          "warnOnLegacyNativeModuleSystemUse",
+          CatalystInstanceImpl::warnOnLegacyNativeModuleSystemUse),
   });
+}
 
-  JNativeRunnable::registerNatives();
+void log(ReactNativeLogLevel level, const char *message) {
+  switch (level) {
+    case ReactNativeLogLevelInfo:
+      LOG(INFO) << message;
+      break;
+    case ReactNativeLogLevelWarning:
+      LOG(WARNING) << message;
+      JReactSoftExceptionLogger::logNoThrowSoftExceptionWithMessage(
+          "react_native_log#warning", message);
+      break;
+    case ReactNativeLogLevelError:
+      LOG(ERROR) << message;
+      JReactCxxErrorHandler::handleError(message);
+      break;
+    case ReactNativeLogLevelFatal:
+      LOG(FATAL) << message;
+      break;
+  }
 }
 
 void CatalystInstanceImpl::initializeBridge(
@@ -142,6 +186,8 @@ void CatalystInstanceImpl::initializeBridge(
         javaModules,
     jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject>
         cxxModules) {
+  set_react_native_logfunc(&log);
+
   // TODO mhorowitz: how to assert here?
   // Assertions.assertCondition(mBridge == null, "initializeBridge should be
   // called once");
@@ -200,6 +246,26 @@ void CatalystInstanceImpl::jniRegisterSegment(
   instance_->registerBundle((uint32_t)segmentId, path);
 }
 
+static ScriptTag getScriptTagFromFile(const char *sourcePath) {
+  std::ifstream bundle_stream(sourcePath, std::ios_base::in);
+  BundleHeader header;
+  if (bundle_stream &&
+      bundle_stream.read(reinterpret_cast<char *>(&header), sizeof(header))) {
+    return parseTypeFromHeader(header);
+  } else {
+    return ScriptTag::String;
+  }
+}
+
+static bool isIndexedRAMBundle(std::unique_ptr<const JSBigString> *script) {
+  BundleHeader header;
+  strncpy(
+      reinterpret_cast<char *>(&header),
+      script->get()->c_str(),
+      sizeof(header));
+  return parseTypeFromHeader(header) == ScriptTag::RAMBundle;
+}
+
 void CatalystInstanceImpl::jniLoadScriptFromAssets(
     jni::alias_ref<JAssetManager::javaobject> assetManager,
     const std::string &assetURL,
@@ -215,7 +281,7 @@ void CatalystInstanceImpl::jniLoadScriptFromAssets(
     instance_->loadRAMBundle(
         std::move(registry), std::move(script), sourceURL, loadSynchronously);
     return;
-  } else if (Instance::isIndexedRAMBundle(&script)) {
+  } else if (isIndexedRAMBundle(&script)) {
     instance_->loadRAMBundleFromString(std::move(script), sourceURL);
   } else {
     instance_->loadScriptFromString(
@@ -228,38 +294,48 @@ void CatalystInstanceImpl::jniLoadScriptFromFile(
     const std::string &sourceURL,
     bool loadSynchronously) {
   auto reactInstance = instance_;
-  if (reactInstance && Instance::isHBCBundle(fileName.c_str())) {
-    std::unique_ptr<const JSBigFileString> script;
-    RecoverableError::runRethrowingAsRecoverable<std::system_error>(
-        [&fileName, &script]() {
-          script = JSBigFileString::fromPath(fileName);
-        });
-    const char *buffer = script->c_str();
-    uint32_t bufferLength = (uint32_t)script->size();
-    uint32_t offset = 8;
-    while (offset < bufferLength) {
-      uint32_t segment = offset + 4;
-      uint32_t moduleLength =
-          bufferLength < segment ? 0 : *(((uint32_t *)buffer) + offset / 4);
+  if (!reactInstance) {
+    return;
+  }
 
-      reactInstance->loadScriptFromString(
-          std::make_unique<const JSBigStdString>(
-              std::string(buffer + segment, buffer + moduleLength + segment)),
-          sourceURL,
-          false);
+  switch (getScriptTagFromFile(fileName.c_str())) {
+    case ScriptTag::MetroHBCBundle: {
+      std::unique_ptr<const JSBigFileString> script;
+      RecoverableError::runRethrowingAsRecoverable<std::system_error>(
+          [&fileName, &script]() {
+            script = JSBigFileString::fromPath(fileName);
+          });
+      const char *buffer = script->c_str();
+      uint32_t bufferLength = (uint32_t)script->size();
+      uint32_t offset = 8;
+      while (offset < bufferLength) {
+        uint32_t segment = offset + 4;
+        uint32_t moduleLength =
+            bufferLength < segment ? 0 : *(((uint32_t *)buffer) + offset / 4);
 
-      offset += ((moduleLength + 3) & ~3) + 4;
+        reactInstance->loadScriptFromString(
+            std::make_unique<const JSBigStdString>(
+                std::string(buffer + segment, buffer + moduleLength + segment)),
+            sourceURL,
+            false);
+
+        offset += ((moduleLength + 3) & ~3) + 4;
+      }
+      break;
     }
-  } else if (Instance::isIndexedRAMBundle(fileName.c_str())) {
-    instance_->loadRAMBundleFromFile(fileName, sourceURL, loadSynchronously);
-  } else {
-    std::unique_ptr<const JSBigFileString> script;
-    RecoverableError::runRethrowingAsRecoverable<std::system_error>(
-        [&fileName, &script]() {
-          script = JSBigFileString::fromPath(fileName);
-        });
-    instance_->loadScriptFromString(
-        std::move(script), sourceURL, loadSynchronously);
+    case ScriptTag::RAMBundle:
+      instance_->loadRAMBundleFromFile(fileName, sourceURL, loadSynchronously);
+      break;
+    case ScriptTag::String:
+    default: {
+      std::unique_ptr<const JSBigFileString> script;
+      RecoverableError::runRethrowingAsRecoverable<std::system_error>(
+          [&fileName, &script]() {
+            script = JSBigFileString::fromPath(fileName);
+          });
+      instance_->loadScriptFromString(
+          std::move(script), sourceURL, loadSynchronously);
+    }
   }
 }
 
@@ -306,10 +382,18 @@ void CatalystInstanceImpl::handleMemoryPressure(int pressureLevel) {
 jni::alias_ref<CallInvokerHolder::javaobject>
 CatalystInstanceImpl::getJSCallInvokerHolder() {
   if (!jsCallInvokerHolder_) {
-    jsCallInvokerHolder_ = jni::make_global(
-        CallInvokerHolder::newObjectCxxArgs(instance_->getJSCallInvoker()));
+    if (enableRuntimeSchedulerInTurboModule_) {
+      auto runtimeScheduler = getRuntimeScheduler();
+      auto runtimeSchedulerCallInvoker =
+          std::make_shared<RuntimeSchedulerCallInvoker>(
+              runtimeScheduler->cthis()->get());
+      jsCallInvokerHolder_ = jni::make_global(
+          CallInvokerHolder::newObjectCxxArgs(runtimeSchedulerCallInvoker));
+    } else {
+      jsCallInvokerHolder_ = jni::make_global(
+          CallInvokerHolder::newObjectCxxArgs(instance_->getJSCallInvoker()));
+    }
   }
-
   return jsCallInvokerHolder_;
 }
 
@@ -352,6 +436,24 @@ CatalystInstanceImpl::getRuntimeExecutor() {
         JRuntimeExecutor::newObjectCxxArgs(instance_->getRuntimeExecutor()));
   }
   return runtimeExecutor_;
+}
+
+jni::alias_ref<JRuntimeScheduler::javaobject>
+CatalystInstanceImpl::getRuntimeScheduler() {
+  if (enableRuntimeScheduler_ && !runtimeScheduler_) {
+    auto runtimeExecutor = instance_->getRuntimeExecutor();
+    auto runtimeScheduler = std::make_shared<RuntimeScheduler>(runtimeExecutor);
+
+    runtimeScheduler_ =
+        jni::make_global(JRuntimeScheduler::newObjectCxxArgs(runtimeScheduler));
+
+    runtimeExecutor([runtimeScheduler](jsi::Runtime &runtime) {
+      RuntimeSchedulerBinding::createAndInstallIfNeeded(
+          runtime, runtimeScheduler);
+    });
+  }
+
+  return runtimeScheduler_;
 }
 
 } // namespace react

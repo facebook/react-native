@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -43,7 +43,10 @@ export function createStringifySafeWithLimits(limits: {|
       return value;
     }
 
-    let retval = value;
+    let retval:
+      | string
+      | {+[string]: mixed}
+      | $TEMPORARY$object<{'...(truncated keys)...': number}> = value;
     if (Array.isArray(value)) {
       if (stack.length >= maxDepth) {
         retval = `[ ... array with ${value.length} values ... ]`;
@@ -62,7 +65,7 @@ export function createStringifySafeWithLimits(limits: {|
         retval = `{ ... object with ${keys.length} keys ... }`;
       } else if (keys.length > maxObjectKeysLimit) {
         // Return a sample of the keys.
-        retval = {};
+        retval = ({}: {[string]: mixed});
         for (let k of keys.slice(0, maxObjectKeysLimit)) {
           retval[k] = value[k];
         }

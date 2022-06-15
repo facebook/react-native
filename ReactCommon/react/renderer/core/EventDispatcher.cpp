@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -17,31 +17,29 @@ namespace facebook {
 namespace react {
 
 EventDispatcher::EventDispatcher(
-    EventPipe const &eventPipe,
-    StatePipe const &statePipe,
+    EventQueueProcessor const &eventProcessor,
     EventBeat::Factory const &synchonousEventBeatFactory,
     EventBeat::Factory const &asynchonousEventBeatFactory,
     EventBeat::SharedOwnerBox const &ownerBox)
     : synchronousUnbatchedQueue_(std::make_unique<UnbatchedEventQueue>(
-          eventPipe,
-          statePipe,
+          eventProcessor,
           synchonousEventBeatFactory(ownerBox))),
       synchronousBatchedQueue_(std::make_unique<BatchedEventQueue>(
-          eventPipe,
-          statePipe,
+          eventProcessor,
           synchonousEventBeatFactory(ownerBox))),
       asynchronousUnbatchedQueue_(std::make_unique<UnbatchedEventQueue>(
-          eventPipe,
-          statePipe,
+          eventProcessor,
           asynchonousEventBeatFactory(ownerBox))),
       asynchronousBatchedQueue_(std::make_unique<BatchedEventQueue>(
-          eventPipe,
-          statePipe,
+          eventProcessor,
           asynchonousEventBeatFactory(ownerBox))) {}
 
-void EventDispatcher::dispatchEvent(
-    RawEvent const &rawEvent,
-    EventPriority priority) const {
+void EventDispatcher::dispatchEvent(RawEvent &&rawEvent, EventPriority priority)
+    const {
+  // Allows the event listener to interrupt default event dispatch
+  if (eventListeners_.willDispatchEvent(rawEvent)) {
+    return;
+  }
   getEventQueue(priority).enqueueEvent(std::move(rawEvent));
 }
 
@@ -51,8 +49,12 @@ void EventDispatcher::dispatchStateUpdate(
   getEventQueue(priority).enqueueStateUpdate(std::move(stateUpdate));
 }
 
-void EventDispatcher::dispatchUniqueEvent(RawEvent const &rawEvent) const {
-  asynchronousBatchedQueue_->enqueueUniqueEvent(rawEvent);
+void EventDispatcher::dispatchUniqueEvent(RawEvent &&rawEvent) const {
+  // Allows the event listener to interrupt default event dispatch
+  if (eventListeners_.willDispatchEvent(rawEvent)) {
+    return;
+  }
+  asynchronousBatchedQueue_->enqueueUniqueEvent(std::move(rawEvent));
 }
 
 const EventQueue &EventDispatcher::getEventQueue(EventPriority priority) const {
@@ -66,6 +68,19 @@ const EventQueue &EventDispatcher::getEventQueue(EventPriority priority) const {
     case EventPriority::AsynchronousBatched:
       return *asynchronousBatchedQueue_;
   }
+}
+
+void EventDispatcher::addListener(
+    const std::shared_ptr<EventListener const> &listener) const {
+  eventListeners_.addListener(listener);
+}
+
+/*
+ * Removes provided event listener to the event dispatcher.
+ */
+void EventDispatcher::removeListener(
+    const std::shared_ptr<EventListener const> &listener) const {
+  eventListeners_.removeListener(listener);
 }
 
 } // namespace react

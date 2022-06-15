@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,11 +7,12 @@
 
 #pragma once
 
-#include <better/mutex.h>
+#include <butter/mutex.h>
 
 #include <react/renderer/componentregistry/ComponentDescriptorProvider.h>
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/renderer/core/ComponentDescriptor.h>
+#include <react/utils/ContextContainer.h>
 
 namespace facebook {
 namespace react {
@@ -58,10 +59,10 @@ class ComponentDescriptorProviderRegistry final {
 
   void request(ComponentName componentName) const;
 
-  mutable better::shared_mutex mutex_;
+  mutable butter::shared_mutex mutex_;
   mutable std::vector<std::weak_ptr<ComponentDescriptorRegistry const>>
       componentDescriptorRegistries_;
-  mutable better::map<ComponentHandle, ComponentDescriptorProvider const>
+  mutable butter::map<ComponentHandle, ComponentDescriptorProvider const>
       componentDescriptorProviders_;
   mutable ComponentDescriptorProviderRequest
       componentDescriptorProviderRequest_;

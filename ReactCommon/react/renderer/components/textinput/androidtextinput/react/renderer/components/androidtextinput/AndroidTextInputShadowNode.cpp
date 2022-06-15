@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,6 +16,8 @@
 #include <react/renderer/core/LayoutConstraints.h>
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/core/conversions.h>
+
+#include <utility>
 
 using namespace facebook::jni;
 
@@ -91,7 +93,7 @@ AttributedString AndroidTextInputShadowNode::getPlaceholderAttributedString()
 void AndroidTextInputShadowNode::setTextLayoutManager(
     SharedTextLayoutManager textLayoutManager) {
   ensureUnsealed();
-  textLayoutManager_ = textLayoutManager;
+  textLayoutManager_ = std::move(textLayoutManager);
 }
 
 AttributedString AndroidTextInputShadowNode::getMostRecentAttributedString()

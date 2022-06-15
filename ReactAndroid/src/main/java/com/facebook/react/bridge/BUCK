@@ -22,7 +22,10 @@ rn_android_library(
     ),
     autoglob = False,
     is_androidx = True,
-    labels = ["supermodule:xplat/default/public.react_native.infra"],
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+        "supermodule:xplat/default/public.react_native.infra",
+    ],
     proguard_config = "reactnative.pro",
     provided_deps = [
         react_native_dep("third-party/android/androidx:annotation"),
@@ -68,7 +71,10 @@ rn_android_library(
     srcs = glob(INTERFACES),
     autoglob = False,
     is_androidx = True,
-    labels = ["supermodule:xplat/default/public.react_native.infra"],
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+        "supermodule:xplat/default/public.react_native.infra",
+    ],
     proguard_config = "reactnative.pro",
     provided_deps = [
         react_native_dep("third-party/android/androidx:annotation"),

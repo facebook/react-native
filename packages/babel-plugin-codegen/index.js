@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,12 +9,21 @@
 
 'use strict';
 
-const {parseString} = require('react-native-codegen/src/parsers/flow');
-const RNCodegen = require('react-native-codegen/src/generators/RNCodegen');
+let flow, RNCodegen;
+
 const {basename} = require('path');
 
+try {
+  flow = require('react-native-codegen/src/parsers/flow');
+  RNCodegen = require('react-native-codegen/src/generators/RNCodegen');
+} catch (e) {
+  // Fallback to lib when source doesn't exit (e.g. when installed as a dev dependency)
+  flow = require('react-native-codegen/lib/parsers/flow');
+  RNCodegen = require('react-native-codegen/lib/generators/RNCodegen');
+}
+
 function generateViewConfig(filename, code) {
-  const schema = parseString(code);
+  const schema = flow.parseString(code);
 
   const libraryName = basename(filename).replace(/NativeComponent\.js$/, '');
   return RNCodegen.generateViewConfig({
@@ -53,7 +62,7 @@ function isCodegenDeclaration(declaration) {
   return false;
 }
 
-module.exports = function({parse, types: t}) {
+module.exports = function ({parse, types: t}) {
   return {
     pre(state) {
       this.code = state.code;
@@ -77,6 +86,7 @@ module.exports = function({parse, types: t}) {
 
           if (firstDeclaration.type === 'VariableDeclarator') {
             if (
+              firstDeclaration.init &&
               firstDeclaration.init.type === 'CallExpression' &&
               firstDeclaration.init.callee.type === 'Identifier' &&
               firstDeclaration.init.callee.name === 'codegenNativeCommands'
@@ -124,7 +134,11 @@ module.exports = function({parse, types: t}) {
           if (this.defaultExport) {
             const viewConfig = generateViewConfig(this.filename, this.code);
             this.defaultExport.replaceWithMultiple(
-              parse(viewConfig).program.body,
+              parse(viewConfig, {
+                babelrc: false,
+                browserslistConfigFile: false,
+                configFile: false,
+              }).program.body,
             );
             if (this.commandsExport != null) {
               this.commandsExport.remove();

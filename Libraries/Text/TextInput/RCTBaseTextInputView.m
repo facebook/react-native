@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -104,6 +104,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   // Similarly, when the user is in the middle of inputting some text in Japanese/Chinese, there will be styling on the
   // text that we should disregard. See https://developer.apple.com/documentation/uikit/uitextinput/1614489-markedtextrange?language=objc
   // for more info.
+  // Also, updating the attributed text while inputting Korean language will break input mechanism.
   // If the user added an emoji, the system adds a font attribute for the emoji and stores the original font in NSOriginalFont.
   // Lastly, when entering a password, etc., there will be additional styling on the field as the native text view
   // handles showing the last character for a split second.
@@ -116,6 +117,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
   BOOL shouldFallbackToBareTextComparison =
     [self.backedTextInputView.textInputMode.primaryLanguage isEqualToString:@"dictation"] ||
+    [self.backedTextInputView.textInputMode.primaryLanguage isEqualToString:@"ko-KR"] ||
     self.backedTextInputView.markedTextRange ||
     self.backedTextInputView.isSecureTextEntry ||
     fontHasBeenUpdatedBySystem;
@@ -242,19 +244,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
                           @"streetAddressLine2": UITextContentTypeStreetAddressLine2,
                           @"sublocality": UITextContentTypeSublocality,
                           @"telephoneNumber": UITextContentTypeTelephoneNumber,
+                          @"username": UITextContentTypeUsername,
+                          @"password": UITextContentTypePassword,
                           };
-
-      #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
-        if (@available(iOS 11.0, *)) {
-          NSDictionary<NSString *, NSString *> * iOS11extras = @{@"username": UITextContentTypeUsername,
-                                                                  @"password": UITextContentTypePassword};
-
-          NSMutableDictionary<NSString *, NSString *> * iOS11baseMap = [contentTypeMap mutableCopy];
-          [iOS11baseMap addEntriesFromDictionary:iOS11extras];
-
-          contentTypeMap = [iOS11baseMap copy];
-        }
-      #endif
 
       #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 120000 /* __IPHONE_12_0 */
         if (@available(iOS 12.0, *)) {
@@ -310,7 +302,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     self.backedTextInputView.inputView = nil;
   } else {
     // Hides keyboard, but keeps blinking cursor.
-    self.backedTextInputView.inputView = [[UIView alloc] init];
+    self.backedTextInputView.inputView = [UIView new];
   }
 }
 
@@ -397,6 +389,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     if (text.length > allowedLength) {
       // If we typed/pasted more than one character, limit the text inputted.
       if (text.length > 1) {
+        if (allowedLength > 0) {
+          //make sure unicode characters that are longer than 16 bits (such as emojis) are not cut off
+          NSRange cutOffCharacterRange = [text rangeOfComposedCharacterSequenceAtIndex: allowedLength - 1];
+          if (cutOffCharacterRange.location + cutOffCharacterRange.length > allowedLength) {
+            //the character at the length limit takes more than 16bits, truncation should end at the character before
+            allowedLength = cutOffCharacterRange.location;
+          }
+        }
         // Truncate the input string so the result is exactly maxLength
         NSString *limitedString = [text substringToIndex:allowedLength];
         NSMutableAttributedString *newAttributedText = [backedTextInputView.attributedText mutableCopy];
@@ -609,7 +609,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   _hasInputAccesoryView = shouldHaveInputAccesoryView;
 
   if (shouldHaveInputAccesoryView) {
-    UIToolbar *toolbarView = [[UIToolbar alloc] init];
+    UIToolbar *toolbarView = [UIToolbar new];
     [toolbarView sizeToFit];
     UIBarButtonItem *flexibleSpace =
       [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace

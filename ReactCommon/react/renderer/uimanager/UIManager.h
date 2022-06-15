@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -23,6 +23,7 @@
 #include <react/renderer/uimanager/UIManagerAnimationDelegate.h>
 #include <react/renderer/uimanager/UIManagerDelegate.h>
 #include <react/renderer/uimanager/primitives.h>
+#include <react/utils/ContextContainer.h>
 
 namespace facebook::react {
 
@@ -33,8 +34,8 @@ class UIManager final : public ShadowTreeDelegate {
  public:
   UIManager(
       RuntimeExecutor const &runtimeExecutor,
-      BackgroundExecutor const &backgroundExecutor,
-      GarbageCollectionTrigger const &garbageCollectionTrigger);
+      BackgroundExecutor backgroundExecutor,
+      ContextContainer::Shared contextContainer);
 
   ~UIManager();
 
@@ -61,7 +62,7 @@ class UIManager final : public ShadowTreeDelegate {
    */
   void stopSurfaceForAnimationDelegate(SurfaceId surfaceId) const;
 
-  void animationTick();
+  void animationTick() const;
 
   /*
    * Provides access to a UIManagerBindging.
@@ -70,7 +71,8 @@ class UIManager final : public ShadowTreeDelegate {
    * The callback is called synchronously on the same thread.
    */
   void visitBinding(
-      std::function<void(UIManagerBinding const &uiManagerBinding)> callback,
+      std::function<void(UIManagerBinding const &uiManagerBinding)> const
+          &callback,
       jsi::Runtime &runtime) const;
 
   /*
@@ -87,7 +89,14 @@ class UIManager final : public ShadowTreeDelegate {
   void startSurface(
       ShadowTree::Unique &&shadowTree,
       std::string const &moduleName,
-      folly::dynamic const &props) const;
+      folly::dynamic const &props,
+      DisplayMode displayMode) const;
+
+  void setSurfaceProps(
+      SurfaceId surfaceId,
+      std::string const &moduleName,
+      folly::dynamic const &props,
+      DisplayMode displayMode) const;
 
   ShadowTree::Unique stopSurface(SurfaceId surfaceId) const;
 
@@ -102,14 +111,6 @@ class UIManager final : public ShadowTreeDelegate {
       RootShadowNode::Shared const &oldRootShadowNode,
       RootShadowNode::Unshared const &newRootShadowNode) const override;
 
- private:
-  friend class UIManagerBinding;
-  friend class Scheduler;
-  friend class SurfaceHandler;
-
-  // `TimelineController` needs to call private `getShadowTreeRegistry()`.
-  friend class TimelineController;
-
   ShadowNode::Shared createNode(
       Tag tag,
       std::string const &componentName,
@@ -118,9 +119,9 @@ class UIManager final : public ShadowTreeDelegate {
       SharedEventTarget eventTarget) const;
 
   ShadowNode::Shared cloneNode(
-      const ShadowNode::Shared &shadowNode,
-      const SharedShadowNodeSharedList &children = nullptr,
-      const RawProps *rawProps = nullptr) const;
+      ShadowNode const &shadowNode,
+      SharedShadowNodeSharedList const &children = nullptr,
+      RawProps const *rawProps = nullptr) const;
 
   void appendChild(
       const ShadowNode::Shared &parentShadowNode,
@@ -159,11 +160,18 @@ class UIManager final : public ShadowTreeDelegate {
   void dispatchCommand(
       const ShadowNode::Shared &shadowNode,
       std::string const &commandName,
-      folly::dynamic const args) const;
+      folly::dynamic const &args) const;
 
   void sendAccessibilityEvent(
       const ShadowNode::Shared &shadowNode,
       std::string const &eventType);
+
+  ShadowTreeRegistry const &getShadowTreeRegistry() const;
+
+ private:
+  friend class UIManagerBinding;
+  friend class Scheduler;
+  friend class SurfaceHandler;
 
   /**
    * Configure a LayoutAnimation to happen on the next commit.
@@ -175,20 +183,16 @@ class UIManager final : public ShadowTreeDelegate {
       jsi::Value const &successCallback,
       jsi::Value const &failureCallback) const;
 
-  ShadowTreeRegistry const &getShadowTreeRegistry() const;
-
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   UIManagerDelegate *delegate_;
   UIManagerAnimationDelegate *animationDelegate_{nullptr};
-  UIManagerBinding *uiManagerBinding_;
   RuntimeExecutor const runtimeExecutor_{};
   ShadowTreeRegistry shadowTreeRegistry_{};
   BackgroundExecutor const backgroundExecutor_{};
+  ContextContainer::Shared contextContainer_;
 
-  mutable better::shared_mutex commitHookMutex_;
+  mutable butter::shared_mutex commitHookMutex_;
   mutable std::vector<UIManagerCommitHook const *> commitHooks_;
-
-  bool extractUIManagerBindingOnDemand_{};
 
   std::unique_ptr<LeakChecker> leakChecker_;
 };

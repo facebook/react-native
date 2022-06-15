@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -45,21 +45,21 @@ public class WritableNativeArray extends ReadableNativeArray implements Writable
   @Override
   public void pushArray(@Nullable ReadableArray array) {
     Assertions.assertCondition(
-        array == null || array instanceof WritableNativeArray, "Illegal type provided");
-    pushNativeArray((WritableNativeArray) array);
+        array == null || array instanceof ReadableNativeArray, "Illegal type provided");
+    pushNativeArray((ReadableNativeArray) array);
   }
 
   // Note: this consumes the map so do not reuse it.
   @Override
   public void pushMap(@Nullable ReadableMap map) {
     Assertions.assertCondition(
-        map == null || map instanceof WritableNativeMap, "Illegal type provided");
-    pushNativeMap((WritableNativeMap) map);
+        map == null || map instanceof ReadableNativeMap, "Illegal type provided");
+    pushNativeMap((ReadableNativeMap) map);
   }
 
   private static native HybridData initHybrid();
 
-  private native void pushNativeArray(WritableNativeArray array);
+  private native void pushNativeArray(ReadableNativeArray array);
 
-  private native void pushNativeMap(WritableNativeMap map);
+  private native void pushNativeMap(ReadableNativeMap map);
 }

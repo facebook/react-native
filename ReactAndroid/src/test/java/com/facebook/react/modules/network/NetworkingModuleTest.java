@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,7 @@
 
 package com.facebook.react.modules.network;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
@@ -76,8 +76,8 @@ public class NetworkingModuleTest {
 
   @Before
   public void prepareModules() {
-    mHttpClient = mock(OkHttpClient.class);
-    when(mHttpClient.cookieJar()).thenReturn(mock(CookieJarContainer.class));
+    mHttpClient = PowerMockito.mock(OkHttpClient.class);
+    PowerMockito.when(mHttpClient.cookieJar()).thenReturn(mock(CookieJarContainer.class));
     when(mHttpClient.newCall(any(Request.class)))
         .thenAnswer(
             new Answer<Object>() {
@@ -87,8 +87,8 @@ public class NetworkingModuleTest {
                 return callMock;
               }
             });
-    OkHttpClient.Builder clientBuilder = mock(OkHttpClient.Builder.class);
-    when(clientBuilder.build()).thenReturn(mHttpClient);
+    OkHttpClient.Builder clientBuilder = PowerMockito.mock(OkHttpClient.Builder.class);
+    PowerMockito.when(clientBuilder.build()).thenReturn(mHttpClient);
     when(mHttpClient.newBuilder()).thenReturn(clientBuilder);
 
     mEmitter = mock(RCTDeviceEventEmitter.class);
@@ -453,7 +453,7 @@ public class NetworkingModuleTest {
         .thenCallRealMethod();
     when(inputStream.available()).thenReturn("imageUri".length());
 
-    final MultipartBody.Builder multipartBuilder = mock(MultipartBody.Builder.class);
+    final MultipartBody.Builder multipartBuilder = PowerMockito.mock(MultipartBody.Builder.class);
     PowerMockito.whenNew(MultipartBody.Builder.class)
         .withNoArguments()
         .thenReturn(multipartBuilder);

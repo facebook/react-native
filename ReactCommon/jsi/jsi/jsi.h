@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -185,6 +185,35 @@ class JSI_EXPORT Runtime {
   virtual Value evaluatePreparedJavaScript(
       const std::shared_ptr<const PreparedJavaScript>& js) = 0;
 
+  /// Drain the JavaScript VM internal Microtask (a.k.a. Job in ECMA262) queue.
+  ///
+  /// \param maxMicrotasksHint a hint to tell an implementation that it should
+  /// make a best effort not execute more than the given number. It's default
+  /// to -1 for infinity (unbounded execution).
+  /// \return true if the queue is drained or false if there is more work to do.
+  ///
+  /// When there were exceptions thrown from the execution of microtasks,
+  /// implementations shall discard the exceptional jobs. An implementation may
+  /// \throw a \c JSError object to signal the hosts to handle. In that case, an
+  /// implementation may or may not suspend the draining.
+  ///
+  /// Hosts may call this function again to resume the draining if it was
+  /// suspended due to either exceptions or the \p maxMicrotasksHint bound.
+  /// E.g. a host may repetitively invoke this function until the queue is
+  /// drained to implement the "microtask checkpoint" defined in WHATWG HTML
+  /// event loop: https://html.spec.whatwg.org/C#perform-a-microtask-checkpoint.
+  ///
+  /// Note that error propagation is only a concern if a host needs to implement
+  /// `queueMicrotask`, a recent API that allows enqueueing arbitrary functions
+  /// (hence may throw) as microtasks. Exceptions from ECMA-262 Promise Jobs are
+  /// handled internally to VMs and are never propagated to hosts.
+  ///
+  /// This API offers some queue management to hosts at its best effort due to
+  /// different behaviors and limitations imposed by different VMs and APIs. By
+  /// the time this is written, An implementation may swallow exceptions (JSC),
+  /// may not pause (V8), and may not support bounded executions.
+  virtual bool drainMicrotasks(int maxMicrotasksHint = -1) = 0;
+
   /// \return the global object
   virtual Object global() = 0;
 
@@ -245,6 +274,7 @@ class JSI_EXPORT Runtime {
       const uint8_t* utf8,
       size_t length) = 0;
   virtual PropNameID createPropNameIDFromString(const String& str) = 0;
+  virtual PropNameID createPropNameIDFromSymbol(const Symbol& sym) = 0;
   virtual std::string utf8(const PropNameID&) = 0;
   virtual bool compare(const PropNameID&, const PropNameID&) = 0;
 
@@ -377,6 +407,7 @@ class JSI_EXPORT PropNameID : public Pointer {
   }
 
   /// Create a PropNameID from utf8 values.  The data is copied.
+  /// Results are undefined if \p utf8 contains invalid code points.
   static PropNameID
   forUtf8(Runtime& runtime, const uint8_t* utf8, size_t length) {
     return runtime.createPropNameIDFromUtf8(utf8, length);
@@ -384,6 +415,7 @@ class JSI_EXPORT PropNameID : public Pointer {
 
   /// Create a PropNameID from utf8-encoded octets stored in a
   /// std::string.  The string data is transformed and copied.
+  /// Results are undefined if \p utf8 contains invalid code points.
   static PropNameID forUtf8(Runtime& runtime, const std::string& utf8) {
     return runtime.createPropNameIDFromUtf8(
         reinterpret_cast<const uint8_t*>(utf8.data()), utf8.size());
@@ -392,6 +424,11 @@ class JSI_EXPORT PropNameID : public Pointer {
   /// Create a PropNameID from a JS string.
   static PropNameID forString(Runtime& runtime, const jsi::String& str) {
     return runtime.createPropNameIDFromString(str);
+  }
+
+  /// Create a PropNameID from a JS symbol.
+  static PropNameID forSymbol(Runtime& runtime, const jsi::Symbol& sym) {
+    return runtime.createPropNameIDFromSymbol(sym);
   }
 
   // Creates a vector of PropNameIDs constructed from given arguments.
@@ -473,14 +510,16 @@ class JSI_EXPORT String : public Pointer {
   }
 
   /// Create a JS string from utf8-encoded octets.  The string data is
-  /// transformed and copied.
+  /// transformed and copied.  Results are undefined if \p utf8 contains invalid
+  /// code points.
   static String
   createFromUtf8(Runtime& runtime, const uint8_t* utf8, size_t length) {
     return runtime.createStringFromUtf8(utf8, length);
   }
 
   /// Create a JS string from utf8-encoded octets stored in a
-  /// std::string.  The string data is transformed and copied.
+  /// std::string.  The string data is transformed and copied.  Results are
+  /// undefined if \p utf8 contains invalid code points.
   static String createFromUtf8(Runtime& runtime, const std::string& utf8) {
     return runtime.createStringFromUtf8(
         reinterpret_cast<const uint8_t*>(utf8.data()), utf8.length());
@@ -651,7 +690,7 @@ class JSI_EXPORT Object : public Pointer {
   std::shared_ptr<T> getHostObject(Runtime& runtime) const;
 
   /// \return a shared_ptr<T> which refers to the same underlying
-  /// \c HostObject that was used to crete this object. If \c isHostObject<T>
+  /// \c HostObject that was used to create this object. If \c isHostObject<T>
   /// is false, this will throw.
   template <typename T = HostObject>
   std::shared_ptr<T> asHostObject(Runtime& runtime) const;
@@ -953,7 +992,7 @@ class JSI_EXPORT Value {
 
   /// Copies a Symbol lvalue into a new JS value.
   Value(Runtime& runtime, const Symbol& sym) : Value(SymbolKind) {
-    new (&data_.pointer) String(runtime.cloneSymbol(sym.ptr_));
+    new (&data_.pointer) Symbol(runtime.cloneSymbol(sym.ptr_));
   }
 
   /// Copies a String lvalue into a new JS value.
@@ -1038,6 +1077,10 @@ class JSI_EXPORT Value {
     assert(isBool());
     return data_.boolean;
   }
+
+  /// \return the boolean value, or throws JSIException if not a
+  /// boolean.
+  bool asBool() const;
 
   /// \return the number value, or asserts if not a number.
   double getNumber() const {
@@ -1209,11 +1252,13 @@ class JSI_EXPORT JSIException : public std::exception {
   JSIException(std::string what) : what_(std::move(what)){};
 
  public:
+  JSIException(const JSIException&) = default;
+
   virtual const char* what() const noexcept override {
     return what_.c_str();
   }
 
-  virtual ~JSIException();
+  virtual ~JSIException() override;
 
  protected:
   std::string what_;
@@ -1224,6 +1269,8 @@ class JSI_EXPORT JSIException : public std::exception {
 class JSI_EXPORT JSINativeException : public JSIException {
  public:
   JSINativeException(std::string what) : JSIException(std::move(what)) {}
+
+  JSINativeException(const JSINativeException&) = default;
 
   virtual ~JSINativeException();
 };
@@ -1253,6 +1300,8 @@ class JSI_EXPORT JSError : public JSIException {
   /// set to provided message.  This argument order is a bit weird,
   /// but necessary to avoid ambiguity with the above.
   JSError(std::string what, Runtime& rt, Value&& value);
+
+  JSError(const JSError&) = default;
 
   virtual ~JSError();
 

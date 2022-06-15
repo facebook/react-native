@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,13 +12,13 @@
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridgeModule.h>
-#import <React/RCTBundleHolderModule.h>
 #import <React/RCTDevMenu.h>
 #import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTLog.h>
 #import <React/RCTProfile.h>
 #import <React/RCTReloadCommand.h>
 #import <React/RCTUtils.h>
+#import <atomic>
 
 #import "CoreModulesPlugins.h"
 
@@ -32,7 +32,7 @@ static NSString *const kRCTDevSettingIsPerfMonitorShown = @"RCTPerfMonitorKey";
 
 static NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
 
-#if ENABLE_PACKAGER_CONNECTION
+#if RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION
 #import <React/RCTPackagerClient.h>
 #import <React/RCTPackagerConnection.h>
 #endif
@@ -114,15 +114,15 @@ void RCTDevSettingsSetEnabled(BOOL enabled)
 
 @end
 
-@interface RCTDevSettings () <
-    RCTBridgeModule,
-    RCTInvalidating,
-    NativeDevSettingsSpec,
-    RCTBundleHolderModule,
-    RCTDevSettingsInspectable> {
+#if RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION
+static RCTHandlerToken reloadToken;
+static std::atomic<int> numInitializedModules{0};
+#endif
+
+@interface RCTDevSettings () <RCTBridgeModule, RCTInvalidating, NativeDevSettingsSpec, RCTDevSettingsInspectable> {
   BOOL _isJSLoaded;
-#if ENABLE_PACKAGER_CONNECTION
-  RCTHandlerToken _reloadToken;
+#if RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION
+  RCTHandlerToken _bridgeExecutorOverrideToken;
 #endif
 }
 
@@ -133,8 +133,8 @@ void RCTDevSettingsSetEnabled(BOOL enabled)
 
 @implementation RCTDevSettings
 
-@synthesize bundleURL = _bundleURL;
 @synthesize isInspectable = _isInspectable;
+@synthesize bundleManager = _bundleManager;
 
 RCT_EXPORT_MODULE()
 
@@ -172,48 +172,61 @@ RCT_EXPORT_MODULE()
   return self;
 }
 
-#if RCT_ENABLE_INSPECTOR
-// In bridgeless mode, `setBridge` is not called, so dev server connection
-// must be kicked off here.
-- (void)setBundleURL:(NSURL *)bundleURL
+- (void)initialize
 {
-  _bundleURL = bundleURL;
-  [RCTInspectorDevServerHelper connectWithBundleURL:_bundleURL];
-}
+#if RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION
+  if (self.bridge) {
+    RCTBridge *__weak weakBridge = self.bridge;
+    _bridgeExecutorOverrideToken = [[RCTPackagerConnection sharedPackagerConnection]
+        addNotificationHandler:^(id params) {
+          if (params != (id)kCFNull && [params[@"debug"] boolValue]) {
+            weakBridge.executorClass = objc_lookUpClass("RCTWebSocketExecutor");
+          }
+        }
+                         queue:dispatch_get_main_queue()
+                     forMethod:@"reload"];
+  }
+
+  if (numInitializedModules++ == 0) {
+    reloadToken = [[RCTPackagerConnection sharedPackagerConnection]
+        addNotificationHandler:^(id params) {
+          RCTTriggerReloadCommandListeners(@"Global hotkey");
+        }
+                         queue:dispatch_get_main_queue()
+                     forMethod:@"reload"];
+  }
 #endif
 
-- (void)setBridge:(RCTBridge *)bridge
-{
-  [super setBridge:bridge];
-
-#if ENABLE_PACKAGER_CONNECTION
-  RCTBridge *__weak weakBridge = bridge;
-  _reloadToken = [[RCTPackagerConnection sharedPackagerConnection]
-      addNotificationHandler:^(id params) {
-        if (params != (id)kCFNull && [params[@"debug"] boolValue]) {
-          weakBridge.executorClass = objc_lookUpClass("RCTWebSocketExecutor");
-        }
-        RCTTriggerReloadCommandListeners(@"Global hotkey");
+#if RCT_ENABLE_INSPECTOR
+  if (self.bridge) {
+    // We need this dispatch to the main thread because the bridge is not yet
+    // finished with its initialisation. By the time it relinquishes control of
+    // the main thread, this operation can be performed.
+    __weak __typeof(self) weakSelf = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+      __typeof(self) strongSelf = weakSelf;
+      if (!strongSelf) {
+        return;
       }
-                       queue:dispatch_get_main_queue()
-                   forMethod:@"reload"];
-#endif
-
-#if RCT_ENABLE_INSPECTOR
-  // We need this dispatch to the main thread because the bridge is not yet
-  // finished with its initialisation. By the time it relinquishes control of
-  // the main thread, this operation can be performed.
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [bridge
-        dispatchBlock:^{
-          [RCTInspectorDevServerHelper connectWithBundleURL:bridge.bundleURL];
+      id dispatchBlock = ^{
+        __typeof(self) strongSelf2 = weakSelf;
+        if (!strongSelf2) {
+          return;
         }
-                queue:RCTJSThread];
-  });
+        NSURL *url = strongSelf2.bundleManager.bundleURL;
+        [RCTInspectorDevServerHelper connectWithBundleURL:url];
+      };
+      [strongSelf.bridge dispatchBlock:dispatchBlock queue:RCTJSThread];
+    });
+  } else {
+    NSURL *url = self.bundleManager.bundleURL;
+    [RCTInspectorDevServerHelper connectWithBundleURL:url];
+  }
 #endif
 
+  __weak __typeof(self) weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
-    [self _synchronizeAllSettings];
+    [weakSelf _synchronizeAllSettings];
   });
 }
 
@@ -225,8 +238,14 @@ RCT_EXPORT_MODULE()
 - (void)invalidate
 {
   [super invalidate];
-#if ENABLE_PACKAGER_CONNECTION
-  [[RCTPackagerConnection sharedPackagerConnection] removeHandler:_reloadToken];
+#if RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION
+  if (self.bridge) {
+    [[RCTPackagerConnection sharedPackagerConnection] removeHandler:_bridgeExecutorOverrideToken];
+  }
+
+  if (--numInitializedModules == 0) {
+    [[RCTPackagerConnection sharedPackagerConnection] removeHandler:reloadToken];
+  }
 #endif
 }
 
@@ -269,10 +288,8 @@ RCT_EXPORT_MODULE()
 
 - (BOOL)isHotLoadingAvailable
 {
-  if (self.bridge.bundleURL) {
-    return !self.bridge.bundleURL.fileURL; // Only works when running from server
-  } else if (self.bundleURL) {
-    return !self.bundleURL.fileURL;
+  if (self.bundleManager.bundleURL) {
+    return !self.bundleManager.bundleURL.fileURL;
   }
   return NO;
 }
@@ -344,8 +361,13 @@ RCT_EXPORT_METHOD(setProfilingEnabled : (BOOL)enabled)
     if (enabled) {
       [self.bridge startProfiling];
     } else {
+      __weak __typeof(self) weakSelf = self;
       [self.bridge stopProfiling:^(NSData *logData) {
-        RCTProfileSendResult(self.bridge, @"systrace", logData);
+        __typeof(self) strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
+        RCTProfileSendResult(strongSelf.bridge, @"systrace", logData);
       }];
     }
   }
@@ -359,16 +381,12 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
       if (enabled) {
-        if (self.bridge) {
-          [self.bridge enqueueJSCall:@"HMRClient" method:@"enable" args:@[] completion:NULL];
-        } else if (self.invokeJS) {
-          self.invokeJS(@"HMRClient", @"enable", @[]);
+        if (self.callableJSModules) {
+          [self.callableJSModules invokeModule:@"HMRClient" method:@"enable" withArgs:@[]];
         }
       } else {
-        if (self.bridge) {
-          [self.bridge enqueueJSCall:@"HMRClient" method:@"disable" args:@[] completion:NULL];
-        } else if (self.invokeJS) {
-          self.invokeJS(@"HMRClient", @"disable", @[]);
+        if (self.callableJSModules) {
+          [self.callableJSModules invokeModule:@"HMRClient" method:@"disable" withArgs:@[]];
         }
       }
 #pragma clang diagnostic pop
@@ -438,7 +456,7 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
 
 - (void)addHandler:(id<RCTPackagerClientMethod>)handler forPackagerMethod:(NSString *)name
 {
-#if ENABLE_PACKAGER_CONNECTION
+#if RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION
   [[RCTPackagerConnection sharedPackagerConnection] addHandler:handler forMethod:name];
 #endif
 }
@@ -446,17 +464,16 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
 - (void)setupHMRClientWithBundleURL:(NSURL *)bundleURL
 {
   if (bundleURL && !bundleURL.fileURL) {
-    NSString *const path = [bundleURL.path substringFromIndex:1]; // Strip initial slash.
-    NSString *const host = bundleURL.host;
-    NSNumber *const port = bundleURL.port;
+    NSURLComponents *urlComponents = [[NSURLComponents alloc] initWithURL:bundleURL resolvingAgainstBaseURL:NO];
+    NSString *const path = [urlComponents.path substringFromIndex:1]; // Strip initial slash.
+    NSString *const host = urlComponents.host;
+    NSNumber *const port = urlComponents.port;
+    NSString *const scheme = urlComponents.scheme;
     BOOL isHotLoadingEnabled = self.isHotLoadingEnabled;
-    if (self.bridge) {
-      [self.bridge enqueueJSCall:@"HMRClient"
-                          method:@"setup"
-                            args:@[ @"ios", path, host, RCTNullIfNil(port), @(isHotLoadingEnabled) ]
-                      completion:NULL];
-    } else {
-      self.invokeJS(@"HMRClient", @"setup", @[ @"ios", path, host, RCTNullIfNil(port), @(isHotLoadingEnabled) ]);
+    if (self.callableJSModules) {
+      [self.callableJSModules invokeModule:@"HMRClient"
+                                    method:@"setup"
+                                  withArgs:@[ @"ios", path, host, RCTNullIfNil(port), @(isHotLoadingEnabled), scheme ]];
     }
   }
 }
@@ -464,13 +481,10 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
 - (void)setupHMRClientWithAdditionalBundleURL:(NSURL *)bundleURL
 {
   if (bundleURL && !bundleURL.fileURL) { // isHotLoadingAvailable check
-    if (self.bridge) {
-      [self.bridge enqueueJSCall:@"HMRClient"
-                          method:@"registerBundle"
-                            args:@[ [bundleURL absoluteString] ]
-                      completion:NULL];
-    } else {
-      self.invokeJS(@"HMRClient", @"registerBundle", @[ [bundleURL absoluteString] ]);
+    if (self.callableJSModules) {
+      [self.callableJSModules invokeModule:@"HMRClient"
+                                    method:@"registerBundle"
+                                  withArgs:@[ [bundleURL absoluteString] ]];
     }
   }
 }
@@ -497,16 +511,21 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
   }
 
   _isJSLoaded = YES;
+  __weak __typeof(self) weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
+    __typeof(self) strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
     // update state again after the bridge has finished loading
-    [self _synchronizeAllSettings];
+    [strongSelf _synchronizeAllSettings];
 
     // Inspector can only be shown after JS has loaded
-    if ([self isElementInspectorShown]) {
+    if ([strongSelf isElementInspectorShown]) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-      [[self.moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"toggleElementInspector"
-                                                                                body:nil];
+      [[strongSelf.moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"toggleElementInspector"
+                                                                                      body:nil];
 #pragma clang diagnostic pop
     }
   });
@@ -530,6 +549,9 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
 - (instancetype)initWithDataSource:(id<RCTDevSettingsDataSource>)dataSource
 {
   return [super init];
+}
+- (void)initialize
+{
 }
 - (BOOL)isHotLoadingAvailable
 {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,6 +18,7 @@ import NativeAppearance, {
 } from './NativeAppearance';
 import invariant from 'invariant';
 import {isAsyncDebugging} from './DebugEnvironment';
+import Platform from '../Utilities/Platform';
 
 type AppearanceListener = (preferences: AppearancePreferences) => void;
 const eventEmitter = new EventEmitter<{
@@ -29,9 +30,12 @@ type NativeAppearanceEventDefinitions = {
 };
 
 if (NativeAppearance) {
-  const nativeEventEmitter = new NativeEventEmitter<NativeAppearanceEventDefinitions>(
-    NativeAppearance,
-  );
+  const nativeEventEmitter =
+    new NativeEventEmitter<NativeAppearanceEventDefinitions>(
+      // T88715063: NativeEventEmitter only used this parameter on iOS. Now it uses it on all platforms, so this code was modified automatically to preserve its behavior
+      // If you want to use the native module on other platforms, please remove this condition and test its behavior
+      Platform.OS !== 'ios' ? null : NativeAppearance,
+    );
   nativeEventEmitter.addListener(
     'appearanceChanged',
     (newAppearance: AppearancePreferences) => {
@@ -86,13 +90,5 @@ module.exports = {
    */
   addChangeListener(listener: AppearanceListener): EventSubscription {
     return eventEmitter.addListener('change', listener);
-  },
-
-  /**
-   * @deprecated Use `remove` on the EventSubscription from `addEventListener`.
-   */
-  removeChangeListener(listener: AppearanceListener): void {
-    // NOTE: This will report a deprecation notice via `console.error`.
-    eventEmitter.removeListener('change', listener);
   },
 };

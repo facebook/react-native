@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,6 +11,8 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.IllegalViewOperationException;
+import com.facebook.react.uimanager.common.UIManagerType;
+import com.facebook.react.uimanager.common.ViewUtil;
 
 /**
  * A UI event that can be dispatched to JS.
@@ -33,19 +35,11 @@ public abstract class Event<T extends Event> {
   private static int sUniqueID = 0;
 
   private boolean mInitialized;
+  private @UIManagerType int mUIManagerType;
   private int mSurfaceId;
   private int mViewTag;
   private long mTimestampMs;
   private int mUniqueID = sUniqueID++;
-
-  // Android native Event times use 'uptimeMillis', and historically we've used `uptimeMillis`
-  // throughout this Event class as the coalescing key for events, and for other purposes.
-  // To get an accurate(ish) absolute UNIX time for the event, we store the initial clock time here.
-  // uptimeMillis can then be added to this to get an accurate UNIX time.
-  // However, we still default to uptimeMillis: you must explicitly request UNIX time if you want
-  // that; see `getUnixTimestampMs`.
-  public static final long sInitialClockTimeUnixOffset =
-      SystemClock.currentTimeMillis() - SystemClock.uptimeMillis();
 
   protected Event() {}
 
@@ -63,14 +57,41 @@ public abstract class Event<T extends Event> {
     init(-1, viewTag);
   }
 
-  /** This method needs to be called before event is sent to event dispatcher. */
   protected void init(int surfaceId, int viewTag) {
+    init(surfaceId, viewTag, SystemClock.uptimeMillis());
+  }
+
+  /**
+   * This method needs to be called before event is sent to event dispatcher. Event timestamps can
+   * optionally be dated/backdated to a custom time: for example, touch events should be dated with
+   * the system event time.
+   */
+  protected void init(int surfaceId, int viewTag, long timestampMs) {
     mSurfaceId = surfaceId;
     mViewTag = viewTag;
-    mInitialized = true;
 
-    // This is a *relative* time. See `getUnixTimestampMs`.
-    mTimestampMs = SystemClock.uptimeMillis();
+    // We infer UIManagerType. Even though it's not passed in explicitly, we have a
+    // contract that Fabric events *always* have a SurfaceId passed in, and non-Fabric events
+    // NEVER have a SurfaceId passed in (the default/placeholder of -1 is passed in instead).
+    //
+    // Why does this matter?
+    // Events can be sent to Views that are part of the View hierarchy *but not directly managed
+    // by React Native*. For example, embedded custom hierachies, Litho hierachies, etc.
+    // In those cases it's important to know that the Event should be sent to the Fabric or
+    // non-Fabric UIManager, and we cannot use the ViewTag for inference since it's not controlled
+    // by RN and is essentially a random number.
+    // At some point it would be great to pass the SurfaceContext here instead.
+    @UIManagerType
+    int uiManagerType = (surfaceId == -1 ? UIManagerType.DEFAULT : UIManagerType.FABRIC);
+    if (uiManagerType == UIManagerType.DEFAULT && !ViewUtil.isRootTag(viewTag)) {
+      // TODO (T123064648): Some events for Fabric still didn't have the surfaceId set, so if it's
+      // not a React RootView, double check if the tag belongs to Fabric.
+      uiManagerType = ViewUtil.getUIManagerType(viewTag);
+    }
+    mUIManagerType = uiManagerType;
+
+    mTimestampMs = timestampMs;
+    mInitialized = true;
   }
 
   /** @return the view id for the view that generated this event */
@@ -89,11 +110,6 @@ public abstract class Event<T extends Event> {
    */
   public final long getTimestampMs() {
     return mTimestampMs;
-  }
-
-  /** @return the time at which the event happened as a UNIX timestamp, in milliseconds. */
-  public final long getUnixTimestampMs() {
-    return sInitialClockTimeUnixOffset + mTimestampMs;
   }
 
   /** @return false if this Event can *never* be coalesced */
@@ -142,20 +158,24 @@ public abstract class Event<T extends Event> {
     onDispose();
   }
 
+  public final @UIManagerType int getUIManagerType() {
+    return mUIManagerType;
+  }
+
   /** @return the name of this event as registered in JS */
   public abstract String getEventName();
 
   /**
    * Dispatch this event to JS using the given event emitter. Compatible with old and new renderer.
    * Instead of using this or dispatchModern, it is recommended that you simply override
-   * `getEventData`. In the future
+   * `getEventData`.
    */
   @Deprecated
   public void dispatch(RCTEventEmitter rctEventEmitter) {
     WritableMap eventData = getEventData();
     if (eventData == null) {
       throw new IllegalViewOperationException(
-          "Event: you must return a valid, non-null value from `getEventData`, or override `dispatch` and `disatchModern`. Event: "
+          "Event: you must return a valid, non-null value from `getEventData`, or override `dispatch` and `dispatchModern`. Event: "
               + getEventName());
     }
     rctEventEmitter.receiveEvent(getViewTag(), getEventName(), eventData);
@@ -171,18 +191,35 @@ public abstract class Event<T extends Event> {
     return null;
   }
 
+  @EventCategoryDef
+  protected int getEventCategory() {
+    return EventCategoryDef.UNSPECIFIED;
+  }
+
   /**
    * Dispatch this event to JS using a V2 EventEmitter. If surfaceId is not -1 and `getEventData` is
    * non-null, this will use the RCTModernEventEmitter API. Otherwise, it falls back to the
    * old-style dispatch function. For Event classes that need to do something different, this method
    * can always be overridden entirely, but it is not recommended.
+   *
+   * <p>This method additionally allows C++ to coalesce events and detect continuous ones for
+   * concurrent mode (Fabric only).
+   *
+   * @see #dispatch
    */
   @Deprecated
   public void dispatchModern(RCTModernEventEmitter rctEventEmitter) {
     if (getSurfaceId() != -1) {
       WritableMap eventData = getEventData();
       if (eventData != null) {
-        rctEventEmitter.receiveEvent(getSurfaceId(), getViewTag(), getEventName(), getEventData());
+        rctEventEmitter.receiveEvent(
+            getSurfaceId(),
+            getViewTag(),
+            getEventName(),
+            canCoalesce(),
+            getCoalescingKey(),
+            eventData,
+            getEventCategory());
         return;
       }
     }

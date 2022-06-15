@@ -14,6 +14,7 @@ rn_apple_library(
         ],
     ),
     exported_headers = glob(["**/*.h"]),
+    autoglob = False,
     compiler_flags = [
         "-Wno-error=unguarded-availability-new",
         "-Wno-unknown-warning-option",
@@ -37,6 +38,7 @@ rn_apple_library(
     labels = [
         "depslint_never_remove",  # Some old NativeModule still relies on +load unfortunately.
         "disable_plugins_only_validation",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     link_whole = True,
@@ -128,9 +130,9 @@ rn_apple_library(
     reexport_all_header_dependencies = True,
     visibility = ["PUBLIC"],
     exported_deps = [
-        "//xplat/js:RCTLinkingApple",
-        "//xplat/js:RCTPushNotificationApple",
+        "//xplat/js/react-native-github:FBReactNativeSpecApple",
+        "//xplat/js/react-native-github:RCTLinkingApple",
+        "//xplat/js/react-native-github:RCTPushNotificationApple",
         "//xplat/js/react-native-github:ReactInternalApple",
-        "//xplat/js/react-native-github/Libraries:FBReactNativeSpecApple",
     ],
 )

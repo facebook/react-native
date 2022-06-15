@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,9 +7,11 @@
 
 #pragma once
 
-#include <better/optional.h>
+#include <optional>
+
 #include <folly/Likely.h>
 #include <folly/dynamic.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawProps.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Geometry.h>
@@ -19,20 +21,26 @@ namespace facebook {
 namespace react {
 
 template <typename T>
-void fromRawValue(RawValue const &rawValue, T &result) {
+void fromRawValue(
+    const PropsParserContext &context,
+    RawValue const &rawValue,
+    T &result) {
   result = (T)rawValue;
 }
 
 template <typename T>
-void fromRawValue(RawValue const &rawValue, std::vector<T> &result) {
+void fromRawValue(
+    const PropsParserContext &context,
+    RawValue const &rawValue,
+    std::vector<T> &result) {
   if (rawValue.hasType<std::vector<RawValue>>()) {
     auto items = (std::vector<RawValue>)rawValue;
     auto length = items.size();
     result.clear();
     result.reserve(length);
-    for (int i = 0; i < length; i++) {
+    for (size_t i = 0; i < length; i++) {
       T itemResult;
-      fromRawValue(items.at(i), itemResult);
+      fromRawValue(context, items.at(i), itemResult);
       result.push_back(itemResult);
     }
     return;
@@ -42,12 +50,13 @@ void fromRawValue(RawValue const &rawValue, std::vector<T> &result) {
   result.clear();
   result.reserve(1);
   T itemResult;
-  fromRawValue(rawValue, itemResult);
+  fromRawValue(context, rawValue, itemResult);
   result.push_back(itemResult);
 }
 
 template <typename T>
 void fromRawValue(
+    const PropsParserContext &context,
     RawValue const &rawValue,
     std::vector<std::vector<T>> &result) {
   if (rawValue.hasType<std::vector<std::vector<RawValue>>>()) {
@@ -57,7 +66,7 @@ void fromRawValue(
     result.reserve(length);
     for (int i = 0; i < length; i++) {
       T itemResult;
-      fromRawValue(items.at(i), itemResult);
+      fromRawValue(context, items.at(i), itemResult);
       result.push_back(itemResult);
     }
     return;
@@ -67,12 +76,13 @@ void fromRawValue(
   result.clear();
   result.reserve(1);
   T itemResult;
-  fromRawValue(rawValue, itemResult);
+  fromRawValue(context, rawValue, itemResult);
   result.push_back(itemResult);
 }
 
 template <typename T, typename U = T>
 T convertRawProp(
+    const PropsParserContext &context,
     RawProps const &rawProps,
     char const *name,
     T const &sourceValue,
@@ -92,16 +102,17 @@ T convertRawProp(
   }
 
   T result;
-  fromRawValue(*rawValue, result);
+  fromRawValue(context, *rawValue, result);
   return result;
 }
 
 template <typename T>
-static better::optional<T> convertRawProp(
+static std::optional<T> convertRawProp(
+    const PropsParserContext &context,
     RawProps const &rawProps,
     char const *name,
-    better::optional<T> const &sourceValue,
-    better::optional<T> const &defaultValue,
+    std::optional<T> const &sourceValue,
+    std::optional<T> const &defaultValue,
     char const *namePrefix = nullptr,
     char const *nameSuffix = nullptr) {
   const auto *rawValue = rawProps.at(name, namePrefix, nameSuffix);
@@ -117,8 +128,8 @@ static better::optional<T> convertRawProp(
   }
 
   T result;
-  fromRawValue(*rawValue, result);
-  return better::optional<T>{result};
+  fromRawValue(context, *rawValue, result);
+  return std::optional<T>{result};
 }
 
 } // namespace react
