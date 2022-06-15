@@ -56,9 +56,7 @@
 
 ### Changed
 
-- Update direct Metro dependencies to 0.70.1 ([b74e964e70](https://github.com/facebook/react-native/commit/b74e964e705c40834acad7020562e870cdad9db1) by [@arushikesarwani94](https://github.com/arushikesarwani94))
-- Update direct Metro dependencies to 0.69.0 ([c92b64b16a](https://github.com/facebook/react-native/commit/c92b64b16a5710c1dfaea9af4c271931e4669636) by [@arushikesarwani94](https://github.com/arushikesarwani94))
-- Update direct Metro dependencies to 0.68.0 ([f89a0b765c](https://github.com/facebook/react-native/commit/f89a0b765c09c9aba573f03777cc76673989628f) by [@robhogan](https://github.com/robhogan))
+- Update direct Metro dependencies to 0.70.1 ([b74e964e70](https://github.com/facebook/react-native/commit/b74e964e705c40834acad7020562e870cdad9db1), ([c92b64b16a](https://github.com/facebook/react-native/commit/c92b64b16a5710c1dfaea9af4c271931e4669636) by [@arushikesarwani94](https://github.com/arushikesarwani94)), ([f89a0b765c](https://github.com/facebook/react-native/commit/f89a0b765c09c9aba573f03777cc76673989628f) by [@robhogan](https://github.com/robhogan))
 - Upgrade RN CLI to v8.0.0 ([0605880c9e](https://github.com/facebook/react-native/commit/0605880c9ed0aec812f3198eb5075db64fba969a) by [@thymikee](https://github.com/thymikee))
 - Replace use-subscripton with use-sync-external-store ([93b50be8c2](https://github.com/facebook/react-native/commit/93b50be8c2341a0daf41f6fdc656896c4907c4dc) by [@rickhanlonii](https://github.com/rickhanlonii))
 - Upgrade RN CLI to v8 alpha.5 ([1e0226f933](https://github.com/facebook/react-native/commit/1e0226f933814bf9ada87eaa14348bfff863ead1) by [@thymikee](https://github.com/thymikee))
