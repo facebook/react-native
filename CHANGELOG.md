@@ -157,7 +157,6 @@ d6ec284ea5f053be3) by [@philIip](https://github.com/philIip))
 ### Fixed
 
 - Remove unactionable warning about `codegenNativeComponent` when on 'Paper' ([494b73cb33](https://github.com/facebook/react-native/commit/494b73cb33197fa865e9ead8fdca11bce6822917) by [@tido64](https://github.com/tido64))
-- Remove AsyncStorage from rn-tester and fix InternalSettings Example ([f4c4f446e4](https://github.com/facebook/react-native/commit/f4c4f446e4365c6cf7adf5db21d3d746b38aa3e2) by [@JTYim](https://github.com/JTYim))
 -  Fix typo in Value's constructor with a Symbol ([a7a0f86a73](https://github.com/facebook/react-native/commit/a7a0f86a73ab51be31fb2c3205612d7ff1fb5384) by [@jpporto](https://github.com/jpporto))
 - Avoid full copy of large folly::dynamic objects by switching to std::move semantics ([3f98c8e4c2](https://github.com/facebook/react-native/commit/3f98c8e4c2c8f40b81c1a90aa65c1bdc9327faed) by [@NikoAri](https://github.com/NikoAri))
 - Fix performance issue on Animated.interpolate with big input range ([f503b21203](https://github.com/facebook/react-native/commit/f503b212039f79f00ea56b65ecf3cd150b82f087) by [@Almouro](https://github.com/Almouro))
