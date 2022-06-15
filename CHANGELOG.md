@@ -213,7 +213,6 @@ d6ec284ea5f053be3) by [@philIip](https://github.com/philIip))
 
 #### iOS specific
 
-- `pod install --project-directory=ios` fails when Hermes is enabled ([eb7cc85a91](https://github.com/facebook/react-native/commit/eb7cc85a9146d058694247178f03d57cc125c97a) by [@tido64](https://github.com/tido64))
 - ScrollView's contentInsetAdjustmentBehavior is reset to Never at every reuse to avoid layout artifacts. ([28a65f4387](https://github.com/facebook/react-native/commit/28a65f438789c29309d6e7c58063a73ca721ef43))
 - Prevent Nullptr segfault in TurboModule init path ([7f3cc256b5](https://github.com/facebook/react-native/commit/7f3cc256b5bcbf2e64540ca69401f62ec6869f0e) by [@RSNara](https://github.com/RSNara))
 - Expose the extraData dict attached to JavaScript errors to the native ExceptionManager on iOS, similar to Android ([a65ae8eff6](https://github.com/facebook/react-native/commit/a65ae8eff6ec6f9ad283ac8e96f00802421a14da) by [@GijsWeterings](https://github.com/GijsWeterings))
