@@ -14,7 +14,17 @@
 # and build a Android application that can be used to run the
 # tests specified in the scripts/ directory.
 #
-FROM reactnativecommunity/react-native-android:5.2
+
+# For compliance reasons Microsoft cannot depend on docker hub.
+# the reactnative community image is not published to MCR (https://mcr.microsoft.com/)
+# If we need to run these validations we can clone the repo that publishes the community image
+# Patch it to use mcr for the base ubuntu image, build the community image locally
+# and then build this customized step on top of it.
+#
+# Disabeling this is okay because per (macOS GH#774) this test, which is redundant to Azure Devops test,
+# failsin the fork because of Microsoft's V8 upgrade to Android
+#
+#FROM reactnativecommunity/react-native-android:5.2
 
 LABEL Description="React Native Android Test Image"
 LABEL maintainer="Héctor Ramos <hector@fb.com>"
