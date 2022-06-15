@@ -82,7 +82,6 @@
 - React Native sync for revisions a3bde79...27b5699 ([aca9037813](https://github.com/facebook/react-native/commit/aca9037813c363c962b8cd090258ebe1330f5c00))
 - Avoid flattening nodes with event props ([980c52de41](https://github.com/facebook/react-native/commit/980c52de41258f6cf2d2360144ea7ca16a19c9f8))
 - React Native sync for revisions 51947a1...a3bde79 ([a6c792db0b](https://github.com/facebook/react-native/commit/a6c792db0bc9d6ce1000f6aa3223db2c06668b0a) by [@kacieb](https://github.com/kacieb))
-- Optimize CicleCI Android RNTester build job to run a single gradle invocation ([1b44e5c040](https://github.com/facebook/react-native/commit/1b44e5c040e0f691e494689c1f81056eb9026243) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Type the argument of Animated.interpolate as read-only ([6584304c10](https://github.com/facebook/react-native/commit/6584304c100ce4d51a5c4d606170a6ad0dc00875) by [@motiz88](https://github.com/motiz88))
 - Update gradle-download-task to 5.0.1 to support concurrent downloads ([a86cae7aac](https://github.com/facebook/react-native/commit/a86cae7aacc9837536e7d679870a57dcd0f45475) by [@michel-kraemer](https://github.com/michel-kraemer))
 - Logging a soft error when ReactRootView has an id other than -1 instead of crashing the app in hybrid apps ([1ca2c24930](https://github.com/facebook/react-native/commit/1ca2c2493027c1b027146cd41e17dd8a4fc33a41) by [@Kunal-Airtel2022](https://github.com/Kunal-Airtel2022))
