@@ -136,10 +136,7 @@
 
 #### iOS specific
 
-- Deprecating support for iOS/tvOS SDK 11.0, 12.4+ is now required ([5f2835b14d](https://github.com/facebook/react-native/commit/5f2835b14d35681c268dd64
-d6ec284ea5f053be3) by [@philIip](https://github.com/philIip))
-- Deprecating support for iOS/tvOS SDK 11.0, 12.4+ is now required ([c71e6efbcd](https://github.com/facebook/react-native/commit/c71e6efbcd2b95faee327d9763d321488120bc5e) by [@philIip](https://github.com/philIip))
-- Deprecating support for iOS/tvOS SDK 11.0, 12.4+ is now required ([982ca30de0](https://github.com/facebook/react-native/commit/982ca30de079d7e80bd0b50365d58b9048fb628f) by [@philIip](https://github.com/philIip))
+- Deprecating support for iOS/tvOS SDK 11.0, 12.4+ is now required ([5f2835b14d](https://github.com/facebook/react-native/commit/5f2835b14d35681c268dd64d6ec284ea5f053be3), ([c71e6efbcd](https://github.com/facebook/react-native/commit/c71e6efbcd2b95faee327d9763d321488120bc5e), ([982ca30de0](https://github.com/facebook/react-native/commit/982ca30de079d7e80bd0b50365d58b9048fb628f) by [@philIip](https://github.com/philIip))
 
 ### Removed
 
