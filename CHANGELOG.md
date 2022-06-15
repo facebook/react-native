@@ -124,7 +124,6 @@
 ### Removed
 
 - Remove deprecated removeListener from Appearance that causes deprecation message in log box. ([8dfbed786b](https://github.com/facebook/react-native/commit/8dfbed786b40082a7a222e00dc0a621c0695697d) by [@matinzd](https://github.com/matinzd))
-- Add pfh labels to targets ([ceae48c0f7](https://github.com/facebook/react-native/commit/ceae48c0f7b80badb0a1afef78da1868c0a699a1) by [@chris-olszewski](https://github.com/chris-olszewski))
 - This diff removes the `SegmentedControlIOS` export from React Native. Internally, we are requiring `SegmentedControlIOS` directly now and externally people will have to use the community maintained module (https://github.com/react-native-segmented-control). ([235f168574](https://github.com/facebook/react-native/commit/235f1685748442553e53f8ec6d904bc0314a8ae6) by [@cipolleschi](https://github.com/cipolleschi))
 - Removed `deprecated-react-native-props` as a package dependency. ([cdfddb4dad](https://github.com/facebook/react-native/commit/cdfddb4dad7c69904850d7e5f089a32a1d3445d1) by [@yungsters](https://github.com/yungsters))
 - Removed `Image.propTypes`, `Text.propTypes`, and `TextInput.propTypes`. ([3e229f27bc](https://github.com/facebook/react-native/commit/3e229f27bc9c7556876ff776abf70147289d544b) by [@yungsters](https://github.com/yungsters))
@@ -145,7 +144,6 @@
 - The Array appended to FormData is transmitted as a string ([d2e8e7d58e](https://github.com/facebook/react-native/commit/d2e8e7d58e680e0bb3b4da1f820dd4dd840639f5) by [@bang9](https://github.com/bang9))
 - AppState.removeEventListener correctly removes listener for blur and focus events ([9aab25ec53](https://github.com/facebook/react-native/commit/9aab25ec536473ffe6d22c5efeae8fea6bd769be) by [@AntoineDoubovetzky](https://github.com/AntoineDoubovetzky))
 - `focus()` on TextInput to respect its `editable` state ([8a5460ce80](https://github.com/facebook/react-native/commit/8a5460ce80e69c11a007121d4278d55642f6b10e) by [@vonovak](https://github.com/vonovak))
-- Export bridging for testlib BUCK target ([7d527e0fc8](https://github.com/facebook/react-native/commit/7d527e0fc870867a9e308fbd91964a5c8046d556) by [@christophpurrer](https://github.com/christophpurrer))
 - Restore Windows build with RawPropsParser.cpp ([2d64d1d693](https://github.com/facebook/react-native/commit/2d64d1d69360161c047c86a026403d8074ba28bb) by [@TatianaKapos](https://github.com/TatianaKapos))
 - Fix babel-plugin-codegen crash when export init is null ([ae756647c9](https://github.com/facebook/react-native/commit/ae756647c9b8a88ba615fd30185f621825a33427) by [@janicduplessis](https://github.com/janicduplessis))
 - Fixed compilation warning due to `using namespace` being used as part of header ([009d80bf5a](https://github.com/facebook/react-native/commit/009d80bf5a55dd74be448960b1344ac7599c6bae) by [@arhelmus](https://github.com/arhelmus))
