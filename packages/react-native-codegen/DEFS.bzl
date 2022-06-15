@@ -43,17 +43,12 @@ def rn_codegen_cli():
             ],
             visibility = ["PUBLIC"],
         )
-        fb_native.sh_binary(
+        yarn_workspace_binary(
             name = "generate_all_from_schema",
-            main = "src/cli/generators/generate-all.sh",
-            resources = native.glob(
-                [
-                    "buck_tests/**/*.js",
-                    "src/**/*.js",
-                ],
-            ) + [
-                "package.json",
-                "//xplat/js:setup_env",
+            main = "src/cli/generators/generate-all.js",
+            root = "//xplat/js:workspace",
+            deps = [
+                ":yarn-workspace",
             ],
             visibility = ["PUBLIC"],
         )
