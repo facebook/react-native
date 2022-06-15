@@ -240,7 +240,6 @@ d6ec284ea5f053be3) by [@philIip](https://github.com/philIip))
 ### Security
 
 - Encode URL params in URLSearchParams.toString() ([1042a8012f](https://github.com/facebook/react-native/commit/1042a8012fb472bd5c882b469fe507dd6279d562) by [@sshic](https://github.com/sshic))
-- RN: Upgrade to `coveralls@^3.1.1` ([c1a55c766f](https://github.com/facebook/react-native/commit/c1a55c766f608341d24c76dfeb42a67da884cb8e) by [@yungsters](https://github.com/yungsters))
 
 
 ## v0.68.2
