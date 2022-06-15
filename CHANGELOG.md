@@ -78,7 +78,6 @@
 - Upgraded react-devtools-core dependency to 4.24.0 ([a7a781ff4a](https://github.com/facebook/react-native/commit/a7a781ff4a13e744f4eb3007ef0657740b277a72))
 - React Native sync for revisions 4de99b3...1780659 ([6a4e905e3a](https://github.com/facebook/react-native/commit/6a4e905e3a4cccb7c134e8504a1c6674e23b1b70) by [@kacieb](https://github.com/kacieb))
 - React Native sync for revisions 27b5699...4de99b3 ([f035f9e6bb](https://github.com/facebook/react-native/commit/f035f9e6bb003c73faf80645ef4de425f75ea11e))
-- Updated `rn-tester/README.md` to include instructions for Mac M1 users ([4ec2d6cf0b](https://github.com/facebook/react-native/commit/4ec2d6cf0ba367f2ef5ae2e2250ac12fe1202ffe) by [@cipolleschi](https://github.com/cipolleschi))
 - React Native sync for revisions a3bde79...27b5699 ([aca9037813](https://github.com/facebook/react-native/commit/aca9037813c363c962b8cd090258ebe1330f5c00))
 - Avoid flattening nodes with event props ([980c52de41](https://github.com/facebook/react-native/commit/980c52de41258f6cf2d2360144ea7ca16a19c9f8))
 - React Native sync for revisions 51947a1...a3bde79 ([a6c792db0b](https://github.com/facebook/react-native/commit/a6c792db0bc9d6ce1000f6aa3223db2c06668b0a) by [@kacieb](https://github.com/kacieb))
