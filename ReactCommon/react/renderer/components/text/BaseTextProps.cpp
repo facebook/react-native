@@ -12,8 +12,26 @@
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
 #include <react/renderer/graphics/conversions.h>
 
+#define GET_FIELD_VALUE(field, fieldName, defaultValue, rawValue) \
+  (rawValue.hasValue() ? ({                                       \
+    decltype(defaultValue) res;                                   \
+    fromRawValue(context, rawValue, res);                         \
+    res;                                                          \
+  })                                                              \
+                       : defaultValue)
+
+#define REBUILD_FIELD_SWITCH_CASE(                                   \
+    defaults, rawValue, property, field, fieldName)                  \
+  case CONSTEXPR_RAW_PROPS_KEY_HASH(fieldName): {                    \
+    property.field =                                                 \
+        GET_FIELD_VALUE(field, fieldName, defaults.field, rawValue); \
+    return;                                                          \
+  }
+
 namespace facebook {
 namespace react {
+
+bool BaseTextProps::enablePropIteratorSetter = false;
 
 static TextAttributes convertRawProp(
     PropsParserContext const &context,
@@ -192,11 +210,95 @@ BaseTextProps::BaseTextProps(
     const PropsParserContext &context,
     const BaseTextProps &sourceProps,
     const RawProps &rawProps)
-    : textAttributes(convertRawProp(
-          context,
-          rawProps,
-          sourceProps.textAttributes,
-          TextAttributes{})){};
+    : textAttributes(
+          BaseTextProps::enablePropIteratorSetter
+              ? sourceProps.textAttributes
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    sourceProps.textAttributes,
+                    TextAttributes{})){};
+
+void BaseTextProps::setProp(
+    const PropsParserContext &context,
+    RawPropsPropNameHash hash,
+    const char *propName,
+    RawValue const &value) {
+  static auto defaults = TextAttributes{};
+
+  switch (hash) {
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, foregroundColor, "color");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, fontFamily, "fontFamily");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, fontSize, "fontSize");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults,
+        value,
+        textAttributes,
+        fontSizeMultiplier,
+        "fontSizeMultiplier");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, fontWeight, "fontWeight");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, fontStyle, "fontStyle");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, fontVariant, "fontVariant");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, allowFontScaling, "allowFontScaling");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, letterSpacing, "letterSpacing");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, textTransform, "textTransform");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, lineHeight, "lineHeight");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, alignment, "textAlign");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults,
+        value,
+        textAttributes,
+        baseWritingDirection,
+        "baseWritingDirection");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults,
+        value,
+        textAttributes,
+        textDecorationColor,
+        "textDecorationColor");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults,
+        value,
+        textAttributes,
+        textDecorationLineType,
+        "textDecorationLine");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults,
+        value,
+        textAttributes,
+        textDecorationStyle,
+        "textDecorationStyle");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, textShadowOffset, "textShadowOffset");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, textShadowRadius, "textShadowRadius");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, textShadowColor, "textShadowColor");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, isHighlighted, "isHighlighted");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults,
+        value,
+        textAttributes,
+        accessibilityRole,
+        "accessibilityRole");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, opacity, "opacity");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, backgroundColor, "backgroundColor");
+  }
+}
 
 #pragma mark - DebugStringConvertible
 
