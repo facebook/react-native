@@ -42,6 +42,8 @@ const FillRateHelper = require('./FillRateHelper');
 const ViewabilityHelper = require('./ViewabilityHelper');
 const invariant = require('invariant');
 
+const ON_END_REACHED_EPSILON = 0.001;
+
 type Item = any;
 
 export type Separators = {
@@ -218,7 +220,8 @@ type OptionalProps = {|
    * How far from the end (in units of visible length of the list) the bottom edge of the
    * list must be from the end of the content to trigger the `onEndReached` callback.
    * Thus a value of 0.5 will trigger `onEndReached` when the end of the content is
-   * within half the visible length of the list.
+   * within half the visible length of the list. A value of 0 will not trigger until scrolling
+   * to the very end of the list.
    */
   onEndReachedThreshold?: ?number,
   /**
@@ -1269,6 +1272,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           refreshControl={
             props.refreshControl == null ? (
               <RefreshControl
+                // $FlowFixMe[incompatible-type]
                 refreshing={props.refreshing}
                 onRefresh={onRefresh}
                 progressViewOffset={props.progressViewOffset}
@@ -1515,13 +1519,22 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const {data, getItemCount, onEndReached, onEndReachedThreshold} =
       this.props;
     const {contentLength, visibleLength, offset} = this._scrollMetrics;
-    const distanceFromEnd = contentLength - visibleLength - offset;
+    let distanceFromEnd = contentLength - visibleLength - offset;
+
+    // Especially when oERT is zero it's necessary to 'floor' very small distanceFromEnd values to be 0
+    // since debouncing causes us to not fire this event for every single "pixel" we scroll and can thus
+    // be at the "end" of the list with a distanceFromEnd approximating 0 but not quite there.
+    if (distanceFromEnd < ON_END_REACHED_EPSILON) {
+      distanceFromEnd = 0;
+    }
+
+    // TODO: T121172172 Look into why we're "defaulting" to a threshold of 2 when oERT is not present
     const threshold =
       onEndReachedThreshold != null ? onEndReachedThreshold * visibleLength : 2;
     if (
       onEndReached &&
       this.state.last === getItemCount(data) - 1 &&
-      distanceFromEnd < threshold &&
+      distanceFromEnd <= threshold &&
       this._scrollMetrics.contentLength !== this._sentEndForContentLength
     ) {
       // Only call onEndReached once for a given content length
@@ -1627,8 +1640,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this._hasWarned.perf = true;
     }
 
-    const zoomScale = e.nativeEvent.zoomScale;
-
+    // For invalid negative values (w/ RTL), set this to 1.
+    const zoomScale = e.nativeEvent.zoomScale < 0 ? 1 : e.nativeEvent.zoomScale;
     this._scrollMetrics = {
       contentLength,
       dt,

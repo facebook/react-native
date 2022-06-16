@@ -5,3 +5,6 @@ build/
 .cxx/
 # Exclude buck config/jars for third-party libraries
 src/main/third-party/
+# Exclude Android & JVM tests
+src/test/
+src/androidTest/

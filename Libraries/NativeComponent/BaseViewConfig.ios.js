@@ -125,6 +125,18 @@ const bubblingEventTypes = {
       skipBubbling: true,
     },
   },
+  topPointerOver: {
+    phasedRegistrationNames: {
+      captured: 'onPointerOverCapture',
+      bubbled: 'onPointerOver',
+    },
+  },
+  topPointerOut: {
+    phasedRegistrationNames: {
+      captured: 'onPointerOutCapture',
+      bubbled: 'onPointerOut',
+    },
+  },
 };
 
 const directEventTypes = {
@@ -316,6 +328,8 @@ const validAttributesForEventProps = ConditionallyIgnoredEventHandlers({
   onPointerEnter2: true,
   onPointerMove2: true,
   onPointerLeave2: true,
+  onPointerOver: true,
+  onPointerOut: true,
 });
 
 /**

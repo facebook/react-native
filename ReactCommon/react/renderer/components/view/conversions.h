@@ -392,8 +392,11 @@ inline void fromRawValue(
             YGUnitPercent};
         return;
       } else {
-        result = YGValue{folly::to<float>(stringValue), YGUnitPoint};
-        return;
+        auto tryValue = folly::tryTo<float>(stringValue);
+        if (tryValue.hasValue()) {
+          result = YGValue{tryValue.value(), YGUnitPoint};
+          return;
+        }
       }
     }
   }

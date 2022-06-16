@@ -32,6 +32,9 @@
 #include <react/renderer/uimanager/primitives.h>
 #include <react/utils/ContextContainer.h>
 
+// Included to set BaseTextProps config; can be deleted later.
+#include <react/renderer/components/text/BaseTextProps.h>
+
 #include <glog/logging.h>
 
 using namespace facebook::jni;
@@ -78,23 +81,15 @@ Binding::getInspectorDataForInstance(
   return ReadableNativeMap::newObjectCxxArgs(result);
 }
 
-bool getFeatureFlagValue(const char *name) {
+constexpr static auto ReactFeatureFlagsJavaDescriptor =
+    "com/facebook/react/config/ReactFeatureFlags";
+
+static bool getFeatureFlagValue(const char *name) {
   static const auto reactFeatureFlagsJavaDescriptor =
-      jni::findClassStatic(Binding::ReactFeatureFlagsJavaDescriptor);
+      jni::findClassStatic(ReactFeatureFlagsJavaDescriptor);
   const auto field =
       reactFeatureFlagsJavaDescriptor->getStaticField<jboolean>(name);
   return reactFeatureFlagsJavaDescriptor->getStaticFieldValue(field);
-}
-
-bool isMapBufferSerializationEnabled() {
-  static const auto reactFeatureFlagsJavaDescriptor =
-      jni::findClassStatic(Binding::ReactFeatureFlagsJavaDescriptor);
-  static const auto isMapBufferSerializationEnabledMethod =
-      reactFeatureFlagsJavaDescriptor->getStaticMethod<jboolean()>(
-          "isMapBufferSerializationEnabled");
-  bool value =
-      isMapBufferSerializationEnabledMethod(reactFeatureFlagsJavaDescriptor);
-  return value;
 }
 
 void Binding::setPixelDensity(float pointScaleFactor) {
@@ -401,8 +396,6 @@ void Binding::installFabricUIManager(
   if (runtimeSchedulerHolder) {
     auto runtimeScheduler = runtimeSchedulerHolder->cthis()->get().lock();
     if (runtimeScheduler) {
-      runtimeScheduler->setEnableYielding(config->getBool(
-          "react_native_new_architecture:runtimescheduler_enable_yielding_android"));
       runtimeExecutor =
           [runtimeScheduler](
               std::function<void(jsi::Runtime & runtime)> &&callback) {
@@ -438,7 +431,8 @@ void Binding::installFabricUIManager(
   reactNativeConfig_ = config;
 
   contextContainer->insert(
-      "MapBufferSerializationEnabled", isMapBufferSerializationEnabled());
+      "MapBufferSerializationEnabled",
+      getFeatureFlagValue("mapBufferSerializationEnabled"));
 
   disablePreallocateViews_ = reactNativeConfig_->getBool(
       "react_fabric:disabled_view_preallocation_android");
@@ -449,6 +443,13 @@ void Binding::installFabricUIManager(
   contextContainer->insert(
       "EnableLargeTextMeasureCache",
       getFeatureFlagValue("enableLargeTextMeasureCache"));
+
+  // Props setter pattern feature
+  Props::enablePropIteratorSetter =
+      getFeatureFlagValue("enableCppPropsIteratorSetter");
+  AccessibilityProps::enablePropIteratorSetter =
+      Props::enablePropIteratorSetter;
+  BaseTextProps::enablePropIteratorSetter = Props::enablePropIteratorSetter;
 
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = contextContainer;

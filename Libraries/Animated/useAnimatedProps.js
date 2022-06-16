@@ -82,6 +82,7 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
           scheduleUpdate();
         } else if (!node.__isNative) {
           // $FlowIgnore[not-a-function] - Assume it's still a function.
+          // $FlowFixMe[incompatible-use]
           instance.setNativeProps(node.__getAnimatedValue());
         } else {
           throw new Error(

@@ -10,29 +10,33 @@
 import * as path from 'path';
 
 const {
+  configureMakeForPrebuiltHermesC,
   copyBuildScripts,
+  copyPodSpec,
   downloadHermesTarball,
   expandHermesTarball,
   getHermesTagSHA,
   readHermesTag,
   setHermesTag,
+  shouldUsePrebuiltHermesC,
 } = require('../hermes/hermes-utils');
 
 const hermesTag =
   'hermes-2022-04-28-RNv0.69.0-15d07c2edd29a4ea0b8f15ab0588a0c1adb1200f';
 const tarballContents = 'dummy string';
+const hermescContents = 'dummy string';
 const hermesTagSha = '5244f819b2f3949ca94a3a1bf75d54a8ed59d94a';
 
 const ROOT_DIR = path.normalize(path.join(__dirname, '..', '..'));
 const SDKS_DIR = path.join(ROOT_DIR, 'sdks');
 
+const MemoryFs = require('metro-memory-fs');
+
 let execCalls;
 let fs;
-let shelljs;
 
-jest.mock('shelljs', () => ({
-  echo: jest.fn(),
-  exec: jest.fn(command => {
+jest.mock('child_process', () => ({
+  execSync: jest.fn(command => {
     if (command.startsWith('curl')) {
       fs.writeFileSync(
         path.join(SDKS_DIR, 'download', `hermes-${hermesTagSha}.tgz`),
@@ -56,7 +60,6 @@ jest.mock('shelljs', () => ({
       return {code: 0};
     }
   }),
-  exit: jest.fn(),
 }));
 
 function populateMockFilesystem() {
@@ -103,18 +106,29 @@ describe('hermes-utils', () => {
   beforeEach(() => {
     jest.resetModules();
 
-    jest.mock('fs', () => new (require('metro-memory-fs'))());
+    jest.mock(
+      'fs',
+      () =>
+        new MemoryFs({
+          platform: process.platform === 'win32' ? 'win32' : 'posix',
+        }),
+    );
     fs = require('fs');
     fs.reset();
 
     populateMockFilesystem();
 
     execCalls = Object.create(null);
-    shelljs = require('shelljs');
   });
   describe('readHermesTag', () => {
     it('should return main if .hermesversion does not exist', () => {
       expect(readHermesTag()).toEqual('main');
+    });
+    it('should fail if hermes tag is empty', () => {
+      fs.writeFileSync(path.join(SDKS_DIR, '.hermesversion'), '');
+      expect(() => {
+        readHermesTag();
+      }).toThrow('[Hermes] .hermesversion file is empty.');
     });
     it('should return tag from .hermesversion if file exists', () => {
       fs.writeFileSync(path.join(SDKS_DIR, '.hermesversion'), hermesTag);
@@ -139,13 +153,14 @@ describe('hermes-utils', () => {
   describe('getHermesTagSHA', () => {
     it('should return trimmed commit SHA for Hermes tag', () => {
       expect(getHermesTagSHA(hermesTag)).toEqual(hermesTagSha);
-      expect(execCalls.git).toBeTruthy();
+      expect(execCalls.git).toBe(true);
     });
   });
   describe('downloadHermesTarball', () => {
     it('should download Hermes tarball to download dir', () => {
+      fs.writeFileSync(path.join(SDKS_DIR, '.hermesversion'), hermesTag);
       downloadHermesTarball();
-      expect(execCalls.curl).toBeTruthy();
+      expect(execCalls.curl).toBe(true);
       expect(
         fs.readFileSync(
           path.join(SDKS_DIR, 'download', `hermes-${hermesTagSha}.tgz`),
@@ -177,49 +192,47 @@ describe('hermes-utils', () => {
       expect(fs.existsSync(path.join(SDKS_DIR, 'hermes'))).toBeFalsy();
       expandHermesTarball();
       expect(execCalls.tar).toBe(true);
-      expect(fs.existsSync(path.join(SDKS_DIR, 'hermes'))).toBeTruthy();
+      expect(fs.existsSync(path.join(SDKS_DIR, 'hermes'))).toBe(true);
     });
     it('should fail if Hermes tarball does not exist', () => {
-      expandHermesTarball();
+      expect(() => {
+        expandHermesTarball();
+      }).toThrow('[Hermes] Could not locate Hermes tarball.');
       expect(execCalls.tar).toBeUndefined();
-      expect(shelljs.exit.mock.calls.length).toBeGreaterThan(0);
     });
   });
   describe('copyBuildScripts', () => {
     it('should copy React Native Hermes build scripts to Hermes source directory', () => {
-      fs.mkdirSync(path.join(SDKS_DIR, 'hermes', 'utils'), {
-        recursive: true,
-      });
       copyBuildScripts();
-      expect(
-        fs.readFileSync(
-          path.join(
-            ROOT_DIR,
-            'sdks',
-            'hermes',
-            'utils',
-            'build-mac-framework.sh',
+
+      [
+        'build-apple-framework.sh',
+        'build-ios-framework.sh',
+        'build-mac-framework.sh',
+      ].forEach(buildScript => {
+        expect(
+          fs.readFileSync(
+            path.join(ROOT_DIR, 'sdks', 'hermes', 'utils', buildScript),
+            {
+              encoding: 'utf8',
+              flag: 'r',
+            },
           ),
-          {
-            encoding: 'utf8',
-            flag: 'r',
-          },
-        ),
-      ).toEqual(
-        fs.readFileSync(
-          path.join(
-            ROOT_DIR,
-            'sdks',
-            'hermes-engine',
-            'utils',
-            'build-mac-framework.sh',
+        ).toEqual(
+          fs.readFileSync(
+            path.join(ROOT_DIR, 'sdks', 'hermes-engine', 'utils', buildScript),
+            {
+              encoding: 'utf8',
+              flag: 'r',
+            },
           ),
-          {
-            encoding: 'utf8',
-            flag: 'r',
-          },
-        ),
-      );
+        );
+      });
+    });
+  });
+  describe('copyPodSpec', () => {
+    it('should copy React Native Hermes Podspec to Hermes source directory', () => {
+      copyPodSpec();
       expect(
         fs.readFileSync(
           path.join(SDKS_DIR, 'hermes', 'hermes-engine.podspec'),
@@ -237,6 +250,38 @@ describe('hermes-utils', () => {
           },
         ),
       );
+    });
+  });
+  describe('shouldUsePrebuiltHermesC', () => {
+    it('returns false if path to osx hermesc does not exist', () => {
+      expect(shouldUsePrebuiltHermesC('macos')).toBeFalsy();
+    });
+    it('returns false for non-macOS', () => {
+      expect(shouldUsePrebuiltHermesC('windows')).toBeFalsy();
+    });
+    it('return true only if path to hermesc exists', () => {
+      fs.mkdirSync(path.join(SDKS_DIR, 'hermesc', 'osx-bin'), {
+        recursive: true,
+      });
+      fs.writeFileSync(
+        path.join(SDKS_DIR, 'hermesc', 'osx-bin', 'hermesc'),
+        hermescContents,
+      );
+      expect(shouldUsePrebuiltHermesC('macos')).toBe(true);
+    });
+  });
+
+  describe('configureMakeForPrebuiltHermesC', () => {
+    it('creates ImportHermesC file', () => {
+      fs.mkdirSync(path.join(SDKS_DIR, 'hermesc', 'osx-bin'), {
+        recursive: true,
+      });
+      configureMakeForPrebuiltHermesC();
+      expect(
+        fs.existsSync(
+          path.join(SDKS_DIR, 'hermesc', 'osx-bin', 'ImportHermesc.cmake'),
+        ),
+      ).toBe(true);
     });
   });
 });

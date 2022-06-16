@@ -12,8 +12,26 @@
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
 #include <react/renderer/graphics/conversions.h>
 
+#define GET_FIELD_VALUE(field, fieldName, defaultValue, rawValue) \
+  (rawValue.hasValue() ? ({                                       \
+    decltype(defaultValue) res;                                   \
+    fromRawValue(context, rawValue, res);                         \
+    res;                                                          \
+  })                                                              \
+                       : defaultValue)
+
+#define REBUILD_FIELD_SWITCH_CASE(                                   \
+    defaults, rawValue, property, field, fieldName)                  \
+  case CONSTEXPR_RAW_PROPS_KEY_HASH(fieldName): {                    \
+    property.field =                                                 \
+        GET_FIELD_VALUE(field, fieldName, defaults.field, rawValue); \
+    return;                                                          \
+  }
+
 namespace facebook {
 namespace react {
+
+bool BaseTextProps::enablePropIteratorSetter = false;
 
 static TextAttributes convertRawProp(
     PropsParserContext const &context,
@@ -22,25 +40,13 @@ static TextAttributes convertRawProp(
     TextAttributes const &defaultTextAttributes) {
   auto textAttributes = TextAttributes{};
 
-  // Color
+  // Color (not accessed by ViewProps)
   textAttributes.foregroundColor = convertRawProp(
       context,
       rawProps,
       "color",
       sourceTextAttributes.foregroundColor,
       defaultTextAttributes.foregroundColor);
-  textAttributes.backgroundColor = convertRawProp(
-      context,
-      rawProps,
-      "backgroundColor",
-      sourceTextAttributes.backgroundColor,
-      defaultTextAttributes.backgroundColor);
-  textAttributes.opacity = convertRawProp(
-      context,
-      rawProps,
-      "opacity",
-      sourceTextAttributes.opacity,
-      defaultTextAttributes.opacity);
 
   // Font
   textAttributes.fontFamily = convertRawProp(
@@ -166,12 +172,36 @@ static TextAttributes convertRawProp(
       sourceTextAttributes.isHighlighted,
       defaultTextAttributes.isHighlighted);
 
+  // In general, we want this class to access props in the same order
+  // that ViewProps accesses them in, so that RawPropParser can optimize
+  // accesses. This is both theoretical, and ParagraphProps takes advantage
+  // of this.
+  // In particular: accessibilityRole, opacity, and backgroundColor also
+  // are parsed first by ViewProps (and indirectly AccessibilityProps).
+  // However, since RawPropsParser will always store these props /before/
+  // the unique BaseTextProps props, it is most efficient to parse these, in
+  // order, /after/ all of the other BaseTextProps, so that the RawPropsParser
+  // index rolls over only once instead of twice.
   textAttributes.accessibilityRole = convertRawProp(
       context,
       rawProps,
       "accessibilityRole",
       sourceTextAttributes.accessibilityRole,
       defaultTextAttributes.accessibilityRole);
+
+  // Color (accessed in this order by ViewProps)
+  textAttributes.opacity = convertRawProp(
+      context,
+      rawProps,
+      "opacity",
+      sourceTextAttributes.opacity,
+      defaultTextAttributes.opacity);
+  textAttributes.backgroundColor = convertRawProp(
+      context,
+      rawProps,
+      "backgroundColor",
+      sourceTextAttributes.backgroundColor,
+      defaultTextAttributes.backgroundColor);
 
   return textAttributes;
 }
@@ -180,11 +210,95 @@ BaseTextProps::BaseTextProps(
     const PropsParserContext &context,
     const BaseTextProps &sourceProps,
     const RawProps &rawProps)
-    : textAttributes(convertRawProp(
-          context,
-          rawProps,
-          sourceProps.textAttributes,
-          TextAttributes{})){};
+    : textAttributes(
+          BaseTextProps::enablePropIteratorSetter
+              ? sourceProps.textAttributes
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    sourceProps.textAttributes,
+                    TextAttributes{})){};
+
+void BaseTextProps::setProp(
+    const PropsParserContext &context,
+    RawPropsPropNameHash hash,
+    const char *propName,
+    RawValue const &value) {
+  static auto defaults = TextAttributes{};
+
+  switch (hash) {
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, foregroundColor, "color");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, fontFamily, "fontFamily");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, fontSize, "fontSize");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults,
+        value,
+        textAttributes,
+        fontSizeMultiplier,
+        "fontSizeMultiplier");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, fontWeight, "fontWeight");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, fontStyle, "fontStyle");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, fontVariant, "fontVariant");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, allowFontScaling, "allowFontScaling");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, letterSpacing, "letterSpacing");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, textTransform, "textTransform");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, lineHeight, "lineHeight");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, alignment, "textAlign");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults,
+        value,
+        textAttributes,
+        baseWritingDirection,
+        "baseWritingDirection");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults,
+        value,
+        textAttributes,
+        textDecorationColor,
+        "textDecorationColor");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults,
+        value,
+        textAttributes,
+        textDecorationLineType,
+        "textDecorationLine");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults,
+        value,
+        textAttributes,
+        textDecorationStyle,
+        "textDecorationStyle");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, textShadowOffset, "textShadowOffset");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, textShadowRadius, "textShadowRadius");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, textShadowColor, "textShadowColor");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, isHighlighted, "isHighlighted");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults,
+        value,
+        textAttributes,
+        accessibilityRole,
+        "accessibilityRole");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, opacity, "opacity");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, backgroundColor, "backgroundColor");
+  }
+}
 
 #pragma mark - DebugStringConvertible
 

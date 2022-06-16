@@ -289,7 +289,6 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   auto weakRuntimeScheduler = _contextContainer->find<std::weak_ptr<RuntimeScheduler>>("RuntimeScheduler");
   auto runtimeScheduler = weakRuntimeScheduler.has_value() ? weakRuntimeScheduler.value().lock() : nullptr;
   if (runtimeScheduler) {
-    runtimeScheduler->setEnableYielding(true);
     runtimeExecutor = [runtimeScheduler](std::function<void(jsi::Runtime & runtime)> &&callback) {
       runtimeScheduler->scheduleWork(std::move(callback));
     };
@@ -364,7 +363,7 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   NSString *commandStr = [[NSString alloc] initWithUTF8String:commandName.c_str()];
   NSArray *argsArray = convertFollyDynamicToId(args);
 
-  [self->_mountingManager dispatchCommand:tag commandName:commandStr args:argsArray];
+  [_mountingManager dispatchCommand:tag commandName:commandStr args:argsArray];
 }
 
 - (void)schedulerDidSendAccessibilityEvent:(const facebook::react::ShadowView &)shadowView
@@ -373,16 +372,14 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   ReactTag tag = shadowView.tag;
   NSString *eventTypeStr = [[NSString alloc] initWithUTF8String:eventType.c_str()];
 
-  [self->_mountingManager sendAccessibilityEvent:tag eventType:eventTypeStr];
+  [_mountingManager sendAccessibilityEvent:tag eventType:eventTypeStr];
 }
 
 - (void)schedulerDidSetIsJSResponder:(BOOL)isJSResponder
                 blockNativeResponder:(BOOL)blockNativeResponder
                        forShadowView:(facebook::react::ShadowView const &)shadowView;
 {
-  [self->_mountingManager setIsJSResponder:isJSResponder
-                      blockNativeResponder:blockNativeResponder
-                             forShadowView:shadowView];
+  [_mountingManager setIsJSResponder:isJSResponder blockNativeResponder:blockNativeResponder forShadowView:shadowView];
 }
 
 - (void)addObserver:(id<RCTSurfacePresenterObserver>)observer

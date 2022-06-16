@@ -466,5 +466,7 @@ RCT_EXPORT_VIEW_PROPERTY(onPointerMove2, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPointerUp, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPointerEnter2, RCTCapturingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPointerLeave2, RCTCapturingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onPointerOver, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onPointerOut, RCTBubblingEventBlock)
 
 @end

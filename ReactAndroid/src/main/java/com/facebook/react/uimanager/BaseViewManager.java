@@ -65,6 +65,80 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   private static final String STATE_MIXED = "mixed";
 
   @Override
+  protected T prepareToRecycleView(@NonNull ThemedReactContext reactContext, T view) {
+    // Reset tags
+    view.setTag(R.id.pointer_enter, null);
+    view.setTag(R.id.pointer_leave, null);
+    view.setTag(R.id.pointer_move, null);
+    view.setTag(R.id.react_test_id, null);
+    view.setTag(R.id.view_tag_native_id, null);
+    view.setTag(R.id.labelled_by, null);
+    view.setTag(R.id.accessibility_label, null);
+    view.setTag(R.id.accessibility_hint, null);
+    view.setTag(R.id.accessibility_role, null);
+    view.setTag(R.id.accessibility_state, null);
+    view.setTag(R.id.accessibility_actions, null);
+    view.setTag(R.id.accessibility_value, null);
+
+    // This indirectly calls (and resets):
+    // setTranslationX
+    // setTranslationY
+    // setRotation
+    // setRotationX
+    // setRotationY
+    // setScaleX
+    // setScaleY
+    // setCameraDistance
+    setTransform(view, null);
+
+    // RenderNode params not covered by setTransform above
+    view.setPivotX(0);
+    view.setPivotY(0);
+    view.setTop(0);
+    view.setBottom(0);
+    view.setLeft(0);
+    view.setRight(0);
+    view.setElevation(0);
+    view.setAnimationMatrix(null);
+
+    // setShadowColor
+    view.setOutlineAmbientShadowColor(Color.BLACK);
+    view.setOutlineSpotShadowColor(Color.BLACK);
+
+    // Focus IDs
+    // Also see in AOSP source:
+    // https://android.googlesource.com/platform/frameworks/base/+/a175a5b/core/java/android/view/View.java#4493
+    view.setNextFocusDownId(View.NO_ID);
+    view.setNextFocusForwardId(View.NO_ID);
+    view.setNextFocusRightId(View.NO_ID);
+    view.setNextFocusUpId(View.NO_ID);
+
+    // This is possibly subject to change and overrideable per-platform, but these
+    // are the default view flags in View.java:
+    // https://android.googlesource.com/platform/frameworks/base/+/a175a5b/core/java/android/view/View.java#2712
+    // `mViewFlags = SOUND_EFFECTS_ENABLED | HAPTIC_FEEDBACK_ENABLED | LAYOUT_DIRECTION_INHERIT`
+    // Therefore we set the following options as such:
+    view.setFocusable(false);
+    view.setFocusableInTouchMode(false);
+
+    // https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-mainline-12.0.0_r96/core/java/android/view/View.java#5491
+    view.setElevation(0);
+
+    // Predictably, alpha defaults to 1:
+    // https://android.googlesource.com/platform/frameworks/base/+/a175a5b/core/java/android/view/View.java#2186
+    // This accounts for resetting mBackfaceOpacity and mBackfaceVisibility
+    view.setAlpha(1);
+
+    // setPadding is a noop for most View types, but it is not for Text
+    setPadding(view, 0, 0, 0, 0);
+
+    // Other stuff
+    view.setForeground(null);
+
+    return view;
+  }
+
+  @Override
   @ReactProp(
       name = ViewProps.BACKGROUND_COLOR,
       defaultInt = Color.TRANSPARENT,
@@ -556,6 +630,39 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   public void setPointerMove(@NonNull T view, boolean value) {
     view.setTag(R.id.pointer_move, value);
   }
+
+  /* Experimental W3C Pointer events start */
+  @ReactProp(name = "onPointerEnter2")
+  public void setPointerEnter2(@NonNull T view, boolean value) {
+    view.setTag(R.id.pointer_enter2, value);
+  }
+
+  @ReactProp(name = "onPointerEnter2Capture")
+  public void setPointerEnter2Capture(@NonNull T view, boolean value) {
+    view.setTag(R.id.pointer_enter2_capture, value);
+  }
+
+  @ReactProp(name = "onPointerLeave2")
+  public void setPointerLeave2(@NonNull T view, boolean value) {
+    view.setTag(R.id.pointer_leave2, value);
+  }
+
+  @ReactProp(name = "onPointerLeave2Capture")
+  public void setPointerLeave2Capture(@NonNull T view, boolean value) {
+    view.setTag(R.id.pointer_leave2_capture, value);
+  }
+
+  @ReactProp(name = "onPointerMove2")
+  public void setPointerMove2(@NonNull T view, boolean value) {
+    view.setTag(R.id.pointer_move2, value);
+  }
+
+  @ReactProp(name = "onPointerMove2Capture")
+  public void setPointerMove2Capture(@NonNull T view, boolean value) {
+    view.setTag(R.id.pointer_move2_capture, value);
+  }
+
+  /* Experimental W3C Pointer events end */
 
   @ReactProp(name = "onMoveShouldSetResponder")
   public void setMoveShouldSetResponder(@NonNull T view, boolean value) {

@@ -14,7 +14,7 @@ PODS:
     - Flipper-Folly (~> 2.6)
     - Flipper-RSocket (~> 1.4)
   - Flipper-Boost-iOSX (1.76.0.1.11)
-  - Flipper-DoubleConversion (3.2.0)
+  - Flipper-DoubleConversion (3.2.0.1)
   - Flipper-Fmt (7.1.7)
   - Flipper-Folly (2.6.10):
     - Flipper-Boost-iOSX
@@ -23,7 +23,7 @@ PODS:
     - Flipper-Glog
     - libevent (~> 2.1.12)
     - OpenSSL-Universal (= 1.1.1100)
-  - Flipper-Glog (0.5.0.4)
+  - Flipper-Glog (0.5.0.5)
   - Flipper-PeerTalk (0.0.4)
   - Flipper-RSocket (1.4.3):
     - Flipper-Folly (~> 2.6)
@@ -727,10 +727,10 @@ DEPENDENCIES:
   - FBReactNativeSpec (from `../../React/FBReactNativeSpec`)
   - Flipper (= 0.125.0)
   - Flipper-Boost-iOSX (= 1.76.0.1.11)
-  - Flipper-DoubleConversion (= 3.2.0)
+  - Flipper-DoubleConversion (= 3.2.0.1)
   - Flipper-Fmt (= 7.1.7)
   - Flipper-Folly (= 2.6.10)
-  - Flipper-Glog (= 0.5.0.4)
+  - Flipper-Glog (= 0.5.0.5)
   - Flipper-PeerTalk (= 0.0.4)
   - Flipper-RSocket (= 1.4.3)
   - FlipperKit (= 0.125.0)
@@ -894,10 +894,10 @@ SPEC CHECKSUMS:
   FBReactNativeSpec: 56756084824aeea7edd1a7015d1505b4845b5989
   Flipper: 26fc4b7382499f1281eb8cb921e5c3ad6de91fe0
   Flipper-Boost-iOSX: fd1e2b8cbef7e662a122412d7ac5f5bea715403c
-  Flipper-DoubleConversion: 3d3d04a078d4f3a1b6c6916587f159dc11f232c4
+  Flipper-DoubleConversion: 2dc99b02f658daf147069aad9dbd29d8feb06d30
   Flipper-Fmt: 60cbdd92fc254826e61d669a5d87ef7015396a9b
   Flipper-Folly: 584845625005ff068a6ebf41f857f468decd26b3
-  Flipper-Glog: 87bc98ff48de90cb5b0b5114ed3da79d85ee2dd4
+  Flipper-Glog: 70c50ce58ddaf67dc35180db05f191692570f446
   Flipper-PeerTalk: 116d8f857dc6ef55c7a5a75ea3ceaafe878aadc9
   Flipper-RSocket: d9d9ade67cbecf6ac10730304bf5607266dd2541
   FlipperKit: cbdee19bdd4e7f05472a66ce290f1b729ba3cb86
@@ -912,7 +912,7 @@ SPEC CHECKSUMS:
   React-bridging: 1329cdc45834252447f5f4cb8bd19ec78ef0f06e
   React-callinvoker: 5f16202ad4e45f0607b1fae0f6955a8f7c87eef1
   React-Codegen: c4ae835565487e494740b756ce953d8f635a76df
-  React-Core: 5f17b3eb71cbd4751186525e874010c264435bae
+  React-Core: 35732f943ac5d0edea8eeff59f05f83a81ba2945
   React-CoreModules: 97cfc7d97cca9a3b59e5c2de5d1e6ddb9605f0c8
   React-cxxreact: 6c8298fa64352792a63f358db73f4f24c1317304
   React-Fabric: 7041000207eca7aa25e73731961630623b8f6510
@@ -925,7 +925,7 @@ SPEC CHECKSUMS:
   React-RCTActionSheet: 166fd1df85ac10219466b45d12a5884d3eaceac1
   React-RCTAnimation: 37350855482bcf0737b6bffe083457a3db801dea
   React-RCTBlob: 209aa807339da293db61bed648a691101f23f52f
-  React-RCTFabric: f67635c27e1287ce62f063beccd210d7c4f2af1f
+  React-RCTFabric: 410b03c9681179adf4051241fca2e49a3c307a0e
   React-RCTImage: a64fe231fe8fb118a227c3bc12189d7a0c087ed0
   React-RCTLinking: 21bb4675c3ec8fe704672ea511e817aeb3bf8370
   React-RCTNetwork: abf43cb960e7b31a7d082143d66d9bd7d0589505
@@ -939,9 +939,9 @@ SPEC CHECKSUMS:
   ReactCommon: 4a2e9e61ef59dc6f7b92f05a6b9e37a0013ee854
   ScreenshotManager: 2cece1df548810a0122fcc271d1b06f82d0cab8b
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
-  Yoga: 2854c07ffae3ed31bf7e1297d87d4aaa73db6640
+  Yoga: 1b1a12ff3d86a10565ea7cbe057d42f5e5fb2a07
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 2bf6f58f9311ff9b7a2195fe9ca589cf78abf099
+PODFILE CHECKSUM: d08b00e183b7a697fa51831655b29144f0ae76cf
 
 COCOAPODS: 1.11.3

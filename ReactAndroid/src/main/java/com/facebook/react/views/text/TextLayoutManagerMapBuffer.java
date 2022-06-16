@@ -29,6 +29,7 @@ import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.common.mapbuffer.MapBuffer;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaMeasureMode;
@@ -205,19 +206,25 @@ public class TextLayoutManagerMapBuffer {
 
     Spannable preparedSpannableText;
 
-    synchronized (sSpannableCacheLock) {
-      preparedSpannableText = sSpannableCache.get(attributedString);
-      if (preparedSpannableText != null) {
-        return preparedSpannableText;
+    if (ReactFeatureFlags.enableSpannableCache) {
+      synchronized (sSpannableCacheLock) {
+        preparedSpannableText = sSpannableCache.get(attributedString);
+        if (preparedSpannableText != null) {
+          return preparedSpannableText;
+        }
       }
-    }
 
-    preparedSpannableText =
-        createSpannableFromAttributedString(
-            context, attributedString, reactTextViewManagerCallback);
+      preparedSpannableText =
+          createSpannableFromAttributedString(
+              context, attributedString, reactTextViewManagerCallback);
 
-    synchronized (sSpannableCacheLock) {
-      sSpannableCache.put(attributedString, preparedSpannableText);
+      synchronized (sSpannableCacheLock) {
+        sSpannableCache.put(attributedString, preparedSpannableText);
+      }
+    } else {
+      preparedSpannableText =
+          createSpannableFromAttributedString(
+              context, attributedString, reactTextViewManagerCallback);
     }
 
     return preparedSpannableText;

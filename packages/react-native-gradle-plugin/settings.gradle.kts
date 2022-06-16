@@ -6,11 +6,11 @@
  */
 
 pluginManagement {
-    repositories {
-        mavenCentral()
-        google()
-        gradlePluginPortal()
-    }
+  repositories {
+    mavenCentral()
+    google()
+    gradlePluginPortal()
+  }
 }
 
 rootProject.name = "react-native-gradle-plugin"

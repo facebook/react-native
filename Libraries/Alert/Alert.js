@@ -28,6 +28,7 @@ export type Buttons = Array<{
 
 type Options = {
   cancelable?: ?boolean,
+  userInterfaceStyle?: 'unspecified' | 'light' | 'dark',
   onDismiss?: ?() => void,
   ...
 };
@@ -45,7 +46,15 @@ class Alert {
     options?: Options,
   ): void {
     if (Platform.OS === 'ios') {
-      Alert.prompt(title, message, buttons, 'default');
+      Alert.prompt(
+        title,
+        message,
+        buttons,
+        'default',
+        undefined,
+        undefined,
+        options,
+      );
     } else if (Platform.OS === 'android') {
       const NativeDialogManagerAndroid =
         require('../NativeModules/specs/NativeDialogManagerAndroid').default;
@@ -108,6 +117,7 @@ class Alert {
     type?: ?AlertType = 'plain-text',
     defaultValue?: string,
     keyboardType?: string,
+    options?: Options,
   ): void {
     if (Platform.OS === 'ios') {
       let callbacks = [];
@@ -142,6 +152,7 @@ class Alert {
           cancelButtonKey,
           destructiveButtonKey,
           keyboardType,
+          userInterfaceStyle: options?.userInterfaceStyle || undefined,
         },
         (id, value) => {
           const cb = callbacks[id];

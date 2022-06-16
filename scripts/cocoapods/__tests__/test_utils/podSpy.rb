@@ -26,11 +26,13 @@ def podSpy_cleanUp
     $podInvocationCount = 0
 end
 
-def pod(name, version = nil, path: nil, configurations: nil)
+def pod(name, version = nil, path: nil, configurations: nil, modular_headers: nil, podspec: nil)
     $podInvocationCount += 1
     params = {}
     if version != nil then params[:version] = version end
     if path != nil then params[:path] = path end
     if configurations != nil then params[:configurations] = configurations end
+    if modular_headers != nil then params[:modular_headers] = modular_headers end
+    if podspec != nil then params[:podspec] = podspec end
     $podInvocation[name] = params
 end

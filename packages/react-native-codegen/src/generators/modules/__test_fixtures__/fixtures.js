@@ -1502,6 +1502,79 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
   },
 };
 
+const CXX_ONLY_NATIVE_MODULES: SchemaType = {
+  modules: {
+    NativeSampleTurboModule: {
+      type: 'NativeModule',
+      aliases: {
+        ObjectAlias: {
+          type: 'ObjectTypeAnnotation',
+          properties: [
+            {
+              name: 'x',
+              optional: false,
+              typeAnnotation: {
+                type: 'NumberTypeAnnotation',
+              },
+            },
+          ],
+        },
+      },
+      spec: {
+        properties: [
+          {
+            name: 'getMixed',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'MixedTypeAnnotation',
+              },
+              params: [
+                {
+                  name: 'arg',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'MixedTypeAnnotation',
+                  },
+                },
+              ],
+            },
+          },
+          {
+            name: 'getNullableNumberFromNullableAlias',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'NullableTypeAnnotation',
+                typeAnnotation: {
+                  type: 'NumberTypeAnnotation',
+                },
+              },
+              params: [
+                {
+                  name: 'a',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'NullableTypeAnnotation',
+                    typeAnnotation: {
+                      type: 'TypeAliasTypeAnnotation',
+                      name: 'ObjectAlias',
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+      moduleNames: ['SampleTurboModuleCxx'],
+      excludedPlatforms: ['iOS', 'android'],
+    },
+  },
+};
+
 const SAMPLE_WITH_UPPERCASE_NAME: SchemaType = {
   modules: {
     NativeSampleTurboModule: {
@@ -1522,5 +1595,6 @@ module.exports = {
   simple_native_modules: SIMPLE_NATIVE_MODULES,
   native_modules_with_type_aliases: NATIVE_MODULES_WITH_TYPE_ALIASES,
   real_module_example: REAL_MODULE_EXAMPLE,
+  cxx_only_native_modules: CXX_ONLY_NATIVE_MODULES,
   SampleWithUppercaseName: SAMPLE_WITH_UPPERCASE_NAME,
 };

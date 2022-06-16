@@ -24,15 +24,23 @@ class AccessibilityProps {
       AccessibilityProps const &sourceProps,
       RawProps const &rawProps);
 
+  void setProp(
+      const PropsParserContext &context,
+      RawPropsPropNameHash hash,
+      const char *propName,
+      RawValue const &value);
+
+  static bool enablePropIteratorSetter;
+
 #pragma mark - Props
 
   bool accessible{false};
-  AccessibilityTraits accessibilityTraits{AccessibilityTraits::None};
   AccessibilityState accessibilityState;
   std::string accessibilityLabel{""};
   AccessibilityLabelledBy accessibilityLabelledBy{};
   AccessibilityLiveRegion accessibilityLiveRegion{
       AccessibilityLiveRegion::None};
+  AccessibilityTraits accessibilityTraits{AccessibilityTraits::None};
   std::string accessibilityRole{""};
   std::string accessibilityHint{""};
   std::string accessibilityLanguage{""};

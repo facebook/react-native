@@ -16,16 +16,30 @@
 const {
   configureMakeForPrebuiltHermesC,
   copyBuildScripts,
+  copyPodSpec,
   downloadHermesTarball,
   expandHermesTarball,
   shouldUsePrebuiltHermesC,
+  shouldBuildHermesFromSource,
 } = require('./hermes-utils');
 
-downloadHermesTarball();
-expandHermesTarball();
-copyBuildScripts();
+async function main() {
+  if (!shouldBuildHermesFromSource()) {
+    copyPodSpec();
+    return;
+  }
 
-if (shouldUsePrebuiltHermesC('macos')) {
-  console.log('[Hermes] Using pre-built HermesC');
-  configureMakeForPrebuiltHermesC();
+  downloadHermesTarball();
+  expandHermesTarball();
+  copyPodSpec();
+  copyBuildScripts();
+
+  if (shouldUsePrebuiltHermesC('macos')) {
+    console.log('[Hermes] Using pre-built HermesC');
+    configureMakeForPrebuiltHermesC();
+  }
 }
+
+main().then(() => {
+  process.exit(0);
+});

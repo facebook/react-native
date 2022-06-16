@@ -16,22 +16,13 @@ class FlipperTests < Test::Unit::TestCase
     # =========================== #
     # TEST - Install Dependencies #
     # =========================== #
-    def test_installFlipperDependencies_whenProductionIsFalse_installDependencies
+    def test_installFlipperDependencies_installDependencies
         # Act
-        install_flipper_dependencies(false, '../..')
+        install_flipper_dependencies('../..')
 
         # Assert
         assert_equal($podInvocationCount, 1)
         assert_equal($podInvocation['React-Core/DevSupport'][:path], "../../" )
-    end
-
-    def test_installFlipperDependencies_whenProductionIsTrue_skipDependencies
-        # Act
-        install_flipper_dependencies(true, '../..')
-
-        # Assert
-        assert_equal($podInvocationCount, 0)
-        assert_true($podInvocation.empty?)
     end
 
     # ======================= #
@@ -95,7 +86,7 @@ class FlipperTests < Test::Unit::TestCase
         reactCore_target = installer.target_with_name("React-Core")
         reactCore_target.build_configurations.each do |config|
             if config.name == 'Debug' then
-                assert_equal(config.build_settings['OTHER_CFLAGS'], "$(inherited) -DFB_SONARKIT_ENABLED=1")
+                assert_equal(config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'], ['$(inherited)', 'FB_SONARKIT_ENABLED=1'])
             else
                 assert_true(config.build_settings.empty?)
             end

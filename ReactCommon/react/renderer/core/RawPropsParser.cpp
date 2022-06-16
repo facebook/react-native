@@ -8,6 +8,7 @@
 #include "RawPropsParser.h"
 
 #include <folly/Likely.h>
+#include <folly/hash/Hash.h>
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/RawProps.h>
 
@@ -99,6 +100,13 @@ void RawPropsParser::preparse(RawProps const &rawProps) const noexcept {
   // Resetting the cursor, the next increment will give `0`.
   rawProps.keyIndexCursor_ = static_cast<int>(keyCount - 1);
 
+  // If the Props constructor doesn't use ::at at all, we might be
+  // able to skip this entirely (in those cases, the Props struct probably
+  // uses setProp instead).
+  if (keyCount == 0) {
+    return;
+  }
+
   switch (rawProps.mode_) {
     case RawProps::Mode::Empty:
       return;
@@ -123,6 +131,7 @@ void RawPropsParser::preparse(RawProps const &rawProps) const noexcept {
 
         auto keyIndex = nameToIndex_.at(
             name.data(), static_cast<RawPropsPropNameLength>(name.size()));
+
         if (keyIndex == kRawPropsValueIndexEmpty) {
           continue;
         }
@@ -145,6 +154,7 @@ void RawPropsParser::preparse(RawProps const &rawProps) const noexcept {
 
         auto keyIndex = nameToIndex_.at(
             name.data(), static_cast<RawPropsPropNameLength>(name.size()));
+
         if (keyIndex == kRawPropsValueIndexEmpty) {
           continue;
         }
@@ -152,6 +162,59 @@ void RawPropsParser::preparse(RawProps const &rawProps) const noexcept {
         rawProps.keyIndexToValueIndex_[keyIndex] = valueIndex;
         rawProps.values_.push_back(RawValue{pair.second});
         valueIndex++;
+      }
+      break;
+    }
+  }
+}
+
+/**
+ * To be used by RawProps only. Value iterator functions.
+ */
+void RawPropsParser::iterateOverValues(
+    RawProps const &rawProps,
+    std::function<
+        void(RawPropsPropNameHash, const char *, RawValue const &)> const
+        &visit) const {
+  switch (rawProps.mode_) {
+    case RawProps::Mode::Empty:
+      return;
+
+    case RawProps::Mode::JSI: {
+      auto &runtime = *rawProps.runtime_;
+      if (!rawProps.value_.isObject()) {
+        LOG(ERROR) << "Preparse props: rawProps value is not object";
+      }
+      react_native_assert(rawProps.value_.isObject());
+      auto object = rawProps.value_.asObject(runtime);
+
+      auto names = object.getPropertyNames(runtime);
+      auto count = names.size(runtime);
+
+      for (size_t i = 0; i < count; i++) {
+        auto nameValue = names.getValueAtIndex(runtime, i).getString(runtime);
+        auto value = object.getProperty(runtime, nameValue);
+
+        auto name = nameValue.utf8(runtime);
+
+        auto nameHash = RAW_PROPS_KEY_HASH(name.c_str());
+        auto rawValue = RawValue(jsi::dynamicFromValue(runtime, value));
+
+        visit(nameHash, name.c_str(), rawValue);
+      }
+
+      break;
+    }
+
+    case RawProps::Mode::Dynamic: {
+      auto const &dynamic = rawProps.dynamic_;
+
+      for (auto const &pair : dynamic.items()) {
+        auto name = pair.first.getString();
+
+        auto nameHash = RAW_PROPS_KEY_HASH(name.c_str());
+        auto rawValue = RawValue{pair.second};
+        visit(nameHash, name.c_str(), rawValue);
       }
       break;
     }
