@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) UIView *inputAccessoryView;
 @property (nonatomic, strong, nullable) UIView *inputView;
 @property (nonatomic, weak, nullable) id<RCTBackedTextInputDelegate> textInputDelegate;
+@property (nonatomic, readwrite, nullable) NSString *errorMessage;
 @property (nonatomic, readonly) CGSize contentSize;
 @property (nonatomic, strong, nullable) NSDictionary<NSAttributedStringKey,id> *defaultTextAttributes;
 @property (nonatomic, assign) BOOL contextMenuHidden;
