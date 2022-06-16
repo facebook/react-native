@@ -73,7 +73,7 @@ ViewProps::ViewProps(
                                                 context,
                                                 rawProps,
                                                 "border",
-                                                "Curves",
+                                                "Curve",
                                                 sourceProps.borderCurves,
                                                 {})),
       borderStyles(
