@@ -101,6 +101,9 @@
 - (void)setAccessibilityErrorMessage:(NSString *)accessibilityErrorMessage
 {
   self.errorMessage = accessibilityErrorMessage;
+  NSString *error = !accessibilityErrorMessage ? @"" : accessibilityErrorMessage;
+  NSString *errorWithText = [self.attributedText.string length] == 0 ? error : [NSString stringWithFormat: @"%@ %@", self.attributedText.string, error];
+  self.accessibilityValue = errorWithText;
 }
 
 - (void)setSecureTextEntry:(BOOL)secureTextEntry
