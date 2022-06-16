@@ -24,6 +24,8 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
       {"pressure", getDebugDescription(pointerEvent.pressure, options)},
       {"pointerType", getDebugDescription(pointerEvent.pointerType, options)},
       {"clientPoint", getDebugDescription(pointerEvent.clientPoint, options)},
+      {"width", getDebugDescription(pointerEvent.width, options)},
+      {"height", getDebugDescription(pointerEvent.height, options)},
   };
 }
 

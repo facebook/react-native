@@ -64,6 +64,11 @@ struct ActiveTouch {
   UITouchType touchType;
 
   /*
+   * The radius (in points) of the touch.
+   */
+  CGFloat majorRadius;
+
+  /*
    * A component view on which the touch was begun.
    */
   __strong UIView<RCTComponentViewProtocol> *componentView = nil;
@@ -105,6 +110,7 @@ static void UpdateActiveTouchWithUITouch(
   }
 
   activeTouch.touchType = uiTouch.type;
+  activeTouch.majorRadius = uiTouch.majorRadius;
 }
 
 static ActiveTouch CreateTouchWithUITouch(UITouch *uiTouch, UIView *rootComponentView, CGPoint rootViewOriginOffset)
@@ -180,6 +186,17 @@ static PointerEvent CreatePointerEventFromActiveTouch(ActiveTouch activeTouch)
   event.pressure = touch.force;
   event.pointerType = PointerTypeCStringFromUITouchType(activeTouch.touchType);
   event.clientPoint = touch.pagePoint;
+
+  CGFloat pointerSize = activeTouch.majorRadius * 2.0;
+  if (@available(iOS 13.4, *)) {
+    if (activeTouch.touchType == UITouchTypeIndirectPointer) {
+      // mouse type pointers should always report a size of 1
+      pointerSize = 1.0;
+    }
+  }
+  event.width = pointerSize;
+  event.height = pointerSize;
+
   return event;
 }
 
@@ -194,6 +211,8 @@ CreatePointerEventFromIncompleteHoverData(UIView *view, CGPoint clientLocation, 
   event.pressure = 0.0;
   event.pointerType = "mouse";
   event.clientPoint = RCTPointFromCGPoint(clientLocation);
+  event.width = 1.0;
+  event.height = 1.0;
   return event;
 }
 

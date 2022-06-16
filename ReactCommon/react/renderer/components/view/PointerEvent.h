@@ -34,6 +34,16 @@ struct PointerEvent {
    * opposed to the coordinate within the page).
    */
   Point clientPoint;
+  /*
+   * The width (magnitude on the X axis), in CSS pixels, of the contact geometry
+   * of the pointer
+   */
+  Float width;
+  /*
+   * The height (magnitude on the y axis), in CSS pixels, of the contact
+   * geometry of the pointer
+   */
+  Float height;
 };
 
 #if RN_DEBUG_STRING_CONVERTIBLE
