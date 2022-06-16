@@ -109,7 +109,21 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
 
     rawProps.parse(rawPropsParser_, context);
 
-    return ShadowNodeT::Props(context, rawProps, props);
+    // Call old-style constructor
+    auto shadowNodeProps = ShadowNodeT::Props(context, rawProps, props);
+
+    // Use the new-style iterator
+    // Note that we just check if `Props` has this flag set, no matter
+    // the type of ShadowNode; it acts as the single global flag.
+    if (Props::enablePropIteratorSetter) {
+      rawProps.iterateOverValues([&](RawPropsPropNameHash hash,
+                                     const char *propName,
+                                     RawValue const &fn) {
+        shadowNodeProps.get()->setProp(context, hash, propName, fn);
+      });
+    }
+
+    return shadowNodeProps;
   };
 
   SharedProps interpolateProps(

@@ -301,6 +301,7 @@ static inline YGStyle convertRawProp(
   return yogaStyle;
 }
 
+// This can be deleted when non-iterator ViewProp parsing is deleted
 template <typename T>
 static inline CascadedRectangleCorners<T> convertRawProp(
     const PropsParserContext &context,
@@ -465,6 +466,7 @@ static inline CascadedRectangleEdges<T> convertRawProp(
   return result;
 }
 
+// This can be deleted when non-iterator ViewProp parsing is deleted
 static inline ViewEvents convertRawProp(
     const PropsParserContext &context,
     RawProps const &rawProps,
