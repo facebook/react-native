@@ -105,7 +105,7 @@
 - Update `PushNotificationIOS.checkPermissions` to include iOS 10+ notification settings. ([17ecd2fb5b](https://github.com/facebook/react-native/commit/17ecd2fb5b3cfb8aa0282ed406b16dc3b9777018))
 - Enable SonarKit in React-Core when the configuration is `'Debug'` ([b5343a6b0d](https://github.com/facebook/react-native/commit/b5343a6b0dd07c1b4ef9dac549df67a4d68ebd1e) by [@cipolleschi](https://github.com/cipolleschi))
 - When Hermes is enabled, the Hermes Engine will be built from source instead of using the pre-built `hermes-engine` CocoaPod. ([12ad1fffe8](https://github.com/facebook/react-native/commit/12ad1fffe87c0c5ab2e001f318ff4f8d3eda7479) by [@hramos](https://github.com/hramos))
--  Replaced folly::Optional with std::optional from C++17 in Objc module generator. ([45e2941367](https://github.com/facebook/react-native/commit/45e2941367fbf13584193bbda598173802289167) by [@philIip](https://github.com/philIip))
+- Replaced folly::Optional with std::optional from C++17 in Objc module generator. ([45e2941367](https://github.com/facebook/react-native/commit/45e2941367fbf13584193bbda598173802289167) by [@philIip](https://github.com/philIip))
 - Removed methodName parameter that was used only for a warning message and moved the warning parameter to be calculated inline. ([cfb11ca2f6](https://github.com/facebook/react-native/commit/cfb11ca2f67c59c090b8a58b2b7bdaacef0e19df))
 - Fix the crash caused by nil partialLoadHandler ([46bc521513](https://github.com/facebook/react-native/commit/46bc521513c9c78e5ffc49cf3e571757e1a91cef))
 - Synchronously render cached images ([189c2c8958](https://github.com/facebook/react-native/commit/189c2c8958442541c6b4f42860b2943ece612da2))
