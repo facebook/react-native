@@ -16,6 +16,8 @@
 namespace facebook {
 namespace react {
 
+// Nearly this entire file can be deleted when iterator-style Prop parsing
+// ships fully for View
 static inline YGStyle::Dimensions convertRawProp(
     const PropsParserContext &context,
     RawProps const &rawProps,
