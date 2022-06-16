@@ -130,4 +130,9 @@ public class ReactFeatureFlags {
    * Feature Flag to enable View Recycling. When enabled, individual ViewManagers must still opt-in.
    */
   public static boolean enableViewRecycling = false;
+
+  /**
+   * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
+   */
+  public static boolean enableCppPropsIteratorSetter = false;
 }
