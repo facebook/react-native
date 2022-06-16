@@ -72,7 +72,7 @@ public class ReactInstanceManagerBuilder {
   ReactInstanceManagerBuilder() {}
 
   /**
-   * Constructor that takes a Boolean specifying weather to load hermes or jsc
+   * Constructor that takes a Boolean specifying whether to load hermes or jsc
    */
   ReactInstanceManagerBuilder(Boolean hermesEnabled) {
     this.hermesEnabled = hermesEnabled;
