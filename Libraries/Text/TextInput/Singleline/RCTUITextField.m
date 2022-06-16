@@ -101,9 +101,16 @@
 - (void)setAccessibilityErrorMessage:(NSString *)accessibilityErrorMessage
 {
   self.errorMessage = accessibilityErrorMessage;
-  NSString *error = !accessibilityErrorMessage ? @"" : accessibilityErrorMessage;
-  NSString *errorWithText = [self.attributedText.string length] == 0 ? error : [NSString stringWithFormat: @"%@ %@", self.attributedText.string, error];
-  self.accessibilityValue = errorWithText;
+  NSString *text = self.attributedText.string;
+  NSString *lastChar = [text length] == 0 ? @"" : [text substringFromIndex:[text length] - 1];
+  if (accessibilityErrorMessage != nil) {
+    NSString *errorWithFirstCharacter = [NSString stringWithFormat: @"%@ %@", lastChar, accessibilityErrorMessage];
+    NSString *errorWithText = [NSString stringWithFormat: @"%@ %@", text, accessibilityErrorMessage];
+    self.accessibilityValue = errorWithText;
+    UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, errorWithFirstCharacter);
+  } else {
+    self.accessibilityValue = text;
+  }
 }
 
 - (void)setSecureTextEntry:(BOOL)secureTextEntry
