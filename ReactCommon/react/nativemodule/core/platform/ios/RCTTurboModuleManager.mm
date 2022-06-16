@@ -521,6 +521,19 @@ static Class getFallbackClassFromName(const char *name)
       std::lock_guard<std::mutex> delegateGuard(_turboModuleManagerDelegateMutex);
       module = [_delegate getModuleInstanceFromClass:moduleClass];
     }
+
+    /**
+     * If the application is unable to create the TurboModule object from its class:
+     * abort TurboModule creation, and early return nil.
+     */
+    if (!module) {
+      RCTLogError(
+          @"TurboModuleManager delegate %@ returned nil TurboModule object for module with name=\"%s\" and class=%@",
+          NSStringFromClass([_delegate class]),
+          moduleName,
+          NSStringFromClass(moduleClass));
+      return nil;
+    }
   } else {
     module = [moduleClass new];
   }
@@ -763,12 +776,14 @@ static Class getFallbackClassFromName(const char *name)
   if (RCTGetTurboModuleCleanupMode() == kRCTGlobalScope ||
       RCTGetTurboModuleCleanupMode() == kRCTGlobalScopeUsingRetainJSCallback) {
     runtimeExecutor([turboModuleProvider = std::move(turboModuleProvider)](jsi::Runtime &runtime) {
-      react::TurboModuleBinding::install(runtime, std::move(turboModuleProvider));
+      react::TurboModuleBinding::install(
+          runtime, std::move(turboModuleProvider), TurboModuleBindingMode::HostObject, nullptr);
     });
   } else if (RCTGetTurboModuleCleanupMode() == kRCTTurboModuleManagerScope) {
     runtimeExecutor([turboModuleProvider = std::move(turboModuleProvider),
                      longLivedObjectCollection = _longLivedObjectCollection](jsi::Runtime &runtime) {
-      react::TurboModuleBinding::install(runtime, std::move(turboModuleProvider), longLivedObjectCollection);
+      react::TurboModuleBinding::install(
+          runtime, std::move(turboModuleProvider), TurboModuleBindingMode::HostObject, longLivedObjectCollection);
     });
   }
 }

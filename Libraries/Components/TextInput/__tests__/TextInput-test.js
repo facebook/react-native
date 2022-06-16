@@ -14,8 +14,6 @@ const ReactTestRenderer = require('react-test-renderer');
 const TextInput = require('../TextInput');
 const ReactNative = require('../../../Renderer/shims/ReactNative');
 
-import Component from '@reactions/component';
-
 const {
   enter,
   expectRendersMatchingSnapshot,
@@ -33,23 +31,24 @@ describe('TextInput tests', () => {
     inputRef = React.createRef(null);
     onChangeListener = jest.fn();
     onChangeTextListener = jest.fn();
-    const renderTree = ReactTestRenderer.create(
-      <Component initialState={{text: initialValue}}>
-        {({setState, state}) => (
-          <TextInput
-            ref={inputRef}
-            value={state.text}
-            onChangeText={text => {
-              onChangeTextListener(text);
-              setState({text});
-            }}
-            onChange={event => {
-              onChangeListener(event);
-            }}
-          />
-        )}
-      </Component>,
-    );
+    function TextInputWrapper() {
+      const [state, setState] = React.useState({text: initialValue});
+
+      return (
+        <TextInput
+          ref={inputRef}
+          value={state.text}
+          onChangeText={text => {
+            onChangeTextListener(text);
+            setState({text});
+          }}
+          onChange={event => {
+            onChangeListener(event);
+          }}
+        />
+      );
+    }
+    const renderTree = ReactTestRenderer.create(<TextInputWrapper />);
     input = renderTree.root.findByType(TextInput);
   });
   it('has expected instance functions', () => {
@@ -71,7 +70,9 @@ describe('TextInput tests', () => {
   it('calls onChange callbacks', () => {
     expect(input.props.value).toBe(initialValue);
     const message = 'This is a test message';
-    enter(input, message);
+    ReactTestRenderer.act(() => {
+      enter(input, message);
+    });
     expect(input.props.value).toBe(message);
     expect(onChangeTextListener).toHaveBeenCalledWith(message);
     expect(onChangeListener).toHaveBeenCalledWith({

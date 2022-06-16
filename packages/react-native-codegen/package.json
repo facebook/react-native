@@ -1,6 +1,6 @@
 {
   "name": "react-native-codegen",
-  "version": "0.0.14",
+  "version": "0.70.0",
   "description": "⚛️ Code generation tools for React Native",
   "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/react-native-codegen",
   "repository": {
@@ -36,7 +36,7 @@
     "chalk": "^4.0.0",
     "glob": "^7.1.1",
     "invariant": "^2.2.4",
-    "micromatch": "^4.0.2",
+    "micromatch": "^4.0.4",
     "mkdirp": "^0.5.1",
     "prettier": "^2.4.1"
   }

@@ -328,7 +328,7 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
 
   @Override
   public Object updateState(
-      ReactScrollView view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
+      ReactScrollView view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
     view.getFabricViewStateManager().setStateWrapper(stateWrapper);
     return null;
   }
@@ -366,5 +366,10 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
   @ReactProp(name = ViewProps.POINTER_EVENTS)
   public void setPointerEvents(ReactScrollView view, @Nullable String pointerEventsStr) {
     view.setPointerEvents(PointerEvents.parsePointerEvents(pointerEventsStr));
+  }
+
+  @ReactProp(name = "scrollEventThrottle")
+  public void setScrollEventThrottle(ReactScrollView view, int scrollEventThrottle) {
+    view.setScrollEventThrottle(scrollEventThrottle);
   }
 }

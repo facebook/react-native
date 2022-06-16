@@ -115,7 +115,7 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   return _mountingManager;
 }
 
-- (RCTScheduler *_Nullable)_scheduler
+- (RCTScheduler *_Nullable)scheduler
 {
   std::lock_guard<std::mutex> lock(_schedulerAccessMutex);
   return _scheduler;
@@ -151,7 +151,7 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 - (void)registerSurface:(RCTFabricSurface *)surface
 {
   [_surfaceRegistry registerSurface:surface];
-  RCTScheduler *scheduler = [self _scheduler];
+  RCTScheduler *scheduler = [self scheduler];
   if (scheduler) {
     [scheduler registerSurface:surface.surfaceHandler];
   }
@@ -159,7 +159,7 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 
 - (void)unregisterSurface:(RCTFabricSurface *)surface
 {
-  RCTScheduler *scheduler = [self _scheduler];
+  RCTScheduler *scheduler = [self scheduler];
   if (scheduler) {
     [scheduler unregisterSurface:surface.surfaceHandler];
   }
@@ -188,7 +188,7 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 
 - (BOOL)synchronouslyUpdateViewOnUIThread:(NSNumber *)reactTag props:(NSDictionary *)props
 {
-  RCTScheduler *scheduler = [self _scheduler];
+  RCTScheduler *scheduler = [self scheduler];
   if (!scheduler) {
     return NO;
   }
@@ -212,7 +212,7 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 
 - (void)setupAnimationDriverWithSurfaceHandler:(facebook::react::SurfaceHandler const &)surfaceHandler
 {
-  [[self _scheduler] setupAnimationDriver:surfaceHandler];
+  [[self scheduler] setupAnimationDriver:surfaceHandler];
 }
 
 - (BOOL)suspend
@@ -289,7 +289,6 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   auto weakRuntimeScheduler = _contextContainer->find<std::weak_ptr<RuntimeScheduler>>("RuntimeScheduler");
   auto runtimeScheduler = weakRuntimeScheduler.has_value() ? weakRuntimeScheduler.value().lock() : nullptr;
   if (runtimeScheduler) {
-    runtimeScheduler->setEnableYielding(true);
     runtimeExecutor = [runtimeScheduler](std::function<void(jsi::Runtime & runtime)> &&callback) {
       runtimeScheduler->scheduleWork(std::move(callback));
     };
@@ -364,7 +363,7 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   NSString *commandStr = [[NSString alloc] initWithUTF8String:commandName.c_str()];
   NSArray *argsArray = convertFollyDynamicToId(args);
 
-  [self->_mountingManager dispatchCommand:tag commandName:commandStr args:argsArray];
+  [_mountingManager dispatchCommand:tag commandName:commandStr args:argsArray];
 }
 
 - (void)schedulerDidSendAccessibilityEvent:(const facebook::react::ShadowView &)shadowView
@@ -373,16 +372,14 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   ReactTag tag = shadowView.tag;
   NSString *eventTypeStr = [[NSString alloc] initWithUTF8String:eventType.c_str()];
 
-  [self->_mountingManager sendAccessibilityEvent:tag eventType:eventTypeStr];
+  [_mountingManager sendAccessibilityEvent:tag eventType:eventTypeStr];
 }
 
 - (void)schedulerDidSetIsJSResponder:(BOOL)isJSResponder
                 blockNativeResponder:(BOOL)blockNativeResponder
                        forShadowView:(facebook::react::ShadowView const &)shadowView;
 {
-  [self->_mountingManager setIsJSResponder:isJSResponder
-                      blockNativeResponder:blockNativeResponder
-                             forShadowView:shadowView];
+  [_mountingManager setIsJSResponder:isJSResponder blockNativeResponder:blockNativeResponder forShadowView:shadowView];
 }
 
 - (void)addObserver:(id<RCTSurfacePresenterObserver>)observer

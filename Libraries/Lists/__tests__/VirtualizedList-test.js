@@ -384,7 +384,7 @@ describe('VirtualizedList', () => {
 
     const instance = component.getInstance();
 
-    instance._onLayout({nativeEvent: {layout}});
+    instance._onLayout({nativeEvent: {layout, zoomScale: 1}});
 
     const initialContentHeight = props.initialNumToRender * ITEM_HEIGHT;
 
@@ -862,7 +862,7 @@ it('does not adjust render area until content area layed out', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('does not adjust render area with non-zero initialScrollIndex until scrolled', () => {
+it('adjusts render area with non-zero initialScrollIndex', () => {
   const items = generateItems(20);
   const ITEM_HEIGHT = 10;
 
@@ -885,46 +885,62 @@ it('does not adjust render area with non-zero initialScrollIndex until scrolled'
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 200},
     });
-    performAllBatches();
-  });
+    simulateScroll(component, {x: 0, y: 10}); // simulate scroll offset for initialScrollIndex
 
-  // Layout information from before the time we scroll to initial index may not
-  // correspond to the area "initialScrollIndex" points to. Expect only the 5
-  // initial items (starting at initialScrollIndex) to be rendered after
-  // processing all batch work, even though the windowSize allows for more.
-  expect(component).toMatchSnapshot();
-});
-
-it('adjusts render area with non-zero initialScrollIndex after scrolled', () => {
-  const items = generateItems(20);
-  const ITEM_HEIGHT = 10;
-
-  let component;
-  ReactTestRenderer.act(() => {
-    component = ReactTestRenderer.create(
-      <VirtualizedList
-        initialNumToRender={5}
-        initialScrollIndex={1}
-        windowSize={10}
-        maxToRenderPerBatch={10}
-        {...baseItemProps(items)}
-        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
-      />,
-    );
-  });
-
-  ReactTestRenderer.act(() => {
-    simulateLayout(component, {
-      viewport: {width: 10, height: 50},
-      content: {width: 10, height: 200},
-    });
-
-    simulateScroll(component, {x: 0, y: 10});
     performAllBatches();
   });
 
   // We should expand the render area after receiving a message indcating we
   // arrived at initialScrollIndex.
+  expect(component).toMatchSnapshot();
+});
+
+it('renders new items when data is updated with non-zero initialScrollIndex', () => {
+  const items = generateItems(2);
+  const ITEM_HEIGHT = 10;
+
+  let component;
+  ReactTestRenderer.act(() => {
+    component = ReactTestRenderer.create(
+      <VirtualizedList
+        initialNumToRender={5}
+        initialScrollIndex={1}
+        windowSize={10}
+        maxToRenderPerBatch={10}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
+
+  ReactTestRenderer.act(() => {
+    simulateLayout(component, {
+      viewport: {width: 10, height: 20},
+      content: {width: 10, height: 20},
+    });
+    performAllBatches();
+  });
+
+  const newItems = generateItems(4);
+
+  ReactTestRenderer.act(() => {
+    component.update(
+      <VirtualizedList
+        initialNumToRender={5}
+        initialScrollIndex={1}
+        windowSize={10}
+        maxToRenderPerBatch={10}
+        {...baseItemProps(newItems)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
+
+  ReactTestRenderer.act(() => {
+    performAllBatches();
+  });
+
+  // We expect all the items to be rendered
   expect(component).toMatchSnapshot();
 });
 
@@ -1115,6 +1131,8 @@ it('retains batch render region when an item is appended', () => {
     });
     performAllBatches();
   });
+
+  jest.runAllTimers();
 
   ReactTestRenderer.act(() => {
     component.update(
@@ -1365,6 +1383,7 @@ it('renders windowSize derived region at top', () => {
     performAllBatches();
   });
 
+  jest.runAllTimers();
   // A windowSize of 3 means that we should render a viewport's worth of content
   // above and below the current. A 20 dip viewport at the top of the list means
   // we should render the top 4 10-dip items (for the current viewport, and
@@ -1402,6 +1421,7 @@ it('renders windowSize derived region in middle', () => {
     performAllBatches();
   });
 
+  jest.runAllTimers();
   // A windowSize of 3 means that we should render a viewport's worth of content
   // above and below the current. A 20 dip viewport in the top of the list means
   // we should render the 6 10-dip items (for the current viewport, 20 dip above
@@ -1434,12 +1454,12 @@ it('renders windowSize derived region at bottom', () => {
     });
     performAllBatches();
   });
-
   ReactTestRenderer.act(() => {
     simulateScroll(component, {x: 0, y: 80});
     performAllBatches();
   });
 
+  jest.runAllTimers();
   // A windowSize of 3 means that we should render a viewport's worth of content
   // above and below the current. A 20 dip viewport at the bottom of the list
   // means we should render the bottom 4 10-dip items (for the current viewport,
@@ -1471,7 +1491,7 @@ it('calls _onCellLayout properly', () => {
   );
   const cell = virtualList._cellRefs.i4;
   const event = {
-    nativeEvent: {layout: {x: 0, y: 0, width: 50, height: 50}},
+    nativeEvent: {layout: {x: 0, y: 0, width: 50, height: 50}, zoomScale: 1},
   };
   cell._onLayout(event);
   expect(mock).toHaveBeenCalledWith(event, 'i4', 3);
@@ -1525,7 +1545,9 @@ function simulateLayout(component, args) {
 
 function simulateViewportLayout(component, dimensions) {
   lastViewportLayout = dimensions;
-  component.getInstance()._onLayout({nativeEvent: {layout: dimensions}});
+  component
+    .getInstance()
+    ._onLayout({nativeEvent: {layout: dimensions}, zoomScale: 1});
 }
 
 function simulateContentLayout(component, dimensions) {
@@ -1539,7 +1561,7 @@ function simulateCellLayout(component, items, itemIndex, dimensions) {
   const instance = component.getInstance();
   const cellKey = instance._keyExtractor(items[itemIndex], itemIndex);
   instance._onCellLayout(
-    {nativeEvent: {layout: dimensions}},
+    {nativeEvent: {layout: dimensions, zoomScale: 1}},
     cellKey,
     itemIndex,
   );
@@ -1551,6 +1573,7 @@ function simulateScroll(component, position) {
       contentOffset: position,
       contentSize: lastContentLayout,
       layoutMeasurement: lastViewportLayout,
+      zoomScale: 1,
     },
   });
 }

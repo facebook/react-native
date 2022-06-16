@@ -29,7 +29,12 @@ abstract class GenerateCodegenSchemaTask : Exec() {
 
   @get:Input abstract val nodeExecutableAndArgs: ListProperty<String>
 
-  @get:InputFiles val jsInputFiles = project.fileTree(jsRootDir) { it.include("**/*.js") }
+  @get:InputFiles
+  val jsInputFiles =
+      project.fileTree(jsRootDir) {
+        it.include("**/*.js")
+        it.exclude("**/generated/source/codegen/**/*")
+      }
 
   @get:OutputFile
   val generatedSchemaFile: Provider<RegularFile> = generatedSrcDir.file("schema.json")

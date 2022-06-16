@@ -8,13 +8,25 @@
  * @flow
  */
 
-import {Button, Switch, StyleSheet, ScrollView, View, Text} from 'react-native';
+import {Button, StyleSheet, ScrollView, View, Text} from 'react-native';
 import * as React from 'react';
 import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
+
+import PointerEventAttributesHoverablePointers from './W3CPointerEventPlatformTests/PointerEventAttributesHoverablePointers';
 
 function EventfulView(props: {|
   name: string,
   emitByDefault?: boolean,
+  onLeave?: boolean,
+  onLeaveCapture?: boolean,
+  onEnter?: boolean,
+  onEnterCapture?: boolean,
+  onDown?: boolean,
+  onDownCapture?: boolean,
+  onUp?: boolean,
+  onUpCapture?: boolean,
+  onMove?: boolean,
+  onMoveCapture?: boolean,
   log: string => void,
   ...ViewProps,
 |}) {
@@ -24,37 +36,53 @@ function EventfulView(props: {|
     setTag(ref.current?._nativeTag);
   }, [ref]);
 
-  const {log, name, children, emitByDefault, ...restProps} = props;
-  const [lastEvent, setLastEvent] = React.useState('');
-  const [listen, setListen] = React.useState(!!emitByDefault);
+  const {
+    log,
+    name,
+    children,
+    emitByDefault,
+    onLeave,
+    onLeaveCapture,
+    onEnter,
+    onEnterCapture,
+    onDown,
+    onDownCapture,
+    onUp,
+    onUpCapture,
+    onMove,
+    onMoveCapture,
+    ...restProps
+  } = props;
   const [tag, setTag] = React.useState('');
 
   const eventLog = eventName => event => {
     // $FlowFixMe Using private property
     log(`${name} - ${eventName} - target: ${event.target._nativeTag}`);
-    setLastEvent(eventName);
   };
 
-  const listeners = listen
-    ? {
-        onPointerUp: eventLog('up'),
-        onPointerDown: eventLog('down'),
-        onPointerLeave2: eventLog('leave'),
-        onPointerEnter2: eventLog('enter'),
-      }
-    : Object.freeze({});
+  const listeners = {
+    onPointerUp: onUp ? eventLog('up') : null,
+    onPointerUpCapture: onUpCapture ? eventLog('up capture') : null,
+    onPointerDown: onDown ? eventLog('down') : null,
+    onPointerDownCapture: onDownCapture ? eventLog('down capture') : null,
+    onPointerLeave2: onLeave ? eventLog('leave') : null,
+    onPointerLeave2Capture: onLeaveCapture ? eventLog('leave capture') : null,
+    onPointerEnter2: onEnter ? eventLog('enter') : null,
+    onPointerEnter2Capture: onEnterCapture ? eventLog('enter capture') : null,
+    onPointerMove2: onMove ? eventLog('move') : null,
+    onPointerMove2Capture: onMoveCapture ? eventLog('move capture') : null,
+  };
+
+  let listeningTo = Object.keys(listeners)
+    .filter(listenerName => listeners[listenerName] != null)
+    .join(', ');
 
   return (
-    <View ref={ref} {...listeners} {...restProps} collapsable={!listen}>
+    <View ref={ref} {...listeners} {...restProps} collapsable={false}>
       <View style={styles.row}>
         <Text>
-          {props.name}, {tag}, last event: {lastEvent}
+          {props.name}, {tag}, {listeningTo}
         </Text>
-        <Switch
-          disabled={emitByDefault}
-          value={listen}
-          onValueChange={() => setListen(l => !l)}
-        />
       </View>
       {props.children}
     </View>
@@ -65,10 +93,18 @@ function AbsoluteChildExample({log}: {log: string => void}) {
   return (
     <View style={styles.absoluteExampleContainer}>
       <EventfulView
+        onUp
+        onDown
+        onEnter
+        onLeave
         log={log}
         style={StyleSheet.compose(styles.eventfulView, styles.parent)}
         name="parent">
         <EventfulView
+          onUp
+          onDown
+          onEnter
+          onLeave
           log={log}
           emitByDefault
           style={StyleSheet.compose(styles.eventfulView, styles.absoluteChild)}
@@ -85,13 +121,25 @@ function RelativeChildExample({log}: {log: string => void}) {
       <EventfulView
         log={log}
         style={StyleSheet.compose(styles.eventfulView, styles.parent)}
+        onUp
+        onDown
+        onEnter
+        onLeave
         name="parent">
         <EventfulView
           log={log}
+          onUp
+          onDown
+          onEnter
+          onLeave
           style={StyleSheet.compose(styles.eventfulView, styles.relativeChild)}
           name="childA">
           <EventfulView
             log={log}
+            onUp
+            onDown
+            onEnter
+            onLeave
             style={StyleSheet.compose(
               styles.eventfulView,
               styles.relativeChild,
@@ -175,6 +223,14 @@ export default {
       title: 'Absolute Child',
       render(): React.Node {
         return <PointerEventScaffolding Example={AbsoluteChildExample} />;
+      },
+    },
+    {
+      name: 'pointerevent_attributes_hoverable_pointers',
+      description: '',
+      title: 'Pointer Events hoverable pointer attributes test',
+      render(): React.Node {
+        return <PointerEventAttributesHoverablePointers />;
       },
     },
   ],

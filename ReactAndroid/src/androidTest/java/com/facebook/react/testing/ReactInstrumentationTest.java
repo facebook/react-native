@@ -96,8 +96,14 @@ public abstract class ReactInstrumentationTest
     return getReactContext().getJSModule(jsInterface);
   }
 
-  protected @Nullable ReactPackageTurboModuleManagerDelegate.Builder
+  @Nullable
+  protected ReactPackageTurboModuleManagerDelegate.Builder
       getReactPackageTurboModuleManagerDelegateBuilder() {
+    return null;
+  }
+
+  @Nullable
+  protected ReactInstanceSpecForTest.JSIModuleBuilder getJSIModuleBuilder() {
     return null;
   }
 
@@ -113,6 +119,7 @@ public abstract class ReactInstrumentationTest
     }
     reactInstanceSpecForTest.setReactPackageTurboModuleManagerDelegateBuilder(
         getReactPackageTurboModuleManagerDelegateBuilder());
+    reactInstanceSpecForTest.setJSIModuleBuilder(getJSIModuleBuilder());
     return reactInstanceSpecForTest;
   }
 

@@ -27,6 +27,8 @@ rn_android_library(
     ],
     pure_kotlin = False,
     required_for_source_only_abi = True,
+    source = "8",
+    target = "8",
     visibility = [
         "PUBLIC",
     ],

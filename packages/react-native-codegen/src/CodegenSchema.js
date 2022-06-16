@@ -295,6 +295,10 @@ export type NativeModulePromiseTypeAnnotation = $ReadOnly<{
   type: 'PromiseTypeAnnotation',
 }>;
 
+export type NativeModuleMixedTypeAnnotation = $ReadOnly<{
+  type: 'MixedTypeAnnotation',
+}>;
+
 export type NativeModuleBaseTypeAnnotation =
   | NativeModuleStringTypeAnnotation
   | NativeModuleNumberTypeAnnotation
@@ -306,7 +310,8 @@ export type NativeModuleBaseTypeAnnotation =
   | ReservedTypeAnnotation
   | NativeModuleTypeAliasTypeAnnotation
   | NativeModuleArrayTypeAnnotation<Nullable<NativeModuleBaseTypeAnnotation>>
-  | NativeModuleObjectTypeAnnotation;
+  | NativeModuleObjectTypeAnnotation
+  | NativeModuleMixedTypeAnnotation;
 
 export type NativeModuleParamTypeAnnotation =
   | NativeModuleBaseTypeAnnotation

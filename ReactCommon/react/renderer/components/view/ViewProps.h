@@ -35,6 +35,12 @@ class ViewProps : public YogaStylableProps, public AccessibilityProps {
       RawProps const &rawProps,
       bool shouldSetRawProps = true);
 
+  void setProp(
+      const PropsParserContext &context,
+      RawPropsPropNameHash hash,
+      const char *propName,
+      RawValue const &value);
+
 #pragma mark - Props
 
   // Color

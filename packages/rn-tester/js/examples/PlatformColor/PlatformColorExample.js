@@ -15,7 +15,7 @@ const {DynamicColorIOS, PlatformColor, StyleSheet, Text, View} = ReactNative;
 
 function PlatformColorsExample() {
   function createTable() {
-    let colors = [];
+    let colors: Array<{color: $Call<typeof PlatformColor>, label: string}> = [];
     if (Platform.OS === 'ios') {
       colors = [
         // https://developer.apple.com/documentation/uikit/uicolor/ui_element_colors

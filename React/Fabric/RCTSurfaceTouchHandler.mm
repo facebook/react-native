@@ -128,6 +128,34 @@ static ActiveTouch CreateTouchWithUITouch(UITouch *uiTouch, UIView *rootComponen
   return activeTouch;
 }
 
+static UIView *FindClosestFabricManagedTouchableView(UIView *componentView)
+{
+  while (componentView) {
+    if ([componentView respondsToSelector:@selector(touchEventEmitterAtPoint:)]) {
+      return componentView;
+    }
+    componentView = componentView.superview;
+  }
+  return nil;
+}
+
+static NSOrderedSet *GetTouchableViewsInPathToRoot(UIView *componentView)
+{
+  NSMutableOrderedSet *results = [NSMutableOrderedSet orderedSet];
+  do {
+    if ([componentView respondsToSelector:@selector(touchEventEmitterAtPoint:)]) {
+      [results addObject:componentView];
+    }
+    componentView = componentView.superview;
+  } while (componentView);
+  return results;
+}
+
+static SharedTouchEventEmitter GetTouchEmitterFromView(UIView *componentView, CGPoint point)
+{
+  return [(id<RCTTouchableComponentViewProtocol>)componentView touchEventEmitterAtPoint:point];
+}
+
 static const char *PointerTypeCStringFromUITouchType(UITouchType type)
 {
   switch (type) {
@@ -157,6 +185,22 @@ static PointerEvent CreatePointerEventFromActiveTouch(ActiveTouch activeTouch)
   return event;
 }
 
+static PointerEvent
+CreatePointerEventFromIncompleteHoverData(UIView *view, CGPoint clientLocation, NSTimeInterval timestamp)
+{
+  PointerEvent event = {};
+  // "touch" events produced from a mouse cursor on iOS always have the ID 0 so
+  // we can just assume that here since these sort of hover events only ever come
+  // from the mouse
+  event.pointerId = 0;
+  event.pressure = 0.0;
+  event.pointerType = "mouse";
+  event.clientPoint = RCTPointFromCGPoint(clientLocation);
+  event.target = (Tag)view.tag;
+  event.timestamp = timestamp;
+  return event;
+}
+
 static BOOL AllTouchesAreCancelledOrEnded(NSSet<UITouch *> *touches)
 {
   for (UITouch *touch in touches) {
@@ -171,6 +215,27 @@ static BOOL AnyTouchesChanged(NSSet<UITouch *> *touches)
 {
   for (UITouch *touch in touches) {
     if (touch.phase == UITouchPhaseBegan || touch.phase == UITouchPhaseMoved) {
+      return YES;
+    }
+  }
+  return NO;
+}
+
+static BOOL IsViewListeningToEvent(UIView *view, ViewEvents::Offset eventType)
+{
+  if ([view.class conformsToProtocol:@protocol(RCTComponentViewProtocol)]) {
+    auto props = ((id<RCTComponentViewProtocol>)view).props;
+    if (SharedViewProps viewProps = std::dynamic_pointer_cast<ViewProps const>(props)) {
+      return viewProps->events[eventType];
+    }
+  }
+  return NO;
+}
+
+static BOOL IsAnyViewInPathListeningToEvent(NSOrderedSet<UIView *> *viewPath, ViewEvents::Offset eventType)
+{
+  for (UIView *view in viewPath) {
+    if (IsViewListeningToEvent(view, eventType)) {
       return YES;
     }
   }
@@ -203,6 +268,9 @@ struct PointerHasher {
    */
   __weak UIView *_rootComponentView;
   IdentifierPool<11> _identifierPool;
+
+  UIHoverGestureRecognizer *_hoverRecognizer API_AVAILABLE(ios(13.0));
+  NSOrderedSet *_currentlyHoveredViews;
 }
 
 - (instancetype)init
@@ -217,6 +285,9 @@ struct PointerHasher {
     self.delaysTouchesEnded = NO;
 
     self.delegate = self;
+
+    _hoverRecognizer = nil;
+    _currentlyHoveredViews = [NSOrderedSet orderedSet];
   }
 
   return self;
@@ -230,6 +301,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 
   [view addGestureRecognizer:self];
   _rootComponentView = view;
+
+  if (RCTGetDispatchW3CPointerEvents()) {
+    if (@available(iOS 13.0, *)) {
+      _hoverRecognizer = [[UIHoverGestureRecognizer alloc] initWithTarget:self action:@selector(hovering:)];
+      [view addGestureRecognizer:_hoverRecognizer];
+    }
+  }
 }
 
 - (void)detachFromView:(UIView *)view
@@ -239,6 +317,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 
   [view removeGestureRecognizer:self];
   _rootComponentView = nil;
+
+  if (_hoverRecognizer != nil) {
+    [view removeGestureRecognizer:_hoverRecognizer];
+    _hoverRecognizer = nil;
+  }
 }
 
 - (void)_registerTouches:(NSSet<UITouch *> *)touches
@@ -481,6 +564,101 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 {
   [self setEnabled:NO];
   [self setEnabled:YES];
+}
+
+- (void)hovering:(UIHoverGestureRecognizer *)recognizer API_AVAILABLE(ios(13.0))
+{
+  UIView *listenerView = recognizer.view;
+  CGPoint clientLocation = [recognizer locationInView:listenerView];
+
+  UIView *targetView = [listenerView hitTest:clientLocation withEvent:nil];
+  targetView = FindClosestFabricManagedTouchableView(targetView);
+  UIView *prevTargetView = [_currentlyHoveredViews firstObject];
+
+  NSOrderedSet *eventPathViews = GetTouchableViewsInPathToRoot(targetView);
+
+  NSTimeInterval timestamp = CACurrentMediaTime();
+
+  // Over
+  if (prevTargetView != targetView) {
+    BOOL shouldEmitOverEvent = IsAnyViewInPathListeningToEvent(eventPathViews, ViewEvents::Offset::PointerOver);
+    SharedTouchEventEmitter eventEmitter = GetTouchEmitterFromView(targetView, [recognizer locationInView:targetView]);
+    if (shouldEmitOverEvent && eventEmitter != nil) {
+      PointerEvent event = CreatePointerEventFromIncompleteHoverData(targetView, clientLocation, timestamp);
+      eventEmitter->onPointerOver(event);
+    }
+  }
+
+  // Entering
+
+  // We only want to emit events to JS if there is a view that is currently listening to said event
+  // so we only send those event to the JS side if the element which has been entered is itself listening,
+  // or if one of its parents is listening in case those listeners care about the capturing phase. Adding the ability
+  // for native to distingusih between capturing listeners and not could be an optimization to futher reduce the number
+  // of events we send to JS
+  BOOL hasParentEnterListener = NO;
+
+  for (UIView *componentView in [eventPathViews reverseObjectEnumerator]) {
+    BOOL shouldEmitEvent =
+        hasParentEnterListener || IsViewListeningToEvent(componentView, ViewEvents::Offset::PointerEnter2);
+
+    if (shouldEmitEvent && ![_currentlyHoveredViews containsObject:componentView]) {
+      SharedTouchEventEmitter eventEmitter =
+          GetTouchEmitterFromView(componentView, [recognizer locationInView:componentView]);
+      if (eventEmitter != nil) {
+        PointerEvent event = CreatePointerEventFromIncompleteHoverData(componentView, clientLocation, timestamp);
+        eventEmitter->onPointerEnter2(event);
+      }
+    }
+
+    if (shouldEmitEvent && !hasParentEnterListener) {
+      hasParentEnterListener = YES;
+    }
+  }
+
+  // Out
+  if (prevTargetView != targetView) {
+    BOOL shouldEmitOutEvent = IsAnyViewInPathListeningToEvent(_currentlyHoveredViews, ViewEvents::Offset::PointerOut);
+    SharedTouchEventEmitter eventEmitter =
+        GetTouchEmitterFromView(prevTargetView, [recognizer locationInView:prevTargetView]);
+    if (shouldEmitOutEvent && eventEmitter != nil) {
+      PointerEvent event = CreatePointerEventFromIncompleteHoverData(prevTargetView, clientLocation, timestamp);
+      eventEmitter->onPointerOut(event);
+    }
+  }
+
+  // Leaving
+
+  // pointerleave events need to be emited from the deepest target to the root but
+  // we also need to efficiently keep track of if a view has a parent which is listening to the leave events,
+  // so we first iterate from the root to the target, collecting the views which need events fired for, of which
+  // we reverse iterate (now from target to root), actually emitting the events.
+  NSMutableOrderedSet *viewsToEmitLeaveEventsTo = [NSMutableOrderedSet orderedSet];
+
+  BOOL hasParentLeaveListener = NO;
+  for (UIView *componentView in [_currentlyHoveredViews reverseObjectEnumerator]) {
+    BOOL shouldEmitEvent =
+        hasParentLeaveListener || IsViewListeningToEvent(componentView, ViewEvents::Offset::PointerLeave2);
+
+    if (shouldEmitEvent && ![eventPathViews containsObject:componentView]) {
+      [viewsToEmitLeaveEventsTo addObject:componentView];
+    }
+
+    if (shouldEmitEvent && !hasParentLeaveListener) {
+      hasParentLeaveListener = YES;
+    }
+  }
+
+  for (UIView *componentView in [viewsToEmitLeaveEventsTo reverseObjectEnumerator]) {
+    SharedTouchEventEmitter eventEmitter =
+        GetTouchEmitterFromView(componentView, [recognizer locationInView:componentView]);
+    if (eventEmitter != nil) {
+      PointerEvent event = CreatePointerEventFromIncompleteHoverData(componentView, clientLocation, timestamp);
+      eventEmitter->onPointerLeave2(event);
+    }
+  }
+
+  _currentlyHoveredViews = eventPathViews;
 }
 
 @end

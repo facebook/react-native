@@ -28,13 +28,12 @@ using namespace facebook::jni;
 namespace facebook {
 namespace react {
 
-static bool doesUseOverflowInset() {
+static bool getFeatureFlagValue(const char *name) {
   static const auto reactFeatureFlagsJavaDescriptor = jni::findClassStatic(
       FabricMountingManager::ReactFeatureFlagsJavaDescriptor);
-  static const auto doesUseOverflowInset =
-      reactFeatureFlagsJavaDescriptor->getStaticMethod<jboolean()>(
-          "doesUseOverflowInset");
-  return doesUseOverflowInset(reactFeatureFlagsJavaDescriptor);
+  const auto field =
+      reactFeatureFlagsJavaDescriptor->getStaticField<jboolean>(name);
+  return reactFeatureFlagsJavaDescriptor->getStaticFieldValue(field);
 }
 
 FabricMountingManager::FabricMountingManager(
@@ -47,9 +46,9 @@ FabricMountingManager::FabricMountingManager(
           config->getBool("react_fabric:disabled_view_preallocation_android")),
       disableRevisionCheckForPreallocation_(config->getBool(
           "react_fabric:disable_revision_check_for_preallocation")),
-      useOverflowInset_(doesUseOverflowInset()),
-      shouldRememberAllocatedViews_(config->getBool(
-          "react_native_new_architecture:remember_views_on_mount_android")),
+      useOverflowInset_(getFeatureFlagValue("useOverflowInset")),
+      shouldRememberAllocatedViews_(
+          getFeatureFlagValue("shouldRememberAllocatedViews")),
       useMapBufferForViewProps_(config->getBool(
           "react_native_new_architecture:use_mapbuffer_for_viewprops")) {}
 
@@ -422,20 +421,23 @@ void FabricMountingManager::executeMount(
             // are updated in the view. This is necessary to ensure that events
             // (resulting from layout changes) are dispatched with the correct
             // padding information.
-            cppUpdatePaddingMountItems.push_back(
-                CppMountItem::UpdatePaddingMountItem(
-                    mutation.newChildShadowView));
+            if (newChildShadowView.layoutMetrics.contentInsets !=
+                EdgeInsets::ZERO) {
+              cppUpdatePaddingMountItems.push_back(
+                  CppMountItem::UpdatePaddingMountItem(newChildShadowView));
+            }
 
             // Layout
             cppUpdateLayoutMountItems.push_back(
-                CppMountItem::UpdateLayoutMountItem(
-                    mutation.newChildShadowView));
+                CppMountItem::UpdateLayoutMountItem(newChildShadowView));
 
             // OverflowInset: This is the values indicating boundaries including
             // children of the current view. The layout of current view may not
             // change, and we separate this part from layout mount items to not
             // pack too much data there.
-            if (useOverflowInset_) {
+            if (useOverflowInset_ &&
+                newChildShadowView.layoutMetrics.overflowInset !=
+                    EdgeInsets::ZERO) {
               cppUpdateOverflowInsetMountItems.push_back(
                   CppMountItem::UpdateOverflowInsetMountItem(
                       newChildShadowView));

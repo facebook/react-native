@@ -26,7 +26,9 @@ exports.examples = [
         <Button
           title="JS crash"
           onPress={() => {
-            const a = {};
+            const a = {...null};
+            // $FlowIgnore[prop-missing]
+            // $FlowIgnore[incompatible-use]
             const b = a.w.q; // js crash here
             console.log(b);
           }}

@@ -53,8 +53,8 @@ public class IntBufferBatchMountItem implements MountItem {
   private final int mSurfaceId;
   private final int mCommitNumber;
 
-  @NonNull private final int[] mIntBuffer;
-  @NonNull private final Object[] mObjBuffer;
+  private final @NonNull int[] mIntBuffer;
+  private final @NonNull Object[] mObjBuffer;
 
   private final int mIntBufferLen;
   private final int mObjBufferLen;
@@ -71,16 +71,7 @@ public class IntBufferBatchMountItem implements MountItem {
   }
 
   private void beginMarkers(String reason) {
-    Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-        "FabricUIManager::"
-            + reason
-            + " - "
-            + mIntBufferLen
-            + " intBufSize "
-            + " - "
-            + mObjBufferLen
-            + " objBufSize");
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricUIManager::" + reason);
 
     if (mCommitNumber > 0) {
       ReactMarker.logFabricMarker(

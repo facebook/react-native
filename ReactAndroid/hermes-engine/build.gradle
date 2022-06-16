@@ -13,6 +13,24 @@ plugins {
     id("maven-publish")
 }
 
+group = "com.facebook.react"
+version = parent.publishing_version
+
+def cmakeVersion = "3.18.1"
+/**
+ * We use the bundled version of CMake in the Android SDK if available, to don't force Android
+ * users to install CMake externally.
+ */
+def findCmakePath(cmakeVersion) {
+    if (System.getenv("ANDROID_SDK_ROOT")) {
+        return "${System.getenv("ANDROID_SDK_ROOT")}/cmake/${cmakeVersion}/bin/cmake"
+    }
+    if (System.getenv("ANDROID_HOME")) {
+        return "${System.getenv("ANDROID_HOME")}/cmake/${cmakeVersion}/bin/cmake"
+    }
+    return "cmake"
+}
+
 def reactNativeRootDir = project(':ReactAndroid').projectDir.parent;
 def customDownloadDir = System.getenv("REACT_NATIVE_DOWNLOADS_DIR")
 def downloadsDir = customDownloadDir ? new File(customDownloadDir) : new File(reactNativeRootDir, "sdks/download")
@@ -21,6 +39,7 @@ def downloadsDir = customDownloadDir ? new File(customDownloadDir) : new File(re
 // but you can provide an override for where the hermes source code is located.
 def overrideHermesDir = System.getenv("REACT_NATIVE_OVERRIDE_HERMES_DIR") != null
 def hermesDir = System.getenv("REACT_NATIVE_OVERRIDE_HERMES_DIR") ?: new File(reactNativeRootDir, "sdks/hermes")
+def hermesBuildDir = new File("$buildDir/hermes")
 
 def hermesVersion = "main"
 def hermesVersionFile = new File(reactNativeRootDir, "sdks/.hermesversion")
@@ -67,12 +86,12 @@ task unzipHermes(dependsOn: downloadHermes, type: Copy) {
 
 task configureBuildForHermes(type: Exec) {
     workingDir(hermesDir)
-    commandLine(windowsAwareCommandLine("cmake", "-S", ".", "-B", "./build", "-DJSI_DIR=" + jsiDir.absolutePath))
+    commandLine(windowsAwareCommandLine(findCmakePath(cmakeVersion), "-S", ".", "-B", hermesBuildDir.toString(), "-DJSI_DIR=" + jsiDir.absolutePath))
 }
 
 task buildHermes(dependsOn: configureBuildForHermes, type: Exec) {
     workingDir(hermesDir)
-    commandLine(windowsAwareCommandLine("cmake", "--build", "./build", "--target", "hermesc", "-j", ndkBuildJobs))
+    commandLine(windowsAwareCommandLine(findCmakePath(cmakeVersion), "--build", hermesBuildDir.toString(), "--target", "hermesc", "-j", ndkBuildJobs))
 }
 
 task prepareHeadersForPrefab(type: Copy) {
@@ -119,10 +138,11 @@ android {
                 arguments "-DANDROID_STL=c++_shared"
                 arguments "-DANDROID_PIE=True"
                 arguments "-DANDROID_LD=lld"
-                arguments "-DIMPORT_HERMESC=${new File(hermesDir, "build/ImportHermesc.cmake").toString()}"
+                arguments "-DIMPORT_HERMESC=${new File(hermesBuildDir, "ImportHermesc.cmake").toString()}"
                 arguments "-DJSI_DIR=${jsiDir}"
                 arguments "-DHERMES_SLOW_DEBUG=False"
                 arguments "-DHERMES_BUILD_SHARED_JSI=True"
+                arguments "-DHERMES_RELEASE_VERSION=for RN ${version}"
                 // We intentionally build Hermes with Intl support only. This is to simplify
                 // the build setup and to avoid overcomplicating the build-type matrix.
                 arguments "-DHERMES_ENABLE_INTL=True"
@@ -136,7 +156,7 @@ android {
 
     externalNativeBuild {
         cmake {
-            version "3.18.1"
+            version cmakeVersion
             path "$hermesDir/CMakeLists.txt"
         }
     }
@@ -193,7 +213,6 @@ android {
     publishing {
         multipleVariants {
             withSourcesJar()
-            withJavadocJar()
             allVariants()
         }
     }
@@ -239,6 +258,3 @@ afterEvaluate {
         }
     }
 }
-
-group = "com.facebook.react"
-version = parent.publishing_version

@@ -1,5 +1,39 @@
 # Changelog
 
+## v0.68.2
+
+### Changed
+
+- Bump used version of react-native-codegen to 0.0.17 ([dfda480a98](https://github.com/facebook/react-native/commit/dfda480a9888d95c542cea40f25e8e783565c1db) by [@cortinico](https://github.com/cortinico))
+- Bump react-native-codegen to 0.0.17 ([a5ddc2e165](https://github.com/facebook/react-native/commit/a5ddc2e16523ea336ffbecf7acfd4820469a29e7) by [@cortinico](https://github.com/cortinico))
+
+### Fixed
+
+#### Android specific
+
+- Working around Long paths limitation on Windows ([62ef6f5fa1](https://github.com/facebook/react-native/commit/62ef6f5fa1ecb918bde130a6024b65afcd34c7e3) by [@mganandraj](https://github.com/mganandraj))
+
+## v0.68.1
+
+### Changed
+
+#### Android specific
+
+- Bump React Native Gradle plugin to 0.0.6 ([9573d7b84d](https://github.com/facebook/react-native/commit/9573d7b84d35233fbb39a4067cfef65490aa34a7) by [@cortinico](https://github.com/cortinico))
+- Don't require yarn for codegen tasks ([d5da70e17e](https://github.com/facebook/react-native/commit/d5da70e17e8c8210cd79a4d7b09c6a5ded4b5607) by [@danilobuerger](https://github.com/danilobuerger))
+
+### Fixed
+
+- Fix dynamic_cast (RTTI) by adding key function to ShadowNodeWrapper and related classes ([58a2eb7f37](https://github.com/facebook/react-native/commit/58a2eb7f37c2dc27ad3575618778ad5b23599b27) by [@kmagiera](https://github.com/kmagiera))
+- Pin use-subscription to < 1.6.0 ([5534634892](https://github.com/facebook/react-native/commit/5534634892f47a3890e58b661faa2260373acb25) by [@danilobuerger](https://github.com/danilobuerger))
+
+#### Android specific
+
+- Use NDK 23 only for Windows users. ([e48a580080](https://github.com/facebook/react-native/commit/e48a580080bdae58b375f30fbcf8a83cc1915b2f) by [@cortinico](https://github.com/cortinico))
+- Improve support for Android users on M1 machine ([4befd2a29c](https://github.com/facebook/react-native/commit/4befd2a29cb94b026d9c048a041aa9f1817295b5) by [@cortinico](https://github.com/cortinico))
+- Template: Specify abiFilters if enableSeparateBuildPerCPUArchitecture is not set. ([5dff920177](https://github.com/facebook/react-native/commit/5dff920177220ae5f4e37c662c63c27ebf696c83) by [@cortinico](https://github.com/cortinico))
+- Fix for building new architecture sources on Windows ([5a8033df98](https://github.com/facebook/react-native/commit/5a8033df98296c941b0a57e49f2349e252339bf9) by [@mganandraj](https://github.com/mganandraj))
+
 ## v0.68.0
 
 ### Breaking Changes

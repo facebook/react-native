@@ -75,6 +75,11 @@ RCT_EXTERN NSString *const RCTObjCStackTraceKey;
 RCT_EXTERN NSString *const RCTFatalExceptionName;
 
 /**
+ * Stringified JSON object containing extra data to attach to the error from JavaScript.
+ */
+RCT_EXTERN NSString *const RCTJSExtraDataKey;
+
+/**
  * A block signature to be used for custom assertion handling.
  */
 typedef void (^RCTAssertFunction)(

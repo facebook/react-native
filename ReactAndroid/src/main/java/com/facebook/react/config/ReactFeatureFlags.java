@@ -32,6 +32,12 @@ public class ReactFeatureFlags {
   public static volatile boolean enableFabricRenderer = false;
 
   /**
+   * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable
+   * the following flags: `useTurboModules` & `enableFabricRenderer`.
+   */
+  public static boolean enableBridgelessArchitecture = false;
+
+  /**
    * After TurboModules and Fabric are enabled, we need to ensure that the legacy NativeModule isn't
    * isn't used. So, turn this flag on to trigger warnings whenever the legacy NativeModule system
    * is used.
@@ -74,27 +80,11 @@ public class ReactFeatureFlags {
   /** Feature flag to configure synchronized queue access for Animated module */
   public static boolean enableSynchronizationForAnimated = false;
 
-  private static boolean mapBufferSerializationEnabled = false;
-
   /** Enables or disables MapBuffer Serialization */
-  public static void setMapBufferSerializationEnabled(boolean enabled) {
-    mapBufferSerializationEnabled = enabled;
-  }
-
-  public static boolean isMapBufferSerializationEnabled() {
-    return mapBufferSerializationEnabled;
-  }
+  public static boolean mapBufferSerializationEnabled = false;
 
   /** Feature Flag to use overflowInset values provided by Yoga */
-  private static boolean useOverflowInset = false;
-
-  public static void setUseOverflowInset(boolean enabled) {
-    useOverflowInset = enabled;
-  }
-
-  public static boolean doesUseOverflowInset() {
-    return useOverflowInset;
-  }
+  public static boolean useOverflowInset = false;
 
   public static boolean enableLockFreeEventDispatcher = false;
 
@@ -102,8 +92,12 @@ public class ReactFeatureFlags {
 
   public static boolean insertZReorderBarriersOnViewGroupChildren = true;
 
+  /** Feature Flag for mitigatin concurrent root crashes */
   public static boolean enableDelayedViewStateDeletion = false;
 
+  public static boolean disablePreallocationOnClone = false;
+
+  public static boolean shouldRememberAllocatedViews = false;
   /**
    * Feature Flag to control the size of the cache used by TextLayoutManager in Fabric. Used from
    * JNI.
@@ -114,4 +108,31 @@ public class ReactFeatureFlags {
   public static boolean enableSpannableCache = false;
 
   public static boolean dispatchPointerEvents = false;
+
+  /** Feature Flag to enable the pending event queue in fabric before mounting views */
+  public static boolean enableFabricPendingEventQueue = false;
+
+  /** Feature Flag to control RN Android scrollEventThrottle prop. */
+  public static boolean enableScrollEventThrottle = false;
+
+  /**
+   * Feature flag that controls how turbo modules are exposed to JS
+   *
+   * <ul>
+   *   <li>0 = as a HostObject
+   *   <li>1 = as a plain object, backed with a HostObject as prototype
+   *   <li>2 = as a plain object, with all methods eagerly configured
+   * </ul>
+   */
+  public static int turboModuleBindingMode = 0;
+
+  /**
+   * Feature Flag to enable View Recycling. When enabled, individual ViewManagers must still opt-in.
+   */
+  public static boolean enableViewRecycling = false;
+
+  /**
+   * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
+   */
+  public static boolean enableCppPropsIteratorSetter = false;
 }

@@ -1600,7 +1600,7 @@ exports[`VirtualizedList warns if both renderItem or ListItemComponent are speci
 </RCTScrollView>
 `;
 
-exports[`adjusts render area with non-zero initialScrollIndex after scrolled 1`] = `
+exports[`adjusts render area with non-zero initialScrollIndex 1`] = `
 <RCTScrollView
   data={
     Array [
@@ -2200,144 +2200,6 @@ exports[`does not adjust render area until content area layed out 1`] = `
       style={
         Object {
           "height": 150,
-        }
-      }
-    />
-  </View>
-</RCTScrollView>
-`;
-
-exports[`does not adjust render area with non-zero initialScrollIndex until scrolled 1`] = `
-<RCTScrollView
-  data={
-    Array [
-      Object {
-        "key": 0,
-      },
-      Object {
-        "key": 1,
-      },
-      Object {
-        "key": 2,
-      },
-      Object {
-        "key": 3,
-      },
-      Object {
-        "key": 4,
-      },
-      Object {
-        "key": 5,
-      },
-      Object {
-        "key": 6,
-      },
-      Object {
-        "key": 7,
-      },
-      Object {
-        "key": 8,
-      },
-      Object {
-        "key": 9,
-      },
-      Object {
-        "key": 10,
-      },
-      Object {
-        "key": 11,
-      },
-      Object {
-        "key": 12,
-      },
-      Object {
-        "key": 13,
-      },
-      Object {
-        "key": 14,
-      },
-      Object {
-        "key": 15,
-      },
-      Object {
-        "key": 16,
-      },
-      Object {
-        "key": 17,
-      },
-      Object {
-        "key": 18,
-      },
-      Object {
-        "key": 19,
-      },
-    ]
-  }
-  getItem={[Function]}
-  getItemCount={[Function]}
-  getItemLayout={[Function]}
-  initialNumToRender={5}
-  initialScrollIndex={1}
-  maxToRenderPerBatch={10}
-  onContentSizeChange={[Function]}
-  onLayout={[Function]}
-  onMomentumScrollBegin={[Function]}
-  onMomentumScrollEnd={[Function]}
-  onScroll={[Function]}
-  onScrollBeginDrag={[Function]}
-  onScrollEndDrag={[Function]}
-  renderItem={[Function]}
-  scrollEventThrottle={50}
-  stickyHeaderIndices={Array []}
-  windowSize={10}
->
-  <View>
-    <View
-      style={
-        Object {
-          "height": 10,
-        }
-      }
-    />
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={1}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={2}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={3}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={4}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={5}
-      />
-    </View>
-    <View
-      style={
-        Object {
-          "height": 140,
         }
       }
     />
@@ -3244,6 +3106,75 @@ exports[`renders items before initialScrollIndex on first batch tick when virtua
     >
       <MockCellItem
         value={6}
+      />
+    </View>
+  </View>
+</RCTScrollView>
+`;
+
+exports[`renders new items when data is updated with non-zero initialScrollIndex 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+      },
+    ]
+  }
+  getItem={[Function]}
+  getItemCount={[Function]}
+  getItemLayout={[Function]}
+  initialNumToRender={5}
+  initialScrollIndex={1}
+  maxToRenderPerBatch={10}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={Array []}
+  windowSize={10}
+>
+  <View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={0}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={1}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={2}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={3}
       />
     </View>
   </View>

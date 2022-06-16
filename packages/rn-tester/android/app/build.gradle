@@ -80,17 +80,15 @@ react {
     cliPath = "../../../../cli.js"
     bundleAssetName = "RNTesterApp.android.bundle"
     entryFile = file("../../js/RNTesterApp.android.js")
-    root = rootDir
+    root = file("../../")
     inputExcludes = ["android/**", "./**", ".gradle/**"]
     composeSourceMapsPath = "$rootDir/scripts/compose-source-maps.js"
-    hermesCommand = "$rootDir/node_modules/hermes-engine/%OS-BIN%/hermesc"
+    hermesCommand = "$rootDir/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"
     enableHermesForVariant { def v -> v.name.contains("hermes") }
 
     // Codegen Configs
-    jsRootDir = file("$rootDir/packages/rn-tester")
     reactNativeDir = rootDir
-    libraryName = "rntester"
-    useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET")?.toBoolean() ?: false
+    codegenDir = new File(rootDir, "node_modules/react-native-codegen")
 }
 
 project.ext.react = [
@@ -265,24 +263,20 @@ if (enableCodegen) {
     android {
         defaultConfig {
             externalNativeBuild {
-                ndkBuild {
-                    arguments "APP_PLATFORM=android-21",
-                            "APP_STL=c++_shared",
-                            "NDK_TOOLCHAIN_VERSION=clang",
-                            // The following paths assume building React Native from source.
-                            "GENERATED_SRC_DIR=$buildDir/generated/source",
-                            "PROJECT_BUILD_DIR=$buildDir",
-                            "REACT_ANDROID_DIR=$reactAndroidProjectDir",
-                            "REACT_ANDROID_BUILD_DIR=$reactAndroidBuildDir"
-                    cFlags "-Wall", "-Werror", "-fexceptions", "-frtti", "-DWITH_INSPECTOR=1"
-                    cppFlags "-std=c++17"
+                cmake {
+                    arguments "-DGENERATED_SRC_DIR=$buildDir/generated/source",
+                        "-DPROJECT_BUILD_DIR=$buildDir",
+                        "-DREACT_ANDROID_DIR=$reactAndroidProjectDir",
+                        "-DREACT_ANDROID_BUILD_DIR=$reactAndroidBuildDir",
+                        "-DANDROID_STL=c++_shared"
+
                     targets "rntester_appmodules"
                 }
             }
         }
         externalNativeBuild {
-            ndkBuild {
-                path "$projectDir/src/main/jni/Android.mk"
+            cmake {
+                path "src/main/jni/CMakeLists.txt"
             }
         }
     }
@@ -304,19 +298,19 @@ if (enableCodegen) {
 
     afterEvaluate {
         reactNativeArchitectures().each { architecture ->
-            tasks.findByName("configureNdkBuildDebug[${architecture}]")?.configure {
+            tasks.findByName("configureCMakeDebug[${architecture}]")?.configure {
                 dependsOn("preHermesDebugBuild")
                 dependsOn("preJscDebugBuild")
             }
-            tasks.findByName("configureNdkBuildRelease[${architecture}]")?.configure {
+            tasks.findByName("configureCMakeRelWithDebInfo[${architecture}]")?.configure {
                 dependsOn("preHermesReleaseBuild")
                 dependsOn("preJscReleaseBuild")
             }
         }
-        configureNdkBuildRelease.dependsOn(packageReactReleaseNdkLibs)
+        configureCMakeRelWithDebInfo.dependsOn(packageReactReleaseNdkLibs)
         preHermesReleaseBuild.dependsOn(packageReactReleaseNdkLibs)
         preJscReleaseBuild.dependsOn(packageReactReleaseNdkLibs)
-        configureNdkBuildDebug.dependsOn(packageReactDebugNdkLibs)
+        configureCMakeDebug.dependsOn(packageReactDebugNdkLibs)
         preHermesDebugBuild.dependsOn(packageReactDebugNdkLibs)
         preJscDebugBuild.dependsOn(packageReactDebugNdkLibs)
     }

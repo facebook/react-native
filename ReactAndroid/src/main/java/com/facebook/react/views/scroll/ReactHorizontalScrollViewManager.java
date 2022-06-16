@@ -66,9 +66,7 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
 
   @Override
   public Object updateState(
-      ReactHorizontalScrollView view,
-      ReactStylesDiffMap props,
-      @Nullable StateWrapper stateWrapper) {
+      ReactHorizontalScrollView view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
     view.getFabricViewStateManager().setStateWrapper(stateWrapper);
     return null;
   }
@@ -324,5 +322,10 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
   @ReactProp(name = ViewProps.POINTER_EVENTS)
   public void setPointerEvents(ReactHorizontalScrollView view, @Nullable String pointerEventsStr) {
     view.setPointerEvents(PointerEvents.parsePointerEvents(pointerEventsStr));
+  }
+
+  @ReactProp(name = "scrollEventThrottle")
+  public void setScrollEventThrottle(ReactHorizontalScrollView view, int scrollEventThrottle) {
+    view.setScrollEventThrottle(scrollEventThrottle);
   }
 }

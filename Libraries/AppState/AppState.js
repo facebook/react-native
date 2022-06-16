@@ -127,38 +127,6 @@ class AppState {
     }
     throw new Error('Trying to subscribe to unknown event: ' + type);
   }
-
-  /**
-   * @deprecated Use `remove` on the EventSubscription from `addEventListener`.
-   */
-  removeEventListener<K: $Keys<AppStateEventDefinitions>>(
-    type: K,
-    listener: (...$ElementType<AppStateEventDefinitions, K>) => mixed,
-  ): void {
-    const emitter = this._emitter;
-    if (emitter == null) {
-      throw new Error('Cannot use AppState when `isAvailable` is false.');
-    }
-    // NOTE: This will report a deprecation notice via `console.error`.
-    switch (type) {
-      case 'change':
-        // $FlowIssue[invalid-tuple-arity] Flow cannot refine handler based on the event type
-        // $FlowIssue[incompatible-call]
-        emitter.removeListener('appStateDidChange', listener);
-        return;
-      case 'memoryWarning':
-        // $FlowIssue[invalid-tuple-arity] Flow cannot refine handler based on the event type
-        emitter.removeListener('memoryWarning', listener);
-        return;
-      case 'blur':
-      case 'focus':
-        // $FlowIssue[invalid-tuple-arity] Flow cannot refine handler based on the event type
-        // $FlowIssue[incompatible-call]
-        emitter.removeListener('appStateFocusChange', listener);
-        return;
-    }
-    throw new Error('Trying to unsubscribe from unknown event: ' + type);
-  }
 }
 
 module.exports = (new AppState(): AppState);

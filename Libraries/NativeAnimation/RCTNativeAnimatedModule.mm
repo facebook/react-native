@@ -258,6 +258,11 @@ RCT_EXPORT_METHOD(getValue:(double)nodeTag saveValueCallback:(RCTResponseSenderB
   }];
 }
 
+RCT_EXPORT_METHOD(queueAndExecuteBatchedOperations:(NSArray *)operationsAndArgs) {
+    // TODO: implement in the future if we want the same optimization here as on Android
+}
+
+
 #pragma mark -- Batch handling
 
 - (void)addOperationBlock:(AnimatedOperation)operation

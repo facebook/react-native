@@ -71,7 +71,7 @@ using namespace facebook::react;
       return;
     }
 
-    observerCoordinator->nativeImageResponseProgress(progress / (float)total);
+    observerCoordinator->nativeImageResponseProgress((float)progress / (float)total);
   };
 
   RCTImageURLLoaderRequest *loaderRequest =

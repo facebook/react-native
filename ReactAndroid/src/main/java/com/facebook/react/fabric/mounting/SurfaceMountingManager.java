@@ -25,6 +25,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
 import com.facebook.react.config.ReactFeatureFlags;
@@ -43,9 +44,12 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
+import com.facebook.react.uimanager.events.EventCategoryDef;
 import com.facebook.react.views.view.ReactMapBufferViewManager;
 import com.facebook.react.views.view.ReactViewManagerWrapper;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -300,6 +304,10 @@ public class SurfaceMountingManager {
             mRootViewManager = null;
             mMountItemExecutor = null;
             mOnViewAttachItems.clear();
+
+            if (ReactFeatureFlags.enableViewRecycling) {
+              mViewManagerRegistry.onSurfaceStopped(mSurfaceId);
+            }
           }
         };
 
@@ -849,6 +857,7 @@ public class SurfaceMountingManager {
     }
   }
 
+  /** We update the event emitter from the main thread when the view is mounted. */
   @UiThread
   public void updateEventEmitter(int reactTag, @NonNull EventEmitterWrapper eventEmitter) {
     UiThreadUtil.assertOnUiThread();
@@ -869,6 +878,20 @@ public class SurfaceMountingManager {
     // Immediately destroy native side of wrapper, instead of waiting for Java GC.
     if (previousEventEmitterWrapper != eventEmitter && previousEventEmitterWrapper != null) {
       previousEventEmitterWrapper.destroy();
+    }
+
+    if (viewState.mPendingEventQueue != null) {
+      // Invoke pending event queued to the view state
+      for (ViewEvent viewEvent : viewState.mPendingEventQueue) {
+        if (viewEvent.canCoalesceEvent()) {
+          eventEmitter.invokeUnique(
+              viewEvent.getEventName(), viewEvent.getParams(), viewEvent.getCustomCoalesceKey());
+        } else {
+          eventEmitter.invoke(
+              viewEvent.getEventName(), viewEvent.getParams(), viewEvent.getEventCategory());
+        }
+      }
+      viewState.mPendingEventQueue = null;
     }
   }
 
@@ -1017,7 +1040,8 @@ public class SurfaceMountingManager {
   private @NonNull ViewState getViewState(int tag) {
     ViewState viewState = mTagToViewState.get(tag);
     if (viewState == null) {
-      throw new RetryableMountingLayerException("Unable to find viewState for tag " + tag);
+      throw new RetryableMountingLayerException(
+          "Unable to find viewState for tag " + tag + ". Surface stopped: " + isStopped());
     }
     if (ReactFeatureFlags.enableDelayedViewStateDeletion) {
       mScheduledForDeletionViewStateTags.remove(tag);
@@ -1026,13 +1050,14 @@ public class SurfaceMountingManager {
   }
 
   private @Nullable ViewState getNullableViewState(int tag) {
-    if (mTagToViewState == null) {
+    ConcurrentHashMap<Integer, ViewState> viewStates = mTagToViewState;
+    if (viewStates == null) {
       return null;
     }
     if (ReactFeatureFlags.enableDelayedViewStateDeletion) {
       mScheduledForDeletionViewStateTags.remove(tag);
     }
-    return mTagToViewState.get(tag);
+    return viewStates.get(tag);
   }
 
   @SuppressWarnings("unchecked") // prevents unchecked conversion warn of the <ViewGroup> type
@@ -1063,6 +1088,31 @@ public class SurfaceMountingManager {
     }
   }
 
+  @UiThread
+  public void enqueuePendingEvent(int reactTag, ViewEvent viewEvent) {
+    UiThreadUtil.assertOnUiThread();
+
+    // When the surface stopped we will reset the view state map. We are not going to enqueue
+    // pending events as they are not expected to be dispatched anyways.
+    if (mTagToViewState == null) {
+      return;
+    }
+
+    ViewState viewState = mTagToViewState.get(reactTag);
+    if (viewState == null) {
+      // Cannot queue event without view state. Do nothing here.
+      return;
+    }
+    Assertions.assertCondition(
+        viewState.mEventEmitter == null,
+        "Only queue pending events when event emitter is null for the given view state");
+
+    if (viewState.mPendingEventQueue == null) {
+      viewState.mPendingEventQueue = new LinkedList<>();
+    }
+    viewState.mPendingEventQueue.add(viewEvent);
+  }
+
   /**
    * This class holds view state for react tags. Objects of this class are stored into the {@link
    * #mTagToViewState}, and they should be updated in the same thread.
@@ -1076,6 +1126,7 @@ public class SurfaceMountingManager {
     @Nullable public ReadableMap mCurrentLocalData = null;
     @Nullable public StateWrapper mStateWrapper = null;
     @Nullable public EventEmitterWrapper mEventEmitter = null;
+    @Nullable public Queue<ViewEvent> mPendingEventQueue = null;
 
     private ViewState(
         int reactTag, @Nullable View view, @Nullable ReactViewManagerWrapper viewManager) {
@@ -1108,6 +1159,47 @@ public class SurfaceMountingManager {
           + mViewManager
           + " - isLayoutOnly: "
           + isLayoutOnly;
+    }
+  }
+
+  public static class ViewEvent {
+    private final String mEventName;
+    private final boolean mCanCoalesceEvent;
+    private final int mCustomCoalesceKey;
+    private final @EventCategoryDef int mEventCategory;
+    private @Nullable WritableMap mParams;
+
+    public ViewEvent(
+        String eventName,
+        @Nullable WritableMap params,
+        @EventCategoryDef int eventCategory,
+        boolean canCoalesceEvent,
+        int customCoalesceKey) {
+      mEventName = eventName;
+      mParams = params;
+      mEventCategory = eventCategory;
+      mCanCoalesceEvent = canCoalesceEvent;
+      mCustomCoalesceKey = customCoalesceKey;
+    }
+
+    public String getEventName() {
+      return mEventName;
+    }
+
+    public boolean canCoalesceEvent() {
+      return mCanCoalesceEvent;
+    }
+
+    public int getCustomCoalesceKey() {
+      return mCustomCoalesceKey;
+    }
+
+    public @EventCategoryDef int getEventCategory() {
+      return mEventCategory;
+    }
+
+    public @Nullable WritableMap getParams() {
+      return mParams;
     }
   }
 }

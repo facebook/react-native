@@ -40,5 +40,12 @@
 
   <!-- tag is used to store if a view is subscribed to the pointermove event -->
   <item type="id" name="pointer_move"/>
-</resources>
 
+  <!-- tags used to store whether a view is listening to relevant events -->
+  <item type="id" name="pointer_enter2"/>
+  <item type="id" name="pointer_enter2_capture"/>
+  <item type="id" name="pointer_leave2"/>
+  <item type="id" name="pointer_leave2_capture"/>
+  <item type="id" name="pointer_move2"/>
+  <item type="id" name="pointer_move2_capture"/>
+</resources>

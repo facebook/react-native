@@ -24,6 +24,15 @@ inline constexpr bool is_jsi_v =
     std::is_same_v<jsi::String, remove_cvref_t<T>> ||
     std::is_base_of_v<jsi::Object, remove_cvref_t<T>>;
 
+template <typename>
+struct is_optional : std::false_type {};
+
+template <typename T>
+struct is_optional<std::optional<T>> : std::true_type {};
+
+template <typename T>
+inline constexpr bool is_optional_v = is_optional<T>::value;
+
 template <typename T>
 struct Converter;
 
