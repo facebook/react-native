@@ -325,7 +325,6 @@
 - Accessing `Image.propTypes`, `Text.propTypes`, `TextInput.propTypes`, `ColorPropType`, `EdgeInsetsPropType`, `PointPropType`, or `ViewPropTypes` now emits a deprecation warning. ([3f629049ba](https://github.com/facebook/react-native/commit/3f629049ba9773793978cf9093c7a71af15e3e8d) by [@yungsters](https://github.com/yungsters))
 - Bump `core-workflow-apply-version-label` version ([e973b3afc2](https://github.com/facebook/react-native/commit/e973b3afc274f892a0e5a6fdea9004dc5d84eb2b) by [@lucasbento](https://github.com/lucasbento))
 - Add `vendor/bundle` into .gitignore template ([2f67f5d68b](https://github.com/facebook/react-native/commit/2f67f5d68b17010c49f2996a788fe68c1fe2e9f6) by [@MoOx](https://github.com/MoOx))
-- Use std::optional instead of butter::optional ([a159416333](https://github.com/facebook/react-native/commit/a159416333927f459b26999973321fa5775b554a) by [@sammy-SC](https://github.com/sammy-SC))
 
 #### Android specific
 
