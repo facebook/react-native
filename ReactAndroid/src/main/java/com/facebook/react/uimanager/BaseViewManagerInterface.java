@@ -28,6 +28,10 @@ public interface BaseViewManagerInterface<T extends View> {
 
   void setAccessibilityRole(T view, @Nullable String accessibilityRole);
 
+  void setAccessibilityCollection(T view, @Nullable ReadableMap accessibilityCollection);
+
+  void setAccessibilityCollectionItem(T view, @Nullable ReadableMap accessibilityCollectionItem);
+
   void setViewState(T view, @Nullable ReadableMap accessibilityState);
 
   void setBackgroundColor(T view, int backgroundColor);
