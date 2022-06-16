@@ -34,16 +34,6 @@ struct PointerEvent {
    * opposed to the coordinate within the page).
    */
   Point clientPoint;
-  /*
-   * A reference to the view to which the event was originally dispatched.
-   */
-  Tag target;
-  /*
-   * The time at which the event was created (in milliseconds). By
-   * specification, this value is time since epoch—but in reality, browsers'
-   * definitions vary.
-   */
-  Float timestamp;
 };
 
 #if RN_DEBUG_STRING_CONVERTIBLE

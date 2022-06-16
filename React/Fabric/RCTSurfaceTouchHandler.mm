@@ -180,8 +180,6 @@ static PointerEvent CreatePointerEventFromActiveTouch(ActiveTouch activeTouch)
   event.pressure = touch.force;
   event.pointerType = PointerTypeCStringFromUITouchType(activeTouch.touchType);
   event.clientPoint = touch.pagePoint;
-  event.target = touch.target;
-  event.timestamp = touch.timestamp;
   return event;
 }
 
@@ -196,8 +194,6 @@ CreatePointerEventFromIncompleteHoverData(UIView *view, CGPoint clientLocation, 
   event.pressure = 0.0;
   event.pointerType = "mouse";
   event.clientPoint = RCTPointFromCGPoint(clientLocation);
-  event.target = (Tag)view.tag;
-  event.timestamp = timestamp;
   return event;
 }
 
