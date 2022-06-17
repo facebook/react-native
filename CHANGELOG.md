@@ -4,7 +4,10 @@
 
 ### Breaking
 
-- Remove console.disableYellowBox support ([b633cc1305](https://github.com/facebook/react-native/commit/b633cc130533f0731b2577123282c4530e4f0abe) by [@GijsWeterings](https://github.com/GijsWeterings))
+- Support for `console.disableYellowBox` [has been dropped](https://github.com/facebook/react-native/commit/b633cc130533f0731b2577123282c4530e4f0abe)
+- Already deprecated prop types have been removed ([cdfddb4dad](https://github.com/facebook/react-native/commit/cdfddb4dad7c69904850d7e5f089a32a1d3445d1), [3e229f27bc](https://github.com/facebook/react-native/commit/3e229f27bc9c7556876ff776abf70147289d544b), [10199b1581](https://github.com/facebook/react-native/commit/10199b158138b8645550b5579df87e654213fe42))
+- `removeListener`, deprecated since RN0.65, [was removed](https://github.com/facebook/react-native/commit/8dfbed786b40082a7a222e00dc0a621c0695697d) from Appearance
+- If you were using `SegmentedComponentIOS`, you will now need to move to the [segmented-control](https://github.com/react-native-segmented-control/segmented-control) library ([235f168574](https://github.com/facebook/react-native/commit/235f1685748442553e53f8ec6d904bc0314a8ae6))
 
 ### Added
 
@@ -120,14 +123,6 @@
 #### iOS specific
 
 - Deprecating support for iOS/tvOS SDK 11.0, 12.4+ is now required ([5f2835b14d](https://github.com/facebook/react-native/commit/5f2835b14d35681c268dd64d6ec284ea5f053be3), ([c71e6efbcd](https://github.com/facebook/react-native/commit/c71e6efbcd2b95faee327d9763d321488120bc5e), ([982ca30de0](https://github.com/facebook/react-native/commit/982ca30de079d7e80bd0b50365d58b9048fb628f) by [@philIip](https://github.com/philIip))
-
-### Removed
-
-- Remove deprecated removeListener from Appearance that causes deprecation message in log box. ([8dfbed786b](https://github.com/facebook/react-native/commit/8dfbed786b40082a7a222e00dc0a621c0695697d) by [@matinzd](https://github.com/matinzd))
-- This diff removes the `SegmentedControlIOS` export from React Native. Internally, we are requiring `SegmentedControlIOS` directly now and externally people will have to use the community maintained module (https://github.com/react-native-segmented-control). ([235f168574](https://github.com/facebook/react-native/commit/235f1685748442553e53f8ec6d904bc0314a8ae6) by [@cipolleschi](https://github.com/cipolleschi))
-- Removed `deprecated-react-native-props` as a package dependency. ([cdfddb4dad](https://github.com/facebook/react-native/commit/cdfddb4dad7c69904850d7e5f089a32a1d3445d1) by [@yungsters](https://github.com/yungsters))
-- Removed `Image.propTypes`, `Text.propTypes`, and `TextInput.propTypes`. ([3e229f27bc](https://github.com/facebook/react-native/commit/3e229f27bc9c7556876ff776abf70147289d544b) by [@yungsters](https://github.com/yungsters))
-- Removed `ColorPropType`, `EdgeInsetsPropType`, `PointPropType`, and `ViewPropTypes`. ([10199b1581](https://github.com/facebook/react-native/commit/10199b158138b8645550b5579df87e654213fe42) by [@yungsters](https://github.com/yungsters))
 
 #### iOS specific
 
