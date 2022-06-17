@@ -44,13 +44,25 @@ void SurfaceRegistryBinding::startSurface(
          jsi::valueFromDynamic(runtime, parameters),
          jsi::Value(runtime, displayModeToInt(displayMode))});
   } else {
-    callMethodOfModule(
-        runtime,
-        "AppRegistry",
-        "runApplication",
-        {jsi::String::createFromUtf8(runtime, moduleName),
-         jsi::valueFromDynamic(runtime, parameters),
-         jsi::Value(runtime, displayModeToInt(displayMode))});
+    if (moduleName != "LogBox" &&
+        global.hasProperty(runtime, "RN$SurfaceRegistry")) {
+      auto registry = global.getPropertyAsObject(runtime, "RN$SurfaceRegistry");
+      auto method = registry.getPropertyAsFunction(runtime, "renderSurface");
+
+      method.call(
+          runtime,
+          {jsi::String::createFromUtf8(runtime, moduleName),
+           jsi::valueFromDynamic(runtime, parameters),
+           jsi::Value(runtime, displayModeToInt(displayMode))});
+    } else {
+      callMethodOfModule(
+          runtime,
+          "AppRegistry",
+          "runApplication",
+          {jsi::String::createFromUtf8(runtime, moduleName),
+           jsi::valueFromDynamic(runtime, parameters),
+           jsi::Value(runtime, displayModeToInt(displayMode))});
+    }
   }
 }
 
@@ -86,13 +98,25 @@ void SurfaceRegistryBinding::setSurfaceProps(
          jsi::valueFromDynamic(runtime, parameters),
          jsi::Value(runtime, displayModeToInt(displayMode))});
   } else {
-    callMethodOfModule(
-        runtime,
-        "AppRegistry",
-        "setSurfaceProps",
-        {jsi::String::createFromUtf8(runtime, moduleName),
-         jsi::valueFromDynamic(runtime, parameters),
-         jsi::Value(runtime, displayModeToInt(displayMode))});
+    if (moduleName != "LogBox" &&
+        global.hasProperty(runtime, "RN$SurfaceRegistry")) {
+      auto registry = global.getPropertyAsObject(runtime, "RN$SurfaceRegistry");
+      auto method = registry.getPropertyAsFunction(runtime, "setSurfaceProps");
+
+      method.call(
+          runtime,
+          {jsi::String::createFromUtf8(runtime, moduleName),
+           jsi::valueFromDynamic(runtime, parameters),
+           jsi::Value(runtime, displayModeToInt(displayMode))});
+    } else {
+      callMethodOfModule(
+          runtime,
+          "AppRegistry",
+          "setSurfaceProps",
+          {jsi::String::createFromUtf8(runtime, moduleName),
+           jsi::valueFromDynamic(runtime, parameters),
+           jsi::Value(runtime, displayModeToInt(displayMode))});
+    }
   }
 }
 
