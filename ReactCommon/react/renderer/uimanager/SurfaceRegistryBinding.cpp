@@ -25,8 +25,7 @@ void SurfaceRegistryBinding::startSurface(
   parameters["initialProps"] = initalProps;
   parameters["fabric"] = true;
 
-  if (moduleName != "LogBox" &&
-      runtime.global().hasProperty(runtime, "RN$SurfaceRegistry")) {
+  if (runtime.global().hasProperty(runtime, "RN$SurfaceRegistry")) {
     auto registry =
         runtime.global().getPropertyAsObject(runtime, "RN$SurfaceRegistry");
     auto method = registry.getPropertyAsFunction(runtime, "renderSurface");
@@ -59,8 +58,7 @@ void SurfaceRegistryBinding::setSurfaceProps(
   parameters["initialProps"] = initalProps;
   parameters["fabric"] = true;
 
-  if (moduleName != "LogBox" &&
-      runtime.global().hasProperty(runtime, "RN$SurfaceRegistry")) {
+  if (runtime.global().hasProperty(runtime, "RN$SurfaceRegistry")) {
     auto registry =
         runtime.global().getPropertyAsObject(runtime, "RN$SurfaceRegistry");
     auto method = registry.getPropertyAsFunction(runtime, "setSurfaceProps");
