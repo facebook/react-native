@@ -102,8 +102,10 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setAnimationMatrix(null);
 
     // setShadowColor
-    view.setOutlineAmbientShadowColor(Color.BLACK);
-    view.setOutlineSpotShadowColor(Color.BLACK);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      view.setOutlineAmbientShadowColor(Color.BLACK);
+      view.setOutlineSpotShadowColor(Color.BLACK);
+    }
 
     // Focus IDs
     // Also see in AOSP source:
