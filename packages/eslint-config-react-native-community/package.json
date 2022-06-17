@@ -11,6 +11,7 @@
   },
   "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/eslint-config-react-native-community#readme",
   "dependencies": {
+    "@babel/core": "^7.14.0",
     "@babel/eslint-parser": "^7.18.2",
     "@react-native-community/eslint-plugin": "^1.1.0",
     "@typescript-eslint/eslint-plugin": "^5.15.0",

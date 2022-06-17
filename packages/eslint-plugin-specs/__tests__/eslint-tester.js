@@ -17,6 +17,9 @@ ESLintTester.setDefaultConfig({
     requireConfigFile: false,
     ecmaVersion: 6,
     sourceType: 'module',
+    babelOptions: {
+      presets: ['@babel/preset-flow'],
+    },
   },
 });
 
