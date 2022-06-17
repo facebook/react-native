@@ -68,8 +68,8 @@ static jsi::Value pointerEventPayload(
   object.setProperty(runtime, "pointerType", event.pointerType);
   object.setProperty(runtime, "clientX", event.clientPoint.x);
   object.setProperty(runtime, "clientY", event.clientPoint.y);
-  object.setProperty(runtime, "target", event.target);
-  object.setProperty(runtime, "timestamp", event.timestamp * 1000);
+  object.setProperty(runtime, "width", event.width);
+  object.setProperty(runtime, "height", event.height);
   return object;
 }
 

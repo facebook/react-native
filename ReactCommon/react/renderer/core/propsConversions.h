@@ -20,6 +20,35 @@
 namespace facebook {
 namespace react {
 
+/**
+ * Use this only when a prop update has definitely been sent from JS;
+ * essentially, cases where rawValue is virtually guaranteed to not be a
+ * nullptr.
+ */
+template <typename T>
+void fromRawValue(
+    const PropsParserContext &context,
+    RawValue const &rawValue,
+    T &result,
+    T defaultValue) {
+  if (!rawValue.hasValue()) {
+    result = std::move(defaultValue);
+    return;
+  }
+
+  fromRawValue(context, rawValue, result);
+}
+
+template <typename T>
+void fromRawValue(
+    const PropsParserContext &context,
+    RawValue const &rawValue,
+    std::optional<T> &result) {
+  T res{};
+  fromRawValue(context, rawValue, res);
+  result = std::optional<T>(res);
+}
+
 template <typename T>
 void fromRawValue(
     const PropsParserContext &context,

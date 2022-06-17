@@ -48,6 +48,18 @@ ParagraphProps::ParagraphProps(
   textAttributes.backgroundColor = {};
 };
 
+void ParagraphProps::setProp(
+    const PropsParserContext &context,
+    RawPropsPropNameHash hash,
+    const char *propName,
+    RawValue const &value) {
+  // All Props structs setProp methods must always, unconditionally,
+  // call all super::setProp methods, since multiple structs may
+  // reuse the same values.
+  ViewProps::setProp(context, hash, propName, value);
+  BaseTextProps::setProp(context, hash, propName, value);
+}
+
 #pragma mark - DebugStringConvertible
 
 #if RN_DEBUG_STRING_CONVERTIBLE

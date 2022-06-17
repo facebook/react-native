@@ -105,6 +105,12 @@ class AndroidTextInputProps final : public ViewProps, public BaseTextProps {
       const AndroidTextInputProps &sourceProps,
       const RawProps &rawProps);
 
+  void setProp(
+      const PropsParserContext &context,
+      RawPropsPropNameHash hash,
+      const char *propName,
+      RawValue const &value);
+
   folly::dynamic getDynamic() const;
 
 #pragma mark - Props

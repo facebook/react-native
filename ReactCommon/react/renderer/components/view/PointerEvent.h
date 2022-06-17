@@ -35,15 +35,15 @@ struct PointerEvent {
    */
   Point clientPoint;
   /*
-   * A reference to the view to which the event was originally dispatched.
+   * The width (magnitude on the X axis), in CSS pixels, of the contact geometry
+   * of the pointer
    */
-  Tag target;
+  Float width;
   /*
-   * The time at which the event was created (in milliseconds). By
-   * specification, this value is time since epoch—but in reality, browsers'
-   * definitions vary.
+   * The height (magnitude on the y axis), in CSS pixels, of the contact
+   * geometry of the pointer
    */
-  Float timestamp;
+  Float height;
 };
 
 #if RN_DEBUG_STRING_CONVERTIBLE
