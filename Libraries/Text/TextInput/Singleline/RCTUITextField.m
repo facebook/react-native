@@ -104,10 +104,10 @@
   NSString *text = self.attributedText.string;
   NSString *lastChar = [text length] == 0 ? @"" : [text substringFromIndex:[text length] - 1];
   if (accessibilityErrorMessage != nil) {
-    NSString *errorWithFirstCharacter = [NSString stringWithFormat: @"%@ %@", lastChar, accessibilityErrorMessage];
+    NSString *errorWithLastCharacter = [NSString stringWithFormat: @"%@ %@", lastChar, accessibilityErrorMessage];
     NSString *errorWithText = [NSString stringWithFormat: @"%@ %@", text, accessibilityErrorMessage];
     self.accessibilityValue = errorWithText;
-    UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, errorWithFirstCharacter);
+    UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, errorWithLastCharacter);
   } else {
     self.accessibilityValue = text;
   }
