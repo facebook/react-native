@@ -25,11 +25,19 @@ void SurfaceRegistryBinding::startSurface(
   parameters["initialProps"] = initalProps;
   parameters["fabric"] = true;
 
-  if (runtime.global().hasProperty(runtime, "RN$SurfaceRegistry")) {
-    auto registry =
-        runtime.global().getPropertyAsObject(runtime, "RN$SurfaceRegistry");
-    auto method = registry.getPropertyAsFunction(runtime, "renderSurface");
+  auto global = runtime.global();
+  auto isBridgeless = global.hasProperty(runtime, "RN$Bridgeless") &&
+      global.getProperty(runtime, "RN$Bridgeless").asBool();
 
+  if (isBridgeless) {
+    if (!global.hasProperty(runtime, "RN$SurfaceRegistry")) {
+      throw std::runtime_error(
+          "SurfaceRegistryBinding::startSurface: Failed to start Surface \"" +
+          moduleName + "\". global.RN$SurfaceRegistry was not installed.");
+    }
+
+    auto registry = global.getPropertyAsObject(runtime, "RN$SurfaceRegistry");
+    auto method = registry.getPropertyAsFunction(runtime, "renderSurface");
     method.call(
         runtime,
         {jsi::String::createFromUtf8(runtime, moduleName),
@@ -58,9 +66,18 @@ void SurfaceRegistryBinding::setSurfaceProps(
   parameters["initialProps"] = initalProps;
   parameters["fabric"] = true;
 
-  if (runtime.global().hasProperty(runtime, "RN$SurfaceRegistry")) {
-    auto registry =
-        runtime.global().getPropertyAsObject(runtime, "RN$SurfaceRegistry");
+  auto global = runtime.global();
+  auto isBridgeless = global.hasProperty(runtime, "RN$Bridgeless") &&
+      global.getProperty(runtime, "RN$Bridgeless").asBool();
+
+  if (isBridgeless) {
+    if (!global.hasProperty(runtime, "RN$SurfaceRegistry")) {
+      throw std::runtime_error(
+          "SurfaceRegistryBinding::setSurfaceProps: Failed to set Surface props for \"" +
+          moduleName + "\". global.RN$SurfaceRegistry was not installed.");
+    }
+
+    auto registry = global.getPropertyAsObject(runtime, "RN$SurfaceRegistry");
     auto method = registry.getPropertyAsFunction(runtime, "setSurfaceProps");
 
     method.call(
@@ -83,7 +100,10 @@ void SurfaceRegistryBinding::stopSurface(
     jsi::Runtime &runtime,
     SurfaceId surfaceId) {
   auto global = runtime.global();
-  if (global.hasProperty(runtime, "RN$Bridgeless")) {
+  auto isBridgeless = global.hasProperty(runtime, "RN$Bridgeless") &&
+      global.getProperty(runtime, "RN$Bridgeless").asBool();
+
+  if (isBridgeless) {
     if (!global.hasProperty(runtime, "RN$stopSurface")) {
       // ReactFabric module has not been loaded yet; there's no surface to stop.
       return;
