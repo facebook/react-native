@@ -33,6 +33,7 @@ using namespace facebook::react;
   UIView<RCTBackedTextInputViewProtocol> *_backedTextInputView;
   NSUInteger _mostRecentEventCount;
   NSAttributedString *_lastStringStateWasUpdatedWith;
+  NSString *_errorMessage;
 
   /*
    * UIKit uses either UITextField or UITextView as its UIKit element for <TextInput>. UITextField is for single line
@@ -134,13 +135,19 @@ using namespace facebook::react;
     _backedTextInputView.editable = newTextInputProps.traits.editable;
   }
 
-  NSString *error = RCTNSStringFromString(newTextInputProps.accessibilityErrorMessage);
-  NSString *text = RCTNSStringFromString(newTextInputProps.text);
-  if (newTextInputProps.accessibilityErrorMessage != oldTextInputProps.accessibilityErrorMessage || newTextInputProps.text != oldTextInputProps.text) {
-    NSString *errorWithText = [text length] == 0 ? error : [NSString stringWithFormat: @"%@ %@", text, error];
-    self.accessibilityElement.accessibilityValue = errorWithText;
+  if (newTextInputProps.accessibilityErrorMessage != oldTextInputProps.accessibilityErrorMessage) {
+    NSString *error = RCTNSStringFromString(newTextInputProps.accessibilityErrorMessage);
+    NSString *text = RCTNSStringFromString(newTextInputProps.text);
+    NSString *lastChar = [text length] == 0 ? @"" : [text substringFromIndex:[text length] - 1];
     if ([error length] != 0) {
-      UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, errorWithText);
+      NSString *errorWithLastCharacter = [NSString stringWithFormat: @"%@ %@", lastChar, error];
+      NSString *errorWithText = [NSString stringWithFormat: @"%@ %@", text, error];
+      self.accessibilityElement.accessibilityValue = errorWithText;
+      self->_errorMessage = errorWithText;
+      UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, errorWithLastCharacter);
+    } else {
+      self.accessibilityElement.accessibilityValue = text;
+      self->_errorMessage = nil;
     }
   }
 
@@ -595,6 +602,13 @@ using namespace facebook::react;
   UITextRange *selectedRange = _backedTextInputView.selectedTextRange;
   NSInteger oldTextLength = _backedTextInputView.attributedText.string.length;
   _backedTextInputView.attributedText = attributedString;
+  if (self->_errorMessage == nil) {
+    NSString *lastChar = [attributedString.string substringFromIndex:[attributedString.string length] - 1];
+    UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, lastChar);
+  }
+  if (self->_errorMessage == nil && ![_backedTextInputView.accessibilityValue isEqualToString: attributedString.string]) {
+    _backedTextInputView.accessibilityValue = attributedString.string;
+  }
   if (selectedRange.empty) {
     // Maintaining a cursor position relative to the end of the old text.
     NSInteger offsetStart = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
