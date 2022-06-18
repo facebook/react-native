@@ -11,14 +11,13 @@ require_relative './cocoapods/flipper.rb'
 require_relative './cocoapods/fabric.rb'
 require_relative './cocoapods/codegen.rb'
 require_relative './cocoapods/utils.rb'
+require_relative './cocoapods/new_architecture.rb'
 
 $CODEGEN_OUTPUT_DIR = 'build/generated/ios'
 $CODEGEN_COMPONENT_DIR = 'react/renderer/components'
 $CODEGEN_MODULE_DIR = '.'
 $REACT_CODEGEN_PODSPEC_GENERATED = false
 $REACT_CODEGEN_DISCOVERY_DONE = false
-DEFAULT_OTHER_CPLUSPLUSFLAGS = '$(inherited)'
-NEW_ARCH_OTHER_CPLUSPLUSFLAGS = '$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1'
 
 $START_TIME = Time.now.to_i
 
@@ -148,38 +147,13 @@ def react_native_post_install(installer, react_native_path = "../node_modules/re
 
   ReactNativePodsUtils.exclude_i386_architecture_while_using_hermes(installer)
   ReactNativePodsUtils.fix_library_search_paths(installer)
-
-  cpp_flags = DEFAULT_OTHER_CPLUSPLUSFLAGS
-  if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
-    cpp_flags = NEW_ARCH_OTHER_CPLUSPLUSFLAGS
-  end
-  modify_flags_for_new_architecture(installer, cpp_flags)
-
   ReactNativePodsUtils.set_node_modules_user_settings(installer, react_native_path)
 
-  puts "Pod install took #{Time.now.to_i - $START_TIME} [s] to run"
-end
+  NewArchitectureHelper.set_clang_cxx_language_standard_if_needed(installer)
+  is_new_arch_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'
+  NewArchitectureHelper.modify_flags_for_new_architecture(installer, is_new_arch_enabled)
 
-def modify_flags_for_new_architecture(installer, cpp_flags)
-  # Add RCT_NEW_ARCH_ENABLED to Target pods xcconfig
-  installer.aggregate_targets.each do |aggregate_target|
-      aggregate_target.xcconfigs.each do |config_name, config_file|
-          config_file.attributes['OTHER_CPLUSPLUSFLAGS'] = cpp_flags
-          xcconfig_path = aggregate_target.xcconfig_path(config_name)
-          Pod::UI.puts xcconfig_path
-          config_file.save_as(xcconfig_path)
-      end
-  end
-
-  # Add RCT_NEW_ARCH_ENABLED to generated pod target projects
-  installer.target_installation_results.pod_target_installation_results
-    .each do |pod_name, target_installation_result|
-    if pod_name == 'React-Core'
-      target_installation_result.native_target.build_configurations.each do |config|
-        config.build_settings['OTHER_CPLUSPLUSFLAGS'] = cpp_flags
-      end
-    end
-  end
+  Pod::UI.puts "Pod install took #{Time.now.to_i - $START_TIME} [s] to run".green
 end
 
 def get_react_codegen_spec(options={})

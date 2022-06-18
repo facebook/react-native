@@ -39,10 +39,12 @@
 class InstallerMock
     attr_reader :pods_project
     attr_reader :aggregate_targets
+    attr_reader :target_installation_results
 
-    def initialize(pods_project = PodsProjectMock.new, aggregate_targets = [AggregatedProjectMock.new])
+    def initialize(pods_project = PodsProjectMock.new, aggregate_targets = [AggregatedProjectMock.new], target_installation_results: [])
         @pods_project = pods_project
         @aggregate_targets = aggregate_targets
+        @target_installation_results = target_installation_results
     end
 
     def target_with_name(name)
@@ -80,9 +82,18 @@ end
 
 class AggregatedProjectMock
     attr_reader :user_project
+    attr_reader :xcconfigs
 
-    def initialize(user_project = UserProjectMock.new)
+    @base_path
+
+    def initialize(user_project = UserProjectMock.new, xcconfigs: {}, base_path: "")
         @user_project = user_project
+        @xcconfigs = xcconfigs
+        @base_path = base_path
+    end
+
+    def xcconfig_path(config_name)
+        return File.join(@base_path, "#{config_name}.xcconfig")
     end
 end
 
@@ -103,6 +114,22 @@ class UserProjectMock
 
     def save()
         @save_invocation_count += 1
+    end
+end
+
+class XCConfigMock
+    attr_reader :name
+    attr_accessor :attributes
+    attr_reader :save_as_invocation
+
+    def initialize(name, attributes: {})
+        @name = name
+        @attributes = attributes
+        @save_as_invocation = []
+    end
+
+    def save_as(file_path)
+        @save_as_invocation.push(file_path)
     end
 end
 
@@ -134,5 +161,23 @@ class BuildConfigurationMock
     def initialize(name, build_settings = {})
         @name = name
         @build_settings = build_settings
+    end
+end
+
+class TargetInstallationResultsMock
+    attr_reader :pod_target_installation_results
+
+    def initialize(pod_target_installation_results: {})
+        @pod_target_installation_results = pod_target_installation_results
+    end
+end
+
+class PodTargetInstallationResultsMock
+    attr_reader :name
+    attr_reader :native_target
+
+    def initialize(name: "", native_target: TargetMock.new())
+        @name = name
+        @native_target = native_target
     end
 end
