@@ -67,7 +67,7 @@ public class ReactInstanceManagerBuilder {
   private @Nullable Map<String, RequestHandler> mCustomPackagerCommandHandlers;
   private @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
   private @Nullable SurfaceDelegateFactory mSurfaceDelegateFactory;
-  private JSInterpreter  jsEngine = JSInterpreter.OLD_LOGIC;
+  private JSInterpreter jsEngine = JSInterpreter.OLD_LOGIC;
 
   /* package protected */ ReactInstanceManagerBuilder() {}
 
