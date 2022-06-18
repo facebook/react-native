@@ -498,6 +498,30 @@ def __apply_Xcode_12_5_M1_post_install_workaround(installer)
   `sed -i -e  $'s/ && (__IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0)//' #{time_header}`
 end
 
+# Apply three patches necessary for successful building and archiving RN on Mac Catalyst targets
+def __apply_mac_catalyst_patches(installer)
+  # Fix bundle signing issues
+  installer.pods_project.targets.each do |target|
+    if target.respond_to?(:product_type) and target.product_type == "com.apple.product-type.bundle"
+      target.build_configurations.each do |config|
+        config.build_settings['CODE_SIGN_IDENTITY[sdk=macosx*]'] = '-'
+      end
+    end
+  end
+
+  installer.aggregate_targets.each do |aggregate_target|
+    aggregate_target.user_project.native_targets.each do |target|
+      target.build_configurations.each do |config|
+        # Explicitly set dead code stripping flag
+        config.build_settings['DEAD_CODE_STRIPPING'] = 'YES'
+        # Modify library search paths
+        config.build_settings['LIBRARY_SEARCH_PATHS'] = ['$(SDKROOT)/usr/lib/swift', '$(SDKROOT)/System/iOSSupport/usr/lib/swift', '$(inherited)']
+      end  
+    end
+    aggregate_target.user_project.save  
+  end
+end
+
 # Monkeypatch of `Pod::Lockfile` to ensure automatic update of dependencies integrated with a local podspec when their version changed.
 # This is necessary because local podspec dependencies must be otherwise manually updated.
 module LocalPodspecPatch
