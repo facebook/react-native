@@ -34,6 +34,8 @@ import com.facebook.react.jscexecutor.JSCExecutorFactory;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.uimanager.UIImplementationProvider;
+import com.facebook.react.util.JSInterpreter;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -66,17 +68,10 @@ public class ReactInstanceManagerBuilder {
   private @Nullable Map<String, RequestHandler> mCustomPackagerCommandHandlers;
   private @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
   private @Nullable SurfaceDelegateFactory mSurfaceDelegateFactory;
-  private Boolean hermesEnabled = null;
+  private JSInterpreter  jsEngine = JSInterpreter.OLD_LOGIC;
 
   /* package protected Deafault Constructor */
   ReactInstanceManagerBuilder() {}
-
-  /**
-   * Constructor that takes a Boolean specifying whether to load hermes or jsc
-   */
-  ReactInstanceManagerBuilder(Boolean hermesEnabled) {
-    this.hermesEnabled = hermesEnabled;
-  }
 
   /** Sets a provider of {@link UIImplementation}. Uses default provider if null is passed. */
   public ReactInstanceManagerBuilder setUIImplementationProvider(
@@ -132,6 +127,30 @@ public class ReactInstanceManagerBuilder {
     mJSBundleLoader = jsBundleLoader;
     mJSBundleAssetUrl = null;
     return this;
+  }
+
+  /**
+   * Sets the jsEngine as JSC or HERMES as per the setJsEngineAsHermes call
+   * Uses the enum {@link JSInterpreter}
+   * @param jsEngine
+   */
+  private void setJSEngine(JSInterpreter jsEngine){
+    this.jsEngine = jsEngine;
+  }
+
+  /**
+   * Utility setter to set the required JSEngine as HERMES or JSC
+   * Defaults to OLD_LOGIC if not called by the host app
+   * @param hermesEnabled
+   * hermesEnabled = true sets the JS Engine as HERMES and JSC otherwise
+   */
+  public void setJsEngineAsHermes(boolean hermesEnabled){
+    if(hermesEnabled){
+      setJSEngine(JSInterpreter.HERMES);
+    }
+    else{
+      setJSEngine(JSInterpreter.JSC);
+    }
   }
 
   /**
@@ -356,15 +375,15 @@ public class ReactInstanceManagerBuilder {
     String appName, String deviceName, Context applicationContext) {
 
     // Relying solely on try catch block and loading jsc even when
-    // project is using hermes can lead to launchtime crashes expecially in
+    // project is using hermes can lead to launch-time crashes especially in
     // monorepo architectures and hybrid apps using both native android
     // and react native.
-    // So we can use the value of enableHermes receved by the constructor
+    // So we can use the value of enableHermes received by the constructor
     // to decide which library to load at launch
 
     // if nothing is specified, use old loading method
     // else load the required engine
-    if (hermesEnabled == null) {
+    if (jsEngine == JSInterpreter.OLD_LOGIC) {
       try {
         // If JSC is included, use it as normal
         initializeSoLoaderIfNecessary(applicationContext);
@@ -377,7 +396,7 @@ public class ReactInstanceManagerBuilder {
         HermesExecutor.loadLibrary();
         return new HermesExecutorFactory();
       }
-    } else if (hermesEnabled == true) {
+    } else if (jsEngine == JSInterpreter.HERMES) {
       HermesExecutor.loadLibrary();
       return new HermesExecutorFactory();
     } else {
