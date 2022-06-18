@@ -35,7 +35,6 @@ import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.util.JSInterpreter;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -70,8 +69,7 @@ public class ReactInstanceManagerBuilder {
   private @Nullable SurfaceDelegateFactory mSurfaceDelegateFactory;
   private JSInterpreter  jsEngine = JSInterpreter.OLD_LOGIC;
 
-  /* package protected Deafault Constructor */
-  ReactInstanceManagerBuilder() {}
+  /* package protected */ ReactInstanceManagerBuilder() {}
 
   /** Sets a provider of {@link UIImplementation}. Uses default provider if null is passed. */
   public ReactInstanceManagerBuilder setUIImplementationProvider(
@@ -144,13 +142,14 @@ public class ReactInstanceManagerBuilder {
    * @param hermesEnabled
    * hermesEnabled = true sets the JS Engine as HERMES and JSC otherwise
    */
-  public void setJsEngineAsHermes(boolean hermesEnabled){
+  public ReactInstanceManagerBuilder setJsEngineAsHermes(boolean hermesEnabled){
     if(hermesEnabled){
       setJSEngine(JSInterpreter.HERMES);
     }
     else{
       setJSEngine(JSInterpreter.JSC);
     }
+    return this;
   }
 
   /**
