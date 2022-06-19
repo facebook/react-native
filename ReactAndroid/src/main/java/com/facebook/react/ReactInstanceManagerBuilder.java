@@ -34,7 +34,6 @@ import com.facebook.react.jscexecutor.JSCExecutorFactory;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.uimanager.UIImplementationProvider;
-import com.facebook.react.util.JSInterpreter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +66,16 @@ public class ReactInstanceManagerBuilder {
   private @Nullable Map<String, RequestHandler> mCustomPackagerCommandHandlers;
   private @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
   private @Nullable SurfaceDelegateFactory mSurfaceDelegateFactory;
+  /**
+   * An enum that specifies the JS Engine to be used in the app
+   * Old Logic uses the legacy code
+   * JSC/HERMES loads the respective engine using the revamped logic
+   */
+  public enum JSInterpreter {
+    OLD_LOGIC,
+    JSC,
+    HERMES
+  }
   private JSInterpreter jsEngine = JSInterpreter.OLD_LOGIC;
 
   /* package protected */ ReactInstanceManagerBuilder() {}
