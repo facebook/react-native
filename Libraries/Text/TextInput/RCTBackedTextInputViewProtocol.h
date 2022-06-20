@@ -15,6 +15,9 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol RCTBackedTextInputViewProtocol <UITextInput>
 
 @property (nonatomic, copy, nullable) NSAttributedString *attributedText;
+@property (nonatomic, assign, nullable) NSString *accessibilityErrorMessage;
+@property (nonatomic, readwrite, nullable) NSString *currentScreenreaderError;
+@property (nonatomic, readwrite, nullable) NSString *previousScreenreaderError;
 @property (nonatomic, copy, nullable) NSString *placeholder;
 @property (nonatomic, strong, nullable) UIColor *placeholderColor;
 @property (nonatomic, assign, readonly) BOOL textWasPasted;
@@ -22,13 +25,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) UIView *inputAccessoryView;
 @property (nonatomic, strong, nullable) UIView *inputView;
 @property (nonatomic, weak, nullable) id<RCTBackedTextInputDelegate> textInputDelegate;
-@property (nonatomic, readwrite, nullable) NSString *currentErrorMessageString;
-@property (nonatomic, readwrite, nullable) NSString *previousErrorMessageString;
 @property (nonatomic, readonly) CGSize contentSize;
 @property (nonatomic, strong, nullable) NSDictionary<NSAttributedStringKey,id> *defaultTextAttributes;
 @property (nonatomic, assign) BOOL contextMenuHidden;
 @property (nonatomic, assign, getter=isEditable) BOOL editable;
-@property (nonatomic, assign, nullable) NSString *accessibilityErrorMessage;
 @property (nonatomic, assign) BOOL caretHidden;
 @property (nonatomic, assign) BOOL enablesReturnKeyAutomatically;
 @property (nonatomic, assign) UITextFieldViewMode clearButtonMode;

@@ -27,8 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) UIColor *placeholderColor;
 @property (nonatomic, assign) UIEdgeInsets textContainerInset;
 @property (nonatomic, assign, getter=isEditable) BOOL editable;
-@property (nonatomic, readwrite, nullable) NSString *currentErrorMessageString;
-@property (nonatomic, readwrite, nullable) NSString *previousErrorMessageString;
+@property (nonatomic, readwrite, nullable) NSString *currentScreenreaderError;
+@property (nonatomic, readwrite, nullable) NSString *previousScreenreaderError;
 @property (nonatomic, readwrite, nullable) NSString *accessibilityErrorMessage;
 @property (nonatomic, getter=isScrollEnabled) BOOL scrollEnabled;
 @property (nonatomic, strong, nullable) NSString *inputAccessoryViewID;

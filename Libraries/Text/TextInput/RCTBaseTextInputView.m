@@ -145,10 +145,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
   textNeedsUpdate = ([self textOf:attributedTextCopy equals:backedTextInputViewTextCopy] == NO);
 
-  NSString *currentErrorMessageString = self.backedTextInputView.currentErrorMessageString;
-  NSString *previousErrorMessageString = self.backedTextInputView.previousErrorMessageString;
-  BOOL errorMessageRemoved = currentErrorMessageString == nil && currentErrorMessageString != previousErrorMessageString;
-  if (currentErrorMessageString == nil && errorMessageRemoved) {
+  NSString *currentScreenreaderError = self.backedTextInputView.currentScreenreaderError;
+  NSString *previousScreenreaderError = self.backedTextInputView.previousScreenreaderError;
+  BOOL errorMessageRemoved = currentScreenreaderError == nil && currentScreenreaderError != previousScreenreaderError;
+  if (currentScreenreaderError == nil && errorMessageRemoved) {
     NSString *lastChar = [attributedText.string substringFromIndex:[attributedText.string length] - 1];
     self.backedTextInputView.accessibilityValue = attributedText.string;
     UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, lastChar);
