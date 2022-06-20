@@ -100,7 +100,8 @@
 
 - (void)setAccessibilityErrorMessage:(NSString *)accessibilityErrorMessage
 {
-  self.errorMessage = accessibilityErrorMessage;
+  self.previousErrorMessageString = self.currentErrorMessageString;
+  self.currentErrorMessageString = accessibilityErrorMessage;
   NSString *text = self.attributedText.string;
   NSString *lastChar = [text length] == 0 ? @"" : [text substringFromIndex:[text length] - 1];
   if (accessibilityErrorMessage != nil) {

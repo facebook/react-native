@@ -26,6 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readonly) BOOL textWasPasted;
 @property (nonatomic, copy, nullable) NSString *placeholder;
 @property (nonatomic, strong, nullable) UIColor *placeholderColor;
+@property (nonatomic, readwrite, nullable) NSString *currentErrorMessageString;
+@property (nonatomic, readwrite, nullable) NSString *previousErrorMessageString;
 
 @property (nonatomic, assign) CGFloat preferredMaxLayoutWidth;
 

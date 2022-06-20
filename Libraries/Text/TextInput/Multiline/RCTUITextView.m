@@ -120,6 +120,22 @@ static UIColor *defaultPlaceholderColor()
   [self _updatePlaceholder];
 }
 
+- (void)setAccessibilityErrorMessage:(NSString *)accessibilityErrorMessage
+{
+  self.previousErrorMessageString = self.currentErrorMessageString;
+  self.currentErrorMessageString = accessibilityErrorMessage;
+  NSString *text = self.attributedText.string;
+  NSString *lastChar = [text length] == 0 ? @"" : [text substringFromIndex:[text length] - 1];
+  if (accessibilityErrorMessage != nil) {
+    NSString *errorWithLastCharacter = [NSString stringWithFormat: @"%@ %@", lastChar, accessibilityErrorMessage];
+    NSString *errorWithText = [NSString stringWithFormat: @"%@ %@", text, accessibilityErrorMessage];
+    self.accessibilityValue = errorWithText;
+    UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, errorWithLastCharacter);
+  } else {
+    self.accessibilityValue = text;
+  }
+}
+
 - (NSDictionary<NSAttributedStringKey, id> *)defaultTextAttributes
 {
   return _defaultTextAttributes;

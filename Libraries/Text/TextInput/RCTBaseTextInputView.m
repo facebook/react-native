@@ -145,19 +145,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
   textNeedsUpdate = ([self textOf:attributedTextCopy equals:backedTextInputViewTextCopy] == NO);
 
+  NSString *currentErrorMessageString = self.backedTextInputView.currentErrorMessageString;
+  NSString *previousErrorMessageString = self.backedTextInputView.previousErrorMessageString;
+  BOOL errorMessageRemoved = currentErrorMessageString == nil && currentErrorMessageString != previousErrorMessageString;
+  NSString *lastChar = [attributedText.string substringFromIndex:[attributedText.string length] - 1];
+  if (currentErrorMessageString == nil && errorMessageRemoved) {
+    self.backedTextInputView.accessibilityValue = attributedText.string;
+    UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, lastChar);
+  }
   if (eventLag == 0 && textNeedsUpdate) {
     UITextRange *selection = self.backedTextInputView.selectedTextRange;
     NSInteger oldTextLength = self.backedTextInputView.attributedText.string.length;
 
     self.backedTextInputView.attributedText = attributedText;
-    NSString *lastChar = [attributedText.string substringFromIndex:[attributedText.string length] - 1];
-    if (self.backedTextInputView.errorMessage == nil) {
-      UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, lastChar);
-    }
-    BOOL accessibilityValueEqualToText = [self.backedTextInputView.accessibilityValue isEqualToString: attributedText.string];
-    if (self.backedTextInputView.errorMessage == nil && !accessibilityValueEqualToText) {
-      self.backedTextInputView.accessibilityValue = attributedText.string;
-    }
     if (selection.empty) {
       // Maintaining a cursor position relative to the end of the old text.
       NSInteger offsetStart =
