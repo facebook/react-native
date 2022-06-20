@@ -76,7 +76,7 @@ public class ReactInstanceManagerBuilder {
     JSC,
     HERMES
   }
-  private JSInterpreter jsEngine = JSInterpreter.OLD_LOGIC;
+  private JSInterpreter jsInterpreter = JSInterpreter.OLD_LOGIC;
 
   /* package protected */ ReactInstanceManagerBuilder() {}
 
@@ -139,10 +139,10 @@ public class ReactInstanceManagerBuilder {
   /**
    * Sets the jsEngine as JSC or HERMES as per the setJsEngineAsHermes call
    * Uses the enum {@link JSInterpreter}
-   * @param jsEngine
+   * @param jsInterpreter
    */
-  private void setJSEngine(JSInterpreter jsEngine){
-    this.jsEngine = jsEngine;
+  private void setJSEngine(JSInterpreter jsInterpreter){
+    this.jsInterpreter = jsInterpreter;
   }
 
   /**
@@ -391,7 +391,7 @@ public class ReactInstanceManagerBuilder {
 
     // if nothing is specified, use old loading method
     // else load the required engine
-    if (jsEngine == JSInterpreter.OLD_LOGIC) {
+    if (jsInterpreter == JSInterpreter.OLD_LOGIC) {
       try {
         // If JSC is included, use it as normal
         initializeSoLoaderIfNecessary(applicationContext);
@@ -404,7 +404,7 @@ public class ReactInstanceManagerBuilder {
         HermesExecutor.loadLibrary();
         return new HermesExecutorFactory();
       }
-    } else if (jsEngine == JSInterpreter.HERMES) {
+    } else if (jsInterpreter == JSInterpreter.HERMES) {
       HermesExecutor.loadLibrary();
       return new HermesExecutorFactory();
     } else {
