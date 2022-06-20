@@ -102,7 +102,7 @@
 {
   self.previousScreenreaderError = self.currentScreenreaderError;
   self.currentScreenreaderError = accessibilityErrorMessage;
-  NSString *text = self.attributedText.string;
+  NSString *text = self.attributedText == nil ? @"" : self.attributedText.string;
   if (accessibilityErrorMessage != nil) {
     NSString *lastChar = [text length] == 0 ? @"" : [text substringFromIndex:[text length] - 1];
     NSString *errorWithLastCharacter = [NSString stringWithFormat: @"%@ %@", lastChar, accessibilityErrorMessage];

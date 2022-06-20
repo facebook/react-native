@@ -147,9 +147,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
   NSString *currentScreenreaderError = self.backedTextInputView.currentScreenreaderError;
   NSString *previousScreenreaderError = self.backedTextInputView.previousScreenreaderError;
-  BOOL errorMessageRemoved = currentScreenreaderError == nil && currentScreenreaderError != previousScreenreaderError;
+  BOOL errorMessageRemoved = currentScreenreaderError == nil && ![currentScreenreaderError isEqualToString: previousScreenreaderError];
   if (currentScreenreaderError == nil && errorMessageRemoved) {
-    NSString *lastChar = [attributedText.string substringFromIndex:[attributedText.string length] - 1];
+    BOOL validString = attributedText && [attributedText.string length] != 0;
+    NSString *lastChar = validString ? [attributedText.string substringFromIndex:[attributedText.string length] - 1] : @"";
     self.backedTextInputView.accessibilityValue = attributedText.string;
     UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, lastChar);
   }
