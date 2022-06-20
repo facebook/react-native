@@ -151,12 +151,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
     self.backedTextInputView.attributedText = attributedText;
     NSString *lastChar = [attributedText.string substringFromIndex:[attributedText.string length] - 1];
-    BOOL shouldUpdateAccessibilityValue = self.backedTextInputView.accessibilityValue != lastChar;
-    if (self.backedTextInputView.errorMessage == nil && shouldUpdateAccessibilityValue) {
-      self.backedTextInputView.accessibilityValue = attributedText.string;
+    if (self.backedTextInputView.errorMessage == nil) {
       UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, lastChar);
     }
-
+    BOOL accessibilityValueEqualToText = [self.backedTextInputView.accessibilityValue isEqualToString: attributedText.string];
+    if (self.backedTextInputView.errorMessage == nil && !accessibilityValueEqualToText) {
+      self.backedTextInputView.accessibilityValue = attributedText.string;
+    }
     if (selection.empty) {
       // Maintaining a cursor position relative to the end of the old text.
       NSInteger offsetStart =

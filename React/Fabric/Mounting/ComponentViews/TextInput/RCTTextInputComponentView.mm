@@ -606,7 +606,8 @@ using namespace facebook::react;
     NSString *lastChar = [attributedString.string substringFromIndex:[attributedString.string length] - 1];
     UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, lastChar);
   }
-  if (self->_errorMessage == nil && ![_backedTextInputView.accessibilityValue isEqualToString: attributedString.string]) {
+  BOOL accessibilityValueEqualToText = [_backedTextInputView.accessibilityValue isEqualToString: attributedString.string];
+  if (self->_errorMessage == nil && !accessibilityValueEqualToText) {
     _backedTextInputView.accessibilityValue = attributedString.string;
   }
   if (selectedRange.empty) {
