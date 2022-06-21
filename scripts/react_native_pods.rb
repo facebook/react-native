@@ -60,7 +60,7 @@ def use_react_native! (options={})
   pod 'React-RCTVibration', :path => "#{prefix}/Libraries/Vibration"
   pod 'React-Core/RCTWebSocket', :path => "#{prefix}/"
 
-  pod 'React-bridging', :path => "#{prefix}/ReactCommon/react/bridging"
+  pod 'React-bridging', :path => "#{prefix}/ReactCommon"
   pod 'React-cxxreact', :path => "#{prefix}/ReactCommon/cxxreact"
   pod 'React-jsi', :path => "#{prefix}/ReactCommon/jsi"
   pod 'React-jsiexecutor', :path => "#{prefix}/ReactCommon/jsiexecutor"
