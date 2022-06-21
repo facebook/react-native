@@ -602,13 +602,10 @@ using namespace facebook::react;
   UITextRange *selectedRange = _backedTextInputView.selectedTextRange;
   NSInteger oldTextLength = _backedTextInputView.attributedText.string.length;
   _backedTextInputView.attributedText = attributedString;
-  if (self->currentScreenreaderError == nil) {
+  if (self->currentScreenreaderError == nil && _backedTextInputView.accessibilityValue != nil) {
+    _backedTextInputView.accessibilityValue = nil;
     NSString *lastChar = [attributedString.string substringFromIndex:[attributedString.string length] - 1];
     UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, lastChar);
-  }
-  BOOL accessibilityValueEqualToText = [_backedTextInputView.accessibilityValue isEqualToString: attributedString.string];
-  if (self->currentScreenreaderError == nil && !accessibilityValueEqualToText) {
-    _backedTextInputView.accessibilityValue = attributedString.string;
   }
   if (selectedRange.empty) {
     // Maintaining a cursor position relative to the end of the old text.
