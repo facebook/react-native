@@ -13,10 +13,7 @@
 
 const React = require('react');
 const View = require('../../View/View');
-/* $FlowFixMe[cannot-resolve-module] (>=0.99.0 site=react_native_ios_fb) This
- * comment suppresses an error found when Flow v0.99 was deployed. To see the
- * error, delete this comment and run Flow. */
-const InputAccessoryView = require('../InputAccessoryView.ios');
+const InputAccessoryView = require('../InputAccessoryView');
 const render = require('../../../../jest/renderer');
 
 describe('<InputAccessoryView />', () => {
