@@ -111,7 +111,6 @@
     UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, errorWithLastCharacter);
   } else {
     self.accessibilityValue = nil;
-    UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, lastChar);
   }
 }
 
