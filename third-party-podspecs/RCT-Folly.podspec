@@ -3,12 +3,12 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-folly_release_version = '2021.06.28.00'
+folly_release_version = '2021.07.22.00'
 
 Pod::Spec.new do |spec|
   spec.name = 'RCT-Folly'
   # Patched to v2 to address https://github.com/react-native-community/releases/issues/251
-  spec.version = folly_release_version + '-v2'
+  spec.version = folly_release_version
   spec.license = { :type => 'Apache License, Version 2.0' }
   spec.homepage = 'https://github.com/facebook/folly'
   spec.summary = 'An open-source C++ library developed and used at Facebook.'
