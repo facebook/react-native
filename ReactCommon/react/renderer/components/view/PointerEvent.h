@@ -44,6 +44,18 @@ struct PointerEvent {
    * geometry of the pointer
    */
   Float height;
+  /*
+   * The plane angle (in degrees, in the range of -90 to 90) between the Y–Z
+   * plane and the plane containing both the pointer (e.g. pen stylus) axis and
+   * the Y axis.
+   */
+  int tiltX;
+  /*
+   * The plane angle (in degrees, in the range of -90 to 90) between the X–Z
+   * plane and the plane containing both the pointer (e.g. pen stylus) axis and
+   * the X axis.
+   */
+  int tiltY;
 };
 
 #if RN_DEBUG_STRING_CONVERTIBLE

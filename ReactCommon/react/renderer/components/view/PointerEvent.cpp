@@ -26,6 +26,8 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
       {"clientPoint", getDebugDescription(pointerEvent.clientPoint, options)},
       {"width", getDebugDescription(pointerEvent.width, options)},
       {"height", getDebugDescription(pointerEvent.height, options)},
+      {"tiltX", getDebugDescription(pointerEvent.tiltX, options)},
+      {"tiltY", getDebugDescription(pointerEvent.tiltY, options)},
   };
 }
 
