@@ -27,6 +27,7 @@
 #import <ReactCommon/TurboCxxModule.h>
 #import <ReactCommon/TurboModuleBinding.h>
 #import <ReactCommon/TurboModulePerfLogger.h>
+#import <ReactCommon/TurboModuleUtils.h>
 
 using namespace facebook;
 using namespace facebook::react;
