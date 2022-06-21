@@ -736,24 +736,7 @@ class AccessibilityActionsExample extends React.Component<{}> {
         </RNTesterBlock>
 
         <RNTesterBlock title="Text with custom accessibility actions">
-          <Text
-            accessible={true}
-            accessibilityActions={[
-              {name: 'activate', label: 'activate label'},
-              {name: 'copy', label: 'copy label'},
-            ]}
-            onAccessibilityAction={event => {
-              switch (event.nativeEvent.actionName) {
-                case 'activate':
-                  Alert.alert('Alert', 'Activate accessiblity action');
-                  break;
-                case 'copy':
-                  Alert.alert('Alert', 'copy action success');
-                  break;
-              }
-            }}>
-            Text
-          </Text>
+          <Text accessible={true}>Text</Text>
         </RNTesterBlock>
       </View>
     );
@@ -1185,13 +1168,10 @@ function AccessibilityErrorWithButtons(): React.Node {
           accessibilityInvalid={accessibilityInvalid}
           onChangeText={newText => {
             setText(newText);
-            setError('the newText is: ' + newText);
             if (newText === 'Error') {
+              setError('the newText is: ' + newText);
               setAccessibilityInvalid(true);
-            } else if (newText === 'empty') {
-              setError(newText);
-              setAccessibilityInvalid(true);
-            } else if (newText === 'null') {
+            } else {
               setError('');
               setAccessibilityInvalid(false);
             }
