@@ -33,7 +33,7 @@ using namespace facebook::react;
   UIView<RCTBackedTextInputViewProtocol> *_backedTextInputView;
   NSUInteger _mostRecentEventCount;
   NSAttributedString *_lastStringStateWasUpdatedWith;
-  NSString *_errorMessage;
+  NSString *currentScreenreaderError;
 
   /*
    * UIKit uses either UITextField or UITextView as its UIKit element for <TextInput>. UITextField is for single line
@@ -143,11 +143,11 @@ using namespace facebook::react;
       NSString *errorWithLastCharacter = [NSString stringWithFormat: @"%@ %@", lastChar, error];
       NSString *errorWithText = [NSString stringWithFormat: @"%@ %@", text, error];
       self.accessibilityElement.accessibilityValue = errorWithText;
-      self->_errorMessage = errorWithText;
+      self->currentScreenreaderError = errorWithText;
       UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, errorWithLastCharacter);
     } else {
-      self.accessibilityElement.accessibilityValue = text;
-      self->_errorMessage = nil;
+      self.accessibilityElement.accessibilityValue = nil;
+      self->currentScreenreaderError = nil;
     }
   }
 
@@ -602,12 +602,12 @@ using namespace facebook::react;
   UITextRange *selectedRange = _backedTextInputView.selectedTextRange;
   NSInteger oldTextLength = _backedTextInputView.attributedText.string.length;
   _backedTextInputView.attributedText = attributedString;
-  if (self->_errorMessage == nil) {
+  if (self->currentScreenreaderError == nil) {
     NSString *lastChar = [attributedString.string substringFromIndex:[attributedString.string length] - 1];
     UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, lastChar);
   }
   BOOL accessibilityValueEqualToText = [_backedTextInputView.accessibilityValue isEqualToString: attributedString.string];
-  if (self->_errorMessage == nil && !accessibilityValueEqualToText) {
+  if (self->currentScreenreaderError == nil && !accessibilityValueEqualToText) {
     _backedTextInputView.accessibilityValue = attributedString.string;
   }
   if (selectedRange.empty) {
