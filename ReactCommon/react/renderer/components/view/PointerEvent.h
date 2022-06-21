@@ -56,6 +56,10 @@ struct PointerEvent {
    * the X axis.
    */
   int tiltY;
+  /**
+   * Returns a long with details about the event, depending on the event type.
+   */
+  int detail;
 };
 
 #if RN_DEBUG_STRING_CONVERTIBLE

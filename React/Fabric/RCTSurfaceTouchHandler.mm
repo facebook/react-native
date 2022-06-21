@@ -249,6 +249,8 @@ static PointerEvent CreatePointerEventFromActiveTouch(ActiveTouch activeTouch)
   event.tiltX = RadsToDegrees(tilt.x);
   event.tiltY = RadsToDegrees(tilt.y);
 
+  event.detail = 0;
+
   return event;
 }
 
@@ -267,6 +269,7 @@ CreatePointerEventFromIncompleteHoverData(UIView *view, CGPoint clientLocation, 
   event.height = 1.0;
   event.tiltX = 0;
   event.tiltY = 0;
+  event.detail = 0;
   return event;
 }
 

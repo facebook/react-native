@@ -72,6 +72,7 @@ static jsi::Value pointerEventPayload(
   object.setProperty(runtime, "height", event.height);
   object.setProperty(runtime, "tiltX", event.tiltX);
   object.setProperty(runtime, "tiltY", event.tiltY);
+  object.setProperty(runtime, "detail", event.detail);
   return object;
 }
 
