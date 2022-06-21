@@ -29,7 +29,7 @@
   "workspaces": {
     "nohoist": [
         "**/@react-native-community/**",
-        "**/react-native-gradle-plugin/**"
+        "**/react-native-gradle-plugin"
     ]
   }
 }
