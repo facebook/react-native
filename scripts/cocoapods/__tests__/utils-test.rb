@@ -299,6 +299,53 @@ class UtilsTests < Test::Unit::TestCase
         assert_equal(pods_projects_mock.save_invocation_count, 1)
     end
 
+    # ================================= #
+    # Test - Apply Mac Catalyst Patches #
+    # ================================= #
+
+    def test_applyMacCatalystPatches_correctlyAppliesNecessaryPatches
+        firstTarget = prepare_target("FirstTarget")
+        secondTarget = prepare_target("SecondTarget")
+        thirdTarget = prepare_target("ThirdTarget")
+        user_project_mock = UserProjectMock.new("a/path", [
+                prepare_config("Debug"),
+                prepare_config("Release"),
+            ],
+            :native_targets => [
+                firstTarget,
+                secondTarget
+            ]
+        )
+        pods_projects_mock = PodsProjectMock.new([], {"hermes-engine" => {}}, :native_targets => [
+            thirdTarget
+        ])
+        installer = InstallerMock.new(pods_projects_mock, [
+            AggregatedProjectMock.new(user_project_mock)
+        ])
+
+        # Act
+        ReactNativePodsUtils.apply_mac_catalyst_patches(installer)
+
+        # Assert
+        pods_projects_mock.targets.each do |target|
+            if target.respond_to?(:product_type) and target.product_type == "com.apple.product-type.bundle"
+                target.build_configurations.each do |config|
+                    assert_equal(config.build_settings["CODE_SIGN_IDENTITY[sdk=macosx*]"], "-")
+                end
+            end
+        end
+        
+        user_project_mock.native_targets.each do |target|
+            target.build_configurations.each do |config|
+                assert_equal(config.build_settings["DEAD_CODE_STRIPPING"], "YES")
+                assert_equal(config.build_settings["PRESERVE_DEAD_CODE_INITS_AND_TERMS"], "YES")
+                assert_equal(config.build_settings["LIBRARY_SEARCH_PATHS"], ["$(SDKROOT)/usr/lib/swift", "$(SDKROOT)/System/iOSSupport/usr/lib/swift", "$(inherited)"])
+            end
+        end
+
+        assert_equal(user_project_mock.save_invocation_count, 1)
+    end    
+
     # ==================================== #
     # Test - Set Node_Modules User Setting #
     # ==================================== #
