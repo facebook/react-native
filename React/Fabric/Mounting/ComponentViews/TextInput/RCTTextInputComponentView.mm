@@ -33,8 +33,8 @@ using namespace facebook::react;
   UIView<RCTBackedTextInputViewProtocol> *_backedTextInputView;
   NSUInteger _mostRecentEventCount;
   NSAttributedString *_lastStringStateWasUpdatedWith;
-  NSString *currentScreenreaderError;
-  NSString *previousScreenreaderError;
+  NSString *currentAccessibilityError;
+  NSString *previousAccessibilityError;
 
   /*
    * UIKit uses either UITextField or UITextView as its UIKit element for <TextInput>. UITextField is for single line
@@ -137,7 +137,7 @@ using namespace facebook::react;
   }
 
   if (newTextInputProps.accessibilityErrorMessage != oldTextInputProps.accessibilityErrorMessage) {
-    self->previousScreenreaderError =  [self->currentScreenreaderError mutableCopy];
+    self->previousAccessibilityError =  [self->currentAccessibilityError mutableCopy];
     NSString *error = RCTNSStringFromString(newTextInputProps.accessibilityErrorMessage);
     NSString *text = RCTNSStringFromString(newTextInputProps.text);
     NSString *lastChar = [text length] == 0 ? @"" : [text substringFromIndex:[text length] - 1];
@@ -145,11 +145,11 @@ using namespace facebook::react;
       NSString *errorWithLastCharacter = [NSString stringWithFormat: @"%@ %@", lastChar, error];
       NSString *errorWithText = [NSString stringWithFormat: @"%@ %@", text, error];
       _backedTextInputView.accessibilityValue = errorWithText;
-      self->currentScreenreaderError = errorWithText;
+      self->currentAccessibilityError = errorWithText;
       UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, errorWithLastCharacter);
     } else {
       _backedTextInputView.accessibilityValue = nil;
-      self->currentScreenreaderError = nil;
+      self->currentAccessibilityError = nil;
     }
   }
 
@@ -604,7 +604,7 @@ using namespace facebook::react;
   UITextRange *selectedRange = _backedTextInputView.selectedTextRange;
   NSInteger oldTextLength = _backedTextInputView.attributedText.string.length;
   _backedTextInputView.attributedText = attributedString;
-  BOOL errorMessageRemoved = self->currentScreenreaderError == nil && ![self->currentScreenreaderError isEqualToString: self->previousScreenreaderError];
+  BOOL errorMessageRemoved = self->currentAccessibilityError == nil && ![self->currentAccessibilityError isEqualToString: self->previousAccessibilityError];
   if (errorMessageRemoved && _backedTextInputView.accessibilityValue != nil) {
     _backedTextInputView.accessibilityValue = nil;
     NSString *lastChar = [attributedString.string substringFromIndex:[attributedString.string length] - 1];
