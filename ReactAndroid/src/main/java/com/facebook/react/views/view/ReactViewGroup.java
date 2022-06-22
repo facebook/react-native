@@ -336,6 +336,8 @@ public class ReactViewGroup extends ViewGroup
 
     ReactClippingViewGroupHelper.calculateClippingRect(this, mClippingRect);
     updateClippingToRect(mClippingRect);
+    // see comment at `updateDrawingOrderHelper`.
+    updateDrawingOrderHelper();
   }
 
   private void updateClippingToRect(Rect clippingRect) {
@@ -705,6 +707,46 @@ public class ReactViewGroup extends ViewGroup
       mReactBackgroundDrawable.setResolvedLayoutDirection(mLayoutDirection);
     }
     return mReactBackgroundDrawable;
+  }
+
+  // NOTE(apkumar)
+  // 
+  // This is added in our (Discord's) fork. 
+  //
+  // Normally, the drawing order is informed of new and removed views via
+  // handleAddView and handleRemoveView, called in `addView` and `removeView`
+  // respectively. However, when removeClippedSubviews is true,
+  // `addViewWithSubviewClippingEnabled` is called _instead of_ `addView`,
+  // which _does not_ call into the drawing order helper's handleAddView (with
+  // a similar story for removing views). Because of this, the drawing order
+  // helper is not aware of any child views, and so does not perform any of the
+  // z-indexing logic it normally does.
+  //
+  // There were two ways to fix this: we could either simply call
+  // `handleAddView` in `addViewWithSubviewClippingEnabled` (similar for the
+  // remove view path), or we could explicitly update the drawing order helper
+  // after we attach/remove views as part of the clipping process. Here, we've
+  // opted for the second approach.
+  //
+  // I've opted for the second approach because the drawing helper's `update()`
+  // call looks through the view group's children to figure out which ones have
+  // z indices. This implies that the `handleAddView`/`handleRemoveView` calls
+  // should, semantically, be 1-1 with the view group's children changing (so
+  // that calling `update()` after one of the `handle*` calls does not change
+  // anything). Since `addViewWithSubviewClippingEnabled` doesn't actually add
+  // the view to the children (that happens during the clipping process), I
+  // thought it made more sense to just explicitly update the drawing helper.
+  //
+  // Note that a third option would have been to call `handleAddView` and
+  // `handleRemoveView` in a more fine-grained way during the clipping process,
+  // but that is just slightly more intrusive, and it doesn't really feel like
+  // that would be any sort of performance boost. It's possible that in some
+  // cases there is a meaningful performance boost (otherwise I'm not sure why
+  // the drawing order helper even has the `handle*` API), so if we find that
+  // to be the case, we can be more fine-grained.
+  private void updateDrawingOrderHelper() {
+    getDrawingOrderHelper().update();
+    setChildrenDrawingOrderEnabled(getDrawingOrderHelper().shouldEnableCustomDrawingOrder());
   }
 
   @Override
