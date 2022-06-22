@@ -8,14 +8,14 @@
  * @flow
  */
 
-import { AnyAttributeType } from '../../Renderer/shims/ReactNativeTypes';
+import {AnyAttributeType} from '../../Renderer/shims/ReactNativeTypes';
 import processColor from '../../StyleSheet/processColor';
 import processTransform from '../../StyleSheet/processTransform';
 import sizesDiffer from '../../Utilities/differ/sizesDiffer';
 
-const colorAttributes = { process: processColor };
+const colorAttributes = {process: processColor};
 
-const ReactNativeStyleAttributes: { [string]: AnyAttributeType, ... } = {
+const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   /**
    * Layout
    */
@@ -78,14 +78,14 @@ const ReactNativeStyleAttributes: { [string]: AnyAttributeType, ... } = {
    */
   elevation: true,
   shadowColor: colorAttributes,
-  shadowOffset: { diff: sizesDiffer },
+  shadowOffset: {diff: sizesDiffer},
   shadowOpacity: true,
   shadowRadius: true,
 
   /**
    * Transform
    */
-  transform: { process: processTransform },
+  transform: {process: processTransform},
 
   /**
    * View
