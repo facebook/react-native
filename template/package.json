@@ -28,8 +28,11 @@
   },
   "workspaces": {
     "nohoist": [
-        "**/@react-native-community/**",
-        "**/react-native-gradle-plugin"
+      "**/@react-native-community/**",
+      "**/hermes-engine",
+      "**/jsc-android",
+      "**/react-native",
+      "**/react-native-gradle-plugin"
     ]
   }
 }
