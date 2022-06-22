@@ -41,7 +41,7 @@ If you own a Mac M1 laptop, you need to run some different commands to install a
 
 ### Running on Android
 
-You'll need to have all the [prerequisites](https://github.com/facebook/react-native/wiki/Building-from-source#prerequisites) (SDK, NDK) for Building React Native installed.
+You'll need to have all the [prerequisites](https://reactnative.dev/contributing/how-to-build-from-source#prerequisites) (SDK, NDK) for Building React Native installed.
 
 Start an Android emulator.
 
