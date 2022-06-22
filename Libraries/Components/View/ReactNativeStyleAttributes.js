@@ -8,7 +8,7 @@
  * @flow
  */
 
-import {AnyAttributeType} from '../../Renderer/shims/ReactNativeTypes';
+import type {AnyAttributeType} from '../../Renderer/shims/ReactNativeTypes';
 import processColor from '../../StyleSheet/processColor';
 import processTransform from '../../StyleSheet/processTransform';
 import sizesDiffer from '../../Utilities/differ/sizesDiffer';
