@@ -34,6 +34,7 @@ using namespace facebook::react;
   NSUInteger _mostRecentEventCount;
   NSAttributedString *_lastStringStateWasUpdatedWith;
   NSString *currentScreenreaderError;
+  NSString *previousScreenreaderError;
 
   /*
    * UIKit uses either UITextField or UITextView as its UIKit element for <TextInput>. UITextField is for single line
@@ -136,17 +137,18 @@ using namespace facebook::react;
   }
 
   if (newTextInputProps.accessibilityErrorMessage != oldTextInputProps.accessibilityErrorMessage) {
+    self->previousScreenreaderError =  self->currentScreenreaderError;
     NSString *error = RCTNSStringFromString(newTextInputProps.accessibilityErrorMessage);
     NSString *text = RCTNSStringFromString(newTextInputProps.text);
     NSString *lastChar = [text length] == 0 ? @"" : [text substringFromIndex:[text length] - 1];
     if ([error length] != 0) {
       NSString *errorWithLastCharacter = [NSString stringWithFormat: @"%@ %@", lastChar, error];
       NSString *errorWithText = [NSString stringWithFormat: @"%@ %@", text, error];
-      self.accessibilityElement.accessibilityValue = errorWithText;
+      _backedTextInputView.accessibilityValue = errorWithText;
       self->currentScreenreaderError = errorWithText;
       UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, errorWithLastCharacter);
     } else {
-      self.accessibilityElement.accessibilityValue = nil;
+      _backedTextInputView.accessibilityValue = nil;
       self->currentScreenreaderError = nil;
     }
   }
@@ -602,7 +604,8 @@ using namespace facebook::react;
   UITextRange *selectedRange = _backedTextInputView.selectedTextRange;
   NSInteger oldTextLength = _backedTextInputView.attributedText.string.length;
   _backedTextInputView.attributedText = attributedString;
-  if (self->currentScreenreaderError == nil && _backedTextInputView.accessibilityValue != nil) {
+  BOOL errorMessageRemoved = self->currentScreenreaderError == nil && ![self->currentScreenreaderError isEqualToString: self->previousScreenreaderError];
+  if (errorMessageRemoved && _backedTextInputView.accessibilityValue != nil) {
     _backedTextInputView.accessibilityValue = nil;
     NSString *lastChar = [attributedString.string substringFromIndex:[attributedString.string length] - 1];
     UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, lastChar);

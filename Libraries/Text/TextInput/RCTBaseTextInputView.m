@@ -159,6 +159,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     NSInteger oldTextLength = self.backedTextInputView.attributedText.string.length;
 
     self.backedTextInputView.attributedText = attributedText;
+
     if (selection.empty) {
       // Maintaining a cursor position relative to the end of the old text.
       NSInteger offsetStart =
