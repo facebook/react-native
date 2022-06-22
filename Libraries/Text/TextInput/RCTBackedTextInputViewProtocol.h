@@ -16,8 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, copy, nullable) NSAttributedString *attributedText;
 @property (nonatomic, assign, nullable) NSString *accessibilityErrorMessage;
-@property (nonatomic, readwrite, nullable) NSString *currentScreenreaderError;
-@property (nonatomic, readwrite, nullable) NSString *previousScreenreaderError;
+@property (nonatomic, readwrite, nullable) NSString *currentAccessibilityError;
+@property (nonatomic, readwrite, nullable) NSString *previousAccessibilityError;
 @property (nonatomic, copy, nullable) NSString *placeholder;
 @property (nonatomic, strong, nullable) UIColor *placeholderColor;
 @property (nonatomic, assign, readonly) BOOL textWasPasted;
