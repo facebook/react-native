@@ -137,7 +137,7 @@ using namespace facebook::react;
   }
 
   if (newTextInputProps.accessibilityErrorMessage != oldTextInputProps.accessibilityErrorMessage) {
-    self->previousScreenreaderError =  self->currentScreenreaderError;
+    self->previousScreenreaderError =  [self->currentScreenreaderError mutableCopy];
     NSString *error = RCTNSStringFromString(newTextInputProps.accessibilityErrorMessage);
     NSString *text = RCTNSStringFromString(newTextInputProps.text);
     NSString *lastChar = [text length] == 0 ? @"" : [text substringFromIndex:[text length] - 1];

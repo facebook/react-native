@@ -100,7 +100,7 @@
 
 - (void)setAccessibilityErrorMessage:(NSString *)accessibilityErrorMessage
 {
-  self.previousScreenreaderError = self.currentScreenreaderError;
+  self.previousScreenreaderError = [self.currentScreenreaderError mutableCopy];
   self.currentScreenreaderError = accessibilityErrorMessage;
   NSString *text = self.attributedText == nil ? @"" : self.attributedText.string;
   NSString *lastChar = [text length] == 0 ? @"" : [text substringFromIndex:[text length] - 1];
