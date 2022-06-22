@@ -118,6 +118,11 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
 
     view.axOrderList = axOrderList
   }
+  
+  @ReactProp(name = "preventClipping")
+  public open fun setPreventClipping(view: ReactViewGroup, preventClipping: Boolean) {
+    view.preventClipping = preventClipping
+  }
 
   @ReactProp(name = "hasTVPreferredFocus")
   public open fun setTVPreferredFocus(view: ReactViewGroup, hasTVPreferredFocus: Boolean) {
