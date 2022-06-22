@@ -113,7 +113,6 @@
     "anser": "^1.4.9",
     "base64-js": "^1.1.2",
     "event-target-shim": "^5.0.1",
-    "hermes-engine": "~0.11.0",
     "invariant": "^2.2.4",
     "jsc-android": "^250230.2.1",
     "memoize-one": "^5.0.0",
