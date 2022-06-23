@@ -100,8 +100,8 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
     }
   }
 
-  /*package*/ @Nullable
-  AnimatedNode getNodeById(int id) {
+  @Nullable
+  public AnimatedNode getNodeById(int id) {
     return mAnimatedNodes.get(id);
   }
 
