@@ -255,6 +255,12 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
     it.outputDir.set(prefabHeadersDir)
 }
 
+def prebuiltHermesDir = findProperty("expo.prebuiltHermesDir") ?: file("${rootDir}/prebuiltHermes")
+def prebuiltHermesVersion = file("${prebuiltHermesDir}/.hermesversion").exists() ? file("${prebuiltHermesDir}/.hermesversion").text : null
+def currentHermesVersion = file("${project(':packages:react-native:ReactAndroid').projectDir}/../sdks/.hermesversion").exists() ? file("${project(':packages:react-native:ReactAndroid').projectDir}/../sdks/.hermesversion").text : null
+def buildHermesSource = currentHermesVersion != prebuiltHermesVersion
+logger.info(":ReactAndroid - buildHermesSource[${buildHermesSource}]")
+
 task createNativeDepsDirectories {
     downloadsDir.mkdirs()
     thirdPartyNdkDir.mkdirs()
@@ -776,7 +782,12 @@ dependencies {
 
     // It's up to the consumer to decide if hermes should be included or not.
     // Therefore hermes-engine is a compileOnly dependency.
-    compileOnly(project(":packages:react-native:ReactAndroid:hermes-engine"))
+    if (!buildHermesSource) {
+        debugCompileOnly(files("${prebuiltHermesDir}/hermes-engine-debug.aar"))
+        releaseCompileOnly(files("${prebuiltHermesDir}/hermes-engine-release.aar"))
+    } else {
+        compileOnly(project(":packages:react-native:ReactAndroid:hermes-engine"))
+    }
 
     testImplementation(libs.junit)
     testImplementation(libs.assertj)
