@@ -18,8 +18,8 @@ import type {
 
 function getPropertyType(
   name,
-  optional,
-  typeAnnotation,
+  optional: boolean,
+  typeAnnotation: $FlowFixMe,
 ): NamedShape<EventTypeAnnotation> {
   const type =
     typeAnnotation.type === 'GenericTypeAnnotation'
@@ -98,10 +98,10 @@ function getPropertyType(
 }
 
 function findEventArgumentsAndType(
-  typeAnnotation,
-  types,
-  bubblingType,
-  paperName,
+  typeAnnotation: $FlowFixMe,
+  types: TypeMap,
+  bubblingType: void | 'direct' | 'bubble',
+  paperName: ?$FlowFixMe,
 ) {
   if (!typeAnnotation.id) {
     throw new Error("typeAnnotation of event doesn't have a name");
@@ -163,7 +163,7 @@ function buildPropertiesForEvent(property): NamedShape<EventTypeAnnotation> {
   return getPropertyType(name, optional, typeAnnotation);
 }
 
-function getEventArgument(argumentProps, name) {
+function getEventArgument(argumentProps, name: $FlowFixMe) {
   return {
     type: 'ObjectTypeAnnotation',
     properties: argumentProps.map(buildPropertiesForEvent),
