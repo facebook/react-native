@@ -182,8 +182,11 @@ jsi::Value RuntimeSchedulerBinding::get(
     return jsi::Value::undefined();
   }
 
-  react_native_assert(false && "undefined property");
+#ifdef REACT_NATIVE_DEBUG
+  throw std::runtime_error("undefined property");
+#else
   return jsi::Value::undefined();
+#endif
 }
 
 } // namespace react
