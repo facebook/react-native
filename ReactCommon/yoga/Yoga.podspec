@@ -27,7 +27,7 @@ Pod::Spec.new do |spec|
   spec.authors = 'Facebook'
   spec.source = source
 
-  spec.module_name = 'yoga'
+  spec.module_name = 'Yoga'
   spec.header_dir = 'yoga'
   spec.requires_arc = false
   spec.pod_target_xcconfig = {
