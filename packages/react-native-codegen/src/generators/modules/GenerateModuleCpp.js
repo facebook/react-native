@@ -127,7 +127,7 @@ function serializeArg(
     realTypeAnnotation = resolveAlias(realTypeAnnotation.name);
   }
 
-  function wrap(callback) {
+  function wrap(callback: (val: string) => string) {
     const val = `args[${index}]`;
     const expression = callback(val);
 

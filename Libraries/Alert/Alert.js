@@ -105,7 +105,7 @@ class Alert {
           options && options.onDismiss && options.onDismiss();
         }
       };
-      const onError = errorMessage => console.warn(errorMessage);
+      const onError = (errorMessage: string) => console.warn(errorMessage);
       NativeDialogManagerAndroid.showAlert(config, onError, onAction);
     }
   }

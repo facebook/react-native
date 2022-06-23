@@ -9,6 +9,7 @@
  */
 
 'use strict';
+import type {Item} from '../../components/ListExampleShared';
 const RNTesterPage = require('../../components/RNTesterPage');
 const React = require('react');
 
@@ -108,7 +109,7 @@ const EmptySectionList = () => (
 );
 
 const renderItemComponent =
-  setItemState =>
+  (setItemState: (item: Item) => void) =>
   ({item, separators}) => {
     if (isNaN(item.key)) {
       return;
@@ -164,7 +165,7 @@ export function SectionList_scrollable(Props: {
   const [data, setData] = React.useState(genItemData(1000));
 
   const filterRegex = new RegExp(String(filterText), 'i');
-  const filter = item =>
+  const filter = (item: Item) =>
     filterRegex.test(item.text) || filterRegex.test(item.title);
   const filteredData = data.filter(filter);
   const filteredSectionData = [...CONSTANT_SECTION_EXAMPLES];
@@ -181,7 +182,7 @@ export function SectionList_scrollable(Props: {
     startIndex = ii;
   }
 
-  const setItemPress = item => {
+  const setItemPress = (item: Item) => {
     if (isNaN(item.key)) {
       return;
     }
@@ -190,7 +191,7 @@ export function SectionList_scrollable(Props: {
   };
 
   const ref = React.useRef<?React.ElementRef<typeof SectionList>>(null);
-  const scrollToLocation = (sectionIndex, itemIndex) => {
+  const scrollToLocation = (sectionIndex: number, itemIndex: number) => {
     // $FlowFixMe[method-unbinding] added when improving typing for this parameters
     if (ref != null && ref.current?.scrollToLocation != null) {
       ref.current.scrollToLocation({sectionIndex, itemIndex});

@@ -105,7 +105,7 @@ const mockUIManagerMeasure = (options?: {|delay: number|}) => {
   });
 };
 
-const createMockTargetEvent = registrationName => {
+const createMockTargetEvent = (registrationName: string) => {
   const nativeEvent = {
     target: 42,
   };
@@ -132,7 +132,7 @@ const createMockTargetEvent = registrationName => {
   };
 };
 
-const createMockMouseEvent = registrationName => {
+const createMockMouseEvent = (registrationName: string) => {
   const nativeEvent = {
     clientX: 0,
     clientY: 0,

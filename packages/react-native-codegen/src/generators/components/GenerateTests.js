@@ -9,6 +9,7 @@
  */
 
 'use strict';
+import type {PropTypeAnnotation, ComponentShape} from '../../CodegenSchema';
 
 import type {SchemaType} from '../../CodegenSchema';
 const {getImports, toSafeCppString} = require('./CppHelpers');
@@ -76,7 +77,10 @@ TEST(${componentName}_${testName}, etc) {
 }
 `;
 
-function getTestCasesForProp(propName, typeAnnotation) {
+function getTestCasesForProp(
+  propName: string,
+  typeAnnotation: PropTypeAnnotation,
+) {
   const cases = [];
   if (typeAnnotation.type === 'StringEnumTypeAnnotation') {
     typeAnnotation.options.forEach(option =>
@@ -134,7 +138,7 @@ function getTestCasesForProp(propName, typeAnnotation) {
   return cases;
 }
 
-function generateTestsString(name, component) {
+function generateTestsString(name: string, component: ComponentShape) {
   function createTest({testName, propName, propValue, raw = false}: TestCase) {
     const value =
       !raw && typeof propValue === 'string' ? `"${propValue}"` : propValue;

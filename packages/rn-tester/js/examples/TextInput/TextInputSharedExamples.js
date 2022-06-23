@@ -88,7 +88,7 @@ class WithLabel extends React.Component<$FlowFixMeProps> {
 }
 
 class RewriteExample extends React.Component<$FlowFixMeProps, any> {
-  constructor(props) {
+  constructor(props: any | void) {
     super(props);
     this.state = {text: ''};
   }
@@ -122,7 +122,7 @@ class RewriteExampleInvalidCharacters extends React.Component<
   $FlowFixMeProps,
   any,
 > {
-  constructor(props) {
+  constructor(props: any | void) {
     super(props);
     this.state = {text: ''};
   }
@@ -150,7 +150,7 @@ class RewriteInvalidCharactersAndClearExample extends React.Component<
 > {
   inputRef: ?React.ElementRef<typeof TextInput> = null;
 
-  constructor(props) {
+  constructor(props: any | void) {
     super(props);
     this.state = {text: ''};
   }
@@ -248,7 +248,7 @@ class TextEventsExample extends React.Component<{...}, $FlowFixMeState> {
     prev3Text: '<No Event>',
   };
 
-  updateText = text => {
+  updateText = (text: string) => {
     this.setState(state => {
       return {
         curText: text,
@@ -305,7 +305,7 @@ class TokenizedTextExample extends React.Component<
   $FlowFixMeProps,
   $FlowFixMeState,
 > {
-  constructor(props) {
+  constructor(props: any | void) {
     super(props);
     this.state = {text: 'Hello #World'};
   }
@@ -396,7 +396,7 @@ class SelectionExample extends React.Component<
     return Math.round(Math.random() * length);
   }
 
-  select(start, end) {
+  select(start: number, end: number) {
     this._textInput?.focus();
     this.setState({selection: {start, end}});
     if (this.props.imperative) {
@@ -412,7 +412,7 @@ class SelectionExample extends React.Component<
     this.select(...positions);
   }
 
-  placeAt(position) {
+  placeAt(position: number) {
     this.select(position, position);
   }
 

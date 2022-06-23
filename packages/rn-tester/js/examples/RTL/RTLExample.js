@@ -43,7 +43,7 @@ const IMAGE_SIZE = [IMAGE_DIMENSION, IMAGE_DIMENSION];
 
 const IS_RTL = I18nManager.isRTL;
 
-function ListItem(props) {
+function ListItem(props: {imageSource: number}) {
   return (
     <View style={styles.row}>
       <View style={styles.column1}>
@@ -127,7 +127,10 @@ const IconsExample = withRTLState(({isRTL, setRTL}) => {
   );
 });
 
-function AnimationBlock(props) {
+function AnimationBlock(props: {
+  imgStyle: {transform: Array<{scaleX: number} | {translateX: any}>},
+  onPress: (e: any) => void,
+}) {
   return (
     <View style={styles.block}>
       <TouchableWithoutFeedback onPress={props.onPress}>
@@ -144,7 +147,13 @@ type RTLSwitcherComponentState = {|
   isRTL: boolean,
 |};
 
-function withRTLState(Component) {
+function withRTLState(
+  Component: ({
+    isRTL: boolean,
+    setRTL: (isRTL: boolean) => void,
+    style?: any,
+  }) => React.Node,
+) {
   return class extends React.Component<
     {style?: any},
     RTLSwitcherComponentState,
@@ -157,7 +166,7 @@ function withRTLState(Component) {
     }
 
     render() {
-      const setRTL = isRTL => this.setState({isRTL: isRTL});
+      const setRTL = (isRTL: boolean) => this.setState({isRTL: isRTL});
       return (
         <Component isRTL={this.state.isRTL} setRTL={setRTL} {...this.props} />
       );
@@ -165,7 +174,12 @@ function withRTLState(Component) {
   };
 }
 
-const RTLToggler = ({isRTL, setRTL}) => {
+const RTLToggler = ({
+  isRTL,
+  setRTL,
+}:
+  | {isRTL: any, setRTL: any}
+  | {isRTL: boolean, setRTL: (isRTL: boolean) => void}) => {
   if (Platform.OS === 'android') {
     return <Text style={styles.rtlToggler}>{isRTL ? 'RTL' : 'LTR'}</Text>;
   }
@@ -528,7 +542,7 @@ const BorderExample = withRTLState(({isRTL, setRTL}) => {
   );
 });
 
-const directionStyle = isRTL =>
+const directionStyle = (isRTL: boolean) =>
   Platform.OS !== 'android' ? {direction: isRTL ? 'rtl' : 'ltr'} : null;
 
 const styles = StyleSheet.create({

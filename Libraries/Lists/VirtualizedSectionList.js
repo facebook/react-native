@@ -392,21 +392,24 @@ class VirtualizedSectionList<
       }
     };
 
-  _updatePropsFor = (cellKey, value) => {
+  _updatePropsFor = (cellKey: string, value: any) => {
     const updateProps = this._updatePropsMap[cellKey];
     if (updateProps != null) {
       updateProps(value);
     }
   };
 
-  _updateHighlightFor = (cellKey, value) => {
+  _updateHighlightFor = (cellKey: string, value: boolean) => {
     const updateHighlight = this._updateHighlightMap[cellKey];
     if (updateHighlight != null) {
       updateHighlight(value);
     }
   };
 
-  _setUpdateHighlightFor = (cellKey, updateHighlightFn) => {
+  _setUpdateHighlightFor = (
+    cellKey: string,
+    updateHighlightFn: ?(boolean) => void,
+  ) => {
     if (updateHighlightFn != null) {
       this._updateHighlightMap[cellKey] = updateHighlightFn;
     } else {
@@ -414,7 +417,7 @@ class VirtualizedSectionList<
     }
   };
 
-  _setUpdatePropsFor = (cellKey, updatePropsFn) => {
+  _setUpdatePropsFor = (cellKey: string, updatePropsFn: ?(boolean) => void) => {
     if (updatePropsFn != null) {
       this._updatePropsMap[cellKey] = updatePropsFn;
     } else {
@@ -449,7 +452,7 @@ class VirtualizedSectionList<
   _updateHighlightMap: {[string]: (boolean) => void} = {};
   _updatePropsMap: {[string]: void | (boolean => void)} = {};
   _listRef: ?React.ElementRef<typeof VirtualizedList>;
-  _captureRef = ref => {
+  _captureRef = (ref: null | React$ElementRef<Class<VirtualizedList>>) => {
     this._listRef = ref;
   };
 }

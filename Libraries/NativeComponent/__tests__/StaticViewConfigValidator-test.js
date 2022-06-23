@@ -210,10 +210,10 @@ StaticViewConfigValidator: Invalid static view config for 'RCTView'.
 });
 
 function expectSVCToNotMatchNVC(
-  name,
+  name: string,
   nativeViewConfig,
   staticViewConfig,
-  message,
+  message: string,
 ) {
   const validationResult = StaticViewConfigValidator.validate(
     name,

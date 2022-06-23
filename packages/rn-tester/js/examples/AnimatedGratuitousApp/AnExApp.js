@@ -189,7 +189,7 @@ class Circle extends React.Component<any, any> {
       </Animated.View>
     );
   }
-  _toggleIsActive = velocity => {
+  _toggleIsActive = (velocity: void) => {
     const config = {tension: 30, friction: 7};
     if (this.state.isActive) {
       Animated.spring(this.props.openVal, {
@@ -311,7 +311,7 @@ function distance(p1: Point, p2: Point): number {
   return dx * dx + dy * dy;
 }
 
-function moveToClosest({activeKey, keys, restLayouts}, position) {
+function moveToClosest({activeKey, keys, restLayouts}: any, position: Point) {
   const activeIdx = -1;
   let closestIdx = activeIdx;
   let minDist = Infinity;

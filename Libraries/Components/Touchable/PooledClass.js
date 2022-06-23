@@ -18,7 +18,7 @@ import invariant from 'invariant';
  * the Class itself, not an instance. If any others are needed, simply add them
  * here, or in their own files.
  */
-const oneArgumentPooler = function (copyFieldsFrom) {
+const oneArgumentPooler = function (copyFieldsFrom: any) {
   const Klass = this; // eslint-disable-line consistent-this
   if (Klass.instancePool.length) {
     const instance = Klass.instancePool.pop();
@@ -29,7 +29,7 @@ const oneArgumentPooler = function (copyFieldsFrom) {
   }
 };
 
-const twoArgumentPooler = function (a1, a2) {
+const twoArgumentPooler = function (a1: any, a2: any) {
   const Klass = this; // eslint-disable-line consistent-this
   if (Klass.instancePool.length) {
     const instance = Klass.instancePool.pop();
@@ -40,7 +40,7 @@ const twoArgumentPooler = function (a1, a2) {
   }
 };
 
-const threeArgumentPooler = function (a1, a2, a3) {
+const threeArgumentPooler = function (a1: any, a2: any, a3: any) {
   const Klass = this; // eslint-disable-line consistent-this
   if (Klass.instancePool.length) {
     const instance = Klass.instancePool.pop();
@@ -51,7 +51,7 @@ const threeArgumentPooler = function (a1, a2, a3) {
   }
 };
 
-const fourArgumentPooler = function (a1, a2, a3, a4) {
+const fourArgumentPooler = function (a1: any, a2: any, a3: any, a4: any) {
   const Klass = this; // eslint-disable-line consistent-this
   if (Klass.instancePool.length) {
     const instance = Klass.instancePool.pop();
