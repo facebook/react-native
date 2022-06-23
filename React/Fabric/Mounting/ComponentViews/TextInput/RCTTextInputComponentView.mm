@@ -58,6 +58,12 @@ using namespace facebook::react;
    */
   BOOL _comingFromJS;
   BOOL _didMoveToWindow;
+
+  /*
+   * A flag that triggers the accessibilityElement.accessibilityValue update and VoiceOver announcement
+   * to avoid duplicated announcements of accessibilityErrorMessage more info https://bit.ly/3yfUXD8 
+   */
+  BOOL _errorMessageRemoved;
 }
 
 #pragma mark - UIView overrides
@@ -74,6 +80,7 @@ using namespace facebook::react;
     _ignoreNextTextInputCall = NO;
     _comingFromJS = NO;
     _didMoveToWindow = NO;
+    _errorMessageRemoved = NO;
     [self addSubview:_backedTextInputView];
   }
 
@@ -136,21 +143,21 @@ using namespace facebook::react;
     _backedTextInputView.editable = newTextInputProps.traits.editable;
   }
 
+  NSString *text = RCTNSStringFromString(newTextInputProps.text);
   if (newTextInputProps.accessibilityErrorMessage != oldTextInputProps.accessibilityErrorMessage) {
-    self->previousAccessibilityError =  [self->currentAccessibilityError mutableCopy];
     NSString *error = RCTNSStringFromString(newTextInputProps.accessibilityErrorMessage);
-    NSString *text = RCTNSStringFromString(newTextInputProps.text);
     NSString *lastChar = [text length] == 0 ? @"" : [text substringFromIndex:[text length] - 1];
     if ([error length] != 0) {
       NSString *errorWithLastCharacter = [NSString stringWithFormat: @"%@ %@", lastChar, error];
       NSString *errorWithText = [NSString stringWithFormat: @"%@ %@", text, error];
-      _backedTextInputView.accessibilityValue = errorWithText;
-      self->currentAccessibilityError = errorWithText;
+      self.accessibilityElement.accessibilityValue = errorWithText;
       UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, errorWithLastCharacter);
+      self->_errorMessageRemoved = NO;
     } else {
-      _backedTextInputView.accessibilityValue = nil;
-      self->currentAccessibilityError = nil;
+      self->_errorMessageRemoved = YES;
     }
+  } else if (newTextInputProps.text != oldTextInputProps.text && [text length] != 0) {
+    self->_errorMessageRemoved = YES;
   }
 
   if (newTextInputProps.traits.enablesReturnKeyAutomatically !=
@@ -604,11 +611,12 @@ using namespace facebook::react;
   UITextRange *selectedRange = _backedTextInputView.selectedTextRange;
   NSInteger oldTextLength = _backedTextInputView.attributedText.string.length;
   _backedTextInputView.attributedText = attributedString;
-  BOOL errorMessageRemoved = self->currentAccessibilityError == nil && ![self->currentAccessibilityError isEqualToString: self->previousAccessibilityError];
-  if (errorMessageRemoved && _backedTextInputView.accessibilityValue != nil) {
-    _backedTextInputView.accessibilityValue = nil;
+  if (self->_errorMessageRemoved) {
+    _backedTextInputView.accessibilityValue = attributedString.string;
+    self.accessibilityElement.accessibilityValue = attributedString.string;
     NSString *lastChar = [attributedString.string substringFromIndex:[attributedString.string length] - 1];
     UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, lastChar);
+    self->_errorMessageRemoved = NO;
   }
   if (selectedRange.empty) {
     // Maintaining a cursor position relative to the end of the old text.
