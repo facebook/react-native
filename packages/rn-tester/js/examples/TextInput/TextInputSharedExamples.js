@@ -379,6 +379,8 @@ class SelectionExample extends React.Component<
 > {
   _textInput: React.ElementRef<typeof TextInput> | null = null;
 
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   constructor(props) {
     super(props);
     this.state = {
@@ -387,6 +389,8 @@ class SelectionExample extends React.Component<
     };
   }
 
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   onSelectionChange({nativeEvent: {selection}}) {
     this.setState({selection});
   }

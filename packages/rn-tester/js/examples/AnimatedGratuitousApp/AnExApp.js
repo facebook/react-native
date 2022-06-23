@@ -235,6 +235,8 @@ class AnExApp extends React.Component<any, any> {
       } else {
         let onLayout = null;
         if (!this.state.restLayouts[idx]) {
+          /* $FlowFixMe[missing-local-annot] The type annotation(s) required by
+           * Flow's LTI update could not be added via codemod */
           onLayout = function (index, e) {
             const layout = e.nativeEvent.layout;
             this.setState(state => {

@@ -366,6 +366,8 @@ function convertErrors(
 
 declare function convertError(void | null): null;
 declare function convertError({message: string, key?: string}): Error;
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
 function convertError(error) {
   if (!error) {
     return null;

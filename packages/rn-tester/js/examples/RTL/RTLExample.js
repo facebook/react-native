@@ -158,6 +158,8 @@ function withRTLState(
     {style?: any},
     RTLSwitcherComponentState,
   > {
+    /* $FlowFixMe[missing-local-annot] The type annotation(s) required by
+     * Flow's LTI update could not be added via codemod */
     constructor(...args) {
       super(...args);
       this.state = {

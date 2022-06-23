@@ -1241,6 +1241,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _updateCellsToRenderBatcher: Batchinator;
   _viewabilityTuples: Array<ViewabilityHelperCallbackTuple> = [];
 
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   _captureScrollRef = ref => {
     this._scrollRef = ref;
   };
@@ -1253,6 +1255,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     );
   }
 
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   _defaultRenderScrollComponent = props => {
     const onRefresh = props.onRefresh;
     if (this._isNestedWithSameOrientation()) {

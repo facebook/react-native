@@ -1822,6 +1822,8 @@ const styles = StyleSheet.create({
   },
 });
 
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
 function Wrapper(props, ref: (mixed => mixed) | {current: mixed, ...}) {
   return <ScrollView {...props} scrollViewRef={ref} />;
 }

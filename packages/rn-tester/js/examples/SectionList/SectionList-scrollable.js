@@ -78,6 +78,8 @@ const CONSTANT_SECTION_EXAMPLES = [
   },
 ];
 
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
 const renderSectionHeader = ({section}) => (
   <View style={styles.header}>
     <Text style={styles.headerText}>SECTION HEADER: {section.key}</Text>
@@ -85,6 +87,8 @@ const renderSectionHeader = ({section}) => (
   </View>
 );
 
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
 const renderSectionFooter = ({section}) => (
   <View style={styles.header}>
     <Text style={styles.headerText}>SECTION FOOTER: {section.key}</Text>
@@ -92,6 +96,8 @@ const renderSectionFooter = ({section}) => (
   </View>
 );
 
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
 const CustomSeparatorComponent = ({highlighted, text}) => (
   <View
     style={[
@@ -110,6 +116,8 @@ const EmptySectionList = () => (
 
 const renderItemComponent =
   (setItemState: (item: Item) => void) =>
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   ({item, separators}) => {
     if (isNaN(item.key)) {
       return;

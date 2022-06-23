@@ -28,6 +28,8 @@ function getMock<TArguments: $ReadOnlyArray<mixed>, TReturn>(
   return (fn: $FlowFixMe);
 }
 
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
 const createMockPressability = overrides => {
   const config = {
     cancelable: null,

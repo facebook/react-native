@@ -17,6 +17,8 @@ import type {
 } from '../../../CodegenSchema.js';
 
 function getPropertyType(
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   name,
   optional: boolean,
   typeAnnotation: $FlowFixMe,
@@ -151,6 +153,8 @@ function findEventArgumentsAndType(
   }
 }
 
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
 function buildPropertiesForEvent(property): NamedShape<EventTypeAnnotation> {
   const name = property.key.name;
   const optional =
@@ -163,6 +167,8 @@ function buildPropertiesForEvent(property): NamedShape<EventTypeAnnotation> {
   return getPropertyType(name, optional, typeAnnotation);
 }
 
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
 function getEventArgument(argumentProps, name: $FlowFixMe) {
   return {
     type: 'ObjectTypeAnnotation',

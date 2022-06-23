@@ -62,6 +62,8 @@ const fourArgumentPooler = function (a1: any, a2: any, a3: any, a4: any) {
   }
 };
 
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
 const standardReleaser = function (instance) {
   const Klass = this; // eslint-disable-line consistent-this
   invariant(
