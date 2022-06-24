@@ -143,8 +143,8 @@ using namespace facebook::react;
     _backedTextInputView.editable = newTextInputProps.traits.editable;
   }
 
-  NSString *text = RCTNSStringFromString(newTextInputProps.text);
-  if (newTextInputProps.accessibilityErrorMessage != oldTextInputProps.accessibilityErrorMessage) {
+  if (newTextInputProps.accessibilityErrorMessage != oldTextInputProps.accessibilityErrorMessage || newTextInputProps.text != oldTextInputProps.text) {
+    NSString *text = RCTNSStringFromString(newTextInputProps.text);
     NSString *error = RCTNSStringFromString(newTextInputProps.accessibilityErrorMessage);
     NSString *lastChar = [text length] == 0 ? @"" : [text substringFromIndex:[text length] - 1];
     if ([error length] != 0) {
@@ -154,11 +154,10 @@ using namespace facebook::react;
       UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, errorWithLastCharacter);
       self->_errorMessageRemoved = NO;
     } else {
+      self.accessibilityElement.accessibilityValue = text;
       self->_errorMessageRemoved = YES;
     }
-  } else if (newTextInputProps.text != oldTextInputProps.text && [text length] != 0) {
-    self->_errorMessageRemoved = YES;
-  }
+  } 
 
   if (newTextInputProps.traits.enablesReturnKeyAutomatically !=
       oldTextInputProps.traits.enablesReturnKeyAutomatically) {
