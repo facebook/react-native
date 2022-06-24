@@ -79,6 +79,7 @@ function renderTableRow({item}: RenderItemProps<PlatformTestResult>) {
 }
 
 type Props = $ReadOnly<{|
+  numPending: number,
   reset: () => void,
   results: $ReadOnlyArray<PlatformTestResult>,
   style?: ?ViewStyleProp,
@@ -86,7 +87,7 @@ type Props = $ReadOnly<{|
 export default function RNTesterPlatformTestResultView(
   props: Props,
 ): React.MixedElement {
-  const {reset, results, style} = props;
+  const {numPending, reset, results, style} = props;
 
   const {numPass, numFail, numError} = useMemo(
     () =>
@@ -129,6 +130,14 @@ export default function RNTesterPlatformTestResultView(
         <Text>
           {numError} <Text style={styles.errorText}>Error</Text>
         </Text>
+        {numPending > 0 ? (
+          <>
+            {' '}
+            <Text>
+              {numPending} <Text style={styles.pendingText}>Pending</Text>
+            </Text>
+          </>
+        ) : null}
       </Text>
 
       <View style={styles.table}>
@@ -148,6 +157,9 @@ const styles = StyleSheet.create({
   },
   passText: {
     color: 'green',
+  },
+  pendingText: {
+    color: 'gray',
   },
   table: {
     flex: 1,

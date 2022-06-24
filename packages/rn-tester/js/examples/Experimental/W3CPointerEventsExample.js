@@ -14,6 +14,7 @@ import * as React from 'react';
 import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
 
 import PointerEventAttributesHoverablePointers from './W3CPointerEventPlatformTests/PointerEventAttributesHoverablePointers';
+import PointerEventPointerMove from './W3CPointerEventPlatformTests/PointerEventPointerMove';
 
 function EventfulView(props: {|
   name: string,
@@ -232,6 +233,14 @@ export default {
       title: 'Pointer Events hoverable pointer attributes test',
       render(): React.Node {
         return <PointerEventAttributesHoverablePointers />;
+      },
+    },
+    {
+      name: 'pointerevent_pointermove',
+      description: '',
+      title: 'PointerMove test',
+      render(): React.Node {
+        return <PointerEventPointerMove />;
       },
     },
   ],
