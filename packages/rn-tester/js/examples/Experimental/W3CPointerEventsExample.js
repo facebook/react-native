@@ -8,6 +8,7 @@
  * @flow
  */
 
+import type {PointerEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 import {Button, StyleSheet, ScrollView, View, Text} from 'react-native';
 import * as React from 'react';
 import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
@@ -55,7 +56,7 @@ function EventfulView(props: {|
   } = props;
   const [tag, setTag] = React.useState('');
 
-  const eventLog = eventName => event => {
+  const eventLog = (eventName: string) => (event: PointerEvent) => {
     // $FlowFixMe Using private property
     log(`${name} - ${eventName} - target: ${event.target._nativeTag}`);
   };
@@ -159,7 +160,7 @@ function PointerEventScaffolding({
 }) {
   const [eventsLog, setEventsLog] = React.useState('');
   const clear = () => setEventsLog('');
-  const log = eventStr => {
+  const log = (eventStr: string) => {
     setEventsLog(currentEventsLog => `${eventStr}\n${currentEventsLog}`);
   };
   return (

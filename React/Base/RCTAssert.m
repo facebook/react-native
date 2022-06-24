@@ -234,7 +234,7 @@ RCTFatalExceptionHandler RCTGetFatalExceptionHandler(void)
 
 // MARK: - New Architecture Validation - Enable Reporting
 
-#if RCT_NEW_ARCHITECTURE
+#if RCT_ONLY_NEW_ARCHITECTURE
 static RCTNotAllowedValidation validationReportingEnabled = RCTNotAllowedInBridgeless;
 #else
 static RCTNotAllowedValidation validationReportingEnabled = RCTNotAllowedValidationDisabled;
@@ -242,7 +242,7 @@ static RCTNotAllowedValidation validationReportingEnabled = RCTNotAllowedValidat
 
 __attribute__((used)) RCT_EXTERN void RCTNewArchitectureValidationSetEnabled(RCTNotAllowedValidation type)
 {
-#if RCT_NEW_ARCHITECTURE
+#if RCT_ONLY_NEW_ARCHITECTURE
   // Cannot disable the reporting in this mode.
 #else
   validationReportingEnabled = type;

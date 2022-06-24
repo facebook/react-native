@@ -215,7 +215,7 @@ handle_menu_input(){
     read -p "Would you like to test something else? (Y/N)" confirm
     if [ "$confirm" == "${confirm#[Yy]}" ]; then
         info "Next steps:"
-        info "https://github.com/facebook/react-native/wiki/Release-Process"
+        info "https://reactnative.dev/contributing/release-candidate-minor"
         popd >/dev/null || exit
         exit 1
     else

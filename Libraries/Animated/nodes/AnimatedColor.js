@@ -249,7 +249,7 @@ export default class AnimatedColor extends AnimatedWithChildren {
    */
   addListener(callback: ColorListenerCallback): string {
     const id = String(_uniqueId++);
-    const jointCallback = ({value: number}) => {
+    const jointCallback = ({value: number}: any) => {
       callback(this.__getValue());
     };
     this._listeners[id] = {

@@ -8,6 +8,7 @@
  * @flow
  */
 
+import type {RenderItemProps} from 'react-native/Libraries/Lists/VirtualizedList';
 import type {
   ViewStyleProp,
   TextStyle,
@@ -73,7 +74,7 @@ const TableRow = React.memo(
   },
 );
 
-function renderTableRow({item}) {
+function renderTableRow({item}: RenderItemProps<PlatformTestResult>) {
   return <TableRow testResult={item} />;
 }
 

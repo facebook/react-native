@@ -10,7 +10,7 @@
 
 import type {ScrollResponderType} from '../Components/ScrollView/ScrollView';
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
-import type {LayoutEvent} from '../Types/CoreEventTypes';
+import type {LayoutEvent, ScrollEvent} from '../Types/CoreEventTypes';
 import type {
   ViewabilityConfig,
   ViewabilityConfigCallbackPair,
@@ -1241,6 +1241,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _updateCellsToRenderBatcher: Batchinator;
   _viewabilityTuples: Array<ViewabilityHelperCallbackTuple> = [];
 
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   _captureScrollRef = ref => {
     this._scrollRef = ref;
   };
@@ -1253,6 +1255,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     );
   }
 
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   _defaultRenderScrollComponent = props => {
     const onRefresh = props.onRefresh;
     if (this._isNestedWithSameOrientation()) {
@@ -1713,7 +1717,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
   }
 
-  _onScrollBeginDrag = (e): void => {
+  _onScrollBeginDrag = (e: ScrollEvent): void => {
     this._nestedChildLists.forEach(childList => {
       childList.ref && childList.ref._onScrollBeginDrag(e);
     });
@@ -1724,7 +1728,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     this.props.onScrollBeginDrag && this.props.onScrollBeginDrag(e);
   };
 
-  _onScrollEndDrag = (e): void => {
+  _onScrollEndDrag = (e: ScrollEvent): void => {
     this._nestedChildLists.forEach(childList => {
       childList.ref && childList.ref._onScrollEndDrag(e);
     });
@@ -1736,14 +1740,14 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     this.props.onScrollEndDrag && this.props.onScrollEndDrag(e);
   };
 
-  _onMomentumScrollBegin = (e): void => {
+  _onMomentumScrollBegin = (e: ScrollEvent): void => {
     this._nestedChildLists.forEach(childList => {
       childList.ref && childList.ref._onMomentumScrollBegin(e);
     });
     this.props.onMomentumScrollBegin && this.props.onMomentumScrollBegin(e);
   };
 
-  _onMomentumScrollEnd = (e): void => {
+  _onMomentumScrollEnd = (e: ScrollEvent): void => {
     this._nestedChildLists.forEach(childList => {
       childList.ref && childList.ref._onMomentumScrollEnd(e);
     });
@@ -2033,7 +2037,12 @@ class CellRenderer extends React.Component<
       );
   };
 
-  _renderElement(renderItem, ListItemComponent, item, index) {
+  _renderElement(
+    renderItem: any,
+    ListItemComponent: any,
+    item: any,
+    index: any,
+  ) {
     if (renderItem && ListItemComponent) {
       console.warn(
         'VirtualizedList: Both ListItemComponent and renderItem props are present. ListItemComponent will take' +
@@ -2097,9 +2106,11 @@ class CellRenderer extends React.Component<
         : this._onLayout;
     // NOTE: that when this is a sticky header, `onLayout` will get automatically extracted and
     // called explicitly by `ScrollViewStickyHeader`.
-    const itemSeparator = ItemSeparatorComponent && (
-      <ItemSeparatorComponent {...this.state.separatorProps} />
-    );
+    const itemSeparator = React.isValidElement(ItemSeparatorComponent)
+      ? ItemSeparatorComponent
+      : ItemSeparatorComponent && (
+          <ItemSeparatorComponent {...this.state.separatorProps} />
+        );
     const cellStyle = inversionStyle
       ? horizontal
         ? [styles.rowReverse, inversionStyle]

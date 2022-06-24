@@ -32,7 +32,7 @@ class SafeAreaViewExample extends React.Component<
     modalVisible: false,
   };
 
-  _setModalVisible = visible => {
+  _setModalVisible = (visible: boolean) => {
     this.setState({modalVisible: visible});
   };
 

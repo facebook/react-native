@@ -69,6 +69,16 @@ struct ActiveTouch {
   CGFloat majorRadius;
 
   /*
+   * The altitude (in radians) of the stylus.
+   */
+  CGFloat altitudeAngle;
+
+  /*
+   * The azimuth angle (in radians) of the stylus.
+   */
+  CGFloat azimuthAngle;
+
+  /*
    * A component view on which the touch was begun.
    */
   __strong UIView<RCTComponentViewProtocol> *componentView = nil;
@@ -87,6 +97,42 @@ struct ActiveTouch {
     }
   };
 };
+
+// Returns a CGPoint which represents the tiltX/Y values (in RADIANS)
+// Adapted from https://gist.github.com/k3a/2903719bb42b48c9198d20c2d6f73ac1
+static CGPoint SphericalToTilt(CGFloat altitudeAngleRad, CGFloat azimuthAngleRad)
+{
+  if (altitudeAngleRad == M_PI / 2.0) {
+    return CGPointMake(0.0, 0.0);
+  } else if (altitudeAngleRad == 0.0) {
+    // when pen is laying on the pad it is impossible to precisely encode but at least approximate for 4 cases
+    if (azimuthAngleRad > 7.0 * M_PI / 4.0 || azimuthAngleRad <= M_PI / 4.0) {
+      // for azimuthRad == 0, the pen is on the positive Y axis
+      return CGPointMake(0.0, M_PI / 2.0);
+    } else if (azimuthAngleRad > M_PI / 4.0 && azimuthAngleRad <= 3 * M_PI / 4.0) {
+      // for azimuthRad == math.pi/2 the pen is on the positive X axis
+      return CGPointMake(M_PI / 2.0, 0.0);
+    } else if (azimuthAngleRad > 3.0 * M_PI / 4.0 && azimuthAngleRad <= 5.0 * M_PI / 4.0) {
+      // for azimuthRad == math.pi, the pen is on the negative Y axis
+      return CGPointMake(0.0, -M_PI / 2.0);
+    } else if (azimuthAngleRad > 5.0 * M_PI / 4.0 && azimuthAngleRad <= 7.0 * M_PI / 4.0) {
+      // for azimuthRad == math.pi + math.pi/2 pen on negative X axis
+      return CGPointMake(-M_PI / 2.0, 0.0);
+    }
+  }
+
+  CGFloat tanAlt = tan(altitudeAngleRad); // tan(x) = sin(x)/cos(x)
+
+  CGFloat tiltXrad = atan(sin(azimuthAngleRad) / tanAlt);
+  CGFloat tiltYrad = atan(cos(azimuthAngleRad) / tanAlt);
+
+  return CGPointMake(tiltXrad, tiltYrad);
+}
+
+static CGFloat RadsToDegrees(CGFloat rads)
+{
+  return rads * 180 / M_PI;
+}
 
 static void UpdateActiveTouchWithUITouch(
     ActiveTouch &activeTouch,
@@ -111,6 +157,8 @@ static void UpdateActiveTouchWithUITouch(
 
   activeTouch.touchType = uiTouch.type;
   activeTouch.majorRadius = uiTouch.majorRadius;
+  activeTouch.altitudeAngle = uiTouch.altitudeAngle;
+  activeTouch.azimuthAngle = [uiTouch azimuthAngleInView:nil];
 }
 
 static ActiveTouch CreateTouchWithUITouch(UITouch *uiTouch, UIView *rootComponentView, CGPoint rootViewOriginOffset)
@@ -197,6 +245,12 @@ static PointerEvent CreatePointerEventFromActiveTouch(ActiveTouch activeTouch)
   event.width = pointerSize;
   event.height = pointerSize;
 
+  CGPoint tilt = SphericalToTilt(activeTouch.altitudeAngle, activeTouch.azimuthAngle);
+  event.tiltX = RadsToDegrees(tilt.x);
+  event.tiltY = RadsToDegrees(tilt.y);
+
+  event.detail = 0;
+
   return event;
 }
 
@@ -213,6 +267,9 @@ CreatePointerEventFromIncompleteHoverData(UIView *view, CGPoint clientLocation, 
   event.clientPoint = RCTPointFromCGPoint(clientLocation);
   event.width = 1.0;
   event.height = 1.0;
+  event.tiltX = 0;
+  event.tiltY = 0;
+  event.detail = 0;
   return event;
 }
 

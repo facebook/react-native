@@ -114,7 +114,7 @@ const UIManagerJS = {
 // $FlowFixMe[prop-missing]
 NativeUIManager.getViewManagerConfig = UIManagerJS.getViewManagerConfig;
 
-function lazifyViewManagerConfig(viewName) {
+function lazifyViewManagerConfig(viewName: string) {
   const viewConfig = getConstants()[viewName];
   viewManagerConfigs[viewName] = viewConfig;
   if (viewConfig.Manager) {

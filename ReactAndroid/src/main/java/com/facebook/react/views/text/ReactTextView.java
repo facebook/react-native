@@ -105,9 +105,13 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
     // Defaults for these fields:
     // https://github.com/aosp-mirror/platform_frameworks_base/blob/master/core/java/android/widget/TextView.java#L1061
-    setBreakStrategy(Layout.BREAK_STRATEGY_SIMPLE);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      setBreakStrategy(Layout.BREAK_STRATEGY_SIMPLE);
+    }
     setMovementMethod(getDefaultMovementMethod());
-    setJustificationMode(Layout.JUSTIFICATION_MODE_NONE);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      setJustificationMode(Layout.JUSTIFICATION_MODE_NONE);
+    }
 
     // reset text
     setLayoutParams(EMPTY_LAYOUT_PARAMS);

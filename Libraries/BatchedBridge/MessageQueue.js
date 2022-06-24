@@ -252,7 +252,7 @@ class MessageQueue {
       // folly-convertible.  As a special case, if a prop value is a
       // function it is permitted here, and special-cased in the
       // conversion.
-      const isValidArgument = val => {
+      const isValidArgument = (val: mixed) => {
         switch (typeof val) {
           case 'undefined':
           case 'boolean':
@@ -286,7 +286,7 @@ class MessageQueue {
       // Replacement allows normally non-JSON-convertible values to be
       // seen.  There is ambiguity with string values, but in context,
       // it should at least be a strong hint.
-      const replacer = (key, val) => {
+      const replacer = (key: string, val: $FlowFixMe) => {
         const t = typeof val;
         if (t === 'function') {
           return '<<Function ' + val.name + '>>';

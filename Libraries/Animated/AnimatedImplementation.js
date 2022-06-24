@@ -94,7 +94,7 @@ const _combineCallbacks = function (
   config: $ReadOnly<{...AnimationConfig, ...}>,
 ) {
   if (callback && config.onComplete) {
-    return (...args) => {
+    return (...args: Array<EndResult>) => {
       config.onComplete && config.onComplete(...args);
       callback && callback(...args);
     };
@@ -308,7 +308,7 @@ const sequence = function (
   let current = 0;
   return {
     start: function (callback?: ?EndCallback) {
-      const onComplete = function (result) {
+      const onComplete = function (result: EndResult) {
         if (!result.finished) {
           callback && callback(result);
           return;
@@ -380,7 +380,7 @@ const parallel = function (
       }
 
       animations.forEach((animation, idx) => {
-        const cb = function (endResult) {
+        const cb = function (endResult: EndResult | {finished: boolean}) {
           hasEnded[idx] = true;
           doneCount++;
           if (doneCount === animations.length) {
