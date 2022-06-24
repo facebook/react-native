@@ -249,28 +249,32 @@ public class JSPointerDispatcher {
    * Returns list of view targets that we should be dispatching events from
    *
    * @param viewTargets, ordered from target -> root
-   * @param bubble, name of event that bubbles
-   * @param capture, name of event that captures
+   * @param bubble, name of event that bubbles. Should only ever be enter or leave
+   * @param capture, name of event that captures. Should only ever be enter or leave
    * @param forceDispatch, if true, all viewTargets should dispatch
    * @return list of viewTargets filtered from target -> root
    */
   private static List<ViewTarget> filterByShouldDispatch(
       List<ViewTarget> viewTargets, EVENT bubble, EVENT capture, boolean forceDispatch) {
+
+    List<ViewTarget> dispatchableViewTargets = new ArrayList<>(viewTargets);
     if (forceDispatch) {
-      return viewTargets;
+      return dispatchableViewTargets;
     }
 
     boolean ancestorListening = false;
-    List<ViewTarget> dispatchableViewTargets = new ArrayList<ViewTarget>(viewTargets);
+
+    // Start to filter which viewTargets may not need to dispatch an event
     for (int i = viewTargets.size() - 1; i >= 0; i--) {
       ViewTarget viewTarget = viewTargets.get(i);
       View view = viewTarget.getView();
+
       if (!ancestorListening
-          && (PointerEventHelper.isListening(view, capture)
-              || (i == 0 && PointerEventHelper.isListening(view, bubble)))) {
-        ancestorListening = true;
-      } else if (!ancestorListening) {
+          && !PointerEventHelper.isListening(view, capture)
+          && !PointerEventHelper.isListening(view, bubble)) {
         dispatchableViewTargets.remove(i);
+      } else if (!ancestorListening && PointerEventHelper.isListening(view, capture)) {
+        ancestorListening = true;
       }
     }
     return dispatchableViewTargets;
