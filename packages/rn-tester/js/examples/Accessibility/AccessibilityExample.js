@@ -1171,8 +1171,7 @@ function AccessibilityErrorWithButtons(): React.Node {
             if (newText === 'Error') {
               setError('the newText is: ' + newText);
               setAccessibilityInvalid(true);
-            } else {
-              setError('');
+            } else if (newText === 'null') {
               setAccessibilityInvalid(false);
             }
           }}
