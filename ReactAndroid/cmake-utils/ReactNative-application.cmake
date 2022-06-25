@@ -11,16 +11,23 @@
 # - Take care of setting the correct compile options
 # - Include all the pre-built libraries in your build graph
 # - Link your library against those prebuilt libraries so you can access JSI, Fabric, etc.
+# - Link your library against any autolinked library.
 
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
 include(${REACT_ANDROID_DIR}/cmake-utils/Android-prebuilt.cmake)
 
-file(GLOB input_SRC CONFIGURE_DEPENDS *.cpp)
+file(GLOB input_SRC CONFIGURE_DEPENDS 
+        *.cpp
+        ${PROJECT_BUILD_DIR}/generated/rncli/src/main/jni/*.cpp)
+
 add_library(${CMAKE_PROJECT_NAME} SHARED ${input_SRC})
 
-target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(${CMAKE_PROJECT_NAME} 
+        PUBLIC 
+                ${CMAKE_CURRENT_SOURCE_DIR}
+                ${PROJECT_BUILD_DIR}/generated/rncli/src/main/jni)
 
 target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wall -Werror -fexceptions -frtti -std=c++17 -DWITH_INSPECTOR=1 -DLOG_TAG=\"ReactNative\")
 
@@ -41,3 +48,9 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         runtimeexecutor
         turbomodulejsijni
         yoga)
+
+# If project is on RN CLI v9, the we can use the following lines to link against the autolinked 3rd party libraries.
+if(EXISTS ${PROJECT_BUILD_DIR}/generated/rncli/src/main/jni/Android-autolinked.cmake)
+        include(${PROJECT_BUILD_DIR}/generated/rncli/src/main/jni/Android-autolinked.cmake)
+        target_link_libraries(${CMAKE_PROJECT_NAME} ${AUTOLINKED_LIBRARIES})
+endif()
