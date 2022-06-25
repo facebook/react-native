@@ -135,4 +135,9 @@ public class ReactFeatureFlags {
    * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
    */
   public static boolean enableCppPropsIteratorSetter = false;
+
+  /**
+   * Allow Differentiator.cpp and FabricMountingManager.cpp to generate a RemoveDeleteTree mega-op.
+   */
+  public static boolean enableRemoveDeleteTreeInstruction = false;
 }
