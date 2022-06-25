@@ -60,19 +60,19 @@ export function check_PointerEvent(
   // * if the attribute is "readonly", it cannot be changed
   // TA: 1.1, 1.2
   const idl_type_check = {
-    long: function (v) {
+    long: function (v: any) {
       return typeof v === 'number' && Math.round(v) === v;
     },
-    float: function (v) {
+    float: function (v: any) {
       return typeof v === 'number';
     },
-    string: function (v) {
+    string: function (v: any) {
       return typeof v === 'string';
     },
-    boolean: function (v) {
+    boolean: function (v: any) {
       return typeof v === 'boolean';
     },
-    object: function (v) {
+    object: function (v: any) {
       return typeof v === 'object';
     },
   };
@@ -189,7 +189,8 @@ export function useTestEventHandler(
   handler: (event: any, eventName: string) => void,
 ): ViewProps {
   const eventProps: any = useMemo(() => {
-    const handlerFactory = eventName => event => handler(event, eventName);
+    const handlerFactory = (eventName: string) => (event: any) =>
+      handler(event, eventName);
     const props = {};
     for (const eventName of eventNames) {
       const eventPropName =

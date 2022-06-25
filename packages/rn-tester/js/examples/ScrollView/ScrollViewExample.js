@@ -732,7 +732,7 @@ const RefreshControlExample = () => {
     wait(2000).then(() => setRefreshing(false));
   }, []);
 
-  const wait = timeout => {
+  const wait = (timeout: number) => {
     return new Promise(resolve => {
       setTimeout(resolve, timeout);
     });
@@ -1253,7 +1253,9 @@ class Item extends React.PureComponent<{|
 
 let ITEMS = [...Array(12)].map((_, i) => `Item ${i}`);
 
-const createItemRow = (msg, index) => <Item key={index} msg={msg} />;
+const createItemRow = (msg: string, index: number) => (
+  <Item key={index} msg={msg} />
+);
 
 const Button = (props: {
   active?: boolean,

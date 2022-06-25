@@ -92,6 +92,8 @@ class Alert {
         config.buttonPositive = buttonPositive.text || defaultPositiveText;
       }
 
+      /* $FlowFixMe[missing-local-annot] The type annotation(s) required by
+       * Flow's LTI update could not be added via codemod */
       const onAction = (action, buttonKey) => {
         if (action === constants.buttonClicked) {
           if (buttonKey === constants.buttonNeutral) {
@@ -105,7 +107,7 @@ class Alert {
           options && options.onDismiss && options.onDismiss();
         }
       };
-      const onError = errorMessage => console.warn(errorMessage);
+      const onError = (errorMessage: string) => console.warn(errorMessage);
       NativeDialogManagerAndroid.showAlert(config, onError, onAction);
     }
   }

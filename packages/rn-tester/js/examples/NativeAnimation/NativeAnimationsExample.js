@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type AnimatedValue from 'react-native/Libraries/Animated/nodes/AnimatedValue';
+
 const React = require('react');
 
 const {
@@ -313,7 +315,7 @@ class TrackingExample extends React.Component<
     this.state.toJS.setValue(nextValue);
   };
 
-  renderBlock = (anim, dest) => [
+  renderBlock = (anim: any | AnimatedValue, dest: any | AnimatedValue) => [
     <Animated.View
       key="line"
       style={[styles.line, {transform: [{translateX: dest}]}]}

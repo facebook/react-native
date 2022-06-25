@@ -198,7 +198,7 @@ module.exports = {
   ): boolean {
     schemaValidator.validate(schema);
 
-    function composePath(intermediate) {
+    function composePath(intermediate: string) {
       return path.join(outputDirectory, intermediate, libraryName);
     }
 

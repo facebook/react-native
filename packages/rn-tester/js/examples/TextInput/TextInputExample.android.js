@@ -29,6 +29,8 @@ class ToggleDefaultPaddingExample extends React.Component<
   $FlowFixMeProps,
   $FlowFixMeState,
 > {
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   constructor(props) {
     super(props);
     this.state = {hasPadding: false};
@@ -47,6 +49,8 @@ class ToggleDefaultPaddingExample extends React.Component<
 }
 
 class AutogrowingTextInputExample extends React.Component<{...}> {
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   constructor(props) {
     super(props);
 
@@ -63,6 +67,8 @@ class AutogrowingTextInputExample extends React.Component<{...}> {
     };
   }
 
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   UNSAFE_componentWillReceiveProps(props) {
     /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
      * when making Flow check .android.js files. */
