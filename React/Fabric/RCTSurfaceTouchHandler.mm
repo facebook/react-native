@@ -651,6 +651,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 
   NSTimeInterval timestamp = CACurrentMediaTime();
 
+  BOOL hasMoveListenerInEventPath = NO;
+
   // Over
   if (prevTargetView != targetView) {
     BOOL shouldEmitOverEvent = IsAnyViewInPathListeningToEvent(eventPathViews, ViewEvents::Offset::PointerOver);
@@ -685,6 +687,19 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 
     if (shouldEmitEvent && !hasParentEnterListener) {
       hasParentEnterListener = YES;
+    }
+
+    if (!hasMoveListenerInEventPath && IsViewListeningToEvent(componentView, ViewEvents::Offset::PointerMove2)) {
+      hasMoveListenerInEventPath = YES;
+    }
+  }
+
+  // Moving
+  if (hasMoveListenerInEventPath) {
+    SharedTouchEventEmitter eventEmitter = GetTouchEmitterFromView(targetView, [recognizer locationInView:targetView]);
+    if (eventEmitter != nil) {
+      PointerEvent event = CreatePointerEventFromIncompleteHoverData(targetView, clientLocation, timestamp);
+      eventEmitter->onPointerMove2(event);
     }
   }
 

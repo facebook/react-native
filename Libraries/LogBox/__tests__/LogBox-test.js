@@ -16,7 +16,7 @@ const LogBoxData = require('../Data/LogBoxData');
 
 declare var console: any;
 
-function mockFilterResult(returnValues) {
+function mockFilterResult(returnValues: $FlowFixMe) {
   (LogBoxData.checkWarningFilter: any).mockReturnValue({
     finalFormat: 'Warning: ...',
     forceDialogImmediately: false,

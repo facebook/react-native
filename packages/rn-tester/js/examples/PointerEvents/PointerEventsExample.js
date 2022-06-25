@@ -268,7 +268,7 @@ const exampleClasses: Array<ExampleClass> = [
   },
 ];
 
-const infoToExample = info => {
+const infoToExample = (info: ExampleClass) => {
   return {
     title: info.title,
     description: info.description,

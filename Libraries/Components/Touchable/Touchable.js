@@ -21,7 +21,18 @@ import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {PressEvent} from '../../Types/CoreEventTypes';
 
-const extractSingleTouch = nativeEvent => {
+const extractSingleTouch = (nativeEvent: {
+  +changedTouches: $ReadOnlyArray<PressEvent['nativeEvent']>,
+  +force?: number,
+  +identifier: number,
+  +locationX: number,
+  +locationY: number,
+  +pageX: number,
+  +pageY: number,
+  +target: ?number,
+  +timestamp: number,
+  +touches: $ReadOnlyArray<PressEvent['nativeEvent']>,
+}) => {
   const touches = nativeEvent.touches;
   const changedTouches = nativeEvent.changedTouches;
   const hasTouches = touches && touches.length > 0;

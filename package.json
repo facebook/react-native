@@ -103,9 +103,9 @@
   },
   "dependencies": {
     "@jest/create-cache-key-function": "^27.0.1",
-    "@react-native-community/cli": "^8.0.0",
-    "@react-native-community/cli-platform-android": "^8.0.0",
-    "@react-native-community/cli-platform-ios": "^8.0.0",
+    "@react-native-community/cli": "^9.0.0-alpha.0",
+    "@react-native-community/cli-platform-android": "^9.0.0-alpha.0",
+    "@react-native-community/cli-platform-ios": "^9.0.0-alpha.0",
     "@react-native/assets": "1.0.0",
     "@react-native/normalize-color": "2.0.0",
     "@react-native/polyfills": "2.0.0",
@@ -113,7 +113,6 @@
     "anser": "^1.4.9",
     "base64-js": "^1.1.2",
     "event-target-shim": "^5.0.1",
-    "hermes-engine": "~0.11.0",
     "invariant": "^2.2.4",
     "jsc-android": "^250230.2.1",
     "memoize-one": "^5.0.0",
@@ -136,7 +135,7 @@
     "ws": "^6.1.4"
   },
   "devDependencies": {
-    "flow-bin": "^0.180.1",
+    "flow-bin": "^0.181.0",
     "hermes-eslint": "0.8.0",
     "react": "18.1.0",
     "react-test-renderer": "^18.1.0"
