@@ -200,7 +200,7 @@ static NSDictionary *RCTExportedDimensions(RCTModuleRegistry *moduleRegistry, RC
             // when it happens and only when it is published.
             _currentInterfaceOrientation = nextOrientation;
             _isFullscreen = isRunningInFullScreen;
-      #pragma clang diagnostic pop
+#pragma clang diagnostic pop
   }
 
   
