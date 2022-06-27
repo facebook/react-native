@@ -174,12 +174,15 @@ static NSDictionary *RCTExportedDimensions(RCTModuleRegistry *moduleRegistry, RC
 
 - (void)_interfaceOrientationDidChange
 {
-  UIInterfaceOrientation nextOrientation = [RCTSharedApplication() statusBarOrientation];
-  UIApplicationState appState = [RCTSharedApplication() applicationState];
-  BOOL isRunningInFullScreen = CGRectEqualToRect([UIApplication sharedApplication].delegate.window.frame, [UIApplication sharedApplication].delegate.window.screen.bounds);
-    
+  UIApplication *application = RCTSharedApplication();
+  if(!application) {
+    return;
+  }
+  UIInterfaceOrientation nextOrientation = [application statusBarOrientation];
   
-  BOOL isActive = appState == UIApplicationStateActive;
+  BOOL isRunningInFullScreen = CGRectEqualToRect(application.delegate.window.frame, application.delegate.window.screen.bounds);
+    
+  BOOL isActive = RCTIsAppActive();
   // We are catching here two situations for multitasking view:
   // a) The app is in Split View and the container gets resized -> !isRunningInFullScreen
   // b) The app changes to/from fullscreen example: App runs in slide over mode and goes into fullscreen-> isRunningInFullScreen != _isFullscreen
@@ -194,10 +197,9 @@ static NSDictionary *RCTExportedDimensions(RCTModuleRegistry *moduleRegistry, RC
   if ((isOrientationChanging || isResizingOrChangingToFullscreen) && isActive) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [[_moduleRegistry moduleForName:"EventDispatcher"]
-        sendDeviceEventWithName:@"didUpdateDimensions"
-                           body:RCTExportedDimensions(_moduleRegistry, _bridge)];
-            // We only want to track the current _currentInterfaceOrientation and _isFullscreen only 
+          [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"didUpdateDimensions"
+                                                                                body:RCTExportedDimensions(_moduleRegistry, _bridge)];
+            // We only want to track the current _currentInterfaceOrientation and _isFullscreen only
             // when it happens and only when it is published.
             _currentInterfaceOrientation = nextOrientation;
             _isFullscreen = isRunningInFullScreen;
@@ -217,20 +219,23 @@ static NSDictionary *RCTExportedDimensions(RCTModuleRegistry *moduleRegistry, RC
 
 - (void)_interfaceFrameDidChange
 {
+  UIApplication *application = RCTSharedApplication();
+  if(!application){
+    return;
+  }
   NSDictionary *nextInterfaceDimensions = RCTExportedDimensions(_moduleRegistry, _bridge);
-  UIApplicationState appState = [RCTSharedApplication() applicationState];
     
-  BOOL isActive = appState == UIApplicationStateActive;
+  BOOL isActive = RCTIsAppActive();
   // update and publish the even only when the app is in active state
   if (!([nextInterfaceDimensions isEqual:_currentInterfaceDimensions]) && isActive) {
-    #pragma clang diagnostic push
-    #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"didUpdateDimensions"
                                                                               body:nextInterfaceDimensions];
-          // We only want to track the current _currentInterfaceOrientation only 
+          // We only want to track the current _currentInterfaceOrientation only
           // when it happens and only when it is published.
           _currentInterfaceDimensions = nextInterfaceDimensions;
-    #pragma clang diagnostic pop
+#pragma clang diagnostic pop
   }
 }
 
