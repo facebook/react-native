@@ -140,9 +140,13 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     //         mViewFlags = SOUND_EFFECTS_ENABLED | HAPTIC_FEEDBACK_ENABLED |
     // LAYOUT_DIRECTION_INHERIT;
     setEnabled(true);
-    setFocusable(View.FOCUSABLE_AUTO);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      setFocusable(View.FOCUSABLE_AUTO);
+    }
 
-    setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NONE);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NONE);
+    }
 
     updateView(); // call after changing ellipsizeLocation in particular
   }
