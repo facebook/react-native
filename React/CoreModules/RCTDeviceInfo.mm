@@ -175,14 +175,9 @@ static NSDictionary *RCTExportedDimensions(RCTModuleRegistry *moduleRegistry, RC
 - (void)_interfaceOrientationDidChange
 {
   UIApplication *application = RCTSharedApplication();
-  if(!application) {
-    return;
-  }
   UIInterfaceOrientation nextOrientation = [application statusBarOrientation];
   
   BOOL isRunningInFullScreen = CGRectEqualToRect(application.delegate.window.frame, application.delegate.window.screen.bounds);
-    
-  BOOL isActive = RCTIsAppActive();
   // We are catching here two situations for multitasking view:
   // a) The app is in Split View and the container gets resized -> !isRunningInFullScreen
   // b) The app changes to/from fullscreen example: App runs in slide over mode and goes into fullscreen-> isRunningInFullScreen != _isFullscreen
@@ -194,7 +189,7 @@ static NSDictionary *RCTExportedDimensions(RCTModuleRegistry *moduleRegistry, RC
 
   // Update when we go from portrait to landscape, or landscape to portrait
   // Also update when the fullscreen state changes (multitasking) and only when the app is in active state.
-  if ((isOrientationChanging || isResizingOrChangingToFullscreen) && isActive) {
+  if ((isOrientationChanging || isResizingOrChangingToFullscreen) && RCTIsAppActive()) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
           [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"didUpdateDimensions"
@@ -220,14 +215,10 @@ static NSDictionary *RCTExportedDimensions(RCTModuleRegistry *moduleRegistry, RC
 - (void)_interfaceFrameDidChange
 {
   UIApplication *application = RCTSharedApplication();
-  if(!application){
-    return;
-  }
   NSDictionary *nextInterfaceDimensions = RCTExportedDimensions(_moduleRegistry, _bridge);
     
-  BOOL isActive = RCTIsAppActive();
   // update and publish the even only when the app is in active state
-  if (!([nextInterfaceDimensions isEqual:_currentInterfaceDimensions]) && isActive) {
+  if (!([nextInterfaceDimensions isEqual:_currentInterfaceDimensions]) && RCTIsAppActive()) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
         [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"didUpdateDimensions"
