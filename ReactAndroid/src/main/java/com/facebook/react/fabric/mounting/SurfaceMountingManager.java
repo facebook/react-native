@@ -19,6 +19,7 @@ import androidx.annotation.UiThread;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -29,9 +30,11 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
 import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.fabric.GuardedFrameCallback;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.mounting.MountingManager.MountItemExecutor;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
+import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.ReactOverflowViewWithInset;
@@ -78,7 +81,11 @@ public class SurfaceMountingManager {
   // Stack of deferred-removal tags for Views that can be
   // removed asynchronously. Guaranteed to be disconnected
   // from the viewport and these tags will not be reused in the future.
+  @ThreadConfined(UI)
   private final Stack<Integer> mReactTagsToRemove = new Stack<>();
+
+  @ThreadConfined(UI)
+  private RemoveDeleteTreeUIFrameCallback mRemoveDeleteTreeUIFrameCallback;
 
   // This is null *until* StopSurface is called.
   private Set<Integer> mTagSetForStoppedSurface;
@@ -731,57 +738,23 @@ public class SurfaceMountingManager {
     // and all of its children, if any, need to be deleted, recursively.
     // We want to maintain the legacy ordering: delete (and call onViewStateDeleted)
     // for leaf nodes, and then parents, recursively.
-    mReactTagsToRemove.push(tag);
+    // Schedule the Runnable first, to detect if we need to schedule a Runnable at all.
+    // Since this current function and the Runnable both run on the UI thread, there is
+    // no race condition here.
     runDeferredTagRemovalAndDeletion();
+    mReactTagsToRemove.push(tag);
   }
 
   @UiThread
   private void runDeferredTagRemovalAndDeletion() {
-    UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            int deletedViews = 1;
-            while (!mReactTagsToRemove.empty()) {
-              int reactTag = mReactTagsToRemove.pop();
-              ViewState thisViewState = getNullableViewState(reactTag);
-              if (thisViewState != null) {
-                View thisView = thisViewState.mView;
-                int numChildren = 0;
-                if (thisView instanceof ViewGroup) {
-                  View nextChild = null;
-                  // For reasons documented elsewhere in this class, getChildCount is not
-                  // necessarily
-                  // reliable, and so we rely instead on requesting children directly.
-                  while ((nextChild = ((ViewGroup) thisView).getChildAt(numChildren)) != null) {
-                    if (numChildren == 0) {
-                      // Push tag onto the stack so we reprocess it after all children
-                      mReactTagsToRemove.push(reactTag);
-                    }
-                    mReactTagsToRemove.push(nextChild.getId());
-                    numChildren++;
-                  }
-                  // Removing all at once is more efficient than removing one-by-one
-                  ((ViewGroup) thisView).removeAllViews();
-                }
-                if (numChildren == 0) {
-                  deletedViews++;
-                  mTagToViewState.remove(reactTag);
-                  onViewStateDeleted(thisViewState);
-                }
-                // circuit breaker
-                // TODO: check frame time
-                if (deletedViews > 200) {
-                  break;
-                }
-              }
-            }
-
-            if (!mReactTagsToRemove.empty()) {
-              runDeferredTagRemovalAndDeletion();
-            }
-          }
-        });
+    if (mReactTagsToRemove.empty()) {
+      if (mRemoveDeleteTreeUIFrameCallback == null) {
+        mRemoveDeleteTreeUIFrameCallback = new RemoveDeleteTreeUIFrameCallback(mThemedReactContext);
+      }
+      ReactChoreographer.getInstance()
+          .postFrameCallback(
+              ReactChoreographer.CallbackType.IDLE_EVENT, mRemoveDeleteTreeUIFrameCallback);
+    }
   }
 
   @UiThread
@@ -1423,6 +1396,76 @@ public class SurfaceMountingManager {
 
     public @Nullable WritableMap getParams() {
       return mParams;
+    }
+  }
+
+  private class RemoveDeleteTreeUIFrameCallback extends GuardedFrameCallback {
+    private static final long FRAME_TIME_MS = 16;
+    private static final long MAX_TIME_IN_FRAME = 9;
+
+    private RemoveDeleteTreeUIFrameCallback(@NonNull ReactContext reactContext) {
+      super(reactContext);
+    }
+
+    /**
+     * Detect if we still have processing time left in this frame. Technically, it should be fine
+     * for this to take up to 15ms since it executes after all other important UI work.
+     */
+    private boolean haveExceededNonBatchedFrameTime(long frameTimeNanos) {
+      long timeLeftInFrame = FRAME_TIME_MS - ((System.nanoTime() - frameTimeNanos) / 1000000);
+      return timeLeftInFrame < MAX_TIME_IN_FRAME;
+    }
+
+    @Override
+    @UiThread
+    @ThreadConfined(UI)
+    public void doFrameGuarded(long frameTimeNanos) {
+      int deletedViews = 0;
+      try {
+        while (!mReactTagsToRemove.empty()) {
+          int reactTag = mReactTagsToRemove.pop();
+          deletedViews++;
+
+          ViewState thisViewState = getNullableViewState(reactTag);
+          if (thisViewState != null) {
+            View thisView = thisViewState.mView;
+            int numChildren = 0;
+            if (thisView instanceof ViewGroup) {
+              View nextChild = null;
+              // For reasons documented elsewhere in this class, getChildCount is not
+              // necessarily
+              // reliable, and so we rely instead on requesting children directly.
+              while ((nextChild = ((ViewGroup) thisView).getChildAt(numChildren)) != null) {
+                if (numChildren == 0) {
+                  // Push tag onto the stack so we reprocess it after all children
+                  mReactTagsToRemove.push(reactTag);
+                }
+                mReactTagsToRemove.push(nextChild.getId());
+                numChildren++;
+              }
+              // Removing all at once is more efficient than removing one-by-one
+              ((ViewGroup) thisView).removeAllViews();
+            }
+            if (numChildren == 0) {
+              mTagToViewState.remove(reactTag);
+              onViewStateDeleted(thisViewState);
+            }
+
+            // Circuit breaker: after processing every N tags, check that we haven't
+            // exceeded the max allowed time. Since we don't know what other work needs
+            // to happen on the UI thread during this frame, and since this works tends to be
+            // low-priority, we only give this function a fraction of a frame to run.
+            if (deletedViews % 20 == 0 && haveExceededNonBatchedFrameTime(frameTimeNanos)) {
+              break;
+            }
+          }
+        }
+      } finally {
+        if (!mReactTagsToRemove.empty()) {
+          ReactChoreographer.getInstance()
+              .postFrameCallback(ReactChoreographer.CallbackType.IDLE_EVENT, this);
+        }
+      }
     }
   }
 }
