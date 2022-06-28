@@ -17,7 +17,7 @@ class UtilsTests < Test::Unit::TestCase
         SysctlChecker.reset()
         Environment.reset()
         ENV['RCT_NEW_ARCH_ENABLED'] = '0'
-        ENV['USE_HERMES'] = '0'
+        ENV['USE_HERMES'] = '1'
     end
 
     # ======================= #
@@ -75,22 +75,6 @@ class UtilsTests < Test::Unit::TestCase
     def test_getDefaultFlag_whenOldArchitecture()
         # Arrange
         ENV['RCT_NEW_ARCH_ENABLED'] = '0'
-        ENV['USE_HERMES'] = '0'
-        # Act
-        flags = ReactNativePodsUtils.get_default_flags()
-
-        # Assert
-        assert_equal(flags, {
-            :fabric_enabled => false,
-            :hermes_enabled => false,
-            :flipper_configuration => FlipperConfiguration.disabled
-        })
-    end
-
-    def test_getDefaultFlag_whenOldArchitectureButHermesEnabled()
-        # Arrange
-        ENV['RCT_NEW_ARCH_ENABLED'] = '0'
-        ENV['USE_HERMES'] = '1'
 
         # Act
         flags = ReactNativePodsUtils.get_default_flags()
@@ -99,6 +83,22 @@ class UtilsTests < Test::Unit::TestCase
         assert_equal(flags, {
             :fabric_enabled => false,
             :hermes_enabled => true,
+            :flipper_configuration => FlipperConfiguration.disabled
+        })
+    end
+
+    def test_getDefaultFlag_whenOldArchitectureButHermesDisabled()
+        # Arrange
+        ENV['RCT_NEW_ARCH_ENABLED'] = '0'
+        ENV['USE_HERMES'] = '0'
+
+        # Act
+        flags = ReactNativePodsUtils.get_default_flags()
+
+        # Assert
+        assert_equal(flags, {
+            :fabric_enabled => false,
+            :hermes_enabled => false,
             :flipper_configuration => FlipperConfiguration.disabled
         })
     end
@@ -114,6 +114,22 @@ class UtilsTests < Test::Unit::TestCase
         assert_equal(flags, {
             :fabric_enabled => true,
             :hermes_enabled => true,
+            :flipper_configuration => FlipperConfiguration.disabled
+        })
+    end
+
+    def test_getDefaultFlag_whenNewArchitectureButHermesDisabled()
+        # Arrange
+        ENV['RCT_NEW_ARCH_ENABLED'] = '1'
+        ENV['USE_HERMES'] = '0'
+
+        # Act
+        flags = ReactNativePodsUtils.get_default_flags()
+
+        # Assert
+        assert_equal(flags, {
+            :fabric_enabled => true,
+            :hermes_enabled => false,
             :flipper_configuration => FlipperConfiguration.disabled
         })
     end
