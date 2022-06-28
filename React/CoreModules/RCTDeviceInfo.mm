@@ -222,8 +222,9 @@ static NSDictionary *RCTExportedDimensions(RCTModuleRegistry *moduleRegistry, RC
   if (!([nextInterfaceDimensions isEqual:_currentInterfaceDimensions]) && RCTIsAppActive()) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"didUpdateDimensions"
-                                                                              body:nextInterfaceDimensions];
+        [[_moduleRegistry moduleForName:"EventDispatcher"]
+                     sendDeviceEventWithName:@"didUpdateDimensions"
+                                                           body:nextInterfaceDimensions];
           // We only want to track the current _currentInterfaceOrientation only
           // when it happens and only when it is published.
           _currentInterfaceDimensions = nextInterfaceDimensions;
