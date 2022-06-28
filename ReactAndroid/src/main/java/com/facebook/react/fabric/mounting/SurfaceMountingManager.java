@@ -1430,23 +1430,48 @@ public class SurfaceMountingManager {
           if (thisViewState != null) {
             View thisView = thisViewState.mView;
             int numChildren = 0;
+
+            // Children are managed by React Native if both of the following are true:
+            // 1) There are 1 or more children of this View, which must be a ViewGroup
+            // 2) Those children are managed by RN (this is not the case for certain native
+            // components, like embedded Litho hierarchies)
+            boolean childrenAreManaged = false;
+
             if (thisView instanceof ViewGroup) {
               View nextChild = null;
               // For reasons documented elsewhere in this class, getChildCount is not
-              // necessarily
-              // reliable, and so we rely instead on requesting children directly.
+              // necessarily reliable, and so we rely instead on requesting children directly.
               while ((nextChild = ((ViewGroup) thisView).getChildAt(numChildren)) != null) {
-                if (numChildren == 0) {
-                  // Push tag onto the stack so we reprocess it after all children
-                  mReactTagsToRemove.push(reactTag);
-                }
+                int childId = nextChild.getId();
+                childrenAreManaged = childrenAreManaged || getNullableViewState(childId) != null;
                 mReactTagsToRemove.push(nextChild.getId());
                 numChildren++;
               }
               // Removing all at once is more efficient than removing one-by-one
-              ((ViewGroup) thisView).removeAllViews();
+              // If the children are not managed by RN, we simply drop the entire
+              // subtree instead of recursing further.
+              if (childrenAreManaged) {
+                try {
+                  // This can happen if the removeAllViews method is overriden to throw,
+                  // which it is explicitly in some cases (for example embedded Litho views,
+                  // but there could be other cases). In those cases, we want to fail silently
+                  // and then assume the subtree is /not/ managed by React Native.
+                  // In this case short-lived memory-leaks could occur if we aren't clearing
+                  // out the ViewState map properly; but the risk should be small.
+                  // In debug mode, the SoftException will cause a crash. In production it
+                  // will not. This should give good visibility into whether or not this is
+                  // a problem without causing user-facing errors.
+                  ((ViewGroup) thisView).removeAllViews();
+                } catch (RuntimeException e) {
+                  childrenAreManaged = false;
+                  ReactSoftExceptionLogger.logSoftException(TAG, e);
+                }
+              }
             }
-            if (numChildren == 0) {
+            if (childrenAreManaged) {
+              // Push tag onto the stack so we reprocess it after all children
+              mReactTagsToRemove.push(reactTag);
+            } else {
               mTagToViewState.remove(reactTag);
               onViewStateDeleted(thisViewState);
             }
