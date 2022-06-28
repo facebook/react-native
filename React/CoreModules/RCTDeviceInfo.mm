@@ -215,7 +215,6 @@ static NSDictionary *RCTExportedDimensions(RCTModuleRegistry *moduleRegistry, RC
 
 - (void)_interfaceFrameDidChange
 {
-  UIApplication *application = RCTSharedApplication();
   NSDictionary *nextInterfaceDimensions = RCTExportedDimensions(_moduleRegistry, _bridge);
     
   // update and publish the even only when the app is in active state
