@@ -140,4 +140,7 @@ public class ReactFeatureFlags {
    * Allow Differentiator.cpp and FabricMountingManager.cpp to generate a RemoveDeleteTree mega-op.
    */
   public static boolean enableRemoveDeleteTreeInstruction = false;
+
+  /** Temporary flag to allow execution of mount items up to 15ms earlier than normal. */
+  public static boolean enableEarlyScheduledMountItemExecution = false;
 }
