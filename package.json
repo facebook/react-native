@@ -120,7 +120,7 @@
     "react-devtools-core": "4.24.0",
     "react-native-gradle-plugin": "^0.0.7",
     "react-refresh": "^0.4.0",
-    "react-shallow-renderer": "16.14.1",
+    "react-shallow-renderer": "16.15.0",
     "regenerator-runtime": "^0.13.2",
     "scheduler": "^0.21.0",
     "stacktrace-parser": "^0.1.3",
