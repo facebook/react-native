@@ -1,5 +1,23 @@
 # Changelog
 
+## v0.69.1
+
+### Changed
+
+#### iOS specific
+
+- Make all Yoga headers public and add #ifdef __cplusplus ([43f831b23c](https://github.com/facebook/react-native/commit/43f831b23caf22e59af5c6d3fdd62fed3d20d4ec) by [@janicduplessis](https://github.com/janicduplessis))
+
+### Fixed
+
+- Use monotonic clock for performance.now() ([114d31feee](https://github.com/facebook/react-native/commit/114d31feeeb47f5a57419e5088c3cbe9340f757a))
+
+#### iOS specific
+
+- Fix build for React-RCTText ([4ea38e16bf](https://github.com/facebook/react-native/commit/4ea38e16bf533955557057656cba5346d2372acd) by [@ph4r05](https://github.com/ph4r05))
+- Fix RCT-Folly build error when use_frameworks! and hermes are both enabled ([79baca678a](https://github.com/facebook/react-native/commit/79baca678a743560fa16fdd551f1d0d018d34304) by [@Kudo](https://github.com/Kudo))
+- Fix use_frameworks! for 0.69 ([f97c6a5b49](https://github.com/facebook/react-native/commit/f97c6a5b498eec95e99a02c7842cb2ae160cd6cd) by [@Kudo](https://github.com/Kudo))
+
 ## v0.69.0
 
 ### Breaking
