@@ -31,9 +31,11 @@ target 'HelloWorld' do
   end
 
   post_install do |installer|
-    react_native_post_install(installer)
+    # Set `mac_catalyst_enabled` to `true` in order to apply patches necessary for Mac Catalyst builds
+    mac_catalyst_enabled = false
+    
+    react_native_post_install(installer, mac_catalyst_enabled)
     __apply_Xcode_12_5_M1_post_install_workaround(installer)
-    # Enable the next line in order to apply patches necessary for Mac Catalyst builds
-    #__apply_mac_catalyst_patches(installer)
+    
   end
 end

@@ -140,7 +140,11 @@ def use_flipper!(versions = {}, configurations: ['Debug'])
   use_flipper_pods(versions, :configurations => configurations)
 end
 
-def react_native_post_install(installer, react_native_path = "../node_modules/react-native")
+def react_native_post_install(installer, mac_catalyst_enabled, react_native_path = "../node_modules/react-native")
+  if mac_catalyst_enabled
+    ReactNativePodsUtils.apply_mac_catalyst_patches(installer)
+  end
+
   if ReactNativePodsUtils.has_pod(installer, 'Flipper')
     flipper_post_install(installer)
   end
@@ -496,11 +500,6 @@ def __apply_Xcode_12_5_M1_post_install_workaround(installer)
   # See https://github.com/facebook/flipper/issues/834 for more details.
   time_header = "#{Pod::Config.instance.installation_root.to_s}/Pods/RCT-Folly/folly/portability/Time.h"
   `sed -i -e  $'s/ && (__IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0)//' #{time_header}`
-end
-
-# Apply three patches necessary for successful building and archiving RN on Mac Catalyst targets
-def __apply_mac_catalyst_patches(installer)
-  ReactNativePodsUtils.apply_mac_catalyst_patches(installer)
 end
 
 # Monkeypatch of `Pod::Lockfile` to ensure automatic update of dependencies integrated with a local podspec when their version changed.
