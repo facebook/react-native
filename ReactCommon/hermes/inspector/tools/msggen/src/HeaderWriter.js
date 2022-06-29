@@ -70,7 +70,7 @@ export class HeaderWriter {
     this.stream.write('struct UnknownRequest;\n\n');
 
     const namespaceMap: Map<string, Array<Type | Command | Event>> = new Map();
-    const addToMap = function (type) {
+    const addToMap = function (type: Type | Command | Event) {
       const domain = type.domain;
       let types = namespaceMap.get(domain);
       if (!types) {

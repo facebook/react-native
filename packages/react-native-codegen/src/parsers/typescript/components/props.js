@@ -9,6 +9,7 @@
  */
 
 'use strict';
+import type {ASTNode} from '../utils';
 
 const {getValueFromTypes} = require('../utils.js');
 
@@ -221,7 +222,7 @@ function getTypeAnnotationForArray(
 
 function getTypeAnnotation(
   name: string,
-  annotation,
+  annotation: $FlowFixMe | ASTNode,
   defaultValue: $FlowFixMe | null,
   withNullDefault: boolean,
   types: TypeDeclarationMap,

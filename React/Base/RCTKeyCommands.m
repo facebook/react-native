@@ -18,10 +18,10 @@
 
 @interface UIEvent (UIPhysicalKeyboardEvent)
 
-@property (nonatomic) NSString *_modifiedEventInput;
+@property (nonatomic) NSString *_modifiedInput;
 @property (nonatomic) NSString *_unmodifiedInput;
-@property (nonatomic) UIKeyModifierFlags _modifierEventFlags;
-@property (nonatomic) BOOL _isKeyEventDown;
+@property (nonatomic) UIKeyModifierFlags _modifierFlags;
+@property (nonatomic) BOOL _isKeyDown;
 @property (nonatomic) long _keyCode;
 
 @end
@@ -116,16 +116,16 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   UIKeyModifierFlags modifierFlags = 0;
   BOOL isKeyDown = NO;
 
-  if ([event respondsToSelector:@selector(_modifiedEventInput)]) {
-    modifiedInput = [event _modifiedEventInput];
+  if ([event respondsToSelector:@selector(_modifiedInput)]) {
+    modifiedInput = [event _modifiedInput];
   }
 
-  if ([event respondsToSelector:@selector(_modifierEventFlags)]) {
-    modifierFlags = [event _modifierEventFlags];
+  if ([event respondsToSelector:@selector(_modifierFlags)]) {
+    modifierFlags = [event _modifierFlags];
   }
 
-  if ([event respondsToSelector:@selector(_isKeyEventDown)]) {
-    isKeyDown = [event _isKeyEventDown];
+  if ([event respondsToSelector:@selector(_isKeyDown)]) {
+    isKeyDown = [event _isKeyDown];
   }
 
   BOOL interactionEnabled = !UIApplication.sharedApplication.isIgnoringInteractionEvents;

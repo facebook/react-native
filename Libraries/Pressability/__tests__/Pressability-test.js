@@ -28,6 +28,8 @@ function getMock<TArguments: $ReadOnlyArray<mixed>, TReturn>(
   return (fn: $FlowFixMe);
 }
 
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
 const createMockPressability = overrides => {
   const config = {
     cancelable: null,
@@ -105,7 +107,7 @@ const mockUIManagerMeasure = (options?: {|delay: number|}) => {
   });
 };
 
-const createMockTargetEvent = registrationName => {
+const createMockTargetEvent = (registrationName: string) => {
   const nativeEvent = {
     target: 42,
   };
@@ -132,7 +134,7 @@ const createMockTargetEvent = registrationName => {
   };
 };
 
-const createMockMouseEvent = registrationName => {
+const createMockMouseEvent = (registrationName: string) => {
   const nativeEvent = {
     clientX: 0,
     clientY: 0,

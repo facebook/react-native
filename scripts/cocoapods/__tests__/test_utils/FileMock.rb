@@ -16,6 +16,8 @@ class File
     @@open_invocation_count = 0
 
     @@open_files = []
+
+    @@files_to_read = {}
     attr_reader :collected_write
     attr_reader :fsync_invocation_count
 
@@ -91,12 +93,25 @@ class File
         return @@open_files
     end
 
+    def self.file_invocation_params
+        return @@file_invocation_params
+    end
+
     def write(text)
         @collected_write.push(text.to_s)
     end
 
     def fsync()
         @fsync_invocation_count += 1
+    end
+
+
+    def self.files_to_read(files)
+        @@files_to_read = files
+    end
+
+    def self.read(filepath)
+        return @@files_to_read[filepath]
     end
 
     # Resets all the settings for the File mock
@@ -108,7 +123,9 @@ class File
         @@open_invocation_count = 0
         @@mocked_existing_files = []
         @@is_testing = false
+        @@file_invocation_params = []
         @@exist_invocation_params = []
+        @@files_to_read = {}
     end
 
 

@@ -54,12 +54,12 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.CatalystInstanceImpl;
 import com.facebook.react.bridge.JSBundleLoader;
+import com.facebook.react.bridge.JSExceptionHandler;
 import com.facebook.react.bridge.JSIModulePackage;
 import com.facebook.react.bridge.JSIModuleType;
 import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
-import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NativeModuleRegistry;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
 import com.facebook.react.bridge.ProxyJavaScriptExecutor;
@@ -182,7 +182,7 @@ public class ReactInstanceManager {
   // while true any spawned create thread should wait for proper clean up before initializing
   private volatile Boolean mHasStartedDestroying = false;
   private final MemoryPressureRouter mMemoryPressureRouter;
-  private final @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
+  private final @Nullable JSExceptionHandler mJSExceptionHandler;
   private final @Nullable JSIModulePackage mJSIModulePackage;
   private final @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
   private List<ViewManager> mViewManagers;
@@ -226,7 +226,7 @@ public class ReactInstanceManager {
       @Nullable NotThreadSafeBridgeIdleDebugListener bridgeIdleDebugListener,
       LifecycleState initialLifecycleState,
       @Nullable UIImplementationProvider mUIImplementationProvider,
-      NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler,
+      JSExceptionHandler jSExceptionHandler,
       @Nullable RedBoxHandler redBoxHandler,
       boolean lazyViewManagersEnabled,
       @Nullable DevBundleDownloadListener devBundleDownloadListener,
@@ -268,7 +268,7 @@ public class ReactInstanceManager {
     mBridgeIdleDebugListener = bridgeIdleDebugListener;
     mLifecycleState = initialLifecycleState;
     mMemoryPressureRouter = new MemoryPressureRouter(applicationContext);
-    mNativeModuleCallExceptionHandler = nativeModuleCallExceptionHandler;
+    mJSExceptionHandler = jSExceptionHandler;
     mTMMDelegateBuilder = tmmDelegateBuilder;
     synchronized (mPackages) {
       PrinterHolder.getPrinter()
@@ -1331,11 +1331,9 @@ public class ReactInstanceManager {
     ReactMarker.logMarker(CREATE_REACT_CONTEXT_START, jsExecutor.getName());
     final ReactApplicationContext reactContext = new ReactApplicationContext(mApplicationContext);
 
-    NativeModuleCallExceptionHandler exceptionHandler =
-        mNativeModuleCallExceptionHandler != null
-            ? mNativeModuleCallExceptionHandler
-            : mDevSupportManager;
-    reactContext.setNativeModuleCallExceptionHandler(exceptionHandler);
+    JSExceptionHandler exceptionHandler =
+        mJSExceptionHandler != null ? mJSExceptionHandler : mDevSupportManager;
+    reactContext.setJSExceptionHandler(exceptionHandler);
 
     NativeModuleRegistry nativeModuleRegistry = processPackages(reactContext, mPackages, false);
 
@@ -1345,7 +1343,7 @@ public class ReactInstanceManager {
             .setJSExecutor(jsExecutor)
             .setRegistry(nativeModuleRegistry)
             .setJSBundleLoader(jsBundleLoader)
-            .setNativeModuleCallExceptionHandler(exceptionHandler);
+            .setJSExceptionHandler(exceptionHandler);
 
     ReactMarker.logMarker(CREATE_CATALYST_INSTANCE_START);
     // CREATE_CATALYST_INSTANCE_END is in JSCExecutor.cpp

@@ -15,7 +15,7 @@ const React = require('react');
 
 const {Alert, Platform, ToastAndroid, Text, View} = require('react-native');
 
-function burnCPU(milliseconds) {
+function burnCPU(milliseconds: number) {
   const start = global.performance.now();
   while (global.performance.now() < start + milliseconds) {}
 }
@@ -117,7 +117,11 @@ class RequestIdleCallbackTester extends React.Component<
       this._idleTimer = null;
     }
 
-    const handler = deadline => {
+    const handler = (deadline: {
+      didTimeout: boolean,
+      timeRemaining: () => number,
+      ...
+    }) => {
       while (deadline.timeRemaining() > 5) {
         burnCPU(5);
         this.setState({

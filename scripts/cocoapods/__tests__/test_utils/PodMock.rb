@@ -83,4 +83,33 @@ module Pod
             @@executed_commands = []
         end
     end
+
+    class Specification
+        @@specs_from_file = {}
+
+        def self.specs_from_file(specs)
+            @@specs_from_file = specs
+        end
+
+        def self.from_file(path)
+            return @@specs_from_file[path]
+        end
+
+        def reset()
+            @@specs_from_file = {}
+        end
+    end
+
+    class PodSpecMock
+        attr_reader :version
+
+        def initialize(version: "0.0.1")
+            @version = version
+        end
+    end
+
+    class Lockfile
+        def initialize()
+        end
+    end
 end

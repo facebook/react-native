@@ -152,9 +152,21 @@ jsi::Value RuntimeSchedulerBinding::get(
         });
   }
 
+  // TODO: remmove this, as it's deprecated in the JS scheduler
   if (propertyName == "unstable_getCurrentPriorityLevel") {
-    auto currentPriorityLevel = runtimeScheduler_->getCurrentPriorityLevel();
-    return jsi::Value(runtime, serialize(currentPriorityLevel));
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        0,
+        [this](
+            jsi::Runtime &runtime,
+            jsi::Value const &,
+            jsi::Value const *,
+            size_t) noexcept -> jsi::Value {
+          auto currentPriorityLevel =
+              runtimeScheduler_->getCurrentPriorityLevel();
+          return jsi::Value(runtime, serialize(currentPriorityLevel));
+        });
   }
 
   if (propertyName == "unstable_ImmediatePriority") {
@@ -182,8 +194,11 @@ jsi::Value RuntimeSchedulerBinding::get(
     return jsi::Value::undefined();
   }
 
-  react_native_assert(false && "undefined property");
+#ifdef REACT_NATIVE_DEBUG
+  throw std::runtime_error("undefined property");
+#else
   return jsi::Value::undefined();
+#endif
 }
 
 } // namespace react
