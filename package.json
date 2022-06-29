@@ -56,6 +56,7 @@
     "scripts/react_native_pods_utils/script_phases.rb",
     "scripts/react_native_pods_utils/script_phases.sh",
     "scripts/react_native_pods.rb",
+    "scripts/cocoapods",
     "scripts/react-native-xcode.sh",
     "sdks/.hermesversion",
     "sdks/hermes-engine",
