@@ -8,6 +8,8 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTComponent.h>
+// Keeps RCTConvert.h here before yoga for clang module to generate correct header imports.
+#import <React/RCTConvert.h>
 #import <React/RCTLayout.h>
 #import <React/RCTRootView.h>
 #import <yoga/Yoga.h>
