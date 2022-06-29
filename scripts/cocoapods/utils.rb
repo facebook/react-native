@@ -111,9 +111,9 @@ class ReactNativePodsUtils
                     config.build_settings['PRESERVE_DEAD_CODE_INITS_AND_TERMS'] = 'YES'
                     # Modify library search paths
                     config.build_settings['LIBRARY_SEARCH_PATHS'] = ['$(SDKROOT)/usr/lib/swift', '$(SDKROOT)/System/iOSSupport/usr/lib/swift', '$(inherited)']
-                end  
+                end
             end
-            aggregate_target.user_project.save  
+            aggregate_target.user_project.save()
         end
     end
 

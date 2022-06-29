@@ -250,20 +250,20 @@ class UtilsTests < Test::Unit::TestCase
     # ============================== #
 
     def test_fixLibrarySearchPaths_correctlySetsTheSearchPathsForAllProjects
-        firstTarget = prepare_target("FirstTarget")
-        secondTarget = prepare_target("SecondTarget")
-        thirdTarget = prepare_target("ThirdTarget")
+        first_target = prepare_target("FirstTarget")
+        second_target = prepare_target("SecondTarget")
+        third_target = prepare_target("ThirdTarget")
         user_project_mock = UserProjectMock.new("a/path", [
                 prepare_config("Debug"),
                 prepare_config("Release"),
             ],
             :native_targets => [
-                firstTarget,
-                secondTarget
+                first_target,
+                second_target
             ]
         )
         pods_projects_mock = PodsProjectMock.new([], {"hermes-engine" => {}}, :native_targets => [
-            thirdTarget
+            third_target
         ])
         installer = InstallerMock.new(pods_projects_mock, [
             AggregatedProjectMock.new(user_project_mock)
@@ -304,21 +304,19 @@ class UtilsTests < Test::Unit::TestCase
     # ================================= #
 
     def test_applyMacCatalystPatches_correctlyAppliesNecessaryPatches
-        firstTarget = prepare_target("FirstTarget")
-        secondTarget = prepare_target("SecondTarget")
-        thirdTarget = prepare_target("ThirdTarget")
+        first_target = prepare_target("FirstTarget")
+        second_target = prepare_target("SecondTarget")
+        third_target = prepare_target("ThirdTarget", "com.apple.product-type.bundle")
         user_project_mock = UserProjectMock.new("a/path", [
                 prepare_config("Debug"),
                 prepare_config("Release"),
             ],
             :native_targets => [
-                firstTarget,
-                secondTarget
+                first_target,
+                second_target
             ]
         )
-        pods_projects_mock = PodsProjectMock.new([], {"hermes-engine" => {}}, :native_targets => [
-            thirdTarget
-        ])
+        pods_projects_mock = PodsProjectMock.new([third_target], {"hermes-engine" => {}}, :native_targets => [])
         installer = InstallerMock.new(pods_projects_mock, [
             AggregatedProjectMock.new(user_project_mock)
         ])
@@ -344,7 +342,7 @@ class UtilsTests < Test::Unit::TestCase
         end
 
         assert_equal(user_project_mock.save_invocation_count, 1)
-    end    
+    end
 
     # ==================================== #
     # Test - Set Node_Modules User Setting #
@@ -388,9 +386,9 @@ def prepare_config(config_name)
     ]})
 end
 
-def prepare_target(name)
-    return TargetMock.new(name, [
-        prepare_config("Debug"),
-        prepare_config("Release")
-    ])
+def prepare_target(name, product_type = nil)
+  return TargetMock.new(name, [
+      prepare_config("Debug"),
+      prepare_config("Release")
+  ], product_type)
 end

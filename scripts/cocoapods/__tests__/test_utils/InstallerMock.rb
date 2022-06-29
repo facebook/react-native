@@ -138,12 +138,16 @@ ReceivedCommonResolvedBuildSettings = Struct.new(:key, :resolve_against_xcconfig
 class TargetMock
     attr_reader :name
     attr_reader :build_configurations
+    attr_reader :product_type
 
     attr_reader :received_resolved_build_setting_parameters
 
-    def initialize(name, build_configurations = [])
+    def initialize(name, build_configurations = [], product_type = nil)
         @name = name
         @build_configurations = build_configurations
+        unless product_type.nil?
+          @product_type = product_type
+        end
         @received_resolved_build_setting_parameters = []
     end
 
