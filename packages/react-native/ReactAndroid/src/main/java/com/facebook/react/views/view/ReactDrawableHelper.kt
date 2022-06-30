@@ -101,6 +101,20 @@ public object ReactDrawableHelper {
       }
 
   private fun getMask(drawableDescriptionDict: ReadableMap): Drawable? {
+    if (drawableDescriptionDict.hasKey("borderless") && drawableDescriptionDict.getBoolean("borderless")) {
+      // Borderless ripples don't have masks.
+      return null
+    }
+
+    if (drawableDescriptionDict.hasKey("rippleCornerRadius")) {
+      val rippleRadius = PixelUtil.toPixelFromDIP(drawableDescriptionDict.getDouble("rippleCornerRadius"))
+      return ShapeDrawable(RoundRectShape(
+          FloatArray(8) { rippleRadius },
+          null,
+          null
+      ))
+    }
+
     if (!drawableDescriptionDict.hasKey("borderless") ||
         drawableDescriptionDict.isNull("borderless") ||
         !drawableDescriptionDict.getBoolean("borderless")) {
