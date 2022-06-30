@@ -266,20 +266,20 @@ class UtilsTests < Test::Unit::TestCase
     # ============================== #
 
     def test_fixLibrarySearchPaths_correctlySetsTheSearchPathsForAllProjects
-        firstTarget = prepare_target("FirstTarget")
-        secondTarget = prepare_target("SecondTarget")
-        thirdTarget = prepare_target("ThirdTarget")
+        first_target = prepare_target("FirstTarget")
+        second_target = prepare_target("SecondTarget")
+        third_target = prepare_target("ThirdTarget")
         user_project_mock = UserProjectMock.new("a/path", [
                 prepare_config("Debug"),
                 prepare_config("Release"),
             ],
             :native_targets => [
-                firstTarget,
-                secondTarget
+                first_target,
+                second_target
             ]
         )
         pods_projects_mock = PodsProjectMock.new([], {"hermes-engine" => {}}, :native_targets => [
-            thirdTarget
+            third_target
         ])
         installer = InstallerMock.new(pods_projects_mock, [
             AggregatedProjectMock.new(user_project_mock)
@@ -313,6 +313,55 @@ class UtilsTests < Test::Unit::TestCase
 
         assert_equal(user_project_mock.save_invocation_count, 1)
         assert_equal(pods_projects_mock.save_invocation_count, 1)
+    end
+
+    # ================================= #
+    # Test - Apply Mac Catalyst Patches #
+    # ================================= #
+
+    def test_applyMacCatalystPatches_correctlyAppliesNecessaryPatches
+        first_target = prepare_target("FirstTarget")
+        second_target = prepare_target("SecondTarget")
+        third_target = prepare_target("ThirdTarget", "com.apple.product-type.bundle")
+        user_project_mock = UserProjectMock.new("a/path", [
+                prepare_config("Debug"),
+                prepare_config("Release"),
+            ],
+            :native_targets => [
+                first_target,
+                second_target
+            ]
+        )
+        pods_projects_mock = PodsProjectMock.new([third_target], {"hermes-engine" => {}}, :native_targets => [])
+        installer = InstallerMock.new(pods_projects_mock, [
+            AggregatedProjectMock.new(user_project_mock)
+        ])
+
+        # Act
+        ReactNativePodsUtils.apply_mac_catalyst_patches(installer)
+
+        # Assert
+        first_target.build_configurations.each do |config|
+          assert_nil(config.build_settings["CODE_SIGN_IDENTITY[sdk=macosx*]"])
+        end
+
+        second_target.build_configurations.each do |config|
+          assert_nil(config.build_settings["CODE_SIGN_IDENTITY[sdk=macosx*]"])
+        end
+
+        third_target.build_configurations.each do |config|
+          assert_equal(config.build_settings["CODE_SIGN_IDENTITY[sdk=macosx*]"], "-")
+        end
+        
+        user_project_mock.native_targets.each do |target|
+            target.build_configurations.each do |config|
+                assert_equal(config.build_settings["DEAD_CODE_STRIPPING"], "YES")
+                assert_equal(config.build_settings["PRESERVE_DEAD_CODE_INITS_AND_TERMS"], "YES")
+                assert_equal(config.build_settings["LIBRARY_SEARCH_PATHS"], ["$(SDKROOT)/usr/lib/swift", "$(SDKROOT)/System/iOSSupport/usr/lib/swift", "$(inherited)"])
+            end
+        end
+
+        assert_equal(user_project_mock.save_invocation_count, 1)
     end
 
     # ==================================== #
@@ -357,9 +406,9 @@ def prepare_config(config_name)
     ]})
 end
 
-def prepare_target(name)
-    return TargetMock.new(name, [
-        prepare_config("Debug"),
-        prepare_config("Release")
-    ])
+def prepare_target(name, product_type = nil)
+  return TargetMock.new(name, [
+      prepare_config("Debug"),
+      prepare_config("Release")
+  ], product_type)
 end

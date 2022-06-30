@@ -141,7 +141,9 @@ def use_flipper!(versions = {}, configurations: ['Debug'])
   use_flipper_pods(versions, :configurations => configurations)
 end
 
-def react_native_post_install(installer, react_native_path = "../node_modules/react-native")
+def react_native_post_install(installer, react_native_path = "../node_modules/react-native", mac_catalyst_enabled: false)
+  ReactNativePodsUtils.apply_mac_catalyst_patches(installer) if mac_catalyst_enabled
+
   if ReactNativePodsUtils.has_pod(installer, 'Flipper')
     flipper_post_install(installer)
   end

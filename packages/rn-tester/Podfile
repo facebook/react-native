@@ -21,6 +21,7 @@ def pods(options = {}, use_flipper: false)
   project 'RNTesterPods.xcodeproj'
 
   fabric_enabled = true
+
   # Hermes is now enabled by default.
   # The following line will only disable Hermes if the USE_HERMES envvar is SET to a value other than 1 (e.g. USE_HERMES=0).
   hermes_enabled = !ENV.has_key?('USE_HERMES') || ENV['USE_HERMES'] == '1'
@@ -66,6 +67,6 @@ target 'RNTesterIntegrationTests' do
 end
 
 post_install do |installer|
-  react_native_post_install(installer, @prefix_path)
+  react_native_post_install(installer, @prefix_path, :mac_catalyst_enabled => false)
   __apply_Xcode_12_5_M1_post_install_workaround(installer)
 end
