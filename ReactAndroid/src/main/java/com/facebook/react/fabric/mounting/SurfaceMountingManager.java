@@ -85,6 +85,9 @@ public class SurfaceMountingManager {
   private final Stack<Integer> mReactTagsToRemove = new Stack<>();
 
   @ThreadConfined(UI)
+  private final Set<Integer> mErroneouslyReaddedReactTags = new HashSet<>();
+
+  @ThreadConfined(UI)
   private RemoveDeleteTreeUIFrameCallback mRemoveDeleteTreeUIFrameCallback;
 
   // This is null *until* StopSurface is called.
@@ -378,7 +381,29 @@ public class SurfaceMountingManager {
                   + "]: View already has a parent: ["
                   + actualParentId
                   + "] "
-                  + viewParent.getClass().getSimpleName()));
+                  + " Parent: "
+                  + viewParent.getClass().getSimpleName()
+                  + " View: "
+                  + view.getClass().getSimpleName()));
+
+      // We've hit an error case, and `addView` will crash below
+      // if we don't take evasive action (it is an error to add a View
+      // to the hierarchy if it already has a parent).
+      // We don't know /why/ this happens yet, but it does happen
+      // very infrequently in production.
+      // Thus, we do three things here:
+      // (1) We logged a SoftException above, so if there's a crash later
+      // on, we might have some hints about what caused it.
+      // (2) We remove the View from its parent.
+      // (3) In case the View was removed from the hierarchy with the
+      // RemoveDeleteTree instruction, and is now being readded - which
+      // should be impossible - we mark this as a "readded" View and
+      // thus prevent the RemoveDeleteTree worker from deleting this
+      // View in the future.
+      if (viewParent instanceof ViewGroup) {
+        ((ViewGroup) viewParent).removeView(view);
+      }
+      mErroneouslyReaddedReactTags.add(tag);
     }
 
     try {
@@ -418,6 +443,17 @@ public class SurfaceMountingManager {
   @UiThread
   public void removeViewAt(final int tag, final int parentTag, int index) {
     if (isStopped()) {
+      return;
+    }
+
+    // This is "impossible". See comments above.
+    if (mErroneouslyReaddedReactTags.contains(tag)) {
+      ReactSoftExceptionLogger.logSoftException(
+          TAG,
+          new IllegalViewOperationException(
+              "removeViewAt tried to remove a React View that was actually reused. This indicates a bug in the Differ (specifically instruction ordering). ["
+                  + tag
+                  + "]"));
       return;
     }
 
@@ -1426,6 +1462,17 @@ public class SurfaceMountingManager {
           int reactTag = mReactTagsToRemove.pop();
           deletedViews++;
 
+          // This is "impossible". See comments above.
+          if (mErroneouslyReaddedReactTags.contains(reactTag)) {
+            ReactSoftExceptionLogger.logSoftException(
+                TAG,
+                new IllegalViewOperationException(
+                    "RemoveDeleteTree recursively tried to remove a React View that was actually reused. This indicates a bug in the Differ. ["
+                        + reactTag
+                        + "]"));
+            continue;
+          }
+
           ViewState thisViewState = getNullableViewState(reactTag);
           if (thisViewState != null) {
             View thisView = thisViewState.mView;
@@ -1489,6 +1536,12 @@ public class SurfaceMountingManager {
         if (!mReactTagsToRemove.empty()) {
           ReactChoreographer.getInstance()
               .postFrameCallback(ReactChoreographer.CallbackType.IDLE_EVENT, this);
+        } else {
+          // If there are no more tags to process, then clear the "reused"
+          // tag set. Since the RemoveDeleteTree runner executes /after/ all
+          // other mounting instructions have been executed, all in-band Remove
+          // instructions have already had a chance to execute here.
+          mErroneouslyReaddedReactTags.clear();
         }
       }
     }
