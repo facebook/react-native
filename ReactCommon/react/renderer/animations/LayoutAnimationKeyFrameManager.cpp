@@ -304,6 +304,10 @@ LayoutAnimationKeyFrameManager::pullTransaction(
       std::vector<AnimationKeyFrame> keyFramesToAnimate;
       auto const layoutAnimationConfig = animation.layoutAnimationConfig;
       for (auto const &mutation : mutations) {
+        if (mutation.type == ShadowViewMutation::Type::RemoveDeleteTree) {
+          continue;
+        }
+
         ShadowView baselineShadowView =
             (mutation.type == ShadowViewMutation::Type::Delete ||
                      mutation.type == ShadowViewMutation::Type::Remove ||
@@ -1523,6 +1527,10 @@ void LayoutAnimationKeyFrameManager::getAndEraseConflictingAnimations(
     std::vector<AnimationKeyFrame> &conflictingAnimations) const {
   ShadowViewMutationList localConflictingMutations{};
   for (auto const &mutation : mutations) {
+    if (mutation.type == ShadowViewMutation::Type::RemoveDeleteTree) {
+      continue;
+    }
+
     bool mutationIsCreateOrDelete =
         mutation.type == ShadowViewMutation::Type::Create ||
         mutation.type == ShadowViewMutation::Type::Delete;
