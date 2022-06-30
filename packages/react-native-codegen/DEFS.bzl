@@ -164,6 +164,7 @@ def rn_codegen_modules(
         ],
         autoglob = False,
         labels = library_labels + ["codegen_rule"],
+        language = "JAVA",
         visibility = ["PUBLIC"],
         deps = [
             react_native_dep("third-party/java/jsr-305:jsr-305"),
@@ -472,6 +473,7 @@ def rn_codegen_components(
             srcs = [
                 ":{}".format(zip_generated_java_files),
             ],
+            language = "JAVA",
             autoglob = False,
             labels = library_labels + ["codegen_rule"],
             visibility = ["PUBLIC"],
@@ -487,6 +489,7 @@ def rn_codegen_components(
             srcs = [
                 ":{}".format(zip_generated_cxx_files),
             ],
+            language = "JAVA",
             autoglob = False,
             labels = library_labels + ["codegen_rule"],
             visibility = ["PUBLIC"],
