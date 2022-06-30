@@ -19,7 +19,7 @@ class ReactNativePodsUtils
     def self.get_default_flags
         flags = {
             :fabric_enabled => false,
-            :hermes_enabled => false,
+            :hermes_enabled => true,
             :flipper_configuration => FlipperConfiguration.disabled
         }
 
@@ -28,8 +28,8 @@ class ReactNativePodsUtils
             flags[:hermes_enabled] = true
         end
 
-        if ENV['USE_HERMES'] == '1'
-            flags[:hermes_enabled] = true
+        if ENV['USE_HERMES'] == '0'
+            flags[:hermes_enabled] = false
         end
 
         return flags

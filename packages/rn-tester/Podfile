@@ -21,7 +21,11 @@ def pods(options = {}, use_flipper: false)
   project 'RNTesterPods.xcodeproj'
 
   fabric_enabled = true
-  hermes_enabled = ENV['USE_HERMES'] == '1'
+  mac_catalyst_enabled = false
+
+  # Hermes is now enabled by default.
+  # The following line will only disable Hermes if the USE_HERMES envvar is SET to a value other than 1 (e.g. USE_HERMES=0).
+  hermes_enabled = !ENV.has_key?('USE_HERMES') || ENV['USE_HERMES'] == '1'
   puts "Building RNTester with Fabric #{fabric_enabled ? "enabled" : "disabled"}.#{hermes_enabled ? " Using Hermes engine." : ""}"
 
   if ENV['RCT_NEW_ARCH_ENABLED'] == '1'

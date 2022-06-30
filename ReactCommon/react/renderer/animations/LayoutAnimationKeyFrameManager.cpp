@@ -1224,6 +1224,16 @@ void LayoutAnimationKeyFrameManager::queueFinalMutationsForCompletedKeyFrame(
           mutationsList.push_back(ShadowViewMutation::RemoveMutation(
               finalMutation.parentShadowView, prev, finalMutation.index));
           break;
+        case ShadowViewMutation::Type::RemoveDeleteTree:
+          // Note: Currently, there is a guarantee that if RemoveDeleteTree
+          // operations are generated, we /also/ generate corresponding
+          // Remove/Delete operations that are marked as "redundant".
+          // LayoutAnimations will process the redundant operations here, and
+          // ignore this mega-op. In the future for perf reasons it would be
+          // nice to remove the redundant operations entirely but we would need
+          // to find a way to make the RemoveDeleteTree operation work with
+          // LayoutAnimations (that might not be possible).
+          break;
         case ShadowViewMutation::Type::Update:
           mutationsList.push_back(ShadowViewMutation::UpdateMutation(
               prev, finalMutation.newChildShadowView));

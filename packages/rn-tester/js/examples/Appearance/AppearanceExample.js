@@ -52,7 +52,7 @@ class ColorSchemeSubscription extends React.Component<
   }
 }
 
-const ThemedContainer = props => (
+const ThemedContainer = (props: {children: React.Node}) => (
   <RNTesterThemeContext.Consumer>
     {theme => {
       return (
@@ -69,7 +69,7 @@ const ThemedContainer = props => (
   </RNTesterThemeContext.Consumer>
 );
 
-const ThemedText = props => (
+const ThemedText = (props: {children: React.Node}) => (
   <RNTesterThemeContext.Consumer>
     {theme => {
       return <Text style={{color: theme.LabelColor}}>{props.children}</Text>;
@@ -89,7 +89,7 @@ const AppearanceViaHook = () => {
   );
 };
 
-const ColorShowcase = props => (
+const ColorShowcase = (props: {themeName: string}) => (
   <RNTesterThemeContext.Consumer>
     {theme => {
       return (

@@ -14,7 +14,7 @@
     "install-android-jsc": "../../gradlew :packages:rn-tester:android:app:installJscDebug",
     "install-android-hermes": "../../gradlew :packages:rn-tester:android:app:installHermesDebug",
     "clean-android": "rm -rf android/app/build",
-    "setup-ios-jsc": "bundle install && bundle exec pod install",
+    "setup-ios-jsc": "bundle install && USE_HERMES=0 bundle exec pod install",
     "setup-ios-hermes": "bundle install && USE_HERMES=1 bundle exec pod install",
     "clean-ios": "rm -rf build/generated/ios && rm -rf Pods && rm Podfile.lock"
   },

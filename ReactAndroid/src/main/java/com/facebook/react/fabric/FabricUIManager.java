@@ -814,6 +814,26 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       if (UiThreadUtil.isOnUiThread()) {
         // We only read these flags on the UI thread.
         mMountItemDispatcher.tryDispatchMountItems();
+      } else {
+        // The Choreographer will dispatch any mount items,
+        // but it only gets called at the /beginning/ of the
+        // frame - it has no idea if, or when, there is actually work scheduled. That means if we
+        // have a big chunk of work
+        // scheduled but the scheduling happens 1ms after the
+        // start of a UI frame, we'll miss out on 15ms of time
+        // to perform the work (assuming a 16ms frame).
+        // The DispatchUIFrameCallback still has value because of
+        // the PreMountItems that we need to process at a lower
+        // priority.
+        if (ReactFeatureFlags.enableEarlyScheduledMountItemExecution) {
+          UiThreadUtil.runOnUiThread(
+              new Runnable() {
+                @Override
+                public void run() {
+                  mDispatchUIFrameCallback.doFrameGuarded(System.nanoTime());
+                }
+              });
+        }
       }
     }
 

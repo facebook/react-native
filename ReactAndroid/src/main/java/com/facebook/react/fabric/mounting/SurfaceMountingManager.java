@@ -19,6 +19,7 @@ import androidx.annotation.UiThread;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -29,9 +30,11 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
 import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.fabric.GuardedFrameCallback;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.mounting.MountingManager.MountItemExecutor;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
+import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.ReactOverflowViewWithInset;
@@ -51,6 +54,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
+import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.annotation.Nullable;
@@ -73,6 +77,15 @@ public class SurfaceMountingManager {
   private ViewManagerRegistry mViewManagerRegistry;
   private RootViewManager mRootViewManager;
   private MountItemExecutor mMountItemExecutor;
+
+  // Stack of deferred-removal tags for Views that can be
+  // removed asynchronously. Guaranteed to be disconnected
+  // from the viewport and these tags will not be reused in the future.
+  @ThreadConfined(UI)
+  private final Stack<Integer> mReactTagsToRemove = new Stack<>();
+
+  @ThreadConfined(UI)
+  private RemoveDeleteTreeUIFrameCallback mRemoveDeleteTreeUIFrameCallback;
 
   // This is null *until* StopSurface is called.
   private Set<Integer> mTagSetForStoppedSurface;
@@ -558,6 +571,189 @@ public class SurfaceMountingManager {
               logViewHierarchy(parentView, false);
             }
           });
+    }
+  }
+
+  @UiThread
+  public void removeDeleteTreeAt(final int tag, final int parentTag, int index) {
+    if (isStopped()) {
+      return;
+    }
+
+    UiThreadUtil.assertOnUiThread();
+    ViewState parentViewState = getNullableViewState(parentTag);
+
+    // TODO: throw exception here?
+    if (parentViewState == null) {
+      ReactSoftExceptionLogger.logSoftException(
+          MountingManager.TAG,
+          new IllegalStateException(
+              "Unable to find viewState for tag: [" + parentTag + "] for removeDeleteTreeAt"));
+      return;
+    }
+
+    if (!(parentViewState.mView instanceof ViewGroup)) {
+      String message =
+          "Unable to remove+delete a view from a view that is not a ViewGroup. ParentTag: "
+              + parentTag
+              + " - Tag: "
+              + tag
+              + " - Index: "
+              + index;
+      FLog.e(TAG, message);
+      throw new IllegalStateException(message);
+    }
+
+    final ViewGroup parentView = (ViewGroup) parentViewState.mView;
+
+    if (parentView == null) {
+      throw new IllegalStateException("Unable to find view for tag [" + parentTag + "]");
+    }
+
+    if (SHOW_CHANGED_VIEW_HIERARCHIES) {
+      // Display children before deleting any
+      FLog.e(
+          TAG,
+          "removeDeleteTreeAt: [" + tag + "] -> [" + parentTag + "] idx: " + index + " BEFORE");
+      logViewHierarchy(parentView, false);
+    }
+
+    ViewGroupManager<ViewGroup> viewGroupManager = getViewGroupManager(parentViewState);
+
+    // Verify that the view we're about to remove has the same tag we expect
+    View view = viewGroupManager.getChildAt(parentView, index);
+    int actualTag = (view != null ? view.getId() : -1);
+    if (actualTag != tag) {
+      int tagActualIndex = -1;
+      int parentChildrenCount = parentView.getChildCount();
+      for (int i = 0; i < parentChildrenCount; i++) {
+        if (parentView.getChildAt(i).getId() == tag) {
+          tagActualIndex = i;
+          break;
+        }
+      }
+
+      // TODO T74425739: previously, we did not do this check and `removeViewAt` would be executed
+      // below, sometimes crashing there. *However*, interestingly enough, `removeViewAt` would not
+      // complain if you removed views from an already-empty parent. This seems necessary currently
+      // for certain ViewManagers that remove their own children - like BottomSheet?
+      // This workaround seems not-great, but for now, we just return here for
+      // backwards-compatibility. Essentially, if a view has already been removed from the
+      // hierarchy, we treat it as a noop.
+      if (tagActualIndex == -1) {
+        FLog.e(
+            TAG,
+            "removeDeleteTreeAt: ["
+                + tag
+                + "] -> ["
+                + parentTag
+                + "] @"
+                + index
+                + ": view already removed from parent! Children in parent: "
+                + parentChildrenCount);
+        return;
+      }
+
+      // Here we are guaranteed that the view is still in the View hierarchy, just
+      // at a different index. In debug mode we'll crash here; in production, we'll remove
+      // the child from the parent and move on.
+      // This is an issue that is safely recoverable 95% of the time. If this allows corruption
+      // of the view hierarchy and causes bugs or a crash after this point, there will be logs
+      // indicating that this happened.
+      // This is likely *only* necessary because of Fabric's LayoutAnimations implementation.
+      // If we can fix the bug there, or remove the need for LayoutAnimation index adjustment
+      // entirely, we can just throw this exception without regression user experience.
+      logViewHierarchy(parentView, true);
+      ReactSoftExceptionLogger.logSoftException(
+          TAG,
+          new IllegalStateException(
+              "Tried to remove+delete view ["
+                  + tag
+                  + "] of parent ["
+                  + parentTag
+                  + "] at index "
+                  + index
+                  + ", but got view tag "
+                  + actualTag
+                  + " - actual index of view: "
+                  + tagActualIndex));
+      index = tagActualIndex;
+    }
+
+    try {
+      viewGroupManager.removeViewAt(parentView, index);
+    } catch (RuntimeException e) {
+      // Note: `getChildCount` may not always be accurate!
+      // We don't currently have a good explanation other than, in situations where you
+      // would empirically expect to see childCount > 0, the childCount is reported as 0.
+      // This is likely due to a ViewManager overriding getChildCount or some other methods
+      // in a way that is strictly incorrect, but potentially only visible here.
+      // The failure mode is actually that in `removeViewAt`, a NullPointerException is
+      // thrown when we try to perform an operation on a View that doesn't exist, and
+      // is therefore null.
+      // We try to add some extra diagnostics here, but we always try to remove the View
+      // from the hierarchy first because detecting by looking at childCount will not work.
+      //
+      // Note that the lesson here is that `getChildCount` is not /required/ to adhere to
+      // any invariants. If you add 9 children to a parent, the `getChildCount` of the parent
+      // may not be equal to 9. This apparently causes no issues with Android and is common
+      // enough that we shouldn't try to change this invariant, without a lot of thought.
+      int childCount = viewGroupManager.getChildCount(parentView);
+
+      logViewHierarchy(parentView, true);
+
+      throw new IllegalStateException(
+          "Cannot remove child at index "
+              + index
+              + " from parent ViewGroup ["
+              + parentView.getId()
+              + "], only "
+              + childCount
+              + " children in parent. Warning: childCount may be incorrect!",
+          e);
+    }
+
+    // Display children after deleting any
+    if (SHOW_CHANGED_VIEW_HIERARCHIES) {
+      final int finalIndex = index;
+      UiThreadUtil.runOnUiThread(
+          new Runnable() {
+            @Override
+            public void run() {
+              FLog.e(
+                  TAG,
+                  "removeViewAt: ["
+                      + tag
+                      + "] -> ["
+                      + parentTag
+                      + "] idx: "
+                      + finalIndex
+                      + " AFTER");
+              logViewHierarchy(parentView, false);
+            }
+          });
+    }
+
+    // The View has been removed from the View hierarchy; now it
+    // and all of its children, if any, need to be deleted, recursively.
+    // We want to maintain the legacy ordering: delete (and call onViewStateDeleted)
+    // for leaf nodes, and then parents, recursively.
+    // Schedule the Runnable first, to detect if we need to schedule a Runnable at all.
+    // Since this current function and the Runnable both run on the UI thread, there is
+    // no race condition here.
+    runDeferredTagRemovalAndDeletion();
+    mReactTagsToRemove.push(tag);
+  }
+
+  @UiThread
+  private void runDeferredTagRemovalAndDeletion() {
+    if (mReactTagsToRemove.empty()) {
+      if (mRemoveDeleteTreeUIFrameCallback == null) {
+        mRemoveDeleteTreeUIFrameCallback = new RemoveDeleteTreeUIFrameCallback(mThemedReactContext);
+      }
+      ReactChoreographer.getInstance()
+          .postFrameCallback(
+              ReactChoreographer.CallbackType.IDLE_EVENT, mRemoveDeleteTreeUIFrameCallback);
     }
   }
 
@@ -1200,6 +1396,101 @@ public class SurfaceMountingManager {
 
     public @Nullable WritableMap getParams() {
       return mParams;
+    }
+  }
+
+  private class RemoveDeleteTreeUIFrameCallback extends GuardedFrameCallback {
+    private static final long FRAME_TIME_MS = 16;
+    private static final long MAX_TIME_IN_FRAME = 9;
+
+    private RemoveDeleteTreeUIFrameCallback(@NonNull ReactContext reactContext) {
+      super(reactContext);
+    }
+
+    /**
+     * Detect if we still have processing time left in this frame. Technically, it should be fine
+     * for this to take up to 15ms since it executes after all other important UI work.
+     */
+    private boolean haveExceededNonBatchedFrameTime(long frameTimeNanos) {
+      long timeLeftInFrame = FRAME_TIME_MS - ((System.nanoTime() - frameTimeNanos) / 1000000);
+      return timeLeftInFrame < MAX_TIME_IN_FRAME;
+    }
+
+    @Override
+    @UiThread
+    @ThreadConfined(UI)
+    public void doFrameGuarded(long frameTimeNanos) {
+      int deletedViews = 0;
+      try {
+        while (!mReactTagsToRemove.empty()) {
+          int reactTag = mReactTagsToRemove.pop();
+          deletedViews++;
+
+          ViewState thisViewState = getNullableViewState(reactTag);
+          if (thisViewState != null) {
+            View thisView = thisViewState.mView;
+            int numChildren = 0;
+
+            // Children are managed by React Native if both of the following are true:
+            // 1) There are 1 or more children of this View, which must be a ViewGroup
+            // 2) Those children are managed by RN (this is not the case for certain native
+            // components, like embedded Litho hierarchies)
+            boolean childrenAreManaged = false;
+
+            if (thisView instanceof ViewGroup) {
+              View nextChild = null;
+              // For reasons documented elsewhere in this class, getChildCount is not
+              // necessarily reliable, and so we rely instead on requesting children directly.
+              while ((nextChild = ((ViewGroup) thisView).getChildAt(numChildren)) != null) {
+                int childId = nextChild.getId();
+                childrenAreManaged = childrenAreManaged || getNullableViewState(childId) != null;
+                mReactTagsToRemove.push(nextChild.getId());
+                numChildren++;
+              }
+              // Removing all at once is more efficient than removing one-by-one
+              // If the children are not managed by RN, we simply drop the entire
+              // subtree instead of recursing further.
+              if (childrenAreManaged) {
+                try {
+                  // This can happen if the removeAllViews method is overriden to throw,
+                  // which it is explicitly in some cases (for example embedded Litho views,
+                  // but there could be other cases). In those cases, we want to fail silently
+                  // and then assume the subtree is /not/ managed by React Native.
+                  // In this case short-lived memory-leaks could occur if we aren't clearing
+                  // out the ViewState map properly; but the risk should be small.
+                  // In debug mode, the SoftException will cause a crash. In production it
+                  // will not. This should give good visibility into whether or not this is
+                  // a problem without causing user-facing errors.
+                  ((ViewGroup) thisView).removeAllViews();
+                } catch (RuntimeException e) {
+                  childrenAreManaged = false;
+                  ReactSoftExceptionLogger.logSoftException(TAG, e);
+                }
+              }
+            }
+            if (childrenAreManaged) {
+              // Push tag onto the stack so we reprocess it after all children
+              mReactTagsToRemove.push(reactTag);
+            } else {
+              mTagToViewState.remove(reactTag);
+              onViewStateDeleted(thisViewState);
+            }
+
+            // Circuit breaker: after processing every N tags, check that we haven't
+            // exceeded the max allowed time. Since we don't know what other work needs
+            // to happen on the UI thread during this frame, and since this works tends to be
+            // low-priority, we only give this function a fraction of a frame to run.
+            if (deletedViews % 20 == 0 && haveExceededNonBatchedFrameTime(frameTimeNanos)) {
+              break;
+            }
+          }
+        }
+      } finally {
+        if (!mReactTagsToRemove.empty()) {
+          ReactChoreographer.getInstance()
+              .postFrameCallback(ReactChoreographer.CallbackType.IDLE_EVENT, this);
+        }
+      }
     }
   }
 }

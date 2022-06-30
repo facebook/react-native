@@ -15,7 +15,7 @@ const React = require('react');
 const {Alert, Button, View, StyleSheet} = require('react-native');
 const {RNTesterThemeContext} = require('../../components/RNTesterTheme');
 
-function onButtonPress(buttonName) {
+function onButtonPress(buttonName: string) {
   Alert.alert(`Your application has been ${buttonName}!`);
 }
 

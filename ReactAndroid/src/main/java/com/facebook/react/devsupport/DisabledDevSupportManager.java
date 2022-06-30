@@ -11,7 +11,7 @@ import android.app.Activity;
 import android.util.Pair;
 import android.view.View;
 import androidx.annotation.Nullable;
-import com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler;
+import com.facebook.react.bridge.DefaultJSExceptionHandler;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.SurfaceDelegate;
@@ -33,10 +33,10 @@ import java.io.File;
  */
 public class DisabledDevSupportManager implements DevSupportManager {
 
-  private final DefaultNativeModuleCallExceptionHandler mDefaultNativeModuleCallExceptionHandler;
+  private final DefaultJSExceptionHandler mDefaultJSExceptionHandler;
 
   public DisabledDevSupportManager() {
-    mDefaultNativeModuleCallExceptionHandler = new DefaultNativeModuleCallExceptionHandler();
+    mDefaultJSExceptionHandler = new DefaultJSExceptionHandler();
   }
 
   @Override
@@ -192,7 +192,7 @@ public class DisabledDevSupportManager implements DevSupportManager {
 
   @Override
   public void handleException(Exception e) {
-    mDefaultNativeModuleCallExceptionHandler.handleException(e);
+    mDefaultJSExceptionHandler.handleException(e);
   }
 
   @Override

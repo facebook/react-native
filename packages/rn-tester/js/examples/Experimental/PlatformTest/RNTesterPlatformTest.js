@@ -32,7 +32,8 @@ export default function RNTesterPlatformTest(props: Props): React.MixedElement {
     component: UnderTestComponent,
   } = props;
 
-  const {harness, reset, results, testKey} = usePlatformTestHarness();
+  const {harness, numPending, reset, results, testKey} =
+    usePlatformTestHarness();
 
   return (
     <View style={styles.root}>
@@ -46,6 +47,7 @@ export default function RNTesterPlatformTest(props: Props): React.MixedElement {
         <UnderTestComponent key={testKey} harness={harness} />
       </View>
       <RNTesterPlatformTestResultView
+        numPending={numPending}
         reset={reset}
         results={results}
         style={styles.results}

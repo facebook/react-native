@@ -133,7 +133,7 @@ function handleUpdate(): void {
   }
 }
 
-function appendNewLog(newLog) {
+function appendNewLog(newLog: LogBoxLog) {
   // Don't want store these logs because they trigger a
   // state update when we add them to the store.
   if (isMessageIgnored(newLog.message.content)) {

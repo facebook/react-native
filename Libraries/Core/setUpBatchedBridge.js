@@ -27,6 +27,8 @@ if (global.RN$Bridgeless === true && global.RN$registerCallableModule) {
       | $TEMPORARY$string<'RCTNativeAppEventEmitter'>
       | $TEMPORARY$string<'SamplingProfiler'>
       | $TEMPORARY$string<'Systrace'>,
+    /* $FlowFixMe[missing-local-annot] The type annotation(s) required by
+     * Flow's LTI update could not be added via codemod */
     factory,
   ) => BatchedBridge.registerLazyCallableModule(moduleName, factory);
 }

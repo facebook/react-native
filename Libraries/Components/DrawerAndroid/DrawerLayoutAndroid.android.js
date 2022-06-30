@@ -232,6 +232,8 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
     );
   }
 
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   _onDrawerSlide = event => {
     if (this.props.onDrawerSlide) {
       this.props.onDrawerSlide(event);
@@ -253,6 +255,8 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
     }
   };
 
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   _onDrawerStateChanged = event => {
     if (this.props.onDrawerStateChanged) {
       this.props.onDrawerStateChanged(
