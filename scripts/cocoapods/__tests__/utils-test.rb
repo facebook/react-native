@@ -341,12 +341,16 @@ class UtilsTests < Test::Unit::TestCase
         ReactNativePodsUtils.apply_mac_catalyst_patches(installer)
 
         # Assert
-        pods_projects_mock.targets.each do |target|
-            if target.respond_to?(:product_type) and target.product_type == "com.apple.product-type.bundle"
-                target.build_configurations.each do |config|
-                    assert_equal(config.build_settings["CODE_SIGN_IDENTITY[sdk=macosx*]"], "-")
-                end
-            end
+        first_target.build_configurations.each do |config|
+          assert_nil(config.build_settings["CODE_SIGN_IDENTITY[sdk=macosx*]"])
+        end
+
+        second_target.build_configurations.each do |config|
+          assert_nil(config.build_settings["CODE_SIGN_IDENTITY[sdk=macosx*]"])
+        end
+
+        third_target.build_configurations.each do |config|
+          assert_equal(config.build_settings["CODE_SIGN_IDENTITY[sdk=macosx*]"], "-")
         end
         
         user_project_mock.native_targets.each do |target|
