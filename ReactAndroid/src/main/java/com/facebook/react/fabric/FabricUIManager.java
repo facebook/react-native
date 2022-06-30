@@ -811,9 +811,15 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
     if (shouldSchedule) {
       mMountItemDispatcher.addMountItem(mountItem);
+      Runnable runnable =
+          new Runnable() {
+            @Override
+            public void run() {
+              mMountItemDispatcher.tryDispatchMountItems();
+            }
+          };
       if (UiThreadUtil.isOnUiThread()) {
-        // We only read these flags on the UI thread.
-        mMountItemDispatcher.tryDispatchMountItems();
+        runnable.run();
       } else {
         // The Choreographer will dispatch any mount items,
         // but it only gets called at the /beginning/ of the
@@ -826,13 +832,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         // the PreMountItems that we need to process at a lower
         // priority.
         if (ReactFeatureFlags.enableEarlyScheduledMountItemExecution) {
-          UiThreadUtil.runOnUiThread(
-              new Runnable() {
-                @Override
-                public void run() {
-                  mDispatchUIFrameCallback.doFrameGuarded(System.nanoTime());
-                }
-              });
+          UiThreadUtil.runOnUiThread(runnable);
         }
       }
     }
