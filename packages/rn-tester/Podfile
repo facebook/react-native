@@ -21,7 +21,6 @@ def pods(options = {}, use_flipper: false)
   project 'RNTesterPods.xcodeproj'
 
   fabric_enabled = true
-  mac_catalyst_enabled = false
   hermes_enabled = ENV['USE_HERMES'] == '1'
   puts "Building RNTester with Fabric #{fabric_enabled ? "enabled" : "disabled"}.#{hermes_enabled ? " Using Hermes engine." : ""}"
 
@@ -65,6 +64,7 @@ target 'RNTesterIntegrationTests' do
 end
 
 post_install do |installer|
+  mac_catalyst_enabled = false
   react_native_post_install(installer, mac_catalyst_enabled, @prefix_path)
   __apply_Xcode_12_5_M1_post_install_workaround(installer)
 end
