@@ -17,6 +17,7 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
+  RCTNewArchitectureValidationPlaceholder(RCTNotAllowedInAppWideFabric, self, nil);
   return [RCTSegmentedControl new];
 }
 
