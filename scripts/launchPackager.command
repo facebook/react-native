@@ -10,6 +10,7 @@ clear
 
 THIS_DIR=$(cd -P "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)
 
+export PODS_ROOT="$THIS_DIR/../../../ios/Pods"
 WITH_ENVIRONMENT="$THIS_DIR/xcode/with-environment.sh"
 source $WITH_ENVIRONMENT
 
