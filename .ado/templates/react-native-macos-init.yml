@@ -82,14 +82,9 @@ steps:
     displayName: Publish react-native-macos-init to verdaccio
 
   - task: CmdLine@2
-    displayName: Install react-native cli
-    inputs:
-      script: npm install -g react-native-cli
-
-  - task: CmdLine@2
     displayName: Init new project
     inputs:
-      script: npx react-native init testcli
+      script: npx --yes react-native@0.68.2 init testcli --template react-native@0.68.2
       workingDirectory: $(Agent.BuildDirectory)
 
   - task: CmdLine@2
