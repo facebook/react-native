@@ -11,6 +11,7 @@
 #include <gtest/gtest.h>
 
 #include <ReactCommon/RuntimeExecutor.h>
+#include <react/renderer/animations/LayoutAnimationDriver.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProvider.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
@@ -28,8 +29,6 @@
 // Uncomment when random test blocks are uncommented below.
 // #include <algorithm>
 // #include <random>
-
-#include "LayoutAnimationDriver.h"
 
 MockClock::time_point MockClock::time_ = {};
 

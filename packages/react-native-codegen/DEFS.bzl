@@ -550,7 +550,7 @@ def rn_codegen_cxx_modules(
             fbobjc_compiler_flags = get_apple_compiler_flags(),
             fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
             labels = library_labels + ["codegen_rule"],
-            platforms = (ANDROID, APPLE),
+            platforms = (ANDROID, APPLE, CXX),
             preprocessor_flags = [
                 "-DLOG_TAG=\"ReactNative\"",
                 "-DWITH_FBSYSTRACE=1",

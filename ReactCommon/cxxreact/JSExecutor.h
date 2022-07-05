@@ -128,7 +128,8 @@ class RN_EXPORT JSExecutor {
    */
   virtual std::string getDescription() = 0;
 
-  virtual void handleMemoryPressure(__unused int pressureLevel) {}
+  virtual void handleMemoryPressure(__attribute__((unused)) int pressureLevel) {
+  }
 
   virtual void destroy() {}
   virtual ~JSExecutor() {}
