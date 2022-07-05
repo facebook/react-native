@@ -139,7 +139,7 @@ class Connection::Impl : public inspector::InspectorObserver,
 
   template <typename C>
   void runInExecutor(int id, C callback) {
-    folly::via(executor_.get(), [cb = std::move(callback)]() { cb(); });
+    executor_->add([cb = std::move(callback)]() { cb(); });
   }
 
   std::shared_ptr<RuntimeAdapter> runtimeAdapter_;
@@ -1411,20 +1411,14 @@ Connection::Impl::makePropsFromValue(
 }
 
 void Connection::Impl::handle(const m::runtime::GetHeapUsageRequest &req) {
-  auto resp = std::make_shared<m::runtime::GetHeapUsageResponse>();
-  resp->id = req.id;
-
-  inspector_
-      ->executeIfEnabled(
-          "Runtime.getHeapUsage",
-          [this, req, resp](const debugger::ProgramState &state) {
-            auto heapInfo = getRuntime().instrumentation().getHeapInfo(false);
-            resp->usedSize = heapInfo["hermes_allocatedBytes"];
-            resp->totalSize = heapInfo["hermes_heapSize"];
-          })
-      .via(executor_.get())
-      .thenValue([this, resp](auto &&) { sendResponseToClient(*resp); })
-      .thenError<std::exception>(sendErrorToClient(req.id));
+  runInExecutor(req.id, [this, req]() {
+    auto heapInfo = getRuntime().instrumentation().getHeapInfo(false);
+    auto resp = std::make_shared<m::runtime::GetHeapUsageResponse>();
+    resp->id = req.id;
+    resp->usedSize = heapInfo["hermes_allocatedBytes"];
+    resp->totalSize = heapInfo["hermes_heapSize"];
+    sendResponseToClient(*resp);
+  });
 }
 
 void Connection::Impl::handle(const m::runtime::GetPropertiesRequest &req) {
