@@ -473,7 +473,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
           activeTouch.eventEmitter->onPointerDown(pointerEvent);
           break;
         case RCTTouchEventTypeTouchMove:
-          activeTouch.eventEmitter->onPointerMove2(pointerEvent);
+          activeTouch.eventEmitter->onPointerMove(pointerEvent);
           break;
         case RCTTouchEventTypeTouchEnd:
           activeTouch.eventEmitter->onPointerUp(pointerEvent);
@@ -674,14 +674,14 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 
   for (UIView *componentView in [eventPathViews reverseObjectEnumerator]) {
     BOOL shouldEmitEvent =
-        hasParentEnterListener || IsViewListeningToEvent(componentView, ViewEvents::Offset::PointerEnter2);
+        hasParentEnterListener || IsViewListeningToEvent(componentView, ViewEvents::Offset::PointerEnter);
 
     if (shouldEmitEvent && ![_currentlyHoveredViews containsObject:componentView]) {
       SharedTouchEventEmitter eventEmitter =
           GetTouchEmitterFromView(componentView, [recognizer locationInView:componentView]);
       if (eventEmitter != nil) {
         PointerEvent event = CreatePointerEventFromIncompleteHoverData(componentView, clientLocation, timestamp);
-        eventEmitter->onPointerEnter2(event);
+        eventEmitter->onPointerEnter(event);
       }
     }
 
@@ -689,7 +689,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
       hasParentEnterListener = YES;
     }
 
-    if (!hasMoveListenerInEventPath && IsViewListeningToEvent(componentView, ViewEvents::Offset::PointerMove2)) {
+    if (!hasMoveListenerInEventPath && IsViewListeningToEvent(componentView, ViewEvents::Offset::PointerMove)) {
       hasMoveListenerInEventPath = YES;
     }
   }
@@ -699,7 +699,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
     SharedTouchEventEmitter eventEmitter = GetTouchEmitterFromView(targetView, [recognizer locationInView:targetView]);
     if (eventEmitter != nil) {
       PointerEvent event = CreatePointerEventFromIncompleteHoverData(targetView, clientLocation, timestamp);
-      eventEmitter->onPointerMove2(event);
+      eventEmitter->onPointerMove(event);
     }
   }
 
@@ -725,7 +725,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
   BOOL hasParentLeaveListener = NO;
   for (UIView *componentView in [_currentlyHoveredViews reverseObjectEnumerator]) {
     BOOL shouldEmitEvent =
-        hasParentLeaveListener || IsViewListeningToEvent(componentView, ViewEvents::Offset::PointerLeave2);
+        hasParentLeaveListener || IsViewListeningToEvent(componentView, ViewEvents::Offset::PointerLeave);
 
     if (shouldEmitEvent && ![eventPathViews containsObject:componentView]) {
       [viewsToEmitLeaveEventsTo addObject:componentView];
@@ -741,7 +741,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
         GetTouchEmitterFromView(componentView, [recognizer locationInView:componentView]);
     if (eventEmitter != nil) {
       PointerEvent event = CreatePointerEventFromIncompleteHoverData(componentView, clientLocation, timestamp);
-      eventEmitter->onPointerLeave2(event);
+      eventEmitter->onPointerLeave(event);
     }
   }
 

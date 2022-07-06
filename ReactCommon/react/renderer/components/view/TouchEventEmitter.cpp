@@ -150,8 +150,8 @@ void TouchEventEmitter::onPointerDown(const PointerEvent &event) const {
       RawEvent::Category::ContinuousStart);
 }
 
-void TouchEventEmitter::onPointerMove2(const PointerEvent &event) const {
-  dispatchUniqueEvent("pointerMove2", [event](jsi::Runtime &runtime) {
+void TouchEventEmitter::onPointerMove(const PointerEvent &event) const {
+  dispatchUniqueEvent("pointerMove", [event](jsi::Runtime &runtime) {
     return pointerEventPayload(runtime, event);
   });
 }
@@ -164,17 +164,17 @@ void TouchEventEmitter::onPointerUp(const PointerEvent &event) const {
       RawEvent::Category::ContinuousEnd);
 }
 
-void TouchEventEmitter::onPointerEnter2(const PointerEvent &event) const {
+void TouchEventEmitter::onPointerEnter(const PointerEvent &event) const {
   dispatchPointerEvent(
-      "pointerEnter2",
+      "pointerEnter",
       event,
       EventPriority::AsynchronousBatched,
       RawEvent::Category::ContinuousStart);
 }
 
-void TouchEventEmitter::onPointerLeave2(const PointerEvent &event) const {
+void TouchEventEmitter::onPointerLeave(const PointerEvent &event) const {
   dispatchPointerEvent(
-      "pointerLeave2",
+      "pointerLeave",
       event,
       EventPriority::AsynchronousBatched,
       RawEvent::Category::ContinuousEnd);

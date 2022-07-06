@@ -99,10 +99,10 @@ const bubblingEventTypes = {
       bubbled: 'onPointerDown',
     },
   },
-  topPointerMove2: {
+  topPointerMove: {
     phasedRegistrationNames: {
-      captured: 'onPointerMove2Capture',
-      bubbled: 'onPointerMove2',
+      captured: 'onPointerMoveCapture',
+      bubbled: 'onPointerMove',
     },
   },
   topPointerUp: {
@@ -111,17 +111,17 @@ const bubblingEventTypes = {
       bubbled: 'onPointerUp',
     },
   },
-  topPointerEnter2: {
+  topPointerEnter: {
     phasedRegistrationNames: {
-      captured: 'onPointerEnter2Capture',
-      bubbled: 'onPointerEnter2',
+      captured: 'onPointerEnterCapture',
+      bubbled: 'onPointerEnter',
       skipBubbling: true,
     },
   },
-  topPointerLeave2: {
+  topPointerLeave: {
     phasedRegistrationNames: {
-      captured: 'onPointerLeave2Capture',
-      bubbled: 'onPointerLeave2',
+      captured: 'onPointerLeaveCapture',
+      bubbled: 'onPointerLeave',
       skipBubbling: true,
     },
   },
@@ -324,9 +324,9 @@ const validAttributesForEventProps = ConditionallyIgnoredEventHandlers({
   onPointerUp: true,
   onPointerDown: true,
   onPointerCancel: true,
-  onPointerEnter2: true,
-  onPointerMove2: true,
-  onPointerLeave2: true,
+  onPointerEnter: true,
+  onPointerMove: true,
+  onPointerLeave: true,
   onPointerOver: true,
   onPointerOut: true,
 });
