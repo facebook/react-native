@@ -944,6 +944,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         ? -1
         : initialNumToRenderOrDefault(this.props.initialNumToRender) - 1;
       const {first, last} = this.state;
+      // scroll to top optimization. The first page is always rendered.
       if (!this.props.inverted) {
         this._pushCells(
           cells,
@@ -1006,6 +1007,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         firstAfterInitial,
         last,
       );
+      // scroll to bottom optimization. The last page is always rendered in an inverted flatlist.
       if (this.props.inverted) {
         this._pushCells(
           cells,
