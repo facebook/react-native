@@ -17,7 +17,10 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  RCTNewArchitectureValidationPlaceholder(RCTNotAllowedInAppWideFabric, self, nil);
+  RCTNewArchitectureValidationPlaceholder(
+      RCTNotAllowedInAppWideFabric,
+      self,
+      @"This native component is still using the legacy interop layer -- please migrate it to use a Fabric specific implementation.");
   return [RCTSegmentedControl new];
 }
 
