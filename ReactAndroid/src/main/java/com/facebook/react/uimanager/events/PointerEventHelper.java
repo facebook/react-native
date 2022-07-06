@@ -22,6 +22,8 @@ public class PointerEventHelper {
   public static final String POINTER_TYPE_MOUSE = "mouse";
   public static final String POINTER_TYPE_UNKNOWN = "";
 
+  private static final int X_FLAG_SUPPORTS_HOVER = 0x01000000;
+
   public static enum EVENT {
     CANCEL,
     CANCEL_CAPTURE,
@@ -144,7 +146,17 @@ public class PointerEventHelper {
     return EventCategoryDef.UNSPECIFIED;
   }
 
-  public static boolean supportsHover(final int toolType) {
+  public static boolean supportsHover(MotionEvent motionEvent) {
+    // A flag has been set on the MotionEvent to indicate it supports hover
+    // See D36958947 on justifications for this.
+    // TODO(luwe): Leverage previous events to determine if MotionEvent
+    //  is from an input device that supports hover
+    boolean supportsHoverFlag = (motionEvent.getFlags() & X_FLAG_SUPPORTS_HOVER) != 0;
+    if (supportsHoverFlag) {
+      return true;
+    }
+
+    int toolType = motionEvent.getToolType(motionEvent.getActionIndex());
     String pointerType = getW3CPointerType(toolType);
 
     if (pointerType.equals(POINTER_TYPE_MOUSE)) {
