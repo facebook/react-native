@@ -36,7 +36,7 @@ def use_react_native! (options={})
   production = options[:production] ||= false
 
   # Include Hermes dependencies
-  hermes_enabled = options[:hermes_enabled] ||= true
+  hermes_enabled = options[:hermes_enabled] != nil ? options[:hermes_enabled] : true
 
   flipper_configuration = options[:flipper_configuration] ||= FlipperConfiguration.disabled
 
