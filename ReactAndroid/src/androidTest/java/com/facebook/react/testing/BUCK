@@ -11,6 +11,7 @@ rn_android_library(
     ),
     autoglob = False,
     is_androidx = True,
+    language = "JAVA",
     visibility = [
         "PUBLIC",
     ],

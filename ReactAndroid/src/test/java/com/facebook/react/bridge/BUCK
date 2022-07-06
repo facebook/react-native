@@ -11,6 +11,7 @@ rn_android_library(
         exclude = STANDARD_TEST_SRCS,
     ),
     autoglob = False,
+    language = "JAVA",
     visibility = [
         "PUBLIC",
     ],

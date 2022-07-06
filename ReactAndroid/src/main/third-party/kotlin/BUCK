@@ -3,6 +3,7 @@ load("//tools/build_defs/oss:rn_defs.bzl", "rn_android_library", "rn_prebuilt_ja
 
 rn_android_library(
     name = "kotlin-stdlib",
+    language = "JAVA",
     visibility = ["PUBLIC"],
     exported_deps = [
         ":jetbrains-annotations",
@@ -13,6 +14,7 @@ rn_android_library(
 
 rn_android_library(
     name = "kotlin-stdlib-jdk7",
+    language = "JAVA",
     visibility = ["PUBLIC"],
     exported_deps = [
         ":kotlin-stdlib",
@@ -22,6 +24,7 @@ rn_android_library(
 
 rn_android_library(
     name = "kotlin-stdlib-jdk8",
+    language = "JAVA",
     visibility = ["PUBLIC"],
     exported_deps = [
         ":kotlin-stdlib",
