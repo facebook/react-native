@@ -81,6 +81,7 @@ rn_android_library(
     name = "impl",
     srcs = glob(["platform/android/*.java"]),
     autoglob = False,
+    language = "JAVA",
     required_for_source_only_abi = True,
     visibility = [
         "PUBLIC",
