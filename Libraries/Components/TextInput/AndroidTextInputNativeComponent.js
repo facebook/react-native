@@ -14,7 +14,7 @@ import type {
   DirectEventHandler,
   Double,
   Float,
-  Int32,
+  Int32, 
   WithDefault,
 } from '../../Types/CodegenTypes';
 import type {
