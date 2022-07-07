@@ -23,13 +23,13 @@ LOCAL_CFLAGS += -fexceptions -frtti -Wno-unused-lambda-capture
 LOCAL_STATIC_LIBRARIES := \
   boost \
   callinvoker \
-  jsi \
   reactperflogger
 
 LOCAL_SHARED_LIBRARIES := \
   glog \
   jsinspector \
   libfolly_json \
+  libjsi \
   libruntimeexecutor \
   logger
 
