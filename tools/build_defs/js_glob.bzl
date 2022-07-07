@@ -17,7 +17,7 @@ js_glob_exts = (
     "png",
 )
 
-def js_glob(dirs, excludes = []):
+def js_glob(dirs, excludes = [], force_include_bundles = False):
     globs = []
     for glob_dir in dirs:
         if glob_dir == ".":

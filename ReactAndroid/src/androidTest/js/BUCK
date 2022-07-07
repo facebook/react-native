@@ -15,6 +15,7 @@ rn_library(
             "**/*.command",
             "**/*.md",
         ],
+        force_include_bundles = True,
     ),
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
