@@ -52,11 +52,11 @@ function getTypeAnnotationForArray(
   if (
     extractedTypeAnnotation.type === 'TSUnionType' &&
     extractedTypeAnnotation.types.some(
-      t => t.type === 'TSNullKeyword' || t.type === 'TSVoidKeyword',
+      t => t.type === 'TSNullKeyword' || t.type === 'TSUndefinedKeyword',
     )
   ) {
     throw new Error(
-      'Nested optionals such as "ReadonlyArray<boolean | null | void>" are not supported, please declare optionals at the top level of value definitions as in "ReadonlyArray<boolean> | null | void"',
+      'Nested optionals such as "ReadonlyArray<boolean | null | void>" are not supported, please declare optionals at the top level of value definitions as in "ReadonlyArray<boolean> | null | undefined"',
     );
   }
 
@@ -452,15 +452,15 @@ function buildPropSchema(
   let typeAnnotation = value;
   let optional = property.optional || false;
 
-  // Check for optional type in union e.g. T | null | void
+  // Check for optional type in union e.g. T | null | undefined
   if (
     typeAnnotation.type === 'TSUnionType' &&
     typeAnnotation.types.some(
-      t => t.type === 'TSNullKeyword' || t.type === 'TSVoidKeyword',
+      t => t.type === 'TSNullKeyword' || t.type === 'TSUndefinedKeyword',
     )
   ) {
     typeAnnotation = typeAnnotation.types.filter(
-      t => t.type !== 'TSNullKeyword' && t.type !== 'TSVoidKeyword',
+      t => t.type !== 'TSNullKeyword' && t.type !== 'TSUndefinedKeyword',
     )[0];
     optional = true;
 
@@ -483,13 +483,13 @@ function buildPropSchema(
     optional = true;
   }
 
-  // example: Readonly<{prop: string} | null | void>;
+  // example: Readonly<{prop: string} | null | undefined>;
   if (
     value.type === 'TSTypeReference' &&
     typeAnnotation.typeParameters?.params[0].type === 'TSUnionType' &&
     typeAnnotation.typeParameters?.params[0].types.some(
       element =>
-        element.type === 'TSNullKeyword' || element.type === 'TSVoidKeyword',
+        element.type === 'TSNullKeyword' || element.type === 'TSUndefinedKeyword',
     )
   ) {
     optional = true;
