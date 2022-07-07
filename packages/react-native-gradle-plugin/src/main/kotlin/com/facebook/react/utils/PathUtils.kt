@@ -170,7 +170,7 @@ internal fun detectOSAwareHermesCommand(projectRoot: File, hermesCommand: String
  */
 internal fun getBuiltHermescFile(projectRoot: File, pathOverride: String?) =
     if (!pathOverride.isNullOrBlank()) {
-      File(pathOverride, "build/bin/hermesc")
+      File(pathOverride, "build/bin/${HERMESC_BIN}")
     } else {
       File(projectRoot, HERMESC_BUILT_FROM_SOURCE_PATH)
     }
@@ -190,7 +190,9 @@ internal fun projectPathToLibraryName(projectPath: String): String =
         .joinToString("") { token -> token.replaceFirstChar { it.uppercase() } }
         .plus("Spec")
 
+private const val HERMESC_BIN = Os.isWindows() ? "hermesc.exe" : "hermesc"
+
 private const val HERMESC_IN_REACT_NATIVE_PATH =
-    "node_modules/react-native/sdks/hermesc/%OS-BIN%/hermesc"
+    "node_modules/react-native/sdks/hermesc/%OS-BIN%/${HERMESC_BIN}"
 private const val HERMESC_BUILT_FROM_SOURCE_PATH =
-    "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"
+    "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/${HERMESC_BIN}"

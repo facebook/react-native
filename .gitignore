@@ -122,7 +122,6 @@ package-lock.json
 # Visual studio
 .vscode
 .vs
-bin/
 
 # Android memory profiler files
 *.hprof
