@@ -6,6 +6,7 @@
 require 'json'
 require 'open3'
 require 'pathname'
+require_relative './cocoapods/FlipperConfiguration.rb'
 require_relative './react_native_pods_utils/script_phases.rb'
 
 $CODEGEN_OUTPUT_DIR = 'build/generated/ios'
@@ -28,6 +29,9 @@ def use_react_native! (options={})
 
   # Include Hermes dependencies
   hermes_enabled = options[:hermes_enabled] ||= false
+
+  # Extract Flipper configuration
+  flipper_configuration = options[:flipper_configuration] ||= FlipperConfiguration.disabled
 
   # Codegen Discovery is required when enabling new architecture.
   if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
@@ -61,8 +65,13 @@ def use_react_native! (options={})
   pod 'React-RCTVibration', :path => "#{prefix}/Libraries/Vibration"
   pod 'React-Core/RCTWebSocket', :path => "#{prefix}/"
 
-  unless production
+  # CocoaPods `configurations` option ensures that the target is copied only for the specified configurations,
+  # but those dependencies are still built.
+  # Flipper doesn't currently compile for release https://github.com/facebook/react-native/issues/33764
+  # Setting the production flag to true when build for production make sure that we don't install Flipper in the app in the first place.
+  if flipper_configuration.flipper_enabled && !production
     pod 'React-Core/DevSupport', :path => "#{prefix}/"
+    use_flipper!(flipper_configuration.versions, :configurations => flipper_configuration.configurations)
   end
 
   pod 'React-bridging', :path => "#{prefix}/ReactCommon"
