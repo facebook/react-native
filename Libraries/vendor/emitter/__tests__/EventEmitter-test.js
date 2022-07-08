@@ -118,6 +118,8 @@ describe('arguments and context', () => {
 
     const context = {};
     let result;
+    /* $FlowFixMe[missing-this-annot] The 'this' type annotation(s) required by
+     * Flow's LTI update could not be added via codemod */
     const listener = jest.fn(function () {
       result = this;
     });
