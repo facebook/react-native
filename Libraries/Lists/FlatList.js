@@ -348,6 +348,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
    * Check out [scrollToOffset](docs/virtualizedlist.html#scrolltooffset) of VirtualizedList
    */
   scrollToOffset(params: {animated?: ?boolean, offset: number, ...}) {
+    console.log('TESTING::FlatList scrollToOffset');
     if (this._listRef) {
       this._listRef.scrollToOffset(params);
     }
@@ -434,6 +435,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   }
 
   componentDidUpdate(prevProps: Props<ItemT>) {
+    console.log('TESTING::FlatList componentDidUpdate');
     invariant(
       prevProps.numColumns === this.props.numColumns,
       'Changing numColumns on the fly is not supported. Change the key prop on FlatList when ' +
