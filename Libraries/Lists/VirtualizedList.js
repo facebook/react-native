@@ -1575,9 +1575,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this.props.onContentSizeChange(width, height);
     }
     this._scrollMetrics.contentLength = this._selectLength({height, width});
+    // inverted flatlist, scroll to top when adding new item
     if (
+      width > 0 &&
+      height > 0 &&
       this._hasTriggeredInitialScrollToIndex &&
-      this.props.initialScrollIndex == null &&
       this.props.inverted
     ) {
       this.scrollToOffset({
@@ -1585,7 +1587,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         offset: 0,
       });
     }
+    // inverted flatlist, scroll to bottom
     if (
+      width > 0 &&
+      height > 0 &&
       !this._hasTriggeredInitialScrollToIndex &&
       this.props.initialScrollIndex == null &&
       this.props.inverted
