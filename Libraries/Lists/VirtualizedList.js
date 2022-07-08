@@ -388,14 +388,13 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const animated = params ? params.animated : true;
     const veryLast = this.props.getItemCount(this.props.data) - 1;
     const frame = this.__getFrameMetricsApprox(veryLast);
-    console.log('TESTING::VirtualizedList scrollToEnd');
-    console.log('TESTING::VirtualizedList frame', frame);
-    const offsetCalculation =
+    const offset = Math.max(
+      0,
       frame.offset +
-      frame.length +
-      this._footerLength -
-      this._scrollMetrics.visibleLength;
-    const offset = Math.max(0, offsetCalculation);
+        frame.length +
+        this._footerLength -
+        this._scrollMetrics.visibleLength,
+    );
 
     if (this._scrollRef == null) {
       return;
@@ -752,17 +751,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         parentDebugInfo: this.context.debugInfo,
       });
     }
-    if (this.props.inverted) {
-      console.log('');
-      // this.scrollToEnd({animated: false});
-      // const veryLast = this.props.getItemCount(this.props.data) - 1;
-      const veryLast = 4;
-      const frame = this.__getFrameMetricsApprox(veryLast);
-      this.scrollToOffset({offset: frame.offset, animated: true});
-      console.log('TESTING::VirtualizedList veryLast', veryLast);
-      console.log('TESTING::VirtualizedList frame', frame);
-      // this.scrollToOffset({offset: 310, animated: true});
-    }
   }
 
   componentWillUnmount() {
@@ -965,7 +953,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           0,
           lastInitialIndex,
         );
-        // this.scrollToOffset({offset: 0, animated: false});
       }
       const firstAfterInitial = Math.max(lastInitialIndex + 1, first);
       if (!isVirtualizationDisabled && first > lastInitialIndex + 1) {
@@ -1028,7 +1015,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           0,
           lastInitialIndex,
         );
-        // this.scrollToOffset({offset: 1300, animated: true});
       }
       if (!this._hasWarned.keys && _usedIndexForKey) {
         console.warn(
@@ -1589,6 +1575,27 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this.props.onContentSizeChange(width, height);
     }
     this._scrollMetrics.contentLength = this._selectLength({height, width});
+    if (
+      this._hasTriggeredInitialScrollToIndex &&
+      this.props.initialScrollIndex == null &&
+      this.props.inverted
+    ) {
+      this.scrollToOffset({
+        animated: false,
+        offset: 0,
+      });
+    }
+    if (
+      !this._hasTriggeredInitialScrollToIndex &&
+      this.props.initialScrollIndex == null &&
+      this.props.inverted
+    ) {
+      this.scrollToOffset({
+        animated: false,
+        offset: this._scrollMetrics.contentLength,
+      });
+      this._hasTriggeredInitialScrollToIndex = true;
+    }
     this._scheduleCellsToRenderUpdate();
     this._maybeCallOnEndReached();
   };
