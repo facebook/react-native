@@ -64,12 +64,20 @@ const renderFlatList = ({ item }) => (
 );
 
 function NestedFlatList(props) {
-  const [items, addItem] = React.useState(DATA);
+  const [items, setItems] = React.useState(DATA);
   return (
     <View>
       <Button
       title="add an item"
-      onPress={() => addItem([...items, {title: 'new item'}])}
+      onPress={() => setItems([...items, {title: 'new item'}])}
+      />
+      <Button
+        title="remove an item"
+        onPress={() => {
+          const newItems = [...items];
+          newItems.splice(items.length - 1, 1)
+          setItems(newItems);
+        }}
       />
       <Text>Flatlist</Text>
       <FlatList
