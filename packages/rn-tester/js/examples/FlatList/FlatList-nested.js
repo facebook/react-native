@@ -88,11 +88,9 @@ function NestedFlatList(props) {
   )
 }
 
-const FlatList_nested = () => {
-  let flatlist = React.useRef(0);
+const FlatList_nested = (): React.Node => {
   return (
     <FlatList
-      ref={(ref) => flatlist = ref}
       data={[1,2,3]}
       horizontal
       renderItem={renderFlatList}
