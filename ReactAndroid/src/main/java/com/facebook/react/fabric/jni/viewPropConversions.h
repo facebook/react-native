@@ -467,17 +467,11 @@ static inline MapBuffer viewPropsDiff(
         VP_POINTER_MOVE, newProps.events[ViewEvents::Offset::PointerMove]);
 
     builder.putBool(
-        VP_POINTER_ENTER, newProps.events[ViewEvents::Offset::PointerEnter]);
-    builder.putBool(
         VP_POINTER_ENTER_CAPTURE,
         newProps.events[ViewEvents::Offset::PointerEnterCapture]);
     builder.putBool(
-        VP_POINTER_LEAVE, newProps.events[ViewEvents::Offset::PointerLeave]);
-    builder.putBool(
         VP_POINTER_LEAVE_CAPTURE,
         newProps.events[ViewEvents::Offset::PointerLeaveCapture]);
-    builder.putBool(
-        VP_POINTER_MOVE, newProps.events[ViewEvents::Offset::PointerMove]);
     builder.putBool(
         VP_POINTER_MOVE_CAPTURE,
         newProps.events[ViewEvents::Offset::PointerMoveCapture]);

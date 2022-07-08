@@ -497,36 +497,18 @@ static inline ViewEvents convertRawProp(
       defaultValue[Offset::PointerLeave]);
 
   // Experimental W3C Pointer callbacks
-  result[Offset::PointerEnter] = convertRawProp(
-      context,
-      rawProps,
-      "onPointerEnter",
-      sourceValue[Offset::PointerEnter],
-      defaultValue[Offset::PointerEnter]);
   result[Offset::PointerEnterCapture] = convertRawProp(
       context,
       rawProps,
       "onPointerEnterCapture",
       sourceValue[Offset::PointerEnterCapture],
       defaultValue[Offset::PointerEnterCapture]);
-  result[Offset::PointerMove] = convertRawProp(
-      context,
-      rawProps,
-      "onPointerMove",
-      sourceValue[Offset::PointerMove],
-      defaultValue[Offset::PointerMove]);
   result[Offset::PointerMoveCapture] = convertRawProp(
       context,
       rawProps,
       "onPointerMoveCapture",
       sourceValue[Offset::PointerMoveCapture],
       defaultValue[Offset::PointerMoveCapture]);
-  result[Offset::PointerLeave] = convertRawProp(
-      context,
-      rawProps,
-      "onPointerLeave",
-      sourceValue[Offset::PointerLeave],
-      defaultValue[Offset::PointerLeave]);
   result[Offset::PointerLeaveCapture] = convertRawProp(
       context,
       rawProps,
