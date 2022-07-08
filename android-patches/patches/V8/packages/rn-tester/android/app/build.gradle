@@ -1,0 +1,13 @@
+diff --git a/packages/rn-tester/android/app/build.gradle b/packages/rn-tester/android/app/build.gradle
+index cf7a24b4648..be4ff3c1472 100644
+--- a/packages/rn-tester/android/app/build.gradle
++++ b/packages/rn-tester/android/app/build.gradle
+@@ -95,7 +95,7 @@ react {
+ 
+ project.ext.react = [
+     enableCodegen: true, // Keep this here until it's sync'ed to Android template.
+-    enableFabric: (System.getenv('USE_FABRIC') ?: 'true').toBoolean()
++    enableFabric: false
+ ]
+ 
+ //apply from: "../../../../react.gradle"
