@@ -276,7 +276,7 @@ static NSString *validationMessage(RCTNotAllowedValidation type, id context, NSS
     case RCTNotAllowedValidationDisabled:
       RCTAssert(0, @"RCTNotAllowedValidationDisabled not a validation type.");
       return nil;
-    case RCTNotAllowedInAppWideFabric:
+    case RCTNotAllowedInFabricWithoutLegacy:
       notAllowedType = @"Fabric";
       break;
     case RCTNotAllowedInBridgeless:

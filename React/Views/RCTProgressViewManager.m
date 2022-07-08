@@ -29,7 +29,7 @@ RCT_EXPORT_MODULE()
 - (UIView *)view
 {
   RCTNewArchitectureValidationPlaceholder(
-      RCTNotAllowedInAppWideFabric,
+      RCTNotAllowedInFabricWithoutLegacy,
       self,
       @"This native component is still using the legacy interop layer -- please migrate it to use a Fabric specific implementation.");
   return [UIProgressView new];
