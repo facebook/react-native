@@ -36,6 +36,9 @@ def get_objc_arc_preprocessor_flags():
         "-Qunused-arguments",
     ]
 
+def get_hermes_shared_library_preprocessor_flags():
+    return []
+
 IS_OSS_BUILD = True
 
 GLOG_DEP = "//ReactAndroid/build/third-party-ndk/glog:glog"
