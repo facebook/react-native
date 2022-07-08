@@ -80,7 +80,7 @@ function EventfulView(props: {|
     .join(', ');
 
   return (
-    <View ref={ref} {...listeners} {...restProps} collapsable={false}>
+    <View ref={ref} {...listeners} {...restProps}>
       <View style={styles.row}>
         <Text>
           {props.name}, {tag}, {listeningTo}
