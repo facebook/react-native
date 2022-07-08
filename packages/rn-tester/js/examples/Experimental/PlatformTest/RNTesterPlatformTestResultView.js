@@ -18,6 +18,8 @@ import type {
   PlatformTestResultStatus,
 } from './RNTesterPlatformTestTypes';
 
+import RNTesterPlatformTestMinimizedResultView from './RNTesterPlatformTestMinimizedResultView';
+
 import * as React from 'react';
 import {useMemo, useState, useCallback} from 'react';
 import {
@@ -31,6 +33,7 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Platform,
+  TouchableOpacity,
 } from 'react-native';
 
 const DISPLAY_STATUS_MAPPING: {[PlatformTestResultStatus]: string} = {
@@ -202,62 +205,96 @@ export default function RNTesterPlatformTestResultView(
     [filteredResults],
   );
 
+  const [resultsExpanded, setResultsExpanded] = useState(false);
+
   const handleReset = useCallback(() => {
     setFilterText('');
     reset();
+    setResultsExpanded(false);
   }, [reset]);
 
+  const handleMinimizedPress = useCallback(() => {
+    setResultsExpanded(true);
+  }, []);
+
+  const handleMaximizedPress = useCallback(() => {
+    setResultsExpanded(false);
+  }, []);
+
   return (
-    <View style={style}>
-      <View style={styles.titleContainer}>
-        <Text style={styles.title}>
-          Results
-          {filterText !== '' ? (
-            <>
-              {' '}
-              <Text style={styles.filteredText}>
-                (Filtered: '{filterText}')
+    <>
+      <RNTesterPlatformTestMinimizedResultView
+        numFail={numFail}
+        numError={numError}
+        numPass={numPass}
+        numPending={numPending}
+        onPress={handleMinimizedPress}
+        style={style}
+      />
+      <Modal
+        animationType="slide"
+        onRequestClose={handleMaximizedPress}
+        visible={resultsExpanded}>
+        <SafeAreaView
+          style={{
+            width: '100%',
+            height: '100%',
+            flexDirection: 'column',
+          }}>
+          <View style={styles.resultsHeader}>
+            <View style={styles.titleContainer}>
+              <Text style={styles.title}>Results</Text>
+              {filterText !== '' ? (
+                <Text style={styles.filteredText}>
+                  (Filtered: '{filterText}')
+                </Text>
+              ) : null}
+              <Text style={styles.summaryContainer}>
+                <Text>
+                  {numPass} <Text style={styles.passText}>Pass</Text>
+                </Text>
+                {'  '}
+                <Text>
+                  {numFail} <Text style={styles.failText}>Fail</Text>
+                </Text>
+                {'  '}
+                <Text>
+                  {numError} <Text style={styles.errorText}>Error</Text>
+                </Text>
+                {numPending > 0 ? (
+                  <>
+                    {' '}
+                    <Text>
+                      {numPending}{' '}
+                      <Text style={styles.pendingText}>Pending</Text>
+                    </Text>
+                  </>
+                ) : null}
               </Text>
-            </>
-          ) : null}
-        </Text>
-        <View style={styles.actionsContainer}>
-          <FilterModalButton
-            filterText={filterText}
-            setFilterText={setFilterText}
-          />
-          <View style={styles.buttonSpacer} />
-          <Button title="Reset" onPress={handleReset} />
-        </View>
-      </View>
+            </View>
+            <View style={styles.actionsContainer}>
+              <FilterModalButton
+                filterText={filterText}
+                setFilterText={setFilterText}
+              />
+              <View style={styles.buttonSpacer} />
+              <Button title="Reset" onPress={handleReset} />
+            </View>
+            <TouchableOpacity
+              hitSlop={{bottom: 10, left: 10, right: 10, top: 10}}
+              onPress={handleMaximizedPress}
+              style={styles.closeButton}>
+              <Text style={styles.closeButtonIcon}>✕</Text>
+            </TouchableOpacity>
+          </View>
 
-      <Text style={styles.summaryContainer}>
-        <Text>
-          {numPass} <Text style={styles.passText}>Pass</Text>
-        </Text>
-        {'  '}
-        <Text>
-          {numFail} <Text style={styles.failText}>Fail</Text>
-        </Text>
-        {'  '}
-        <Text>
-          {numError} <Text style={styles.errorText}>Error</Text>
-        </Text>
-        {numPending > 0 ? (
-          <>
-            {' '}
-            <Text>
-              {numPending} <Text style={styles.pendingText}>Pending</Text>
-            </Text>
-          </>
-        ) : null}
-      </Text>
-
-      <View style={styles.table}>
-        <TableHeader />
-        <FlatList data={filteredResults} renderItem={renderTableRow} />
-      </View>
-    </View>
+          <View style={styles.table}>
+            <TableHeader />
+            <FlatList data={filteredResults} renderItem={renderTableRow} />
+          </View>
+        </SafeAreaView>
+      </Modal>
+    </>
   );
 }
 
@@ -268,6 +305,22 @@ const styles = StyleSheet.create({
   buttonSpacer: {
     width: 8,
   },
+  closeButton: {
+    position: 'absolute',
+    top: 0,
+    right: 16,
+    backgroundColor: 'lightgray',
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  closeButtonIcon: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    opacity: 0.5,
+  },
   errorText: {
     color: 'orange',
   },
@@ -276,6 +329,7 @@ const styles = StyleSheet.create({
   },
   filteredText: {
     fontSize: 18,
+    lineHeight: 18,
     fontWeight: 'normal',
     opacity: 0.5,
   },
@@ -337,6 +391,14 @@ const styles = StyleSheet.create({
   pendingText: {
     color: 'gray',
   },
+  resultsHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    paddingHorizontal: 8,
+    paddingTop: 8,
+    flex: 0,
+  },
   table: {
     flex: 1,
   },
@@ -349,6 +411,7 @@ const styles = StyleSheet.create({
   },
   tableMessageColumn: {
     flex: 2.5,
+    paddingLeft: 8,
     justifyContent: 'center',
   },
   tableRow: {
@@ -358,6 +421,8 @@ const styles = StyleSheet.create({
   },
   tableResultColumn: {
     flex: 0.5,
+    minWidth: 40,
+    paddingLeft: 8,
     justifyContent: 'center',
   },
   tableTestNameColumn: {
@@ -366,16 +431,14 @@ const styles = StyleSheet.create({
   },
   summaryContainer: {
     flexDirection: 'row',
+    paddingBottom: 8,
   },
   title: {
     fontSize: 32,
     fontWeight: '700',
-    marginBottom: 8,
   },
   titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    justifyContent: 'space-between',
+    flexDirection: 'column',
   },
 });
 
