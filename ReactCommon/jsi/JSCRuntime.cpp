@@ -142,6 +142,7 @@ class JSCRuntime : public jsi::Runtime {
   };
 
   PointerValue *cloneSymbol(const Runtime::PointerValue *pv) override;
+  PointerValue *cloneBigInt(const Runtime::PointerValue *pv) override;
   PointerValue *cloneString(const Runtime::PointerValue *pv) override;
   PointerValue *cloneObject(const Runtime::PointerValue *pv) override;
   PointerValue *clonePropNameID(const Runtime::PointerValue *pv) override;
@@ -214,6 +215,7 @@ class JSCRuntime : public jsi::Runtime {
       size_t count) override;
 
   bool strictEquals(const jsi::Symbol &a, const jsi::Symbol &b) const override;
+  bool strictEquals(const jsi::BigInt &a, const jsi::BigInt &b) const override;
   bool strictEquals(const jsi::String &a, const jsi::String &b) const override;
   bool strictEquals(const jsi::Object &a, const jsi::Object &b) const override;
   bool instanceOf(const jsi::Object &o, const jsi::Function &f) override;
@@ -597,6 +599,11 @@ jsi::Runtime::PointerValue *JSCRuntime::cloneSymbol(
   }
   const JSCSymbolValue *symbol = static_cast<const JSCSymbolValue *>(pv);
   return makeSymbolValue(symbol->sym_);
+}
+
+jsi::Runtime::PointerValue *JSCRuntime::cloneBigInt(
+    const Runtime::PointerValue *) {
+  throw std::logic_error("Not implemented");
 }
 
 jsi::Runtime::PointerValue *JSCRuntime::cloneString(
@@ -1297,6 +1304,11 @@ bool JSCRuntime::strictEquals(const jsi::Symbol &a, const jsi::Symbol &b)
   bool ret = JSValueIsEqual(ctx_, symbolRef(a), symbolRef(b), &exc);
   const_cast<JSCRuntime *>(this)->checkException(exc);
   return ret;
+}
+
+bool JSCRuntime::strictEquals(const jsi::BigInt &a, const jsi::BigInt &b)
+    const {
+  throw std::logic_error("Not implemented");
 }
 
 bool JSCRuntime::strictEquals(const jsi::String &a, const jsi::String &b)
