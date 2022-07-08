@@ -28,15 +28,14 @@ const UNINITIALIZED_LAYOUT: Layout = {
   height: NaN,
 };
 
-// TODO: remove number suffixes
 const eventList = [
   'pointerOver',
-  'pointerEnter2',
-  'pointerMove2',
+  'pointerEnter',
+  'pointerMove',
   'pointerDown',
   'pointerUp',
   'pointerOut',
-  'pointerLeave2',
+  'pointerLeave',
 ];
 
 function PointerEventAttributesHoverablePointersTestCase(
