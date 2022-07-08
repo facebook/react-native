@@ -1,5 +1,5 @@
 diff --git a/packages/rn-tester/android/app/build.gradle b/packages/rn-tester/android/app/build.gradle
-index cf7a24b4648..be4ff3c1472 100644
+index cf7a24b4648..31c2060be9e 100644
 --- a/packages/rn-tester/android/app/build.gradle
 +++ b/packages/rn-tester/android/app/build.gradle
 @@ -95,7 +95,7 @@ react {
@@ -11,3 +11,13 @@ index cf7a24b4648..be4ff3c1472 100644
  ]
  
  //apply from: "../../../../react.gradle"
+@@ -162,6 +162,9 @@ android {
+         jsc {
+             dimension "vm"
+         }
++        v8 {
++            dimension "vm"
++        }
+     }
+ 
+     defaultConfig {
