@@ -79,6 +79,11 @@ struct ActiveTouch {
   CGFloat azimuthAngle;
 
   /*
+   * The button mask of the touch
+   */
+  UIEventButtonMask buttonMask;
+
+  /*
    * A component view on which the touch was begun.
    */
   __strong UIView<RCTComponentViewProtocol> *componentView = nil;
@@ -134,9 +139,19 @@ static CGFloat RadsToDegrees(CGFloat rads)
   return rads * 180 / M_PI;
 }
 
+static int ButtonMaskToButtons(UIEventButtonMask buttonMask)
+{
+  if (@available(iOS 13.4, *)) {
+    return (((buttonMask & UIEventButtonMaskPrimary) > 0) ? 1 : 0) |
+        (((buttonMask & UIEventButtonMaskSecondary) > 0) ? 2 : 0);
+  }
+  return 0;
+}
+
 static void UpdateActiveTouchWithUITouch(
     ActiveTouch &activeTouch,
     UITouch *uiTouch,
+    UIEvent *uiEvent,
     UIView *rootComponentView,
     CGPoint rootViewOriginOffset)
 {
@@ -159,9 +174,15 @@ static void UpdateActiveTouchWithUITouch(
   activeTouch.majorRadius = uiTouch.majorRadius;
   activeTouch.altitudeAngle = uiTouch.altitudeAngle;
   activeTouch.azimuthAngle = [uiTouch azimuthAngleInView:nil];
+  if (@available(iOS 13.4, *)) {
+    activeTouch.buttonMask = uiEvent.buttonMask;
+  } else {
+    activeTouch.buttonMask = 0;
+  }
 }
 
-static ActiveTouch CreateTouchWithUITouch(UITouch *uiTouch, UIView *rootComponentView, CGPoint rootViewOriginOffset)
+static ActiveTouch
+CreateTouchWithUITouch(UITouch *uiTouch, UIEvent *uiEvent, UIView *rootComponentView, CGPoint rootViewOriginOffset)
 {
   ActiveTouch activeTouch = {};
 
@@ -178,7 +199,7 @@ static ActiveTouch CreateTouchWithUITouch(UITouch *uiTouch, UIView *rootComponen
     componentView = componentView.superview;
   }
 
-  UpdateActiveTouchWithUITouch(activeTouch, uiTouch, rootComponentView, rootViewOriginOffset);
+  UpdateActiveTouchWithUITouch(activeTouch, uiTouch, uiEvent, rootComponentView, rootViewOriginOffset);
   return activeTouch;
 }
 
@@ -225,7 +246,7 @@ static const char *PointerTypeCStringFromUITouchType(UITouchType type)
   }
 }
 
-static PointerEvent CreatePointerEventFromActiveTouch(ActiveTouch activeTouch)
+static PointerEvent CreatePointerEventFromActiveTouch(ActiveTouch activeTouch, RCTTouchEventType eventType)
 {
   Touch touch = activeTouch.touch;
 
@@ -251,6 +272,13 @@ static PointerEvent CreatePointerEventFromActiveTouch(ActiveTouch activeTouch)
 
   event.detail = 0;
 
+  event.buttons = ButtonMaskToButtons(activeTouch.buttonMask);
+  // UIEvent's button mask for touch end events still marks the button as down
+  // so this ensures it's set to 0 as per the pointer event spec
+  if (eventType == RCTTouchEventTypeTouchEnd) {
+    event.buttons = 0;
+  }
+
   return event;
 }
 
@@ -270,6 +298,7 @@ CreatePointerEventFromIncompleteHoverData(UIView *view, CGPoint clientLocation, 
   event.tiltX = 0;
   event.tiltY = 0;
   event.detail = 0;
+  event.buttons = 0;
   return event;
 }
 
@@ -396,16 +425,16 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
   }
 }
 
-- (void)_registerTouches:(NSSet<UITouch *> *)touches
+- (void)_registerTouches:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
   for (UITouch *touch in touches) {
-    auto activeTouch = CreateTouchWithUITouch(touch, _rootComponentView, _viewOriginOffset);
+    auto activeTouch = CreateTouchWithUITouch(touch, event, _rootComponentView, _viewOriginOffset);
     activeTouch.touch.identifier = _identifierPool.dequeue();
     _activeTouches.emplace(touch, activeTouch);
   }
 }
 
-- (void)_updateTouches:(NSSet<UITouch *> *)touches
+- (void)_updateTouches:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
   for (UITouch *touch in touches) {
     auto iterator = _activeTouches.find(touch);
@@ -414,7 +443,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
       continue;
     }
 
-    UpdateActiveTouchWithUITouch(iterator->second, touch, _rootComponentView, _viewOriginOffset);
+    UpdateActiveTouchWithUITouch(iterator->second, touch, event, _rootComponentView, _viewOriginOffset);
   }
 }
 
@@ -467,7 +496,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 
     // emit w3c pointer events
     if (RCTGetDispatchW3CPointerEvents()) {
-      PointerEvent pointerEvent = CreatePointerEventFromActiveTouch(activeTouch);
+      PointerEvent pointerEvent = CreatePointerEventFromActiveTouch(activeTouch, eventType);
       switch (eventType) {
         case RCTTouchEventTypeTouchStart:
           activeTouch.eventEmitter->onPointerDown(pointerEvent);
@@ -529,7 +558,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 {
   [super touchesBegan:touches withEvent:event];
 
-  [self _registerTouches:touches];
+  [self _registerTouches:touches withEvent:event];
   [self _dispatchActiveTouches:[self _activeTouchesFromTouches:touches] eventType:RCTTouchEventTypeTouchStart];
 
   if (self.state == UIGestureRecognizerStatePossible) {
@@ -543,7 +572,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 {
   [super touchesMoved:touches withEvent:event];
 
-  [self _updateTouches:touches];
+  [self _updateTouches:touches withEvent:event];
   [self _dispatchActiveTouches:[self _activeTouchesFromTouches:touches] eventType:RCTTouchEventTypeTouchMove];
 
   self.state = UIGestureRecognizerStateChanged;
@@ -553,7 +582,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 {
   [super touchesEnded:touches withEvent:event];
 
-  [self _updateTouches:touches];
+  [self _updateTouches:touches withEvent:event];
   [self _dispatchActiveTouches:[self _activeTouchesFromTouches:touches] eventType:RCTTouchEventTypeTouchEnd];
   [self _unregisterTouches:touches];
 
@@ -568,7 +597,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 {
   [super touchesCancelled:touches withEvent:event];
 
-  [self _updateTouches:touches];
+  [self _updateTouches:touches withEvent:event];
   [self _dispatchActiveTouches:[self _activeTouchesFromTouches:touches] eventType:RCTTouchEventTypeTouchCancel];
   [self _unregisterTouches:touches];
 

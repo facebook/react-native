@@ -29,6 +29,7 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
       {"tiltX", getDebugDescription(pointerEvent.tiltX, options)},
       {"tiltY", getDebugDescription(pointerEvent.tiltY, options)},
       {"detail", getDebugDescription(pointerEvent.detail, options)},
+      {"buttons", getDebugDescription(pointerEvent.buttons, options)},
   };
 }
 
