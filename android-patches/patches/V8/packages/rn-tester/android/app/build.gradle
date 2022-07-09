@@ -1,5 +1,5 @@
 diff --git a/packages/rn-tester/android/app/build.gradle b/packages/rn-tester/android/app/build.gradle
-index cf7a24b4648..31c2060be9e 100644
+index cf7a24b4648..6083e54cf0e 100644
 --- a/packages/rn-tester/android/app/build.gradle
 +++ b/packages/rn-tester/android/app/build.gradle
 @@ -95,7 +95,7 @@ react {
@@ -21,3 +21,14 @@ index cf7a24b4648..31c2060be9e 100644
      }
  
      defaultConfig {
+@@ -304,8 +307,10 @@ if (enableCodegen) {
+         configureNdkBuildRelease.dependsOn(packageReactReleaseNdkLibs)
+         preHermesReleaseBuild.dependsOn(packageReactReleaseNdkLibs)
+         preJscReleaseBuild.dependsOn(packageReactReleaseNdkLibs)
++        preV8ReleaseBuild.dependsOn(packageReactReleaseNdkLibs)
+         configureNdkBuildDebug.dependsOn(packageReactDebugNdkLibs)
+         preHermesDebugBuild.dependsOn(packageReactDebugNdkLibs)
+         preJscDebugBuild.dependsOn(packageReactDebugNdkLibs)
++        preV8DebugBuild.dependsOn(packageReactDebugNdkLibs)
+     }
+ }
