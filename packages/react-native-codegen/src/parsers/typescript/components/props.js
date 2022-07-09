@@ -489,7 +489,8 @@ function buildPropSchema(
     typeAnnotation.typeParameters?.params[0].type === 'TSUnionType' &&
     typeAnnotation.typeParameters?.params[0].types.some(
       element =>
-        element.type === 'TSNullKeyword' || element.type === 'TSUndefinedKeyword',
+        element.type === 'TSNullKeyword' ||
+        element.type === 'TSUndefinedKeyword',
     )
   ) {
     optional = true;
