@@ -466,7 +466,7 @@ def rn_codegen_components(
     # Android handling
     ##################
     if is_running_buck_project():
-        rn_android_library(name = "generated_components_java-{}".format(name), autoglob = False)
+        rn_android_library(name = "generated_components_java-{}".format(name), autoglob = False, language = "JAVA")
     else:
         rn_android_library(
             name = "generated_components_java-{}".format(name),
