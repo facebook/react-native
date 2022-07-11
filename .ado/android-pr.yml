@@ -46,10 +46,16 @@ jobs:
         inputs:
           script: REACT_NATIVE_BOOST_PATH=$(System.DefaultWorkingDirectory)/build_deps ./gradlew installArchives -Pparam="excludeLibs"
 
+      # We have separate tasks to build rn-tester for debug and release due to a regression upstream. See https://github.com/facebook/react-native/issues/34168.
       - task: CmdLine@2
-        displayName: Build rn-tester
+        displayName: Build rn-tester debug
         inputs:
-          script: REACT_NATIVE_BOOST_PATH=$(System.DefaultWorkingDirectory)/build_deps ./gradlew :packages:rn-tester:android:app:assemble
+          script: REACT_NATIVE_BOOST_PATH=$(System.DefaultWorkingDirectory)/build_deps ./gradlew :packages:rn-tester:android:app:assembleDebug
+
+      - task: CmdLine@2
+        displayName: Build rn-tester release
+        inputs:
+          script: REACT_NATIVE_BOOST_PATH=$(System.DefaultWorkingDirectory)/build_deps ./gradlew :packages:rn-tester:android:app:assembleRelease
 
       - template: templates/prep-android-nuget.yml
 
