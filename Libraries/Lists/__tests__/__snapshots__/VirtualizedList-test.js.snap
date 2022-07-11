@@ -503,12 +503,9 @@ exports[`VirtualizedList handles nested lists 1`] = `
           <View
             onLayout={[Function]}
             style={
-              Array [
-                Object {
-                  "flexDirection": "row",
-                },
-                null,
-              ]
+              Object {
+                "flexDirection": "row",
+              }
             }
           >
             <item
@@ -518,12 +515,9 @@ exports[`VirtualizedList handles nested lists 1`] = `
           <View
             onLayout={[Function]}
             style={
-              Array [
-                Object {
-                  "flexDirection": "row",
-                },
-                null,
-              ]
+              Object {
+                "flexDirection": "row",
+              }
             }
           >
             <item

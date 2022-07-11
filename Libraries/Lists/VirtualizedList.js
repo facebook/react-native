@@ -2129,11 +2129,12 @@ class CellRenderer extends React.Component<
       : ItemSeparatorComponent && (
           <ItemSeparatorComponent {...this.state.separatorProps} />
         );
+    const cellStyle = horizontal ? styles.row : null;
     const result = !CellRendererComponent ? (
       /* $FlowFixMe[incompatible-type-arg] (>=0.89.0 site=react_native_fb) *
         This comment suppresses an error found when Flow v0.89 was deployed. *
         To see the error, delete this comment and run Flow. */
-      <View onLayout={onLayout}>
+      <View style={cellStyle} onLayout={onLayout}>
         {element}
         {itemSeparator}
       </View>
