@@ -953,6 +953,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           0,
           lastInitialIndex,
         );
+        this.scrollToOffset({offset: 0, animated: false});
       }
       const firstAfterInitial = Math.max(lastInitialIndex + 1, first);
       if (!isVirtualizationDisabled && first > lastInitialIndex + 1) {
@@ -1015,6 +1016,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           0,
           lastInitialIndex,
         );
+        this.scrollToEnd({animated: false});
       }
       if (!this._hasWarned.keys && _usedIndexForKey) {
         console.warn(
@@ -1586,6 +1588,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         animated: false,
         offset: 0,
       });
+      this._hasTriggeredInitialScrollToIndex = true;
     }
     // inverted flatlist, scroll to bottom
     if (
