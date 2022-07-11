@@ -127,7 +127,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
             I18nUtil.getInstance().isRTL(context)
                 ? ViewCompat.LAYOUT_DIRECTION_RTL
                 : ViewCompat.LAYOUT_DIRECTION_LTR);
-    fullScroll(View.FOCUS_DOWN);
   }
 
   public boolean getScrollEnabled() {
