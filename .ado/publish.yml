@@ -208,19 +208,12 @@ jobs:
         inputs:
           script: node .ado/removeWorkspaceConfig.js
 
-      - task: CmdLine@2
-        displayName: gradlew installArchives
-        inputs:
-          script: REACT_NATIVE_BOOST_PATH=$(System.DefaultWorkingDirectory)/build_deps ./gradlew installArchives -Pparam="excludeLibs"
-
-      - template: templates\prep-android-nuget.yml
+      - template: templates/prep-android-nuget.yml
 
       # Enumerate and download all dependencies ..
-      - task: CmdLine@2
-        displayName: 'Verify Dependencies can be enumerated'
-        inputs:
-          script: sudo apt-get install python3-pip && sudo apt-get install python3-setuptools && pip3 install BeautifulSoup4 && pip3 install wheel && pip3 install wget && python3 .ado/downloadAndroidDependencies.py $(Build.SourcesDirectory) && tree $(Build.SourcesDirectory)/android
-
+      - template: templates/download-android-dependencies.yml
+        parameters:
+          artifact_feed: react-native/react-native-public
 
       # Very similar to the default pack task .. but appends 'ndk21b' to the nuget pack version
       - task: CmdLine@2
