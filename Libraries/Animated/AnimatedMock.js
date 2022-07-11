@@ -160,7 +160,10 @@ type LoopAnimationConfig = {
 
 const loop = function (
   animation: CompositeAnimation,
-  {iterations = -1}: LoopAnimationConfig = {},
+  // $FlowFixMe[prop-missing]
+  {iterations = -1}: LoopAnimationConfig = {
+    ...null,
+  },
 ): CompositeAnimation {
   return emptyAnimation;
 };

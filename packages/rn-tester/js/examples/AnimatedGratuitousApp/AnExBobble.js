@@ -30,7 +30,10 @@ const BOBBLE_SPOTS = [...Array(NUM_BOBBLES)].map((_, i) => {
 class AnExBobble extends React.Component<Object, any> {
   constructor(props: Object) {
     super(props);
-    this.state = {};
+    this.state = {
+      ...null,
+    };
+    // $FlowFixMe[prop-missing]
     this.state.bobbles = BOBBLE_SPOTS.map((_, i) => {
       return new Animated.ValueXY();
     });
@@ -98,7 +101,12 @@ class AnExBobble extends React.Component<Object, any> {
       <View style={styles.bobbleContainer}>
         {this.state.bobbles.map((_, i) => {
           const j = this.state.bobbles.length - i - 1; // reverse so lead on top
-          const handlers = j > 0 ? {} : this.state.bobbleResponder.panHandlers;
+          const handlers =
+            j > 0
+              ? {
+                  ...null,
+                }
+              : this.state.bobbleResponder.panHandlers;
           return (
             <Animated.Image
               {...handlers}
