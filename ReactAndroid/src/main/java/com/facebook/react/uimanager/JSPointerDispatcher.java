@@ -72,8 +72,7 @@ public class JSPointerDispatcher {
   }
 
   public void handleMotionEvent(MotionEvent motionEvent, EventDispatcher eventDispatcher) {
-    boolean supportsHover =
-        PointerEventHelper.supportsHover(motionEvent.getToolType(motionEvent.getActionIndex()));
+    boolean supportsHover = PointerEventHelper.supportsHover(motionEvent);
 
     int surfaceId = UIManagerHelper.getSurfaceId(mRootViewGroup);
     int action = motionEvent.getActionMasked();

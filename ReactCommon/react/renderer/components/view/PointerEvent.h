@@ -60,6 +60,10 @@ struct PointerEvent {
    * Returns a long with details about the event, depending on the event type.
    */
   int detail;
+  /*
+   * The buttons being depressed (if any) when the mouse event was fired.
+   */
+  int buttons;
 };
 
 #if RN_DEBUG_STRING_CONVERTIBLE

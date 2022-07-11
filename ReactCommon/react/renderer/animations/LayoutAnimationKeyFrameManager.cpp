@@ -8,6 +8,7 @@
 #include "LayoutAnimationKeyFrameManager.h"
 
 #include <algorithm>
+#include <sstream>
 #include <utility>
 
 #include <react/debug/flags.h>

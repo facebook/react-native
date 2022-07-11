@@ -1457,6 +1457,7 @@ public class SurfaceMountingManager {
     @ThreadConfined(UI)
     public void doFrameGuarded(long frameTimeNanos) {
       int deletedViews = 0;
+      Stack<Integer> localChildren = new Stack<>();
       try {
         while (!mReactTagsToRemove.empty()) {
           int reactTag = mReactTagsToRemove.pop();
@@ -1472,6 +1473,8 @@ public class SurfaceMountingManager {
                         + "]"));
             continue;
           }
+
+          localChildren.clear();
 
           ViewState thisViewState = getNullableViewState(reactTag);
           if (thisViewState != null) {
@@ -1491,7 +1494,7 @@ public class SurfaceMountingManager {
               while ((nextChild = ((ViewGroup) thisView).getChildAt(numChildren)) != null) {
                 int childId = nextChild.getId();
                 childrenAreManaged = childrenAreManaged || getNullableViewState(childId) != null;
-                mReactTagsToRemove.push(nextChild.getId());
+                localChildren.push(nextChild.getId());
                 numChildren++;
               }
               // Removing all at once is more efficient than removing one-by-one
@@ -1516,12 +1519,20 @@ public class SurfaceMountingManager {
               }
             }
             if (childrenAreManaged) {
-              // Push tag onto the stack so we reprocess it after all children
-              mReactTagsToRemove.push(reactTag);
-            } else {
-              mTagToViewState.remove(reactTag);
-              onViewStateDeleted(thisViewState);
+              // Push tags onto the stack so we process all children
+              mReactTagsToRemove.addAll(localChildren);
             }
+
+            // Immediately remove tag and notify listeners.
+            // Note that this causes RemoveDeleteTree to call onViewStateDeleted
+            // in a top-down matter (parents first) vs a bottom-up matter (leaf nodes first).
+            // Hopefully this doesn't matter but you should ensure that any custom
+            // onViewStateDeleted logic is resilient to both semantics.
+            // In the initial version of RemoveDeleteTree we attempted to maintain
+            // the bottom-up event listener behavior but this causes additional
+            // memory pressure as well as complexity.
+            mTagToViewState.remove(reactTag);
+            onViewStateDeleted(thisViewState);
 
             // Circuit breaker: after processing every N tags, check that we haven't
             // exceeded the max allowed time. Since we don't know what other work needs
@@ -1542,6 +1553,7 @@ public class SurfaceMountingManager {
           // other mounting instructions have been executed, all in-band Remove
           // instructions have already had a chance to execute here.
           mErroneouslyReaddedReactTags.clear();
+          mReactTagsToRemove.clear();
         }
       }
     }

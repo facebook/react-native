@@ -64,7 +64,7 @@
                     moduleName:(NSString *)moduleName
              initialProperties:(NSDictionary *)initialProperties
 {
-  RCTErrorNewArchitectureValidation(RCTNotAllowedInAppWideFabric, @"RCTSurface", nil);
+  RCTErrorNewArchitectureValidation(RCTNotAllowedInFabricWithoutLegacy, @"RCTSurface", nil);
   RCTAssert(bridge.valid, @"Valid bridge is required to instantiate `RCTSurface`.");
 
   if (self = [super init]) {

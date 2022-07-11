@@ -179,15 +179,17 @@ RCT_EXTERN NSString *RCTFormatStackTrace(NSArray<NSDictionary<NSString *, id> *>
 
 typedef enum {
   RCTNotAllowedInBridgeless = 1,
-  RCTNotAllowedInAppWideFabric = 2,
+  RCTNotAllowedInFabricWithoutLegacy = 2,
   RCTNotAllowedValidationDisabled = 3,
 } RCTNotAllowedValidation;
 
 /**
+ * // TODO: (T125626909) Only validate legacy architecture usages in Bridgeless mode, not Bridged Fabric mode
+ *
  * Ensure runtime assumptions holds for the new architecture by reporting when assumptions are violated.
  * Note: this is work in progress.
  *
- * When level is RCTNotAllowedInAppWideFabric, validate Fabric assumptions.
+ * When level is RCTNotAllowedInFabricWithoutLegacy, validate Fabric assumptions.
  * i.e. Report legacy pre-Fabric call sites that should not be used while Fabric is enabled on all surfaces.
  *
  * When level is RCTNotAllowedInBridgeless, validate Fabric or Bridgeless assumptions.

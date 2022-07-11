@@ -18,15 +18,98 @@ import type {
   PlatformTestResultStatus,
 } from './RNTesterPlatformTestTypes';
 
+import RNTesterPlatformTestMinimizedResultView from './RNTesterPlatformTestMinimizedResultView';
+
 import * as React from 'react';
-import {useMemo} from 'react';
-import {Button, View, Text, StyleSheet, FlatList} from 'react-native';
+import {useMemo, useState, useCallback} from 'react';
+import {
+  Button,
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  Modal,
+  SafeAreaView,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableOpacity,
+} from 'react-native';
 
 const DISPLAY_STATUS_MAPPING: {[PlatformTestResultStatus]: string} = {
   PASS: 'Pass',
   FAIL: 'Fail',
   ERROR: 'Error',
 };
+
+type FilterModalProps = $ReadOnly<{
+  filterText: string,
+  setFilterText: (newFilterText: string) => void,
+}>;
+function FilterModalButton(props: FilterModalProps) {
+  const {filterText, setFilterText} = props;
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [pendingFilterText, setPendingFilterText] = useState(filterText);
+
+  const onFilterButtonPress = useCallback(() => {
+    setPendingFilterText(filterText);
+    setModalVisible(true);
+  }, [filterText]);
+
+  const onFilterSubmit = useCallback(() => {
+    setFilterText(pendingFilterText);
+    setModalVisible(false);
+  }, [pendingFilterText, setFilterText]);
+
+  const onFilterCancel = useCallback(() => {
+    setModalVisible(false);
+  }, []);
+
+  const onPendingTextChange = useCallback(newText => {
+    setPendingFilterText(newText);
+  }, []);
+
+  return (
+    <>
+      <Button title="Filter" onPress={onFilterButtonPress} />
+      <Modal
+        visible={modalVisible}
+        animationType="fade"
+        presentationStyle="overFullScreen"
+        transparent={true}>
+        <SafeAreaView style={styles.filterModalRoot}>
+          <KeyboardAvoidingView
+            style={styles.filterModalKeboardAvoidingRoot}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+            <View style={styles.filterModalContainer}>
+              <View style={styles.filterModalContentContainer}>
+                <View style={styles.filterModalPromptContainer}>
+                  <Text style={styles.filterModalPromptText}>
+                    Enter a test name filter
+                  </Text>
+                </View>
+                <TextInput
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  autoFocus={true}
+                  style={styles.filterModalPendingTextInput}
+                  value={pendingFilterText}
+                  onChangeText={onPendingTextChange}
+                  onSubmitEditing={onFilterSubmit}
+                />
+              </View>
+              <View style={styles.filterModalActionsContainer}>
+                <Button title="Cancel" onPress={onFilterCancel} />
+                <Button title="Submit" onPress={onFilterSubmit} />
+              </View>
+            </View>
+          </KeyboardAvoidingView>
+        </SafeAreaView>
+      </Modal>
+    </>
+  );
+}
 
 function TableHeader() {
   return (
@@ -89,9 +172,20 @@ export default function RNTesterPlatformTestResultView(
 ): React.MixedElement {
   const {numPending, reset, results, style} = props;
 
+  const [filterText, setFilterText] = useState('');
+
+  const filteredResults = useMemo(() => {
+    if (filterText === '') {
+      return results;
+    }
+    return results.filter(result =>
+      result.name.toLowerCase().includes(filterText.toLowerCase()),
+    );
+  }, [filterText, results]);
+
   const {numPass, numFail, numError} = useMemo(
     () =>
-      results.reduce(
+      filteredResults.reduce(
         (acc, result) => {
           switch (result.status) {
             case 'PASS':
@@ -108,58 +202,202 @@ export default function RNTesterPlatformTestResultView(
           numError: 0,
         },
       ),
-    [results],
+    [filteredResults],
   );
 
+  const [resultsExpanded, setResultsExpanded] = useState(false);
+
+  const handleReset = useCallback(() => {
+    setFilterText('');
+    reset();
+    setResultsExpanded(false);
+  }, [reset]);
+
+  const handleMinimizedPress = useCallback(() => {
+    setResultsExpanded(true);
+  }, []);
+
+  const handleMaximizedPress = useCallback(() => {
+    setResultsExpanded(false);
+  }, []);
+
   return (
-    <View style={style}>
-      <View style={styles.titleContainer}>
-        <Text style={styles.title}>Results</Text>
-        <Button title="Reset" onPress={reset} />
-      </View>
+    <>
+      <RNTesterPlatformTestMinimizedResultView
+        numFail={numFail}
+        numError={numError}
+        numPass={numPass}
+        numPending={numPending}
+        onPress={handleMinimizedPress}
+        style={style}
+      />
+      <Modal
+        animationType="slide"
+        onRequestClose={handleMaximizedPress}
+        visible={resultsExpanded}>
+        <SafeAreaView
+          style={{
+            width: '100%',
+            height: '100%',
+            flexDirection: 'column',
+          }}>
+          <View style={styles.resultsHeader}>
+            <View style={styles.titleContainer}>
+              <Text style={styles.title}>Results</Text>
+              {filterText !== '' ? (
+                <Text style={styles.filteredText}>
+                  (Filtered: '{filterText}')
+                </Text>
+              ) : null}
+              <Text style={styles.summaryContainer}>
+                <Text>
+                  {numPass} <Text style={styles.passText}>Pass</Text>
+                </Text>
+                {'  '}
+                <Text>
+                  {numFail} <Text style={styles.failText}>Fail</Text>
+                </Text>
+                {'  '}
+                <Text>
+                  {numError} <Text style={styles.errorText}>Error</Text>
+                </Text>
+                {numPending > 0 ? (
+                  <>
+                    {' '}
+                    <Text>
+                      {numPending}{' '}
+                      <Text style={styles.pendingText}>Pending</Text>
+                    </Text>
+                  </>
+                ) : null}
+              </Text>
+            </View>
+            <View style={styles.actionsContainer}>
+              <FilterModalButton
+                filterText={filterText}
+                setFilterText={setFilterText}
+              />
+              <View style={styles.buttonSpacer} />
+              <Button title="Reset" onPress={handleReset} />
+            </View>
+            <TouchableOpacity
+              hitSlop={{bottom: 10, left: 10, right: 10, top: 10}}
+              onPress={handleMaximizedPress}
+              style={styles.closeButton}>
+              <Text style={styles.closeButtonIcon}>✕</Text>
+            </TouchableOpacity>
+          </View>
 
-      <Text style={styles.summaryContainer}>
-        <Text>
-          {numPass} <Text style={styles.passText}>Pass</Text>
-        </Text>
-        {'  '}
-        <Text>
-          {numFail} <Text style={styles.failText}>Fail</Text>
-        </Text>
-        {'  '}
-        <Text>
-          {numError} <Text style={styles.errorText}>Error</Text>
-        </Text>
-        {numPending > 0 ? (
-          <>
-            {' '}
-            <Text>
-              {numPending} <Text style={styles.pendingText}>Pending</Text>
-            </Text>
-          </>
-        ) : null}
-      </Text>
-
-      <View style={styles.table}>
-        <TableHeader />
-        <FlatList data={results} renderItem={renderTableRow} />
-      </View>
-    </View>
+          <View style={styles.table}>
+            <TableHeader />
+            <FlatList data={filteredResults} renderItem={renderTableRow} />
+          </View>
+        </SafeAreaView>
+      </Modal>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
+  actionsContainer: {
+    flexDirection: 'row',
+  },
+  buttonSpacer: {
+    width: 8,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 0,
+    right: 16,
+    backgroundColor: 'lightgray',
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  closeButtonIcon: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    opacity: 0.5,
+  },
   errorText: {
     color: 'orange',
   },
   failText: {
     color: 'red',
   },
+  filteredText: {
+    fontSize: 18,
+    lineHeight: 18,
+    fontWeight: 'normal',
+    opacity: 0.5,
+  },
+  filterModalActionButton: {
+    flex: 1,
+  },
+  filterModalActionsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    minHeight: 50,
+  },
+  filterModalContainer: {
+    minWidth: 250,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  filterModalContentContainer: {
+    paddingHorizontal: 12,
+  },
+  filterModalPromptContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  filterModalRoot: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'stretch',
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+  },
+  filterModalPromptText: {
+    paddingVertical: 12,
+    fontSize: 16,
+  },
+  filterModalPendingTextInput: {
+    // height: 40,
+    padding: 6,
+    backgroundColor: 'white',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgb(171, 171, 171)',
+    borderRadius: 8,
+  },
+  filterModalKeboardAvoidingRoot: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   passText: {
     color: 'green',
   },
   pendingText: {
     color: 'gray',
+  },
+  resultsHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    paddingHorizontal: 8,
+    paddingTop: 8,
+    flex: 0,
   },
   table: {
     flex: 1,
@@ -173,6 +411,7 @@ const styles = StyleSheet.create({
   },
   tableMessageColumn: {
     flex: 2.5,
+    paddingLeft: 8,
     justifyContent: 'center',
   },
   tableRow: {
@@ -182,6 +421,8 @@ const styles = StyleSheet.create({
   },
   tableResultColumn: {
     flex: 0.5,
+    minWidth: 40,
+    paddingLeft: 8,
     justifyContent: 'center',
   },
   tableTestNameColumn: {
@@ -190,16 +431,14 @@ const styles = StyleSheet.create({
   },
   summaryContainer: {
     flexDirection: 'row',
+    paddingBottom: 8,
   },
   title: {
     fontSize: 32,
     fontWeight: '700',
-    marginBottom: 8,
   },
   titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: 'column',
   },
 });
 

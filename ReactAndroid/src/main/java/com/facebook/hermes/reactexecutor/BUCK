@@ -7,6 +7,7 @@ rn_android_library(
         "HermesExecutorFactory.java",
     ],
     autoglob = False,
+    language = "JAVA",
     visibility = [
         "PUBLIC",
     ],
@@ -27,6 +28,7 @@ rn_android_library(
         "RuntimeConfig.java",
     ],
     autoglob = False,
+    language = "JAVA",
     visibility = [
         "PUBLIC",
     ],

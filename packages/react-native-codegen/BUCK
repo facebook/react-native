@@ -39,6 +39,7 @@ rn_android_library(
         ["buck_tests/*.java"],
     ),
     autoglob = False,
+    language = "JAVA",
     visibility = [
         "PUBLIC",
     ],

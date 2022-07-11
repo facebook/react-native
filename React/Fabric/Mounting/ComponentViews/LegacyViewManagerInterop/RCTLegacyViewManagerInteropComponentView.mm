@@ -109,14 +109,6 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
 
 + (BOOL)isSupported:(NSString *)componentName
 {
-  RCTLogNewArchitectureValidation(
-      RCTNotAllowedInBridgeless,
-      self,
-      [NSString
-          stringWithFormat:
-              @"Legacy ViewManagers should be migrated to Fabric ComponentViews in the new architecture to reduce risk. Component using interop layer: %@",
-              componentName]);
-
   // Step 1: check if ViewManager with specified name is supported.
   BOOL isComponentNameSupported =
       [[RCTLegacyViewManagerInteropComponentView supportedViewManagers] containsObject:componentName];

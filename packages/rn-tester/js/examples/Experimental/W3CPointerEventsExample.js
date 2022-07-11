@@ -67,12 +67,12 @@ function EventfulView(props: {|
     onPointerUpCapture: onUpCapture ? eventLog('up capture') : null,
     onPointerDown: onDown ? eventLog('down') : null,
     onPointerDownCapture: onDownCapture ? eventLog('down capture') : null,
-    onPointerLeave2: onLeave ? eventLog('leave') : null,
-    onPointerLeave2Capture: onLeaveCapture ? eventLog('leave capture') : null,
-    onPointerEnter2: onEnter ? eventLog('enter') : null,
-    onPointerEnter2Capture: onEnterCapture ? eventLog('enter capture') : null,
-    onPointerMove2: onMove ? eventLog('move') : null,
-    onPointerMove2Capture: onMoveCapture ? eventLog('move capture') : null,
+    onPointerLeave: onLeave ? eventLog('leave') : null,
+    onPointerLeaveCapture: onLeaveCapture ? eventLog('leave capture') : null,
+    onPointerEnter: onEnter ? eventLog('enter') : null,
+    onPointerEnterCapture: onEnterCapture ? eventLog('enter capture') : null,
+    onPointerMove: onMove ? eventLog('move') : null,
+    onPointerMoveCapture: onMoveCapture ? eventLog('move capture') : null,
   };
 
   let listeningTo = Object.keys(listeners)
@@ -80,7 +80,7 @@ function EventfulView(props: {|
     .join(', ');
 
   return (
-    <View ref={ref} {...listeners} {...restProps} collapsable={false}>
+    <View ref={ref} {...listeners} {...restProps}>
       <View style={styles.row}>
         <Text>
           {props.name}, {tag}, {listeningTo}

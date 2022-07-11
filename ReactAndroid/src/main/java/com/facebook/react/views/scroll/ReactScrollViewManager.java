@@ -285,6 +285,9 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
   @Override
   public void scrollToEnd(
       ReactScrollView scrollView, ReactScrollViewCommandHelper.ScrollToEndCommandData data) {
+    // ScrollView always has one child - the scrollable area. However, it's possible today that we
+    // execute this method as view command before the child view is mounted. Here we will retry the
+    // view commands as a workaround.
     View child = scrollView.getChildAt(0);
     if (child == null) {
       throw new RetryableMountingLayerException("scrollToEnd called on ScrollView without child");

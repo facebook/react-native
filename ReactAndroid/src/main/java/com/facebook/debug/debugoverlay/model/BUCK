@@ -4,6 +4,7 @@ rn_android_library(
     name = "model",
     srcs = glob(["*.java"]),
     autoglob = False,
+    language = "JAVA",
     visibility = [
         "PUBLIC",
     ],

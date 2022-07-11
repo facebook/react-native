@@ -116,9 +116,9 @@
     "invariant": "^2.2.4",
     "jsc-android": "^250230.2.1",
     "memoize-one": "^5.0.0",
-    "metro-react-native-babel-transformer": "0.71.2",
-    "metro-runtime": "0.71.2",
-    "metro-source-map": "0.71.2",
+    "metro-react-native-babel-transformer": "0.71.3",
+    "metro-runtime": "0.71.3",
+    "metro-source-map": "0.71.3",
     "mkdirp": "^0.5.1",
     "nullthrows": "^1.1.1",
     "pretty-format": "^26.5.2",
@@ -135,7 +135,7 @@
     "ws": "^6.1.4"
   },
   "devDependencies": {
-    "flow-bin": "^0.181.2",
+    "flow-bin": "^0.182.0",
     "hermes-eslint": "0.8.0",
     "react": "18.1.0",
     "react-test-renderer": "^18.1.0"

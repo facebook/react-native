@@ -7,6 +7,7 @@ require 'json'
 require 'open3'
 require 'pathname'
 require_relative './react_native_pods_utils/script_phases.rb'
+require_relative './cocoapods/hermes.rb'
 require_relative './cocoapods/flipper.rb'
 require_relative './cocoapods/fabric.rb'
 require_relative './cocoapods/codegen.rb'
@@ -36,7 +37,7 @@ def use_react_native! (options={})
   production = options[:production] ||= false
 
   # Include Hermes dependencies
-  hermes_enabled = options[:hermes_enabled] ||= true
+  hermes_enabled = options[:hermes_enabled] != nil ? options[:hermes_enabled] : true
 
   flipper_configuration = options[:flipper_configuration] ||= FlipperConfiguration.disabled
 
@@ -101,17 +102,7 @@ def use_react_native! (options={})
     setup_fabric!(prefix)
   end
 
-  if hermes_enabled
-    prepare_hermes = 'node scripts/hermes/prepare-hermes-for-build'
-    react_native_dir = Pod::Config.instance.installation_root.join(prefix)
-    prep_output, prep_status = Open3.capture2e(prepare_hermes, :chdir => react_native_dir)
-    prep_output.split("\n").each { |line| Pod::UI.info line }
-    abort unless prep_status == 0
-
-    pod 'React-hermes', :path => "#{prefix}/ReactCommon/hermes"
-    pod 'libevent', '~> 2.1.12'
-    pod 'hermes-engine', :podspec => "#{prefix}/sdks/hermes/hermes-engine.podspec"
-  end
+  install_hermes_if_enabled(hermes_enabled, prefix)
 
   # CocoaPods `configurations` option ensures that the target is copied only for the specified configurations,
   # but those dependencies are still built.
