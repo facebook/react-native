@@ -31,32 +31,6 @@ jobs:
 
       - template: templates/android-build-office.yml
 
-      - task: CmdLine@2
-        displayName: Remove RNTesterApp.android.bundle
-        inputs:
-          script: rm -f ./packages/rn-tester/js/RNTesterApp.android.bundle
-
-      - task: CmdLine@2
-        displayName: Create RNTester bundle
-        inputs:
-          script: node cli.js bundle --entry-file ./packages/rn-tester/js/RNTesterApp.android.js --bundle-output ./packages/rn-tester/js/RNTesterApp.android.bundle --platform android
-
-      - task: CmdLine@2
-        displayName: gradlew installArchives
-        inputs:
-          script: REACT_NATIVE_BOOST_PATH=$(System.DefaultWorkingDirectory)/build_deps ./gradlew installArchives -Pparam="excludeLibs"
-
-      # We have separate tasks to build rn-tester for debug and release due to a regression upstream. See https://github.com/facebook/react-native/issues/34168.
-      - task: CmdLine@2
-        displayName: Build rn-tester debug
-        inputs:
-          script: REACT_NATIVE_BOOST_PATH=$(System.DefaultWorkingDirectory)/build_deps ./gradlew :packages:rn-tester:android:app:assembleDebug
-
-      - task: CmdLine@2
-        displayName: Build rn-tester release
-        inputs:
-          script: REACT_NATIVE_BOOST_PATH=$(System.DefaultWorkingDirectory)/build_deps ./gradlew :packages:rn-tester:android:app:assembleRelease
-
       - template: templates/prep-android-nuget.yml
 
       - template: templates/download-android-dependencies.yml

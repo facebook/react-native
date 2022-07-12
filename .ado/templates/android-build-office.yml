@@ -55,3 +55,43 @@ steps:
     displayName: Setup Build Dependencies
     inputs:
       script: chmod +x .ado/setup_droid_deps.sh && .ado/setup_droid_deps.sh
+
+  - task: CmdLine@2
+    displayName: Remove RNTesterApp.android.bundle
+    inputs:
+      script: rm -f ./packages/rn-tester/js/RNTesterApp.android.bundle
+
+  - task: CmdLine@2
+    displayName: Create RNTester bundle
+    inputs:
+      script: node cli.js bundle --entry-file ./packages/rn-tester/js/RNTesterApp.android.js --bundle-output ./packages/rn-tester/js/RNTesterApp.android.bundle --platform android
+
+  - task: CmdLine@2
+    displayName: gradlew installArchives
+    inputs:
+      script: REACT_NATIVE_BOOST_PATH=$(System.DefaultWorkingDirectory)/build_deps ./gradlew installArchives -Pparam="excludeLibs"
+
+  # We have separate tasks to build rn-tester for debug and release due to a regression upstream. See https://github.com/facebook/react-native/issues/34168.
+  - task: CmdLine@2
+    displayName: Build rn-tester debug
+    inputs:
+      script: REACT_NATIVE_BOOST_PATH=$(System.DefaultWorkingDirectory)/build_deps ./gradlew :packages:rn-tester:android:app:assembleDebug
+
+  - task: CmdLine@2
+    displayName: Build rn-tester release
+    inputs:
+      script: REACT_NATIVE_BOOST_PATH=$(System.DefaultWorkingDirectory)/build_deps ./gradlew :packages:rn-tester:android:app:assembleRelease
+
+  - task: CopyFiles@2
+    displayName: 'Copy rn-tester apks to build artifacts'
+    inputs:
+      SourceFolder: '$(System.DefaultWorkingDirectory)/packages/rn-tester/android/app/build/outputs/apk'
+      Contents: '**'
+      TargetFolder: '$(Build.StagingDirectory)/final/rn-tester'
+
+  - task: CopyFiles@2
+    displayName: 'Copy rn-tester android bundle to build artifacts'
+    inputs:
+      SourceFolder: '$(System.DefaultWorkingDirectory)/packages/rn-tester/js'
+      Contents: 'RNTesterApp.android.bundle'
+      TargetFolder: '$(Build.StagingDirectory)/final/rn-tester'
