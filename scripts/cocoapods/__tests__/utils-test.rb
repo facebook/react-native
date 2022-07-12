@@ -352,7 +352,7 @@ class UtilsTests < Test::Unit::TestCase
         third_target.build_configurations.each do |config|
           assert_equal(config.build_settings["CODE_SIGN_IDENTITY[sdk=macosx*]"], "-")
         end
-        
+
         user_project_mock.native_targets.each do |target|
             target.build_configurations.each do |config|
                 assert_equal(config.build_settings["DEAD_CODE_STRIPPING"], "YES")

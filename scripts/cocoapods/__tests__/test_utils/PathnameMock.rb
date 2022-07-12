@@ -7,6 +7,20 @@ class Pathname
     @@pwd = ""
     @@pwd_invocation_count = 0
 
+    attr_reader :path
+
+    def initialize(path)
+        @path = path
+    end
+
+    def realpath
+        return self
+    end
+
+    def relative_path_from(path)
+        return @path
+    end
+
     def self.pwd!(pwd)
         @@pwd = pwd
     end
