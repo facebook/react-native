@@ -178,12 +178,14 @@
   "resolutions": {
     "async": "^3.2.2",
     "es5-ext": "0.10.53",
+    "readable-stream": "^4.0.0",
     "shell-quote": "^1.7.3",
     "workspace-tools": "^0.18.4"
   },
   "_justification": {
     "async": "Versions of async prior to 3.2.2 are vulnerable to prototype pollution",
     "es5-ext": "Packages after 0.10.54 and at the moment up until 0.10.59 contain a protest message. A policy prevents us from using packages with protestware, therefore downgrading to the latest release without the message.",
+    "readable-stream": "Eliminates dependency on outdated string_decoder component",
     "shell-quote": "Versions prior to 1.7.3 have an RCE vulnerability. Should be removable once we upgrade CLI tools to ^8.0.0 with RN 0.69.",
     "workspace-tools": "Versions prior to 0.18.4 are vulnerable to command injection and prototype pollution attacks"
   },
