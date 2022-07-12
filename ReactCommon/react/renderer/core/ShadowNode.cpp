@@ -22,9 +22,9 @@
 namespace facebook {
 namespace react {
 
-SharedShadowNodeSharedList ShadowNode::emptySharedShadowNodeSharedList() {
+ShadowNode::SharedListOfShared ShadowNode::emptySharedShadowNodeSharedList() {
   static const auto emptySharedShadowNodeSharedList =
-      std::make_shared<SharedShadowNodeList>();
+      std::make_shared<ShadowNode::ListOfShared>();
   return emptySharedShadowNodeSharedList;
 }
 
@@ -131,7 +131,7 @@ ComponentHandle ShadowNode::getComponentHandle() const {
   return family_->getComponentHandle();
 }
 
-const SharedShadowNodeList &ShadowNode::getChildren() const {
+const ShadowNode::ListOfShared &ShadowNode::getChildren() const {
   return *children_;
 }
 
@@ -192,7 +192,7 @@ void ShadowNode::appendChild(const ShadowNode::Shared &child) {
 
   cloneChildrenIfShared();
   auto nonConstChildren =
-      std::const_pointer_cast<SharedShadowNodeList>(children_);
+      std::const_pointer_cast<ShadowNode::ListOfShared>(children_);
   nonConstChildren->push_back(child);
 
   child->family_->setParent(family_);
@@ -237,7 +237,7 @@ void ShadowNode::cloneChildrenIfShared() {
   }
 
   traits_.unset(ShadowNodeTraits::Trait::ChildrenAreShared);
-  children_ = std::make_shared<SharedShadowNodeList>(*children_);
+  children_ = std::make_shared<ShadowNode::ListOfShared>(*children_);
 }
 
 void ShadowNode::setMounted(bool mounted) const {
@@ -285,7 +285,7 @@ ShadowNode::Unshared ShadowNode::cloneTree(
 
     childNode = parentNode.clone({
         ShadowNodeFragment::propsPlaceholder(),
-        std::make_shared<SharedShadowNodeList>(children),
+        std::make_shared<ShadowNode::ListOfShared>(children),
     });
   }
 
