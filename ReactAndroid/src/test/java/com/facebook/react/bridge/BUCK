@@ -28,6 +28,7 @@ rn_robolectric_test(
     name = "bridge",
     srcs = glob(STANDARD_TEST_SRCS),
     contacts = ["oncall+react_native@xmail.facebook.com"],
+    language = "JAVA",
     visibility = [
         "PUBLIC",
     ],
