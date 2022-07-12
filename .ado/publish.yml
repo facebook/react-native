@@ -213,7 +213,7 @@ jobs:
       # Enumerate and download all dependencies ..
       - template: templates/download-android-dependencies.yml
         parameters:
-          artifact_feed: react-native/react-native-public
+          artifact_feed: Office
 
       # Very similar to the default pack task .. but appends 'ndk21b' to the nuget pack version
       - task: CmdLine@2
