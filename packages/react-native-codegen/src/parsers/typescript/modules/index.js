@@ -152,6 +152,35 @@ function translateTypeAnnotation(
     resolveTypeAnnotation(typeScriptTypeAnnotation, types);
 
   switch (typeAnnotation.type) {
+    case 'TSArrayType': {
+      return translateArrayTypeAnnotation(
+        hasteModuleName,
+        types,
+        aliasMap,
+        cxxOnly,
+        'Array',
+        typeAnnotation.elementType,
+        nullable,
+      );
+    }
+    case 'TSTypeOperator': {
+      if (typeAnnotation.operator === 'readonly' && typeAnnotation.typeAnnotation.type === 'TSArrayType') {
+        return translateArrayTypeAnnotation(
+          hasteModuleName,
+          types,
+          aliasMap,
+          cxxOnly,
+          'ReadonlyArray',
+          typeAnnotation.typeAnnotation.elementType,
+          nullable,
+        );
+      } else {
+        throw new UnsupportedTypeScriptGenericParserError(
+          hasteModuleName,
+          typeAnnotation,
+        );
+      }
+    }
     case 'TSTypeReference': {
       switch (typeAnnotation.typeName.name) {
         case 'RootTag': {
