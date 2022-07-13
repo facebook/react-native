@@ -92,6 +92,7 @@ target 'RNTester-macOSUnitTests' do
   platform :osx, '10.15'
   pods()
   pod 'React-RCTTest', :path => "./RCTTest"
+  pod 'OCMock', '~> 3.9.0'
 end
 
 target 'RNTester-macOSIntegrationTests' do
