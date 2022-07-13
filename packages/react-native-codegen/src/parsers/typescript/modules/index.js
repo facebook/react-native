@@ -62,6 +62,10 @@ function nullGuard<T>(fn: () => T): ?T {
 }
 
 function translateArrayTypeAnnotation(
+  hasteModuleName: string,
+  types: TypeDeclarationMap,
+  aliasMap: {...NativeModuleAliasMap},
+  cxxOnly: boolean,
   tsArrayType: 'Array' | 'ReadonlyArray',
   tsElementType: $FlowFixMe,
   nullable: $FlowFixMe,
@@ -174,6 +178,10 @@ function translateTypeAnnotation(
           );
 
           return translateArrayTypeAnnotation(
+            hasteModuleName,
+            types,
+            aliasMap,
+            cxxOnly,
             typeAnnotation.type,
             typeAnnotation.typeParameters.params[0],
             nullable,
