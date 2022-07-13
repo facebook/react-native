@@ -976,6 +976,8 @@ function InternalTextInput(props: Props): React.Node {
   const text =
     typeof props.value === 'string'
       ? props.value
+      : typeof lastNativeText === 'string'
+      ? lastNativeText
       : typeof props.defaultValue === 'string'
       ? props.defaultValue
       : '';
