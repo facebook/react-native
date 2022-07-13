@@ -15,6 +15,7 @@ import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTyp
 
 import PointerEventAttributesHoverablePointers from './W3CPointerEventPlatformTests/PointerEventAttributesHoverablePointers';
 import PointerEventPointerMove from './W3CPointerEventPlatformTests/PointerEventPointerMove';
+import CompatibilityAnimatedPointerMove from './Compatibility/CompatibilityAnimatedPointerMove';
 
 function EventfulView(props: {|
   name: string,
@@ -246,5 +247,6 @@ export default {
         return <PointerEventPointerMove />;
       },
     },
+    CompatibilityAnimatedPointerMove,
   ],
 };
