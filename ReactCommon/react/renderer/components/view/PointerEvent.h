@@ -70,6 +70,11 @@ struct PointerEvent {
    * neutral position of the control.
    */
   Float tangentialPressure;
+  /*
+   * The clockwise rotation of the pointer (e.g. pen stylus) around its major
+   * axis in degrees, with a value in the range 0 to 359.
+   */
+  int twist;
 };
 
 #if RN_DEBUG_STRING_CONVERTIBLE
