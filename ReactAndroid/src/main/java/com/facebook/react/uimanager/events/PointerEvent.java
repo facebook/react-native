@@ -72,6 +72,7 @@ public class PointerEvent extends Event<PointerEvent> {
   private int mCoalescingKey = UNSET_COALESCING_KEY;
   private float mOffsetX;
   private float mOffsetY;
+  private @Nullable List<WritableMap> mPointersEventData;
 
   private void init(
       String eventName,
@@ -98,12 +99,33 @@ public class PointerEvent extends Event<PointerEvent> {
 
   @Override
   public void dispatch(RCTEventEmitter rctEventEmitter) {
-    // Skip legacy stuff for now?
+    if (mMotionEvent == null) {
+      ReactSoftExceptionLogger.logSoftException(
+          TAG,
+          new IllegalStateException(
+              "Cannot dispatch a Pointer that has no MotionEvent; the PointerEvehas been recycled"));
+      return;
+    }
+    if (mPointersEventData == null) {
+      mPointersEventData = createPointersEventData();
+    }
+
+    if (mPointersEventData == null) {
+      // No relevant MotionEvent to dispatch
+      return;
+    }
+
+    boolean shouldCopy = mPointersEventData.size() > 1;
+    for (WritableMap pointerEventData : mPointersEventData) {
+      WritableMap eventData = shouldCopy ? pointerEventData.copy() : pointerEventData;
+      rctEventEmitter.receiveEvent(this.getViewTag(), mEventName, eventData);
+    }
     return;
   }
 
   @Override
   public void onDispose() {
+    mPointersEventData = null;
     MotionEvent motionEvent = mMotionEvent;
     mMotionEvent = null;
     if (motionEvent != null) {
@@ -130,13 +152,13 @@ public class PointerEvent extends Event<PointerEvent> {
     ArrayList<WritableMap> pointerEvents = new ArrayList<>();
 
     for (int index = 0; index < motionEvent.getPointerCount(); index++) {
-      pointerEvents.add(this.createPointerEvent(index));
+      pointerEvents.add(this.createPointerEventData(index));
     }
 
     return pointerEvents;
   }
 
-  private WritableMap createPointerEvent(int index) {
+  private WritableMap createPointerEventData(int index) {
     WritableMap pointerEvent = Arguments.createMap();
 
     pointerEvent.putDouble("pointerId", mMotionEvent.getPointerId(index));
@@ -158,6 +180,27 @@ public class PointerEvent extends Event<PointerEvent> {
     return pointerEvent;
   }
 
+  private List<WritableMap> createPointersEventData() {
+    int activePointerIndex = mMotionEvent.getActionIndex();
+    List<WritableMap> pointersEventData = null;
+    switch (mEventName) {
+        // Cases where all pointer info is relevant
+      case PointerEventHelper.POINTER_MOVE:
+      case PointerEventHelper.POINTER_CANCEL:
+        pointersEventData = createPointerEvents();
+        break;
+        // Cases where only the "active" pointer info is relevant
+      case PointerEventHelper.POINTER_ENTER:
+      case PointerEventHelper.POINTER_DOWN:
+      case PointerEventHelper.POINTER_UP:
+      case PointerEventHelper.POINTER_LEAVE:
+        pointersEventData = Arrays.asList(createPointerEventData(activePointerIndex));
+        break;
+    }
+
+    return pointersEventData;
+  }
+
   @Override
   public void dispatchModern(RCTModernEventEmitter rctEventEmitter) {
     if (mMotionEvent == null) {
@@ -168,31 +211,17 @@ public class PointerEvent extends Event<PointerEvent> {
       return;
     }
 
-    List<WritableMap> relevantPointerEventData = null;
-
-    int activePointerIndex = mMotionEvent.getActionIndex();
-    switch (mEventName) {
-        // Cases where all pointer info is relevant
-      case PointerEventHelper.POINTER_MOVE:
-      case PointerEventHelper.POINTER_CANCEL:
-        relevantPointerEventData = createPointerEvents();
-        break;
-        // Cases where only the "active" pointer info is relevant
-      case PointerEventHelper.POINTER_ENTER:
-      case PointerEventHelper.POINTER_DOWN:
-      case PointerEventHelper.POINTER_UP:
-      case PointerEventHelper.POINTER_LEAVE:
-        relevantPointerEventData = Arrays.asList(createPointerEvent(activePointerIndex));
-        break;
+    if (mPointersEventData == null) {
+      mPointersEventData = createPointersEventData();
     }
 
-    if (relevantPointerEventData == null) {
+    if (mPointersEventData == null) {
       // No relevant MotionEvent to dispatch
       return;
     }
 
-    boolean shouldCopy = relevantPointerEventData.size() > 1;
-    for (WritableMap pointerEventData : relevantPointerEventData) {
+    boolean shouldCopy = mPointersEventData.size() > 1;
+    for (WritableMap pointerEventData : mPointersEventData) {
       WritableMap eventData = shouldCopy ? pointerEventData.copy() : pointerEventData;
       rctEventEmitter.receiveEvent(
           this.getSurfaceId(),
