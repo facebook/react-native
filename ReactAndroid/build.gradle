@@ -8,7 +8,7 @@
 plugins {
     id("com.android.library")
     id("com.facebook.react")
-    id("org.jetbrains.kotlin.android") version "1.6.10"
+    id("org.jetbrains.kotlin.android") version KOTLIN_VERSION
     id("maven-publish")
     id("de.undercouch.download")
 }
@@ -372,35 +372,38 @@ android {
 }
 
 dependencies {
-    api("com.facebook.infer.annotation:infer-annotation:0.18.0")
-    api("com.facebook.yoga:proguard-annotations:1.19.0")
-    api("javax.inject:javax.inject:1")
-    api("androidx.appcompat:appcompat:${APPCOMPAT_VERSION}")
-    api("androidx.appcompat:appcompat-resources:${APPCOMPAT_VERSION}")
-    api("androidx.autofill:autofill:1.1.0")
-    api("androidx.swiperefreshlayout:swiperefreshlayout:1.0.0")
+    api("androidx.appcompat:appcompat-resources:${ANDROIDX_APPCOMPAT_VERSION}")
+    api("androidx.appcompat:appcompat:${ANDROIDX_APPCOMPAT_VERSION}")
+    api("androidx.autofill:autofill:${ANDROIDX_AUTOFILL_VERSION}")
+    api("androidx.swiperefreshlayout:swiperefreshlayout:${SWIPEREFRESH_LAYOUT_VERSION}")
+
+    api("com.facebook.fbjni:fbjni-java-only:${FBJNI_VERSION}")
     api("com.facebook.fresco:fresco:${FRESCO_VERSION}")
     api("com.facebook.fresco:imagepipeline-okhttp3:${FRESCO_VERSION}")
-    api("com.facebook.fresco:ui-common:${FRESCO_VERSION}")
+    api("com.facebook.fresco:ui-common:${FRESCO_VERSION}")    
+    api("com.facebook.infer.annotation:infer-annotation:${INFER_ANNOTATIONS_VERSION}")
     api("com.facebook.soloader:soloader:${SO_LOADER_VERSION}")
-    api("com.google.code.findbugs:jsr305:3.0.2")
-    api("com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}")
+    api("com.facebook.yoga:proguard-annotations:${PROGUARD_ANNOTATIONS_VERSION}")
+
+    api("com.google.code.findbugs:jsr305:${JSR305_VERSION}")
     api("com.squareup.okhttp3:okhttp-urlconnection:${OKHTTP_VERSION}")
-    api("com.squareup.okio:okio:2.9.0")
-    api("com.facebook.fbjni:fbjni-java-only:0.2.2")
-    extractHeaders("com.facebook.fbjni:fbjni:0.2.2:headers")
-    extractJNI("com.facebook.fbjni:fbjni:0.2.2")
+    api("com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}")
+    api("com.squareup.okio:okio:${OKIO_VERSION}")
+    api("javax.inject:javax.inject:${JAVAX_INJECT_VERSION}")
+
+    extractHeaders("com.facebook.fbjni:fbjni:${FBJNI_VERSION}:headers")
+    extractJNI("com.facebook.fbjni:fbjni:${FBJNI_VERSION}")
 
     // It's up to the consumer to decide if hermes should be included or not.
     // Therefore hermes-engine is a compileOnly dependency.
     compileOnly(project(":ReactAndroid:hermes-engine"))
 
     testImplementation("junit:junit:${JUNIT_VERSION}")
-    testImplementation("org.powermock:powermock-api-mockito2:${POWERMOCK_VERSION}")
-    testImplementation("org.powermock:powermock-module-junit4-rule:${POWERMOCK_VERSION}")
-    testImplementation("org.powermock:powermock-classloading-xstream:${POWERMOCK_VERSION}")
+    testImplementation("org.assertj:assertj-core:${ASSERTJ_VERSION}")
     testImplementation("org.mockito:mockito-core:${MOCKITO_CORE_VERSION}")
-    testImplementation("org.assertj:assertj-core:3.21.0")
+    testImplementation("org.powermock:powermock-api-mockito2:${POWERMOCK_VERSION}")
+    testImplementation("org.powermock:powermock-classloading-xstream:${POWERMOCK_VERSION}")
+    testImplementation("org.powermock:powermock-module-junit4-rule:${POWERMOCK_VERSION}")
     testImplementation("org.robolectric:robolectric:${ROBOLECTRIC_VERSION}")
 
     androidTestImplementation(fileTree(dir: "src/main/third-party/java/buck-android-support/", include: ["*.jar"]))
