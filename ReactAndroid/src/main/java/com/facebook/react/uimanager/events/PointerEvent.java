@@ -14,6 +14,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.uimanager.PixelUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,12 +27,22 @@ public class PointerEvent extends Event<PointerEvent> {
   private static final int UNSET_COALESCING_KEY = -1;
 
   public static PointerEvent obtain(
-      String eventName, int surfaceId, int viewTag, MotionEvent motionEventToCopy) {
+      String eventName,
+      int surfaceId,
+      int viewTag,
+      MotionEvent motionEventToCopy,
+      float[] offsetCoords) {
     PointerEvent event = EVENTS_POOL.acquire();
     if (event == null) {
       event = new PointerEvent();
     }
-    event.init(eventName, surfaceId, viewTag, Assertions.assertNotNull(motionEventToCopy), 0);
+    event.init(
+        eventName,
+        surfaceId,
+        viewTag,
+        Assertions.assertNotNull(motionEventToCopy),
+        offsetCoords,
+        0);
     return event;
   }
 
@@ -40,30 +51,42 @@ public class PointerEvent extends Event<PointerEvent> {
       int surfaceId,
       int viewTag,
       MotionEvent motionEventToCopy,
+      float[] offsetCoords,
       int coalescingKey) {
     PointerEvent event = EVENTS_POOL.acquire();
     if (event == null) {
       event = new PointerEvent();
     }
     event.init(
-        eventName, surfaceId, viewTag, Assertions.assertNotNull(motionEventToCopy), coalescingKey);
+        eventName,
+        surfaceId,
+        viewTag,
+        Assertions.assertNotNull(motionEventToCopy),
+        offsetCoords,
+        coalescingKey);
     return event;
   }
 
   private @Nullable MotionEvent mMotionEvent;
   private @Nullable String mEventName;
   private int mCoalescingKey = UNSET_COALESCING_KEY;
+  private float mOffsetX;
+  private float mOffsetY;
 
   private void init(
       String eventName,
       int surfaceId,
       int viewTag,
       MotionEvent motionEventToCopy,
+      float[] offsetCoords,
       int coalescingKey) {
+
     super.init(surfaceId, viewTag, motionEventToCopy.getEventTime());
     mEventName = eventName;
     mMotionEvent = MotionEvent.obtain(motionEventToCopy);
     mCoalescingKey = coalescingKey;
+    mOffsetX = offsetCoords[0];
+    mOffsetY = offsetCoords[1];
   }
 
   private PointerEvent() {}
@@ -125,6 +148,10 @@ public class PointerEvent extends Event<PointerEvent> {
     // We define the viewport to be ReactRootView
     pointerEvent.putDouble("clientX", mMotionEvent.getX(index));
     pointerEvent.putDouble("clientY", mMotionEvent.getY(index));
+
+    // Offset refers to upper left edge of the target view
+    pointerEvent.putDouble("offsetX", PixelUtil.toDIPFromPixel(mOffsetX));
+    pointerEvent.putDouble("offsetY", PixelUtil.toDIPFromPixel(mOffsetY));
 
     pointerEvent.putInt("target", this.getViewTag());
     pointerEvent.putDouble("timestamp", this.getTimestampMs());

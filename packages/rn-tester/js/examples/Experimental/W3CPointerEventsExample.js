@@ -57,10 +57,13 @@ function EventfulView(props: {|
   } = props;
   const [tag, setTag] = React.useState('');
 
-  const eventLog = (eventName: string) => (event: PointerEvent) => {
-    // $FlowFixMe Using private property
-    log(`${name} - ${eventName} - target: ${event.target._nativeTag}`);
-  };
+  const eventLog =
+    (eventName: string, handler: ?(e: PointerEvent) => void) =>
+    (event: PointerEvent) => {
+      // $FlowFixMe Using private property
+      log(`${name} - ${eventName} - target: ${event.target._nativeTag}`);
+      handler?.(event);
+    };
 
   const listeners = {
     onPointerUp: onUp ? eventLog('up') : null,
@@ -75,7 +78,7 @@ function EventfulView(props: {|
     onPointerMoveCapture: onMoveCapture ? eventLog('move capture') : null,
   };
 
-  let listeningTo = Object.keys(listeners)
+  const listeningTo = Object.keys(listeners)
     .filter(listenerName => listeners[listenerName] != null)
     .join(', ');
 

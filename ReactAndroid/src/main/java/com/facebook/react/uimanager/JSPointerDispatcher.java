@@ -128,7 +128,11 @@ public class JSPointerDispatcher {
       if (listeningForDown) {
         eventDispatcher.dispatchEvent(
             PointerEvent.obtain(
-                PointerEventHelper.POINTER_DOWN, surfaceId, activeTargetTag, motionEvent));
+                PointerEventHelper.POINTER_DOWN,
+                surfaceId,
+                activeTargetTag,
+                motionEvent,
+                mTargetCoordinates));
       }
 
       return;
@@ -149,7 +153,11 @@ public class JSPointerDispatcher {
       if (listeningForDown) {
         eventDispatcher.dispatchEvent(
             PointerEvent.obtain(
-                PointerEventHelper.POINTER_DOWN, surfaceId, activeTargetTag, motionEvent));
+                PointerEventHelper.POINTER_DOWN,
+                surfaceId,
+                activeTargetTag,
+                motionEvent,
+                mTargetCoordinates));
       }
 
       return;
@@ -167,6 +175,7 @@ public class JSPointerDispatcher {
                 surfaceId,
                 activeTargetTag,
                 motionEvent,
+                mTargetCoordinates,
                 coalescingKey));
       }
 
@@ -182,7 +191,11 @@ public class JSPointerDispatcher {
       if (listeningForUp) {
         eventDispatcher.dispatchEvent(
             PointerEvent.obtain(
-                PointerEventHelper.POINTER_UP, surfaceId, activeTargetTag, motionEvent));
+                PointerEventHelper.POINTER_UP,
+                surfaceId,
+                activeTargetTag,
+                motionEvent,
+                mTargetCoordinates));
       }
 
       return;
@@ -200,7 +213,11 @@ public class JSPointerDispatcher {
       if (listeningForUp) {
         eventDispatcher.dispatchEvent(
             PointerEvent.obtain(
-                PointerEventHelper.POINTER_UP, surfaceId, activeTargetTag, motionEvent));
+                PointerEventHelper.POINTER_UP,
+                surfaceId,
+                activeTargetTag,
+                motionEvent,
+                mTargetCoordinates));
       }
 
       if (!supportsHover) {
@@ -279,7 +296,7 @@ public class JSPointerDispatcher {
     return dispatchableViewTargets;
   }
 
-  private static void dispatchEventForViewTargets(
+  private void dispatchEventForViewTargets(
       String eventName,
       List<ViewTarget> viewTargets,
       EventDispatcher dispatcher,
@@ -288,7 +305,8 @@ public class JSPointerDispatcher {
 
     for (ViewTarget viewTarget : viewTargets) {
       int viewId = viewTarget.getViewId();
-      dispatcher.dispatchEvent(PointerEvent.obtain(eventName, surfaceId, viewId, motionEvent));
+      dispatcher.dispatchEvent(
+          PointerEvent.obtain(eventName, surfaceId, viewId, motionEvent, mTargetCoordinates));
     }
   }
 
@@ -416,7 +434,12 @@ public class JSPointerDispatcher {
     if (listeningToMove) {
       eventDispatcher.dispatchEvent(
           PointerEvent.obtain(
-              PointerEventHelper.POINTER_MOVE, surfaceId, targetTag, motionEvent, coalescingKey));
+              PointerEventHelper.POINTER_MOVE,
+              surfaceId,
+              targetTag,
+              motionEvent,
+              mTargetCoordinates,
+              coalescingKey));
     }
 
     mLastHitPath = hitPath;
@@ -443,7 +466,11 @@ public class JSPointerDispatcher {
         Assertions.assertNotNull(eventDispatcher)
             .dispatchEvent(
                 PointerEvent.obtain(
-                    PointerEventHelper.POINTER_CANCEL, surfaceId, targetTag, motionEvent));
+                    PointerEventHelper.POINTER_CANCEL,
+                    surfaceId,
+                    targetTag,
+                    motionEvent,
+                    mTargetCoordinates));
       }
 
       List<ViewTarget> leaveViewTargets =
