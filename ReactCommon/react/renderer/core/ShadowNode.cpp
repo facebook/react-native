@@ -36,7 +36,7 @@ ShadowNode::SharedListOfShared ShadowNode::emptySharedShadowNodeSharedList() {
  * Background Executor and should be removed once reimplementation of JNI layer
  * is finished.
  */
-SharedProps ShadowNode::propsForClonedShadowNode(
+Props::Shared ShadowNode::propsForClonedShadowNode(
     ShadowNode const &sourceShadowNode,
     Props::Shared const &props) {
 #ifdef ANDROID
@@ -139,7 +139,7 @@ ShadowNodeTraits ShadowNode::getTraits() const {
   return traits_;
 }
 
-const SharedProps &ShadowNode::getProps() const {
+const Props::Shared &ShadowNode::getProps() const {
   return props_;
 }
 

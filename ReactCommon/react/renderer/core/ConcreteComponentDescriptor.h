@@ -94,9 +94,9 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     concreteNonConstParentShadowNode->appendChild(childShadowNode);
   }
 
-  virtual SharedProps cloneProps(
+  virtual Props::Shared cloneProps(
       const PropsParserContext &context,
-      const SharedProps &props,
+      const Props::Shared &props,
       const RawProps &rawProps) const override {
     // Optimization:
     // Quite often nodes are constructed with default/empty props: the base
@@ -126,19 +126,19 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     return shadowNodeProps;
   };
 
-  SharedProps interpolateProps(
+  Props::Shared interpolateProps(
       const PropsParserContext &context,
       Float animationProgress,
-      const SharedProps &props,
-      const SharedProps &newProps) const override {
+      const Props::Shared &props,
+      const Props::Shared &newProps) const override {
 #ifdef ANDROID
     // On Android only, the merged props should have the same RawProps as the
     // final props struct
-    SharedProps interpolatedPropsShared =
+    Props::Shared interpolatedPropsShared =
         (newProps != nullptr ? cloneProps(context, newProps, newProps->rawProps)
                              : cloneProps(context, newProps, {}));
 #else
-    SharedProps interpolatedPropsShared = cloneProps(context, newProps, {});
+    Props::Shared interpolatedPropsShared = cloneProps(context, newProps, {});
 #endif
 
     if (ConcreteShadowNode::BaseTraits().check(

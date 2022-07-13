@@ -35,7 +35,7 @@ class StubView final {
   ComponentHandle componentHandle;
   SurfaceId surfaceId;
   Tag tag;
-  SharedProps props;
+  Props::Shared props;
   SharedEventEmitter eventEmitter;
   LayoutMetrics layoutMetrics;
   State::Shared state;

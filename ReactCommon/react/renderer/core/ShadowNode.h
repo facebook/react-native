@@ -118,7 +118,7 @@ class ShadowNode : public Sealable, public DebugStringConvertible {
    */
   ShadowNodeTraits getTraits() const;
 
-  SharedProps const &getProps() const;
+  Props::Shared const &getProps() const;
   ListOfShared const &getChildren() const;
   SharedEventEmitter const &getEventEmitter() const;
   Tag getTag() const;
@@ -186,7 +186,7 @@ class ShadowNode : public Sealable, public DebugStringConvertible {
 #endif
 
  protected:
-  SharedProps props_;
+  Props::Shared props_;
   SharedListOfShared children_;
   State::Shared state_;
   int orderIndex_;
@@ -207,7 +207,7 @@ class ShadowNode : public Sealable, public DebugStringConvertible {
 
   mutable std::atomic<bool> hasBeenMounted_{false};
 
-  static SharedProps propsForClonedShadowNode(
+  static Props::Shared propsForClonedShadowNode(
       ShadowNode const &sourceShadowNode,
       Props::Shared const &props);
 
