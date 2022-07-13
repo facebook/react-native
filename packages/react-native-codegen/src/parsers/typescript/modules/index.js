@@ -164,7 +164,10 @@ function translateTypeAnnotation(
       );
     }
     case 'TSTypeOperator': {
-      if (typeAnnotation.operator === 'readonly' && typeAnnotation.typeAnnotation.type === 'TSArrayType') {
+      if (
+        typeAnnotation.operator === 'readonly' &&
+        typeAnnotation.typeAnnotation.type === 'TSArrayType'
+      ) {
         return translateArrayTypeAnnotation(
           hasteModuleName,
           types,
