@@ -1016,7 +1016,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           0,
           lastInitialIndex,
         );
-        this.scrollToEnd({animated: false});
       }
       if (!this._hasWarned.keys && _usedIndexForKey) {
         console.warn(
