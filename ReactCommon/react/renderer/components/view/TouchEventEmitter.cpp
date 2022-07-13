@@ -68,6 +68,13 @@ static jsi::Value pointerEventPayload(
   object.setProperty(runtime, "pointerType", event.pointerType);
   object.setProperty(runtime, "clientX", event.clientPoint.x);
   object.setProperty(runtime, "clientY", event.clientPoint.y);
+  // x/y are an alias to clientX/Y
+  object.setProperty(runtime, "x", event.clientPoint.x);
+  object.setProperty(runtime, "y", event.clientPoint.y);
+  // since RN doesn't have a scrollable root, pageX/Y will always equal
+  // clientX/Y
+  object.setProperty(runtime, "pageX", event.clientPoint.x);
+  object.setProperty(runtime, "pageY", event.clientPoint.y);
   object.setProperty(runtime, "width", event.width);
   object.setProperty(runtime, "height", event.height);
   object.setProperty(runtime, "tiltX", event.tiltX);
