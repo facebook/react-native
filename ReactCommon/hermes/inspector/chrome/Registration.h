@@ -31,7 +31,7 @@ extern void enableDebugging(
  * disableDebugging removes this runtime from the list of debuggable JS targets
  * in this process.
  */
-extern void disableDebugging(HermesRuntime &runtime);
+extern void disableDebugging(jsi::Runtime &runtime);
 
 } // namespace chrome
 } // namespace inspector
