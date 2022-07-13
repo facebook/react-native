@@ -64,6 +64,7 @@ function nullGuard<T>(fn: () => T): ?T {
 function translateArrayTypeAnnotation(
   tsArrayType: 'Array' | 'ReadonlyArray',
   tsElementType: $FlowFixMe,
+  nullable: $FlowFixMe,
 ): Nullable<NativeModuleTypeAnnotation> {
   try {
     /**
@@ -174,7 +175,8 @@ function translateTypeAnnotation(
 
           return translateArrayTypeAnnotation(
             typeAnnotation.type,
-            typeAnnotation.typeParameters.params[0]
+            typeAnnotation.typeParameters.params[0],
+            nullable,
           );
         }
         case 'Readonly': {
