@@ -56,7 +56,7 @@ struct PointerEvent {
    * the X axis.
    */
   int tiltY;
-  /**
+  /*
    * Returns a long with details about the event, depending on the event type.
    */
   int detail;
@@ -64,6 +64,12 @@ struct PointerEvent {
    * The buttons being depressed (if any) when the mouse event was fired.
    */
   int buttons;
+  /*
+   * The normalized tangential pressure of the pointer input (also known as
+   * barrel pressure or cylinder stress) in the range -1 to 1, where 0 is the
+   * neutral position of the control.
+   */
+  Float tangentialPressure;
 };
 
 #if RN_DEBUG_STRING_CONVERTIBLE

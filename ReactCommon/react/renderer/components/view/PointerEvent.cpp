@@ -30,6 +30,8 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
       {"tiltY", getDebugDescription(pointerEvent.tiltY, options)},
       {"detail", getDebugDescription(pointerEvent.detail, options)},
       {"buttons", getDebugDescription(pointerEvent.buttons, options)},
+      {"tangentialPressure",
+       getDebugDescription(pointerEvent.tangentialPressure, options)},
   };
 }
 

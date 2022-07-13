@@ -74,6 +74,7 @@ static jsi::Value pointerEventPayload(
   object.setProperty(runtime, "tiltY", event.tiltY);
   object.setProperty(runtime, "detail", event.detail);
   object.setProperty(runtime, "buttons", event.buttons);
+  object.setProperty(runtime, "tangentialPressure", event.tangentialPressure);
   return object;
 }
 

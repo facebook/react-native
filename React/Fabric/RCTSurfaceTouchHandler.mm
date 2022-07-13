@@ -279,6 +279,8 @@ static PointerEvent CreatePointerEventFromActiveTouch(ActiveTouch activeTouch, R
     event.buttons = 0;
   }
 
+  event.tangentialPressure = 0.0;
+
   return event;
 }
 
@@ -299,6 +301,7 @@ CreatePointerEventFromIncompleteHoverData(UIView *view, CGPoint clientLocation, 
   event.tiltY = 0;
   event.detail = 0;
   event.buttons = 0;
+  event.tangentialPressure = 0.0;
   return event;
 }
 
