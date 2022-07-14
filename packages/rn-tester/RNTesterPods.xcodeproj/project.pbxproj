@@ -47,7 +47,6 @@
 		383838E1244BC5A4005FAC75 /* RNTesterSnapshotTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E7DB216022B2F3EC005AC45F /* RNTesterSnapshotTests.m */; };
 		383838E2244BC5A8005FAC75 /* RNTesterTestModule.m in Sources */ = {isa = PBXBuildFile; fileRef = E7DB215D22B2F3EC005AC45F /* RNTesterTestModule.m */; };
 		383889DA23A7398900D06C3E /* RCTConvert_UIColorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 383889D923A7398900D06C3E /* RCTConvert_UIColorTests.m */; };
-		38A9383C244532470025DABB /* libOCMock.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 38A9381B244532460025DABB /* libOCMock.a */; };
 		38B2630B2444F5EB006AB4D5 /* UpdatePropertiesExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 272E6B3C1BEA849E001FCF37 /* UpdatePropertiesExampleView.m */; };
 		38B2630C2444F628006AB4D5 /* FlexibleSizeExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F441E81BEBE5030039B79C /* FlexibleSizeExampleView.m */; };
 		38BB7CFD244560CC00803CDE /* RNTesterUnitTests_macOS.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F153471233AB2C7006DFE44 /* RNTesterUnitTests_macOS.m */; };
@@ -386,7 +385,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				383838C1244BC3D9005FAC75 /* JavaScriptCore.framework in Frameworks */,
-				38A9383C244532470025DABB /* libOCMock.a in Frameworks */,
 				087CFC06CF5A5AA9DBB32BE2 /* libPods-RNTesterUnitTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
