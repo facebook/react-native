@@ -35,6 +35,10 @@ struct PointerEvent {
    */
   Point clientPoint;
   /*
+   * The X/Y coordinate of the pointer in global (screen) coordinates.
+   */
+  Point screenPoint;
+  /*
    * The width (magnitude on the X axis), in CSS pixels, of the contact geometry
    * of the pointer
    */
