@@ -39,6 +39,11 @@ struct PointerEvent {
    */
   Point screenPoint;
   /*
+   * The X/Y coordinate of the pointer relative to the position of the padding
+   * edge of the target node.
+   */
+  Point offsetPoint;
+  /*
    * The width (magnitude on the X axis), in CSS pixels, of the contact geometry
    * of the pointer
    */

@@ -25,6 +25,7 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
       {"pointerType", getDebugDescription(pointerEvent.pointerType, options)},
       {"clientPoint", getDebugDescription(pointerEvent.clientPoint, options)},
       {"screenPoint", getDebugDescription(pointerEvent.screenPoint, options)},
+      {"offsetPoint", getDebugDescription(pointerEvent.offsetPoint, options)},
       {"width", getDebugDescription(pointerEvent.width, options)},
       {"height", getDebugDescription(pointerEvent.height, options)},
       {"tiltX", getDebugDescription(pointerEvent.tiltX, options)},

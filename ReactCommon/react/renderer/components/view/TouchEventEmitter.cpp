@@ -77,6 +77,8 @@ static jsi::Value pointerEventPayload(
   object.setProperty(runtime, "pageY", event.clientPoint.y);
   object.setProperty(runtime, "screenX", event.screenPoint.x);
   object.setProperty(runtime, "screenY", event.screenPoint.y);
+  object.setProperty(runtime, "offsetX", event.offsetPoint.x);
+  object.setProperty(runtime, "offsetY", event.offsetPoint.y);
   object.setProperty(runtime, "width", event.width);
   object.setProperty(runtime, "height", event.height);
   object.setProperty(runtime, "tiltX", event.tiltX);

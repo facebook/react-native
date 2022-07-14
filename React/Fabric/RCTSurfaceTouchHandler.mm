@@ -258,6 +258,7 @@ static PointerEvent CreatePointerEventFromActiveTouch(ActiveTouch activeTouch, R
   event.pointerType = PointerTypeCStringFromUITouchType(activeTouch.touchType);
   event.clientPoint = touch.pagePoint;
   event.screenPoint = touch.screenPoint;
+  event.offsetPoint = touch.offsetPoint;
 
   CGFloat pointerSize = activeTouch.majorRadius * 2.0;
   if (@available(iOS 13.4, *)) {
@@ -292,6 +293,7 @@ static PointerEvent CreatePointerEventFromIncompleteHoverData(
     UIView *view,
     CGPoint clientLocation,
     CGPoint screenLocation,
+    CGPoint offsetLocation,
     NSTimeInterval timestamp)
 {
   PointerEvent event = {};
@@ -303,6 +305,7 @@ static PointerEvent CreatePointerEventFromIncompleteHoverData(
   event.pointerType = "mouse";
   event.clientPoint = RCTPointFromCGPoint(clientLocation);
   event.screenPoint = RCTPointFromCGPoint(screenLocation);
+  event.offsetPoint = RCTPointFromCGPoint(offsetLocation);
   event.width = 1.0;
   event.height = 1.0;
   event.tiltX = 0;
@@ -690,6 +693,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
   targetView = FindClosestFabricManagedTouchableView(targetView);
   UIView *prevTargetView = [_currentlyHoveredViews firstObject];
 
+  CGPoint offsetLocation = [recognizer locationInView:targetView];
+
   NSOrderedSet *eventPathViews = GetTouchableViewsInPathToRoot(targetView);
 
   NSTimeInterval timestamp = CACurrentMediaTime();
@@ -701,8 +706,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
     BOOL shouldEmitOverEvent = IsAnyViewInPathListeningToEvent(eventPathViews, ViewEvents::Offset::PointerOver);
     SharedTouchEventEmitter eventEmitter = GetTouchEmitterFromView(targetView, [recognizer locationInView:targetView]);
     if (shouldEmitOverEvent && eventEmitter != nil) {
-      PointerEvent event =
-          CreatePointerEventFromIncompleteHoverData(targetView, clientLocation, screenLocation, timestamp);
+      PointerEvent event = CreatePointerEventFromIncompleteHoverData(
+          targetView, clientLocation, screenLocation, offsetLocation, timestamp);
       eventEmitter->onPointerOver(event);
     }
   }
@@ -724,8 +729,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
       SharedTouchEventEmitter eventEmitter =
           GetTouchEmitterFromView(componentView, [recognizer locationInView:componentView]);
       if (eventEmitter != nil) {
-        PointerEvent event =
-            CreatePointerEventFromIncompleteHoverData(componentView, clientLocation, screenLocation, timestamp);
+        PointerEvent event = CreatePointerEventFromIncompleteHoverData(
+            componentView, clientLocation, screenLocation, offsetLocation, timestamp);
         eventEmitter->onPointerEnter(event);
       }
     }
@@ -743,8 +748,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
   if (hasMoveListenerInEventPath) {
     SharedTouchEventEmitter eventEmitter = GetTouchEmitterFromView(targetView, [recognizer locationInView:targetView]);
     if (eventEmitter != nil) {
-      PointerEvent event =
-          CreatePointerEventFromIncompleteHoverData(targetView, clientLocation, screenLocation, timestamp);
+      PointerEvent event = CreatePointerEventFromIncompleteHoverData(
+          targetView, clientLocation, screenLocation, offsetLocation, timestamp);
       eventEmitter->onPointerMove(event);
     }
   }
@@ -755,8 +760,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
     SharedTouchEventEmitter eventEmitter =
         GetTouchEmitterFromView(prevTargetView, [recognizer locationInView:prevTargetView]);
     if (shouldEmitOutEvent && eventEmitter != nil) {
-      PointerEvent event =
-          CreatePointerEventFromIncompleteHoverData(prevTargetView, clientLocation, screenLocation, timestamp);
+      PointerEvent event = CreatePointerEventFromIncompleteHoverData(
+          prevTargetView, clientLocation, screenLocation, offsetLocation, timestamp);
       eventEmitter->onPointerOut(event);
     }
   }
@@ -787,8 +792,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
     SharedTouchEventEmitter eventEmitter =
         GetTouchEmitterFromView(componentView, [recognizer locationInView:componentView]);
     if (eventEmitter != nil) {
-      PointerEvent event =
-          CreatePointerEventFromIncompleteHoverData(componentView, clientLocation, screenLocation, timestamp);
+      PointerEvent event = CreatePointerEventFromIncompleteHoverData(
+          componentView, clientLocation, screenLocation, offsetLocation, timestamp);
       eventEmitter->onPointerLeave(event);
     }
   }
