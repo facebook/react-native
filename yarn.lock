@@ -2173,16 +2173,15 @@ bcrypt-pbkdf@^1.0.0:
   dependencies:
     tweetnacl "^0.14.3"
 
-beachball@^1.27.0:
-  version "1.53.2"
-  resolved "https://registry.yarnpkg.com/beachball/-/beachball-1.53.2.tgz#891e7d78ab928495563a3e536422a072e490793f"
-  integrity sha512-TFZrO82gCZwAC+tFZQ0cPPEG7YCif4W0FnPT8AsqkE5kotMtU6mhfrQqCOq3jcRjX7CCv4UultI83zY4NY73JA==
+beachball@^2.25.0:
+  version "2.25.0"
+  resolved "https://registry.yarnpkg.com/beachball/-/beachball-2.25.0.tgz#e82bd35369bd8b9ced7eb54559fe5bb5d7f6dbe1"
+  integrity sha512-pfvbEtCTNP1rZEKUbjxjJWCHtpJaAJ3eq4EfwdkL8b98VU8kkVRf0aW2h0PfN9qoQhKT0TKaw5Rr5DXaBVoJrA==
   dependencies:
     cosmiconfig "^6.0.0"
     execa "^4.0.3"
     fs-extra "^8.0.1"
-    git-url-parse "^11.1.2"
-    glob "^7.1.4"
+    human-id "^2.0.1"
     lodash "^4.17.15"
     minimatch "^3.0.4"
     p-limit "^3.0.2"
@@ -2190,7 +2189,7 @@ beachball@^1.27.0:
     semver "^6.1.1"
     toposort "^2.0.2"
     uuid "^8.3.1"
-    workspace-tools "^0.12.3"
+    workspace-tools "^0.22.0"
     yargs-parser "^20.2.4"
 
 big-integer@1.6.x:
@@ -4389,6 +4388,11 @@ https-proxy-agent@^5.0.0:
   dependencies:
     agent-base "6"
     debug "4"
+
+human-id@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/human-id/-/human-id-2.0.1.tgz#71aadd0f46d577fd982358133cfd43f2a46f1477"
+  integrity sha512-XWoYbGsEfBB0mtUHiyihsefgf+s1tNQHj7sX1kgDxUM0IEKk8rcZIPTwUpqDdFIQbkViOLejbc0t8jBzz5jL3w==
 
 human-signals@^1.1.1:
   version "1.1.1"
@@ -8753,7 +8757,7 @@ word-wrap@^1.2.3, word-wrap@~1.2.3:
   resolved "https://registry.yarnpkg.com/word-wrap/-/word-wrap-1.2.3.tgz#610636f6b1f703891bd34771ccb17fb93b47079c"
   integrity sha512-Hz/mrNwitNRh/HUAtM/VT/5VH+ygD6DV7mYKZAtHOrbs8U7lvPS6xf7EJKMF0uW1KJCl0H701g3ZGus+muE5vQ==
 
-workspace-tools@^0.12.3, workspace-tools@^0.18.4:
+workspace-tools@^0.18.4, workspace-tools@^0.22.0:
   version "0.18.4"
   resolved "https://registry.yarnpkg.com/workspace-tools/-/workspace-tools-0.18.4.tgz#a59ca6dc864d07aafc06a9ff4a9ff093456b8765"
   integrity sha512-ZdhlB4NEC3uJ4eW7snyHKOfzMC00HXWO2QbIU3aY8XBdtE+VrU2ajv+oxDUIZfCLD4Wlk3ltWaPt4Jk6IC9bMA==
