@@ -76,11 +76,22 @@ const renderFlatList = ({item}) => <NestedFlatList item={item} />;
 function NestedFlatList(props) {
   const [items, setItems] = useState(DATA);
   const [disabled, setDisabled] = useState(false);
+  const [index, setIndex] = useState(DATA.length + 1);
   return (
     <View>
       <Button
         title="add an item"
-        onPress={() => setItems([...items, {title: 'new item'}])}
+        onPress={() => {
+          setItems([...items, {title: `new item ${index}`}]);
+          setIndex(index + 1);
+        }}
+      />
+      <Button
+        title="prepend an item"
+        onPress={() => {
+          setItems([{title: `new item ${index}`}, ...items]);
+          setIndex(index + 1);
+        }}
       />
       <Button
         title="remove an item"
@@ -91,12 +102,7 @@ function NestedFlatList(props) {
         }}
       />
       <Text>Flatlist</Text>
-      <FlatList
-        inverted
-        style={{height: 400}}
-        renderItem={renderItem}
-        data={items}
-      />
+      <FlatList style={{height: 400}} renderItem={renderItem} data={items} />
     </View>
   );
 }
