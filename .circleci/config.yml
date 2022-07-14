@@ -1217,6 +1217,14 @@ jobs:
                     -H "Accept: application/vnd.github.v3+json" \
                     -u "$PAT_USERNAME:$PAT_TOKEN" \
                     -d "{\"event_type\": \"publish\", \"client_payload\": { \"version\": \"${CIRCLE_TAG:1}\" }}"
+            - run:
+                name: Install dependencies
+                command: apt update && apt install -y jq jo
+            - run:
+                name: Create draft GitHub Release and upload Hermes binaries
+                command: |
+                  ARTIFACTS=("$HERMES_WS_DIR/hermes-runtime-darwin/hermes-runtime-darwin-$CIRCLE_TAG.tar.gz")
+                  ./scripts/circleci/create_github_release.sh $CIRCLE_TAG $CIRCLE_PROJECT_USERNAME $CIRCLE_PROJECT_REPONAME $GITHUB_TOKEN "${ARTIFACTS[@]}"
       # END: Stable releases
 
   # -------------------------
