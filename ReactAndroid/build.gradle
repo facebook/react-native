@@ -8,7 +8,7 @@
 plugins {
     id("com.android.library")
     id("com.facebook.react")
-    id("org.jetbrains.kotlin.android") version KOTLIN_VERSION
+    id("org.jetbrains.kotlin.android") version "1.6.10"
     id("maven-publish")
     id("de.undercouch.download")
 }
