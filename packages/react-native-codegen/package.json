@@ -11,7 +11,7 @@
   "scripts": {
     "build": "yarn clean && node scripts/build.js --verbose",
     "clean": "rm -rf lib",
-    "prepublish": "yarn run build"
+    "prepare": "yarn run build"
   },
   "license": "MIT",
   "files": [
