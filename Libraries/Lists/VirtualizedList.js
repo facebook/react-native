@@ -724,6 +724,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           (this.props.initialScrollIndex || 0) +
             initialNumToRenderOrDefault(this.props.initialNumToRender),
         ) - 1,
+      height: undefined,
+      resetScrollPosition: false,
+      bottomHeight: 0,
     };
 
     if (this._isNestedWithSameOrientation()) {
@@ -1007,6 +1010,14 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         firstAfterInitial,
         last,
       );
+      const {resetScrollPosition, height, bottomHeight} = this.state;
+      if (resetScrollPosition && bottomHeight) {
+        this.scrollToOffset({
+          offset: height - bottomHeight,
+          animated: false,
+        });
+        this.setState({resetScrollPosition: false});
+      }
       // scroll to bottom optimization. The last page is always rendered in an inverted flatlist.
       if (this.props.inverted) {
         this._pushCells(
@@ -1174,6 +1185,13 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   componentDidUpdate(prevProps: Props) {
     const {data, extraData} = this.props;
+    const dataAppended =
+      data[data.length - 1] != prevProps.data[prevProps.data.length - 1];
+    const dataPrepended = data[0] != prevProps.data[0];
+    if (dataAppended) {
+      this.setState({bottomHeight: this.bottomY});
+    }
+
     if (data !== prevProps.data || extraData !== prevProps.extraData) {
       // clear the viewableIndices cache to also trigger
       // the onViewableItemsChanged callback with the new data
@@ -1592,6 +1610,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
     this._scheduleCellsToRenderUpdate();
     this._maybeCallOnEndReached();
+    this.setState({height: height, resetScrollPosition: true});
   };
 
   /* Translates metrics from a scroll event in a parent VirtualizedList into
@@ -1629,6 +1648,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     let contentLength = this._selectLength(e.nativeEvent.contentSize);
     let offset = this._selectOffset(e.nativeEvent.contentOffset);
     let dOffset = offset - this._scrollMetrics.offset;
+    const scrollY = e.nativeEvent.contentOffset.y;
+    const height = e.nativeEvent.contentSize.height;
+    this.bottomY = height - scrollY;
 
     if (this._isNestedWithSameOrientation()) {
       if (this._scrollMetrics.contentLength === 0) {
