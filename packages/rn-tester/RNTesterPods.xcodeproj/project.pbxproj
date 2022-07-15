@@ -47,11 +47,8 @@
 		383838E1244BC5A4005FAC75 /* RNTesterSnapshotTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E7DB216022B2F3EC005AC45F /* RNTesterSnapshotTests.m */; };
 		383838E2244BC5A8005FAC75 /* RNTesterTestModule.m in Sources */ = {isa = PBXBuildFile; fileRef = E7DB215D22B2F3EC005AC45F /* RNTesterTestModule.m */; };
 		383889DA23A7398900D06C3E /* RCTConvert_UIColorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 383889D923A7398900D06C3E /* RCTConvert_UIColorTests.m */; };
-		3882C0E22445657000E92FB9 /* OCMock.framework in Copy Files (1 item) */ = {isa = PBXBuildFile; fileRef = 38A93816244532460025DABB /* OCMock.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		38A9383C244532470025DABB /* libOCMock.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 38A9381B244532460025DABB /* libOCMock.a */; };
 		38B2630B2444F5EB006AB4D5 /* UpdatePropertiesExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 272E6B3C1BEA849E001FCF37 /* UpdatePropertiesExampleView.m */; };
 		38B2630C2444F628006AB4D5 /* FlexibleSizeExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F441E81BEBE5030039B79C /* FlexibleSizeExampleView.m */; };
-		38BB7CD524455EDD00803CDE /* OCMock.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 38A93816244532460025DABB /* OCMock.framework */; };
 		38BB7CFD244560CC00803CDE /* RNTesterUnitTests_macOS.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F153471233AB2C7006DFE44 /* RNTesterUnitTests_macOS.m */; };
 		38C8AC1F246611E500BA7FAA /* RNTesterLoadAllPages.m in Sources */ = {isa = PBXBuildFile; fileRef = 38C8AC1E246611E500BA7FAA /* RNTesterLoadAllPages.m */; };
 		38C8AC20246611E500BA7FAA /* RNTesterLoadAllPages.m in Sources */ = {isa = PBXBuildFile; fileRef = 38C8AC1E246611E500BA7FAA /* RNTesterLoadAllPages.m */; };
@@ -175,7 +172,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				3882C0E22445657000E92FB9 /* OCMock.framework in Copy Files (1 item) */,
 			);
 			name = "Copy Files (1 item)";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -199,7 +195,6 @@
 		387847D1245631D80035033A /* libiosDeviceBuild.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libiosDeviceBuild.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		387847DE245631F50035033A /* libiosSimulatorBuild.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libiosSimulatorBuild.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		387847EB2456320C0035033A /* libmacOSBuild.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmacOSBuild.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		38A93816244532460025DABB /* OCMock.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = OCMock.framework; sourceTree = "<group>"; };
 		38A9381B244532460025DABB /* libOCMock.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libOCMock.a; sourceTree = "<group>"; };
 		38BB7CB524455C4100803CDE /* libPods-RNTester-macOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libPods-RNTester-macOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		38C8AC1E246611E500BA7FAA /* RNTesterLoadAllPages.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNTesterLoadAllPages.m; sourceTree = "<group>"; };
@@ -311,15 +306,6 @@
 		E7DB211822B2BD53005AC45F /* libReact-RCTText.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libReact-RCTText.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7DB211A22B2BD53005AC45F /* libReact-RCTVibration.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libReact-RCTVibration.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7DB212222B2BD53005AC45F /* libyoga.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libyoga.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		E7DB212622B2C342005AC45F /* OCMockObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMockObject.h; sourceTree = "<group>"; };
-		E7DB212722B2C342005AC45F /* OCMMacroState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMMacroState.h; sourceTree = "<group>"; };
-		E7DB212822B2C342005AC45F /* OCMock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMock.h; sourceTree = "<group>"; };
-		E7DB212922B2C342005AC45F /* NSNotificationCenter+OCMAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSNotificationCenter+OCMAdditions.h"; sourceTree = "<group>"; };
-		E7DB212A22B2C342005AC45F /* OCMStubRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMStubRecorder.h; sourceTree = "<group>"; };
-		E7DB212B22B2C342005AC45F /* OCMRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMRecorder.h; sourceTree = "<group>"; };
-		E7DB212C22B2C342005AC45F /* OCMLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMLocation.h; sourceTree = "<group>"; };
-		E7DB212D22B2C342005AC45F /* OCMConstraint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMConstraint.h; sourceTree = "<group>"; };
-		E7DB212E22B2C342005AC45F /* OCMArg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMArg.h; sourceTree = "<group>"; };
 		E7DB213022B2C649005AC45F /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		E7DB215322B2F332005AC45F /* RNTesterIntegrationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RNTesterIntegrationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7DB215722B2F332005AC45F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -382,7 +368,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				38BB7CD524455EDD00803CDE /* OCMock.framework in Frameworks */,
 				460CE8493C58CA1961711C65 /* libPods-RNTester-macOSUnitTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -400,7 +385,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				383838C1244BC3D9005FAC75 /* JavaScriptCore.framework in Frameworks */,
-				38A9383C244532470025DABB /* libOCMock.a in Frameworks */,
 				087CFC06CF5A5AA9DBB32BE2 /* libPods-RNTesterUnitTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -661,27 +645,9 @@
 				E7DB20C122B2BAA4005AC45F /* RCTUnicodeDecodeTests.m */,
 				E7DB20D022B2BAA5005AC45F /* RCTURLUtilsTests.m */,
 				38A9381B244532460025DABB /* libOCMock.a */,
-				38A93816244532460025DABB /* OCMock.framework */,
-				E7DB212522B2C342005AC45F /* OCMock */,
 				E7DB20B322B2BAA4005AC45F /* RNTesterUnitTestsBundle.js */,
 			);
 			path = RNTesterUnitTests;
-			sourceTree = "<group>";
-		};
-		E7DB212522B2C342005AC45F /* OCMock */ = {
-			isa = PBXGroup;
-			children = (
-				E7DB212622B2C342005AC45F /* OCMockObject.h */,
-				E7DB212722B2C342005AC45F /* OCMMacroState.h */,
-				E7DB212822B2C342005AC45F /* OCMock.h */,
-				E7DB212922B2C342005AC45F /* NSNotificationCenter+OCMAdditions.h */,
-				E7DB212A22B2C342005AC45F /* OCMStubRecorder.h */,
-				E7DB212B22B2C342005AC45F /* OCMRecorder.h */,
-				E7DB212C22B2C342005AC45F /* OCMLocation.h */,
-				E7DB212D22B2C342005AC45F /* OCMConstraint.h */,
-				E7DB212E22B2C342005AC45F /* OCMArg.h */,
-			);
-			path = OCMock;
 			sourceTree = "<group>";
 		};
 		E7DB215422B2F332005AC45F /* RNTesterIntegrationTests */ = {
