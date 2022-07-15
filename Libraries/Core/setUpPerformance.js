@@ -11,7 +11,7 @@
 'use strict';
 
 if (!global.performance) {
-  global.performance = ({...null}: {now?: () => number});
+  global.performance = ({}: {now?: () => number});
 }
 
 /**

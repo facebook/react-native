@@ -369,9 +369,7 @@ const parallel = function (
 ): CompositeAnimation {
   let doneCount = 0;
   // Make sure we only call stop() at most once for each animation
-  const hasEnded = {
-    ...null,
-  };
+  const hasEnded = {};
   const stopTogether = !(config && config.stopTogether === false);
 
   const result = {
@@ -463,9 +461,7 @@ type LoopAnimationConfig = {
 const loop = function (
   animation: CompositeAnimation,
   // $FlowFixMe[prop-missing]
-  {iterations = -1, resetBeforeIteration = true}: LoopAnimationConfig = {
-    ...null,
-  },
+  {iterations = -1, resetBeforeIteration = true}: LoopAnimationConfig = {},
 ): CompositeAnimation {
   let isFinished = false;
   let iterationsSoFar = 0;
