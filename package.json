@@ -1,7 +1,6 @@
 {
   "name": "react-native",
-  "private": true,
-  "version": "1000.0.0",
+  "version": "0.70.0-rc.0",
   "bin": "./cli.js",
   "description": "A framework for building native apps using React",
   "license": "MIT",
@@ -94,10 +93,6 @@
     "test-android-e2e": "yarn run docker-build-android && yarn run test-android-run-e2e",
     "test-ios": "./scripts/objc-test.sh test"
   },
-  "workspaces": [
-    "packages/!(eslint-config-react-native-community)",
-    "repo-config"
-  ],
   "peerDependencies": {
     "react": "18.1.0"
   },
@@ -132,13 +127,51 @@
     "stacktrace-parser": "^0.1.3",
     "use-sync-external-store": "^1.0.0",
     "whatwg-fetch": "^3.0.0",
-    "ws": "^6.1.4"
+    "ws": "^6.1.4",
+    "react-native-codegen": "^0.70.3"
   },
   "devDependencies": {
     "flow-bin": "^0.182.0",
     "hermes-eslint": "0.8.0",
     "react": "18.1.0",
-    "react-test-renderer": "^18.1.0"
+    "react-test-renderer": "18.1.0",
+    "@babel/core": "^7.14.0",
+    "@babel/eslint-parser": "^7.18.2",
+    "@babel/generator": "^7.14.0",
+    "@babel/plugin-transform-regenerator": "^7.0.0",
+    "@react-native-community/eslint-plugin": "*",
+    "@react-native/eslint-plugin-specs": ">0.0.2",
+    "@reactions/component": "^2.0.2",
+    "async": "^3.2.2",
+    "clang-format": "^1.2.4",
+    "connect": "^3.6.5",
+    "coveralls": "^3.1.1",
+    "eslint": "^7.32.0",
+    "eslint-config-fb-strict": "^26.0.0",
+    "eslint-config-fbjs": "^3.1.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-babel": "^5.3.1",
+    "eslint-plugin-eslint-comments": "^3.2.0",
+    "eslint-plugin-flowtype": "^7.0.0",
+    "eslint-plugin-jest": "^25.2.4",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.26.1",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "eslint-plugin-react-native": "^3.11.0",
+    "eslint-plugin-relay": "^1.8.2",
+    "inquirer": "^7.1.0",
+    "jest": "^26.6.3",
+    "jest-junit": "^10.0.0",
+    "jscodeshift": "^0.13.1",
+    "metro-babel-register": "0.71.3",
+    "metro-memory-fs": "0.71.3",
+    "mkdirp": "^0.5.1",
+    "prettier": "^2.4.1",
+    "shelljs": "^0.8.5",
+    "signedsource": "^1.0.0",
+    "ws": "^6.1.4",
+    "yargs": "^15.3.1"
   },
   "codegenConfig": {
     "libraries": [
