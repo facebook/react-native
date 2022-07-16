@@ -141,7 +141,7 @@ import type {ViewProps} from 'ViewPropTypes';
 import type {HostComponent} from 'react-native';
 
 interface NativeCommands {
-  readonly hotspotUpdate: (viewRef: React.Ref<'RCTView'> | null | void, x: Int32, y: Int32) => void;
+  readonly hotspotUpdate: (viewRef: React.Ref<'RCTView'> | null | undefined, x: Int32, y: Int32) => void;
 }
 
 export interface ModuleProps extends ViewProps {
@@ -249,7 +249,7 @@ import type {ViewProps} from 'ViewPropTypes';
 import type {HostComponent} from 'react-native';
 
 export interface ModuleProps extends ViewProps {
-  nullable_with_default: WithDefault<Float, 1.0> | null | void;
+  nullable_with_default: WithDefault<Float, 1.0> | null | undefined;
 }
 
 export default codegenNativeComponent<ModuleProps>(
