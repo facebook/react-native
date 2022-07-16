@@ -181,7 +181,6 @@ describe('FlatList', () => {
       />,
     );
 
-    // This test fails (renderItemInThreeColumnss is called only 3 times)
     expect(renderItemInThreeColumns).toHaveBeenCalledTimes(7);
   });
 });

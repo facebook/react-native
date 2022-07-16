@@ -499,8 +499,9 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     if (numColumns > 1) {
       const ret = [];
       for (let kk = 0; kk < numColumns; kk++) {
-        const item = data[index * numColumns + kk];
-        if (item != null) {
+        const itemIndex = index * numColumns + kk;
+        if (itemIndex < data.length) {
+          const item = data[itemIndex];
           ret.push(item);
         }
       }
