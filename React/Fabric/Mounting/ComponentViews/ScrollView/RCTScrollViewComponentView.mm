@@ -98,7 +98,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   // some other part of the system scrolls scroll view.
   BOOL _isUserTriggeredScrolling;
   BOOL _createScrollView;
-  BOOL _shouldUpdateContextSize;
+  BOOL _shouldUpdateContentSize;
 
   CGPoint _contentOffsetWhenClipped;
 }
@@ -306,13 +306,13 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
   CGSize contentSize = RCTCGSizeFromSize(data.getContentSize());
 
-  if (!_shouldUpdateContextSize && CGSizeEqualToSize(_contentSize, contentSize)) {
+  if (!_shouldUpdateContentSize && CGSizeEqualToSize(_contentSize, contentSize)) {
     return;
   }
 
   _contentSize = contentSize;
   _containerView.frame = CGRect{RCTCGPointFromPoint(data.contentBoundingRect.origin), contentSize};
-  _shouldUpdateContextSize = NO;
+  _shouldUpdateContentSize = NO;
 
   [self _preserveContentOffsetIfNeededWithBlock:^{
     self->_scrollView.contentSize = contentSize;
@@ -400,7 +400,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   _isUserTriggeredScrolling = NO;
   [self.scrollViewDelegateSplitter removeAllDelegates];
   _createScrollView = YES;
-  _shouldUpdateContextSize = YES;
+  _shouldUpdateContentSize = YES;
   [super prepareForRecycle];
 }
 
