@@ -98,6 +98,8 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   // some other part of the system scrolls scroll view.
   BOOL _isUserTriggeredScrolling;
   BOOL _shouldUpdateContentInsetAdjustmentBehavior;
+  BOOL _createScrollView;
+  BOOL _shouldUpdateContextSize;
 
   CGPoint _contentOffsetWhenClipped;
 }
@@ -115,7 +117,16 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   if (self = [super initWithFrame:frame]) {
     static const auto defaultProps = std::make_shared<const ScrollViewProps>();
     _props = defaultProps;
+    _createScrollView = YES;
+    _scrollEventThrottle = INFINITY;
+  }
 
+  return self;
+}
+
+- (void)ensureScrollView
+{
+  if (_createScrollView) {
     _scrollView = [[RCTEnhancedScrollView alloc] initWithFrame:self.bounds];
     _scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     _scrollView.delaysContentTouches = NO;
@@ -128,18 +139,8 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
     [_scrollView addSubview:_containerView];
 
     [self.scrollViewDelegateSplitter addDelegate:self];
-
-    _scrollEventThrottle = INFINITY;
+    _createScrollView = NO;
   }
-
-  return self;
-}
-
-- (void)dealloc
-{
-  // Removing all delegates from the splitter nils the actual delegate which prevents a crash on UIScrollView
-  // deallocation.
-  [self.scrollViewDelegateSplitter removeAllDelegates];
 }
 
 - (RCTGenericDelegateSplitter<id<UIScrollViewDelegate>> *)scrollViewDelegateSplitter
@@ -178,6 +179,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
+  [self ensureScrollView];
   const auto &oldScrollViewProps = *std::static_pointer_cast<const ScrollViewProps>(_props);
   const auto &newScrollViewProps = *std::static_pointer_cast<const ScrollViewProps>(props);
 
@@ -306,12 +308,13 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
   CGSize contentSize = RCTCGSizeFromSize(data.getContentSize());
 
-  if (CGSizeEqualToSize(_contentSize, contentSize)) {
+  if (!_shouldUpdateContextSize && CGSizeEqualToSize(_contentSize, contentSize)) {
     return;
   }
 
   _contentSize = contentSize;
   _containerView.frame = CGRect{RCTCGPointFromPoint(data.contentBoundingRect.origin), contentSize};
+  _shouldUpdateContextSize = NO;
 
   [self _preserveContentOffsetIfNeededWithBlock:^{
     self->_scrollView.contentSize = contentSize;
@@ -336,6 +339,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
 - (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
+  [self ensureScrollView];
   [_containerView insertSubview:childComponentView atIndex:index];
 }
 
@@ -401,6 +405,9 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   _shouldUpdateContentInsetAdjustmentBehavior = YES;
   _state.reset();
   _isUserTriggeredScrolling = NO;
+  [self.scrollViewDelegateSplitter removeAllDelegates];
+  _createScrollView = YES;
+  _shouldUpdateContextSize = YES;
   [super prepareForRecycle];
 }
 
