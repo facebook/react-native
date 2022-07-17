@@ -117,7 +117,6 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
     static const auto defaultProps = std::make_shared<const ScrollViewProps>();
     _props = defaultProps;
     _createScrollView = YES;
-    _scrollEventThrottle = INFINITY;
   }
 
   return self;
@@ -137,6 +136,8 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
     [_scrollView addSubview:_containerView];
 
     [self.scrollViewDelegateSplitter addDelegate:self];
+
+    _scrollEventThrottle = INFINITY;
     _createScrollView = NO;
   }
 }
