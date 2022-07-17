@@ -15,8 +15,13 @@ import {StyleSheet, View, Text} from 'react-native';
 import * as React from 'react';
 
 const Separator =
-  (defaultColor, highlightColor) =>
-  ({leadingItem, trailingItem, highlighted, hasBeenHighlighted}) => {
+  (defaultColor: string, highlightColor: string) =>
+  ({
+    leadingItem,
+    trailingItem,
+    highlighted,
+    hasBeenHighlighted,
+  }: $FlowFixMe) => {
     const text = `Separator for leading ${leadingItem} and trailing ${trailingItem} has ${
       !hasBeenHighlighted ? 'not ' : ''
     }been pressed`;

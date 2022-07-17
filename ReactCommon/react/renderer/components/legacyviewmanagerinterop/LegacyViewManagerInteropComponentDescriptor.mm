@@ -30,9 +30,6 @@ static std::string moduleNameFromComponentName(const std::string &componentName)
     return "FBReactFDSTooltipViewManager";
   }
 
-  if (componentName == "FBRotatablePhotoPlayer") {
-    return "FBRotatablePhotoPlayerViewManager";
-  }
   std::string fbPrefix("FB");
   if (std::mismatch(fbPrefix.begin(), fbPrefix.end(), componentName.begin()).first == fbPrefix.end()) {
     // If `moduleName` has "FB" prefix.

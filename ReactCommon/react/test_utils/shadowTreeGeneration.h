@@ -308,7 +308,7 @@ static inline ShadowNode::Shared generateShadowNodeTree(
   return componentDescriptor.createShadowNode(
       ShadowNodeFragment{
           generateDefaultProps(componentDescriptor),
-          std::make_shared<SharedShadowNodeList>(children)},
+          std::make_shared<ShadowNode::ListOfShared>(children)},
       family);
 }
 

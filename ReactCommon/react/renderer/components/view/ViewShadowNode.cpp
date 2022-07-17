@@ -70,7 +70,7 @@ void ViewShadowNode::initialize() noexcept {
       (viewProps.zIndex.has_value() &&
        viewProps.yogaStyle.positionType() != YGPositionTypeStatic) ||
       viewProps.yogaStyle.display() == YGDisplayNone ||
-      viewProps.getClipsContentToBounds() ||
+      viewProps.getClipsContentToBounds() || viewProps.events.bits.any() ||
       isColorMeaningful(viewProps.shadowColor) ||
       viewProps.accessibilityElementsHidden ||
       viewProps.accessibilityViewIsModal ||
@@ -84,7 +84,6 @@ void ViewShadowNode::initialize() noexcept {
   bool formsView = formsStackingContext ||
       isColorMeaningful(viewProps.backgroundColor) ||
       isColorMeaningful(viewProps.foregroundColor) ||
-      viewProps.events.bits.any() ||
       !(viewProps.yogaStyle.border() == YGStyle::Edges{}) ||
       !viewProps.testId.empty();
 

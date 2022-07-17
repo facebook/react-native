@@ -26,8 +26,6 @@ module.exports = {
         // These rules are not required with hermes-eslint
         'ft-flow/define-flow-type': 0,
         'ft-flow/use-flow-type': 0,
-        'flowtype/define-flow-type': 0,
-        'flowtype/use-flow-type': 0,
         // flow handles this check for us, so it's not required
         'no-undef': 0,
       },

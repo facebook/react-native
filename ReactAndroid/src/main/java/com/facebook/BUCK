@@ -4,6 +4,7 @@ rn_android_library(
     name = "yoga",
     srcs = glob(["yoga/*.java"]),
     autoglob = False,
+    language = "JAVA",
     visibility = ["PUBLIC"],
     deps = [
         react_native_dep("libraries/fbjni:java"),

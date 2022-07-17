@@ -68,8 +68,25 @@ static jsi::Value pointerEventPayload(
   object.setProperty(runtime, "pointerType", event.pointerType);
   object.setProperty(runtime, "clientX", event.clientPoint.x);
   object.setProperty(runtime, "clientY", event.clientPoint.y);
-  object.setProperty(runtime, "target", event.target);
-  object.setProperty(runtime, "timestamp", event.timestamp * 1000);
+  // x/y are an alias to clientX/Y
+  object.setProperty(runtime, "x", event.clientPoint.x);
+  object.setProperty(runtime, "y", event.clientPoint.y);
+  // since RN doesn't have a scrollable root, pageX/Y will always equal
+  // clientX/Y
+  object.setProperty(runtime, "pageX", event.clientPoint.x);
+  object.setProperty(runtime, "pageY", event.clientPoint.y);
+  object.setProperty(runtime, "screenX", event.screenPoint.x);
+  object.setProperty(runtime, "screenY", event.screenPoint.y);
+  object.setProperty(runtime, "offsetX", event.offsetPoint.x);
+  object.setProperty(runtime, "offsetY", event.offsetPoint.y);
+  object.setProperty(runtime, "width", event.width);
+  object.setProperty(runtime, "height", event.height);
+  object.setProperty(runtime, "tiltX", event.tiltX);
+  object.setProperty(runtime, "tiltY", event.tiltY);
+  object.setProperty(runtime, "detail", event.detail);
+  object.setProperty(runtime, "buttons", event.buttons);
+  object.setProperty(runtime, "tangentialPressure", event.tangentialPressure);
+  object.setProperty(runtime, "twist", event.twist);
   return object;
 }
 
@@ -147,8 +164,8 @@ void TouchEventEmitter::onPointerDown(const PointerEvent &event) const {
       RawEvent::Category::ContinuousStart);
 }
 
-void TouchEventEmitter::onPointerMove2(const PointerEvent &event) const {
-  dispatchUniqueEvent("pointerMove2", [event](jsi::Runtime &runtime) {
+void TouchEventEmitter::onPointerMove(const PointerEvent &event) const {
+  dispatchUniqueEvent("pointerMove", [event](jsi::Runtime &runtime) {
     return pointerEventPayload(runtime, event);
   });
 }
@@ -161,17 +178,17 @@ void TouchEventEmitter::onPointerUp(const PointerEvent &event) const {
       RawEvent::Category::ContinuousEnd);
 }
 
-void TouchEventEmitter::onPointerEnter2(const PointerEvent &event) const {
+void TouchEventEmitter::onPointerEnter(const PointerEvent &event) const {
   dispatchPointerEvent(
-      "pointerEnter2",
+      "pointerEnter",
       event,
       EventPriority::AsynchronousBatched,
       RawEvent::Category::ContinuousStart);
 }
 
-void TouchEventEmitter::onPointerLeave2(const PointerEvent &event) const {
+void TouchEventEmitter::onPointerLeave(const PointerEvent &event) const {
   dispatchPointerEvent(
-      "pointerLeave2",
+      "pointerLeave",
       event,
       EventPriority::AsynchronousBatched,
       RawEvent::Category::ContinuousEnd);

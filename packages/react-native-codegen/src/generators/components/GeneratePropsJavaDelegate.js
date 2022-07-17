@@ -9,6 +9,7 @@
  */
 
 'use strict';
+import type {CommandParamTypeAnnotation} from '../../CodegenSchema';
 
 import type {
   NamedShape,
@@ -170,7 +171,10 @@ function generatePropCasesString(
     }`;
 }
 
-function getCommandArgJavaType(param, index) {
+function getCommandArgJavaType(
+  param: NamedShape<CommandParamTypeAnnotation>,
+  index: number,
+) {
   const {typeAnnotation} = param;
 
   switch (typeAnnotation.type) {
@@ -229,7 +233,7 @@ function generateCommandCasesString(
   return commandMethods;
 }
 
-function getClassExtendString(component): string {
+function getClassExtendString(component: ComponentShape): string {
   const extendString = component.extendsProps
     .map(extendProps => {
       switch (extendProps.type) {
@@ -251,7 +255,7 @@ function getClassExtendString(component): string {
   return extendString;
 }
 
-function getDelegateImports(component) {
+function getDelegateImports(component: ComponentShape) {
   const imports = getImports(component, 'delegate');
   // The delegate needs ReadableArray for commands always.
   // The interface doesn't always need it
@@ -265,7 +269,10 @@ function getDelegateImports(component) {
   return imports;
 }
 
-function generateMethods(propsString, commandsString): string {
+function generateMethods(
+  propsString: string,
+  commandsString: null | string,
+): string {
   return [
     PropSetterTemplate({propCases: propsString}),
     commandsString != null

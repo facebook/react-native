@@ -55,12 +55,9 @@ object ReactMapBufferPropSetter {
   private const val VP_TEST_ID = 32
   private const val VP_TRANSFORM = 33
   private const val VP_ZINDEX = 34
-  private const val VP_POINTER_ENTER2 = 35
-  private const val VP_POINTER_LEAVE2 = 36
-  private const val VP_POINTER_MOVE2 = 37
-  private const val VP_POINTER_ENTER2_CAPTURE = 38
-  private const val VP_POINTER_LEAVE2_CAPTURE = 39
-  private const val VP_POINTER_MOVE2_CAPTURE = 40
+  private const val VP_POINTER_ENTER_CAPTURE = 38
+  private const val VP_POINTER_LEAVE_CAPTURE = 39
+  private const val VP_POINTER_MOVE_CAPTURE = 40
 
   // Yoga values
   private const val YG_BORDER_WIDTH = 100
@@ -191,23 +188,14 @@ object ReactMapBufferPropSetter {
         VP_POINTER_MOVE -> {
           viewManager.setPointerMove(view, entry.booleanValue)
         }
-        VP_POINTER_ENTER2 -> {
-          viewManager.setPointerEnter2(view, entry.booleanValue)
+        VP_POINTER_ENTER_CAPTURE -> {
+          viewManager.setPointerEnterCapture(view, entry.booleanValue)
         }
-        VP_POINTER_LEAVE2 -> {
-          viewManager.setPointerLeave2(view, entry.booleanValue)
+        VP_POINTER_LEAVE_CAPTURE -> {
+          viewManager.setPointerLeaveCapture(view, entry.booleanValue)
         }
-        VP_POINTER_MOVE2 -> {
-          viewManager.setPointerMove2(view, entry.booleanValue)
-        }
-        VP_POINTER_ENTER2_CAPTURE -> {
-          viewManager.setPointerEnter2Capture(view, entry.booleanValue)
-        }
-        VP_POINTER_LEAVE2_CAPTURE -> {
-          viewManager.setPointerLeave2Capture(view, entry.booleanValue)
-        }
-        VP_POINTER_MOVE2_CAPTURE -> {
-          viewManager.setPointerMove2Capture(view, entry.booleanValue)
+        VP_POINTER_MOVE_CAPTURE -> {
+          viewManager.setPointerMoveCapture(view, entry.booleanValue)
         }
         VP_REMOVE_CLIPPED_SUBVIEW -> {
           viewManager.setRemoveClippedSubviews(view, entry.booleanValue)

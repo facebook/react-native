@@ -64,24 +64,24 @@ const bubblingEventTypes = {
       bubbled: 'onPointerDown',
     },
   },
-  topPointerEnter2: {
+  topPointerEnter: {
     phasedRegistrationNames: {
-      captured: 'onPointerEnter2Capture',
-      bubbled: 'onPointerEnter2',
+      captured: 'onPointerEnterCapture',
+      bubbled: 'onPointerEnter',
       skipBubbling: true,
     },
   },
-  topPointerLeave2: {
+  topPointerLeave: {
     phasedRegistrationNames: {
-      captured: 'onPointerLeave2Capture',
-      bubbled: 'onPointerLeave2',
+      captured: 'onPointerLeaveCapture',
+      bubbled: 'onPointerLeave',
       skipBubbling: true,
     },
   },
-  topPointerMove2: {
+  topPointerMove: {
     phasedRegistrationNames: {
-      captured: 'onPointerMove2Capture',
-      bubbled: 'onPointerMove2',
+      captured: 'onPointerMoveCapture',
+      bubbled: 'onPointerMove',
     },
   },
   topPointerUp: {
@@ -95,15 +95,6 @@ const bubblingEventTypes = {
 const directEventTypes = {
   topAccessibilityAction: {
     registrationName: 'onAccessibilityAction',
-  },
-  topPointerEnter: {
-    registrationName: 'onPointerEnter',
-  },
-  topPointerLeave: {
-    registrationName: 'onPointerLeave',
-  },
-  topPointerMove: {
-    registrationName: 'onPointerMove',
   },
   onGestureHandlerEvent: DynamicallyInjectedByGestureHandler({
     registrationName: 'onGestureHandlerEvent',

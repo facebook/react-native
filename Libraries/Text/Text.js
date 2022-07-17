@@ -8,6 +8,8 @@
  * @format
  */
 
+import type {PressEvent} from '../Types/CoreEventTypes';
+
 import Platform from '../Utilities/Platform';
 import * as PressabilityDebug from '../Pressability/PressabilityDebug';
 import usePressability from '../Pressability/usePressability';
@@ -73,11 +75,11 @@ const Text: React.AbstractComponent<
             pressRectOffset: pressRetentionOffset,
             onLongPress,
             onPress,
-            onPressIn(event) {
+            onPressIn(event: PressEvent) {
               setHighlighted(!suppressHighlighting);
               onPressIn?.(event);
             },
-            onPressOut(event) {
+            onPressOut(event: PressEvent) {
               setHighlighted(false);
               onPressOut?.(event);
             },
@@ -106,25 +108,25 @@ const Text: React.AbstractComponent<
       eventHandlers == null
         ? null
         : {
-            onResponderGrant(event) {
+            onResponderGrant(event: PressEvent) {
               eventHandlers.onResponderGrant(event);
               if (onResponderGrant != null) {
                 onResponderGrant(event);
               }
             },
-            onResponderMove(event) {
+            onResponderMove(event: PressEvent) {
               eventHandlers.onResponderMove(event);
               if (onResponderMove != null) {
                 onResponderMove(event);
               }
             },
-            onResponderRelease(event) {
+            onResponderRelease(event: PressEvent) {
               eventHandlers.onResponderRelease(event);
               if (onResponderRelease != null) {
                 onResponderRelease(event);
               }
             },
-            onResponderTerminate(event) {
+            onResponderTerminate(event: PressEvent) {
               eventHandlers.onResponderTerminate(event);
               if (onResponderTerminate != null) {
                 onResponderTerminate(event);

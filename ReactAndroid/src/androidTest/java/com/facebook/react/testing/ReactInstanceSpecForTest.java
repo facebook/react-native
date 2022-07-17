@@ -11,11 +11,11 @@ import android.annotation.SuppressLint;
 import androidx.annotation.Nullable;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate;
+import com.facebook.react.bridge.JSExceptionHandler;
 import com.facebook.react.bridge.JSIModuleSpec;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
-import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ public class ReactInstanceSpecForTest {
   private final List<Class<? extends JavaScriptModule>> mJSModuleSpecs = new ArrayList<>();
   private final List<ViewManager> mViewManagers = new ArrayList<>();
   private final ArrayList<ReactPackage> mReactPackages = new ArrayList<>();
-  @Nullable private NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler = null;
+  @Nullable private JSExceptionHandler mJSExceptionHandler = null;
   @Nullable private FabricUIManagerFactory mFabricUIManagerFactory = null;
   @Nullable private JavaScriptExecutorFactory mJavaScriptExecutorFactory = null;
   @Nullable private ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder = null;
@@ -51,14 +51,13 @@ public class ReactInstanceSpecForTest {
     return this;
   }
 
-  public ReactInstanceSpecForTest setNativeModuleCallExceptionHandler(
-      NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler) {
-    mNativeModuleCallExceptionHandler = nativeModuleCallExceptionHandler;
+  public ReactInstanceSpecForTest setJSExceptionHandler(JSExceptionHandler jSExceptionHandler) {
+    mJSExceptionHandler = jSExceptionHandler;
     return this;
   }
 
-  public NativeModuleCallExceptionHandler getNativeModuleCallExceptionHandler() {
-    return mNativeModuleCallExceptionHandler;
+  public JSExceptionHandler getJSExceptionHandler() {
+    return mJSExceptionHandler;
   }
 
   public ReactInstanceSpecForTest setJavaScriptExecutorFactory(

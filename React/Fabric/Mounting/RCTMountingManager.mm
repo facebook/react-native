@@ -104,6 +104,11 @@ static void RCTPerformMountInstructions(
         break;
       }
 
+      case ShadowViewMutation::RemoveDeleteTree: {
+        // TODO - not supported yet
+        break;
+      }
+
       case ShadowViewMutation::Update: {
         auto &oldChildShadowView = mutation.oldChildShadowView;
         auto &newChildShadowView = mutation.newChildShadowView;
@@ -298,8 +303,8 @@ static void RCTPerformMountInstructions(
   RCTAssertMainQueue();
   UIView<RCTComponentViewProtocol> *componentView = [_componentViewRegistry findComponentViewWithTag:reactTag];
   SurfaceId surfaceId = RCTSurfaceIdForView(componentView);
-  SharedProps oldProps = [componentView props];
-  SharedProps newProps = componentDescriptor.cloneProps(
+  Props::Shared oldProps = [componentView props];
+  Props::Shared newProps = componentDescriptor.cloneProps(
       PropsParserContext{surfaceId, *_contextContainer.get()}, oldProps, RawProps(convertIdToFollyDynamic(props)));
 
   NSSet<NSString *> *propKeys = componentView.propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN ?: [NSSet new];

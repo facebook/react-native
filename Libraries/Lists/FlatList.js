@@ -459,7 +459,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   _listRef: ?React.ElementRef<typeof VirtualizedList>;
   _virtualizedListPairs: Array<ViewabilityConfigCallbackPair> = [];
 
-  _captureRef = ref => {
+  _captureRef = (ref: ?React.ElementRef<typeof VirtualizedList>) => {
     this._listRef = ref;
   };
 
@@ -596,7 +596,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
       ? 'ListItemComponent'
       : 'renderItem';
 
-    const renderer = (props): React.Node => {
+    const renderer = (props: RenderItemProps<ItemT>): React.Node => {
       if (ListItemComponent) {
         // $FlowFixMe[not-a-component] Component isn't valid
         // $FlowFixMe[incompatible-type-arg] Component isn't valid
@@ -625,6 +625,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
             <View style={StyleSheet.compose(styles.row, columnWrapperStyle)}>
               {item.map((it, kk) => {
                 const element = renderer({
+                  // $FlowFixMe[incompatible-call]
                   item: it,
                   index: index * cols + kk,
                   separators: info.separators,

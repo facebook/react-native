@@ -301,17 +301,14 @@ void ViewProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(removeClippedSubviews, false);
     // events field
     VIEW_EVENT_CASE(ViewEvents::Offset::PointerEnter, "onPointerEnter");
+    VIEW_EVENT_CASE(
+        ViewEvents::Offset::PointerEnterCapture, "onPointerEnterCapture");
     VIEW_EVENT_CASE(ViewEvents::Offset::PointerMove, "onPointerMove");
+    VIEW_EVENT_CASE(
+        ViewEvents::Offset::PointerMoveCapture, "onPointerMoveCapture");
     VIEW_EVENT_CASE(ViewEvents::Offset::PointerLeave, "onPointerLeave");
-    VIEW_EVENT_CASE(ViewEvents::Offset::PointerEnter2, "onPointerEnter2");
     VIEW_EVENT_CASE(
-        ViewEvents::Offset::PointerEnter2Capture, "onPointerEnter2Capture");
-    VIEW_EVENT_CASE(ViewEvents::Offset::PointerMove2, "onPointerMove2");
-    VIEW_EVENT_CASE(
-        ViewEvents::Offset::PointerMove2Capture, "onPointerMove2Capture");
-    VIEW_EVENT_CASE(ViewEvents::Offset::PointerLeave2, "onPointerLeave2");
-    VIEW_EVENT_CASE(
-        ViewEvents::Offset::PointerLeave2Capture, "onPointerLeave2Capture");
+        ViewEvents::Offset::PointerLeaveCapture, "onPointerLeaveCapture");
     VIEW_EVENT_CASE(ViewEvents::Offset::PointerOver, "onPointerOver");
     VIEW_EVENT_CASE(ViewEvents::Offset::PointerOut, "onPointerOut");
     VIEW_EVENT_CASE(

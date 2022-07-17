@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {EndResult} from './animations/Animation';
+
 const {AnimatedEvent, attachNativeEvent} = require('./AnimatedEvent');
 const AnimatedImplementation = require('./AnimatedImplementation');
 const AnimatedInterpolation = require('./nodes/AnimatedInterpolation');
@@ -43,7 +45,7 @@ function mockAnimationStart(
     const guardedCallback =
       callback == null
         ? callback
-        : (...args) => {
+        : (...args: Array<EndResult>) => {
             if (inAnimationCallback) {
               console.warn(
                 'Ignoring recursive animation callback when running mock animations',
@@ -158,6 +160,7 @@ type LoopAnimationConfig = {
 
 const loop = function (
   animation: CompositeAnimation,
+  // $FlowFixMe[prop-missing]
   {iterations = -1}: LoopAnimationConfig = {},
 ): CompositeAnimation {
   return emptyAnimation;

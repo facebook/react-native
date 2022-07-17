@@ -8,6 +8,7 @@
 #include "LayoutAnimationKeyFrameManager.h"
 
 #include <algorithm>
+#include <sstream>
 #include <utility>
 
 #include <react/debug/flags.h>
@@ -304,6 +305,10 @@ LayoutAnimationKeyFrameManager::pullTransaction(
       std::vector<AnimationKeyFrame> keyFramesToAnimate;
       auto const layoutAnimationConfig = animation.layoutAnimationConfig;
       for (auto const &mutation : mutations) {
+        if (mutation.type == ShadowViewMutation::Type::RemoveDeleteTree) {
+          continue;
+        }
+
         ShadowView baselineShadowView =
             (mutation.type == ShadowViewMutation::Type::Delete ||
                      mutation.type == ShadowViewMutation::Type::Remove ||
@@ -1224,6 +1229,16 @@ void LayoutAnimationKeyFrameManager::queueFinalMutationsForCompletedKeyFrame(
           mutationsList.push_back(ShadowViewMutation::RemoveMutation(
               finalMutation.parentShadowView, prev, finalMutation.index));
           break;
+        case ShadowViewMutation::Type::RemoveDeleteTree:
+          // Note: Currently, there is a guarantee that if RemoveDeleteTree
+          // operations are generated, we /also/ generate corresponding
+          // Remove/Delete operations that are marked as "redundant".
+          // LayoutAnimations will process the redundant operations here, and
+          // ignore this mega-op. In the future for perf reasons it would be
+          // nice to remove the redundant operations entirely but we would need
+          // to find a way to make the RemoveDeleteTree operation work with
+          // LayoutAnimations (that might not be possible).
+          break;
         case ShadowViewMutation::Type::Update:
           mutationsList.push_back(ShadowViewMutation::UpdateMutation(
               prev, finalMutation.newChildShadowView));
@@ -1513,6 +1528,10 @@ void LayoutAnimationKeyFrameManager::getAndEraseConflictingAnimations(
     std::vector<AnimationKeyFrame> &conflictingAnimations) const {
   ShadowViewMutationList localConflictingMutations{};
   for (auto const &mutation : mutations) {
+    if (mutation.type == ShadowViewMutation::Type::RemoveDeleteTree) {
+      continue;
+    }
+
     bool mutationIsCreateOrDelete =
         mutation.type == ShadowViewMutation::Type::Create ||
         mutation.type == ShadowViewMutation::Type::Delete;

@@ -91,7 +91,7 @@ test_ios_jsc(){
     success "About to test iOS JSC... "
     success "Installing CocoaPods dependencies..."
     rm -rf packages/rn-tester/Pods
-    (cd packages/rn-tester && bundle exec pod install)
+    (cd packages/rn-tester && USE_HERMES=0 bundle exec pod install)
 
     info "Press any key to open the workspace in Xcode, then build and test manually."
     info ""
@@ -215,7 +215,7 @@ handle_menu_input(){
     read -p "Would you like to test something else? (Y/N)" confirm
     if [ "$confirm" == "${confirm#[Yy]}" ]; then
         info "Next steps:"
-        info "https://github.com/facebook/react-native/wiki/Release-Process"
+        info "https://reactnative.dev/contributing/release-candidate-minor"
         popd >/dev/null || exit
         exit 1
     else
@@ -232,4 +232,3 @@ init(){
 }
 
 init
-

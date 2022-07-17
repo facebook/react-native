@@ -35,15 +35,55 @@ struct PointerEvent {
    */
   Point clientPoint;
   /*
-   * A reference to the view to which the event was originally dispatched.
+   * The X/Y coordinate of the pointer in global (screen) coordinates.
    */
-  Tag target;
+  Point screenPoint;
   /*
-   * The time at which the event was created (in milliseconds). By
-   * specification, this value is time since epoch—but in reality, browsers'
-   * definitions vary.
+   * The X/Y coordinate of the pointer relative to the position of the padding
+   * edge of the target node.
    */
-  Float timestamp;
+  Point offsetPoint;
+  /*
+   * The width (magnitude on the X axis), in CSS pixels, of the contact geometry
+   * of the pointer
+   */
+  Float width;
+  /*
+   * The height (magnitude on the y axis), in CSS pixels, of the contact
+   * geometry of the pointer
+   */
+  Float height;
+  /*
+   * The plane angle (in degrees, in the range of -90 to 90) between the Y–Z
+   * plane and the plane containing both the pointer (e.g. pen stylus) axis and
+   * the Y axis.
+   */
+  int tiltX;
+  /*
+   * The plane angle (in degrees, in the range of -90 to 90) between the X–Z
+   * plane and the plane containing both the pointer (e.g. pen stylus) axis and
+   * the X axis.
+   */
+  int tiltY;
+  /*
+   * Returns a long with details about the event, depending on the event type.
+   */
+  int detail;
+  /*
+   * The buttons being depressed (if any) when the mouse event was fired.
+   */
+  int buttons;
+  /*
+   * The normalized tangential pressure of the pointer input (also known as
+   * barrel pressure or cylinder stress) in the range -1 to 1, where 0 is the
+   * neutral position of the control.
+   */
+  Float tangentialPressure;
+  /*
+   * The clockwise rotation of the pointer (e.g. pen stylus) around its major
+   * axis in degrees, with a value in the range 0 to 359.
+   */
+  int twist;
 };
 
 #if RN_DEBUG_STRING_CONVERTIBLE

@@ -119,7 +119,7 @@ function translatePrimitiveJSTypeToCpp(
     realTypeAnnotation = resolveAlias(realTypeAnnotation.name);
   }
 
-  function wrap(type) {
+  function wrap(type: string) {
     return nullable ? `std::optional<${type}>` : type;
   }
 

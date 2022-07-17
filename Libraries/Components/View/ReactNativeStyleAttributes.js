@@ -85,14 +85,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   /**
    * Transform
    */
-  decomposedMatrix: true, // @deprecated
-  rotation: true, // @deprecated
-  scaleX: true, // @deprecated
-  scaleY: true, // @deprecated
   transform: {process: processTransform},
-  transformMatrix: true, // @deprecated
-  translateX: true, // @deprecated
-  translateY: true, // @deprecated
 
   /**
    * View

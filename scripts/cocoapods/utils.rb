@@ -19,7 +19,7 @@ class ReactNativePodsUtils
     def self.get_default_flags
         flags = {
             :fabric_enabled => false,
-            :hermes_enabled => false,
+            :hermes_enabled => true,
             :flipper_configuration => FlipperConfiguration.disabled
         }
 
@@ -28,8 +28,8 @@ class ReactNativePodsUtils
             flags[:hermes_enabled] = true
         end
 
-        if ENV['USE_HERMES'] == '1'
-            flags[:hermes_enabled] = true
+        if ENV['USE_HERMES'] == '0'
+            flags[:hermes_enabled] = false
         end
 
         return flags
@@ -90,6 +90,30 @@ class ReactNativePodsUtils
                 end
             end
             project.save()
+        end
+    end
+
+    def self.apply_mac_catalyst_patches(installer)
+        # Fix bundle signing issues
+        installer.pods_project.targets.each do |target|
+            if target.respond_to?(:product_type) and target.product_type == "com.apple.product-type.bundle"
+                target.build_configurations.each do |config|
+                    config.build_settings['CODE_SIGN_IDENTITY[sdk=macosx*]'] = '-'
+                end
+            end
+        end
+
+        installer.aggregate_targets.each do |aggregate_target|
+            aggregate_target.user_project.native_targets.each do |target|
+                target.build_configurations.each do |config|
+                    # Explicitly set dead code stripping flags
+                    config.build_settings['DEAD_CODE_STRIPPING'] = 'YES'
+                    config.build_settings['PRESERVE_DEAD_CODE_INITS_AND_TERMS'] = 'YES'
+                    # Modify library search paths
+                    config.build_settings['LIBRARY_SEARCH_PATHS'] = ['$(SDKROOT)/usr/lib/swift', '$(SDKROOT)/System/iOSSupport/usr/lib/swift', '$(inherited)']
+                end
+            end
+            aggregate_target.user_project.save()
         end
     end
 

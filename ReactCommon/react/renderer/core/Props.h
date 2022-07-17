@@ -19,10 +19,6 @@
 namespace facebook {
 namespace react {
 
-class Props;
-
-using SharedProps = std::shared_ptr<Props const>;
-
 /*
  * Represents the most generic props object.
  */

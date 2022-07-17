@@ -7,18 +7,19 @@ require 'json'
 require 'open3'
 require 'pathname'
 require_relative './react_native_pods_utils/script_phases.rb'
+require_relative './cocoapods/hermes.rb'
 require_relative './cocoapods/flipper.rb'
 require_relative './cocoapods/fabric.rb'
 require_relative './cocoapods/codegen.rb'
 require_relative './cocoapods/utils.rb'
+require_relative './cocoapods/new_architecture.rb'
+require_relative './cocoapods/local_podspec_patch.rb'
 
 $CODEGEN_OUTPUT_DIR = 'build/generated/ios'
 $CODEGEN_COMPONENT_DIR = 'react/renderer/components'
 $CODEGEN_MODULE_DIR = '.'
 $REACT_CODEGEN_PODSPEC_GENERATED = false
 $REACT_CODEGEN_DISCOVERY_DONE = false
-DEFAULT_OTHER_CPLUSPLUSFLAGS = '$(inherited)'
-NEW_ARCH_OTHER_CPLUSPLUSFLAGS = '$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1'
 
 $START_TIME = Time.now.to_i
 
@@ -36,7 +37,7 @@ def use_react_native! (options={})
   production = options[:production] ||= false
 
   # Include Hermes dependencies
-  hermes_enabled = options[:hermes_enabled] ||= false
+  hermes_enabled = options[:hermes_enabled] != nil ? options[:hermes_enabled] : true
 
   flipper_configuration = options[:flipper_configuration] ||= FlipperConfiguration.disabled
 
@@ -61,7 +62,7 @@ def use_react_native! (options={})
   pod 'React-RCTVibration', :path => "#{prefix}/Libraries/Vibration"
   pod 'React-Core/RCTWebSocket', :path => "#{prefix}/"
 
-  pod 'React-bridging', :path => "#{prefix}/ReactCommon/react/bridging"
+  pod 'React-bridging', :path => "#{prefix}/ReactCommon"
   pod 'React-cxxreact', :path => "#{prefix}/ReactCommon/cxxreact"
   pod 'React-jsi', :path => "#{prefix}/ReactCommon/jsi"
   pod 'React-jsiexecutor', :path => "#{prefix}/ReactCommon/jsiexecutor"
@@ -101,17 +102,7 @@ def use_react_native! (options={})
     setup_fabric!(prefix)
   end
 
-  if hermes_enabled
-    prepare_hermes = 'node scripts/hermes/prepare-hermes-for-build'
-    react_native_dir = Pod::Config.instance.installation_root.join(prefix)
-    prep_output, prep_status = Open3.capture2e(prepare_hermes, :chdir => react_native_dir)
-    prep_output.split("\n").each { |line| Pod::UI.info line }
-    abort unless prep_status == 0
-
-    pod 'React-hermes', :path => "#{prefix}/ReactCommon/hermes"
-    pod 'libevent', '~> 2.1.12'
-    pod 'hermes-engine', :podspec => "#{prefix}/sdks/hermes/hermes-engine.podspec"
-  end
+  install_hermes_if_enabled(hermes_enabled, prefix)
 
   # CocoaPods `configurations` option ensures that the target is copied only for the specified configurations,
   # but those dependencies are still built.
@@ -122,7 +113,7 @@ def use_react_native! (options={})
     use_flipper_pods(flipper_configuration.versions, :configurations => flipper_configuration.configurations)
   end
 
-  pods_to_update = LocalPodspecPatch.pods_to_update(options)
+  pods_to_update = LocalPodspecPatch.pods_to_update(:react_native_path => prefix)
   if !pods_to_update.empty?
     if Pod::Lockfile.public_instance_methods.include?(:detect_changes_with_podfile)
       Pod::Lockfile.prepend(LocalPodspecPatch)
@@ -141,45 +132,22 @@ def use_flipper!(versions = {}, configurations: ['Debug'])
   use_flipper_pods(versions, :configurations => configurations)
 end
 
-def react_native_post_install(installer, react_native_path = "../node_modules/react-native")
+def react_native_post_install(installer, react_native_path = "../node_modules/react-native", mac_catalyst_enabled: false)
+  ReactNativePodsUtils.apply_mac_catalyst_patches(installer) if mac_catalyst_enabled
+
   if ReactNativePodsUtils.has_pod(installer, 'Flipper')
     flipper_post_install(installer)
   end
 
   ReactNativePodsUtils.exclude_i386_architecture_while_using_hermes(installer)
   ReactNativePodsUtils.fix_library_search_paths(installer)
-
-  cpp_flags = DEFAULT_OTHER_CPLUSPLUSFLAGS
-  if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
-    cpp_flags = NEW_ARCH_OTHER_CPLUSPLUSFLAGS
-  end
-  modify_flags_for_new_architecture(installer, cpp_flags)
-
   ReactNativePodsUtils.set_node_modules_user_settings(installer, react_native_path)
 
-  puts "Pod install took #{Time.now.to_i - $START_TIME} [s] to run"
-end
+  NewArchitectureHelper.set_clang_cxx_language_standard_if_needed(installer)
+  is_new_arch_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'
+  NewArchitectureHelper.modify_flags_for_new_architecture(installer, is_new_arch_enabled)
 
-def modify_flags_for_new_architecture(installer, cpp_flags)
-  # Add RCT_NEW_ARCH_ENABLED to Target pods xcconfig
-  installer.aggregate_targets.each do |aggregate_target|
-      aggregate_target.xcconfigs.each do |config_name, config_file|
-          config_file.attributes['OTHER_CPLUSPLUSFLAGS'] = cpp_flags
-          xcconfig_path = aggregate_target.xcconfig_path(config_name)
-          Pod::UI.puts xcconfig_path
-          config_file.save_as(xcconfig_path)
-      end
-  end
-
-  # Add RCT_NEW_ARCH_ENABLED to generated pod target projects
-  installer.target_installation_results.pod_target_installation_results
-    .each do |pod_name, target_installation_result|
-    if pod_name == 'React-Core'
-      target_installation_result.native_target.build_configurations.each do |config|
-        config.build_settings['OTHER_CPLUSPLUSFLAGS'] = cpp_flags
-      end
-    end
-  end
+  Pod::UI.puts "Pod install took #{Time.now.to_i - $START_TIME} [s] to run".green
 end
 
 def get_react_codegen_spec(options={})
@@ -198,7 +166,7 @@ def get_react_codegen_spec(options={})
   end
 
   folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
-  folly_version = '2021.06.28.00-v2'
+  folly_version = '2021.07.22.00'
   boost_version = '1.76.0'
   boost_compiler_flags = '-Wno-documentation'
 
@@ -522,47 +490,4 @@ def __apply_Xcode_12_5_M1_post_install_workaround(installer)
   # See https://github.com/facebook/flipper/issues/834 for more details.
   time_header = "#{Pod::Config.instance.installation_root.to_s}/Pods/RCT-Folly/folly/portability/Time.h"
   `sed -i -e  $'s/ && (__IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0)//' #{time_header}`
-end
-
-# Monkeypatch of `Pod::Lockfile` to ensure automatic update of dependencies integrated with a local podspec when their version changed.
-# This is necessary because local podspec dependencies must be otherwise manually updated.
-module LocalPodspecPatch
-  # Returns local podspecs whose versions differ from the one in the `react-native` package.
-  def self.pods_to_update(react_native_options)
-    prefix = react_native_options[:path] ||= "../node_modules/react-native"
-    @@local_podspecs = Dir.glob("#{prefix}/third-party-podspecs/*").map { |file| File.basename(file, ".podspec") }
-    @@local_podspecs = @@local_podspecs.select do |podspec_name|
-      # Read local podspec to determine the cached version
-      local_podspec_path = File.join(
-        Dir.pwd, "Pods/Local Podspecs/#{podspec_name}.podspec.json"
-      )
-
-      # Local podspec cannot be outdated if it does not exist, yet
-      next unless File.file?(local_podspec_path)
-
-      local_podspec = File.read(local_podspec_path)
-      local_podspec_json = JSON.parse(local_podspec)
-      local_version = local_podspec_json["version"]
-
-      # Read the version from a podspec from the `react-native` package
-      podspec_path = "#{prefix}/third-party-podspecs/#{podspec_name}.podspec"
-      current_podspec = Pod::Specification.from_file(podspec_path)
-
-      current_version = current_podspec.version.to_s
-      current_version != local_version
-    end
-    @@local_podspecs
-  end
-
-  # Patched `detect_changes_with_podfile` method
-  def detect_changes_with_podfile(podfile)
-    changes = super(podfile)
-    @@local_podspecs.each do |local_podspec|
-      next unless changes[:unchanged].include?(local_podspec)
-
-      changes[:unchanged].delete(local_podspec)
-      changes[:changed] << local_podspec
-    end
-    changes
-  end
 end

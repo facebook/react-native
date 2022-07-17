@@ -102,8 +102,10 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setAnimationMatrix(null);
 
     // setShadowColor
-    view.setOutlineAmbientShadowColor(Color.BLACK);
-    view.setOutlineSpotShadowColor(Color.BLACK);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      view.setOutlineAmbientShadowColor(Color.BLACK);
+      view.setOutlineSpotShadowColor(Color.BLACK);
+    }
 
     // Focus IDs
     // Also see in AOSP source:
@@ -247,6 +249,20 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       return;
     }
     view.setTag(R.id.accessibility_role, AccessibilityRole.fromValue(accessibilityRole));
+  }
+
+  @Override
+  @ReactProp(name = ViewProps.ACCESSIBILITY_COLLECTION)
+  public void setAccessibilityCollection(
+      @NonNull T view, @Nullable ReadableMap accessibilityCollection) {
+    view.setTag(R.id.accessibility_collection, accessibilityCollection);
+  }
+
+  @Override
+  @ReactProp(name = ViewProps.ACCESSIBILITY_COLLECTION_ITEM)
+  public void setAccessibilityCollectionItem(
+      @NonNull T view, @Nullable ReadableMap accessibilityCollectionItem) {
+    view.setTag(R.id.accessibility_collection_item, accessibilityCollectionItem);
   }
 
   @Override
@@ -536,33 +552,32 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
                     "phasedRegistrationNames",
                     MapBuilder.of("bubbled", "onPointerDown", "captured", "onPointerDownCapture")))
             .put(
-                "topPointerEnter2",
+                "topPointerEnter",
                 MapBuilder.of(
                     "phasedRegistrationNames",
                     MapBuilder.of(
                         "bubbled",
-                        "onPointerEnter2",
+                        "onPointerEnter",
                         "captured",
-                        "onPointerEnter2Capture",
+                        "onPointerEnterCapture",
                         "skipBubbling",
                         true)))
             .put(
-                "topPointerLeave2",
+                "topPointerLeave",
                 MapBuilder.of(
                     "phasedRegistrationNames",
                     MapBuilder.of(
                         "bubbled",
-                        "onPointerLeave2",
+                        "onPointerLeave",
                         "captured",
-                        "onPointerLeave2Capture",
+                        "onPointerLeaveCapture",
                         "skipBubbling",
                         true)))
             .put(
-                "topPointerMove2",
+                "topPointerMove",
                 MapBuilder.of(
                     "phasedRegistrationNames",
-                    MapBuilder.of(
-                        "bubbled", "onPointerMove2", "captured", "onPointerMove2Capture")))
+                    MapBuilder.of("bubbled", "onPointerMove", "captured", "onPointerMoveCapture")))
             .put(
                 "topPointerUp",
                 MapBuilder.of(
@@ -616,9 +631,15 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     FLog.w(ReactConstants.TAG, "%s doesn't support property '%s'", getName(), propName);
   }
 
+  /* Experimental W3C Pointer events start */
   @ReactProp(name = "onPointerEnter")
   public void setPointerEnter(@NonNull T view, boolean value) {
     view.setTag(R.id.pointer_enter, value);
+  }
+
+  @ReactProp(name = "onPointerEnterCapture")
+  public void setPointerEnterCapture(@NonNull T view, boolean value) {
+    view.setTag(R.id.pointer_enter_capture, value);
   }
 
   @ReactProp(name = "onPointerLeave")
@@ -626,40 +647,19 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setTag(R.id.pointer_leave, value);
   }
 
+  @ReactProp(name = "onPointerLeaveCapture")
+  public void setPointerLeaveCapture(@NonNull T view, boolean value) {
+    view.setTag(R.id.pointer_leave_capture, value);
+  }
+
   @ReactProp(name = "onPointerMove")
   public void setPointerMove(@NonNull T view, boolean value) {
     view.setTag(R.id.pointer_move, value);
   }
 
-  /* Experimental W3C Pointer events start */
-  @ReactProp(name = "onPointerEnter2")
-  public void setPointerEnter2(@NonNull T view, boolean value) {
-    view.setTag(R.id.pointer_enter2, value);
-  }
-
-  @ReactProp(name = "onPointerEnter2Capture")
-  public void setPointerEnter2Capture(@NonNull T view, boolean value) {
-    view.setTag(R.id.pointer_enter2_capture, value);
-  }
-
-  @ReactProp(name = "onPointerLeave2")
-  public void setPointerLeave2(@NonNull T view, boolean value) {
-    view.setTag(R.id.pointer_leave2, value);
-  }
-
-  @ReactProp(name = "onPointerLeave2Capture")
-  public void setPointerLeave2Capture(@NonNull T view, boolean value) {
-    view.setTag(R.id.pointer_leave2_capture, value);
-  }
-
-  @ReactProp(name = "onPointerMove2")
-  public void setPointerMove2(@NonNull T view, boolean value) {
-    view.setTag(R.id.pointer_move2, value);
-  }
-
-  @ReactProp(name = "onPointerMove2Capture")
-  public void setPointerMove2Capture(@NonNull T view, boolean value) {
-    view.setTag(R.id.pointer_move2_capture, value);
+  @ReactProp(name = "onPointerMoveCapture")
+  public void setPointerMoveCapture(@NonNull T view, boolean value) {
+    view.setTag(R.id.pointer_move_capture, value);
   }
 
   /* Experimental W3C Pointer events end */

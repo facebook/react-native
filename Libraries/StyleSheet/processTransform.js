@@ -116,6 +116,8 @@ function processTransform(
 /**
  * Performs a destructive operation on a transform matrix.
  */
+/* $FlowFixMe[missing-this-annot] The 'this' type annotation(s) required by
+ * Flow's LTI update could not be added via codemod */
 function _multiplyTransform(
   result: Array<number>,
   matrixMathFunction: Function,

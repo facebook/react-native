@@ -46,8 +46,13 @@ export type PlatformTestContext = $ReadOnly<{
 
 export type PlatformTestCase = (context: PlatformTestContext) => void;
 
+export type AsyncPlatformTest = $ReadOnly<{|
+  done(): void,
+|}>;
+
 export type PlatformTestHarness = $ReadOnly<{|
   test(testcase: PlatformTestCase, name: string): void,
+  useAsyncTest(description: string, timeout?: number): AsyncPlatformTest,
 |}>;
 
 export type PlatformTestComponentBaseProps = {

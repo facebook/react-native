@@ -32,6 +32,8 @@ std::string kindToString(const Value& v, Runtime* rt = nullptr) {
     return "a string";
   } else if (v.isSymbol()) {
     return "a symbol";
+  } else if (v.isBigInt()) {
+    return "a bigint";
   } else {
     assert(v.isObject() && "Expecting object.");
     return rt != nullptr && v.getObject(*rt).isFunction(*rt) ? "a function"
@@ -234,6 +236,8 @@ Value::Value(Runtime& runtime, const Value& other) : Value(other.kind_) {
     data_.number = other.data_.number;
   } else if (kind_ == SymbolKind) {
     new (&data_.pointer) Pointer(runtime.cloneSymbol(other.data_.pointer.ptr_));
+  } else if (kind_ == BigIntKind) {
+    new (&data_.pointer) Pointer(runtime.cloneBigInt(other.data_.pointer.ptr_));
   } else if (kind_ == StringKind) {
     new (&data_.pointer) Pointer(runtime.cloneString(other.data_.pointer.ptr_));
   } else if (kind_ >= ObjectKind) {
@@ -263,6 +267,10 @@ bool Value::strictEquals(Runtime& runtime, const Value& a, const Value& b) {
       return runtime.strictEquals(
           static_cast<const Symbol&>(a.data_.pointer),
           static_cast<const Symbol&>(b.data_.pointer));
+    case BigIntKind:
+      return runtime.strictEquals(
+          static_cast<const BigInt&>(a.data_.pointer),
+          static_cast<const BigInt&>(b.data_.pointer));
     case StringKind:
       return runtime.strictEquals(
           static_cast<const String&>(a.data_.pointer),
@@ -328,6 +336,24 @@ Symbol Value::asSymbol(Runtime& rt) && {
   }
 
   return std::move(*this).getSymbol(rt);
+}
+
+BigInt Value::asBigInt(Runtime& rt) const& {
+  if (!isBigInt()) {
+    throw JSError(
+        rt, "Value is " + kindToString(*this, &rt) + ", expected a BigInt");
+  }
+
+  return getBigInt(rt);
+}
+
+BigInt Value::asBigInt(Runtime& rt) && {
+  if (!isBigInt()) {
+    throw JSError(
+        rt, "Value is " + kindToString(*this, &rt) + ", expected a BigInt");
+  }
+
+  return std::move(*this).getBigInt(rt);
 }
 
 String Value::asString(Runtime& rt) const& {

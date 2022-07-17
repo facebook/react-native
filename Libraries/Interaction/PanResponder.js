@@ -190,6 +190,21 @@ type ActiveCallback = (
 
 type PassiveCallback = (event: PressEvent, gestureState: GestureState) => mixed;
 
+type PanHandlers = {|
+  onMoveShouldSetResponder: (event: PressEvent) => boolean,
+  onMoveShouldSetResponderCapture: (event: PressEvent) => boolean,
+  onResponderEnd: (event: PressEvent) => void,
+  onResponderGrant: (event: PressEvent) => boolean,
+  onResponderMove: (event: PressEvent) => void,
+  onResponderReject: (event: PressEvent) => void,
+  onResponderRelease: (event: PressEvent) => void,
+  onResponderStart: (event: PressEvent) => void,
+  onResponderTerminate: (event: PressEvent) => void,
+  onResponderTerminationRequest: (event: PressEvent) => boolean,
+  onStartShouldSetResponder: (event: PressEvent) => boolean,
+  onStartShouldSetResponderCapture: (event: PressEvent) => boolean,
+|};
+
 type PanResponderConfig = $ReadOnly<{|
   onMoveShouldSetPanResponder?: ?ActiveCallback,
   onMoveShouldSetPanResponderCapture?: ?ActiveCallback,
@@ -385,20 +400,7 @@ const PanResponder = {
    */
   create(config: PanResponderConfig): $TEMPORARY$object<{|
     getInteractionHandle: () => ?number,
-    panHandlers: $TEMPORARY$object<{|
-      onMoveShouldSetResponder: (event: PressEvent) => boolean,
-      onMoveShouldSetResponderCapture: (event: PressEvent) => boolean,
-      onResponderEnd: (event: PressEvent) => void,
-      onResponderGrant: (event: PressEvent) => boolean,
-      onResponderMove: (event: PressEvent) => void,
-      onResponderReject: (event: PressEvent) => void,
-      onResponderRelease: (event: PressEvent) => void,
-      onResponderStart: (event: PressEvent) => void,
-      onResponderTerminate: (event: PressEvent) => void,
-      onResponderTerminationRequest: (event: PressEvent) => boolean,
-      onStartShouldSetResponder: (event: PressEvent) => boolean,
-      onStartShouldSetResponderCapture: (event: PressEvent) => boolean,
-    |}>,
+    panHandlers: PanHandlers,
   |}> {
     const interactionState = {
       handle: (null: ?number),
