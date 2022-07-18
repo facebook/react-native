@@ -1638,7 +1638,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   _onContentSizeChange = (width: number, height: number) => {
-    const {isScreenReaderEnabled} = this.state;
+    const {screenreaderEnabled} = this.state;
     if (
       width > 0 &&
       height > 0 &&
@@ -1665,7 +1665,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       !this._hasTriggeredInitialScrollToIndex &&
       this.props.initialScrollIndex == null &&
       this.props.inverted &&
-      isScreenReaderEnabled
+      screenreaderEnabled
     ) {
       this.scrollToOffset({
         animated: false,
@@ -1677,7 +1677,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     this._maybeCallOnEndReached();
     // talkback inverted flatlist, height is used to compute
     // an inverted flatlist contentLength from the bottom of the screen
-    if (isScreenReaderEnabled && this.props.inverted) {
+    if (screenreaderEnabled && this.props.inverted) {
       this.setState({height: height, resetScrollPosition: true});
     }
   };
@@ -1706,7 +1706,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   };
 
   _onScroll = (e: Object) => {
-    const {isScreenReaderEnabled} = this.state;
+    const {screenreaderEnabled} = this.state;
     this._nestedChildLists.forEach(childList => {
       childList.ref && childList.ref._onScroll(e);
     });
@@ -1720,7 +1720,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     let dOffset = offset - this._scrollMetrics.offset;
     // update the bottomY (contentLength from the bottom of the screen)
     // when items are appended to the end of the list, the view needs to stay in the same position
-    if (isScreenReaderEnabled && this.props.inverted) {
+    if (screenreaderEnabled && this.props.inverted) {
       const scrollY = e.nativeEvent.contentOffset.y;
       const height = e.nativeEvent.contentSize.height;
       this.bottomY = height - scrollY;
@@ -2141,6 +2141,7 @@ class CellRenderer extends React.Component<
 
   componentWillUnmount() {
     this.props.onUnmount(this.props.cellKey);
+    // unsubscribe from event listener screenReaderChanged
   }
 
   _onLayout = (nativeEvent: LayoutEvent): void => {
