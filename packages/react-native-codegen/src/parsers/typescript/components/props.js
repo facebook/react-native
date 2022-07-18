@@ -73,6 +73,30 @@ function getTypeAnnotationForArray(
     );
   }
 
+  // Covers: T[]
+  if (typeAnnotation.type === 'TSArrayType') {
+    // We need to go yet another level deeper to resolve
+    // types that may be defined in a type alias
+    const nestedObjectType = getValueFromTypes(
+      typeAnnotation.elementType,
+      types,
+    );
+
+    return {
+      type: 'ArrayTypeAnnotation',
+      elementType: {
+        type: 'ObjectTypeAnnotation',
+        properties: flattenProperties(
+          nestedObjectType.typeParameters.params[0].members ||
+            nestedObjectType.typeParameters.params,
+          types,
+        )
+          .map(prop => buildPropSchema(prop, types))
+          .filter(Boolean),
+      },
+    };
+  }
+
   if (extractedTypeAnnotation.type === 'TSTypeReference') {
     // Resolve the type alias if it's not defined inline
     const objectType = getValueFromTypes(extractedTypeAnnotation, types);
@@ -90,6 +114,7 @@ function getTypeAnnotationForArray(
       };
     }
 
+    // Covers: ReadonlyArray<T>
     if (objectType.typeName.name === 'ReadonlyArray') {
       // We need to go yet another level deeper to resolve
       // types that may be defined in a type alias
