@@ -47,6 +47,10 @@ function getTypeAnnotationForArray(
   defaultValue: $FlowFixMe | null,
   types: TypeDeclarationMap,
 ) {
+  if (typeAnnotation.type === 'TSParenthesizedType') {
+    return getTypeAnnotationForArray(name, typeAnnotation.typeAnnotation, defaultValue, types);
+  }
+
   const extractedTypeAnnotation = getValueFromTypes(typeAnnotation, types);
 
   if (
@@ -56,7 +60,7 @@ function getTypeAnnotationForArray(
     )
   ) {
     throw new Error(
-      'Nested optionals such as "ReadonlyArray<boolean | null | void>" are not supported, please declare optionals at the top level of value definitions as in "ReadonlyArray<boolean> | null | undefined"',
+      'Nested optionals such as "ReadonlyArray<boolean | null | undefined>" are not supported, please declare optionals at the top level of value definitions as in "ReadonlyArray<boolean> | null | undefined"',
     );
   }
 
@@ -239,7 +243,7 @@ function getTypeAnnotation(
       type: 'ArrayTypeAnnotation',
       elementType: getTypeAnnotationForArray(
         name,
-        typeAnnotation.typeAnnotation,
+        typeAnnotation.typeAnnotation.elementType,
         defaultValue,
         types,
       ),

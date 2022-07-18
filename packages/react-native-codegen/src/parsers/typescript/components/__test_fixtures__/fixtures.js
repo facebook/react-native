@@ -493,7 +493,7 @@ export interface ModuleProps extends ViewProps {
   array_boolean_required: readonly boolean[];
   array_boolean_optional_key?: readonly boolean[];
   array_boolean_optional_value: readonly boolean[] | null | undefined;
-  array_boolean_optional_both?: readobly boolean[] | null | undefined;
+  array_boolean_optional_both?: readonly boolean[] | null | undefined;
 
   // String props
   array_string_required: readonly string[];
@@ -521,11 +521,11 @@ export interface ModuleProps extends ViewProps {
 
   // String enum props
   array_enum_optional_key?: WithDefault<
-  readonly ('small' | 'large')[],
+    readonly ('small' | 'large')[],
     'small'
   >;
   array_enum_optional_both?: WithDefault<
-  readonly ('small' | 'large')[],
+    readonly ('small' | 'large')[],
     'small'
   >;
 
