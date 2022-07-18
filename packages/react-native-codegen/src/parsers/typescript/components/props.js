@@ -49,7 +49,7 @@ function getTypeAnnotationForObjectAsArrayElement(
     type: 'ObjectTypeAnnotation',
     properties: flattenProperties(
       objectType.typeParameters.params[0].members ||
-      objectType.typeParameters.params,
+        objectType.typeParameters.params,
       types,
     )
       .map(prop => buildPropSchema(prop, types))
@@ -63,14 +63,14 @@ function getTypeAnnotationForArrayOfArrayOfObject(
 ) {
   // We need to go yet another level deeper to resolve
   // types that may be defined in a type alias
-  const nestedObjectType = getValueFromTypes(
-    typeAnnotation,
-    types,
-  );
+  const nestedObjectType = getValueFromTypes(typeAnnotation, types);
 
   return {
     type: 'ArrayTypeAnnotation',
-    elementType: getTypeAnnotationForObjectAsArrayElement(nestedObjectType,types),
+    elementType: getTypeAnnotationForObjectAsArrayElement(
+      nestedObjectType,
+      types,
+    ),
   };
 }
 
@@ -81,7 +81,12 @@ function getTypeAnnotationForArray(
   types: TypeDeclarationMap,
 ) {
   if (typeAnnotation.type === 'TSParenthesizedType') {
-    return getTypeAnnotationForArray(name, typeAnnotation.typeAnnotation, defaultValue, types);
+    return getTypeAnnotationForArray(
+      name,
+      typeAnnotation.typeAnnotation,
+      defaultValue,
+      types,
+    );
   }
 
   const extractedTypeAnnotation = getValueFromTypes(typeAnnotation, types);
@@ -108,7 +113,10 @@ function getTypeAnnotationForArray(
 
   // Covers: T[]
   if (typeAnnotation.type === 'TSArrayType') {
-    return getTypeAnnotationForArrayOfArrayOfObject(typeAnnotation.elementType, types);
+    return getTypeAnnotationForArrayOfArrayOfObject(
+      typeAnnotation.elementType,
+      types,
+    );
   }
 
   if (extractedTypeAnnotation.type === 'TSTypeReference') {
@@ -116,12 +124,15 @@ function getTypeAnnotationForArray(
     const objectType = getValueFromTypes(extractedTypeAnnotation, types);
 
     if (objectType.typeName.name === 'Readonly') {
-      return getTypeAnnotationForObjectAsArrayElement(objectType,types);
+      return getTypeAnnotationForObjectAsArrayElement(objectType, types);
     }
 
     // Covers: ReadonlyArray<T>
     if (objectType.typeName.name === 'ReadonlyArray') {
-      return getTypeAnnotationForArrayOfArrayOfObject( objectType.typeParameters.params[0], types);
+      return getTypeAnnotationForArrayOfArrayOfObject(
+        objectType.typeParameters.params[0],
+        types,
+      );
     }
   }
 
