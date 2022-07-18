@@ -29,6 +29,7 @@ import {
   keyExtractor as defaultKeyExtractor,
 } from './VirtualizeUtils';
 import AccessibilityInfo from '../Components/AccessibilityInfo/AccessibilityInfo';
+import Platform from '../Utilities/Platform';
 import * as React from 'react';
 
 const RefreshControl = require('../Components/RefreshControl/RefreshControl');
@@ -717,14 +718,16 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       }
     }
 
-    AccessibilityInfo.addEventListener(
-      'screenReaderChanged',
-      screenreaderEnabled => {
-        if (screenreaderEnabled != this.state.screenreaderEnabled) {
-          this.setState({screenreaderEnabled: screenreaderEnabled});
-        }
-      },
-    );
+    if (Platform.OS === 'android') {
+      AccessibilityInfo.addEventListener(
+        'screenReaderChanged',
+        screenreaderEnabled => {
+          if (screenreaderEnabled != this.state.screenreaderEnabled) {
+            this.setState({screenreaderEnabled: screenreaderEnabled});
+          }
+        },
+      );
+    }
 
     let initialState = {
       first: this.props.initialScrollIndex || 0,
@@ -764,7 +767,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
 
     // updates the initial state of the screenreaderReader
-    if (this.state.screenreaderEnabled == undefined) {
+    if (
+      Platform.OS === 'android' &&
+      this.state.screenreaderEnabled == undefined
+    ) {
       AccessibilityInfo.isScreenReaderEnabled().then(
         screenreaderEnabled => {
           if (
@@ -2100,7 +2106,9 @@ class CellRenderer extends React.Component<
 
   componentWillUnmount() {
     this.props.onUnmount(this.props.cellKey);
-    // unsubscribe from event listener screenReaderChanged
+    if (Platform.OS === 'android') {
+      // unsubscribe from event listener screenReaderChanged
+    }
   }
 
   _onLayout = (nativeEvent: LayoutEvent): void => {
