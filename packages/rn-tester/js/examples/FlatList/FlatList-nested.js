@@ -22,7 +22,7 @@ import {
 
 const DATA = [
   {
-    id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
+    id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28b7',
     title: 'First Item',
   },
   {
@@ -58,7 +58,7 @@ const DATA = [
     title: 'Nine Item',
   },
   {
-    id: '58694a0f-3da1-471f-bd96-1155h1429234',
+    id: '58694a0f-3da1-471f-bd96-1155h1429235',
     title: 'Ten Item',
   },
 ];
@@ -91,7 +91,7 @@ function NestedFlatList(props) {
       <Text>Flatlist</Text>
       <FlatList
         style={{height: 400}}
-        inverted={true}
+        inverted={false}
         renderItem={renderItem}
         data={items}
       />

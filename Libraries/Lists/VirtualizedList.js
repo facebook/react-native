@@ -28,6 +28,7 @@ import {
   computeWindowedRenderLimits,
   keyExtractor as defaultKeyExtractor,
 } from './VirtualizeUtils';
+import AccessibilityInfo from '../Components/AccessibilityInfo/AccessibilityInfo';
 import * as React from 'react';
 
 const RefreshControl = require('../Components/RefreshControl/RefreshControl');
@@ -716,6 +717,20 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       }
     }
 
+    AccessibilityInfo.addEventListener(
+      'screenReaderChanged',
+      screenreaderEnabled => {
+        if (screenreaderEnabled != this.state.screenreaderEnabled) {
+          this.setState({screenreaderEnabled: screenreaderEnabled}, () =>
+            console.log(
+              'TESTING:: this.state.screenreaderEnabled',
+              this.state.screenreaderEnabled,
+            ),
+          );
+        }
+      },
+    );
+
     let initialState = {
       first: this.props.initialScrollIndex || 0,
       last:
@@ -727,6 +742,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       height: undefined,
       resetScrollPosition: false,
       bottomHeight: 0,
+      screenreaderEnabled: undefined,
     };
 
     if (this._isNestedWithSameOrientation()) {
@@ -753,6 +769,19 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         // parent.
         parentDebugInfo: this.context.debugInfo,
       });
+    }
+
+    // updates the initial state of the screenreaderReader
+    if (this.state.screenreaderEnabled === undefined) {
+      AccessibilityInfo.isScreenReaderEnabled(screenreaderEnabled => {
+        if (
+          typeof screenreaderEnabled == 'boolean' &&
+          screenreaderEnabled != this.state.screenreaderEnabled
+        ) {
+          this.setState({screenreaderEnabled});
+        }
+      });
+      // check exceptions
     }
   }
 
@@ -797,6 +826,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     stickyIndicesFromProps: Set<number>,
     first: number,
     last: number,
+    inversionStyle: ViewStyleProp,
   ) {
     const {
       CellRendererComponent,
@@ -833,6 +863,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           getItemLayout={getItemLayout}
           horizontal={horizontal}
           index={ii}
+          inversionStyle={inversionStyle}
           item={item}
           key={key}
           prevCellKey={prevCellKey}
@@ -847,7 +878,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       );
       prevCellKey = key;
     };
-    if (this.props.inverted) {
+    if (this.state.screenreaderEnabled && this.props.inverted) {
       for (let ii = last; ii >= first; ii--) {
         pushCell(ii);
       }
@@ -907,8 +938,14 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
     const {ListEmptyComponent, ListFooterComponent, ListHeaderComponent} =
       this.props;
+    const {screenreaderEnabled} = this.state;
     const {data, horizontal} = this.props;
     const isVirtualizationDisabled = this._isVirtualizationDisabled();
+    const inversionStyle = this.props.inverted
+      ? horizontalOrDefault(this.props.horizontal)
+        ? styles.horizontallyInverted
+        : styles.verticallyInverted
+      : null;
     const cells = [];
     const stickyIndicesFromProps = new Set(this.props.stickyHeaderIndices);
     const stickyHeaderIndices = [];
@@ -929,7 +966,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           key="$header">
           <View
             onLayout={this._onLayoutHeader}
-            style={this.props.ListHeaderComponentStyle}>
+            style={StyleSheet.compose(
+              inversionStyle,
+              this.props.ListHeaderComponentStyle,
+            )}>
             {
               // $FlowFixMe[incompatible-type] - Typing ReactNativeComponent revealed errors
               element
@@ -948,15 +988,24 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         : initialNumToRenderOrDefault(this.props.initialNumToRender) - 1;
       const {first, last} = this.state;
       // scroll to top optimization. The first page is always rendered.
-      if (!this.props.inverted) {
+      if (screenreaderEnabled && !this.props.inverted) {
         this._pushCells(
           cells,
           stickyHeaderIndices,
           stickyIndicesFromProps,
           0,
           lastInitialIndex,
+          null,
         );
-        this.scrollToOffset({offset: 0, animated: false});
+      } else {
+        this._pushCells(
+          cells,
+          stickyHeaderIndices,
+          stickyIndicesFromProps,
+          0,
+          lastInitialIndex,
+          inversionStyle,
+        );
       }
       const firstAfterInitial = Math.max(lastInitialIndex + 1, first);
       if (!isVirtualizationDisabled && first > lastInitialIndex + 1) {
@@ -975,13 +1024,25 @@ class VirtualizedList extends React.PureComponent<Props, State> {
               cells.push(
                 <View key="$sticky_lead" style={{[spacerKey]: leadSpace}} />,
               );
-              this._pushCells(
-                cells,
-                stickyHeaderIndices,
-                stickyIndicesFromProps,
-                ii,
-                ii,
-              );
+              if (screenreaderEnabled && this.props.inverted) {
+                this._pushCells(
+                  cells,
+                  stickyHeaderIndices,
+                  stickyIndicesFromProps,
+                  ii,
+                  ii,
+                  null,
+                );
+              } else {
+                this._pushCells(
+                  cells,
+                  stickyHeaderIndices,
+                  stickyIndicesFromProps,
+                  ii,
+                  ii,
+                  inversionStyle,
+                );
+              }
               const trailSpace =
                 this.__getFrameMetricsApprox(first).offset -
                 (stickyBlock.offset + stickyBlock.length);
@@ -1009,9 +1070,16 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         stickyIndicesFromProps,
         firstAfterInitial,
         last,
+        inversionStyle,
       );
-      const {resetScrollPosition, height, bottomHeight} = this.state;
-      if (resetScrollPosition && bottomHeight) {
+      const {screenreaderEnabled, resetScrollPosition, height, bottomHeight} =
+        this.state;
+      if (
+        screenreaderEnabled &&
+        this.props.inverted &&
+        resetScrollPosition &&
+        bottomHeight
+      ) {
         this.scrollToOffset({
           offset: height - bottomHeight,
           animated: false,
@@ -1019,13 +1087,14 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         this.setState({resetScrollPosition: false});
       }
       // scroll to bottom optimization. The last page is always rendered in an inverted flatlist.
-      if (this.props.inverted) {
+      if (screenreaderEnabled && this.props.inverted) {
         this._pushCells(
           cells,
           stickyHeaderIndices,
           stickyIndicesFromProps,
           0,
           lastInitialIndex,
+          null,
         );
       }
       if (!this._hasWarned.keys && _usedIndexForKey) {
@@ -1072,7 +1141,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
               element.props.onLayout(event);
             }
           },
-          style: element.props.style,
+          style: StyleSheet.compose(inversionStyle, element.props.style),
         }),
       );
     }
@@ -1090,7 +1159,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           key="$footer">
           <View
             onLayout={this._onLayoutFooter}
-            style={this.props.ListFooterComponentStyle}>
+            style={StyleSheet.compose(
+              inversionStyle,
+              this.props.ListFooterComponentStyle,
+            )}>
             {
               // $FlowFixMe[incompatible-type] - Typing ReactNativeComponent revealed errors
               element
@@ -1116,7 +1188,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           ? this.props.invertStickyHeaders
           : this.props.inverted,
       stickyHeaderIndices,
-      style: this.props.style,
+      style: inversionStyle
+        ? [inversionStyle, this.props.style]
+        : this.props.style,
     };
 
     this._hasMore =
@@ -1184,12 +1258,15 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   componentDidUpdate(prevProps: Props) {
-    const {data, extraData} = this.props;
-    const dataAppended =
-      data[data.length - 1] != prevProps.data[prevProps.data.length - 1];
-    const dataPrepended = data[0] != prevProps.data[0];
-    if (dataAppended) {
-      this.setState({bottomHeight: this.bottomY});
+    const {data, extraData, inverted} = this.props;
+    const {screenreaderEnabled} = this.state;
+    if (screenreaderEnabled && inverted) {
+      const dataAppended =
+        data[data.length - 1] != prevProps.data[prevProps.data.length - 1];
+      const dataPrepended = data[0] != prevProps.data[0];
+      if (dataAppended) {
+        this.setState({bottomHeight: this.bottomY});
+      }
     }
 
     if (data !== prevProps.data || extraData !== prevProps.extraData) {
@@ -1575,6 +1652,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   _onContentSizeChange = (width: number, height: number) => {
+    const {isScreenReaderEnabled} = this.state;
     if (
       width > 0 &&
       height > 0 &&
@@ -1600,7 +1678,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       height > 0 &&
       !this._hasTriggeredInitialScrollToIndex &&
       this.props.initialScrollIndex == null &&
-      this.props.inverted
+      this.props.inverted &&
+      isScreenReaderEnabled
     ) {
       this.scrollToOffset({
         animated: false,
@@ -1610,7 +1689,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
     this._scheduleCellsToRenderUpdate();
     this._maybeCallOnEndReached();
-    this.setState({height: height, resetScrollPosition: true});
+    if (isScreenReaderEnabled && this.props.inverted) {
+      this.setState({height: height, resetScrollPosition: true});
+    }
   };
 
   /* Translates metrics from a scroll event in a parent VirtualizedList into
@@ -1637,6 +1718,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   };
 
   _onScroll = (e: Object) => {
+    const {isScreenReaderEnabled} = this.state;
     this._nestedChildLists.forEach(childList => {
       childList.ref && childList.ref._onScroll(e);
     });
@@ -1648,9 +1730,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     let contentLength = this._selectLength(e.nativeEvent.contentSize);
     let offset = this._selectOffset(e.nativeEvent.contentOffset);
     let dOffset = offset - this._scrollMetrics.offset;
-    const scrollY = e.nativeEvent.contentOffset.y;
-    const height = e.nativeEvent.contentSize.height;
-    this.bottomY = height - scrollY;
+    if (isScreenReaderEnabled && this.props.inverted) {
+      const scrollY = e.nativeEvent.contentOffset.y;
+      const height = e.nativeEvent.contentSize.height;
+      this.bottomY = height - scrollY;
+    }
 
     if (this._isNestedWithSameOrientation()) {
       if (this._scrollMetrics.contentLength === 0) {
@@ -1993,6 +2077,7 @@ type CellRendererProps = {
   },
   horizontal: ?boolean,
   index: number,
+  inversionStyle: ViewStyleProp,
   item: Item,
   // This is extracted by ScrollViewStickyHeader
   onCellLayout: (event: Object, cellKey: string, index: number) => void,
@@ -2129,6 +2214,7 @@ class CellRenderer extends React.Component<
       horizontal,
       item,
       index,
+      inversionStyle,
       renderItem,
     } = this.props;
     const element = this._renderElement(
@@ -2150,7 +2236,13 @@ class CellRenderer extends React.Component<
       : ItemSeparatorComponent && (
           <ItemSeparatorComponent {...this.state.separatorProps} />
         );
-    const cellStyle = horizontal ? styles.row : null;
+    const cellStyle = inversionStyle
+      ? horizontal
+        ? [styles.rowReverse, inversionStyle]
+        : [styles.columnReverse, inversionStyle]
+      : horizontal
+      ? [styles.row, inversionStyle]
+      : inversionStyle;
     const result = !CellRendererComponent ? (
       /* $FlowFixMe[incompatible-type-arg] (>=0.89.0 site=react_native_fb) *
         This comment suppresses an error found when Flow v0.89 was deployed. *
@@ -2160,7 +2252,10 @@ class CellRenderer extends React.Component<
         {itemSeparator}
       </View>
     ) : (
-      <CellRendererComponent {...this.props} onLayout={onLayout}>
+      <CellRendererComponent
+        {...this.props}
+        style={cellStyle}
+        onLayout={onLayout}>
         {element}
         {itemSeparator}
       </CellRendererComponent>
