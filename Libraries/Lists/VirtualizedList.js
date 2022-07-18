@@ -725,7 +725,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this._screenreaderEventListener = AccessibilityInfo.addEventListener(
         'screenReaderChanged',
         screenreaderEnabled => {
-          if (screenreaderEnabled != this.state.screenreaderEnabled) {
+          if (
+            typeof screenreaderEnabled === 'boolean' &&
+            screenreaderEnabled != this.state.screenreaderEnabled
+          ) {
             this.setState({screenreaderEnabled: screenreaderEnabled});
           }
         },
@@ -777,14 +780,19 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       AccessibilityInfo.isScreenReaderEnabled().then(
         screenreaderEnabled => {
           if (
-            typeof screenreaderEnabled == 'boolean' &&
+            typeof screenreaderEnabled === 'boolean' &&
             screenreaderEnabled != this.state.screenreaderEnabled
           ) {
             this.setState({screenreaderEnabled});
           }
         },
-        failure => {
-          // check exceptions
+        e => {
+          if (__DEV__) {
+            console.log(
+              'isScreenReaderEnabled() raised an error, in this case the default inverted FlatList will be used with Talkback. ' +
+                e.toString(),
+            );
+          }
         },
       );
     }
