@@ -877,6 +877,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       );
       prevCellKey = key;
     };
+    // avoid using scaleY and scaleX with talkback
     if (this.state.screenreaderEnabled && this.props.inverted) {
       for (let ii = last; ii >= first; ii--) {
         pushCell(ii);
@@ -1243,6 +1244,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   componentDidUpdate(prevProps: Props) {
     const {data, extraData, inverted} = this.props;
     const {screenreaderEnabled} = this.state;
+    // used with TalkBack to add the behavior on an inverted flatlist
+    // when items are appended to the end of the list, the view needs to stay in the same position
     if (screenreaderEnabled && inverted) {
       const dataAppended =
         data[data.length - 1] != prevProps.data[prevProps.data.length - 1];
@@ -1655,7 +1658,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this.props.onContentSizeChange(width, height);
     }
     this._scrollMetrics.contentLength = this._selectLength({height, width});
-    // inverted flatlist, scroll to bottom
+    // talkback inverted flatlist, scroll to bottom when first rendered
     if (
       width > 0 &&
       height > 0 &&
@@ -1672,6 +1675,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
     this._scheduleCellsToRenderUpdate();
     this._maybeCallOnEndReached();
+    // talkback inverted flatlist, height is used to compute
+    // an inverted flatlist contentLength from the bottom of the screen
     if (isScreenReaderEnabled && this.props.inverted) {
       this.setState({height: height, resetScrollPosition: true});
     }
@@ -1713,6 +1718,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     let contentLength = this._selectLength(e.nativeEvent.contentSize);
     let offset = this._selectOffset(e.nativeEvent.contentOffset);
     let dOffset = offset - this._scrollMetrics.offset;
+    // update the bottomY (contentLength from the bottom of the screen)
+    // when items are appended to the end of the list, the view needs to stay in the same position
     if (isScreenReaderEnabled && this.props.inverted) {
       const scrollY = e.nativeEvent.contentOffset.y;
       const height = e.nativeEvent.contentSize.height;
