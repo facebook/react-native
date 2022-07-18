@@ -317,6 +317,7 @@ let _keylessItemComponentName: string = '';
 type State = {
   first: number,
   last: number,
+  screenreaderEnabled: ?boolean,
 };
 
 /**
