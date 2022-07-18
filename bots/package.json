@@ -11,5 +11,11 @@
   "dependencies": {
     "@octokit/rest": "^18.12.0",
     "firebase": "^9.6.5"
+  },
+  "resolutions": {
+    "readable-stream": "^4.0.0"
+  },
+  "_justification": {
+    "readable-stream": "Eliminates dependency on outdated string_decoder component"
   }
 }
