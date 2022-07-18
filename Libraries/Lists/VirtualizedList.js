@@ -1251,7 +1251,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         data[data.length - 1] != prevProps.data[prevProps.data.length - 1];
       const dataPrepended = data[0] != prevProps.data[0];
       if (dataAppended) {
-        this.setState({bottomHeight: this.bottomY});
+        this.setState({bottomHeight: this.bottom});
       }
     }
 
@@ -1718,12 +1718,18 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     let contentLength = this._selectLength(e.nativeEvent.contentSize);
     let offset = this._selectOffset(e.nativeEvent.contentOffset);
     let dOffset = offset - this._scrollMetrics.offset;
-    // update the bottomY (contentLength from the bottom of the screen)
+    // update the bottom (contentLength from the bottom of the screen)
     // when items are appended to the end of the list, the view needs to stay in the same position
     if (screenreaderEnabled && this.props.inverted) {
-      const scrollY = e.nativeEvent.contentOffset.y;
-      const height = e.nativeEvent.contentSize.height;
-      this.bottomY = height - scrollY;
+      if (this.props.horizontal) {
+        const scrollX = e.nativeEvent.contentOffset.x;
+        const height = e.nativeEvent.contentSize.height;
+        this.bottom = height - scrollX;
+      } else {
+        const scrollY = e.nativeEvent.contentOffset.y;
+        const height = e.nativeEvent.contentSize.height;
+        this.bottom = height - scrollY;
+      }
     }
 
     if (this._isNestedWithSameOrientation()) {
