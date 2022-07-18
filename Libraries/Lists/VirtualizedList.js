@@ -721,12 +721,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       'screenReaderChanged',
       screenreaderEnabled => {
         if (screenreaderEnabled != this.state.screenreaderEnabled) {
-          this.setState({screenreaderEnabled: screenreaderEnabled}, () =>
-            console.log(
-              'TESTING:: this.state.screenreaderEnabled',
-              this.state.screenreaderEnabled,
-            ),
-          );
+          this.setState({screenreaderEnabled: screenreaderEnabled});
         }
       },
     );
@@ -772,16 +767,20 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
 
     // updates the initial state of the screenreaderReader
-    if (this.state.screenreaderEnabled === undefined) {
-      AccessibilityInfo.isScreenReaderEnabled(screenreaderEnabled => {
-        if (
-          typeof screenreaderEnabled == 'boolean' &&
-          screenreaderEnabled != this.state.screenreaderEnabled
-        ) {
-          this.setState({screenreaderEnabled});
-        }
-      });
-      // check exceptions
+    if (this.state.screenreaderEnabled == undefined) {
+      AccessibilityInfo.isScreenReaderEnabled().then(
+        screenreaderEnabled => {
+          if (
+            typeof screenreaderEnabled == 'boolean' &&
+            screenreaderEnabled != this.state.screenreaderEnabled
+          ) {
+            this.setState({screenreaderEnabled});
+          }
+        },
+        failure => {
+          // check exceptions
+        },
+      );
     }
   }
 
@@ -938,14 +937,16 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
     const {ListEmptyComponent, ListFooterComponent, ListHeaderComponent} =
       this.props;
-    const {screenreaderEnabled} = this.state;
+    const {screenreaderEnabled, resetScrollPosition, height, bottomHeight} =
+      this.state;
     const {data, horizontal} = this.props;
     const isVirtualizationDisabled = this._isVirtualizationDisabled();
-    const inversionStyle = this.props.inverted
-      ? horizontalOrDefault(this.props.horizontal)
-        ? styles.horizontallyInverted
-        : styles.verticallyInverted
-      : null;
+    const inversionStyle =
+      this.props.inverted && !screenreaderEnabled
+        ? horizontalOrDefault(this.props.horizontal)
+          ? styles.horizontallyInverted
+          : styles.verticallyInverted
+        : null;
     const cells = [];
     const stickyIndicesFromProps = new Set(this.props.stickyHeaderIndices);
     const stickyHeaderIndices = [];
@@ -988,16 +989,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         : initialNumToRenderOrDefault(this.props.initialNumToRender) - 1;
       const {first, last} = this.state;
       // scroll to top optimization. The first page is always rendered.
-      if (screenreaderEnabled && !this.props.inverted) {
-        this._pushCells(
-          cells,
-          stickyHeaderIndices,
-          stickyIndicesFromProps,
-          0,
-          lastInitialIndex,
-          null,
-        );
-      } else {
+      const talkbackEnabledWithInvertedFlatlist =
+        screenreaderEnabled && this.props.inverted;
+      if (!talkbackEnabledWithInvertedFlatlist) {
         this._pushCells(
           cells,
           stickyHeaderIndices,
@@ -1024,25 +1018,14 @@ class VirtualizedList extends React.PureComponent<Props, State> {
               cells.push(
                 <View key="$sticky_lead" style={{[spacerKey]: leadSpace}} />,
               );
-              if (screenreaderEnabled && this.props.inverted) {
-                this._pushCells(
-                  cells,
-                  stickyHeaderIndices,
-                  stickyIndicesFromProps,
-                  ii,
-                  ii,
-                  null,
-                );
-              } else {
-                this._pushCells(
-                  cells,
-                  stickyHeaderIndices,
-                  stickyIndicesFromProps,
-                  ii,
-                  ii,
-                  inversionStyle,
-                );
-              }
+              this._pushCells(
+                cells,
+                stickyHeaderIndices,
+                stickyIndicesFromProps,
+                ii,
+                ii,
+                inversionStyle,
+              );
               const trailSpace =
                 this.__getFrameMetricsApprox(first).offset -
                 (stickyBlock.offset + stickyBlock.length);
@@ -1072,8 +1055,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         last,
         inversionStyle,
       );
-      const {screenreaderEnabled, resetScrollPosition, height, bottomHeight} =
-        this.state;
       if (
         screenreaderEnabled &&
         this.props.inverted &&
@@ -1087,7 +1068,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         this.setState({resetScrollPosition: false});
       }
       // scroll to bottom optimization. The last page is always rendered in an inverted flatlist.
-      if (screenreaderEnabled && this.props.inverted) {
+      if (talkbackEnabledWithInvertedFlatlist) {
         this._pushCells(
           cells,
           stickyHeaderIndices,
@@ -1171,6 +1152,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         </VirtualizedListCellContextProvider>,
       );
     }
+    const talkbackCompatibleInversionStyle = screenreaderEnabled
+      ? this.props.style
+      : [inversionStyle, this.props.style];
+
     const scrollProps = {
       ...this.props,
       onContentSizeChange: this._onContentSizeChange,
@@ -1188,9 +1173,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           ? this.props.invertStickyHeaders
           : this.props.inverted,
       stickyHeaderIndices,
-      style: inversionStyle
-        ? [inversionStyle, this.props.style]
-        : this.props.style,
+      style: talkbackCompatibleInversionStyle,
     };
 
     this._hasMore =
