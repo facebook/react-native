@@ -734,9 +734,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           (this.props.initialScrollIndex || 0) +
             initialNumToRenderOrDefault(this.props.initialNumToRender),
         ) - 1,
-      height: undefined,
-      resetScrollPosition: false,
-      bottomHeight: 0,
       screenreaderEnabled: undefined,
     };
 
@@ -938,8 +935,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
     const {ListEmptyComponent, ListFooterComponent, ListHeaderComponent} =
       this.props;
-    const {screenreaderEnabled, resetScrollPosition, height, bottomHeight} =
-      this.state;
+    const {screenreaderEnabled} = this.state;
     const {data, horizontal} = this.props;
     const isVirtualizationDisabled = this._isVirtualizationDisabled();
     const inversionStyle =
@@ -1056,18 +1052,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         last,
         inversionStyle,
       );
-      if (
-        screenreaderEnabled &&
-        this.props.inverted &&
-        resetScrollPosition &&
-        bottomHeight
-      ) {
-        this.scrollToOffset({
-          offset: height - bottomHeight,
-          animated: false,
-        });
-        this.setState({resetScrollPosition: false});
-      }
       // scroll to bottom optimization. The last page is always rendered in an inverted flatlist.
       if (talkbackEnabledWithInvertedFlatlist) {
         this._pushCells(
@@ -1242,19 +1226,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   componentDidUpdate(prevProps: Props) {
-    const {data, extraData, inverted} = this.props;
-    const {screenreaderEnabled} = this.state;
-    // used with TalkBack to add the behavior on an inverted flatlist
-    // when items are appended to the end of the list, the view needs to stay in the same position
-    if (screenreaderEnabled && inverted) {
-      const dataAppended =
-        data[data.length - 1] != prevProps.data[prevProps.data.length - 1];
-      const dataPrepended = data[0] != prevProps.data[0];
-      if (dataAppended) {
-        this.setState({bottomHeight: this.bottom});
-      }
-    }
-
+    const {data, extraData} = this.props;
     if (data !== prevProps.data || extraData !== prevProps.extraData) {
       // clear the viewableIndices cache to also trigger
       // the onViewableItemsChanged callback with the new data
@@ -1675,11 +1647,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
     this._scheduleCellsToRenderUpdate();
     this._maybeCallOnEndReached();
-    // talkback inverted flatlist, height is used to compute
-    // an inverted flatlist contentLength from the bottom of the screen
-    if (screenreaderEnabled && this.props.inverted) {
-      this.setState({height: height, resetScrollPosition: true});
-    }
   };
 
   /* Translates metrics from a scroll event in a parent VirtualizedList into
@@ -1706,7 +1673,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   };
 
   _onScroll = (e: Object) => {
-    const {screenreaderEnabled} = this.state;
     this._nestedChildLists.forEach(childList => {
       childList.ref && childList.ref._onScroll(e);
     });
@@ -1718,19 +1684,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     let contentLength = this._selectLength(e.nativeEvent.contentSize);
     let offset = this._selectOffset(e.nativeEvent.contentOffset);
     let dOffset = offset - this._scrollMetrics.offset;
-    // update the bottom (contentLength from the bottom of the screen)
-    // when items are appended to the end of the list, the view needs to stay in the same position
-    if (screenreaderEnabled && this.props.inverted) {
-      if (this.props.horizontal) {
-        const scrollX = e.nativeEvent.contentOffset.x;
-        const height = e.nativeEvent.contentSize.height;
-        this.bottom = height - scrollX;
-      } else {
-        const scrollY = e.nativeEvent.contentOffset.y;
-        const height = e.nativeEvent.contentSize.height;
-        this.bottom = height - scrollY;
-      }
-    }
 
     if (this._isNestedWithSameOrientation()) {
       if (this._scrollMetrics.contentLength === 0) {
