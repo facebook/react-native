@@ -28,7 +28,7 @@
     "nwmatcher": "1.4.4",
     "randomatic": "3.0.0",
     "sshpk": "1.16.1",
-    "webpack": "^4.41.0"
+    "webpack": "^5.73.0"
   },
   "resolutions": {
     "set-value": "^4.1.0"
