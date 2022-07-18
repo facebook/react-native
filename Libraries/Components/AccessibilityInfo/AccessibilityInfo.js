@@ -345,7 +345,7 @@ const AccessibilityInfo: AccessibilityInfoType = {
   /**
    * Send a named accessibility event to a HostComponent.
    */
-  sendAccessibilityEvent_unstable(
+  sendAccessibilityEvent(
     handle: ElementRef<HostComponent<mixed>>,
     eventType: AccessibilityEventTypes,
   ) {
