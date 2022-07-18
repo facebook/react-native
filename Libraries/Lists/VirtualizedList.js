@@ -29,6 +29,7 @@ import {
   keyExtractor as defaultKeyExtractor,
 } from './VirtualizeUtils';
 import AccessibilityInfo from '../Components/AccessibilityInfo/AccessibilityInfo';
+import type {EventSubscription} from '../vendor/emitter/EventEmitter';
 import Platform from '../Utilities/Platform';
 import * as React from 'react';
 
@@ -384,6 +385,7 @@ function windowSizeOrDefault(windowSize: ?number) {
  */
 class VirtualizedList extends React.PureComponent<Props, State> {
   static contextType: typeof VirtualizedListContext = VirtualizedListContext;
+  _screenreaderEventListener: EventSubscription;
 
   // scrollToEnd may be janky without getItemLayout prop
   scrollToEnd(params?: ?{animated?: ?boolean, ...}) {
@@ -719,7 +721,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
 
     if (Platform.OS === 'android') {
-      this.screenreaderEventListener = AccessibilityInfo.addEventListener(
+      this._screenreaderEventListener = AccessibilityInfo.addEventListener(
         'screenReaderChanged',
         screenreaderEnabled => {
           if (screenreaderEnabled != this.state.screenreaderEnabled) {
@@ -804,8 +806,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       tuple.viewabilityHelper.dispose();
     });
     this._fillRateHelper.deactivateAndFlush();
-    if (Platform.OS === 'android' && this.screenreaderEventListener) {
-      this.screenreaderEventListener.remove();
+    if (Platform.OS === 'android' && this._screenreaderEventListener) {
+      this._screenreaderEventListener.remove();
     }
   }
 
