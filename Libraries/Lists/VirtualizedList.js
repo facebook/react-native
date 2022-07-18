@@ -1150,9 +1150,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         </VirtualizedListCellContextProvider>,
       );
     }
-    const talkbackCompatibleInversionStyle = screenreaderEnabled
-      ? this.props.style
-      : [inversionStyle, this.props.style];
 
     const scrollProps = {
       ...this.props,
@@ -1171,7 +1168,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           ? this.props.invertStickyHeaders
           : this.props.inverted,
       stickyHeaderIndices,
-      style: talkbackCompatibleInversionStyle,
+      style: inversionStyle
+        ? [inversionStyle, this.props.style]
+        : this.props.style,
     };
 
     this._hasMore =
