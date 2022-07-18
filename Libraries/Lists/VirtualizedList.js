@@ -719,7 +719,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
 
     if (Platform.OS === 'android') {
-      AccessibilityInfo.addEventListener(
+      this.screenreaderEventListener = AccessibilityInfo.addEventListener(
         'screenReaderChanged',
         screenreaderEnabled => {
           if (screenreaderEnabled != this.state.screenreaderEnabled) {
@@ -804,6 +804,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       tuple.viewabilityHelper.dispose();
     });
     this._fillRateHelper.deactivateAndFlush();
+    if (Platform.OS === 'android' && this.screenreaderEventListener) {
+      this.screenreaderEventListener.remove();
+    }
   }
 
   static getDerivedStateFromProps(newProps: Props, prevState: State): State {
@@ -2106,9 +2109,6 @@ class CellRenderer extends React.Component<
 
   componentWillUnmount() {
     this.props.onUnmount(this.props.cellKey);
-    if (Platform.OS === 'android') {
-      // unsubscribe from event listener screenReaderChanged
-    }
   }
 
   _onLayout = (nativeEvent: LayoutEvent): void => {
