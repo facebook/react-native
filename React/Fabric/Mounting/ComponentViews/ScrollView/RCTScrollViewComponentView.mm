@@ -97,10 +97,10 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   // This helps to only update state from `scrollViewDidScroll` in case
   // some other part of the system scrolls scroll view.
   BOOL _isUserTriggeredScrolling;
-  BOOL _createScrollView;
-  BOOL _shouldUpdateContentSize;
+  BOOL _shouldUpdateContentInsetAdjustmentBehavior;
 
   CGPoint _contentOffsetWhenClipped;
+  CGRect _oldFrame;
 }
 
 + (RCTScrollViewComponentView *_Nullable)findScrollViewComponentViewForView:(UIView *)view
@@ -116,21 +116,14 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   if (self = [super initWithFrame:frame]) {
     static const auto defaultProps = std::make_shared<const ScrollViewProps>();
     _props = defaultProps;
-    _createScrollView = YES;
-  }
+    _oldFrame = frame;
 
-  return self;
-}
-
-- (void)ensureScrollView
-{
-  if (_createScrollView) {
-    [_scrollView removeFromSuperview];
     _scrollView = [[RCTEnhancedScrollView alloc] initWithFrame:self.bounds];
     _scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     _scrollView.delaysContentTouches = NO;
     ((RCTEnhancedScrollView *)_scrollView).overridingDelegate = self;
     _isUserTriggeredScrolling = NO;
+    _shouldUpdateContentInsetAdjustmentBehavior = YES;
     [self addSubview:_scrollView];
 
     _containerView = [[UIView alloc] initWithFrame:CGRectZero];
@@ -139,8 +132,16 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
     [self.scrollViewDelegateSplitter addDelegate:self];
 
     _scrollEventThrottle = INFINITY;
-    _createScrollView = NO;
   }
+
+  return self;
+}
+
+- (void)dealloc
+{
+  // Removing all delegates from the splitter nils the actual delegate which prevents a crash on UIScrollView
+  // deallocation.
+  [self.scrollViewDelegateSplitter removeAllDelegates];
 }
 
 - (RCTGenericDelegateSplitter<id<UIScrollViewDelegate>> *)scrollViewDelegateSplitter
@@ -179,7 +180,10 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-  [self ensureScrollView];
+  if (!CGRectEqualToRect(_oldFrame, CGRectNull)) {
+    [self setFrame:_oldFrame];
+    _oldFrame = CGRectNull;
+  }
   const auto &oldScrollViewProps = *std::static_pointer_cast<const ScrollViewProps>(_props);
   const auto &newScrollViewProps = *std::static_pointer_cast<const ScrollViewProps>(props);
 
@@ -270,7 +274,8 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
     }
   }
 
-  if (oldScrollViewProps.contentInsetAdjustmentBehavior != newScrollViewProps.contentInsetAdjustmentBehavior) {
+  if ((oldScrollViewProps.contentInsetAdjustmentBehavior != newScrollViewProps.contentInsetAdjustmentBehavior) ||
+      _shouldUpdateContentInsetAdjustmentBehavior) {
     auto const contentInsetAdjustmentBehavior = newScrollViewProps.contentInsetAdjustmentBehavior;
     if (contentInsetAdjustmentBehavior == ContentInsetAdjustmentBehavior::Never) {
       scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
@@ -281,6 +286,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
     } else if (contentInsetAdjustmentBehavior == ContentInsetAdjustmentBehavior::Always) {
       scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAlways;
     }
+    _shouldUpdateContentInsetAdjustmentBehavior = NO;
   }
 
   MAP_SCROLL_VIEW_PROP(disableIntervalMomentum);
@@ -306,13 +312,12 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
   CGSize contentSize = RCTCGSizeFromSize(data.getContentSize());
 
-  if (!_shouldUpdateContentSize && CGSizeEqualToSize(_contentSize, contentSize)) {
+  if (CGSizeEqualToSize(_contentSize, contentSize)) {
     return;
   }
 
   _contentSize = contentSize;
   _containerView.frame = CGRect{RCTCGPointFromPoint(data.contentBoundingRect.origin), contentSize};
-  _shouldUpdateContentSize = NO;
 
   [self _preserveContentOffsetIfNeededWithBlock:^{
     self->_scrollView.contentSize = contentSize;
@@ -337,7 +342,6 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
 - (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
-  [self ensureScrollView];
   [_containerView insertSubview:childComponentView atIndex:index];
 }
 
@@ -394,13 +398,17 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
 - (void)prepareForRecycle
 {
-  const auto defaultProps = std::make_shared<const ScrollViewProps>();
-  _props = defaultProps;
+  const auto &props = *std::static_pointer_cast<const ScrollViewProps>(_props);
+  _scrollView.contentOffset = RCTCGPointFromPoint(props.contentOffset);
+  // We set the default behavior to "never" so that iOS
+  // doesn't do weird things to UIScrollView insets automatically
+  // and keeps it as an opt-in behavior.
+  _scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+  _shouldUpdateContentInsetAdjustmentBehavior = YES;
   _state.reset();
   _isUserTriggeredScrolling = NO;
-  [self.scrollViewDelegateSplitter removeAllDelegates];
-  _createScrollView = YES;
-  _shouldUpdateContentSize = YES;
+  _oldFrame = self.frame;
+  [self setFrame:CGRectZero];
   [super prepareForRecycle];
 }
 
