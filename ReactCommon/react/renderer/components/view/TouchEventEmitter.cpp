@@ -87,6 +87,10 @@ static jsi::Value pointerEventPayload(
   object.setProperty(runtime, "buttons", event.buttons);
   object.setProperty(runtime, "tangentialPressure", event.tangentialPressure);
   object.setProperty(runtime, "twist", event.twist);
+  object.setProperty(runtime, "ctrlKey", event.ctrlKey);
+  object.setProperty(runtime, "shiftKey", event.shiftKey);
+  object.setProperty(runtime, "altKey", event.altKey);
+  object.setProperty(runtime, "metaKey", event.metaKey);
   return object;
 }
 
