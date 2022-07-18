@@ -52,8 +52,9 @@ references:
     gems_cache_key: &gems_cache_key v1-gems-{{ checksum "Gemfile.lock" }}
     gradle_cache_key: &gradle_cache_key v1-gradle-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "ReactAndroid/gradle.properties" }}
     hermes_cache_key: &hermes_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
-    hermes_sdk_cache_key: &hermes_sdk_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "sdks/.hermes-cache-key-file" }}
+    hermes_sdk_cache_key: &hermes_sdk_cache_key v1-hermes-{{ checksum "sdks/.hermes-cache-key-file" }}
     hermes_windows_cache_key: &hermes_windows_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "tmp/hermes/hermesversion" }}
+    hermes_tarball_cache_key: &hermes_tarball_cache_key v1-hermes-tarball-{{ checksum "sdks/.hermes-cache-key-file" }}
     pods_cache_key: &pods_cache_key v6-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
     windows_yarn_cache_key: &windows_yarn_cache_key v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
     yarn_cache_key: &yarn_cache_key v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}
@@ -281,10 +282,13 @@ commands:
           name: Report size of RNTester.app (analysis-bot)
           command: GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" scripts/circleci/report-bundle-size.sh << parameters.platform >> || true
 
-  with_hermes_sdk_cache_span:
+  with_hermes_tarball_cache_span:
     parameters:
       steps:
         type: steps
+      set_tarball_path:
+        type: boolean
+        default: False
     steps:
       - run:
           name: Setup Hermes cache
@@ -295,13 +299,31 @@ commands:
             fi
       - restore_cache:
           keys:
-            - *hermes_sdk_cache_key
+            - *hermes_tarball_cache_key
+      - when:
+          condition: << parameters.set_tarball_path >>
+          steps:
+            - run:
+                name: Set HERMES_TARBALL_PATH if present
+                command: |
+                  BASE_PATH=/tmp/hermes/hermes-runtime-darwin/
+                  if [ ! -d $BASE_PATH ]; then
+                    echo "Hermes tarball base path not present ($BASE_PATH). Build it from source."
+                    return
+                  fi
+                  TARBALL=$(ls /tmp/hermes/hermes-runtime-darwin/)
+                  TARBALL_PATH=$BASE_PATH$TARBALL
+                  if [ ! -f $TARBALL_PATH ]; then
+                    echo "Hermes tarball not present ($TARBALL_PATH). Build it from source."
+                    return
+                  fi
+
+                  echo "export HERMES_ENGINE_TARBALL_PATH=$TARBALL_PATH" >> $BASH_ENV
       - steps: << parameters.steps >>
       - save_cache:
-          key: *hermes_sdk_cache_key
+          key: *hermes_tarball_cache_key
           paths:
-            - sdks/hermesc
-            - sdks/hermes
+            - /tmp/hermes/hermes-runtime-darwin/
 
 # -------------------------
 #          JOBS
@@ -492,7 +514,8 @@ jobs:
           name: Setup the CocoaPods environment
           command: bundle exec pod setup
 
-      - with_hermes_sdk_cache_span:
+      - with_hermes_tarball_cache_span:
+          set_tarball_path: True
           steps:
             - with_rntester_pods_cache_span:
                 steps:
@@ -738,7 +761,8 @@ jobs:
       - brew_install:
           package: cmake
 
-      - with_hermes_sdk_cache_span:
+      - with_hermes_tarball_cache_span:
+          set_tarball_path: True
           steps:
             - run:
                 name: Install CocoaPods dependencies
@@ -976,50 +1000,70 @@ jobs:
           name: Install dependencies
           command: |
             brew install cmake
-      - run:
-          name: Build the Hermes iOS frameworks
-          command: |
-            cd ~/react-native/sdks/hermes
-            ./utils/build-ios-framework.sh
-      - run:
-          name: Build the Hermes Mac frameworks
-          command: |
-            cd ~/react-native/sdks/hermes
-            ./utils/build-mac-framework.sh
-            cp build_macosx/bin/hermesc /tmp/hermes/osx-bin/.
-      - run:
-          name: Package the Hermes Apple frameworks
-          command: |
-            cd ~/react-native/sdks/hermes
-            . ./utils/build-apple-framework.sh
+      - with_hermes_tarball_cache_span:
+          steps:
+            - run:
+                name: Build the Hermes iOS frameworks
+                command: |
+                  if [[ -d "~/react-native/sdks/hermes/destroot" && -d "/tmp/hermes/hermes-runtime-darwin/" ]]; then
+                    echo "destroot and tarball exists. Skip building"
+                    return
+                  fi
+                  echo "either destroot or the tarball does not exists. Build from source"
 
-            mkdir -p /tmp/cocoapods-package-root/destroot
-            mkdir -p /tmp/hermes/output
-            cp -R ./destroot /tmp/cocoapods-package-root
-            cp LICENSE /tmp/cocoapods-package-root
+                  cd ~/react-native/sdks/hermes
+                  ./utils/build-ios-framework.sh
+            - run:
+                name: Build the Hermes Mac frameworks
+                command: |
+                  if [[ -d "~/react-native/sdks/hermes/destroot" && -d "/tmp/hermes/hermes-runtime-darwin/" ]]; then
+                    echo "destroot and tarball exists. Skip building"
+                    return
+                  fi
+                  echo "either destroot or the tarball does not exists. Build from source"
 
-            tar -C /tmp/cocoapods-package-root/ -czvf /tmp/hermes/output/hermes-runtime-darwin-v$(get_release_version).tar.gz .
+                  cd ~/react-native/sdks/hermes
+                  ./utils/build-mac-framework.sh
+                  cp build_macosx/bin/hermesc /tmp/hermes/osx-bin/.
+            - run:
+                name: Package the Hermes Apple frameworks
+                command: |
+                  if [[ -d "~/react-native/sdks/hermes/destroot" && -d "/tmp/hermes/hermes-runtime-darwin/" ]]; then
+                    echo "destroot and tarball exists. Skip building"
+                    return
+                  fi
+                  echo "either destroot or the tarball does not exists. Build from source"
 
-            mkdir -p /tmp/hermes/hermes-runtime-darwin
-            cp /tmp/hermes/output/hermes-runtime-darwin-v$(get_release_version).tar.gz /tmp/hermes/hermes-runtime-darwin/.
-      - save_cache:
-          key: *hermes_cache_key
-          paths:
-            - ~/react-native/hermes/build_host_hermesc
-            - ~/react-native/hermes/build_iphoneos
-            - ~/react-native/hermes/build_catalyst
-            - ~/react-native/hermes/build_iphonesimulator
-            - ~/react-native/hermes/build_macosx
-            - ~/react-native/hermes/destroot
-      - store_artifacts:
-          path: /tmp/hermes/hermes-runtime-darwin/
-      - store_artifacts:
-          path: /tmp/hermes/osx-bin/
-      - persist_to_workspace:
-          root: /tmp/hermes/
-          paths:
-            - hermes-runtime-darwin
-            - osx-bin
+                  cd ~/react-native/sdks/hermes
+                  . ./utils/build-apple-framework.sh
+
+                  mkdir -p /tmp/cocoapods-package-root/destroot
+                  mkdir -p /tmp/hermes/output
+                  cp -R ./destroot /tmp/cocoapods-package-root
+                  cp LICENSE /tmp/cocoapods-package-root
+
+                  tar -C /tmp/cocoapods-package-root/ -czvf /tmp/hermes/output/hermes-runtime-darwin-v$(get_release_version).tar.gz .
+
+                  mkdir -p /tmp/hermes/hermes-runtime-darwin
+                  cp /tmp/hermes/output/hermes-runtime-darwin-v$(get_release_version).tar.gz /tmp/hermes/hermes-runtime-darwin/.
+            - save_cache:
+                key: *hermes_cache_key
+                paths:
+                  - ~/react-native/sdks/hermes/build_host_hermesc
+                  - ~/react-native/sdks/hermes/build_iphoneos
+                  - ~/react-native/sdks/hermes/build_catalyst
+                  - ~/react-native/sdks/hermes/build_iphonesimulator
+                  - ~/react-native/sdks/hermes/build_macosx
+                  - ~/react-native/sdks/hermes/destroot
+            - store_artifacts:
+                path: /tmp/hermes/hermes-runtime-darwin/
+            - store_artifacts:
+                path: /tmp/hermes/osx-bin/
+            - persist_to_workspace:
+                root: /tmp/hermes/
+                paths:
+                  - hermes-runtime-darwin
+                  - osx-bin
 
   build_hermesc_windows:
     executor:
@@ -1296,9 +1340,13 @@ workflows:
       - test_ios_template:
           requires:
             - build_npm_package
-      - test_ios_rntester
+      - test_ios_rntester:
+          requires:
+            - build_hermes_macos
       - test_ios:
           run_unit_tests: true
+          requires:
+            - build_hermes_macos
       # DISABLED: USE_FRAMEWORKS=1 not supported by Flipper
       # - test_ios:
       #     name: test_ios_frameworks
