@@ -277,10 +277,9 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   toolbox.componentRegistryFactory = componentRegistryFactory;
 
   auto weakRuntimeScheduler = _contextContainer->find<std::weak_ptr<RuntimeScheduler>>("RuntimeScheduler");
-  auto runtimeScheduler = weakRuntimeScheduler.hasValue() ? weakRuntimeScheduler.value().lock() : nullptr;
+  auto runtimeScheduler = weakRuntimeScheduler.has_value() ? weakRuntimeScheduler.value().lock() : nullptr;
   if (runtimeScheduler) {
-    runtimeScheduler->setEnableYielding(
-        reactNativeConfig->getBool("react_native_new_architecture:runtimescheduler_enable_yielding_ios"));
+    runtimeScheduler->setEnableYielding(true);
     runtimeExecutor = [runtimeScheduler](std::function<void(jsi::Runtime & runtime)> &&callback) {
       runtimeScheduler->scheduleWork(std::move(callback));
     };

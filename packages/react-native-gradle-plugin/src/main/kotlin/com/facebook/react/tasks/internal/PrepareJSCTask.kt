@@ -42,6 +42,7 @@ abstract class PrepareJSCTask : DefaultTask() {
       it.from(soFiles)
       it.from(headerFiles)
       it.from(project.file("src/main/jni/third-party/jsc/Android.mk"))
+      it.from(project.file("src/main/jni/third-party/jsc/CMakeLists.txt"))
       it.filesMatching("**/*.h") { it.path = "JavaScriptCore/${it.name}" }
       it.includeEmptyDirs = false
       it.into(outputDir)

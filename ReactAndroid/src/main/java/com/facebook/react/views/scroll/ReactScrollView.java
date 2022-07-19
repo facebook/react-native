@@ -254,8 +254,8 @@ public class ReactScrollView extends ScrollView
   @Override
   protected void onLayout(boolean changed, int l, int t, int r, int b) {
     // Call with the present values in order to re-layout if necessary
-    // If a "pending" value has been set, we restore that value.
-    // That value gets cleared by reactScrollTo.
+    // If a "pending" content offset value has been set, we restore that value.
+    // Upon call to scrollTo, the "pending" values will be re-set.
     int scrollToX =
         pendingContentOffsetX != UNSET_CONTENT_OFFSET ? pendingContentOffsetX : getScrollX();
     int scrollToY =
@@ -340,11 +340,7 @@ public class ReactScrollView extends ScrollView
 
     try {
       if (super.onInterceptTouchEvent(ev)) {
-        NativeGestureUtil.notifyNativeGestureStarted(this, ev);
-        ReactScrollViewHelper.emitScrollBeginDragEvent(this);
-        mDragging = true;
-        enableFpsListener();
-        getFlingAnimator().cancel();
+        handleInterceptedTouchEvent(ev);
         return true;
       }
     } catch (IllegalArgumentException e) {
@@ -355,6 +351,14 @@ public class ReactScrollView extends ScrollView
     }
 
     return false;
+  }
+
+  protected void handleInterceptedTouchEvent(MotionEvent ev) {
+    NativeGestureUtil.notifyNativeGestureStarted(this, ev);
+    ReactScrollViewHelper.emitScrollBeginDragEvent(this);
+    mDragging = true;
+    enableFpsListener();
+    getFlingAnimator().cancel();
   }
 
   @Override
@@ -369,7 +373,7 @@ public class ReactScrollView extends ScrollView
     }
 
     mVelocityHelper.calculateVelocity(ev);
-    int action = ev.getAction() & MotionEvent.ACTION_MASK;
+    int action = ev.getActionMasked();
     if (action == MotionEvent.ACTION_UP && mDragging) {
       ReactScrollViewHelper.updateFabricScrollState(this);
 
@@ -380,6 +384,10 @@ public class ReactScrollView extends ScrollView
       // After the touch finishes, we may need to do some scrolling afterwards either as a result
       // of a fling or because we need to page align the content
       handlePostTouchScrolling(Math.round(velocityX), Math.round(velocityY));
+    }
+
+    if (action == MotionEvent.ACTION_DOWN) {
+      cancelPostTouchScrolling();
     }
 
     return super.onTouchEvent(ev);
@@ -609,6 +617,14 @@ public class ReactScrollView extends ScrollView
         };
     ViewCompat.postOnAnimationDelayed(
         this, mPostTouchRunnable, ReactScrollViewHelper.MOMENTUM_DELAY);
+  }
+
+  private void cancelPostTouchScrolling() {
+    if (mPostTouchRunnable != null) {
+      removeCallbacks(mPostTouchRunnable);
+      mPostTouchRunnable = null;
+      getFlingAnimator().cancel();
+    }
   }
 
   private int predictFinalScrollPosition(int velocityY) {
@@ -954,10 +970,10 @@ public class ReactScrollView extends ScrollView
   }
 
   /**
-   * Calls `reactScrollTo` and updates state.
+   * Calls `super.scrollTo` and updates state.
    *
-   * <p>`reactScrollTo` changes `contentOffset` and we need to keep `contentOffset` in sync between
-   * scroll view and state. Calling raw `reactScrollTo` doesn't update state.
+   * <p>`super.scrollTo` changes `contentOffset` and we need to keep `contentOffset` in sync between
+   * scroll view and state.
    *
    * <p>Note that while we can override scrollTo, we *cannot* override `smoothScrollTo` because it
    * is final. See `reactSmoothScrollTo`.
@@ -965,12 +981,13 @@ public class ReactScrollView extends ScrollView
   @Override
   public void scrollTo(int x, int y) {
     super.scrollTo(x, y);
-    // The final scroll position might be different from (x, y). For example, we may need to scroll
-    // to the last item in the list, but that item cannot be move to the start position of the view.
-    final int actualX = getScrollX();
-    final int actualY = getScrollY();
-    ReactScrollViewHelper.updateFabricScrollState(this, actualX, actualY);
-    setPendingContentOffsets(actualX, actualY);
+    ReactScrollViewHelper.updateFabricScrollState(this);
+    setPendingContentOffsets(x, y);
+  }
+
+  private boolean isContentReady() {
+    View child = getContentView();
+    return child != null && child.getWidth() != 0 && child.getHeight() != 0;
   }
 
   /**
@@ -981,8 +998,7 @@ public class ReactScrollView extends ScrollView
    * @param y
    */
   private void setPendingContentOffsets(int x, int y) {
-    View child = getChildAt(0);
-    if (child != null && child.getWidth() != 0 && child.getHeight() != 0) {
+    if (isContentReady()) {
       pendingContentOffsetX = UNSET_CONTENT_OFFSET;
       pendingContentOffsetY = UNSET_CONTENT_OFFSET;
     } else {

@@ -15,6 +15,7 @@ import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -315,6 +316,47 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
       ReadableMap localData,
       ReadableMap props,
       ReadableMap state,
+      float width,
+      YogaMeasureMode widthMode,
+      float height,
+      YogaMeasureMode heightMode,
+      @Nullable float[] attachmentsPositions) {
+    return 0;
+  }
+
+  /**
+   * THIS MEASURE METHOD IS EXPERIMENTAL, MOST LIKELY YOU ARE LOOKING TO USE THE OTHER OVERLOAD
+   * INSTEAD: {@link #measure(Context, ReadableMap, ReadableMap, ReadableMap, float,
+   * YogaMeasureMode, float, YogaMeasureMode, float[])}
+   *
+   * <p>Subclasses can override this method to implement custom measure functions for the
+   * ViewManager
+   *
+   * @param context {@link com.facebook.react.bridge.ReactContext} used for the view.
+   * @param localData {@link ReadableMapBuffer} containing "local data" defined in C++
+   * @param props {@link ReadableMapBuffer} containing JS props
+   * @param state {@link ReadableMapBuffer} containing state defined in C++
+   * @param width width of the view (usually zero)
+   * @param widthMode widthMode used during calculation of layout
+   * @param height height of the view (usually zero)
+   * @param heightMode widthMode used during calculation of layout
+   * @param attachmentsPositions {@link int[]} array containing 2x times the amount of attachments
+   *     of the view. An attachment represents the position of an inline view that needs to be
+   *     rendered inside a component and it requires the content of the parent view in order to be
+   *     positioned. This array is meant to be used by the platform to RETURN the position of each
+   *     attachment, as a result of the calculation of layout. (e.g. this array is used to measure
+   *     inlineViews that are rendered inside Text components). On most of the components this array
+   *     will be contain a null value.
+   *     <p>Even values will represent the TOP of each attachment, Odd values represent the LEFT of
+   *     each attachment.
+   * @return result of calculation of layout for the arguments received as a parameter.
+   */
+  public long measure(
+      Context context,
+      ReadableMapBuffer localData,
+      ReadableMapBuffer props,
+      // TODO(T114731225): review whether state parameter is needed
+      @Nullable ReadableMapBuffer state,
       float width,
       YogaMeasureMode widthMode,
       float height,

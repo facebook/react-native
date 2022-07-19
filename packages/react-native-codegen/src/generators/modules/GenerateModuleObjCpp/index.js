@@ -82,7 +82,7 @@ const HeaderFileTemplate = ({
 #import <React/RCTCxxConvert.h>
 #import <React/RCTManagedPointer.h>
 #import <ReactCommon/RCTTurboModule.h>
-#import <folly/Optional.h>
+#import <optional>
 #import <vector>
 
 ` +

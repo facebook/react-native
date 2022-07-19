@@ -33,7 +33,8 @@ RawValue const *RawPropsParser::at(
     // 1))) or n*n - (1/2)(n*(n+1)). If there are 100 props, this will result in
     // 4950 lookups and equality checks on initialization of the parser, which
     // happens exactly once per component.
-    for (int i = 0; i < size_; i++) {
+    size_t size = keys_.size();
+    for (int i = 0; i < size; i++) {
       if (keys_[i] == key) {
         return nullptr;
       }
@@ -41,8 +42,7 @@ RawValue const *RawPropsParser::at(
     // This is not thread-safe part; this happens only during initialization of
     // a `ComponentDescriptor` where it is actually safe.
     keys_.push_back(key);
-    nameToIndex_.insert(key, static_cast<RawPropsValueIndex>(size_));
-    size_++;
+    nameToIndex_.insert(key, static_cast<RawPropsValueIndex>(size));
     return nullptr;
   }
 
@@ -69,7 +69,7 @@ RawValue const *RawPropsParser::at(
   do {
     rawProps.keyIndexCursor_++;
 
-    if (UNLIKELY(rawProps.keyIndexCursor_ >= size_)) {
+    if (UNLIKELY(rawProps.keyIndexCursor_ >= keys_.size())) {
 #ifdef REACT_NATIVE_DEBUG
       if (resetLoop) {
         LOG(ERROR) << "Looked up RawProps key that does not exist: "
@@ -93,10 +93,11 @@ void RawPropsParser::postPrepare() noexcept {
 }
 
 void RawPropsParser::preparse(RawProps const &rawProps) const noexcept {
-  rawProps.keyIndexToValueIndex_.resize(size_, kRawPropsValueIndexEmpty);
+  const size_t keyCount = keys_.size();
+  rawProps.keyIndexToValueIndex_.resize(keyCount, kRawPropsValueIndexEmpty);
 
   // Resetting the cursor, the next increment will give `0`.
-  rawProps.keyIndexCursor_ = size_ - 1;
+  rawProps.keyIndexCursor_ = static_cast<int>(keyCount - 1);
 
   switch (rawProps.mode_) {
     case RawProps::Mode::Empty:

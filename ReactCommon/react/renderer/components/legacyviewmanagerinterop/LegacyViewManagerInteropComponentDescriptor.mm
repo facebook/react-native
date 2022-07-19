@@ -7,6 +7,7 @@
 
 #include "LegacyViewManagerInteropComponentDescriptor.h"
 #include <React/RCTBridge.h>
+#include <React/RCTBridgeModuleDecorator.h>
 #include <React/RCTComponentData.h>
 #include <React/RCTEventDispatcher.h>
 #include <React/RCTModuleData.h>
@@ -43,6 +44,11 @@ static std::string moduleNameFromComponentName(const std::string &componentName)
     return componentName + "Manager";
   }
 
+  std::string rnPrefix("RN");
+  if (std::mismatch(rnPrefix.begin(), rnPrefix.end(), componentName.begin()).first == rnPrefix.end()) {
+    return componentName + "Manager";
+  }
+
   return "RCT" + componentName + "Manager";
 }
 
@@ -71,11 +77,19 @@ static std::shared_ptr<void> const constructCoordinator(
     eventDispatcher = unwrapManagedObject(optionalEventDispatcher.value());
   }
 
+  auto optionalModuleDecorator = contextContainer->find<std::shared_ptr<void>>("RCTBridgeModuleDecorator");
+  RCTBridgeModuleDecorator *bridgeModuleDecorator;
+  if (optionalModuleDecorator) {
+    bridgeModuleDecorator = unwrapManagedObject(optionalModuleDecorator.value());
+  }
+
   RCTComponentData *componentData = [[RCTComponentData alloc] initWithManagerClass:module
                                                                             bridge:bridge
                                                                    eventDispatcher:eventDispatcher];
-  return wrapManagedObject([[RCTLegacyViewManagerInteropCoordinator alloc] initWithComponentData:componentData
-                                                                                          bridge:bridge]);
+  return wrapManagedObject([[RCTLegacyViewManagerInteropCoordinator alloc]
+      initWithComponentData:componentData
+                     bridge:bridge
+      bridgelessInteropData:bridgeModuleDecorator]);
 }
 
 LegacyViewManagerInteropComponentDescriptor::LegacyViewManagerInteropComponentDescriptor(

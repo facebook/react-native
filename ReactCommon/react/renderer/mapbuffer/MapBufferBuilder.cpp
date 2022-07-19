@@ -14,7 +14,7 @@ namespace facebook {
 namespace react {
 
 constexpr uint32_t INT_SIZE = sizeof(uint32_t);
-constexpr double DOUBLE_SIZE = sizeof(double);
+constexpr uint32_t DOUBLE_SIZE = sizeof(double);
 constexpr uint32_t MAX_BUCKET_VALUE_SIZE = sizeof(uint64_t);
 
 MapBuffer MapBufferBuilder::EMPTY() {
@@ -23,6 +23,8 @@ MapBuffer MapBufferBuilder::EMPTY() {
 
 MapBufferBuilder::MapBufferBuilder(uint32_t initialSize) {
   buckets_.reserve(initialSize);
+  header_.count = 0;
+  header_.bufferSize = 0;
 }
 
 void MapBufferBuilder::storeKeyValue(
@@ -76,7 +78,7 @@ void MapBufferBuilder::putInt(MapBuffer::Key key, int32_t value) {
 }
 
 void MapBufferBuilder::putString(MapBuffer::Key key, std::string const &value) {
-  int32_t strSize = value.size();
+  auto strSize = value.size();
   const char *strData = value.data();
 
   // format [length of string (int)] + [Array of Characters in the string]
@@ -94,7 +96,7 @@ void MapBufferBuilder::putString(MapBuffer::Key key, std::string const &value) {
 }
 
 void MapBufferBuilder::putMapBuffer(MapBuffer::Key key, MapBuffer const &map) {
-  int32_t mapBufferSize = map.size();
+  auto mapBufferSize = map.size();
 
   auto offset = dynamicData_.size();
 
@@ -122,9 +124,9 @@ MapBuffer MapBufferBuilder::build() {
   // Create buffer: [header] + [key, values] + [dynamic data]
   auto bucketSize = buckets_.size() * sizeof(MapBuffer::Bucket);
   auto headerSize = sizeof(MapBuffer::Header);
-  uint32_t bufferSize = headerSize + bucketSize + dynamicData_.size();
+  auto bufferSize = headerSize + bucketSize + dynamicData_.size();
 
-  header_.bufferSize = bufferSize;
+  header_.bufferSize = static_cast<uint32_t>(bufferSize);
 
   if (needsSort_) {
     std::sort(buckets_.begin(), buckets_.end(), compareBuckets);

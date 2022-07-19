@@ -21,8 +21,9 @@ namespace react {
 ViewProps::ViewProps(
     const PropsParserContext &context,
     ViewProps const &sourceProps,
-    RawProps const &rawProps)
-    : YogaStylableProps(context, sourceProps, rawProps),
+    RawProps const &rawProps,
+    bool shouldSetRawProps)
+    : YogaStylableProps(context, sourceProps, rawProps, shouldSetRawProps),
       AccessibilityProps(context, sourceProps, rawProps),
       opacity(convertRawProp(
           context,
@@ -125,24 +126,7 @@ ViewProps::ViewProps(
           "onLayout",
           sourceProps.onLayout,
           {})),
-      pointerEnter(convertRawProp(
-          context,
-          rawProps,
-          "pointerenter",
-          sourceProps.pointerEnter,
-          {})),
-      pointerLeave(convertRawProp(
-          context,
-          rawProps,
-          "pointerleave",
-          sourceProps.pointerLeave,
-          {})),
-      pointerMove(convertRawProp(
-          context,
-          rawProps,
-          "pointermove",
-          sourceProps.pointerMove,
-          {})),
+      events(convertRawProp(context, rawProps, sourceProps.events, {})),
       collapsable(convertRawProp(
           context,
           rawProps,
@@ -154,13 +138,53 @@ ViewProps::ViewProps(
           rawProps,
           "removeClippedSubviews",
           sourceProps.removeClippedSubviews,
-          false)),
+          false))
+#ifdef ANDROID
+      ,
       elevation(convertRawProp(
           context,
           rawProps,
           "elevation",
           sourceProps.elevation,
-          {})){};
+          {})),
+      nativeBackground(convertRawProp(
+          context,
+          rawProps,
+          "nativeBackgroundAndroid",
+          sourceProps.nativeBackground,
+          {})),
+      nativeForeground(convertRawProp(
+          context,
+          rawProps,
+          "nativeForegroundAndroid",
+          sourceProps.nativeForeground,
+          {})),
+      focusable(convertRawProp(
+          context,
+          rawProps,
+          "focusable",
+          sourceProps.focusable,
+          {})),
+      hasTVPreferredFocus(convertRawProp(
+          context,
+          rawProps,
+          "hasTVPreferredFocus",
+          sourceProps.hasTVPreferredFocus,
+          {})),
+      needsOffscreenAlphaCompositing(convertRawProp(
+          context,
+          rawProps,
+          "needsOffscreenAlphaCompositing",
+          sourceProps.needsOffscreenAlphaCompositing,
+          {})),
+      renderToHardwareTextureAndroid(convertRawProp(
+          context,
+          rawProps,
+          "renderToHardwareTextureAndroid",
+          sourceProps.renderToHardwareTextureAndroid,
+          {}))
+#endif
+          {};
 
 #pragma mark - Convenience Methods
 

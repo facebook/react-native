@@ -33,7 +33,8 @@ class Props : public virtual Sealable, public virtual DebugStringConvertible {
   Props(
       const PropsParserContext &context,
       const Props &sourceProps,
-      RawProps const &rawProps);
+      RawProps const &rawProps,
+      bool shouldSetRawProps = true);
   virtual ~Props() = default;
 
   std::string nativeId;

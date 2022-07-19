@@ -38,12 +38,12 @@ Pod::Spec.new do |spec|
       '-fexceptions',
       '-Wall',
       '-Werror',
-      '-std=c++1y',
+      '-std=c++17',
       '-fPIC'
   ]
 
   # Pinning to the same version as React.podspec.
-  spec.platforms = { :ios => "11.0" }
+  spec.platforms = { :ios => "12.4" }
 
   # Set this environment variable when *not* using the `:path` option to install the pod.
   # E.g. when publishing this spec to a spec repo.

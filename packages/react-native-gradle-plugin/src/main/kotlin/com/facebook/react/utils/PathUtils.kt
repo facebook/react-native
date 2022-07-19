@@ -11,7 +11,6 @@ package com.facebook.react.utils
 
 import com.facebook.react.ReactExtension
 import java.io.File
-import java.util.*
 import org.apache.tools.ant.taskdefs.condition.Os
 
 /**
@@ -25,7 +24,7 @@ import org.apache.tools.ant.taskdefs.condition.Os
  */
 internal fun detectedEntryFile(config: ReactExtension): File =
     detectEntryFile(
-        entryFile = config.entryFile.orNull?.asFile, reactRoot = config.reactRoot.get().asFile)
+        entryFile = config.entryFile.orNull?.asFile, reactRoot = config.root.get().asFile)
 
 /**
  * Computes the CLI location for React Native. The Algo follows this order:
@@ -40,7 +39,7 @@ internal fun detectedCliPath(
 ): String =
     detectCliPath(
         projectDir = projectDir,
-        reactRoot = config.reactRoot.get().asFile,
+        reactRoot = config.root.get().asFile,
         preconfiguredCliPath = config.cliPath.orNull)
 
 /**
@@ -68,7 +67,18 @@ private fun detectCliPath(
 ): String {
   // 1. preconfigured path
   if (preconfiguredCliPath != null) {
-    return File(projectDir, preconfiguredCliPath).toString()
+    val preconfiguredCliJsAbsolute = File(preconfiguredCliPath)
+    if (preconfiguredCliJsAbsolute.exists()) {
+      return preconfiguredCliJsAbsolute.absolutePath
+    }
+    val preconfiguredCliJsRelativeToReactRoot = File(reactRoot, preconfiguredCliPath)
+    if (preconfiguredCliJsRelativeToReactRoot.exists()) {
+      return preconfiguredCliJsRelativeToReactRoot.absolutePath
+    }
+    val preconfiguredCliJsRelativeToProject = File(projectDir, preconfiguredCliPath)
+    if (preconfiguredCliJsRelativeToProject.exists()) {
+      return preconfiguredCliJsRelativeToProject.absolutePath
+    }
   }
 
   // 2. node module path
@@ -82,7 +92,10 @@ private fun detectCliPath(
   val nodeProcessOutput = nodeProcess.inputStream.use { it.bufferedReader().readText().trim() }
 
   if (nodeProcessOutput.isNotEmpty()) {
-    return nodeProcessOutput
+    val nodeModuleCliJs = File(nodeProcessOutput)
+    if (nodeModuleCliJs.exists()) {
+      return nodeModuleCliJs.absolutePath
+    }
   }
 
   // 3. cli.js in the root folder

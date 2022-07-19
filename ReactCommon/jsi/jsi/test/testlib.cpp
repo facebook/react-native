@@ -849,6 +849,8 @@ TEST_P(JSITest, ValueTest) {
   EXPECT_EQ(eval("'str'").getString(rt).utf8(rt), "str");
   EXPECT_TRUE(eval("[]").getObject(rt).isArray(rt));
 
+  EXPECT_TRUE(eval("true").asBool());
+  EXPECT_THROW(eval("123").asBool(), JSIException);
   EXPECT_EQ(eval("456").asNumber(), 456);
   EXPECT_THROW(eval("'word'").asNumber(), JSIException);
   EXPECT_EQ(
@@ -1423,7 +1425,7 @@ TEST_P(JSITest, MultilevelDecoratedHostObject) {
   EXPECT_EQ(1, RD2::numGets);
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     Runtimes,
     JSITest,
     ::testing::ValuesIn(runtimeGenerators()));

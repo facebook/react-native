@@ -1,5 +1,5 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
-// @generated <<SignedSource::*O*zOeWoEQle#+L!plEphiEmie@IsG>>
+// Copyright (c) Meta Platforms, Inc. and affiliates. All Rights Reserved.
+// @generated SignedSource<<130ce3da2ad67004eb7bb91f19028a89>>
 
 #include "MessageTypes.h"
 
@@ -505,8 +505,11 @@ debugger::ResumeRequest::ResumeRequest(const dynamic &obj)
   assign(id, obj, "id");
   assign(method, obj, "method");
 
-  dynamic params = obj.at("params");
-  assign(terminateOnResume, params, "terminateOnResume");
+  auto it = obj.find("params");
+  if (it != obj.items().end()) {
+    dynamic params = it->second;
+    assign(terminateOnResume, params, "terminateOnResume");
+  }
 }
 
 dynamic debugger::ResumeRequest::toDynamic() const {
@@ -825,8 +828,11 @@ heapProfiler::StartSamplingRequest::StartSamplingRequest(const dynamic &obj)
   assign(id, obj, "id");
   assign(method, obj, "method");
 
-  dynamic params = obj.at("params");
-  assign(samplingInterval, params, "samplingInterval");
+  auto it = obj.find("params");
+  if (it != obj.items().end()) {
+    dynamic params = it->second;
+    assign(samplingInterval, params, "samplingInterval");
+  }
 }
 
 dynamic heapProfiler::StartSamplingRequest::toDynamic() const {
@@ -853,8 +859,11 @@ heapProfiler::StartTrackingHeapObjectsRequest::StartTrackingHeapObjectsRequest(
   assign(id, obj, "id");
   assign(method, obj, "method");
 
-  dynamic params = obj.at("params");
-  assign(trackAllocations, params, "trackAllocations");
+  auto it = obj.find("params");
+  if (it != obj.items().end()) {
+    dynamic params = it->second;
+    assign(trackAllocations, params, "trackAllocations");
+  }
 }
 
 dynamic heapProfiler::StartTrackingHeapObjectsRequest::toDynamic() const {
@@ -902,10 +911,13 @@ heapProfiler::StopTrackingHeapObjectsRequest::StopTrackingHeapObjectsRequest(
   assign(id, obj, "id");
   assign(method, obj, "method");
 
-  dynamic params = obj.at("params");
-  assign(reportProgress, params, "reportProgress");
-  assign(treatGlobalObjectsAsRoots, params, "treatGlobalObjectsAsRoots");
-  assign(captureNumericValue, params, "captureNumericValue");
+  auto it = obj.find("params");
+  if (it != obj.items().end()) {
+    dynamic params = it->second;
+    assign(reportProgress, params, "reportProgress");
+    assign(treatGlobalObjectsAsRoots, params, "treatGlobalObjectsAsRoots");
+    assign(captureNumericValue, params, "captureNumericValue");
+  }
 }
 
 dynamic heapProfiler::StopTrackingHeapObjectsRequest::toDynamic() const {
@@ -935,10 +947,13 @@ heapProfiler::TakeHeapSnapshotRequest::TakeHeapSnapshotRequest(
   assign(id, obj, "id");
   assign(method, obj, "method");
 
-  dynamic params = obj.at("params");
-  assign(reportProgress, params, "reportProgress");
-  assign(treatGlobalObjectsAsRoots, params, "treatGlobalObjectsAsRoots");
-  assign(captureNumericValue, params, "captureNumericValue");
+  auto it = obj.find("params");
+  if (it != obj.items().end()) {
+    dynamic params = it->second;
+    assign(reportProgress, params, "reportProgress");
+    assign(treatGlobalObjectsAsRoots, params, "treatGlobalObjectsAsRoots");
+    assign(captureNumericValue, params, "captureNumericValue");
+  }
 }
 
 dynamic heapProfiler::TakeHeapSnapshotRequest::toDynamic() const {

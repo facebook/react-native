@@ -58,6 +58,10 @@ public class ReactViewBackgroundManager {
     getOrCreateReactViewBackground().setBorderColor(position, color, alpha);
   }
 
+  public int getBorderColor(int position) {
+    return getOrCreateReactViewBackground().getBorderColor(position);
+  }
+
   public void setBorderRadius(float borderRadius) {
     getOrCreateReactViewBackground().setRadius(borderRadius);
   }

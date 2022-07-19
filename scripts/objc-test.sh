@@ -78,7 +78,7 @@ xcprettyFormat() {
     # Circle CI expects JUnit reports to be available here
     REPORTS_DIR="$HOME/react-native/reports/junit"
   else
-    THIS_DIR=$(cd -P "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)
+    THIS_DIR=$(cd -P "$(dirname "$(realpath "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)
 
     # Write reports to the react-native root dir
     REPORTS_DIR="$THIS_DIR/../build/reports"

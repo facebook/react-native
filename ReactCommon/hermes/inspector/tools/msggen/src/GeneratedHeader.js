@@ -12,5 +12,5 @@
 
 // placeholder token that will be replaced by signedsource script
 export const GeneratedHeader: string =
-  '// Copyright 2004-present Facebook. All Rights Reserved.\n' +
+  '// Copyright (c) Meta Platforms, Inc. and affiliates. All Rights Reserved.\n' +
   '// @generated <<SignedSource::*O*zOeWoEQle#+L!plEphiEmie@IsG>>';

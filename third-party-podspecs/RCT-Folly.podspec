@@ -91,7 +91,11 @@ Pod::Spec.new do |spec|
                           'folly/concurrency/CacheLocality.cpp',
                           'folly/detail/Futex.cpp',
                           'folly/synchronization/ParkingLot.cpp',
-                          'folly/portability/Malloc.cpp'
+                          'folly/portability/Malloc.cpp',
+                          'folly/concurrency/CacheLocality.h',
+                          'folly/synchronization/ParkingLot.h',
+                          'folly/synchronization/SanitizeThread.h',
+                          'folly/system/ThreadId.h'
 
     fabric.preserve_paths = 'folly/concurrency/CacheLocality.h',
                             'folly/synchronization/ParkingLot.h',

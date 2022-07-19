@@ -75,11 +75,11 @@ void MountingCoordinator::resetLatestRevision() const {
   lastRevision_.reset();
 }
 
-butter::optional<MountingTransaction> MountingCoordinator::pullTransaction()
+std::optional<MountingTransaction> MountingCoordinator::pullTransaction()
     const {
   std::lock_guard<std::mutex> lock(mutex_);
 
-  auto transaction = butter::optional<MountingTransaction>{};
+  auto transaction = std::optional<MountingTransaction>{};
 
   // Base case
   if (lastRevision_.has_value()) {

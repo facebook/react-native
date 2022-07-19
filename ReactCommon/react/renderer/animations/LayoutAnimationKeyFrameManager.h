@@ -8,7 +8,6 @@
 #pragma once
 
 #include <ReactCommon/RuntimeExecutor.h>
-#include <butter/optional.h>
 #include <butter/set.h>
 #include <react/renderer/animations/LayoutAnimationCallbackWrapper.h>
 #include <react/renderer/animations/primitives.h>
@@ -19,6 +18,8 @@
 #include <react/renderer/mounting/ShadowViewMutation.h>
 #include <react/renderer/uimanager/LayoutAnimationStatusDelegate.h>
 #include <react/renderer/uimanager/UIManagerAnimationDelegate.h>
+
+#include <optional>
 
 namespace facebook {
 namespace react {
@@ -67,7 +68,7 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
   // This is used to "hijack" the diffing process to figure out which mutations
   // should be animated. The mutations returned by this function will be
   // executed immediately.
-  butter::optional<MountingTransaction> pullTransaction(
+  std::optional<MountingTransaction> pullTransaction(
       SurfaceId surfaceId,
       MountingTransaction::Number number,
       TransactionTelemetry const &telemetry,
@@ -95,7 +96,7 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
 
  protected:
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
-  mutable butter::optional<LayoutAnimation> currentAnimation_{};
+  mutable std::optional<LayoutAnimation> currentAnimation_{};
   mutable std::mutex currentAnimationMutex_;
 
   /**

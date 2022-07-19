@@ -141,22 +141,12 @@ const DeprecatedComponentNameCheckTemplate = ({
   paperComponentNameDeprecated: string,
 }) =>
   `
-if (global.__nativeComponentRegistry__hasComponent) {
-  if (UIManager.hasViewManagerConfig('${componentName}')) {
-    nativeComponentName = '${componentName}';
-  } else if (UIManager.hasViewManagerConfig('${paperComponentNameDeprecated}')) {
-    nativeComponentName = '${paperComponentNameDeprecated}';
-  } else {
-    throw new Error('Failed to find native component for either "${componentName}" or "${paperComponentNameDeprecated}", with SVC enabled.');
-  }
+if (UIManager.hasViewManagerConfig('${componentName}')) {
+  nativeComponentName = '${componentName}';
+} else if (UIManager.hasViewManagerConfig('${paperComponentNameDeprecated}')) {
+  nativeComponentName = '${paperComponentNameDeprecated}';
 } else {
-  if (UIManager.getViewManagerConfig('${componentName}')) {
-    nativeComponentName = '${componentName}';
-  } else if (UIManager.getViewManagerConfig('${paperComponentNameDeprecated}')) {
-    nativeComponentName = '${paperComponentNameDeprecated}';
-  } else {
-    throw new Error('Failed to find native component for either "${componentName}" or "${paperComponentNameDeprecated}", with SVC disabled.');
-  }
+  throw new Error('Failed to find native component for either "${componentName}" or "${paperComponentNameDeprecated}"');
 }
 `.trim();
 
@@ -169,6 +159,23 @@ function normalizeInputEventName(name) {
   }
 
   return name;
+}
+
+// Replicates the behavior of viewConfig in RCTComponentData.m
+function getValidAttributesForEvents(events, imports) {
+  imports.add(
+    "const {ConditionallyIgnoredEventHandlers} = require('react-native/Libraries/NativeComponent/ViewConfigIgnore');",
+  );
+
+  const validAttributes = j.objectExpression(
+    events.map(eventType => {
+      return j.property('init', j.identifier(eventType.name), j.literal(true));
+    }),
+  );
+
+  return j.callExpression(j.identifier('ConditionallyIgnoredEventHandlers'), [
+    validAttributes,
+  ]);
 }
 
 function generateBubblingEventInfo(event, nameOveride) {
@@ -243,6 +250,13 @@ function buildViewConfig(
         getReactDiffProcessValue(schemaProp.typeAnnotation),
       );
     }),
+    ...(componentEvents.length > 0
+      ? [
+          j.spreadProperty(
+            getValidAttributesForEvents(componentEvents, imports),
+          ),
+        ]
+      : []),
   ]);
 
   const bubblingEventNames = component.events

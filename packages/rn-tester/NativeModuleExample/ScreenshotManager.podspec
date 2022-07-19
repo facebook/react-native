@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
   s.description     = "ScreenshotManager"
   s.homepage        = "https://github.com/facebook/react-native.git"
   s.license         = "MIT"
-  s.platforms       = { :ios => "11.0", :tvos => "11.0" }
+  s.platforms       = { :ios => "12.4", :tvos => "12.4" }
   s.compiler_flags  = folly_compiler_flags + ' -Wno-nullability-completeness'
   s.author          = "Facebook, Inc. and its affiliates"
   s.source          = { :git => "https://github.com/facebook/react-native.git", :tag => "#{s.version}" }
@@ -25,7 +25,7 @@ Pod::Spec.new do |s|
   s.source_files    = "**/*.{h,m,mm,swift}"
   s.requires_arc    = true
 
-  s.dependency "React"
+  s.dependency "React-Core"
   s.dependency "RCT-Folly", folly_version
 
   # s.dependency "..."

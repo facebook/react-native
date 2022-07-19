@@ -12,6 +12,7 @@
 #import <React/RCTAdditionAnimatedNode.h>
 #import <React/RCTAnimatedNode.h>
 #import <React/RCTAnimationDriver.h>
+#import <React/RCTColorAnimatedNode.h>
 #import <React/RCTDiffClampAnimatedNode.h>
 #import <React/RCTDivisionAnimatedNode.h>
 #import <React/RCTEventAnimation.h>
@@ -86,6 +87,7 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
   dispatch_once(&mapToken, ^{
     map = @{@"style" : [RCTStyleAnimatedNode class],
             @"value" : [RCTValueAnimatedNode class],
+            @"color" : [RCTColorAnimatedNode class],
             @"props" : [RCTPropsAnimatedNode class],
             @"interpolation" : [RCTInterpolationAnimatedNode class],
             @"addition" : [RCTAdditionAnimatedNode class],
@@ -257,6 +259,12 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
      }
     RCTValueAnimatedNode *valueNode = (RCTValueAnimatedNode *)node;;
     saveCallback(@[@(valueNode.value)]);
+}
+
+- (void)updateAnimatedNodeConfig:(NSNumber *)tag
+                    config:(NSDictionary<NSString *, id> *)config
+{
+  // TODO (T111179606): Support platform colors for color animations
 }
 
 #pragma mark -- Drivers

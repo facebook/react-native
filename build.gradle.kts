@@ -12,7 +12,7 @@ buildscript {
     }
     dependencies {
         val kotlin_version: String by project
-        classpath("com.android.tools.build:gradle:7.0.4")
+        classpath("com.android.tools.build:gradle:7.1.1")
         classpath("de.undercouch:gradle-download-task:5.0.1")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
         // NOTE: Do not place your application dependencies here; they belong
@@ -24,6 +24,9 @@ allprojects {
     repositories {
         maven {
             url = uri("$rootDir/node_modules/jsc-android/dist")
+        }
+        maven {
+            url = uri("$rootDir/android")
         }
         google()
         mavenCentral {

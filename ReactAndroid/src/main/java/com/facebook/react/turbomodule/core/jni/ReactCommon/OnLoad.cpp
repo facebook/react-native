@@ -12,9 +12,9 @@
 #include "TurboModuleManager.h"
 
 void jniEnableCppLogging(
-    jni::alias_ref<jclass> cls,
-    jni::alias_ref<facebook::react::JNativeModulePerfLogger::javaobject>
-        perfLogger) {
+    facebook::jni::alias_ref<jclass> cls,
+    facebook::jni::alias_ref<
+        facebook::react::JNativeModulePerfLogger::javaobject> perfLogger) {
   facebook::react::TurboModulePerfLogger::enableLogging(
       perfLogger->cthis()->get());
 }

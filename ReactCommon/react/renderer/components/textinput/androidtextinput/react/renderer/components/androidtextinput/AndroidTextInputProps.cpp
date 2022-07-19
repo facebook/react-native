@@ -266,7 +266,7 @@ folly::dynamic AndroidTextInputProps::getDynamic() const {
   props["numberOfLines"] = numberOfLines;
   props["disableFullscreenUI"] = disableFullscreenUI;
   props["textBreakStrategy"] = textBreakStrategy;
-  props["underlineColorAndroid"] = toDynamic(underlineColorAndroid);
+  props["underlineColorAndroid"] = toAndroidRepr(underlineColorAndroid);
   props["inlineImageLeft"] = inlineImageLeft;
   props["inlineImagePadding"] = inlineImagePadding;
   props["importantForAutofill"] = importantForAutofill;
@@ -282,9 +282,9 @@ folly::dynamic AndroidTextInputProps::getDynamic() const {
   props["maxLength"] = maxLength;
   props["multiline"] = multiline;
   props["placeholder"] = placeholder;
-  props["placeholderTextColor"] = toDynamic(placeholderTextColor);
+  props["placeholderTextColor"] = toAndroidRepr(placeholderTextColor);
   props["secureTextEntry"] = secureTextEntry;
-  props["selectionColor"] = toDynamic(selectionColor);
+  props["selectionColor"] = toAndroidRepr(selectionColor);
   props["selection"] = toDynamic(selection);
   props["value"] = value;
   props["defaultValue"] = defaultValue;
@@ -292,14 +292,14 @@ folly::dynamic AndroidTextInputProps::getDynamic() const {
   props["blurOnSubmit"] = blurOnSubmit;
   props["caretHidden"] = caretHidden;
   props["contextMenuHidden"] = contextMenuHidden;
-  props["textShadowColor"] = toDynamic(textShadowColor);
+  props["textShadowColor"] = toAndroidRepr(textShadowColor);
   props["textShadowRadius"] = textShadowRadius;
   props["textDecorationLine"] = textDecorationLine;
   props["fontStyle"] = fontStyle;
   props["textShadowOffset"] = toDynamic(textShadowOffset);
   props["lineHeight"] = lineHeight;
   props["textTransform"] = textTransform;
-  props["color"] = toDynamic(color);
+  props["color"] = toAndroidRepr(color);
   props["letterSpacing"] = letterSpacing;
   props["fontSize"] = fontSize;
   props["textAlign"] = textAlign;
@@ -307,7 +307,7 @@ folly::dynamic AndroidTextInputProps::getDynamic() const {
   props["fontWeight"] = fontWeight;
   props["fontFamily"] = fontFamily;
   props["textAlignVertical"] = textAlignVertical;
-  props["cursorColor"] = toDynamic(cursorColor);
+  props["cursorColor"] = toAndroidRepr(cursorColor);
   props["mostRecentEventCount"] = mostRecentEventCount;
   props["text"] = text;
 

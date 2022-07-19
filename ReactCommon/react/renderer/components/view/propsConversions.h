@@ -11,6 +11,8 @@
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 
+#include <optional>
+
 namespace facebook {
 namespace react {
 
@@ -462,6 +464,195 @@ static inline CascadedRectangleEdges<T> convertRawProp(
 
   return result;
 }
+
+static inline ViewEvents convertRawProp(
+    const PropsParserContext &context,
+    RawProps const &rawProps,
+    ViewEvents const &sourceValue,
+    ViewEvents const &defaultValue) {
+  ViewEvents result{};
+  using Offset = ViewEvents::Offset;
+
+  result[Offset::PointerEnter] = convertRawProp(
+      context,
+      rawProps,
+      "onPointerEnter",
+      sourceValue[Offset::PointerEnter],
+      defaultValue[Offset::PointerEnter]);
+  result[Offset::PointerMove] = convertRawProp(
+      context,
+      rawProps,
+      "onPointerMove",
+      sourceValue[Offset::PointerMove],
+      defaultValue[Offset::PointerMove]);
+  result[Offset::PointerLeave] = convertRawProp(
+      context,
+      rawProps,
+      "onPointerLeave",
+      sourceValue[Offset::PointerLeave],
+      defaultValue[Offset::PointerLeave]);
+
+  // PanResponder callbacks
+  result[Offset::MoveShouldSetResponder] = convertRawProp(
+      context,
+      rawProps,
+      "onMoveShouldSetResponder",
+      sourceValue[Offset::MoveShouldSetResponder],
+      defaultValue[Offset::MoveShouldSetResponder]);
+  result[Offset::MoveShouldSetResponderCapture] = convertRawProp(
+      context,
+      rawProps,
+      "onMoveShouldSetResponderCapture",
+      sourceValue[Offset::MoveShouldSetResponderCapture],
+      defaultValue[Offset::MoveShouldSetResponderCapture]);
+  result[Offset::StartShouldSetResponder] = convertRawProp(
+      context,
+      rawProps,
+      "onStartShouldSetResponder",
+      sourceValue[Offset::StartShouldSetResponder],
+      defaultValue[Offset::StartShouldSetResponder]);
+  result[Offset::StartShouldSetResponderCapture] = convertRawProp(
+      context,
+      rawProps,
+      "onStartShouldSetResponderCapture",
+      sourceValue[Offset::StartShouldSetResponderCapture],
+      defaultValue[Offset::StartShouldSetResponderCapture]);
+  result[Offset::ResponderGrant] = convertRawProp(
+      context,
+      rawProps,
+      "onResponderGrant",
+      sourceValue[Offset::ResponderGrant],
+      defaultValue[Offset::ResponderGrant]);
+  result[Offset::ResponderReject] = convertRawProp(
+      context,
+      rawProps,
+      "onResponderReject",
+      sourceValue[Offset::ResponderReject],
+      defaultValue[Offset::ResponderReject]);
+  result[Offset::ResponderStart] = convertRawProp(
+      context,
+      rawProps,
+      "onResponderStart",
+      sourceValue[Offset::ResponderStart],
+      defaultValue[Offset::ResponderStart]);
+  result[Offset::ResponderEnd] = convertRawProp(
+      context,
+      rawProps,
+      "onResponderEnd",
+      sourceValue[Offset::ResponderEnd],
+      defaultValue[Offset::ResponderEnd]);
+  result[Offset::ResponderRelease] = convertRawProp(
+      context,
+      rawProps,
+      "onResponderRelease",
+      sourceValue[Offset::ResponderRelease],
+      defaultValue[Offset::ResponderRelease]);
+  result[Offset::ResponderMove] = convertRawProp(
+      context,
+      rawProps,
+      "onResponderMove",
+      sourceValue[Offset::ResponderMove],
+      defaultValue[Offset::ResponderMove]);
+  result[Offset::ResponderTerminate] = convertRawProp(
+      context,
+      rawProps,
+      "onResponderTerminate",
+      sourceValue[Offset::ResponderTerminate],
+      defaultValue[Offset::ResponderTerminate]);
+  result[Offset::ResponderTerminationRequest] = convertRawProp(
+      context,
+      rawProps,
+      "onResponderTerminationRequest",
+      sourceValue[Offset::ResponderTerminationRequest],
+      defaultValue[Offset::ResponderTerminationRequest]);
+  result[Offset::ShouldBlockNativeResponder] = convertRawProp(
+      context,
+      rawProps,
+      "onShouldBlockNativeResponder",
+      sourceValue[Offset::ShouldBlockNativeResponder],
+      defaultValue[Offset::ShouldBlockNativeResponder]);
+
+  // Touch events
+  result[Offset::TouchStart] = convertRawProp(
+      context,
+      rawProps,
+      "onTouchStart",
+      sourceValue[Offset::TouchStart],
+      defaultValue[Offset::TouchStart]);
+  result[Offset::TouchMove] = convertRawProp(
+      context,
+      rawProps,
+      "onTouchMove",
+      sourceValue[Offset::TouchMove],
+      defaultValue[Offset::TouchMove]);
+  result[Offset::TouchEnd] = convertRawProp(
+      context,
+      rawProps,
+      "onTouchEnd",
+      sourceValue[Offset::TouchEnd],
+      defaultValue[Offset::TouchEnd]);
+  result[Offset::TouchCancel] = convertRawProp(
+      context,
+      rawProps,
+      "onTouchCancel",
+      sourceValue[Offset::TouchCancel],
+      defaultValue[Offset::TouchCancel]);
+
+  return result;
+}
+
+#ifdef ANDROID
+
+static inline void fromRawValue(
+    const PropsParserContext &context,
+    RawValue const &rawValue,
+    NativeDrawable &result) {
+  auto map = (butter::map<std::string, RawValue>)rawValue;
+
+  auto typeIterator = map.find("type");
+  react_native_assert(
+      typeIterator != map.end() && typeIterator->second.hasType<std::string>());
+  std::string type = (std::string)typeIterator->second;
+
+  if (type == "ThemeAttrAndroid") {
+    auto attrIterator = map.find("attribute");
+    react_native_assert(
+        attrIterator != map.end() &&
+        attrIterator->second.hasType<std::string>());
+
+    result = NativeDrawable{
+        .kind = NativeDrawable::Kind::ThemeAttr,
+        .themeAttr = (std::string)attrIterator->second,
+    };
+  } else if (type == "RippleAndroid") {
+    auto color = map.find("color");
+    auto borderless = map.find("borderless");
+    auto rippleRadius = map.find("rippleRadius");
+
+    result = NativeDrawable{
+        .kind = NativeDrawable::Kind::Ripple,
+        .ripple =
+            NativeDrawable::Ripple{
+                .color = color != map.end() && color->second.hasType<int32_t>()
+                    ? (int32_t)color->second
+                    : std::optional<int32_t>{},
+                .borderless = borderless != map.end() &&
+                        borderless->second.hasType<bool>()
+                    ? (bool)borderless->second
+                    : false,
+                .rippleRadius = rippleRadius != map.end() &&
+                        rippleRadius->second.hasType<Float>()
+                    ? (Float)rippleRadius->second
+                    : std::optional<Float>{},
+            },
+    };
+  } else {
+    LOG(ERROR) << "Unknown native drawable type: " << type;
+    react_native_assert(false);
+  }
+}
+
+#endif
 
 } // namespace react
 } // namespace facebook

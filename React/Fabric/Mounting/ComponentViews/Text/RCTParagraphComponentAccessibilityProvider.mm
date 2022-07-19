@@ -67,6 +67,7 @@ using namespace facebook::react;
   firstElement.isAccessibilityElement = YES;
   firstElement.accessibilityTraits = _view.accessibilityTraits;
   firstElement.accessibilityLabel = accessibilityLabel;
+  firstElement.accessibilityLanguage = _view.accessibilityLanguage;
   firstElement.accessibilityFrame = UIAccessibilityConvertFrameToScreenCoordinates(_view.bounds, _view);
   [firstElement setAccessibilityActivationPoint:CGPointMake(
                                                     firstElement.accessibilityFrame.origin.x + 1.0,

@@ -69,7 +69,7 @@ JNI_TARGET = "//ReactAndroid/src/main/jni/first-party/jni-hack:jni-hack"
 KEYSTORE_TARGET = "//keystores:debug"
 
 # Minimum supported iOS version for RN
-REACT_NATIVE_TARGET_IOS_SDK = "11.0"
+REACT_NATIVE_TARGET_IOS_SDK = "12.4"
 
 def get_apple_inspector_flags():
     return []
@@ -177,6 +177,7 @@ def _unique(li):
 def rn_android_library(name, deps = [], plugins = [], *args, **kwargs):
     _ = kwargs.pop("autoglob", False)
     _ = kwargs.pop("is_androidx", False)
+    _ = kwargs.pop("pure_kotlin", False)
     if react_native_target(
         "java/com/facebook/react/uimanager/annotations:annotations",
     ) in deps and name != "processing":

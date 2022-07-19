@@ -80,7 +80,7 @@ react {
     cliPath = "../../../../cli.js"
     bundleAssetName = "RNTesterApp.android.bundle"
     entryFile = file("../../js/RNTesterApp.android.js")
-    reactRoot = rootDir
+    root = rootDir
     inputExcludes = ["android/**", "./**", ".gradle/**"]
     composeSourceMapsPath = "$rootDir/scripts/compose-source-maps.js"
     hermesCommand = "$rootDir/node_modules/hermes-engine/%OS-BIN%/hermesc"
@@ -88,6 +88,7 @@ react {
 
     // Codegen Configs
     jsRootDir = file("$rootDir/packages/rn-tester")
+    reactNativeDir = rootDir
     libraryName = "rntester"
     useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET")?.toBoolean() ?: false
 }
@@ -142,6 +143,7 @@ def reactNativeArchitectures() {
 }
 
 android {
+    buildToolsVersion = "31.0.0"
     compileSdkVersion 31
 
     // Used to override the NDK path & version on internal CI
@@ -224,11 +226,12 @@ dependencies {
     // Build React Native from source
     implementation project(':ReactAndroid')
 
-    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+    // Consume Hermes as built from source only for the Hermes variant.
+    hermesImplementation(project(":ReactAndroid:hermes-engine")) {
+        exclude group:'com.facebook.fbjni'
+    }
 
-    def hermesPath = '$projectDir/../../../../../node_modules/hermes-engine/android/'
-    hermesDebugImplementation files(hermesPath + "hermes-debug.aar")
-    hermesReleaseImplementation files(hermesPath + "hermes-release.aar")
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'
@@ -297,6 +300,16 @@ if (enableCodegen) {
     }
 
     afterEvaluate {
+        reactNativeArchitectures().each { architecture ->
+            tasks.findByName("configureNdkBuildDebug[${architecture}]")?.configure {
+                dependsOn("preHermesDebugBuild")
+                dependsOn("preJscDebugBuild")
+            }
+            tasks.findByName("configureNdkBuildRelease[${architecture}]")?.configure {
+                dependsOn("preHermesReleaseBuild")
+                dependsOn("preJscReleaseBuild")
+            }
+        }
         configureNdkBuildRelease.dependsOn(packageReactReleaseNdkLibs)
         preHermesReleaseBuild.dependsOn(packageReactReleaseNdkLibs)
         preJscReleaseBuild.dependsOn(packageReactReleaseNdkLibs)

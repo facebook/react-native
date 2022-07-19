@@ -8,6 +8,8 @@
  * @format
  */
 
+import Platform from '../Utilities/Platform';
+
 const ignoredViewConfigProps = new WeakSet<{...}>();
 
 /**
@@ -17,6 +19,30 @@ const ignoredViewConfigProps = new WeakSet<{...}>();
 export function DynamicallyInjectedByGestureHandler<T: {...}>(object: T): T {
   ignoredViewConfigProps.add(object);
   return object;
+}
+
+/**
+ * On iOS, ViewManager event declarations generate {eventName}: true entries
+ * in ViewConfig valueAttributes. These entries aren't generated for Android.
+ * This annotation allows Static ViewConfigs to insert these entries into
+ * iOS but not Android.
+ *
+ * In the future, we want to remove this platform-inconsistency.
+ * This annotation also allows us to safely test this removal by setting
+ * global.RN$ViewConfigEventValidAttributesDisabled = true server-side.
+ *
+ * TODO(T110872225): Remove this logic, after achieving platform-consistency
+ */
+export function ConditionallyIgnoredEventHandlers<T: {[name: string]: true}>(
+  value: T,
+): T | void {
+  if (
+    Platform.OS === 'ios' &&
+    !(global.RN$ViewConfigEventValidAttributesDisabled === true)
+  ) {
+    return value;
+  }
+  return undefined;
 }
 
 export function isIgnored(value: mixed): boolean {

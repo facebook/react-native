@@ -15,8 +15,7 @@ LOCAL_SHARED_LIBRARIES := \
   glog \
   libfb \
   libfbjni \
-  libfolly_futures \
-  libfolly_json \
+  libfolly_runtime \
   libglog_init \
   libmapbufferjni \
   libreact_debug \

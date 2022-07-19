@@ -181,7 +181,7 @@ RCT_EXPORT_METHOD(setNetworkActivityIndicatorVisible : (BOOL)visible)
   RCTUnsafeExecuteOnMainQueueSync(^{
     constants = facebook::react::typedConstants<JS::NativeStatusBarManagerIOS::Constants>({
         .HEIGHT = RCTSharedApplication().statusBarFrame.size.height,
-        .DEFAULT_BACKGROUND_COLOR = folly::none,
+        .DEFAULT_BACKGROUND_COLOR = std::nullopt,
     });
   });
 

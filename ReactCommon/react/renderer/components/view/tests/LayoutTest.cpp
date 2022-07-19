@@ -17,6 +17,9 @@
 namespace facebook {
 namespace react {
 
+// Note: the (x, y) origin is always relative to the parent node. You may use
+// P482342650 to re-create this test case in playground.
+
 //  *******************************************************┌─ABCD:────┐****
 //  *******************************************************│ {70,-50} │****
 //  *******************************************************│ {30,60}  │****
@@ -43,6 +46,8 @@ namespace react {
 //  ***********************│          │************************************
 //  ***********************└──────────┘************************************
 
+enum TestCase { AS_IS, CLIPPING, TRANSFORM_SCALE, TRANSFORM_TRANSLATE };
+
 class LayoutTest : public ::testing::Test {
  protected:
   ComponentBuilder builder_;
@@ -55,7 +60,7 @@ class LayoutTest : public ::testing::Test {
 
   LayoutTest() : builder_(simpleComponentBuilder()) {}
 
-  void initialize(bool enforceClippingForABC) {
+  void initialize(TestCase testCase) {
     // clang-format off
     auto element =
         Element<RootShadowNode>()
@@ -73,8 +78,9 @@ class LayoutTest : public ::testing::Test {
           .children({
             Element<ViewShadowNode>()
               .reference(viewShadowNodeA_)
+              .tag(2)
               .props([] {
-                auto sharedProps = std::make_shared<ViewProps>();
+                auto sharedProps = std::make_shared<ViewShadowNodeProps>();
                 auto &props = *sharedProps;
                 auto &yogaStyle = props.yogaStyle;
                 yogaStyle.positionType() = YGPositionTypeAbsolute;
@@ -85,8 +91,9 @@ class LayoutTest : public ::testing::Test {
               .children({
                 Element<ViewShadowNode>()
                   .reference(viewShadowNodeAB_)
-                  .props([] {
-                    auto sharedProps = std::make_shared<ViewProps>();
+                  .tag(3)
+                  .props([=] {
+                    auto sharedProps = std::make_shared<ViewShadowNodeProps>();
                     auto &props = *sharedProps;
                     auto &yogaStyle = props.yogaStyle;
                     yogaStyle.positionType() = YGPositionTypeAbsolute;
@@ -94,17 +101,26 @@ class LayoutTest : public ::testing::Test {
                     yogaStyle.position()[YGEdgeTop] = YGValue{10, YGUnitPoint};
                     yogaStyle.dimensions()[YGDimensionWidth] = YGValue{30, YGUnitPoint};
                     yogaStyle.dimensions()[YGDimensionHeight] = YGValue{90, YGUnitPoint};
+
+                    if (testCase == TRANSFORM_SCALE) {
+                      props.transform = props.transform * Transform::Scale(2, 2, 1);
+                    }
+
+                    if (testCase == TRANSFORM_TRANSLATE) {
+                      props.transform = props.transform * Transform::Translate(10, 10, 0);
+                    }
                     return sharedProps;
                   })
                   .children({
                     Element<ViewShadowNode>()
                       .reference(viewShadowNodeABC_)
+                      .tag(4)
                       .props([=] {
-                        auto sharedProps = std::make_shared<ViewProps>();
+                        auto sharedProps = std::make_shared<ViewShadowNodeProps>();
                         auto &props = *sharedProps;
                         auto &yogaStyle = props.yogaStyle;
 
-                        if (enforceClippingForABC) {
+                        if (testCase == CLIPPING) {
                           yogaStyle.overflow() = YGOverflowHidden;
                         }
 
@@ -118,8 +134,9 @@ class LayoutTest : public ::testing::Test {
                       .children({
                         Element<ViewShadowNode>()
                           .reference(viewShadowNodeABCD_)
+                          .tag(5)
                           .props([] {
-                            auto sharedProps = std::make_shared<ViewProps>();
+                            auto sharedProps = std::make_shared<ViewShadowNodeProps>();
                             auto &props = *sharedProps;
                             auto &yogaStyle = props.yogaStyle;
                             yogaStyle.positionType() = YGPositionTypeAbsolute;
@@ -132,8 +149,9 @@ class LayoutTest : public ::testing::Test {
                       }),
                     Element<ViewShadowNode>()
                       .reference(viewShadowNodeABE_)
+                      .tag(6)
                       .props([] {
-                        auto sharedProps = std::make_shared<ViewProps>();
+                        auto sharedProps = std::make_shared<ViewShadowNodeProps>();
                         auto &props = *sharedProps;
                         auto &yogaStyle = props.yogaStyle;
                         yogaStyle.positionType() = YGPositionTypeAbsolute;
@@ -154,32 +172,191 @@ class LayoutTest : public ::testing::Test {
   }
 };
 
+// Test the layout as described above with no extra changes
 TEST_F(LayoutTest, overflowInsetTest) {
-  initialize(false);
+  initialize(AS_IS);
 
-  auto layoutMetrics = viewShadowNodeA_->getLayoutMetrics();
+  auto layoutMetricsA = viewShadowNodeA_->getLayoutMetrics();
 
-  EXPECT_EQ(layoutMetrics.frame.size.width, 50);
-  EXPECT_EQ(layoutMetrics.frame.size.height, 50);
+  EXPECT_EQ(layoutMetricsA.frame.size.width, 50);
+  EXPECT_EQ(layoutMetricsA.frame.size.height, 50);
 
-  EXPECT_EQ(layoutMetrics.overflowInset.left, -50);
-  EXPECT_EQ(layoutMetrics.overflowInset.top, -30);
-  EXPECT_EQ(layoutMetrics.overflowInset.right, -80);
-  EXPECT_EQ(layoutMetrics.overflowInset.bottom, -50);
+  EXPECT_EQ(layoutMetricsA.overflowInset.left, -50);
+  EXPECT_EQ(layoutMetricsA.overflowInset.top, -30);
+  EXPECT_EQ(layoutMetricsA.overflowInset.right, -80);
+  EXPECT_EQ(layoutMetricsA.overflowInset.bottom, -50);
+
+  auto layoutMetricsABC = viewShadowNodeABC_->getLayoutMetrics();
+
+  EXPECT_EQ(layoutMetricsABC.frame.size.width, 110);
+  EXPECT_EQ(layoutMetricsABC.frame.size.height, 20);
+
+  EXPECT_EQ(layoutMetricsABC.overflowInset.left, 0);
+  EXPECT_EQ(layoutMetricsABC.overflowInset.top, -50);
+  EXPECT_EQ(layoutMetricsABC.overflowInset.right, 0);
+  EXPECT_EQ(layoutMetricsABC.overflowInset.bottom, 0);
 }
 
+// Test when box ABC has clipping (aka overflow hidden)
 TEST_F(LayoutTest, overflowInsetWithClippingTest) {
-  initialize(true);
+  initialize(CLIPPING);
 
-  auto layoutMetrics = viewShadowNodeA_->getLayoutMetrics();
+  auto layoutMetricsA = viewShadowNodeA_->getLayoutMetrics();
 
-  EXPECT_EQ(layoutMetrics.frame.size.width, 50);
-  EXPECT_EQ(layoutMetrics.frame.size.height, 50);
+  EXPECT_EQ(layoutMetricsA.frame.size.width, 50);
+  EXPECT_EQ(layoutMetricsA.frame.size.height, 50);
 
-  EXPECT_EQ(layoutMetrics.overflowInset.left, -50);
-  EXPECT_EQ(layoutMetrics.overflowInset.top, 0);
-  EXPECT_EQ(layoutMetrics.overflowInset.right, -80);
-  EXPECT_EQ(layoutMetrics.overflowInset.bottom, -50);
+  EXPECT_EQ(layoutMetricsA.overflowInset.left, -50);
+  EXPECT_EQ(layoutMetricsA.overflowInset.top, 0);
+  EXPECT_EQ(layoutMetricsA.overflowInset.right, -80);
+  EXPECT_EQ(layoutMetricsA.overflowInset.bottom, -50);
+
+  auto layoutMetricsABC = viewShadowNodeABC_->getLayoutMetrics();
+
+  EXPECT_EQ(layoutMetricsABC.frame.size.width, 110);
+  EXPECT_EQ(layoutMetricsABC.frame.size.height, 20);
+
+  EXPECT_EQ(layoutMetricsABC.overflowInset.left, 0);
+  EXPECT_EQ(layoutMetricsABC.overflowInset.top, 0);
+  EXPECT_EQ(layoutMetricsABC.overflowInset.right, 0);
+  EXPECT_EQ(layoutMetricsABC.overflowInset.bottom, 0);
+}
+
+// Test when box AB translate (10, 10, 0) in transform. The parent node's
+// overflowInset will be affected, but the transformed node and its child nodes
+// are not affected. Here is an example:
+//
+//      ┌────────────────┐                  ┌────────────────┐
+//      │Original Layout │                  │  Translate AB  │
+//      └────────────────┘                  └────────────────┘
+//                                                          ─────▶
+// ┌ ─ ─ ─ ┬──────────┐─ ─ ─ ─ ┐      ┌ ─ ─ ─ ┬──────────┐─ ─ ─ ─ ─ ┐
+//         │ A        │                       │ A        │
+// │       │          │        │      │       │          │          │
+//  ─ ─ ─ ─│─ ─ ─┌───┐┼ ─ ─ ─ ─               │          │
+// │       │     │AB ││        │      │ ┌ ─ ─ ┼ ─ ─ ─ ┬──┴┬ ─ ─ ─ ─ ┤
+//         └─────┤   ├┘                       └───────┤AB │
+// │             │┌──┴─────────┤      │ │             │   │         │
+//               ││ABC         │                      │┌──┴─────────┐
+// │             │└──┬─────────┤    │ │ │             ││ABC         │
+// ┌───ABD───────┴─┐ │              │                 │└──┬─────────┘
+// ├─────────────┬─┘ │         │    │ │ ├───ABD───────┴─┐ │         │
+//  ─ ─ ─ ─ ─ ─ ─└───┘─ ─ ─ ─ ─     ▼   └─────────────┬─┘ │
+//                                    └ ┴ ─ ─ ─ ─ ─ ─ ┴───┴ ─ ─ ─ ─ ┘
+
+TEST_F(LayoutTest, overflowInsetTransformTranslateTest) {
+  initialize(TRANSFORM_TRANSLATE);
+
+  auto layoutMetricsA = viewShadowNodeA_->getLayoutMetrics();
+
+  EXPECT_EQ(layoutMetricsA.frame.size.width, 50);
+  EXPECT_EQ(layoutMetricsA.frame.size.height, 50);
+
+  // Change on parent node
+  // The top/left values are NOT changing as overflowInset is union of before
+  // and after transform layout. In this case, we move to the right and bottom,
+  // so the left and top is not changing, while right and bottom values are
+  // increased.
+  EXPECT_EQ(layoutMetricsA.overflowInset.left, -50);
+  EXPECT_EQ(layoutMetricsA.overflowInset.top, -30);
+  EXPECT_EQ(layoutMetricsA.overflowInset.right, -90);
+  EXPECT_EQ(layoutMetricsA.overflowInset.bottom, -60);
+
+  auto layoutMetricsAB = viewShadowNodeAB_->getLayoutMetrics();
+
+  EXPECT_EQ(layoutMetricsAB.frame.size.width, 30);
+  EXPECT_EQ(layoutMetricsAB.frame.size.height, 90);
+
+  // No change on self node with translate transform
+  EXPECT_EQ(layoutMetricsAB.overflowInset.left, -60);
+  EXPECT_EQ(layoutMetricsAB.overflowInset.top, -40);
+  EXPECT_EQ(layoutMetricsAB.overflowInset.right, -90);
+  EXPECT_EQ(layoutMetricsAB.overflowInset.bottom, 0);
+
+  auto layoutMetricsABC = viewShadowNodeABC_->getLayoutMetrics();
+
+  EXPECT_EQ(layoutMetricsABC.frame.size.width, 110);
+  EXPECT_EQ(layoutMetricsABC.frame.size.height, 20);
+
+  // No change on child node
+  EXPECT_EQ(layoutMetricsABC.overflowInset.left, 0);
+  EXPECT_EQ(layoutMetricsABC.overflowInset.top, -50);
+  EXPECT_EQ(layoutMetricsABC.overflowInset.right, 0);
+  EXPECT_EQ(layoutMetricsABC.overflowInset.bottom, 0);
+}
+
+// Test when box AB scaled 2X in transform. The parent node's overflowInset will
+// be affected. However, the transformed node and its child nodes only appears
+// to be affected (dashed arrow). Since all transform is cosmetic only, the
+// actual values are NOT changed. It will be converted later when mapping the
+// values to pixels during rendering. Here is an example:
+//
+//      ┌────────────────┐                    ┌────────────────┐
+//      │Original Layout │                    │    Scale AB    │
+//      └────────────────┘                    └────────────────┘
+//                                                             ─────▶
+// ┌ ─ ─ ─ ┬──────────┐─ ─ ─ ─ ┐     ┌ ─ ─ ─ ─ ─ ┬──────────┐─ ─ ─ ─ ─ ┐
+//         │ A        │                          │ A        │
+// │       │          │        │     ├ ─ ─ ─ ─ ─ ┼ ─ ─┌─────┤─ ─ ─ ─ ─ ┤
+//  ─ ─ ─ ─│─ ─ ─┌───┐┼ ─ ─ ─ ─                  │    │AB   │  ─ ─ ─▶
+// │       │     │AB ││        │     │           │    │     │          │
+//         └─────┤   ├┘                          └────┤     │
+// │             │┌──┴─────────┤     │                │ ┌───┴──────────┤
+//               ││ABC         │                      │ │ABC           │
+// │             │└──┬─────────┤   │ │                │ │              │
+// ┌───ABD───────┴─┐ │             │                  │ └───┬──────────┘
+// ├─────────────┬─┘ │         │   │ ├────────────────┴──┐  │          │
+//  ─ ─ ─ ─ ─ ─ ─└───┘─ ─ ─ ─ ─    ▼ │      ABD          │  │
+//                                   ├────────────────┬──┘  │          │
+//                                    ─ ─ ─ ─ ─ ─ ─ ─ ┴─────┴ ─ ─ ─ ─ ─
+
+TEST_F(LayoutTest, overflowInsetTransformScaleTest) {
+  initialize(TRANSFORM_SCALE);
+
+  auto layoutMetricsA = viewShadowNodeA_->getLayoutMetrics();
+
+  EXPECT_EQ(layoutMetricsA.frame.size.width, 50);
+  EXPECT_EQ(layoutMetricsA.frame.size.height, 50);
+
+  // Change on parent node when a child view scale up
+  // Note that AB scale up from its center point. The numbers are calculated
+  // assuming AB's center point is not moving.
+  EXPECT_EQ(layoutMetricsA.overflowInset.left, -125);
+  EXPECT_EQ(layoutMetricsA.overflowInset.top, -115);
+  EXPECT_EQ(layoutMetricsA.overflowInset.right, -185);
+  EXPECT_EQ(layoutMetricsA.overflowInset.bottom, -95);
+
+  auto layoutMetricsAB = viewShadowNodeAB_->getLayoutMetrics();
+
+  // The frame of box AB won't actually scale up. The transform matrix is
+  // purely cosmetic and should apply later in mounting phase.
+  EXPECT_EQ(layoutMetricsAB.frame.size.width, 30);
+  EXPECT_EQ(layoutMetricsAB.frame.size.height, 90);
+
+  // No change on self node with scale transform. This may sound a bit
+  // surprising, but the overflowInset values will be scaled up via pixel
+  // density ratio along with width/height of the view. When we do hit-testing,
+  // the overflowInset value will appears to be doubled as expected.
+  EXPECT_EQ(layoutMetricsAB.overflowInset.left, -60);
+  EXPECT_EQ(layoutMetricsAB.overflowInset.top, -40);
+  EXPECT_EQ(layoutMetricsAB.overflowInset.right, -90);
+  EXPECT_EQ(layoutMetricsAB.overflowInset.bottom, 0);
+
+  auto layoutMetricsABC = viewShadowNodeABC_->getLayoutMetrics();
+
+  // The frame of box ABC won't actually scale up. The transform matrix is
+  // purely cosmatic and should apply later in mounting phase.
+  EXPECT_EQ(layoutMetricsABC.frame.size.width, 110);
+  EXPECT_EQ(layoutMetricsABC.frame.size.height, 20);
+
+  // The overflowInset of ABC won't change either. This may sound a bit
+  // surprising, but the overflowInset values will be scaled up via pixel
+  // density ratio along with width/height of the view. When we do hit-testing,
+  // the overflowInset value will appears to be doubled as expected.
+  EXPECT_EQ(layoutMetricsABC.overflowInset.left, 0);
+  EXPECT_EQ(layoutMetricsABC.overflowInset.top, -50);
+  EXPECT_EQ(layoutMetricsABC.overflowInset.right, 0);
+  EXPECT_EQ(layoutMetricsABC.overflowInset.bottom, 0);
 }
 
 } // namespace react

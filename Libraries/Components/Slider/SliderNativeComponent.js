@@ -47,7 +47,6 @@ type NativeProps = $ReadOnly<{|
   value?: WithDefault<Double, 0>,
 
   // Events
-  onChange?: ?BubblingEventHandler<Event>,
   onValueChange?: ?BubblingEventHandler<Event>,
   onSlidingComplete?: ?DirectEventHandler<Event>,
 |}>;

@@ -87,7 +87,7 @@ TextInputProps::TextInputProps(
           rawProps,
           "selection",
           sourceProps.selection,
-          butter::optional<Selection>())),
+          std::optional<Selection>())),
       inputAccessoryViewID(convertRawProp(
           context,
           rawProps,

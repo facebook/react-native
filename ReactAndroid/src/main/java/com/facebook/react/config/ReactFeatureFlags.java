@@ -71,6 +71,9 @@ public class ReactFeatureFlags {
   /** Feature flag to configure eager attachment of the root view/initialisation of the JS code */
   public static boolean enableEagerRootViewAttachment = false;
 
+  /** Feature flag to configure synchronized queue access for Animated module */
+  public static boolean enableSynchronizationForAnimated = false;
+
   private static boolean mapBufferSerializationEnabled = false;
 
   /** Enables or disables MapBuffer Serialization */
@@ -99,6 +102,14 @@ public class ReactFeatureFlags {
 
   public static boolean insertZReorderBarriersOnViewGroupChildren = true;
 
-  /** TODO: T103427072 Delete ReactFeatureFlags.enableNestedTextOnPressEventFix */
-  public static boolean enableNestedTextOnPressEventFix = true;
+  public static boolean enableDelayedViewStateDeletion = false;
+
+  /**
+   * Feature Flag to control the size of the cache used by TextLayoutManager in Fabric. Used from
+   * JNI.
+   */
+  public static boolean enableLargeTextMeasureCache = true;
+
+  /** TODO: T113245006 Delete this flag. Enables caching of spannables for text */
+  public static boolean enableSpannableCache = false;
 }

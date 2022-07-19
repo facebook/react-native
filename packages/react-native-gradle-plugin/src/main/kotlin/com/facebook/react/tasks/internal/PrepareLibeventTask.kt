@@ -30,15 +30,14 @@ abstract class PrepareLibeventTask : DefaultTask() {
   fun taskAction() {
     project.copy { it ->
       it.from(libeventPath)
-      it.from(project.file("src/main/jni/third-party/libevent/Android.mk"))
-      it.from(project.file("src/main/jni/third-party/libevent/event-config.h"))
-      it.from(project.file("src/main/jni/third-party/libevent/evconfig-private.h"))
+      it.from(project.file("src/main/jni/third-party/libevent/"))
       it.include(
           "libevent-${libeventVersion.get()}-stable/*.c",
           "libevent-${libeventVersion.get()}-stable/*.h",
           "libevent-${libeventVersion.get()}-stable/include/**/*",
           "evconfig-private.h",
           "event-config.h",
+          "CMakeLists.txt",
           "Android.mk")
       it.eachFile { it.path = it.path.removePrefix("libevent-${libeventVersion.get()}-stable/") }
       it.includeEmptyDirs = false

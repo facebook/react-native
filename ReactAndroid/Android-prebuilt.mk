@@ -29,10 +29,10 @@ LOCAL_SRC_FILES := $(REACT_NDK_EXPORT_DIR)/$(TARGET_ARCH_ABI)/libfb.so
 LOCAL_EXPORT_C_INCLUDES := $(FIRST_PARTY_NDK_DIR)/fb/include
 include $(PREBUILT_SHARED_LIBRARY)
 
-# folly_json
+# folly_runtime
 include $(CLEAR_VARS)
-LOCAL_MODULE := folly_json
-LOCAL_SRC_FILES := $(REACT_NDK_EXPORT_DIR)/$(TARGET_ARCH_ABI)/libfolly_json.so
+LOCAL_MODULE := folly_runtime
+LOCAL_SRC_FILES := $(REACT_NDK_EXPORT_DIR)/$(TARGET_ARCH_ABI)/libfolly_runtime.so
 LOCAL_EXPORT_C_INCLUDES := \
   $(THIRD_PARTY_NDK_DIR)/boost/boost_1_63_0 \
   $(THIRD_PARTY_NDK_DIR)/double-conversion \
@@ -47,13 +47,6 @@ FOLLY_FLAGS := \
   -DFOLLY_HAVE_XSI_STRERROR_R=1
 LOCAL_CFLAGS += $(FOLLY_FLAGS)
 LOCAL_EXPORT_CPPFLAGS := $(FOLLY_FLAGS)
-include $(PREBUILT_SHARED_LIBRARY)
-
-# folly_futures
-include $(CLEAR_VARS)
-LOCAL_MODULE := folly_futures
-LOCAL_SRC_FILES := $(REACT_NDK_EXPORT_DIR)/$(TARGET_ARCH_ABI)/libfolly_futures.so
-LOCAL_SHARED_LIBRARIES := liblibfolly_json
 include $(PREBUILT_SHARED_LIBRARY)
 
 # glog
@@ -82,11 +75,12 @@ LOCAL_MODULE := react_nativemodule_core
 LOCAL_SRC_FILES := $(REACT_NDK_EXPORT_DIR)/$(TARGET_ARCH_ABI)/libreact_nativemodule_core.so
 LOCAL_EXPORT_C_INCLUDES := \
   $(REACT_ANDROID_SRC_DIR)/jni \
+  $(REACT_COMMON_DIR) \
   $(REACT_COMMON_DIR)/callinvoker \
   $(REACT_COMMON_DIR)/jsi \
   $(REACT_COMMON_DIR)/react/nativemodule/core \
   $(REACT_COMMON_DIR)/react/nativemodule/core/platform/android
-LOCAL_SHARED_LIBRARIES := libfolly_json
+LOCAL_SHARED_LIBRARIES := libfolly_runtime
 include $(PREBUILT_SHARED_LIBRARY)
 
 # turbomodulejsijni
@@ -120,7 +114,7 @@ LOCAL_MODULE := react_debug
 LOCAL_SRC_FILES := $(REACT_NDK_EXPORT_DIR)/$(TARGET_ARCH_ABI)/libreact_debug.so
 LOCAL_EXPORT_C_INCLUDES := \
   $(REACT_COMMON_DIR)/react/debug
-LOCAL_SHARED_LIBRARIES := libfolly_json
+LOCAL_SHARED_LIBRARIES := libfolly_runtime
 include $(PREBUILT_SHARED_LIBRARY)
 
 # react_render_graphics

@@ -125,7 +125,8 @@ public class LockFreeEventDispatcherImpl implements EventDispatcher, LifecycleEv
 
   @Override
   public void onHostResume() {
-    maybePostFrameCallbackFromNonUI();
+    UiThreadUtil.assertOnUiThread();
+    mCurrentFrameCallback.resume();
   }
 
   @Override
@@ -181,6 +182,11 @@ public class LockFreeEventDispatcherImpl implements EventDispatcher, LifecycleEv
       }
 
       driveEventBeats();
+    }
+
+    public void resume() {
+      mShouldStop = false;
+      maybePost();
     }
 
     public void stop() {

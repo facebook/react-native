@@ -53,17 +53,15 @@ echo "$VERSION" > template/_ruby-version
 sed_i -e "s/^\(ruby '\)[^']*\('.*\)$/\1$VERSION\2/" Gemfile
 sed_i -e "s/^\(ruby '\)[^']*\('.*\)$/\1$VERSION\2/" template/Gemfile
 
-rm -f Gemfile.lock template/Gemfile.lock
+rm -f Gemfile.lock
 
 export BUNDLE_APP_CONFIG="$ROOT/.bundle"
 cp "$BUNDLE_APP_CONFIG/"* template/_bundle # sync!
 
 bundle lock
-(cd template && bundle lock)
 
 git add \
     .ruby-version \
     Gemfile \
     template/_ruby-version \
-    template/Gemfile \
-    template/Gemfile.lock
+    template/Gemfile

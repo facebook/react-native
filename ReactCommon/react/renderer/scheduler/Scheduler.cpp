@@ -42,8 +42,7 @@ Scheduler::Scheduler(
           "ReactNativeConfig");
 
   // Creating a container for future `EventDispatcher` instance.
-  eventDispatcher_ =
-      std::make_shared<butter::optional<EventDispatcher const>>();
+  eventDispatcher_ = std::make_shared<std::optional<EventDispatcher const>>();
 
   auto uiManager = std::make_shared<UIManager>(
       runtimeExecutor_, schedulerToolbox.backgroundExecutor, contextContainer_);
@@ -62,7 +61,7 @@ Scheduler::Scheduler(
       contextContainer_->find<std::weak_ptr<RuntimeScheduler>>(
           "RuntimeScheduler");
   auto runtimeScheduler =
-      (enableCallImmediates && weakRuntimeScheduler.hasValue())
+      (enableCallImmediates && weakRuntimeScheduler.has_value())
       ? weakRuntimeScheduler.value().lock()
       : nullptr;
 
@@ -79,7 +78,7 @@ Scheduler::Scheduler(
         },
         runtime);
     if (runtimeScheduler) {
-      runtimeScheduler->callImmediates(runtime);
+      runtimeScheduler->callExpiredTasks(runtime);
     }
   };
 
@@ -134,8 +133,7 @@ Scheduler::Scheduler(
   uiManager_->setAnimationDelegate(animationDelegate);
 
 #ifdef ANDROID
-  removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
-      "react_fabric:remove_outstanding_surfaces_on_destruction_android");
+  removeOutstandingSurfacesOnDestruction_ = true;
 #else
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_ios");

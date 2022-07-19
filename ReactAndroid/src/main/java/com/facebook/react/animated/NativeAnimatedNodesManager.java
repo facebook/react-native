@@ -160,6 +160,21 @@ import java.util.Queue;
   }
 
   @UiThread
+  public void updateAnimatedNodeConfig(int tag, ReadableMap config) {
+    AnimatedNode node = mAnimatedNodes.get(tag);
+    if (node == null) {
+      throw new JSApplicationIllegalArgumentException(
+          "updateAnimatedNode: Animated node [" + tag + "] does not exist");
+    }
+
+    if (node instanceof AnimatedNodeWithUpdateableConfig) {
+      stopAnimationsForNode(node);
+      ((AnimatedNodeWithUpdateableConfig) node).onUpdateConfig(config);
+      mUpdatedNodes.put(tag, node);
+    }
+  }
+
+  @UiThread
   public void dropAnimatedNode(int tag) {
     mAnimatedNodes.remove(tag);
     mUpdatedNodes.remove(tag);

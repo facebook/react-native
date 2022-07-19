@@ -827,11 +827,11 @@ inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
   auto _textAttributes = folly::dynamic::object();
   if (textAttributes.foregroundColor) {
     _textAttributes(
-        "foregroundColor", toDynamic(textAttributes.foregroundColor));
+        "foregroundColor", toAndroidRepr(textAttributes.foregroundColor));
   }
   if (textAttributes.backgroundColor) {
     _textAttributes(
-        "backgroundColor", toDynamic(textAttributes.backgroundColor));
+        "backgroundColor", toAndroidRepr(textAttributes.backgroundColor));
   }
   if (!std::isnan(textAttributes.opacity)) {
     _textAttributes("opacity", textAttributes.opacity);
@@ -860,7 +860,7 @@ inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
   if (!std::isnan(textAttributes.letterSpacing)) {
     _textAttributes("letterSpacing", textAttributes.letterSpacing);
   }
-  if (textAttributes.textTransform.hasValue()) {
+  if (textAttributes.textTransform.has_value()) {
     _textAttributes("textTransform", toString(*textAttributes.textTransform));
   }
   if (!std::isnan(textAttributes.lineHeight)) {
@@ -876,7 +876,8 @@ inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
   // Decoration
   if (textAttributes.textDecorationColor) {
     _textAttributes(
-        "textDecorationColor", toDynamic(textAttributes.textDecorationColor));
+        "textDecorationColor",
+        toAndroidRepr(textAttributes.textDecorationColor));
   }
   if (textAttributes.textDecorationLineType.has_value()) {
     _textAttributes(
@@ -894,7 +895,7 @@ inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
   }
   if (textAttributes.textShadowColor) {
     _textAttributes(
-        "textShadowColor", toDynamic(textAttributes.textShadowColor));
+        "textShadowColor", toAndroidRepr(textAttributes.textShadowColor));
   }
   // Special
   if (textAttributes.isHighlighted.has_value()) {
@@ -976,7 +977,7 @@ constexpr static MapBuffer::Key TA_KEY_BEST_WRITING_DIRECTION = 13;
 constexpr static MapBuffer::Key TA_KEY_TEXT_DECORATION_COLOR = 14;
 constexpr static MapBuffer::Key TA_KEY_TEXT_DECORATION_LINE = 15;
 constexpr static MapBuffer::Key TA_KEY_TEXT_DECORATION_STYLE = 16;
-constexpr static MapBuffer::Key TA_KEY_TEXT_SHADOW_RAIDUS = 18;
+constexpr static MapBuffer::Key TA_KEY_TEXT_SHADOW_RADIUS = 18;
 constexpr static MapBuffer::Key TA_KEY_TEXT_SHADOW_COLOR = 19;
 constexpr static MapBuffer::Key TA_KEY_IS_HIGHLIGHTED = 20;
 constexpr static MapBuffer::Key TA_KEY_LAYOUT_DIRECTION = 21;
@@ -1036,11 +1037,11 @@ inline MapBuffer toMapBuffer(const TextAttributes &textAttributes) {
   auto builder = MapBufferBuilder();
   if (textAttributes.foregroundColor) {
     builder.putInt(
-        TA_KEY_FOREGROUND_COLOR, toMapBuffer(textAttributes.foregroundColor));
+        TA_KEY_FOREGROUND_COLOR, toAndroidRepr(textAttributes.foregroundColor));
   }
   if (textAttributes.backgroundColor) {
     builder.putInt(
-        TA_KEY_BACKGROUND_COLOR, toMapBuffer(textAttributes.backgroundColor));
+        TA_KEY_BACKGROUND_COLOR, toAndroidRepr(textAttributes.backgroundColor));
   }
   if (!std::isnan(textAttributes.opacity)) {
     builder.putDouble(TA_KEY_OPACITY, textAttributes.opacity);
@@ -1087,7 +1088,7 @@ inline MapBuffer toMapBuffer(const TextAttributes &textAttributes) {
   if (textAttributes.textDecorationColor) {
     builder.putInt(
         TA_KEY_TEXT_DECORATION_COLOR,
-        toMapBuffer(textAttributes.textDecorationColor));
+        toAndroidRepr(textAttributes.textDecorationColor));
   }
   if (textAttributes.textDecorationLineType.has_value()) {
     builder.putString(
@@ -1103,11 +1104,12 @@ inline MapBuffer toMapBuffer(const TextAttributes &textAttributes) {
   // Shadow
   if (!std::isnan(textAttributes.textShadowRadius)) {
     builder.putDouble(
-        TA_KEY_TEXT_SHADOW_RAIDUS, textAttributes.textShadowRadius);
+        TA_KEY_TEXT_SHADOW_RADIUS, textAttributes.textShadowRadius);
   }
   if (textAttributes.textShadowColor) {
     builder.putInt(
-        TA_KEY_TEXT_SHADOW_COLOR, toMapBuffer(textAttributes.textShadowColor));
+        TA_KEY_TEXT_SHADOW_COLOR,
+        toAndroidRepr(textAttributes.textShadowColor));
   }
   // Special
   if (textAttributes.isHighlighted.has_value()) {

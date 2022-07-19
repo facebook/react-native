@@ -66,7 +66,7 @@ public class ReactTextViewManager
 
   @Override
   public ReactTextShadowNode createShadowNodeInstance() {
-    return new ReactTextShadowNode();
+    return new ReactTextShadowNode(mReactTextViewManagerCallback);
   }
 
   public ReactTextShadowNode createShadowNodeInstance(
@@ -97,7 +97,7 @@ public class ReactTextViewManager
     }
 
     if (ReactFeatureFlags.isMapBufferSerializationEnabled()) {
-      ReadableMapBuffer stateMapBuffer = stateWrapper.getStatDataMapBuffer();
+      ReadableMapBuffer stateMapBuffer = stateWrapper.getStateDataMapBuffer();
       if (stateMapBuffer != null) {
         return getReactTextUpdate(view, props, stateMapBuffer);
       }
@@ -175,8 +175,30 @@ public class ReactTextViewManager
       float height,
       YogaMeasureMode heightMode,
       @Nullable float[] attachmentsPositions) {
-
     return TextLayoutManager.measureText(
+        context,
+        localData,
+        props,
+        width,
+        widthMode,
+        height,
+        heightMode,
+        mReactTextViewManagerCallback,
+        attachmentsPositions);
+  }
+
+  @Override
+  public long measure(
+      Context context,
+      ReadableMapBuffer localData,
+      ReadableMapBuffer props,
+      @Nullable ReadableMapBuffer state,
+      float width,
+      YogaMeasureMode widthMode,
+      float height,
+      YogaMeasureMode heightMode,
+      @Nullable float[] attachmentsPositions) {
+    return TextLayoutManagerMapBuffer.measureText(
         context,
         localData,
         props,

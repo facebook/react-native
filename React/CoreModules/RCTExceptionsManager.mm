@@ -117,15 +117,15 @@ RCT_EXPORT_METHOD(reportException : (JS::NativeExceptionsManager::ExceptionData 
   NSMutableArray<NSDictionary *> *stackArray = [NSMutableArray<NSDictionary *> new];
   for (auto frame : data.stack()) {
     NSMutableDictionary *frameDict = [NSMutableDictionary new];
-    if (frame.column().hasValue()) {
+    if (frame.column().has_value()) {
       frameDict[@"column"] = @(frame.column().value());
     }
     frameDict[@"file"] = frame.file();
-    if (frame.lineNumber().hasValue()) {
+    if (frame.lineNumber().has_value()) {
       frameDict[@"lineNumber"] = @(frame.lineNumber().value());
     }
     frameDict[@"methodName"] = frame.methodName();
-    if (frame.collapse().hasValue()) {
+    if (frame.collapse().has_value()) {
       frameDict[@"collapse"] = @(frame.collapse().value());
     }
     [stackArray addObject:frameDict];
@@ -135,6 +135,27 @@ RCT_EXPORT_METHOD(reportException : (JS::NativeExceptionsManager::ExceptionData 
     [self reportFatal:message stack:stackArray exceptionId:exceptionId];
   } else {
     [self reportSoft:message stack:stackArray exceptionId:exceptionId];
+  }
+}
+
+- (void)reportEarlyJsException:(std::string)errorMap
+{
+  NSString *errprStr = [NSString stringWithUTF8String:errorMap.c_str()];
+  NSData *jsonData = [errprStr dataUsingEncoding:NSUTF8StringEncoding];
+  NSError *jsonError;
+  NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:jsonData
+                                                       options:NSJSONWritingPrettyPrinted
+                                                         error:&jsonError];
+
+  NSString *message = [dict objectForKey:@"message"];
+  double exceptionId = [[dict objectForKey:@"id"] doubleValue];
+  NSArray *stack = [dict objectForKey:@"stack"];
+  BOOL isFatal = [[dict objectForKey:@"isFatal"] boolValue];
+
+  if (isFatal) {
+    [self reportFatalException:message stack:stack exceptionId:exceptionId];
+  } else {
+    [self reportSoftException:message stack:stack exceptionId:exceptionId];
   }
 }
 

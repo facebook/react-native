@@ -91,7 +91,6 @@ const InteractionManager = {
       onFulfill?: ?(void) => ?(Promise<U> | U),
       onReject?: ?(error: mixed) => ?(Promise<U> | U),
     ) => Promise<U>,
-    done: () => void,
     cancel: () => void,
     ...
   } {
@@ -110,16 +109,6 @@ const InteractionManager = {
     return {
       // $FlowFixMe[method-unbinding] added when improving typing for this parameters
       then: promise.then.bind(promise),
-      done: (...args) => {
-        // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-        if (promise.done) {
-          return promise.done(...args);
-        } else {
-          console.warn(
-            'Tried to call done when not supported by current Promise implementation.',
-          );
-        }
-      },
       cancel: function () {
         _taskQueue.cancelTasks(tasks);
       },

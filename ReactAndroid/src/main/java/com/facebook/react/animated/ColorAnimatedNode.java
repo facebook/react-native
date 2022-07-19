@@ -7,22 +7,26 @@
 
 package com.facebook.react.animated;
 
+import android.content.Context;
 import android.graphics.Color;
+import android.view.View;
 import com.facebook.react.bridge.ColorPropConverter;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.views.view.ColorUtil;
 
 /** Animated node that represents a color. */
-/*package*/ class ColorAnimatedNode extends AnimatedNode {
+/*package*/ class ColorAnimatedNode extends AnimatedNode
+    implements AnimatedNodeWithUpdateableConfig {
 
   private final NativeAnimatedNodesManager mNativeAnimatedNodesManager;
   private final ReactApplicationContext mReactApplicationContext;
-  private final int mRNodeId;
-  private final int mGNodeId;
-  private final int mBNodeId;
-  private final int mANodeId;
-  private int mColor;
+  private int mRNodeId;
+  private int mGNodeId;
+  private int mBNodeId;
+  private int mANodeId;
+  private ReadableMap mNativeColor;
+  private boolean mNativeColorApplied;
 
   public ColorAnimatedNode(
       ReadableMap config,
@@ -30,19 +34,12 @@ import com.facebook.react.views.view.ColorUtil;
       ReactApplicationContext reactApplicationContext) {
     mNativeAnimatedNodesManager = nativeAnimatedNodesManager;
     mReactApplicationContext = reactApplicationContext;
-    mRNodeId = config.getInt("r");
-    mGNodeId = config.getInt("g");
-    mBNodeId = config.getInt("b");
-    mANodeId = config.getInt("a");
-    setNativeColor(config.getMap("nativeColor"));
+    onUpdateConfig(config);
   }
 
   public int getColor() {
-    return mColor;
-  }
+    tryApplyNativeColor();
 
-  @Override
-  public void update() {
     ValueAnimatedNode rNode = (ValueAnimatedNode) mNativeAnimatedNodesManager.getNodeById(mRNodeId);
     ValueAnimatedNode gNode = (ValueAnimatedNode) mNativeAnimatedNodesManager.getNodeById(mGNodeId);
     ValueAnimatedNode bNode = (ValueAnimatedNode) mNativeAnimatedNodesManager.getNodeById(mBNodeId);
@@ -53,7 +50,17 @@ import com.facebook.react.views.view.ColorUtil;
     double b = bNode.getValue();
     double a = aNode.getValue();
 
-    mColor = ColorUtil.normalize(r, g, b, a);
+    return ColorUtil.normalize(r, g, b, a);
+  }
+
+  public void onUpdateConfig(ReadableMap config) {
+    mRNodeId = config.getInt("r");
+    mGNodeId = config.getInt("g");
+    mBNodeId = config.getInt("b");
+    mANodeId = config.getInt("a");
+    mNativeColor = config.getMap("nativeColor");
+    mNativeColorApplied = false;
+    tryApplyNativeColor();
   }
 
   @Override
@@ -70,13 +77,17 @@ import com.facebook.react.views.view.ColorUtil;
         + mANodeId;
   }
 
-  private void setNativeColor(ReadableMap nativeColor) {
-    if (nativeColor == null) {
+  private void tryApplyNativeColor() {
+    if (mNativeColor == null || mNativeColorApplied) {
       return;
     }
 
-    int color =
-        ColorPropConverter.getColor(nativeColor, mReactApplicationContext.getCurrentActivity());
+    Context context = getContext();
+    if (context == null) {
+      return;
+    }
+
+    int color = ColorPropConverter.getColor(mNativeColor, context);
 
     ValueAnimatedNode rNode = (ValueAnimatedNode) mNativeAnimatedNodesManager.getNodeById(mRNodeId);
     ValueAnimatedNode gNode = (ValueAnimatedNode) mNativeAnimatedNodesManager.getNodeById(mGNodeId);
@@ -88,6 +99,33 @@ import com.facebook.react.views.view.ColorUtil;
     bNode.mValue = Color.blue(color);
     aNode.mValue = Color.alpha(color) / 255.0;
 
-    update();
+    mNativeColorApplied = true;
+  }
+
+  private Context getContext() {
+    Context context = mReactApplicationContext.getCurrentActivity();
+    if (context != null) {
+      return context;
+    }
+
+    // There are cases where the activity may not exist (such as for VRShell panel apps). In this
+    // case we will search for a view associated with a PropsAnimatedNode to get the context.
+    return getContextHelper(this);
+  }
+
+  private static Context getContextHelper(AnimatedNode node) {
+    // Search children depth-first until we get to a PropsAnimatedNode, from which we can
+    // get the view and its context
+    if (node.mChildren != null) {
+      for (AnimatedNode child : node.mChildren) {
+        if (child instanceof PropsAnimatedNode) {
+          View view = ((PropsAnimatedNode) child).getConnectedView();
+          return view != null ? view.getContext() : null;
+        } else {
+          return getContextHelper(child);
+        }
+      }
+    }
+    return null;
   }
 }

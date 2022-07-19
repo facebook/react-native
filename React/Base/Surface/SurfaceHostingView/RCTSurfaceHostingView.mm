@@ -46,8 +46,10 @@ RCT_NOT_IMPLEMENTED(-(nullable instancetype)initWithCoder : (NSCoder *)coder)
   id<RCTSurfaceProtocol> surface = [[self class] createSurfaceWithBridge:bridge
                                                               moduleName:moduleName
                                                        initialProperties:initialProperties];
-  [surface start];
-  return [self initWithSurface:surface sizeMeasureMode:sizeMeasureMode];
+  if (self = [self initWithSurface:surface sizeMeasureMode:sizeMeasureMode]) {
+    [surface start];
+  }
+  return self;
 }
 
 - (instancetype)initWithSurface:(id<RCTSurfaceProtocol>)surface

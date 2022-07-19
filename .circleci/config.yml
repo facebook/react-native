@@ -8,17 +8,43 @@ orbs:
   win: circleci/windows@2.4.0
 
 # -------------------------
-#        DEFAULTS
+#        REFERENCES
 # -------------------------
-defaults: &defaults
-  working_directory: ~/react-native
-  environment:
-    - GIT_COMMIT_DESC: git log --format=oneline -n 1 $CIRCLE_SHA1
-    # The public github tokens are publicly visible by design
-    - PUBLIC_PULLBOT_GITHUB_TOKEN_A: &github_pullbot_token_a "a6edf8e8d40ce4e8b11a"
-    - PUBLIC_PULLBOT_GITHUB_TOKEN_B: &github_pullbot_token_b "150e1341f4dd9c944d2a"
-    - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: &github_analysisbot_token_a "312d354b5c36f082cfe9"
-    - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B: &github_analysisbot_token_b "07973d757026bdd9f196"
+references:
+  defaults: &defaults
+    working_directory: ~/react-native
+    environment:
+      - GIT_COMMIT_DESC: git log --format=oneline -n 1 $CIRCLE_SHA1
+      # The public github tokens are publicly visible by design
+      - PUBLIC_PULLBOT_GITHUB_TOKEN_A: &github_pullbot_token_a "a6edf8e8d40ce4e8b11a"
+      - PUBLIC_PULLBOT_GITHUB_TOKEN_B: &github_pullbot_token_b "150e1341f4dd9c944d2a"
+      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: &github_analysisbot_token_a "312d354b5c36f082cfe9"
+      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B: &github_analysisbot_token_b "07973d757026bdd9f196"
+      # Homebrew currently breaks while updating:
+      # https://discuss.circleci.com/t/brew-install-fails-while-updating/32992
+      - HOMEBREW_NO_AUTO_UPDATE: 1
+
+  hermes_workspace_root: &hermes_workspace_root
+    /tmp/hermes
+  attach_hermes_workspace: &attach_hermes_workspace
+    attach_workspace:
+      at: *hermes_workspace_root
+
+  # -------------------------
+  #        Filters
+  # -------------------------
+  # CircleCI filters are OR-ed, with all branches triggering by default and tags excluded by default
+  # CircleCI env-vars are only set with the branch OR tag that triggered the job, not both.
+
+  # In this case, CIRCLE_BRANCH is unset, but CIRCLE_TAG is set.
+  only_release_tags: &only_release_tags
+    # Both of the following conditions must be included!
+    # Ignore any commit on any branch by default.
+    branches:
+      ignore: /.*/
+    # Only act on version tags.
+    tags:
+      only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
 
 # -------------------------
 #        EXECUTORS
@@ -36,7 +62,7 @@ executors:
   reactnativeandroid:
     <<: *defaults
     docker:
-      - image: reactnativecommunity/react-native-android:5.2
+      - image: reactnativecommunity/react-native-android:5.4
     resource_class: "large"
     environment:
       - TERM: "dumb"
@@ -127,7 +153,7 @@ commands:
     steps:
       - run:
           name: "Brew: Install << parameters.package >>"
-          command: HOMEBREW_NO_AUTO_UPDATE=1 brew install << parameters.package >> >/dev/null
+          command: brew install << parameters.package >> >/dev/null
 
   with_brew_cache_span:
     parameters:
@@ -385,15 +411,9 @@ jobs:
                 package: watchman
             - run:
                 name: "Brew: Tap wix/brew"
-                command: HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew >/dev/null
+                command: brew tap wix/brew >/dev/null
             - brew_install:
                 package: applesimutils
-
-      - run:
-          name: Configure Node
-          # Sourcing find-node.sh will ensure nvm is set up.
-          # It also helps future invocation of find-node.sh prevent permission issue with nvm.sh.
-          command: source scripts/find-node.sh && nvm install 16 && nvm alias default 16
 
       - run:
           name: Configure Watchman
@@ -466,6 +486,8 @@ jobs:
       run_disabled_tests:
         type: boolean
         default: false
+    environment:
+      KOTLIN_HOME=third-party/kotlin
     steps:
       - checkout
       - setup_artifacts
@@ -569,20 +591,18 @@ jobs:
     steps:
       - checkout
       - run_yarn
+      - attach_workspace:
+          at: .
 
       - run:
-          name: Setup the Android Template
+          name: Create Android template project
           command: |
+            REPO_ROOT=$(pwd)
+            PACKAGE=$(cat build/react-native-package-version)
+            PATH_TO_PACKAGE="$REPO_ROOT/build/$PACKAGE"
             cd template
-            # We replace the "react-native" dependency version with file:.. so we use it from source.
-            sed -i 's/\"react-native\"\:.*/\"react-native\"\: \"file\:\.\.\"/g' package.json
+            npm add $PATH_TO_PACKAGE
             npm install
-            # react-native-community/cli is needed as the Android template is referencing a .gradle file inside it.
-            npm i @react-native-community/cli
-
-      - run:
-          name: Bundle the latest version of ReactAndroid
-          command: ./gradlew :ReactAndroid:publishReleasePublicationToNpmRepository
 
       - run:
           name: Build the template application
@@ -593,10 +613,6 @@ jobs:
   # -------------------------
   test_android_rntester:
     executor: reactnativeandroid
-    parameters:
-      use_hermes:
-          type: boolean
-          default: false
     steps:
       - checkout
       - run_yarn
@@ -605,19 +621,9 @@ jobs:
           name: Generate artifacts for Maven
           command: ./gradlew :ReactAndroid:installArchives
 
-      - when:
-          condition: << parameters.use_hermes >>
-          steps:
-            - run:
-                name: Build RNTester with Hermes
-                command: ./gradlew :packages:rn-tester:android:app:assembleHermesDebug
-      - when:
-          condition:
-            not: << parameters.use_hermes >>
-          steps:
-            - run:
-                name: Build RNTester with JSC
-                command: ./gradlew :packages:rn-tester:android:app:assembleJscDebug
+      - run:
+          name: Assemble RNTester
+          command: ./gradlew :packages:rn-tester:android:app:assembleDebug
 
   # -------------------------
   #    JOBS: Test iOS Template
@@ -795,6 +801,192 @@ jobs:
           path: ~/react-native/coverage/
 
   # -------------------------
+  #      JOBS: Build hermesc
+  # -------------------------
+  prepare-hermes-workspace:
+    docker:
+      - image: debian:buster
+    environment:
+      - HERMES_WS_DIR: *hermes_workspace_root
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            apt-get update
+            apt-get install -y wget git
+      - run:
+          name: Set up Hermes workspace
+          command: mkdir -p "$HERMES_WS_DIR/hermes" "$HERMES_WS_DIR/download" "$HERMES_WS_DIR/output"
+      - run:
+          name: Download Hermes tarball
+          command: |
+            HERMES_VERSION_FILE="sdks/.hermesversion"
+            HERMES_TARBALL_URL="https://github.com/facebook/hermes/archive/refs/heads/main.tar.gz"
+            if [ -f "$HERMES_VERSION_FILE" ]; then
+              HERMES_TAG=$(cat $HERMES_VERSION_FILE | tr -d '[:space:]')
+              HERMES_TARBALL_URL="https://github.com/facebook/hermes/archive/refs/tags/$HERMES_TAG.tar.gz"
+              echo "Using Hermes version tagged $HERMES_TAG"
+            else
+              echo "Using Hermes latest version from trunk"
+            fi
+            wget --timestamping -O "$HERMES_WS_DIR/download/hermes.tar.gz" "$HERMES_TARBALL_URL"
+            tar -xzf "$HERMES_WS_DIR/download/hermes.tar.gz" --strip-components=1 -C "$HERMES_WS_DIR/hermes"
+      - persist_to_workspace:
+          root: *hermes_workspace_root
+          paths:
+            - download
+            - hermes
+            - hermesc
+            - output
+            - hermesversion
+
+  build-hermesc-linux:
+    docker:
+      - image: debian:buster
+    environment:
+      - HERMES_WS_DIR: *hermes_workspace_root
+      - TERM: dumb
+      - DEBIAN_FRONTEND: noninteractive
+    steps:
+      - *attach_hermes_workspace
+      - run:
+          name: Install dependencies
+          command: |
+            apt-get update
+            apt-get install -y \
+                sudo git openssh-client cmake ninja-build python \
+                build-essential libreadline-dev libicu-dev
+      - run:
+          name: Set up workspace
+          command: |
+            sudo cp /usr/bin/ninja /usr/bin/ninja.real
+            printf '%s\n' '#!/bin/sh' 'ninja.real -j4 "$@" || ninja.real -j1 "$@"' | sudo tee /usr/bin/ninja
+      - run:
+          name: Build Hermes Compiler for Linux
+          command: |
+            HERMESC_LINUX_DIR="$HERMES_WS_DIR/hermesc/linux"
+            cd "$HERMES_WS_DIR"
+            hermes/utils/build/configure.py --static-link --distribute --cmake-flags="-DCMAKE_CXX_FLAGS=-s"
+            cd build_release
+            ninja github-cli-release
+            mkdir -p "$HERMESC_LINUX_DIR"
+            mv $HERMES_WS_DIR/build_release/* "$HERMESC_LINUX_DIR"
+      - persist_to_workspace:
+          root: *hermes_workspace_root
+          paths:
+            - hermesc/linux
+
+  build-hermesc-macos:
+    macos:
+      xcode: &_XCODE_VERSION "13.0.0"
+    working_directory: ~/hermes
+    environment:
+      - HERMES_WS_DIR: *hermes_workspace_root
+      - TERM: dumb
+      - HOMEBREW_NO_AUTO_UPDATE: 1
+    steps:
+      - *attach_hermes_workspace
+      - restore_cache:
+          key: v4-repo-{{ .Environment.CIRCLE_SHA1 }}
+      - run:
+          name: Install dependencies
+          command: |
+            brew install cmake ninja
+            sudo gem install cocoapods
+      - run:
+          name: Build Hermes Compiler for macOS
+          command: |
+            HERMESC_MACOS_DIR="$HERMES_WS_DIR/hermesc/macos"
+            cd "$HERMES_WS_DIR"
+            hermes/utils/build/configure.py ./build_host_hermesc
+            cmake --build ./build_host_hermesc --target hermesc
+            mkdir -p "$HERMESC_MACOS_DIR"
+            mv $HERMES_WS_DIR/build_host_hermesc/* "$HERMESC_MACOS_DIR"
+      - persist_to_workspace:
+          root: *hermes_workspace_root
+          paths:
+            - hermesc/macos
+
+  build-hermesc-windows:
+    executor:
+      name: win/default
+      shell: powershell.exe
+    environment:
+      - HERMES_WS_DIR: 'C:\tmp\hermes'
+      - ICU_URL: "https://github.com/unicode-org/icu/releases/download/release-64-2/icu4c-64_2-Win64-MSVC2017.zip"
+      - MSBUILD_DIR: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\MSBuild\Current\Bin'
+      - CMAKE_DIR: 'C:\Program Files\CMake\bin'
+    steps:
+      - *attach_hermes_workspace
+      - run:
+          name: Set up workspace
+          command: |
+            New-Item -ItemType Directory $Env:HERMES_WS_DIR
+            New-Item -ItemType Directory $Env:HERMES_WS_DIR\icu
+            New-Item -ItemType Directory $Env:HERMES_WS_DIR\output
+            New-Item -ItemType Directory $Env:HERMES_WS_DIR\deps
+            New-Item -ItemType Directory $Env:HERMES_WS_DIR\windows
+            New-Item -ItemType SymbolicLink -Target tmp\hermes\hermes -Path $Env:HERMES_WS_DIR -Name hermes
+      - run:
+          name: Download ICU
+          command: |
+            cd $Env:HERMES_WS_DIR\icu
+            # If Invoke-WebRequest shows a progress bar, it will fail with
+            #   Win32 internal error "Access is denied" 0x5 occurred [...]
+            $progressPreference = 'silentlyContinue'
+            Invoke-WebRequest -Uri "$Env:ICU_URL" -OutFile "icu.zip"
+            Expand-Archive -Path "icu.zip" -DestinationPath "."
+      - run:
+          name: Install dependencies
+          command: |
+            choco install --no-progress cmake --version 3.14.7
+            if (-not $?) { throw "Failed to install CMake" }
+            choco install --no-progress python3
+            if (-not $?) { throw "Failed to install Python" }
+      - run:
+          name: Assemble Windows runtime dependencies
+          command: |
+            cd $Env:HERMES_WS_DIR
+            Copy-Item -Path "icu\bin64\icu*.dll" -Destination "deps"
+            # Include MSVC++ 2015 redistributables
+            Copy-Item -Path "c:\windows\system32\msvcp140.dll" -Destination "deps"
+            Copy-Item -Path "c:\windows\system32\vcruntime140.dll" -Destination "deps"
+            Copy-Item -Path "c:\windows\system32\vcruntime140_1.dll" -Destination "deps"
+
+      - run:
+          name: Build Hermes Compiler for Windows
+          command: |
+            $HermesCWindowsFolder = "$Env:HERMES_WS_DIR\hermesc\windows"
+            $Env:PATH += ";$Env:CMAKE_DIR;$Env:MSBUILD_DIR"
+            $Env:ICU_ROOT = "$Env:HERMES_WS_DIR\icu"
+            cd $Env:HERMES_WS_DIR
+            hermes\utils\build\configure.py --build-system='Visual Studio 16 2019' --cmake-flags="-DHERMES_ENABLE_WIN10_ICU_FALLBACK=OFF -DHERMES_GITHUB_RESOURCE_DIR=$Env:HERMES_WS_DIR\deps" --distribute
+            if (-not $?) { throw "Failed to configure Hermes" }
+            cd build_release
+            cmake --build . --target github-cli-release --config Release
+            if (-not $?) { throw "Failed to build Hermes" }
+            New-Item -ItemType Directory $HermesCWindowsFolder
+            Copy-Item -Path "C:\tmp\hermes\build_release\*" -Destination $HermesCWindowsFolder -Recurse
+      - persist_to_workspace:
+          root: 'C:\tmp\hermes'
+          paths:
+            - hermesc\windows
+
+  store-hermesc:
+    docker:
+      - image: debian:buster
+    environment:
+      - HERMES_WS_DIR: *hermes_workspace_root
+    steps:
+      - *attach_hermes_workspace
+      # Provide a tarball of hermesc binaries as an artifact, for convenience.
+      - run: tar -czvf $HERMES_WS_DIR/hermesc.tar.gz $HERMES_WS_DIR/hermesc
+      - store_artifacts:
+          path: /tmp/hermes/hermesc.tar.gz
+          destination: hermesc
+
+  # -------------------------
   #      JOBS: Releases
   # -------------------------
   prepare_package_for_release:
@@ -822,6 +1014,8 @@ jobs:
         type: string
         default: --dry-run
     executor: reactnativeandroid
+    environment:
+      - HERMES_WS_DIR: *hermes_workspace_root
     steps:
       - run:
           name: Add github.com to SSH known hosts
@@ -829,11 +1023,21 @@ jobs:
             mkdir -p ~/.ssh
             echo '|1|If6MU203eXTaaWL678YEfWkVMrw=|kqLeIAyTy8pzpj8x8Ae4Fr8Mtlc= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
       - checkout
+      - *attach_hermes_workspace
+      - run:
+          name: Move hermesc binaries to sdks/hermesc
+          command: |
+            mkdir -p ./sdks/hermesc
+            cp -R $HERMES_WS_DIR/hermesc/* ./sdks/hermesc
       - run_yarn
       - install_buck_tooling
       - download_buck_dependencies
       - download_gradle_dependencies
-      # Only tagged releases and nightlies should be able to publish to npm
+
+      # START: Stables and nightlies
+      # This conditional step sets up the necessary credentials for publishing react-native to npm,
+      # and for interacting with GitHub as the react-native-bot account. Important: these steps
+      # should not be allowed to run on commits from pull requests.
       - when:
           condition:
             or:
@@ -845,7 +1049,12 @@ jobs:
                 git config --global user.email "react-native-bot@users.noreply.github.com"
                 git config --global user.name "npm Deployment Script"
                 echo "machine github.com login react-native-bot password $GITHUB_TOKEN" > ~/.netrc
+      # END: Stables and nightlies
+
       - run: node ./scripts/publish-npm.js << parameters.publish_npm_args >>
+
+      # START: Commitlies
+      # Provide a react-native package for this commit as a Circle CI release artifact.
       - when:
           condition:
             equal: [ --dry-run, << parameters.publish_npm_args >> ]
@@ -864,7 +1073,10 @@ jobs:
                 root: .
                 paths:
                   - build/*
+      # END: Commitlies
 
+      # START: Commits from pull requests
+      # When building commits from pull requests, leave a comment on the PR with a link to build artifacts
       - when:
           condition:
             matches: { pattern: '^pull\/.*$', value: << pipeline.git.branch >> }
@@ -873,7 +1085,9 @@ jobs:
             - run:
                 name: Post link to PR build artifacts (pull-bot)
                 command: GITHUB_TOKEN="$PUBLIC_PULLBOT_GITHUB_TOKEN_A""$PUBLIC_PULLBOT_GITHUB_TOKEN_B" scripts/circleci/post-artifacts-link.sh || true
+      # END: Commits from pull requests
 
+      # START: Stable releases
       - when:
           condition:
             equal: [ --release, << parameters.publish_npm_args >> ]
@@ -885,6 +1099,7 @@ jobs:
                     -H "Accept: application/vnd.github.v3+json" \
                     -u "$PAT_USERNAME:$PAT_TOKEN" \
                     -d "{\"event_type\": \"publish\", \"client_payload\": { \"version\": \"${CIRCLE_TAG:1}\" }}"
+      # END: Stable releases
 
   # -------------------------
   #    JOBS: Nightly
@@ -928,62 +1143,45 @@ workflows:
   tests:
     unless: << pipeline.parameters.run_package_release_workflow_only >>
     jobs:
+      - prepare-hermes-workspace
+      - build-hermesc-linux:
+          requires:
+            - prepare-hermes-workspace
+      - build-hermesc-macos:
+          requires:
+            - prepare-hermes-workspace
+      - build-hermesc-windows:
+          requires:
+            - prepare-hermes-workspace
+      - store-hermesc:
+          requires:
+            - build-hermesc-linux
+            - build-hermesc-macos
+            - build-hermesc-windows
       - build_npm_package:
           # Build a release package on every untagged commit, but do not publish to npm.
           publish_npm_args: --dry-run
-          filters:
-            branches:
-              only:
-                - main
-                - /^pull\/.*$/
+          requires:
+            - store-hermesc
       - test_js:
           run_disabled_tests: false
-          filters:
-            branches:
-              ignore: gh-pages
       - test_android:
           run_disabled_tests: false
-          filters:
-            branches:
-              ignore: gh-pages
       - test_android_template:
-          filters:
-            branches:
-              ignore: gh-pages
-      - test_android_rntester:
-          name: test_android_rntester_hermes
-          use_hermes: true
-          filters:
-            branches:
-              ignore: gh-pages
-      - test_android_rntester:
-          name: test_android_rntester_jsc
-          filters:
-            branches:
-              ignore: gh-pages
+          requires:
+            - build_npm_package
+      - test_android_rntester
       - test_ios_template:
           requires:
             - build_npm_package
-          filters:
-            branches:
-              ignore: gh-pages
       - test_ios_rntester:
           name: test_ios_rntester_hermes
           use_hermes: true
-          filters:
-            branches:
-              ignore: gh-pages
       - test_ios_rntester:
           name: test_ios_rntester_jsc
-          filters:
-            branches:
-              ignore: gh-pages
       - test_ios:
           name: test_ios_unit_jsc
           run_unit_tests: true
-          filters:
-            branches:
-              ignore: gh-pages
       # DISABLED: USE_FRAMEWORKS=1 not supported by Flipper
       # - test_ios:
       #     name: test_ios_unit_frameworks_jsc
@@ -992,10 +1190,10 @@ workflows:
       - test_ios:
           name: test_ios_unit_hermes
           use_hermes: true
-          run_unit_tests: true
-          filters:
-            branches:
-              ignore: gh-pages
+          # TODO(ncor, neildhar) Integration tests for iOS + Hermes are currently
+          # disabled due to an ABI incompatibility introduced by D33830544.
+          # They can be re-enabled as soon as Hermes 0.12.0 is released.
+          run_unit_tests: false
       # DISABLED: USE_FRAMEWORKS=1 not supported by Flipper
       # - test_ios:
       #     name: test_ios_unit_frameworks_hermes
@@ -1005,13 +1203,7 @@ workflows:
       - test_js:
           name: test_js_prev_lts
           executor: nodeprevlts
-          filters:
-            branches:
-              ignore: gh-pages
       - test_windows:
-          filters:
-            branches:
-              ignore: gh-pages
           run_disabled_tests: false
 
   # This workflow should only be triggered by release script
@@ -1027,31 +1219,36 @@ workflows:
   publish_release:
     unless: << pipeline.parameters.run_package_release_workflow_only >>
     jobs:
+      - prepare-hermes-workspace:
+          filters: *only_release_tags
+      - build-hermesc-linux:
+          requires:
+            - prepare-hermes-workspace
+      - build-hermesc-macos:
+          requires:
+            - prepare-hermes-workspace
+      - build-hermesc-windows:
+          requires:
+            - prepare-hermes-workspace
+      - store-hermesc:
+          requires:
+            - build-hermesc-linux
+            - build-hermesc-macos
+            - build-hermesc-windows
       # This job will trigger when a version tag is pushed (by package_release)
       - build_npm_package:
           name: build_and_publish_npm_package
           context: react-native-bot
           publish_npm_args: --release
-          # CircleCI filters are OR-ed, with all branches triggering by default and tags excluded by default
-          # CircleCI env-vars are only set with the branch OR tag that triggered the job, not both.
-          # In this case, CIRCLE_BRANCH is unset, but CIRCLE_TAG is set
-          filters:
-            # Both of the following conditions must be included!
-            # Ignore any commit on any branch by default.
-            branches:
-              ignore: /.*/
-            # Only act on version tags.
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
+          filters: *only_release_tags
+          requires:
+            - store-hermesc
 
   analysis:
     unless: << pipeline.parameters.run_package_release_workflow_only >>
     jobs:
-      # Run lints on every commit other than those to the gh-pages branch
-      - analyze_code:
-          filters:
-            branches:
-              ignore: gh-pages
+      # Run lints on every commit
+      - analyze_code
 
       # Run code checks on PRs from forks
       - analyze_pr:
@@ -1060,10 +1257,7 @@ workflows:
               only: /^pull\/.*$/
 
       # Gather coverage
-      - js_coverage:
-          filters:
-            branches:
-              ignore: gh-pages
+      - js_coverage
 
   nightly:
     unless: << pipeline.parameters.run_package_release_workflow_only >>
@@ -1077,5 +1271,23 @@ workflows:
     jobs:
       - nightly_job
 
+      - prepare-hermes-workspace
+      - build-hermesc-linux:
+          requires:
+            - prepare-hermes-workspace
+      - build-hermesc-macos:
+          requires:
+            - prepare-hermes-workspace
+      - build-hermesc-windows:
+          requires:
+            - prepare-hermes-workspace
+      - store-hermesc:
+          requires:
+            - build-hermesc-linux
+            - build-hermesc-macos
+            - build-hermesc-windows
+
       - build_npm_package:
           publish_npm_args: --nightly
+          requires:
+            - store-hermesc

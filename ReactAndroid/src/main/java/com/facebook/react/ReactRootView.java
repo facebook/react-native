@@ -234,15 +234,25 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     return true;
   }
 
+  // By default the JS touch events are dispatched at the root view. This can be overridden in
+  // subclasses as needed.
+  public boolean shouldDispatchJSTouchEvent(MotionEvent ev) {
+    return true;
+  }
+
   @Override
   public boolean onInterceptTouchEvent(MotionEvent ev) {
-    dispatchJSTouchEvent(ev);
+    if (shouldDispatchJSTouchEvent(ev)) {
+      dispatchJSTouchEvent(ev);
+    }
     return super.onInterceptTouchEvent(ev);
   }
 
   @Override
   public boolean onTouchEvent(MotionEvent ev) {
-    dispatchJSTouchEvent(ev);
+    if (shouldDispatchJSTouchEvent(ev)) {
+      dispatchJSTouchEvent(ev);
+    }
     super.onTouchEvent(ev);
     // In case when there is no children interested in handling touch event, we return true from
     // the root view in order to receive subsequent events related to that gesture

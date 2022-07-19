@@ -15,15 +15,36 @@ import com.facebook.react.tasks.BuildCodegenCLITask
 import com.facebook.react.tasks.GenerateCodegenArtifactsTask
 import com.facebook.react.tasks.GenerateCodegenSchemaTask
 import java.io.File
+import kotlin.system.exitProcess
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.internal.jvm.Jvm
 
 class ReactPlugin : Plugin<Project> {
   override fun apply(project: Project) {
+    checkJvmVersion(project)
     val extension = project.extensions.create("react", ReactExtension::class.java, project)
     applyAppPlugin(project, extension)
     applyCodegenPlugin(project, extension)
+  }
+
+  private fun checkJvmVersion(project: Project) {
+    val jvmVersion = Jvm.current()?.javaVersion?.majorVersion
+    if ((jvmVersion?.toIntOrNull() ?: 0) <= 8) {
+      project.logger.error(
+          """
+      
+      ********************************************************************************
+      
+      ERROR: requires JDK11 or higher.
+      Incompatible major version detected: '$jvmVersion'
+      
+      ********************************************************************************
+      
+      """.trimIndent())
+      exitProcess(1)
+    }
   }
 
   private fun applyAppPlugin(project: Project, config: ReactExtension) {
@@ -75,7 +96,8 @@ class ReactPlugin : Plugin<Project> {
         project.tasks.register(
             "generateCodegenArtifactsFromSchema", GenerateCodegenArtifactsTask::class.java) {
           it.dependsOn(generateCodegenSchemaTask)
-          it.reactRoot.set(extension.reactRoot)
+          it.reactNativeDir.set(extension.reactNativeDir)
+          it.deprecatedReactRoot.set(extension.reactRoot)
           it.nodeExecutableAndArgs.set(extension.nodeExecutableAndArgs)
           it.codegenDir.set(extension.codegenDir)
           it.useJavaGenerator.set(extension.useJavaGenerator)

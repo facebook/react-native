@@ -116,11 +116,11 @@ public class ReadableMapBuffer implements Iterable<ReadableMapBuffer.MapBufferEn
 
   private int getTypedValueOffsetForKey(int key, DataType expected) {
     int bucketIndex = getBucketIndexForKey(key);
-    DataType dataType = readDataType(bucketIndex);
     if (bucketIndex == -1) {
       throw new IllegalArgumentException("Key not found: " + key);
     }
 
+    DataType dataType = readDataType(bucketIndex);
     if (dataType != expected) {
       throw new IllegalStateException(
           "Expected "
@@ -301,6 +301,36 @@ public class ReadableMapBuffer implements Iterable<ReadableMapBuffer.MapBufferEn
     return thisByteBuffer.equals(otherByteBuffer);
   }
 
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder("{");
+    for (MapBufferEntry entry : this) {
+      int key = entry.getKey();
+      builder.append(key);
+      builder.append('=');
+      switch (entry.getType()) {
+        case BOOL:
+          builder.append(entry.getBoolean());
+          break;
+        case INT:
+          builder.append(entry.getInt());
+          break;
+        case DOUBLE:
+          builder.append(entry.getDouble());
+          break;
+        case STRING:
+          builder.append(entry.getString());
+          break;
+        case MAP:
+          builder.append(entry.getReadableMapBuffer().toString());
+          break;
+      }
+      builder.append(',');
+    }
+    builder.append('}');
+    return builder.toString();
+  }
+
   /** @return an {@link Iterator<MapBufferEntry>} for the entries of this MapBuffer. */
   @Override
   public Iterator<MapBufferEntry> iterator() {
@@ -372,7 +402,7 @@ public class ReadableMapBuffer implements Iterable<ReadableMapBuffer.MapBufferEn
     }
 
     /** @return the String value that is stored in this {@link MapBufferEntry}. */
-    public @Nullable String getString() {
+    public String getString() {
       assertType(DataType.STRING);
       return readStringValue(mBucketOffset + VALUE_OFFSET);
     }
@@ -380,7 +410,7 @@ public class ReadableMapBuffer implements Iterable<ReadableMapBuffer.MapBufferEn
     /**
      * @return the {@link ReadableMapBuffer} value that is stored in this {@link MapBufferEntry}.
      */
-    public @Nullable ReadableMapBuffer getReadableMapBuffer() {
+    public ReadableMapBuffer getReadableMapBuffer() {
       assertType(DataType.MAP);
       return readMapBufferValue(mBucketOffset + VALUE_OFFSET);
     }
