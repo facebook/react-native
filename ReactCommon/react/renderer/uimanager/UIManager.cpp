@@ -94,28 +94,27 @@ SharedShadowNode UIManager::createNode(
 }
 
 SharedShadowNode UIManager::cloneNode(
-    const ShadowNode::Shared &shadowNode,
-    const SharedShadowNodeSharedList &children,
-    const RawProps *rawProps) const {
+    ShadowNode const &shadowNode,
+    SharedShadowNodeSharedList const &children,
+    RawProps const *rawProps) const {
   SystraceSection s("UIManager::cloneNode");
 
   PropsParserContext propsParserContext{
-      shadowNode->getFamily().getSurfaceId(), *contextContainer_.get()};
+      shadowNode.getFamily().getSurfaceId(), *contextContainer_.get()};
 
-  auto &componentDescriptor = shadowNode->getComponentDescriptor();
+  auto &componentDescriptor = shadowNode.getComponentDescriptor();
   auto clonedShadowNode = componentDescriptor.cloneShadowNode(
-      *shadowNode,
+      shadowNode,
       {
           /* .props = */
           rawProps ? componentDescriptor.cloneProps(
-                         propsParserContext, shadowNode->getProps(), *rawProps)
+                         propsParserContext, shadowNode.getProps(), *rawProps)
                    : ShadowNodeFragment::propsPlaceholder(),
           /* .children = */ children,
       });
 
   if (delegate_) {
-    delegate_->uiManagerDidCloneShadowNode(
-        *shadowNode.get(), *clonedShadowNode);
+    delegate_->uiManagerDidCloneShadowNode(shadowNode, *clonedShadowNode);
   }
 
   return clonedShadowNode;

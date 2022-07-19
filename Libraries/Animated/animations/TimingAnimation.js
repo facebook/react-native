@@ -19,6 +19,9 @@ const {shouldUseNativeDriver} = require('../NativeAnimatedHelper');
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type {AnimationConfig, EndCallback} from './Animation';
+import type {RgbaValue} from '../nodes/AnimatedColor';
+
+import AnimatedColor from '../nodes/AnimatedColor';
 
 export type TimingAnimationConfig = {
   ...AnimationConfig,
@@ -31,6 +34,8 @@ export type TimingAnimationConfig = {
         ...
       }
     | AnimatedValueXY
+    | RgbaValue
+    | AnimatedColor
     | AnimatedInterpolation,
   easing?: (value: number) => number,
   duration?: number,

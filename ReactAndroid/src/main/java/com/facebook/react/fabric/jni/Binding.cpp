@@ -60,9 +60,8 @@ Binding::getInspectorDataForInstance(
   }
 
   EventEmitterWrapper *cEventEmitter = cthis(eventEmitterWrapper);
-  InspectorData data = scheduler->getInspectorDataForInstance(
-      enableEventEmitterRawPointer_ ? *cEventEmitter->eventEmitterPointer
-                                    : *cEventEmitter->eventEmitter);
+  InspectorData data =
+      scheduler->getInspectorDataForInstance(*cEventEmitter->eventEmitter);
 
   folly::dynamic result = folly::dynamic::object;
   result["fileName"] = data.fileName;
@@ -266,13 +265,37 @@ void Binding::stopSurface(jint surfaceId) {
 }
 
 void Binding::registerSurface(SurfaceHandlerBinding *surfaceHandlerBinding) {
+  auto const &surfaceHandler = surfaceHandlerBinding->getSurfaceHandler();
   auto scheduler = getScheduler();
-  scheduler->registerSurface(surfaceHandlerBinding->getSurfaceHandler());
+  if (!scheduler) {
+    LOG(ERROR) << "Binding::registerSurface: scheduler disappeared";
+    return;
+  }
+  scheduler->registerSurface(surfaceHandler);
+
+  auto mountingManager =
+      verifyMountingManager("FabricUIManagerBinding::registerSurface");
+  if (!mountingManager) {
+    return;
+  }
+  mountingManager->onSurfaceStart(surfaceHandler.getSurfaceId());
 }
 
 void Binding::unregisterSurface(SurfaceHandlerBinding *surfaceHandlerBinding) {
+  auto const &surfaceHandler = surfaceHandlerBinding->getSurfaceHandler();
   auto scheduler = getScheduler();
-  scheduler->unregisterSurface(surfaceHandlerBinding->getSurfaceHandler());
+  if (!scheduler) {
+    LOG(ERROR) << "Binding::unregisterSurface: scheduler disappeared";
+    return;
+  }
+  scheduler->unregisterSurface(surfaceHandler);
+
+  auto mountingManager =
+      verifyMountingManager("FabricUIManagerBinding::unregisterSurface");
+  if (!mountingManager) {
+    return;
+  }
+  mountingManager->onSurfaceStop(surfaceHandler.getSurfaceId());
 }
 
 void Binding::setConstraints(
@@ -344,9 +367,6 @@ void Binding::installFabricUIManager(
 
   disableRevisionCheckForPreallocation_ =
       config->getBool("react_fabric:disable_revision_check_for_preallocation");
-
-  enableEventEmitterRawPointer_ =
-      config->getBool("react_fabric:enable_event_emitter_wrapper_raw_pointer");
 
   if (enableFabricLogs_) {
     LOG(WARNING) << "Binding::installFabricUIManager() was called (address: "

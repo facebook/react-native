@@ -137,8 +137,7 @@ class VirtualizedSectionList<
       return;
     }
     if (params.itemIndex > 0 && this.props.stickySectionHeadersEnabled) {
-      // $FlowFixMe[prop-missing] Cannot access private property
-      const frame = this._listRef._getFrameMetricsApprox(
+      const frame = this._listRef.__getFrameMetricsApprox(
         index - params.itemIndex,
       );
       viewOffset += frame.length;

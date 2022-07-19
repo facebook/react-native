@@ -10,18 +10,14 @@
 
 import normalizeColor from '../StyleSheet/normalizeColor';
 import type {ColorValue} from '../StyleSheet/StyleSheet';
+import {normalizeRect, type RectOrSize} from '../StyleSheet/Rect';
 
 import View from '../Components/View/View';
 import * as React from 'react';
 
 type Props = $ReadOnly<{|
   color: ColorValue,
-  hitSlop: ?$ReadOnly<{|
-    bottom?: ?number,
-    left?: ?number,
-    right?: ?number,
-    top?: ?number,
-  |}>,
+  hitSlop: ?RectOrSize,
 |}>;
 
 /**
@@ -39,16 +35,16 @@ type Props = $ReadOnly<{|
  *   );
  *
  */
-export function PressabilityDebugView({color, hitSlop}: Props): React.Node {
+export function PressabilityDebugView(props: Props): React.Node {
   if (__DEV__) {
     if (isEnabled()) {
-      const normalizedColor = normalizeColor(color);
+      const normalizedColor = normalizeColor(props.color);
       if (typeof normalizedColor !== 'number') {
         return null;
       }
       const baseColor =
         '#' + (normalizedColor ?? 0).toString(16).padStart(8, '0');
-
+      const hitSlop = normalizeRect(props.hitSlop);
       return (
         <View
           pointerEvents="none"

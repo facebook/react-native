@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <condition_variable>
 #include <queue>
 
 class StubQueue {
@@ -50,6 +51,15 @@ class StubQueue {
     std::unique_lock<std::mutex> lock(mutex_);
     return signal_.wait_for(
         lock, timeout, [this]() { return !callbackQueue_.empty(); });
+  }
+
+  bool waitForTasks(
+      std::size_t numberOfTasks,
+      std::chrono::duration<double> timeout) const {
+    std::unique_lock<std::mutex> lock(mutex_);
+    return signal_.wait_for(lock, timeout, [this, numberOfTasks]() {
+      return numberOfTasks == callbackQueue_.size();
+    });
   }
 
  private:

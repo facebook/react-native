@@ -31,7 +31,6 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.yoga.YogaConstants;
-import java.util.Locale;
 import java.util.Map;
 
 /** View manager for AndroidViews (plain React Views). */
@@ -161,13 +160,7 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
 
   @ReactProp(name = ViewProps.POINTER_EVENTS)
   public void setPointerEvents(ReactViewGroup view, @Nullable String pointerEventsStr) {
-    if (pointerEventsStr == null) {
-      view.setPointerEvents(PointerEvents.AUTO);
-    } else {
-      PointerEvents pointerEvents =
-          PointerEvents.valueOf(pointerEventsStr.toUpperCase(Locale.US).replace("-", "_"));
-      view.setPointerEvents(pointerEvents);
-    }
+    view.setPointerEvents(PointerEvents.parsePointerEvents(pointerEventsStr));
   }
 
   @ReactProp(name = "nativeBackgroundAndroid")

@@ -57,16 +57,55 @@ class RuntimeScheduler final {
       SchedulerPriority priority,
       jsi::Function callback);
 
-  void cancelTask(std::shared_ptr<Task> const &task) noexcept;
+  /*
+   * Cancelled task will never be executed.
+   *
+   * Operates on JSI object.
+   * Thread synchronization must be enforced externally.
+   */
+  void cancelTask(Task &task) noexcept;
 
+  /*
+   * Return value indicates if host platform has a pending access to the
+   * runtime.
+   *
+   * Can be called from any thread.
+   */
   bool getShouldYield() const noexcept;
 
+  /*
+   * Return value informs if the current task is executed inside synchronous
+   * block.
+   *
+   * Can be called from any thread.
+   */
   bool getIsSynchronous() const noexcept;
 
+  /*
+   * Returns value of currently executed task. Designed to be called from React.
+   *
+   * Thread synchronization must be enforced externally.
+   */
   SchedulerPriority getCurrentPriorityLevel() const noexcept;
 
+  /*
+   * Returns current monotonic time. This time is not related to wall clock
+   * time.
+   *
+   * Thread synchronization must be enforced externally.
+   */
   RuntimeSchedulerTimePoint now() const noexcept;
 
+  /*
+   * Immediate is a task that is expired and should have been already executed
+   * or has priority set to Immediate. Designed to be called in the event
+   * pipeline after an event is dispatched to React. React may schedule events
+   * with immediate priority which need to be handled before the next event is
+   * sent to React.
+   *
+   * Thread synchronization must be enforced externally.
+   */
+  void callImmediates(jsi::Runtime &runtime);
   void setEnableYielding(bool enableYielding);
 
  private:
@@ -78,7 +117,12 @@ class RuntimeScheduler final {
 
   RuntimeExecutor const runtimeExecutor_;
   mutable SchedulerPriority currentPriority_{SchedulerPriority::NormalPriority};
-  mutable std::atomic_bool shouldYield_{false};
+
+  /*
+   * Counter indicating how many access to the runtime have been requested.
+   */
+  mutable std::atomic<uint_fast8_t> runtimeAccessRequests_{0};
+
   mutable std::atomic_bool isSynchronous_{false};
 
   void startWorkLoop(jsi::Runtime &runtime) const;

@@ -1046,8 +1046,7 @@ const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/
 const {UIManager} = require(\\"react-native\\")
 
 let nativeComponentName = 'NativeComponentName';
-const staticViewConfigsEnabled = global.__fbStaticViewConfig === true;
-if (staticViewConfigsEnabled) {
+if (global.__nativeComponentRegistry__hasComponent) {
   if (UIManager.hasViewManagerConfig('NativeComponentName')) {
     nativeComponentName = 'NativeComponentName';
   } else if (UIManager.hasViewManagerConfig('DeprecatedNativeComponentName')) {

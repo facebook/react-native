@@ -38,6 +38,8 @@ import type {DecayAnimationConfig} from './animations/DecayAnimation';
 import type {SpringAnimationConfig} from './animations/SpringAnimation';
 import type {Mapping, EventConfig} from './AnimatedEvent';
 
+import AnimatedColor from './nodes/AnimatedColor';
+
 export type CompositeAnimation = {
   start: (callback?: ?EndCallback) => void,
   stop: () => void,
@@ -102,7 +104,7 @@ const _combineCallbacks = function (
 };
 
 const maybeVectorAnim = function (
-  value: AnimatedValue | AnimatedValueXY,
+  value: AnimatedValue | AnimatedValueXY | AnimatedColor,
   config: Object,
   anim: (value: AnimatedValue, config: Object) => CompositeAnimation,
 ): ?CompositeAnimation {
@@ -121,16 +123,42 @@ const maybeVectorAnim = function (
     // We use `stopTogether: false` here because otherwise tracking will break
     // because the second animation will get stopped before it can update.
     return parallel([aX, aY], {stopTogether: false});
+  } else if (value instanceof AnimatedColor) {
+    const configR = {...config};
+    const configG = {...config};
+    const configB = {...config};
+    const configA = {...config};
+    for (const key in config) {
+      const {r, g, b, a} = config[key];
+      if (
+        r !== undefined &&
+        g !== undefined &&
+        b !== undefined &&
+        a !== undefined
+      ) {
+        configR[key] = r;
+        configG[key] = g;
+        configB[key] = b;
+        configA[key] = a;
+      }
+    }
+    const aR = anim((value: AnimatedColor).r, configR);
+    const aG = anim((value: AnimatedColor).g, configG);
+    const aB = anim((value: AnimatedColor).b, configB);
+    const aA = anim((value: AnimatedColor).a, configA);
+    // We use `stopTogether: false` here because otherwise tracking will break
+    // because the second animation will get stopped before it can update.
+    return parallel([aR, aG, aB, aA], {stopTogether: false});
   }
   return null;
 };
 
 const spring = function (
-  value: AnimatedValue | AnimatedValueXY,
+  value: AnimatedValue | AnimatedValueXY | AnimatedColor,
   config: SpringAnimationConfig,
 ): CompositeAnimation {
   const start = function (
-    animatedValue: AnimatedValue | AnimatedValueXY,
+    animatedValue: AnimatedValue | AnimatedValueXY | AnimatedColor,
     configuration: SpringAnimationConfig,
     callback?: ?EndCallback,
   ): void {
@@ -179,11 +207,11 @@ const spring = function (
 };
 
 const timing = function (
-  value: AnimatedValue | AnimatedValueXY,
+  value: AnimatedValue | AnimatedValueXY | AnimatedColor,
   config: TimingAnimationConfig,
 ): CompositeAnimation {
   const start = function (
-    animatedValue: AnimatedValue | AnimatedValueXY,
+    animatedValue: AnimatedValue | AnimatedValueXY | AnimatedColor,
     configuration: TimingAnimationConfig,
     callback?: ?EndCallback,
   ): void {
@@ -233,11 +261,11 @@ const timing = function (
 };
 
 const decay = function (
-  value: AnimatedValue | AnimatedValueXY,
+  value: AnimatedValue | AnimatedValueXY | AnimatedColor,
   config: DecayAnimationConfig,
 ): CompositeAnimation {
   const start = function (
-    animatedValue: AnimatedValue | AnimatedValueXY,
+    animatedValue: AnimatedValue | AnimatedValueXY | AnimatedColor,
     configuration: DecayAnimationConfig,
     callback?: ?EndCallback,
   ): void {
@@ -547,6 +575,10 @@ module.exports = {
    * See https://reactnative.dev/docs/animatedvaluexy
    */
   ValueXY: AnimatedValueXY,
+  /**
+   * Value class for driving color animations.
+   */
+  Color: AnimatedColor,
   /**
    * Exported to use the Interpolation type in flow.
    *

@@ -28,11 +28,11 @@ executors:
     <<: *defaults
     docker:
       # Note: Version set separately for Windows builds, see below.
-      - image: circleci/node:14
+      - image: circleci/node:16
   nodeprevlts:
     <<: *defaults
     docker:
-      - image: circleci/node:12
+      - image: circleci/node:14
   reactnativeandroid:
     <<: *defaults
     docker:
@@ -376,7 +376,7 @@ jobs:
       - run:
           name: Configure Environment Variables
           command: |
-            echo 'export PATH=/usr/local/opt/node@14/bin:$PATH' >> $BASH_ENV
+            echo 'export PATH=/usr/local/opt/node@16/bin:$PATH' >> $BASH_ENV
             source $BASH_ENV
 
       - with_brew_cache_span:
@@ -393,7 +393,7 @@ jobs:
           name: Configure Node
           # Sourcing find-node.sh will ensure nvm is set up.
           # It also helps future invocation of find-node.sh prevent permission issue with nvm.sh.
-          command: source scripts/find-node.sh && nvm install 14 && nvm alias default 14
+          command: source scripts/find-node.sh && nvm install 16 && nvm alias default 16
 
       - run:
           name: Configure Watchman
@@ -589,6 +589,37 @@ jobs:
           command: cd template/android/ && ./gradlew assembleDebug
 
   # -------------------------
+  #    JOBS: Test Android RNTester
+  # -------------------------
+  test_android_rntester:
+    executor: reactnativeandroid
+    parameters:
+      use_hermes:
+          type: boolean
+          default: false
+    steps:
+      - checkout
+      - run_yarn
+
+      - run:
+          name: Generate artifacts for Maven
+          command: ./gradlew :ReactAndroid:installArchives
+
+      - when:
+          condition: << parameters.use_hermes >>
+          steps:
+            - run:
+                name: Build RNTester with Hermes
+                command: ./gradlew :packages:rn-tester:android:app:assembleHermesDebug
+      - when:
+          condition:
+            not: << parameters.use_hermes >>
+          steps:
+            - run:
+                name: Build RNTester with JSC
+                command: ./gradlew :packages:rn-tester:android:app:assembleJscDebug
+
+  # -------------------------
   #    JOBS: Test iOS Template
   # -------------------------
   test_ios_template:
@@ -622,6 +653,40 @@ jobs:
               -sdk iphonesimulator
 
   # -------------------------
+  #    JOBS: Test iOS RNTester
+  # -------------------------
+  test_ios_rntester:
+    executor: reactnativeios
+    parameters:
+      use_hermes:
+          type: boolean
+          default: false
+    steps:
+      - checkout
+      - run_yarn
+
+      - when:
+          condition: << parameters.use_hermes >>
+          steps:
+            - run:
+                name: Set USE_HERMES=1
+                command: echo "export USE_HERMES=1" >> $BASH_ENV
+
+      - run:
+          name: Install CocoaPods dependencies
+          command: |
+            rm -rf packages/rn-tester/Pods
+            cd packages/rn-tester && bundle exec pod install
+
+      - run:
+          name: Build RNTester
+          command: |
+            xcodebuild build \
+              -workspace packages/rn-tester/RNTesterPods.xcworkspace \
+              -scheme RNTester \
+              -sdk iphonesimulator
+
+  # -------------------------
   #    JOBS: Windows
   # -------------------------
   test_windows:
@@ -644,8 +709,8 @@ jobs:
           name: Install Node
           # Note: Version set separately for non-Windows builds, see above.
           command: |
-            nvm install 14.17.0
-            nvm use 14.17.0
+            nvm install 16
+            nvm use 16
 
       # Setup Dependencies
       - run:
@@ -885,9 +950,31 @@ workflows:
           filters:
             branches:
               ignore: gh-pages
+      - test_android_rntester:
+          name: test_android_rntester_hermes
+          use_hermes: true
+          filters:
+            branches:
+              ignore: gh-pages
+      - test_android_rntester:
+          name: test_android_rntester_jsc
+          filters:
+            branches:
+              ignore: gh-pages
       - test_ios_template:
           requires:
             - build_npm_package
+          filters:
+            branches:
+              ignore: gh-pages
+      - test_ios_rntester:
+          name: test_ios_rntester_hermes
+          use_hermes: true
+          filters:
+            branches:
+              ignore: gh-pages
+      - test_ios_rntester:
+          name: test_ios_rntester_jsc
           filters:
             branches:
               ignore: gh-pages
