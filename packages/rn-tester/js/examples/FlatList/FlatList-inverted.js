@@ -73,10 +73,29 @@ const ITEM_HEIGHT = 50;
 
 const renderFlatList = ({item}) => <NestedFlatList item={item} />;
 
+const NEW_ITEMS = [
+  {title: '11 Item'},
+  {title: '12 Item'},
+  {title: '13 Item'},
+  {title: '14 Item'},
+  {title: '15 Item'},
+  {title: '16 Item'},
+  {title: '17 Item'},
+  {title: '18 Item'},
+];
+
 function NestedFlatList(props) {
   const [items, setItems] = useState(DATA);
   const [disabled, setDisabled] = useState(false);
   const [index, setIndex] = useState(DATA.length + 1);
+  const getNewItems = startIndex => {
+    let newItems = [];
+    for (let i = startIndex; i < startIndex + 11; i++) {
+      newItems.push({title: `${i} Item`});
+    }
+    return newItems;
+  };
+  console.log('TESTING:: ' + 'items.length', items.length);
   return (
     <View>
       <Button
@@ -102,7 +121,17 @@ function NestedFlatList(props) {
         }}
       />
       <Text>Flatlist</Text>
-      <FlatList style={{height: 400}} renderItem={renderItem} data={items} />
+      <FlatList
+        inverted
+        style={{height: 400}}
+        renderItem={renderItem}
+        data={items}
+        onEndReached={() => {
+          console.log('TESTING:: ' + 'callback called');
+          setItems(items => [...items, ...getNewItems(index)]);
+          setIndex(index => index + 11);
+        }}
+      />
     </View>
   );
 }

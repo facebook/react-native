@@ -1632,29 +1632,25 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     // TODO: T121172172 Look into why we're "defaulting" to a threshold of 2 when oERT is not present
     const threshold =
       onEndReachedThreshold != null ? onEndReachedThreshold * visibleLength : 2;
+    const timeDiff = this.lastTimeCalled
+      ? this.lastTimeCalled - Date.now()
+      : 4000;
     if (
       this.beginningReached &&
       talkbackEnabledWithInvertedFlatlist &&
       distanceFromEnd === 0 &&
       this._hasTriggeredInitialScrollToIndex &&
       this.state.last === getItemCount(data) - 1 &&
-      this._scrollMetrics.contentLength !== this._sentEndForContentLength
+      this._scrollMetrics.contentLength !== this._sentEndForContentLength &&
+      timeDiff > 500
     ) {
+      this.lastBottomHeight = this.bottom;
       // Only call onEndReached once for a given content length
       this._sentEndForContentLength = this._scrollMetrics.contentLength;
-      const lastBottomHeight = this.bottom;
+      // set timeout of 500 ms to call again onEndReached
+      this.lastTimeCalled = Date.now();
+      // save the last position in the flastlist to restore it after animation to Top
       onEndReached({distanceFromEnd});
-      setTimeout(
-        (flatlist, lastBottomHeight) => {
-          flatlist.scrollToOffset({
-            offset: lastBottomHeight,
-            animated: false,
-          });
-        },
-        1,
-        this,
-        lastBottomHeight,
-      );
     } else {
       this.lastBottomHeight = undefined;
     }
@@ -1715,12 +1711,23 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this._hasTriggeredInitialScrollToIndex = true;
     }
     this._scheduleCellsToRenderUpdate();
-    this._maybeCallOnEndReached();
     // talkback inverted flatlist, height is used to compute
     // an inverted flatlist contentLength from the bottom of the screen
-    if (screenreaderEnabled && this.props.inverted) {
-      this.setState({height: height, resetScrollPosition: true});
+    if (screenreaderEnabled && this.props.inverted && this.lastBottomHeight) {
+      const newBottomHeight = height - this.lastBottomHeight;
+      setTimeout(
+        (flatlist, newBottomHeight) => {
+          flatlist.scrollToOffset({
+            offset: newBottomHeight,
+            animated: false,
+          });
+        },
+        1,
+        this,
+        newBottomHeight,
+      );
     }
+    this._maybeCallOnEndReached();
   };
 
   /* Translates metrics from a scroll event in a parent VirtualizedList into
@@ -1767,9 +1774,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         const height = e.nativeEvent.contentSize.height;
         this.bottom = height - scrollX;
       } else {
-        const scrollY = e.nativeEvent.contentOffset.y;
-        const height = e.nativeEvent.contentSize.height;
-        this.bottom = height - scrollY;
+        this.bottom = contentLength - offset;
       }
     }
 
