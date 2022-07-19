@@ -34,7 +34,8 @@ elsif currentremote.strip.end_with?("facebook/react-native.git") and currentbran
   hermestag_file = File.join(__dir__, "..", ".hermesversion")
   hermestag = File.read(hermestag_file)
   source[:git] = git
-  source[:commit] = `git ls-remote https://github.com/facebook/hermes #{hermestag} | cut -f 1`.strip
+  source[:tag] = hermestag.to_s
+  puts "TAG! #{source [:tag]}"
 else
   source[:http] = "https://github.com/facebook/react-native/releases/download/v#{version}/hermes-runtime-darwin-v#{version}.tar.gz"
 end
