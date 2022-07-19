@@ -1158,7 +1158,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         </VirtualizedListCellContextProvider>,
       );
     }
-
     const scrollProps = {
       ...this.props,
       onContentSizeChange: this._onContentSizeChange,
@@ -1598,15 +1597,27 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   _maybeCallOnEndReached() {
-    const {data, getItemCount, onEndReached, onEndReachedThreshold} =
+    const {data, getItemCount, onEndReached, onEndReachedThreshold, inverted} =
       this.props;
     const {contentLength, visibleLength, offset} = this._scrollMetrics;
-    let distanceFromEnd = contentLength - visibleLength - offset;
+    let distanceFromEnd;
+    const talkbackEnabledWithInvertedFlatlist =
+      this.state.screenreaderEnabled &&
+      inverted &&
+      this._hasTriggeredInitialScrollToIndex === true;
+    if (talkbackEnabledWithInvertedFlatlist) {
+      distanceFromEnd = offset;
+    } else {
+      distanceFromEnd = contentLength - visibleLength - offset;
+    }
 
     // Especially when oERT is zero it's necessary to 'floor' very small distanceFromEnd values to be 0
     // since debouncing causes us to not fire this event for every single "pixel" we scroll and can thus
     // be at the "end" of the list with a distanceFromEnd approximating 0 but not quite there.
-    if (distanceFromEnd < ON_END_REACHED_EPSILON) {
+    if (
+      !talkbackEnabledWithInvertedFlatlist &&
+      distanceFromEnd < ON_END_REACHED_EPSILON
+    ) {
       distanceFromEnd = 0;
     }
 
@@ -1614,14 +1625,30 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const threshold =
       onEndReachedThreshold != null ? onEndReachedThreshold * visibleLength : 2;
     if (
-      onEndReached &&
+      this.beginningReached &&
+      talkbackEnabledWithInvertedFlatlist &&
+      distanceFromEnd === 0 &&
+      this._hasTriggeredInitialScrollToIndex &&
       this.state.last === getItemCount(data) - 1 &&
-      distanceFromEnd <= threshold &&
       this._scrollMetrics.contentLength !== this._sentEndForContentLength
     ) {
       // Only call onEndReached once for a given content length
       this._sentEndForContentLength = this._scrollMetrics.contentLength;
       onEndReached({distanceFromEnd});
+    }
+    if (
+      onEndReached &&
+      this.state.last === getItemCount(data) - 1 &&
+      distanceFromEnd <= threshold &&
+      this._scrollMetrics.contentLength !== this._sentEndForContentLength
+    ) {
+      if (talkbackEnabledWithInvertedFlatlist) {
+        this.beginningReached = true;
+      } else {
+        // Only call onEndReached once for a given content length
+        this._sentEndForContentLength = this._scrollMetrics.contentLength;
+        onEndReached({distanceFromEnd});
+      }
     } else if (distanceFromEnd > threshold) {
       // If the user scrolls away from the end and back again cause
       // an onEndReached to be triggered again
