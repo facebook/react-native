@@ -743,8 +743,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           (this.props.initialScrollIndex || 0) +
             initialNumToRenderOrDefault(this.props.initialNumToRender),
         ) - 1,
-      height: undefined,
-      resetScrollPosition: false,
       bottomHeight: 0,
       screenreaderEnabled: undefined,
     };
@@ -959,8 +957,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
     const {ListEmptyComponent, ListFooterComponent, ListHeaderComponent} =
       this.props;
-    const {screenreaderEnabled, resetScrollPosition, height, bottomHeight} =
-      this.state;
+    const {screenreaderEnabled} = this.state;
     const {data, horizontal} = this.props;
     const isVirtualizationDisabled = this._isVirtualizationDisabled();
     const inversionStyle =
@@ -1250,10 +1247,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   componentDidUpdate(prevProps: Props) {
     const {data, extraData, inverted} = this.props;
-    const {screenreaderEnabled} = this.state;
-    // used with TalkBack to add the behavior on an inverted flatlist
-    // when items are appended to the end of the list, the view needs to stay in the same position
-
     if (data !== prevProps.data || extraData !== prevProps.extraData) {
       // clear the viewableIndices cache to also trigger
       // the onViewableItemsChanged callback with the new data
@@ -1632,9 +1625,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     // TODO: T121172172 Look into why we're "defaulting" to a threshold of 2 when oERT is not present
     const threshold =
       onEndReachedThreshold != null ? onEndReachedThreshold * visibleLength : 2;
-    const timeDiff = this.lastTimeCalled
-      ? Math.abs(this.lastTimeCalled - Date.now())
-      : 101;
+    const canTriggerOnEndReachedWithTalkback = this.lastTimeCalled
+      ? Math.abs(this.lastTimeCalled - Date.now()) > 100
+      : true;
     if (
       this.beginningReached &&
       talkbackEnabledWithInvertedFlatlist &&
@@ -1642,12 +1635,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this._hasTriggeredInitialScrollToIndex &&
       this.state.last === getItemCount(data) - 1 &&
       this._scrollMetrics.contentLength !== this._sentEndForContentLength &&
-      timeDiff > 100
+      canTriggerOnEndReachedWithTalkback
     ) {
       this.lastBottomHeight = this.bottom;
       // Only call onEndReached once for a given content length
       this._sentEndForContentLength = this._scrollMetrics.contentLength;
-      // set timeout of 500 ms to call again onEndReached
+      // wait 100 ms to call again onEndReached (TalkBack scrolling is slower)
       this.lastTimeCalled = Date.now();
       // save the last position in the flastlist to restore it after animation to Top
       onEndReached({distanceFromEnd});
@@ -1713,6 +1706,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     this._scheduleCellsToRenderUpdate();
     // talkback inverted flatlist, height is used to compute
     // an inverted flatlist contentLength from the bottom of the screen
+    // setTimeout is required as animated false will not work
     if (screenreaderEnabled && this.props.inverted && this.lastBottomHeight) {
       const newBottomHeight = height - this.lastBottomHeight;
       setTimeout(
@@ -1766,8 +1760,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     let contentLength = this._selectLength(e.nativeEvent.contentSize);
     let offset = this._selectOffset(e.nativeEvent.contentOffset);
     let dOffset = offset - this._scrollMetrics.offset;
-    // update the bottom (contentLength from the bottom of the screen)
-    // when items are appended to the end of the list, the view needs to stay in the same position
+    // with Talkback Inverted Flatlist we save the difference between
+    // contentLength and offset (the bottomY or bottomX) and we use it to
+    // restore the scrollPosition after onEndReached
+    // this.scrollToOffset({offset: newHeight - this.bottom})
     if (screenreaderEnabled && this.props.inverted) {
       if (this.props.horizontal) {
         const scrollX = e.nativeEvent.contentOffset.x;
