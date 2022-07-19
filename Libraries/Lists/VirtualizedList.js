@@ -1077,18 +1077,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         last,
         inversionStyle,
       );
-      if (
-        screenreaderEnabled &&
-        this.props.inverted &&
-        resetScrollPosition &&
-        bottomHeight
-      ) {
-        this.scrollToOffset({
-          offset: height - bottomHeight,
-          animated: false,
-        });
-        this.setState({resetScrollPosition: false});
-      }
       // scroll to bottom optimization. The last page is always rendered in an inverted flatlist.
       if (talkbackEnabledWithInvertedFlatlist) {
         this._pushCells(
@@ -1265,14 +1253,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const {screenreaderEnabled} = this.state;
     // used with TalkBack to add the behavior on an inverted flatlist
     // when items are appended to the end of the list, the view needs to stay in the same position
-    if (screenreaderEnabled && inverted) {
-      const dataAppended =
-        data[data.length - 1] != prevProps.data[prevProps.data.length - 1];
-      const dataPrepended = data[0] != prevProps.data[0];
-      if (dataAppended) {
-        this.setState({bottomHeight: this.bottom});
-      }
-    }
 
     if (data !== prevProps.data || extraData !== prevProps.extraData) {
       // clear the viewableIndices cache to also trigger
@@ -1662,7 +1642,21 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     ) {
       // Only call onEndReached once for a given content length
       this._sentEndForContentLength = this._scrollMetrics.contentLength;
+      const lastBottomHeight = this.bottom;
       onEndReached({distanceFromEnd});
+      setTimeout(
+        (flatlist, lastBottomHeight) => {
+          flatlist.scrollToOffset({
+            offset: lastBottomHeight,
+            animated: false,
+          });
+        },
+        1,
+        this,
+        lastBottomHeight,
+      );
+    } else {
+      this.lastBottomHeight = undefined;
     }
     if (
       onEndReached &&
