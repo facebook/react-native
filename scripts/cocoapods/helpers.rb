@@ -18,3 +18,11 @@ class Environment
         return RUBY_PLATFORM
     end
 end
+
+class Finder
+    def self.find_codegen_file(path)
+        js_files = '-name "Native*.js" -or -name "*NativeComponent.js"'
+        ts_files = '-name "Native*.ts" -or -name "*NativeComponent.ts"'
+        return `find #{path} -type f \\( #{js_files} -or #{ts_files} \\)`.split("\n").sort()
+    end
+end
