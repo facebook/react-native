@@ -22,26 +22,31 @@ $CODEGEN_MODULE_DIR = '.'
 
 $START_TIME = Time.now.to_i
 
-def use_react_native! (options={})
+# Function that setup all the react native dependencies
+# 
+# Parameters
+# - path: path to react_native installation.
+# - fabric_enabled: whether fabric should be enabled or not.
+# - new_arch_enabled: whether the new architecture should be enabled or not.
+# - production: whether the dependencies must be installed to target a Debug or a Release build.
+# - hermes_enabled: whether Hermes should be enabled or not.
+# - flipper_configuration: The configuration to use for flipper.
+# - app_path: path to the React Native app. Required by the New Architecture.
+# - config_file_dir: directory of the `package.json` file, required by the New Architecture.
+def use_react_native! (
+  path: "../node_modules/react-native",
+  fabric_enabled: false,
+  new_arch_enabled: ENV['RCT_NEW_ARCH_ENABLED'] == '1',
+  production: false,
+  hermes_enabled: true,
+  flipper_configuration: FlipperConfiguration.disabled,
+  app_path: '..',
+  config_file_dir: '')
+
+  prefix = path
+
   # The version of folly that must be used
   folly_version = '2021.07.22.00'
-
-  # The prefix to react-native
-  prefix = options[:path] ||= "../node_modules/react-native"
-
-  # Include Fabric dependencies
-  fabric_enabled = options[:fabric_enabled] ||= false
-
-  # New arch enabled
-  new_arch_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'
-
-  # Include DevSupport dependency
-  production = options[:production] ||= false
-
-  # Include Hermes dependencies
-  hermes_enabled = options[:hermes_enabled] != nil ? options[:hermes_enabled] : true
-
-  flipper_configuration = options[:flipper_configuration] ||= FlipperConfiguration.disabled
 
   ReactNativePodsUtils.warn_if_not_on_arm64()
 
@@ -82,8 +87,8 @@ def use_react_native! (options={})
   pod 'RCT-Folly', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec", :modular_headers => true
 
   run_codegen!(
-    options[:app_path],
-    options[:config_file_dir],
+    app_path,
+    config_file_dir,
     :new_arch_enabled => new_arch_enabled,
     :disable_codegen => ENV['DISABLE_CODEGEN'] == '1',
     :react_native_path => prefix,
@@ -121,15 +126,27 @@ def use_react_native! (options={})
   end
 end
 
+# It returns the default flags.
 def get_default_flags()
   return ReactNativePodsUtils.get_default_flags()
 end
 
+# It installs the flipper dependencies into the project.
+#
+# Parameters
+# - versions: a dictionary of Flipper Library -> Versions that can be used to customize which version of Flipper to install.
+# - configurations: an array of configuration where to install the dependencies.
 def use_flipper!(versions = {}, configurations: ['Debug'])
   Pod::UI.warn "use_flipper is deprecated, use the flipper_configuration option in the use_react_native function"
   use_flipper_pods(versions, :configurations => configurations)
 end
 
+# Function that executes after React Native has been installed to configure some flags and build settings.
+#
+# Parameters
+# - installer: the Cocoapod object that allows to customize the project.
+# - react_native_path: path to React Native.
+# - mac_catalyst_enabled: whether we are running the Pod on a Mac Catalyst project or not.
 def react_native_post_install(installer, react_native_path = "../node_modules/react-native", mac_catalyst_enabled: false)
   ReactNativePodsUtils.apply_mac_catalyst_patches(installer) if mac_catalyst_enabled
 
