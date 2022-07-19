@@ -63,6 +63,7 @@ type State = {|
   fadingEdgeLength: number,
   onPressDisabled: boolean,
   textSelectable: boolean,
+  enableSelectionOnKeyPress: boolean, // TODO(macOS GH#774)]
 |};
 
 class FlatListExample extends React.PureComponent<Props, State> {
@@ -80,6 +81,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
     fadingEdgeLength: 0,
     onPressDisabled: false,
     textSelectable: true,
+    enableSelectionOnKeyPress: false, //  TODO(macOS GH#774)
   };
 
   _onChangeFilterText = filterText => {
@@ -183,6 +185,13 @@ class FlatListExample extends React.PureComponent<Props, State> {
                 this.state.useFlatListItemComponent,
                 this._setBooleanValue('useFlatListItemComponent'),
               )}
+              {/* [TODO(macOS GH#774)  */}
+              {renderSmallSwitchOption(
+                'Keyboard Navigation',
+                this.state.enableSelectionOnKeyPress,
+                this._setBooleanValue('enableSelectionOnKeyPress'),
+              )}
+              {/* TODO(macOS GH#774)] */}
               {Platform.OS === 'android' && (
                 <View>
                   <TextInput
@@ -202,6 +211,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
           </View>
           <SeparatorComponent />
           <Animated.FlatList
+            enableSelectionOnKeyPress={this.state.enableSelectionOnKeyPress} // TODO(macOS GH#774)
             fadingEdgeLength={this.state.fadingEdgeLength}
             ItemSeparatorComponent={ItemSeparatorComponent}
             ListHeaderComponent={<HeaderComponent />}
@@ -277,7 +287,8 @@ class FlatListExample extends React.PureComponent<Props, State> {
       /* $FlowFixMe[invalid-computed-prop] (>=0.111.0 site=react_native_fb)
        * This comment suppresses an error found when Flow v0.111 was deployed.
        * To see the error, delete this comment and run Flow. */
-      [flatListPropKey]: ({item, separators}) => {
+      [flatListPropKey]: props => {
+        const {item, separators, isSelected} = props; // TODO(macOS GH#774)
         return (
           <ItemComponent
             item={item}
@@ -287,6 +298,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
             onShowUnderlay={separators.highlight}
             onHideUnderlay={separators.unhighlight}
             textSelectable={this.state.textSelectable}
+            isSelected={isSelected} // TODO(macOS GH#774)
           />
         );
       },

@@ -1206,42 +1206,10 @@ class ScrollView extends React.Component<Props, State> {
               nativeEvent.contentOffset.y +
               nativeEvent.layoutMeasurement.height,
           });
-        } else if (key === 'LEFT_ARROW') {
-          this._handleScrollByKeyDown(event, {
-            x:
-              nativeEvent.contentOffset.x +
-              -(this.props.horizontalLineScroll !== undefined
-                ? this.props.horizontalLineScroll
-                : kMinScrollOffset),
-            y: nativeEvent.contentOffset.y,
-          });
-        } else if (key === 'RIGHT_ARROW') {
-          this._handleScrollByKeyDown(event, {
-            x:
-              nativeEvent.contentOffset.x +
-              (this.props.horizontalLineScroll !== undefined
-                ? this.props.horizontalLineScroll
-                : kMinScrollOffset),
-            y: nativeEvent.contentOffset.y,
-          });
-        } else if (key === 'DOWN_ARROW') {
-          this._handleScrollByKeyDown(event, {
-            x: nativeEvent.contentOffset.x,
-            y:
-              nativeEvent.contentOffset.y +
-              (this.props.verticalLineScroll !== undefined
-                ? this.props.verticalLineScroll
-                : kMinScrollOffset),
-          });
-        } else if (key === 'UP_ARROW') {
-          this._handleScrollByKeyDown(event, {
-            x: nativeEvent.contentOffset.x,
-            y:
-              nativeEvent.contentOffset.y +
-              -(this.props.verticalLineScroll !== undefined
-                ? this.props.verticalLineScroll
-                : kMinScrollOffset),
-          });
+        } else if (key === 'HOME') {
+          this.scrollTo({x: 0, y: 0});
+        } else if (key === 'END') {
+          this.scrollToEnd({animated: true});
         }
       }
     }

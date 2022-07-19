@@ -282,29 +282,37 @@
 
 - (void)reactFocus
 {
-  if (![self becomeFirstResponder]) {
-    self.reactIsFocusNeeded = YES;
-  }
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
+	if (![[self window] makeFirstResponder:self]) {
+#else
+	if (![self becomeFirstResponder]) {
+#endif //// TODO(macOS GH#774)]
+		self.reactIsFocusNeeded = YES;
+	}
 }
 
 - (void)reactFocusIfNeeded
 {
-  if (self.reactIsFocusNeeded) {
-    if ([self becomeFirstResponder]) {
-      self.reactIsFocusNeeded = NO;
-    }
-  }
+	if (self.reactIsFocusNeeded) {
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
+		if ([[self window] makeFirstResponder:self]) {
+#else
+		if ([self becomeFirstResponder]) {
+#endif // TODO(macOS GH#774)]
+			self.reactIsFocusNeeded = NO;
+		}
+	}
 }
 
 - (void)reactBlur
 {
-#if TARGET_OS_OSX // TODO(macOS GH#774)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
   if (self == [[self window] firstResponder]) {
     [[self window] makeFirstResponder:[[self window] nextResponder]];
   }
 #else
   [self resignFirstResponder];
-#endif
+#endif // TODO(macOS GH#774)]
 }
 
 #pragma mark - Layout

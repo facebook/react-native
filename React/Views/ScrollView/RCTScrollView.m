@@ -1258,15 +1258,21 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
 
 #if TARGET_OS_OSX // [TODO(macOS GH#774)
 
-- (NSString*)keyCommandFromKeyCode:(NSInteger)keyCode
+- (NSString*)keyCommandFromKeyCode:(NSInteger)keyCode modifierFlags:(NSEventModifierFlags)modifierFlags
 {
   switch (keyCode)
   {
     case 36:
       return @"ENTER";
 
+    case 115:
+      return @"HOME";
+
     case 116:
       return @"PAGE_UP";
+
+    case 119:
+      return @"END";
 
     case 121:
       return @"PAGE_DOWN";
@@ -1278,10 +1284,18 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
       return @"RIGHT_ARROW";
 
     case 125:
-      return @"DOWN_ARROW";
+			if (modifierFlags & NSEventModifierFlagOption) {
+				return @"OPTION_DOWN";
+			} else {
+				return @"DOWN_ARROW";
+			}
 
     case 126:
-      return @"UP_ARROW";
+			if (modifierFlags & NSEventModifierFlagOption) {
+				return @"OPTION_UP";
+			} else {
+				return @"UP_ARROW";
+			}
   }
   return @"";
 }
@@ -1289,24 +1303,25 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
 - (void)keyDown:(UIEvent*)theEvent
 {
   // Don't emit a scroll event if tab was pressed while the scrollview is first responder
-  if (self == [[self window] firstResponder] &&
-      theEvent.keyCode != 48) {
-    NSString *keyCommand = [self keyCommandFromKeyCode:theEvent.keyCode];
-    RCT_SEND_SCROLL_EVENT(onScrollKeyDown, (@{ @"key": keyCommand}));
-	} else {
-    [super keyDown:theEvent];
+  if (!(self == [[self window] firstResponder] && theEvent.keyCode == 48)) {
+    NSString *keyCommand = [self keyCommandFromKeyCode:theEvent.keyCode modifierFlags:theEvent.modifierFlags];
+		if (![keyCommand isEqual: @""]) {
+			RCT_SEND_SCROLL_EVENT(onScrollKeyDown, (@{ @"key": keyCommand}));
+		} else {
+			[super keyDown:theEvent];
+		}
+	}
 
-    // AX: if a tab key was pressed and the first responder is currently clipped by the scroll view,
-    // automatically scroll to make the view visible to make it navigable via keyboard.
-    if ([theEvent keyCode] == 48) {  //tab key
-      id firstResponder = [[self window] firstResponder];
-      if ([firstResponder isKindOfClass:[NSView class]] &&
-          [firstResponder isDescendantOf:[_scrollView documentView]]) {
-        NSView *view = (NSView*)firstResponder;
-        NSRect visibleRect = ([view superview] == [_scrollView documentView]) ? NSInsetRect(view.frame, -1, -1) :
-                              [view convertRect:view.frame toView:_scrollView.documentView];
-        [[_scrollView documentView] scrollRectToVisible:visibleRect];
-      }
+  // AX: if a tab key was pressed and the first responder is currently clipped by the scroll view,
+  // automatically scroll to make the view visible to make it navigable via keyboard.
+  if ([theEvent keyCode] == 48) {  //tab key
+    id firstResponder = [[self window] firstResponder];
+    if ([firstResponder isKindOfClass:[NSView class]] &&
+        [firstResponder isDescendantOf:[_scrollView documentView]]) {
+      NSView *view = (NSView*)firstResponder;
+      NSRect visibleRect = ([view superview] == [_scrollView documentView]) ? NSInsetRect(view.frame, -1, -1) :
+                            [view convertRect:view.frame toView:_scrollView.documentView];
+      [[_scrollView documentView] scrollRectToVisible:visibleRect];
     }
   }
 }
