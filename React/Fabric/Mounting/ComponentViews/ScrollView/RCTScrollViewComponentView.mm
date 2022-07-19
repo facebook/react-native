@@ -100,7 +100,6 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   BOOL _shouldUpdateContentInsetAdjustmentBehavior;
 
   CGPoint _contentOffsetWhenClipped;
-  CGRect _oldFrame;
 }
 
 + (RCTScrollViewComponentView *_Nullable)findScrollViewComponentViewForView:(UIView *)view
@@ -131,7 +130,6 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
     [self.scrollViewDelegateSplitter addDelegate:self];
 
     _scrollEventThrottle = INFINITY;
-    _oldFrame = CGRectNull;
   }
 
   return self;
@@ -180,10 +178,6 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-  if (!CGRectEqualToRect(_oldFrame, CGRectNull)) {
-    [self setFrame:_oldFrame];
-    _oldFrame = CGRectNull;
-  }
   const auto &oldScrollViewProps = *std::static_pointer_cast<const ScrollViewProps>(_props);
   const auto &newScrollViewProps = *std::static_pointer_cast<const ScrollViewProps>(props);
 
@@ -407,8 +401,9 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   _shouldUpdateContentInsetAdjustmentBehavior = YES;
   _state.reset();
   _isUserTriggeredScrolling = NO;
-  _oldFrame = self.frame;
-  [self setFrame:CGRectZero];
+  CGRect oldFrame = self.frame;
+  self.frame = CGRectZero;
+  self.frame = oldFrame;
   [super prepareForRecycle];
 }
 
