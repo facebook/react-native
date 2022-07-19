@@ -6,7 +6,7 @@
  *
  * @noformat
  * @flow strict-local
- * @generated SignedSource<<a81ed33269e71024fedad145e843fab0>>
+ * @generated SignedSource<<a5b40ebf1f5b17d6dc83479c1c597566>>
  *
  * This file was sync'd from the facebook/react repository.
  */
@@ -22,6 +22,7 @@ const customBubblingEventTypes: {
     phasedRegistrationNames: $ReadOnly<{|
       captured: string,
       bubbled: string,
+      skipBubbling?: ?boolean,
     |}>,
   |}>,
   ...,

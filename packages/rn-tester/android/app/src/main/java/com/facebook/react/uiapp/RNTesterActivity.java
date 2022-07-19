@@ -51,6 +51,11 @@ public class RNTesterActivity extends ReactActivity {
     protected Bundle getLaunchOptions() {
       return mInitialProps;
     }
+
+    @Override
+    protected boolean isConcurrentRootEnabled() {
+      return true;
+    }
   }
 
   @Override

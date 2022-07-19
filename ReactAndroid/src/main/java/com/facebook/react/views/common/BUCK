@@ -5,7 +5,10 @@ rn_android_library(
     srcs = glob(["*.java"]),
     autoglob = False,
     is_androidx = True,
-    labels = ["supermodule:xplat/default/public.react_native.infra"],
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+        "supermodule:xplat/default/public.react_native.infra",
+    ],
     provided_deps = [
         react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_dep("third-party/android/androidx:annotation"),

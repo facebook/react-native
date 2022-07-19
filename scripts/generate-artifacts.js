@@ -54,6 +54,11 @@ const argv = yargs
     description:
       'Path where codegen config files are located (e.g. node_modules dir).',
   })
+  .option('n', {
+    alias: 'nodeBinary',
+    default: 'node',
+    description: 'Path to the node executable.',
+  })
   .usage('Usage: $0 -p [path to app]')
   .demandOption(['p']).argv;
 
@@ -62,6 +67,7 @@ const CODEGEN_CONFIG_FILENAME = argv.f;
 const CODEGEN_CONFIG_FILE_DIR = argv.c;
 const CODEGEN_CONFIG_KEY = argv.k;
 const CODEGEN_FABRIC_ENABLED = argv.e;
+const NODE = argv.n;
 const CODEGEN_REPO_PATH = `${RN_ROOT}/packages/react-native-codegen`;
 const CODEGEN_NPM_PATH = `${RN_ROOT}/../react-native-codegen`;
 const CORE_LIBRARIES = new Set(['rncore', 'FBReactNativeSpec']);
@@ -69,6 +75,10 @@ const REACT_NATIVE_DEPENDENCY_NAME = 'react-native';
 
 function isReactNativeCoreLibrary(libraryName) {
   return CORE_LIBRARIES.has(libraryName);
+}
+
+function executeNodeScript(script) {
+  execSync(`${NODE} ${script}`);
 }
 
 function main(appRootDir, outputPath) {
@@ -234,8 +244,8 @@ function main(appRootDir, outputPath) {
 
       console.log(`\n\n[Codegen] >>>>> Processing ${library.config.name}`);
       // Generate one schema for the entire library...
-      execSync(
-        `node ${path.join(
+      executeNodeScript(
+        `${path.join(
           codegenCliPath,
           'lib',
           'cli',
@@ -250,8 +260,8 @@ function main(appRootDir, outputPath) {
         ? `--libraryType ${library.config.type}`
         : '';
       fs.mkdirSync(pathToTempOutputDir, {recursive: true});
-      execSync(
-        `node ${path.join(
+      executeNodeScript(
+        `${path.join(
           RN_ROOT,
           'scripts',
           'generate-specs-cli.js',
@@ -284,8 +294,8 @@ function main(appRootDir, outputPath) {
 
       // Generate FabricComponentProvider.
       // Only for iOS at this moment.
-      execSync(
-        `node ${path.join(
+      executeNodeScript(
+        `${path.join(
           RN_ROOT,
           'scripts',
           'generate-provider-cli.js',

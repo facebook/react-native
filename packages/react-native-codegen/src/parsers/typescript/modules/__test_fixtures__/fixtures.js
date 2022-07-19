@@ -504,6 +504,28 @@ export default TurboModuleRegistry.getEnforcing<Spec>(
 );
 `;
 
+const CXX_ONLY_NATIVE_MODULE = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+
+export interface Spec extends TurboModule {
+  readonly getCallback: () => () => void;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>(
+  'SampleTurboModuleCxx',
+);
+`;
+
 module.exports = {
   NATIVE_MODULE_WITH_OBJECT_WITH_OBJECT_DEFINED_IN_FILE_AS_PROPERTY,
   NATIVE_MODULE_WITH_ARRAY_WITH_UNION_AND_TOUPLE,
@@ -525,4 +547,5 @@ module.exports = {
   EMPTY_NATIVE_MODULE,
   ANDROID_ONLY_NATIVE_MODULE,
   IOS_ONLY_NATIVE_MODULE,
+  CXX_ONLY_NATIVE_MODULE,
 };

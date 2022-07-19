@@ -41,6 +41,7 @@ def rn_codegen_cli():
                 "src/cli/combine/combine_js_to_schema.sh",
                 ":yarn-workspace",
                 "//xplat/js:setup_env",
+                "//xplat/js:setup_env_vars",
             ],
             visibility = ["PUBLIC"],
         )
@@ -537,7 +538,7 @@ def rn_codegen_cxx_modules(
     )
 
     if is_running_buck_project():
-        rn_xplat_cxx_library(name = "{}JSI".format(name))
+        rn_xplat_cxx_library(name = "{}JSI".format(name), visibility = ["PUBLIC"])
     else:
         rn_xplat_cxx_library(
             name = "{}JSI".format(name),

@@ -228,7 +228,7 @@ class CheckboxExample extends React.Component<
   };
 
   _onCheckboxPress = () => {
-    let checkboxState = false;
+    let checkboxState: boolean | $TEMPORARY$string<'mixed'> = false;
     if (this.state.checkboxState === false) {
       checkboxState = 'mixed';
     } else if (this.state.checkboxState === 'mixed') {
@@ -951,37 +951,24 @@ class AnnounceForAccessibility extends React.Component<{}> {
   }
 }
 
-class SetAccessibilityFocusExample extends React.Component<{}> {
-  render(): React.Node {
-    const myRef: {current: React.ElementRef<any> | null} = createRef();
+function SetAccessibilityFocusExample(props: {}): React.Node {
+  const myRef = React.useRef<?React.ElementRef<typeof Text>>(null);
 
-    const onClose = () => {
-      if (myRef && myRef.current) {
-        AccessibilityInfo.sendAccessibilityEvent_unstable(
-          myRef.current,
-          'focus',
-        );
-      }
-    };
+  const onPress = () => {
+    if (myRef && myRef.current) {
+      AccessibilityInfo.sendAccessibilityEvent_unstable(myRef.current, 'focus');
+    }
+  };
 
-    return (
-      <View>
-        <Text>SetAccessibilityFocus on native element</Text>
-        <Button
-          ref={myRef}
-          title={'Click'}
-          onPress={() => {
-            Alert.alert(
-              'Set Accessibility Focus',
-              'Press okay to proceed',
-              [{text: 'Okay', onPress: onClose}],
-              {cancelable: true},
-            );
-          }}
-        />
-      </View>
-    );
-  }
+  return (
+    <View>
+      <Text ref={myRef}>
+        SetAccessibilityFocus on native element. This should get focus after
+        clicking the button!
+      </Text>
+      <Button title={'Click'} onPress={onPress} />
+    </View>
+  );
 }
 
 class EnabledExamples extends React.Component<{}> {

@@ -112,4 +112,9 @@ public class ReactFeatureFlags {
 
   /** TODO: T113245006 Delete this flag. Enables caching of spannables for text */
   public static boolean enableSpannableCache = false;
+
+  public static boolean dispatchPointerEvents = false;
+
+  /** Feature Flag to control RN Android scrollEventThrottle prop. */
+  public static boolean enableScrollEventThrottle = false;
 }

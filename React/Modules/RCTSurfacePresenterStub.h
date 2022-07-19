@@ -9,6 +9,8 @@
 
 #import <React/RCTBridge.h>
 
+@protocol RCTSurfaceProtocol;
+
 NS_ASSUME_NONNULL_BEGIN
 
 // TODO: Eventually this should go away and files should just include RCTSurfacePresenter.h, but
@@ -26,6 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol RCTSurfacePresenterStub <NSObject>
 
+- (id<RCTSurfaceProtocol>)createFabricSurfaceForModuleName:(NSString *)moduleName
+                                         initialProperties:(NSDictionary *)initialProperties;
 - (nullable UIView *)findComponentViewWithTag_DO_NOT_USE_DEPRECATED:(NSInteger)tag;
 - (BOOL)synchronouslyUpdateViewOnUIThread:(NSNumber *)reactTag props:(NSDictionary *)props;
 - (void)addObserver:(id<RCTSurfacePresenterObserver>)observer;

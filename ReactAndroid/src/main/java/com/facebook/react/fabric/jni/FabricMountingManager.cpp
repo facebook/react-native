@@ -255,7 +255,7 @@ local_ref<jobject> FabricMountingManager::getProps(
         ? static_cast<ViewProps const &>(*oldShadowView.props)
         : ViewProps{};
     auto newProps = static_cast<ViewProps const &>(*newShadowView.props);
-    return ReadableMapBuffer::createWithContents(
+    return JReadableMapBuffer::createWithContents(
         viewPropsDiff(oldProps, newProps));
   } else {
     return ReadableNativeMap::newObjectCxxArgs(newShadowView.props->rawProps);

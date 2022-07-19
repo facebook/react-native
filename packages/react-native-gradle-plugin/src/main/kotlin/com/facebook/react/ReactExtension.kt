@@ -141,9 +141,11 @@ abstract class ReactExtension @Inject constructor(project: Project) {
 
   /** Hermes Config */
 
-  /** The command to use to invoke hermes. Default is `hermesc` for the correct OS. */
-  val hermesCommand: Property<String> =
-      objects.property(String::class.java).convention("node_modules/hermes-engine/%OS-BIN%/hermesc")
+  /**
+   * The command to use to invoke hermesc (the hermes compiler). Default is "", the plugin will
+   * autodetect it.
+   */
+  val hermesCommand: Property<String> = objects.property(String::class.java).convention("")
 
   /** Toggle Hermes for the whole build. Default: false */
   val enableHermes: Property<Boolean> = objects.property(Boolean::class.java).convention(false)
@@ -248,7 +250,7 @@ abstract class ReactExtension @Inject constructor(project: Project) {
    * Please also note that those are the default value and you most likely don't need those at all.
    */
   @Deprecated(
-      "reactRoot was confusing and has been replace with root" +
+      "reactRoot was confusing and has been replace with root " +
           "to point to your root project and reactNativeDir to point to " +
           "the folder of the react-native NPM package",
       replaceWith = ReplaceWith("reactNativeRoot"))

@@ -110,6 +110,7 @@ def use_react_native! (options={})
 
   if hermes_enabled
     pod 'React-hermes', :path => "#{prefix}/ReactCommon/hermes"
+    Pod::UI.puts "[Hermes] Building Hermes from source"
     hermes_source_path = downloadAndConfigureHermesSource(prefix)
     pod 'hermes-engine', :path => "#{hermes_source_path}/hermes-engine.podspec"
     pod 'libevent', '~> 2.1.12'
@@ -187,6 +188,15 @@ def flipper_post_install(installer)
         config.build_settings['SWIFT_VERSION'] = '4.1'
       end
     end
+
+    # Enable flipper for React-Core Debug configuration
+    if target.name == 'React-Core'
+      target.build_configurations.each do |config|
+        if config.name == 'Debug'
+          config.build_settings['OTHER_CFLAGS'] = "$(inherited) -DFB_SONARKIT_ENABLED=1"
+        end
+      end
+    end
   end
 end
 
@@ -243,7 +253,23 @@ def fix_library_search_paths(installer)
   end
 end
 
-def react_native_post_install(installer)
+def set_node_modules_user_settings(installer, react_native_path)
+  puts "Setting REACT_NATIVE build settings"
+  projects = installer.aggregate_targets
+    .map{ |t| t.user_project }
+    .uniq{ |p| p.path }
+    .push(installer.pods_project)
+
+  projects.each do |project|
+    project.build_configurations.each do |config|
+      config.build_settings["REACT_NATIVE_PATH"] = File.join("${PODS_ROOT}", "..", react_native_path)
+    end
+
+    project.save()
+  end
+end
+
+def react_native_post_install(installer, react_native_path = "../node_modules/react-native")
   if has_pod(installer, 'Flipper')
     flipper_post_install(installer)
   end
@@ -257,6 +283,7 @@ def react_native_post_install(installer)
   end
   modify_flags_for_new_architecture(installer, cpp_flags)
 
+  set_node_modules_user_settings(installer, react_native_path)
 end
 
 def modify_flags_for_new_architecture(installer, cpp_flags)
@@ -269,12 +296,12 @@ def modify_flags_for_new_architecture(installer, cpp_flags)
           config_file.save_as(xcconfig_path)
       end
   end
-  # Add RCT_NEW_ARCH_ENABLED to Pods project xcconfig
-  installer.pods_project.targets.each do |target|
-    # if target.name == 'React-Core'
-    if target.name == 'React-Core'
-      puts "#{target.name}"
-      target.build_configurations.each do |config|
+
+  # Add RCT_NEW_ARCH_ENABLED to generated pod target projects
+  installer.target_installation_results.pod_target_installation_results
+    .each do |pod_name, target_installation_result|
+    if pod_name == 'React-Core'
+      target_installation_result.native_target.build_configurations.each do |config|
         config.build_settings['OTHER_CPLUSPLUSFLAGS'] = cpp_flags
       end
     end
@@ -615,9 +642,11 @@ def use_react_native_codegen!(spec, options={})
   system(prepare_command) # Always run prepare_command when a podspec uses the codegen, as CocoaPods may skip invoking this command in certain scenarios. Replace with pre_integrate_hook after updating to CocoaPods 1.11
   spec.prepare_command = prepare_command
 
+  env_files = ["$PODS_ROOT/../.xcode.env.local", "$PODS_ROOT/../.xcode.env"]
+
   spec.script_phase = {
     :name => 'Generate Specs',
-    :input_files => input_files, # This also needs to be relative to Xcode
+    :input_files => input_files + env_files, # This also needs to be relative to Xcode
     :output_files => ["${DERIVED_FILE_DIR}/codegen-#{library_name}.log"].concat(generated_files.map { |filename| "${PODS_TARGET_SRCROOT}/#{filename}"} ),
     # The final generated files will be created when this script is invoked at Xcode build time.
     :script => get_script_phases_no_codegen_discovery(
@@ -651,15 +680,15 @@ def downloadAndConfigureHermesSource(react_native_path)
   end
 
   hermes_tarball_url = hermes_tarball_base_url + hermes_tag
-  # GitHub does not provide a last-modified header, so we cannot rely on wget's --timestamping
   hermes_tag_sha = %x[git ls-remote https://github.com/facebook/hermes #{hermes_tag} | cut -f 1].strip
   hermes_tarball_path = "#{download_dir}/hermes-#{hermes_tag_sha}.tar.gz"
 
   if (!File.exist?(hermes_tarball_path))
-    Pod::UI.puts '[Hermes] Downloading Hermes source code'
-    system("wget -q -O #{hermes_tarball_path} #{hermes_tarball_url}")
+    Pod::UI.puts "[Hermes] Downloading Hermes source code (#{hermes_tarball_url})"
+    system("curl #{hermes_tarball_url} -Lo #{hermes_tarball_path}")
   end
-  system("tar -xzf #{hermes_tarball_path} --strip-components=1 -C #{hermes_dir}")
+  Pod::UI.puts "[Hermes] Extracting Hermes (#{hermes_tag_sha})"
+  system("tar -zxf #{hermes_tarball_path} --strip-components=1 --directory #{hermes_dir}")
 
   hermesc_macos_path = "#{sdks_dir}/hermesc/macos/build_host_hermesc"
   hermesc_macos_link = "#{hermes_dir}/utils/build_host_hermesc"
@@ -668,6 +697,9 @@ def downloadAndConfigureHermesSource(react_native_path)
     Pod::UI.puts "[Hermes] Using pre-compiled Hermes Compiler from #{hermesc_macos_path}"
     system("ln -s #{hermesc_macos_path} #{hermesc_macos_link}")
   end
+
+  # TODO: Integrate this temporary hermes-engine.podspec into the actual one located in facebook/hermes
+  system("cp #{sdks_dir}/hermes-engine.podspec #{hermes_dir}/hermes-engine.podspec")
 
   hermes_dir
 end

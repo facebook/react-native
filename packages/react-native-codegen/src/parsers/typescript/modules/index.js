@@ -70,6 +70,7 @@ function translateTypeAnnotation(
   types: TypeDeclarationMap,
   aliasMap: {...NativeModuleAliasMap},
   tryParse: ParserErrorCapturer,
+  cxxOnly: boolean,
 ): Nullable<NativeModuleTypeAnnotation> {
   const {nullable, typeAnnotation, typeAliasResolutionStatus} =
     resolveTypeAnnotation(typeScriptTypeAnnotation, types);
@@ -121,6 +122,7 @@ function translateTypeAnnotation(
                  * to be parseable.
                  */
                 nullGuard,
+                cxxOnly,
               ),
             );
 
@@ -177,6 +179,7 @@ function translateTypeAnnotation(
             types,
             aliasMap,
             tryParse,
+            cxxOnly,
           );
         }
         case 'Stringish': {
@@ -239,6 +242,7 @@ function translateTypeAnnotation(
                       types,
                       aliasMap,
                       tryParse,
+                      cxxOnly,
                     ),
                   );
 
@@ -355,6 +359,7 @@ function translateTypeAnnotation(
           types,
           aliasMap,
           tryParse,
+          cxxOnly,
         ),
       );
     }
@@ -401,6 +406,7 @@ function translateFunctionTypeAnnotation(
   types: TypeDeclarationMap,
   aliasMap: {...NativeModuleAliasMap},
   tryParse: ParserErrorCapturer,
+  cxxOnly: boolean,
 ): NativeModuleFunctionTypeAnnotation {
   type Param = NamedShape<Nullable<NativeModuleParamTypeAnnotation>>;
   const params: Array<Param> = [];
@@ -423,6 +429,7 @@ function translateFunctionTypeAnnotation(
             types,
             aliasMap,
             tryParse,
+            cxxOnly,
           ),
         );
 
@@ -466,10 +473,11 @@ function translateFunctionTypeAnnotation(
       types,
       aliasMap,
       tryParse,
+      cxxOnly,
     ),
   );
 
-  if (returnTypeAnnotation.type === 'FunctionTypeAnnotation') {
+  if (!cxxOnly && returnTypeAnnotation.type === 'FunctionTypeAnnotation') {
     throw new UnsupportedFunctionReturnTypeAnnotationParserError(
       hasteModuleName,
       typescriptFunctionTypeAnnotation.returnType,
@@ -494,6 +502,7 @@ function buildPropertySchema(
   types: TypeDeclarationMap,
   aliasMap: {...NativeModuleAliasMap},
   tryParse: ParserErrorCapturer,
+  cxxOnly: boolean,
 ): NativeModulePropertyShape {
   let nullable = false;
   let {key} = property;
@@ -524,6 +533,7 @@ function buildPropertySchema(
         types,
         aliasMap,
         tryParse,
+        cxxOnly,
       ),
     ),
   };
@@ -658,6 +668,7 @@ function buildModuleSchema(
   // Eventually this should be made explicit in the Flow type itself.
   // Also check the hasteModuleName for platform suffix.
   // Note: this shape is consistent with ComponentSchema.
+  let cxxOnly = false;
   const excludedPlatforms = [];
   const namesToValidate = [...moduleNames, hasteModuleName];
   namesToValidate.forEach(name => {
@@ -665,6 +676,9 @@ function buildModuleSchema(
       excludedPlatforms.push('iOS');
     } else if (name.endsWith('IOS')) {
       excludedPlatforms.push('android');
+    } else if (name.endsWith('Cxx')) {
+      cxxOnly = true;
+      excludedPlatforms.push('iOS', 'android');
     }
   });
 
@@ -689,6 +703,7 @@ function buildModuleSchema(
           types,
           aliasMap,
           tryParse,
+          cxxOnly,
         ),
       }));
     })

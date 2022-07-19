@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class RCTFabricSurface;
 @class RCTImageLoader;
 @class RCTMountingManager;
+@class RCTScheduler;
 
 /**
  * Coordinates presenting of React Native Surfaces and represents application
@@ -53,6 +54,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)unregisterSurface:(RCTFabricSurface *)surface;
 
 @property (readonly) RCTMountingManager *mountingManager;
+@property (readonly, nullable) RCTScheduler *scheduler;
+
+/*
+ * Allow callers to initialize a new fabric surface without adding Fabric as a Buck dependency.
+ */
+- (id<RCTSurfaceProtocol>)createFabricSurfaceForModuleName:(NSString *)moduleName
+                                         initialProperties:(NSDictionary *)initialProperties;
 
 - (nullable RCTFabricSurface *)surfaceForRootTag:(ReactTag)rootTag;
 

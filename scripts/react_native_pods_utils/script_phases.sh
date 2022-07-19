@@ -33,10 +33,11 @@ else
 fi
 
 find_node () {
-
     NODE_BINARY="${NODE_BINARY:-$(command -v node || true)}"
     if [ -z "$NODE_BINARY" ]; then
-        error "error: Could not find node. Make sure it is in bash PATH or set the NODE_BINARY environment variable."
+        error "[Error] Could not find node. It looks like that the .xcode.env or .xcode.env.local " \
+"files are misconfigured. Please check that they are exporting a valid NODE_BINARY " \
+"variable, pointing to a node executable."
     fi
 }
 
@@ -99,7 +100,7 @@ generateCodegenArtifactsFromSchema () {
 generateArtifacts () {
     describe "Generating codegen artifacts"
     pushd "$RCT_SCRIPT_RN_DIR" >/dev/null || exit 1
-        "$NODE_BINARY" "scripts/generate-artifacts.js" --path "$RCT_SCRIPT_APP_PATH" --outputPath "$TEMP_OUTPUT_DIR" --fabricEnabled "$RCT_SCRIPT_FABRIC_ENABLED" --configFileDir "$RCT_SCRIPT_CONFIG_FILE_DIR"
+        "$NODE_BINARY" "scripts/generate-artifacts.js" --path "$RCT_SCRIPT_APP_PATH" --outputPath "$TEMP_OUTPUT_DIR" --fabricEnabled "$RCT_SCRIPT_FABRIC_ENABLED" --configFileDir "$RCT_SCRIPT_CONFIG_FILE_DIR" --nodeBinary "$NODE_BINARY"
     popd >/dev/null || exit 1
 }
 

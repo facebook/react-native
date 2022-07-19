@@ -8,23 +8,19 @@ platform :ios, '12.4'
 install! 'cocoapods', :deterministic_uuids => false
 
 USE_FRAMEWORKS = ENV['USE_FRAMEWORKS'] == '1'
+@prefix_path = "../.."
 
 if USE_FRAMEWORKS
   puts "Installing pods with use_frameworks!"
   use_frameworks!
 end
 
-if ENV['USE_HERMES'] == '1'
-  puts "Using Hermes engine"
-end
-
 def pods(options = {})
   project 'RNTesterPods.xcodeproj'
 
   fabric_enabled = true
-  puts "Building RNTester with Fabric #{fabric_enabled ? "enabled" : "disabled"}."
-
-  prefix_path = "../.."
+  hermes_enabled = ENV['USE_HERMES'] == '1'
+  puts "Building RNTester with Fabric #{fabric_enabled ? "enabled" : "disabled"}.#{hermes_enabled ? " Using Hermes engine." : ""}"
 
   if ENV['USE_CODEGEN_DISCOVERY'] == '1'
     # Custom fabric component is only supported when using codegen discovery.
@@ -32,17 +28,17 @@ def pods(options = {})
   end
 
   use_react_native!(
-    path: prefix_path,
+    path: @prefix_path,
     fabric_enabled: fabric_enabled,
-    hermes_enabled: ENV['USE_HERMES'] == '1',
+    hermes_enabled: hermes_enabled,
     app_path: "#{Dir.pwd}",
     config_file_dir: "#{Dir.pwd}/node_modules",
   )
-  pod 'ReactCommon/turbomodule/samples', :path => "#{prefix_path}/ReactCommon"
+  pod 'ReactCommon/turbomodule/samples', :path => "#{@prefix_path}/ReactCommon"
 
   # Additional Pods which aren't included in the default Podfile
-  pod 'React-RCTPushNotification', :path => "#{prefix_path}/Libraries/PushNotificationIOS"
-  pod 'Yoga', :path => "#{prefix_path}/ReactCommon/yoga", :modular_headers => true
+  pod 'React-RCTPushNotification', :path => "#{@prefix_path}/Libraries/PushNotificationIOS"
+  pod 'Yoga', :path => "#{@prefix_path}/ReactCommon/yoga", :modular_headers => true
   # Additional Pods which are classed as unstable
 
   # RNTester native modules and components
@@ -67,6 +63,6 @@ target 'RNTesterIntegrationTests' do
 end
 
 post_install do |installer|
-  react_native_post_install(installer)
+  react_native_post_install(installer, @prefix_path)
   __apply_Xcode_12_5_M1_post_install_workaround(installer)
 end

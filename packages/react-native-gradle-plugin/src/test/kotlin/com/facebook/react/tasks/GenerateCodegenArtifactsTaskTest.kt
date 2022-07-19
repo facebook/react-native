@@ -97,7 +97,6 @@ class GenerateCodegenArtifactsTaskTest {
 
     assertEquals(
         listOf(
-            "yarn",
             "--verbose",
             File(reactNativeDir, "scripts/generate-specs-cli.js").toString(),
             "--platform",

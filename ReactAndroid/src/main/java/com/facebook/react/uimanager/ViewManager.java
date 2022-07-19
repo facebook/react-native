@@ -15,7 +15,7 @@ import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
+import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -333,9 +333,9 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * ViewManager
    *
    * @param context {@link com.facebook.react.bridge.ReactContext} used for the view.
-   * @param localData {@link ReadableMapBuffer} containing "local data" defined in C++
-   * @param props {@link ReadableMapBuffer} containing JS props
-   * @param state {@link ReadableMapBuffer} containing state defined in C++
+   * @param localData {@link MapBuffer} containing "local data" defined in C++
+   * @param props {@link MapBuffer} containing JS props
+   * @param state {@link MapBuffer} containing state defined in C++
    * @param width width of the view (usually zero)
    * @param widthMode widthMode used during calculation of layout
    * @param height height of the view (usually zero)
@@ -353,10 +353,10 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    */
   public long measure(
       Context context,
-      ReadableMapBuffer localData,
-      ReadableMapBuffer props,
+      MapBuffer localData,
+      MapBuffer props,
       // TODO(T114731225): review whether state parameter is needed
-      @Nullable ReadableMapBuffer state,
+      @Nullable MapBuffer state,
       float width,
       YogaMeasureMode widthMode,
       float height,

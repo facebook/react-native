@@ -868,7 +868,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       // If we have a non-zero initialScrollIndex and run this before we've scrolled,
       // wait until we've scrolled the view to the right place. And until then,
       // we will trust the initialScrollIndex suggestion.
-      if (this.props.initialScrollIndex && !this._scrollMetrics.offset) {
+      if (this.props.initialScrollIndex && !this._hasDoneInitialScroll) {
         return cellsAroundViewport;
       }
 
@@ -1306,7 +1306,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         )}
       </VirtualizedListContextProvider>
     );
-    let ret = innerRet;
+    let ret: React.Node = innerRet;
     if (__DEV__) {
       ret = (
         <ScrollView.Context.Consumer>
@@ -2296,7 +2296,7 @@ function describeNestedLists(childList: {
     `    listKey: ${childList.key}\n` +
     `    cellKey: ${childList.cellKey}`;
 
-  let debugInfo = childList.parentDebugInfo;
+  let debugInfo: ?ListDebugInfo = childList.parentDebugInfo;
   while (debugInfo) {
     trace +=
       `\n  Parent (${debugInfo.horizontal ? 'horizontal' : 'vertical'}):\n` +

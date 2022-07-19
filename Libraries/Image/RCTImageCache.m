@@ -18,7 +18,13 @@
 
 #import <React/RCTImageUtils.h>
 
-static const NSUInteger RCTMaxCachableDecodedImageSizeInBytes = 2097152; // 2 MB
+static NSUInteger RCTMaxCachableDecodedImageSizeInBytes = 2*1024*1024;
+static NSUInteger RCTImageCacheTotalCostLimit = 20*1024*1024;
+
+void RCTSetImageCacheLimits(NSUInteger maxCachableDecodedImageSizeInBytes, NSUInteger imageCacheTotalCostLimit) {
+  RCTMaxCachableDecodedImageSizeInBytes = maxCachableDecodedImageSizeInBytes;
+  RCTImageCacheTotalCostLimit = imageCacheTotalCostLimit;
+}
 
 static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat scale,
                                      RCTResizeMode resizeMode)
@@ -38,7 +44,7 @@ static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat sc
 {
   if (self = [super init]) {
     _decodedImageCache = [NSCache new];
-    _decodedImageCache.totalCostLimit = 20 * 1024 * 1024; // 20 MB
+    _decodedImageCache.totalCostLimit = RCTImageCacheTotalCostLimit;
     _cacheStaleTimes = [NSMutableDictionary new];
 
     [[NSNotificationCenter defaultCenter] addObserver:self

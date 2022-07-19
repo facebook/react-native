@@ -14,7 +14,7 @@ import com.facebook.react.bridge.DynamicFromObject
 import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReadableMap
-import com.facebook.react.common.mapbuffer.ReadableMapBuffer
+import com.facebook.react.common.mapbuffer.MapBuffer
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.PointerEvents
 
@@ -97,134 +97,131 @@ object ReactMapBufferPropSetter {
 
   private const val UNDEF_COLOR = Int.MAX_VALUE
 
-  fun setProps(view: ReactViewGroup, viewManager: ReactViewManager, props: ReadableMapBuffer) {
+  fun setProps(view: ReactViewGroup, viewManager: ReactViewManager, props: MapBuffer) {
     for (entry in props) {
       when (entry.key) {
         VP_ACCESSIBILITY_ACTIONS -> {
-          viewManager.accessibilityActions(view, entry.readableMapBuffer)
+          viewManager.accessibilityActions(view, entry.mapBufferValue)
         }
         VP_ACCESSIBILITY_HINT -> {
-          viewManager.setAccessibilityHint(view, entry.string.takeIf { it.isNotEmpty() })
+          viewManager.setAccessibilityHint(view, entry.stringValue.takeIf { it.isNotEmpty() })
         }
         VP_ACCESSIBILITY_LABEL -> {
-          viewManager.setAccessibilityLabel(view, entry.string.takeIf { it.isNotEmpty() })
+          viewManager.setAccessibilityLabel(view, entry.stringValue.takeIf { it.isNotEmpty() })
         }
         VP_ACCESSIBILITY_LABELLED_BY -> {
-          viewManager.accessibilityLabelledBy(view, entry.readableMapBuffer)
+          viewManager.accessibilityLabelledBy(view, entry.mapBufferValue)
         }
         VP_ACCESSIBILITY_LIVE_REGION -> {
-          view.accessibilityLiveRegion(entry.int)
+          view.accessibilityLiveRegion(entry.intValue)
         }
         VP_ACCESSIBILITY_ROLE -> {
-          viewManager.setAccessibilityRole(view, entry.string.takeIf { it.isNotEmpty() })
+          viewManager.setAccessibilityRole(view, entry.stringValue.takeIf { it.isNotEmpty() })
         }
         VP_ACCESSIBILITY_STATE -> {
-          viewManager.accessibilityState(view, entry.readableMapBuffer)
+          viewManager.accessibilityState(view, entry.mapBufferValue)
         }
         VP_ACCESSIBILITY_VALUE -> {
-          viewManager.accessibilityValue(view, entry.string)
+          viewManager.accessibilityValue(view, entry.stringValue)
         }
         VP_ACCESSIBLE -> {
-          viewManager.setAccessible(view, entry.boolean)
+          viewManager.setAccessible(view, entry.booleanValue)
         }
         VP_BACKFACE_VISIBILITY -> {
-          viewManager.backfaceVisibility(view, entry.int)
+          viewManager.backfaceVisibility(view, entry.intValue)
         }
         VP_BG_COLOR -> {
           // TODO: color for some reason can be object in Java but not in C++
-          viewManager.backgroundColor(view, entry.int)
+          viewManager.backgroundColor(view, entry.intValue)
         }
         VP_BORDER_COLOR -> {
-          viewManager.borderColor(view, entry.readableMapBuffer)
+          viewManager.borderColor(view, entry.mapBufferValue)
         }
         VP_BORDER_RADII -> {
-          viewManager.borderRadius(view, entry.readableMapBuffer)
+          viewManager.borderRadius(view, entry.mapBufferValue)
         }
         VP_BORDER_STYLE -> {
-          viewManager.borderStyle(view, entry.int)
+          viewManager.borderStyle(view, entry.intValue)
         }
         VP_ELEVATION -> {
-          viewManager.setElevation(view, entry.double.toFloat())
+          viewManager.setElevation(view, entry.doubleValue.toFloat())
         }
         VP_FOCUSABLE -> {
-          viewManager.setFocusable(view, entry.boolean)
+          viewManager.setFocusable(view, entry.booleanValue)
         }
         VP_HAS_TV_FOCUS -> {
-          viewManager.setTVPreferredFocus(view, entry.boolean)
+          viewManager.setTVPreferredFocus(view, entry.booleanValue)
         }
         VP_HIT_SLOP -> {
-          view.hitSlop(entry.readableMapBuffer)
+          view.hitSlop(entry.mapBufferValue)
         }
         VP_IMPORTANT_FOR_ACCESSIBILITY -> {
-          view.importantForAccessibility(entry.int)
+          view.importantForAccessibility(entry.intValue)
         }
         VP_NATIVE_BACKGROUND -> {
-          viewManager.nativeBackground(view, entry.readableMapBuffer)
+          viewManager.nativeBackground(view, entry.mapBufferValue)
         }
         VP_NATIVE_FOREGROUND -> {
-          viewManager.nativeForeground(view, entry.readableMapBuffer)
+          viewManager.nativeForeground(view, entry.mapBufferValue)
         }
         VP_NATIVE_ID -> {
-          viewManager.setNativeId(view, entry.string.takeIf { it.isNotEmpty() })
+          viewManager.setNativeId(view, entry.stringValue.takeIf { it.isNotEmpty() })
         }
         VP_OFFSCREEN_ALPHA_COMPOSITING -> {
-          viewManager.setNeedsOffscreenAlphaCompositing(view, entry.boolean)
+          viewManager.setNeedsOffscreenAlphaCompositing(view, entry.booleanValue)
         }
         VP_OPACITY -> {
-          viewManager.setOpacity(view, entry.double.toFloat())
+          viewManager.setOpacity(view, entry.doubleValue.toFloat())
         }
         VP_POINTER_EVENTS -> {
-          view.pointerEvents(entry.int)
+          view.pointerEvents(entry.intValue)
         }
         VP_POINTER_ENTER -> {
-          viewManager.setPointerEnter(view, entry.boolean)
+          viewManager.setPointerEnter(view, entry.booleanValue)
         }
         VP_POINTER_LEAVE -> {
-          viewManager.setPointerLeave(view, entry.boolean)
+          viewManager.setPointerLeave(view, entry.booleanValue)
         }
         VP_POINTER_MOVE -> {
-          viewManager.setPointerMove(view, entry.boolean)
+          viewManager.setPointerMove(view, entry.booleanValue)
         }
         VP_REMOVE_CLIPPED_SUBVIEW -> {
-          viewManager.setRemoveClippedSubviews(view, entry.boolean)
+          viewManager.setRemoveClippedSubviews(view, entry.booleanValue)
         }
         VP_RENDER_TO_HARDWARE_TEXTURE -> {
-          viewManager.setRenderToHardwareTexture(view, entry.boolean)
+          viewManager.setRenderToHardwareTexture(view, entry.booleanValue)
         }
         VP_SHADOW_COLOR -> {
           // TODO: color for some reason can be object in Java but not in C++
-          viewManager.shadowColor(view, entry.int)
+          viewManager.shadowColor(view, entry.intValue)
         }
         VP_TEST_ID -> {
-          viewManager.setTestId(view, entry.string.takeIf { it.isNotEmpty() })
+          viewManager.setTestId(view, entry.stringValue.takeIf { it.isNotEmpty() })
         }
         VP_TRANSFORM -> {
-          viewManager.transform(view, entry.readableMapBuffer)
+          viewManager.transform(view, entry.mapBufferValue)
         }
         VP_ZINDEX -> {
-          viewManager.setZIndex(view, entry.int.toFloat())
+          viewManager.setZIndex(view, entry.intValue.toFloat())
         }
         YG_BORDER_WIDTH -> {
-          viewManager.borderWidth(view, entry.readableMapBuffer)
+          viewManager.borderWidth(view, entry.mapBufferValue)
         }
         YG_OVERFLOW -> {
-          viewManager.overflow(view, entry.int)
+          viewManager.overflow(view, entry.intValue)
         }
       }
     }
   }
 
-  private fun ReactViewManager.accessibilityActions(
-      view: ReactViewGroup,
-      mapBuffer: ReadableMapBuffer
-  ) {
+  private fun ReactViewManager.accessibilityActions(view: ReactViewGroup, mapBuffer: MapBuffer) {
     val actions = mutableListOf<ReadableMap>()
     for (entry in mapBuffer) {
       val map = JavaOnlyMap()
-      val action = entry.readableMapBuffer
+      val action = entry.mapBufferValue
       if (action != null) {
         map.putString("name", action.getString(ACCESSIBILITY_ACTION_NAME))
-        if (action.hasKey(ACCESSIBILITY_ACTION_LABEL)) {
+        if (action.contains(ACCESSIBILITY_ACTION_LABEL)) {
           map.putString("label", action.getString(ACCESSIBILITY_ACTION_LABEL))
         }
       }
@@ -245,7 +242,7 @@ object ReactMapBufferPropSetter {
     ViewCompat.setAccessibilityLiveRegion(this, mode)
   }
 
-  private fun ReactViewManager.accessibilityState(view: ReactViewGroup, value: ReadableMapBuffer) {
+  private fun ReactViewManager.accessibilityState(view: ReactViewGroup, value: MapBuffer) {
     val accessibilityState = JavaOnlyMap()
     accessibilityState.putBoolean("selected", value.getBoolean(ACCESSIBILITY_STATE_SELECTED))
     accessibilityState.putBoolean("busy", value.getBoolean(ACCESSIBILITY_STATE_BUSY))
@@ -273,17 +270,14 @@ object ReactMapBufferPropSetter {
     setAccessibilityValue(view, map)
   }
 
-  private fun ReactViewManager.accessibilityLabelledBy(
-      view: ReactViewGroup,
-      value: ReadableMapBuffer
-  ) {
+  private fun ReactViewManager.accessibilityLabelledBy(view: ReactViewGroup, value: MapBuffer) {
     val converted =
         if (value.count == 0) {
           DynamicFromObject(null)
         } else {
           val array = JavaOnlyArray()
           for (label in value) {
-            array.pushString(label.string)
+            array.pushString(label.stringValue)
           }
           DynamicFromObject(array)
         }
@@ -306,7 +300,7 @@ object ReactMapBufferPropSetter {
     setBackgroundColor(view, color)
   }
 
-  private fun ReactViewManager.borderColor(view: ReactViewGroup, value: ReadableMapBuffer) {
+  private fun ReactViewManager.borderColor(view: ReactViewGroup, value: MapBuffer) {
     for (entry in value) {
       val index =
           when (val key = entry.key) {
@@ -319,12 +313,12 @@ object ReactMapBufferPropSetter {
             EDGE_END -> 6
             else -> throw IllegalArgumentException("Unknown key for border color: $key")
           }
-      val colorValue = entry.int
+      val colorValue = entry.intValue
       setBorderColor(view, index, colorValue.takeIf { it != -1 })
     }
   }
 
-  private fun ReactViewManager.borderRadius(view: ReactViewGroup, value: ReadableMapBuffer) {
+  private fun ReactViewManager.borderRadius(view: ReactViewGroup, value: MapBuffer) {
     for (entry in value) {
       val index =
           when (val key = entry.key) {
@@ -339,7 +333,7 @@ object ReactMapBufferPropSetter {
             CORNER_BOTTOM_END -> 8
             else -> throw IllegalArgumentException("Unknown key for border style: $key")
           }
-      val borderRadius = entry.double
+      val borderRadius = entry.doubleValue
       if (!borderRadius.isNaN()) {
         setBorderRadius(view, index, borderRadius.toFloat())
       }
@@ -357,7 +351,7 @@ object ReactMapBufferPropSetter {
     setBorderStyle(view, stringValue)
   }
 
-  private fun ReactViewGroup.hitSlop(value: ReadableMapBuffer) {
+  private fun ReactViewGroup.hitSlop(value: MapBuffer) {
     val rect =
         Rect(
             PixelUtil.toPixelFromDIP(value.getDouble(EDGE_LEFT)).toInt(),
@@ -392,15 +386,15 @@ object ReactMapBufferPropSetter {
     setPointerEvents(pointerEvents)
   }
 
-  private fun ReactViewManager.transform(view: ReactViewGroup, value: ReadableMapBuffer) {
+  private fun ReactViewManager.transform(view: ReactViewGroup, value: MapBuffer) {
     val list = JavaOnlyArray()
     for (entry in value) {
-      list.pushDouble(entry.double)
+      list.pushDouble(entry.doubleValue)
     }
     setTransform(view, list)
   }
 
-  private fun ReactViewManager.borderWidth(view: ReactViewGroup, value: ReadableMapBuffer) {
+  private fun ReactViewManager.borderWidth(view: ReactViewGroup, value: MapBuffer) {
     for (entry in value) {
       val index =
           when (val key = entry.key) {
@@ -413,7 +407,7 @@ object ReactMapBufferPropSetter {
             EDGE_END -> 6
             else -> throw IllegalArgumentException("Unknown key for border width: $key")
           }
-      val borderWidth = entry.double
+      val borderWidth = entry.doubleValue
       if (!borderWidth.isNaN()) {
         setBorderWidth(view, index, borderWidth.toFloat())
       }
@@ -437,15 +431,15 @@ object ReactMapBufferPropSetter {
     setShadowColor(view, color)
   }
 
-  private fun ReactViewManager.nativeBackground(view: ReactViewGroup, value: ReadableMapBuffer) {
+  private fun ReactViewManager.nativeBackground(view: ReactViewGroup, value: MapBuffer) {
     setNativeBackground(view, value.toJsDrawableDescription())
   }
 
-  private fun ReactViewManager.nativeForeground(view: ReactViewGroup, value: ReadableMapBuffer) {
+  private fun ReactViewManager.nativeForeground(view: ReactViewGroup, value: MapBuffer) {
     setNativeForeground(view, value.toJsDrawableDescription())
   }
 
-  private fun ReadableMapBuffer.toJsDrawableDescription(): ReadableMap? {
+  private fun MapBuffer.toJsDrawableDescription(): ReadableMap? {
     if (count == 0) {
       return null
     }
@@ -459,11 +453,11 @@ object ReactMapBufferPropSetter {
       }
       1 -> {
         result.putString("type", "RippleAndroid")
-        if (hasKey(NATIVE_DRAWABLE_COLOR)) {
+        if (contains(NATIVE_DRAWABLE_COLOR)) {
           result.putInt("color", getInt(NATIVE_DRAWABLE_COLOR))
         }
         result.putBoolean("borderless", getBoolean(NATIVE_DRAWABLE_BORDERLESS))
-        if (hasKey(NATIVE_DRAWABLE_RIPPLE_RADIUS)) {
+        if (contains(NATIVE_DRAWABLE_RIPPLE_RADIUS)) {
           result.putDouble("rippleRadius", getDouble(NATIVE_DRAWABLE_RIPPLE_RADIUS))
         }
       }

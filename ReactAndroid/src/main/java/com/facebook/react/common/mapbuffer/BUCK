@@ -4,11 +4,17 @@ rn_android_library(
     name = "mapbuffer",
     srcs = glob([
         "*.java",
+        "*.kt",
     ]),
     autoglob = False,
     is_androidx = True,
-    labels = ["supermodule:xplat/default/public.react_native.infra"],
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+        "supermodule:xplat/default/public.react_native.infra",
+    ],
+    language = "KOTLIN",
     provided_deps = [],
+    pure_kotlin = False,
     required_for_source_only_abi = True,
     visibility = [
         "PUBLIC",
@@ -21,9 +27,9 @@ rn_android_library(
         react_native_dep("third-party/android/androidx:annotation"),
         react_native_dep("third-party/java/infer-annotations:infer-annotations"),
         react_native_target("java/com/facebook/react/common:common"),
+        react_native_dep("third-party/java/jsr-305:jsr-305"),
         # dependencies used for systraces
         react_native_dep("java/com/facebook/systrace:systrace"),
         react_native_target("java/com/facebook/react/bridge:bridge"),
     ],
-    exported_deps = [],
 )

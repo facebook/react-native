@@ -14,6 +14,7 @@ NSString *const RCTJSRawStackTraceKey = @"RCTJSRawStackTraceKey";
 NSString *const RCTObjCStackTraceKey = @"RCTObjCStackTraceKey";
 NSString *const RCTFatalExceptionName = @"RCTFatalException";
 NSString *const RCTUntruncatedMessageKey = @"RCTUntruncatedMessageKey";
+NSString *const RCTJSExtraDataKey = @"RCTJSExtraDataKey";
 
 static NSString *const RCTAssertFunctionStack = @"RCTAssertFunctionStack";
 
@@ -236,10 +237,10 @@ RCTFatalExceptionHandler RCTGetFatalExceptionHandler(void)
 #if RCT_NEW_ARCHITECTURE
 static RCTNotAllowedValidation validationReportingEnabled = RCTNotAllowedInBridgeless;
 #else
-static RCTNotAllowedValidation validationReportingEnabled = 0;
+static RCTNotAllowedValidation validationReportingEnabled = RCTNotAllowedValidationDisabled;
 #endif
 
-__attribute__((used)) RCT_EXTERN void RCTEnableNewArchitectureValidationReporting(RCTNotAllowedValidation type)
+__attribute__((used)) RCT_EXTERN void RCTNewArchitectureValidationSetEnabled(RCTNotAllowedValidation type)
 {
 #if RCT_NEW_ARCHITECTURE
   // Cannot disable the reporting in this mode.
@@ -253,11 +254,13 @@ __attribute__((used)) RCT_EXTERN void RCTEnableNewArchitectureValidationReportin
 static BOOL shouldEnforceValidation(RCTNotAllowedValidation type)
 {
   switch (type) {
-    case RCTNotAllowedInFabric:
+    case RCTNotAllowedInAppWideFabric:
       return validationReportingEnabled == RCTNotAllowedInBridgeless ||
-          validationReportingEnabled == RCTNotAllowedInFabric;
+          validationReportingEnabled == RCTNotAllowedInAppWideFabric;
     case RCTNotAllowedInBridgeless:
       return validationReportingEnabled == RCTNotAllowedInBridgeless;
+    case RCTNotAllowedValidationDisabled:
+      return NO;
   }
   return NO;
 }
@@ -279,7 +282,10 @@ static NSString *validationMessage(RCTNotAllowedValidation type, id context, NSS
 {
   NSString *notAllowedType;
   switch (type) {
-    case RCTNotAllowedInFabric:
+    case RCTNotAllowedValidationDisabled:
+      RCTAssert(0, @"RCTNotAllowedValidationDisabled not a validation type.");
+      break;
+    case RCTNotAllowedInAppWideFabric:
       notAllowedType = @"Fabric";
       break;
     case RCTNotAllowedInBridgeless:
