@@ -1633,8 +1633,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const threshold =
       onEndReachedThreshold != null ? onEndReachedThreshold * visibleLength : 2;
     const timeDiff = this.lastTimeCalled
-      ? this.lastTimeCalled - Date.now()
-      : 4000;
+      ? Math.abs(this.lastTimeCalled - Date.now())
+      : 101;
     if (
       this.beginningReached &&
       talkbackEnabledWithInvertedFlatlist &&
@@ -1642,7 +1642,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this._hasTriggeredInitialScrollToIndex &&
       this.state.last === getItemCount(data) - 1 &&
       this._scrollMetrics.contentLength !== this._sentEndForContentLength &&
-      timeDiff > 500
+      timeDiff > 100
     ) {
       this.lastBottomHeight = this.bottom;
       // Only call onEndReached once for a given content length
