@@ -49,6 +49,7 @@
     "scripts/xcode/with-environment.sh",
     "scripts/launchPackager.bat",
     "scripts/launchPackager.command",
+    "scripts/native_modules.rb",
     "scripts/node-binary.sh",
     "scripts/packager.sh",
     "scripts/packager-reporter.js",
