@@ -414,11 +414,19 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       return;
     }
 
-    this._scrollRef.scrollTo(
-      horizontalOrDefault(this.props.horizontal)
-        ? {x: offset, animated}
-        : {y: offset, animated},
-    );
+    if (this.state.screenreaderEnabled && this.props.inverted) {
+      this._scrollRef.scrollTo(
+        horizontalOrDefault(this.props.horizontal)
+          ? {x: 0, animated}
+          : {y: 0, animated},
+      );
+    } else {
+      this._scrollRef.scrollTo(
+        horizontalOrDefault(this.props.horizontal)
+          ? {x: offset, animated}
+          : {y: offset, animated},
+      );
+    }
   }
 
   // scrollToIndex may be janky without getItemLayout prop
