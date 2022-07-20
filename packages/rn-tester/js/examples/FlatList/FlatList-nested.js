@@ -91,7 +91,7 @@ function NestedFlatList(props) {
       <Text>Flatlist</Text>
       <FlatList
         style={{height: 400}}
-        inverted={false}
+        inverted
         renderItem={renderItem}
         data={items}
       />
