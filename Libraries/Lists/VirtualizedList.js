@@ -1706,10 +1706,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this.props.inverted &&
       screenreaderEnabled
     ) {
-      this.scrollToOffset({
-        animated: false,
-        offset: this._scrollMetrics.contentLength,
-      });
+      const endOfList =
+        this._scrollMetrics.contentLength + this._scrollMetrics.visibleLength;
+      this.scrollToOffset({offset: endOfList});
       this._hasTriggeredInitialScrollToIndex = true;
     }
     this._scheduleCellsToRenderUpdate();
