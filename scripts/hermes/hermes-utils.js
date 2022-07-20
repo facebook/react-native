@@ -190,12 +190,27 @@ function isOnAReleaseTag() {
   return currentRemote.endsWith('facebook/react-native.git');
 }
 
-function shouldBuildHermesFromSource() {
+function isPRAgainstStable(pullRequest) {
+  if (pullRequest == null) {
+    return false;
+  }
+
+  const prComponents = pullRequest.split('/');
+  const prNumber = prComponents[prComponents.length - 1];
+  const apiURL = `https://api.github.com/repos/facebook/react-native/pulls/${prNumber}`;
+  const prJson = JSON.parse(execSync(`curl ${apiURL}`).toString());
+  const baseBranch = prJson.base.label;
+
+  return baseBranch.endsWith('-stable');
+}
+
+function shouldBuildHermesFromSource(pullRequest) {
   const hermesTag = readHermesTag();
 
   return (
     isOnAReleaseBranch() ||
     isOnAReleaseTag() ||
+    isPRAgainstStable(pullRequest) ||
     hermesTag === DEFAULT_HERMES_TAG
   );
 }
