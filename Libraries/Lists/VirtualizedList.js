@@ -1629,6 +1629,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       ? Math.abs(this.lastTimeCalled - Date.now()) > 100
       : true;
     if (
+      onEndReached &&
       this.beginningReached &&
       talkbackEnabledWithInvertedFlatlist &&
       distanceFromEnd === 0 &&
@@ -1637,12 +1638,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this._scrollMetrics.contentLength !== this._sentEndForContentLength &&
       canTriggerOnEndReachedWithTalkback
     ) {
+      // save the last position in the flastlist to restore it after animation to Top
       this.lastBottomHeight = this.bottom;
       // Only call onEndReached once for a given content length
       this._sentEndForContentLength = this._scrollMetrics.contentLength;
       // wait 100 ms to call again onEndReached (TalkBack scrolling is slower)
       this.lastTimeCalled = Date.now();
-      // save the last position in the flastlist to restore it after animation to Top
       onEndReached({distanceFromEnd});
     } else {
       this.lastBottomHeight = undefined;
@@ -1707,19 +1708,17 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     // talkback inverted flatlist, height is used to compute
     // an inverted flatlist contentLength from the bottom of the screen
     // setTimeout is required as animated false will not work
-    if (screenreaderEnabled && this.props.inverted && this.lastBottomHeight) {
+    if (
+      this._hasTriggeredInitialScrollToIndex &&
+      screenreaderEnabled &&
+      this.props.inverted &&
+      this.lastBottomHeight
+    ) {
       const newBottomHeight = height - this.lastBottomHeight;
-      setTimeout(
-        (flatlist, newBottomHeight) => {
-          flatlist.scrollToOffset({
-            offset: newBottomHeight,
-            animated: false,
-          });
-        },
-        1,
-        this,
-        newBottomHeight,
-      );
+      this.scrollToOffset({
+        offset: newBottomHeight,
+        animated: false,
+      });
     }
     this._maybeCallOnEndReached();
   };
