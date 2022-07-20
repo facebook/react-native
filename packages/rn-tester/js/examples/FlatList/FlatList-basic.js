@@ -87,6 +87,8 @@ class FlatListExample extends React.PureComponent<Props, State> {
     isRTL: IS_RTL,
   };
 
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   _onChangeFilterText = filterText => {
     this.setState({filterText});
   };
@@ -297,6 +299,8 @@ class FlatListExample extends React.PureComponent<Props, State> {
       /* $FlowFixMe[invalid-computed-prop] (>=0.111.0 site=react_native_fb)
        * This comment suppresses an error found when Flow v0.111 was deployed.
        * To see the error, delete this comment and run Flow. */
+      /* $FlowFixMe[missing-local-annot] The type annotation(s) required by
+       * Flow's LTI update could not be added via codemod */
       [flatListPropKey]: ({item, separators}) => {
         return (
           <ItemComponent

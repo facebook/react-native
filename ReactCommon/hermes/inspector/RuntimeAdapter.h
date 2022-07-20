@@ -66,7 +66,7 @@ class INSPECTOR_EXPORT SharedRuntimeAdapter : public RuntimeAdapter {
   SharedRuntimeAdapter(
       std::shared_ptr<jsi::Runtime> runtime,
       debugger::Debugger &debugger);
-  virtual ~SharedRuntimeAdapter();
+  ~SharedRuntimeAdapter() override;
 
   jsi::Runtime &getRuntime() override;
   debugger::Debugger &getDebugger() override;

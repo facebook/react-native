@@ -22,7 +22,7 @@ const symbolicateStackTrace: JestMockFn<
   Promise<Array<StackFrame>>,
 > = (require('../../../Core/Devtools/symbolicateStackTrace'): any);
 
-const createStack = methodNames =>
+const createStack = (methodNames: Array<string>) =>
   methodNames.map(methodName => ({
     column: null,
     file: 'file://path/to/file.js',

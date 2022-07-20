@@ -677,13 +677,21 @@ jobs:
     executor: reactnativeios
     environment:
       - PROJECT_NAME: "iOSTemplateProject"
+      - HERMES_WS_DIR: *hermes_workspace_root
 
     steps:
       - checkout_code_with_cache
       - run_yarn
       - attach_workspace:
           at: .
-
+      - *attach_hermes_workspace
+      - run:
+          name: Set USE_HERMES=1
+          command: echo "export USE_HERMES=1" >> $BASH_ENV
+      - run:
+          name: Set HERMES_ENGINE_TARBALL_PATH
+          command: |
+            echo "export HERMES_ENGINE_TARBALL_PATH=$(ls -AU $HERMES_WS_DIR/hermes-runtime-darwin/hermes-runtime-darwin-*.tar.gz | head -1)" >> $BASH_ENV
       - run:
           name: Create iOS template project
           command: |
@@ -693,8 +701,7 @@ jobs:
             node ./scripts/set-rn-template-version.js "file:$PATH_TO_PACKAGE"
             mkdir -p ~/tmp
             cd ~/tmp
-            node "$REPO_ROOT/cli.js" init "$PROJECT_NAME" --template "$REPO_ROOT"
-
+            node "$REPO_ROOT/cli.js" init "$PROJECT_NAME" --template "$REPO_ROOT" --verbose
       - run:
           name: Build template project
           command: |
@@ -992,6 +999,9 @@ jobs:
             cp LICENSE /tmp/cocoapods-package-root
 
             tar -C /tmp/cocoapods-package-root/ -czvf /tmp/hermes/output/hermes-runtime-darwin-v$(get_release_version).tar.gz .
+
+            mkdir -p /tmp/hermes/hermes-runtime-darwin
+            cp /tmp/hermes/output/hermes-runtime-darwin-v$(get_release_version).tar.gz /tmp/hermes/hermes-runtime-darwin/.
       - save_cache:
           key: *hermes_cache_key
           paths:
@@ -1002,12 +1012,13 @@ jobs:
             - ~/react-native/hermes/build_macosx
             - ~/react-native/hermes/destroot
       - store_artifacts:
-          path: /tmp/hermes/output/
+          path: /tmp/hermes/hermes-runtime-darwin/
       - store_artifacts:
           path: /tmp/hermes/osx-bin/
       - persist_to_workspace:
           root: /tmp/hermes/
           paths:
+            - hermes-runtime-darwin
             - osx-bin
 
   build_hermesc_windows:
@@ -1206,6 +1217,14 @@ jobs:
                     -H "Accept: application/vnd.github.v3+json" \
                     -u "$PAT_USERNAME:$PAT_TOKEN" \
                     -d "{\"event_type\": \"publish\", \"client_payload\": { \"version\": \"${CIRCLE_TAG:1}\" }}"
+            - run:
+                name: Install dependencies
+                command: apt update && apt install -y jq jo
+            - run:
+                name: Create draft GitHub Release and upload Hermes binaries
+                command: |
+                  ARTIFACTS=("$HERMES_WS_DIR/hermes-runtime-darwin/hermes-runtime-darwin-$CIRCLE_TAG.tar.gz")
+                  ./scripts/circleci/create_github_release.sh $CIRCLE_TAG $CIRCLE_PROJECT_USERNAME $CIRCLE_PROJECT_REPONAME $GITHUB_TOKEN "${ARTIFACTS[@]}"
       # END: Stable releases
 
   # -------------------------

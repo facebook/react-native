@@ -200,6 +200,11 @@ void StubViewTree::mutate(ShadowViewMutationList const &mutations) {
         break;
       }
 
+      case ShadowViewMutation::RemoveDeleteTree: {
+        // TODO: do something here
+        break;
+      }
+
       case ShadowViewMutation::Update: {
         STUB_VIEW_LOG({
           LOG(ERROR) << "StubView: Update [" << mutation.newChildShadowView.tag

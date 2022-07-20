@@ -32,6 +32,9 @@
 #include <react/renderer/uimanager/primitives.h>
 #include <react/utils/ContextContainer.h>
 
+// Included to set BaseTextProps config; can be deleted later.
+#include <react/renderer/components/text/BaseTextProps.h>
+
 #include <glog/logging.h>
 
 using namespace facebook::jni;
@@ -440,6 +443,17 @@ void Binding::installFabricUIManager(
   contextContainer->insert(
       "EnableLargeTextMeasureCache",
       getFeatureFlagValue("enableLargeTextMeasureCache"));
+
+  // Props setter pattern feature
+  Props::enablePropIteratorSetter =
+      getFeatureFlagValue("enableCppPropsIteratorSetter");
+  AccessibilityProps::enablePropIteratorSetter =
+      Props::enablePropIteratorSetter;
+  BaseTextProps::enablePropIteratorSetter = Props::enablePropIteratorSetter;
+
+  // RemoveDelete mega-op
+  ShadowViewMutation::PlatformSupportsRemoveDeleteTreeInstruction =
+      getFeatureFlagValue("enableRemoveDeleteTreeInstruction");
 
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = contextContainer;

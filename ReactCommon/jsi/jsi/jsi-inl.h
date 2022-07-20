@@ -189,8 +189,8 @@ inline std::shared_ptr<T> Object::getHostObject(Runtime& runtime) const {
 template <typename T>
 inline std::shared_ptr<T> Object::asHostObject(Runtime& runtime) const {
   if (!isHostObject<T>(runtime)) {
-    detail::throwOrDie<JSError>(
-        runtime, "Object is not a HostObject of desired type");
+    detail::throwOrDie<JSINativeException>(
+        "Object is not a HostObject of desired type");
   }
   return std::static_pointer_cast<T>(runtime.getHostObject(*this));
 }
@@ -200,6 +200,24 @@ inline std::shared_ptr<HostObject> Object::getHostObject<HostObject>(
     Runtime& runtime) const {
   assert(runtime.isHostObject(*this));
   return runtime.getHostObject(*this);
+}
+
+template <typename T>
+inline bool Object::hasNativeState(Runtime& runtime) const {
+  return runtime.hasNativeState(*this) &&
+      std::dynamic_pointer_cast<T>(runtime.getNativeState(*this));
+}
+
+template <typename T>
+inline std::shared_ptr<T> Object::getNativeState(Runtime& runtime) const {
+  assert(hasNativeState<T>(runtime));
+  return std::static_pointer_cast<T>(runtime.getNativeState(*this));
+}
+
+inline void Object::setNativeState(
+    Runtime& runtime,
+    std::shared_ptr<NativeState> state) const {
+  runtime.setNativeState(*this, state);
 }
 
 inline Array Object::getPropertyNames(Runtime& runtime) const {

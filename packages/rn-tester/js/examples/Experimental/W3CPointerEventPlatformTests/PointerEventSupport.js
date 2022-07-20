@@ -14,6 +14,10 @@ import type {PointerEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
 import {useMemo} from 'react';
 
+// These props are not in the specification but are present in the WPT so we keep them
+// but marked as skipped so we don't prioritize them
+const SKIPPED_PROPS = ['fromElement', 'toElement'];
+
 // Check for conformance to PointerEvent interface
 // TA: 1.1, 1.2, 1.6, 1.7, 1.8, 1.9, 1.10, 1.11, 1.12, 1.13
 // Adapted from https://github.com/web-platform-tests/wpt/blob/6c26371ea1c144dd612864a278e88b6ba2f3d883/pointerevents/pointerevent_support.js#L15
@@ -60,19 +64,19 @@ export function check_PointerEvent(
   // * if the attribute is "readonly", it cannot be changed
   // TA: 1.1, 1.2
   const idl_type_check = {
-    long: function (v) {
+    long: function (v: any) {
       return typeof v === 'number' && Math.round(v) === v;
     },
-    float: function (v) {
+    float: function (v: any) {
       return typeof v === 'number';
     },
-    string: function (v) {
+    string: function (v: any) {
       return typeof v === 'string';
     },
-    boolean: function (v) {
+    boolean: function (v: any) {
       return typeof v === 'boolean';
     },
-    object: function (v) {
+    object: function (v: any) {
       return typeof v === 'object';
     },
   };
@@ -95,33 +99,54 @@ export function check_PointerEvent(
     const name = attr[2];
     const value = attr[3];
 
+    const skip = SKIPPED_PROPS.includes(name);
+
     // existence check
-    harness.test(({assert_true}) => {
-      assert_true(
-        name in nativeEvent,
-        name + ' attribute in ' + eventType + ' event',
-      );
-    }, pointerTestName + '.' + name + ' attribute exists');
+    harness.test(
+      ({assert_true}) => {
+        assert_true(
+          name in nativeEvent,
+          name + ' attribute in ' + eventType + ' event',
+        );
+      },
+      pointerTestName + '.' + name + ' attribute exists',
+      {skip},
+    );
 
     // readonly check
     // TODO
 
     // type check
-    harness.test(({assert_true}) => {
-      assert_true(
+    harness.test(
+      ({assert_true}) => {
+        assert_true(
+          // $FlowFixMe
+          idl_type_check[type](nativeEvent[name]),
+          name + ' attribute of type ' + type,
+        );
+      },
+      pointerTestName +
+        '.' +
+        name +
+        ' IDL type ' +
+        type +
+        ' (JS type was ' +
         // $FlowFixMe
-        idl_type_check[type](nativeEvent[name]),
-        name + ' attribute of type ' + type,
-      );
-      // $FlowFixMe
-    }, pointerTestName + '.' + name + ' IDL type ' + type + ' (JS type was ' + typeof nativeEvent[name] + ')');
+        typeof nativeEvent[name] +
+        ')',
+      {skip},
+    );
 
     // value check if defined
     if (value !== undefined) {
-      harness.test(({assert_equals}) => {
-        // $FlowFixMe
-        assert_equals(nativeEvent[name], value, name + ' attribute value');
-      }, pointerTestName + '.' + name + ' value is ' + String(value) + '.');
+      harness.test(
+        ({assert_equals}) => {
+          // $FlowFixMe
+          assert_equals(nativeEvent[name], value, name + ' attribute value');
+        },
+        pointerTestName + '.' + name + ' value is ' + String(value) + '.',
+        {skip},
+      );
     }
   });
 
@@ -189,7 +214,8 @@ export function useTestEventHandler(
   handler: (event: any, eventName: string) => void,
 ): ViewProps {
   const eventProps: any = useMemo(() => {
-    const handlerFactory = eventName => event => handler(event, eventName);
+    const handlerFactory = (eventName: string) => (event: any) =>
+      handler(event, eventName);
     const props = {};
     for (const eventName of eventNames) {
       const eventPropName =

@@ -144,6 +144,8 @@ function handleException(e: mixed, isFatal: boolean) {
   }
 }
 
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
 function reactConsoleErrorHandler(...args) {
   // bubble up to any original handlers
   console._errorOriginal(...args);

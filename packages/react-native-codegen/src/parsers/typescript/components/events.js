@@ -17,8 +17,12 @@ import type {
 } from '../../../CodegenSchema.js';
 
 function getPropertyType(
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   name,
-  optional,
+  optional: boolean,
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   typeAnnotation,
 ): NamedShape<EventTypeAnnotation> {
   const type =
@@ -85,17 +89,17 @@ function getPropertyType(
       };
 
     case 'TSUnionType':
-      // Check for <T | null | void>
+      // Check for <T | null | undefined>
       if (
         typeAnnotation.types.some(
-          t => t.type === 'TSNullKeyword' || t.type === 'TSVoidKeyword',
+          t => t.type === 'TSNullKeyword' || t.type === 'TSUndefinedKeyword',
         )
       ) {
         const optionalType = typeAnnotation.types.filter(
-          t => t.type !== 'TSNullKeyword' && t.type !== 'TSVoidKeyword',
+          t => t.type !== 'TSNullKeyword' && t.type !== 'TSUndefinedKeyword',
         )[0];
 
-        // Check for <(T | T2) | null | void>
+        // Check for <(T | T2) | null | undefined>
         if (optionalType.type === 'TSParenthesizedType') {
           return getPropertyType(name, true, optionalType.typeAnnotation);
         }
@@ -118,10 +122,10 @@ function getPropertyType(
 }
 
 function findEventArgumentsAndType(
-  typeAnnotation,
-  types,
-  bubblingType,
-  paperName,
+  typeAnnotation: $FlowFixMe,
+  types: TypeMap,
+  bubblingType: void | 'direct' | 'bubble',
+  paperName: ?$FlowFixMe,
 ) {
   if (!typeAnnotation.typeName) {
     throw new Error("typeAnnotation of event doesn't have a name");
@@ -169,6 +173,8 @@ function findEventArgumentsAndType(
   }
 }
 
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
 function buildPropertiesForEvent(property): NamedShape<EventTypeAnnotation> {
   const name = property.key.name;
   const optional = property.optional || false;
@@ -177,7 +183,9 @@ function buildPropertiesForEvent(property): NamedShape<EventTypeAnnotation> {
   return getPropertyType(name, optional, typeAnnotation);
 }
 
-function getEventArgument(argumentProps, name) {
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
+function getEventArgument(argumentProps, name: $FlowFixMe) {
   return {
     type: 'ObjectTypeAnnotation',
     properties: argumentProps.map(buildPropertiesForEvent),
@@ -193,15 +201,15 @@ function buildEventSchema(
   let optional = property.optional || false;
   let typeAnnotation = property.typeAnnotation.typeAnnotation;
 
-  // Check for T | null | void
+  // Check for T | null | undefined
   if (
     typeAnnotation.type === 'TSUnionType' &&
     typeAnnotation.types.some(
-      t => t.type === 'TSNullKeyword' || t.type === 'TSVoidKeyword',
+      t => t.type === 'TSNullKeyword' || t.type === 'TSUndefinedKeyword',
     )
   ) {
     typeAnnotation = typeAnnotation.types.filter(
-      t => t.type !== 'TSNullKeyword' && t.type !== 'TSVoidKeyword',
+      t => t.type !== 'TSNullKeyword' && t.type !== 'TSUndefinedKeyword',
     )[0];
     optional = true;
   }

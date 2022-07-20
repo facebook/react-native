@@ -51,7 +51,7 @@ import java.util.Queue;
  *
  * <p>IMPORTANT: This class should be accessed only from the UI Thread
  */
-/*package*/ class NativeAnimatedNodesManager implements EventDispatcherListener {
+public class NativeAnimatedNodesManager implements EventDispatcherListener {
 
   private static final String TAG = "NativeAnimatedNodesManager";
 
@@ -100,8 +100,8 @@ import java.util.Queue;
     }
   }
 
-  /*package*/ @Nullable
-  AnimatedNode getNodeById(int id) {
+  @Nullable
+  public AnimatedNode getNodeById(int id) {
     return mAnimatedNodes.get(id);
   }
 

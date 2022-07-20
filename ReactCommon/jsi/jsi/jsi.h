@@ -68,6 +68,7 @@ class Runtime;
 class Pointer;
 class PropNameID;
 class Symbol;
+class BigInt;
 class String;
 class Object;
 class WeakObject;
@@ -125,6 +126,13 @@ class JSI_EXPORT HostObject {
   // call this method. If it throws an exception, the call will throw a
   // JS \c Error object. The default implementation returns empty vector.
   virtual std::vector<PropNameID> getPropertyNames(Runtime& rt);
+};
+
+/// Native state (and destructor) that can be attached to any JS object
+/// using setNativeState.
+class JSI_EXPORT NativeState {
+ public:
+  virtual ~NativeState();
 };
 
 /// Represents a JS runtime.  Movable, but not copyable.  Note that
@@ -240,6 +248,7 @@ class JSI_EXPORT Runtime {
   friend class Pointer;
   friend class PropNameID;
   friend class Symbol;
+  friend class BigInt;
   friend class String;
   friend class Object;
   friend class WeakObject;
@@ -263,6 +272,7 @@ class JSI_EXPORT Runtime {
   };
 
   virtual PointerValue* cloneSymbol(const Runtime::PointerValue* pv) = 0;
+  virtual PointerValue* cloneBigInt(const Runtime::PointerValue* pv) = 0;
   virtual PointerValue* cloneString(const Runtime::PointerValue* pv) = 0;
   virtual PointerValue* cloneObject(const Runtime::PointerValue* pv) = 0;
   virtual PointerValue* clonePropNameID(const Runtime::PointerValue* pv) = 0;
@@ -292,6 +302,12 @@ class JSI_EXPORT Runtime {
   virtual Object createObject(std::shared_ptr<HostObject> ho) = 0;
   virtual std::shared_ptr<HostObject> getHostObject(const jsi::Object&) = 0;
   virtual HostFunctionType& getHostFunction(const jsi::Function&) = 0;
+
+  virtual bool hasNativeState(const jsi::Object&) = 0;
+  virtual std::shared_ptr<NativeState> getNativeState(const jsi::Object&) = 0;
+  virtual void setNativeState(
+      const jsi::Object&,
+      std::shared_ptr<NativeState> state) = 0;
 
   virtual Value getProperty(const Object&, const PropNameID& name) = 0;
   virtual Value getProperty(const Object&, const String& name) = 0;
@@ -337,6 +353,7 @@ class JSI_EXPORT Runtime {
   virtual void popScope(ScopeState*);
 
   virtual bool strictEquals(const Symbol& a, const Symbol& b) const = 0;
+  virtual bool strictEquals(const BigInt& a, const BigInt& b) const = 0;
   virtual bool strictEquals(const String& a, const String& b) const = 0;
   virtual bool strictEquals(const Object& a, const Object& b) const = 0;
 
@@ -477,6 +494,18 @@ class JSI_EXPORT Symbol : public Pointer {
   std::string toString(Runtime& runtime) const {
     return runtime.symbolToString(*this);
   }
+
+  friend class Runtime;
+  friend class Value;
+};
+
+/// Represents a JS BigInt.  Movable, not copyable.
+class JSI_EXPORT BigInt : public Pointer {
+ public:
+  using Pointer::Pointer;
+
+  BigInt(BigInt&& other) = default;
+  BigInt& operator=(BigInt&& other) = default;
 
   friend class Runtime;
   friend class Value;
@@ -694,6 +723,25 @@ class JSI_EXPORT Object : public Pointer {
   /// is false, this will throw.
   template <typename T = HostObject>
   std::shared_ptr<T> asHostObject(Runtime& runtime) const;
+
+  /// \return whether this object has native state of type T previously set by
+  /// \c setNativeState.
+  template <typename T = NativeState>
+  bool hasNativeState(Runtime& runtime) const;
+
+  /// \return a shared_ptr to the state previously set by \c setNativeState.
+  /// If \c hasNativeState<T> is false, this will assert. Note that this does a
+  /// type check and will assert if the native state isn't of type \c T
+  template <typename T = NativeState>
+  std::shared_ptr<T> getNativeState(Runtime& runtime) const;
+
+  /// Set the internal native state property of this object, overwriting any old
+  /// value. Creates a new shared_ptr to the object managed by \p state, which
+  /// will live until the value at this property becomes unreachable.
+  ///
+  /// Throws a type error if this object is a proxy or host object.
+  void setNativeState(Runtime& runtime, std::shared_ptr<NativeState> state)
+      const;
 
   /// \return same as \c getProperty(name).asObject(), except with
   /// a better exception message.
@@ -973,6 +1021,7 @@ class JSI_EXPORT Value {
   /* implicit */ Value(T&& other) : Value(kindOf(other)) {
     static_assert(
         std::is_base_of<Symbol, T>::value ||
+            std::is_base_of<BigInt, T>::value ||
             std::is_base_of<String, T>::value ||
             std::is_base_of<Object, T>::value,
         "Value cannot be implicitly move-constructed from this type");
@@ -993,6 +1042,11 @@ class JSI_EXPORT Value {
   /// Copies a Symbol lvalue into a new JS value.
   Value(Runtime& runtime, const Symbol& sym) : Value(SymbolKind) {
     new (&data_.pointer) Symbol(runtime.cloneSymbol(sym.ptr_));
+  }
+
+  /// Copies a BigInt lvalue into a new JS value.
+  Value(Runtime& runtime, const BigInt& bigint) : Value(BigIntKind) {
+    new (&data_.pointer) BigInt(runtime.cloneBigInt(bigint.ptr_));
   }
 
   /// Copies a String lvalue into a new JS value.
@@ -1064,6 +1118,10 @@ class JSI_EXPORT Value {
     return kind_ == StringKind;
   }
 
+  bool isBigInt() const {
+    return kind_ == BigIntKind;
+  }
+
   bool isSymbol() const {
     return kind_ == SymbolKind;
   }
@@ -1111,6 +1169,26 @@ class JSI_EXPORT Value {
   /// symbol
   Symbol asSymbol(Runtime& runtime) const&;
   Symbol asSymbol(Runtime& runtime) &&;
+
+  /// \return the BigInt value, or asserts if not a bigint.
+  BigInt getBigInt(Runtime& runtime) const& {
+    assert(isBigInt());
+    return BigInt(runtime.cloneBigInt(data_.pointer.ptr_));
+  }
+
+  /// \return the BigInt value, or asserts if not a bigint.
+  /// Can be used on rvalue references to avoid cloning more bigints.
+  BigInt getBigInt(Runtime&) && {
+    assert(isBigInt());
+    auto ptr = data_.pointer.ptr_;
+    data_.pointer.ptr_ = nullptr;
+    return static_cast<BigInt>(ptr);
+  }
+
+  /// \return the BigInt value, or throws JSIException if not a
+  /// bigint
+  BigInt asBigInt(Runtime& runtime) const&;
+  BigInt asBigInt(Runtime& runtime) &&;
 
   /// \return the String value, or asserts if not a string.
   String getString(Runtime& runtime) const& {
@@ -1164,6 +1242,7 @@ class JSI_EXPORT Value {
     BooleanKind,
     NumberKind,
     SymbolKind,
+    BigIntKind,
     StringKind,
     ObjectKind,
     PointerKind = SymbolKind,
@@ -1189,6 +1268,9 @@ class JSI_EXPORT Value {
 
   constexpr static ValueKind kindOf(const Symbol&) {
     return SymbolKind;
+  }
+  constexpr static ValueKind kindOf(const BigInt&) {
+    return BigIntKind;
   }
   constexpr static ValueKind kindOf(const String&) {
     return StringKind;

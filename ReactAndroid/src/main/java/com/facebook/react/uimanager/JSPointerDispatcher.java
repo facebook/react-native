@@ -20,6 +20,7 @@ import com.facebook.react.uimanager.events.PointerEventHelper;
 import com.facebook.react.uimanager.events.PointerEventHelper.EVENT;
 import com.facebook.react.uimanager.events.TouchEvent;
 import com.facebook.react.uimanager.events.TouchEventCoalescingKeyHelper;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -71,8 +72,7 @@ public class JSPointerDispatcher {
   }
 
   public void handleMotionEvent(MotionEvent motionEvent, EventDispatcher eventDispatcher) {
-    boolean supportsHover =
-        PointerEventHelper.supportsHover(motionEvent.getToolType(motionEvent.getActionIndex()));
+    boolean supportsHover = PointerEventHelper.supportsHover(motionEvent);
 
     int surfaceId = UIManagerHelper.getSurfaceId(mRootViewGroup);
     int action = motionEvent.getActionMasked();
@@ -110,14 +110,17 @@ public class JSPointerDispatcher {
       mTouchEventCoalescingKeyHelper.addCoalescingKey(mDownStartTime);
 
       if (!supportsHover) {
-        dispatchNonBubblingEventForPathWhenListened(
-            EVENT.ENTER,
-            EVENT.ENTER_CAPTURE,
-            hitPath,
+        List<ViewTarget> enterViewTargets =
+            filterByShouldDispatch(hitPath, EVENT.ENTER, EVENT.ENTER_CAPTURE, false);
+
+        // Dispatch root -> target, we need to reverse order of enterViewTargets
+        Collections.reverse(enterViewTargets);
+        dispatchEventForViewTargets(
+            PointerEventHelper.POINTER_ENTER,
+            enterViewTargets,
             eventDispatcher,
             surfaceId,
-            motionEvent,
-            false);
+            motionEvent);
       }
 
       boolean listeningForDown =
@@ -125,7 +128,11 @@ public class JSPointerDispatcher {
       if (listeningForDown) {
         eventDispatcher.dispatchEvent(
             PointerEvent.obtain(
-                PointerEventHelper.POINTER_DOWN, surfaceId, activeTargetTag, motionEvent));
+                PointerEventHelper.POINTER_DOWN,
+                surfaceId,
+                activeTargetTag,
+                motionEvent,
+                mTargetCoordinates));
       }
 
       return;
@@ -146,7 +153,11 @@ public class JSPointerDispatcher {
       if (listeningForDown) {
         eventDispatcher.dispatchEvent(
             PointerEvent.obtain(
-                PointerEventHelper.POINTER_DOWN, surfaceId, activeTargetTag, motionEvent));
+                PointerEventHelper.POINTER_DOWN,
+                surfaceId,
+                activeTargetTag,
+                motionEvent,
+                mTargetCoordinates));
       }
 
       return;
@@ -164,6 +175,7 @@ public class JSPointerDispatcher {
                 surfaceId,
                 activeTargetTag,
                 motionEvent,
+                mTargetCoordinates,
                 coalescingKey));
       }
 
@@ -179,7 +191,11 @@ public class JSPointerDispatcher {
       if (listeningForUp) {
         eventDispatcher.dispatchEvent(
             PointerEvent.obtain(
-                PointerEventHelper.POINTER_UP, surfaceId, activeTargetTag, motionEvent));
+                PointerEventHelper.POINTER_UP,
+                surfaceId,
+                activeTargetTag,
+                motionEvent,
+                mTargetCoordinates));
       }
 
       return;
@@ -197,18 +213,24 @@ public class JSPointerDispatcher {
       if (listeningForUp) {
         eventDispatcher.dispatchEvent(
             PointerEvent.obtain(
-                PointerEventHelper.POINTER_UP, surfaceId, activeTargetTag, motionEvent));
+                PointerEventHelper.POINTER_UP,
+                surfaceId,
+                activeTargetTag,
+                motionEvent,
+                mTargetCoordinates));
       }
 
       if (!supportsHover) {
-        dispatchNonBubblingEventForPathWhenListened(
-            EVENT.LEAVE,
-            EVENT.LEAVE_CAPTURE,
-            hitPath,
+        List<ViewTarget> leaveViewTargets =
+            filterByShouldDispatch(hitPath, EVENT.LEAVE, EVENT.LEAVE_CAPTURE, false);
+
+        // target -> root
+        dispatchEventForViewTargets(
+            PointerEventHelper.POINTER_LEAVE,
+            leaveViewTargets,
             eventDispatcher,
             surfaceId,
-            motionEvent,
-            false);
+            motionEvent);
       }
       return;
     }
@@ -240,42 +262,51 @@ public class JSPointerDispatcher {
   }
 
   /**
-   * Dispatch event only if ancestor is listening to relevant capture event. This should only be
-   * relevant for ENTER/LEAVE events that need to be dispatched along every relevant view in the hit
-   * path.
+   * Returns list of view targets that we should be dispatching events from
    *
-   * @param pointerEventType - Should only be ENTER/LEAVE events
-   * @param hitPath - ViewTargets ordered from target -> root
-   * @param dispatcher
-   * @param surfaceId
-   * @param motionEvent
-   * @param forceDispatch - Ignore if ancestor is listening and force the event to be dispatched
+   * @param viewTargets, ordered from target -> root
+   * @param bubble, name of event that bubbles. Should only ever be enter or leave
+   * @param capture, name of event that captures. Should only ever be enter or leave
+   * @param forceDispatch, if true, all viewTargets should dispatch
+   * @return list of viewTargets filtered from target -> root
    */
-  private static void dispatchNonBubblingEventForPathWhenListened(
-      EVENT event,
-      EVENT captureEvent,
-      List<ViewTarget> hitPath,
-      EventDispatcher dispatcher,
-      int surfaceId,
-      MotionEvent motionEvent,
-      boolean forceDispatch) {
+  private static List<ViewTarget> filterByShouldDispatch(
+      List<ViewTarget> viewTargets, EVENT bubble, EVENT capture, boolean forceDispatch) {
 
-    boolean ancestorListening = forceDispatch;
-    String eventName = PointerEventHelper.getDispatchableEventName(event);
-    if (eventName == null) {
-      return;
+    List<ViewTarget> dispatchableViewTargets = new ArrayList<>(viewTargets);
+    if (forceDispatch) {
+      return dispatchableViewTargets;
     }
 
-    // iterate through hitPath from ancestor -> target
-    for (int i = hitPath.size() - 1; i >= 0; i--) {
-      View view = hitPath.get(i).getView();
-      int viewId = hitPath.get(i).getViewId();
-      if (ancestorListening
-          || (i == 0 && PointerEventHelper.isListening(view, event))
-          || PointerEventHelper.isListening(view, captureEvent)) {
-        dispatcher.dispatchEvent(PointerEvent.obtain(eventName, surfaceId, viewId, motionEvent));
+    boolean ancestorListening = false;
+
+    // Start to filter which viewTargets may not need to dispatch an event
+    for (int i = viewTargets.size() - 1; i >= 0; i--) {
+      ViewTarget viewTarget = viewTargets.get(i);
+      View view = viewTarget.getView();
+
+      if (!ancestorListening
+          && !PointerEventHelper.isListening(view, capture)
+          && !PointerEventHelper.isListening(view, bubble)) {
+        dispatchableViewTargets.remove(i);
+      } else if (!ancestorListening && PointerEventHelper.isListening(view, capture)) {
         ancestorListening = true;
       }
+    }
+    return dispatchableViewTargets;
+  }
+
+  private void dispatchEventForViewTargets(
+      String eventName,
+      List<ViewTarget> viewTargets,
+      EventDispatcher dispatcher,
+      int surfaceId,
+      MotionEvent motionEvent) {
+
+    for (ViewTarget viewTarget : viewTargets) {
+      int viewId = viewTarget.getViewId();
+      dispatcher.dispatchEvent(
+          PointerEvent.obtain(eventName, surfaceId, viewId, motionEvent, mTargetCoordinates));
     }
   }
 
@@ -360,31 +391,40 @@ public class JSPointerDispatcher {
       // If something has changed in either enter/exit, let's start a new coalescing key
       mTouchEventCoalescingKeyHelper.incrementCoalescingKey(mHoverInteractionKey);
 
+      // target -> root
       List<ViewTarget> enterViewTargets =
-          hitPath.subList(0, hitPath.size() - firstDivergentIndexFromBack);
+          filterByShouldDispatch(
+              hitPath.subList(0, hitPath.size() - firstDivergentIndexFromBack),
+              EVENT.ENTER,
+              EVENT.ENTER_CAPTURE,
+              nonDivergentListeningToEnter);
+
       if (enterViewTargets.size() > 0) {
-        dispatchNonBubblingEventForPathWhenListened(
-            EVENT.ENTER,
-            EVENT.ENTER_CAPTURE,
+        // We want to iterate these from root -> target so we need to reverse
+        Collections.reverse(enterViewTargets);
+        dispatchEventForViewTargets(
+            PointerEventHelper.POINTER_ENTER,
             enterViewTargets,
             eventDispatcher,
             surfaceId,
-            motionEvent,
-            nonDivergentListeningToEnter);
+            motionEvent);
       }
 
-      List<ViewTarget> exitViewTargets =
-          mLastHitPath.subList(0, mLastHitPath.size() - firstDivergentIndexFromBack);
-      if (exitViewTargets.size() > 0) {
-        // child -> root
-        dispatchNonBubblingEventForPathWhenListened(
-            EVENT.LEAVE,
-            EVENT.LEAVE_CAPTURE,
-            enterViewTargets,
+      // target -> root
+      List<ViewTarget> leaveViewTargets =
+          filterByShouldDispatch(
+              mLastHitPath.subList(0, mLastHitPath.size() - firstDivergentIndexFromBack),
+              EVENT.LEAVE,
+              EVENT.LEAVE_CAPTURE,
+              nonDivergentListeningToLeave);
+      if (leaveViewTargets.size() > 0) {
+        // We want to dispatch from target -> root, so no need to reverse
+        dispatchEventForViewTargets(
+            PointerEventHelper.POINTER_LEAVE,
+            leaveViewTargets,
             eventDispatcher,
             surfaceId,
-            motionEvent,
-            nonDivergentListeningToLeave);
+            motionEvent);
       }
     }
 
@@ -394,7 +434,12 @@ public class JSPointerDispatcher {
     if (listeningToMove) {
       eventDispatcher.dispatchEvent(
           PointerEvent.obtain(
-              PointerEventHelper.POINTER_MOVE, surfaceId, targetTag, motionEvent, coalescingKey));
+              PointerEventHelper.POINTER_MOVE,
+              surfaceId,
+              targetTag,
+              motionEvent,
+              mTargetCoordinates,
+              coalescingKey));
     }
 
     mLastHitPath = hitPath;
@@ -421,17 +466,23 @@ public class JSPointerDispatcher {
         Assertions.assertNotNull(eventDispatcher)
             .dispatchEvent(
                 PointerEvent.obtain(
-                    PointerEventHelper.POINTER_CANCEL, surfaceId, targetTag, motionEvent));
+                    PointerEventHelper.POINTER_CANCEL,
+                    surfaceId,
+                    targetTag,
+                    motionEvent,
+                    mTargetCoordinates));
       }
 
-      dispatchNonBubblingEventForPathWhenListened(
-          EVENT.LEAVE,
-          EVENT.LEAVE_CAPTURE,
-          hitPath,
+      List<ViewTarget> leaveViewTargets =
+          filterByShouldDispatch(hitPath, EVENT.LEAVE, EVENT.LEAVE_CAPTURE, false);
+
+      // dispatch from target -> root
+      dispatchEventForViewTargets(
+          PointerEventHelper.POINTER_LEAVE,
+          leaveViewTargets,
           eventDispatcher,
           surfaceId,
-          motionEvent,
-          false);
+          motionEvent);
 
       mTouchEventCoalescingKeyHelper.removeCoalescingKey(mDownStartTime);
       mDownStartTime = TouchEvent.UNSET;

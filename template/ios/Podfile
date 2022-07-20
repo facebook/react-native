@@ -1,5 +1,5 @@
 require_relative '../node_modules/react-native/scripts/react_native_pods'
-require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+require_relative '../node_modules/react-native/scripts/native_modules'
 
 platform :ios, '12.4'
 install! 'cocoapods', :deterministic_uuids => false
@@ -12,9 +12,10 @@ target 'HelloWorld' do
 
   use_react_native!(
     :path => config[:reactNativePath],
-    # By default, Hermes is disabled on Old Architecture, and enabled on New Architecture.
-    # You can enabled/disable it manually by replacing `flags[:hermes_enabled]` with `true` or `false`.
-    :hermes_enabled => flags[:hermes_enabled],
+    # Hermes is now enabled by default. Disable by setting this flag to false.
+    # Upcoming versions of React Native may rely on get_default_flags(), but
+    # we make it explicit here to aid in the React Native upgrade process.
+    :hermes_enabled => true,
     :fabric_enabled => flags[:fabric_enabled],
     # Enables Flipper.
     #
@@ -31,7 +32,12 @@ target 'HelloWorld' do
   end
 
   post_install do |installer|
-    react_native_post_install(installer)
+    react_native_post_install(
+      installer,
+      # Set `mac_catalyst_enabled` to `true` in order to apply patches
+      # necessary for Mac Catalyst builds
+      :mac_catalyst_enabled => false
+    )
     __apply_Xcode_12_5_M1_post_install_workaround(installer)
   end
 end

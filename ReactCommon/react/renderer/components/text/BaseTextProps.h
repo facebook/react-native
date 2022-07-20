@@ -28,6 +28,14 @@ class BaseTextProps {
       const BaseTextProps &sourceProps,
       const RawProps &rawProps);
 
+  void setProp(
+      const PropsParserContext &context,
+      RawPropsPropNameHash hash,
+      const char *propName,
+      RawValue const &value);
+
+  static bool enablePropIteratorSetter;
+
 #pragma mark - Props
 
   TextAttributes textAttributes{};

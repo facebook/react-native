@@ -114,7 +114,7 @@ typedef NS_OPTIONS(NSInteger, RNComponentViewUpdateMask) {
 /*
  * Read the last props used to update the view.
  */
-- (facebook::react::SharedProps)props;
+- (facebook::react::Props::Shared)props;
 
 - (BOOL)isJSResponder;
 - (void)setIsJSResponder:(BOOL)isJSResponder;

@@ -84,7 +84,7 @@ def flipper_post_install(installer)
         if target.name == 'React-Core'
             target.build_configurations.each do |config|
                 if config.name == 'Debug'
-                    config.build_settings['OTHER_CFLAGS'] = "$(inherited) -DFB_SONARKIT_ENABLED=1"
+                    config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = ['$(inherited)', 'FB_SONARKIT_ENABLED=1']
                 end
             end
         end
@@ -108,5 +108,11 @@ class FlipperConfiguration
 
     def self.disabled
         FlipperConfiguration.new(false, [], {})
+    end
+
+    def == (other)
+        return @flipper_enabled == other.flipper_enabled &&
+            @configurations == other.configurations &&
+            @versions == other.versions
     end
 end

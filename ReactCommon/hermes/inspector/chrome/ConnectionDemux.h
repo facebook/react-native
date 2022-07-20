@@ -39,7 +39,7 @@ class ConnectionDemux {
   int enableDebugging(
       std::unique_ptr<RuntimeAdapter> adapter,
       const std::string &title);
-  void disableDebugging(HermesRuntime &runtime);
+  void disableDebugging(jsi::Runtime &runtime);
 
  private:
   int addPage(std::shared_ptr<Connection> conn);

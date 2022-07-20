@@ -74,25 +74,19 @@ else
   ENTRY_FILE=${1:-index.js}
 fi
 
-if [[ $DEV != true && ! -f "$ENTRY_FILE" ]]; then
-  echo "error: Entry file $ENTRY_FILE does not exist. If you use another file as your entry point, pass ENTRY_FILE=myindex.js" >&2
-  exit 2
-fi
-
 # check and assign NODE_BINARY env
 # shellcheck source=/dev/null
 source "$REACT_NATIVE_DIR/scripts/node-binary.sh"
 
-[ -z "$HERMES_CLI_PATH" ] && HERMES_CLI_PATH="$PODS_ROOT/hermes-engine/destroot/bin/hermesc"
+HERMES_ENGINE_PATH="$PODS_ROOT/hermes-engine"
+[ -z "$HERMES_CLI_PATH" ] && HERMES_CLI_PATH="$HERMES_ENGINE_PATH/destroot/bin/hermesc"
 
-if [[ -z "$USE_HERMES" && -f "$HERMES_CLI_PATH" ]]; then
-  echo "Enabling Hermes byte-code compilation. Disable with USE_HERMES=false if needed."
-  USE_HERMES=true
-fi
-
-if [[ $USE_HERMES == true && ! -f "$HERMES_CLI_PATH" ]]; then
-  echo "error: USE_HERMES is set to true but the hermesc binary could not be " \
-       "found at ${HERMES_CLI_PATH}. Perhaps you need to run 'bundle exec pod install' or otherwise " \
+# Hermes is enabled in new projects by default, so we cannot assume that USE_HERMES=1 is set as an envvar.
+# If hermes-engine is found in Pods, we can assume Hermes has not been disabled.
+# If hermesc is not available and USE_HERMES is either unset or true, show error.
+if [[  -f "$HERMES_ENGINE_PATH" && ! -f "$HERMES_CLI_PATH" ]]; then
+  echo "error: Hermes is enabled but the hermesc binary could not be found at ${HERMES_CLI_PATH}." \
+       "Perhaps you need to run 'bundle exec pod install' or otherwise " \
        "point the HERMES_CLI_PATH variable to your custom location." >&2
   exit 2
 fi
@@ -181,7 +175,6 @@ else
 fi
 
 if [[ $DEV != true && ! -f "$BUNDLE_FILE" ]]; then
-  echo "error: File $BUNDLE_FILE does not exist. This must be a bug with" >&2
-  echo "React Native, please report it here: https://github.com/facebook/react-native/issues"
+  echo "error: File $BUNDLE_FILE does not exist. This must be a bug with React Native, please report it here: https://github.com/facebook/react-native/issues" >&2
   exit 2
 fi

@@ -12,6 +12,7 @@ rn_android_library(
     srcs = glob(["*.java"]),
     autoglob = False,
     is_androidx = True,
+    language = "JAVA",
     deps = [
         react_native_dep("third-party/android/androidx:test-espresso-core"),
         react_native_dep("third-party/java/assertj:assertj-core"),

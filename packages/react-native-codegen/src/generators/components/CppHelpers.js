@@ -57,7 +57,13 @@ function getImports(
 ): Set<string> {
   const imports: Set<string> = new Set();
 
-  function addImportsForNativeName(name) {
+  function addImportsForNativeName(
+    name:
+      | 'ColorPrimitive'
+      | 'EdgeInsetsPrimitive'
+      | 'ImageSourcePrimitive'
+      | 'PointPrimitive',
+  ) {
     switch (name) {
       case 'ColorPrimitive':
         return;

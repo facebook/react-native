@@ -4,6 +4,9 @@ on:
   pull_request:
     types: [opened, edited, reopened, synchronize]
 
+permissions:
+  contents: read
+
 jobs:
   danger:
     runs-on: ubuntu-latest

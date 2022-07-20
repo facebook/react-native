@@ -1067,3 +1067,8 @@ RCT_EXTERN BOOL RCTValidateTypeOfViewCommandArgument(
 
   return true;
 }
+
+BOOL RCTIsAppActive(void)
+{
+  return [RCTSharedApplication() applicationState] == UIApplicationStateActive;
+}

@@ -32,6 +32,7 @@ enum TurboModuleMethodValueKind {
   PromiseKind,
 };
 
+class TurboCxxModule;
 class TurboModuleBinding;
 
 /**
@@ -58,10 +59,20 @@ class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
     }
   }
 
+  std::vector<facebook::jsi::PropNameID> getPropertyNames(
+      facebook::jsi::Runtime &runtime) override {
+    std::vector<jsi::PropNameID> result;
+    result.reserve(methodMap_.size());
+    for (auto it = methodMap_.cbegin(); it != methodMap_.cend(); ++it) {
+      result.push_back(jsi::PropNameID::forUtf8(runtime, it->first));
+    }
+    return result;
+  }
+
+ protected:
   const std::string name_;
   std::shared_ptr<CallInvoker> jsInvoker_;
 
- protected:
   struct MethodMetadata {
     size_t argCount;
     facebook::jsi::Value (*invoker)(
@@ -70,17 +81,17 @@ class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
         const facebook::jsi::Value *args,
         size_t count);
   };
+  std::unordered_map<std::string, MethodMetadata> methodMap_;
+
+ private:
+  friend class TurboCxxModule;
+  friend class TurboModuleBinding;
+  std::unique_ptr<jsi::Object> jsRepresentation_;
 
   facebook::jsi::Value get(
       facebook::jsi::Runtime &runtime,
       const facebook::jsi::PropNameID &propName,
       const MethodMetadata &meta);
-
-  std::unordered_map<std::string, MethodMetadata> methodMap_;
-
- private:
-  friend class TurboModuleBinding;
-  std::unique_ptr<jsi::Object> jsRepresentation_;
 };
 
 /**

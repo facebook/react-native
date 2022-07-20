@@ -12,6 +12,7 @@ rn_android_library(
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
+    language = "JAVA",
     visibility = [
         "PUBLIC",
     ],
@@ -31,6 +32,7 @@ rn_android_library(
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
+    language = "JAVA",
     visibility = [
         "PUBLIC",
     ],

@@ -108,10 +108,10 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
  */
 @property (nonatomic, assign) RCTBubblingEventBlock onPointerCancel;
 @property (nonatomic, assign) RCTBubblingEventBlock onPointerDown;
-@property (nonatomic, assign) RCTBubblingEventBlock onPointerMove2;
+@property (nonatomic, assign) RCTBubblingEventBlock onPointerMove;
 @property (nonatomic, assign) RCTBubblingEventBlock onPointerUp;
-@property (nonatomic, assign) RCTCapturingEventBlock onPointerEnter2;
-@property (nonatomic, assign) RCTCapturingEventBlock onPointerLeave2;
+@property (nonatomic, assign) RCTCapturingEventBlock onPointerEnter;
+@property (nonatomic, assign) RCTCapturingEventBlock onPointerLeave;
 @property (nonatomic, assign) RCTBubblingEventBlock onPointerOver;
 @property (nonatomic, assign) RCTBubblingEventBlock onPointerOut;
 

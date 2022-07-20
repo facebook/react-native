@@ -252,7 +252,7 @@ class MessageQueue {
       // folly-convertible.  As a special case, if a prop value is a
       // function it is permitted here, and special-cased in the
       // conversion.
-      const isValidArgument = val => {
+      const isValidArgument = (val: mixed) => {
         switch (typeof val) {
           case 'undefined':
           case 'boolean':
@@ -286,7 +286,7 @@ class MessageQueue {
       // Replacement allows normally non-JSON-convertible values to be
       // seen.  There is ambiguity with string values, but in context,
       // it should at least be a strong hint.
-      const replacer = (key, val) => {
+      const replacer = (key: string, val: $FlowFixMe) => {
         const t = typeof val;
         if (t === 'function') {
           return '<<Function ' + val.name + '>>';
@@ -408,9 +408,12 @@ class MessageQueue {
       const callableModuleNames = Object.keys(this._lazyCallableModules);
       const n = callableModuleNames.length;
       const callableModuleNameList = callableModuleNames.join(', ');
+
+      // TODO(T122225939): Remove after investigation: Why are we getting to this line in bridgeless mode?
+      const isBridgelessMode = global.RN$Bridgeless === true ? 'true' : 'false';
       invariant(
         false,
-        `Failed to call into JavaScript module method ${module}.${method}(). Module has not been registered as callable. Registered callable JavaScript modules (n = ${n}): ${callableModuleNameList}.
+        `Failed to call into JavaScript module method ${module}.${method}(). Module has not been registered as callable. Bridgeless Mode: ${isBridgelessMode}. Registered callable JavaScript modules (n = ${n}): ${callableModuleNameList}.
         A frequent cause of the error is that the application entry file path is incorrect. This can also happen when the JS bundle is corrupt or there is an early initialization error when loading React Native.`,
       );
     }

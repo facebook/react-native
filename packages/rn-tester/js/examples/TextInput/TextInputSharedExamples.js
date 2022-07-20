@@ -72,6 +72,14 @@ const styles = StyleSheet.create({
     margin: 3,
     fontSize: 12,
   },
+  focusedUncontrolled: {
+    margin: -2,
+    borderWidth: 2,
+    borderColor: '#0a0a0a',
+    flex: 1,
+    fontSize: 13,
+    padding: 4,
+  },
 });
 
 class WithLabel extends React.Component<$FlowFixMeProps> {
@@ -88,7 +96,7 @@ class WithLabel extends React.Component<$FlowFixMeProps> {
 }
 
 class RewriteExample extends React.Component<$FlowFixMeProps, any> {
-  constructor(props) {
+  constructor(props: any | void) {
     super(props);
     this.state = {text: ''};
   }
@@ -122,7 +130,7 @@ class RewriteExampleInvalidCharacters extends React.Component<
   $FlowFixMeProps,
   any,
 > {
-  constructor(props) {
+  constructor(props: any | void) {
     super(props);
     this.state = {text: ''};
   }
@@ -150,7 +158,7 @@ class RewriteInvalidCharactersAndClearExample extends React.Component<
 > {
   inputRef: ?React.ElementRef<typeof TextInput> = null;
 
-  constructor(props) {
+  constructor(props: any | void) {
     super(props);
     this.state = {text: ''};
   }
@@ -248,7 +256,7 @@ class TextEventsExample extends React.Component<{...}, $FlowFixMeState> {
     prev3Text: '<No Event>',
   };
 
-  updateText = text => {
+  updateText = (text: string) => {
     this.setState(state => {
       return {
         curText: text,
@@ -305,7 +313,7 @@ class TokenizedTextExample extends React.Component<
   $FlowFixMeProps,
   $FlowFixMeState,
 > {
-  constructor(props) {
+  constructor(props: any | void) {
     super(props);
     this.state = {text: 'Hello #World'};
   }
@@ -379,6 +387,8 @@ class SelectionExample extends React.Component<
 > {
   _textInput: React.ElementRef<typeof TextInput> | null = null;
 
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   constructor(props) {
     super(props);
     this.state = {
@@ -387,6 +397,8 @@ class SelectionExample extends React.Component<
     };
   }
 
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   onSelectionChange({nativeEvent: {selection}}) {
     this.setState({selection});
   }
@@ -396,7 +408,7 @@ class SelectionExample extends React.Component<
     return Math.round(Math.random() * length);
   }
 
-  select(start, end) {
+  select(start: number, end: number) {
     this._textInput?.focus();
     this.setState({selection: {start, end}});
     if (this.props.imperative) {
@@ -412,7 +424,7 @@ class SelectionExample extends React.Component<
     this.select(...positions);
   }
 
-  placeAt(position) {
+  placeAt(position: number) {
     this.select(position, position);
   }
 
@@ -471,6 +483,20 @@ class SelectionExample extends React.Component<
       </View>
     );
   }
+}
+
+function UncontrolledExample() {
+  const [isFocused, setIsFocused] = React.useState(false);
+
+  return (
+    <TextInput
+      defaultValue="Hello World!"
+      testID="uncontrolled-textinput"
+      style={isFocused ? styles.focusedUncontrolled : styles.default}
+      onFocus={() => setIsFocused(true)}
+      onBlur={() => setIsFocused(false)}
+    />
+  );
 }
 
 module.exports = ([
@@ -690,6 +716,13 @@ module.exports = ([
           />
         </View>
       );
+    },
+  },
+  {
+    title: 'Uncontrolled component with layout changes',
+    name: 'uncontrolledComponent',
+    render: function (): React.Node {
+      return <UncontrolledExample />;
     },
   },
 ]: Array<RNTesterModuleExample>);

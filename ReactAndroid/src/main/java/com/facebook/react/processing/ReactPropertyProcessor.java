@@ -593,7 +593,7 @@ public class ReactPropertyProcessor extends AbstractProcessor {
                 + " has already registered a property named \""
                 + name
                 + "\". If you want to override a property, don't add"
-                + "the @ReactProp annotation to the property in the subclass",
+                + " the @ReactProp annotation to the property in the subclass",
             propertyInfo);
       }
 

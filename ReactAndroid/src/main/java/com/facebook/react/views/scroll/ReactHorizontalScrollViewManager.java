@@ -8,10 +8,12 @@
 package com.facebook.react.views.scroll;
 
 import android.graphics.Color;
+import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.PointerEvents;
@@ -208,8 +210,15 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
   public void scrollToEnd(
       ReactHorizontalScrollView scrollView,
       ReactScrollViewCommandHelper.ScrollToEndCommandData data) {
-    // ScrollView always has one child - the scrollable area
-    int right = scrollView.getChildAt(0).getWidth() + scrollView.getPaddingRight();
+    // ScrollView always has one child - the scrollable area. However, it's possible today that we
+    // execute this method as view command before the child view is mounted. Here we will retry the
+    // view commands as a workaround.
+    @Nullable View child = scrollView.getChildAt(0);
+    if (child == null) {
+      throw new RetryableMountingLayerException(
+          "scrollToEnd called on HorizontalScrollView without child");
+    }
+    int right = child.getWidth() + scrollView.getPaddingRight();
     if (data.mAnimated) {
       scrollView.reactSmoothScrollTo(right, scrollView.getScrollY());
     } else {

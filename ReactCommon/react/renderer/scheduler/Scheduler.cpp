@@ -264,8 +264,8 @@ void Scheduler::renderTemplateToSurface(
                     ShadowNodeFragment{
                         /* .props = */ ShadowNodeFragment::propsPlaceholder(),
                         /* .children = */
-                        std::make_shared<SharedShadowNodeList>(
-                            SharedShadowNodeList{tree}),
+                        std::make_shared<ShadowNode::ListOfShared>(
+                            ShadowNode::ListOfShared{tree}),
                     });
               });
         });

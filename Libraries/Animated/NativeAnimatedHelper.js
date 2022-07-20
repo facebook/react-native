@@ -80,6 +80,7 @@ const nativeOps: ?typeof NativeAnimatedModule = useSingleOpBatching
       ];
       return apis.reduce((acc, functionName, i) => {
         // These indices need to be kept in sync with the indices in native (see NativeAnimatedModule in Java, or the equivalent for any other native platform).
+        // $FlowFixMe[prop-missing]
         acc[functionName] = i + 1;
         return acc;
       }, {});

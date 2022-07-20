@@ -110,7 +110,7 @@ RCT_EXPORT_MODULE()
   [self sendEvent:event];
 }
 
-- (void)sendEvent:(id<RCTEvent>)event
+- (void)notifyObserversOfEvent:(id<RCTEvent>)event
 {
   [_observersLock lock];
 
@@ -119,6 +119,11 @@ RCT_EXPORT_MODULE()
   }
 
   [_observersLock unlock];
+}
+
+- (void)sendEvent:(id<RCTEvent>)event
+{
+  [self notifyObserversOfEvent:event];
 
   [_eventQueueLock lock];
 

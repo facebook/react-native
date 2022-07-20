@@ -181,7 +181,7 @@ class TouchableFeedbackEvents extends React.Component<{...}, $FlowFixMeState> {
     );
   }
 
-  _appendEvent = eventName => {
+  _appendEvent = (eventName: string) => {
     const limit = 6;
     const eventLog = this.state.eventLog.slice(0, limit - 1);
     eventLog.unshift(eventName);
@@ -222,7 +222,7 @@ class TouchableDelayEvents extends React.Component<{...}, $FlowFixMeState> {
     );
   }
 
-  _appendEvent = eventName => {
+  _appendEvent = (eventName: string) => {
     const limit = 6;
     const eventLog = this.state.eventLog.slice(0, limit - 1);
     eventLog.unshift(eventName);

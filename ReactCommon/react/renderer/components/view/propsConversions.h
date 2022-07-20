@@ -16,6 +16,8 @@
 namespace facebook {
 namespace react {
 
+// Nearly this entire file can be deleted when iterator-style Prop parsing
+// ships fully for View
 static inline YGStyle::Dimensions convertRawProp(
     const PropsParserContext &context,
     RawProps const &rawProps,
@@ -301,6 +303,7 @@ static inline YGStyle convertRawProp(
   return yogaStyle;
 }
 
+// This can be deleted when non-iterator ViewProp parsing is deleted
 template <typename T>
 static inline CascadedRectangleCorners<T> convertRawProp(
     const PropsParserContext &context,
@@ -465,6 +468,7 @@ static inline CascadedRectangleEdges<T> convertRawProp(
   return result;
 }
 
+// This can be deleted when non-iterator ViewProp parsing is deleted
 static inline ViewEvents convertRawProp(
     const PropsParserContext &context,
     RawProps const &rawProps,
@@ -493,42 +497,24 @@ static inline ViewEvents convertRawProp(
       defaultValue[Offset::PointerLeave]);
 
   // Experimental W3C Pointer callbacks
-  result[Offset::PointerEnter2] = convertRawProp(
+  result[Offset::PointerEnterCapture] = convertRawProp(
       context,
       rawProps,
-      "onPointerEnter2",
-      sourceValue[Offset::PointerEnter2],
-      defaultValue[Offset::PointerEnter2]);
-  result[Offset::PointerEnter2Capture] = convertRawProp(
+      "onPointerEnterCapture",
+      sourceValue[Offset::PointerEnterCapture],
+      defaultValue[Offset::PointerEnterCapture]);
+  result[Offset::PointerMoveCapture] = convertRawProp(
       context,
       rawProps,
-      "onPointerEnter2Capture",
-      sourceValue[Offset::PointerEnter2Capture],
-      defaultValue[Offset::PointerEnter2Capture]);
-  result[Offset::PointerMove2] = convertRawProp(
+      "onPointerMoveCapture",
+      sourceValue[Offset::PointerMoveCapture],
+      defaultValue[Offset::PointerMoveCapture]);
+  result[Offset::PointerLeaveCapture] = convertRawProp(
       context,
       rawProps,
-      "onPointerMove2",
-      sourceValue[Offset::PointerMove2],
-      defaultValue[Offset::PointerMove2]);
-  result[Offset::PointerMove2Capture] = convertRawProp(
-      context,
-      rawProps,
-      "onPointerMove2Capture",
-      sourceValue[Offset::PointerMove2Capture],
-      defaultValue[Offset::PointerMove2Capture]);
-  result[Offset::PointerLeave2] = convertRawProp(
-      context,
-      rawProps,
-      "onPointerLeave2",
-      sourceValue[Offset::PointerLeave2],
-      defaultValue[Offset::PointerLeave2]);
-  result[Offset::PointerLeave2Capture] = convertRawProp(
-      context,
-      rawProps,
-      "onPointerLeave2Capture",
-      sourceValue[Offset::PointerLeave2Capture],
-      defaultValue[Offset::PointerLeave2Capture]);
+      "onPointerLeaveCapture",
+      sourceValue[Offset::PointerLeaveCapture],
+      defaultValue[Offset::PointerLeaveCapture]);
   result[Offset::PointerOver] = convertRawProp(
       context,
       rawProps,

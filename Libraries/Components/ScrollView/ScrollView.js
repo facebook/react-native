@@ -1107,7 +1107,7 @@ class ScrollView extends React.Component<Props, State> {
     }
   };
 
-  _getKeyForIndex(index, childArray) {
+  _getKeyForIndex(index: $FlowFixMe, childArray: $FlowFixMe) {
     const child = childArray[index];
     return child && child.key;
   }
@@ -1140,7 +1140,7 @@ class ScrollView extends React.Component<Props, State> {
     }
   }
 
-  _onStickyHeaderLayout(index, event, key) {
+  _onStickyHeaderLayout(index: $FlowFixMe, event: $FlowFixMe, key: $FlowFixMe) {
     const {stickyHeaderIndices} = this.props;
     if (!stickyHeaderIndices) {
       return;
@@ -1822,7 +1822,9 @@ const styles = StyleSheet.create({
   },
 });
 
-function Wrapper(props, ref) {
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
+function Wrapper(props, ref: (mixed => mixed) | {current: mixed, ...}) {
   return <ScrollView {...props} scrollViewRef={ref} />;
 }
 Wrapper.displayName = 'ScrollView';

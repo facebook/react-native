@@ -956,7 +956,7 @@ function SetAccessibilityFocusExample(props: {}): React.Node {
 
   const onPress = () => {
     if (myRef && myRef.current) {
-      AccessibilityInfo.sendAccessibilityEvent_unstable(myRef.current, 'focus');
+      AccessibilityInfo.sendAccessibilityEvent(myRef.current, 'focus');
     }
   };
 
@@ -1148,10 +1148,19 @@ class DisplayOptionsStatusExample extends React.Component<{}> {
   }
 }
 
-function DisplayOptionStatusExample({optionName, optionChecker, notification}) {
+function DisplayOptionStatusExample({
+  optionName,
+  optionChecker,
+  notification,
+}: {
+  notification: string,
+  optionChecker: () => Promise<boolean>,
+  optionName: string,
+}) {
   const [statusEnabled, setStatusEnabled] = React.useState(false);
   React.useEffect(() => {
     const listener = AccessibilityInfo.addEventListener(
+      // $FlowFixMe[prop-missing]
       notification,
       setStatusEnabled,
     );

@@ -4,6 +4,7 @@ rn_robolectric_test(
     name = "modules",
     srcs = glob(["**/*.java"]),
     contacts = ["oncall+react_native@xmail.facebook.com"],
+    language = "JAVA",
     visibility = [
         "PUBLIC",
     ],

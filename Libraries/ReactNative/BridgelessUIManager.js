@@ -146,7 +146,7 @@ module.exports = {
       errorMessageForMethod('setLayoutAnimationEnabledExperimental'),
     );
   },
-  // Please use AccessibilityInfo.sendAccessibilityEvent_unstable instead.
+  // Please use AccessibilityInfo.sendAccessibilityEvent instead.
   // See SetAccessibilityFocusExample in AccessibilityExample.js for a migration example.
   sendAccessibilityEvent: (reactTag: ?number, eventType: number): void =>
     console.error(errorMessageForMethod('sendAccessibilityEvent')),

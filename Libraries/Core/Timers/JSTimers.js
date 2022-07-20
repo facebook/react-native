@@ -274,7 +274,7 @@ const JSTimers = {
     const timeout = options && options.timeout;
     const id = _allocateCallback(
       timeout != null
-        ? deadline => {
+        ? (deadline: any) => {
             const timeoutId = requestIdleCallbackTimeouts[id];
             if (timeoutId) {
               JSTimers.clearTimeout(timeoutId);
@@ -364,7 +364,7 @@ const JSTimers = {
         // error one at a time
         for (let ii = 1; ii < errorCount; ii++) {
           JSTimers.setTimeout(
-            (error => {
+            ((error: Error) => {
               throw error;
             }).bind(null, errors[ii]),
             0,

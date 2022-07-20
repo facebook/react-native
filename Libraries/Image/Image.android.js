@@ -123,6 +123,8 @@ export type ImageComponentStatics = $ReadOnly<{|
  *
  * See https://reactnative.dev/docs/image
  */
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
 const BaseImage = (props: ImagePropsType, forwardedRef) => {
   let source = resolveAssetSource(props.source);
   const defaultSource = resolveAssetSource(props.defaultSource);
