@@ -23,8 +23,8 @@ const {
   shouldBuildHermesFromSource,
 } = require('./hermes-utils');
 
-async function main() {
-  if (!shouldBuildHermesFromSource()) {
+async function main(pullRequest) {
+  if (!shouldBuildHermesFromSource(pullRequest)) {
     copyPodSpec();
     return;
   }
@@ -40,6 +40,8 @@ async function main() {
   }
 }
 
-main().then(() => {
+const pullRequest = process.argv.length > 2 ? process.argv[2] : null;
+console.log(`Pull request detected: ${pullRequest}`);
+main(pullRequest).then(() => {
   process.exit(0);
 });

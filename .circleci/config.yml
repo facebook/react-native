@@ -898,7 +898,7 @@ jobs:
       - run:
           name: Download Hermes tarball
           command: |
-            node scripts/hermes/prepare-hermes-for-build
+            node scripts/hermes/prepare-hermes-for-build $CIRCLE_PULL_REQUEST
             cp sdks/download/* $HERMES_WS_DIR/download/.
             cp -r sdks/hermes/* $HERMES_WS_DIR/hermes/.
       - save_cache:
