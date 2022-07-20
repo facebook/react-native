@@ -1875,7 +1875,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this._fillRateHelper.activate();
     }
     this._computeBlankness();
-    this._scheduleCellsToRenderUpdate();
+    // Disabled with TalkBack inverted FlatList
+    // Triggers a scrollTo bottom and subsequent top when scrolling down
+    // fast, documented in https://bit.ly/3PkawQ4
+    if (!screenreaderEnabled && this.props.inverted) {
+      this._scheduleCellsToRenderUpdate();
+    }
   };
 
   _scheduleCellsToRenderUpdate() {
