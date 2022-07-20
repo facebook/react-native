@@ -35,6 +35,10 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
       {"tangentialPressure",
        getDebugDescription(pointerEvent.tangentialPressure, options)},
       {"twist", getDebugDescription(pointerEvent.twist, options)},
+      {"ctrlKey", getDebugDescription(pointerEvent.ctrlKey, options)},
+      {"shiftKey", getDebugDescription(pointerEvent.shiftKey, options)},
+      {"altKey", getDebugDescription(pointerEvent.altKey, options)},
+      {"metaKey", getDebugDescription(pointerEvent.metaKey, options)},
   };
 }
 

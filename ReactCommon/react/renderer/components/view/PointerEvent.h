@@ -84,6 +84,22 @@ struct PointerEvent {
    * axis in degrees, with a value in the range 0 to 359.
    */
   int twist;
+  /*
+   * Returns true if the control key was down when the event was fired.
+   */
+  bool ctrlKey;
+  /*
+   * Returns true if the shift key was down when the event was fired.
+   */
+  bool shiftKey;
+  /*
+   * Returns true if the alt key was down when the event was fired.
+   */
+  bool altKey;
+  /*
+   * Returns true if the meta key was down when the event was fired.
+   */
+  bool metaKey;
 };
 
 #if RN_DEBUG_STRING_CONVERTIBLE

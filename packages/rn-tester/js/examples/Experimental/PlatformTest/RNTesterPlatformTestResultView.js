@@ -19,6 +19,7 @@ import type {
 } from './RNTesterPlatformTestTypes';
 
 import RNTesterPlatformTestMinimizedResultView from './RNTesterPlatformTestMinimizedResultView';
+import RNTesterPlatformTestResultsText from './RNTesterPlatformTestResultsText';
 
 import * as React from 'react';
 import {useMemo, useState, useCallback} from 'react';
@@ -40,6 +41,7 @@ const DISPLAY_STATUS_MAPPING: {[PlatformTestResultStatus]: string} = {
   PASS: 'Pass',
   FAIL: 'Fail',
   ERROR: 'Error',
+  SKIPPED: 'Skipped',
 };
 
 type FilterModalProps = $ReadOnly<{
@@ -183,7 +185,7 @@ export default function RNTesterPlatformTestResultView(
     );
   }, [filterText, results]);
 
-  const {numPass, numFail, numError} = useMemo(
+  const {numPass, numFail, numError, numSkipped} = useMemo(
     () =>
       filteredResults.reduce(
         (acc, result) => {
@@ -194,12 +196,15 @@ export default function RNTesterPlatformTestResultView(
               return {...acc, numFail: acc.numFail + 1};
             case 'ERROR':
               return {...acc, numError: acc.numError + 1};
+            case 'SKIPPED':
+              return {...acc, numSkipped: acc.numSkipped + 1};
           }
         },
         {
           numPass: 0,
           numFail: 0,
           numError: 0,
+          numSkipped: 0,
         },
       ),
     [filteredResults],
@@ -228,6 +233,7 @@ export default function RNTesterPlatformTestResultView(
         numError={numError}
         numPass={numPass}
         numPending={numPending}
+        numSkipped={numSkipped}
         onPress={handleMinimizedPress}
         style={style}
       />
@@ -250,26 +256,13 @@ export default function RNTesterPlatformTestResultView(
                 </Text>
               ) : null}
               <Text style={styles.summaryContainer}>
-                <Text>
-                  {numPass} <Text style={styles.passText}>Pass</Text>
-                </Text>
-                {'  '}
-                <Text>
-                  {numFail} <Text style={styles.failText}>Fail</Text>
-                </Text>
-                {'  '}
-                <Text>
-                  {numError} <Text style={styles.errorText}>Error</Text>
-                </Text>
-                {numPending > 0 ? (
-                  <>
-                    {' '}
-                    <Text>
-                      {numPending}{' '}
-                      <Text style={styles.pendingText}>Pending</Text>
-                    </Text>
-                  </>
-                ) : null}
+                <RNTesterPlatformTestResultsText
+                  numError={numError}
+                  numFail={numFail}
+                  numPass={numPass}
+                  numPending={numPending}
+                  numSkipped={numSkipped}
+                />
               </Text>
             </View>
             <View style={styles.actionsContainer}>
@@ -399,6 +392,9 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     flex: 0,
   },
+  skippedText: {
+    color: 'blue',
+  },
   table: {
     flex: 1,
   },
@@ -446,4 +442,5 @@ const STATUS_TEXT_STYLE_MAPPING: {[PlatformTestResultStatus]: TextStyle} = {
   PASS: styles.passText,
   FAIL: styles.failText,
   ERROR: styles.errorText,
+  SKIPPED: styles.skippedText,
 };

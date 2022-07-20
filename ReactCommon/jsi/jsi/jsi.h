@@ -128,6 +128,13 @@ class JSI_EXPORT HostObject {
   virtual std::vector<PropNameID> getPropertyNames(Runtime& rt);
 };
 
+/// Native state (and destructor) that can be attached to any JS object
+/// using setNativeState.
+class JSI_EXPORT NativeState {
+ public:
+  virtual ~NativeState();
+};
+
 /// Represents a JS runtime.  Movable, but not copyable.  Note that
 /// this object may not be thread-aware, but cannot be used safely from
 /// multiple threads at once.  The application is responsible for
@@ -295,6 +302,12 @@ class JSI_EXPORT Runtime {
   virtual Object createObject(std::shared_ptr<HostObject> ho) = 0;
   virtual std::shared_ptr<HostObject> getHostObject(const jsi::Object&) = 0;
   virtual HostFunctionType& getHostFunction(const jsi::Function&) = 0;
+
+  virtual bool hasNativeState(const jsi::Object&) = 0;
+  virtual std::shared_ptr<NativeState> getNativeState(const jsi::Object&) = 0;
+  virtual void setNativeState(
+      const jsi::Object&,
+      std::shared_ptr<NativeState> state) = 0;
 
   virtual Value getProperty(const Object&, const PropNameID& name) = 0;
   virtual Value getProperty(const Object&, const String& name) = 0;
@@ -710,6 +723,25 @@ class JSI_EXPORT Object : public Pointer {
   /// is false, this will throw.
   template <typename T = HostObject>
   std::shared_ptr<T> asHostObject(Runtime& runtime) const;
+
+  /// \return whether this object has native state of type T previously set by
+  /// \c setNativeState.
+  template <typename T = NativeState>
+  bool hasNativeState(Runtime& runtime) const;
+
+  /// \return a shared_ptr to the state previously set by \c setNativeState.
+  /// If \c hasNativeState<T> is false, this will assert. Note that this does a
+  /// type check and will assert if the native state isn't of type \c T
+  template <typename T = NativeState>
+  std::shared_ptr<T> getNativeState(Runtime& runtime) const;
+
+  /// Set the internal native state property of this object, overwriting any old
+  /// value. Creates a new shared_ptr to the object managed by \p state, which
+  /// will live until the value at this property becomes unreachable.
+  ///
+  /// Throws a type error if this object is a proxy or host object.
+  void setNativeState(Runtime& runtime, std::shared_ptr<NativeState> state)
+      const;
 
   /// \return same as \c getProperty(name).asObject(), except with
   /// a better exception message.

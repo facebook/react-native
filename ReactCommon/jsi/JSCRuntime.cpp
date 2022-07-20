@@ -168,6 +168,12 @@ class JSCRuntime : public jsi::Runtime {
       const jsi::Object &) override;
   jsi::HostFunctionType &getHostFunction(const jsi::Function &) override;
 
+  bool hasNativeState(const jsi::Object &) override;
+  std::shared_ptr<jsi::NativeState> getNativeState(
+      const jsi::Object &) override;
+  void setNativeState(const jsi::Object &, std::shared_ptr<jsi::NativeState>)
+      override;
+
   jsi::Value getProperty(const jsi::Object &, const jsi::String &name) override;
   jsi::Value getProperty(const jsi::Object &, const jsi::PropNameID &name)
       override;
@@ -860,6 +866,21 @@ std::shared_ptr<jsi::HostObject> JSCRuntime::getHostObject(
       static_cast<detail::HostObjectProxyBase *>(JSObjectGetPrivate(object));
   assert(metadata);
   return metadata->hostObject;
+}
+
+bool JSCRuntime::hasNativeState(const jsi::Object &) {
+  throw std::logic_error("Not implemented");
+}
+
+std::shared_ptr<jsi::NativeState> JSCRuntime::getNativeState(
+    const jsi::Object &) {
+  throw std::logic_error("Not implemented");
+}
+
+void JSCRuntime::setNativeState(
+    const jsi::Object &,
+    std::shared_ptr<jsi::NativeState>) {
+  throw std::logic_error("Not implemented");
 }
 
 jsi::Value JSCRuntime::getProperty(
