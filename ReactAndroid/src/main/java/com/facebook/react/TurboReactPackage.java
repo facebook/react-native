@@ -8,6 +8,7 @@
 package com.facebook.react;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ModuleHolder;
 import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
@@ -42,7 +43,8 @@ public abstract class TurboReactPackage implements ReactPackage {
    * @param reactContext
    * @return
    */
-  public abstract NativeModule getModule(String name, final ReactApplicationContext reactContext);
+  public abstract @Nullable NativeModule getModule(
+      String name, final ReactApplicationContext reactContext);
 
   /**
    * This is a temporary method till we implement TurboModules. Once we implement TurboModules, we
