@@ -391,6 +391,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _bottom: ?number;
   _lastBottomHeight: ?number;
   _beginningReached: ?boolean;
+  _lastTimeCalled: ?number;
 
   // scrollToEnd may be janky without getItemLayout prop
   scrollToEnd(params?: ?{animated?: ?boolean, ...}) {
@@ -1625,7 +1626,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const talkbackEnabledWithInvertedFlatlist =
       this.state.screenreaderEnabled &&
       inverted &&
-      this._hasTriggeredInitialScrollToIndex === true;
+      this._hasTriggeredInitialScrollToIndex;
     if (talkbackEnabledWithInvertedFlatlist) {
       distanceFromEnd = offset;
     } else {
@@ -1645,9 +1646,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     // TODO: T121172172 Look into why we're "defaulting" to a threshold of 2 when oERT is not present
     const threshold =
       onEndReachedThreshold != null ? onEndReachedThreshold * visibleLength : 2;
-    const canTriggerOnEndReachedWithTalkback = this.lastTimeCalled
-      ? Math.abs(this.lastTimeCalled - Date.now()) > 100
-      : true;
+    const canTriggerOnEndReachedWithTalkback =
+      typeof this._lastTimeCalled === 'number'
+        ? Math.abs(this._lastTimeCalled - Date.now()) > 100
+        : true;
     if (
       onEndReached &&
       this._beginningReached &&
@@ -1663,7 +1665,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       // Only call onEndReached once for a given content length
       this._sentEndForContentLength = this._scrollMetrics.contentLength;
       // wait 100 ms to call again onEndReached (TalkBack scrolling is slower)
-      this.lastTimeCalled = Date.now();
+      this._lastTimeCalled = Date.now();
       onEndReached({distanceFromEnd});
     } else {
       this._lastBottomHeight = undefined;
