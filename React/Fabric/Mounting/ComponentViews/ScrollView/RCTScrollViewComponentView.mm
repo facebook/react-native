@@ -401,6 +401,9 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   _shouldUpdateContentInsetAdjustmentBehavior = YES;
   _state.reset();
   _isUserTriggeredScrolling = NO;
+  CGRect oldFrame = self.frame;
+  self.frame = CGRectZero;
+  self.frame = oldFrame;
   [super prepareForRecycle];
 }
 
