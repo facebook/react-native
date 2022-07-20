@@ -10,6 +10,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := rrc_view
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
+LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../../../
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../../../../

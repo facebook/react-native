@@ -885,6 +885,7 @@ it('adjusts render area with non-zero initialScrollIndex', () => {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 200},
     });
+    simulateScroll(component, {x: 0, y: 10}); // simulate scroll offset for initialScrollIndex
 
     performAllBatches();
   });
@@ -914,8 +915,8 @@ it('renders new items when data is updated with non-zero initialScrollIndex', ()
 
   ReactTestRenderer.act(() => {
     simulateLayout(component, {
-      viewport: {width: 10, height: 50},
-      content: {width: 10, height: 200},
+      viewport: {width: 10, height: 20},
+      content: {width: 10, height: 20},
     });
     performAllBatches();
   });

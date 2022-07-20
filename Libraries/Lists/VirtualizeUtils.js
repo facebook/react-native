@@ -25,7 +25,7 @@ export function elementsThatOverlapOffsets(
     offset: number,
     ...
   },
-  zoomScale: number,
+  zoomScale: number = 1,
 ): Array<number> {
   const out = [];
   let outLength = 0;
@@ -115,7 +115,7 @@ export function computeWindowedRenderLimits(
   if (itemCount === 0) {
     return prev;
   }
-  const {offset, velocity, visibleLength, zoomScale} = scrollMetrics;
+  const {offset, velocity, visibleLength, zoomScale = 1} = scrollMetrics;
 
   // Start with visible area, then compute maximum overscan region by expanding from there, biased
   // in the direction of scroll. Total overscan area is capped, which should cap memory consumption
