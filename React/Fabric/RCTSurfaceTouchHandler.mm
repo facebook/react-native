@@ -232,6 +232,16 @@ static BOOL IsViewListeningToEvent(UIView *view, ViewEvents::Offset eventType)
   return NO;
 }
 
+static BOOL IsAnyViewInPathListeningToEvent(NSOrderedSet<UIView *> *viewPath, ViewEvents::Offset eventType)
+{
+  for (UIView *view in viewPath) {
+    if (IsViewListeningToEvent(view, eventType)) {
+      return YES;
+    }
+  }
+  return NO;
+}
+
 /**
  * Surprisingly, `__unsafe_unretained id` pointers are not regular pointers
  * and `std::hash<>` cannot hash them.
@@ -563,10 +573,21 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 
   UIView *targetView = [listenerView hitTest:clientLocation withEvent:nil];
   targetView = FindClosestFabricManagedTouchableView(targetView);
+  UIView *prevTargetView = [_currentlyHoveredViews firstObject];
 
   NSOrderedSet *eventPathViews = GetTouchableViewsInPathToRoot(targetView);
 
   NSTimeInterval timestamp = CACurrentMediaTime();
+
+  // Over
+  if (prevTargetView != targetView) {
+    BOOL shouldEmitOverEvent = IsAnyViewInPathListeningToEvent(eventPathViews, ViewEvents::Offset::PointerOver);
+    SharedTouchEventEmitter eventEmitter = GetTouchEmitterFromView(targetView, [recognizer locationInView:targetView]);
+    if (shouldEmitOverEvent && eventEmitter != nil) {
+      PointerEvent event = CreatePointerEventFromIncompleteHoverData(targetView, clientLocation, timestamp);
+      eventEmitter->onPointerOver(event);
+    }
+  }
 
   // Entering
 
@@ -592,6 +613,17 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 
     if (shouldEmitEvent && !hasParentEnterListener) {
       hasParentEnterListener = YES;
+    }
+  }
+
+  // Out
+  if (prevTargetView != targetView) {
+    BOOL shouldEmitOutEvent = IsAnyViewInPathListeningToEvent(_currentlyHoveredViews, ViewEvents::Offset::PointerOut);
+    SharedTouchEventEmitter eventEmitter =
+        GetTouchEmitterFromView(prevTargetView, [recognizer locationInView:prevTargetView]);
+    if (shouldEmitOutEvent && eventEmitter != nil) {
+      PointerEvent event = CreatePointerEventFromIncompleteHoverData(prevTargetView, clientLocation, timestamp);
+      eventEmitter->onPointerOut(event);
     }
   }
 

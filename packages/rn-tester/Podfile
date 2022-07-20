@@ -1,4 +1,5 @@
 require_relative '../../scripts/react_native_pods'
+require_relative '../../scripts/cocoapods/new_architecture'
 
 source 'https://cdn.cocoapods.org/'
 platform :ios, '12.4'
@@ -8,6 +9,8 @@ platform :ios, '12.4'
 install! 'cocoapods', :deterministic_uuids => false
 
 USE_FRAMEWORKS = ENV['USE_FRAMEWORKS'] == '1'
+IN_CI = ENV['CI'] == 'true'
+
 @prefix_path = "../.."
 
 if USE_FRAMEWORKS
@@ -15,7 +18,7 @@ if USE_FRAMEWORKS
   use_frameworks!
 end
 
-def pods(options = {})
+def pods(options = {}, use_flipper: false)
   project 'RNTesterPods.xcodeproj'
 
   fabric_enabled = true
@@ -26,13 +29,15 @@ def pods(options = {})
     # Custom fabric component is only supported when using codegen discovery.
     pod 'MyNativeView', :path => "NativeComponentExample"
   end
-
+  
   use_react_native!(
     path: @prefix_path,
     fabric_enabled: fabric_enabled,
     hermes_enabled: hermes_enabled,
+    flipper_configuration: use_flipper ? FlipperConfiguration.enabled : FlipperConfiguration.disabled,
     app_path: "#{Dir.pwd}",
     config_file_dir: "#{Dir.pwd}/node_modules",
+    production: !ENV['PRODUCTION'].nil?
   )
   pod 'ReactCommon/turbomodule/samples', :path => "#{@prefix_path}/ReactCommon"
 
@@ -46,10 +51,7 @@ def pods(options = {})
 end
 
 target 'RNTester' do
-  pods()
-  if !USE_FRAMEWORKS
-    use_flipper!
-  end
+  pods({}, :use_flipper => !IN_CI && !USE_FRAMEWORKS)
 end
 
 target 'RNTesterUnitTests' do
@@ -65,4 +67,5 @@ end
 post_install do |installer|
   react_native_post_install(installer, @prefix_path)
   __apply_Xcode_12_5_M1_post_install_workaround(installer)
+  set_clang_cxx_language_standard_if_needed(installer)
 end

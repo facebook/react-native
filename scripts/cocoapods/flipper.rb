@@ -8,10 +8,10 @@
 $flipper_default_versions = {
     'Flipper' => '0.125.0',
     'Flipper-Boost-iOSX' => '1.76.0.1.11',
-    'Flipper-DoubleConversion' => '3.2.0',
+    'Flipper-DoubleConversion' => '3.2.0.1',
     'Flipper-Fmt' => '7.1.7',
     'Flipper-Folly' => '2.6.10',
-    'Flipper-Glog' => '0.5.0.4',
+    'Flipper-Glog' => '0.5.0.5',
     'Flipper-PeerTalk' => '0.0.4',
     'Flipper-RSocket' => '1.4.3',
     'OpenSSL-Universal' => '1.1.1100',
@@ -22,10 +22,8 @@ $flipper_default_versions = {
 #
 # @parameter production: a boolean that indicates whether we are in production or not.
 # @parameter pathToReactNative: the path to the React Native installation
-def install_flipper_dependencies(production, pathToReactNative)
-    unless production
-        pod 'React-Core/DevSupport', :path => "#{pathToReactNative}/"
-    end
+def install_flipper_dependencies(pathToReactNative)
+    pod 'React-Core/DevSupport', :path => "#{pathToReactNative}/"
 end
 
 
@@ -90,5 +88,25 @@ def flipper_post_install(installer)
                 end
             end
         end
+    end
+end
+
+class FlipperConfiguration
+    attr_reader :flipper_enabled
+    attr_reader :configurations
+    attr_reader :versions
+
+    def initialize(flipper_enabled, configurations, versions)
+        @flipper_enabled = flipper_enabled
+        @configurations = configurations
+        @versions = versions
+    end
+
+    def self.enabled(configurations = ["Debug"], versions = {})
+        FlipperConfiguration.new(true, configurations, versions)
+    end
+
+    def self.disabled
+        FlipperConfiguration.new(false, [], {})
     end
 end

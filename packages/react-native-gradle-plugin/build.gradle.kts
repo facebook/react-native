@@ -6,6 +6,7 @@
  */
 
 import org.gradle.api.internal.classpath.ModuleRegistry
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.configurationcache.extensions.serviceOf
 
 plugins {
@@ -31,7 +32,7 @@ group = "com.facebook.react"
 
 dependencies {
   implementation(gradleApi())
-  implementation("com.android.tools.build:gradle:7.0.4")
+  implementation("com.android.tools.build:gradle:7.2.0")
   implementation("com.google.code.gson:gson:2.8.9")
   implementation("com.google.guava:guava:31.0.1-jre")
   implementation("com.squareup:javapoet:1.13.0")
@@ -53,5 +54,14 @@ java {
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11.majorVersion
+    }
+}
+
+tasks.withType<Test>().configureEach {
+    testLogging {
+        exceptionFormat = TestExceptionFormat.FULL
+        showExceptions = true
+        showCauses = true
+        showStackTraces = true
     }
 }

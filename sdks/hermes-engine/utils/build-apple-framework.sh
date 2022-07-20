@@ -11,6 +11,7 @@ else
 fi
 
 NUM_CORES=$(sysctl -n hw.ncpu)
+IMPORT_HERMESC_PATH=${HERMES_OVERRIDE_HERMESC_PATH:-$PWD/build_host_hermesc/ImportHermesc.cmake}
 
 function get_release_version {
   ruby -rcocoapods-core -rjson -e "puts Pod::Specification.from_file('hermes-engine.podspec').version"
@@ -57,7 +58,7 @@ function configure_apple_framework {
     -DHERMES_BUILD_APPLE_FRAMEWORK:BOOLEAN=true \
     -DHERMES_BUILD_APPLE_DSYM:BOOLEAN=true \
     -DHERMES_ENABLE_TOOLS:BOOLEAN="$build_cli_tools" \
-    -DIMPORT_HERMESC:PATH="$PWD/build_host_hermesc/ImportHermesc.cmake" \
+    -DIMPORT_HERMESC:PATH="$IMPORT_HERMESC_PATH" \
     -DCMAKE_INSTALL_PREFIX:PATH=../destroot \
     -DCMAKE_BUILD_TYPE="$BUILD_TYPE"
 }
@@ -66,8 +67,12 @@ function configure_apple_framework {
 function build_apple_framework {
   echo "Building framework for $1 with architectures: $2"
 
+  # Only build host HermesC if no file found at $IMPORT_HERMESC_PATH
+  [ ! -f "$IMPORT_HERMESC_PATH" ] &&
   build_host_hermesc
-  [ ! -f "$PWD/build_host_hermesc/ImportHermesc.cmake" ] &&
+
+  # Confirm ImportHermesc.cmake is now available.
+  [ ! -f "$IMPORT_HERMESC_PATH" ] &&
   echo "Host hermesc is required to build apple frameworks!"
 
   configure_apple_framework "$1" "$2" "$3"
@@ -90,9 +95,10 @@ function create_universal_framework {
   done
 
   mkdir universal
+  # shellcheck disable=SC2086
   xcodebuild -create-xcframework $args -output "universal/hermes.xcframework"
 
-  for platform in $@; do
+  for platform in "$@"; do
     rm -r "$platform"
   done
 

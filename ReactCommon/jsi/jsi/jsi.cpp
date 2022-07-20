@@ -62,14 +62,6 @@ Value callGlobalFunction(Runtime& runtime, const char* name, const Value& arg) {
 
 } // namespace
 
-namespace detail {
-
-void throwJSError(Runtime& rt, const char* msg) {
-  throw JSError(rt, msg);
-}
-
-} // namespace detail
-
 Buffer::~Buffer() = default;
 
 PreparedJavaScript::~PreparedJavaScript() = default;

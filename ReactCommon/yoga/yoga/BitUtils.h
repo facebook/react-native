@@ -7,6 +7,8 @@
 
 #pragma once
 
+#ifdef __cplusplus
+
 #include <cstdio>
 #include <cstdint>
 #include "YGEnums.h"
@@ -65,3 +67,5 @@ inline void setBooleanData(uint8_t& flags, size_t index, bool value) {
 } // namespace detail
 } // namespace yoga
 } // namespace facebook
+
+#endif

@@ -53,6 +53,12 @@ struct ViewEvents {
     // W3C Pointer Events
     PointerEnter2 = 20,
     PointerLeave2 = 21,
+    PointerMove2 = 22,
+    PointerEnter2Capture = 23,
+    PointerLeave2Capture = 24,
+    PointerMove2Capture = 25,
+    PointerOver = 26,
+    PointerOut = 27,
   };
 
   constexpr bool operator[](const Offset offset) const {

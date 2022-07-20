@@ -72,10 +72,11 @@ public abstract class Event<T extends Event> {
     // We infer UIManagerType. Even though it's not passed in explicitly, we have a
     // contract that Fabric events *always* have a SurfaceId passed in, and non-Fabric events
     // NEVER have a SurfaceId passed in (the default/placeholder of -1 is passed in instead).
+    //
     // Why does this matter?
     // Events can be sent to Views that are part of the View hierarchy *but not directly managed
     // by React Native*. For example, embedded custom hierachies, Litho hierachies, etc.
-    // In those cases it's important to konw that the Event should be sent to the Fabric or
+    // In those cases it's important to know that the Event should be sent to the Fabric or
     // non-Fabric UIManager, and we cannot use the ViewTag for inference since it's not controlled
     // by RN and is essentially a random number.
     // At some point it would be great to pass the SurfaceContext here instead.

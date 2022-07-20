@@ -36,14 +36,17 @@ class AnimatedProps extends AnimatedNode {
     this._callback = callback;
   }
 
-  __getValue(): Object {
+  __getValue(isInitialRender: boolean = true): Object {
     const props: {[string]: any | ((...args: any) => void)} = {};
     for (const key in this._props) {
       const value = this._props[key];
       if (value instanceof AnimatedNode) {
-        if (!value.__isNative || value instanceof AnimatedStyle) {
-          // We cannot use value of natively driven nodes this way as the value we have access from
-          // JS may not be up to date.
+        // During initial render we want to use the initial value of both natively and non-natively
+        // driven nodes. On subsequent renders, we cannot use the value of natively driven nodes
+        // as they may not be up to date.
+        if (value instanceof AnimatedStyle) {
+          props[key] = value.__getValue(isInitialRender);
+        } else if (isInitialRender || !value.__isNative) {
           props[key] = value.__getValue();
         }
       } else if (value instanceof AnimatedEvent) {
