@@ -88,6 +88,7 @@ function NestedFlatList(props) {
   const [items, setItems] = useState(DATA);
   const [disabled, setDisabled] = useState(false);
   const [index, setIndex] = useState(DATA.length + 1);
+  let flatlist = React.useRef(null);
   const getNewItems = startIndex => {
     let newItems = [];
     for (let i = startIndex; i < startIndex + 11; i++) {
@@ -95,7 +96,6 @@ function NestedFlatList(props) {
     }
     return newItems;
   };
-  console.log('TESTING:: ' + 'items.length', items.length);
   return (
     <View>
       <Button
@@ -120,8 +120,16 @@ function NestedFlatList(props) {
           setItems(newItems);
         }}
       />
+      <Button
+        title="scroll to end"
+        onPress={() => {
+          if (flatlist) flatlist.scrollToEnd();
+        }}
+      />
       <Text>Flatlist</Text>
       <FlatList
+        horizontal
+        ref={ref => (flatlist = ref)}
         inverted
         style={{height: 400}}
         renderItem={renderItem}
