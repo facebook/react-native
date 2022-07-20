@@ -1719,7 +1719,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     // and ScrollView scrollEnd events are not compatible with TalkBack
     // https://github.com/facebook/react-native/pull/34141#issuecomment-1189883210
     if (screenreaderEnabled && this.props.inverted && this.lastBottomHeight) {
-      const newBottomHeight = height - this.lastBottomHeight;
+      let newBottomHeight;
+      if (this.props.horizontal) {
+        newBottomHeight = width - this.lastBottomHeight;
+      } else {
+        newBottomHeight = height - this.lastBottomHeight;
+      }
       setTimeout(
         (flatlist, newBottomHeight) => {
           flatlist.scrollToOffset({
@@ -1776,13 +1781,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     // restore the scrollPosition after onEndReached
     // this.scrollToOffset({offset: newHeight - this.bottom})
     if (screenreaderEnabled && this.props.inverted) {
-      if (this.props.horizontal) {
-        const scrollX = e.nativeEvent.contentOffset.x;
-        const height = e.nativeEvent.contentSize.height;
-        this.bottom = height - scrollX;
-      } else {
-        this.bottom = contentLength - offset;
-      }
+      this.bottom = contentLength - offset;
     }
 
     if (this._isNestedWithSameOrientation()) {
