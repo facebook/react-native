@@ -44,7 +44,7 @@ def use_react_native! (options={})
   pod 'FBLazyVector', :path => "#{prefix}/Libraries/FBLazyVector"
   pod 'FBReactNativeSpec', :path => "#{prefix}/React/FBReactNativeSpec"
   pod 'RCTRequired', :path => "#{prefix}/Libraries/RCTRequired"
-  pod 'RCTTypeSafety', :path => "#{prefix}/Libraries/TypeSafety"
+  pod 'RCTTypeSafety', :path => "#{prefix}/Libraries/TypeSafety", :modular_headers => true
   pod 'React', :path => "#{prefix}/"
   pod 'React-Core', :path => "#{prefix}/"
   pod 'React-CoreModules', :path => "#{prefix}/React/CoreModules"
@@ -72,13 +72,13 @@ def use_react_native! (options={})
   pod 'React-runtimeexecutor', :path => "#{prefix}/ReactCommon/runtimeexecutor"
   pod 'React-perflogger', :path => "#{prefix}/ReactCommon/reactperflogger"
   pod 'React-logger', :path => "#{prefix}/ReactCommon/logger"
-  pod 'ReactCommon/turbomodule/core', :path => "#{prefix}/ReactCommon"
+  pod 'ReactCommon/turbomodule/core', :path => "#{prefix}/ReactCommon", :modular_headers => true
   pod 'Yoga', :path => "#{prefix}/ReactCommon/yoga", :modular_headers => true
 
   pod 'DoubleConversion', :podspec => "#{prefix}/third-party-podspecs/DoubleConversion.podspec"
   pod 'glog', :podspec => "#{prefix}/third-party-podspecs/glog.podspec"
   pod 'boost', :podspec => "#{prefix}/third-party-podspecs/boost.podspec"
-  pod 'RCT-Folly', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec"
+  pod 'RCT-Folly', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec", :modular_headers => true
 
   if ENV['USE_CODEGEN_DISCOVERY'] == '1'
     app_path = options[:app_path]
@@ -96,7 +96,7 @@ def use_react_native! (options={})
     generate_react_codegen_podspec!(react_codegen_spec)
   end
 
-  pod 'React-Codegen', :path => $CODEGEN_OUTPUT_DIR
+  pod 'React-Codegen', :path => $CODEGEN_OUTPUT_DIR, :modular_headers => true
 
   if fabric_enabled
     checkAndGenerateEmptyThirdPartyProvider!(prefix)
@@ -104,13 +104,12 @@ def use_react_native! (options={})
     pod 'React-rncore', :path => "#{prefix}/ReactCommon"
     pod 'React-graphics', :path => "#{prefix}/ReactCommon/react/renderer/graphics"
     pod 'React-jsi/Fabric', :path => "#{prefix}/ReactCommon/jsi"
-    pod 'React-RCTFabric', :path => "#{prefix}/React"
+    pod 'React-RCTFabric', :path => "#{prefix}/React", :modular_headers => true
     pod 'RCT-Folly/Fabric', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec"
   end
 
   if hermes_enabled
     pod 'React-hermes', :path => "#{prefix}/ReactCommon/hermes"
-    Pod::UI.puts "[Hermes] Building Hermes from source"
     hermes_source_path = downloadAndConfigureHermesSource(prefix)
     pod 'hermes-engine', :path => "#{hermes_source_path}/hermes-engine.podspec"
     pod 'libevent', '~> 2.1.12'
@@ -684,19 +683,11 @@ def downloadAndConfigureHermesSource(react_native_path)
   hermes_tarball_path = "#{download_dir}/hermes-#{hermes_tag_sha}.tar.gz"
 
   if (!File.exist?(hermes_tarball_path))
-    Pod::UI.puts "[Hermes] Downloading Hermes source code (#{hermes_tarball_url})"
+    Pod::UI.puts "[Hermes] Downloading Hermes source code..."
     system("curl #{hermes_tarball_url} -Lo #{hermes_tarball_path}")
   end
-  Pod::UI.puts "[Hermes] Extracting Hermes (#{hermes_tag_sha})"
+  Pod::UI.puts "[Hermes] Extracting Hermes tarball (#{hermes_tag_sha.slice(0,6)})"
   system("tar -zxf #{hermes_tarball_path} --strip-components=1 --directory #{hermes_dir}")
-
-  hermesc_macos_path = "#{sdks_dir}/hermesc/macos/build_host_hermesc"
-  hermesc_macos_link = "#{hermes_dir}/utils/build_host_hermesc"
-  if (File.exist?(hermesc_macos_path))
-    # If hermesc is present, create a symbolic link in the hermes source directory to avoid re-building hermesc
-    Pod::UI.puts "[Hermes] Using pre-compiled Hermes Compiler from #{hermesc_macos_path}"
-    system("ln -s #{hermesc_macos_path} #{hermesc_macos_link}")
-  end
 
   # TODO: Integrate this temporary hermes-engine.podspec into the actual one located in facebook/hermes
   system("cp #{sdks_dir}/hermes-engine.podspec #{hermes_dir}/hermes-engine.podspec")

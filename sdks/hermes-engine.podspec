@@ -16,9 +16,11 @@ module HermesHelper
   BUILD_TYPE = :release
 end
 
+Pod::UI.puts '[Hermes] Hermes needs to be compiled, installing hermes-engine may take a while...'.yellow
+
 Pod::Spec.new do |spec|
   spec.name        = "hermes-engine"
-  spec.version     = '1000.0.0'
+  spec.version     = "1000.0.0-#{hermes_tag_sha.slice(0,6)}"
   spec.summary     = "Hermes is a small and lightweight JavaScript engine optimized for running React Native."
   spec.description = "Hermes is a JavaScript engine optimized for fast start-up of React Native apps. It features ahead-of-time static optimization and compact bytecode."
   spec.homepage    = "https://hermesengine.dev"

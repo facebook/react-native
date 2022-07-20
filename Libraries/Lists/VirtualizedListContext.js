@@ -47,6 +47,7 @@ type Context = $ReadOnly<{
     timestamp: number,
     velocity: number,
     visibleLength: number,
+    zoomScale: number,
   },
   horizontal: ?boolean,
   getOutermostParentListRef: () => VirtualizedList,

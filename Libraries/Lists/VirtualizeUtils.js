@@ -25,12 +25,13 @@ export function elementsThatOverlapOffsets(
     offset: number,
     ...
   },
+  zoomScale: number,
 ): Array<number> {
   const out = [];
   let outLength = 0;
   for (let ii = 0; ii < itemCount; ii++) {
     const frame = getFrameMetrics(ii);
-    const trailingOffset = frame.offset + frame.length;
+    const trailingOffset = (frame.offset + frame.length) * zoomScale;
     for (let kk = 0; kk < offsets.length; kk++) {
       if (out[kk] == null && trailingOffset >= offsets[kk]) {
         out[kk] = ii;
@@ -103,6 +104,7 @@ export function computeWindowedRenderLimits(
     offset: number,
     velocity: number,
     visibleLength: number,
+    zoomScale: number,
     ...
   },
 ): {
@@ -113,7 +115,7 @@ export function computeWindowedRenderLimits(
   if (itemCount === 0) {
     return prev;
   }
-  const {offset, velocity, visibleLength} = scrollMetrics;
+  const {offset, velocity, visibleLength, zoomScale} = scrollMetrics;
 
   // Start with visible area, then compute maximum overscan region by expanding from there, biased
   // in the direction of scroll. Total overscan area is capped, which should cap memory consumption
@@ -134,7 +136,8 @@ export function computeWindowedRenderLimits(
   );
   const overscanEnd = Math.max(0, visibleEnd + leadFactor * overscanLength);
 
-  const lastItemOffset = getFrameMetricsApprox(itemCount - 1).offset;
+  const lastItemOffset =
+    getFrameMetricsApprox(itemCount - 1).offset * zoomScale;
   if (lastItemOffset < overscanBegin) {
     // Entire list is before our overscan window
     return {
@@ -148,6 +151,7 @@ export function computeWindowedRenderLimits(
     [overscanBegin, visibleBegin, visibleEnd, overscanEnd],
     itemCount,
     getFrameMetricsApprox,
+    zoomScale,
   );
   overscanFirst = overscanFirst == null ? 0 : overscanFirst;
   first = first == null ? Math.max(0, overscanFirst) : first;

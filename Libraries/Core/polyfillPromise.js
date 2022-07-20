@@ -11,7 +11,6 @@
 'use strict';
 
 const {polyfillGlobal} = require('../Utilities/PolyfillFunctions');
-const warnOnce = require('../Utilities/warnOnce');
 
 /**
  * Set up Promise. The native Promise implementation throws the following error:
@@ -36,35 +35,4 @@ if (global?.HermesInternal?.hasPromise?.()) {
   }
 } else {
   polyfillGlobal('Promise', () => require('../Promise'));
-}
-
-if (__DEV__) {
-  // $FlowFixMe
-  const done = Promise.prototype.done;
-  if (done != null) {
-    let depth = 0;
-    /* eslint-disable no-extend-native */
-    // $FlowFixMe
-    Promise.prototype.done = function () {
-      ++depth;
-      try {
-        // Avoid infinite recursion if done() happens to be triggered by warnOnce.
-        if (depth === 1) {
-          // Warn once per unique call stack. Not super efficient, but we're in
-          // __DEV__ and .done() calls are rare to begin with.
-          const key = new Error().stack;
-          warnOnce(
-            key,
-            'Promise.prototype.done(): This nonstandard polyfill ' +
-              'has been deprecated and will be removed in a future release. ' +
-              'Please instead use `.then()`.',
-          );
-        }
-      } finally {
-        --depth;
-      }
-      return done.apply(this, arguments);
-    };
-    /* eslint-enable no-extend-native */
-  }
 }

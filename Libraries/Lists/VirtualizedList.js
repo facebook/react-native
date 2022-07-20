@@ -8,44 +8,44 @@
  * @format
  */
 
-const Batchinator = require('../Interaction/Batchinator');
-const FillRateHelper = require('./FillRateHelper');
-const ReactNative = require('../Renderer/shims/ReactNative');
-const RefreshControl = require('../Components/RefreshControl/RefreshControl');
-const ScrollView = require('../Components/ScrollView/ScrollView');
-const StyleSheet = require('../StyleSheet/StyleSheet');
-const View = require('../Components/View/View');
-const ViewabilityHelper = require('./ViewabilityHelper');
-
-const flattenStyle = require('../StyleSheet/flattenStyle');
-const infoLog = require('../Utilities/infoLog');
-const invariant = require('invariant');
-
-import {
-  keyExtractor as defaultKeyExtractor,
-  computeWindowedRenderLimits,
-} from './VirtualizeUtils';
-
-import * as React from 'react';
 import type {ScrollResponderType} from '../Components/ScrollView/ScrollView';
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
+import type {LayoutEvent} from '../Types/CoreEventTypes';
 import type {
   ViewabilityConfig,
-  ViewToken,
   ViewabilityConfigCallbackPair,
+  ViewToken,
 } from './ViewabilityHelper';
-import type {LayoutEvent} from '../Types/CoreEventTypes';
+
 import {
+  type ChildListState,
+  type ListDebugInfo,
   VirtualizedListCellContextProvider,
   VirtualizedListContext,
   VirtualizedListContextProvider,
-  type ChildListState,
-  type ListDebugInfo,
-} from './VirtualizedListContext';
+} from './VirtualizedListContext.js';
+import {
+  computeWindowedRenderLimits,
+  keyExtractor as defaultKeyExtractor,
+} from './VirtualizeUtils';
+import * as React from 'react';
+
 import type {FocusEvent} from '../Types/CoreEventTypes';
 
 import {CellRenderMask} from './CellRenderMask';
 import clamp from '../Utilities/clamp';
+
+const RefreshControl = require('../Components/RefreshControl/RefreshControl');
+const ScrollView = require('../Components/ScrollView/ScrollView');
+const View = require('../Components/View/View');
+const Batchinator = require('../Interaction/Batchinator');
+const ReactNative = require('../Renderer/shims/ReactNative');
+const flattenStyle = require('../StyleSheet/flattenStyle');
+const StyleSheet = require('../StyleSheet/StyleSheet');
+const infoLog = require('../Utilities/infoLog');
+const FillRateHelper = require('./FillRateHelper');
+const ViewabilityHelper = require('./ViewabilityHelper');
+const invariant = require('invariant');
 
 type Item = any;
 
@@ -1370,14 +1370,21 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _averageCellLength = 0;
   // Maps a cell key to the set of keys for all outermost child lists within that cell
   _cellKeysToChildListKeys: Map<string, Set<string>> = new Map();
-  _cellRefs: {[string]: ?CellRenderer} = {};
+  _cellRefs: {[string]: null | CellRenderer} = {};
   _fillRateHelper: FillRateHelper;
-  _frames = {};
+  _frames: {
+    [string]: {
+      inLayout?: boolean,
+      index: number,
+      length: number,
+      offset: number,
+    },
+  } = {};
   _footerLength = 0;
   _hasDoneInitialScroll = false;
   _hasInteracted = false;
   _hasMore = false;
-  _hasWarned = {};
+  _hasWarned: {[string]: boolean} = {};
   _headerLength = 0;
   _hiPriInProgress: boolean = false; // flag to prevent infinite hiPri cell limit update
   _highestMeasuredFrameIndex = 0;
@@ -1401,6 +1408,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     timestamp: 0,
     velocity: 0,
     visibleLength: 0,
+    zoomScale: 1,
   };
   _scrollRef: ?React.ElementRef<any> = null;
   _sentEndForContentLength = 0;
@@ -1814,6 +1822,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       );
       this._hasWarned.perf = true;
     }
+
+    const zoomScale = e.nativeEvent.zoomScale;
+
     this._scrollMetrics = {
       contentLength,
       dt,
@@ -1822,6 +1833,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       timestamp,
       velocity,
       visibleLength,
+      zoomScale,
     };
     this._updateViewableItems(this.props.data);
     if (!this.props) {
@@ -1990,15 +2002,15 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       'Tried to get frame for out of range index ' + index,
     );
     const item = getItem(data, index);
-    let frame = item && this._frames[this._keyExtractor(item, index)];
+    const frame = item && this._frames[this._keyExtractor(item, index)];
     if (!frame || frame.index !== index) {
       if (getItemLayout) {
-        frame = getItemLayout(data, index);
+        /* $FlowFixMe[prop-missing] (>=0.63.0 site=react_native_fb) This comment
+         * suppresses an error found when Flow v0.63 was deployed. To see the error
+         * delete this comment and run Flow. */
+        return getItemLayout(data, index);
       }
     }
-    /* $FlowFixMe[prop-missing] (>=0.63.0 site=react_native_fb) This comment
-     * suppresses an error found when Flow v0.63 was deployed. To see the error
-     * delete this comment and run Flow. */
     return frame;
   };
 

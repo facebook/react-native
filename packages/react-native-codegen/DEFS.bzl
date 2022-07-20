@@ -28,24 +28,21 @@ load(
     "rn_apple_library",
     "rn_xplat_cxx_library",
 )
+load("//tools/build_defs/third_party:yarn_defs.bzl", "yarn_workspace_binary")
 
 # Call this in the react-native-codegen/BUCK file
 def rn_codegen_cli():
     if not IS_OSS_BUILD:
         # FB Internal Setup
-        fb_native.sh_binary(
+        yarn_workspace_binary(
             name = "write_to_json",
-            main = "src/cli/combine/combine_js_to_schema.sh",
-            resources = [
-                "src/cli/combine/combine-js-to-schema.js",
-                "src/cli/combine/combine_js_to_schema.sh",
+            main = "src/cli/combine/combine-js-to-schema-cli.js",
+            root = "//xplat/js:workspace",
+            deps = [
                 ":yarn-workspace",
-                "//xplat/js:setup_env",
-                "//xplat/js:setup_env_vars",
             ],
             visibility = ["PUBLIC"],
         )
-
         fb_native.sh_binary(
             name = "generate_all_from_schema",
             main = "src/cli/generators/generate-all.sh",
@@ -220,14 +217,14 @@ def rn_codegen_modules(
         # iOS Buck build isn't fully working in OSS, so let's skip it for OSS for now.
         fb_native.genrule(
             name = generate_module_hobjcpp_name,
-            cmd = "cp $(location :{})/{}.h $OUT".format(generate_fixtures_rule_name, name),
+            cmd = "cp $(location :{})/{}/{}.h $OUT".format(generate_fixtures_rule_name, name, name),
             out = "{}.h".format(name),
             labels = ["codegen_rule"],
         )
 
         fb_native.genrule(
             name = generate_module_mm_name,
-            cmd = "cp $(location :{})/{}-generated.mm $OUT".format(generate_fixtures_rule_name, name),
+            cmd = "cp $(location :{})/{}/{}-generated.mm $OUT".format(generate_fixtures_rule_name, name, name),
             out = "{}-generated.mm".format(name),
             labels = ["codegen_rule"],
         )

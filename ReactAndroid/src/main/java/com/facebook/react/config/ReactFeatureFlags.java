@@ -86,15 +86,7 @@ public class ReactFeatureFlags {
   }
 
   /** Feature Flag to use overflowInset values provided by Yoga */
-  private static boolean useOverflowInset = false;
-
-  public static void setUseOverflowInset(boolean enabled) {
-    useOverflowInset = enabled;
-  }
-
-  public static boolean doesUseOverflowInset() {
-    return useOverflowInset;
-  }
+  public static boolean useOverflowInset = false;
 
   public static boolean enableLockFreeEventDispatcher = false;
 
@@ -102,8 +94,12 @@ public class ReactFeatureFlags {
 
   public static boolean insertZReorderBarriersOnViewGroupChildren = true;
 
+  /** Feature Flag for mitigatin concurrent root crashes */
   public static boolean enableDelayedViewStateDeletion = false;
 
+  public static boolean disablePreallocationOnClone = false;
+
+  public static boolean shouldRememberAllocatedViews = false;
   /**
    * Feature Flag to control the size of the cache used by TextLayoutManager in Fabric. Used from
    * JNI.

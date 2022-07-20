@@ -12,6 +12,7 @@
 
 /**
  * This script walks a releaser through bumping the Hermes version for a release.
+ * It needs be executed on a release branch.
  */
 const {exit} = require('shelljs');
 const yargs = require('yargs');
