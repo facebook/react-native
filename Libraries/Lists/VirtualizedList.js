@@ -1484,7 +1484,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   _onLayout = (e: LayoutEvent) => {
-    console.log('TESTING:: ' + '_onLayout');
     if (this._isNestedWithSameOrientation()) {
       // Need to adjust our scroll metrics to be relative to our containing
       // VirtualizedList before we can make claims about list item viewability
@@ -1599,7 +1598,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   _maybeCallOnEndReached() {
-    console.log('TESTING:: ' + '_maybeCallOnEndReached');
     const {data, getItemCount, onEndReached, onEndReachedThreshold, inverted} =
       this.props;
     const {contentLength, visibleLength, offset} = this._scrollMetrics;
@@ -1646,13 +1644,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this.lastTimeCalled = Date.now();
       // save the last position in the flastlist to restore it after animation to Top
       onEndReached({distanceFromEnd});
-      console.log('TESTING:: ' + 'TalkBack onEndReached({distanceFromEnd})');
     } else {
       this.lastBottomHeight = undefined;
-      console.log(
-        'TESTING:: ' + 'this.lastBottomHeight',
-        this.lastBottomHeight,
-      );
     }
     if (
       onEndReached &&
@@ -1662,17 +1655,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     ) {
       if (talkbackEnabledWithInvertedFlatlist) {
         this.beginningReached = true;
-        console.log('TESTING:: ' + 'this.beginningReached = true');
       } else {
         // Only call onEndReached once for a given content length
         this._sentEndForContentLength = this._scrollMetrics.contentLength;
         onEndReached({distanceFromEnd});
-        console.log(
-          'TESTING:: ' + 'not TalkBack onEndReached({distanceFromEnd})',
-        );
       }
     } else if (distanceFromEnd > threshold) {
-      console.log('TESTING:: ' + 'distanceFromEnd > threshold');
       // If the user scrolls away from the end and back again cause
       // an onEndReached to be triggered again
       this._sentEndForContentLength = 0;
@@ -1680,7 +1668,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   _onContentSizeChange = (width: number, height: number) => {
-    console.log('TESTING:: ' + '_onContentSizeChange');
     const {screenreaderEnabled} = this.state;
     if (
       width > 0 &&
@@ -1690,10 +1677,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       !this._hasTriggeredInitialScrollToIndex
     ) {
       if (this.props.contentOffset == null) {
-        console.log(
-          'TESTING:: ' +
-            '_onContentSizeChange scrollToIndex this.prop.initialScrollIndex',
-        );
         this.scrollToIndex({
           animated: false,
           index: this.props.initialScrollIndex,
@@ -1702,10 +1685,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this._hasTriggeredInitialScrollToIndex = true;
     }
     if (this.props.onContentSizeChange) {
-      console.log(
-        'TESTING:: ' +
-          '_onContentSizeChange calls this.props.onContentSizeChange',
-      );
       this.props.onContentSizeChange(width, height);
     }
     this._scrollMetrics.contentLength = this._selectLength({height, width});
@@ -1718,18 +1697,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this.props.inverted &&
       screenreaderEnabled
     ) {
-      console.log(
-        'TESTING:: ' +
-          '_onContentSizeChange triggering scrollToOffset to start the Inverted FlatList at the Bottom',
-      );
-      console.log(
-        'TESTING:: ' + 'this._hasTriggeredInitialScrollToIndex',
-        this._hasTriggeredInitialScrollToIndex,
-      );
-      console.log(
-        'TESTING:: ' + 'this._scrollMetrics.contentLength',
-        this._scrollMetrics.contentLength,
-      );
       this.scrollToOffset({
         animated: false,
         offset: this._scrollMetrics.contentLength,
@@ -1741,20 +1708,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     // an inverted flatlist contentLength from the bottom of the screen
     // setTimeout is required as animated false will not work
     if (screenreaderEnabled && this.props.inverted && this.lastBottomHeight) {
-      console.log(
-        'TESTING:: ' +
-          '_onContentSizeChange after calling onEndReached (which appends items to the list), we trigger a scrollToOffset to previous Y/X coordinates in Inverted FlatList to keep same scroll Position. After the first onEndReached callback is executed this.lastBottomHeight is valorized, then is set to undefined to avoid doing this multiple times.',
-      );
-      console.log(
-        'TESTING:: ' + 'this.lastBottomHeight',
-        this.lastBottomHeight,
-      );
       const newBottomHeight = height - this.lastBottomHeight;
-      console.log(
-        'TESTING:: ' +
-          'now we trigger scrollToOffset with value newBottomHeight',
-      );
-      console.log('TESTING:: ' + 'newBottomHeight', newBottomHeight);
       setTimeout(
         (flatlist, newBottomHeight) => {
           flatlist.scrollToOffset({
@@ -1794,7 +1748,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   };
 
   _onScroll = (e: Object) => {
-    console.log('TESTING:: ' + '_onScroll');
     const {screenreaderEnabled} = this.state;
     this._nestedChildLists.forEach(childList => {
       childList.ref && childList.ref._onScroll(e);
@@ -1884,7 +1837,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   };
 
   _scheduleCellsToRenderUpdate() {
-    console.log('TESTING:: ' + '_scheduleCellsToRenderUpdate');
     const {first, last} = this.state;
     const {offset, visibleLength, velocity} = this._scrollMetrics;
     const itemCount = this.props.getItemCount(this.props.data);
@@ -1896,10 +1848,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     // Mark as high priority if we're close to the start of the first item
     // But only if there are items before the first rendered item
     if (first > 0) {
-      console.log(
-        'TESTING:: ' +
-          "Mark as high priority if we're close to the start of the first item But only if there are items before the first rendered item",
-      );
       const distTop = offset - this.__getFrameMetricsApprox(first).offset;
       hiPri =
         hiPri || distTop < 0 || (velocity < -2 && distTop < scrollingThreshold);
@@ -1907,10 +1855,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     // Mark as high priority if we're close to the end of the last item
     // But only if there are items after the last rendered item
     if (last < itemCount - 1) {
-      console.log(
-        'TESTING:: ' +
-          "Mark as high priority if we're close to the end of the last item But only if there are items after the last rendered item",
-      );
       const distBottom =
         this.__getFrameMetricsApprox(last).offset - (offset + visibleLength);
       hiPri =
@@ -1930,16 +1874,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       (this._averageCellLength || this.props.getItemLayout) &&
       !this._hiPriInProgress
     ) {
-      console.log(
-        'TESTING:: ' +
-          `Only trigger high-priority updates if we've actually rendered cells,
-    and with that size estimate, accurately compute how many cells we should render.
-    Otherwise, it would just render as many cells as it can (of zero dimension),
-    each time through attempting to render more (limited by maxToRenderPerBatch),
-    starving the renderer from actually laying out the objects and computing _averageCellLength.
-    If this is triggered in an componentDidUpdate followed by a hiPri cellToRenderUpdate
-    We shouldn't do another hipri cellToRenderUpdate`,
-      );
       this._hiPriInProgress = true;
       // Don't worry about interactions when scrolling quickly; focus on filling content as fast
       // as possible.
