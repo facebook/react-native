@@ -71,7 +71,7 @@ const IS_RTL = I18nManager.isRTL;
 
 class FlatListExample extends React.PureComponent<Props, State> {
   state: State = {
-    data: genItemData(1),
+    data: genItemData(100),
     debug: false,
     horizontal: false,
     inverted: false,
@@ -94,7 +94,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
   };
 
   _onChangeScrollToIndex = (text: mixed) => {
-    // this._listRef.scrollToIndex({viewPosition: 0.5, index: Number(text)});
+    this._listRef.scrollToIndex({viewPosition: 0.5, index: Number(text)});
   };
 
   _scrollPos = new Animated.Value(0);
@@ -129,7 +129,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
     const filterRegex = new RegExp(String(this.state.filterText), 'i');
     const filter = (item: Item) =>
       filterRegex.test(item.text) || filterRegex.test(item.title);
-    const filteredData = this.state.data;
+    const filteredData = this.state.data.filter(filter);
     const flatListItemRendererProps = this._renderItemComponent();
     return (
       <RNTesterPage
@@ -246,10 +246,10 @@ class FlatListExample extends React.PureComponent<Props, State> {
             keyboardDismissMode="on-drag"
             numColumns={1}
             onEndReached={this._onEndReached}
-            // onRefresh={this._onRefresh}
-            // onScroll={
-            // this.state.horizontal ? this._scrollSinkX : this._scrollSinkY
-            // }
+            onRefresh={this._onRefresh}
+            onScroll={
+              this.state.horizontal ? this._scrollSinkX : this._scrollSinkY
+            }
             onViewableItemsChanged={this._onViewableItemsChanged}
             ref={this._captureRef}
             refreshing={false}
