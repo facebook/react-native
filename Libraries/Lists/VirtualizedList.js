@@ -1708,17 +1708,21 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     // talkback inverted flatlist, height is used to compute
     // an inverted flatlist contentLength from the bottom of the screen
     // setTimeout is required as animated false will not work
-    if (
-      this._hasTriggeredInitialScrollToIndex &&
-      screenreaderEnabled &&
-      this.props.inverted &&
-      this.lastBottomHeight
-    ) {
+    // and ScrollView scrollEnd events are not compatible with TalkBack
+    // https://github.com/facebook/react-native/pull/34141#issuecomment-1189883210
+    if (screenreaderEnabled && this.props.inverted && this.lastBottomHeight) {
       const newBottomHeight = height - this.lastBottomHeight;
-      this.scrollToOffset({
-        offset: newBottomHeight,
-        animated: false,
-      });
+      setTimeout(
+        (flatlist, newBottomHeight) => {
+          flatlist.scrollToOffset({
+            offset: newBottomHeight,
+            animated: false,
+          });
+        },
+        1,
+        this,
+        newBottomHeight,
+      );
     }
     this._maybeCallOnEndReached();
   };
