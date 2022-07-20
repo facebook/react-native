@@ -937,8 +937,17 @@ jobs:
           name: Download Hermes tarball
           command: |
             node scripts/hermes/prepare-hermes-for-build
-            cp sdks/download/* $HERMES_WS_DIR/download/.
-            cp -r sdks/hermes/* $HERMES_WS_DIR/hermes/.
+
+            # If Hermes is not built from source, we don't have these folders.
+            DOWNLOAD_FOLDER=sdks/download/
+            if [[ -d $DOWNLOAD_FOLDER ]]; then
+              cp $DOWNLOAD_FOLDER* $HERMES_WS_DIR/download/.
+            fi
+
+            HERMES_FOLDER=sdks/hermes/
+            if [[ -d $HERMES_FOLDER ]]; then
+              cp -r $HERMES_FOLDER* $HERMES_WS_DIR/hermes/.
+            fi
       - save_cache:
           key: v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
           paths:

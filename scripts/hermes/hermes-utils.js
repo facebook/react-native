@@ -192,6 +192,7 @@ function isOnAReleaseTag() {
 
 function shouldBuildHermesFromSource() {
   const hermesTag = readHermesTag();
+
   return (
     isOnAReleaseBranch() ||
     isOnAReleaseTag() ||
