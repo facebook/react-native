@@ -532,6 +532,7 @@ export type ____ViewStyle_InternalCore = $ReadOnly<{
   backfaceVisibility?: 'visible' | 'hidden',
   backgroundColor?: ____ColorValue_Internal,
   borderColor?: ____ColorValue_Internal,
+  borderCurve?: 'circular' | 'continuous',
   borderBottomColor?: ____ColorValue_Internal,
   borderEndColor?: ____ColorValue_Internal,
   borderLeftColor?: ____ColorValue_Internal,
