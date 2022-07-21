@@ -120,7 +120,7 @@ class UIManager final : public ShadowTreeDelegate {
 
   ShadowNode::Shared cloneNode(
       ShadowNode const &shadowNode,
-      SharedShadowNodeSharedList const &children = nullptr,
+      ShadowNode::SharedListOfShared const &children = nullptr,
       RawProps const *rawProps = nullptr) const;
 
   void appendChild(
@@ -129,7 +129,7 @@ class UIManager final : public ShadowTreeDelegate {
 
   void completeSurface(
       SurfaceId surfaceId,
-      SharedShadowNodeUnsharedList const &rootChildren,
+      ShadowNode::UnsharedListOfShared const &rootChildren,
       ShadowTree::CommitOptions commitOptions) const;
 
   void setIsJSResponder(

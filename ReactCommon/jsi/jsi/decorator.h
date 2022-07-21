@@ -222,6 +222,17 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
     return dhf.target<DecoratedHostFunction>()->plainHF_;
   };
 
+  bool hasNativeState(const Object& o) override {
+    return plain_.hasNativeState(o);
+  }
+  std::shared_ptr<NativeState> getNativeState(const Object& o) override {
+    return plain_.getNativeState(o);
+  }
+  void setNativeState(const Object& o, std::shared_ptr<NativeState> state)
+      override {
+    plain_.setNativeState(o, state);
+  }
+
   Value getProperty(const Object& o, const PropNameID& name) override {
     return plain_.getProperty(o, name);
   };

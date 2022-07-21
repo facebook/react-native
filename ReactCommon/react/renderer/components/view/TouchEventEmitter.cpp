@@ -68,12 +68,29 @@ static jsi::Value pointerEventPayload(
   object.setProperty(runtime, "pointerType", event.pointerType);
   object.setProperty(runtime, "clientX", event.clientPoint.x);
   object.setProperty(runtime, "clientY", event.clientPoint.y);
+  // x/y are an alias to clientX/Y
+  object.setProperty(runtime, "x", event.clientPoint.x);
+  object.setProperty(runtime, "y", event.clientPoint.y);
+  // since RN doesn't have a scrollable root, pageX/Y will always equal
+  // clientX/Y
+  object.setProperty(runtime, "pageX", event.clientPoint.x);
+  object.setProperty(runtime, "pageY", event.clientPoint.y);
+  object.setProperty(runtime, "screenX", event.screenPoint.x);
+  object.setProperty(runtime, "screenY", event.screenPoint.y);
+  object.setProperty(runtime, "offsetX", event.offsetPoint.x);
+  object.setProperty(runtime, "offsetY", event.offsetPoint.y);
   object.setProperty(runtime, "width", event.width);
   object.setProperty(runtime, "height", event.height);
   object.setProperty(runtime, "tiltX", event.tiltX);
   object.setProperty(runtime, "tiltY", event.tiltY);
   object.setProperty(runtime, "detail", event.detail);
   object.setProperty(runtime, "buttons", event.buttons);
+  object.setProperty(runtime, "tangentialPressure", event.tangentialPressure);
+  object.setProperty(runtime, "twist", event.twist);
+  object.setProperty(runtime, "ctrlKey", event.ctrlKey);
+  object.setProperty(runtime, "shiftKey", event.shiftKey);
+  object.setProperty(runtime, "altKey", event.altKey);
+  object.setProperty(runtime, "metaKey", event.metaKey);
   return object;
 }
 

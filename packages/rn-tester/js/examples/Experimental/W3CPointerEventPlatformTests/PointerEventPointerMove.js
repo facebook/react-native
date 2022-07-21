@@ -28,7 +28,7 @@ function PointerEventPointerMoveTestCase(
   const testPointerMove = harness.useAsyncTest('pointermove event recieved');
 
   const handlers = useTestEventHandler(
-    ['pointerMove2'],
+    ['pointerMove'],
     (event: PointerEvent) => {
       detectedPointerTypesRef.current[event.nativeEvent.pointerType] = true;
       testPointerMove.done();

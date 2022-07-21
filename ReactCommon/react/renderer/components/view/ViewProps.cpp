@@ -67,6 +67,15 @@ ViewProps::ViewProps(
                                                 "Color",
                                                 sourceProps.borderColors,
                                                 {})),
+      borderCurves(
+          Props::enablePropIteratorSetter ? sourceProps.borderCurves
+                                          : convertRawProp(
+                                                context,
+                                                rawProps,
+                                                "border",
+                                                "Curve",
+                                                sourceProps.borderCurves,
+                                                {})),
       borderStyles(
           Props::enablePropIteratorSetter ? sourceProps.borderStyles
                                           : convertRawProp(
@@ -412,6 +421,7 @@ BorderMetrics ViewProps::resolveBorderMetrics(
       /* .borderWidths = */ borderWidths.resolve(isRTL, 0),
       /* .borderRadii = */
       ensureNoOverlap(borderRadii.resolve(isRTL, 0), layoutMetrics.frame.size),
+      /* .borderCurves = */ borderCurves.resolve(isRTL, BorderCurve::Circular),
       /* .borderStyles = */ borderStyles.resolve(isRTL, BorderStyle::Solid),
   };
 }

@@ -81,6 +81,8 @@ void HostObject::set(Runtime& rt, const PropNameID& name, const Value&) {
 
 HostObject::~HostObject() {}
 
+NativeState::~NativeState() {}
+
 Runtime::~Runtime() {}
 
 Instrumentation& Runtime::instrumentation() {

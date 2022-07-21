@@ -753,7 +753,7 @@ DEPENDENCIES:
   - RCTRequired (from `../../Libraries/RCTRequired`)
   - RCTTypeSafety (from `../../Libraries/TypeSafety`)
   - React (from `../../`)
-  - React-bridging (from `../../ReactCommon/react/bridging`)
+  - React-bridging (from `../../ReactCommon`)
   - React-callinvoker (from `../../ReactCommon/callinvoker`)
   - React-Codegen (from `build/generated/ios`)
   - React-Core (from `../../`)
@@ -826,7 +826,7 @@ EXTERNAL SOURCES:
   React:
     :path: "../../"
   React-bridging:
-    :path: "../../ReactCommon/react/bridging"
+    :path: "../../ReactCommon"
   React-callinvoker:
     :path: "../../ReactCommon/callinvoker"
   React-Codegen:
@@ -905,11 +905,11 @@ SPEC CHECKSUMS:
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
-  RCT-Folly: 9638863070ed4e7b2be5e91385745a0ad741e9c1
+  RCT-Folly: 0080d0a6ebf2577475bda044aa59e2ca1f909cda
   RCTRequired: 1c8808cf84569265784a6c33984bbb506ada8c6e
   RCTTypeSafety: b6dcb5036a808864ee8cad66ca15f263c24661cc
   React: 8d809d414723bb5763093ddec7658066a21ccabc
-  React-bridging: 3ba3efbd3a2d7d99aad5658b8e48b1c134c16ecf
+  React-bridging: cc10a051eff1f03306a1d7659593d8aac3242bc3
   React-callinvoker: 5f16202ad4e45f0607b1fae0f6955a8f7c87eef1
   React-Codegen: 5adf19af97eb37a7d441c040521191e446255086
   React-Core: 0cfb25c65d4dcb856b1807fe44a1ebe5e7ec9749
@@ -936,12 +936,12 @@ SPEC CHECKSUMS:
   React-RCTVibration: 0386f50996a153b3f39cecbe7d139763ac9a9fdf
   React-rncore: 6daa27c74047a9e13ce3412b99660274a5780603
   React-runtimeexecutor: 97dca9247f4d3cfe0733384b189c6930fbd402b7
-  ReactCommon: a34f02c7251e6725e744167b9381d5dd9d016591
+  ReactCommon: 6cef8ed13ee2a9d7d4cf9660dbe6dd2ea6ba7104
   ScreenshotManager: 71d047abd38a77310985b87f8136b620c5c61e88
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   Yoga: 1b1a12ff3d86a10565ea7cbe057d42f5e5fb2a07
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: e067e04e7697dc3cd3d3fbd7556f77c6eccf8075
+PODFILE CHECKSUM: 54d9bd86f3c8151531bd4da1d3ba2e2e1f9a6ca9
 
 COCOAPODS: 1.11.3

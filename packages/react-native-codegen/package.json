@@ -1,6 +1,6 @@
 {
   "name": "react-native-codegen",
-  "version": "0.70.0",
+  "version": "0.70.3",
   "description": "⚛️ Code generation tools for React Native",
   "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/react-native-codegen",
   "repository": {
@@ -11,7 +11,7 @@
   "scripts": {
     "build": "yarn clean && node scripts/build.js --verbose",
     "clean": "rm -rf lib",
-    "prepublish": "yarn run build"
+    "prepare": "yarn run build"
   },
   "license": "MIT",
   "files": [

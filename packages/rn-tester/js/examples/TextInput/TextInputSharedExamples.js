@@ -72,6 +72,14 @@ const styles = StyleSheet.create({
     margin: 3,
     fontSize: 12,
   },
+  focusedUncontrolled: {
+    margin: -2,
+    borderWidth: 2,
+    borderColor: '#0a0a0a',
+    flex: 1,
+    fontSize: 13,
+    padding: 4,
+  },
 });
 
 class WithLabel extends React.Component<$FlowFixMeProps> {
@@ -477,6 +485,20 @@ class SelectionExample extends React.Component<
   }
 }
 
+function UncontrolledExample() {
+  const [isFocused, setIsFocused] = React.useState(false);
+
+  return (
+    <TextInput
+      defaultValue="Hello World!"
+      testID="uncontrolled-textinput"
+      style={isFocused ? styles.focusedUncontrolled : styles.default}
+      onFocus={() => setIsFocused(true)}
+      onBlur={() => setIsFocused(false)}
+    />
+  );
+}
+
 module.exports = ([
   {
     title: 'Auto-focus',
@@ -694,6 +716,13 @@ module.exports = ([
           />
         </View>
       );
+    },
+  },
+  {
+    title: 'Uncontrolled component with layout changes',
+    name: 'uncontrolledComponent',
+    render: function (): React.Node {
+      return <UncontrolledExample />;
     },
   },
 ]: Array<RNTesterModuleExample>);

@@ -303,8 +303,8 @@ static void RCTPerformMountInstructions(
   RCTAssertMainQueue();
   UIView<RCTComponentViewProtocol> *componentView = [_componentViewRegistry findComponentViewWithTag:reactTag];
   SurfaceId surfaceId = RCTSurfaceIdForView(componentView);
-  SharedProps oldProps = [componentView props];
-  SharedProps newProps = componentDescriptor.cloneProps(
+  Props::Shared oldProps = [componentView props];
+  Props::Shared newProps = componentDescriptor.cloneProps(
       PropsParserContext{surfaceId, *_contextContainer.get()}, oldProps, RawProps(convertIdToFollyDynamic(props)));
 
   NSSet<NSString *> *propKeys = componentView.propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN ?: [NSSet new];
@@ -324,10 +324,7 @@ static void RCTPerformMountInstructions(
     componentView.layer.opacity = newViewProps.opacity;
   }
 
-  auto reactNativeConfig = _contextContainer->at<std::shared_ptr<ReactNativeConfig const>>("ReactNativeConfig");
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:finalize_updates_on_synchronous_update_view_ios")) {
-    [componentView finalizeUpdates:RNComponentViewUpdateMaskProps];
-  }
+  [componentView finalizeUpdates:RNComponentViewUpdateMaskProps];
 }
 
 - (void)synchronouslyDispatchCommandOnUIThread:(ReactTag)reactTag

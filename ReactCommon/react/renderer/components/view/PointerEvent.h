@@ -35,6 +35,15 @@ struct PointerEvent {
    */
   Point clientPoint;
   /*
+   * The X/Y coordinate of the pointer in global (screen) coordinates.
+   */
+  Point screenPoint;
+  /*
+   * The X/Y coordinate of the pointer relative to the position of the padding
+   * edge of the target node.
+   */
+  Point offsetPoint;
+  /*
    * The width (magnitude on the X axis), in CSS pixels, of the contact geometry
    * of the pointer
    */
@@ -56,7 +65,7 @@ struct PointerEvent {
    * the X axis.
    */
   int tiltY;
-  /**
+  /*
    * Returns a long with details about the event, depending on the event type.
    */
   int detail;
@@ -64,6 +73,33 @@ struct PointerEvent {
    * The buttons being depressed (if any) when the mouse event was fired.
    */
   int buttons;
+  /*
+   * The normalized tangential pressure of the pointer input (also known as
+   * barrel pressure or cylinder stress) in the range -1 to 1, where 0 is the
+   * neutral position of the control.
+   */
+  Float tangentialPressure;
+  /*
+   * The clockwise rotation of the pointer (e.g. pen stylus) around its major
+   * axis in degrees, with a value in the range 0 to 359.
+   */
+  int twist;
+  /*
+   * Returns true if the control key was down when the event was fired.
+   */
+  bool ctrlKey;
+  /*
+   * Returns true if the shift key was down when the event was fired.
+   */
+  bool shiftKey;
+  /*
+   * Returns true if the alt key was down when the event was fired.
+   */
+  bool altKey;
+  /*
+   * Returns true if the meta key was down when the event was fired.
+   */
+  bool metaKey;
 };
 
 #if RN_DEBUG_STRING_CONVERTIBLE

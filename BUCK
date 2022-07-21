@@ -248,6 +248,7 @@ REACT_PUBLIC_HEADERS = {
     "React/RCTAnimationType.h": RCTVIEWS_PATH + "RCTAnimationType.h",
     "React/RCTAssert.h": RCTBASE_PATH + "RCTAssert.h",
     "React/RCTAutoInsetsProtocol.h": RCTVIEWS_PATH + "RCTAutoInsetsProtocol.h",
+    "React/RCTBorderCurve.h": RCTVIEWS_PATH + "RCTBorderCurve.h",
     "React/RCTBorderDrawing.h": RCTVIEWS_PATH + "RCTBorderDrawing.h",
     "React/RCTBorderStyle.h": RCTVIEWS_PATH + "RCTBorderStyle.h",
     "React/RCTBridge+Private.h": RCTBASE_PATH + "RCTBridge+Private.h",

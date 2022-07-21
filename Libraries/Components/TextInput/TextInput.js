@@ -984,7 +984,7 @@ function InternalTextInput(props: Props): React.Node {
   // that the update should be ignored and we should stick with the value
   // that we have in JS.
   useLayoutEffect(() => {
-    const nativeUpdate: {text?: string, selection?: Selection} = {...null};
+    const nativeUpdate: {text?: string, selection?: Selection} = {};
 
     if (lastNativeText !== props.value && typeof props.value === 'string') {
       nativeUpdate.text = props.value;

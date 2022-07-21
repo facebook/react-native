@@ -16,6 +16,7 @@ import type {
   PlatformTestCase,
   PlatformTestAssertionResult,
   PlatformTestContext,
+  SyncTestOptions,
 } from './RNTesterPlatformTestTypes';
 
 type AsyncTestStatus = 'NOT_RAN' | 'COMPLETED' | 'TIMED_OUT';
@@ -174,7 +175,23 @@ export default function usePlatformTestHarness(): PlatformTestHarnessHookResult 
   }, []);
 
   const testFunction: PlatformTestHarness['test'] = useCallback(
-    (testCase: PlatformTestCase, name: string): void => {
+    (
+      testCase: PlatformTestCase,
+      name: string,
+      options?: SyncTestOptions,
+    ): void => {
+      const {skip = false} = options ?? {};
+
+      if (skip) {
+        addTestResult({
+          name,
+          status: 'SKIPPED',
+          assertions: [],
+          error: null,
+        });
+        return;
+      }
+
       const assertionResults: Array<PlatformTestAssertionResult> = [];
 
       const baseAssert = (

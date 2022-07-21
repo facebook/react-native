@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.69.2
+
+### Changed
+
+- Set react-shallow-renderer v16.15.0 for react v18 compat ([a39a7c453d](https://github.com/facebook/react-native/commit/a39a7c453d87086935ff07d549ba8220cbcf30bd) by [@mikehardy](https://github.com/mikehardy))
+- Upgrade RN CLI to v8.0.3 ([28cbd21d21](https://github.com/facebook/react-native/commit/28cbd21d21f2ffb3f38b2449a4983f013947ce0a) by [@thymikee](https://github.com/thymikee))
+
+#### iOS specific
+
+- Hermes pod: change logic to use the hermes tag to set the pod source correctly ([46a9edc854](https://github.com/facebook/react-native/commit/46a9edc8544ae070149a97ea3d919b88dd6e2942) by [@kelset](https://github.com/kelset))
+- Fix the race condition when calling readAsDataURL after new Blob(blobs) ([bd12e41188](https://github.com/facebook/react-native/commit/bd12e41188c8d85c0acbd713f10f0bd34ea0edca) by [@wood1986](https://github.com/wood1986))
+- Make sure that Flipper pods are not installed when creating a release build ([23accbf58d](https://github.com/facebook/react-native/commit/23accbf58d2fa03ad020e07f00012a32609c7218) by [@cipolleschi](https://github.com/cipolleschi))
+
 ## v0.69.1
 
 ### Changed

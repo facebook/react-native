@@ -24,12 +24,21 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
       {"pressure", getDebugDescription(pointerEvent.pressure, options)},
       {"pointerType", getDebugDescription(pointerEvent.pointerType, options)},
       {"clientPoint", getDebugDescription(pointerEvent.clientPoint, options)},
+      {"screenPoint", getDebugDescription(pointerEvent.screenPoint, options)},
+      {"offsetPoint", getDebugDescription(pointerEvent.offsetPoint, options)},
       {"width", getDebugDescription(pointerEvent.width, options)},
       {"height", getDebugDescription(pointerEvent.height, options)},
       {"tiltX", getDebugDescription(pointerEvent.tiltX, options)},
       {"tiltY", getDebugDescription(pointerEvent.tiltY, options)},
       {"detail", getDebugDescription(pointerEvent.detail, options)},
       {"buttons", getDebugDescription(pointerEvent.buttons, options)},
+      {"tangentialPressure",
+       getDebugDescription(pointerEvent.tangentialPressure, options)},
+      {"twist", getDebugDescription(pointerEvent.twist, options)},
+      {"ctrlKey", getDebugDescription(pointerEvent.ctrlKey, options)},
+      {"shiftKey", getDebugDescription(pointerEvent.shiftKey, options)},
+      {"altKey", getDebugDescription(pointerEvent.altKey, options)},
+      {"metaKey", getDebugDescription(pointerEvent.metaKey, options)},
   };
 }
 
