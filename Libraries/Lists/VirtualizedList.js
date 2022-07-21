@@ -105,6 +105,16 @@ type OptionalProps = {|
    * this for debugging purposes. Defaults to false.
    */
   disableVirtualization?: ?boolean,
+
+  /**
+   * Enable TalkBack support for inverted FlatList
+   * The default implementation of inverted FlatList uses transform scaleX or scaleY and is not compatible
+   * with TalkBack. This implementation manually inverts the order of the items, but does not yet support all
+   * FlatList functionalities, by default is disabled. Not supported functionalities: scrollToIndex, initialScrollIndex.
+   * Supported functionalities: infinite list, scrollToEnd, scrollToOffset (calculated as on a not inverted FlatList)
+   */
+  enableTalkbackCompatibleInvertedList?: ?boolean,
+
   /**
    * A marker property for telling the list to re-render (since it implements `PureComponent`). If
    * any of your `renderItem`, Header, Footer, etc. functions depend on anything outside of the
@@ -448,9 +458,19 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       getItemLayout,
       onScrollToIndexFailed,
       inverted,
+      enableTalkbackCompatibleInvertedList,
     } = this.props;
-    const {screenreaderEnabled} = this.state;
     const {animated, index, viewOffset, viewPosition} = params;
+    if (
+      __DEV__ &&
+      enableTalkbackCompatibleInvertedList &&
+      inverted &&
+      Platform.OS === 'android'
+    ) {
+      console.log(
+        'enableTalkbackCompatibleInvertedList does not support scrollToIndex.',
+      );
+    }
     invariant(
       index >= 0,
       `scrollToIndex out of range: requested index ${index} but minimum is 0`,
@@ -480,14 +500,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       });
       return;
     }
-    let frame;
-    // TalkBack Inverted FlatList does not use scaleX/Y -1
-    if (data && data.length > 0 && screenreaderEnabled && inverted) {
-      const invertedIndex = data.length - 1 - index;
-      frame = this.__getFrameMetricsApprox(invertedIndex);
-    } else {
-      frame = this.__getFrameMetricsApprox(index);
-    }
+    const frame = this.__getFrameMetricsApprox(index);
     const offset =
       Math.max(
         0,
@@ -742,7 +755,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       }
     }
 
-    if (Platform.OS === 'android') {
+    if (
+      this.props.enableTalkbackCompatibleInvertedList &&
+      Platform.OS === 'android' &&
+      !this.props.initialScrollIndex
+    ) {
       this._screenreaderEventListener = AccessibilityInfo.addEventListener(
         'screenReaderChanged',
         screenreaderEnabled => {
@@ -753,6 +770,19 @@ class VirtualizedList extends React.PureComponent<Props, State> {
             this.setState({screenreaderEnabled: screenreaderEnabled});
           }
         },
+      );
+    }
+
+    if (
+      __DEV__ &&
+      this.props.enableTalkbackCompatibleInvertedList &&
+      this.props.initialScrollIndex &&
+      Platform.OS === 'android'
+    ) {
+      console.log(
+        `enableTalkbackCompatibleInvertedList is disabled. 
+        initialScrollIndex is not supported with enableTalkbackCompatibleInvertedList, 
+        the default implementation of inverted FlatList will be used.`,
       );
     }
 
@@ -795,8 +825,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
     // updates the initial state of the screenreaderReader
     if (
+      this.props.enableTalkbackCompatibleInvertedList &&
       Platform.OS === 'android' &&
-      this.state.screenreaderEnabled == undefined
+      this.state.screenreaderEnabled == undefined &&
+      !this.props.initialScrollIndex
     ) {
       AccessibilityInfo.isScreenReaderEnabled().then(
         screenreaderEnabled => {

@@ -121,6 +121,7 @@ function NestedFlatList(props) {
       />
       <Text>Flatlist</Text>
       <FlatList
+        enableTalkbackCompatibleInvertedList
         accessibilityRole="list"
         ListFooterComponent={
           <Text style={{height: 50, width: 100, backgroundColor: 'yellow'}}>
