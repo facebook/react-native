@@ -428,19 +428,13 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       return;
     }
 
-    if (this.state.screenreaderEnabled && this.props.inverted) {
-      this._scrollRef.scrollTo(
-        horizontalOrDefault(this.props.horizontal)
-          ? {x: 0, animated}
-          : {y: 0, animated},
-      );
-    } else {
-      this._scrollRef.scrollTo(
-        horizontalOrDefault(this.props.horizontal)
-          ? {x: offset, animated}
-          : {y: offset, animated},
-      );
-    }
+    const scrollToOffset =
+      this.state.screenreaderEnabled && this.props.inverted ? 0 : offset;
+    this._scrollRef.scrollTo(
+      horizontalOrDefault(this.props.horizontal)
+        ? {x: scrollToOffset, animated}
+        : {y: scrollToOffset, animated},
+    );
   }
 
   // scrollToIndex may be janky without getItemLayout prop
@@ -457,20 +451,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       getItemCount,
       getItemLayout,
       onScrollToIndexFailed,
-      inverted,
-      enableTalkbackCompatibleInvertedList,
     } = this.props;
     const {animated, index, viewOffset, viewPosition} = params;
-    if (
-      __DEV__ &&
-      enableTalkbackCompatibleInvertedList &&
-      inverted &&
-      Platform.OS === 'android'
-    ) {
-      console.log(
-        'enableTalkbackCompatibleInvertedList does not support scrollToIndex.',
-      );
-    }
     invariant(
       index >= 0,
       `scrollToIndex out of range: requested index ${index} but minimum is 0`,

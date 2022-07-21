@@ -88,6 +88,7 @@ function NestedFlatList(props) {
   const [items, setItems] = useState(DATA);
   const [disabled, setDisabled] = useState(false);
   const [index, setIndex] = useState(DATA.length + 1);
+  const [counter, setCounter] = useState(0);
   const getNewItems = startIndex => {
     let newItems = [];
     for (let i = startIndex; i < startIndex + 11; i++) {
@@ -95,6 +96,7 @@ function NestedFlatList(props) {
     }
     return newItems;
   };
+  let flatlist = React.useRef(null);
   return (
     <View style={{flex: 1}}>
       <Button
@@ -119,8 +121,23 @@ function NestedFlatList(props) {
           setItems(newItems);
         }}
       />
+      <Button
+        title={`scroll to index of value: ${counter}`}
+        onPress={() => {
+          // $FlowFixMe
+          if (flatlist) flatlist.scrollToIndex({index: counter});
+        }}
+      />
+      <Button
+        title="increase index"
+        onPress={() => setCounter(counter => counter + 1)}
+      />
       <Text>Flatlist</Text>
       <FlatList
+        ref={ref => {
+          // $FlowFixMe
+          flatlist = ref;
+        }}
         enableTalkbackCompatibleInvertedList
         accessibilityRole="list"
         ListFooterComponent={
