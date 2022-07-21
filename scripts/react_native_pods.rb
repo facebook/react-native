@@ -268,6 +268,18 @@ def fix_library_search_paths(installer)
   end
 end
 
+def fix_react_bridging_header_search_paths(installer)
+  installer.target_installation_results.pod_target_installation_results
+    .each do |pod_name, target_installation_result|
+      target_installation_result.native_target.build_configurations.each do |config|
+        # For third party modules who have React-bridging dependency to search correct headers
+        config.build_settings['HEADER_SEARCH_PATHS'] ||= '$(inherited) '
+        config.build_settings['HEADER_SEARCH_PATHS'] << '"$(PODS_ROOT)/Headers/Private/React-bridging/react/bridging" '
+        config.build_settings['HEADER_SEARCH_PATHS'] << '"$(PODS_CONFIGURATION_BUILD_DIR)/React-bridging/react_bridging.framework/Headers" '
+      end
+  end
+end
+
 def set_node_modules_user_settings(installer, react_native_path)
   puts "Setting REACT_NATIVE build settings"
   projects = installer.aggregate_targets
@@ -291,6 +303,7 @@ def react_native_post_install(installer, react_native_path = "../node_modules/re
 
   exclude_architectures(installer)
   fix_library_search_paths(installer)
+  fix_react_bridging_header_search_paths(installer)
 
   cpp_flags = DEFAULT_OTHER_CPLUSPLUSFLAGS
   if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
