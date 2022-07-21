@@ -4,8 +4,6 @@ require_relative '../node_modules/react-native/scripts/native_modules'
 platform :ios, '12.4'
 install! 'cocoapods', :deterministic_uuids => false
 
-production = ENV["PRODUCTION"] == "1"
-
 target 'HelloWorld' do
   config = use_native_modules!
 
@@ -14,7 +12,6 @@ target 'HelloWorld' do
 
   use_react_native!(
     :path => config[:reactNativePath],
-    :production => production,
     # Hermes is now enabled by default. Disable by setting this flag to false.
     # Upcoming versions of React Native may rely on get_default_flags(), but
     # we make it explicit here to aid in the React Native upgrade process.
