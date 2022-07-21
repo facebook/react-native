@@ -459,6 +459,138 @@ export default codegenNativeComponent<ModuleProps>(
 ) as HostComponent<ModuleProps>;
 `;
 
+const ARRAY2_PROP_TYPES_NO_EVENTS = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+'use strict';
+
+const codegenNativeComponent = require('codegenNativeComponent');
+
+import type {Int32, Double, Float, WithDefault} from 'CodegenTypes';
+import type {ImageSource} from 'ImageSource';
+import type {
+  ColorValue,
+  ColorArrayValue,
+  PointValue,
+  EdgeInsetsValue,
+} from 'StyleSheetTypes';
+import type {ViewProps} from 'ViewPropTypes';
+import type {HostComponent} from 'react-native';
+
+type ObjectType = Readonly<{prop: string}>;
+type ArrayObjectType = readonly Readonly<{prop: string}>[];
+
+export interface ModuleProps extends ViewProps {
+  // Props
+  // Boolean props
+  array_boolean_required: readonly boolean[];
+  array_boolean_optional_key?: readonly boolean[];
+  array_boolean_optional_value: readonly boolean[] | null | undefined;
+  array_boolean_optional_both?: readonly boolean[] | null | undefined;
+
+  // String props
+  array_string_required: readonly string[];
+  array_string_optional_key?: readonly string[];
+  array_string_optional_value: readonly string[] | null | undefined;
+  array_string_optional_both?: readonly string[] | null | undefined;
+
+  // Double props
+  array_double_required: readonly Double[];
+  array_double_optional_key?: readonly Double[];
+  array_double_optional_value: readonly Double[] | null | undefined;
+  array_double_optional_both?: readonly Double[] | null | undefined;
+
+  // Float props
+  array_float_required: readonly Float[];
+  array_float_optional_key?: readonly Float[];
+  array_float_optional_value: readonly Float[] | null | undefined;
+  array_float_optional_both?: readonly Float[] | null | undefined;
+
+  // Int32 props
+  array_int32_required: readonly Int32[];
+  array_int32_optional_key?: readonly Int32[];
+  array_int32_optional_value: readonly Int32[] | null | undefined;
+  array_int32_optional_both?: readonly Int32[] | null | undefined;
+
+  // String enum props
+  array_enum_optional_key?: WithDefault<
+    readonly ('small' | 'large')[],
+    'small'
+  >;
+  array_enum_optional_both?: WithDefault<
+    readonly ('small' | 'large')[],
+    'small'
+  >;
+
+  // ImageSource props
+  array_image_required: readonly ImageSource[];
+  array_image_optional_key?: readonly ImageSource[];
+  array_image_optional_value: readonly ImageSource[] | null | undefined;
+  array_image_optional_both?: readonly ImageSource[] | null | undefined;
+
+  // ColorValue props
+  array_color_required: readonly ColorValue[];
+  array_color_optional_key?: readonly ColorValue[];
+  array_color_optional_value: readonly ColorValue[] | null | undefined;
+  array_color_optional_both?: readonly ColorValue[] | null | undefined;
+
+  // PointValue props
+  array_point_required: readonly PointValue[];
+  array_point_optional_key?: readonly PointValue[];
+  array_point_optional_value: readonly PointValue[] | null | undefined;
+  array_point_optional_both?: readonly PointValue[] | null | undefined;
+
+  // EdgeInsetsValue props
+  array_insets_required: readonly EdgeInsetsValue[];
+  array_insets_optional_key?: readonly EdgeInsetsValue[];
+  array_insets_optional_value: readonly EdgeInsetsValue[] | null | undefined;
+  array_insets_optional_both?: readonly EdgeInsetsValue[] | null | undefined;
+
+  // Object props
+  array_object_required: readonly Readonly<{prop: string}>[];
+  array_object_optional_key?: readonly Readonly<{prop: string}>[];
+  array_object_optional_value: ArrayObjectType | null | undefined;
+  array_object_optional_both?: readonly ObjectType[] | null | undefined;
+
+  // Nested array object types
+  array_of_array_object_required: readonly Readonly<{
+      // This needs to be the same name as the top level array above
+      array_object_required: readonly Readonly<{prop: string}>[];
+    }>[];
+  array_of_array_object_optional_key?: readonly Readonly<{
+      // This needs to be the same name as the top level array above
+      array_object_optional_key: readonly Readonly<{prop?: string}>[];
+    }>[];
+  array_of_array_object_optional_value: readonly Readonly<{
+      // This needs to be the same name as the top level array above
+      array_object_optional_value: readonly Readonly<{prop: string | null | undefined}>[];
+    }>[] | null | undefined;
+  array_of_array_object_optional_both?: readonly Readonly<{
+      // This needs to be the same name as the top level array above
+      array_object_optional_both: readonly Readonly<{prop?: string | null | undefined}>[];
+    }>[] | null | undefined;
+
+  // Nested array of array of object types
+  array_of_array_of_object_required: readonly Readonly<{
+        prop: string;
+      }>[][];
+
+  // Nested array of array of object types (in file)
+  array_of_array_of_object_required_in_file: readonly ObjectType[][];
+}
+
+export default codegenNativeComponent<ModuleProps>(
+  'Module',
+) as HostComponent<ModuleProps>;
+`;
+
 const OBJECT_PROP_TYPES_NO_EVENTS = `
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -959,6 +1091,7 @@ export default codegenNativeComponent<ModuleProps>(
 module.exports = {
   ALL_PROP_TYPES_NO_EVENTS,
   ARRAY_PROP_TYPES_NO_EVENTS,
+  ARRAY2_PROP_TYPES_NO_EVENTS,
   OBJECT_PROP_TYPES_NO_EVENTS,
   PROPS_ALIASED_LOCALLY,
   ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS,

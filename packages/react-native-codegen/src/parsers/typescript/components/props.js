@@ -41,12 +41,54 @@ function getPropProperties(
   }
 }
 
+function getTypeAnnotationForObjectAsArrayElement(
+  objectType: $FlowFixMe,
+  types: TypeDeclarationMap,
+) {
+  return {
+    type: 'ObjectTypeAnnotation',
+    properties: flattenProperties(
+      objectType.typeParameters.params[0].members ||
+        objectType.typeParameters.params,
+      types,
+    )
+      .map(prop => buildPropSchema(prop, types))
+      .filter(Boolean),
+  };
+}
+
+function getTypeAnnotationForArrayOfArrayOfObject(
+  typeAnnotation: $FlowFixMe,
+  types: TypeDeclarationMap,
+) {
+  // We need to go yet another level deeper to resolve
+  // types that may be defined in a type alias
+  const nestedObjectType = getValueFromTypes(typeAnnotation, types);
+
+  return {
+    type: 'ArrayTypeAnnotation',
+    elementType: getTypeAnnotationForObjectAsArrayElement(
+      nestedObjectType,
+      types,
+    ),
+  };
+}
+
 function getTypeAnnotationForArray(
   name: string,
   typeAnnotation: $FlowFixMe,
   defaultValue: $FlowFixMe | null,
   types: TypeDeclarationMap,
 ) {
+  if (typeAnnotation.type === 'TSParenthesizedType') {
+    return getTypeAnnotationForArray(
+      name,
+      typeAnnotation.typeAnnotation,
+      defaultValue,
+      types,
+    );
+  }
+
   const extractedTypeAnnotation = getValueFromTypes(typeAnnotation, types);
 
   if (
@@ -56,7 +98,7 @@ function getTypeAnnotationForArray(
     )
   ) {
     throw new Error(
-      'Nested optionals such as "ReadonlyArray<boolean | null | void>" are not supported, please declare optionals at the top level of value definitions as in "ReadonlyArray<boolean> | null | undefined"',
+      'Nested optionals such as "ReadonlyArray<boolean | null | undefined>" are not supported, please declare optionals at the top level of value definitions as in "ReadonlyArray<boolean> | null | undefined"',
     );
   }
 
@@ -69,44 +111,28 @@ function getTypeAnnotationForArray(
     );
   }
 
+  // Covers: T[]
+  if (typeAnnotation.type === 'TSArrayType') {
+    return getTypeAnnotationForArrayOfArrayOfObject(
+      typeAnnotation.elementType,
+      types,
+    );
+  }
+
   if (extractedTypeAnnotation.type === 'TSTypeReference') {
     // Resolve the type alias if it's not defined inline
     const objectType = getValueFromTypes(extractedTypeAnnotation, types);
 
     if (objectType.typeName.name === 'Readonly') {
-      return {
-        type: 'ObjectTypeAnnotation',
-        properties: flattenProperties(
-          objectType.typeParameters.params[0].members ||
-            objectType.typeParameters.params,
-          types,
-        )
-          .map(prop => buildPropSchema(prop, types))
-          .filter(Boolean),
-      };
+      return getTypeAnnotationForObjectAsArrayElement(objectType, types);
     }
 
+    // Covers: ReadonlyArray<T>
     if (objectType.typeName.name === 'ReadonlyArray') {
-      // We need to go yet another level deeper to resolve
-      // types that may be defined in a type alias
-      const nestedObjectType = getValueFromTypes(
+      return getTypeAnnotationForArrayOfArrayOfObject(
         objectType.typeParameters.params[0],
         types,
       );
-
-      return {
-        type: 'ArrayTypeAnnotation',
-        elementType: {
-          type: 'ObjectTypeAnnotation',
-          properties: flattenProperties(
-            nestedObjectType.typeParameters.params[0].members ||
-              nestedObjectType.typeParameters.params,
-            types,
-          )
-            .map(prop => buildPropSchema(prop, types))
-            .filter(Boolean),
-        },
-      };
     }
   }
 
@@ -239,7 +265,7 @@ function getTypeAnnotation(
       type: 'ArrayTypeAnnotation',
       elementType: getTypeAnnotationForArray(
         name,
-        typeAnnotation.typeAnnotation,
+        typeAnnotation.typeAnnotation.elementType,
         defaultValue,
         types,
       ),
