@@ -1746,10 +1746,17 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       } else {
         newBottomHeight = height - this._lastOffsetFromBottomOfScreen;
       }
-      this.scrollToOffset({
-        offset: newBottomHeight,
-        animated: false,
-      });
+      setTimeout(
+        (flatlist, newBottomHeight) => {
+          flatlist.scrollToOffset({
+            offset: newBottomHeight,
+            animated: false,
+          });
+        },
+        1,
+        this,
+        newBottomHeight,
+      );
     }
     this._maybeCallOnEndReached();
   };
