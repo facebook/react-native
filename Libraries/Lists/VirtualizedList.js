@@ -764,7 +764,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           (this.props.initialScrollIndex || 0) +
             initialNumToRenderOrDefault(this.props.initialNumToRender),
         ) - 1,
-      bottomHeight: 0,
       screenreaderEnabled: undefined,
     };
 
