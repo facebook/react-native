@@ -1858,7 +1858,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     // Disabled with TalkBack inverted FlatList
     // Triggers a scrollTo bottom and subsequent top when scrolling down
     // fast, documented in https://bit.ly/3PkawQ4
-    if (!screenreaderEnabled && this.props.inverted) {
+    if (!(screenreaderEnabled && this.props.inverted)) {
       this._scheduleCellsToRenderUpdate();
     }
   };
