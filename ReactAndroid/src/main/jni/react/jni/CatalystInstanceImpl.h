@@ -37,7 +37,10 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   static constexpr auto kJavaDescriptor =
       "Lcom/facebook/react/bridge/CatalystInstanceImpl;";
 
-  static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
+  static jni::local_ref<jhybriddata> initHybrid(
+      jni::alias_ref<jclass>,
+      bool enableRuntimeScheduler,
+      bool enableRuntimeSchedulerInTurboModule);
 
   static void registerNatives();
 
@@ -48,7 +51,9 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
  private:
   friend HybridBase;
 
-  CatalystInstanceImpl();
+  CatalystInstanceImpl(
+      bool enableRuntimeScheduler,
+      bool enableRuntimeSchedulerInTurboModule);
 
   void initializeBridge(
       jni::alias_ref<ReactCallback::javaobject> callback,
@@ -115,6 +120,9 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   jni::global_ref<CallInvokerHolder::javaobject> nativeCallInvokerHolder_;
   jni::global_ref<JRuntimeExecutor::javaobject> runtimeExecutor_;
   jni::global_ref<JRuntimeScheduler::javaobject> runtimeScheduler_;
+
+  bool const enableRuntimeScheduler_;
+  bool const enableRuntimeSchedulerInTurboModule_;
 };
 
 } // namespace react
