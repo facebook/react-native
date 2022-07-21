@@ -863,6 +863,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         Math.min(prevState.first, getItemCount(data) - 1 - maxToRenderPerBatch),
       ),
       last: Math.max(0, Math.min(prevState.last, getItemCount(data) - 1)),
+      screenreaderEnabled: prevState.screenreaderEnabled,
     };
   }
 
