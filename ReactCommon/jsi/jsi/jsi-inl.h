@@ -208,6 +208,11 @@ inline bool Object::hasNativeState(Runtime& runtime) const {
       std::dynamic_pointer_cast<T>(runtime.getNativeState(*this));
 }
 
+template <>
+inline bool Object::hasNativeState<NativeState>(Runtime& runtime) const {
+  return runtime.hasNativeState(*this);
+}
+
 template <typename T>
 inline std::shared_ptr<T> Object::getNativeState(Runtime& runtime) const {
   assert(hasNativeState<T>(runtime));
