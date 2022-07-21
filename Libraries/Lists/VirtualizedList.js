@@ -753,18 +753,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         },
       );
     }
-
-    if (
-      __DEV__ &&
-      this.props.enabledTalkbackCompatibleInvertedList &&
-      this.props.initialScrollIndex &&
-      Platform.OS === 'android'
-    ) {
-      console.warn(
-        'initialScrollIndex is not supported with enabledTalkbackCompatibleInvertedList',
-      );
-    }
-
     let initialState = {
       first: this.props.initialScrollIndex || 0,
       last:
@@ -1749,6 +1737,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     if (
       screenreaderEnabled &&
       this.props.inverted &&
+      this._hasTriggeredInitialScrollToIndex &&
       this._lastOffsetFromBottomOfScreen
     ) {
       let newBottomHeight;
@@ -1757,17 +1746,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       } else {
         newBottomHeight = height - this._lastOffsetFromBottomOfScreen;
       }
-      setTimeout(
-        (flatlist, newBottomHeight) => {
-          flatlist.scrollToOffset({
-            offset: newBottomHeight,
-            animated: false,
-          });
-        },
-        1,
-        this,
-        newBottomHeight,
-      );
+      this.scrollToOffset({
+        offset: newBottomHeight,
+        animated: false,
+      });
     }
     this._maybeCallOnEndReached();
   };
