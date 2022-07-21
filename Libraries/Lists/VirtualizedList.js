@@ -387,7 +387,6 @@ function windowSizeOrDefault(windowSize: ?number) {
 class VirtualizedList extends React.PureComponent<Props, State> {
   static contextType: typeof VirtualizedListContext = VirtualizedListContext;
   _screenreaderEventListener: EventSubscription;
-  _hasTriggeredInitialScrollToIndex: ?boolean;
   _bottom: ?number;
   _lastBottomHeight: ?number;
   _beginningReached: ?boolean;
@@ -725,10 +724,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this._updateCellsToRender,
       this.props.updateCellsBatchingPeriod ?? 50,
     );
-    this._hasTriggeredInitialScrollToIndex = false;
-    this._bottom = undefined;
-    this._lastBottomHeight = undefined;
-    this._beginningReached = undefined;
 
     if (this.props.viewabilityConfigCallbackPairs) {
       this._viewabilityTuples = this.props.viewabilityConfigCallbackPairs.map(
