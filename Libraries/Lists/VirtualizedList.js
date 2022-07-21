@@ -404,6 +404,18 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   // scrollToEnd may be janky without getItemLayout prop
   scrollToEnd(params?: ?{animated?: ?boolean, ...}) {
+    const {screenreaderEnabled} = this.state;
+    const {
+      initialScrollIndex,
+      inverted,
+      enabledTalkbackCompatibleInvertedList,
+    } = this.props;
+    const talkbackCompatibility =
+      screenreaderEnabled &&
+      initialScrollIndex == null &&
+      inverted &&
+      Platform.OS === 'android' &&
+      enabledTalkbackCompatibleInvertedList;
     const animated = params ? params.animated : true;
     const veryLast = this.props.getItemCount(this.props.data) - 1;
     const frame = this.__getFrameMetricsApprox(veryLast);
@@ -428,8 +440,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       return;
     }
 
-    const scrollToOffset =
-      this.state.screenreaderEnabled && this.props.inverted ? 0 : offset;
+    const scrollToOffset = talkbackCompatibility ? 0 : offset;
     this._scrollRef.scrollTo(
       horizontalOrDefault(this.props.horizontal)
         ? {x: scrollToOffset, animated}
@@ -737,10 +748,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       }
     }
 
-    if (
-      this.props.enabledTalkbackCompatibleInvertedList &&
-      Platform.OS === 'android'
-    ) {
+    if (Platform.OS === 'android') {
       this._screenreaderEventListener = AccessibilityInfo.addEventListener(
         'screenReaderChanged',
         screenreaderEnabled => {
@@ -748,7 +756,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
             typeof screenreaderEnabled === 'boolean' &&
             screenreaderEnabled != this.state.screenreaderEnabled
           ) {
-            this.setState({screenreaderEnabled: screenreaderEnabled});
+            this.setState({screenreaderEnabled});
           }
         },
       );
@@ -792,9 +800,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
     // updates the initial state of the screenreaderReader
     if (
-      this.props.enabledTalkbackCompatibleInvertedList &&
       Platform.OS === 'android' &&
-      this.state.screenreaderEnabled == undefined
+      this.state.screenreaderEnabled === undefined
     ) {
       AccessibilityInfo.isScreenReaderEnabled().then(
         screenreaderEnabled => {
@@ -856,7 +863,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         Math.min(prevState.first, getItemCount(data) - 1 - maxToRenderPerBatch),
       ),
       last: Math.max(0, Math.min(prevState.last, getItemCount(data) - 1)),
-      screenreaderEnabled: prevState.screenreaderEnabled,
     };
   }
 
@@ -880,7 +886,16 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       getItemLayout,
       horizontal,
       renderItem,
+      initialScrollIndex,
+      inverted,
+      enabledTalkbackCompatibleInvertedList,
     } = this.props;
+    const talkbackCompatibility =
+      this.state.screenreaderEnabled &&
+      initialScrollIndex == null &&
+      inverted &&
+      Platform.OS === 'android' &&
+      enabledTalkbackCompatibleInvertedList;
     const stickyOffset = ListHeaderComponent ? 1 : 0;
     const end = getItemCount(data) - 1;
     let prevCellKey;
@@ -919,7 +934,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       prevCellKey = key;
     };
     // avoid using scaleY and scaleX with talkback
-    if (this.state.screenreaderEnabled && this.props.inverted) {
+    if (talkbackCompatibility) {
       for (let ii = last; ii >= first; ii--) {
         pushCell(ii);
       }
@@ -979,11 +994,23 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
     const {ListEmptyComponent, ListFooterComponent, ListHeaderComponent} =
       this.props;
-    const {screenreaderEnabled} = this.state;
-    const {data, horizontal} = this.props;
+    const {
+      data,
+      horizontal,
+      initialScrollIndex,
+      inverted,
+      enabledTalkbackCompatibleInvertedList,
+    } = this.props;
+    const {first, last, screenreaderEnabled} = this.state;
+    const talkbackCompatibility =
+      screenreaderEnabled &&
+      initialScrollIndex == null &&
+      inverted &&
+      Platform.OS === 'android' &&
+      enabledTalkbackCompatibleInvertedList;
     const isVirtualizationDisabled = this._isVirtualizationDisabled();
     const inversionStyle =
-      this.props.inverted && !screenreaderEnabled
+      this.props.inverted && !talkbackCompatibility
         ? horizontalOrDefault(this.props.horizontal)
           ? styles.horizontallyInverted
           : styles.verticallyInverted
@@ -1028,11 +1055,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       const lastInitialIndex = this.props.initialScrollIndex
         ? -1
         : initialNumToRenderOrDefault(this.props.initialNumToRender) - 1;
-      const {first, last} = this.state;
       // scroll to top optimization. The first page is always rendered.
-      const talkbackEnabledWithInvertedFlatlist =
-        screenreaderEnabled && this.props.inverted;
-      if (!talkbackEnabledWithInvertedFlatlist) {
+      if (!talkbackCompatibility) {
         this._pushCells(
           cells,
           stickyHeaderIndices,
@@ -1098,7 +1122,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       );
       // TalkBack scroll to bottom optimization.
       // The first page is always rendered at the bottom of the inverted flatlist.
-      if (talkbackEnabledWithInvertedFlatlist) {
+      if (talkbackCompatibility) {
         this._pushCells(
           cells,
           stickyHeaderIndices,
@@ -1621,15 +1645,24 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   _maybeCallOnEndReached() {
-    const {data, getItemCount, onEndReached, onEndReachedThreshold, inverted} =
-      this.props;
+    const {
+      data,
+      getItemCount,
+      onEndReached,
+      onEndReachedThreshold,
+      inverted,
+      initialScrollIndex,
+      enabledTalkbackCompatibleInvertedList,
+    } = this.props;
     const {contentLength, visibleLength, offset} = this._scrollMetrics;
-    let distanceFromEnd;
-    const talkbackEnabledWithInvertedFlatlist =
+    const talkbackCompatibility =
       this.state.screenreaderEnabled &&
+      initialScrollIndex == null &&
       inverted &&
-      this._hasTriggeredInitialScrollToIndex;
-    if (talkbackEnabledWithInvertedFlatlist) {
+      Platform.OS === 'android' &&
+      enabledTalkbackCompatibleInvertedList;
+    let distanceFromEnd;
+    if (talkbackCompatibility && this._hasTriggeredInitialScrollToIndex) {
       distanceFromEnd = offset;
     } else {
       distanceFromEnd = contentLength - visibleLength - offset;
@@ -1638,10 +1671,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     // Especially when oERT is zero it's necessary to 'floor' very small distanceFromEnd values to be 0
     // since debouncing causes us to not fire this event for every single "pixel" we scroll and can thus
     // be at the "end" of the list with a distanceFromEnd approximating 0 but not quite there.
-    if (
-      !talkbackEnabledWithInvertedFlatlist &&
-      distanceFromEnd < ON_END_REACHED_EPSILON
-    ) {
+    if (!talkbackCompatibility && distanceFromEnd < ON_END_REACHED_EPSILON) {
       distanceFromEnd = 0;
     }
 
@@ -1655,7 +1685,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     if (
       onEndReached &&
       this._beginningReached &&
-      talkbackEnabledWithInvertedFlatlist &&
+      talkbackCompatibility &&
       distanceFromEnd === 0 &&
       this._hasTriggeredInitialScrollToIndex &&
       this.state.last === getItemCount(data) - 1 &&
@@ -1678,7 +1708,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       distanceFromEnd <= threshold &&
       this._scrollMetrics.contentLength !== this._sentEndForContentLength
     ) {
-      if (talkbackEnabledWithInvertedFlatlist) {
+      if (talkbackCompatibility) {
         this._beginningReached = true;
       } else {
         // Only call onEndReached once for a given content length
@@ -1694,17 +1724,40 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   _onContentSizeChange = (width: number, height: number) => {
     const {screenreaderEnabled} = this.state;
+    const {
+      initialScrollIndex,
+      inverted,
+      enabledTalkbackCompatibleInvertedList,
+    } = this.props;
+    const talkbackCompatibility =
+      screenreaderEnabled &&
+      initialScrollIndex == null &&
+      inverted &&
+      Platform.OS === 'android' &&
+      enabledTalkbackCompatibleInvertedList;
+    if (
+      __DEV__ &&
+      screenreaderEnabled &&
+      initialScrollIndex != null &&
+      inverted &&
+      Platform.OS === 'android' &&
+      enabledTalkbackCompatibleInvertedList
+    ) {
+      console.error(
+        'The prop enabledTalkbackCompatibleInvertedList can not be used with initialScrollIndex.',
+      );
+    }
     if (
       width > 0 &&
       height > 0 &&
-      this.props.initialScrollIndex != null &&
-      this.props.initialScrollIndex > 0 &&
+      initialScrollIndex != null &&
+      initialScrollIndex > 0 &&
       !this._hasTriggeredInitialScrollToIndex
     ) {
       if (this.props.contentOffset == null) {
         this.scrollToIndex({
           animated: false,
-          index: this.props.initialScrollIndex,
+          index: initialScrollIndex,
         });
       }
       this._hasTriggeredInitialScrollToIndex = true;
@@ -1718,9 +1771,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       width > 0 &&
       height > 0 &&
       !this._hasTriggeredInitialScrollToIndex &&
-      this.props.initialScrollIndex == null &&
-      this.props.inverted &&
-      screenreaderEnabled
+      talkbackCompatibility
     ) {
       this.scrollToOffset({
         animated: false,
@@ -1735,8 +1786,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     // and ScrollView scrollEnd events are not compatible with TalkBack
     // https://github.com/facebook/react-native/pull/34141#issuecomment-1189883210
     if (
-      screenreaderEnabled &&
-      this.props.inverted &&
+      talkbackCompatibility &&
       this._hasTriggeredInitialScrollToIndex &&
       this._lastOffsetFromBottomOfScreen
     ) {
@@ -1786,6 +1836,17 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   _onScroll = (e: Object) => {
     const {screenreaderEnabled} = this.state;
+    const {
+      initialScrollIndex,
+      inverted,
+      enabledTalkbackCompatibleInvertedList,
+    } = this.props;
+    const talkbackCompatibility =
+      screenreaderEnabled &&
+      initialScrollIndex == null &&
+      inverted &&
+      Platform.OS === 'android' &&
+      enabledTalkbackCompatibleInvertedList;
     this._nestedChildLists.forEach(childList => {
       childList.ref && childList.ref._onScroll(e);
     });
@@ -1801,7 +1862,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     // contentLength and offset (the bottomY or bottomX) and we use it to
     // restore the scrollPosition after onEndReached
     // this.scrollToOffset({offset: newHeight - this._offsetFromBottomOfScreen})
-    if (screenreaderEnabled && this.props.inverted) {
+    if (talkbackCompatibility) {
       this._offsetFromBottomOfScreen = contentLength - offset;
     }
 
@@ -1862,7 +1923,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     // Disabled with TalkBack inverted FlatList
     // Triggers a scrollTo bottom and subsequent top when scrolling down
     // fast, documented in https://bit.ly/3PkawQ4
-    if (!(screenreaderEnabled && this.props.inverted)) {
+    if (!talkbackCompatibility) {
       this._scheduleCellsToRenderUpdate();
     }
   };
