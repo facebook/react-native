@@ -448,7 +448,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       getItemCount,
       getItemLayout,
       onScrollToIndexFailed,
+      inverted,
     } = this.props;
+    const {screenreaderEnabled} = this.state;
     const {animated, index, viewOffset, viewPosition} = params;
     invariant(
       index >= 0,
@@ -479,7 +481,14 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       });
       return;
     }
-    const frame = this.__getFrameMetricsApprox(index);
+    let frame;
+    // TalkBack Inverted FlatList does not use scaleX/Y -1
+    if (data && data.length > 0 && screenreaderEnabled && inverted) {
+      const invertedIndex = data.length - 1 - index;
+      frame = this.__getFrameMetricsApprox(invertedIndex);
+    } else {
+      frame = this.__getFrameMetricsApprox(index);
+    }
     const offset =
       Math.max(
         0,
