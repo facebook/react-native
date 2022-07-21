@@ -110,8 +110,8 @@ type OptionalProps = {|
    * Enable TalkBack support for inverted FlatList
    * The default implementation of inverted FlatList uses transform scaleX or scaleY and is not compatible
    * with TalkBack. This implementation manually inverts the order of the items, but does not yet support all
-   * FlatList functionalities, by default is disabled. Not supported functionalities: scrollToIndex, initialScrollIndex.
-   * Supported functionalities: infinite list, scrollToEnd, scrollToOffset (calculated as on a not inverted FlatList)
+   * FlatList functionalities, by default is disabled. Not supported functionalities: initialScrollIndex.
+   * Supported functionalities: infinite list, scrollToEnd, scrollToIndex, horizontal, scrollToOffset
    */
   enableTalkbackCompatibleInvertedList?: ?boolean,
 
@@ -739,8 +739,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
     if (
       this.props.enableTalkbackCompatibleInvertedList &&
-      Platform.OS === 'android' &&
-      !this.props.initialScrollIndex
+      Platform.OS === 'android'
     ) {
       this._screenreaderEventListener = AccessibilityInfo.addEventListener(
         'screenReaderChanged',
@@ -761,10 +760,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this.props.initialScrollIndex &&
       Platform.OS === 'android'
     ) {
-      console.log(
-        `enableTalkbackCompatibleInvertedList is disabled. 
-        initialScrollIndex is not supported with enableTalkbackCompatibleInvertedList, 
-        the default implementation of inverted FlatList will be used.`,
+      console.warn(
+        'initialScrollIndex is not supported with enableTalkbackCompatibleInvertedList',
       );
     }
 
@@ -809,8 +806,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     if (
       this.props.enableTalkbackCompatibleInvertedList &&
       Platform.OS === 'android' &&
-      this.state.screenreaderEnabled == undefined &&
-      !this.props.initialScrollIndex
+      this.state.screenreaderEnabled == undefined
     ) {
       AccessibilityInfo.isScreenReaderEnabled().then(
         screenreaderEnabled => {

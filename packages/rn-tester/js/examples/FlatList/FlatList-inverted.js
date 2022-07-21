@@ -134,6 +134,9 @@ function NestedFlatList(props) {
       />
       <Text>Flatlist</Text>
       <FlatList
+        onScrollToIndexFailed={() => console.log('scrollToIndex failed')}
+        // initialScrollIndex is not supported with enableTalkbackCompatibleInvertedList
+        // initialScrollIndex={8}
         ref={ref => {
           // $FlowFixMe
           flatlist = ref;
