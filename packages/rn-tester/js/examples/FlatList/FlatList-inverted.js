@@ -64,9 +64,17 @@ const DATA = [
   },
 ];
 
-const Item = ({title}) => (
-  <Text style={[styles.item, styles.title]}>{title}</Text>
-);
+function Item({title}) {
+  const [pressed, setPressed] = useState(false);
+  return (
+    <Text
+      onPress={() => setPressed(pressed => !pressed)}
+      style={[styles.item, styles.title]}>
+      {title}
+      {` ${pressed ? 'pressed' : ''}`}
+    </Text>
+  );
+}
 
 const renderItem = ({item}) => <Item title={item.title} />;
 const ITEM_HEIGHT = 50;
