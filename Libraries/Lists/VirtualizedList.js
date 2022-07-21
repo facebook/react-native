@@ -397,10 +397,10 @@ function windowSizeOrDefault(windowSize: ?number) {
 class VirtualizedList extends React.PureComponent<Props, State> {
   static contextType: typeof VirtualizedListContext = VirtualizedListContext;
   _screenreaderEventListener: EventSubscription;
-  _bottom: ?number;
-  _lastBottomHeight: ?number;
+  _offsetFromBottomOfScreen: ?number;
+  _lastOffsetFromBottomOfScreen: ?number;
   _beginningReached: ?boolean;
-  _lastTimeCalled: ?number;
+  _lastTimeOnEndReachedCalled: ?number;
 
   // scrollToEnd may be janky without getItemLayout prop
   scrollToEnd(params?: ?{animated?: ?boolean, ...}) {
@@ -872,8 +872,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this._screenreaderEventListener.remove();
     }
     this._hasTriggeredInitialScrollToIndex = false;
-    this._bottom = undefined;
-    this._lastBottomHeight = undefined;
+    this._offsetFromBottomOfScreen = undefined;
+    this._lastOffsetFromBottomOfScreen = undefined;
     this._beginningReached = undefined;
   }
 
@@ -1682,8 +1682,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const threshold =
       onEndReachedThreshold != null ? onEndReachedThreshold * visibleLength : 2;
     const canTriggerOnEndReachedWithTalkback =
-      typeof this._lastTimeCalled === 'number'
-        ? Math.abs(this._lastTimeCalled - Date.now()) > 100
+      typeof this._lastTimeOnEndReachedCalled === 'number'
+        ? Math.abs(this._lastTimeOnEndReachedCalled - Date.now()) > 100
         : true;
     if (
       onEndReached &&
@@ -1696,14 +1696,14 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       canTriggerOnEndReachedWithTalkback
     ) {
       // save the last position in the flastlist to restore it after animation to Top
-      this._lastBottomHeight = this._bottom;
+      this._lastOffsetFromBottomOfScreen = this._offsetFromBottomOfScreen;
       // Only call onEndReached once for a given content length
       this._sentEndForContentLength = this._scrollMetrics.contentLength;
       // wait 100 ms to call again onEndReached (TalkBack scrolling is slower)
-      this._lastTimeCalled = Date.now();
+      this._lastTimeOnEndReachedCalled = Date.now();
       onEndReached({distanceFromEnd});
     } else {
-      this._lastBottomHeight = undefined;
+      this._lastOffsetFromBottomOfScreen = undefined;
     }
     if (
       onEndReached &&
@@ -1767,12 +1767,16 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     // setTimeout is required as animated false will not work
     // and ScrollView scrollEnd events are not compatible with TalkBack
     // https://github.com/facebook/react-native/pull/34141#issuecomment-1189883210
-    if (screenreaderEnabled && this.props.inverted && this._lastBottomHeight) {
+    if (
+      screenreaderEnabled &&
+      this.props.inverted &&
+      this._lastOffsetFromBottomOfScreen
+    ) {
       let newBottomHeight;
       if (this.props.horizontal) {
-        newBottomHeight = width - this._lastBottomHeight;
+        newBottomHeight = width - this._lastOffsetFromBottomOfScreen;
       } else {
-        newBottomHeight = height - this._lastBottomHeight;
+        newBottomHeight = height - this._lastOffsetFromBottomOfScreen;
       }
       setTimeout(
         (flatlist, newBottomHeight) => {
@@ -1828,9 +1832,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     // with Talkback Inverted Flatlist we save the difference between
     // contentLength and offset (the bottomY or bottomX) and we use it to
     // restore the scrollPosition after onEndReached
-    // this.scrollToOffset({offset: newHeight - this._bottom})
+    // this.scrollToOffset({offset: newHeight - this._offsetFromBottomOfScreen})
     if (screenreaderEnabled && this.props.inverted) {
-      this._bottom = contentLength - offset;
+      this._offsetFromBottomOfScreen = contentLength - offset;
     }
 
     if (this._isNestedWithSameOrientation()) {
