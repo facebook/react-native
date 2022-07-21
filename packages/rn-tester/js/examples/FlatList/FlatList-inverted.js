@@ -158,7 +158,6 @@ function NestedFlatList(props) {
         renderItem={renderItem}
         data={items}
         onEndReached={() => {
-          console.log('TESTING:: ' + 'callback called');
           setItems(items => [...items, ...getNewItems(index)]);
           setIndex(index => index + 11);
         }}
@@ -184,8 +183,8 @@ const styles = StyleSheet.create({
 });
 
 export default ({
-  title: 'Inverted',
-  name: 'inverted',
+  title: 'Inverted (Talkback)',
+  name: 'inverted (Talkback)',
   description: 'Test inverted prop on FlatList',
   render: () => <FlatList_nested />,
 }: RNTesterModuleExample);

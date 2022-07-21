@@ -113,7 +113,7 @@ type OptionalProps = {|
    * FlatList functionalities, by default is disabled. Not supported functionalities: initialScrollIndex.
    * Supported functionalities: infinite list, scrollToEnd, scrollToIndex, horizontal, scrollToOffset
    */
-  enableTalkbackCompatibleInvertedList?: ?boolean,
+  enabledTalkbackCompatibleInvertedList?: ?boolean,
 
   /**
    * A marker property for telling the list to re-render (since it implements `PureComponent`). If
@@ -738,7 +738,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
 
     if (
-      this.props.enableTalkbackCompatibleInvertedList &&
+      this.props.enabledTalkbackCompatibleInvertedList &&
       Platform.OS === 'android'
     ) {
       this._screenreaderEventListener = AccessibilityInfo.addEventListener(
@@ -756,12 +756,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
     if (
       __DEV__ &&
-      this.props.enableTalkbackCompatibleInvertedList &&
+      this.props.enabledTalkbackCompatibleInvertedList &&
       this.props.initialScrollIndex &&
       Platform.OS === 'android'
     ) {
       console.warn(
-        'initialScrollIndex is not supported with enableTalkbackCompatibleInvertedList',
+        'initialScrollIndex is not supported with enabledTalkbackCompatibleInvertedList',
       );
     }
 
@@ -804,7 +804,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
     // updates the initial state of the screenreaderReader
     if (
-      this.props.enableTalkbackCompatibleInvertedList &&
+      this.props.enabledTalkbackCompatibleInvertedList &&
       Platform.OS === 'android' &&
       this.state.screenreaderEnabled == undefined
     ) {
@@ -1108,7 +1108,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         last,
         inversionStyle,
       );
-      // scroll to bottom optimization. The last page is always rendered in an inverted flatlist.
+      // TalkBack scroll to bottom optimization.
+      // The first page is always rendered at the bottom of the inverted flatlist.
       if (talkbackEnabledWithInvertedFlatlist) {
         this._pushCells(
           cells,

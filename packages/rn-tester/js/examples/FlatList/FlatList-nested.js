@@ -78,7 +78,7 @@ function NestedFlatList(props) {
     <View>
       <Button
         title="add an item"
-        onPress={() => setItems([...items, {title: 'new item'}])}
+        onPress={() => setItems(items => [...items, {title: 'new item'}])}
       />
       <Button
         title="remove an item"
@@ -90,6 +90,7 @@ function NestedFlatList(props) {
       />
       <Text>Flatlist</Text>
       <FlatList
+        enabledTalkbackCompatibleInvertedList
         style={{height: 400}}
         inverted
         renderItem={renderItem}
@@ -123,8 +124,8 @@ const styles = StyleSheet.create({
 });
 
 export default ({
-  title: 'Nested',
-  name: 'nested',
+  title: 'Nested (TalkBack)',
+  name: 'nested (TalkBack)',
   description: 'nested FlatList',
   render: () => <FlatList_nested />,
 }: RNTesterModuleExample);
