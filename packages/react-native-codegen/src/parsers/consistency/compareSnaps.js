@@ -57,7 +57,7 @@ function compareTsArraySnaps(tsSnaps, tsExtraCases) {
     name => name.indexOf('ARRAY2') != -1,
   )) {
     const arrayCase = array2Case.replace('ARRAY2', 'ARRAY');
-    it(`should generate the same snap fromfixture ${arrayCase} and ${array2Case}`, () => {
+    it(`should generate the same snap from fixture ${arrayCase} and ${array2Case}`, () => {
       expect(
         tsSnaps[
           `RN Codegen TypeScript Parser can generate fixture ${arrayCase}`
