@@ -19,7 +19,7 @@ const {
   Alert,
 } = require('react-native');
 
-const {examples: SharedAlertExamples} = require('./AlertExample');
+import {examples as SharedAlertExamples} from './AlertExample';
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
