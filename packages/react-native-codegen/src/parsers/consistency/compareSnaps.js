@@ -40,11 +40,11 @@ function compareSnaps(
       it(`should generate the same snap from Flow and TypeScript for fixture ${commonCase}`, () => {
         expect(
           flowSnaps[
-            `RN Codegen Flow Parser can generate fixture ${commonCase}`
+          `RN Codegen Flow Parser can generate fixture ${commonCase}`
           ],
         ).toEqual(
           tsSnaps[
-            `RN Codegen TypeScript Parser can generate fixture ${commonCase}`
+          `RN Codegen TypeScript Parser can generate fixture ${commonCase}`
           ],
         );
       });
@@ -52,6 +52,27 @@ function compareSnaps(
   });
 }
 
+function compareTsArraySnaps(
+  tsSnaps,
+  tsExtraCases,
+) {
+  for (const array2Case of tsExtraCases.filter(name => name.indexOf('ARRAY2') != -1)) {
+    const arrayCase = array2Case.replace('ARRAY2', 'ARRAY');
+    it(`should generate the same snap fromfixture ${arrayCase} and ${array2Case}`, () => {
+      expect(
+        tsSnaps[
+        `RN Codegen TypeScript Parser can generate fixture ${arrayCase}`
+        ],
+      ).toEqual(
+        tsSnaps[
+        `RN Codegen TypeScript Parser can generate fixture ${array2Case}`
+        ],
+      );
+    });
+  }
+}
+
 module.exports = {
   compareSnaps,
+  compareTsArraySnaps,
 };
