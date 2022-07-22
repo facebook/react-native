@@ -1055,7 +1055,7 @@ class ImportantForAccessibility extends React.Component<{}> {
   render(): React.Node {
     return (
       <View>
-        <RNTesterBlock title="no-hide-descendants with ImageBackground">
+        <RNTesterBlock title="ImageBackground with importantForAccessibility=no-hide-descendants">
           <View style={styles.container}>
             <ImageBackground
               importantForAccessibility="no-hide-descendants"
@@ -1066,7 +1066,7 @@ class ImportantForAccessibility extends React.Component<{}> {
             </ImageBackground>
           </View>
         </RNTesterBlock>
-        <RNTesterBlock title="no with ImageBackground">
+        <RNTesterBlock title="ImageBackground with importantForAccessibility=no">
           <View style={styles.container}>
             <ImageBackground
               importantForAccessibility="no"
@@ -1076,6 +1076,9 @@ class ImportantForAccessibility extends React.Component<{}> {
               <Text style={styles.text}>accessible</Text>
             </ImageBackground>
           </View>
+        </RNTesterBlock>
+        <RNTesterBlock title="ImageBackground with importantForAccessibility=no">
+          <Button title="this is text" accessible="no" />
         </RNTesterBlock>
       </View>
     );
