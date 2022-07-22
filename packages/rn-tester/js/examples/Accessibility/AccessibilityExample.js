@@ -1078,7 +1078,7 @@ class ImportantForAccessibility extends React.Component<{}> {
           </View>
         </RNTesterBlock>
         <RNTesterBlock title="ImageBackground with importantForAccessibility=no">
-          <Button title="this is text" accessible="no" />
+          <Button title="this is text" importantForAccessibility="no" />
         </RNTesterBlock>
       </View>
     );
