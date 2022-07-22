@@ -199,7 +199,7 @@ android {
 
     dependencies {
         implementation("com.facebook.fbjni:fbjni:0.2.2")
-        implementation("com.facebook.soloader:soloader:0.10.3")
+        implementation("com.facebook.soloader:soloader:0.10.4")
         implementation("com.facebook.yoga:proguard-annotations:1.19.0")
         implementation("androidx.annotation:annotation:1.3.0")
     }
