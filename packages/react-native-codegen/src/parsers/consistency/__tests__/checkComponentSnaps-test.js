@@ -11,7 +11,7 @@
 
 'use strict';
 
-const {compareSnaps,compareTsArraySnaps} = require('../compareSnaps.js');
+const {compareSnaps, compareTsArraySnaps} = require('../compareSnaps.js');
 
 const flowFixtures = require('../../flow/components/__test_fixtures__/fixtures.js');
 const flowSnaps = require('../../flow/components/__tests__/__snapshots__/component-parser-test.js.snap');
@@ -20,4 +20,4 @@ const tsSnaps = require('../../typescript/components/__tests__/__snapshots__/typ
 const tsExtraCases = ['ARRAY2_PROP_TYPES_NO_EVENTS'];
 
 compareSnaps(flowFixtures, flowSnaps, [], tsFixtures, tsSnaps, tsExtraCases);
-compareTsArraySnaps(tsSnaps,tsExtraCases);
+compareTsArraySnaps(tsSnaps, tsExtraCases);
