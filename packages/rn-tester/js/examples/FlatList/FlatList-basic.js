@@ -63,7 +63,7 @@ type State = {|
   fadingEdgeLength: number,
   onPressDisabled: boolean,
   textSelectable: boolean,
-  enableSelectionOnKeyPress: boolean, // TODO(macOS GH#774)]
+  enableSelectionOnKeyPress: boolean, // TODO(macOS GH#774)
 |};
 
 class FlatListExample extends React.PureComponent<Props, State> {
@@ -329,6 +329,10 @@ class FlatListExample extends React.PureComponent<Props, State> {
   _pressItem = (key: string) => {
     this._listRef && this._listRef.recordInteraction();
     const index = Number(key);
+    // [TODO(macOS GH#774)
+    if (this.state.enableSelectionOnKeyPress) {
+      this._listRef && this._listRef.selectRowAtIndex(index);
+    } // ]TODO(macOS GH#774)
     const itemState = pressItem(this.state.data[index]);
     this.setState(state => ({
       ...state,

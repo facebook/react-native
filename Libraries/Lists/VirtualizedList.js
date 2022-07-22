@@ -592,6 +592,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this.scrollToOffset({offset: newOffset});
     }
   }
+
+  selectRowAtIndex(rowIndex: number) {
+    this._selectRowAtIndex(rowIndex);
+  }
   // ]TODO(macOS GH#774)
 
   recordInteraction() {

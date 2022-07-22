@@ -369,6 +369,19 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     }
   }
 
+  // [TODO(macOS GH#750)
+  /**
+   * Move selection to the specified index
+   *
+   * @platform ios
+   */
+  selectRowAtIndex(index: number) {
+    if (this._listRef) {
+      this._listRef.selectRowAtIndex(index);
+    }
+  }
+  // ]TODO(macOS GH#750)
+
   /**
    * Provides a handle to the underlying scroll responder.
    */
