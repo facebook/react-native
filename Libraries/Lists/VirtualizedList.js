@@ -401,6 +401,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _lastOffsetFromBottomOfScreen: ?number;
   _beginningReached: ?boolean;
   _lastTimeOnEndReachedCalled: ?number;
+  _scrollToOffsetTimeout: ?TimeoutID;
 
   // scrollToEnd may be janky without getItemLayout prop
   scrollToEnd(params?: ?{animated?: ?boolean, ...}) {
@@ -848,6 +849,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     this._offsetFromBottomOfScreen = undefined;
     this._lastOffsetFromBottomOfScreen = undefined;
     this._beginningReached = undefined;
+    if (this._scrollToOffsetTimeout) {
+      clearTimeout(this._scrollToOffsetTimeout);
+    }
   }
 
   static getDerivedStateFromProps(newProps: Props, prevState: State): State {
@@ -1797,7 +1801,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       } else {
         newBottomHeight = height - this._lastOffsetFromBottomOfScreen;
       }
-      setTimeout(
+      this._scrollToOffsetTimeout = setTimeout(
         (flatlist, newBottomHeight) => {
           flatlist.scrollToOffset({
             offset: newBottomHeight,
