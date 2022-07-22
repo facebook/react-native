@@ -429,6 +429,19 @@ static RCTUIView *RCTUIViewCommonInit(RCTUIView *self)
 
 @implementation RCTUIScrollView // TODO(macOS ISS#3536887)
 
+- (void)setEnableFocusRing:(BOOL)enableFocusRing {
+  if (_enableFocusRing != enableFocusRing) {
+    _enableFocusRing = enableFocusRing;
+  }
+
+  if (enableFocusRing) {
+    // NSTextView has no focus ring by default so let's use the standard Aqua focus ring.
+    [self setFocusRingType:NSFocusRingTypeExterior];
+  } else {
+    [self setFocusRingType:NSFocusRingTypeNone];
+  }
+}
+
 // UIScrollView properties missing from NSScrollView
 - (CGPoint)contentOffset
 {
