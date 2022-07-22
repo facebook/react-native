@@ -51,7 +51,9 @@ static CVReturn RCTPlatformDisplayLinkCallBack(__unused CVDisplayLinkRef display
     if (rctDisplayLink->_runLoop != nil) {
       CFRunLoopRef cfRunLoop = [rctDisplayLink->_runLoop getCFRunLoop];
       CFRunLoopPerformBlock(cfRunLoop, (__bridge CFArrayRef)rctDisplayLink->_modes, ^{
-        [rctDisplayLink tick];
+        @autoreleasepool {
+          [rctDisplayLink tick];
+        }
       });
       CFRunLoopWakeUp(cfRunLoop);
     }
