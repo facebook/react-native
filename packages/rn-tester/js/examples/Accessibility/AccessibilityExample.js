@@ -14,6 +14,7 @@ import type {PressEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
 const React = require('react');
 const {
+  ImageBackground,
   AccessibilityInfo,
   TextInput,
   Button,
@@ -66,6 +67,21 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
+  },
+  container: {
+    flex: 1,
+  },
+  ImageBackground: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  text: {
+    color: 'white',
+    fontSize: 20,
+    lineHeight: 84,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    backgroundColor: '#000000c0',
   },
 });
 
@@ -1035,6 +1051,37 @@ class EnabledExamples extends React.Component<{}> {
   }
 }
 
+class ImportantForAccessibility extends React.Component<{}> {
+  render(): React.Node {
+    return (
+      <View>
+        <RNTesterBlock title="no-hide-descendants with ImageBackground">
+          <View style={styles.container}>
+            <ImageBackground
+              importantForAccessibility="no-hide-descendants"
+              source={require('../../assets/trees.jpg')}
+              resizeMode="cover"
+              style={styles.ImageBackground}>
+              <Text style={styles.text}>not accessible</Text>
+            </ImageBackground>
+          </View>
+        </RNTesterBlock>
+        <RNTesterBlock title="no with ImageBackground">
+          <View style={styles.container}>
+            <ImageBackground
+              importantForAccessibility="no"
+              source={require('../../assets/trees.jpg')}
+              resizeMode="cover"
+              style={styles.ImageBackground}>
+              <Text style={styles.text}>accessible</Text>
+            </ImageBackground>
+          </View>
+        </RNTesterBlock>
+      </View>
+    );
+  }
+}
+
 class EnabledExample extends React.Component<
   {
     eventListener:
@@ -1238,6 +1285,12 @@ exports.examples = [
     title: 'Check if these properties are enabled',
     render(): React.Element<typeof EnabledExamples> {
       return <EnabledExamples />;
+    },
+  },
+  {
+    title: 'Testing importantForAccessibility',
+    render(): React.Element<typeof EnabledExamples> {
+      return <ImportantForAccessibility />;
     },
   },
   {
