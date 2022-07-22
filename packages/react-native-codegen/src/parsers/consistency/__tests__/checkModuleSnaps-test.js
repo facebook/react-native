@@ -11,7 +11,7 @@
 
 'use strict';
 
-const {compareSnaps} = require('../compareSnaps');
+const {compareSnaps} = require('../compareSnaps.js');
 
 const flowFixtures = require('../../flow/modules/__test_fixtures__/fixtures.js');
 const flowSnaps = require('../flow/modules/__test__/__snapshots__/module-parser-snapshot-test.js.snap');
