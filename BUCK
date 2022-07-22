@@ -600,7 +600,7 @@ rn_apple_library(
     contacts = ["oncall+react_native@xmail.facebook.com"],
     extension_api_only = True,
     frameworks = [
-        "$PLATFORM_DIR/Developer/Library/Frameworks/Foundation.framework",
+        "Foundation",
     ],
     inherited_buck_flags = get_static_library_ios_flags(),
     labels = [
