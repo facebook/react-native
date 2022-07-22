@@ -51,6 +51,7 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
     self.insertionPointColor = [NSColor selectedControlColor];
     // Fix blurry text on non-retina displays.
     self.canDrawSubviewsIntoLayer = YES;
+    self.allowsUndo = YES;
 #endif // ]TODO(macOS GH#774)
 
     _textInputDelegateAdapter = [[RCTBackedTextViewDelegateAdapter alloc] initWithTextView:self];
@@ -185,6 +186,18 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
 
   return success;
 }
+
+- (BOOL)resignFirstResponder
+{
+  BOOL success = [super resignFirstResponder];
+
+  if (success) {
+    // Break undo coalescing when losing focus.
+    [self breakUndoCoalescing];
+  }
+
+  return success;
+}
 #endif // ]TODO(macOS GH#774)
 
 - (void)setDefaultTextAttributes:(NSDictionary<NSAttributedStringKey, id> *)defaultTextAttributes
@@ -247,6 +260,9 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
   }
 #else // [TODO(macOS GH#774)
   if (![self.textStorage isEqualTo:attributedText.string]) {
+    // Break undo coalescing when the text is changed by JS (e.g. autocomplete).
+    [self breakUndoCoalescing];
+
     if (attributedText != nil) {
       [self.textStorage setAttributedString:attributedText];
     } else {

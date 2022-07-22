@@ -263,6 +263,7 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
   UITextRange *_previousSelectedTextRange;
 #else // [TODO(macOS GH#774)
   NSRange _previousSelectedTextRange;
+  NSUndoManager *_undoManager;
 #endif // ]TODO(macOS GH#774)
 }
 
@@ -426,6 +427,13 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
   }
 
   return commandHandled;
+}
+
+- (NSUndoManager *)undoManagerForTextView:(NSTextView *)textView {
+  if (!_undoManager) {
+    _undoManager = [NSUndoManager new];
+  }
+  return _undoManager;
 }
 
 #endif // ]TODO(macOS GH#774)

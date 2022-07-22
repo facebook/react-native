@@ -144,7 +144,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   BOOL textNeedsUpdate = NO;
   // Remove tag attribute to ensure correct attributed string comparison.
   NSMutableAttributedString *const backedTextInputViewTextCopy = [self.backedTextInputView.attributedText mutableCopy];
-  NSMutableAttributedString *const attributedTextCopy = [attributedText mutableCopy];
+  NSMutableAttributedString *const attributedTextCopy = [attributedText mutableCopy] ?: [NSMutableAttributedString new];
 
   [backedTextInputViewTextCopy removeAttribute:RCTTextAttributesTagAttributeName
                                          range:NSMakeRange(0, backedTextInputViewTextCopy.length)];
@@ -160,7 +160,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 #else // [TODO(macOS GH#774)
     NSRange selection = [self.backedTextInputView selectedTextRange];
 #endif // ]TODO(macOS GH#774)
-    NSInteger oldTextLength = self.backedTextInputView.attributedText.string.length;
+    NSAttributedString *oldAttributedText = [self.backedTextInputView.attributedText copy];
+    NSInteger oldTextLength = oldAttributedText.string.length;
+
+    [self.backedTextInputView.undoManager registerUndoWithTarget:self handler:^(RCTBaseTextInputView *strongSelf) {
+      strongSelf.attributedText = oldAttributedText;
+      [strongSelf textInputDidChange];
+    }];
 
     self.backedTextInputView.attributedText = attributedText;
 
