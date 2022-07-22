@@ -373,7 +373,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   /**
    * Move selection to the specified index
    *
-   * @platform ios
+   * @platform macos
    */
   selectRowAtIndex(index: number) {
     if (this._listRef) {
