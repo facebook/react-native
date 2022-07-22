@@ -105,7 +105,6 @@
 #if TARGET_OS_OSX // [TODO(macOS GH#774)
     [self setBordered:NO];
     [self setAllowsEditingTextAttributes:YES];
-    [self setAccessibilityRole:NSAccessibilityTextFieldRole];
     [self setBackgroundColor:[NSColor clearColor]];
 #endif // ]TODO(macOS GH#774)
 
@@ -127,7 +126,11 @@
 
 #pragma mark - Accessibility
 
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
 - (void)setIsAccessibilityElement:(BOOL)isAccessibilityElement
+#else
+- (void)setAccessibilityElement:(BOOL)isAccessibilityElement
+#endif // ]TODO(macOS GH#774)
 {
   // UITextField is accessible by default (some nested views are) and disabling that is not supported.
   // On iOS accessible elements cannot be nested, therefore enabling accessibility for some container view
