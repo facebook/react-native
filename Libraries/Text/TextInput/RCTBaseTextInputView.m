@@ -350,20 +350,27 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
                                eventCount:_nativeEventCount];
 }
 
+- (BOOL)textInputShouldSubmitOnReturn
+{
+  const BOOL shouldSubmit = [_submitBehavior isEqualToString:@"blurAndSubmit"] || [_submitBehavior isEqualToString:@"submit"];
+  if (shouldSubmit) {
+    // We send `submit` event here, in `textInputShouldSubmit`
+    // (not in `textInputDidReturn)`, because of semantic of the event:
+    // `onSubmitEditing` is called when "Submit" button
+    // (the blue key on onscreen keyboard) did pressed
+    // (no connection to any specific "submitting" process).
+    [_eventDispatcher sendTextEventWithType:RCTTextEventTypeSubmit
+                                   reactTag:self.reactTag
+                                       text:[self.backedTextInputView.attributedText.string copy]
+                                        key:nil
+                                 eventCount:_nativeEventCount];
+  }
+  return shouldSubmit;
+}
+
 - (BOOL)textInputShouldReturn
 {
-  // We send `submit` event here, in `textInputShouldReturn`
-  // (not in `textInputDidReturn)`, because of semantic of the event:
-  // `onSubmitEditing` is called when "Submit" button
-  // (the blue key on onscreen keyboard) did pressed
-  // (no connection to any specific "submitting" process).
-  [_eventDispatcher sendTextEventWithType:RCTTextEventTypeSubmit
-                                 reactTag:self.reactTag
-                                     text:[self.backedTextInputView.attributedText.string copy]
-                                      key:nil
-                               eventCount:_nativeEventCount];
-
-  return _blurOnSubmit;
+  return [_submitBehavior isEqualToString:@"blurAndSubmit"];
 }
 
 - (void)textInputDidReturn
