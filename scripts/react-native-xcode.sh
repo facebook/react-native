@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -74,29 +74,19 @@ else
   ENTRY_FILE=${1:-index.js}
 fi
 
-if [[ $DEV != true && ! -f "$ENTRY_FILE" ]]; then
-  echo "error: Entry file $ENTRY_FILE does not exist. If you use another file as your entry point, pass ENTRY_FILE=myindex.js" >&2
-  exit 2
-fi
-
-# Find path to Node
-# shellcheck source=/dev/null
-source "$REACT_NATIVE_DIR/scripts/find-node.sh"
-
 # check and assign NODE_BINARY env
 # shellcheck source=/dev/null
 source "$REACT_NATIVE_DIR/scripts/node-binary.sh"
 
-[ -z "$HERMES_CLI_PATH" ] && HERMES_CLI_PATH="$PODS_ROOT/hermes-engine/destroot/bin/hermesc"
+HERMES_ENGINE_PATH="$PODS_ROOT/hermes-engine"
+[ -z "$HERMES_CLI_PATH" ] && HERMES_CLI_PATH="$HERMES_ENGINE_PATH/destroot/bin/hermesc"
 
-if [[ -z "$USE_HERMES" && -f "$HERMES_CLI_PATH" ]]; then
-  echo "Enabling Hermes byte-code compilation. Disable with USE_HERMES=false if needed."
-  USE_HERMES=true
-fi
-
-if [[ $USE_HERMES == true && ! -f "$HERMES_CLI_PATH" ]]; then
-  echo "error: USE_HERMES is set to true but the hermesc binary could not be " \
-       "found at ${HERMES_CLI_PATH}. Perhaps you need to run 'bundle exec pod install' or otherwise " \
+# Hermes is enabled in new projects by default, so we cannot assume that USE_HERMES=1 is set as an envvar.
+# If hermes-engine is found in Pods, we can assume Hermes has not been disabled.
+# If hermesc is not available and USE_HERMES is either unset or true, show error.
+if [[  -f "$HERMES_ENGINE_PATH" && ! -f "$HERMES_CLI_PATH" ]]; then
+  echo "error: Hermes is enabled but the hermesc binary could not be found at ${HERMES_CLI_PATH}." \
+       "Perhaps you need to run 'bundle exec pod install' or otherwise " \
        "point the HERMES_CLI_PATH variable to your custom location." >&2
   exit 2
 fi
@@ -117,7 +107,7 @@ fi
 
 BUNDLE_FILE="$CONFIGURATION_BUILD_DIR/main.jsbundle"
 
-EXTRA_ARGS=()
+EXTRA_ARGS=
 
 case "$PLATFORM_NAME" in
   "macosx")
@@ -144,12 +134,12 @@ if [[ $EMIT_SOURCEMAP == true ]]; then
   else
     PACKAGER_SOURCEMAP_FILE="$SOURCEMAP_FILE"
   fi
-  EXTRA_ARGS+=("--sourcemap-output" "$PACKAGER_SOURCEMAP_FILE")
+  EXTRA_ARGS="$EXTRA_ARGS --sourcemap-output $PACKAGER_SOURCEMAP_FILE"
 fi
 
 # Hermes doesn't require JS minification.
 if [[ $USE_HERMES == true && $DEV == false ]]; then
-  EXTRA_ARGS+=("--minify" "false")
+  EXTRA_ARGS="$EXTRA_ARGS --minify false"
 fi
 
 "$NODE_BINARY" $NODE_ARGS "$CLI_PATH" $BUNDLE_COMMAND \
@@ -160,8 +150,8 @@ fi
   --reset-cache \
   --bundle-output "$BUNDLE_FILE" \
   --assets-dest "$DEST" \
-  "${EXTRA_ARGS[@]}" \
-  "${EXTRA_PACKAGER_ARGS[@]}"
+  $EXTRA_ARGS \
+  $EXTRA_PACKAGER_ARGS
 
 if [[ $USE_HERMES != true ]]; then
   cp "$BUNDLE_FILE" "$DEST/"
@@ -185,7 +175,6 @@ else
 fi
 
 if [[ $DEV != true && ! -f "$BUNDLE_FILE" ]]; then
-  echo "error: File $BUNDLE_FILE does not exist. This must be a bug with" >&2
-  echo "React Native, please report it here: https://github.com/facebook/react-native/issues"
+  echo "error: File $BUNDLE_FILE does not exist. This must be a bug with React Native, please report it here: https://github.com/facebook/react-native/issues" >&2
   exit 2
 fi

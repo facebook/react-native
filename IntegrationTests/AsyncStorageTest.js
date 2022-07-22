@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -33,7 +33,7 @@ const VAL_MERGE_EXPECT = {foo: 1, bar: {hoo: 2, boo: 1}, baz: 2, moo: {a: 3}};
 let done = (result: ?boolean) => {};
 let updateMessage = (message: string) => {};
 
-function runTestCase(description: string, fn) {
+function runTestCase(description: string, fn: () => void) {
   updateMessage(description);
   fn();
 }
@@ -61,7 +61,20 @@ function stringify(
   return JSON.stringify(value);
 }
 
-function expectEqual(lhs, rhs, testname: string) {
+function expectEqual(
+  lhs: ?(any | string | Array<Array<string>>),
+  rhs:
+    | null
+    | string
+    | {
+        bar: {boo: number, hoo: number},
+        baz: number,
+        foo: number,
+        moo: {a: number},
+      }
+    | Array<Array<string>>,
+  testname: string,
+) {
   expectTrue(
     !deepDiffer(lhs, rhs),
     'Error in test ' +
@@ -73,7 +86,10 @@ function expectEqual(lhs, rhs, testname: string) {
   );
 }
 
-function expectAsyncNoError(place, err) {
+function expectAsyncNoError(
+  place: string,
+  err: ?(Error | string | Array<Error>),
+) {
   if (err instanceof Error) {
     err = err.message;
   }
@@ -207,7 +223,7 @@ class AsyncStorageTest extends React.Component<{...}, $FlowFixMeState> {
       this.setState({done: true}, () => {
         TestModule.markTestCompleted();
       });
-    updateMessage = msg => {
+    updateMessage = (msg: string) => {
       this.setState({messages: this.state.messages.concat('\n' + msg)});
       DEBUG && console.log(msg);
     };
@@ -218,11 +234,13 @@ class AsyncStorageTest extends React.Component<{...}, $FlowFixMeState> {
     return (
       <View style={styles.container}>
         <Text>
-          {/* $FlowFixMe[incompatible-type] (>=0.54.0 site=react_native_fb,react_
-           * native_oss) This comment suppresses an error found when Flow v0.54
-           * was deployed. To see the error delete this comment and run Flow.
-           */
-          this.constructor.displayName + ': '}
+          {
+            /* $FlowFixMe[incompatible-type] (>=0.54.0 site=react_native_fb,react_
+             * native_oss) This comment suppresses an error found when Flow v0.54
+             * was deployed. To see the error delete this comment and run Flow.
+             */
+            this.constructor.displayName + ': '
+          }
           {this.state.done ? 'Done' : 'Testing...'}
           {'\n\n' + this.state.messages}
         </Text>

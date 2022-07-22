@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,8 +9,6 @@
  */
 
 import * as React from 'react';
-
-import DeprecatedTextInputPropTypes from '../../DeprecatedPropTypes/DeprecatedTextInputPropTypes';
 
 import Platform from '../../Utilities/Platform';
 import StyleSheet, {
@@ -34,7 +32,6 @@ import type {
   PressEvent,
 } from '../../Types/CoreEventTypes';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
-import type {TextInputNativeCommands} from './TextInputNativeCommands';
 
 const {useLayoutEffect, useRef, useState} = React;
 
@@ -49,17 +46,17 @@ let RCTMultilineTextInputNativeCommands;
 
 if (Platform.OS === 'android') {
   AndroidTextInput = require('./AndroidTextInputNativeComponent').default;
-  AndroidTextInputCommands = require('./AndroidTextInputNativeComponent')
-    .Commands;
+  AndroidTextInputCommands =
+    require('./AndroidTextInputNativeComponent').Commands;
 } else if (Platform.OS === 'ios') {
-  RCTSinglelineTextInputView = require('./RCTSingelineTextInputNativeComponent')
-    .default;
-  RCTSinglelineTextInputNativeCommands = require('./RCTSingelineTextInputNativeComponent')
-    .Commands;
-  RCTMultilineTextInputView = require('./RCTMultilineTextInputNativeComponent')
-    .default;
-  RCTMultilineTextInputNativeCommands = require('./RCTMultilineTextInputNativeComponent')
-    .Commands;
+  RCTSinglelineTextInputView =
+    require('./RCTSingelineTextInputNativeComponent').default;
+  RCTSinglelineTextInputNativeCommands =
+    require('./RCTSingelineTextInputNativeComponent').Commands;
+  RCTMultilineTextInputView =
+    require('./RCTMultilineTextInputNativeComponent').default;
+  RCTMultilineTextInputNativeCommands =
+    require('./RCTMultilineTextInputNativeComponent').Commands;
 }
 
 export type ChangeEvent = SyntheticEvent<
@@ -308,25 +305,49 @@ type IOSProps = $ReadOnly<{|
 
 type AndroidProps = $ReadOnly<{|
   /**
-   * Determines which content to suggest on auto complete, e.g.`username`.
-   * To disable auto complete, use `off`.
+   * Specifies autocomplete hints for the system, so it can provide autofill. On Android, the system will always attempt to offer autofill by using heuristics to identify the type of content.
+   * To disable autocomplete, set `autoComplete` to `off`.
    *
    * *Android Only*
    *
-   * The following values work on Android only:
+   * Possible values for `autoComplete` are:
    *
-   * - `username`
-   * - `password`
-   * - `email`
-   * - `name`
-   * - `tel`
-   * - `street-address`
-   * - `postal-code`
-   * - `cc-number`
+   * - `birthdate-day`
+   * - `birthdate-full`
+   * - `birthdate-month`
+   * - `birthdate-year`
    * - `cc-csc`
    * - `cc-exp`
+   * - `cc-exp-day`
    * - `cc-exp-month`
    * - `cc-exp-year`
+   * - `cc-number`
+   * - `email`
+   * - `gender`
+   * - `name`
+   * - `name-family`
+   * - `name-given`
+   * - `name-middle`
+   * - `name-middle-initial`
+   * - `name-prefix`
+   * - `name-suffix`
+   * - `password`
+   * - `password-new`
+   * - `postal-address`
+   * - `postal-address-country`
+   * - `postal-address-extended`
+   * - `postal-address-extended-postal-code`
+   * - `postal-address-locality`
+   * - `postal-address-region`
+   * - `postal-code`
+   * - `street-address`
+   * - `sms-otp`
+   * - `tel`
+   * - `tel-country-code`
+   * - `tel-national`
+   * - `tel-device`
+   * - `username`
+   * - `username-new`
    * - `off`
    *
    * @platform android
@@ -370,6 +391,14 @@ type AndroidProps = $ReadOnly<{|
     | 'username-new'
     | 'off'
   ),
+
+  /**
+   * When provided it will set the color of the cursor (or "caret") in the component.
+   * Unlike the behavior of `selectionColor` the cursor color will be set independently
+   * from the color of the text selection box.
+   * @platform android
+   */
+  cursorColor?: ?ColorValue,
 
   /**
    * When `false`, if there is a small amount of space available around a text input
@@ -578,10 +607,31 @@ export type Props = $ReadOnly<{|
   onChange?: ?(e: ChangeEvent) => mixed,
 
   /**
+   * DANGER: this API is not stable and will change in the future.
+   *
+   * Callback will be called on the main thread and may result in dropped frames.
+   * Callback that is called when the text input's text changes.
+   *
+   * @platform ios
+   */
+  unstable_onChangeSync?: ?(e: ChangeEvent) => mixed,
+
+  /**
    * Callback that is called when the text input's text changes.
    * Changed text is passed as an argument to the callback handler.
    */
   onChangeText?: ?(text: string) => mixed,
+
+  /**
+   * DANGER: this API is not stable and will change in the future.
+   *
+   * Callback will be called on the main thread and may result in dropped frames.
+   * Callback that is called when the text input's text changes.
+   * Changed text is passed as an argument to the callback handler.
+   *
+   * @platform ios
+   */
+  unstable_onChangeTextSync?: ?(text: string) => mixed,
 
   /**
    * Callback that is called when the text input's content size changes.
@@ -610,6 +660,21 @@ export type Props = $ReadOnly<{|
    * Fires before `onChange` callbacks.
    */
   onKeyPress?: ?(e: KeyPressEvent) => mixed,
+
+  /**
+   * DANGER: this API is not stable and will change in the future.
+   *
+   * Callback will be called on the main thread and may result in dropped frames.
+   *
+   * Callback that is called when a key is pressed.
+   * This will be called with `{ nativeEvent: { key: keyValue } }`
+   * where `keyValue` is `'Enter'` or `'Backspace'` for respective keys and
+   * the typed-in character otherwise including `' '` for space.
+   * Fires before `onChange` callbacks.
+   *
+   * @platform ios
+   */
+  unstable_onKeyPressSync?: ?(e: KeyPressEvent) => mixed,
 
   /**
    * Called when a touch is engaged.
@@ -745,6 +810,7 @@ type ImperativeMethods = $ReadOnly<{|
   clear: () => void,
   isFocused: () => boolean,
   getNativeRef: () => ?React.ElementRef<HostComponent<mixed>>,
+  setSelection: (start: number, end: number) => void,
 |}>;
 
 const emptyFunctionThatReturnsTrue = () => true;
@@ -918,7 +984,7 @@ function InternalTextInput(props: Props): React.Node {
   // that the update should be ignored and we should stick with the value
   // that we have in JS.
   useLayoutEffect(() => {
-    const nativeUpdate = {};
+    const nativeUpdate: {text?: string, selection?: Selection} = {};
 
     if (lastNativeText !== props.value && typeof props.value === 'string') {
       nativeUpdate.text = props.value;
@@ -988,6 +1054,18 @@ function InternalTextInput(props: Props): React.Node {
     }
   }
 
+  function setSelection(start: number, end: number): void {
+    if (inputRef.current != null) {
+      viewCommands.setTextAndSelection(
+        inputRef.current,
+        mostRecentEventCount,
+        null,
+        start,
+        end,
+      );
+    }
+  }
+
   // TODO: Fix this returning true on null === null, when no input is focused
   function isFocused(): boolean {
     return TextInputState.currentlyFocusedInput() === inputRef.current;
@@ -1028,14 +1106,15 @@ function InternalTextInput(props: Props): React.Node {
         ref.clear = clear;
         ref.isFocused = isFocused;
         ref.getNativeRef = getNativeRef;
+        ref.setSelection = setSelection;
       }
     },
   });
 
   const _onChange = (event: ChangeEvent) => {
-    const text = event.nativeEvent.text;
+    const currentText = event.nativeEvent.text;
     props.onChange && props.onChange(event);
-    props.onChangeText && props.onChangeText(text);
+    props.onChangeText && props.onChangeText(currentText);
 
     if (inputRef.current == null) {
       // calling `props.onChange` or `props.onChangeText`
@@ -1043,7 +1122,27 @@ function InternalTextInput(props: Props): React.Node {
       return;
     }
 
-    setLastNativeText(text);
+    setLastNativeText(currentText);
+    // This must happen last, after we call setLastNativeText.
+    // Different ordering can cause bugs when editing AndroidTextInputs
+    // with multiple Fragments.
+    // We must update this so that controlled input updates work.
+    setMostRecentEventCount(event.nativeEvent.eventCount);
+  };
+
+  const _onChangeSync = (event: ChangeEvent) => {
+    const currentText = event.nativeEvent.text;
+    props.unstable_onChangeSync && props.unstable_onChangeSync(event);
+    props.unstable_onChangeTextSync &&
+      props.unstable_onChangeTextSync(currentText);
+
+    if (inputRef.current == null) {
+      // calling `props.onChange` or `props.onChangeText`
+      // may clean up the input itself. Exits here.
+      return;
+    }
+
+    setLastNativeText(currentText);
     // This must happen last, after we call setLastNativeText.
     // Different ordering can cause bugs when editing AndroidTextInputs
     // with multiple Fragments.
@@ -1134,8 +1233,12 @@ function InternalTextInput(props: Props): React.Node {
 
     const style =
       props.multiline === true
-        ? [styles.multilineInput, props.style]
+        ? StyleSheet.flatten([styles.multilineInput, props.style])
         : props.style;
+
+    const useOnChangeSync =
+      (props.unstable_onChangeSync || props.unstable_onChangeTextSync) &&
+      !(props.onChange || props.onChangeText);
 
     textInput = (
       <RCTTextInputView
@@ -1149,7 +1252,9 @@ function InternalTextInput(props: Props): React.Node {
         focusable={focusable}
         mostRecentEventCount={mostRecentEventCount}
         onBlur={_onBlur}
+        onKeyPressSync={props.unstable_onKeyPressSync}
         onChange={_onChange}
+        onChangeSync={useOnChangeSync === true ? _onChangeSync : null}
         onContentSizeChange={props.onContentSizeChange}
         onFocus={_onFocus}
         onScroll={_onScroll}
@@ -1244,9 +1349,6 @@ const ExportedForwardRef: React.AbstractComponent<
   );
 });
 
-// TODO: Deprecate this
-ExportedForwardRef.propTypes = DeprecatedTextInputPropTypes;
-
 // $FlowFixMe[prop-missing]
 ExportedForwardRef.State = {
   currentlyFocusedInput: TextInputState.currentlyFocusedInput,
@@ -1256,14 +1358,13 @@ ExportedForwardRef.State = {
   blurTextInput: TextInputState.blurTextInput,
 };
 
-type TextInputComponentStatics = $ReadOnly<{|
+export type TextInputComponentStatics = $ReadOnly<{|
   State: $ReadOnly<{|
     currentlyFocusedInput: typeof TextInputState.currentlyFocusedInput,
     currentlyFocusedField: typeof TextInputState.currentlyFocusedField,
     focusTextInput: typeof TextInputState.focusTextInput,
     blurTextInput: typeof TextInputState.blurTextInput,
   |}>,
-  propTypes: typeof DeprecatedTextInputPropTypes,
 |}>;
 
 const styles = StyleSheet.create({

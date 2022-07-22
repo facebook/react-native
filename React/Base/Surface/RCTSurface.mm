@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -64,6 +64,7 @@
                     moduleName:(NSString *)moduleName
              initialProperties:(NSDictionary *)initialProperties
 {
+  RCTErrorNewArchitectureValidation(RCTNotAllowedInFabricWithoutLegacy, @"RCTSurface", nil);
   RCTAssert(bridge.valid, @"Valid bridge is required to instantiate `RCTSurface`.");
 
   if (self = [super init]) {
@@ -481,7 +482,7 @@
           @"Only waiting for `RCTSurfaceStageSurfaceDidInitialRendering`, `RCTSurfaceStageSurfaceDidInitialLayout` and `RCTSurfaceStageSurfaceDidInitialMounting` stages are supported.");
   }
 
-  BOOL timeoutOccurred = dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, timeout * NSEC_PER_SEC));
+  auto timeoutOccurred = dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, timeout * NSEC_PER_SEC));
 
   // Atomic equivalent of `_waitingForMountingStageOnMainQueue = NO;`.
   atomic_fetch_and(&_waitingForMountingStageOnMainQueue, 0);
@@ -567,18 +568,16 @@
   }
 }
 
-- (BOOL)start
+- (void)start
 {
   // Does nothing.
   // The Start&Stop feature is not implemented for regular Surface yet.
-  return YES;
 }
 
-- (BOOL)stop
+- (void)stop
 {
   // Does nothing.
   // The Start&Stop feature is not implemented for regular Surface yet.
-  return YES;
 }
 
 #pragma mark - Mounting/Unmounting of React components

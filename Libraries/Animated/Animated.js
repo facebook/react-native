@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,8 +16,8 @@ import typeof AnimatedSectionList from './components/AnimatedSectionList';
 import typeof AnimatedText from './components/AnimatedText';
 import typeof AnimatedView from './components/AnimatedView';
 
-const AnimatedMock = require('./AnimatedMock');
-const AnimatedImplementation = require('./AnimatedImplementation');
+import * as AnimatedMock from './AnimatedMock';
+import * as AnimatedImplementation from './AnimatedImplementation';
 
 const Animated = ((Platform.isTesting
   ? AnimatedMock

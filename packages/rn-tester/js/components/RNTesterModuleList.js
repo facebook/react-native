@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -24,6 +24,8 @@ const {
 
 import {RNTesterThemeContext} from './RNTesterTheme';
 
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
 const ExampleModuleRow = ({
   onShowUnderlay,
   onHideUnderlay,
@@ -97,7 +99,7 @@ const ExampleModuleRow = ({
   );
 };
 
-const renderSectionHeader = ({section}) => (
+const renderSectionHeader = ({section}: {section: any, ...}) => (
   <RNTesterThemeContext.Consumer>
     {theme => {
       return (
@@ -118,13 +120,13 @@ const renderSectionHeader = ({section}) => (
 
 const RNTesterModuleList: React$AbstractComponent<any, void> = React.memo(
   ({sections, toggleBookmark, handleModuleCardPress}) => {
-    const theme = React.useContext(RNTesterThemeContext);
-
-    const filter = ({example, filterRegex, category}) =>
+    const filter = ({example, filterRegex, category}: any) =>
       filterRegex.test(example.module.title) &&
       (!category || example.category === category) &&
       (!Platform.isTV || example.supportsTVOS);
 
+    /* $FlowFixMe[missing-local-annot] The type annotation(s) required by
+     * Flow's LTI update could not be added via codemod */
     const renderListItem = ({item, section, separators}) => {
       return (
         <ExampleModuleRow
@@ -139,11 +141,7 @@ const RNTesterModuleList: React$AbstractComponent<any, void> = React.memo(
     };
 
     return (
-      <View
-        style={[
-          styles.listContainer,
-          {backgroundColor: theme.SecondaryGroupedBackgroundColor},
-        ]}>
+      <View style={styles.listContainer}>
         <RNTesterExampleFilter
           testID="explorer_search"
           page="components_page"
@@ -155,11 +153,11 @@ const RNTesterModuleList: React$AbstractComponent<any, void> = React.memo(
               sections={filteredSections}
               extraData={filteredSections}
               renderItem={renderListItem}
-              ItemSeparatorComponent={ItemSeparator}
               keyboardShouldPersistTaps="handled"
               automaticallyAdjustContentInsets={false}
               keyboardDismissMode="on-drag"
               renderSectionHeader={renderSectionHeader}
+              // eslint-disable-next-line react/no-unstable-nested-components
               ListFooterComponent={() => <View style={{height: 80}} />}
             />
           )}
@@ -169,31 +167,9 @@ const RNTesterModuleList: React$AbstractComponent<any, void> = React.memo(
   },
 );
 
-const ItemSeparator = ({highlighted}) => (
-  <RNTesterThemeContext.Consumer>
-    {theme => {
-      return (
-        <View
-          style={
-            highlighted
-              ? [
-                  styles.separatorHighlighted,
-                  {backgroundColor: theme.OpaqueSeparatorColor},
-                ]
-              : [styles.separator, {backgroundColor: theme.SeparatorColor}]
-          }
-        />
-      );
-    }}
-  </RNTesterThemeContext.Consumer>
-);
-
 const styles = StyleSheet.create({
   listContainer: {
     flex: 1,
-  },
-  listItem: {
-    backgroundColor: Platform.select({ios: '#FFFFFF', android: '#F3F8FF'}),
   },
   sectionHeader: {
     padding: 5,
@@ -208,13 +184,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 15,
     overflow: 'hidden',
     elevation: 5,
-  },
-  separator: {
-    height: Platform.select({ios: StyleSheet.hairlineWidth, android: 0}),
-    marginHorizontal: Platform.select({ios: 15, android: 0}),
-  },
-  separatorHighlighted: {
-    height: StyleSheet.hairlineWidth,
   },
   topRowStyle: {
     flexDirection: 'row',

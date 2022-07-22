@@ -12,9 +12,10 @@ rn_android_library(
     srcs = glob(["*.java"]),
     autoglob = False,
     is_androidx = True,
+    language = "JAVA",
     deps = [
         react_native_dep("third-party/android/androidx:test-espresso-core"),
-        react_native_dep("third-party/java/fest:fest"),
+        react_native_dep("third-party/java/assertj:assertj-core"),
         react_native_dep("third-party/java/junit:junit"),
         react_native_dep("third-party/android/androidx:test-rules"),
         react_native_dep("third-party/android/androidx:test-runner"),

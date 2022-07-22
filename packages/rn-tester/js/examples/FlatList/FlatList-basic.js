@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,11 +10,15 @@
 
 'use strict';
 
+import type {AnimatedComponentType} from 'react-native/Libraries/Animated/createAnimatedComponent';
+import typeof FlatListType from 'react-native/Libraries/Lists/FlatList';
+
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import * as React from 'react';
 import {
   Alert,
   Animated,
+  I18nManager,
   Platform,
   StyleSheet,
   TextInput,
@@ -60,7 +64,10 @@ type State = {|
   fadingEdgeLength: number,
   onPressDisabled: boolean,
   textSelectable: boolean,
+  isRTL: boolean,
 |};
+
+const IS_RTL = I18nManager.isRTL;
 
 class FlatListExample extends React.PureComponent<Props, State> {
   state: State = {
@@ -77,13 +84,16 @@ class FlatListExample extends React.PureComponent<Props, State> {
     fadingEdgeLength: 0,
     onPressDisabled: false,
     textSelectable: true,
+    isRTL: IS_RTL,
   };
 
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   _onChangeFilterText = filterText => {
     this.setState({filterText});
   };
 
-  _onChangeScrollToIndex = text => {
+  _onChangeScrollToIndex = (text: mixed) => {
     this._listRef.scrollToIndex({viewPosition: 0.5, index: Number(text)});
   };
 
@@ -104,9 +114,20 @@ class FlatListExample extends React.PureComponent<Props, State> {
   _setBooleanValue: string => boolean => void = key => value =>
     this.setState({[key]: value});
 
+  _setIsRTL: boolean => void = value => {
+    I18nManager.forceRTL(value);
+    this.setState({isRTL: value});
+    Alert.alert(
+      'Reload this page',
+      'Please reload this page to change the UI direction! ' +
+        'All examples in this app will be affected. ' +
+        'Check them out to see what they look like in RTL layout.',
+    );
+  };
+
   render(): React.Node {
     const filterRegex = new RegExp(String(this.state.filterText), 'i');
-    const filter = item =>
+    const filter = (item: Item) =>
       filterRegex.test(item.text) || filterRegex.test(item.title);
     const filteredData = this.state.data.filter(filter);
     const flatListItemRendererProps = this._renderItemComponent();
@@ -179,6 +200,11 @@ class FlatListExample extends React.PureComponent<Props, State> {
                 this.state.useFlatListItemComponent,
                 this._setBooleanValue('useFlatListItemComponent'),
               )}
+              {renderSmallSwitchOption(
+                'Is RTL',
+                this.state.isRTL,
+                this._setIsRTL,
+              )}
               {Platform.OS === 'android' && (
                 <View>
                   <TextInput
@@ -235,7 +261,14 @@ class FlatListExample extends React.PureComponent<Props, State> {
       </RNTesterPage>
     );
   }
-  _captureRef = ref => {
+  _captureRef = (
+    ref: React.ElementRef<
+      AnimatedComponentType<
+        React.ElementConfig<FlatListType>,
+        React.ElementRef<FlatListType>,
+      >,
+    >,
+  ) => {
     this._listRef = ref;
   };
   _getItemLayout = (data: any, index: number) => {
@@ -266,6 +299,8 @@ class FlatListExample extends React.PureComponent<Props, State> {
       /* $FlowFixMe[invalid-computed-prop] (>=0.111.0 site=react_native_fb)
        * This comment suppresses an error found when Flow v0.111 was deployed.
        * To see the error, delete this comment and run Flow. */
+      /* $FlowFixMe[missing-local-annot] The type annotation(s) required by
+       * Flow's LTI update could not be added via codemod */
       [flatListPropKey]: ({item, separators}) => {
         return (
           <ItemComponent

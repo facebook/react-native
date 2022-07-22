@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -35,7 +35,7 @@ const {
 /**
  * Returns a path like 'assets/AwesomeModule/icon@2x.png'
  */
-function getScaledAssetPath(asset): string {
+function getScaledAssetPath(asset: PackagerAsset): string {
   const scale = pickScale(asset.scales, PixelRatio.get());
   const scaleSuffix = scale === 1 ? '' : '@' + scale + 'x';
   const assetDir = getBasePath(asset);
@@ -45,7 +45,7 @@ function getScaledAssetPath(asset): string {
 /**
  * Returns a path like 'drawable-mdpi/icon.png'
  */
-function getAssetPathInDrawableFolder(asset): string {
+function getAssetPathInDrawableFolder(asset: PackagerAsset): string {
   const scale = pickScale(asset.scales, PixelRatio.get());
   const drawbleFolder = getAndroidResourceFolderName(asset, scale);
   const fileName = getAndroidResourceIdentifier(asset);
@@ -159,10 +159,8 @@ class AssetSourceResolver {
     };
   }
 
-  static pickScale: (
-    scales: Array<number>,
-    deviceScale?: number,
-  ) => number = pickScale;
+  static pickScale: (scales: Array<number>, deviceScale?: number) => number =
+    pickScale;
 }
 
 module.exports = AssetSourceResolver;

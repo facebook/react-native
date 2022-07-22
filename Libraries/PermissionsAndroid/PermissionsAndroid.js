@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -49,45 +49,72 @@ const PERMISSIONS = Object.freeze({
   READ_CALL_LOG: 'android.permission.READ_CALL_LOG',
   WRITE_CALL_LOG: 'android.permission.WRITE_CALL_LOG',
   ADD_VOICEMAIL: 'com.android.voicemail.permission.ADD_VOICEMAIL',
+  READ_VOICEMAIL: 'com.android.voicemail.permission.READ_VOICEMAIL',
+  WRITE_VOICEMAIL: 'com.android.voicemail.permission.WRITE_VOICEMAIL',
   USE_SIP: 'android.permission.USE_SIP',
   PROCESS_OUTGOING_CALLS: 'android.permission.PROCESS_OUTGOING_CALLS',
   BODY_SENSORS: 'android.permission.BODY_SENSORS',
+  BODY_SENSORS_BACKGROUND: 'android.permission.BODY_SENSORS_BACKGROUND',
   SEND_SMS: 'android.permission.SEND_SMS',
   RECEIVE_SMS: 'android.permission.RECEIVE_SMS',
   READ_SMS: 'android.permission.READ_SMS',
   RECEIVE_WAP_PUSH: 'android.permission.RECEIVE_WAP_PUSH',
   RECEIVE_MMS: 'android.permission.RECEIVE_MMS',
   READ_EXTERNAL_STORAGE: 'android.permission.READ_EXTERNAL_STORAGE',
+  READ_MEDIA_IMAGES: 'android.permission.READ_MEDIA_IMAGES',
+  READ_MEDIA_VIDEO: 'android.permission.READ_MEDIA_VIDEO',
+  READ_MEDIA_AUDIO: 'android.permission.READ_MEDIA_AUDIO',
   WRITE_EXTERNAL_STORAGE: 'android.permission.WRITE_EXTERNAL_STORAGE',
   BLUETOOTH_CONNECT: 'android.permission.BLUETOOTH_CONNECT',
   BLUETOOTH_SCAN: 'android.permission.BLUETOOTH_SCAN',
   BLUETOOTH_ADVERTISE: 'android.permission.BLUETOOTH_ADVERTISE',
+  ACCESS_MEDIA_LOCATION: 'android.permission.ACCESS_MEDIA_LOCATION',
+  ACCEPT_HANDOVER: 'android.permission.ACCEPT_HANDOVER',
+  ACTIVITY_RECOGNITION: 'android.permission.ACTIVITY_RECOGNITION',
+  ANSWER_PHONE_CALLS: 'android.permission.ANSWER_PHONE_CALLS',
+  READ_PHONE_NUMBERS: 'android.permission.READ_PHONE_NUMBERS',
+  UWB_RANGING: 'android.permission.UWB_RANGING',
+  POST_NOTIFICATION: 'android.permission.POST_NOTIFICATIONS',
+  NEARBY_WIFI_DEVICES: 'android.permission.NEARBY_WIFI_DEVICES',
 });
 
 /**
  * `PermissionsAndroid` provides access to Android M's new permissions model.
  *
- * See https://reactnative.dev/docs/permissionsandroid.html
+ * See https://reactnative.dev/docs/permissionsandroid
  */
 
 class PermissionsAndroid {
   PERMISSIONS: {|
+    ACCEPT_HANDOVER: string,
     ACCESS_BACKGROUND_LOCATION: string,
     ACCESS_COARSE_LOCATION: string,
     ACCESS_FINE_LOCATION: string,
+    ACCESS_MEDIA_LOCATION: string,
+    ACTIVITY_RECOGNITION: string,
     ADD_VOICEMAIL: string,
+    READ_VOICEMAIL: string,
+    WRITE_VOICEMAIL: string,
+    ANSWER_PHONE_CALLS: string,
     BLUETOOTH_ADVERTISE: string,
     BLUETOOTH_CONNECT: string,
     BLUETOOTH_SCAN: string,
     BODY_SENSORS: string,
+    BODY_SENSORS_BACKGROUND: string,
     CALL_PHONE: string,
     CAMERA: string,
     GET_ACCOUNTS: string,
+    NEARBY_WIFI_DEVICES: string,
+    POST_NOTIFICATION: string,
     PROCESS_OUTGOING_CALLS: string,
     READ_CALENDAR: string,
     READ_CALL_LOG: string,
     READ_CONTACTS: string,
     READ_EXTERNAL_STORAGE: string,
+    READ_MEDIA_IMAGES: string,
+    READ_MEDIA_VIDEO: string,
+    READ_MEDIA_AUDIO: string,
+    READ_PHONE_NUMBERS: string,
     READ_PHONE_STATE: string,
     READ_SMS: string,
     RECEIVE_MMS: string,
@@ -96,6 +123,7 @@ class PermissionsAndroid {
     RECORD_AUDIO: string,
     SEND_SMS: string,
     USE_SIP: string,
+    UWB_RANGING: string,
     WRITE_CALENDAR: string,
     WRITE_CALL_LOG: string,
     WRITE_CONTACTS: string,
@@ -138,7 +166,7 @@ class PermissionsAndroid {
    * Returns a promise resolving to a boolean value as to whether the specified
    * permissions has been granted
    *
-   * See https://reactnative.dev/docs/permissionsandroid.html#check
+   * See https://reactnative.dev/docs/permissionsandroid#check
    */
   check(permission: PermissionType): Promise<boolean> {
     if (Platform.OS !== 'android') {
@@ -165,7 +193,7 @@ class PermissionsAndroid {
    * If the optional rationale argument is included (which is an object with a
    * `title` and `message`), this function checks with the OS whether it is
    * necessary to show a dialog explaining why the permission is needed
-   * (https://developer.android.com/training/permissions/requesting.html#explain)
+   * (https://developer.android.com/training/permissions/requesting#explain)
    * and then shows the system permission dialog
    *
    * @deprecated
@@ -192,7 +220,7 @@ class PermissionsAndroid {
    * Prompts the user to enable a permission and returns a promise resolving to a
    * string value indicating whether the user allowed or denied the request
    *
-   * See https://reactnative.dev/docs/permissionsandroid.html#request
+   * See https://reactnative.dev/docs/permissionsandroid#request
    */
   async request(
     permission: PermissionType,
@@ -211,9 +239,10 @@ class PermissionsAndroid {
     );
 
     if (rationale) {
-      const shouldShowRationale = await NativePermissionsAndroid.shouldShowRequestPermissionRationale(
-        permission,
-      );
+      const shouldShowRationale =
+        await NativePermissionsAndroid.shouldShowRequestPermissionRationale(
+          permission,
+        );
 
       if (shouldShowRationale && !!NativeDialogManagerAndroid) {
         return new Promise((resolve, reject) => {
@@ -241,7 +270,7 @@ class PermissionsAndroid {
    * returns an object with the permissions as keys and strings as values
    * indicating whether the user allowed or denied the request
    *
-   * See https://reactnative.dev/docs/permissionsandroid.html#requestmultiple
+   * See https://reactnative.dev/docs/permissionsandroid#requestmultiple
    */
   requestMultiple(
     permissions: Array<PermissionType>,

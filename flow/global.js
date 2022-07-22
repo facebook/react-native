@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -49,11 +49,7 @@ declare var global: {
   +requestIdleCallback: typeof requestIdleCallback,
   +cancelIdleCallback: typeof cancelIdleCallback,
   +setTimeout: typeof setTimeout,
-  // TODO(T97509743): use `typeof` when the next Flow release is available.
-  +queueMicrotask: <TArguments: Array<mixed>>(
-    jobCallback: (...args: TArguments) => mixed,
-  ) => void,
-
+  +queueMicrotask: typeof queueMicrotask,
   +console: typeof console,
 
   // JavaScript environments specific

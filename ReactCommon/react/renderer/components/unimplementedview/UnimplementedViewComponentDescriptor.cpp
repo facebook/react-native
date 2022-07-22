@@ -1,13 +1,11 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 #include "UnimplementedViewComponentDescriptor.h"
-
-#include <react/debug/react_native_assert.h>
 
 namespace facebook {
 namespace react {
@@ -28,8 +26,6 @@ Props::Shared UnimplementedViewComponentDescriptor::cloneProps(
   auto clonedProps =
       ConcreteComponentDescriptor<UnimplementedViewShadowNode>::cloneProps(
           context, props, rawProps);
-  react_native_assert(
-      std::dynamic_pointer_cast<UnimplementedViewProps const>(clonedProps));
 
   // We have to clone `Props` object one more time to make sure that we have
   // an unshared (and non-`const`) copy of it which we can mutate.

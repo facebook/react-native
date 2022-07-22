@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,6 +12,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.common.UIManagerType;
+import com.facebook.react.uimanager.common.ViewUtil;
 
 /**
  * A UI event that can be dispatched to JS.
@@ -72,14 +73,22 @@ public abstract class Event<T extends Event> {
     // We infer UIManagerType. Even though it's not passed in explicitly, we have a
     // contract that Fabric events *always* have a SurfaceId passed in, and non-Fabric events
     // NEVER have a SurfaceId passed in (the default/placeholder of -1 is passed in instead).
+    //
     // Why does this matter?
     // Events can be sent to Views that are part of the View hierarchy *but not directly managed
     // by React Native*. For example, embedded custom hierachies, Litho hierachies, etc.
-    // In those cases it's important to konw that the Event should be sent to the Fabric or
+    // In those cases it's important to know that the Event should be sent to the Fabric or
     // non-Fabric UIManager, and we cannot use the ViewTag for inference since it's not controlled
     // by RN and is essentially a random number.
     // At some point it would be great to pass the SurfaceContext here instead.
-    mUIManagerType = (surfaceId == -1 ? UIManagerType.DEFAULT : UIManagerType.FABRIC);
+    @UIManagerType
+    int uiManagerType = (surfaceId == -1 ? UIManagerType.DEFAULT : UIManagerType.FABRIC);
+    if (uiManagerType == UIManagerType.DEFAULT && !ViewUtil.isRootTag(viewTag)) {
+      // TODO (T123064648): Some events for Fabric still didn't have the surfaceId set, so if it's
+      // not a React RootView, double check if the tag belongs to Fabric.
+      uiManagerType = ViewUtil.getUIManagerType(viewTag);
+    }
+    mUIManagerType = uiManagerType;
 
     mTimestampMs = timestampMs;
     mInitialized = true;
@@ -159,7 +168,7 @@ public abstract class Event<T extends Event> {
   /**
    * Dispatch this event to JS using the given event emitter. Compatible with old and new renderer.
    * Instead of using this or dispatchModern, it is recommended that you simply override
-   * `getEventData`. In the future
+   * `getEventData`.
    */
   @Deprecated
   public void dispatch(RCTEventEmitter rctEventEmitter) {
@@ -182,30 +191,24 @@ public abstract class Event<T extends Event> {
     return null;
   }
 
+  @EventCategoryDef
+  protected int getEventCategory() {
+    return EventCategoryDef.UNSPECIFIED;
+  }
+
   /**
    * Dispatch this event to JS using a V2 EventEmitter. If surfaceId is not -1 and `getEventData` is
    * non-null, this will use the RCTModernEventEmitter API. Otherwise, it falls back to the
    * old-style dispatch function. For Event classes that need to do something different, this method
    * can always be overridden entirely, but it is not recommended.
-   */
-  public void dispatchModern(RCTModernEventEmitter rctEventEmitter) {
-    if (getSurfaceId() != -1) {
-      WritableMap eventData = getEventData();
-      if (eventData != null) {
-        rctEventEmitter.receiveEvent(getSurfaceId(), getViewTag(), getEventName(), getEventData());
-        return;
-      }
-    }
-    dispatch(rctEventEmitter);
-  }
-
-  /**
-   * Dispatch this event to JS using a V2 version of dispatchModern. See all comments from
-   * `dispatchModern` - all still apply. This method additionally allows C++ to coalesce events
-   * (Fabric only). This will ONLY be called in an experimental path, and in Fabric only.
+   *
+   * <p>This method additionally allows C++ to coalesce events and detect continuous ones for
+   * concurrent mode (Fabric only).
+   *
+   * @see #dispatch
    */
   @Deprecated
-  public void dispatchModernV2(RCTModernEventEmitter rctEventEmitter) {
+  public void dispatchModern(RCTModernEventEmitter rctEventEmitter) {
     if (getSurfaceId() != -1) {
       WritableMap eventData = getEventData();
       if (eventData != null) {
@@ -215,7 +218,8 @@ public abstract class Event<T extends Event> {
             getEventName(),
             canCoalesce(),
             getCoalescingKey(),
-            eventData);
+            eventData,
+            getEventCategory());
         return;
       }
     }

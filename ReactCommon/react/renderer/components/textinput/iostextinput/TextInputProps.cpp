@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -87,13 +87,34 @@ TextInputProps::TextInputProps(
           rawProps,
           "selection",
           sourceProps.selection,
-          better::optional<Selection>())),
+          std::optional<Selection>())),
       inputAccessoryViewID(convertRawProp(
           context,
           rawProps,
           "inputAccessoryViewID",
           sourceProps.inputAccessoryViewID,
+          {})),
+      onKeyPressSync(convertRawProp(
+          context,
+          rawProps,
+          "onKeyPressSync",
+          sourceProps.onKeyPressSync,
+          {})),
+      onChangeSync(convertRawProp(
+          context,
+          rawProps,
+          "onChangeSync",
+          sourceProps.onChangeSync,
           {})){};
+
+void TextInputProps::setProp(
+    const PropsParserContext &context,
+    RawPropsPropNameHash hash,
+    const char *propName,
+    RawValue const &value) {
+  ViewProps::setProp(context, hash, propName, value);
+  BaseTextProps::setProp(context, hash, propName, value);
+}
 
 TextAttributes TextInputProps::getEffectiveTextAttributes(
     Float fontSizeMultiplier) const {

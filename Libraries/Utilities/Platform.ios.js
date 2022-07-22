@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -46,13 +46,6 @@ const Platform = {
   // $FlowFixMe[unsafe-getters-setters]
   get isPad(): boolean {
     return this.constants.interfaceIdiom === 'pad';
-  },
-  /**
-   * Deprecated, use `isTV` instead.
-   */
-  // $FlowFixMe[unsafe-getters-setters]
-  get isTVOS(): boolean {
-    return Platform.isTV;
   },
   // $FlowFixMe[unsafe-getters-setters]
   get isTV(): boolean {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,9 +8,10 @@
 package com.facebook.react.devsupport;
 
 import android.app.Activity;
+import android.util.Pair;
 import android.view.View;
 import androidx.annotation.Nullable;
-import com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler;
+import com.facebook.react.bridge.DefaultJSExceptionHandler;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.SurfaceDelegate;
@@ -21,6 +22,7 @@ import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.interfaces.ErrorCustomizer;
 import com.facebook.react.devsupport.interfaces.ErrorType;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
+import com.facebook.react.devsupport.interfaces.RedBoxHandler;
 import com.facebook.react.devsupport.interfaces.StackFrame;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 import java.io.File;
@@ -31,10 +33,10 @@ import java.io.File;
  */
 public class DisabledDevSupportManager implements DevSupportManager {
 
-  private final DefaultNativeModuleCallExceptionHandler mDefaultNativeModuleCallExceptionHandler;
+  private final DefaultJSExceptionHandler mDefaultJSExceptionHandler;
 
   public DisabledDevSupportManager() {
-    mDefaultNativeModuleCallExceptionHandler = new DefaultNativeModuleCallExceptionHandler();
+    mDefaultJSExceptionHandler = new DefaultJSExceptionHandler();
   }
 
   @Override
@@ -91,6 +93,11 @@ public class DisabledDevSupportManager implements DevSupportManager {
 
   @Override
   public DeveloperSettings getDevSettings() {
+    return null;
+  }
+
+  @Override
+  public RedBoxHandler getRedBoxHandler() {
     return null;
   }
 
@@ -167,7 +174,17 @@ public class DisabledDevSupportManager implements DevSupportManager {
   }
 
   @Override
+  public int getLastErrorCookie() {
+    return 0;
+  }
+
+  @Override
   public void registerErrorCustomizer(ErrorCustomizer errorCustomizer) {}
+
+  @Override
+  public Pair<String, StackFrame[]> processErrorCustomizers(Pair<String, StackFrame[]> errorInfo) {
+    return errorInfo;
+  }
 
   @Override
   public void setPackagerLocationCustomizer(
@@ -175,7 +192,7 @@ public class DisabledDevSupportManager implements DevSupportManager {
 
   @Override
   public void handleException(Exception e) {
-    mDefaultNativeModuleCallExceptionHandler.handleException(e);
+    mDefaultJSExceptionHandler.handleException(e);
   }
 
   @Override

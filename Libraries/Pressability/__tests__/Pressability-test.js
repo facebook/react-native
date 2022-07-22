@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,12 +10,13 @@
  */
 
 import type {PressEvent} from '../../Types/CoreEventTypes';
-import * as HoverState from '../HoverState';
-import Pressability from '../Pressability';
-import invariant from 'invariant';
-import nullthrows from 'nullthrows';
-import Platform from '../../Utilities/Platform';
-import UIManager from '../../ReactNative/UIManager';
+
+const HoverState = require('../HoverState');
+const Pressability = require('../Pressability').default;
+const invariant = require('invariant');
+const nullthrows = require('nullthrows');
+const Platform = require('../../Utilities/Platform');
+const UIManager = require('../../ReactNative/UIManager');
 
 // TODO: Move this util to a shared location.
 function getMock<TArguments: $ReadOnlyArray<mixed>, TReturn>(
@@ -27,6 +28,8 @@ function getMock<TArguments: $ReadOnlyArray<mixed>, TReturn>(
   return (fn: $FlowFixMe);
 }
 
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
 const createMockPressability = overrides => {
   const config = {
     cancelable: null,
@@ -104,7 +107,7 @@ const mockUIManagerMeasure = (options?: {|delay: number|}) => {
   });
 };
 
-const createMockTargetEvent = registrationName => {
+const createMockTargetEvent = (registrationName: string) => {
   const nativeEvent = {
     target: 42,
   };
@@ -131,7 +134,7 @@ const createMockTargetEvent = registrationName => {
   };
 };
 
-const createMockMouseEvent = registrationName => {
+const createMockMouseEvent = (registrationName: string) => {
   const nativeEvent = {
     clientX: 0,
     clientY: 0,

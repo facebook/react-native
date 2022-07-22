@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,6 +8,7 @@
  * @flow
  */
 
+import type {ViewToken} from 'react-native/Libraries/Lists/ViewabilityHelper';
 import SectionListBaseExample from './SectionListBaseExample';
 import {View, StyleSheet, SectionList} from 'react-native';
 import * as React from 'react';
@@ -30,7 +31,11 @@ export function SectionList_onViewableItemsChanged(props: {
   const {viewabilityConfig, offScreen, horizontal, useScrollRefScroll} = props;
   const [output, setOutput] = React.useState('');
   const exampleProps = {
-    onViewableItemsChanged: info =>
+    onViewableItemsChanged: (info: {
+      changed: Array<ViewToken>,
+      viewableItems: Array<ViewToken>,
+      ...
+    }) =>
       setOutput(
         info.viewableItems
           .filter(viewToken => viewToken.index != null && viewToken.isViewable)
@@ -67,7 +72,9 @@ const styles = StyleSheet.create({
 export default {
   title: 'SectionList On Viewable Items Changed',
   name: 'SectionList_onViewableItemsChanged',
-  render: function(): React.Element<typeof SectionList_onViewableItemsChanged> {
+  render: function (): React.Element<
+    typeof SectionList_onViewableItemsChanged,
+  > {
     return (
       <SectionList_onViewableItemsChanged
         viewabilityConfig={VIEWABILITY_CONFIG}

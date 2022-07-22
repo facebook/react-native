@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -103,7 +103,7 @@ RCT_EXPORT_MODULE()
 
 - (void)handleMemoryWarning
 {
-  if (self.bridge) {
+  if ([self canSendEvents_DEPRECATED]) {
     [self sendEventWithName:@"memoryWarning" body:nil];
   }
 }
@@ -122,7 +122,7 @@ RCT_EXPORT_MODULE()
 
   if (![newState isEqualToString:_lastKnownState]) {
     _lastKnownState = newState;
-    if (self.bridge) {
+    if ([self canSendEvents_DEPRECATED]) {
       [self sendEventWithName:@"appStateDidChange" body:@{@"app_state" : _lastKnownState}];
     }
   }

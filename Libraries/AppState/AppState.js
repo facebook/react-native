@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -33,7 +33,7 @@ type NativeAppStateEventDefinitions = {
  * `AppState` can tell you if the app is in the foreground or background,
  * and notify you when the state changes.
  *
- * See https://reactnative.dev/docs/appstate.html
+ * See https://reactnative.dev/docs/appstate
  */
 class AppState {
   currentState: ?string = null;
@@ -47,11 +47,12 @@ class AppState {
     } else {
       this.isAvailable = true;
 
-      const emitter: NativeEventEmitter<NativeAppStateEventDefinitions> = new NativeEventEmitter(
-        // T88715063: NativeEventEmitter only used this parameter on iOS. Now it uses it on all platforms, so this code was modified automatically to preserve its behavior
-        // If you want to use the native module on other platforms, please remove this condition and test its behavior
-        Platform.OS !== 'ios' ? null : NativeAppState,
-      );
+      const emitter: NativeEventEmitter<NativeAppStateEventDefinitions> =
+        new NativeEventEmitter(
+          // T88715063: NativeEventEmitter only used this parameter on iOS. Now it uses it on all platforms, so this code was modified automatically to preserve its behavior
+          // If you want to use the native module on other platforms, please remove this condition and test its behavior
+          Platform.OS !== 'ios' ? null : NativeAppState,
+        );
       this._emitter = emitter;
 
       this.currentState = NativeAppState.getConstants().initialAppState;
@@ -90,7 +91,7 @@ class AppState {
    * Add a handler to AppState changes by listening to the `change` event type
    * and providing the handler.
    *
-   * See https://reactnative.dev/docs/appstate.html#addeventlistener
+   * See https://reactnative.dev/docs/appstate#addeventlistener
    */
   addEventListener<K: $Keys<AppStateEventDefinitions>>(
     type: K,
@@ -125,38 +126,6 @@ class AppState {
         });
     }
     throw new Error('Trying to subscribe to unknown event: ' + type);
-  }
-
-  /**
-   * @deprecated Use `remove` on the EventSubscription from `addEventListener`.
-   */
-  removeEventListener<K: $Keys<AppStateEventDefinitions>>(
-    type: K,
-    listener: (...$ElementType<AppStateEventDefinitions, K>) => mixed,
-  ): void {
-    const emitter = this._emitter;
-    if (emitter == null) {
-      throw new Error('Cannot use AppState when `isAvailable` is false.');
-    }
-    // NOTE: This will report a deprecation notice via `console.error`.
-    switch (type) {
-      case 'change':
-        // $FlowIssue[invalid-tuple-arity] Flow cannot refine handler based on the event type
-        // $FlowIssue[incompatible-call]
-        emitter.removeListener('appStateDidChange', listener);
-        return;
-      case 'memoryWarning':
-        // $FlowIssue[invalid-tuple-arity] Flow cannot refine handler based on the event type
-        emitter.removeListener('memoryWarning', listener);
-        return;
-      case 'blur':
-      case 'focus':
-        // $FlowIssue[invalid-tuple-arity] Flow cannot refine handler based on the event type
-        // $FlowIssue[incompatible-call]
-        emitter.addListener('appStateFocusChange', listener);
-        return;
-    }
-    throw new Error('Trying to unsubscribe from unknown event: ' + type);
   }
 }
 

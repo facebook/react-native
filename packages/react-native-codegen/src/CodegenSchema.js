@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -295,6 +295,10 @@ export type NativeModulePromiseTypeAnnotation = $ReadOnly<{
   type: 'PromiseTypeAnnotation',
 }>;
 
+export type NativeModuleMixedTypeAnnotation = $ReadOnly<{
+  type: 'MixedTypeAnnotation',
+}>;
+
 export type NativeModuleBaseTypeAnnotation =
   | NativeModuleStringTypeAnnotation
   | NativeModuleNumberTypeAnnotation
@@ -306,7 +310,8 @@ export type NativeModuleBaseTypeAnnotation =
   | ReservedTypeAnnotation
   | NativeModuleTypeAliasTypeAnnotation
   | NativeModuleArrayTypeAnnotation<Nullable<NativeModuleBaseTypeAnnotation>>
-  | NativeModuleObjectTypeAnnotation;
+  | NativeModuleObjectTypeAnnotation
+  | NativeModuleMixedTypeAnnotation;
 
 export type NativeModuleParamTypeAnnotation =
   | NativeModuleBaseTypeAnnotation

@@ -1,6 +1,6 @@
 {
   "name": "react-native-gradle-plugin",
-  "version": "0.0.1",
+  "version": "0.70.0",
   "description": "⚛️ Gradle Plugin for React Native",
   "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/react-native-gradle-plugin",
   "repository": {
@@ -20,11 +20,9 @@
     "gradle",
     "gradlew",
     "gradlew.bat",
-    "src",
+    "src/main",
     "README.md"
   ],
-  "dependencies": {
-    "react-native-codegen": "*"
-  },
+  "dependencies": {},
   "devDependencies": {}
 }

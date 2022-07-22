@@ -1,4 +1,4 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -17,7 +17,7 @@ else
 end
 
 folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
-folly_version = '2021.06.28.00-v2'
+folly_version = '2021.07.22.00'
 folly_dep_name = 'RCT-Folly/Fabric'
 boost_compiler_flags = '-Wno-documentation'
 react_native_path = ".."
@@ -29,10 +29,9 @@ Pod::Spec.new do |s|
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
-  s.platforms              = { :ios => "11.0" }
+  s.platforms              = { :ios => "12.4" }
   s.source                 = source
   s.source_files           = "dummyFile.cpp"
-  s.library                = "stdc++"
   s.pod_target_xcconfig = { "USE_HEADERMAP" => "YES",
                             "CLANG_CXX_LANGUAGE_STANDARD" => "c++17" }
 
@@ -62,12 +61,12 @@ Pod::Spec.new do |s|
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
   end
 
-  s.subspec "better" do |ss|
+  s.subspec "butter" do |ss|
     ss.dependency             folly_dep_name, folly_version
     ss.compiler_flags       = folly_compiler_flags
-    ss.source_files         = "better/**/*.{m,mm,cpp,h}"
-    ss.exclude_files        = "better/tests"
-    ss.header_dir           = "better"
+    ss.source_files         = "butter/**/*.{m,mm,cpp,h}"
+    ss.exclude_files        = "butter/tests"
+    ss.header_dir           = "butter"
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
   end
 
@@ -145,15 +144,6 @@ Pod::Spec.new do |s|
       sss.source_files         = "react/renderer/components/modal/**/*.{m,mm,cpp,h}"
       sss.exclude_files        = "react/renderer/components/modal/tests"
       sss.header_dir           = "react/renderer/components/modal"
-      sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
-    end
-
-    ss.subspec "rncore" do |sss|
-      sss.dependency             folly_dep_name, folly_version
-      sss.compiler_flags       = folly_compiler_flags
-      sss.source_files         = "react/renderer/components/rncore/**/*.{m,mm,cpp,h}"
-      sss.exclude_files        = "react/renderer/components/rncore/tests"
-      sss.header_dir           = "react/renderer/components/rncore"
       sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
     end
 
@@ -343,11 +333,4 @@ Pod::Spec.new do |s|
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
   end
 
-  use_react_native_codegen!(s, {
-    :react_native_path => react_native_path,
-    :js_srcs_dir => "#{react_native_path}/Libraries",
-    :library_name => "rncore",
-    :library_type => "components",
-    :output_dir => "#{react_native_path}/ReactCommon",
-  })
 end

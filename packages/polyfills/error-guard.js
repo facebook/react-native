@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -102,6 +102,8 @@ const ErrorUtils = {
       return null;
     }
     const guardName = name ?? fun.name ?? '<generated guard>';
+    /* $FlowFixMe[missing-this-annot] The 'this' type annotation(s) required by
+     * Flow's LTI update could not be added via codemod */
     function guarded(...args: TArgs): ?TOut {
       return ErrorUtils.applyWithGuard(
         fun,

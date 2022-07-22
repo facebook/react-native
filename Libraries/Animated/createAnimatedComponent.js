@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -24,8 +24,8 @@ const setAndForwardRef = require('../Utilities/setAndForwardRef');
 let animatedComponentNextId = 1;
 
 export type AnimatedComponentType<
-  Props: {+[string]: mixed, ...},
-  Instance,
+  -Props: {+[string]: mixed, ...},
+  +Instance = mixed,
 > = React.AbstractComponent<
   $ObjMap<
     Props &
@@ -55,6 +55,7 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
     _prevComponent: any;
     _propsAnimated: AnimatedProps;
     _eventDetachers: Array<Function> = [];
+    _initialAnimatedProps: Object;
 
     // Only to be used in this file, and only in Fabric.
     _animatedComponentId: string = `${animatedComponentNextId++}:animatedComponent`;
@@ -168,7 +169,7 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
       }
     };
 
-    _attachProps(nextProps) {
+    _attachProps(nextProps: any) {
       const oldPropsAnimated = this._propsAnimated;
 
       this._propsAnimated = new AnimatedProps(
@@ -200,10 +201,16 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
     });
 
     render() {
-      const {style = {}, ...props} = this._propsAnimated.__getValue() || {};
+      const animatedProps =
+        this._propsAnimated.__getValue(this._initialAnimatedProps) || {};
+      const {style = {}, ...props} = animatedProps;
       const {style: passthruStyle = {}, ...passthruProps} =
         this.props.passthroughAnimatedPropExplicitValues || {};
       const mergedStyle = {...style, ...passthruStyle};
+
+      if (!this._initialAnimatedProps) {
+        this._initialAnimatedProps = animatedProps;
+      }
 
       // Force `collapsable` to be false so that native view is not flattened.
       // Flattened views cannot be accurately referenced by a native driver.
@@ -234,12 +241,12 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
       this._markUpdateComplete();
     }
 
-    UNSAFE_componentWillReceiveProps(newProps) {
+    UNSAFE_componentWillReceiveProps(newProps: any) {
       this._waitForUpdate();
       this._attachProps(newProps);
     }
 
-    componentDidUpdate(prevProps) {
+    componentDidUpdate(prevProps: any) {
       if (this._component !== this._prevComponent) {
         this._propsAnimated.setNativeView(this._component);
       }

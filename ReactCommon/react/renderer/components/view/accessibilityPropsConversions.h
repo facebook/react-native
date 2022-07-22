@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -133,7 +133,7 @@ inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
     AccessibilityState &result) {
-  auto map = (better::map<std::string, RawValue>)value;
+  auto map = (butter::map<std::string, RawValue>)value;
   auto selected = map.find("selected");
   if (selected != map.end()) {
     fromRawValue(context, selected->second, result.selected);
@@ -212,7 +212,7 @@ inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
     AccessibilityAction &result) {
-  auto map = (better::map<std::string, RawValue>)value;
+  auto map = (butter::map<std::string, RawValue>)value;
 
   auto name = map.find("name");
   react_native_assert(name != map.end() && name->second.hasType<std::string>());
@@ -232,7 +232,7 @@ inline void fromRawValue(
     const PropsParserContext &,
     const RawValue &value,
     AccessibilityValue &result) {
-  auto map = (better::map<std::string, RawValue>)value;
+  auto map = (butter::map<std::string, RawValue>)value;
 
   auto min = map.find("min");
   if (min != map.end()) {
@@ -260,6 +260,39 @@ inline void fromRawValue(
     if (text->second.hasType<std::string>()) {
       result.text = (std::string)text->second;
     }
+  }
+}
+
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    AccessibilityLabelledBy &result) {
+  if (value.hasType<std::string>()) {
+    result.value.push_back((std::string)value);
+  } else if (value.hasType<std::vector<std::string>>()) {
+    result.value = (std::vector<std::string>)value;
+  }
+}
+
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    AccessibilityLiveRegion &result) {
+  react_native_assert(value.hasType<std::string>());
+  if (value.hasType<std::string>()) {
+    auto string = (std::string)value;
+    if (string == "none") {
+      result = AccessibilityLiveRegion::None;
+    } else if (string == "polite") {
+      result = AccessibilityLiveRegion::Polite;
+    } else if (string == "assertive") {
+      result = AccessibilityLiveRegion::Assertive;
+    } else {
+      LOG(ERROR) << "Unsupported AccessibilityLiveRegion value: " << string;
+      react_native_assert(false);
+    }
+  } else {
+    LOG(ERROR) << "Unsupported AccessibilityLiveRegion type";
   }
 }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,6 +9,8 @@
  */
 
 'use strict';
+
+import type {PressEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
 const React = require('react');
 const {
@@ -192,6 +194,24 @@ class AccessibilityExample extends React.Component<{}> {
             <Text>Accessible view with label, hint, role, and state</Text>
           </View>
         </RNTesterBlock>
+
+        <RNTesterBlock title="TextInput with accessibilityLabelledBy attribute">
+          <View>
+            <Text nativeID="formLabel1">Mail Address</Text>
+            <TextInput
+              accessibilityLabel="input test1"
+              accessibilityLabelledBy="formLabel1"
+              style={styles.default}
+            />
+            <Text nativeID="formLabel2">First Name</Text>
+            <TextInput
+              accessibilityLabel="input test2"
+              accessibilityLabelledBy={['formLabel2', 'formLabel3']}
+              style={styles.default}
+              value="Foo"
+            />
+          </View>
+        </RNTesterBlock>
       </View>
     );
   }
@@ -208,7 +228,7 @@ class CheckboxExample extends React.Component<
   };
 
   _onCheckboxPress = () => {
-    let checkboxState = false;
+    let checkboxState: boolean | $TEMPORARY$string<'mixed'> = false;
     if (this.state.checkboxState === false) {
       checkboxState = 'mixed';
     } else if (this.state.checkboxState === 'mixed') {
@@ -862,10 +882,65 @@ class FakeSliderExample extends React.Component<{}, FakeSliderExampleState> {
 
 class AnnounceForAccessibility extends React.Component<{}> {
   _handleOnPress = () =>
-    AccessibilityInfo.announceForAccessibility('Announcement Test');
+    setTimeout(
+      () => AccessibilityInfo.announceForAccessibility('Announcement Test'),
+      1000,
+    );
+
+  _handleOnPressQueued = () =>
+    setTimeout(
+      () =>
+        AccessibilityInfo.announceForAccessibilityWithOptions(
+          'Queued Announcement Test',
+          {queue: true},
+        ),
+      1000,
+    );
+
+  _handleOnPressQueueMultiple = () => {
+    setTimeout(
+      () =>
+        AccessibilityInfo.announceForAccessibilityWithOptions(
+          'First Queued Announcement Test',
+          {queue: true},
+        ),
+      1000,
+    );
+    setTimeout(
+      () =>
+        AccessibilityInfo.announceForAccessibilityWithOptions(
+          'Second Queued Announcement Test',
+          {queue: true},
+        ),
+      1100,
+    );
+    setTimeout(
+      () =>
+        AccessibilityInfo.announceForAccessibilityWithOptions(
+          'Third Queued Announcement Test',
+          {queue: true},
+        ),
+      1200,
+    );
+  };
 
   render(): React.Node {
-    return (
+    return Platform.OS === 'ios' ? (
+      <View>
+        <Button
+          onPress={this._handleOnPress}
+          title="Announce for Accessibility Immediately"
+        />
+        <Button
+          onPress={this._handleOnPressQueued}
+          title="Announce for Accessibility Queued"
+        />
+        <Button
+          onPress={this._handleOnPressQueueMultiple}
+          title="Announce for Accessibility Queue Multiple"
+        />
+      </View>
+    ) : (
       <View>
         <Button
           onPress={this._handleOnPress}
@@ -876,37 +951,24 @@ class AnnounceForAccessibility extends React.Component<{}> {
   }
 }
 
-class SetAccessibilityFocusExample extends React.Component<{}> {
-  render(): React.Node {
-    const myRef: {current: React.ElementRef<any> | null} = createRef();
+function SetAccessibilityFocusExample(props: {}): React.Node {
+  const myRef = React.useRef<?React.ElementRef<typeof Text>>(null);
 
-    const onClose = () => {
-      if (myRef && myRef.current) {
-        AccessibilityInfo.sendAccessibilityEvent_unstable(
-          myRef.current,
-          'focus',
-        );
-      }
-    };
+  const onPress = () => {
+    if (myRef && myRef.current) {
+      AccessibilityInfo.sendAccessibilityEvent(myRef.current, 'focus');
+    }
+  };
 
-    return (
-      <View>
-        <Text>SetAccessibilityFocus on native element</Text>
-        <Button
-          ref={myRef}
-          title={'Click'}
-          onPress={() => {
-            Alert.alert(
-              'Set Accessibility Focus',
-              'Press okay to proceed',
-              [{text: 'Okay', onPress: onClose}],
-              {cancelable: true},
-            );
-          }}
-        />
-      </View>
-    );
-  }
+  return (
+    <View>
+      <Text ref={myRef}>
+        SetAccessibilityFocus on native element. This should get focus after
+        clicking the button!
+      </Text>
+      <Button title={'Click'} onPress={onPress} />
+    </View>
+  );
 }
 
 class EnabledExamples extends React.Component<{}> {
@@ -942,6 +1004,19 @@ class EnabledExamples extends React.Component<{}> {
           </>
         ) : null}
 
+        {Platform.OS === 'android' ? (
+          <RNTesterBlock
+            title="isAccessibilityServiceEnabled()"
+            description={
+              'Event emitted whenever an accessibility service is enabled. This includes TalkBack as well as assistive technologies such as "Select to Speak".'
+            }>
+            <EnabledExample
+              test="any accessibility service"
+              eventListener="accessibilityServiceChanged"
+            />
+          </RNTesterBlock>
+        ) : null}
+
         <RNTesterBlock title="isReduceMotionEnabled()">
           <EnabledExample
             test="reduce motion"
@@ -969,7 +1044,8 @@ class EnabledExample extends React.Component<
       | 'invertColorsChanged'
       | 'reduceTransparencyChanged'
       | 'reduceMotionChanged'
-      | 'screenReaderChanged',
+      | 'screenReaderChanged'
+      | 'accessibilityServiceChanged',
     test: string,
   },
   {
@@ -991,6 +1067,10 @@ class EnabledExample extends React.Component<
         return AccessibilityInfo.isReduceMotionEnabled().then(state => {
           this.setState({isEnabled: state});
         });
+      case 'accessibilityServiceChanged':
+        return AccessibilityInfo.isAccessibilityServiceEnabled().then(state => {
+          this.setState({isEnabled: state});
+        });
       default:
         return null;
     }
@@ -1000,7 +1080,7 @@ class EnabledExample extends React.Component<
     this._subscription?.remove();
   }
 
-  _handleToggled = isEnabled => {
+  _handleToggled = (isEnabled: void | PressEvent | boolean) => {
     if (!this.state.isEnabled) {
       this.setState({isEnabled: true});
     } else {
@@ -1037,7 +1117,7 @@ class DisplayOptionsStatusExample extends React.Component<{}> {
         <DisplayOptionStatusExample
           optionName={'Screen Reader'}
           optionChecker={AccessibilityInfo.isScreenReaderEnabled}
-          notification={'reduceMotionChanged'}
+          notification={'screenReaderChanged'}
         />
         {isAndroid ? null : (
           <>
@@ -1068,15 +1148,27 @@ class DisplayOptionsStatusExample extends React.Component<{}> {
   }
 }
 
-function DisplayOptionStatusExample({optionName, optionChecker, notification}) {
+function DisplayOptionStatusExample({
+  optionName,
+  optionChecker,
+  notification,
+}: {
+  notification: string,
+  optionChecker: () => Promise<boolean>,
+  optionName: string,
+}) {
   const [statusEnabled, setStatusEnabled] = React.useState(false);
   React.useEffect(() => {
-    AccessibilityInfo.addEventListener(notification, setStatusEnabled);
+    const listener = AccessibilityInfo.addEventListener(
+      // $FlowFixMe[prop-missing]
+      notification,
+      setStatusEnabled,
+    );
     optionChecker().then(isEnabled => {
       setStatusEnabled(isEnabled);
     });
     return function cleanup() {
-      AccessibilityInfo.removeEventListener(notification, setStatusEnabled);
+      listener.remove();
     };
   }, [optionChecker, notification]);
   return (

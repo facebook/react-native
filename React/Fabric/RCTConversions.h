@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -173,9 +173,17 @@ inline facebook::react::Point RCTPointFromCGPoint(const CGPoint &point)
   return {point.x, point.y};
 }
 
+inline facebook::react::Float RCTFloatFromCGFloat(CGFloat value)
+{
+  if (value == CGFLOAT_MAX) {
+    return std::numeric_limits<facebook::react::Float>::infinity();
+  }
+  return value;
+}
+
 inline facebook::react::Size RCTSizeFromCGSize(const CGSize &size)
 {
-  return {size.width, size.height};
+  return {RCTFloatFromCGFloat(size.width), RCTFloatFromCGFloat(size.height)};
 }
 
 inline facebook::react::Rect RCTRectFromCGRect(const CGRect &rect)

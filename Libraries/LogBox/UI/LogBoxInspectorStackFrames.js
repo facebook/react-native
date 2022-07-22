@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,6 +7,10 @@
  * @flow strict-local
  * @format
  */
+
+import type {StackFrame} from '../../Core/NativeExceptionsManager';
+import type {Stack} from '../Data/LogBoxSymbolication';
+import type LogBoxLog from '../Data/LogBoxLog';
 
 import * as React from 'react';
 import StyleSheet from '../../StyleSheet/StyleSheet';
@@ -18,8 +22,6 @@ import LogBoxInspectorStackFrame from './LogBoxInspectorStackFrame';
 import LogBoxInspectorSection from './LogBoxInspectorSection';
 import * as LogBoxStyle from './LogBoxStyle';
 import openFileInEditor from '../../Core/Devtools/openFileInEditor';
-import type {Stack} from '../Data/LogBoxSymbolication';
-import type LogBoxLog from '../Data/LogBoxLog';
 
 type Props = $ReadOnly<{|
   log: LogBoxLog,
@@ -111,7 +113,10 @@ function LogBoxInspectorStackFrames(props: Props): React.Node {
   );
 }
 
-function StackFrameList(props) {
+function StackFrameList(props: {
+  list: Stack | Array<StackFrame>,
+  status: string | 'COMPLETE' | 'FAILED' | 'NONE' | 'PENDING',
+}) {
   return (
     <>
       {props.list.map((frame, index) => {
@@ -132,7 +137,9 @@ function StackFrameList(props) {
   );
 }
 
-function StackFrameFooter(props) {
+function StackFrameFooter(
+  props: $TEMPORARY$object<{message: string, onPress: () => void}>,
+) {
   return (
     <View style={stackStyles.collapseContainer}>
       <LogBoxButton

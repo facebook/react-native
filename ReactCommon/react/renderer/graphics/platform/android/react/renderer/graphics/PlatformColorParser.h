@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -21,36 +21,24 @@ inline ColorComponents parsePlatformColor(
     const RawValue &value) {
   ColorComponents colorComponents = {0, 0, 0, 0};
 
-  if (value.hasType<better::map<std::string, std::vector<std::string>>>()) {
-    auto map = (better::map<std::string, std::vector<std::string>>)value;
-    auto resourcePaths = map["resource_paths"];
-    auto dynamicResourcePaths = folly::dynamic::array();
-    for (const auto &resourcePath : resourcePaths) {
-      dynamicResourcePaths.push_back(resourcePath);
-    }
-    folly::dynamic dynamicPlatformColor = folly::dynamic::object();
-    dynamicPlatformColor["resource_paths"] = dynamicResourcePaths;
-
-    auto fabricUIManager =
+  if (value.hasType<butter::map<std::string, std::vector<std::string>>>()) {
+    const auto &fabricUIManager =
         context.contextContainer.at<jni::global_ref<jobject>>(
             "FabricUIManager");
-
     static auto getColorFromJava =
-        facebook::jni::findClassStatic(
-            "com/facebook/react/fabric/FabricUIManager")
-            ->getMethod<jint(jint, ReadableMap::javaobject)>("getColor");
+        fabricUIManager->getClass()
+            ->getMethod<jint(jint, jni::JArrayClass<jni::JString>)>("getColor");
 
-    jni::local_ref<ReadableNativeMap::javaobject> dynamicPlatformColorRNM =
-        ReadableNativeMap::newObjectCxxArgs(dynamicPlatformColor);
-    jni::local_ref<ReadableMap::javaobject> dynamicPlatformColorRM =
-        jni::make_local(reinterpret_cast<ReadableMap::javaobject>(
-            dynamicPlatformColorRNM.get()));
+    auto map = (butter::map<std::string, std::vector<std::string>>)value;
+    auto &resourcePaths = map["resource_paths"];
 
+    auto javaResourcePaths =
+        jni::JArrayClass<jni::JString>::newArray(resourcePaths.size());
+    for (int i = 0; i < resourcePaths.size(); i++) {
+      javaResourcePaths->setElement(i, *jni::make_jstring(resourcePaths[i]));
+    }
     auto color = getColorFromJava(
-        fabricUIManager, context.surfaceId, dynamicPlatformColorRM.get());
-
-    dynamicPlatformColorRM.reset();
-    dynamicPlatformColorRNM.reset();
+        fabricUIManager, context.surfaceId, *javaResourcePaths);
 
     auto argb = (int64_t)color;
     auto ratio = 255.f;

@@ -36,12 +36,6 @@ rn_xplat_cxx_library(
         ],
         prefix = "react/renderer/graphics",
     ),
-    compiler_flags = [
-        "-fexceptions",
-        "-frtti",
-        "-std=c++17",
-        "-Wall",
-    ],
     cxx_exported_headers = subdir_glob(
         [
             ("platform/cxx/react/renderer/graphics", "**/*.h"),
@@ -97,7 +91,10 @@ rn_xplat_cxx_library(
             "platform/ios/**/*.mm",
         ],
     ),
-    labels = ["supermodule:xplat/default/public.react_native.infra"],
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+        "supermodule:xplat/default/public.react_native.infra",
+    ],
     macosx_tests_override = [],
     platforms = (ANDROID, APPLE, CXX),
     preprocessor_flags = [
@@ -108,10 +105,10 @@ rn_xplat_cxx_library(
     visibility = ["PUBLIC"],
     deps = [
         react_native_xplat_target("react/debug:debug"),
-        react_native_xplat_target("better:better"),
+        react_native_xplat_target("butter:butter"),
         "//third-party/glog:glog",
         "//xplat/fbsystrace:fbsystrace",
-        "//xplat/folly:headers_only",
+        "//xplat/folly:headers_only_do_not_use",
         "//xplat/folly:memory",
         "//xplat/folly:molly",
     ],

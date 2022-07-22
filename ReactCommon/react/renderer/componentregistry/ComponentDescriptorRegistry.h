@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,8 +9,8 @@
 
 #include <memory>
 
-#include <better/map.h>
-#include <better/mutex.h>
+#include <butter/map.h>
+#include <butter/mutex.h>
 
 #include <react/renderer/componentregistry/ComponentDescriptorProvider.h>
 #include <react/renderer/core/ComponentDescriptor.h>
@@ -37,7 +37,7 @@ class ComponentDescriptorRegistry {
    * be used later to create `ComponentDescriptor`s.
    */
   ComponentDescriptorRegistry(
-      ComponentDescriptorParameters const &parameters,
+      ComponentDescriptorParameters parameters,
       ComponentDescriptorProviderRegistry const &providerRegistry,
       ContextContainer::Shared contextContainer);
 
@@ -80,10 +80,10 @@ class ComponentDescriptorRegistry {
    */
   void add(ComponentDescriptorProvider componentDescriptorProvider) const;
 
-  mutable better::shared_mutex mutex_;
-  mutable better::map<ComponentHandle, SharedComponentDescriptor>
+  mutable butter::shared_mutex mutex_;
+  mutable butter::map<ComponentHandle, SharedComponentDescriptor>
       _registryByHandle;
-  mutable better::map<std::string, SharedComponentDescriptor> _registryByName;
+  mutable butter::map<std::string, SharedComponentDescriptor> _registryByName;
   ComponentDescriptor::Shared _fallbackComponentDescriptor;
   ComponentDescriptorParameters parameters_{};
   ComponentDescriptorProviderRegistry const &providerRegistry_;

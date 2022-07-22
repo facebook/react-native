@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,7 +9,7 @@
  * @nolint
  */
 
-(function() {
+(function () {
   'use strict';
 
   const hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -19,7 +19,7 @@
    * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/entries
    */
   if (typeof Object.entries !== 'function') {
-    Object.entries = function(object) {
+    Object.entries = function (object) {
       // `null` and `undefined` values are not allowed.
       if (object == null) {
         throw new TypeError('Object.entries called on non-object');
@@ -40,7 +40,7 @@
    * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/values
    */
   if (typeof Object.values !== 'function') {
-    Object.values = function(object) {
+    Object.values = function (object) {
       // `null` and `undefined` values are not allowed.
       if (object == null) {
         throw new TypeError('Object.values called on non-object');

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,9 +10,9 @@
 #import <React/RCTAssert.h>
 #import <React/RCTConversions.h>
 
-#import <better/map.h>
-#import <better/mutex.h>
-#import <better/set.h>
+#import <butter/map.h>
+#import <butter/mutex.h>
+#import <butter/set.h>
 
 #import <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #import <react/renderer/componentregistry/componentNameByReactViewName.h>
@@ -41,6 +41,7 @@
 
 using namespace facebook::react;
 
+// Allow JS runtime to register native components as needed. For static view configs.
 void RCTInstallNativeComponentRegistryBinding(facebook::jsi::Runtime &runtime)
 {
   auto hasComponentProvider = [](std::string const &name) -> bool {
@@ -56,10 +57,10 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
 }
 
 @implementation RCTComponentViewFactory {
-  better::map<ComponentHandle, RCTComponentViewClassDescriptor> _componentViewClasses;
-  better::set<std::string> _registeredComponentsNames;
+  butter::map<ComponentHandle, RCTComponentViewClassDescriptor> _componentViewClasses;
+  butter::set<std::string> _registeredComponentsNames;
   ComponentDescriptorProviderRegistry _providerRegistry;
-  better::shared_mutex _mutex;
+  butter::shared_mutex _mutex;
 }
 
 + (RCTComponentViewFactory *)currentComponentViewFactory
@@ -68,7 +69,7 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
   static RCTComponentViewFactory *componentViewFactory;
 
   dispatch_once(&onceToken, ^{
-    componentViewFactory = [[RCTComponentViewFactory alloc] init];
+    componentViewFactory = [RCTComponentViewFactory new];
     [componentViewFactory registerComponentViewClass:[RCTRootComponentView class]];
     [componentViewFactory registerComponentViewClass:[RCTViewComponentView class]];
     [componentViewFactory registerComponentViewClass:[RCTParagraphComponentView class]];
@@ -94,9 +95,9 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
   {
     .viewClass = viewClass,
     .observesMountingTransactionWillMount =
-        (bool)class_respondsToSelector(viewClass, @selector(mountingTransactionWillMountWithMetadata:)),
+        (bool)class_respondsToSelector(viewClass, @selector(mountingTransactionWillMount:withSurfaceTelemetry:)),
     .observesMountingTransactionDidMount =
-        (bool)class_respondsToSelector(viewClass, @selector(mountingTransactionDidMountWithMetadata:)),
+        (bool)class_respondsToSelector(viewClass, @selector(mountingTransactionDidMount:withSurfaceTelemetry:)),
   };
 #pragma clang diagnostic pop
 }
@@ -116,7 +117,16 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
   }
 
   // Fallback 2: Try to use Paper Interop.
-  if ([RCTLegacyViewManagerInteropComponentView isSupported:RCTNSStringFromString(name)]) {
+  NSString *componentNameString = RCTNSStringFromString(name);
+  if ([RCTLegacyViewManagerInteropComponentView isSupported:componentNameString]) {
+    RCTLogNewArchitectureValidation(
+        RCTNotAllowedInBridgeless,
+        self,
+        [NSString
+            stringWithFormat:
+                @"Legacy ViewManagers should be migrated to Fabric ComponentViews in the new architecture to reduce risk. Component using interop layer: %@",
+                componentNameString]);
+
     auto flavor = std::make_shared<std::string const>(name);
     auto componentName = ComponentName{flavor->c_str()};
     auto componentHandle = reinterpret_cast<ComponentHandle>(componentName);
@@ -149,7 +159,7 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
 - (void)registerComponentViewClass:(Class<RCTComponentViewProtocol>)componentViewClass
 {
   RCTAssert(componentViewClass, @"RCTComponentViewFactory: Provided `componentViewClass` is `nil`.");
-  std::unique_lock<better::shared_mutex> lock(_mutex);
+  std::unique_lock<butter::shared_mutex> lock(_mutex);
 
   auto componentDescriptorProvider = [componentViewClass componentDescriptorProvider];
   _componentViewClasses[componentDescriptorProvider.handle] =
@@ -171,7 +181,7 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
 - (RCTComponentViewDescriptor)createComponentViewWithComponentHandle:(facebook::react::ComponentHandle)componentHandle
 {
   RCTAssertMainQueue();
-  std::shared_lock<better::shared_mutex> lock(_mutex);
+  std::shared_lock<butter::shared_mutex> lock(_mutex);
 
   auto iterator = _componentViewClasses.find(componentHandle);
   RCTAssert(
@@ -183,7 +193,7 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
   Class viewClass = componentViewClassDescriptor.viewClass;
 
   return RCTComponentViewDescriptor{
-      .view = [[viewClass alloc] init],
+      .view = [viewClass new],
       .observesMountingTransactionWillMount = componentViewClassDescriptor.observesMountingTransactionWillMount,
       .observesMountingTransactionDidMount = componentViewClassDescriptor.observesMountingTransactionDidMount,
   };
@@ -192,7 +202,7 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
 - (facebook::react::ComponentDescriptorRegistry::Shared)createComponentDescriptorRegistryWithParameters:
     (facebook::react::ComponentDescriptorParameters)parameters
 {
-  std::shared_lock<better::shared_mutex> lock(_mutex);
+  std::shared_lock<butter::shared_mutex> lock(_mutex);
 
   return _providerRegistry.createComponentDescriptorRegistry(parameters);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -62,13 +62,13 @@ inline static UIFont *RCTEffectiveFontFromTextAttributes(const TextAttributes &t
   RCTFontProperties fontProperties;
   fontProperties.family = fontFamily;
   fontProperties.size = textAttributes.fontSize;
-  fontProperties.style = textAttributes.fontStyle.hasValue()
+  fontProperties.style = textAttributes.fontStyle.has_value()
       ? RCTFontStyleFromFontStyle(textAttributes.fontStyle.value())
       : RCTFontStyleUndefined;
-  fontProperties.variant = textAttributes.fontVariant.hasValue()
+  fontProperties.variant = textAttributes.fontVariant.has_value()
       ? RCTFontVariantFromFontVariant(textAttributes.fontVariant.value())
       : RCTFontVariantUndefined;
-  fontProperties.weight = textAttributes.fontWeight.hasValue()
+  fontProperties.weight = textAttributes.fontWeight.has_value()
       ? RCTUIFontWeightFromInteger((NSInteger)textAttributes.fontWeight.value())
       : NAN;
   fontProperties.sizeMultiplier = textAttributes.fontSizeMultiplier;
@@ -136,7 +136,7 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(T
   // Paragraph Style
   NSMutableParagraphStyle *paragraphStyle = [NSMutableParagraphStyle new];
   BOOL isParagraphStyleUsed = NO;
-  if (textAttributes.alignment.hasValue()) {
+  if (textAttributes.alignment.has_value()) {
     TextAlignment textAlignment = textAttributes.alignment.value_or(TextAlignment::Natural);
     if (textAttributes.layoutDirection.value_or(LayoutDirection::LeftToRight) == LayoutDirection::RightToLeft) {
       if (textAlignment == TextAlignment::Right) {
@@ -150,7 +150,7 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(T
     isParagraphStyleUsed = YES;
   }
 
-  if (textAttributes.baseWritingDirection.hasValue()) {
+  if (textAttributes.baseWritingDirection.has_value()) {
     paragraphStyle.baseWritingDirection =
         RCTNSWritingDirectionFromWritingDirection(textAttributes.baseWritingDirection.value());
     isParagraphStyleUsed = YES;
@@ -171,9 +171,8 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(T
   if (textAttributes.textDecorationLineType.value_or(TextDecorationLineType::None) != TextDecorationLineType::None) {
     auto textDecorationLineType = textAttributes.textDecorationLineType.value();
 
-    NSUnderlineStyle style = RCTNSUnderlineStyleFromStyleAndPattern(
-        textAttributes.textDecorationLineStyle.value_or(TextDecorationLineStyle::Single),
-        textAttributes.textDecorationLinePattern.value_or(TextDecorationLinePattern::Solid));
+    NSUnderlineStyle style = RCTNSUnderlineStyleFromTextDecorationStyle(
+        textAttributes.textDecorationStyle.value_or(TextDecorationStyle::Solid));
 
     UIColor *textDecorationColor = RCTUIColorFromSharedColor(textAttributes.textDecorationColor);
 
@@ -199,7 +198,7 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(T
   }
 
   // Shadow
-  if (textAttributes.textShadowOffset.hasValue()) {
+  if (textAttributes.textShadowOffset.has_value()) {
     auto textShadowOffset = textAttributes.textShadowOffset.value();
     NSShadow *shadow = [NSShadow new];
     shadow.shadowOffset = CGSize{textShadowOffset.width, textShadowOffset.height};
@@ -213,7 +212,7 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(T
     attributes[RCTAttributedStringIsHighlightedAttributeName] = @YES;
   }
 
-  if (textAttributes.accessibilityRole.hasValue()) {
+  if (textAttributes.accessibilityRole.has_value()) {
     auto accessibilityRole = textAttributes.accessibilityRole.value();
     switch (accessibilityRole) {
       case AccessibilityRole::None:
@@ -311,10 +310,10 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedSt
   static UIImage *placeholderImage;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    placeholderImage = [[UIImage alloc] init];
+    placeholderImage = [UIImage new];
   });
 
-  NSMutableAttributedString *nsAttributedString = [[NSMutableAttributedString alloc] init];
+  NSMutableAttributedString *nsAttributedString = [NSMutableAttributedString new];
 
   [nsAttributedString beginEditing];
 
@@ -335,7 +334,7 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedSt
     } else {
       NSString *string = [NSString stringWithCString:fragment.string.c_str() encoding:NSUTF8StringEncoding];
 
-      if (fragment.textAttributes.textTransform.hasValue()) {
+      if (fragment.textAttributes.textTransform.has_value()) {
         auto textTransform = fragment.textAttributes.textTransform.value();
         string = RCTNSStringFromStringApplyingTextTransform(string, textTransform);
       }
@@ -379,6 +378,23 @@ AttributedStringBox RCTAttributedStringBoxFromNSAttributedString(NSAttributedStr
   return nsAttributedString.length ? AttributedStringBox{wrapManagedObject(nsAttributedString)} : AttributedStringBox{};
 }
 
+static NSString *capitalizeText(NSString *text)
+{
+  NSArray *words = [text componentsSeparatedByString:@" "];
+  NSMutableArray *newWords = [NSMutableArray new];
+  NSNumberFormatter *num = [NSNumberFormatter new];
+  for (NSString *item in words) {
+    NSString *word;
+    if ([item length] > 0 && [num numberFromString:[item substringWithRange:NSMakeRange(0, 1)]] == nil) {
+      word = [item capitalizedString];
+    } else {
+      word = [item lowercaseString];
+    }
+    [newWords addObject:word];
+  }
+  return [newWords componentsJoinedByString:@" "];
+}
+
 NSString *RCTNSStringFromStringApplyingTextTransform(NSString *string, TextTransform textTransform)
 {
   switch (textTransform) {
@@ -387,7 +403,7 @@ NSString *RCTNSStringFromStringApplyingTextTransform(NSString *string, TextTrans
     case TextTransform::Lowercase:
       return [string lowercaseString];
     case TextTransform::Capitalize:
-      return [string capitalizedString];
+      return capitalizeText(string);
     default:
       return string;
   }

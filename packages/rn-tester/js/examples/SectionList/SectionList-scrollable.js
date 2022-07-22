@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,6 +9,7 @@
  */
 
 'use strict';
+import type {Item} from '../../components/ListExampleShared';
 const RNTesterPage = require('../../components/RNTesterPage');
 const React = require('react');
 
@@ -77,6 +78,8 @@ const CONSTANT_SECTION_EXAMPLES = [
   },
 ];
 
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
 const renderSectionHeader = ({section}) => (
   <View style={styles.header}>
     <Text style={styles.headerText}>SECTION HEADER: {section.key}</Text>
@@ -84,6 +87,8 @@ const renderSectionHeader = ({section}) => (
   </View>
 );
 
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
 const renderSectionFooter = ({section}) => (
   <View style={styles.header}>
     <Text style={styles.headerText}>SECTION FOOTER: {section.key}</Text>
@@ -91,6 +96,8 @@ const renderSectionFooter = ({section}) => (
   </View>
 );
 
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
 const CustomSeparatorComponent = ({highlighted, text}) => (
   <View
     style={[
@@ -107,24 +114,28 @@ const EmptySectionList = () => (
   </View>
 );
 
-const renderItemComponent = setItemState => ({item, separators}) => {
-  if (isNaN(item.key)) {
-    return;
-  }
-  const onPress = () => {
-    const updatedItem = pressItem(item);
-    setItemState(updatedItem);
-  };
+const renderItemComponent =
+  (setItemState: (item: Item) => void) =>
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
+  ({item, separators}) => {
+    if (isNaN(item.key)) {
+      return;
+    }
+    const onPress = () => {
+      const updatedItem = pressItem(item);
+      setItemState(updatedItem);
+    };
 
-  return (
-    <ItemComponent
-      item={item}
-      onPress={onPress}
-      onHideUnderlay={separators.unhighlight}
-      onShowUnderlay={separators.highlight}
-    />
-  );
-};
+    return (
+      <ItemComponent
+        item={item}
+        onPress={onPress}
+        onHideUnderlay={separators.unhighlight}
+        onShowUnderlay={separators.highlight}
+      />
+    );
+  };
 
 const onScrollToIndexFailed = (info: {
   index: number,
@@ -147,7 +158,7 @@ const onScrollToIndexFailed = (info: {
 };
 
 export function SectionList_scrollable(Props: {
-  ...,
+  ...
 }): React.Element<typeof RNTesterPage> {
   const scrollPos = new Animated.Value(0);
   const scrollSinkY = Animated.event(
@@ -162,7 +173,7 @@ export function SectionList_scrollable(Props: {
   const [data, setData] = React.useState(genItemData(1000));
 
   const filterRegex = new RegExp(String(filterText), 'i');
-  const filter = item =>
+  const filter = (item: Item) =>
     filterRegex.test(item.text) || filterRegex.test(item.title);
   const filteredData = data.filter(filter);
   const filteredSectionData = [...CONSTANT_SECTION_EXAMPLES];
@@ -179,7 +190,7 @@ export function SectionList_scrollable(Props: {
     startIndex = ii;
   }
 
-  const setItemPress = item => {
+  const setItemPress = (item: Item) => {
     if (isNaN(item.key)) {
       return;
     }
@@ -188,7 +199,7 @@ export function SectionList_scrollable(Props: {
   };
 
   const ref = React.useRef<?React.ElementRef<typeof SectionList>>(null);
-  const scrollToLocation = (sectionIndex, itemIndex) => {
+  const scrollToLocation = (sectionIndex: number, itemIndex: number) => {
     // $FlowFixMe[method-unbinding] added when improving typing for this parameters
     if (ref != null && ref.current?.scrollToLocation != null) {
       ref.current.scrollToLocation({sectionIndex, itemIndex});
@@ -269,9 +280,11 @@ export function SectionList_scrollable(Props: {
         ref={ref}
         ListHeaderComponent={HeaderComponent}
         ListFooterComponent={FooterComponent}
+        // eslint-disable-next-line react/no-unstable-nested-components
         SectionSeparatorComponent={info => (
           <CustomSeparatorComponent {...info} text="SECTION SEPARATOR" />
         )}
+        // eslint-disable-next-line react/no-unstable-nested-components
         ItemSeparatorComponent={info => (
           <CustomSeparatorComponent {...info} text="ITEM SEPARATOR" />
         )}
@@ -344,7 +357,7 @@ const styles = StyleSheet.create({
 export default {
   title: 'SectionList scrollable',
   name: 'SectionList-scrollable',
-  render: function(): React.Element<typeof SectionList_scrollable> {
+  render: function (): React.Element<typeof SectionList_scrollable> {
     return <SectionList_scrollable />;
   },
 };

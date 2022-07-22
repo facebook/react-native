@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,10 +15,10 @@ const BatchedBridge = require('react-native/Libraries/BatchedBridge/BatchedBridg
 const {Recording} = NativeModules;
 
 const TestJSLocaleModule = {
-  toUpper: function(s) {
+  toUpper: function (s) {
     Recording.record(s.toUpperCase());
   },
-  toLower: function(s) {
+  toLower: function (s) {
     Recording.record(s.toLowerCase());
   },
 };

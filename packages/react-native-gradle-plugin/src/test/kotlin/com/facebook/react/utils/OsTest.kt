@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -21,20 +21,26 @@ class OsTest {
 
   @Test
   @WithOs(OS.UNIX)
-  fun isWindows_onUnix_returnsFalse() {
+  fun onUnix_checksOsCorrectly() {
     assertFalse(Os.isWindows())
+    assertFalse(Os.isMac())
+    assertFalse(Os.isLinuxAmd64())
   }
 
   @Test
   @WithOs(OS.MAC)
-  fun isWindows_onMac_returnsTrue() {
+  fun onMac_checksOsCorrectly() {
     assertFalse(Os.isWindows())
+    assertTrue(Os.isMac())
+    assertFalse(Os.isLinuxAmd64())
   }
 
   @Test
   @WithOs(OS.WIN)
   fun isWindows_onWindows_returnsTrue() {
     assertTrue(Os.isWindows())
+    assertFalse(Os.isMac())
+    assertFalse(Os.isLinuxAmd64())
   }
 
   @Test

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -82,6 +82,7 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
           scheduleUpdate();
         } else if (!node.__isNative) {
           // $FlowIgnore[not-a-function] - Assume it's still a function.
+          // $FlowFixMe[incompatible-use]
           instance.setNativeProps(node.__getAnimatedValue());
         } else {
           throw new Error(

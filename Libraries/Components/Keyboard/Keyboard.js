@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -103,11 +103,12 @@ type KeyboardEventDefinitions = {
  */
 
 class Keyboard {
-  _emitter: NativeEventEmitter<KeyboardEventDefinitions> = new NativeEventEmitter(
-    // T88715063: NativeEventEmitter only used this parameter on iOS. Now it uses it on all platforms, so this code was modified automatically to preserve its behavior
-    // If you want to use the native module on other platforms, please remove this condition and test its behavior
-    Platform.OS !== 'ios' ? null : NativeKeyboardObserver,
-  );
+  _emitter: NativeEventEmitter<KeyboardEventDefinitions> =
+    new NativeEventEmitter(
+      // T88715063: NativeEventEmitter only used this parameter on iOS. Now it uses it on all platforms, so this code was modified automatically to preserve its behavior
+      // If you want to use the native module on other platforms, please remove this condition and test its behavior
+      Platform.OS !== 'ios' ? null : NativeKeyboardObserver,
+    );
 
   /**
    * The `addListener` function connects a JavaScript function to an identified native
@@ -138,17 +139,6 @@ class Keyboard {
     context?: mixed,
   ): EventSubscription {
     return this._emitter.addListener(eventType, listener);
-  }
-
-  /**
-   * @deprecated Use `remove` on the EventSubscription from `addEventListener`.
-   */
-  removeEventListener<K: $Keys<KeyboardEventDefinitions>>(
-    eventType: K,
-    listener: (...$ElementType<KeyboardEventDefinitions, K>) => mixed,
-  ): void {
-    // NOTE: This will report a deprecation notice via `console.error`.
-    this._emitter.removeListener(eventType, listener);
   }
 
   /**

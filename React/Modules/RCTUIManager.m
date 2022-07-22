@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -147,7 +147,8 @@ RCT_EXPORT_MODULE()
 
 - (void)setBridge:(RCTBridge *)bridge
 {
-  RCTEnforceNotAllowedForNewArchitecture(self, @"RCTUIManager must not be initialized for the new architecture");
+  RCTEnforceNewArchitectureValidation(
+      RCTNotAllowedInBridgeless, self, @"RCTUIManager must not be initialized for the new architecture");
 
   RCTAssert(_bridge == nil, @"Should not re-use same UIManager instance");
   _bridge = bridge;
@@ -1522,6 +1523,28 @@ static NSMutableDictionary<NSString *, id> *moduleConstantsForComponent(
     }
   }
 
+  // Add capturing events (added as bubbling events but with the 'skipBubbling' flag)
+  for (NSString *eventName in viewConfig[@"capturingEvents"]) {
+    if (!bubblingEvents[eventName]) {
+      NSString *bubbleName = [eventName stringByReplacingCharactersInRange:(NSRange){0, 3} withString:@"on"];
+      bubblingEvents[eventName] = @{
+        @"phasedRegistrationNames" : @{
+          @"bubbled" : bubbleName,
+          @"captured" : [bubbleName stringByAppendingString:@"Capture"],
+          @"skipBubbling" : @YES
+        }
+      };
+    }
+    bubblingEventTypes[eventName] = bubblingEvents[eventName];
+    if (RCT_DEBUG && directEvents[eventName]) {
+      RCTLogError(
+          @"Component '%@' re-registered direct event '%@' as a "
+           "bubbling event",
+          componentData.name,
+          eventName);
+    }
+  }
+
   return moduleConstants;
 }
 
@@ -1633,6 +1656,8 @@ static UIView *_jsResponder;
 
 + (UIView *)JSResponder
 {
+  RCTErrorNewArchitectureValidation(
+      RCTNotAllowedInFabricWithoutLegacy, @"RCTUIManager", @"Please migrate this legacy surface to Fabric.");
   return _jsResponder;
 }
 

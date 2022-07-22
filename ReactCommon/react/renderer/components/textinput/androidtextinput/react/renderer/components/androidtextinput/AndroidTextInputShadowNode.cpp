@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,6 +16,8 @@
 #include <react/renderer/core/LayoutConstraints.h>
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/core/conversions.h>
+
+#include <utility>
 
 using namespace facebook::jni;
 
@@ -91,7 +93,7 @@ AttributedString AndroidTextInputShadowNode::getPlaceholderAttributedString()
 void AndroidTextInputShadowNode::setTextLayoutManager(
     SharedTextLayoutManager textLayoutManager) {
   ensureUnsealed();
-  textLayoutManager_ = textLayoutManager;
+  textLayoutManager_ = std::move(textLayoutManager);
 }
 
 AttributedString AndroidTextInputShadowNode::getMostRecentAttributedString()
@@ -139,17 +141,17 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
   auto defaultTextAttributes = TextAttributes::defaultTextAttributes();
   defaultTextAttributes.apply(getConcreteProps().textAttributes);
 
-  auto newEventCount =
-      (state.reactTreeAttributedString == reactTreeAttributedString
-           ? 0
-           : getConcreteProps().mostRecentEventCount);
-  auto newAttributedString = getMostRecentAttributedString();
-
   // Even if we're here and updating state, it may be only to update the layout
   // manager If that is the case, make sure we don't update text: pass in the
   // current attributedString unchanged, and pass in zero for the "event count"
   // so no changes are applied There's no way to prevent a state update from
   // flowing to Java, so we just ensure it's a noop in those cases.
+  auto newEventCount =
+      state.reactTreeAttributedString.isContentEqual(reactTreeAttributedString)
+      ? 0
+      : getConcreteProps().mostRecentEventCount;
+  auto newAttributedString = getMostRecentAttributedString();
+
   setStateData(AndroidTextInputState{
       newEventCount,
       newAttributedString,

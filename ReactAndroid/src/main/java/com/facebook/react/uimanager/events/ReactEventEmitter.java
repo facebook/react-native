@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -64,20 +64,33 @@ public class ReactEventEmitter implements RCTModernEventEmitter {
       int surfaceId, int targetTag, String eventName, @Nullable WritableMap event) {
     // The two additional params here, `canCoalesceEvent` and `customCoalesceKey`, have no
     // meaning outside of Fabric.
-    receiveEvent(surfaceId, targetTag, eventName, false, 0, event);
+    receiveEvent(surfaceId, targetTag, eventName, false, 0, event, EventCategoryDef.UNSPECIFIED);
   }
 
   @Override
   public void receiveTouches(
       String eventName, WritableArray touches, WritableArray changedIndices) {
+    /*
+     * This method should be unused by default processing pipeline, but leaving it here to make sure
+     * that any custom code using it in legacy renderer is compatible
+     */
     Assertions.assertCondition(touches.size() > 0);
 
     int reactTag = touches.getMap(0).getInt(TARGET_KEY);
     @UIManagerType int uiManagerType = ViewUtil.getUIManagerType(reactTag);
-    if (uiManagerType == UIManagerType.FABRIC && mFabricEventEmitter != null) {
-      mFabricEventEmitter.receiveTouches(eventName, touches, changedIndices);
-    } else if (uiManagerType == UIManagerType.DEFAULT && getEventEmitter(reactTag) != null) {
+    if (uiManagerType == UIManagerType.DEFAULT && getEventEmitter(reactTag) != null) {
       mRCTEventEmitter.receiveTouches(eventName, touches, changedIndices);
+    }
+  }
+
+  @Override
+  public void receiveTouches(TouchEvent event) {
+    int reactTag = event.getViewTag();
+    @UIManagerType int uiManagerType = event.getUIManagerType();
+    if (uiManagerType == UIManagerType.FABRIC && mFabricEventEmitter != null) {
+      mFabricEventEmitter.receiveTouches(event);
+    } else if (uiManagerType == UIManagerType.DEFAULT && getEventEmitter(reactTag) != null) {
+      TouchesHelper.sendTouchesLegacy(mRCTEventEmitter, event);
     } else {
       ReactSoftExceptionLogger.logSoftException(
           TAG,
@@ -87,7 +100,7 @@ public class ReactEventEmitter implements RCTModernEventEmitter {
                   + "] UIManagerType["
                   + uiManagerType
                   + "] EventName["
-                  + eventName
+                  + event.getEventName()
                   + "]"));
     }
   }
@@ -120,11 +133,18 @@ public class ReactEventEmitter implements RCTModernEventEmitter {
       String eventName,
       boolean canCoalesceEvent,
       int customCoalesceKey,
-      @Nullable WritableMap event) {
+      @Nullable WritableMap event,
+      @EventCategoryDef int category) {
     @UIManagerType int uiManagerType = ViewUtil.getUIManagerType(targetReactTag);
     if (uiManagerType == UIManagerType.FABRIC && mFabricEventEmitter != null) {
       mFabricEventEmitter.receiveEvent(
-          surfaceId, targetReactTag, eventName, canCoalesceEvent, customCoalesceKey, event);
+          surfaceId,
+          targetReactTag,
+          eventName,
+          canCoalesceEvent,
+          customCoalesceKey,
+          event,
+          category);
     } else if (uiManagerType == UIManagerType.DEFAULT && getEventEmitter(targetReactTag) != null) {
       mRCTEventEmitter.receiveEvent(targetReactTag, eventName, event);
     } else {

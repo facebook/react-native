@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -17,6 +17,8 @@ import {act, create} from 'react-test-renderer';
 /**
  * TestView provide a component execution environment to test hooks.
  */
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
 function TestView({name, refs}) {
   const mergeRef = useMergeRefs(...refs);
   return <View ref={mergeRef} testID={name} />;
@@ -66,9 +68,11 @@ function mockRefRegistry<T>(): {
 } {
   const registry = [];
   return {
-    mockCallbackRef: (name: string): (T => mixed) => current => {
-      registry.push({[name]: TestViewInstance.fromValue(current)});
-    },
+    mockCallbackRef:
+      (name: string): (T => mixed) =>
+      current => {
+        registry.push({[name]: TestViewInstance.fromValue(current)});
+      },
     mockObjectRef: (name: string): {current: T, ...} => ({
       // $FlowIgnore[unsafe-getters-setters] - Intentional.
       set current(current) {

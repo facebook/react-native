@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -281,9 +281,9 @@ RCT_EXPORT_METHOD(setAccessibilityContentSizeMultipliers
 static void setMultipliers(
     NSMutableDictionary<NSString *, NSNumber *> *multipliers,
     NSString *key,
-    folly::Optional<double> optionalDouble)
+    std::optional<double> optionalDouble)
 {
-  if (optionalDouble.hasValue()) {
+  if (optionalDouble.has_value()) {
     multipliers[key] = @(optionalDouble.value());
   }
 }
@@ -299,6 +299,28 @@ RCT_EXPORT_METHOD(setAccessibilityFocus : (double)reactTag)
 RCT_EXPORT_METHOD(announceForAccessibility : (NSString *)announcement)
 {
   UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcement);
+}
+
+RCT_EXPORT_METHOD(announceForAccessibilityWithOptions
+                  : (NSString *)announcement options
+                  : (JS::NativeAccessibilityManager::SpecAnnounceForAccessibilityWithOptionsOptions &)options)
+{
+  if (@available(iOS 11.0, *)) {
+    NSMutableDictionary<NSString *, NSNumber *> *attrsDictionary = [NSMutableDictionary new];
+    if (options.queue()) {
+      attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] = @(*(options.queue()) ? YES : NO);
+    }
+
+    if (attrsDictionary.count > 0) {
+      NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString:announcement
+                                                                                  attributes:attrsDictionary];
+      UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
+    } else {
+      UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcement);
+    }
+  } else {
+    UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcement);
+  }
 }
 
 RCT_EXPORT_METHOD(getMultiplier : (RCTResponseSenderBlock)callback)

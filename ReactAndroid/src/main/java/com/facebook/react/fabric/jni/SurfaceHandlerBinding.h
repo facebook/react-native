@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -28,9 +28,6 @@ class SurfaceHandlerBinding : public jni::HybridClass<SurfaceHandlerBinding> {
 
   void setDisplayMode(jint mode);
 
-  void registerScheduler(std::shared_ptr<Scheduler> scheduler);
-  void unregisterScheduler(std::shared_ptr<Scheduler> scheduler);
-
   jint getSurfaceId();
   void setSurfaceId(jint surfaceId);
   jni::local_ref<jstring> getModuleName();
@@ -53,7 +50,7 @@ class SurfaceHandlerBinding : public jni::HybridClass<SurfaceHandlerBinding> {
   SurfaceHandler const &getSurfaceHandler();
 
  private:
-  mutable better::shared_mutex lifecycleMutex_;
+  mutable butter::shared_mutex lifecycleMutex_;
   const SurfaceHandler surfaceHandler_;
 
   jni::alias_ref<SurfaceHandlerBinding::jhybriddata> jhybridobject_;

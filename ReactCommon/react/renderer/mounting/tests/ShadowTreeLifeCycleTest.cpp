@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -77,8 +77,8 @@ static void testShadowNodeTreeLifeCycle(
     auto currentRootNode = std::static_pointer_cast<RootShadowNode const>(
         emptyRootNode->ShadowNode::clone(ShadowNodeFragment{
             ShadowNodeFragment::propsPlaceholder(),
-            std::make_shared<SharedShadowNodeList>(
-                SharedShadowNodeList{singleRootChildNode})}));
+            std::make_shared<ShadowNode::ListOfShared>(
+                ShadowNode::ListOfShared{singleRootChildNode})}));
 
     // Building an initial view hierarchy.
     auto viewTree = buildStubViewTreeWithoutUsingDifferentiator(*emptyRootNode);
@@ -227,8 +227,8 @@ static void testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
     auto currentRootNode = std::static_pointer_cast<RootShadowNode const>(
         emptyRootNode->ShadowNode::clone(ShadowNodeFragment{
             ShadowNodeFragment::propsPlaceholder(),
-            std::make_shared<SharedShadowNodeList>(
-                SharedShadowNodeList{singleRootChildNode})}));
+            std::make_shared<ShadowNode::ListOfShared>(
+                ShadowNode::ListOfShared{singleRootChildNode})}));
 
     // Building an initial view hierarchy.
     auto viewTree = buildStubViewTreeWithoutUsingDifferentiator(*emptyRootNode);

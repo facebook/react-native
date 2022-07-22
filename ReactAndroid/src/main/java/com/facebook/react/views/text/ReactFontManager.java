@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -105,6 +105,16 @@ public class ReactFontManager {
    */
   public void addCustomFont(Context context, String fontFamily, int fontId) {
     Typeface font = ResourcesCompat.getFont(context, fontId);
+    if (font != null) {
+      mCustomTypefaceCache.put(fontFamily, font);
+    }
+  }
+
+  /**
+   * Equivalent method to {@see addCustomFont(Context, String, int)} which accepts a Typeface
+   * object.
+   */
+  public void addCustomFont(String fontFamily, @Nullable Typeface font) {
     if (font != null) {
       mCustomTypefaceCache.put(fontFamily, font);
     }

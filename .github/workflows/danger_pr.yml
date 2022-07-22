@@ -1,0 +1,22 @@
+name: Run Danger on PR
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  danger:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: yarn install
+        working-directory: bots
+      - name: Danger
+        run: DANGER_GITHUB_API_TOKEN="$PUBLIC_PULLBOT_GITHUB_TOKEN_A""$PUBLIC_PULLBOT_GITHUB_TOKEN_B" yarn danger ci --use-github-checks --failOnErrors --id danger_pr
+        working-directory: bots
+        env:
+          PUBLIC_PULLBOT_GITHUB_TOKEN_A: a6edf8e8d40ce4e8b11a
+          PUBLIC_PULLBOT_GITHUB_TOKEN_B: 150e1341f4dd9c944d2a

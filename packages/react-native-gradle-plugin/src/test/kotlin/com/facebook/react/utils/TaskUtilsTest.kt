@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -40,24 +40,6 @@ class TaskUtilsTest {
   @WithOs(OS.WIN)
   fun windowsAwareCommandLine_onWindows_prependsCmd() {
     assertEquals(listOf("cmd", "/c", "a", "b", "c"), windowsAwareCommandLine("a", "b", "c"))
-  }
-
-  @Test
-  @WithOs(OS.MAC)
-  fun windowsAwareYarn_onMac_returnsTheList() {
-    assertEquals(listOf("yarn", "a", "b", "c"), windowsAwareYarn("a", "b", "c"))
-  }
-
-  @Test
-  @WithOs(OS.UNIX)
-  fun windowsAwareYarn_onLinux_returnsTheList() {
-    assertEquals(listOf("yarn", "a", "b", "c"), windowsAwareYarn("a", "b", "c"))
-  }
-
-  @Test
-  @WithOs(OS.WIN)
-  fun windowsAwareYarn_onWindows_prependsCmd() {
-    assertEquals(listOf("yarn.cmd", "a", "b", "c"), windowsAwareYarn("a", "b", "c"))
   }
 
   @Test

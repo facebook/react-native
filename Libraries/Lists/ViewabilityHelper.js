@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -102,9 +102,7 @@ class ViewabilityHelper {
     itemCount: number,
     scrollOffset: number,
     viewportHeight: number,
-    getFrameMetrics: (
-      index: number,
-    ) => ?{
+    getFrameMetrics: (index: number) => ?{
       length: number,
       offset: number,
       ...
@@ -116,10 +114,8 @@ class ViewabilityHelper {
       ...
     },
   ): Array<number> {
-    const {
-      itemVisiblePercentThreshold,
-      viewAreaCoveragePercentThreshold,
-    } = this._config;
+    const {itemVisiblePercentThreshold, viewAreaCoveragePercentThreshold} =
+      this._config;
     const viewAreaMode = viewAreaCoveragePercentThreshold != null;
     const viewablePercentThreshold = viewAreaMode
       ? viewAreaCoveragePercentThreshold
@@ -179,9 +175,7 @@ class ViewabilityHelper {
     itemCount: number,
     scrollOffset: number,
     viewportHeight: number,
-    getFrameMetrics: (
-      index: number,
-    ) => ?{
+    getFrameMetrics: (index: number) => ?{
       length: number,
       offset: number,
       ...
@@ -265,9 +259,13 @@ class ViewabilityHelper {
   }
 
   _onUpdateSync(
-    viewableIndicesToCheck,
-    onViewableItemsChanged,
-    createViewToken,
+    viewableIndicesToCheck: Array<number>,
+    onViewableItemsChanged: ({
+      changed: Array<ViewToken>,
+      viewableItems: Array<ViewToken>,
+      ...
+    }) => void,
+    createViewToken: (index: number, isViewable: boolean) => ViewToken,
   ) {
     // Filter out indices that have gone out of view since this call was scheduled.
     viewableIndicesToCheck = viewableIndicesToCheck.filter(ii =>

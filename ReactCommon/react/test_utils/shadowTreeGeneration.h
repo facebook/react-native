@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -308,7 +308,7 @@ static inline ShadowNode::Shared generateShadowNodeTree(
   return componentDescriptor.createShadowNode(
       ShadowNodeFragment{
           generateDefaultProps(componentDescriptor),
-          std::make_shared<SharedShadowNodeList>(children)},
+          std::make_shared<ShadowNode::ListOfShared>(children)},
       family);
 }
 

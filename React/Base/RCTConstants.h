@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -17,7 +17,19 @@ RCT_EXTERN BOOL RCTExperimentGetPreemptiveViewAllocationDisabled(void);
 RCT_EXTERN void RCTExperimentSetPreemptiveViewAllocationDisabled(BOOL value);
 
 /*
- * Remove clipped subviews
+ * W3C Pointer Events
  */
-RCT_EXTERN BOOL RCTGetRemoveClippedSubviewsEnabled(void);
-RCT_EXTERN void RCTSetRemoveClippedSubviewsEnabled(BOOL value);
+RCT_EXTERN BOOL RCTGetDispatchW3CPointerEvents(void);
+RCT_EXTERN void RCTSetDispatchW3CPointerEvents(BOOL value);
+
+/*
+ * Validate RCTEventEmitter
+ */
+RCT_EXTERN BOOL RCTGetValidateCanSendEventInRCTEventEmitter(void);
+RCT_EXTERN void RCTSetValidateCanSendEventInRCTEventEmitter(BOOL value);
+
+/*
+ * Memory Pressure Unloading Level
+ */
+RCT_EXTERN BOOL RCTGetMemoryPressureUnloadLevel(void);
+RCT_EXTERN void RCTSetMemoryPressureUnloadLevel(int value);

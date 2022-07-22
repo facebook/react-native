@@ -1,10 +1,10 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
+ * @flow strict
  * @format
  */
 
@@ -71,7 +71,7 @@ let updateTimeout = null;
 let _isDisabled = false;
 let _selectedIndex = -1;
 
-let warningFilter: WarningFilter = function(format) {
+let warningFilter: WarningFilter = function (format) {
   return {
     finalFormat: format,
     forceDialogImmediately: false,
@@ -100,7 +100,6 @@ export function reportLogBoxError(
 ): void {
   const ExceptionsManager = require('../../Core/ExceptionsManager');
 
-  error.forceRedbox = true;
   error.message = `${LOGBOX_ERROR_MESSAGE}\n\n${error.message}`;
   if (componentStack != null) {
     error.componentStack = componentStack;
@@ -134,7 +133,7 @@ function handleUpdate(): void {
   }
 }
 
-function appendNewLog(newLog) {
+function appendNewLog(newLog: LogBoxLog) {
   // Don't want store these logs because they trigger a
   // state update when we add them to the store.
   if (isMessageIgnored(newLog.message.content)) {
@@ -157,7 +156,7 @@ function appendNewLog(newLog) {
     // sybolication for up to a second before adding the log.
     const OPTIMISTIC_WAIT_TIME = 1000;
 
-    let addPendingLog = () => {
+    let addPendingLog: ?() => void = () => {
       logs.add(newLog);
       if (_selectedIndex < 0) {
         setSelectedLog(logs.size - 1);

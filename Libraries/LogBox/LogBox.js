@@ -1,10 +1,10 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict
  * @format
  */
 
@@ -39,7 +39,7 @@ if (__DEV__) {
   let originalConsoleError;
   let originalConsoleWarn;
   let consoleErrorImpl;
-  let consoleWarnImpl;
+  let consoleWarnImpl: (...args: Array<mixed>) => void;
 
   let isLogBoxInstalled: boolean = false;
 
@@ -75,24 +75,6 @@ if (__DEV__) {
       consoleErrorImpl = registerError;
       consoleWarnImpl = registerWarning;
 
-      if ((console: any).disableYellowBox === true) {
-        LogBoxData.setDisabled(true);
-        console.warn(
-          'console.disableYellowBox has been deprecated and will be removed in a future release. Please use LogBox.ignoreAllLogs(value) instead.',
-        );
-      }
-
-      (Object.defineProperty: any)(console, 'disableYellowBox', {
-        configurable: true,
-        get: () => LogBoxData.isDisabled(),
-        set: value => {
-          LogBoxData.setDisabled(value);
-          console.warn(
-            'console.disableYellowBox has been deprecated and will be removed in a future release. Please use LogBox.ignoreAllLogs(value) instead.',
-          );
-        },
-      });
-
       if (Platform.isTesting) {
         LogBoxData.setDisabled(true);
       }
@@ -115,7 +97,6 @@ if (__DEV__) {
       // After uninstalling:  original > LogBox (noop) > OtherErrorHandler
       consoleErrorImpl = originalConsoleError;
       consoleWarnImpl = originalConsoleWarn;
-      delete (console: any).disableLogBox;
     },
 
     isInstalled(): boolean {
@@ -147,17 +128,17 @@ if (__DEV__) {
     },
   };
 
-  const isRCTLogAdviceWarning = (...args) => {
+  const isRCTLogAdviceWarning = (...args: Array<mixed>) => {
     // RCTLogAdvice is a native logging function designed to show users
     // a message in the console, but not show it to them in Logbox.
     return typeof args[0] === 'string' && args[0].startsWith('(ADVICE)');
   };
 
-  const isWarningModuleWarning = (...args) => {
+  const isWarningModuleWarning = (...args: Array<mixed>) => {
     return typeof args[0] === 'string' && args[0].startsWith('Warning: ');
   };
 
-  const registerWarning = (...args): void => {
+  const registerWarning = (...args: Array<mixed>): void => {
     // Let warnings within LogBox itself fall through.
     if (LogBoxData.isLogBoxErrorMessage(String(args[0]))) {
       originalConsoleError(...args);
@@ -185,6 +166,8 @@ if (__DEV__) {
     }
   };
 
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   const registerError = (...args): void => {
     // Let errors within LogBox itself fall through.
     if (LogBoxData.isLogBoxErrorMessage(args[0])) {

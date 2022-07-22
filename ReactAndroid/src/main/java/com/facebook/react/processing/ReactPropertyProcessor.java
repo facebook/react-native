@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -59,7 +59,7 @@ import javax.lang.model.util.Types;
 /**
  * This annotation processor crawls subclasses of ReactShadowNode and ViewManager and finds their
  * exported properties with the @ReactProp or @ReactGroupProp annotation. It generates a class per
- * shadow node/view manager that is named {@code <classname>$$PropSetter}. This class contains
+ * shadow node/view manager that is named {@code <classname>$$PropsSetter}. This class contains
  * methods to retrieve the name and type of all methods and a way to set these properties without
  * reflection.
  */
@@ -593,7 +593,7 @@ public class ReactPropertyProcessor extends AbstractProcessor {
                 + " has already registered a property named \""
                 + name
                 + "\". If you want to override a property, don't add"
-                + "the @ReactProp annotation to the property in the subclass",
+                + " the @ReactProp annotation to the property in the subclass",
             propertyInfo);
       }
 

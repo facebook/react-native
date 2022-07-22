@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -116,6 +116,8 @@ function processTransform(
 /**
  * Performs a destructive operation on a transform matrix.
  */
+/* $FlowFixMe[missing-this-annot] The 'this' type annotation(s) required by
+ * Flow's LTI update could not be added via codemod */
 function _multiplyTransform(
   result: Array<number>,
   matrixMathFunction: Function,
@@ -150,7 +152,26 @@ function _validateTransforms(transform: Array<Object>): void {
   });
 }
 
-function _validateTransform(key, value, transformation) {
+function _validateTransform(
+  key:
+    | string
+    | $TEMPORARY$string<'matrix'>
+    | $TEMPORARY$string<'perspective'>
+    | $TEMPORARY$string<'rotate'>
+    | $TEMPORARY$string<'rotateX'>
+    | $TEMPORARY$string<'rotateY'>
+    | $TEMPORARY$string<'rotateZ'>
+    | $TEMPORARY$string<'scale'>
+    | $TEMPORARY$string<'scaleX'>
+    | $TEMPORARY$string<'scaleY'>
+    | $TEMPORARY$string<'skewX'>
+    | $TEMPORARY$string<'skewY'>
+    | $TEMPORARY$string<'translate'>
+    | $TEMPORARY$string<'translateX'>
+    | $TEMPORARY$string<'translateY'>,
+  value: any | number | string,
+  transformation: any,
+) {
   invariant(
     !value.getValue,
     'You passed an Animated.Value to a normal component. ' +

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -94,7 +94,7 @@ int ConnectionDemux::enableDebugging(
       std::make_shared<Connection>(std::move(adapter), title, waitForDebugger));
 }
 
-void ConnectionDemux::disableDebugging(HermesRuntime &runtime) {
+void ConnectionDemux::disableDebugging(jsi::Runtime &runtime) {
   std::lock_guard<std::mutex> lock(mutex_);
 
   for (auto &it : conns_) {

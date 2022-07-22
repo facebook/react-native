@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,6 +7,8 @@
  * @flow strict-local
  * @format
  */
+
+import type {RenderItemProps} from 'react-native/Libraries/Lists/VirtualizedList';
 
 import * as React from 'react';
 import {
@@ -29,9 +31,10 @@ module.exports = {
   examples: [
     {
       title: 'SwipeableCardExample',
-      description: ('This example creates a swipeable card using PanResponder. ' +
-        'Under the hood, JSResponderHandler should prevent scroll when the card is being swiped.': string),
-      render: function(): React.Node {
+      description:
+        ('This example creates a swipeable card using PanResponder. ' +
+          'Under the hood, JSResponderHandler should prevent scroll when the card is being swiped.': string),
+      render: function (): React.Node {
         return <SwipeableCardExample />;
       },
     },
@@ -48,7 +51,7 @@ function SwipeableCardExample() {
 
   const incrementCurrent = () => setCurrentIndex(currentIndex + 1);
 
-  const getCardColor = index => cardColors[index % cardColors.length];
+  const getCardColor = (index: number) => cardColors[index % cardColors.length];
 
   /*
    * The cards try to reuse the views. Instead of always rebuilding the current card on top
@@ -118,7 +121,7 @@ function SwipeableCard(props: {
   const {width} = useWindowDimensions();
   const rotation = movementX.interpolate({
     inputRange: [-width / 2, 0, width / 2],
-    outputRange: (['-5deg', '0deg', '5deg']: $ReadOnlyArray<string>),
+    outputRange: ['-5deg', '0deg', '5deg'],
     extrapolate: 'clamp',
   });
 
@@ -139,7 +142,7 @@ function SwipeableCard(props: {
 const cardData = Array(5);
 
 function Card(props: {color: string}) {
-  const renderItem = ({item, index}) => (
+  const renderItem = ({item, index}: RenderItemProps<$FlowFixMe>) => (
     <CardSection color={props.color} index={index} />
   );
 

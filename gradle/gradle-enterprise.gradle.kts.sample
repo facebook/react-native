@@ -1,0 +1,17 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+// You can use this script to configure the gradleEnterprise{} block in your build.
+// You need to rename this file to ./gradle/gradle-enterprise.gradle.kts in order for
+// this to be processed.
+extensions.getByName("gradleEnterprise").withGroovyBuilder {
+    setProperty("server", "https://your-gradle-enterprise-instance.example.com")
+    getProperty("buildScan").withGroovyBuilder {
+        "publishAlways"()
+        "tag"(if(System.getenv("CI") != null) "CI" else "Local")
+    }
+}

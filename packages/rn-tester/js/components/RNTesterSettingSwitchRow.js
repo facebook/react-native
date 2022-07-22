@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -47,14 +47,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
 });
-/* $FlowFixMe[cannot-reassign-export] (>=0.85.0 site=react_native_fb) This
- * comment suppresses an error found when Flow v0.85 was deployed. To see the
- * error, delete this comment and run Flow. */
-RNTesterSettingSwitchRow = RNTesterStatePersister.createContainer(
-  RNTesterSettingSwitchRow,
-  {
+
+const RNTesterSettingSwitchRowContainer: React.ComponentType<$FlowFixMeProps> =
+  RNTesterStatePersister.createContainer(RNTesterSettingSwitchRow, {
     cacheKeySuffix: ({label}) => 'Switch:' + label,
     getInitialState: ({initialValue}) => initialValue,
-  },
-);
-module.exports = RNTesterSettingSwitchRow;
+  });
+module.exports = RNTesterSettingSwitchRowContainer;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -162,9 +162,10 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
     return {Left: 'left', Right: 'right'};
   }
 
-  _nativeRef = React.createRef<
-    React.ElementRef<typeof AndroidDrawerLayoutNativeComponent>,
-  >();
+  _nativeRef =
+    React.createRef<
+      React.ElementRef<typeof AndroidDrawerLayoutNativeComponent>,
+    >();
 
   state: State = {statusBarBackgroundColor: null};
 
@@ -231,6 +232,8 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
     );
   }
 
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   _onDrawerSlide = event => {
     if (this.props.onDrawerSlide) {
       this.props.onDrawerSlide(event);
@@ -252,6 +255,8 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
     }
   };
 
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   _onDrawerStateChanged = event => {
     if (this.props.onDrawerStateChanged) {
       this.props.onDrawerStateChanged(

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,9 +12,9 @@
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeModule.h>
+#import <React/RCTInitializing.h>
 #import <React/RCTJavaScriptExecutor.h>
 #import <React/RCTUtils.h>
-#import <React/RCTInitializing.h>
 
 @interface RCTTestInjectedModule : NSObject <RCTBridgeModule>
 @end
@@ -27,7 +27,6 @@
 RCT_EXPORT_MODULE()
 
 @end
-
 
 @interface RCTTestCustomInitModule : NSObject <RCTBridgeModule>
 
@@ -52,7 +51,6 @@ RCT_EXPORT_MODULE()
 
 @end
 
-
 @interface RCTTestCustomSetBridgeModule : NSObject <RCTBridgeModule, RCTInitializing>
 
 @property (nonatomic, assign) BOOL setBridgeOnMainQueue;
@@ -72,7 +70,6 @@ RCT_EXPORT_MODULE()
 }
 
 @end
-
 
 @interface RCTTestExportConstantsModule : NSObject <RCTBridgeModule>
 
@@ -97,11 +94,10 @@ RCT_EXPORT_MODULE()
 {
   _exportedConstants = YES;
   _exportedConstantsOnMainQueue = RCTIsMainQueue();
-  return @{ @"foo": @"bar" };
+  return @{@"foo" : @"bar"};
 }
 
 @end
-
 
 @interface RCTLazyInitModule : NSObject <RCTBridgeModule>
 @end
@@ -115,9 +111,7 @@ RCT_EXPORT_MODULE()
 
 @end
 
-
-@interface RCTModuleInitTests : XCTestCase <RCTBridgeDelegate>
-{
+@interface RCTModuleInitTests : XCTestCase <RCTBridgeDelegate> {
   RCTBridge *_bridge;
   BOOL _injectedModuleInitNotificationSent;
   BOOL _customInitModuleNotificationSent;
@@ -140,14 +134,17 @@ RCT_EXPORT_MODULE()
 
 - (NSArray *)extraModulesForBridge:(__unused RCTBridge *)bridge
 {
-  return @[_injectedModule];
+  return @[ _injectedModule ];
 }
 
 - (void)setUp
 {
   [super setUp];
 
-  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moduleDidInit:) name:RCTDidInitializeModuleNotification object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(moduleDidInit:)
+                                               name:RCTDidInitializeModuleNotification
+                                             object:nil];
 
   _injectedModuleInitNotificationSent = NO;
   _customInitModuleNotificationSent = NO;

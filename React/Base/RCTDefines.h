@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -157,7 +157,7 @@
  * Note: this is work in progress.
  */
 #ifdef REACT_NATIVE_FORCE_NEW_ARCHITECTURE
-#define RCT_NEW_ARCHITECTURE 1
+#define RCT_ONLY_NEW_ARCHITECTURE 1
 #else
-#define RCT_NEW_ARCHITECTURE 0
+#define RCT_ONLY_NEW_ARCHITECTURE 0
 #endif

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,6 +16,7 @@ import InvertedExample from './FlatList-inverted';
 import onViewableItemsChangedExample from './FlatList-onViewableItemsChanged';
 import WithSeparatorsExample from './FlatList-withSeparators';
 import MultiColumnExample from './FlatList-multiColumn';
+import StickyHeadersExample from './FlatList-stickyHeaders';
 
 export default ({
   framework: 'React',
@@ -32,5 +33,6 @@ export default ({
     onViewableItemsChangedExample,
     WithSeparatorsExample,
     MultiColumnExample,
+    StickyHeadersExample,
   ],
 }: RNTesterModule);

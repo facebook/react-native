@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -35,6 +35,12 @@ static const RCTLogLevel RCTDefaultLogThreshold = (RCTLogLevel)(RCTLogLevelInfo 
 static RCTLogFunction RCTCurrentLogFunction;
 static RCTLogLevel RCTCurrentLogThreshold = RCTDefaultLogThreshold;
 
+static __weak RCTModuleRegistry *RCTLogBridgeModuleRegistry;
+static __weak RCTModuleRegistry *RCTLogBridgelessModuleRegistry;
+
+static __weak RCTCallableJSModules *RCTLogBridgeCallableJSModules;
+static __weak RCTCallableJSModules *RCTLogBridgelessCallableJSModules;
+
 RCTLogLevel RCTGetLogThreshold()
 {
   return RCTCurrentLogThreshold;
@@ -43,6 +49,26 @@ RCTLogLevel RCTGetLogThreshold()
 void RCTSetLogThreshold(RCTLogLevel threshold)
 {
   RCTCurrentLogThreshold = threshold;
+}
+
+void RCTLogSetBridgeModuleRegistry(RCTModuleRegistry *moduleRegistry)
+{
+  RCTLogBridgeModuleRegistry = moduleRegistry;
+}
+
+void RCTLogSetBridgelessModuleRegistry(RCTModuleRegistry *moduleRegistry)
+{
+  RCTLogBridgelessModuleRegistry = moduleRegistry;
+}
+
+void RCTLogSetBridgeCallableJSModules(RCTCallableJSModules *callableJSModules)
+{
+  RCTLogBridgeCallableJSModules = callableJSModules;
+}
+
+void RCTLogSetBridgelessCallableJSModules(RCTCallableJSModules *callableJSModules)
+{
+  RCTLogBridgelessCallableJSModules = callableJSModules;
 }
 
 static os_log_type_t RCTLogTypeForLogLevel(RCTLogLevel logLevel)
@@ -274,7 +300,8 @@ void _RCTLogNativeInternal(RCTLogLevel level, const char *fileName, int lineNumb
       dispatch_async(dispatch_get_main_queue(), ^{
         // red box is thread safe, but by deferring to main queue we avoid a startup
         // race condition that causes the module to be accessed before it has loaded
-        id redbox = [[RCTBridge currentBridge] moduleForName:@"RedBox" lazilyLoadIfNecessary:YES];
+        RCTModuleRegistry *moduleRegistry = RCTLogBridgeModuleRegistry ?: RCTLogBridgelessModuleRegistry;
+        id redbox = [moduleRegistry moduleForName:"RedBox" lazilyLoadIfNecessary:YES];
         if (redbox) {
           void (*showErrorMessage)(id, SEL, NSString *, NSMutableArray<NSDictionary *> *) =
               (__typeof__(showErrorMessage))objc_msgSend;
@@ -290,7 +317,9 @@ void _RCTLogNativeInternal(RCTLogLevel level, const char *fileName, int lineNumb
 #if RCT_DEBUG
     if (!RCTRunningInTestEnvironment()) {
       // Log to JS executor
-      [[RCTBridge currentBridge] logMessage:message level:level ? @(RCTLogLevels[level]) : @"info"];
+      NSString *levelString = level ? @(RCTLogLevels[level]) : @"info";
+      RCTCallableJSModules *callableModule = RCTLogBridgeCallableJSModules ?: RCTLogBridgelessCallableJSModules;
+      [callableModule invokeModule:@"RCTLog" method:@"logIfNoNativeHook" withArgs:@[ levelString, message ]];
     }
 #endif
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -322,17 +322,17 @@ static ParagraphShadowNode::ConcreteState::Shared stateWithShadowNode(
 - (void)testAttributedString
 {
   ParagraphShadowNode::ConcreteState::Shared _stateA = stateWithShadowNode(ParagrahShadowNodeA_);
-  RCTParagraphComponentView *paragraphComponentViewA = [[RCTParagraphComponentView alloc] init];
+  RCTParagraphComponentView *paragraphComponentViewA = [RCTParagraphComponentView new];
   [paragraphComponentViewA updateProps:ParagrahShadowNodeA_->getProps() oldProps:nullptr];
   [paragraphComponentViewA updateState:_stateA oldState:nil];
 
   ParagraphShadowNode::ConcreteState::Shared _stateB = stateWithShadowNode(ParagrahShadowNodeB_);
-  RCTParagraphComponentView *paragraphComponentViewB = [[RCTParagraphComponentView alloc] init];
+  RCTParagraphComponentView *paragraphComponentViewB = [RCTParagraphComponentView new];
   [paragraphComponentViewB updateProps:ParagrahShadowNodeB_->getProps() oldProps:nullptr];
   [paragraphComponentViewB updateState:_stateB oldState:nil];
 
   ParagraphShadowNode::ConcreteState::Shared _stateC = stateWithShadowNode(ParagrahShadowNodeC_);
-  RCTParagraphComponentView *paragraphComponentViewC = [[RCTParagraphComponentView alloc] init];
+  RCTParagraphComponentView *paragraphComponentViewC = [RCTParagraphComponentView new];
   [paragraphComponentViewC updateProps:ParagrahShadowNodeC_->getProps() oldProps:nullptr];
   [paragraphComponentViewC updateState:_stateC oldState:nil];
 
@@ -358,7 +358,7 @@ static ParagraphShadowNode::ConcreteState::Shared stateWithShadowNode(
 {
   // initialize the paragraphComponentView to get the accessibilityElements
   ParagraphShadowNode::ConcreteState::Shared _state = stateWithShadowNode(ParagrahShadowNodeA_);
-  RCTParagraphComponentView *paragraphComponentView = [[RCTParagraphComponentView alloc] init];
+  RCTParagraphComponentView *paragraphComponentView = [RCTParagraphComponentView new];
   [paragraphComponentView updateProps:ParagrahShadowNodeA_->getProps() oldProps:nullptr];
   [paragraphComponentView updateState:_state oldState:nil];
 
@@ -379,7 +379,7 @@ static ParagraphShadowNode::ConcreteState::Shared stateWithShadowNode(
 - (void)testAccessibilityLinkWrappingMultipleLines
 {
   ParagraphShadowNode::ConcreteState::Shared _state = stateWithShadowNode(ParagrahShadowNodeB_);
-  RCTParagraphComponentView *paragraphComponentView = [[RCTParagraphComponentView alloc] init];
+  RCTParagraphComponentView *paragraphComponentView = [RCTParagraphComponentView new];
   [paragraphComponentView updateProps:ParagrahShadowNodeB_->getProps() oldProps:nullptr];
   [paragraphComponentView updateState:_state oldState:nil];
 
@@ -393,7 +393,7 @@ static ParagraphShadowNode::ConcreteState::Shared stateWithShadowNode(
 - (void)testAccessibilityTruncatedText
 {
   ParagraphShadowNode::ConcreteState::Shared _state = stateWithShadowNode(ParagrahShadowNodeC_);
-  RCTParagraphComponentView *paragraphComponentView = [[RCTParagraphComponentView alloc] init];
+  RCTParagraphComponentView *paragraphComponentView = [RCTParagraphComponentView new];
   [paragraphComponentView updateProps:ParagrahShadowNodeC_->getProps() oldProps:nullptr];
   [paragraphComponentView updateState:_state oldState:nil];
 
@@ -458,7 +458,7 @@ static ParagraphShadowNode::ConcreteState::Shared stateWithShadowNode(
   rootShadowNode->layoutIfNeeded();
 
   ParagraphShadowNode::ConcreteState::Shared _state = stateWithShadowNode(paragrahShadowNode);
-  RCTParagraphComponentView *paragraphComponentView = [[RCTParagraphComponentView alloc] init];
+  RCTParagraphComponentView *paragraphComponentView = [RCTParagraphComponentView new];
   [paragraphComponentView updateProps:paragrahShadowNode->getProps() oldProps:nullptr];
   [paragraphComponentView updateState:_state oldState:nil];
 

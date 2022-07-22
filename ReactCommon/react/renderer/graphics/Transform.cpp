@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -30,6 +30,14 @@ void Transform::print(Transform const &t, std::string prefix) {
 
 Transform Transform::Identity() {
   return {};
+}
+
+Transform Transform::VerticalInversion() {
+  return Transform::Scale(1, -1, 1);
+}
+
+Transform Transform::HorizontalInversion() {
+  return Transform::Scale(-1, 1, 1);
 }
 
 Transform Transform::Perspective(Float perspective) {
@@ -241,6 +249,14 @@ Transform Transform::Interpolate(
   return result;
 }
 
+bool Transform::isVerticalInversion(Transform const &transform) {
+  return transform.at(1, 1) == -1;
+}
+
+bool Transform::isHorizontalInversion(Transform const &transform) {
+  return transform.at(0, 0) == -1;
+}
+
 bool Transform::operator==(Transform const &rhs) const {
   for (auto i = 0; i < 16; i++) {
     if (matrix[i] != rhs.matrix[i]) {
@@ -360,6 +376,14 @@ Rect operator*(Rect const &rect, Transform const &transform) {
       transformedA, transformedB, transformedC, transformedD);
 }
 
+EdgeInsets operator*(EdgeInsets const &edgeInsets, Transform const &transform) {
+  return EdgeInsets{
+      edgeInsets.left * transform.matrix[0],
+      edgeInsets.top * transform.matrix[5],
+      edgeInsets.right * transform.matrix[0],
+      edgeInsets.bottom * transform.matrix[5]};
+}
+
 Vector operator*(Transform const &transform, Vector const &vector) {
   return {
       vector.x * transform.at(0, 0) + vector.y * transform.at(1, 0) +
@@ -379,8 +403,8 @@ Size operator*(Size const &size, Transform const &transform) {
   }
 
   auto result = Size{};
-  result.width = transform.at(0, 0) * size.width;
-  result.height = transform.at(1, 1) * size.height;
+  result.width = std::abs(transform.at(0, 0) * size.width);
+  result.height = std::abs(transform.at(1, 1) * size.height);
 
   return result;
 }

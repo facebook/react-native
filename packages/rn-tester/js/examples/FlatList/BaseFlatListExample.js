@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,6 +8,7 @@
  * @format
  */
 
+import type {RenderItemProps} from 'react-native/Libraries/Lists/VirtualizedList';
 import {
   Pressable,
   Button,
@@ -33,7 +34,7 @@ const DATA = [
   'Ice Cream',
 ];
 
-const Item = ({item, separators}) => {
+const Item = ({item, separators}: RenderItemProps<string>) => {
   return (
     <Pressable
       onPressIn={() => {

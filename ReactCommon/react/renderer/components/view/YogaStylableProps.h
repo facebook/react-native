@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -22,7 +22,14 @@ class YogaStylableProps : public Props {
   YogaStylableProps(
       const PropsParserContext &context,
       YogaStylableProps const &sourceProps,
-      RawProps const &rawProps);
+      RawProps const &rawProps,
+      bool shouldSetRawProps = true);
+
+  void setProp(
+      const PropsParserContext &context,
+      RawPropsPropNameHash hash,
+      const char *propName,
+      RawValue const &value);
 
 #pragma mark - Props
 

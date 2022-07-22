@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -27,7 +27,6 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.autofill.HintConstants;
@@ -75,6 +74,7 @@ import com.facebook.yoga.YogaConstants;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Locale;
 import java.util.Map;
 
 /** Manages instances of TextInput. */
@@ -202,48 +202,62 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @Nullable
   @Override
   public Map<String, Object> getExportedCustomBubblingEventTypeConstants() {
-    return MapBuilder.<String, Object>builder()
-        .put(
-            "topSubmitEditing",
-            MapBuilder.of(
-                "phasedRegistrationNames",
-                MapBuilder.of("bubbled", "onSubmitEditing", "captured", "onSubmitEditingCapture")))
-        .put(
-            "topEndEditing",
-            MapBuilder.of(
-                "phasedRegistrationNames",
-                MapBuilder.of("bubbled", "onEndEditing", "captured", "onEndEditingCapture")))
-        .put(
-            "topTextInput",
-            MapBuilder.of(
-                "phasedRegistrationNames",
-                MapBuilder.of("bubbled", "onTextInput", "captured", "onTextInputCapture")))
-        .put(
-            "topFocus",
-            MapBuilder.of(
-                "phasedRegistrationNames",
-                MapBuilder.of("bubbled", "onFocus", "captured", "onFocusCapture")))
-        .put(
-            "topBlur",
-            MapBuilder.of(
-                "phasedRegistrationNames",
-                MapBuilder.of("bubbled", "onBlur", "captured", "onBlurCapture")))
-        .put(
-            "topKeyPress",
-            MapBuilder.of(
-                "phasedRegistrationNames",
-                MapBuilder.of("bubbled", "onKeyPress", "captured", "onKeyPressCapture")))
-        .build();
+    @Nullable
+    Map<String, Object> baseEventTypeConstants =
+        super.getExportedCustomBubblingEventTypeConstants();
+    Map<String, Object> eventTypeConstants =
+        baseEventTypeConstants == null ? new HashMap<String, Object>() : baseEventTypeConstants;
+    eventTypeConstants.putAll(
+        MapBuilder.<String, Object>builder()
+            .put(
+                "topSubmitEditing",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of(
+                        "bubbled", "onSubmitEditing", "captured", "onSubmitEditingCapture")))
+            .put(
+                "topEndEditing",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onEndEditing", "captured", "onEndEditingCapture")))
+            .put(
+                "topTextInput",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onTextInput", "captured", "onTextInputCapture")))
+            .put(
+                "topFocus",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onFocus", "captured", "onFocusCapture")))
+            .put(
+                "topBlur",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onBlur", "captured", "onBlurCapture")))
+            .put(
+                "topKeyPress",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onKeyPress", "captured", "onKeyPressCapture")))
+            .build());
+    return eventTypeConstants;
   }
 
   @Nullable
   @Override
   public Map<String, Object> getExportedCustomDirectEventTypeConstants() {
-    return MapBuilder.<String, Object>builder()
-        .put(
-            ScrollEventType.getJSEventName(ScrollEventType.SCROLL),
-            MapBuilder.of("registrationName", "onScroll"))
-        .build();
+    @Nullable
+    Map<String, Object> baseEventTypeConstants = super.getExportedCustomDirectEventTypeConstants();
+    Map<String, Object> eventTypeConstants =
+        baseEventTypeConstants == null ? new HashMap<String, Object>() : baseEventTypeConstants;
+    eventTypeConstants.putAll(
+        MapBuilder.<String, Object>builder()
+            .put(
+                ScrollEventType.getJSEventName(ScrollEventType.SCROLL),
+                MapBuilder.of("registrationName", "onScroll"))
+            .build());
+    return eventTypeConstants;
   }
 
   @Override
@@ -288,16 +302,17 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
           return;
         }
 
-        String text = args.getString(1);
-
         int start = args.getInt(2);
         int end = args.getInt(3);
         if (end == UNSET) {
           end = start;
         }
 
-        reactEditText.maybeSetTextFromJS(
-            getReactTextUpdate(text, mostRecentEventCount, start, end));
+        if (!args.isNull(1)) {
+          String text = args.getString(1);
+          reactEditText.maybeSetTextFromJS(
+              getReactTextUpdate(text, mostRecentEventCount, start, end));
+        }
         reactEditText.maybeSetSelection(mostRecentEventCount, start, end);
         break;
     }
@@ -554,7 +569,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   }
 
   private static boolean shouldHideCursorForEmailTextInput() {
-    String manufacturer = Build.MANUFACTURER.toLowerCase();
+    String manufacturer = Build.MANUFACTURER.toLowerCase(Locale.ROOT);
     return (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q && manufacturer.contains("xiaomi"));
   }
 
@@ -621,7 +636,16 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     if (underlineColor == null) {
       drawableToMutate.clearColorFilter();
     } else {
-      drawableToMutate.setColorFilter(underlineColor, PorterDuff.Mode.SRC_IN);
+      // fixes underlineColor transparent not working on API 21
+      // re-sets the TextInput underlineColor https://bit.ly/3M4alr6
+      if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP) {
+        int bottomBorderColor = view.getBorderColor(Spacing.BOTTOM);
+        setBorderColor(view, Spacing.START, underlineColor);
+        drawableToMutate.setColorFilter(underlineColor, PorterDuff.Mode.SRC_IN);
+        setBorderColor(view, Spacing.START, bottomBorderColor);
+      } else {
+        drawableToMutate.setColorFilter(underlineColor, PorterDuff.Mode.SRC_IN);
+      }
     }
   }
 
@@ -947,12 +971,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     return UIManagerHelper.getEventDispatcherForReactTag(reactContext, editText.getId());
   }
 
-  private class ReactTextInputTextWatcher implements TextWatcher {
-
-    private EventDispatcher mEventDispatcher;
-    private ReactEditText mEditText;
+  private final class ReactTextInputTextWatcher implements TextWatcher {
+    private final ReactEditText mEditText;
+    private final EventDispatcher mEventDispatcher;
+    private final int mSurfaceId;
     private String mPreviousText;
-    private int mSurfaceId;
 
     public ReactTextInputTextWatcher(
         final ReactContext reactContext, final ReactEditText editText) {
@@ -988,24 +1011,23 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         return;
       }
 
-      if (mEditText.getFabricViewStateManager().hasStateWrapper()) {
+      FabricViewStateManager stateManager = mEditText.getFabricViewStateManager();
+      if (stateManager.hasStateWrapper()) {
         // Fabric: communicate to C++ layer that text has changed
         // We need to call `incrementAndGetEventCounter` here explicitly because this
         // update may race with other updates.
         // We simply pass in the cache ID, which never changes, but UpdateState will still be called
         // on the native side, triggering a measure.
-        mEditText
-            .getFabricViewStateManager()
-            .setState(
-                new FabricViewStateManager.StateUpdateCallback() {
-                  @Override
-                  public WritableMap getStateUpdate() {
-                    WritableMap map = new WritableNativeMap();
-                    map.putInt("mostRecentEventCount", mEditText.incrementAndGetEventCounter());
-                    map.putInt("opaqueCacheId", mEditText.getId());
-                    return map;
-                  }
-                });
+        stateManager.setState(
+            new FabricViewStateManager.StateUpdateCallback() {
+              @Override
+              public WritableMap getStateUpdate() {
+                WritableMap map = new WritableNativeMap();
+                map.putInt("mostRecentEventCount", mEditText.incrementAndGetEventCounter());
+                map.putInt("opaqueCacheId", mEditText.getId());
+                return map;
+              }
+            });
       }
 
       // The event that contains the event counter and updates it must be sent first.
@@ -1101,11 +1123,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   }
 
   private static class ReactContentSizeWatcher implements ContentSizeWatcher {
-    private ReactEditText mEditText;
-    private @Nullable EventDispatcher mEventDispatcher;
+    private final ReactEditText mEditText;
+    private final EventDispatcher mEventDispatcher;
+    private final int mSurfaceId;
     private int mPreviousContentWidth = 0;
     private int mPreviousContentHeight = 0;
-    private int mSurfaceId;
 
     public ReactContentSizeWatcher(ReactEditText editText) {
       mEditText = editText;
@@ -1149,17 +1171,15 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
   }
 
-  private class ReactSelectionWatcher implements SelectionWatcher {
-
-    private ReactEditText mReactEditText;
-    private EventDispatcher mEventDispatcher;
+  private static class ReactSelectionWatcher implements SelectionWatcher {
+    private final ReactEditText mReactEditText;
+    private final EventDispatcher mEventDispatcher;
+    private final int mSurfaceId;
     private int mPreviousSelectionStart;
     private int mPreviousSelectionEnd;
-    private int mSurfaceId;
 
     public ReactSelectionWatcher(ReactEditText editText) {
       mReactEditText = editText;
-
       ReactContext reactContext = getReactContext(editText);
       mEventDispatcher = getEventDispatcher(reactContext, editText);
       mSurfaceId = UIManagerHelper.getSurfaceId(reactContext);
@@ -1188,12 +1208,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   }
 
   private static class ReactScrollWatcher implements ScrollWatcher {
-
-    private ReactEditText mReactEditText;
-    private EventDispatcher mEventDispatcher;
+    private final ReactEditText mReactEditText;
+    private final EventDispatcher mEventDispatcher;
+    private final int mSurfaceId;
     private int mPreviousHoriz;
     private int mPreviousVert;
-    private int mSurfaceId;
 
     public ReactScrollWatcher(ReactEditText editText) {
       mReactEditText = editText;
@@ -1247,40 +1266,34 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setPadding(left, top, right, bottom);
   }
 
-  /**
-   * May be overridden by subclasses that would like to provide their own instance of the internal
-   * {@code EditText} this class uses to determine the expected size of the view.
-   */
-  protected EditText createInternalEditText(ThemedReactContext themedReactContext) {
-    return new EditText(themedReactContext);
-  }
-
   @Override
   public Object updateState(
-      ReactEditText view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
-
+      ReactEditText view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
     if (ReactEditText.DEBUG_MODE) {
       FLog.e(TAG, "updateState: [" + view.getId() + "]");
     }
 
-    view.getFabricViewStateManager().setStateWrapper(stateWrapper);
-
-    if (stateWrapper == null) {
-      return null;
+    FabricViewStateManager stateManager = view.getFabricViewStateManager();
+    if (!stateManager.hasStateWrapper()) {
+      // HACK: In Fabric, we assume all components start off with zero padding, which is
+      // not true for TextInput components. We expose the theme's default padding via
+      // AndroidTextInputComponentDescriptor, which will be applied later though setPadding.
+      // TODO T58784068: move this constructor once Fabric is shipped
+      view.setPadding(0, 0, 0, 0);
     }
 
-    ReadableNativeMap state = stateWrapper.getStateData();
+    stateManager.setStateWrapper(stateWrapper);
 
+    ReadableNativeMap state = stateWrapper.getStateData();
     if (state == null) {
       return null;
     }
-
     if (!state.hasKey("attributedString")) {
       return null;
     }
+
     ReadableMap attributedString = state.getMap("attributedString");
     ReadableMap paragraphAttributes = state.getMap("paragraphAttributes");
-
     if (attributedString == null || paragraphAttributes == null) {
       throw new IllegalArgumentException("Invalid TextInput State was received as a parameters");
     }

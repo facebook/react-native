@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,6 +16,7 @@ import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.fabric.FabricSoLoader;
+import com.facebook.react.uimanager.events.EventCategoryDef;
 
 /**
  * This class holds reference to the C++ EventEmitter object. Instances of this class are created on

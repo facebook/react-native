@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -23,7 +23,11 @@ type Props = $ReadOnly<{|
 class RNTesterPage extends React.Component<Props> {
   render(): React.Node {
     let ContentWrapper;
-    let wrapperProps = {};
+    let wrapperProps: {
+      automaticallyAdjustContentInsets?: boolean,
+      keyboardShouldPersistTaps?: string,
+      keyboardDismissMode?: string,
+    } = {};
     if (this.props.noScroll) {
       ContentWrapper = ((View: any): React.ComponentType<any>);
     } else {

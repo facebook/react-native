@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -99,9 +99,7 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
    * Creates a value for the `background` prop that uses the Android theme's
    * default background for selectable elements.
    */
-  static SelectableBackground: (
-    rippleRadius: ?number,
-  ) => $ReadOnly<{|
+  static SelectableBackground: (rippleRadius: ?number) => $ReadOnly<{|
     attribute: 'selectableItemBackground',
     type: 'ThemeAttrAndroid',
     rippleRadius: ?number,
@@ -115,9 +113,7 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
    * Creates a value for the `background` prop that uses the Android theme's
    * default background for borderless selectable elements. Requires API 21+.
    */
-  static SelectableBackgroundBorderless: (
-    rippleRadius: ?number,
-  ) => $ReadOnly<{|
+  static SelectableBackgroundBorderless: (rippleRadius: ?number) => $ReadOnly<{|
     attribute: 'selectableItemBackgroundBorderless',
     type: 'ThemeAttrAndroid',
     rippleRadius: ?number,
@@ -252,11 +248,8 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
 
     // BACKWARD-COMPATIBILITY: Focus and blur events were never supported before
     // adopting `Pressability`, so preserve that behavior.
-    const {
-      onBlur,
-      onFocus,
-      ...eventHandlersWithoutBlurAndFocus
-    } = this.state.pressability.getEventHandlers();
+    const {onBlur, onFocus, ...eventHandlersWithoutBlurAndFocus} =
+      this.state.pressability.getEventHandlers();
 
     const accessibilityState =
       this.props.disabled != null
@@ -278,6 +271,7 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
         ),
         accessible: this.props.accessible !== false,
         accessibilityHint: this.props.accessibilityHint,
+        accessibilityLanguage: this.props.accessibilityLanguage,
         accessibilityLabel: this.props.accessibilityLabel,
         accessibilityRole: this.props.accessibilityRole,
         accessibilityState: accessibilityState,
@@ -318,11 +312,15 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
 
 const getBackgroundProp =
   Platform.OS === 'android'
-    ? (background, useForeground) =>
+    ? /* $FlowFixMe[missing-local-annot] The type annotation(s) required by
+       * Flow's LTI update could not be added via codemod */
+      (background, useForeground: boolean) =>
         useForeground && TouchableNativeFeedback.canUseNativeForeground()
           ? {nativeForegroundAndroid: background}
           : {nativeBackgroundAndroid: background}
-    : (background, useForeground) => null;
+    : /* $FlowFixMe[missing-local-annot] The type annotation(s) required by
+       * Flow's LTI update could not be added via codemod */
+      (background, useForeground: boolean) => null;
 
 TouchableNativeFeedback.displayName = 'TouchableNativeFeedback';
 

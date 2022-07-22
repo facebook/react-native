@@ -28,6 +28,7 @@ fb_native.remote_file(
 rn_android_library(
     name = "imagepipeline",
     autoglob = False,
+    language = "JAVA",
     visibility = ["//ReactAndroid/..."],
     exported_deps = [
         ":bolts",
@@ -73,7 +74,7 @@ rn_android_prebuilt_aar(
     visibility = ["//ReactAndroid/..."],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "nativeimagefilters-aar",
     sha1 = "4a30438df8d960000b37b1f8cdba9d7996d57ea9",
     url = "mvn:com.facebook.fresco:nativeimagefilters:aar:2.5.0",
@@ -85,7 +86,7 @@ rn_android_prebuilt_aar(
     visibility = ["//ReactAndroid/..."],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "nativeimagetranscoder-aar",
     sha1 = "7db353c68b41e2ad502a959c554387d59e75eb75",
     url = "mvn:com.facebook.fresco:nativeimagetranscoder:aar:2.5.0",
@@ -145,7 +146,7 @@ rn_android_prebuilt_aar(
     visibility = ["//ReactAndroid/..."],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "memory-type-ashmem-aar",
     sha1 = "b43b53aca89569fd2e8e964b71dc7afbf62204e8",
     url = "mvn:com.facebook.fresco:memory-type-ashmem:aar:2.5.0",
@@ -157,7 +158,7 @@ rn_android_prebuilt_aar(
     visibility = ["//ReactAndroid/..."],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "memory-type-java-aar",
     sha1 = "57537a8b69dbad44fafdaea3067a776e11586465",
     url = "mvn:com.facebook.fresco:memory-type-java:aar:2.5.0",
@@ -169,7 +170,7 @@ rn_android_prebuilt_aar(
     visibility = ["//ReactAndroid/..."],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "memory-type-native-aar",
     sha1 = "7eb7c52ee2a4d40b7f706c90069549410236aaa5",
     url = "mvn:com.facebook.fresco:memory-type-native:aar:2.5.0",
@@ -181,7 +182,7 @@ rn_android_prebuilt_aar(
     visibility = ["//ReactAndroid/..."],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "ui-common-aar",
     sha1 = "224851cf4c074aeff5dc42861b557870459a9d28",
     url = "mvn:com.facebook.fresco:ui-common:aar:2.5.0",

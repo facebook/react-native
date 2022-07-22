@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -355,16 +355,18 @@ RCT_ARRAY_CONVERTER(RCTFontVariantDescriptor)
     }
   }
 
-  // Get the closest font that matches the given weight for the fontFamily
-  CGFloat closestWeight = INFINITY;
   NSArray<NSString *> *names = fontNamesForFamilyName(familyName);
-  for (NSString *name in names) {
-    UIFont *match = [UIFont fontWithName:name size:fontSize];
-    if (isItalic == isItalicFont(match) && isCondensed == isCondensedFont(match)) {
-      CGFloat testWeight = weightOfFont(match);
-      if (ABS(testWeight - fontWeight) < ABS(closestWeight - fontWeight)) {
-        font = match;
-        closestWeight = testWeight;
+  if (!didFindFont) {
+    // Get the closest font that matches the given weight for the fontFamily
+    CGFloat closestWeight = INFINITY;
+    for (NSString *name in names) {
+      UIFont *match = [UIFont fontWithName:name size:fontSize];
+      if (isItalic == isItalicFont(match) && isCondensed == isCondensedFont(match)) {
+        CGFloat testWeight = weightOfFont(match);
+        if (ABS(testWeight - fontWeight) < ABS(closestWeight - fontWeight)) {
+          font = match;
+          closestWeight = testWeight;
+        }
       }
     }
   }

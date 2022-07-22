@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,9 +15,8 @@ import requireNativeComponent from '../../../ReactNative/requireNativeComponent'
 
 import type {HostComponent} from '../../../Renderer/shims/ReactNativeTypes';
 
-const RCTRefreshControl: HostComponent<mixed> = requireNativeComponent<mixed>(
-  'RCTRefreshControl',
-);
+const RCTRefreshControl: HostComponent<mixed> =
+  requireNativeComponent<mixed>('RCTRefreshControl');
 
 class RefreshControlMock extends React.Component<{...}> {
   static latestRef: ?RefreshControlMock;

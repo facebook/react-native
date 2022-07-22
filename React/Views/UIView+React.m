@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -313,6 +313,17 @@
 {
   objc_setAssociatedObject(
       self, @selector(accessibilityActions), accessibilityActions, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (NSString *)accessibilityLanguage
+{
+  return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setAccessibilityLanguage:(NSString *)accessibilityLanguage
+{
+  objc_setAssociatedObject(
+      self, @selector(accessibilityLanguage), accessibilityLanguage, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 - (NSString *)accessibilityRole

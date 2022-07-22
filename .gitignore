@@ -20,19 +20,24 @@ DerivedData
 *.ipa
 *.xcuserstate
 project.xcworkspace
+**/.xcode.env.local
 
 # Gradle
 /build/
 /packages/react-native-gradle-plugin/build/
+/packages/rn-tester/build
 /packages/rn-tester/android/app/.cxx/
 /packages/rn-tester/android/app/build/
 /packages/rn-tester/android/app/gradle/
 /packages/rn-tester/android/app/gradlew
 /packages/rn-tester/android/app/gradlew.bat
 /ReactAndroid/build/
+/ReactAndroid/.cxx/
 /ReactAndroid/gradle/
 /ReactAndroid/gradlew
 /ReactAndroid/gradlew.bat
+/ReactAndroid/hermes-engine/build/
+/ReactAndroid/hermes-engine/.cxx/
 /template/android/app/build/
 /template/android/build/
 
@@ -81,8 +86,6 @@ package-lock.json
 
 # ReactCommon subdir shouldn't have Xcode project
 /ReactCommon/**/*.xcodeproj
-/packages/rn-tester/build
-/packages/rn-tester/android/app/build/*
 
 # Libs that shouldn't have Xcode project
 /Libraries/FBLazyVector/**/*.xcodeproj
@@ -95,7 +98,8 @@ package-lock.json
 /vendor
 /template/vendor
 
-# CocoaPods
+# iOS / CocoaPods
+/template/ios/build/
 /template/ios/Pods/
 /template/ios/Podfile.lock
 /packages/rn-tester/Gemfile.lock
@@ -109,6 +113,11 @@ package-lock.json
 /packages/react-native-codegen/lib
 /ReactCommon/react/renderer/components/rncore/
 /packages/rn-tester/NativeModuleExample/ScreenshotManagerSpec*
+
+# Additional SDKs
+/sdks/download
+/sdks/hermes
+/sdks/hermesc
 
 # Visual studio
 .vscode

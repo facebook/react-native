@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -171,10 +171,11 @@ class TaskQueue {
         this.hasTasksToProcess() && this._onMoreTasks();
       })
       .catch(ex => {
-        ex.message = `TaskQueue: Error resolving Promise in task ${task.name}: ${ex.message}`;
-        throw ex;
-      })
-      .done();
+        setTimeout(() => {
+          ex.message = `TaskQueue: Error resolving Promise in task ${task.name}: ${ex.message}`;
+          throw ex;
+        }, 0);
+      });
   }
 }
 

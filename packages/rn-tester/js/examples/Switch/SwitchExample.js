@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -238,7 +238,29 @@ class OnChangeExample extends React.Component<{...}, $FlowFixMeState> {
   render() {
     return (
       <View>
-        <Switch onChange={() => alert('OnChange Called')} />
+        <Switch
+          onChange={() => {
+            // eslint-disable-next-line no-alert
+            alert('OnChange Called');
+          }}
+        />
+      </View>
+    );
+  }
+}
+
+class ContainerBackgroundColorStyleExample extends React.Component<
+  {...},
+  $FlowFixMeState,
+> {
+  render() {
+    return (
+      <View>
+        <Switch
+          style={{backgroundColor: 'blue'}}
+          thumbColor="white"
+          value={true}
+        />
       </View>
     );
   }
@@ -289,6 +311,12 @@ exports.examples = [
     title: 'OnChange receives the change event as an argument',
     render(): React.Element<any> {
       return <OnChangeExample />;
+    },
+  },
+  {
+    title: "The container's background color can be set",
+    render(): React.Element<any> {
+      return <ContainerBackgroundColorStyleExample />;
     },
   },
 ];

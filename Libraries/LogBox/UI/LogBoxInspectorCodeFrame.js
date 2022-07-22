@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -32,15 +32,18 @@ function LogBoxInspectorCodeFrame(props: Props): React.Node {
   }
 
   function getFileName() {
+    // $FlowFixMe[incompatible-use]
     const matches = /[^/]*$/.exec(codeFrame.fileName);
     if (matches && matches.length > 0) {
       return matches[0];
     }
 
+    // $FlowFixMe[incompatible-use]
     return codeFrame.fileName;
   }
 
   function getLocation() {
+    // $FlowFixMe[incompatible-use]
     const location = codeFrame.location;
     if (location != null) {
       return ` (${location.row}:${

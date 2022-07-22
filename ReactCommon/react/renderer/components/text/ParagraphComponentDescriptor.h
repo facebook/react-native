@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <react/debug/react_native_assert.h>
 #include <react/renderer/components/text/ParagraphShadowNode.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 #include <react/renderer/textlayoutmanager/TextLayoutManager.h>
@@ -33,8 +32,6 @@ class ParagraphComponentDescriptor final
   void adopt(ShadowNode::Unshared const &shadowNode) const override {
     ConcreteComponentDescriptor::adopt(shadowNode);
 
-    react_native_assert(
-        std::dynamic_pointer_cast<ParagraphShadowNode>(shadowNode));
     auto paragraphShadowNode =
         std::static_pointer_cast<ParagraphShadowNode>(shadowNode);
 
@@ -44,7 +41,7 @@ class ParagraphComponentDescriptor final
   }
 
  private:
-  SharedTextLayoutManager textLayoutManager_;
+  std::shared_ptr<TextLayoutManager const> textLayoutManager_;
 };
 
 } // namespace react

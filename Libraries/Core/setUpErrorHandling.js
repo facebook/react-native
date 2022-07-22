@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -19,7 +19,7 @@ ExceptionsManager.installConsoleErrorReporter();
 
 // Set up error handler
 if (!global.__fbDisableExceptionsManager) {
-  const handleError = (e, isFatal) => {
+  const handleError = (e: mixed, isFatal: boolean) => {
     try {
       ExceptionsManager.handleException(e, isFatal);
     } catch (ee) {

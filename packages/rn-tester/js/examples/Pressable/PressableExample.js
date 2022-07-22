@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,6 +18,7 @@ import {
   Platform,
   View,
 } from 'react-native';
+import ReactNativeFeatureFlags from 'react-native/Libraries/ReactNative/ReactNativeFeatureFlags';
 
 const {useEffect, useRef, useState} = React;
 
@@ -83,7 +84,7 @@ function TextOnPressBox() {
 function PressableFeedbackEvents() {
   const [eventLog, setEventLog] = useState([]);
 
-  function appendEvent(eventName) {
+  function appendEvent(eventName: string) {
     const limit = 6;
     setEventLog(current => {
       return [eventName].concat(current.slice(0, limit - 1));
@@ -119,7 +120,7 @@ function PressableFeedbackEvents() {
 function PressableDelayEvents() {
   const [eventLog, setEventLog] = useState([]);
 
-  function appendEvent(eventName) {
+  function appendEvent(eventName: string) {
     const limit = 6;
     const newEventLog = eventLog.slice(0, limit - 1);
     newEventLog.unshift(eventName);
@@ -166,6 +167,7 @@ function ForceTouchExample() {
           style={styles.wrapper}
           testID="pressable_3dtouch_button"
           onStartShouldSetResponder={() => true}
+          // $FlowFixMe[sketchy-null-number]
           onResponderMove={event => setForce(event.nativeEvent?.force || 1)}
           onResponderRelease={event => setForce(0)}>
           <Text style={styles.button}>Press Me</Text>
@@ -249,6 +251,25 @@ function PressableDisabled() {
   );
 }
 
+function PressableHoverStyle() {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <View style={styles.row}>
+      <Pressable
+        style={[
+          {
+            backgroundColor: hovered ? 'rgb(210, 230, 255)' : 'white',
+          },
+          styles.wrapperCustom,
+        ]}
+        onHoverIn={() => setHovered(true)}
+        onHoverOut={() => setHovered(false)}>
+        <Text style={styles.text}>Hover Me</Text>
+      </Pressable>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   row: {
     justifyContent: 'center',
@@ -322,7 +343,8 @@ exports.description = 'Component for making views pressable.';
 exports.title = 'Pressable';
 exports.category = 'UI';
 exports.documentationURL = 'https://reactnative.dev/docs/pressable';
-exports.examples = [
+
+const examples = [
   {
     title: 'Change content based on Press',
     render(): React.Node {
@@ -351,15 +373,16 @@ exports.examples = [
     title: 'Pressable feedback events',
     description: ('<Pressable> components accept onPress, onPressIn, ' +
       'onPressOut, and onLongPress as props.': string),
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <PressableFeedbackEvents />;
     },
   },
   {
     title: 'Pressable with Ripple and Animated child',
-    description: ('Pressable can have an AnimatedComponent as a direct child.': string),
+    description:
+      ('Pressable can have an AnimatedComponent as a direct child.': string),
     platform: 'android',
-    render: function(): React.Node {
+    render: function (): React.Node {
       const mScale = new Animated.Value(1);
       Animated.timing(mScale, {
         toValue: 0.3,
@@ -383,9 +406,10 @@ exports.examples = [
   },
   {
     title: 'Pressable with custom Ripple',
-    description: ("Pressable can specify ripple's radius, color and borderless params": string),
+    description:
+      ("Pressable can specify ripple's radius, color and borderless params": string),
     platform: 'android',
-    render: function(): React.Node {
+    render: function (): React.Node {
       const nativeFeedbackButton = {
         textAlign: 'center',
         margin: 10,
@@ -452,7 +476,7 @@ exports.examples = [
   },
   {
     title: '<Text onPress={fn}> with highlight',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <TextOnPressBox />;
     },
   },
@@ -461,7 +485,7 @@ exports.examples = [
     description: ('<Pressable> also accept delayPressIn, ' +
       'delayPressOut, and delayLongPress as props. These props impact the ' +
       'timing of feedback events.': string),
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <PressableDelayEvents />;
     },
   },
@@ -469,32 +493,46 @@ exports.examples = [
     title: '3D Touch / Force Touch',
     description:
       'iPhone 8 and 8 plus support 3D touch, which adds a force property to touches',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <ForceTouchExample />;
     },
     platform: 'ios',
   },
   {
     title: 'Pressable Hit Slop',
-    description: ('<Pressable> components accept hitSlop prop which extends the touch area ' +
-      'without changing the view bounds.': string),
-    render: function(): React.Node {
+    description:
+      ('<Pressable> components accept hitSlop prop which extends the touch area ' +
+        'without changing the view bounds.': string),
+    render: function (): React.Node {
       return <PressableHitSlop />;
     },
   },
   {
     title: 'Pressable Native Methods',
-    description: ('<Pressable> components expose native methods like `measure`.': string),
-    render: function(): React.Node {
+    description:
+      ('<Pressable> components expose native methods like `measure`.': string),
+    render: function (): React.Node {
       return <PressableNativeMethods />;
     },
   },
   {
     title: 'Disabled Pressable',
-    description: ('<Pressable> components accept disabled prop which prevents ' +
-      'any interaction with component': string),
-    render: function(): React.Node {
+    description:
+      ('<Pressable> components accept disabled prop which prevents ' +
+        'any interaction with component': string),
+    render: function (): React.Node {
       return <PressableDisabled />;
     },
   },
 ];
+
+if (ReactNativeFeatureFlags.shouldPressibilityUseW3CPointerEventsForHover()) {
+  examples.push({
+    title: 'Change style based on Hover',
+    render(): React.Node {
+      return <PressableHoverStyle />;
+    },
+  });
+}
+
+exports.examples = examples;

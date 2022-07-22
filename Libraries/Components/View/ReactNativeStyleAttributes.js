@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -85,14 +85,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   /**
    * Transform
    */
-  decomposedMatrix: true, // @deprecated
-  rotation: true, // @deprecated
-  scaleX: true, // @deprecated
-  scaleY: true, // @deprecated
   transform: {process: processTransform},
-  transformMatrix: true, // @deprecated
-  translateX: true, // @deprecated
-  translateY: true, // @deprecated
 
   /**
    * View
@@ -105,6 +98,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   borderBottomRightRadius: true,
   borderBottomStartRadius: true,
   borderColor: colorAttributes,
+  borderCurve: true,
   borderEndColor: colorAttributes,
   borderLeftColor: colorAttributes,
   borderRadius: true,

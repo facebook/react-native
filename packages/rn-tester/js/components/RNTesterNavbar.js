@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,12 +8,22 @@
  * @flow
  */
 
+import type {RNTesterTheme} from './RNTesterTheme';
+
 import * as React from 'react';
 import {Text, View, StyleSheet, Image, Pressable} from 'react-native';
 
 import {RNTesterThemeContext} from './RNTesterTheme';
 
-const BookmarkTab = ({handleNavBarPress, isBookmarkActive, theme}) => (
+const BookmarkTab = ({
+  handleNavBarPress,
+  isBookmarkActive,
+  theme,
+}: $TEMPORARY$object<{
+  handleNavBarPress: (data: {screen: string}) => void,
+  isBookmarkActive: boolean,
+  theme: RNTesterTheme,
+}>) => (
   <View style={styles.centerBox}>
     <View
       style={[
@@ -41,6 +51,8 @@ const BookmarkTab = ({handleNavBarPress, isBookmarkActive, theme}) => (
   </View>
 );
 
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
 const NavbarButton = ({
   testID,
   theme,
@@ -69,7 +81,15 @@ const NavbarButton = ({
   </Pressable>
 );
 
-const ComponentTab = ({isComponentActive, handleNavBarPress, theme}) => (
+const ComponentTab = ({
+  isComponentActive,
+  handleNavBarPress,
+  theme,
+}: $TEMPORARY$object<{
+  handleNavBarPress: (data: {screen: string}) => void,
+  isComponentActive: boolean,
+  theme: RNTesterTheme,
+}>) => (
   <NavbarButton
     testID="components-tab"
     label="Components"
@@ -82,7 +102,15 @@ const ComponentTab = ({isComponentActive, handleNavBarPress, theme}) => (
   />
 );
 
-const APITab = ({isAPIActive, handleNavBarPress, theme}) => (
+const APITab = ({
+  isAPIActive,
+  handleNavBarPress,
+  theme,
+}: $TEMPORARY$object<{
+  handleNavBarPress: (data: {screen: string}) => void,
+  isAPIActive: boolean,
+  theme: RNTesterTheme,
+}>) => (
   <NavbarButton
     testID="apis-tab"
     label="APIs"

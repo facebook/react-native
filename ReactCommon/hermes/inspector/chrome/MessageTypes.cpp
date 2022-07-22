@@ -1,5 +1,5 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
-// @generated SignedSource<<522f29c54f207a4f7b5c33af07cf64d0>>
+// Copyright (c) Meta Platforms, Inc. and affiliates. All Rights Reserved.
+// @generated SignedSource<<f6f9a72f332587809b4e50ab054e0a74>>
 
 #include "MessageTypes.h"
 
@@ -60,7 +60,11 @@ std::unique_ptr<Request> Request::fromJsonThrowOnError(const std::string &str) {
        makeUnique<heapProfiler::StopTrackingHeapObjectsRequest>},
       {"HeapProfiler.takeHeapSnapshot",
        makeUnique<heapProfiler::TakeHeapSnapshotRequest>},
+      {"Profiler.start", makeUnique<profiler::StartRequest>},
+      {"Profiler.stop", makeUnique<profiler::StopRequest>},
+      {"Runtime.callFunctionOn", makeUnique<runtime::CallFunctionOnRequest>},
       {"Runtime.evaluate", makeUnique<runtime::EvaluateRequest>},
+      {"Runtime.getHeapUsage", makeUnique<runtime::GetHeapUsageRequest>},
       {"Runtime.getProperties", makeUnique<runtime::GetPropertiesRequest>},
       {"Runtime.runIfWaitingForDebugger",
        makeUnique<runtime::RunIfWaitingForDebuggerRequest>},
@@ -271,6 +275,74 @@ dynamic heapProfiler::SamplingHeapProfile::toDynamic() const {
 
   put(obj, "head", head);
   put(obj, "samples", samples);
+  return obj;
+}
+
+profiler::PositionTickInfo::PositionTickInfo(const dynamic &obj) {
+  assign(line, obj, "line");
+  assign(ticks, obj, "ticks");
+}
+
+dynamic profiler::PositionTickInfo::toDynamic() const {
+  dynamic obj = dynamic::object;
+
+  put(obj, "line", line);
+  put(obj, "ticks", ticks);
+  return obj;
+}
+
+profiler::ProfileNode::ProfileNode(const dynamic &obj) {
+  assign(id, obj, "id");
+  assign(callFrame, obj, "callFrame");
+  assign(hitCount, obj, "hitCount");
+  assign(children, obj, "children");
+  assign(deoptReason, obj, "deoptReason");
+  assign(positionTicks, obj, "positionTicks");
+}
+
+dynamic profiler::ProfileNode::toDynamic() const {
+  dynamic obj = dynamic::object;
+
+  put(obj, "id", id);
+  put(obj, "callFrame", callFrame);
+  put(obj, "hitCount", hitCount);
+  put(obj, "children", children);
+  put(obj, "deoptReason", deoptReason);
+  put(obj, "positionTicks", positionTicks);
+  return obj;
+}
+
+profiler::Profile::Profile(const dynamic &obj) {
+  assign(nodes, obj, "nodes");
+  assign(startTime, obj, "startTime");
+  assign(endTime, obj, "endTime");
+  assign(samples, obj, "samples");
+  assign(timeDeltas, obj, "timeDeltas");
+}
+
+dynamic profiler::Profile::toDynamic() const {
+  dynamic obj = dynamic::object;
+
+  put(obj, "nodes", nodes);
+  put(obj, "startTime", startTime);
+  put(obj, "endTime", endTime);
+  put(obj, "samples", samples);
+  put(obj, "timeDeltas", timeDeltas);
+  return obj;
+}
+
+runtime::CallArgument::CallArgument(const dynamic &obj) {
+  assign(value, obj, "value");
+  assign(unserializableValue, obj, "unserializableValue");
+  assign(objectId, obj, "objectId");
+}
+
+dynamic runtime::CallArgument::toDynamic() const {
+  dynamic obj = dynamic::object;
+
+  put(obj, "value", value);
+  put(obj, "unserializableValue", unserializableValue);
+  put(obj, "objectId", objectId);
   return obj;
 }
 
@@ -487,12 +559,22 @@ debugger::ResumeRequest::ResumeRequest(const dynamic &obj)
     : Request("Debugger.resume") {
   assign(id, obj, "id");
   assign(method, obj, "method");
+
+  auto it = obj.find("params");
+  if (it != obj.items().end()) {
+    dynamic params = it->second;
+    assign(terminateOnResume, params, "terminateOnResume");
+  }
 }
 
 dynamic debugger::ResumeRequest::toDynamic() const {
+  dynamic params = dynamic::object;
+  put(params, "terminateOnResume", terminateOnResume);
+
   dynamic obj = dynamic::object;
   put(obj, "id", id);
   put(obj, "method", method);
+  put(obj, "params", std::move(params));
   return obj;
 }
 
@@ -801,8 +883,11 @@ heapProfiler::StartSamplingRequest::StartSamplingRequest(const dynamic &obj)
   assign(id, obj, "id");
   assign(method, obj, "method");
 
-  dynamic params = obj.at("params");
-  assign(samplingInterval, params, "samplingInterval");
+  auto it = obj.find("params");
+  if (it != obj.items().end()) {
+    dynamic params = it->second;
+    assign(samplingInterval, params, "samplingInterval");
+  }
 }
 
 dynamic heapProfiler::StartSamplingRequest::toDynamic() const {
@@ -829,8 +914,11 @@ heapProfiler::StartTrackingHeapObjectsRequest::StartTrackingHeapObjectsRequest(
   assign(id, obj, "id");
   assign(method, obj, "method");
 
-  dynamic params = obj.at("params");
-  assign(trackAllocations, params, "trackAllocations");
+  auto it = obj.find("params");
+  if (it != obj.items().end()) {
+    dynamic params = it->second;
+    assign(trackAllocations, params, "trackAllocations");
+  }
 }
 
 dynamic heapProfiler::StartTrackingHeapObjectsRequest::toDynamic() const {
@@ -878,15 +966,20 @@ heapProfiler::StopTrackingHeapObjectsRequest::StopTrackingHeapObjectsRequest(
   assign(id, obj, "id");
   assign(method, obj, "method");
 
-  dynamic params = obj.at("params");
-  assign(reportProgress, params, "reportProgress");
-  assign(treatGlobalObjectsAsRoots, params, "treatGlobalObjectsAsRoots");
+  auto it = obj.find("params");
+  if (it != obj.items().end()) {
+    dynamic params = it->second;
+    assign(reportProgress, params, "reportProgress");
+    assign(treatGlobalObjectsAsRoots, params, "treatGlobalObjectsAsRoots");
+    assign(captureNumericValue, params, "captureNumericValue");
+  }
 }
 
 dynamic heapProfiler::StopTrackingHeapObjectsRequest::toDynamic() const {
   dynamic params = dynamic::object;
   put(params, "reportProgress", reportProgress);
   put(params, "treatGlobalObjectsAsRoots", treatGlobalObjectsAsRoots);
+  put(params, "captureNumericValue", captureNumericValue);
 
   dynamic obj = dynamic::object;
   put(obj, "id", id);
@@ -909,15 +1002,20 @@ heapProfiler::TakeHeapSnapshotRequest::TakeHeapSnapshotRequest(
   assign(id, obj, "id");
   assign(method, obj, "method");
 
-  dynamic params = obj.at("params");
-  assign(reportProgress, params, "reportProgress");
-  assign(treatGlobalObjectsAsRoots, params, "treatGlobalObjectsAsRoots");
+  auto it = obj.find("params");
+  if (it != obj.items().end()) {
+    dynamic params = it->second;
+    assign(reportProgress, params, "reportProgress");
+    assign(treatGlobalObjectsAsRoots, params, "treatGlobalObjectsAsRoots");
+    assign(captureNumericValue, params, "captureNumericValue");
+  }
 }
 
 dynamic heapProfiler::TakeHeapSnapshotRequest::toDynamic() const {
   dynamic params = dynamic::object;
   put(params, "reportProgress", reportProgress);
   put(params, "treatGlobalObjectsAsRoots", treatGlobalObjectsAsRoots);
+  put(params, "captureNumericValue", captureNumericValue);
 
   dynamic obj = dynamic::object;
   put(obj, "id", id);
@@ -928,6 +1026,87 @@ dynamic heapProfiler::TakeHeapSnapshotRequest::toDynamic() const {
 
 void heapProfiler::TakeHeapSnapshotRequest::accept(
     RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
+profiler::StartRequest::StartRequest() : Request("Profiler.start") {}
+
+profiler::StartRequest::StartRequest(const dynamic &obj)
+    : Request("Profiler.start") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+}
+
+dynamic profiler::StartRequest::toDynamic() const {
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  return obj;
+}
+
+void profiler::StartRequest::accept(RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
+profiler::StopRequest::StopRequest() : Request("Profiler.stop") {}
+
+profiler::StopRequest::StopRequest(const dynamic &obj)
+    : Request("Profiler.stop") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+}
+
+dynamic profiler::StopRequest::toDynamic() const {
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  return obj;
+}
+
+void profiler::StopRequest::accept(RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
+runtime::CallFunctionOnRequest::CallFunctionOnRequest()
+    : Request("Runtime.callFunctionOn") {}
+
+runtime::CallFunctionOnRequest::CallFunctionOnRequest(const dynamic &obj)
+    : Request("Runtime.callFunctionOn") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(functionDeclaration, params, "functionDeclaration");
+  assign(objectId, params, "objectId");
+  assign(arguments, params, "arguments");
+  assign(silent, params, "silent");
+  assign(returnByValue, params, "returnByValue");
+  assign(userGesture, params, "userGesture");
+  assign(awaitPromise, params, "awaitPromise");
+  assign(executionContextId, params, "executionContextId");
+  assign(objectGroup, params, "objectGroup");
+}
+
+dynamic runtime::CallFunctionOnRequest::toDynamic() const {
+  dynamic params = dynamic::object;
+  put(params, "functionDeclaration", functionDeclaration);
+  put(params, "objectId", objectId);
+  put(params, "arguments", arguments);
+  put(params, "silent", silent);
+  put(params, "returnByValue", returnByValue);
+  put(params, "userGesture", userGesture);
+  put(params, "awaitPromise", awaitPromise);
+  put(params, "executionContextId", executionContextId);
+  put(params, "objectGroup", objectGroup);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  put(obj, "params", std::move(params));
+  return obj;
+}
+
+void runtime::CallFunctionOnRequest::accept(RequestHandler &handler) const {
   handler.handle(*this);
 }
 
@@ -968,6 +1147,26 @@ dynamic runtime::EvaluateRequest::toDynamic() const {
 }
 
 void runtime::EvaluateRequest::accept(RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
+runtime::GetHeapUsageRequest::GetHeapUsageRequest()
+    : Request("Runtime.getHeapUsage") {}
+
+runtime::GetHeapUsageRequest::GetHeapUsageRequest(const dynamic &obj)
+    : Request("Runtime.getHeapUsage") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+}
+
+dynamic runtime::GetHeapUsageRequest::toDynamic() const {
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  return obj;
+}
+
+void runtime::GetHeapUsageRequest::accept(RequestHandler &handler) const {
   handler.handle(*this);
 }
 
@@ -1187,6 +1386,42 @@ dynamic heapProfiler::StopSamplingResponse::toDynamic() const {
   return obj;
 }
 
+profiler::StopResponse::StopResponse(const dynamic &obj) {
+  assign(id, obj, "id");
+
+  dynamic res = obj.at("result");
+  assign(profile, res, "profile");
+}
+
+dynamic profiler::StopResponse::toDynamic() const {
+  dynamic res = dynamic::object;
+  put(res, "profile", profile);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "result", std::move(res));
+  return obj;
+}
+
+runtime::CallFunctionOnResponse::CallFunctionOnResponse(const dynamic &obj) {
+  assign(id, obj, "id");
+
+  dynamic res = obj.at("result");
+  assign(result, res, "result");
+  assign(exceptionDetails, res, "exceptionDetails");
+}
+
+dynamic runtime::CallFunctionOnResponse::toDynamic() const {
+  dynamic res = dynamic::object;
+  put(res, "result", result);
+  put(res, "exceptionDetails", exceptionDetails);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "result", std::move(res));
+  return obj;
+}
+
 runtime::EvaluateResponse::EvaluateResponse(const dynamic &obj) {
   assign(id, obj, "id");
 
@@ -1199,6 +1434,25 @@ dynamic runtime::EvaluateResponse::toDynamic() const {
   dynamic res = dynamic::object;
   put(res, "result", result);
   put(res, "exceptionDetails", exceptionDetails);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "result", std::move(res));
+  return obj;
+}
+
+runtime::GetHeapUsageResponse::GetHeapUsageResponse(const dynamic &obj) {
+  assign(id, obj, "id");
+
+  dynamic res = obj.at("result");
+  assign(usedSize, res, "usedSize");
+  assign(totalSize, res, "totalSize");
+}
+
+dynamic runtime::GetHeapUsageResponse::toDynamic() const {
+  dynamic res = dynamic::object;
+  put(res, "usedSize", usedSize);
+  put(res, "totalSize", totalSize);
 
   dynamic obj = dynamic::object;
   put(obj, "id", id);

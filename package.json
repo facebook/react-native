@@ -7,16 +7,13 @@
   "license": "MIT",
   "repository": "github:facebook/react-native",
   "engines": {
-    "node": ">=12"
+    "node": ">=14"
   },
   "jest-junit": {
     "outputDirectory": "reports/junit",
     "outputName": "js-test-results.xml"
   },
   "files": [
-    "!template/node_modules",
-    "!template/package-lock.json",
-    "!template/yarn.lock",
     "android",
     "cli.js",
     "flow",
@@ -25,6 +22,7 @@
     "interface.js",
     "jest-preset.js",
     "jest",
+    "!jest/private",
     "Libraries",
     "LICENSE",
     "local-cli",
@@ -38,17 +36,36 @@
     "README.md",
     "rn-get-polyfills.js",
     "scripts/compose-source-maps.js",
-    "scripts/find-node.sh",
+    "scripts/find-node-for-xcode.sh",
+    "scripts/generate-artifacts.js",
+    "scripts/generate-provider-cli.js",
     "scripts/generate-specs-cli.js",
+    "scripts/codegen/codegen-utils.js",
+    "scripts/codegen/generate-artifacts-executor.js",
+    "scripts/codegen/generate-specs-cli-executor.js",
+    "scripts/hermes/hermes-utils.js",
+    "scripts/hermes/prepare-hermes-for-build.js",
     "scripts/ios-configure-glog.sh",
+    "scripts/xcode/with-environment.sh",
     "scripts/launchPackager.bat",
     "scripts/launchPackager.command",
+    "scripts/native_modules.rb",
     "scripts/node-binary.sh",
     "scripts/packager.sh",
+    "scripts/packager-reporter.js",
+    "scripts/react_native_pods_utils/script_phases.rb",
+    "scripts/react_native_pods_utils/script_phases.sh",
     "scripts/react_native_pods.rb",
+    "scripts/cocoapods",
     "scripts/react-native-xcode.sh",
+    "sdks/.hermesversion",
+    "sdks/hermes-engine",
+    "sdks/hermesc",
     "template.config.js",
     "template",
+    "!template/node_modules",
+    "!template/package-lock.json",
+    "!template/yarn.lock",
     "third-party-podspecs"
   ],
   "scripts": {
@@ -67,7 +84,7 @@
     "prettier": "prettier --write \"./**/*.{js,md,yml}\"",
     "format-check": "prettier --list-different \"./**/*.{js,md,yml}\"",
     "update-lock": "npx yarn-deduplicate",
-    "docker-setup-android": "docker pull reactnativecommunity/react-native-android:4.0",
+    "docker-setup-android": "docker pull reactnativecommunity/react-native-android:5.2",
     "docker-build-android": "docker build -t reactnativeci/android -f .circleci/Dockerfiles/Dockerfile.android .",
     "test-android-run-instrumentation": "docker run --cap-add=SYS_ADMIN -it reactnativeci/android bash .circleci/Dockerfiles/scripts/run-android-docker-instrumentation-tests.sh",
     "test-android-run-unit": "docker run --cap-add=SYS_ADMIN -it reactnativeci/android bash .circleci/Dockerfiles/scripts/run-android-docker-unit-tests.sh",
@@ -76,8 +93,6 @@
     "test-android-instrumentation": "yarn run docker-build-android && yarn run test-android-run-instrumentation",
     "test-android-unit": "yarn run docker-build-android && yarn run test-android-run-unit",
     "test-android-e2e": "yarn run docker-build-android && yarn run test-android-run-e2e",
-    "build-ios-e2e": "detox build -c ios.sim.release",
-    "test-ios-e2e": "detox test -c ios.sim.release packages/rn-tester/e2e",
     "test-ios": "./scripts/objc-test.sh test"
   },
   "workspaces": [
@@ -85,13 +100,13 @@
     "repo-config"
   ],
   "peerDependencies": {
-    "react": "17.0.2"
+    "react": "18.1.0"
   },
   "dependencies": {
     "@jest/create-cache-key-function": "^27.0.1",
-    "@react-native-community/cli": "^6.0.0",
-    "@react-native-community/cli-platform-android": "^6.0.0",
-    "@react-native-community/cli-platform-ios": "^6.0.0",
+    "@react-native-community/cli": "^9.0.0-alpha.3",
+    "@react-native-community/cli-platform-android": "^9.0.0-alpha.3",
+    "@react-native-community/cli-platform-ios": "^9.0.0-alpha.3",
     "@react-native/assets": "1.0.0",
     "@react-native/normalize-color": "2.0.0",
     "@react-native/polyfills": "2.0.0",
@@ -99,64 +114,49 @@
     "anser": "^1.4.9",
     "base64-js": "^1.1.2",
     "event-target-shim": "^5.0.1",
-    "hermes-engine": "~0.9.0",
     "invariant": "^2.2.4",
     "jsc-android": "^250230.2.1",
-    "metro-react-native-babel-transformer": "0.66.2",
-    "metro-runtime": "0.66.2",
-    "metro-source-map": "0.66.2",
+    "memoize-one": "^5.0.0",
+    "metro-react-native-babel-transformer": "0.71.3",
+    "metro-runtime": "0.71.3",
+    "metro-source-map": "0.71.3",
+    "mkdirp": "^0.5.1",
     "nullthrows": "^1.1.1",
     "pretty-format": "^26.5.2",
     "promise": "^8.0.3",
-    "prop-types": "^15.7.2",
-    "react-devtools-core": "^4.13.0",
+    "react-devtools-core": "4.24.0",
+    "react-native-gradle-plugin": "^0.70.0",
     "react-refresh": "^0.4.0",
+    "react-shallow-renderer": "^16.15.0",
     "regenerator-runtime": "^0.13.2",
-    "scheduler": "^0.20.2",
+    "scheduler": "^0.22.0",
     "stacktrace-parser": "^0.1.3",
-    "use-subscription": "^1.0.0",
+    "use-sync-external-store": "^1.0.0",
     "whatwg-fetch": "^3.0.0",
     "ws": "^6.1.4"
   },
   "devDependencies": {
-    "flow-bin": "^0.161.0",
-    "react": "17.0.2"
+    "flow-bin": "^0.183.0",
+    "hermes-eslint": "0.8.0",
+    "react": "18.1.0",
+    "react-test-renderer": "^18.1.0"
   },
-  "detox": {
-    "test-runner": "jest",
-    "runner-config": "packages/rn-tester/e2e/config.json",
-    "specs": "",
-    "configurations": {
-      "android.emu.release": {
-        "binaryPath": "packages/rn-tester/android/app/build/outputs/apk/hermes/release/app-hermes-x86-release.apk",
-        "testBinaryPath": "packages/rn-tester/android/app/build/outputs/apk/androidTest/hermes/release/app-hermes-release-androidTest.apk",
-        "build": "./gradlew :packages:rn-tester:android:app:assembleRelease :packages:rn-tester:android:app:assembleAndroidTest -DtestBuildType=release",
-        "type": "android.emulator",
-        "device": {
-          "avdName": "Nexus_6_API_29"
-        }
+  "codegenConfig": {
+    "libraries": [
+      {
+        "name": "FBReactNativeSpec",
+        "type": "modules",
+        "ios": {},
+        "android": {},
+        "jsSrcsDir": "Libraries"
       },
-      "android.emu.debug": {
-        "binaryPath": "packages/rn-tester/android/app/build/outputs/apk/hermes/debug/app-hermes-x86-debug.apk",
-        "testBinaryPath": "packages/rn-tester/android/app/build/outputs/apk/androidTest/hermes/debug/app-hermes-debug-androidTest.apk",
-        "build": "./gradlew :packages:rn-tester:android:app:assembleDebug :packages:rn-tester:android:app:assembleAndroidTest -DtestBuildType=debug",
-        "type": "android.emulator",
-        "device": {
-          "avdName": "Nexus_6_API_29"
-        }
-      },
-      "ios.sim.release": {
-        "binaryPath": "packages/rn-tester/build/Build/Products/Release-iphonesimulator/RNTester.app/",
-        "build": "xcodebuild -workspace packages/rn-tester/RNTesterPods.xcworkspace -scheme RNTester -configuration Release -sdk iphonesimulator -derivedDataPath packages/rn-tester/build -UseModernBuildSystem=NO -quiet",
-        "type": "ios.simulator",
-        "name": "iPhone 8"
-      },
-      "ios.sim.debug": {
-        "binaryPath": "packages/rn-tester/build/Build/Products/Debug-iphonesimulator/RNTester.app/",
-        "build": "xcodebuild -workspace packages/rn-tester/RNTesterPods.xcworkspace -scheme RNTester -configuration Debug -sdk iphonesimulator -derivedDataPath packages/rn-tester/build -UseModernBuildSystem=NO -quiet",
-        "type": "ios.simulator",
-        "name": "iPhone 8"
+      {
+        "name": "rncore",
+        "type": "components",
+        "ios": {},
+        "android": {},
+        "jsSrcsDir": "Libraries"
       }
-    }
+    ]
   }
 }

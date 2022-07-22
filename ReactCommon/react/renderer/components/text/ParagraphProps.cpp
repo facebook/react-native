@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -47,6 +47,25 @@ ParagraphProps::ParagraphProps(
   textAttributes.opacity = std::numeric_limits<Float>::quiet_NaN();
   textAttributes.backgroundColor = {};
 };
+
+void ParagraphProps::setProp(
+    const PropsParserContext &context,
+    RawPropsPropNameHash hash,
+    const char *propName,
+    RawValue const &value) {
+  // All Props structs setProp methods must always, unconditionally,
+  // call all super::setProp methods, since multiple structs may
+  // reuse the same values.
+  ViewProps::setProp(context, hash, propName, value);
+  BaseTextProps::setProp(context, hash, propName, value);
+
+  /*
+   * These props are applied to `View`, therefore they must not be a part of
+   * base text attributes.
+   */
+  textAttributes.opacity = std::numeric_limits<Float>::quiet_NaN();
+  textAttributes.backgroundColor = {};
+}
 
 #pragma mark - DebugStringConvertible
 

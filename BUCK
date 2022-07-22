@@ -10,13 +10,13 @@ load(
 )
 load(
     "//tools/build_defs/oss:rn_defs.bzl",
-    "APPLETVOS",
     "HERMES_BYTECODE_VERSION",
     "IOS",
     "RCT_IMAGE_DATA_DECODER_SOCKET",
     "RCT_IMAGE_URL_LOADER_SOCKET",
     "RCT_URL_REQUEST_HANDLER_SOCKET",
     "YOGA_CXX_TARGET",
+    "get_react_native_ios_target_sdk_version",
     "react_fabric_component_plugin_provider",
     "react_module_plugin_providers",
     "react_native_root_target",
@@ -35,6 +35,7 @@ RCTCXXBRIDGE_PUBLIC_HEADERS = {
         "JSCExecutorFactory.h",
         "NSDataBigString.h",
         "RCTCxxBridgeDelegate.h",
+        "RCTJSIExecutorRuntimeInstaller.h",
         "RCTMessageThread.h",
     ]
 }
@@ -56,6 +57,7 @@ fb_native.genrule(
     ) + [
         react_native_root_target("packages/rn-tester:nativecomponent-srcs"),
     ],
+    labels = ["uses_hg"],
     cmd = "$(exe {}) $OUT $SRCS".format(react_native_root_target("packages/react-native-codegen:write_to_json")),
     out = "schema-rncore.json",
 )
@@ -95,6 +97,7 @@ rn_xplat_cxx_library2(
     # it's linked in your app, transparently use it".
     labels = [
         "depslint_never_remove",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode() + [
@@ -151,14 +154,17 @@ rn_xplat_cxx_library2(
     frameworks = [
         "$SDKROOT/System/Library/Frameworks/Foundation.framework",
     ],
-    labels = ["supermodule:xplat/default/public.react_native.infra"],
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+        "supermodule:xplat/default/public.react_native.infra",
+    ],
     preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode() + ["-DWITH_FBSYSTRACE=1"],
     visibility = ["PUBLIC"],
     deps = [
         ":RCTCxxUtils",
         ":ReactInternal",
         "//xplat/fbsystrace:fbsystrace",
-        "//xplat/folly:headers_only",
+        "//xplat/folly:headers_only_do_not_use",
         react_native_xplat_target("cxxreact:module"),
         react_native_xplat_target("cxxreact:bridge"),
         react_native_xplat_target("reactperflogger:reactperflogger"),
@@ -182,17 +188,49 @@ rn_xplat_cxx_library2(
         exclude = RCTCXXMODULE_PUBLIC_HEADERS.values(),
         prefix = "React",
     ),
-    apple_sdks = (IOS, APPLETVOS),
+    apple_sdks = (IOS,),
     contacts = ["oncall+react_native@xmail.facebook.com"],
     fbobjc_enable_exceptions = True,
     frameworks = [
         "$SDKROOT/System/Library/Frameworks/Foundation.framework",
     ],
-    labels = ["supermodule:xplat/default/public.react_native.infra"],
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+        "supermodule:xplat/default/public.react_native.infra",
+    ],
     preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode(),
     visibility = ["PUBLIC"],
     deps = [
         "//xplat/folly:molly",
+    ],
+)
+
+rn_xplat_cxx_library2(
+    name = "RCTCxxLogUtils",
+    srcs = glob([
+        "React/CxxLogUtils/*.mm",
+    ]),
+    header_namespace = "",
+    exported_headers = subdir_glob(
+        [
+            (
+                "React/CxxLogUtils",
+                "*.h",
+            ),
+        ],
+        prefix = "React",
+    ),
+    contacts = ["oncall+react_native@xmail.facebook.com"],
+    fbobjc_enable_exceptions = True,
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+        "supermodule:xplat/default/public.react_native.infra",
+    ],
+    preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode(),
+    visibility = ["PUBLIC"],
+    deps = [
+        "//xplat/js/react-native-github:ReactInternal",
+        react_native_xplat_target("logger:logger"),
     ],
 )
 
@@ -210,6 +248,7 @@ REACT_PUBLIC_HEADERS = {
     "React/RCTAnimationType.h": RCTVIEWS_PATH + "RCTAnimationType.h",
     "React/RCTAssert.h": RCTBASE_PATH + "RCTAssert.h",
     "React/RCTAutoInsetsProtocol.h": RCTVIEWS_PATH + "RCTAutoInsetsProtocol.h",
+    "React/RCTBorderCurve.h": RCTVIEWS_PATH + "RCTBorderCurve.h",
     "React/RCTBorderDrawing.h": RCTVIEWS_PATH + "RCTBorderDrawing.h",
     "React/RCTBorderStyle.h": RCTVIEWS_PATH + "RCTBorderStyle.h",
     "React/RCTBridge+Private.h": RCTBASE_PATH + "RCTBridge+Private.h",
@@ -217,6 +256,7 @@ REACT_PUBLIC_HEADERS = {
     "React/RCTBridgeDelegate.h": RCTBASE_PATH + "RCTBridgeDelegate.h",
     "React/RCTBridgeMethod.h": RCTBASE_PATH + "RCTBridgeMethod.h",
     "React/RCTBridgeModule.h": RCTBASE_PATH + "RCTBridgeModule.h",
+    "React/RCTBridgeModuleDecorator.h": RCTBASE_PATH + "RCTBridgeModuleDecorator.h",
     "React/RCTBundleURLProvider.h": RCTBASE_PATH + "RCTBundleURLProvider.h",
     "React/RCTComponent.h": RCTVIEWS_PATH + "RCTComponent.h",
     "React/RCTComponentData.h": RCTVIEWS_PATH + "RCTComponentData.h",
@@ -253,6 +293,7 @@ REACT_PUBLIC_HEADERS = {
     "React/RCTLayoutAnimationGroup.h": RCTMODULES_PATH + "RCTLayoutAnimationGroup.h",
     "React/RCTLog.h": RCTBASE_PATH + "RCTLog.h",
     "React/RCTManagedPointer.h": RCTBASE_PATH + "RCTManagedPointer.h",
+    "React/RCTMockDef.h": RCTBASE_PATH + "RCTMockDef.h",
     "React/RCTModalHostViewController.h": RCTVIEWS_PATH + "RCTModalHostViewController.h",
     "React/RCTModalHostViewManager.h": RCTVIEWS_PATH + "RCTModalHostViewManager.h",
     "React/RCTModalManager.h": RCTVIEWS_PATH + "RCTModalManager.h",
@@ -260,9 +301,11 @@ REACT_PUBLIC_HEADERS = {
     "React/RCTModuleMethod.h": RCTBASE_PATH + "RCTModuleMethod.h",
     "React/RCTMultipartStreamReader.h": RCTBASE_PATH + "RCTMultipartStreamReader.h",
     "React/RCTNullability.h": RCTBASE_PATH + "RCTNullability.h",
+    "React/RCTPLTag.h": RCTBASE_PATH + "RCTPLTag.h",
     "React/RCTPackagerClient.h": RCTDEVSUPPORT_PATH + "RCTPackagerClient.h",
     "React/RCTPackagerConnection.h": RCTDEVSUPPORT_PATH + "RCTPackagerConnection.h",
     "React/RCTPerformanceLogger.h": RCTBASE_PATH + "RCTPerformanceLogger.h",
+    "React/RCTPerformanceLoggerLabels.h": RCTBASE_PATH + "RCTPerformanceLoggerLabels.h",
     "React/RCTPointerEvents.h": RCTVIEWS_PATH + "RCTPointerEvents.h",
     "React/RCTProfile.h": "React/Profiler/RCTProfile.h",
     "React/RCTPushNotificationManager.h": RCTLIB_PATH + "PushNotificationIOS/RCTPushNotificationManager.h",
@@ -307,8 +350,8 @@ REACT_PUBLIC_HEADERS = {
     "React/RCTVersion.h": RCTBASE_PATH + "RCTVersion.h",
     "React/RCTView.h": RCTVIEWS_PATH + "RCTView.h",
     "React/RCTViewManager.h": RCTVIEWS_PATH + "RCTViewManager.h",
+    "React/RCTViewUtils.h": RCTVIEWS_PATH + "RCTViewUtils.h",
     "React/RCTWeakProxy.h": RCTBASE_PATH + "RCTWeakProxy.h",
-    "React/RCTWeakViewHolder.h": RCTVIEWS_PATH + "RCTWeakViewHolder.h",
     "React/RCTWrapperViewController.h": RCTVIEWS_PATH + "RCTWrapperViewController.h",
     "React/UIView+React.h": RCTVIEWS_PATH + "UIView+React.h",
 }
@@ -386,6 +429,7 @@ rn_xplat_cxx_library2(
     labels = [
         "depslint_never_add",
         "depslint_never_remove",  # Some old NativeModule still relies on +load unfortunately.
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     platform_preprocessor_flags = [(
@@ -403,12 +447,14 @@ rn_xplat_cxx_library2(
         "//fbobjc/Libraries/FBQPLMetadataProviders/...",
         "//fbobjc/Libraries/FBReactKit/...",
         "//fbobjc/Libraries/FBiOSSecurityUtils/...",
+        "//fbobjc/Libraries/RCTPrerendering/...",
         "//fbobjc/VendorLib/react-native-maps:react-native-maps",
         "//xplat/js:",
         "//xplat/js/react-native-github/React/...",
         "//xplat/js/react-native-github/ReactCommon/react/nativemodule/core:",
         "//xplat/js/react-native-github/ReactCommon/react/nativemodule/samples:",
         "//xplat/js/react-native-github/packages/rn-tester:",
+        "//xplat/rtc/manul/...",
     ],
     deps = [
         YOGA_CXX_TARGET,
@@ -439,7 +485,6 @@ rn_xplat_cxx_library2(
         "React/RCTComponentViewRegistry.h": "React/Fabric/Mounting/RCTComponentViewRegistry.h",
         "React/RCTFabricSurface.h": "React/Fabric/Surface/RCTFabricSurface.h",
         "React/RCTFabricSurfaceHostingProxyRootView.h": "React/Fabric/Surface/RCTFabricSurfaceHostingProxyRootView.h",
-        "React/RCTFabricSurfaceHostingView.h": "React/Fabric/Surface/RCTFabricSurfaceHostingView.h",
         "React/RCTGenericDelegateSplitter.h": "React/Fabric/Utils/RCTGenericDelegateSplitter.h",
         "React/RCTLegacyViewManagerInteropComponentView.h": "React/Fabric/Mounting/ComponentViews/LegacyViewManagerInterop/RCTLegacyViewManagerInteropComponentView.h",
         "React/RCTLocalizationProvider.h": "React/Fabric/RCTLocalizationProvider.h",
@@ -466,7 +511,7 @@ rn_xplat_cxx_library2(
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],
     fbobjc_enable_exceptions = True,
-    fbobjc_target_sdk_version = "11.0",
+    fbobjc_target_sdk_version = get_react_native_ios_target_sdk_version(),
     frameworks = [
         "$SDKROOT/System/Library/Frameworks/Foundation.framework",
         "$SDKROOT/System/Library/Frameworks/QuartzCore.framework",
@@ -475,6 +520,7 @@ rn_xplat_cxx_library2(
     header_path_prefix = "React",
     labels = [
         "disable_plugins_only_validation",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     plugins = [
@@ -505,6 +551,7 @@ rn_xplat_cxx_library2(
         ":RCTFabricComponentViewsBase",
         "//fbobjc/Libraries/FBReactKit/RCTFabricComponent/RCTFabricComponentPlugin:RCTFabricComponentPlugin",
         "//xplat/js/react-native-github:RCTCxxBridge",
+        "//xplat/js/react-native-github:RCTCxxLogUtils",
         "//xplat/js/react-native-github:RCTCxxUtils",
         "//xplat/js/react-native-github:RCTImage",
         "//xplat/js/react-native-github:RCTPushNotification",
@@ -549,13 +596,17 @@ rn_apple_library(
         ],
     ),
     autoglob = False,
+    complete_nullability = True,
     contacts = ["oncall+react_native@xmail.facebook.com"],
     extension_api_only = True,
     frameworks = [
         "$PLATFORM_DIR/Developer/Library/Frameworks/Foundation.framework",
     ],
     inherited_buck_flags = get_static_library_ios_flags(),
-    labels = ["supermodule:xplat/default/public.react_native.infra"],
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+        "supermodule:xplat/default/public.react_native.infra",
+    ],
     preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode(),
     reexport_all_header_dependencies = True,
     deps = [
@@ -625,6 +676,7 @@ rn_apple_library(
     contacts = ["oncall+react_native@xmail.facebook.com"],
     labels = [
         "disable_plugins_only_validation",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     plugins = [react_fabric_component_plugin_provider("Image", "RCTImageCls")],
@@ -655,7 +707,10 @@ rn_xplat_cxx_library2(
     },
     compiler_flags = ["-Wall"],
     contacts = ["oncall+react_native@xmail.facebook.com"],
-    labels = ["supermodule:xplat/default/public.react_native.infra"],
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+        "supermodule:xplat/default/public.react_native.infra",
+    ],
     visibility = ["PUBLIC"],
     deps = [
         "//xplat/js/react-native-github:RCTImage",
@@ -682,9 +737,13 @@ rn_library(
             "**/__*__/**",
             "**/gulpfile.js",
             "Libraries/Components/Switch/SwitchSchema.js",
+            "**/*._reactvr.js",
         ],
     ),
-    labels = ["supermodule:xplat/default/public.react_native.core"],
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+        "supermodule:xplat/default/public.react_native.core",
+    ],
     visibility = ["PUBLIC"],
     deps = [
         "//xplat/js:node_modules__abort_19controller",
@@ -692,19 +751,18 @@ rn_library(
         "//xplat/js:node_modules__base64_19js",
         "//xplat/js:node_modules__event_19target_19shim",
         "//xplat/js:node_modules__invariant",
+        "//xplat/js:node_modules__memoize_19one",
         "//xplat/js:node_modules__nullthrows",
         "//xplat/js:node_modules__pretty_19format",
         "//xplat/js:node_modules__promise",
-        "//xplat/js:node_modules__prop_19types",
         "//xplat/js:node_modules__react_19devtools_19core",
         "//xplat/js:node_modules__react_19refresh",
         "//xplat/js:node_modules__react_19shallow_19renderer",
         "//xplat/js:node_modules__regenerator_19runtime",
         "//xplat/js:node_modules__stacktrace_19parser",
-        "//xplat/js:node_modules__use_19subscription",
+        "//xplat/js:node_modules__use_19sync_19external_19store",
         "//xplat/js:node_modules__whatwg_19fetch",
         "//xplat/js/RKJSModules/Libraries/Polyfills:Polyfills",
-        "//xplat/js/RKJSModules/Libraries/React:React",
         "//xplat/js/RKJSModules/vendor/react:react",
         "//xplat/js/RKJSModules/vendor/react-test-renderer:react-test-renderer",
         "//xplat/js/RKJSModules/vendor/scheduler:scheduler",
@@ -721,7 +779,10 @@ rn_codegen(
     android_package_name = "com.facebook.fbreact.specs",
     codegen_modules = True,
     ios_assume_nonnull = False,
-    library_labels = ["supermodule:xplat/default/public.react_native.infra"],
+    library_labels = [
+        "supermodule:xplat/default/public.react_native.infra",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+    ],
     native_module_spec_name = "FBReactNativeSpec",
     src_prefix = "Libraries/",
 )
@@ -731,7 +792,10 @@ rn_codegen(
     name = "FBReactNativeComponentSpec",
     codegen_components = True,
     ios_assume_nonnull = False,
-    library_labels = ["supermodule:xplat/default/public.react_native.infra"],
+    library_labels = [
+        "supermodule:xplat/default/public.react_native.infra",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+    ],
     src_prefix = "Libraries/",
 )
 
@@ -765,6 +829,7 @@ rn_apple_library(
         "depslint_never_remove",  # Some old NativeModule still relies on +load unfortunately.
         "disable_plugins_only_validation",
         "extension_api_allow_unsafe_unavailable_usages",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     plugins =
@@ -814,6 +879,7 @@ rn_apple_library(
     labels = [
         "depslint_never_remove",  # Some old NativeModule still relies on +load unfortunately.
         "disable_plugins_only_validation",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     plugins =
@@ -872,6 +938,7 @@ rn_apple_library(
         "depslint_never_remove",  # Some old NativeModule still relies on +load unfortunately.
         "disable_plugins_only_validation",
         "extension_api_allow_unsafe_unavailable_usages",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     plugins =
@@ -919,6 +986,7 @@ rn_apple_library(
         "depslint_never_remove",  # Some old NativeModule still relies on +load unfortunately.
         "disable_plugins_only_validation",
         "extension_api_allow_unsafe_unavailable_usages",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     plugins =
@@ -970,6 +1038,7 @@ rn_apple_library(
         "depslint_never_remove",  # Some old NativeModule still relies on +load unfortunately.
         "disable_plugins_only_validation",
         "extension_api_allow_unsafe_unavailable_usages",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     plugins =
@@ -1050,6 +1119,7 @@ rn_apple_library(
         "depslint_never_remove",  # Some old NativeModule still relies on +load unfortunately.
         "disable_plugins_only_validation",
         "extension_api_allow_unsafe_unavailable_usages",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     plugins =
@@ -1183,6 +1253,7 @@ rn_xplat_cxx_library2(
     ],
     labels = [
         "depslint_never_remove",  # Some old NativeModule still relies on +load unfortunately.
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode(),
@@ -1215,6 +1286,7 @@ rn_apple_library(
     labels = [
         "depslint_never_remove",
         "disable_plugins_only_validation",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     plugins = react_module_plugin_providers(
@@ -1255,6 +1327,7 @@ rn_xplat_cxx_library2(
     ],
     labels = [
         "depslint_never_remove",  # Some old NativeModule still relies on +load unfortunately.
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode(),
@@ -1287,6 +1360,7 @@ rn_xplat_cxx_library2(
     ],
     labels = [
         "depslint_never_remove",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode(),
@@ -1321,12 +1395,14 @@ rn_xplat_cxx_library2(
     ],
     labels = [
         "depslint_never_remove",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode(),
     visibility = ["PUBLIC"],
     deps = [
         "//fbobjc/Libraries/MobileUI/ComponentKit:ComponentKit",
+        "//xplat/js/react-native-github:RCTFabric",
         "//xplat/js/react-native-github:RCTLinking",
         "//xplat/js/react-native-github:RCTPushNotification",
         "//xplat/js/react-native-github:ReactInternal",
@@ -1355,6 +1431,7 @@ rn_xplat_cxx_library2(
     ],
     labels = [
         "depslint_never_remove",
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode(),
@@ -1362,6 +1439,7 @@ rn_xplat_cxx_library2(
     deps = [
         ":RCTSurfaceHostingComponent",
         "//fbobjc/Libraries/MobileUI/ComponentKit:ComponentKit",
+        "//xplat/js/react-native-github:RCTFabric",
         "//xplat/js/react-native-github:RCTLinking",
         "//xplat/js/react-native-github:RCTPushNotification",
         "//xplat/js/react-native-github:ReactInternal",
@@ -1375,6 +1453,7 @@ rn_xplat_cxx_library2(
         "React/RCTConvert+CoreLocation.h": RCTVIEWS_PATH + "RCTConvert+CoreLocation.h",
     },
     labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
         "supermodule:xplat/default/public.react_native.infra",
     ],
     visibility = [

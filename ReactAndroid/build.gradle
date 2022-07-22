@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,9 +8,12 @@
 plugins {
     id("com.android.library")
     id("com.facebook.react")
+    id("org.jetbrains.kotlin.android") version "1.6.10"
     id("maven-publish")
     id("de.undercouch.download")
 }
+
+import com.facebook.react.tasks.internal.*
 
 import java.nio.file.Paths
 
@@ -26,9 +29,10 @@ def AAR_OUTPUT_URL = "file://${projectDir}/../android"
 def customDownloadsDir = System.getenv("REACT_NATIVE_DOWNLOADS_DIR")
 def downloadsDir = customDownloadsDir ? new File(customDownloadsDir) : new File("$buildDir/downloads")
 def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
+def reactNativeRootDir = projectDir.parent
 
 // You need to have following folders in this directory:
-//   - boost_1_63_0
+//   - boost_1_76_0
 //   - double-conversion-1.1.6
 //   - folly-deprecate-dynamic-initializer
 //   - glog-0.3.5
@@ -42,27 +46,27 @@ def boostPath = dependenciesPath ?: System.getenv("REACT_NATIVE_BOOST_PATH")
 // Setup build type for NDK, supported values: {debug, release}
 def nativeBuildType = System.getenv("NATIVE_BUILD_TYPE") ?: "release"
 
+// We put the publishing version from gradle.properties inside ext. so other
+// subprojects can access it as well.
+ext.publishing_version = VERSION_NAME
+
 task createNativeDepsDirectories {
     downloadsDir.mkdirs()
     thirdPartyNdkDir.mkdirs()
 }
 
 task downloadBoost(dependsOn: createNativeDepsDirectories, type: Download) {
-    src("https://github.com/react-native-community/boost-for-react-native/releases/download/v${BOOST_VERSION.replace("_", ".")}-0/boost_${BOOST_VERSION}.tar.gz")
+    src("https://boostorg.jfrog.io/artifactory/main/release/${BOOST_VERSION.replace("_", ".")}/source/boost_${BOOST_VERSION}.tar.gz")
     onlyIfNewer(true)
     overwrite(false)
     dest(new File(downloadsDir, "boost_${BOOST_VERSION}.tar.gz"))
 }
 
-task prepareBoost(dependsOn: boostPath ? [] : [downloadBoost], type: Copy) {
-    from(boostPath ?: tarTree(resources.gzip(downloadBoost.dest)))
-    from("src/main/jni/third-party/boost")
-    include("Android.mk", "boost_${BOOST_VERSION}/boost/**/*.hpp", "boost/boost/**/*.hpp", "asm/**/*.S")
-    includeEmptyDirs = false
-    into("$thirdPartyNdkDir/boost")
-    doLast {
-        file("$thirdPartyNdkDir/boost/boost").renameTo("$thirdPartyNdkDir/boost/boost_${BOOST_VERSION}")
-    }
+final def prepareBoost = tasks.register("prepareBoost", PrepareBoostTask) {
+    it.dependsOn(boostPath ? [] : [downloadBoost])
+    it.boostPath.setFrom(boostPath ?: tarTree(resources.gzip(downloadBoost.dest)))
+    it.boostVersion.set(BOOST_VERSION)
+    it.outputDir.set(new File(thirdPartyNdkDir, "boost"))
 }
 
 task downloadDoubleConversion(dependsOn: createNativeDepsDirectories, type: Download) {
@@ -74,8 +78,8 @@ task downloadDoubleConversion(dependsOn: createNativeDepsDirectories, type: Down
 
 task prepareDoubleConversion(dependsOn: dependenciesPath ? [] : [downloadDoubleConversion], type: Copy) {
     from(dependenciesPath ?: tarTree(downloadDoubleConversion.dest))
-    from("src/main/jni/third-party/double-conversion/Android.mk")
-    include("double-conversion-${DOUBLE_CONVERSION_VERSION}/src/**/*", "Android.mk")
+    from("src/main/jni/third-party/double-conversion/")
+    include("double-conversion-${DOUBLE_CONVERSION_VERSION}/src/**/*", "Android.mk", "CMakeLists.txt")
     filesMatching("*/src/**/*", { fname -> fname.path = "double-conversion/${fname.name}" })
     includeEmptyDirs = false
     into("$thirdPartyNdkDir/double-conversion")
@@ -90,8 +94,8 @@ task downloadFolly(dependsOn: createNativeDepsDirectories, type: Download) {
 
 task prepareFolly(dependsOn: dependenciesPath ? [] : [downloadFolly], type: Copy) {
     from(dependenciesPath ?: tarTree(downloadFolly.dest))
-    from("src/main/jni/third-party/folly/Android.mk")
-    include("folly-${FOLLY_VERSION}/folly/**/*", "Android.mk")
+    from("src/main/jni/third-party/folly/")
+    include("folly-${FOLLY_VERSION}/folly/**/*", "Android.mk", "CMakeLists.txt")
     eachFile { fname -> fname.path = (fname.path - "folly-${FOLLY_VERSION}/") }
     includeEmptyDirs = false
     into("$thirdPartyNdkDir/folly")
@@ -106,8 +110,8 @@ task downloadFmt(dependsOn: createNativeDepsDirectories, type: Download) {
 
 task prepareFmt(dependsOn: dependenciesPath ? [] : [downloadFmt], type: Copy) {
     from(dependenciesPath ?: tarTree(downloadFmt.dest))
-    from("src/main/jni/third-party/fmt/Android.mk")
-    include("fmt-${FMT_VERSION}/src/**/*", "fmt-${FMT_VERSION}/include/**/*", "Android.mk")
+    from("src/main/jni/third-party/fmt/")
+    include("fmt-${FMT_VERSION}/src/**/*", "fmt-${FMT_VERSION}/include/**/*", "Android.mk", "CMakeLists.txt")
     eachFile { fname -> fname.path = (fname.path - "fmt-${FMT_VERSION}/") }
     includeEmptyDirs = false
     into("$thirdPartyNdkDir/fmt")
@@ -120,44 +124,12 @@ task downloadLibevent(dependsOn: createNativeDepsDirectories, type: Download) {
     dest(new File(downloadsDir, "libevent-${LIBEVENT_VERSION}.tar.gz"))
 }
 
-task prepareLibevent(dependsOn: dependenciesPath ? [] : [downloadLibevent], type: Copy) {
-    from(dependenciesPath ?: tarTree(downloadLibevent.dest))
-    from("src/main/jni/third-party/libevent/Android.mk")
-    from("src/main/jni/third-party/libevent/event-config.h")
-    from("src/main/jni/third-party/libevent/evconfig-private.h")
-    include(
-        "libevent-${LIBEVENT_VERSION}-stable/*.c",
-        "libevent-${LIBEVENT_VERSION}-stable/*.h",
-        "libevent-${LIBEVENT_VERSION}-stable/include/**/*",
-        "evconfig-private.h",
-        "event-config.h",
-        "Android.mk"
-    )
-    eachFile { fname -> fname.path = (fname.path - "libevent-${LIBEVENT_VERSION}-stable/") }
-    includeEmptyDirs = false
-    into("$thirdPartyNdkDir/libevent")
 
-    doLast {
-        ant.move(file: "$thirdPartyNdkDir/libevent/event-config.h", tofile: "$thirdPartyNdkDir/libevent/include/event2/event-config.h")
-    }
-}
-
-task prepareHermes(dependsOn: createNativeDepsDirectories, type: Copy) {
-    def hermesPackagePath = findNodeModulePath(projectDir, "hermes-engine")
-    if (!hermesPackagePath) {
-        throw new GradleScriptException("Could not find the hermes-engine npm package", null)
-    }
-
-    def hermesAAR = file("$hermesPackagePath/android/hermes-debug.aar")
-    if (!hermesAAR.exists()) {
-        throw new GradleScriptException("The hermes-engine npm package is missing \"android/hermes-debug.aar\"", null)
-    }
-
-    def soFiles = zipTree(hermesAAR).matching({ it.include "**/*.so" })
-
-    from soFiles
-    from "src/main/jni/first-party/hermes/Android.mk"
-    into "$thirdPartyNdkDir/hermes"
+final def prepareLibevent = tasks.register("prepareLibevent", PrepareLibeventTask) {
+    it.dependsOn(dependenciesPath ? [] : [downloadLibevent])
+    it.libeventPath.setFrom(dependenciesPath ?: tarTree(downloadLibevent.dest))
+    it.libeventVersion.set(LIBEVENT_VERSION)
+    it.outputDir.set(new File(thirdPartyNdkDir, "libevent"))
 }
 
 task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
@@ -169,73 +141,19 @@ task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
 
 // Prepare glog sources to be compiled, this task will perform steps that normally should've been
 // executed by automake. This way we can avoid dependencies on make/automake
-task prepareGlog(dependsOn: dependenciesPath ? [] : [downloadGlog], type: Copy) {
-    duplicatesStrategy("warn")
-    from(dependenciesPath ?: tarTree(downloadGlog.dest))
-    from("src/main/jni/third-party/glog/")
-    include("glog-${GLOG_VERSION}/src/**/*", "Android.mk", "config.h")
-    includeEmptyDirs = false
-    filesMatching("**/*.h.in") {
-        filter(ReplaceTokens, tokens: [
-                ac_cv_have_unistd_h           : "1",
-                ac_cv_have_stdint_h           : "1",
-                ac_cv_have_systypes_h         : "1",
-                ac_cv_have_inttypes_h         : "1",
-                ac_cv_have_libgflags          : "0",
-                ac_google_start_namespace     : "namespace google {",
-                ac_cv_have_uint16_t           : "1",
-                ac_cv_have_u_int16_t          : "1",
-                ac_cv_have___uint16           : "0",
-                ac_google_end_namespace       : "}",
-                ac_cv_have___builtin_expect   : "1",
-                ac_google_namespace           : "google",
-                ac_cv___attribute___noinline  : "__attribute__ ((noinline))",
-                ac_cv___attribute___noreturn  : "__attribute__ ((noreturn))",
-                ac_cv___attribute___printf_4_5: "__attribute__((__format__ (__printf__, 4, 5)))"
-        ])
-        it.path = (it.name - ".in")
-    }
-    into("$thirdPartyNdkDir/glog")
-
-    doLast {
-        copy {
-            from(fileTree(dir: "$thirdPartyNdkDir/glog", includes: ["stl_logging.h", "logging.h", "raw_logging.h", "vlog_is_on.h", "**/src/glog/log_severity.h"]).files)
-            includeEmptyDirs = false
-            into("$thirdPartyNdkDir/glog/exported/glog")
-        }
-    }
+final def prepareGlog = tasks.register("prepareGlog", PrepareGlogTask) {
+    it.dependsOn(dependenciesPath ? [] : [downloadGlog])
+    it.glogPath.setFrom(dependenciesPath ?: tarTree(downloadGlog.dest))
+    it.glogVersion.set(GLOG_VERSION)
+    it.outputDir.set(new File(thirdPartyNdkDir, "glog"))
 }
 
 // Create Android.mk library module based on jsc from npm
-task prepareJSC {
-    doLast {
-        def jscPackagePath = findNodeModulePath(projectDir, "jsc-android")
-        if (!jscPackagePath) {
-            throw new GradleScriptException("Could not find the jsc-android npm package", null)
-        }
-
-        def jscDist = file("$jscPackagePath/dist")
-        if (!jscDist.exists()) {
-            throw new GradleScriptException("The jsc-android npm package is missing its \"dist\" directory", null)
-        }
-
-        def jscAAR = fileTree(jscDist).matching({ it.include "**/android-jsc/**/*.aar" }).singleFile
-        def soFiles = zipTree(jscAAR).matching({ it.include "**/*.so" })
-
-        def headerFiles = fileTree(jscDist).matching({ it.include "**/include/*.h" })
-
-        copy {
-            from(soFiles)
-            from(headerFiles)
-            from("src/main/jni/third-party/jsc/Android.mk")
-
-            filesMatching("**/*.h", { it.path = "JavaScriptCore/${it.name}" })
-
-            includeEmptyDirs(false)
-            into("$thirdPartyNdkDir/jsc")
-        }
-    }
+tasks.register('prepareJSC', PrepareJSCTask) {
+    it.jscPackagePath.set(findNodeModulePath(projectDir, "jsc-android"))
+    it.outputDir = project.layout.buildDirectory.dir("third-party-ndk/jsc")
 }
+
 task downloadNdkBuildDependencies {
     if (!boostPath) {
         dependsOn(downloadBoost)
@@ -282,39 +200,6 @@ def findNodeModulePath(baseDir, packageName) {
     return null
 }
 
-def getNdkBuildName() {
-    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-        return "ndk-build.cmd"
-    } else {
-        return "ndk-build"
-    }
-}
-
-def findNdkBuildFullPath() {
-    // android.ndkDirectory should return project.android.ndkVersion ndkDirectory
-    def ndkDir = android.ndkDirectory ? android.ndkDirectory.absolutePath : null
-    if (ndkDir) {
-        return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
-    }
-
-    // we allow to provide full path to ndk-build tool
-    if (hasProperty("ndk.command")) {
-        return property("ndk.command")
-    }
-    // or just a path to the containing directory
-    if (hasProperty("ndk.path")) {
-        ndkDir = property("ndk.path")
-        return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
-    }
-
-    // @TODO ANDROID_NDK && ndk.dir is deprecated and will be removed in the future.
-    if (System.getenv("ANDROID_NDK") != null) {
-        ndkDir = System.getenv("ANDROID_NDK")
-        return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
-    }
-
-    return null
-}
 
 def reactNativeDevServerPort() {
     def value = project.getProperties().get("reactNativeDevServerPort")
@@ -327,134 +212,58 @@ def reactNativeInspectorProxyPort() {
 }
 
 def reactNativeArchitectures() {
-    def isDebug = gradle.startParameter.taskRequests.any {
-        it.args.any { it.endsWith("Debug") }
-    }
-    def value = project.getProperties().get("reactNativeDebugArchitectures")
-    return value != null && isDebug ? value : "all"
+    def value = project.getProperties().get("reactNativeArchitectures")
+    return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
-def getNdkBuildFullPath() {
-    def ndkBuildFullPath = findNdkBuildFullPath()
-    if (ndkBuildFullPath == null) {
-        throw new GradleScriptException(
-                "ndk-build binary cannot be found, check if you've set " +
-                        "\$ANDROID_NDK environment variable correctly or if ndk.dir is " +
-                        "setup in local.properties",
-                null)
-    }
-    if (!new File(ndkBuildFullPath).canExecute()) {
-        throw new GradleScriptException(
-                "ndk-build binary " + ndkBuildFullPath + " doesn't exist or isn't executable.\n" +
-                        "Check that the \$ANDROID_NDK environment variable, or ndk.dir in local.properties, is set correctly.\n" +
-                        "(On Windows, make sure you escape backslashes in local.properties or use forward slashes, e.g. C:\\\\ndk or C:/ndk rather than C:\\ndk)",
-                null)
-    }
-    return ndkBuildFullPath
+tasks.register("packageReactNdkLibsForBuck") {
+    dependsOn("packageReactNdkDebugLibsForBuck")
 }
 
-def buildReactNdkLib = tasks.register("buildReactNdkLib", Exec) {
-    dependsOn(prepareJSC, prepareHermes, prepareBoost, prepareDoubleConversion, prepareFmt, prepareFolly, prepareGlog, prepareLibevent, extractAARHeaders, extractJNIFiles)
-    dependsOn("generateCodegenArtifactsFromSchema");
-
-    inputs.dir("$projectDir/../ReactCommon")
-    inputs.dir("src/main/jni")
-    inputs.dir("src/main/java/com/facebook/react/turbomodule/core/jni")
-    inputs.dir("src/main/java/com/facebook/react/modules/blob")
-    outputs.dir("$buildDir/react-ndk/all")
-    def commandLineArgs = [
-            getNdkBuildFullPath(),
-            "APP_ABI=${reactNativeArchitectures()}",
-            "NDK_DEBUG=" + (nativeBuildType.equalsIgnoreCase("debug") ? "1" : "0"),
-            "NDK_PROJECT_PATH=null",
-            "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
-            "NDK_OUT=" + temporaryDir,
-            "NDK_LIBS_OUT=$buildDir/react-ndk/all",
-            "THIRD_PARTY_NDK_DIR=$thirdPartyNdkDir",
-            "REACT_COMMON_DIR=$projectDir/../ReactCommon",
-            "REACT_GENERATED_SRC_DIR=$buildDir/generated/source",
-            "REACT_SRC_DIR=$projectDir/src/main/java/com/facebook/react",
-            "-C", file("src/main/jni/react/jni").absolutePath,
-            "--jobs", project.findProperty("jobs") ?: Runtime.runtime.availableProcessors()
-    ]
-    if (Os.isFamily(Os.FAMILY_MAC)) {
-        // This flag will suppress "fcntl(): Bad file descriptor" warnings on local builds.
-        commandLineArgs.add("--output-sync=none")
-    }
-    commandLine(commandLineArgs)
-}
-
-def cleanReactNdkLib = tasks.register("cleanReactNdkLib", Exec) {
-    ignoreExitValue(true)
-    errorOutput(new ByteArrayOutputStream())
-    commandLine(getNdkBuildFullPath(),
-            "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
-            "THIRD_PARTY_NDK_DIR=$thirdPartyNdkDir",
-            "REACT_COMMON_DIR=$projectDir/../ReactCommon",
-            "-C", file("src/main/jni/react/jni").absolutePath,
-            "clean")
-    doLast {
-        file(AAR_OUTPUT_URL).delete()
-        println("Deleted aar output dir at ${file(AAR_OUTPUT_URL)}")
-    }
-}
-
-def packageReactNdkLibs = tasks.register("packageReactNdkLibs", Copy) {
-    dependsOn(buildReactNdkLib)
-    from("$buildDir/react-ndk/all")
-    into("$buildDir/react-ndk/exported")
+tasks.register("packageReactNdkDebugLibsForBuck", Copy) {
+    dependsOn("mergeDebugNativeLibs")
+    // Shared libraries (.so) are copied from the merged_native_libs folder instead
+    from("$buildDir/intermediates/merged_native_libs/debug/out/lib/")
     exclude("**/libjsc.so")
     exclude("**/libhermes.so")
-}
-
-def packageReactNdkLibsForBuck = tasks.register("packageReactNdkLibsForBuck", Copy) {
-    dependsOn(packageReactNdkLibs)
-    from("$buildDir/react-ndk/exported")
     into("src/main/jni/prebuilt/lib")
 }
 
-task extractAARHeaders {
-    doLast {
-        configurations.extractHeaders.files.each {
-            def file = it.absoluteFile
-            def packageName = file.name.tokenize('-')[0]
-            copy {
-                from zipTree(file)
-                into "$projectDir/src/main/jni/first-party/$packageName/headers"
-                include "**/*.h"
-            }
-        }
-    }
+tasks.register("packageReactNdkReleaseLibsForBuck", Copy) {
+    dependsOn("mergeReleaseNativeLibs")
+    // Shared libraries (.so) are copied from the merged_native_libs folder instead
+    from("$buildDir/intermediates/merged_native_libs/release/out/lib/")
+    exclude("**/libjsc.so")
+    exclude("**/libhermes.so")
+    into("src/main/jni/prebuilt/lib")
 }
 
-task extractJNIFiles {
-    doLast {
-        configurations.extractJNI.files.each {
-            def file = it.absoluteFile
-            def packageName = file.name.tokenize('-')[0]
-            copy {
-                from zipTree(file)
-                into "$projectDir/src/main/jni/first-party/$packageName/"
-                include "jni/**/*"
-            }
-        }
-    }
+final def extractNativeDependencies = tasks.register('extractNativeDependencies', ExtractJniAndHeadersTask) {
+    it.extractHeadersConfiguration.setFrom(configurations.extractHeaders)
+    it.extractJniConfiguration.setFrom(configurations.extractJNI)
+    it.baseOutputDir = project.file("src/main/jni/first-party/")
 }
 
 task installArchives {
-    dependsOn("publishReleasePublicationToNpmRepository")
+    dependsOn("publishAllPublicationsToNpmRepository")
 }
 
 android {
-    compileSdkVersion 30
-    ndkVersion ANDROID_NDK_VERSION
-    if (ANDROID_NDK_PATH != null) {
-        ndkPath ANDROID_NDK_PATH
+    buildToolsVersion = "31.0.0"
+    compileSdkVersion 31
+
+    // Used to override the NDK path/version on internal CI or by allowing
+    // users to customize the NDK path/version from their root project (e.g. for M1 support)
+    if (rootProject.hasProperty("ndkPath")) {
+        ndkPath rootProject.ext.ndkPath
+    }
+    if (rootProject.hasProperty("ndkVersion")) {
+        ndkVersion rootProject.ext.ndkVersion
     }
 
     defaultConfig {
         minSdkVersion(21)
-        targetSdkVersion(28)
+        targetSdkVersion(31)
         versionCode(1)
         versionName("1.0")
 
@@ -469,11 +278,59 @@ android {
 
         testApplicationId("com.facebook.react.tests.gradle")
         testInstrumentationRunner("androidx.test.runner.AndroidJUnitRunner")
+
+        externalNativeBuild {
+            cmake {
+                arguments "-DREACT_COMMON_DIR=${reactNativeRootDir}/ReactCommon",
+                        "-DREACT_ANDROID_DIR=$projectDir",
+                        "-DREACT_BUILD_DIR=$buildDir",
+                        "-DANDROID_STL=c++_shared",
+                        "-DANDROID_TOOLCHAIN=clang",
+                        "-DANDROID_PLATFORM=android-21"
+
+                targets "reactnativejni",
+                    "jscexecutor",
+                    "jsijniprofiler",
+                    "reactnativeblob",
+                    "reactperfloggerjni",
+                    "turbomodulejsijni",
+                    "fabricjni"
+            }
+        }
+        ndk {
+            abiFilters (*reactNativeArchitectures())
+        }
     }
+
+    buildTypes {
+        debug {
+            externalNativeBuild {
+                cmake {
+                    targets "hermes-executor-debug"
+                }
+            }
+        }
+
+        release {
+            externalNativeBuild {
+                cmake {
+                    targets "hermes-executor-release"
+                }
+            }
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            path "src/main/jni/CMakeLists.txt"
+        }
+    }
+
+    preBuild.dependsOn(prepareJSC, prepareBoost, prepareDoubleConversion, prepareFmt, prepareFolly, prepareGlog, prepareLibevent, extractNativeDependencies)
+    preBuild.dependsOn("generateCodegenArtifactsFromSchema")
 
     sourceSets.main {
         jni.srcDirs = []
-        jniLibs.srcDir("$buildDir/react-ndk/exported")
         res.srcDirs = ["src/main/res/devsupport", "src/main/res/shell", "src/main/res/views/modal", "src/main/res/views/uimanager"]
         java {
             srcDirs = ["src/main/java", "src/main/libraries/soloader/java", "src/main/jni/first-party/fb/jni/java"]
@@ -482,9 +339,6 @@ android {
         }
     }
 
-    preBuild.dependsOn(packageReactNdkLibs)
-    clean.dependsOn(cleanReactNdkLib)
-
     lintOptions {
         abortOnError(false)
     }
@@ -492,42 +346,64 @@ android {
     packagingOptions {
         exclude("META-INF/NOTICE")
         exclude("META-INF/LICENSE")
+        // We intentionally don't want to bundle any JS Runtime inside the Android AAR
+        // we produce. The reason behind this is that we want to allow users to pick the
+        // JS engine by specifying a dependency on either `hermes-engine` or `android-jsc`
+        // that will include the necessary .so files to load.
+        exclude("**/libhermes.so")
+        exclude("**/libjsc.so")
     }
 
     configurations {
         extractHeaders
         extractJNI
-        javadocDeps.extendsFrom api
+    }
+
+    buildFeatures {
+        prefab true
+    }
+
+    publishing {
+        multipleVariants {
+            withSourcesJar()
+            allVariants()
+        }
     }
 }
 
 dependencies {
-    api("com.facebook.infer.annotation:infer-annotation:0.18.0")
-    api("com.facebook.yoga:proguard-annotations:1.19.0")
-    api("javax.inject:javax.inject:1")
-    api("androidx.appcompat:appcompat:1.0.2")
-    api("androidx.autofill:autofill:1.1.0")
-    api("androidx.swiperefreshlayout:swiperefreshlayout:1.0.0")
+    api("androidx.appcompat:appcompat-resources:${ANDROIDX_APPCOMPAT_VERSION}")
+    api("androidx.appcompat:appcompat:${ANDROIDX_APPCOMPAT_VERSION}")
+    api("androidx.autofill:autofill:${ANDROIDX_AUTOFILL_VERSION}")
+    api("androidx.swiperefreshlayout:swiperefreshlayout:${SWIPEREFRESH_LAYOUT_VERSION}")
+
+    api("com.facebook.fbjni:fbjni-java-only:${FBJNI_VERSION}")
     api("com.facebook.fresco:fresco:${FRESCO_VERSION}")
     api("com.facebook.fresco:imagepipeline-okhttp3:${FRESCO_VERSION}")
     api("com.facebook.fresco:ui-common:${FRESCO_VERSION}")
+    api("com.facebook.infer.annotation:infer-annotation:${INFER_ANNOTATIONS_VERSION}")
     api("com.facebook.soloader:soloader:${SO_LOADER_VERSION}")
-    api("com.google.code.findbugs:jsr305:3.0.2")
-    api("com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}")
-    api("com.squareup.okhttp3:okhttp-urlconnection:${OKHTTP_VERSION}")
-    api("com.squareup.okio:okio:2.9.0")
-    api("com.facebook.fbjni:fbjni-java-only:0.2.2")
-    extractHeaders("com.facebook.fbjni:fbjni:0.2.2:headers")
-    extractJNI("com.facebook.fbjni:fbjni:0.2.2")
+    api("com.facebook.yoga:proguard-annotations:${PROGUARD_ANNOTATIONS_VERSION}")
 
-    javadocDeps("com.squareup:javapoet:1.13.0")
+    api("com.google.code.findbugs:jsr305:${JSR305_VERSION}")
+    api("com.squareup.okhttp3:okhttp-urlconnection:${OKHTTP_VERSION}")
+    api("com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}")
+    api("com.squareup.okio:okio:${OKIO_VERSION}")
+    api("javax.inject:javax.inject:${JAVAX_INJECT_VERSION}")
+
+    extractHeaders("com.facebook.fbjni:fbjni:${FBJNI_VERSION}:headers")
+    extractJNI("com.facebook.fbjni:fbjni:${FBJNI_VERSION}")
+
+    // It's up to the consumer to decide if hermes should be included or not.
+    // Therefore hermes-engine is a compileOnly dependency.
+    compileOnly(project(":ReactAndroid:hermes-engine"))
 
     testImplementation("junit:junit:${JUNIT_VERSION}")
-    testImplementation("org.powermock:powermock-api-mockito2:${POWERMOCK_VERSION}")
-    testImplementation("org.powermock:powermock-module-junit4-rule:${POWERMOCK_VERSION}")
-    testImplementation("org.powermock:powermock-classloading-xstream:${POWERMOCK_VERSION}")
+    testImplementation("org.assertj:assertj-core:${ASSERTJ_VERSION}")
     testImplementation("org.mockito:mockito-core:${MOCKITO_CORE_VERSION}")
-    testImplementation("org.easytesting:fest-assert-core:2.0M10")
+    testImplementation("org.powermock:powermock-api-mockito2:${POWERMOCK_VERSION}")
+    testImplementation("org.powermock:powermock-classloading-xstream:${POWERMOCK_VERSION}")
+    testImplementation("org.powermock:powermock-module-junit4-rule:${POWERMOCK_VERSION}")
     testImplementation("org.robolectric:robolectric:${ROBOLECTRIC_VERSION}")
 
     androidTestImplementation(fileTree(dir: "src/main/third-party/java/buck-android-support/", include: ["*.jar"]))
@@ -540,17 +416,30 @@ react {
     // TODO: The library name is chosen for parity with Fabric components & iOS
     // This should be changed to a more generic name, e.g. `ReactCoreSpec`.
     libraryName = "rncore"
+    root = file("..")
     jsRootDir = file("../Libraries")
-    reactRoot = file("$projectDir/..")
-    useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET") ?: false
+    reactNativeDir = file("$projectDir/..")
+    useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET")?.toBoolean() ?: false
+    // We search for the codegen in either one of the `node_modules` folder or in the
+    // root packages folder (that's for when we build from source without calling `yarn install`).
+    codegenDir = file(findNodeModulePath(projectDir, "react-native-codegen") ?: "../packages/react-native-codegen/")
 }
 
 afterEvaluate {
+    // Needed as some of the native sources needs to be downloaded
+    // before configureNdkBuildDebug could be executed.
+    reactNativeArchitectures().each { architecture ->
+        tasks.findByName("configureCMakeDebug[${architecture}]")?.configure { dependsOn(preBuild) }
+        tasks.findByName("configureCMakeRelWithDebInfo[${architecture}]")?.configure { dependsOn(preBuild) }
+    }
+    configureCMakeDebug.dependsOn(preBuild)
+    configureCMakeRelWithDebInfo.dependsOn(preBuild)
+
     publishing {
         publications {
             release(MavenPublication) {
-                // Applies the component for the release build variant.
-                from components.release
+                // We do a multi variant release
+                from components.default
 
                 // You can then customize attributes of the publication as shown below.
                 artifactId = POM_ARTIFACT_ID

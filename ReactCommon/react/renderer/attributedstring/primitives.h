@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -81,15 +81,7 @@ enum class TextDecorationLineType {
   UnderlineStrikethrough
 };
 
-enum class TextDecorationLineStyle { Single, Thick, Double };
-
-enum class TextDecorationLinePattern {
-  Solid,
-  Dot,
-  Dash,
-  DashDot,
-  DashDotDot,
-};
+enum class TextDecorationStyle { Solid, Double, Dotted, Dashed };
 
 enum class AccessibilityRole {
   None,
@@ -176,15 +168,8 @@ struct hash<facebook::react::WritingDirection> {
 };
 
 template <>
-struct hash<facebook::react::TextDecorationLinePattern> {
-  size_t operator()(const facebook::react::TextDecorationLinePattern &v) const {
-    return hash<int>()(static_cast<int>(v));
-  }
-};
-
-template <>
-struct hash<facebook::react::TextDecorationLineStyle> {
-  size_t operator()(const facebook::react::TextDecorationLineStyle &v) const {
+struct hash<facebook::react::TextDecorationStyle> {
+  size_t operator()(const facebook::react::TextDecorationStyle &v) const {
     return hash<int>()(static_cast<int>(v));
   }
 };

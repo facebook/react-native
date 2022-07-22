@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -17,9 +17,11 @@ import type {
 } from '../../../CodegenSchema.js';
 
 function getPropertyType(
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   name,
-  optional,
-  typeAnnotation,
+  optional: boolean,
+  typeAnnotation: $FlowFixMe,
 ): NamedShape<EventTypeAnnotation> {
   const type =
     typeAnnotation.type === 'GenericTypeAnnotation'
@@ -98,10 +100,10 @@ function getPropertyType(
 }
 
 function findEventArgumentsAndType(
-  typeAnnotation,
-  types,
-  bubblingType,
-  paperName,
+  typeAnnotation: $FlowFixMe,
+  types: TypeMap,
+  bubblingType: void | 'direct' | 'bubble',
+  paperName: ?$FlowFixMe,
 ) {
   if (!typeAnnotation.id) {
     throw new Error("typeAnnotation of event doesn't have a name");
@@ -151,6 +153,8 @@ function findEventArgumentsAndType(
   }
 }
 
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
 function buildPropertiesForEvent(property): NamedShape<EventTypeAnnotation> {
   const name = property.key.name;
   const optional =
@@ -163,7 +167,9 @@ function buildPropertiesForEvent(property): NamedShape<EventTypeAnnotation> {
   return getPropertyType(name, optional, typeAnnotation);
 }
 
-function getEventArgument(argumentProps, name) {
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
+function getEventArgument(argumentProps, name: $FlowFixMe) {
   return {
     type: 'ObjectTypeAnnotation',
     properties: argumentProps.map(buildPropertiesForEvent),
@@ -191,11 +197,8 @@ function buildEventSchema(
     return null;
   }
 
-  const {
-    argumentProps,
-    bubblingType,
-    paperTopLevelNameDeprecated,
-  } = findEventArgumentsAndType(typeAnnotation, types);
+  const {argumentProps, bubblingType, paperTopLevelNameDeprecated} =
+    findEventArgumentsAndType(typeAnnotation, types);
 
   if (bubblingType && argumentProps) {
     if (paperTopLevelNameDeprecated != null) {
@@ -237,7 +240,7 @@ type EventTypeAST = Object;
 type TypeMap = {
   // $FlowFixMe[unclear-type] there's no flowtype for ASTs
   [string]: Object,
-  ...,
+  ...
 };
 
 function getEvents(

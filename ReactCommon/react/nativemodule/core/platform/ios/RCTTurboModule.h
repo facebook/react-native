@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,7 +16,6 @@
 #import <React/RCTModuleMethod.h>
 #import <ReactCommon/CallInvoker.h>
 #import <ReactCommon/TurboModule.h>
-#import <ReactCommon/TurboModuleUtils.h>
 #import <string>
 #import <unordered_map>
 
@@ -27,6 +26,7 @@
 namespace facebook {
 namespace react {
 
+class CallbackWrapper;
 class Instance;
 
 typedef std::weak_ptr<CallbackWrapper> (

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,7 +16,6 @@ import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.RuntimeExecutor;
 import com.facebook.react.bridge.RuntimeScheduler;
-import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.fabric.events.EventBeatManager;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.uimanager.PixelUtil;
@@ -42,7 +41,6 @@ public class Binding {
       RuntimeScheduler runtimeScheduler,
       Object uiManager,
       EventBeatManager eventBeatManager,
-      MessageQueueThread jsMessageQueueThread,
       ComponentFactory componentsRegistry,
       Object reactNativeConfig);
 
@@ -89,7 +87,6 @@ public class Binding {
       @Nullable RuntimeScheduler runtimeScheduler,
       @NonNull FabricUIManager fabricUIManager,
       @NonNull EventBeatManager eventBeatManager,
-      @NonNull MessageQueueThread jsMessageQueueThread,
       @NonNull ComponentFactory componentFactory,
       @NonNull ReactNativeConfig reactNativeConfig) {
     fabricUIManager.setBinding(this);
@@ -98,7 +95,6 @@ public class Binding {
         runtimeScheduler,
         fabricUIManager,
         eventBeatManager,
-        jsMessageQueueThread,
         componentFactory,
         reactNativeConfig);
 

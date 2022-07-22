@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -36,6 +36,11 @@ bool Fragment::operator==(const Fragment &rhs) const {
              rhs.textAttributes,
              rhs.parentShadowView.tag,
              rhs.parentShadowView.layoutMetrics);
+}
+
+bool Fragment::isContentEqual(const Fragment &rhs) const {
+  return std::tie(string, textAttributes) ==
+      std::tie(rhs.string, rhs.textAttributes);
 }
 
 bool Fragment::operator!=(const Fragment &rhs) const {
@@ -124,6 +129,20 @@ bool AttributedString::operator==(const AttributedString &rhs) const {
 
 bool AttributedString::operator!=(const AttributedString &rhs) const {
   return !(*this == rhs);
+}
+
+bool AttributedString::isContentEqual(const AttributedString &rhs) const {
+  if (fragments_.size() != rhs.fragments_.size()) {
+    return false;
+  }
+
+  for (auto i = 0; i < fragments_.size(); i++) {
+    if (!fragments_[i].isContentEqual(rhs.fragments_[i])) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 #pragma mark - DebugStringConvertible

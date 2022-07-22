@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,10 +11,9 @@
 #include <mutex>
 
 #include <fb/log.h>
+#include <fbjni/NativeRunnable.h>
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
-
-#include "JNativeRunnable.h"
 
 namespace facebook {
 namespace react {
@@ -69,11 +68,10 @@ void JMessageQueueThread::runOnQueue(std::function<void()> &&runnable) {
   jni::ThreadScope guard;
   static auto method =
       JavaMessageQueueThread::javaClassStatic()
-          ->getMethod<void(Runnable::javaobject)>("runOnQueue");
-  method(
-      m_jobj,
-      JNativeRunnable::newObjectCxxArgs(wrapRunnable(std::move(runnable)))
-          .get());
+          ->getMethod<jboolean(JRunnable::javaobject)>("runOnQueue");
+  auto jrunnable =
+      JNativeRunnable::newObjectCxxArgs(wrapRunnable(std::move(runnable)));
+  method(m_jobj, jrunnable.get());
 }
 
 void JMessageQueueThread::runOnQueueSync(std::function<void()> &&runnable) {

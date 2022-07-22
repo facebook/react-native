@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -29,13 +29,13 @@ abstract class ReactExtension @Inject constructor(project: Project) {
   val applyAppPlugin: Property<Boolean> = objects.property(Boolean::class.java).convention(false)
 
   /**
-   * The path to the react root folder. This is the path to the root folder where the `node_modules`
-   * folder is present. All the CLI commands will be invoked from this folder as working directory.
+   * The path to the root of your project. This is the path to where the `package.json` lives. All
+   * the CLI commands will be invoked from this folder as working directory.
    *
-   * Default: $projectDir/../../
+   * Default: ${rootProject.dir}/../
    */
-  val reactRoot: DirectoryProperty =
-      objects.directoryProperty().convention(project.layout.projectDirectory.dir("../../"))
+  val root: DirectoryProperty =
+      objects.directoryProperty().convention(project.rootProject.layout.projectDirectory.dir("../"))
 
   /**
    * The path to the JS entry file. If not specified, the plugin will try to resolve it using a list
@@ -45,7 +45,7 @@ abstract class ReactExtension @Inject constructor(project: Project) {
 
   /**
    * The path to the React Native CLI. If not specified, the plugin will try to resolve it looking
-   * for `react-native` CLI inside `node_modules` in [reactRoot].
+   * for `react-native` CLI inside `node_modules` in [root].
    */
   val cliPath: Property<String> = objects.property(String::class.java)
 
@@ -56,9 +56,7 @@ abstract class ReactExtension @Inject constructor(project: Project) {
   val nodeExecutableAndArgs: ListProperty<String> =
       objects.listProperty(String::class.java).convention(listOf("node"))
 
-  /**
-   * The command to use to invoke bundle. Default is `bundle` and will be invoked on [reactRoot].
-   */
+  /** The command to use to invoke bundle. Default is `bundle` and will be invoked on [root]. */
   val bundleCommand: Property<String> = objects.property(String::class.java).convention("bundle")
 
   /**
@@ -115,6 +113,14 @@ abstract class ReactExtension @Inject constructor(project: Project) {
       objects.listProperty(String::class.java).convention(emptyList())
 
   /**
+   * Functional interface to disable dev mode only on specific [BaseVariant] Default: will check
+   * [devDisabledInVariants] or return True for Release variants and False for Debug variants.
+   */
+  var disableDevForVariant: (BaseVariant) -> Boolean = { variant ->
+    variant.name in devDisabledInVariants.get() || variant.isRelease
+  }
+
+  /**
    * Variant Name to Boolean map that allows to toggle the bundle command for a specific variant.
    * Default: {}
    */
@@ -122,11 +128,24 @@ abstract class ReactExtension @Inject constructor(project: Project) {
   val bundleIn: MapProperty<String, Boolean> =
       objects.mapProperty(String::class.java, Boolean::class.java).convention(emptyMap())
 
+  /**
+   * Functional interface to toggle the bundle command only on specific [BaseVariant] Default: will
+   * check [bundleIn] or return True for Release variants and False for Debug variants.
+   */
+  var bundleForVariant: (BaseVariant) -> Boolean = { variant ->
+    if (bundleIn.getting(variant.name).isPresent) bundleIn.getting(variant.name).get()
+    else if (bundleIn.getting(variant.buildType.name).isPresent)
+        bundleIn.getting(variant.buildType.name).get()
+    else variant.isRelease
+  }
+
   /** Hermes Config */
 
-  /** The command to use to invoke hermes. Default is `hermesc` for the correct OS. */
-  val hermesCommand: Property<String> =
-      objects.property(String::class.java).convention("node_modules/hermes-engine/%OS-BIN%/hermesc")
+  /**
+   * The command to use to invoke hermesc (the hermes compiler). Default is "", the plugin will
+   * autodetect it.
+   */
+  val hermesCommand: Property<String> = objects.property(String::class.java).convention("")
 
   /** Toggle Hermes for the whole build. Default: false */
   val enableHermes: Property<Boolean> = objects.property(Boolean::class.java).convention(false)
@@ -136,6 +155,20 @@ abstract class ReactExtension @Inject constructor(project: Project) {
    * return [enableHermes] for all the variants.
    */
   var enableHermesForVariant: (BaseVariant) -> Boolean = { enableHermes.get() }
+
+  /**
+   * Functional interface specify flags for Hermes on specific [BaseVariant] Default: will return
+   * [hermesFlagsRelease] for Release variants and [hermesFlagsDebug] for Debug variants.
+   */
+  var hermesFlagsForVariant: (BaseVariant) -> List<String> = { variant ->
+    if (variant.isRelease) hermesFlagsRelease.get() else hermesFlagsDebug.get()
+  }
+
+  /**
+   * Functional interface to delete debug files only on specific [BaseVariant] Default: will return
+   * True for Release variants and False for Debug variants.
+   */
+  var deleteDebugFilesForVariant: (BaseVariant) -> Boolean = { variant -> variant.isRelease }
 
   /** Flags to pass to Hermes for Debug variants. Default: [] */
   val hermesFlagsDebug: ListProperty<String> =
@@ -157,19 +190,27 @@ abstract class ReactExtension @Inject constructor(project: Project) {
   /** Codegen Config */
 
   /**
-   * The path to the react-native-codegen folder.
+   * The path to the react-native-codegen NPM package folder.
    *
-   * Default: $projectDir/../../packages/react-native-codegen
+   * Default: ${rootProject.dir}/../node_modules/react-native-codegen
    */
   val codegenDir: DirectoryProperty =
-      objects.directoryProperty().convention(reactRoot.dir("packages/react-native-codegen"))
+      objects.directoryProperty().convention(root.dir("node_modules/react-native-codegen"))
+
+  /**
+   * The path to the react-native NPM package folder.
+   *
+   * Default: ${rootProject.dir}/../node_modules/react-native-codegen
+   */
+  val reactNativeDir: DirectoryProperty =
+      objects.directoryProperty().convention(root.dir("node_modules/react-native"))
 
   /**
    * The root directory for all JS files for the app.
    *
-   * Default: $projectDir/../../
+   * Default: [root] (i.e. ${rootProject.dir}/../)
    */
-  val jsRootDir: DirectoryProperty = objects.directoryProperty().convention(reactRoot.get())
+  val jsRootDir: DirectoryProperty = objects.directoryProperty().convention(root.get())
 
   /**
    * The library name that will be used for the codegen artifacts.
@@ -187,6 +228,38 @@ abstract class ReactExtension @Inject constructor(project: Project) {
   val codegenJavaPackageName: Property<String> =
       objects.property(String::class.java).convention("com.facebook.fbreact.specs")
 
-  /** Whether the Java Generator (based on Javapoet) should be used or not. Default: false */
+  /**
+   * Whether the Java Generator (based on Javapoet) should be used or not. Please note that this is
+   * currently deprecated as the Java generator is not supported anymore. Default: false
+   */
+  @Deprecated(
+      level = DeprecationLevel.ERROR,
+      message =
+          "Please note that this is deprecated as the Java generator is not supported and react-native-codegen should be used instead.")
   val useJavaGenerator: Property<Boolean> = objects.property(Boolean::class.java).convention(false)
+
+  /**
+   * The `reactRoot` property was confusing and should not be used.
+   *
+   * You should instead use either:
+   * - [root] to point to your root project (where the package.json lives)
+   * - [reactNativeDir] to point to the NPM package of react native.
+   *
+   * A valid configuration would look like:
+   *
+   * ```
+   * react {
+   *    root = rootProject.file("..")
+   *    reactNativeDir = rootProject.file("../node_modules/react-native")
+   * }
+   * ```
+   *
+   * Please also note that those are the default value and you most likely don't need those at all.
+   */
+  @Deprecated(
+      "reactRoot was confusing and has been replace with root " +
+          "to point to your root project and reactNativeDir to point to " +
+          "the folder of the react-native NPM package",
+      replaceWith = ReplaceWith("reactNativeRoot"))
+  val reactRoot: DirectoryProperty = objects.directoryProperty()
 }

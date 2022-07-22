@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -22,15 +22,6 @@ void EventEmitterWrapper::invokeEvent(
     std::string eventName,
     NativeMap *payload,
     int category) {
-  if (eventEmitterPointer) {
-    eventEmitterPointer->dispatchEvent(
-        std::move(eventName),
-        payload->consume(),
-        EventPriority::AsynchronousBatched,
-        static_cast<RawEvent::Category>(category));
-    return;
-  }
-
   // It is marginal, but possible for this to be constructed without a valid
   // EventEmitter. In those cases, make sure we noop/blackhole events instead of
   // crashing.
@@ -47,11 +38,6 @@ void EventEmitterWrapper::invokeUniqueEvent(
     std::string eventName,
     NativeMap *payload,
     int customCoalesceKey) {
-  if (eventEmitterPointer) {
-    eventEmitterPointer->dispatchUniqueEvent(
-        std::move(eventName), payload->consume());
-    return;
-  }
   // TODO: customCoalesceKey currently unused
   // It is marginal, but possible for this to be constructed without a valid
   // EventEmitter. In those cases, make sure we noop/blackhole events instead of

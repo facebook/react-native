@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -40,7 +40,6 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
@@ -208,6 +207,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   @Override
   public void initialize() {
     getReactApplicationContext().registerComponentCallbacks(mMemoryTrimCallback);
+    getReactApplicationContext().registerComponentCallbacks(mViewManagerRegistry);
     mEventDispatcher.registerEventEmitter(
         DEFAULT, getReactApplicationContext().getJSModule(RCTEventEmitter.class));
   }
@@ -234,10 +234,8 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     mUIImplementation.onCatalystInstanceDestroyed();
 
     ReactApplicationContext reactApplicationContext = getReactApplicationContext();
-    if (ReactFeatureFlags.enableReactContextCleanupFix) {
-      reactApplicationContext.removeLifecycleEventListener(this);
-    }
     reactApplicationContext.unregisterComponentCallbacks(mMemoryTrimCallback);
+    reactApplicationContext.unregisterComponentCallbacks(mViewManagerRegistry);
     YogaNodePool.get().clear();
     ViewManagerPropertyUpdater.clear();
   }
@@ -291,16 +289,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   @Deprecated
   @Override
   public void preInitializeViewManagers(List<String> viewManagerNames) {
-    if (ReactFeatureFlags.enableExperimentalStaticViewConfigs) {
-      for (String viewManagerName : viewManagerNames) {
-        mUIImplementation.resolveViewManager(viewManagerName);
-      }
-      // When Static view configs are enabled it is not necessary to pre-compute the constants for
-      // viewManagers, although the pre-initialization of viewManager objects is still necessary
-      // for performance reasons.
-      return;
-    }
-
     Map<String, WritableMap> constantsMap = new ArrayMap<>();
     for (String viewManagerName : viewManagerNames) {
       WritableMap constants = computeConstantsForViewManager(viewManagerName);

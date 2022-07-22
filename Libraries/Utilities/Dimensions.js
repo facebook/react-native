@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -107,19 +107,6 @@ class Dimensions {
       type,
     );
     return eventEmitter.addListener(type, handler);
-  }
-
-  /**
-   * @deprecated Use `remove` on the EventSubscription from `addEventListener`.
-   */
-  static removeEventListener(type: 'change', handler: Function) {
-    invariant(
-      type === 'change',
-      'Trying to remove listener for unknown event: "%s"',
-      type,
-    );
-    // NOTE: This will report a deprecation notice via `console.error`.
-    eventEmitter.removeListener(type, handler);
   }
 }
 

@@ -1,0 +1,21 @@
+name: Apply version label to issue
+
+on:
+  issues:
+    types: [opened, edited]
+
+permissions:
+  contents: read
+
+jobs:
+  add-version-label-issue:
+    permissions:
+      issues: write  # for react-native-community/actions-apply-version-label to label issues
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+      - uses: react-native-community/actions-apply-version-label@v0.0.3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          required-label: "Type: Upgrade Issue"

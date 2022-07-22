@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -27,7 +27,14 @@ describe('Keyboard', () => {
   });
 
   describe('scheduling layout animation', () => {
-    const scheduleLayoutAnimation = (duration, easing): void =>
+    const scheduleLayoutAnimation = (
+      duration: null | number,
+      easing:
+        | null
+        | $TEMPORARY$string<'linear'>
+        | $TEMPORARY$string<'some-unknown-animation-type'>
+        | $TEMPORARY$string<'spring'>,
+    ): void =>
       // $FlowFixMe[incompatible-call]
       Keyboard.scheduleLayoutAnimation({duration, easing});
 
@@ -53,7 +60,9 @@ describe('Keyboard', () => {
     });
 
     describe('animation update type', () => {
-      const assertAnimationUpdateType = type =>
+      const assertAnimationUpdateType = (
+        type: $TEMPORARY$string<'keyboard'> | $TEMPORARY$string<'linear'>,
+      ) =>
         expect(LayoutAnimation.configureNext).toHaveBeenCalledWith(
           expect.objectContaining({
             duration: expect.anything(),

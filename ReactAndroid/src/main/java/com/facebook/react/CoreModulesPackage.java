@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -37,8 +37,8 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerResolver;
 import com.facebook.systrace.Systrace;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -184,7 +184,7 @@ public class CoreModulesPackage extends TurboReactPackage implements ReactPackag
               }
 
               @Override
-              public List<String> getViewManagerNames() {
+              public Collection<String> getViewManagerNames() {
                 return mReactInstanceManager.getViewManagerNames();
               }
             };

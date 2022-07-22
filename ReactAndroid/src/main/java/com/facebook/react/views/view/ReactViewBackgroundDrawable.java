@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -89,7 +89,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
   private @Nullable Path mOuterClipPathForBorderRadius;
   private @Nullable Path mPathForBorderRadiusOutline;
   private @Nullable Path mPathForBorder;
-  private Path mPathForSingleBorder = new Path();
+  private final Path mPathForSingleBorder = new Path();
   private @Nullable Path mCenterDrawPath;
   private @Nullable RectF mInnerClipTempRectForBorderRadius;
   private @Nullable RectF mOuterClipTempRectForBorderRadius;
@@ -217,6 +217,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
   public void setBorderColor(int position, float rgb, float alpha) {
     this.setBorderRGB(position, rgb);
     this.setBorderAlpha(position, alpha);
+    mNeedUpdatePathForBorderRadius = true;
   }
 
   private void setBorderRGB(int position, float rgb) {
@@ -523,10 +524,24 @@ public class ReactViewBackgroundDrawable extends Drawable {
 
     final RectF borderWidth = getDirectionAwareBorderInsets();
 
-    mInnerClipTempRectForBorderRadius.top += borderWidth.top;
-    mInnerClipTempRectForBorderRadius.bottom -= borderWidth.bottom;
-    mInnerClipTempRectForBorderRadius.left += borderWidth.left;
-    mInnerClipTempRectForBorderRadius.right -= borderWidth.right;
+    int colorLeft = getBorderColor(Spacing.LEFT);
+    int colorTop = getBorderColor(Spacing.TOP);
+    int colorRight = getBorderColor(Spacing.RIGHT);
+    int colorBottom = getBorderColor(Spacing.BOTTOM);
+    int borderColor = getBorderColor(Spacing.ALL);
+
+    // Clip border ONLY if its color is non transparent
+    if (Color.alpha(colorLeft) != 0
+        && Color.alpha(colorTop) != 0
+        && Color.alpha(colorRight) != 0
+        && Color.alpha(colorBottom) != 0
+        && Color.alpha(borderColor) != 0) {
+
+      mInnerClipTempRectForBorderRadius.top += borderWidth.top;
+      mInnerClipTempRectForBorderRadius.bottom -= borderWidth.bottom;
+      mInnerClipTempRectForBorderRadius.left += borderWidth.left;
+      mInnerClipTempRectForBorderRadius.right -= borderWidth.right;
+    }
 
     mTempRectForCenterDrawPath.top += borderWidth.top * 0.5f;
     mTempRectForCenterDrawPath.bottom -= borderWidth.bottom * 0.5f;
@@ -1106,8 +1121,8 @@ public class ReactViewBackgroundDrawable extends Drawable {
             int width = Math.round(borderWidth.left);
             updatePathEffect(width);
             mPaint.setStrokeWidth(width);
-            mPathForSingleBorder.moveTo(left, top - borderWidth.top / 2);
-            mPathForSingleBorder.lineTo(left, bottom + borderWidth.bottom / 2);
+            mPathForSingleBorder.moveTo(left + width / 2, top);
+            mPathForSingleBorder.lineTo(left + width / 2, bottom);
             canvas.drawPath(mPathForSingleBorder, mPaint);
           }
           if (borderTop > 0) {
@@ -1115,8 +1130,8 @@ public class ReactViewBackgroundDrawable extends Drawable {
             int width = Math.round(borderWidth.top);
             updatePathEffect(width);
             mPaint.setStrokeWidth(width);
-            mPathForSingleBorder.moveTo(left, top);
-            mPathForSingleBorder.lineTo(right, top);
+            mPathForSingleBorder.moveTo(left, top + width / 2);
+            mPathForSingleBorder.lineTo(right, top + width / 2);
             canvas.drawPath(mPathForSingleBorder, mPaint);
           }
           if (borderRight > 0) {
@@ -1124,8 +1139,8 @@ public class ReactViewBackgroundDrawable extends Drawable {
             int width = Math.round(borderWidth.right);
             updatePathEffect(width);
             mPaint.setStrokeWidth(width);
-            mPathForSingleBorder.moveTo(right, top - borderWidth.top / 2);
-            mPathForSingleBorder.lineTo(right, bottom + borderWidth.bottom / 2);
+            mPathForSingleBorder.moveTo(right - width / 2, top);
+            mPathForSingleBorder.lineTo(right - width / 2, bottom);
             canvas.drawPath(mPathForSingleBorder, mPaint);
           }
           if (borderBottom > 0) {
@@ -1133,8 +1148,8 @@ public class ReactViewBackgroundDrawable extends Drawable {
             int width = Math.round(borderWidth.bottom);
             updatePathEffect(width);
             mPaint.setStrokeWidth(width);
-            mPathForSingleBorder.moveTo(left, bottom);
-            mPathForSingleBorder.lineTo(right, bottom);
+            mPathForSingleBorder.moveTo(left, bottom - width / 2);
+            mPathForSingleBorder.lineTo(right, bottom - width / 2);
             canvas.drawPath(mPathForSingleBorder, mPaint);
           }
         }
@@ -1259,7 +1274,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
     return !YogaConstants.isUndefined(rgb) && !YogaConstants.isUndefined(alpha);
   }
 
-  private int getBorderColor(int position) {
+  public int getBorderColor(int position) {
     float rgb = mBorderRGB != null ? mBorderRGB.get(position) : DEFAULT_BORDER_RGB;
     float alpha = mBorderAlpha != null ? mBorderAlpha.get(position) : DEFAULT_BORDER_ALPHA;
 

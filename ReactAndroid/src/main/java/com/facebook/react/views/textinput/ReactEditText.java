@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -101,7 +101,7 @@ public class ReactEditText extends AppCompatEditText
   private @Nullable SelectionWatcher mSelectionWatcher;
   private @Nullable ContentSizeWatcher mContentSizeWatcher;
   private @Nullable ScrollWatcher mScrollWatcher;
-  private final InternalKeyListener mKeyListener;
+  private InternalKeyListener mKeyListener;
   private boolean mDetectScrollMovement = false;
   private boolean mOnKeyPress = false;
   private TextAttributes mTextAttributes;
@@ -140,7 +140,9 @@ public class ReactEditText extends AppCompatEditText
     mListeners = null;
     mTextWatcherDelegator = null;
     mStagedInputType = getInputType();
-    mKeyListener = new InternalKeyListener();
+    if (mKeyListener == null) {
+      mKeyListener = new InternalKeyListener();
+    }
     mScrollWatcher = null;
     mTextAttributes = new TextAttributes();
 
@@ -153,9 +155,9 @@ public class ReactEditText extends AppCompatEditText
       setLayerType(View.LAYER_TYPE_SOFTWARE, null);
     }
 
-    ViewCompat.setAccessibilityDelegate(
-        this,
-        new ReactAccessibilityDelegate() {
+    ReactAccessibilityDelegate editTextAccessibilityDelegate =
+        new ReactAccessibilityDelegate(
+            this, this.isFocusable(), this.getImportantForAccessibility()) {
           @Override
           public boolean performAccessibilityAction(View host, int action, Bundle args) {
             if (action == AccessibilityNodeInfo.ACTION_CLICK) {
@@ -171,7 +173,8 @@ public class ReactEditText extends AppCompatEditText
             }
             return super.performAccessibilityAction(host, action, args);
           }
-        });
+        };
+    ViewCompat.setAccessibilityDelegate(this, editTextAccessibilityDelegate);
   }
 
   @Override
@@ -450,6 +453,10 @@ public class ReactEditText extends AppCompatEditText
     // We override the KeyListener so that all keys on the soft input keyboard as well as hardware
     // keyboards work. Some KeyListeners like DigitsKeyListener will display the keyboard but not
     // accept all input from it
+    if (mKeyListener == null) {
+      mKeyListener = new InternalKeyListener();
+    }
+
     mKeyListener.setInputType(type);
     setKeyListener(mKeyListener);
   }
@@ -746,7 +753,10 @@ public class ReactEditText extends AppCompatEditText
     // view, we don't need to construct one or apply it at all - it provides no use in Fabric.
     ReactContext reactContext = getReactContext(this);
 
-    if (!mFabricViewStateManager.hasStateWrapper() && !reactContext.isBridgeless()) {
+    if (mFabricViewStateManager != null
+        && !mFabricViewStateManager.hasStateWrapper()
+        && !reactContext.isBridgeless()) {
+
       final ReactTextInputLocalData localData = new ReactTextInputLocalData(this);
       UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
       if (uiManager != null) {
@@ -911,6 +921,10 @@ public class ReactEditText extends AppCompatEditText
     mReactBackgroundManager.setBorderColor(position, color, alpha);
   }
 
+  public int getBorderColor(int position) {
+    return mReactBackgroundManager.getBorderColor(position);
+  }
+
   public void setBorderRadius(float borderRadius) {
     mReactBackgroundManager.setBorderRadius(borderRadius);
   }
@@ -978,7 +992,7 @@ public class ReactEditText extends AppCompatEditText
    */
   private void updateCachedSpannable(boolean resetStyles) {
     // Noops in non-Fabric
-    if (!mFabricViewStateManager.hasStateWrapper()) {
+    if (mFabricViewStateManager == null || !mFabricViewStateManager.hasStateWrapper()) {
       return;
     }
     // If this view doesn't have an ID yet, we don't have a cache key, so bail here

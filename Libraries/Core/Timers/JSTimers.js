@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -42,7 +42,7 @@ let requestIdleCallbacks: Array<number> = [];
 const requestIdleCallbackTimeouts: {[number]: number, ...} = {};
 
 let GUID = 1;
-let errors: ?Array<Error> = null;
+const errors: Array<Error> = [];
 
 let hasEmittedTimeDriftWarning = false;
 
@@ -114,7 +114,7 @@ function _callTimer(timerID: number, frameTime: number, didTimeout: ?boolean) {
       callback(global.performance.now());
     } else if (type === 'requestIdleCallback') {
       callback({
-        timeRemaining: function() {
+        timeRemaining: function () {
           // TODO: Optimisation: allow running for longer than one frame if
           // there are no pending JS calls on the bridge from native. This
           // would require a way to check the bridge queue synchronously.
@@ -130,11 +130,7 @@ function _callTimer(timerID: number, frameTime: number, didTimeout: ?boolean) {
     }
   } catch (e) {
     // Don't rethrow so that we can run all timers.
-    if (!errors) {
-      errors = [e];
-    } else {
-      errors.push(e);
-    }
+    errors.push(e);
   }
 
   if (__DEV__) {
@@ -209,7 +205,11 @@ const JSTimers = {
    * @param {function} func Callback to be invoked after `duration` ms.
    * @param {number} duration Number of milliseconds.
    */
-  setTimeout: function(func: Function, duration: number, ...args: any): number {
+  setTimeout: function (
+    func: Function,
+    duration: number,
+    ...args: any
+  ): number {
     const id = _allocateCallback(
       () => func.apply(undefined, args),
       'setTimeout',
@@ -222,7 +222,7 @@ const JSTimers = {
    * @param {function} func Callback to be invoked every `duration` ms.
    * @param {number} duration Number of milliseconds.
    */
-  setInterval: function(
+  setInterval: function (
     func: Function,
     duration: number,
     ...args: any
@@ -243,7 +243,7 @@ const JSTimers = {
    * @param {function} func Callback to be invoked before the end of the
    * current JavaScript execution loop.
    */
-  queueReactNativeMicrotask: function(func: Function, ...args: any) {
+  queueReactNativeMicrotask: function (func: Function, ...args: any) {
     const id = _allocateCallback(
       () => func.apply(undefined, args),
       'queueReactNativeMicrotask',
@@ -255,7 +255,7 @@ const JSTimers = {
   /**
    * @param {function} func Callback to be invoked every frame.
    */
-  requestAnimationFrame: function(func: Function) {
+  requestAnimationFrame: function (func: Function) {
     const id = _allocateCallback(func, 'requestAnimationFrame');
     createTimer(id, 1, Date.now(), /* recurring */ false);
     return id;
@@ -266,7 +266,7 @@ const JSTimers = {
    * with time remaining in frame.
    * @param {?object} options
    */
-  requestIdleCallback: function(func: Function, options: ?Object) {
+  requestIdleCallback: function (func: Function, options: ?Object) {
     if (requestIdleCallbacks.length === 0) {
       setSendIdleEvents(true);
     }
@@ -274,7 +274,7 @@ const JSTimers = {
     const timeout = options && options.timeout;
     const id = _allocateCallback(
       timeout != null
-        ? deadline => {
+        ? (deadline: any) => {
             const timeoutId = requestIdleCallbackTimeouts[id];
             if (timeoutId) {
               JSTimers.clearTimeout(timeoutId);
@@ -304,7 +304,7 @@ const JSTimers = {
     return id;
   },
 
-  cancelIdleCallback: function(timerID: number) {
+  cancelIdleCallback: function (timerID: number) {
     _freeCallback(timerID);
     const index = requestIdleCallbacks.indexOf(timerID);
     if (index !== -1) {
@@ -322,15 +322,15 @@ const JSTimers = {
     }
   },
 
-  clearTimeout: function(timerID: number) {
+  clearTimeout: function (timerID: number) {
     _freeCallback(timerID);
   },
 
-  clearInterval: function(timerID: number) {
+  clearInterval: function (timerID: number) {
     _freeCallback(timerID);
   },
 
-  clearReactNativeMicrotask: function(timerID: number) {
+  clearReactNativeMicrotask: function (timerID: number) {
     _freeCallback(timerID);
     const index = reactNativeMicrotasks.indexOf(timerID);
     if (index !== -1) {
@@ -338,7 +338,7 @@ const JSTimers = {
     }
   },
 
-  cancelAnimationFrame: function(timerID: number) {
+  cancelAnimationFrame: function (timerID: number) {
     _freeCallback(timerID);
   },
 
@@ -346,39 +346,36 @@ const JSTimers = {
    * This is called from the native side. We are passed an array of timerIDs,
    * and
    */
-  callTimers: function(timersToCall: Array<number>) {
+  callTimers: function (timersToCall: Array<number>) {
     invariant(
       timersToCall.length !== 0,
       'Cannot call `callTimers` with an empty list of IDs.',
     );
 
-    errors = (null: ?Array<Error>);
+    errors.length = 0;
     for (let i = 0; i < timersToCall.length; i++) {
       _callTimer(timersToCall[i], 0);
     }
 
-    if (errors) {
-      // $FlowFixMe[incompatible-use]
-      const errorCount = errors.length;
+    const errorCount = errors.length;
+    if (errorCount > 0) {
       if (errorCount > 1) {
         // Throw all the other errors in a setTimeout, which will throw each
         // error one at a time
         for (let ii = 1; ii < errorCount; ii++) {
           JSTimers.setTimeout(
-            (error => {
+            ((error: Error) => {
               throw error;
-              // $FlowFixMe[incompatible-use]
             }).bind(null, errors[ii]),
             0,
           );
         }
       }
-      // $FlowFixMe[incompatible-use]
       throw errors[0];
     }
   },
 
-  callIdleCallbacks: function(frameTime: number) {
+  callIdleCallbacks: function (frameTime: number) {
     if (
       FRAME_DURATION - (global.performance.now() - frameTime) <
       IDLE_CALLBACK_FRAME_DEADLINE
@@ -386,7 +383,7 @@ const JSTimers = {
       return;
     }
 
-    errors = (null: ?Array<Error>);
+    errors.length = 0;
     if (requestIdleCallbacks.length > 0) {
       const passIdleCallbacks = requestIdleCallbacks;
       requestIdleCallbacks = [];
@@ -400,13 +397,11 @@ const JSTimers = {
       setSendIdleEvents(false);
     }
 
-    if (errors) {
-      errors.forEach(error =>
-        JSTimers.setTimeout(() => {
-          throw error;
-        }, 0),
-      );
-    }
+    errors.forEach(error =>
+      JSTimers.setTimeout(() => {
+        throw error;
+      }, 0),
+    );
   },
 
   /**
@@ -414,15 +409,13 @@ const JSTimers = {
    * before we hand control back to native.
    */
   callReactNativeMicrotasks() {
-    errors = (null: ?Array<Error>);
+    errors.length = 0;
     while (_callReactNativeMicrotasksPass()) {}
-    if (errors) {
-      errors.forEach(error =>
-        JSTimers.setTimeout(() => {
-          throw error;
-        }, 0),
-      );
-    }
+    errors.forEach(error =>
+      JSTimers.setTimeout(() => {
+        throw error;
+      }, 0),
+    );
   },
 
   /**

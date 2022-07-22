@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -27,6 +27,8 @@ const {
 // TODO: Is there a cleaner way to flip the TextAncestor value to false? I
 //   suspect apps won't even be able to leverage this workaround because
 //   TextAncestor is not public.
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
 function InlineView(props) {
   return (
     <TextAncestor.Provider value={false}>
@@ -522,7 +524,7 @@ exports.displayName = 'TextExample';
 exports.examples = [
   {
     title: 'Wrap',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <Text>
           The text should wrap if it goes on multiple lines. See, this is going
@@ -533,13 +535,13 @@ exports.examples = [
   },
   {
     title: "Substring Emoji (should only see 'test')",
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <Text>{'test🙃'.substring(0, 5)}</Text>;
     },
   },
   {
     title: 'Transparent Background Color',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <Text style={{backgroundColor: '#00000020', padding: 10}}>
           Text in a gray box!
@@ -552,7 +554,7 @@ exports.examples = [
   },
   {
     title: 'Text metrics',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <TextRenderInfoExample />;
     },
   },
@@ -570,7 +572,7 @@ exports.examples = [
   },
   {
     title: 'Padding',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <Text style={{padding: 10}}>
           This text is indented by 10px padding on all sides.
@@ -580,7 +582,7 @@ exports.examples = [
   },
   {
     title: 'Font Family',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <Text style={{fontFamily: Platform.isTV ? 'Times' : 'Cochin'}}>
@@ -613,7 +615,7 @@ exports.examples = [
   },
   {
     title: 'Font Size',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <Text style={{fontSize: 23}}>Size 23</Text>
@@ -624,7 +626,7 @@ exports.examples = [
   },
   {
     title: 'Color',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <Text style={{color: 'red'}}>Red color</Text>
@@ -635,7 +637,7 @@ exports.examples = [
   },
   {
     title: 'Font Weight',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <Text style={{fontWeight: 'bold'}}>Move fast and be bold</Text>
@@ -655,7 +657,7 @@ exports.examples = [
   },
   {
     title: 'Font Style',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <Text style={{fontStyle: 'normal'}}>Normal text</Text>
@@ -666,7 +668,7 @@ exports.examples = [
   },
   {
     title: 'Selectable',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <Text selectable={true}>
@@ -679,7 +681,7 @@ exports.examples = [
   },
   {
     title: 'Text Decoration',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <Text
@@ -757,7 +759,7 @@ exports.examples = [
     description: ('Nested text components will inherit the styles of their ' +
       'parents (only backgroundColor is inherited from non-Text parents).  ' +
       '<Text> only supports other <Text> and raw text (strings) as children.': string),
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <Text>
@@ -795,7 +797,7 @@ exports.examples = [
   },
   {
     title: 'Text Align',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <Text>auto (default) - english LTR</Text>
@@ -827,7 +829,7 @@ exports.examples = [
   },
   {
     title: 'Letter Spacing',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <Text style={{letterSpacing: 0}}>letterSpacing = 0</Text>
@@ -871,7 +873,7 @@ exports.examples = [
   },
   {
     title: 'Spaces',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <Text>
           A {'generated'} {'string'} and some &nbsp;&nbsp;&nbsp; spaces
@@ -881,7 +883,7 @@ exports.examples = [
   },
   {
     title: 'Line Height',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <Text>
           <Text style={{lineHeight: 35}}>
@@ -895,20 +897,20 @@ exports.examples = [
   {
     title: 'Empty Text',
     description: "It's ok to have Text with zero or null children.",
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <Text />;
     },
   },
   {
     title: 'Toggling Attributes',
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <AttributeToggler />;
     },
   },
   {
     title: 'backgroundColor attribute',
     description: 'backgroundColor is inherited from all types of views.',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <Text style={{backgroundColor: 'yellow'}}>
           Yellow container background,
@@ -934,7 +936,7 @@ exports.examples = [
   },
   {
     title: 'numberOfLines attribute',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <Text numberOfLines={1}>
@@ -955,7 +957,7 @@ exports.examples = [
   },
   {
     title: 'Text highlighting (tap the link to see highlight)',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <Text>
@@ -981,7 +983,7 @@ exports.examples = [
   },
   {
     title: 'allowFontScaling attribute',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <Text>
@@ -1029,7 +1031,7 @@ exports.examples = [
   },
   {
     title: 'Text shadow',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <Text
@@ -1047,7 +1049,7 @@ exports.examples = [
   },
   {
     title: 'Ellipsize mode',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <Text numberOfLines={1}>
@@ -1068,7 +1070,7 @@ exports.examples = [
   },
   {
     title: 'Font variants',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <Text style={{fontVariant: ['small-caps']}}>Small Caps{'\n'}</Text>
@@ -1102,7 +1104,7 @@ exports.examples = [
   },
   {
     title: 'Nested content',
-    render: function(): React.Node {
+    render: function (): React.Node {
       // iOS-only because it relies on inline views being able to size to content.
       // Android's implementation requires that a width and height be specified
       // on the inline view.
@@ -1130,25 +1132,25 @@ exports.examples = [
   },
   {
     title: 'Dynamic Font Size Adjustment',
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <AdjustingFontSize />;
     },
   },
   {
     title: 'Text Align with RTL',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <TextAlignRTLExample />;
     },
   },
   {
     title: "Text `alignItems: 'baseline'` style",
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <TextBaseLineLayoutExample />;
     },
   },
   {
     title: 'Transform',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <Text style={{textTransform: 'uppercase'}}>
@@ -1159,6 +1161,18 @@ exports.examples = [
           </Text>
           <Text style={{textTransform: 'capitalize'}}>
             This text should be CAPITALIZED.
+          </Text>
+          <Text>
+            Capitalize a date:
+            <Text style={{textTransform: 'capitalize'}}>
+              the 9th of november, 1998
+            </Text>
+          </Text>
+          <Text>
+            Capitalize a 2 digit date:
+            <Text style={{textTransform: 'capitalize'}}>
+              the 25th of december
+            </Text>
           </Text>
           <Text style={{textTransform: 'capitalize'}}>
             Mixed: <Text style={{textTransform: 'uppercase'}}>uppercase </Text>

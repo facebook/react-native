@@ -39,6 +39,7 @@ rn_android_library(
         ["buck_tests/*.java"],
     ),
     autoglob = False,
+    language = "JAVA",
     visibility = [
         "PUBLIC",
     ],
@@ -55,12 +56,6 @@ rn_xplat_cxx_library(
     name = "rn_codegen_library",
     srcs = ["buck_tests/emptyFile.cpp"],
     headers = [],
-    compiler_flags = [
-        "-fexceptions",
-        "-frtti",
-        "-std=c++17",
-        "-Wall",
-    ],
     platforms = (ANDROID, APPLE),
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",
@@ -79,12 +74,6 @@ rn_xplat_cxx_library(
     srcs = ["buck_tests/emptyFile.mm"],
     headers = [],
     apple_sdks = (IOS,),
-    compiler_flags = [
-        "-fexceptions",
-        "-frtti",
-        "-std=c++17",
-        "-Wall",
-    ],
     platforms = APPLE,
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",

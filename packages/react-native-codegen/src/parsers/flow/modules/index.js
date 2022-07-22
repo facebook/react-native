@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -70,12 +70,10 @@ function translateTypeAnnotation(
   types: TypeDeclarationMap,
   aliasMap: {...NativeModuleAliasMap},
   tryParse: ParserErrorCapturer,
+  cxxOnly: boolean,
 ): Nullable<NativeModuleTypeAnnotation> {
-  const {
-    nullable,
-    typeAnnotation,
-    typeAliasResolutionStatus,
-  } = resolveTypeAnnotation(flowTypeAnnotation, types);
+  const {nullable, typeAnnotation, typeAliasResolutionStatus} =
+    resolveTypeAnnotation(flowTypeAnnotation, types);
 
   switch (typeAnnotation.type) {
     case 'GenericTypeAnnotation': {
@@ -124,6 +122,7 @@ function translateTypeAnnotation(
                  * to be parseable.
                  */
                 nullGuard,
+                cxxOnly,
               ),
             );
 
@@ -174,13 +173,18 @@ function translateTypeAnnotation(
             typeAnnotation,
           );
 
-          return translateTypeAnnotation(
-            hasteModuleName,
-            typeAnnotation.typeParameters.params[0],
-            types,
-            aliasMap,
-            tryParse,
+          const [paramType, isParamNullable] = unwrapNullable(
+            translateTypeAnnotation(
+              hasteModuleName,
+              typeAnnotation.typeParameters.params[0],
+              types,
+              aliasMap,
+              tryParse,
+              cxxOnly,
+            ),
           );
+
+          return wrapNullable(nullable || isParamNullable, paramType);
         }
         case 'Stringish': {
           return wrapNullable(nullable, {
@@ -234,18 +238,17 @@ function translateTypeAnnotation(
 
                 const {optional, key} = property;
 
-                const [
-                  propertyTypeAnnotation,
-                  isPropertyNullable,
-                ] = unwrapNullable(
-                  translateTypeAnnotation(
-                    hasteModuleName,
-                    property.value,
-                    types,
-                    aliasMap,
-                    tryParse,
-                  ),
-                );
+                const [propertyTypeAnnotation, isPropertyNullable] =
+                  unwrapNullable(
+                    translateTypeAnnotation(
+                      hasteModuleName,
+                      property.value,
+                      types,
+                      aliasMap,
+                      tryParse,
+                      cxxOnly,
+                    ),
+                  );
 
                 if (propertyTypeAnnotation.type === 'FunctionTypeAnnotation') {
                   throw new UnsupportedObjectPropertyValueTypeAnnotationParserError(
@@ -360,8 +363,17 @@ function translateTypeAnnotation(
           types,
           aliasMap,
           tryParse,
+          cxxOnly,
         ),
       );
+    }
+    case 'MixedTypeAnnotation': {
+      if (cxxOnly) {
+        return wrapNullable(nullable, {
+          type: 'MixedTypeAnnotation',
+        });
+      }
+      // Fallthrough
     }
     default: {
       throw new UnsupportedFlowTypeAnnotationParserError(
@@ -406,6 +418,7 @@ function translateFunctionTypeAnnotation(
   types: TypeDeclarationMap,
   aliasMap: {...NativeModuleAliasMap},
   tryParse: ParserErrorCapturer,
+  cxxOnly: boolean,
 ): NativeModuleFunctionTypeAnnotation {
   type Param = NamedShape<Nullable<NativeModuleParamTypeAnnotation>>;
   const params: Array<Param> = [];
@@ -417,18 +430,17 @@ function translateFunctionTypeAnnotation(
       }
 
       const paramName = flowParam.name.name;
-      const [
-        paramTypeAnnotation,
-        isParamTypeAnnotationNullable,
-      ] = unwrapNullable(
-        translateTypeAnnotation(
-          hasteModuleName,
-          flowParam.typeAnnotation,
-          types,
-          aliasMap,
-          tryParse,
-        ),
-      );
+      const [paramTypeAnnotation, isParamTypeAnnotationNullable] =
+        unwrapNullable(
+          translateTypeAnnotation(
+            hasteModuleName,
+            flowParam.typeAnnotation,
+            types,
+            aliasMap,
+            tryParse,
+            cxxOnly,
+          ),
+        );
 
       if (paramTypeAnnotation.type === 'VoidTypeAnnotation') {
         throw new UnsupportedFunctionParamTypeAnnotationParserError(
@@ -470,10 +482,11 @@ function translateFunctionTypeAnnotation(
       types,
       aliasMap,
       tryParse,
+      cxxOnly,
     ),
   );
 
-  if (returnTypeAnnotation.type === 'FunctionTypeAnnotation') {
+  if (!cxxOnly && returnTypeAnnotation.type === 'FunctionTypeAnnotation') {
     throw new UnsupportedFunctionReturnTypeAnnotationParserError(
       hasteModuleName,
       flowFunctionTypeAnnotation.returnType,
@@ -501,6 +514,7 @@ function buildPropertySchema(
   types: TypeDeclarationMap,
   aliasMap: {...NativeModuleAliasMap},
   tryParse: ParserErrorCapturer,
+  cxxOnly: boolean,
 ): NativeModulePropertyShape {
   let nullable = false;
   let {key, value} = property;
@@ -529,12 +543,13 @@ function buildPropertySchema(
         types,
         aliasMap,
         tryParse,
+        cxxOnly,
       ),
     ),
   };
 }
 
-function isModuleInterface(node) {
+function isModuleInterface(node: $FlowFixMe) {
   return (
     node.type === 'InterfaceDeclaration' &&
     node.extends.length === 1 &&
@@ -660,6 +675,7 @@ function buildModuleSchema(
   // Eventually this should be made explicit in the Flow type itself.
   // Also check the hasteModuleName for platform suffix.
   // Note: this shape is consistent with ComponentSchema.
+  let cxxOnly = false;
   const excludedPlatforms = [];
   const namesToValidate = [...moduleNames, hasteModuleName];
   namesToValidate.forEach(name => {
@@ -667,6 +683,9 @@ function buildModuleSchema(
       excludedPlatforms.push('iOS');
     } else if (name.endsWith('IOS')) {
       excludedPlatforms.push('android');
+    } else if (name.endsWith('Cxx')) {
+      cxxOnly = true;
+      excludedPlatforms.push('iOS', 'android');
     }
   });
 
@@ -687,6 +706,7 @@ function buildModuleSchema(
           types,
           aliasMap,
           tryParse,
+          cxxOnly,
         ),
       }));
     })

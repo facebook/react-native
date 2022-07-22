@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,12 +14,22 @@
 #include <ReactCommon/TurboCxxModule.h>
 #include <ReactCommon/TurboModuleBinding.h>
 #include <ReactCommon/TurboModulePerfLogger.h>
-#include <react/jni/JMessageQueueThread.h>
 
 #include "TurboModuleManager.h"
 
 namespace facebook {
 namespace react {
+
+constexpr static auto ReactFeatureFlagsJavaDescriptor =
+    "com/facebook/react/config/ReactFeatureFlags";
+
+static int getFeatureFlagValue(const char *name) {
+  static const auto reactFeatureFlagsJavaDescriptor =
+      jni::findClassStatic(ReactFeatureFlagsJavaDescriptor);
+  const auto field =
+      reactFeatureFlagsJavaDescriptor->getStaticField<jint>(name);
+  return reactFeatureFlagsJavaDescriptor->getStaticFieldValue(field);
+}
 
 TurboModuleManager::TurboModuleManager(
     jni::alias_ref<TurboModuleManager::javaobject> jThis,
@@ -170,12 +180,13 @@ void TurboModuleManager::installJSIBindings() {
       return nullptr;
     };
 
-    if (longLivedObjectCollection_) {
-      TurboModuleBinding::install(
-          runtime, std::move(turboModuleProvider), longLivedObjectCollection_);
-    } else {
-      TurboModuleBinding::install(runtime, std::move(turboModuleProvider));
-    }
+    TurboModuleBindingMode bindingMode = static_cast<TurboModuleBindingMode>(
+        getFeatureFlagValue("turboModuleBindingMode"));
+    TurboModuleBinding::install(
+        runtime,
+        std::move(turboModuleProvider),
+        bindingMode,
+        longLivedObjectCollection_);
   });
 }
 

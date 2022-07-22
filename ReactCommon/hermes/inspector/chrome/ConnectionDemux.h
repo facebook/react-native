@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -39,7 +39,7 @@ class ConnectionDemux {
   int enableDebugging(
       std::unique_ptr<RuntimeAdapter> adapter,
       const std::string &title);
-  void disableDebugging(HermesRuntime &runtime);
+  void disableDebugging(jsi::Runtime &runtime);
 
  private:
   int addPage(std::shared_ptr<Connection> conn);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -35,7 +35,7 @@ class StubView final {
   ComponentHandle componentHandle;
   SurfaceId surfaceId;
   Tag tag;
-  SharedProps props;
+  Props::Shared props;
   SharedEventEmitter eventEmitter;
   LayoutMetrics layoutMetrics;
   State::Shared state;

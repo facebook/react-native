@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -42,7 +42,11 @@ const TextInputForm = () => {
   );
 };
 
-const CloseButton = props => {
+const CloseButton = (
+  props:
+    | {behavior: any, setModalOpen: any}
+    | {behavior: string, setModalOpen: any},
+) => {
   return (
     <View
       style={[
@@ -232,16 +236,18 @@ exports.description =
 exports.examples = [
   {
     title: 'Keyboard Avoiding View with different behaviors',
-    description: ('Specify how to react to the presence of the keyboard. Android and iOS both interact' +
-      'with this prop differently. On both iOS and Android, setting behavior is recommended.': string),
+    description:
+      ('Specify how to react to the presence of the keyboard. Android and iOS both interact' +
+        'with this prop differently. On both iOS and Android, setting behavior is recommended.': string),
     render(): React.Node {
       return <KeyboardAvoidingViewBehaviour />;
     },
   },
   {
     title: 'Keyboard Avoiding View with keyboardVerticalOffset={distance}',
-    description: ('This is the distance between the top of the user screen and the react native' +
-      'view, may be non-zero in some use cases. Defaults to 0.': string),
+    description:
+      ('This is the distance between the top of the user screen and the react native' +
+        'view, may be non-zero in some use cases. Defaults to 0.': string),
     render(): React.Node {
       return <KeyboardAvoidingVerticalOffset />;
     },
