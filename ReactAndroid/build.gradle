@@ -376,6 +376,7 @@ dependencies {
     api("androidx.appcompat:appcompat:${ANDROIDX_APPCOMPAT_VERSION}")
     api("androidx.autofill:autofill:${ANDROIDX_AUTOFILL_VERSION}")
     api("androidx.swiperefreshlayout:swiperefreshlayout:${SWIPEREFRESH_LAYOUT_VERSION}")
+    api("androidx.tracing:tracing:${ANDROIDX_TRACING_VERSION}")
 
     api("com.facebook.fbjni:fbjni-java-only:${FBJNI_VERSION}")
     api("com.facebook.fresco:fresco:${FRESCO_VERSION}")

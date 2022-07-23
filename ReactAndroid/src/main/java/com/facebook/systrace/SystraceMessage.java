@@ -7,17 +7,19 @@
 
 package com.facebook.systrace;
 
-/** Systrace stub. */
+import java.util.ArrayList;
+import java.util.List;
+
 public final class SystraceMessage {
 
-  private static final Builder NOOP_BUILDER = new NoopBuilder();
+  public static Boolean INCLUDE_ARGS = false;
 
   public static Builder beginSection(long tag, String sectionName) {
-    return NOOP_BUILDER;
+    return new StartSectionBuilder(tag, sectionName);
   }
 
   public static Builder endSection(long tag) {
-    return NOOP_BUILDER;
+    return new EndSectionBuilder(tag);
   }
 
   public abstract static class Builder {
@@ -33,13 +35,60 @@ public final class SystraceMessage {
     public abstract Builder arg(String key, double value);
   }
 
-  private interface Flusher {
-    void flush(StringBuilder builder);
+  private static class StartSectionBuilder extends Builder {
+    private String mSectionName;
+    private long mTag;
+    private List<String> mArgs;
+
+    public StartSectionBuilder(long tag, String sectionName) {
+      mTag = tag;
+      mSectionName = sectionName;
+      mArgs = new ArrayList<>();
+    }
+
+    @Override
+    public void flush() {
+      Systrace.beginSection(
+              mTag,
+              mSectionName + (INCLUDE_ARGS && mArgs.size() > 0 ? (" (" + String.join(", ", mArgs) + ")") : ""));
+    }
+
+    @Override
+    public Builder arg(String key, Object value) {
+      mArgs.add(key + ": " + value.toString());
+      return this;
+    }
+
+    @Override
+    public Builder arg(String key, int value) {
+      mArgs.add(key + ": " + value);
+      return this;
+    }
+
+    @Override
+    public Builder arg(String key, long value) {
+      mArgs.add(key + ": " + value);
+      return this;
+    }
+
+    @Override
+    public Builder arg(String key, double value) {
+      mArgs.add(key + ": " + value);
+      return this;
+    }
   }
 
-  private static class NoopBuilder extends Builder {
+  private static class EndSectionBuilder extends Builder {
+    private long mTag;
+
+    public EndSectionBuilder(long tag) {
+      mTag = tag;
+    }
+
     @Override
-    public void flush() {}
+    public void flush() {
+      Systrace.endSection(mTag);
+    }
 
     @Override
     public Builder arg(String key, Object value) {

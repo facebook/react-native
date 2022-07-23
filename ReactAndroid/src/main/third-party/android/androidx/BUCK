@@ -292,6 +292,15 @@ fb_native.android_library(
 )
 
 fb_native.android_library(
+    name = "tracing",
+    visibility = ["PUBLIC"],
+    exported_deps = [
+        ":annotation",
+        ":tracing-binary",
+    ],
+)
+
+fb_native.android_library(
     name = "test-monitor",
     visibility = ["PUBLIC"],
     exported_deps = [
@@ -698,6 +707,12 @@ fb_native.remote_file(
     name = "swiperefreshlayout-binary-aar",
     sha1 = "4fd265b80a2b0fbeb062ab2bc4b1487521507762",
     url = "mvn:androidx.swiperefreshlayout:swiperefreshlayout:aar:1.0.0",
+)
+
+fb_native.remote_file(
+    name = "tracing-binary-aar",
+    sha1 = "4fd265b80a2b0fbeb062ab2bc4b1487521507762",
+    url = "mvn:androidx.tracing:tracing:aar:1.1.0",
 )
 
 fb_native.remote_file(
