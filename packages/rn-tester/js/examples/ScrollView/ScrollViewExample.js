@@ -401,7 +401,7 @@ const examples = ([
   {
     title: '<ScrollView> Inverted\n',
     description:
-      'The `inverted` prop makes content appear from the bottom of the list, ' +
+      'The `inverted` prop makes content appear from the bottom of the view, ' +
       'if the first item should appear at the bottom, items inside ScrollView should be placed in reversed order.',
     render: function (): React.Node {
       return (
