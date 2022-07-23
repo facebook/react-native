@@ -1699,7 +1699,7 @@ ShadowViewMutation::List calculateShadowViewMutations(
 
   if (oldRootShadowView != newRootShadowView) {
     mutations.push_back(ShadowViewMutation::UpdateMutation(
-        oldRootShadowView, newRootShadowView. {}));
+        oldRootShadowView, newRootShadowView, {}));
   }
 
   calculateShadowViewMutationsV2(
