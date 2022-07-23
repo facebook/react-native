@@ -570,14 +570,12 @@ const InvertedScrollView = (props: {horizontal: boolean}) => {
         onPress={() => {
           nullthrows(scrollRef.current).scrollTo({x: 0, y: 0});
         }}
-        testID={'scroll_to_start_button'}
       />
       <Button
         label="Scroll to end"
         onPress={() => {
           nullthrows(scrollRef.current).scrollToEnd({animated: true});
         }}
-        testID={'scroll_to_end_button'}
       />
     </View>
   );
