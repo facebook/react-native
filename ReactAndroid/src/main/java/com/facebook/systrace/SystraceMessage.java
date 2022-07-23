@@ -38,12 +38,11 @@ public final class SystraceMessage {
   private static class StartSectionBuilder extends Builder {
     private String mSectionName;
     private long mTag;
-    private List<String> mArgs;
+    private List<String> mArgs = new ArrayList<>();
 
     public StartSectionBuilder(long tag, String sectionName) {
       mTag = tag;
       mSectionName = sectionName;
-      mArgs = new ArrayList<>();
     }
 
     @Override
@@ -55,26 +54,30 @@ public final class SystraceMessage {
 
     @Override
     public Builder arg(String key, Object value) {
-      mArgs.add(key + ": " + value.toString());
+      addArg(key, String.valueOf(value));
       return this;
     }
 
     @Override
     public Builder arg(String key, int value) {
-      mArgs.add(key + ": " + value);
+      addArg(key, String.valueOf(value));
       return this;
     }
 
     @Override
     public Builder arg(String key, long value) {
-      mArgs.add(key + ": " + value);
+      addArg(key, String.valueOf(value));
       return this;
     }
 
     @Override
     public Builder arg(String key, double value) {
-      mArgs.add(key + ": " + value);
+      addArg(key, String.valueOf(value));
       return this;
+    }
+
+    private void addArg(String key, String value) {
+      mArgs.add(key + ": " + value);
     }
   }
 
