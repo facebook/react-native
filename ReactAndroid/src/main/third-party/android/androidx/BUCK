@@ -716,7 +716,7 @@ fb_native.remote_file(
 
 fb_native.remote_file(
     name = "tracing-binary-aar",
-    sha1 = "4fd265b80a2b0fbeb062ab2bc4b1487521507762",
+    sha1 = "cdc41b1335c3857e4136d399f6a7962663d05e5e",
     url = "mvn:androidx.tracing:tracing:aar:1.1.0",
 )
 
