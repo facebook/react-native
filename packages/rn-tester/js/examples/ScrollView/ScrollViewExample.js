@@ -398,6 +398,20 @@ const examples = ([
       return <ContentOffsetList />;
     },
   },
+  {
+    title: '<ScrollView> Inverted\n',
+    description:
+      'The `inverted` prop makes content appear from the bottom of the list, ' +
+      'if the first item should appear at the bottom, items inside ScrollView should be placed in reversed order.',
+    render: function (): React.Node {
+      return (
+        <>
+          <InvertedScrollView horizontal={false} />
+          <InvertedScrollView horizontal={true} />
+        </>
+      );
+    },
+  },
 ]: Array<RNTesterModuleExample>);
 
 if (Platform.OS === 'ios') {
@@ -522,6 +536,39 @@ const HorizontalScrollView = (props: {direction: 'ltr' | 'rtl'}) => {
         label="Scroll to start"
         onPress={() => {
           nullthrows(scrollRef.current).scrollTo({x: 0});
+        }}
+        testID={'scroll_to_start_button'}
+      />
+      <Button
+        label="Scroll to end"
+        onPress={() => {
+          nullthrows(scrollRef.current).scrollToEnd({animated: true});
+        }}
+        testID={'scroll_to_end_button'}
+      />
+    </View>
+  );
+};
+
+const InvertedScrollView = (props: {horizontal: boolean}) => {
+  const {horizontal} = props;
+  const scrollRef = React.useRef<?React.ElementRef<typeof ScrollView>>();
+  const title = horizontal ? 'Horizontal Inverted' : 'Vertical Inverted';
+  return (
+    <View>
+      <Text style={styles.text}>{title}</Text>
+      <ScrollView
+        horizontal={horizontal}
+        ref={scrollRef}
+        style={[styles.scrollView, {height: 200}]}
+        nestedScrollEnabled
+        inverted={true}>
+        {ITEMS.map(createItemRow).reverse()}
+      </ScrollView>
+      <Button
+        label="Scroll to start"
+        onPress={() => {
+          nullthrows(scrollRef.current).scrollTo({x: 0, y: 0});
         }}
         testID={'scroll_to_start_button'}
       />
