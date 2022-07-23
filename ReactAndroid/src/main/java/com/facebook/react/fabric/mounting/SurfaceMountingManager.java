@@ -994,7 +994,7 @@ public class SurfaceMountingManager {
     }
 
     ViewState parentViewState = getViewState(parentTag);
-    ViewManager parentViewManager = parentViewState.mViewManager;
+    ReactViewManagerWrapper parentViewManager = parentViewState.mViewManager;
     IViewManagerWithChildren parentViewManagerWithChildren;
     if (parentViewManager instanceof IViewManagerWithChildren) {
       parentViewManagerWithChildren = (IViewManagerWithChildren) parentViewManager;
