@@ -574,7 +574,7 @@ static void updateMatchedPair(
     if (oldPair.shadowView != newPair.shadowView) {
       mutationContainer.updateMutations.push_back(
           ShadowViewMutation::UpdateMutation(
-              oldPair.shadowView, newPair.shadowView));
+              oldPair.shadowView, newPair.shadowView, parentShadowView));
     }
   }
 }
@@ -835,7 +835,7 @@ static void calculateShadowViewMutationsFlattener(
           newTreeNodePair.isConcreteView && oldTreeNodePair.isConcreteView) {
         mutationContainer.updateMutations.push_back(
             ShadowViewMutation::UpdateMutation(
-                oldTreeNodePair.shadowView, newTreeNodePair.shadowView));
+                oldTreeNodePair.shadowView, newTreeNodePair.shadowView, node.shadowView));
       }
 
       // Update children if appropriate.
@@ -1161,7 +1161,7 @@ static void calculateShadowViewMutationsV2(
         oldChildPair.shadowView != newChildPair.shadowView) {
       mutationContainer.updateMutations.push_back(
           ShadowViewMutation::UpdateMutation(
-              oldChildPair.shadowView, newChildPair.shadowView));
+              oldChildPair.shadowView, newChildPair.shadowView, parentShadowView));
     }
 
     // Recursively update tree if ShadowNode pointers are not equal
@@ -1699,7 +1699,7 @@ ShadowViewMutation::List calculateShadowViewMutations(
 
   if (oldRootShadowView != newRootShadowView) {
     mutations.push_back(ShadowViewMutation::UpdateMutation(
-        oldRootShadowView, newRootShadowView));
+        oldRootShadowView, newRootShadowView. {}));
   }
 
   calculateShadowViewMutationsV2(

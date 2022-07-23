@@ -1241,7 +1241,7 @@ void LayoutAnimationKeyFrameManager::queueFinalMutationsForCompletedKeyFrame(
           break;
         case ShadowViewMutation::Type::Update:
           mutationsList.push_back(ShadowViewMutation::UpdateMutation(
-              prev, finalMutation.newChildShadowView));
+              prev, finalMutation.newChildShadowView, {}));
           break;
       }
       if (finalMutation.newChildShadowView.tag > 0) {
@@ -1266,7 +1266,7 @@ void LayoutAnimationKeyFrameManager::queueFinalMutationsForCompletedKeyFrame(
       auto mutatedShadowView =
           createInterpolatedShadowView(1, keyframe.viewStart, keyframe.viewEnd);
       auto generatedPenultimateMutation = ShadowViewMutation::UpdateMutation(
-          keyframe.viewPrev, mutatedShadowView);
+          keyframe.viewPrev, mutatedShadowView, {});
       react_native_assert(
           generatedPenultimateMutation.oldChildShadowView.tag > 0);
       react_native_assert(
@@ -1277,7 +1277,7 @@ void LayoutAnimationKeyFrameManager::queueFinalMutationsForCompletedKeyFrame(
       mutationsList.push_back(generatedPenultimateMutation);
 
       auto generatedMutation = ShadowViewMutation::UpdateMutation(
-          mutatedShadowView, keyframe.viewEnd);
+          mutatedShadowView, keyframe.viewEnd, {});
       react_native_assert(generatedMutation.oldChildShadowView.tag > 0);
       react_native_assert(generatedMutation.newChildShadowView.tag > 0);
       PrintMutationInstruction(
@@ -1286,7 +1286,7 @@ void LayoutAnimationKeyFrameManager::queueFinalMutationsForCompletedKeyFrame(
       mutationsList.push_back(generatedMutation);
     } else {
       auto mutation = ShadowViewMutation::UpdateMutation(
-          keyframe.viewPrev, keyframe.viewEnd);
+          keyframe.viewPrev, keyframe.viewEnd, {});
       PrintMutationInstruction(
           logPrefix +
               "Animation Complete: Queuing up Final Synthetic Mutation:",
