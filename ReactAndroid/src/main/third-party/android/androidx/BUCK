@@ -296,7 +296,7 @@ fb_native.android_library(
     visibility = ["PUBLIC"],
     exported_deps = [
         ":annotation",
-        ":tracing-binary",
+        ":tracing-binary-aar",
     ],
 )
 
