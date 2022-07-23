@@ -620,6 +620,10 @@ export type Props = $ReadOnly<{|
    */
   snapToOffsets?: ?$ReadOnlyArray<number>,
   /**
+   * Reverses the direction of scroll. Uses scale transforms of -1.
+   */
+  inverted?: ?boolean,
+  /**
    * Use in conjunction with `snapToOffsets`. By default, the beginning
    * of the list counts as a snap offset. Set `snapToStart` to false to disable
    * this behavior and allow the list to scroll freely between its start and
@@ -1610,10 +1614,19 @@ class ScrollView extends React.Component<Props, State> {
         ? NativeHorizontalScrollViewTuple
         : NativeVerticalScrollViewTuple;
 
+    const inversionStyle =
+      this.props.inverted === true
+        ? this.props.horizontal === true
+          ? styles.horizontallyInverted
+          : styles.verticallyInverted
+        : null;
+
     const contentContainerStyle = [
       this.props.horizontal === true && styles.contentContainerHorizontal,
+      inversionStyle,
       this.props.contentContainerStyle,
     ];
+
     if (__DEV__ && this.props.style !== undefined) {
       const style = flattenStyle(this.props.style);
       const childLayoutProps = ['alignItems', 'justifyContent'].filter(
@@ -1713,7 +1726,7 @@ class ScrollView extends React.Component<Props, State> {
       ...this.props,
       alwaysBounceHorizontal,
       alwaysBounceVertical,
-      style: StyleSheet.compose(baseStyle, this.props.style),
+      style: [baseStyle, inversionStyle, this.props.style],
       // Override the onContentSizeChange from props, since this event can
       // bubble up from TextInputs
       onContentSizeChange: null,
@@ -1819,6 +1832,12 @@ const styles = StyleSheet.create({
   },
   contentContainerHorizontal: {
     flexDirection: 'row',
+  },
+  verticallyInverted: {
+    transform: [{scaleY: -1}],
+  },
+  horizontallyInverted: {
+    transform: [{scaleX: -1}],
   },
 });
 
