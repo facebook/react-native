@@ -149,13 +149,14 @@ public class IntBufferBatchMountItem implements MountItem {
           surfaceMountingManager.updateState(mIntBuffer[i++], castToState(mObjBuffer[j++]));
         } else if (type == INSTRUCTION_UPDATE_LAYOUT) {
           int reactTag = mIntBuffer[i++];
+          int parentTag = mIntBuffer[i++];
           int x = mIntBuffer[i++];
           int y = mIntBuffer[i++];
           int width = mIntBuffer[i++];
           int height = mIntBuffer[i++];
           int displayType = mIntBuffer[i++];
 
-          surfaceMountingManager.updateLayout(reactTag, x, y, width, height, displayType);
+          surfaceMountingManager.updateLayout(reactTag, parentTag, x, y, width, height, displayType);
 
         } else if (type == INSTRUCTION_UPDATE_PADDING) {
           surfaceMountingManager.updatePadding(

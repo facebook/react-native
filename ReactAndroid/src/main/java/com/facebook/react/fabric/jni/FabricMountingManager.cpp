@@ -79,7 +79,7 @@ static inline int getIntBufferSizeForType(CppMountItem::Type mountItemType) {
     case CppMountItem::Type::UpdatePadding:
       return 5; // tag, top, left, bottom, right
     case CppMountItem::Type::UpdateLayout:
-      return 6; // tag, x, y, w, h, DisplayType
+      return 7; // tag, parentTag, x, y, w, h, DisplayType
     case CppMountItem::Type::UpdateOverflowInset:
       return 5; // tag, left, top, right, bottom
     case CppMountItem::Undefined:
@@ -381,7 +381,7 @@ void FabricMountingManager::executeMount(
                 newChildShadowView.layoutMetrics) {
               cppUpdateLayoutMountItems.push_back(
                   CppMountItem::UpdateLayoutMountItem(
-                      mutation.newChildShadowView));
+                      mutation.newChildShadowView, parentShadowView));
             }
 
             // OverflowInset: This is the values indicating boundaries including
@@ -441,7 +441,8 @@ void FabricMountingManager::executeMount(
 
             // Layout
             cppUpdateLayoutMountItems.push_back(
-                CppMountItem::UpdateLayoutMountItem(newChildShadowView));
+                CppMountItem::UpdateLayoutMountItem(
+                    newChildShadowView, parentShadowView));
 
             // OverflowInset: This is the values indicating boundaries including
             // children of the current view. The layout of current view may not
@@ -548,7 +549,7 @@ void FabricMountingManager::executeMount(
   int intBufferPosition = 0;
   int objBufferPosition = 0;
   int prevMountItemType = -1;
-  jint temp[6];
+  jint temp[7];
   for (int i = 0; i < cppCommonMountItems.size(); i++) {
     const auto &mountItem = cppCommonMountItems[i];
     const auto &mountItemType = mountItem.type;
@@ -723,13 +724,14 @@ void FabricMountingManager::executeMount(
           toInt(mountItem.newChildShadowView.layoutMetrics.displayType);
 
       temp[0] = mountItem.newChildShadowView.tag;
-      temp[1] = x;
-      temp[2] = y;
-      temp[3] = w;
-      temp[4] = h;
-      temp[5] = displayType;
-      env->SetIntArrayRegion(intBufferArray, intBufferPosition, 6, temp);
-      intBufferPosition += 6;
+      temp[1] = mountItem.parentShadowView.tag;
+      temp[2] = x;
+      temp[3] = y;
+      temp[4] = w;
+      temp[5] = h;
+      temp[6] = displayType;
+      env->SetIntArrayRegion(intBufferArray, intBufferPosition, 7, temp);
+      intBufferPosition += 7;
     }
   }
   if (!cppUpdateOverflowInsetMountItems.empty()) {

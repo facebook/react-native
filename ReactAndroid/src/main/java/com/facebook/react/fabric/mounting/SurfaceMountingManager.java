@@ -36,6 +36,7 @@ import com.facebook.react.fabric.mounting.MountingManager.MountItemExecutor;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.touch.JSResponderHandler;
+import com.facebook.react.uimanager.IViewManagerWithChildren;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.ReactOverflowViewWithInset;
 import com.facebook.react.uimanager.ReactRoot;
@@ -967,7 +968,7 @@ public class SurfaceMountingManager {
   }
 
   @UiThread
-  public void updateLayout(int reactTag, int x, int y, int width, int height, int displayType) {
+  public void updateLayout(int reactTag, int parentTag, int x, int y, int width, int height, int displayType) {
     if (isStopped()) {
       return;
     }
@@ -992,9 +993,21 @@ public class SurfaceMountingManager {
       parent.requestLayout();
     }
 
-    // TODO: T31905686 Check if the parent of the view has to layout the view, or the child has
-    // to lay itself out. see NativeViewHierarchyManager.updateLayout
-    viewToUpdate.layout(x, y, x + width, y + height);
+    ViewState parentViewState = getViewState(parentTag);
+    ViewManager parentViewManager = parentViewState.mViewManager;
+    IViewManagerWithChildren parentViewManagerWithChildren;
+    if (parentViewManager instanceof IViewManagerWithChildren) {
+      parentViewManagerWithChildren = (IViewManagerWithChildren) parentViewManager;
+    } else {
+      throw new IllegalViewOperationException(
+          "Trying to use view with tag "
+              + parentTag
+              + " as a parent, but its Manager doesn't implement IViewManagerWithChildren");
+    }
+    if (parentViewManagerWithChildren != null
+        && !parentViewManagerWithChildren.needsCustomLayoutForChildren()) {
+      viewToUpdate.layout(x, y, x + width, y + height);
+    }
 
     // displayType: 0 represents display: 'none'
     int visibility = displayType == 0 ? View.INVISIBLE : View.VISIBLE;
