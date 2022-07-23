@@ -296,7 +296,7 @@ fb_native.android_library(
     visibility = ["PUBLIC"],
     exported_deps = [
         ":annotation",
-        ":tracing-binary-aar",
+        ":tracing-binary",
     ],
 )
 
@@ -503,6 +503,11 @@ fb_native.android_prebuilt_aar(
 fb_native.android_prebuilt_aar(
     name = "swiperefreshlayout-binary",
     aar = ":swiperefreshlayout-binary-aar",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "tracing-binary",
+    aar = ":tracing-binary-aar",
 )
 
 fb_native.android_prebuilt_aar(
