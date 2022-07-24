@@ -19,7 +19,10 @@ export type PlatformSelectSpec<D, N, I> = {
 
 const Platform = {
   __constants: null,
-  OS: 'ios',
+  // $FlowFixMe[unsafe-getters-setters]
+  get OS(): string {
+    return 'ios';
+  },
   // $FlowFixMe[unsafe-getters-setters]
   get Version(): string {
     return this.constants.osVersion;
