@@ -9,6 +9,11 @@
 
 #ifdef __cplusplus
 
+#ifdef __cpp_lib_bit_cast
+#include <bit>
+#else
+#include <cstring>
+#endif
 #include "YGValue.h"
 #include "YGMacros.h"
 #include <cmath>
@@ -55,7 +60,7 @@ public:
     if (value == 0.0f || (value < LOWER_BOUND && value > -LOWER_BOUND)) {
       constexpr auto zero =
           Unit == YGUnitPercent ? ZERO_BITS_PERCENT : ZERO_BITS_POINT;
-      return {Payload{zero}};
+      return {zero};
     }
 
     constexpr auto upperBound =
@@ -65,9 +70,9 @@ public:
     }
 
     uint32_t unitBit = Unit == YGUnitPercent ? PERCENT_BIT : 0;
-    auto data = Payload{value};
-    data.repr -= BIAS;
-    data.repr |= unitBit;
+    auto data = asU32(value);
+    data -= BIAS;
+    data |= unitBit;
     return {data};
   }
 
@@ -78,7 +83,7 @@ public:
   }
 
   static constexpr CompactValue ofZero() noexcept {
-    return CompactValue{Payload{ZERO_BITS_POINT}};
+    return CompactValue{ZERO_BITS_POINT};
   }
 
   static constexpr CompactValue ofUndefined() noexcept {
@@ -86,13 +91,12 @@ public:
   }
 
   static constexpr CompactValue ofAuto() noexcept {
-    return CompactValue{Payload{AUTO_BITS}};
+    return CompactValue{AUTO_BITS};
   }
 
-  constexpr CompactValue() noexcept
-      : payload_(std::numeric_limits<float>::quiet_NaN()) {}
+  constexpr CompactValue() noexcept : repr_(0x7FC00000) {}
 
-  CompactValue(const YGValue& x) noexcept : payload_(uint32_t{0}) {
+  CompactValue(const YGValue& x) noexcept : repr_(uint32_t{0}) {
     switch (x.unit) {
       case YGUnitUndefined:
         *this = ofUndefined();
@@ -110,7 +114,7 @@ public:
   }
 
   operator YGValue() const noexcept {
-    switch (payload_.repr) {
+    switch (repr_) {
       case AUTO_BITS:
         return YGValueAuto;
       case ZERO_BITS_POINT:
@@ -119,34 +123,28 @@ public:
         return YGValue{0.0f, YGUnitPercent};
     }
 
-    if (std::isnan(payload_.value)) {
+    if (std::isnan(asFloat(repr_))) {
       return YGValueUndefined;
     }
 
-    auto data = payload_;
-    data.repr &= ~PERCENT_BIT;
-    data.repr += BIAS;
+    auto data = repr_;
+    data &= ~PERCENT_BIT;
+    data += BIAS;
 
     return YGValue{
-        data.value, payload_.repr & 0x40000000 ? YGUnitPercent : YGUnitPoint};
+        asFloat(data), repr_ & 0x40000000 ? YGUnitPercent : YGUnitPoint};
   }
 
   bool isUndefined() const noexcept {
     return (
-        payload_.repr != AUTO_BITS && payload_.repr != ZERO_BITS_POINT &&
-        payload_.repr != ZERO_BITS_PERCENT && std::isnan(payload_.value));
+        repr_ != AUTO_BITS && repr_ != ZERO_BITS_POINT &&
+        repr_ != ZERO_BITS_PERCENT && std::isnan(asFloat(repr_)));
   }
 
-  bool isAuto() const noexcept { return payload_.repr == AUTO_BITS; }
+  bool isAuto() const noexcept { return repr_ == AUTO_BITS; }
 
 private:
-  union Payload {
-    float value;
-    uint32_t repr;
-    Payload() = delete;
-    constexpr Payload(uint32_t r) : repr(r) {}
-    constexpr Payload(float v) : value(v) {}
-  };
+  uint32_t repr_;
 
   static constexpr uint32_t BIAS = 0x20000000;
   static constexpr uint32_t PERCENT_BIT = 0x40000000;
@@ -157,11 +155,33 @@ private:
   static constexpr uint32_t ZERO_BITS_POINT = 0x7f8f0f0f;
   static constexpr uint32_t ZERO_BITS_PERCENT = 0x7f80f0f0;
 
-  constexpr CompactValue(Payload data) noexcept : payload_(data) {}
+  constexpr CompactValue(uint32_t data) noexcept : repr_(data) {}
 
-  Payload payload_;
+  VISIBLE_FOR_TESTING uint32_t repr() { return repr_; }
 
-  VISIBLE_FOR_TESTING uint32_t repr() { return payload_.repr; }
+  static uint32_t asU32(float f) {
+#ifdef __cpp_lib_bit_cast
+    return std::bit_cast<uint32_t>(f);
+#else
+    uint32_t u;
+    static_assert(
+        sizeof(u) == sizeof(f), "uint32_t and float must have the same size");
+    std::memcpy(&u, &f, sizeof(f));
+    return u;
+#endif
+  }
+
+  static float asFloat(uint32_t u) {
+#ifdef __cpp_lib_bit_cast
+    return std::bit_cast<float>(u);
+#else
+    float f;
+    static_assert(
+        sizeof(f) == sizeof(u), "uint32_t and float must have the same size");
+    std::memcpy(&f, &u, sizeof(u));
+    return f;
+#endif
+  }
 };
 
 template <>
@@ -174,7 +194,7 @@ template <>
 CompactValue CompactValue::ofMaybe<YGUnitAuto>(float) noexcept = delete;
 
 constexpr bool operator==(CompactValue a, CompactValue b) noexcept {
-  return a.payload_.repr == b.payload_.repr;
+  return a.repr_ == b.repr_;
 }
 
 constexpr bool operator!=(CompactValue a, CompactValue b) noexcept {
