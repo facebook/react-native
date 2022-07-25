@@ -226,7 +226,7 @@ RCT_EXPORT_METHOD(hide)
       [NSAnimationContext runAnimationGroup:^(__unused NSAnimationContext *context) {
         self->_window.animator.alphaValue = 0.0;
       } completionHandler:^{
-        [self->_window orderFront:self];
+        [self->_window close];
         self->_window = nil;
       }];
     });
