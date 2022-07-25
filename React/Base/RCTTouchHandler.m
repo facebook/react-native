@@ -221,7 +221,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
   NSEvent *nativeTouch = _nativeTouches[touchIndex];
   CGPoint location = nativeTouch.locationInWindow;
   CGPoint rootViewLocation = CGPointMake(location.x, CGRectGetHeight(self.view.window.frame) - location.y);
-  CGPoint touchViewLocation = rootViewLocation;
+  NSView *touchView = _touchViews[touchIndex];
+  CGPoint touchViewLocation = [touchView convertPoint:location fromView:nil];
 #endif // ]TODO(macOS GH#774)
 
   NSMutableDictionary *reactTouch = _reactTouches[touchIndex];
