@@ -57,7 +57,7 @@ void LayoutAnimationDriver::animationMutationsForFrame(
 
       // Create the mutation instruction
       mutationsList.emplace_back(ShadowViewMutation::UpdateMutation(
-          keyframe.viewPrev, mutatedShadowView, {}));
+          keyframe.viewPrev, mutatedShadowView, keyframe.parentView));
 
       PrintMutationInstruction("Animation Progress:", updateMutation);
 
