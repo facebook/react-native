@@ -19,9 +19,6 @@
 - (instancetype)initWithBridge:(RCTBridge *)bridge
 {
   if (self = [super initWithBridge:bridge]) {
-    // `blurOnSubmit` defaults to `false` for <TextInput multiline={true}> by design.
-    self.blurOnSubmit = NO;
-
     _backedTextInputView = [[RCTUITextView alloc] initWithFrame:self.bounds];
     _backedTextInputView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     _backedTextInputView.textInputDelegate = self;

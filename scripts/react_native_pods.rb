@@ -37,7 +37,7 @@ def use_react_native! (
   path: "../node_modules/react-native",
   fabric_enabled: false,
   new_arch_enabled: ENV['RCT_NEW_ARCH_ENABLED'] == '1',
-  production: false,
+  production: ENV['PRODUCTION'] == '1',
   hermes_enabled: true,
   flipper_configuration: FlipperConfiguration.disabled,
   app_path: '..',

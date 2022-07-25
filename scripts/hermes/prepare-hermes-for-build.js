@@ -23,12 +23,11 @@ const {
   shouldBuildHermesFromSource,
 } = require('./hermes-utils');
 
-async function main(pullRequest) {
-  if (!shouldBuildHermesFromSource(pullRequest)) {
+async function main(isInCI) {
+  if (!shouldBuildHermesFromSource(isInCI)) {
     copyPodSpec();
     return;
   }
-
   downloadHermesTarball();
   expandHermesTarball();
   copyPodSpec();
@@ -40,8 +39,8 @@ async function main(pullRequest) {
   }
 }
 
-const pullRequest = process.argv.length > 2 ? process.argv[2] : null;
-console.log(`Pull request detected: ${pullRequest}`);
-main(pullRequest).then(() => {
+const isInCI = process.env.CI === 'true';
+
+main(isInCI).then(() => {
   process.exit(0);
 });

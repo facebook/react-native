@@ -95,7 +95,7 @@ public class ReactEditText extends AppCompatEditText
   private @Nullable TextWatcherDelegator mTextWatcherDelegator;
   private int mStagedInputType;
   protected boolean mContainsImages;
-  private @Nullable Boolean mBlurOnSubmit;
+  private @Nullable String mSubmitBehavior = null;
   private boolean mDisableFullscreen;
   private @Nullable String mReturnKeyType;
   private @Nullable SelectionWatcher mSelectionWatcher;
@@ -135,7 +135,6 @@ public class ReactEditText extends AppCompatEditText
     mDefaultGravityVertical = getGravity() & Gravity.VERTICAL_GRAVITY_MASK;
     mNativeEventCount = 0;
     mIsSettingTextFromJS = false;
-    mBlurOnSubmit = null;
     mDisableFullscreen = false;
     mListeners = null;
     mTextWatcherDelegator = null;
@@ -256,7 +255,7 @@ public class ReactEditText extends AppCompatEditText
               inputConnection, reactContext, this, mEventDispatcher);
     }
 
-    if (isMultiline() && getBlurOnSubmit()) {
+    if (isMultiline() && (shouldBlurOnReturn() || shouldSubmitOnReturn())) {
       // Remove IME_FLAG_NO_ENTER_ACTION to keep the original IME_OPTION
       outAttrs.imeOptions &= ~EditorInfo.IME_FLAG_NO_ENTER_ACTION;
     }
@@ -380,21 +379,52 @@ public class ReactEditText extends AppCompatEditText
     mSelectionWatcher = selectionWatcher;
   }
 
-  public void setBlurOnSubmit(@Nullable Boolean blurOnSubmit) {
-    mBlurOnSubmit = blurOnSubmit;
-  }
-
   public void setOnKeyPress(boolean onKeyPress) {
     mOnKeyPress = onKeyPress;
   }
 
-  public boolean getBlurOnSubmit() {
-    if (mBlurOnSubmit == null) {
-      // Default blurOnSubmit
-      return isMultiline() ? false : true;
+  public boolean shouldBlurOnReturn() {
+    String submitBehavior = getSubmitBehavior();
+    boolean shouldBlur;
+
+    // Default shouldBlur
+    if (submitBehavior == null) {
+      if (!isMultiline()) {
+        shouldBlur = true;
+      } else {
+        shouldBlur = false;
+      }
+    } else {
+      shouldBlur = submitBehavior.equals("blurAndSubmit");
     }
 
-    return mBlurOnSubmit;
+    return shouldBlur;
+  }
+
+  public boolean shouldSubmitOnReturn() {
+    String submitBehavior = getSubmitBehavior();
+    boolean shouldSubmit;
+
+    // Default shouldSubmit
+    if (submitBehavior == null) {
+      if (!isMultiline()) {
+        shouldSubmit = true;
+      } else {
+        shouldSubmit = false;
+      }
+    } else {
+      shouldSubmit = submitBehavior.equals("submit") || submitBehavior.equals("blurAndSubmit");
+    }
+
+    return shouldSubmit;
+  }
+
+  public String getSubmitBehavior() {
+    return mSubmitBehavior;
+  }
+
+  public void setSubmitBehavior(String submitBehavior) {
+    mSubmitBehavior = submitBehavior;
   }
 
   public void setDisableFullscreenUI(boolean disableFullscreenUI) {

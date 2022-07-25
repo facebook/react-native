@@ -248,6 +248,90 @@ class BlurOnSubmitExample extends React.Component<{...}> {
   }
 }
 
+class SubmitBehaviorExample extends React.Component<{...}> {
+  ref1 = React.createRef();
+  ref2 = React.createRef();
+  ref3 = React.createRef();
+  ref4 = React.createRef();
+  ref5 = React.createRef();
+  ref6 = React.createRef();
+  ref7 = React.createRef();
+  ref8 = React.createRef();
+  ref9 = React.createRef();
+  ref10 = React.createRef();
+  ref11 = React.createRef();
+
+  render() {
+    return (
+      <View>
+        <TextInput
+          ref={this.ref1}
+          placeholder="single line submit"
+          submitBehavior="submit"
+          onSubmitEditing={() => this.ref2.current?.focus()}
+        />
+        <TextInput
+          ref={this.ref2}
+          placeholder="single line blurAndSubmit"
+          submitBehavior="blurAndSubmit"
+          onSubmitEditing={() => this.ref3.current?.focus()}
+        />
+        <TextInput
+          ref={this.ref3}
+          placeholder="single line default"
+          onSubmitEditing={() => this.ref4.current?.focus()}
+        />
+        <TextInput
+          ref={this.ref4}
+          blurOnSubmit
+          placeholder="single line blurOnSubmit true"
+          onSubmitEditing={() => this.ref5.current?.focus()}
+        />
+        <TextInput
+          ref={this.ref5}
+          blurOnSubmit={false}
+          placeholder="single line blurOnSubmit false"
+          onSubmitEditing={() => this.ref6.current?.focus()}
+        />
+        <TextInput
+          ref={this.ref6}
+          multiline
+          placeholder="multiline submit"
+          submitBehavior="submit"
+          onSubmitEditing={() => this.ref7.current?.focus()}
+        />
+        <TextInput
+          ref={this.ref7}
+          multiline
+          placeholder="multiline blurAndSubmit"
+          submitBehavior="blurAndSubmit"
+          onSubmitEditing={() => this.ref8.current?.focus()}
+        />
+        <TextInput
+          ref={this.ref8}
+          multiline
+          blurOnSubmit
+          placeholder="multiline blurOnSubmit true"
+          onSubmitEditing={() => this.ref9.current?.focus()}
+        />
+        <TextInput
+          ref={this.ref9}
+          multiline
+          blurOnSubmit={false}
+          placeholder="multiline blurOnSubmit false"
+        />
+        <TextInput
+          ref={this.ref10}
+          multiline
+          placeholder="multiline newline"
+          submitBehavior="newline"
+        />
+        <TextInput ref={this.ref11} multiline placeholder="multiline default" />
+      </View>
+    );
+  }
+}
+
 class TextEventsExample extends React.Component<{...}, $FlowFixMeState> {
   state = {
     curText: '<No Event>',
@@ -618,6 +702,12 @@ module.exports = ([
     title: 'Blur on submit',
     render: function (): React.Element<any> {
       return <BlurOnSubmitExample />;
+    },
+  },
+  {
+    title: 'Submit behavior',
+    render: function (): React.Element<any> {
+      return <SubmitBehaviorExample />;
     },
   },
   {

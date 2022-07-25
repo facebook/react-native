@@ -194,7 +194,7 @@ public class ReactTextInputPropertyTest {
     ReactEditText view = mManager.createViewInstance(mThemedContext);
 
     mManager.updateProperties(view, buildStyles("multiline", true));
-    mManager.updateProperties(view, buildStyles("blurOnSubmit", true));
+    mManager.updateProperties(view, buildStyles("submitBehavior", "blurAndSubmit"));
 
     EditorInfo editorInfo = new EditorInfo();
     editorInfo.imeOptions = EditorInfo.IME_ACTION_DONE | EditorInfo.IME_FLAG_NO_ENTER_ACTION;

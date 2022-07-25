@@ -52,9 +52,8 @@ references:
     gems_cache_key: &gems_cache_key v1-gems-{{ checksum "Gemfile.lock" }}
     gradle_cache_key: &gradle_cache_key v1-gradle-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "ReactAndroid/gradle.properties" }}
     hermes_cache_key: &hermes_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
-    hermes_sdk_cache_key: &hermes_sdk_cache_key v1-hermes-{{ checksum "sdks/.hermes-cache-key-file" }}
     hermes_windows_cache_key: &hermes_windows_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "tmp/hermes/hermesversion" }}
-    hermes_tarball_cache_key: &hermes_tarball_cache_key v1-hermes-tarball-{{ checksum "sdks/.hermes-cache-key-file" }}
+    hermes_tarball_cache_key: &hermes_tarball_cache_key v1-hermes-tarball-{{ checksum "/tmp/hermes/cache/.hermes-cache-key-file" }}
     pods_cache_key: &pods_cache_key v6-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
     windows_yarn_cache_key: &windows_yarn_cache_key v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
     yarn_cache_key: &yarn_cache_key v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}
@@ -293,10 +292,13 @@ commands:
       - run:
           name: Setup Hermes cache
           command: |
-            HERMES_CACHE_KEY_FILE="sdks/.hermes-cache-key-file"
+            HERMES_CACHE_KEY_FILE="/tmp/hermes/cache/.hermes-cache-key-file"
             if [ ! -f "$HERMES_CACHE_KEY_FILE" ]; then
+              echo "File not found. Creating it using latest commit from main"
+              mkdir -p /tmp/hermes/cache
               git ls-remote https://github.com/facebook/hermes main | cut -f 1 > $HERMES_CACHE_KEY_FILE
             fi
+            cat $HERMES_CACHE_KEY_FILE
       - restore_cache:
           keys:
             - *hermes_tarball_cache_key
@@ -309,13 +311,13 @@ commands:
                   BASE_PATH=/tmp/hermes/hermes-runtime-darwin/
                   if [ ! -d $BASE_PATH ]; then
                     echo "Hermes tarball base path not present ($BASE_PATH). Build it from source."
-                    return
+                    exit 0
                   fi
                   TARBALL=$(ls /tmp/hermes/hermes-runtime-darwin/)
                   TARBALL_PATH=$BASE_PATH$TARBALL
                   if [ ! -f $TARBALL_PATH ]; then
                     echo "Hermes tarball not present ($TARBALL_PATH). Build it from source."
-                    return
+                    exit 0
                   fi
 
                   echo "export HERMES_ENGINE_TARBALL_PATH=$TARBALL_PATH" >> $BASH_ENV
@@ -472,6 +474,8 @@ jobs:
             cd scripts
             sh run_ruby_tests.sh
       - run_yarn
+      - attach_workspace:
+          at: /tmp/hermes/
       - run: |
           cd packages/rn-tester
           bundle check || bundle install
@@ -761,6 +765,9 @@ jobs:
       - brew_install:
           package: cmake
 
+      - attach_workspace:
+          at: /tmp/hermes
+
       - with_hermes_tarball_cache_span:
           set_tarball_path: True
           steps:
@@ -1002,38 +1009,24 @@ jobs:
             brew install cmake
       - with_hermes_tarball_cache_span:
           steps:
+            - persist_to_workspace:
+                root: /tmp/hermes/
+                paths:
+                  - cache
             - run:
                 name: Build the Hermes iOS frameworks
                 command: |
-                  if [[ -d "~/react-native/sdks/hermes/destroot" && -d "/tmp/hermes/hermes-runtime-darwin/" ]]; then
-                    echo "destroot and tarball exists. Skip building"
-                    return
-                  fi
-                  echo "either destroot or the tarball does not exists. Build from source"
-
                   cd ~/react-native/sdks/hermes
                   ./utils/build-ios-framework.sh
             - run:
                 name: Build the Hermes Mac frameworks
                 command: |
-                  if [[ -d "~/react-native/sdks/hermes/destroot" && -d "/tmp/hermes/hermes-runtime-darwin/" ]]; then
-                    echo "destroot and tarball exists. Skip building"
-                    return
-                  fi
-                  echo "either destroot or the tarball does not exists. Build from source"
-
                   cd ~/react-native/sdks/hermes
                   ./utils/build-mac-framework.sh
                   cp build_macosx/bin/hermesc /tmp/hermes/osx-bin/.
             - run:
                 name: Package the Hermes Apple frameworks
                 command: |
-                  if [[ -d "~/react-native/sdks/hermes/destroot" && -d "/tmp/hermes/hermes-runtime-darwin/" ]]; then
-                    echo "destroot and tarball exists. Skip building"
-                    return
-                  fi
-                  echo "either destroot or the tarball does not exists. Build from source"
-
                   cd ~/react-native/sdks/hermes
                   . ./utils/build-apple-framework.sh
 
