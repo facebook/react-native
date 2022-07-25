@@ -1051,7 +1051,7 @@ class EnabledExamples extends React.Component<{}> {
   }
 }
 
-class ImportantForAccessibility extends React.Component<{}> {
+class ImportantForAccessibilityExamples extends React.Component<{}> {
   render(): React.Node {
     return (
       <View>
@@ -1078,7 +1078,11 @@ class ImportantForAccessibility extends React.Component<{}> {
           </View>
         </RNTesterBlock>
         <RNTesterBlock title="ImageBackground with importantForAccessibility=no">
-          <Button title="this is text" importantForAccessibility="no" />
+          <Button
+            title="this is text"
+            importantForAccessibility="no"
+            onPress={() => console.log('pressed')}
+          />
         </RNTesterBlock>
       </View>
     );
@@ -1292,8 +1296,8 @@ exports.examples = [
   },
   {
     title: 'Testing importantForAccessibility',
-    render(): React.Element<typeof EnabledExamples> {
-      return <ImportantForAccessibility />;
+    render(): React.Element<typeof ImportantForAccessibilityExamples> {
+      return <ImportantForAccessibilityExamples />;
     },
   },
   {
