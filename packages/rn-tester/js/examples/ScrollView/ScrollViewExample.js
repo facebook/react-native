@@ -205,6 +205,7 @@ const examples = ([
       return (
         <View>
           <ScrollView
+            accessibilityRole="grid"
             ref={scrollView => {
               _scrollView = scrollView;
             }}
