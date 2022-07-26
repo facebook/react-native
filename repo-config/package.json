@@ -14,7 +14,7 @@
     "@babel/generator": "^7.14.0",
     "@babel/plugin-transform-regenerator": "^7.0.0",
     "@react-native-community/eslint-plugin": "*",
-    "@react-native/eslint-plugin-specs": ">0.0.2",
+    "@react-native/eslint-plugin-specs": "^0.70.0",
     "@reactions/component": "^2.0.2",
     "async": "^3.2.2",
     "clang-format": "^1.2.4",
