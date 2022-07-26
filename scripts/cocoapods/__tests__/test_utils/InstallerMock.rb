@@ -44,8 +44,8 @@ class InstallerMock
     InstallationResults = Struct.new(:pod_target_installation_results, :aggregate_target_installation_results)
 
     def initialize(pods_project = PodsProjectMock.new, aggregate_targets = [AggregatedProjectMock.new],
-                   pod_target_installation_results = {},
-                   aggregate_target_installation_results = {})
+                   pod_target_installation_results: {},
+                   aggregate_target_installation_results: {})
         @pods_project = pods_project
         @aggregate_targets = aggregate_targets
 

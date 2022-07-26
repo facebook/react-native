@@ -208,10 +208,8 @@ def prepare_CXX_Flags_build_configuration(name)
 end
 
 def prepare_pod_target_installation_results_mock(name, configs)
-    return PodTargetInstallationResultsMock.new(
-        :name => name,
-        :native_target => TargetMock.new(name, configs)
-    )
+    target = TargetMock.new(name, configs)
+    return TargetInstallationResultMock.new(target, target)
 end
 
 def prepare_installer_for_cpp_flags(xcconfigs, build_configs)
@@ -232,8 +230,6 @@ def prepare_installer_for_cpp_flags(xcconfigs, build_configs)
         [
             AggregatedProjectMock.new(:xcconfigs => xcconfigs_map, :base_path => "a/path/")
         ],
-        :target_installation_results => TargetInstallationResultsMock.new(
-            :pod_target_installation_results => pod_target_installation_results_map
-        )
+        :pod_target_installation_results => pod_target_installation_results_map
     )
 end
