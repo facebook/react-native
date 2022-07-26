@@ -97,11 +97,9 @@ const BackHandler: TBackHandler = {
     eventName: BackPressEventName,
     handler: () => ?boolean,
   ): void {
-    if (_backPressSubscriptions.indexOf(handler) !== -1) {
-      _backPressSubscriptions.splice(
-        _backPressSubscriptions.indexOf(handler),
-        1,
-      );
+    const index = _backPressSubscriptions.indexOf(handler);
+    if (index !== -1) {
+      _backPressSubscriptions.splice(index, 1);
     }
   },
 };
