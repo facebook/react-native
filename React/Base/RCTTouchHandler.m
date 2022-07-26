@@ -129,6 +129,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
     // The assumption here is that a RCTUIView/RCTSurfaceView will always have a superview.
     CGPoint touchLocation = [self.view.superview convertPoint:touch.locationInWindow fromView:nil];
     NSView *targetView = [self.view hitTest:touchLocation];
+    // Don't record clicks on scrollbars.
+    if ([targetView isKindOfClass:[NSScroller class]]) {
+      continue;
+    }
     // Pair the mouse down events with mouse up events so our _nativeTouches cache doesn't get stale
     if ([targetView isKindOfClass:[NSControl class]]) {
       _shouldSendMouseUpOnSystemBehalf = [(NSControl*)targetView isEnabled];
@@ -394,6 +398,11 @@ static BOOL RCTAnyTouchesChanged(NSSet *touches) // [TODO(macOS GH#774)
   // "start" has to record new touches *before* extracting the event.
   // "end"/"cancel" needs to remove the touch *after* extracting the event.
   [self _recordNewTouches:touches];
+
+  // [TODO(macOS GH#774) - Filter out touches that were ignored.
+  touches = [touches objectsPassingTest:^(id touch, BOOL *stop) {
+    return [_nativeTouches containsObject:touch];
+  }]; // ]TODO(macOS GH#774)
 
   [self _updateAndDispatchTouches:touches eventName:@"touchStart"];
 
