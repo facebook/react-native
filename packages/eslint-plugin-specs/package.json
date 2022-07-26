@@ -9,7 +9,7 @@
     "directory": "packages/eslint-plugin-specs"
   },
   "scripts": {
-    "prepublish": "node prepublish.js"
+    "prepack": "node prepack.js"
   },
   "dependencies": {
     "@babel/core": "^7.14.0",
