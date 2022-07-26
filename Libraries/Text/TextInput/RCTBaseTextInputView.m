@@ -439,7 +439,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
   if (_onTextInput) {
     _onTextInput(@{
-      @"text": text,
+      // We copy the string here because if it's a mutable string it may get released before we stop using it on a different thread, causing a crash.
+      @"text": [text copy],
       @"previousText": previousText,
       @"range": @{
         @"start": @(range.location),
