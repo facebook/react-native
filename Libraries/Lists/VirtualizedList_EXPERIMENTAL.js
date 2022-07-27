@@ -307,7 +307,7 @@ type OptionalProps = {|
   legacyImplementation?: empty,
 |};
 
-type Props = {|
+export type Props = {|
   ...React.ElementConfig<typeof ScrollView>,
   ...RequiredProps,
   ...OptionalProps,

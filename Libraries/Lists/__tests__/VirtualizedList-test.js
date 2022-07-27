@@ -12,15 +12,14 @@
 
 import React from 'react';
 import ReactTestRenderer from 'react-test-renderer';
-import VirtualizedListInjection from '../VirtualizedListInjection';
+import * as VirtualizedListInjection from '../VirtualizedListInjection';
 import VirtualizedList_EXPERIMENTAL from '../VirtualizedList_EXPERIMENTAL';
 
 const useExperimentalList =
   process.env.USE_EXPERIMENTAL_VIRTUALIZEDLIST === 'true';
 
 if (useExperimentalList) {
-  VirtualizedListInjection.unstable_VirtualizedList =
-    VirtualizedList_EXPERIMENTAL;
+  VirtualizedListInjection.inject(VirtualizedList_EXPERIMENTAL);
 }
 
 const VirtualizedList = require('../VirtualizedList');

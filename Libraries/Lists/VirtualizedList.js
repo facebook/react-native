@@ -28,6 +28,7 @@ import {
   computeWindowedRenderLimits,
   keyExtractor as defaultKeyExtractor,
 } from './VirtualizeUtils';
+import * as VirtualizedListInjection from './VirtualizedListInjection';
 import * as React from 'react';
 
 const RefreshControl = require('../Components/RefreshControl/RefreshControl');
@@ -302,7 +303,7 @@ type OptionalProps = {|
   legacyImplementation?: empty,
 |};
 
-type Props = {|
+export type Props = {|
   ...React.ElementConfig<typeof ScrollView>,
   ...RequiredProps,
   ...OptionalProps,
@@ -2217,5 +2218,6 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = (require('./VirtualizedListInjection').default
-  .unstable_VirtualizedList ?? VirtualizedList: typeof VirtualizedList);
+module.exports = (VirtualizedListInjection.getOrDefault(
+  VirtualizedList,
+): typeof VirtualizedList);
