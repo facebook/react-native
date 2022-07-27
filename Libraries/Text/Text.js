@@ -176,6 +176,9 @@ const Text: React.AbstractComponent<
     default: accessible,
   });
 
+  const _hasOnPressOrOnLongPress =
+    props.onPress != null && props.onLongPress != null;
+
   return hasTextAncestor ? (
     <NativeVirtualText
       {...restProps}
@@ -193,9 +196,7 @@ const Text: React.AbstractComponent<
         {...restProps}
         {...eventHandlersForText}
         disabled={_disabled}
-        accessible={
-          accessible == null ? props.onPress != undefined : _accessible
-        }
+        accessible={accessible == null ? _hasOnPressOrOnLongPress : _accessible}
         accessibilityState={_accessibilityState}
         allowFontScaling={allowFontScaling !== false}
         ellipsizeMode={ellipsizeMode ?? 'tail'}
