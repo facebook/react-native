@@ -995,17 +995,21 @@ public class SurfaceMountingManager {
 
     ViewState parentViewState = getViewState(parentTag);
     ReactViewManagerWrapper parentViewManager = parentViewState.mViewManager;
-    IViewManagerWithChildren parentViewManagerWithChildren;
-    if (parentViewManager instanceof IViewManagerWithChildren) {
-      parentViewManagerWithChildren = (IViewManagerWithChildren) parentViewManager;
+    if (parentViewManager != null) {
+      IViewManagerWithChildren parentViewManagerWithChildren;
+      if (parentViewManager instanceof IViewManagerWithChildren) {
+        parentViewManagerWithChildren = (IViewManagerWithChildren) parentViewManager;
+      } else {
+        throw new IllegalViewOperationException(
+            "Trying to use view with tag "
+                + parentTag
+                + " as a parent, but its Manager doesn't implement IViewManagerWithChildren");
+      }
+      if (parentViewManagerWithChildren != null
+          && !parentViewManagerWithChildren.needsCustomLayoutForChildren()) {
+        viewToUpdate.layout(x, y, x + width, y + height);
+      }
     } else {
-      throw new IllegalViewOperationException(
-          "Trying to use view with tag "
-              + parentTag
-              + " as a parent, but its Manager doesn't implement IViewManagerWithChildren");
-    }
-    if (parentViewManagerWithChildren != null
-        && !parentViewManagerWithChildren.needsCustomLayoutForChildren()) {
       viewToUpdate.layout(x, y, x + width, y + height);
     }
 
