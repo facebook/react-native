@@ -177,7 +177,7 @@ const Text: React.AbstractComponent<
   });
 
   const _hasOnPressOrOnLongPress =
-    props.onPress != null && props.onLongPress != null;
+    props.onPress != null || props.onLongPress != null;
 
   return hasTextAncestor ? (
     <NativeVirtualText
