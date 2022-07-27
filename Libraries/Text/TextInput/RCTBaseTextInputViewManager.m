@@ -48,6 +48,7 @@ RCT_REMAP_VIEW_PROPERTY(placeholderTextColor, backedTextInputView.placeholderCol
 RCT_REMAP_NOT_OSX_VIEW_PROPERTY(returnKeyType, backedTextInputView.returnKeyType, UIReturnKeyType) // TODO(macOS GH#774)
 RCT_REMAP_NOT_OSX_VIEW_PROPERTY(selectionColor, backedTextInputView.tintColor, UIColor) // TODO(macOS GH#774)
 RCT_REMAP_OSX_VIEW_PROPERTY(selectionColor, backedTextInputView.selectionColor, UIColor) // TODO(macOS GH#774)
+RCT_REMAP_OSX_VIEW_PROPERTY(grammarCheck, backedTextInputView.grammarCheckingEnabled, BOOL) // TODO(macOS GH#774)
 RCT_REMAP_NOT_OSX_VIEW_PROPERTY(spellCheck, backedTextInputView.spellCheckingType, UITextSpellCheckingType) // TODO(macOS GH#774)
 RCT_REMAP_OSX_VIEW_PROPERTY(spellCheck, backedTextInputView.continuousSpellCheckingEnabled, BOOL) // TODO(macOS GH#774)
 RCT_REMAP_NOT_OSX_VIEW_PROPERTY(caretHidden, backedTextInputView.caretHidden, BOOL) // TODO(macOS GH#774)

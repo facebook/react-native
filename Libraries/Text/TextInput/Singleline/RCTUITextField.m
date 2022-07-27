@@ -27,6 +27,7 @@
 @property (nonatomic, getter=isAutomaticTextReplacementEnabled) BOOL automaticTextReplacementEnabled;
 @property (nonatomic, getter=isAutomaticSpellingCorrectionEnabled) BOOL automaticSpellingCorrectionEnabled;
 @property (nonatomic, getter=isContinuousSpellCheckingEnabled) BOOL continuousSpellCheckingEnabled;
+@property (nonatomic, getter=isGrammarCheckingEnabled) BOOL grammarCheckingEnabled;
 @property (nonatomic, strong, nullable) RCTUIColor *selectionColor;
 
 @end
@@ -72,6 +73,7 @@
   fieldEditor.automaticSpellingCorrectionEnabled = self.isAutomaticSpellingCorrectionEnabled;
   fieldEditor.automaticTextReplacementEnabled = self.isAutomaticTextReplacementEnabled;
   fieldEditor.continuousSpellCheckingEnabled = self.isContinuousSpellCheckingEnabled;
+  fieldEditor.grammarCheckingEnabled = self.isGrammarCheckingEnabled;
   NSMutableDictionary *selectTextAttributes = fieldEditor.selectedTextAttributes.mutableCopy;
   selectTextAttributes[NSBackgroundColorAttributeName] = self.selectionColor ?: [NSColor selectedControlColor];
 	fieldEditor.selectedTextAttributes = selectTextAttributes;
@@ -206,6 +208,16 @@
 - (BOOL)isContinuousSpellCheckingEnabled
 {
   return ((RCTUITextFieldCell*)self.cell).isContinuousSpellCheckingEnabled;
+}
+
+- (void)setGrammarCheckingEnabled:(BOOL)grammarCheckingEnabled
+{
+  ((RCTUITextFieldCell*)self.cell).grammarCheckingEnabled = grammarCheckingEnabled;
+}
+
+- (BOOL)isGrammarCheckingEnabled
+{
+  return ((RCTUITextFieldCell*)self.cell).isGrammarCheckingEnabled;
 }
 
 - (void)setSelectionColor:(RCTUIColor *)selectionColor // TODO(OSS Candidate ISS#2710739)

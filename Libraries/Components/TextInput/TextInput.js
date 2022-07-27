@@ -303,6 +303,14 @@ type IOSProps = $ReadOnly<{|
    */
   scrollEnabled?: ?boolean,
 
+  // [TODO(macOS GH#774)
+  /**
+   * If `false`, disables grammar-check.
+   * @platform macOS
+   */
+  grammarCheck?: ?boolean,
+  // ]TODO(macOS GH#774)
+
   /**
    * If `false`, disables spell-check style (i.e. red underlines).
    * The default value is inherited from `autoCorrect`.
