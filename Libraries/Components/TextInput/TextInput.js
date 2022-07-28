@@ -1316,7 +1316,6 @@ function InternalTextInput(props: Props): React.Node {
         {...eventHandlers}
         accessible={accessible}
         accessibilityErrorMessage={accessibilityErrorMessage}
-        blurOnSubmit={blurOnSubmit}
         submitBehavior={submitBehavior}
         caretHidden={caretHidden}
         dataDetectorTypes={props.dataDetectorTypes}
