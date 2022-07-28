@@ -28,7 +28,6 @@
     return;                                                          \
   }
 
-
 namespace facebook {
 namespace react {
 
