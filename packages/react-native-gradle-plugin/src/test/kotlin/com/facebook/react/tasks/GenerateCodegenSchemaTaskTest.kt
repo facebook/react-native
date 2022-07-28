@@ -29,15 +29,17 @@ class GenerateCodegenSchemaTaskTest {
     val jsRootDir =
         tempFolder.newFolder("js").apply {
           File(this, "file.js").createNewFile()
+          File(this, "file.ts").createNewFile()
           File(this, "ignore.txt").createNewFile()
         }
 
     val task = createTestTask<GenerateCodegenSchemaTask> { it.jsRootDir.set(jsRootDir) }
 
     assertEquals(jsRootDir, task.jsInputFiles.dir)
-    assertEquals(setOf("**/*.js"), task.jsInputFiles.includes)
-    assertEquals(1, task.jsInputFiles.files.size)
-    assertEquals(setOf(File(jsRootDir, "file.js")), task.jsInputFiles.files)
+    assertEquals(setOf("**/*.js", "**/*.ts"), task.jsInputFiles.includes)
+    assertEquals(2, task.jsInputFiles.files.size)
+    assertEquals(
+        setOf(File(jsRootDir, "file.js"), File(jsRootDir, "file.ts")), task.jsInputFiles.files)
   }
 
   @Test
