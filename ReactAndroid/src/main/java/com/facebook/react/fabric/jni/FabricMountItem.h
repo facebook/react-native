@@ -46,7 +46,9 @@ struct CppMountItem final {
 
   static CppMountItem UpdateStateMountItem(ShadowView const &shadowView);
 
-  static CppMountItem UpdateLayoutMountItem(ShadowView const &shadowView);
+  static CppMountItem UpdateLayoutMountItem(
+      ShadowView const &shadowView,
+      ShadowView const &parentView);
 
   static CppMountItem UpdateEventEmitterMountItem(ShadowView const &shadowView);
 

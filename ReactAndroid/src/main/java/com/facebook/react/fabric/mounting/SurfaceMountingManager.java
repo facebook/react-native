@@ -967,7 +967,8 @@ public class SurfaceMountingManager {
   }
 
   @UiThread
-  public void updateLayout(int reactTag, int x, int y, int width, int height, int displayType) {
+  public void updateLayout(
+      int reactTag, int parentTag, int x, int y, int width, int height, int displayType) {
     if (isStopped()) {
       return;
     }
@@ -992,9 +993,14 @@ public class SurfaceMountingManager {
       parent.requestLayout();
     }
 
-    // TODO: T31905686 Check if the parent of the view has to layout the view, or the child has
-    // to lay itself out. see NativeViewHierarchyManager.updateLayout
-    viewToUpdate.layout(x, y, x + width, y + height);
+    ViewState parentViewState = getViewState(parentTag);
+    ViewGroupManager<?> parentViewManager = null;
+    if (parentViewState.mViewManager != null) {
+      parentViewManager = parentViewState.mViewManager.getViewGroupManager();
+    }
+    if (parentViewManager == null || !parentViewManager.needsCustomLayoutForChildren()) {
+      viewToUpdate.layout(x, y, x + width, y + height);
+    }
 
     // displayType: 0 represents display: 'none'
     int visibility = displayType == 0 ? View.INVISIBLE : View.VISIBLE;
