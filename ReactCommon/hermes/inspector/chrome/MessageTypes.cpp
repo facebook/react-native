@@ -1,5 +1,5 @@
 // Copyright (c) Meta Platforms, Inc. and affiliates. All Rights Reserved.
-// @generated SignedSource<<f6f9a72f332587809b4e50ab054e0a74>>
+// @generated SignedSource<<d10e11c5f88b40149af7ace19008d0fc>>
 
 #include "MessageTypes.h"
 
@@ -66,6 +66,8 @@ std::unique_ptr<Request> Request::fromJsonThrowOnError(const std::string &str) {
       {"Runtime.evaluate", makeUnique<runtime::EvaluateRequest>},
       {"Runtime.getHeapUsage", makeUnique<runtime::GetHeapUsageRequest>},
       {"Runtime.getProperties", makeUnique<runtime::GetPropertiesRequest>},
+      {"Runtime.globalLexicalScopeNames",
+       makeUnique<runtime::GlobalLexicalScopeNamesRequest>},
       {"Runtime.runIfWaitingForDebugger",
        makeUnique<runtime::RunIfWaitingForDebuggerRequest>},
   };
@@ -1199,6 +1201,38 @@ void runtime::GetPropertiesRequest::accept(RequestHandler &handler) const {
   handler.handle(*this);
 }
 
+runtime::GlobalLexicalScopeNamesRequest::GlobalLexicalScopeNamesRequest()
+    : Request("Runtime.globalLexicalScopeNames") {}
+
+runtime::GlobalLexicalScopeNamesRequest::GlobalLexicalScopeNamesRequest(
+    const dynamic &obj)
+    : Request("Runtime.globalLexicalScopeNames") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+
+  auto it = obj.find("params");
+  if (it != obj.items().end()) {
+    dynamic params = it->second;
+    assign(executionContextId, params, "executionContextId");
+  }
+}
+
+dynamic runtime::GlobalLexicalScopeNamesRequest::toDynamic() const {
+  dynamic params = dynamic::object;
+  put(params, "executionContextId", executionContextId);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  put(obj, "params", std::move(params));
+  return obj;
+}
+
+void runtime::GlobalLexicalScopeNamesRequest::accept(
+    RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
 runtime::RunIfWaitingForDebuggerRequest::RunIfWaitingForDebuggerRequest()
     : Request("Runtime.runIfWaitingForDebugger") {}
 
@@ -1474,6 +1508,24 @@ dynamic runtime::GetPropertiesResponse::toDynamic() const {
   put(res, "result", result);
   put(res, "internalProperties", internalProperties);
   put(res, "exceptionDetails", exceptionDetails);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "result", std::move(res));
+  return obj;
+}
+
+runtime::GlobalLexicalScopeNamesResponse::GlobalLexicalScopeNamesResponse(
+    const dynamic &obj) {
+  assign(id, obj, "id");
+
+  dynamic res = obj.at("result");
+  assign(names, res, "names");
+}
+
+dynamic runtime::GlobalLexicalScopeNamesResponse::toDynamic() const {
+  dynamic res = dynamic::object;
+  put(res, "names", names);
 
   dynamic obj = dynamic::object;
   put(obj, "id", id);
