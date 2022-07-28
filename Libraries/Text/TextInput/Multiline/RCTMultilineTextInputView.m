@@ -95,7 +95,7 @@
 - (void)setEnableFocusRing:(BOOL)enableFocusRing {
   [super setEnableFocusRing:enableFocusRing];
   if ([_scrollView respondsToSelector:@selector(setEnableFocusRing:)]) {
-    [_scrollView setEnableFocusRing:YES];
+    [_scrollView setEnableFocusRing:enableFocusRing];
   }
 }
 
