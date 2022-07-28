@@ -76,7 +76,7 @@ GEM
     ruby-macho (2.5.1)
     typhoeus (1.4.0)
       ethon (>= 0.9.0)
-    tzinfo (2.0.4)
+    tzinfo (2.0.5)
       concurrent-ruby (~> 1.0)
     xcodeproj (1.22.0)
       CFPropertyList (>= 2.3.3, < 4.0)
