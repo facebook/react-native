@@ -28,11 +28,12 @@ import {
   computeWindowedRenderLimits,
   keyExtractor as defaultKeyExtractor,
 } from './VirtualizeUtils';
-import AccessibilityInfo from '../Components/AccessibilityInfo/AccessibilityInfo';
-import type {EventSubscription} from '../vendor/emitter/EventEmitter';
-import Platform from '../Utilities/Platform';
-import * as VirtualizedListInjection from './VirtualizedListInjection';
 import * as React from 'react';
+
+import type {FocusEvent} from '../Types/CoreEventTypes';
+
+import {CellRenderMask} from './CellRenderMask';
+import clamp from '../Utilities/clamp';
 
 const RefreshControl = require('../Components/RefreshControl/RefreshControl');
 const ScrollView = require('../Components/ScrollView/ScrollView');
@@ -106,16 +107,6 @@ type OptionalProps = {|
    * this for debugging purposes. Defaults to false.
    */
   disableVirtualization?: ?boolean,
-
-  /**
-   * Enable TalkBack support for inverted FlatList
-   * The default implementation of inverted FlatList uses transform scaleX or scaleY and is not compatible
-   * with TalkBack. This implementation manually inverts the order of the items, but does not yet support all
-   * FlatList functionalities, by default is disabled. Not supported functionalities: initialScrollIndex.
-   * Supported functionalities: infinite list, scrollToEnd, scrollToIndex, horizontal, scrollToOffset
-   */
-  enabledTalkbackCompatibleInvertedList?: ?boolean,
-
   /**
    * A marker property for telling the list to re-render (since it implements `PureComponent`). If
    * any of your `renderItem`, Header, Footer, etc. functions depend on anything outside of the
@@ -326,9 +317,8 @@ let _usedIndexForKey = false;
 let _keylessItemComponentName: string = '';
 
 type State = {
-  first: number,
-  last: number,
-  screenreaderEnabled: ?boolean,
+  renderMask: CellRenderMask,
+  cellsAroundViewport: {first: number, last: number},
 };
 
 /**
@@ -366,6 +356,19 @@ function windowSizeOrDefault(windowSize: ?number) {
   return windowSize ?? 21;
 }
 
+function findLastWhere<T>(
+  arr: $ReadOnlyArray<T>,
+  predicate: (element: T) => boolean,
+): T | null {
+  for (let i = arr.length - 1; i >= 0; i--) {
+    if (predicate(arr[i])) {
+      return arr[i];
+    }
+  }
+
+  return null;
+}
+
 /**
  * Base implementation for the more convenient [`<FlatList>`](https://reactnative.dev/docs/flatlist)
  * and [`<SectionList>`](https://reactnative.dev/docs/sectionlist) components, which are also better
@@ -397,27 +400,9 @@ function windowSizeOrDefault(windowSize: ?number) {
  */
 class VirtualizedList extends React.PureComponent<Props, State> {
   static contextType: typeof VirtualizedListContext = VirtualizedListContext;
-  _screenreaderEventListener: EventSubscription;
-  _offsetFromBottomOfScreen: ?number;
-  _lastOffsetFromBottomOfScreen: ?number;
-  _beginningReached: ?boolean;
-  _lastTimeOnEndReachedCalled: ?number;
-  _scrollToOffsetTimeout: ?TimeoutID;
 
   // scrollToEnd may be janky without getItemLayout prop
   scrollToEnd(params?: ?{animated?: ?boolean, ...}) {
-    const {screenreaderEnabled} = this.state;
-    const {
-      initialScrollIndex,
-      inverted,
-      enabledTalkbackCompatibleInvertedList,
-    } = this.props;
-    const talkbackCompatibility =
-      screenreaderEnabled &&
-      initialScrollIndex == null &&
-      inverted &&
-      Platform.OS === 'android' &&
-      enabledTalkbackCompatibleInvertedList;
     const animated = params ? params.animated : true;
     const veryLast = this.props.getItemCount(this.props.data) - 1;
     const frame = this.__getFrameMetricsApprox(veryLast);
@@ -442,11 +427,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       return;
     }
 
-    const scrollToOffset = talkbackCompatibility ? 0 : offset;
     this._scrollRef.scrollTo(
       horizontalOrDefault(this.props.horizontal)
-        ? {x: scrollToOffset, animated}
-        : {y: scrollToOffset, animated},
+        ? {x: offset, animated}
+        : {y: offset, animated},
     );
   }
 
@@ -729,6 +713,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       'VirtualizedList: The windowSize prop must be present and set to a value greater than 0.',
     );
 
+    invariant(
+      props.getItemCount,
+      'VirtualizedList: The "getItemCount" prop must be provided',
+    );
+
     this._fillRateHelper = new FillRateHelper(this._getFrameMetrics);
     this._updateCellsToRenderBatcher = new Batchinator(
       this._updateCellsToRender,
@@ -752,28 +741,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       }
     }
 
-    if (Platform.OS === 'android') {
-      this._screenreaderEventListener = AccessibilityInfo.addEventListener(
-        'screenReaderChanged',
-        screenreaderEnabled => {
-          if (
-            typeof screenreaderEnabled === 'boolean' &&
-            screenreaderEnabled != this.state.screenreaderEnabled
-          ) {
-            this.setState({screenreaderEnabled});
-          }
-        },
-      );
-    }
-    let initialState = {
-      first: this.props.initialScrollIndex || 0,
-      last:
-        Math.min(
-          this.props.getItemCount(this.props.data),
-          (this.props.initialScrollIndex || 0) +
-            initialNumToRenderOrDefault(this.props.initialNumToRender),
-        ) - 1,
-      screenreaderEnabled: undefined,
+    const initialRenderRegion = VirtualizedList._initialRenderRegion(props);
+
+    let initialState: State = {
+      cellsAroundViewport: initialRenderRegion,
+      renderMask: VirtualizedList._createRenderMask(props, initialRenderRegion),
     };
 
     if (this._isNestedWithSameOrientation()) {
@@ -786,6 +758,183 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
 
     this.state = initialState;
+  }
+
+  static _createRenderMask(
+    props: Props,
+    cellsAroundViewport: {first: number, last: number},
+    additionalRegions?: ?$ReadOnlyArray<{first: number, last: number}>,
+  ): CellRenderMask {
+    const itemCount = props.getItemCount(props.data);
+
+    invariant(
+      cellsAroundViewport.first >= 0 &&
+        cellsAroundViewport.last >= cellsAroundViewport.first - 1 &&
+        cellsAroundViewport.last < itemCount,
+      `Invalid cells around viewport "[${cellsAroundViewport.first}, ${cellsAroundViewport.last}]" was passed to VirtualizedList._createRenderMask`,
+    );
+
+    const renderMask = new CellRenderMask(itemCount);
+
+    if (itemCount > 0) {
+      const allRegions = [cellsAroundViewport, ...(additionalRegions ?? [])];
+      for (const region of allRegions) {
+        if (region.last >= region.first) {
+          renderMask.addCells(region);
+        }
+      }
+
+      // The initially rendered cells are retained as part of the
+      // "scroll-to-top" optimization
+      if (props.initialScrollIndex == null || props.initialScrollIndex <= 0) {
+        const initialRegion = VirtualizedList._initialRenderRegion(props);
+        renderMask.addCells(initialRegion);
+      }
+
+      // The layout coordinates of sticker headers may be off-screen while the
+      // actual header is on-screen. Keep the most recent before the viewport
+      // rendered, even if its layout coordinates are not in viewport.
+      const stickyIndicesSet = new Set(props.stickyHeaderIndices);
+      VirtualizedList._ensureClosestStickyHeader(
+        props,
+        stickyIndicesSet,
+        renderMask,
+        cellsAroundViewport.first,
+      );
+    }
+
+    return renderMask;
+  }
+
+  static _initialRenderRegion(props: Props): {first: number, last: number} {
+    const itemCount = props.getItemCount(props.data);
+    const scrollIndex = Math.max(0, props.initialScrollIndex ?? 0);
+
+    return {
+      first: scrollIndex,
+      last:
+        Math.min(
+          itemCount,
+          scrollIndex + initialNumToRenderOrDefault(props.initialNumToRender),
+        ) - 1,
+    };
+  }
+
+  static _ensureClosestStickyHeader(
+    props: Props,
+    stickyIndicesSet: Set<number>,
+    renderMask: CellRenderMask,
+    cellIdx: number,
+  ) {
+    const stickyOffset = props.ListHeaderComponent ? 1 : 0;
+
+    for (let itemIdx = cellIdx - 1; itemIdx >= 0; itemIdx--) {
+      if (stickyIndicesSet.has(itemIdx + stickyOffset)) {
+        renderMask.addCells({first: itemIdx, last: itemIdx});
+        break;
+      }
+    }
+  }
+
+  _adjustCellsAroundViewport(
+    props: Props,
+    cellsAroundViewport: {first: number, last: number},
+  ): {first: number, last: number} {
+    const {data, getItemCount} = props;
+    const onEndReachedThreshold = onEndReachedThresholdOrDefault(
+      props.onEndReachedThreshold,
+    );
+    this._updateViewableItems(data);
+
+    const {contentLength, offset, visibleLength} = this._scrollMetrics;
+    const distanceFromEnd = contentLength - visibleLength - offset;
+
+    // Wait until the scroll view metrics have been set up. And until then,
+    // we will trust the initialNumToRender suggestion
+    if (visibleLength <= 0 || contentLength <= 0) {
+      return cellsAroundViewport;
+    }
+
+    let newCellsAroundViewport: {first: number, last: number};
+    if (this._isVirtualizationDisabled()) {
+      const renderAhead =
+        distanceFromEnd < onEndReachedThreshold * visibleLength
+          ? maxToRenderPerBatchOrDefault(props.maxToRenderPerBatch)
+          : 0;
+
+      newCellsAroundViewport = {
+        first: 0,
+        last: Math.min(
+          this.state.cellsAroundViewport.last + renderAhead,
+          getItemCount(data) - 1,
+        ),
+      };
+    } else {
+      // If we have a non-zero initialScrollIndex and run this before we've scrolled,
+      // we'll wipe out the initialNumToRender rendered elements starting at initialScrollIndex.
+      // So let's wait until we've scrolled the view to the right place. And until then,
+      // we will trust the initialScrollIndex suggestion.
+
+      // Thus, we want to recalculate the windowed render limits if any of the following hold:
+      // - initialScrollIndex is undefined or is 0
+      // - initialScrollIndex > 0 AND scrolling is complete
+      // - initialScrollIndex > 0 AND the end of the list is visible (this handles the case
+      //   where the list is shorter than the visible area)
+      if (
+        this.props.initialScrollIndex &&
+        !this._scrollMetrics.offset &&
+        Math.abs(distanceFromEnd) >= Number.EPSILON
+      ) {
+        return cellsAroundViewport;
+      }
+
+      newCellsAroundViewport = computeWindowedRenderLimits(
+        props.data,
+        props.getItemCount,
+        maxToRenderPerBatchOrDefault(props.maxToRenderPerBatch),
+        windowSizeOrDefault(props.windowSize),
+        cellsAroundViewport,
+        this.__getFrameMetricsApprox,
+        this._scrollMetrics,
+      );
+    }
+
+    if (this._nestedChildLists.size > 0) {
+      // If some cell in the new state has a child list in it, we should only render
+      // up through that item, so that we give that list a chance to render.
+      // Otherwise there's churn from multiple child lists mounting and un-mounting
+      // their items.
+
+      // Will this prevent rendering if the nested list doesn't realize the end?
+      const childIdx = this._findFirstChildWithMore(
+        newCellsAroundViewport.first,
+        newCellsAroundViewport.last,
+      );
+
+      newCellsAroundViewport.last = childIdx ?? newCellsAroundViewport.last;
+    }
+
+    return newCellsAroundViewport;
+  }
+
+  _findFirstChildWithMore(first: number, last: number): number | null {
+    for (let ii = first; ii <= last; ii++) {
+      const cellKeyForIndex = this._indicesToKeys.get(ii);
+      const childListKeys =
+        cellKeyForIndex && this._cellKeysToChildListKeys.get(cellKeyForIndex);
+      if (!childListKeys) {
+        continue;
+      }
+      // For each cell, need to check whether any child list in it has more elements to render
+      for (let childKey of childListKeys) {
+        const childList = this._nestedChildLists.get(childKey);
+        if (childList && childList.ref && childList.ref.hasMore()) {
+          return ii;
+        }
+      }
+    }
+
+    return null;
   }
 
   componentDidMount() {
@@ -801,31 +950,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         parentDebugInfo: this.context.debugInfo,
       });
     }
-
-    // updates the initial state of the screenreaderReader
-    if (
-      Platform.OS === 'android' &&
-      this.state.screenreaderEnabled === undefined
-    ) {
-      AccessibilityInfo.isScreenReaderEnabled().then(
-        screenreaderEnabled => {
-          if (
-            typeof screenreaderEnabled === 'boolean' &&
-            screenreaderEnabled != this.state.screenreaderEnabled
-          ) {
-            this.setState({screenreaderEnabled});
-          }
-        },
-        e => {
-          if (__DEV__) {
-            console.log(
-              'isScreenReaderEnabled() raised an error, in this case the default inverted FlatList will be used with Talkback. ' +
-                e.toString(),
-            );
-          }
-        },
-      );
-    }
   }
 
   componentWillUnmount() {
@@ -833,8 +957,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this.context.unregisterAsNestedChild({
         key: this._getListKey(),
         state: {
-          first: this.state.first,
-          last: this.state.last,
+          ...this.state,
           frames: this._frames,
         },
       });
@@ -845,32 +968,24 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       tuple.viewabilityHelper.dispose();
     });
     this._fillRateHelper.deactivateAndFlush();
-    if (Platform.OS === 'android' && this._screenreaderEventListener) {
-      this._screenreaderEventListener.remove();
-    }
-    this._hasTriggeredInitialScrollToIndex = false;
-    this._offsetFromBottomOfScreen = undefined;
-    this._lastOffsetFromBottomOfScreen = undefined;
-    this._beginningReached = undefined;
-    if (this._scrollToOffsetTimeout) {
-      clearTimeout(this._scrollToOffsetTimeout);
-    }
   }
 
   static getDerivedStateFromProps(newProps: Props, prevState: State): State {
-    const {data, getItemCount} = newProps;
-    const maxToRenderPerBatch = maxToRenderPerBatchOrDefault(
-      newProps.maxToRenderPerBatch,
-    );
     // first and last could be stale (e.g. if a new, shorter items props is passed in), so we make
     // sure we're rendering a reasonable range here.
+    const itemCount = newProps.getItemCount(newProps.data);
+    if (itemCount === prevState.renderMask.numCells()) {
+      return prevState;
+    }
+
+    const constrainedCells = VirtualizedList._constrainToItemCount(
+      prevState.cellsAroundViewport,
+      newProps,
+    );
+
     return {
-      first: Math.max(
-        0,
-        Math.min(prevState.first, getItemCount(data) - 1 - maxToRenderPerBatch),
-      ),
-      last: Math.max(0, Math.min(prevState.last, getItemCount(data) - 1)),
-      screenreaderEnabled: prevState.screenreaderEnabled,
+      cellsAroundViewport: constrainedCells,
+      renderMask: VirtualizedList._createRenderMask(newProps, constrainedCells),
     };
   }
 
@@ -894,21 +1009,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       getItemLayout,
       horizontal,
       renderItem,
-      initialScrollIndex,
-      inverted,
-      enabledTalkbackCompatibleInvertedList,
     } = this.props;
-    const talkbackCompatibility =
-      this.state.screenreaderEnabled &&
-      initialScrollIndex == null &&
-      inverted &&
-      Platform.OS === 'android' &&
-      enabledTalkbackCompatibleInvertedList;
     const stickyOffset = ListHeaderComponent ? 1 : 0;
     const end = getItemCount(data) - 1;
     let prevCellKey;
     last = Math.min(end, last);
-    const pushCell = ii => {
+    for (let ii = first; ii <= last; ii++) {
       const item = getItem(data, ii);
       const key = this._keyExtractor(item, ii);
       this._indicesToKeys.set(ii, key);
@@ -932,6 +1038,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           prevCellKey={prevCellKey}
           onCellLayout={this._onCellLayout}
           onUpdateSeparators={this._onUpdateSeparators}
+          onFocusCapture={e => this._onCellFocusCapture(key)}
           onUnmount={this._onCellUnmount}
           ref={ref => {
             this._cellRefs[key] = ref;
@@ -940,17 +1047,24 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         />,
       );
       prevCellKey = key;
-    };
-    // avoid using scaleY and scaleX with talkback
-    if (talkbackCompatibility) {
-      for (let ii = last; ii >= first; ii--) {
-        pushCell(ii);
-      }
-    } else {
-      for (let ii = first; ii <= last; ii++) {
-        pushCell(ii);
-      }
     }
+  }
+
+  static _constrainToItemCount(
+    cells: {first: number, last: number},
+    props: Props,
+  ): {first: number, last: number} {
+    const itemCount = props.getItemCount(props.data);
+    const last = Math.min(itemCount - 1, cells.last);
+
+    const maxToRenderPerBatch = maxToRenderPerBatchOrDefault(
+      props.maxToRenderPerBatch,
+    );
+
+    return {
+      first: clamp(0, itemCount - 1 - maxToRenderPerBatch, cells.first),
+      last,
+    };
   }
 
   _onUpdateSeparators = (keys: Array<?string>, newProps: Object) => {
@@ -1002,30 +1116,17 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
     const {ListEmptyComponent, ListFooterComponent, ListHeaderComponent} =
       this.props;
-    const {
-      data,
-      horizontal,
-      initialScrollIndex,
-      inverted,
-      enabledTalkbackCompatibleInvertedList,
-    } = this.props;
-    const {first, last, screenreaderEnabled} = this.state;
-    const talkbackCompatibility =
-      screenreaderEnabled &&
-      initialScrollIndex == null &&
-      inverted &&
-      Platform.OS === 'android' &&
-      enabledTalkbackCompatibleInvertedList;
-    const isVirtualizationDisabled = this._isVirtualizationDisabled();
-    const inversionStyle =
-      this.props.inverted && !talkbackCompatibility
-        ? horizontalOrDefault(this.props.horizontal)
-          ? styles.horizontallyInverted
-          : styles.verticallyInverted
-        : null;
+    const {data, horizontal} = this.props;
+    const inversionStyle = this.props.inverted
+      ? horizontalOrDefault(this.props.horizontal)
+        ? styles.horizontallyInverted
+        : styles.verticallyInverted
+      : null;
     const cells = [];
     const stickyIndicesFromProps = new Set(this.props.stickyHeaderIndices);
     const stickyHeaderIndices = [];
+
+    // 1. Add cell for ListHeaderComponent
     if (ListHeaderComponent) {
       if (stickyIndicesFromProps.has(0)) {
         stickyHeaderIndices.push(0);
@@ -1055,117 +1156,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         </VirtualizedListCellContextProvider>,
       );
     }
+
+    // 2a. Add a cell for ListEmptyComponent if applicable
     const itemCount = this.props.getItemCount(data);
-    if (itemCount > 0) {
-      _usedIndexForKey = false;
-      _keylessItemComponentName = '';
-      const spacerKey = this._getSpacerKey(!horizontal);
-      const lastInitialIndex = this.props.initialScrollIndex
-        ? -1
-        : initialNumToRenderOrDefault(this.props.initialNumToRender) - 1;
-      // scroll to top optimization. The first page is always rendered.
-      if (!talkbackCompatibility) {
-        this._pushCells(
-          cells,
-          stickyHeaderIndices,
-          stickyIndicesFromProps,
-          0,
-          lastInitialIndex,
-          inversionStyle,
-        );
-      }
-      const firstAfterInitial = Math.max(lastInitialIndex + 1, first);
-      if (!isVirtualizationDisabled && first > lastInitialIndex + 1) {
-        let insertedStickySpacer = false;
-        if (stickyIndicesFromProps.size > 0) {
-          const stickyOffset = ListHeaderComponent ? 1 : 0;
-          // See if there are any sticky headers in the virtualized space that we need to render.
-          for (let ii = firstAfterInitial - 1; ii > lastInitialIndex; ii--) {
-            if (stickyIndicesFromProps.has(ii + stickyOffset)) {
-              const initBlock = this.__getFrameMetricsApprox(lastInitialIndex);
-              const stickyBlock = this.__getFrameMetricsApprox(ii);
-              const leadSpace =
-                stickyBlock.offset -
-                initBlock.offset -
-                (this.props.initialScrollIndex ? 0 : initBlock.length);
-              cells.push(
-                <View key="$sticky_lead" style={{[spacerKey]: leadSpace}} />,
-              );
-              this._pushCells(
-                cells,
-                stickyHeaderIndices,
-                stickyIndicesFromProps,
-                ii,
-                ii,
-                inversionStyle,
-              );
-              const trailSpace =
-                this.__getFrameMetricsApprox(first).offset -
-                (stickyBlock.offset + stickyBlock.length);
-              cells.push(
-                <View key="$sticky_trail" style={{[spacerKey]: trailSpace}} />,
-              );
-              insertedStickySpacer = true;
-              break;
-            }
-          }
-        }
-        if (!insertedStickySpacer) {
-          const initBlock = this.__getFrameMetricsApprox(lastInitialIndex);
-          const firstSpace =
-            this.__getFrameMetricsApprox(first).offset -
-            (initBlock.offset + initBlock.length);
-          cells.push(
-            <View key="$lead_spacer" style={{[spacerKey]: firstSpace}} />,
-          );
-        }
-      }
-      this._pushCells(
-        cells,
-        stickyHeaderIndices,
-        stickyIndicesFromProps,
-        firstAfterInitial,
-        last,
-        inversionStyle,
-      );
-      // TalkBack scroll to bottom optimization.
-      // The first page is always rendered at the bottom of the inverted flatlist.
-      if (talkbackCompatibility) {
-        this._pushCells(
-          cells,
-          stickyHeaderIndices,
-          stickyIndicesFromProps,
-          0,
-          lastInitialIndex,
-          null,
-        );
-      }
-      if (!this._hasWarned.keys && _usedIndexForKey) {
-        console.warn(
-          'VirtualizedList: missing keys for items, make sure to specify a key or id property on each ' +
-            'item or provide a custom keyExtractor.',
-          _keylessItemComponentName,
-        );
-        this._hasWarned.keys = true;
-      }
-      if (!isVirtualizationDisabled && last < itemCount - 1) {
-        const lastFrame = this.__getFrameMetricsApprox(last);
-        // Without getItemLayout, we limit our tail spacer to the _highestMeasuredFrameIndex to
-        // prevent the user for hyperscrolling into un-measured area because otherwise content will
-        // likely jump around as it renders in above the viewport.
-        const end = this.props.getItemLayout
-          ? itemCount - 1
-          : Math.min(itemCount - 1, this._highestMeasuredFrameIndex);
-        const endFrame = this.__getFrameMetricsApprox(end);
-        const tailSpacerLength =
-          endFrame.offset +
-          endFrame.length -
-          (lastFrame.offset + lastFrame.length);
-        cells.push(
-          <View key="$tail_spacer" style={{[spacerKey]: tailSpacerLength}} />,
-        );
-      }
-    } else if (ListEmptyComponent) {
+    if (itemCount === 0 && ListEmptyComponent) {
       const element: React.Element<any> = ((React.isValidElement(
         ListEmptyComponent,
       ) ? (
@@ -1188,6 +1182,70 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         }),
       );
     }
+
+    // 2b. Add cells and spacers for each item
+    if (itemCount > 0) {
+      _usedIndexForKey = false;
+      _keylessItemComponentName = '';
+      const spacerKey = this._getSpacerKey(!horizontal);
+
+      const renderRegions = this.state.renderMask.enumerateRegions();
+      const lastSpacer = findLastWhere(renderRegions, r => r.isSpacer);
+
+      for (const section of renderRegions) {
+        if (section.isSpacer) {
+          // Legacy behavior is to avoid spacers when virtualization is
+          // disabled (including head spacers on initial render).
+          if (this._isVirtualizationDisabled()) {
+            continue;
+          }
+
+          // Without getItemLayout, we limit our tail spacer to the _highestMeasuredFrameIndex to
+          // prevent the user for hyperscrolling into un-measured area because otherwise content will
+          // likely jump around as it renders in above the viewport.
+          const isLastSpacer = section === lastSpacer;
+          const constrainToMeasured = isLastSpacer && !this.props.getItemLayout;
+          const last = constrainToMeasured
+            ? clamp(
+                section.first - 1,
+                section.last,
+                this._highestMeasuredFrameIndex,
+              )
+            : section.last;
+
+          const firstMetrics = this.__getFrameMetricsApprox(section.first);
+          const lastMetrics = this.__getFrameMetricsApprox(last);
+          const spacerSize =
+            lastMetrics.offset + lastMetrics.length - firstMetrics.offset;
+          cells.push(
+            <View
+              key={`$spacer-${section.first}`}
+              style={{[spacerKey]: spacerSize}}
+            />,
+          );
+        } else {
+          this._pushCells(
+            cells,
+            stickyHeaderIndices,
+            stickyIndicesFromProps,
+            section.first,
+            section.last,
+            inversionStyle,
+          );
+        }
+      }
+
+      if (!this._hasWarned.keys && _usedIndexForKey) {
+        console.warn(
+          'VirtualizedList: missing keys for items, make sure to specify a key or id property on each ' +
+            'item or provide a custom keyExtractor.',
+          _keylessItemComponentName,
+        );
+        this._hasWarned.keys = true;
+      }
+    }
+
+    // 3. Add cell for ListFooterComponent
     if (ListFooterComponent) {
       const element = React.isValidElement(ListFooterComponent) ? (
         ListFooterComponent
@@ -1214,6 +1272,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         </VirtualizedListCellContextProvider>,
       );
     }
+
+    // 4. Render the ScrollView
     const scrollProps = {
       ...this.props,
       onContentSizeChange: this._onContentSizeChange,
@@ -1236,8 +1296,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         : this.props.style,
     };
 
-    this._hasMore =
-      this.state.last < this.props.getItemCount(this.props.data) - 1;
+    this._hasMore = this.state.cellsAroundViewport.last < itemCount - 1;
 
     const innerRet = (
       <VirtualizedListContextProvider
@@ -1347,6 +1406,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _hiPriInProgress: boolean = false; // flag to prevent infinite hiPri cell limit update
   _highestMeasuredFrameIndex = 0;
   _indicesToKeys: Map<number, string> = new Map();
+  _lastFocusedCellKey: ?string = null;
   _nestedChildLists: Map<
     string,
     {
@@ -1383,7 +1443,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _computeBlankness() {
     this._fillRateHelper.computeBlankness(
       this.props,
-      this.state,
+      this.state.cellsAroundViewport,
       this._scrollMetrics,
     );
   }
@@ -1460,6 +1520,19 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     this._computeBlankness();
     this._updateViewableItems(this.props.data);
   };
+
+  _onCellFocusCapture(cellKey: string) {
+    this._lastFocusedCellKey = cellKey;
+    const renderMask = VirtualizedList._createRenderMask(
+      this.props,
+      this.state.cellsAroundViewport,
+      this._getNonViewportRenderRegions(),
+    );
+
+    if (!renderMask.equals(this.state.renderMask)) {
+      this.setState({...this.state, renderMask});
+    }
+  }
 
   _onCellUnmount = (cellKey: string) => {
     const curr = this._frames[cellKey];
@@ -1585,8 +1658,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         framesInLayout.push(frame);
       }
     }
-    const windowTop = this.__getFrameMetricsApprox(this.state.first).offset;
-    const frameLast = this.__getFrameMetricsApprox(this.state.last);
+    const windowTop = this.__getFrameMetricsApprox(
+      this.state.cellsAroundViewport.first,
+    ).offset;
+    const frameLast = this.__getFrameMetricsApprox(
+      this.state.cellsAroundViewport.last,
+    );
     const windowLen = frameLast.offset + frameLast.length - windowTop;
     const visTop = this._scrollMetrics.offset;
     const visLen = this._scrollMetrics.visibleLength;
@@ -1653,76 +1730,30 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   _maybeCallOnEndReached() {
-    const {
-      data,
-      getItemCount,
-      onEndReached,
-      onEndReachedThreshold,
-      inverted,
-      initialScrollIndex,
-      enabledTalkbackCompatibleInvertedList,
-    } = this.props;
+    const {data, getItemCount, onEndReached, onEndReachedThreshold} =
+      this.props;
     const {contentLength, visibleLength, offset} = this._scrollMetrics;
-    const talkbackCompatibility =
-      this.state.screenreaderEnabled &&
-      initialScrollIndex == null &&
-      inverted &&
-      Platform.OS === 'android' &&
-      enabledTalkbackCompatibleInvertedList;
-    let distanceFromEnd;
-    if (talkbackCompatibility && this._hasTriggeredInitialScrollToIndex) {
-      distanceFromEnd = offset;
-    } else {
-      distanceFromEnd = contentLength - visibleLength - offset;
-    }
+    let distanceFromEnd = contentLength - visibleLength - offset;
 
     // Especially when oERT is zero it's necessary to 'floor' very small distanceFromEnd values to be 0
     // since debouncing causes us to not fire this event for every single "pixel" we scroll and can thus
     // be at the "end" of the list with a distanceFromEnd approximating 0 but not quite there.
-    if (!talkbackCompatibility && distanceFromEnd < ON_END_REACHED_EPSILON) {
+    if (distanceFromEnd < ON_END_REACHED_EPSILON) {
       distanceFromEnd = 0;
     }
 
     // TODO: T121172172 Look into why we're "defaulting" to a threshold of 2 when oERT is not present
     const threshold =
       onEndReachedThreshold != null ? onEndReachedThreshold * visibleLength : 2;
-    const canTriggerOnEndReachedWithTalkback =
-      typeof this._lastTimeOnEndReachedCalled === 'number'
-        ? Math.abs(this._lastTimeOnEndReachedCalled - Date.now()) > 100
-        : true;
     if (
       onEndReached &&
-      this._beginningReached &&
-      talkbackCompatibility &&
-      distanceFromEnd === 0 &&
-      this._hasTriggeredInitialScrollToIndex &&
-      this.state.last === getItemCount(data) - 1 &&
-      this._scrollMetrics.contentLength !== this._sentEndForContentLength &&
-      canTriggerOnEndReachedWithTalkback
-    ) {
-      // save the last position in the flastlist to restore it after animation to Top
-      this._lastOffsetFromBottomOfScreen = this._offsetFromBottomOfScreen;
-      // Only call onEndReached once for a given content length
-      this._sentEndForContentLength = this._scrollMetrics.contentLength;
-      // wait 100 ms to call again onEndReached (TalkBack scrolling is slower)
-      this._lastTimeOnEndReachedCalled = Date.now();
-      onEndReached({distanceFromEnd});
-    } else {
-      this._lastOffsetFromBottomOfScreen = undefined;
-    }
-    if (
-      onEndReached &&
-      this.state.last === getItemCount(data) - 1 &&
+      this.state.cellsAroundViewport.last === getItemCount(data) - 1 &&
       distanceFromEnd <= threshold &&
       this._scrollMetrics.contentLength !== this._sentEndForContentLength
     ) {
-      if (talkbackCompatibility) {
-        this._beginningReached = true;
-      } else {
-        // Only call onEndReached once for a given content length
-        this._sentEndForContentLength = this._scrollMetrics.contentLength;
-        onEndReached({distanceFromEnd});
-      }
+      // Only call onEndReached once for a given content length
+      this._sentEndForContentLength = this._scrollMetrics.contentLength;
+      onEndReached({distanceFromEnd});
     } else if (distanceFromEnd > threshold) {
       // If the user scrolls away from the end and back again cause
       // an onEndReached to be triggered again
@@ -1731,41 +1762,17 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   _onContentSizeChange = (width: number, height: number) => {
-    const {screenreaderEnabled} = this.state;
-    const {
-      initialScrollIndex,
-      inverted,
-      enabledTalkbackCompatibleInvertedList,
-    } = this.props;
-    const talkbackCompatibility =
-      screenreaderEnabled &&
-      initialScrollIndex == null &&
-      inverted &&
-      Platform.OS === 'android' &&
-      enabledTalkbackCompatibleInvertedList;
-    if (
-      __DEV__ &&
-      screenreaderEnabled &&
-      initialScrollIndex != null &&
-      inverted &&
-      Platform.OS === 'android' &&
-      enabledTalkbackCompatibleInvertedList
-    ) {
-      console.error(
-        'The prop enabledTalkbackCompatibleInvertedList can not be used with initialScrollIndex.',
-      );
-    }
     if (
       width > 0 &&
       height > 0 &&
-      initialScrollIndex != null &&
-      initialScrollIndex > 0 &&
+      this.props.initialScrollIndex != null &&
+      this.props.initialScrollIndex > 0 &&
       !this._hasTriggeredInitialScrollToIndex
     ) {
       if (this.props.contentOffset == null) {
         this.scrollToIndex({
           animated: false,
-          index: initialScrollIndex,
+          index: this.props.initialScrollIndex,
         });
       }
       this._hasTriggeredInitialScrollToIndex = true;
@@ -1774,48 +1781,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this.props.onContentSizeChange(width, height);
     }
     this._scrollMetrics.contentLength = this._selectLength({height, width});
-    // talkback inverted flatlist, scroll to bottom when first rendered
-    if (
-      width > 0 &&
-      height > 0 &&
-      !this._hasTriggeredInitialScrollToIndex &&
-      talkbackCompatibility
-    ) {
-      this.scrollToOffset({
-        animated: false,
-        offset: this._scrollMetrics.contentLength,
-      });
-      this._hasTriggeredInitialScrollToIndex = true;
-    }
     this._scheduleCellsToRenderUpdate();
-    // talkback inverted flatlist, height is used to compute
-    // an inverted flatlist contentLength from the bottom of the screen
-    // setTimeout is required as animated false will not work
-    // and ScrollView scrollEnd events are not compatible with TalkBack
-    // https://github.com/facebook/react-native/pull/34141#issuecomment-1189883210
-    if (
-      talkbackCompatibility &&
-      this._hasTriggeredInitialScrollToIndex &&
-      this._lastOffsetFromBottomOfScreen
-    ) {
-      let newBottomHeight;
-      if (this.props.horizontal) {
-        newBottomHeight = width - this._lastOffsetFromBottomOfScreen;
-      } else {
-        newBottomHeight = height - this._lastOffsetFromBottomOfScreen;
-      }
-      this._scrollToOffsetTimeout = setTimeout(
-        (flatlist, newBottomHeight) => {
-          flatlist.scrollToOffset({
-            offset: newBottomHeight,
-            animated: false,
-          });
-        },
-        1,
-        this,
-        newBottomHeight,
-      );
-    }
     this._maybeCallOnEndReached();
   };
 
@@ -1843,18 +1809,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   };
 
   _onScroll = (e: Object) => {
-    const {screenreaderEnabled} = this.state;
-    const {
-      initialScrollIndex,
-      inverted,
-      enabledTalkbackCompatibleInvertedList,
-    } = this.props;
-    const talkbackCompatibility =
-      screenreaderEnabled &&
-      initialScrollIndex == null &&
-      inverted &&
-      Platform.OS === 'android' &&
-      enabledTalkbackCompatibleInvertedList;
     this._nestedChildLists.forEach(childList => {
       childList.ref && childList.ref._onScroll(e);
     });
@@ -1866,13 +1820,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     let contentLength = this._selectLength(e.nativeEvent.contentSize);
     let offset = this._selectOffset(e.nativeEvent.contentOffset);
     let dOffset = offset - this._scrollMetrics.offset;
-    // with Talkback Inverted Flatlist we save the difference between
-    // contentLength and offset (the bottomY or bottomX) and we use it to
-    // restore the scrollPosition after onEndReached
-    // this.scrollToOffset({offset: newHeight - this._offsetFromBottomOfScreen})
-    if (talkbackCompatibility) {
-      this._offsetFromBottomOfScreen = contentLength - offset;
-    }
 
     if (this._isNestedWithSameOrientation()) {
       if (this._scrollMetrics.contentLength === 0) {
@@ -1928,16 +1875,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this._fillRateHelper.activate();
     }
     this._computeBlankness();
-    // Disabled with TalkBack inverted FlatList
-    // Triggers a scrollTo bottom and subsequent top when scrolling down
-    // fast, documented in https://bit.ly/3PkawQ4
-    if (!talkbackCompatibility) {
-      this._scheduleCellsToRenderUpdate();
-    }
+    this._scheduleCellsToRenderUpdate();
   };
 
   _scheduleCellsToRenderUpdate() {
-    const {first, last} = this.state;
+    const {first, last} = this.state.cellsAroundViewport;
     const {offset, visibleLength, velocity} = this._scrollMetrics;
     const itemCount = this.props.getItemCount(this.props.data);
     let hiPri = false;
@@ -1954,7 +1896,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
     // Mark as high priority if we're close to the end of the last item
     // But only if there are items after the last rendered item
-    if (last < itemCount - 1) {
+    if (last >= 0 && last < itemCount - 1) {
       const distBottom =
         this.__getFrameMetricsApprox(last).offset - (offset + visibleLength);
       hiPri =
@@ -2025,106 +1967,26 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   };
 
   _updateCellsToRender = () => {
-    const {
-      data,
-      getItemCount,
-      onEndReachedThreshold: _onEndReachedThreshold,
-    } = this.props;
-    const onEndReachedThreshold = onEndReachedThresholdOrDefault(
-      _onEndReachedThreshold,
-    );
-    const isVirtualizationDisabled = this._isVirtualizationDisabled();
-    this._updateViewableItems(data);
-    if (!data) {
-      return;
-    }
-    this.setState(state => {
-      let newState: ?(
-        | {first: number, last: number, ...}
-        | $TEMPORARY$object<{first: number, last: number}>
+    this.setState((state, props) => {
+      const cellsAroundViewport = this._adjustCellsAroundViewport(
+        props,
+        state.cellsAroundViewport,
       );
-      const {contentLength, offset, visibleLength} = this._scrollMetrics;
-      const distanceFromEnd = contentLength - visibleLength - offset;
-      if (!isVirtualizationDisabled) {
-        // If we run this with bogus data, we'll force-render window {first: 0, last: 0},
-        // and wipe out the initialNumToRender rendered elements.
-        // So let's wait until the scroll view metrics have been set up. And until then,
-        // we will trust the initialNumToRender suggestion
-        if (visibleLength > 0 && contentLength > 0) {
-          // If we have a non-zero initialScrollIndex and run this before we've scrolled,
-          // we'll wipe out the initialNumToRender rendered elements starting at initialScrollIndex.
-          // So let's wait until we've scrolled the view to the right place. And until then,
-          // we will trust the initialScrollIndex suggestion.
+      const renderMask = VirtualizedList._createRenderMask(
+        props,
+        cellsAroundViewport,
+        this._getNonViewportRenderRegions(),
+      );
 
-          // Thus, we want to recalculate the windowed render limits if any of the following hold:
-          // - initialScrollIndex is undefined or is 0
-          // - initialScrollIndex > 0 AND scrolling is complete
-          // - initialScrollIndex > 0 AND the end of the list is visible (this handles the case
-          //   where the list is shorter than the visible area)
-          if (
-            !this.props.initialScrollIndex ||
-            this._scrollMetrics.offset ||
-            Math.abs(distanceFromEnd) < Number.EPSILON
-          ) {
-            newState = computeWindowedRenderLimits(
-              this.props.data,
-              this.props.getItemCount,
-              maxToRenderPerBatchOrDefault(this.props.maxToRenderPerBatch),
-              windowSizeOrDefault(this.props.windowSize),
-              state,
-              this.__getFrameMetricsApprox,
-              this._scrollMetrics,
-            );
-          }
-        }
-      } else {
-        const renderAhead =
-          distanceFromEnd < onEndReachedThreshold * visibleLength
-            ? maxToRenderPerBatchOrDefault(this.props.maxToRenderPerBatch)
-            : 0;
-        newState = {
-          first: 0,
-          last: Math.min(state.last + renderAhead, getItemCount(data) - 1),
-        };
-      }
-      if (newState && this._nestedChildLists.size > 0) {
-        const newFirst = newState.first;
-        const newLast = newState.last;
-        // If some cell in the new state has a child list in it, we should only render
-        // up through that item, so that we give that list a chance to render.
-        // Otherwise there's churn from multiple child lists mounting and un-mounting
-        // their items.
-        for (let ii = newFirst; ii <= newLast; ii++) {
-          const cellKeyForIndex = this._indicesToKeys.get(ii);
-          const childListKeys =
-            cellKeyForIndex &&
-            this._cellKeysToChildListKeys.get(cellKeyForIndex);
-          if (!childListKeys) {
-            continue;
-          }
-          let someChildHasMore = false;
-          // For each cell, need to check whether any child list in it has more elements to render
-          for (let childKey of childListKeys) {
-            const childList = this._nestedChildLists.get(childKey);
-            if (childList && childList.ref && childList.ref.hasMore()) {
-              someChildHasMore = true;
-              break;
-            }
-          }
-          if (someChildHasMore) {
-            newState.last = ii;
-            break;
-          }
-        }
-      }
       if (
-        newState != null &&
-        newState.first === state.first &&
-        newState.last === state.last
+        cellsAroundViewport.first === state.cellsAroundViewport.first &&
+        cellsAroundViewport.last === state.cellsAroundViewport.last &&
+        renderMask.equals(state.renderMask)
       ) {
-        newState = null;
+        return null;
       }
-      return newState;
+
+      return {cellsAroundViewport, renderMask};
     });
   };
 
@@ -2144,7 +2006,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       // check for invalid frames due to row re-ordering
       return frame;
     } else {
-      const {getItemLayout} = this.props;
+      const {data, getItemCount, getItemLayout} = this.props;
+      invariant(
+        index >= 0 && index < getItemCount(data),
+        'Tried to get frame for out of range index ' + index,
+      );
       invariant(
         !getItemLayout,
         'Should not have to estimate frames when a measurement metrics function is provided',
@@ -2167,7 +2033,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   } => {
     const {data, getItem, getItemCount, getItemLayout} = this.props;
     invariant(
-      getItemCount(data) > index,
+      index >= 0 && index < getItemCount(data),
       'Tried to get frame for out of range index ' + index,
     );
     const item = getItem(data, index);
@@ -2183,6 +2049,57 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     return frame;
   };
 
+  _getNonViewportRenderRegions = (): $ReadOnlyArray<{
+    first: number,
+    last: number,
+  }> => {
+    // Keep a viewport's worth of content around the last focused cell to allow
+    // random navigation around it without any blanking. E.g. tabbing from one
+    // focused item out of viewport to another.
+    if (
+      !(this._lastFocusedCellKey && this._cellRefs[this._lastFocusedCellKey])
+    ) {
+      return [];
+    }
+
+    const lastFocusedCellRenderer = this._cellRefs[this._lastFocusedCellKey];
+    const focusedCellIndex = lastFocusedCellRenderer.props.index;
+    const itemCount = this.props.getItemCount(this.props.data);
+
+    // The cell may have been unmounted and have a stale index
+    if (
+      focusedCellIndex >= itemCount ||
+      this._indicesToKeys.get(focusedCellIndex) !== this._lastFocusedCellKey
+    ) {
+      return [];
+    }
+
+    let first = focusedCellIndex;
+    let heightOfCellsBeforeFocused = 0;
+    for (
+      let i = first - 1;
+      i >= 0 && heightOfCellsBeforeFocused < this._scrollMetrics.visibleLength;
+      i--
+    ) {
+      first--;
+      heightOfCellsBeforeFocused += this.__getFrameMetricsApprox(i).length;
+    }
+
+    let last = focusedCellIndex;
+    let heightOfCellsAfterFocused = 0;
+    for (
+      let i = last + 1;
+      i < itemCount &&
+      heightOfCellsAfterFocused < this._scrollMetrics.visibleLength;
+      i++
+    ) {
+      last++;
+      heightOfCellsAfterFocused += this.__getFrameMetricsApprox(i).length;
+    }
+
+    return [{first, last}];
+  };
+
   _updateViewableItems(data: any) {
     const {getItemCount} = this.props;
 
@@ -2194,7 +2111,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         this._getFrameMetrics,
         this._createViewToken,
         tuple.onViewableItemsChanged,
-        this.state,
+        this.state.cellsAroundViewport,
       );
     });
   }
@@ -2227,6 +2144,7 @@ type CellRendererProps = {
   onUnmount: (cellKey: string) => void,
   onUpdateSeparators: (cellKeys: Array<?string>, props: Object) => void,
   prevCellKey: ?string,
+  onFocusCapture: (event: FocusEvent) => void,
   renderItem?: ?RenderItemType<Item>,
   ...
 };
@@ -2358,6 +2276,7 @@ class CellRenderer extends React.Component<
       item,
       index,
       inversionStyle,
+      onFocusCapture,
       renderItem,
     } = this.props;
     const element = this._renderElement(
@@ -2387,10 +2306,14 @@ class CellRenderer extends React.Component<
       ? [styles.row, inversionStyle]
       : inversionStyle;
     const result = !CellRendererComponent ? (
-      /* $FlowFixMe[incompatible-type-arg] (>=0.89.0 site=react_native_fb) *
+      <View
+        style={cellStyle}
+        onLayout={onLayout}
+        onFocusCapture={onFocusCapture}
+        /* $FlowFixMe[incompatible-type-arg] (>=0.89.0 site=react_native_fb) *
         This comment suppresses an error found when Flow v0.89 was deployed. *
         To see the error, delete this comment and run Flow. */
-      <View style={cellStyle} onLayout={onLayout}>
+      >
         {element}
         {itemSeparator}
       </View>
@@ -2398,7 +2321,8 @@ class CellRenderer extends React.Component<
       <CellRendererComponent
         {...this.props}
         style={cellStyle}
-        onLayout={onLayout}>
+        onLayout={onLayout}
+        onFocusCapture={onFocusCapture}>
         {element}
         {itemSeparator}
       </CellRendererComponent>
@@ -2483,6 +2407,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = (VirtualizedListInjection.getOrDefault(
-  VirtualizedList,
-): typeof VirtualizedList);
+module.exports = VirtualizedList;

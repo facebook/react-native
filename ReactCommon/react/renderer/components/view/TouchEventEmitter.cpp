@@ -91,6 +91,7 @@ static jsi::Value pointerEventPayload(
   object.setProperty(runtime, "shiftKey", event.shiftKey);
   object.setProperty(runtime, "altKey", event.altKey);
   object.setProperty(runtime, "metaKey", event.metaKey);
+  object.setProperty(runtime, "isPrimary", event.isPrimary);
   return object;
 }
 
