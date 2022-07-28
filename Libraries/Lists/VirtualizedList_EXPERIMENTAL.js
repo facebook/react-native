@@ -779,9 +779,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     if (itemCount > 0) {
       const allRegions = [cellsAroundViewport, ...(additionalRegions ?? [])];
       for (const region of allRegions) {
-        if (region.last >= region.first) {
-          renderMask.addCells(region);
-        }
+        renderMask.addCells(region);
       }
 
       // The initially rendered cells are retained as part of the
