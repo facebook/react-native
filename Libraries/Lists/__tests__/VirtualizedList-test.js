@@ -701,6 +701,24 @@ it('unmounts sticky headers moved below viewport', () => {
   expect(component).toMatchSnapshot();
 });
 
+it('gracefully handles negaitve initialScrollIndex', () => {
+  const items = generateItems(10);
+  const ITEM_HEIGHT = 10;
+
+  const component = ReactTestRenderer.create(
+    <VirtualizedList
+      initialScrollIndex={-1}
+      initialNumToRender={4}
+      {...baseItemProps(items)}
+      {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+    />,
+  );
+
+  // Existing code assumes we handle this in some way. Do something reasonable
+  // here.
+  expect(component).toMatchSnapshot();
+});
+
 it('renders offset cells in initial render when initialScrollIndex set', () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;

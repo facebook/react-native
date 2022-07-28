@@ -786,7 +786,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
       // The initially rendered cells are retained as part of the
       // "scroll-to-top" optimization
-      if (props.initialScrollIndex == null || props.initialScrollIndex === 0) {
+      if (props.initialScrollIndex == null || props.initialScrollIndex <= 0) {
         const initialRegion = VirtualizedList._initialRenderRegion(props);
         renderMask.addCells(initialRegion);
       }
@@ -808,7 +808,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   static _initialRenderRegion(props: Props): {first: number, last: number} {
     const itemCount = props.getItemCount(props.data);
-    const scrollIndex = props.initialScrollIndex || 0;
+    const scrollIndex = Math.max(0, props.initialScrollIndex ?? 0);
 
     return {
       first: scrollIndex,
