@@ -91,7 +91,7 @@ test_ios_jsc(){
     success "About to test iOS JSC... "
     success "Installing CocoaPods dependencies..."
     rm -rf packages/rn-tester/Pods
-    (cd packages/rn-tester && bundle exec pod install)
+    (cd packages/rn-tester && USE_HERMES=0 bundle exec pod install)
 
     info "Press any key to open the workspace in Xcode, then build and test manually."
     info ""
@@ -232,4 +232,3 @@ init(){
 }
 
 init
-

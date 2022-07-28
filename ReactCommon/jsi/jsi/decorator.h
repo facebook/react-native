@@ -154,6 +154,9 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
   Runtime::PointerValue* cloneSymbol(const Runtime::PointerValue* pv) override {
     return plain_.cloneSymbol(pv);
   };
+  Runtime::PointerValue* cloneBigInt(const Runtime::PointerValue* pv) override {
+    return plain_.cloneBigInt(pv);
+  };
   Runtime::PointerValue* cloneString(const Runtime::PointerValue* pv) override {
     return plain_.cloneString(pv);
   };
@@ -218,6 +221,17 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
     // with RTTI.
     return dhf.target<DecoratedHostFunction>()->plainHF_;
   };
+
+  bool hasNativeState(const Object& o) override {
+    return plain_.hasNativeState(o);
+  }
+  std::shared_ptr<NativeState> getNativeState(const Object& o) override {
+    return plain_.getNativeState(o);
+  }
+  void setNativeState(const Object& o, std::shared_ptr<NativeState> state)
+      override {
+    plain_.setNativeState(o, state);
+  }
 
   Value getProperty(const Object& o, const PropNameID& name) override {
     return plain_.getProperty(o, name);
@@ -313,6 +327,9 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
   }
 
   bool strictEquals(const Symbol& a, const Symbol& b) const override {
+    return plain_.strictEquals(a, b);
+  };
+  bool strictEquals(const BigInt& a, const BigInt& b) const override {
     return plain_.strictEquals(a, b);
   };
   bool strictEquals(const String& a, const String& b) const override {

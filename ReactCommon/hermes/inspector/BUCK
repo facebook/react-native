@@ -2,7 +2,7 @@ load("@fbsource//tools/build_defs:fb_xplat_cxx_binary.bzl", "fb_xplat_cxx_binary
 load("@fbsource//tools/build_defs:fb_xplat_cxx_library.bzl", "fb_xplat_cxx_library")
 load("@fbsource//tools/build_defs:fb_xplat_cxx_test.bzl", "fb_xplat_cxx_test")
 load("@fbsource//tools/build_defs:platform_defs.bzl", "ANDROID", "APPLE", "CXX", "FBCODE", "WINDOWS")
-load("@fbsource//tools/build_defs/oss:rn_defs.bzl", "react_native_xplat_target")
+load("@fbsource//tools/build_defs/oss:rn_defs.bzl", "get_hermes_shared_library_preprocessor_flags", "react_native_xplat_target")
 load("@fbsource//xplat/hermes/defs:hermes.bzl", "hermes_build_mode", "hermes_optimize_flag")
 
 CFLAGS_BY_MODE = {
@@ -195,6 +195,7 @@ fb_xplat_cxx_library(
     labels = ["supermodule:xplat/default/public.hermes"],
     macosx_tests_override = [],
     platforms = (ANDROID, APPLE, CXX, FBCODE, WINDOWS),
+    preprocessor_flags = get_hermes_shared_library_preprocessor_flags(),
     visibility = [
         "PUBLIC",
     ],

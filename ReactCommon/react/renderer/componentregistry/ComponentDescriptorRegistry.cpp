@@ -126,7 +126,7 @@ bool ComponentDescriptorRegistry::hasComponentDescriptorAt(
   return true;
 }
 
-SharedShadowNode ComponentDescriptorRegistry::createNode(
+ShadowNode::Shared ComponentDescriptorRegistry::createNode(
     Tag tag,
     std::string const &viewName,
     SurfaceId surfaceId,

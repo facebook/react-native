@@ -142,6 +142,7 @@ class JSCRuntime : public jsi::Runtime {
   };
 
   PointerValue *cloneSymbol(const Runtime::PointerValue *pv) override;
+  PointerValue *cloneBigInt(const Runtime::PointerValue *pv) override;
   PointerValue *cloneString(const Runtime::PointerValue *pv) override;
   PointerValue *cloneObject(const Runtime::PointerValue *pv) override;
   PointerValue *clonePropNameID(const Runtime::PointerValue *pv) override;
@@ -166,6 +167,12 @@ class JSCRuntime : public jsi::Runtime {
   virtual std::shared_ptr<jsi::HostObject> getHostObject(
       const jsi::Object &) override;
   jsi::HostFunctionType &getHostFunction(const jsi::Function &) override;
+
+  bool hasNativeState(const jsi::Object &) override;
+  std::shared_ptr<jsi::NativeState> getNativeState(
+      const jsi::Object &) override;
+  void setNativeState(const jsi::Object &, std::shared_ptr<jsi::NativeState>)
+      override;
 
   jsi::Value getProperty(const jsi::Object &, const jsi::String &name) override;
   jsi::Value getProperty(const jsi::Object &, const jsi::PropNameID &name)
@@ -214,6 +221,7 @@ class JSCRuntime : public jsi::Runtime {
       size_t count) override;
 
   bool strictEquals(const jsi::Symbol &a, const jsi::Symbol &b) const override;
+  bool strictEquals(const jsi::BigInt &a, const jsi::BigInt &b) const override;
   bool strictEquals(const jsi::String &a, const jsi::String &b) const override;
   bool strictEquals(const jsi::Object &a, const jsi::Object &b) const override;
   bool instanceOf(const jsi::Object &o, const jsi::Function &f) override;
@@ -599,6 +607,11 @@ jsi::Runtime::PointerValue *JSCRuntime::cloneSymbol(
   return makeSymbolValue(symbol->sym_);
 }
 
+jsi::Runtime::PointerValue *JSCRuntime::cloneBigInt(
+    const Runtime::PointerValue *) {
+  throw std::logic_error("Not implemented");
+}
+
 jsi::Runtime::PointerValue *JSCRuntime::cloneString(
     const jsi::Runtime::PointerValue *pv) {
   if (!pv) {
@@ -853,6 +866,21 @@ std::shared_ptr<jsi::HostObject> JSCRuntime::getHostObject(
       static_cast<detail::HostObjectProxyBase *>(JSObjectGetPrivate(object));
   assert(metadata);
   return metadata->hostObject;
+}
+
+bool JSCRuntime::hasNativeState(const jsi::Object &) {
+  throw std::logic_error("Not implemented");
+}
+
+std::shared_ptr<jsi::NativeState> JSCRuntime::getNativeState(
+    const jsi::Object &) {
+  throw std::logic_error("Not implemented");
+}
+
+void JSCRuntime::setNativeState(
+    const jsi::Object &,
+    std::shared_ptr<jsi::NativeState>) {
+  throw std::logic_error("Not implemented");
 }
 
 jsi::Value JSCRuntime::getProperty(
@@ -1297,6 +1325,11 @@ bool JSCRuntime::strictEquals(const jsi::Symbol &a, const jsi::Symbol &b)
   bool ret = JSValueIsEqual(ctx_, symbolRef(a), symbolRef(b), &exc);
   const_cast<JSCRuntime *>(this)->checkException(exc);
   return ret;
+}
+
+bool JSCRuntime::strictEquals(const jsi::BigInt &a, const jsi::BigInt &b)
+    const {
+  throw std::logic_error("Not implemented");
 }
 
 bool JSCRuntime::strictEquals(const jsi::String &a, const jsi::String &b)

@@ -43,7 +43,8 @@ export type AccessibilityRole =
   | 'tablist'
   | 'timer'
   | 'list'
-  | 'toolbar';
+  | 'toolbar'
+  | 'grid';
 
 // the info associated with an accessibility action
 export type AccessibilityActionInfo = $ReadOnly<{

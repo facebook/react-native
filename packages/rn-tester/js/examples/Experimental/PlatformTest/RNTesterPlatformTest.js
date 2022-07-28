@@ -32,20 +32,26 @@ export default function RNTesterPlatformTest(props: Props): React.MixedElement {
     component: UnderTestComponent,
   } = props;
 
-  const {harness, reset, results, testKey} = usePlatformTestHarness();
+  const {harness, numPending, reset, results, testKey} =
+    usePlatformTestHarness();
 
   return (
     <View style={styles.root}>
-      <Text style={[styles.textBlock, styles.title]}>{title}</Text>
-      <Text style={[styles.textBlock, styles.description]}>{description}</Text>
-      <RNTesterPlatformTestInstructions
-        instructions={instructions}
-        style={[styles.instructions, styles.block]}
-      />
-      <View style={[styles.testContainer, styles.block]}>
-        <UnderTestComponent key={testKey} harness={harness} />
+      <View style={styles.testcaseContainer}>
+        <Text style={[styles.textBlock, styles.title]}>{title}</Text>
+        <Text style={[styles.textBlock, styles.description]}>
+          {description}
+        </Text>
+        <RNTesterPlatformTestInstructions
+          instructions={instructions}
+          style={[styles.instructions, styles.block]}
+        />
+        <View style={[styles.testContainer, styles.block]}>
+          <UnderTestComponent key={testKey} harness={harness} />
+        </View>
       </View>
       <RNTesterPlatformTestResultView
+        numPending={numPending}
         reset={reset}
         results={results}
         style={styles.results}
@@ -71,12 +77,16 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   results: {
-    flex: 1,
+    position: 'absolute',
+    left: 0,
+    bottom: 0,
+    right: 0,
   },
   root: {
-    padding: 8,
-    paddingBottom: 0,
     flex: 1,
+  },
+  testcaseContainer: {
+    padding: 8,
   },
   testContainer: {
     flexGrow: 0,

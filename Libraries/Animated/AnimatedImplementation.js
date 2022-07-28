@@ -460,6 +460,7 @@ type LoopAnimationConfig = {
 
 const loop = function (
   animation: CompositeAnimation,
+  // $FlowFixMe[prop-missing]
   {iterations = -1, resetBeforeIteration = true}: LoopAnimationConfig = {},
 ): CompositeAnimation {
   let isFinished = false;

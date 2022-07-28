@@ -451,6 +451,10 @@ void Binding::installFabricUIManager(
       Props::enablePropIteratorSetter;
   BaseTextProps::enablePropIteratorSetter = Props::enablePropIteratorSetter;
 
+  // RemoveDelete mega-op
+  ShadowViewMutation::PlatformSupportsRemoveDeleteTreeInstruction =
+      getFeatureFlagValue("enableRemoveDeleteTreeInstruction");
+
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = contextContainer;
   toolbox.componentRegistryFactory = componentsRegistry->buildRegistryFunction;

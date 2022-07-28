@@ -72,8 +72,7 @@ public class JSPointerDispatcher {
   }
 
   public void handleMotionEvent(MotionEvent motionEvent, EventDispatcher eventDispatcher) {
-    boolean supportsHover =
-        PointerEventHelper.supportsHover(motionEvent.getToolType(motionEvent.getActionIndex()));
+    boolean supportsHover = PointerEventHelper.supportsHover(motionEvent);
 
     int surfaceId = UIManagerHelper.getSurfaceId(mRootViewGroup);
     int action = motionEvent.getActionMasked();
@@ -129,7 +128,11 @@ public class JSPointerDispatcher {
       if (listeningForDown) {
         eventDispatcher.dispatchEvent(
             PointerEvent.obtain(
-                PointerEventHelper.POINTER_DOWN, surfaceId, activeTargetTag, motionEvent));
+                PointerEventHelper.POINTER_DOWN,
+                surfaceId,
+                activeTargetTag,
+                motionEvent,
+                mTargetCoordinates));
       }
 
       return;
@@ -150,7 +153,11 @@ public class JSPointerDispatcher {
       if (listeningForDown) {
         eventDispatcher.dispatchEvent(
             PointerEvent.obtain(
-                PointerEventHelper.POINTER_DOWN, surfaceId, activeTargetTag, motionEvent));
+                PointerEventHelper.POINTER_DOWN,
+                surfaceId,
+                activeTargetTag,
+                motionEvent,
+                mTargetCoordinates));
       }
 
       return;
@@ -168,6 +175,7 @@ public class JSPointerDispatcher {
                 surfaceId,
                 activeTargetTag,
                 motionEvent,
+                mTargetCoordinates,
                 coalescingKey));
       }
 
@@ -183,7 +191,11 @@ public class JSPointerDispatcher {
       if (listeningForUp) {
         eventDispatcher.dispatchEvent(
             PointerEvent.obtain(
-                PointerEventHelper.POINTER_UP, surfaceId, activeTargetTag, motionEvent));
+                PointerEventHelper.POINTER_UP,
+                surfaceId,
+                activeTargetTag,
+                motionEvent,
+                mTargetCoordinates));
       }
 
       return;
@@ -201,7 +213,11 @@ public class JSPointerDispatcher {
       if (listeningForUp) {
         eventDispatcher.dispatchEvent(
             PointerEvent.obtain(
-                PointerEventHelper.POINTER_UP, surfaceId, activeTargetTag, motionEvent));
+                PointerEventHelper.POINTER_UP,
+                surfaceId,
+                activeTargetTag,
+                motionEvent,
+                mTargetCoordinates));
       }
 
       if (!supportsHover) {
@@ -249,34 +265,38 @@ public class JSPointerDispatcher {
    * Returns list of view targets that we should be dispatching events from
    *
    * @param viewTargets, ordered from target -> root
-   * @param bubble, name of event that bubbles
-   * @param capture, name of event that captures
+   * @param bubble, name of event that bubbles. Should only ever be enter or leave
+   * @param capture, name of event that captures. Should only ever be enter or leave
    * @param forceDispatch, if true, all viewTargets should dispatch
    * @return list of viewTargets filtered from target -> root
    */
   private static List<ViewTarget> filterByShouldDispatch(
       List<ViewTarget> viewTargets, EVENT bubble, EVENT capture, boolean forceDispatch) {
+
+    List<ViewTarget> dispatchableViewTargets = new ArrayList<>(viewTargets);
     if (forceDispatch) {
-      return viewTargets;
+      return dispatchableViewTargets;
     }
 
     boolean ancestorListening = false;
-    List<ViewTarget> dispatchableViewTargets = new ArrayList<ViewTarget>(viewTargets);
+
+    // Start to filter which viewTargets may not need to dispatch an event
     for (int i = viewTargets.size() - 1; i >= 0; i--) {
       ViewTarget viewTarget = viewTargets.get(i);
       View view = viewTarget.getView();
+
       if (!ancestorListening
-          && (PointerEventHelper.isListening(view, capture)
-              || (i == 0 && PointerEventHelper.isListening(view, bubble)))) {
-        ancestorListening = true;
-      } else if (!ancestorListening) {
+          && !PointerEventHelper.isListening(view, capture)
+          && !PointerEventHelper.isListening(view, bubble)) {
         dispatchableViewTargets.remove(i);
+      } else if (!ancestorListening && PointerEventHelper.isListening(view, capture)) {
+        ancestorListening = true;
       }
     }
     return dispatchableViewTargets;
   }
 
-  private static void dispatchEventForViewTargets(
+  private void dispatchEventForViewTargets(
       String eventName,
       List<ViewTarget> viewTargets,
       EventDispatcher dispatcher,
@@ -285,7 +305,8 @@ public class JSPointerDispatcher {
 
     for (ViewTarget viewTarget : viewTargets) {
       int viewId = viewTarget.getViewId();
-      dispatcher.dispatchEvent(PointerEvent.obtain(eventName, surfaceId, viewId, motionEvent));
+      dispatcher.dispatchEvent(
+          PointerEvent.obtain(eventName, surfaceId, viewId, motionEvent, mTargetCoordinates));
     }
   }
 
@@ -413,7 +434,12 @@ public class JSPointerDispatcher {
     if (listeningToMove) {
       eventDispatcher.dispatchEvent(
           PointerEvent.obtain(
-              PointerEventHelper.POINTER_MOVE, surfaceId, targetTag, motionEvent, coalescingKey));
+              PointerEventHelper.POINTER_MOVE,
+              surfaceId,
+              targetTag,
+              motionEvent,
+              mTargetCoordinates,
+              coalescingKey));
     }
 
     mLastHitPath = hitPath;
@@ -440,7 +466,11 @@ public class JSPointerDispatcher {
         Assertions.assertNotNull(eventDispatcher)
             .dispatchEvent(
                 PointerEvent.obtain(
-                    PointerEventHelper.POINTER_CANCEL, surfaceId, targetTag, motionEvent));
+                    PointerEventHelper.POINTER_CANCEL,
+                    surfaceId,
+                    targetTag,
+                    motionEvent,
+                    mTargetCoordinates));
       }
 
       List<ViewTarget> leaveViewTargets =

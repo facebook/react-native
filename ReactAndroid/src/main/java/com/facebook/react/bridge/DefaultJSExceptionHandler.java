@@ -8,7 +8,7 @@
 package com.facebook.react.bridge;
 
 /** Crashy crashy exception handler. */
-public class DefaultNativeModuleCallExceptionHandler implements NativeModuleCallExceptionHandler {
+public class DefaultJSExceptionHandler implements JSExceptionHandler {
 
   @Override
   public void handleException(Exception e) {

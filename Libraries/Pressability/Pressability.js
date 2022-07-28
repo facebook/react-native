@@ -160,8 +160,8 @@ export type EventHandlers = $ReadOnly<{|
   onFocus: (event: FocusEvent) => void,
   onMouseEnter?: (event: MouseEvent) => void,
   onMouseLeave?: (event: MouseEvent) => void,
-  onPointerEnter2?: (event: PointerEvent) => void,
-  onPointerLeave2?: (event: PointerEvent) => void,
+  onPointerEnter?: (event: PointerEvent) => void,
+  onPointerLeave?: (event: PointerEvent) => void,
   onResponderGrant: (event: PressEvent) => void,
   onResponderMove: (event: PressEvent) => void,
   onResponderRelease: (event: PressEvent) => void,
@@ -557,12 +557,12 @@ export default class Pressability {
       ReactNativeFeatureFlags.shouldPressibilityUseW3CPointerEventsForHover()
     ) {
       const hoverPointerEvents = {
-        onPointerEnter2: undefined,
-        onPointerLeave2: undefined,
+        onPointerEnter: undefined,
+        onPointerLeave: undefined,
       };
       const {onHoverIn, onHoverOut} = this._config;
       if (onHoverIn != null) {
-        hoverPointerEvents.onPointerEnter2 = (event: PointerEvent) => {
+        hoverPointerEvents.onPointerEnter = (event: PointerEvent) => {
           this._isHovered = true;
           this._cancelHoverOutDelayTimeout();
           if (onHoverIn != null) {
@@ -579,7 +579,7 @@ export default class Pressability {
         };
       }
       if (onHoverOut != null) {
-        hoverPointerEvents.onPointerLeave2 = (event: PointerEvent) => {
+        hoverPointerEvents.onPointerLeave = (event: PointerEvent) => {
           if (this._isHovered) {
             this._isHovered = false;
             this._cancelHoverInDelayTimeout();

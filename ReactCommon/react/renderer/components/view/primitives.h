@@ -51,12 +51,9 @@ struct ViewEvents {
     TouchCancel = 19,
 
     // W3C Pointer Events
-    PointerEnter2 = 20,
-    PointerLeave2 = 21,
-    PointerMove2 = 22,
-    PointerEnter2Capture = 23,
-    PointerLeave2Capture = 24,
-    PointerMove2Capture = 25,
+    PointerEnterCapture = 23,
+    PointerLeaveCapture = 24,
+    PointerMoveCapture = 25,
     PointerOver = 26,
     PointerOut = 27,
   };
@@ -79,6 +76,8 @@ inline static bool operator!=(ViewEvents const &lhs, ViewEvents const &rhs) {
 }
 
 enum class BackfaceVisibility { Auto, Visible, Hidden };
+
+enum class BorderCurve { Circular, Continuous };
 
 enum class BorderStyle { Solid, Dotted, Dashed };
 
@@ -205,11 +204,13 @@ struct CascadedRectangleCorners {
 };
 
 using BorderWidths = RectangleEdges<Float>;
+using BorderCurves = RectangleCorners<BorderCurve>;
 using BorderStyles = RectangleEdges<BorderStyle>;
 using BorderColors = RectangleEdges<SharedColor>;
 using BorderRadii = RectangleCorners<Float>;
 
 using CascadedBorderWidths = CascadedRectangleEdges<Float>;
+using CascadedBorderCurves = CascadedRectangleCorners<BorderCurve>;
 using CascadedBorderStyles = CascadedRectangleEdges<BorderStyle>;
 using CascadedBorderColors = CascadedRectangleEdges<SharedColor>;
 using CascadedBorderRadii = CascadedRectangleCorners<Float>;
@@ -218,6 +219,7 @@ struct BorderMetrics {
   BorderColors borderColors{};
   BorderWidths borderWidths{};
   BorderRadii borderRadii{};
+  BorderCurves borderCurves{};
   BorderStyles borderStyles{};
 
   bool operator==(const BorderMetrics &rhs) const {
@@ -225,11 +227,13 @@ struct BorderMetrics {
                this->borderColors,
                this->borderWidths,
                this->borderRadii,
+               this->borderCurves,
                this->borderStyles) ==
         std::tie(
                rhs.borderColors,
                rhs.borderWidths,
                rhs.borderRadii,
+               rhs.borderCurves,
                rhs.borderStyles);
   }
 

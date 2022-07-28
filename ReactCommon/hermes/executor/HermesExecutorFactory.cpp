@@ -171,7 +171,7 @@ class DecoratedRuntime : public jsi::WithRuntimeDecorator<ReentrancyCheck> {
 
   ~DecoratedRuntime() {
 #ifdef HERMES_ENABLE_DEBUGGER
-    facebook::hermes::inspector::chrome::disableDebugging(hermesRuntime_);
+    facebook::hermes::inspector::chrome::disableDebugging(*runtime_);
 #endif
   }
 

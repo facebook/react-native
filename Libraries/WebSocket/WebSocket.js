@@ -101,7 +101,7 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): any) {
       protocols = [protocols];
     }
 
-    const {headers = {}, ...unrecognized} = options || {...null};
+    const {headers = {}, ...unrecognized} = options || {};
 
     // Preserve deprecated backwards compatibility for the 'origin' option
     // $FlowFixMe[prop-missing]

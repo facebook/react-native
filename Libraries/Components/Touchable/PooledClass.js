@@ -18,6 +18,8 @@ import invariant from 'invariant';
  * the Class itself, not an instance. If any others are needed, simply add them
  * here, or in their own files.
  */
+/* $FlowFixMe[missing-this-annot] The 'this' type annotation(s) required by
+ * Flow's LTI update could not be added via codemod */
 const oneArgumentPooler = function (copyFieldsFrom: any) {
   const Klass = this; // eslint-disable-line consistent-this
   if (Klass.instancePool.length) {
@@ -29,6 +31,8 @@ const oneArgumentPooler = function (copyFieldsFrom: any) {
   }
 };
 
+/* $FlowFixMe[missing-this-annot] The 'this' type annotation(s) required by
+ * Flow's LTI update could not be added via codemod */
 const twoArgumentPooler = function (a1: any, a2: any) {
   const Klass = this; // eslint-disable-line consistent-this
   if (Klass.instancePool.length) {
@@ -40,6 +44,8 @@ const twoArgumentPooler = function (a1: any, a2: any) {
   }
 };
 
+/* $FlowFixMe[missing-this-annot] The 'this' type annotation(s) required by
+ * Flow's LTI update could not be added via codemod */
 const threeArgumentPooler = function (a1: any, a2: any, a3: any) {
   const Klass = this; // eslint-disable-line consistent-this
   if (Klass.instancePool.length) {
@@ -51,6 +57,8 @@ const threeArgumentPooler = function (a1: any, a2: any, a3: any) {
   }
 };
 
+/* $FlowFixMe[missing-this-annot] The 'this' type annotation(s) required by
+ * Flow's LTI update could not be added via codemod */
 const fourArgumentPooler = function (a1: any, a2: any, a3: any, a4: any) {
   const Klass = this; // eslint-disable-line consistent-this
   if (Klass.instancePool.length) {
@@ -64,6 +72,8 @@ const fourArgumentPooler = function (a1: any, a2: any, a3: any, a4: any) {
 
 /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
  * LTI update could not be added via codemod */
+/* $FlowFixMe[missing-this-annot] The 'this' type annotation(s) required by
+ * Flow's LTI update could not be added via codemod */
 const standardReleaser = function (instance) {
   const Klass = this; // eslint-disable-line consistent-this
   invariant(

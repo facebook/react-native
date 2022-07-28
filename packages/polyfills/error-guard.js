@@ -102,6 +102,8 @@ const ErrorUtils = {
       return null;
     }
     const guardName = name ?? fun.name ?? '<generated guard>';
+    /* $FlowFixMe[missing-this-annot] The 'this' type annotation(s) required by
+     * Flow's LTI update could not be added via codemod */
     function guarded(...args: TArgs): ?TOut {
       return ErrorUtils.applyWithGuard(
         fun,

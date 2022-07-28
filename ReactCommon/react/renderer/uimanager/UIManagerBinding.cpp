@@ -361,8 +361,8 @@ jsi::Value UIManagerBinding::get(
            jsi::Value const &thisValue,
            jsi::Value const *arguments,
            size_t count) noexcept -> jsi::Value {
-          auto shadowNodeList =
-              std::make_shared<SharedShadowNodeList>(SharedShadowNodeList({}));
+          auto shadowNodeList = std::make_shared<ShadowNode::ListOfShared>(
+              ShadowNode::ListOfShared({}));
           return valueFromShadowNodeList(runtime, shadowNodeList);
         });
   }

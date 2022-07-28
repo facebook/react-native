@@ -14,6 +14,9 @@ import * as React from 'react';
 import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
 
 import PointerEventAttributesHoverablePointers from './W3CPointerEventPlatformTests/PointerEventAttributesHoverablePointers';
+import PointerEventPointerMove from './W3CPointerEventPlatformTests/PointerEventPointerMove';
+import CompatibilityAnimatedPointerMove from './Compatibility/CompatibilityAnimatedPointerMove';
+import PointerEventPrimaryTouchPointer from './W3CPointerEventPlatformTests/PointerEventPrimaryTouchPointer';
 
 function EventfulView(props: {|
   name: string,
@@ -56,30 +59,33 @@ function EventfulView(props: {|
   } = props;
   const [tag, setTag] = React.useState('');
 
-  const eventLog = (eventName: string) => (event: PointerEvent) => {
-    // $FlowFixMe Using private property
-    log(`${name} - ${eventName} - target: ${event.target._nativeTag}`);
-  };
+  const eventLog =
+    (eventName: string, handler: ?(e: PointerEvent) => void) =>
+    (event: PointerEvent) => {
+      // $FlowFixMe Using private property
+      log(`${name} - ${eventName} - target: ${event.target._nativeTag}`);
+      handler?.(event);
+    };
 
   const listeners = {
     onPointerUp: onUp ? eventLog('up') : null,
     onPointerUpCapture: onUpCapture ? eventLog('up capture') : null,
     onPointerDown: onDown ? eventLog('down') : null,
     onPointerDownCapture: onDownCapture ? eventLog('down capture') : null,
-    onPointerLeave2: onLeave ? eventLog('leave') : null,
-    onPointerLeave2Capture: onLeaveCapture ? eventLog('leave capture') : null,
-    onPointerEnter2: onEnter ? eventLog('enter') : null,
-    onPointerEnter2Capture: onEnterCapture ? eventLog('enter capture') : null,
-    onPointerMove2: onMove ? eventLog('move') : null,
-    onPointerMove2Capture: onMoveCapture ? eventLog('move capture') : null,
+    onPointerLeave: onLeave ? eventLog('leave') : null,
+    onPointerLeaveCapture: onLeaveCapture ? eventLog('leave capture') : null,
+    onPointerEnter: onEnter ? eventLog('enter') : null,
+    onPointerEnterCapture: onEnterCapture ? eventLog('enter capture') : null,
+    onPointerMove: onMove ? eventLog('move') : null,
+    onPointerMoveCapture: onMoveCapture ? eventLog('move capture') : null,
   };
 
-  let listeningTo = Object.keys(listeners)
+  const listeningTo = Object.keys(listeners)
     .filter(listenerName => listeners[listenerName] != null)
     .join(', ');
 
   return (
-    <View ref={ref} {...listeners} {...restProps} collapsable={false}>
+    <View ref={ref} {...listeners} {...restProps}>
       <View style={styles.row}>
         <Text>
           {props.name}, {tag}, {listeningTo}
@@ -234,5 +240,22 @@ export default {
         return <PointerEventAttributesHoverablePointers />;
       },
     },
+    {
+      name: 'pointerevent_pointermove',
+      description: '',
+      title: 'PointerMove test',
+      render(): React.Node {
+        return <PointerEventPointerMove />;
+      },
+    },
+    {
+      name: 'pointerevent_primary_touch_pointer',
+      description: '',
+      title: 'Pointer Event primary touch pointer test',
+      render(): React.Node {
+        return <PointerEventPrimaryTouchPointer />;
+      },
+    },
+    CompatibilityAnimatedPointerMove,
   ],
 };

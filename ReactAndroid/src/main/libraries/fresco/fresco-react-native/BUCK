@@ -28,6 +28,7 @@ fb_native.remote_file(
 rn_android_library(
     name = "imagepipeline",
     autoglob = False,
+    language = "JAVA",
     visibility = ["//ReactAndroid/..."],
     exported_deps = [
         ":bolts",

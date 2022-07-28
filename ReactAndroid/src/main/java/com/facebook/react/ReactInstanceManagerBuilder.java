@@ -18,9 +18,9 @@ import com.facebook.hermes.reactexecutor.HermesExecutor;
 import com.facebook.hermes.reactexecutor.HermesExecutorFactory;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSBundleLoader;
+import com.facebook.react.bridge.JSExceptionHandler;
 import com.facebook.react.bridge.JSIModulePackage;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
-import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.SurfaceDelegateFactory;
@@ -53,7 +53,7 @@ public class ReactInstanceManagerBuilder {
   private boolean mRequireActivity;
   private @Nullable LifecycleState mInitialLifecycleState;
   private @Nullable UIImplementationProvider mUIImplementationProvider;
-  private @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
+  private @Nullable JSExceptionHandler mJSExceptionHandler;
   private @Nullable Activity mCurrentActivity;
   private @Nullable DefaultHardwareBackBtnHandler mDefaultHardwareBackBtnHandler;
   private @Nullable RedBoxHandler mRedBoxHandler;
@@ -253,9 +253,8 @@ public class ReactInstanceManagerBuilder {
    * DevSupportManager} will be used, which shows a redbox in dev mode and rethrows (crashes the
    * app) in prod mode.
    */
-  public ReactInstanceManagerBuilder setNativeModuleCallExceptionHandler(
-      NativeModuleCallExceptionHandler handler) {
-    mNativeModuleCallExceptionHandler = handler;
+  public ReactInstanceManagerBuilder setJSExceptionHandler(JSExceptionHandler handler) {
+    mJSExceptionHandler = handler;
     return this;
   }
 
@@ -357,7 +356,7 @@ public class ReactInstanceManagerBuilder {
         mBridgeIdleDebugListener,
         Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
         mUIImplementationProvider,
-        mNativeModuleCallExceptionHandler,
+        mJSExceptionHandler,
         mRedBoxHandler,
         mLazyViewManagersEnabled,
         mDevBundleDownloadListener,

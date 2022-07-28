@@ -8,7 +8,6 @@
  * @format
  */
 
-import type VirtualizedList from './VirtualizedList.js';
 import * as React from 'react';
 import {useMemo, useContext} from 'react';
 
@@ -50,12 +49,12 @@ type Context = $ReadOnly<{
     zoomScale: number,
   },
   horizontal: ?boolean,
-  getOutermostParentListRef: () => VirtualizedList,
+  getOutermostParentListRef: () => React.ElementRef<typeof React.Component>,
   getNestedChildState: string => ?ChildListState,
   registerAsNestedChild: ({
     cellKey: string,
     key: string,
-    ref: VirtualizedList,
+    ref: React.ElementRef<typeof React.Component>,
     parentDebugInfo: ListDebugInfo,
   }) => ?ChildListState,
   unregisterAsNestedChild: ({

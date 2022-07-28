@@ -12,8 +12,8 @@ This lets us build React Native:
 # @lint-ignore-every BUCKRESTRICTEDSYNTAX
 
 load(
-    "//tools/build_defs:js_glob.bzl",
-    _js_glob = "js_glob",
+    "//tools/build_defs:js_library_glob.bzl",
+    _js_library_glob = "js_library_glob",
 )
 
 _DEBUG_PREPROCESSOR_FLAGS = []
@@ -35,6 +35,9 @@ def get_objc_arc_preprocessor_flags():
         "-fno-objc-arc-exceptions",
         "-Qunused-arguments",
     ]
+
+def get_hermes_shared_library_preprocessor_flags():
+    return []
 
 IS_OSS_BUILD = True
 
@@ -303,7 +306,7 @@ def _paths_join(path, *others):
 
     return result
 
-js_glob = _js_glob
+js_library_glob = _js_library_glob
 
 def subdir_glob(glob_specs, exclude = None, prefix = ""):
     """Returns a dict of sub-directory relative paths to full paths.

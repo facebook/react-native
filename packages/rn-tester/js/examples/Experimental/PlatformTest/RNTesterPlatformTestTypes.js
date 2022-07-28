@@ -28,7 +28,7 @@ export type PlatformTestAssertionResult =
   | PassingPlatformTestAssertionResult
   | FailingPlatformTestAssertionResult;
 
-export type PlatformTestResultStatus = 'PASS' | 'FAIL' | 'ERROR';
+export type PlatformTestResultStatus = 'PASS' | 'FAIL' | 'ERROR' | 'SKIPPED';
 
 export type PlatformTestResult = $ReadOnly<{|
   name: string,
@@ -46,8 +46,21 @@ export type PlatformTestContext = $ReadOnly<{
 
 export type PlatformTestCase = (context: PlatformTestContext) => void;
 
+export type AsyncPlatformTest = $ReadOnly<{|
+  done(): void,
+|}>;
+
+export type SyncTestOptions = $ReadOnly<{|
+  skip?: boolean,
+|}>;
+
 export type PlatformTestHarness = $ReadOnly<{|
-  test(testcase: PlatformTestCase, name: string): void,
+  test(
+    testcase: PlatformTestCase,
+    name: string,
+    options?: SyncTestOptions,
+  ): void,
+  useAsyncTest(description: string, timeout?: number): AsyncPlatformTest,
 |}>;
 
 export type PlatformTestComponentBaseProps = {

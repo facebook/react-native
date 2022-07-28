@@ -48,8 +48,11 @@ public class ReactTextViewManager
   protected @Nullable ReactTextViewManagerCallback mReactTextViewManagerCallback;
 
   public ReactTextViewManager() {
-    super();
+    this(null);
+  }
 
+  public ReactTextViewManager(@Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
+    mReactTextViewManagerCallback = reactTextViewManagerCallback;
     setupViewRecycling();
   }
 

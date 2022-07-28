@@ -9,19 +9,23 @@
 
 #include <react/renderer/core/RawPropsPrimitives.h>
 
+// We need to use clang pragmas inside of a macro below,
+// so we need to pull out the "if" statement here.
+#if __clang__
+#define CLANG_PRAGMA(s) _Pragma(s)
+#else
+#define CLANG_PRAGMA(s)
+#endif
+
 // Get hash at compile-time. sizeof(str) - 1 == strlen
-// Auto-formatting makes this more ugly than it has to be, but it works.
-// The pragma is to ignore warnings about variable shadowing of `len` and/or
-// `hash`, which are technically shadowing but it doesn't matter since they're
-// constexpr'd.
-#define CONSTEXPR_RAW_PROPS_KEY_HASH(s)                                           \
-  ({                                                                              \
-    _Pragma("clang diagnostic push") _Pragma(                                     \
-        "clang diagnostic ignored \"-Wshadow\"") constexpr RawPropsPropNameLength \
-        len = sizeof(s) - 1;                                                      \
-    constexpr RawPropsPropNameHash hash = folly::hash::fnv32_buf(s, len);         \
-    hash;                                                                         \
-    _Pragma("clang diagnostic pop")                                               \
+#define CONSTEXPR_RAW_PROPS_KEY_HASH(s)                   \
+  ({                                                      \
+    CLANG_PRAGMA("clang diagnostic push")                 \
+    CLANG_PRAGMA("clang diagnostic ignored \"-Wshadow\"") \
+    constexpr RawPropsPropNameHash propNameHash =         \
+        folly::hash::fnv32_buf(s, sizeof(s) - 1);         \
+    propNameHash;                                         \
+    CLANG_PRAGMA("clang diagnostic pop")                  \
   })
 
 #define RAW_PROPS_KEY_HASH(s) folly::hash::fnv32_buf(s, std::strlen(s))

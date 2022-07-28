@@ -173,6 +173,8 @@ export type ReturnKeyType =
   | 'route'
   | 'yahoo';
 
+export type SubmitBehavior = 'submit' | 'blurAndSubmit' | 'newline';
+
 export type AutoCapitalize = 'none' | 'sentences' | 'words' | 'characters';
 
 export type TextContentType =
@@ -517,15 +519,6 @@ export type Props = $ReadOnly<{|
   allowFontScaling?: ?boolean,
 
   /**
-   * If `true`, the text field will blur when submitted.
-   * The default value is true for single-line fields and false for
-   * multiline fields. Note that for multiline fields, setting `blurOnSubmit`
-   * to `true` means that pressing return will blur the field and trigger the
-   * `onSubmitEditing` event instead of inserting a newline into the field.
-   */
-  blurOnSubmit?: ?boolean,
-
-  /**
    * If `true`, caret is hidden. The default value is `false`.
    *
    * On Android devices manufactured by Xiaomi with Android Q,
@@ -790,6 +783,40 @@ export type Props = $ReadOnly<{|
   selectTextOnFocus?: ?boolean,
 
   /**
+   * If `true`, the text field will blur when submitted.
+   * The default value is true for single-line fields and false for
+   * multiline fields. Note that for multiline fields, setting `blurOnSubmit`
+   * to `true` means that pressing return will blur the field and trigger the
+   * `onSubmitEditing` event instead of inserting a newline into the field.
+   *
+   * @deprecated
+   * Note that `submitBehavior` now takes the place of `blurOnSubmit` and will
+   * override any behavior defined by `blurOnSubmit`.
+   * @see submitBehavior
+   */
+  blurOnSubmit?: ?boolean,
+
+  /**
+   * When the return key is pressed,
+   *
+   * For single line inputs:
+   *
+   * - `'newline`' defaults to `'blurAndSubmit'`
+   * - `undefined` defaults to `'blurAndSubmit'`
+   *
+   * For multiline inputs:
+   *
+   * - `'newline'` adds a newline
+   * - `undefined` defaults to `'newline'`
+   *
+   * For both single line and multiline inputs:
+   *
+   * - `'submit'` will only send a submit event and not blur the input
+   * - `'blurAndSubmit`' will both blur the input and send a submit event
+   */
+  submitBehavior?: ?SubmitBehavior,
+
+  /**
    * Note that not all Text styles are supported, an incomplete list of what is not supported includes:
    *
    * - `borderLeftWidth`
@@ -998,7 +1025,7 @@ function InternalTextInput(props: Props): React.Node {
   // that the update should be ignored and we should stick with the value
   // that we have in JS.
   useLayoutEffect(() => {
-    const nativeUpdate: {text?: string, selection?: Selection} = {...null};
+    const nativeUpdate: {text?: string, selection?: Selection} = {};
 
     if (lastNativeText !== props.value && typeof props.value === 'string') {
       nativeUpdate.text = props.value;
@@ -1199,9 +1226,31 @@ function InternalTextInput(props: Props): React.Node {
 
   let textInput = null;
 
-  // The default value for `blurOnSubmit` is true for single-line fields and
-  // false for multi-line fields.
-  const blurOnSubmit = props.blurOnSubmit ?? !props.multiline;
+  const multiline = props.multiline ?? false;
+
+  let submitBehavior: SubmitBehavior;
+  if (props.submitBehavior != null) {
+    // `submitBehavior` is set explicitly
+    if (!multiline && props.submitBehavior === 'newline') {
+      // For single line text inputs, `'newline'` is not a valid option
+      submitBehavior = 'blurAndSubmit';
+    } else {
+      submitBehavior = props.submitBehavior;
+    }
+  } else if (multiline) {
+    if (props.blurOnSubmit === true) {
+      submitBehavior = 'blurAndSubmit';
+    } else {
+      submitBehavior = 'newline';
+    }
+  } else {
+    // Single line
+    if (props.blurOnSubmit !== false) {
+      submitBehavior = 'blurAndSubmit';
+    } else {
+      submitBehavior = 'submit';
+    }
+  }
 
   const accessible = props.accessible !== false;
 
@@ -1268,6 +1317,7 @@ function InternalTextInput(props: Props): React.Node {
         accessible={accessible}
         accessibilityErrorMessage={accessibilityErrorMessage}
         blurOnSubmit={blurOnSubmit}
+        submitBehavior={submitBehavior}
         caretHidden={caretHidden}
         dataDetectorTypes={props.dataDetectorTypes}
         focusable={focusable}
@@ -1316,7 +1366,7 @@ function InternalTextInput(props: Props): React.Node {
         accessible={accessible}
         accessibilityErrorMessage={accessibilityErrorMessage}
         autoCapitalize={autoCapitalize}
-        blurOnSubmit={blurOnSubmit}
+        submitBehavior={submitBehavior}
         caretHidden={caretHidden}
         children={children}
         disableFullscreenUI={props.disableFullscreenUI}

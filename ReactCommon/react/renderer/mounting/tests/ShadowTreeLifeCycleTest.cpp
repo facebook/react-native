@@ -77,8 +77,8 @@ static void testShadowNodeTreeLifeCycle(
     auto currentRootNode = std::static_pointer_cast<RootShadowNode const>(
         emptyRootNode->ShadowNode::clone(ShadowNodeFragment{
             ShadowNodeFragment::propsPlaceholder(),
-            std::make_shared<SharedShadowNodeList>(
-                SharedShadowNodeList{singleRootChildNode})}));
+            std::make_shared<ShadowNode::ListOfShared>(
+                ShadowNode::ListOfShared{singleRootChildNode})}));
 
     // Building an initial view hierarchy.
     auto viewTree = buildStubViewTreeWithoutUsingDifferentiator(*emptyRootNode);
@@ -227,8 +227,8 @@ static void testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
     auto currentRootNode = std::static_pointer_cast<RootShadowNode const>(
         emptyRootNode->ShadowNode::clone(ShadowNodeFragment{
             ShadowNodeFragment::propsPlaceholder(),
-            std::make_shared<SharedShadowNodeList>(
-                SharedShadowNodeList{singleRootChildNode})}));
+            std::make_shared<ShadowNode::ListOfShared>(
+                ShadowNode::ListOfShared{singleRootChildNode})}));
 
     // Building an initial view hierarchy.
     auto viewTree = buildStubViewTreeWithoutUsingDifferentiator(*emptyRootNode);

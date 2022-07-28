@@ -28,6 +28,13 @@ CppMountItem CppMountItem::RemoveMountItem(
     int index) {
   return {CppMountItem::Type::Remove, parentView, shadowView, {}, index};
 }
+CppMountItem CppMountItem::RemoveDeleteTreeMountItem(
+    ShadowView const &parentView,
+    ShadowView const &shadowView,
+    int index) {
+  return {
+      CppMountItem::Type::RemoveDeleteTree, parentView, shadowView, {}, index};
+}
 CppMountItem CppMountItem::UpdatePropsMountItem(
     ShadowView const &oldShadowView,
     ShadowView const &newShadowView) {
