@@ -511,7 +511,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   };
 
   _getItemCount = (data: ?Array<ItemT>): number => {
-    if (data) {
+    if (Array.isArray(data)) {
       const numColumns = numColumnsOrDefault(this.props.numColumns);
       return numColumns > 1 ? Math.ceil(data.length / numColumns) : data.length;
     } else {
