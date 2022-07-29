@@ -17,6 +17,7 @@
 #include <queue>
 #include <sstream>
 #include <thread>
+#include <codecvt>
 
 namespace facebook {
 namespace jsc {
@@ -693,11 +694,130 @@ jsi::String JSCRuntime::createStringFromAscii(const char *str, size_t length) {
       reinterpret_cast<const uint8_t *>(str), length);
 }
 
+static bool isLittleEndian()
+{
+    short int number = 0x1;
+    char *numPtr = (char*)&number;
+    return (numPtr[0] == 1);
+}
+
+// Minor adaptation from https://stackoverflow.com/a/52703954/4469172
+static std::u16string utf8_to_utf16(const char *utf8, const char *utf8end)
+{
+  if(isLittleEndian()) {
+    std::wstring_convert<std::codecvt_utf8_utf16<char16_t, 0x10ffff,
+        std::codecvt_mode::little_endian>, char16_t> cnv;
+    std::u16string s = cnv.from_bytes(utf8, utf8end);
+    if(cnv.converted() < utf8end - utf8)
+        throw std::runtime_error("incomplete conversion");
+    return s;
+  }
+  else {
+    std::wstring_convert<std::codecvt_utf8_utf16<char16_t, 0x10ffff>, char16_t> cnv;
+    std::u16string s = cnv.from_bytes(utf8, utf8end);
+    if(cnv.converted() < utf8end - utf8)
+        throw std::runtime_error("incomplete conversion");
+    return s;
+  }
+}
+
+// Minor adaptation from https://stackoverflow.com/a/7154226/4469172
+std::wstring utf8_to_utf16_wstring(const char *utf8, const char *utf8end)
+{
+  std::vector<unsigned long> unicode;
+  size_t i = 0;
+  size_t totalSize = utf8end - utf8;
+  while (i < totalSize)
+  {
+    unsigned long uni;
+    size_t todo;
+//    bool error = false;
+    unsigned char ch = utf8[i++];
+    if (ch <= 0x7F)
+    {
+      uni = ch;
+      todo = 0;
+    }
+    else if (ch <= 0xBF)
+    {
+      throw std::logic_error("not a UTF-8 string");
+    }
+    else if (ch <= 0xDF)
+    {
+      uni = ch&0x1F;
+      todo = 1;
+    }
+    else if (ch <= 0xEF)
+    {
+      uni = ch&0x0F;
+      todo = 2;
+    }
+    else if (ch <= 0xF7)
+    {
+      uni = ch&0x07;
+      todo = 3;
+    }
+    else
+    {
+      throw std::logic_error("not a UTF-8 string");
+    }
+    for (size_t j = 0; j < todo; ++j)
+    {
+      if (i == totalSize)
+        throw std::logic_error("not a UTF-8 string");
+      unsigned char ch = utf8[i++];
+      if (ch < 0x80 || ch > 0xBF)
+        throw std::logic_error("not a UTF-8 string");
+      uni <<= 6;
+      uni += ch & 0x3F;
+    }
+    if (uni >= 0xD800 && uni <= 0xDFFF)
+      throw std::logic_error("not a UTF-8 string");
+    if (uni > 0x10FFFF)
+      throw std::logic_error("not a UTF-8 string");
+    unicode.push_back(uni);
+  }
+  std::wstring utf16;
+  for (size_t i = 0; i < unicode.size(); ++i)
+  {
+    unsigned long uni = unicode[i];
+    if (uni <= 0xFFFF)
+    {
+      utf16 += (wchar_t)uni;
+    }
+    else
+    {
+      uni -= 0x10000;
+      utf16 += (wchar_t)((uni >> 10) + 0xD800);
+      utf16 += (wchar_t)((uni & 0x3FF) + 0xDC00);
+    }
+  }
+  return utf16;
+}
+
+
 jsi::String JSCRuntime::createStringFromUtf8(
     const uint8_t *str,
     size_t length) {
-  std::string tmp(reinterpret_cast<const char *>(str), length);
-  JSStringRef stringRef = JSStringCreateWithUTF8CString(tmp.c_str());
+  // JSChar is just a UTF-16 character.
+  // Either defined as `unsigned short` or `wchar_t`, depending on platforms
+  
+  // Convert to UTF-16 here so we can construct with the appropriate provided length.
+  // According to JavascriptCore source, JSStringCreateWithUTF8CString internally calls
+  // strlen() and then converts to UTF-16 using `convertUTF8ToUTF16()` from
+  // `<wtf/unicode/UTF8Conversion.h>`.
+  // The implementation isn't that complicated and could be substituted with a simple
+  // UTF converter.
+  JSStringRef stringRef;
+  if(sizeof(JSChar) == sizeof(char16_t)) {
+    std::u16string res = utf8_to_utf16((const char *)str, (const char *)str + length);
+    stringRef = JSStringCreateWithCharacters((JSChar *)res.data(), res.length());
+  }
+  else {
+    // JSChar is large; maybe Windows? uses large wchar_t and is likely 32 bit wide
+    std::wstring res = utf8_to_utf16_wstring((const char *)str, (const char *)str + length);
+    stringRef = JSStringCreateWithCharacters((JSChar *)res.data(), res.length());
+  }
   auto result = createString(stringRef);
   JSStringRelease(stringRef);
   return result;
