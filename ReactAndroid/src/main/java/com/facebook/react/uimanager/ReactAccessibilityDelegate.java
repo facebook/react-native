@@ -18,6 +18,7 @@ import android.text.Spannable;
 import android.text.Spanned;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ClickableSpan;
+import android.util.Log;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.TextView;
@@ -30,19 +31,11 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.RangeInfoCom
 import androidx.core.view.accessibility.AccessibilityNodeProviderCompat;
 import androidx.customview.widget.ExploreByTouchHelper;
 import com.facebook.react.R;
-import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Dynamic;
-import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReactNoCrashSoftException;
-import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
-import com.facebook.react.bridge.UIManager;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.uimanager.events.Event;
-import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -348,6 +341,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
 
   @Override
   public boolean performAccessibilityAction(View host, int action, Bundle args) {
+    /*
     if (mAccessibilityActionsMap.containsKey(action)) {
       final WritableMap event = Arguments.createMap();
       event.putString("actionName", mAccessibilityActionsMap.get(action));
@@ -392,7 +386,8 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
       }
       return true;
     }
-    return super.performAccessibilityAction(host, action, args);
+    */
+    return true;
   }
 
   private static void setState(
@@ -503,41 +498,15 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
 
   @Override
   protected int getVirtualViewAt(float x, float y) {
-    if (mAccessibilityLinks == null
-        || mAccessibilityLinks.size() == 0
-        || !(mView instanceof TextView)) {
-      return INVALID_ID;
-    }
-
+    Log.w("TESTING::ReactAccessibilityDelegate", "getVirtualViewAt");
+    Log.w("TESTING::ReactAccessibilityDelegate", "x: " + (x));
+    Log.w("TESTING::ReactAccessibilityDelegate", "y: " + (y));
     TextView textView = (TextView) mView;
-    if (!(textView.getText() instanceof Spanned)) {
-      return INVALID_ID;
+    if (mAccessibilityLinks != null || mAccessibilityLinks.size() > 0) {
+      Integer firstLinkId = mAccessibilityLinks.mLinks.get(mAccessibilityLinks.size() - 1).id;
+      return firstLinkId;
     }
-
-    Layout layout = textView.getLayout();
-    if (layout == null) {
-      return INVALID_ID;
-    }
-
-    x -= textView.getTotalPaddingLeft();
-    y -= textView.getTotalPaddingTop();
-    x += textView.getScrollX();
-    y += textView.getScrollY();
-
-    int line = layout.getLineForVertical((int) y);
-    int charOffset = layout.getOffsetForHorizontal(line, x);
-
-    ClickableSpan clickableSpan = getFirstSpan(charOffset, charOffset, ClickableSpan.class);
-    if (clickableSpan == null) {
-      return INVALID_ID;
-    }
-
-    Spanned spanned = (Spanned) textView.getText();
-    int start = spanned.getSpanStart(clickableSpan);
-    int end = spanned.getSpanEnd(clickableSpan);
-
-    final AccessibilityLinks.AccessibleLink link = mAccessibilityLinks.getLinkBySpanPos(start, end);
-    return link != null ? link.id : INVALID_ID;
+    return INVALID_ID;
   }
 
   @Override

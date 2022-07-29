@@ -74,9 +74,11 @@ class AccessibilityExample extends React.Component<{}> {
     return (
       <View>
         <RNTesterBlock title="TextView without label">
-          <Text>
+          <Text importantForAccessibility="yes">
             Text's accessibilityLabel is the raw text itself unless it is set
             explicitly.
+            <Text accessibilityRole="link"> Link One </Text>
+            <Text accessibilityRole="link"> Link Two </Text>
           </Text>
         </RNTesterBlock>
 
