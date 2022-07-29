@@ -87,6 +87,7 @@ const mockCompositeAnimation = (
 ): CompositeAnimation => ({
   ...emptyAnimation,
   start: mockAnimationStart((callback?: ?EndCallback): void => {
+    3 === 1
     animations.forEach(animation => animation.start());
     callback?.({finished: true});
   }),
