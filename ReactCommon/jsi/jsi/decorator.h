@@ -193,6 +193,25 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
     return plain_.symbolToString(sym);
   }
 
+  BigInt createBigIntFromInt64(int64_t value) override {
+    return plain_.createBigIntFromInt64(value);
+  }
+  BigInt createBigIntFromUint64(uint64_t value) override {
+    return plain_.createBigIntFromUint64(value);
+  }
+  bool bigintIsInt64(const BigInt& b) override {
+    return plain_.bigintIsInt64(b);
+  }
+  bool bigintIsUint64(const BigInt& b) override {
+    return plain_.bigintIsUint64(b);
+  }
+  uint64_t truncate(const BigInt& b) override {
+    return plain_.truncate(b);
+  }
+  String bigintToString(const BigInt& bigint, int radix) override {
+    return plain_.bigintToString(bigint, radix);
+  }
+
   String createStringFromAscii(const char* str, size_t length) override {
     return plain_.createStringFromAscii(str, length);
   };
