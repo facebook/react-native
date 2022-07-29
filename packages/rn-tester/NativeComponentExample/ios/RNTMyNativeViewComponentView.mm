@@ -7,10 +7,10 @@
 
 #import "RNTMyNativeViewComponentView.h"
 
-#import <react/renderer/components/MyNativeViewSpec/ComponentDescriptors.h>
-#import <react/renderer/components/MyNativeViewSpec/EventEmitters.h>
-#import <react/renderer/components/MyNativeViewSpec/Props.h>
-#import <react/renderer/components/MyNativeViewSpec/RCTComponentViewHelpers.h>
+#import <react/renderer/components/AppSpecs/ComponentDescriptors.h>
+#import <react/renderer/components/AppSpecs/EventEmitters.h>
+#import <react/renderer/components/AppSpecs/Props.h>
+#import <react/renderer/components/AppSpecs/RCTComponentViewHelpers.h>
 
 #import "RCTFabricComponentsPlugins.h"
 

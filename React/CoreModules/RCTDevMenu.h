@@ -40,6 +40,11 @@ RCT_EXTERN NSString *const RCTShowDevMenuNotification;
 @property (nonatomic, assign) BOOL hotLoadingEnabled DEPRECATED_ATTRIBUTE;
 
 /**
+ * Whether the hotkeys that toggles the developer menu is enabled.
+ */
+@property (nonatomic, assign) BOOL hotkeysEnabled;
+
+/**
  * Presented items in development menu
  */
 @property (nonatomic, copy, readonly) NSArray<RCTDevMenuItem *> *presentedItems;

@@ -47,17 +47,6 @@ class Linking extends NativeEventEmitter<LinkingEventDefinitions> {
   }
 
   /**
-   * @deprecated Use `remove` on the EventSubscription from `addEventListener`.
-   */
-  removeEventListener<K: $Keys<LinkingEventDefinitions>>(
-    eventType: K,
-    listener: (...$ElementType<LinkingEventDefinitions, K>) => mixed,
-  ): void {
-    // NOTE: This will report a deprecation notice via `console.error`.
-    this.removeListener(eventType, listener);
-  }
-
-  /**
    * Try to open the given `url` with any of the installed apps.
    *
    * See https://reactnative.dev/docs/linking#openurl

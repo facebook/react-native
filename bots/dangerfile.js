@@ -29,7 +29,7 @@ if (!danger.github.pr.body || danger.github.pr.body.length < 50) {
     'Can you add a Summary? ' +
     'To do so, add a "## Summary" section to your PR description. ' +
     'This is a good place to explain the motivation for making this change.';
-  message(`${title} - <i>${idea}</i>`);
+  warn(`${title} - <i>${idea}</i>`);
 }
 
 // Warns if there are changes to package.json, and tags the team.
@@ -53,7 +53,7 @@ if (!includesTestPlan && !isFromPhabricator) {
     'Can you add a Test Plan? ' +
     'To do so, add a "## Test Plan" section to your PR description. ' +
     'A Test Plan lets us know how these changes were tested.';
-  message(`${title} - <i>${idea}</i>`);
+  warn(`${title} - <i>${idea}</i>`);
 }
 
 // Regex looks for given categories, types, a file/framework/component, and a message - broken into 4 capture groups
@@ -80,11 +80,11 @@ if (!includesChangelog) {
     'Can you add a Changelog? ' +
     'To do so, add a "## Changelog" section to your PR description. ' +
     changelogInstructions;
-  message(`${title} - <i>${idea}</i>`);
+  fail(`${title} - <i>${idea}</i>`);
 } else if (!correctlyFormattedChangelog && !containsInternalChangelog) {
   const title = ':clipboard: Verify Changelog Format';
   const idea = changelogInstructions;
-  message(`${title} - <i>${idea}</i>`);
+  fail(`${title} - <i>${idea}</i>`);
 }
 
 // Warns if the PR is opened against stable, as commits need to be cherry picked and tagged by a release maintainer.

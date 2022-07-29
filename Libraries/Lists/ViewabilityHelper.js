@@ -259,9 +259,13 @@ class ViewabilityHelper {
   }
 
   _onUpdateSync(
-    viewableIndicesToCheck,
-    onViewableItemsChanged,
-    createViewToken,
+    viewableIndicesToCheck: Array<number>,
+    onViewableItemsChanged: ({
+      changed: Array<ViewToken>,
+      viewableItems: Array<ViewToken>,
+      ...
+    }) => void,
+    createViewToken: (index: number, isViewable: boolean) => ViewToken,
   ) {
     // Filter out indices that have gone out of view since this call was scheduled.
     viewableIndicesToCheck = viewableIndicesToCheck.filter(ii =>

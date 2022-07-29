@@ -11,21 +11,14 @@
 #include <string>
 #include <unordered_set>
 
-#include <ReactCommon/LongLivedObject.h>
+#include <ReactCommon/CallInvoker.h>
 #include <ReactCommon/TurboModule.h>
-#include <ReactCommon/TurboModuleUtils.h>
-#include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
+#include <react/bridging/CallbackWrapper.h>
 #include <react/jni/JCallback.h>
 
 namespace facebook {
 namespace react {
-
-struct JNIArgs {
-  JNIArgs(size_t count) : args_(count) {}
-  std::vector<jvalue> args_;
-  std::vector<jobject> globalRefs_;
-};
 
 struct JTurboModule : jni::JavaClass<JTurboModule> {
   static auto constexpr kJavaDescriptor =
@@ -35,7 +28,7 @@ struct JTurboModule : jni::JavaClass<JTurboModule> {
 using JSCallbackRetainer = std::function<std::weak_ptr<CallbackWrapper>(
     jsi::Function &&callback,
     jsi::Runtime &runtime,
-    std::shared_ptr<CallInvoker> jsInvoker)>;
+    const std::shared_ptr<CallInvoker> &jsInvoker)>;
 
 class JSI_EXPORT JavaTurboModule : public TurboModule {
  public:
@@ -57,23 +50,13 @@ class JSI_EXPORT JavaTurboModule : public TurboModule {
       const std::string &methodName,
       const std::string &methodSignature,
       const jsi::Value *args,
-      size_t argCount);
+      size_t argCount,
+      jmethodID &cachedMethodID);
 
  private:
   jni::global_ref<JTurboModule> instance_;
   std::shared_ptr<CallInvoker> nativeInvoker_;
   JSCallbackRetainer retainJSCallback_;
-
-  JNIArgs convertJSIArgsToJNIArgs(
-      JNIEnv *env,
-      jsi::Runtime &rt,
-      std::string methodName,
-      std::vector<std::string> methodArgTypes,
-      const jsi::Value *args,
-      size_t count,
-      std::shared_ptr<CallInvoker> jsInvoker,
-      TurboModuleMethodValueKind valueKind,
-      JSCallbackRetainer retainJSCallbacks);
 };
 
 } // namespace react

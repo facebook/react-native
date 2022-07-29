@@ -143,9 +143,7 @@ public abstract class LazyReactPackage implements ReactPackage {
     List<NativeModule> modules = new ArrayList<>();
     for (ModuleSpec holder : getNativeModules(reactContext)) {
       NativeModule nativeModule;
-      SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "createNativeModule")
-          .arg("module", holder.getType())
-          .flush();
+      SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "createNativeModule").flush();
       ReactMarker.logMarker(ReactMarkerConstants.CREATE_MODULE_START, holder.getName());
       try {
         nativeModule = holder.getProvider().get();

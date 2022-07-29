@@ -8,6 +8,7 @@
 #import "RCTViewManager.h"
 
 #import "RCTAssert.h"
+#import "RCTBorderCurve.h"
 #import "RCTBorderStyle.h"
 #import "RCTBridge.h"
 #import "RCTConvert+Transform.h"
@@ -264,6 +265,19 @@ RCT_CUSTOM_VIEW_PROPERTY(removeClippedSubviews, BOOL, RCTView)
     view.removeClippedSubviews = json ? [RCTConvert BOOL:json] : defaultView.removeClippedSubviews;
   }
 }
+RCT_CUSTOM_VIEW_PROPERTY(borderCurve, RCTBorderCurve, RCTView)
+{
+  if (@available(iOS 13.0, *)) {
+    switch ([RCTConvert RCTBorderCurve:json]) {
+      case RCTBorderCurveContinuous:
+        view.layer.cornerCurve = kCACornerCurveContinuous;
+        break;
+      case RCTBorderCurveCircular:
+        view.layer.cornerCurve = kCACornerCurveCircular;
+        break;
+    }
+  }
+}
 RCT_CUSTOM_VIEW_PROPERTY(borderRadius, CGFloat, RCTView)
 {
   if ([view respondsToSelector:@selector(setBorderRadius:)]) {
@@ -444,5 +458,15 @@ RCT_CUSTOM_VIEW_PROPERTY(onTouchStart, BOOL, RCTView) {}
 RCT_CUSTOM_VIEW_PROPERTY(onTouchMove, BOOL, RCTView) {}
 RCT_CUSTOM_VIEW_PROPERTY(onTouchEnd, BOOL, RCTView) {}
 RCT_CUSTOM_VIEW_PROPERTY(onTouchCancel, BOOL, RCTView) {}
+
+// Experimental/WIP Pointer Events (not yet ready for use)
+RCT_EXPORT_VIEW_PROPERTY(onPointerCancel, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onPointerDown, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onPointerMove, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onPointerUp, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onPointerEnter, RCTCapturingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onPointerLeave, RCTCapturingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onPointerOver, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onPointerOut, RCTBubblingEventBlock)
 
 @end

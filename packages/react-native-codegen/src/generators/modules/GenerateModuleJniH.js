@@ -54,7 +54,8 @@ namespace react {
 
 ${modules}
 
-std::shared_ptr<TurboModule> ${libraryName}_ModuleProvider(const std::string moduleName, const JavaTurboModule::InitParams &params);
+JSI_EXPORT
+std::shared_ptr<TurboModule> ${libraryName}_ModuleProvider(const std::string &moduleName, const JavaTurboModule::InitParams &params);
 
 } // namespace react
 } // namespace facebook
@@ -77,6 +78,7 @@ LOCAL_MODULE := react_codegen_${libraryName}
 LOCAL_C_INCLUDES := $(LOCAL_PATH)
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp) $(wildcard $(LOCAL_PATH)/react/renderer/components/${libraryName}/*.cpp)
+LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) $(LOCAL_PATH)/react/renderer/components/${libraryName}
 
@@ -130,6 +132,7 @@ target_link_libraries(
   fbjni
   folly_runtime
   glog
+  jsi
   ${libraryName !== 'rncore' ? 'react_codegen_rncore' : ''}
   react_debug
   react_nativemodule_core

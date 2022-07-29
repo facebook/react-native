@@ -10,6 +10,11 @@
 
 'use strict';
 
+import type {
+  PressEvent,
+  ScrollEvent,
+} from 'react-native/Libraries/Types/CoreEventTypes';
+
 const BatchedBridge = require('react-native/Libraries/BatchedBridge/BatchedBridge');
 const React = require('react');
 
@@ -25,8 +30,6 @@ const {
 const {ScrollListener} = NativeModules;
 
 const NUM_ITEMS = 100;
-
-import type {PressEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
 // Shared by integration tests for ScrollView and HorizontalScrollView
 
@@ -61,28 +64,28 @@ const getInitialState = function () {
   };
 };
 
-const onScroll = function (e) {
+const onScroll = function (e: ScrollEvent) {
   ScrollListener.onScroll(
     e.nativeEvent.contentOffset.x,
     e.nativeEvent.contentOffset.y,
   );
 };
 
-const onScrollBeginDrag = function (e) {
+const onScrollBeginDrag = function (e: ScrollEvent) {
   ScrollListener.onScrollBeginDrag(
     e.nativeEvent.contentOffset.x,
     e.nativeEvent.contentOffset.y,
   );
 };
 
-const onScrollEndDrag = function (e) {
+const onScrollEndDrag = function (e: ScrollEvent) {
   ScrollListener.onScrollEndDrag(
     e.nativeEvent.contentOffset.x,
     e.nativeEvent.contentOffset.y,
   );
 };
 
-const onItemPress = function (itemNumber) {
+const onItemPress = function (itemNumber: number) {
   ScrollListener.onItemPress(itemNumber);
 };
 

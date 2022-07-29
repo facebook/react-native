@@ -195,7 +195,7 @@ class ArrayProperty extends Property {
 
   getFullCppType(): string {
     let elemType: string = 'folly::dynamic';
-    let recursive = false;
+    let recursive: ?(false | boolean) = false;
 
     if (this.items) {
       if (this.items.type) {

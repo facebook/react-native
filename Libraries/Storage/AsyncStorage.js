@@ -198,6 +198,8 @@ const AsyncStorage = {
    *
    * See https://reactnative.dev/docs/asyncstorage#flushgetrequests
    * */
+  /* $FlowFixMe[missing-this-annot] The 'this' type annotation(s) required by
+   * Flow's LTI update could not be added via codemod */
   flushGetRequests: function (): void {
     const getRequests = this._getRequests;
     const getKeys = this._getKeys;
@@ -213,7 +215,7 @@ const AsyncStorage = {
       //
       // Is there a way to avoid using the map but fix the bug in this breaking test?
       // https://github.com/facebook/react-native/commit/8dd8ad76579d7feef34c014d387bf02065692264
-      const map = {};
+      const map: {[string]: string} = {};
       result &&
         result.forEach(([key, value]) => {
           map[key] = value;
@@ -237,6 +239,8 @@ const AsyncStorage = {
    *
    * See https://reactnative.dev/docs/asyncstorage#multiget
    */
+  /* $FlowFixMe[missing-this-annot] The 'this' type annotation(s) required by
+   * Flow's LTI update could not be added via codemod */
   multiGet: function (
     keys: Array<string>,
     callback?: ?(errors: ?Array<Error>, result: ?Array<Array<string>>) => void,
@@ -366,6 +370,8 @@ function convertErrors(
 
 declare function convertError(void | null): null;
 declare function convertError({message: string, key?: string}): Error;
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
 function convertError(error) {
   if (!error) {
     return null;

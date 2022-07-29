@@ -10,11 +10,11 @@
 
 'use strict';
 
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
+
+const NativeAnimatedHelper = require('../NativeAnimatedHelper');
 const AnimatedNode = require('./AnimatedNode');
 const AnimatedWithChildren = require('./AnimatedWithChildren');
-const NativeAnimatedHelper = require('../NativeAnimatedHelper');
-
-import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
 class AnimatedTransform extends AnimatedWithChildren {
   _transforms: $ReadOnlyArray<Object>;
@@ -38,7 +38,7 @@ class AnimatedTransform extends AnimatedWithChildren {
 
   __getValue(): $ReadOnlyArray<Object> {
     return this._transforms.map(transform => {
-      const result = {};
+      const result: {[string]: any} = {};
       for (const key in transform) {
         const value = transform[key];
         if (value instanceof AnimatedNode) {
@@ -53,7 +53,7 @@ class AnimatedTransform extends AnimatedWithChildren {
 
   __getAnimatedValue(): $ReadOnlyArray<Object> {
     return this._transforms.map(transform => {
-      const result = {};
+      const result: {[string]: any} = {};
       for (const key in transform) {
         const value = transform[key];
         if (value instanceof AnimatedNode) {

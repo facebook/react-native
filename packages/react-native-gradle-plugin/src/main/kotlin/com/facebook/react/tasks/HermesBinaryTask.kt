@@ -7,6 +7,7 @@
 
 package com.facebook.react.tasks
 
+import com.facebook.react.utils.detectOSAwareHermesCommand
 import com.facebook.react.utils.moveTo
 import com.facebook.react.utils.windowsAwareCommandLine
 import java.io.File
@@ -19,7 +20,7 @@ import org.gradle.api.tasks.TaskAction
 
 open class HermesBinaryTask : DefaultTask() {
 
-  @get:Internal internal lateinit var reactRoot: File
+  @get:Internal internal lateinit var root: File
 
   @get:Input internal lateinit var hermesCommand: String
   @get:Input internal var hermesFlags: List<String> = emptyList()
@@ -33,8 +34,9 @@ open class HermesBinaryTask : DefaultTask() {
 
   @TaskAction
   fun run() {
+    val detectedHermesCommand = detectOSAwareHermesCommand(root, hermesCommand)
     val bytecodeTempFile = File("$jsBundleFile.hbc")
-    emitHermesBinary(outputFile = bytecodeTempFile)
+    emitHermesBinary(hermesCommand = detectedHermesCommand, outputFile = bytecodeTempFile)
     bytecodeTempFile.moveTo(jsBundleFile)
 
     if (hermesFlags.contains("-output-source-map")) {
@@ -44,7 +46,7 @@ open class HermesBinaryTask : DefaultTask() {
     }
   }
 
-  private fun emitHermesBinary(outputFile: File) {
+  private fun emitHermesBinary(hermesCommand: String, outputFile: File) {
     project.exec {
       @Suppress("SpreadOperator")
       it.commandLine(
@@ -60,7 +62,7 @@ open class HermesBinaryTask : DefaultTask() {
 
   private fun composeSourceMaps() {
     project.exec {
-      it.workingDir(reactRoot)
+      it.workingDir(root)
 
       @Suppress("SpreadOperator")
       it.commandLine(

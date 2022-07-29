@@ -78,7 +78,7 @@ rn_xplat_cxx_library(
     ],
     visibility = ["PUBLIC"],
     deps = [
-        "//xplat/folly:headers_only",
+        "//xplat/folly:headers_only_do_not_use",
         "//xplat/folly:molly",
         YOGA_CXX_TARGET,
         react_native_xplat_target("react/debug:debug"),

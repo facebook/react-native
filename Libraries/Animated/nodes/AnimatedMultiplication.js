@@ -38,10 +38,11 @@ class AnimatedMultiplication extends AnimatedWithChildren {
     return this._a.__getValue() * this._b.__getValue();
   }
 
-  interpolate(config: InterpolationConfigType): AnimatedInterpolation {
+  interpolate<OutputT: number | string>(
+    config: InterpolationConfigType<OutputT>,
+  ): AnimatedInterpolation<OutputT> {
     return new AnimatedInterpolation(this, config);
   }
-
   __attach(): void {
     this._a.__addChild(this);
     this._b.__addChild(this);

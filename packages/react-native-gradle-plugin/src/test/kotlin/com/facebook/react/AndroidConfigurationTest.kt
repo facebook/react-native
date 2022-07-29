@@ -24,10 +24,11 @@ class AndroidConfigurationTest {
 
     project.configureDevPorts(androidExtension)
 
-    assertEquals("8081", debug?.resValues?.get("react_native_dev_server_port")?.value)
-    assertEquals("8081", debug?.resValues?.get("react_native_inspector_proxy_port")?.value)
-    assertEquals("8081", release?.resValues?.get("react_native_dev_server_port")?.value)
-    assertEquals("8081", release?.resValues?.get("react_native_inspector_proxy_port")?.value)
+    assertEquals("8081", debug?.resValues?.get("integer/react_native_dev_server_port")?.value)
+    assertEquals("8081", debug?.resValues?.get("integer/react_native_inspector_proxy_port")?.value)
+    assertEquals("8081", release?.resValues?.get("integer/react_native_dev_server_port")?.value)
+    assertEquals(
+        "8081", release?.resValues?.get("integer/react_native_inspector_proxy_port")?.value)
   }
 
   @Test
@@ -42,10 +43,11 @@ class AndroidConfigurationTest {
 
     project.configureDevPorts(androidExtension)
 
-    assertEquals("42424", debug?.resValues?.get("react_native_dev_server_port")?.value)
-    assertEquals("42424", debug?.resValues?.get("react_native_inspector_proxy_port")?.value)
-    assertEquals("42424", release?.resValues?.get("react_native_dev_server_port")?.value)
-    assertEquals("42424", release?.resValues?.get("react_native_inspector_proxy_port")?.value)
+    assertEquals("42424", debug?.resValues?.get("integer/react_native_dev_server_port")?.value)
+    assertEquals("42424", debug?.resValues?.get("integer/react_native_inspector_proxy_port")?.value)
+    assertEquals("42424", release?.resValues?.get("integer/react_native_dev_server_port")?.value)
+    assertEquals(
+        "42424", release?.resValues?.get("integer/react_native_inspector_proxy_port")?.value)
   }
 
   @Test
@@ -60,9 +62,10 @@ class AndroidConfigurationTest {
 
     project.configureDevPorts(androidExtension)
 
-    assertEquals("8081", debug?.resValues?.get("react_native_dev_server_port")?.value)
-    assertEquals("42424", debug?.resValues?.get("react_native_inspector_proxy_port")?.value)
-    assertEquals("8081", release?.resValues?.get("react_native_dev_server_port")?.value)
-    assertEquals("42424", release?.resValues?.get("react_native_inspector_proxy_port")?.value)
+    assertEquals("8081", debug?.resValues?.get("integer/react_native_dev_server_port")?.value)
+    assertEquals("42424", debug?.resValues?.get("integer/react_native_inspector_proxy_port")?.value)
+    assertEquals("8081", release?.resValues?.get("integer/react_native_dev_server_port")?.value)
+    assertEquals(
+        "42424", release?.resValues?.get("integer/react_native_inspector_proxy_port")?.value)
   }
 }

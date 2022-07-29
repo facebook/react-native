@@ -3,11 +3,13 @@ load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "FBJNI_TARGET", "react_nat
 rn_xplat_cxx_library(
     name = "jni",
     srcs = [
+        "ReactCommon/CompositeTurboModuleManagerDelegate.cpp",
         "ReactCommon/OnLoad.cpp",
         "ReactCommon/TurboModuleManager.cpp",
     ],
     header_namespace = "",
     exported_headers = {
+        "ReactCommon/CompositeTurboModuleManagerDelegate.h": "ReactCommon/CompositeTurboModuleManagerDelegate.h",
         "ReactCommon/TurboModuleManager.h": "ReactCommon/TurboModuleManager.h",
         "ReactCommon/TurboModuleManagerDelegate.h": "ReactCommon/TurboModuleManagerDelegate.h",
     },

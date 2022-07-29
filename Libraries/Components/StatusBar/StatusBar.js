@@ -112,14 +112,17 @@ function mergePropsStack(
   propsStack: Array<Object>,
   defaultValues: Object,
 ): Object {
-  return propsStack.reduce((prev, cur) => {
-    for (const prop in cur) {
-      if (cur[prop] != null) {
-        prev[prop] = cur[prop];
+  return propsStack.reduce(
+    (prev, cur) => {
+      for (const prop in cur) {
+        if (cur[prop] != null) {
+          prev[prop] = cur[prop];
+        }
       }
-    }
-    return prev;
-  }, Object.assign({}, defaultValues));
+      return prev;
+    },
+    {...defaultValues},
+  );
 }
 
 /**

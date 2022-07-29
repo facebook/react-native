@@ -41,6 +41,13 @@ TEST(TransformTest, scalingRect) {
   EXPECT_EQ(transformedRect.size.height, 200);
 }
 
+TEST(TransformTest, invertingSize) {
+  auto size = facebook::react::Size{300, 400};
+  auto transformedSize = size * Transform::VerticalInversion();
+  EXPECT_EQ(transformedSize.width, 300);
+  EXPECT_EQ(transformedSize.height, 400);
+}
+
 TEST(TransformTest, rotatingRect) {
   auto point = facebook::react::Point{10, 10};
   auto size = facebook::react::Size{10, 10};

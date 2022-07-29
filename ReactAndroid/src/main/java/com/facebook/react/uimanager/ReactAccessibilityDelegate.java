@@ -27,6 +27,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.RangeInfoCompat;
+import androidx.core.view.accessibility.AccessibilityNodeProviderCompat;
 import androidx.customview.widget.ExploreByTouchHelper;
 import com.facebook.react.R;
 import com.facebook.react.bridge.Arguments;
@@ -121,6 +122,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     TABLIST,
     TIMER,
     LIST,
+    GRID,
     TOOLBAR;
 
     public static String getValue(AccessibilityRole role) {
@@ -151,6 +153,8 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
           return "android.widget.Switch";
         case LIST:
           return "android.widget.AbsListView";
+        case GRID:
+          return "android.widget.GridView";
         case NONE:
         case LINK:
         case SUMMARY:
@@ -241,6 +245,22 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     }
     final ReadableArray accessibilityActions =
         (ReadableArray) host.getTag(R.id.accessibility_actions);
+
+    final ReadableMap accessibilityCollectionItem =
+        (ReadableMap) host.getTag(R.id.accessibility_collection_item);
+    if (accessibilityCollectionItem != null) {
+      int rowIndex = accessibilityCollectionItem.getInt("rowIndex");
+      int columnIndex = accessibilityCollectionItem.getInt("columnIndex");
+      int rowSpan = accessibilityCollectionItem.getInt("rowSpan");
+      int columnSpan = accessibilityCollectionItem.getInt("columnSpan");
+      boolean heading = accessibilityCollectionItem.getBoolean("heading");
+
+      AccessibilityNodeInfoCompat.CollectionItemInfoCompat collectionItemCompat =
+          AccessibilityNodeInfoCompat.CollectionItemInfoCompat.obtain(
+              rowIndex, rowSpan, columnIndex, columnSpan, heading);
+      info.setCollectionItemInfo(collectionItemCompat);
+    }
+
     if (accessibilityActions != null) {
       for (int i = 0; i < accessibilityActions.size(); i++) {
         final ReadableMap action = accessibilityActions.getMap(i);
@@ -465,6 +485,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
             || view.getTag(R.id.accessibility_state) != null
             || view.getTag(R.id.accessibility_actions) != null
             || view.getTag(R.id.react_test_id) != null
+            || view.getTag(R.id.accessibility_collection_item) != null
             || view.getTag(R.id.accessibility_links) != null)) {
       ViewCompat.setAccessibilityDelegate(
           view,
@@ -683,5 +704,21 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
       public int end;
       public int id;
     }
+  }
+
+  @Override
+  public @Nullable AccessibilityNodeProviderCompat getAccessibilityNodeProvider(View host) {
+    // Only set a NodeProvider if we have virtual views, otherwise just return null here so that
+    // we fall back to the View class's default behavior. If we don't do this, then Views with
+    // no virtual children will fall back to using ExploreByTouchHelper's onPopulateNodeForHost
+    // method to populate their AccessibilityNodeInfo, which defaults to doing nothing, so no
+    // AccessibilityNodeInfo will be created. Alternatively, we could override
+    // onPopulateNodeForHost instead, and have it create an AccessibilityNodeInfo for the host
+    // but this is what the default View class does by itself, so we may as well defer to it.
+    if (mAccessibilityLinks != null) {
+      return super.getAccessibilityNodeProvider(host);
+    }
+
+    return null;
   }
 }

@@ -32,6 +32,12 @@ class ParagraphProps : public ViewProps, public BaseTextProps {
       ParagraphProps const &sourceProps,
       RawProps const &rawProps);
 
+  void setProp(
+      const PropsParserContext &context,
+      RawPropsPropNameHash hash,
+      const char *propName,
+      RawValue const &value);
+
 #pragma mark - Props
 
   /*

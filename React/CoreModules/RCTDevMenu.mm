@@ -123,35 +123,64 @@ RCT_EXPORT_MODULE()
                                                object:nil];
     _extraMenuItems = [NSMutableArray new];
 
-#if TARGET_OS_SIMULATOR || TARGET_OS_MACCATALYST
-    RCTKeyCommands *commands = [RCTKeyCommands sharedInstance];
-    __weak __typeof(self) weakSelf = self;
-
-    // Toggle debug menu
-    [commands registerKeyCommandWithInput:@"d"
-                            modifierFlags:UIKeyModifierCommand
-                                   action:^(__unused UIKeyCommand *command) {
-                                     [weakSelf toggle];
-                                   }];
-
-    // Toggle element inspector
-    [commands registerKeyCommandWithInput:@"i"
-                            modifierFlags:UIKeyModifierCommand
-                                   action:^(__unused UIKeyCommand *command) {
-                                     [(RCTDevSettings *)[weakSelf.moduleRegistry moduleForName:"DevSettings"]
-                                         toggleElementInspector];
-                                   }];
-
-    // Reload in normal mode
-    [commands registerKeyCommandWithInput:@"n"
-                            modifierFlags:UIKeyModifierCommand
-                                   action:^(__unused UIKeyCommand *command) {
-                                     [(RCTDevSettings *)[weakSelf.moduleRegistry moduleForName:"DevSettings"]
-                                         setIsDebuggingRemotely:NO];
-                                   }];
-#endif
+    [self registerHotkeys];
   }
   return self;
+}
+
+- (void)registerHotkeys
+{
+#if TARGET_OS_SIMULATOR || TARGET_OS_MACCATALYST
+  RCTKeyCommands *commands = [RCTKeyCommands sharedInstance];
+  __weak __typeof(self) weakSelf = self;
+
+  // Toggle debug menu
+  [commands registerKeyCommandWithInput:@"d"
+                          modifierFlags:UIKeyModifierCommand
+                                 action:^(__unused UIKeyCommand *command) {
+                                   [weakSelf toggle];
+                                 }];
+
+  // Toggle element inspector
+  [commands registerKeyCommandWithInput:@"i"
+                          modifierFlags:UIKeyModifierCommand
+                                 action:^(__unused UIKeyCommand *command) {
+                                   [(RCTDevSettings *)[weakSelf.moduleRegistry moduleForName:"DevSettings"]
+                                       toggleElementInspector];
+                                 }];
+
+  // Reload in normal mode
+  [commands registerKeyCommandWithInput:@"n"
+                          modifierFlags:UIKeyModifierCommand
+                                 action:^(__unused UIKeyCommand *command) {
+                                   [(RCTDevSettings *)[weakSelf.moduleRegistry moduleForName:"DevSettings"]
+                                       setIsDebuggingRemotely:NO];
+                                 }];
+#endif
+}
+
+- (void)unregisterHotkeys
+{
+#if TARGET_OS_SIMULATOR || TARGET_OS_MACCATALYST
+  RCTKeyCommands *commands = [RCTKeyCommands sharedInstance];
+
+  [commands unregisterKeyCommandWithInput:@"d" modifierFlags:UIKeyModifierCommand];
+  [commands unregisterKeyCommandWithInput:@"i" modifierFlags:UIKeyModifierCommand];
+  [commands unregisterKeyCommandWithInput:@"n" modifierFlags:UIKeyModifierCommand];
+#endif
+}
+
+- (BOOL)isHotkeysRegistered
+{
+#if TARGET_OS_SIMULATOR || TARGET_OS_MACCATALYST
+  RCTKeyCommands *commands = [RCTKeyCommands sharedInstance];
+
+  return [commands isKeyCommandRegisteredForInput:@"d" modifierFlags:UIKeyModifierCommand] &&
+      [commands isKeyCommandRegisteredForInput:@"i" modifierFlags:UIKeyModifierCommand] &&
+      [commands isKeyCommandRegisteredForInput:@"n" modifierFlags:UIKeyModifierCommand];
+#else
+  return NO;
+#endif
 }
 
 - (dispatch_queue_t)methodQueue
@@ -479,6 +508,20 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
 - (BOOL)hotLoadingEnabled
 {
   return ((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]).isHotLoadingEnabled;
+}
+
+- (void)setHotkeysEnabled:(BOOL)enabled
+{
+  if (enabled) {
+    [self registerHotkeys];
+  } else {
+    [self unregisterHotkeys];
+  }
+}
+
+- (BOOL)hotkeysEnabled
+{
+  return [self isHotkeysRegistered];
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:

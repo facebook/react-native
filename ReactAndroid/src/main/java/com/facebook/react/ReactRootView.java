@@ -338,7 +338,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     super.requestChildFocus(child, focused);
   }
 
-  private void dispatchJSPointerEvent(MotionEvent event) {
+  protected void dispatchJSPointerEvent(MotionEvent event) {
     if (mReactInstanceManager == null
         || !mIsAttachedToInstance
         || mReactInstanceManager.getCurrentReactContext() == null) {
@@ -361,7 +361,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     }
   }
 
-  private void dispatchJSTouchEvent(MotionEvent event) {
+  protected void dispatchJSTouchEvent(MotionEvent event) {
     if (mReactInstanceManager == null
         || !mIsAttachedToInstance
         || mReactInstanceManager.getCurrentReactContext() == null) {

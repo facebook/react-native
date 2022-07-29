@@ -2884,6 +2884,54 @@ TEST(ConnectionTests, testBasicProfilerOperation) {
   asyncRuntime.stop();
 }
 
+TEST(ConnectionTests, testGlobalLexicalScopeNames) {
+  TestContext context;
+  AsyncHermesRuntime &asyncRuntime = context.runtime();
+  SyncConnection &conn = context.conn();
+  int msgId = 1;
+  asyncRuntime.executeScriptAsync(R"(
+    let globalLet = "let";
+    const globalConst = "const";
+    var globalVar = "var";
+
+    let func1 = () => {
+      let local1 = 111;
+      func2();
+    }
+
+    function func2() {
+      let func3 = () => {
+        let local3 = 333;
+        debugger;
+      }
+
+      let local2 = 222;
+      func3();
+    }
+
+    func1();
+  )");
+  send<m::debugger::EnableRequest>(conn, msgId++);
+  expectExecutionContextCreated(conn);
+  expectNotification<m::debugger::ScriptParsedNotification>(conn);
+  expectNotification<m::debugger::PausedNotification>(conn);
+
+  m::runtime::GlobalLexicalScopeNamesRequest req;
+  req.id = msgId;
+  req.executionContextId = 1;
+  conn.send(req.toJson());
+
+  auto resp =
+      expectResponse<m::runtime::GlobalLexicalScopeNamesResponse>(conn, msgId);
+  EXPECT_EQ(resp.id, msgId++);
+  std::sort(resp.names.begin(), resp.names.end());
+  std::vector<std::string> expectedNames{"func1", "globalConst", "globalLet"};
+  EXPECT_EQ(resp.names, expectedNames);
+
+  send<m::debugger::ResumeRequest>(conn, msgId++);
+  expectNotification<m::debugger::ResumedNotification>(conn);
+}
+
 } // namespace chrome
 } // namespace inspector
 } // namespace hermes

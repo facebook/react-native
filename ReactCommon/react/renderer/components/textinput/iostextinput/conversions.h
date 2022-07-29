@@ -129,6 +129,26 @@ inline void fromRawValue(
 inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
+    SubmitBehavior &result) {
+  auto string = (std::string)value;
+  if (string == "newline") {
+    result = SubmitBehavior::Newline;
+    return;
+  }
+  if (string == "submit") {
+    result = SubmitBehavior::Submit;
+    return;
+  }
+  if (string == "blurAndSubmit") {
+    result = SubmitBehavior::BlurAndSubmit;
+    return;
+  }
+  abort();
+}
+
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
     TextInputAccessoryVisibilityMode &result) {
   auto string = (std::string)value;
   if (string == "never") {

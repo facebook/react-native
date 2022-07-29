@@ -170,7 +170,7 @@ if (isCommitly) {
   }
 }
 
-// -------- Generating Android Artifacts with JavaDoc
+// -------- Generating Android Artifacts
 if (exec('./gradlew :ReactAndroid:installArchives').code) {
   echo('Could not generate artifacts');
   exit(1);
@@ -195,8 +195,6 @@ let artifacts = [
   '-release.aar',
   '-debug-sources.jar',
   '-release-sources.jar',
-  '-debug-javadoc.jar',
-  '-release-javadoc.jar',
 ].map(suffix => {
   return `react-native-${releaseVersion}${suffix}`;
 });

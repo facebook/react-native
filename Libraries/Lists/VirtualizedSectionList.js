@@ -8,11 +8,12 @@
  * @format
  */
 
-import invariant from 'invariant';
 import type {ViewToken} from './ViewabilityHelper';
+
 import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';
-import {View, VirtualizedList} from 'react-native';
+import invariant from 'invariant';
 import * as React from 'react';
+import {View, VirtualizedList} from 'react-native';
 
 type Item = any;
 
@@ -147,6 +148,7 @@ class VirtualizedSectionList<
       viewOffset,
       index,
     };
+    // $FlowFixMe[incompatible-use]
     this._listRef.scrollToIndex(toIndexParams);
   }
 
@@ -338,6 +340,7 @@ class VirtualizedSectionList<
 
   _renderItem =
     (listItemCount: number) =>
+    // eslint-disable-next-line react/no-unstable-nested-components
     ({item, index}: {item: Item, index: number, ...}) => {
       const info = this._subExtractor(index);
       if (!info) {
@@ -389,21 +392,24 @@ class VirtualizedSectionList<
       }
     };
 
-  _updatePropsFor = (cellKey, value) => {
+  _updatePropsFor = (cellKey: string, value: any) => {
     const updateProps = this._updatePropsMap[cellKey];
     if (updateProps != null) {
       updateProps(value);
     }
   };
 
-  _updateHighlightFor = (cellKey, value) => {
+  _updateHighlightFor = (cellKey: string, value: boolean) => {
     const updateHighlight = this._updateHighlightMap[cellKey];
     if (updateHighlight != null) {
       updateHighlight(value);
     }
   };
 
-  _setUpdateHighlightFor = (cellKey, updateHighlightFn) => {
+  _setUpdateHighlightFor = (
+    cellKey: string,
+    updateHighlightFn: ?(boolean) => void,
+  ) => {
     if (updateHighlightFn != null) {
       this._updateHighlightMap[cellKey] = updateHighlightFn;
     } else {
@@ -411,7 +417,7 @@ class VirtualizedSectionList<
     }
   };
 
-  _setUpdatePropsFor = (cellKey, updatePropsFn) => {
+  _setUpdatePropsFor = (cellKey: string, updatePropsFn: ?(boolean) => void) => {
     if (updatePropsFn != null) {
       this._updatePropsMap[cellKey] = updatePropsFn;
     } else {
@@ -443,10 +449,10 @@ class VirtualizedSectionList<
     return null;
   }
 
-  _updateHighlightMap = {};
-  _updatePropsMap = {};
+  _updateHighlightMap: {[string]: (boolean) => void} = {};
+  _updatePropsMap: {[string]: void | (boolean => void)} = {};
   _listRef: ?React.ElementRef<typeof VirtualizedList>;
-  _captureRef = ref => {
+  _captureRef = (ref: null | React$ElementRef<Class<VirtualizedList>>) => {
     this._listRef = ref;
   };
 }

@@ -61,6 +61,7 @@ class PureComponentDebug<
       }
     }
     for (const key in this.state) {
+      // $FlowFixMe[incompatible-use]
       if (this.state[key] !== (nextState || {})[key]) {
         ret = true;
         console.warn('PureComponentDebug: different state values', tag, key);

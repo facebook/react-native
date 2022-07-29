@@ -25,13 +25,10 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.accessibility.AccessibilityEvent;
 import android.widget.HorizontalScrollView;
 import android.widget.OverScroller;
 import androidx.annotation.Nullable;
-import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.ReactConstants;
@@ -46,6 +43,7 @@ import com.facebook.react.uimanager.ReactOverflowViewWithInset;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.HasFlingAnimator;
+import com.facebook.react.views.scroll.ReactScrollViewHelper.HasScrollEventThrottle;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.HasScrollState;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.ReactScrollViewScrollState;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
@@ -59,7 +57,8 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
         FabricViewStateManager.HasFabricViewStateManager,
         ReactOverflowViewWithInset,
         HasScrollState,
-        HasFlingAnimator {
+        HasFlingAnimator,
+        HasScrollEventThrottle {
 
   private static boolean DEBUG_MODE = false && ReactBuildConfig.DEBUG;
   private static String TAG = ReactHorizontalScrollView.class.getSimpleName();
@@ -106,6 +105,8 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private final ReactScrollViewScrollState mReactScrollViewScrollState;
   private final ValueAnimator DEFAULT_FLING_ANIMATOR = ObjectAnimator.ofInt(this, "scrollX", 0, 0);
   private PointerEvents mPointerEvents = PointerEvents.AUTO;
+  private long mLastScrollDispatchTime = 0;
+  private int mScrollEventThrottle = 0;
 
   private final Rect mTempRect = new Rect();
 
@@ -118,22 +119,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     mReactBackgroundManager = new ReactViewBackgroundManager(this);
     mFpsListener = fpsListener;
 
-    ViewCompat.setAccessibilityDelegate(
-        this,
-        new AccessibilityDelegateCompat() {
-          @Override
-          public void onInitializeAccessibilityEvent(View host, AccessibilityEvent event) {
-            super.onInitializeAccessibilityEvent(host, event);
-            event.setScrollable(mScrollEnabled);
-          }
-
-          @Override
-          public void onInitializeAccessibilityNodeInfo(
-              View host, AccessibilityNodeInfoCompat info) {
-            super.onInitializeAccessibilityNodeInfo(host, info);
-            info.setScrollable(mScrollEnabled);
-          }
-        });
+    ViewCompat.setAccessibilityDelegate(this, new ReactScrollViewAccessibilityDelegate());
 
     mScroller = getOverScrollerFromParent();
     mReactScrollViewScrollState =
@@ -141,6 +127,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
             I18nUtil.getInstance().isRTL(context)
                 ? ViewCompat.LAYOUT_DIRECTION_RTL
                 : ViewCompat.LAYOUT_DIRECTION_LTR);
+  }
+
+  public boolean getScrollEnabled() {
+    return mScrollEnabled;
   }
 
   @Nullable
@@ -404,7 +394,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   }
 
   /** Returns whether the given descendent is partially scrolled in view */
-  private boolean isPartiallyScrolledInView(View descendent) {
+  public boolean isPartiallyScrolledInView(View descendent) {
     int scrollDelta = getScrollDelta(descendent);
     descendent.getDrawingRect(mTempRect);
     return scrollDelta != 0 && Math.abs(scrollDelta) < mTempRect.width();
@@ -542,6 +532,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
       float velocityX = mVelocityHelper.getXVelocity();
       float velocityY = mVelocityHelper.getYVelocity();
       ReactScrollViewHelper.emitScrollEndDragEvent(this, velocityX, velocityY);
+      NativeGestureUtil.notifyNativeGestureEnded(this, ev);
       mDragging = false;
       // After the touch finishes, we may need to do some scrolling afterwards either as a result
       // of a fling or because we need to page align the content
@@ -553,6 +544,16 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     }
 
     return super.onTouchEvent(ev);
+  }
+
+  @Override
+  public boolean dispatchGenericPointerEvent(MotionEvent ev) {
+    // We do not dispatch the pointer event if its children are not supposed to receive it
+    if (!PointerEvents.canChildrenBeTouchTarget(mPointerEvents)) {
+      return false;
+    }
+
+    return super.dispatchGenericPointerEvent(ev);
   }
 
   @Override
@@ -1285,5 +1286,25 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   public PointerEvents getPointerEvents() {
     return mPointerEvents;
+  }
+
+  @Override
+  public void setScrollEventThrottle(int scrollEventThrottle) {
+    mScrollEventThrottle = scrollEventThrottle;
+  }
+
+  @Override
+  public int getScrollEventThrottle() {
+    return mScrollEventThrottle;
+  }
+
+  @Override
+  public void setLastScrollDispatchTime(long lastScrollDispatchTime) {
+    mLastScrollDispatchTime = lastScrollDispatchTime;
+  }
+
+  @Override
+  public long getLastScrollDispatchTime() {
+    return mLastScrollDispatchTime;
   }
 }

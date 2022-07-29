@@ -14,6 +14,7 @@ import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.uimanager.ViewManager;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -89,18 +90,18 @@ public class CompositeReactPackage implements ViewManagerOnDemandReactPackage, R
 
   /** {@inheritDoc} */
   @Override
-  public List<String> getViewManagerNames(ReactApplicationContext reactContext) {
+  public Collection<String> getViewManagerNames(ReactApplicationContext reactContext) {
     Set<String> uniqueNames = new HashSet<>();
     for (ReactPackage reactPackage : mChildReactPackages) {
       if (reactPackage instanceof ViewManagerOnDemandReactPackage) {
-        List<String> names =
+        Collection<String> names =
             ((ViewManagerOnDemandReactPackage) reactPackage).getViewManagerNames(reactContext);
         if (names != null) {
           uniqueNames.addAll(names);
         }
       }
     }
-    return new ArrayList<>(uniqueNames);
+    return uniqueNames;
   }
 
   /** {@inheritDoc} */

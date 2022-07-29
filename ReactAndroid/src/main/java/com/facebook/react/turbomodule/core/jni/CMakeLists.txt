@@ -43,8 +43,9 @@ target_link_libraries(callinvokerholder
 add_library(
         turbomodulejsijni
         SHARED
-        ReactCommon/TurboModuleManager.cpp
+        ReactCommon/CompositeTurboModuleManagerDelegate.cpp
         ReactCommon/OnLoad.cpp
+        ReactCommon/TurboModuleManager.cpp
 )
 
 target_include_directories(

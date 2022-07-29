@@ -19,7 +19,9 @@ export type Args = {|
   defaultValue?: string,
   cancelButtonKey?: string,
   destructiveButtonKey?: string,
+  preferredButtonKey?: string,
   keyboardType?: string,
+  userInterfaceStyle?: string,
 |};
 
 export interface Spec extends TurboModule {

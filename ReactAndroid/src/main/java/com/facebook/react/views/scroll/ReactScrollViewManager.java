@@ -285,6 +285,9 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
   @Override
   public void scrollToEnd(
       ReactScrollView scrollView, ReactScrollViewCommandHelper.ScrollToEndCommandData data) {
+    // ScrollView always has one child - the scrollable area. However, it's possible today that we
+    // execute this method as view command before the child view is mounted. Here we will retry the
+    // view commands as a workaround.
     View child = scrollView.getChildAt(0);
     if (child == null) {
       throw new RetryableMountingLayerException("scrollToEnd called on ScrollView without child");
@@ -328,7 +331,7 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
 
   @Override
   public Object updateState(
-      ReactScrollView view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
+      ReactScrollView view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
     view.getFabricViewStateManager().setStateWrapper(stateWrapper);
     return null;
   }
@@ -366,5 +369,10 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
   @ReactProp(name = ViewProps.POINTER_EVENTS)
   public void setPointerEvents(ReactScrollView view, @Nullable String pointerEventsStr) {
     view.setPointerEvents(PointerEvents.parsePointerEvents(pointerEventsStr));
+  }
+
+  @ReactProp(name = "scrollEventThrottle")
+  public void setScrollEventThrottle(ReactScrollView view, int scrollEventThrottle) {
+    view.setScrollEventThrottle(scrollEventThrottle);
   }
 }

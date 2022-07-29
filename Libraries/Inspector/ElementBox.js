@@ -26,7 +26,7 @@ class ElementBox extends React.Component<$FlowFixMeProps> {
     let padding = resolveBoxStyle('padding', style);
 
     const frameStyle = {...this.props.frame};
-    const contentStyle = {
+    const contentStyle: {width: number, height: number} = {
       width: this.props.frame.width,
       height: this.props.frame.height,
     };
@@ -102,7 +102,7 @@ type Style = {
  * @return a modified copy
  */
 function resolveRelativeSizes(style: $ReadOnly<Style>): Style {
-  let resolvedStyle = Object.assign({}, style);
+  let resolvedStyle = {...style};
   resolveSizeInPlace(resolvedStyle, 'top', 'height');
   resolveSizeInPlace(resolvedStyle, 'right', 'width');
   resolveSizeInPlace(resolvedStyle, 'bottom', 'height');

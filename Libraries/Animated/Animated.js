@@ -16,8 +16,8 @@ import typeof AnimatedSectionList from './components/AnimatedSectionList';
 import typeof AnimatedText from './components/AnimatedText';
 import typeof AnimatedView from './components/AnimatedView';
 
-const AnimatedMock = require('./AnimatedMock');
-const AnimatedImplementation = require('./AnimatedImplementation');
+import * as AnimatedMock from './AnimatedMock';
+import * as AnimatedImplementation from './AnimatedImplementation';
 
 const Animated = ((Platform.isTesting
   ? AnimatedMock

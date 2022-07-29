@@ -173,14 +173,18 @@ function translateTypeAnnotation(
             typeAnnotation,
           );
 
-          return translateTypeAnnotation(
-            hasteModuleName,
-            typeAnnotation.typeParameters.params[0],
-            types,
-            aliasMap,
-            tryParse,
-            cxxOnly,
+          const [paramType, isParamNullable] = unwrapNullable(
+            translateTypeAnnotation(
+              hasteModuleName,
+              typeAnnotation.typeParameters.params[0],
+              types,
+              aliasMap,
+              tryParse,
+              cxxOnly,
+            ),
           );
+
+          return wrapNullable(nullable || isParamNullable, paramType);
         }
         case 'Stringish': {
           return wrapNullable(nullable, {
@@ -363,6 +367,14 @@ function translateTypeAnnotation(
         ),
       );
     }
+    case 'MixedTypeAnnotation': {
+      if (cxxOnly) {
+        return wrapNullable(nullable, {
+          type: 'MixedTypeAnnotation',
+        });
+      }
+      // Fallthrough
+    }
     default: {
       throw new UnsupportedFlowTypeAnnotationParserError(
         hasteModuleName,
@@ -537,7 +549,7 @@ function buildPropertySchema(
   };
 }
 
-function isModuleInterface(node) {
+function isModuleInterface(node: $FlowFixMe) {
   return (
     node.type === 'InterfaceDeclaration' &&
     node.extends.length === 1 &&

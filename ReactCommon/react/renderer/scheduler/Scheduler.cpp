@@ -53,8 +53,7 @@ Scheduler::Scheduler(
   auto enableCallImmediates = reactNativeConfig_->getBool(
       "react_native_new_architecture:enable_call_immediates_android");
 #else
-  auto enableCallImmediates = reactNativeConfig_->getBool(
-      "react_native_new_architecture:enable_call_immediates_ios");
+  auto enableCallImmediates = true;
 #endif
 
   auto weakRuntimeScheduler =
@@ -264,8 +263,8 @@ void Scheduler::renderTemplateToSurface(
                     ShadowNodeFragment{
                         /* .props = */ ShadowNodeFragment::propsPlaceholder(),
                         /* .children = */
-                        std::make_shared<SharedShadowNodeList>(
-                            SharedShadowNodeList{tree}),
+                        std::make_shared<ShadowNode::ListOfShared>(
+                            ShadowNode::ListOfShared{tree}),
                     });
               });
         });
@@ -366,6 +365,24 @@ void Scheduler::uiManagerDidSetIsJSResponder(
 
 ContextContainer::Shared Scheduler::getContextContainer() const {
   return contextContainer_;
+}
+
+std::shared_ptr<UIManager> Scheduler::getUIManager() const {
+  return uiManager_;
+}
+
+void Scheduler::addEventListener(
+    const std::shared_ptr<EventListener const> &listener) {
+  if (eventDispatcher_->has_value()) {
+    eventDispatcher_->value().addListener(listener);
+  }
+}
+
+void Scheduler::removeEventListener(
+    const std::shared_ptr<EventListener const> &listener) {
+  if (eventDispatcher_->has_value()) {
+    eventDispatcher_->value().removeListener(listener);
+  }
 }
 
 } // namespace react

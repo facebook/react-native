@@ -17,6 +17,15 @@ TextProps::TextProps(
     : Props(context, sourceProps, rawProps),
       BaseTextProps::BaseTextProps(context, sourceProps, rawProps){};
 
+void TextProps::setProp(
+    const PropsParserContext &context,
+    RawPropsPropNameHash hash,
+    const char *propName,
+    RawValue const &value) {
+  BaseTextProps::setProp(context, hash, propName, value);
+  Props::setProp(context, hash, propName, value);
+}
+
 #pragma mark - DebugStringConvertible
 
 #if RN_DEBUG_STRING_CONVERTIBLE

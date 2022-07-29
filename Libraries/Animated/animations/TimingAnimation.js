@@ -36,7 +36,7 @@ export type TimingAnimationConfig = $ReadOnly<{
     | AnimatedValueXY
     | RgbaValue
     | AnimatedColor
-    | AnimatedInterpolation,
+    | AnimatedInterpolation<number>,
   easing?: (value: number) => number,
   duration?: number,
   delay?: number,
@@ -44,7 +44,7 @@ export type TimingAnimationConfig = $ReadOnly<{
 
 export type TimingAnimationConfigSingle = $ReadOnly<{
   ...AnimationConfig,
-  toValue: number | AnimatedValue | AnimatedInterpolation,
+  toValue: number,
   easing?: (value: number) => number,
   duration?: number,
   delay?: number,
@@ -62,7 +62,7 @@ function easeInOut() {
 class TimingAnimation extends Animation {
   _startTime: number;
   _fromValue: number;
-  _toValue: any;
+  _toValue: number;
   _duration: number;
   _delay: number;
   _easing: (value: number) => number;

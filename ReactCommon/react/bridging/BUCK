@@ -15,7 +15,7 @@ rn_xplat_cxx_library(
     tests = [":tests"],
     visibility = ["PUBLIC"],
     deps = [
-        "//xplat/folly:headers_only",
+        "//xplat/folly:headers_only_do_not_use",
     ],
     exported_deps = [
         react_native_xplat_target("butter:butter"),

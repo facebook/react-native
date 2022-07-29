@@ -65,6 +65,82 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   private static final String STATE_MIXED = "mixed";
 
   @Override
+  protected T prepareToRecycleView(@NonNull ThemedReactContext reactContext, T view) {
+    // Reset tags
+    view.setTag(R.id.pointer_enter, null);
+    view.setTag(R.id.pointer_leave, null);
+    view.setTag(R.id.pointer_move, null);
+    view.setTag(R.id.react_test_id, null);
+    view.setTag(R.id.view_tag_native_id, null);
+    view.setTag(R.id.labelled_by, null);
+    view.setTag(R.id.accessibility_label, null);
+    view.setTag(R.id.accessibility_hint, null);
+    view.setTag(R.id.accessibility_role, null);
+    view.setTag(R.id.accessibility_state, null);
+    view.setTag(R.id.accessibility_actions, null);
+    view.setTag(R.id.accessibility_value, null);
+
+    // This indirectly calls (and resets):
+    // setTranslationX
+    // setTranslationY
+    // setRotation
+    // setRotationX
+    // setRotationY
+    // setScaleX
+    // setScaleY
+    // setCameraDistance
+    setTransform(view, null);
+
+    // RenderNode params not covered by setTransform above
+    view.setPivotX(0);
+    view.setPivotY(0);
+    view.setTop(0);
+    view.setBottom(0);
+    view.setLeft(0);
+    view.setRight(0);
+    view.setElevation(0);
+    view.setAnimationMatrix(null);
+
+    // setShadowColor
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      view.setOutlineAmbientShadowColor(Color.BLACK);
+      view.setOutlineSpotShadowColor(Color.BLACK);
+    }
+
+    // Focus IDs
+    // Also see in AOSP source:
+    // https://android.googlesource.com/platform/frameworks/base/+/a175a5b/core/java/android/view/View.java#4493
+    view.setNextFocusDownId(View.NO_ID);
+    view.setNextFocusForwardId(View.NO_ID);
+    view.setNextFocusRightId(View.NO_ID);
+    view.setNextFocusUpId(View.NO_ID);
+
+    // This is possibly subject to change and overrideable per-platform, but these
+    // are the default view flags in View.java:
+    // https://android.googlesource.com/platform/frameworks/base/+/a175a5b/core/java/android/view/View.java#2712
+    // `mViewFlags = SOUND_EFFECTS_ENABLED | HAPTIC_FEEDBACK_ENABLED | LAYOUT_DIRECTION_INHERIT`
+    // Therefore we set the following options as such:
+    view.setFocusable(false);
+    view.setFocusableInTouchMode(false);
+
+    // https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-mainline-12.0.0_r96/core/java/android/view/View.java#5491
+    view.setElevation(0);
+
+    // Predictably, alpha defaults to 1:
+    // https://android.googlesource.com/platform/frameworks/base/+/a175a5b/core/java/android/view/View.java#2186
+    // This accounts for resetting mBackfaceOpacity and mBackfaceVisibility
+    view.setAlpha(1);
+
+    // setPadding is a noop for most View types, but it is not for Text
+    setPadding(view, 0, 0, 0, 0);
+
+    // Other stuff
+    view.setForeground(null);
+
+    return view;
+  }
+
+  @Override
   @ReactProp(
       name = ViewProps.BACKGROUND_COLOR,
       defaultInt = Color.TRANSPARENT,
@@ -176,6 +252,20 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   @Override
+  @ReactProp(name = ViewProps.ACCESSIBILITY_COLLECTION)
+  public void setAccessibilityCollection(
+      @NonNull T view, @Nullable ReadableMap accessibilityCollection) {
+    view.setTag(R.id.accessibility_collection, accessibilityCollection);
+  }
+
+  @Override
+  @ReactProp(name = ViewProps.ACCESSIBILITY_COLLECTION_ITEM)
+  public void setAccessibilityCollectionItem(
+      @NonNull T view, @Nullable ReadableMap accessibilityCollectionItem) {
+    view.setTag(R.id.accessibility_collection_item, accessibilityCollectionItem);
+  }
+
+  @Override
   @ReactProp(name = ViewProps.ACCESSIBILITY_STATE)
   public void setViewState(@NonNull T view, @Nullable ReadableMap accessibilityState) {
     if (accessibilityState == null) {
@@ -197,7 +287,9 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       view.setSelected(false);
     }
     view.setTag(R.id.accessibility_state, accessibilityState);
-    view.setEnabled(true);
+    if (accessibilityState.hasKey("disabled") && !accessibilityState.getBoolean("disabled")) {
+      view.setEnabled(true);
+    }
 
     // For states which don't have corresponding methods in
     // AccessibilityNodeInfo, update the view's content description
@@ -462,33 +554,32 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
                     "phasedRegistrationNames",
                     MapBuilder.of("bubbled", "onPointerDown", "captured", "onPointerDownCapture")))
             .put(
-                "topPointerEnter2",
+                "topPointerEnter",
                 MapBuilder.of(
                     "phasedRegistrationNames",
                     MapBuilder.of(
                         "bubbled",
-                        "onPointerEnter2",
+                        "onPointerEnter",
                         "captured",
-                        "onPointerEnter2Capture",
+                        "onPointerEnterCapture",
                         "skipBubbling",
                         true)))
             .put(
-                "topPointerLeave2",
+                "topPointerLeave",
                 MapBuilder.of(
                     "phasedRegistrationNames",
                     MapBuilder.of(
                         "bubbled",
-                        "onPointerLeave2",
+                        "onPointerLeave",
                         "captured",
-                        "onPointerLeave2Capture",
+                        "onPointerLeaveCapture",
                         "skipBubbling",
                         true)))
             .put(
-                "topPointerMove2",
+                "topPointerMove",
                 MapBuilder.of(
                     "phasedRegistrationNames",
-                    MapBuilder.of(
-                        "bubbled", "onPointerMove2", "captured", "onPointerMove2Capture")))
+                    MapBuilder.of("bubbled", "onPointerMove", "captured", "onPointerMoveCapture")))
             .put(
                 "topPointerUp",
                 MapBuilder.of(
@@ -542,9 +633,15 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     FLog.w(ReactConstants.TAG, "%s doesn't support property '%s'", getName(), propName);
   }
 
+  /* Experimental W3C Pointer events start */
   @ReactProp(name = "onPointerEnter")
   public void setPointerEnter(@NonNull T view, boolean value) {
     view.setTag(R.id.pointer_enter, value);
+  }
+
+  @ReactProp(name = "onPointerEnterCapture")
+  public void setPointerEnterCapture(@NonNull T view, boolean value) {
+    view.setTag(R.id.pointer_enter_capture, value);
   }
 
   @ReactProp(name = "onPointerLeave")
@@ -552,10 +649,22 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setTag(R.id.pointer_leave, value);
   }
 
+  @ReactProp(name = "onPointerLeaveCapture")
+  public void setPointerLeaveCapture(@NonNull T view, boolean value) {
+    view.setTag(R.id.pointer_leave_capture, value);
+  }
+
   @ReactProp(name = "onPointerMove")
   public void setPointerMove(@NonNull T view, boolean value) {
     view.setTag(R.id.pointer_move, value);
   }
+
+  @ReactProp(name = "onPointerMoveCapture")
+  public void setPointerMoveCapture(@NonNull T view, boolean value) {
+    view.setTag(R.id.pointer_move_capture, value);
+  }
+
+  /* Experimental W3C Pointer events end */
 
   @ReactProp(name = "onMoveShouldSetResponder")
   public void setMoveShouldSetResponder(@NonNull T view, boolean value) {

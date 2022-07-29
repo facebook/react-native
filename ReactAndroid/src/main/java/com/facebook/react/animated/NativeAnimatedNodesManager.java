@@ -23,6 +23,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.events.Event;
@@ -50,7 +51,7 @@ import java.util.Queue;
  *
  * <p>IMPORTANT: This class should be accessed only from the UI Thread
  */
-/*package*/ class NativeAnimatedNodesManager implements EventDispatcherListener {
+public class NativeAnimatedNodesManager implements EventDispatcherListener {
 
   private static final String TAG = "NativeAnimatedNodesManager";
 
@@ -76,40 +77,31 @@ import java.util.Queue;
 
   /**
    * Initialize event listeners for Fabric UIManager or non-Fabric UIManager, exactly once. Once
-   * Fabric is the only UIManager, this logic can be simplified. This is only called on the JS
-   * thread.
+   * Fabric is the only UIManager, this logic can be simplified. This is expected to only be called
+   * from the native module thread.
    *
    * @param uiManagerType
    */
-  @UiThread
   public void initializeEventListenerForUIManagerType(@UIManagerType final int uiManagerType) {
-    if ((uiManagerType == UIManagerType.FABRIC && mEventListenerInitializedForFabric)
-        || (uiManagerType == UIManagerType.DEFAULT && mEventListenerInitializedForNonFabric)) {
+    if (uiManagerType == UIManagerType.FABRIC
+        ? mEventListenerInitializedForFabric
+        : mEventListenerInitializedForNonFabric) {
       return;
     }
 
-    final NativeAnimatedNodesManager self = this;
-    mReactApplicationContext.runOnUiQueueThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            UIManager uiManager =
-                UIManagerHelper.getUIManager(mReactApplicationContext, uiManagerType);
-            if (uiManager != null) {
-              uiManager.<EventDispatcher>getEventDispatcher().addListener(self);
-
-              if (uiManagerType == UIManagerType.FABRIC) {
-                mEventListenerInitializedForFabric = true;
-              } else {
-                mEventListenerInitializedForNonFabric = true;
-              }
-            }
-          }
-        });
+    UIManager uiManager = UIManagerHelper.getUIManager(mReactApplicationContext, uiManagerType);
+    if (uiManager != null) {
+      uiManager.<EventDispatcher>getEventDispatcher().addListener(this);
+      if (uiManagerType == UIManagerType.FABRIC) {
+        mEventListenerInitializedForFabric = true;
+      } else {
+        mEventListenerInitializedForNonFabric = true;
+      }
+    }
   }
 
-  /*package*/ @Nullable
-  AnimatedNode getNodeById(int id) {
+  @Nullable
+  public AnimatedNode getNodeById(int id) {
     return mAnimatedNodes.get(id);
   }
 
@@ -311,6 +303,16 @@ import java.util.Queue;
           WritableMap endCallbackResponse = Arguments.createMap();
           endCallbackResponse.putBoolean("finished", false);
           animation.mEndCallback.invoke(endCallbackResponse);
+        } else if (mReactApplicationContext != null) {
+          // If no callback is passed in, this /may/ be an animation set up by the single-op
+          // instruction from JS, meaning that no jsi::functions are passed into native and
+          // we communicate via RCTDeviceEventEmitter instead of callbacks.
+          WritableMap params = Arguments.createMap();
+          params.putInt("animationId", animation.mId);
+          params.putBoolean("finished", false);
+          mReactApplicationContext
+              .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+              .emit("onNativeAnimatedModuleAnimationFinished", params);
         }
         mActiveAnimations.removeAt(i);
         i--;
@@ -332,6 +334,16 @@ import java.util.Queue;
           WritableMap endCallbackResponse = Arguments.createMap();
           endCallbackResponse.putBoolean("finished", false);
           animation.mEndCallback.invoke(endCallbackResponse);
+        } else if (mReactApplicationContext != null) {
+          // If no callback is passed in, this /may/ be an animation set up by the single-op
+          // instruction from JS, meaning that no jsi::functions are passed into native and
+          // we communicate via RCTDeviceEventEmitter instead of callbacks.
+          WritableMap params = Arguments.createMap();
+          params.putInt("animationId", animation.mId);
+          params.putBoolean("finished", false);
+          mReactApplicationContext
+              .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+              .emit("onNativeAnimatedModuleAnimationFinished", params);
         }
         mActiveAnimations.removeAt(i);
         return;
@@ -448,7 +460,25 @@ import java.util.Queue;
       throw new JSApplicationIllegalArgumentException(
           "getValue: Animated node with tag [" + tag + "] does not exist or is not a 'value' node");
     }
-    callback.invoke(((ValueAnimatedNode) node).getValue());
+    double value = ((ValueAnimatedNode) node).getValue();
+    if (callback != null) {
+      callback.invoke(value);
+      return;
+    }
+
+    // If there's no callback, that means that JS is using the single-operation mode, and not
+    // passing any callbacks into Java.
+    // See NativeAnimatedHelper.js for details.
+    // Instead, we use RCTDeviceEventEmitter to pass data back to JS and emulate callbacks.
+    if (mReactApplicationContext == null) {
+      return;
+    }
+    WritableMap params = Arguments.createMap();
+    params.putInt("tag", tag);
+    params.putDouble("value", value);
+    mReactApplicationContext
+        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+        .emit("onNativeAnimatedModuleGetValue", params);
   }
 
   @UiThread
@@ -524,7 +554,6 @@ import java.util.Queue;
     }
   }
 
-  @UiThread
   @Override
   public void onEventDispatch(final Event event) {
     // Events can be dispatched from any thread so we have to make sure handleEvent is run from the
@@ -622,6 +651,19 @@ import java.util.Queue;
             WritableMap endCallbackResponse = Arguments.createMap();
             endCallbackResponse.putBoolean("finished", true);
             animation.mEndCallback.invoke(endCallbackResponse);
+          } else if (mReactApplicationContext != null) {
+            // If no callback is passed in, this /may/ be an animation set up by the single-op
+            // instruction from JS, meaning that no jsi::functions are passed into native and
+            // we communicate via RCTDeviceEventEmitter instead of callbacks.
+            WritableMap params = Arguments.createMap();
+            params.putInt("animationId", animation.mId);
+            params.putBoolean("finished", true);
+            DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter =
+                mReactApplicationContext.getJSModule(
+                    DeviceEventManagerModule.RCTDeviceEventEmitter.class);
+            if (eventEmitter != null) {
+              eventEmitter.emit("onNativeAnimatedModuleAnimationFinished", params);
+            }
           }
           mActiveAnimations.removeAt(i);
         }

@@ -16,6 +16,8 @@
 namespace facebook {
 namespace react {
 
+// Nearly this entire file can be deleted when iterator-style Prop parsing
+// ships fully for View
 static inline YGStyle::Dimensions convertRawProp(
     const PropsParserContext &context,
     RawProps const &rawProps,
@@ -35,7 +37,7 @@ static inline YGStyle::Dimensions convertRawProp(
       rawProps,
       heightName,
       sourceValue[YGDimensionHeight],
-      defaultValue[YGDimensionWidth]);
+      defaultValue[YGDimensionHeight]);
   return dimensions;
 }
 
@@ -301,6 +303,7 @@ static inline YGStyle convertRawProp(
   return yogaStyle;
 }
 
+// This can be deleted when non-iterator ViewProp parsing is deleted
 template <typename T>
 static inline CascadedRectangleCorners<T> convertRawProp(
     const PropsParserContext &context,
@@ -465,6 +468,7 @@ static inline CascadedRectangleEdges<T> convertRawProp(
   return result;
 }
 
+// This can be deleted when non-iterator ViewProp parsing is deleted
 static inline ViewEvents convertRawProp(
     const PropsParserContext &context,
     RawProps const &rawProps,
@@ -491,6 +495,38 @@ static inline ViewEvents convertRawProp(
       "onPointerLeave",
       sourceValue[Offset::PointerLeave],
       defaultValue[Offset::PointerLeave]);
+
+  // Experimental W3C Pointer callbacks
+  result[Offset::PointerEnterCapture] = convertRawProp(
+      context,
+      rawProps,
+      "onPointerEnterCapture",
+      sourceValue[Offset::PointerEnterCapture],
+      defaultValue[Offset::PointerEnterCapture]);
+  result[Offset::PointerMoveCapture] = convertRawProp(
+      context,
+      rawProps,
+      "onPointerMoveCapture",
+      sourceValue[Offset::PointerMoveCapture],
+      defaultValue[Offset::PointerMoveCapture]);
+  result[Offset::PointerLeaveCapture] = convertRawProp(
+      context,
+      rawProps,
+      "onPointerLeaveCapture",
+      sourceValue[Offset::PointerLeaveCapture],
+      defaultValue[Offset::PointerLeaveCapture]);
+  result[Offset::PointerOver] = convertRawProp(
+      context,
+      rawProps,
+      "onPointerOver",
+      sourceValue[Offset::PointerOver],
+      defaultValue[Offset::PointerOver]);
+  result[Offset::PointerOut] = convertRawProp(
+      context,
+      rawProps,
+      "onPointerOut",
+      sourceValue[Offset::PointerOut],
+      defaultValue[Offset::PointerOut]);
 
   // PanResponder callbacks
   result[Offset::MoveShouldSetResponder] = convertRawProp(

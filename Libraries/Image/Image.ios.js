@@ -102,7 +102,9 @@ export type ImageComponentStatics = $ReadOnly<{|
  *
  * See https://reactnative.dev/docs/image
  */
-let Image = (props: ImagePropsType, forwardedRef) => {
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
+const BaseImage = (props: ImagePropsType, forwardedRef) => {
   const source = resolveAssetSource(props.source) || {
     uri: undefined,
     width: undefined,
@@ -124,7 +126,9 @@ let Image = (props: ImagePropsType, forwardedRef) => {
     }
   }
 
+  // $FlowFixMe[prop-missing]
   const resizeMode = props.resizeMode || style.resizeMode || 'cover';
+  // $FlowFixMe[prop-missing]
   const tintColor = style.tintColor;
 
   if (props.src != null) {
@@ -158,11 +162,12 @@ let Image = (props: ImagePropsType, forwardedRef) => {
   );
 };
 
-Image = React.forwardRef<
+const ImageForwardRef = React.forwardRef<
   ImagePropsType,
   React.ElementRef<typeof ImageViewNativeComponent>,
->(Image);
+>(BaseImage);
 
+let Image = ImageForwardRef;
 if (ImageInjection.unstable_createImageComponent != null) {
   Image = ImageInjection.unstable_createImageComponent(Image);
 }

@@ -10,15 +10,14 @@
 
 'use strict';
 
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
+
+const ReactNative = require('../../Renderer/shims/ReactNative');
 const {AnimatedEvent} = require('../AnimatedEvent');
+const NativeAnimatedHelper = require('../NativeAnimatedHelper');
 const AnimatedNode = require('./AnimatedNode');
 const AnimatedStyle = require('./AnimatedStyle');
-const NativeAnimatedHelper = require('../NativeAnimatedHelper');
-const ReactNative = require('../../Renderer/shims/ReactNative');
-
 const invariant = require('invariant');
-
-import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
 class AnimatedProps extends AnimatedNode {
   _props: Object;
@@ -37,15 +36,23 @@ class AnimatedProps extends AnimatedNode {
     this._callback = callback;
   }
 
-  __getValue(): Object {
-    const props = {};
+  __getValue(initialProps: ?Object): Object {
+    const props: {[string]: any | ((...args: any) => void)} = {};
     for (const key in this._props) {
       const value = this._props[key];
       if (value instanceof AnimatedNode) {
-        if (!value.__isNative || value instanceof AnimatedStyle) {
-          // We cannot use value of natively driven nodes this way as the value we have access from
-          // JS may not be up to date.
+        // During initial render we want to use the initial value of both natively and non-natively
+        // driven nodes. On subsequent renders, we cannot use the value of natively driven nodes
+        // as they may not be up to date, so we use the initial value to ensure that values of
+        // native animated nodes do not impact rerenders.
+        if (value instanceof AnimatedStyle) {
+          props[key] = value.__getValue(
+            initialProps ? initialProps.style : null,
+          );
+        } else if (!initialProps || !value.__isNative) {
           props[key] = value.__getValue();
+        } else if (initialProps.hasOwnProperty(key)) {
+          props[key] = initialProps[key];
         }
       } else if (value instanceof AnimatedEvent) {
         props[key] = value.__getHandler();
@@ -53,11 +60,12 @@ class AnimatedProps extends AnimatedNode {
         props[key] = value;
       }
     }
+
     return props;
   }
 
   __getAnimatedValue(): Object {
-    const props = {};
+    const props: {[string]: any} = {};
     for (const key in this._props) {
       const value = this._props[key];
       if (value instanceof AnimatedNode) {
@@ -165,7 +173,7 @@ class AnimatedProps extends AnimatedNode {
   }
 
   __getNativeConfig(): Object {
-    const propsConfig = {};
+    const propsConfig: {[string]: number} = {};
     for (const propKey in this._props) {
       const value = this._props[propKey];
       if (value instanceof AnimatedNode) {

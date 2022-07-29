@@ -53,6 +53,8 @@ class MultiColumnExample extends React.PureComponent<
     numColumns: 2,
     virtualized: true,
   };
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   _onChangeFilterText = filterText => {
     this.setState(() => ({filterText}));
   };

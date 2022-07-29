@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import <React/RCTBorderCurve.h>
 #import <React/RCTBorderStyle.h>
 #import <React/RCTComponent.h>
 #import <React/RCTPointerEvents.h>
@@ -94,6 +95,11 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 @property (nonatomic, assign) CGFloat borderWidth;
 
 /**
+ * Border curve.
+ */
+@property (nonatomic, assign) RCTBorderCurve borderCurve;
+
+/**
  * Border styles.
  */
 @property (nonatomic, assign) RCTBorderStyle borderStyle;
@@ -102,5 +108,17 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
  *  Insets used when hit testing inside this view.
  */
 @property (nonatomic, assign) UIEdgeInsets hitTestEdgeInsets;
+
+/**
+ * (Experimental and unused for Paper) Pointer event handlers.
+ */
+@property (nonatomic, assign) RCTBubblingEventBlock onPointerCancel;
+@property (nonatomic, assign) RCTBubblingEventBlock onPointerDown;
+@property (nonatomic, assign) RCTBubblingEventBlock onPointerMove;
+@property (nonatomic, assign) RCTBubblingEventBlock onPointerUp;
+@property (nonatomic, assign) RCTCapturingEventBlock onPointerEnter;
+@property (nonatomic, assign) RCTCapturingEventBlock onPointerLeave;
+@property (nonatomic, assign) RCTBubblingEventBlock onPointerOver;
+@property (nonatomic, assign) RCTBubblingEventBlock onPointerOut;
 
 @end

@@ -112,6 +112,8 @@ class StructCollector {
         this._insertAlias(typeAnnotation.name, structContext, resolveAlias);
         return wrapNullable(nullable, typeAnnotation);
       }
+      case 'MixedTypeAnnotation':
+        throw new Error('Mixed types are unsupported in structs');
       default: {
         return wrapNullable(nullable, typeAnnotation);
       }

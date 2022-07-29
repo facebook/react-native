@@ -13,7 +13,7 @@ import android.view.View;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.yoga.YogaMeasureMode;
 
-public class LayoutMetricsConversions {
+public interface LayoutMetricsConversions {
 
   public static float getMinSize(int viewMeasureSpec) {
     int mode = View.MeasureSpec.getMode(viewMeasureSpec);

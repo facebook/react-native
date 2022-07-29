@@ -56,6 +56,25 @@ exports[`RN Codegen TypeScript Parser can generate fixture CXX_ONLY_NATIVE_MODUL
               },
               'params': []
             }
+          },
+          {
+            'name': 'getMixed',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'MixedTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'arg',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'MixedTypeAnnotation'
+                  }
+                }
+              ]
+            }
           }
         ]
       },
@@ -230,6 +249,72 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_AL
                 }
               ]
             }
+          },
+          {
+            'name': 'getStringFromNullableAlias',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'StringTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'a',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'NullableTypeAnnotation',
+                    'typeAnnotation': {
+                      'type': 'TypeAliasTypeAnnotation',
+                      'name': 'ObjectAlias'
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            'name': 'getStringFromReadOnlyAlias',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'StringTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'a',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'TypeAliasTypeAnnotation',
+                    'name': 'ObjectAlias'
+                  }
+                }
+              ]
+            }
+          },
+          {
+            'name': 'getStringFromNullableReadOnlyAlias',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'StringTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'a',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'NullableTypeAnnotation',
+                    'typeAnnotation': {
+                      'type': 'TypeAliasTypeAnnotation',
+                      'name': 'ObjectAlias'
+                    }
+                  }
+                }
+              ]
+            }
           }
         ]
       },
@@ -242,6 +327,49 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_AL
 `;
 
 exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_ARRAY_WITH_ALIAS 1`] = `
+"{
+  'modules': {
+    'NativeSampleTurboModule': {
+      'type': 'NativeModule',
+      'aliases': {},
+      'spec': {
+        'properties': [
+          {
+            'name': 'getArray',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'ArrayTypeAnnotation',
+                'elementType': {
+                  'type': 'StringTypeAnnotation'
+                }
+              },
+              'params': [
+                {
+                  'name': 'arg',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'ArrayTypeAnnotation',
+                    'elementType': {
+                      'type': 'StringTypeAnnotation'
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      'moduleNames': [
+        'SampleTurboModule'
+      ]
+    }
+  }
+}"
+`;
+
+exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_ARRAY2_WITH_ALIAS 1`] = `
 "{
   'modules': {
     'NativeSampleTurboModule': {
@@ -321,7 +449,112 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_AR
 }"
 `;
 
+exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_ARRAY2_WITH_UNION_AND_TOUPLE 1`] = `
+"{
+  'modules': {
+    'NativeSampleTurboModule': {
+      'type': 'NativeModule',
+      'aliases': {},
+      'spec': {
+        'properties': [
+          {
+            'name': 'getArray',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'ArrayTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'arg',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'ArrayTypeAnnotation'
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      'moduleNames': [
+        'SampleTurboModule'
+      ]
+    }
+  }
+}"
+`;
+
 exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_BASIC_ARRAY 1`] = `
+"{
+  'modules': {
+    'NativeSampleTurboModule': {
+      'type': 'NativeModule',
+      'aliases': {},
+      'spec': {
+        'properties': [
+          {
+            'name': 'getArray',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'ArrayTypeAnnotation',
+                'elementType': {
+                  'type': 'StringTypeAnnotation'
+                }
+              },
+              'params': [
+                {
+                  'name': 'arg',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'ArrayTypeAnnotation',
+                    'elementType': {
+                      'type': 'StringTypeAnnotation'
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            'name': 'getArray',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'ArrayTypeAnnotation',
+                'elementType': {
+                  'type': 'StringTypeAnnotation'
+                }
+              },
+              'params': [
+                {
+                  'name': 'arg',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'ArrayTypeAnnotation',
+                    'elementType': {
+                      'type': 'StringTypeAnnotation'
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      'moduleNames': [
+        'SampleTurboModule'
+      ]
+    }
+  }
+}"
+`;
+
+exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_BASIC_ARRAY2 1`] = `
 "{
   'modules': {
     'NativeSampleTurboModule': {
@@ -546,6 +779,67 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_CA
 `;
 
 exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_ARRAY 1`] = `
+"{
+  'modules': {
+    'NativeSampleTurboModule': {
+      'type': 'NativeModule',
+      'aliases': {},
+      'spec': {
+        'properties': [
+          {
+            'name': 'getArray',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'ArrayTypeAnnotation',
+                'elementType': {
+                  'type': 'ArrayTypeAnnotation',
+                  'elementType': {
+                    'type': 'ArrayTypeAnnotation',
+                    'elementType': {
+                      'type': 'StringTypeAnnotation'
+                    }
+                  }
+                }
+              },
+              'params': [
+                {
+                  'name': 'arg',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'ArrayTypeAnnotation',
+                    'elementType': {
+                      'type': 'ArrayTypeAnnotation',
+                      'elementType': {
+                        'type': 'ArrayTypeAnnotation',
+                        'elementType': {
+                          'type': 'ArrayTypeAnnotation',
+                          'elementType': {
+                            'type': 'ArrayTypeAnnotation',
+                            'elementType': {
+                              'type': 'StringTypeAnnotation'
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      'moduleNames': [
+        'SampleTurboModule'
+      ]
+    }
+  }
+}"
+`;
+
+exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_ARRAY2 1`] = `
 "{
   'modules': {
     'NativeSampleTurboModule': {

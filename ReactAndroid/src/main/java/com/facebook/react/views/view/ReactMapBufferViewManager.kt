@@ -26,7 +26,8 @@ object ReactMapBufferViewManager : ReactViewManagerWrapper {
       stateWrapper: StateWrapper?,
       jsResponderHandler: JSResponderHandler
   ): View =
-      viewManager.createView(
+      viewManager
+          .createView(
               reactTag,
               reactContext,
               props as? ReactStylesDiffMap,

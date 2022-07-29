@@ -170,6 +170,8 @@ type Props = $ReadOnly<{|
  * Component used to build display components that should respond to whether the
  * component is currently pressed or not.
  */
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
 function Pressable(props: Props, forwardedRef): React.Node {
   const {
     accessible,

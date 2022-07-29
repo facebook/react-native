@@ -133,7 +133,7 @@ function handleUpdate(): void {
   }
 }
 
-function appendNewLog(newLog) {
+function appendNewLog(newLog: LogBoxLog) {
   // Don't want store these logs because they trigger a
   // state update when we add them to the store.
   if (isMessageIgnored(newLog.message.content)) {
@@ -156,7 +156,7 @@ function appendNewLog(newLog) {
     // sybolication for up to a second before adding the log.
     const OPTIMISTIC_WAIT_TIME = 1000;
 
-    let addPendingLog = () => {
+    let addPendingLog: ?() => void = () => {
       logs.add(newLog);
       if (_selectedIndex < 0) {
         setSelectedLog(logs.size - 1);

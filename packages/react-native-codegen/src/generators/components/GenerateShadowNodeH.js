@@ -37,6 +37,7 @@ const FileTemplate = ({
 
 ${imports}#include <react/renderer/components/${libraryName}/Props.h>
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
+#include <jsi/jsi.h>
 
 namespace facebook {
 namespace react {
@@ -55,7 +56,7 @@ const ComponentTemplate = ({
   eventEmitter: string,
 }) =>
   `
-extern const char ${className}ComponentName[];
+JSI_EXPORT extern const char ${className}ComponentName[];
 
 /*
  * \`ShadowNode\` for <${className}> component.

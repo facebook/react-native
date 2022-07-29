@@ -8,12 +8,15 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
   test-docker-android:
     name: Test Docker
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Free up space by removing unnecessary folders
         run: |
           sudo rm -rf /usr/share/dotnet

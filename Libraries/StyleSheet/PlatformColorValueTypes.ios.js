@@ -58,9 +58,13 @@ export const normalizeColorObject = (
     const dynamic = color.dynamic;
     const dynamicColor: NativeColorValue = {
       dynamic: {
+        // $FlowFixMe[incompatible-use]
         light: normalizeColor(dynamic.light),
+        // $FlowFixMe[incompatible-use]
         dark: normalizeColor(dynamic.dark),
+        // $FlowFixMe[incompatible-use]
         highContrastLight: normalizeColor(dynamic.highContrastLight),
+        // $FlowFixMe[incompatible-use]
         highContrastDark: normalizeColor(dynamic.highContrastDark),
       },
     };
@@ -78,9 +82,13 @@ export const processColorObject = (
     const dynamic = color.dynamic;
     const dynamicColor: NativeColorValue = {
       dynamic: {
+        // $FlowFixMe[incompatible-use]
         light: processColor(dynamic.light),
+        // $FlowFixMe[incompatible-use]
         dark: processColor(dynamic.dark),
+        // $FlowFixMe[incompatible-use]
         highContrastLight: processColor(dynamic.highContrastLight),
+        // $FlowFixMe[incompatible-use]
         highContrastDark: processColor(dynamic.highContrastDark),
       },
     };

@@ -55,6 +55,9 @@ constexpr MapBuffer::Key VP_SHADOW_COLOR = 31;
 constexpr MapBuffer::Key VP_TEST_ID = 32;
 constexpr MapBuffer::Key VP_TRANSFORM = 33;
 constexpr MapBuffer::Key VP_ZINDEX = 34;
+constexpr MapBuffer::Key VP_POINTER_ENTER_CAPTURE = 38;
+constexpr MapBuffer::Key VP_POINTER_LEAVE_CAPTURE = 39;
+constexpr MapBuffer::Key VP_POINTER_MOVE_CAPTURE = 40;
 
 // Yoga values
 constexpr MapBuffer::Key YG_BORDER_WIDTH = 100;
@@ -462,6 +465,16 @@ static inline MapBuffer viewPropsDiff(
         VP_POINTER_LEAVE, newProps.events[ViewEvents::Offset::PointerLeave]);
     builder.putBool(
         VP_POINTER_MOVE, newProps.events[ViewEvents::Offset::PointerMove]);
+
+    builder.putBool(
+        VP_POINTER_ENTER_CAPTURE,
+        newProps.events[ViewEvents::Offset::PointerEnterCapture]);
+    builder.putBool(
+        VP_POINTER_LEAVE_CAPTURE,
+        newProps.events[ViewEvents::Offset::PointerLeaveCapture]);
+    builder.putBool(
+        VP_POINTER_MOVE_CAPTURE,
+        newProps.events[ViewEvents::Offset::PointerMoveCapture]);
   }
 
   if (oldProps.removeClippedSubviews != newProps.removeClippedSubviews) {

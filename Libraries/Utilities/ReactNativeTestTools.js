@@ -17,6 +17,7 @@ const ShallowRenderer = require('react-shallow-renderer');
 /* $FlowFixMe[not-a-function] (>=0.125.1 site=react_native_fb) This comment
  * suppresses an error found when Flow v0.125.1 was deployed. To see the error,
  * delete this comment and run Flow. */
+// $FlowFixMe[invalid-constructor]
 const shallowRenderer = new ShallowRenderer();
 
 import type {ReactTestRenderer as ReactTestRendererType} from 'react-test-renderer';
@@ -179,7 +180,9 @@ function renderAndEnforceStrictMode(element: React.Node): any {
 }
 
 function renderWithStrictMode(element: React.Node): ReactTestRendererType {
-  const WorkAroundBugWithStrictModeInTestRenderer = prps => prps.children;
+  const WorkAroundBugWithStrictModeInTestRenderer = (prps: {
+    children: React.Node,
+  }) => prps.children;
   const StrictMode = (React: $FlowFixMe).StrictMode;
   return ReactTestRenderer.create(
     <WorkAroundBugWithStrictModeInTestRenderer>

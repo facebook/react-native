@@ -34,15 +34,14 @@ function codegenNativeComponent<Props>(
   componentName: string,
   options?: Options,
 ): NativeComponentType<Props> {
-  const errorMessage =
-    "Native Component '" +
-    componentName +
-    "' that calls codegenNativeComponent was not code generated at build time. Please check its definition.";
   if (global.RN$Bridgeless === true) {
+    const errorMessage =
+      "Native Component '" +
+      componentName +
+      "' that calls codegenNativeComponent was not code generated at build time. Please check its definition.";
     console.error(errorMessage);
-  } else {
-    console.warn(errorMessage);
   }
+
   let componentNameInUse =
     options && options.paperComponentName != null
       ? options.paperComponentName

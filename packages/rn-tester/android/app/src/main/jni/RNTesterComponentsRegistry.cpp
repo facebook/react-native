@@ -10,8 +10,8 @@
 #include <CoreComponentsRegistry.h>
 #include <fbjni/fbjni.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <react/renderer/components/AppSpecs/ComponentDescriptors.h>
 #include <react/renderer/components/rncore/ComponentDescriptors.h>
-#include <react/renderer/components/rntester/ComponentDescriptors.h>
 
 namespace facebook {
 namespace react {

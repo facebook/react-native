@@ -48,6 +48,10 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
+  RCTNewArchitectureValidationPlaceholder(
+      RCTNotAllowedInFabricWithoutLegacy,
+      self,
+      @"This native component is still using the legacy interop layer -- please migrate it to use a Fabric specific implementation.");
   return [RCTDatePicker new];
 }
 

@@ -52,6 +52,23 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
   private static final int CMD_SET_PRESSED = 2;
   private static final String HOTSPOT_UPDATE_KEY = "hotspotUpdate";
 
+  public ReactViewManager() {
+    super();
+
+    setupViewRecycling();
+  }
+
+  @Override
+  protected ReactViewGroup prepareToRecycleView(
+      @NonNull ThemedReactContext reactContext, ReactViewGroup view) {
+    // BaseViewManager
+    super.prepareToRecycleView(reactContext, view);
+
+    view.recycleView();
+
+    return view;
+  }
+
   @ReactProp(name = "accessible")
   public void setAccessible(ReactViewGroup view, boolean accessible) {
     view.setFocusable(accessible);

@@ -10,11 +10,10 @@
 
 'use strict';
 
-const BatchedBridge = require('./BatchedBridge');
-
-const invariant = require('invariant');
-
 import type {ExtendedError} from '../Core/ExtendedError';
+
+const BatchedBridge = require('./BatchedBridge');
+const invariant = require('invariant');
 
 export type ModuleConfig = [
   string /* name */,
@@ -51,7 +50,7 @@ function genModule(
     return {name: moduleName};
   }
 
-  const module = {};
+  const module: {[string]: mixed} = {};
   methods &&
     methods.forEach((methodName, methodID) => {
       const isPromise =

@@ -62,22 +62,22 @@ function TransformBounceView({useNativeDriver}: {useNativeDriver: boolean}) {
               {
                 scale: anim.interpolate({
                   inputRange: [0, 1],
-                  outputRange: ([1, 4]: $ReadOnlyArray<number>),
+                  outputRange: [1, 4],
                 }),
               },
               {
                 translateX: anim.interpolate({
                   inputRange: [0, 1],
-                  outputRange: ([0, 500]: $ReadOnlyArray<number>),
+                  outputRange: [0, 500],
                 }),
               },
               {
                 rotate: anim.interpolate({
                   inputRange: [0, 1],
-                  outputRange: ([
+                  outputRange: [
                     '0deg',
                     '360deg', // 'deg' or 'rad'
-                  ]: $ReadOnlyArray<string>),
+                  ],
                 }),
               },
             ],

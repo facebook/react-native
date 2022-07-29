@@ -24,6 +24,8 @@ import Platform from '../Utilities/Platform';
 import UIManager from '../ReactNative/UIManager';
 import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
 import * as React from 'react';
+import ReactNativeFeatureFlags from '../ReactNative/ReactNativeFeatureFlags';
+import {type PointerEvent} from '../Types/CoreEventTypes';
 
 export type PressabilityConfig = $ReadOnly<{|
   /**
@@ -158,6 +160,8 @@ export type EventHandlers = $ReadOnly<{|
   onFocus: (event: FocusEvent) => void,
   onMouseEnter?: (event: MouseEvent) => void,
   onMouseLeave?: (event: MouseEvent) => void,
+  onPointerEnter?: (event: PointerEvent) => void,
+  onPointerLeave?: (event: PointerEvent) => void,
   onResponderGrant: (event: PressEvent) => void,
   onResponderMove: (event: PressEvent) => void,
   onResponderRelease: (event: PressEvent) => void,
@@ -251,20 +255,20 @@ const Transitions = Object.freeze({
   },
 });
 
-const isActiveSignal = signal =>
+const isActiveSignal = (signal: TouchState) =>
   signal === 'RESPONDER_ACTIVE_PRESS_IN' ||
   signal === 'RESPONDER_ACTIVE_LONG_PRESS_IN';
 
-const isActivationSignal = signal =>
+const isActivationSignal = (signal: TouchState) =>
   signal === 'RESPONDER_ACTIVE_PRESS_OUT' ||
   signal === 'RESPONDER_ACTIVE_PRESS_IN';
 
-const isPressInSignal = signal =>
+const isPressInSignal = (signal: TouchState) =>
   signal === 'RESPONDER_INACTIVE_PRESS_IN' ||
   signal === 'RESPONDER_ACTIVE_PRESS_IN' ||
   signal === 'RESPONDER_ACTIVE_LONG_PRESS_IN';
 
-const isTerminalSignal = signal =>
+const isTerminalSignal = (signal: TouchSignal) =>
   signal === 'RESPONDER_TERMINATED' || signal === 'RESPONDER_RELEASE';
 
 const DEFAULT_LONG_PRESS_DELAY_MS = 500;
@@ -549,58 +553,108 @@ export default class Pressability {
         () => this._config;
     }
 
-    const mouseEventHandlers =
-      Platform.OS === 'ios' || Platform.OS === 'android'
-        ? null
-        : {
-            onMouseEnter: (event: MouseEvent): void => {
-              if (isHoverEnabled()) {
-                this._isHovered = true;
-                this._cancelHoverOutDelayTimeout();
-                const {onHoverIn} = this._config;
-                if (onHoverIn != null) {
-                  const delayHoverIn = normalizeDelay(
-                    this._config.delayHoverIn,
-                  );
-                  if (delayHoverIn > 0) {
-                    event.persist();
-                    this._hoverInDelayTimeout = setTimeout(() => {
+    if (
+      ReactNativeFeatureFlags.shouldPressibilityUseW3CPointerEventsForHover()
+    ) {
+      const hoverPointerEvents = {
+        onPointerEnter: undefined,
+        onPointerLeave: undefined,
+      };
+      const {onHoverIn, onHoverOut} = this._config;
+      if (onHoverIn != null) {
+        hoverPointerEvents.onPointerEnter = (event: PointerEvent) => {
+          this._isHovered = true;
+          this._cancelHoverOutDelayTimeout();
+          if (onHoverIn != null) {
+            const delayHoverIn = normalizeDelay(this._config.delayHoverIn);
+            if (delayHoverIn > 0) {
+              event.persist();
+              this._hoverInDelayTimeout = setTimeout(() => {
+                onHoverIn(convertPointerEventToMouseEvent(event));
+              }, delayHoverIn);
+            } else {
+              onHoverIn(convertPointerEventToMouseEvent(event));
+            }
+          }
+        };
+      }
+      if (onHoverOut != null) {
+        hoverPointerEvents.onPointerLeave = (event: PointerEvent) => {
+          if (this._isHovered) {
+            this._isHovered = false;
+            this._cancelHoverInDelayTimeout();
+            if (onHoverOut != null) {
+              const delayHoverOut = normalizeDelay(this._config.delayHoverOut);
+              if (delayHoverOut > 0) {
+                event.persist();
+                this._hoverOutDelayTimeout = setTimeout(() => {
+                  onHoverOut(convertPointerEventToMouseEvent(event));
+                }, delayHoverOut);
+              } else {
+                onHoverOut(convertPointerEventToMouseEvent(event));
+              }
+            }
+          }
+        };
+      }
+      return {
+        ...focusEventHandlers,
+        ...responderEventHandlers,
+        ...hoverPointerEvents,
+      };
+    } else {
+      const mouseEventHandlers =
+        Platform.OS === 'ios' || Platform.OS === 'android'
+          ? null
+          : {
+              onMouseEnter: (event: MouseEvent): void => {
+                if (isHoverEnabled()) {
+                  this._isHovered = true;
+                  this._cancelHoverOutDelayTimeout();
+                  const {onHoverIn} = this._config;
+                  if (onHoverIn != null) {
+                    const delayHoverIn = normalizeDelay(
+                      this._config.delayHoverIn,
+                    );
+                    if (delayHoverIn > 0) {
+                      event.persist();
+                      this._hoverInDelayTimeout = setTimeout(() => {
+                        onHoverIn(event);
+                      }, delayHoverIn);
+                    } else {
                       onHoverIn(event);
-                    }, delayHoverIn);
-                  } else {
-                    onHoverIn(event);
+                    }
                   }
                 }
-              }
-            },
+              },
 
-            onMouseLeave: (event: MouseEvent): void => {
-              if (this._isHovered) {
-                this._isHovered = false;
-                this._cancelHoverInDelayTimeout();
-                const {onHoverOut} = this._config;
-                if (onHoverOut != null) {
-                  const delayHoverOut = normalizeDelay(
-                    this._config.delayHoverOut,
-                  );
-                  if (delayHoverOut > 0) {
-                    event.persist();
-                    this._hoverInDelayTimeout = setTimeout(() => {
+              onMouseLeave: (event: MouseEvent): void => {
+                if (this._isHovered) {
+                  this._isHovered = false;
+                  this._cancelHoverInDelayTimeout();
+                  const {onHoverOut} = this._config;
+                  if (onHoverOut != null) {
+                    const delayHoverOut = normalizeDelay(
+                      this._config.delayHoverOut,
+                    );
+                    if (delayHoverOut > 0) {
+                      event.persist();
+                      this._hoverInDelayTimeout = setTimeout(() => {
+                        onHoverOut(event);
+                      }, delayHoverOut);
+                    } else {
                       onHoverOut(event);
-                    }, delayHoverOut);
-                  } else {
-                    onHoverOut(event);
+                    }
                   }
                 }
-              }
-            },
-          };
-
-    return {
-      ...focusEventHandlers,
-      ...responderEventHandlers,
-      ...mouseEventHandlers,
-    };
+              },
+            };
+      return {
+        ...focusEventHandlers,
+        ...responderEventHandlers,
+        ...mouseEventHandlers,
+      };
+    }
   }
 
   /**
@@ -754,7 +808,14 @@ export default class Pressability {
     }
   }
 
-  _measureCallback = (left, top, width, height, pageX, pageY) => {
+  _measureCallback = (
+    left: number,
+    top: number,
+    width: number,
+    height: number,
+    pageX: number,
+    pageY: number,
+  ) => {
     if (!left && !top && !width && !height && !pageX && !pageY) {
       return;
     }
@@ -864,7 +925,11 @@ export default class Pressability {
   }
 }
 
-function normalizeDelay(delay: ?number, min = 0, fallback = 0): number {
+function normalizeDelay(
+  delay: ?number,
+  min: number = 0,
+  fallback: number = 0,
+): number {
   return Math.max(min, delay ?? fallback);
 }
 
@@ -879,3 +944,17 @@ const getTouchFromPressEvent = (event: PressEvent) => {
   }
   return event.nativeEvent;
 };
+
+function convertPointerEventToMouseEvent(input: PointerEvent): MouseEvent {
+  const {clientX, clientY} = input.nativeEvent;
+  return {
+    ...input,
+    nativeEvent: {
+      clientX,
+      clientY,
+      pageX: clientX,
+      pageY: clientY,
+      timestamp: input.timeStamp,
+    },
+  };
+}

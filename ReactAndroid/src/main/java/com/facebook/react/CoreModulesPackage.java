@@ -37,8 +37,8 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerResolver;
 import com.facebook.systrace.Systrace;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -184,7 +184,7 @@ public class CoreModulesPackage extends TurboReactPackage implements ReactPackag
               }
 
               @Override
-              public List<String> getViewManagerNames() {
+              public Collection<String> getViewManagerNames() {
                 return mReactInstanceManager.getViewManagerNames();
               }
             };

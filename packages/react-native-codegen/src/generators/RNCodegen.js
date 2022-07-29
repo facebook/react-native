@@ -134,42 +134,55 @@ const SCHEMAS_GENERATORS = {
   ],
 };
 
-function writeMapToFiles(map: Map<string, string>, outputDir: string) {
+type CodeGenFile = {
+  name: string,
+  content: string,
+  outputDir: string,
+};
+
+function writeMapToFiles(map: Array<CodeGenFile>) {
   let success = true;
-  map.forEach((contents: string, fileName: string) => {
+  map.forEach(file => {
     try {
-      const location = path.join(outputDir, fileName);
+      const location = path.join(file.outputDir, file.name);
       const dirName = path.dirname(location);
       if (!fs.existsSync(dirName)) {
         fs.mkdirSync(dirName, {recursive: true});
       }
-      fs.writeFileSync(location, contents);
+      fs.writeFileSync(location, file.content);
     } catch (error) {
       success = false;
-      console.error(`Failed to write ${fileName} to ${outputDir}`, error);
+      console.error(`Failed to write ${file.name} to ${file.outputDir}`, error);
     }
   });
 
   return success;
 }
 
-function checkFilesForChanges(
-  map: Map<string, string>,
-  outputDir: string,
-): boolean {
+function checkFilesForChanges(generated: Array<CodeGenFile>): boolean {
   let hasChanged = false;
 
-  map.forEach((contents: string, fileName: string) => {
-    const location = path.join(outputDir, fileName);
+  generated.forEach(file => {
+    const location = path.join(file.outputDir, file.name);
     const currentContents = fs.readFileSync(location, 'utf8');
-    if (currentContents !== contents) {
-      console.error(`- ${fileName} has changed`);
+    if (currentContents !== file.content) {
+      console.error(`- ${file.name} has changed`);
 
       hasChanged = true;
     }
   });
 
   return !hasChanged;
+}
+
+function checkOrWriteFiles(
+  generatedFiles: Array<CodeGenFile>,
+  test: void | boolean,
+): boolean {
+  if (test === true) {
+    return checkFilesForChanges(generatedFiles);
+  }
+  return writeMapToFiles(generatedFiles);
 }
 
 module.exports = {
@@ -185,22 +198,42 @@ module.exports = {
   ): boolean {
     schemaValidator.validate(schema);
 
-    const generatedFiles = [];
+    function composePath(intermediate: string) {
+      return path.join(outputDirectory, intermediate, libraryName);
+    }
+
+    const componentIOSOutput = composePath('react/renderer/components/');
+    const modulesIOSOutput = composePath('./');
+
+    const outputFoldersForGenerators = {
+      componentsIOS: componentIOSOutput,
+      modulesIOS: modulesIOSOutput,
+      descriptors: outputDirectory,
+      events: outputDirectory,
+      props: outputDirectory,
+      componentsAndroid: outputDirectory,
+      modulesAndroid: outputDirectory,
+      modulesCxx: outputDirectory,
+      tests: outputDirectory,
+      'shadow-nodes': outputDirectory,
+    };
+
+    const generatedFiles: Array<CodeGenFile> = [];
+
     for (const name of generators) {
       for (const generator of LIBRARY_GENERATORS[name]) {
-        generatedFiles.push(
-          ...generator(libraryName, schema, packageName, assumeNonnull),
+        generator(libraryName, schema, packageName, assumeNonnull).forEach(
+          (contents: string, fileName: string) => {
+            generatedFiles.push({
+              name: fileName,
+              content: contents,
+              outputDir: outputFoldersForGenerators[name],
+            });
+          },
         );
       }
     }
-
-    const filesToUpdate = new Map([...generatedFiles]);
-
-    if (test === true) {
-      return checkFilesForChanges(filesToUpdate, outputDirectory);
-    }
-
-    return writeMapToFiles(filesToUpdate, outputDirectory);
+    return checkOrWriteFiles(generatedFiles, test);
   },
   generateFromSchemas(
     {schemas, outputDirectory}: SchemasOptions,
@@ -210,20 +243,20 @@ module.exports = {
       schemaValidator.validate(schemas[libraryName]),
     );
 
-    const generatedFiles = [];
+    const generatedFiles: Array<CodeGenFile> = [];
+
     for (const name of generators) {
       for (const generator of SCHEMAS_GENERATORS[name]) {
-        generatedFiles.push(...generator(schemas));
+        generator(schemas).forEach((contents: string, fileName: string) => {
+          generatedFiles.push({
+            name: fileName,
+            content: contents,
+            outputDir: outputDirectory,
+          });
+        });
       }
     }
-
-    const filesToUpdate = new Map([...generatedFiles]);
-
-    if (test === true) {
-      return checkFilesForChanges(filesToUpdate, outputDirectory);
-    }
-
-    return writeMapToFiles(filesToUpdate, outputDirectory);
+    return checkOrWriteFiles(generatedFiles, test);
   },
   generateViewConfig({libraryName, schema}: LibraryOptions): string {
     schemaValidator.validate(schema);

@@ -44,7 +44,7 @@ export type SpringAnimationConfig = {
         ...
       }
     | AnimatedColor
-    | AnimatedInterpolation,
+    | AnimatedInterpolation<number>,
   overshootClamping?: boolean,
   restDisplacementThreshold?: number,
   restSpeedThreshold?: number,
@@ -67,7 +67,7 @@ export type SpringAnimationConfig = {
 
 export type SpringAnimationConfigSingle = {
   ...AnimationConfig,
-  toValue: number | AnimatedValue | AnimatedInterpolation,
+  toValue: number,
   overshootClamping?: boolean,
   restDisplacementThreshold?: number,
   restSpeedThreshold?: number,
@@ -90,7 +90,7 @@ class SpringAnimation extends Animation {
   _startPosition: number;
   _lastPosition: number;
   _fromValue: number;
-  _toValue: any;
+  _toValue: number;
   _stiffness: number;
   _damping: number;
   _mass: number;

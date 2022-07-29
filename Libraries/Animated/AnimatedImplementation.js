@@ -94,7 +94,7 @@ const _combineCallbacks = function (
   config: $ReadOnly<{...AnimationConfig, ...}>,
 ) {
   if (callback && config.onComplete) {
-    return (...args) => {
+    return (...args: Array<EndResult>) => {
       config.onComplete && config.onComplete(...args);
       callback && callback(...args);
     };
@@ -308,7 +308,7 @@ const sequence = function (
   let current = 0;
   return {
     start: function (callback?: ?EndCallback) {
-      const onComplete = function (result) {
+      const onComplete = function (result: EndResult) {
         if (!result.finished) {
           callback && callback(result);
           return;
@@ -380,7 +380,7 @@ const parallel = function (
       }
 
       animations.forEach((animation, idx) => {
-        const cb = function (endResult) {
+        const cb = function (endResult: EndResult | {finished: boolean}) {
           hasEnded[idx] = true;
           doneCount++;
           if (doneCount === animations.length) {
@@ -460,6 +460,7 @@ type LoopAnimationConfig = {
 
 const loop = function (
   animation: CompositeAnimation,
+  // $FlowFixMe[prop-missing]
   {iterations = -1, resetBeforeIteration = true}: LoopAnimationConfig = {},
 ): CompositeAnimation {
   let isFinished = false;
@@ -550,6 +551,19 @@ const event = function (
     return animatedEvent.__getHandler();
   }
 };
+
+// All types of animated nodes that represent scalar numbers and can be interpolated (etc)
+type AnimatedNumeric =
+  | AnimatedAddition
+  | AnimatedDiffClamp
+  | AnimatedDivision
+  | AnimatedInterpolation<number>
+  | AnimatedModulo
+  | AnimatedMultiplication
+  | AnimatedSubtraction
+  | AnimatedValue;
+
+export type {AnimatedNumeric as Numeric};
 
 /**
  * The `Animated` library is designed to make animations fluid, powerful, and

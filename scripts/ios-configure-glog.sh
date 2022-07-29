@@ -20,6 +20,7 @@ if [ -z "$CURRENT_ARCH" ] || [ "$CURRENT_ARCH" == "undefined_arch" ]; then
     fi
 fi
 
+# @lint-ignore-every TXT2 Tab Literal
 if [ "$CURRENT_ARCH" == "arm64" ]; then
     cat <<\EOF >>fix_glog_0.3.5_apple_silicon.patch
 diff --git a/config.sub b/config.sub
@@ -50,8 +51,8 @@ if [ -h "test-driver" ]; then
 fi
 
 # Manually disable gflags include to fix issue https://github.com/facebook/react-native/issues/28446
-sed -i '' 's/\@ac_cv_have_libgflags\@/0/' src/glog/logging.h.in
-sed -i '' 's/HAVE_LIB_GFLAGS/HAVE_LIB_GFLAGS_DISABLED/' src/config.h.in
+sed -i.bak -e 's/\@ac_cv_have_libgflags\@/0/' src/glog/logging.h.in && rm src/glog/logging.h.in.bak
+sed -i.bak -e 's/HAVE_LIB_GFLAGS/HAVE_LIB_GFLAGS_DISABLED/' src/config.h.in && rm src/config.h.in.bak
 
 ./configure --host arm-apple-darwin
 

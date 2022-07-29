@@ -17,8 +17,8 @@ const ReactTestRenderer = require('react-test-renderer');
 const setAndForwardRef = require('../setAndForwardRef');
 
 describe('setAndForwardRef', () => {
-  let innerFuncCalled = false;
-  let outerFuncCalled = false;
+  let innerFuncCalled: ?boolean = false;
+  let outerFuncCalled: ?boolean = false;
 
   class ForwardedComponent extends React.Component<{||}> {
     testFunc() {

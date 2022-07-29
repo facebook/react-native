@@ -32,7 +32,7 @@ type Descriptor = {|
   events: Array<Event>,
 |};
 
-function mergeDomains(original, extra) {
+function mergeDomains(original: any, extra: any) {
   return {...original, domains: original.domains.concat(extra.domains)};
 }
 
@@ -186,7 +186,7 @@ function filterReachableFromRoots(
 
   // Sort commands and events so the code is easier to read. Types have to be
   // topologically sorted as explained above.
-  const comparator = (a, b) => {
+  const comparator = (a: Command | Event, b: Command | Event) => {
     const id1 = a.getDebuggerName();
     const id2 = b.getDebuggerName();
     return id1 < id2 ? -1 : id1 > id2 ? 1 : 0;

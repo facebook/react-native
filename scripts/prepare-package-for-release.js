@@ -38,7 +38,6 @@ const argv = yargs
     default: false,
   }).argv;
 
-const currentCommit = process.env.CIRCLE_SHA1;
 const branch = process.env.CIRCLE_BRANCH;
 const remote = argv.remote;
 const releaseVersion = argv.toVersion;

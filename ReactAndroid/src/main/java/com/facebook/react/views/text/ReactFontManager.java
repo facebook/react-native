@@ -111,6 +111,16 @@ public class ReactFontManager {
   }
 
   /**
+   * Equivalent method to {@see addCustomFont(Context, String, int)} which accepts a Typeface
+   * object.
+   */
+  public void addCustomFont(String fontFamily, @Nullable Typeface font) {
+    if (font != null) {
+      mCustomTypefaceCache.put(fontFamily, font);
+    }
+  }
+
+  /**
    * Add additional font family, or replace the exist one in the font memory cache.
    *
    * @param style

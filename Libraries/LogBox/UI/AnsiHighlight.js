@@ -63,6 +63,8 @@ export default function Ansi({
     }
   });
 
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   const getText = (content, key) => {
     if (key === 1) {
       // Remove the vertical bar after line numbers

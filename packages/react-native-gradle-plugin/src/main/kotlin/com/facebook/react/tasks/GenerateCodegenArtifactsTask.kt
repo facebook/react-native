@@ -7,16 +7,20 @@
 
 package com.facebook.react.tasks
 
-import com.facebook.react.codegen.generator.JavaGenerator
+import com.facebook.react.utils.JsonUtils
 import com.facebook.react.utils.windowsAwareCommandLine
-import org.gradle.api.GradleException
 import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFile
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
-import org.gradle.api.tasks.*
+import org.gradle.api.tasks.Exec
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.OutputDirectory
 
 abstract class GenerateCodegenArtifactsTask : Exec() {
 
@@ -26,9 +30,9 @@ abstract class GenerateCodegenArtifactsTask : Exec() {
 
   @get:Internal abstract val generatedSrcDir: DirectoryProperty
 
-  @get:Input abstract val nodeExecutableAndArgs: ListProperty<String>
+  @get:InputFile abstract val packageJsonFile: RegularFileProperty
 
-  @get:Input abstract val useJavaGenerator: Property<Boolean>
+  @get:Input abstract val nodeExecutableAndArgs: ListProperty<String>
 
   @get:Input abstract val codegenJavaPackageName: Property<String>
 
@@ -50,21 +54,10 @@ abstract class GenerateCodegenArtifactsTask : Exec() {
 
   override fun exec() {
     checkForDeprecatedProperty()
-    setupCommandLine()
+
+    val (resolvedLibraryName, resolvedCodegenJavaPackageName) = resolveTaskParameters()
+    setupCommandLine(resolvedLibraryName, resolvedCodegenJavaPackageName)
     super.exec()
-    if (useJavaGenerator.getOrElse(false)) {
-      // Use Java-based generator implementation to produce the source files,
-      // this will override the JS-based generator output (for the Java files only).
-      try {
-        JavaGenerator(
-                generatedSchemaFile.get().asFile,
-                codegenJavaPackageName.get(),
-                generatedSrcDir.get().asFile)
-            .build()
-      } catch (e: Exception) {
-        throw GradleException("Failed to generate Java from schema.", e)
-      }
-    }
   }
 
   private fun checkForDeprecatedProperty() {
@@ -91,7 +84,20 @@ abstract class GenerateCodegenArtifactsTask : Exec() {
     }
   }
 
-  internal fun setupCommandLine() {
+  internal fun resolveTaskParameters(): Pair<String, String> {
+    val parsedPackageJson =
+        if (packageJsonFile.isPresent && packageJsonFile.get().asFile.exists()) {
+          JsonUtils.fromCodegenJson(packageJsonFile.get().asFile)
+        } else {
+          null
+        }
+    val resolvedLibraryName = parsedPackageJson?.codegenConfig?.name ?: libraryName.get()
+    val resolvedCodegenJavaPackageName =
+        parsedPackageJson?.codegenConfig?.android?.javaPackageName ?: codegenJavaPackageName.get()
+    return resolvedLibraryName to resolvedCodegenJavaPackageName
+  }
+
+  internal fun setupCommandLine(libraryName: String, codegenJavaPackageName: String) {
     commandLine(
         windowsAwareCommandLine(
             *nodeExecutableAndArgs.get().toTypedArray(),
@@ -103,8 +109,8 @@ abstract class GenerateCodegenArtifactsTask : Exec() {
             "--outputDir",
             generatedSrcDir.get().asFile.absolutePath,
             "--libraryName",
-            libraryName.get(),
+            libraryName,
             "--javaPackageName",
-            codegenJavaPackageName.get()))
+            codegenJavaPackageName))
   }
 }

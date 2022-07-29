@@ -87,7 +87,16 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
       }
 
       TypeElement typeElement = (TypeElement) reactModuleListElement;
-      ReactModuleList reactModuleList = typeElement.getAnnotation(ReactModuleList.class);
+
+      ReactModuleList reactModuleList = null;
+      try {
+        reactModuleList = typeElement.getAnnotation(ReactModuleList.class);
+      } catch (Exception ex) {
+        throw new RuntimeException(
+            "Could not load classes set in @ReactModuleList.nativeModules. Check that they exist and are imported correctly on class: "
+                + typeElement.getQualifiedName(),
+            ex);
+      }
 
       if (reactModuleList == null) {
         continue;

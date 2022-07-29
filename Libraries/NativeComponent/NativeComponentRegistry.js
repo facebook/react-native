@@ -23,8 +23,6 @@ import * as React from 'react';
 
 let getRuntimeConfig;
 
-let componentNameToExists: Map<string, boolean> = new Map();
-
 /**
  * Configures a function that is called to determine whether a given component
  * should be registered using reflection of the native component at runtime.

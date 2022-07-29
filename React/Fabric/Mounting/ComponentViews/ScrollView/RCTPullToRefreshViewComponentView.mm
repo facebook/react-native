@@ -25,7 +25,7 @@ using namespace facebook::react;
 
 @implementation RCTPullToRefreshViewComponentView {
   UIRefreshControl *_refreshControl;
-  RCTScrollViewComponentView *_scrollViewComponentView;
+  RCTScrollViewComponentView *__weak _scrollViewComponentView;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame

@@ -9,6 +9,9 @@
 
 #include "FabricMountingManager.h"
 
+#include <memory>
+#include <mutex>
+
 #include <fbjni/fbjni.h>
 #include <react/jni/JRuntimeExecutor.h>
 #include <react/jni/JRuntimeScheduler.h>
@@ -18,12 +21,9 @@
 #include <react/renderer/scheduler/SchedulerDelegate.h>
 #include <react/renderer/uimanager/LayoutAnimationStatusDelegate.h>
 
-#include <memory>
-#include <mutex>
 #include "ComponentFactory.h"
 #include "EventBeatManager.h"
 #include "EventEmitterWrapper.h"
-#include "JBackgroundExecutor.h"
 #include "SurfaceHandlerBinding.h"
 
 namespace facebook {
@@ -38,10 +38,9 @@ class Binding : public jni::HybridClass<Binding>,
   constexpr static const char *const kJavaDescriptor =
       "Lcom/facebook/react/fabric/Binding;";
 
-  constexpr static auto ReactFeatureFlagsJavaDescriptor =
-      "com/facebook/react/config/ReactFeatureFlags";
-
   static void registerNatives();
+
+  std::shared_ptr<Scheduler> getScheduler();
 
  private:
   void setConstraints(
@@ -133,7 +132,6 @@ class Binding : public jni::HybridClass<Binding>,
   std::shared_ptr<FabricMountingManager> mountingManager_;
   std::shared_ptr<Scheduler> scheduler_;
 
-  std::shared_ptr<Scheduler> getScheduler();
   std::shared_ptr<FabricMountingManager> verifyMountingManager(
       std::string const &locationHint);
 
@@ -143,7 +141,7 @@ class Binding : public jni::HybridClass<Binding>,
 
   std::shared_ptr<LayoutAnimationDriver> animationDriver_;
 
-  std::unique_ptr<JBackgroundExecutor> backgroundExecutor_;
+  BackgroundExecutor backgroundExecutor_;
 
   butter::map<SurfaceId, SurfaceHandler> surfaceHandlerRegistry_{};
   butter::shared_mutex

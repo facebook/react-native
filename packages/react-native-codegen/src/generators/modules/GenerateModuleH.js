@@ -119,7 +119,7 @@ function translatePrimitiveJSTypeToCpp(
     realTypeAnnotation = resolveAlias(realTypeAnnotation.name);
   }
 
-  function wrap(type) {
+  function wrap(type: string) {
     return nullable ? `std::optional<${type}>` : type;
   }
 
@@ -155,6 +155,8 @@ function translatePrimitiveJSTypeToCpp(
     case 'FunctionTypeAnnotation':
       return wrap('jsi::Function');
     case 'PromiseTypeAnnotation':
+      return wrap('jsi::Value');
+    case 'MixedTypeAnnotation':
       return wrap('jsi::Value');
     default:
       (realTypeAnnotation.type: empty);

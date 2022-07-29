@@ -22,6 +22,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.uimanager.FabricViewStateManager;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIManagerHelper;
@@ -68,34 +69,49 @@ public class ReactScrollViewHelper {
   private static boolean mSmoothScrollDurationInitialized = false;
 
   /** Shared by {@link ReactScrollView} and {@link ReactHorizontalScrollView}. */
-  public static void emitScrollEvent(ViewGroup scrollView, float xVelocity, float yVelocity) {
+  public static <T extends ViewGroup & HasScrollEventThrottle> void emitScrollEvent(
+      T scrollView, float xVelocity, float yVelocity) {
     emitScrollEvent(scrollView, ScrollEventType.SCROLL, xVelocity, yVelocity);
   }
 
-  public static void emitScrollBeginDragEvent(ViewGroup scrollView) {
+  public static <T extends ViewGroup & HasScrollEventThrottle> void emitScrollBeginDragEvent(
+      T scrollView) {
     emitScrollEvent(scrollView, ScrollEventType.BEGIN_DRAG);
   }
 
-  public static void emitScrollEndDragEvent(
-      ViewGroup scrollView, float xVelocity, float yVelocity) {
+  public static <T extends ViewGroup & HasScrollEventThrottle> void emitScrollEndDragEvent(
+      T scrollView, float xVelocity, float yVelocity) {
     emitScrollEvent(scrollView, ScrollEventType.END_DRAG, xVelocity, yVelocity);
   }
 
-  public static void emitScrollMomentumBeginEvent(
-      ViewGroup scrollView, int xVelocity, int yVelocity) {
+  public static <T extends ViewGroup & HasScrollEventThrottle> void emitScrollMomentumBeginEvent(
+      T scrollView, int xVelocity, int yVelocity) {
     emitScrollEvent(scrollView, ScrollEventType.MOMENTUM_BEGIN, xVelocity, yVelocity);
   }
 
-  public static void emitScrollMomentumEndEvent(ViewGroup scrollView) {
+  public static <T extends ViewGroup & HasScrollEventThrottle> void emitScrollMomentumEndEvent(
+      T scrollView) {
     emitScrollEvent(scrollView, ScrollEventType.MOMENTUM_END);
   }
 
-  private static void emitScrollEvent(ViewGroup scrollView, ScrollEventType scrollEventType) {
+  private static <T extends ViewGroup & HasScrollEventThrottle> void emitScrollEvent(
+      T scrollView, ScrollEventType scrollEventType) {
     emitScrollEvent(scrollView, scrollEventType, 0, 0);
   }
 
-  private static void emitScrollEvent(
-      ViewGroup scrollView, ScrollEventType scrollEventType, float xVelocity, float yVelocity) {
+  private static <T extends ViewGroup & HasScrollEventThrottle> void emitScrollEvent(
+      T scrollView, ScrollEventType scrollEventType, float xVelocity, float yVelocity) {
+    long now = System.currentTimeMillis();
+    // Throttle the scroll event if scrollEventThrottle is set to be equal or more than 17 ms.
+    // We limit the delta to 17ms so that small throttles intended to enable 60fps updates will not
+    // inadvertently filter out any scroll events.
+    if (ReactFeatureFlags.enableScrollEventThrottle
+        && scrollView.getScrollEventThrottle()
+            >= Math.max(17, now - scrollView.getLastScrollDispatchTime())) {
+      // Scroll events are throttled.
+      return;
+    }
+
     View contentView = scrollView.getChildAt(0);
 
     if (contentView == null) {
@@ -129,6 +145,7 @@ public class ReactScrollViewHelper {
               contentView.getHeight(),
               scrollView.getWidth(),
               scrollView.getHeight()));
+      scrollView.setLastScrollDispatchTime(now);
     }
   }
 
@@ -469,7 +486,7 @@ public class ReactScrollViewHelper {
   public static <
           T extends
               ViewGroup & FabricViewStateManager.HasFabricViewStateManager & HasScrollState
-                  & HasFlingAnimator>
+                  & HasFlingAnimator & HasScrollEventThrottle>
       void updateStateOnScrollChanged(
           final T scrollView, final float xVelocity, final float yVelocity) {
     // Race an UpdateState with every onScroll. This makes it more likely that, in Fabric,
@@ -578,5 +595,22 @@ public class ReactScrollViewHelper {
 
     /** Get the fling distance with current velocity for prediction */
     int getFlingExtrapolatedDistance(int velocity);
+  }
+
+  public interface HasScrollEventThrottle {
+    /**
+     * Set the scroll event throttle in ms. This number is used to throttle the scroll events. The
+     * default value is zero, which means the scroll events are sent with no throttle.
+     */
+    void setScrollEventThrottle(int scrollEventThrottle);
+
+    /** Get the scroll event throttle in ms. */
+    int getScrollEventThrottle();
+
+    /** Set the scroll view's last dispatch time for throttling */
+    void setLastScrollDispatchTime(long lastScrollDispatchTime);
+
+    /** Get the scroll view dispatch time for throttling */
+    long getLastScrollDispatchTime();
   }
 }

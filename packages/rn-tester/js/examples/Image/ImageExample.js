@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {LayoutEvent} from 'react-native/Libraries/Types/CoreEventTypes';
+
 const React = require('react');
 
 const {
@@ -451,7 +453,7 @@ class OnLayoutExample extends React.Component<
     layoutHandlerMessage: 'No Message',
   };
 
-  onLayoutHandler = event => {
+  onLayoutHandler = (event: LayoutEvent) => {
     this.setState({
       width: this.state.width,
       height: this.state.height,

@@ -47,13 +47,6 @@ const Platform = {
   get isPad(): boolean {
     return this.constants.interfaceIdiom === 'pad';
   },
-  /**
-   * Deprecated, use `isTV` instead.
-   */
-  // $FlowFixMe[unsafe-getters-setters]
-  get isTVOS(): boolean {
-    return Platform.isTV;
-  },
   // $FlowFixMe[unsafe-getters-setters]
   get isTV(): boolean {
     return this.constants.interfaceIdiom === 'tv';

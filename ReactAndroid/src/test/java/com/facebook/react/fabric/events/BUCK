@@ -4,6 +4,7 @@ rn_robolectric_test(
     name = "events",
     srcs = glob(["*.java"]),
     contacts = ["oncall+react_native@xmail.facebook.com"],
+    language = "JAVA",
     deps = [
         react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_dep("third-party/java/junit:junit"),

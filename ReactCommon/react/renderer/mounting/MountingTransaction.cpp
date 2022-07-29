@@ -30,7 +30,7 @@ ShadowViewMutationList MountingTransaction::getMutations() && {
   return std::move(mutations_);
 }
 
-TransactionTelemetry const &MountingTransaction::getTelemetry() const {
+TransactionTelemetry &MountingTransaction::getTelemetry() const {
   return telemetry_;
 }
 

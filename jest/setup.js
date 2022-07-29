@@ -130,9 +130,8 @@ jest
       isReduceMotionEnabled: jest.fn(),
       isReduceTransparencyEnabled: jest.fn(),
       isScreenReaderEnabled: jest.fn(() => Promise.resolve(false)),
-      removeEventListener: jest.fn(),
       setAccessibilityFocus: jest.fn(),
-      sendAccessibilityEvent_unstable: jest.fn(),
+      sendAccessibilityEvent: jest.fn(),
       getRecommendedTimeoutMillis: jest.fn(),
     },
   }))
@@ -177,7 +176,6 @@ jest
     openSettings: jest.fn(),
     addEventListener: jest.fn(),
     getInitialURL: jest.fn(() => Promise.resolve()),
-    removeEventListener: jest.fn(),
     sendIntent: jest.fn(),
   }))
   // Mock modules defined by the native layer (ex: Objective-C, Java)
@@ -355,6 +353,10 @@ jest
     '../Libraries/Utilities/verifyComponentAttributeEquivalence',
     () => function () {},
   )
+  .mock('../Libraries/Vibration/Vibration', () => ({
+    vibrate: jest.fn(),
+    cancel: jest.fn(),
+  }))
   .mock('../Libraries/Components/View/ViewNativeComponent', () => {
     const React = require('react');
     const Component = class extends React.Component {

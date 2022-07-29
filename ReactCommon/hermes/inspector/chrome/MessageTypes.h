@@ -1,5 +1,5 @@
 // Copyright (c) Meta Platforms, Inc. and affiliates. All Rights Reserved.
-// @generated SignedSource<<fcbcfeecbc72ca30c8ed005ad47839bb>>
+// @generated SignedSource<<dafd583635231e17c0264beb38610499>>
 
 #pragma once
 
@@ -63,6 +63,8 @@ struct GetHeapUsageRequest;
 struct GetHeapUsageResponse;
 struct GetPropertiesRequest;
 struct GetPropertiesResponse;
+struct GlobalLexicalScopeNamesRequest;
+struct GlobalLexicalScopeNamesResponse;
 struct InternalPropertyDescriptor;
 struct PropertyDescriptor;
 struct RemoteObject;
@@ -142,6 +144,7 @@ struct RequestHandler {
   virtual void handle(const runtime::EvaluateRequest &req) = 0;
   virtual void handle(const runtime::GetHeapUsageRequest &req) = 0;
   virtual void handle(const runtime::GetPropertiesRequest &req) = 0;
+  virtual void handle(const runtime::GlobalLexicalScopeNamesRequest &req) = 0;
   virtual void handle(const runtime::RunIfWaitingForDebuggerRequest &req) = 0;
 };
 
@@ -180,6 +183,7 @@ struct NoopRequestHandler : public RequestHandler {
   void handle(const runtime::EvaluateRequest &req) override {}
   void handle(const runtime::GetHeapUsageRequest &req) override {}
   void handle(const runtime::GetPropertiesRequest &req) override {}
+  void handle(const runtime::GlobalLexicalScopeNamesRequest &req) override {}
   void handle(const runtime::RunIfWaitingForDebuggerRequest &req) override {}
 };
 
@@ -686,6 +690,16 @@ struct runtime::GetPropertiesRequest : public Request {
   folly::Optional<bool> ownProperties;
 };
 
+struct runtime::GlobalLexicalScopeNamesRequest : public Request {
+  GlobalLexicalScopeNamesRequest();
+  explicit GlobalLexicalScopeNamesRequest(const folly::dynamic &obj);
+
+  folly::dynamic toDynamic() const override;
+  void accept(RequestHandler &handler) const override;
+
+  folly::Optional<runtime::ExecutionContextId> executionContextId;
+};
+
 struct runtime::RunIfWaitingForDebuggerRequest : public Request {
   RunIfWaitingForDebuggerRequest();
   explicit RunIfWaitingForDebuggerRequest(const folly::dynamic &obj);
@@ -814,6 +828,14 @@ struct runtime::GetPropertiesResponse : public Response {
   folly::Optional<std::vector<runtime::InternalPropertyDescriptor>>
       internalProperties;
   folly::Optional<runtime::ExceptionDetails> exceptionDetails;
+};
+
+struct runtime::GlobalLexicalScopeNamesResponse : public Response {
+  GlobalLexicalScopeNamesResponse() = default;
+  explicit GlobalLexicalScopeNamesResponse(const folly::dynamic &obj);
+  folly::dynamic toDynamic() const override;
+
+  std::vector<std::string> names;
 };
 
 /// Notifications

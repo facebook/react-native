@@ -156,7 +156,7 @@ function translateFunctionParamToJavaType(
       imports.add('com.facebook.react.bridge.Callback');
       return 'Callback';
     default:
-      (realTypeAnnotation.type: empty);
+      (realTypeAnnotation.type: 'MixedTypeAnnotation');
       throw new Error(createErrorMessage(realTypeAnnotation.type));
   }
 }
@@ -212,15 +212,15 @@ function translateFunctionReturnTypeToJavaType(
       return nullable ? 'Boolean' : 'boolean';
     case 'ObjectTypeAnnotation':
       imports.add('com.facebook.react.bridge.WritableMap');
-      return 'WritableMap';
+      return wrapIntoNullableIfNeeded('WritableMap');
     case 'GenericObjectTypeAnnotation':
       imports.add('com.facebook.react.bridge.WritableMap');
-      return 'WritableMap';
+      return wrapIntoNullableIfNeeded('WritableMap');
     case 'ArrayTypeAnnotation':
       imports.add('com.facebook.react.bridge.WritableArray');
-      return 'WritableArray';
+      return wrapIntoNullableIfNeeded('WritableArray');
     default:
-      (realTypeAnnotation.type: empty);
+      (realTypeAnnotation.type: 'MixedTypeAnnotation');
       throw new Error(createErrorMessage(realTypeAnnotation.type));
   }
 }
@@ -272,7 +272,7 @@ function getFalsyReturnStatementFromReturnType(
     case 'ArrayTypeAnnotation':
       return 'return null;';
     default:
-      (realTypeAnnotation.type: empty);
+      (realTypeAnnotation.type: 'MixedTypeAnnotation');
       throw new Error(createErrorMessage(realTypeAnnotation.type));
   }
 }

@@ -173,8 +173,8 @@ type IOSProps = $ReadOnly<{|
    */
   automaticallyAdjustContentInsets?: ?boolean,
   /**
-   * Controls whether the ScrollView should automatically adjust it's contentInset
-   * and scrollViewInsets when the Keyboard changes it's size. The default value is false.
+   * Controls whether the ScrollView should automatically adjust its `contentInset`
+   * and `scrollViewInsets` when the Keyboard changes its size. The default value is false.
    * @platform ios
    */
   automaticallyAdjustKeyboardInsets?: ?boolean,
@@ -190,12 +190,6 @@ type IOSProps = $ReadOnly<{|
    * @platform ios
    */
   contentInset?: ?EdgeInsetsProp,
-  /**
-   * Used to manually set the starting scroll offset.
-   * The default value is `{x: 0, y: 0}`.
-   * @platform ios
-   */
-  contentOffset?: ?PointProp,
   /**
    * When true, the scroll view bounces when it reaches the end of the
    * content if the content is larger then the scroll view along the axis of
@@ -457,6 +451,11 @@ export type Props = $ReadOnly<{|
    * ```
    */
   contentContainerStyle?: ?ViewStyleProp,
+  /**
+   * Used to manually set the starting scroll offset.
+   * The default value is `{x: 0, y: 0}`.
+   */
+  contentOffset?: ?PointProp,
   /**
    * When true, the scroll view stops on the next index (in relation to scroll
    * position at release) regardless of how fast the gesture is. This can be
@@ -1108,7 +1107,7 @@ class ScrollView extends React.Component<Props, State> {
     }
   };
 
-  _getKeyForIndex(index, childArray) {
+  _getKeyForIndex(index: $FlowFixMe, childArray: $FlowFixMe) {
     const child = childArray[index];
     return child && child.key;
   }
@@ -1141,7 +1140,7 @@ class ScrollView extends React.Component<Props, State> {
     }
   }
 
-  _onStickyHeaderLayout(index, event, key) {
+  _onStickyHeaderLayout(index: $FlowFixMe, event: $FlowFixMe, key: $FlowFixMe) {
     const {stickyHeaderIndices} = this.props;
     if (!stickyHeaderIndices) {
       return;
@@ -1519,6 +1518,7 @@ class ScrollView extends React.Component<Props, State> {
       keyboardNeverPersistTaps &&
       this._keyboardIsDismissible() &&
       e.target != null &&
+      // $FlowFixMe[incompatible-call]
       !TextInputState.isTextInput(e.target)
     ) {
       return true;
@@ -1822,7 +1822,9 @@ const styles = StyleSheet.create({
   },
 });
 
-function Wrapper(props, ref) {
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
+function Wrapper(props, ref: (mixed => mixed) | {current: mixed, ...}) {
   return <ScrollView {...props} scrollViewRef={ref} />;
 }
 Wrapper.displayName = 'ScrollView';

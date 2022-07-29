@@ -12,14 +12,14 @@ There are three types of stakeholders:
 
 Partners are companies that are significantly invested in React Native and have been for years. Informed by their use of React Native, they push for improvements of the core and/or the ecosystem around it. Partners think of React Native as a product: they understand the trade offs that the project makes as well as future plans and goals. Together we shape the vision for React Native to make it the best way to build applications.
 
-React Native's current set of partners include Callstack, Expo, Facebook, Infinite Red, Microsoft and Software Mansion. Many engineers from these companies are core contributors, and their partner responsibilities also include:
+React Native's current set of partners include Callstack, Expo, Infinite Red, Meta, Microsoft and Software Mansion. Many engineers from these companies are core contributors, and their partner responsibilities also include:
 
 * **[Callstack](https://callstack.com/):** Manages releases, maintains the [React Native CLI](https://github.com/react-native-community/react-native-cli) and organizes [React Native EU](https://react-native.eu/)
-* **[Expo](https://expo.io/):** Builds [expo](https://github.com/expo/expo) on top of React Native to simplify app development
-* **[Facebook](https://opensource.facebook.com):** Oversees the React Native product and maintains the [React Native core repo](https://reactnative.dev/) 
+* **[Expo](https://expo.dev/):** Builds [expo](https://github.com/expo/expo) and [EAS](https://expo.dev/eas) on top of React Native to simplify app development
 * **[Infinite Red](https://infinite.red/):** Maintains the [ignite cli/boilerplate](https://github.com/infinitered/ignite), organizes [Chain React Conf](https://cr.infinite.red/)
+* **[Meta](https://opensource.fb.com/):** Oversees the React Native product and maintains the [React Native core repo](https://reactnative.dev/) 
 * **[Microsoft](http://aka.ms/reactnative):** Develops [React Native Windows](https://github.com/Microsoft/react-native-windows) and [React Native macOS](https://github.com/microsoft/react-native-macos) for building apps that target Windows and macOS
-* **[Software Mansion](https://swmansion.com/):** Maintain core infrastructure including JSC, Animated, and other popular third-party plugins.
+* **[Software Mansion](https://swmansion.com/):** Maintain core infrastructure including JSC, Animated, and other popular third-party plugins and organizes [App.js Conf](https://appjs.co/)
 
 In terms of open source work, pull requests from partners are commonly prioritized. When you are contributing to React Native, you'll most likely meet somebody who works at one of the partner companies and who is a core contributor:
 
@@ -44,7 +44,7 @@ We aim to make contributing to React Native as easy and transparent as possible.
 
 ## Community Contributors
 
-Community contributors are individuals who support projects in the [react-native-community](https://github.com/react-native-community) organization. This organization exists as an incubator for high quality components that extend the capabilities of React Native with functionality that many but not all applications require. Facebook engineers will provide guidance to help build a vibrant community of people and components that make React Native better.
+Community contributors are individuals who support projects in the [react-native-community](https://github.com/react-native-community) organization. This organization exists as an incubator for high quality components that extend the capabilities of React Native with functionality that many but not all applications require. Meta engineers will provide guidance to help build a vibrant community of people and components that make React Native better.
 
 This structure has multiple benefits:
 

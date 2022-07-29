@@ -28,13 +28,12 @@ using namespace facebook::jni;
 namespace facebook {
 namespace react {
 
-static bool doesUseOverflowInset() {
+static bool getFeatureFlagValue(const char *name) {
   static const auto reactFeatureFlagsJavaDescriptor = jni::findClassStatic(
       FabricMountingManager::ReactFeatureFlagsJavaDescriptor);
-  static const auto doesUseOverflowInset =
-      reactFeatureFlagsJavaDescriptor->getStaticMethod<jboolean()>(
-          "doesUseOverflowInset");
-  return doesUseOverflowInset(reactFeatureFlagsJavaDescriptor);
+  const auto field =
+      reactFeatureFlagsJavaDescriptor->getStaticField<jboolean>(name);
+  return reactFeatureFlagsJavaDescriptor->getStaticFieldValue(field);
 }
 
 FabricMountingManager::FabricMountingManager(
@@ -47,9 +46,9 @@ FabricMountingManager::FabricMountingManager(
           config->getBool("react_fabric:disabled_view_preallocation_android")),
       disableRevisionCheckForPreallocation_(config->getBool(
           "react_fabric:disable_revision_check_for_preallocation")),
-      useOverflowInset_(doesUseOverflowInset()),
-      shouldRememberAllocatedViews_(config->getBool(
-          "react_native_new_architecture:remember_views_on_mount_android")),
+      useOverflowInset_(getFeatureFlagValue("useOverflowInset")),
+      shouldRememberAllocatedViews_(
+          getFeatureFlagValue("shouldRememberAllocatedViews")),
       useMapBufferForViewProps_(config->getBool(
           "react_native_new_architecture:use_mapbuffer_for_viewprops")) {}
 
@@ -70,6 +69,8 @@ static inline int getIntBufferSizeForType(CppMountItem::Type mountItemType) {
     case CppMountItem::Type::Insert:
     case CppMountItem::Type::Remove:
       return 3; // tag, parentTag, index
+    case CppMountItem::Type::RemoveDeleteTree:
+      return 3; // tag, parentTag, index
     case CppMountItem::Type::Delete:
     case CppMountItem::Type::UpdateProps:
     case CppMountItem::Type::UpdateState:
@@ -78,7 +79,7 @@ static inline int getIntBufferSizeForType(CppMountItem::Type mountItemType) {
     case CppMountItem::Type::UpdatePadding:
       return 5; // tag, top, left, bottom, right
     case CppMountItem::Type::UpdateLayout:
-      return 6; // tag, x, y, w, h, DisplayType
+      return 7; // tag, parentTag, x, y, w, h, DisplayType
     case CppMountItem::Type::UpdateOverflowInset:
       return 5; // tag, left, top, right, bottom
     case CppMountItem::Undefined:
@@ -333,15 +334,25 @@ void FabricMountingManager::executeMount(
           break;
         }
         case ShadowViewMutation::Remove: {
-          if (!isVirtual) {
+          if (!isVirtual && !mutation.isRedundantOperation) {
             cppCommonMountItems.push_back(CppMountItem::RemoveMountItem(
                 parentShadowView, oldChildShadowView, index));
           }
           break;
         }
+        case ShadowViewMutation::RemoveDeleteTree: {
+          if (!isVirtual) {
+            cppCommonMountItems.push_back(
+                CppMountItem::RemoveDeleteTreeMountItem(
+                    parentShadowView, oldChildShadowView, index));
+          }
+          break;
+        }
         case ShadowViewMutation::Delete: {
-          cppDeleteMountItems.push_back(
-              CppMountItem::DeleteMountItem(oldChildShadowView));
+          if (!mutation.isRedundantOperation) {
+            cppDeleteMountItems.push_back(
+                CppMountItem::DeleteMountItem(oldChildShadowView));
+          }
           break;
         }
         case ShadowViewMutation::Update: {
@@ -370,7 +381,7 @@ void FabricMountingManager::executeMount(
                 newChildShadowView.layoutMetrics) {
               cppUpdateLayoutMountItems.push_back(
                   CppMountItem::UpdateLayoutMountItem(
-                      mutation.newChildShadowView));
+                      mutation.newChildShadowView, parentShadowView));
             }
 
             // OverflowInset: This is the values indicating boundaries including
@@ -422,20 +433,24 @@ void FabricMountingManager::executeMount(
             // are updated in the view. This is necessary to ensure that events
             // (resulting from layout changes) are dispatched with the correct
             // padding information.
-            cppUpdatePaddingMountItems.push_back(
-                CppMountItem::UpdatePaddingMountItem(
-                    mutation.newChildShadowView));
+            if (newChildShadowView.layoutMetrics.contentInsets !=
+                EdgeInsets::ZERO) {
+              cppUpdatePaddingMountItems.push_back(
+                  CppMountItem::UpdatePaddingMountItem(newChildShadowView));
+            }
 
             // Layout
             cppUpdateLayoutMountItems.push_back(
                 CppMountItem::UpdateLayoutMountItem(
-                    mutation.newChildShadowView));
+                    newChildShadowView, parentShadowView));
 
             // OverflowInset: This is the values indicating boundaries including
             // children of the current view. The layout of current view may not
             // change, and we separate this part from layout mount items to not
             // pack too much data there.
-            if (useOverflowInset_) {
+            if (useOverflowInset_ &&
+                newChildShadowView.layoutMetrics.overflowInset !=
+                    EdgeInsets::ZERO) {
               cppUpdateOverflowInsetMountItems.push_back(
                   CppMountItem::UpdateOverflowInsetMountItem(
                       newChildShadowView));
@@ -534,7 +549,7 @@ void FabricMountingManager::executeMount(
   int intBufferPosition = 0;
   int objBufferPosition = 0;
   int prevMountItemType = -1;
-  jint temp[6];
+  jint temp[7];
   for (int i = 0; i < cppCommonMountItems.size(); i++) {
     const auto &mountItem = cppCommonMountItems[i];
     const auto &mountItemType = mountItem.type;
@@ -602,6 +617,12 @@ void FabricMountingManager::executeMount(
       env->SetIntArrayRegion(intBufferArray, intBufferPosition, 3, temp);
       intBufferPosition += 3;
     } else if (mountItemType == CppMountItem::Remove) {
+      temp[0] = mountItem.oldChildShadowView.tag;
+      temp[1] = mountItem.parentShadowView.tag;
+      temp[2] = mountItem.index;
+      env->SetIntArrayRegion(intBufferArray, intBufferPosition, 3, temp);
+      intBufferPosition += 3;
+    } else if (mountItemType == CppMountItem::RemoveDeleteTree) {
       temp[0] = mountItem.oldChildShadowView.tag;
       temp[1] = mountItem.parentShadowView.tag;
       temp[2] = mountItem.index;
@@ -703,13 +724,14 @@ void FabricMountingManager::executeMount(
           toInt(mountItem.newChildShadowView.layoutMetrics.displayType);
 
       temp[0] = mountItem.newChildShadowView.tag;
-      temp[1] = x;
-      temp[2] = y;
-      temp[3] = w;
-      temp[4] = h;
-      temp[5] = displayType;
-      env->SetIntArrayRegion(intBufferArray, intBufferPosition, 6, temp);
-      intBufferPosition += 6;
+      temp[1] = mountItem.parentShadowView.tag;
+      temp[2] = x;
+      temp[3] = y;
+      temp[4] = w;
+      temp[5] = h;
+      temp[6] = displayType;
+      env->SetIntArrayRegion(intBufferArray, intBufferPosition, 7, temp);
+      intBufferPosition += 7;
     }
   }
   if (!cppUpdateOverflowInsetMountItems.empty()) {

@@ -105,6 +105,12 @@ class AndroidTextInputProps final : public ViewProps, public BaseTextProps {
       const AndroidTextInputProps &sourceProps,
       const RawProps &rawProps);
 
+  void setProp(
+      const PropsParserContext &context,
+      RawPropsPropNameHash hash,
+      const char *propName,
+      RawValue const &value);
+
   folly::dynamic getDynamic() const;
 
 #pragma mark - Props
@@ -137,7 +143,7 @@ class AndroidTextInputProps final : public ViewProps, public BaseTextProps {
   const std::string value{};
   const std::string defaultValue{};
   const bool selectTextOnFocus{false};
-  const bool blurOnSubmit{false};
+  const std::string submitBehavior{};
   const bool caretHidden{false};
   const bool contextMenuHidden{false};
   const SharedColor textShadowColor{};

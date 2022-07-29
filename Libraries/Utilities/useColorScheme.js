@@ -8,24 +8,18 @@
  * @flow strict-local
  */
 
-import {useMemo} from 'react';
-import {useSubscription} from 'use-subscription';
+'use strict';
+
+import {useSyncExternalStore} from 'use-sync-external-store/shim';
 import Appearance from './Appearance';
 import type {ColorSchemeName} from './NativeAppearance';
 
 export default function useColorScheme(): ?ColorSchemeName {
-  const subscription = useMemo(
-    () => ({
-      getCurrentValue: () => Appearance.getColorScheme(),
-      subscribe: callback => {
-        const appearanceSubscription = Appearance.addChangeListener(callback);
-        return () => {
-          appearanceSubscription.remove();
-        };
-      },
-    }),
-    [],
+  return useSyncExternalStore(
+    callback => {
+      const appearanceSubscription = Appearance.addChangeListener(callback);
+      return () => appearanceSubscription.remove();
+    },
+    () => Appearance.getColorScheme(),
   );
-
-  return useSubscription(subscription);
 }

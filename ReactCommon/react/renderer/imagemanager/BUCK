@@ -18,39 +18,23 @@ APPLE_COMPILER_FLAGS = get_apple_compiler_flags()
 rn_xplat_cxx_library(
     name = "imagemanager",
     srcs = glob(
-        [
-            "*.cpp",
-        ],
+        ["*.cpp"],
         exclude = glob(["tests/**/*.cpp"]),
+    ),
+    headers = subdir_glob(
+        [("", "*.h")],
+        prefix = "",
     ),
     header_namespace = "",
     exported_headers = subdir_glob(
-        [
-            ("", "*.h"),
-            ("platform/cxx", "**/*.h"),
-        ],
+        [("", "*.h")],
         prefix = "react/renderer/imagemanager",
     ),
     contacts = ["oncall+react_native@xmail.facebook.com"],
-    fbandroid_exported_headers = subdir_glob(
-        [
-            ("", "*.h"),
-            ("platform/cxx", "**/*.h"),
-        ],
-        prefix = "react/renderer/imagemanager",
-    ),
-    fbandroid_headers = subdir_glob(
-        [
-            ("", "*.h"),
-            ("platform/cxx", "**/*.h"),
-        ],
-        prefix = "",
-    ),
-    fbandroid_srcs = glob(
-        [
-            "platform/cxx/**/*.cpp",
-        ],
-    ),
+    cxx_srcs = glob(["platform/cxx/**/*.cpp"]),
+    # FIXME: android relies on stubs implemented for the cxx platform
+    fbandroid_srcs = glob(["platform/cxx/**/*.cpp"]),
+    fbandroid_tests_override = [],
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
     fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags() + [
         "-DLOG_TAG=\"ReactNative\"",
@@ -99,7 +83,7 @@ rn_xplat_cxx_library(
     tests = [":tests"],
     visibility = ["PUBLIC"],
     deps = [
-        "//xplat/folly:headers_only",
+        "//xplat/folly:headers_only_do_not_use",
         "//xplat/folly:molly",
         YOGA_CXX_TARGET,
         react_native_xplat_target("react/debug:debug"),
@@ -121,7 +105,7 @@ fb_xplat_cxx_test(
         "-Wall",
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],
-    platforms = (ANDROID, APPLE, CXX),
+    platforms = (APPLE, CXX),
     deps = [
         ":imagemanager",
         "//xplat/folly:molly",

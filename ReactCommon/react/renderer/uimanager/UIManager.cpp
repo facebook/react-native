@@ -52,7 +52,7 @@ UIManager::~UIManager() {
                << ").";
 }
 
-SharedShadowNode UIManager::createNode(
+ShadowNode::Shared UIManager::createNode(
     Tag tag,
     std::string const &name,
     SurfaceId surfaceId,
@@ -100,9 +100,9 @@ SharedShadowNode UIManager::createNode(
   return shadowNode;
 }
 
-SharedShadowNode UIManager::cloneNode(
+ShadowNode::Shared UIManager::cloneNode(
     ShadowNode const &shadowNode,
-    SharedShadowNodeSharedList const &children,
+    ShadowNode::SharedListOfShared const &children,
     RawProps const *rawProps) const {
   SystraceSection s("UIManager::cloneNode");
 
@@ -138,7 +138,7 @@ void UIManager::appendChild(
 
 void UIManager::completeSurface(
     SurfaceId surfaceId,
-    SharedShadowNodeUnsharedList const &rootChildren,
+    ShadowNode::UnsharedListOfShared const &rootChildren,
     ShadowTree::CommitOptions commitOptions) const {
   SystraceSection s("UIManager::completeSurface");
 

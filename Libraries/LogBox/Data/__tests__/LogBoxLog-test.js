@@ -49,7 +49,7 @@ function getLogBoxSymbolication(): {|
   return (require('../LogBoxSymbolication'): any);
 }
 
-const createStack = methodNames =>
+const createStack = (methodNames: Array<string>) =>
   methodNames.map(methodName => ({
     column: null,
     file: 'file://path/to/file.js',

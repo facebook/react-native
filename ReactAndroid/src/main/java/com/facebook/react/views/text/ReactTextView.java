@@ -52,25 +52,103 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
       new ViewGroup.LayoutParams(0, 0);
 
   private boolean mContainsImages;
-  private int mDefaultGravityHorizontal;
-  private int mDefaultGravityVertical;
-  private int mTextAlign = Gravity.NO_GRAVITY;
-  private int mNumberOfLines = ViewDefaults.NUMBER_OF_LINES;
-  private TextUtils.TruncateAt mEllipsizeLocation = TextUtils.TruncateAt.END;
-  private boolean mAdjustsFontSizeToFit = false;
-  private int mLinkifyMaskType = 0;
+  private final int mDefaultGravityHorizontal;
+  private final int mDefaultGravityVertical;
+  private int mTextAlign;
+  private int mNumberOfLines;
+  private TextUtils.TruncateAt mEllipsizeLocation;
+  private boolean mAdjustsFontSizeToFit;
+  private int mLinkifyMaskType;
   private boolean mNotifyOnInlineViewLayout;
-  private boolean mTextIsSelectable = false;
+  private boolean mTextIsSelectable;
 
   private ReactViewBackgroundManager mReactBackgroundManager;
   private Spannable mSpanned;
 
   public ReactTextView(Context context) {
     super(context);
-    mReactBackgroundManager = new ReactViewBackgroundManager(this);
+
+    // Get these defaults only during the constructor - these should never be set otherwise
     mDefaultGravityHorizontal =
         getGravity() & (Gravity.HORIZONTAL_GRAVITY_MASK | Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK);
     mDefaultGravityVertical = getGravity() & Gravity.VERTICAL_GRAVITY_MASK;
+
+    initView();
+  }
+
+  /**
+   * Set all default values here as opposed to in the constructor or field defaults. It is important
+   * that these properties are set during the constructor, but also on-demand whenever an existing
+   * ReactTextView is recycled.
+   */
+  private void initView() {
+    if (mReactBackgroundManager != null) {
+      // make sure old background manager doesn't have any references back to this View
+      mReactBackgroundManager.cleanup();
+    }
+
+    mReactBackgroundManager = new ReactViewBackgroundManager(this);
+
+    mTextAlign = Gravity.NO_GRAVITY;
+    mNumberOfLines = ViewDefaults.NUMBER_OF_LINES;
+    mAdjustsFontSizeToFit = false;
+    mLinkifyMaskType = 0;
+    mTextIsSelectable = false;
+    mEllipsizeLocation = TextUtils.TruncateAt.END;
+
+    mSpanned = null;
+  }
+
+  /* package */ void recycleView() {
+    // Set default field values
+    initView();
+
+    // Defaults for these fields:
+    // https://github.com/aosp-mirror/platform_frameworks_base/blob/master/core/java/android/widget/TextView.java#L1061
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      setBreakStrategy(Layout.BREAK_STRATEGY_SIMPLE);
+    }
+    setMovementMethod(getDefaultMovementMethod());
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      setJustificationMode(Layout.JUSTIFICATION_MODE_NONE);
+    }
+
+    // reset text
+    setLayoutParams(EMPTY_LAYOUT_PARAMS);
+    super.setText(null);
+
+    // Call setters to ensure that any super setters are called
+    setGravityHorizontal(mDefaultGravityHorizontal);
+    setGravityVertical(mDefaultGravityVertical);
+    setNumberOfLines(mNumberOfLines);
+    setAdjustFontSizeToFit(mAdjustsFontSizeToFit);
+    setLinkifyMask(mLinkifyMaskType);
+    setTextIsSelectable(mTextIsSelectable);
+
+    // Default true:
+    // https://github.com/aosp-mirror/platform_frameworks_base/blob/master/core/java/android/widget/TextView.java#L9347
+    setIncludeFontPadding(true);
+    setEnabled(true);
+
+    // reset data detectors
+    setLinkifyMask(0);
+
+    setEllipsizeLocation(mEllipsizeLocation);
+
+    // View flags - defaults are here:
+    // https://android.googlesource.com/platform/frameworks/base/+/98e54bb941cb6feb07127b75da37833281951d52/core/java/android/view/View.java#5311
+    //         mViewFlags = SOUND_EFFECTS_ENABLED | HAPTIC_FEEDBACK_ENABLED |
+    // LAYOUT_DIRECTION_INHERIT;
+    setEnabled(true);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      setFocusable(View.FOCUSABLE_AUTO);
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NONE);
+    }
+
+    updateView(); // call after changing ellipsizeLocation in particular
   }
 
   private static WritableMap inlineViewJson(

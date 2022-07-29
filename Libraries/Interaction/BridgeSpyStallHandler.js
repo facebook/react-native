@@ -10,14 +10,15 @@
 
 'use strict';
 
+import type {SpyData} from '../BatchedBridge/MessageQueue';
 const JSEventLoopWatchdog = require('./JSEventLoopWatchdog');
-const MessageQueue = require('../BatchedBridge/MessageQueue');
 
+const MessageQueue = require('../BatchedBridge/MessageQueue');
 const infoLog = require('../Utilities/infoLog');
 
 const BridgeSpyStallHandler = {
   register: function () {
-    let spyBuffer = [];
+    let spyBuffer: Array<SpyData> = [];
     MessageQueue.spy(data => {
       spyBuffer.push(data);
     });
@@ -27,7 +28,7 @@ const BridgeSpyStallHandler = {
         infoLog(
           spyBuffer.length + ' bridge messages during stall: ',
           spyBuffer.map(info => {
-            let args = '<args>';
+            let args: string | Array<?string> = '<args>';
             try {
               args = JSON.stringify(info.args);
             } catch (e1) {

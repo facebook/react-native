@@ -10,8 +10,17 @@
 
 'use strict';
 
-const React = require('react');
-const ReactTestRenderer = require('react-test-renderer');
+import React from 'react';
+import ReactTestRenderer from 'react-test-renderer';
+import * as VirtualizedListInjection from '../VirtualizedListInjection';
+import VirtualizedList_EXPERIMENTAL from '../VirtualizedList_EXPERIMENTAL';
+
+const useExperimentalList =
+  process.env.USE_EXPERIMENTAL_VIRTUALIZEDLIST === 'true';
+
+if (useExperimentalList) {
+  VirtualizedListInjection.inject(VirtualizedList_EXPERIMENTAL);
+}
 
 const VirtualizedList = require('../VirtualizedList');
 
@@ -384,7 +393,7 @@ describe('VirtualizedList', () => {
 
     const instance = component.getInstance();
 
-    instance._onLayout({nativeEvent: {layout}});
+    instance._onLayout({nativeEvent: {layout, zoomScale: 1}});
 
     const initialContentHeight = props.initialNumToRender * ITEM_HEIGHT;
 
@@ -692,6 +701,24 @@ it('unmounts sticky headers moved below viewport', () => {
   expect(component).toMatchSnapshot();
 });
 
+it('gracefully handles negaitve initialScrollIndex', () => {
+  const items = generateItems(10);
+  const ITEM_HEIGHT = 10;
+
+  const component = ReactTestRenderer.create(
+    <VirtualizedList
+      initialScrollIndex={-1}
+      initialNumToRender={4}
+      {...baseItemProps(items)}
+      {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+    />,
+  );
+
+  // Existing code assumes we handle this in some way. Do something reasonable
+  // here.
+  expect(component).toMatchSnapshot();
+});
+
 it('renders offset cells in initial render when initialScrollIndex set', () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
@@ -706,6 +733,23 @@ it('renders offset cells in initial render when initialScrollIndex set', () => {
   );
 
   // Check that the first render respects initialScrollIndex
+  expect(component).toMatchSnapshot();
+});
+
+it('initially renders nothing when initialNumToRender is 0', () => {
+  const items = generateItems(10);
+  const ITEM_HEIGHT = 10;
+
+  const component = ReactTestRenderer.create(
+    <VirtualizedList
+      initialNumToRender={0}
+      {...baseItemProps(items)}
+      {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+    />,
+  );
+
+  // Only a spacer should be present (a single item is present in the legacy
+  // implementation)
   expect(component).toMatchSnapshot();
 });
 
@@ -862,7 +906,7 @@ it('does not adjust render area until content area layed out', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('does not adjust render area with non-zero initialScrollIndex until scrolled', () => {
+it('adjusts render area with non-zero initialScrollIndex', () => {
   const items = generateItems(20);
   const ITEM_HEIGHT = 10;
 
@@ -885,46 +929,62 @@ it('does not adjust render area with non-zero initialScrollIndex until scrolled'
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 200},
     });
-    performAllBatches();
-  });
+    simulateScroll(component, {x: 0, y: 10}); // simulate scroll offset for initialScrollIndex
 
-  // Layout information from before the time we scroll to initial index may not
-  // correspond to the area "initialScrollIndex" points to. Expect only the 5
-  // initial items (starting at initialScrollIndex) to be rendered after
-  // processing all batch work, even though the windowSize allows for more.
-  expect(component).toMatchSnapshot();
-});
-
-it('adjusts render area with non-zero initialScrollIndex after scrolled', () => {
-  const items = generateItems(20);
-  const ITEM_HEIGHT = 10;
-
-  let component;
-  ReactTestRenderer.act(() => {
-    component = ReactTestRenderer.create(
-      <VirtualizedList
-        initialNumToRender={5}
-        initialScrollIndex={1}
-        windowSize={10}
-        maxToRenderPerBatch={10}
-        {...baseItemProps(items)}
-        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
-      />,
-    );
-  });
-
-  ReactTestRenderer.act(() => {
-    simulateLayout(component, {
-      viewport: {width: 10, height: 50},
-      content: {width: 10, height: 200},
-    });
-
-    simulateScroll(component, {x: 0, y: 10});
     performAllBatches();
   });
 
   // We should expand the render area after receiving a message indcating we
   // arrived at initialScrollIndex.
+  expect(component).toMatchSnapshot();
+});
+
+it('renders new items when data is updated with non-zero initialScrollIndex', () => {
+  const items = generateItems(2);
+  const ITEM_HEIGHT = 10;
+
+  let component;
+  ReactTestRenderer.act(() => {
+    component = ReactTestRenderer.create(
+      <VirtualizedList
+        initialNumToRender={5}
+        initialScrollIndex={1}
+        windowSize={10}
+        maxToRenderPerBatch={10}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
+
+  ReactTestRenderer.act(() => {
+    simulateLayout(component, {
+      viewport: {width: 10, height: 20},
+      content: {width: 10, height: 20},
+    });
+    performAllBatches();
+  });
+
+  const newItems = generateItems(4);
+
+  ReactTestRenderer.act(() => {
+    component.update(
+      <VirtualizedList
+        initialNumToRender={5}
+        initialScrollIndex={1}
+        windowSize={10}
+        maxToRenderPerBatch={10}
+        {...baseItemProps(newItems)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
+
+  ReactTestRenderer.act(() => {
+    performAllBatches();
+  });
+
+  // We expect all the items to be rendered
   expect(component).toMatchSnapshot();
 });
 
@@ -1115,6 +1175,8 @@ it('retains batch render region when an item is appended', () => {
     });
     performAllBatches();
   });
+
+  jest.runAllTimers();
 
   ReactTestRenderer.act(() => {
     component.update(
@@ -1365,6 +1427,7 @@ it('renders windowSize derived region at top', () => {
     performAllBatches();
   });
 
+  jest.runAllTimers();
   // A windowSize of 3 means that we should render a viewport's worth of content
   // above and below the current. A 20 dip viewport at the top of the list means
   // we should render the top 4 10-dip items (for the current viewport, and
@@ -1402,6 +1465,7 @@ it('renders windowSize derived region in middle', () => {
     performAllBatches();
   });
 
+  jest.runAllTimers();
   // A windowSize of 3 means that we should render a viewport's worth of content
   // above and below the current. A 20 dip viewport in the top of the list means
   // we should render the 6 10-dip items (for the current viewport, 20 dip above
@@ -1434,12 +1498,12 @@ it('renders windowSize derived region at bottom', () => {
     });
     performAllBatches();
   });
-
   ReactTestRenderer.act(() => {
     simulateScroll(component, {x: 0, y: 80});
     performAllBatches();
   });
 
+  jest.runAllTimers();
   // A windowSize of 3 means that we should render a viewport's worth of content
   // above and below the current. A 20 dip viewport at the bottom of the list
   // means we should render the bottom 4 10-dip items (for the current viewport,
@@ -1471,12 +1535,194 @@ it('calls _onCellLayout properly', () => {
   );
   const cell = virtualList._cellRefs.i4;
   const event = {
-    nativeEvent: {layout: {x: 0, y: 0, width: 50, height: 50}},
+    nativeEvent: {layout: {x: 0, y: 0, width: 50, height: 50}, zoomScale: 1},
   };
   cell._onLayout(event);
   expect(mock).toHaveBeenCalledWith(event, 'i4', 3);
   expect(mock).not.toHaveBeenCalledWith(event, 'i3', 2);
 });
+
+if (useExperimentalList) {
+  describe('VirtualizedList (Experimental functionality)', () => {
+    it('keeps viewport below last focused rendered', () => {
+      const items = generateItems(20);
+      const ITEM_HEIGHT = 10;
+
+      let component;
+      ReactTestRenderer.act(() => {
+        component = ReactTestRenderer.create(
+          <VirtualizedList
+            initialNumToRender={1}
+            windowSize={1}
+            {...baseItemProps(items)}
+            {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+          />,
+        );
+      });
+
+      ReactTestRenderer.act(() => {
+        simulateLayout(component, {
+          viewport: {width: 10, height: 50},
+          content: {width: 10, height: 200},
+        });
+
+        performAllBatches();
+      });
+
+      ReactTestRenderer.act(() => {
+        component.getInstance()._onCellFocusCapture(3);
+      });
+
+      ReactTestRenderer.act(() => {
+        simulateScroll(component, {x: 0, y: 150});
+        performAllBatches();
+      });
+
+      // Cells 1-8 should remain rendered after scrolling to the bottom of the list
+      expect(component).toMatchSnapshot();
+    });
+
+    it('virtualizes away last focused item if focus changes to a new cell', () => {
+      const items = generateItems(20);
+      const ITEM_HEIGHT = 10;
+
+      let component;
+      ReactTestRenderer.act(() => {
+        component = ReactTestRenderer.create(
+          <VirtualizedList
+            initialNumToRender={1}
+            windowSize={1}
+            {...baseItemProps(items)}
+            {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+          />,
+        );
+      });
+
+      ReactTestRenderer.act(() => {
+        simulateLayout(component, {
+          viewport: {width: 10, height: 50},
+          content: {width: 10, height: 200},
+        });
+
+        performAllBatches();
+      });
+
+      ReactTestRenderer.act(() => {
+        component.getInstance()._onCellFocusCapture(3);
+      });
+
+      ReactTestRenderer.act(() => {
+        simulateScroll(component, {x: 0, y: 150});
+        performAllBatches();
+      });
+
+      ReactTestRenderer.act(() => {
+        component.getInstance()._onCellFocusCapture(17);
+      });
+
+      // Cells 1-8 should no longer be rendered after focus is moved to the end of
+      // the list
+      expect(component).toMatchSnapshot();
+    });
+
+    it('keeps viewport above last focused rendered', () => {
+      const items = generateItems(20);
+      const ITEM_HEIGHT = 10;
+
+      let component;
+      ReactTestRenderer.act(() => {
+        component = ReactTestRenderer.create(
+          <VirtualizedList
+            initialNumToRender={1}
+            windowSize={1}
+            {...baseItemProps(items)}
+            {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+          />,
+        );
+      });
+
+      ReactTestRenderer.act(() => {
+        simulateLayout(component, {
+          viewport: {width: 10, height: 50},
+          content: {width: 10, height: 200},
+        });
+
+        performAllBatches();
+      });
+
+      ReactTestRenderer.act(() => {
+        component.getInstance()._onCellFocusCapture(3);
+      });
+
+      ReactTestRenderer.act(() => {
+        simulateScroll(component, {x: 0, y: 150});
+        performAllBatches();
+      });
+
+      ReactTestRenderer.act(() => {
+        component.getInstance()._onCellFocusCapture(17);
+      });
+
+      ReactTestRenderer.act(() => {
+        simulateScroll(component, {x: 0, y: 0});
+        performAllBatches();
+      });
+
+      // Cells 12-19 should remain rendered after scrolling to the top of the list
+      expect(component).toMatchSnapshot();
+    });
+
+    it('virtualizes away last focused index if item removed', () => {
+      const items = generateItems(20);
+      const ITEM_HEIGHT = 10;
+
+      let component;
+      ReactTestRenderer.act(() => {
+        component = ReactTestRenderer.create(
+          <VirtualizedList
+            initialNumToRender={1}
+            windowSize={1}
+            {...baseItemProps(items)}
+            {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+          />,
+        );
+      });
+
+      ReactTestRenderer.act(() => {
+        simulateLayout(component, {
+          viewport: {width: 10, height: 50},
+          content: {width: 10, height: 200},
+        });
+
+        performAllBatches();
+      });
+
+      ReactTestRenderer.act(() => {
+        component.getInstance()._onCellFocusCapture(3);
+      });
+
+      ReactTestRenderer.act(() => {
+        simulateScroll(component, {x: 0, y: 150});
+        performAllBatches();
+      });
+
+      const itemsWithoutFocused = [...items.slice(0, 3), ...items.slice(4)];
+      ReactTestRenderer.act(() => {
+        component.update(
+          <VirtualizedList
+            initialNumToRender={1}
+            windowSize={1}
+            {...baseItemProps(itemsWithoutFocused)}
+            {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+          />,
+        );
+      });
+
+      // Cells 1-8 should no longer be rendered
+      expect(component).toMatchSnapshot();
+    });
+  });
+}
 
 function generateItems(count) {
   return Array(count)
@@ -1525,7 +1771,9 @@ function simulateLayout(component, args) {
 
 function simulateViewportLayout(component, dimensions) {
   lastViewportLayout = dimensions;
-  component.getInstance()._onLayout({nativeEvent: {layout: dimensions}});
+  component
+    .getInstance()
+    ._onLayout({nativeEvent: {layout: dimensions}, zoomScale: 1});
 }
 
 function simulateContentLayout(component, dimensions) {
@@ -1539,7 +1787,7 @@ function simulateCellLayout(component, items, itemIndex, dimensions) {
   const instance = component.getInstance();
   const cellKey = instance._keyExtractor(items[itemIndex], itemIndex);
   instance._onCellLayout(
-    {nativeEvent: {layout: dimensions}},
+    {nativeEvent: {layout: dimensions, zoomScale: 1}},
     cellKey,
     itemIndex,
   );
@@ -1551,6 +1799,7 @@ function simulateScroll(component, position) {
       contentOffset: position,
       contentSize: lastContentLayout,
       layoutMeasurement: lastViewportLayout,
+      zoomScale: 1,
     },
   });
 }

@@ -88,7 +88,7 @@ class AppContainer extends React.Component<Props, State> {
       }
     }
 
-    let innerView = (
+    let innerView: React.Node = (
       <View
         collapsable={!this.state.inspector}
         key={this.state.mainKey}

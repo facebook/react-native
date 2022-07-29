@@ -42,6 +42,11 @@ class DimensionsSubscription extends React.Component<
   }
 }
 
+const DimensionsViaHook = () => {
+  const dims = useWindowDimensions();
+  return <Text>{JSON.stringify(dims, null, 2)}</Text>;
+};
+
 exports.title = 'Dimensions';
 exports.category = 'UI';
 exports.documentationURL = 'https://reactnative.dev/docs/dimensions';
@@ -50,10 +55,6 @@ exports.examples = [
   {
     title: 'useWindowDimensions hook',
     render(): React.Node {
-      const DimensionsViaHook = () => {
-        const dims = useWindowDimensions();
-        return <Text>{JSON.stringify(dims, null, 2)}</Text>;
-      };
       return <DimensionsViaHook />;
     },
   },

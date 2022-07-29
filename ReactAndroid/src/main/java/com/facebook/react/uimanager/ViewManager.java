@@ -11,18 +11,22 @@ import android.content.Context;
 import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.mapbuffer.MapBuffer;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
 import com.facebook.yoga.YogaMeasureMode;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Stack;
 
 /**
  * Class responsible for knowing how to create and update catalyst Views of a given type. It is also
@@ -32,6 +36,40 @@ import java.util.Map;
 @ReactPropertyHolder
 public abstract class ViewManager<T extends View, C extends ReactShadowNode>
     extends BaseJavaModule {
+
+  private static String NAME = ViewManager.class.getSimpleName();
+
+  /**
+   * For View recycling: we store a Stack of unused, dead Views. This is null by default, and when
+   * null signals that View Recycling is disabled. `enableViewRecycling` must be explicitly called
+   * in a concrete constructor to enable View Recycling per ViewManager.
+   */
+  @Nullable private HashMap<Integer, Stack<T>> mRecyclableViews = null;
+
+  private int mRecyclableViewsBufferSize = 1024;
+
+  /** Call in constructor of concrete ViewManager class to enable. */
+  protected void setupViewRecycling() {
+    if (ReactFeatureFlags.enableViewRecycling) {
+      mRecyclableViews = new HashMap<>();
+    }
+  }
+
+  /** Call in constructor of concrete ViewManager class to enable. */
+  protected void setupViewRecycling(int bufferSize) {
+    mRecyclableViewsBufferSize = bufferSize;
+    setupViewRecycling();
+  }
+
+  private @Nullable Stack<T> getRecyclableViewStack(int surfaceId) {
+    if (mRecyclableViews == null) {
+      return null;
+    }
+    if (!mRecyclableViews.containsKey(surfaceId)) {
+      mRecyclableViews.put(surfaceId, new Stack<T>());
+    }
+    return mRecyclableViews.get(surfaceId);
+  }
 
   /**
    * For the vast majority of ViewManagers, you will not need to override this. Only override this
@@ -137,7 +175,13 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
       @NonNull ThemedReactContext reactContext,
       @Nullable ReactStylesDiffMap initialProps,
       @Nullable StateWrapper stateWrapper) {
-    T view = createViewInstance(reactContext);
+    T view = null;
+    @Nullable Stack<T> recyclableViews = getRecyclableViewStack(reactContext.getSurfaceId());
+    if (recyclableViews != null && !recyclableViews.empty()) {
+      view = recycleView(reactContext, recyclableViews.pop());
+    } else {
+      view = createViewInstance(reactContext);
+    }
     view.setId(reactTag);
     addEventEmitters(reactContext, view);
     if (initialProps != null) {
@@ -157,7 +201,49 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * Called when view is detached from view hierarchy and allows for some additional cleanup by the
    * {@link ViewManager} subclass.
    */
-  public void onDropViewInstance(@NonNull T view) {}
+  public void onDropViewInstance(@NonNull T view) {
+    // Some legacy components will return an Activity here instead of a ThemedReactContext
+    Context viewContext = view.getContext();
+    if (viewContext == null) {
+      // Who knows! Anything is possible. Checking instanceof on null is an NPE,
+      // So this is not redundant.
+      FLog.e(NAME, "onDropViewInstance: view [" + view.getId() + "] has a null context");
+      return;
+    }
+    if (!(viewContext instanceof ThemedReactContext)) {
+      FLog.e(
+          NAME,
+          "onDropViewInstance: view ["
+              + view.getId()
+              + "] has a context that is not a ThemedReactContext: "
+              + viewContext);
+      return;
+    }
+
+    // View recycling
+    ThemedReactContext themedReactContext = (ThemedReactContext) viewContext;
+    int surfaceId = themedReactContext.getSurfaceId();
+    @Nullable Stack<T> recyclableViews = getRecyclableViewStack(surfaceId);
+
+    // Any max buffer size <0 results in an infinite buffer size
+    if (recyclableViews != null
+        && (mRecyclableViewsBufferSize < 0
+            || recyclableViews.size() < mRecyclableViewsBufferSize)) {
+      recyclableViews.push(prepareToRecycleView(themedReactContext, view));
+    }
+  }
+
+  /**
+   * Called when a View is removed from the hierachy. This should be used to reset any properties.
+   */
+  protected T prepareToRecycleView(@NonNull ThemedReactContext reactContext, @NonNull T view) {
+    return view;
+  }
+
+  /** Called when a View is going to be reused. */
+  protected T recycleView(@NonNull ThemedReactContext reactContext, @NonNull T view) {
+    return view;
+  }
 
   /**
    * Subclasses can override this method to install custom event emitters on the given View. You
@@ -285,7 +371,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * this component type.
    */
   public @Nullable Object updateState(
-      @NonNull T view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
+      @NonNull T view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
     return null;
   }
 
@@ -370,4 +456,24 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * components support setting padding, the default implementation of this method does nothing.
    */
   public void setPadding(T view, int left, int top, int right, int bottom) {}
+
+  /**
+   * Lifecycle method: called when a surface is stopped. Currently only used for View Recycling
+   * cleanup. There is no corresponding startSurface lifecycle event for ViewManagers because we
+   * currently only need this for recycling cleanup. Only called in Fabric.
+   */
+  public void onSurfaceStopped(int surfaceId) {
+    if (mRecyclableViews != null) {
+      mRecyclableViews.remove(surfaceId);
+    }
+  }
+
+  /** With even slight memory pressure, we immediately evict all recyclable Views. */
+  /* package */ void trimMemory() {
+    // Wipe out all existing recyclable Views, but do not disable View Recycling entirely.
+    // We only take any action if View Recycling is already enabled.
+    if (mRecyclableViews != null) {
+      mRecyclableViews = new HashMap<>();
+    }
+  }
 }

@@ -10,15 +10,32 @@ package com.facebook.react.bridge;
 import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 @DoNotStrip
 public class BackgroundExecutor {
   private static final String TAG = "FabricBackgroundExecutor";
+
+  private static class NamedThreadFactory implements ThreadFactory {
+    private final String mName;
+
+    public NamedThreadFactory(String name) {
+      mName = name;
+    }
+
+    @Override
+    public Thread newThread(Runnable r) {
+      Thread thread = Executors.defaultThreadFactory().newThread(r);
+      thread.setName(mName);
+      return thread;
+    }
+  }
+
   private final ExecutorService mExecutorService;
 
   @DoNotStrip
-  private BackgroundExecutor() {
-    mExecutorService = Executors.newFixedThreadPool(1);
+  private BackgroundExecutor(String name) {
+    mExecutorService = Executors.newFixedThreadPool(1, new NamedThreadFactory(name));
   }
 
   @DoNotStrip

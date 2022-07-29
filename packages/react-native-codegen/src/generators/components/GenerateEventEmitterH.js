@@ -48,6 +48,7 @@ const FileTemplate = ({componentEmitters}: {componentEmitters: string}) => `
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
+#include <jsi/jsi.h>
 
 namespace facebook {
 namespace react {
@@ -68,7 +69,7 @@ const ComponentTemplate = ({
   events: string,
 }) =>
   `
-class ${className}EventEmitter : public ViewEventEmitter {
+class JSI_EXPORT ${className}EventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
 
@@ -134,7 +135,11 @@ function getNativeTypeFromAnnotation(
       throw new Error(`Received invalid event property type ${type}`);
   }
 }
-function generateEnum(structs, options, nameParts) {
+function generateEnum(
+  structs: StructsMap,
+  options: $ReadOnlyArray<string>,
+  nameParts: Array<string>,
+) {
   const structName = generateEventStructName(nameParts);
   const fields = options
     .map((option, index) => `${toSafeCppString(option)}`)
@@ -217,7 +222,10 @@ function generateStruct(
   );
 }
 
-function generateStructs(componentName: string, component): string {
+function generateStructs(
+  componentName: string,
+  component: ComponentShape,
+): string {
   const structs: StructsMap = new Map();
 
   component.events.forEach(event => {
@@ -243,7 +251,10 @@ function generateEvent(componentName: string, event: EventTypeShape): string {
 
   return `void ${event.name}() const;`;
 }
-function generateEvents(componentName: string, component): string {
+function generateEvents(
+  componentName: string,
+  component: ComponentShape,
+): string {
   return component.events
     .map(event => generateEvent(componentName, event))
     .join('\n\n' + '  ');

@@ -50,10 +50,14 @@ export default function splitLayoutProps(props: ?____ViewStyle_Internal): {
         case 'top':
         case 'transform':
           // $FlowFixMe[cannot-write]
+          // $FlowFixMe[incompatible-use]
+          // $FlowFixMe[prop-missing]
           outer[prop] = props[prop];
           break;
         default:
           // $FlowFixMe[cannot-write]
+          // $FlowFixMe[incompatible-use]
+          // $FlowFixMe[prop-missing]
           inner[prop] = props[prop];
           break;
       }

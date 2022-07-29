@@ -8,6 +8,7 @@
 #include "LayoutAnimationKeyFrameManager.h"
 
 #include <algorithm>
+#include <sstream>
 #include <utility>
 
 #include <react/debug/flags.h>
@@ -304,6 +305,10 @@ LayoutAnimationKeyFrameManager::pullTransaction(
       std::vector<AnimationKeyFrame> keyFramesToAnimate;
       auto const layoutAnimationConfig = animation.layoutAnimationConfig;
       for (auto const &mutation : mutations) {
+        if (mutation.type == ShadowViewMutation::Type::RemoveDeleteTree) {
+          continue;
+        }
+
         ShadowView baselineShadowView =
             (mutation.type == ShadowViewMutation::Type::Delete ||
                      mutation.type == ShadowViewMutation::Type::Remove ||
@@ -1224,9 +1229,21 @@ void LayoutAnimationKeyFrameManager::queueFinalMutationsForCompletedKeyFrame(
           mutationsList.push_back(ShadowViewMutation::RemoveMutation(
               finalMutation.parentShadowView, prev, finalMutation.index));
           break;
+        case ShadowViewMutation::Type::RemoveDeleteTree:
+          // Note: Currently, there is a guarantee that if RemoveDeleteTree
+          // operations are generated, we /also/ generate corresponding
+          // Remove/Delete operations that are marked as "redundant".
+          // LayoutAnimations will process the redundant operations here, and
+          // ignore this mega-op. In the future for perf reasons it would be
+          // nice to remove the redundant operations entirely but we would need
+          // to find a way to make the RemoveDeleteTree operation work with
+          // LayoutAnimations (that might not be possible).
+          break;
         case ShadowViewMutation::Type::Update:
           mutationsList.push_back(ShadowViewMutation::UpdateMutation(
-              prev, finalMutation.newChildShadowView));
+              prev,
+              finalMutation.newChildShadowView,
+              finalMutation.parentShadowView));
           break;
       }
       if (finalMutation.newChildShadowView.tag > 0) {
@@ -1251,7 +1268,7 @@ void LayoutAnimationKeyFrameManager::queueFinalMutationsForCompletedKeyFrame(
       auto mutatedShadowView =
           createInterpolatedShadowView(1, keyframe.viewStart, keyframe.viewEnd);
       auto generatedPenultimateMutation = ShadowViewMutation::UpdateMutation(
-          keyframe.viewPrev, mutatedShadowView);
+          keyframe.viewPrev, mutatedShadowView, keyframe.parentView);
       react_native_assert(
           generatedPenultimateMutation.oldChildShadowView.tag > 0);
       react_native_assert(
@@ -1262,7 +1279,7 @@ void LayoutAnimationKeyFrameManager::queueFinalMutationsForCompletedKeyFrame(
       mutationsList.push_back(generatedPenultimateMutation);
 
       auto generatedMutation = ShadowViewMutation::UpdateMutation(
-          mutatedShadowView, keyframe.viewEnd);
+          mutatedShadowView, keyframe.viewEnd, keyframe.parentView);
       react_native_assert(generatedMutation.oldChildShadowView.tag > 0);
       react_native_assert(generatedMutation.newChildShadowView.tag > 0);
       PrintMutationInstruction(
@@ -1271,7 +1288,7 @@ void LayoutAnimationKeyFrameManager::queueFinalMutationsForCompletedKeyFrame(
       mutationsList.push_back(generatedMutation);
     } else {
       auto mutation = ShadowViewMutation::UpdateMutation(
-          keyframe.viewPrev, keyframe.viewEnd);
+          keyframe.viewPrev, keyframe.viewEnd, keyframe.parentView);
       PrintMutationInstruction(
           logPrefix +
               "Animation Complete: Queuing up Final Synthetic Mutation:",
@@ -1513,6 +1530,10 @@ void LayoutAnimationKeyFrameManager::getAndEraseConflictingAnimations(
     std::vector<AnimationKeyFrame> &conflictingAnimations) const {
   ShadowViewMutationList localConflictingMutations{};
   for (auto const &mutation : mutations) {
+    if (mutation.type == ShadowViewMutation::Type::RemoveDeleteTree) {
+      continue;
+    }
+
     bool mutationIsCreateOrDelete =
         mutation.type == ShadowViewMutation::Type::Create ||
         mutation.type == ShadowViewMutation::Type::Delete;

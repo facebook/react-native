@@ -90,7 +90,7 @@ class ScrollViewStickyHeader extends React.Component<Props, State> {
   }
 
   updateTranslateListener(
-    translateY: AnimatedImplementation.Interpolation,
+    translateY: AnimatedNode,
     isFabric: boolean,
     offset: AnimatedDiffClamp | null,
   ) {
@@ -177,6 +177,8 @@ class ScrollViewStickyHeader extends React.Component<Props, State> {
     }
   };
 
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   _setComponentRef = ref => {
     this._ref = ref;
   };
@@ -274,11 +276,11 @@ class ScrollViewStickyHeader extends React.Component<Props, State> {
                 .interpolate({
                   extrapolateLeft: 'clamp',
                   inputRange: [layoutY, layoutY + 1],
-                  outputRange: ([0, 1]: Array<number>),
+                  outputRange: [0, 1],
                 })
                 .interpolate({
                   inputRange: [0, 1],
-                  outputRange: ([0, -1]: Array<number>),
+                  outputRange: [0, -1],
                 }),
               -this.state.layoutHeight,
               0,

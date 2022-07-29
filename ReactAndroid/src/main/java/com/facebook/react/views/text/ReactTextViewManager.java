@@ -9,6 +9,7 @@ package com.facebook.react.views.text;
 
 import android.content.Context;
 import android.text.Spannable;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.react.R;
 import com.facebook.react.bridge.ReadableMap;
@@ -45,6 +46,30 @@ public class ReactTextViewManager
   @VisibleForTesting public static final String REACT_CLASS = "RCTText";
 
   protected @Nullable ReactTextViewManagerCallback mReactTextViewManagerCallback;
+
+  public ReactTextViewManager() {
+    this(null);
+  }
+
+  public ReactTextViewManager(@Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
+    mReactTextViewManagerCallback = reactTextViewManagerCallback;
+    setupViewRecycling();
+  }
+
+  @Override
+  protected ReactTextView prepareToRecycleView(
+      @NonNull ThemedReactContext reactContext, ReactTextView view) {
+    // BaseViewManager
+    super.prepareToRecycleView(reactContext, view);
+
+    // Resets background and borders
+    view.recycleView();
+
+    // Defaults from ReactTextAnchorViewManager
+    setSelectionColor(view, null);
+
+    return view;
+  }
 
   @Override
   public String getName() {
@@ -106,12 +131,8 @@ public class ReactTextViewManager
 
   @Override
   public Object updateState(
-      ReactTextView view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
-    if (stateWrapper == null) {
-      return null;
-    }
-
-    if (ReactFeatureFlags.isMapBufferSerializationEnabled()) {
+      ReactTextView view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
+    if (ReactFeatureFlags.mapBufferSerializationEnabled) {
       MapBuffer stateMapBuffer = stateWrapper.getStateDataMapBuffer();
       if (stateMapBuffer != null) {
         return getReactTextUpdate(view, props, stateMapBuffer);

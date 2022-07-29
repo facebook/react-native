@@ -25,7 +25,7 @@ class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public JavaTurboModule {
 };
 
 std::shared_ptr<TurboModule> SampleTurboModuleSpec_ModuleProvider(
-    const std::string moduleName,
+    const std::string &moduleName,
     const JavaTurboModule::InitParams &params);
 
 } // namespace react

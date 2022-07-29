@@ -154,7 +154,7 @@ const _interactionSet = new Set();
 const _addInteractionSet = new Set();
 const _deleteInteractionSet = new Set();
 const _taskQueue = new TaskQueue({onMoreTasks: _scheduleUpdate});
-let _nextUpdateHandle = 0;
+let _nextUpdateHandle: $FlowFixMe | TimeoutID = 0;
 let _inc = 0;
 let _deadline = -1;
 

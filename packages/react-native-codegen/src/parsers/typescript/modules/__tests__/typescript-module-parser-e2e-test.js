@@ -714,7 +714,7 @@ describe('TypeScript Module Parser', () => {
       const RETURN_TYPE_DESCRIPTION = IS_RETURN_TYPE_NULLABLE
         ? 'a nullable'
         : 'a non-nullable';
-      const annotateRet = retType =>
+      const annotateRet = (retType: string) =>
         IS_RETURN_TYPE_NULLABLE ? `${retType} | null | void` : retType;
 
       function parseReturnType(
@@ -927,7 +927,7 @@ describe('TypeScript Module Parser', () => {
                   ? 'an optional'
                   : 'a required';
 
-              function annotateProp(propName, propType) {
+              function annotateProp(propName: string, propType: string) {
                 if (nullable && optional) {
                   return `${propName}?: ${propType} | null | void`;
                 }
@@ -1231,7 +1231,7 @@ describe('TypeScript Module Parser', () => {
   });
 });
 
-function parseModule(source) {
+function parseModule(source: string) {
   const schema = parseString(source, `${MODULE_NAME}.ts`);
   const module = schema.modules.NativeFoo;
   invariant(

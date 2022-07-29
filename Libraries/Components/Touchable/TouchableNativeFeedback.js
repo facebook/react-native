@@ -312,11 +312,15 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
 
 const getBackgroundProp =
   Platform.OS === 'android'
-    ? (background, useForeground) =>
+    ? /* $FlowFixMe[missing-local-annot] The type annotation(s) required by
+       * Flow's LTI update could not be added via codemod */
+      (background, useForeground: boolean) =>
         useForeground && TouchableNativeFeedback.canUseNativeForeground()
           ? {nativeForegroundAndroid: background}
           : {nativeBackgroundAndroid: background}
-    : (background, useForeground) => null;
+    : /* $FlowFixMe[missing-local-annot] The type annotation(s) required by
+       * Flow's LTI update could not be added via codemod */
+      (background, useForeground: boolean) => null;
 
 TouchableNativeFeedback.displayName = 'TouchableNativeFeedback';
 

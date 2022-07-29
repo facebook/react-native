@@ -12,6 +12,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 import androidx.annotation.Nullable;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.systrace.SystraceMessage;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -33,7 +34,7 @@ import java.util.Map;
    */
   /* package */ static Map<String, Object> createConstants(ViewManagerResolver resolver) {
     Map<String, Object> constants = UIManagerModuleConstants.getConstants();
-    constants.put("ViewManagerNames", resolver.getViewManagerNames());
+    constants.put("ViewManagerNames", new ArrayList<>(resolver.getViewManagerNames()));
     constants.put("LazyViewManagersEnabled", true);
     return constants;
   }

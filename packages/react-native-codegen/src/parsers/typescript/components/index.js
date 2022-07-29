@@ -9,17 +9,19 @@
  */
 
 'use strict';
-import type {CommandOptions} from './options';
 import type {TypeDeclarationMap} from '../utils';
-
+import type {CommandOptions} from './options';
 import type {ComponentSchemaBuilderConfig} from './schema.js';
+
+const {getTypes} = require('../utils');
 const {getCommands} = require('./commands');
 const {getEvents} = require('./events');
-const {getProps, getPropProperties} = require('./props');
-const {getCommandOptions, getOptions} = require('./options');
 const {getExtendsProps, removeKnownExtends} = require('./extends');
-const {getTypes} = require('../utils');
+const {getCommandOptions, getOptions} = require('./options');
+const {getPropProperties, getProps} = require('./props');
 
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
 function findComponentConfig(ast) {
   const foundConfigs = [];
 
@@ -41,9 +43,10 @@ function findComponentConfig(ast) {
         const typeArgumentParams = declaration.typeParameters.params;
         const funcArgumentParams = declaration.arguments;
 
-        const nativeComponentType = {};
-        nativeComponentType.propsTypeName = typeArgumentParams[0].typeName.name;
-        nativeComponentType.componentName = funcArgumentParams[0].value;
+        const nativeComponentType: {[string]: string} = {
+          propsTypeName: typeArgumentParams[0].typeName.name,
+          componentName: funcArgumentParams[0].value,
+        };
         if (funcArgumentParams.length > 1) {
           nativeComponentType.optionsExpression = funcArgumentParams[1];
         }
@@ -122,6 +125,8 @@ function findComponentConfig(ast) {
 }
 
 function getCommandProperties(
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   commandTypeName,
   types: TypeDeclarationMap,
   commandOptions: ?CommandOptions,
@@ -175,6 +180,8 @@ function getCommandProperties(
 }
 
 // $FlowFixMe[signature-verification-failure] TODO(T108222691): Use flow-types for @babel/parser
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
 function buildComponentSchema(ast): ComponentSchemaBuilderConfig {
   const {
     componentName,

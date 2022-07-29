@@ -39,7 +39,7 @@ if (__DEV__) {
   let originalConsoleError;
   let originalConsoleWarn;
   let consoleErrorImpl;
-  let consoleWarnImpl;
+  let consoleWarnImpl: (...args: Array<mixed>) => void;
 
   let isLogBoxInstalled: boolean = false;
 
@@ -166,6 +166,8 @@ if (__DEV__) {
     }
   };
 
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   const registerError = (...args): void => {
     // Let errors within LogBox itself fall through.
     if (LogBoxData.isLogBoxErrorMessage(args[0])) {

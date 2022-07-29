@@ -123,7 +123,9 @@ export type ImageComponentStatics = $ReadOnly<{|
  *
  * See https://reactnative.dev/docs/image
  */
-let Image = (props: ImagePropsType, forwardedRef) => {
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
+const BaseImage = (props: ImagePropsType, forwardedRef) => {
   let source = resolveAssetSource(props.source);
   const defaultSource = resolveAssetSource(props.defaultSource);
   const loadingIndicatorSource = resolveAssetSource(
@@ -221,11 +223,11 @@ let Image = (props: ImagePropsType, forwardedRef) => {
   );
 };
 
-Image = React.forwardRef<
+let Image = React.forwardRef<
   ImagePropsType,
   | React.ElementRef<typeof TextInlineImageNativeComponent>
   | React.ElementRef<typeof ImageViewNativeComponent>,
->(Image);
+>(BaseImage);
 
 if (ImageInjection.unstable_createImageComponent != null) {
   Image = ImageInjection.unstable_createImageComponent(Image);

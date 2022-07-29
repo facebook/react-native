@@ -15,6 +15,12 @@
   <!--tag is used to store accessibilityRole tag-->
   <item type="id" name="accessibility_role"/>
 
+  <!--tag is used to store accessibilityCollection -->
+  <item type="id" name="accessibility_collection"/>
+
+  <!--tag is used to store accessibilityCollectionItem -->
+  <item type="id" name="accessibility_collection_item"/>
+
   <!--tag is used to store accessibilityState -->
   <item type="id" name="accessibility_state"/>
 
@@ -34,11 +40,14 @@
 
   <!-- tag is used to store if a view is subscribed to the pointerenter event -->
   <item type="id" name="pointer_enter"/>
+  <item type="id" name="pointer_enter_capture"/>
 
   <!-- tag is used to store if a view is subscribed to the pointerleave event -->
   <item type="id" name="pointer_leave"/>
+  <item type="id" name="pointer_leave_capture"/>
 
   <!-- tag is used to store if a view is subscribed to the pointermove event -->
   <item type="id" name="pointer_move"/>
-</resources>
+  <item type="id" name="pointer_move_capture"/>
 
+</resources>

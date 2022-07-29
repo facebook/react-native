@@ -27,6 +27,8 @@ const {
 // TODO: Is there a cleaner way to flip the TextAncestor value to false? I
 //   suspect apps won't even be able to leverage this workaround because
 //   TextAncestor is not public.
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
 function InlineView(props) {
   return (
     <TextAncestor.Provider value={false}>

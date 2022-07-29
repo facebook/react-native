@@ -45,7 +45,7 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricJSIModuleProvider.registerBinding");
     final Binding binding = new Binding();
 
-    if (ReactFeatureFlags.isMapBufferSerializationEnabled()) {
+    if (ReactFeatureFlags.mapBufferSerializationEnabled) {
       MapBufferSoLoader.staticInit();
     }
 

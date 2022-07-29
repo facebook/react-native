@@ -15,33 +15,33 @@
 const EVENT_DEFINITION = `
   boolean_required: boolean;
   boolean_optional_key?: boolean;
-  boolean_optional_value: boolean | null | void;
-  boolean_optional_both?: boolean | null | void;
+  boolean_optional_value: boolean | null | undefined;
+  boolean_optional_both?: boolean | null | undefined;
 
   string_required: string;
   string_optional_key?: string;
-  string_optional_value: string | null | void;
-  string_optional_both?: string | null | void;
+  string_optional_value: string | null | undefined;
+  string_optional_both?: string | null | undefined;
 
   double_required: Double;
   double_optional_key?: Double;
-  double_optional_value: Double | null | void;
-  double_optional_both?: Double | null | void;
+  double_optional_value: Double | null | undefined;
+  double_optional_both?: Double | null | undefined;
 
   float_required: Float;
   float_optional_key?: Float;
-  float_optional_value: Float | null | void;
-  float_optional_both?: Float | null | void;
+  float_optional_value: Float | null | undefined;
+  float_optional_both?: Float | null | undefined;
 
   int32_required: Int32;
   int32_optional_key?: Int32;
-  int32_optional_value: Int32 | null | void;
-  int32_optional_both?: Int32 | null | void;
+  int32_optional_value: Int32 | null | undefined;
+  int32_optional_both?: Int32 | null | undefined;
 
   enum_required: 'small' | 'large';
   enum_optional_key?: 'small' | 'large';
-  enum_optional_value: ('small' | 'large') | null | void;
-  enum_optional_both?: ('small' | 'large') | null | void;
+  enum_optional_value: ('small' | 'large') | null | undefined;
+  enum_optional_both?: ('small' | 'large') | null | undefined;
 
   object_required: {
     boolean_required: boolean;
@@ -52,21 +52,21 @@ const EVENT_DEFINITION = `
   };
 
   object_optional_value: {
-    float_optional_value: Float | null | void;
-  } | null | void;
+    float_optional_value: Float | null | undefined;
+  } | null | undefined;
 
   object_optional_both?: {
-    int32_optional_both?: Int32 | null | void;
-  } | null | void;
+    int32_optional_both?: Int32 | null | undefined;
+  } | null | undefined;
 
   object_required_nested_2_layers: {
     object_optional_nested_1_layer?: {
       boolean_required: Int32;
       string_optional_key?: string;
-      double_optional_value: Double | null | void;
-      float_optional_value: Float | null | void;
-      int32_optional_both?: Int32 | null | void;
-    } | null | void;
+      double_optional_value: Double | null | undefined;
+      float_optional_value: Float | null | undefined;
+      int32_optional_both?: Int32 | null | undefined;
+    } | null | undefined;
   };
 
   object_readonly_required: Readonly<{
@@ -78,12 +78,12 @@ const EVENT_DEFINITION = `
   }>;
 
   object_readonly_optional_value: Readonly<{
-    float_optional_value: Float | null | void;
-  }> | null | void;
+    float_optional_value: Float | null | undefined;
+  }> | null | undefined;
 
   object_readonly_optional_both?: Readonly<{
-    int32_optional_both?: Int32 | null | void;
-  }> | null | void;
+    int32_optional_both?: Int32 | null | undefined;
+  }> | null | undefined;
 `;
 
 const ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS = `
@@ -265,43 +265,43 @@ export interface ModuleProps extends ViewProps {
 
   // Object props
   object_optional_key?: Readonly<{prop: string}>;
-  object_optional_both?: Readonly<{prop: string} | null | void>;
-  object_optional_value: Readonly<{prop: string} | null | void>;
+  object_optional_both?: Readonly<{prop: string} | null | undefined>;
+  object_optional_value: Readonly<{prop: string} | null | undefined>;
 
   // ImageSource props
   image_required: ImageSource;
-  image_optional_value: ImageSource | null | void;
-  image_optional_both?: ImageSource | null | void;
+  image_optional_value: ImageSource | null | undefined;
+  image_optional_both?: ImageSource | null | undefined;
 
   // ColorValue props
   color_required: ColorValue;
   color_optional_key?: ColorValue;
-  color_optional_value: ColorValue | null | void;
-  color_optional_both?: ColorValue | null | void;
+  color_optional_value: ColorValue | null | undefined;
+  color_optional_both?: ColorValue | null | undefined;
 
   // ColorArrayValue props
   color_array_required: ColorArrayValue;
   color_array_optional_key?: ColorArrayValue;
-  color_array_optional_value: ColorArrayValue | null | void;
-  color_array_optional_both?: ColorArrayValue | null | void;
+  color_array_optional_value: ColorArrayValue | null | undefined;
+  color_array_optional_both?: ColorArrayValue | null | undefined;
 
   // ProcessedColorValue props
   processed_color_required: ProcessedColorValue;
   processed_color_optional_key?: ProcessedColorValue;
-  processed_color_optional_value: ProcessedColorValue | null | void;
-  processed_color_optional_both?: ProcessedColorValue | null | void;
+  processed_color_optional_value: ProcessedColorValue | null | undefined;
+  processed_color_optional_both?: ProcessedColorValue | null | undefined;
 
   // PointValue props
   point_required: PointValue;
   point_optional_key?: PointValue;
-  point_optional_value: PointValue | null | void;
-  point_optional_both?: PointValue | null | void;
+  point_optional_value: PointValue | null | undefined;
+  point_optional_both?: PointValue | null | undefined;
 
   // EdgeInsets props
   insets_required: EdgeInsetsValue;
   insets_optional_key?: EdgeInsetsValue;
-  insets_optional_value: EdgeInsetsValue | null | void;
-  insets_optional_both?: EdgeInsetsValue | null | void;
+  insets_optional_value: EdgeInsetsValue | null | undefined;
+  insets_optional_both?: EdgeInsetsValue | null | undefined;
 }
 
 export default codegenNativeComponent<ModuleProps>(
@@ -342,32 +342,32 @@ export interface ModuleProps extends ViewProps {
   // Boolean props
   array_boolean_required: ReadonlyArray<boolean>;
   array_boolean_optional_key?: ReadonlyArray<boolean>;
-  array_boolean_optional_value: ReadonlyArray<boolean> | null | void;
-  array_boolean_optional_both?: ReadonlyArray<boolean> | null | void;
+  array_boolean_optional_value: ReadonlyArray<boolean> | null | undefined;
+  array_boolean_optional_both?: ReadonlyArray<boolean> | null | undefined;
 
   // String props
   array_string_required: ReadonlyArray<string>;
   array_string_optional_key?: ReadonlyArray<string>;
-  array_string_optional_value: ReadonlyArray<string> | null | void;
-  array_string_optional_both?: ReadonlyArray<string> | null | void;
+  array_string_optional_value: ReadonlyArray<string> | null | undefined;
+  array_string_optional_both?: ReadonlyArray<string> | null | undefined;
 
   // Double props
   array_double_required: ReadonlyArray<Double>;
   array_double_optional_key?: ReadonlyArray<Double>;
-  array_double_optional_value: ReadonlyArray<Double> | null | void;
-  array_double_optional_both?: ReadonlyArray<Double> | null | void;
+  array_double_optional_value: ReadonlyArray<Double> | null | undefined;
+  array_double_optional_both?: ReadonlyArray<Double> | null | undefined;
 
   // Float props
   array_float_required: ReadonlyArray<Float>;
   array_float_optional_key?: ReadonlyArray<Float>;
-  array_float_optional_value: ReadonlyArray<Float> | null | void;
-  array_float_optional_both?: ReadonlyArray<Float> | null | void;
+  array_float_optional_value: ReadonlyArray<Float> | null | undefined;
+  array_float_optional_both?: ReadonlyArray<Float> | null | undefined;
 
   // Int32 props
   array_int32_required: ReadonlyArray<Int32>;
   array_int32_optional_key?: ReadonlyArray<Int32>;
-  array_int32_optional_value: ReadonlyArray<Int32> | null | void;
-  array_int32_optional_both?: ReadonlyArray<Int32> | null | void;
+  array_int32_optional_value: ReadonlyArray<Int32> | null | undefined;
+  array_int32_optional_both?: ReadonlyArray<Int32> | null | undefined;
 
   // String enum props
   array_enum_optional_key?: WithDefault<
@@ -382,32 +382,32 @@ export interface ModuleProps extends ViewProps {
   // ImageSource props
   array_image_required: ReadonlyArray<ImageSource>;
   array_image_optional_key?: ReadonlyArray<ImageSource>;
-  array_image_optional_value: ReadonlyArray<ImageSource> | null | void;
-  array_image_optional_both?: ReadonlyArray<ImageSource> | null | void;
+  array_image_optional_value: ReadonlyArray<ImageSource> | null | undefined;
+  array_image_optional_both?: ReadonlyArray<ImageSource> | null | undefined;
 
   // ColorValue props
   array_color_required: ReadonlyArray<ColorValue>;
   array_color_optional_key?: ReadonlyArray<ColorValue>;
-  array_color_optional_value: ReadonlyArray<ColorValue> | null | void;
-  array_color_optional_both?: ReadonlyArray<ColorValue> | null | void;
+  array_color_optional_value: ReadonlyArray<ColorValue> | null | undefined;
+  array_color_optional_both?: ReadonlyArray<ColorValue> | null | undefined;
 
   // PointValue props
   array_point_required: ReadonlyArray<PointValue>;
   array_point_optional_key?: ReadonlyArray<PointValue>;
-  array_point_optional_value: ReadonlyArray<PointValue> | null | void;
-  array_point_optional_both?: ReadonlyArray<PointValue> | null | void;
+  array_point_optional_value: ReadonlyArray<PointValue> | null | undefined;
+  array_point_optional_both?: ReadonlyArray<PointValue> | null | undefined;
 
   // EdgeInsetsValue props
   array_insets_required: ReadonlyArray<EdgeInsetsValue>;
   array_insets_optional_key?: ReadonlyArray<EdgeInsetsValue>;
-  array_insets_optional_value: ReadonlyArray<EdgeInsetsValue> | null | void;
-  array_insets_optional_both?: ReadonlyArray<EdgeInsetsValue> | null | void;
+  array_insets_optional_value: ReadonlyArray<EdgeInsetsValue> | null | undefined;
+  array_insets_optional_both?: ReadonlyArray<EdgeInsetsValue> | null | undefined;
 
   // Object props
   array_object_required: ReadonlyArray<Readonly<{prop: string}>>;
   array_object_optional_key?: ReadonlyArray<Readonly<{prop: string}>>;
-  array_object_optional_value: ArrayObjectType | null | void;
-  array_object_optional_both?: ReadonlyArray<ObjectType> | null | void;
+  array_object_optional_value: ArrayObjectType | null | undefined;
+  array_object_optional_both?: ReadonlyArray<ObjectType> | null | undefined;
 
   // Nested array object types
   array_of_array_object_required: ReadonlyArray<
@@ -426,18 +426,18 @@ export interface ModuleProps extends ViewProps {
     Readonly<{
       // This needs to be the same name as the top level array above
       array_object_optional_value: ReadonlyArray<
-        Readonly<{prop: string | null | void}>
+        Readonly<{prop: string | null | undefined}>
       >;
     }>
-  > | null | void;
+  > | null | undefined;
   array_of_array_object_optional_both?: ReadonlyArray<
     Readonly<{
       // This needs to be the same name as the top level array above
       array_object_optional_both: ReadonlyArray<
-        Readonly<{prop?: string | null | void}>
+        Readonly<{prop?: string | null | undefined}>
       >;
     }>
-  > | null | void;
+  > | null | undefined;
 
   // Nested array of array of object types
   array_of_array_of_object_required: ReadonlyArray<
@@ -452,6 +452,138 @@ export interface ModuleProps extends ViewProps {
   array_of_array_of_object_required_in_file: ReadonlyArray<
     ReadonlyArray<ObjectType>
   >;
+}
+
+export default codegenNativeComponent<ModuleProps>(
+  'Module',
+) as HostComponent<ModuleProps>;
+`;
+
+const ARRAY2_PROP_TYPES_NO_EVENTS = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+'use strict';
+
+const codegenNativeComponent = require('codegenNativeComponent');
+
+import type {Int32, Double, Float, WithDefault} from 'CodegenTypes';
+import type {ImageSource} from 'ImageSource';
+import type {
+  ColorValue,
+  ColorArrayValue,
+  PointValue,
+  EdgeInsetsValue,
+} from 'StyleSheetTypes';
+import type {ViewProps} from 'ViewPropTypes';
+import type {HostComponent} from 'react-native';
+
+type ObjectType = Readonly<{prop: string}>;
+type ArrayObjectType = readonly Readonly<{prop: string}>[];
+
+export interface ModuleProps extends ViewProps {
+  // Props
+  // Boolean props
+  array_boolean_required: readonly boolean[];
+  array_boolean_optional_key?: readonly boolean[];
+  array_boolean_optional_value: readonly boolean[] | null | undefined;
+  array_boolean_optional_both?: readonly boolean[] | null | undefined;
+
+  // String props
+  array_string_required: readonly string[];
+  array_string_optional_key?: readonly string[];
+  array_string_optional_value: readonly string[] | null | undefined;
+  array_string_optional_both?: readonly string[] | null | undefined;
+
+  // Double props
+  array_double_required: readonly Double[];
+  array_double_optional_key?: readonly Double[];
+  array_double_optional_value: readonly Double[] | null | undefined;
+  array_double_optional_both?: readonly Double[] | null | undefined;
+
+  // Float props
+  array_float_required: readonly Float[];
+  array_float_optional_key?: readonly Float[];
+  array_float_optional_value: readonly Float[] | null | undefined;
+  array_float_optional_both?: readonly Float[] | null | undefined;
+
+  // Int32 props
+  array_int32_required: readonly Int32[];
+  array_int32_optional_key?: readonly Int32[];
+  array_int32_optional_value: readonly Int32[] | null | undefined;
+  array_int32_optional_both?: readonly Int32[] | null | undefined;
+
+  // String enum props
+  array_enum_optional_key?: WithDefault<
+    readonly ('small' | 'large')[],
+    'small'
+  >;
+  array_enum_optional_both?: WithDefault<
+    readonly ('small' | 'large')[],
+    'small'
+  >;
+
+  // ImageSource props
+  array_image_required: readonly ImageSource[];
+  array_image_optional_key?: readonly ImageSource[];
+  array_image_optional_value: readonly ImageSource[] | null | undefined;
+  array_image_optional_both?: readonly ImageSource[] | null | undefined;
+
+  // ColorValue props
+  array_color_required: readonly ColorValue[];
+  array_color_optional_key?: readonly ColorValue[];
+  array_color_optional_value: readonly ColorValue[] | null | undefined;
+  array_color_optional_both?: readonly ColorValue[] | null | undefined;
+
+  // PointValue props
+  array_point_required: readonly PointValue[];
+  array_point_optional_key?: readonly PointValue[];
+  array_point_optional_value: readonly PointValue[] | null | undefined;
+  array_point_optional_both?: readonly PointValue[] | null | undefined;
+
+  // EdgeInsetsValue props
+  array_insets_required: readonly EdgeInsetsValue[];
+  array_insets_optional_key?: readonly EdgeInsetsValue[];
+  array_insets_optional_value: readonly EdgeInsetsValue[] | null | undefined;
+  array_insets_optional_both?: readonly EdgeInsetsValue[] | null | undefined;
+
+  // Object props
+  array_object_required: readonly Readonly<{prop: string}>[];
+  array_object_optional_key?: readonly Readonly<{prop: string}>[];
+  array_object_optional_value: ArrayObjectType | null | undefined;
+  array_object_optional_both?: readonly ObjectType[] | null | undefined;
+
+  // Nested array object types
+  array_of_array_object_required: readonly Readonly<{
+      // This needs to be the same name as the top level array above
+      array_object_required: readonly Readonly<{prop: string}>[];
+    }>[];
+  array_of_array_object_optional_key?: readonly Readonly<{
+      // This needs to be the same name as the top level array above
+      array_object_optional_key: readonly Readonly<{prop?: string}>[];
+    }>[];
+  array_of_array_object_optional_value: readonly Readonly<{
+      // This needs to be the same name as the top level array above
+      array_object_optional_value: readonly Readonly<{prop: string | null | undefined}>[];
+    }>[] | null | undefined;
+  array_of_array_object_optional_both?: readonly Readonly<{
+      // This needs to be the same name as the top level array above
+      array_object_optional_both: readonly Readonly<{prop?: string | null | undefined}>[];
+    }>[] | null | undefined;
+
+  // Nested array of array of object types
+  array_of_array_of_object_required: readonly Readonly<{
+        prop: string;
+      }>[][];
+
+  // Nested array of array of object types (in file)
+  array_of_array_of_object_required_in_file: readonly ObjectType[][];
 }
 
 export default codegenNativeComponent<ModuleProps>(
@@ -514,46 +646,46 @@ export interface ModuleProps extends ViewProps {
   // ImageSource props
   image_required: Readonly<{prop: ImageSource}>;
   image_optional_key: Readonly<{prop?: ImageSource}>;
-  image_optional_value: Readonly<{prop: ImageSource | null | void}>;
-  image_optional_both: Readonly<{prop?: ImageSource | null | void}>;
+  image_optional_value: Readonly<{prop: ImageSource | null | undefined}>;
+  image_optional_both: Readonly<{prop?: ImageSource | null | undefined}>;
 
   // ColorValue props
   color_required: Readonly<{prop: ColorValue}>;
   color_optional_key: Readonly<{prop?: ColorValue}>;
-  color_optional_value: Readonly<{prop: ColorValue | null | void}>;
-  color_optional_both: Readonly<{prop?: ColorValue | null | void}>;
+  color_optional_value: Readonly<{prop: ColorValue | null | undefined}>;
+  color_optional_both: Readonly<{prop?: ColorValue | null | undefined}>;
 
   // ProcessedColorValue props
   processed_color_required: Readonly<{prop: ProcessedColorValue}>;
   processed_color_optional_key: Readonly<{prop?: ProcessedColorValue}>;
   processed_color_optional_value: Readonly<{
-    prop: ProcessedColorValue | null | void;
+    prop: ProcessedColorValue | null | undefined;
   }>;
   processed_color_optional_both: Readonly<{
-    prop?: ProcessedColorValue | null | void;
+    prop?: ProcessedColorValue | null | undefined;
   }>;
 
   // PointValue props
   point_required: Readonly<{prop: PointValue}>;
   point_optional_key: Readonly<{prop?: PointValue}>;
-  point_optional_value: Readonly<{prop: PointValue | null | void}>;
-  point_optional_both: Readonly<{prop?: PointValue | null | void}>;
+  point_optional_value: Readonly<{prop: PointValue | null | undefined}>;
+  point_optional_both: Readonly<{prop?: PointValue | null | undefined}>;
 
   // EdgeInsetsValue props
   insets_required: Readonly<{prop: EdgeInsetsValue}>;
   insets_optional_key: Readonly<{prop?: EdgeInsetsValue}>;
-  insets_optional_value: Readonly<{prop: EdgeInsetsValue | null | void}>;
-  insets_optional_both: Readonly<{prop?: EdgeInsetsValue | null | void}>;
+  insets_optional_value: Readonly<{prop: EdgeInsetsValue | null | undefined}>;
+  insets_optional_both: Readonly<{prop?: EdgeInsetsValue | null | undefined}>;
 
   // Nested object props
   object_required: Readonly<{prop: Readonly<{nestedProp: string}>}>;
   object_optional_key?: Readonly<{prop: Readonly<{nestedProp: string}>}>;
   object_optional_value: Readonly<{
     prop: Readonly<{nestedProp: string}>;
-  }> | null | void;
+  }> | null | undefined;
   object_optional_both?: Readonly<{
     prop: Readonly<{nestedProp: string}>;
-  }> | null | void;
+  }> | null | undefined;
 }
 
 export default codegenNativeComponent<ModuleProps>(
@@ -642,20 +774,20 @@ export interface ModuleProps extends ViewProps {
     Readonly<{
       ${EVENT_DEFINITION}
     }>
-  > | null | void;
+  > | null | undefined;
 
   onDirectEventDefinedInlineOptionalBoth?: DirectEventHandler<
     Readonly<{
       ${EVENT_DEFINITION}
     }>
-  > | null | void;
+  > | null | undefined;
 
   onDirectEventDefinedInlineWithPaperName?: DirectEventHandler<
     Readonly<{
       ${EVENT_DEFINITION}
     }>,
     'paperDirectEventDefinedInlineWithPaperName'
-  > | null | void;
+  > | null | undefined;
 
   onBubblingEventDefinedInline: BubblingEventHandler<
     Readonly<{
@@ -673,20 +805,20 @@ export interface ModuleProps extends ViewProps {
     Readonly<{
       ${EVENT_DEFINITION}
     }>
-  > | null | void;
+  > | null | undefined;
 
   onBubblingEventDefinedInlineOptionalBoth?: BubblingEventHandler<
     Readonly<{
       ${EVENT_DEFINITION}
     }>
-  > | null | void;
+  > | null | undefined;
 
   onBubblingEventDefinedInlineWithPaperName?: BubblingEventHandler<
     Readonly<{
       ${EVENT_DEFINITION}
     }>,
     'paperBubblingEventDefinedInlineWithPaperName'
-  > | null | void;
+  > | null | undefined;
 }
 
 export default codegenNativeComponent<ModuleProps>(
@@ -718,21 +850,21 @@ export interface ModuleProps extends ViewProps {
   // Events defined inline
   onDirectEventDefinedInlineNull: DirectEventHandler<null>;
   onDirectEventDefinedInlineNullOptionalKey?: DirectEventHandler<null>;
-  onDirectEventDefinedInlineNullOptionalValue: DirectEventHandler<null> | null | void;
+  onDirectEventDefinedInlineNullOptionalValue: DirectEventHandler<null> | null | undefined;
   onDirectEventDefinedInlineNullOptionalBoth?: DirectEventHandler<null>;
   onDirectEventDefinedInlineNullWithPaperName?: DirectEventHandler<
     null,
     'paperDirectEventDefinedInlineNullWithPaperName'
-  > | null | void;
+  > | null | undefined;
 
   onBubblingEventDefinedInlineNull: BubblingEventHandler<null>;
   onBubblingEventDefinedInlineNullOptionalKey?: BubblingEventHandler<null>;
-  onBubblingEventDefinedInlineNullOptionalValue: BubblingEventHandler<null> | null | void;
-  onBubblingEventDefinedInlineNullOptionalBoth?: BubblingEventHandler<null> | null | void;
+  onBubblingEventDefinedInlineNullOptionalValue: BubblingEventHandler<null> | null | undefined;
+  onBubblingEventDefinedInlineNullOptionalBoth?: BubblingEventHandler<null> | null | undefined;
   onBubblingEventDefinedInlineNullWithPaperName?: BubblingEventHandler<
     null,
     'paperBubblingEventDefinedInlineNullWithPaperName'
-  > | null | void;
+  > | null | undefined;
 }
 
 export default codegenNativeComponent<ModuleProps>(
@@ -959,6 +1091,7 @@ export default codegenNativeComponent<ModuleProps>(
 module.exports = {
   ALL_PROP_TYPES_NO_EVENTS,
   ARRAY_PROP_TYPES_NO_EVENTS,
+  ARRAY2_PROP_TYPES_NO_EVENTS,
   OBJECT_PROP_TYPES_NO_EVENTS,
   PROPS_ALIASED_LOCALLY,
   ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS,
