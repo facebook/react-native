@@ -208,18 +208,12 @@ jobs:
         inputs:
           script: node .ado/removeWorkspaceConfig.js
 
-      - template: templates/prep-android-nuget.yml
-
       # Enumerate and download all dependencies ..
       - template: templates/download-android-dependencies.yml
         parameters:
           artifact_feed: Office
 
-      # Very similar to the default pack task .. but appends 'ndk21b' to the nuget pack version
-      - task: CmdLine@2
-        displayName: 'NuGet pack'
-        inputs:
-          script: NDK=ndk`cat ${ANDROID_SDK_ROOT}/ndk-bundle/source.properties 2>&1 | grep Pkg.Revision | awk '{ print $3}' | awk -F. '{ print $1 }'`; mono $(System.DefaultWorkingDirectory)/nuget-bin/nuget.exe pack $(System.DefaultWorkingDirectory)/ReactAndroid/ReactAndroid.nuspec -OutputDirectory $(Build.StagingDirectory)/final -Properties buildNumber=$(buildNumber)-$NDK;commitId=$(Build.SourceVersion)
+      - template: templates/android-nuget-pack.yml
 
       - task: CmdLine@2
         displayName: 'Npm pack'

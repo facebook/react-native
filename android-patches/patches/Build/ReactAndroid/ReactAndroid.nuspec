@@ -1,9 +1,9 @@
 diff --git a/ReactAndroid/ReactAndroid.nuspec b/ReactAndroid/ReactAndroid.nuspec
 new file mode 100644
-index 0000000000..87a89816c7
+index 00000000000..5ea2105f8ac
 --- /dev/null
 +++ b/ReactAndroid/ReactAndroid.nuspec
-@@ -0,0 +1,262 @@
+@@ -0,0 +1,231 @@
 +<?xml version="1.0" encoding="utf-8"?>
 +<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 +  <metadata>
@@ -18,236 +18,206 @@ index 0000000000..87a89816c7
 +
 +  <files>
 +    <!-- Stripped binaries -->
-+    <file src="build\react-ndk\all\x86_64\libfb.so" target="lib\droidx64"/>
-+    <file src="build\react-ndk\all\armeabi-v7a\libfb.so" target="lib\droidarm"/>
-+    <file src="build\react-ndk\all\x86\libfb.so" target="lib\droidx86"/>
-+    <file src="build\react-ndk\all\arm64-v8a\libfb.so" target="lib\droidarm64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86_64\libfb.so" target="lib\droidx64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\armeabi-v7a\libfb.so" target="lib\droidarm"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86\libfb.so" target="lib\droidx86"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\arm64-v8a\libfb.so" target="lib\droidarm64"/>
 +
-+    <file src="build\react-ndk\all\x86_64\libfbjni.so" target="lib\droidx64"/>
-+    <file src="build\react-ndk\all\armeabi-v7a\libfbjni.so" target="lib\droidarm"/>
-+    <file src="build\react-ndk\all\x86\libfbjni.so" target="lib\droidx86"/>
-+    <file src="build\react-ndk\all\arm64-v8a\libfbjni.so" target="lib\droidarm64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86_64\libfbjni.so" target="lib\droidx64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\armeabi-v7a\libfbjni.so" target="lib\droidarm"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86\libfbjni.so" target="lib\droidx86"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\arm64-v8a\libfbjni.so" target="lib\droidarm64"/>
 +
-+    <file src="build\react-ndk\all\x86_64\libfolly_json.so" target="lib\droidx64"/>
-+    <file src="build\react-ndk\all\armeabi-v7a\libfolly_json.so" target="lib\droidarm"/>
-+    <file src="build\react-ndk\all\x86\libfolly_json.so" target="lib\droidx86"/>
-+    <file src="build\react-ndk\all\arm64-v8a\libfolly_json.so" target="lib\droidarm64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86_64\libfolly_json.so" target="lib\droidx64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\armeabi-v7a\libfolly_json.so" target="lib\droidarm"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86\libfolly_json.so" target="lib\droidx86"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\arm64-v8a\libfolly_json.so" target="lib\droidarm64"/>
 +
-+    <file src="build\react-ndk\all\x86_64\libglog.so" target="lib\droidx64"/>
-+    <file src="build\react-ndk\all\armeabi-v7a\libglog.so" target="lib\droidarm"/>
-+    <file src="build\react-ndk\all\x86\libglog.so" target="lib\droidx86"/>
-+    <file src="build\react-ndk\all\arm64-v8a\libglog.so" target="lib\droidarm64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86_64\libglog.so" target="lib\droidx64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\armeabi-v7a\libglog.so" target="lib\droidarm"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86\libglog.so" target="lib\droidx86"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\arm64-v8a\libglog.so" target="lib\droidarm64"/>
 +
-+    <file src="build\react-ndk\all\x86_64\libglog_init.so" target="lib\droidx64"/>
-+    <file src="build\react-ndk\all\armeabi-v7a\libglog_init.so" target="lib\droidarm"/>
-+    <file src="build\react-ndk\all\x86\libglog_init.so" target="lib\droidx86"/>
-+    <file src="build\react-ndk\all\arm64-v8a\libglog_init.so" target="lib\droidarm64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86_64\libglog_init.so" target="lib\droidx64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\armeabi-v7a\libglog_init.so" target="lib\droidarm"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86\libglog_init.so" target="lib\droidx86"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\arm64-v8a\libglog_init.so" target="lib\droidarm64"/>
 +
-+    <file src="build\react-ndk\all\x86_64\libjsinspector.so" target="lib\droidx64"/>
-+    <file src="build\react-ndk\all\armeabi-v7a\libjsinspector.so" target="lib\droidarm"/>
-+    <file src="build\react-ndk\all\x86\libjsinspector.so" target="lib\droidx86"/>
-+    <file src="build\react-ndk\all\arm64-v8a\libjsinspector.so" target="lib\droidarm64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86_64\libjsinspector.so" target="lib\droidx64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\armeabi-v7a\libjsinspector.so" target="lib\droidarm"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86\libjsinspector.so" target="lib\droidx86"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\arm64-v8a\libjsinspector.so" target="lib\droidarm64"/>
 +
-+    <file src="build\react-ndk\all\x86_64\libreactnativeblob.so" target="lib\droidx64"/>
-+    <file src="build\react-ndk\all\armeabi-v7a\libreactnativeblob.so" target="lib\droidarm"/>
-+    <file src="build\react-ndk\all\x86\libreactnativeblob.so" target="lib\droidx86"/>
-+    <file src="build\react-ndk\all\arm64-v8a\libreactnativeblob.so" target="lib\droidarm64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86_64\libreactnativeblob.so" target="lib\droidx64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\armeabi-v7a\libreactnativeblob.so" target="lib\droidarm"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86\libreactnativeblob.so" target="lib\droidx86"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\arm64-v8a\libreactnativeblob.so" target="lib\droidarm64"/>
 +
-+    <file src="build\react-ndk\all\x86_64\libreactnativejni.so" target="lib\droidx64"/>
-+    <file src="build\react-ndk\all\armeabi-v7a\libreactnativejni.so" target="lib\droidarm"/>
-+    <file src="build\react-ndk\all\x86\libreactnativejni.so" target="lib\droidx86"/>
-+    <file src="build\react-ndk\all\arm64-v8a\libreactnativejni.so" target="lib\droidarm64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86_64\libreactnativejni.so" target="lib\droidx64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\armeabi-v7a\libreactnativejni.so" target="lib\droidarm"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86\libreactnativejni.so" target="lib\droidx86"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\arm64-v8a\libreactnativejni.so" target="lib\droidarm64"/>
 +
-+    <file src="build\react-ndk\all\x86_64\libv8executor.so" target="lib\droidx64"/>
-+    <file src="build\react-ndk\all\armeabi-v7a\libv8executor.so" target="lib\droidarm"/>
-+    <file src="build\react-ndk\all\x86\libv8executor.so" target="lib\droidx86"/>
-+    <file src="build\react-ndk\all\arm64-v8a\libv8executor.so" target="lib\droidarm64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86_64\libv8executor.so" target="lib\droidx64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\armeabi-v7a\libv8executor.so" target="lib\droidarm"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86\libv8executor.so" target="lib\droidx86"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\arm64-v8a\libv8executor.so" target="lib\droidarm64"/>
 +
-+    <file src="build\react-ndk\all\x86_64\libyoga.so" target="lib\droidx64"/>
-+    <file src="build\react-ndk\all\armeabi-v7a\libyoga.so" target="lib\droidarm"/>
-+    <file src="build\react-ndk\all\x86\libyoga.so" target="lib\droidx86"/>
-+    <file src="build\react-ndk\all\arm64-v8a\libyoga.so" target="lib\droidarm64"/>
-+    
-+    <file src="build\react-ndk\all\x86_64\libhermes-executor-common-debug.so" target="lib\droidx64"/>
-+    <file src="build\react-ndk\all\armeabi-v7a\libhermes-executor-common-debug.so" target="lib\droidarm"/>
-+    <file src="build\react-ndk\all\x86\libhermes-executor-common-debug.so" target="lib\droidx86"/>
-+    <file src="build\react-ndk\all\arm64-v8a\libhermes-executor-common-debug.so" target="lib\droidarm64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86_64\libyoga.so" target="lib\droidx64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\armeabi-v7a\libyoga.so" target="lib\droidarm"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86\libyoga.so" target="lib\droidx86"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\arm64-v8a\libyoga.so" target="lib\droidarm64"/>
 +
-+    <file src="build\react-ndk\all\x86_64\libhermes-executor-common-release.so" target="lib\droidx64"/>
-+    <file src="build\react-ndk\all\armeabi-v7a\libhermes-executor-common-release.so" target="lib\droidarm"/>
-+    <file src="build\react-ndk\all\x86\libhermes-executor-common-release.so" target="lib\droidx86"/>
-+    <file src="build\react-ndk\all\arm64-v8a\libhermes-executor-common-release.so" target="lib\droidarm64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86_64\libhermes-executor-debug.so" target="lib\droidx64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\armeabi-v7a\libhermes-executor-debug.so" target="lib\droidarm"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86\libhermes-executor-debug.so" target="lib\droidx86"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\arm64-v8a\libhermes-executor-debug.so" target="lib\droidarm64"/>
 +
-+    <file src="build\react-ndk\all\x86_64\libhermes-executor-debug.so" target="lib\droidx64"/>
-+    <file src="build\react-ndk\all\armeabi-v7a\libhermes-executor-debug.so" target="lib\droidarm"/>
-+    <file src="build\react-ndk\all\x86\libhermes-executor-debug.so" target="lib\droidx86"/>
-+    <file src="build\react-ndk\all\arm64-v8a\libhermes-executor-debug.so" target="lib\droidarm64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86_64\libhermes-executor-release.so" target="lib\droidx64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\armeabi-v7a\libhermes-executor-release.so" target="lib\droidarm"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86\libhermes-executor-release.so" target="lib\droidx86"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\arm64-v8a\libhermes-executor-release.so" target="lib\droidarm64"/>
 +
-+    <file src="build\react-ndk\all\x86_64\libhermes-executor-release.so" target="lib\droidx64"/>
-+    <file src="build\react-ndk\all\armeabi-v7a\libhermes-executor-release.so" target="lib\droidarm"/>
-+    <file src="build\react-ndk\all\x86\libhermes-executor-release.so" target="lib\droidx86"/>
-+    <file src="build\react-ndk\all\arm64-v8a\libhermes-executor-release.so" target="lib\droidarm64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86_64\libjsijniprofiler.so" target="lib\droidx64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\armeabi-v7a\libjsijniprofiler.so" target="lib\droidarm"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86\libjsijniprofiler.so" target="lib\droidx86"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\arm64-v8a\libjsijniprofiler.so" target="lib\droidarm64"/>
 +
-+    <file src="build\react-ndk\all\x86_64\libhermes-inspector.so" target="lib\droidx64"/>
-+    <file src="build\react-ndk\all\armeabi-v7a\libhermes-inspector.so" target="lib\droidarm"/>
-+    <file src="build\react-ndk\all\x86\libhermes-inspector.so" target="lib\droidx86"/>
-+    <file src="build\react-ndk\all\arm64-v8a\libhermes-inspector.so" target="lib\droidarm64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86_64\libfolly_futures.so" target="lib\droidx64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\armeabi-v7a\libfolly_futures.so" target="lib\droidarm"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86\libfolly_futures.so" target="lib\droidx86"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\arm64-v8a\libfolly_futures.so" target="lib\droidarm64"/>
 +
-+    <file src="build\react-ndk\all\x86_64\libjsijniprofiler.so" target="lib\droidx64"/>
-+    <file src="build\react-ndk\all\armeabi-v7a\libjsijniprofiler.so" target="lib\droidarm"/>
-+    <file src="build\react-ndk\all\x86\libjsijniprofiler.so" target="lib\droidx86"/>
-+    <file src="build\react-ndk\all\arm64-v8a\libjsijniprofiler.so" target="lib\droidarm64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86_64\libreact_nativemodule_core.so" target="lib\droidx64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\armeabi-v7a\libreact_nativemodule_core.so" target="lib\droidarm"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86\libreact_nativemodule_core.so" target="lib\droidx86"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\arm64-v8a\libreact_nativemodule_core.so" target="lib\droidarm64"/>
 +
-+    <file src="build\react-ndk\all\x86_64\libfolly_futures.so" target="lib\droidx64"/>
-+    <file src="build\react-ndk\all\armeabi-v7a\libfolly_futures.so" target="lib\droidarm"/>
-+    <file src="build\react-ndk\all\x86\libfolly_futures.so" target="lib\droidx86"/>
-+    <file src="build\react-ndk\all\arm64-v8a\libfolly_futures.so" target="lib\droidarm64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86_64\libreactnativeutilsjni.so" target="lib\droidx64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\armeabi-v7a\libreactnativeutilsjni.so" target="lib\droidarm"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86\libreactnativeutilsjni.so" target="lib\droidx86"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\arm64-v8a\libreactnativeutilsjni.so" target="lib\droidarm64"/>
 +
-+    <file src="build\react-ndk\all\x86_64\libreact_nativemodule_core.so" target="lib\droidx64"/>
-+    <file src="build\react-ndk\all\armeabi-v7a\libreact_nativemodule_core.so" target="lib\droidarm"/>
-+    <file src="build\react-ndk\all\x86\libreact_nativemodule_core.so" target="lib\droidx86"/>
-+    <file src="build\react-ndk\all\arm64-v8a\libreact_nativemodule_core.so" target="lib\droidarm64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86_64\libreactperfloggerjni.so" target="lib\droidx64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\armeabi-v7a\libreactperfloggerjni.so" target="lib\droidarm"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86\libreactperfloggerjni.so" target="lib\droidx86"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\arm64-v8a\libreactperfloggerjni.so" target="lib\droidarm64"/>
 +
-+    <file src="build\react-ndk\all\x86_64\libreactnativeutilsjni.so" target="lib\droidx64"/>
-+    <file src="build\react-ndk\all\armeabi-v7a\libreactnativeutilsjni.so" target="lib\droidarm"/>
-+    <file src="build\react-ndk\all\x86\libreactnativeutilsjni.so" target="lib\droidx86"/>
-+    <file src="build\react-ndk\all\arm64-v8a\libreactnativeutilsjni.so" target="lib\droidarm64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86_64\libturbomodulejsijni.so" target="lib\droidx64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\armeabi-v7a\libturbomodulejsijni.so" target="lib\droidarm"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86\libturbomodulejsijni.so" target="lib\droidx86"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\arm64-v8a\libturbomodulejsijni.so" target="lib\droidarm64"/>
 +
-+    <file src="build\react-ndk\all\x86_64\libreactperfloggerjni.so" target="lib\droidx64"/>
-+    <file src="build\react-ndk\all\armeabi-v7a\libreactperfloggerjni.so" target="lib\droidarm"/>
-+    <file src="build\react-ndk\all\x86\libreactperfloggerjni.so" target="lib\droidx86"/>
-+    <file src="build\react-ndk\all\arm64-v8a\libreactperfloggerjni.so" target="lib\droidarm64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86_64\libjsi.so" target="lib\droidx64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\armeabi-v7a\libjsi.so" target="lib\droidarm"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86\libjsi.so" target="lib\droidx86"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\arm64-v8a\libjsi.so" target="lib\droidarm64"/>
 +
-+    <file src="build\react-ndk\all\x86_64\libturbomodulejsijni.so" target="lib\droidx64"/>
-+    <file src="build\react-ndk\all\armeabi-v7a\libturbomodulejsijni.so" target="lib\droidarm"/>
-+    <file src="build\react-ndk\all\x86\libturbomodulejsijni.so" target="lib\droidx86"/>
-+    <file src="build\react-ndk\all\arm64-v8a\libturbomodulejsijni.so" target="lib\droidarm64"/>
-+
-+    <file src="build\react-ndk\all\x86_64\libjsi.so" target="lib\droidx64"/>
-+    <file src="build\react-ndk\all\armeabi-v7a\libjsi.so" target="lib\droidarm"/>
-+    <file src="build\react-ndk\all\x86\libjsi.so" target="lib\droidx86"/>
-+    <file src="build\react-ndk\all\arm64-v8a\libjsi.so" target="lib\droidarm64"/>
-+
-+    <file src="build\react-ndk\all\x86_64\liblogger.so" target="lib\droidx64"/>
-+    <file src="build\react-ndk\all\armeabi-v7a\liblogger.so" target="lib\droidarm"/>
-+    <file src="build\react-ndk\all\x86\liblogger.so" target="lib\droidx86"/>
-+    <file src="build\react-ndk\all\arm64-v8a\liblogger.so" target="lib\droidarm64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86_64\liblogger.so" target="lib\droidx64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\armeabi-v7a\liblogger.so" target="lib\droidarm"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86\liblogger.so" target="lib\droidx86"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\arm64-v8a\liblogger.so" target="lib\droidarm64"/>
 +
 +    <!-- Unstripped binaries -->
-+    <file src="build\tmp\buildReactNdkLib\local\x86_64\libfb.so" target="lib\droidx64\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libfb.so" target="lib\droidarm\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\x86\libfb.so" target="lib\droidx86\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libfb.so" target="lib\droidarm64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86_64\libfb.so" target="lib\droidx64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\armeabi-v7a\libfb.so" target="lib\droidarm\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86\libfb.so" target="lib\droidx86\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\arm64-v8a\libfb.so" target="lib\droidarm64\unstripped"/>
 +
-+    <file src="build\tmp\buildReactNdkLib\local\x86_64\libfbjni.so" target="lib\droidx64\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libfbjni.so" target="lib\droidarm\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\x86\libfbjni.so" target="lib\droidx86\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libfbjni.so" target="lib\droidarm64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86_64\libfbjni.so" target="lib\droidx64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\armeabi-v7a\libfbjni.so" target="lib\droidarm\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86\libfbjni.so" target="lib\droidx86\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\arm64-v8a\libfbjni.so" target="lib\droidarm64\unstripped"/>
 +
-+    <file src="build\tmp\buildReactNdkLib\local\x86_64\libfolly_json.so" target="lib\droidx64\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libfolly_json.so" target="lib\droidarm\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\x86\libfolly_json.so" target="lib\droidx86\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libfolly_json.so" target="lib\droidarm64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86_64\libfolly_json.so" target="lib\droidx64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\armeabi-v7a\libfolly_json.so" target="lib\droidarm\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86\libfolly_json.so" target="lib\droidx86\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\arm64-v8a\libfolly_json.so" target="lib\droidarm64\unstripped"/>
 +
-+    <file src="build\tmp\buildReactNdkLib\local\x86_64\libglog.so" target="lib\droidx64\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libglog.so" target="lib\droidarm\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\x86\libglog.so" target="lib\droidx86\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libglog.so" target="lib\droidarm64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86_64\libglog.so" target="lib\droidx64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\armeabi-v7a\libglog.so" target="lib\droidarm\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86\libglog.so" target="lib\droidx86\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\arm64-v8a\libglog.so" target="lib\droidarm64\unstripped"/>
 +
-+    <file src="build\tmp\buildReactNdkLib\local\x86_64\libglog_init.so" target="lib\droidx64\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libglog_init.so" target="lib\droidarm\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\x86\libglog_init.so" target="lib\droidx86\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libglog_init.so" target="lib\droidarm64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86_64\libglog_init.so" target="lib\droidx64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\armeabi-v7a\libglog_init.so" target="lib\droidarm\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86\libglog_init.so" target="lib\droidx86\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\arm64-v8a\libglog_init.so" target="lib\droidarm64\unstripped"/>
 +
-+    <file src="build\tmp\buildReactNdkLib\local\x86_64\libjsinspector.so" target="lib\droidx64\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libjsinspector.so" target="lib\droidarm\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\x86\libjsinspector.so" target="lib\droidx86\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libjsinspector.so" target="lib\droidarm64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86_64\libjsinspector.so" target="lib\droidx64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\armeabi-v7a\libjsinspector.so" target="lib\droidarm\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86\libjsinspector.so" target="lib\droidx86\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\arm64-v8a\libjsinspector.so" target="lib\droidarm64\unstripped"/>
 +
-+    <file src="build\tmp\buildReactNdkLib\local\x86_64\libreactnativeblob.so" target="lib\droidx64\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libreactnativeblob.so" target="lib\droidarm\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\x86\libreactnativeblob.so" target="lib\droidx86\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libreactnativeblob.so" target="lib\droidarm64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86_64\libreactnativeblob.so" target="lib\droidx64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\armeabi-v7a\libreactnativeblob.so" target="lib\droidarm\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86\libreactnativeblob.so" target="lib\droidx86\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\arm64-v8a\libreactnativeblob.so" target="lib\droidarm64\unstripped"/>
 +
-+    <file src="build\tmp\buildReactNdkLib\local\x86_64\libreactnativejni.so" target="lib\droidx64\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libreactnativejni.so" target="lib\droidarm\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\x86\libreactnativejni.so" target="lib\droidx86\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libreactnativejni.so" target="lib\droidarm64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86_64\libreactnativejni.so" target="lib\droidx64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\armeabi-v7a\libreactnativejni.so" target="lib\droidarm\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86\libreactnativejni.so" target="lib\droidx86\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\arm64-v8a\libreactnativejni.so" target="lib\droidarm64\unstripped"/>
 +
-+    <file src="build\tmp\buildReactNdkLib\local\x86_64\libv8executor.so" target="lib\droidx64\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libv8executor.so" target="lib\droidarm\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\x86\libv8executor.so" target="lib\droidx86\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libv8executor.so" target="lib\droidarm64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86_64\libv8executor.so" target="lib\droidx64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\armeabi-v7a\libv8executor.so" target="lib\droidarm\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86\libv8executor.so" target="lib\droidx86\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\arm64-v8a\libv8executor.so" target="lib\droidarm64\unstripped"/>
 +
-+    <file src="build\tmp\buildReactNdkLib\local\x86_64\libyoga.so" target="lib\droidx64\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libyoga.so" target="lib\droidarm\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\x86\libyoga.so" target="lib\droidx86\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libyoga.so" target="lib\droidarm64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86_64\libyoga.so" target="lib\droidx64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\armeabi-v7a\libyoga.so" target="lib\droidarm\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86\libyoga.so" target="lib\droidx86\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\arm64-v8a\libyoga.so" target="lib\droidarm64\unstripped"/>
 +
-+    <file src="build\tmp\buildReactNdkLib\local\x86_64\libhermes-executor-common-debug.so" target="lib\droidx64\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libhermes-executor-common-debug.so" target="lib\droidarm\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\x86\libhermes-executor-common-debug.so" target="lib\droidx86\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libhermes-executor-common-debug.so" target="lib\droidarm64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86_64\libhermes-executor-debug.so" target="lib\droidx64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\armeabi-v7a\libhermes-executor-debug.so" target="lib\droidarm\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86\libhermes-executor-debug.so" target="lib\droidx86\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\arm64-v8a\libhermes-executor-debug.so" target="lib\droidarm64\unstripped"/>
 +
-+    <file src="build\tmp\buildReactNdkLib\local\x86_64\libhermes-executor-common-release.so" target="lib\droidx64\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libhermes-executor-common-release.so" target="lib\droidarm\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\x86\libhermes-executor-common-release.so" target="lib\droidx86\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libhermes-executor-common-release.so" target="lib\droidarm64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86_64\libhermes-executor-release.so" target="lib\droidx64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\armeabi-v7a\libhermes-executor-release.so" target="lib\droidarm\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86\libhermes-executor-release.so" target="lib\droidx86\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\arm64-v8a\libhermes-executor-release.so" target="lib\droidarm64\unstripped"/>
 +
-+    <file src="build\tmp\buildReactNdkLib\local\x86_64\libhermes-executor-debug.so" target="lib\droidx64\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libhermes-executor-debug.so" target="lib\droidarm\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\x86\libhermes-executor-debug.so" target="lib\droidx86\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libhermes-executor-debug.so" target="lib\droidarm64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86_64\libjsijniprofiler.so" target="lib\droidx64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\armeabi-v7a\libjsijniprofiler.so" target="lib\droidarm\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86\libjsijniprofiler.so" target="lib\droidx86\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\arm64-v8a\libjsijniprofiler.so" target="lib\droidarm64\unstripped"/>
 +
-+    <file src="build\tmp\buildReactNdkLib\local\x86_64\libhermes-executor-release.so" target="lib\droidx64\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libhermes-executor-release.so" target="lib\droidarm\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\x86\libhermes-executor-release.so" target="lib\droidx86\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libhermes-executor-release.so" target="lib\droidarm64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86_64\libfolly_futures.so" target="lib\droidx64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\armeabi-v7a\libfolly_futures.so" target="lib\droidarm\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86\libfolly_futures.so" target="lib\droidx86\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\arm64-v8a\libfolly_futures.so" target="lib\droidarm64\unstripped"/>
 +
-+    <file src="build\tmp\buildReactNdkLib\local\x86_64\libhermes-inspector.so" target="lib\droidx64\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libhermes-inspector.so" target="lib\droidarm\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\x86\libhermes-inspector.so" target="lib\droidx86\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libhermes-inspector.so" target="lib\droidarm64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86_64\libreact_nativemodule_core.so" target="lib\droidx64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\armeabi-v7a\libreact_nativemodule_core.so" target="lib\droidarm\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86\libreact_nativemodule_core.so" target="lib\droidx86\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\arm64-v8a\libreact_nativemodule_core.so" target="lib\droidarm64\unstripped"/>
 +
-+    <file src="build\tmp\buildReactNdkLib\local\x86_64\libjsijniprofiler.so" target="lib\droidx64\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libjsijniprofiler.so" target="lib\droidarm\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\x86\libjsijniprofiler.so" target="lib\droidx86\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libjsijniprofiler.so" target="lib\droidarm64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86_64\libreactnativeutilsjni.so" target="lib\droidx64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\armeabi-v7a\libreactnativeutilsjni.so" target="lib\droidarm\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86\libreactnativeutilsjni.so" target="lib\droidx86\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\arm64-v8a\libreactnativeutilsjni.so" target="lib\droidarm64\unstripped"/>
 +
-+    <file src="build\tmp\buildReactNdkLib\local\x86_64\libfolly_futures.so" target="lib\droidx64\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libfolly_futures.so" target="lib\droidarm\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\x86\libfolly_futures.so" target="lib\droidx86\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libfolly_futures.so" target="lib\droidarm64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86_64\libreactperfloggerjni.so" target="lib\droidx64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\armeabi-v7a\libreactperfloggerjni.so" target="lib\droidarm\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86\libreactperfloggerjni.so" target="lib\droidx86\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\arm64-v8a\libreactperfloggerjni.so" target="lib\droidarm64\unstripped"/>
 +
-+    <file src="build\tmp\buildReactNdkLib\local\x86_64\libreact_nativemodule_core.so" target="lib\droidx64\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libreact_nativemodule_core.so" target="lib\droidarm\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\x86\libreact_nativemodule_core.so" target="lib\droidx86\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libreact_nativemodule_core.so" target="lib\droidarm64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86_64\libturbomodulejsijni.so" target="lib\droidx64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\armeabi-v7a\libturbomodulejsijni.so" target="lib\droidarm\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86\libturbomodulejsijni.so" target="lib\droidx86\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\arm64-v8a\libturbomodulejsijni.so" target="lib\droidarm64\unstripped"/>
 +
-+    <file src="build\tmp\buildReactNdkLib\local\x86_64\libreactnativeutilsjni.so" target="lib\droidx64\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libreactnativeutilsjni.so" target="lib\droidarm\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\x86\libreactnativeutilsjni.so" target="lib\droidx86\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libreactnativeutilsjni.so" target="lib\droidarm64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86_64\libjsi.so" target="lib\droidx64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\armeabi-v7a\libjsi.so" target="lib\droidarm\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86\libjsi.so" target="lib\droidx86\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\arm64-v8a\libjsi.so" target="lib\droidarm64\unstripped"/>
 +
-+    <file src="build\tmp\buildReactNdkLib\local\x86_64\libreactperfloggerjni.so" target="lib\droidx64\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libreactperfloggerjni.so" target="lib\droidarm\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\x86\libreactperfloggerjni.so" target="lib\droidx86\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libreactperfloggerjni.so" target="lib\droidarm64\unstripped"/>
-+
-+    <file src="build\tmp\buildReactNdkLib\local\x86_64\libturbomodulejsijni.so" target="lib\droidx64\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libturbomodulejsijni.so" target="lib\droidarm\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\x86\libturbomodulejsijni.so" target="lib\droidx86\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libturbomodulejsijni.so" target="lib\droidarm64\unstripped"/>
-+
-+    <file src="build\tmp\buildReactNdkLib\local\x86_64\libjsi.so" target="lib\droidx64\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libjsi.so" target="lib\droidarm\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\x86\libjsi.so" target="lib\droidx86\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libjsi.so" target="lib\droidarm64\unstripped"/>
-+
-+    <file src="build\tmp\buildReactNdkLib\local\x86_64\liblogger.so" target="lib\droidx64\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\liblogger.so" target="lib\droidarm\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\x86\liblogger.so" target="lib\droidx86\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\liblogger.so" target="lib\droidarm64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86_64\liblogger.so" target="lib\droidx64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\armeabi-v7a\liblogger.so" target="lib\droidarm\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86\liblogger.so" target="lib\droidx86\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\arm64-v8a\liblogger.so" target="lib\droidarm64\unstripped"/>
 +
 +    <!-- AAR and POM -->
 +    <file src="..\android\com\**\*" target="maven\com"/>
@@ -265,4 +235,4 @@ index 0000000000..87a89816c7
 +    <file src="..\android\dependencies\**\*.*" target="dependencies"/>
 +  </files>
 +</package>
-+
+\ No newline at end of file

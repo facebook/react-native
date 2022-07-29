@@ -31,21 +31,11 @@ jobs:
 
       - template: templates/android-build-office.yml
 
-      - template: templates/prep-android-nuget.yml
-
       - template: templates/download-android-dependencies.yml
         parameters:
           artifact_feed: react-native/react-native-public
 
-      # Very similar to the default pack task .. but appends 'ndk21' to the nuget pack version
-      - task: CmdLine@2
-        displayName: 'Verify NuGet can be packed'
-        inputs:
-          script: NDK=ndk`cat ${ANDROID_SDK_ROOT}/ndk-bundle/source.properties 2>&1 | grep Pkg.Revision | awk '{ print $3}' | awk -F. '{ print $1 }'`; mono $(System.DefaultWorkingDirectory)/nuget-bin/nuget.exe pack $(System.DefaultWorkingDirectory)/ReactAndroid/ReactAndroid.nuspec -OutputDirectory $(Build.StagingDirectory)/final -Properties buildNumber=$(buildNumber)-$NDK;commitId=$(Build.SourceVersion)
-
-      # Android CI doesn't create a nuget now, but this check is failing builds. Quickest fix to unblock builds is to disable the check... but we need to find the root cause and fix it and enable this again.
-      # - script: '[ -f $(System.DefaultWorkingDirectory)/*.nupkg ]'
-      #   displayName: Verify that NuGet was actually created
+      - template: templates/android-nuget-pack.yml
 
       - task: CmdLine@2
         displayName: 'Npm pack'
