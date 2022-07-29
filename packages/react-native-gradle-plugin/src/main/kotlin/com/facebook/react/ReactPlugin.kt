@@ -92,19 +92,24 @@ class ReactPlugin : Plugin<Project> {
 
           // We're reading the package.json at configuration time to properly feed
           // the `jsRootDir` @Input property of this task. Therefore, the
-          // parsePackageJson should be invoked here.
-          val parsedPackageJson =
-              extension.root.file("package.json").orNull?.asFile?.let {
-                JsonUtils.fromCodegenJson(it)
+          // parsePackageJson should be invoked inside this lambda.
+          // We look for `package.json` in the parent folder of this Gradle module
+          // (generally the case for library projects) or we fallback to looking into the `root`
+          // folder of a React Native project (generally the case for app projects).
+          val packageJson =
+              if (project.file("../package.json").exists()) {
+                project.file("../package.json")
+              } else {
+                extension.root.file("package.json").orNull?.asFile
               }
+          val parsedPackageJson = packageJson?.let { JsonUtils.fromCodegenJson(it) }
 
-          val parsedJsRootDir =
-              parsedPackageJson?.codegenConfig?.jsSrcsDir?.let { relativePath ->
-                extension.root.dir(relativePath)
-              }
-                  ?: extension.jsRootDir
-
-          it.jsRootDir.set(parsedJsRootDir)
+          val jsSrcsDirInPackageJson = parsedPackageJson?.codegenConfig?.jsSrcsDir
+          if (jsSrcsDirInPackageJson != null) {
+            it.jsRootDir.set(File(packageJson.parentFile, jsSrcsDirInPackageJson))
+          } else {
+            it.jsRootDir.set(extension.jsRootDir)
+          }
         }
 
     // We create the task to generate Java code from schema.
