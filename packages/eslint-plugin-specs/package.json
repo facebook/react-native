@@ -9,7 +9,8 @@
     "directory": "packages/eslint-plugin-specs"
   },
   "scripts": {
-    "prepack": "node prepack.js"
+    "prepack": "node prepack.js",
+    "postpack": "node postpack.js"
   },
   "dependencies": {
     "@babel/core": "^7.14.0",
