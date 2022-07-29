@@ -341,52 +341,10 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
 
   @Override
   public boolean performAccessibilityAction(View host, int action, Bundle args) {
-    /*
-    if (mAccessibilityActionsMap.containsKey(action)) {
-      final WritableMap event = Arguments.createMap();
-      event.putString("actionName", mAccessibilityActionsMap.get(action));
-      ReactContext reactContext = (ReactContext) host.getContext();
-      if (reactContext.hasActiveReactInstance()) {
-        final int reactTag = host.getId();
-        final int surfaceId = UIManagerHelper.getSurfaceId(reactContext);
-        UIManager uiManager = UIManagerHelper.getUIManager(reactContext, reactTag);
-        if (uiManager != null) {
-          uiManager
-              .<EventDispatcher>getEventDispatcher()
-              .dispatchEvent(
-                  new Event(surfaceId, reactTag) {
-                    @Override
-                    public String getEventName() {
-                      return TOP_ACCESSIBILITY_ACTION_EVENT;
-                    }
-
-                    @Override
-                    protected WritableMap getEventData() {
-                      return event;
-                    }
-                  });
-        }
-      } else {
-        ReactSoftExceptionLogger.logSoftException(
-            TAG, new ReactNoCrashSoftException("Cannot get RCTEventEmitter, no CatalystInstance"));
-      }
-
-      // In order to make Talkback announce the change of the adjustable's value,
-      // schedule to send a TYPE_VIEW_SELECTED event after performing the scroll actions.
-      final AccessibilityRole accessibilityRole =
-          (AccessibilityRole) host.getTag(R.id.accessibility_role);
-      final ReadableMap accessibilityValue = (ReadableMap) host.getTag(R.id.accessibility_value);
-      if (accessibilityRole == AccessibilityRole.ADJUSTABLE
-          && (action == AccessibilityActionCompat.ACTION_SCROLL_FORWARD.getId()
-              || action == AccessibilityActionCompat.ACTION_SCROLL_BACKWARD.getId())) {
-        if (accessibilityValue != null && !accessibilityValue.hasKey("text")) {
-          scheduleAccessibilityEventSender(host);
-        }
-        return super.performAccessibilityAction(host, action, args);
-      }
-      return true;
-    }
-    */
+    Integer x = 225;
+    Integer y = 116;
+    Integer virtualViewId = getVirtualViewAt(x, y);
+    sendEventForVirtualView(virtualViewId, AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED);
     return true;
   }
 
