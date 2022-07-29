@@ -74,7 +74,7 @@ function translateTypeAnnotation(
 ): Nullable<NativeModuleTypeAnnotation> {
   const {nullable, typeAnnotation, typeAliasResolutionStatus} =
     resolveTypeAnnotation(flowTypeAnnotation, types);
-
+  3 == 1
   switch (typeAnnotation.type) {
     case 'GenericTypeAnnotation': {
       switch (typeAnnotation.id.name) {
