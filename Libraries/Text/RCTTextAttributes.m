@@ -17,6 +17,17 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
 
 @implementation RCTTextAttributes
 
+// [TODO(macOS GH#774)
++ (RCTUIColor *)defaultForegroundColor
+{
+  if (@available(iOS 13.0, *)) {
+    return [RCTUIColor labelColor];
+  } else {
+    return [RCTUIColor blackColor];
+  }
+}
+// ]TODO(macOS GH#774)
+
 - (instancetype)init
 {
   if (self = [super init]) {
@@ -31,13 +42,9 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
     _textShadowRadius = NAN;
     _opacity = NAN;
     _textTransform = RCTTextTransformUndefined;
-    // [TODO(OSS Candidate ISS#2710739)
-    if (@available(iOS 13.0, *)) {
-      _foregroundColor = [RCTUIColor labelColor];
-    } else {
-      _foregroundColor = [RCTUIColor blackColor];
-    }
-    // ]TODO(OSS Candidate ISS#2710739)
+    // [TODO(macOS GH#774)
+    _foregroundColor = [RCTTextAttributes defaultForegroundColor];
+    // ]TODO(macOS GH#774)
   }
 
   return self;
@@ -50,7 +57,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   // We will address this in the future.
 
   // Color
-  _foregroundColor = textAttributes->_foregroundColor ?: _foregroundColor;
+  _foregroundColor = textAttributes->_foregroundColor == [RCTTextAttributes defaultForegroundColor] ? _foregroundColor : textAttributes->_foregroundColor;
   _backgroundColor = textAttributes->_backgroundColor ?: _backgroundColor;
   _opacity = !isnan(textAttributes->_opacity) ? (isnan(_opacity) ? 1.0 : _opacity) * textAttributes->_opacity : _opacity;
 
