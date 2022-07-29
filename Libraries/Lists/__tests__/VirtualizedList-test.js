@@ -736,6 +736,23 @@ it('renders offset cells in initial render when initialScrollIndex set', () => {
   expect(component).toMatchSnapshot();
 });
 
+it('initially renders nothing when initialNumToRender is 0', () => {
+  const items = generateItems(10);
+  const ITEM_HEIGHT = 10;
+
+  const component = ReactTestRenderer.create(
+    <VirtualizedList
+      initialNumToRender={0}
+      {...baseItemProps(items)}
+      {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+    />,
+  );
+
+  // Only a spacer should be present (a single item is present in the legacy
+  // implementation)
+  expect(component).toMatchSnapshot();
+});
+
 it('does not over-render when there is less than initialNumToRender cells', () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
