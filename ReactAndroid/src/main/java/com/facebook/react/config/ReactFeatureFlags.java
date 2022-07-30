@@ -83,6 +83,9 @@ public class ReactFeatureFlags {
   /** Enables or disables MapBuffer Serialization */
   public static boolean mapBufferSerializationEnabled = false;
 
+  /** Enables or disables calculation of Transformed Frames */
+  public static boolean calculateTransformedFramesEnabled = false;
+
   /** Feature Flag to use overflowInset values provided by Yoga */
   public static boolean useOverflowInset = false;
 
