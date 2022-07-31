@@ -488,3 +488,5 @@ afterEvaluate {
         }
     }
 }
+
+apply plugin: "org.jetbrains.kotlin.android"
