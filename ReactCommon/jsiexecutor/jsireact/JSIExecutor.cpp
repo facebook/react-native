@@ -121,7 +121,6 @@ void JSIExecutor::initializeRuntime() {
               const jsi::Value *args,
               size_t count) { return nativeCallSyncHook(args, count); }));
 
-#if DEBUG
   runtime_->global().setProperty(
       *runtime_,
       "globalEvalWithSourceUrl",
@@ -134,7 +133,6 @@ void JSIExecutor::initializeRuntime() {
               const jsi::Value &,
               const jsi::Value *args,
               size_t count) { return globalEvalWithSourceUrl(args, count); }));
-#endif
 
   if (runtimeInstaller_) {
     runtimeInstaller_(*runtime_);
