@@ -13,7 +13,7 @@
 #include <react/renderer/graphics/conversions.h>
 
 #define GET_FIELD_VALUE(field, fieldName, defaultValue, rawValue) \
-  (rawValue.hasValue() ? ([&rawValue, &context]{                   \
+  (rawValue.hasValue() ? ([&rawValue, &context]{                  \
     decltype(defaultValue) res;                                   \
     fromRawValue(context, rawValue, res);                         \
     return res;                                                   \
