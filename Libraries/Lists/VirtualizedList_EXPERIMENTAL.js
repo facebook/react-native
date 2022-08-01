@@ -607,7 +607,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
 
     let newCellsAroundViewport: {first: number, last: number};
-    if (this._isVirtualizationDisabled()) {
+    if (props.disableVirtualization) {
       const renderAhead =
         distanceFromEnd < onEndReachedThreshold * visibleLength
           ? maxToRenderPerBatchOrDefault(props.maxToRenderPerBatch)
@@ -825,10 +825,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     });
   };
 
-  _isVirtualizationDisabled(): boolean {
-    return this.props.disableVirtualization || false;
-  }
-
   _isNestedWithSameOrientation(): boolean {
     const nestedContext = this.context;
     return !!(
@@ -947,7 +943,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         if (section.isSpacer) {
           // Legacy behavior is to avoid spacers when virtualization is
           // disabled (including head spacers on initial render).
-          if (this._isVirtualizationDisabled()) {
+          if (this.props.disableVirtualization) {
             continue;
           }
 
