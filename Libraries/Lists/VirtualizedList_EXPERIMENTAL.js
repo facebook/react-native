@@ -863,7 +863,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       newCellsAroundViewport = {
         first: 0,
         last: Math.min(
-          this.state.cellsAroundViewport.last + renderAhead,
+          cellsAroundViewport.last + renderAhead,
           getItemCount(data) - 1,
         ),
       };
@@ -879,7 +879,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       // - initialScrollIndex > 0 AND the end of the list is visible (this handles the case
       //   where the list is shorter than the visible area)
       if (
-        this.props.initialScrollIndex &&
+        props.initialScrollIndex &&
         !this._scrollMetrics.offset &&
         Math.abs(distanceFromEnd) >= Number.EPSILON
       ) {
