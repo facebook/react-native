@@ -262,11 +262,11 @@ ViewProps::ViewProps(
   case CONSTEXPR_RAW_PROPS_KEY_HASH(eventString): { \
     ViewEvents defaultViewEvents{};                 \
     events[eventType] = [defaultViewEvents, &value, &context]{    \
-        bool res = defaultViewEvents[eventType];    \
-        if (value.hasValue()) {                     \
-            fromRawValue(context, value, res);      \
-        }                                           \
-        return res;                                 \
+      bool res = defaultViewEvents[eventType];      \
+      if (value.hasValue()) {                       \
+        fromRawValue(context, value, res);          \
+      }                                             \
+      return res;                                   \
     }();                                            \
     return;                                         \
   }
