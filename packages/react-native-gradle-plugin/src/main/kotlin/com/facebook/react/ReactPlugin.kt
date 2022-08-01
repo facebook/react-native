@@ -15,6 +15,7 @@ import com.facebook.react.tasks.BuildCodegenCLITask
 import com.facebook.react.tasks.GenerateCodegenArtifactsTask
 import com.facebook.react.tasks.GenerateCodegenSchemaTask
 import com.facebook.react.utils.JsonUtils
+import com.facebook.react.utils.findPackageJsonFile
 import java.io.File
 import kotlin.system.exitProcess
 import org.gradle.api.Plugin
@@ -93,15 +94,7 @@ class ReactPlugin : Plugin<Project> {
           // We're reading the package.json at configuration time to properly feed
           // the `jsRootDir` @Input property of this task. Therefore, the
           // parsePackageJson should be invoked inside this lambda.
-          // We look for `package.json` in the parent folder of this Gradle module
-          // (generally the case for library projects) or we fallback to looking into the `root`
-          // folder of a React Native project (generally the case for app projects).
-          val packageJson =
-              if (project.file("../package.json").exists()) {
-                project.file("../package.json")
-              } else {
-                extension.root.file("package.json").orNull?.asFile
-              }
+          val packageJson = findPackageJsonFile(project, extension)
           val parsedPackageJson = packageJson?.let { JsonUtils.fromCodegenJson(it) }
 
           val jsSrcsDirInPackageJson = parsedPackageJson?.codegenConfig?.jsSrcsDir
@@ -122,7 +115,7 @@ class ReactPlugin : Plugin<Project> {
           it.nodeExecutableAndArgs.set(extension.nodeExecutableAndArgs)
           it.codegenDir.set(extension.codegenDir)
           it.generatedSrcDir.set(generatedSrcDir)
-          it.packageJsonFile.set(extension.root.file("package.json"))
+          it.packageJsonFile.set(findPackageJsonFile(project, extension))
           it.codegenJavaPackageName.set(extension.codegenJavaPackageName)
           it.libraryName.set(extension.libraryName)
         }

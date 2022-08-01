@@ -10,6 +10,7 @@
 package com.facebook.react.utils
 
 import com.facebook.react.ReactExtension
+import org.gradle.api.Project
 import java.io.File
 
 /**
@@ -189,6 +190,18 @@ internal fun projectPathToLibraryName(projectPath: String): String =
         .split(':', '-', '_', '.')
         .joinToString("") { token -> token.replaceFirstChar { it.uppercase() } }
         .plus("Spec")
+
+/**
+ * Function to look for the relevant `package.json`. We first look in the parent folder
+ * of this Gradle module (generally the case for library projects) or we fallback to
+ * looking into the `root` folder of a React Native project (generally the case for app projects).
+ */
+internal fun findPackageJsonFile(project: Project, extension: ReactExtension) : File? =
+    if (project.file("../package.json").exists()) {
+        project.file("../package.json")
+    } else {
+        extension.root.file("package.json").orNull?.asFile
+    }
 
 private const val HERMESC_IN_REACT_NATIVE_PATH =
     "node_modules/react-native/sdks/hermesc/%OS-BIN%/hermesc"
