@@ -51,10 +51,10 @@ references:
     checkout_cache_key: &checkout_cache_key v1-checkout
     gems_cache_key: &gems_cache_key v1-gems-{{ checksum "Gemfile.lock" }}
     gradle_cache_key: &gradle_cache_key v1-gradle-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "ReactAndroid/gradle.properties" }}
-    hermes_cache_key: &hermes_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
-    hermes_windows_cache_key: &hermes_windows_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "tmp/hermes/hermesversion" }}
-    hermes_tarball_cache_key: &hermes_tarball_cache_key v1-hermes-tarball-{{ checksum "/tmp/hermes/cache/.hermes-cache-key-file" }}
-    pods_cache_key: &pods_cache_key v6-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
+    hermes_cache_key: &hermes_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
+    hermes_windows_cache_key: &hermes_windows_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "tmp/hermes/hermesversion" }}
+    hermes_tarball_cache_key: &hermes_tarball_cache_key v2-hermes-tarball-{{ checksum "/tmp/hermes/cache/.hermes-cache-key-file" }}
+    pods_cache_key: &pods_cache_key v7-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
     windows_yarn_cache_key: &windows_yarn_cache_key v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
     yarn_cache_key: &yarn_cache_key v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}
 
@@ -294,11 +294,19 @@ commands:
           command: |
             HERMES_CACHE_KEY_FILE="/tmp/hermes/cache/.hermes-cache-key-file"
             if [ ! -f "$HERMES_CACHE_KEY_FILE" ]; then
-              echo "File not found. Creating it using latest commit from main"
+              echo "File not found. Use the same version from the hermes workspace"
+
+              HERMES_VERSION="/tmp/hermes/hermesversion"
+              if [ ! -f "$HERMES_VERSION" ]; then
+                echo "No hermesversion file found. Failing due to possible inconsistencies in the build"
+                exit 1
+              fi
+
               mkdir -p /tmp/hermes/cache
-              git ls-remote https://github.com/facebook/hermes main | cut -f 1 > $HERMES_CACHE_KEY_FILE
+              cat $HERMES_VERSION > $HERMES_CACHE_KEY_FILE
             fi
-            cat $HERMES_CACHE_KEY_FILE
+            echo "Hermes version: "$HERMES_VERSION
+            echo "Hermes cached tarball: "$HERMES_CACHE_KEY_FILE
       - restore_cache:
           keys:
             - *hermes_tarball_cache_key
@@ -535,6 +543,16 @@ jobs:
             - run:
                 name: "Run Tests: iOS Unit and Integration Tests"
                 command: yarn test-ios
+            - run:
+                name: Zip Derived data folder
+                when: always
+                command: |
+                  echo "zipping tests results"
+                  cd /Users/distiller/Library/Developer/Xcode
+                  XCRESULT_PATH=$(find . -name '*.xcresult')
+                  tar -zcvf xcresults.tar.gz $XCRESULT_PATH
+            - store_artifacts:
+                path: /Users/distiller/Library/Developer/Xcode/xcresults.tar.gz
 
       # Optionally, run disabled tests
       - when:
@@ -560,6 +578,7 @@ jobs:
           platform: ios
       - store_test_results:
           path: ./reports/junit
+
 
   # -------------------------
   #    JOBS: Test Android
@@ -924,6 +943,7 @@ jobs:
               HERMES_TAG_SHA=$(git ls-remote https://github.com/facebook/hermes main | cut -f 1 | tr -d '[:space:]')
               echo $HERMES_TAG_SHA > /tmp/hermes/hermesversion
             fi
+            cat /tmp/hermes/hermesversion
       - restore_cache:
           key: *hermes_cache_key
       - run:
@@ -932,6 +952,8 @@ jobs:
             node scripts/hermes/prepare-hermes-for-build $CIRCLE_PULL_REQUEST
             cp sdks/download/* $HERMES_WS_DIR/download/.
             cp -r sdks/hermes/* $HERMES_WS_DIR/hermes/.
+
+            cat /tmp/hermes/hermesversion
       - save_cache:
           key: *hermes_cache_key
           paths:
