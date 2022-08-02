@@ -86,7 +86,7 @@ end
 
 target 'RNTester-macOS' do
   platform :osx, '10.15'
-  pods(:hermes_enabled => false)
+  pods()
 end
 
 target 'RNTester-macOSUnitTests' do
