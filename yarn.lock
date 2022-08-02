@@ -1311,7 +1311,7 @@
   resolved "https://registry.yarnpkg.com/@react-native/assets/-/assets-1.0.0.tgz#c6f9bf63d274bafc8e970628de24986b30a55c8e"
   integrity sha512-KrwSpS1tKI70wuKl68DwJZYEvXktDHdZMG0k2AXD/rJVSlB23/X2CB2cutVR0HwNMJIal9HOUOBB2rVfa6UGtQ==
 
-"@react-native/eslint-plugin-specs@>0.0.2":
+"@react-native/eslint-plugin-specs@^0.70.0":
   version "0.70.0"
   resolved "https://registry.yarnpkg.com/@react-native/eslint-plugin-specs/-/eslint-plugin-specs-0.70.0.tgz#648ca606df1bb02562b9b0af8c975dc1b8634a67"
   integrity sha512-33ZyGhFdB38jvk5l0f1RIh2LrdDWuOEbUZgn4KUSlyST89xr3k3fvj7bi5Qjlf4lyS1pyaBuJf9SPNyYs3cWVA==
