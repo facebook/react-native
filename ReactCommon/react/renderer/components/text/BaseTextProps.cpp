@@ -13,12 +13,12 @@
 #include <react/renderer/graphics/conversions.h>
 
 #define GET_FIELD_VALUE(field, fieldName, defaultValue, rawValue) \
-  (rawValue.hasValue() ? ({                                       \
+  (rawValue.hasValue() ? ([&rawValue, &context] {                 \
     decltype(defaultValue) res;                                   \
     fromRawValue(context, rawValue, res);                         \
-    res;                                                          \
-  })                                                              \
-                       : defaultValue)
+    return res;                                                   \
+  }())                                                            \
+                       : defaultValue);
 
 #define REBUILD_FIELD_SWITCH_CASE(                                   \
     defaults, rawValue, property, field, fieldName)                  \
