@@ -1785,7 +1785,11 @@ function simulateContentLayout(component, dimensions) {
 
 function simulateCellLayout(component, items, itemIndex, dimensions) {
   const instance = component.getInstance();
-  const cellKey = instance._keyExtractor(items[itemIndex], itemIndex);
+  const cellKey = instance._keyExtractor(
+    items[itemIndex],
+    itemIndex,
+    instance.props,
+  );
   instance._onCellLayout(
     {nativeEvent: {layout: dimensions, zoomScale: 1}},
     cellKey,

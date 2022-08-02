@@ -25,6 +25,7 @@ import type {
   RenderItemType,
   Separators,
 } from './VirtualizedListProps';
+
 export type {RenderItemProps, RenderItemType, Separators};
 
 import {
@@ -766,7 +767,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     last = Math.min(end, last);
     for (let ii = first; ii <= last; ii++) {
       const item = getItem(data, ii);
-      const key = this._keyExtractor(item, ii);
+      const key = this._keyExtractor(item, ii, this.props);
       this._indicesToKeys.set(ii, key);
       if (stickyIndicesFromProps.has(ii + stickyOffset)) {
         stickyHeaderIndices.push(cells.length);
@@ -835,9 +836,16 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _getSpacerKey = (isVertical: boolean): string =>
     isVertical ? 'height' : 'width';
 
-  _keyExtractor(item: Item, index: number) {
-    if (this.props.keyExtractor != null) {
-      return this.props.keyExtractor(item, index);
+  _keyExtractor(
+    item: Item,
+    index: number,
+    props: {
+      keyExtractor?: ?(item: Item, index: number) => string,
+      ...
+    },
+  ) {
+    if (props.keyExtractor != null) {
+      return props.keyExtractor(item, index);
     }
 
     const key = defaultKeyExtractor(item, index);
@@ -1746,7 +1754,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _createViewToken = (index: number, isViewable: boolean) => {
     const {data, getItem} = this.props;
     const item = getItem(data, index);
-    return {index, item, key: this._keyExtractor(item, index), isViewable};
+    return {
+      index,
+      item,
+      key: this._keyExtractor(item, index, this.props),
+      isViewable,
+    };
   };
 
   __getFrameMetricsApprox: (
@@ -1794,7 +1807,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       'Tried to get frame for out of range index ' + index,
     );
     const item = getItem(data, index);
-    const frame = item && this._frames[this._keyExtractor(item, index)];
+    const frame = item && this._frames[this._keyExtractor(item, index, props)];
     if (!frame || frame.index !== index) {
       if (getItemLayout) {
         /* $FlowFixMe[prop-missing] (>=0.63.0 site=react_native_fb) This comment
