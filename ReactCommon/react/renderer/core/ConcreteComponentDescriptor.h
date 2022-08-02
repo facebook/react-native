@@ -119,7 +119,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
       rawProps.iterateOverValues([&](RawPropsPropNameHash hash,
                                      const char *propName,
                                      RawValue const &fn) {
-        shadowNodeProps.get()->setProp(context, hash, propName, fn);
+        shadowNodeProps.get()->Props::setProp(context, hash, propName, fn);
       });
     }
 

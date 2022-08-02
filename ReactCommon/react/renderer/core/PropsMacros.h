@@ -19,14 +19,12 @@
 
 // Get hash at compile-time. sizeof(str) - 1 == strlen
 #define CONSTEXPR_RAW_PROPS_KEY_HASH(s)                   \
-  ({                                                      \
+  ([]() constexpr {                                       \
     CLANG_PRAGMA("clang diagnostic push")                 \
     CLANG_PRAGMA("clang diagnostic ignored \"-Wshadow\"") \
-    constexpr RawPropsPropNameHash propNameHash =         \
-        folly::hash::fnv32_buf(s, sizeof(s) - 1);         \
-    propNameHash;                                         \
+    return folly::hash::fnv32_buf(s, sizeof(s) - 1);      \
     CLANG_PRAGMA("clang diagnostic pop")                  \
-  })
+  }())
 
 #define RAW_PROPS_KEY_HASH(s) folly::hash::fnv32_buf(s, std::strlen(s))
 
