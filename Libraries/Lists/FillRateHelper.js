@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {FrameMetricProps} from './VirtualizedListProps';
+
 export type FillRateInfo = Info;
 
 class Info {
@@ -49,7 +51,7 @@ let _sampleRate = DEBUG ? 1 : null;
 class FillRateHelper {
   _anyBlankStartTime = (null: ?number);
   _enabled = false;
-  _getFrameMetrics: (index: number) => ?FrameMetrics;
+  _getFrameMetrics: (index: number, props: FrameMetricProps) => ?FrameMetrics;
   _info = new Info();
   _mostlyBlankStartTime = (null: ?number);
   _samplesStartTime = (null: ?number);
@@ -77,7 +79,9 @@ class FillRateHelper {
     _minSampleCount = minSampleCount;
   }
 
-  constructor(getFrameMetrics: (index: number) => ?FrameMetrics) {
+  constructor(
+    getFrameMetrics: (index: number, props: FrameMetricProps) => ?FrameMetrics,
+  ) {
     this._getFrameMetrics = getFrameMetrics;
     this._enabled = (_sampleRate || 0) > Math.random();
     this._resetData();
@@ -134,8 +138,7 @@ class FillRateHelper {
 
   computeBlankness(
     props: {
-      data: any,
-      getItemCount: (data: any) => number,
+      ...FrameMetricProps,
       initialNumToRender?: ?number,
       ...
     },
@@ -181,9 +184,9 @@ class FillRateHelper {
 
     let blankTop = 0;
     let first = state.first;
-    let firstFrame = this._getFrameMetrics(first);
+    let firstFrame = this._getFrameMetrics(first, props);
     while (first <= state.last && (!firstFrame || !firstFrame.inLayout)) {
-      firstFrame = this._getFrameMetrics(first);
+      firstFrame = this._getFrameMetrics(first, props);
       first++;
     }
     // Only count blankTop if we aren't rendering the first item, otherwise we will count the header
@@ -196,9 +199,9 @@ class FillRateHelper {
     }
     let blankBottom = 0;
     let last = state.last;
-    let lastFrame = this._getFrameMetrics(last);
+    let lastFrame = this._getFrameMetrics(last, props);
     while (last >= state.first && (!lastFrame || !lastFrame.inLayout)) {
-      lastFrame = this._getFrameMetrics(last);
+      lastFrame = this._getFrameMetrics(last, props);
       last--;
     }
     // Only count blankBottom if we aren't rendering the last item, otherwise we will count the

@@ -159,7 +159,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   scrollToEnd(params?: ?{animated?: ?boolean, ...}) {
     const animated = params ? params.animated : true;
     const veryLast = this.props.getItemCount(this.props.data) - 1;
-    const frame = this.__getFrameMetricsApprox(veryLast);
+    const frame = this.__getFrameMetricsApprox(veryLast, this.props);
     const offset = Math.max(
       0,
       frame.offset +
@@ -233,7 +233,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       });
       return;
     }
-    const frame = this.__getFrameMetricsApprox(index);
+    const frame = this.__getFrameMetricsApprox(index, this.props);
     const offset =
       Math.max(
         0,
@@ -713,7 +713,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         },
       });
     }
-    this._updateViewableItems(null, this.state.cellsAroundViewport);
     this._updateCellsToRenderBatcher.dispose({abort: true});
     this._viewabilityTuples.forEach(tuple => {
       tuple.viewabilityHelper.dispose();
@@ -960,8 +959,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
               )
             : section.last;
 
-          const firstMetrics = this.__getFrameMetricsApprox(section.first);
-          const lastMetrics = this.__getFrameMetricsApprox(last);
+          const firstMetrics = this.__getFrameMetricsApprox(
+            section.first,
+            this.props,
+          );
+          const lastMetrics = this.__getFrameMetricsApprox(last, this.props);
           const spacerSize =
             lastMetrics.offset + lastMetrics.length - firstMetrics.offset;
           cells.push(
@@ -1273,7 +1275,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const renderMask = VirtualizedList._createRenderMask(
       this.props,
       this.state.cellsAroundViewport,
-      this._getNonViewportRenderRegions(),
+      this._getNonViewportRenderRegions(this.props),
     );
 
     if (!renderMask.equals(this.state.renderMask)) {
@@ -1397,7 +1399,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const framesInLayout = [];
     const itemCount = this.props.getItemCount(this.props.data);
     for (let ii = 0; ii < itemCount; ii++) {
-      const frame = this.__getFrameMetricsApprox(ii);
+      const frame = this.__getFrameMetricsApprox(ii, this.props);
       /* $FlowFixMe[prop-missing] (>=0.68.0 site=react_native_fb) This comment
        * suppresses an error found when Flow v0.68 was deployed. To see the
        * error delete this comment and run Flow. */
@@ -1407,9 +1409,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
     const windowTop = this.__getFrameMetricsApprox(
       this.state.cellsAroundViewport.first,
+      this.props,
     ).offset;
     const frameLast = this.__getFrameMetricsApprox(
       this.state.cellsAroundViewport.last,
+      this.props,
     );
     const windowLen = frameLast.offset + frameLast.length - windowTop;
     const visTop = this._scrollMetrics.offset;
@@ -1637,7 +1641,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     // Mark as high priority if we're close to the start of the first item
     // But only if there are items before the first rendered item
     if (first > 0) {
-      const distTop = offset - this.__getFrameMetricsApprox(first).offset;
+      const distTop =
+        offset - this.__getFrameMetricsApprox(first, this.props).offset;
       hiPri =
         hiPri || distTop < 0 || (velocity < -2 && distTop < scrollingThreshold);
     }
@@ -1645,7 +1650,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     // But only if there are items after the last rendered item
     if (last >= 0 && last < itemCount - 1) {
       const distBottom =
-        this.__getFrameMetricsApprox(last).offset - (offset + visibleLength);
+        this.__getFrameMetricsApprox(last, this.props).offset -
+        (offset + visibleLength);
       hiPri =
         hiPri ||
         distBottom < 0 ||
@@ -1722,7 +1728,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       const renderMask = VirtualizedList._createRenderMask(
         props,
         cellsAroundViewport,
-        this._getNonViewportRenderRegions(),
+        this._getNonViewportRenderRegions(props),
       );
 
       if (
@@ -1743,17 +1749,20 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     return {index, item, key: this._keyExtractor(item, index), isViewable};
   };
 
-  __getFrameMetricsApprox: (index: number) => {
+  __getFrameMetricsApprox: (
+    index: number,
+    props: FrameMetricProps,
+  ) => {
     length: number,
     offset: number,
     ...
-  } = index => {
-    const frame = this._getFrameMetrics(index);
+  } = (index, props) => {
+    const frame = this._getFrameMetrics(index, props);
     if (frame && frame.index === index) {
       // check for invalid frames due to row re-ordering
       return frame;
     } else {
-      const {data, getItemCount, getItemLayout} = this.props;
+      const {data, getItemCount, getItemLayout} = props;
       invariant(
         index >= 0 && index < getItemCount(data),
         'Tried to get frame for out of range index ' + index,
@@ -1771,6 +1780,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   _getFrameMetrics = (
     index: number,
+    props: FrameMetricProps,
   ): ?{
     length: number,
     offset: number,
@@ -1778,7 +1788,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     inLayout?: boolean,
     ...
   } => {
-    const {data, getItem, getItemCount, getItemLayout} = this.props;
+    const {data, getItem, getItemCount, getItemLayout} = props;
     invariant(
       index >= 0 && index < getItemCount(data),
       'Tried to get frame for out of range index ' + index,
@@ -1796,7 +1806,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     return frame;
   };
 
-  _getNonViewportRenderRegions = (): $ReadOnlyArray<{
+  _getNonViewportRenderRegions = (
+    props: FrameMetricProps,
+  ): $ReadOnlyArray<{
     first: number,
     last: number,
   }> => {
@@ -1811,7 +1823,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
     const lastFocusedCellRenderer = this._cellRefs[this._lastFocusedCellKey];
     const focusedCellIndex = lastFocusedCellRenderer.props.index;
-    const itemCount = this.props.getItemCount(this.props.data);
+    const itemCount = props.getItemCount(props.data);
 
     // The cell may have been unmounted and have a stale index
     if (
@@ -1829,7 +1841,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       i--
     ) {
       first--;
-      heightOfCellsBeforeFocused += this.__getFrameMetricsApprox(i).length;
+      heightOfCellsBeforeFocused += this.__getFrameMetricsApprox(
+        i,
+        props,
+      ).length;
     }
 
     let last = focusedCellIndex;
@@ -1841,21 +1856,22 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       i++
     ) {
       last++;
-      heightOfCellsAfterFocused += this.__getFrameMetricsApprox(i).length;
+      heightOfCellsAfterFocused += this.__getFrameMetricsApprox(
+        i,
+        props,
+      ).length;
     }
 
     return [{first, last}];
   };
 
   _updateViewableItems(
-    props: ?FrameMetricProps,
+    props: FrameMetricProps,
     cellsAroundViewport: {first: number, last: number},
   ) {
-    const itemCount = props ? props.getItemCount(props.data) : 0;
-
     this._viewabilityTuples.forEach(tuple => {
       tuple.viewabilityHelper.onUpdate(
-        itemCount,
+        props,
         this._scrollMetrics.offset,
         this._scrollMetrics.visibleLength,
         this._getFrameMetrics,
