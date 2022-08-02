@@ -14,6 +14,7 @@ import type {LayoutEvent, ScrollEvent} from '../Types/CoreEventTypes';
 
 import type {ViewToken} from './ViewabilityHelper';
 import type {
+  FrameMetricProps,
   Item,
   Props,
   RenderItemProps,
@@ -1619,7 +1620,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     return {index, item, key: this._keyExtractor(item, index), isViewable};
   };
 
-  __getFrameMetricsApprox: (index: number) => {
+  __getFrameMetricsApprox: (
+    index: number,
+    props?: FrameMetricProps,
+  ) => {
     length: number,
     offset: number,
     ...
@@ -1643,6 +1647,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   _getFrameMetrics = (
     index: number,
+    props?: FrameMetricProps,
   ): ?{
     length: number,
     offset: number,
@@ -1669,11 +1674,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   };
 
   _updateViewableItems(data: any) {
-    const {getItemCount} = this.props;
-
     this._viewabilityTuples.forEach(tuple => {
       tuple.viewabilityHelper.onUpdate(
-        getItemCount(data),
+        this.props,
         this._scrollMetrics.offset,
         this._scrollMetrics.visibleLength,
         this._getFrameMetrics,

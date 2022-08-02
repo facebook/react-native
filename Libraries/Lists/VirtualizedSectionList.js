@@ -140,6 +140,7 @@ class VirtualizedSectionList<
     if (params.itemIndex > 0 && this.props.stickySectionHeadersEnabled) {
       const frame = this._listRef.__getFrameMetricsApprox(
         index - params.itemIndex,
+        this._listRef.props,
       );
       viewOffset += frame.length;
     }

@@ -19,14 +19,18 @@ import type {FrameMetricProps} from './VirtualizedListProps';
  */
 export function elementsThatOverlapOffsets(
   offsets: Array<number>,
-  itemCount: number,
-  getFrameMetrics: (index: number) => {
+  props: FrameMetricProps,
+  getFrameMetrics: (
+    index: number,
+    props: FrameMetricProps,
+  ) => {
     length: number,
     offset: number,
     ...
   },
   zoomScale: number = 1,
 ): Array<number> {
+  const itemCount = props.getItemCount(props.data);
   const result = [];
   for (let offsetIndex = 0; offsetIndex < offsets.length; offsetIndex++) {
     const currentOffset = offsets[offsetIndex];
@@ -36,7 +40,7 @@ export function elementsThatOverlapOffsets(
     while (left <= right) {
       // eslint-disable-next-line no-bitwise
       const mid = left + ((right - left) >>> 1);
-      const frame = getFrameMetrics(mid);
+      const frame = getFrameMetrics(mid, props);
       const scaledOffsetStart = frame.offset * zoomScale;
       const scaledOffsetEnd = (frame.offset + frame.length) * zoomScale;
 
@@ -102,7 +106,10 @@ export function computeWindowedRenderLimits(
     first: number,
     last: number,
   },
-  getFrameMetricsApprox: (index: number) => {
+  getFrameMetricsApprox: (
+    index: number,
+    props: FrameMetricProps,
+  ) => {
     length: number,
     offset: number,
     ...
@@ -145,7 +152,7 @@ export function computeWindowedRenderLimits(
   const overscanEnd = Math.max(0, visibleEnd + leadFactor * overscanLength);
 
   const lastItemOffset =
-    getFrameMetricsApprox(itemCount - 1).offset * zoomScale;
+    getFrameMetricsApprox(itemCount - 1, props).offset * zoomScale;
   if (lastItemOffset < overscanBegin) {
     // Entire list is before our overscan window
     return {
@@ -157,7 +164,7 @@ export function computeWindowedRenderLimits(
   // Find the indices that correspond to the items at the render boundaries we're targeting.
   let [overscanFirst, first, last, overscanLast] = elementsThatOverlapOffsets(
     [overscanBegin, visibleBegin, visibleEnd, overscanEnd],
-    itemCount,
+    props,
     getFrameMetricsApprox,
     zoomScale,
   );

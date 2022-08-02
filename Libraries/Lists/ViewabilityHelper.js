@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {FrameMetricProps} from './VirtualizedListProps';
+
 const invariant = require('invariant');
 
 export type ViewToken = {
@@ -99,10 +101,13 @@ class ViewabilityHelper {
    * Determines which items are viewable based on the current metrics and config.
    */
   computeViewableItems(
-    itemCount: number,
+    props: FrameMetricProps,
     scrollOffset: number,
     viewportHeight: number,
-    getFrameMetrics: (index: number) => ?{
+    getFrameMetrics: (
+      index: number,
+      props: FrameMetricProps,
+    ) => ?{
       length: number,
       offset: number,
       ...
@@ -114,6 +119,7 @@ class ViewabilityHelper {
       ...
     },
   ): Array<number> {
+    const itemCount = props.getItemCount(props.data);
     const {itemVisiblePercentThreshold, viewAreaCoveragePercentThreshold} =
       this._config;
     const viewAreaMode = viewAreaCoveragePercentThreshold != null;
@@ -140,7 +146,7 @@ class ViewabilityHelper {
       return [];
     }
     for (let idx = first; idx <= last; idx++) {
-      const metrics = getFrameMetrics(idx);
+      const metrics = getFrameMetrics(idx, props);
       if (!metrics) {
         continue;
       }
@@ -172,10 +178,13 @@ class ViewabilityHelper {
    * `onViewableItemsChanged` as appropriate.
    */
   onUpdate(
-    itemCount: number,
+    props: FrameMetricProps,
     scrollOffset: number,
     viewportHeight: number,
-    getFrameMetrics: (index: number) => ?{
+    getFrameMetrics: (
+      index: number,
+      props: FrameMetricProps,
+    ) => ?{
       length: number,
       offset: number,
       ...
@@ -193,17 +202,18 @@ class ViewabilityHelper {
       ...
     },
   ): void {
+    const itemCount = props.getItemCount(props.data);
     if (
       (this._config.waitForInteraction && !this._hasInteracted) ||
       itemCount === 0 ||
-      !getFrameMetrics(0)
+      !getFrameMetrics(0, props)
     ) {
       return;
     }
     let viewableIndices = [];
     if (itemCount) {
       viewableIndices = this.computeViewableItems(
-        itemCount,
+        props,
         scrollOffset,
         viewportHeight,
         getFrameMetrics,
