@@ -280,5 +280,6 @@ export type FrameMetricProps = {
   getItemCount: RequiredProps['getItemCount'],
   getItem: RequiredProps['getItem'],
   getItemLayout?: OptionalProps['getItemLayout'],
+  keyExtractor?: OptionalProps['keyExtractor'],
   ...
 };
