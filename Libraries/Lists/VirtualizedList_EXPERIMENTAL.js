@@ -641,8 +641,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       }
 
       newCellsAroundViewport = computeWindowedRenderLimits(
-        props.data,
-        props.getItemCount,
+        props,
         maxToRenderPerBatchOrDefault(props.maxToRenderPerBatch),
         windowSizeOrDefault(props.windowSize),
         cellsAroundViewport,

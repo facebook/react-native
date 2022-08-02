@@ -1553,8 +1553,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
             Math.abs(distanceFromEnd) < Number.EPSILON
           ) {
             newState = computeWindowedRenderLimits(
-              this.props.data,
-              this.props.getItemCount,
+              this.props,
               maxToRenderPerBatchOrDefault(this.props.maxToRenderPerBatch),
               windowSizeOrDefault(this.props.windowSize),
               state,
