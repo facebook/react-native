@@ -10,7 +10,7 @@
 
 'use strict';
 
-import invariant from 'invariant';
+import type {FrameMetricProps} from './VirtualizedListProps';
 
 /**
  * Used to find the indices of the frames that overlap the given offsets. Useful for finding the
@@ -95,8 +95,7 @@ export function newRangeCount(
  * biased in the direction of scroll.
  */
 export function computeWindowedRenderLimits(
-  data: any,
-  getItemCount: (data: any) => number,
+  props: FrameMetricProps,
   maxToRenderPerBatch: number,
   windowSize: number,
   prev: {
@@ -120,7 +119,7 @@ export function computeWindowedRenderLimits(
   first: number,
   last: number,
 } {
-  const itemCount = getItemCount(data);
+  const itemCount = props.getItemCount(props.data);
   if (itemCount === 0) {
     return prev;
   }
