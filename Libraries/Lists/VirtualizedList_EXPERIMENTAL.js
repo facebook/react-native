@@ -1754,13 +1754,17 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     });
   };
 
-  _createViewToken = (index: number, isViewable: boolean) => {
-    const {data, getItem} = this.props;
+  _createViewToken = (
+    index: number,
+    isViewable: boolean,
+    props: FrameMetricProps,
+  ) => {
+    const {data, getItem} = props;
     const item = getItem(data, index);
     return {
       index,
       item,
-      key: this._keyExtractor(item, index, this.props),
+      key: this._keyExtractor(item, index, props),
       isViewable,
     };
   };
