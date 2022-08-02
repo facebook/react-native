@@ -258,18 +258,15 @@ ViewProps::ViewProps(
 #endif
           {};
 
-#define VIEW_EVENT_CASE(eventType, eventString)                               \
-  case CONSTEXPR_RAW_PROPS_KEY_HASH(eventString): {                           \
-    ViewEvents defaultViewEvents{};                                           \
-    events[eventType] = [ defaultViewEvents, &value, &context ]() constexpr { \
-      bool res = defaultViewEvents[eventType];                                \
-      if (value.hasValue()) {                                                 \
-        fromRawValue(context, value, res);                                    \
-      }                                                                       \
-      return res;                                                             \
-    }                                                                         \
-    ();                                                                       \
-    return;                                                                   \
+#define VIEW_EVENT_CASE(eventType, eventString)     \
+  case CONSTEXPR_RAW_PROPS_KEY_HASH(eventString): { \
+    ViewEvents defaultViewEvents{};                 \
+    bool res = defaultViewEvents[eventType];        \
+    if (value.hasValue()) {                         \
+      fromRawValue(context, value, res);            \
+    }                                               \
+    events[eventType] = res;                        \
+    return;                                         \
   }
 
 void ViewProps::setProp(
