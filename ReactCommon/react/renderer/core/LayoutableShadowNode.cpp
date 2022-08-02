@@ -30,11 +30,6 @@ static LayoutableSmallVector<Rect> calculateTransformedFrames(
   for (int i = size - 1; i >= 0; --i) {
     auto currentShadowNode =
         traitCast<LayoutableShadowNode const *>(shadowNodeList.at(i));
-
-    if (!currentShadowNode) {
-      return {};
-    }
-
     auto currentFrame = currentShadowNode->getLayoutMetrics().frame;
 
     if (policy.includeTransform) {
@@ -171,11 +166,6 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
   auto transformedFrames = shouldCalculateTransformedFrames
       ? calculateTransformedFrames(shadowNodeList, policy)
       : LayoutableSmallVector<Rect>();
-
-  if (transformedFrames.empty()) {
-    return EmptyLayoutMetrics;
-  }
-
   auto layoutMetrics = descendantLayoutableNode->getLayoutMetrics();
   auto &resultFrame = layoutMetrics.frame;
   resultFrame.origin = {0, 0};
