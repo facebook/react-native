@@ -1286,9 +1286,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this._getNonViewportRenderRegions(this.props),
     );
 
-    if (!renderMask.equals(this.state.renderMask)) {
-      this.setState({...this.state, renderMask});
-    }
+    this.setState(state => {
+      if (!renderMask.equals(state.renderMask)) {
+        return {renderMask};
+      }
+      return null;
+    });
   }
 
   _onCellUnmount = (cellKey: string) => {
