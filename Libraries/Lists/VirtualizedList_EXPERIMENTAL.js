@@ -18,6 +18,7 @@ import type {
 
 import type {ViewToken} from './ViewabilityHelper';
 import type {
+  FrameMetricProps,
   Item,
   Props,
   RenderItemProps,
@@ -318,7 +319,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     this._viewabilityTuples.forEach(t => {
       t.viewabilityHelper.recordInteraction();
     });
-    this._updateViewableItems(this.props.data);
+    this._updateViewableItems(this.props, this.state.cellsAroundViewport);
   }
 
   flashScrollIndicators() {
@@ -595,7 +596,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const onEndReachedThreshold = onEndReachedThresholdOrDefault(
       props.onEndReachedThreshold,
     );
-    this._updateViewableItems(data);
+    this._updateViewableItems(props, cellsAroundViewport);
 
     const {contentLength, offset, visibleLength} = this._scrollMetrics;
     const distanceFromEnd = contentLength - visibleLength - offset;
@@ -713,7 +714,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         },
       });
     }
-    this._updateViewableItems(null);
+    this._updateViewableItems(null, this.state.cellsAroundViewport);
     this._updateCellsToRenderBatcher.dispose({abort: true});
     this._viewabilityTuples.forEach(tuple => {
       tuple.viewabilityHelper.dispose();
@@ -1265,7 +1266,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     this._triggerRemeasureForChildListsInCell(cellKey);
 
     this._computeBlankness();
-    this._updateViewableItems(this.props.data);
+    this._updateViewableItems(this.props, this.state.cellsAroundViewport);
   };
 
   _onCellFocusCapture(cellKey: string) {
@@ -1613,7 +1614,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       visibleLength,
       zoomScale,
     };
-    this._updateViewableItems(this.props.data);
+    this._updateViewableItems(this.props, this.state.cellsAroundViewport);
     if (!this.props) {
       return;
     }
@@ -1847,18 +1848,21 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     return [{first, last}];
   };
 
-  _updateViewableItems(data: any) {
-    const {getItemCount} = this.props;
+  _updateViewableItems(
+    props: ?FrameMetricProps,
+    cellsAroundViewport: {first: number, last: number},
+  ) {
+    const itemCount = props ? props.getItemCount(props.data) : 0;
 
     this._viewabilityTuples.forEach(tuple => {
       tuple.viewabilityHelper.onUpdate(
-        getItemCount(data),
+        itemCount,
         this._scrollMetrics.offset,
         this._scrollMetrics.visibleLength,
         this._getFrameMetrics,
         this._createViewToken,
         tuple.onViewableItemsChanged,
-        this.state.cellsAroundViewport,
+        cellsAroundViewport,
       );
     });
   }

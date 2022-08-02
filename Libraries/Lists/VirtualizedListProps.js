@@ -271,3 +271,14 @@ export type Props = {|
   ...RequiredProps,
   ...OptionalProps,
 |};
+
+/**
+ * Subset of properties needed to calculate frame metrics
+ */
+export type FrameMetricProps = {
+  data: RequiredProps['data'],
+  getItemCount: RequiredProps['getItemCount'],
+  getItem: RequiredProps['getItem'],
+  getItemLayout?: OptionalProps['getItemLayout'],
+  ...
+};
