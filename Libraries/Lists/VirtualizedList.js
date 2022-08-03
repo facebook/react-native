@@ -505,7 +505,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         screenreaderEnabled => {
           if (
             typeof screenreaderEnabled === 'boolean' &&
-            screenreaderEnabled != this.state.screenreaderEnabled
+            screenreaderEnabled !== this.state.screenreaderEnabled
           ) {
             this.setState({screenreaderEnabled});
           }
@@ -1585,9 +1585,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         newBottomHeight = height - this._lastOffsetFromBottomOfScreen;
       }
       this._scrollToOffsetTimeout = setTimeout(
-        (flatlist, newBottomHeight) => {
+        (flatlist, bottomHeight) => {
           flatlist.scrollToOffset({
-            offset: newBottomHeight,
+            offset: bottomHeight,
             animated: false,
           });
         },
