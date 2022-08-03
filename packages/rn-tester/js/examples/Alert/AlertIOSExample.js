@@ -53,7 +53,7 @@ class PromptOptions extends React.Component<Props, State> {
     };
   }
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <Text style={styles.promptValue}>
