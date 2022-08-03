@@ -6,8 +6,6 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-# TODO Those two libraries are building against the same sources
-# and should probably be merged
 file(GLOB reactnativejni_SRC CONFIGURE_DEPENDS *.cpp)
 
 add_compile_options(
