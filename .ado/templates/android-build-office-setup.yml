@@ -1,0 +1,62 @@
+steps:
+  - task: UseNode@1
+    inputs:
+      version: '16.x'
+
+  - template: apple-droid-node-patching.yml
+    parameters:
+      apply_office_patches: true
+
+  # Install NuGet
+  - task: CmdLine@2
+    displayName: Install NuGet
+    inputs:
+      script: curl -o $(System.DefaultWorkingDirectory)/nuget-bin/nuget.exe --create-dirs https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
+
+  - task: CmdLine@2
+    displayName: "Rename package to react-native"
+    inputs:
+      script: node .ado/renamePackageForOffice.js
+
+  - task: CmdLine@2
+    displayName: yarn install
+    inputs:
+      script: yarn install --frozen-lockfile
+
+  # scripts/set-rn-version.js
+  #
+  # update the following files to the commit id.
+  # package.json (-> npm package version)
+  # gradle.properties (-> aar version)
+  # gradle.properties (-> aar version)
+  #
+  # The following files are updated for runtime version checking.
+  # ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java
+  # React/Base/RCTVersion.m
+  # ReactCommon/cxxreact/ReactNativeVersion.h
+  # Libraries/Core/ReactNativeVersion.js
+  #
+  # --nightly --autogenerateVersionNumber => version = `0.0.0-${currentCommit.slice(0, 9)}`;
+  # When on main branch or non-stable branch.
+  - task: CmdLine@2
+    displayName: Set canary package version
+    inputs:
+      script: node scripts/set-rn-version.js --nightly --autogenerateVersionNumber --skipUpdateRuby # TODO(macOS GH#1148): Remove --skipUpdateRuby flag once we clean up version update scripts
+    condition: or(eq(variables['Build.SourceBranchName'], 'main'), not(contains(variables['Build.SourceBranchName'], '-stable')))
+
+  # TODO: We don't seem to be running set-rn-version.js for stable branches, hence we would end up publishing using the values in the repository.
+
+  - task: CmdLine@2
+    displayName: nuget restore
+    inputs:
+      script: mono $(System.DefaultWorkingDirectory)/nuget-bin/nuget.exe restore $(System.DefaultWorkingDirectory)/ReactAndroid/packages.config -PackagesDirectory  $(System.DefaultWorkingDirectory)/ReactAndroid/packages/ -Verbosity Detailed -NonInteractive
+
+  - task: CmdLine@2
+    displayName: Setup Build Dependencies
+    inputs:
+      script: chmod +x .ado/setup_droid_deps.sh && .ado/setup_droid_deps.sh
+
+  - task: CmdLine@2
+    displayName: Remove RNTesterApp.android.bundle
+    inputs:
+      script: rm -f ./packages/rn-tester/js/RNTesterApp.android.bundle
