@@ -558,7 +558,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         screenreaderEnabled => {
           if (
             typeof screenreaderEnabled === 'boolean' &&
-            screenreaderEnabled != this.state.screenreaderEnabled
+            screenreaderEnabled !== this.state.screenreaderEnabled
           ) {
             this.setState({screenreaderEnabled});
           }
