@@ -324,10 +324,7 @@ static void RCTPerformMountInstructions(
     componentView.layer.opacity = newViewProps.opacity;
   }
 
-  auto reactNativeConfig = _contextContainer->at<std::shared_ptr<ReactNativeConfig const>>("ReactNativeConfig");
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:finalize_updates_on_synchronous_update_view_ios")) {
-    [componentView finalizeUpdates:RNComponentViewUpdateMaskProps];
-  }
+  [componentView finalizeUpdates:RNComponentViewUpdateMaskProps];
 }
 
 - (void)synchronouslyDispatchCommandOnUIThread:(ReactTag)reactTag

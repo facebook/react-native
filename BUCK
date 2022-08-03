@@ -57,9 +57,9 @@ fb_native.genrule(
     ) + [
         react_native_root_target("packages/rn-tester:nativecomponent-srcs"),
     ],
-    labels = ["uses_hg"],
-    cmd = "$(exe {}) $OUT $SRCS".format(react_native_root_target("packages/react-native-codegen:write_to_json")),
     out = "schema-rncore.json",
+    cmd = "$(exe {}) $OUT $SRCS".format(react_native_root_target("packages/react-native-codegen:write_to_json")),
+    labels = ["uses_hg"],
 )
 
 rn_codegen_components(
@@ -248,6 +248,7 @@ REACT_PUBLIC_HEADERS = {
     "React/RCTAnimationType.h": RCTVIEWS_PATH + "RCTAnimationType.h",
     "React/RCTAssert.h": RCTBASE_PATH + "RCTAssert.h",
     "React/RCTAutoInsetsProtocol.h": RCTVIEWS_PATH + "RCTAutoInsetsProtocol.h",
+    "React/RCTBorderCurve.h": RCTVIEWS_PATH + "RCTBorderCurve.h",
     "React/RCTBorderDrawing.h": RCTVIEWS_PATH + "RCTBorderDrawing.h",
     "React/RCTBorderStyle.h": RCTVIEWS_PATH + "RCTBorderStyle.h",
     "React/RCTBridge+Private.h": RCTBASE_PATH + "RCTBridge+Private.h",
@@ -599,7 +600,7 @@ rn_apple_library(
     contacts = ["oncall+react_native@xmail.facebook.com"],
     extension_api_only = True,
     frameworks = [
-        "$PLATFORM_DIR/Developer/Library/Frameworks/Foundation.framework",
+        "Foundation",
     ],
     inherited_buck_flags = get_static_library_ios_flags(),
     labels = [

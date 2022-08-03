@@ -7,6 +7,7 @@
 
 package com.facebook.react.utils
 
+import com.facebook.react.ReactExtension
 import com.facebook.react.TestReactExtension
 import com.facebook.react.tests.OS
 import com.facebook.react.tests.OsRule
@@ -241,5 +242,30 @@ class PathUtilsTest {
     assertEquals(
         File("/home/circleci/hermes/build/bin/hermesc"),
         getBuiltHermescFile(tempFolder.root, "/home/circleci/hermes"))
+  }
+
+  @Test
+  fun findPackageJsonFile_withFileInParentFolder_picksItUp() {
+    tempFolder.newFile("package.json")
+    val moduleFolder = tempFolder.newFolder("awesome-module")
+
+    val project = ProjectBuilder.builder().withProjectDir(moduleFolder).build()
+    project.plugins.apply("com.facebook.react")
+    val extension = project.extensions.getByType(ReactExtension::class.java)
+
+    assertEquals(project.file("../package.json"), findPackageJsonFile(project, extension))
+  }
+
+  @Test
+  fun findPackageJsonFile_withFileConfiguredInExtension_picksItUp() {
+    val moduleFolder = tempFolder.newFolder("awesome-module")
+    val localFile = File(moduleFolder, "package.json").apply { writeText("{}") }
+
+    val project = ProjectBuilder.builder().withProjectDir(moduleFolder).build()
+    project.plugins.apply("com.facebook.react")
+    val extension =
+        project.extensions.getByType(ReactExtension::class.java).apply { root.set(moduleFolder) }
+
+    assertEquals(localFile, findPackageJsonFile(project, extension))
   }
 }

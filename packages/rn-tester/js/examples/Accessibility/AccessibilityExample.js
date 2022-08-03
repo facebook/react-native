@@ -956,7 +956,7 @@ function SetAccessibilityFocusExample(props: {}): React.Node {
 
   const onPress = () => {
     if (myRef && myRef.current) {
-      AccessibilityInfo.sendAccessibilityEvent_unstable(myRef.current, 'focus');
+      AccessibilityInfo.sendAccessibilityEvent(myRef.current, 'focus');
     }
   };
 

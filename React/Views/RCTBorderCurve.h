@@ -5,10 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
-#import <React/RCTView.h>
-
-@interface RCTMaskedView : RCTView
-
-@end
+typedef NS_ENUM(NSInteger, RCTBorderCurve) {
+  RCTBorderCurveContinuous = 0,
+  RCTBorderCurveCircular,
+};

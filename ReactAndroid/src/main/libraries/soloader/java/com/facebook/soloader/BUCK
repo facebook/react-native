@@ -2,12 +2,12 @@ load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 
 fb_native.android_library(
     name = "soloader",
+    visibility = ["PUBLIC"],
     exported_deps = [
         ":annotation-binary",
         ":nativeloader-binary",
         ":soloader-binary",
     ],
-    visibility = ["PUBLIC"],
 )
 
 fb_native.prebuilt_jar(

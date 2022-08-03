@@ -32,6 +32,11 @@ const Components: Array<RNTesterModuleInfo> = [
     supportsTVOS: true,
   },
   {
+    key: 'FlatList-nested',
+    module: require('../examples/FlatList/FlatList-nested'),
+    category: 'ListView',
+  },
+  {
     key: 'ImageExample',
     category: 'Basic',
     module: require('../examples/Image/ImageExample'),
@@ -142,7 +147,7 @@ const APIs: Array<RNTesterModuleInfo> = [
   {
     key: 'AlertExample',
     category: 'UI',
-    module: require('../examples/Alert/AlertExample'),
+    module: require('../examples/Alert/AlertExample').default,
   },
   {
     key: 'AnimatedIndex',

@@ -13,6 +13,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: yarn install
+        working-directory: .
+      - run: yarn install
         working-directory: bots
       - name: Danger
         run: DANGER_GITHUB_API_TOKEN="$PUBLIC_PULLBOT_GITHUB_TOKEN_A""$PUBLIC_PULLBOT_GITHUB_TOKEN_B" yarn danger ci --use-github-checks --failOnErrors --id danger_pr

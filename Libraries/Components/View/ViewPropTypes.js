@@ -33,11 +33,6 @@ import type {
 export type ViewLayout = Layout;
 export type ViewLayoutEvent = LayoutEvent;
 
-type BubblingEventProps = $ReadOnly<{|
-  onBlur?: ?(event: BlurEvent) => mixed,
-  onFocus?: ?(event: FocusEvent) => mixed,
-|}>;
-
 type DirectEventProps = $ReadOnly<{|
   /**
    * When `accessible` is true, the system will try to invoke this function
@@ -103,6 +98,13 @@ type PointerEventProps = $ReadOnly<{|
   onPointerDownCapture?: ?(e: PointerEvent) => void,
   onPointerUp?: ?(e: PointerEvent) => void,
   onPointerUpCapture?: ?(e: PointerEvent) => void,
+|}>;
+
+type FocusEventProps = $ReadOnly<{|
+  onBlur?: ?(event: BlurEvent) => void,
+  onBlurCapture?: ?(event: BlurEvent) => void,
+  onFocus?: ?(event: FocusEvent) => void,
+  onFocusCapture?: ?(event: FocusEvent) => void,
 |}>;
 
 type TouchEventProps = $ReadOnly<{|
@@ -394,11 +396,11 @@ type IOSViewProps = $ReadOnly<{|
 |}>;
 
 export type ViewProps = $ReadOnly<{|
-  ...BubblingEventProps,
   ...DirectEventProps,
   ...GestureResponderEventProps,
   ...MouseEventProps,
   ...PointerEventProps,
+  ...FocusEventProps,
   ...TouchEventProps,
   ...AndroidViewProps,
   ...IOSViewProps,
@@ -458,6 +460,23 @@ export type ViewProps = $ReadOnly<{|
    *
    */
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
+
+  /**
+   *
+   * Node Information of a FlatList, VirtualizedList or SectionList collection item.
+   * A collection item starts at a given row and column in the collection, and spans one or more rows and columns.
+   *
+   * @platform android
+   *
+   */
+  accessibilityCollectionItem?: ?{
+    rowIndex: number,
+    rowSpan: number,
+    columnIndex: number,
+    columnSpan: number,
+    heading: boolean,
+    itemIndex: number,
+  },
 
   /**
    * Specifies the nativeID of the associated label text. When the assistive technology focuses on the component with this props, the text is read aloud.

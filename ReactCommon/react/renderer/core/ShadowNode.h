@@ -130,6 +130,11 @@ class ShadowNode : public Sealable, public DebugStringConvertible {
   const ComponentDescriptor &getComponentDescriptor() const;
 
   /*
+   * Returns the `ContextContainer` used by this ShadowNode.
+   */
+  ContextContainer::Shared getContextContainer() const;
+
+  /*
    * Returns a state associated with the particular node.
    */
   const State::Shared &getState() const;

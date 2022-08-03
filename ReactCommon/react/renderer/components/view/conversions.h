@@ -566,6 +566,24 @@ inline void fromRawValue(
 inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
+    BorderCurve &result) {
+  react_native_assert(value.hasType<std::string>());
+  auto stringValue = (std::string)value;
+  if (stringValue == "circular") {
+    result = BorderCurve::Circular;
+    return;
+  }
+  if (stringValue == "continuous") {
+    result = BorderCurve::Continuous;
+    return;
+  }
+  LOG(FATAL) << "Could not parse BorderCurve:" << stringValue;
+  react_native_assert(false);
+}
+
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
     BorderStyle &result) {
   react_native_assert(value.hasType<std::string>());
   auto stringValue = (std::string)value;

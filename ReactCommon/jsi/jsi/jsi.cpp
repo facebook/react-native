@@ -81,6 +81,8 @@ void HostObject::set(Runtime& rt, const PropNameID& name, const Value&) {
 
 HostObject::~HostObject() {}
 
+NativeState::~NativeState() {}
+
 Runtime::~Runtime() {}
 
 Instrumentation& Runtime::instrumentation() {
@@ -377,6 +379,20 @@ String Value::asString(Runtime& rt) && {
 String Value::toString(Runtime& runtime) const {
   Function toString = runtime.global().getPropertyAsFunction(runtime, "String");
   return toString.call(runtime, *this).getString(runtime);
+}
+
+uint64_t BigInt::asUint64(Runtime& runtime) const {
+  if (!isUint64(runtime)) {
+    throw JSError(runtime, "Lossy truncation in BigInt64::asUint64");
+  }
+  return getUint64(runtime);
+}
+
+int64_t BigInt::asInt64(Runtime& runtime) const {
+  if (!isInt64(runtime)) {
+    throw JSError(runtime, "Lossy truncation in BigInt64::asInt64");
+  }
+  return getInt64(runtime);
 }
 
 Array Array::createWithElements(

@@ -20,6 +20,7 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -404,6 +405,7 @@ public class ReactScrollView extends ScrollView
       float velocityX = mVelocityHelper.getXVelocity();
       float velocityY = mVelocityHelper.getYVelocity();
       ReactScrollViewHelper.emitScrollEndDragEvent(this, velocityX, velocityY);
+      NativeGestureUtil.notifyNativeGestureEnded(this, ev);
       mDragging = false;
       // After the touch finishes, we may need to do some scrolling afterwards either as a result
       // of a fling or because we need to page align the content
@@ -479,18 +481,7 @@ public class ReactScrollView extends ScrollView
 
   @Override
   public void fling(int velocityY) {
-    // Workaround.
-    // On Android P if a ScrollView is inverted, we will get a wrong sign for
-    // velocityY (see https://issuetracker.google.com/issues/112385925).
-    // At the same time, mOnScrollDispatchHelper tracks the correct velocity direction.
-    //
-    // Hence, we can use the absolute value from whatever the OS gives
-    // us and use the sign of what mOnScrollDispatchHelper has tracked.
-    float signum = Math.signum(mOnScrollDispatchHelper.getYFlingVelocity());
-    if (signum == 0) {
-      signum = Math.signum(velocityY);
-    }
-    final int correctedVelocityY = (int) (Math.abs(velocityY) * signum);
+    final int correctedVelocityY = correctFlingVelocityY(velocityY);
 
     if (mPagingEnabled) {
       flingAndSnap(correctedVelocityY);
@@ -527,6 +518,25 @@ public class ReactScrollView extends ScrollView
       super.fling(correctedVelocityY);
     }
     handlePostTouchScrolling(0, correctedVelocityY);
+  }
+
+  private int correctFlingVelocityY(int velocityY) {
+    if (Build.VERSION.SDK_INT != Build.VERSION_CODES.P) {
+      return velocityY;
+    }
+
+    // Workaround.
+    // On Android P if a ScrollView is inverted, we will get a wrong sign for
+    // velocityY (see https://issuetracker.google.com/issues/112385925).
+    // At the same time, mOnScrollDispatchHelper tracks the correct velocity direction.
+    //
+    // Hence, we can use the absolute value from whatever the OS gives
+    // us and use the sign of what mOnScrollDispatchHelper has tracked.
+    float signum = Math.signum(mOnScrollDispatchHelper.getYFlingVelocity());
+    if (signum == 0) {
+      signum = Math.signum(velocityY);
+    }
+    return (int) (Math.abs(velocityY) * signum);
   }
 
   private void enableFpsListener() {

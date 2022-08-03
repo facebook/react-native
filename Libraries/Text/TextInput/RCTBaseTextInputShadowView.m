@@ -144,8 +144,7 @@
 
   RCTTextAttributes *textAttributes = [self.textAttributes copy];
 
-  NSMutableAttributedString *attributedText =
-    [[NSMutableAttributedString alloc] initWithAttributedString:[self attributedTextWithBaseTextAttributes:nil]];
+  NSMutableAttributedString *attributedText = [[self attributedTextWithBaseTextAttributes:nil] mutableCopy];
 
   // Removing all references to Shadow Views and tags to avoid unnecessary retaining
   // and problems with comparing the strings.
@@ -162,13 +161,13 @@
     [attributedText insertAttributedString:propertyAttributedText atIndex:0];
   }
 
-  BOOL isAttributedTextChanged = NO;
+  NSAttributedString *newAttributedText;
   if (![_previousAttributedText isEqualToAttributedString:attributedText]) {
     // We have to follow `set prop` pattern:
     // If the value has not changed, we must not notify the view about the change,
     // otherwise we may break local (temporary) state of the text input.
-    isAttributedTextChanged = YES;
-    _previousAttributedText = [attributedText copy];
+    newAttributedText = [attributedText copy];
+    _previousAttributedText = newAttributedText;
   }
 
   NSNumber *tag = self.reactTag;
@@ -183,10 +182,10 @@
     baseTextInputView.reactBorderInsets = borderInsets;
     baseTextInputView.reactPaddingInsets = paddingInsets;
 
-    if (isAttributedTextChanged) {
+    if (newAttributedText) {
       // Don't set `attributedText` if length equal to zero, otherwise it would shrink when attributes contain like `lineHeight`.
-      if (attributedText.length != 0) {
-        baseTextInputView.attributedText = attributedText;
+      if (newAttributedText.length != 0) {
+        baseTextInputView.attributedText = newAttributedText;
       } else {
         baseTextInputView.attributedText = nil;
       }

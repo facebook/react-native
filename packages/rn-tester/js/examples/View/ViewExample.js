@@ -17,6 +17,7 @@ const {
   Text,
   TouchableWithoutFeedback,
   View,
+  Platform,
 } = require('react-native');
 
 class ViewBorderStyleExample extends React.Component<
@@ -360,12 +361,29 @@ exports.examples = [
     title: 'Border Radius',
     render(): React.Node {
       return (
-        <View style={{borderWidth: 0.5, borderRadius: 5, padding: 5}}>
-          <Text style={{fontSize: 11}}>
-            Too much use of `borderRadius` (especially large radii) on anything
-            which is scrolling may result in dropped frames. Use sparingly.
-          </Text>
-        </View>
+        <>
+          <View style={{borderWidth: 0.5, borderRadius: 5, padding: 5}}>
+            <Text style={{fontSize: 11}}>
+              Too much use of `borderRadius` (especially large radii) on
+              anything which is scrolling may result in dropped frames. Use
+              sparingly.
+            </Text>
+          </View>
+          {Platform.OS === 'ios' && (
+            <View
+              style={{
+                borderRadius: 20,
+                padding: 8,
+                marginTop: 12,
+                backgroundColor: '#527FE4',
+                borderCurve: 'continuous',
+              }}>
+              <Text style={{fontSize: 16, color: 'white'}}>
+                View with continuous border curve
+              </Text>
+            </View>
+          )}
+        </>
       );
     },
   },

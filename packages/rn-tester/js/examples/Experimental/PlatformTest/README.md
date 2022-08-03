@@ -24,7 +24,7 @@ function ExampleTestCase ({ harness }) { /* ... */ }
 
 As of writting this README there are 2 different types of tests that the `harness` prop provides:
 
-### `test(testcase: (TestContext) => void, testName: string)`
+### `test(testcase: (TestContext) => void, testName: string, options?: TestOptions)`
 
 This is a method to create "regular" test reminicent of other frameworks such as Jest. These are meant to be run imperatively, and while that means that they technically could work in a `useEffect` hook as a way to run the test "on mount" — it is instead recommended to try and keep these tests in callbacks instead. A good alternative to running the test on mount would be to instead put the test in a callback and render a "Start Test" button which executes the callback.
 
@@ -34,6 +34,10 @@ The first argument is the closure in which you will run your test and make asser
 * `assert_equals(a: any, b: any, description: string): void`
 * `assert_greater_than_equal(a: number, b: number, description: string): void`
 * `assert_less_than_equal(a: number, b: number, description: string): void`
+
+An optional third argument can be used for specifying additional options to the test — that object currently has the following properties (all of which are optional themselves):
+
+* `skip: boolean`: In cases where we want the test to be registered but we don't want it to contribute to the pass/fail count.
 
 Here's what a basic/contrived example which verifies the layout of a basic view:
 

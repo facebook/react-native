@@ -13,6 +13,9 @@
 
 using namespace facebook::react;
 
+// TODO: T127619309 re-enable CalculateTransformedFrames
+bool enableCalculateTransformedFrames = false;
+
 /*
  * ┌────────┐
  * │<View>  │
@@ -430,4 +433,373 @@ TEST(LayoutableShadowNodeTest, includeViewportOffset) {
       {/* includeTransform = */ true, /* includeViewportOffset = */ true});
   EXPECT_EQ(layoutMetrics.frame.origin.x, 10);
   EXPECT_EQ(layoutMetrics.frame.origin.y, 20);
+}
+
+/*
+ * ┌───────────────────────────────┐
+ * │ <View verticallyInverted>     │
+ * │                               │
+ * │┌─────────────────────────────┐│
+ * ││<View childShadowNode1>      ││
+ * ││                             ││
+ * │└─────────────────────────────┘│
+ * │┌─────────────────────────────┐│
+ * ││<View childShadowNode2>      ││
+ * ││                             ││
+ * │└─────────────────────────────┘│
+ * └───────────────────────────────┘
+ */
+TEST(LayoutableShadowNodeTest, invertedVerticalView) {
+  auto builder = simpleComponentBuilder();
+  auto childShadowNode1 = std::shared_ptr<ViewShadowNode>{};
+  auto childShadowNode2 = std::shared_ptr<ViewShadowNode>{};
+
+  if (!enableCalculateTransformedFrames) {
+    return;
+  }
+
+  // clang-format off
+  auto element =
+        Element<ViewShadowNode>()
+          .props([] {
+            auto sharedProps = std::make_shared<ViewShadowNodeProps>();
+            sharedProps->transform = Transform::VerticalInversion(); // Inverted <ScrollView>
+            return sharedProps;
+          })
+            .finalize([](ViewShadowNode &shadowNode){
+              auto layoutMetrics = EmptyLayoutMetrics;
+              layoutMetrics.frame.size = {200, 200};
+              shadowNode.setLayoutMetrics(layoutMetrics);
+            }).children({
+                Element<ViewShadowNode>()
+                  .reference(childShadowNode1)
+                  .finalize([](ViewShadowNode &shadowNode){
+                    auto layoutMetrics = EmptyLayoutMetrics;
+                    layoutMetrics.frame.origin = {0, 0};
+                    layoutMetrics.frame.size = {100, 100};
+                    shadowNode.setLayoutMetrics(layoutMetrics);
+                  }),
+                Element<ViewShadowNode>()
+                  .reference(childShadowNode2)
+                  .finalize([](ViewShadowNode &shadowNode){
+                    auto layoutMetrics = EmptyLayoutMetrics;
+                    layoutMetrics.frame.origin = {0, 100};
+                    layoutMetrics.frame.size = {100, 100};
+                    shadowNode.setLayoutMetrics(layoutMetrics);
+                  })
+        });
+  // clang-format on
+
+  auto scrollShadowNode = builder.build(element);
+
+  auto firstItemRelativeLayoutMetrics =
+      LayoutableShadowNode::computeRelativeLayoutMetrics(
+          childShadowNode1->getFamily(), *scrollShadowNode, {});
+
+  EXPECT_EQ(firstItemRelativeLayoutMetrics.frame.origin.x, 0);
+  EXPECT_EQ(firstItemRelativeLayoutMetrics.frame.origin.y, 100);
+  EXPECT_EQ(firstItemRelativeLayoutMetrics.frame.size.width, 100);
+  EXPECT_EQ(firstItemRelativeLayoutMetrics.frame.size.height, 100);
+
+  auto secondItemRelativeLayoutMetrics =
+      LayoutableShadowNode::computeRelativeLayoutMetrics(
+          childShadowNode2->getFamily(), *scrollShadowNode, {});
+
+  EXPECT_EQ(secondItemRelativeLayoutMetrics.frame.origin.x, 0);
+  EXPECT_EQ(secondItemRelativeLayoutMetrics.frame.origin.y, 0);
+  EXPECT_EQ(secondItemRelativeLayoutMetrics.frame.size.width, 100);
+  EXPECT_EQ(secondItemRelativeLayoutMetrics.frame.size.height, 100);
+}
+
+/*
+ * ┌────────────────────────────────────┐
+ * │ <View verticallyInverted>          │
+ * │                                    │
+ * │ ┌───────────────────────────────┐  │
+ * │ │ <View>                        │  │
+ * │ │                               │  │
+ * │ │┌─────────────────────────────┐│  │
+ * │ ││<View childShadowNode1>      ││  │
+ * │ ││                             ││  │
+ * │ │└─────────────────────────────┘│  │
+ * │ │┌─────────────────────────────┐│  │
+ * │ ││<View childShadowNode2>      ││  │
+ * │ ││                             ││  │
+ * │ │└─────────────────────────────┘│  │
+ * │ └───────────────────────────────┘  │
+ * └────────────────────────────────────┘
+ */
+TEST(LayoutableShadowNodeTest, nestedInvertedVerticalView) {
+  auto builder = simpleComponentBuilder();
+  auto childShadowNode1 = std::shared_ptr<ViewShadowNode>{};
+  auto childShadowNode2 = std::shared_ptr<ViewShadowNode>{};
+
+  if (!enableCalculateTransformedFrames) {
+    return;
+  }
+
+  // clang-format off
+  auto element =
+    Element<ViewShadowNode>()
+      .props([] {
+        auto sharedProps = std::make_shared<ViewShadowNodeProps>();
+        sharedProps->transform = Transform::VerticalInversion(); // Inverted <ScrollView>
+        return sharedProps;
+      })
+      .finalize([](ViewShadowNode &shadowNode){
+        auto layoutMetrics = EmptyLayoutMetrics;
+        layoutMetrics.frame.size = {400, 400};
+        shadowNode.setLayoutMetrics(layoutMetrics);
+    })
+      .children({
+        Element<ViewShadowNode>()
+              .finalize([](ViewShadowNode &shadowNode){
+                auto layoutMetrics = EmptyLayoutMetrics;
+                layoutMetrics.frame.origin = {100, 50};
+                layoutMetrics.frame.size = {200, 200};
+                shadowNode.setLayoutMetrics(layoutMetrics);
+              }).children({
+                Element<ViewShadowNode>()
+                  .reference(childShadowNode1)
+                  .finalize([](ViewShadowNode &shadowNode){
+                    auto layoutMetrics = EmptyLayoutMetrics;
+                    layoutMetrics.frame.origin = {0, 0};
+                    layoutMetrics.frame.size = {100, 100};
+                    shadowNode.setLayoutMetrics(layoutMetrics);
+                  }),
+                Element<ViewShadowNode>()
+                  .reference(childShadowNode2)
+                  .finalize([](ViewShadowNode &shadowNode){
+                    auto layoutMetrics = EmptyLayoutMetrics;
+                    layoutMetrics.frame.origin = {0, 100};
+                    layoutMetrics.frame.size = {100, 100};
+                    shadowNode.setLayoutMetrics(layoutMetrics);
+                  })
+        })
+      });
+  // clang-format on
+
+  auto scrollShadowNode = builder.build(element);
+
+  auto firstItemRelativeLayoutMetrics =
+      LayoutableShadowNode::computeRelativeLayoutMetrics(
+          childShadowNode1->getFamily(), *scrollShadowNode, {});
+
+  EXPECT_EQ(firstItemRelativeLayoutMetrics.frame.origin.x, 100);
+  EXPECT_EQ(firstItemRelativeLayoutMetrics.frame.origin.y, 250);
+  EXPECT_EQ(firstItemRelativeLayoutMetrics.frame.size.width, 100);
+  EXPECT_EQ(firstItemRelativeLayoutMetrics.frame.size.height, 100);
+
+  auto secondItemRelativeLayoutMetrics =
+      LayoutableShadowNode::computeRelativeLayoutMetrics(
+          childShadowNode2->getFamily(), *scrollShadowNode, {});
+
+  EXPECT_EQ(secondItemRelativeLayoutMetrics.frame.origin.x, 100);
+  EXPECT_EQ(secondItemRelativeLayoutMetrics.frame.origin.y, 150);
+  EXPECT_EQ(secondItemRelativeLayoutMetrics.frame.size.width, 100);
+  EXPECT_EQ(secondItemRelativeLayoutMetrics.frame.size.height, 100);
+}
+
+/*
+ * ┌──────────────────────────────────────┐
+ * │ <View horizontallyInverted>          │
+ * │                                      │
+ * │┌─────────────────┐┌─────────────────┐│
+ * ││ <View>          ││ <View>          ││
+ * ││                 ││                 ││
+ * │└─────────────────┘└─────────────────┘│
+ * └──────────────────────────────────────┘
+ */
+TEST(LayoutableShadowNodeTest, invertedHorizontalView) {
+  auto builder = simpleComponentBuilder();
+  auto childShadowNode1 = std::shared_ptr<ViewShadowNode>{};
+  auto childShadowNode2 = std::shared_ptr<ViewShadowNode>{};
+
+  if (!enableCalculateTransformedFrames) {
+    return;
+  }
+
+  // clang-format off
+  auto element =
+        Element<ViewShadowNode>()
+          .props([] {
+            auto sharedProps = std::make_shared<ViewShadowNodeProps>();
+            sharedProps->transform = Transform::HorizontalInversion(); // Inverted <ScrollView>
+            return sharedProps;
+          })
+            .finalize([](ViewShadowNode &shadowNode){
+              auto layoutMetrics = EmptyLayoutMetrics;
+              layoutMetrics.frame.size = {200, 200};
+              shadowNode.setLayoutMetrics(layoutMetrics);
+            }).children({
+                Element<ViewShadowNode>()
+                  .reference(childShadowNode1)
+                  .finalize([](ViewShadowNode &shadowNode){
+                    auto layoutMetrics = EmptyLayoutMetrics;
+                    layoutMetrics.frame.origin = {0, 0};
+                    layoutMetrics.frame.size = {100, 100};
+                    shadowNode.setLayoutMetrics(layoutMetrics);
+                  }),
+                Element<ViewShadowNode>()
+                  .reference(childShadowNode2)
+                  .finalize([](ViewShadowNode &shadowNode){
+                    auto layoutMetrics = EmptyLayoutMetrics;
+                    layoutMetrics.frame.origin = {100, 0};
+                    layoutMetrics.frame.size = {100, 100};
+                    shadowNode.setLayoutMetrics(layoutMetrics);
+                  })
+        });
+  // clang-format on
+
+  auto scrollShadowNode = builder.build(element);
+
+  auto firstItemRelativeLayoutMetrics =
+      LayoutableShadowNode::computeRelativeLayoutMetrics(
+          childShadowNode1->getFamily(), *scrollShadowNode, {});
+
+  EXPECT_EQ(firstItemRelativeLayoutMetrics.frame.origin.x, 100);
+  EXPECT_EQ(firstItemRelativeLayoutMetrics.frame.origin.y, 0);
+  EXPECT_EQ(firstItemRelativeLayoutMetrics.frame.size.width, 100);
+  EXPECT_EQ(firstItemRelativeLayoutMetrics.frame.size.height, 100);
+
+  auto secondItemRelativeLayoutMetrics =
+      LayoutableShadowNode::computeRelativeLayoutMetrics(
+          childShadowNode2->getFamily(), *scrollShadowNode, {});
+
+  EXPECT_EQ(secondItemRelativeLayoutMetrics.frame.origin.x, 0);
+  EXPECT_EQ(secondItemRelativeLayoutMetrics.frame.origin.y, 0);
+  EXPECT_EQ(secondItemRelativeLayoutMetrics.frame.size.width, 100);
+  EXPECT_EQ(secondItemRelativeLayoutMetrics.frame.size.height, 100);
+}
+
+/*
+ * ┌──────────────────────────────────────────┐
+ * │ <View horizontallyInverted>              │
+ * │                                          │
+ * │ ┌──────────────────────────────────────┐ │
+ * │ │ <View>                               │ │
+ * │ │                                      │ │
+ * │ │┌─────────────────┐┌─────────────────┐│ │
+ * │ ││ <View>          ││ <View>          ││ │
+ * │ ││                 ││                 ││ │
+ * │ │└─────────────────┘└─────────────────┘│ │
+ * │ └──────────────────────────────────────┘ │
+ * └──────────────────────────────────────────┘
+ */
+TEST(LayoutableShadowNodeTest, nestedInvertedHorizontalView) {
+  auto builder = simpleComponentBuilder();
+  auto childShadowNode1 = std::shared_ptr<ViewShadowNode>{};
+  auto childShadowNode2 = std::shared_ptr<ViewShadowNode>{};
+
+  if (!enableCalculateTransformedFrames) {
+    return;
+  }
+
+  // clang-format off
+  auto element =
+    Element<ViewShadowNode>()
+      .props([] {
+        auto sharedProps = std::make_shared<ViewShadowNodeProps>();
+        sharedProps->transform = Transform::HorizontalInversion(); // Inverted <ScrollView>
+        return sharedProps;
+      })
+      .finalize([](ViewShadowNode &shadowNode){
+        auto layoutMetrics = EmptyLayoutMetrics;
+        layoutMetrics.frame.size = {400, 400};
+        shadowNode.setLayoutMetrics(layoutMetrics);
+    })
+      .children({
+        Element<ViewShadowNode>()
+              .finalize([](ViewShadowNode &shadowNode){
+                auto layoutMetrics = EmptyLayoutMetrics;
+                layoutMetrics.frame.origin = {50, 100};
+                layoutMetrics.frame.size = {200, 200};
+                shadowNode.setLayoutMetrics(layoutMetrics);
+              }).children({
+                Element<ViewShadowNode>()
+                  .reference(childShadowNode1)
+                  .finalize([](ViewShadowNode &shadowNode){
+                    auto layoutMetrics = EmptyLayoutMetrics;
+                    layoutMetrics.frame.origin = {0, 0};
+                    layoutMetrics.frame.size = {100, 100};
+                    shadowNode.setLayoutMetrics(layoutMetrics);
+                  }),
+                Element<ViewShadowNode>()
+                  .reference(childShadowNode2)
+                  .finalize([](ViewShadowNode &shadowNode){
+                    auto layoutMetrics = EmptyLayoutMetrics;
+                    layoutMetrics.frame.origin = {100, 0};
+                    layoutMetrics.frame.size = {100, 100};
+                    shadowNode.setLayoutMetrics(layoutMetrics);
+                  })
+        })
+      });
+  // clang-format on
+
+  auto scrollShadowNode = builder.build(element);
+
+  auto firstItemRelativeLayoutMetrics =
+      LayoutableShadowNode::computeRelativeLayoutMetrics(
+          childShadowNode1->getFamily(), *scrollShadowNode, {});
+
+  EXPECT_EQ(firstItemRelativeLayoutMetrics.frame.origin.x, 250);
+  EXPECT_EQ(firstItemRelativeLayoutMetrics.frame.origin.y, 100);
+  EXPECT_EQ(firstItemRelativeLayoutMetrics.frame.size.width, 100);
+  EXPECT_EQ(firstItemRelativeLayoutMetrics.frame.size.height, 100);
+
+  auto secondItemRelativeLayoutMetrics =
+      LayoutableShadowNode::computeRelativeLayoutMetrics(
+          childShadowNode2->getFamily(), *scrollShadowNode, {});
+
+  EXPECT_EQ(secondItemRelativeLayoutMetrics.frame.origin.x, 150);
+  EXPECT_EQ(secondItemRelativeLayoutMetrics.frame.origin.y, 100);
+  EXPECT_EQ(secondItemRelativeLayoutMetrics.frame.size.width, 100);
+  EXPECT_EQ(secondItemRelativeLayoutMetrics.frame.size.height, 100);
+}
+
+TEST(LayoutableShadowNodeTest, inversedContentOriginOffset) {
+  auto builder = simpleComponentBuilder();
+
+  auto childShadowNode = std::shared_ptr<ViewShadowNode>{};
+
+  if (!enableCalculateTransformedFrames) {
+    return;
+  }
+
+  // clang-format off
+  auto element =
+    Element<ScrollViewShadowNode>()
+      .props([] {
+        auto sharedProps = std::make_shared<ScrollViewProps>();
+        sharedProps->transform = Transform::HorizontalInversion() * Transform::VerticalInversion();
+        return sharedProps;
+      })
+      .finalize([](ScrollViewShadowNode &shadowNode){
+        auto layoutMetrics = EmptyLayoutMetrics;
+        layoutMetrics.frame.size = {300, 350};
+        shadowNode.setLayoutMetrics(layoutMetrics);
+      })
+      .stateData([](ScrollViewState &data) {
+        data.contentOffset = {10, 20};
+      })
+      .children({
+        Element<ViewShadowNode>()
+        .finalize([](ViewShadowNode &shadowNode){
+          auto layoutMetrics = EmptyLayoutMetrics;
+          layoutMetrics.frame.origin = {30, 40};
+          layoutMetrics.frame.size = {100, 200};
+          shadowNode.setLayoutMetrics(layoutMetrics);
+        })
+        .reference(childShadowNode)
+    });
+  // clang-format on
+
+  auto parentShadowNode = builder.build(element);
+
+  auto relativeLayoutMetrics =
+      LayoutableShadowNode::computeRelativeLayoutMetrics(
+          childShadowNode->getFamily(), *parentShadowNode, {});
+
+  EXPECT_EQ(relativeLayoutMetrics.frame.origin.x, 180);
+  EXPECT_EQ(relativeLayoutMetrics.frame.origin.y, 130);
 }

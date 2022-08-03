@@ -38,6 +38,11 @@ bool Fragment::operator==(const Fragment &rhs) const {
              rhs.parentShadowView.layoutMetrics);
 }
 
+bool Fragment::isContentEqual(const Fragment &rhs) const {
+  return std::tie(string, textAttributes) ==
+      std::tie(rhs.string, rhs.textAttributes);
+}
+
 bool Fragment::operator!=(const Fragment &rhs) const {
   return !(*this == rhs);
 }
@@ -124,6 +129,20 @@ bool AttributedString::operator==(const AttributedString &rhs) const {
 
 bool AttributedString::operator!=(const AttributedString &rhs) const {
   return !(*this == rhs);
+}
+
+bool AttributedString::isContentEqual(const AttributedString &rhs) const {
+  if (fragments_.size() != rhs.fragments_.size()) {
+    return false;
+  }
+
+  for (auto i = 0; i < fragments_.size(); i++) {
+    if (!fragments_[i].isContentEqual(rhs.fragments_[i])) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 #pragma mark - DebugStringConvertible

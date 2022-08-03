@@ -53,8 +53,7 @@ Scheduler::Scheduler(
   auto enableCallImmediates = reactNativeConfig_->getBool(
       "react_native_new_architecture:enable_call_immediates_android");
 #else
-  auto enableCallImmediates = reactNativeConfig_->getBool(
-      "react_native_new_architecture:enable_call_immediates_ios");
+  auto enableCallImmediates = true;
 #endif
 
   auto weakRuntimeScheduler =

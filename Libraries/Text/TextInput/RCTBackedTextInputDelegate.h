@@ -19,8 +19,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)textInputShouldEndEditing; // Return `YES` to allow editing to stop and to resign first responder status. `NO` to disallow the editing session to end.
 - (void)textInputDidEndEditing; // May be called if forced even if `textInputShouldEndEditing` returns `NO` (e.g. view removed from window) or `[textInput endEditing:YES]` called.
 
-- (BOOL)textInputShouldReturn; // May be called right before `textInputShouldEndEditing` if "Return" button was pressed.
+- (BOOL)textInputShouldReturn; // May be called right before `textInputShouldEndEditing` if "Return" button was pressed. Dismisses keyboard if true
 - (void)textInputDidReturn;
+
+- (BOOL)textInputShouldSubmitOnReturn; // Checks whether to submit when return is pressed and emits an event if true.
 
 /*
  * Called before any change in the TextInput. The delegate has the opportunity to change the replacement string or reject the change completely.

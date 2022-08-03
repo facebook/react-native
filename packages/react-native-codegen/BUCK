@@ -17,8 +17,8 @@ fb_native.genrule(
             "**/e2e/__test_fixtures__/modules/Native*.js",
         ],
     ),
-    cmd = "$(exe {}) $OUT $SRCS".format(react_native_root_target("packages/react-native-codegen:write_to_json")),
     out = "schema-codegen_tests.json",
+    cmd = "$(exe {}) $OUT $SRCS".format(react_native_root_target("packages/react-native-codegen:write_to_json")),
 )
 
 rn_codegen_components(

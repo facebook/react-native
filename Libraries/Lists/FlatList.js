@@ -499,8 +499,9 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     if (numColumns > 1) {
       const ret = [];
       for (let kk = 0; kk < numColumns; kk++) {
-        const item = data[index * numColumns + kk];
-        if (item != null) {
+        const itemIndex = index * numColumns + kk;
+        if (itemIndex < data.length) {
+          const item = data[itemIndex];
           ret.push(item);
         }
       }
@@ -511,7 +512,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   };
 
   _getItemCount = (data: ?Array<ItemT>): number => {
-    if (data) {
+    if (Array.isArray(data)) {
       const numColumns = numColumnsOrDefault(this.props.numColumns);
       return numColumns > 1 ? Math.ceil(data.length / numColumns) : data.length;
     } else {
@@ -624,11 +625,18 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
           return (
             <View style={StyleSheet.compose(styles.row, columnWrapperStyle)}>
               {item.map((it, kk) => {
+                const itemIndex = index * cols + kk;
+                const accessibilityCollectionItem = {
+                  ...info.accessibilityCollectionItem,
+                  columnIndex: itemIndex % cols,
+                  itemIndex: itemIndex,
+                };
                 const element = renderer({
                   // $FlowFixMe[incompatible-call]
                   item: it,
-                  index: index * cols + kk,
+                  index: itemIndex,
                   separators: info.separators,
+                  accessibilityCollectionItem,
                 });
                 return element != null ? (
                   <React.Fragment key={kk}>{element}</React.Fragment>
@@ -659,6 +667,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     return (
       <VirtualizedList
         {...restProps}
+        numColumns={numColumns}
         getItem={this._getItem}
         getItemCount={this._getItemCount}
         keyExtractor={this._keyExtractor}
