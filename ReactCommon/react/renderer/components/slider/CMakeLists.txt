@@ -31,7 +31,7 @@ target_link_libraries(rrc_slider
         react_render_imagemanager
         react_render_mapbuffer
         react_render_uimanager
-        reactnativeutilsjni
+        reactnativejni
         rrc_image
         rrc_view
         yoga
