@@ -193,10 +193,15 @@ class RewriteInvalidCharactersAndClearExample extends React.Component<
 }
 
 class BlurOnSubmitExample extends React.Component<{...}> {
+  // $FlowFixMe[missing-local-annot]
   ref1 = React.createRef();
+  // $FlowFixMe[missing-local-annot]
   ref2 = React.createRef();
+  // $FlowFixMe[missing-local-annot]
   ref3 = React.createRef();
+  // $FlowFixMe[missing-local-annot]
   ref4 = React.createRef();
+  // $FlowFixMe[missing-local-annot]
   ref5 = React.createRef();
 
   render(): React.Node {
@@ -249,16 +254,27 @@ class BlurOnSubmitExample extends React.Component<{...}> {
 }
 
 class SubmitBehaviorExample extends React.Component<{...}> {
+  // $FlowFixMe[missing-local-annot]
   ref1 = React.createRef();
+  // $FlowFixMe[missing-local-annot]
   ref2 = React.createRef();
+  // $FlowFixMe[missing-local-annot]
   ref3 = React.createRef();
+  // $FlowFixMe[missing-local-annot]
   ref4 = React.createRef();
+  // $FlowFixMe[missing-local-annot]
   ref5 = React.createRef();
+  // $FlowFixMe[missing-local-annot]
   ref6 = React.createRef();
+  // $FlowFixMe[missing-local-annot]
   ref7 = React.createRef();
+  // $FlowFixMe[missing-local-annot]
   ref8 = React.createRef();
+  // $FlowFixMe[missing-local-annot]
   ref9 = React.createRef();
+  // $FlowFixMe[missing-local-annot]
   ref10 = React.createRef();
+  // $FlowFixMe[missing-local-annot]
   ref11 = React.createRef();
 
   render(): React.Node {
