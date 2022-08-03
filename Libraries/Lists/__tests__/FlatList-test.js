@@ -152,4 +152,35 @@ describe('FlatList', () => {
     expect(scrollRef.measureLayout).toBeInstanceOf(jest.fn().constructor);
     expect(scrollRef.measureInWindow).toBeInstanceOf(jest.fn().constructor);
   });
+
+  it('calls renderItem for all data items', () => {
+    const data = [
+      {key: 'i1'},
+      null,
+      undefined,
+      {key: 'i2'},
+      null,
+      undefined,
+      {key: 'i3'},
+    ];
+
+    const renderItemInOneColumn = jest.fn();
+    ReactTestRenderer.create(
+      <FlatList data={data} renderItem={renderItemInOneColumn} />,
+    );
+
+    expect(renderItemInOneColumn).toHaveBeenCalledTimes(7);
+
+    const renderItemInThreeColumns = jest.fn();
+
+    ReactTestRenderer.create(
+      <FlatList
+        data={data}
+        renderItem={renderItemInThreeColumns}
+        numColumns={3}
+      />,
+    );
+
+    expect(renderItemInThreeColumns).toHaveBeenCalledTimes(7);
+  });
 });
