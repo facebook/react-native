@@ -22,6 +22,7 @@ if (useExperimentalList) {
   VirtualizedListInjection.inject(VirtualizedList_EXPERIMENTAL);
 }
 
+const View = require('../../Components/View/View');
 const VirtualizedList = require('../VirtualizedList');
 
 describe('VirtualizedList', () => {
@@ -1542,6 +1543,38 @@ it('calls _onCellLayout properly', () => {
   expect(mock).not.toHaveBeenCalledWith(event, 'i3', 2);
 });
 
+it('renders list with custom column count', () => {
+  const numColumns = 3;
+  const component = ReactTestRenderer.create(
+    <VirtualizedList
+      data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}, {key: 'i4'}, {key: 'i5'}]}
+      renderItem={({item}) => {
+        return (
+          <View key={item.key}>
+            {item.items.map((subitem, index) => (
+              <item value={subitem.key} key={index} />
+            ))}
+          </View>
+        );
+      }}
+      getItem={(data, index) => {
+        const ret = {key: index, items: []};
+        for (let i = 0; i < numColumns; i++) {
+          const item = data[index * numColumns + i];
+          if (item != null) {
+            ret.items.push(item);
+          }
+        }
+        return ret;
+      }}
+      numColumns={numColumns}
+      getItemCount={data => Math.ceil(data.length / numColumns)}
+      getCellsInItemCount={data => data.length}
+    />,
+  );
+  expect(component).toMatchSnapshot();
+});
+
 if (useExperimentalList) {
   describe('VirtualizedList (Experimental functionality)', () => {
     it('keeps viewport below last focused rendered', () => {
@@ -1785,7 +1818,11 @@ function simulateContentLayout(component, dimensions) {
 
 function simulateCellLayout(component, items, itemIndex, dimensions) {
   const instance = component.getInstance();
-  const cellKey = instance._keyExtractor(items[itemIndex], itemIndex);
+  const cellKey = instance._keyExtractor(
+    items[itemIndex],
+    itemIndex,
+    instance.props,
+  );
   instance._onCellLayout(
     {nativeEvent: {layout: dimensions, zoomScale: 1}},
     cellKey,

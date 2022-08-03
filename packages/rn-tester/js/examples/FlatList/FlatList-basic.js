@@ -301,17 +301,21 @@ class FlatListExample extends React.PureComponent<Props, State> {
        * To see the error, delete this comment and run Flow. */
       /* $FlowFixMe[missing-local-annot] The type annotation(s) required by
        * Flow's LTI update could not be added via codemod */
-      [flatListPropKey]: ({item, separators}) => {
+      [flatListPropKey]: ({item, separators, accessibilityCollectionItem}) => {
         return (
-          <ItemComponent
-            item={item}
-            horizontal={this.state.horizontal}
-            fixedHeight={this.state.fixedHeight}
-            onPress={this._onPressCallback()}
-            onShowUnderlay={separators.highlight}
-            onHideUnderlay={separators.unhighlight}
-            textSelectable={this.state.textSelectable}
-          />
+          <View
+            importantForAccessibility="yes"
+            accessibilityCollectionItem={accessibilityCollectionItem}>
+            <ItemComponent
+              item={item}
+              horizontal={this.state.horizontal}
+              fixedHeight={this.state.fixedHeight}
+              onPress={this._onPressCallback()}
+              onShowUnderlay={separators.highlight}
+              onHideUnderlay={separators.unhighlight}
+              textSelectable={this.state.textSelectable}
+            />
+          </View>
         );
       },
     };

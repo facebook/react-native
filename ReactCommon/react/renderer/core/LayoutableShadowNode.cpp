@@ -151,8 +151,21 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
   }
 
   // ------------------------------
+  // TODO: T127619309 remove after validating that T127619309 is fixed
+  auto optionalCalculateTransformedFrames =
+      descendantNode->getContextContainer()
+      ? descendantNode->getContextContainer()->find<bool>(
+            "CalculateTransformedFramesEnabled")
+      : std::optional<bool>(false);
 
-  auto transformedFrames = calculateTransformedFrames(shadowNodeList, policy);
+  bool shouldCalculateTransformedFrames =
+      optionalCalculateTransformedFrames.has_value()
+      ? optionalCalculateTransformedFrames.value()
+      : false;
+
+  auto transformedFrames = shouldCalculateTransformedFrames
+      ? calculateTransformedFrames(shadowNodeList, policy)
+      : LayoutableSmallVector<Rect>();
   auto layoutMetrics = descendantLayoutableNode->getLayoutMetrics();
   auto &resultFrame = layoutMetrics.frame;
   resultFrame.origin = {0, 0};
@@ -168,7 +181,9 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
       return EmptyLayoutMetrics;
     }
 
-    auto currentFrame = transformedFrames[i];
+    auto currentFrame = shouldCalculateTransformedFrames
+        ? transformedFrames[i]
+        : currentShadowNode->getLayoutMetrics().frame;
     if (i == size - 1) {
       // If it's the last element, its origin is irrelevant.
       currentFrame.origin = {0, 0};
@@ -185,6 +200,10 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
     }
 
     resultFrame.origin += currentFrame.origin;
+    if (!shouldCalculateTransformedFrames && i != 0 &&
+        policy.includeTransform) {
+      resultFrame.origin += currentShadowNode->getContentOriginOffset();
+    }
   }
 
   // ------------------------------

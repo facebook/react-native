@@ -12,7 +12,7 @@
 
 import * as React from 'react';
 import type VirtualizedList from './VirtualizedList';
-import type {Props as VirtualizedListProps} from './VirtualizedList';
+import type {Props as VirtualizedListProps} from './VirtualizedListProps';
 import invariant from 'invariant';
 
 export type ListImplementation = React.ComponentType<VirtualizedListProps> &

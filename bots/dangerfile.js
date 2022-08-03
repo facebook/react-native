@@ -9,8 +9,9 @@
 
 'use strict';
 
-const {danger, fail, message, warn} = require('danger');
+const {danger, fail, /*message,*/ warn} = require('danger');
 const includes = require('lodash.includes');
+const eslint = require('@seadub/danger-plugin-eslint');
 
 const isFromPhabricator =
   danger.github.pr.body &&
@@ -112,3 +113,5 @@ if (isMergeRefStable) {
     },
   );
 }
+
+eslint.default();
