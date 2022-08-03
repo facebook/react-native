@@ -86,6 +86,16 @@ type OptionalProps = {|
    * this for debugging purposes. Defaults to false.
    */
   disableVirtualization?: ?boolean,
+
+  /**
+   * Enable TalkBack support for inverted FlatList
+   * The default implementation of inverted FlatList uses transform scaleX or scaleY and is not compatible
+   * with TalkBack. This implementation manually inverts the order of the items, but does not yet support all
+   * FlatList functionalities, by default is disabled. Not supported functionalities: initialScrollIndex.
+   * Supported functionalities: infinite list, scrollToEnd, scrollToIndex, horizontal, scrollToOffset
+   */
+  enabledTalkbackCompatibleInvertedList?: ?boolean,
+
   /**
    * A marker property for telling the list to re-render (since it implements `PureComponent`). If
    * any of your `renderItem`, Header, Footer, etc. functions depend on anything outside of the
