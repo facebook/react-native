@@ -10,7 +10,10 @@
 
 'use strict';
 
-import type {RenderItemProps} from 'react-native/Libraries/Lists/VirtualizedList';
+import type {
+  RenderItemProps,
+  AccessibilityCollectionItem,
+} from 'react-native/Libraries/Lists/VirtualizedListProps';
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 const RNTesterPage = require('../../components/RNTesterPage');
 const React = require('react');
@@ -142,9 +145,19 @@ class MultiColumnExample extends React.PureComponent<
       getItemLayout(data, index).length + 2 * (CARD_MARGIN + BORDER_WIDTH);
     return {length, offset: length * index, index};
   }
-  _renderItemComponent = ({item}: RenderItemProps<any | Item>) => {
+  _renderItemComponent = ({
+    item,
+    accessibilityCollectionItem,
+  }: {
+    item: Item,
+    accessibilityCollectionItem: AccessibilityCollectionItem,
+    ...
+  }) => {
     return (
-      <View style={styles.card}>
+      <View
+        importantForAccessibility="yes"
+        accessibilityCollectionItem={accessibilityCollectionItem}
+        style={styles.card}>
         <ItemComponent
           item={item}
           fixedHeight={this.state.fixedHeight}
