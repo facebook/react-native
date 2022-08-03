@@ -53,7 +53,7 @@ references:
     gradle_cache_key: &gradle_cache_key v1-gradle-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "ReactAndroid/gradle.properties" }}
     hermes_cache_key: &hermes_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
     hermes_windows_cache_key: &hermes_windows_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "tmp/hermes/hermesversion" }}
-    hermes_tarball_cache_key: &hermes_tarball_cache_key v2-hermes-tarball-{{ checksum "/tmp/hermes/cache/.hermes-cache-key-file" }}
+    hermes_tarball_cache_key: &hermes_tarball_cache_key v2-hermes-tarball-{{ checksum "/tmp/hermes/hermesversion" }}
     pods_cache_key: &pods_cache_key v7-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
     windows_yarn_cache_key: &windows_yarn_cache_key v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
     yarn_cache_key: &yarn_cache_key v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}
@@ -289,24 +289,6 @@ commands:
         type: boolean
         default: False
     steps:
-      - run:
-          name: Setup Hermes cache
-          command: |
-            HERMES_CACHE_KEY_FILE="/tmp/hermes/cache/.hermes-cache-key-file"
-            if [ ! -f "$HERMES_CACHE_KEY_FILE" ]; then
-              echo "File not found. Use the same version from the hermes workspace"
-
-              HERMES_VERSION="/tmp/hermes/hermesversion"
-              if [ ! -f "$HERMES_VERSION" ]; then
-                echo "No hermesversion file found. Failing due to possible inconsistencies in the build"
-                exit 1
-              fi
-
-              mkdir -p /tmp/hermes/cache
-              cat $HERMES_VERSION > $HERMES_CACHE_KEY_FILE
-            fi
-            echo "Hermes version: "$HERMES_VERSION
-            echo "Hermes cached tarball: "$HERMES_CACHE_KEY_FILE
       - restore_cache:
           keys:
             - *hermes_tarball_cache_key
@@ -482,8 +464,7 @@ jobs:
             cd scripts
             sh run_ruby_tests.sh
       - run_yarn
-      - attach_workspace:
-          at: /tmp/hermes/
+      - *attach_hermes_workspace
       - run: |
           cd packages/rn-tester
           bundle check || bundle install
@@ -764,6 +745,7 @@ jobs:
     steps:
       - checkout_code_with_cache
       - run_yarn
+      - *attach_hermes_workspace
 
       # The macOS machine can run out of storage if Hermes is enabled and built from source.
       # Since this job does not use the iOS Simulator, deleting it provides a quick way to
@@ -783,9 +765,6 @@ jobs:
 
       - brew_install:
           package: cmake
-
-      - attach_workspace:
-          at: /tmp/hermes
 
       - with_hermes_tarball_cache_span:
           set_tarball_path: True
@@ -1031,10 +1010,6 @@ jobs:
             brew install cmake
       - with_hermes_tarball_cache_span:
           steps:
-            - persist_to_workspace:
-                root: /tmp/hermes/
-                paths:
-                  - cache
             - run:
                 name: Build the Hermes iOS frameworks
                 command: |
