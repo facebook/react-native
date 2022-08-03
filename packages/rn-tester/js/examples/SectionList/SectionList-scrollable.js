@@ -9,6 +9,7 @@
  */
 
 'use strict';
+import type {AccessibilityCollectionItem} from 'react-native/Libraries/Lists/VirtualizedListProps';
 import type {Item} from '../../components/ListExampleShared';
 const RNTesterPage = require('../../components/RNTesterPage');
 const React = require('react');
@@ -118,7 +119,7 @@ const renderItemComponent =
   (setItemState: (item: Item) => void) =>
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
    * LTI update could not be added via codemod */
-  ({item, separators}) => {
+  ({item, separators, accessibilityCollectionItem}) => {
     if (isNaN(item.key)) {
       return;
     }
@@ -128,12 +129,16 @@ const renderItemComponent =
     };
 
     return (
-      <ItemComponent
-        item={item}
-        onPress={onPress}
-        onHideUnderlay={separators.unhighlight}
-        onShowUnderlay={separators.highlight}
-      />
+      <View
+        importantForAccessibility="yes"
+        accessibilityCollectionItem={accessibilityCollectionItem}>
+        <ItemComponent
+          item={item}
+          onPress={onPress}
+          onHideUnderlay={separators.unhighlight}
+          onShowUnderlay={separators.highlight}
+        />
+      </View>
     );
   };
 
