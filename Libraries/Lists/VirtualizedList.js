@@ -36,7 +36,6 @@ import {
 } from './VirtualizeUtils';
 import AccessibilityInfo from '../Components/AccessibilityInfo/AccessibilityInfo';
 import type {EventSubscription} from '../vendor/emitter/EventEmitter';
-import Platform from '../Utilities/Platform';
 import * as VirtualizedListInjection from './VirtualizedListInjection';
 import * as React from 'react';
 
