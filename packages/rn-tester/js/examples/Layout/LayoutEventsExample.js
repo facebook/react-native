@@ -81,7 +81,7 @@ class LayoutEventExample extends React.Component<Props, State> {
     this.setState({imageLayout: e.nativeEvent.layout});
   };
 
-  render() {
+  render(): React.Node {
     const viewStyle = [styles.view, this.state.viewStyle];
     const textLayout = this.state.textLayout || {width: '?', height: '?'};
     const imageLayout = this.state.imageLayout || {x: '?', y: '?'};

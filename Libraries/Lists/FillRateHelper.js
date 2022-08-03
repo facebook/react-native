@@ -49,12 +49,12 @@ let _sampleRate = DEBUG ? 1 : null;
  * `SceneTracker.getActiveScene` to determine the context of the events.
  */
 class FillRateHelper {
-  _anyBlankStartTime = (null: ?number);
+  _anyBlankStartTime: ?number = null;
   _enabled = false;
   _getFrameMetrics: (index: number, props: FrameMetricProps) => ?FrameMetrics;
-  _info = new Info();
-  _mostlyBlankStartTime = (null: ?number);
-  _samplesStartTime = (null: ?number);
+  _info: Info = new Info();
+  _mostlyBlankStartTime: ?number = null;
+  _samplesStartTime: ?number = null;
 
   static addListener(callback: FillRateInfo => void): {
     remove: () => void,

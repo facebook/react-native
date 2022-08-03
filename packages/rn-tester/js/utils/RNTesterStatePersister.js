@@ -40,11 +40,11 @@ function createContainer<Props: Object, State>(
     Props,
     $FlowFixMeState,
   > {
-    static displayName = `RNTesterStatePersister(${String(
+    static displayName: ?string = `RNTesterStatePersister(${String(
       Component.displayName ?? Component.name,
     )})`;
-    state = {value: spec.getInitialState(this.props)};
-    _cacheKey = `RNTester:${spec.version || 'v1'}:${spec.cacheKeySuffix(
+    state: any | {value: State} = {value: spec.getInitialState(this.props)};
+    _cacheKey: string = `RNTester:${spec.version || 'v1'}:${spec.cacheKeySuffix(
       this.props,
     )}`;
     componentDidMount() {

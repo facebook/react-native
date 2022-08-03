@@ -27,7 +27,7 @@ class RequestIdleCallbackTester extends React.Component<
   RequestIdleCallbackTesterProps,
   RequestIdleCallbackTesterState,
 > {
-  state = {
+  state: RequestIdleCallbackTesterState = {
     message: '-',
   };
 
@@ -41,7 +41,7 @@ class RequestIdleCallbackTester extends React.Component<
     }
   }
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         {/* $FlowFixMe[method-unbinding] added when improving typing for this
@@ -159,7 +159,7 @@ class TimerTester extends React.Component<TimerTesterProps> {
   _immediateId: ?Object = null;
   _timerFn: ?() => any = null;
 
-  render() {
+  render(): any {
     const args =
       'fn' + (this.props.dt !== undefined ? ', ' + this.props.dt : '');
     return (
@@ -274,13 +274,13 @@ class IntervalExample extends React.Component<
     showTimer: boolean,
   |},
 > {
-  state = {
+  state: {showTimer: boolean} = {
     showTimer: true,
   };
 
   _timerTester: ?React.ElementRef<typeof TimerTester>;
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         {this.state.showTimer && this._renderTimer()}
@@ -291,7 +291,7 @@ class IntervalExample extends React.Component<
     );
   }
 
-  _renderTimer = () => {
+  _renderTimer = (): React.Node => {
     return (
       <View>
         <TimerTester

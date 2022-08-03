@@ -206,7 +206,7 @@ class RTLToggleExample extends React.Component<any, RTLToggleState> {
     };
   }
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <View style={styles.directionBox}>
@@ -267,7 +267,7 @@ class AnimationExample extends React.Component<any, AnimationState> {
     };
   }
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <RTLToggler setRTL={this.props.setRTL} isRTL={this.props.isRTL} />
