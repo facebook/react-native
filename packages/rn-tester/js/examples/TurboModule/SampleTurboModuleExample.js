@@ -40,6 +40,7 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
   };
 
   // Add calls to methods in TurboModule here
+  // $FlowFixMe[missing-local-annot]
   _tests = {
     callback: () =>
       NativeSampleTurboModule.getValueWithCallback(callbackValue =>
