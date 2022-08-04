@@ -106,7 +106,7 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
    * provided runtime before any JS executes in the runtime.
    */
   Inspector(
-      std::shared_ptr<RuntimeAdapter> adapter,
+      RuntimeAdapter &adapter,
       InspectorObserver &observer,
       bool pauseOnFirstStatement);
   ~Inspector();
@@ -317,7 +317,7 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
       const std::string &name,
       const std::string &chromeType);
 
-  std::shared_ptr<RuntimeAdapter> adapter_;
+  RuntimeAdapter &adapter_;
   facebook::hermes::debugger::Debugger &debugger_;
   InspectorObserver &observer_;
 
