@@ -31,6 +31,23 @@ class ElementBox extends React.Component<$FlowFixMeProps> {
       height: this.props.frame.height,
     };
 
+    let frameStyle = {...this.props.frame};
+    if (isNaN(frameStyle.top)) {
+      frameStyle.top = 0;
+    }
+    if (isNaN(frameStyle.left)) {
+      frameStyle.left = 0;
+    }
+    if (isNaN(frameStyle.height)) {
+      frameStyle.height = 0;
+    }
+    if (isNaN(frameStyle.width)) {
+      frameStyle.width = 0;
+    }
+
+    const contentStyle = {
+
+
     if (margin != null) {
       margin = resolveRelativeSizes(margin);
 
