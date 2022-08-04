@@ -97,11 +97,14 @@ class FlatListExample extends React.PureComponent<Props, State> {
     this._listRef.scrollToIndex({viewPosition: 0.5, index: Number(text)});
   };
 
+  // $FlowFixMe[missing-local-annot]
   _scrollPos = new Animated.Value(0);
+  // $FlowFixMe[missing-local-annot]
   _scrollSinkX = Animated.event(
     [{nativeEvent: {contentOffset: {x: this._scrollPos}}}],
     {useNativeDriver: true},
   );
+  // $FlowFixMe[missing-local-annot]
   _scrollSinkY = Animated.event(
     [{nativeEvent: {contentOffset: {y: this._scrollPos}}}],
     {useNativeDriver: true},
@@ -271,6 +274,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
   ) => {
     this._listRef = ref;
   };
+  // $FlowFixMe[missing-local-annot]
   _getItemLayout = (data: any, index: number) => {
     return getItemLayout(data, index, this.state.horizontal);
   };
@@ -282,13 +286,16 @@ class FlatListExample extends React.PureComponent<Props, State> {
       data: state.data.concat(genItemData(100, state.data.length)),
     }));
   };
+  // $FlowFixMe[missing-local-annot]
   _onPressCallback = () => {
     const {onPressDisabled} = this.state;
     const warning = () => console.log('onPress disabled');
     const onPressAction = onPressDisabled ? warning : this._pressItem;
     return onPressAction;
   };
+  // $FlowFixMe[missing-local-annot]
   _onRefresh = () => Alert.alert('onRefresh: nothing to refresh :P');
+  // $FlowFixMe[missing-local-annot]
   _renderItemComponent = () => {
     const flatListPropKey = this.state.useFlatListItemComponent
       ? 'ListItemComponent'
