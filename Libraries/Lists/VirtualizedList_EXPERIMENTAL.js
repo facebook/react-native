@@ -207,7 +207,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     viewOffset?: number,
     viewPosition?: number,
     ...
-  }) {
+  }): $FlowFixMe {
     const {
       data,
       horizontal,
@@ -394,6 +394,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     };
   }
 
+  // $FlowFixMe[missing-local-annot]
   _getScrollMetrics = () => {
     return this._scrollMetrics;
   };
@@ -402,6 +403,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     return this._hasMore;
   }
 
+  // $FlowFixMe[missing-local-annot]
   _getOutermostParentListRef = () => {
     if (this._isNestedWithSameOrientation()) {
       return this.context.getOutermostParentListRef();
@@ -864,6 +866,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       keyExtractor?: ?(item: Item, index: number) => string,
       ...
     },
+    // $FlowFixMe[missing-local-annot]
   ) {
     if (props.keyExtractor != null) {
       return props.keyExtractor(item, index);
@@ -1195,6 +1198,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   > = new Map();
   _offsetFromParentVirtualizedList: number = 0;
   _prevParentOffset: number = 0;
+  // $FlowFixMe[missing-local-annot]
   _scrollMetrics = {
     contentLength: 0,
     dOffset: 0,
@@ -1226,6 +1230,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     );
   }
 
+  // $FlowFixMe[missing-local-annot]
   _getCellsInItemCount = (props: Props) => {
     const {getCellsInItemCount, data} = props;
     if (getCellsInItemCount) {
@@ -1457,6 +1462,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     this._headerLength = this._selectLength(e.nativeEvent.layout);
   };
 
+  // $FlowFixMe[missing-local-annot]
   _renderDebugOverlay() {
     const normalize =
       this._scrollMetrics.visibleLength /
@@ -1608,7 +1614,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     visibleLength: number,
     offset: number,
     ...
-  }) => {
+  }): $FlowFixMe => {
     // Offset of the top of the nested list relative to the top of its parent's viewport
     const offset = metrics.offset - this._offsetFromParentVirtualizedList;
     // Child's visible length is the same as its parent's
@@ -1812,6 +1818,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     index: number,
     isViewable: boolean,
     props: FrameMetricProps,
+    // $FlowFixMe[missing-local-annot]
   ) => {
     const {data, getItem} = props;
     const item = getItem(data, index);
@@ -2005,6 +2012,7 @@ class CellRenderer extends React.Component<
   CellRendererProps,
   CellRendererState,
 > {
+  // $FlowFixMe[missing-local-annot]
   state = {
     separatorProps: {
       highlighted: false,
@@ -2026,6 +2034,7 @@ class CellRenderer extends React.Component<
 
   // TODO: consider factoring separator stuff out of VirtualizedList into FlatList since it's not
   // reused by SectionList and we can keep VirtualizedList simpler.
+  // $FlowFixMe[missing-local-annot]
   _separators = {
     highlight: () => {
       const {cellKey, prevCellKey} = this.props;
@@ -2072,6 +2081,7 @@ class CellRenderer extends React.Component<
     ListItemComponent: any,
     item: any,
     index: any,
+    // $FlowFixMe[missing-local-annot]
   ) {
     if (renderItem && ListItemComponent) {
       console.warn(
@@ -2117,6 +2127,7 @@ class CellRenderer extends React.Component<
     );
   }
 
+  // $FlowFixMe[missing-local-annot]
   render() {
     const {
       CellRendererComponent,

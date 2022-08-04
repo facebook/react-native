@@ -45,7 +45,7 @@ class TestEffect {
     this.name = name;
     this.key = key;
   }
-  static called(name: string, key: ?string) {
+  static called(name: string, key: ?string): $FlowFixMe {
     // $FlowIssue[prop-missing] - Flow does not support type augmentation.
     return expect.effect(name, key);
   }
@@ -61,7 +61,7 @@ class TestEffectCleanup {
     this.name = name;
     this.key = key;
   }
-  static called(name: string, key: ?string) {
+  static called(name: string, key: ?string): $FlowFixMe {
     // $FlowIssue[prop-missing] - Flow does not support type augmentation.
     return expect.effectCleanup(name, key);
   }

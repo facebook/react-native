@@ -16,7 +16,7 @@ class DimensionsSubscription extends React.Component<
   {dim: string, ...},
   {dims: Object, ...},
 > {
-  state = {
+  state: {dims: any, ...} = {
     dims: Dimensions.get(this.props.dim),
   };
 
@@ -37,7 +37,7 @@ class DimensionsSubscription extends React.Component<
     this._dimensionsSubscription?.remove();
   }
 
-  render() {
+  render(): React.Node {
     return <Text>{JSON.stringify(this.state.dims, null, 2)}</Text>;
   }
 }

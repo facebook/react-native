@@ -35,7 +35,7 @@ class ToggleDefaultPaddingExample extends React.Component<
     super(props);
     this.state = {hasPadding: false};
   }
-  render() {
+  render(): React.Node {
     return (
       <View>
         <TextInput style={this.state.hasPadding ? {padding: 0} : null} />
@@ -79,7 +79,7 @@ class AutogrowingTextInputExample extends React.Component<{...}> {
     });
   }
 
-  render() {
+  render(): React.Node {
     /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
      * when making Flow check .android.js files. */
     const {style, multiline, ...props} = this.props;

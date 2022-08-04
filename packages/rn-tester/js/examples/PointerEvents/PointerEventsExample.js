@@ -27,7 +27,7 @@ type ExampleBoxState = $ReadOnly<{|
 |}>;
 
 class ExampleBox extends React.Component<ExampleBoxProps, ExampleBoxState> {
-  state = {
+  state: ExampleBoxState = {
     log: [],
   };
 
@@ -49,7 +49,7 @@ class ExampleBox extends React.Component<ExampleBoxProps, ExampleBoxState> {
     this.state.log = this.state.log.concat(['---']);
   };
 
-  render() {
+  render(): React.Node {
     const {Component} = this.props;
     return (
       <View>
@@ -69,7 +69,7 @@ class ExampleBox extends React.Component<ExampleBoxProps, ExampleBoxState> {
 }
 
 class NoneExample extends React.Component<$FlowFixMeProps> {
-  render() {
+  render(): React.Node {
     return (
       <View
         onTouchStart={() => this.props.onLog('A unspecified touched')}
@@ -100,7 +100,7 @@ class NoneExample extends React.Component<$FlowFixMeProps> {
  * the experiment and confuse the output.
  */
 class DemoText extends React.Component<$FlowFixMeProps> {
-  render() {
+  render(): React.Node {
     return (
       <View pointerEvents="none">
         <Text style={this.props.style}>{this.props.children}</Text>
@@ -110,7 +110,7 @@ class DemoText extends React.Component<$FlowFixMeProps> {
 }
 
 class BoxNoneExample extends React.Component<$FlowFixMeProps> {
-  render() {
+  render(): React.Node {
     return (
       <View
         onTouchStart={() => this.props.onLog('A unspecified touched')}
@@ -143,7 +143,7 @@ class BoxNoneExample extends React.Component<$FlowFixMeProps> {
 }
 
 class BoxOnlyExample extends React.Component<$FlowFixMeProps> {
-  render() {
+  render(): React.Node {
     return (
       <View
         onTouchStart={() => this.props.onLog('A unspecified touched')}
@@ -183,7 +183,7 @@ type OverflowExampleProps = $ReadOnly<{|
 |}>;
 
 class OverflowExample extends React.Component<OverflowExampleProps> {
-  render() {
+  render(): React.Node {
     const {overflow} = this.props;
     return (
       <View
@@ -217,13 +217,13 @@ class OverflowExample extends React.Component<OverflowExampleProps> {
 }
 
 class OverflowVisibleExample extends React.Component<ExampleBoxComponentProps> {
-  render() {
+  render(): React.Node {
     return <OverflowExample {...this.props} overflow="visible" />;
   }
 }
 
 class OverflowHiddenExample extends React.Component<ExampleBoxComponentProps> {
-  render() {
+  render(): React.Node {
     return <OverflowExample {...this.props} overflow="hidden" />;
   }
 }

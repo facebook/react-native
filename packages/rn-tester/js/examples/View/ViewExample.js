@@ -24,11 +24,11 @@ class ViewBorderStyleExample extends React.Component<
   $ReadOnly<{||}>,
   {|showBorder: boolean|},
 > {
-  state = {
+  state: {showBorder: boolean} = {
     showBorder: true,
   };
 
-  render() {
+  render(): React.Node {
     return (
       <TouchableWithoutFeedback onPress={this._handlePress}>
         <View>
@@ -87,11 +87,11 @@ class OffscreenAlphaCompositing extends React.Component<
     active: boolean,
   |},
 > {
-  state = {
+  state: {active: boolean} = {
     active: false,
   };
 
-  render() {
+  render(): React.Node {
     return (
       <TouchableWithoutFeedback onPress={this._handlePress}>
         <View>
@@ -169,11 +169,11 @@ class ZIndexExample extends React.Component<
     flipped: boolean,
   |},
 > {
-  state = {
+  state: {flipped: boolean} = {
     flipped: false,
   };
 
-  render() {
+  render(): React.Node {
     const indices = this.state.flipped ? [-1, 0, 1, 2] : [2, 1, 0, -1];
     return (
       <TouchableWithoutFeedback onPress={this._handlePress}>
@@ -239,11 +239,11 @@ class DisplayNoneStyle extends React.Component<
     index: number,
   |},
 > {
-  state = {
+  state: {index: number} = {
     index: 0,
   };
 
-  render() {
+  render(): React.Node {
     return (
       <TouchableWithoutFeedback onPress={this._handlePress}>
         <View>

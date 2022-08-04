@@ -45,7 +45,7 @@ export class CellRenderMask {
     return this._regions;
   }
 
-  addCells(cells: {first: number, last: number}) {
+  addCells(cells: {first: number, last: number}): void {
     invariant(
       cells.first >= 0 &&
         cells.first < this._numCells &&

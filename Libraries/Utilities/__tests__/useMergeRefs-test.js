@@ -40,7 +40,7 @@ class TestViewInstance {
     return testID == null ? null : new TestViewInstance(testID);
   }
 
-  static named(name: string) {
+  static named(name: string): $FlowFixMe {
     // $FlowIssue[prop-missing] - Flow does not support type augmentation.
     return expect.testViewInstance(name);
   }

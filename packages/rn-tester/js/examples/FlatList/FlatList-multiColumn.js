@@ -152,7 +152,7 @@ class MultiColumnExample extends React.PureComponent<
     item: Item,
     accessibilityCollectionItem: AccessibilityCollectionItem,
     ...
-  }) => {
+  }): $FlowFixMe => {
     return (
       <View
         importantForAccessibility="yes"
