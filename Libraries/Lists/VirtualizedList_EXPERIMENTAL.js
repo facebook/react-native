@@ -74,12 +74,7 @@ type ViewabilityHelperCallbackTuple = {
 
 type State = {
   renderMask: CellRenderMask,
-  cellsAroundViewport: {
-    first: number,
-    last: number,
-    screenreaderEnabled: ?boolean,
-  },
-  screenreaderEnabled: ?boolean,
+  cellsAroundViewport: {first: number, last: number},
 };
 
 /**
@@ -514,7 +509,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     let initialState: State = {
       cellsAroundViewport: initialRenderRegion,
       renderMask: VirtualizedList._createRenderMask(props, initialRenderRegion),
-      screenreaderEnabled: undefined,
     };
 
     if (this._isNestedWithSameOrientation()) {
@@ -531,11 +525,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   static _createRenderMask(
     props: Props,
-    cellsAroundViewport: {
-      first: number,
-      last: number,
-      screenreaderEnabled: ?boolean,
-    },
+    cellsAroundViewport: {first: number, last: number},
     additionalRegions?: ?$ReadOnlyArray<{first: number, last: number}>,
   ): CellRenderMask {
     const itemCount = props.getItemCount(props.data);
@@ -609,12 +599,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   _adjustCellsAroundViewport(
     props: Props,
-    cellsAroundViewport: {
-      first: number,
-      last: number,
-      screenreaderEnabled: ?boolean,
-    },
-  ): {first: number, last: number, screenreaderEnabled: ?boolean} {
+    cellsAroundViewport: {first: number, last: number},
+  ): {first: number, last: number} {
     const {data, getItemCount} = props;
     const onEndReachedThreshold = onEndReachedThresholdOrDefault(
       props.onEndReachedThreshold,
@@ -759,7 +745,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     return {
       cellsAroundViewport: constrainedCells,
       renderMask: VirtualizedList._createRenderMask(newProps, constrainedCells),
-      screenreaderEnabled: prevState.screenreaderEnabled,
     };
   }
 
@@ -1948,11 +1933,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   _updateViewableItems(
     props: FrameMetricProps,
-    cellsAroundViewport: {
-      first: number,
-      last: number,
-      screenreaderEnabled: ?boolean,
-    },
+    cellsAroundViewport: {first: number, last: number},
   ) {
     this._viewabilityTuples.forEach(tuple => {
       tuple.viewabilityHelper.onUpdate(
