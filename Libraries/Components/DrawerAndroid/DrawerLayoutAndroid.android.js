@@ -162,6 +162,7 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
     return {Left: 'left', Right: 'right'};
   }
 
+  // $FlowFixMe[missing-local-annot]
   _nativeRef =
     React.createRef<
       React.ElementRef<typeof AndroidDrawerLayoutNativeComponent>,

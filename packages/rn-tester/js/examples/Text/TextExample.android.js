@@ -21,7 +21,7 @@ import TextLegend from '../../components/TextLegend';
 const {LayoutAnimation, StyleSheet, Text, View} = require('react-native');
 
 class Entity extends React.Component<{|children: React.Node|}> {
-  render() {
+  render(): React.Node {
     return (
       <Text style={{fontWeight: 'bold', color: '#527fe4'}}>
         {this.props.children}
@@ -30,7 +30,10 @@ class Entity extends React.Component<{|children: React.Node|}> {
   }
 }
 class AttributeToggler extends React.Component<{...}, $FlowFixMeState> {
-  state = {fontWeight: 'bold', fontSize: 15};
+  state: {fontSize: number, fontWeight: 'bold' | 'normal'} = {
+    fontWeight: 'bold',
+    fontSize: 15,
+  };
 
   toggleWeight = () => {
     this.setState({
@@ -44,7 +47,7 @@ class AttributeToggler extends React.Component<{...}, $FlowFixMeState> {
     });
   };
 
-  render() {
+  render(): React.Node {
     const curStyle = {
       fontWeight: this.state.fontWeight,
       fontSize: this.state.fontSize,
@@ -83,7 +86,7 @@ class AdjustingFontSize extends React.Component<
   AdjustingFontSizeProps,
   AdjustingFontSizeState,
 > {
-  state = {
+  state: AdjustingFontSizeState = {
     dynamicText: '',
     shouldRender: true,
   };
@@ -119,7 +122,7 @@ class AdjustingFontSize extends React.Component<
     });
   };
 
-  render() {
+  render(): React.Node {
     if (!this.state.shouldRender) {
       return <View />;
     }
