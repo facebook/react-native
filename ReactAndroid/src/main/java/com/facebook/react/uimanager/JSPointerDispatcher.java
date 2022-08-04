@@ -31,21 +31,23 @@ import java.util.List;
  * and also dispatch the appropriate event to JS
  */
 public class JSPointerDispatcher {
-
-  private final float[] mTargetCoordinates = new float[2];
-  private int mChildHandlingNativeGesture = -1;
-  private long mDownStartTime = TouchEvent.UNSET;
-  private final ViewGroup mRootViewGroup;
-  private final TouchEventCoalescingKeyHelper mTouchEventCoalescingKeyHelper =
-      new TouchEventCoalescingKeyHelper();
-
+  private static final int UNSET_POINTER_ID = -1;
   private static final float ONMOVE_EPSILON = 0.1f;
   private static final String TAG = "POINTER EVENTS";
 
-  // Set globally for hover interactions, referenced for coalescing hover events
-  private long mHoverInteractionKey = TouchEvent.UNSET;
+  private final TouchEventCoalescingKeyHelper mTouchEventCoalescingKeyHelper =
+      new TouchEventCoalescingKeyHelper();
   private List<ViewTarget> mLastHitPath = Collections.emptyList();
   private final float[] mLastEventCoordinates = new float[2];
+  private final float[] mTargetCoordinates = new float[2];
+
+  private int mChildHandlingNativeGesture = -1;
+  private int mPrimaryPointerId = UNSET_POINTER_ID;
+  private long mDownStartTime = TouchEvent.UNSET;
+  private long mHoverInteractionKey = TouchEvent.UNSET;
+  private final ViewGroup mRootViewGroup;
+
+  // Set globally for hover interactions, referenced for coalescing hover events
 
   public JSPointerDispatcher(ViewGroup viewGroup) {
     mRootViewGroup = viewGroup;
@@ -110,6 +112,7 @@ public class JSPointerDispatcher {
 
       // Reset mChildHandlingNativeGesture like JSTouchDispatcher does
       mChildHandlingNativeGesture = -1;
+      mPrimaryPointerId = motionEvent.getPointerId(actionIndex);
 
       // Start a "down" coalescing key
       mDownStartTime = motionEvent.getEventTime();
@@ -138,7 +141,8 @@ public class JSPointerDispatcher {
                 surfaceId,
                 activeTargetTag,
                 motionEvent,
-                mTargetCoordinates));
+                mTargetCoordinates,
+                mPrimaryPointerId));
       }
 
       return;
@@ -163,7 +167,8 @@ public class JSPointerDispatcher {
                 surfaceId,
                 activeTargetTag,
                 motionEvent,
-                mTargetCoordinates));
+                mTargetCoordinates,
+                mPrimaryPointerId));
       }
 
       return;
@@ -182,7 +187,8 @@ public class JSPointerDispatcher {
                 activeTargetTag,
                 motionEvent,
                 mTargetCoordinates,
-                coalescingKey));
+                coalescingKey,
+                mPrimaryPointerId));
       }
 
       return;
@@ -201,7 +207,8 @@ public class JSPointerDispatcher {
                 surfaceId,
                 activeTargetTag,
                 motionEvent,
-                mTargetCoordinates));
+                mTargetCoordinates,
+                mPrimaryPointerId));
       }
 
       return;
@@ -223,7 +230,8 @@ public class JSPointerDispatcher {
                 surfaceId,
                 activeTargetTag,
                 motionEvent,
-                mTargetCoordinates));
+                mTargetCoordinates,
+                mPrimaryPointerId));
       }
 
       if (!supportsHover) {
@@ -238,6 +246,8 @@ public class JSPointerDispatcher {
             surfaceId,
             motionEvent);
       }
+
+      mPrimaryPointerId = UNSET_POINTER_ID;
       return;
     }
 
@@ -312,7 +322,8 @@ public class JSPointerDispatcher {
     for (ViewTarget viewTarget : viewTargets) {
       int viewId = viewTarget.getViewId();
       dispatcher.dispatchEvent(
-          PointerEvent.obtain(eventName, surfaceId, viewId, motionEvent, mTargetCoordinates));
+          PointerEvent.obtain(
+              eventName, surfaceId, viewId, motionEvent, mTargetCoordinates, mPrimaryPointerId));
     }
   }
 
@@ -445,7 +456,8 @@ public class JSPointerDispatcher {
               targetTag,
               motionEvent,
               mTargetCoordinates,
-              coalescingKey));
+              coalescingKey,
+              mPrimaryPointerId));
     }
 
     mLastHitPath = hitPath;
@@ -476,7 +488,8 @@ public class JSPointerDispatcher {
                     surfaceId,
                     targetTag,
                     motionEvent,
-                    mTargetCoordinates));
+                    mTargetCoordinates,
+                    mPrimaryPointerId));
       }
 
       List<ViewTarget> leaveViewTargets =
@@ -492,6 +505,7 @@ public class JSPointerDispatcher {
 
       mTouchEventCoalescingKeyHelper.removeCoalescingKey(mDownStartTime);
       mDownStartTime = TouchEvent.UNSET;
+      mPrimaryPointerId = UNSET_POINTER_ID;
     }
   }
 
