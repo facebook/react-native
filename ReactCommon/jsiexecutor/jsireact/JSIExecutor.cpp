@@ -244,8 +244,7 @@ void JSIExecutor::callFunction(
   // by value.
   auto errorProducer = [=] {
     std::stringstream ss;
-    ss << "moduleID: " << moduleId << " methodID: " << methodId
-       << " arguments: " << folly::toJson(arguments);
+    ss << "moduleID: " << moduleId << " methodID: " << methodId;
     return ss.str();
   };
 
