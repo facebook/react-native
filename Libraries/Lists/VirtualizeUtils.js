@@ -105,6 +105,7 @@ export function computeWindowedRenderLimits(
   prev: {
     first: number,
     last: number,
+    screenreaderReader: boolean,
   },
   getFrameMetricsApprox: (
     index: number,
