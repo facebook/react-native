@@ -1,6 +1,19 @@
---- ./ReactAndroid/build.gradle	2022-01-11 17:41:28.000000000 -0800
-+++ /var/folders/vs/8_b205053dddbcv7btj0w0v80000gn/T/update-1h8V3n/merge/Build/ReactAndroid/build.gradle	2022-01-12 15:51:37.000000000 -0800
-@@ -41,6 +41,8 @@
+diff --git a/ReactAndroid/build.gradle b/ReactAndroid/build.gradle
+index 3c23c6a84b4..183bffe7164 100644
+--- a/ReactAndroid/build.gradle
++++ b/ReactAndroid/build.gradle
+@@ -12,6 +12,10 @@ plugins {
+     id("de.undercouch.download")
+ }
+ 
++rootProject.ext {
++    ndkVersion="21.4.7075529"
++}
++
+ import com.facebook.react.tasks.internal.*
+ 
+ import java.nio.file.Paths
+@@ -41,6 +45,8 @@ def dependenciesPath = System.getenv("REACT_NATIVE_DEPENDENCIES")
  // and the build will use that.
  def boostPath = dependenciesPath ?: System.getenv("REACT_NATIVE_BOOST_PATH")
  
@@ -9,7 +22,7 @@
  // Setup build type for NDK, supported values: {debug, release}
  def nativeBuildType = System.getenv("NATIVE_BUILD_TYPE") ?: "release"
  
-@@ -86,11 +88,22 @@
+@@ -86,11 +92,22 @@ task downloadFolly(dependsOn: createNativeDepsDirectories, type: Download) {
      dest(new File(downloadsDir, "folly-${FOLLY_VERSION}.tar.gz"))
  }
  
@@ -32,7 +45,7 @@
      includeEmptyDirs = false
      into("$thirdPartyNdkDir/folly")
  }
-@@ -144,6 +157,14 @@
+@@ -144,6 +161,14 @@ task prepareHermes(dependsOn: createNativeDepsDirectories, type: Copy) {
      into "$thirdPartyNdkDir/hermes"
  }
  
@@ -47,7 +60,7 @@
  task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
      src("https://github.com/google/glog/archive/v${GLOG_VERSION}.tar.gz")
      onlyIfNewer(true)
-@@ -292,6 +313,7 @@
+@@ -315,6 +340,7 @@ android {
                          "REACT_COMMON_DIR=$projectDir/../ReactCommon",
                          "REACT_GENERATED_SRC_DIR=$buildDir/generated/source",
                          "REACT_SRC_DIR=$projectDir/src/main/java/com/facebook/react",
@@ -55,7 +68,7 @@
                          "-j${ndkBuildJobs()}"
  
                  if (Os.isFamily(Os.FAMILY_MAC)) {
-@@ -311,7 +333,7 @@
+@@ -339,7 +365,7 @@ android {
          }
      }
  

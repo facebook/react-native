@@ -195,7 +195,7 @@ jobs:
         submodules: recursive # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
         persistCredentials: true # set to 'true' to leave the OAuth token in the Git config after the initial fetch
 
-      - template: templates/android-build-office.yml
+      - template: templates/android-build-office-setup.yml
 
       - task: CmdLine@2
         displayName: Bump package version
@@ -207,6 +207,8 @@ jobs:
         displayName: Remove workspace config from package.json
         inputs:
           script: node .ado/removeWorkspaceConfig.js
+
+      - template: templates/android-build-office.yml
 
       # Enumerate and download all dependencies ..
       - template: templates/download-android-dependencies.yml
