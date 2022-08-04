@@ -25,7 +25,7 @@ Our current partners and other areas of ownership:
 * **[Expo](https://expo.dev/):** Builds [expo](https://github.com/expo/expo) and [EAS](https://expo.dev/eas) on top of React Native to simplify app development
 * **[Infinite Red](https://infinite.red/):** Maintains the [ignite cli/boilerplate](https://github.com/infinitered/ignite), organizes [Chain React Conf](https://cr.infinite.red/)
 * **[Meta](https://opensource.fb.com/):** Oversees the React Native product and maintains the [React Native core repo](https://reactnative.dev/) 
-* **[Microsoft](http://aka.ms/reactnative):** Develops [React Native Windows](https://github.com/Microsoft/react-native-windows) and [React Native macOS](https://github.com/microsoft/react-native-macos) for building apps that target Windows and macOS
+* **[Microsoft](https://twitter.com/ReactNativeMSFT):** Develops [React Native Windows](https://github.com/Microsoft/react-native-windows) and [React Native macOS](https://github.com/microsoft/react-native-macos) for building apps that target Windows and macOS; maintains [rnx-kit](https://github.com/microsoft/rnx-kit), [react-native-test-app](https://github.com/microsoft/react-native-test-app) and coordinates cross-companies efforts such as the [bundle working group](https://github.com/microsoft/rnx-kit/discussions/categories/bundle-working-group).
 * **[Shopify](TODO):** TODO
 * **[Software Mansion](https://swmansion.com/):** Maintain core infrastructure including JSC, Animated, and other popular third-party plugins and organizes [App.js Conf](https://appjs.co/)
 * **[Tesla](TODO ):** TODO
