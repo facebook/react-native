@@ -105,7 +105,6 @@ export function computeWindowedRenderLimits(
   prev: {
     first: number,
     last: number,
-    screenreaderEnabled: ?boolean,
   },
   getFrameMetricsApprox: (
     index: number,
@@ -126,7 +125,6 @@ export function computeWindowedRenderLimits(
 ): {
   first: number,
   last: number,
-  screenreaderEnabled: ?boolean,
 } {
   const itemCount = props.getItemCount(props.data);
   if (itemCount === 0) {
@@ -160,7 +158,6 @@ export function computeWindowedRenderLimits(
     return {
       first: Math.max(0, itemCount - 1 - maxToRenderPerBatch),
       last: itemCount - 1,
-      screenreaderEnabled: prev.screenreaderEnabled,
     };
   }
 
@@ -247,7 +244,7 @@ export function computeWindowedRenderLimits(
         }),
     );
   }
-  return {first, last, screenreaderEnabled: prev.screenreaderEnabled};
+  return {first, last};
 }
 
 export function keyExtractor(item: any, index: number): string {

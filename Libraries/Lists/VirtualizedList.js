@@ -1847,6 +1847,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           // - initialScrollIndex > 0 AND scrolling is complete
           // - initialScrollIndex > 0 AND the end of the list is visible (this handles the case
           //   where the list is shorter than the visible area)
+          const limits: {first: number, last: number} = {
+            first: state.first,
+            last: state.last,
+          };
           if (
             !this.props.initialScrollIndex ||
             this._scrollMetrics.offset ||
@@ -1856,7 +1860,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
               this.props,
               maxToRenderPerBatchOrDefault(this.props.maxToRenderPerBatch),
               windowSizeOrDefault(this.props.windowSize),
-              state,
+              limits,
               this.__getFrameMetricsApprox,
               this._scrollMetrics,
             );
