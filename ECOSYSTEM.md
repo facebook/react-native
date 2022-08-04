@@ -16,7 +16,7 @@ Partners think of React Native as a product: they understand the trade offs that
 
 Baseline responsibilities of partners include: 
 * Attending monthly meeting
-* Contributing to the release process as a [release co-pilot](https://reactnative.dev/contributing/release-roles-responsibilities#release-role-2--release-copilot)
+* Contributing to the release process as a [community releaser](https://reactnative.dev/contributing/release-roles-responsibilities#release-role-2-community-releaser)
 * Engage on the core contributor Discord
 
 Our current partners and other areas of ownership:
