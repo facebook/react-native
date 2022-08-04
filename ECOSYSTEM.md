@@ -55,7 +55,7 @@ You can use this form <MISSING_LINK_TODO> to either:
 
 As a core contributor, you will have access to the core contributor Discord which is used for light-weight coordination and discussion. 
 
-**We aim to make contributing to React Native as easy and transparent as possible.** All important topics are handled through a [discussion or RFC process on GitHub](https://github.com/react-native-community/discussions-and-proposals). We are always looking for active, enthusiastic members of the React Native community to become core contributors.
+**We aim to make contributing to React Native as easy and transparent as possible.** We have discussion groups dedicated to the [new architecture rollout](https://github.com/reactwg/react-native-new-architecture), [releases](https://github.com/reactwg/react-native-releases), and [general questions and proposals](https://github.com/react-native-community/discussions-and-proposals). We are always looking for active, enthusiastic members of the React Native community to become core contributors.
 
 ## Community Contributors
 
