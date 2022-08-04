@@ -104,16 +104,16 @@ static constexpr bool kShouldLog = false;
   } while (0)
 
 Inspector::Inspector(
-    std::shared_ptr<RuntimeAdapter> adapter,
+    RuntimeAdapter &adapter,
     InspectorObserver &observer,
     bool pauseOnFirstStatement)
     : adapter_(adapter),
-      debugger_(adapter->getRuntime().getDebugger()),
+      debugger_(adapter.getRuntime().getDebugger()),
       observer_(observer),
       executor_(std::make_unique<detail::SerialExecutor>("hermes-inspector")) {
   // TODO (t26491391): make tickleJs a real Hermes runtime API
   std::string src = "function __tickleJs() { return Math.random(); }";
-  adapter->getRuntime().evaluateJavaScript(
+  adapter.getRuntime().evaluateJavaScript(
       std::make_shared<jsi::StringBuffer>(src), "__tickleJsHackUrl");
 
   {
@@ -163,7 +163,7 @@ void Inspector::installConsoleFunction(
     std::shared_ptr<jsi::Object> &originalConsole,
     const std::string &name,
     const std::string &chromeTypeDefault = "") {
-  jsi::Runtime &rt = adapter_->getRuntime();
+  jsi::Runtime &rt = adapter_.getRuntime();
   auto chromeType = chromeTypeDefault == "" ? name : chromeTypeDefault;
   auto nameID = jsi::PropNameID::forUtf8(rt, name);
   auto weakInspector = std::weak_ptr<Inspector>(shared_from_this());
@@ -222,7 +222,7 @@ void Inspector::installConsoleFunction(
 }
 
 void Inspector::installLogHandler() {
-  jsi::Runtime &rt = adapter_->getRuntime();
+  jsi::Runtime &rt = adapter_.getRuntime();
   auto console = jsi::Object(rt);
   auto val = rt.global().getProperty(rt, "console");
   std::shared_ptr<jsi::Object> originalConsole;
@@ -261,9 +261,8 @@ void Inspector::triggerAsyncPause(bool andTickle) {
   if (andTickle) {
     // We run the dummy JS on a background thread to avoid any reentrancy issues
     // in case this thread is called with the inspector mutex held.
-    std::shared_ptr<RuntimeAdapter> adapter = adapter_;
     detail::Thread tickleJsLater(
-        "inspectorTickleJs", [adapter]() { adapter->tickleJs(); });
+        "inspectorTickleJs", [&adapter = adapter_]() { adapter.tickleJs(); });
     tickleJsLater.detach();
   }
 }
@@ -706,8 +705,8 @@ void Inspector::alertIfPausedInSupersededFile() {
         "=true to "
         "suppress this warning. Filename: " +
         info.fileName + ").";
-    jsi::Array jsiArray(adapter_->getRuntime(), 1);
-    jsiArray.setValueAtIndex(adapter_->getRuntime(), 0, warning);
+    jsi::Array jsiArray(adapter_.getRuntime(), 1);
+    jsiArray.setValueAtIndex(adapter_.getRuntime(), 0, warning);
 
     ConsoleMessageInfo logMessage("warning", std::move(jsiArray));
     observer_.onMessageAdded(*this, logMessage);
@@ -715,7 +714,7 @@ void Inspector::alertIfPausedInSupersededFile() {
 }
 
 bool Inspector::shouldSuppressAlertAboutSupersededFiles() {
-  jsi::Runtime &rt = adapter_->getRuntime();
+  jsi::Runtime &rt = adapter_.getRuntime();
   jsi::Value setting = rt.global().getProperty(rt, kSuppressionVariable);
 
   if (setting.isUndefined() || !setting.isBool())
