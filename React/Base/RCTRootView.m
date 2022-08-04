@@ -33,10 +33,6 @@
 #import "RCTDevMenu.h"
 #endif // ]TODO(OSS Candidate ISS#2710739)
 
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
-#define RCT_LAYOUT_THROTTLE 0.25
-#endif // ]TODO(macOS GH#774)
-
 NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotification";
 
 @interface RCTUIManager (RCTRootView)
@@ -51,11 +47,6 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
   RCTRootContentView *_contentView;
   BOOL _passThroughTouches;
   CGSize _intrinsicContentSize;
-
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
-  NSDate *_lastLayout;
-  BOOL _throttleLayout;
-#endif // ]TODO(macOS GH#774)
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -84,10 +75,6 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
     _loadingViewFadeDuration = 0.25;
     _sizeFlexibility = RCTRootViewSizeFlexibilityNone;
     _minimumSize = CGSizeZero;
-
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
-    _lastLayout = [NSDate new];
-#endif // ]TODO(macOS GH#774)
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(bridgeDidReload)
@@ -181,35 +168,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
   return fitSize;
 }
-
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
-// TODO: https://github.com/microsoft/react-native-macos/issues/459
-// This is a workaround for window resizing events overloading the shadow queue:
-//  - https://github.com/microsoft/react-native-macos/issues/322
-//  - https://github.com/microsoft/react-native-macos/issues/422
-// We should revisit this issue when we switch over to Fabric.
-- (void)layout
-{
-  if (self.window != nil && !_throttleLayout) {
-    NSTimeInterval interval = [[NSDate date] timeIntervalSinceDate:_lastLayout];
-    if (interval >= RCT_LAYOUT_THROTTLE) {
-      _lastLayout = [NSDate new];
-      [self layoutSubviews];
-    } else {
-      _throttleLayout = YES;
-      __weak typeof(self) weakSelf = self;
-      int64_t delta = (RCT_LAYOUT_THROTTLE - interval) * NSEC_PER_SEC;
-      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, delta), dispatch_get_main_queue(), ^{
-        typeof(self) strongSelf = weakSelf;
-        if (strongSelf != nil) {
-          strongSelf->_throttleLayout = NO;
-          [strongSelf setNeedsLayout];
-        }
-      });
-    }
-  }
-}
-#endif // ]TODO(macOS GH#774)
 
 - (void)layoutSubviews
 {

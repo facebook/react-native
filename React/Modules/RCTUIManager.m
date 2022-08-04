@@ -412,21 +412,34 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
 - (void)setAvailableSize:(CGSize)availableSize forRootView:(RCTUIView *)rootView // TODO(macOS ISS#3536887)
 {
   RCTAssertMainQueue();
-  [self
-      _executeBlockWithShadowView:^(RCTShadowView *shadowView) {
-        RCTAssert(
-            [shadowView isKindOfClass:[RCTRootShadowView class]], @"Located shadow view is actually not root view.");
 
-        RCTRootShadowView *rootShadowView = (RCTRootShadowView *)shadowView;
+  void (^block)(RCTShadowView *) = ^(RCTShadowView *shadowView) {
+    RCTAssert(
+        [shadowView isKindOfClass:[RCTRootShadowView class]], @"Located shadow view is actually not root view.");
 
-        if (CGSizeEqualToSize(availableSize, rootShadowView.availableSize)) {
-          return;
-        }
+    RCTRootShadowView *rootShadowView = (RCTRootShadowView *)shadowView;
 
-        rootShadowView.availableSize = availableSize;
-        [self setNeedsLayout];
-      }
-                           forTag:rootView.reactTag];
+    if (CGSizeEqualToSize(availableSize, rootShadowView.availableSize)) {
+      return;
+    }
+
+    rootShadowView.availableSize = availableSize;
+    [self setNeedsLayout];
+  };
+
+#if TARGET_OS_OSX // [TODO(macOS GH#744)
+  if (rootView.inLiveResize) {
+    NSNumber* tag = rootView.reactTag;
+    // Synchronously relayout to prevent "tearing" when resizing windows.
+    // Still run block asynchronously below so it "wins" after any in-flight layout.
+    RCTUnsafeExecuteOnUIManagerQueueSync(^{
+      RCTShadowView *shadowView = self->_shadowViewRegistry[tag];
+      block(shadowView);
+    });
+  }
+#endif // ]TODO(macOS GH#744)
+
+  [self _executeBlockWithShadowView:block forTag:rootView.reactTag];
 }
 
 - (void)setLocalData:(NSObject *)localData forView:(RCTUIView *)view // TODO(macOS ISS#3536887)
