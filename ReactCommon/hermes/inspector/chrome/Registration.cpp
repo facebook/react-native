@@ -28,7 +28,7 @@ void enableDebugging(
   demux().enableDebugging(std::move(adapter), title);
 }
 
-void disableDebugging(jsi::Runtime &runtime) {
+void disableDebugging(HermesRuntime &runtime) {
   demux().disableDebugging(runtime);
 }
 

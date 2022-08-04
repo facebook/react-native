@@ -94,7 +94,7 @@ int ConnectionDemux::enableDebugging(
       std::make_shared<Connection>(std::move(adapter), title, waitForDebugger));
 }
 
-void ConnectionDemux::disableDebugging(jsi::Runtime &runtime) {
+void ConnectionDemux::disableDebugging(HermesRuntime &runtime) {
   std::lock_guard<std::mutex> lock(mutex_);
 
   for (auto &it : conns_) {
