@@ -1826,7 +1826,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
     this.setState(state => {
       let newState: ?(
-        | {first: number, last: number, screenreaderReader: ?boolean, ...}
+        | {first: number, last: number, ...}
         | $TEMPORARY$object<{first: number, last: number}>
       );
       const {contentLength, offset, visibleLength} = this._scrollMetrics;
