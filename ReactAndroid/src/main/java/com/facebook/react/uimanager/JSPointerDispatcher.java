@@ -40,6 +40,7 @@ public class JSPointerDispatcher {
       new TouchEventCoalescingKeyHelper();
 
   private static final float ONMOVE_EPSILON = 0.1f;
+  private static final String TAG = "POINTER EVENTS";
 
   // Set globally for hover interactions, referenced for coalescing hover events
   private long mHoverInteractionKey = TouchEvent.UNSET;
@@ -72,13 +73,25 @@ public class JSPointerDispatcher {
   }
 
   public void handleMotionEvent(MotionEvent motionEvent, EventDispatcher eventDispatcher) {
-    boolean supportsHover = PointerEventHelper.supportsHover(motionEvent);
-
-    int surfaceId = UIManagerHelper.getSurfaceId(mRootViewGroup);
     int action = motionEvent.getActionMasked();
+
+    // Ignore hover enter/exit because we determine this ourselves
+    if (action == MotionEvent.ACTION_HOVER_EXIT || action == MotionEvent.ACTION_HOVER_ENTER) {
+      return;
+    }
+
+    boolean supportsHover = PointerEventHelper.supportsHover(motionEvent);
+    int surfaceId = UIManagerHelper.getSurfaceId(mRootViewGroup);
+
+    // Only relevant for POINTER_UP/POINTER_DOWN actions, otherwise 0
+    int actionIndex = motionEvent.getActionIndex();
+
     List<ViewTarget> hitPath =
         TouchTargetHelper.findTargetPathAndCoordinatesForTouch(
-            motionEvent.getX(), motionEvent.getY(), mRootViewGroup, mTargetCoordinates);
+            motionEvent.getX(actionIndex),
+            motionEvent.getY(actionIndex),
+            mRootViewGroup,
+            mTargetCoordinates);
 
     if (hitPath.isEmpty()) {
       return;
@@ -87,16 +100,9 @@ public class JSPointerDispatcher {
     TouchTargetHelper.ViewTarget activeViewTarget = hitPath.get(0);
     int activeTargetTag = activeViewTarget.getViewId();
 
-    if (supportsHover) {
-      if (action == MotionEvent.ACTION_HOVER_MOVE) {
-        handleHoverEvent(motionEvent, eventDispatcher, surfaceId, hitPath);
-        return;
-      }
-
-      // Ignore hover enter/exit because it's handled in `handleHoverEvent`
-      if (action == MotionEvent.ACTION_HOVER_EXIT || action == MotionEvent.ACTION_HOVER_ENTER) {
-        return;
-      }
+    if (action == MotionEvent.ACTION_HOVER_MOVE) {
+      handleHoverEvent(motionEvent, eventDispatcher, surfaceId, hitPath);
+      return;
     }
 
     // First down pointer
@@ -487,5 +493,14 @@ public class JSPointerDispatcher {
       mTouchEventCoalescingKeyHelper.removeCoalescingKey(mDownStartTime);
       mDownStartTime = TouchEvent.UNSET;
     }
+  }
+
+  private void debugPrintHitPath(List<ViewTarget> hitPath) {
+    StringBuilder builder = new StringBuilder("hitPath: ");
+    for (ViewTarget viewTarget : hitPath) {
+      builder.append(String.format("%d, ", viewTarget.getViewId()));
+    }
+
+    FLog.d(TAG, builder.toString());
   }
 }
