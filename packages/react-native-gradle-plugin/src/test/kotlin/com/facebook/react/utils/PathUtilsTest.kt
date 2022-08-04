@@ -238,10 +238,38 @@ class PathUtilsTest {
   }
 
   @Test
+  @WithOs(OS.WIN)
+  fun getBuiltHermescFile_onWindows_withoutOverride() {
+    assertEquals(
+        File(
+            tempFolder.root,
+            "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc.exe"),
+        getBuiltHermescFile(tempFolder.root, ""))
+  }
+
+  @Test
   fun getBuiltHermescFile_withOverride() {
     assertEquals(
         File("/home/circleci/hermes/build/bin/hermesc"),
         getBuiltHermescFile(tempFolder.root, "/home/circleci/hermes"))
+  }
+
+  @Test
+  @WithOs(OS.WIN)
+  fun getHermesCBin_onWindows_returnsHermescExe() {
+    assertEquals("hermesc.exe", getHermesCBin())
+  }
+
+  @Test
+  @WithOs(OS.UNIX)
+  fun getHermesCBin_onUnix_returnsHermesc() {
+    assertEquals("hermesc", getHermesCBin())
+  }
+
+  @Test
+  @WithOs(OS.MAC)
+  fun getHermesCBin_onMax_returnsHermesc() {
+    assertEquals("hermesc", getHermesCBin())
   }
 
   @Test

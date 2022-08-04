@@ -146,7 +146,8 @@ internal fun detectOSAwareHermesCommand(projectRoot: File, hermesCommand: String
 
   // 3. If the react-native contains a pre-built hermesc, use it.
   val prebuiltHermesPath =
-      HERMESC_IN_REACT_NATIVE_PATH.replace("%OS-BIN%", getHermesOSBin())
+      HERMESC_IN_REACT_NATIVE_DIR.plus(getHermesCBin())
+          .replace("%OS-BIN%", getHermesOSBin())
           // Execution on Windows fails with / as separator
           .replace('/', File.separatorChar)
 
@@ -163,7 +164,7 @@ internal fun detectOSAwareHermesCommand(projectRoot: File, hermesCommand: String
 
 /**
  * Gets the location where Hermesc should be. If nothing is specified, built hermesc is assumed to
- * be inside [HERMESC_BUILT_FROM_SOURCE_PATH]. Otherwise user can specify an override with
+ * be inside [HERMESC_BUILT_FROM_SOURCE_DIR]. Otherwise user can specify an override with
  * [pathOverride], which is assumed to be an absolute path where Hermes source code is
  * provided/built.
  *
@@ -171,10 +172,12 @@ internal fun detectOSAwareHermesCommand(projectRoot: File, hermesCommand: String
  */
 internal fun getBuiltHermescFile(projectRoot: File, pathOverride: String?) =
     if (!pathOverride.isNullOrBlank()) {
-      File(pathOverride, "build/bin/hermesc")
+      File(pathOverride, "build/bin/${getHermesCBin()}")
     } else {
-      File(projectRoot, HERMESC_BUILT_FROM_SOURCE_PATH)
+      File(projectRoot, HERMESC_BUILT_FROM_SOURCE_DIR.plus(getHermesCBin()))
     }
+
+internal fun getHermesCBin() = if (Os.isWindows()) "hermesc.exe" else "hermesc"
 
 internal fun getHermesOSBin(): String {
   if (Os.isWindows()) return "win64-bin"
@@ -203,7 +206,6 @@ internal fun findPackageJsonFile(project: Project, extension: ReactExtension): F
       extension.root.file("package.json").orNull?.asFile
     }
 
-private const val HERMESC_IN_REACT_NATIVE_PATH =
-    "node_modules/react-native/sdks/hermesc/%OS-BIN%/hermesc"
-private const val HERMESC_BUILT_FROM_SOURCE_PATH =
-    "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"
+private const val HERMESC_IN_REACT_NATIVE_DIR = "node_modules/react-native/sdks/hermesc/%OS-BIN%/"
+private const val HERMESC_BUILT_FROM_SOURCE_DIR =
+    "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/"
