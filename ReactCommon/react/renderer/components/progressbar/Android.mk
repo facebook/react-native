@@ -35,7 +35,7 @@ LOCAL_SHARED_LIBRARIES := \
   libreact_render_debug \
   libreact_render_graphics \
   libreact_render_uimanager \
-  libreactnativeutilsjni \
+  libreactnativejni \
   librrc_view \
   libyoga
 

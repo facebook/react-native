@@ -31,7 +31,7 @@ LOCAL_SHARED_LIBRARIES := \
   libreact_render_telemetry \
   libreact_render_uimanager \
   libreact_utils \
-  libreactnativeutilsjni \
+  libreactnativejni \
   libyoga
 
 LOCAL_STATIC_LIBRARIES :=

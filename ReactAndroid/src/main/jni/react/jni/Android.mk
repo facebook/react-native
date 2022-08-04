@@ -3,66 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-
-##########################
-### React Native Utils ###
-##########################
-
 LOCAL_PATH := $(call my-dir)
-
-include $(CLEAR_VARS)
-
-# Include . in the header search path for all source files in this module.
-LOCAL_C_INCLUDES := $(LOCAL_PATH)
-
-# Include ./../../ in the header search path for modules that depend on
-# reactnativejni. This will allow external modules to require this module's
-# headers using #include <react/jni/<header>.h>, assuming:
-#   .     == jni
-#   ./../ == react
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../..
-
-LOCAL_CFLAGS += -fexceptions -frtti -Wno-unused-lambda-capture
-
-LOCAL_LDLIBS += -landroid
-
-# The dynamic libraries (.so files) that this module depends on.
-LOCAL_SHARED_LIBRARIES := \
-  libfb \
-  libfbjni \
-  libfolly_json \
-  libglog_init \
-  libreact_render_runtimescheduler \
-  libruntimeexecutor \
-  libyoga
-
-# The static libraries (.a files) that this module depends on.
-LOCAL_STATIC_LIBRARIES := libreactnative libcallinvokerholder
-
-# Name of this module.
-#
-# Other modules can depend on this one by adding libreactnativejni to their
-# LOCAL_SHARED_LIBRARIES variable.
-LOCAL_MODULE := reactnativeutilsjni
-
-# Compile all local c++ files.
-LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
-LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
-
-ifeq ($(APP_OPTIM),debug)
-  # Keep symbols by overriding the strip command invoked by ndk-build.
-  # Note that this will apply to all shared libraries,
-  # i.e. shared libraries will NOT be stripped
-  # even though we override it in this Android.mk
-  cmd-strip :=
-endif
-
-# Build the files in this directory as a shared library
-include $(BUILD_SHARED_LIBRARY)
-
-
-
-
 
 ######################
 ### reactnativejni ###
@@ -91,7 +32,6 @@ LOCAL_SHARED_LIBRARIES := \
   libfolly_json \
   libglog_init \
   libreact_render_runtimescheduler \
-  libreactnativeutilsjni \
   libruntimeexecutor \
   libyoga \
   logger
