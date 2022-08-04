@@ -47,12 +47,8 @@ class HermesExecutorRuntimeAdapter
 
   virtual ~HermesExecutorRuntimeAdapter() = default;
 
-  jsi::Runtime &getRuntime() override {
+  HermesRuntime &getRuntime() override {
     return *runtime_;
-  }
-
-  debugger::Debugger &getDebugger() override {
-    return runtime_->getDebugger();
   }
 
   void tickleJs() override {
