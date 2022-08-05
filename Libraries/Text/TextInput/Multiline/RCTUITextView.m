@@ -46,7 +46,6 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
     _placeholderView.numberOfLines = 0;
     [self addSubview:_placeholderView];
 #else // [TODO(macOS GH#774)
-    self.insertionPointColor = [NSColor selectedControlColor];
     // Fix blurry text on non-retina displays.
     self.canDrawSubviewsIntoLayer = YES;
     self.allowsUndo = YES;
@@ -131,7 +130,7 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
   NSMutableDictionary *selectTextAttributes = self.selectedTextAttributes.mutableCopy;
   selectTextAttributes[NSBackgroundColorAttributeName] = selectionColor ?: [NSColor selectedControlColor];
   self.selectedTextAttributes = selectTextAttributes.copy;
-  self.insertionPointColor = self.selectionColor ?: [NSColor selectedControlColor];
+  self.insertionPointColor = self.selectionColor ?: [NSColor textColor];
 }
 
 - (RCTUIColor*)selectionColor
