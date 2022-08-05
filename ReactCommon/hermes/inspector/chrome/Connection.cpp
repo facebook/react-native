@@ -48,11 +48,13 @@ static const char *const kBeforeScriptWithSourceMapExecution =
 class Connection::Impl : public inspector::InspectorObserver,
                          public message::RequestHandler {
  public:
-  Impl(RuntimeAdapter &adapter, const std::string &title, bool waitForDebugger);
+  Impl(
+      std::unique_ptr<RuntimeAdapter> adapter,
+      const std::string &title,
+      bool waitForDebugger);
   ~Impl();
 
   jsi::Runtime &getRuntime();
-  RuntimeAdapter &getRuntimeAdapter();
   std::string getTitle() const;
 
   bool connect(std::unique_ptr<IRemoteConnection> remoteConn);
@@ -141,7 +143,7 @@ class Connection::Impl : public inspector::InspectorObserver,
     folly::via(executor_.get(), [cb = std::move(callback)]() { cb(); });
   }
 
-  RuntimeAdapter &runtimeAdapter_;
+  std::shared_ptr<RuntimeAdapter> runtimeAdapter_;
   std::string title_;
 
   // connected_ is protected by connectionMutex_.
@@ -183,10 +185,10 @@ class Connection::Impl : public inspector::InspectorObserver,
 };
 
 Connection::Impl::Impl(
-    RuntimeAdapter &adapter,
+    std::unique_ptr<RuntimeAdapter> adapter,
     const std::string &title,
     bool waitForDebugger)
-    : runtimeAdapter_(adapter),
+    : runtimeAdapter_(std::move(adapter)),
       title_(title),
       connected_(false),
       executor_(std::make_unique<inspector::detail::SerialExecutor>(
@@ -202,11 +204,7 @@ Connection::Impl::Impl(
 Connection::Impl::~Impl() = default;
 
 jsi::Runtime &Connection::Impl::getRuntime() {
-  return runtimeAdapter_.getRuntime();
-}
-
-RuntimeAdapter &Connection::Impl::getRuntimeAdapter() {
-  return runtimeAdapter_;
+  return runtimeAdapter_->getRuntime();
 }
 
 std::string Connection::Impl::getTitle() const {
@@ -1573,19 +1571,16 @@ void Connection::Impl::sendNotificationToClientViaExecutor(
  * Connection
  */
 Connection::Connection(
-    RuntimeAdapter &adapter,
+    std::unique_ptr<RuntimeAdapter> adapter,
     const std::string &title,
     bool waitForDebugger)
-    : impl_(std::make_unique<Impl>(adapter, title, waitForDebugger)) {}
+    : impl_(
+          std::make_unique<Impl>(std::move(adapter), title, waitForDebugger)) {}
 
 Connection::~Connection() = default;
 
 jsi::Runtime &Connection::getRuntime() {
   return impl_->getRuntime();
-}
-
-RuntimeAdapter &Connection::getRuntimeAdapter() {
-  return impl_->getRuntimeAdapter();
 }
 
 std::string Connection::getTitle() const {

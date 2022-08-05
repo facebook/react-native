@@ -64,7 +64,7 @@ ConnectionDemux::ConnectionDemux(facebook::react::IInspector &inspector)
 ConnectionDemux::~ConnectionDemux() = default;
 
 int ConnectionDemux::enableDebugging(
-    RuntimeAdapter &adapter,
+    std::unique_ptr<RuntimeAdapter> adapter,
     const std::string &title) {
   std::lock_guard<std::mutex> lock(mutex_);
 
@@ -90,17 +90,18 @@ int ConnectionDemux::enableDebugging(
       (inspectedContexts_->find(title) != inspectedContexts_->end()) ||
       isNetworkInspected(title, "app_name", "device_name");
 
-  return addPage(std::make_shared<Connection>(adapter, title, waitForDebugger));
+  return addPage(
+      std::make_shared<Connection>(std::move(adapter), title, waitForDebugger));
 }
 
-void ConnectionDemux::disableDebugging(RuntimeAdapter &adapter) {
+void ConnectionDemux::disableDebugging(HermesRuntime &runtime) {
   std::lock_guard<std::mutex> lock(mutex_);
 
   for (auto &it : conns_) {
     int pageId = it.first;
     auto &conn = it.second;
 
-    if (&(conn->getRuntimeAdapter()) == &adapter) {
+    if (&(conn->getRuntime()) == &runtime) {
       removePage(pageId);
 
       // must break here. removePage mutates conns_, so range-for iterator is
