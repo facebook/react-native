@@ -12,8 +12,10 @@ steps:
       slice_name: ${{ parameters.slice_name }}
       xcode_version: ${{ parameters.xcode_version }}
 
-  - script: 'yarn install'
-    displayName: 'yarn install'
+  - task: CmdLine@2
+    displayName: yarn install
+    inputs:
+      script: yarn install --frozen-lockfile
 
   - task: CmdLine@2
     displayName: yarn test-ci [test]
