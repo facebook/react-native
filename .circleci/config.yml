@@ -737,7 +737,7 @@ jobs:
           name: Build template project
           command: |
             xcodebuild build \
-              -workspace ~/tmp/$PROJECT_NAME/ios/$PROJECT_NAME.xcworkspace \
+              -workspace /tmp/$PROJECT_NAME/ios/$PROJECT_NAME.xcworkspace \
               -scheme $PROJECT_NAME \
               -sdk iphonesimulator
 
