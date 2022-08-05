@@ -732,7 +732,7 @@ jobs:
             PACKAGE=$(cat build/react-native-package-version)
             PATH_TO_PACKAGE="$(pwd)/build/$PACKAGE"
             node ./scripts/set-rn-template-version.js "file:$PATH_TO_PACKAGE"
-            node cli.js init $PROJECT_NAME --directory "/tmp/$PROJECT_NAME" --template $(pwd) --verbose --skip-install
+            node cli.js init $PROJECT_NAME --directory "/tmp/$PROJECT_NAME" --template $(pwd) --verbose
       - run:
           name: Build template project
           command: |
