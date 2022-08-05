@@ -40,7 +40,7 @@ LOCAL_SHARED_LIBRARIES := \
   libreact_render_uimanager \
   libreact_utils \
   libreact_config \
-  libreactnativeutilsjni \
+  libreactnativejni \
   librrc_image \
   librrc_root \
   librrc_unimplementedview \
