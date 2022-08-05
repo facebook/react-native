@@ -39,7 +39,7 @@ class XHRExampleFetch extends React.Component<any, any> {
       });
   }
 
-  _renderHeaders() {
+  _renderHeaders(): null | Array<React.Node> {
     if (!this.responseHeaders) {
       return null;
     }

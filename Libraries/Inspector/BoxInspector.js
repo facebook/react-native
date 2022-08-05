@@ -49,7 +49,7 @@ class BoxInspector extends React.Component<$FlowFixMeProps> {
 }
 
 class BoxContainer extends React.Component<$FlowFixMeProps> {
-  render() {
+  render(): React.Node {
     const box = this.props.box;
     return (
       <View style={styles.box}>

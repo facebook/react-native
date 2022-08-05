@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.69.3
+
+### Fixed
+
+#### iOS specific
+
+- Fix React-bridging header not found for third party modules ([fa2acc32d1](https://github.com/facebook/react-native/commit/fa2acc32d1490f6e418689dec321f8bd4ef7bb28) by [@Kudo](https://github.com/Kudo))
+
 ## v0.69.2
 
 ### Changed

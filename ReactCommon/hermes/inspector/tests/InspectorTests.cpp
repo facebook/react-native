@@ -92,12 +92,8 @@ struct HermesDebugContext {
       InspectorObserver &observer,
       folly::Future<Unit> &&finished)
       : runtime(makeHermesRuntime()),
-        inspector(
-            std::make_shared<SharedRuntimeAdapter>(
-                runtime,
-                runtime->getDebugger()),
-            observer,
-            false),
+        adapter(runtime),
+        inspector(adapter, observer, false),
         stopFlag(false),
         finished(std::move(finished)) {
     runtime->global().setProperty(
@@ -126,6 +122,7 @@ struct HermesDebugContext {
   }
 
   std::shared_ptr<HermesRuntime> runtime;
+  SharedRuntimeAdapter adapter;
   Inspector inspector;
   std::atomic<bool> stopFlag{};
   folly::Future<Unit> finished;

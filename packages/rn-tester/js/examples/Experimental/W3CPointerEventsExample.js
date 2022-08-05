@@ -16,6 +16,7 @@ import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTyp
 import PointerEventAttributesHoverablePointers from './W3CPointerEventPlatformTests/PointerEventAttributesHoverablePointers';
 import PointerEventPointerMove from './W3CPointerEventPlatformTests/PointerEventPointerMove';
 import CompatibilityAnimatedPointerMove from './Compatibility/CompatibilityAnimatedPointerMove';
+import PointerEventPrimaryTouchPointer from './W3CPointerEventPlatformTests/PointerEventPrimaryTouchPointer';
 
 function EventfulView(props: {|
   name: string,
@@ -245,6 +246,14 @@ export default {
       title: 'PointerMove test',
       render(): React.Node {
         return <PointerEventPointerMove />;
+      },
+    },
+    {
+      name: 'pointerevent_primary_touch_pointer',
+      description: '',
+      title: 'Pointer Event primary touch pointer test',
+      render(): React.Node {
+        return <PointerEventPrimaryTouchPointer />;
       },
     },
     CompatibilityAnimatedPointerMove,

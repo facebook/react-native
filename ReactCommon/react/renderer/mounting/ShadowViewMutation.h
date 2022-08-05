@@ -76,7 +76,8 @@ struct ShadowViewMutation final {
    */
   static ShadowViewMutation UpdateMutation(
       ShadowView oldChildShadowView,
-      ShadowView newChildShadowView);
+      ShadowView newChildShadowView,
+      ShadowView parentShadowView);
 
 #pragma mark - Type
 

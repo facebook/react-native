@@ -287,7 +287,9 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       view.setSelected(false);
     }
     view.setTag(R.id.accessibility_state, accessibilityState);
-    view.setEnabled(true);
+    if (accessibilityState.hasKey("disabled") && !accessibilityState.getBoolean("disabled")) {
+      view.setEnabled(true);
+    }
 
     // For states which don't have corresponding methods in
     // AccessibilityNodeInfo, update the view's content description

@@ -95,7 +95,11 @@ class NetworkOverlay extends React.Component<Props, State> {
   // scroll to the bottom as new network requests come in, or if the user has
   // intentionally scrolled away from the bottom - to instead flash the scroll bar
   // and keep the current position
-  _requestsListViewScrollMetrics = {
+  _requestsListViewScrollMetrics: {
+    contentLength: number,
+    offset: number,
+    visibleLength: number,
+  } = {
     offset: 0,
     visibleLength: 0,
     contentLength: 0,
@@ -363,7 +367,7 @@ class NetworkOverlay extends React.Component<Props, State> {
     );
   };
 
-  _renderItemDetail(id: number) {
+  _renderItemDetail(id: number): React.Node {
     const requestItem = this.state.requests[id];
     const details = Object.keys(requestItem).map(key => {
       if (key === 'id') {

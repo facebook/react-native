@@ -83,7 +83,6 @@ fb_native.remote_file(
 
 fb_native.genrule(
     name = "kotlin-compiler-download",
-    type = "copy",
     srcs = [
         ":annotations-13.0.jar",
         ":kotlin-annotation-processing.jar",
@@ -94,9 +93,10 @@ fb_native.genrule(
         ":kotlin-stdlib.jar",
         ":trove4j.jar",
     ],
+    out = "kotlin-compiler-out",
     cmd = "mkdir ${OUT} && cp ${SRCS} ${OUT}",
     cmd_exe = "@powershell -Command Copy-Item '${SRCS}' '${OUT}'",
-    out = "kotlin-compiler-out",
+    type = "copy",
 )
 
 fb_native.remote_file(

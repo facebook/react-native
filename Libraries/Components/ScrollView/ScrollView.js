@@ -825,7 +825,7 @@ class ScrollView extends React.Component<Props, State> {
     }
   }
 
-  _setNativeRef = setAndForwardRef({
+  _setNativeRef: $FlowFixMe = setAndForwardRef({
     getForwardedRef: () => this.props.scrollViewRef,
     setLocalRef: ref => {
       this._scrollViewRef = ref;
@@ -1107,7 +1107,7 @@ class ScrollView extends React.Component<Props, State> {
     }
   };
 
-  _getKeyForIndex(index: $FlowFixMe, childArray: $FlowFixMe) {
+  _getKeyForIndex(index: $FlowFixMe, childArray: $FlowFixMe): $FlowFixMe {
     const child = childArray[index];
     return child && child.key;
   }
@@ -1204,7 +1204,7 @@ class ScrollView extends React.Component<Props, State> {
   _scrollViewRef: ?React.ElementRef<HostComponent<mixed>> = null;
 
   _innerViewRef: ?React.ElementRef<typeof View> = null;
-  _setInnerViewRef = setAndForwardRef({
+  _setInnerViewRef: $FlowFixMe = setAndForwardRef({
     getForwardedRef: () => this.props.innerViewRef,
     setLocalRef: ref => {
       this._innerViewRef = ref;

@@ -543,6 +543,11 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha1-p3c2C1s5oaLlEG+OhY8v0tBgxXA=
 
+"@seadub/danger-plugin-eslint@^3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@seadub/danger-plugin-eslint/-/danger-plugin-eslint-3.0.2.tgz#9a51d9f1a103a274264c30212234001de0b417c1"
+  integrity sha512-W+efX4mP04A8wMuLV0nV+iOj892Vrbyik+FyDZcGgpzkJFXX0UfDhOPZ0FonbSV0xM47DI5a8go88U/pBdGM2A==
+
 "@types/long@^4.0.1":
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/@types/long/-/long-4.0.1.tgz#459c65fa1867dafe6a8f322c4c51695663cc55e9"

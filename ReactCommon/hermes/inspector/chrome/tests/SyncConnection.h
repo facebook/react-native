@@ -54,6 +54,7 @@ class SyncConnection {
 
   void onReply(const std::string &message);
 
+  SharedRuntimeAdapter runtimeAdapter_;
   Connection connection_;
 
   std::mutex mutex_;

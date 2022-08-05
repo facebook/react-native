@@ -15,6 +15,7 @@ import com.facebook.react.tasks.BuildCodegenCLITask
 import com.facebook.react.tasks.GenerateCodegenArtifactsTask
 import com.facebook.react.tasks.GenerateCodegenSchemaTask
 import com.facebook.react.utils.JsonUtils
+import com.facebook.react.utils.findPackageJsonFile
 import java.io.File
 import kotlin.system.exitProcess
 import org.gradle.api.Plugin
@@ -85,42 +86,39 @@ class ReactPlugin : Plugin<Project> {
     val generateCodegenSchemaTask =
         project.tasks.register(
             "generateCodegenSchemaFromJavaScript", GenerateCodegenSchemaTask::class.java) { it ->
-          it.dependsOn(buildCodegenTask)
-          it.nodeExecutableAndArgs.set(extension.nodeExecutableAndArgs)
-          it.codegenDir.set(extension.codegenDir)
-          it.generatedSrcDir.set(generatedSrcDir)
+              it.dependsOn(buildCodegenTask)
+              it.nodeExecutableAndArgs.set(extension.nodeExecutableAndArgs)
+              it.codegenDir.set(extension.codegenDir)
+              it.generatedSrcDir.set(generatedSrcDir)
 
-          // We're reading the package.json at configuration time to properly feed
-          // the `jsRootDir` @Input property of this task. Therefore, the
-          // parsePackageJson should be invoked here.
-          val parsedPackageJson =
-              extension.root.file("package.json").orNull?.asFile?.let {
-                JsonUtils.fromCodegenJson(it)
+              // We're reading the package.json at configuration time to properly feed
+              // the `jsRootDir` @Input property of this task. Therefore, the
+              // parsePackageJson should be invoked inside this lambda.
+              val packageJson = findPackageJsonFile(project, extension)
+              val parsedPackageJson = packageJson?.let { JsonUtils.fromCodegenJson(it) }
+
+              val jsSrcsDirInPackageJson = parsedPackageJson?.codegenConfig?.jsSrcsDir
+              if (jsSrcsDirInPackageJson != null) {
+                it.jsRootDir.set(File(packageJson.parentFile, jsSrcsDirInPackageJson))
+              } else {
+                it.jsRootDir.set(extension.jsRootDir)
               }
-
-          val parsedJsRootDir =
-              parsedPackageJson?.codegenConfig?.jsSrcsDir?.let { relativePath ->
-                extension.root.dir(relativePath)
-              }
-                  ?: extension.jsRootDir
-
-          it.jsRootDir.set(parsedJsRootDir)
-        }
+            }
 
     // We create the task to generate Java code from schema.
     val generateCodegenArtifactsTask =
         project.tasks.register(
             "generateCodegenArtifactsFromSchema", GenerateCodegenArtifactsTask::class.java) {
-          it.dependsOn(generateCodegenSchemaTask)
-          it.reactNativeDir.set(extension.reactNativeDir)
-          it.deprecatedReactRoot.set(extension.reactRoot)
-          it.nodeExecutableAndArgs.set(extension.nodeExecutableAndArgs)
-          it.codegenDir.set(extension.codegenDir)
-          it.generatedSrcDir.set(generatedSrcDir)
-          it.packageJsonFile.set(extension.root.file("package.json"))
-          it.codegenJavaPackageName.set(extension.codegenJavaPackageName)
-          it.libraryName.set(extension.libraryName)
-        }
+              it.dependsOn(generateCodegenSchemaTask)
+              it.reactNativeDir.set(extension.reactNativeDir)
+              it.deprecatedReactRoot.set(extension.reactRoot)
+              it.nodeExecutableAndArgs.set(extension.nodeExecutableAndArgs)
+              it.codegenDir.set(extension.codegenDir)
+              it.generatedSrcDir.set(generatedSrcDir)
+              it.packageJsonFile.set(findPackageJsonFile(project, extension))
+              it.codegenJavaPackageName.set(extension.codegenJavaPackageName)
+              it.libraryName.set(extension.libraryName)
+            }
 
     // We add dependencies & generated sources to the project.
     // Note: This last step needs to happen after the project has been evaluated.

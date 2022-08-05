@@ -140,7 +140,7 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
     // components. If you want to animate a composite component, you need to
     // re-render it. In this case, we have a fallback that uses forceUpdate.
     // This fallback is also called in Fabric.
-    _animatedPropsCallback = () => {
+    _animatedPropsCallback = (): void => {
       if (this._component == null) {
         // AnimatedProps is created in will-mount because it's used in render.
         // But this callback may be invoked before mount in async mode,
@@ -192,7 +192,7 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
       }
     }
 
-    _setComponentRef = setAndForwardRef({
+    _setComponentRef: (ref: React.ElementRef<any>) => void = setAndForwardRef({
       getForwardedRef: () => this.props.forwardedRef,
       setLocalRef: ref => {
         this._prevComponent = this._component;
@@ -200,7 +200,7 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
       },
     });
 
-    render() {
+    render(): React.Node {
       const animatedProps =
         this._propsAnimated.__getValue(this._initialAnimatedProps) || {};
       const {style = {}, ...props} = animatedProps;

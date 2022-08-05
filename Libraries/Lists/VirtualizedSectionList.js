@@ -9,7 +9,7 @@
  */
 
 import type {ViewToken} from './ViewabilityHelper';
-
+import type {AccessibilityCollectionItem} from './VirtualizedListProps';
 import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';
 import invariant from 'invariant';
 import * as React from 'react';
@@ -140,6 +140,7 @@ class VirtualizedSectionList<
     if (params.itemIndex > 0 && this.props.stickySectionHeadersEnabled) {
       const frame = this._listRef.__getFrameMetricsApprox(
         index - params.itemIndex,
+        this._listRef.props,
       );
       viewOffset += frame.length;
     }
@@ -236,6 +237,7 @@ class VirtualizedSectionList<
     return null;
   }
 
+  // $FlowFixMe[missing-local-annot]
   _keyExtractor = (item: Item, index: number) => {
     const info = this._subExtractor(index);
     return (info && info.key) || String(index);
@@ -339,9 +341,18 @@ class VirtualizedSectionList<
   };
 
   _renderItem =
-    (listItemCount: number) =>
+    (listItemCount: number): $FlowFixMe =>
     // eslint-disable-next-line react/no-unstable-nested-components
-    ({item, index}: {item: Item, index: number, ...}) => {
+    ({
+      item,
+      index,
+      accessibilityCollectionItem,
+    }: {
+      item: Item,
+      index: number,
+      accessibilityCollectionItem: AccessibilityCollectionItem,
+      ...
+    }) => {
       const info = this._subExtractor(index);
       if (!info) {
         return null;
@@ -370,6 +381,7 @@ class VirtualizedSectionList<
             LeadingSeparatorComponent={
               infoIndex === 0 ? this.props.SectionSeparatorComponent : undefined
             }
+            accessibilityCollectionItem={accessibilityCollectionItem}
             cellKey={info.key}
             index={infoIndex}
             item={item}
@@ -485,6 +497,7 @@ type ItemWithSeparatorProps = $ReadOnly<{|
   updatePropsFor: (prevCellKey: string, value: Object) => void,
   renderItem: Function,
   inverted: boolean,
+  accessibilityCollectionItem: AccessibilityCollectionItem,
 |}>;
 
 function ItemWithSeparator(props: ItemWithSeparatorProps): React.Node {
@@ -502,6 +515,7 @@ function ItemWithSeparator(props: ItemWithSeparatorProps): React.Node {
     index,
     section,
     inverted,
+    accessibilityCollectionItem,
   } = props;
 
   const [leadingSeparatorHiglighted, setLeadingSeparatorHighlighted] =
@@ -575,6 +589,7 @@ function ItemWithSeparator(props: ItemWithSeparatorProps): React.Node {
     index,
     section,
     separators,
+    accessibilityCollectionItem,
   });
   const leadingSeparator = LeadingSeparatorComponent != null && (
     <LeadingSeparatorComponent

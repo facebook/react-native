@@ -46,11 +46,11 @@ require('./LoggingTestModule');
 type Test = any;
 
 class IntegrationTestsApp extends React.Component<{...}, $FlowFixMeState> {
-  state = {
+  state: {test: ?Test} = {
     test: (null: ?Test),
   };
 
-  render() {
+  render(): React.Node {
     if (this.state.test) {
       return (
         <ScrollView>

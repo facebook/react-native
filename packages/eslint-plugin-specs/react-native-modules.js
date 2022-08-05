@@ -13,7 +13,7 @@
 const path = require('path');
 const withBabelRegister = require('./with-babel-register');
 
-// We run yarn prepublish before publishing package which will set this value to true
+// We use the prepack hook before publishing package to set this value to true
 const PACKAGE_USAGE = false;
 const ERRORS = {
   misnamedHasteModule(hasteModuleName) {

@@ -177,7 +177,7 @@ class AnimatedEvent {
     this._listeners = this._listeners.filter(listener => listener !== callback);
   }
 
-  __attach(viewRef: any, eventName: string) {
+  __attach(viewRef: any, eventName: string): void {
     invariant(
       this.__isNative,
       'Only native driven events need to be attached.',
@@ -191,7 +191,7 @@ class AnimatedEvent {
     );
   }
 
-  __detach(viewTag: any, eventName: string) {
+  __detach(viewTag: any, eventName: string): void {
     invariant(
       this.__isNative,
       'Only native driven events need to be detached.',

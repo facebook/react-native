@@ -48,13 +48,11 @@ static const char *const kBeforeScriptWithSourceMapExecution =
 class Connection::Impl : public inspector::InspectorObserver,
                          public message::RequestHandler {
  public:
-  Impl(
-      std::unique_ptr<RuntimeAdapter> adapter,
-      const std::string &title,
-      bool waitForDebugger);
+  Impl(RuntimeAdapter &adapter, const std::string &title, bool waitForDebugger);
   ~Impl();
 
   jsi::Runtime &getRuntime();
+  RuntimeAdapter &getRuntimeAdapter();
   std::string getTitle() const;
 
   bool connect(std::unique_ptr<IRemoteConnection> remoteConn);
@@ -107,6 +105,7 @@ class Connection::Impl : public inspector::InspectorObserver,
   void handle(const m::runtime::EvaluateRequest &req) override;
   void handle(const m::runtime::GetHeapUsageRequest &req) override;
   void handle(const m::runtime::GetPropertiesRequest &req) override;
+  void handle(const m::runtime::GlobalLexicalScopeNamesRequest &req) override;
   void handle(const m::runtime::RunIfWaitingForDebuggerRequest &req) override;
 
  private:
@@ -142,7 +141,7 @@ class Connection::Impl : public inspector::InspectorObserver,
     folly::via(executor_.get(), [cb = std::move(callback)]() { cb(); });
   }
 
-  std::shared_ptr<RuntimeAdapter> runtimeAdapter_;
+  RuntimeAdapter &runtimeAdapter_;
   std::string title_;
 
   // connected_ is protected by connectionMutex_.
@@ -184,10 +183,10 @@ class Connection::Impl : public inspector::InspectorObserver,
 };
 
 Connection::Impl::Impl(
-    std::unique_ptr<RuntimeAdapter> adapter,
+    RuntimeAdapter &adapter,
     const std::string &title,
     bool waitForDebugger)
-    : runtimeAdapter_(std::move(adapter)),
+    : runtimeAdapter_(adapter),
       title_(title),
       connected_(false),
       executor_(std::make_unique<inspector::detail::SerialExecutor>(
@@ -203,7 +202,11 @@ Connection::Impl::Impl(
 Connection::Impl::~Impl() = default;
 
 jsi::Runtime &Connection::Impl::getRuntime() {
-  return runtimeAdapter_->getRuntime();
+  return runtimeAdapter_.getRuntime();
+}
+
+RuntimeAdapter &Connection::Impl::getRuntimeAdapter() {
+  return runtimeAdapter_;
 }
 
 std::string Connection::Impl::getTitle() const {
@@ -1452,6 +1455,45 @@ void Connection::Impl::handle(const m::runtime::GetPropertiesRequest &req) {
 }
 
 void Connection::Impl::handle(
+    const m::runtime::GlobalLexicalScopeNamesRequest &req) {
+  auto resp = std::make_shared<m::runtime::GlobalLexicalScopeNamesResponse>();
+  resp->id = req.id;
+
+  inspector_
+      ->executeIfEnabled(
+          "Runtime.globalLexicalScopeNames",
+          [req, resp](const debugger::ProgramState &state) {
+            if (req.executionContextId.hasValue() &&
+                req.executionContextId.value() != kHermesExecutionContextId) {
+              throw std::invalid_argument("Invalid execution context");
+            }
+
+            const debugger::LexicalInfo &lexicalInfo = state.getLexicalInfo(0);
+            debugger::ScopeDepth scopeCount = lexicalInfo.getScopesCount();
+            if (scopeCount == 0) {
+              return;
+            }
+
+            const debugger::ScopeDepth globalScopeIndex = scopeCount - 1;
+            uint32_t variableCount =
+                lexicalInfo.getVariablesCountInScope(globalScopeIndex);
+            resp->names.reserve(variableCount);
+            for (uint32_t i = 0; i < variableCount; i++) {
+              debugger::String name =
+                  state.getVariableInfo(0, globalScopeIndex, i).name;
+              // The global scope has some entries prefixed with '?', which are
+              // not valid identifiers.
+              if (!name.empty() && name.front() != '?') {
+                resp->names.push_back(name);
+              }
+            }
+          })
+      .via(executor_.get())
+      .thenValue([this, resp](auto &&) { sendResponseToClient(*resp); })
+      .thenError<std::exception>(sendErrorToClient(req.id));
+}
+
+void Connection::Impl::handle(
     const m::runtime::RunIfWaitingForDebuggerRequest &req) {
   if (inspector_->isAwaitingDebuggerOnStart()) {
     sendResponseToClientViaExecutor(inspector_->resume(), req.id);
@@ -1531,16 +1573,19 @@ void Connection::Impl::sendNotificationToClientViaExecutor(
  * Connection
  */
 Connection::Connection(
-    std::unique_ptr<RuntimeAdapter> adapter,
+    RuntimeAdapter &adapter,
     const std::string &title,
     bool waitForDebugger)
-    : impl_(
-          std::make_unique<Impl>(std::move(adapter), title, waitForDebugger)) {}
+    : impl_(std::make_unique<Impl>(adapter, title, waitForDebugger)) {}
 
 Connection::~Connection() = default;
 
 jsi::Runtime &Connection::getRuntime() {
   return impl_->getRuntime();
+}
+
+RuntimeAdapter &Connection::getRuntimeAdapter() {
+  return impl_->getRuntimeAdapter();
 }
 
 std::string Connection::getTitle() const {

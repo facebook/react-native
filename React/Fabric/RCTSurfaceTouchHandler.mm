@@ -89,6 +89,11 @@ struct ActiveTouch {
   UIKeyModifierFlags modifierFlags;
 
   /*
+   * Indicates if the active touch represents the primary pointer of this pointer type.
+   */
+  bool isPrimary;
+
+  /*
    * A component view on which the touch was begun.
    */
   __strong UIView<RCTComponentViewProtocol> *componentView = nil;
@@ -107,6 +112,15 @@ struct ActiveTouch {
     }
   };
 };
+
+// Mouse and Pen pointers get reserved IDs so they stay consistent no matter the order
+// at which events come in
+static int const kMousePointerId = 0;
+static int const kPencilPointerId = 1;
+
+// If a new reserved ID is added above this should be incremented to ensure touch events
+// do not conflict
+static int const kTouchIdentifierPoolOffset = 2;
 
 // Returns a CGPoint which represents the tiltX/Y values (in RADIANS)
 // Adapted from https://gist.github.com/k3a/2903719bb42b48c9198d20c2d6f73ac1
@@ -309,6 +323,7 @@ static PointerEvent CreatePointerEventFromActiveTouch(ActiveTouch activeTouch, R
 
   event.tangentialPressure = 0.0;
   event.twist = 0;
+  event.isPrimary = activeTouch.isPrimary;
 
   return event;
 }
@@ -324,7 +339,7 @@ static PointerEvent CreatePointerEventFromIncompleteHoverData(
   // "touch" events produced from a mouse cursor on iOS always have the ID 0 so
   // we can just assume that here since these sort of hover events only ever come
   // from the mouse
-  event.pointerId = 0;
+  event.pointerId = kMousePointerId;
   event.pressure = 0.0;
   event.pointerType = "mouse";
   event.clientPoint = RCTPointFromCGPoint(clientLocation);
@@ -339,6 +354,7 @@ static PointerEvent CreatePointerEventFromIncompleteHoverData(
   UpdatePointerEventModifierFlags(event, modifierFlags);
   event.tangentialPressure = 0.0;
   event.twist = 0;
+  event.isPrimary = true;
   return event;
 }
 
@@ -412,6 +428,8 @@ struct PointerHasher {
 
   UIHoverGestureRecognizer *_hoverRecognizer API_AVAILABLE(ios(13.0));
   NSOrderedSet *_currentlyHoveredViews;
+
+  int _primaryTouchPointerId;
 }
 
 - (instancetype)init
@@ -429,6 +447,7 @@ struct PointerHasher {
 
     _hoverRecognizer = nil;
     _currentlyHoveredViews = [NSOrderedSet orderedSet];
+    _primaryTouchPointerId = -1;
   }
 
   return self;
@@ -469,7 +488,34 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 {
   for (UITouch *touch in touches) {
     auto activeTouch = CreateTouchWithUITouch(touch, event, _rootComponentView, _viewOriginOffset);
-    activeTouch.touch.identifier = _identifierPool.dequeue();
+
+    if (@available(iOS 13.4, *)) {
+      switch (touch.type) {
+        case UITouchTypeIndirectPointer:
+          activeTouch.touch.identifier = kMousePointerId;
+          activeTouch.isPrimary = true;
+          break;
+        case UITouchTypePencil:
+          activeTouch.touch.identifier = kPencilPointerId;
+          activeTouch.isPrimary = true;
+          break;
+        default:
+          // use the identifier pool offset to ensure no conflicts between the reserved IDs and the
+          // touch IDs
+          activeTouch.touch.identifier = _identifierPool.dequeue() + kTouchIdentifierPoolOffset;
+          if (_primaryTouchPointerId == -1) {
+            _primaryTouchPointerId = activeTouch.touch.identifier;
+            activeTouch.isPrimary = true;
+          }
+          break;
+      }
+    } else {
+      activeTouch.touch.identifier = _identifierPool.dequeue();
+      if (_primaryTouchPointerId == -1) {
+        _primaryTouchPointerId = activeTouch.touch.identifier;
+        activeTouch.isPrimary = true;
+      }
+    }
     _activeTouches.emplace(touch, activeTouch);
   }
 }
@@ -496,7 +542,25 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
       continue;
     }
     auto &activeTouch = iterator->second;
-    _identifierPool.enqueue(activeTouch.touch.identifier);
+
+    if (activeTouch.touch.identifier == _primaryTouchPointerId) {
+      _primaryTouchPointerId = -1;
+    }
+
+    if (@available(iOS 13.4, *)) {
+      // only need to enqueue if the touch type isn't one with a reserved identifier
+      switch (touch.type) {
+        case UITouchTypeIndirectPointer:
+        case UITouchTypePencil:
+          break;
+        default:
+          // since the touch's identifier has been offset we need to re-normalize it to 0-based
+          // which is what the identifier pool expects
+          _identifierPool.enqueue(activeTouch.touch.identifier - kTouchIdentifierPoolOffset);
+      }
+    } else {
+      _identifierPool.enqueue(activeTouch.touch.identifier);
+    }
     _activeTouches.erase(touch);
   }
 }
