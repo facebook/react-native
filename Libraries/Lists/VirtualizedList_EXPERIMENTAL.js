@@ -43,6 +43,7 @@ import * as React from 'react';
 
 import {CellRenderMask} from './CellRenderMask';
 import clamp from '../Utilities/clamp';
+import StateSafePureComponent from './StateSafePureComponent';
 
 const RefreshControl = require('../Components/RefreshControl/RefreshControl');
 const ScrollView = require('../Components/ScrollView/ScrollView');
@@ -159,7 +160,7 @@ function findLastWhere<T>(
  * - As an effort to remove defaultProps, use helper functions when referencing certain props
  *
  */
-class VirtualizedList extends React.PureComponent<Props, State> {
+class VirtualizedList extends StateSafePureComponent<Props, State> {
   static contextType: typeof VirtualizedListContext = VirtualizedListContext;
 
   // scrollToEnd may be janky without getItemLayout prop
@@ -2252,4 +2253,5 @@ const styles = StyleSheet.create({
   },
 });
 
+VirtualizedList.displayName = 'VirtualizedList_EXPERIMENTAL';
 module.exports = VirtualizedList;
