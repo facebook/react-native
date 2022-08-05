@@ -1,8 +1,0 @@
-{
-    "contacts": ["acoates@microsoft.com"],
-    "description": "Fork of facebook\u0027s Folly implementation, used by react-native.  Includes changes to build for Windows and newer tools on other platforms.",
-    "deployedToProduction": true,
-    "complianceTypes": [],
-    "inventoryId": [],
-    "schema": { "office":  "1.0.0" }
-}
