@@ -36,8 +36,10 @@ class ConnectionDemux {
   ConnectionDemux(const ConnectionDemux &) = delete;
   ConnectionDemux &operator=(const ConnectionDemux &) = delete;
 
-  int enableDebugging(RuntimeAdapter &adapter, const std::string &title);
-  void disableDebugging(RuntimeAdapter &adapter);
+  int enableDebugging(
+      std::unique_ptr<RuntimeAdapter> adapter,
+      const std::string &title);
+  void disableDebugging(HermesRuntime &runtime);
 
  private:
   int addPage(std::shared_ptr<Connection> conn);

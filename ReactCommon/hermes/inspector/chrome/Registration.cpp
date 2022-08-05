@@ -22,12 +22,14 @@ ConnectionDemux &demux() {
 
 } // namespace
 
-void enableDebugging(RuntimeAdapter &adapter, const std::string &title) {
-  demux().enableDebugging(adapter, title);
+void enableDebugging(
+    std::unique_ptr<RuntimeAdapter> adapter,
+    const std::string &title) {
+  demux().enableDebugging(std::move(adapter), title);
 }
 
-void disableDebugging(RuntimeAdapter &adapter) {
-  demux().disableDebugging(adapter);
+void disableDebugging(HermesRuntime &runtime) {
+  demux().disableDebugging(runtime);
 }
 
 } // namespace chrome

@@ -97,10 +97,10 @@ TEST(ConnectionDemuxTests, TestEnableDisable) {
 
   ConnectionDemux demux{*inspector};
 
-  SharedRuntimeAdapter adapter1(runtime1);
-  int id1 = demux.enableDebugging(adapter1, "page1");
-  SharedRuntimeAdapter adapter2(runtime2);
-  int id2 = demux.enableDebugging(adapter2, "page2");
+  int id1 = demux.enableDebugging(
+      std::make_unique<SharedRuntimeAdapter>(runtime1), "page1");
+  int id2 = demux.enableDebugging(
+      std::make_unique<SharedRuntimeAdapter>(runtime2), "page2");
 
   expectPages(*inspector, {{id1, "page1"}, {id2, "page2"}});
 
@@ -124,7 +124,7 @@ TEST(ConnectionDemuxTests, TestEnableDisable) {
 
   // Disable debugging on runtime2. This should remove its page from the list
   // and call onDisconnect on its remoteConn
-  demux.disableDebugging(adapter2);
+  demux.disableDebugging(*runtime2);
   expectPages(*inspector, {{id1, "page1"}});
   remoteData2->expectDisconnected();
 

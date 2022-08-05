@@ -149,38 +149,35 @@ class DecoratedRuntime : public jsi::WithRuntimeDecorator<ReentrancyCheck> {
       HermesRuntime &hermesRuntime,
       std::shared_ptr<MessageQueueThread> jsQueue)
       : jsi::WithRuntimeDecorator<ReentrancyCheck>(*runtime, reentrancyCheck_),
-        runtime_(std::move(runtime))
+        runtime_(std::move(runtime)),
+        hermesRuntime_(hermesRuntime) {
 #ifdef HERMES_ENABLE_DEBUGGER
-        ,
-        adapter_(
-            std::shared_ptr<HermesRuntime>(runtime_, &hermesRuntime),
-            jsQueue)
-#endif
-  {
-#ifdef HERMES_ENABLE_DEBUGGER
+    std::shared_ptr<HermesRuntime> rt(runtime_, &hermesRuntime);
+    auto adapter = std::make_unique<HermesExecutorRuntimeAdapter>(rt, jsQueue);
     facebook::hermes::inspector::chrome::enableDebugging(
-        adapter_, "Hermes React Native");
+        std::move(adapter), "Hermes React Native");
+#else
+    (void)hermesRuntime_;
 #endif
   }
 
   ~DecoratedRuntime() {
 #ifdef HERMES_ENABLE_DEBUGGER
-    facebook::hermes::inspector::chrome::disableDebugging(adapter_);
+    facebook::hermes::inspector::chrome::disableDebugging(hermesRuntime_);
 #endif
   }
 
  private:
   // runtime_ is a potentially decorated Runtime.
+  // hermesRuntime is a reference to a HermesRuntime managed by runtime_.
   //
   // HermesExecutorRuntimeAdapter requirements are kept, because the
   // dtor will disable debugging on the HermesRuntime before the
   // member managing it is destroyed.
 
   std::shared_ptr<Runtime> runtime_;
-#ifdef HERMES_ENABLE_DEBUGGER
-  HermesExecutorRuntimeAdapter adapter_;
-#endif
   ReentrancyCheck reentrancyCheck_;
+  HermesRuntime &hermesRuntime_;
 };
 
 } // namespace
