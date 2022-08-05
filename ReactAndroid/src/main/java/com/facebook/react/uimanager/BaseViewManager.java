@@ -338,12 +338,6 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
             && value.asBoolean()) {
           contentDescription.add(view.getContext().getString(R.string.state_busy_description));
         } else if (state.equals(STATE_EXPANDED) && value.getType() == ReadableType.Boolean) {
-          contentDescription.add(
-              view.getContext()
-                  .getString(
-                      value.asBoolean()
-                          ? R.string.state_expanded_description
-                          : R.string.state_collapsed_description));
         }
       }
     }

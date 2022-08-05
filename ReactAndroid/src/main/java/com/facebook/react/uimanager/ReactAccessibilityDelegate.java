@@ -414,6 +414,8 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
               context.getString(
                   boolValue ? R.string.state_on_description : R.string.state_off_description));
         }
+      } else if (state.equals("expanded") && value.getType() == ReadableType.Boolean) {
+        info.addAction(value.asBoolean() ? AccessibilityNodeInfoCompat.ACTION_EXPAND : AccessibilityNodeInfoCompat.ACTION_COLLAPSE); 
       }
     }
   }
