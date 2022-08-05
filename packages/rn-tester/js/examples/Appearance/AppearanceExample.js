@@ -61,8 +61,7 @@ const ThemedContainer = props => (
             paddingHorizontal: 8,
             paddingVertical: 16,
             backgroundColor: theme.SystemBackgroundColor,
-          }}
-        >
+          }}>
           {props.children}
         </View>
       );
@@ -90,8 +89,7 @@ exports.examples = [
         const colorScheme = useColorScheme();
         return (
           <RNTesterThemeContext.Provider
-            value={colorScheme === 'dark' ? themes.dark : themes.light}
-          >
+            value={colorScheme === 'dark' ? themes.dark : themes.light}>
             <ThemedContainer>
               <ThemedText>useColorScheme(): {colorScheme}</ThemedText>
             </ThemedContainer>
@@ -165,8 +163,7 @@ exports.examples = [
                 style={{
                   marginVertical: 20,
                   backgroundColor: theme.SystemBackgroundColor,
-                }}
-              >
+                }}>
                 <Text style={{fontWeight: '700', color: theme.LabelColor}}>
                   {props.themeName}
                 </Text>
@@ -188,8 +185,7 @@ exports.examples = [
                           paddingVertical: 2,
                           color: theme.LabelColor,
                           fontWeight: '600',
-                        }}
-                      >
+                        }}>
                         {key}
                       </Text>
                       <Text
@@ -197,8 +193,7 @@ exports.examples = [
                           paddingHorizontal: 16,
                           paddingVertical: 2,
                           color: theme.LabelColor,
-                        }}
-                      >
+                        }}>
                         {typeof theme[key] === 'string'
                           ? theme[key]
                           : JSON.stringify(theme[key])}

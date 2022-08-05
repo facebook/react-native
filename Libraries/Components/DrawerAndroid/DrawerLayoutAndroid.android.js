@@ -162,9 +162,10 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
     return {Left: 'left', Right: 'right'};
   }
 
-  _nativeRef = React.createRef<
-    React.ElementRef<typeof AndroidDrawerLayoutNativeComponent>,
-  >();
+  _nativeRef =
+    React.createRef<
+      React.ElementRef<typeof AndroidDrawerLayoutNativeComponent>,
+    >();
 
   state: State = {statusBarBackgroundColor: null};
 
@@ -188,8 +189,7 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
             backgroundColor: drawerBackgroundColor,
           },
         ]}
-        collapsable={false}
-      >
+        collapsable={false}>
         {renderNavigationView()}
         {drawStatusBar && <View style={styles.drawerStatusBar} />}
       </View>
@@ -225,8 +225,7 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
         onDrawerSlide={this._onDrawerSlide}
         onDrawerOpen={this._onDrawerOpen}
         onDrawerClose={this._onDrawerClose}
-        onDrawerStateChanged={this._onDrawerStateChanged}
-      >
+        onDrawerStateChanged={this._onDrawerStateChanged}>
         {childrenWrapper}
         {drawerViewWrapper}
       </AndroidDrawerLayoutNativeComponent>

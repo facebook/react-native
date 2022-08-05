@@ -181,23 +181,20 @@ function ComposingExampleItem({
           onPress={() => {
             animation.current.reset();
             animation.current.start();
-          }}
-        >
+          }}>
           Start
         </RNTesterButton>
         <RNTesterButton
           onPress={() => {
             animation.current.stop();
-          }}
-        >
+          }}>
           Stop
         </RNTesterButton>
         <RNTesterButton
           onPress={() => {
             // TODO (T96213225): Animated.reset() doesn't work without using native driver
             animation.current.reset();
-          }}
-        >
+          }}>
           Reset
         </RNTesterButton>
       </View>

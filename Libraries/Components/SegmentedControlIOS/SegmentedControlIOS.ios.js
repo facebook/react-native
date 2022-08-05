@@ -87,14 +87,8 @@ class SegmentedControlIOS extends React.Component<Props> {
   };
 
   render() {
-    const {
-      enabled,
-      forwardedRef,
-      onValueChange,
-      style,
-      values,
-      ...props
-    } = this.props;
+    const {enabled, forwardedRef, onValueChange, style, values, ...props} =
+      this.props;
     return (
       <RCTSegmentedControlNativeComponent
         {...props}

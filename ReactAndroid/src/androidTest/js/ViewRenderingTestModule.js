@@ -64,19 +64,19 @@ class TransformSampleApp extends React.Component {
 }
 
 const ViewRenderingTestModule = {
-  renderViewApplication: function(rootTag) {
+  renderViewApplication: function (rootTag) {
     renderApplication(ViewSampleApp, {}, rootTag);
   },
-  renderMarginApplication: function(rootTag) {
+  renderMarginApplication: function (rootTag) {
     renderApplication(MarginSampleApp, {}, rootTag);
   },
-  renderBorderApplication: function(rootTag) {
+  renderBorderApplication: function (rootTag) {
     renderApplication(BorderSampleApp, {}, rootTag);
   },
-  renderTransformApplication: function(rootTag) {
+  renderTransformApplication: function (rootTag) {
     renderApplication(TransformSampleApp, {}, rootTag);
   },
-  updateMargins: function() {
+  updateMargins: function () {
     updateMargins();
   },
 };

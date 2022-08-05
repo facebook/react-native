@@ -65,8 +65,7 @@ class AnimatedTransformTestApp extends React.Component {
         <TouchableOpacity
           onPress={this.toggle}
           testID="TouchableOpacity"
-          style={[styles.base, this.state.flag ? styles.transformed : null]}
-        >
+          style={[styles.base, this.state.flag ? styles.transformed : null]}>
           <Text>TouchableOpacity</Text>
         </TouchableOpacity>
       </View>

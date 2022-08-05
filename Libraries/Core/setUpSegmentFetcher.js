@@ -27,8 +27,8 @@ function __fetchSegment(
   }>,
   callback: (?Error) => void,
 ) {
-  const SegmentFetcher = require('./SegmentFetcher/NativeSegmentFetcher')
-    .default;
+  const SegmentFetcher =
+    require('./SegmentFetcher/NativeSegmentFetcher').default;
   SegmentFetcher.fetchSegment(
     segmentId,
     options,
@@ -61,8 +61,8 @@ function __getSegment(
   }>,
   callback: (?Error, ?string) => void,
 ) {
-  const SegmentFetcher = require('./SegmentFetcher/NativeSegmentFetcher')
-    .default;
+  const SegmentFetcher =
+    require('./SegmentFetcher/NativeSegmentFetcher').default;
 
   if (!SegmentFetcher.getSegment) {
     throw new Error('SegmentFetcher.getSegment must be defined');

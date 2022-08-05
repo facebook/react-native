@@ -37,8 +37,7 @@ class AnExScroll extends React.Component<$FlowFixMeProps, any> {
           )}
           contentContainerStyle={{flex: 1, padding: 10}}
           pagingEnabled={true}
-          horizontal={true}
-        >
+          horizontal={true}>
           <View style={[styles.page, {width}]}>
             <Image style={{width: 180, height: 180}} source={HAWK_PIC} />
             <Text style={styles.text}>
@@ -114,12 +113,10 @@ const styles = StyleSheet.create({
 });
 
 const HAWK_PIC = {
-  uri:
-    'https://scontent-sea1-1.xx.fbcdn.net/hphotos-xfa1/t39.1997-6/10734304_1562225620659674_837511701_n.png',
+  uri: 'https://scontent-sea1-1.xx.fbcdn.net/hphotos-xfa1/t39.1997-6/10734304_1562225620659674_837511701_n.png',
 };
 const BUNNY_PIC = {
-  uri:
-    'https://scontent-sea1-1.xx.fbcdn.net/hphotos-xaf1/t39.1997-6/851564_531111380292237_1898871086_n.png',
+  uri: 'https://scontent-sea1-1.xx.fbcdn.net/hphotos-xaf1/t39.1997-6/851564_531111380292237_1898871086_n.png',
 };
 
 module.exports = AnExScroll;

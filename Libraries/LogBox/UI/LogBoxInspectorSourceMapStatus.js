@@ -95,8 +95,7 @@ function LogBoxInspectorSourceMapStatus(props: Props): React.Node {
       }}
       hitSlop={{bottom: 8, left: 8, right: 8, top: 8}}
       onPress={props.onPress}
-      style={styles.root}
-    >
+      style={styles.root}>
       <Animated.Image
         source={image}
         style={[

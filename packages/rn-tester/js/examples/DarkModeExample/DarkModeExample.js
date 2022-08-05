@@ -139,8 +139,7 @@ class SemanticColorsExample extends React.Component<{}> {
               flex: 1,
               alignItems: 'stretch',
               color: PlatformColor('labelColor'),
-            }}
-          >
+            }}>
             {color}
           </Text>
           <View
@@ -171,7 +170,7 @@ exports.description =
 exports.examples = [
   {
     title: 'Semantic Colors',
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <SemanticColorsExample />;
     },
   },

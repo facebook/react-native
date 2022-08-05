@@ -56,8 +56,7 @@ function ClippedByText(): React.Node {
           width: 150,
           height: 75,
           backgroundColor: 'lightgrey',
-        }}
-      >
+        }}>
         This is an inline view
         {/* Render a red border around the steelblue rectangle to make it clear how the inline view is being clipped */}
         <View style={{width: 50, height: 100, backgroundColor: 'red'}}>
@@ -86,8 +85,7 @@ function ClippedByText(): React.Node {
           width: 175,
           height: 100,
           backgroundColor: 'lightgrey',
-        }}
-      >
+        }}>
         This is an inline image
         <Image
           source={{
@@ -120,8 +118,7 @@ class ChangeImageSize extends React.Component<mixed, ChangeSizeState> {
         <TouchableHighlight
           onPress={() => {
             this.setState({width: this.state.width === 50 ? 100 : 50});
-          }}
-        >
+          }}>
           <Text style={{fontSize: 15}}>
             Change Image Width (width={this.state.width})
           </Text>
@@ -157,8 +154,7 @@ class ChangeViewSize extends React.Component<mixed, ChangeSizeState> {
         <TouchableHighlight
           onPress={() => {
             this.setState({width: this.state.width === 50 ? 100 : 50});
-          }}
-        >
+          }}>
           <Text style={{fontSize: 15}}>
             Change View Width (width={this.state.width})
           </Text>
@@ -190,8 +186,7 @@ class ChangeInnerViewSize extends React.Component<mixed, ChangeSizeState> {
         <TouchableHighlight
           onPress={() => {
             this.setState({width: this.state.width === 50 ? 100 : 50});
-          }}
-        >
+          }}>
           {/* When updating `state.width`, it's important that the only thing that
               changes is the width of the pink inline view. When we do this, we
               demonstrate a bug in RN Android where the pink view doesn't get

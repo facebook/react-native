@@ -61,8 +61,7 @@ class LayoutEventsTestApp extends React.Component {
       <View
         onLayout={this.handleParentOnLayout}
         testID="parent"
-        style={styles.container}
-      >
+        style={styles.container}>
         <View
           onLayout={this.handleOnLayout}
           testID="container"

@@ -63,8 +63,7 @@ const Components: Array<RNTesterModuleInfo> = [
     module: require('../examples/Image/ImageExample'),
     skipTest: {
       // [TODO(OSS Candidate ISS#2710739)
-      ios:
-        'Reason: -[NSURLResponse allHeaderFields]: unrecognized selector exception. Occurs upstream also.',
+      ios: 'Reason: -[NSURLResponse allHeaderFields]: unrecognized selector exception. Occurs upstream also.',
     }, // ]TODO(OSS Candidate ISS#2710739)
     category: 'Basic',
     supportsTVOS: true,

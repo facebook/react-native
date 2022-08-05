@@ -45,25 +45,27 @@ type AccessibilityEventDefinitions = {
 type AccessibilityEventTypes = 'click' | 'focus';
 
 // Mapping of public event names to platform-specific event names.
-const EventNames: Map<$Keys<AccessibilityEventDefinitions>, string> =
-  Platform.OS === 'android'
-    ? new Map([
-        ['change', 'touchExplorationDidChange'],
-        ['reduceMotionChanged', 'reduceMotionDidChange'],
-        ['screenReaderChanged', 'touchExplorationDidChange'],
-        ['accessibilityServiceChanged', 'accessibilityServiceDidChange'],
-      ])
-    : new Map([
-        ['announcementFinished', 'announcementFinished'],
-        ['boldTextChanged', 'boldTextChanged'],
-        ['change', 'screenReaderChanged'],
-        ['grayscaleChanged', 'grayscaleChanged'],
-        ['highContrastChanged', 'highContrastChanged'], // TODO(macOS GH#774)
-        ['invertColorsChanged', 'invertColorsChanged'],
-        ['reduceMotionChanged', 'reduceMotionChanged'],
-        ['reduceTransparencyChanged', 'reduceTransparencyChanged'],
-        ['screenReaderChanged', 'screenReaderChanged'],
-      ]);
+const EventNames: Map<
+  $Keys<AccessibilityEventDefinitions>,
+  string,
+> = Platform.OS === 'android'
+  ? new Map([
+      ['change', 'touchExplorationDidChange'],
+      ['reduceMotionChanged', 'reduceMotionDidChange'],
+      ['screenReaderChanged', 'touchExplorationDidChange'],
+      ['accessibilityServiceChanged', 'accessibilityServiceDidChange'],
+    ])
+  : new Map([
+      ['announcementFinished', 'announcementFinished'],
+      ['boldTextChanged', 'boldTextChanged'],
+      ['change', 'screenReaderChanged'],
+      ['grayscaleChanged', 'grayscaleChanged'],
+      ['highContrastChanged', 'highContrastChanged'], // TODO(macOS GH#774)
+      ['invertColorsChanged', 'invertColorsChanged'],
+      ['reduceMotionChanged', 'reduceMotionChanged'],
+      ['reduceTransparencyChanged', 'reduceTransparencyChanged'],
+      ['screenReaderChanged', 'screenReaderChanged'],
+    ]);
 
 /**
  * Sometimes it's useful to know whether or not the device has a screen reader
@@ -133,7 +135,7 @@ const AccessibilityInfo = {
    * macOS only
    */
   // [TODO(macOS GH#774)
-  isHighContrastEnabled: function(): Promise<boolean> {
+  isHighContrastEnabled: function (): Promise<boolean> {
     if (Platform.OS === 'macos') {
       return new Promise((resolve, reject) => {
         if (NativeAccessibilityManagerApple) {

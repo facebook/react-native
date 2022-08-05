@@ -69,8 +69,7 @@ exports.examples = [
             style={[
               styles.box,
               {margin: 5, padding: 5, alignSelf: 'flex-start'},
-            ]}
-          >
+            ]}>
             <Text style={{fontSize: 11}}>5px margin and padding,</Text>
             <Text style={{fontSize: 11}}>widthAutonomous=true</Text>
           </View>
@@ -119,8 +118,7 @@ exports.examples = [
                           borderStyle: 'dashed',
                         }
                       : null,
-                  ]}
-                >
+                  ]}>
                   <Text style={{fontSize: 11}}>Dashed border style</Text>
                 </View>
                 <View
@@ -136,8 +134,7 @@ exports.examples = [
                           borderStyle: 'dotted',
                         }
                       : null,
-                  ]}
-                >
+                  ]}>
                   <Text style={{fontSize: 11}}>Dotted border style</Text>
                 </View>
               </View>
@@ -302,8 +299,7 @@ exports.examples = [
                 <Text style={{paddingBottom: 10}}>Blobs</Text>
                 <View
                   style={{opacity: 1.0, paddingBottom: 30}}
-                  needsOffscreenAlphaCompositing={this.state.active}
-                >
+                  needsOffscreenAlphaCompositing={this.state.active}>
                   <View
                     style={[
                       styles.alphaCompositing,
@@ -330,8 +326,7 @@ exports.examples = [
                 </Text>
                 <View
                   style={{opacity: 0.8}}
-                  needsOffscreenAlphaCompositing={this.state.active}
-                >
+                  needsOffscreenAlphaCompositing={this.state.active}>
                   <View
                     style={[
                       styles.alphaCompositing,
@@ -401,8 +396,7 @@ exports.examples = [
                       backgroundColor: '#E57373',
                       zIndex: indices[0],
                     },
-                  ]}
-                >
+                  ]}>
                   <Text>ZIndex {indices[0]}</Text>
                 </View>
                 <View
@@ -413,8 +407,7 @@ exports.examples = [
                       backgroundColor: '#FFF176',
                       zIndex: indices[1],
                     },
-                  ]}
-                >
+                  ]}>
                   <Text>ZIndex {indices[1]}</Text>
                 </View>
                 <View
@@ -425,8 +418,7 @@ exports.examples = [
                       backgroundColor: '#81C784',
                       zIndex: indices[2],
                     },
-                  ]}
-                >
+                  ]}>
                   <Text>ZIndex {indices[2]}</Text>
                 </View>
                 <View
@@ -437,8 +429,7 @@ exports.examples = [
                       backgroundColor: '#64B5F6',
                       zIndex: indices[3],
                     },
-                  ]}
-                >
+                  ]}>
                   <Text>ZIndex {indices[3]}</Text>
                 </View>
               </View>
@@ -495,8 +486,7 @@ exports.examples = [
                     width: 50,
                     backgroundColor: 'yellow',
                     display: this.state.index % 5 === 0 ? 'none' : 'flex',
-                  }}
-                >
+                  }}>
                   <View
                     style={{
                       height: 30,
@@ -529,7 +519,7 @@ exports.examples = [
   },
   {
     title: 'BackfaceVisibility',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <>
           <Text style={{paddingBottom: 10}}>
@@ -544,8 +534,7 @@ exports.examples = [
                 alignItems: 'center',
                 backgroundColor: 'blue',
                 backfaceVisibility: 'hidden',
-              }}
-            >
+              }}>
               <Text>Front</Text>
             </View>
             <View
@@ -559,8 +548,7 @@ exports.examples = [
                 transform: [{rotateY: '180deg'}],
                 position: 'absolute',
                 top: 0,
-              }}
-            >
+              }}>
               <Text>Back (You should not see this)</Text>
             </View>
           </View>
@@ -576,8 +564,7 @@ exports.examples = [
                 alignItems: 'center',
                 backgroundColor: 'blue',
                 backfaceVisibility: 'hidden',
-              }}
-            >
+              }}>
               <Text>Front (You should not see this)</Text>
             </View>
             <View
@@ -590,8 +577,7 @@ exports.examples = [
                 backfaceVisibility: 'hidden',
                 position: 'absolute',
                 top: 0,
-              }}
-            >
+              }}>
               <Text>Back</Text>
             </View>
           </View>

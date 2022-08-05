@@ -184,8 +184,7 @@ class SecureEntryExample extends React.Component<$FlowFixMeProps, any> {
           style={{
             flex: 1,
             flexDirection: 'row',
-          }}
-        >
+          }}>
           <TextInput
             style={styles.default}
             defaultValue="cde"
@@ -333,13 +332,13 @@ exports.examples = ([
   ...TextInputSharedExamples,
   {
     title: 'Live Re-Write (ひ -> 日)',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <RewriteExampleKana />;
     },
   },
   {
     title: 'Keyboard Input Accessory View',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <TextInputAccessoryViewChangeTextExample />
@@ -350,7 +349,7 @@ exports.examples = ([
   },
   {
     title: "Default Input Accessory View with returnKeyType = 'done'",
-    render: function(): React.Node {
+    render: function (): React.Node {
       const keyboardTypesWithDoneButton = [
         'number-pad',
         'phone-pad',
@@ -372,7 +371,7 @@ exports.examples = ([
   },
   {
     title: 'Nested content and `value` property',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <WithLabel label="singleline">
@@ -386,8 +385,7 @@ exports.examples = ([
             <TextInput
               style={styles.default}
               multiline={true}
-              value="(value property)"
-            >
+              value="(value property)">
               (first raw text node)
               <Text style={{color: 'red'}}>(internal raw text node)</Text>
               (last raw text node)
@@ -399,7 +397,7 @@ exports.examples = ([
   },
   {
     title: 'Keyboard appearance',
-    render: function(): React.Node {
+    render: function (): React.Node {
       const keyboardAppearance = ['default', 'light', 'dark'];
       const examples = keyboardAppearance.map(type => {
         return (
@@ -413,7 +411,7 @@ exports.examples = ([
   },
   {
     title: 'Return key types',
-    render: function(): React.Node {
+    render: function (): React.Node {
       const returnKeyTypes = [
         'default',
         'go',
@@ -439,7 +437,7 @@ exports.examples = ([
   },
   {
     title: 'Enable return key automatically',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <WithLabel label="true">
@@ -454,13 +452,13 @@ exports.examples = ([
   },
   {
     title: 'Secure text entry',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <SecureEntryExample />;
     },
   },
   {
     title: 'Colored input text',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <TextInput
@@ -477,7 +475,7 @@ exports.examples = ([
   },
   {
     title: 'Colored highlight/cursor for text input',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <TextInput
@@ -496,7 +494,7 @@ exports.examples = ([
   },
   {
     title: 'Clear button mode',
-    render: function(): React.Node {
+    render: function (): React.Node {
       const clearButtonModes = [
         'never',
         'while-editing',
@@ -519,7 +517,7 @@ exports.examples = ([
   },
   {
     title: 'Clear and select',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <WithLabel label="clearTextOnFocus">
@@ -562,7 +560,7 @@ exports.examples = ([
   },
   {
     title: 'Multiline blur on submit',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <TextInput
@@ -581,7 +579,7 @@ exports.examples = ([
   },
   {
     title: 'Multiline',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <TextInput
@@ -624,7 +622,7 @@ exports.examples = ([
   },
   {
     title: 'TextInput Intrinsic Size',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <Text>Singleline TextInput</Text>
@@ -691,7 +689,7 @@ exports.examples = ([
   },
   {
     title: 'Auto-expanding',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <TextInput
@@ -708,7 +706,7 @@ exports.examples = ([
   },
   {
     title: 'Auto-expanding',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <AutogrowingTextInputExample
@@ -721,8 +719,7 @@ exports.examples = ([
               paddingTop: 0,
               backgroundColor: '#eeeeee',
               color: 'blue',
-            }}
-          >
+            }}>
             <Text style={{fontSize: 30, color: 'green'}}>huge</Text>
             generic generic generic
             <Text style={{fontSize: 6, color: 'red'}}>
@@ -740,7 +737,7 @@ exports.examples = ([
   },
   {
     title: 'TextInput maxLength',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <WithLabel label="maxLength: 5">
@@ -773,7 +770,7 @@ exports.examples = ([
   },
   {
     title: 'Text Content Type',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <WithLabel label="emailAddress">
@@ -788,7 +785,7 @@ exports.examples = ([
   },
   {
     title: 'TextInput Placeholder Styles',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <WithLabel label="letterSpacing: 10 lineHeight: 20 textAlign: 'center'">
@@ -810,7 +807,7 @@ exports.examples = ([
   },
   {
     title: 'showSoftInputOnFocus',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <WithLabel label="showSoftInputOnFocus: false">

@@ -19,7 +19,7 @@
  * @param {MatrixMath.Matrix} two Second matrix.
  * @return {boolean} Whether or not the two matrices differ.
  */
-const matricesDiffer = function(
+const matricesDiffer = function (
   one: ?Array<number>,
   two: ?Array<number>,
 ): boolean {

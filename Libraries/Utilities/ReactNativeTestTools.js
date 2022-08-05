@@ -200,10 +200,8 @@ function tap(instance: ReactTestInstance) {
   } else if (
     touchable?.props?.onStartShouldSetResponder?.testOnly_pressabilityConfig
   ) {
-    const {
-      onPress,
-      disabled,
-    } = touchable.props.onStartShouldSetResponder.testOnly_pressabilityConfig();
+    const {onPress, disabled} =
+      touchable.props.onStartShouldSetResponder.testOnly_pressabilityConfig();
     if (!disabled) {
       onPress({nativeEvent: {}});
     }

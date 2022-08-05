@@ -33,8 +33,7 @@ function ModalOnShowOnDismiss(): React.Node {
           }}
           onRequestClose={() => {
             setModalVisible(false);
-          }}
-        >
+          }}>
           <View style={[styles.centeredView, styles.modalBackdrop]}>
             <View style={styles.modalView}>
               <Text testID="modal-on-show-count">
@@ -45,20 +44,17 @@ function ModalOnShowOnDismiss(): React.Node {
               </Text>
               <Pressable
                 style={[styles.button, styles.buttonClose]}
-                onPress={() => setModalVisible(false)}
-              >
+                onPress={() => setModalVisible(false)}>
                 <Text testID="dismiss-modal" style={styles.textStyle}>
                   Hide modal by setting visible to false
                 </Text>
               </Pressable>
               <Pressable
                 style={[styles.button, styles.buttonClose]}
-                onPress={() => setModalShowComponent(false)}
-              >
+                onPress={() => setModalShowComponent(false)}>
                 <Text
                   testID="dismiss-modal-by-removing-component"
-                  style={styles.textStyle}
-                >
+                  style={styles.textStyle}>
                   Hide modal by removing component
                 </Text>
               </Pressable>
@@ -75,8 +71,7 @@ function ModalOnShowOnDismiss(): React.Node {
         onPress={() => {
           setModalShowComponent(true);
           setModalVisible(true);
-        }}
-      >
+        }}>
         <Text testID="open-modal" style={styles.textStyle}>
           Show Modal
         </Text>

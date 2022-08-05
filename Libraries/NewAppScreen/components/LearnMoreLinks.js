@@ -92,8 +92,7 @@ const LinkList = (): Node => {
           <TouchableOpacity
             accessibilityRole="button"
             onPress={() => openURLInBrowser(link)}
-            style={styles.linkContainer}
-          >
+            style={styles.linkContainer}>
             <Text style={styles.link}>{title}</Text>
             <Text
               style={[
@@ -101,8 +100,7 @@ const LinkList = (): Node => {
                 {
                   color: isDarkMode ? Colors.lighter : Colors.dark,
                 },
-              ]}
-            >
+              ]}>
               {description}
             </Text>
           </TouchableOpacity>

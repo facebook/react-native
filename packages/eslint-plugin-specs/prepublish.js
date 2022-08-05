@@ -15,7 +15,7 @@ const fs = require('fs');
  * Due to differences to how we consume internal packages, update a flag
  */
 
-fs.readFile('./react-native-modules.js', 'utf8', function(readError, source) {
+fs.readFile('./react-native-modules.js', 'utf8', function (readError, source) {
   if (readError != null) {
     return console.error(
       'Failed to read react-native-modules.js for publish',
@@ -28,14 +28,17 @@ fs.readFile('./react-native-modules.js', 'utf8', function(readError, source) {
     'const PACKAGE_USAGE = true;',
   );
 
-  fs.writeFile('./react-native-modules.js', result, 'utf8', function(
-    writeError,
-  ) {
-    if (writeError != null) {
-      return console.error(
-        'Failed to update react-native-modules.js for publish',
-        writeError,
-      );
-    }
-  });
+  fs.writeFile(
+    './react-native-modules.js',
+    result,
+    'utf8',
+    function (writeError) {
+      if (writeError != null) {
+        return console.error(
+          'Failed to update react-native-modules.js for publish',
+          writeError,
+        );
+      }
+    },
+  );
 });

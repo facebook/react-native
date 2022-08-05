@@ -24,9 +24,8 @@ type NativeProps = $ReadOnly<{
   headers?: ?{[string]: string},
 }>;
 
-const TextInlineImage: HostComponent<NativeProps> = NativeComponentRegistry.get<NativeProps>(
-  'RCTTextInlineImage',
-  () => ({
+const TextInlineImage: HostComponent<NativeProps> =
+  NativeComponentRegistry.get<NativeProps>('RCTTextInlineImage', () => ({
     uiViewClassName: 'RCTTextInlineImage',
     bubblingEventTypes: {},
     directEventTypes: {},
@@ -38,7 +37,6 @@ const TextInlineImage: HostComponent<NativeProps> = NativeComponentRegistry.get<
       },
       headers: true,
     },
-  }),
-);
+  }));
 
 module.exports = TextInlineImage;

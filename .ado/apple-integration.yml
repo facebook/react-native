@@ -37,6 +37,8 @@ jobs:
           echo "##vso[task.setvariable variable=package_version]$(cat package.json | jq .version | awk '{ print substr($0, 2, length($0) - 2) }')"
           echo "##vso[task.setvariable variable=react_version]$(cat package.json | jq .peerDependencies.react)"
           echo "##vso[task.setvariable variable=rncli_version]$(cat package.json | jq '.dependencies."@react-native-community/cli"')"
+          echo "##vso[task.setvariable variable=rncli_android_version]$(cat package.json | jq '.dependencies."@react-native-community/cli-platform-android"')"
+          echo "##vso[task.setvariable variable=rncli_ios_version]$(cat package.json | jq '.dependencies."@react-native-community/cli-platform-ios"')"
         displayName: 'Determine react-native-macos version'
       - bash: |
           npm pack
@@ -62,8 +64,8 @@ jobs:
           set -eo pipefail
           cat package.json |
             jq '.devDependencies["@react-native-community/cli"] = $(rncli_version)' |
-            jq '.devDependencies["@react-native-community/cli-platform-android"] = $(rncli_version)' |
-            jq '.devDependencies["@react-native-community/cli-platform-ios"] = $(rncli_version)' |
+            jq '.devDependencies["@react-native-community/cli-platform-android"] = $(rncli_android_version)' |
+            jq '.devDependencies["@react-native-community/cli-platform-ios"] = $(rncli_ios_version)' |
             jq '.devDependencies["react"] = $(react_version)' |
             jq '.devDependencies["react-native"] = "^0.64"' |
             jq '.devDependencies["react-native-macos"] = "../../react-native-macos-$(package_version).tgz"' |

@@ -50,8 +50,7 @@ function TransformBounceView({useNativeDriver}: {useNativeDriver: boolean}) {
       <RNTesterButton
         onPress={() => {
           bounceAnimation.start();
-        }}
-      >
+        }}>
         Press to Fling it!
       </RNTesterButton>
       <Animated.View
@@ -83,8 +82,7 @@ function TransformBounceView({useNativeDriver}: {useNativeDriver: boolean}) {
               },
             ],
           },
-        ]}
-      >
+        ]}>
         <Text>Transforms!</Text>
       </Animated.View>
     </>

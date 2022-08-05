@@ -147,8 +147,7 @@ class ActionSheetAnchorExample extends React.Component<
           <Text
             onPress={this.showActionSheet}
             style={style.button}
-            ref={this.anchorRef}
-          >
+            ref={this.anchorRef}>
             HERE
           </Text>
         </View>
@@ -311,8 +310,7 @@ class ShareScreenshotAnchorExample extends React.Component<
           <Text
             onPress={this.showShareActionSheet}
             style={style.button}
-            ref={this.anchorRef}
-          >
+            ref={this.anchorRef}>
             HERE
           </Text>
         </View>

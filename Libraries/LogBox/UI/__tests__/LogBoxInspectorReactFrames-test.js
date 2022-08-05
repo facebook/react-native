@@ -12,8 +12,8 @@
 'use strict';
 
 const React = require('react');
-const LogBoxInspectorReactFrames = require('../LogBoxInspectorReactFrames')
-  .default;
+const LogBoxInspectorReactFrames =
+  require('../LogBoxInspectorReactFrames').default;
 const LogBoxLog = require('../../Data/LogBoxLog').default;
 const render = require('../../../../jest/renderer');
 

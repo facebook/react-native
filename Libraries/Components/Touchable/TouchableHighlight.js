@@ -345,8 +345,7 @@ class TouchableHighlight extends React.Component<Props, State> {
         draggedTypes={this.props.draggedTypes}
         // ]TODO(macOS/win GH#774)
         ref={this.props.hostRef}
-        {...eventHandlersWithoutBlurAndFocus}
-      >
+        {...eventHandlersWithoutBlurAndFocus}>
         {React.cloneElement(child, {
           style: StyleSheet.compose(
             child.props.style,

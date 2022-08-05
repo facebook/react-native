@@ -386,9 +386,7 @@ class VirtualizedSectionList<
     return (info && info.key) || String(index);
   };
 
-  _subExtractor(
-    index: number,
-  ): ?{
+  _subExtractor(index: number): ?{
     section: SectionT,
     // Key of the section or combined key for section + item
     key: string,
@@ -503,64 +501,59 @@ class VirtualizedSectionList<
   };
   // ]TODO(macOS GH#774)
 
-  _renderItem = (listItemCount: number) => ({
-    item,
-    index,
-  }: {
-    item: Item,
-    index: number,
-    ...
-  }) => {
-    const info = this._subExtractor(index);
-    if (!info) {
-      return null;
-    }
-    const infoIndex = info.index;
-    if (infoIndex == null) {
-      const {section} = info;
-      if (info.header === true) {
-        const {renderSectionHeader} = this.props;
-        return renderSectionHeader ? renderSectionHeader({section}) : null;
-      } else {
-        const {renderSectionFooter} = this.props;
-        return renderSectionFooter ? renderSectionFooter({section}) : null;
+  _renderItem =
+    (listItemCount: number) =>
+    ({item, index}: {item: Item, index: number, ...}) => {
+      const info = this._subExtractor(index);
+      if (!info) {
+        return null;
       }
-    } else {
-      const renderItem = info.section.renderItem || this.props.renderItem;
-      const SeparatorComponent = this._getSeparatorComponent(
-        index,
-        info,
-        listItemCount,
-      );
-      invariant(renderItem, 'no renderItem!');
-      return (
-        <ItemWithSeparator
-          SeparatorComponent={SeparatorComponent}
-          LeadingSeparatorComponent={
-            infoIndex === 0 ? this.props.SectionSeparatorComponent : undefined
-          }
-          cellKey={info.key}
-          index={infoIndex}
-          isSelected={this._isItemSelected(item)} // TODO(macOS GH#774)
-          item={item}
-          leadingItem={info.leadingItem}
-          leadingSection={info.leadingSection}
-          prevCellKey={(this._subExtractor(index - 1) || {}).key}
-          // Callback to provide updateHighlight for this item
-          setSelfHighlightCallback={this._setUpdateHighlightFor}
-          setSelfUpdatePropsCallback={this._setUpdatePropsFor}
-          // Provide child ability to set highlight/updateProps for previous item using prevCellKey
-          updateHighlightFor={this._updateHighlightFor}
-          updatePropsFor={this._updatePropsFor}
-          renderItem={renderItem}
-          section={info.section}
-          trailingItem={info.trailingItem}
-          trailingSection={info.trailingSection}
-          inverted={!!this.props.inverted}
-        />
-      );
-    }
-  };
+      const infoIndex = info.index;
+      if (infoIndex == null) {
+        const {section} = info;
+        if (info.header === true) {
+          const {renderSectionHeader} = this.props;
+          return renderSectionHeader ? renderSectionHeader({section}) : null;
+        } else {
+          const {renderSectionFooter} = this.props;
+          return renderSectionFooter ? renderSectionFooter({section}) : null;
+        }
+      } else {
+        const renderItem = info.section.renderItem || this.props.renderItem;
+        const SeparatorComponent = this._getSeparatorComponent(
+          index,
+          info,
+          listItemCount,
+        );
+        invariant(renderItem, 'no renderItem!');
+        return (
+          <ItemWithSeparator
+            SeparatorComponent={SeparatorComponent}
+            LeadingSeparatorComponent={
+              infoIndex === 0 ? this.props.SectionSeparatorComponent : undefined
+            }
+            cellKey={info.key}
+            index={infoIndex}
+            isSelected={this._isItemSelected(item)} // TODO(macOS GH#774)
+            item={item}
+            leadingItem={info.leadingItem}
+            leadingSection={info.leadingSection}
+            prevCellKey={(this._subExtractor(index - 1) || {}).key}
+            // Callback to provide updateHighlight for this item
+            setSelfHighlightCallback={this._setUpdateHighlightFor}
+            setSelfUpdatePropsCallback={this._setUpdatePropsFor}
+            // Provide child ability to set highlight/updateProps for previous item using prevCellKey
+            updateHighlightFor={this._updateHighlightFor}
+            updatePropsFor={this._updatePropsFor}
+            renderItem={renderItem}
+            section={info.section}
+            trailingItem={info.trailingItem}
+            trailingSection={info.trailingSection}
+            inverted={!!this.props.inverted}
+          />
+        );
+      }
+    };
 
   _updatePropsFor = (cellKey, value) => {
     const updateProps = this._updatePropsMap[cellKey];
@@ -673,10 +666,8 @@ function ItemWithSeparator(props: ItemWithSeparatorProps): React.Node {
     inverted,
   } = props;
 
-  const [
-    leadingSeparatorHiglighted,
-    setLeadingSeparatorHighlighted,
-  ] = React.useState(false);
+  const [leadingSeparatorHiglighted, setLeadingSeparatorHighlighted] =
+    React.useState(false);
 
   const [separatorHighlighted, setSeparatorHighlighted] = React.useState(false);
 

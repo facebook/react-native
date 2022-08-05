@@ -44,8 +44,7 @@ function RotatingImagesView({useNativeDriver}: {useNativeDriver: boolean}) {
       <RNTesterButton
         onPress={() => {
           rotatingAnimation.start();
-        }}
-      >
+        }}>
         Press to Spin it!
       </RNTesterButton>
       <Animated.Image

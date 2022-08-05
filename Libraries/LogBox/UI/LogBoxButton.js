@@ -48,8 +48,7 @@ function LogBoxButton(props: Props): React.Node {
             : backgroundColor.default,
         },
         props.style,
-      )}
-    >
+      )}>
       {props.children}
     </View>
   );
@@ -61,8 +60,7 @@ function LogBoxButton(props: Props): React.Node {
       hitSlop={props.hitSlop}
       onPress={props.onPress}
       onPressIn={() => setPressed(true)}
-      onPressOut={() => setPressed(false)}
-    >
+      onPressOut={() => setPressed(false)}>
       {content}
     </TouchableWithoutFeedback>
   );

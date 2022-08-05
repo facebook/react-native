@@ -179,8 +179,7 @@ const RNTesterApp = (): React.Node => {
       <View
         style={StyleSheet.compose(styles.container, {
           backgroundColor: theme.GroupedBackgroundColor,
-        })}
-      >
+        })}>
         {activeModule != null ? (
           <RNTesterModuleContainer
             module={activeModule}

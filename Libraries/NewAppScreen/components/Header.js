@@ -27,8 +27,7 @@ const Header = (): Node => {
           backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
         },
       ]}
-      imageStyle={styles.logo}
-    >
+      imageStyle={styles.logo}>
       <HermesBadge />
       <Text
         style={[
@@ -36,8 +35,7 @@ const Header = (): Node => {
           {
             color: isDarkMode ? Colors.white : Colors.black,
           },
-        ]}
-      >
+        ]}>
         Welcome to
         {'\n'}
         React Native

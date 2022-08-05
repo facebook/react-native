@@ -80,8 +80,7 @@ function LogBoxInspectorReactFrames(props: Props): React.Node {
         <View
           // Unfortunately we don't have a unique identifier for stack traces.
           key={index}
-          style={componentStyles.frameContainer}
-        >
+          style={componentStyles.frameContainer}>
           <LogBoxButton
             backgroundColor={{
               default: 'transparent',
@@ -96,8 +95,7 @@ function LogBoxInspectorReactFrames(props: Props): React.Node {
                     openFileInEditor(frame.fileName, frame.location?.row ?? 1)
                 : null
             }
-            style={componentStyles.frame}
-          >
+            style={componentStyles.frame}>
             <View style={componentStyles.component}>
               <Text style={componentStyles.frameName}>
                 <Text style={componentStyles.bracket}>{'<'}</Text>
@@ -119,8 +117,7 @@ function LogBoxInspectorReactFrames(props: Props): React.Node {
             pressed: LogBoxStyle.getBackgroundColor(1),
           }}
           onPress={() => setCollapsed(!collapsed)}
-          style={componentStyles.collapseButton}
-        >
+          style={componentStyles.collapseButton}>
           <Text style={componentStyles.collapse}>{getCollapseMessage()}</Text>
         </LogBoxButton>
       </View>

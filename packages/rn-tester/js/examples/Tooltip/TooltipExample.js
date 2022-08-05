@@ -67,7 +67,7 @@ exports.examples = [
   {
     title: 'Button',
     description: ('Simple button to showcase tooltip.': string),
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <Button
           title="Hover me"
@@ -80,7 +80,7 @@ exports.examples = [
   {
     title: 'Text',
     description: ('Simple text string to showcase tooltip.': string),
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <Text tooltip={'Text tooltip'}>
           Simple text string to showcase tooltip.
@@ -91,7 +91,7 @@ exports.examples = [
   {
     title: 'Image',
     description: ('Image to showcase tooltip.': string),
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <Image source={image} style={styles.image} tooltip={'Facebook logo'} />
       );
@@ -100,7 +100,7 @@ exports.examples = [
   {
     title: 'View',
     description: ('Background color view to showcase tooltip.': string),
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <View style={styles.view} tooltip={'Turquoise'} />;
     },
   },
@@ -113,7 +113,7 @@ exports.examples = [
   },
   {
     title: 'TextInput',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <TextInput style={styles.textInput} tooltip={'Name'} />;
     },
   },

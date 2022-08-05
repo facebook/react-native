@@ -74,7 +74,8 @@ export type ImageStyleProp = ____ImageStyleProp_Internal;
  * through to an underlying component. Using this is almost always a mistake
  * and using one of the other more restrictive types is likely the right choice.
  */
-export type DangerouslyImpreciseStyleProp = ____DangerouslyImpreciseStyleProp_Internal;
+export type DangerouslyImpreciseStyleProp =
+  ____DangerouslyImpreciseStyleProp_Internal;
 
 /**
  * Utility type for getting the values for specific style keys.

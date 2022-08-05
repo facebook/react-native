@@ -36,7 +36,8 @@ export type {EventSubscription};
  * can theoretically listen to `RCTDeviceEventEmitter` (although discouraged).
  */
 export default class NativeEventEmitter<TEventToArgsMap: {...}>
-  implements IEventEmitter<TEventToArgsMap> {
+  implements IEventEmitter<TEventToArgsMap>
+{
   _nativeModule: ?NativeModule;
 
   constructor(nativeModule: ?NativeModule) {

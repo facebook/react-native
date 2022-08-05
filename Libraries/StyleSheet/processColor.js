@@ -31,8 +31,8 @@ function processColor(color?: ?(number | ColorValue)): ?ProcessedColorValue {
   }
 
   if (typeof normalizedColor === 'object') {
-    const processColorObject = require('./PlatformColorValueTypes')
-      .processColorObject;
+    const processColorObject =
+      require('./PlatformColorValueTypes').processColorObject;
 
     const processedColorObj = processColorObject(normalizedColor);
 

@@ -130,14 +130,12 @@ class AttributeToggler extends React.Component<{...}, $FlowFixMeState> {
         </Text>
         <Text
           style={{backgroundColor: '#ffaaaa', marginTop: 5}}
-          onPress={this.toggleWeight}
-        >
+          onPress={this.toggleWeight}>
           Toggle Weight
         </Text>
         <Text
           style={{backgroundColor: '#aaaaff', marginTop: 5}}
-          onPress={this.increaseSize}
-        >
+          onPress={this.increaseSize}>
           Increase Size
         </Text>
       </View>
@@ -201,31 +199,27 @@ class AdjustingFontSize extends React.Component<
         <Text
           ellipsizeMode="tail"
           numberOfLines={1}
-          style={{fontSize: 36, marginVertical: 6}}
-        >
+          style={{fontSize: 36, marginVertical: 6}}>
           Truncated text is baaaaad.
         </Text>
         <Text
           numberOfLines={1}
           adjustsFontSizeToFit={true}
-          style={{fontSize: 40, marginVertical: 6}}
-        >
+          style={{fontSize: 40, marginVertical: 6}}>
           Shrinking to fit available space is much better!
         </Text>
 
         <Text
           adjustsFontSizeToFit={true}
           numberOfLines={1}
-          style={{fontSize: 30, marginVertical: 6}}
-        >
+          style={{fontSize: 30, marginVertical: 6}}>
           {'Add text to me to watch me shrink!' + ' ' + this.state.dynamicText}
         </Text>
 
         <Text
           adjustsFontSizeToFit={true}
           numberOfLines={4}
-          style={{fontSize: 20, marginVertical: 6}}
-        >
+          style={{fontSize: 20, marginVertical: 6}}>
           {'Multiline text component shrinking is supported, watch as this reeeeaaaally loooooong teeeeeeext grooooows and then shriiiinks as you add text to me! ioahsdia soady auydoa aoisyd aosdy ' +
             ' ' +
             this.state.dynamicText}
@@ -233,8 +227,7 @@ class AdjustingFontSize extends React.Component<
 
         <Text
           adjustsFontSizeToFit={true}
-          style={{fontSize: 20, marginVertical: 6, maxHeight: 50}}
-        >
+          style={{fontSize: 20, marginVertical: 6, maxHeight: 50}}>
           {'Text limited by height, watch as this reeeeaaaally loooooong teeeeeeext grooooows and then shriiiinks as you add text to me! ioahsdia soady auydoa aoisyd aosdy ' +
             ' ' +
             this.state.dynamicText}
@@ -243,8 +236,7 @@ class AdjustingFontSize extends React.Component<
         <Text
           adjustsFontSizeToFit={true}
           numberOfLines={1}
-          style={{marginVertical: 6}}
-        >
+          style={{marginVertical: 6}}>
           <Text style={{fontSize: 14}}>
             {'Differently sized nested elements will shrink together. '}
           </Text>
@@ -259,8 +251,7 @@ class AdjustingFontSize extends React.Component<
             justifyContent: 'space-around',
             marginTop: 5,
             marginVertical: 6,
-          }}
-        >
+          }}>
           <Text style={{backgroundColor: '#ffaaaa'}} onPress={this.reset}>
             Reset
           </Text>
@@ -321,8 +312,7 @@ class TextBaseLineLayoutExample extends React.Component<{}, mixed> {
                 flexDirection: 'row',
                 alignItems: 'baseline',
                 backgroundColor: '#eee',
-              }}
-            >
+              }}>
               {marker}
               <Text>Text inside View.</Text>
               {marker}
@@ -341,8 +331,7 @@ class TextBaseLineLayoutExample extends React.Component<{}, mixed> {
             <View
               style={{
                 backgroundColor: 'yellow',
-              }}
-            >
+              }}>
               <Text>mauris eu commodo maximus</Text>
             </View>{' '}
             , ante arcu vestibulum ligula, et scelerisque diam.
@@ -443,8 +432,7 @@ class TextRenderInfoExample extends React.Component<
               if (lines.length > 0) {
                 this.setState({textMetrics: lines[lines.length - 1]});
               }
-            }}
-          >
+            }}>
             {new Array(this.state.numberOfTextBlocks)
               .fill('A tiny block of text.')
               .join(' ')}
@@ -455,18 +443,15 @@ class TextRenderInfoExample extends React.Component<
             this.setState({
               numberOfTextBlocks: this.state.numberOfTextBlocks + 1,
             })
-          }
-        >
+          }>
           More text
         </Text>
         <Text
-          onPress={() => this.setState({fontSize: this.state.fontSize + 1})}
-        >
+          onPress={() => this.setState({fontSize: this.state.fontSize + 1})}>
           Increase size
         </Text>
         <Text
-          onPress={() => this.setState({fontSize: this.state.fontSize - 1})}
-        >
+          onPress={() => this.setState({fontSize: this.state.fontSize - 1})}>
           Decrease size
         </Text>
       </View>
@@ -522,8 +507,7 @@ class TextWithCapBaseBox extends React.Component<
             marginBottom: Math.ceil(-this.state.textMetrics.descender),
           },
           this.props.style,
-        ]}
-      >
+        ]}>
         {this.props.children}
       </Text>
     );
@@ -539,7 +523,7 @@ exports.examples = [
   // [TODO(OSS Candidate ISS#2710739)
   {
     title: 'Apple Font Smoothing',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <Text>
@@ -575,7 +559,7 @@ exports.examples = [
   // ]TODO(OSS Candidate ISS#2710739)
   {
     title: 'Wrap',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <Text>
           The text should wrap if it goes on multiple lines. See, this is going
@@ -586,13 +570,13 @@ exports.examples = [
   },
   {
     title: "Substring Emoji (should only see 'test')",
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <Text>{'test🙃'.substring(0, 5)}</Text>;
     },
   },
   {
     title: 'Transparent Background Color',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <Text style={{backgroundColor: '#00000020', padding: 10}}>
           Text in a gray box!
@@ -605,7 +589,7 @@ exports.examples = [
   },
   {
     title: 'Text metrics',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <TextRenderInfoExample />;
     },
   },
@@ -623,7 +607,7 @@ exports.examples = [
   },
   {
     title: 'Padding',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <Text style={{padding: 10}}>
           This text is indented by 10px padding on all sides.
@@ -633,7 +617,7 @@ exports.examples = [
   },
   {
     title: 'Font Family',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <Text style={{fontFamily: Platform.isTV ? 'Times' : 'Cochin'}}>
@@ -643,8 +627,7 @@ exports.examples = [
             style={{
               fontFamily: Platform.isTV ? 'Times' : 'Cochin',
               fontWeight: 'bold',
-            }}
-          >
+            }}>
             Cochin bold
           </Text>
           <Text style={{fontFamily: 'Helvetica'}}>Helvetica</Text>
@@ -658,8 +641,7 @@ exports.examples = [
             style={{
               fontFamily: Platform.isTV ? 'Courier' : 'Verdana',
               fontWeight: 'bold',
-            }}
-          >
+            }}>
             Verdana bold
           </Text>
         </View>
@@ -668,7 +650,7 @@ exports.examples = [
   },
   {
     title: 'Font Size',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <Text style={{fontSize: 23}}>Size 23</Text>
@@ -679,7 +661,7 @@ exports.examples = [
   },
   {
     title: 'Color',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <Text style={{color: 'red'}}>Red color</Text>
@@ -690,7 +672,7 @@ exports.examples = [
   },
   {
     title: 'Font Weight',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <Text style={{fontWeight: 'bold'}}>Move fast and be bold</Text>
@@ -710,7 +692,7 @@ exports.examples = [
   },
   {
     title: 'Font Style',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <Text style={{fontStyle: 'normal'}}>Normal text</Text>
@@ -721,7 +703,7 @@ exports.examples = [
   },
   {
     title: 'Selectable',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <Text selectable={true}>
@@ -734,15 +716,14 @@ exports.examples = [
   },
   {
     title: 'Text Decoration',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <Text
             style={{
               textDecorationLine: 'underline',
               textDecorationStyle: 'solid',
-            }}
-          >
+            }}>
             Solid underline
           </Text>
           <Text
@@ -750,8 +731,7 @@ exports.examples = [
               textDecorationLine: 'underline',
               textDecorationStyle: 'double',
               textDecorationColor: '#ff0000',
-            }}
-          >
+            }}>
             Double underline with custom color
           </Text>
           <Text
@@ -759,8 +739,7 @@ exports.examples = [
               textDecorationLine: 'underline',
               textDecorationStyle: 'dashed',
               textDecorationColor: '#9CDC40',
-            }}
-          >
+            }}>
             Dashed underline with custom color
           </Text>
           <Text
@@ -768,8 +747,7 @@ exports.examples = [
               textDecorationLine: 'underline',
               textDecorationStyle: 'dotted',
               textDecorationColor: 'blue',
-            }}
-          >
+            }}>
             Dotted underline with custom color
           </Text>
           <Text style={{textDecorationLine: 'none'}}>None textDecoration</Text>
@@ -777,8 +755,7 @@ exports.examples = [
             style={{
               textDecorationLine: 'line-through',
               textDecorationStyle: 'solid',
-            }}
-          >
+            }}>
             Solid line-through
           </Text>
           <Text
@@ -786,8 +763,7 @@ exports.examples = [
               textDecorationLine: 'line-through',
               textDecorationStyle: 'double',
               textDecorationColor: '#ff0000',
-            }}
-          >
+            }}>
             Double line-through with custom color
           </Text>
           <Text
@@ -795,8 +771,7 @@ exports.examples = [
               textDecorationLine: 'line-through',
               textDecorationStyle: 'dashed',
               textDecorationColor: '#9CDC40',
-            }}
-          >
+            }}>
             Dashed line-through with custom color
           </Text>
           <Text
@@ -804,8 +779,7 @@ exports.examples = [
               textDecorationLine: 'line-through',
               textDecorationStyle: 'dotted',
               textDecorationColor: 'blue',
-            }}
-          >
+            }}>
             Dotted line-through with custom color
           </Text>
           <Text style={{textDecorationLine: 'underline line-through'}}>
@@ -820,7 +794,7 @@ exports.examples = [
     description: ('Nested text components will inherit the styles of their ' +
       'parents (only backgroundColor is inherited from non-Text parents).  ' +
       '<Text> only supports other <Text> and raw text (strings) as children.': string),
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <Text>
@@ -858,7 +832,7 @@ exports.examples = [
   },
   {
     title: 'Text Align',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <Text>auto (default) - english LTR</Text>
@@ -890,7 +864,7 @@ exports.examples = [
   },
   {
     title: 'Letter Spacing',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <Text style={{letterSpacing: 0}}>letterSpacing = 0</Text>
@@ -907,8 +881,7 @@ exports.examples = [
                 letterSpacing: 2,
                 backgroundColor: 'fuchsia',
                 marginTop: 5,
-              }}
-            >
+              }}>
               With size and background color
             </Text>
           </View>
@@ -920,8 +893,7 @@ exports.examples = [
               letterSpacing: 3,
               backgroundColor: '#dddddd',
               marginTop: 5,
-            }}
-          >
+            }}>
             [letterSpacing = 3]
             <Text style={{letterSpacing: 0, backgroundColor: '#bbbbbb'}}>
               [Nested letterSpacing = 0]
@@ -936,7 +908,7 @@ exports.examples = [
   },
   {
     title: 'Spaces',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <Text>
           A {'generated'} {'string'} and some &nbsp;&nbsp;&nbsp; spaces
@@ -946,7 +918,7 @@ exports.examples = [
   },
   {
     title: 'Line Height',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <Text>
           <Text style={{lineHeight: 35}}>
@@ -960,20 +932,20 @@ exports.examples = [
   {
     title: 'Empty Text',
     description: "It's ok to have Text with zero or null children.",
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <Text />;
     },
   },
   {
     title: 'Toggling Attributes',
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <AttributeToggler />;
     },
   },
   {
     title: 'backgroundColor attribute',
     description: 'backgroundColor is inherited from all types of views.',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <Text style={{backgroundColor: 'yellow'}}>
           Yellow container background,
@@ -999,7 +971,7 @@ exports.examples = [
   },
   {
     title: 'numberOfLines attribute',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <Text numberOfLines={1}>
@@ -1020,7 +992,7 @@ exports.examples = [
   },
   {
     title: 'Text highlighting (tap the link to see highlight)',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <Text>
@@ -1032,8 +1004,7 @@ exports.examples = [
                 textDecorationLine: 'underline',
                 color: 'blue',
               }}
-              onPress={() => null}
-            >
+              onPress={() => null}>
               consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
               labore et dolore magna aliqua. Ut enim ad minim veniam, quis
               nostrud
@@ -1047,7 +1018,7 @@ exports.examples = [
   },
   {
     title: 'allowFontScaling attribute',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <Text>
@@ -1095,7 +1066,7 @@ exports.examples = [
   },
   {
     title: 'Text shadow',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <Text
@@ -1104,8 +1075,7 @@ exports.examples = [
               textShadowOffset: {width: 2, height: 2},
               textShadowRadius: 1,
               textShadowColor: '#00cccc',
-            }}
-          >
+            }}>
             Demo text shadow
           </Text>
         </View>
@@ -1114,7 +1084,7 @@ exports.examples = [
   },
   {
     title: 'Ellipsize mode',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <Text numberOfLines={1}>
@@ -1135,7 +1105,7 @@ exports.examples = [
   },
   {
     title: 'Font variants',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <Text style={{fontVariant: ['small-caps']}}>Small Caps{'\n'}</Text>
@@ -1143,16 +1113,14 @@ exports.examples = [
             style={{
               fontFamily: Platform.isTV ? 'Times' : 'Hoefler Text',
               fontVariant: ['oldstyle-nums'],
-            }}
-          >
+            }}>
             Old Style nums 0123456789{'\n'}
           </Text>
           <Text
             style={{
               fontFamily: Platform.isTV ? 'Times' : 'Hoefler Text',
               fontVariant: ['lining-nums'],
-            }}
-          >
+            }}>
             Lining nums 0123456789{'\n'}
           </Text>
           <Text style={{fontVariant: ['tabular-nums']}}>
@@ -1171,7 +1139,7 @@ exports.examples = [
   },
   {
     title: 'Nested content',
-    render: function(): React.Node {
+    render: function (): React.Node {
       // iOS-only because it relies on inline views being able to size to content.
       // Android's implementation requires that a width and height be specified
       // on the inline view.
@@ -1199,25 +1167,25 @@ exports.examples = [
   },
   {
     title: 'Dynamic Font Size Adjustment',
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <AdjustingFontSize />;
     },
   },
   {
     title: 'Text Align with RTL',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <TextAlignRTLExample />;
     },
   },
   {
     title: "Text `alignItems: 'baseline'` style",
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <TextBaseLineLayoutExample />;
     },
   },
   {
     title: 'Transform',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <Text style={{textTransform: 'uppercase'}}>
@@ -1266,7 +1234,7 @@ exports.examples = [
   },
   {
     title: 'Text components inheriting color from parent',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View style={{marginTop: 10, marginBottom: 10}}>
           <Text style={{color: 'red'}}>

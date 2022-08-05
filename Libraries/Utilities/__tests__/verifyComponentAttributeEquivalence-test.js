@@ -12,8 +12,8 @@
 
 jest.dontMock('../verifyComponentAttributeEquivalence');
 
-const verifyComponentAttributeEquivalence = require('../verifyComponentAttributeEquivalence')
-  .default;
+const verifyComponentAttributeEquivalence =
+  require('../verifyComponentAttributeEquivalence').default;
 
 const TestComponentNativeViewConfig = {
   uiViewClassName: 'TestComponent',

@@ -100,8 +100,7 @@ function MovingBoxView({useNativeDriver}: {useNativeDriver: boolean}) {
         <RNTesterButton onPress={onReset}>Reset</RNTesterButton>
         <RNTesterButton
           testID="move-right-button"
-          onPress={() => moveTo(containerWidth - boxSize)}
-        >
+          onPress={() => moveTo(containerWidth - boxSize)}>
           {'->'}
         </RNTesterButton>
       </View>

@@ -22,17 +22,15 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['focus', 'blur', 'setTextAndSelection'],
 });
 
-const MultilineTextInputNativeComponent: HostComponent<mixed> = NativeComponentRegistry.get<mixed>(
-  'RCTMultilineTextInputView',
-  () => ({
+const MultilineTextInputNativeComponent: HostComponent<mixed> =
+  NativeComponentRegistry.get<mixed>('RCTMultilineTextInputView', () => ({
     uiViewClassName: 'RCTMultilineTextInputView',
     ...RCTTextInputViewConfig,
     validAttributes: {
       ...RCTTextInputViewConfig.validAttributes,
       dataDetectorTypes: true,
     },
-  }),
-);
+  }));
 
 // flowlint-next-line unclear-type:off
 export default ((MultilineTextInputNativeComponent: any): HostComponent<mixed>);

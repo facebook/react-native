@@ -322,9 +322,7 @@ module.exports = {
           const extendString = getClassExtendString(component);
 
           const replacedTemplate = FileTemplate({
-            imports: Array.from(imports)
-              .sort()
-              .join('\n'),
+            imports: Array.from(imports).sort().join('\n'),
             packageName: normalizedPackageName,
             className,
             extendClasses: extendString,

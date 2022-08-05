@@ -13,15 +13,8 @@
 const React = require('react');
 const ReactNative = require('react-native');
 const {Component} = React;
-const {
-  StyleSheet,
-  Text,
-  View,
-  Animated,
-  Easing,
-  TouchableOpacity,
-  Dimensions,
-} = ReactNative;
+const {StyleSheet, Text, View, Animated, Easing, TouchableOpacity, Dimensions} =
+  ReactNative;
 
 class ScrollViewAnimatedExample extends Component<{...}> {
   _scrollViewPos = new Animated.Value(0);
@@ -67,8 +60,7 @@ class ScrollViewAnimatedExample extends Component<{...}> {
           onScroll={Animated.event(
             [{nativeEvent: {contentOffset: {x: this._scrollViewPos}}}],
             {useNativeDriver: true},
-          )}
-        >
+          )}>
           <TouchableOpacity onPress={this.startAnimation}>
             <View style={styles.button}>
               <Text>Scroll me horizontally</Text>
@@ -104,7 +96,7 @@ exports.description = 'Component that is animated when ScrollView is offset.';
 exports.examples = [
   {
     title: 'Animated by scroll view',
-    render: function(): React.Element<typeof ScrollViewAnimatedExample> {
+    render: function (): React.Element<typeof ScrollViewAnimatedExample> {
       return <ScrollViewAnimatedExample />;
     },
   },

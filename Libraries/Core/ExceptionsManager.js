@@ -102,8 +102,8 @@ function reportException(
       isComponentError: !!e.isComponentError,
     });
   } else if (isFatal || e.type !== 'warn') {
-    const NativeExceptionsManager = require('./NativeExceptionsManager')
-      .default;
+    const NativeExceptionsManager =
+      require('./NativeExceptionsManager').default;
     if (NativeExceptionsManager) {
       NativeExceptionsManager.reportException(data);
     }

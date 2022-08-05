@@ -57,16 +57,14 @@ class RNTesterListFilters extends React.Component<
                       : 'white',
                 },
               ]}
-              onPress={() => this.filterPressed(filterLabel)}
-            >
+              onPress={() => this.filterPressed(filterLabel)}>
               <Text
                 style={{
                   color:
                     this.state.currentFilter === filterLabel
                       ? 'white'
                       : '#045cfc',
-                }}
-              >
+                }}>
                 {filterLabel}
               </Text>
             </TouchableOpacity>

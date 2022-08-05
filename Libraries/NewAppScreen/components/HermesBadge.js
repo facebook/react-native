@@ -26,8 +26,7 @@ const HermesBadge = (): Node => {
           {
             color: isDarkMode ? Colors.light : Colors.dark,
           },
-        ]}
-      >
+        ]}>
         {`Engine: Hermes ${version}`}
       </Text>
     </View>

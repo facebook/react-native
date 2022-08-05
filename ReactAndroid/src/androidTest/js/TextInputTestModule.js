@@ -75,8 +75,7 @@ class TokenizedTextExample extends React.Component {
           style={styles.multiline}
           onChangeText={text => {
             this.setState({text});
-          }}
-        >
+          }}>
           <Text>{parts}</Text>
         </TextInput>
       </View>
@@ -171,7 +170,7 @@ const styles = StyleSheet.create({
 
 const TextInputTestModule = {
   TextInputTestApp,
-  setValueRef: function(ref, value) {
+  setValueRef: function (ref, value) {
     app.refs[ref].setNativeProps({
       text: value,
     });

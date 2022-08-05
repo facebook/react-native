@@ -53,8 +53,7 @@ const Item = ({item, separators}: RenderItemProps<string>) => {
           backgroundColor: pressed ? 'red' : 'pink',
         },
       ]}
-      testID={item}
-    >
+      testID={item}>
       <Text style={styles.title}>{item}</Text>
     </Pressable>
   );

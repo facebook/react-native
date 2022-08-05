@@ -18,8 +18,7 @@ export const RNTesterEmptyBookmarksState = (): React.Node => {
     <View
       style={StyleSheet.compose(styles.emptyContainer, {
         backgroundColor: theme.GroupedBackgroundColor,
-      })}
-    >
+      })}>
       <View style={styles.emptyContainerInner}>
         <View>
           <Text style={[styles.heading, {color: theme.LabelColor}]}>

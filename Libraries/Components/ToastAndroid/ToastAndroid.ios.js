@@ -11,11 +11,11 @@
 'use strict';
 
 const ToastAndroid = {
-  show: function(message: string, duration: number): void {
+  show: function (message: string, duration: number): void {
     console.warn('ToastAndroid is not supported on this platform.');
   },
 
-  showWithGravity: function(
+  showWithGravity: function (
     message: string,
     duration: number,
     gravity: number,
@@ -23,7 +23,7 @@ const ToastAndroid = {
     console.warn('ToastAndroid is not supported on this platform.');
   },
 
-  showWithGravityAndOffset: function(
+  showWithGravityAndOffset: function (
     message: string,
     duration: number,
     gravity: number,

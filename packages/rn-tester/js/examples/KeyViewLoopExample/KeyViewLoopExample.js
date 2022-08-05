@@ -39,8 +39,7 @@ class KeyViewLoopExample extends React.Component<{}> {
                   this.firstViewRef.current?.setNativeProps({
                     nextKeyViewTag: findNodeHandle(this.secondViewRef.current),
                   });
-                }}
-              >
+                }}>
                 <Text>First View</Text>
               </View>
               <View
@@ -51,8 +50,7 @@ class KeyViewLoopExample extends React.Component<{}> {
                   this.thirdViewRef.current?.setNativeProps({
                     nextKeyViewTag: findNodeHandle(this.fourthViewRef.current),
                   });
-                }}
-              >
+                }}>
                 <Text>Third View</Text>
               </View>
               <View
@@ -63,8 +61,7 @@ class KeyViewLoopExample extends React.Component<{}> {
                   this.secondViewRef.current?.setNativeProps({
                     nextKeyViewTag: findNodeHandle(this.thirdViewRef.current),
                   });
-                }}
-              >
+                }}>
                 <Text>Second View</Text>
               </View>
               <Button
@@ -143,13 +140,13 @@ exports.description = 'Examples that show how key-view loops can be used.';
 exports.examples = [
   {
     title: 'Key View Loop Example',
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <KeyViewLoopExample />;
     },
   },
   {
     title: 'Focus Trap Example',
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <FocusTrapExample />;
     },
   },

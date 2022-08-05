@@ -22,7 +22,7 @@ let hasNativeGenerator;
 try {
   // If this function was lowered by regenerator-transform, it will try to
   // access `global.regeneratorRuntime` which doesn't exist yet and will throw.
-  hasNativeGenerator = hasNativeConstructor(function*() {},
+  hasNativeGenerator = hasNativeConstructor(function* () {},
   'GeneratorFunction');
 } catch {
   // In this case, we know generators are not provided natively.

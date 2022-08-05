@@ -98,7 +98,7 @@ export default class AnimatedColor extends AnimatedWithChildren {
       a: string,
       ...
     },
-    ...,
+    ...
   };
 
   constructor(valueIn?: ?(RgbaValue | RgbaAnimatedValue | ColorValue)) {
