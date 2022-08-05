@@ -99,9 +99,6 @@
     "packages/!(eslint-config-react-native-community)",
     "repo-config"
   ],
-  "peerDependencies": {
-    "react": "18.1.0"
-  },
   "dependencies": {
     "@jest/create-cache-key-function": "^27.0.1",
     "@react-native-community/cli": "^9.0.0-alpha.9",
@@ -124,6 +121,7 @@
     "nullthrows": "^1.1.1",
     "pretty-format": "^26.5.2",
     "promise": "^8.0.3",
+    "react": "18.1.0",
     "react-devtools-core": "4.24.0",
     "react-native-gradle-plugin": "^0.71.0",
     "react-refresh": "^0.4.0",
@@ -138,7 +136,6 @@
   "devDependencies": {
     "flow-bin": "^0.184.0",
     "hermes-eslint": "0.8.0",
-    "react": "18.1.0",
     "react-test-renderer": "^18.1.0"
   },
   "codegenConfig": {
