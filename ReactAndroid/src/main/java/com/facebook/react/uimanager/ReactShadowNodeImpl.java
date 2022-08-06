@@ -795,6 +795,21 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   }
 
   @Override
+  public void setRowGap(float rowGap) {
+    mYogaNode.setRowGap(rowGap);
+  }
+
+  @Override
+  public void setColumnGap(float columnGap) {
+    mYogaNode.setColumnGap(columnGap);
+  }
+
+  @Override
+  public void setGap(float gap) {
+    mYogaNode.setGap(gap);
+  }
+
+  @Override
   public void setFlexShrink(float flexShrink) {
     mYogaNode.setFlexShrink(flexShrink);
   }

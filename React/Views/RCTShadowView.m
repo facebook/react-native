@@ -642,6 +642,20 @@ RCTShadowViewMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, float
   return YGNodeStyleGetFlexBasis(_yogaNode);
 }
 
+#define RCT_GAP_PROPERTY(setProp, getProp, cssProp, type, gap) \
+  -(void)set##setProp : (type)value                         \
+  {                                                         \
+    YGNodeStyleSet##cssProp(_yogaNode, gap, value);              \
+  }                                                         \
+  -(type)getProp                                            \
+  {                                                         \
+    return YGNodeStyleGet##cssProp(_yogaNode, gap);              \
+  }
+
+RCT_GAP_PROPERTY(RowGap, rowGap, Gap, float, YGGapRow);
+RCT_GAP_PROPERTY(ColumnGap, columnGap, Gap, float, YGGapColumn);
+RCT_GAP_PROPERTY(Gap, gap, Gap, float, YGGapAll);
+
 #define RCT_STYLE_PROPERTY(setProp, getProp, cssProp, type) \
   -(void)set##setProp : (type)value                         \
   {                                                         \

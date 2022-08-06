@@ -266,6 +266,13 @@ static inline YGStyle convertRawProp(
       "",
       sourceValue.padding(),
       yogaStyle.padding());
+
+  yogaStyle.gap()[YGGapRow] = convertRawProp(context, rawProps, "rowGap", sourceValue.gap()[YGGapRow], yogaStyle.gap()[YGGapRow]);
+
+  yogaStyle.gap()[YGGapColumn] = convertRawProp(context, rawProps, "columnGap", sourceValue.gap()[YGGapColumn], yogaStyle.gap()[YGGapColumn]);
+
+  yogaStyle.gap()[YGGapAll] = convertRawProp(context, rawProps, "gap", sourceValue.gap()[YGGapAll], yogaStyle.gap()[YGGapAll]);
+
   yogaStyle.border() = convertRawProp(
       context,
       rawProps,

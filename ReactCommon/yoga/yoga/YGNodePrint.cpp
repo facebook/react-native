@@ -184,6 +184,16 @@ void YGNodeToString(
     appendEdges(str, "padding", style.padding());
     appendEdges(str, "border", style.border());
 
+    if (YGNode::computeColumnGap(style.gap(), detail::CompactValue::ofUndefined()) !=
+        YGNode::computeColumnGap(YGNode().getStyle().gap(), detail::CompactValue::ofUndefined())) {
+      appendNumberIfNotUndefined(str, "column-gap", style.gap()[YGGapRow]);
+    }
+    if (YGNode::computeRowGap(style.gap(), detail::CompactValue::ofUndefined()) !=
+        YGNode::computeRowGap(YGNode().getStyle().gap(), detail::CompactValue::ofUndefined())) {
+      appendNumberIfNotUndefined(str, "row-gap", style.gap()[YGGapRow]);
+    }
+
+
     appendNumberIfNotAuto(str, "width", style.dimensions()[YGDimensionWidth]);
     appendNumberIfNotAuto(str, "height", style.dimensions()[YGDimensionHeight]);
     appendNumberIfNotAuto(

@@ -29,6 +29,7 @@ class YOGA_EXPORT YGStyle {
 public:
   using Dimensions = Values<YGDimension>;
   using Edges = Values<YGEdge>;
+  using Gaps = Values<YGGap>;
 
   template <typename T>
   struct BitfieldRef {
@@ -113,6 +114,7 @@ private:
   Edges position_ = {};
   Edges padding_ = {};
   Edges border_ = {};
+  Gaps gap_ = {};
   Dimensions dimensions_{CompactValue::ofAuto()};
   Dimensions minDimensions_ = {};
   Dimensions maxDimensions_ = {};
@@ -209,6 +211,9 @@ public:
 
   const Edges& border() const { return border_; }
   IdxRef<YGEdge, &YGStyle::border_> border() { return {*this}; }
+
+  const Gaps& gap() const { return gap_; }
+  IdxRef<YGGap, &YGStyle::gap_> gap() { return {*this}; }
 
   const Dimensions& dimensions() const { return dimensions_; }
   IdxRef<YGDimension, &YGStyle::dimensions_> dimensions() { return {*this}; }

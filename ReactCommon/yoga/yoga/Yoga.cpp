@@ -797,6 +797,28 @@ YOGA_EXPORT float YGNodeStyleGetBorder(
   return static_cast<YGValue>(border).value;
 }
 
+YOGA_EXPORT void YGNodeStyleSetGap(
+    const YGNodeRef node,
+    const YGGap gap,
+    const float gapValue) {
+  auto value = detail::CompactValue::ofMaybe<YGUnitPoint>(gapValue);
+  updateIndexedStyleProp<MSVC_HINT(gap)>(
+      node, &YGStyle::gap, gap, value);
+}
+
+YOGA_EXPORT float YGNodeStyleGetGap(
+    const YGNodeConstRef node,
+    const YGGap gap) {
+  auto gapValue = node->getStyle().gap()[gap];
+  if (gapValue.isUndefined() || gapValue.isAuto()) {
+    // TODO(T26792433): Rather than returning YGUndefined, change the api to
+    // return YGFloatOptional.
+    return YGUndefined;
+  }
+
+  return static_cast<YGValue>(gapValue).value;
+}
+
 // Yoga specific properties, not compatible with flexbox specification
 
 // TODO(T26792433): Change the API to accept YGFloatOptional.
@@ -1972,6 +1994,7 @@ static YGCollectFlexItemsRowValues YGCalculateCollectFlexItemsRowValues(
   const YGFlexDirection mainAxis = YGResolveFlexDirection(
       node->getStyle().flexDirection(), node->resolveDirection(ownerDirection));
   const bool isNodeFlexWrap = node->getStyle().flexWrap() != YGWrapNoWrap;
+  const float gap = node->getGapForAxis(mainAxis, availableInnerWidth).unwrap();
 
   // Add items to the current line until it's full or we run out of items.
   uint32_t endOfLineIndex = startOfLineIndex;
@@ -1981,9 +2004,13 @@ static YGCollectFlexItemsRowValues YGCalculateCollectFlexItemsRowValues(
         child->getStyle().positionType() == YGPositionTypeAbsolute) {
       continue;
     }
+    
+    const int32_t elementInLineIndex = endOfLineIndex - startOfLineIndex;
+
     child->setLineIndex(lineCount);
     const float childMarginMainAxis =
         child->getMarginForAxis(mainAxis, availableInnerWidth).unwrap();
+    const float childLeadingGapMainAxis = elementInLineIndex != 0 ? gap : 0.0f;
     const float flexBasisWithMinAndMaxConstraints =
         YGNodeBoundAxisWithinMinAndMax(
             child,
@@ -1996,16 +2023,16 @@ static YGCollectFlexItemsRowValues YGCalculateCollectFlexItemsRowValues(
     // size, we've hit the end of the current line. Break out of the loop and
     // lay out the current line.
     if (sizeConsumedOnCurrentLineIncludingMinConstraint +
-                flexBasisWithMinAndMaxConstraints + childMarginMainAxis >
+                flexBasisWithMinAndMaxConstraints + childMarginMainAxis + childLeadingGapMainAxis >
             availableInnerMainDim &&
         isNodeFlexWrap && flexAlgoRowMeasurement.itemsOnLine > 0) {
       break;
     }
 
     sizeConsumedOnCurrentLineIncludingMinConstraint +=
-        flexBasisWithMinAndMaxConstraints + childMarginMainAxis;
+        flexBasisWithMinAndMaxConstraints + childMarginMainAxis + childLeadingGapMainAxis;
     flexAlgoRowMeasurement.sizeConsumedOnCurrentLine +=
-        flexBasisWithMinAndMaxConstraints + childMarginMainAxis;
+        flexBasisWithMinAndMaxConstraints + childMarginMainAxis + childLeadingGapMainAxis;
     flexAlgoRowMeasurement.itemsOnLine++;
 
     if (child->isNodeFlexible()) {
@@ -2415,6 +2442,7 @@ static void YGJustifyMainAxis(
       node->getLeadingPaddingAndBorder(mainAxis, ownerWidth).unwrap();
   const float trailingPaddingAndBorderMain =
       node->getTrailingPaddingAndBorder(mainAxis, ownerWidth).unwrap();
+  const float gap = node->getGapForAxis(mainAxis, ownerWidth).unwrap();
   // If we are using "at most" rules in the main axis, make sure that
   // remainingFreeSpace is 0 when min main dimension is not given
   if (measureModeMainDim == YGMeasureModeAtMost &&
@@ -2462,7 +2490,7 @@ static void YGJustifyMainAxis(
   // The space between the beginning and the first element and the space between
   // each two elements.
   float leadingMainDim = 0;
-  float betweenMainDim = 0;
+  float betweenMainDim = gap;
   const YGJustify justifyContent = node->getStyle().justifyContent();
 
   if (numberOfAutoMarginsOnCurrentLine == 0) {
@@ -2475,7 +2503,7 @@ static void YGJustifyMainAxis(
         break;
       case YGJustifySpaceBetween:
         if (collectedFlexItemsValues.itemsOnLine > 1) {
-          betweenMainDim =
+          betweenMainDim +=
               YGFloatMax(collectedFlexItemsValues.remainingFreeSpace, 0) /
               (collectedFlexItemsValues.itemsOnLine - 1);
         } else {
@@ -2490,9 +2518,10 @@ static void YGJustifyMainAxis(
         break;
       case YGJustifySpaceAround:
         // Space on the edges is half of the space between elements
-        betweenMainDim = collectedFlexItemsValues.remainingFreeSpace /
+        leadingMainDim = 0.5 *
+            collectedFlexItemsValues.remainingFreeSpace /
             collectedFlexItemsValues.itemsOnLine;
-        leadingMainDim = betweenMainDim / 2;
+        betweenMainDim += leadingMainDim * 2;
         break;
       case YGJustifyFlexStart:
         break;
@@ -2890,6 +2919,8 @@ static void YGNodelayoutImpl(
   // Accumulated cross dimensions of all lines so far.
   float totalLineCrossDim = 0;
 
+  const float crossAxisGap = node->getGapForAxis(crossAxis, availableInnerCrossDim).unwrap();
+
   // Max main dimension of all the lines.
   float maxLineMainDim = 0;
   YGCollectFlexItemsRowValues collectedFlexItemsValues;
@@ -3209,7 +3240,8 @@ static void YGNodelayoutImpl(
       }
     }
 
-    totalLineCrossDim += collectedFlexItemsValues.crossDim;
+    const float appliedCrossGap = lineCount != 0 ? crossAxisGap : 0.0f;
+    totalLineCrossDim += collectedFlexItemsValues.crossDim + appliedCrossGap;
     maxLineMainDim =
         YGFloatMax(maxLineMainDim, collectedFlexItemsValues.mainDim);
   }
@@ -3304,6 +3336,7 @@ static void YGNodelayoutImpl(
       }
       endIndex = ii;
       lineHeight += crossDimLead;
+      currentLead += i != 0 ? crossAxisGap : 0;
 
       if (performLayout) {
         for (ii = startIndex; ii < endIndex; ii++) {

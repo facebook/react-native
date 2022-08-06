@@ -107,6 +107,18 @@ const char* YGFlexDirectionToString(const YGFlexDirection value) {
   return "unknown";
 }
 
+const char* YGFlexDirectionToString(const YGGap value) {
+  switch (value) {
+    case YGGapRow:
+      return "row";
+    case YGGapColumn:
+      return "column";
+    case YGGapAll:
+      return "all";
+  }
+  return "unknown";
+}
+
 const char* YGJustifyToString(const YGJustify value) {
   switch (value) {
     case YGJustifyFlexStart:

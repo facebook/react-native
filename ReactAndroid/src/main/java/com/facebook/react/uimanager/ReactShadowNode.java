@@ -307,6 +307,12 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
   void setFlex(float flex);
 
   void setFlexGrow(float flexGrow);
+ 
+  void setRowGap(float rowGap);
+
+  void setColumnGap(float columnGap);
+
+  void setGap(float gap);
 
   void setFlexShrink(float flexShrink);
 

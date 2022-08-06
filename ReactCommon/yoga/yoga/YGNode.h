@@ -204,6 +204,14 @@ public:
       YGEdge edge,
       CompactValue defaultValue);
 
+  static CompactValue computeRowGap(
+      const YGStyle::Gaps& gaps,
+      CompactValue defaultValue);
+
+  static CompactValue computeColumnGap(
+      const YGStyle::Gaps& gaps,
+      CompactValue defaultValue);
+
   // Methods related to positions, margin, padding and border
   YGFloatOptional getLeadingPosition(
       const YGFlexDirection axis,
@@ -234,6 +242,10 @@ public:
       const YGFlexDirection axis,
       const float widthSize) const;
   YGFloatOptional getMarginForAxis(
+      const YGFlexDirection axis,
+      const float widthSize) const;
+
+  YGFloatOptional getGapForAxis(
       const YGFlexDirection axis,
       const float widthSize) const;
   // Setters

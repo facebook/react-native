@@ -32,6 +32,9 @@ public class ViewProps {
   public static final String FLEX_BASIS = "flexBasis";
   public static final String FLEX_DIRECTION = "flexDirection";
   public static final String FLEX_WRAP = "flexWrap";
+  public static final String ROW_GAP = "rowGap";
+  public static final String COLUMN_GAP = "columnGap";
+  public static final String GAP = "gap";
   public static final String HEIGHT = "height";
   public static final String JUSTIFY_CONTENT = "justifyContent";
   public static final String LEFT = "left";
@@ -203,6 +206,9 @@ public class ViewProps {
               FLEX_BASIS,
               FLEX_DIRECTION,
               FLEX_GROW,
+              ROW_GAP,
+              COLUMN_GAP,
+              GAP,
               FLEX_SHRINK,
               FLEX_WRAP,
               JUSTIFY_CONTENT,
