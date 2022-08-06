@@ -247,11 +247,13 @@ public class IntBufferBatchMountItem implements MountItem {
                     : "<hidden>";
             s.append(String.format("UPDATE STATE [%d]: %s\n", mIntBuffer[i++], stateString));
           } else if (type == INSTRUCTION_UPDATE_LAYOUT) {
+            int reactTag = mIntBuffer[i++];
+            int parentTag = mIntBuffer[i++];
             s.append(
                 String.format(
-                    "UPDATE LAYOUT [%d]: x:%d y:%d w:%d h:%d displayType:%d\n",
-                    mIntBuffer[i++],
-                    mIntBuffer[i++],
+                    "UPDATE LAYOUT [%d]->[%d]: x:%d y:%d w:%d h:%d displayType:%d\n",
+                    parentTag,
+                    reactTag,
                     mIntBuffer[i++],
                     mIntBuffer[i++],
                     mIntBuffer[i++],
