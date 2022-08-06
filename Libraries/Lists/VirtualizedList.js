@@ -42,7 +42,6 @@ const ScrollView = require('../Components/ScrollView/ScrollView');
 const View = require('../Components/View/View');
 const Batchinator = require('../Interaction/Batchinator');
 const ReactNative = require('../Renderer/shims/ReactNative');
-const Platform = require('../Utilities/Platform');
 const flattenStyle = require('../StyleSheet/flattenStyle');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const infoLog = require('../Utilities/infoLog');
@@ -74,11 +73,6 @@ type State = {
  * Default Props Helper Functions
  * Use the following helper functions for default values
  */
-
-// numColumnsOrDefault(this.props.numColumns)
-function numColumnsOrDefault(numColumns: ?number) {
-  return numColumns ?? 1;
-}
 
 // horizontalOrDefault(this.props.horizontal)
 function horizontalOrDefault(horizontal: ?boolean) {
@@ -1020,36 +1014,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     );
   }
 
-  // $FlowFixMe[missing-local-annot]
-  _getCellsInItemCount = (props: Props) => {
-    const {getCellsInItemCount, data} = props;
-    if (getCellsInItemCount) {
-      return getCellsInItemCount(data);
-    }
-    if (Array.isArray(data)) {
-      return data.length;
-    }
-    return 0;
-  };
-
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
    * LTI update could not be added via codemod */
   _defaultRenderScrollComponent = props => {
-    const {getItemCount, data} = props;
     const onRefresh = props.onRefresh;
-    const numColumns = numColumnsOrDefault(props.numColumns);
-    const accessibilityRole = Platform.select({
-      android: numColumns > 1 ? 'grid' : 'list',
-    });
-    const rowCount = getItemCount(data);
-    const accessibilityCollection = {
-      // over-ride _getCellsInItemCount to handle Objects or other data formats
-      // see https://bit.ly/35RKX7H
-      itemCount: this._getCellsInItemCount(props),
-      rowCount,
-      columnCount: numColumns,
-      hierarchical: false,
-    };
     if (this._isNestedWithSameOrientation()) {
       // $FlowFixMe[prop-missing] - Typing ReactNativeComponent revealed errors
       return <View {...props} />;
@@ -1064,8 +1032,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         // $FlowFixMe[prop-missing] Invalid prop usage
         <ScrollView
           {...props}
-          accessibilityRole={accessibilityRole}
-          accessibilityCollection={accessibilityCollection}
           refreshControl={
             props.refreshControl == null ? (
               <RefreshControl
@@ -1081,14 +1047,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         />
       );
     } else {
-      return (
-        // $FlowFixMe[prop-missing] Invalid prop usage
-        <ScrollView
-          {...props}
-          accessibilityRole={accessibilityRole}
-          accessibilityCollection={accessibilityCollection}
-        />
-      );
+      // $FlowFixMe[prop-missing] Invalid prop usage
+      return <ScrollView {...props} />;
     }
   };
 
@@ -1870,19 +1830,10 @@ class CellRenderer extends React.Component<
     }
 
     if (renderItem) {
-      const accessibilityCollectionItem = {
-        itemIndex: index,
-        rowIndex: index,
-        rowSpan: 1,
-        columnIndex: 0,
-        columnSpan: 1,
-        heading: false,
-      };
       return renderItem({
         item,
         index,
         separators: this._separators,
-        accessibilityCollectionItem,
       });
     }
 
