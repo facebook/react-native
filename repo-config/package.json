@@ -17,7 +17,7 @@
     "@react-native/eslint-plugin-specs": "^0.71.0",
     "@reactions/component": "^2.0.2",
     "async": "^3.2.2",
-    "clang-format": "^1.2.4",
+    "clang-format": "^1.8.0",
     "connect": "^3.6.5",
     "coveralls": "^3.1.1",
     "eslint": "^8.19.0",
