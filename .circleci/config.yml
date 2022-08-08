@@ -677,8 +677,17 @@ jobs:
   # -------------------------
   test_android_template:
     executor: reactnativeandroid
+    parameters:
+      flavor:
+        type: string
+        default: "Debug"
+      newarchitecture:
+        type: boolean
+        default: false
+    environment:
+      - PROJECT_NAME: "AndroidTemplateProject"
     steps:
-      - checkout
+      - checkout_code_with_cache
       - run_yarn
       - attach_workspace:
           at: .
@@ -687,15 +696,14 @@ jobs:
           name: Create Android template project
           command: |
             REPO_ROOT=$(pwd)
-            PACKAGE=$(cat build/react-native-package-version)
-            PATH_TO_PACKAGE="$REPO_ROOT/build/$PACKAGE"
-            cd template
-            npm add $PATH_TO_PACKAGE
-            npm install
+            node ./scripts/set-rn-template-version.js "file:$REPO_ROOT/build/$(cat build/react-native-package-version)"
+            node cli.js init $PROJECT_NAME --directory "/tmp/$PROJECT_NAME" --template $REPO_ROOT --verbose --skip-install
+            cd /tmp/$PROJECT_NAME
+            yarn
 
       - run:
-          name: Build the template application
-          command: cd template/android/ && ./gradlew assembleDebug
+          name: Build the template application for << parameters.flavor >> with New Architecture set << parameters.newarchitecture >>
+          command: cd /tmp/$PROJECT_NAME/android/ && ./gradlew assemble<< parameters.flavor >> -PnewArchEnabled=<< parameters.newarchitecture >>
 
   # -------------------------
   #    JOBS: Test iOS Template
@@ -726,14 +734,12 @@ jobs:
             PACKAGE=$(cat build/react-native-package-version)
             PATH_TO_PACKAGE="$REPO_ROOT/build/$PACKAGE"
             node ./scripts/set-rn-template-version.js "file:$PATH_TO_PACKAGE"
-            mkdir -p ~/tmp
-            cd ~/tmp
-            node "$REPO_ROOT/cli.js" init "$PROJECT_NAME" --template "$REPO_ROOT" --verbose
+            node cli.js init $PROJECT_NAME --directory "/tmp/$PROJECT_NAME" --template $REPO_ROOT --verbose
       - run:
           name: Build template project
           command: |
             xcodebuild build \
-              -workspace ~/tmp/$PROJECT_NAME/ios/$PROJECT_NAME.xcworkspace \
+              -workspace /tmp/$PROJECT_NAME/ios/$PROJECT_NAME.xcworkspace \
               -scheme $PROJECT_NAME \
               -sdk iphonesimulator
 
@@ -1327,6 +1333,10 @@ workflows:
       - test_android_template:
           requires:
             - build_npm_package
+          matrix:
+            parameters:
+              newarchitecture: [true, false]
+              flavor: ["Debug", "Release"]
       - test_ios_template:
           requires:
             - build_npm_package
