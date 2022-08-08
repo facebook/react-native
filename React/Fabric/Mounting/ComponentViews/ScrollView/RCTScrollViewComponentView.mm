@@ -649,6 +649,10 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
 - (void)scrollToOffset:(CGPoint)offset animated:(BOOL)animated
 {
+  if (CGPointEqualToPoint(_scrollView.contentOffset, offset)) {
+    return;
+  }
+
   [self _forceDispatchNextScrollEvent];
 
   if (_layoutMetrics.layoutDirection == LayoutDirection::RightToLeft) {
