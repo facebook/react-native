@@ -260,6 +260,22 @@
 
 - Encode URL params in URLSearchParams.toString() ([1042a8012f](https://github.com/facebook/react-native/commit/1042a8012fb472bd5c882b469fe507dd6279d562) by [@sshic](https://github.com/sshic))
 
+## v0.68.3
+
+### Changed
+
+#### Android specific
+
+- Let's not build reactnativeutilsjni shared library ([af9225ec5f](https://github.com/facebook/react-native/commit/af9225ec5fd22da802e3da4d786fa7f6ec956b0f) by [@SparshaSaha](https://github.com/SparshaSaha))
+- Modified **getDefaultJSExecutorFactory** method ([87cfd386cb](https://github.com/facebook/react-native/commit/87cfd386cb2e02bfa440c94706d9d0274f83070c) by [@KunalFarmah98](https://github.com/KunalFarmah98))
+
+### Fixed
+
+- Use monotonic clock for performance.now() ([114d31feee](https://github.com/facebook/react-native/commit/114d31feeeb47f5a57419e5088c3cbe9340f757a))
+
+#### Android specific
+
+- Logging a soft error when ReactRootView has an id other than -1 instead of crashing the app in hybrid apps ([1ca2c24930](https://github.com/facebook/react-native/commit/1ca2c2493027c1b027146cd41e17dd8a4fc33a41) by [@Kunal-Airtel2022](https://github.com/Kunal-Airtel2022))
 
 ## v0.68.2
 
