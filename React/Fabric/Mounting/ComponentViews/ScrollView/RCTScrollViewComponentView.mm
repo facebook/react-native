@@ -590,7 +590,6 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
     offset = CGPointMake(localX, localY);
   }
 
-  [self _forceDispatchNextScrollEvent];
   [self scrollToOffset:offset animated:animated];
 }
 
@@ -645,7 +644,6 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
 - (void)scrollToOffset:(CGPoint)offset
 {
-  [self _forceDispatchNextScrollEvent];
   [self scrollToOffset:offset animated:YES];
 }
 
