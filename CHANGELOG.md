@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.69.4
+
+### Changed
+
+- Upgrade RN CLI to v8.0.4 ([66c68c37ce](https://github.com/facebook/react-native/commit/66c68c37ce94f6c1160e7f260c0d1887539c6605) by [@thymikee](https://github.com/thymikee))
+
+#### Android specific
+
+- Modified **getDefaultJSExecutorFactory** method ([87cfd386cb](https://github.com/facebook/react-native/commit/87cfd386cb2e02bfa440c94706d9d0274f83070c) by [@KunalFarmah98](https://github.com/KunalFarmah98))
+
 ## v0.69.3
 
 ### Fixed
