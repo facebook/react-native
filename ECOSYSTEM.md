@@ -1,6 +1,6 @@
 # The React Native Ecosystem
 
-We aim to build a vibrant and inclusive ecosystem of partners, core contributors, and community that goes beyond the main React Native GitHub repository. This document explains the roles and responsibilities of various stakeholders and provides guidelines for the community organization. The structure outlined in this document has been in place for a while but hadn't been written down before.
+We aim to build a vibrant and inclusive ecosystem of partners, core contributors, and community that goes beyond the main React Native GitHub repository. This document explains the roles and responsibilities of various stakeholders and provides guidelines for the community organization. The structure outlined in this document has been in place for a while but had not been written down before.
 
 There are three types of stakeholders:
 
@@ -10,13 +10,13 @@ There are three types of stakeholders:
 
 ## Partners
 
-Partners are companies that are significantly invested in React Native and demonstrate ownership. Informed by their use of React Native, they push for improvements of the core and/or the ecosystem around it. Examples of this may include large scale contributions to `react-native` or owning an essential tools or libraries. 
+Partners are companies that are significantly invested in React Native and demonstrate ownership. Informed by their use of React Native, they push for improvements of the core and/or the ecosystem around it. Examples of this may include large scale contributions to `react-native` or owning essential tools or libraries. 
 
-Partners think of React Native as a product: they understand the trade offs that the project makes as well as future plans and goals. Together we shape the vision for React Native to make it the best way to build applications. 
+Partners think of React Native as a product; they understand the trade offs that the project makes as well as future plans and goals. Together we shape the vision for React Native to make it the best way to build applications. 
 
 Baseline responsibilities of partners include: 
 * Attending monthly meeting
-* Contributing to the release process as a [community releaser](https://reactnative.dev/contributing/release-roles-responsibilities#release-role-2-community-releaser)
+* Contributing to the release process. Examples include being a [community releaser](https://reactnative.dev/contributing/release-roles-responsibilities#release-role-2-community-releaser), testing new releases, technical support for release issues.
 * Engage on the core contributor Discord
 
 Our current partners and other areas of ownership:
