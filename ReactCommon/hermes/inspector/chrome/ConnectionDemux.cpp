@@ -132,6 +132,8 @@ void ConnectionDemux::removePage(int pageId) {
   globalInspector_.removePage(pageId);
 
   auto conn = conns_.at(pageId);
+  std::string title = conn->getTitle();
+  inspectedContexts_->erase(title);
   conn->disconnect();
   conns_.erase(pageId);
 }
