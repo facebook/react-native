@@ -7,6 +7,7 @@
  * @format
  * @flow strict-local
  */
+
 // TODO: move this file to shims/ReactNative (requires React update and sync)
 
 import requireNativeComponent from '../../Libraries/ReactNative/requireNativeComponent';
