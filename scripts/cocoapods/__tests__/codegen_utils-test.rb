@@ -125,7 +125,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
         codegen = CodegenUtils.new().get_codegen_config_from_file('package.json', 'codegenConfig')
 
         # Assert
-        assert_equal(codegen, {'libraries' => []})
+        assert_equal(codegen, {})
     end
 
     def testGetCodegenConfigFromFile_whenFileExistsButHasNoKey_returnEmpty
@@ -137,7 +137,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
         codegen = CodegenUtils.new().get_codegen_config_from_file('package.json', 'codegen')
 
         # Assert
-        assert_equal(codegen, {'libraries' => []})
+        assert_equal(codegen, {})
     end
 
     def testGetCodegenConfigFromFile_whenFileExistsAndHasKey_returnObject
@@ -211,19 +211,6 @@ class CodegenUtilsTests < Test::Unit::TestCase
             "${PODS_ROOT}/../MyFabricComponent1NativeComponent.js",
             "${PODS_ROOT}/../NativeModule1.js",
         ])
-    end
-
-    def testGetListOfJSSpecs_whenMisconfigured_aborts
-        # Arrange
-        app_codegen_config = {}
-        app_path = "~/MyApp/"
-        # Act
-        assert_raises() {
-           files = CodegenUtils.new().get_list_of_js_specs(app_codegen_config, app_path)
-        }
-        # Assert
-        assert_equal(Pod::UI.collected_warns , ["[Error] Codegen not properly configured. Please add the `codegenConfig` entry to your `package.json`"])
-
     end
 
     # ================================== #
