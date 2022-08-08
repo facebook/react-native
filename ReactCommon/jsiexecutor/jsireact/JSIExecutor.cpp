@@ -173,7 +173,7 @@ void JSIExecutor::setBundleRegistry(std::unique_ptr<RAMBundleRegistry> r) {
             PropNameID::forAscii(*runtime_, "nativeRequire"),
             2,
             [this](
-                __unused Runtime &rt,
+                [[maybe_unused]] Runtime &rt,
                 const facebook::jsi::Value &,
                 const facebook::jsi::Value *args,
                 size_t count) { return nativeRequire(args, count); }));
