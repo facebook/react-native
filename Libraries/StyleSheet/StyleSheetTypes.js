@@ -37,7 +37,7 @@ export type CursorValue = ?(
   | 'text'
   | 'vertical-text'
   | 'w-resize'
-)
+);
 
 export type ColorArrayValue = null | $ReadOnlyArray<____ColorValue_Internal>;
 export type PointValue = {|
