@@ -185,6 +185,11 @@ const APIs: Array<RNTesterModuleInfo> = [
     module: require('../examples/Dimensions/DimensionsExample'),
   },
   {
+    key: 'Keyboard',
+    category: 'Basic',
+    module: require('../examples/Keyboard/KeyboardExample').default,
+  },
+  {
     key: 'LayoutEventsExample',
     category: 'UI',
     module: require('../examples/Layout/LayoutEventsExample'),
