@@ -286,7 +286,7 @@
 	if (![[self window] makeFirstResponder:self]) {
 #else
 	if (![self becomeFirstResponder]) {
-#endif //// TODO(macOS GH#774)]
+#endif // TODO(macOS GH#774)]
 		self.reactIsFocusNeeded = YES;
 	}
 }

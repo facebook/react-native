@@ -172,7 +172,7 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
 
 - (BOOL)becomeFirstResponder
 {
-  BOOL success =  [[self window] makeFirstResponder:self];
+  BOOL success = [super becomeFirstResponder];
 
   if (success) {
     id<RCTBackedTextInputDelegate> textInputDelegate = [self textInputDelegate];
