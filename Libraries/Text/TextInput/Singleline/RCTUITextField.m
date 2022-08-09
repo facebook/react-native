@@ -188,8 +188,8 @@
 
 - (void)paste:(id)sender
 {
-  [super paste:sender];
   _textWasPasted = YES;
+  [super paste:sender];
 }
 
 #pragma mark - Layout
