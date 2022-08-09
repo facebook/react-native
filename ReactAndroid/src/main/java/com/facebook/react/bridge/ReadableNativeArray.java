@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -98,17 +98,17 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
   }
 
   @Override
-  public @Nullable String getString(int index) {
+  public @NonNull String getString(int index) {
     return (String) getLocalArray()[index];
   }
 
   @Override
-  public @Nullable ReadableNativeArray getArray(int index) {
+  public @NonNull ReadableNativeArray getArray(int index) {
     return (ReadableNativeArray) getLocalArray()[index];
   }
 
   @Override
-  public @Nullable ReadableNativeMap getMap(int index) {
+  public @NonNull ReadableNativeMap getMap(int index) {
     return (ReadableNativeMap) getLocalArray()[index];
   }
 

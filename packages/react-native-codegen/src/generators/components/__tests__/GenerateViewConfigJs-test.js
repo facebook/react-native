@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -30,6 +30,7 @@ describe('GenerateViewConfigJs', () => {
       generator.generate('DEPRECATED_VIEW_CONFIG_NAME', {
         modules: {
           Component: {
+            type: 'Component',
             components: {
               NativeComponentName: {
                 paperComponentNameDeprecated: 'DeprecatedNativeComponentName',

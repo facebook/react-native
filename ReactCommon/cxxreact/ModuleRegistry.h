@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -58,6 +58,11 @@ class RN_EXPORT ModuleRegistry {
       unsigned int moduleId,
       unsigned int methodId,
       folly::dynamic &&args);
+
+  std::string getModuleName(unsigned int moduleId);
+  std::string getModuleSyncMethodName(
+      unsigned int moduleId,
+      unsigned int methodName);
 
  private:
   // This is always populated

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -17,6 +17,17 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
 
 @implementation RCTTextAttributes
 
+// [TODO(macOS GH#774)
++ (RCTUIColor *)defaultForegroundColor
+{
+  if (@available(iOS 13.0, *)) {
+    return [RCTUIColor labelColor];
+  } else {
+    return [RCTUIColor blackColor];
+  }
+}
+// ]TODO(macOS GH#774)
+
 - (instancetype)init
 {
   if (self = [super init]) {
@@ -31,13 +42,9 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
     _textShadowRadius = NAN;
     _opacity = NAN;
     _textTransform = RCTTextTransformUndefined;
-    // [TODO(OSS Candidate ISS#2710739)
-    if (@available(iOS 13.0, *)) {
-      _foregroundColor = [RCTUIColor labelColor];
-    } else {
-      _foregroundColor = [RCTUIColor blackColor];
-    }
-    // ]TODO(OSS Candidate ISS#2710739)
+    // [TODO(macOS GH#774)
+    _foregroundColor = [RCTTextAttributes defaultForegroundColor];
+    // ]TODO(macOS GH#774)
   }
 
   return self;
@@ -50,7 +57,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   // We will address this in the future.
 
   // Color
-  _foregroundColor = textAttributes->_foregroundColor ?: _foregroundColor;
+  _foregroundColor = textAttributes->_foregroundColor == [RCTTextAttributes defaultForegroundColor] ? _foregroundColor : textAttributes->_foregroundColor;
   _backgroundColor = textAttributes->_backgroundColor ?: _backgroundColor;
   _opacity = !isnan(textAttributes->_opacity) ? (isnan(_opacity) ? 1.0 : _opacity) * textAttributes->_opacity : _opacity;
 
@@ -192,11 +199,11 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
     attributes[RCTTextAttributesIsHighlightedAttributeName] = @YES;
   }
 
-  // [TODO(macOS ISS#2323203)
+  // [TODO(macOS GH#774)
   if (_fontSmoothing != RCTFontSmoothingAuto) {
     attributes[RCTTextAttributesFontSmoothingAttributeName] = @(_fontSmoothing);
   }
-  // ]TODO(macOS ISS#2323203)
+  // ]TODO(macOS GH#774)
 
   if (_tag) {
     attributes[RCTTextAttributesTagAttributeName] = _tag;
@@ -252,6 +259,23 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   return effectiveBackgroundColor ?: [RCTUIColor clearColor]; // TODO(OSS Candidate ISS#2710739)
 }
 
+static NSString *capitalizeText(NSString *text)
+{
+  NSArray *words = [text componentsSeparatedByString:@" "];
+  NSMutableArray *newWords = [NSMutableArray new];
+  NSNumberFormatter *num = [NSNumberFormatter new];
+  for (NSString *item in words) {
+    NSString *word; 
+    if ([item length] > 0 && [num numberFromString:[item substringWithRange:NSMakeRange(0, 1)]] == nil) {
+      word = [item capitalizedString];
+    } else {
+      word = [item lowercaseString];
+    }
+    [newWords addObject:word];
+  }
+  return [newWords componentsJoinedByString:@" "];
+}
+
 - (NSString *)applyTextAttributesToText:(NSString *)text
 {
   switch (_textTransform) {
@@ -263,7 +287,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
     case RCTTextTransformUppercase:
       return [text uppercaseString];
     case RCTTextTransformCapitalize:
-      return [text capitalizedString];
+      return capitalizeText(text);
   }
 }
 

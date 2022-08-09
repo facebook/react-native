@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -49,11 +49,11 @@ RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   for (UIAlertController *alertController in _alertControllers) {
     [alertController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
   }
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
   for (NSAlert *alert in _alertControllers) {
     if (alert.window.sheetParent) {
       [alert.window.sheetParent endSheet:alert.window];
@@ -61,7 +61,7 @@ RCT_EXPORT_MODULE()
       [alert.window close];
     }
   }
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 }
 
 /**
@@ -78,7 +78,7 @@ RCT_EXPORT_MODULE()
  * The key from the `buttons` dictionary is passed back in the callback on click.
  * Buttons are displayed in the order they are specified.
  */
-RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::Args &)args callback : (RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::NativeArgs &)args callback : (RCTResponseSenderBlock)callback)
 {
   NSString *title = [RCTConvert NSString:args.title()];
   NSString *message = [RCTConvert NSString:args.message()];
@@ -87,22 +87,22 @@ RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::Args &)args callback 
       [RCTConvert NSDictionaryArray:RCTConvertOptionalVecToArray(args.buttons(), ^id(id<NSObject> element) {
                     return element;
                   })];
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   NSString *defaultValue = [RCTConvert NSString:args.defaultValue()];
   NSString *cancelButtonKey = [RCTConvert NSString:args.cancelButtonKey()];
   NSString *destructiveButtonKey = [RCTConvert NSString:args.destructiveButtonKey()];
   UIKeyboardType keyboardType = [RCTConvert UIKeyboardType:args.keyboardType()];
-#else // [TODO(macOS ISS#2323203)
-  BOOL critical = args.critical();
-  BOOL modal = args.modal();
+#else // [TODO(macOS GH#774)
+  BOOL critical = args.critical().value_or(NO);
+  BOOL modal = args.modal().value_or(NO);
   NSArray<NSDictionary *> *defaultInputs = [RCTConvert NSDictionaryArray:RCTConvertOptionalVecToArray(args.defaultInputs(), ^id(id<NSObject> element) { return element; })];
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
   if (!title && !message) {
     RCTLogError(@"Must specify either an alert title, or message, or both");
     return;
   }
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   if (buttons.count == 0) {
     if (type == RCTAlertViewStyleDefault) {
       buttons = @[ @{@"0" : RCTUIKitLocalizedString(@"OK")} ];
@@ -177,6 +177,7 @@ RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::Args &)args callback 
                                   case RCTAlertViewStylePlainTextInput:
                                   case RCTAlertViewStyleSecureTextInput:
                                     callback(@[ buttonKey, [weakAlertController.textFields.firstObject text] ]);
+                                    [weakAlertController hide];
                                     break;
                                   case RCTAlertViewStyleLoginAndPasswordInput: {
                                     NSDictionary<NSString *, NSString *> *loginCredentials = @{
@@ -184,10 +185,12 @@ RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::Args &)args callback 
                                       @"password" : [weakAlertController.textFields.lastObject text]
                                     };
                                     callback(@[ buttonKey, loginCredentials ]);
+                                    [weakAlertController hide];
                                     break;
                                   }
                                   case RCTAlertViewStyleDefault:
                                     callback(@[ buttonKey ]);
+                                    [weakAlertController hide];
                                     break;
                                 }
                               }]];
@@ -201,9 +204,9 @@ RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::Args &)args callback 
   dispatch_async(dispatch_get_main_queue(), ^{
     [alertController show:YES completion:nil];
   });
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
   
-  NSAlert *alert = [[NSAlert alloc] init];
+  NSAlert *alert = [NSAlert new];
   if (title.length > 0) {
     alert.messageText = title;
   }
@@ -293,15 +296,13 @@ RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::Args &)args callback 
   } else {
     [alert beginSheetModalForWindow:[NSApp keyWindow] completionHandler:callbacksHandlers];
   }
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)
-    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
-                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeAlertManagerSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
+  return std::make_shared<facebook::react::NativeAlertManagerSpecJSI>(params);
 }
 
 @end

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,10 +9,13 @@
 #include <string>
 
 #include <ReactCommon/CallInvokerHolder.h>
+#include <ReactCommon/RuntimeExecutor.h>
 #include <fbjni/fbjni.h>
 
 #include "CxxModuleWrapper.h"
 #include "JMessageQueueThread.h"
+#include "JRuntimeExecutor.h"
+#include "JRuntimeScheduler.h"
 #include "JSLoader.h"
 #include "JavaModuleWrapper.h"
 #include "ModuleRegistryBuilder.h"
@@ -34,8 +37,10 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   static constexpr auto kJavaDescriptor =
       "Lcom/facebook/react/bridge/CatalystInstanceImpl;";
 
-  static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
-  ~CatalystInstanceImpl() override;
+  static jni::local_ref<jhybriddata> initHybrid(
+      jni::alias_ref<jclass>,
+      bool enableRuntimeScheduler,
+      bool enableRuntimeSchedulerInTurboModule);
 
   static void registerNatives();
 
@@ -46,7 +51,9 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
  private:
   friend HybridBase;
 
-  CatalystInstanceImpl();
+  CatalystInstanceImpl(
+      bool enableRuntimeScheduler,
+      bool enableRuntimeSchedulerInTurboModule);
 
   void initializeBridge(
       jni::alias_ref<ReactCallback::javaobject> callback,
@@ -59,6 +66,10 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
           javaModules,
       jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject>
           cxxModules);
+
+  // When called from CatalystInstanceImpl.java, warnings will be logged when
+  // CxxNativeModules are used. Java NativeModule usages log error in Java.
+  void warnOnLegacyNativeModuleSystemUse();
 
   void extendNativeModules(
       jni::alias_ref<jni::JCollection<
@@ -92,9 +103,13 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   void jniCallJSCallback(jint callbackId, NativeArray *arguments);
   jni::alias_ref<CallInvokerHolder::javaobject> getJSCallInvokerHolder();
   jni::alias_ref<CallInvokerHolder::javaobject> getNativeCallInvokerHolder();
+  jni::alias_ref<JRuntimeExecutor::javaobject> getRuntimeExecutor();
+  jni::alias_ref<JRuntimeScheduler::javaobject> getRuntimeScheduler();
   void setGlobalVariable(std::string propName, std::string &&jsonValue);
   jlong getJavaScriptContext();
   void handleMemoryPressure(int pressureLevel);
+
+  void createAndInstallRuntimeSchedulerIfNecessary();
 
   // This should be the only long-lived strong reference, but every C++ class
   // will have a weak reference.
@@ -103,6 +118,11 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   std::shared_ptr<JMessageQueueThread> moduleMessageQueue_;
   jni::global_ref<CallInvokerHolder::javaobject> jsCallInvokerHolder_;
   jni::global_ref<CallInvokerHolder::javaobject> nativeCallInvokerHolder_;
+  jni::global_ref<JRuntimeExecutor::javaobject> runtimeExecutor_;
+  jni::global_ref<JRuntimeScheduler::javaobject> runtimeScheduler_;
+
+  bool const enableRuntimeScheduler_;
+  bool const enableRuntimeSchedulerInTurboModule_;
 };
 
 } // namespace react

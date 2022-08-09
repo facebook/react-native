@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,7 +11,6 @@
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTAssert.h>
 #import <React/RCTConvert.h>
-#import <React/RCTEventDispatcher.h>
 #import <React/RCTLog.h>
 #import <React/RCTNetworkTask.h>
 #import <React/RCTNetworking.h>
@@ -149,7 +148,7 @@ static NSString *RCTGenerateFormBoundary()
   NSMutableDictionary<NSNumber *, RCTNetworkTask *> *_tasksByRequestID;
   std::mutex _handlersLock;
   NSArray<id<RCTURLRequestHandler>> *_handlers;
-  NSArray<id<RCTURLRequestHandler>> * (^_handlersProvider)(void);
+  NSArray<id<RCTURLRequestHandler>> * (^_handlersProvider)(RCTModuleRegistry *);
   NSMutableArray<id<RCTNetworkingRequestHandler>> *_requestHandlers;
   NSMutableArray<id<RCTNetworkingResponseHandler>> *_responseHandlers;
 }
@@ -158,9 +157,19 @@ static NSString *RCTGenerateFormBoundary()
 
 RCT_EXPORT_MODULE()
 
-- (instancetype)initWithHandlersProvider:(NSArray<id<RCTURLRequestHandler>> * (^)(void))getHandlers
++ (BOOL)requiresMainQueueSetup
 {
-  if (self = [super init]) {
+  return YES;
+}
+
+- (instancetype)init
+{
+  return [super initWithDisabledObservation];
+}
+
+- (instancetype)initWithHandlersProvider:(NSArray<id<RCTURLRequestHandler>> * (^)(RCTModuleRegistry *moduleRegistry))getHandlers
+{
+  if (self = [super initWithDisabledObservation]) {
     _handlersProvider = getHandlers;
   }
   return self;
@@ -168,6 +177,8 @@ RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
+  [super invalidate];
+
   for (NSNumber *requestID in _tasksByRequestID) {
     [_tasksByRequestID[requestID] cancel];
   }
@@ -198,7 +209,7 @@ RCT_EXPORT_MODULE()
 
     if (!_handlers) {
       if (_handlersProvider) {
-        _handlers = _handlersProvider();
+        _handlers = _handlersProvider(self.moduleRegistry);
       } else {
         _handlers = [self.bridge modulesConformingToProtocol:@protocol(RCTURLRequestHandler)];
       }
@@ -680,7 +691,7 @@ RCT_EXPORT_METHOD(sendRequest:(JS::NativeNetworkingIOS::SpecSendRequestQuery &)q
     @"timeout": @(query.timeout()),
     @"withCredentials": @(query.withCredentials()),
   };
-  
+
   // TODO: buildRequest returns a cancellation block, but there's currently
   // no way to invoke it, if, for example the request is cancelled while
   // loading a large file to build the request body
@@ -714,12 +725,9 @@ RCT_EXPORT_METHOD(clearCookies:(RCTResponseSenderBlock)responseSender)
   responseSender(@[@YES]);
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)
-    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
-                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeNetworkingIOSSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
+  return std::make_shared<facebook::react::NativeNetworkingIOSSpecJSI>(params);
 }
 
 @end

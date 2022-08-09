@@ -1,5 +1,5 @@
 # Make sure we never publish ReactAndroid/build (Gradle output) to npm.
 # The folder is huge (> 100MB)!
 build/
-# TODO(macOS ISS#2323203): No need to publish our imported nugets 
+# TODO(macOS GH#774): No need to publish our imported nugets 
 packages

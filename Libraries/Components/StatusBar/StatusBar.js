@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,14 +8,11 @@
  * @flow
  */
 
-'use strict';
-
-const Platform = require('../../Utilities/Platform');
-const React = require('react');
-
-const invariant = require('invariant');
-const processColor = require('../../StyleSheet/processColor');
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import * as React from 'react';
+import Platform from '../../Utilities/Platform';
+import invariant from 'invariant';
+import processColor from '../../StyleSheet/processColor';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 
 import NativeStatusBarManagerAndroid from './NativeStatusBarManagerAndroid';
 import NativeStatusBarManagerIOS from './NativeStatusBarManagerIOS';
@@ -31,11 +28,11 @@ export type StatusBarStyle = $Keys<{
   /**
    * Dark background, white texts and icons
    */
-  'light-content': ColorValue, // TODO(macOS ISS#2323203)
+  'light-content': ColorValue, // TODO(macOS GH#774)
   /**
    * Light background, dark texts and icons
    */
-  'dark-content': ColorValue, // TODO(macOS ISS#2323203)
+  'dark-content': ColorValue, // TODO(macOS GH#774)
   ...
 }>;
 
@@ -87,7 +84,7 @@ type IOSProps = $ReadOnly<{|
    *
    * @platform ios
    */
-  showHideTransition?: ?('fade' | 'slide'),
+  showHideTransition?: ?('fade' | 'slide' | 'none'),
 |}>;
 
 type Props = $ReadOnly<{|
@@ -130,19 +127,21 @@ function mergePropsStack(
  * and the transition/animation info.
  */
 function createStackEntry(props: any): any {
+  const animated = props.animated ?? false;
+  const showHideTransition = props.showHideTransition ?? 'fade';
   return {
     backgroundColor:
       props.backgroundColor != null
         ? {
             value: props.backgroundColor,
-            animated: props.animated,
+            animated,
           }
         : null,
     barStyle:
       props.barStyle != null
         ? {
             value: props.barStyle,
-            animated: props.animated,
+            animated,
           }
         : null,
     translucent: props.translucent,
@@ -150,8 +149,8 @@ function createStackEntry(props: any): any {
       props.hidden != null
         ? {
             value: props.hidden,
-            animated: props.animated,
-            transition: props.showHideTransition,
+            animated,
+            transition: showHideTransition,
           }
         : null,
     networkActivityIndicatorVisible: props.networkActivityIndicatorVisible,
@@ -224,8 +223,6 @@ class StatusBar extends React.Component<Props> {
   static _propsStack = [];
 
   static _defaultProps = createStackEntry({
-    animated: false,
-    showHideTransition: 'fade',
     backgroundColor:
       Platform.OS === 'android'
         ? NativeStatusBarManagerAndroid.getConstants()
@@ -387,14 +384,6 @@ class StatusBar extends React.Component<Props> {
     return newEntry;
   }
 
-  static defaultProps: {|
-    animated: boolean,
-    showHideTransition: $TEMPORARY$string<'fade'>,
-  |} = {
-    animated: false,
-    showHideTransition: 'fade',
-  };
-
   _stackEntry = null;
 
   componentDidMount() {
@@ -467,9 +456,7 @@ class StatusBar extends React.Component<Props> {
         const processedColor = processColor(mergedProps.backgroundColor.value);
         if (processedColor == null) {
           console.warn(
-            `\`StatusBar._updatePropsStack\`: Color ${
-              mergedProps.backgroundColor.value
-            } parsed to null or undefined`,
+            `\`StatusBar._updatePropsStack\`: Color ${mergedProps.backgroundColor.value} parsed to null or undefined`,
           );
         } else {
           invariant(

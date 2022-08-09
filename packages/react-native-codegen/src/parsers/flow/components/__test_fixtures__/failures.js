@@ -1,18 +1,19 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
  * @flow strict-local
  * @format
+ * @lint-ignore-every LICENSELINT
  */
 
 'use strict';
 
 const COMMANDS_DEFINED_INLINE = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -48,7 +49,7 @@ export default (codegenNativeComponent<ModuleProps>(
 
 const COMMANDS_DEFINED_MULTIPLE_TIMES = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -89,7 +90,7 @@ export default (codegenNativeComponent<ModuleProps>(
 
 const COMMANDS_DEFINED_WITHOUT_REF = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -127,7 +128,7 @@ export default (codegenNativeComponent<ModuleProps>(
 
 const COMMANDS_DEFINED_WITH_NULLABLE_REF = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -165,7 +166,7 @@ export default (codegenNativeComponent<ModuleProps>(
 
 const COMMANDS_DEFINED_WITH_MISMATCHED_METHOD_NAMES = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -208,7 +209,7 @@ export default (codegenNativeComponent<ModuleProps>(
 
 const COMMANDS_DEFINED_WITHOUT_METHOD_NAMES = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -249,7 +250,7 @@ export default (codegenNativeComponent<ModuleProps>(
 
 const NULLABLE_WITH_DEFAULT = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -278,7 +279,7 @@ export default (codegenNativeComponent<ModuleProps>(
 
 const NON_OPTIONAL_KEY_WITH_DEFAULT_VALUE = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -307,7 +308,7 @@ export default (codegenNativeComponent<ModuleProps>(
 
 const PROPS_CONFLICT_NAMES = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -337,7 +338,7 @@ export default (codegenNativeComponent<ModuleProps>(
 
 const PROPS_CONFLICT_WITH_SPREAD_PROPS = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -371,7 +372,7 @@ export default (codegenNativeComponent<ModuleProps>(
 
 const PROPS_SPREAD_CONFLICTS_WITH_PROPS = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -405,7 +406,7 @@ export default (codegenNativeComponent<ModuleProps>(
 
 const PROP_NUMBER_TYPE = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -434,7 +435,7 @@ export default (codegenNativeComponent<ModuleProps>(
 
 const PROP_MIXED_ENUM = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -463,7 +464,7 @@ export default (codegenNativeComponent<ModuleProps>(
 
 const PROP_ENUM_BOOLEAN = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -492,7 +493,7 @@ export default (codegenNativeComponent<ModuleProps>(
 
 const PROP_ARRAY_MIXED_ENUM = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -521,7 +522,7 @@ export default (codegenNativeComponent<ModuleProps>(
 
 const PROP_ARRAY_ENUM_BOOLEAN = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -550,7 +551,7 @@ export default (codegenNativeComponent<ModuleProps>(
 
 const PROP_ARRAY_ENUM_INT = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.

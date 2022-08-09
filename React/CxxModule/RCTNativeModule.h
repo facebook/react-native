@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,6 +16,7 @@ class RCTNativeModule : public NativeModule {
   RCTNativeModule(RCTBridge *bridge, RCTModuleData *moduleData);
 
   std::string getName() override;
+  std::string getSyncMethodName(unsigned int methodId) override;
   std::vector<MethodDescriptor> getMethods() override;
   folly::dynamic getConstants() override;
   void invoke(unsigned int methodId, folly::dynamic &&params, int callId)

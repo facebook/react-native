@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -37,15 +37,10 @@ public class ReactDrawableHelper {
     String type = drawableDescriptionDict.getString("type");
     if ("ThemeAttrAndroid".equals(type)) {
       String attr = drawableDescriptionDict.getString("attribute");
-      SoftAssertions.assertNotNull(attr);
-      int attrID = context.getResources().getIdentifier(attr, "attr", "android");
-      if (attrID == 0) {
+      int attrId = getAttrId(context, attr);
+      if (!context.getTheme().resolveAttribute(attrId, sResolveOutValue, true)) {
         throw new JSApplicationIllegalArgumentException(
-            "Attribute " + attr + " couldn't be found in the resource list");
-      }
-      if (!context.getTheme().resolveAttribute(attrID, sResolveOutValue, true)) {
-        throw new JSApplicationIllegalArgumentException(
-            "Attribute " + attr + " couldn't be resolved into a drawable");
+            "Attribute " + attr + " with id " + attrId + " couldn't be resolved into a drawable");
       }
       Drawable drawable = getDefaultThemeDrawable(context);
       return setRadius(drawableDescriptionDict, drawable);
@@ -57,20 +52,24 @@ public class ReactDrawableHelper {
     }
   }
 
-  private static Drawable getDefaultThemeDrawable(Context context) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      return context.getResources().getDrawable(sResolveOutValue.resourceId, context.getTheme());
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+  private static int getAttrId(Context context, String attr) {
+    SoftAssertions.assertNotNull(attr);
+    if ("selectableItemBackground".equals(attr)) {
+      return android.R.attr.selectableItemBackground;
+    } else if ("selectableItemBackgroundBorderless".equals(attr)) {
+      return android.R.attr.selectableItemBackgroundBorderless;
     } else {
-      return context.getResources().getDrawable(sResolveOutValue.resourceId);
+      return context.getResources().getIdentifier(attr, "attr", "android");
     }
+  }
+
+  private static Drawable getDefaultThemeDrawable(Context context) {
+    return context.getResources().getDrawable(sResolveOutValue.resourceId, context.getTheme());
   }
 
   private static RippleDrawable getRippleDrawable(
       Context context, ReadableMap drawableDescriptionDict) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-      throw new JSApplicationIllegalArgumentException(
-          "Ripple drawable is not available on android API <21");
-    }
     int color = getColor(context, drawableDescriptionDict);
     Drawable mask = getMask(drawableDescriptionDict);
     ColorStateList colorStateList =

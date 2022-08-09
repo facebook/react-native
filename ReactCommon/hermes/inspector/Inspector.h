@@ -1,11 +1,14 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-#pragma once
+// using include guards instead of #pragma once due to compile issues
+// with MSVC and BUCK
+#ifndef HERMES_INSPECTOR_INSPECTOR_H
+#define HERMES_INSPECTOR_INSPECTOR_H
 
 #include <memory>
 #include <queue>
@@ -52,6 +55,8 @@ struct ConsoleMessageInfo {
         column(-1),
         args(std::move(args)) {}
 };
+
+enum PauseOnLoadMode { None, Smart, All };
 
 /**
  * InspectorObserver notifies the observer of events that occur in the VM.
@@ -201,6 +206,25 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
       const facebook::hermes::debugger::PauseOnThrowMode &mode);
 
   /**
+   * Set whether to pause on loads. This does not require runtime modifications,
+   * but returns a future for consistency.
+   */
+  folly::Future<folly::Unit> setPauseOnLoads(const PauseOnLoadMode mode);
+
+  /**
+   * Set whether breakpoints are active (pause when hit). This does not require
+   * runtime modifications, but returns a future for consistency.
+   */
+  folly::Future<folly::Unit> setBreakpointsActive(bool active);
+
+  /**
+   * If called during a script load event, return true if we should pause.
+   * Assumed to be called from a script load event where we already hold
+   * `mutex_`.
+   */
+  bool shouldPauseOnThisScriptLoad();
+
+  /**
    * didPause implements the pause callback from Hermes. This callback arrives
    * on the JS thread.
    */
@@ -213,6 +237,16 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
   void breakpointResolved(
       facebook::hermes::debugger::Debugger &debugger,
       facebook::hermes::debugger::BreakpointID breakpointId) override;
+
+  /**
+   * Get whether we started with pauseOnFirstStatement, and have not yet had a
+   * debugger attach and ask to resume from that point. This matches the
+   * semantics of when CDP Debugger.runIfWaitingForDebugger should resume.
+   *
+   * It's not named "isPausedOnStart" because the VM and inspector is not
+   * necessarily paused; we could be in a RunningWaitPause state.
+   */
+  bool isAwaitingDebuggerOnStart();
 
  private:
   friend class InspectorState;
@@ -277,17 +311,13 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
 
   void installConsoleFunction(
       jsi::Object &console,
+      std::shared_ptr<jsi::Object> &originalConsole,
       const std::string &name,
       const std::string &chromeType);
 
   std::shared_ptr<RuntimeAdapter> adapter_;
   facebook::hermes::debugger::Debugger &debugger_;
   InspectorObserver &observer_;
-
-  // All client methods (e.g. enable, setBreakpoint, resume, etc.) are executed
-  // on executor_ to prevent deadlocking on mutex_. See the implementation for
-  // more comments on the threading invariants used in this class.
-  std::unique_ptr<folly::Executor> executor_;
 
   // All of the following member variables are guarded by mutex_.
   std::mutex mutex_;
@@ -296,6 +326,12 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
   // See the InspectorState::Running implementation for an explanation for why
   // this state is here rather than in the Running class.
   AsyncPauseState pendingPauseState_ = AsyncPauseState::None;
+
+  // Whether we should enter a paused state when a script loads.
+  PauseOnLoadMode pauseOnLoadMode_ = PauseOnLoadMode::None;
+
+  // Whether or not we should pause on breakpoints.
+  bool breakpointsActive_ = true;
 
   // All scripts loaded in to the VM, along with whether we've notified the
   // client about the script yet.
@@ -315,8 +351,20 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
 
   // Trigger a fake console.log if we're currently in a superseded file.
   void alertIfPausedInSupersededFile();
+
+  // Are we currently waiting for a debugger to attach, because we
+  // requested 'pauseOnFirstStatement'?
+  bool awaitingDebuggerOnStart_;
+
+  // All client methods (e.g. enable, setBreakpoint, resume, etc.) are executed
+  // on executor_ to prevent deadlocking on mutex_. See the implementation for
+  // more comments on the threading invariants used in this class.
+  // NOTE: This needs to be declared LAST because it should be destroyed FIRST.
+  std::unique_ptr<folly::Executor> executor_;
 };
 
 } // namespace inspector
 } // namespace hermes
 } // namespace facebook
+
+#endif // HERMES_INSPECTOR_INSPECTOR_H

@@ -1,22 +1,22 @@
---- "E:\\github\\rnm-63-fresh\\ReactAndroid\\src\\main\\java\\com\\facebook\\react\\ReactInstanceManager.java"	2020-10-27 20:26:16.728167300 -0700
-+++ "E:\\github\\rnm-63\\ReactAndroid\\src\\main\\java\\com\\facebook\\react\\ReactInstanceManager.java"	2020-10-13 21:26:17.779198100 -0700
-@@ -51,6 +51,7 @@
+--- ./ReactAndroid/src/main/java/com/facebook/react/ReactInstanceManager.java	2022-01-11 17:41:29.000000000 -0800
++++ /var/folders/vs/8_b205053dddbcv7btj0w0v80000gn/T/update-1h8V3n/merge/OfficeRNHost/ReactAndroid/src/main/java/com/facebook/react/ReactInstanceManager.java	2022-01-12 15:04:31.000000000 -0800
+@@ -52,6 +52,7 @@
  import com.facebook.infer.annotation.ThreadSafe;
  import com.facebook.react.bridge.Arguments;
  import com.facebook.react.bridge.CatalystInstance;
 +import com.facebook.react.bridge.CatalystInstance.CatalystInstanceEventListener;
  import com.facebook.react.bridge.CatalystInstanceImpl;
  import com.facebook.react.bridge.JSBundleLoader;
- import com.facebook.react.bridge.JSIModule;
-@@ -173,6 +174,7 @@
-   private final @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
-   private final @Nullable JSIModulePackage mJSIModulePackage;
+ import com.facebook.react.bridge.JSIModulePackage;
+@@ -186,6 +187,7 @@
+   private final @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
    private List<ViewManager> mViewManagers;
+   private boolean mUseFallbackBundle = false;
 +  private @Nullable CatalystInstanceEventListener mCatalystInstanceEventListener;
  
    private class ReactContextInitParams {
      private final JavaScriptExecutorFactory mJsExecutorFactory;
-@@ -915,6 +917,15 @@
+@@ -206,6 +208,15 @@
      }
    }
  
@@ -29,16 +29,16 @@
 +    mCatalystInstanceEventListener = catalystInstanceEventListener;
 +  }
 +
-   /** Add a listener to be notified of react instance events. */
-   public void addReactInstanceEventListener(ReactInstanceEventListener listener) {
-     mReactInstanceEventListeners.add(listener);
-@@ -1230,7 +1241,8 @@
+   /** Creates a builder that is capable of creating an instance of {@link ReactInstanceManager}. */
+   public static ReactInstanceManagerBuilder builder() {
+     return new ReactInstanceManagerBuilder();
+@@ -1333,7 +1344,8 @@
              .setJSExecutor(jsExecutor)
              .setRegistry(nativeModuleRegistry)
              .setJSBundleLoader(jsBundleLoader)
 -            .setNativeModuleCallExceptionHandler(exceptionHandler);
 +            .setNativeModuleCallExceptionHandler(exceptionHandler)
-+            .setCatalystInstanceEventListener(mCatalystInstanceEventListener);
++	    .setCatalystInstanceEventListener(mCatalystInstanceEventListener);
  
      ReactMarker.logMarker(CREATE_CATALYST_INSTANCE_START);
      // CREATE_CATALYST_INSTANCE_END is in JSCExecutor.cpp

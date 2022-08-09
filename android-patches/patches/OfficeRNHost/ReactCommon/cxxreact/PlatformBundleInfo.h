@@ -1,5 +1,8 @@
---- "E:\\github\\rnm-63-fresh\\ReactCommon\\cxxreact\\PlatformBundleInfo.h"	1969-12-31 16:00:00.000000000 -0800
-+++ "E:\\github\\rnm-63\\ReactCommon\\cxxreact\\PlatformBundleInfo.h"	2020-10-13 21:56:36.835848700 -0700
+diff --git a/ReactCommon/cxxreact/PlatformBundleInfo.h b/ReactCommon/cxxreact/PlatformBundleInfo.h
+new file mode 100644
+index 0000000000..84fb4a2aa6
+--- /dev/null
++++ b/ReactCommon/cxxreact/PlatformBundleInfo.h
 @@ -0,0 +1,15 @@
 +#pragma once
 +

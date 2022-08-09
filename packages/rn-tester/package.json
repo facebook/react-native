@@ -1,0 +1,42 @@
+{
+  "name": "@react-native/tester",
+  "version": "0.0.1",
+  "license": "MIT",
+  "description": "React Native tester app.",
+  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/rn-tester",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:facebook/react-native.git",
+    "directory": "packages/rn-tester"
+  },
+  "dependencies": {
+    "invariant": "^2.2.4",
+    "nullthrows": "^1.1.1"
+  },
+  "peerDependencies": {
+    "react": "17.0.2",
+    "react-native": "*"
+  },
+  "devDependencies": {
+    "connect": "^3.6.5",
+    "ws": "^6.1.4"
+  },
+  "codegenConfig": {
+    "libraries": [
+      {
+        "name": "ScreenshotManagerSpec",
+        "type": "modules",
+        "ios": {},
+        "android": {},
+        "jsSrcsDir": "NativeModuleExample"
+      },
+      {
+        "name": "MyNativeViewSpec",
+        "type": "components",
+        "ios": {},
+        "android": {},
+        "jsSrcsDir": "NativeComponentExample/js"
+      }
+    ]
+  }
+}

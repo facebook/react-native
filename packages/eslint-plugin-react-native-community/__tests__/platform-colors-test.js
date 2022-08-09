@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -22,7 +22,6 @@ eslintTester.run('../platform-colors', rule, {
     "const color = PlatformColor('controlAccentColor', 'controlColor');",
     "const color = DynamicColorIOS({light: 'black', dark: 'white'});",
     "const color = DynamicColorIOS({light: PlatformColor('black'), dark: PlatformColor('white')});",
-    "const color = ColorAndroid('?attr/colorAccent')",
   ],
   invalid: [
     {
@@ -30,33 +29,20 @@ eslintTester.run('../platform-colors', rule, {
       errors: [{message: rule.meta.messages.platformColorArgsLength}],
     },
     {
-      code:
-        "const labelColor = 'labelColor'; const color = PlatformColor(labelColor);",
+      code: "const labelColor = 'labelColor'; const color = PlatformColor(labelColor);",
       errors: [{message: rule.meta.messages.platformColorArgTypes}],
     },
     {
-      code:
-        "const tuple = {light: 'black', dark: 'white'}; const color = DynamicColorIOS(tuple);",
+      code: "const tuple = {light: 'black', dark: 'white'}; const color = DynamicColorIOS(tuple);",
       errors: [{message: rule.meta.messages.dynamicColorIOSArg}],
     },
     {
-      code:
-        "const black = 'black'; const color = DynamicColorIOS({light: black, dark: 'white'});",
+      code: "const black = 'black'; const color = DynamicColorIOS({light: black, dark: 'white'});",
       errors: [{message: rule.meta.messages.dynamicColorIOSLight}],
     },
     {
-      code:
-        "const white = 'white'; const color = DynamicColorIOS({light: 'black', dark: white});",
+      code: "const white = 'white'; const color = DynamicColorIOS({light: 'black', dark: white});",
       errors: [{message: rule.meta.messages.dynamicColorIOSDark}],
-    },
-    {
-      code: 'const color = ColorAndroid();',
-      errors: [{message: rule.meta.messages.colorAndroidArg}],
-    },
-    {
-      code:
-        "const colorAccent = '?attr/colorAccent'; const color = ColorAndroid(colorAccent);",
-      errors: [{message: rule.meta.messages.colorAndroidArg}],
     },
   ],
 });

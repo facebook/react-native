@@ -1,14 +1,12 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict-local
+ * @flow strict
  */
-
-'use strict';
 
 import invariant from 'invariant';
 
@@ -101,7 +99,7 @@ export function createStringifySafeWithLimits(limits: {|
       } catch (e) {
         if (typeof arg.toString === 'function') {
           try {
-            // $FlowFixMe: toString shouldn't take any arguments in general.
+            // $FlowFixMe[incompatible-use] : toString shouldn't take any arguments in general.
             return arg.toString();
           } catch (E) {}
         }

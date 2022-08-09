@@ -1,14 +1,12 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
+ * @flow strict
  * @format
  */
-
-'use strict';
 
 import type {TurboModule} from '../TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
@@ -47,7 +45,6 @@ export interface Spec extends TurboModule {
     stack: Array<StackFrame>,
     exceptionId: number,
   ) => void;
-  // TODO(T53311281): This is a noop on iOS now. Implement it.
   +reportException?: (data: ExceptionData) => void;
   +updateExceptionMessage: (
     message: string,
@@ -60,9 +57,8 @@ export interface Spec extends TurboModule {
 
 const Platform = require('../Utilities/Platform');
 
-const NativeModule = TurboModuleRegistry.getEnforcing<Spec>(
-  'ExceptionsManager',
-);
+const NativeModule =
+  TurboModuleRegistry.getEnforcing<Spec>('ExceptionsManager');
 
 const ExceptionsManager = {
   reportFatalException(
@@ -89,7 +85,7 @@ const ExceptionsManager = {
   dismissRedbox(): void {
     if (
       Platform.OS !== 'ios' &&
-      Platform.OS !== 'macos' /* TODO(macOS ISS#2323203) */ &&
+      Platform.OS !== 'macos' /* TODO(macOS GH#774) */ &&
       NativeModule.dismissRedbox
     ) {
       // TODO(T53311281): This is a noop on iOS now. Implement it.

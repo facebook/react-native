@@ -7,14 +7,16 @@
  * @format
  * @flow strict-local
  */
-// [TODO(macOS ISS#2323203)
+// [TODO(macOS GH#774)
 'use strict';
 
-import type {ColorValue} from './StyleSheetTypes';
+import type {ColorValue} from './StyleSheet';
 
 export type DynamicColorMacOSTuple = {
   light: ColorValue,
   dark: ColorValue,
+  highContrastLight?: ColorValue,
+  highContrastDark?: ColorValue,
 };
 
 export const DynamicColorMacOS = (
@@ -38,4 +40,4 @@ export const ColorWithSystemEffectMacOS = (
     'ColorWithSystemEffectMacOS is not available on this platform.',
   );
 };
-// ]TODO(macOS ISS#2323203)
+// ]TODO(macOS GH#774)

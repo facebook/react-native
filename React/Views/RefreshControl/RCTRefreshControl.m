@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -21,6 +21,7 @@
   BOOL _refreshingProgrammatically;
   NSString *_title;
   UIColor *_titleColor;
+  CGFloat _progressViewOffset;
 }
 
 - (instancetype)init
@@ -40,9 +41,9 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 - (void)layoutSubviews
 {
   [super layoutSubviews];
+  [self _applyProgressViewOffset];
 
   // Fix for bug #7976
-  // TODO: Remove when updating to use iOS 10 refreshControl UIScrollView prop.
   if (self.backgroundColor == nil) {
     self.backgroundColor = [UIColor clearColor];
   }
@@ -59,34 +60,42 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 {
   UInt64 beginRefreshingTimestamp = _currentRefreshingStateTimestamp;
   _refreshingProgrammatically = YES;
-  // When using begin refreshing we need to adjust the ScrollView content offset manually.
-  UIScrollView *scrollView = (UIScrollView *)self.superview;
+
   // Fix for bug #24855
   [self sizeToFit];
-  CGPoint offset = {scrollView.contentOffset.x, scrollView.contentOffset.y - self.frame.size.height};
 
-  // `beginRefreshing` must be called after the animation is done. This is why it is impossible
-  // to use `setContentOffset` with `animated:YES`.
-  [UIView animateWithDuration:0.25
-      delay:0
-      options:UIViewAnimationOptionBeginFromCurrentState
-      animations:^(void) {
-        [scrollView setContentOffset:offset];
-      }
-      completion:^(__unused BOOL finished) {
-        if (beginRefreshingTimestamp == self->_currentRefreshingStateTimestamp) {
-          [super beginRefreshing];
-          [self setCurrentRefreshingState:super.refreshing];
+  if (self.scrollView) {
+    // When using begin refreshing we need to adjust the ScrollView content offset manually.
+    UIScrollView *scrollView = (UIScrollView *)self.scrollView;
+
+    CGPoint offset = {scrollView.contentOffset.x, scrollView.contentOffset.y - self.frame.size.height};
+
+    // `beginRefreshing` must be called after the animation is done. This is why it is impossible
+    // to use `setContentOffset` with `animated:YES`.
+    [UIView animateWithDuration:0.25
+        delay:0
+        options:UIViewAnimationOptionBeginFromCurrentState
+        animations:^(void) {
+          [scrollView setContentOffset:offset];
         }
-      }];
+        completion:^(__unused BOOL finished) {
+          if (beginRefreshingTimestamp == self->_currentRefreshingStateTimestamp) {
+            [super beginRefreshing];
+            [self setCurrentRefreshingState:super.refreshing];
+          }
+        }];
+  } else if (beginRefreshingTimestamp == self->_currentRefreshingStateTimestamp) {
+    [super beginRefreshing];
+    [self setCurrentRefreshingState:super.refreshing];
+  }
 }
 
 - (void)endRefreshingProgrammatically
 {
   // The contentOffset of the scrollview MUST be greater than the contentInset before calling
   // endRefreshing otherwise the next pull to refresh will not work properly.
-  UIScrollView *scrollView = (UIScrollView *)self.superview;
-  if (_refreshingProgrammatically && scrollView.contentOffset.y < -scrollView.contentInset.top) {
+  UIScrollView *scrollView = self.scrollView;
+  if (scrollView && _refreshingProgrammatically && scrollView.contentOffset.y < -scrollView.contentInset.top) {
     UInt64 endRefreshingTimestamp = _currentRefreshingStateTimestamp;
     CGPoint offset = {scrollView.contentOffset.x, -scrollView.contentInset.top};
     [UIView animateWithDuration:0.25
@@ -104,6 +113,19 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   } else {
     [super endRefreshing];
   }
+}
+
+- (void)_applyProgressViewOffset
+{
+  // progressViewOffset must be converted from the ScrollView parent's coordinate space to
+  // the coordinate space of the RefreshControl. This ensures that the control respects any
+  // offset in the view hierarchy, and that progressViewOffset is not inadvertently applied
+  // multiple times.
+  UIView *scrollView = self.superview;
+  UIView *target = scrollView.superview;
+  CGPoint rawOffset = CGPointMake(0, _progressViewOffset);
+  CGPoint converted = [self convertPoint:rawOffset fromView:target];
+  self.frame = CGRectOffset(self.frame, 0, converted.y);
 }
 
 - (NSString *)title
@@ -156,6 +178,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 {
   _currentRefreshingState = refreshing;
   _currentRefreshingStateTimestamp = _currentRefreshingStateClock++;
+}
+
+- (void)setProgressViewOffset:(CGFloat)offset
+{
+  _progressViewOffset = offset;
+  [self _applyProgressViewOffset];
 }
 
 - (void)refreshControlValueChanged

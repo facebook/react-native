@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,16 +8,14 @@
  * @format
  */
 
-'use strict';
+import Platform from '../../Utilities/Platform';
+import * as React from 'react';
+import StatusBar from '../StatusBar/StatusBar';
+import StyleSheet from '../../StyleSheet/StyleSheet';
+import View from '../View/View';
 
-const Platform = require('../../Utilities/Platform');
-const React = require('react');
-const StatusBar = require('../StatusBar/StatusBar');
-const StyleSheet = require('../../StyleSheet/StyleSheet');
-const View = require('../View/View');
-
-const dismissKeyboard = require('../../Utilities/dismissKeyboard');
-const nullthrows = require('nullthrows');
+import dismissKeyboard from '../../Utilities/dismissKeyboard';
+import nullthrows from 'nullthrows';
 
 import AndroidDrawerLayoutNativeComponent, {
   Commands,
@@ -25,8 +23,7 @@ import AndroidDrawerLayoutNativeComponent, {
 
 const DRAWER_STATES = ['Idle', 'Dragging', 'Settling'];
 
-import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ColorValue, ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {DirectEventHandler} from '../../Types/CodegenTypes';
 import type {
   MeasureOnSuccessCallback,
@@ -59,7 +56,7 @@ type Props = $ReadOnly<{|
    * );
    * ```
    */
-  drawerBackgroundColor: ColorValue,
+  drawerBackgroundColor?: ?ColorValue,
 
   /**
    * Specifies the side of the screen from which the drawer will slide in.
@@ -164,20 +161,17 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
 
     return {Left: 'left', Right: 'right'};
   }
-  static defaultProps: {|
-    drawerBackgroundColor: 'white',
-  |} = {
-    drawerBackgroundColor: 'white',
-  };
 
-  _nativeRef = React.createRef<
-    React.ElementRef<typeof AndroidDrawerLayoutNativeComponent>,
-  >();
+  _nativeRef =
+    React.createRef<
+      React.ElementRef<typeof AndroidDrawerLayoutNativeComponent>,
+    >();
 
   state: State = {statusBarBackgroundColor: null};
 
   render(): React.Node {
     const {
+      drawerBackgroundColor = 'white',
       onDrawerStateChanged,
       renderNavigationView,
       onDrawerOpen,
@@ -192,7 +186,7 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
           styles.drawerSubview,
           {
             width: this.props.drawerWidth,
-            backgroundColor: this.props.drawerBackgroundColor,
+            backgroundColor: drawerBackgroundColor,
           },
         ]}
         collapsable={false}>
@@ -223,6 +217,7 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
       <AndroidDrawerLayoutNativeComponent
         {...props}
         ref={this._nativeRef}
+        drawerBackgroundColor={drawerBackgroundColor}
         drawerWidth={this.props.drawerWidth}
         drawerPosition={this.props.drawerPosition}
         drawerLockMode={this.props.drawerLockMode}

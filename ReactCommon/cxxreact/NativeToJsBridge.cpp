@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,7 +11,10 @@
 #include <folly/MoveWrapper.h>
 #include <folly/json.h>
 #include <glog/logging.h>
+#include <jsi/jsi.h>
+#include <reactperflogger/BridgeNativeModulePerfLogger.h>
 
+#include "ErrorUtils.h"
 #include "Instance.h"
 #include "JSBigString.h"
 #include "MessageQueueThread.h"
@@ -24,6 +27,8 @@
 
 #ifdef WITH_FBSYSTRACE
 #include <fbsystrace.h>
+#include <jsi/jsi/jsi.h>
+
 using fbsystrace::FbSystraceAsyncFlow;
 #endif
 
@@ -55,10 +60,14 @@ class JsToNativeBridge : public react::ExecutorDelegate {
     m_batchHadNativeModuleOrTurboModuleCalls =
         m_batchHadNativeModuleOrTurboModuleCalls || !calls.empty();
 
+    std::vector<MethodCall> methodCalls = parseMethodCalls(std::move(calls));
+    BridgeNativeModulePerfLogger::asyncMethodCallBatchPreprocessEnd(
+        (int)methodCalls.size());
+
     // An exception anywhere in here stops processing of the batch.  This
     // was the behavior of the Android bridge, and since exception handling
     // terminates the whole bridge, there's not much point in continuing.
-    for (auto &call : parseMethodCalls(std::move(calls))) {
+    for (auto &call : methodCalls) {
       m_registry->callNativeMethod(
           call.moduleId, call.methodId, std::move(call.arguments), call.callId);
     }

@@ -1,6 +1,6 @@
 # eslint-plugin-react-native-community
 
-This plugin is intended to be used in `@react-native-community/eslint-plugin`. You probably want to install that package instead.
+This plugin is intended to be used in [`@react-native-community/eslint-config`](https://github.com/facebook/react-native/tree/HEAD/packages/eslint-config-react-native-community). You probably want to install that package instead.
 
 ## Installation
 
@@ -31,3 +31,7 @@ Enforces that error classes ( = classes with PascalCase names ending with `Error
 ### `no-haste-imports`
 
 Disallows Haste module names in `import` statements and `require()` calls.
+
+### `platform-colors`
+
+Enforces that calls to `PlatformColor` and `DynamicColorIOS` are statically analyzable to enable performance optimizations.

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,23 +9,24 @@
 
 'use strict';
 
-const {GITHUB_REF, GITHUB_SHA} = process.env;
-if (!GITHUB_REF || !GITHUB_SHA) {
-  if (!GITHUB_REF) {
-    console.error("Missing GITHUB_REF. This should've been set by the CI.");
-  }
-  if (!GITHUB_SHA) {
-    console.error("Missing GITHUB_SHA. This should've been set by the CI.");
-  }
-  process.exit(1);
-}
+const {
+  GITHUB_TOKEN,
+  GITHUB_OWNER,
+  GITHUB_REPO,
+  GITHUB_PR_NUMBER,
+  GITHUB_REF,
+  GITHUB_SHA,
+} = process.env;
 
 const fs = require('fs');
 const datastore = require('./datastore');
-const {createOrUpdateComment} = require('./make-comment');
+const {
+  createOrUpdateComment,
+  validateEnvironment: validateEnvironmentForMakeComment,
+} = require('./make-comment');
 
 /**
- * Generates and submits a comment. If this is run on master branch, data is
+ * Generates and submits a comment. If this is run on the main or release branch, data is
  * committed to the store instead.
  * @param {{
       'android-hermes-arm64-v8a'?: number;
@@ -47,7 +48,7 @@ async function reportSizeStats(stats, replacePattern) {
   );
   const collection = datastore.getBinarySizesCollection(store);
 
-  if (GITHUB_REF === 'master') {
+  if (!isPullRequest(GITHUB_REF)) {
     // Ensure we only store numbers greater than zero.
     const validatedStats = Object.keys(stats).reduce((validated, key) => {
       const value = stats[key];
@@ -58,63 +59,90 @@ async function reportSizeStats(stats, replacePattern) {
       validated[key] = value;
       return validated;
     }, {});
+
     if (Object.keys(validatedStats).length > 0) {
+      // Print out the new stats
+      const document =
+        (await datastore.getLatestDocument(collection, GITHUB_REF)) || {};
+      const formattedStats = formatBundleStats(document, validatedStats);
+      console.log(formattedStats);
+
       await datastore.createOrUpdateDocument(
         collection,
         GITHUB_SHA,
         validatedStats,
+        GITHUB_REF,
       );
     }
   } else {
-    const document = await datastore.getLatestDocument(collection);
+    const params = {
+      auth: GITHUB_TOKEN,
+      owner: GITHUB_OWNER,
+      repo: GITHUB_REPO,
+      issue_number: GITHUB_PR_NUMBER,
+    };
 
-    const diffFormatter = new Intl.NumberFormat('en', {signDisplay: 'always'});
-    const sizeFormatter = new Intl.NumberFormat('en', {});
-
-    // | Platform | Engine | Arch        | Size (bytes) | Diff |
-    // |:---------|:-------|:------------|-------------:|-----:|
-    // | android  | hermes | arm64-v8a   |      9437184 |   ±0 |
-    // | android  | hermes | armeabi-v7a |      9015296 |   ±0 |
-    // | android  | hermes | x86         |      9498624 |   ±0 |
-    // | android  | hermes | x86_64      |      9965568 |   ±0 |
-    // | android  | jsc    | arm64-v8a   |      9236480 |   ±0 |
-    // | android  | jsc    | armeabi-v7a |      8814592 |   ±0 |
-    // | android  | jsc    | x86         |      9297920 |   ±0 |
-    // | android  | jsc    | x86_64      |      9764864 |   ±0 |
-    // | android  | jsc    | x86_64      |      9764864 |   ±0 |
-    // | ios      | -      | universal   |     10715136 |   ±0 |
-    const comment = [
-      '| Platform | Engine | Arch | Size (bytes) | Diff |',
-      '|:---------|:-------|:-----|-------------:|-----:|',
-      ...Object.keys(stats).map(identifier => {
-        const [size, diff] = (() => {
-          const statSize = stats[identifier];
-          if (!statSize) {
-            return ['n/a', '--'];
-          } else if (!(identifier in document)) {
-            return [statSize, 'n/a'];
-          } else {
-            return [
-              sizeFormatter.format(statSize),
-              diffFormatter.format(statSize - document[identifier]),
-            ];
-          }
-        })();
-
-        const [platform, engineOrArch, ...archParts] = identifier.split('-');
-        const arch = archParts.join('-') || engineOrArch;
-        const engine = arch === engineOrArch ? '-' : engineOrArch; // e.g. 'ios-universal'
-        return `| ${platform} | ${engine} | ${arch} | ${size} | ${diff} |`;
-      }),
-      '',
-      `Base commit: ${document.commit}`,
-    ].join('\n');
-    createOrUpdateComment(comment, replacePattern);
+    // For PRs, always compare vs main.
+    const document =
+      (await datastore.getLatestDocument(collection, 'main')) || {};
+    const comment = formatBundleStats(document, stats);
+    createOrUpdateComment(params, comment, replacePattern);
   }
 
-  // Documentation says that we don't need to call `terminate()` but the script
-  // will just hang around until the connection times out if we don't.
-  store.terminate();
+  await datastore.terminateStore(store);
+}
+
+/**
+ * Format the new bundle stats as compared to the latest stored entry.
+ * @param {firebase.firestore.DocumentData} document the latest entry to compare against
+ * @param {firebase.firestore.UpdateData} stats The stats to be formatted
+ * @returns {string}
+ */
+function formatBundleStats(document, stats) {
+  const diffFormatter = new Intl.NumberFormat('en', {signDisplay: 'always'});
+  const sizeFormatter = new Intl.NumberFormat('en', {});
+
+  // | Platform | Engine | Arch        | Size (bytes) | Diff |
+  // |:---------|:-------|:------------|-------------:|-----:|
+  // | android  | hermes | arm64-v8a   |      9437184 |   ±0 |
+  // | android  | hermes | armeabi-v7a |      9015296 |   ±0 |
+  // | android  | hermes | x86         |      9498624 |   ±0 |
+  // | android  | hermes | x86_64      |      9965568 |   ±0 |
+  // | android  | jsc    | arm64-v8a   |      9236480 |   ±0 |
+  // | android  | jsc    | armeabi-v7a |      8814592 |   ±0 |
+  // | android  | jsc    | x86         |      9297920 |   ±0 |
+  // | android  | jsc    | x86_64      |      9764864 |   ±0 |
+  // | android  | jsc    | x86_64      |      9764864 |   ±0 |
+  // | ios      | -      | universal   |     10715136 |   ±0 |
+  const formatted = [
+    '| Platform | Engine | Arch | Size (bytes) | Diff |',
+    '|:---------|:-------|:-----|-------------:|-----:|',
+    ...Object.keys(stats).map(identifier => {
+      const [size, diff] = (() => {
+        const statSize = stats[identifier];
+        if (!statSize) {
+          return ['n/a', '--'];
+        } else if (!(identifier in document)) {
+          return [statSize, 'n/a'];
+        } else {
+          return [
+            sizeFormatter.format(statSize),
+            diffFormatter.format(statSize - document[identifier]),
+          ];
+        }
+      })();
+
+      const [platform, engineOrArch, ...archParts] = identifier.split('-');
+      const arch = archParts.join('-') || engineOrArch;
+      const engine = arch === engineOrArch ? '-' : engineOrArch; // e.g. 'ios-universal'
+      return `| ${platform} | ${engine} | ${arch} | ${size} | ${diff} |`;
+    }),
+    '',
+    `Base commit: ${document.commit || '<unknown>'}`,
+    `Branch: ${document.branch || '<unknown>'}`,
+  ].join('\n');
+
+  return formatted;
 }
 
 /**
@@ -138,18 +166,50 @@ function getFileSize(path) {
  */
 function android_getApkSize(engine, arch) {
   return getFileSize(
-    `RNTester/android/app/build/outputs/apk/${engine}/release/app-${engine}-${arch}-release.apk`,
+    `packages/rn-tester/android/app/build/outputs/apk/${engine}/release/app-${engine}-${arch}-release.apk`,
   );
+}
+
+/**
+ * Returns whether the specified ref points to a pull request.
+ */
+function isPullRequest(ref) {
+  return ref !== 'main' && !/^\d+\.\d+-stable$/.test(ref);
+}
+
+/**
+ * Validates that required environment variables are set.
+ * @returns {boolean} `true` if everything is in order; `false` otherwise.
+ */
+function validateEnvironment() {
+  if (!GITHUB_REF) {
+    console.error("Missing GITHUB_REF. This should've been set by the CI.");
+    return false;
+  }
+
+  if (isPullRequest(GITHUB_REF)) {
+    if (!validateEnvironmentForMakeComment()) {
+      return false;
+    }
+  } else if (!GITHUB_SHA) {
+    // To update the data store, we need the SHA associated with the build
+    console.error("Missing GITHUB_SHA. This should've been set by the CI.");
+    return false;
+  }
+
+  console.log(`  GITHUB_SHA=${GITHUB_SHA}`);
+
+  return true;
 }
 
 /**
  * Reports app bundle size.
  * @param {string} target
  */
-function report(target) {
+async function report(target) {
   switch (target) {
     case 'android':
-      reportSizeStats(
+      await reportSizeStats(
         {
           'android-hermes-arm64-v8a': android_getApkSize('hermes', 'arm64-v8a'),
           'android-hermes-armeabi-v7a': android_getApkSize(
@@ -168,10 +228,10 @@ function report(target) {
       break;
 
     case 'ios':
-      reportSizeStats(
+      await reportSizeStats(
         {
           'ios-universal': getFileSize(
-            'RNTester/build/Build/Products/Release-iphonesimulator/RNTester.app/RNTester',
+            'packages/rn-tester/build/Build/Products/Release-iphonesimulator/RNTester.app/RNTester',
           ),
         },
         '\\| ios \\| - \\| universal \\|',
@@ -181,10 +241,18 @@ function report(target) {
     default: {
       const path = require('path');
       console.log(`Syntax: ${path.basename(process.argv[1])} [android | ios]`);
+      process.exitCode = 2;
       break;
     }
   }
 }
 
+if (!validateEnvironment()) {
+  process.exit(1);
+}
+
 const {[2]: target} = process.argv;
-report(target);
+report(target).catch(error => {
+  console.error(error);
+  process.exitCode = 1;
+});

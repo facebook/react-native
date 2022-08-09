@@ -1,0 +1,8 @@
+//
+//  Debug-UnitTests-macOS.xcconfig
+//  RNTesterPods
+//
+
+#include "../../Pods/Target Support Files/Pods-RNTester-macOSUnitTests/Pods-RNTester-macOSUnitTests.debug.xcconfig"
+
+ENABLE_ADDRESS_SANITIZER = YES

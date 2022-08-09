@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// TODO(macOS ISS#2323203)
+// TODO(macOS GH#774)
 
-#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // TODO(macOS GH#774)
 
 #import <React/RCTAssert.h>
 
@@ -236,7 +236,7 @@ static RCTUIView *RCTUIViewCommonInit(RCTUIView *self)
   if (self != nil) {
     self.wantsLayer = YES;
     self->_userInteractionEnabled = YES;
-
+    self->_enableFocusRing = YES;
   }
   return self;
 }
@@ -429,6 +429,19 @@ static RCTUIView *RCTUIViewCommonInit(RCTUIView *self)
 
 @implementation RCTUIScrollView // TODO(macOS ISS#3536887)
 
+- (void)setEnableFocusRing:(BOOL)enableFocusRing {
+  if (_enableFocusRing != enableFocusRing) {
+    _enableFocusRing = enableFocusRing;
+  }
+
+  if (enableFocusRing) {
+    // NSTextView has no focus ring by default so let's use the standard Aqua focus ring.
+    [self setFocusRingType:NSFocusRingTypeExterior];
+  } else {
+    [self setFocusRingType:NSFocusRingTypeNone];
+  }
+}
+
 // UIScrollView properties missing from NSScrollView
 - (CGPoint)contentOffset
 {
@@ -536,94 +549,4 @@ BOOL RCTUIViewSetClipsToBounds(RCTPlatformView *view)
   }
 
   return clipsToBounds;
-}
-
-static BOOL RCTUIViewIsFieldEditor(RCTPlatformView *view)
-{
-  if ([view isKindOfClass:[NSText class]]) {
-    NSText *textObj = (NSText *) view;
-    return [textObj isFieldEditor];
-  }
-  return NO;
-}
-
-static BOOL RCTUIViewDescendantIsFieldEditor(RCTPlatformView *root)
-{
-  return RCTUIViewHasDescendantPassingPredicate(root, ^BOOL(RCTPlatformView *view) {
-    return RCTUIViewIsFieldEditor(view);
-  });
-}
-
-static RCTPlatformView *RCTUIViewDescendantPassingPredicate_DFS(RCTPlatformView *root, BOOL (^predicate)(RCTPlatformView *view))
-{
-  if (!root || !predicate) {
-    return nil;
-  }
-
-  if (predicate(root)) {
-    return root;
-  }
-
-  for (RCTPlatformView *subview in [root subviews]) {
-    RCTPlatformView *passingView = RCTUIViewDescendantPassingPredicate_DFS(subview, predicate);
-
-    if (passingView) {
-      return passingView;
-    }
-  }
-
-  return nil;
-}
-
-BOOL RCTUIViewHasDescendantPassingPredicate(RCTPlatformView *root, BOOL (^predicate)(RCTPlatformView *view))
-{
-  return RCTUIViewDescendantPassingPredicate_DFS(root, predicate) != nil;
-}
-
-static void RCTUIViewCalculateKeyViewLoopInternal(RCTPlatformView *root, NSMutableArray *keyViewLoop)
-{
-  for (RCTPlatformView *view in root.subviews) {
-    RCTUIViewCalculateKeyViewLoopInternal(view, keyViewLoop);
-  }
-  if ([root canBecomeKeyView]) {
-    BOOL include = YES;
-    
-    /*
-     
-     When dealing with the field editor and the key view loop, we want to take special
-     care to include the text control that is being edited, while skipping over the view
-     subtree that contains the field editor itself. The field editor manages focus/blur
-     events, and shouldn't be included in the key view loop.
-     
-     A typical construction looks like:
-     
-     NSTextField <-- Field being edited. We want to include this in the key view loop.
-       |
-       _NSKeyboardFocusClipView	<-- Field editor's superview. Not included.
-         |
-         NSTextView <-- The field editor. We do not want this in the key view loop.
-     
-     */
-    if (RCTUIViewDescendantIsFieldEditor(root)) {
-      BOOL isEditedControl = [root isKindOfClass:[NSControl class]] ? ([(NSControl *) root currentEditor] != nil) : NO;
-      
-      if (!isEditedControl) {
-        include = NO;
-      }
-    }
-    if (include) {
-      [keyViewLoop addObject:root];
-    }
-  }
-}
-
-NSArray *RCTUIViewCalculateKeyViewLoop(RCTPlatformView *root)
-{
-  NSMutableArray *keyViewLoop = [NSMutableArray array];
-  RCTUIViewCalculateKeyViewLoopInternal(root, keyViewLoop);
-  // Avoid returning self-referential single-link loops
-  if ([keyViewLoop count] == 1 && [keyViewLoop firstObject] == root) {
-    return nil;
-  }
-  return keyViewLoop;
 }

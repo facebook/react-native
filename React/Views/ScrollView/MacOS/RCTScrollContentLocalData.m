@@ -9,12 +9,12 @@
 
 @implementation RCTScrollContentLocalData
 
-- (instancetype)initWithVerticalScroller:(NSScroller *)verticalScroller
-                      horizontalScroller:(NSScroller *)horizontalScroller
+- (instancetype)initWithVerticalScrollerWidth:(CGFloat)verticalScrollerWidth
+										 horizontalScrollerHeight:(CGFloat)horizontalScrollerHeight;
 {
   if (self = [super init]) {
-    _verticalScrollerWidth = NSWidth([verticalScroller frame]);
-    _horizontalScrollerHeight = NSHeight([horizontalScroller frame]);
+    _verticalScrollerWidth = verticalScrollerWidth;
+    _horizontalScrollerHeight = horizontalScrollerHeight;
   }
   return self;
 }

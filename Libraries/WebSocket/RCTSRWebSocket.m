@@ -14,10 +14,10 @@
 //   limitations under the License.
 //
 
-#import <TargetConditionals.h> // [TODO(macOS ISS#2323203)
+#import <TargetConditionals.h> // [TODO(macOS GH#774)
 #if !TARGET_OS_OSX
 #import <Endian.h>
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 #import <React/RCTSRWebSocket.h>
 
 #import <Availability.h>
@@ -466,7 +466,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   CFHTTPMessageSetHeaderFieldValue(request, CFSTR("Origin"), (__bridge CFStringRef)_url.RCTSR_origin);
 
-  if (_requestedProtocols) {
+  if (_requestedProtocols && _requestedProtocols.count > 0) {
     CFHTTPMessageSetHeaderFieldValue(request, CFSTR("Sec-WebSocket-Protocol"), (__bridge CFStringRef)[_requestedProtocols componentsJoinedByString:@", "]);
   }
 
@@ -530,12 +530,42 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)_connect
 {
   if (!_scheduledRunloops.count) {
-    [self scheduleInRunLoop:[NSRunLoop RCTSR_networkRunLoop] forMode:NSDefaultRunLoopMode];
+    // [TODO(macOS ISS#2323203): `scheduleInRunLoop:forMode:` takes in a non-null run loop parameter so let's be safe and verify that
+    NSRunLoop *runLoop = [NSRunLoop RCTSR_networkRunLoop];
+    if (runLoop != nil) {
+      [self scheduleInRunLoop:runLoop forMode:NSDefaultRunLoopMode];
+    } else {
+      RCTSRLog(@"Failed connecting to RCTSR_networkRunLoop");
+    }
+    // ]TODO(macOS ISS#2323203)
   }
+
+  // [TODO(macOS GH#774)
+  // We've seen a rare ASan crash where _inputStream seems to be invalid. This is just a safety check.
+#if DEBUG
+  [self _validateStream:_outputStream name:@"_outputStream"];
+  [self _validateStream:_inputStream name:@"_inputStream"];
+#endif
+  // ]TODO(macOS GH#774)
 
   [_outputStream open];
   [_inputStream open];
 }
+
+// [TODO(macOS GH#774)
+#if DEBUG
+- (void)_validateStream:(NSStream *)stream name:(NSString *)name {
+  NSStreamStatus status = stream.streamStatus;
+  if (status != NSStreamStatusNotOpen) {
+    RCTLogWarn(@"%@ was already opened, why are we opening it again? status=%@", name, @(status));
+  }
+
+  if (stream.delegate == nil) {
+    RCTLogError(@"%@'s delegate is nil, did we clean it up too early?", name);
+  }
+}
+#endif
+// ]TODO(macOS GH#774)
 
 - (void)scheduleInRunLoop:(NSRunLoop *)aRunLoop forMode:(NSString *)mode
 {
@@ -786,6 +816,10 @@ static inline BOOL closeCodeIsValid(int closeCode)
 
 - (void)_handleFrameWithData:(NSData *)frameData opCode:(NSInteger)opcode
 {
+  // copy frameData before handling,
+  // to avoid concurrent updates to the value at the pointer
+  frameData = [frameData copy];
+
   // Check that the current data is valid UTF8
 
   BOOL isControlFrame = (opcode == RCTSROpCodePing || opcode == RCTSROpCodePong || opcode == RCTSROpCodeConnectionClose);

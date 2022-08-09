@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,16 +8,18 @@
  * @format
  */
 
-'use strict';
-
 import UTFSequence from '../../UTFSequence';
 import stringifySafe from '../../Utilities/stringifySafe';
 import type {ExceptionData} from '../../Core/NativeExceptionsManager';
 import type {LogBoxLogData} from './LogBoxLog';
+import parseErrorStack from '../../Core/Devtools/parseErrorStack';
 
-const BABEL_TRANSFORM_ERROR_FORMAT = /^(?:TransformError )?(?:SyntaxError: |ReferenceError: )(.*): (.*) \((\d+):(\d+)\)\n\n([\s\S]+)/;
-const BABEL_CODE_FRAME_ERROR_FORMAT = /^(?:TransformError )?(?:.*):? (?:.*?)(\/.*): ([\s\S]+?)\n([ >]{2}[\d\s]+ \|[\s\S]+|\u{001b}[\s\S]+)/u;
-const METRO_ERROR_FORMAT = /^(?:InternalError Metro has encountered an error:) (.*): (.*) \((\d+):(\d+)\)\n\n([\s\S]+)/u;
+const BABEL_TRANSFORM_ERROR_FORMAT =
+  /^(?:TransformError )?(?:SyntaxError: |ReferenceError: )(.*): (.*) \((\d+):(\d+)\)\n\n([\s\S]+)/;
+const BABEL_CODE_FRAME_ERROR_FORMAT =
+  /^(?:TransformError )?(?:.*):? (?:.*?)(\/.*): ([\s\S]+?)\n([ >]{2}[\d\s]+ \|[\s\S]+|\u{001b}[\s\S]+)/u;
+const METRO_ERROR_FORMAT =
+  /^(?:InternalError Metro has encountered an error:) (.*): (.*) \((\d+):(\d+)\)\n\n([\s\S]+)/u;
 
 export type ExtendedExceptionData = ExceptionData & {
   isComponentError: boolean,
@@ -32,6 +34,11 @@ export type CodeFrame = $ReadOnly<{|
     ...
   },
   fileName: string,
+
+  // TODO: When React switched to using call stack frames,
+  // we gained the ability to use the collapse flag, but
+  // it is not integrated into the LogBox UI.
+  collapse?: boolean,
 |}>;
 export type Message = $ReadOnly<{|
   content: string,
@@ -47,9 +54,7 @@ export type ComponentStack = $ReadOnlyArray<CodeFrame>;
 
 const SUBSTITUTION = UTFSequence.BOM + '%s';
 
-export function parseInterpolation(
-  args: $ReadOnlyArray<mixed>,
-): $ReadOnly<{|
+export function parseInterpolation(args: $ReadOnlyArray<mixed>): $ReadOnly<{|
   category: Category,
   message: Message,
 |}> {
@@ -124,7 +129,35 @@ export function parseInterpolation(
   };
 }
 
+function isComponentStack(consoleArgument: string) {
+  const isOldComponentStackFormat = / {4}in/.test(consoleArgument);
+  const isNewComponentStackFormat = / {4}at/.test(consoleArgument);
+  const isNewJSCComponentStackFormat = /@.*\n/.test(consoleArgument);
+
+  return (
+    isOldComponentStackFormat ||
+    isNewComponentStackFormat ||
+    isNewJSCComponentStackFormat
+  );
+}
+
 export function parseComponentStack(message: string): ComponentStack {
+  // In newer versions of React, the component stack is formatted as a call stack frame.
+  // First try to parse the component stack as a call stack frame, and if that doesn't
+  // work then we'll fallback to the old custom component stack format parsing.
+  const stack = parseErrorStack(message);
+  if (stack && stack.length > 0) {
+    return stack.map(frame => ({
+      content: frame.methodName,
+      collapse: frame.collapse || false,
+      fileName: frame.file == null ? 'unknown' : frame.file,
+      location: {
+        column: frame.column == null ? -1 : frame.column,
+        row: frame.lineNumber == null ? -1 : frame.lineNumber,
+      },
+    }));
+  }
+
   return message
     .split(/\n {4}in /g)
     .map(s => {
@@ -154,13 +187,8 @@ export function parseLogBoxException(
 
   const metroInternalError = message.match(METRO_ERROR_FORMAT);
   if (metroInternalError) {
-    const [
-      content,
-      fileName,
-      row,
-      column,
-      codeFrame,
-    ] = metroInternalError.slice(1);
+    const [content, fileName, row, column, codeFrame] =
+      metroInternalError.slice(1);
 
     return {
       level: 'fatal',
@@ -187,13 +215,8 @@ export function parseLogBoxException(
   const babelTransformError = message.match(BABEL_TRANSFORM_ERROR_FORMAT);
   if (babelTransformError) {
     // Transform errors are thrown from inside the Babel transformer.
-    const [
-      fileName,
-      content,
-      row,
-      column,
-      codeFrame,
-    ] = babelTransformError.slice(1);
+    const [fileName, content, row, column, codeFrame] =
+      babelTransformError.slice(1);
 
     return {
       level: 'syntax',
@@ -286,9 +309,7 @@ export function parseLogBoxException(
   };
 }
 
-export function parseLogBoxLog(
-  args: $ReadOnlyArray<mixed>,
-): {|
+export function parseLogBoxLog(args: $ReadOnlyArray<mixed>): {|
   componentStack: ComponentStack,
   category: Category,
   message: Message,
@@ -304,8 +325,7 @@ export function parseLogBoxLog(
     args.length > 0
   ) {
     const lastArg = args[args.length - 1];
-    // Does it look like React component stack? "   in ..."
-    if (typeof lastArg === 'string' && /\s{4}in/.test(lastArg)) {
+    if (typeof lastArg === 'string' && isComponentStack(lastArg)) {
       argsWithoutComponentStack = args.slice(0, -1);
       argsWithoutComponentStack[0] = message.slice(0, -2);
       componentStack = parseComponentStack(lastArg);
@@ -315,9 +335,13 @@ export function parseLogBoxLog(
   if (componentStack.length === 0) {
     // Try finding the component stack elsewhere.
     for (const arg of args) {
-      if (typeof arg === 'string' && /\n {4}in /.exec(arg)) {
+      if (typeof arg === 'string' && isComponentStack(arg)) {
         // Strip out any messages before the component stack.
-        const messageEndIndex = arg.indexOf('\n    in ');
+        let messageEndIndex = arg.search(/\n {4}(in|at) /);
+        if (messageEndIndex < 0) {
+          // Handle JSC component stacks.
+          messageEndIndex = arg.search(/\n/);
+        }
         if (messageEndIndex > 0) {
           argsWithoutComponentStack.push(arg.slice(0, messageEndIndex));
         }

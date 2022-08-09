@@ -1,12 +1,13 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // TODO(macOS GH#774)
 
+#import <React/RCTBridgeModule.h>
 #import <React/RCTRootView.h>
 
 #import "RCTSurfaceHostingView.h"
@@ -26,15 +27,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, copy, readonly) NSString *moduleName;
 @property (nonatomic, strong, readonly) RCTBridge *bridge;
+@property (nonatomic, readonly) BOOL hasBridge;
+@property (nonatomic, strong, readonly) RCTModuleRegistry *moduleRegistry;
+@property (nonatomic, strong, readonly) id<RCTEventDispatcherProtocol> eventDispatcher;
 @property (nonatomic, copy, readwrite) NSDictionary *appProperties;
 @property (nonatomic, assign) RCTRootViewSizeFlexibility sizeFlexibility;
 @property (nonatomic, weak) id<RCTRootViewDelegate> delegate;
 @property (nonatomic, weak) UIViewController *reactViewController;
-@property (nonatomic, strong, readonly) RCTUIView *contentView; // TODO(macOS ISS#2323203)
-@property (nonatomic, strong) RCTUIView *loadingView; // TODO(macOS ISS#2323203)
+@property (nonatomic, strong, readonly) RCTUIView *contentView; // TODO(macOS GH#774)
+@property (nonatomic, strong) RCTUIView *loadingView; // TODO(macOS GH#774)
 @property (nonatomic, assign) BOOL passThroughTouches;
 @property (nonatomic, assign) NSTimeInterval loadingViewFadeDelay;
 @property (nonatomic, assign) NSTimeInterval loadingViewFadeDuration;
+@property (nonatomic, assign) CGSize minimumSize;
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
@@ -45,8 +50,12 @@ NS_ASSUME_NONNULL_BEGIN
                 initialProperties:(NSDictionary *)initialProperties
                     launchOptions:(NSDictionary *)launchOptions;
 
-- (instancetype)initWithSurface:(RCTSurface *)surface
-                sizeMeasureMode:(RCTSurfaceSizeMeasureMode)sizeMeasureMode NS_UNAVAILABLE;
+/**
+ * Bridgeless mode initializer
+ */
+- (instancetype)initWithSurface:(id<RCTSurfaceProtocol>)surface
+                sizeMeasureMode:(RCTSurfaceSizeMeasureMode)sizeMeasureMode
+                 moduleRegistry:(RCTModuleRegistry *)moduleRegistry;
 
 - (void)cancelTouches;
 

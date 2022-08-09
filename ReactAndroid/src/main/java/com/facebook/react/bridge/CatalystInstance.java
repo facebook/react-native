@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -62,8 +62,10 @@ public interface CatalystInstance
 
   <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface);
 
+  @Nullable
   <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface);
 
+  @Nullable
   NativeModule getNativeModule(String moduleName);
 
   JSIModule getJSIModule(JSIModuleType moduleType);
@@ -97,13 +99,19 @@ public interface CatalystInstance
   void setGlobalVariable(String propName, String jsonValue);
 
   /**
-   * Get the C pointer (as a long) to the JavaScriptCore context associated with this instance.
+   * Do not use this anymore. Use {@link #getRuntimeExecutor()} instead. Get the C pointer (as a
+   * long) to the JavaScriptCore context associated with this instance.
    *
    * <p>Use the following pattern to ensure that the JS context is not cleared while you are using
    * it: JavaScriptContextHolder jsContext = reactContext.getJavaScriptContextHolder()
    * synchronized(jsContext) { nativeThingNeedingJsContext(jsContext.get()); }
    */
+  @Deprecated
   JavaScriptContextHolder getJavaScriptContextHolder();
+
+  RuntimeExecutor getRuntimeExecutor();
+
+  RuntimeScheduler getRuntimeScheduler();
 
   void addJSIModules(List<JSIModuleSpec> jsiModules);
 

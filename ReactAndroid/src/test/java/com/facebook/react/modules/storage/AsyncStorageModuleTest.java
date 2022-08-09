@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,7 @@
 
 package com.facebook.react.modules.storage;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import com.facebook.react.bridge.Arguments;
@@ -36,7 +36,7 @@ import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.util.concurrent.RoboExecutorService;
+import org.robolectric.android.util.concurrent.RoboExecutorService;
 
 /** Tests for {@link com.facebook.react.modules.storage.AsyncStorageModule}. */
 @PrepareForTest({Arguments.class})

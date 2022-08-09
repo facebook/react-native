@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -30,6 +30,7 @@
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)decoder)
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 
+#if DEBUG // TODO(macOS GH#774) description is a debug-only feature
 - (NSString *)description
 {
   NSString *superDescription = [super description];
@@ -44,6 +45,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
                                     NSStringFromUIEdgeInsets([self safeAreaInsetsIfSupportedAndEnabled]),
                                     NSStringFromUIEdgeInsets(_currentSafeAreaInsets)];
 }
+#endif // TODO(macOS GH#774)
 
 - (BOOL)isSupportedByOS
 {
@@ -52,13 +54,9 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 
 - (UIEdgeInsets)safeAreaInsetsIfSupportedAndEnabled
 {
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
   if (self.isSupportedByOS) {
-    if (@available(iOS 11.0, *)) {
-      return self.safeAreaInsets;
-    }
+    return self.safeAreaInsets;
   }
-#endif
   return self.emulateUnlessSupported ? self.emulatedSafeAreaInsets : UIEdgeInsetsZero;
 }
 

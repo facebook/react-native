@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -104,10 +104,13 @@ static void appendEdgeIfNotUndefined(
     const string& str,
     const YGStyle::Edges& edges,
     const YGEdge edge) {
-  appendNumberIfNotUndefined(
-      base,
-      str,
-      YGComputedEdgeValue(edges, edge, detail::CompactValue::ofUndefined()));
+  // TODO: this doesn't take RTL / YGEdgeStart / YGEdgeEnd into account
+  auto value = (edge == YGEdgeLeft || edge == YGEdgeRight)
+      ? YGNode::computeEdgeValueForRow(
+            edges, edge, edge, detail::CompactValue::ofUndefined())
+      : YGNode::computeEdgeValueForColumn(
+            edges, edge, detail::CompactValue::ofUndefined());
+  appendNumberIfNotUndefined(base, str, value);
 }
 
 void YGNodeToString(

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,9 +8,9 @@
  * @format
  */
 
-const Platform = require('../../Utilities/Platform');
-const React = require('react');
-const View = require('../View/View');
+import Platform from '../../Utilities/Platform';
+import * as React from 'react';
+import View from '../View/View';
 
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
@@ -35,7 +35,7 @@ let exported: React.AbstractComponent<
  * sensor housing area on iPhone X).
  */
 if (Platform.OS !== 'ios') {
-  // TODO(macOS ISS#2323203)
+  // TODO(macOS GH#774)
   exported = React.forwardRef<Props, React.ElementRef<HostComponent<mixed>>>(
     function SafeAreaView(props, forwardedRef) {
       const {emulateUnlessSupported, ...localProps} = props;
@@ -43,8 +43,8 @@ if (Platform.OS !== 'ios') {
     },
   );
 } else {
-  const RCTSafeAreaViewNativeComponent = require('./RCTSafeAreaViewNativeComponent')
-    .default;
+  const RCTSafeAreaViewNativeComponent =
+    require('./RCTSafeAreaViewNativeComponent').default;
 
   exported = React.forwardRef<Props, React.ElementRef<HostComponent<mixed>>>(
     function SafeAreaView(props, forwardedRef) {
@@ -59,4 +59,4 @@ if (Platform.OS !== 'ios') {
   );
 }
 
-module.exports = exported;
+export default exported;

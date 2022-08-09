@@ -1,5 +1,5 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
-// @generated SignedSource<<4ab81efd6f767bd583d00c806b7d1d9b>>
+// @generated SignedSource<<522f29c54f207a4f7b5c33af07cf64d0>>
 
 #include "MessageTypes.h"
 
@@ -35,19 +35,35 @@ std::unique_ptr<Request> Request::fromJsonThrowOnError(const std::string &str) {
       {"Debugger.setBreakpoint", makeUnique<debugger::SetBreakpointRequest>},
       {"Debugger.setBreakpointByUrl",
        makeUnique<debugger::SetBreakpointByUrlRequest>},
+      {"Debugger.setBreakpointsActive",
+       makeUnique<debugger::SetBreakpointsActiveRequest>},
+      {"Debugger.setInstrumentationBreakpoint",
+       makeUnique<debugger::SetInstrumentationBreakpointRequest>},
       {"Debugger.setPauseOnExceptions",
        makeUnique<debugger::SetPauseOnExceptionsRequest>},
       {"Debugger.stepInto", makeUnique<debugger::StepIntoRequest>},
       {"Debugger.stepOut", makeUnique<debugger::StepOutRequest>},
       {"Debugger.stepOver", makeUnique<debugger::StepOverRequest>},
+      {"HeapProfiler.collectGarbage",
+       makeUnique<heapProfiler::CollectGarbageRequest>},
+      {"HeapProfiler.getHeapObjectId",
+       makeUnique<heapProfiler::GetHeapObjectIdRequest>},
+      {"HeapProfiler.getObjectByHeapObjectId",
+       makeUnique<heapProfiler::GetObjectByHeapObjectIdRequest>},
+      {"HeapProfiler.startSampling",
+       makeUnique<heapProfiler::StartSamplingRequest>},
       {"HeapProfiler.startTrackingHeapObjects",
        makeUnique<heapProfiler::StartTrackingHeapObjectsRequest>},
+      {"HeapProfiler.stopSampling",
+       makeUnique<heapProfiler::StopSamplingRequest>},
       {"HeapProfiler.stopTrackingHeapObjects",
        makeUnique<heapProfiler::StopTrackingHeapObjectsRequest>},
       {"HeapProfiler.takeHeapSnapshot",
        makeUnique<heapProfiler::TakeHeapSnapshotRequest>},
       {"Runtime.evaluate", makeUnique<runtime::EvaluateRequest>},
       {"Runtime.getProperties", makeUnique<runtime::GetPropertiesRequest>},
+      {"Runtime.runIfWaitingForDebugger",
+       makeUnique<runtime::RunIfWaitingForDebuggerRequest>},
   };
 
   dynamic obj = folly::parseJson(str);
@@ -208,6 +224,53 @@ dynamic debugger::CallFrame::toDynamic() const {
   put(obj, "scopeChain", scopeChain);
   put(obj, "this", thisObj);
   put(obj, "returnValue", returnValue);
+  return obj;
+}
+
+heapProfiler::SamplingHeapProfileNode::SamplingHeapProfileNode(
+    const dynamic &obj) {
+  assign(callFrame, obj, "callFrame");
+  assign(selfSize, obj, "selfSize");
+  assign(id, obj, "id");
+  assign(children, obj, "children");
+}
+
+dynamic heapProfiler::SamplingHeapProfileNode::toDynamic() const {
+  dynamic obj = dynamic::object;
+
+  put(obj, "callFrame", callFrame);
+  put(obj, "selfSize", selfSize);
+  put(obj, "id", id);
+  put(obj, "children", children);
+  return obj;
+}
+
+heapProfiler::SamplingHeapProfileSample::SamplingHeapProfileSample(
+    const dynamic &obj) {
+  assign(size, obj, "size");
+  assign(nodeId, obj, "nodeId");
+  assign(ordinal, obj, "ordinal");
+}
+
+dynamic heapProfiler::SamplingHeapProfileSample::toDynamic() const {
+  dynamic obj = dynamic::object;
+
+  put(obj, "size", size);
+  put(obj, "nodeId", nodeId);
+  put(obj, "ordinal", ordinal);
+  return obj;
+}
+
+heapProfiler::SamplingHeapProfile::SamplingHeapProfile(const dynamic &obj) {
+  assign(head, obj, "head");
+  assign(samples, obj, "samples");
+}
+
+dynamic heapProfiler::SamplingHeapProfile::toDynamic() const {
+  dynamic obj = dynamic::object;
+
+  put(obj, "head", head);
+  put(obj, "samples", samples);
   return obj;
 }
 
@@ -505,6 +568,65 @@ void debugger::SetBreakpointByUrlRequest::accept(
   handler.handle(*this);
 }
 
+debugger::SetBreakpointsActiveRequest::SetBreakpointsActiveRequest()
+    : Request("Debugger.setBreakpointsActive") {}
+
+debugger::SetBreakpointsActiveRequest::SetBreakpointsActiveRequest(
+    const dynamic &obj)
+    : Request("Debugger.setBreakpointsActive") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(active, params, "active");
+}
+
+dynamic debugger::SetBreakpointsActiveRequest::toDynamic() const {
+  dynamic params = dynamic::object;
+  put(params, "active", active);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  put(obj, "params", std::move(params));
+  return obj;
+}
+
+void debugger::SetBreakpointsActiveRequest::accept(
+    RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
+debugger::SetInstrumentationBreakpointRequest::
+    SetInstrumentationBreakpointRequest()
+    : Request("Debugger.setInstrumentationBreakpoint") {}
+
+debugger::SetInstrumentationBreakpointRequest::
+    SetInstrumentationBreakpointRequest(const dynamic &obj)
+    : Request("Debugger.setInstrumentationBreakpoint") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(instrumentation, params, "instrumentation");
+}
+
+dynamic debugger::SetInstrumentationBreakpointRequest::toDynamic() const {
+  dynamic params = dynamic::object;
+  put(params, "instrumentation", instrumentation);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  put(obj, "params", std::move(params));
+  return obj;
+}
+
+void debugger::SetInstrumentationBreakpointRequest::accept(
+    RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
 debugger::SetPauseOnExceptionsRequest::SetPauseOnExceptionsRequest()
     : Request("Debugger.setPauseOnExceptions") {}
 
@@ -591,6 +713,113 @@ void debugger::StepOverRequest::accept(RequestHandler &handler) const {
   handler.handle(*this);
 }
 
+heapProfiler::CollectGarbageRequest::CollectGarbageRequest()
+    : Request("HeapProfiler.collectGarbage") {}
+
+heapProfiler::CollectGarbageRequest::CollectGarbageRequest(const dynamic &obj)
+    : Request("HeapProfiler.collectGarbage") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+}
+
+dynamic heapProfiler::CollectGarbageRequest::toDynamic() const {
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  return obj;
+}
+
+void heapProfiler::CollectGarbageRequest::accept(
+    RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
+heapProfiler::GetHeapObjectIdRequest::GetHeapObjectIdRequest()
+    : Request("HeapProfiler.getHeapObjectId") {}
+
+heapProfiler::GetHeapObjectIdRequest::GetHeapObjectIdRequest(const dynamic &obj)
+    : Request("HeapProfiler.getHeapObjectId") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(objectId, params, "objectId");
+}
+
+dynamic heapProfiler::GetHeapObjectIdRequest::toDynamic() const {
+  dynamic params = dynamic::object;
+  put(params, "objectId", objectId);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  put(obj, "params", std::move(params));
+  return obj;
+}
+
+void heapProfiler::GetHeapObjectIdRequest::accept(
+    RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
+heapProfiler::GetObjectByHeapObjectIdRequest::GetObjectByHeapObjectIdRequest()
+    : Request("HeapProfiler.getObjectByHeapObjectId") {}
+
+heapProfiler::GetObjectByHeapObjectIdRequest::GetObjectByHeapObjectIdRequest(
+    const dynamic &obj)
+    : Request("HeapProfiler.getObjectByHeapObjectId") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(objectId, params, "objectId");
+  assign(objectGroup, params, "objectGroup");
+}
+
+dynamic heapProfiler::GetObjectByHeapObjectIdRequest::toDynamic() const {
+  dynamic params = dynamic::object;
+  put(params, "objectId", objectId);
+  put(params, "objectGroup", objectGroup);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  put(obj, "params", std::move(params));
+  return obj;
+}
+
+void heapProfiler::GetObjectByHeapObjectIdRequest::accept(
+    RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
+heapProfiler::StartSamplingRequest::StartSamplingRequest()
+    : Request("HeapProfiler.startSampling") {}
+
+heapProfiler::StartSamplingRequest::StartSamplingRequest(const dynamic &obj)
+    : Request("HeapProfiler.startSampling") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(samplingInterval, params, "samplingInterval");
+}
+
+dynamic heapProfiler::StartSamplingRequest::toDynamic() const {
+  dynamic params = dynamic::object;
+  put(params, "samplingInterval", samplingInterval);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  put(obj, "params", std::move(params));
+  return obj;
+}
+
+void heapProfiler::StartSamplingRequest::accept(RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
 heapProfiler::StartTrackingHeapObjectsRequest::StartTrackingHeapObjectsRequest()
     : Request("HeapProfiler.startTrackingHeapObjects") {}
 
@@ -617,6 +846,26 @@ dynamic heapProfiler::StartTrackingHeapObjectsRequest::toDynamic() const {
 
 void heapProfiler::StartTrackingHeapObjectsRequest::accept(
     RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
+heapProfiler::StopSamplingRequest::StopSamplingRequest()
+    : Request("HeapProfiler.stopSampling") {}
+
+heapProfiler::StopSamplingRequest::StopSamplingRequest(const dynamic &obj)
+    : Request("HeapProfiler.stopSampling") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+}
+
+dynamic heapProfiler::StopSamplingRequest::toDynamic() const {
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  return obj;
+}
+
+void heapProfiler::StopSamplingRequest::accept(RequestHandler &handler) const {
   handler.handle(*this);
 }
 
@@ -751,6 +1000,28 @@ void runtime::GetPropertiesRequest::accept(RequestHandler &handler) const {
   handler.handle(*this);
 }
 
+runtime::RunIfWaitingForDebuggerRequest::RunIfWaitingForDebuggerRequest()
+    : Request("Runtime.runIfWaitingForDebugger") {}
+
+runtime::RunIfWaitingForDebuggerRequest::RunIfWaitingForDebuggerRequest(
+    const dynamic &obj)
+    : Request("Runtime.runIfWaitingForDebugger") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+}
+
+dynamic runtime::RunIfWaitingForDebuggerRequest::toDynamic() const {
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  return obj;
+}
+
+void runtime::RunIfWaitingForDebuggerRequest::accept(
+    RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
 /// Responses
 ErrorResponse::ErrorResponse(const dynamic &obj) {
   assign(id, obj, "id");
@@ -838,6 +1109,77 @@ dynamic debugger::SetBreakpointByUrlResponse::toDynamic() const {
   dynamic res = dynamic::object;
   put(res, "breakpointId", breakpointId);
   put(res, "locations", locations);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "result", std::move(res));
+  return obj;
+}
+
+debugger::SetInstrumentationBreakpointResponse::
+    SetInstrumentationBreakpointResponse(const dynamic &obj) {
+  assign(id, obj, "id");
+
+  dynamic res = obj.at("result");
+  assign(breakpointId, res, "breakpointId");
+}
+
+dynamic debugger::SetInstrumentationBreakpointResponse::toDynamic() const {
+  dynamic res = dynamic::object;
+  put(res, "breakpointId", breakpointId);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "result", std::move(res));
+  return obj;
+}
+
+heapProfiler::GetHeapObjectIdResponse::GetHeapObjectIdResponse(
+    const dynamic &obj) {
+  assign(id, obj, "id");
+
+  dynamic res = obj.at("result");
+  assign(heapSnapshotObjectId, res, "heapSnapshotObjectId");
+}
+
+dynamic heapProfiler::GetHeapObjectIdResponse::toDynamic() const {
+  dynamic res = dynamic::object;
+  put(res, "heapSnapshotObjectId", heapSnapshotObjectId);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "result", std::move(res));
+  return obj;
+}
+
+heapProfiler::GetObjectByHeapObjectIdResponse::GetObjectByHeapObjectIdResponse(
+    const dynamic &obj) {
+  assign(id, obj, "id");
+
+  dynamic res = obj.at("result");
+  assign(result, res, "result");
+}
+
+dynamic heapProfiler::GetObjectByHeapObjectIdResponse::toDynamic() const {
+  dynamic res = dynamic::object;
+  put(res, "result", result);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "result", std::move(res));
+  return obj;
+}
+
+heapProfiler::StopSamplingResponse::StopSamplingResponse(const dynamic &obj) {
+  assign(id, obj, "id");
+
+  dynamic res = obj.at("result");
+  assign(profile, res, "profile");
+}
+
+dynamic heapProfiler::StopSamplingResponse::toDynamic() const {
+  dynamic res = dynamic::object;
+  put(res, "profile", profile);
 
   dynamic obj = dynamic::object;
   put(obj, "id", id);
@@ -1014,6 +1356,52 @@ heapProfiler::AddHeapSnapshotChunkNotification::
 dynamic heapProfiler::AddHeapSnapshotChunkNotification::toDynamic() const {
   dynamic params = dynamic::object;
   put(params, "chunk", chunk);
+
+  dynamic obj = dynamic::object;
+  put(obj, "method", method);
+  put(obj, "params", std::move(params));
+  return obj;
+}
+
+heapProfiler::HeapStatsUpdateNotification::HeapStatsUpdateNotification()
+    : Notification("HeapProfiler.heapStatsUpdate") {}
+
+heapProfiler::HeapStatsUpdateNotification::HeapStatsUpdateNotification(
+    const dynamic &obj)
+    : Notification("HeapProfiler.heapStatsUpdate") {
+  assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(statsUpdate, params, "statsUpdate");
+}
+
+dynamic heapProfiler::HeapStatsUpdateNotification::toDynamic() const {
+  dynamic params = dynamic::object;
+  put(params, "statsUpdate", statsUpdate);
+
+  dynamic obj = dynamic::object;
+  put(obj, "method", method);
+  put(obj, "params", std::move(params));
+  return obj;
+}
+
+heapProfiler::LastSeenObjectIdNotification::LastSeenObjectIdNotification()
+    : Notification("HeapProfiler.lastSeenObjectId") {}
+
+heapProfiler::LastSeenObjectIdNotification::LastSeenObjectIdNotification(
+    const dynamic &obj)
+    : Notification("HeapProfiler.lastSeenObjectId") {
+  assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(lastSeenObjectId, params, "lastSeenObjectId");
+  assign(timestamp, params, "timestamp");
+}
+
+dynamic heapProfiler::LastSeenObjectIdNotification::toDynamic() const {
+  dynamic params = dynamic::object;
+  put(params, "lastSeenObjectId", lastSeenObjectId);
+  put(params, "timestamp", timestamp);
 
   dynamic obj = dynamic::object;
   put(obj, "method", method);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -36,13 +36,26 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
 
   public static final String NAME = "AccessibilityInfo";
 
-  @TargetApi(Build.VERSION_CODES.KITKAT)
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private class ReactTouchExplorationStateChangeListener
       implements AccessibilityManager.TouchExplorationStateChangeListener {
 
     @Override
     public void onTouchExplorationStateChanged(boolean enabled) {
       updateAndSendTouchExplorationChangeEvent(enabled);
+    }
+  }
+
+  // Android can listen for accessibility service enable with `accessibilityStateChange`, but
+  // `accessibilityState` conflicts with React Native props and confuses developers. Therefore, the
+  // name `accessibilityServiceChange` is used here instead.
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+  private class ReactAccessibilityServiceChangeListener
+      implements AccessibilityManager.AccessibilityStateChangeListener {
+
+    @Override
+    public void onAccessibilityStateChanged(boolean enabled) {
+      updateAndSendAccessibilityServiceChangeEvent(enabled);
     }
   }
 
@@ -56,7 +69,7 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
 
         @Override
         public void onChange(boolean selfChange, Uri uri) {
-          if (getReactApplicationContext().hasActiveCatalystInstance()) {
+          if (getReactApplicationContext().hasActiveReactInstance()) {
             AccessibilityInfoModule.this.updateAndSendReduceMotionChangeEvent();
           }
         }
@@ -64,12 +77,16 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
 
   private @Nullable AccessibilityManager mAccessibilityManager;
   private @Nullable ReactTouchExplorationStateChangeListener mTouchExplorationStateChangeListener;
+  private @Nullable ReactAccessibilityServiceChangeListener mAccessibilityServiceChangeListener;
   private final ContentResolver mContentResolver;
   private boolean mReduceMotionEnabled = false;
   private boolean mTouchExplorationEnabled = false;
+  private boolean mAccessibilityServiceEnabled = false;
+  private int mRecommendedTimeout;
 
   private static final String REDUCE_MOTION_EVENT_NAME = "reduceMotionDidChange";
   private static final String TOUCH_EXPLORATION_EVENT_NAME = "touchExplorationDidChange";
+  private static final String ACCESSIBILITY_SERVICE_EVENT_NAME = "accessibilityServiceDidChange";
 
   public AccessibilityInfoModule(ReactApplicationContext context) {
     super(context);
@@ -78,11 +95,10 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
         (AccessibilityManager) appContext.getSystemService(Context.ACCESSIBILITY_SERVICE);
     mContentResolver = getReactApplicationContext().getContentResolver();
     mTouchExplorationEnabled = mAccessibilityManager.isTouchExplorationEnabled();
+    mAccessibilityServiceEnabled = mAccessibilityManager.isEnabled();
     mReduceMotionEnabled = this.getIsReduceMotionEnabledValue();
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      mTouchExplorationStateChangeListener = new ReactTouchExplorationStateChangeListener();
-    }
+    mTouchExplorationStateChangeListener = new ReactTouchExplorationStateChangeListener();
+    mAccessibilityServiceChangeListener = new ReactAccessibilityServiceChangeListener();
   }
 
   @Override
@@ -90,12 +106,10 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
     return "AccessibilityInfo";
   }
 
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private boolean getIsReduceMotionEnabledValue() {
     String value =
-        Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1
-            ? null
-            : Settings.Global.getString(
-                mContentResolver, Settings.Global.TRANSITION_ANIMATION_SCALE);
+        Settings.Global.getString(mContentResolver, Settings.Global.TRANSITION_ANIMATION_SCALE);
 
     return value != null && value.equals("0.0");
   }
@@ -108,6 +122,11 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
   @Override
   public void isTouchExplorationEnabled(Callback successCallback) {
     successCallback.invoke(mTouchExplorationEnabled);
+  }
+
+  @Override
+  public void isAccessibilityServiceEnabled(Callback successCallback) {
+    successCallback.invoke(mAccessibilityServiceEnabled);
   }
 
   private void updateAndSendReduceMotionChangeEvent() {
@@ -138,45 +157,61 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
     }
   }
 
-  @Override
-  public void onHostResume() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      mAccessibilityManager.addTouchExplorationStateChangeListener(
-          mTouchExplorationStateChangeListener);
-    }
+  private void updateAndSendAccessibilityServiceChangeEvent(boolean enabled) {
+    if (mAccessibilityServiceEnabled != enabled) {
+      mAccessibilityServiceEnabled = enabled;
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      Uri transitionUri = Settings.Global.getUriFor(Settings.Global.TRANSITION_ANIMATION_SCALE);
-      mContentResolver.registerContentObserver(transitionUri, false, animationScaleObserver);
+      ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
+      if (reactApplicationContext != null) {
+        getReactApplicationContext()
+            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+            .emit(ACCESSIBILITY_SERVICE_EVENT_NAME, mAccessibilityServiceEnabled);
+      }
     }
+  }
+
+  @Override
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+  public void onHostResume() {
+    mAccessibilityManager.addTouchExplorationStateChangeListener(
+        mTouchExplorationStateChangeListener);
+    mAccessibilityManager.addAccessibilityStateChangeListener(mAccessibilityServiceChangeListener);
+
+    Uri transitionUri = Settings.Global.getUriFor(Settings.Global.TRANSITION_ANIMATION_SCALE);
+    mContentResolver.registerContentObserver(transitionUri, false, animationScaleObserver);
 
     updateAndSendTouchExplorationChangeEvent(mAccessibilityManager.isTouchExplorationEnabled());
+    updateAndSendAccessibilityServiceChangeEvent(mAccessibilityManager.isEnabled());
     updateAndSendReduceMotionChangeEvent();
   }
 
   @Override
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   public void onHostPause() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      mAccessibilityManager.removeTouchExplorationStateChangeListener(
-          mTouchExplorationStateChangeListener);
-    }
+    mAccessibilityManager.removeTouchExplorationStateChangeListener(
+        mTouchExplorationStateChangeListener);
+    mAccessibilityManager.removeAccessibilityStateChangeListener(
+        mAccessibilityServiceChangeListener);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      mContentResolver.unregisterContentObserver(animationScaleObserver);
-    }
+    mContentResolver.unregisterContentObserver(animationScaleObserver);
   }
 
   @Override
   public void initialize() {
     getReactApplicationContext().addLifecycleEventListener(this);
     updateAndSendTouchExplorationChangeEvent(mAccessibilityManager.isTouchExplorationEnabled());
+    updateAndSendAccessibilityServiceChangeEvent(mAccessibilityManager.isEnabled());
     updateAndSendReduceMotionChangeEvent();
   }
 
   @Override
-  public void onCatalystInstanceDestroy() {
-    super.onCatalystInstanceDestroy();
-    getReactApplicationContext().removeLifecycleEventListener(this);
+  public void invalidate() {
+    super.invalidate();
+
+    ReactApplicationContext applicationContext = getReactApplicationContextIfActiveOrWarn();
+    if (applicationContext != null) {
+      applicationContext.removeLifecycleEventListener(this);
+    }
   }
 
   @Override
@@ -199,5 +234,17 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
   @Override
   public void setAccessibilityFocus(double reactTag) {
     // iOS only
+  }
+
+  @Override
+  public void getRecommendedTimeoutMillis(double originalTimeout, Callback successCallback) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+      successCallback.invoke((int) originalTimeout);
+      return;
+    }
+    mRecommendedTimeout =
+        mAccessibilityManager.getRecommendedTimeoutMillis(
+            (int) originalTimeout, AccessibilityManager.FLAG_CONTENT_CONTROLS);
+    successCallback.invoke(mRecommendedTimeout);
   }
 }

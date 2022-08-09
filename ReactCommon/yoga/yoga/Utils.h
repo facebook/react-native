@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -63,6 +63,8 @@ inline bool YGValueEqual(
 // This custom float equality function returns true if either absolute
 // difference between two floats is less than 0.0001f or both are undefined.
 bool YGFloatsEqual(const float a, const float b);
+
+bool YGDoubleEqual(const double a, const double b);
 
 float YGFloatMax(const float a, const float b);
 
@@ -141,3 +143,5 @@ inline YGFloatOptional YGResolveValueMargin(
     const float ownerSize) {
   return value.isAuto() ? YGFloatOptional{0} : YGResolveValue(value, ownerSize);
 }
+
+void throwLogicalErrorWithMessage(const char* message);

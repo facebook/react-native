@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,21 +7,18 @@
  * @format
  */
 
-'use strict';
-
-const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
-
+import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import NativeWebSocketModule from './NativeWebSocketModule';
-
-const base64 = require('base64-js');
+import Platform from '../Utilities/Platform';
+import base64 from 'base64-js';
 
 const originalRCTWebSocketConnect = NativeWebSocketModule.connect;
 const originalRCTWebSocketSend = NativeWebSocketModule.send;
 const originalRCTWebSocketSendBinary = NativeWebSocketModule.sendBinary;
 const originalRCTWebSocketClose = NativeWebSocketModule.close;
 
-let eventEmitter: NativeEventEmitter;
-let subscriptions: Array<EventSubscription>;
+let eventEmitter;
+let subscriptions;
 
 let closeCallback;
 let sendCallback;
@@ -135,13 +132,19 @@ const WebSocketInterceptor = {
     if (isInterceptorEnabled) {
       return;
     }
-    eventEmitter = new NativeEventEmitter(NativeWebSocketModule);
+    eventEmitter = new NativeEventEmitter(
+      // T88715063: NativeEventEmitter only used this parameter on iOS. Now it uses it on all platforms, so this code was modified automatically to preserve its behavior
+      // If you want to use the native module on other platforms, please remove this condition and test its behavior
+      Platform.OS !== 'ios' && Platform.OS !== 'macos' // TODO(macOS GH#774): Also use this parameter on macOS
+        ? null
+        : NativeWebSocketModule,
+    );
     WebSocketInterceptor._registerEvents();
 
     // Override `connect` method for all RCTWebSocketModule requests
     // to intercept the request url, protocols, options and socketId,
     // then pass them through the `connectCallback`.
-    NativeWebSocketModule.connect = function(
+    NativeWebSocketModule.connect = function (
       url,
       protocols,
       options,
@@ -155,7 +158,7 @@ const WebSocketInterceptor = {
 
     // Override `send` method for all RCTWebSocketModule requests to intercept
     // the data sent, then pass them through the `sendCallback`.
-    NativeWebSocketModule.send = function(data, socketId) {
+    NativeWebSocketModule.send = function (data, socketId) {
       if (sendCallback) {
         sendCallback(data, socketId);
       }
@@ -164,7 +167,7 @@ const WebSocketInterceptor = {
 
     // Override `sendBinary` method for all RCTWebSocketModule requests to
     // intercept the data sent, then pass them through the `sendCallback`.
-    NativeWebSocketModule.sendBinary = function(data, socketId) {
+    NativeWebSocketModule.sendBinary = function (data, socketId) {
       if (sendCallback) {
         sendCallback(WebSocketInterceptor._arrayBufferToString(data), socketId);
       }
@@ -173,7 +176,7 @@ const WebSocketInterceptor = {
 
     // Override `close` method for all RCTWebSocketModule requests to intercept
     // the close information, then pass them through the `closeCallback`.
-    NativeWebSocketModule.close = function() {
+    NativeWebSocketModule.close = function () {
       if (closeCallback) {
         if (arguments.length === 3) {
           closeCallback(arguments[0], arguments[1], arguments[2]);

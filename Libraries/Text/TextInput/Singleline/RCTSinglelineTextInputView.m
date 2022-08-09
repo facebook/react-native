@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,14 +10,14 @@
 #import <React/RCTBridge.h>
 
 #include <React/RCTUITextField.h>
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
 #include <React/RCTUISecureTextField.h>
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 @implementation RCTSinglelineTextInputView
 {
   RCTUITextField *_backedTextInputView;
-  BOOL _useSecureTextField; // TODO(macOS ISS#2323203)
+  BOOL _useSecureTextField; // TODO(macOS GH#774)
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -28,6 +28,10 @@
 
     _backedTextInputView = [[RCTUITextField alloc] initWithFrame:self.bounds];
     _backedTextInputView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
+    _backedTextInputView.cell.scrollable = YES;
+    _backedTextInputView.cell.usesSingleLineMode = YES;
+#endif // ]TODO(macOS GH#774)
     _backedTextInputView.textInputDelegate = self;
 
     [self addSubview:_backedTextInputView];
@@ -41,7 +45,7 @@
   return _backedTextInputView;
 }
 
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
 - (void)setReactPaddingInsets:(UIEdgeInsets)reactPaddingInsets
 {
   [super setReactPaddingInsets:reactPaddingInsets];
@@ -87,6 +91,13 @@
     [self replaceSubview:previousTextField with:_backedTextInputView];
   }
 }
-#endif // ]TODO(macOS ISS#2323203)
+
+- (void)setEnableFocusRing:(BOOL)enableFocusRing {
+  [super setEnableFocusRing:enableFocusRing];
+  if ([_backedTextInputView respondsToSelector:@selector(setEnableFocusRing:)]) {
+    [_backedTextInputView setEnableFocusRing:enableFocusRing];
+  }
+}
+#endif // ]TODO(macOS GH#774)
 
 @end

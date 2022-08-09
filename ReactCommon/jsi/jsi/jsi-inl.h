@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -63,6 +63,10 @@ void throwJSError(Runtime&, const char* msg);
 template <typename T>
 inline T Runtime::make(Runtime::PointerValue* pv) {
   return T(pv);
+}
+
+inline Runtime::PointerValue* Runtime::getPointerValue(jsi::Pointer& pointer) {
+  return pointer.ptr_;
 }
 
 inline const Runtime::PointerValue* Runtime::getPointerValue(

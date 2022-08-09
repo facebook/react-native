@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -25,7 +25,7 @@ function unstable_setLogListeners(listeners: ?LogListeners) {
 /*
  * @returns {bool} true if different, false if equal
  */
-const deepDiffer = function(
+const deepDiffer = function (
   one: any,
   two: any,
   maxDepthOrOptions: Options | number = -1,

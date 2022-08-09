@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -23,6 +23,7 @@ using namespace facebook::react;
 RCT_EXPORT_MODULE()
 
 @synthesize bridge = _bridge;
+@synthesize bundleManager = _bundleManager;
 
 + (BOOL)requiresMainQueueSetup
 {
@@ -37,15 +38,13 @@ RCT_EXPORT_MODULE()
 - (NSDictionary<NSString *, id> *)getConstants
 {
   return @{
-    @"scriptURL" : self.bridge.bundleURL.absoluteString ?: @"",
+    @"scriptURL" : self.bundleManager.bundleURL.absoluteString ?: @"",
   };
 }
 
-- (std::shared_ptr<TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
-                                              nativeInvoker:(std::shared_ptr<CallInvoker>)nativeInvoker
-                                                 perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+- (std::shared_ptr<TurboModule>)getTurboModule:(const ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<NativeSourceCodeSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
+  return std::make_shared<NativeSourceCodeSpecJSI>(params);
 }
 
 @end

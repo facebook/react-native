@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,13 +8,9 @@
  * @flow
  */
 
-'use strict';
-
-import AlertMacOS from './AlertMacOS'; // TODO(macOS ISS#2323203)
+import AlertMacOS from './AlertMacOS'; // TODO(macOS GH#774)
 import Platform from '../Utilities/Platform';
-import NativeDialogManagerAndroid, {
-  type DialogOptions,
-} from '../NativeModules/specs/NativeDialogManagerAndroid';
+import type {DialogOptions} from '../NativeModules/specs/NativeDialogManagerAndroid';
 import RCTAlertManager from './RCTAlertManager';
 
 export type AlertType =
@@ -39,7 +35,7 @@ type Options = {
 /**
  * Launches an alert dialog with the specified title and message.
  *
- * See https://reactnative.dev/docs/alert.html
+ * See https://reactnative.dev/docs/alert
  */
 class Alert {
   static alert(
@@ -50,10 +46,12 @@ class Alert {
   ): void {
     if (
       Platform.OS === 'ios' ||
-      Platform.OS === 'macos' /* TODO(macOS ISS#2323203) */
+      Platform.OS === 'macos' /* TODO(macOS GH#774) */
     ) {
       Alert.prompt(title, message, buttons, 'default');
     } else if (Platform.OS === 'android') {
+      const NativeDialogManagerAndroid =
+        require('../NativeModules/specs/NativeDialogManagerAndroid').default;
       if (!NativeDialogManagerAndroid) {
         return;
       }
@@ -153,12 +151,12 @@ class Alert {
           cb && cb(value);
         },
       );
-      // [TODO(macOS ISS#2323203)
+      // [TODO(macOS GH#774)
     } else if (Platform.OS === 'macos') {
       const defaultInputs = [{default: defaultValue}];
       AlertMacOS.prompt(title, message, callbackOrButtons, type, defaultInputs);
     }
-    // ]TODO(macOS ISS#2323203)
+    // ]TODO(macOS GH#774)
   }
 }
 

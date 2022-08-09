@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,6 +10,7 @@ package com.facebook.react.testing.rule;
 import android.app.Activity;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import androidx.test.rule.ActivityTestRule;
+import com.facebook.react.ReactInstanceEventListener;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.ReactRootView;
@@ -90,11 +91,16 @@ public class ReactNativeTestRule implements TestRule {
             // This threading garbage will be replaced by Surface
             final AtomicBoolean isLayoutUpdated = new AtomicBoolean(false);
             mReactInstanceManager.addReactInstanceEventListener(
-                new ReactInstanceManager.ReactInstanceEventListener() {
+                new ReactInstanceEventListener() {
                   @Override
                   public void onReactContextInitialized(ReactContext reactContext) {
                     final UIManagerModule uiManagerModule =
                         reactContext.getCatalystInstance().getNativeModule(UIManagerModule.class);
+
+                    if (uiManagerModule == null) {
+                      return;
+                    }
+
                     uiManagerModule
                         .getUIImplementation()
                         .setLayoutUpdateListener(

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,6 +9,7 @@
 
 #import <React/RCTBridgeModule.h>
 #import <React/RCTFrameUpdate.h>
+#import <React/RCTInitializing.h>
 #import <React/RCTInvalidating.h>
 
 @protocol RCTTimingDelegate
@@ -19,7 +20,7 @@
 
 @end
 
-@interface RCTTiming : NSObject <RCTBridgeModule, RCTInvalidating, RCTFrameUpdateObserver>
+@interface RCTTiming : NSObject <RCTBridgeModule, RCTInvalidating, RCTFrameUpdateObserver, RCTInitializing>
 
 - (instancetype)initWithDelegate:(id<RCTTimingDelegate>)delegate;
 - (void)createTimerForNextFrame:(nonnull NSNumber *)callbackID

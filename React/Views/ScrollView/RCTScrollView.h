@@ -1,27 +1,28 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // TODO(macOS GH#774)
 
 #import <React/RCTAutoInsetsProtocol.h>
-#import <React/RCTEventDispatcher.h>
+#import <React/RCTDefines.h>
+#import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTScrollableProtocol.h>
 #import <React/RCTView.h>
 
 @protocol UIScrollViewDelegate;
 
 @interface RCTScrollView : RCTView <
-#if TARGET_OS_IPHONE // [TODO(macOS ISS#2323203)
+#if TARGET_OS_IPHONE // [TODO(macOS GH#774)
 	UIScrollViewDelegate,
 #endif
 	RCTScrollableProtocol, RCTAutoInsetsProtocol
-> // ]TODO(macOS ISS#2323203)
+> // ]TODO(macOS GH#774)
 
-- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithEventDispatcher:(id<RCTEventDispatcherProtocol>)eventDispatcher NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, readonly) RCTBridge *bridge;
 
@@ -35,18 +36,13 @@
 @property (nonatomic, readonly) RCTUIView *contentView; // TODO(macOS ISS#3536887)
 
 /**
- * If the `contentSize` is not specified (or is specified as {0, 0}, then the
- * `contentSize` will automatically be determined by the size of the subview.
- */
-@property (nonatomic, assign) CGSize contentSize;
-
-/**
  * The underlying scrollView (TODO: can we remove this?)
  */
 @property (nonatomic, readonly) RCTUIScrollView *scrollView; // TODO(macOS ISS#3536887)
 
 @property (nonatomic, assign) UIEdgeInsets contentInset;
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
+@property (nonatomic, assign) BOOL automaticallyAdjustKeyboardInsets;
 @property (nonatomic, assign) BOOL DEPRECATED_sendUpdatedChildFrames;
 @property (nonatomic, assign) NSTimeInterval scrollEventThrottle;
 @property (nonatomic, assign) BOOL centerContent;
@@ -69,24 +65,17 @@
 @property (nonatomic, copy) RCTDirectEventBlock onScrollEndDrag;
 @property (nonatomic, copy) RCTDirectEventBlock onMomentumScrollBegin;
 @property (nonatomic, copy) RCTDirectEventBlock onMomentumScrollEnd;
-@property (nonatomic, copy) RCTDirectEventBlock onScrollKeyDown; // TODO(macOS ISS#2323203)
-@property (nonatomic, copy) RCTDirectEventBlock onPreferredScrollerStyleDidChange; // TODO(macOS ISS#2323203)
+@property (nonatomic, copy) RCTDirectEventBlock onScrollKeyDown; // TODO(macOS GH#774)
+@property (nonatomic, copy) RCTDirectEventBlock onPreferredScrollerStyleDidChange; // TODO(macOS GH#774)
 
-- (void)flashScrollIndicators; // TODO(macOS ISS#2323203)
+- (void)flashScrollIndicators; // TODO(macOS GH#774)
 
 @end
 
 @interface RCTScrollView (Internal)
 
-- (void)updateContentOffsetIfNeeded;
+- (void)updateContentSizeIfNeeded;
 
 @end
 
-@interface RCTEventDispatcher (RCTScrollView)
-
-/**
- * Send a fake scroll event.
- */
-- (void)sendFakeScrollEvent:(NSNumber *)reactTag;
-
-@end
+RCT_EXTERN void RCTSendFakeScrollEvent(id<RCTEventDispatcherProtocol> eventDispatcher, NSNumber *reactTag);

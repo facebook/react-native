@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,6 +9,7 @@
 
 #include <cstdlib>
 #include <mutex>
+#include <sstream>
 
 #include <folly/Conv.h>
 #include <folly/Executor.h>
@@ -34,6 +35,10 @@ using ::folly::Unit;
 namespace debugger = ::facebook::hermes::debugger;
 namespace inspector = ::facebook::hermes::inspector;
 namespace m = ::facebook::hermes::inspector::chrome::message;
+
+static const char *const kVirtualBreakpointPrefix = "virtualbreakpoint-";
+static const char *const kBeforeScriptWithSourceMapExecution =
+    "beforeScriptWithSourceMapExecution";
 
 /*
  * Connection::Impl
@@ -77,6 +82,9 @@ class Connection::Impl : public inspector::InspectorObserver,
   void handle(const m::debugger::ResumeRequest &req) override;
   void handle(const m::debugger::SetBreakpointRequest &req) override;
   void handle(const m::debugger::SetBreakpointByUrlRequest &req) override;
+  void handle(const m::debugger::SetBreakpointsActiveRequest &req) override;
+  void handle(
+      const m::debugger::SetInstrumentationBreakpointRequest &req) override;
   void handle(const m::debugger::SetPauseOnExceptionsRequest &req) override;
   void handle(const m::debugger::StepIntoRequest &req) override;
   void handle(const m::debugger::StepOutRequest &req) override;
@@ -86,8 +94,15 @@ class Connection::Impl : public inspector::InspectorObserver,
       const m::heapProfiler::StartTrackingHeapObjectsRequest &req) override;
   void handle(
       const m::heapProfiler::StopTrackingHeapObjectsRequest &req) override;
+  void handle(const m::heapProfiler::StartSamplingRequest &req) override;
+  void handle(const m::heapProfiler::StopSamplingRequest &req) override;
+  void handle(const m::heapProfiler::CollectGarbageRequest &req) override;
+  void handle(
+      const m::heapProfiler::GetObjectByHeapObjectIdRequest &req) override;
+  void handle(const m::heapProfiler::GetHeapObjectIdRequest &req) override;
   void handle(const m::runtime::EvaluateRequest &req) override;
   void handle(const m::runtime::GetPropertiesRequest &req) override;
+  void handle(const m::runtime::RunIfWaitingForDebuggerRequest &req) override;
 
  private:
   std::vector<m::runtime::PropertyDescriptor> makePropsFromScope(
@@ -110,6 +125,7 @@ class Connection::Impl : public inspector::InspectorObserver,
   folly::Function<void(const std::exception &)> sendErrorToClient(int id);
   void sendResponseToClientViaExecutor(int id);
   void sendResponseToClientViaExecutor(folly::Future<Unit> future, int id);
+  void sendResponseToClientViaExecutor(const m::Response &resp);
   void sendNotificationToClientViaExecutor(const m::Notification &note);
   void sendErrorToClientViaExecutor(int id, const std::string &error);
 
@@ -129,6 +145,19 @@ class Connection::Impl : public inspector::InspectorObserver,
   // Access is protected by parsedScriptsMutex_.
   std::mutex parsedScriptsMutex_;
   std::vector<std::string> parsedScripts_;
+
+  // Some events are represented as a mode in Hermes but a breakpoint in CDP,
+  // e.g. "beforeScriptExecution" and "beforeScriptWithSourceMapExecution".
+  // Keep track of these separately. The caller should lock the
+  // virtualBreakpointMutex_.
+  std::mutex virtualBreakpointMutex_;
+  uint32_t nextVirtualBreakpoint_ = 1;
+  const std::string &createVirtualBreakpoint(const std::string &category);
+  bool isVirtualBreakpointId(const std::string &id);
+  bool hasVirtualBreakpoint(const std::string &category);
+  bool removeVirtualBreakpoint(const std::string &id);
+  std::unordered_map<std::string, std::unordered_set<std::string>>
+      virtualBreakpoints_;
 
   // The rest of these member variables are only accessed via executor_.
   std::unique_ptr<folly::Executor> executor_;
@@ -271,6 +300,7 @@ void Connection::Impl::onContextCreated(Inspector &inspector) {
 void Connection::Impl::onPause(
     Inspector &inspector,
     const debugger::ProgramState &state) {
+  bool sendNotification = true;
   m::debugger::PausedNotification note;
   note.callFrames = m::debugger::makeCallFrames(state, objTable_, getRuntime());
 
@@ -290,12 +320,41 @@ void Connection::Impl::onPause(
     case debugger::PauseReason::Exception:
       note.reason = "exception";
       break;
+    case debugger::PauseReason::ScriptLoaded: {
+      // This case covers both wait-for-debugger and instrumentation
+      // breakpoints, since both are implemented as pauses on script load.
+
+      note.reason = "other";
+      note.hitBreakpoints = std::vector<m::debugger::BreakpointId>();
+
+      std::lock_guard<std::mutex> lock(virtualBreakpointMutex_);
+      for (auto &bp :
+           virtualBreakpoints_[kBeforeScriptWithSourceMapExecution]) {
+        note.hitBreakpoints->emplace_back(bp);
+      }
+
+      // Debuggers don't tend to ever remove these kinds of breakpoints, but
+      // in the extremely unlikely event that it did *and* did it exactly
+      // between us 1. checking that we should stop, and 2. adding the stop
+      // reason here, then just resume and skip sending a pause notification.
+      if (!inspector_->isAwaitingDebuggerOnStart() &&
+          note.hitBreakpoints->empty()) {
+        sendNotification = false;
+        inspector_->resume();
+      }
+    };
+      // This will be toggled back on in the next onScriptParsed if applicable
+      // Locking is handled by didPause in the inspector
+      inspector_->setPauseOnLoads(PauseOnLoadMode::None);
+      break;
     default:
       note.reason = "other";
       break;
   }
 
-  sendNotificationToClientViaExecutor(note);
+  if (sendNotification) {
+    sendNotificationToClientViaExecutor(note);
+  }
 }
 
 void Connection::Impl::onResume(Inspector &inspector) {
@@ -314,6 +373,15 @@ void Connection::Impl::onScriptParsed(
 
   if (!info.sourceMappingUrl.empty()) {
     note.sourceMapURL = info.sourceMappingUrl;
+
+    std::lock_guard<std::mutex> lock(virtualBreakpointMutex_);
+    if (hasVirtualBreakpoint(kBeforeScriptWithSourceMapExecution)) {
+      // We are precariously relying on the fact that onScriptParsed
+      // is invoked immediately before the pause load mode is checked.
+      // That means that we can check for breakpoints and toggle the
+      // mode here, and then immediately turn it off in onPause.
+      inspector_->setPauseOnLoads(PauseOnLoadMode::All);
+    }
   }
 
   {
@@ -408,6 +476,13 @@ void Connection::Impl::sendSnapshot(
           message,
           [this, reportProgress, stopStackTraceCapture](
               const debugger::ProgramState &) {
+            // Stop taking any new traces before sending out the heap snapshot.
+            if (stopStackTraceCapture) {
+              getRuntime()
+                  .instrumentation()
+                  .stopTrackingHeapObjectStackTraces();
+            }
+
             if (reportProgress) {
               // A progress notification with finished = true indicates the
               // snapshot has been captured and is ready to be sent.  Our
@@ -431,11 +506,6 @@ void Connection::Impl::sendSnapshot(
                 });
 
             getRuntime().instrumentation().createSnapshotToStream(cos);
-            if (stopStackTraceCapture) {
-              getRuntime()
-                  .instrumentation()
-                  .stopTrackingHeapObjectStackTraces();
-            }
           })
       .via(executor_.get())
       .thenValue([this, reqId](auto &&) {
@@ -461,7 +531,45 @@ void Connection::Impl::handle(
       ->executeIfEnabled(
           "HeapProfiler.startTrackingHeapObjects",
           [this](const debugger::ProgramState &) {
-            getRuntime().instrumentation().startTrackingHeapObjectStackTraces();
+            getRuntime().instrumentation().startTrackingHeapObjectStackTraces(
+                [this](
+                    uint64_t lastSeenObjectId,
+                    std::chrono::microseconds timestamp,
+                    std::vector<jsi::Instrumentation::HeapStatsUpdate> stats) {
+                  // Send the last object ID notification first.
+                  m::heapProfiler::LastSeenObjectIdNotification note;
+                  note.lastSeenObjectId = lastSeenObjectId;
+                  // The protocol uses milliseconds with a fraction for
+                  // microseconds.
+                  note.timestamp =
+                      static_cast<double>(timestamp.count()) / 1000;
+                  sendNotificationToClient(note);
+
+                  m::heapProfiler::HeapStatsUpdateNotification heapStatsNote;
+                  // Flatten the HeapStatsUpdate list.
+                  heapStatsNote.statsUpdate.reserve(stats.size() * 3);
+                  for (const jsi::Instrumentation::HeapStatsUpdate &fragment :
+                       stats) {
+                    // Each triplet is the fragment number, the total count of
+                    // objects for the fragment, and the total size of objects
+                    // for the fragment.
+                    heapStatsNote.statsUpdate.push_back(
+                        static_cast<int>(std::get<0>(fragment)));
+                    heapStatsNote.statsUpdate.push_back(
+                        static_cast<int>(std::get<1>(fragment)));
+                    heapStatsNote.statsUpdate.push_back(
+                        static_cast<int>(std::get<2>(fragment)));
+                  }
+                  assert(
+                      heapStatsNote.statsUpdate.size() == stats.size() * 3 &&
+                      "Should be exactly 3x the stats vector");
+                  // TODO: Chunk this if there are too many fragments to update.
+                  // Unlikely to be a problem in practice unless there's a huge
+                  // amount of allocation and freeing.
+                  sendNotificationToClient(heapStatsNote);
+                });
+            // At this point we need the equivalent of a setInterval, where each
+            // interval samples the existing
           })
       .via(executor_.get())
       .thenValue(
@@ -473,9 +581,134 @@ void Connection::Impl::handle(
     const m::heapProfiler::StopTrackingHeapObjectsRequest &req) {
   sendSnapshot(
       req.id,
-      "HeapSnapshot.takeHeapSnapshot",
+      "HeapSnapshot.stopTrackingHeapObjects",
       req.reportProgress && *req.reportProgress,
       /* stopStackTraceCapture */ true);
+}
+
+void Connection::Impl::handle(
+    const m::heapProfiler::StartSamplingRequest &req) {
+  const auto id = req.id;
+  // This is the same default sampling interval that Chrome uses.
+  // https://chromedevtools.github.io/devtools-protocol/tot/HeapProfiler/#method-startSampling
+  constexpr size_t kDefaultSamplingInterval = 1 << 15;
+  const size_t samplingInterval =
+      req.samplingInterval.value_or(kDefaultSamplingInterval);
+
+  inspector_
+      ->executeIfEnabled(
+          "HeapProfiler.startSampling",
+          [this, samplingInterval](const debugger::ProgramState &) {
+            getRuntime().instrumentation().startHeapSampling(samplingInterval);
+          })
+      .via(executor_.get())
+      .thenValue(
+          [this, id](auto &&) { sendResponseToClient(m::makeOkResponse(id)); })
+      .thenError<std::exception>(sendErrorToClient(req.id));
+}
+
+void Connection::Impl::handle(const m::heapProfiler::StopSamplingRequest &req) {
+  inspector_
+      ->executeIfEnabled(
+          "HeapProfiler.stopSampling",
+          [this, id = req.id](const debugger::ProgramState &) {
+            std::ostringstream stream;
+            getRuntime().instrumentation().stopHeapSampling(stream);
+            folly::dynamic json = folly::parseJson(stream.str());
+            m::heapProfiler::StopSamplingResponse resp;
+            resp.id = id;
+            m::heapProfiler::SamplingHeapProfile profile{json};
+            resp.profile = profile;
+            sendResponseToClient(resp);
+          })
+      .via(executor_.get())
+      .thenError<std::exception>(sendErrorToClient(req.id));
+}
+
+void Connection::Impl::handle(
+    const m::heapProfiler::CollectGarbageRequest &req) {
+  const auto id = req.id;
+
+  inspector_
+      ->executeIfEnabled(
+          "HeapProfiler.collectGarbage",
+          [this](const debugger::ProgramState &) {
+            getRuntime().instrumentation().collectGarbage("inspector");
+          })
+      .via(executor_.get())
+      .thenValue(
+          [this, id](auto &&) { sendResponseToClient(m::makeOkResponse(id)); })
+      .thenError<std::exception>(sendErrorToClient(req.id));
+}
+
+void Connection::Impl::handle(
+    const m::heapProfiler::GetObjectByHeapObjectIdRequest &req) {
+  uint64_t objID = atoi(req.objectId.c_str());
+  folly::Optional<std::string> group = req.objectGroup;
+  auto remoteObjPtr = std::make_shared<m::runtime::RemoteObject>();
+
+  inspector_
+      ->executeIfEnabled(
+          "HeapProfiler.getObjectByHeapObjectId",
+          [this, remoteObjPtr, objID, group](const debugger::ProgramState &) {
+            jsi::Runtime *rt = &getRuntime();
+            if (auto *hermesRT = dynamic_cast<HermesRuntime *>(rt)) {
+              jsi::Value val = hermesRT->getObjectForID(objID);
+              if (val.isNull()) {
+                return;
+              }
+              *remoteObjPtr = m::runtime::makeRemoteObject(
+                  getRuntime(), val, objTable_, group.value_or(""));
+            }
+          })
+      .via(executor_.get())
+      .thenValue([this, id = req.id, remoteObjPtr](auto &&) {
+        if (!remoteObjPtr->type.empty()) {
+          m::heapProfiler::GetObjectByHeapObjectIdResponse resp;
+          resp.id = id;
+          resp.result = *remoteObjPtr;
+          sendResponseToClient(resp);
+        } else {
+          sendResponseToClient(m::makeErrorResponse(
+              id, m::ErrorCode::ServerError, "Object is not available"));
+        }
+      })
+      .thenError<std::exception>(sendErrorToClient(req.id));
+}
+
+void Connection::Impl::handle(
+    const m::heapProfiler::GetHeapObjectIdRequest &req) {
+  // Use a shared_ptr because the stack frame will go away.
+  std::shared_ptr<uint64_t> snapshotID = std::make_shared<uint64_t>(0);
+
+  inspector_
+      ->executeIfEnabled(
+          "HeapProfiler.getHeapObjectId",
+          [this, req, snapshotID](const debugger::ProgramState &) {
+            if (const jsi::Value *valuePtr = objTable_.getValue(req.objectId)) {
+              jsi::Runtime *rt = &getRuntime();
+              if (auto *hermesRT = dynamic_cast<HermesRuntime *>(rt)) {
+                *snapshotID = hermesRT->getUniqueID(*valuePtr);
+              }
+            }
+          })
+      .via(executor_.get())
+      .thenValue([this, id = req.id, snapshotID](auto &&) {
+        if (*snapshotID) {
+          m::heapProfiler::GetHeapObjectIdResponse resp;
+          resp.id = id;
+          // std::to_string is not available on Android, use a std::ostream
+          // instead.
+          std::ostringstream stream;
+          stream << *snapshotID;
+          resp.heapSnapshotObjectId = stream.str();
+          sendResponseToClient(resp);
+        } else {
+          sendResponseToClient(m::makeErrorResponse(
+              id, m::ErrorCode::ServerError, "Object is not available"));
+        }
+      })
+      .thenError<std::exception>(sendErrorToClient(req.id));
 }
 
 void Connection::Impl::handle(const m::runtime::EvaluateRequest &req) {
@@ -521,9 +754,18 @@ void Connection::Impl::handle(const m::debugger::PauseRequest &req) {
 }
 
 void Connection::Impl::handle(const m::debugger::RemoveBreakpointRequest &req) {
-  auto breakpointId = folly::to<debugger::BreakpointID>(req.breakpointId);
-  sendResponseToClientViaExecutor(
-      inspector_->removeBreakpoint(breakpointId), req.id);
+  if (isVirtualBreakpointId(req.breakpointId)) {
+    std::lock_guard<std::mutex> lock(virtualBreakpointMutex_);
+    if (!removeVirtualBreakpoint(req.breakpointId)) {
+      sendErrorToClientViaExecutor(
+          req.id, "Unknown breakpoint ID: " + req.breakpointId);
+    }
+    sendResponseToClientViaExecutor(req.id);
+  } else {
+    auto breakpointId = folly::to<debugger::BreakpointID>(req.breakpointId);
+    sendResponseToClientViaExecutor(
+        inspector_->removeBreakpoint(breakpointId), req.id);
+  }
 }
 
 void Connection::Impl::handle(const m::debugger::ResumeRequest &req) {
@@ -588,6 +830,61 @@ void Connection::Impl::handle(
         sendResponseToClient(resp);
       })
       .thenError<std::exception>(sendErrorToClient(req.id));
+}
+
+void Connection::Impl::handle(
+    const m::debugger::SetBreakpointsActiveRequest &req) {
+  inspector_->setBreakpointsActive(req.active)
+      .via(executor_.get())
+      .thenValue([this, id = req.id](const Unit &unit) {
+        sendResponseToClient(m::makeOkResponse(id));
+      })
+      .thenError<std::exception>(sendErrorToClient(req.id));
+}
+
+bool Connection::Impl::isVirtualBreakpointId(const std::string &id) {
+  return id.rfind(kVirtualBreakpointPrefix, 0) == 0;
+}
+
+const std::string &Connection::Impl::createVirtualBreakpoint(
+    const std::string &category) {
+  auto ret = virtualBreakpoints_[category].insert(folly::to<std::string>(
+      kVirtualBreakpointPrefix, nextVirtualBreakpoint_++));
+  return *ret.first;
+}
+
+bool Connection::Impl::hasVirtualBreakpoint(const std::string &category) {
+  auto pos = virtualBreakpoints_.find(category);
+  if (pos == virtualBreakpoints_.end())
+    return false;
+  return !pos->second.empty();
+}
+
+bool Connection::Impl::removeVirtualBreakpoint(const std::string &id) {
+  // We expect roughly 1 category, so just iterate over all the sets
+  for (auto &kv : virtualBreakpoints_) {
+    if (kv.second.erase(id) > 0) {
+      return true;
+    }
+  }
+  return false;
+}
+
+void Connection::Impl::handle(
+    const m::debugger::SetInstrumentationBreakpointRequest &req) {
+  if (req.instrumentation != kBeforeScriptWithSourceMapExecution) {
+    sendErrorToClientViaExecutor(
+        req.id, "Unknown instrumentation breakpoint: " + req.instrumentation);
+    return;
+  }
+
+  // The act of creating and registering the breakpoint ID is enough
+  // to "set" it. We merely check for the existence of them later.
+  std::lock_guard<std::mutex> lock(virtualBreakpointMutex_);
+  m::debugger::SetInstrumentationBreakpointResponse resp;
+  resp.id = req.id;
+  resp.breakpointId = createVirtualBreakpoint(req.instrumentation);
+  sendResponseToClientViaExecutor(resp);
 }
 
 void Connection::Impl::handle(
@@ -757,6 +1054,16 @@ void Connection::Impl::handle(const m::runtime::GetPropertiesRequest &req) {
       .thenError<std::exception>(sendErrorToClient(req.id));
 }
 
+void Connection::Impl::handle(
+    const m::runtime::RunIfWaitingForDebuggerRequest &req) {
+  if (inspector_->isAwaitingDebuggerOnStart()) {
+    sendResponseToClientViaExecutor(inspector_->resume(), req.id);
+  } else {
+    // We weren't awaiting a debugger. Just send an 'ok'.
+    sendResponseToClientViaExecutor(req.id);
+  }
+}
+
 /*
  * Send-to-client methods
  */
@@ -785,6 +1092,15 @@ Connection::Impl::sendErrorToClient(int id) {
 
 void Connection::Impl::sendResponseToClientViaExecutor(int id) {
   sendResponseToClientViaExecutor(folly::makeFuture(), id);
+}
+
+void Connection::Impl::sendResponseToClientViaExecutor(
+    const m::Response &resp) {
+  std::string json = resp.toJson();
+
+  folly::makeFuture()
+      .via(executor_.get())
+      .thenValue([this, json](const Unit &unit) { sendToClient(json); });
 }
 
 void Connection::Impl::sendResponseToClientViaExecutor(

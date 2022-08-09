@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.text.ClipboardManager;
+import com.facebook.react.bridge.ReactApplicationContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,7 +33,8 @@ public class ClipboardModuleTest {
 
   @Before
   public void setUp() {
-    mClipboardModule = new ClipboardModule(RuntimeEnvironment.application);
+    mClipboardModule =
+        new ClipboardModule(new ReactApplicationContext(RuntimeEnvironment.application));
     mClipboardManager =
         (ClipboardManager)
             RuntimeEnvironment.application.getSystemService(Context.CLIPBOARD_SERVICE);

@@ -1,5 +1,8 @@
---- "E:\\github\\rnm-63-fresh\\ReactAndroid\\src\\main\\java\\com\\facebook\\react\\views\\view\\ReactViewFocusEvent.java"	1969-12-31 16:00:00.000000000 -0800
-+++ "E:\\github\\rnm-63\\ReactAndroid\\src\\main\\java\\com\\facebook\\react\\views\\view\\ReactViewFocusEvent.java"	2020-10-13 21:42:27.709385000 -0700
+diff --git a/ReactAndroid/src/main/java/com/facebook/react/views/view/ReactViewFocusEvent.java b/ReactAndroid/src/main/java/com/facebook/react/views/view/ReactViewFocusEvent.java
+new file mode 100644
+index 0000000000..87364957dc
+--- /dev/null
++++ b/ReactAndroid/src/main/java/com/facebook/react/views/view/ReactViewFocusEvent.java
 @@ -0,0 +1,49 @@
 +/**
 + * Copyright (c) 2015-present, Facebook, Inc.

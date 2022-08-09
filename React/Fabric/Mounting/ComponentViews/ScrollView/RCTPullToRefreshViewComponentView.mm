@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,16 +7,16 @@
 
 #import "RCTPullToRefreshViewComponentView.h"
 
-#import <react/components/rncore/ComponentDescriptors.h>
-#import <react/components/rncore/EventEmitters.h>
-#import <react/components/rncore/Props.h>
-#import <react/components/rncore/RCTComponentViewHelpers.h>
+#import <react/renderer/components/rncore/ComponentDescriptors.h>
+#import <react/renderer/components/rncore/EventEmitters.h>
+#import <react/renderer/components/rncore/Props.h>
+#import <react/renderer/components/rncore/RCTComponentViewHelpers.h>
 
 #import <React/RCTConversions.h>
 #import <React/RCTRefreshableProtocol.h>
 #import <React/RCTScrollViewComponentView.h>
 
-#import "FBRCTFabricComponentsPlugins.h"
+#import "RCTFabricComponentsPlugins.h"
 
 using namespace facebook::react;
 
@@ -39,7 +39,7 @@ using namespace facebook::react;
     static auto const defaultProps = std::make_shared<PullToRefreshViewProps const>();
     _props = defaultProps;
 
-    _refreshControl = [[UIRefreshControl alloc] init];
+    _refreshControl = [UIRefreshControl new];
     [_refreshControl addTarget:self
                         action:@selector(handleUIControlEventValueChanged)
               forControlEvents:UIControlEventValueChanged];

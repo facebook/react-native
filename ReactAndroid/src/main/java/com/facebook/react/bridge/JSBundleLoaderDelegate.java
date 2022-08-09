@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -32,6 +32,12 @@ public interface JSBundleLoaderDelegate {
    * @param loadSynchronously
    */
   void loadScriptFromFile(String fileName, String sourceURL, boolean loadSynchronously);
+
+  /**
+   * Load a split JS bundle from the filesystem. See {@link
+   * JSBundleLoader#createCachedSplitBundleFromNetworkLoader(String, String)}.
+   */
+  void loadSplitBundleFromFile(String fileName, String sourceURL);
 
   /**
    * This API is used in situations where the JS bundle is being executed not on the device, but on

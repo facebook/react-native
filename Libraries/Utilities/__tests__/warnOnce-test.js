@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,14 +14,14 @@ describe('warnOnce', () => {
   const warnOnce = require('../warnOnce');
 
   it('logs warning messages to the console exactly once', () => {
-    console.error = jest.fn();
+    jest.spyOn(console, 'warn').mockReturnValue(undefined);
 
     warnOnce('test-message', 'This is a log message');
     warnOnce('test-message', 'This is a second log message');
 
-    expect(console.error).toHaveBeenCalledWith(
-      'Warning: This is a log message',
-    );
-    expect(console.error).toHaveBeenCalledTimes(1);
+    expect(console.warn).toHaveBeenCalledWith('This is a log message');
+    expect(console.warn).toHaveBeenCalledTimes(1);
+
+    console.warn.mockRestore();
   });
 });

@@ -24,20 +24,16 @@ steps:
       slice_name: ${{ parameters.slice_name }}
       xcode_version: ${{ parameters.xcode_version }}
 
-  - template: apple-droid-node-patching.yml
-    parameters:
-      apply_office_patches: $(apply_office_patches)
-
   - task: CmdLine@2
     displayName: yarn install
     inputs:
-      script: yarn install
+      script: yarn install --frozen-lockfile
 
   - task: CmdLine@2
     displayName: pod install
     inputs:
       script: |
-        cd RNTester
+        cd packages/rn-tester
         pod install
 
   - task: ShellScript@2
@@ -58,17 +54,18 @@ steps:
     parameters:
       xcode_sdk: ${{ parameters.xcode_sdk }}
       xcode_configuration: Debug
-      xcode_workspacePath: RNTester/RNTesterPods.xcworkspace
+      xcode_workspacePath: packages/rn-tester/RNTesterPods.xcworkspace
       xcode_scheme: ${{ parameters.xcode_scheme }}
       xcode_actions: ${{ parameters.xcode_actions_debug }}
       xcode_useXcpretty: true
       xcode_destination: ${{ parameters.xcode_destination }}
+      xcode_extraArgs: -retry-tests-on-failure -test-iterations 2
 
   - template: apple-xcode-build.yml
     parameters:
       xcode_sdk: ${{ parameters.xcode_sdk }}
       xcode_configuration: Release
-      xcode_workspacePath: RNTester/RNTesterPods.xcworkspace
+      xcode_workspacePath: packages/rn-tester/RNTesterPods.xcworkspace
       xcode_scheme: ${{ parameters.xcode_scheme }}
       xcode_actions: ${{ parameters.xcode_actions_release }}
       xcode_useXcpretty: false

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,8 +14,6 @@ jest.unmock('../NativeModules');
 
 let BatchedBridge;
 let NativeModules;
-let fs;
-let parseErrorStack;
 
 const MODULE_IDS = 0;
 const METHOD_IDS = 1;
@@ -38,15 +36,13 @@ const assertQueue = (flushedQueue, index, moduleID, methodID, params) => {
 // success callbacks are cleaned up.
 //
 // [ ] Remote invocation throws if not supplying an error callback.
-describe('MessageQueue', function() {
-  beforeEach(function() {
+describe('MessageQueue', function () {
+  beforeEach(function () {
     jest.resetModules();
 
     global.__fbBatchedBridgeConfig = require('../__mocks__/MessageQueueTestConfig');
     BatchedBridge = require('../BatchedBridge');
     NativeModules = require('../NativeModules');
-    fs = require('fs');
-    parseErrorStack = require('../../Core/Devtools/parseErrorStack');
   });
 
   it('should generate native modules', () => {
@@ -55,7 +51,7 @@ describe('MessageQueue', function() {
     assertQueue(flushedQueue, 0, 0, 0, ['foo']);
   });
 
-  it('should make round trip and clear memory', function() {
+  it('should make round trip and clear memory', function () {
     const onFail = jest.fn();
     const onSucc = jest.fn();
 
@@ -101,7 +97,7 @@ describe('MessageQueue', function() {
     // Handle the first remote invocation by signaling failure.
     BatchedBridge.__invokeCallback(firstFailCBID, ['firstFailure']);
     // The failure callback was already invoked, the success is no longer valid
-    expect(function() {
+    expect(function () {
       BatchedBridge.__invokeCallback(firstSuccCBID, ['firstSucc']);
     }).toThrow();
     expect(onFail.mock.calls.length).toBe(1);
@@ -110,14 +106,14 @@ describe('MessageQueue', function() {
     // Handle the second remote invocation by signaling success.
     BatchedBridge.__invokeCallback(secondSuccCBID, ['secondSucc']);
     // The success callback was already invoked, the fail cb is no longer valid
-    expect(function() {
+    expect(function () {
       BatchedBridge.__invokeCallback(secondFailCBID, ['secondFail']);
     }).toThrow();
     expect(onFail.mock.calls.length).toBe(1);
     expect(onSucc.mock.calls.length).toBe(1);
   });
 
-  it('promise-returning methods (type=promise)', async function() {
+  it('promise-returning methods (type=promise)', async function () {
     // Perform communication
     const promise1 = NativeModules.RemoteModule1.promiseReturningMethod(
       'paloAlto',
@@ -162,7 +158,7 @@ describe('MessageQueue', function() {
     // Handle the first remote invocation by signaling failure.
     BatchedBridge.__invokeCallback(firstFailCBID, [{message: 'firstFailure'}]);
     // The failure callback was already invoked, the success is no longer valid
-    expect(function() {
+    expect(function () {
       BatchedBridge.__invokeCallback(firstSuccCBID, ['firstSucc']);
     }).toThrow();
     await expect(promise1).rejects.toBeInstanceOf(Error);
@@ -171,18 +167,18 @@ describe('MessageQueue', function() {
     // Handle the second remote invocation by signaling success.
     BatchedBridge.__invokeCallback(secondSuccCBID, ['secondSucc']);
     // The success callback was already invoked, the fail cb is no longer valid
-    expect(function() {
+    expect(function () {
       BatchedBridge.__invokeCallback(secondFailCBID, ['secondFail']);
     }).toThrow();
     await promise2;
   });
 
   describe('sync methods', () => {
-    afterEach(function() {
+    afterEach(function () {
       delete global.nativeCallSyncHook;
     });
 
-    it('throwing an exception', function() {
+    it('throwing an exception', function () {
       global.nativeCallSyncHook = jest.fn(() => {
         throw new Error('firstFailure');
       });
@@ -206,7 +202,7 @@ describe('MessageQueue', function() {
       });
     });
 
-    it('returning a value', function() {
+    it('returning a value', function () {
       global.nativeCallSyncHook = jest.fn(() => {
         return 'secondSucc';
       });

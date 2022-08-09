@@ -26,11 +26,14 @@ project.xcworkspace/*
 
 # Gradle
 /build/
-/RNTester/android/app/build/
-/RNTester/android/app/gradle/
-/RNTester/android/app/gradlew
-/RNTester/android/app/gradlew.bat
+/packages/react-native-gradle-plugin/build/
+/packages/rn-tester/android/app/.cxx/
+/packages/rn-tester/android/app/build/
+/packages/rn-tester/android/app/gradle/
+/packages/rn-tester/android/app/gradlew
+/packages/rn-tester/android/app/gradlew.bat
 /ReactAndroid/build/
+/ReactAndroid/.cxx/
 /ReactAndroid/gradle/
 /ReactAndroid/gradlew
 /ReactAndroid/gradlew.bat
@@ -40,6 +43,8 @@ project.xcworkspace/*
 # Buck
 .buckd
 buck-out
+/.lsp.buckd
+/.lsp-buck-out
 /ReactAndroid/src/main/jni/prebuilt/lib/
 /ReactAndroid/src/main/gen
 
@@ -76,6 +81,7 @@ package-lock.json
 /coverage
 /third-party
 /packages/*
+!/packages/rn-tester
 !/packages/react-native-macos-init/
 
 # Root dir shouldn't have Xcode project
@@ -83,28 +89,40 @@ package-lock.json
 
 # ReactCommon subdir shouldn't have Xcode project
 /ReactCommon/**/*.xcodeproj
-RNTester/build
+/packages/rn-tester/build
+/packages/rn-tester/android/app/build/*
 
 # Libs that shouldn't have Xcode project
 /Libraries/FBLazyVector/**/*.xcodeproj
-/Libraries/FBReactNativeSpec/**/*.xcodeproj
 /Libraries/RCTRequired/**/*.xcodeproj
 /React/CoreModules/**/*.xcodeproj
+/React/FBReactNativeSpec/**/*.xcodeproj
 /packages/react-native-codegen/**/*.xcodeproj
 
-# CocoaPods
+# Ruby Gems (Bundler)
+/vendor
+/template/vendor
+
+# iOS / CocoaPods
+/template/ios/build/
 /template/ios/Pods/
 /template/ios/Podfile.lock
-/RNTester/Gemfile.lock
+/packages/rn-tester/Gemfile.lock
 
 # Ignore RNTester specific Pods, but keep the __offline_mirrors__ here.
-RNTester/Pods/*
-!RNTester/Pods/__offline_mirrors
+/packages/rn-tester/Pods/*
+!/packages/rn-tester/Pods/__offline_mirrors__
 
 # react-native-codegen
-/ReactCommon/fabric/components/rncore/
-/schema-rncore.json
+/React/FBReactNativeSpec/FBReactNativeSpec
+/packages/react-native-codegen/lib
+/ReactCommon/react/renderer/components/rncore/
+/packages/rn-tester/NativeModuleExample/ScreenshotManagerSpec*
+/packages/rn-tester/NativeModuleExample/react/renderer/components/ScreenshotManagerSpec/
 
 # Visual studio
 .vscode
 .vs
+
+# Android memory profiler files
+*.hprof

@@ -1,4 +1,4 @@
-Here's how to test the whole dev experience end-to-end. This will be eventually merged into the [Getting Started guide](https://reactnative.dev/docs/getting-started.html).
+Here's how to test the whole dev experience end-to-end. This will be eventually merged into the [Getting Started guide](https://reactnative.dev/docs/getting-started).
 
 Assuming you have the [Android SDK](https://developer.android.com/sdk/installing/index.html) installed, run `android` to open the Android SDK Manager.
 

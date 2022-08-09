@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,12 +10,13 @@
 
 'use strict';
 
-const getNativeComponentAttributes = require('../../ReactNative/getNativeComponentAttributes');
-const verifyComponentAttributeEquivalence = require('../verifyComponentAttributeEquivalence')
-  .default;
-
 jest.dontMock('../verifyComponentAttributeEquivalence');
-jest.mock('../../ReactNative/getNativeComponentAttributes', () => () => ({
+
+const verifyComponentAttributeEquivalence =
+  require('../verifyComponentAttributeEquivalence').default;
+
+const TestComponentNativeViewConfig = {
+  uiViewClassName: 'TestComponent',
   NativeProps: {
     value: 'BOOL',
   },
@@ -40,62 +41,63 @@ jest.mock('../../ReactNative/getNativeComponentAttributes', () => () => ({
     },
     transform: 'CATransform3D',
   },
-}));
-
-beforeEach(() => {
-  global.__DEV__ = true;
-  console.error = jest.fn();
-  jest.resetModules();
-});
+};
 
 describe('verifyComponentAttributeEquivalence', () => {
-  test('should not verify in prod', () => {
-    global.__DEV__ = false;
-    verifyComponentAttributeEquivalence('TestComponent', {});
+  beforeEach(() => {
+    global.__DEV__ = true;
+    console.error = jest.fn();
+    jest.resetModules();
   });
 
-  test('should not error with native config that is a subset of the given config', () => {
-    const configWithAdditionalProperties = getNativeComponentAttributes(
-      'TestComponent',
-    );
+  it('should not verify in prod', () => {
+    global.__DEV__ = false;
+    verifyComponentAttributeEquivalence(TestComponentNativeViewConfig, {});
+  });
 
-    configWithAdditionalProperties.bubblingEventTypes.topFocus = {
-      phasedRegistrationNames: {
-        bubbled: 'onFocus',
-        captured: 'onFocusCapture',
+  it('should not error with native config that is a subset of the given config', () => {
+    const configWithAdditionalProperties = {
+      ...TestComponentNativeViewConfig,
+      bubblingEventTypes: {
+        ...TestComponentNativeViewConfig.bubblingEventTypes,
+        topFocus: {
+          phasedRegistrationNames: {
+            bubbled: 'onFocus',
+            captured: 'onFocusCapture',
+          },
+        },
+      },
+      directEventTypes: {
+        ...TestComponentNativeViewConfig.directEventTypes,
+        topSlidingComplete: {
+          registrationName: 'onSlidingComplete',
+        },
+      },
+      validAttributes: {
+        ...TestComponentNativeViewConfig.validAttributes,
+        active: true,
       },
     };
-
-    configWithAdditionalProperties.directEventTypes.topSlidingComplete = {
-      registrationName: 'onSlidingComplete',
-    };
-
-    configWithAdditionalProperties.validAttributes.active = true;
-
     verifyComponentAttributeEquivalence(
-      'TestComponent',
-      configWithAdditionalProperties,
-    );
-    verifyComponentAttributeEquivalence(
-      'TestComponent',
+      TestComponentNativeViewConfig,
       configWithAdditionalProperties,
     );
 
     expect(console.error).not.toBeCalled();
   });
 
-  test('should error if given config is missing native config properties', () => {
-    verifyComponentAttributeEquivalence('TestComponent', {});
+  it('should error if given config is missing native config properties', () => {
+    verifyComponentAttributeEquivalence(TestComponentNativeViewConfig, {});
 
     expect(console.error).toBeCalledTimes(3);
     expect(console.error).toBeCalledWith(
-      'TestComponent generated view config for directEventTypes does not match native, missing: topAccessibilityAction',
+      "'TestComponent' has a view config that does not match native. 'validAttributes' is missing: borderColor, style",
     );
     expect(console.error).toBeCalledWith(
-      'TestComponent generated view config for bubblingEventTypes does not match native, missing: topChange',
+      "'TestComponent' has a view config that does not match native. 'bubblingEventTypes' is missing: topChange",
     );
     expect(console.error).toBeCalledWith(
-      'TestComponent generated view config for validAttributes does not match native, missing: borderColor style',
+      "'TestComponent' has a view config that does not match native. 'directEventTypes' is missing: topAccessibilityAction",
     );
   });
 });

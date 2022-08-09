@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -49,6 +49,7 @@ NSArray *RCTConvertOptionalVecToArray(const folly::Optional<ContainerT> &vec)
 bool RCTBridgingToBool(id value);
 folly::Optional<bool> RCTBridgingToOptionalBool(id value);
 NSString *RCTBridgingToString(id value);
+NSString *RCTBridgingToOptionalString(id value);
 folly::Optional<double> RCTBridgingToOptionalDouble(id value);
 double RCTBridgingToDouble(id value);
 NSArray *RCTBridgingToArray(id value);

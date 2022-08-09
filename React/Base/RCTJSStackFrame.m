@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -57,7 +57,7 @@ static NSRegularExpression *RCTJSStackFrameRegex()
                               file:(NSString *)file
                         lineNumber:(NSInteger)lineNumber
                             column:(NSInteger)column
-                          collapse:(NSInteger)collapse
+                          collapse:(BOOL)collapse
 {
   if (self = [super init]) {
     _methodName = methodName;
@@ -100,7 +100,7 @@ static NSRegularExpression *RCTJSStackFrameRegex()
                                      file:file
                                lineNumber:[lineNumber integerValue]
                                    column:[column integerValue]
-                                 collapse:@NO];
+                                 collapse:NO];
 }
 
 + (instancetype)stackFrameWithDictionary:(NSDictionary *)dict
@@ -109,7 +109,7 @@ static NSRegularExpression *RCTJSStackFrameRegex()
                                      file:dict[@"file"]
                                lineNumber:[RCTNilIfNull(dict[@"lineNumber"]) integerValue]
                                    column:[RCTNilIfNull(dict[@"column"]) integerValue]
-                                 collapse:[RCTNilIfNull(dict[@"collapse"]) integerValue]];
+                                 collapse:[RCTNilIfNull(dict[@"collapse"]) boolValue]];
 }
 
 + (NSArray<RCTJSStackFrame *> *)stackFramesWithLines:(NSString *)lines
@@ -136,6 +136,7 @@ static NSRegularExpression *RCTJSStackFrameRegex()
   return stack;
 }
 
+#if DEBUG // TODO(macOS GH#774) description is a debug-only feature
 - (NSString *)description
 {
   return [NSString stringWithFormat:@"<%@: %p method name: %@; file name: %@; line: %ld; column: %ld>",
@@ -146,5 +147,6 @@ static NSRegularExpression *RCTJSStackFrameRegex()
                                     (long)self.lineNumber,
                                     (long)self.column];
 }
+#endif // TODO(macOS GH#774)
 
 @end

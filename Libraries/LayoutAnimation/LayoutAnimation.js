@@ -1,62 +1,97 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
 'use strict';
 
 const UIManager = require('../ReactNative/UIManager');
+import type {Spec as FabricUIManagerSpec} from '../ReactNative/FabricUIManager';
+import type {
+  LayoutAnimationConfig as LayoutAnimationConfig_,
+  LayoutAnimationType,
+  LayoutAnimationProperty,
+} from '../Renderer/shims/ReactNativeTypes';
 
 import Platform from '../Utilities/Platform';
 
-type Type =
-  | 'spring'
-  | 'linear'
-  | 'easeInEaseOut'
-  | 'easeIn'
-  | 'easeOut'
-  | 'keyboard';
+// Reexport type
+export type LayoutAnimationConfig = LayoutAnimationConfig_;
 
-type Property = 'opacity' | 'scaleX' | 'scaleY' | 'scaleXY';
+type OnAnimationDidEndCallback = () => void;
+type OnAnimationDidFailCallback = () => void;
 
-type AnimationConfig = $ReadOnly<{|
-  duration?: number,
-  delay?: number,
-  springDamping?: number,
-  initialVelocity?: number,
-  type?: Type,
-  property?: Property,
-|}>;
-
-export type LayoutAnimationConfig = $ReadOnly<{|
-  duration: number,
-  create?: AnimationConfig,
-  update?: AnimationConfig,
-  delete?: AnimationConfig,
-|}>;
-
+/**
+ * Configures the next commit to be animated.
+ *
+ * onAnimationDidEnd is guaranteed to be called when the animation completes.
+ * onAnimationDidFail is *never* called in the classic, pre-Fabric renderer,
+ * and never has been. In the new renderer (Fabric) it is called only if configuration
+ * parsing fails.
+ */
 function configureNext(
   config: LayoutAnimationConfig,
-  onAnimationDidEnd?: Function,
+  onAnimationDidEnd?: OnAnimationDidEndCallback,
+  onAnimationDidFail?: OnAnimationDidFailCallback,
 ) {
-  if (!Platform.isTesting) {
+  if (Platform.isTesting) {
+    return;
+  }
+
+  // Since LayoutAnimations may possibly be disabled for now on iOS (Fabric),
+  // or Android (non-Fabric) we race a setTimeout with animation completion,
+  // in case onComplete is never called
+  // from native. Once LayoutAnimations+Fabric unconditionally ship everywhere, we can
+  // delete this mechanism at least in the Fabric branch.
+  let animationCompletionHasRun = false;
+  const onAnimationComplete = () => {
+    if (animationCompletionHasRun) {
+      return;
+    }
+    animationCompletionHasRun = true;
+    clearTimeout(raceWithAnimationId);
+    onAnimationDidEnd?.();
+  };
+  const raceWithAnimationId = setTimeout(
+    onAnimationComplete,
+    (config.duration ?? 0) + 17 /* one frame + 1ms */,
+  );
+
+  // In Fabric, LayoutAnimations are unconditionally enabled for Android, and
+  // conditionally enabled on iOS (pending fully shipping; this is a temporary state).
+  const FabricUIManager: FabricUIManagerSpec = global?.nativeFabricUIManager;
+  if (FabricUIManager?.configureNextLayoutAnimation) {
+    global?.nativeFabricUIManager?.configureNextLayoutAnimation(
+      config,
+      onAnimationComplete,
+      onAnimationDidFail ??
+        function () {} /* this will only be called if configuration parsing fails */,
+    );
+    return;
+  }
+
+  // This will only run if Fabric is *not* installed.
+  // If you have Fabric + non-Fabric running in the same VM, non-Fabric LayoutAnimations
+  // will not work.
+  if (UIManager?.configureNextLayoutAnimation) {
     UIManager.configureNextLayoutAnimation(
       config,
-      onAnimationDidEnd ?? function() {},
-      function() {} /* unused onError */,
+      onAnimationComplete ?? function () {},
+      onAnimationDidFail ??
+        function () {} /* this should never be called in Non-Fabric */,
     );
   }
 }
 
 function create(
   duration: number,
-  type: Type,
-  property: Property,
+  type: LayoutAnimationType,
+  property: LayoutAnimationProperty,
 ): LayoutAnimationConfig {
   return {
     duration,
@@ -138,13 +173,13 @@ const LayoutAnimation = {
   },
   Presets,
   easeInEaseOut: (configureNext.bind(null, Presets.easeInEaseOut): (
-    onAnimationDidEnd?: any,
+    onAnimationDidEnd?: OnAnimationDidEndCallback,
   ) => void),
   linear: (configureNext.bind(null, Presets.linear): (
-    onAnimationDidEnd?: any,
+    onAnimationDidEnd?: OnAnimationDidEndCallback,
   ) => void),
   spring: (configureNext.bind(null, Presets.spring): (
-    onAnimationDidEnd?: any,
+    onAnimationDidEnd?: OnAnimationDidEndCallback,
   ) => void),
 };
 

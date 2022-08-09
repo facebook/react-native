@@ -1,5 +1,8 @@
---- "E:\\github\\rnm-63-fresh\\ReactAndroid\\src\\main\\java\\com\\facebook\\react\\v8executor\\Android.mk"	1969-12-31 16:00:00.000000000 -0800
-+++ "E:\\github\\rnm-63\\ReactAndroid\\src\\main\\java\\com\\facebook\\react\\v8executor\\Android.mk"	2020-10-13 21:39:46.668978500 -0700
+diff --git a/ReactAndroid/src/main/java/com/facebook/react/v8executor/Android.mk b/ReactAndroid/src/main/java/com/facebook/react/v8executor/Android.mk
+new file mode 100644
+index 0000000000..8e28a3ddfd
+--- /dev/null
++++ b/ReactAndroid/src/main/java/com/facebook/react/v8executor/Android.mk
 @@ -0,0 +1,21 @@
 +# Copyright (c) Facebook, Inc. and its affiliates.
 +#

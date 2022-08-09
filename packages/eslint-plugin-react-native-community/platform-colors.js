@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,7 +12,7 @@ module.exports = {
     type: 'problem',
     docs: {
       description:
-        'Ensure that PlatformColor(), DynamicColorIOS(), and ColorAndroid() are passed literals of the expected shape.',
+        'Ensure that PlatformColor() and DynamicColorIOS() are passed literals of the expected shape.',
     },
     messages: {
       platformColorArgsLength:
@@ -25,15 +25,13 @@ module.exports = {
         'DynamicColorIOS() light value must be either a literal or a PlatformColor() call.',
       dynamicColorIOSDark:
         'DynamicColorIOS() dark value must be either a literal or a PlatformColor() call.',
-      colorAndroidArg:
-        'ColorAndroid() must take a single argument that is a literal.',
     },
     schema: [],
   },
 
-  create: function(context) {
+  create: function (context) {
     return {
-      CallExpression: function(node) {
+      CallExpression: function (node) {
         if (node.callee.name === 'PlatformColor') {
           const args = node.arguments;
           if (args.length === 0) {
@@ -62,7 +60,6 @@ module.exports = {
           const properties = args[0].properties;
           if (
             !(
-              properties.length === 2 &&
               properties[0].type === 'Property' &&
               properties[0].key.name === 'light' &&
               properties[1].type === 'Property' &&
@@ -100,15 +97,6 @@ module.exports = {
             context.report({
               node,
               messageId: 'dynamicColorIOSDark',
-            });
-            return;
-          }
-        } else if (node.callee.name === 'ColorAndroid') {
-          const args = node.arguments;
-          if (!(args.length === 1 && args[0].type === 'Literal')) {
-            context.report({
-              node,
-              messageId: 'colorAndroidArg',
             });
             return;
           }

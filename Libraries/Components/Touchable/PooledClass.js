@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,8 +9,7 @@
  */
 
 'use strict';
-
-const invariant = require('invariant');
+import invariant from 'invariant';
 
 /**
  * Static poolers. Several custom versions for each potential number of
@@ -19,8 +18,8 @@ const invariant = require('invariant');
  * the Class itself, not an instance. If any others are needed, simply add them
  * here, or in their own files.
  */
-const oneArgumentPooler = function(copyFieldsFrom) {
-  const Klass = this;
+const oneArgumentPooler = function (copyFieldsFrom) {
+  const Klass = this; // eslint-disable-line consistent-this
   if (Klass.instancePool.length) {
     const instance = Klass.instancePool.pop();
     Klass.call(instance, copyFieldsFrom);
@@ -30,8 +29,8 @@ const oneArgumentPooler = function(copyFieldsFrom) {
   }
 };
 
-const twoArgumentPooler = function(a1, a2) {
-  const Klass = this;
+const twoArgumentPooler = function (a1, a2) {
+  const Klass = this; // eslint-disable-line consistent-this
   if (Klass.instancePool.length) {
     const instance = Klass.instancePool.pop();
     Klass.call(instance, a1, a2);
@@ -41,8 +40,8 @@ const twoArgumentPooler = function(a1, a2) {
   }
 };
 
-const threeArgumentPooler = function(a1, a2, a3) {
-  const Klass = this;
+const threeArgumentPooler = function (a1, a2, a3) {
+  const Klass = this; // eslint-disable-line consistent-this
   if (Klass.instancePool.length) {
     const instance = Klass.instancePool.pop();
     Klass.call(instance, a1, a2, a3);
@@ -52,8 +51,8 @@ const threeArgumentPooler = function(a1, a2, a3) {
   }
 };
 
-const fourArgumentPooler = function(a1, a2, a3, a4) {
-  const Klass = this;
+const fourArgumentPooler = function (a1, a2, a3, a4) {
+  const Klass = this; // eslint-disable-line consistent-this
   if (Klass.instancePool.length) {
     const instance = Klass.instancePool.pop();
     Klass.call(instance, a1, a2, a3, a4);
@@ -63,8 +62,8 @@ const fourArgumentPooler = function(a1, a2, a3, a4) {
   }
 };
 
-const standardReleaser = function(instance) {
-  const Klass = this;
+const standardReleaser = function (instance) {
+  const Klass = this; // eslint-disable-line consistent-this
   invariant(
     instance instanceof Klass,
     'Trying to release an instance into a pool of a different type.',
@@ -89,7 +88,7 @@ type Pooler = any;
  * @param {Function} CopyConstructor Constructor that can be used to reset.
  * @param {Function} pooler Customizable pooler.
  */
-const addPoolingTo = function<T>(
+const addPoolingTo = function <T>(
   CopyConstructor: Class<T>,
   pooler: Pooler,
 ): Class<T> & {

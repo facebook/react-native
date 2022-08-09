@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,18 +7,18 @@
 
 #import "RCTAppState.h"
 
-#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // TODO(macOS GH#774)
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTAssert.h>
 #import <React/RCTBridge.h>
-#import <React/RCTEventDispatcher.h>
+#import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTUtils.h>
 
 #import "CoreModulesPlugins.h"
 
 static NSString *RCTCurrentAppState()
 {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   static NSDictionary *states;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -28,7 +28,7 @@ static NSString *RCTCurrentAppState()
     return @"extension";
   }
   return states[@(RCTSharedApplication().applicationState)] ?: @"unknown";
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
   
   if (RCTSharedApplication().isActive) {
     return @"active";
@@ -37,7 +37,7 @@ static NSString *RCTCurrentAppState()
   }
   return @"unknown";
   
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
   
 }
 
@@ -67,9 +67,14 @@ RCT_EXPORT_MODULE()
 
 - (facebook::react::ModuleConstants<JS::NativeAppState::Constants>)getConstants
 {
-  return facebook::react::typedConstants<JS::NativeAppState::Constants>({
-      .initialAppState = RCTCurrentAppState(),
+  __block facebook::react::ModuleConstants<JS::NativeAppState::Constants> constants;
+  RCTUnsafeExecuteOnMainQueueSync(^{
+    constants = facebook::react::typedConstants<JS::NativeAppState::Constants>({
+        .initialAppState = RCTCurrentAppState(),
+    });
   });
+
+  return constants;
 }
 
 #pragma mark - Lifecycle
@@ -94,22 +99,17 @@ RCT_EXPORT_MODULE()
                                                object:nil];
   }
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(handleMemoryWarning)
                                                name:UIApplicationDidReceiveMemoryWarningNotification
                                              object:nil];
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 }
 
 - (void)stopObserving
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (void)invalidate
-{
-  [self stopObserving];
 }
 
 #pragma mark - App Notification Methods
@@ -151,12 +151,10 @@ RCT_EXPORT_METHOD(getCurrentAppState : (RCTResponseSenderBlock)callback error : 
   callback(@[ @{@"app_state" : RCTCurrentAppState()} ]);
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)
-    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
-                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeAppStateSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
+  return std::make_shared<facebook::react::NativeAppStateSpecJSI>(params);
 }
 
 @end

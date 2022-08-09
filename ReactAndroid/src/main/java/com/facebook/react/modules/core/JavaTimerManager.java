@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -81,7 +81,7 @@ public class JavaTimerManager {
       }
 
       if (mTimersToCall != null) {
-        mJavaScriptTimerManager.callTimers(mTimersToCall);
+        mJavaScriptTimerExecutor.callTimers(mTimersToCall);
         mTimersToCall = null;
       }
 
@@ -139,7 +139,7 @@ public class JavaTimerManager {
       }
 
       if (sendIdleEvents) {
-        mJavaScriptTimerManager.callIdleCallbacks(absoluteFrameStartTime);
+        mJavaScriptTimerExecutor.callIdleCallbacks(absoluteFrameStartTime);
       }
 
       mCurrentIdleCallbackRunnable = null;
@@ -151,7 +151,7 @@ public class JavaTimerManager {
   }
 
   private final ReactApplicationContext mReactApplicationContext;
-  private final JavaScriptTimerManager mJavaScriptTimerManager;
+  private final JavaScriptTimerExecutor mJavaScriptTimerExecutor;
   private final ReactChoreographer mReactChoreographer;
   private final DevSupportManager mDevSupportManager;
   private final Object mTimerGuard = new Object();
@@ -169,11 +169,11 @@ public class JavaTimerManager {
 
   public JavaTimerManager(
       ReactApplicationContext reactContext,
-      JavaScriptTimerManager javaScriptTimerManager,
+      JavaScriptTimerExecutor javaScriptTimerManager,
       ReactChoreographer reactChoreographer,
       DevSupportManager devSupportManager) {
     mReactApplicationContext = reactContext;
-    mJavaScriptTimerManager = javaScriptTimerManager;
+    mJavaScriptTimerExecutor = javaScriptTimerManager;
     mReactChoreographer = reactChoreographer;
     mDevSupportManager = devSupportManager;
 
@@ -327,7 +327,7 @@ public class JavaTimerManager {
     if (mDevSupportManager.getDevSupportEnabled()) {
       long driftTime = Math.abs(remoteTime - deviceTime);
       if (driftTime > 60000) {
-        mJavaScriptTimerManager.emitTimeDriftWarning(
+        mJavaScriptTimerExecutor.emitTimeDriftWarning(
             "Debugger and device times have drifted by more than 60s. Please correct this by "
                 + "running adb shell \"date `date +%m%d%H%M%Y.%S`\" on your debugger machine.");
       }
@@ -338,7 +338,7 @@ public class JavaTimerManager {
     if (duration == 0 && !repeat) {
       WritableArray timerToCall = Arguments.createArray();
       timerToCall.pushInt(callbackID);
-      mJavaScriptTimerManager.callTimers(timerToCall);
+      mJavaScriptTimerExecutor.callTimers(timerToCall);
       return;
     }
 

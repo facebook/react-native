@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -21,11 +21,11 @@
 using namespace facebook::react;
 
 @interface RCTActionSheetManager () <
-#if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
 UIActionSheetDelegate
 #else
 NSSharingServicePickerDelegate
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 , NativeActionSheetManagerSpec>
 @end
 
@@ -33,24 +33,28 @@ NSSharingServicePickerDelegate
   // Use NSMapTable, as UIAlertViews do not implement <NSCopying>
   // which is required for NSDictionary keys
   NSMapTable *_callbacks;
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
   NSArray<NSSharingService*> *_excludedActivities;
   NSString *_sharingSubject;
   RCTResponseSenderBlock _failureCallback;
   RCTResponseSenderBlock _successCallback;
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 }
 
 RCT_EXPORT_MODULE()
 
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
 @synthesize bridge = _bridge;
+#else // TODO(macOS GH#774)
+@synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED;
+#endif // ]TODO(macOS GH#774)
 
 - (dispatch_queue_t)methodQueue
 {
   return dispatch_get_main_queue();
 }
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 - (void)presentViewController:(UIViewController *)alertController
        onParentViewController:(UIViewController *)parentViewController
                 anchorViewTag:(NSNumber *)anchorViewTag
@@ -59,7 +63,7 @@ RCT_EXPORT_MODULE()
   UIView *sourceView = parentViewController.view;
 
   if (anchorViewTag) {
-    sourceView = [self.bridge.uiManager viewForReactTag:anchorViewTag];
+    sourceView = [self.viewRegistry_DEPRECATED viewForReactTag:anchorViewTag];
   } else {
     alertController.popoverPresentationController.permittedArrowDirections = 0;
   }
@@ -67,63 +71,74 @@ RCT_EXPORT_MODULE()
   alertController.popoverPresentationController.sourceRect = sourceView.bounds;
   [parentViewController presentViewController:alertController animated:YES completion:nil];
 }
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 
 RCT_EXPORT_METHOD(showActionSheetWithOptions
                   : (JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions &)options callback
                   : (RCTResponseSenderBlock)callback)
 {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   if (RCTRunningInAppExtension()) {
     RCTLogError(@"Unable to show action sheet from app extension");
     return;
   }
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 
   if (!_callbacks) {
     _callbacks = [NSMapTable strongToStrongObjectsMapTable];
   }
 
   NSString *title = options.title();
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   NSString *message = options.message();
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
   NSArray<NSString *> *buttons = RCTConvertOptionalVecToArray(options.options(), ^id(NSString *element) {
     return element;
   });
+  NSArray<NSNumber *> *disabledButtonIndices;
   NSInteger cancelButtonIndex =
       options.cancelButtonIndex() ? [RCTConvert NSInteger:@(*options.cancelButtonIndex())] : -1;
   NSArray<NSNumber *> *destructiveButtonIndices;
+  if (options.disabledButtonIndices()) {
+    disabledButtonIndices = RCTConvertVecToArray(*options.disabledButtonIndices(), ^id(double element) {
+      return @(element);
+    });
+  }
   if (options.destructiveButtonIndices()) {
     destructiveButtonIndices = RCTConvertVecToArray(*options.destructiveButtonIndices(), ^id(double element) {
       return @(element);
     });
   } else {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
     NSNumber *destructiveButtonIndex = @-1;
     destructiveButtonIndices = @[ destructiveButtonIndex ];
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
   }
 
   NSNumber *anchor = [RCTConvert NSNumber:options.anchor() ? @(*options.anchor()) : nil];
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   UIViewController *controller = RCTPresentedViewController();
   UIColor *tintColor = [RCTConvert UIColor:options.tintColor() ? @(*options.tintColor()) : nil];
+  UIColor *cancelButtonTintColor =
+      [RCTConvert UIColor:options.cancelButtonTintColor() ? @(*options.cancelButtonTintColor()) : nil];
 
   if (controller == nil) {
-    RCTLogError(@"Tried to display action sheet but there is no application window. options: %@", @{
-      @"title" : title,
-      @"message" : message,
-      @"options" : buttons,
-      @"cancelButtonIndex" : @(cancelButtonIndex),
-      @"destructiveButtonIndices" : destructiveButtonIndices,
-      @"anchor" : anchor,
-      @"tintColor" : tintColor,
-    });
+    RCTLogError(
+        @"Tried to display action sheet but there is no application window. options: %@", @{ /*  // [ TODO(macOS GH#774): nil check our dict values before inserting them or we may crash */
+          @"title" : title ?: [NSNull null],
+          @"message" : message ?: [NSNull null],
+          @"options" : buttons ?: [NSNull null],
+          @"cancelButtonIndex" : @(cancelButtonIndex),
+          @"destructiveButtonIndices" : destructiveButtonIndices ?: [NSNull null],
+          @"anchor" : anchor ?: [NSNull null],
+          @"tintColor" : tintColor ?: [NSNull null],
+          @"cancelButtonTintColor" : cancelButtonTintColor ?: [NSNull null],
+          @"disabledButtonIndices" : disabledButtonIndices ?: [NSNull null],
+        }); /*  // TODO(macOS GH#774): nil check our dict values before inserting them or we may crash ] */
     return;
   }
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
   /*
    * The `anchor` option takes a view to set as the anchor for the share
    * popup to point to, on iPads running iOS 8. If it is not passed, it
@@ -131,28 +146,48 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
    */
   NSNumber *anchorViewTag = anchor;
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title
                                                                            message:message
                                                                     preferredStyle:UIAlertControllerStyleActionSheet];
 
   NSInteger index = 0;
+  bool isCancelButtonIndex = false;
   for (NSString *option in buttons) {
     UIAlertActionStyle style = UIAlertActionStyleDefault;
     if ([destructiveButtonIndices containsObject:@(index)]) {
       style = UIAlertActionStyleDestructive;
     } else if (index == cancelButtonIndex) {
       style = UIAlertActionStyleCancel;
+      isCancelButtonIndex = true;
     }
 
     NSInteger localIndex = index;
-    [alertController addAction:[UIAlertAction actionWithTitle:option
-                                                        style:style
-                                                      handler:^(__unused UIAlertAction *action) {
-                                                        callback(@[ @(localIndex) ]);
-                                                      }]];
+    UIAlertAction *actionButton = [UIAlertAction actionWithTitle:option
+                                                           style:style
+                                                         handler:^(__unused UIAlertAction *action) {
+                                                           callback(@[ @(localIndex) ]);
+                                                         }];
+    if (isCancelButtonIndex) {
+      [actionButton setValue:cancelButtonTintColor forKey:@"titleTextColor"];
+    }
+    [alertController addAction:actionButton];
 
     index++;
+  }
+
+  if (disabledButtonIndices) {
+    for (NSNumber *disabledButtonIndex in disabledButtonIndices) {
+      if ([disabledButtonIndex integerValue] < buttons.count) {
+        [alertController.actions[[disabledButtonIndex integerValue]] setEnabled:false];
+      } else {
+        RCTLogError(
+            @"Index %@ from `disabledButtonIndices` is out of bounds. Maximum index value is %@.",
+            @([disabledButtonIndex integerValue]),
+            @(buttons.count - 1));
+        return;
+      }
+    }
   }
 
   alertController.view.tintColor = tintColor;
@@ -173,7 +208,7 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
 
   [self presentViewController:alertController onParentViewController:controller anchorViewTag:anchorViewTag];
 
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
   NSMenu *menu = [[NSMenu alloc] initWithTitle:title ?: @""];
   [_callbacks setObject:callback forKey:menu];
   for (NSInteger index = 0; index < buttons.count; index++) {
@@ -205,7 +240,7 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
     location = [NSEvent mouseLocation];
   }
   [menu popUpMenuPositioningItem:menu.itemArray.firstObject atLocation:location inView:view];
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 }
 
 RCT_EXPORT_METHOD(showShareActionSheetWithOptions
@@ -213,12 +248,12 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions
                   : (RCTResponseSenderBlock)failureCallback successCallback
                   : (RCTResponseSenderBlock)successCallback)
 {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   if (RCTRunningInAppExtension()) {
     RCTLogError(@"Unable to show action sheet from app extension");
     return;
   }
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 
   NSMutableArray<id> *items = [NSMutableArray array];
   NSString *message = options.message();
@@ -244,7 +279,7 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions
     return;
   }
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   UIActivityViewController *shareController = [[UIActivityViewController alloc] initWithActivityItems:items
                                                                                 applicationActivities:nil];
 
@@ -290,7 +325,7 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions
 #endif
 
   [self presentViewController:shareController onParentViewController:controller anchorViewTag:anchorViewTag];
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
   NSArray *excludedActivityTypes = RCTConvertOptionalVecToArray(options.excludedActivityTypes(), ^id(NSString *element) { return element; });
   NSMutableArray<NSSharingService*> *excludedTypes = [NSMutableArray array];
   for (NSString *excludeActivityType in excludedActivityTypes) {
@@ -312,10 +347,10 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions
   NSSharingServicePicker *picker = [[NSSharingServicePicker alloc] initWithItems:items];
   picker.delegate = self;
   [picker showRelativeToRect:contentView.bounds ofView:contentView preferredEdge:NSRectEdgeMinX];
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 }
 
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
 
 #pragma mark - NSSharingServicePickerDelegate methods
 
@@ -364,13 +399,11 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions
   }]];
 }
   
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
   
-- (std::shared_ptr<TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
-                                              nativeInvoker:(std::shared_ptr<CallInvoker>)nativeInvoker
-                                                 perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+- (std::shared_ptr<TurboModule>)getTurboModule:(const ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<NativeActionSheetManagerSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
+  return std::make_shared<NativeActionSheetManagerSpecJSI>(params);
 }
 
 @end

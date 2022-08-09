@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,11 +8,8 @@
  * @format
  */
 
-'use strict';
-
 import type {BubblingEventHandler, WithDefault} from '../../Types/CodegenTypes';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
-import type {ProcessedColorValue} from '../../StyleSheet/processColor'; // TODO(macOS ISS#2323203)
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {ViewProps} from '../View/ViewPropTypes';
 import * as React from 'react';
 
@@ -30,14 +27,14 @@ type NativeProps = $ReadOnly<{|
   // Props
   disabled?: WithDefault<boolean, false>,
   value?: WithDefault<boolean, false>,
-  tintColor?: ?(ColorValue | ProcessedColorValue), // TODO(macOS ISS#2323203)
-  onTintColor?: ?(ColorValue | ProcessedColorValue), // TODO(macOS ISS#2323203)
-  thumbTintColor?: ?(ColorValue | ProcessedColorValue), // TODO(macOS ISS#2323203)
+  tintColor?: ?ColorValue,
+  onTintColor?: ?ColorValue,
+  thumbTintColor?: ?ColorValue,
 
   // Deprecated props
-  thumbColor?: ?(ColorValue | ProcessedColorValue), // TODO(macOS ISS#2323203)
-  trackColorForFalse?: ?(ColorValue | ProcessedColorValue), // TODO(macOS ISS#2323203)
-  trackColorForTrue?: ?(ColorValue | ProcessedColorValue), // TODO(macOS ISS#2323203)
+  thumbColor?: ?ColorValue,
+  trackColorForFalse?: ?ColorValue,
+  trackColorForTrue?: ?ColorValue,
 
   // Events
   onChange?: ?BubblingEventHandler<SwitchChangeEvent>,
@@ -55,5 +52,5 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
 
 export default (codegenNativeComponent<NativeProps>('Switch', {
   paperComponentName: 'RCTSwitch',
-  excludedPlatform: 'android',
+  excludedPlatforms: ['android'],
 }): ComponentType);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -602,6 +602,7 @@ RCT_EXTERN_C_END
   return [NSString stringWithFormat:@"-[%@ %s]", _moduleClass, sel_getName(_selector)];
 }
 
+#if DEBUG // TODO(macOS GH#774) description is a debug-only feature
 - (NSString *)description
 {
   return [NSString stringWithFormat:@"<%@: %p; exports %@ as %s(); type: %s>",
@@ -611,5 +612,6 @@ RCT_EXTERN_C_END
                                     self.JSMethodName,
                                     RCTFunctionDescriptorFromType(self.functionType)];
 }
+#endif // TODO(macOS GH#774)
 
 @end

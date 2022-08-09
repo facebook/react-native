@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,7 @@
 
 #import "RCTRedBoxSetEnabled.h"
 
-#if RCT_DEV && DEBUG // TODO(macOS ISS#2323203) RCT_DEV is always on in the react-native-macos fork, so to not default to redboxing in release builds, trigger the initial value off of the scheme as well
+#if RCT_DEV && DEBUG // TODO(macOS GH#774) RCT_DEV is always on in the react-native-macos fork, so to not default to redboxing in release builds, trigger the initial value off of the scheme as well
 static BOOL redBoxEnabled = YES;
 #else
 static BOOL redBoxEnabled = NO;

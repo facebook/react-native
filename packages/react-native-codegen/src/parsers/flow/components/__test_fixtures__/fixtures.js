@@ -1,11 +1,12 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
  * @flow strict-local
  * @format
+ * @lint-ignore-every LICENSELINT
  */
 
 'use strict';
@@ -66,11 +67,27 @@ const EVENT_DEFINITION = `
       int32_optional_both?: ?Int32,
     }
   },
+
+  object_readonly_required: $ReadOnly<{
+    boolean_required: boolean,
+  }>,
+
+  object_readonly_optional_key?: $ReadOnly<{
+    string_optional_key?: string,
+  }>,
+
+  object_readonly_optional_value: ?$ReadOnly<{
+    float_optional_value: ?Float,
+  }>,
+
+  object_readonly_optional_both?: ?$ReadOnly<{
+    int32_optional_both?: ?Int32,
+  }>,
 `;
 
 const ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -110,7 +127,7 @@ export default (codegenNativeComponent<ModuleProps>('Module', {
 
 const ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS_NO_CAST = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -144,13 +161,14 @@ type ModuleProps = $ReadOnly<{|
 
 export default codegenNativeComponent<ModuleProps>('Module', {
   interfaceOnly: true,
+  excludedPlatforms: ['android'],
   paperComponentName: 'RCTModule',
 });
 `;
 
 const NO_PROPS_EVENTS_ONLY_DEPRECATED_VIEW_CONFIG_NAME_OPTION = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -177,7 +195,7 @@ export default (codegenNativeComponent<ModuleProps>('Module', {
 
 const ALL_PROP_TYPES_NO_EVENTS = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -301,7 +319,7 @@ export default (codegenNativeComponent<ModuleProps, Options>(
 
 const ARRAY_PROP_TYPES_NO_EVENTS = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -454,7 +472,7 @@ export default (codegenNativeComponent<ModuleProps>(
 
 const OBJECT_PROP_TYPES_NO_EVENTS = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -546,7 +564,7 @@ export default (codegenNativeComponent<ModuleProps>(
 
 const PROPS_ALIASED_LOCALLY = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -591,7 +609,7 @@ export default (codegenNativeComponent<ModuleProps>(
 
 const EVENTS_DEFINED_INLINE_WITH_ALL_TYPES = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -700,7 +718,7 @@ export default (codegenNativeComponent<ModuleProps>(
 
 const EVENTS_DEFINED_AS_NULL_INLINE = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -749,7 +767,7 @@ export default (codegenNativeComponent<ModuleProps>(
 
 const PROPS_AND_EVENTS_TYPES_EXPORTED = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -792,7 +810,7 @@ export default (codegenNativeComponent<ModuleProps>(
 
 const PROPS_AS_EXTERNAL_TYPES = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -822,7 +840,7 @@ export default (codegenNativeComponent<ModuleProps>(
 
 const COMMANDS_DEFINED_WITH_ALL_TYPES = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -837,6 +855,7 @@ const codegenNativeCommands = require('codegenNativeCommands');
 const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {Int32, Double, Float} from 'CodegenTypes';
+import type {RootTag} from 'RCTExport';
 import type {ViewProps} from 'ViewPropTypes';
 import type {HostComponent} from 'react-native';
 
@@ -849,6 +868,7 @@ export type ModuleProps = $ReadOnly<{|
 type NativeType = HostComponent<ModuleProps>;
 
 interface NativeCommands {
+  +handleRootTag: (viewRef: React.ElementRef<NativeType>, rootTag: RootTag) => void;
   +hotspotUpdate: (viewRef: React.ElementRef<NativeType>, x: Int32, y: Int32) => void;
   +scrollTo: (
     viewRef: React.ElementRef<NativeType>,
@@ -860,7 +880,7 @@ interface NativeCommands {
 }
 
 export const Commands = codegenNativeCommands<NativeCommands>({
-  supportedCommands: ['hotspotUpdate', 'scrollTo'],
+  supportedCommands: ['handleRootTag', 'hotspotUpdate', 'scrollTo'],
 });
 
 export default (codegenNativeComponent<ModuleProps>(
@@ -870,7 +890,7 @@ export default (codegenNativeComponent<ModuleProps>(
 
 const COMMANDS_WITH_EXTERNAL_TYPES = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -920,7 +940,7 @@ export default (codegenNativeComponent<ModuleProps>(
 
 const COMMANDS_AND_EVENTS_TYPES_EXPORTED = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.

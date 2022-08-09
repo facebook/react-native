@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -24,22 +24,7 @@ describe('MatrixMath', () => {
   it('decomposes a 4x4 matrix to produce accurate Z-axis angles', () => {
     expect(
       MatrixMath.decomposeMatrix([
-        1,
-        0,
-        0,
-        0,
-        0,
-        1,
-        0,
-        0,
-        0,
-        0,
-        1,
-        0,
-        0,
-        0,
-        0,
-        1,
+        1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1,
       ]).rotationDegrees,
     ).toEqual([0, 0, 0]);
 
@@ -140,17 +125,13 @@ describe('MatrixMath', () => {
     mat = MatrixMath.createIdentityMatrix();
     MatrixMath.reuseRotateYCommand(mat, degreesToRadians(222));
     expect(MatrixMath.decomposeMatrix(mat).rotationDegrees).toEqual([
-      0,
-      -138,
-      0,
+      0, -138, 0,
     ]);
 
     mat = MatrixMath.createIdentityMatrix();
     MatrixMath.reuseRotateYCommand(mat, degreesToRadians(270));
     expect(MatrixMath.decomposeMatrix(mat).rotationDegrees).toEqual([
-      0,
-      -90,
-      0,
+      0, -90, 0,
     ]);
 
     mat = MatrixMath.createIdentityMatrix();
@@ -173,17 +154,13 @@ describe('MatrixMath', () => {
     mat = MatrixMath.createIdentityMatrix();
     MatrixMath.reuseRotateXCommand(mat, degreesToRadians(222));
     expect(MatrixMath.decomposeMatrix(mat).rotationDegrees).toEqual([
-      -138,
-      0,
-      0,
+      -138, 0, 0,
     ]);
 
     mat = MatrixMath.createIdentityMatrix();
     MatrixMath.reuseRotateXCommand(mat, degreesToRadians(270));
     expect(MatrixMath.decomposeMatrix(mat).rotationDegrees).toEqual([
-      -90,
-      0,
-      0,
+      -90, 0, 0,
     ]);
 
     mat = MatrixMath.createIdentityMatrix();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -44,9 +44,9 @@ static NSUInteger RCTDeviceFreeMemory() {
 @property (nonatomic, strong) NSOperationQueue *fetchQueue;
 @property (nonatomic, strong) dispatch_semaphore_t lock;
 @property (nonatomic, assign) CGFloat animatedImageScale;
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 @property (nonatomic, strong) CADisplayLink *displayLink;
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 
 @end
 
@@ -56,9 +56,9 @@ static NSUInteger RCTDeviceFreeMemory() {
 {
   if (self = [super initWithFrame:frame]) {
     self.lock = dispatch_semaphore_create(1);
-    #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+    #if !TARGET_OS_OSX // TODO(macOS GH#774)
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveMemoryWarning:) name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
-    #endif // TODO(macOS ISS#2323203)
+    #endif // TODO(macOS GH#774)
   }
   return self;
 }
@@ -91,7 +91,7 @@ static NSUInteger RCTDeviceFreeMemory() {
 
 #if TARGET_OS_OSX
   [super setImage:image];
-#else // TODO(macOS ISS#2323203)
+#else // TODO(macOS GH#774)
   [self stop];
   [self resetAnimatedImage];
 
@@ -108,7 +108,7 @@ static NSUInteger RCTDeviceFreeMemory() {
     // Get the current frame and loop count.
     self.totalLoopCount = self.animatedImage.animatedImageLoopCount;
 
-    self.animatedImageScale = UIImageGetScale(image); // TODO(macOS ISS#2323203)
+    self.animatedImageScale = UIImageGetScale(image); // TODO(macOS GH#774)
 
     self.currentFrame = image;
 
@@ -127,7 +127,7 @@ static NSUInteger RCTDeviceFreeMemory() {
   } else {
     super.image = image;
   }
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 }
 
 #pragma mark - Private
@@ -135,7 +135,7 @@ static NSUInteger RCTDeviceFreeMemory() {
 - (NSOperationQueue *)fetchQueue
 {
   if (!_fetchQueue) {
-    _fetchQueue = [[NSOperationQueue alloc] init];
+    _fetchQueue = [NSOperationQueue new];
     _fetchQueue.maxConcurrentOperationCount = 1;
   }
   return _fetchQueue;
@@ -149,7 +149,7 @@ static NSUInteger RCTDeviceFreeMemory() {
   return _frameBuffer;
 }
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 - (CADisplayLink *)displayLink
 {
   // We only need a displayLink in the case of animated images, so short-circuit this code and don't create one for most of the use cases.
@@ -187,9 +187,12 @@ static NSUInteger RCTDeviceFreeMemory() {
 {
 #if TARGET_OS_UIKITFORMAC
   // TODO: `displayLink.frameInterval` is not available on UIKitForMac
-  NSTimeInterval duration = displayLink.duration;
+  NSTimeInterval durationToNextRefresh = displayLink.duration;
 #else
-  NSTimeInterval duration = displayLink.duration * displayLink.frameInterval;
+  // displaylink.duration -- time interval between frames, assuming maximumFramesPerSecond
+  // displayLink.preferredFramesPerSecond (>= iOS 10) -- Set to 30 for displayDidRefresh to be called at 30 fps
+  // durationToNextRefresh -- Time interval to the next time displayDidRefresh is called
+  NSTimeInterval durationToNextRefresh = displayLink.targetTimestamp - displayLink.timestamp;
 #endif
   NSUInteger totalFrameCount = self.totalFrameCount;
   NSUInteger currentFrameIndex = self.currentFrameIndex;
@@ -197,13 +200,14 @@ static NSUInteger RCTDeviceFreeMemory() {
   // Check if we have the frame buffer firstly to improve performance
   if (!self.bufferMiss) {
     // Then check if timestamp is reached
-    self.currentTime += duration;
+    self.currentTime += durationToNextRefresh;
     NSTimeInterval currentDuration = [self.animatedImage animatedImageDurationAtIndex:currentFrameIndex];
     if (self.currentTime < currentDuration) {
       // Current frame timestamp not reached, return
       return;
     }
     self.currentTime -= currentDuration;
+    // nextDuration - duration to wait before displaying next image
     NSTimeInterval nextDuration = [self.animatedImage animatedImageDurationAtIndex:nextFrameIndex];
     if (self.currentTime > nextDuration) {
       // Do not skip frame
@@ -329,6 +333,6 @@ static NSUInteger RCTDeviceFreeMemory() {
     dispatch_semaphore_signal(self.lock);
   }];
 }
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 
 @end

@@ -1,22 +1,23 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTAccessibilityManager.h"
+#import "RCTAccessibilityManager+Internal.h"
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
-#import <React/RCTEventDispatcher.h>
+#import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTLog.h>
 #import <React/RCTUIManager.h>
 
 #import "CoreModulesPlugins.h"
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 
 NSString *const RCTAccessibilityManagerDidUpdateMultiplierNotification =
     @"RCTAccessibilityManagerDidUpdateMultiplierNotification";
@@ -30,7 +31,8 @@ NSString *const RCTAccessibilityManagerDidUpdateMultiplierNotification =
 
 @implementation RCTAccessibilityManager
 
-@synthesize bridge = _bridge;
+@synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED;
+@synthesize moduleRegistry = _moduleRegistry;
 @synthesize multipliers = _multipliers;
 
 RCT_EXPORT_MODULE()
@@ -83,7 +85,7 @@ RCT_EXPORT_MODULE()
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(voiceVoiceOverStatusDidChange:)
-                                                 name:UIAccessibilityVoiceOverStatusChanged
+                                                 name:UIAccessibilityVoiceOverStatusDidChangeNotification
                                                object:nil];
 
     self.contentSizeCategory = RCTSharedApplication().preferredContentSizeCategory;
@@ -113,7 +115,7 @@ RCT_EXPORT_MODULE()
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  [_bridge.eventDispatcher sendDeviceEventWithName:@"announcementFinished" body:response];
+  [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"announcementFinished" body:response];
 #pragma clang diagnostic pop
 }
 
@@ -124,7 +126,8 @@ RCT_EXPORT_MODULE()
     _isBoldTextEnabled = newBoldTextEnabled;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [_bridge.eventDispatcher sendDeviceEventWithName:@"boldTextChanged" body:@(_isBoldTextEnabled)];
+    [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"boldTextChanged"
+                                                                          body:@(_isBoldTextEnabled)];
 #pragma clang diagnostic pop
   }
 }
@@ -136,7 +139,8 @@ RCT_EXPORT_MODULE()
     _isGrayscaleEnabled = newGrayscaleEnabled;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [_bridge.eventDispatcher sendDeviceEventWithName:@"grayscaleChanged" body:@(_isGrayscaleEnabled)];
+    [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"grayscaleChanged"
+                                                                          body:@(_isGrayscaleEnabled)];
 #pragma clang diagnostic pop
   }
 }
@@ -148,7 +152,8 @@ RCT_EXPORT_MODULE()
     _isInvertColorsEnabled = newInvertColorsEnabled;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [_bridge.eventDispatcher sendDeviceEventWithName:@"invertColorsChanged" body:@(_isInvertColorsEnabled)];
+    [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"invertColorsChanged"
+                                                                          body:@(_isInvertColorsEnabled)];
 #pragma clang diagnostic pop
   }
 }
@@ -160,7 +165,8 @@ RCT_EXPORT_MODULE()
     _isReduceMotionEnabled = newReduceMotionEnabled;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [_bridge.eventDispatcher sendDeviceEventWithName:@"reduceMotionChanged" body:@(_isReduceMotionEnabled)];
+    [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"reduceMotionChanged"
+                                                                          body:@(_isReduceMotionEnabled)];
 #pragma clang diagnostic pop
   }
 }
@@ -172,19 +178,26 @@ RCT_EXPORT_MODULE()
     _isReduceTransparencyEnabled = newReduceTransparencyEnabled;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [_bridge.eventDispatcher sendDeviceEventWithName:@"reduceTransparencyChanged" body:@(_isReduceTransparencyEnabled)];
+    [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"reduceTransparencyChanged"
+                                                                          body:@(_isReduceTransparencyEnabled)];
 #pragma clang diagnostic pop
   }
 }
 
 - (void)voiceVoiceOverStatusDidChange:(__unused NSNotification *)notification
 {
-  BOOL newIsVoiceOverEnabled = UIAccessibilityIsVoiceOverRunning();
-  if (_isVoiceOverEnabled != newIsVoiceOverEnabled) {
-    _isVoiceOverEnabled = newIsVoiceOverEnabled;
+  BOOL isVoiceOverEnabled = UIAccessibilityIsVoiceOverRunning();
+  [self _setIsVoiceOverEnabled:isVoiceOverEnabled];
+}
+
+- (void)_setIsVoiceOverEnabled:(BOOL)isVoiceOverEnabled
+{
+  if (_isVoiceOverEnabled != isVoiceOverEnabled) {
+    _isVoiceOverEnabled = isVoiceOverEnabled;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [_bridge.eventDispatcher sendDeviceEventWithName:@"screenReaderChanged" body:@(_isVoiceOverEnabled)];
+    [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"screenReaderChanged"
+                                                                          body:@(_isVoiceOverEnabled)];
 #pragma clang diagnostic pop
   }
 }
@@ -280,7 +293,7 @@ static void setMultipliers(
 RCT_EXPORT_METHOD(setAccessibilityFocus : (double)reactTag)
 {
   dispatch_async(dispatch_get_main_queue(), ^{
-    UIView *view = [self.bridge.uiManager viewForReactTag:@(reactTag)];
+    UIView *view = [self.viewRegistry_DEPRECATED viewForReactTag:@(reactTag)];
     UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification, view);
   });
 }
@@ -288,6 +301,28 @@ RCT_EXPORT_METHOD(setAccessibilityFocus : (double)reactTag)
 RCT_EXPORT_METHOD(announceForAccessibility : (NSString *)announcement)
 {
   UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcement);
+}
+
+RCT_EXPORT_METHOD(announceForAccessibilityWithOptions
+                  : (NSString *)announcement options
+                  : (JS::NativeAccessibilityManager::SpecAnnounceForAccessibilityWithOptionsOptions &)options)
+{
+  if (@available(iOS 11.0, *)) {
+    NSMutableDictionary<NSString *, NSNumber *> *attrsDictionary = [NSMutableDictionary new];
+    if (options.queue()) {
+      attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] = @(*(options.queue()) ? YES : NO);
+    }
+
+    if (attrsDictionary.count > 0) {
+      NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString:announcement
+                                                                                  attributes:attrsDictionary];
+      UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
+    } else {
+      UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcement);
+    }
+  } else {
+    UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcement);
+  }
 }
 
 RCT_EXPORT_METHOD(getMultiplier : (RCTResponseSenderBlock)callback)
@@ -339,13 +374,19 @@ RCT_EXPORT_METHOD(getCurrentVoiceOverState
   onSuccess(@[ @(_isVoiceOverEnabled) ]);
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)
-    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
-                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeAccessibilityManagerSpecJSI>(
-      self, jsInvoker, nativeInvoker, perfLogger);
+  return std::make_shared<facebook::react::NativeAccessibilityManagerSpecJSI>(params);
+}
+
+#pragma mark - Internal
+
+void RCTAccessibilityManagerSetIsVoiceOverEnabled(
+    RCTAccessibilityManager *accessibilityManager,
+    BOOL isVoiceOverEnabled)
+{
+  [accessibilityManager _setIsVoiceOverEnabled:isVoiceOverEnabled];
 }
 
 @end
@@ -363,4 +404,4 @@ Class RCTAccessibilityManagerCls(void)
 {
   return RCTAccessibilityManager.class;
 }
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)

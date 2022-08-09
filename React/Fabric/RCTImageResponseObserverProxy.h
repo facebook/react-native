@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,7 +9,7 @@
 
 #import "RCTImageResponseDelegate.h"
 
-#include <react/imagemanager/ImageResponseObserver.h>
+#include <react/renderer/imagemanager/ImageResponseObserver.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -27,6 +27,7 @@ class RCTImageResponseObserverProxy final : public ImageResponseObserver {
  private:
   __weak id<RCTImageResponseDelegate> delegate_;
 };
+
 } // namespace react
 } // namespace facebook
 

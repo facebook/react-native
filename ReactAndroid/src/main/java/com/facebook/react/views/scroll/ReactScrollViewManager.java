@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,11 +13,13 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.Spacing;
@@ -29,6 +31,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.yoga.YogaConstants;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -101,12 +104,22 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
 
   @ReactProp(name = "snapToOffsets")
   public void setSnapToOffsets(ReactScrollView view, @Nullable ReadableArray snapToOffsets) {
+    if (snapToOffsets == null) {
+      view.setSnapOffsets(null);
+      return;
+    }
+
     DisplayMetrics screenDisplayMetrics = DisplayMetricsHolder.getScreenDisplayMetrics();
     List<Integer> offsets = new ArrayList<Integer>();
     for (int i = 0; i < snapToOffsets.size(); i++) {
       offsets.add((int) (snapToOffsets.getDouble(i) * screenDisplayMetrics.density));
     }
     view.setSnapOffsets(offsets);
+  }
+
+  @ReactProp(name = "snapToAlignment")
+  public void setSnapToAlignment(ReactScrollView view, String alignment) {
+    view.setSnapToAlignment(ReactScrollViewHelper.parseSnapToAlignment(alignment));
   }
 
   @ReactProp(name = "snapToStart")
@@ -205,7 +218,7 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
     if (data.mAnimated) {
       scrollView.reactSmoothScrollTo(data.mDestX, data.mDestY);
     } else {
-      scrollView.reactScrollTo(data.mDestX, data.mDestY);
+      scrollView.scrollTo(data.mDestX, data.mDestY);
     }
   }
 
@@ -284,7 +297,7 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
     if (data.mAnimated) {
       scrollView.reactSmoothScrollTo(scrollView.getScrollX(), bottom);
     } else {
-      scrollView.reactScrollTo(scrollView.getScrollX(), bottom);
+      scrollView.scrollTo(scrollView.getScrollX(), bottom);
     }
   }
 
@@ -304,16 +317,32 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
     }
   }
 
+  @ReactProp(name = "contentOffset", customType = "Point")
+  public void setContentOffset(ReactScrollView view, ReadableMap value) {
+    if (value != null) {
+      double x = value.hasKey("x") ? value.getDouble("x") : 0;
+      double y = value.hasKey("y") ? value.getDouble("y") : 0;
+      view.scrollTo((int) PixelUtil.toPixelFromDIP(x), (int) PixelUtil.toPixelFromDIP(y));
+    } else {
+      view.scrollTo(0, 0);
+    }
+  }
+
   @Override
   public Object updateState(
       ReactScrollView view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
-    view.updateState(stateWrapper);
+    view.getFabricViewStateManager().setStateWrapper(stateWrapper);
     return null;
   }
 
   @Override
   public @Nullable Map<String, Object> getExportedCustomDirectEventTypeConstants() {
-    return createExportedCustomDirectEventTypeConstants();
+    @Nullable
+    Map<String, Object> baseEventTypeConstants = super.getExportedCustomDirectEventTypeConstants();
+    Map<String, Object> eventTypeConstants =
+        baseEventTypeConstants == null ? new HashMap<String, Object>() : baseEventTypeConstants;
+    eventTypeConstants.putAll(createExportedCustomDirectEventTypeConstants());
+    return eventTypeConstants;
   }
 
   public static Map<String, Object> createExportedCustomDirectEventTypeConstants() {
@@ -334,5 +363,10 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
             ScrollEventType.getJSEventName(ScrollEventType.MOMENTUM_END),
             MapBuilder.of("registrationName", "onMomentumScrollEnd"))
         .build();
+  }
+
+  @ReactProp(name = ViewProps.POINTER_EVENTS)
+  public void setPointerEvents(ReactScrollView view, @Nullable String pointerEventsStr) {
+    view.setPointerEvents(PointerEvents.parsePointerEvents(pointerEventsStr));
   }
 }

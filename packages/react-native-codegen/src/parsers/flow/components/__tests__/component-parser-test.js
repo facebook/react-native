@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -23,7 +23,12 @@ describe('RN Codegen Flow Parser', () => {
     .sort()
     .forEach(fixtureName => {
       it(`can generate fixture ${fixtureName}`, () => {
-        expect(FlowParser.parseFile(fixtureName)).toMatchSnapshot();
+        const schema = FlowParser.parseFile(fixtureName);
+        const serializedSchema = JSON.stringify(schema, null, 2).replace(
+          /"/g,
+          "'",
+        );
+        expect(serializedSchema).toMatchSnapshot();
       });
     });
 

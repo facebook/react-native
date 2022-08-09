@@ -1,11 +1,11 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // TODO(macOS GH#774)
 
 #import <React/RCTBridgeDelegate.h>
 #import <React/RCTBridgeModule.h>
@@ -15,7 +15,6 @@
 
 @class JSValue;
 @class RCTBridge;
-@class RCTEventDispatcher;
 @class RCTPerformanceLogger;
 
 /**
@@ -136,6 +135,12 @@ RCT_EXTERN NSString *const RCTBridgeDidDownloadScriptNotificationBridgeDescripti
 typedef NSArray<id<RCTBridgeModule>> * (^RCTBridgeModuleListProvider)(void);
 
 /**
+ * These blocks are used to report whether an additional bundle
+ * fails or succeeds loading.
+ */
+typedef void (^RCTLoadAndExecuteErrorBlock)(NSError *error);
+
+/**
  * This function returns the module name for a given class.
  */
 RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
@@ -146,6 +151,32 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
  */
 RCT_EXTERN BOOL RCTTurboModuleEnabled(void);
 RCT_EXTERN void RCTEnableTurboModule(BOOL enabled);
+
+// Turn on TurboModule eager initialization
+RCT_EXTERN BOOL RCTTurboModuleEagerInitEnabled(void);
+RCT_EXTERN void RCTEnableTurboModuleEagerInit(BOOL enabled);
+
+// Turn on TurboModule shared mutex initialization
+RCT_EXTERN BOOL RCTTurboModuleSharedMutexInitEnabled(void);
+RCT_EXTERN void RCTEnableTurboModuleSharedMutexInit(BOOL enabled);
+
+// Turn off TurboModule delegate locking
+RCT_EXTERN BOOL RCTTurboModuleManagerDelegateLockingDisabled(void);
+RCT_EXTERN void RCTDisableTurboModuleManagerDelegateLocking(BOOL enabled);
+
+// Turn off validAttribute: entries inside ViewConfigs for events
+// TODO(109509380): Remove this gating
+RCT_EXTERN BOOL RCTViewConfigEventValidAttributesDisabled(void);
+RCT_EXTERN void RCTDisableViewConfigEventValidAttributes(BOOL disabled);
+
+typedef enum {
+  kRCTGlobalScope,
+  kRCTGlobalScopeUsingRetainJSCallback,
+  kRCTTurboModuleManagerScope,
+} RCTTurboModuleCleanupMode;
+
+RCT_EXTERN RCTTurboModuleCleanupMode RCTGetTurboModuleCleanupMode(void);
+RCT_EXTERN void RCTSetTurboModuleCleanupMode(RCTTurboModuleCleanupMode mode);
 
 /**
  * Async batched bridge used to communicate with the JavaScript application.
@@ -210,9 +241,16 @@ RCT_EXTERN void RCTEnableTurboModule(BOOL enabled);
 
 /**
  * When a NativeModule performs a lookup for a TurboModule, we need to query
- * the lookupDelegate.
+ * the TurboModuleRegistry.
  */
-- (void)setRCTTurboModuleLookupDelegate:(id<RCTTurboModuleLookupDelegate>)turboModuleLookupDelegate;
+- (void)setRCTTurboModuleRegistry:(id<RCTTurboModuleRegistry>)turboModuleRegistry;
+
+/**
+ * This hook is called by the TurboModule infra with every TurboModule that's created.
+ * It allows the bridge to attach properties to TurboModules that give TurboModules
+ * access to Bridge APIs.
+ */
+- (void)attachBridgeAPIsToTurboModule:(id<RCTTurboModule>)module;
 
 /**
  * Convenience method for retrieving all modules conforming to a given protocol.
@@ -290,8 +328,15 @@ RCT_EXTERN void RCTEnableTurboModule(BOOL enabled);
 - (void)requestReload __deprecated_msg("Use RCTReloadCommand instead");
 
 /**
- * Says whether bridge has started receiving calls from javascript.
+ * Says whether bridge has started receiving calls from JavaScript.
  */
 - (BOOL)isBatchActive;
+
+/**
+ * Loads and executes additional bundles in the VM for development.
+ */
+- (void)loadAndExecuteSplitBundleURL:(NSURL *)bundleURL
+                             onError:(RCTLoadAndExecuteErrorBlock)onError
+                          onComplete:(dispatch_block_t)onComplete;
 
 @end

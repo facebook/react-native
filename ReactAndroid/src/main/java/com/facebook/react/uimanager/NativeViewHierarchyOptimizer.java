@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,7 +13,6 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
-import com.facebook.react.config.ReactFeatureFlags;
 
 /**
  * Class responsible for optimizing the native view hierarchy while still respecting the final UI
@@ -425,18 +424,16 @@ public class NativeViewHierarchyOptimizer {
     // Bit of a hack: we need to update the layout of this node's children now that it's no longer
     // layout-only, but we may still receive more layout updates at the end of this batch that we
     // don't want to ignore.
-    if (ReactFeatureFlags.enableTransitionLayoutOnlyViewCleanup) {
-      FLog.i(
-          TAG,
-          "Transitioning LayoutOnlyView - tag: "
-              + node.getReactTag()
-              + " - rootTag: "
-              + node.getRootTag()
-              + " - hasProps: "
-              + (props != null)
-              + " - tagsWithLayout.size: "
-              + mTagsWithLayoutVisited.size());
-    }
+    FLog.i(
+        TAG,
+        "Transitioning LayoutOnlyView - tag: "
+            + node.getReactTag()
+            + " - rootTag: "
+            + node.getRootTag()
+            + " - hasProps: "
+            + (props != null)
+            + " - tagsWithLayout.size: "
+            + mTagsWithLayoutVisited.size());
     Assertions.assertCondition(mTagsWithLayoutVisited.size() == 0);
     applyLayoutBase(node);
     for (int i = 0; i < node.getChildCount(); i++) {

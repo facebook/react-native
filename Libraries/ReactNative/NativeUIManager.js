@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,8 +8,7 @@
  * @format
  */
 
-'use strict';
-
+import type {RootTag} from '../TurboModule/RCTExport';
 import type {TurboModule} from '../TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
@@ -17,12 +16,11 @@ export interface Spec extends TurboModule {
   +getConstants: () => Object;
   +getConstantsForViewManager: (viewManagerName: string) => Object;
   +getDefaultEventTypes: () => Array<string>;
-  +playTouchSound: () => void;
   +lazilyLoadView: (name: string) => Object; // revisit return
   +createView: (
     reactTag: ?number,
     viewName: string,
-    rootTag: number,
+    rootTag: RootTag,
     props: Object,
   ) => void;
   +updateView: (reactTag: number, viewName: string, props: Object) => void;

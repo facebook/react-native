@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,6 +8,7 @@
 #import <objc/runtime.h>
 
 #import <React/RCTBridge.h>
+#import <React/RCTUIKit.h> // TODO(macOS GH#774)
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -26,6 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol RCTSurfacePresenterStub <NSObject>
 
+- (nullable RCTPlatformView *)findComponentViewWithTag_DO_NOT_USE_DEPRECATED:(NSInteger)tag; // TODO(macOS GH#774)
 - (BOOL)synchronouslyUpdateViewOnUIThread:(NSNumber *)reactTag props:(NSDictionary *)props;
 - (void)addObserver:(id<RCTSurfacePresenterObserver>)observer;
 - (void)removeObserver:(id<RCTSurfacePresenterObserver>)observer;

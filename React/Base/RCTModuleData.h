@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,23 +8,41 @@
 #import <Foundation/Foundation.h>
 
 #import <React/RCTInvalidating.h>
+#import "RCTDefines.h"
 
 @protocol RCTBridgeMethod;
 @protocol RCTBridgeModule;
 @class RCTBridge;
+@class RCTModuleRegistry;
+@class RCTViewRegistry;
+@class RCTBundleManager;
+@class RCTCallableJSModules;
 
 typedef id<RCTBridgeModule> (^RCTBridgeModuleProvider)(void);
 
 @interface RCTModuleData : NSObject <RCTInvalidating>
 
-- (instancetype)initWithModuleClass:(Class)moduleClass bridge:(RCTBridge *)bridge;
+- (instancetype)initWithModuleClass:(Class)moduleClass
+                             bridge:(RCTBridge *)bridge
+                     moduleRegistry:(RCTModuleRegistry *)moduleRegistry
+            viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
+                      bundleManager:(RCTBundleManager *)bundleManager
+                  callableJSModules:(RCTCallableJSModules *)callableJSModules;
 
 - (instancetype)initWithModuleClass:(Class)moduleClass
                      moduleProvider:(RCTBridgeModuleProvider)moduleProvider
-                             bridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
+                             bridge:(RCTBridge *)bridge
+                     moduleRegistry:(RCTModuleRegistry *)moduleRegistry
+            viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
+                      bundleManager:(RCTBundleManager *)bundleManager
+                  callableJSModules:(RCTCallableJSModules *)callableJSModules NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithModuleInstance:(id<RCTBridgeModule>)instance
-                                bridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
+                                bridge:(RCTBridge *)bridge
+                        moduleRegistry:(RCTModuleRegistry *)moduleRegistry
+               viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
+                         bundleManager:(RCTBundleManager *)bundleManager
+                     callableJSModules:(RCTCallableJSModules *)callableJSModules NS_DESIGNATED_INITIALIZER;
 
 /**
  * Calls `constantsToExport` on the module and stores the result. Note that
@@ -94,3 +112,6 @@ typedef id<RCTBridgeModule> (^RCTBridgeModuleProvider)(void);
 @property (nonatomic, assign, readonly) BOOL implementsPartialBatchDidFlush;
 
 @end
+
+RCT_EXTERN void RCTSetIsMainQueueExecutionOfConstantsToExportDisabled(BOOL val);
+RCT_EXTERN BOOL RCTIsMainQueueExecutionOfConstantsToExportDisabled(void);

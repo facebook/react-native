@@ -1,5 +1,5 @@
---- "E:\\github\\rnm-63-fresh\\ReactAndroid\\src\\main\\java\\com\\facebook\\react\\views\\view\\ReactClippingViewManager.java"	2020-10-27 20:26:16.991167000 -0700
-+++ "E:\\github\\rnm-63\\ReactAndroid\\src\\main\\java\\com\\facebook\\react\\views\\view\\ReactClippingViewManager.java"	2020-10-13 21:41:45.084843900 -0700
+--- ./ReactAndroid/src/main/java/com/facebook/react/views/view/ReactClippingViewManager.java	2021-10-25 12:38:05.000000000 -0700
++++ /var/folders/vs/8_b205053dddbcv7btj0w0v80000gn/T/update-1h8V3n/merge/Focus/ReactAndroid/src/main/java/com/facebook/react/views/view/ReactClippingViewManager.java	2022-01-12 15:04:31.000000000 -0800
 @@ -7,7 +7,10 @@
  
  package com.facebook.react.views.view;

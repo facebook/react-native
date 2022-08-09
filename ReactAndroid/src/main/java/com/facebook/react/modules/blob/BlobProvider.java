@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -20,8 +20,14 @@ import com.facebook.react.bridge.ReactContext;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public final class BlobProvider extends ContentProvider {
+
+  private static final int PIPE_CAPACITY = 65536;
+
+  private ExecutorService executor = Executors.newSingleThreadExecutor();
 
   @Override
   public boolean onCreate() {
@@ -72,7 +78,7 @@ public final class BlobProvider extends ContentProvider {
       throw new RuntimeException("No blob module associated with BlobProvider");
     }
 
-    byte[] data = blobModule.resolve(uri);
+    final byte[] data = blobModule.resolve(uri);
     if (data == null) {
       throw new FileNotFoundException("Cannot open " + uri.toString() + ", blob not found.");
     }
@@ -84,12 +90,34 @@ public final class BlobProvider extends ContentProvider {
       return null;
     }
     ParcelFileDescriptor readSide = pipe[0];
-    ParcelFileDescriptor writeSide = pipe[1];
+    final ParcelFileDescriptor writeSide = pipe[1];
 
-    try (OutputStream outputStream = new ParcelFileDescriptor.AutoCloseOutputStream(writeSide)) {
-      outputStream.write(data);
-    } catch (IOException exception) {
-      return null;
+    if (data.length <= PIPE_CAPACITY) {
+      // If the blob length is less than or equal to pipe capacity (64 KB),
+      // we can write the data synchronously to the pipe buffer.
+      try (OutputStream outputStream = new ParcelFileDescriptor.AutoCloseOutputStream(writeSide)) {
+        outputStream.write(data);
+      } catch (IOException exception) {
+        return null;
+      }
+    } else {
+      // For blobs larger than 64 KB, a synchronous write would fill up the whole buffer
+      // and block forever, because there are no readers to empty the buffer.
+      // Writing from a separate thread allows us to return the read side descriptor
+      // immediately so that both writer and reader can work concurrently.
+      // Reading from the pipe empties the buffer and allows the next chunks to be written.
+      Runnable writer =
+          new Runnable() {
+            public void run() {
+              try (OutputStream outputStream =
+                  new ParcelFileDescriptor.AutoCloseOutputStream(writeSide)) {
+                outputStream.write(data);
+              } catch (IOException exception) {
+                // no-op
+              }
+            }
+          };
+      executor.submit(writer);
     }
 
     return readSide;

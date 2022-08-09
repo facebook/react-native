@@ -1,16 +1,14 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict-local
+ * @flow strict
  */
 
 'use strict';
-
-const warning = require('fbjs/lib/warning');
 
 const warnedKeys: {[string]: boolean, ...} = {};
 
@@ -26,7 +24,7 @@ function warnOnce(key: string, message: string) {
     return;
   }
 
-  warning(false, message);
+  console.warn(message);
 
   warnedKeys[key] = true;
 }

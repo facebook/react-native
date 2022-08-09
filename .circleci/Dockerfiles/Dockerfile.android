@@ -14,7 +14,17 @@
 # and build a Android application that can be used to run the
 # tests specified in the scripts/ directory.
 #
-FROM reactnativecommunity/react-native-android:2019-10-18
+
+# For compliance reasons Microsoft cannot depend on docker hub.
+# the reactnative community image is not published to MCR (https://mcr.microsoft.com/)
+# If we need to run these validations we can clone the repo that publishes the community image
+# Patch it to use mcr for the base ubuntu image, build the community image locally
+# and then build this customized step on top of it.
+#
+# Disabeling this is okay because per (macOS GH#774) this test, which is redundant to Azure Devops test,
+# failsin the fork because of Microsoft's V8 upgrade to Android
+#
+#FROM reactnativecommunity/react-native-android:5.2
 
 LABEL Description="React Native Android Test Image"
 LABEL maintainer="Héctor Ramos <hector@fb.com>"
@@ -26,18 +36,20 @@ ENV JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
 
 ADD .buckconfig /app/.buckconfig
 ADD .buckjavaargs /app/.buckjavaargs
-ADD tools /app/tools
+ADD BUCK /app/BUCK
+ADD Libraries /app/Libraries
 ADD ReactAndroid /app/ReactAndroid
 ADD ReactCommon /app/ReactCommon
 ADD React /app/React
 ADD keystores /app/keystores
+ADD packages/react-native-codegen /app/packages/react-native-codegen
+ADD tools /app/tools
 
 # add third party dependencies
 ADD Folly /app/Folly
 ADD glog /app/glog
 ADD double-conversion /app/double-conversion
 ADD jsc /app/jsc
-ADD v8 /app/v8
 
 # set workdir
 WORKDIR /app
@@ -71,4 +83,3 @@ RUN yarn
 RUN ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog
 
 RUN ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=1
-

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,6 @@
  * @flow
  * @format
  */
-
-'use strict';
 
 import fs from 'fs';
 
@@ -23,14 +21,22 @@ import {PropsType, Type} from './Type';
 import {HeaderWriter} from './HeaderWriter';
 import {ImplementationWriter} from './ImplementationWriter';
 
-// $FlowFixMe: this isn't a module, just a JSON file.
-const proto = require('devtools-protocol/json/js_protocol.json');
+// $FlowFixMe[cannot-resolve-module] : this isn't a module, just a JSON file.
+const standard = require('devtools-protocol/json/js_protocol.json');
+
+const custom = require('../src/custom.json');
 
 type Descriptor = {|
   types: Array<Type>,
   commands: Array<Command>,
   events: Array<Event>,
 |};
+
+function mergeDomains(original, extra) {
+  return {...original, domains: original.domains.concat(extra.domains)};
+}
+
+const proto = mergeDomains(standard, custom);
 
 function parseDomains(
   domainObjs: Array<any>,
@@ -77,7 +83,7 @@ function buildGraph(desc: Descriptor): Graph {
   const commands = desc.commands;
   const events = desc.events;
 
-  const maybeAddPropEdges = function(nodeId: string, props: ?Array<Property>) {
+  const maybeAddPropEdges = function (nodeId: string, props: ?Array<Property>) {
     if (props) {
       for (const prop of props) {
         const refId = prop.getRefDebuggerName();

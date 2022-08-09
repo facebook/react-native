@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,28 +7,20 @@
 
 #import "RCTImageComponentView.h"
 
-#import <React/RCTImageResponseDelegate.h>
+#import <React/RCTAssert.h>
+#import <React/RCTConversions.h>
+#import <React/RCTImageBlurUtils.h>
 #import <React/RCTImageResponseObserverProxy.h>
-#import <react/components/image/ImageComponentDescriptor.h>
-#import <react/components/image/ImageEventEmitter.h>
-#import <react/components/image/ImageProps.h>
-#import <react/imagemanager/ImageInstrumentation.h>
-#import <react/imagemanager/ImageRequest.h>
-#import <react/imagemanager/RCTImageInstrumentationProxy.h>
-#import <react/imagemanager/RCTImagePrimitivesConversions.h>
-
-#import "RCTConversions.h"
-#import "RCTFabricComponentsPlugins.h"
+#import <react/renderer/components/image/ImageComponentDescriptor.h>
+#import <react/renderer/components/image/ImageEventEmitter.h>
+#import <react/renderer/components/image/ImageProps.h>
+#import <react/renderer/imagemanager/ImageRequest.h>
+#import <react/renderer/imagemanager/RCTImagePrimitivesConversions.h>
 
 using namespace facebook::react;
 
-@interface RCTImageComponentView () <RCTImageResponseDelegate>
-@end
-
 @implementation RCTImageComponentView {
-  UIImageView *_imageView;
   ImageShadowNode::ConcreteState::Shared _state;
-  ImageResponseObserverCoordinator const *_coordinator;
   RCTImageResponseObserverProxy _imageResponseObserverProxy;
 }
 
@@ -38,9 +30,11 @@ using namespace facebook::react;
     static auto const defaultProps = std::make_shared<ImageProps const>();
     _props = defaultProps;
 
-    _imageView = [[UIImageView alloc] initWithFrame:self.bounds];
+    _imageView = [RCTUIImageViewAnimated new];
     _imageView.clipsToBounds = YES;
-    _imageView.contentMode = (UIViewContentMode)RCTResizeModeFromImageResizeMode(defaultProps->resizeMode);
+    _imageView.contentMode = RCTContentModeFromImageResizeMode(defaultProps->resizeMode);
+    _imageView.layer.minificationFilter = kCAFilterTrilinear;
+    _imageView.layer.magnificationFilter = kCAFilterTrilinear;
 
     _imageResponseObserverProxy = RCTImageResponseObserverProxy(self);
 
@@ -64,18 +58,12 @@ using namespace facebook::react;
 
   // `resizeMode`
   if (oldImageProps.resizeMode != newImageProps.resizeMode) {
-    if (newImageProps.resizeMode == ImageResizeMode::Repeat) {
-      // Repeat resize mode is handled by the UIImage. Use scale to fill
-      // so the repeated image fills the UIImageView.
-      _imageView.contentMode = UIViewContentModeScaleToFill;
-    } else {
-      _imageView.contentMode = (UIViewContentMode)RCTResizeModeFromImageResizeMode(newImageProps.resizeMode);
-    }
+    _imageView.contentMode = RCTContentModeFromImageResizeMode(newImageProps.resizeMode);
   }
 
   // `tintColor`
   if (oldImageProps.tintColor != newImageProps.tintColor) {
-    _imageView.tintColor = [UIColor colorWithCGColor:newImageProps.tintColor.get()];
+    _imageView.tintColor = RCTUIColorFromSharedColor(newImageProps.tintColor);
   }
 
   [super updateProps:props oldProps:oldProps];
@@ -83,58 +71,54 @@ using namespace facebook::react;
 
 - (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
 {
-  _state = std::static_pointer_cast<ImageShadowNode::ConcreteState const>(state);
-  auto _oldState = std::static_pointer_cast<ImageShadowNode::ConcreteState const>(oldState);
-  auto data = _state->getData();
+  RCTAssert(state, @"`state` must not be null.");
+  RCTAssert(
+      std::dynamic_pointer_cast<ImageShadowNode::ConcreteState const>(state),
+      @"`state` must be a pointer to `ImageShadowNode::ConcreteState`.");
 
-  // This call (setting `coordinator`) must be unconditional (at the same block as setting `State`)
-  // because the setter stores a raw pointer to object that `State` owns.
-  self.coordinator = &data.getImageRequest().getObserverCoordinator();
+  auto oldImageState = std::static_pointer_cast<ImageShadowNode::ConcreteState const>(_state);
+  auto newImageState = std::static_pointer_cast<ImageShadowNode::ConcreteState const>(state);
 
-  bool havePreviousData = _oldState && _oldState->getData().getImageSource() != ImageSource{};
+  [self _setStateAndResubscribeImageResponseObserver:newImageState];
 
-  if (!havePreviousData || data.getImageSource() != _oldState->getData().getImageSource()) {
+  bool havePreviousData = oldImageState && oldImageState->getData().getImageSource() != ImageSource{};
+
+  if (!havePreviousData ||
+      (newImageState && newImageState->getData().getImageSource() != oldImageState->getData().getImageSource())) {
     // Loading actually starts a little before this, but this is the first time we know
     // the image is loading and can fire an event from this component
     std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onLoadStart();
 
     // TODO (T58941612): Tracking for visibility should be done directly on this class.
     // For now, we consolidate instrumentation logic in the image loader, so that pre-Fabric gets the same treatment.
-    auto instrumentation = std::static_pointer_cast<RCTImageInstrumentationProxy const>(
-        data.getImageRequest().getSharedImageInstrumentation());
-    if (instrumentation) {
-      instrumentation->trackNativeImageView(self);
-    }
   }
 }
 
-- (void)setCoordinator:(ImageResponseObserverCoordinator const *)coordinator
+- (void)_setStateAndResubscribeImageResponseObserver:(ImageShadowNode::ConcreteState::Shared const &)state
 {
-  if (_coordinator) {
-    _coordinator->removeObserver(_imageResponseObserverProxy);
+  if (_state) {
+    auto &observerCoordinator = _state->getData().getImageRequest().getObserverCoordinator();
+    observerCoordinator.removeObserver(_imageResponseObserverProxy);
   }
-  _coordinator = coordinator;
-  if (_coordinator != nullptr) {
-    _coordinator->addObserver(_imageResponseObserverProxy);
+
+  _state = state;
+
+  if (_state) {
+    auto &observerCoordinator = _state->getData().getImageRequest().getObserverCoordinator();
+    observerCoordinator.addObserver(_imageResponseObserverProxy);
   }
 }
 
 - (void)prepareForRecycle
 {
   [super prepareForRecycle];
-  self.coordinator = nullptr;
+  [self _setStateAndResubscribeImageResponseObserver:nullptr];
   _imageView.image = nil;
-  _state.reset();
-}
-
-- (void)dealloc
-{
-  self.coordinator = nullptr;
 }
 
 #pragma mark - RCTImageResponseDelegate
 
-- (void)didReceiveImage:(UIImage *)image fromObserver:(void const *)observer
+- (void)didReceiveImage:(UIImage *)image metadata:(id)metadata fromObserver:(void const *)observer
 {
   if (!_eventEmitter || !_state) {
     // Notifications are delivered asynchronously and might arrive after the view is already recycled.
@@ -161,17 +145,17 @@ using namespace facebook::react;
                                   resizingMode:UIImageResizingModeStretch];
   }
 
-  self->_imageView.image = image;
-
-  // Apply trilinear filtering to smooth out mis-sized images.
-  self->_imageView.layer.minificationFilter = kCAFilterTrilinear;
-  self->_imageView.layer.magnificationFilter = kCAFilterTrilinear;
-
-  auto data = _state->getData();
-  auto instrumentation = std::static_pointer_cast<RCTImageInstrumentationProxy const>(
-      data.getImageRequest().getSharedImageInstrumentation());
-  if (instrumentation) {
-    instrumentation->didSetImage();
+  if (imageProps.blurRadius > __FLT_EPSILON__) {
+    // Blur on a background thread to avoid blocking interaction.
+    CGFloat blurRadius = imageProps.blurRadius;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+      UIImage *blurredImage = RCTBlurredImageWithRadius(image, blurRadius);
+      RCTExecuteOnMainQueue(^{
+        self->_imageView.image = blurredImage;
+      });
+    });
+  } else {
+    self->_imageView.image = image;
   }
 }
 
@@ -197,6 +181,17 @@ using namespace facebook::react;
 }
 
 @end
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+// Can't the import generated Plugin.h because plugins are not in this BUCK target
+Class<RCTComponentViewProtocol> RCTImageCls(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 Class<RCTComponentViewProtocol> RCTImageCls(void)
 {

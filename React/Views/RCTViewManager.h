@@ -1,16 +1,16 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // TODO(macOS GH#774)
 
 #import <React/RCTBridgeModule.h>
 #import <React/RCTConvert.h>
 #import <React/RCTDefines.h>
-#import <React/RCTEventDispatcher.h>
+#import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTLog.h>
 #import <React/UIView+React.h>
 
@@ -19,7 +19,7 @@
 @class RCTSparseArray;
 @class RCTUIManager;
 
-typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry); // TODO(macOS ISS#2323203)
+typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry); // TODO(macOS GH#774)
 
 @interface RCTViewManager : NSObject <RCTBridgeModule>
 
@@ -37,7 +37,7 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, NSDictionary<NSNu
  * return a fresh instance each time. The view module MUST NOT cache the returned
  * view and return the same instance for subsequent calls.
  */
-- (RCTPlatformView *)view; // TODO(macOS ISS#2323203)
+- (RCTPlatformView *)view; // TODO(macOS GH#774)
 
 /**
  * This method instantiates a shadow view to be managed by the module. If omitted,
@@ -79,7 +79,7 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, NSDictionary<NSNu
     return @[ @ #type, @ #keyPath ];                    \
   }
 
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
 /**
  * These macros allow properties to only be mapped in OSX
  */
@@ -96,7 +96,7 @@ RCT_EXPORT_VIEW_PROPERTY(name, type)
 #define RCT_REMAP_NOT_OSX_VIEW_PROPERTY(name, keyPath, type) \
 RCT_REMAP_VIEW_PROPERTY(name, keyPath, type)
 #define RCT_REMAP_OSX_VIEW_PROPERTY(name, keyPath, type)
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 /**
  * This macro can be used when you need to provide custom logic for setting

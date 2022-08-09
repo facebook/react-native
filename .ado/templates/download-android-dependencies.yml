@@ -1,0 +1,14 @@
+parameters:
+  artifact_feed: ''
+
+steps:
+  - task: PipAuthenticate@1
+    displayName: 'Pip Authenticate to react-native-public'
+    inputs:
+      artifactFeeds: '${{ parameters.artifact_feed }}'
+
+  # Verify depenendencies can be enumerated and downloaded ..
+  - task: CmdLine@2
+    displayName: 'Verify Dependencies can be enumerated'
+    inputs:
+      script: pip3 install maven-dependency-utils==1.22.0 requests && python3 .ado/downloadAndroidDependencies.py $(Build.SourcesDirectory) && tree $(Build.SourcesDirectory)/android

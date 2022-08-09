@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,15 +8,12 @@
  * @format
  */
 
-'use strict';
-
 import Pressability, {
   type PressabilityConfig,
 } from '../../Pressability/Pressability';
 import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 import StyleSheet, {type ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
-import TVTouchable from './TVTouchable';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback';
 import Platform from '../../Utilities/Platform';
 import View from '../../Components/View/View';
@@ -158,7 +155,6 @@ type State = $ReadOnly<{|
 class TouchableHighlight extends React.Component<Props, State> {
   _hideTimeout: ?TimeoutID;
   _isMounted: boolean = false;
-  _tvTouchable: ?TVTouchable;
 
   state: State = {
     pressability: new Pressability(this._createPressabilityConfig()),
@@ -169,7 +165,10 @@ class TouchableHighlight extends React.Component<Props, State> {
   _createPressabilityConfig(): PressabilityConfig {
     return {
       cancelable: !this.props.rejectResponderTermination,
-      disabled: this.props.disabled,
+      disabled:
+        this.props.disabled != null
+          ? this.props.disabled
+          : this.props.accessibilityState?.disabled,
       hitSlop: this.props.hitSlop,
       delayLongPress: this.props.delayLongPress,
       delayPressIn: this.props.delayPressIn,
@@ -193,11 +192,7 @@ class TouchableHighlight extends React.Component<Props, State> {
           this.props.onFocus(event);
         }
       },
-      onLongPress: event => {
-        if (this.props.onLongPress != null) {
-          this.props.onLongPress(event);
-        }
-      },
+      onLongPress: this.props.onLongPress,
       onPress: event => {
         if (this._hideTimeout != null) {
           clearTimeout(this._hideTimeout);
@@ -288,18 +283,26 @@ class TouchableHighlight extends React.Component<Props, State> {
     const {
       onBlur,
       onFocus,
-      onMouseEnter, // [TODO(macOS/win ISS#2323203)
-      onMouseLeave, // ]TODO(macOS/win ISS#2323203)
+      onMouseEnter, // [TODO(macOS GH#774)
+      onMouseLeave, // ]TODO(macOS GH#774)
       ...eventHandlersWithoutBlurAndFocus
     } = this.state.pressability.getEventHandlers();
+
+    const accessibilityState =
+      this.props.disabled != null
+        ? {
+            ...this.props.accessibilityState,
+            disabled: this.props.disabled,
+          }
+        : this.props.accessibilityState;
 
     return (
       <View
         accessible={this.props.accessible !== false}
         accessibilityLabel={this.props.accessibilityLabel}
-        accessibilityHint={this.props.accessibilityHint} // TODO(OSS Candidate ISS#2710739)
+        accessibilityHint={this.props.accessibilityHint}
         accessibilityRole={this.props.accessibilityRole}
-        accessibilityState={this.props.accessibilityState}
+        accessibilityState={accessibilityState}
         accessibilityValue={this.props.accessibilityValue}
         accessibilityActions={this.props.accessibilityActions}
         onAccessibilityAction={this.props.onAccessibilityAction}
@@ -307,14 +310,6 @@ class TouchableHighlight extends React.Component<Props, State> {
         accessibilityLiveRegion={this.props.accessibilityLiveRegion}
         accessibilityViewIsModal={this.props.accessibilityViewIsModal}
         accessibilityElementsHidden={this.props.accessibilityElementsHidden}
-        acceptsFirstMouse={
-          this.props.acceptsFirstMouse !== false && !this.props.disabled
-        } // TODO(macOS ISS#2323203)
-        enableFocusRing={
-          (this.props.enableFocusRing === undefined ||
-            this.props.enableFocusRing === true) &&
-          !this.props.disabled
-        } // TODO(macOS/win ISS#2323203)
         style={StyleSheet.compose(
           this.props.style,
           this.state.extraStyles?.underlay,
@@ -327,34 +322,28 @@ class TouchableHighlight extends React.Component<Props, State> {
         nextFocusLeft={this.props.nextFocusLeft}
         nextFocusRight={this.props.nextFocusRight}
         nextFocusUp={this.props.nextFocusUp}
-        // [macOS #656 We need to reconcile between focusable and acceptsKeyboardFocus
-        // (e.g. if one is explicitly disabled, we shouldn't implicitly enable the
-        // other on the underlying view). Prefer passing acceptsKeyboardFocus if
-        // passed explicitly to preserve original behavior, and trigger view warnings.
-        {...(this.props.acceptsKeyboardFocus !== undefined
-          ? {
-              acceptsKeyboardFocus:
-                this.props.acceptsKeyboardFocus === true &&
-                !this.props.disabled,
-            }
-          : {
-              focusable:
-                this.props.focusable !== false &&
-                this.props.onPress !== undefined,
-            })}
-        // macOS]
-        cursor={this.props.cursor}
-        tooltip={this.props.tooltip} // TODO(macOS/win ISS#2323203)
-        onMouseEnter={this.props.onMouseEnter} // [TODO(macOS/win ISS#2323203)
+        nativeID={this.props.nativeID}
+        testID={this.props.testID}
+        // [TODO(macOS GH#774)
+        acceptsFirstMouse={
+          this.props.acceptsFirstMouse !== false && !this.props.disabled
+        }
+        enableFocusRing={
+          (this.props.enableFocusRing === undefined ||
+            this.props.enableFocusRing === true) &&
+          !this.props.disabled
+        }
+        focusable={this.props.focusable !== false && !this.props.disabled}
+        tooltip={this.props.tooltip}
+        onMouseEnter={this.props.onMouseEnter}
         onMouseLeave={this.props.onMouseLeave}
         onDragEnter={this.props.onDragEnter}
         onDragLeave={this.props.onDragLeave}
         onDrop={this.props.onDrop}
         onFocus={this.props.onFocus}
         onBlur={this.props.onBlur}
-        draggedTypes={this.props.draggedTypes} // ]TODO(macOS/win ISS#2323203)
-        nativeID={this.props.nativeID}
-        testID={this.props.testID}
+        draggedTypes={this.props.draggedTypes}
+        // ]TODO(macOS/win GH#774)
         ref={this.props.hostRef}
         {...eventHandlersWithoutBlurAndFocus}>
         {React.cloneElement(child, {
@@ -372,26 +361,6 @@ class TouchableHighlight extends React.Component<Props, State> {
 
   componentDidMount(): void {
     this._isMounted = true;
-    if (Platform.isTV) {
-      this._tvTouchable = new TVTouchable(this, {
-        getDisabled: () => this.props.disabled === true,
-        onBlur: event => {
-          if (this.props.onBlur != null) {
-            this.props.onBlur(event);
-          }
-        },
-        onFocus: event => {
-          if (this.props.onFocus != null) {
-            this.props.onFocus(event);
-          }
-        },
-        onPress: event => {
-          if (this.props.onPress != null) {
-            this.props.onPress(event);
-          }
-        },
-      });
-    }
   }
 
   componentDidUpdate(prevProps: Props, prevState: State) {
@@ -403,15 +372,17 @@ class TouchableHighlight extends React.Component<Props, State> {
     if (this._hideTimeout != null) {
       clearTimeout(this._hideTimeout);
     }
-    if (Platform.isTV) {
-      if (this._tvTouchable != null) {
-        this._tvTouchable.destroy();
-      }
-    }
     this.state.pressability.reset();
   }
 }
 
-module.exports = (React.forwardRef((props, hostRef) => (
+const Touchable = (React.forwardRef((props, hostRef) => (
   <TouchableHighlight {...props} hostRef={hostRef} />
-)): React.ComponentType<$ReadOnly<$Diff<Props, {|hostRef: mixed|}>>>);
+)): React.AbstractComponent<
+  $ReadOnly<$Diff<Props, {|hostRef: React.Ref<typeof View>|}>>,
+  React.ElementRef<typeof View>,
+>);
+
+Touchable.displayName = 'TouchableHighlight';
+
+module.exports = Touchable;

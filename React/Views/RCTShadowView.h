@@ -1,11 +1,11 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // TODO(macOS GH#774)
 
 #import <React/RCTComponent.h>
 #import <React/RCTLayout.h>
@@ -15,7 +15,7 @@
 @class RCTRootShadowView;
 @class RCTSparseArray;
 
-typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry); // TODO(macOS ISS#2323203)
+typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry); // TODO(macOS GH#774)
 
 /**
  * ShadowView tree mirrors RCT view tree. Every node is highly stateful.

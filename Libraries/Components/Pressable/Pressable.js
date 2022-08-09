@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,6 @@
  * @flow strict-local
  * @format
  */
-
-'use strict';
 
 import * as React from 'react';
 import {useMemo, useState, useRef, useImperativeHandle} from 'react';
@@ -25,13 +23,17 @@ import type {
 import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 import usePressability from '../../Pressability/usePressability';
 import {normalizeRect, type RectOrSize} from '../../StyleSheet/Rect';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {
   LayoutEvent,
-  MouseEvent, // TODO(macOS ISS#2323203)
+  MouseEvent,
   PressEvent,
+  // [TODO(macOS GH#774)
+  FocusEvent,
+  BlurEvent,
+  KeyEvent,
+  // ]TODO(macOS GH#774)
 } from '../../Types/CoreEventTypes';
-import type {DraggedTypesType} from '../View/DraggedType'; // TODO(macOS ISS#2323203)
+import type {DraggedTypesType} from '../View/DraggedType'; // TODO(macOS GH#774)
 import View from '../View/View';
 
 type ViewStyleProp = $ElementType<React.ElementConfig<typeof View>, 'style'>;
@@ -60,10 +62,26 @@ type Props = $ReadOnly<{|
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
 
   /**
+   * Whether a press gesture can be interrupted by a parent gesture such as a
+   * scroll event. Defaults to true.
+   */
+  cancelable?: ?boolean,
+
+  /**
    * Either children or a render prop that receives a boolean reflecting whether
    * the component is currently pressed.
    */
   children: React.Node | ((state: StateCallbackType) => React.Node),
+
+  /**
+   * Duration to wait after hover in before calling `onHoverIn`.
+   */
+  delayHoverIn?: ?number,
+
+  /**
+   * Duration to wait after hover out before calling `onHoverOut`.
+   */
+  delayHoverOut?: ?number,
 
   /**
    * Duration (in milliseconds) from `onPressIn` before `onLongPress` is called.
@@ -89,27 +107,71 @@ type Props = $ReadOnly<{|
   /**
    * Called when this view's layout changes.
    */
-  onLayout?: ?(event: LayoutEvent) => void,
+  onLayout?: ?(event: LayoutEvent) => mixed,
+
+  /**
+   * Called when the hover is activated to provide visual feedback.
+   */
+  onHoverIn?: ?(event: MouseEvent) => mixed,
+
+  /**
+   * Called when the hover is deactivated to undo visual feedback.
+   */
+  onHoverOut?: ?(event: MouseEvent) => mixed,
 
   /**
    * Called when a long-tap gesture is detected.
    */
-  onLongPress?: ?(event: PressEvent) => void,
+  onLongPress?: ?(event: PressEvent) => mixed,
 
   /**
    * Called when a single tap gesture is detected.
    */
-  onPress?: ?(event: PressEvent) => void,
+  onPress?: ?(event: PressEvent) => mixed,
 
   /**
    * Called when a touch is engaged before `onPress`.
    */
-  onPressIn?: ?(event: PressEvent) => void,
+  onPressIn?: ?(event: PressEvent) => mixed,
 
   /**
    * Called when a touch is released before `onPress`.
    */
-  onPressOut?: ?(event: PressEvent) => void,
+  onPressOut?: ?(event: PressEvent) => mixed,
+
+  // [TODO(macOS GH#774)
+  /**
+   * Called after the element is focused.
+   */
+  onFocus?: ?(event: FocusEvent) => mixed,
+
+  /**
+   * Called after the element loses focus.
+   */
+  onBlur?: ?(event: BlurEvent) => mixed,
+
+  /**
+   * Called after a key down event is detected.
+   */
+  onKeyDown?: ?(event: KeyEvent) => mixed,
+
+  /**
+   * Called after a key up event is detected.
+   */
+  onKeyUp?: ?(event: KeyEvent) => mixed,
+
+  /**
+   * Array of keys to receive key down events for
+   * For arrow keys, add "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
+   */
+  validKeysDown?: ?Array<string>,
+
+  /**
+   * Array of keys to receive key up events for
+   * For arrow keys, add "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
+   */
+  validKeysUp?: ?Array<string>,
+  // ]TODO(macOS GH#774)
 
   /**
    * Either view styles or a function that receives a boolean reflecting whether
@@ -137,17 +199,20 @@ type Props = $ReadOnly<{|
    */
   testOnly_pressed?: ?boolean,
 
-  // [TODO(macOS ISS#2323203)
+  /**
+   * Duration to wait after press down before calling `onPressIn`.
+   */
+  unstable_pressDelay?: ?number,
+
+  // [TODO(macOS GH#774)
   acceptsFirstMouse?: ?boolean,
   enableFocusRing?: ?boolean,
   tooltip?: ?string,
-  onMouseEnter?: (event: MouseEvent) => void,
-  onMouseLeave?: (event: MouseEvent) => void,
   onDragEnter?: (event: MouseEvent) => void,
   onDragLeave?: (event: MouseEvent) => void,
   onDrop?: (event: MouseEvent) => void,
   draggedTypes?: ?DraggedTypesType,
-  // ]TODO(macOS ISS#2323203)
+  // ]TODO(macOS GH#774)
 |}>;
 
 /**
@@ -156,22 +221,34 @@ type Props = $ReadOnly<{|
  */
 function Pressable(props: Props, forwardedRef): React.Node {
   const {
-    acceptsFirstMouse, // [TODO(macOS ISS#2323203)
-    enableFocusRing, // ]TODO(macOS ISS#2323203)
+    acceptsFirstMouse, // [TODO(macOS GH#774)
+    enableFocusRing, // ]TODO(macOS GH#774)
     accessible,
     android_disableSound,
     android_ripple,
+    cancelable,
     children,
+    delayHoverIn,
+    delayHoverOut,
     delayLongPress,
     disabled,
     focusable,
+    onHoverIn,
+    onHoverOut,
     onLongPress,
     onPress,
     onPressIn,
     onPressOut,
+    // [TODO(macOS GH#774)
+    onFocus,
+    onBlur,
+    onKeyDown,
+    onKeyUp,
+    // ]TODO(macOS GH#774)
     pressRetentionOffset,
     style,
     testOnly_pressed,
+    unstable_pressDelay,
     ...restProps
   } = props;
 
@@ -184,13 +261,35 @@ function Pressable(props: Props, forwardedRef): React.Node {
 
   const hitSlop = normalizeRect(props.hitSlop);
 
+  const accessibilityState =
+    disabled != null
+      ? {...props.accessibilityState, disabled}
+      : props.accessibilityState;
+
+  const restPropsWithDefaults: React.ElementConfig<typeof View> = {
+    ...restProps,
+    ...android_rippleConfig?.viewProps,
+    acceptsFirstMouse: acceptsFirstMouse !== false && !disabled, // [TODO(macOS GH#774)
+    enableFocusRing: enableFocusRing !== false && !disabled,
+    accessible: accessible !== false,
+    focusable: focusable !== false && !disabled, // ]TODO(macOS GH#774)
+    accessibilityState,
+    hitSlop,
+  };
+
   const config = useMemo(
     () => ({
+      cancelable,
       disabled,
       hitSlop,
       pressRectOffset: pressRetentionOffset,
       android_disableSound,
+      delayHoverIn,
+      delayHoverOut,
       delayLongPress,
+      delayPressIn: unstable_pressDelay,
+      onHoverIn,
+      onHoverOut,
       onLongPress,
       onPress,
       onPressIn(event: PressEvent): void {
@@ -212,35 +311,48 @@ function Pressable(props: Props, forwardedRef): React.Node {
           onPressOut(event);
         }
       },
+      // [TODO(macOS GH#774)
+      onFocus,
+      onBlur,
+      onKeyDown,
+      onKeyUp,
+      // ]TODO(macOS GH#774)
     }),
     [
       android_disableSound,
       android_rippleConfig,
+      cancelable,
+      delayHoverIn,
+      delayHoverOut,
       delayLongPress,
       disabled,
       hitSlop,
+      onHoverIn,
+      onHoverOut,
       onLongPress,
       onPress,
       onPressIn,
       onPressOut,
+      // [TODO(macOS GH#774)
+      onFocus,
+      onBlur,
+      onKeyDown,
+      onKeyUp,
+      // ]TODO(macOS GH#774)
       pressRetentionOffset,
       setPressed,
+      unstable_pressDelay,
     ],
   );
   const eventHandlers = usePressability(config);
 
   return (
     <View
-      {...restProps}
+      {...restPropsWithDefaults}
       {...eventHandlers}
-      {...android_rippleConfig?.viewProps}
-      acceptsFirstMouse={acceptsFirstMouse !== false && !disabled} // [TODO(macOS ISS#2323203)
-      enableFocusRing={enableFocusRing !== false && !disabled} // ]TODO(macOS ISS#2323203)
-      accessible={accessible !== false}
-      focusable={focusable !== false}
-      hitSlop={hitSlop}
       ref={viewRef}
-      style={typeof style === 'function' ? style({pressed}) : style}>
+      style={typeof style === 'function' ? style({pressed}) : style}
+      collapsable={false}>
       {typeof children === 'function' ? children({pressed}) : children}
       {__DEV__ ? <PressabilityDebugView color="red" hitSlop={hitSlop} /> : null}
     </View>

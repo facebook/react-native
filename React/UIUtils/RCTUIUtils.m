@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,7 +9,7 @@
 
 #import "RCTUtils.h"
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 RCTDimensions RCTGetDimensions(CGFloat fontScale)
 {
   UIScreen *mainScreen = UIScreen.mainScreen;
@@ -17,7 +17,8 @@ RCTDimensions RCTGetDimensions(CGFloat fontScale)
 
   UIView *mainWindow;
   mainWindow = RCTKeyWindow();
-  CGSize windowSize = mainWindow.bounds.size;
+  // We fallback to screen size if a key window is not found.
+  CGSize windowSize = mainWindow ? mainWindow.bounds.size : screenSize;
 
   RCTDimensions result;
   typeof(result.screen) dimsScreen = {
@@ -55,7 +56,7 @@ CGFloat RCTGetMultiplierForContentSizeCategory(UIContentSizeCategory category)
   return value > 0.0 ? value : 1.0;
 }
 
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
 
 RCTDimensions RCTGetDimensions(RCTPlatformView *rootView) {
   RCTDimensions dimensions = {
@@ -96,4 +97,4 @@ RCTDimensions RCTGetDimensions(RCTPlatformView *rootView) {
   return dimensions;
 }
 
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)

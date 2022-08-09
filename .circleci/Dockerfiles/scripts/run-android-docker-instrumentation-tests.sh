@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -10,7 +10,7 @@ mount -o remount,exec /dev/shm
 AVD_UUID=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1)
 
 # create virtual device
-echo no | android create avd -n "$AVD_UUID" -f -t android-19 --abi default/armeabi-v7a
+echo no | android create avd -n "$AVD_UUID" -f -t android-21 --abi default/armeabi-v7a
 
 # emulator setup
 emulator64-arm -avd $AVD_UUID -no-skin -no-audio -no-window -no-boot-anim &

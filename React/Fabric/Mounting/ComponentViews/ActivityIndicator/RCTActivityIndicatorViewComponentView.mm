@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,11 +7,13 @@
 
 #import "RCTActivityIndicatorViewComponentView.h"
 
-#import <react/components/rncore/ComponentDescriptors.h>
-#import <react/components/rncore/EventEmitters.h>
-#import <react/components/rncore/Props.h>
+#import <React/RCTConversions.h>
 
-#import "FBRCTFabricComponentsPlugins.h"
+#import <react/renderer/components/rncore/ComponentDescriptors.h>
+#import <react/renderer/components/rncore/EventEmitters.h>
+#import <react/renderer/components/rncore/Props.h>
+
+#import "RCTFabricComponentsPlugins.h"
 
 using namespace facebook::react;
 
@@ -50,7 +52,7 @@ static UIActivityIndicatorViewStyle convertActivityIndicatorViewStyle(const Acti
     } else {
       [_activityIndicatorView stopAnimating];
     }
-    _activityIndicatorView.color = [UIColor colorWithCGColor:defaultProps->color.get()];
+    _activityIndicatorView.color = RCTUIColorFromSharedColor(defaultProps->color);
     _activityIndicatorView.hidesWhenStopped = defaultProps->hidesWhenStopped;
     _activityIndicatorView.activityIndicatorViewStyle = convertActivityIndicatorViewStyle(defaultProps->size);
 
@@ -73,8 +75,8 @@ static UIActivityIndicatorViewStyle convertActivityIndicatorViewStyle(const Acti
     }
   }
 
-  if (oldViewProps.color.get() != newViewProps.color.get()) {
-    _activityIndicatorView.color = [UIColor colorWithCGColor:newViewProps.color.get()];
+  if (oldViewProps.color != newViewProps.color) {
+    _activityIndicatorView.color = RCTUIColorFromSharedColor(newViewProps.color);
   }
 
   // TODO: This prop should be deprecated.

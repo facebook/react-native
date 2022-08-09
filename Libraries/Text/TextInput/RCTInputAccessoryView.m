@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,7 +16,7 @@
 @interface RCTInputAccessoryView()
 
 // Overriding `inputAccessoryView` to `readwrite`.
-@property (nonatomic, readwrite, retain) RCTUIView *inputAccessoryView; // TODO(macOS ISS#2323203)
+@property (nonatomic, readwrite, retain) RCTUIView *inputAccessoryView; // TODO(macOS GH#774)
 
 @end
 
@@ -50,13 +50,13 @@
   }
 }
 
-- (void)insertReactSubview:(RCTUIView *)subview atIndex:(NSInteger)index  // TODO(macOS ISS#2323203)
+- (void)insertReactSubview:(RCTUIView *)subview atIndex:(NSInteger)index  // TODO(macOS GH#774)
 {
   [super insertReactSubview:subview atIndex:index];
   [_inputAccessoryView insertReactSubview:subview atIndex:index];
 }
 
-- (void)removeReactSubview:(RCTUIView *)subview // TODO(macOS ISS#2323203)
+- (void)removeReactSubview:(RCTUIView *)subview // TODO(macOS GH#774)
 {
   [super removeReactSubview:subview];
   [_inputAccessoryView removeReactSubview:subview];

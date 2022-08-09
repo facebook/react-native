@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -43,13 +43,13 @@ RCT_EXPORT_VIEW_PROPERTY(selectable, BOOL)
 
   [bridge.uiManager.observerCoordinator addObserver:self];
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(handleDidUpdateMultiplierNotification)
                                                name:@"RCTAccessibilityManagerDidUpdateMultiplierNotification"
                                              object:[bridge moduleForName:@"AccessibilityManager"
                                                     lazilyLoadIfNecessary:YES]];
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 }
 
 - (RCTUIView *)view // TODO(macOS ISS#3536887)
@@ -60,10 +60,10 @@ RCT_EXPORT_VIEW_PROPERTY(selectable, BOOL)
 - (RCTShadowView *)shadowView
 {
   RCTTextShadowView *shadowView = [[RCTTextShadowView alloc] initWithBridge:self.bridge];
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   shadowView.textAttributes.fontSizeMultiplier = [[[self.bridge moduleForName:@"AccessibilityManager"]
                                                    valueForKey:@"multiplier"] floatValue];
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
   [_shadowViews addObject:shadowView];
   return shadowView;
 }

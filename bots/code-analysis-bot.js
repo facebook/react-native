@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -30,10 +30,11 @@ function push(arr, key, value) {
 const converterSummary = {
   eslint:
     '`eslint` found some issues. Run `yarn lint --fix` to automatically fix problems.',
-  flow:
-    '`flow` found some issues. Run `yarn flow check` to analyze your code and address any errors.',
+  flow: '`flow` found some issues. Run `yarn flow check` to analyze your code and address any errors.',
   shellcheck:
     '`shellcheck` found some issues. Run `yarn shellcheck` to analyze shell scripts.',
+  'google-java-format':
+    '`google-java-format` found some issues. See https://github.com/google/google-java-format',
 };
 
 /**
@@ -49,20 +50,38 @@ const converterSummary = {
  * is an array of objects of the shape message and line.
  */
 const converters = {
-  raw: function(output, input) {
+  raw: function (output, input) {
     for (let key in input) {
-      input[key].forEach(function(message) {
+      input[key].forEach(function (message) {
         push(output, key, message);
       });
     }
   },
 
-  flow: function(output, input) {
+  'google-java-format': function (output, input) {
+    if (!input) {
+      return;
+    }
+
+    input.forEach(function (change) {
+      push(output, change.file, {
+        message: `\`google-java-format\` suggested changes:
+\`\`\`diff
+${change.description}
+\`\`\`
+`,
+        line: change.line,
+        converter: 'google-java-format',
+      });
+    });
+  },
+
+  flow: function (output, input) {
     if (!input || !input.errors) {
       return;
     }
 
-    input.errors.forEach(function(error) {
+    input.errors.forEach(function (error) {
       push(output, error.message[0].path, {
         message: error.message.map(message => message.descr).join(' '),
         line: error.message[0].line,
@@ -71,13 +90,13 @@ const converters = {
     });
   },
 
-  eslint: function(output, input) {
+  eslint: function (output, input) {
     if (!input) {
       return;
     }
 
-    input.forEach(function(file) {
-      file.messages.forEach(function(message) {
+    input.forEach(function (file) {
+      file.messages.forEach(function (message) {
         push(output, file.filePath, {
           message: message.ruleId + ': ' + message.message,
           line: message.line,
@@ -87,12 +106,12 @@ const converters = {
     });
   },
 
-  shellcheck: function(output, input) {
+  shellcheck: function (output, input) {
     if (!input) {
       return;
     }
 
-    input.forEach(function(report) {
+    input.forEach(function (report) {
       push(output, report.file, {
         message:
           '**[SC' +
@@ -112,30 +131,6 @@ const converters = {
     });
   },
 };
-
-function getShaFromPullRequest(octokit, owner, repo, number, callback) {
-  octokit.pullRequests.get({owner, repo, number}, (error, res) => {
-    if (error) {
-      console.error(error);
-      return;
-    }
-
-    callback(res.data.head.sha);
-  });
-}
-
-function getFilesFromPullRequest(octokit, owner, repo, number, callback) {
-  octokit.pullRequests.listFiles(
-    {owner, repo, number, per_page: 100},
-    (error, res) => {
-      if (error) {
-        console.error(error);
-        return;
-      }
-      callback(res.data);
-    },
-  );
-}
 
 /**
  * Sadly we can't just give the line number to github, we have to give the
@@ -166,7 +161,15 @@ function getLineMapFromPatch(patchString) {
   return lineMap;
 }
 
-function sendReview(octokit, owner, repo, number, commit_id, body, comments) {
+async function sendReview(
+  octokit,
+  owner,
+  repo,
+  pull_number,
+  commit_id,
+  body,
+  comments,
+) {
   if (process.env.GITHUB_TOKEN) {
     if (comments.length === 0) {
       // Do not leave an empty review.
@@ -181,19 +184,14 @@ function sendReview(octokit, owner, repo, number, commit_id, body, comments) {
     const opts = {
       owner,
       repo,
-      number,
+      pull_number,
       commit_id,
       body,
       event,
       comments,
     };
 
-    octokit.pullRequests.createReview(opts, function(error, res) {
-      if (error) {
-        console.error(error);
-        return;
-      }
-    });
+    await octokit.pulls.createReview(opts);
   } else {
     if (comments.length === 0) {
       console.log('No issues found.');
@@ -216,7 +214,7 @@ function sendReview(octokit, owner, repo, number, commit_id, body, comments) {
   }
 }
 
-function main(messages, owner, repo, number) {
+async function main(messages, owner, repo, pull_number) {
   // No message, we don't need to do anything :)
   if (Object.keys(messages).length === 0) {
     return;
@@ -232,50 +230,65 @@ function main(messages, owner, repo, number) {
   const {Octokit} = require('@octokit/rest');
   const octokit = new Octokit({
     auth: process.env.GITHUB_TOKEN,
+    userAgent: 'react-native-code-analysis-bot',
   });
 
-  getShaFromPullRequest(octokit, owner, repo, number, sha => {
-    getFilesFromPullRequest(octokit, owner, repo, number, files => {
-      let comments = [];
-      let convertersUsed = [];
-      files
-        .filter(file => messages[file.filename])
-        .forEach(file => {
-          // github api sometimes does not return a patch on large commits
-          if (!file.patch) {
-            return;
-          }
-          const lineMap = getLineMapFromPatch(file.patch);
-          messages[file.filename].forEach(message => {
-            if (lineMap[message.line]) {
-              const comment = {
-                path: file.filename,
-                position: lineMap[message.line],
-                body: message.message,
-              };
-              convertersUsed.push(message.converter);
-              comments.push(comment);
-            }
-          }); // forEach
-        }); // filter
+  const opts = {
+    owner,
+    repo,
+    pull_number,
+  };
 
-      let body = '**Code analysis results:**\n\n';
-      const uniqueconvertersUsed = [...new Set(convertersUsed)];
-      uniqueconvertersUsed.forEach(converter => {
-        body += '* ' + converterSummary[converter] + '\n';
-      });
+  const {data: pull} = await octokit.pulls.get(opts);
+  const {data: files} = await octokit.pulls.listFiles(opts);
 
-      sendReview(octokit, owner, repo, number, sha, body, comments);
-    }); // getFilesFromPullRequest
-  }); // getShaFromPullRequest
+  const comments = [];
+  const convertersUsed = [];
+
+  files
+    .filter(file => messages[file.filename])
+    .forEach(file => {
+      // github api sometimes does not return a patch on large commits
+      if (!file.patch) {
+        return;
+      }
+      const lineMap = getLineMapFromPatch(file.patch);
+      messages[file.filename].forEach(message => {
+        if (lineMap[message.line]) {
+          const comment = {
+            path: file.filename,
+            position: lineMap[message.line],
+            body: message.message,
+          };
+          convertersUsed.push(message.converter);
+          comments.push(comment);
+        }
+      }); // forEach
+    }); // filter
+
+  let body = '**Code analysis results:**\n\n';
+  const uniqueconvertersUsed = [...new Set(convertersUsed)];
+  uniqueconvertersUsed.forEach(converter => {
+    body += '* ' + converterSummary[converter] + '\n';
+  });
+
+  await sendReview(
+    octokit,
+    owner,
+    repo,
+    pull_number,
+    pull.head.sha,
+    body,
+    comments,
+  );
 }
 
 let content = '';
 process.stdin.resume();
-process.stdin.on('data', function(buf) {
+process.stdin.on('data', function (buf) {
   content += buf.toString();
 });
-process.stdin.on('end', function() {
+process.stdin.on('end', function () {
   let messages = {};
 
   // Since we send a few http requests to setup the process, we don't want
@@ -331,6 +344,7 @@ process.stdin.on('end', function() {
 
   const number = process.env.GITHUB_PR_NUMBER;
 
-  // intentional lint warning to make sure that the bot is working :)
-  main(messages, owner, repo, number);
+  (async () => {
+    await main(messages, owner, repo, number);
+  })();
 });

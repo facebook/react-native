@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -204,7 +204,7 @@ static inline RefPtr<T> adoptRef(T *ptr) {
 }
 
 template <typename T, typename... Args>
-static inline RefPtr<T> createNew(Args &&... arguments) {
+static inline RefPtr<T> createNew(Args &&...arguments) {
   return RefPtr<T>::adoptRef(new T(std::forward<Args>(arguments)...));
 }
 

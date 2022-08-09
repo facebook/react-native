@@ -1,5 +1,5 @@
 [ignore]
-; TODO(macOS ISS#2323203)
+; TODO(macOS GH#774)
 ; We fork some components by platform
 .*/*[.]ios.js
 .*/*[.]android.js
@@ -13,15 +13,14 @@
 ; Ignore "BUCK" generated dirs
 <PROJECT_ROOT>/\.buckd/
 
-; TODO(macOS ISS#2323203): Ignore metro.config.js
+; TODO(macOS GH#774): Ignore metro.config.js
 <PROJECT_ROOT>/metro.config.js
-
-; These should not be required directly
-; require from fbjs/lib instead: require('fbjs/lib/warning')
-.*/node_modules/warning/.*
 
 ; Flow doesn't support platforms
 .*/Libraries/Utilities/LoadingView.js
+
+; Ignore everything in android-patches
+<PROJECT_ROOT>/android-patches/.*
 
 [untyped]
 .*/node_modules/@react-native-community/cli/.*/.*
@@ -37,9 +36,6 @@ flow/
 
 [options]
 emoji=true
-
-esproposal.optional_chaining=enable
-esproposal.nullish_coalescing=enable
 
 exact_by_default=true
 
@@ -59,12 +55,6 @@ suppress_type=$FlowFixMeProps
 suppress_type=$FlowFixMeState
 suppress_type=$FlowFixMeEmpty
 
-suppress_comment=\\(.\\|\n\\)*\\$FlowFixMe\\($\\|[^(]\\|(\\(<VERSION>\\)? *\\(site=[a-z,_]*react_native\\(_macos\\)?_\\(oss\\|fb\\)[a-z,_]*\\)?)\\)
-suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(<VERSION>\\)? *\\(site=[a-z,_]*react_native\\(_macos\\)?_\\(oss\\|fb\\)[a-z,_]*\\)?)\\)?:? #[0-9]+
-suppress_comment=\\(.\\|\n\\)*\\$FlowExpectedError
-
-experimental.well_formed_exports=true
-experimental.types_first=true
 experimental.abstract_locations=true
 
 [lints]
@@ -89,4 +79,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.122.0
+^0.170.0

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -17,9 +17,9 @@
 #import <React/RCTSurfacePresenter.h>
 #import <React/RCTSurfacePresenterStub.h>
 
+#import <ReactCommon/RuntimeExecutor.h>
 #import <react/utils/ContextContainer.h>
 #import <react/utils/ManagedObjectWrapper.h>
-#import <react/utils/RuntimeExecutor.h>
 
 using namespace facebook::react;
 
@@ -41,20 +41,31 @@ static ContextContainer::Shared RCTContextContainerFromBridge(RCTBridge *bridge)
   return contextContainer;
 }
 
-static RuntimeExecutor RCTRuntimeExecutorFromBridge(RCTBridge *bridge)
+RuntimeExecutor RCTRuntimeExecutorFromBridge(RCTBridge *bridge)
 {
+  RCTAssert(bridge, @"RCTRuntimeExecutorFromBridge: Bridge must not be nil.");
+
   auto bridgeWeakWrapper = wrapManagedObjectWeakly([bridge batchedBridge] ?: bridge);
 
   RuntimeExecutor runtimeExecutor = [bridgeWeakWrapper](
                                         std::function<void(facebook::jsi::Runtime & runtime)> &&callback) {
-    [unwrapManagedObjectWeakly(bridgeWeakWrapper) invokeAsync:[bridgeWeakWrapper, callback = std::move(callback)]() {
+    RCTBridge *bridge = unwrapManagedObjectWeakly(bridgeWeakWrapper);
+
+    RCTAssert(bridge, @"RCTRuntimeExecutorFromBridge: Bridge must not be nil at the moment of scheduling a call.");
+
+    [bridge invokeAsync:[bridgeWeakWrapper, callback = std::move(callback)]() {
       RCTCxxBridge *batchedBridge = (RCTCxxBridge *)unwrapManagedObjectWeakly(bridgeWeakWrapper);
+
+      RCTAssert(batchedBridge, @"RCTRuntimeExecutorFromBridge: Bridge must not be nil at the moment of invocation.");
 
       if (!batchedBridge) {
         return;
       }
 
       auto runtime = (facebook::jsi::Runtime *)(batchedBridge.runtime);
+
+      RCTAssert(
+          runtime, @"RCTRuntimeExecutorFromBridge: Bridge must have a valid jsi::Runtime at the moment of invocation.");
 
       if (!runtime) {
         return;

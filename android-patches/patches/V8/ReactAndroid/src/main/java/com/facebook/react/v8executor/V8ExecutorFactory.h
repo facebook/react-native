@@ -1,5 +1,8 @@
---- "E:\\github\\rnm-63-fresh\\ReactAndroid\\src\\main\\java\\com\\facebook\\react\\v8executor\\V8ExecutorFactory.h"	1969-12-31 16:00:00.000000000 -0800
-+++ "E:\\github\\rnm-63\\ReactAndroid\\src\\main\\java\\com\\facebook\\react\\v8executor\\V8ExecutorFactory.h"	2020-10-13 21:39:46.729978100 -0700
+diff --git a/ReactAndroid/src/main/java/com/facebook/react/v8executor/V8ExecutorFactory.h b/ReactAndroid/src/main/java/com/facebook/react/v8executor/V8ExecutorFactory.h
+new file mode 100644
+index 0000000000..0606103d3a
+--- /dev/null
++++ b/ReactAndroid/src/main/java/com/facebook/react/v8executor/V8ExecutorFactory.h
 @@ -0,0 +1,17 @@
 +#include <folly/dynamic.h>
 +#include <jsiexecutor/jsireact/JSIExecutor.h>

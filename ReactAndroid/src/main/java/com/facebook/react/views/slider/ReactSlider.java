@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -53,7 +53,7 @@ public class ReactSlider extends AppCompatSeekBar {
     disableStateListAnimatorIfNeeded();
   }
 
-  private void disableStateListAnimatorIfNeeded() {
+  /* package */ void disableStateListAnimatorIfNeeded() {
     // We disable the state list animator for Android 6 and 7; this is a hack to prevent T37452851
     // and https://github.com/facebook/react-native/issues/9979
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M

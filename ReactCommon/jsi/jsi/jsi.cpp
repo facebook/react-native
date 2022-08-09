@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -97,10 +97,17 @@ Instrumentation& Runtime::instrumentation() {
       return std::unordered_map<std::string, int64_t>{};
     }
 
-    void collectGarbage() override {}
+    void collectGarbage(std::string) override {}
 
-    void startTrackingHeapObjectStackTraces() override {}
+    void startTrackingHeapObjectStackTraces(
+        std::function<void(
+            uint64_t,
+            std::chrono::microseconds,
+            std::vector<HeapStatsUpdate>)>) override {}
     void stopTrackingHeapObjectStackTraces() override {}
+
+    void startHeapSampling(size_t) override {}
+    void stopHeapSampling(std::ostream&) override {}
 
     void createSnapshotToFile(const std::string&) override {
       throw JSINativeException(
@@ -401,32 +408,63 @@ JSError::JSError(std::string what, Runtime& rt, Value&& value)
 }
 
 void JSError::setValue(Runtime& rt, Value&& value) {
-  value_ = std::make_shared<jsi::Value>(std::move(value));
+  value_ = std::make_shared<Value>(std::move(value));
 
   try {
     if ((message_.empty() || stack_.empty()) && value_->isObject()) {
       auto obj = value_->getObject(rt);
 
       if (message_.empty()) {
-        jsi::Value message = obj.getProperty(rt, "message");
-        if (!message.isUndefined()) {
-          message_ =
-              callGlobalFunction(rt, "String", message).getString(rt).utf8(rt);
+        try {
+          Value message = obj.getProperty(rt, "message");
+          if (!message.isUndefined() && !message.isString()) {
+            message = callGlobalFunction(rt, "String", message);
+          }
+          if (message.isString()) {
+            message_ = message.getString(rt).utf8(rt);
+          } else if (!message.isUndefined()) {
+            message_ = "String(e.message) is a " + kindToString(message, &rt);
+          }
+        } catch (const std::exception& ex) {
+          message_ = std::string("[Exception while creating message string: ") +
+              ex.what() + "]";
         }
       }
 
       if (stack_.empty()) {
-        jsi::Value stack = obj.getProperty(rt, "stack");
-        if (!stack.isUndefined()) {
-          stack_ =
-              callGlobalFunction(rt, "String", stack).getString(rt).utf8(rt);
+        try {
+          Value stack = obj.getProperty(rt, "stack");
+          if (!stack.isUndefined() && !stack.isString()) {
+            stack = callGlobalFunction(rt, "String", stack);
+          }
+          if (stack.isString()) {
+            stack_ = stack.getString(rt).utf8(rt);
+          } else if (!stack.isUndefined()) {
+            stack_ = "String(e.stack) is a " + kindToString(stack, &rt);
+          }
+        } catch (const std::exception& ex) {
+          message_ = std::string("[Exception while creating stack string: ") +
+              ex.what() + "]";
         }
       }
     }
 
     if (message_.empty()) {
-      message_ =
-          callGlobalFunction(rt, "String", *value_).getString(rt).utf8(rt);
+      try {
+        if (value_->isString()) {
+          message_ = value_->getString(rt).utf8(rt);
+        } else {
+          Value message = callGlobalFunction(rt, "String", *value_);
+          if (message.isString()) {
+            message_ = message.getString(rt).utf8(rt);
+          } else {
+            message_ = "String(e) is a " + kindToString(message, &rt);
+          }
+        }
+      } catch (const std::exception& ex) {
+        message_ = std::string("[Exception while creating message string: ") +
+            ex.what() + "]";
+      }
     }
 
     if (stack_.empty()) {
@@ -436,19 +474,18 @@ void JSError::setValue(Runtime& rt, Value&& value) {
     if (what_.empty()) {
       what_ = message_ + "\n\n" + stack_;
     }
-  } catch (const std::exception& ex) {
-    message_ = std::string("[Exception while creating message string: ") +
-        ex.what() + "]";
-    stack_ = std::string("Exception while creating stack string: ") +
-        ex.what() + "]";
-    what_ =
-        std::string("Exception while getting value fields: ") + ex.what() + "]";
   } catch (...) {
     message_ = "[Exception caught creating message string]";
     stack_ = "[Exception caught creating stack string]";
     what_ = "[Exception caught getting value fields]";
   }
 }
+
+JSIException::~JSIException() {}
+
+JSINativeException::~JSINativeException() {}
+
+JSError::~JSError() {}
 
 } // namespace jsi
 } // namespace facebook

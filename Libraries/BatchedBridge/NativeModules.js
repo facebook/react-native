@@ -1,11 +1,11 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict
  */
 
 'use strict';
@@ -14,11 +14,11 @@ const BatchedBridge = require('./BatchedBridge');
 
 const invariant = require('invariant');
 
-import type {ExtendedError} from '../Core/Devtools/parseErrorStack';
+import type {ExtendedError} from '../Core/ExtendedError';
 
 export type ModuleConfig = [
   string /* name */,
-  ?Object /* constants */,
+  ?{...} /* constants */,
   ?$ReadOnlyArray<string> /* functions */,
   ?$ReadOnlyArray<number> /* promise method IDs */,
   ?$ReadOnlyArray<number> /* sync method IDs */,
@@ -31,7 +31,7 @@ function genModule(
   moduleID: number,
 ): ?{
   name: string,
-  module?: Object,
+  module?: {...},
   ...
 } {
   if (!config) {
@@ -55,8 +55,9 @@ function genModule(
   methods &&
     methods.forEach((methodName, methodID) => {
       const isPromise =
-        promiseMethods && arrayContains(promiseMethods, methodID);
-      const isSync = syncMethods && arrayContains(syncMethods, methodID);
+        (promiseMethods && arrayContains(promiseMethods, methodID)) || false;
+      const isSync =
+        (syncMethods && arrayContains(syncMethods, methodID)) || false;
       invariant(
         !isPromise || !isSync,
         'Cannot have a method that is both async and a sync hook',
@@ -85,7 +86,7 @@ function genModule(
 // export this method as a global so we can call it from native
 global.__fbGenNativeModule = genModule;
 
-function loadModule(name: string, moduleID: number): ?Object {
+function loadModule(name: string, moduleID: number): ?{...} {
   invariant(
     global.nativeRequireModuleConfig,
     "Can't lazily create module without nativeRequireModuleConfig",
@@ -98,8 +99,10 @@ function loadModule(name: string, moduleID: number): ?Object {
 function genMethod(moduleID: number, methodID: number, type: MethodType) {
   let fn = null;
   if (type === 'promise') {
-    fn = function promiseMethodWrapper(...args: Array<any>) {
+    fn = function promiseMethodWrapper(...args: Array<mixed>) {
       // In case we reject, capture a useful stack trace here.
+      /* $FlowFixMe[class-object-subtyping] added when improving typing for
+       * this parameters */
       const enqueueingFrameError: ExtendedError = new Error();
       return new Promise((resolve, reject) => {
         BatchedBridge.enqueueNativeCall(
@@ -108,12 +111,17 @@ function genMethod(moduleID: number, methodID: number, type: MethodType) {
           args,
           data => resolve(data),
           errorData =>
-            reject(updateErrorWithErrorData(errorData, enqueueingFrameError)),
+            reject(
+              updateErrorWithErrorData(
+                (errorData: $FlowFixMe),
+                enqueueingFrameError,
+              ),
+            ),
         );
       });
     };
   } else {
-    fn = function nonPromiseMethodWrapper(...args: Array<any>) {
+    fn = function nonPromiseMethodWrapper(...args: Array<mixed>) {
       const lastArg = args.length > 0 ? args[args.length - 1] : null;
       const secondLastArg = args.length > 1 ? args[args.length - 2] : null;
       const hasSuccessCallback = typeof lastArg === 'function';
@@ -123,15 +131,17 @@ function genMethod(moduleID: number, methodID: number, type: MethodType) {
           hasSuccessCallback,
           'Cannot have a non-function arg after a function arg.',
         );
-      const onSuccess = hasSuccessCallback ? lastArg : null;
-      const onFail = hasErrorCallback ? secondLastArg : null;
+      // $FlowFixMe[incompatible-type]
+      const onSuccess: ?(mixed) => void = hasSuccessCallback ? lastArg : null;
+      // $FlowFixMe[incompatible-type]
+      const onFail: ?(mixed) => void = hasErrorCallback ? secondLastArg : null;
       const callbackCount = hasSuccessCallback + hasErrorCallback;
-      args = args.slice(0, args.length - callbackCount);
+      const newArgs = args.slice(0, args.length - callbackCount);
       if (type === 'sync') {
         return BatchedBridge.callNativeSyncHook(
           moduleID,
           methodID,
-          args,
+          newArgs,
           onFail,
           onSuccess,
         );
@@ -139,7 +149,7 @@ function genMethod(moduleID: number, methodID: number, type: MethodType) {
         BatchedBridge.enqueueNativeCall(
           moduleID,
           methodID,
-          args,
+          newArgs,
           onFail,
           onSuccess,
         );
@@ -158,10 +168,12 @@ function updateErrorWithErrorData(
   errorData: {message: string, ...},
   error: ExtendedError,
 ): ExtendedError {
+  /* $FlowFixMe[class-object-subtyping] added when improving typing for this
+   * parameters */
   return Object.assign(error, errorData || {});
 }
 
-let NativeModules: {[moduleName: string]: Object, ...} = {};
+let NativeModules: {[moduleName: string]: $FlowFixMe, ...} = {};
 if (global.nativeModuleProxy) {
   NativeModules = global.nativeModuleProxy;
 } else if (!global.nativeExtensions) {

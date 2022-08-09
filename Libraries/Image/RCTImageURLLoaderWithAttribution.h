@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,9 @@
 
 #import <React/RCTImageURLLoader.h>
 #import <React/RCTImageLoaderProtocol.h>
+#import <React/RCTImageLoaderLoggable.h>
 
-#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // TODO(macOS GH#774)
 
 // TODO (T61325135): Remove C++ checks
 #ifdef __cplusplus
@@ -18,6 +19,8 @@ namespace react {
 struct ImageURLLoaderAttribution {
   int32_t nativeViewTag = 0;
   int32_t surfaceId = 0;
+  std::string queryRootName;
+  NSString *analyticTag;
 };
 
 } // namespace react
@@ -39,7 +42,7 @@ struct ImageURLLoaderAttribution {
  * Same as the RCTImageURLLoader interface, but allows passing in optional `attribution` information.
  * This is useful for per-app logging and other instrumentation.
  */
-@protocol RCTImageURLLoaderWithAttribution <RCTImageURLLoader>
+@protocol RCTImageURLLoaderWithAttribution <RCTImageURLLoader, RCTImageLoaderLoggable>
 
 // TODO (T61325135): Remove C++ checks
 #ifdef __cplusplus
@@ -56,18 +59,18 @@ struct ImageURLLoaderAttribution {
                                   attribution:(const facebook::react::ImageURLLoaderAttribution &)attribution
                               progressHandler:(RCTImageLoaderProgressBlock)progressHandler
                            partialLoadHandler:(RCTImageLoaderPartialLoadBlock)partialLoadHandler
-                            completionHandler:(RCTImageLoaderCompletionBlock)completionHandler;
+                            completionHandler:(RCTImageLoaderCompletionBlockWithMetadata)completionHandler;
 #endif
-
-/**
- * Image instrumentation - notify that the image content (UIImage) has been set on the native view.
- */
-- (void)trackURLImageContentDidSetForRequest:(RCTImageURLLoaderRequest *)loaderRequest;
 
 /**
  * Image instrumentation - start tracking the on-screen visibility of the native image view.
  */
-- (void)trackURLImageVisibilityForRequest:(RCTImageURLLoaderRequest *)loaderRequest imageView:(RCTUIView *)imageView; // TODO(macOS ISS#2323203)
+- (void)trackURLImageVisibilityForRequest:(RCTImageURLLoaderRequest *)loaderRequest imageView:(RCTUIView *)imageView; // TODO(macOS GH#774)
+
+/**
+ * Image instrumentation - notify that the request was destroyed.
+ */
+- (void)trackURLImageRequestDidDestroy:(RCTImageURLLoaderRequest *)loaderRequest;
 
 /**
  * Image instrumentation - notify that the native image view was destroyed.

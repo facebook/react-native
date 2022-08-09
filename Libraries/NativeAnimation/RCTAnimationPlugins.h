@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -30,6 +30,7 @@ Class RCTAnimationClassProvider(const char *name);
 
 // Lookup functions
 Class RCTNativeAnimatedModuleCls(void) __attribute__((used));
+Class RCTNativeAnimatedTurboModuleCls(void) __attribute__((used));
 
 #ifdef __cplusplus
 }

@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// TODO(macOS ISS#2323203)
+// TODO(macOS GH#774)
 
 #include <TargetConditionals.h>
 
@@ -62,6 +62,8 @@ UIKIT_STATIC_INLINE CGPathRef UIBezierPathCreateCGPathRef(UIBezierPath *path)
 #define RCTPlatformView         UIView
 #define RCTUIView UIView // TODO(macOS ISS#3536887)
 #define RCTUIScrollView UIScrollView // TODO(macOS ISS#3536887)
+
+#define RCTPlatformWindow UIWindow
 
 UIKIT_STATIC_INLINE RCTPlatformView *RCTUIViewHitTestWithEvent(RCTPlatformView *view, CGPoint point, UIEvent *event)
 {
@@ -361,6 +363,8 @@ CGPathRef UIBezierPathCreateCGPathRef(UIBezierPath *path);
 // UIView
 #define RCTPlatformView NSView
 
+#define RCTPlatformWindow NSWindow
+
 @interface RCTUIView : NSView // TODO(macOS ISS#3536887)
 
 @property (nonatomic, readonly) BOOL canBecomeFirstResponder;
@@ -421,6 +425,8 @@ CGPathRef UIBezierPathCreateCGPathRef(UIBezierPath *path);
 @property (nonatomic, assign) CGFloat zoomScale;
 @property (nonatomic, assign) BOOL alwaysBounceHorizontal;
 @property (nonatomic, assign) BOOL alwaysBounceVertical;
+// macOS specific properties
+@property (nonatomic, assign) BOOL enableFocusRing;
 
 @end
 
@@ -448,10 +454,6 @@ NS_INLINE BOOL RCTUIViewIsDescendantOfView(RCTPlatformView *view, RCTPlatformVie
 {
   return [view isDescendantOf:parent];
 }
-
-NSArray *RCTUIViewCalculateKeyViewLoop(RCTPlatformView *root);
-
-BOOL RCTUIViewHasDescendantPassingPredicate(RCTPlatformView *root, BOOL (^predicate)(RCTPlatformView *view));
 
 NS_INLINE NSValue *NSValueWithCGRect(CGRect rect)
 {

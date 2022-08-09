@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,6 @@
  * @flow strict-local
  * @format
  */
-
-'use strict';
 
 import {isHoverEnabled} from './HoverState';
 import invariant from 'invariant';
@@ -21,6 +19,8 @@ import type {
   PressEvent,
   MouseEvent,
 } from '../Types/CoreEventTypes';
+import PressabilityPerformanceEventEmitter from './PressabilityPerformanceEventEmitter.js';
+import {type PressabilityTouchSignal as TouchSignal} from './PressabilityTypes.js';
 import Platform from '../Utilities/Platform';
 import UIManager from '../ReactNative/UIManager';
 import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
@@ -200,15 +200,6 @@ type TouchState =
   | 'RESPONDER_ACTIVE_LONG_PRESS_IN'
   | 'RESPONDER_ACTIVE_LONG_PRESS_OUT'
   | 'ERROR';
-
-type TouchSignal =
-  | 'DELAY'
-  | 'RESPONDER_GRANT'
-  | 'RESPONDER_RELEASE'
-  | 'RESPONDER_TERMINATED'
-  | 'ENTER_PRESS_RECT'
-  | 'LEAVE_PRESS_RECT'
-  | 'LONG_PRESS_DETECTED';
 
 const Transitions = Object.freeze({
   NOT_RESPONDER: {
@@ -443,6 +434,10 @@ export default class Pressability {
     this._cancelLongPressDelayTimeout();
     this._cancelPressDelayTimeout();
     this._cancelPressOutDelayTimeout();
+
+    // Ensure that, if any async event handlers are fired after unmount
+    // due to a race, we don't call any configured callbacks.
+    this._config = Object.freeze({});
   }
 
   /**
@@ -467,21 +462,6 @@ export default class Pressability {
         const {onFocus} = this._config;
         if (onFocus != null) {
           onFocus(event);
-        }
-      },
-    };
-
-    const keyEventHandlers = {
-      onKeyDown: (event: KeyEvent): void => {
-        const {onKeyDown} = this._config;
-        if (onKeyDown != null) {
-          onKeyDown(event);
-        }
-      },
-      onKeyUp: (event: KeyEvent): void => {
-        const {onKeyUp} = this._config;
-        if (onKeyUp != null) {
-          onKeyUp(event);
         }
       },
     };
@@ -527,8 +507,9 @@ export default class Pressability {
       },
 
       onResponderMove: (event: PressEvent): void => {
-        if (this._config.onPressMove != null) {
-          this._config.onPressMove(event);
+        const {onPressMove} = this._config;
+        if (onPressMove != null) {
+          onPressMove(event);
         }
 
         // Region may not have finished being measured, yet.
@@ -580,8 +561,8 @@ export default class Pressability {
       },
 
       onClick: (event: PressEvent): void => {
-        const {onPress} = this._config;
-        if (onPress != null) {
+        const {onPress, disabled} = this._config;
+        if (onPress != null && disabled !== true) {
           onPress(event);
         }
       },
@@ -589,8 +570,8 @@ export default class Pressability {
 
     if (process.env.NODE_ENV === 'test') {
       // We are setting this in order to find this node in ReactNativeTestTools
-      responderEventHandlers.onStartShouldSetResponder.testOnly_pressabilityConfig = () =>
-        this._config;
+      responderEventHandlers.onStartShouldSetResponder.testOnly_pressabilityConfig =
+        () => this._config;
     }
 
     const mouseEventHandlers =
@@ -607,6 +588,7 @@ export default class Pressability {
                     this._config.delayHoverIn,
                   );
                   if (delayHoverIn > 0) {
+                    event.persist();
                     this._hoverInDelayTimeout = setTimeout(() => {
                       onHoverIn(event);
                     }, delayHoverIn);
@@ -627,6 +609,7 @@ export default class Pressability {
                     this._config.delayHoverOut,
                   );
                   if (delayHoverOut > 0) {
+                    event.persist();
                     this._hoverInDelayTimeout = setTimeout(() => {
                       onHoverOut(event);
                     }, delayHoverOut);
@@ -638,11 +621,28 @@ export default class Pressability {
             },
           };
 
+    // [TODO(macOS GH#774)
+    const keyboardEventHandlers = {
+      onKeyDown: (event: KeyEvent): void => {
+        const {onKeyDown} = this._config;
+        if (onKeyDown != null) {
+          onKeyDown(event);
+        }
+      },
+      onKeyUp: (event: KeyEvent): void => {
+        const {onKeyUp} = this._config;
+        if (onKeyUp != null) {
+          onKeyUp(event);
+        }
+      },
+    };
+    // ]TODO(macOS GH#774)
+
     return {
       ...focusEventHandlers,
       ...responderEventHandlers,
       ...mouseEventHandlers,
-      ...keyEventHandlers,
+      ...keyboardEventHandlers, // [TODO(macOS GH#774)]
     };
   }
 
@@ -651,6 +651,19 @@ export default class Pressability {
    * and stores the new state. Validates the transition as well.
    */
   _receiveSignal(signal: TouchSignal, event: PressEvent): void {
+    // Especially on iOS, not all events have timestamps associated.
+    // For telemetry purposes, this doesn't matter too much, as long as *some* do.
+    // Since the native timestamp is integral for logging telemetry, just skip
+    // events if they don't have a timestamp attached.
+    if (event.nativeEvent.timestamp != null) {
+      PressabilityPerformanceEventEmitter.emitEvent(() => {
+        return {
+          signal,
+          nativeTimestamp: event.nativeEvent.timestamp,
+        };
+      });
+    }
+
     const prevState = this._touchState;
     const nextState = Transitions[prevState]?.[signal];
     if (this._responderID == null && signal === 'RESPONDER_RELEASE') {
@@ -690,10 +703,10 @@ export default class Pressability {
       prevState === 'NOT_RESPONDER' &&
       nextState === 'RESPONDER_INACTIVE_PRESS_IN';
 
-    const isActivationTransiton =
+    const isActivationTransition =
       !isActivationSignal(prevState) && isActivationSignal(nextState);
 
-    if (isInitialTransition || isActivationTransiton) {
+    if (isInitialTransition || isActivationTransition) {
       this._measureResponderRegion();
     }
 
@@ -714,6 +727,11 @@ export default class Pressability {
     }
 
     if (isPressInSignal(prevState) && signal === 'RESPONDER_RELEASE') {
+      // If we never activated (due to delays), activate and deactivate now.
+      if (!isNextActive && !isPrevActive) {
+        this._activate(event);
+        this._deactivate(event);
+      }
       const {onLongPress, onPress, android_disableSound} = this._config;
       if (onPress != null) {
         const isPressCanceledByLongPress =
@@ -721,11 +739,6 @@ export default class Pressability {
           prevState === 'RESPONDER_ACTIVE_LONG_PRESS_IN' &&
           this._shouldLongPressCancelPress();
         if (!isPressCanceledByLongPress) {
-          // If we never activated (due to delays), activate and deactivate now.
-          if (!isNextActive && !isPrevActive) {
-            this._activate(event);
-            this._deactivate(event);
-          }
           if (Platform.OS === 'android' && android_disableSound !== true) {
             SoundManager.playTouchSound();
           }
@@ -739,11 +752,8 @@ export default class Pressability {
 
   _activate(event: PressEvent): void {
     const {onPressIn} = this._config;
-    const touch = getTouchFromPressEvent(event);
-    this._touchActivatePosition = {
-      pageX: touch.pageX,
-      pageY: touch.pageY,
-    };
+    const {pageX, pageY} = getTouchFromPressEvent(event);
+    this._touchActivatePosition = {pageX, pageY};
     this._touchActivateTime = Date.now();
     if (onPressIn != null) {
       onPressIn(event);
@@ -764,6 +774,7 @@ export default class Pressability {
         normalizeDelay(this._config.delayPressOut),
       );
       if (delayPressOut > 0) {
+        event.persist();
         this._pressOutDelayTimeout = setTimeout(() => {
           onPressOut(event);
         }, delayPressOut);

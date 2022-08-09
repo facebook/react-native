@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,22 +7,18 @@
 
 #import <React/RCTPropsAnimatedNode.h>
 
-#import <React/RCTLog.h>
-#import <React/RCTSurfacePresenterStub.h>
-#import <React/RCTUIManager.h>
-
 #import <React/RCTAnimationUtils.h>
+#import <React/RCTLog.h>
 #import <React/RCTStyleAnimatedNode.h>
+#import <React/RCTUIManager.h>
 #import <React/RCTValueAnimatedNode.h>
-
-
 
 @implementation RCTPropsAnimatedNode
 {
   NSNumber *_connectedViewTag;
-  NSNumber *_rootTag;
   NSString *_connectedViewName;
   __weak RCTBridge *_bridge;
+  __weak id<RCTSurfacePresenterStub> _surfacePresenter;
   NSMutableDictionary<NSString *, NSObject *> *_propsDictionary; // TODO: use RawProps or folly::dynamic directly
   BOOL _managedByFabric;
 }
@@ -44,28 +40,34 @@
 - (void)connectToView:(NSNumber *)viewTag
              viewName:(NSString *)viewName
                bridge:(RCTBridge *)bridge
+     surfacePresenter:(id<RCTSurfacePresenterStub> )surfacePresenter
 {
   _bridge = bridge;
+  _surfacePresenter = surfacePresenter;
   _connectedViewTag = viewTag;
   _connectedViewName = viewName;
   _managedByFabric = RCTUIManagerTypeForTagIsFabric(viewTag);
-  _rootTag = nil;
 }
 
 - (void)disconnectFromView:(NSNumber *)viewTag
 {
   _bridge = nil;
+  _surfacePresenter = nil;
   _connectedViewTag = nil;
   _connectedViewName = nil;
   _managedByFabric = NO;
-  _rootTag = nil;
 }
 
 - (void)updateView
 {
   if (_managedByFabric) {
-    [_bridge.surfacePresenter synchronouslyUpdateViewOnUIThread:_connectedViewTag
-                                                          props:_propsDictionary];
+    if (_bridge.surfacePresenter) {
+      [_bridge.surfacePresenter synchronouslyUpdateViewOnUIThread:_connectedViewTag
+      props:_propsDictionary];
+    } else {
+      [_surfacePresenter synchronouslyUpdateViewOnUIThread:_connectedViewTag
+      props:_propsDictionary];
+    }
   } else {
     [_bridge.uiManager synchronouslyUpdateViewOnUIThread:_connectedViewTag
                                                 viewName:_connectedViewName
@@ -75,6 +77,11 @@
 
 - (void)restoreDefaultValues
 {
+  if (_managedByFabric) {
+    // Restoring to default values causes render of inconsistent state
+    // to the user because it isn't synchonised with Fabric's UIManager.
+    return;
+  }
   // Restore the default value for all props that were modified by this node.
   for (NSString *key in _propsDictionary.allKeys) {
     _propsDictionary[key] = [NSNull null];

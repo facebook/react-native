@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -74,8 +74,7 @@ NSError *tryAndReturnError(const std::function<void()> &func)
       func();
       return nil;
     } @catch (NSException *exception) {
-      NSString *message = [NSString stringWithFormat:@"Exception '%@' was thrown from JS thread", exception];
-      return RCTErrorWithMessage(message);
+      return RCTErrorWithNSException(exception);
     } @catch (id exception) {
       // This will catch any other ObjC exception, but no C++ exceptions
       return RCTErrorWithMessage(@"non-std ObjC Exception");

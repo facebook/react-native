@@ -1,4 +1,4 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -21,7 +21,14 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_ROOT)
 
 LOCAL_CPP_FEATURES := exceptions
 
-LOCAL_STATIC_LIBRARIES := libjsi
-LOCAL_SHARED_LIBRARIES := jsinspector libfb libfbjni libfolly_futures libfolly_json libhermes
+LOCAL_SHARED_LIBRARIES := \
+  jsinspector \
+  libfb \
+  libfbjni \
+  libfolly_futures \
+  libfolly_json \
+  libglog \
+  libhermes \
+  libjsi
 
-include $(BUILD_SHARED_LIBRARY)
+include $(BUILD_STATIC_LIBRARY)

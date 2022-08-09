@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,9 +12,9 @@
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <ImageIO/ImageIO.h>
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 #import <MobileCoreServices/UTType.h>
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 #import <React/RCTAssert.h>
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
@@ -24,7 +24,7 @@
 
 static NSString *const RCTImageStoreURLScheme = @"rct-image-store";
 
-@interface RCTImageStoreManager() <NativeImageStoreSpec>
+@interface RCTImageStoreManager() <NativeImageStoreIOSSpec>
 @end
 
 @implementation RCTImageStoreManager
@@ -198,6 +198,11 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
   }
 }
 
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params
+{
+  return std::make_shared<facebook::react::NativeImageStoreIOSSpecJSI>(params);
+}
+
 @end
 
 @implementation RCTImageStoreManager (Deprecated)
@@ -221,7 +226,7 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
   dispatch_sync(_methodQueue, ^{
     imageData = self->_store[imageTag];
   });
-  return UIImageWithData(imageData); // TODO(macOS ISS#2323203)
+  return UIImageWithData(imageData); // TODO(macOS GH#774)
 }
 
 - (void)getImageForTag:(NSString *)imageTag withBlock:(void (^)(UIImage *image))block
@@ -231,17 +236,9 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
     NSData *imageData = self->_store[imageTag];
     dispatch_async(dispatch_get_main_queue(), ^{
       // imageWithData: is not thread-safe, so we can't do this on methodQueue
-      block(UIImageWithData(imageData)); // TODO(macOS ISS#2323203)
+      block(UIImageWithData(imageData)); // TODO(macOS GH#774)
     });
   });
-}
-
-- (std::shared_ptr<facebook::react::TurboModule>)
-    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
-                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
-{
-  return std::make_shared<facebook::react::NativeImageStoreSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
 }
 
 @end

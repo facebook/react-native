@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,8 +8,8 @@
 #import "RCTImageResponseObserverProxy.h"
 
 #import <React/RCTUtils.h>
-#import <react/imagemanager/ImageResponse.h>
-#import <react/imagemanager/ImageResponseObserver.h>
+#import <react/renderer/imagemanager/ImageResponse.h>
+#import <react/renderer/imagemanager/ImageResponseObserver.h>
 #import <react/utils/ManagedObjectWrapper.h>
 
 namespace facebook {
@@ -23,10 +23,11 @@ RCTImageResponseObserverProxy::RCTImageResponseObserverProxy(id<RCTImageResponse
 void RCTImageResponseObserverProxy::didReceiveImage(ImageResponse const &imageResponse) const
 {
   UIImage *image = (UIImage *)unwrapManagedObject(imageResponse.getImage());
+  id metadata = unwrapManagedObject(imageResponse.getMetadata());
   id<RCTImageResponseDelegate> delegate = delegate_;
   auto this_ = this;
   RCTExecuteOnMainQueue(^{
-    [delegate didReceiveImage:image fromObserver:this_];
+    [delegate didReceiveImage:image metadata:metadata fromObserver:this_];
   });
 }
 

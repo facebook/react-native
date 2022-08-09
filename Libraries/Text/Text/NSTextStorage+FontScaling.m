@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -126,7 +126,7 @@ typedef NS_OPTIONS(NSInteger, RCTTextSizeComparisonOptions) {
       CGFloat fontSize = MAX(MIN(font.pointSize * ratio, maximumFontSize), minimumFontSize);
 
       [self addAttribute:NSFontAttributeName
-                   value:UIFontWithSize(font, fontSize) // TODO(macOS ISS#2323203)
+                   value:UIFontWithSize(font, fontSize) // TODO(macOS GH#774)
                    range:range];
     }
   ];

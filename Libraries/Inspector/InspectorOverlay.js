@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -56,6 +56,7 @@ class InspectorOverlay extends React.Component<Props> {
       <View
         onStartShouldSetResponder={this.shouldSetResponser}
         onResponderMove={this.findViewForTouchEvent}
+        nativeID="inspectorOverlay" /* TODO: T68258846. */
         style={[styles.inspector, {height: Dimensions.get('window').height}]}>
         {content}
       </View>

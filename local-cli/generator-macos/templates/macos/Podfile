@@ -2,23 +2,19 @@ require_relative '../node_modules/react-native-macos/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
 target 'HelloWorld-macOS' do
-  platform :macos, '10.14'
+  platform :macos, '10.15'
   use_native_modules!
   use_react_native!(
     :path => '../node_modules/react-native-macos',
-    
-    # To use Hermes, install the `hermes-engine-darwin` npm package, e.g.:
-    #   $ yarn add 'hermes-engine-darwin@~0.5.3'
-    #
-    # Then enable this option:
-    #   :hermes_enabled => true
+    # to enable hermes on macOS, change `false` to `true` and then install pods
+    :hermes_enabled => false
   )
 
   # Pods specifically for macOS target
 end
 
 target 'HelloWorld-iOS' do
-  platform :ios, '10'
+  platform :ios, '11'
   use_native_modules!
   use_react_native!(:path => '../node_modules/react-native-macos')
 
@@ -27,9 +23,10 @@ target 'HelloWorld-iOS' do
   # Note that if you have use_frameworks! enabled, Flipper will not work and
   # you should disable these next few lines.
   use_flipper!
-  post_install do |installer|
-    flipper_post_install(installer)
-  end
 
+  post_install do |installer|
+    react_native_post_install(installer)
+    __apply_Xcode_12_5_M1_post_install_workaround(installer)
+  end
   # Pods specifically for iOS target
 end

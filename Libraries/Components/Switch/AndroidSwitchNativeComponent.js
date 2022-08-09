@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,6 @@
  * @flow strict-local
  * @format
  */
-
-'use strict';
 
 import * as React from 'react';
 
@@ -21,7 +19,7 @@ import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativ
 import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
 import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 
-import type {ProcessedColorValue} from '../../StyleSheet/processColor'; // TODO(macOS ISS#2323203)
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {ViewProps} from '../View/ViewPropTypes';
 
 type SwitchChangeEvent = $ReadOnly<{|
@@ -34,13 +32,13 @@ type NativeProps = $ReadOnly<{|
   // Props
   disabled?: WithDefault<boolean, false>,
   enabled?: WithDefault<boolean, true>,
-  thumbColor?: ?(string | ProcessedColorValue), // TODO(macOS ISS#2323203)
-  trackColorForFalse?: ?(string | ProcessedColorValue), // TODO(macOS ISS#2323203)
-  trackColorForTrue?: ?(string | ProcessedColorValue), // TODO(macOS ISS#2323203)
+  thumbColor?: ?ColorValue,
+  trackColorForFalse?: ?ColorValue,
+  trackColorForTrue?: ?ColorValue,
   value?: WithDefault<boolean, false>,
   on?: WithDefault<boolean, false>,
-  thumbTintColor?: ?(string | ProcessedColorValue), // TODO(macOS ISS#2323203)
-  trackTintColor?: ?(string | ProcessedColorValue), // TODO(macOS ISS#2323203)
+  thumbTintColor?: ?ColorValue,
+  trackTintColor?: ?ColorValue,
 
   // Events
   onChange?: BubblingEventHandler<SwitchChangeEvent>,

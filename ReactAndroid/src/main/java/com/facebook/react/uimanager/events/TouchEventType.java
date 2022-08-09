@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,23 +9,22 @@ package com.facebook.react.uimanager.events;
 
 /** Touch event types that JS module RCTEventEmitter can understand */
 public enum TouchEventType {
-  START,
-  END,
-  MOVE,
-  CANCEL;
+  START("topTouchStart"),
+  END("topTouchEnd"),
+  MOVE("topTouchMove"),
+  CANCEL("topTouchCancel");
+
+  private final String mJsName;
+
+  TouchEventType(String jsName) {
+    mJsName = jsName;
+  }
+
+  public String getJsName() {
+    return mJsName;
+  }
 
   public static String getJSEventName(TouchEventType type) {
-    switch (type) {
-      case START:
-        return "topTouchStart";
-      case END:
-        return "topTouchEnd";
-      case MOVE:
-        return "topTouchMove";
-      case CANCEL:
-        return "topTouchCancel";
-      default:
-        throw new IllegalArgumentException("Unexpected type " + type);
-    }
+    return type.getJsName();
   }
 }

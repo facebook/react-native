@@ -5,10 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict
  */
 
-// TODO(macOS ISS#2323203) Copied from Platform.ios.js
+// TODO(macOS GH#774) Copied from Platform.ios.js
 
 'use strict';
 
@@ -24,9 +24,11 @@ export type PlatformSelectSpec<D, N, I> = {
 const Platform = {
   __constants: null,
   OS: 'macos',
+  // $FlowFixMe[unsafe-getters-setters]
   get Version(): string {
     return this.constants.osVersion;
   },
+  // $FlowFixMe[unsafe-getters-setters]
   get constants(): {|
     isTesting: boolean,
     osVersion: string,
@@ -43,9 +45,11 @@ const Platform = {
     }
     return this.__constants;
   },
+  // $FlowFixMe[unsafe-getters-setters]
   get isTV(): boolean {
     return false;
   },
+  // $FlowFixMe[unsafe-getters-setters]
   get isTesting(): boolean {
     if (__DEV__) {
       return this.constants.isTesting;
@@ -54,10 +58,13 @@ const Platform = {
   },
   select: <D, N, I>(spec: PlatformSelectSpec<D, N, I>): D | N | I =>
     'macos' in spec
-      ? spec.macos
+      ? // $FlowFixMe[incompatible-return]
+        spec.macos
       : 'native' in spec
-      ? spec.native
-      : spec.default,
+      ? // $FlowFixMe[incompatible-return]
+        spec.native
+      : // $FlowFixMe[incompatible-return]
+        spec.default,
 };
 
 module.exports = Platform;

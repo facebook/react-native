@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,6 @@
  * @format
  * @flow strict-local
  */
-
-'use strict';
 
 import type {
   BubblingEventHandler,
@@ -20,7 +18,7 @@ import type {
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {ImageSource} from '../../Image/ImageSource';
 import type {ViewProps} from '../View/ViewPropTypes';
 
@@ -50,8 +48,8 @@ type NativeProps = $ReadOnly<{|
 
   // Events
   onChange?: ?BubblingEventHandler<Event>,
-  onValueChange?: ?BubblingEventHandler<Event, 'paperValueChange'>,
-  onSlidingComplete?: ?DirectEventHandler<Event, 'paperSlidingComplete'>,
+  onValueChange?: ?BubblingEventHandler<Event>,
+  onSlidingComplete?: ?DirectEventHandler<Event>,
 |}>;
 
 export default (codegenNativeComponent<NativeProps>('Slider', {

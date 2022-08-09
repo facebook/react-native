@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,6 +8,7 @@
 #include "ModuleRegistry.h"
 
 #include <glog/logging.h>
+#include <reactperflogger/BridgeNativeModulePerfLogger.h>
 
 #include "NativeModule.h"
 #include "SystraceSection.h"
@@ -47,6 +48,11 @@ void ModuleRegistry::updateModuleNamesFromIndex(size_t index) {
 void ModuleRegistry::registerModules(
     std::vector<std::unique_ptr<NativeModule>> modules) {
   SystraceSection s_("ModuleRegistry::registerModules");
+  // Noop if there are no NativeModules to add
+  if (modules.empty()) {
+    return;
+  }
+
   if (modules_.empty() && unknownModules_.empty()) {
     modules_ = std::move(modules);
   } else {
@@ -99,14 +105,37 @@ folly::Optional<ModuleConfig> ModuleRegistry::getConfig(
 
   if (it == modulesByName_.end()) {
     if (unknownModules_.find(name) != unknownModules_.end()) {
+      BridgeNativeModulePerfLogger::moduleJSRequireBeginningFail(name.c_str());
+      BridgeNativeModulePerfLogger::moduleJSRequireEndingStart(name.c_str());
       return folly::none;
     }
-    if (!moduleNotFoundCallback_ || !moduleNotFoundCallback_(name) ||
-        (it = modulesByName_.find(name)) == modulesByName_.end()) {
+
+    if (!moduleNotFoundCallback_) {
+      unknownModules_.insert(name);
+      BridgeNativeModulePerfLogger::moduleJSRequireBeginningFail(name.c_str());
+      BridgeNativeModulePerfLogger::moduleJSRequireEndingStart(name.c_str());
+      return folly::none;
+    }
+
+    BridgeNativeModulePerfLogger::moduleJSRequireBeginningEnd(name.c_str());
+
+    bool wasModuleLazilyLoaded = moduleNotFoundCallback_(name);
+    it = modulesByName_.find(name);
+
+    bool wasModuleRegisteredWithRegistry =
+        wasModuleLazilyLoaded && it != modulesByName_.end();
+
+    if (!wasModuleRegisteredWithRegistry) {
+      BridgeNativeModulePerfLogger::moduleJSRequireEndingStart(name.c_str());
       unknownModules_.insert(name);
       return folly::none;
     }
+  } else {
+    BridgeNativeModulePerfLogger::moduleJSRequireBeginningEnd(name.c_str());
   }
+
+  // If we've gotten this far, then we've signaled moduleJSRequireBeginningEnd
+
   size_t index = it->second;
 
   CHECK(index < modules_.size());
@@ -118,6 +147,12 @@ folly::Optional<ModuleConfig> ModuleRegistry::getConfig(
 
   {
     SystraceSection s_("ModuleRegistry::getConstants", "module", name);
+    /**
+     * In the case that there are constants, we'll initialize the NativeModule,
+     * and signal moduleJSRequireEndingStart. Otherwise, we'll simply signal the
+     * event. The Module will be initialized when we invoke one of its
+     * NativeModule methods.
+     */
     config.push_back(module->getConstants());
   }
 
@@ -156,6 +191,26 @@ folly::Optional<ModuleConfig> ModuleRegistry::getConfig(
   } else {
     return ModuleConfig{index, config};
   }
+}
+
+std::string ModuleRegistry::getModuleName(unsigned int moduleId) {
+  if (moduleId >= modules_.size()) {
+    throw std::runtime_error(folly::to<std::string>(
+        "moduleId ", moduleId, " out of range [0..", modules_.size(), ")"));
+  }
+
+  return modules_[moduleId]->getName();
+}
+
+std::string ModuleRegistry::getModuleSyncMethodName(
+    unsigned int moduleId,
+    unsigned int methodId) {
+  if (moduleId >= modules_.size()) {
+    throw std::runtime_error(folly::to<std::string>(
+        "moduleId ", moduleId, " out of range [0..", modules_.size(), ")"));
+  }
+
+  return modules_[moduleId]->getSyncMethodName(methodId);
 }
 
 void ModuleRegistry::callNativeMethod(

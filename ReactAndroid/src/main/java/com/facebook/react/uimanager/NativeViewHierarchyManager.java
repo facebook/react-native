@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,8 @@
 
 package com.facebook.react.uimanager;
 
-import android.content.res.Resources;
 import android.graphics.Matrix;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
@@ -29,6 +29,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationController;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationListener;
@@ -68,6 +69,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 public class NativeViewHierarchyManager {
 
   private static final String TAG = NativeViewHierarchyManager.class.getSimpleName();
+  private final boolean DEBUG_MODE = ReactBuildConfig.DEBUG && false;
 
   private final SparseArray<View> mTagsToViews;
   private final SparseArray<ViewManager> mTagsToViewManagers;
@@ -127,6 +129,9 @@ public class NativeViewHierarchyManager {
   }
 
   public synchronized void updateProperties(int tag, ReactStylesDiffMap props) {
+    if (DEBUG_MODE) {
+      FLog.d(TAG, "updateProperties[%d]: %s", tag, props.toString());
+    }
     UiThreadUtil.assertOnUiThread();
 
     try {
@@ -142,6 +147,9 @@ public class NativeViewHierarchyManager {
   }
 
   public synchronized void updateViewExtraData(int tag, Object extraData) {
+    if (DEBUG_MODE) {
+      FLog.d(TAG, "updateViewExtraData[%d]: %s", tag, extraData.toString());
+    }
     UiThreadUtil.assertOnUiThread();
 
     ViewManager viewManager = resolveViewManager(tag);
@@ -151,6 +159,9 @@ public class NativeViewHierarchyManager {
 
   public synchronized void updateLayout(
       int parentTag, int tag, int x, int y, int width, int height) {
+    if (DEBUG_MODE) {
+      FLog.d(TAG, "updateLayout[%d]->[%d]: %d %d %d %d", tag, parentTag, x, y, width, height);
+    }
     UiThreadUtil.assertOnUiThread();
     SystraceMessage.beginSection(
             Systrace.TRACE_TAG_REACT_VIEW, "NativeViewHierarchyManager_updateLayout")
@@ -249,6 +260,14 @@ public class NativeViewHierarchyManager {
       int tag,
       String className,
       @Nullable ReactStylesDiffMap initialProps) {
+    if (DEBUG_MODE) {
+      FLog.d(
+          TAG,
+          "createView[%d]: %s %s",
+          tag,
+          className,
+          (initialProps != null ? initialProps.toString() : "<null>"));
+    }
     UiThreadUtil.assertOnUiThread();
     SystraceMessage.beginSection(
             Systrace.TRACE_TAG_REACT_VIEW, "NativeViewHierarchyManager_createView")
@@ -258,17 +277,10 @@ public class NativeViewHierarchyManager {
     try {
       ViewManager viewManager = mViewManagers.get(className);
 
-      View view = viewManager.createView(themedContext, null, null, mJSResponderHandler);
+      View view =
+          viewManager.createView(tag, themedContext, initialProps, null, mJSResponderHandler);
       mTagsToViews.put(tag, view);
       mTagsToViewManagers.put(tag, viewManager);
-
-      // Use android View id field to store React tag. This is possible since we don't inflate
-      // React views from layout xmls. Thus it is easier to just reuse that field instead of
-      // creating another (potentially much more expensive) mapping from view to React tag
-      view.setId(tag);
-      if (initialProps != null) {
-        viewManager.updateProperties(view, initialProps);
-      }
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_VIEW);
     }
@@ -283,11 +295,16 @@ public class NativeViewHierarchyManager {
     StringBuilder stringBuilder = new StringBuilder();
 
     if (null != viewToManage) {
-      stringBuilder.append("View tag:" + viewToManage.getId() + "\n");
+      stringBuilder.append(
+          "View tag:"
+              + viewToManage.getId()
+              + " View Type:"
+              + viewToManage.getClass().toString()
+              + "\n");
       stringBuilder.append("  children(" + viewManager.getChildCount(viewToManage) + "): [\n");
-      for (int index = 0; index < viewManager.getChildCount(viewToManage); index += 16) {
+      for (int index = 0; viewManager.getChildAt(viewToManage, index) != null; index += 16) {
         for (int innerOffset = 0;
-            ((index + innerOffset) < viewManager.getChildCount(viewToManage)) && innerOffset < 16;
+            viewManager.getChildAt(viewToManage, index + innerOffset) != null && innerOffset < 16;
             innerOffset++) {
           stringBuilder.append(
               viewManager.getChildAt(viewToManage, index + innerOffset).getId() + ",");
@@ -366,6 +383,15 @@ public class NativeViewHierarchyManager {
       @Nullable int[] indicesToRemove,
       @Nullable ViewAtIndex[] viewsToAdd,
       @Nullable int[] tagsToDelete) {
+    if (DEBUG_MODE) {
+      FLog.d(
+          TAG,
+          "createView[%d]: %s %s %s",
+          tag,
+          (indicesToRemove != null ? indicesToRemove.toString() : "<null>"),
+          (viewsToAdd != null ? viewsToAdd.toString() : "<null>"),
+          (tagsToDelete != null ? tagsToDelete.toString() : "<null>"));
+    }
     UiThreadUtil.assertOnUiThread();
 
     final Set<Integer> pendingDeletionTags = getPendingDeletionsForTag(tag);
@@ -395,7 +421,7 @@ public class NativeViewHierarchyManager {
                   + constructManageChildrenErrorMessage(
                       viewToManage, viewManager, indicesToRemove, viewsToAdd, tagsToDelete));
         }
-        if (indexToRemove >= viewManager.getChildCount(viewToManage)) {
+        if (viewManager.getChildAt(viewToManage, indexToRemove) == null) {
           if (mRootTags.get(tag) && viewManager.getChildCount(viewToManage) == 0) {
             // This root node has already been removed (likely due to a threading issue caused by
             // async js execution). Ignore this root removal.
@@ -539,6 +565,13 @@ public class NativeViewHierarchyManager {
 
   /** Simplified version of manageChildren that only deals with adding children views */
   public synchronized void setChildren(int tag, ReadableArray childrenTags) {
+    if (DEBUG_MODE) {
+      FLog.d(
+          TAG,
+          "setChildren[%d]: %s",
+          tag,
+          (childrenTags != null ? childrenTags.toString() : "<null>"));
+    }
     UiThreadUtil.assertOnUiThread();
     ViewGroup viewToManage = (ViewGroup) mTagsToViews.get(tag);
     ViewGroupManager viewManager = (ViewGroupManager) resolveViewManager(tag);
@@ -562,6 +595,9 @@ public class NativeViewHierarchyManager {
   }
 
   protected final synchronized void addRootViewGroup(int tag, View view) {
+    if (DEBUG_MODE) {
+      FLog.d(TAG, "addRootViewGroup[%d]: %s", tag, (view != null ? view.toString() : "<null>"));
+    }
     if (view.getId() != View.NO_ID) {
       FLog.e(
           TAG,
@@ -581,6 +617,9 @@ public class NativeViewHierarchyManager {
 
   /** Releases all references to given native View. */
   protected synchronized void dropView(View view) {
+    if (DEBUG_MODE) {
+      FLog.d(TAG, "dropView[%d]", (view != null ? view.getId() : -1));
+    }
     UiThreadUtil.assertOnUiThread();
     if (view == null) {
       // Ignore this drop operation when view is null.
@@ -614,6 +653,9 @@ public class NativeViewHierarchyManager {
   }
 
   public synchronized void removeRootView(int rootViewTag) {
+    if (DEBUG_MODE) {
+      FLog.d(TAG, "removeRootView[%d]", rootViewTag);
+    }
     UiThreadUtil.assertOnUiThread();
     if (!mRootTags.get(rootViewTag)) {
       SoftAssertions.assertUnreachable(
@@ -629,6 +671,9 @@ public class NativeViewHierarchyManager {
    * {x, y, width, height}.
    */
   public synchronized void measure(int tag, int[] outputBuffer) {
+    if (DEBUG_MODE) {
+      FLog.d(TAG, "measure[%d]", tag);
+    }
     UiThreadUtil.assertOnUiThread();
     View v = mTagsToViews.get(tag);
     if (v == null) {
@@ -693,6 +738,9 @@ public class NativeViewHierarchyManager {
    *     relative to the device window
    */
   public synchronized void measureInWindow(int tag, int[] outputBuffer) {
+    if (DEBUG_MODE) {
+      FLog.d(TAG, "measureInWindow[%d]", tag);
+    }
     UiThreadUtil.assertOnUiThread();
     View v = mTagsToViews.get(tag);
     if (v == null) {
@@ -701,14 +749,12 @@ public class NativeViewHierarchyManager {
 
     v.getLocationOnScreen(outputBuffer);
 
-    // We need to remove the status bar from the height.  getLocationOnScreen will include the
-    // status bar.
-    Resources resources = v.getContext().getResources();
-    int statusBarId = resources.getIdentifier("status_bar_height", "dimen", "android");
-    if (statusBarId > 0) {
-      int height = (int) resources.getDimension(statusBarId);
-      outputBuffer[1] -= height;
-    }
+    // we need to subtract visibleWindowCoords - to subtract possible window insets, split screen or
+    // multi window
+    Rect visibleWindowFrame = new Rect();
+    v.getWindowVisibleDisplayFrame(visibleWindowFrame);
+    outputBuffer[0] = outputBuffer[0] - visibleWindowFrame.left;
+    outputBuffer[1] = outputBuffer[1] - visibleWindowFrame.top;
 
     // outputBuffer[0,1] already contain what we want
     outputBuffer[2] = v.getWidth();
@@ -716,6 +762,9 @@ public class NativeViewHierarchyManager {
   }
 
   public synchronized int findTargetTagForTouch(int reactTag, float touchX, float touchY) {
+    if (DEBUG_MODE) {
+      FLog.d(TAG, "findTargetTagForTouch[%d]: %f %f", reactTag, touchX, touchY);
+    }
     UiThreadUtil.assertOnUiThread();
     View view = mTagsToViews.get(reactTag);
     if (view == null) {
@@ -761,6 +810,14 @@ public class NativeViewHierarchyManager {
   @Deprecated
   public synchronized void dispatchCommand(
       int reactTag, int commandId, @Nullable ReadableArray args) {
+    if (DEBUG_MODE) {
+      FLog.d(
+          TAG,
+          "dispatchCommand[%d]: %d %s",
+          reactTag,
+          commandId,
+          (args != null ? args.toString() : "<null>"));
+    }
     UiThreadUtil.assertOnUiThread();
     View view = mTagsToViews.get(reactTag);
     if (view == null) {
@@ -776,6 +833,14 @@ public class NativeViewHierarchyManager {
 
   public synchronized void dispatchCommand(
       int reactTag, String commandId, @Nullable ReadableArray args) {
+    if (DEBUG_MODE) {
+      FLog.d(
+          TAG,
+          "dispatchCommand[%d]: %s %s",
+          reactTag,
+          commandId,
+          (args != null ? args.toString() : "<null>"));
+    }
     UiThreadUtil.assertOnUiThread();
     View view = mTagsToViews.get(reactTag);
     if (view == null) {
@@ -786,7 +851,12 @@ public class NativeViewHierarchyManager {
               + commandId);
     }
     ViewManager viewManager = resolveViewManager(reactTag);
-    viewManager.receiveCommand(view, commandId, args);
+    ViewManagerDelegate delegate = viewManager.getDelegate();
+    if (delegate != null) {
+      delegate.receiveCommand(view, commandId, args);
+    } else {
+      viewManager.receiveCommand(view, commandId, args);
+    }
   }
 
   /**

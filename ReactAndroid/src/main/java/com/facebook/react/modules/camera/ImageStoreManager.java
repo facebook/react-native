@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,7 +12,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Base64;
 import android.util.Base64OutputStream;
-import com.facebook.fbreact.specs.NativeImageStoreSpec;
+import com.facebook.fbreact.specs.NativeImageStoreAndroidSpec;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.GuardedAsyncTask;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 @ReactModule(name = ImageStoreManager.NAME)
-public class ImageStoreManager extends NativeImageStoreSpec {
+public class ImageStoreManager extends NativeImageStoreAndroidSpec {
 
   public static final String NAME = "ImageStoreManager";
   private static final int BUFFER_SIZE = 8192;
@@ -104,21 +104,5 @@ public class ImageStoreManager extends NativeImageStoreSpec {
     } catch (IOException e) {
       // shhh
     }
-  }
-
-  @Override
-  public void hasImageForTag(String uri, Callback callback) {
-    // iOS only
-  }
-
-  @Override
-  public void removeImageForTag(String uri) {
-    // iOS only
-  }
-
-  @Override
-  public void addImageFromBase64(
-      String base64ImageData, Callback successCallback, Callback errorCallback) {
-    // iOS only
   }
 }

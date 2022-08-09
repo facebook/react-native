@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,9 +10,9 @@
 #include <mutex>
 #include <unordered_set>
 
+#include <ReactCommon/RuntimeExecutor.h>
 #include <fbjni/fbjni.h>
-#include <react/core/EventBeat.h>
-#include <react/utils/RuntimeExecutor.h>
+#include <react/renderer/core/EventBeat.h>
 
 namespace facebook {
 namespace react {
@@ -35,7 +35,8 @@ class EventBeatManager : public jni::HybridClass<EventBeatManager> {
 
   static void registerNatives();
 
-  EventBeatManager(jni::alias_ref<EventBeatManager::jhybriddata> jhybridobject);
+  explicit EventBeatManager(
+      jni::alias_ref<EventBeatManager::jhybriddata> jhybridobject);
 
   /*
    * Adds (or removes) observers.

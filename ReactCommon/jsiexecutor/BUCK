@@ -16,13 +16,13 @@ cxx_library(
         "-frtti",
     ],
     fbandroid_deps = [
+        "//third-party/glog:glog",
         "//xplat/folly:molly",
-        "//xplat/third-party/glog:glog",
         "//xplat/third-party/linker_lib:atomic",
     ],
     fbobjc_force_static = True,
     fbobjc_header_path_prefix = "",
-    fbobjc_labels = ["supermodule:ios/default/public.react_native.infra"],
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
     platforms = (ANDROID, APPLE),
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",
@@ -38,5 +38,6 @@ cxx_library(
         react_native_xplat_dep("jsi:JSIDynamic"),
         react_native_xplat_target("cxxreact:bridge"),
         react_native_xplat_target("cxxreact:jsbigstring"),
+        react_native_xplat_target("reactperflogger:reactperflogger"),
     ],
 )

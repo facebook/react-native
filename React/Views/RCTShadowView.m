@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -49,11 +49,11 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     yogaConfig = YGConfigNew();
-#if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
     float pixelsInPoint = RCTScreenScale();
 #else
-    float pixelsInPoint = 0; // TODO(ISS#1656079): Turn off pixel rounding for macOS until we can get screen resolution passed here
-#endif // ]TODO(macOS ISS#2323203)
+    float pixelsInPoint = 1; // TODO(ISS#1656079): Use 1x alignment for macOS until we can use backing resolution
+#endif // ]TODO(macOS GH#774)
     YGConfigSetPointScaleFactor(yogaConfig, pixelsInPoint);
     YGConfigSetUseLegacyStretchBehaviour(yogaConfig, true);
   });
@@ -210,10 +210,10 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
     YGNodeSetContext(_yogaNode, (__bridge void *)self);
     YGNodeSetPrintFunc(_yogaNode, RCTPrint);
 
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
     // RCTUIManager will fix the scale if we're on a Retina display
     _scale = 1.0;
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
   }
   return self;
 }
@@ -277,8 +277,9 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
 {
   YGNodeRef yogaNode = _yogaNode;
 
-  CGSize oldMinimumSize = (CGSize){RCTCoreGraphicsFloatFromYogaValue(YGNodeStyleGetMinWidth(yogaNode), 0.0),
-                                   RCTCoreGraphicsFloatFromYogaValue(YGNodeStyleGetMinHeight(yogaNode), 0.0)};
+  CGSize oldMinimumSize = (CGSize){
+      RCTCoreGraphicsFloatFromYogaValue(YGNodeStyleGetMinWidth(yogaNode), 0.0),
+      RCTCoreGraphicsFloatFromYogaValue(YGNodeStyleGetMinHeight(yogaNode), 0.0)};
 
   if (!CGSizeEqualToSize(oldMinimumSize, minimumSize)) {
     YGNodeStyleSetMinWidth(yogaNode, RCTYogaFloatFromCoreGraphicsFloat(minimumSize.width));
@@ -392,6 +393,7 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
   return self.reactTag;
 }
 
+#if DEBUG // TODO(macOS GH#774) description is a debug-only feature
 - (NSString *)description
 {
   NSString *description = super.description;
@@ -402,6 +404,7 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
                               NSStringFromCGRect(self.layoutMetrics.frame)];
   return description;
 }
+#endif // TODO(macOS GH#774)
 
 - (void)addRecursiveDescriptionToString:(NSMutableString *)string atLevel:(NSUInteger)level
 {

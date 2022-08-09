@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -64,6 +64,7 @@
        [_deletingLayoutAnimation isEqual:deletingLayoutAnimation]);
 }
 
+#if DEBUG // TODO(macOS GH#774) description is a debug-only feature
 - (NSString *)description
 {
   return
@@ -75,5 +76,6 @@
                     [_updatingLayoutAnimation description],
                     [_deletingLayoutAnimation description]];
 }
+#endif // TODO(macOS GH#774)
 
 @end

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -397,11 +397,8 @@ class NetworkOverlay extends React.Component<Props, State> {
   _indicateAdditionalRequests = (): void => {
     if (this._requestsListView) {
       const distanceFromEndThreshold = LISTVIEW_CELL_HEIGHT * 2;
-      const {
-        offset,
-        visibleLength,
-        contentLength,
-      } = this._requestsListViewScrollMetrics;
+      const {offset, visibleLength, contentLength} =
+        this._requestsListViewScrollMetrics;
       const distanceFromEnd = contentLength - visibleLength - offset;
       const isCloseToEnd = distanceFromEnd <= distanceFromEndThreshold;
       if (isCloseToEnd) {

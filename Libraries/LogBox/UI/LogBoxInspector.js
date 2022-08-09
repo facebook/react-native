@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,6 @@
  * @flow strict-local
  * @format
  */
-
-'use strict';
 
 import LogBoxInspectorCodeFrame from './LogBoxInspectorCodeFrame';
 import * as React from 'react';
@@ -87,14 +85,16 @@ function LogBoxInspector(props: Props): React.Node {
 }
 
 const headerTitleMap = {
-  warn: 'Warning',
-  error: 'Error',
-  fatal: 'Exception',
+  warn: 'Console Warning',
+  error: 'Console Error',
+  fatal: 'Uncaught Error',
   syntax: 'Syntax Error',
-  component: 'Component Exception',
+  component: 'Render Error',
 };
 
-function LogBoxInspectorBody(props) {
+function LogBoxInspectorBody(
+  props: $TEMPORARY$object<{log: LogBoxLog, onRetry: () => void}>,
+) {
   const [collapsed, setCollapsed] = React.useState(true);
 
   React.useEffect(() => {

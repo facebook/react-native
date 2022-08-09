@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -26,10 +26,6 @@ void vlog(
     va_list args) {
   YGConfig* logConfig = config != nullptr ? config : YGConfigGetDefault();
   logConfig->log(logConfig, node, level, context, format, args);
-
-  if (level == YGLogLevelFatal) {
-    abort();
-  }
 }
 } // namespace
 

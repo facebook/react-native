@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,9 +13,9 @@ import com.facebook.fbreact.specs.NativeDeviceInfoSpec;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
@@ -54,8 +54,13 @@ public class DeviceInfoModule extends NativeDeviceInfoSpec implements LifecycleE
 
   @Override
   public @Nullable Map<String, Object> getTypedExportedConstants() {
+    WritableMap displayMetrics = DisplayMetricsHolder.getDisplayMetricsWritableMap(mFontScale);
+
+    // Cache the initial dimensions for later comparison in emitUpdateDimensionsEvent
+    mPreviousDisplayMetrics = displayMetrics.copy();
+
     HashMap<String, Object> constants = new HashMap<>();
-    constants.put("Dimensions", DisplayMetricsHolder.getDisplayMetricsMap(mFontScale));
+    constants.put("Dimensions", displayMetrics.toHashMap());
     return constants;
   }
 
@@ -83,10 +88,9 @@ public class DeviceInfoModule extends NativeDeviceInfoSpec implements LifecycleE
       return;
     }
 
-    if (mReactApplicationContext.hasActiveCatalystInstance()) {
+    if (mReactApplicationContext.hasActiveReactInstance()) {
       // Don't emit an event to JS if the dimensions haven't changed
-      WritableNativeMap displayMetrics =
-          DisplayMetricsHolder.getDisplayMetricsNativeMap(mFontScale);
+      WritableMap displayMetrics = DisplayMetricsHolder.getDisplayMetricsWritableMap(mFontScale);
       if (mPreviousDisplayMetrics == null) {
         mPreviousDisplayMetrics = displayMetrics.copy();
       } else if (!displayMetrics.equals(mPreviousDisplayMetrics)) {
@@ -96,7 +100,7 @@ public class DeviceInfoModule extends NativeDeviceInfoSpec implements LifecycleE
             .emit("didUpdateDimensions", displayMetrics);
       }
     } else {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           NAME,
           new ReactNoCrashSoftException(
               "No active CatalystInstance, cannot emitUpdateDimensionsEvent"));
@@ -104,5 +108,12 @@ public class DeviceInfoModule extends NativeDeviceInfoSpec implements LifecycleE
   }
 
   @Override
-  public void invalidate() {}
+  public void invalidate() {
+    super.invalidate();
+
+    ReactApplicationContext applicationContext = getReactApplicationContextIfActiveOrWarn();
+    if (applicationContext != null) {
+      applicationContext.removeLifecycleEventListener(this);
+    }
+  }
 }

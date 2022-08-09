@@ -1,21 +1,19 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // TODO(macOS GH#774)
 
 #import <React/RCTImageLoaderProtocol.h>
 #import <React/RCTImageURLLoaderWithAttribution.h>
 
-RCT_EXTERN BOOL RCTImageLoadingInstrumentationEnabled(void);
 RCT_EXTERN BOOL RCTImageLoadingPerfInstrumentationEnabled(void);
-RCT_EXTERN void RCTEnableImageLoadingInstrumentation(BOOL enabled);
 RCT_EXTERN void RCTEnableImageLoadingPerfInstrumentation(BOOL enabled);
 
-@protocol RCTImageLoaderWithAttributionProtocol<RCTImageLoaderProtocol>
+@protocol RCTImageLoaderWithAttributionProtocol<RCTImageLoaderProtocol, RCTImageLoaderLoggableProtocol>
 
 // TODO (T61325135): Remove C++ checks
 #ifdef __cplusplus
@@ -32,18 +30,18 @@ RCT_EXTERN void RCTEnableImageLoadingPerfInstrumentation(BOOL enabled);
                                           attribution:(const facebook::react::ImageURLLoaderAttribution &)attribution
                                         progressBlock:(RCTImageLoaderProgressBlock)progressBlock
                                      partialLoadBlock:(RCTImageLoaderPartialLoadBlock)partialLoadBlock
-                                      completionBlock:(RCTImageLoaderCompletionBlock)completionBlock;
+                                      completionBlock:(RCTImageLoaderCompletionBlockWithMetadata)completionBlock;
 #endif
-
-/**
- * Image instrumentation - notify that the image content (UIImage) has been set on the native view.
- */
-- (void)trackURLImageContentDidSetForRequest:(RCTImageURLLoaderRequest *)loaderRequest;
 
 /**
  * Image instrumentation - start tracking the on-screen visibility of the native image view.
  */
-- (void)trackURLImageVisibilityForRequest:(RCTImageURLLoaderRequest *)loaderRequest imageView:(RCTUIView *)imageView; // TODO(macOS ISS#2323203)
+- (void)trackURLImageVisibilityForRequest:(RCTImageURLLoaderRequest *)loaderRequest imageView:(RCTUIView *)imageView; // TODO(macOS GH#774)
+
+/**
+ * Image instrumentation - notify that the request was cancelled.
+ */
+- (void)trackURLImageRequestDidDestroy:(RCTImageURLLoaderRequest *)loaderRequest;
 
 /**
  * Image instrumentation - notify that the native image view was destroyed.

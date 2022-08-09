@@ -1,34 +1,36 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 #import <React/RCTBridge.h>
-#import <React/RCTJSInvokerModule.h>
 
 /**
  * RCTEventEmitter is an abstract base class to be used for modules that emit
  * events to be observed by JS.
  */
-@interface RCTEventEmitter : NSObject <RCTBridgeModule, RCTJSInvokerModule>
+@interface RCTEventEmitter : NSObject <RCTBridgeModule, RCTInvalidating>
 
-@property (nonatomic, weak) RCTBridge * _Nullable bridge; // TODO(macOS ISS#2323203)
-@property (nonatomic, copy, nonnull) void (^invokeJS)(NSString * _Nullable module, NSString * _Nullable method, NSArray * _Nullable args); // TODO(macOS ISS#2323203)
+@property (nonatomic, weak) RCTBridge * _Nullable bridge; // TODO(macOS GH#774)
+@property (nonatomic, weak) RCTModuleRegistry * _Nullable moduleRegistry; // TODO(macOS GH#774)
+@property (nonatomic, weak) RCTViewRegistry * _Nullable viewRegistry_DEPRECATED; // TODO(macOS GH#774)
+
+- (instancetype _Nullable)initWithDisabledObservation; // TODO(macOS GH#774)
 
 /**
  * Override this method to return an array of supported event names. Attempting
  * to observe or send an event that isn't included in this list will result in
  * an error.
  */
-- (NSArray<NSString *> *_Nullable)supportedEvents; // TODO(macOS ISS#2323203)
+- (NSArray<NSString *> *_Nullable)supportedEvents; // TODO(macOS GH#774)
 
 /**
  * Send an event that does not relate to a specific view, e.g. a navigation
  * or data update notification.
  */
-- (void)sendEventWithName:(NSString *_Nullable)name body:(id _Nullable )body; // TODO(macOS ISS#2323203)
+- (void)sendEventWithName:(NSString *_Nullable)name body:(id _Nullable )body; // TODO(macOS GH#774)
 
 /**
  * These methods will be called when the first observer is added and when the
@@ -38,7 +40,9 @@
 - (void)startObserving;
 - (void)stopObserving;
 
-- (void)addListener:(NSString *_Nullable)eventName; // TODO(macOS ISS#2323203)
+- (void)invalidate NS_REQUIRES_SUPER;
+
+- (void)addListener:(NSString *_Nullable)eventName; // TODO(macOS GH#774)
 - (void)removeListeners:(double)count;
 
 @end

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,9 +11,9 @@
 'use strict';
 
 import type {ExtendsPropsShape} from '../../../CodegenSchema.js';
-import type {TypeMap} from '../utils.js';
+import type {TypeDeclarationMap} from '../utils.js';
 
-function extendsForProp(prop: PropsAST, types: TypeMap) {
+function extendsForProp(prop: PropsAST, types: TypeDeclarationMap) {
   if (!prop.argument) {
     console.log('null', prop);
   }
@@ -38,7 +38,7 @@ function extendsForProp(prop: PropsAST, types: TypeMap) {
 
 function removeKnownExtends(
   typeDefinition: $ReadOnlyArray<PropsAST>,
-  types: TypeMap,
+  types: TypeDeclarationMap,
 ): $ReadOnlyArray<PropsAST> {
   return typeDefinition.filter(
     prop =>
@@ -47,12 +47,12 @@ function removeKnownExtends(
   );
 }
 
-// $FlowFixMe there's no flowtype for ASTs
+// $FlowFixMe[unclear-type] there's no flowtype for ASTs
 type PropsAST = Object;
 
 function getExtendsProps(
   typeDefinition: $ReadOnlyArray<PropsAST>,
-  types: TypeMap,
+  types: TypeDeclarationMap,
 ): $ReadOnlyArray<ExtendsPropsShape> {
   return typeDefinition
     .filter(prop => prop.type === 'ObjectTypeSpreadProperty')

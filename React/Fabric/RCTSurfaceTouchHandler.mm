@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -78,11 +78,16 @@ struct ActiveTouch {
   };
 };
 
-static void UpdateActiveTouchWithUITouch(ActiveTouch &activeTouch, UITouch *uiTouch, UIView *rootComponentView)
+static void UpdateActiveTouchWithUITouch(
+    ActiveTouch &activeTouch,
+    UITouch *uiTouch,
+    UIView *rootComponentView,
+    CGPoint rootViewOriginOffset)
 {
   CGPoint offsetPoint = [uiTouch locationInView:activeTouch.componentView];
   CGPoint screenPoint = [uiTouch locationInView:uiTouch.window];
   CGPoint pagePoint = [uiTouch locationInView:rootComponentView];
+  pagePoint = CGPointMake(pagePoint.x + rootViewOriginOffset.x, pagePoint.y + rootViewOriginOffset.y);
 
   activeTouch.touch.offsetPoint = RCTPointFromCGPoint(offsetPoint);
   activeTouch.touch.screenPoint = RCTPointFromCGPoint(screenPoint);
@@ -91,25 +96,28 @@ static void UpdateActiveTouchWithUITouch(ActiveTouch &activeTouch, UITouch *uiTo
   activeTouch.touch.timestamp = uiTouch.timestamp;
 
   if (RCTForceTouchAvailable()) {
-    activeTouch.touch.force = uiTouch.force / uiTouch.maximumPossibleForce;
+    activeTouch.touch.force = RCTZeroIfNaN(uiTouch.force / uiTouch.maximumPossibleForce);
   }
 }
 
-static ActiveTouch CreateTouchWithUITouch(UITouch *uiTouch, UIView *rootComponentView)
+static ActiveTouch CreateTouchWithUITouch(UITouch *uiTouch, UIView *rootComponentView, CGPoint rootViewOriginOffset)
 {
-  UIView *componentView = uiTouch.view;
-
   ActiveTouch activeTouch = {};
 
-  if ([componentView respondsToSelector:@selector(touchEventEmitterAtPoint:)]) {
-    activeTouch.eventEmitter = [(id<RCTTouchableComponentViewProtocol>)componentView
-        touchEventEmitterAtPoint:[uiTouch locationInView:componentView]];
-    activeTouch.touch.target = (Tag)componentView.tag;
+  // Find closest Fabric-managed touchable view
+  UIView *componentView = uiTouch.view;
+  while (componentView) {
+    if ([componentView respondsToSelector:@selector(touchEventEmitterAtPoint:)]) {
+      activeTouch.eventEmitter = [(id<RCTTouchableComponentViewProtocol>)componentView
+          touchEventEmitterAtPoint:[uiTouch locationInView:componentView]];
+      activeTouch.touch.target = (Tag)componentView.tag;
+      activeTouch.componentView = componentView;
+      break;
+    }
+    componentView = componentView.superview;
   }
 
-  activeTouch.componentView = componentView;
-
-  UpdateActiveTouchWithUITouch(activeTouch, uiTouch, rootComponentView);
+  UpdateActiveTouchWithUITouch(activeTouch, uiTouch, rootComponentView, rootViewOriginOffset);
   return activeTouch;
 }
 
@@ -154,7 +162,10 @@ struct PointerHasher {
   std::unordered_map<__unsafe_unretained UITouch *, ActiveTouch, PointerHasher<__unsafe_unretained UITouch *>>
       _activeTouches;
 
-  UIView *_rootComponentView;
+  /*
+   * We hold the view weakly to prevent a retain cycle.
+   */
+  __weak UIView *_rootComponentView;
   IdentifierPool<11> _identifierPool;
 }
 
@@ -197,7 +208,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 - (void)_registerTouches:(NSSet<UITouch *> *)touches
 {
   for (UITouch *touch in touches) {
-    auto activeTouch = CreateTouchWithUITouch(touch, _rootComponentView);
+    auto activeTouch = CreateTouchWithUITouch(touch, _rootComponentView, _viewOriginOffset);
     activeTouch.touch.identifier = _identifierPool.dequeue();
     _activeTouches.emplace(touch, activeTouch);
   }
@@ -212,7 +223,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
       continue;
     }
 
-    UpdateActiveTouchWithUITouch(iterator->second, touch, _rootComponentView);
+    UpdateActiveTouchWithUITouch(iterator->second, touch, _rootComponentView, _viewOriginOffset);
   }
 }
 
@@ -362,7 +373,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 {
   [super reset];
 
-  if (_activeTouches.size() != 0) {
+  if (!_activeTouches.empty()) {
     std::vector<ActiveTouch> activeTouches;
     activeTouches.reserve(_activeTouches.size());
 
@@ -397,6 +408,24 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 {
   // Same condition for `failure of` as for `be prevented by`.
   return [self canBePreventedByGestureRecognizer:otherGestureRecognizer];
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
+    shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+  BOOL canBePrevented = [self canBePreventedByGestureRecognizer:otherGestureRecognizer];
+  if (canBePrevented) {
+    [self _cancelTouches];
+  }
+  return NO;
+}
+
+#pragma mark -
+
+- (void)_cancelTouches
+{
+  [self setEnabled:NO];
+  [self setEnabled:YES];
 }
 
 @end

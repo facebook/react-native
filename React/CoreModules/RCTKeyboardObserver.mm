@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,7 +8,7 @@
 #import "RCTKeyboardObserver.h"
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
-#import <React/RCTEventDispatcher.h>
+#import <React/RCTEventDispatcherProtocol.h>
 
 #import "CoreModulesPlugins.h"
 
@@ -23,7 +23,7 @@ RCT_EXPORT_MODULE()
 
 - (void)startObserving
 {
-#if !TARGET_OS_TV && !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
@@ -37,8 +37,7 @@ RCT_EXPORT_MODULE()
   ADD_KEYBOARD_HANDLER(UIKeyboardDidChangeFrameNotification, keyboardDidChangeFrame);
 
 #undef ADD_KEYBOARD_HANDLER
-
-#endif
+#endif // TODO(macOS GH#774)
 }
 
 - (NSArray<NSString *> *)supportedEvents
@@ -64,7 +63,7 @@ RCT_EXPORT_MODULE()
 #define IMPLEMENT_KEYBOARD_HANDLER(EVENT)                                              \
   -(void)EVENT : (NSNotification *)notification                                        \
   {                                                                                    \
-    if (!self.bridge) {                                                                \
+    if (!self.callableJSModules) {                                                     \
       return;                                                                          \
     }                                                                                  \
     [self sendEventWithName:@ #EVENT body:RCTParseKeyboardNotification(notification)]; \
@@ -77,12 +76,10 @@ IMPLEMENT_KEYBOARD_HANDLER(keyboardDidHide)
 IMPLEMENT_KEYBOARD_HANDLER(keyboardWillChangeFrame)
 IMPLEMENT_KEYBOARD_HANDLER(keyboardDidChangeFrame)
 
-- (std::shared_ptr<facebook::react::TurboModule>)
-    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
-                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeKeyboardObserverSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
+  return std::make_shared<facebook::react::NativeKeyboardObserverSpecJSI>(params);
 }
 
 @end
@@ -96,7 +93,7 @@ NS_INLINE NSDictionary *RCTRectDictionaryValue(CGRect rect)
     @"height" : @(rect.size.height),
   };
 }
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 static NSString *RCTAnimationNameForCurve(UIViewAnimationCurve curve)
 {
   switch (curve) {
@@ -112,11 +109,11 @@ static NSString *RCTAnimationNameForCurve(UIViewAnimationCurve curve)
       return @"keyboard";
   }
 }
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 
 static NSDictionary *RCTParseKeyboardNotification(NSNotification *notification)
 {
-#if TARGET_OS_TV || TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // TODO(macOS GH#774)
   return @{};
 #else
   NSDictionary *userInfo = notification.userInfo;
@@ -134,7 +131,7 @@ static NSDictionary *RCTParseKeyboardNotification(NSNotification *notification)
     @"easing" : RCTAnimationNameForCurve(curve),
     @"isEventFromThisApp" : isLocalUserInfoKey == 1 ? @YES : @NO,
   };
-#endif
+#endif // TODO(macOS GH#774)
 }
 
 Class RCTKeyboardObserverCls(void)

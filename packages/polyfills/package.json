@@ -1,0 +1,11 @@
+{
+  "name": "@react-native/polyfills",
+  "version": "2.0.0",
+  "description": "Polyfills for React Native.",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:facebook/react-native.git",
+    "directory": "packages/polyfills"
+  },
+  "license": "MIT"
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,6 +8,7 @@
 #import <React/RCTBridge.h>
 #import <React/RCTDefines.h>
 #import <React/RCTEventEmitter.h>
+#import <React/RCTInitializing.h>
 
 @protocol RCTPackagerClientMethod;
 
@@ -28,31 +29,32 @@
  */
 - (id)settingForKey:(NSString *)key;
 
-// [TODO(macOS ISS#2323203)
+// [TODO(macOS GH#774)
 /**
  * Returns all keys that are overridden
  */
 - (NSArray<NSString *> *)overridenKeys;
-// ]TODO(macOS ISS#2323203)
+// ]TODO(macOS GH#774)
 
 @end
 
-@interface RCTDevSettings : RCTEventEmitter
+@protocol RCTDevSettingsInspectable <NSObject>
+
+/**
+ * Whether current jsi::Runtime is inspectable.
+ * Only set when using as a bridgeless turbo module.
+ */
+@property (nonatomic, assign, readwrite) BOOL isInspectable;
+
+@end
+
+@interface RCTDevSettings : RCTEventEmitter <RCTInitializing>
 
 - (instancetype)initWithDataSource:(id<RCTDevSettingsDataSource>)dataSource;
 
-// [TODO(OSS Candidate ISS#2710739)
-/**
- * Whether Dev Mode is enabled meaning the development tools
- * such as the debug executors, dev menu, red box, etc. are available.
- */
-@property (nonatomic, assign, setter=setDevModeEnabled:) BOOL isDevModeEnabled;
-// ]TODO(OSS Candidate ISS#2710739)
-
 @property (nonatomic, readonly) BOOL isHotLoadingAvailable;
-@property (nonatomic, readonly) BOOL isLiveReloadAvailable;
 @property (nonatomic, readonly) BOOL isRemoteDebuggingAvailable;
-@property (nonatomic, readonly) BOOL isNuclideDebuggingAvailable;
+@property (nonatomic, readonly) BOOL isDeviceDebuggingAvailable;
 @property (nonatomic, readonly) BOOL isJSCSamplingProfilerAvailable;
 
 /**
@@ -66,13 +68,13 @@
  */
 @property (nonatomic, assign) BOOL isShakeToShowDevMenuEnabled;
 
-// [TODO(macOS ISS#2323203)
+// [TODO(macOS GH#774)
 /*
  * Whether secondary click will show RCTDevMenu. The menu is enabled by default if RCT_DEV=1, but
  * you may wish to disable it so that you can provide your own contextual menu.
  */
 @property (nonatomic, assign) BOOL isSecondaryClickToShowDevMenuEnabled;
-// ]TODO(macOS ISS#2323203)
+// ]TODO(macOS GH#774)
 
 /**
  * Whether performance profiling is enabled.
@@ -105,9 +107,14 @@
 - (void)toggleElementInspector;
 
 /**
- * If loading bundle from metro, sets up HMRClient.
+ * Set up the HMRClient if loading the bundle from Metro.
  */
-- (void)setupHotModuleReloadClientIfApplicableForURL:(NSURL *)bundleURL;
+- (void)setupHMRClientWithBundleURL:(NSURL *)bundleURL;
+
+/**
+ * Register additional bundles with the HMRClient.
+ */
+- (void)setupHMRClientWithAdditionalBundleURL:(NSURL *)bundleURL;
 
 #if RCT_DEV_MENU
 - (void)addHandler:(id<RCTPackagerClientMethod>)handler

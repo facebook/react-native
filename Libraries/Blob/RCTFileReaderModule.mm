@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -23,14 +23,14 @@
 
 RCT_EXPORT_MODULE(FileReaderModule)
 
-@synthesize bridge = _bridge;
+@synthesize moduleRegistry = _moduleRegistry;
 
 RCT_EXPORT_METHOD(readAsText:(NSDictionary<NSString *, id> *)blob
                   encoding:(NSString *)encoding
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-  RCTBlobManager *blobManager = [[self bridge] moduleForClass:[RCTBlobManager class]];
+  RCTBlobManager *blobManager = [_moduleRegistry moduleForName:"BlobModule"];
   NSData *data = [blobManager resolve:blob];
 
   if (data == nil) {
@@ -55,7 +55,7 @@ RCT_EXPORT_METHOD(readAsDataURL:(NSDictionary<NSString *, id> *)blob
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-  RCTBlobManager *blobManager = [[self bridge] moduleForClass:[RCTBlobManager class]];
+  RCTBlobManager *blobManager = [_moduleRegistry moduleForName:"BlobModule"];
   NSData *data = [blobManager resolve:blob];
 
   if (data == nil) {
@@ -71,12 +71,9 @@ RCT_EXPORT_METHOD(readAsDataURL:(NSDictionary<NSString *, id> *)blob
   }
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)
-    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
-                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeFileReaderModuleSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
+  return std::make_shared<facebook::react::NativeFileReaderModuleSpecJSI>(params);
 }
 
 @end

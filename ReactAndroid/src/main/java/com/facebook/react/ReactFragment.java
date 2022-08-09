@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -27,8 +27,8 @@ import com.facebook.react.modules.core.PermissionListener;
  */
 public class ReactFragment extends Fragment implements PermissionAwareActivity {
 
-  private static final String ARG_COMPONENT_NAME = "arg_component_name";
-  private static final String ARG_LAUNCH_OPTIONS = "arg_launch_options";
+  protected static final String ARG_COMPONENT_NAME = "arg_component_name";
+  protected static final String ARG_LAUNCH_OPTIONS = "arg_launch_options";
 
   private ReactDelegate mReactDelegate;
 
@@ -77,6 +77,10 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity {
    */
   protected ReactNativeHost getReactNativeHost() {
     return ((ReactApplication) getActivity().getApplication()).getReactNativeHost();
+  }
+
+  protected ReactDelegate getReactDelegate() {
+    return mReactDelegate;
   }
 
   @Override

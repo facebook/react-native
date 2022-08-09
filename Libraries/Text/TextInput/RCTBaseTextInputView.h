@@ -1,11 +1,11 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // TODO(macOS GH#774)
 
 #import <React/RCTView.h>
 
@@ -13,7 +13,6 @@
 #import "RCTBackedTextInputViewProtocol.h"
 
 @class RCTBridge;
-@class RCTEventDispatcher;
 @class RCTTextAttributes;
 @class RCTTextSelection;
 
@@ -40,6 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nullable) RCTDirectEventBlock onContentSizeChange;
 @property (nonatomic, copy, nullable) RCTDirectEventBlock onSelectionChange;
 @property (nonatomic, copy, nullable) RCTDirectEventBlock onChange;
+@property (nonatomic, copy, nullable) RCTDirectEventBlock onChangeSync;
 @property (nonatomic, copy, nullable) RCTDirectEventBlock onTextInput;
 @property (nonatomic, copy, nullable) RCTDirectEventBlock onScroll;
 
@@ -55,9 +55,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nullable) NSAttributedString *attributedText;
 @property (nonatomic, copy) NSString *predictedText; // TODO(OSS Candidate ISS#2710739)
 @property (nonatomic, copy) NSString *inputAccessoryViewID;
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 @property (nonatomic, assign) UIKeyboardType keyboardType;
-#endif // TODO(macOS ISS#2323203)
+@property (nonatomic, assign) BOOL showSoftInputOnFocus;
+#endif // TODO(macOS GH#774)
 
 /**
  Sets selection intext input if both start and end are within range of the text input.

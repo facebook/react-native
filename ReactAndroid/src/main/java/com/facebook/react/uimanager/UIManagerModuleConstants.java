@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -59,6 +59,9 @@ import java.util.Map;
     return MapBuilder.builder()
         .put("topContentSizeChange", MapBuilder.of(rn, "onContentSizeChange"))
         .put("topLayout", MapBuilder.of(rn, "onLayout"))
+        .put("topPointerEnter", MapBuilder.of(rn, "pointerenter"))
+        .put("topPointerLeave", MapBuilder.of(rn, "pointerleave"))
+        .put("topPointerMove", MapBuilder.of(rn, "pointermove"))
         .put("topLoadingError", MapBuilder.of(rn, "onLoadingError"))
         .put("topLoadingFinish", MapBuilder.of(rn, "onLoadingFinish"))
         .put("topLoadingStart", MapBuilder.of(rn, "onLoadingStart"))

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,7 @@
 
 package com.facebook.react.views.textinput;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -221,6 +221,7 @@ public class ReactTextInputPropertyTest {
   public void testKeyboardType() {
     ReactEditText view = mManager.createViewInstance(mThemedContext);
     int numberPadTypeFlags = InputType.TYPE_CLASS_NUMBER;
+    int urlTypeFlags = InputType.TYPE_TEXT_VARIATION_URI;
     int decimalPadTypeFlags = InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL;
     int numericTypeFlags =
         InputType.TYPE_CLASS_NUMBER
@@ -245,6 +246,9 @@ public class ReactTextInputPropertyTest {
 
     mManager.updateProperties(view, buildStyles("keyboardType", "number-pad"));
     assertThat(view.getInputType() & generalKeyboardTypeFlags).isEqualTo(numberPadTypeFlags);
+
+    mManager.updateProperties(view, buildStyles("keyboardType", "url"));
+    assertThat(view.getInputType() & generalKeyboardTypeFlags).isEqualTo(urlTypeFlags);
 
     mManager.updateProperties(view, buildStyles("keyboardType", "decimal-pad"));
     assertThat(view.getInputType() & generalKeyboardTypeFlags).isEqualTo(decimalPadTypeFlags);

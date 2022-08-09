@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,7 +9,6 @@
 
 #import <React/RCTUIManager.h>
 #import "RCTBridge.h"
-#import "RCTEventDispatcher.h"
 #import "RCTSwitch.h"
 #import "UIView+React.h"
 
@@ -17,30 +16,30 @@
 
 RCT_EXPORT_MODULE()
 
-- (RCTPlatformView *)view // TODO(macOS ISS#2323203)
+- (RCTPlatformView *)view // TODO(macOS GH#774)
 {
   RCTSwitch *switcher = [RCTSwitch new];
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   [switcher addTarget:self action:@selector(onChange:) forControlEvents:UIControlEventValueChanged];
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
   [switcher setTarget:self];
   [switcher setAction:@selector(onChange:)];
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
   return switcher;
 }
 
 - (void)onChange:(RCTSwitch *)sender
 {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   if (sender.wasOn != sender.on) {
     if (sender.onChange) {
       sender.onChange(@{@"value" : @(sender.on)});
     }
     sender.wasOn = sender.on;
   }
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
   sender.onChange(@{ @"value": @(sender.on) });
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 }
 
 RCT_EXPORT_METHOD(setValue : (nonnull NSNumber *)viewTag toValue : (BOOL)value)
@@ -51,21 +50,16 @@ RCT_EXPORT_METHOD(setValue : (nonnull NSNumber *)viewTag toValue : (BOOL)value)
     if ([view isKindOfClass:[RCTSwitch class]]) {
       [(RCTSwitch *)view setOn:value animated:NO];
     } else {
-      RCTUIView *subview = view.subviews.firstObject;
-      if ([subview isKindOfClass:[RCTSwitch class]]) {
-        [(RCTSwitch *)subview setOn:value animated:NO];
-      } else {
-        RCTLogError(@"view type must be UISwitch");
-      }
+      RCTLogError(@"view type must be UISwitch");
     }
   }];
 }
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 RCT_EXPORT_VIEW_PROPERTY(onTintColor, UIColor);
 RCT_EXPORT_VIEW_PROPERTY(tintColor, UIColor);
 RCT_EXPORT_VIEW_PROPERTY(thumbTintColor, UIColor);
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 RCT_REMAP_VIEW_PROPERTY(value, on, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock);
 RCT_CUSTOM_VIEW_PROPERTY(disabled, BOOL, RCTSwitch)

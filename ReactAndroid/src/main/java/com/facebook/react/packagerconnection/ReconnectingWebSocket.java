@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -41,6 +41,7 @@ public final class ReconnectingWebSocket extends WebSocketListener {
 
   private final String mUrl;
   private final Handler mHandler;
+  private final OkHttpClient mOkHttpClient;
   private boolean mClosed = false;
   private boolean mSuppressConnectionErrors;
   private @Nullable WebSocket mWebSocket;
@@ -48,12 +49,20 @@ public final class ReconnectingWebSocket extends WebSocketListener {
   private @Nullable ConnectionCallback mConnectionCallback;
 
   public ReconnectingWebSocket(
-      String url, MessageCallback messageCallback, ConnectionCallback connectionCallback) {
+      String url,
+      @Nullable MessageCallback messageCallback,
+      @Nullable ConnectionCallback connectionCallback) {
     super();
     mUrl = url;
     mMessageCallback = messageCallback;
     mConnectionCallback = connectionCallback;
     mHandler = new Handler(Looper.getMainLooper());
+    mOkHttpClient =
+        new OkHttpClient.Builder()
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .writeTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(0, TimeUnit.MINUTES) // Disable timeouts for read
+            .build();
   }
 
   public void connect() {
@@ -61,15 +70,8 @@ public final class ReconnectingWebSocket extends WebSocketListener {
       throw new IllegalStateException("Can't connect closed client");
     }
 
-    OkHttpClient httpClient =
-        new OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .writeTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(0, TimeUnit.MINUTES) // Disable timeouts for read
-            .build();
-
     Request request = new Request.Builder().url(mUrl).build();
-    httpClient.newWebSocket(request, this);
+    mOkHttpClient.newWebSocket(request, this);
   }
 
   private synchronized void delayedReconnect() {

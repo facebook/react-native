@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -149,5 +149,21 @@ describe('TaskQueue', () => {
     clearTaskQueue(taskQueue);
     expect(task1).not.toBeCalled();
     expect(taskQueue.hasTasksToProcess()).toBe(false);
+  });
+
+  it('should not crash when task is cancelled between being started and resolved', () => {
+    const task1 = jest.fn(() => {
+      return new Promise(resolve => {
+        setTimeout(() => {
+          resolve();
+        }, 1);
+      });
+    });
+
+    taskQueue.enqueue({gen: task1, name: 'gen1'});
+    taskQueue.processNext();
+    taskQueue.cancelTasks([task1]);
+
+    jest.runAllTimers();
   });
 });

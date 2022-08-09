@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -30,12 +30,33 @@ using namespace facebook::react;
 
 - (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
+  RCTAssert(
+      childComponentView.superview == nil,
+      @"Attempt to mount already mounted component view. (parent: %@, child: %@, index: %@, existing parent: %@)",
+      self,
+      childComponentView,
+      @(index),
+      @([childComponentView.superview tag]));
   [self insertSubview:childComponentView atIndex:index];
 }
 
 - (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
-  RCTAssert(childComponentView.superview == self, @"Attempt to unmount improperly mounted component view.");
+  RCTAssert(
+      childComponentView.superview == self,
+      @"Attempt to unmount a view which is mounted inside different view. (parent: %@, child: %@, index: %@)",
+      self,
+      childComponentView,
+      @(index));
+  RCTAssert(
+      (self.subviews.count > index) && [self.subviews objectAtIndex:index] == childComponentView,
+      @"Attempt to unmount a view which has a different index. (parent: %@, child: %@, index: %@, actual index: %@, tag at index: %@)",
+      self,
+      childComponentView,
+      @(index),
+      @([self.subviews indexOfObject:childComponentView]),
+      @([[self.subviews objectAtIndex:index] tag]));
+
   [childComponentView removeFromSuperview];
 }
 
@@ -79,13 +100,12 @@ using namespace facebook::react;
           @"-[UIView(ComponentViewProtocol) updateLayoutMetrics:oldLayoutMetrics:]: Received invalid layout metrics (%@) for a view (%@).",
           NSStringFromCGRect(frame),
           self);
-      return;
+    } else {
+      // Note: Changing `frame` when `layer.transform` is not the `identity transform` is undefined behavior.
+      // Therefore, we must use `center` and `bounds`.
+      self.center = CGPoint{CGRectGetMidX(frame), CGRectGetMidY(frame)};
+      self.bounds = CGRect{CGPointZero, frame.size};
     }
-
-    // Note: Changing `frame` when `layer.transform` is not the `identity transform` is undefined behavior.
-    // Therefore, we must use `center` and `bounds`.
-    self.center = CGPoint{CGRectGetMidX(frame), CGRectGetMidY(frame)};
-    self.bounds = CGRect{CGPointZero, frame.size};
   }
 
   if (forceUpdate || (layoutMetrics.layoutDirection != oldLayoutMetrics.layoutDirection)) {
@@ -113,6 +133,39 @@ using namespace facebook::react;
 {
   RCTAssert(NO, @"props access should be implemented by RCTViewComponentView.");
   return nullptr;
+}
+
+- (BOOL)isJSResponder
+{
+  // Default implementation always returns `NO`.
+  return NO;
+}
+
+- (void)setIsJSResponder:(BOOL)isJSResponder
+{
+  // Default implementation does nothing.
+}
+
+- (void)setPropKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN:(nullable NSSet<NSString *> *)propKeys
+{
+  // Default implementation does nothing.
+}
+
+- (nullable NSSet<NSString *> *)propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN
+{
+  return nil;
+}
+
+- (void)updateClippedSubviewsWithClipRect:(CGRect)clipRect relativeToView:(UIView *)clipView
+{
+  clipRect = [clipView convertRect:clipRect toView:self];
+
+  // Normal views don't support unmounting, so all
+  // this does is forward message to our subviews,
+  // in case any of those do support it
+  for (UIView *subview in self.subviews) {
+    [subview updateClippedSubviewsWithClipRect:clipRect relativeToView:self];
+  }
 }
 
 @end

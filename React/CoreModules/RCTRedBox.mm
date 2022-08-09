@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,9 +12,9 @@
 #import <React/RCTConvert.h>
 #import <React/RCTDefines.h>
 #import <React/RCTErrorInfo.h>
-#import <React/RCTEventDispatcher.h>
+#import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTJSStackFrame.h>
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 #import <React/RCTRedBoxExtraDataViewController.h>
 #endif
 #import <React/RCTRedBoxSetEnabled.h>
@@ -29,7 +29,7 @@
 
 @class RCTRedBoxWindow;
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 @interface UIButton (RCTRedBox)
 
 @property (nonatomic) RCTRedBoxButtonPressHandler rct_handler;
@@ -64,7 +64,7 @@
 }
 
 @end
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 
 @protocol RCTRedBoxWindowActionDelegate <NSObject>
 
@@ -74,7 +74,7 @@
 
 @end
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 @interface RCTRedBoxWindow : NSObject <UITableViewDelegate, UITableViewDataSource>
 @property (nonatomic, strong) UIViewController *rootViewController;
 @property (nonatomic, weak) id<RCTRedBoxWindowActionDelegate> actionDelegate;
@@ -109,10 +109,8 @@
     _stackTraceTableView.delegate = self;
     _stackTraceTableView.dataSource = self;
     _stackTraceTableView.backgroundColor = [UIColor clearColor];
-#if !TARGET_OS_TV
     _stackTraceTableView.separatorColor = [UIColor colorWithWhite:1 alpha:0.3];
     _stackTraceTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-#endif
     _stackTraceTableView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
     [rootView addSubview:_stackTraceTableView];
 
@@ -145,8 +143,8 @@
                                       selector:@selector(showExtraDataViewController)
                                          block:nil];
 
-    CGFloat buttonWidth = frame.size.width / (4 + [customButtonTitles count]);
-    CGFloat bottomButtonHeight = frame.size.height - buttonHeight - [self bottomSafeViewHeight];
+    CGFloat buttonWidth = frame.size.width / (CGFloat)(4 + [customButtonTitles count]);
+    CGFloat bottomButtonHeight = frame.size.height - buttonHeight - (CGFloat)[self bottomSafeViewHeight];
     dismissButton.frame = CGRectMake(0, bottomButtonHeight, buttonWidth, buttonHeight);
     reloadButton.frame = CGRectMake(buttonWidth, bottomButtonHeight, buttonWidth, buttonHeight);
     copyButton.frame = CGRectMake(buttonWidth * 2, bottomButtonHeight, buttonWidth, buttonHeight);
@@ -174,8 +172,11 @@
 
     UIView *bottomSafeView = [UIView new];
     bottomSafeView.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
-    bottomSafeView.frame =
-        CGRectMake(0, frame.size.height - [self bottomSafeViewHeight], frame.size.width, [self bottomSafeViewHeight]);
+    bottomSafeView.frame = CGRectMake(
+        0,
+        frame.size.height - (CGFloat)[self bottomSafeViewHeight],
+        frame.size.width,
+        (CGFloat)[self bottomSafeViewHeight]);
 
     [rootView addSubview:bottomSafeView];
   }
@@ -208,20 +209,10 @@
 
 - (NSInteger)bottomSafeViewHeight
 {
-  if (@available(iOS 11.0, *)) {
-    return RCTSharedApplication().delegate.window.safeAreaInsets.bottom;
-  } else {
-    return 0;
-  }
+  return RCTSharedApplication().delegate.window.safeAreaInsets.bottom;
 }
 
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
-
-- (void)dealloc
-{
-  _stackTraceTableView.dataSource = nil;
-  _stackTraceTableView.delegate = nil;
-}
 
 - (NSString *)stripAnsi:(NSString *)text
 {
@@ -240,10 +231,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   // Remove ANSI color codes from the message
   NSString *messageWithoutAnsi = [self stripAnsi:message];
 
+  BOOL isRootViewControllerPresented = self.rootViewController.presentingViewController != nil;
   // Show if this is a new message, or if we're updating the previous message
-  BOOL isNew = !self.rootViewController.isBeingPresented && !isUpdate;
+  BOOL isNew = !isRootViewControllerPresented && !isUpdate;
   BOOL isUpdateForSameMessage = !isNew &&
-      (self.rootViewController.isBeingPresented && isUpdate &&
+      (isRootViewControllerPresented && isUpdate &&
        ((errorCookie == -1 && [_lastErrorMessage isEqualToString:messageWithoutAnsi]) ||
         (errorCookie == _lastErrorCookie)));
   if (isNew || isUpdateForSameMessage) {
@@ -255,7 +247,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
     [_stackTraceTableView reloadData];
 
-    if (!self.rootViewController.isBeingPresented) {
+    if (!isRootViewControllerPresented) {
       [_stackTraceTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
                                   atScrollPosition:UITableViewScrollPositionTop
                                           animated:NO];
@@ -296,10 +288,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
       [fullStackTrace appendFormat:@"    %@\n", [self formatFrameSource:stackFrame]];
     }
   }
-#if !TARGET_OS_TV
   UIPasteboard *pb = [UIPasteboard generalPasteboard];
   [pb setString:fullStackTrace];
-#endif
 }
 
 - (NSString *)formatFrameSource:(RCTJSStackFrame *)stackFrame
@@ -446,7 +436,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 }
 
 @end
-#elif TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#elif TARGET_OS_OSX // [TODO(macOS GH#774)
 
 @interface RCTRedBoxScrollView : NSScrollView
 @end
@@ -792,12 +782,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
 @end
 
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 @interface RCTRedBox () <
     RCTInvalidating,
     RCTRedBoxWindowActionDelegate,
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
     RCTRedBoxExtraDataActionDelegate,
 #endif
     NativeRedBoxSpec>
@@ -806,7 +796,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 @implementation RCTRedBox {
   RCTRedBoxWindow *_window;
   NSMutableArray<id<RCTErrorCustomizer>> *_errorCustomizers;
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   RCTRedBoxExtraDataViewController *_extraDataViewController;
 #endif
   NSMutableArray<NSString *> *_customButtonTitles;
@@ -814,6 +804,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 }
 
 @synthesize bridge = _bridge;
+@synthesize moduleRegistry = _moduleRegistry;
+@synthesize bundleManager = _bundleManager;
 
 RCT_EXPORT_MODULE()
 
@@ -942,26 +934,27 @@ RCT_EXPORT_MODULE()
              errorCookie:(int)errorCookie
 {
   dispatch_async(dispatch_get_main_queue(), ^{
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
     if (self->_extraDataViewController == nil) {
       self->_extraDataViewController = [RCTRedBoxExtraDataViewController new];
       self->_extraDataViewController.actionDelegate = self;
     }
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [self->_bridge.eventDispatcher sendDeviceEventWithName:@"collectRedBoxExtraData" body:nil];
+    [[self->_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"collectRedBoxExtraData"
+                                                                                body:nil];
 #pragma clang diagnostic pop
 
     if (!self->_window) {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
       self->_window = [[RCTRedBoxWindow alloc] initWithFrame:[UIScreen mainScreen].bounds
                                     customButtonTitles:self->_customButtonTitles
                                   customButtonHandlers:self->_customButtonHandlers];
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
       self->_window = [RCTRedBoxWindow new];
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
       self->_window.actionDelegate = self;
     }
 
@@ -975,7 +968,7 @@ RCT_EXPORT_MODULE()
 }
 
 - (void)loadExtraDataViewController {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   dispatch_async(dispatch_get_main_queue(), ^{
     // Make sure the CMD+E shortcut doesn't call this twice
     if (self->_extraDataViewController != nil && ![self->_window.rootViewController presentedViewController]) {
@@ -988,21 +981,21 @@ RCT_EXPORT_MODULE()
 }
 
 RCT_EXPORT_METHOD(setExtraData:(NSDictionary *)extraData forIdentifier:(NSString *)identifier) {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
     [_extraDataViewController addExtraData:extraData forIdentifier:identifier];
 #endif
 }
 
 RCT_EXPORT_METHOD(dismiss)
 {
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
   [self->_window performSelectorOnMainThread:@selector(dismiss) withObject:nil waitUntilDone:NO];
-#else // ]TODO(macOS ISS#2323203)
+#else // ]TODO(macOS GH#774)
   dispatch_async(dispatch_get_main_queue(), ^{
     [self->_window dismiss];
     self->_window = nil; // TODO(OSS Candidate ISS#2710739): release _window now to ensure its UIKit ivars are dealloc'd on the main thread as the RCTRedBox can be dealloc'd on a background thread.
   });
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 }
 
 - (void)invalidate
@@ -1012,7 +1005,7 @@ RCT_EXPORT_METHOD(dismiss)
 
 - (void)redBoxWindow:(__unused RCTRedBoxWindow *)redBoxWindow openStackFrameInEditor:(RCTJSStackFrame *)stackFrame
 {
-  NSURL *const bundleURL = _overrideBundleURL ?: _bridge.bundleURL;
+  NSURL *const bundleURL = _overrideBundleURL ?: _bundleManager.bundleURL;
   if (![bundleURL.scheme hasPrefix:@"http"]) {
     RCTLogWarn(@"Cannot open stack frame in editor because you're not connected to the packager.");
     return;
@@ -1057,12 +1050,10 @@ RCT_EXPORT_METHOD(dismiss)
   [_customButtonHandlers addObject:handler];
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)
-    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
-                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeRedBoxSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
+  return std::make_shared<facebook::react::NativeRedBoxSpecJSI>(params);
 }
 
 @end
@@ -1144,12 +1135,10 @@ RCT_EXPORT_METHOD(dismiss)
 - (void)addCustomButton:(NSString *)title onPressHandler:(RCTRedBoxButtonPressHandler)handler
 {
 }
-- (std::shared_ptr<facebook::react::TurboModule>)
-    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
-                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeRedBoxSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
+  return std::make_shared<facebook::react::NativeRedBoxSpecJSI>(params);
 }
 
 @end

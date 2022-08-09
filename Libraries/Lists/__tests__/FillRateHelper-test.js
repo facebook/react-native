@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -40,13 +40,13 @@ function computeResult({helper, props, state, scroll}): number {
   );
 }
 
-describe('computeBlankness', function() {
+describe('computeBlankness', function () {
   beforeEach(() => {
     FillRateHelper.setSampleRate(1);
     FillRateHelper.setMinSampleCount(0);
   });
 
-  it('computes correct blankness of viewport', function() {
+  it('computes correct blankness of viewport', function () {
     const helper = new FillRateHelper(getFrameMetrics);
     rowFramesGlobal = {
       header: {y: 0, height: 0, inLayout: true},
@@ -65,7 +65,7 @@ describe('computeBlankness', function() {
     expect(blankness).toBe(1);
   });
 
-  it('skips frames that are not in layout', function() {
+  it('skips frames that are not in layout', function () {
     const helper = new FillRateHelper(getFrameMetrics);
     rowFramesGlobal = {
       header: {y: 0, height: 0, inLayout: false},
@@ -79,7 +79,7 @@ describe('computeBlankness', function() {
     expect(blankness).toBe(0.3);
   });
 
-  it('sampling rate can disable', function() {
+  it('sampling rate can disable', function () {
     let helper = new FillRateHelper(getFrameMetrics);
     rowFramesGlobal = {
       header: {y: 0, height: 0, inLayout: true},
@@ -96,7 +96,7 @@ describe('computeBlankness', function() {
     expect(blankness).toBe(0);
   });
 
-  it('can handle multiple listeners and unsubscribe', function() {
+  it('can handle multiple listeners and unsubscribe', function () {
     const listeners = [jest.fn(), jest.fn(), jest.fn()];
     const subscriptions = listeners.map(listener =>
       FillRateHelper.addListener(listener),

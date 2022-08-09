@@ -1,15 +1,13 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict
  * @jsdoc
  */
-
-'use strict';
 
 import NativeVibration from './NativeVibration';
 const Platform = require('../Utilities/Platform');
@@ -17,7 +15,7 @@ const Platform = require('../Utilities/Platform');
 /**
  * Vibration API
  *
- * See https://reactnative.dev/docs/vibration.html
+ * See https://reactnative.dev/docs/vibration
  */
 
 let _vibrating: boolean = false;
@@ -31,6 +29,7 @@ function vibrateByPattern(pattern: Array<number>, repeat: boolean = false) {
   _vibrating = true;
   if (pattern[0] === 0) {
     NativeVibration.vibrate(_default_vibration_length);
+    // $FlowFixMe[reassign-const]
     pattern = pattern.slice(1);
   }
   if (pattern.length === 0) {
@@ -52,6 +51,7 @@ function vibrateScheduler(
   NativeVibration.vibrate(_default_vibration_length);
   if (nextIndex >= pattern.length) {
     if (repeat) {
+      // $FlowFixMe[reassign-const]
       nextIndex = 0;
     } else {
       _vibrating = false;
@@ -68,9 +68,9 @@ const Vibration = {
   /**
    * Trigger a vibration with specified `pattern`.
    *
-   * See https://reactnative.dev/docs/vibration.html#vibrate
+   * See https://reactnative.dev/docs/vibration#vibrate
    */
-  vibrate: function(
+  vibrate: function (
     pattern: number | Array<number> = _default_vibration_length,
     repeat: boolean = false,
   ) {
@@ -98,9 +98,9 @@ const Vibration = {
   /**
    * Stop vibration
    *
-   * See https://reactnative.dev/docs/vibration.html#cancel
+   * See https://reactnative.dev/docs/vibration#cancel
    */
-  cancel: function() {
+  cancel: function () {
     if (Platform.OS === 'ios') {
       _vibrating = false;
     } else {

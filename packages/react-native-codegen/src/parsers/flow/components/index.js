@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,6 +9,8 @@
  */
 
 'use strict';
+import type {CommandOptions} from './options';
+import type {TypeDeclarationMap} from '../utils';
 
 import type {ComponentSchemaBuilderConfig} from './schema.js';
 const {getCommands} = require('./commands');
@@ -16,6 +18,7 @@ const {getEvents} = require('./events');
 const {getProps, getPropProperties} = require('./props');
 const {getCommandOptions, getOptions} = require('./options');
 const {getExtendsProps, removeKnownExtends} = require('./extends');
+const {getTypes} = require('../utils');
 
 function findComponentConfig(ast) {
   const foundConfigs = [];
@@ -118,7 +121,11 @@ function findComponentConfig(ast) {
   };
 }
 
-function getCommandProperties(commandTypeName, types, commandOptions) {
+function getCommandProperties(
+  commandTypeName,
+  types: TypeDeclarationMap,
+  commandOptions: ?CommandOptions,
+) {
   if (commandTypeName == null) {
     return [];
   }
@@ -127,9 +134,7 @@ function getCommandProperties(commandTypeName, types, commandOptions) {
 
   if (typeAlias.type !== 'InterfaceDeclaration') {
     throw new Error(
-      `The type argument for codegenNativeCommands must be an interface, received ${
-        typeAlias.type
-      }`,
+      `The type argument for codegenNativeCommands must be an interface, received ${typeAlias.type}`,
     );
   }
 
@@ -168,8 +173,8 @@ function getCommandProperties(commandTypeName, types, commandOptions) {
   return properties;
 }
 
-// $FlowFixMe there's no flowtype for AST
-function processComponent(ast, types): ComponentSchemaBuilderConfig {
+// $FlowFixMe[signature-verification-failure] there's no flowtype for AST
+function buildComponentSchema(ast): ComponentSchemaBuilderConfig {
   const {
     componentName,
     propsTypeName,
@@ -177,6 +182,8 @@ function processComponent(ast, types): ComponentSchemaBuilderConfig {
     commandOptionsExpression,
     optionsExpression,
   } = findComponentConfig(ast);
+
+  const types = getTypes(ast);
 
   const propProperties = getPropProperties(propsTypeName, types);
   const commandOptions = getCommandOptions(commandOptionsExpression);
@@ -207,5 +214,5 @@ function processComponent(ast, types): ComponentSchemaBuilderConfig {
 }
 
 module.exports = {
-  processComponent,
+  buildComponentSchema,
 };

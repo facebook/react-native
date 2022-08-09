@@ -1,11 +1,11 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // TODO(macOS GH#774)
 
 #import <React/RCTBridge.h>
 #import <React/RCTResizeMode.h>
@@ -13,6 +13,8 @@
 #import <React/RCTImageDataDecoder.h>
 #import <React/RCTImageURLLoader.h>
 #import <React/RCTImageCache.h>
+
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  * If available, RCTImageRedirectProtocol is invoked before loading an asset.
@@ -32,7 +34,7 @@
  * Use PriorityPrefetch to prefetch images at a lower priority.
  * The priority logic is up to each @RCTImageLoaderProtocol implementation
  */
-typedef NS_ENUM(NSUInteger, RCTImageLoaderPriority) {
+typedef NS_ENUM(NSInteger, RCTImageLoaderPriority) {
   RCTImageLoaderPriorityImmediate,
   RCTImageLoaderPriorityPrefetch
 };
@@ -131,3 +133,5 @@ typedef NS_ENUM(NSUInteger, RCTImageLoaderPriority) {
  */
 - (void)setImageCache:(id<RCTImageCache>)cache;
 @end
+
+NS_ASSUME_NONNULL_END

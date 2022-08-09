@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -17,8 +17,8 @@ jest.setMock('../../BatchedBridge/NativeModules', {
 const Blob = require('../Blob');
 const File = require('../File');
 
-describe('babel 7 smoke test', function() {
-  it('should be able to extend a class with native name', function() {
+describe('babel 7 smoke test', function () {
+  it('should be able to extend a class with native name', function () {
     let called = false;
     class Array {
       constructor() {
@@ -40,14 +40,14 @@ describe('babel 7 smoke test', function() {
   });
 });
 
-describe('Blob', function() {
-  it('regression caused by circular dep && babel 7', function() {
+describe('Blob', function () {
+  it('regression caused by circular dep && babel 7', function () {
     const blob = new Blob([], {type: 'image/jpeg'});
     expect(blob).toBeInstanceOf(Blob);
   });
 });
 
-describe('File', function() {
+describe('File', function () {
   it('should create empty file', () => {
     const file = new File([], 'test.jpg');
     expect(file).toBeInstanceOf(File);

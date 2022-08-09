@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
+#import <React/RCTDefines.h>
 #import <React/RCTGenericDelegateSplitter.h>
+#import <React/RCTMountingTransactionObserving.h>
 #import <React/RCTScrollableProtocol.h>
 #import <React/RCTViewComponentView.h>
 
@@ -21,12 +23,12 @@ NS_ASSUME_NONNULL_BEGIN
  * keyboard-avoiding functionality and so on. All that complexity must be implemented inside those components in order
  * to keep the complexity of this component manageable.
  */
-@interface RCTScrollViewComponentView : RCTViewComponentView
+@interface RCTScrollViewComponentView : RCTViewComponentView <RCTMountingTransactionObserving>
 
 /*
  * Finds and returns the closet RCTScrollViewComponentView component to the given view
  */
-+ (RCTScrollViewComponentView *_Nullable)findScrollViewComponentViewForView:(UIView *)view;
++ (nullable RCTScrollViewComponentView *)findScrollViewComponentViewForView:(UIView *)view;
 
 /*
  * Returns an actual UIScrollView that this component uses under the hood.

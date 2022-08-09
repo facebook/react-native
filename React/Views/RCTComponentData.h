@@ -1,11 +1,11 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // TODO(macOS GH#774)
 
 #import <React/RCTComponent.h>
 #import <React/RCTDefines.h>
@@ -13,17 +13,28 @@
 
 @class RCTBridge;
 @class RCTShadowView;
-@class RCTUIView; // TODO(macOS ISS#2323203)
+@class RCTUIView; // TODO(macOS GH#774)
+@class RCTEventDispatcherProtocol;
+
+NS_ASSUME_NONNULL_BEGIN
 
 @interface RCTComponentData : NSObject
 
 @property (nonatomic, readonly) Class managerClass;
 @property (nonatomic, copy, readonly) NSString *name;
 @property (nonatomic, weak, readonly) RCTViewManager *manager;
+/*
+ * When running React Native with the bridge, view managers are retained by the
+ * bridge. When running in bridgeless mode, allocate and retain view managers
+ * in this class.
+ */
+@property (nonatomic, strong, readonly) RCTViewManager *bridgelessViewManager;
 
-- (instancetype)initWithManagerClass:(Class)managerClass bridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithManagerClass:(Class)managerClass
+                              bridge:(RCTBridge *)bridge
+                     eventDispatcher:(id<RCTEventDispatcherProtocol>)eventDispatcher NS_DESIGNATED_INITIALIZER;
 
-- (RCTPlatformView *)createViewWithTag:(NSNumber *)tag rootTag:(NSNumber *)rootTag; // TODO(macOS ISS#2323203)
+- (RCTPlatformView *)createViewWithTag:(nullable NSNumber *)tag rootTag:(nullable NSNumber *)rootTag; // TODO(macOS GH#774)
 - (RCTShadowView *)createShadowViewWithTag:(NSNumber *)tag;
 - (void)setProps:(NSDictionary<NSString *, id> *)props forView:(id<RCTComponent>)view;
 - (void)setProps:(NSDictionary<NSString *, id> *)props forShadowView:(RCTShadowView *)shadowView;
@@ -34,3 +45,5 @@
 - (NSDictionary<NSString *, id> *)viewConfig;
 
 @end
+
+NS_ASSUME_NONNULL_END

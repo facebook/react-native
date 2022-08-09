@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,7 +9,6 @@
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTBridge.h>
-#import <React/RCTEventDispatcher.h>
 #import <React/RCTUtils.h>
 #import <React/RCTLog.h>
 
@@ -25,7 +24,7 @@ static void postNotificationWithURL(NSURL *URL, id sender)
                                                     userInfo:payload];
 }
 
-@interface RCTLinkingManager() <NativeLinkingSpec>
+@interface RCTLinkingManager() <NativeLinkingManagerSpec>
 @end
 
 @implementation RCTLinkingManager
@@ -186,12 +185,9 @@ RCT_EXPORT_METHOD(sendIntent:(NSString *)action
   RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)
-    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
-                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeLinkingSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
+  return std::make_shared<facebook::react::NativeLinkingManagerSpecJSI>(params);
 }
 
 @end

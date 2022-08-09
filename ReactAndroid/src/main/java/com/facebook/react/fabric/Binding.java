@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,12 +9,15 @@ package com.facebook.react.fabric;
 
 import android.annotation.SuppressLint;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.NativeMap;
-import com.facebook.react.bridge.queue.MessageQueueThread;
+import com.facebook.react.bridge.ReadableNativeMap;
+import com.facebook.react.bridge.RuntimeExecutor;
+import com.facebook.react.bridge.RuntimeScheduler;
 import com.facebook.react.fabric.events.EventBeatManager;
+import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.uimanager.PixelUtil;
 
 @DoNotStrip
@@ -34,11 +37,11 @@ public class Binding {
   }
 
   private native void installFabricUIManager(
-      long jsContextNativePointer,
+      RuntimeExecutor runtimeExecutor,
+      RuntimeScheduler runtimeScheduler,
       Object uiManager,
       EventBeatManager eventBeatManager,
-      MessageQueueThread jsMessageQueueThread,
-      ComponentFactoryDelegate componentsRegistry,
+      ComponentFactory componentsRegistry,
       Object reactNativeConfig);
 
   public native void startSurface(
@@ -52,6 +55,8 @@ public class Binding {
       float maxWidth,
       float minHeight,
       float maxHeight,
+      float offsetX,
+      float offsetY,
       boolean isRTL,
       boolean doLeftAndRightSwapInRTL);
 
@@ -67,24 +72,32 @@ public class Binding {
       float maxWidth,
       float minHeight,
       float maxHeight,
+      float offsetX,
+      float offsetY,
       boolean isRTL,
       boolean doLeftAndRightSwapInRTL);
 
+  public native void driveCxxAnimations();
+
+  public native ReadableNativeMap getInspectorDataForInstance(
+      EventEmitterWrapper eventEmitterWrapper);
+
   public void register(
-      @NonNull JavaScriptContextHolder jsContext,
+      @NonNull RuntimeExecutor runtimeExecutor,
+      @Nullable RuntimeScheduler runtimeScheduler,
       @NonNull FabricUIManager fabricUIManager,
       @NonNull EventBeatManager eventBeatManager,
-      @NonNull MessageQueueThread jsMessageQueueThread,
-      @NonNull ComponentFactoryDelegate componentFactoryDelegate,
+      @NonNull ComponentFactory componentFactory,
       @NonNull ReactNativeConfig reactNativeConfig) {
     fabricUIManager.setBinding(this);
     installFabricUIManager(
-        jsContext.get(),
+        runtimeExecutor,
+        runtimeScheduler,
         fabricUIManager,
         eventBeatManager,
-        jsMessageQueueThread,
-        componentFactoryDelegate,
+        componentFactory,
         reactNativeConfig);
+
     setPixelDensity(PixelUtil.getDisplayMetricDensity());
   }
 
@@ -93,4 +106,8 @@ public class Binding {
   public void unregister() {
     uninstallFabricUIManager();
   }
+
+  public native void registerSurface(SurfaceHandlerBinding surfaceHandler);
+
+  public native void unregisterSurface(SurfaceHandlerBinding surfaceHandler);
 }

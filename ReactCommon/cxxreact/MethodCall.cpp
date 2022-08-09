@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -73,8 +73,8 @@ std::vector<MethodCall> parseMethodCalls(folly::dynamic &&jsonData) {
     }
 
     methodCalls.emplace_back(
-        moduleIds[i].asInt(),
-        methodIds[i].asInt(),
+        static_cast<int>(moduleIds[i].asInt()),
+        static_cast<int>(methodIds[i].asInt()),
         std::move(params[i]),
         callId);
 

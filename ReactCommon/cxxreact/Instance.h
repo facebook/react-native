@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,6 +12,7 @@
 #include <memory>
 #include <mutex>
 
+#include <ReactCommon/RuntimeExecutor.h>
 #include <cxxreact/NativeToJsBridge.h>
 
 #ifndef RN_EXPORT
@@ -55,6 +56,7 @@ class RN_EXPORT Instance {
       std::unique_ptr<const JSBigString> string,
       std::string sourceURL,
       bool loadSynchronously);
+  static bool isHBCBundle(const char *sourcePath);
   static bool isIndexedRAMBundle(const char *sourcePath);
   static bool isIndexedRAMBundle(std::unique_ptr<const JSBigString> *string);
   void loadRAMBundleFromString(
@@ -128,6 +130,11 @@ class RN_EXPORT Instance {
    */
   std::shared_ptr<CallInvoker> getDecoratedNativeCallInvoker(
       std::shared_ptr<CallInvoker> nativeInvoker);
+
+  /**
+   * RuntimeExecutor is used by Fabric to access the jsi::Runtime.
+   */
+  RuntimeExecutor getRuntimeExecutor();
 
  private:
   void callNativeModules(folly::dynamic &&calls, bool isEndOfBatch);

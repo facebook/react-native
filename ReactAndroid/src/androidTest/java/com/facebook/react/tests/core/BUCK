@@ -1,4 +1,3 @@
-# BUILD FILE SYNTAX: SKYLARK
 load(
     "//tools/build_defs/oss:rn_defs.bzl",
     "IS_OSS_BUILD",
@@ -11,12 +10,14 @@ load(
 rn_android_library(
     name = "core",
     srcs = glob(["*.java"]),
+    autoglob = False,
     is_androidx = True,
-    deps = ([
+    deps = [
         react_native_dep("third-party/android/androidx:test-espresso-core"),
-        react_native_dep("third-party/java/fest:fest"),
+        react_native_dep("third-party/java/assertj:assertj-core"),
         react_native_dep("third-party/java/junit:junit"),
-        react_native_dep("third-party/java/testing-support-lib:testing-support-lib"),
+        react_native_dep("third-party/android/androidx:test-rules"),
+        react_native_dep("third-party/android/androidx:test-runner"),
         react_native_integration_tests_target("java/com/facebook/react/testing:testing"),
         react_native_integration_tests_target("java/com/facebook/react/testing/rule:rule"),
         react_native_target("java/com/facebook/react:react"),
@@ -26,7 +27,7 @@ rn_android_library(
         react_native_target("java/com/facebook/react/module/model:model"),
         react_native_target("java/com/facebook/react/shell:shell"),
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
-    ]) + ([
+    ] + [
         react_native_dep("java/com/facebook/fbreact/testing:testing"),
-    ]) if not IS_OSS_BUILD else [],
+    ] if not IS_OSS_BUILD else [],
 )

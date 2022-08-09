@@ -1,11 +1,12 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 #include "Utils.h"
+#include <stdexcept>
 
 using namespace facebook;
 
@@ -52,6 +53,13 @@ bool YGFloatsEqual(const float a, const float b) {
   return yoga::isUndefined(a) && yoga::isUndefined(b);
 }
 
+bool YGDoubleEqual(const double a, const double b) {
+  if (!yoga::isUndefined(a) && !yoga::isUndefined(b)) {
+    return fabs(a - b) < 0.0001;
+  }
+  return yoga::isUndefined(a) && yoga::isUndefined(b);
+}
+
 float YGFloatSanitize(const float val) {
   return yoga::isUndefined(val) ? 0 : val;
 }
@@ -64,4 +72,8 @@ YGFloatOptional YGFloatOptionalMax(YGFloatOptional op1, YGFloatOptional op2) {
     return op2;
   }
   return op1.isUndefined() ? op2 : op1;
+}
+
+void throwLogicalErrorWithMessage(const char* message) {
+  throw std::logic_error(message);
 }

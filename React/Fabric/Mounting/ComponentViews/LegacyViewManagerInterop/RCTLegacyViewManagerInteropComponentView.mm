@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,16 +7,20 @@
 
 #import "RCTLegacyViewManagerInteropComponentView.h"
 
+#import <React/RCTAssert.h>
 #import <React/UIView+React.h>
-#import <react/components/legacyviewmanagerinterop/LegacyViewManagerInteropComponentDescriptor.h>
-#import <react/components/legacyviewmanagerinterop/LegacyViewManagerInteropViewProps.h>
+#import <react/renderer/components/legacyviewmanagerinterop/LegacyViewManagerInteropComponentDescriptor.h>
+#import <react/renderer/components/legacyviewmanagerinterop/LegacyViewManagerInteropViewProps.h>
 #import <react/utils/ManagedObjectWrapper.h>
 #import "RCTLegacyViewManagerInteropCoordinatorAdapter.h"
 
 using namespace facebook::react;
 
+static NSString *const kRCTLegacyInteropChildComponentKey = @"childComponentView";
+static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
+
 @implementation RCTLegacyViewManagerInteropComponentView {
-  NSMutableDictionary<NSNumber *, UIView *> *_viewsToBeMounted;
+  NSMutableArray<NSDictionary *> *_viewsToBeMounted;
   NSMutableArray<UIView *> *_viewsToBeUnmounted;
   RCTLegacyViewManagerInteropCoordinatorAdapter *_adapter;
   LegacyViewManagerInteropShadowNode::ConcreteState::Shared _state;
@@ -25,19 +29,39 @@ using namespace facebook::react;
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
+    RCTWarnNotAllowedForNewArchitecture(
+        self, @"ViewManager with interop layer is not allowed in the new architecture.");
     static const auto defaultProps = std::make_shared<const LegacyViewManagerInteropViewProps>();
     _props = defaultProps;
-    _viewsToBeMounted = [NSMutableDictionary new];
+    _viewsToBeMounted = [NSMutableArray new];
     _viewsToBeUnmounted = [NSMutableArray new];
   }
 
   return self;
 }
 
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+{
+  UIView *result = [super hitTest:point withEvent:event];
+
+  if (result == _adapter.paperView) {
+    return self;
+  }
+
+  return result;
+}
+
 + (NSMutableSet<NSString *> *)supportedViewManagers
 {
-  static NSMutableSet<NSString *> *supported =
-      [NSMutableSet setWithObjects:@"Picker", @"DatePicker", @"ProgressView", @"SegmentedControl", @"MaskedView", nil];
+  static NSMutableSet<NSString *> *supported = [NSMutableSet setWithObjects:@"DatePicker",
+                                                                            @"ProgressView",
+                                                                            @"SegmentedControl",
+                                                                            @"MaskedView",
+                                                                            @"ARTSurfaceView",
+                                                                            @"ARTText",
+                                                                            @"ARTShape",
+                                                                            @"ARTGroup",
+                                                                            nil];
   return supported;
 }
 
@@ -76,17 +100,25 @@ using namespace facebook::react;
   [_viewsToBeMounted removeAllObjects];
   [_viewsToBeUnmounted removeAllObjects];
   _state.reset();
+  self.contentView = nil;
   [super prepareForRecycle];
 }
 
 - (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
-  [_viewsToBeMounted setObject:childComponentView forKey:[NSNumber numberWithInteger:index]];
+  [_viewsToBeMounted addObject:@{
+    kRCTLegacyInteropChildIndexKey : [NSNumber numberWithInteger:index],
+    kRCTLegacyInteropChildComponentKey : childComponentView
+  }];
 }
 
 - (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
-  [_viewsToBeUnmounted addObject:childComponentView];
+  if (_adapter) {
+    [_adapter.paperView removeReactSubview:childComponentView];
+  } else {
+    [_viewsToBeUnmounted addObject:childComponentView];
+  }
 }
 
 + (ComponentDescriptorProvider)componentDescriptorProvider
@@ -118,8 +150,10 @@ using namespace facebook::react;
     self.contentView = _adapter.paperView;
   }
 
-  for (NSNumber *key in _viewsToBeMounted) {
-    [_adapter.paperView insertReactSubview:_viewsToBeMounted[key] atIndex:key.integerValue];
+  for (NSDictionary *mountInstruction in _viewsToBeMounted) {
+    NSNumber *index = mountInstruction[kRCTLegacyInteropChildIndexKey];
+    UIView *childView = mountInstruction[kRCTLegacyInteropChildComponentKey];
+    [_adapter.paperView insertReactSubview:childView atIndex:index.integerValue];
   }
 
   [_viewsToBeMounted removeAllObjects];

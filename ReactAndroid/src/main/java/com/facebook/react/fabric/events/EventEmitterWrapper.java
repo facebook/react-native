@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,6 +16,7 @@ import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.fabric.FabricSoLoader;
+import com.facebook.react.uimanager.events.EventCategoryDef;
 
 /**
  * This class holds reference to the C++ EventEmitter object. Instances of this class are created on
@@ -36,7 +37,11 @@ public class EventEmitterWrapper {
     mHybridData = initHybrid();
   }
 
-  private native void invokeEvent(@NonNull String eventName, @NonNull NativeMap params);
+  private native void invokeEvent(
+      @NonNull String eventName, @NonNull NativeMap params, @EventCategoryDef int category);
+
+  private native void invokeUniqueEvent(
+      @NonNull String eventName, @NonNull NativeMap params, int customCoalesceKey);
 
   /**
    * Invokes the execution of the C++ EventEmitter.
@@ -44,8 +49,43 @@ public class EventEmitterWrapper {
    * @param eventName {@link String} name of the event to execute.
    * @param params {@link WritableMap} payload of the event
    */
-  public void invoke(@NonNull String eventName, @Nullable WritableMap params) {
+  public synchronized void invoke(
+      @NonNull String eventName,
+      @Nullable WritableMap params,
+      @EventCategoryDef int eventCategory) {
+    if (!isValid()) {
+      return;
+    }
     NativeMap payload = params == null ? new WritableNativeMap() : (NativeMap) params;
-    invokeEvent(eventName, payload);
+    invokeEvent(eventName, payload, eventCategory);
+  }
+
+  /**
+   * Invokes the execution of the C++ EventEmitter. C++ will coalesce events sent to the same
+   * target.
+   *
+   * @param eventName {@link String} name of the event to execute.
+   * @param params {@link WritableMap} payload of the event
+   */
+  public synchronized void invokeUnique(
+      @NonNull String eventName, @Nullable WritableMap params, int customCoalesceKey) {
+    if (!isValid()) {
+      return;
+    }
+    NativeMap payload = params == null ? new WritableNativeMap() : (NativeMap) params;
+    invokeUniqueEvent(eventName, payload, customCoalesceKey);
+  }
+
+  public synchronized void destroy() {
+    if (mHybridData != null) {
+      mHybridData.resetNative();
+    }
+  }
+
+  private boolean isValid() {
+    if (mHybridData != null) {
+      return mHybridData.isValid();
+    }
+    return false;
   }
 }

@@ -7,10 +7,10 @@
  * @format
  * @flow strict-local
  */
-// [TODO(macOS ISS#2323203)
+// [TODO(macOS GH#774)
 'use strict';
 
-import type {ColorValue} from './StyleSheetTypes';
+import type {ColorValue} from './StyleSheet';
 import {
   DynamicColorMacOSPrivate,
   ColorWithSystemEffectMacOSPrivate,
@@ -19,12 +19,19 @@ import {
 export type DynamicColorMacOSTuple = {
   light: ColorValue,
   dark: ColorValue,
+  highContrastLight?: ColorValue,
+  highContrastDark?: ColorValue,
 };
 
 export const DynamicColorMacOS = (
   tuple: DynamicColorMacOSTuple,
 ): ColorValue => {
-  return DynamicColorMacOSPrivate({light: tuple.light, dark: tuple.dark});
+  return DynamicColorMacOSPrivate({
+    light: tuple.light,
+    dark: tuple.dark,
+    highContrastLight: tuple.highContrastLight,
+    highContrastDark: tuple.highContrastDark,
+  });
 };
 
 export type SystemEffectMacOS =
@@ -40,4 +47,4 @@ export const ColorWithSystemEffectMacOS = (
 ): ColorValue => {
   return ColorWithSystemEffectMacOSPrivate(color, effect);
 };
-// ]TODO(macOS ISS#2323203)
+// ]TODO(macOS GH#774)

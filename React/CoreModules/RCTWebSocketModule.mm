@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -53,6 +53,8 @@ RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
+  [super invalidate];
+
   _contentHandlers = nil;
   for (RCTSRWebSocket *socket in _sockets.allValues) {
     socket.delegate = nil;
@@ -66,37 +68,40 @@ RCT_EXPORT_METHOD(connect
                   : (JS::NativeWebSocketModule::SpecConnectOptions &)options socketID
                   : (double)socketID)
 {
-  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
+  RCTAssertParam(URL); // TODO: GH#774, prevent crashes when URL is erroneously nil
+  if (URL != nil) { // TODO: GH#774, prevent crashes when URL is erroneously nil
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
 
-  // We load cookies from sharedHTTPCookieStorage (shared with XHR and
-  // fetch). To get secure cookies for wss URLs, replace wss with https
-  // in the URL.
-  NSURLComponents *components = [NSURLComponents componentsWithURL:URL resolvingAgainstBaseURL:true];
-  if ([components.scheme.lowercaseString isEqualToString:@"wss"]) {
-    components.scheme = @"https";
-  }
+    // We load cookies from sharedHTTPCookieStorage (shared with XHR and
+    // fetch). To get secure cookies for wss URLs, replace wss with https
+    // in the URL.
+    NSURLComponents *components = [NSURLComponents componentsWithURL:URL resolvingAgainstBaseURL:true];
+    if ([components.scheme.lowercaseString isEqualToString:@"wss"]) {
+      components.scheme = @"https";
+    }
 
-  // Load and set the cookie header.
-  NSArray<NSHTTPCookie *> *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:components.URL];
-  request.allHTTPHeaderFields = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
+    // Load and set the cookie header.
+    NSArray<NSHTTPCookie *> *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:components.URL];
+    request.allHTTPHeaderFields = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
 
-  // Load supplied headers
-  if ([options.headers() isKindOfClass:NSDictionary.class]) {
-    NSDictionary *headers = (NSDictionary *)options.headers();
-    [headers enumerateKeysAndObjectsUsingBlock:^(NSString *key, id value, BOOL *stop) {
-      [request addValue:[RCTConvert NSString:value] forHTTPHeaderField:key];
-    }];
-  }
+    // Load supplied headers
+    if ([options.headers() isKindOfClass:NSDictionary.class]) {
+      NSDictionary *headers = (NSDictionary *)options.headers();
+      [headers enumerateKeysAndObjectsUsingBlock:^(NSString *key, id value, BOOL *stop) {
+        [request addValue:[RCTConvert NSString:value] forHTTPHeaderField:key];
+      }];
+    }
 
-  RCTSRWebSocket *webSocket = [[RCTSRWebSocket alloc] initWithURLRequest:request protocols:protocols];
-  [webSocket setDelegateDispatchQueue:[self methodQueue]];
-  webSocket.delegate = self;
-  webSocket.reactTag = @(socketID);
-  if (!_sockets) {
-    _sockets = [NSMutableDictionary new];
-  }
-  _sockets[@(socketID)] = webSocket;
-  [webSocket open];
+    RCTSRWebSocket *webSocket = [[RCTSRWebSocket alloc] initWithURLRequest:request protocols:protocols];
+    [webSocket setDelegateDispatchQueue:[self methodQueue]];
+    webSocket.delegate = self;
+    webSocket.reactTag = @(socketID);
+    if (!_sockets) {
+      _sockets = [NSMutableDictionary new];
+    }
+    _sockets[@(socketID)] = webSocket;
+    [webSocket open];
+  } // TODO: GH#774, prevent crashes when URL is erroneously nil
 }
 
 RCT_EXPORT_METHOD(send : (NSString *)message forSocketID : (double)socketID)
@@ -166,7 +171,9 @@ RCT_EXPORT_METHOD(close : (double)code reason : (NSString *)reason socketID : (d
   NSNumber *socketID = [webSocket reactTag];
   _contentHandlers[socketID] = nil;
   _sockets[socketID] = nil;
-  [self sendEventWithName:@"websocketFailed" body:@{@"message" : error.localizedDescription, @"id" : socketID}];
+  NSDictionary *body =
+      @{@"message" : error.localizedDescription ?: @"Undefined, error is nil", @"id" : socketID ?: @(-1)};
+  [self sendEventWithName:@"websocketFailed" body:body];
 }
 
 - (void)webSocket:(RCTSRWebSocket *)webSocket
@@ -186,12 +193,10 @@ RCT_EXPORT_METHOD(close : (double)code reason : (NSString *)reason socketID : (d
                      }];
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)
-    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
-                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeWebSocketModuleSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
+  return std::make_shared<facebook::react::NativeWebSocketModuleSpecJSI>(params);
 }
 
 @end

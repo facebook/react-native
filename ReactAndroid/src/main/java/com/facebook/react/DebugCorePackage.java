@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -37,7 +37,7 @@ public class DebugCorePackage extends TurboReactPackage {
         return new JSCHeapCapture(reactContext);
       default:
         throw new IllegalArgumentException(
-            "In CoreModulesPackage, could not find Native module for " + name);
+            "In DebugCorePackage, could not find Native module for " + name);
     }
   }
 

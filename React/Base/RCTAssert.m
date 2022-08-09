@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,6 +11,7 @@
 NSString *const RCTErrorDomain = @"RCTErrorDomain";
 NSString *const RCTJSStackTraceKey = @"RCTJSStackTraceKey";
 NSString *const RCTJSRawStackTraceKey = @"RCTJSRawStackTraceKey";
+NSString *const RCTObjCStackTraceKey = @"RCTObjCStackTraceKey";
 NSString *const RCTFatalExceptionName = @"RCTFatalException";
 NSString *const RCTUntruncatedMessageKey = @"RCTUntruncatedMessageKey";
 
@@ -228,4 +229,56 @@ void RCTSetFatalExceptionHandler(RCTFatalExceptionHandler fatalExceptionHandler)
 RCTFatalExceptionHandler RCTGetFatalExceptionHandler(void)
 {
   return RCTCurrentFatalExceptionHandler;
+}
+
+// -------------------------
+// New architecture section
+// -------------------------
+
+#if RCT_NEW_ARCHITECTURE
+static BOOL newArchitectureViolationReporting = YES;
+#else
+static BOOL newArchitectureViolationReporting = NO;
+#endif
+
+void RCTEnableNewArchitectureViolationReporting(BOOL enabled)
+{
+#if RCT_NEW_ARCHITECTURE
+  // Cannot disable the reporting in this mode.
+#else
+  newArchitectureViolationReporting = enabled;
+#endif
+}
+
+static NSString *getNewArchitectureViolationMessage(id context, NSString *extra)
+{
+  NSString *tag = @"uncategorized";
+  if ([context isKindOfClass:NSString.class]) {
+    tag = context;
+  } else if (context) {
+    Class klass = [context class];
+    if (klass) {
+      tag = NSStringFromClass(klass);
+    }
+  }
+  NSString *errorMessage = extra ?: @"Unexpectedly reached this code path.";
+  return [NSString stringWithFormat:@"[ReactNative Architecture][%@] %@", tag, errorMessage];
+}
+
+void RCTEnforceNotAllowedForNewArchitecture(id context, NSString *extra)
+{
+  if (!newArchitectureViolationReporting) {
+    return;
+  }
+
+  RCTAssert(0, @"%@", getNewArchitectureViolationMessage(context, extra));
+}
+
+void RCTWarnNotAllowedForNewArchitecture(id context, NSString *extra)
+{
+  if (!newArchitectureViolationReporting) {
+    return;
+  }
+
+  RCTLogWarn(@"%@", getNewArchitectureViolationMessage(context, extra));
 }

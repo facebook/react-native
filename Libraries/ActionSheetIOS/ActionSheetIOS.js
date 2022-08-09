@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,19 +8,17 @@
  * @format
  */
 
-'use strict';
-
 import RCTActionSheetManager from './NativeActionSheetManager';
 
 const invariant = require('invariant');
 const processColor = require('../StyleSheet/processColor');
-import type {ColorValue} from '../StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../StyleSheet/StyleSheet';
 import type {ProcessedColorValue} from '../StyleSheet/processColor';
 
 /**
  * Display action sheets and share sheets on iOS.
  *
- * See https://reactnative.dev/docs/actionsheetios.html
+ * See https://reactnative.dev/docs/actionsheetios
  */
 const ActionSheetIOS = {
   /**
@@ -33,11 +31,12 @@ const ActionSheetIOS = {
    * - `destructiveButtonIndex` (int or array of ints) - index or indices of destructive buttons in `options`
    * - `title` (string) - a title to show above the action sheet
    * - `message` (string) - a message to show below the title
+   * - `disabledButtonIndices` (array of numbers) - a list of button indices which should be disabled
    *
    * The 'callback' function takes one parameter, the zero-based index
    * of the selected item.
    *
-   * See https://reactnative.dev/docs/actionsheetios.html#showactionsheetwithoptions
+   * See https://reactnative.dev/docs/actionsheetios#showactionsheetwithoptions
    */
   showActionSheetWithOptions(
     options: {|
@@ -48,7 +47,9 @@ const ActionSheetIOS = {
       +cancelButtonIndex?: ?number,
       +anchor?: ?number,
       +tintColor?: ColorValue | ProcessedColorValue,
+      +cancelButtonTintColor?: ColorValue | ProcessedColorValue,
       +userInterfaceStyle?: string,
+      +disabledButtonIndices?: Array<number>,
     |},
     callback: (buttonIndex: number) => void,
   ) {
@@ -57,9 +58,14 @@ const ActionSheetIOS = {
       'Options must be a valid object',
     );
     invariant(typeof callback === 'function', 'Must provide a valid callback');
-    invariant(RCTActionSheetManager, "ActionSheetManager does't exist");
+    invariant(RCTActionSheetManager, "ActionSheetManager doesn't exist");
 
-    const {tintColor, destructiveButtonIndex, ...remainingOptions} = options;
+    const {
+      tintColor,
+      cancelButtonTintColor,
+      destructiveButtonIndex,
+      ...remainingOptions
+    } = options;
     let destructiveButtonIndices = null;
 
     if (Array.isArray(destructiveButtonIndex)) {
@@ -69,14 +75,21 @@ const ActionSheetIOS = {
     }
 
     const processedTintColor = processColor(tintColor);
+    const processedCancelButtonTintColor = processColor(cancelButtonTintColor);
     invariant(
       processedTintColor == null || typeof processedTintColor === 'number',
       'Unexpected color given for ActionSheetIOS.showActionSheetWithOptions tintColor',
+    );
+    invariant(
+      processedCancelButtonTintColor == null ||
+        typeof processedCancelButtonTintColor === 'number',
+      'Unexpected color given for ActionSheetIOS.showActionSheetWithOptions cancelButtonTintColor',
     );
     RCTActionSheetManager.showActionSheetWithOptions(
       {
         ...remainingOptions,
         tintColor: processedTintColor,
+        cancelButtonTintColor: processedCancelButtonTintColor,
         destructiveButtonIndices,
       },
       callback,
@@ -104,7 +117,7 @@ const ActionSheetIOS = {
    * - a boolean value signifying success or failure
    * - a string that, in the case of success, indicates the method of sharing
    *
-   * See https://reactnative.dev/docs/actionsheetios.html#showshareactionsheetwithoptions
+   * See https://reactnative.dev/docs/actionsheetios#showshareactionsheetwithoptions
    */
   showShareActionSheetWithOptions(
     options: Object,
@@ -123,7 +136,7 @@ const ActionSheetIOS = {
       typeof successCallback === 'function',
       'Must provide a valid successCallback',
     );
-    invariant(RCTActionSheetManager, "ActionSheetManager does't exist");
+    invariant(RCTActionSheetManager, "ActionSheetManager doesn't exist");
     RCTActionSheetManager.showShareActionSheetWithOptions(
       {...options, tintColor: processColor(options.tintColor)},
       failureCallback,

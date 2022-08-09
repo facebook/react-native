@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,29 +7,29 @@
 
 #import <React/RCTTextView.h>
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 #import <MobileCoreServices/UTCoreTypes.h>
 #else
-#import <Quartz/Quartz.h> // TODO(macOS ISS#2323203) for CATiledLayer
-#endif // TODO(macOS ISS#2323203)
+#import <Quartz/Quartz.h> // TODO(macOS GH#774) for CATiledLayer
+#endif // TODO(macOS GH#774)
 
-#import <React/RCTAssert.h> // TODO(macOS ISS#2323203)
+#import <React/RCTAssert.h> // TODO(macOS GH#774)
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
 #import <React/RCTFocusChangeEvent.h> // TODO(OSS Candidate ISS#2710739)
 
 #import <React/RCTTextShadowView.h>
 
-#import <QuartzCore/QuartzCore.h> // TODO(macOS ISS#2323203)
+#import <QuartzCore/QuartzCore.h> // TODO(macOS GH#774)
 
 @implementation RCTTextView
 {
   CAShapeLayer *_highlightLayer;
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   UILongPressGestureRecognizer *_longPressGestureRecognizer;
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
   NSString * _accessibilityLabel;
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
   RCTEventDispatcher *_eventDispatcher; // TODO(OSS Candidate ISS#2710739)
   NSArray<RCTUIView *> *_Nullable _descendantViews; // TODO(macOS ISS#3536887)
@@ -50,19 +50,21 @@
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
     self.isAccessibilityElement = YES;
     self.accessibilityTraits |= UIAccessibilityTraitStaticText;
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
     self.accessibilityRole = NSAccessibilityStaticTextRole;
-#endif // ]TODO(macOS ISS#2323203)
+    // Fix blurry text on non-retina displays.
+    self.canDrawSubviewsIntoLayer = YES;
+#endif // ]TODO(macOS GH#774)
     self.opaque = NO;
-    RCTUIViewSetContentModeRedraw(self); // TODO(macOS ISS#2323203) and TODO(macOS ISS#3536887)
+    RCTUIViewSetContentModeRedraw(self); // TODO(macOS GH#774) and TODO(macOS ISS#3536887)
   }
   return self;
 }
 
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
 - (void)dealloc
 {
   [self removeAllTextStorageLayoutManagers];
@@ -88,11 +90,6 @@
 	return _selectable;
 }
 
-- (BOOL)enableFocusRing
-{
-  return _selectable;
-}
-
 - (void)drawFocusRingMask {
   if ([self enableFocusRing]) {
     NSRectFill([self bounds]);
@@ -102,15 +99,17 @@
 - (NSRect)focusRingMaskBounds {
   return [self bounds];
 }
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
+#if DEBUG // TODO(macOS GH#774) description is a debug-only feature
 - (NSString *)description
 {
-  NSString *superDescription = super.description;
-  NSRange semicolonRange = [superDescription rangeOfString:@";"];
-  NSString *replacement = [NSString stringWithFormat:@"; reactTag: %@; text: %@", self.reactTag, _textStorage.string];
-  return [superDescription stringByReplacingCharactersInRange:semicolonRange withString:replacement];
+  // [TODO(macOS GH#774): we shouldn't make assumptions on what super's description is. Just append additional content.
+  NSString *stringToAppend = [NSString stringWithFormat:@" reactTag: %@; text: %@", self.reactTag, _textStorage.string];
+  return [[super description] stringByAppendingString:stringToAppend];
+  // TODO(macOS GH#774)]
 }
+#endif // TODO(macOS GH#774)
 
 - (void)setSelectable:(BOOL)selectable
 {
@@ -120,17 +119,17 @@
 
   _selectable = selectable;
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   if (_selectable) {
     [self enableContextMenu];
   }
   else {
     [self disableContextMenu];
   }
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 }
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 - (void)reactSetFrame:(CGRect)frame
 {
   // Text looks super weird if its frame is animated.
@@ -139,7 +138,7 @@
     [super reactSetFrame:frame];
   }];
 }
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 
 - (void)didUpdateReactSubviews
 {
@@ -150,9 +149,9 @@
           contentFrame:(CGRect)contentFrame
        descendantViews:(NSArray<RCTUIView *> *)descendantViews // TODO(macOS ISS#3536887)
 {
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
   [self removeAllTextStorageLayoutManagers];
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
   _textStorage = textStorage;
   _contentFrame = contentFrame;
@@ -182,6 +181,15 @@
   NSLayoutManager *layoutManager = _textStorage.layoutManagers.firstObject;
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
 
+#if TARGET_OS_MACCATALYST
+  CGContextRef context = UIGraphicsGetCurrentContext();
+  CGContextSaveGState(context);
+  // NSLayoutManager tries to draw text with sub-pixel anti-aliasing by default on
+  // macOS, but rendering SPAA onto a transparent background produces poor results.
+  // CATextLayer disables font smoothing by default now on macOS; we follow suit.
+  CGContextSetShouldSmoothFonts(context, NO);
+#endif
+  
   NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
   NSRange characterRange = [layoutManager characterRangeForGlyphRange:glyphRange
                                                      actualGlyphRange:NULL];
@@ -237,7 +245,7 @@
         NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:CGRectInset(enclosingRect, -2, -2) xRadius:2 yRadius:2];
 #endif // TODO(macOS ISS#3536887)
           if (highlightPath) {
-            UIBezierPathAppendPath(highlightPath, path); // TODO(macOS ISS#2323203)
+            UIBezierPathAppendPath(highlightPath, path); // TODO(macOS GH#774)
           } else {
             highlightPath = path;
           }
@@ -252,11 +260,15 @@
       [self.layer addSublayer:_highlightLayer];
     }
     _highlightLayer.position = _contentFrame.origin;
-    _highlightLayer.path = UIBezierPathCreateCGPathRef(highlightPath); // TODO(macOS ISS#2323203)
+    _highlightLayer.path = UIBezierPathCreateCGPathRef(highlightPath); // TODO(macOS GH#774)
   } else {
     [_highlightLayer removeFromSuperlayer];
     _highlightLayer = nil;
   }
+  
+#if TARGET_OS_MACCATALYST
+  CGContextRestoreGState(context);
+#endif
 }
 
 
@@ -297,7 +309,7 @@
 
 #pragma mark - Accessibility
 
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
 
 // This code is here to cover for a mismatch in the what accessibilityLabels and accessibilityValues mean in iOS versus macOS.
 // In macOS a text element will always read its accessibilityValue, but will only read it's accessibilityLabel if it's value is set.
@@ -318,7 +330,7 @@
   }
   return _textStorage.string;
 }
-#else // ]TODO(macOS ISS#2323203)
+#else // ]TODO(macOS GH#774)
 - (NSString *)accessibilityLabel
 {
   NSString *superAccessibilityLabel = [super accessibilityLabel];
@@ -327,11 +339,11 @@
   }
   return _textStorage.string;
 }
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 
 #pragma mark - Context Menu
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 - (void)enableContextMenu
 {
   _longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
@@ -347,7 +359,7 @@
 - (void)handleLongPress:(UILongPressGestureRecognizer *)gesture
 {
   // TODO: Adopt showMenuFromRect (necessary for UIKitForMac)
-#if !TARGET_OS_TV && !TARGET_OS_UIKITFORMAC
+#if !TARGET_OS_UIKITFORMAC
   UIMenuController *menuController = [UIMenuController sharedMenuController];
 
   if (menuController.isMenuVisible) {
@@ -362,7 +374,7 @@
   [menuController setMenuVisible:YES animated:YES];
 #endif
 }
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
 
 - (void)rightMouseDown:(NSEvent *)event
 {
@@ -421,14 +433,14 @@
   return YES;
 }
 
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 - (BOOL)canBecomeFirstResponder
 {
   return _selectable;
 }
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
 {
   if (_selectable && action == @selector(copy:)) {
@@ -437,18 +449,17 @@
 
   return [self.nextResponder canPerformAction:action withSender:sender];
 }
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 
 - (void)copy:(id)sender
 {
-#if !TARGET_OS_TV
   NSAttributedString *attributedText = _textStorage;
 
   NSData *rtf = [attributedText dataFromRange:NSMakeRange(0, attributedText.length)
                            documentAttributes:@{NSDocumentTypeDocumentAttribute: NSRTFDTextDocumentType}
                                         error:nil];
-#if TARGET_OS_IPHONE // TODO(macOS ISS#2323203)
-  NSMutableDictionary *item = [NSMutableDictionary new]; // TODO(macOS ISS#2323203)
+#if TARGET_OS_IPHONE // TODO(macOS GH#774)
+  NSMutableDictionary *item = [NSMutableDictionary new]; // TODO(macOS GH#774)
 
   if (rtf) {
     [item setObject:rtf forKey:(id)kUTTypeFlatRTFD];
@@ -458,12 +469,11 @@
 
   UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
   pasteboard.items = @[item];
-#elif TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#elif TARGET_OS_OSX // TODO(macOS GH#774)
   NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
   [pasteboard clearContents];
   [pasteboard writeObjects:[NSArray arrayWithObjects:attributedText.string, rtf, nil]];
-#endif // TODO(macOS ISS#2323203)
-#endif
+#endif // TODO(macOS GH#774)
 }
 
 @end

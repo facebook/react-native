@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -19,9 +19,9 @@ import java.util.Map;
 public final class ViewManagerRegistry {
 
   private final Map<String, ViewManager> mViewManagers;
-  private final @Nullable UIManagerModule.ViewManagerResolver mViewManagerResolver;
+  private final @Nullable ViewManagerResolver mViewManagerResolver;
 
-  public ViewManagerRegistry(UIManagerModule.ViewManagerResolver viewManagerResolver) {
+  public ViewManagerRegistry(ViewManagerResolver viewManagerResolver) {
     mViewManagers = MapBuilder.newHashMap();
     mViewManagerResolver = viewManagerResolver;
   }
@@ -56,7 +56,11 @@ public final class ViewManagerRegistry {
     if (mViewManagerResolver != null) {
       viewManager = getViewManagerFromResolver(className);
       if (viewManager != null) return viewManager;
-      throw new IllegalViewOperationException("ViewManagerResolver returned null for " + className);
+      throw new IllegalViewOperationException(
+          "ViewManagerResolver returned null for "
+              + className
+              + ", existing names are: "
+              + mViewManagerResolver.getViewManagerNames());
     }
     throw new IllegalViewOperationException("No ViewManager found for class " + className);
   }

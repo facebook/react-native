@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -31,6 +31,7 @@ class NativeModule {
  public:
   virtual ~NativeModule() {}
   virtual std::string getName() = 0;
+  virtual std::string getSyncMethodName(unsigned int methodId) = 0;
   virtual std::vector<MethodDescriptor> getMethods() = 0;
   virtual folly::dynamic getConstants() = 0;
   virtual void

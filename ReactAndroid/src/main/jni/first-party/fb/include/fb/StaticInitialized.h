@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -21,7 +21,7 @@ class StaticInitialized {
   constexpr StaticInitialized() : m_instance(nullptr) {}
 
   template <typename... Args>
-  void initialize(Args &&... arguments) {
+  void initialize(Args &&...arguments) {
     FBASSERT(!m_instance);
     m_instance = new T(std::forward<Args>(arguments)...);
   }

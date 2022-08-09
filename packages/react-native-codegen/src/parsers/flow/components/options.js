@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,12 +12,12 @@
 
 import type {OptionsShape} from '../../../CodegenSchema.js';
 
-// $FlowFixMe there's no flowtype for ASTs
+// $FlowFixMe[unclear-type] there's no flowtype for ASTs
 type OptionsAST = Object;
 
-export type CommandOptions = $ReadOnly<{|
+export type CommandOptions = $ReadOnly<{
   supportedCommands: $ReadOnlyArray<string>,
-|}>;
+}>;
 
 function getCommandOptions(
   commandOptionsExpression: OptionsAST,
@@ -54,7 +54,13 @@ function getOptions(optionsExpression: OptionsAST): ?OptionsShape {
   let foundOptions;
   try {
     foundOptions = optionsExpression.properties.reduce((options, prop) => {
-      options[prop.key.name] = prop.value.value;
+      if (prop.value.type === 'ArrayExpression') {
+        options[prop.key.name] = prop.value.elements.map(
+          element => element.value,
+        );
+      } else {
+        options[prop.key.name] = prop.value.value;
+      }
       return options;
     }, {});
   } catch (e) {

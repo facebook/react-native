@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -30,26 +30,26 @@ RCT_ENUM_CONVERTER(
 
 RCT_EXPORT_MODULE()
 
-- (RCTPlatformView *)view // TODO(macOS ISS#2323203)
+- (RCTPlatformView *)view // TODO(macOS GH#774)
 {
   return [RCTActivityIndicatorView new];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(color, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(hidesWhenStopped, BOOL)
-RCT_CUSTOM_VIEW_PROPERTY(size, UIActivityIndicatorViewStyle, RCTActivityIndicatorView) // TODO(macOS ISS#2323203)
+RCT_CUSTOM_VIEW_PROPERTY(size, UIActivityIndicatorViewStyle, RCTActivityIndicatorView) // TODO(macOS GH#774)
 {
   /*
     Setting activityIndicatorViewStyle overrides the color, so restore the original color
     after setting the indicator style.
   */
-  RCTUIColor *oldColor = view.color; // TODO(macOS ISS#2323203)
+  RCTUIColor *oldColor = view.color; // TODO(macOS GH#774)
   view.activityIndicatorViewStyle =
       json ? [RCTConvert UIActivityIndicatorViewStyle:json] : defaultView.activityIndicatorViewStyle;
   view.color = oldColor;
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(animating, BOOL, RCTActivityIndicatorView) // TODO(macOS ISS#2323203)
+RCT_CUSTOM_VIEW_PROPERTY(animating, BOOL, RCTActivityIndicatorView) // TODO(macOS GH#774)
 {
   BOOL animating = json ? [RCTConvert BOOL:json] : [defaultView isAnimating];
   if (animating != [view isAnimating]) {

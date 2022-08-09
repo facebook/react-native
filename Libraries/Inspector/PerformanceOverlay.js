@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -22,7 +22,7 @@ class PerformanceOverlay extends React.Component<{...}> {
     const items = [];
 
     for (const key in perfLogs) {
-      if (perfLogs[key].totalTime) {
+      if (perfLogs[key]?.totalTime) {
         const unit = key === 'BundleSize' ? 'b' : 'ms';
         items.push(
           <View style={styles.row} key={key}>

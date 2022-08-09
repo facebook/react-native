@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,8 +8,7 @@
  * @format
  */
 
-'use strict';
-
+import type {RootTag} from '../TurboModule/RCTExport';
 import type {TurboModule} from '../TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
@@ -26,6 +25,11 @@ export interface Spec extends TurboModule {
     ...
   }>;
   +prefetchImage: (uri: string) => Promise<boolean>;
+  +prefetchImageWithMetadata?: (
+    uri: string,
+    queryRootName: string,
+    rootTag: RootTag,
+  ) => Promise<boolean>;
   +queryCache: (uris: Array<string>) => Promise<Object>;
 }
 

@@ -1,26 +1,26 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // TODO(macOS GH#774)
 
 #import <React/RCTComponent.h>
 #import <yoga/YGEnums.h>
 
 @class RCTShadowView;
 
-@interface RCTPlatformView (React) <RCTComponent> // TODO(macOS ISS#2323203)
+@interface RCTPlatformView (React) <RCTComponent> // TODO(macOS GH#774)
 
 /**
  * RCTComponent interface.
  */
-- (NSArray<RCTPlatformView *> *)reactSubviews NS_REQUIRES_SUPER; // TODO(macOS ISS#2323203)
-- (RCTPlatformView *)reactSuperview NS_REQUIRES_SUPER; // TODO(macOS ISS#2323203)
-- (void)insertReactSubview:(RCTPlatformView *)subview atIndex:(NSInteger)atIndex NS_REQUIRES_SUPER; // TODO(macOS ISS#2323203)
-- (void)removeReactSubview:(RCTPlatformView *)subview NS_REQUIRES_SUPER; // TODO(macOS ISS#2323203)
+- (NSArray<RCTPlatformView *> *)reactSubviews NS_REQUIRES_SUPER; // TODO(macOS GH#774)
+- (RCTPlatformView *)reactSuperview NS_REQUIRES_SUPER; // TODO(macOS GH#774)
+- (void)insertReactSubview:(RCTPlatformView *)subview atIndex:(NSInteger)atIndex NS_REQUIRES_SUPER; // TODO(macOS GH#774)
+- (void)removeReactSubview:(RCTPlatformView *)subview NS_REQUIRES_SUPER; // TODO(macOS GH#774)
 
 /**
  * The native id of the view, used to locate view from native codes
@@ -56,7 +56,7 @@
  * Subviews sorted by z-index. Note that this method doesn't do any caching (yet)
  * and sorts all the views each call.
  */
-- (NSArray<RCTPlatformView *> *)reactZIndexSortedSubviews; // TODO(macOS ISS#2323203)
+- (NSArray<RCTPlatformView *> *)reactZIndexSortedSubviews; // TODO(macOS GH#774)
 
 /**
  * Updates the subviews array based on the reactSubviews. Default behavior is
@@ -81,7 +81,7 @@
  */
 - (UIViewController *)reactViewController;
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 /**
  * This method attaches the specified controller as a child of the
  * the owning view controller of this view. Returns NO if no view
@@ -89,7 +89,7 @@
  * attached to the view hierarchy).
  */
 - (void)reactAddControllerToClosestParent:(UIViewController *)controller;
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 
 /**
  * Focus manipulation.
@@ -113,7 +113,7 @@
  * transparent in favour of some subview.
  * Defaults to `self`.
  */
-@property (nonatomic, readonly) RCTPlatformView *reactAccessibilityElement; // TODO(macOS ISS#2323203)
+@property (nonatomic, readonly) RCTPlatformView *reactAccessibilityElement; // TODO(macOS GH#774)
 
 /**
  * Accessibility properties

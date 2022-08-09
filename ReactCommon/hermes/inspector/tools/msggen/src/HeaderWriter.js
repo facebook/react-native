@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,6 @@
  * @flow
  * @format
  */
-
-'use strict';
 
 import {Writable} from 'stream';
 
@@ -72,7 +70,7 @@ export class HeaderWriter {
     this.stream.write('struct UnknownRequest;\n\n');
 
     const namespaceMap: Map<string, Array<Type | Command | Event>> = new Map();
-    const addToMap = function(type) {
+    const addToMap = function (type) {
       const domain = type.domain;
       let types = namespaceMap.get(domain);
       if (!types) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -30,8 +30,13 @@ void RCTOverrideAppearancePreference(NSString *const colorSchemeOverride)
   sColorSchemeOverride = colorSchemeOverride;
 }
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-static NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
+NSString *RCTCurrentOverrideAppearancePreference()
+{
+  return sColorSchemeOverride;
+}
+
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
+NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
 {
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
     __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
@@ -63,34 +68,30 @@ static NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
   // Default to light on older OS version - same behavior as Android.
   return RCTAppearanceColorSchemeLight;
 }
-#else // [TODO(macOS ISS#2323203)
-static NSString *RCTColorSchemePreference(NSAppearance *appearance)
+#else // [TODO(macOS GH#774)
+NSString *RCTColorSchemePreference(NSAppearance *appearance)
 {
-  if (@available(macOS 10.14, *)) {
-    static NSDictionary *appearances;
-    static dispatch_once_t onceToken;
+  static NSDictionary *appearances;
+  static dispatch_once_t onceToken;
 
-    dispatch_once(&onceToken, ^{
-      appearances = @{
-                      NSAppearanceNameAqua: RCTAppearanceColorSchemeLight,
-                      NSAppearanceNameDarkAqua: RCTAppearanceColorSchemeDark
-                      };
-    });
+  dispatch_once(&onceToken, ^{
+    appearances = @{
+                    NSAppearanceNameAqua: RCTAppearanceColorSchemeLight,
+                    NSAppearanceNameDarkAqua: RCTAppearanceColorSchemeDark
+                    };
+  });
 
-    if (!sAppearancePreferenceEnabled) {
-      // Return the default if the app doesn't allow different color schemes.
-      return RCTAppearanceColorSchemeLight;
-    }
-
-    appearance = appearance ?: [NSAppearance currentAppearance];
-    NSAppearanceName appearanceName = [appearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
-    return appearances[appearanceName] ?: RCTAppearanceColorSchemeLight;
+  if (!sAppearancePreferenceEnabled) {
+    // Return the default if the app doesn't allow different color schemes.
+    return RCTAppearanceColorSchemeLight;
   }
 
-  // Default to light on older OS version - same behavior as Android.
-  return RCTAppearanceColorSchemeLight;
+  appearance = appearance ?: [NSApp effectiveAppearance];
+
+  NSAppearanceName appearanceName = [appearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
+  return appearances[appearanceName] ?: RCTAppearanceColorSchemeLight;
 }
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 @interface RCTAppearance () <NativeAppearanceSpec>
 @end
@@ -111,14 +112,12 @@ RCT_EXPORT_MODULE(Appearance)
   return dispatch_get_main_queue();
 }
 
-- (std::shared_ptr<TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
-                                              nativeInvoker:(std::shared_ptr<CallInvoker>)nativeInvoker
-                                                 perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+- (std::shared_ptr<TurboModule>)getTurboModule:(const ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<NativeAppearanceSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
+  return std::make_shared<NativeAppearanceSpecJSI>(params);
 }
 
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203): on macOS don't lazy init _currentColorScheme because [NSAppearance currentAppearance] cannot be executed on background thread.
+#if TARGET_OS_OSX // [TODO(macOS GH#774): on macOS don't lazy init _currentColorScheme because [NSApp effectiveAppearance] cannot be executed on background thread.
 - (instancetype)init
 {
   if (self = [super init]) {
@@ -126,32 +125,34 @@ RCT_EXPORT_MODULE(Appearance)
   }
   return self;
 }
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
 {
-#if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
-  _currentColorScheme = RCTColorSchemePreference(nil);
-#endif // ]TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
+  if (_currentColorScheme == nil) {
+    _currentColorScheme = RCTColorSchemePreference(nil);
+  }
+#endif // ]TODO(macOS GH#774)
   return _currentColorScheme;
 }
 
 - (void)appearanceChanged:(NSNotification *)notification
 {
   NSDictionary *userInfo = [notification userInfo];
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   UITraitCollection *traitCollection = nil;
   if (userInfo) {
     traitCollection = userInfo[RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey];
   }
   NSString *newColorScheme = RCTColorSchemePreference(traitCollection);
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
   NSAppearance *appearance = nil;
   if (userInfo) {
     appearance = userInfo[RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey];
   }
   NSString *newColorScheme = RCTColorSchemePreference(appearance);
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
   if (![_currentColorScheme isEqualToString:newColorScheme]) {
     _currentColorScheme = newColorScheme;
     [self sendEventWithName:@"appearanceChanged" body:@{@"colorScheme" : newColorScheme}];
@@ -167,7 +168,7 @@ RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
 
 - (void)startObserving
 {
-  if (@available(macOS 10.14, iOS 13.0, *)) { // TODO(macOS ISS#2323203)
+  if (@available(iOS 13.0, *)) {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(appearanceChanged:)
                                                  name:RCTUserInterfaceStyleDidChangeNotification
@@ -177,7 +178,7 @@ RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
 
 - (void)stopObserving
 {
-  if (@available(macOS 10.14, iOS 13.0, *)) { // TODO(macOS ISS#2323203)
+  if (@available(iOS 13.0, *)) {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
   }
 }

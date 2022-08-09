@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -85,7 +85,7 @@ namespace debugger = ::facebook::hermes::debugger;
  */
 
 // TODO: read this out of an env variable or config
-static constexpr bool kShouldLog = true;
+static constexpr bool kShouldLog = false;
 
 // Logging state transitions is done outside of transition() in a macro so that
 // function and line numbers in the log will be accurate.
@@ -120,6 +120,7 @@ Inspector::Inspector(
     std::lock_guard<std::mutex> lock(mutex_);
 
     if (pauseOnFirstStatement) {
+      awaitingDebuggerOnStart_ = true;
       TRANSITION(std::make_unique<InspectorState::RunningWaitEnable>(*this));
     } else {
       TRANSITION(std::make_unique<InspectorState::RunningDetached>(*this));
@@ -131,12 +132,35 @@ Inspector::Inspector(
 }
 
 Inspector::~Inspector() {
-  // TODO: think about expected detach flow
   debugger_.setEventObserver(nullptr);
+}
+
+static bool toBoolean(jsi::Runtime &runtime, const jsi::Value &val) {
+  // Based on Operations.cpp:toBoolean in the Hermes VM.
+  if (val.isUndefined() || val.isNull()) {
+    return false;
+  }
+  if (val.isBool()) {
+    return val.getBool();
+  }
+  if (val.isNumber()) {
+    double m = val.getNumber();
+    return m != 0 && !std::isnan(m);
+  }
+  if (val.isSymbol() || val.isObject()) {
+    return true;
+  }
+  if (val.isString()) {
+    std::string s = val.getString(runtime).utf8(runtime);
+    return !s.empty();
+  }
+  assert(false && "All cases should be covered");
+  return false;
 }
 
 void Inspector::installConsoleFunction(
     jsi::Object &console,
+    std::shared_ptr<jsi::Object> &originalConsole,
     const std::string &name,
     const std::string &chromeTypeDefault = "") {
   jsi::Runtime &rt = adapter_->getRuntime();
@@ -150,17 +174,47 @@ void Inspector::installConsoleFunction(
           rt,
           nameID,
           1,
-          [weakInspector, chromeType](
+          [weakInspector, originalConsole, name, chromeType](
               jsi::Runtime &runtime,
               const jsi::Value &thisVal,
               const jsi::Value *args,
               size_t count) {
+            if (originalConsole) {
+              auto val = originalConsole->getProperty(runtime, name.c_str());
+              if (val.isObject()) {
+                auto obj = val.getObject(runtime);
+                if (obj.isFunction(runtime)) {
+                  auto func = obj.getFunction(runtime);
+                  func.callWithThis(runtime, *originalConsole, args, count);
+                }
+              }
+            }
+
             if (auto inspector = weakInspector.lock()) {
-              jsi::Array argsArray(runtime, count);
-              for (size_t index = 0; index < count; ++index)
-                argsArray.setValueAtIndex(runtime, index, args[index]);
-              inspector->logMessage(
-                  ConsoleMessageInfo{chromeType, std::move(argsArray)});
+              if (name != "assert") {
+                // All cases other than assert just log a simple message.
+                jsi::Array argsArray(runtime, count);
+                for (size_t index = 0; index < count; ++index)
+                  argsArray.setValueAtIndex(runtime, index, args[index]);
+                inspector->logMessage(
+                    ConsoleMessageInfo{chromeType, std::move(argsArray)});
+                return jsi::Value::undefined();
+              }
+              // console.assert needs to check the first parameter before
+              // logging.
+              if (count == 0) {
+                // No parameters, throw a blank assertion failed message.
+                inspector->logMessage(
+                    ConsoleMessageInfo{chromeType, jsi::Array(runtime, 0)});
+              } else if (!toBoolean(runtime, args[0])) {
+                // Shift the message array down by one to not include the
+                // condition.
+                jsi::Array argsArray(runtime, count - 1);
+                for (size_t index = 1; index < count; ++index)
+                  argsArray.setValueAtIndex(runtime, index, args[index]);
+                inspector->logMessage(
+                    ConsoleMessageInfo{chromeType, std::move(argsArray)});
+              }
             }
 
             return jsi::Value::undefined();
@@ -170,22 +224,28 @@ void Inspector::installConsoleFunction(
 void Inspector::installLogHandler() {
   jsi::Runtime &rt = adapter_->getRuntime();
   auto console = jsi::Object(rt);
-  installConsoleFunction(console, "assert");
-  installConsoleFunction(console, "clear");
-  installConsoleFunction(console, "debug");
-  installConsoleFunction(console, "dir");
-  installConsoleFunction(console, "dirxml");
-  installConsoleFunction(console, "error");
-  installConsoleFunction(console, "group", "startGroup");
-  installConsoleFunction(console, "groupCollapsed", "startGroupCollapsed");
-  installConsoleFunction(console, "groupEnd", "endGroup");
-  installConsoleFunction(console, "info");
-  installConsoleFunction(console, "log");
-  installConsoleFunction(console, "profile");
-  installConsoleFunction(console, "profileEnd");
-  installConsoleFunction(console, "table");
-  installConsoleFunction(console, "trace");
-  installConsoleFunction(console, "warn", "warning");
+  auto val = rt.global().getProperty(rt, "console");
+  std::shared_ptr<jsi::Object> originalConsole;
+  if (val.isObject()) {
+    originalConsole = std::make_shared<jsi::Object>(val.getObject(rt));
+  }
+  installConsoleFunction(console, originalConsole, "assert");
+  installConsoleFunction(console, originalConsole, "clear");
+  installConsoleFunction(console, originalConsole, "debug");
+  installConsoleFunction(console, originalConsole, "dir");
+  installConsoleFunction(console, originalConsole, "dirxml");
+  installConsoleFunction(console, originalConsole, "error");
+  installConsoleFunction(console, originalConsole, "group", "startGroup");
+  installConsoleFunction(
+      console, originalConsole, "groupCollapsed", "startGroupCollapsed");
+  installConsoleFunction(console, originalConsole, "groupEnd", "endGroup");
+  installConsoleFunction(console, originalConsole, "info");
+  installConsoleFunction(console, originalConsole, "log");
+  installConsoleFunction(console, originalConsole, "profile");
+  installConsoleFunction(console, originalConsole, "profileEnd");
+  installConsoleFunction(console, originalConsole, "table");
+  installConsoleFunction(console, originalConsole, "trace");
+  installConsoleFunction(console, originalConsole, "warn", "warning");
   rt.global().setProperty(rt, "console", console);
 }
 
@@ -290,6 +350,9 @@ folly::Future<debugger::BreakpointInfo> Inspector::setBreakpoint(
     debugger::SourceLocation loc,
     folly::Optional<std::string> condition) {
   auto promise = std::make_shared<folly::Promise<debugger::BreakpointInfo>>();
+  // Automatically re-enable breakpoints since the user presumably wants this
+  // to start triggering.
+  breakpointsActive_ = true;
 
   executor_->add([this, loc, condition, promise] {
     setBreakpointOnExecutor(loc, condition, promise);
@@ -380,6 +443,43 @@ folly::Future<folly::Unit> Inspector::setPauseOnExceptions(
   });
 
   return promise->getFuture();
+};
+
+folly::Future<folly::Unit> Inspector::setPauseOnLoads(
+    const PauseOnLoadMode mode) {
+  // This flag does not touch the runtime, so it doesn't need the executor.
+  // Return a future anyways for consistency.
+  auto promise = std::make_shared<folly::Promise<Unit>>();
+  pauseOnLoadMode_ = mode;
+  promise->setValue();
+  return promise->getFuture();
+};
+
+folly::Future<folly::Unit> Inspector::setBreakpointsActive(bool active) {
+  // Same logic as setPauseOnLoads.
+  auto promise = std::make_shared<folly::Promise<Unit>>();
+  breakpointsActive_ = active;
+  promise->setValue();
+  return promise->getFuture();
+};
+
+bool Inspector::shouldPauseOnThisScriptLoad() {
+  switch (pauseOnLoadMode_) {
+    case None:
+      return false;
+    case All:
+      return true;
+    case Smart:
+      // If we don't have active breakpoints, there's nothing to set or update.
+      if (debugger_.getBreakpoints().size() == 0) {
+        return false;
+      }
+      // If there's no source map URL, it's probably not a file we care about.
+      if (getScriptInfoFromTopCallFrame().sourceMappingUrl.size() == 0) {
+        return false;
+      }
+      return true;
+  }
 };
 
 debugger::Command Inspector::didPause(debugger::Debugger &debugger) {
@@ -630,6 +730,10 @@ bool Inspector::isExecutingSupersededFile() {
     return it->second > info.fileId;
   }
   return false;
+}
+
+bool Inspector::isAwaitingDebuggerOnStart() {
+  return awaitingDebuggerOnStart_;
 }
 
 } // namespace inspector

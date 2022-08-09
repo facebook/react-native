@@ -2,9 +2,7 @@
 
 exports[`<ActivityIndicator /> should render as expected: should deep render when mocked (please verify output manually) 1`] = `
 <ActivityIndicator
-  animating={true}
   color="#0000ff"
-  hidesWhenStopped={true}
   size="large"
 />
 `;
@@ -34,19 +32,15 @@ exports[`<ActivityIndicator /> should render as expected: should deep render whe
 `;
 
 exports[`<ActivityIndicator /> should render as expected: should shallow render as <ActivityIndicator /> when mocked 1`] = `
-<ForwardRef(ActivityIndicator)
-  animating={true}
+<ActivityIndicator
   color="#0000ff"
-  hidesWhenStopped={true}
   size="large"
 />
 `;
 
 exports[`<ActivityIndicator /> should render as expected: should shallow render as <ActivityIndicator /> when not mocked 1`] = `
-<ForwardRef(ActivityIndicator)
-  animating={true}
+<ActivityIndicator
   color="#0000ff"
-  hidesWhenStopped={true}
   size="large"
 />
 `;

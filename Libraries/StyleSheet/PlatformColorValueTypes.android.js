@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,9 +8,7 @@
  * @flow strict-local
  */
 
-'use strict';
-
-import type {ColorValue} from './StyleSheetTypes';
+import type {ColorValue} from './StyleSheet';
 import type {ProcessedColorValue} from './processColor';
 
 export opaque type NativeColorValue = {
@@ -19,10 +17,6 @@ export opaque type NativeColorValue = {
 
 export const PlatformColor = (...names: Array<string>): ColorValue => {
   return {resource_paths: names};
-};
-
-export const ColorAndroidPrivate = (color: string): ColorValue => {
-  return {resource_paths: [color]};
 };
 
 export const normalizeColorObject = (

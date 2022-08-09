@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,8 +10,8 @@
 
 'use strict';
 
-const React = require('react');
-const SectionList = require('../SectionList');
+import * as React from 'react';
+import SectionList from '../SectionList';
 
 function renderMyListItem(info: {
   item: {title: string, ...},
@@ -75,7 +75,7 @@ module.exports = {
     ];
   },
 
-  testBadInheritedDefaultProp(): React.Element<*> {
+  testBadInheritedDefaultProp(): React.MixedElement {
     const sections = [];
     return (
       <SectionList
@@ -87,12 +87,12 @@ module.exports = {
     );
   },
 
-  testMissingData(): React.Element<*> {
+  testMissingData(): React.MixedElement {
     // $FlowExpectedError - missing `sections` prop
     return <SectionList renderItem={renderMyListItem} />;
   },
 
-  testBadSectionsShape(): React.Element<*> {
+  testBadSectionsShape(): React.MixedElement {
     const sections = [
       {
         key: 'a',
@@ -108,7 +108,7 @@ module.exports = {
     return <SectionList renderItem={renderMyListItem} sections={sections} />;
   },
 
-  testBadSectionsMetadata(): React.Element<*> {
+  testBadSectionsMetadata(): React.MixedElement {
     const sections = [
       {
         key: 'a',

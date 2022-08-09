@@ -1,10 +1,10 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict
  * @format
  */
 
@@ -27,7 +27,7 @@ opaque type DoNotCommitUsageOfPureComponentDebug = {...};
  */
 class PureComponentDebug<
   P: DoNotCommitUsageOfPureComponentDebug,
-  S: ?Object = void,
+  S: ?{...} = void,
 > extends React.Component<P, S> {
   shouldComponentUpdate(nextProps: P, nextState: S): boolean {
     const tag = this.constructor.name;

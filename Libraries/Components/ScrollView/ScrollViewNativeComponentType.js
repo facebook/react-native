@@ -1,22 +1,17 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
- * @flow
  */
 
 'use strict';
 
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
-import type {
-  ViewStyleProp,
-  DangerouslyImpreciseStyle,
-} from '../../StyleSheet/StyleSheet';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {ScrollEvent} from '../../Types/CoreEventTypes';
 import type {PointProp} from '../../StyleSheet/PointPropType';
@@ -26,6 +21,8 @@ export type ScrollViewNativeProps = $ReadOnly<{
   alwaysBounceHorizontal?: ?boolean,
   alwaysBounceVertical?: ?boolean,
   automaticallyAdjustContentInsets?: ?boolean,
+  automaticallyAdjustKeyboardInsets?: ?boolean,
+  automaticallyAdjustsScrollIndicatorInsets?: ?boolean,
   bounces?: ?boolean,
   bouncesZoom?: ?boolean,
   canCancelContentTouches?: ?boolean,
@@ -45,10 +42,10 @@ export type ScrollViewNativeProps = $ReadOnly<{
   fadingEdgeLength?: ?number,
   indicatorStyle?: ?('default' | 'black' | 'white'),
   keyboardDismissMode?: ?('none' | 'on-drag' | 'interactive'),
-  maintainVisibleContentPosition?: ?$ReadOnly<{|
+  maintainVisibleContentPosition?: ?$ReadOnly<{
     minIndexForVisible: number,
     autoscrollToTopThreshold?: ?number,
-  |}>,
+  }>,
   maximumZoomScale?: ?number,
   minimumZoomScale?: ?number,
   nestedScrollEnabled?: ?boolean,
@@ -77,11 +74,7 @@ export type ScrollViewNativeProps = $ReadOnly<{
   snapToOffsets?: ?$ReadOnlyArray<number>,
   snapToStart?: ?boolean,
   zoomScale?: ?number,
-  DEPRECATED_sendUpdatedChildFrames?: ?boolean,
   // Overrides
-  style?: {...ViewStyleProp, ...} | DangerouslyImpreciseStyle,
-  onResponderGrant?: ?(e: any) => void | boolean,
+  onResponderGrant?: ?(e: $FlowFixMe) => void | boolean,
   ...
 }>;
-
-export type ScrollViewNativeComponentType = HostComponent<ScrollViewNativeProps>;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,11 +7,11 @@
 
 #import <React/RCTFileRequestHandler.h>
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 #import <MobileCoreServices/MobileCoreServices.h>
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
 #import <CoreServices/CoreServices.h>
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 #import <React/RCTUtils.h>
 #import <ReactCommon/RCTTurboModule.h>
@@ -95,6 +95,12 @@ RCT_EXPORT_MODULE()
 - (void)cancelRequest:(NSOperation *)op
 {
   [op cancel];
+}
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
+{
+  return nullptr;
 }
 
 @end

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,10 +16,7 @@ module.exports = {
     sourceType: 'module',
   },
 
-  extends: [
-    'plugin:prettier/recommended', // https://github.com/prettier/eslint-plugin-prettier#recommended-configuration
-    'prettier/react',
-  ],
+  extends: ['plugin:prettier/recommended'],
 
   plugins: [
     'eslint-comments',
@@ -59,6 +56,9 @@ module.exports = {
           {argsIgnorePattern: '^_'},
         ],
         'no-unused-vars': 'off',
+        'no-shadow': 'off',
+        '@typescript-eslint/no-shadow': 1,
+        'no-undef': 'off',
       },
     },
     {
@@ -72,6 +72,7 @@ module.exports = {
       },
       rules: {
         'react-native/no-inline-styles': 0,
+        quotes: [1, 'single', {avoidEscape: true, allowTemplateLiterals: true}],
       },
     },
   ],
@@ -81,6 +82,7 @@ module.exports = {
     __DEV__: true,
     __dirname: false,
     __fbBatchedBridgeConfig: false,
+    AbortController: false,
     alert: false,
     cancelAnimationFrame: false,
     cancelIdleCallback: false,
@@ -95,6 +97,7 @@ module.exports = {
     EventTarget: false,
     exports: false,
     fetch: false,
+    FileReader: false,
     FormData: false,
     global: false,
     Headers: false,
@@ -111,6 +114,7 @@ module.exports = {
     setImmediate: true,
     setInterval: false,
     setTimeout: false,
+    queueMicrotask: true,
     URL: false,
     URLSearchParams: false,
     WebSocket: true,
@@ -285,7 +289,7 @@ module.exports = {
 
     'react/display-name': 0,
     'react/jsx-boolean-value': 0,
-    'react/jsx-no-comment-textnodes': 1,
+    'react/jsx-no-comment-textnodes': 2,
     'react/jsx-no-duplicate-props': 2,
     'react/jsx-no-undef': 2,
     'react/jsx-sort-props': 0,
@@ -296,6 +300,7 @@ module.exports = {
     'react/no-multi-comp': 0,
     'react/no-string-refs': 1,
     'react/no-unknown-property': 0,
+    'react/no-unstable-nested-components': 1,
     'react/prop-types': 0,
     'react/react-in-jsx-scope': 1,
     'react/self-closing-comp': 1,
@@ -303,8 +308,8 @@ module.exports = {
 
     // React-Hooks Plugin
     // The following rules are made available via `eslint-plugin-react-hooks`
-    'react-hooks/rules-of-hooks': 'error',
-    'react-hooks/exhaustive-deps': 'error',
+    'react-hooks/rules-of-hooks': 2,
+    'react-hooks/exhaustive-deps': 2,
 
     // React-Native Plugin
     // The following rules are made available via `eslint-plugin-react-native`

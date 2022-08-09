@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -25,8 +25,10 @@ Class<RCTComponentViewProtocol> RCTFabricComponentsProvider(const char *name) {
     {"Slider", RCTSliderCls},
     {"Switch", RCTSwitchCls},
     {"UnimplementedNativeView", RCTUnimplementedNativeViewCls},
-    {"ModalHostView", RCTModalHostViewCls},
-    {"ARTSurfaceView", RCTARTSurfaceViewCls},
+    {"Paragraph", RCTParagraphCls},
+    {"TextInput", RCTTextInputCls},
+    {"InputAccessoryView", RCTInputAccessoryCls},
+    {"View", RCTViewCls},
     {"Image", RCTImageCls},
   };
 
@@ -35,7 +37,7 @@ Class<RCTComponentViewProtocol> RCTFabricComponentsProvider(const char *name) {
     auto classFunc = p->second;
     return classFunc();
   }
-  return nil;
+  return RCTThirdPartyFabricComponentsProvider(name);
 }
 
 #endif // RN_DISABLE_OSS_PLUGIN_HEADER

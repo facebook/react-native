@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -20,6 +20,8 @@ namespace react {
 class Instance;
 class MessageQueueThread;
 
+typedef void (*WarnOnUsageLogger)(std::string message);
+
 std::function<void(folly::dynamic)> makeCallback(
     std::weak_ptr<Instance> instance,
     const folly::dynamic &callbackId);
@@ -37,6 +39,7 @@ class RN_EXPORT CxxNativeModule : public NativeModule {
         messageQueueThread_(messageQueueThread) {}
 
   std::string getName() override;
+  std::string getSyncMethodName(unsigned int methodId) override;
   std::vector<MethodDescriptor> getMethods() override;
   folly::dynamic getConstants() override;
   void invoke(unsigned int reactMethodId, folly::dynamic &&params, int callId)
@@ -44,6 +47,8 @@ class RN_EXPORT CxxNativeModule : public NativeModule {
   MethodCallResult callSerializableNativeHook(
       unsigned int hookId,
       folly::dynamic &&args) override;
+
+  static void setShouldWarnOnUse(bool value);
 
  private:
   void lazyInit();
@@ -54,6 +59,11 @@ class RN_EXPORT CxxNativeModule : public NativeModule {
   std::shared_ptr<MessageQueueThread> messageQueueThread_;
   std::unique_ptr<xplat::module::CxxModule> module_;
   std::vector<xplat::module::CxxModule::Method> methods_;
+  void emitWarnIfWarnOnUsage(
+      const std::string &method_name,
+      const std::string &module_name);
+
+  static bool shouldWarnOnUse_;
 };
 
 } // namespace react

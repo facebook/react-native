@@ -1,4 +1,4 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -19,17 +19,29 @@ LOCAL_CFLAGS := \
 
 LOCAL_CFLAGS += -fexceptions -frtti -Wno-unused-lambda-capture
 
-LOCAL_STATIC_LIBRARIES := boost jsi callinvoker
-LOCAL_SHARED_LIBRARIES := jsinspector libfolly_json glog
+LOCAL_STATIC_LIBRARIES := \
+  boost \
+  callinvoker \
+  jsi \
+  reactperflogger
+
+LOCAL_SHARED_LIBRARIES := \
+  glog \
+  jsinspector \
+  libfolly_json \
+  libruntimeexecutor \
+  logger
 
 include $(BUILD_STATIC_LIBRARY)
 
 $(call import-module,fb)
 $(call import-module,folly)
 $(call import-module,callinvoker)
+$(call import-module,reactperflogger)
 $(call import-module,jsc)
 $(call import-module,glog)
 $(call import-module,jsi)
 $(call import-module,jsinspector)
 $(call import-module,hermes/inspector)
 $(call import-module,hermes/executor)
+$(call import-module,logger)

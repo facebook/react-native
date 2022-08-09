@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -9,6 +9,7 @@
 # shellcheck disable=SC1091
 source "scripts/.tests.env"
 
+# NOTE: This doesn't run in Circle CI currently!
 function getAndroidPackages {
   export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools:$ANDROID_HOME/tools.bin:$PATH"
 
@@ -16,8 +17,8 @@ function getAndroidPackages {
 
   # Package names can be obtained using `sdkmanager --list`
   if [ ! -e "$DEPS" ] || [ ! "$CI" ]; then
-    echo "Installing Android API level $ANDROID_SDK_TARGET_API_LEVEL, Google APIs, $AVD_ABI system image..."
-    sdkmanager "system-images;android-$ANDROID_SDK_TARGET_API_LEVEL;google_apis;$AVD_ABI"
+    echo "Installing Android API level $ANDROID_SYSTEM_IMAGE_API_LEVEL, Google APIs, $AVD_ABI system image..."
+    sdkmanager "system-images;android-$ANDROID_SYSTEM_IMAGE_API_LEVEL;google_apis;$AVD_ABI"
     echo "Installing build SDK for Android API level $ANDROID_SDK_BUILD_API_LEVEL..."
     sdkmanager "platforms;android-$ANDROID_SDK_BUILD_API_LEVEL"
     echo "Installing target SDK for Android API level $ANDROID_SDK_TARGET_API_LEVEL..."
@@ -49,31 +50,49 @@ function getAndroidNDK {
 }
 
 function createAVD {
-  AVD_PACKAGES="system-images;android-$ANDROID_SDK_TARGET_API_LEVEL;google_apis;$AVD_ABI"
-  echo "Creating AVD with packages $AVD_PACKAGES"
-  echo no | avdmanager create avd --name "$AVD_NAME" --force --package "$AVD_PACKAGES" --tag google_apis --abi "$AVD_ABI"
+  if [ -z "$ANDROID_DISABLE_AVD_TESTS" ]
+  then
+    AVD_PACKAGES="system-images;android-$ANDROID_IMAGE_API_LEVEL;google_apis;$AVD_ABI"
+    echo "Creating AVD with packages $AVD_PACKAGES"
+    echo no | avdmanager create avd --name "$AVD_NAME" --force --package "$AVD_PACKAGES" --tag google_apis --abi "$AVD_ABI"
+  else
+    echo "Skipping AVD-related test setup..."
+  fi
 }
 
 function launchAVD {
-  # The AVD name here should match the one created in createAVD
-  if [ "$CI" ]
+  # Force start adb server
+  adb start-server
+
+  if [ -z "$ANDROID_DISABLE_AVD_TESTS" ]
   then
-    "$ANDROID_HOME/emulator/emulator" -avd "$AVD_NAME" -no-audio -no-window
+    # The AVD name here should match the one created in createAVD
+    if [ "$CI" ]
+    then
+      "$ANDROID_HOME/emulator/emulator" -avd "$AVD_NAME" -no-audio -no-window
+    else
+      "$ANDROID_HOME/emulator/emulator" -avd "$AVD_NAME"
+    fi
   else
-    "$ANDROID_HOME/emulator/emulator" -avd "$AVD_NAME"
+    echo "Skipping AVD-related test setup..."
   fi
 }
 
 function waitForAVD {
-  echo "Waiting for Android Virtual Device to finish booting..."
-  local bootanim=""
-  export PATH=$(dirname $(dirname $(command -v android)))/platform-tools:$PATH
-  until [[ "$bootanim" =~ "stopped" ]]; do
-    sleep 5
-    bootanim=$(adb -e shell getprop init.svc.bootanim 2>&1)
-    echo "boot animation status=$bootanim"
-  done
-  echo "Android Virtual Device is ready."
+  if [ -z "$ANDROID_DISABLE_AVD_TESTS" ]
+  then
+    echo "Waiting for Android Virtual Device to finish booting..."
+    local bootanim=""
+    export PATH=$(dirname $(dirname $(command -v android)))/platform-tools:$PATH
+    until [[ "$bootanim" =~ "stopped" ]]; do
+      sleep 5
+      bootanim=$(adb -e shell getprop init.svc.bootanim 2>&1)
+      echo "boot animation status=$bootanim"
+    done
+    echo "Android Virtual Device is ready."
+  else
+    echo "Skipping AVD-related test setup..."
+  fi
 }
 
 function retry3 {

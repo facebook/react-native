@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,7 +11,7 @@ import android.os.Handler;
 import android.util.SparseArray;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.modules.appregistry.AppRegistry;
@@ -107,12 +107,12 @@ public class HeadlessJsTaskContext {
     }
     mActiveTasks.add(taskId);
     mActiveTaskConfigs.put(taskId, new HeadlessJsTaskConfig(taskConfig));
-    if (reactContext.hasActiveCatalystInstance()) {
+    if (reactContext.hasActiveReactInstance()) {
       reactContext
           .getJSModule(AppRegistry.class)
           .startHeadlessTask(taskId, taskConfig.getTaskKey(), taskConfig.getData());
     } else {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           "HeadlessJsTaskContext",
           new RuntimeException("Cannot start headless task, CatalystInstance not available"));
     }

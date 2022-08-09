@@ -1,3 +1,10 @@
-** @acoates-ms
-** @tom-un
-** @alloy
+# These owners will be the default owners for everything in
+# the repo. Unless a later match takes precedence,
+# the global will be requested for
+# review when someone opens a pull request.
+* @microsoft/apple-rn-team
+
+# React Android specific ones
+/ReactAndroid/ @microsoft/rnandroid
+/android-patches/ @microsoft/rnandroid
+/.ado/**/*droid* @microsoft/rnandroid

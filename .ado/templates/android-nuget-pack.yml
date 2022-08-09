@@ -1,0 +1,15 @@
+steps:
+  - task: PowerShell@2
+    displayName: Extract version from package.json, and put it in `buildNumber` variable
+    inputs:
+      targetType: inline # filePath | inline
+      script: |
+        $lines = Get-Content package.json | Where {$_ -match '^\s*"version":.*'} 
+        $npmVersion = $lines.Trim().Split()[1].Trim('",');
+        echo "##vso[task.setvariable variable=buildNumber]$npmVersion"
+
+  # Very similar to the default pack task .. but appends 'ndk21b' to the nuget pack version
+  - task: CmdLine@2
+    displayName: 'NuGet pack'
+    inputs:
+      script: NDK=ndk`$(System.DefaultWorkingDirectory)/gradlew -q ReactAndroid:properties | grep ndkVersion | awk '{print $2}' | awk -F. '{print $1}'`; mono $(System.DefaultWorkingDirectory)/nuget-bin/nuget.exe pack $(System.DefaultWorkingDirectory)/ReactAndroid/ReactAndroid.nuspec -OutputDirectory $(Build.StagingDirectory)/final -Properties buildNumber=$(buildNumber)-$NDK\;commitId=$(Build.SourceVersion)

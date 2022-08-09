@@ -1,15 +1,14 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
-// TODO: move this file to shims/ReactNative (requires React update and sync)
 
-'use strict';
+// TODO: move this file to shims/ReactNative (requires React update and sync)
 
 import requireNativeComponent from '../../Libraries/ReactNative/requireNativeComponent';
 import type {HostComponent} from '../../Libraries/Renderer/shims/ReactNativeTypes';
@@ -20,7 +19,7 @@ type Options = $ReadOnly<{|
   interfaceOnly?: boolean,
   paperComponentName?: string,
   paperComponentNameDeprecated?: string,
-  excludedPlatform?: 'iOS' | 'android',
+  excludedPlatforms?: $ReadOnlyArray<'iOS' | 'android'>,
 |}>;
 
 export type NativeComponentType<T> = HostComponent<T>;
@@ -30,7 +29,7 @@ function codegenNativeComponent<Props>(
   options?: Options,
 ): NativeComponentType<Props> {
   let componentNameInUse =
-    options && options.paperComponentName
+    options && options.paperComponentName != null
       ? options.paperComponentName
       : componentName;
 
@@ -44,8 +43,9 @@ function codegenNativeComponent<Props>(
       componentNameInUse = options.paperComponentNameDeprecated;
     } else {
       throw new Error(
-        `Failed to find native component for either ${componentName} or ${options.paperComponentNameDeprecated ||
-          '(unknown)'}`,
+        `Failed to find native component for either ${componentName} or ${
+          options.paperComponentNameDeprecated ?? '(unknown)'
+        }`,
       );
     }
   }

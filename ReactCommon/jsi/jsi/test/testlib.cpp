@@ -1,11 +1,12 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 #include <jsi/test/testlib.h>
+
 #include <gtest/gtest.h>
 #include <jsi/decorator.h>
 #include <jsi/jsi.h>
@@ -392,6 +393,23 @@ TEST_P(JSITest, HostObjectTest) {
   EXPECT_FALSE(hasOwnPropertyName
                    .call(rt, howpn, String::createFromAscii(rt, "not_existing"))
                    .getBool());
+}
+
+TEST_P(JSITest, HostObjectProtoTest) {
+  class ProtoHostObject : public HostObject {
+    Value get(Runtime& rt, const PropNameID&) override {
+      return String::createFromAscii(rt, "phoprop");
+    }
+  };
+
+  rt.global().setProperty(
+      rt,
+      "pho",
+      Object::createFromHostObject(rt, std::make_shared<ProtoHostObject>()));
+
+  EXPECT_EQ(
+      eval("({__proto__: pho})[Symbol.toPrimitive]").getString(rt).utf8(rt),
+      "phoprop");
 }
 
 TEST_P(JSITest, ArrayTest) {
@@ -981,19 +999,6 @@ TEST_P(JSITest, JSErrorsCanBeConstructedWithStack) {
 }
 
 TEST_P(JSITest, JSErrorDoesNotInfinitelyRecurse) {
-  Value globalString = rt.global().getProperty(rt, "String");
-  rt.global().setProperty(rt, "String", Value::undefined());
-  try {
-    eval("throw Error('whoops')");
-    FAIL() << "expected exception";
-  } catch (const JSError& ex) {
-    EXPECT_EQ(
-        ex.getMessage(),
-        "[Exception while creating message string: callGlobalFunction: "
-        "JS global property 'String' is undefined, expected a Function]");
-  }
-  rt.global().setProperty(rt, "String", globalString);
-
   Value globalError = rt.global().getProperty(rt, "Error");
   rt.global().setProperty(rt, "Error", Value::undefined());
   try {
@@ -1197,10 +1202,11 @@ TEST_P(JSITest, MultiDecoratorTest) {
     int nest = 0;
   };
 
-  class MultiRuntime final : public WithRuntimeDecorator<WithTuple<Inc, Nest>> {
+  class MultiRuntime final
+      : public WithRuntimeDecorator<std::tuple<Inc, Nest>> {
    public:
     explicit MultiRuntime(std::unique_ptr<Runtime> rt)
-        : WithRuntimeDecorator<WithTuple<Inc, Nest>>(*rt, tuple_),
+        : WithRuntimeDecorator<std::tuple<Inc, Nest>>(*rt, tuple_),
           rt_(std::move(rt)) {}
 
     int count() {
@@ -1212,7 +1218,7 @@ TEST_P(JSITest, MultiDecoratorTest) {
 
    private:
     std::unique_ptr<Runtime> rt_;
-    WithTuple<Inc, Nest> tuple_;
+    std::tuple<Inc, Nest> tuple_;
   };
 
   MultiRuntime mrt(factory());
@@ -1269,6 +1275,70 @@ TEST_P(JSITest, SymbolTest) {
   EXPECT_TRUE(Value::strictEquals(
       rt, eval("Symbol.for('a')"), eval("Symbol.for('a')")));
   EXPECT_FALSE(Value::strictEquals(rt, eval("Symbol('a')"), eval("'a'")));
+}
+
+TEST_P(JSITest, JSErrorTest) {
+  // JSError creation can lead to further errors.  Make sure these
+  // cases are handled and don't cause weird crashes or other issues.
+  //
+  // Getting message property can throw
+
+  EXPECT_THROW(
+      eval("var GetMessageThrows = {get message() { throw Error('ex'); }};"
+           "throw GetMessageThrows;"),
+      JSIException);
+
+  EXPECT_THROW(
+      eval("var GetMessageThrows = {get message() { throw GetMessageThrows; }};"
+           "throw GetMessageThrows;"),
+      JSIException);
+
+  // Converting exception message to String can throw
+
+  EXPECT_THROW(
+      eval(
+          "Object.defineProperty("
+          "  globalThis, 'String', {configurable:true, get() { var e = Error(); e.message = 23; throw e; }});"
+          "var e = Error();"
+          "e.message = 17;"
+          "throw e;"),
+      JSIException);
+
+  EXPECT_THROW(
+      eval(
+          "var e = Error();"
+          "Object.defineProperty("
+          "  e, 'message', {configurable:true, get() { throw Error('getter'); }});"
+          "throw e;"),
+      JSIException);
+
+  EXPECT_THROW(
+      eval("var e = Error();"
+           "String = function() { throw Error('ctor'); };"
+           "throw e;"),
+      JSIException);
+
+  // Converting an exception message to String can return a non-String
+
+  EXPECT_THROW(
+      eval("String = function() { return 42; };"
+           "var e = Error();"
+           "e.message = 17;"
+           "throw e;"),
+      JSIException);
+
+  // Exception can be non-Object
+
+  EXPECT_THROW(eval("throw 17;"), JSIException);
+
+  EXPECT_THROW(eval("throw undefined;"), JSIException);
+
+  // Converting exception with no message or stack property to String can throw
+
+  EXPECT_THROW(
+      eval("var e = {toString() { throw new Error('errstr'); }};"
+           "throw e;"),
+      JSIException);
 }
 
 //----------------------------------------------------------------------

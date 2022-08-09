@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,7 @@
 
 #import <React/RCTImageViewManager.h>
 
-#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // TODO(macOS GH#774)
 
 #import <React/RCTConvert.h>
 #import <React/RCTImageSource.h>
@@ -25,7 +25,7 @@ RCT_EXPORT_MODULE()
   return [RCTImageShadowView new];
 }
 
-- (RCTPlatformView *)view // TODO(macOS ISS#2323203)
+- (RCTPlatformView *)view // TODO(macOS GH#774)
 {
   return [[RCTImageView alloc] initWithBridge:self.bridge];
 }
@@ -40,6 +40,7 @@ RCT_EXPORT_VIEW_PROPERTY(onPartialLoad, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onLoad, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onLoadEnd, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(resizeMode, RCTResizeMode)
+RCT_EXPORT_VIEW_PROPERTY(internal_analyticTag, NSString)
 RCT_REMAP_VIEW_PROPERTY(source, imageSources, NSArray<RCTImageSource *>);
 RCT_CUSTOM_VIEW_PROPERTY(tintColor, UIColor, RCTImageView)
 {

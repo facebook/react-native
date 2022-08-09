@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -65,6 +65,25 @@ public abstract class JSBundleLoader {
       public String loadScript(JSBundleLoaderDelegate delegate) {
         try {
           delegate.loadScriptFromFile(cachedFileLocation, sourceURL, false);
+          return sourceURL;
+        } catch (Exception e) {
+          throw DebugServerException.makeGeneric(sourceURL, e.getMessage(), e);
+        }
+      }
+    };
+  }
+
+  /**
+   * Same as {{@link JSBundleLoader#createCachedBundleFromNetworkLoader(String, String)}}, but for
+   * split bundles in development.
+   */
+  public static JSBundleLoader createCachedSplitBundleFromNetworkLoader(
+      final String sourceURL, final String cachedFileLocation) {
+    return new JSBundleLoader() {
+      @Override
+      public String loadScript(JSBundleLoaderDelegate delegate) {
+        try {
+          delegate.loadSplitBundleFromFile(cachedFileLocation, sourceURL);
           return sourceURL;
         } catch (Exception e) {
           throw DebugServerException.makeGeneric(sourceURL, e.getMessage(), e);

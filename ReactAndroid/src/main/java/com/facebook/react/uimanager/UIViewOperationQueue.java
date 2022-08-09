@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,14 +18,13 @@ import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.systrace.Systrace;
@@ -113,11 +112,20 @@ public class UIViewOperationQueue {
 
     @Override
     public void execute() {
-      mReactApplicationContext
-          .getNativeModule(UIManagerModule.class)
-          .getEventDispatcher()
-          .dispatchEvent(
-              OnLayoutEvent.obtain(mTag, mScreenX, mScreenY, mScreenWidth, mScreenHeight));
+      UIManagerModule uiManager = mReactApplicationContext.getNativeModule(UIManagerModule.class);
+
+      if (uiManager != null) {
+        uiManager
+            .getEventDispatcher()
+            .dispatchEvent(
+                OnLayoutEvent.obtain(
+                    -1 /* SurfaceId not used in classic renderer */,
+                    mTag,
+                    mScreenX,
+                    mScreenY,
+                    mScreenWidth,
+                    mScreenHeight));
+      }
     }
   }
 
@@ -305,7 +313,7 @@ public class UIViewOperationQueue {
       try {
         mNativeViewHierarchyManager.dispatchCommand(mTag, mCommand, mArgs);
       } catch (Throwable e) {
-        ReactSoftException.logSoftException(
+        ReactSoftExceptionLogger.logSoftException(
             TAG, new RuntimeException("Error dispatching View Command", e));
       }
     }
@@ -346,7 +354,7 @@ public class UIViewOperationQueue {
       try {
         mNativeViewHierarchyManager.dispatchCommand(mTag, mCommand, mArgs);
       } catch (Throwable e) {
-        ReactSoftException.logSoftException(
+        ReactSoftExceptionLogger.logSoftException(
             TAG, new RuntimeException("Error dispatching View Command", e));
       }
     }
@@ -593,7 +601,6 @@ public class UIViewOperationQueue {
   private final DispatchUIFrameCallback mDispatchUIFrameCallback;
   private final ReactApplicationContext mReactApplicationContext;
 
-  private final boolean mAllowViewCommandsQueue;
   private ArrayList<DispatchCommandViewOperation> mViewCommandOperations = new ArrayList<>();
 
   // Only called from the UIManager queue?
@@ -634,7 +641,6 @@ public class UIViewOperationQueue {
                 ? DEFAULT_MIN_TIME_LEFT_IN_FRAME_FOR_NONBATCHED_OPERATION_MS
                 : minTimeLeftInFrameForNonBatchedOperationMs);
     mReactApplicationContext = reactContext;
-    mAllowViewCommandsQueue = ReactFeatureFlags.allowEarlyViewCommandExecution;
   }
 
   /*package*/ NativeViewHierarchyManager getNativeViewHierarchyManager() {
@@ -706,22 +712,14 @@ public class UIViewOperationQueue {
       int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
     final DispatchCommandOperation command =
         new DispatchCommandOperation(reactTag, commandId, commandArgs);
-    if (mAllowViewCommandsQueue) {
-      mViewCommandOperations.add(command);
-    } else {
-      mOperations.add(command);
-    }
+    mViewCommandOperations.add(command);
   }
 
   public void enqueueDispatchCommand(
       int reactTag, String commandId, @Nullable ReadableArray commandArgs) {
     final DispatchStringCommandOperation command =
         new DispatchStringCommandOperation(reactTag, commandId, commandArgs);
-    if (mAllowViewCommandsQueue) {
-      mViewCommandOperations.add(command);
-    } else {
-      mOperations.add(command);
-    }
+    mViewCommandOperations.add(command);
   }
 
   public void enqueueUpdateExtraData(int reactTag, Object extraData) {
@@ -874,8 +872,7 @@ public class UIViewOperationQueue {
                 long runStartTime = SystemClock.uptimeMillis();
 
                 // All ViewCommands should be executed first as a perf optimization.
-                // This entire block is only executed if there's a separate viewCommand queue,
-                // which is currently gated by a ReactFeatureFlag.
+                // This entire block is only executed if there's at least one ViewCommand queued.
                 if (viewCommandOperations != null) {
                   for (DispatchCommandViewOperation op : viewCommandOperations) {
                     try {
@@ -895,11 +892,12 @@ public class UIViewOperationQueue {
                         mViewCommandOperations.add(op);
                       } else {
                         // Retryable exceptions should be logged, but never crash in debug.
-                        ReactSoftException.logSoftException(TAG, new ReactNoCrashSoftException(e));
+                        ReactSoftExceptionLogger.logSoftException(
+                            TAG, new ReactNoCrashSoftException(e));
                       }
                     } catch (Throwable e) {
                       // Non-retryable exceptions should be logged in prod, and crash in Debug.
-                      ReactSoftException.logSoftException(TAG, e);
+                      ReactSoftExceptionLogger.logSoftException(TAG, e);
                     }
                   }
                 }

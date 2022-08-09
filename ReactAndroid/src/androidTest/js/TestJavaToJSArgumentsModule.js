@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -29,20 +29,20 @@ function assertStrictStringEquals(a, b) {
 }
 
 const TestJavaToJSArgumentsModule = {
-  receiveBasicTypes: function(str, dbl, bool, null_arg) {
+  receiveBasicTypes: function (str, dbl, bool, null_arg) {
     assertEquals('foo', str);
     assertEquals(3.14, dbl);
     assertEquals(true, bool);
     assertEquals(null, null_arg);
   },
-  receiveArrayWithBasicTypes: function(arr) {
+  receiveArrayWithBasicTypes: function (arr) {
     assertEquals(4, arr.length);
     assertEquals('red panda', arr[0]);
     assertEquals(1.19, arr[1]);
     assertEquals(true, arr[2]);
     assertEquals(null, arr[3]);
   },
-  receiveNestedArray: function(arr) {
+  receiveNestedArray: function (arr) {
     assertEquals(2, arr.length);
     assertEquals('level1', arr[0]);
     const arr2 = arr[1];
@@ -50,7 +50,7 @@ const TestJavaToJSArgumentsModule = {
     const arr3 = arr2[1];
     assertEquals('level3', arr3[0]);
   },
-  receiveArrayWithMaps: function(arr) {
+  receiveArrayWithMaps: function (arr) {
     assertEquals(2, arr.length);
     const m1 = arr[0];
     const m2 = arr[1];
@@ -58,17 +58,17 @@ const TestJavaToJSArgumentsModule = {
     assertEquals('m1v2', m1.m1k2);
     assertEquals('m2v1', m2.m2k1);
   },
-  receiveMapWithBasicTypes: function(map) {
+  receiveMapWithBasicTypes: function (map) {
     assertEquals('stringValue', map.stringKey);
     assertEquals(3.14, map.doubleKey);
     assertEquals(true, map.booleanKey);
     assertEquals(null, map.nullKey);
   },
-  receiveNestedMap: function(map) {
+  receiveNestedMap: function (map) {
     const nestedMap = map.nestedMap;
     assertEquals('foxes', nestedMap.animals);
   },
-  receiveMapWithArrays: function(map) {
+  receiveMapWithArrays: function (map) {
     const a1 = map.array1;
     const a2 = map.array2;
     assertEquals(3, a1.length);
@@ -76,7 +76,7 @@ const TestJavaToJSArgumentsModule = {
     assertEquals(3, a1[0]);
     assertEquals(9, a2[1]);
   },
-  receiveMapAndArrayWithNullValues: function(map, array) {
+  receiveMapAndArrayWithNullValues: function (map, array) {
     assertEquals(null, map.string);
     assertEquals(null, map.array);
     assertEquals(null, map.map);
@@ -85,7 +85,7 @@ const TestJavaToJSArgumentsModule = {
     assertEquals(null, array[1]);
     assertEquals(null, array[2]);
   },
-  receiveMapWithMultibyteUTF8CharacterString: function(map) {
+  receiveMapWithMultibyteUTF8CharacterString: function (map) {
     assertStrictStringEquals('\u00A2', map['two-bytes']);
     assertStrictStringEquals('\u20AC', map['three-bytes']);
     assertStrictStringEquals('\uD83D\uDE1C', map['four-bytes']);
@@ -94,7 +94,7 @@ const TestJavaToJSArgumentsModule = {
       map.mixed,
     );
   },
-  receiveArrayWithMultibyteUTF8CharacterString: function(array) {
+  receiveArrayWithMultibyteUTF8CharacterString: function (array) {
     assertTrue(true);
     assertStrictStringEquals('\u00A2', array[0]);
     assertStrictStringEquals('\u20AC', array[1]);

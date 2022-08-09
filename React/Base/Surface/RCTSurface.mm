@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -57,6 +57,8 @@
   // Atomics
   atomic_bool _waitingForMountingStageOnMainQueue;
 }
+
+@synthesize delegate = _delegate;
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
@@ -370,10 +372,12 @@
 
 - (void)setSize:(CGSize)size
 {
-  [self setMinimumSize:size maximumSize:size];
+  // `viewportOffset` is intentionally zero because `RCTSurface` ignores it.
+  // However, it is needed in `RCTFabricSurface`.
+  [self setMinimumSize:size maximumSize:size viewportOffset:CGPointZero];
 }
 
-- (void)setMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize
+- (void)setMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize viewportOffset:(CGPoint)viewportOffset
 {
   {
     std::lock_guard<std::mutex> lock(_mutex);
@@ -397,6 +401,11 @@
     [rootShadowView setMinimumSize:minimumSize maximumSize:maximumSize];
     [uiManager setNeedsLayout];
   });
+}
+
+- (void)setMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize
+{
+  [self setMinimumSize:minimumSize maximumSize:maximumSize viewportOffset:CGPointZero];
 }
 
 - (CGSize)minimumSize
@@ -558,18 +567,16 @@
   }
 }
 
-- (BOOL)start
+- (void)start
 {
   // Does nothing.
   // The Start&Stop feature is not implemented for regular Surface yet.
-  return YES;
 }
 
-- (BOOL)stop
+- (void)stop
 {
   // Does nothing.
   // The Start&Stop feature is not implemented for regular Surface yet.
-  return YES;
 }
 
 #pragma mark - Mounting/Unmounting of React components
@@ -587,6 +594,11 @@
                  method:@"unmountApplicationComponentAtRootTag"
                    args:@[ rootViewTag ]
              completion:NULL];
+}
+
+- (NSInteger)rootTag
+{
+  return _rootViewTag.integerValue;
 }
 
 @end

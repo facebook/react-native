@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,6 +8,7 @@
 package com.facebook.react;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import androidx.annotation.Nullable;
@@ -65,6 +66,7 @@ public abstract class ReactActivity extends AppCompatActivity
 
   @Override
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
     mDelegate.onActivityResult(requestCode, resultCode, data);
   }
 
@@ -118,6 +120,12 @@ public abstract class ReactActivity extends AppCompatActivity
   public void onWindowFocusChanged(boolean hasFocus) {
     super.onWindowFocusChanged(hasFocus);
     mDelegate.onWindowFocusChanged(hasFocus);
+  }
+
+  @Override
+  public void onConfigurationChanged(Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+    mDelegate.onConfigurationChanged(newConfig);
   }
 
   protected final ReactNativeHost getReactNativeHost() {

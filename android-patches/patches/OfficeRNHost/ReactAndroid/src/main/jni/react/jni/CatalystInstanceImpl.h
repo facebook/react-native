@@ -1,8 +1,8 @@
---- "E:\\github\\rnm-63-fresh\\ReactAndroid\\src\\main\\jni\\react\\jni\\CatalystInstanceImpl.h"	2020-10-27 20:26:17.024172000 -0700
-+++ "E:\\github\\rnm-63\\ReactAndroid\\src\\main\\jni\\react\\jni\\CatalystInstanceImpl.h"	2020-10-13 21:51:15.981376100 -0700
-@@ -48,17 +48,16 @@
- 
-   CatalystInstanceImpl();
+--- ./ReactAndroid/src/main/jni/react/jni/CatalystInstanceImpl.h	2022-01-11 17:41:29.000000000 -0800
++++ /var/folders/vs/8_b205053dddbcv7btj0w0v80000gn/T/update-1h8V3n/merge/OfficeRNHost/ReactAndroid/src/main/jni/react/jni/CatalystInstanceImpl.h	2022-01-12 15:04:31.000000000 -0800
+@@ -55,17 +55,16 @@
+       bool enableRuntimeScheduler,
+       bool enableRuntimeSchedulerInTurboModule);
  
 +  void createModuleRegistry(
 +    jni::alias_ref<JavaMessageQueueThread::javaobject> nativeModulesQueue,
@@ -22,13 +22,13 @@
 -          cxxModules);
 +      jni::alias_ref<JavaMessageQueueThread::javaobject> jsQueue);
  
-   void extendNativeModules(
-       jni::alias_ref<jni::JCollection<
-@@ -95,6 +94,7 @@
+   // When called from CatalystInstanceImpl.java, warnings will be logged when
+   // CxxNativeModules are used. Java NativeModule usages log error in Java.
+@@ -108,6 +107,7 @@
    void setGlobalVariable(std::string propName, std::string &&jsonValue);
    jlong getJavaScriptContext();
    void handleMemoryPressure(int pressureLevel);
 +  jlong getPointerOfInstancePointer();
  
-   // This should be the only long-lived strong reference, but every C++ class
-   // will have a weak reference.
+   void createAndInstallRuntimeSchedulerIfNecessary();
+ 

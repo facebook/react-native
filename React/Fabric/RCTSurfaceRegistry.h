@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -17,7 +17,7 @@ typedef void (^RCTSurfaceEnumeratorBlock)(NSEnumerator<RCTFabricSurface *> *enum
 
 /**
  * Registry of Surfaces.
- * Incapsulates storing Surface objects and querying them by root tag.
+ * Encapsulates storing Surface objects and querying them by root tag.
  * All methods of the registry are thread-safe.
  * The registry stores Surface objects as weak references.
  */

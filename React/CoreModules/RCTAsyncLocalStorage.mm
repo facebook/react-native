@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -76,12 +76,12 @@ static NSString *RCTGetStorageDirectory()
   static NSString *storageDirectory = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-    // iOS and tvOS to use Caches folder.
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
+    // iOS to use Caches folder.
     // Don't use NSDocumentsDirectory otherwise the RCTAsyncLocalStorage_V1 will appear in apps that
     // expose the User's Documents folder such as Microsoft Office apps.
     storageDirectory = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
     // Apps on macos may not be sandboxed and using NSDocumentsDirectory with NSSearchPathForDirectoriesInDomains
     // will return the User's Document folder which is not what we want. Instead, we will query NSFileManager for
     // NSApplicationSupportDirectory which returns the correct URL path based on whether the app is sandboxed or not
@@ -98,7 +98,7 @@ static NSString *RCTGetStorageDirectory()
     } else {
       RCTLogError(@"Unable to access storage directory for RCTAsyncLocalStorage. %@", [error description]);
     }
-// ]TODO(macOS ISS#2323203)
+// ]TODO(macOS GH#774)
 #endif
     storageDirectory = [storageDirectory stringByAppendingPathComponent:RCTStorageDirectory];
   });
@@ -162,7 +162,7 @@ static NSCache *RCTGetCache()
   dispatch_once(&onceToken, ^{
     cache = [NSCache new];
     cache.totalCostLimit = 2 * 1024 * 1024; // 2MB
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
     // Clear cache in the event of a memory warning
     [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidReceiveMemoryWarningNotification
                                                       object:nil
@@ -170,7 +170,7 @@ static NSCache *RCTGetCache()
                                                   usingBlock:^(__unused NSNotification *note) {
                                                     [cache removeAllObjects];
                                                   }];
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
   });
   return cache;
 }
@@ -186,7 +186,7 @@ static NSDictionary *RCTDeleteStorageDirectory()
 
 #pragma mark - RCTAsyncLocalStorage
 
-@interface RCTAsyncLocalStorage () <NativeAsyncStorageSpec>
+@interface RCTAsyncLocalStorage () <NativeAsyncLocalStorageSpec>
 @end
 
 @implementation RCTAsyncLocalStorage {
@@ -251,10 +251,6 @@ RCT_EXPORT_MODULE()
 - (NSDictionary *)_ensureSetup
 {
   RCTAssertThread(RCTGetMethodQueue(), @"Must be executed on storage thread");
-
-#if TARGET_OS_TV
-  RCTLogWarn(@"Persistent storage is not supported on tvOS, your data may be removed at any point.");
-#endif
 
   NSError *error = nil;
   if (!RCTHasCreatedStorageDirectory) {
@@ -334,7 +330,11 @@ RCT_EXPORT_MODULE()
   if (errorOut) {
     return errorOut;
   }
+  if (![entry[1] isKindOfClass:[NSString class]]) {
+    return RCTMakeAndLogError(@"Invalid value for entry - must be a string. Got entry: ", entry, nil);
+  }
   NSString *value = entry[1];
+
   NSString *filePath = [self _filePathForKey:key];
   NSError *error;
   if (value.length <= RCTInlineValueThreshold) {
@@ -480,12 +480,10 @@ RCT_EXPORT_METHOD(getAllKeys : (RCTResponseSenderBlock)callback)
   }
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)
-    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
-                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeAsyncStorageSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
+  return std::make_shared<facebook::react::NativeAsyncLocalStorageSpecJSI>(params);
 }
 
 @end

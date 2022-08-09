@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -98,7 +98,7 @@ RCT_EXPORT_MODULE()
     [self invalidate];
     NSString *error =
         @"Runtime is not ready for debugging.\n "
-         "- Make sure Packager server is running.\n"
+         "- Make sure Metro is running.\n"
          "- Make sure the JavaScript Debugger is running and not paused on a "
          "breakpoint or exception and try reloading again.";
     _setupError = RCTErrorWithMessage(error);
@@ -165,7 +165,7 @@ RCT_EXPORT_MODULE()
 
   dispatch_async(_jsQueue, ^{
     if (!self.valid) {
-      callback(RCTErrorWithMessage(@"Runtime is not ready for debugging. Make sure Packager server is running."), nil);
+      callback(RCTErrorWithMessage(@"Runtime is not ready for debugging. Make sure Metro is running."), nil);
       return;
     }
 
@@ -276,6 +276,12 @@ RCT_EXPORT_MODULE()
 - (void)dealloc
 {
   RCTAssert(!self.valid, @"-invalidate must be called before -dealloc");
+}
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
+{
+  return nullptr;
 }
 
 @end

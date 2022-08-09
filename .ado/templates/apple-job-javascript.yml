@@ -12,15 +12,13 @@ steps:
       slice_name: ${{ parameters.slice_name }}
       xcode_version: ${{ parameters.xcode_version }}
 
-  - template: apple-droid-node-patching.yml
-    parameters:
-      apply_office_patches: $(apply_office_patches)
-
-  - script: 'yarn install'
-    displayName: 'yarn install'
+  - task: CmdLine@2
+    displayName: yarn install
+    inputs:
+      script: yarn install --frozen-lockfile
 
   - task: CmdLine@2
-    displayName: yarn test-ci
+    displayName: yarn test-ci [test]
     inputs:
       script: 'yarn test-ci'
   

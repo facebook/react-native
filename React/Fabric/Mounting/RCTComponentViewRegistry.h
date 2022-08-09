@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,7 +10,7 @@
 #import <React/RCTComponentViewDescriptor.h>
 #import <React/RCTComponentViewFactory.h>
 #import <React/RCTComponentViewProtocol.h>
-#import <react/core/ReactPrimitives.h>
+#import <react/renderer/core/ReactPrimitives.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -27,8 +27,9 @@ NS_ASSUME_NONNULL_BEGIN
  * for given `componentHandle` and with given `tag`.
  * #RefuseSingleUse
  */
-- (RCTComponentViewDescriptor)dequeueComponentViewWithComponentHandle:(facebook::react::ComponentHandle)componentHandle
-                                                                  tag:(facebook::react::Tag)tag;
+- (RCTComponentViewDescriptor const &)dequeueComponentViewWithComponentHandle:
+                                          (facebook::react::ComponentHandle)componentHandle
+                                                                          tag:(facebook::react::Tag)tag;
 
 /**
  * Puts a given native component view to the recycle pool.

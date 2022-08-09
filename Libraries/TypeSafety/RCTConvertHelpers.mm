@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -26,6 +26,12 @@ NSString *RCTBridgingToString(id value)
 {
   return [RCTConvert NSString:RCTNilIfNull(value)];
 }
+
+NSString *RCTBridgingToOptionalString(id value)
+{
+  return RCTBridgingToString(value);
+}
+
 
 folly::Optional<double> RCTBridgingToOptionalDouble(id value)
 {

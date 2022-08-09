@@ -1,18 +1,23 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // TODO(macOS GH#774)
 
 #import <React/RCTBridge.h>
 #import <React/RCTResizeMode.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 typedef void (^RCTImageLoaderProgressBlock)(int64_t progress, int64_t total);
 typedef void (^RCTImageLoaderPartialLoadBlock)(UIImage *image);
-typedef void (^RCTImageLoaderCompletionBlock)(NSError *error, UIImage *image);
+typedef void (^RCTImageLoaderCompletionBlock)(NSError * _Nullable error, UIImage * _Nullable image);
+// Metadata is passed as a id in an additional parameter because there are forks of RN without this parameter,
+// and the complexity of RCTImageLoader would make using protocols here difficult to typecheck.
+typedef void (^RCTImageLoaderCompletionBlockWithMetadata)(NSError * _Nullable error, UIImage * _Nullable image, id _Nullable metadata);
 typedef dispatch_block_t RCTImageLoaderCancellationBlock;
 
 /**
@@ -71,3 +76,5 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
 - (BOOL)shouldCacheLoadedImages;
 
 @end
+
+NS_ASSUME_NONNULL_END

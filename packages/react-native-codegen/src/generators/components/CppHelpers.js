@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,7 +9,7 @@
  */
 
 'use strict';
-import type {PropTypeShape} from '../../CodegenSchema';
+import type {NamedShape, PropTypeAnnotation} from '../../CodegenSchema';
 
 function upperCaseFirst(inString: string): string {
   if (inString.length === 0) {
@@ -20,10 +20,7 @@ function upperCaseFirst(inString: string): string {
 }
 
 function toSafeCppString(input: string): string {
-  return input
-    .split('-')
-    .map(upperCaseFirst)
-    .join('');
+  return input.split('-').map(upperCaseFirst).join('');
 }
 
 function toIntEnumValueName(propName: string, value: number): string {
@@ -55,7 +52,9 @@ function getCppTypeForAnnotation(
   }
 }
 
-function getImports(properties: $ReadOnlyArray<PropTypeShape>): Set<string> {
+function getImports(
+  properties: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
+): Set<string> {
   const imports: Set<string> = new Set();
 
   function addImportsForNativeName(name) {
@@ -67,7 +66,7 @@ function getImports(properties: $ReadOnlyArray<PropTypeShape>): Set<string> {
       case 'EdgeInsetsPrimitive':
         return;
       case 'ImageSourcePrimitive':
-        imports.add('#include <react/components/image/conversions.h>');
+        imports.add('#include <react/renderer/components/image/conversions.h>');
         return;
       default:
         (name: empty);
@@ -78,19 +77,20 @@ function getImports(properties: $ReadOnlyArray<PropTypeShape>): Set<string> {
   properties.forEach(prop => {
     const typeAnnotation = prop.typeAnnotation;
 
-    if (typeAnnotation.type === 'NativePrimitiveTypeAnnotation') {
+    if (typeAnnotation.type === 'ReservedPropTypeAnnotation') {
       addImportsForNativeName(typeAnnotation.name);
     }
 
     if (
       typeAnnotation.type === 'ArrayTypeAnnotation' &&
-      typeAnnotation.elementType.type === 'NativePrimitiveTypeAnnotation'
+      typeAnnotation.elementType.type === 'ReservedPropTypeAnnotation'
     ) {
       addImportsForNativeName(typeAnnotation.elementType.name);
     }
 
     if (typeAnnotation.type === 'ObjectTypeAnnotation') {
       const objectImports = getImports(typeAnnotation.properties);
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
       objectImports.forEach(imports.add, imports);
     }
   });
@@ -122,7 +122,7 @@ function getEnumMaskName(enumName: string): string {
 
 function convertDefaultTypeToString(
   componentName: string,
-  prop: PropTypeShape,
+  prop: NamedShape<PropTypeAnnotation>,
 ): string {
   const typeAnnotation = prop.typeAnnotation;
   switch (typeAnnotation.type) {
@@ -151,7 +151,7 @@ function convertDefaultTypeToString(
       return parseInt(defaultFloatVal, 10) === defaultFloatVal
         ? defaultFloatVal.toFixed(1)
         : String(typeAnnotation.default);
-    case 'NativePrimitiveTypeAnnotation':
+    case 'ReservedPropTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'ColorPrimitive':
           return '';
@@ -163,7 +163,9 @@ function convertDefaultTypeToString(
           return '';
         default:
           (typeAnnotation.name: empty);
-          throw new Error('Received unknown NativePrimitiveTypeAnnotation');
+          throw new Error(
+            `Unsupported type annotation: ${typeAnnotation.name}`,
+          );
       }
     case 'ArrayTypeAnnotation': {
       const elementType = typeAnnotation.elementType;
@@ -198,7 +200,7 @@ function convertDefaultTypeToString(
       )}`;
     default:
       (typeAnnotation: empty);
-      throw new Error('Received invalid typeAnnotation');
+      throw new Error(`Unsupported type annotation: ${typeAnnotation.type}`);
   }
 }
 

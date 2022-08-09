@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,24 +12,22 @@
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTDefines.h>
 #import <React/RCTDevSettings.h>
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 #import <React/RCTKeyCommands.h>
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 #import <React/RCTLog.h>
 #import <React/RCTReloadCommand.h>
 #import <React/RCTUtils.h>
-
 #import "CoreModulesPlugins.h"
 
 #if RCT_DEV_MENU
-
 #if RCT_ENABLE_INSPECTOR
 #import <React/RCTInspectorDevServerHelper.h>
 #endif
 
 NSString *const RCTShowDevMenuNotification = @"RCTShowDevMenuNotification";
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 
 // [TODO(OSS Candidate ISS#2710739)
 typedef void (*MotionEndedWithEventImpType)(id self, SEL selector, UIEventSubtype motion, UIEvent *event);
@@ -48,7 +46,7 @@ static MotionEndedWithEventImpType RCTOriginalUIWindowMotionEndedWithEventImp = 
 
 @end
 
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 
 @implementation RCTDevMenuItem {
   RCTDevMenuItemTitleBlock _titleBlock;
@@ -97,33 +95,36 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 @end
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 
 typedef void (^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
 
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 
 @interface RCTDevMenu () <RCTBridgeModule, RCTInvalidating, NativeDevMenuSpec>
 
 @end
 
 @implementation RCTDevMenu {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   UIAlertController *_actionSheet;
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
   NSMutableArray<RCTDevMenuItem *> *_extraMenuItems;
 }
 
 @synthesize bridge = _bridge;
+@synthesize moduleRegistry = _moduleRegistry;
+@synthesize callableJSModules = _callableJSModules;
+@synthesize bundleManager = _bundleManager;
 
 RCT_EXPORT_MODULE()
 
 + (void)initialize
 {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   // We're swizzling here because it's poor form to override methods in a category,
   RCTOriginalUIWindowMotionEndedWithEventImp = (MotionEndedWithEventImpType) RCTSwapInstanceMethods([UIWindow class], @selector(motionEnded:withEvent:), @selector(RCT_motionEnded:withEvent:)); // TODO(OSS Candidate ISS#2710739)
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 }
 
 + (BOOL)requiresMainQueueSetup
@@ -155,14 +156,16 @@ RCT_EXPORT_MODULE()
     [commands registerKeyCommandWithInput:@"i"
                             modifierFlags:UIKeyModifierCommand
                                    action:^(__unused UIKeyCommand *command) {
-                                     [weakSelf.bridge.devSettings toggleElementInspector];
+                                     [(RCTDevSettings *)[weakSelf.moduleRegistry moduleForName:"DevSettings"]
+                                         toggleElementInspector];
                                    }];
 
     // Reload in normal mode
     [commands registerKeyCommandWithInput:@"n"
                             modifierFlags:UIKeyModifierCommand
                                    action:^(__unused UIKeyCommand *command) {
-                                     [weakSelf.bridge.devSettings setIsDebuggingRemotely:NO];
+                                     [(RCTDevSettings *)[weakSelf.moduleRegistry moduleForName:"DevSettings"]
+                                         setIsDebuggingRemotely:NO];
                                    }];
 #endif
   }
@@ -177,21 +180,27 @@ RCT_EXPORT_MODULE()
 - (void)invalidate
 {
   _presentedItems = nil;
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   [_actionSheet dismissViewControllerAnimated:YES
                                    completion:^(void){
                                    }];
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 }
 
 - (void)showOnShake
 {
-  if ([_bridge.devSettings isShakeToShowDevMenuEnabled]) {
-    [self show];
+  if ([((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]) isShakeToShowDevMenuEnabled]) {
+    for (RCTPlatformWindow *window in [RCTSharedApplication() windows]) {
+      NSString *recursiveDescription = [window valueForKey:@"recursiveDescription"];
+      if ([recursiveDescription containsString:@"RCTView"]) {
+        [self show];
+        return;
+      }
+    }
   }
 }
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 - (void)toggle
 {
   if (_actionSheet) {
@@ -208,7 +217,7 @@ RCT_EXPORT_MODULE()
 {
   return _actionSheet != nil;
 }
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 
 - (void)addItem:(NSString *)title handler:(void (^)(void))handler
 {
@@ -223,8 +232,7 @@ RCT_EXPORT_MODULE()
 - (void)setDefaultJSBundle
 {
   [[RCTBundleURLProvider sharedSettings] resetToDefaults];
-  self->_bridge.bundleURL = [[RCTBundleURLProvider sharedSettings] jsBundleURLForFallbackResource:nil
-                                                                                fallbackExtension:nil];
+  self->_bundleManager.bundleURL = [[RCTBundleURLProvider sharedSettings] jsBundleURLForFallbackExtension:nil];
   RCTTriggerReloadCommandListeners(@"Dev menu - reset to default");
 }
 
@@ -233,9 +241,9 @@ RCT_EXPORT_MODULE()
   NSMutableArray<RCTDevMenuItem *> *items = [NSMutableArray new];
 
   // Add built-in items
-  __weak RCTBridge *bridge = _bridge;
-  __weak RCTDevSettings *devSettings = _bridge.devSettings;
+  __weak RCTDevSettings *devSettings = [_moduleRegistry moduleForName:"DevSettings"];
   __weak RCTDevMenu *weakSelf = self;
+  __weak RCTBundleManager *bundleManager = _bundleManager;
 
   [items addObject:[RCTDevMenuItem buttonItemWithTitle:@"Reload"
                                                handler:^{
@@ -243,15 +251,55 @@ RCT_EXPORT_MODULE()
                                                }]];
 
   if (!devSettings.isProfilingEnabled) {
-    if (!devSettings.isRemoteDebuggingAvailable) {
+#if RCT_ENABLE_INSPECTOR
+    if (devSettings.isDeviceDebuggingAvailable) {
+      // For on-device debugging we link out to Flipper.
+      // Since we're assuming Flipper is available, also include the DevTools.
+      // Note: For parity with the Android code.
+      [items addObject:[RCTDevMenuItem
+                           buttonItemWithTitleBlock:^NSString * {
+                             return @"Open Debugger";
+                           }
+                           handler:^{
+                             [RCTInspectorDevServerHelper
+                                          openURL:@"flipper://null/Hermesdebuggerrn?device=React%20Native"
+                                    withBundleURL:bundleManager.bundleURL
+                                 withErrorMessage:@"Failed to open Flipper. Please check that Metro is runnning."];
+                           }]];
+
+      [items addObject:[RCTDevMenuItem
+                           buttonItemWithTitleBlock:^NSString * {
+                             return @"Open React DevTools";
+                           }
+                           handler:^{
+                             [RCTInspectorDevServerHelper
+                                          openURL:@"flipper://null/React?device=React%20Native"
+                                    withBundleURL:bundleManager.bundleURL
+                                 withErrorMessage:@"Failed to open Flipper. Please check that Metro is runnning."];
+                           }]];
+    } else if (devSettings.isRemoteDebuggingAvailable) {
+#else
+    if (devSettings.isRemoteDebuggingAvailable) {
+#endif
+      // For remote debugging, we open up Chrome running the app in a web worker.
+      // Note that this requires async communication, which will not work for Turbo Modules.
+      [items addObject:[RCTDevMenuItem
+                           buttonItemWithTitleBlock:^NSString * {
+                             return devSettings.isDebuggingRemotely ? @"Stop Debugging" : @"Debug with Chrome";
+                           }
+                           handler:^{
+                             devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely;
+                           }]];
+    } else {
+      // If neither are available, we're defaulting to a message that tells you about remote debugging.
       [items
           addObject:[RCTDevMenuItem
                         buttonItemWithTitle:@"Debugger Unavailable"
                                     handler:^{
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
                                       NSString *message = RCTTurboModuleEnabled()
-                                          ? @"Debugging is not currently supported when TurboModule is enabled."
+                                          ? @"Debugging with Chrome is not supported when TurboModules are enabled."
                                           : @"Include the RCTWebSocket library to enable JavaScript debugging.";
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
                                       UIAlertController *alertController =
                                           [UIAlertController alertControllerWithTitle:@"Debugger Unavailable"
                                                                               message:message
@@ -268,23 +316,15 @@ RCT_EXPORT_MODULE()
                                       [RCTPresentedViewController() presentViewController:alertController
                                                                                  animated:YES
                                                                                completion:NULL];
-#else // [TODO(macOS ISS#2323203)
-                                      NSAlert *alert = [[NSAlert alloc] init];
-                                      [alert setMessageText:@"Remote JS Debugger Unavailable"];
-                                      [alert setInformativeText:@"You need to include the RCTWebSocket library to enable remote JS debugging"];
+#else // [TODO(macOS GH#774)
+                                      NSAlert *alert = [NSAlert new];
+                                      [alert setMessageText:@"Debugger Unavailable"];
+                                      [alert setInformativeText:message];
                                       [alert addButtonWithTitle:@"OK"];
-                                      [alert setAlertStyle:NSWarningAlertStyle];
+                                      [alert setAlertStyle:NSAlertStyleWarning];
                                       [alert beginSheetModalForWindow:[NSApp keyWindow] completionHandler:nil];
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
                                     }]];
-    } else {
-      [items addObject:[RCTDevMenuItem
-                           buttonItemWithTitleBlock:^NSString * {
-                             return devSettings.isDebuggingRemotely ? @"Stop Debugging" : @"Debug";
-                           }
-                           handler:^{
-                             devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely;
-                           }]];
     }
   }
 
@@ -307,56 +347,13 @@ RCT_EXPORT_MODULE()
                          }]];
   }
 
-  if (devSettings.isLiveReloadAvailable) {
-    [items addObject:[RCTDevMenuItem
-                         buttonItemWithTitleBlock:^NSString * {
-                           return devSettings.isDebuggingRemotely
-                               ? @"Systrace Unavailable"
-                               : devSettings.isProfilingEnabled ? @"Stop Systrace" : @"Start Systrace";
-                         }
-                         handler:^{
-                           if (devSettings.isDebuggingRemotely) {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-                             UIAlertController *alertController =
-                                 [UIAlertController alertControllerWithTitle:@"Systrace Unavailable"
-                                                                     message:@"Stop debugging to enable Systrace."
-                                                              preferredStyle:UIAlertControllerStyleAlert];
-                             __weak __typeof__(alertController) weakAlertController = alertController;
-                             [alertController
-                                 addAction:[UIAlertAction actionWithTitle:@"OK"
-                                                                    style:UIAlertActionStyleDefault
-                                                                  handler:^(__unused UIAlertAction *action) {
-                                                                    [weakAlertController
-                                                                        dismissViewControllerAnimated:YES
-                                                                                           completion:nil];
-                                                                  }]];
-                             [RCTPresentedViewController() presentViewController:alertController
-                                                                        animated:YES
-                                                                      completion:NULL];
-#else // [TODO(macOS ISS#2323203)
-                              NSAlert *alert = [[NSAlert alloc] init];
-                              [alert setMessageText:@"Systrace Unavailable"];
-                              [alert setInformativeText:@"You need to stop remote JS debugging to enable Systrace"];
-                              [alert addButtonWithTitle:@"OK"];
-                              [alert setAlertStyle:NSWarningAlertStyle];
-                              [alert beginSheetModalForWindow:[NSApp keyWindow] completionHandler:nil];
-#endif // ]TODO(macOS ISS#2323203)
-                           } else {
-                             devSettings.isProfilingEnabled = !devSettings.isProfilingEnabled;
-                           }
-                         }]];
-    // "Live reload" which refreshes on every edit was removed in favor of "Fast Refresh".
-    // While native code for "Live reload" is still there, please don't add the option back.
-    // See D15958697 for more context.
-  }
-
   [items
       addObject:[RCTDevMenuItem
                     buttonItemWithTitleBlock:^NSString * {
                       return @"Configure Bundler";
                     }
                     handler:^{
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
                       UIAlertController *alertController = [UIAlertController
                           alertControllerWithTitle:@"Configure Bundler"
                                            message:@"Provide a custom bundler address, port, and entrypoint."
@@ -384,7 +381,7 @@ RCT_EXPORT_MODULE()
                                                     [weakSelf setDefaultJSBundle];
                                                     return;
                                                   }
-                                                  NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+                                                  NSNumberFormatter *formatter = [NSNumberFormatter new];
                                                   formatter.numberStyle = NSNumberFormatterDecimalStyle;
                                                   NSNumber *portNumber =
                                                       [formatter numberFromString:portTextField.text];
@@ -393,16 +390,14 @@ RCT_EXPORT_MODULE()
                                                   }
                                                   [RCTBundleURLProvider sharedSettings].jsLocation = [NSString
                                                       stringWithFormat:@"%@:%d", ipTextField.text, portNumber.intValue];
-                                                  __strong RCTBridge *strongBridge = bridge;
-                                                  if (strongBridge) {
-                                                    NSURL *bundleURL = bundleRoot.length
-                                                        ? [[RCTBundleURLProvider sharedSettings]
-                                                              jsBundleURLForBundleRoot:bundleRoot
-                                                                      fallbackResource:nil]
-                                                        : [strongBridge.delegate sourceURLForBridge:strongBridge];
-                                                    strongBridge.bundleURL = bundleURL;
-                                                    RCTTriggerReloadCommandListeners(@"Dev menu - apply changes");
+                                                  if (bundleRoot.length == 0) {
+                                                    [bundleManager resetBundleURL];
+                                                  } else {
+                                                    bundleManager.bundleURL = [[RCTBundleURLProvider sharedSettings]
+                                                        jsBundleURLForBundleRoot:bundleRoot];
                                                   }
+
+                                                  RCTTriggerReloadCommandListeners(@"Dev menu - apply changes");
                                                 }]];
                       [alertController addAction:[UIAlertAction actionWithTitle:@"Reset to Default"
                                                                           style:UIAlertActionStyleDefault
@@ -415,14 +410,14 @@ RCT_EXPORT_MODULE()
                                                                           return;
                                                                         }]];
                       [RCTPresentedViewController() presentViewController:alertController animated:YES completion:NULL];
-#else // [TODO(macOS ISS#2323203)
-                      NSAlert *alert = [[NSAlert alloc] init];
+#else // [TODO(macOS GH#774)
+                      NSAlert *alert = [NSAlert new];
                       [alert setMessageText:@"Change packager location"];
                       [alert setInformativeText:@"Input packager IP, port and entrypoint"];
                       [alert addButtonWithTitle:@"Use bundled JS"];
                       [alert setAlertStyle:NSWarningAlertStyle];
                       [alert beginSheetModalForWindow:[NSApp keyWindow] completionHandler:nil];
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
                     }]];
 
   [items addObjectsFromArray:_extraMenuItems];
@@ -431,8 +426,8 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(show)
 {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  if (_actionSheet || !_bridge || RCTRunningInAppExtension()) {
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
+  if (_actionSheet || RCTRunningInAppExtension()) {
     return;
   }
 
@@ -444,9 +439,11 @@ RCT_EXPORT_METHOD(show)
   UIAlertControllerStyle style = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone
       ? UIAlertControllerStyleActionSheet
       : UIAlertControllerStyleAlert;
-  _actionSheet = [UIAlertController alertControllerWithTitle:@"React Native Debug Menu"
-                                                     message:description
-                                              preferredStyle:style];
+
+  NSString *debugMenuType = self.bridge ? @"Bridge" : @"Bridgeless";
+  NSString *debugMenuTitle = [NSString stringWithFormat:@"React Native Debug Menu (%@)", debugMenuType];
+
+  _actionSheet = [UIAlertController alertControllerWithTitle:debugMenuTitle message:description preferredStyle:style];
 
   NSArray<RCTDevMenuItem *> *items = [self _menuItemsToPresent];
   for (RCTDevMenuItem *item in items) {
@@ -462,20 +459,19 @@ RCT_EXPORT_METHOD(show)
   _presentedItems = items;
   [RCTPresentedViewController() presentViewController:_actionSheet animated:YES completion:nil];
 
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
   NSMenu *menu = [self menu];
   NSWindow *window = [NSApp keyWindow];
   NSEvent *event = [NSEvent mouseEventWithType:NSLeftMouseUp location:CGPointMake(0, 0) modifierFlags:0 timestamp:NSTimeIntervalSince1970 windowNumber:[window windowNumber]  context:nil eventNumber:0 clickCount:0 pressure:0.1];
   [NSMenu popUpContextMenu:menu withEvent:event forView:[window contentView]];
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
-  [_bridge enqueueJSCall:@"RCTNativeAppEventEmitter" method:@"emit" args:@[ @"RCTDevMenuShown" ] completion:NULL];
+  [_callableJSModules invokeModule:@"RCTNativeAppEventEmitter" method:@"emit" withArgs:@[ @"RCTDevMenuShown" ]];
 }
 
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
 - (NSMenu *)menu
 {
-  NSMenu *menu = nil;
   if ([_bridge.devSettings isSecondaryClickToShowDevMenuEnabled]) {
     NSMenu *menu = nil;
     if (_bridge) {
@@ -485,11 +481,11 @@ RCT_EXPORT_METHOD(show)
       }
       NSString *title = [NSString stringWithFormat:@"React Native: Development\n(%@)", desc];
 
-      menu = [[NSMenu alloc] init];
+      menu = [NSMenu new];
 
       NSMutableAttributedString *attributedTitle = [[NSMutableAttributedString alloc]initWithString:title];
       [attributedTitle setAttributes: @{ NSFontAttributeName : [NSFont menuFontOfSize:0] } range: NSMakeRange(0, [attributedTitle length])];
-      NSMenuItem *titleItem = [[NSMenuItem alloc] init];
+      NSMenuItem *titleItem = [NSMenuItem new];
       [titleItem setAttributedTitle:attributedTitle];
       [menu addItem:titleItem];
 
@@ -520,7 +516,7 @@ RCT_EXPORT_METHOD(show)
   _bridge.devSettings.isSecondaryClickToShowDevMenuEnabled = secondaryClickToShow;
 }
 
-#else // ]TODO(macOS ISS#2323203)
+#else // ]TODO(macOS GH#774)
 
 - (RCTDevMenuAlertActionHandler)alertActionHandlerForDevItem:(RCTDevMenuItem *__nullable)item
 {
@@ -532,7 +528,7 @@ RCT_EXPORT_METHOD(show)
     self->_actionSheet = nil;
   };
 }
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 
 #pragma mark - deprecated methods and properties
 
@@ -541,12 +537,12 @@ RCT_EXPORT_METHOD(show)
 
 - (void)setShakeToShow:(BOOL)shakeToShow
 {
-  _bridge.devSettings.isShakeToShowDevMenuEnabled = shakeToShow;
+  ((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]).isShakeToShowDevMenuEnabled = shakeToShow;
 }
 
 - (BOOL)shakeToShow
 {
-  return _bridge.devSettings.isShakeToShowDevMenuEnabled;
+  return ((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]).isShakeToShowDevMenuEnabled;
 }
 
 RCT_EXPORT_METHOD(reload)
@@ -558,37 +554,35 @@ RCT_EXPORT_METHOD(reload)
 RCT_EXPORT_METHOD(debugRemotely : (BOOL)enableDebug)
 {
   WARN_DEPRECATED_DEV_MENU_EXPORT();
-  _bridge.devSettings.isDebuggingRemotely = enableDebug;
+  ((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]).isDebuggingRemotely = enableDebug;
 }
 
 RCT_EXPORT_METHOD(setProfilingEnabled : (BOOL)enabled)
 {
   WARN_DEPRECATED_DEV_MENU_EXPORT();
-  _bridge.devSettings.isProfilingEnabled = enabled;
+  ((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]).isProfilingEnabled = enabled;
 }
 
 - (BOOL)profilingEnabled
 {
-  return _bridge.devSettings.isProfilingEnabled;
+  return ((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]).isProfilingEnabled;
 }
 
 RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
 {
   WARN_DEPRECATED_DEV_MENU_EXPORT();
-  _bridge.devSettings.isHotLoadingEnabled = enabled;
+  ((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]).isHotLoadingEnabled = enabled;
 }
 
 - (BOOL)hotLoadingEnabled
 {
-  return _bridge.devSettings.isHotLoadingEnabled;
+  return ((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]).isHotLoadingEnabled;
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)
-    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
-                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeDevMenuSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
+  return std::make_shared<facebook::react::NativeDevMenuSpecJSI>(params);
 }
 
 @end
@@ -626,12 +620,10 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
   return @"DevMenu";
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)
-    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
-                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeDevMenuSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
+  return std::make_shared<facebook::react::NativeDevMenuSpecJSI>(params);
 }
 
 @end

@@ -1,0 +1,125 @@
+require_relative '../../scripts/react_native_pods'
+
+source 'https://cdn.cocoapods.org/'
+platform :ios, '11.0'
+
+# Temporary solution to suppress duplicated GUID error.
+# Can be removed once we move to generate files outside pod install.
+install! 'cocoapods', :deterministic_uuids => false
+
+USE_FRAMEWORKS = ENV['USE_FRAMEWORKS'] == '1'
+
+if USE_FRAMEWORKS
+  puts "Installing pods with use_frameworks!"
+  use_frameworks!
+end
+
+if ENV['USE_HERMES'] == '1'
+  puts "Using Hermes engine"
+end
+
+def pods(options = {})
+  project 'RNTesterPods.xcodeproj'
+
+  # [TODO(macOS GH#774) - don't enable Fabric on RNTester by default until it works on macOS
+  fabric_enabled = false
+
+  # To use fabric: set the environment variable `USE_FABRIC` to 1, like below
+  #   $ USE_FABRIC=1 bundle exec pod install
+  # or
+  #   $ export USE_FABRIC=1
+  #   $ bundle exec pod install
+  if ENV['USE_FABRIC'] == '1'
+    puts "Building RNTester with Fabric enabled."
+    fabric_enabled = true
+  end
+  # ]TODO(macOS GH#774)
+
+  # TODO(macOS GH#774) - uncomment once Fabric works on macOS
+  # puts "Building RNTester with Fabric #{fabric_enabled ? "enabled" : "disabled"}."
+  # fabric_enabled = true
+
+  prefix_path = "../.."
+
+  if ENV['USE_CODEGEN_DISCOVERY'] == '1'
+    # Custom fabric component is only supported when using codegen discovery.
+    pod 'MyNativeView', :path => "NativeComponentExample"
+  end
+
+  use_react_native!(
+    path: prefix_path,
+    fabric_enabled: fabric_enabled,
+    hermes_enabled: ENV['USE_HERMES'] == '1',
+    app_path: "#{Dir.pwd}",
+    config_file_dir: "#{Dir.pwd}/node_modules",
+  )
+  pod 'ReactCommon/turbomodule/samples', :path => "#{prefix_path}/ReactCommon"
+
+  # Additional Pods which aren't included in the default Podfile
+  pod 'React-RCTPushNotification', :path => "#{prefix_path}/Libraries/PushNotificationIOS"
+  pod 'Yoga', :path => "#{prefix_path}/ReactCommon/yoga", :modular_headers => true
+  pod 'React-TurboModuleCxx-WinRTPort', :path => "#{prefix_path}/ReactTurboModuleCxx" # TODO(macOS GH#774)
+  pod 'React-TurboModuleCxx-RNW', :podspec => "#{prefix_path}/ReactTurboModuleCxx/React-TurboModuleCxx-RNW.podspec" # TODO(macOS GH#774)
+  # Additional Pods which are classed as unstable
+
+  # RNTester native modules and components
+  pod 'ScreenshotManager', :path => "NativeModuleExample"
+end
+
+target 'RNTester' do
+  pods()
+  if !USE_FRAMEWORKS
+    use_flipper!
+  end
+end
+
+target 'RNTesterUnitTests' do
+  pods()
+  pod 'React-RCTTest', :path => "./RCTTest"
+  pod 'OCMock', '~> 3.9.1'
+end
+
+target 'RNTesterIntegrationTests' do
+  pods()
+  pod 'React-RCTTest', :path => "./RCTTest"
+end
+
+target 'RNTester-macOS' do
+  platform :osx, '10.15'
+  pods()
+end
+
+target 'RNTester-macOSUnitTests' do
+  platform :osx, '10.15'
+  pods()
+  pod 'React-RCTTest', :path => "./RCTTest"
+  pod 'OCMock', '~> 3.9.1'
+end
+
+target 'RNTester-macOSIntegrationTests' do
+  platform :osx, '10.15'
+  pods()
+  pod 'React-RCTTest', :path => "./RCTTest"
+end
+
+# [TODO(macOS GH#774): these are special targets used by the internal Microsoft build pipeline
+target 'iosDeviceBuild' do
+  platform :ios, '11.0'
+  pods()
+end
+
+target 'iosSimulatorBuild' do
+  platform :ios, '11.0'
+  pods()
+end
+
+target 'macOSBuild' do
+  platform :osx, '10.15'
+  pods()
+end
+# ]TODO(macOS GH#774)
+
+post_install do |installer|
+  react_native_post_install(installer)
+  __apply_Xcode_12_5_M1_post_install_workaround(installer)
+end

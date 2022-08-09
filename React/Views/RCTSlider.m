@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,7 @@
 
 #import "RCTSlider.h"
 
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
 #import <Quartz/Quartz.h>
 
 @protocol RCTSliderCellDelegate <NSObject>
@@ -115,18 +115,18 @@
 #if TARGET_OS_OSX
 @interface RCTSlider () <RCTSliderCellDelegate>
 @end
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 @implementation RCTSlider {
   float _unclippedValue;
 }
 
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
 
 - (instancetype)initWithFrame:(NSRect)frameRect
 {
   if (self = [super initWithFrame:frameRect]) {
-    self.cell.controlSize = NSRegularControlSize;
+    self.cell.controlSize = NSControlSizeRegular;
     ((RCTSliderCell*)self.cell).delegate = self;
   }
   return self;
@@ -201,40 +201,40 @@
 	}
 }
 
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 - (void)setValue:(float)value
 {
   _unclippedValue = value;
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   super.value = value;
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
   self.floatValue = value;
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 }
 
 - (void)setMinimumValue:(float)minimumValue
 {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   super.minimumValue = minimumValue;
   super.value = _unclippedValue;
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
   _minimumValue = minimumValue;
   self.minValue = minimumValue;
   self.floatValue = _unclippedValue;
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 }
 
 - (void)setMaximumValue:(float)maximumValue
 {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   super.maximumValue = maximumValue;
   super.value = _unclippedValue;
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
   _maximumValue = maximumValue;
   self.maxValue = maximumValue;
   self.floatValue = _unclippedValue;
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 }
 
 - (void)setTrackImage:(UIImage *)trackImage
@@ -242,89 +242,89 @@
   if (trackImage != _trackImage) {
     _trackImage = trackImage;
     CGFloat width = trackImage.size.width / 2;
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
     UIImage *minimumTrackImage = [trackImage resizableImageWithCapInsets:(UIEdgeInsets){0, width, 0, width}
                                                             resizingMode:UIImageResizingModeStretch];
     UIImage *maximumTrackImage = [trackImage resizableImageWithCapInsets:(UIEdgeInsets){0, width, 0, width}
                                                             resizingMode:UIImageResizingModeStretch];
     [self setMinimumTrackImage:minimumTrackImage forState:UIControlStateNormal];
     [self setMaximumTrackImage:maximumTrackImage forState:UIControlStateNormal];
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
     trackImage.capInsets = NSEdgeInsetsMake(0, width-0.5, 0, width-0.5);
     trackImage.resizingMode = NSImageResizingModeStretch;
     ((RCTSliderCell*)self.cell).minimumValueImage = trackImage;
     ((RCTSliderCell*)self.cell).maximumValueImage = trackImage;
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
   }
 }
 
 - (void)setMinimumTrackImage:(UIImage *)minimumTrackImage
 {
   _trackImage = nil;
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   minimumTrackImage =
       [minimumTrackImage resizableImageWithCapInsets:(UIEdgeInsets){0, minimumTrackImage.size.width, 0, 0}
                                         resizingMode:UIImageResizingModeStretch];
   [self setMinimumTrackImage:minimumTrackImage forState:UIControlStateNormal];
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
   minimumTrackImage.capInsets = NSEdgeInsetsMake(0, minimumTrackImage.size.width-0.5, 0, 0);
   minimumTrackImage.resizingMode = NSImageResizingModeStretch;
   ((RCTSliderCell*)self.cell).minimumValueImage = minimumTrackImage;
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 }
 
 - (UIImage *)minimumTrackImage
 {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   return [self thumbImageForState:UIControlStateNormal];
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
   return ((RCTSliderCell*)self.cell).minimumValueImage;
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 }
 
 - (void)setMaximumTrackImage:(UIImage *)maximumTrackImage
 {
   _trackImage = nil;
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   maximumTrackImage =
       [maximumTrackImage resizableImageWithCapInsets:(UIEdgeInsets){0, 0, 0, maximumTrackImage.size.width}
                                         resizingMode:UIImageResizingModeStretch];
   [self setMaximumTrackImage:maximumTrackImage forState:UIControlStateNormal];
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
   maximumTrackImage.capInsets = NSEdgeInsetsMake(0, 0, 0, maximumTrackImage.size.width-0.5);
   maximumTrackImage.resizingMode = NSImageResizingModeStretch;
   ((RCTSliderCell*)self.cell).maximumValueImage = maximumTrackImage;
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 }
 
 - (UIImage *)maximumTrackImage
 {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   return [self thumbImageForState:UIControlStateNormal];
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
   return ((RCTSliderCell*)self.cell).maximumValueImage;
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 }
 
 - (void)setThumbImage:(UIImage *)thumbImage
 {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   [self setThumbImage:thumbImage forState:UIControlStateNormal];
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
   ((RCTSliderCell*)self.cell).knobImage = thumbImage;
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 }
 
 - (UIImage *)thumbImage
 {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   return [self thumbImageForState:UIControlStateNormal];
-#else  // [TODO(macOS ISS#2323203)
+#else  // [TODO(macOS GH#774)
   return ((RCTSliderCell*)self.cell).knobImage;
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 }
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203) - accessibility on macOS is on the NSCell rather than the NSControl
+#if !TARGET_OS_OSX // TODO(macOS GH#774) - accessibility on macOS is on the NSCell rather than the NSControl
 - (void)accessibilityIncrement
 {
   [super accessibilityIncrement];
@@ -344,6 +344,6 @@
     });
   }
 }
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 
 @end

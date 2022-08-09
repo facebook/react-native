@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -17,10 +17,10 @@ describe('mapWithSeparator', () => {
     const array = [1, 2, 3];
     const result = mapWithSeparator(
       array,
-      function(value) {
+      function (value) {
         return value * 2;
       },
-      function() {
+      function () {
         return 0;
       },
     );
@@ -31,10 +31,10 @@ describe('mapWithSeparator', () => {
     const array = [1, 2, 3];
     const result = mapWithSeparator(
       array,
-      function(value, index) {
+      function (value, index) {
         return index;
       },
-      function(index) {
+      function (index) {
         return index;
       },
     );
@@ -45,10 +45,10 @@ describe('mapWithSeparator', () => {
     const array = [3, 2, 1];
     const result = mapWithSeparator(
       array,
-      function(value, index, arr) {
+      function (value, index, arr) {
         return arr[index];
       },
-      function(index) {
+      function (index) {
         return index;
       },
     );
@@ -59,10 +59,10 @@ describe('mapWithSeparator', () => {
     const array = [];
     const result = mapWithSeparator(
       array,
-      function(value) {
+      function (value) {
         return value * 2;
       },
-      function() {
+      function () {
         return 0;
       },
     );
