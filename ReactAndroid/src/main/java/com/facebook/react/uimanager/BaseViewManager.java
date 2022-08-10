@@ -354,7 +354,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       }
     }
     if (accessibilityHint != null) {
-      contentDescription.add(accessibilityHint);
+      // contentDescription.add(accessibilityHint);
     }
     if (contentDescription.size() > 0) {
       view.setContentDescription(TextUtils.join(", ", contentDescription));

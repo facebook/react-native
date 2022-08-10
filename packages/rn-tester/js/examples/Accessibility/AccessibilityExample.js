@@ -129,7 +129,7 @@ class AccessibilityExample extends React.Component<{}> {
         </RNTesterBlock>
 
         <RNTesterBlock title="Text with accessibilityRole = header">
-          <Text accessibilityRole="header">This is a title.</Text>
+          <Text accessibilityRole="button">This is a title.</Text>
         </RNTesterBlock>
 
         <RNTesterBlock title="Touchable with accessibilityRole = link">
