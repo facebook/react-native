@@ -7,6 +7,7 @@
 
 #import "RCTSurfaceTouchHandler.h"
 
+#import <React/RCTReactTaggedView.h>
 #import <React/RCTUtils.h>
 #import <React/RCTViewComponentView.h>
 #import <UIKit/UIGestureRecognizerSubclass.h>
@@ -237,12 +238,12 @@ static UIView *FindClosestFabricManagedTouchableView(UIView *componentView)
   return nil;
 }
 
-static NSOrderedSet *GetTouchableViewsInPathToRoot(UIView *componentView)
+static NSOrderedSet<RCTReactTaggedView *> *GetTouchableViewsInPathToRoot(UIView *componentView)
 {
   NSMutableOrderedSet *results = [NSMutableOrderedSet orderedSet];
   do {
     if ([componentView respondsToSelector:@selector(touchEventEmitterAtPoint:)]) {
-      [results addObject:componentView];
+      [results addObject:[RCTReactTaggedView wrap:componentView]];
     }
     componentView = componentView.superview;
   } while (componentView);
@@ -378,9 +379,10 @@ static BOOL AnyTouchesChanged(NSSet<UITouch *> *touches)
   return NO;
 }
 
-static BOOL IsViewListeningToEvent(UIView *view, ViewEvents::Offset eventType)
+static BOOL IsViewListeningToEvent(RCTReactTaggedView *taggedView, ViewEvents::Offset eventType)
 {
-  if ([view.class conformsToProtocol:@protocol(RCTComponentViewProtocol)]) {
+  UIView *view = taggedView.view;
+  if (view && [view.class conformsToProtocol:@protocol(RCTComponentViewProtocol)]) {
     auto props = ((id<RCTComponentViewProtocol>)view).props;
     if (SharedViewProps viewProps = std::dynamic_pointer_cast<ViewProps const>(props)) {
       return viewProps->events[eventType];
@@ -389,10 +391,10 @@ static BOOL IsViewListeningToEvent(UIView *view, ViewEvents::Offset eventType)
   return NO;
 }
 
-static BOOL IsAnyViewInPathListeningToEvent(NSOrderedSet<UIView *> *viewPath, ViewEvents::Offset eventType)
+static BOOL IsAnyViewInPathListeningToEvent(NSOrderedSet<RCTReactTaggedView *> *viewPath, ViewEvents::Offset eventType)
 {
-  for (UIView *view in viewPath) {
-    if (IsViewListeningToEvent(view, eventType)) {
+  for (RCTReactTaggedView *taggedView in viewPath) {
+    if (IsViewListeningToEvent(taggedView, eventType)) {
       return YES;
     }
   }
@@ -427,7 +429,7 @@ struct PointerHasher {
   IdentifierPool<11> _identifierPool;
 
   UIHoverGestureRecognizer *_hoverRecognizer API_AVAILABLE(ios(13.0));
-  NSOrderedSet *_currentlyHoveredViews;
+  NSOrderedSet<RCTReactTaggedView *> *_currentlyHoveredViews;
 
   int _primaryTouchPointerId;
 }
@@ -780,7 +782,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 
   UIView *targetView = [listenerView hitTest:clientLocation withEvent:nil];
   targetView = FindClosestFabricManagedTouchableView(targetView);
-  UIView *prevTargetView = [_currentlyHoveredViews firstObject];
+
+  RCTReactTaggedView *targetTaggedView = [RCTReactTaggedView wrap:targetView];
+  RCTReactTaggedView *prevTargetTaggedView = [_currentlyHoveredViews firstObject];
+  UIView *prevTargetView = prevTargetTaggedView.view;
 
   CGPoint offsetLocation = [recognizer locationInView:targetView];
 
@@ -791,12 +796,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
     modifierFlags = 0;
   }
 
-  NSOrderedSet *eventPathViews = GetTouchableViewsInPathToRoot(targetView);
+  NSOrderedSet<RCTReactTaggedView *> *eventPathViews = GetTouchableViewsInPathToRoot(targetView);
 
   BOOL hasMoveListenerInEventPath = NO;
 
   // Over
-  if (prevTargetView != targetView) {
+  if (prevTargetTaggedView.tag != targetTaggedView.tag) {
     BOOL shouldEmitOverEvent = IsAnyViewInPathListeningToEvent(eventPathViews, ViewEvents::Offset::PointerOver);
     SharedTouchEventEmitter eventEmitter = GetTouchEmitterFromView(targetView, [recognizer locationInView:targetView]);
     if (shouldEmitOverEvent && eventEmitter != nil) {
@@ -815,11 +820,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
   // of events we send to JS
   BOOL hasParentEnterListener = NO;
 
-  for (UIView *componentView in [eventPathViews reverseObjectEnumerator]) {
-    BOOL shouldEmitEvent =
-        hasParentEnterListener || IsViewListeningToEvent(componentView, ViewEvents::Offset::PointerEnter);
+  for (RCTReactTaggedView *taggedView in [eventPathViews reverseObjectEnumerator]) {
+    UIView *componentView = taggedView.view;
 
-    if (shouldEmitEvent && ![_currentlyHoveredViews containsObject:componentView]) {
+    BOOL shouldEmitEvent = componentView != nil &&
+        (hasParentEnterListener || IsViewListeningToEvent(taggedView, ViewEvents::Offset::PointerEnter));
+
+    if (shouldEmitEvent && ![_currentlyHoveredViews containsObject:taggedView]) {
       SharedTouchEventEmitter eventEmitter =
           GetTouchEmitterFromView(componentView, [recognizer locationInView:componentView]);
       if (eventEmitter != nil) {
@@ -833,7 +840,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
       hasParentEnterListener = YES;
     }
 
-    if (!hasMoveListenerInEventPath && IsViewListeningToEvent(componentView, ViewEvents::Offset::PointerMove)) {
+    if (!hasMoveListenerInEventPath && IsViewListeningToEvent(taggedView, ViewEvents::Offset::PointerMove)) {
       hasMoveListenerInEventPath = YES;
     }
   }
@@ -849,7 +856,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
   }
 
   // Out
-  if (prevTargetView != targetView) {
+  if (prevTargetView != nil && prevTargetTaggedView.tag != targetTaggedView.tag) {
     BOOL shouldEmitOutEvent = IsAnyViewInPathListeningToEvent(_currentlyHoveredViews, ViewEvents::Offset::PointerOut);
     SharedTouchEventEmitter eventEmitter =
         GetTouchEmitterFromView(prevTargetView, [recognizer locationInView:prevTargetView]);
@@ -866,14 +873,16 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
   // we also need to efficiently keep track of if a view has a parent which is listening to the leave events,
   // so we first iterate from the root to the target, collecting the views which need events fired for, of which
   // we reverse iterate (now from target to root), actually emitting the events.
-  NSMutableOrderedSet *viewsToEmitLeaveEventsTo = [NSMutableOrderedSet orderedSet];
+  NSMutableOrderedSet<UIView *> *viewsToEmitLeaveEventsTo = [NSMutableOrderedSet orderedSet];
 
   BOOL hasParentLeaveListener = NO;
-  for (UIView *componentView in [_currentlyHoveredViews reverseObjectEnumerator]) {
-    BOOL shouldEmitEvent =
-        hasParentLeaveListener || IsViewListeningToEvent(componentView, ViewEvents::Offset::PointerLeave);
+  for (RCTReactTaggedView *taggedView in [_currentlyHoveredViews reverseObjectEnumerator]) {
+    UIView *componentView = taggedView.view;
 
-    if (shouldEmitEvent && ![eventPathViews containsObject:componentView]) {
+    BOOL shouldEmitEvent = componentView != nil &&
+        (hasParentLeaveListener || IsViewListeningToEvent(taggedView, ViewEvents::Offset::PointerLeave));
+
+    if (shouldEmitEvent && ![eventPathViews containsObject:taggedView]) {
       [viewsToEmitLeaveEventsTo addObject:componentView];
     }
 
