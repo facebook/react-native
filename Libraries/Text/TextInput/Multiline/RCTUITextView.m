@@ -125,6 +125,24 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
 }
 
 #if TARGET_OS_OSX // [TODO(macOS GH#774)
+- (void)toggleAutomaticSpellingCorrection:(id)sender
+{
+  self.automaticSpellingCorrectionEnabled = !self.isAutomaticSpellingCorrectionEnabled;
+  [_textInputDelegate automaticSpellingCorrectionDidChange:self.isAutomaticSpellingCorrectionEnabled];
+}
+
+- (void)toggleContinuousSpellChecking:(id)sender
+{
+  self.continuousSpellCheckingEnabled = !self.isContinuousSpellCheckingEnabled;
+  [_textInputDelegate continuousSpellCheckingDidChange:self.isContinuousSpellCheckingEnabled];
+}
+
+- (void)toggleGrammarChecking:(id)sender
+{
+  self.grammarCheckingEnabled = !self.isGrammarCheckingEnabled;
+  [_textInputDelegate grammarCheckingDidChange:self.isGrammarCheckingEnabled];
+}
+
 - (void)setSelectionColor:(RCTUIColor *)selectionColor
 {
   NSMutableDictionary *selectTextAttributes = self.selectedTextAttributes.mutableCopy;
