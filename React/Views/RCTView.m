@@ -723,7 +723,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
   if (layer.shadowColor != nil && layer.shadowOpacity > 0) {
     NSShadow *shadow = [NSShadow new];
 
-    shadow.shadowColor = [NSColor colorWithCGColor:layer.shadowColor];
+    shadow.shadowColor = [[NSColor colorWithCGColor:layer.shadowColor] colorWithAlphaComponent:layer.shadowOpacity];
     shadow.shadowOffset = layer.shadowOffset;
     shadow.shadowBlurRadius = layer.shadowRadius;
 
