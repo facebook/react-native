@@ -20,6 +20,7 @@
 - C++ TurboModule methods can now use mixed types ([3c569f546c](https://github.com/facebook/react-native/commit/3c569f546ca78b23fbcb9773a1273dd9710f8c60) by [@appden](https://github.com/appden))
 - [Animated] Add useNativeDriver as a param for setValue ([73191edb72](https://github.com/facebook/react-native/commit/73191edb7255b1ba5e9a0955a25c14250186a676) by [@genkikondo](https://github.com/genkikondo))
 - Add `Animated.Numeric` Flow type ([9eb7629ac6](https://github.com/facebook/react-native/commit/9eb7629ac66abc23b91b81d420891d68bbd4f578) by [@motiz88](https://github.com/motiz88))
+- Add LTI annotations to function params ([c940eb0c49](https://github.com/facebook/react-native/commit/c940eb0c49518b82a3999dcac3027aa70018c763), [e7a4dbcefc](https://github.com/facebook/react-native/commit/e7a4dbcefc9e393c41f4a796d522211bc1e60b6f), [d96744e277](https://github.com/facebook/react-native/commit/d96744e27711c4fa4dfad1b5a796283a232e60af) by [@pieterv](https://github.com/pieterv))
 
 #### Android specific
 
@@ -30,6 +31,9 @@
 - Ability to pass a Typeface object to ReactFontManager in addition to a font resource ID ([e2dd2e2a6e](https://github.com/facebook/react-native/commit/e2dd2e2a6ed17b366a3e2ec0942ea1d82a404c5d) by [@thurn](https://github.com/thurn))
 - Option to enable lazyViewManager support with `ViewManagerOnDemandReactPackage` ([d4b59cd9d0](https://github.com/facebook/react-native/commit/d4b59cd9d02a8c4eda3ac4bf89cfe8161847adf0) by [@javache](https://github.com/javache))
 - Support for dataUri in form data ([c663c0ec9d](https://github.com/facebook/react-native/commit/c663c0ec9deee7281f819f222bb29ad79e99f3b8) by [@hetanthakkar1](https://github.com/hetanthakkar1))
+- Explicitly set language to JAVA where it is missing in BUCK files ([0d915aa942](https://github.com/facebook/react-native/commit/0d915aa94216a4f99e91822abe4ec837169fe855))
+- Explicitly set language to JAVA where it is missing in BUCK files in test targets ([fd0b82cd3c](https://github.com/facebook/react-native/commit/fd0b82cd3c460e3e00e31ea279f876276feaec15))
+- Specify the language field in some codegen modules ([daea147cc5](https://github.com/facebook/react-native/commit/daea147cc56ef1041aceda3daec2f58cc4d97bba))
 
 #### iOS specific
 
@@ -55,6 +59,10 @@
 - Bump React Native Codegen to 0.70.0 ([2a274c1a08](https://github.com/facebook/react-native/commit/2a274c1a082c3291d2df1a4b960bf654e217a4dd) by [@cortinico](https://github.com/cortinico))
 - Hermes version bump. ([8c682ddd59](https://github.com/facebook/react-native/commit/8c682ddd599b75a547975104cb6f90eec8753daf) by [@dmitryrykun](https://github.com/dmitryrykun))
 - Codemod `{...null}` to `{}` in xplat/js ([f392ba6725](https://github.com/facebook/react-native/commit/f392ba67254e95126974fafabf3e4ef0300e24e8) by [@gkz](https://github.com/gkz))
+- Fix TextInput dropping text when used as uncontrolled component with `defaultValue` ([51f49ca998](https://github.com/facebook/react-native/commit/51f49ca9982f24de08f5a5654a5210e547bb5b86))
+- Suppress errors ahead of launch ([67e12a19cb](https://github.com/facebook/react-native/commit/67e12a19cb236fbe0809fbbc9e516b37a5848a6a) by [@gkz](https://github.com/gkz))
+- Suppress missing 'this' annotations ([6c563a507f](https://github.com/facebook/react-native/commit/6c563a507fd8c41e04a1e62e2ba87993c6eb1e2f) by [@pieterv](https://github.com/pieterv))
+- Suppress missing annotations ([66c6a75650](https://github.com/facebook/react-native/commit/66c6a75650f91d61e7e87a8e661d87101e26cf9c) by [@pieterv](https://github.com/pieterv))
 
 #### Android specific
 
@@ -92,6 +100,7 @@
 - The diffs renames the required variable which was causing conflicts in names with Apple core SDK's ([086c13dd5f](https://github.com/facebook/react-native/commit/086c13dd5fba3f77acbc70c9bdedc9299118b526) by [@arinjay](https://github.com/arinjay))
 - Removed `EventEmitter.prototype.removeSubscription` method. ([870755fa7e](https://github.com/facebook/react-native/commit/870755fa7e7011ac46d269d5fb66d2a1d1543442) by [@yungsters](https://github.com/yungsters))
 - Remove deprecated removeListener methods ([2596b2f695](https://github.com/facebook/react-native/commit/2596b2f6954362d2cd34a1be870810ab90cbb916) by [@matinzd](https://github.com/matinzd))
+- Remove APPLETVOS variants from BUCk targets. ([cf2e27c388](https://github.com/facebook/react-native/commit/cf2e27c3888ded6f851ba267597ef13f1d0cfd8c) by [@d16r](https://github.com/d16r))
 
 #### iOS specific
 
@@ -126,6 +135,7 @@
 - Fixed an edge case that event dispatching is failed after pre-allocation of a view and before the view is mounted. ([a093fe5f2f](https://github.com/facebook/react-native/commit/a093fe5f2fae4e9996b0cbffdfccdce8e58e8cf1) by [@ryancat](https://github.com/ryancat))
 - Avoid crash by handling missing views in dispatchViewManagerCommand ([ee1a191cb1](https://github.com/facebook/react-native/commit/ee1a191cb1c10085722d57fc276734f83e86a4f3) by [@hsource](https://github.com/hsource))
 - Pass react build dir to cmake ([6ab7a99518](https://github.com/facebook/react-native/commit/6ab7a99518f8ba0d53e62e35d230ebec78e50217) by [@janicduplessis](https://github.com/janicduplessis))
+- Fix missing space in ReactPropertyException message ([24560b6718](https://github.com/facebook/react-native/commit/24560b67184da00e05491af38289865c4b934ee8) by [@markv](https://github.com/markv))
 
 #### iOS specific
 
@@ -143,6 +153,7 @@
 - Fix blank spaces that don't recover as you scroll when in an RTL locale and e.nativeEvent.zoomScale is -1. ([bc7b5c3011](https://github.com/facebook/react-native/commit/bc7b5c3011460935614a47a03cd077cd1059de72), [2f491bfa9f](https://github.com/facebook/react-native/commit/2f491bfa9f86c3db2e459e331f39bc3cf12e7239))
 - Fixed paddingTop not being applied when using padding and paddingVertical in multiline textinput ([2fb107c9a6](https://github.com/facebook/react-native/commit/2fb107c9a63aacd2c880ad6abedaad67ffb6022b) by [@hetanthakkar1](https://github.com/hetanthakkar1))
 - Fixed the ability to pass the port to use for Metro when running `react-native run-ios --port <port>`. ([7dc0b5153e](https://github.com/facebook/react-native/commit/7dc0b5153e4eb91c333238a58fe8c75a47cb5f81) by [@lindboe](https://github.com/lindboe))
+- Fix missing imports ([c78babac39](https://github.com/facebook/react-native/commit/c78babac39b7c64e03e137d8fddd91e783303426))
 
 ### Security
 
@@ -151,20 +162,6 @@
 
 ### Unknown
 
-- Fix TextInput dropping text when used as uncontrolled component with `defaultValue` ([51f49ca998](https://github.com/facebook/react-native/commit/51f49ca9982f24de08f5a5654a5210e547bb5b86))
-- Set explicit language in robolectric tests ([fd0b82cd3c](https://github.com/facebook/react-native/commit/fd0b82cd3c460e3e00e31ea279f876276feaec15))
-- Suppress errors ahead of launch ([67e12a19cb](https://github.com/facebook/react-native/commit/67e12a19cb236fbe0809fbbc9e516b37a5848a6a) by [@gkz](https://github.com/gkz))
-- Fix more missing language issues ([7d8907fe52](https://github.com/facebook/react-native/commit/7d8907fe52770ca05b19828678a6f346d4a3329c))
-- Suppress missing 'this' annotations in xplat/js ([6c563a507f](https://github.com/facebook/react-native/commit/6c563a507fd8c41e04a1e62e2ba87993c6eb1e2f) by [@pieterv](https://github.com/pieterv))
-- Remove APPLETVOS variants from targets. ([cf2e27c388](https://github.com/facebook/react-native/commit/cf2e27c3888ded6f851ba267597ef13f1d0cfd8c) by [@d16r](https://github.com/d16r))
-- Specify the language field in some codegen modules ([daea147cc5](https://github.com/facebook/react-native/commit/daea147cc56ef1041aceda3daec2f58cc4d97bba))
-- Fix missing space in ReactPropertyException message ([24560b6718](https://github.com/facebook/react-native/commit/24560b67184da00e05491af38289865c4b934ee8) by [@markv](https://github.com/markv))
-- Suppress missing annotations in xplat/js ([66c6a75650](https://github.com/facebook/react-native/commit/66c6a75650f91d61e7e87a8e661d87101e26cf9c) by [@pieterv](https://github.com/pieterv))
-- Add LTI annotations to function params in xplat/js [manually-modified] ([c940eb0c49](https://github.com/facebook/react-native/commit/c940eb0c49518b82a3999dcac3027aa70018c763) by [@pieterv](https://github.com/pieterv))
-- Add LTI annotations to function params in xplat/js [1/2] ([e7a4dbcefc](https://github.com/facebook/react-native/commit/e7a4dbcefc9e393c41f4a796d522211bc1e60b6f) by [@pieterv](https://github.com/pieterv))
-- Add LTI annotations to function params in xplat/js [2/2] ([d96744e277](https://github.com/facebook/react-native/commit/d96744e27711c4fa4dfad1b5a796283a232e60af) by [@pieterv](https://github.com/pieterv))
-- Switch from babel-eslint to hermes-eslint for flow code ([7b0ba6d94f](https://github.com/facebook/react-native/commit/7b0ba6d94f9a325efdded1d2a1727c833b8f97f4) by [@bradzacher](https://github.com/bradzacher))
-- Fixing more imports ([c78babac39](https://github.com/facebook/react-native/commit/c78babac39b7c64e03e137d8fddd91e783303426))
 - Daily `arc lint --take CLANGFORMAT` ([90998a8f85](https://github.com/facebook/react-native/commit/90998a8f85b9f1eaa6b715a31bd801d78c419c2c) by [@undefined](https://github.com/undefined))
 - Update ktfmt component on FBS:master ([f296e0e5b3](https://github.com/facebook/react-native/commit/f296e0e5b3d8b63d72f6a23824369466693f774c) by [@cgrushko](https://github.com/cgrushko))
 - Create Apple MSYS Mailbox Provider TurboModule ([528414cc89](https://github.com/facebook/react-native/commit/528414cc890a81c63add69bd58945c082c41b57c))
@@ -177,10 +174,6 @@
 - Fix import path breakage ([2e1e62f2bf](https://github.com/facebook/react-native/commit/2e1e62f2bf043ea0bf9926e1f5786ca54a22005e) by [@aniketmathur](https://github.com/aniketmathur))
 - Fixup query errors ([05c594d2f5](https://github.com/facebook/react-native/commit/05c594d2f5f41879ecca74bfa9716a161c20bf13) by [@aniketmathur](https://github.com/aniketmathur))
 - Codemod `Object.assign` with object literal first argument to object spread in Xplat ([d992ae0448](https://github.com/facebook/react-native/commit/d992ae0448d2a032e1b65057fb8cb7d4725aa00d) by [@gkz](https://github.com/gkz))
-
-#### Android Unknown
-
-- Explicitly set language to JAVA where it is missing [xplat] (round 1) ([0d915aa942](https://github.com/facebook/react-native/commit/0d915aa94216a4f99e91822abe4ec837169fe855))
 
 #### Failed to parse
 
