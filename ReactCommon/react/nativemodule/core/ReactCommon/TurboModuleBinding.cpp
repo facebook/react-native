@@ -24,16 +24,13 @@ namespace react {
 
 TurboModuleBinding::TurboModuleBinding(
     const TurboModuleProviderFunctionType &&moduleProvider,
-    TurboModuleBindingMode bindingMode,
     std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection)
     : moduleProvider_(std::move(moduleProvider)),
-      longLivedObjectCollection_(std::move(longLivedObjectCollection)),
-      bindingMode_(bindingMode) {}
+      longLivedObjectCollection_(std::move(longLivedObjectCollection)) {}
 
 void TurboModuleBinding::install(
     jsi::Runtime &runtime,
     const TurboModuleProviderFunctionType &&moduleProvider,
-    TurboModuleBindingMode bindingMode,
     std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection) {
   runtime.global().setProperty(
       runtime,
@@ -44,7 +41,6 @@ void TurboModuleBinding::install(
           1,
           [binding = TurboModuleBinding(
                std::move(moduleProvider),
-               bindingMode,
                std::move(longLivedObjectCollection))](
               jsi::Runtime &rt,
               const jsi::Value &thisVal,
@@ -80,28 +76,15 @@ jsi::Value TurboModuleBinding::getModule(
     module = moduleProvider_(moduleName);
   }
   if (module) {
-    // Default behaviour
-    if (bindingMode_ == TurboModuleBindingMode::HostObject) {
-      return jsi::Object::createFromHostObject(runtime, std::move(module));
-    }
-
     auto &jsRepresentation = module->jsRepresentation_;
     if (!jsRepresentation) {
       jsRepresentation = std::make_unique<jsi::Object>(runtime);
-      if (bindingMode_ == TurboModuleBindingMode::Prototype) {
-        // Option 1: create plain object, with it's prototype mapped back to the
-        // hostobject. Any properties accessed are stored on the plain object
-        auto hostObject =
-            jsi::Object::createFromHostObject(runtime, std::move(module));
-        jsRepresentation->setProperty(
-            runtime, "__proto__", std::move(hostObject));
-      } else {
-        // Option 2: eagerly install all hostfunctions at this point, avoids
-        // prototype
-        for (auto &propName : module->getPropertyNames(runtime)) {
-          module->get(runtime, propName);
-        }
-      }
+      // Create plain object, with it's prototype mapped back to the hostobject.
+      // Any properties accessed are cached on the plain object.
+      auto hostObject =
+          jsi::Object::createFromHostObject(runtime, std::move(module));
+      jsRepresentation->setProperty(
+          runtime, "__proto__", std::move(hostObject));
     }
     return jsi::Value(runtime, *jsRepresentation);
   } else {
