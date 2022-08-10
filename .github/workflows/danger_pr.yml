@@ -26,3 +26,5 @@ jobs:
       - name: Danger
         run: yarn danger ci --use-github-checks --failOnErrors
         working-directory: bots
+        env:
+          DANGER_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
