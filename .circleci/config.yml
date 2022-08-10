@@ -625,11 +625,6 @@ jobs:
           command: ./gradlew buildAll
 
       - run:
-          name: Compile Native Libs for Unit and Integration Tests
-          command: ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=$BUILD_THREADS
-          no_output_timeout: 30m
-
-      - run:
           name: Build RN Tester for Release using Gradle
           command: ./gradlew packages:rn-tester:android:app:assembleRelease
 
