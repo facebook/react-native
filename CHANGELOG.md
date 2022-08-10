@@ -31,9 +31,6 @@
 - Ability to pass a Typeface object to ReactFontManager in addition to a font resource ID ([e2dd2e2a6e](https://github.com/facebook/react-native/commit/e2dd2e2a6ed17b366a3e2ec0942ea1d82a404c5d) by [@thurn](https://github.com/thurn))
 - Option to enable lazyViewManager support with `ViewManagerOnDemandReactPackage` ([d4b59cd9d0](https://github.com/facebook/react-native/commit/d4b59cd9d02a8c4eda3ac4bf89cfe8161847adf0) by [@javache](https://github.com/javache))
 - Support for dataUri in form data ([c663c0ec9d](https://github.com/facebook/react-native/commit/c663c0ec9deee7281f819f222bb29ad79e99f3b8) by [@hetanthakkar1](https://github.com/hetanthakkar1))
-- Explicitly set language to JAVA where it is missing in BUCK files ([0d915aa942](https://github.com/facebook/react-native/commit/0d915aa94216a4f99e91822abe4ec837169fe855))
-- Explicitly set language to JAVA where it is missing in BUCK files in test targets ([fd0b82cd3c](https://github.com/facebook/react-native/commit/fd0b82cd3c460e3e00e31ea279f876276feaec15))
-- Specify the language field in some codegen modules ([daea147cc5](https://github.com/facebook/react-native/commit/daea147cc56ef1041aceda3daec2f58cc4d97bba))
 
 #### iOS specific
 
@@ -162,7 +159,6 @@
 
 ### Unknown
 
-- Daily `arc lint --take CLANGFORMAT` ([90998a8f85](https://github.com/facebook/react-native/commit/90998a8f85b9f1eaa6b715a31bd801d78c419c2c) by [@undefined](https://github.com/undefined))
 - Update ktfmt component on FBS:master ([f296e0e5b3](https://github.com/facebook/react-native/commit/f296e0e5b3d8b63d72f6a23824369466693f774c) by [@cgrushko](https://github.com/cgrushko))
 - Create Apple MSYS Mailbox Provider TurboModule ([528414cc89](https://github.com/facebook/react-native/commit/528414cc890a81c63add69bd58945c082c41b57c))
 - Turn on env-mode ssa ([4f1aa4d686](https://github.com/facebook/react-native/commit/4f1aa4d686291d05d5fcab2bdcf691bb375d6fec) by [@jbrown215](https://github.com/jbrown215))
