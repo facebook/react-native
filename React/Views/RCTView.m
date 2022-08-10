@@ -1573,177 +1573,38 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
 #pragma mark - Keyboard Events
 
 #if TARGET_OS_OSX
-NSString* const leftArrowPressKey = @"ArrowLeft";
-NSString* const rightArrowPressKey = @"ArrowRight";
-NSString* const upArrowPressKey = @"ArrowUp";
-NSString* const downArrowPressKey = @"ArrowDown";
+- (RCTViewKeyboardEvent*)keyboardEvent:(NSEvent*)event {
+  BOOL keyDown = event.type == NSEventTypeKeyDown;
+  NSArray<NSString *> *validKeys = keyDown ? self.validKeysDown : self.validKeysUp;
+  NSString *key = [RCTViewKeyboardEvent keyFromEvent:event];
 
-- (RCTViewKeyboardEvent*)keyboardEvent:(NSEvent*)event downPress:(BOOL)downPress {
-  // modifiers
-  BOOL capsLockKey = NO;
-  BOOL shiftKey = NO;
-  BOOL controlKey = NO;
-  BOOL optionKey = NO;
-  BOOL commandKey = NO;
-  BOOL numericPadKey = NO;
-  BOOL helpKey = NO;
-  BOOL functionKey = NO;
-  // commonly used key short-cuts
-  BOOL leftArrowKey = NO;
-  BOOL rightArrowKey = NO;
-  BOOL upArrowKey = NO;
-  BOOL downArrowKey = NO;
-  BOOL tabKeyPressed = NO;
-  BOOL escapeKeyPressed = NO;
-  NSString *key = event.charactersIgnoringModifiers;
-  if ([key length] == 0) {
-        return nil;
-  }
-  unichar const code = [key characterAtIndex:0];
-
-  // detect arrow key presses
-  if (code == NSLeftArrowFunctionKey) {
-    leftArrowKey = YES;
-  } else if (code == NSRightArrowFunctionKey) {
-    rightArrowKey = YES;
-  } else if (code == NSUpArrowFunctionKey) {
-    upArrowKey = YES;
-  } else if (code == NSDownArrowFunctionKey) {
-    downArrowKey = YES;
-  }
-  
-  // detect special key presses via the key code
-  switch (event.keyCode) {
-    case 48: // Tab
-      tabKeyPressed = YES;
-      break;
-    case 53: // Escape
-      escapeKeyPressed = YES;
-      break;
-    default:
-      break;
+  // Only post events for keys we care about
+  if (![validKeys containsObject:key]) {
+    return nil;
   }
 
-  // detect modifier flags
-  if (event.modifierFlags & NSEventModifierFlagCapsLock) {
-    capsLockKey = YES;
-  } else if (event.modifierFlags & NSEventModifierFlagShift) {
-    shiftKey = YES;
-  } else if (event.modifierFlags & NSEventModifierFlagControl) {
-    controlKey = YES;
-  } else if (event.modifierFlags & NSEventModifierFlagOption) {
-    optionKey = YES;
-  } else if (event.modifierFlags & NSEventModifierFlagCommand) {
-    commandKey = YES;
-  } else if (event.modifierFlags & NSEventModifierFlagNumericPad) {
-    numericPadKey = YES;
-  } else if (event.modifierFlags & NSEventModifierFlagHelp) {
-    helpKey = YES;
-  } else if (event.modifierFlags & NSEventModifierFlagFunction) {
-    functionKey = YES;
-  }
-
-  RCTViewKeyboardEvent *keyboardEvent = nil;
-  // only post events for keys we care about
-  if (downPress) {
-    NSString *keyToReturn = [self keyIsValid:key left:leftArrowKey right:rightArrowKey up:upArrowKey down:downArrowKey tabKey:tabKeyPressed escapeKey:escapeKeyPressed validKeys:[self validKeysDown]];
-    if (keyToReturn != nil) {
-      keyboardEvent = [RCTViewKeyboardEvent keyDownEventWithReactTag:self.reactTag
-                                                         capsLockKey:capsLockKey
-                                                            shiftKey:shiftKey
-                                                             ctrlKey:controlKey
-                                                              altKey:optionKey
-                                                             metaKey:commandKey
-                                                       numericPadKey:numericPadKey
-                                                             helpKey:helpKey
-                                                         functionKey:functionKey
-                                                        leftArrowKey:leftArrowKey
-                                                       rightArrowKey:rightArrowKey
-                                                          upArrowKey:upArrowKey
-                                                        downArrowKey:downArrowKey
-                                                                 key:keyToReturn];
-    }
-  } else {
-    NSString *keyToReturn = [self keyIsValid:key left:leftArrowKey right:rightArrowKey up:upArrowKey down:downArrowKey tabKey:tabKeyPressed escapeKey:escapeKeyPressed validKeys:[self validKeysUp]];
-    if (keyToReturn != nil) {
-      keyboardEvent = [RCTViewKeyboardEvent keyUpEventWithReactTag:self.reactTag
-                                                       capsLockKey:capsLockKey
-                                                          shiftKey:shiftKey
-                                                           ctrlKey:controlKey
-                                                            altKey:optionKey
-                                                           metaKey:commandKey
-                                                     numericPadKey:numericPadKey
-                                                           helpKey:helpKey
-                                                       functionKey:functionKey
-                                                      leftArrowKey:leftArrowKey
-                                                     rightArrowKey:rightArrowKey
-                                                        upArrowKey:upArrowKey
-                                                      downArrowKey:downArrowKey
-                                                               key:keyToReturn];
-    }
-  }
-  return keyboardEvent;
+  return [RCTViewKeyboardEvent keyEventFromEvent:event reactTag:self.reactTag];
 }
 
-// check if the user typed key matches a key we need to send an event for
-// translate key codes over to JS compatible keys
-- (NSString*)keyIsValid:(NSString*)key left:(BOOL)leftArrowPressed right:(BOOL)rightArrowPressed up:(BOOL)upArrowPressed down:(BOOL)downArrowPressed tabKey:(BOOL)tabKeyPressed escapeKey:(BOOL)escapeKeyPressed validKeys:(NSArray<NSString*>*)validKeys {
-  NSString *keyToReturn = key;
-
-  // Allow the flexibility of defining special keys in multiple ways
-  BOOL enterKeyValidityCheck = [key isEqualToString:@"\r"] && ([validKeys containsObject:@"Enter"] || [validKeys containsObject:@"\r"]);
-  BOOL tabKeyValidityCheck = tabKeyPressed && ([validKeys containsObject:@"Tab"]); // tab has to be checked via a key code so we can't just use the key itself here
-  BOOL escapeKeyValidityCheck = escapeKeyPressed && ([validKeys containsObject:@"Esc"] || [validKeys containsObject:@"Escape"]); // escape has to be checked via a key code so we can't just use the key itself here
-  BOOL leftArrowValidityCheck = [validKeys containsObject:leftArrowPressKey] && leftArrowPressed;
-  BOOL rightArrowValidityCheck = [validKeys containsObject:rightArrowPressKey] && rightArrowPressed;
-  BOOL upArrowValidityCheck = [validKeys containsObject:upArrowPressKey] && upArrowPressed;
-  BOOL downArrowValidityCheck = [validKeys containsObject:downArrowPressKey] && downArrowPressed;
-
-if (tabKeyValidityCheck) {
-    keyToReturn = @"Tab";
-  } else if (escapeKeyValidityCheck) {
-    keyToReturn = @"Escape";
-  } else if (enterKeyValidityCheck) {
-    keyToReturn = @"Enter";
-  } else if (leftArrowValidityCheck) {
-    keyToReturn = leftArrowPressKey;
-  } else if (rightArrowValidityCheck) {
-    keyToReturn = rightArrowPressKey;
-  } else if (upArrowValidityCheck) {
-    keyToReturn = upArrowPressKey;
-  } else if (downArrowValidityCheck) {
-    keyToReturn = downArrowPressKey;
-  } else if (![validKeys containsObject:key]) {
-    keyToReturn = nil;
+- (BOOL)handleKeyboardEvent:(NSEvent *)event {
+  if (event.type == NSEventTypeKeyDown ? self.onKeyDown : self.onKeyUp) {
+    RCTViewKeyboardEvent *keyboardEvent = [self keyboardEvent:event];
+    if (keyboardEvent) {
+      [_eventDispatcher sendEvent:keyboardEvent];
+      return YES;
+    }
   }
-  
-  return keyToReturn;
+  return NO;
 }
 
 - (void)keyDown:(NSEvent *)event {
-  if (self.onKeyDown == nil) {
-    [super keyDown:event];
-    return;
-  }
-
-  RCTViewKeyboardEvent *keyboardEvent = [self keyboardEvent:event downPress:YES];
-  if (keyboardEvent != nil) {
-    [_eventDispatcher sendEvent:keyboardEvent];
-  } else {
+  if (![self handleKeyboardEvent:event]) {
     [super keyDown:event];
   }
 }
 
 - (void)keyUp:(NSEvent *)event {
-  if (self.onKeyUp == nil) {
-    [super keyUp:event];
-    return;
-  }
-
-  RCTViewKeyboardEvent *keyboardEvent = [self keyboardEvent:event downPress:NO];
-  if (keyboardEvent != nil) {
-    [_eventDispatcher sendEvent:keyboardEvent];
-  } else {
+  if (![self handleKeyboardEvent:event]) {
     [super keyUp:event];
   }
 }

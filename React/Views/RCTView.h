@@ -25,6 +25,10 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 
 - (BOOL)becomeFirstResponder;
 - (BOOL)resignFirstResponder;
+
+#if TARGET_OS_OSX
+- (BOOL)handleKeyboardEvent:(NSEvent *)event;
+#endif
 // ]TODO(OSS Candidate ISS#2710739)
 
 /**
