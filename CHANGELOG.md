@@ -7,20 +7,12 @@
 - Remove jest/preprocessor from the react-native package ([0301cb285b](https://github.com/facebook/react-native/commit/0301cb285b2e85b48a397fe58d565196654d9754) by [@motiz88](https://github.com/motiz88))
 - Remove nonstandard Promise.prototype.done ([018d5cf985](https://github.com/facebook/react-native/commit/018d5cf985497273dd700b56168cf1cf64f498d5) by [@motiz88](https://github.com/motiz88))
 
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
 ### Added
 
 - Support TypeScript array types for turbo module (module only) ([f0c4c291e1](https://github.com/facebook/react-native/commit/f0c4c291e12a8e76f91d3841d65291f0f1f16714) by [@ZihanChen-MSFT](https://github.com/ZihanChen-MSFT))
 - Added files for `avn`, `nodenv`, and other managers that set the node.js version in reactive native project including testing ([933fbb1b2b](https://github.com/facebook/react-native/commit/933fbb1b2b4d2b7c802bf1f2be4c47e5b442a850) by [@ramonmedel](https://github.com/ramonmedel))
-- Jsi::BigInt ([11bae63bb1](https://github.com/facebook/react-native/commit/11bae63bb1f833802ec6ce01342ebdd1d61e9252) by [@jpporto](https://github.com/jpporto))
-- JSITimerInternal descriptor ([c37f719567](https://github.com/facebook/react-native/commit/c37f7195675df67d23c3c008ec5ab5fd7b8d0394) by [@jpporto](https://github.com/jpporto))
+- Support BigInt in Hermes ([11bae63bb1](https://github.com/facebook/react-native/commit/11bae63bb1f833802ec6ce01342ebdd1d61e9252) by [@jpporto](https://github.com/jpporto))
+- The old Hermes instrumented stats migrated to the new one ([c37f719567](https://github.com/facebook/react-native/commit/c37f7195675df67d23c3c008ec5ab5fd7b8d0394) by [@jpporto](https://github.com/jpporto))
 - Suppress missing annotations and lock arvr/js ([a174530bb3](https://github.com/facebook/react-native/commit/a174530bb30b44e5410bc24d73daf7565de102d1) by [@pieterv](https://github.com/pieterv))
 - Modified **getDefaultJSExecutorFactory** method ([87cfd386cb](https://github.com/facebook/react-native/commit/87cfd386cb2e02bfa440c94706d9d0274f83070c) by [@KunalFarmah98](https://github.com/KunalFarmah98))
 - `EventEmitter#emit` now freezes the set of listeners before iterating over them, meaning listeners that are added or removed will not affect that iteration. ([e5c5dcd9e2](https://github.com/facebook/react-native/commit/e5c5dcd9e26e9443f59864d9763b049e0bda98e7) by [@yungsters](https://github.com/yungsters))
@@ -31,13 +23,12 @@
 
 #### Android specific
 
-- Accessibility announcement for list and grid in FlatList ([2d5882132f](https://github.com/facebook/react-native/commit/2d5882132fb2c533fe9bbba83576b8fac4aca727) by [@fabriziobertoglio1987](https://github.com/fabriziobertoglio1987))
-- Accessibility announcement for list and grid in FlatList ([105a2397b6](https://github.com/facebook/react-native/commit/105a2397b6b187a9669ba1c028508a7bb9664009) by [@fabriziobertoglio1987](https://github.com/fabriziobertoglio1987))
+- Accessibility announcement for list and grid in FlatList ([2d5882132f](https://github.com/facebook/react-native/commit/2d5882132fb2c533fe9bbba83576b8fac4aca727), [105a2397b6](https://github.com/facebook/react-native/commit/105a2397b6b187a9669ba1c028508a7bb9664009) by [@fabriziobertoglio1987](https://github.com/fabriziobertoglio1987))
 - Add READ_VOICEMAIL and WRITE_VOICEMAIL permissions to PermisionsAndroid library. ([8a2be3e143](https://github.com/facebook/react-native/commit/8a2be3e1438dd145ccb5374d6ef60811047d23aa) by [@zolbooo](https://github.com/zolbooo))
 - Add POST_NOTIFICATIONS, NEARBY_WIFI_DEVICES permission ([0a854c7c8b](https://github.com/facebook/react-native/commit/0a854c7c8b7ffc382c43fa460651a4b4de34c3c7) by [@vincent-paing](https://github.com/vincent-paing))
 - Extend the React Native Gradle plugin to accept a config from package.json ([5f3c5aa529](https://github.com/facebook/react-native/commit/5f3c5aa529ed75414eb339c3d8fd2c9628534621) by [@cortinico](https://github.com/cortinico))
 - Ability to pass a Typeface object to ReactFontManager in addition to a font resource ID ([e2dd2e2a6e](https://github.com/facebook/react-native/commit/e2dd2e2a6ed17b366a3e2ec0942ea1d82a404c5d) by [@thurn](https://github.com/thurn))
-- Summary: Changelog: [Android][Added] Option to enable lazyViewManager support with `ViewManagerOnDemandReactPackage` ([d4b59cd9d0](https://github.com/facebook/react-native/commit/d4b59cd9d02a8c4eda3ac4bf89cfe8161847adf0) by [@javache](https://github.com/javache))
+- Option to enable lazyViewManager support with `ViewManagerOnDemandReactPackage` ([d4b59cd9d0](https://github.com/facebook/react-native/commit/d4b59cd9d02a8c4eda3ac4bf89cfe8161847adf0) by [@javache](https://github.com/javache))
 - Support for dataUri in form data ([c663c0ec9d](https://github.com/facebook/react-native/commit/c663c0ec9deee7281f819f222bb29ad79e99f3b8) by [@hetanthakkar1](https://github.com/hetanthakkar1))
 
 #### iOS specific
@@ -62,6 +53,8 @@
 - Do not depend on hermes-engine NPM package anymore ([78cd689f9a](https://github.com/facebook/react-native/commit/78cd689f9a634b152ea09ed6cb4fa858ee26e653) by [@cortinico](https://github.com/cortinico))
 - Add ability to pass `ItemSeparatorComponent` as React Element ([5854b11bf9](https://github.com/facebook/react-native/commit/5854b11bf9d42bab9dbe62b9152a3d3a94e42c13) by [@retyui](https://github.com/retyui))
 - Bump React Native Codegen to 0.70.0 ([2a274c1a08](https://github.com/facebook/react-native/commit/2a274c1a082c3291d2df1a4b960bf654e217a4dd) by [@cortinico](https://github.com/cortinico))
+- Hermes version bump. ([8c682ddd59](https://github.com/facebook/react-native/commit/8c682ddd599b75a547975104cb6f90eec8753daf) by [@dmitryrykun](https://github.com/dmitryrykun))
+- Codemod `{...null}` to `{}` in xplat/js ([f392ba6725](https://github.com/facebook/react-native/commit/f392ba67254e95126974fafabf3e4ef0300e24e8) by [@gkz](https://github.com/gkz))
 
 #### Android specific
 
@@ -83,28 +76,14 @@
 - Hermes is now the default engine on iOS. This setting is controlled via `flags[:hermes_enabled]` in the Podfile. ([1115bc77db](https://github.com/facebook/react-native/commit/1115bc77db1090042effc021837f70b28694fa09) by [@hramos](https://github.com/hramos))
 - Move LocalPodspecPatch to dedicated file ([8fe2b591c7](https://github.com/facebook/react-native/commit/8fe2b591c7e073d629e95cd7b67aa1dfa96ece38) by [@cipolleschi](https://github.com/cipolleschi))
 - Move the `modify_flags_for_new_architecture` method to separate ruby file ([71da21243c](https://github.com/facebook/react-native/commit/71da21243c85283445c6cefa64d1ace13823ab69) by [@cipolleschi](https://github.com/cipolleschi))
-- Refactoring part of the react_native_pods.rb script ([4f732ba9ee](https://github.com/facebook/react-native/commit/4f732ba9ee2a1e162729c97d5c12ea771b3a424a) by [@cipolleschi](https://github.com/cipolleschi))
-- Refactoring part of the react_native_pods.rb script ([7a2704455f](https://github.com/facebook/react-native/commit/7a2704455f3edf203d2ecc8135fabf2667f718d8) by [@cipolleschi](https://github.com/cipolleschi))
+- Refactoring part of the react_native_pods.rb script ([4f732ba9ee](https://github.com/facebook/react-native/commit/4f732ba9ee2a1e162729c97d5c12ea771b3a424a), [7a2704455f](https://github.com/facebook/react-native/commit/7a2704455f3edf203d2ecc8135fabf2667f718d8) by [@cipolleschi](https://github.com/cipolleschi))
 - When Hermes is enabled, it will use the same copy of JSI as React Native ([340612a200](https://github.com/facebook/react-native/commit/340612a200505ca829bae1f9bce800d3673dac04) by [@hramos](https://github.com/hramos))
 - Move `use_flipper` logic inside `use_react_native` and simplify the Flipper dependencies logic ([0bd5239553](https://github.com/facebook/react-native/commit/0bd523955385a3b1e622077b7ee4ea0df3c5c158) by [@f-meloni](https://github.com/f-meloni))
 - Export `flipper.rb` script file ([e07a7eb16b](https://github.com/facebook/react-native/commit/e07a7eb16b97e1222e23f935a3d4bb3dac848ef2) by [@cipolleschi](https://github.com/cipolleschi))
 - Use `outputDir` as base directory for the codegen and remove the possibility to customize the intermediate path. The generated code requires specific paths in the `#include` directive. ([e4d0153a67](https://github.com/facebook/react-native/commit/e4d0153a675fbdd8718f433b2e9f8bfdccec4b2f) by [@cipolleschi](https://github.com/cipolleschi))
-- Refactor part of the codegen scripts and add tests. ([0465c3fd10](https://github.com/facebook/react-native/commit/0465c3fd102525b005826f3c68923d7e9851d6b8) by [@cipolleschi](https://github.com/cipolleschi))
-- Refactor part of the codegen scripts and add tests. ([305a054865](https://github.com/facebook/react-native/commit/305a0548652a405d9f638fb2c054781951dfc996) by [@cipolleschi](https://github.com/cipolleschi))
+- Refactor part of the codegen scripts and add tests. ([0465c3fd10](https://github.com/facebook/react-native/commit/0465c3fd102525b005826f3c68923d7e9851d6b8), [305a054865](https://github.com/facebook/react-native/commit/305a0548652a405d9f638fb2c054781951dfc996) by [@cipolleschi](https://github.com/cipolleschi))
 - CodeGen now supports the `"all"` library type. ([6718500eaa](https://github.com/facebook/react-native/commit/6718500eaaeb92b8a74320dcee961ac96f6f12fa) by [@cipolleschi](https://github.com/cipolleschi))
 - Fix the test_ios_unit test ([fdbe4719e2](https://github.com/facebook/react-native/commit/fdbe4719e2e2b599e86d42c49d42c4da97ef431a) by [@cipolleschi](https://github.com/cipolleschi))
-
-### Deprecated
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
 
 ### Removed
 
@@ -113,10 +92,6 @@
 - The diffs renames the required variable which was causing conflicts in names with Apple core SDK's ([086c13dd5f](https://github.com/facebook/react-native/commit/086c13dd5fba3f77acbc70c9bdedc9299118b526) by [@arinjay](https://github.com/arinjay))
 - Removed `EventEmitter.prototype.removeSubscription` method. ([870755fa7e](https://github.com/facebook/react-native/commit/870755fa7e7011ac46d269d5fb66d2a1d1543442) by [@yungsters](https://github.com/yungsters))
 - Remove deprecated removeListener methods ([2596b2f695](https://github.com/facebook/react-native/commit/2596b2f6954362d2cd34a1be870810ab90cbb916) by [@matinzd](https://github.com/matinzd))
-
-#### Android specific
-
-
 
 #### iOS specific
 
@@ -127,7 +102,7 @@
 
 - Throw JSINativeException from asHostObject ([ef6ab3f5ca](https://github.com/facebook/react-native/commit/ef6ab3f5cad968d7b2c9127d834429b0f4e1b2cf) by [@neildhar](https://github.com/neildhar))
 - Use new Babel parser instead of deprecated one ([97291bfa31](https://github.com/facebook/react-native/commit/97291bfa3157ac171a2754e19a52d006040961fb) by [@Kerumen](https://github.com/Kerumen))
--     [General][Fixed] - Fixed a crash on deserialization of props when using 'px'/'em' units. ([70788313fe](https://github.com/facebook/react-native/commit/70788313fedd40fe2e6d1cf15980ce3cca5adaac) by [@nlutsenko](https://github.com/nlutsenko))
+- Fixed a crash on deserialization of props when using 'px'/'em' units. ([70788313fe](https://github.com/facebook/react-native/commit/70788313fedd40fe2e6d1cf15980ce3cca5adaac) by [@nlutsenko](https://github.com/nlutsenko))
 - Fix nullability lost on readonly types in TurboModule specs ([c006722e6c](https://github.com/facebook/react-native/commit/c006722e6cdbe02711cb50ea7a739e0d4d81c7e7) by [@appden](https://github.com/appden))
 - Make tests pass for windows ([9596bf045d](https://github.com/facebook/react-native/commit/9596bf045d527e27608ac4b7b2990a4e6846fdeb) by [@cipolleschi](https://github.com/cipolleschi))
 - Handle possible null exception on ReactEditText with AppCompat 1.4.0 ([24a1f5c66c](https://github.com/facebook/react-native/commit/24a1f5c66c8633f9b41eef45df3297ffc1d2b606) by [@mikemasam](https://github.com/mikemasam))
@@ -142,7 +117,7 @@
 - Fix InputAccessoryView crash on Android ([afa5df1764](https://github.com/facebook/react-native/commit/afa5df1764324f2574d102abeae7199d4b02d183) by [@hduprat](https://github.com/hduprat))
 - Bring back non-rootview touch handling based on reactTag ([8b837268b4](https://github.com/facebook/react-native/commit/8b837268b49fd4e72a05f955c20702c457a68fab) by [@fkgozali](https://github.com/fkgozali))
 - Make Text not focusable by default ([8ced165e53](https://github.com/facebook/react-native/commit/8ced165e53135d9d33cfdc55a9d4660f8eb5b3c5) by [@kacieb](https://github.com/kacieb))
-- Revert PR 33924 because of issues with TextInputs with numeric keyboard types not respecting the secureTextEntry prop ([edb27e3aa1](https://github.com/facebook/react-native/commit/edb27e3aa1210ef33d55c1840065457c31b19cb0) by [@charlesbdudley](https://github.com/charlesbdudley))
+- Revert [PR 33924](https://github.com/facebook/react-native/pull/33924) because of issues with TextInputs with numeric keyboard types not respecting the secureTextEntry prop ([edb27e3aa1](https://github.com/facebook/react-native/commit/edb27e3aa1210ef33d55c1840065457c31b19cb0) by [@charlesbdudley](https://github.com/charlesbdudley))
 - Fix edge case when we enqueue a pending event to views on stopped surface ([ea7c9f2ad9](https://github.com/facebook/react-native/commit/ea7c9f2ad9a78b16234306932edc1d78b783ac27) by [@ryancat](https://github.com/ryancat))
 - Fix a bug where the keyboard, once set as email, won't change back to default. ([ec307e0167](https://github.com/facebook/react-native/commit/ec307e0167deca7f17640cd3c5a60f6be5f47b62) by [@larkox](https://github.com/larkox))
 - NPE in `ReactEditText.setInputType` when React Native is used with some versions of a AppCompat 1.4.x. (and possibly others) ([92ebb298e2](https://github.com/facebook/react-native/commit/92ebb298e2e5ad640754e09ce3a37d3de1d28f58))
@@ -160,13 +135,12 @@
 - Fix the way the orientation events are published, to avoid false publish on orientation change when app changes state to inactive ([7d42106d4c](https://github.com/facebook/react-native/commit/7d42106d4ce20c644bda4d928fb0abc163580cee) by [@lbaldy](https://github.com/lbaldy))
 - Fix sed error when installing `glog` ([4a7e4b9ca6](https://github.com/facebook/react-native/commit/4a7e4b9ca6ef4fb52611b6c3cb788f624d1f81a4) by [@alphashuro](https://github.com/alphashuro))
 - Don't validate ENTRY_FILE in react-native-xcode.sh ([780fe80fca](https://github.com/facebook/react-native/commit/780fe80fcaf213d84d9d087132af933bd02d1349) by [@janicduplessis](https://github.com/janicduplessis))
-- `_scrollViewComponentView` is set to `RCTPullToRefreshViewComponentView's` superview: ([4e4b9e2111](https://github.com/facebook/react-native/commit/4e4b9e2111faaf5652ae1f5b885730b378f3de98) by [@dmitryrykun](https://github.com/dmitryrykun))
+- `_scrollViewComponentView` is set to `RCTPullToRefreshViewComponentView's` superview ([4e4b9e2111](https://github.com/facebook/react-native/commit/4e4b9e2111faaf5652ae1f5b885730b378f3de98) by [@dmitryrykun](https://github.com/dmitryrykun))
 - Use `GCC_PREPROCESSOR_DEFINITIONS` to set `FB_SONARKIT_ENABLED` ([77e6bff629](https://github.com/facebook/react-native/commit/77e6bff629312f20cdacb1e798cd2464ac50db9e) by [@janicduplessis](https://github.com/janicduplessis))
 - Fix Hermes not being properly downloaded during pod install ([d5e0659fcc](https://github.com/facebook/react-native/commit/d5e0659fccf2767beb7aae55461e9690ba335c81) by [@cortinico](https://github.com/cortinico))
 - Typo in the documation for the `automaticallyAdjustKeyboardInsets` prop ([927b43d47c](https://github.com/facebook/react-native/commit/927b43d47c2cd42538265cb06154b12cb0be6816) by [@jeremybarbet](https://github.com/jeremybarbet))
 - Deprecate iOS/tvOS SDK 11.0 support now that 12.4+ is required ([f56d701e56](https://github.com/facebook/react-native/commit/f56d701e567af0c252a2e297bf81cd4add59378a) by [@leotm](https://github.com/leotm))
-- When in an RTL locale on iOS, e.nativeEvent.zoomScale is -1. This seems to cause erratic blank spaces that don't recover as you scroll. Set the value to 1 instead when negative. ([bc7b5c3011](https://github.com/facebook/react-native/commit/bc7b5c3011460935614a47a03cd077cd1059de72))
-- When in an RTL locale on iOS, e.nativeEvent.zoomScale is -1. This seems to cause erratic blank spaces that don't recover as you scroll. Taking Math.abs of the value fixes it. Blame: D36169686 (https://github.com/facebook/react-native/commit/13a72e0ccceb2db6aeacd03b4f429d200392c17b) ([2f491bfa9f](https://github.com/facebook/react-native/commit/2f491bfa9f86c3db2e459e331f39bc3cf12e7239))
+- Fix blank spaces that don't recover as you scroll when in an RTL locale and e.nativeEvent.zoomScale is -1. ([bc7b5c3011](https://github.com/facebook/react-native/commit/bc7b5c3011460935614a47a03cd077cd1059de72), [2f491bfa9f](https://github.com/facebook/react-native/commit/2f491bfa9f86c3db2e459e331f39bc3cf12e7239))
 - Fixed paddingTop not being applied when using padding and paddingVertical in multiline textinput ([2fb107c9a6](https://github.com/facebook/react-native/commit/2fb107c9a63aacd2c880ad6abedaad67ffb6022b) by [@hetanthakkar1](https://github.com/hetanthakkar1))
 - Fixed the ability to pass the port to use for Metro when running `react-native run-ios --port <port>`. ([7dc0b5153e](https://github.com/facebook/react-native/commit/7dc0b5153e4eb91c333238a58fe8c75a47cb5f81) by [@lindboe](https://github.com/lindboe))
 
@@ -175,18 +149,8 @@
 - Add GitHub token permissions for workflows ([3da3d82320](https://github.com/facebook/react-native/commit/3da3d82320bd035c6bd361a82ea12a70dba4e851) by [@varunsh-coder](https://github.com/varunsh-coder))
 - Bump RTC-Folly to 2021-07-22 ([68f3a42fc7](https://github.com/facebook/react-native/commit/68f3a42fc7380051714253f43b42175de361f8bd) by [@luissantana](https://github.com/luissantana))
 
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
 ### Unknown
 
-- Hermes version bump. ([8c682ddd59](https://github.com/facebook/react-native/commit/8c682ddd599b75a547975104cb6f90eec8753daf) by [@dmitryrykun](https://github.com/dmitryrykun))
-- Codemod `{...null}` to `{}` in xplat/js ([f392ba6725](https://github.com/facebook/react-native/commit/f392ba67254e95126974fafabf3e4ef0300e24e8) by [@gkz](https://github.com/gkz))
 - Fix TextInput dropping text when used as uncontrolled component with `defaultValue` ([51f49ca998](https://github.com/facebook/react-native/commit/51f49ca9982f24de08f5a5654a5210e547bb5b86))
 - Set explicit language in robolectric tests ([fd0b82cd3c](https://github.com/facebook/react-native/commit/fd0b82cd3c460e3e00e31ea279f876276feaec15))
 - Suppress errors ahead of launch ([67e12a19cb](https://github.com/facebook/react-native/commit/67e12a19cb236fbe0809fbbc9e516b37a5848a6a) by [@gkz](https://github.com/gkz))
@@ -217,10 +181,6 @@
 #### Android Unknown
 
 - Explicitly set language to JAVA where it is missing [xplat] (round 1) ([0d915aa942](https://github.com/facebook/react-native/commit/0d915aa94216a4f99e91822abe4ec837169fe855))
-
-#### iOS Unknown
-
-
 
 #### Failed to parse
 
