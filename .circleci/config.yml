@@ -131,6 +131,12 @@ commands:
           command: |
             mkdir ~/.ssh -p
             ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+      - run:
+          name: Test
+          command: |
+            ls
+             git status
+             git branch
       - run: git clone --depth << parameters.checkout_depth >> "$CIRCLE_REPOSITORY_URL" --branch "$CIRCLE_BRANCH"
 
   # Checkout with cache, on machines that are using Docker the cache is ignored
