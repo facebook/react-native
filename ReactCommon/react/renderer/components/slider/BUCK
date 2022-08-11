@@ -33,6 +33,7 @@ rn_xplat_cxx_library(
         ],
         prefix = "react/renderer/components/slider",
     ),
+    compiler_flags_pedantic = True,
     cxx_tests = [":tests"],
     fbandroid_deps = [
         react_native_target("jni/react/jni:jni"),

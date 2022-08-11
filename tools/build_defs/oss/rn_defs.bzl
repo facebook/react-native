@@ -89,7 +89,12 @@ def get_react_native_ios_target_sdk_version():
     return REACT_NATIVE_TARGET_IOS_SDK
 
 # Building is not supported in OSS right now
-def rn_xplat_cxx_library(name, compiler_flags_enable_exceptions = False, compiler_flags_enable_rtti = False, **kwargs):
+def rn_xplat_cxx_library(
+        name,
+        compiler_flags_enable_exceptions = False,
+        compiler_flags_enable_rtti = False,
+        compiler_flags_pedantic = False,
+        **kwargs):
     visibility = kwargs.get("visibility", [])
     kwargs = {
         k: v
@@ -108,9 +113,23 @@ def rn_xplat_cxx_library(name, compiler_flags_enable_exceptions = False, compile
     # OSS builds cannot have platform-specific flags here, so these are the same
     # for all platforms.
     kwargs["compiler_flags"] = kwargs.get("compiler_flags", [])
+    kwargs["fbobjc_compiler_flags"] = kwargs.get("fbobjc_compiler_flags", [])
+    kwargs["fbandroid_compiler_flags"] = kwargs.get("fbandroid_compiler_flags", [])
+
     kwargs["compiler_flags"] = ["-std=c++17"] + kwargs["compiler_flags"]
     kwargs["compiler_flags"] = ["-Wall"] + kwargs["compiler_flags"]
     kwargs["compiler_flags"] = ["-Werror"] + kwargs["compiler_flags"]
+
+    # -Wpedantic catches usage of nonstandard language extensions that may not
+    # be supported by other compilers (e.g. MSVC)
+    if compiler_flags_pedantic:
+        kwargs["compiler_flags"] = ["-Wpedantic"] + kwargs["compiler_flags"]
+
+        # Do not enable the flag for Apple in targets which also build Objective C++
+        if any([file.endswith(".mm") for file in (kwargs.get("srcs", []) + kwargs.get("ios_srcs", []))]):
+            kwargs["fbobjc_compiler_flags"] = ["-Wno-pedantic"] + kwargs["fbobjc_compiler_flags"]
+    else:
+        kwargs["compiler_flags"] = ["-Wno-pedantic"] + kwargs["compiler_flags"]
 
     # For now, we allow turning off RTTI and exceptions for android builds only
     if compiler_flags_enable_exceptions:

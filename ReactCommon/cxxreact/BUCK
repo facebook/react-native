@@ -12,6 +12,7 @@ rn_xplat_cxx_library(
         ],
         prefix = "cxxreact",
     ),
+    compiler_flags_pedantic = True,
     fbobjc_compiler_flags = get_apple_compiler_flags(),
     force_static = True,
     labels = [
@@ -36,6 +37,7 @@ rn_xplat_cxx_library(
         [("", "JSBigString.h")],
         prefix = "cxxreact",
     ),
+    compiler_flags_pedantic = True,
     fbobjc_compiler_flags = get_apple_compiler_flags(),
     force_static = True,
     labels = [
@@ -60,6 +62,7 @@ rn_xplat_cxx_library(
     compiler_flags = [
         "-fno-omit-frame-pointer",
     ],
+    compiler_flags_pedantic = True,
     fbobjc_compiler_flags = get_apple_compiler_flags(),
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
@@ -118,6 +121,7 @@ rn_xplat_cxx_library(
         )
         for header in CXXREACT_PUBLIC_HEADERS
     ]),
+    compiler_flags_pedantic = True,
     fbandroid_preprocessor_flags = get_android_inspector_flags(),
     fbobjc_compiler_flags = get_apple_compiler_flags(),
     fbobjc_force_static = True,

@@ -15,6 +15,7 @@ rn_xplat_cxx_library(
     compiler_flags = [
         "-Wno-global-constructors",
     ],
+    compiler_flags_pedantic = True,
     fbandroid_deps = [
         react_native_target("jni/react/jni:jni"),
         FBJNI_TARGET,
