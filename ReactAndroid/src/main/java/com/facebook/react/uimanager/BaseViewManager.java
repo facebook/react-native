@@ -92,8 +92,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     setTransform(view, null);
 
     // RenderNode params not covered by setTransform above
-    view.setPivotX(0);
-    view.setPivotY(0);
+    view.resetPivot();
     view.setTop(0);
     view.setBottom(0);
     view.setLeft(0);
