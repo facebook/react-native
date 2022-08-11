@@ -33,6 +33,7 @@ rn_xplat_cxx_library(
         # TODO(shergin) T26519801 Figure out better directories structure
         prefix = "react/renderer/components/iostextinput",
     ),
+    compiler_flags_pedantic = True,
     cxx_tests = [":tests"],
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
     fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),

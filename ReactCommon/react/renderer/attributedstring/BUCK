@@ -31,6 +31,7 @@ rn_xplat_cxx_library(
         ],
         prefix = "react/renderer/attributedstring",
     ),
+    compiler_flags_pedantic = True,
     fbandroid_deps = [
         react_native_xplat_target("react/renderer/mapbuffer:mapbuffer"),
     ],

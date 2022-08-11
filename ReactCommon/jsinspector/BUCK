@@ -26,6 +26,7 @@ rn_xplat_cxx_library(
         ],
         prefix = "jsinspector",
     ),
+    compiler_flags_pedantic = True,
     fbandroid_preferred_linkage = "shared",
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
