@@ -6,6 +6,11 @@
 
 - Upgrade RN CLI to v9.0.0-alpha.9 ([c504d038c4](https://github.com/facebook/react-native/commit/c504d038c470f7a13fb345f57261172c7c85248c) by [@thymikee](https://github.com/thymikee))
 - Bump CLI to v9.0.0-alpha.5 ([f1d624823f](https://github.com/facebook/react-native/commit/f1d624823fe23eb3d30de00cf78beb71dc1b8413) by [@kelset](https://github.com/kelset))
+- Upgrade react-native-gradle-plugin to 0.70.1 ([2176173dcc](https://github.com/facebook/react-native/commit/2176173dcc029ab21bfcdfe5c9e150581db47409) by [@dmitryrykun](https://github.com/dmitryrykun))
+- Update a few metro deps as follow up from the commit from main ([7c7ba1babd](https://github.com/facebook/react-native/commit/7c7ba1babd41b6b60f0dc9f48c34d00235d2fef5) by [@kelset](https://github.com/kelset))
+- Update @react-native/eslint-plugin-specs to 0.70.0 ([d07fae9b23](https://github.com/facebook/react-native/commit/d07fae9b23c258a60045b666167efd5259b962ce) by [@dmitryrykun](https://github.com/dmitryrykun))
+- Bump @react-native/eslint-plugin-specs to 0.70.0 ([afd76f69c7](https://github.com/facebook/react-native/commit/afd76f69c7d2408654ba67ac2ed4d612abfbe0ce) by [@dmitryrykun](https://github.com/dmitryrykun))
+- Hermes version bump for 0.70.0-RC1 ([eb6767813a](https://github.com/facebook/react-native/commit/eb6767813a0efe04a9e79955b8f6ee909a4a76bf) by [@cortinico](https://github.com/cortinico))
 
 #### Android specific
 
@@ -33,14 +38,6 @@
 
 - Fix React-bridging headers import not found ([c4b51e8d76](https://github.com/facebook/react-native/commit/c4b51e8d7679c3c20b843072581acd23a931fc83) by [@Kudo](https://github.com/Kudo))
 - Fix Hermes executor not available when `use_frameworks` is enabled ([88b7b640a7](https://github.com/facebook/react-native/commit/88b7b640a74bafd918b8b1cd5d58e1f5ddfb730a) by [@Kudo](https://github.com/Kudo))
-
-### Unknown
-
-- Upgrade react-native-gradle-plugin to 0.70.1 ([2176173dcc](https://github.com/facebook/react-native/commit/2176173dcc029ab21bfcdfe5c9e150581db47409) by [@dmitryrykun](https://github.com/dmitryrykun))
-- Update a few metro deps as follow up from the commit from main ([7c7ba1babd](https://github.com/facebook/react-native/commit/7c7ba1babd41b6b60f0dc9f48c34d00235d2fef5) by [@kelset](https://github.com/kelset))
-- Update @react-native/eslint-plugin-specs to 0.70.0 ([d07fae9b23](https://github.com/facebook/react-native/commit/d07fae9b23c258a60045b666167efd5259b962ce) by [@dmitryrykun](https://github.com/dmitryrykun))
-- Bump @react-native/eslint-plugin-specs to 0.70.0 ([afd76f69c7](https://github.com/facebook/react-native/commit/afd76f69c7d2408654ba67ac2ed4d612abfbe0ce) by [@dmitryrykun](https://github.com/dmitryrykun))
-- Hermes version bump for 0.70.0-RC1 ([eb6767813a](https://github.com/facebook/react-native/commit/eb6767813a0efe04a9e79955b8f6ee909a4a76bf) by [@cortinico](https://github.com/cortinico))
 
 ## v0.70.0-rc.0
 
