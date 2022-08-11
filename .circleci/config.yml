@@ -130,7 +130,7 @@ commands:
           name: Add shhkey for github
           command: |
             mkdir ~/.ssh/known_hosts -p
-            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+            ssh-keyscan -H github.com >> ~/.ssh
       - run: git clone --depth << parameters.checkout_depth >> "$CIRCLE_REPOSITORY_URL" --branch "$CIRCLE_BRANCH"
 
   # Checkout with cache, on machines that are using Docker the cache is ignored
