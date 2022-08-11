@@ -45,7 +45,7 @@ references:
   #        Single Use Environmental Variables
   # -------------------------
   envs:
-    shallow_checkout_depth: &shallow_checkout_depth 16
+    shallow_checkout_depth: &shallow_checkout_depth 8
 
   # -------------------------
   #        Cache Key Anchors
@@ -132,12 +132,6 @@ commands:
             mkdir ~/.ssh -p
             ssh-keyscan -H github.com >> ~/.ssh/known_hosts
       - run: git clone --depth << parameters.checkout_depth >> "$CIRCLE_REPOSITORY_URL" --branch "$CIRCLE_BRANCH" .
-      - run:
-          name: Test
-          command: |
-            ls
-            git status
-            git branch
 
   # Checkout with cache, on machines that are using Docker the cache is ignored
   checkout_code_with_cache:
