@@ -126,7 +126,7 @@ commands:
         default: *shallow_checkout_depth
         type: integer
     steps:
-      - run: git clone --depth << parameters.checkout_depth >> "$CIRCLE_REPOSITORY_URL" --branch "$CIRCLE_BRANCH"
+      - run: git clone --depth << parameters.checkout_depth >> "$CIRCLE_REPOSITORY_URL" --branch "$CIRCLE_BRANCH" -y
 
   # Checkout with cache, on machines that are using Docker the cache is ignored
   checkout_code_with_cache:
