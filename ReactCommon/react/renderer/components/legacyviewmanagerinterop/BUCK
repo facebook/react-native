@@ -42,8 +42,8 @@ rn_xplat_cxx_library(
     ],
     visibility = ["PUBLIC"],
     deps = [
-        "//xplat/folly:headers_only_do_not_use",
-        "//xplat/folly:memory",
+        "//xplat/folly:dynamic",
+        "//xplat/folly:json",
         react_native_xplat_target("react/renderer/core:core"),
         react_native_xplat_target("react/renderer/components/view:view"),
         "//xplat/js/react-native-github:generated_components-rncore",

@@ -51,9 +51,6 @@ rn_xplat_cxx_library(
     deps = [
         "//third-party/glog:glog",
         "//xplat/fbsystrace:fbsystrace",
-        "//xplat/folly:headers_only_do_not_use",
-        "//xplat/folly:memory",
-        "//xplat/folly:molly",
         react_native_xplat_target("butter:butter"),
         react_native_xplat_target("react/debug:debug"),
         react_native_xplat_target("react/utils:utils"),
@@ -75,7 +72,6 @@ fb_xplat_cxx_test(
     platforms = (ANDROID, APPLE, CXX),
     deps = [
         ":telemetry",
-        "//xplat/folly:molly",
         "//xplat/third-party/gmock:gtest",
         react_native_xplat_target("react/test_utils:test_utils"),
     ],

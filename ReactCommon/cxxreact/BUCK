@@ -23,7 +23,7 @@ rn_xplat_cxx_library(
         "PUBLIC",
     ],
     deps = [
-        "//xplat/folly:molly",
+        "//xplat/folly:dynamic",
     ],
 )
 
@@ -48,8 +48,13 @@ rn_xplat_cxx_library(
         "PUBLIC",
     ],
     deps = [
+        "//third-party/glog:glog",
+        "//xplat/folly:exception",
         "//xplat/folly:memory",
-        "//xplat/folly:molly",
+        "//xplat/folly:portability_fcntl",
+        "//xplat/folly:portability_sys_mman",
+        "//xplat/folly:portability_sys_stat",
+        "//xplat/folly:portability_unistd",
         "//xplat/folly:scope_guard",
     ],
 )
@@ -76,7 +81,6 @@ rn_xplat_cxx_library(
         ":module",
         "//third-party/glog:glog",
         "//xplat/folly:memory",
-        "//xplat/folly:molly",
     ],
 )
 
@@ -143,17 +147,19 @@ rn_xplat_cxx_library(
     deps = [
         ":jsbigstring",
         ":module",
+        "//third-party/glog:glog",
         "//xplat/fbsystrace:fbsystrace",
-        "//xplat/folly:headers_only_do_not_use",
+        "//xplat/folly:conv",
+        "//xplat/folly:dynamic",
+        "//xplat/folly:json",
         "//xplat/folly:memory",
-        "//xplat/folly:molly",
+        "//xplat/folly:move_wrapper",
+        "//xplat/folly:optional",
         "//xplat/jsi:jsi",
         react_native_xplat_target("callinvoker:callinvoker"),
         react_native_xplat_target("jsinspector:jsinspector"),
         react_native_xplat_target("runtimeexecutor:runtimeexecutor"),
         react_native_xplat_target("reactperflogger:reactperflogger"),
         react_native_xplat_target("logger:logger"),
-        "//third-party/glog:glog",
-        "//xplat/folly:optional",
     ],
 )
