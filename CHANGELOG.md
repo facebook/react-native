@@ -1,5 +1,47 @@
 # Changelog
 
+## v0.70.0-rc.2
+
+### Changed
+
+- Upgrade RN CLI to v9.0.0-alpha.9 ([c504d038c4](https://github.com/facebook/react-native/commit/c504d038c470f7a13fb345f57261172c7c85248c) by [@thymikee](https://github.com/thymikee))
+- Bump CLI to v9.0.0-alpha.5 ([f1d624823f](https://github.com/facebook/react-native/commit/f1d624823fe23eb3d30de00cf78beb71dc1b8413) by [@kelset](https://github.com/kelset))
+
+#### Android specific
+
+- Replaced reactnativeutilsjni with reactnativejni in the build process to reduce size ([54a4fcbfdc](https://github.com/facebook/react-native/commit/54a4fcbfdcc8111b3010b2c31ed3c1d48632ce4c) by [@SparshaSaha](https://github.com/SparshaSaha))
+- Bump Gradle to 7.5.0 ([5c8186623a](https://github.com/facebook/react-native/commit/5c8186623ae15388949cfc4143edae86863a447b) by [@leotm](https://github.com/leotm))
+- Bump Soloader to 0.10.4 ([b9adf2db20](https://github.com/facebook/react-native/commit/b9adf2db20bf9e1436fa58182d886fd9461df9af) by [@mikehardy](https://github.com/mikehardy))
+
+#### iOS specific
+
+- Update Podfile to allow `PRODUCTION=1 pod install` ([77752fc403](https://github.com/facebook/react-native/commit/77752fc4037e66d5b0a5851bae79c4d3285ed334) by [@leotm](https://github.com/leotm))
+- Destruct use_reactnative parameters and ad ddocumentation ([79a37e5a88](https://github.com/facebook/react-native/commit/79a37e5a88e179090ade7145a453a46719c87b3f) by [@cipolleschi](https://github.com/cipolleschi))
+- Move codegen in separate files ([7d069b2583](https://github.com/facebook/react-native/commit/7d069b25835ad20654a46ebb1e09631d826598e0) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Fixed
+
+- Fix eslint-plugin-specs prepack npm lifecycle hook now that we use npm 8 ([8441c4a6f7](https://github.com/facebook/react-native/commit/8441c4a6f7bfeda73f89f076fe7d8d1132e4b9be) by [@kelset](https://github.com/kelset))
+
+#### Android specific
+
+- Fix accessibilityState overwriting view's disabled state on Android ([f35d18caa3](https://github.com/facebook/react-native/commit/f35d18caa302351319840ec85337182f4f148e5e) by [@okwasniewski](https://github.com/okwasniewski))
+- Make sure *.ts files are considered for task avoidance in the Gradle Plugin ([1a9fb6cb68](https://github.com/facebook/react-native/commit/1a9fb6cb682aa5ff83462e1e2869eb99f3b873fd) by [@cortinico](https://github.com/cortinico))
+- Fix missing import on New Architecture build script in template ([a22f30d2ce](https://github.com/facebook/react-native/commit/a22f30d2ce866cb1488b26bb18eee0620a0ac259) by [@cortinico](https://github.com/cortinico))
+
+#### iOS specific
+
+- Fix React-bridging headers import not found ([c4b51e8d76](https://github.com/facebook/react-native/commit/c4b51e8d7679c3c20b843072581acd23a931fc83) by [@Kudo](https://github.com/Kudo))
+- Fix Hermes executor not available when `use_frameworks` is enabled ([88b7b640a7](https://github.com/facebook/react-native/commit/88b7b640a74bafd918b8b1cd5d58e1f5ddfb730a) by [@Kudo](https://github.com/Kudo))
+
+### Unknown
+
+- Upgrade react-native-gradle-plugin to 0.70.1 ([2176173dcc](https://github.com/facebook/react-native/commit/2176173dcc029ab21bfcdfe5c9e150581db47409) by [@dmitryrykun](https://github.com/dmitryrykun))
+- Update a few metro deps as follow up from the commit from main ([7c7ba1babd](https://github.com/facebook/react-native/commit/7c7ba1babd41b6b60f0dc9f48c34d00235d2fef5) by [@kelset](https://github.com/kelset))
+- Update @react-native/eslint-plugin-specs to 0.70.0 ([d07fae9b23](https://github.com/facebook/react-native/commit/d07fae9b23c258a60045b666167efd5259b962ce) by [@dmitryrykun](https://github.com/dmitryrykun))
+- Bump @react-native/eslint-plugin-specs to 0.70.0 ([afd76f69c7](https://github.com/facebook/react-native/commit/afd76f69c7d2408654ba67ac2ed4d612abfbe0ce) by [@dmitryrykun](https://github.com/dmitryrykun))
+- Hermes version bump for 0.70.0-RC1 ([eb6767813a](https://github.com/facebook/react-native/commit/eb6767813a0efe04a9e79955b8f6ee909a4a76bf) by [@cortinico](https://github.com/cortinico))
+
 ## v0.70.0-rc.0
 
 ### Breaking
