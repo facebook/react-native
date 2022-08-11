@@ -20,17 +20,6 @@
 namespace facebook {
 namespace react {
 
-constexpr static auto ReactFeatureFlagsJavaDescriptor =
-    "com/facebook/react/config/ReactFeatureFlags";
-
-static int getFeatureFlagValue(const char *name) {
-  static const auto reactFeatureFlagsJavaDescriptor =
-      jni::findClassStatic(ReactFeatureFlagsJavaDescriptor);
-  const auto field =
-      reactFeatureFlagsJavaDescriptor->getStaticField<jint>(name);
-  return reactFeatureFlagsJavaDescriptor->getStaticFieldValue(field);
-}
-
 TurboModuleManager::TurboModuleManager(
     jni::alias_ref<TurboModuleManager::javaobject> jThis,
     RuntimeExecutor runtimeExecutor,
@@ -180,13 +169,8 @@ void TurboModuleManager::installJSIBindings() {
       return nullptr;
     };
 
-    TurboModuleBindingMode bindingMode = static_cast<TurboModuleBindingMode>(
-        getFeatureFlagValue("turboModuleBindingMode"));
     TurboModuleBinding::install(
-        runtime,
-        std::move(turboModuleProvider),
-        bindingMode,
-        longLivedObjectCollection_);
+        runtime, std::move(turboModuleProvider), longLivedObjectCollection_);
   });
 }
 

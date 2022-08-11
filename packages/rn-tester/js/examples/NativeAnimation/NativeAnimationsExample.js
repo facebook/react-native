@@ -26,7 +26,7 @@ const {
 const AnimatedSlider = Animated.createAnimatedComponent(Slider);
 
 class Tester extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
-  state = {
+  state: any | {js: AnimatedValue, native: AnimatedValue} = {
     native: new Animated.Value(0),
     js: new Animated.Value(0),
   };
@@ -54,7 +54,7 @@ class Tester extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
     }).start();
   };
 
-  render() {
+  render(): React.Node {
     return (
       <TouchableWithoutFeedback onPress={this.onPress}>
         <View>
@@ -75,7 +75,7 @@ class Tester extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
 }
 
 class ValueListenerExample extends React.Component<{...}, $FlowFixMeState> {
-  state = {
+  state: any | {anim: AnimatedValue, progress: number} = {
     anim: new Animated.Value(0),
     progress: 0,
   };
@@ -102,7 +102,7 @@ class ValueListenerExample extends React.Component<{...}, $FlowFixMeState> {
     }).start();
   };
 
-  render() {
+  render(): React.Node {
     return (
       <TouchableWithoutFeedback onPress={this._onPress}>
         <View>
@@ -124,7 +124,7 @@ class ValueListenerExample extends React.Component<{...}, $FlowFixMeState> {
 }
 
 class LoopExample extends React.Component<{...}, $FlowFixMeState> {
-  state = {
+  state: any | {value: AnimatedValue} = {
     value: new Animated.Value(0),
   };
 
@@ -138,7 +138,7 @@ class LoopExample extends React.Component<{...}, $FlowFixMeState> {
     ).start();
   }
 
-  render() {
+  render(): React.Node {
     return (
       <View style={styles.row}>
         <Animated.View
@@ -167,7 +167,7 @@ class InternalSettings extends React.Component<
   },
 > {
   _stallInterval: ?number;
-  render() {
+  render(): React.Node {
     return (
       <View>
         <RNTesterSettingSwitchRow
@@ -227,11 +227,11 @@ class InternalSettings extends React.Component<
 }
 
 class EventExample extends React.Component<{...}, $FlowFixMeState> {
-  state = {
+  state: any | {anim: AnimatedValue} = {
     anim: new Animated.Value(0),
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <Animated.View
@@ -282,7 +282,14 @@ class TrackingExample extends React.Component<
   $FlowFixMeProps,
   $FlowFixMeState,
 > {
-  state = {
+  state:
+    | any
+    | {
+        js: AnimatedValue,
+        native: AnimatedValue,
+        toJS: AnimatedValue,
+        toNative: AnimatedValue,
+      } = {
     native: new Animated.Value(0),
     toNative: new Animated.Value(0),
     js: new Animated.Value(0),
@@ -315,7 +322,10 @@ class TrackingExample extends React.Component<
     this.state.toJS.setValue(nextValue);
   };
 
-  renderBlock = (anim: any | AnimatedValue, dest: any | AnimatedValue) => [
+  renderBlock = (
+    anim: any | AnimatedValue,
+    dest: any | AnimatedValue,
+  ): Array<React.Node> => [
     <Animated.View
       key="line"
       style={[styles.line, {transform: [{translateX: dest}]}]}
@@ -326,7 +336,7 @@ class TrackingExample extends React.Component<
     />,
   ];
 
-  render() {
+  render(): React.Node {
     return (
       <TouchableWithoutFeedback onPress={this.onPress}>
         <View>

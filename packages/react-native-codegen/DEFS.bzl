@@ -421,12 +421,6 @@ def rn_codegen_components(
                 tests = [":generated_tests-{}".format(name)],
                 visibility = ["PUBLIC"],
                 deps = [
-                    "//third-party/glog:glog",
-                    "//xplat/fbsystrace:fbsystrace",
-                    "//xplat/folly:headers_only_do_not_use",
-                    "//xplat/folly:memory",
-                    "//xplat/folly:molly",
-                    YOGA_CXX_TARGET,
                     react_native_xplat_target("react/renderer/debug:debug"),
                     react_native_xplat_target("react/renderer/core:core"),
                     react_native_xplat_target("react/renderer/graphics:graphics"),

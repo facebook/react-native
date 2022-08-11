@@ -67,6 +67,15 @@ ViewProps::ViewProps(
                                                 "Color",
                                                 sourceProps.borderColors,
                                                 {})),
+      borderCurves(
+          Props::enablePropIteratorSetter ? sourceProps.borderCurves
+                                          : convertRawProp(
+                                                context,
+                                                rawProps,
+                                                "border",
+                                                "Curve",
+                                                sourceProps.borderCurves,
+                                                {})),
       borderStyles(
           Props::enablePropIteratorSetter ? sourceProps.borderStyles
                                           : convertRawProp(
@@ -252,13 +261,11 @@ ViewProps::ViewProps(
 #define VIEW_EVENT_CASE(eventType, eventString)     \
   case CONSTEXPR_RAW_PROPS_KEY_HASH(eventString): { \
     ViewEvents defaultViewEvents{};                 \
-    events[eventType] = ({                          \
-      bool res = defaultViewEvents[eventType];      \
-      if (value.hasValue()) {                       \
-        fromRawValue(context, value, res);          \
-      }                                             \
-      res;                                          \
-    });                                             \
+    bool res = defaultViewEvents[eventType];        \
+    if (value.hasValue()) {                         \
+      fromRawValue(context, value, res);            \
+    }                                               \
+    events[eventType] = res;                        \
     return;                                         \
   }
 
@@ -412,6 +419,7 @@ BorderMetrics ViewProps::resolveBorderMetrics(
       /* .borderWidths = */ borderWidths.resolve(isRTL, 0),
       /* .borderRadii = */
       ensureNoOverlap(borderRadii.resolve(isRTL, 0), layoutMetrics.frame.size),
+      /* .borderCurves = */ borderCurves.resolve(isRTL, BorderCurve::Circular),
       /* .borderStyles = */ borderStyles.resolve(isRTL, BorderStyle::Solid),
   };
 }

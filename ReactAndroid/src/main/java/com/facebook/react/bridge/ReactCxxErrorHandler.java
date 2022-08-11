@@ -32,7 +32,7 @@ public class ReactCxxErrorHandler {
         parameters[0] = new Exception(message);
         mHandleErrorFunc.invoke(mObject, parameters);
       } catch (Exception e) {
-        FLog.e("ReactCxxErrorHandler", "Failed to invole error hanlder function", e);
+        FLog.e("ReactCxxErrorHandler", "Failed to invoke error handler function", e);
       }
     }
   }

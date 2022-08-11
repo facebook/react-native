@@ -92,8 +92,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     setTransform(view, null);
 
     // RenderNode params not covered by setTransform above
-    view.setPivotX(0);
-    view.setPivotY(0);
+    view.resetPivot();
     view.setTop(0);
     view.setBottom(0);
     view.setLeft(0);
@@ -287,7 +286,9 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       view.setSelected(false);
     }
     view.setTag(R.id.accessibility_state, accessibilityState);
-    view.setEnabled(true);
+    if (accessibilityState.hasKey("disabled") && !accessibilityState.getBoolean("disabled")) {
+      view.setEnabled(true);
+    }
 
     // For states which don't have corresponding methods in
     // AccessibilityNodeInfo, update the view's content description

@@ -30,8 +30,8 @@ describe('CellRenderMask', () => {
   it('throws when adding invalid cell ranges', () => {
     const renderMask = new CellRenderMask(5);
 
-    expect(() => renderMask.addCells({first: -1, last: 0})).toThrow();
-    expect(() => renderMask.addCells({first: 1, last: 0})).toThrow();
+    expect(() => renderMask.addCells({first: -2, last: -1})).toThrow();
+    expect(() => renderMask.addCells({first: -2, last: 0})).toThrow();
     expect(() => renderMask.addCells({first: 0, last: 5})).toThrow();
     expect(() => renderMask.addCells({first: 6, last: 7})).toThrow();
   });
@@ -73,6 +73,15 @@ describe('CellRenderMask', () => {
 
     expect(renderMask.enumerateRegions()).toEqual([
       {first: 0, last: 4, isSpacer: false},
+    ]);
+  });
+
+  it('allows adding empty cell range', () => {
+    const renderMask = new CellRenderMask(5);
+    renderMask.addCells({first: 0, last: -1});
+
+    expect(renderMask.enumerateRegions()).toEqual([
+      {first: 0, last: 4, isSpacer: true},
     ]);
   });
 

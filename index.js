@@ -21,7 +21,6 @@ import typeof Image from './Libraries/Image/Image';
 import typeof ImageBackground from './Libraries/Image/ImageBackground';
 import typeof InputAccessoryView from './Libraries/Components/TextInput/InputAccessoryView';
 import typeof KeyboardAvoidingView from './Libraries/Components/Keyboard/KeyboardAvoidingView';
-import typeof MaskedViewIOS from './Libraries/Components/MaskedView/MaskedViewIOS';
 import typeof Modal from './Libraries/Modal/Modal';
 import typeof Pressable from './Libraries/Components/Pressable/Pressable';
 import typeof ProgressBarAndroid from './Libraries/Components/ProgressBarAndroid/ProgressBarAndroid';
@@ -144,15 +143,6 @@ module.exports = {
   get KeyboardAvoidingView(): KeyboardAvoidingView {
     return require('./Libraries/Components/Keyboard/KeyboardAvoidingView')
       .default;
-  },
-  get MaskedViewIOS(): MaskedViewIOS {
-    warnOnce(
-      'maskedviewios-moved',
-      'MaskedViewIOS has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-masked-view/masked-view' instead of 'react-native'. " +
-        'See https://github.com/react-native-masked-view/masked-view',
-    );
-    return require('./Libraries/Components/MaskedView/MaskedViewIOS');
   },
   get Modal(): Modal {
     return require('./Libraries/Modal/Modal');
@@ -733,6 +723,21 @@ if (__DEV__) {
         'DatePickerAndroid has been removed from React Native. ' +
           "It can now be installed and imported from '@react-native-community/datetimepicker' instead of 'react-native'. " +
           'See https://github.com/react-native-datetimepicker/datetimepicker',
+      );
+    },
+  });
+  /* $FlowFixMe[prop-missing] This is intentional: Flow will error when
+   * attempting to access MaskedViewIOS. */
+  /* $FlowFixMe[invalid-export] This is intentional: Flow will error when
+   * attempting to access MaskedViewIOS. */
+  Object.defineProperty(module.exports, 'MaskedViewIOS', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'MaskedViewIOS has been removed from React Native. ' +
+          "It can now be installed and imported from '@react-native-community/react-native-masked-view' instead of 'react-native'. " +
+          'See https://github.com/react-native-masked-view/masked-view',
       );
     },
   });

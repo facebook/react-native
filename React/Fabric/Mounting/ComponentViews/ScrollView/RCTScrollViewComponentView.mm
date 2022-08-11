@@ -401,6 +401,9 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   _shouldUpdateContentInsetAdjustmentBehavior = YES;
   _state.reset();
   _isUserTriggeredScrolling = NO;
+  CGRect oldFrame = self.frame;
+  self.frame = CGRectZero;
+  self.frame = oldFrame;
   [super prepareForRecycle];
 }
 
@@ -587,7 +590,6 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
     offset = CGPointMake(localX, localY);
   }
 
-  [self _forceDispatchNextScrollEvent];
   [self scrollToOffset:offset animated:animated];
 }
 
@@ -642,12 +644,15 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
 - (void)scrollToOffset:(CGPoint)offset
 {
-  [self _forceDispatchNextScrollEvent];
   [self scrollToOffset:offset animated:YES];
 }
 
 - (void)scrollToOffset:(CGPoint)offset animated:(BOOL)animated
 {
+  if (CGPointEqualToPoint(_scrollView.contentOffset, offset)) {
+    return;
+  }
+
   [self _forceDispatchNextScrollEvent];
 
   if (_layoutMetrics.layoutDirection == LayoutDirection::RightToLeft) {

@@ -140,6 +140,7 @@ class VirtualizedSectionList<
     if (params.itemIndex > 0 && this.props.stickySectionHeadersEnabled) {
       const frame = this._listRef.__getFrameMetricsApprox(
         index - params.itemIndex,
+        this._listRef.props,
       );
       viewOffset += frame.length;
     }
@@ -236,6 +237,7 @@ class VirtualizedSectionList<
     return null;
   }
 
+  // $FlowFixMe[missing-local-annot]
   _keyExtractor = (item: Item, index: number) => {
     const info = this._subExtractor(index);
     return (info && info.key) || String(index);
@@ -339,7 +341,7 @@ class VirtualizedSectionList<
   };
 
   _renderItem =
-    (listItemCount: number) =>
+    (listItemCount: number): $FlowFixMe =>
     // eslint-disable-next-line react/no-unstable-nested-components
     ({item, index}: {item: Item, index: number, ...}) => {
       const info = this._subExtractor(index);

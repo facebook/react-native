@@ -158,6 +158,13 @@ class JSCRuntime : public jsi::Runtime {
 
   std::string symbolToString(const jsi::Symbol &) override;
 
+  jsi::BigInt createBigIntFromInt64(int64_t) override;
+  jsi::BigInt createBigIntFromUint64(uint64_t) override;
+  bool bigintIsInt64(const jsi::BigInt &) override;
+  bool bigintIsUint64(const jsi::BigInt &) override;
+  uint64_t truncate(const jsi::BigInt &) override;
+  jsi::String bigintToString(const jsi::BigInt &, int) override;
+
   jsi::String createStringFromAscii(const char *str, size_t length) override;
   jsi::String createStringFromUtf8(const uint8_t *utf8, size_t length) override;
   std::string utf8(const jsi::String &) override;
@@ -167,6 +174,12 @@ class JSCRuntime : public jsi::Runtime {
   virtual std::shared_ptr<jsi::HostObject> getHostObject(
       const jsi::Object &) override;
   jsi::HostFunctionType &getHostFunction(const jsi::Function &) override;
+
+  bool hasNativeState(const jsi::Object &) override;
+  std::shared_ptr<jsi::NativeState> getNativeState(
+      const jsi::Object &) override;
+  void setNativeState(const jsi::Object &, std::shared_ptr<jsi::NativeState>)
+      override;
 
   jsi::Value getProperty(const jsi::Object &, const jsi::String &name) override;
   jsi::Value getProperty(const jsi::Object &, const jsi::PropNameID &name)
@@ -680,6 +693,30 @@ std::string JSCRuntime::symbolToString(const jsi::Symbol &sym) {
   return jsi::Value(*this, sym).toString(*this).utf8(*this);
 }
 
+jsi::BigInt JSCRuntime::createBigIntFromInt64(int64_t) {
+  throw std::logic_error("Not implemented");
+}
+
+jsi::BigInt JSCRuntime::createBigIntFromUint64(uint64_t) {
+  throw std::logic_error("Not implemented");
+}
+
+bool JSCRuntime::bigintIsInt64(const jsi::BigInt &) {
+  throw std::logic_error("Not implemented");
+}
+
+bool JSCRuntime::bigintIsUint64(const jsi::BigInt &) {
+  throw std::logic_error("Not implemented");
+}
+
+uint64_t JSCRuntime::truncate(const jsi::BigInt &) {
+  throw std::logic_error("Not implemented");
+}
+
+jsi::String JSCRuntime::bigintToString(const jsi::BigInt &, int) {
+  throw std::logic_error("Not implemented");
+}
+
 jsi::String JSCRuntime::createStringFromAscii(const char *str, size_t length) {
   // Yes we end up double casting for semantic reasons (UTF8 contains ASCII,
   // not the other way around)
@@ -860,6 +897,21 @@ std::shared_ptr<jsi::HostObject> JSCRuntime::getHostObject(
       static_cast<detail::HostObjectProxyBase *>(JSObjectGetPrivate(object));
   assert(metadata);
   return metadata->hostObject;
+}
+
+bool JSCRuntime::hasNativeState(const jsi::Object &) {
+  throw std::logic_error("Not implemented");
+}
+
+std::shared_ptr<jsi::NativeState> JSCRuntime::getNativeState(
+    const jsi::Object &) {
+  throw std::logic_error("Not implemented");
+}
+
+void JSCRuntime::setNativeState(
+    const jsi::Object &,
+    std::shared_ptr<jsi::NativeState>) {
+  throw std::logic_error("Not implemented");
 }
 
 jsi::Value JSCRuntime::getProperty(

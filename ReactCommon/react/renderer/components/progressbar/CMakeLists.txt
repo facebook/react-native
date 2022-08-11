@@ -28,7 +28,7 @@ target_link_libraries(rrc_progressbar
         react_render_debug
         react_render_graphics
         react_render_uimanager
-        reactnativeutilsjni
+        reactnativejni
         rrc_view
         yoga
 )

@@ -253,7 +253,7 @@ class TimersTest extends React.Component<Props, State> {
     );
   }
 
-  _incrementInterval() {
+  _incrementInterval(): void {
     if (this.state.count > 3) {
       throw new Error('interval incremented past end.');
     }

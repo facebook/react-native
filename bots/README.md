@@ -1,13 +1,15 @@
 ## Danger
 
-[Danger](http://danger.systems/js/) is a JavaScript runtime which helps you provide continuous feedback inside GitHub. It's used by @pull-bot to analyze the contents of a GitHub pull request.
+[Danger](http://danger.systems/js/) is a JavaScript runtime which helps you provide continuous feedback inside GitHub.
+It's used inside Github Actions to analyze the contents of a GitHub pull request.
 
 If you want to test changes to Danger, I'd recommend checking out an existing PR and then running the `danger pr` command.
-You'll need a GitHub token. You can re-use this one: `a6edf8e8d40ce4e8b11a 150e1341f4dd9c944d2a` (just remove the space).
+You'll need a GitHub Public Access Token (PAT). It will look like `ghp_<REDACTED>`.
+
 So, for example:
 
 ```
-DANGER_GITHUB_API_TOKEN=[ENV_ABOVE] yarn danger pr https://github.com/facebook/react-native/pull/1234
+DANGER_GITHUB_API_TOKEN=ghp_<REDACTED> yarn danger pr https://github.com/facebook/react-native/pull/1234
 ```
 
 ## Code Analysis Bot

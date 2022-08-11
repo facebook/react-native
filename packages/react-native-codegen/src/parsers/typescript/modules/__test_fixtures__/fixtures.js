@@ -84,7 +84,7 @@ export interface Spec extends TurboModule {
       major: number;
       minor: number;
       patch?: number;
-      prerelease: number | null | void;
+      prerelease: number | null | undefined;
     };
     forceTouchAvailable: boolean;
     osVersion: string;
@@ -295,7 +295,7 @@ import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
 import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  readonly voidFunc: (arg: string | null | void) => void;
+  readonly voidFunc: (arg: string | null | undefined) => void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');

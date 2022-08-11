@@ -141,17 +141,17 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
   auto defaultTextAttributes = TextAttributes::defaultTextAttributes();
   defaultTextAttributes.apply(getConcreteProps().textAttributes);
 
-  auto newEventCount =
-      (state.reactTreeAttributedString == reactTreeAttributedString
-           ? 0
-           : getConcreteProps().mostRecentEventCount);
-  auto newAttributedString = getMostRecentAttributedString();
-
   // Even if we're here and updating state, it may be only to update the layout
   // manager If that is the case, make sure we don't update text: pass in the
   // current attributedString unchanged, and pass in zero for the "event count"
   // so no changes are applied There's no way to prevent a state update from
   // flowing to Java, so we just ensure it's a noop in those cases.
+  auto newEventCount =
+      state.reactTreeAttributedString.isContentEqual(reactTreeAttributedString)
+      ? 0
+      : getConcreteProps().mostRecentEventCount;
+  auto newAttributedString = getMostRecentAttributedString();
+
   setStateData(AndroidTextInputState{
       newEventCount,
       newAttributedString,

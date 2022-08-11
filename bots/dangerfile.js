@@ -9,8 +9,9 @@
 
 'use strict';
 
-const {danger, fail, message, warn} = require('danger');
+const {danger, fail, /*message,*/ warn} = require('danger');
 const includes = require('lodash.includes');
+const eslint = require('@seadub/danger-plugin-eslint');
 
 const isFromPhabricator =
   danger.github.pr.body &&
@@ -90,7 +91,7 @@ if (!includesChangelog) {
 // Warns if the PR is opened against stable, as commits need to be cherry picked and tagged by a release maintainer.
 // Fails if the PR is opened against anything other than `main` or `-stable`.
 const isMergeRefMain = danger.github.pr.base.ref === 'main';
-const isMergeRefStable = danger.github.pr.base.ref.indexOf('-stable') !== -1;
+const isMergeRefStable = danger.github.pr.base.ref.endsWith('-stable');
 if (!isMergeRefMain && !isMergeRefStable) {
   const title = ':exclamation: Base Branch';
   const idea =
@@ -100,15 +101,12 @@ if (!isMergeRefMain && !isMergeRefStable) {
 
 // If the PR is opened against stable should add `Pick Request` label
 if (isMergeRefStable) {
-  const {owner, repo, number: issueNumber} = danger.github.thisPR;
-
-  danger.github.api.request(
-    'POST /repos/{owner}/{repo}/issues/{issueNumber}/labels',
-    {
-      owner,
-      repo,
-      issueNumber,
-      labels: ['Pick Request'],
-    },
-  );
+  danger.github.api.issues.addLabels({
+    owner: danger.github.pr.base.repo.owner.login,
+    repo: danger.github.pr.base.repo.name,
+    issue_number: danger.github.pr.number,
+    labels: ['Pick Request'],
+  });
 }
+
+eslint.default();

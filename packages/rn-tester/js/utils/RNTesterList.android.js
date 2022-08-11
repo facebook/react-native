@@ -142,7 +142,7 @@ const APIs: Array<RNTesterModuleInfo> = [
   {
     key: 'AlertExample',
     category: 'UI',
-    module: require('../examples/Alert/AlertExample'),
+    module: require('../examples/Alert/AlertExample').default,
   },
   {
     key: 'AnimatedIndex',
@@ -183,6 +183,11 @@ const APIs: Array<RNTesterModuleInfo> = [
     key: 'Dimensions',
     category: 'UI',
     module: require('../examples/Dimensions/DimensionsExample'),
+  },
+  {
+    key: 'Keyboard',
+    category: 'Basic',
+    module: require('../examples/Keyboard/KeyboardExample').default,
   },
   {
     key: 'LayoutEventsExample',

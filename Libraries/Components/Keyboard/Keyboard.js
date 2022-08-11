@@ -126,10 +126,11 @@ class Keyboard {
    * - `keyboardWillChangeFrame`
    * - `keyboardDidChangeFrame`
    *
-   * Note that if you set `android:windowSoftInputMode` to `adjustResize`  or `adjustNothing`,
-   * only `keyboardDidShow` and `keyboardDidHide` events will be available on Android.
-   * `keyboardWillShow` as well as `keyboardWillHide` are generally not available on Android
-   * since there is no native corresponding event.
+   * Android versions prior to API 30 rely on observing layout changes when
+   * `android:windowSoftInputMode` is set to `adjustResize` or `adjustPan`.
+   *
+   * `keyboardWillShow` as well as `keyboardWillHide` are not available on Android since there is
+   * no native corresponding event.
    *
    * @param {function} callback function to be called when the event fires.
    */

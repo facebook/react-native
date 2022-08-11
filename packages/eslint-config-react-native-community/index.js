@@ -37,13 +37,13 @@ module.exports = {
     {
       files: ['*.js'],
       parser: '@babel/eslint-parser',
-      plugins: ['flowtype'],
+      plugins: ['ft-flow'],
       rules: {
         // Flow Plugin
-        // The following rules are made available via `eslint-plugin-flowtype`
+        // The following rules are made available via `eslint-plugin-ft-flow`
 
-        'flowtype/define-flow-type': 1,
-        'flowtype/use-flow-type': 1,
+        'ft-flow/define-flow-type': 1,
+        'ft-flow/use-flow-type': 1,
       },
     },
     {

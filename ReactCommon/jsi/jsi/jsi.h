@@ -128,6 +128,13 @@ class JSI_EXPORT HostObject {
   virtual std::vector<PropNameID> getPropertyNames(Runtime& rt);
 };
 
+/// Native state (and destructor) that can be attached to any JS object
+/// using setNativeState.
+class JSI_EXPORT NativeState {
+ public:
+  virtual ~NativeState();
+};
+
 /// Represents a JS runtime.  Movable, but not copyable.  Note that
 /// this object may not be thread-aware, but cannot be used safely from
 /// multiple threads at once.  The application is responsible for
@@ -283,6 +290,13 @@ class JSI_EXPORT Runtime {
 
   virtual std::string symbolToString(const Symbol&) = 0;
 
+  virtual BigInt createBigIntFromInt64(int64_t) = 0;
+  virtual BigInt createBigIntFromUint64(uint64_t) = 0;
+  virtual bool bigintIsInt64(const BigInt&) = 0;
+  virtual bool bigintIsUint64(const BigInt&) = 0;
+  virtual uint64_t truncate(const BigInt&) = 0;
+  virtual String bigintToString(const BigInt&, int) = 0;
+
   virtual String createStringFromAscii(const char* str, size_t length) = 0;
   virtual String createStringFromUtf8(const uint8_t* utf8, size_t length) = 0;
   virtual std::string utf8(const String&) = 0;
@@ -295,6 +309,12 @@ class JSI_EXPORT Runtime {
   virtual Object createObject(std::shared_ptr<HostObject> ho) = 0;
   virtual std::shared_ptr<HostObject> getHostObject(const jsi::Object&) = 0;
   virtual HostFunctionType& getHostFunction(const jsi::Function&) = 0;
+
+  virtual bool hasNativeState(const jsi::Object&) = 0;
+  virtual std::shared_ptr<NativeState> getNativeState(const jsi::Object&) = 0;
+  virtual void setNativeState(
+      const jsi::Object&,
+      std::shared_ptr<NativeState> state) = 0;
 
   virtual Value getProperty(const Object&, const PropNameID& name) = 0;
   virtual Value getProperty(const Object&, const String& name) = 0;
@@ -493,6 +513,53 @@ class JSI_EXPORT BigInt : public Pointer {
 
   BigInt(BigInt&& other) = default;
   BigInt& operator=(BigInt&& other) = default;
+
+  /// Create a BigInt representing the signed 64-bit \p value.
+  static BigInt fromInt64(Runtime& runtime, int64_t value) {
+    return runtime.createBigIntFromInt64(value);
+  }
+
+  /// Create a BigInt representing the unsigned 64-bit \p value.
+  static BigInt fromUint64(Runtime& runtime, uint64_t value) {
+    return runtime.createBigIntFromUint64(value);
+  }
+
+  /// \return whether a === b.
+  static bool strictEquals(Runtime& runtime, const BigInt& a, const BigInt& b) {
+    return runtime.strictEquals(a, b);
+  }
+
+  /// \returns This bigint truncated to a signed 64-bit integer.
+  int64_t getInt64(Runtime& runtime) const {
+    return runtime.truncate(*this);
+  }
+
+  /// \returns Whether this bigint can be losslessly converted to int64_t.
+  bool isInt64(Runtime& runtime) const {
+    return runtime.bigintIsInt64(*this);
+  }
+
+  /// \returns This bigint truncated to a signed 64-bit integer. Throws a
+  /// JSIException if the truncation is lossy.
+  int64_t asInt64(Runtime& runtime) const;
+
+  /// \returns This bigint truncated to an unsigned 64-bit integer.
+  uint64_t getUint64(Runtime& runtime) const {
+    return runtime.truncate(*this);
+  }
+
+  /// \returns Whether this bigint can be losslessly converted to uint64_t.
+  bool isUint64(Runtime& runtime) const {
+    return runtime.bigintIsUint64(*this);
+  }
+
+  /// \returns This bigint truncated to an unsigned 64-bit integer. Throws a
+  /// JSIException if the truncation is lossy.
+  uint64_t asUint64(Runtime& runtime) const;
+
+  /// \returns this BigInt converted to a String in base \p radix. Throws a
+  /// JSIException if radix is not in the [2, 36] range.
+  inline String toString(Runtime& runtime, int radix = 10) const;
 
   friend class Runtime;
   friend class Value;
@@ -710,6 +777,25 @@ class JSI_EXPORT Object : public Pointer {
   /// is false, this will throw.
   template <typename T = HostObject>
   std::shared_ptr<T> asHostObject(Runtime& runtime) const;
+
+  /// \return whether this object has native state of type T previously set by
+  /// \c setNativeState.
+  template <typename T = NativeState>
+  bool hasNativeState(Runtime& runtime) const;
+
+  /// \return a shared_ptr to the state previously set by \c setNativeState.
+  /// If \c hasNativeState<T> is false, this will assert. Note that this does a
+  /// type check and will assert if the native state isn't of type \c T
+  template <typename T = NativeState>
+  std::shared_ptr<T> getNativeState(Runtime& runtime) const;
+
+  /// Set the internal native state property of this object, overwriting any old
+  /// value. Creates a new shared_ptr to the object managed by \p state, which
+  /// will live until the value at this property becomes unreachable.
+  ///
+  /// Throws a type error if this object is a proxy or host object.
+  void setNativeState(Runtime& runtime, std::shared_ptr<NativeState> state)
+      const;
 
   /// \return same as \c getProperty(name).asObject(), except with
   /// a better exception message.

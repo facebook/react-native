@@ -202,6 +202,29 @@ inline std::shared_ptr<HostObject> Object::getHostObject<HostObject>(
   return runtime.getHostObject(*this);
 }
 
+template <typename T>
+inline bool Object::hasNativeState(Runtime& runtime) const {
+  return runtime.hasNativeState(*this) &&
+      std::dynamic_pointer_cast<T>(runtime.getNativeState(*this));
+}
+
+template <>
+inline bool Object::hasNativeState<NativeState>(Runtime& runtime) const {
+  return runtime.hasNativeState(*this);
+}
+
+template <typename T>
+inline std::shared_ptr<T> Object::getNativeState(Runtime& runtime) const {
+  assert(hasNativeState<T>(runtime));
+  return std::static_pointer_cast<T>(runtime.getNativeState(*this));
+}
+
+inline void Object::setNativeState(
+    Runtime& runtime,
+    std::shared_ptr<NativeState> state) const {
+  runtime.setNativeState(*this, state);
+}
+
 inline Array Object::getPropertyNames(Runtime& runtime) const {
   return runtime.getPropertyNames(*this);
 }
@@ -316,6 +339,10 @@ inline Value Function::callAsConstructor(Runtime& runtime, Args&&... args)
     const {
   return callAsConstructor(
       runtime, {detail::toValue(runtime, std::forward<Args>(args))...});
+}
+
+String BigInt::toString(Runtime& runtime, int radix) const {
+  return runtime.bigintToString(*this, radix);
 }
 
 } // namespace jsi

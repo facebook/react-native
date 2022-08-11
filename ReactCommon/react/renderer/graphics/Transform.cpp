@@ -32,6 +32,14 @@ Transform Transform::Identity() {
   return {};
 }
 
+Transform Transform::VerticalInversion() {
+  return Transform::Scale(1, -1, 1);
+}
+
+Transform Transform::HorizontalInversion() {
+  return Transform::Scale(-1, 1, 1);
+}
+
 Transform Transform::Perspective(Float perspective) {
   auto transform = Transform{};
   transform.operations.push_back(TransformOperation{
@@ -241,6 +249,14 @@ Transform Transform::Interpolate(
   return result;
 }
 
+bool Transform::isVerticalInversion(Transform const &transform) {
+  return transform.at(1, 1) == -1;
+}
+
+bool Transform::isHorizontalInversion(Transform const &transform) {
+  return transform.at(0, 0) == -1;
+}
+
 bool Transform::operator==(Transform const &rhs) const {
   for (auto i = 0; i < 16; i++) {
     if (matrix[i] != rhs.matrix[i]) {
@@ -387,8 +403,8 @@ Size operator*(Size const &size, Transform const &transform) {
   }
 
   auto result = Size{};
-  result.width = transform.at(0, 0) * size.width;
-  result.height = transform.at(1, 1) * size.height;
+  result.width = std::abs(transform.at(0, 0) * size.width);
+  result.height = std::abs(transform.at(1, 1) * size.height);
 
   return result;
 }

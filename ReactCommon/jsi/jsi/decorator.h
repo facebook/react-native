@@ -193,6 +193,25 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
     return plain_.symbolToString(sym);
   }
 
+  BigInt createBigIntFromInt64(int64_t value) override {
+    return plain_.createBigIntFromInt64(value);
+  }
+  BigInt createBigIntFromUint64(uint64_t value) override {
+    return plain_.createBigIntFromUint64(value);
+  }
+  bool bigintIsInt64(const BigInt& b) override {
+    return plain_.bigintIsInt64(b);
+  }
+  bool bigintIsUint64(const BigInt& b) override {
+    return plain_.bigintIsUint64(b);
+  }
+  uint64_t truncate(const BigInt& b) override {
+    return plain_.truncate(b);
+  }
+  String bigintToString(const BigInt& bigint, int radix) override {
+    return plain_.bigintToString(bigint, radix);
+  }
+
   String createStringFromAscii(const char* str, size_t length) override {
     return plain_.createStringFromAscii(str, length);
   };
@@ -221,6 +240,17 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
     // with RTTI.
     return dhf.target<DecoratedHostFunction>()->plainHF_;
   };
+
+  bool hasNativeState(const Object& o) override {
+    return plain_.hasNativeState(o);
+  }
+  std::shared_ptr<NativeState> getNativeState(const Object& o) override {
+    return plain_.getNativeState(o);
+  }
+  void setNativeState(const Object& o, std::shared_ptr<NativeState> state)
+      override {
+    plain_.setNativeState(o, state);
+  }
 
   Value getProperty(const Object& o, const PropNameID& name) override {
     return plain_.getProperty(o, name);

@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {NativeMethods} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
+
 const React = require('react');
 const {
   ActionSheetIOS,
@@ -29,11 +31,11 @@ const DISABLED_BUTTON_INDICES = [1, 2];
 type Props = $ReadOnly<{||}>;
 type State = {|clicked: string|};
 class ActionSheetExample extends React.Component<Props, State> {
-  state = {
+  state: State = {
     clicked: 'none',
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <Text onPress={this.showActionSheet} style={style.button}>
@@ -62,11 +64,11 @@ class ActionSheetTintExample extends React.Component<
   $FlowFixMeProps,
   $FlowFixMeState,
 > {
-  state = {
+  state: any | {clicked: string} = {
     clicked: 'none',
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <Text onPress={this.showActionSheet} style={style.button}>
@@ -96,11 +98,11 @@ class ActionSheetCancelButtonTintExample extends React.Component<
   $FlowFixMeProps,
   $FlowFixMeState,
 > {
-  state = {
+  state: any | {clicked: string} = {
     clicked: 'none',
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <Text onPress={this.showActionSheet} style={style.button}>
@@ -131,13 +133,13 @@ class ActionSheetAnchorExample extends React.Component<
   $FlowFixMeProps,
   $FlowFixMeState,
 > {
-  state = {
+  state: any | {clicked: string} = {
     clicked: 'none',
   };
 
-  anchorRef = React.createRef();
+  anchorRef: {current: null | $Exact<NativeMethods>} = React.createRef();
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <View style={style.anchorRow}>
@@ -174,11 +176,11 @@ class ActionSheetAnchorExample extends React.Component<
 }
 
 class ActionSheetDisabledExample extends React.Component<Props, State> {
-  state = {
+  state: State = {
     clicked: 'none',
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <Text onPress={this.showActionSheet} style={style.button}>
@@ -205,7 +207,7 @@ class ActionSheetDisabledExample extends React.Component<Props, State> {
 }
 
 class ActionSheetDismissExample extends React.Component<{...}> {
-  render() {
+  render(): React.Node {
     return (
       <View>
         <Text onPress={this.showAndDismissActionSheet} style={style.button}>
@@ -236,11 +238,11 @@ class ShareActionSheetExample extends React.Component<
   $FlowFixMeProps,
   $FlowFixMeState,
 > {
-  state = {
+  state: any | {text: string} = {
     text: '',
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <Text onPress={this.showShareActionSheet} style={style.button}>
@@ -277,11 +279,11 @@ class ShareScreenshotExample extends React.Component<
   $FlowFixMeProps,
   $FlowFixMeState,
 > {
-  state = {
+  state: any | {text: string} = {
     text: '',
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <Text onPress={this.showShareActionSheet} style={style.button}>
@@ -322,13 +324,13 @@ class ShareScreenshotAnchorExample extends React.Component<
   $FlowFixMeProps,
   $FlowFixMeState,
 > {
-  state = {
+  state: any | {text: string} = {
     text: '',
   };
 
-  anchorRef = React.createRef();
+  anchorRef: {current: null | $Exact<NativeMethods>} = React.createRef();
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <View style={style.anchorRow}>

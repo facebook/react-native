@@ -78,6 +78,18 @@ struct Transform {
   static Transform Identity();
 
   /*
+   * Returns the vertival inversion transform (`[1 0 0 0; 0 -1 0 0; 0 0 1 0; 0 0
+   * 0 1]`).
+   */
+  static Transform VerticalInversion();
+
+  /*
+   * Returns the horizontal inversion transform (`[-1 0 0 0; 0 1 0 0; 0 0 1 0; 0
+   * 0 0 1]`).
+   */
+  static Transform HorizontalInversion();
+
+  /*
    * Returns a Perspective transform.
    */
   static Transform Perspective(Float perspective);
@@ -120,6 +132,9 @@ struct Transform {
       Float animationProgress,
       Transform const &lhs,
       Transform const &rhs);
+
+  static bool isVerticalInversion(Transform const &transform);
+  static bool isHorizontalInversion(Transform const &transform);
 
   /*
    * Equality operators.

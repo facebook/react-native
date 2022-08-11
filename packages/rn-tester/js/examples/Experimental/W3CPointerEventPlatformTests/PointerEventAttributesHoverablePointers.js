@@ -139,7 +139,6 @@ function PointerEventAttributesHoverablePointersTestCase(
         }, pointerTestName + "'s ClientX and ClientY attributes are correct.");
       }
 
-      // TODO: check_PointerEvent
       check_PointerEvent(harness, event, eventType, {
         testNamePrefix,
       });

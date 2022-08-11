@@ -401,7 +401,7 @@ export function withSubscription(
   WrappedComponent: SubscribedComponent,
 ): React.AbstractComponent<{||}> {
   class LogBoxStateSubscription extends React.Component<Props, State> {
-    static getDerivedStateFromError() {
+    static getDerivedStateFromError(): {hasError: boolean} {
       return {hasError: true};
     }
 
@@ -413,7 +413,7 @@ export function withSubscription(
 
     _subscription: ?Subscription;
 
-    state = {
+    state: State = {
       logs: new Set(),
       isDisabled: false,
       hasError: false,

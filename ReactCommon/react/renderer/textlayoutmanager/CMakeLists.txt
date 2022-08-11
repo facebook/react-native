@@ -40,6 +40,6 @@ target_link_libraries(react_render_textlayoutmanager
         react_render_telemetry
         react_render_uimanager
         react_utils
-        reactnativeutilsjni
+        reactnativejni
         yoga
 )

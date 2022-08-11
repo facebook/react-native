@@ -189,6 +189,37 @@
 - Add GitHub token permissions for workflows ([3da3d82320](https://github.com/facebook/react-native/commit/3da3d82320bd035c6bd361a82ea12a70dba4e851) by [@varunsh-coder](https://github.com/varunsh-coder))
 - Bump RCT-Folly to 2021-07-22 ([68f3a42fc7](https://github.com/facebook/react-native/commit/68f3a42fc7380051714253f43b42175de361f8bd) by [@luissantana](https://github.com/luissantana))
 
+## v0.69.4
+
+### Changed
+
+- Upgrade RN CLI to v8.0.4 ([66c68c37ce](https://github.com/facebook/react-native/commit/66c68c37ce94f6c1160e7f260c0d1887539c6605) by [@thymikee](https://github.com/thymikee))
+
+#### Android specific
+
+- Modified **getDefaultJSExecutorFactory** method ([87cfd386cb](https://github.com/facebook/react-native/commit/87cfd386cb2e02bfa440c94706d9d0274f83070c) by [@KunalFarmah98](https://github.com/KunalFarmah98))
+
+## v0.69.3
+
+### Fixed
+
+#### iOS specific
+
+- Fix React-bridging header not found for third party modules ([fa2acc32d1](https://github.com/facebook/react-native/commit/fa2acc32d1490f6e418689dec321f8bd4ef7bb28) by [@Kudo](https://github.com/Kudo))
+
+## v0.69.2
+
+### Changed
+
+- Set react-shallow-renderer v16.15.0 for react v18 compat ([a39a7c453d](https://github.com/facebook/react-native/commit/a39a7c453d87086935ff07d549ba8220cbcf30bd) by [@mikehardy](https://github.com/mikehardy))
+- Upgrade RN CLI to v8.0.3 ([28cbd21d21](https://github.com/facebook/react-native/commit/28cbd21d21f2ffb3f38b2449a4983f013947ce0a) by [@thymikee](https://github.com/thymikee))
+
+#### iOS specific
+
+- Hermes pod: change logic to use the hermes tag to set the pod source correctly ([46a9edc854](https://github.com/facebook/react-native/commit/46a9edc8544ae070149a97ea3d919b88dd6e2942) by [@kelset](https://github.com/kelset))
+- Fix the race condition when calling readAsDataURL after new Blob(blobs) ([bd12e41188](https://github.com/facebook/react-native/commit/bd12e41188c8d85c0acbd713f10f0bd34ea0edca) by [@wood1986](https://github.com/wood1986))
+- Make sure that Flipper pods are not installed when creating a release build ([23accbf58d](https://github.com/facebook/react-native/commit/23accbf58d2fa03ad020e07f00012a32609c7218) by [@cipolleschi](https://github.com/cipolleschi))
+
 ## v0.69.1
 
 ### Changed
@@ -418,6 +449,22 @@
 
 - Encode URL params in URLSearchParams.toString() ([1042a8012f](https://github.com/facebook/react-native/commit/1042a8012fb472bd5c882b469fe507dd6279d562) by [@sshic](https://github.com/sshic))
 
+## v0.68.3
+
+### Changed
+
+#### Android specific
+
+- Let's not build reactnativeutilsjni shared library ([af9225ec5f](https://github.com/facebook/react-native/commit/af9225ec5fd22da802e3da4d786fa7f6ec956b0f) by [@SparshaSaha](https://github.com/SparshaSaha))
+- Modified **getDefaultJSExecutorFactory** method ([87cfd386cb](https://github.com/facebook/react-native/commit/87cfd386cb2e02bfa440c94706d9d0274f83070c) by [@KunalFarmah98](https://github.com/KunalFarmah98))
+
+### Fixed
+
+- Use monotonic clock for performance.now() ([114d31feee](https://github.com/facebook/react-native/commit/114d31feeeb47f5a57419e5088c3cbe9340f757a))
+
+#### Android specific
+
+- Logging a soft error when ReactRootView has an id other than -1 instead of crashing the app in hybrid apps ([1ca2c24930](https://github.com/facebook/react-native/commit/1ca2c2493027c1b027146cd41e17dd8a4fc33a41) by [@Kunal-Airtel2022](https://github.com/Kunal-Airtel2022))
 
 ## v0.68.2
 

@@ -8,6 +8,7 @@
 #import "RCTViewManager.h"
 
 #import "RCTAssert.h"
+#import "RCTBorderCurve.h"
 #import "RCTBorderStyle.h"
 #import "RCTBridge.h"
 #import "RCTConvert+Transform.h"
@@ -262,6 +263,19 @@ RCT_CUSTOM_VIEW_PROPERTY(removeClippedSubviews, BOOL, RCTView)
 {
   if ([view respondsToSelector:@selector(setRemoveClippedSubviews:)]) {
     view.removeClippedSubviews = json ? [RCTConvert BOOL:json] : defaultView.removeClippedSubviews;
+  }
+}
+RCT_CUSTOM_VIEW_PROPERTY(borderCurve, RCTBorderCurve, RCTView)
+{
+  if (@available(iOS 13.0, *)) {
+    switch ([RCTConvert RCTBorderCurve:json]) {
+      case RCTBorderCurveContinuous:
+        view.layer.cornerCurve = kCACornerCurveContinuous;
+        break;
+      case RCTBorderCurveCircular:
+        view.layer.cornerCurve = kCACornerCurveCircular;
+        break;
+    }
   }
 }
 RCT_CUSTOM_VIEW_PROPERTY(borderRadius, CGFloat, RCTView)
