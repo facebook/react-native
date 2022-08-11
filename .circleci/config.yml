@@ -126,7 +126,10 @@ commands:
         default: *shallow_checkout_depth
         type: integer
     steps:
-      - run: git clone --depth << parameters.checkout_depth >> "$CIRCLE_REPOSITORY_URL" --branch "$CIRCLE_BRANCH" -y
+      - run:
+        name: Add shhkey for github
+        command: ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+      - run: git clone --depth << parameters.checkout_depth >> "$CIRCLE_REPOSITORY_URL" --branch "$CIRCLE_BRANCH"
 
   # Checkout with cache, on machines that are using Docker the cache is ignored
   checkout_code_with_cache:
