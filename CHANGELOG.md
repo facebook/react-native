@@ -2,45 +2,6 @@
 
 ## v0.70.0-rc.2
 
-### Changed
-
-- Upgrade RN CLI to v9.0.0-alpha.9 ([c504d038c4](https://github.com/facebook/react-native/commit/c504d038c470f7a13fb345f57261172c7c85248c) by [@thymikee](https://github.com/thymikee))
-- Bump CLI to v9.0.0-alpha.5 ([f1d624823f](https://github.com/facebook/react-native/commit/f1d624823fe23eb3d30de00cf78beb71dc1b8413) by [@kelset](https://github.com/kelset))
-- Upgrade react-native-gradle-plugin to 0.70.1 ([2176173dcc](https://github.com/facebook/react-native/commit/2176173dcc029ab21bfcdfe5c9e150581db47409) by [@dmitryrykun](https://github.com/dmitryrykun))
-- Update a few metro deps as follow up from the commit from main ([7c7ba1babd](https://github.com/facebook/react-native/commit/7c7ba1babd41b6b60f0dc9f48c34d00235d2fef5) by [@kelset](https://github.com/kelset))
-- Update @react-native/eslint-plugin-specs to 0.70.0 ([d07fae9b23](https://github.com/facebook/react-native/commit/d07fae9b23c258a60045b666167efd5259b962ce) by [@dmitryrykun](https://github.com/dmitryrykun))
-- Bump @react-native/eslint-plugin-specs to 0.70.0 ([afd76f69c7](https://github.com/facebook/react-native/commit/afd76f69c7d2408654ba67ac2ed4d612abfbe0ce) by [@dmitryrykun](https://github.com/dmitryrykun))
-- Hermes version bump for 0.70.0-RC1 ([eb6767813a](https://github.com/facebook/react-native/commit/eb6767813a0efe04a9e79955b8f6ee909a4a76bf) by [@cortinico](https://github.com/cortinico))
-
-#### Android specific
-
-- Replaced reactnativeutilsjni with reactnativejni in the build process to reduce size ([54a4fcbfdc](https://github.com/facebook/react-native/commit/54a4fcbfdcc8111b3010b2c31ed3c1d48632ce4c) by [@SparshaSaha](https://github.com/SparshaSaha))
-- Bump Gradle to 7.5.0 ([5c8186623a](https://github.com/facebook/react-native/commit/5c8186623ae15388949cfc4143edae86863a447b) by [@leotm](https://github.com/leotm))
-- Bump Soloader to 0.10.4 ([b9adf2db20](https://github.com/facebook/react-native/commit/b9adf2db20bf9e1436fa58182d886fd9461df9af) by [@mikehardy](https://github.com/mikehardy))
-
-#### iOS specific
-
-- Update Podfile to allow `PRODUCTION=1 pod install` ([77752fc403](https://github.com/facebook/react-native/commit/77752fc4037e66d5b0a5851bae79c4d3285ed334) by [@leotm](https://github.com/leotm))
-- Destruct use_reactnative parameters and ad ddocumentation ([79a37e5a88](https://github.com/facebook/react-native/commit/79a37e5a88e179090ade7145a453a46719c87b3f) by [@cipolleschi](https://github.com/cipolleschi))
-- Move codegen in separate files ([7d069b2583](https://github.com/facebook/react-native/commit/7d069b25835ad20654a46ebb1e09631d826598e0) by [@cipolleschi](https://github.com/cipolleschi))
-
-### Fixed
-
-- Fix eslint-plugin-specs prepack npm lifecycle hook now that we use npm 8 ([8441c4a6f7](https://github.com/facebook/react-native/commit/8441c4a6f7bfeda73f89f076fe7d8d1132e4b9be) by [@kelset](https://github.com/kelset))
-
-#### Android specific
-
-- Fix accessibilityState overwriting view's disabled state on Android ([f35d18caa3](https://github.com/facebook/react-native/commit/f35d18caa302351319840ec85337182f4f148e5e) by [@okwasniewski](https://github.com/okwasniewski))
-- Make sure *.ts files are considered for task avoidance in the Gradle Plugin ([1a9fb6cb68](https://github.com/facebook/react-native/commit/1a9fb6cb682aa5ff83462e1e2869eb99f3b873fd) by [@cortinico](https://github.com/cortinico))
-- Fix missing import on New Architecture build script in template ([a22f30d2ce](https://github.com/facebook/react-native/commit/a22f30d2ce866cb1488b26bb18eee0620a0ac259) by [@cortinico](https://github.com/cortinico))
-
-#### iOS specific
-
-- Fix React-bridging headers import not found ([c4b51e8d76](https://github.com/facebook/react-native/commit/c4b51e8d7679c3c20b843072581acd23a931fc83) by [@Kudo](https://github.com/Kudo))
-- Fix Hermes executor not available when `use_frameworks` is enabled ([88b7b640a7](https://github.com/facebook/react-native/commit/88b7b640a74bafd918b8b1cd5d58e1f5ddfb730a) by [@Kudo](https://github.com/Kudo))
-
-## v0.70.0-rc.0
-
 ### Breaking
 
 - Remove jest/preprocessor from the react-native package ([0301cb285b](https://github.com/facebook/react-native/commit/0301cb285b2e85b48a397fe58d565196654d9754) by [@motiz88](https://github.com/motiz88))
@@ -106,6 +67,13 @@
 - Update direct Metro dependencies to 0.71.0 ([08ebc1cfd8](https://github.com/facebook/react-native/commit/08ebc1cfd88a629389c43abf23b40a2bdf1b1579) by [@arushikesarwani94](https://github.com/arushikesarwani94))
 - ECOSYSTEM.md: update Partner entries ([5471afeebf](https://github.com/facebook/react-native/commit/5471afeebf59853ce31df1ade6a4591414b6aa2f) by [@Simek](https://github.com/Simek))
 - Move ScrollView's contentOffset to common props ([7c581f3d30](https://github.com/facebook/react-native/commit/7c581f3d3007954413d68daf2e868ce93e120615) by [@genkikondo](https://github.com/genkikondo))
+- Upgrade RN CLI to v9.0.0-alpha.9 ([c504d038c4](https://github.com/facebook/react-native/commit/c504d038c470f7a13fb345f57261172c7c85248c) by [@thymikee](https://github.com/thymikee))
+- Bump CLI to v9.0.0-alpha.5 ([f1d624823f](https://github.com/facebook/react-native/commit/f1d624823fe23eb3d30de00cf78beb71dc1b8413) by [@kelset](https://github.com/kelset))
+- Upgrade react-native-gradle-plugin to 0.70.1 ([2176173dcc](https://github.com/facebook/react-native/commit/2176173dcc029ab21bfcdfe5c9e150581db47409) by [@dmitryrykun](https://github.com/dmitryrykun))
+- Update a few metro deps as follow up from the commit from main ([7c7ba1babd](https://github.com/facebook/react-native/commit/7c7ba1babd41b6b60f0dc9f48c34d00235d2fef5) by [@kelset](https://github.com/kelset))
+- Update @react-native/eslint-plugin-specs to 0.70.0 ([d07fae9b23](https://github.com/facebook/react-native/commit/d07fae9b23c258a60045b666167efd5259b962ce) by [@dmitryrykun](https://github.com/dmitryrykun))
+- Bump @react-native/eslint-plugin-specs to 0.70.0 ([afd76f69c7](https://github.com/facebook/react-native/commit/afd76f69c7d2408654ba67ac2ed4d612abfbe0ce) by [@dmitryrykun](https://github.com/dmitryrykun))
+- Hermes version bump for 0.70.0-RC1 ([eb6767813a](https://github.com/facebook/react-native/commit/eb6767813a0efe04a9e79955b8f6ee909a4a76bf) by [@cortinico](https://github.com/cortinico))
 
 #### Android specific
 
@@ -120,6 +88,9 @@
 - Generalized the return type of ViewManagerOnDemandReactPackage.getViewManagerNames ([51e029ec3c](https://github.com/facebook/react-native/commit/51e029ec3ce42ae8df3d367d8f553ec2148eeafc) by [@javache](https://github.com/javache))
 - Don't assert on current activity when call startActivityForResult ([bf6884dc90](https://github.com/facebook/react-native/commit/bf6884dc903154ae32daa50ce7983a9f014be781) by [@sshic](https://github.com/sshic))
 - Adapt template to new architecture autolinking on Android ([9ad7cbc3eb](https://github.com/facebook/react-native/commit/9ad7cbc3eb365190e0bfe290e1025553a807b298) by [@thymikee](https://github.com/thymikee))
+- Replaced reactnativeutilsjni with reactnativejni in the build process to reduce size ([54a4fcbfdc](https://github.com/facebook/react-native/commit/54a4fcbfdcc8111b3010b2c31ed3c1d48632ce4c) by [@SparshaSaha](https://github.com/SparshaSaha))
+- Bump Gradle to 7.5.0 ([5c8186623a](https://github.com/facebook/react-native/commit/5c8186623ae15388949cfc4143edae86863a447b) by [@leotm](https://github.com/leotm))
+- Bump Soloader to 0.10.4 ([b9adf2db20](https://github.com/facebook/react-native/commit/b9adf2db20bf9e1436fa58182d886fd9461df9af) by [@mikehardy](https://github.com/mikehardy))
 
 #### iOS specific
 
@@ -136,6 +107,9 @@
 - Refactor part of the codegen scripts and add tests. ([0465c3fd10](https://github.com/facebook/react-native/commit/0465c3fd102525b005826f3c68923d7e9851d6b8), [305a054865](https://github.com/facebook/react-native/commit/305a0548652a405d9f638fb2c054781951dfc996) by [@cipolleschi](https://github.com/cipolleschi))
 - CodeGen now supports the `"all"` library type. ([6718500eaa](https://github.com/facebook/react-native/commit/6718500eaaeb92b8a74320dcee961ac96f6f12fa) by [@cipolleschi](https://github.com/cipolleschi))
 - Fix the test_ios_unit test ([fdbe4719e2](https://github.com/facebook/react-native/commit/fdbe4719e2e2b599e86d42c49d42c4da97ef431a) by [@cipolleschi](https://github.com/cipolleschi))
+- Update Podfile to allow `PRODUCTION=1 pod install` ([77752fc403](https://github.com/facebook/react-native/commit/77752fc4037e66d5b0a5851bae79c4d3285ed334) by [@leotm](https://github.com/leotm))
+- Destruct use_reactnative parameters and ad ddocumentation ([79a37e5a88](https://github.com/facebook/react-native/commit/79a37e5a88e179090ade7145a453a46719c87b3f) by [@cipolleschi](https://github.com/cipolleschi))
+- Move codegen in separate files ([7d069b2583](https://github.com/facebook/react-native/commit/7d069b25835ad20654a46ebb1e09631d826598e0) by [@cipolleschi](https://github.com/cipolleschi))
 
 ### Removed
 
@@ -164,6 +138,7 @@
 - Add Jest mock for Vibration module ([79529a1c77](https://github.com/facebook/react-native/commit/79529a1c77e7e1b174fdbe8103a2199c9ac924ff) by [@hduprat](https://github.com/hduprat))
 - Allow ReactInstrumentationTest to use custom JSIModules ([eb2a83b0be](https://github.com/facebook/react-native/commit/eb2a83b0be4658654fc6ca6f4671e45f1898798d) by [@christophpurrer](https://github.com/christophpurrer))
 - Working around Long paths limitation on Windows ([883a93871c](https://github.com/facebook/react-native/commit/883a93871cb1fbca4434600a322f63afbba333da) by [@mganandraj](https://github.com/mganandraj))
+- Fix eslint-plugin-specs prepack npm lifecycle hook now that we use npm 8 ([8441c4a6f7](https://github.com/facebook/react-native/commit/8441c4a6f7bfeda73f89f076fe7d8d1132e4b9be) by [@kelset](https://github.com/kelset))
 
 #### Android specific
 
@@ -185,6 +160,9 @@
 - When `onEndReachedThreshold` is set to 0 `onEndReached` function on `VirtualizedList` properly fires once the user scrolls to the bottom of the list. ([b869680c11](https://github.com/facebook/react-native/commit/b869680c1196a6549154a4b9cb7ffa10eab1989c))
 - Fix rendering of transparent borders in RN Android ([a9659ce86d](https://github.com/facebook/react-native/commit/a9659ce86d94dd34768b067763740a5c41917e42) by [@mdvacca](https://github.com/mdvacca))
 - Exception with `Cannot load WebView` message will initialising WebView (along with existing checks) ([9e0d8696cc](https://github.com/facebook/react-native/commit/9e0d8696cc68436a0d309cafde252c55fc337be4) by [@rachitmishra](https://github.com/rachitmishra))
+- Fix accessibilityState overwriting view's disabled state on Android ([f35d18caa3](https://github.com/facebook/react-native/commit/f35d18caa302351319840ec85337182f4f148e5e) by [@okwasniewski](https://github.com/okwasniewski))
+- Make sure *.ts files are considered for task avoidance in the Gradle Plugin ([1a9fb6cb68](https://github.com/facebook/react-native/commit/1a9fb6cb682aa5ff83462e1e2869eb99f3b873fd) by [@cortinico](https://github.com/cortinico))
+- Fix missing import on New Architecture build script in template ([a22f30d2ce](https://github.com/facebook/react-native/commit/a22f30d2ce866cb1488b26bb18eee0620a0ac259) by [@cortinico](https://github.com/cortinico))
 
 #### iOS specific
 
@@ -203,6 +181,8 @@
 - Fixed paddingTop not being applied when using padding and paddingVertical in multiline textinput ([2fb107c9a6](https://github.com/facebook/react-native/commit/2fb107c9a63aacd2c880ad6abedaad67ffb6022b) by [@hetanthakkar1](https://github.com/hetanthakkar1))
 - Fixed the ability to pass the port to use for Metro when running `react-native run-ios --port <port>`. ([7dc0b5153e](https://github.com/facebook/react-native/commit/7dc0b5153e4eb91c333238a58fe8c75a47cb5f81) by [@lindboe](https://github.com/lindboe))
 - Fix missing imports ([c78babac39](https://github.com/facebook/react-native/commit/c78babac39b7c64e03e137d8fddd91e783303426))
+- Fix React-bridging headers import not found ([c4b51e8d76](https://github.com/facebook/react-native/commit/c4b51e8d7679c3c20b843072581acd23a931fc83) by [@Kudo](https://github.com/Kudo))
+- Fix Hermes executor not available when `use_frameworks` is enabled ([88b7b640a7](https://github.com/facebook/react-native/commit/88b7b640a74bafd918b8b1cd5d58e1f5ddfb730a) by [@Kudo](https://github.com/Kudo))
 
 ### Security
 
