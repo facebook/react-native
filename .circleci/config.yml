@@ -42,6 +42,12 @@ references:
     nodeprevlts_image: &nodeprevlts_image "cimg/node:14.19"
 
   # -------------------------
+  #        Single Use Environmental Variables
+  # -------------------------
+  envs:
+    shallow_checkout_depth: &shallow_checkout_depth 2
+
+  # -------------------------
   #        Cache Key Anchors
   # -------------------------
   # Anchors for the cache keys
@@ -113,19 +119,47 @@ executors:
 #        COMMANDS
 # -------------------------
 commands:
+  # Shallow checkout
+  checkout_shallow:
+    parameters:
+      checkout_depth:
+        default: *shallow_checkout_depth
+        type: integer
+    steps:
+      - run: git checkout --depth << parameters.checkout_depth >>
+
   # Checkout with cache, on machines that are using Docker the cache is ignored
   checkout_code_with_cache:
     parameters:
       checkout_base_cache_key:
         default: *checkout_cache_key
         type: string
+      shallow_checkout:
+        default: False
+        type: boolean
+      shallow_checkout_depth:
+        default: *shallow_checkout_depth
+        type: integer
     steps:
       - restore_cache:
             keys:
               - << parameters.checkout_base_cache_key >>-{{ .Branch }}-{{ .Revision }}
               - << parameters.checkout_base_cache_key >>-{{ .Branch }}-
               - << parameters.checkout_base_cache_key >>
-      - checkout
+      # Logic to decide whether to shallow copy with cache
+      - when:
+          condition:
+            and:
+              - equal: [ true, << parameters.shallow_checkout >> ]
+          steps:
+            - checkout_shallow:
+                checkout_depth: << parameters.shallow_checkout_depth >>
+      - when:
+          condition:
+            and:
+              - not: << parameters.shallow_checkout >>
+          steps:
+            - checkout
       - save_cache:
           key: << parameters.checkout_base_cache_key >>-{{ .Branch }}-{{ .Revision }}
           paths:
@@ -304,7 +338,7 @@ jobs:
   analyze_pr:
     executor: reactnativeandroid
     steps:
-      - checkout
+      - checkout_shallow
       - run_yarn
 
       - install_github_bot_deps
@@ -332,7 +366,7 @@ jobs:
   analyze_code:
     executor: reactnativeandroid
     steps:
-      - checkout
+      - checkout_shallow
       - setup_artifacts
       - run_yarn
 
@@ -384,7 +418,7 @@ jobs:
         default: false
     executor: << parameters.executor >>
     steps:
-      - checkout
+      - checkout_shallow
       - setup_artifacts
       - run_yarn
       - run:
@@ -542,7 +576,7 @@ jobs:
     environment:
       KOTLIN_HOME=third-party/kotlin
     steps:
-      - checkout
+      - checkout_shallow
       - setup_artifacts
       - run_yarn
 
@@ -601,7 +635,7 @@ jobs:
         type: boolean
         default: false
     steps:
-      - checkout
+      - checkout_shallow
       - setup_artifacts
       - run_yarn
 
@@ -856,7 +890,7 @@ jobs:
       - CI_BUILD_NUMBER: $CIRCLE_BUILD_NUM
       - CI_BUILD_URL: $CIRCLE_BUILD_URL
     steps:
-      - checkout
+      - checkout_shallow
       - setup_artifacts
       - run_yarn
       - run:
@@ -887,7 +921,7 @@ jobs:
             curl -sL https://deb.nodesource.com/setup_16.x | bash -
             apt install -y nodejs
             npm install --global yarn
-      - checkout
+      - checkout_shallow
       - run_yarn
       - run:
           name: Set up Hermes workspace and caching
@@ -1144,7 +1178,7 @@ jobs:
           command: |
             mkdir -p ~/.ssh
             echo '|1|If6MU203eXTaaWL678YEfWkVMrw=|kqLeIAyTy8pzpj8x8Ae4Fr8Mtlc= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
-      - checkout
+      - checkout_shallow
       - *attach_hermes_workspace
       - run:
           name: Copy HermesC binaries
