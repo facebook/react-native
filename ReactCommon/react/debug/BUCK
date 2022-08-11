@@ -57,9 +57,8 @@ rn_xplat_cxx_library(
     visibility = ["PUBLIC"],
     deps = [
         "//xplat/fbsystrace:fbsystrace",
-        "//xplat/folly:headers_only_do_not_use",
-        "//xplat/folly:memory",
-        "//xplat/folly:molly",
+        "//xplat/folly:conv",
+        "//xplat/folly:format",
     ],
     exported_deps = [
         "//third-party/glog:glog",

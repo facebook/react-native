@@ -11,7 +11,6 @@ rn_xplat_cxx_library(
     deps = [
         "//fbandroid/native:base",
         "//fbandroid/native/fb:fb",
-        "//xplat/folly:molly",
         react_native_xplat_target("cxxreact:module"),
     ],
 )

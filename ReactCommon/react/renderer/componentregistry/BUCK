@@ -46,13 +46,6 @@ rn_xplat_cxx_library(
     ],
     visibility = ["PUBLIC"],
     deps = [
-        "//third-party/glog:glog",
-        "//xplat/fbsystrace:fbsystrace",
-        "//xplat/folly:headers_only_do_not_use",
-        "//xplat/folly:memory",
-        "//xplat/folly:molly",
-        "//xplat/jsi:JSIDynamic",
-        "//xplat/jsi:jsi",
         react_native_xplat_target("react/debug:debug"),
         react_native_xplat_target("react/renderer/core:core"),
         react_native_xplat_target("react/renderer/debug:debug"),

@@ -48,8 +48,6 @@ rn_xplat_cxx_library(
     tests = [":tests"],
     visibility = ["PUBLIC"],
     deps = [
-        "//xplat/folly:headers_only_do_not_use",
-        "//xplat/folly:molly",
         YOGA_CXX_TARGET,
         react_native_xplat_target("react/debug:debug"),
         react_native_xplat_target("react/renderer/debug:debug"),
@@ -74,7 +72,6 @@ fb_xplat_cxx_test(
     platforms = (ANDROID, APPLE, CXX),
     deps = [
         ":image",
-        "//xplat/folly:molly",
         "//xplat/third-party/gmock:gtest",
     ],
 )
