@@ -898,7 +898,7 @@ jobs:
       - CI_BUILD_URL: $CIRCLE_BUILD_URL
     steps:
       - shallow_checkout:
-        checkout_depth: 12
+          checkout_depth: 12
       - setup_artifacts
       - run_yarn
       - run:
