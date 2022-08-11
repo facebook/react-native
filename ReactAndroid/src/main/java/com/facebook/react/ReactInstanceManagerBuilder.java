@@ -18,9 +18,9 @@ import com.facebook.hermes.reactexecutor.HermesExecutor;
 import com.facebook.hermes.reactexecutor.HermesExecutorFactory;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSBundleLoader;
+import com.facebook.react.bridge.JSExceptionHandler;
 import com.facebook.react.bridge.JSIModulePackage;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
-import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.SurfaceDelegateFactory;
@@ -53,7 +53,7 @@ public class ReactInstanceManagerBuilder {
   private boolean mRequireActivity;
   private @Nullable LifecycleState mInitialLifecycleState;
   private @Nullable UIImplementationProvider mUIImplementationProvider;
-  private @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
+  private @Nullable JSExceptionHandler mJSExceptionHandler;
   private @Nullable Activity mCurrentActivity;
   private @Nullable DefaultHardwareBackBtnHandler mDefaultHardwareBackBtnHandler;
   private @Nullable RedBoxHandler mRedBoxHandler;
@@ -66,6 +66,7 @@ public class ReactInstanceManagerBuilder {
   private @Nullable Map<String, RequestHandler> mCustomPackagerCommandHandlers;
   private @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
   private @Nullable SurfaceDelegateFactory mSurfaceDelegateFactory;
+  private JSInterpreter jsInterpreter = JSInterpreter.OLD_LOGIC;
 
   /* package protected */ ReactInstanceManagerBuilder() {}
 
@@ -122,6 +123,31 @@ public class ReactInstanceManagerBuilder {
   public ReactInstanceManagerBuilder setJSBundleLoader(JSBundleLoader jsBundleLoader) {
     mJSBundleLoader = jsBundleLoader;
     mJSBundleAssetUrl = null;
+    return this;
+  }
+
+  /**
+   * Sets the jsEngine as JSC or HERMES as per the setJsEngineAsHermes call Uses the enum {@link
+   * JSInterpreter}
+   *
+   * @param jsInterpreter
+   */
+  private void setJSEngine(JSInterpreter jsInterpreter) {
+    this.jsInterpreter = jsInterpreter;
+  }
+
+  /**
+   * Utility setter to set the required JSEngine as HERMES or JSC Defaults to OLD_LOGIC if not
+   * called by the host app
+   *
+   * @param hermesEnabled hermesEnabled = true sets the JS Engine as HERMES and JSC otherwise
+   */
+  public ReactInstanceManagerBuilder setJsEngineAsHermes(boolean hermesEnabled) {
+    if (hermesEnabled) {
+      setJSEngine(JSInterpreter.HERMES);
+    } else {
+      setJSEngine(JSInterpreter.JSC);
+    }
     return this;
   }
 
@@ -227,9 +253,8 @@ public class ReactInstanceManagerBuilder {
    * DevSupportManager} will be used, which shows a redbox in dev mode and rethrows (crashes the
    * app) in prod mode.
    */
-  public ReactInstanceManagerBuilder setNativeModuleCallExceptionHandler(
-      NativeModuleCallExceptionHandler handler) {
-    mNativeModuleCallExceptionHandler = handler;
+  public ReactInstanceManagerBuilder setJSExceptionHandler(JSExceptionHandler handler) {
+    mJSExceptionHandler = handler;
     return this;
   }
 
@@ -331,7 +356,7 @@ public class ReactInstanceManagerBuilder {
         mBridgeIdleDebugListener,
         Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
         mUIImplementationProvider,
-        mNativeModuleCallExceptionHandler,
+        mJSExceptionHandler,
         mRedBoxHandler,
         mLazyViewManagersEnabled,
         mDevBundleDownloadListener,
@@ -345,41 +370,35 @@ public class ReactInstanceManagerBuilder {
 
   private JavaScriptExecutorFactory getDefaultJSExecutorFactory(
       String appName, String deviceName, Context applicationContext) {
-    try {
-      // If JSC is included, use it as normal
-      initializeSoLoaderIfNecessary(applicationContext);
-      JSCExecutor.loadLibrary();
-      return new JSCExecutorFactory(appName, deviceName);
-    } catch (UnsatisfiedLinkError jscE) {
-      // https://github.com/facebook/hermes/issues/78 shows that
-      // people who aren't trying to use Hermes are having issues.
-      // https://github.com/facebook/react-native/issues/25923#issuecomment-554295179
-      // includes the actual JSC error in at least one case.
-      //
-      // So, if "__cxa_bad_typeid" shows up in the jscE exception
-      // message, then we will assume that's the failure and just
-      // throw now.
 
-      if (jscE.getMessage().contains("__cxa_bad_typeid")) {
-        throw jscE;
-      }
+    // Relying solely on try catch block and loading jsc even when
+    // project is using hermes can lead to launch-time crashes especially in
+    // monorepo architectures and hybrid apps using both native android
+    // and react native.
+    // So we can use the value of enableHermes received by the constructor
+    // to decide which library to load at launch
 
-      // Otherwise use Hermes
+    // if nothing is specified, use old loading method
+    // else load the required engine
+    if (jsInterpreter == JSInterpreter.OLD_LOGIC) {
       try {
+        // If JSC is included, use it as normal
+        initializeSoLoaderIfNecessary(applicationContext);
+        JSCExecutor.loadLibrary();
+        return new JSCExecutorFactory(appName, deviceName);
+      } catch (UnsatisfiedLinkError jscE) {
+        if (jscE.getMessage().contains("__cxa_bad_typeid")) {
+          throw jscE;
+        }
         HermesExecutor.loadLibrary();
         return new HermesExecutorFactory();
-      } catch (UnsatisfiedLinkError hermesE) {
-        // If we get here, either this is a JSC build, and of course
-        // Hermes failed (since it's not in the APK), or it's a Hermes
-        // build, and Hermes had a problem.
-
-        // We suspect this is a JSC issue (it's the default), so we
-        // will throw that exception, but we will print hermesE first,
-        // since it could be a Hermes issue and we don't want to
-        // swallow that.
-        hermesE.printStackTrace();
-        throw jscE;
       }
+    } else if (jsInterpreter == JSInterpreter.HERMES) {
+      HermesExecutor.loadLibrary();
+      return new HermesExecutorFactory();
+    } else {
+      JSCExecutor.loadLibrary();
+      return new JSCExecutorFactory(appName, deviceName);
     }
   }
 }

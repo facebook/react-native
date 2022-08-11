@@ -157,6 +157,15 @@ export interface NativeMouseEvent extends NativeUIEvent {
    * The secondary target for the event, if there is one.
    */
   +relatedTarget: null | number | React.ElementRef<HostComponent<mixed>>;
+  // offset is proposed: https://drafts.csswg.org/cssom-view/#extensions-to-the-mouseevent-interface
+  /**
+   * The X coordinate of the mouse pointer between that event and the padding edge of the target node
+   */
+  +offsetX: number;
+  /**
+   * The Y coordinate of the mouse pointer between that event and the padding edge of the target node
+   */
+  +offsetY: number;
 }
 
 /**

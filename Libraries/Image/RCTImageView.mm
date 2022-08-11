@@ -378,7 +378,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     });
 
     if (_onError) {
-      _onError(@{ @"error": error.localizedDescription });
+      _onError(@{ @"error": error.localizedDescription, @"responseCode": (error.userInfo[@"httpStatusCode"]?: [NSNull null]), @"httpResponseHeaders": (error.userInfo[@"httpResponseHeaders"] ?: [NSNull null]) });
     }
     if (_onLoadEnd) {
       _onLoadEnd(nil);

@@ -180,7 +180,9 @@ function renderAndEnforceStrictMode(element: React.Node): any {
 }
 
 function renderWithStrictMode(element: React.Node): ReactTestRendererType {
-  const WorkAroundBugWithStrictModeInTestRenderer = prps => prps.children;
+  const WorkAroundBugWithStrictModeInTestRenderer = (prps: {
+    children: React.Node,
+  }) => prps.children;
   const StrictMode = (React: $FlowFixMe).StrictMode;
   return ReactTestRenderer.create(
     <WorkAroundBugWithStrictModeInTestRenderer>

@@ -19,21 +19,26 @@
 
 const bezier = require('../bezier');
 
-const identity = function (x) {
+const identity = function (x: number) {
   return x;
 };
 
-function assertClose(a, b, precision = 3) {
+function assertClose(a: number, b: number, precision: number = 3) {
   expect(a).toBeCloseTo(b, precision);
 }
 
-function makeAssertCloseWithPrecision(precision) {
-  return function (a, b) {
+function makeAssertCloseWithPrecision(precision: number) {
+  return function (a: number, b: number) {
     assertClose(a, b, precision);
   };
 }
 
-function allEquals(be1, be2, samples, assertion) {
+function allEquals(
+  be1: (x: number) => number,
+  be2: (x: number) => number,
+  samples: number,
+  assertion: $FlowFixMe,
+) {
   if (!assertion) {
     assertion = assertClose;
   }
@@ -43,8 +48,8 @@ function allEquals(be1, be2, samples, assertion) {
   }
 }
 
-function repeat(n) {
-  return function (f) {
+function repeat(n: number) {
+  return function (f: () => void) {
     for (let i = 0; i < n; ++i) {
       f();
     }
@@ -99,7 +104,7 @@ describe('bezier', function () {
           d = Math.random();
         const easing = bezier(a, b, c, d);
         const projected = bezier(b, a, d, c);
-        const composed = function (x) {
+        const composed = function (x: number) {
           return projected(easing(x));
         };
         allEquals(identity, composed, 100, makeAssertCloseWithPrecision(2));
@@ -135,7 +140,7 @@ describe('bezier', function () {
           c = 1 - a,
           d = 1 - b;
         const easing = bezier(a, b, c, d);
-        const sym = function (x) {
+        const sym = function (x: number) {
           return 1 - easing(1 - x);
         };
         allEquals(easing, sym, 100, makeAssertCloseWithPrecision(2));

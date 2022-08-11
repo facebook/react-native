@@ -13,8 +13,8 @@ import {View, Text, StyleSheet} from 'react-native';
 import * as React from 'react';
 
 const Separator =
-  (defaultColor, highlightColor, isSectionSeparator) =>
-  ({leadingItem, trailingItem, highlighted, hasBeenHighlighted}) => {
+  (defaultColor: string, highlightColor: string, isSectionSeparator: boolean) =>
+  ({leadingItem, trailingItem, highlighted, hasBeenHighlighted}: any) => {
     const text = `${
       isSectionSeparator ? 'Section ' : ''
     }separator for leading ${leadingItem} and trailing ${trailingItem} has ${

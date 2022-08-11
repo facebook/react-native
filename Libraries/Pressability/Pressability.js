@@ -160,8 +160,8 @@ export type EventHandlers = $ReadOnly<{|
   onFocus: (event: FocusEvent) => void,
   onMouseEnter?: (event: MouseEvent) => void,
   onMouseLeave?: (event: MouseEvent) => void,
-  onPointerEnter2?: (event: PointerEvent) => void,
-  onPointerLeave2?: (event: PointerEvent) => void,
+  onPointerEnter?: (event: PointerEvent) => void,
+  onPointerLeave?: (event: PointerEvent) => void,
   onResponderGrant: (event: PressEvent) => void,
   onResponderMove: (event: PressEvent) => void,
   onResponderRelease: (event: PressEvent) => void,
@@ -255,20 +255,20 @@ const Transitions = Object.freeze({
   },
 });
 
-const isActiveSignal = signal =>
+const isActiveSignal = (signal: TouchState) =>
   signal === 'RESPONDER_ACTIVE_PRESS_IN' ||
   signal === 'RESPONDER_ACTIVE_LONG_PRESS_IN';
 
-const isActivationSignal = signal =>
+const isActivationSignal = (signal: TouchState) =>
   signal === 'RESPONDER_ACTIVE_PRESS_OUT' ||
   signal === 'RESPONDER_ACTIVE_PRESS_IN';
 
-const isPressInSignal = signal =>
+const isPressInSignal = (signal: TouchState) =>
   signal === 'RESPONDER_INACTIVE_PRESS_IN' ||
   signal === 'RESPONDER_ACTIVE_PRESS_IN' ||
   signal === 'RESPONDER_ACTIVE_LONG_PRESS_IN';
 
-const isTerminalSignal = signal =>
+const isTerminalSignal = (signal: TouchSignal) =>
   signal === 'RESPONDER_TERMINATED' || signal === 'RESPONDER_RELEASE';
 
 const DEFAULT_LONG_PRESS_DELAY_MS = 500;
@@ -557,12 +557,12 @@ export default class Pressability {
       ReactNativeFeatureFlags.shouldPressibilityUseW3CPointerEventsForHover()
     ) {
       const hoverPointerEvents = {
-        onPointerEnter2: undefined,
-        onPointerLeave2: undefined,
+        onPointerEnter: undefined,
+        onPointerLeave: undefined,
       };
       const {onHoverIn, onHoverOut} = this._config;
       if (onHoverIn != null) {
-        hoverPointerEvents.onPointerEnter2 = (event: PointerEvent) => {
+        hoverPointerEvents.onPointerEnter = (event: PointerEvent) => {
           this._isHovered = true;
           this._cancelHoverOutDelayTimeout();
           if (onHoverIn != null) {
@@ -579,7 +579,7 @@ export default class Pressability {
         };
       }
       if (onHoverOut != null) {
-        hoverPointerEvents.onPointerLeave2 = (event: PointerEvent) => {
+        hoverPointerEvents.onPointerLeave = (event: PointerEvent) => {
           if (this._isHovered) {
             this._isHovered = false;
             this._cancelHoverInDelayTimeout();
@@ -808,7 +808,14 @@ export default class Pressability {
     }
   }
 
-  _measureCallback = (left, top, width, height, pageX, pageY) => {
+  _measureCallback = (
+    left: number,
+    top: number,
+    width: number,
+    height: number,
+    pageX: number,
+    pageY: number,
+  ) => {
     if (!left && !top && !width && !height && !pageX && !pageY) {
       return;
     }
@@ -918,7 +925,11 @@ export default class Pressability {
   }
 }
 
-function normalizeDelay(delay: ?number, min = 0, fallback = 0): number {
+function normalizeDelay(
+  delay: ?number,
+  min: number = 0,
+  fallback: number = 0,
+): number {
   return Math.max(min, delay ?? fallback);
 }
 

@@ -72,8 +72,6 @@ public class ReactFeatureFlags {
 
   public static boolean enableRuntimeScheduler = false;
 
-  public static boolean enableRuntimeSchedulerInTurboModule = false;
-
   /** Feature flag to configure eager attachment of the root view/initialisation of the JS code */
   public static boolean enableEagerRootViewAttachment = false;
 
@@ -82,6 +80,9 @@ public class ReactFeatureFlags {
 
   /** Enables or disables MapBuffer Serialization */
   public static boolean mapBufferSerializationEnabled = false;
+
+  /** Enables or disables calculation of Transformed Frames */
+  public static boolean calculateTransformedFramesEnabled = false;
 
   /** Feature Flag to use overflowInset values provided by Yoga */
   public static boolean useOverflowInset = false;
@@ -130,4 +131,17 @@ public class ReactFeatureFlags {
    * Feature Flag to enable View Recycling. When enabled, individual ViewManagers must still opt-in.
    */
   public static boolean enableViewRecycling = false;
+
+  /**
+   * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
+   */
+  public static boolean enableCppPropsIteratorSetter = false;
+
+  /**
+   * Allow Differentiator.cpp and FabricMountingManager.cpp to generate a RemoveDeleteTree mega-op.
+   */
+  public static boolean enableRemoveDeleteTreeInstruction = false;
+
+  /** Temporary flag to allow execution of mount items up to 15ms earlier than normal. */
+  public static boolean enableEarlyScheduledMountItemExecution = false;
 }

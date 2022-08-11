@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {LayoutEvent} from 'react-native/Libraries/Types/CoreEventTypes';
+
 const React = require('react');
 
 const {
@@ -41,7 +43,7 @@ type BlobImageProps = $ReadOnly<{|
 |}>;
 
 class BlobImage extends React.Component<BlobImageProps, BlobImageState> {
-  state = {
+  state: BlobImageState = {
     objectURL: null,
   };
 
@@ -54,7 +56,7 @@ class BlobImage extends React.Component<BlobImageProps, BlobImageState> {
     })();
   }
 
-  render() {
+  render(): React.Node {
     return this.state.objectURL !== null ? (
       <Image source={{uri: this.state.objectURL}} style={styles.base} />
     ) : (
@@ -73,7 +75,7 @@ class BlobImageExample extends React.Component<
   BlobImageExampleProps,
   BlobImageExampleState,
 > {
-  render() {
+  render(): React.Node {
     return (
       <View style={styles.horizontal}>
         {this.props.urls.map(url => (
@@ -100,7 +102,7 @@ class NetworkImageCallbackExample extends React.Component<
   NetworkImageCallbackExampleProps,
   NetworkImageCallbackExampleState,
 > {
-  state = {
+  state: NetworkImageCallbackExampleState = {
     events: [],
     startLoadPrefetched: false,
     mountTime: Date.now(),
@@ -121,7 +123,7 @@ class NetworkImageCallbackExample extends React.Component<
     this.setState({imageHash: Date.now()});
   };
 
-  render() {
+  render(): React.Node {
     const {mountTime} = this.state;
     return (
       <View>
@@ -231,13 +233,13 @@ class NetworkImageExample extends React.Component<
   NetworkImageExampleProps,
   NetworkImageExampleState,
 > {
-  state = {
+  state: NetworkImageExampleState = {
     error: null,
     loading: false,
     progress: [],
   };
 
-  render() {
+  render(): React.Node {
     return this.state.error != null ? (
       <Text>{this.state.error}</Text>
     ) : (
@@ -281,7 +283,7 @@ class ImageSizeExample extends React.Component<
   ImageSizeExampleProps,
   ImageSizeExampleState,
 > {
-  state = {
+  state: ImageSizeExampleState = {
     width: 0,
     height: 0,
   };
@@ -292,7 +294,7 @@ class ImageSizeExample extends React.Component<
     });
   }
 
-  render() {
+  render(): React.Node {
     return (
       <View style={{flexDirection: 'row'}}>
         <Image
@@ -324,7 +326,7 @@ class MultipleSourcesExample extends React.Component<
   MultipleSourcesExampleProps,
   MultipleSourcesExampleState,
 > {
-  state = {
+  state: MultipleSourcesExampleState = {
     width: 30,
     height: 30,
   };
@@ -349,7 +351,7 @@ class MultipleSourcesExample extends React.Component<
     });
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
@@ -395,7 +397,7 @@ class LoadingIndicatorSourceExample extends React.Component<
   LoadingIndicatorSourceExampleProps,
   LoadingIndicatorSourceExampleState,
 > {
-  state = {
+  state: LoadingIndicatorSourceExampleState = {
     imageHash: Date.now(),
   };
 
@@ -405,11 +407,11 @@ class LoadingIndicatorSourceExample extends React.Component<
     });
   };
 
-  loaderGif = {
+  loaderGif: {uri: string} = {
     uri: 'https://media1.giphy.com/media/3oEjI6SIIHBdRxXI40/200.gif',
   };
 
-  render() {
+  render(): React.Node {
     const loadingImage = {
       uri: `https://www.facebook.com/ads/pics/successstories.png?hash=${this.state.imageHash}`,
     };
@@ -445,13 +447,13 @@ class OnLayoutExample extends React.Component<
   OnLayoutExampleProps,
   OnLayoutExampleState,
 > {
-  state = {
+  state: OnLayoutExampleState = {
     width: 30,
     height: 30,
     layoutHandlerMessage: 'No Message',
   };
 
-  onLayoutHandler = event => {
+  onLayoutHandler = (event: LayoutEvent) => {
     this.setState({
       width: this.state.width,
       height: this.state.height,
@@ -480,7 +482,7 @@ class OnLayoutExample extends React.Component<
     });
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <Text>Adjust the image size to trigger the OnLayout handler.</Text>
@@ -534,7 +536,7 @@ class OnPartialLoadExample extends React.Component<
   OnPartialLoadExampleProps,
   OnPartialLoadExampleState,
 > {
-  state = {
+  state: OnPartialLoadExampleState = {
     hasLoaded: false,
   };
 
@@ -544,7 +546,7 @@ class OnPartialLoadExample extends React.Component<
     });
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <Text>

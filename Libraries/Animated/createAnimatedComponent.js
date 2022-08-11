@@ -55,6 +55,7 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
     _prevComponent: any;
     _propsAnimated: AnimatedProps;
     _eventDetachers: Array<Function> = [];
+    _initialAnimatedProps: Object;
 
     // Only to be used in this file, and only in Fabric.
     _animatedComponentId: string = `${animatedComponentNextId++}:animatedComponent`;
@@ -139,7 +140,7 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
     // components. If you want to animate a composite component, you need to
     // re-render it. In this case, we have a fallback that uses forceUpdate.
     // This fallback is also called in Fabric.
-    _animatedPropsCallback = () => {
+    _animatedPropsCallback = (): void => {
       if (this._component == null) {
         // AnimatedProps is created in will-mount because it's used in render.
         // But this callback may be invoked before mount in async mode,
@@ -191,7 +192,7 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
       }
     }
 
-    _setComponentRef = setAndForwardRef({
+    _setComponentRef: (ref: React.ElementRef<any>) => void = setAndForwardRef({
       getForwardedRef: () => this.props.forwardedRef,
       setLocalRef: ref => {
         this._prevComponent = this._component;
@@ -199,11 +200,17 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
       },
     });
 
-    render() {
-      const {style = {}, ...props} = this._propsAnimated.__getValue() || {};
+    render(): React.Node {
+      const animatedProps =
+        this._propsAnimated.__getValue(this._initialAnimatedProps) || {};
+      const {style = {}, ...props} = animatedProps;
       const {style: passthruStyle = {}, ...passthruProps} =
         this.props.passthroughAnimatedPropExplicitValues || {};
       const mergedStyle = {...style, ...passthruStyle};
+
+      if (!this._initialAnimatedProps) {
+        this._initialAnimatedProps = animatedProps;
+      }
 
       // Force `collapsable` to be false so that native view is not flattened.
       // Flattened views cannot be accurately referenced by a native driver.

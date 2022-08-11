@@ -45,15 +45,21 @@ export class CellRenderMask {
     return this._regions;
   }
 
-  addCells(cells: {first: number, last: number}) {
+  addCells(cells: {first: number, last: number}): void {
     invariant(
       cells.first >= 0 &&
         cells.first < this._numCells &&
-        cells.last >= 0 &&
+        cells.last >= -1 &&
         cells.last < this._numCells &&
-        cells.last >= cells.first,
+        cells.last >= cells.first - 1,
       'CellRenderMask.addCells called with invalid cell range',
     );
+
+    // VirtualizedList uses inclusive ranges, where zero-count states are
+    // possible. E.g. [0, -1] for no cells, starting at 0.
+    if (cells.last < cells.first) {
+      return;
+    }
 
     const [firstIntersect, firstIntersectIdx] = this._findRegion(cells.first);
     const [lastIntersect, lastIntersectIdx] = this._findRegion(cells.last);
@@ -108,6 +114,10 @@ export class CellRenderMask {
       numRegionsToDelete,
       ...replacementRegions,
     );
+  }
+
+  numCells(): number {
+    return this._numCells;
   }
 
   equals(other: CellRenderMask): boolean {

@@ -20,7 +20,7 @@ import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
 
 type FlexTestAppProps = $ReadOnly<{||}>;
 class FlexTestApp extends React.Component<FlexTestAppProps> {
-  render() {
+  render(): React.Node {
     return (
       <View
         style={FlexTestAppStyles.container}
@@ -58,7 +58,7 @@ const FlexTestAppStyles = StyleSheet.create({
 
 type FlexWithTextProps = $ReadOnly<{||}>;
 class FlexWithText extends React.Component<FlexWithTextProps> {
-  render() {
+  render(): React.Node {
     return (
       <View
         style={FlexWithTextStyles.container}
@@ -91,7 +91,7 @@ const FlexWithTextStyles = StyleSheet.create({
 
 type AbsolutePositionTestAppProps = $ReadOnly<{||}>;
 class AbsolutePositionTestApp extends React.Component<AbsolutePositionTestAppProps> {
-  render() {
+  render(): React.Node {
     return (
       <View
         style={AbsolutePositionTestAppStyles.absolute}
@@ -114,7 +114,7 @@ const AbsolutePositionTestAppStyles = StyleSheet.create({
 
 type AbsolutePositionBottomRightTestAppProps = $ReadOnly<{||}>;
 class AbsolutePositionBottomRightTestApp extends React.Component<AbsolutePositionBottomRightTestAppProps> {
-  render() {
+  render(): React.Node {
     return (
       <View
         style={AbsolutePositionBottomRightTestAppStyles.container}
@@ -147,7 +147,7 @@ type CenteredTextViewProps = $ReadOnly<{|
   text?: ?string,
 |}>;
 class CenteredTextView extends React.Component<CenteredTextViewProps> {
-  render() {
+  render(): React.Node {
     return (
       <View collapsable={false}>
         <View style={CenteredTextViewStyles.parent} collapsable={false}>
@@ -184,16 +184,18 @@ class UpdatePositionInListTestApp extends React.Component<
   UpdatePositionInListTestAppProps,
   UpdatePositionInListTestAppState,
 > {
-  state = {
+  state: UpdatePositionInListTestAppState = {
     active: false,
   };
 
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   constructor(...args) {
     super(...args);
     flushUpdatePositionInList = () => this.setState({active: true});
   }
 
-  render() {
+  render(): React.Node {
     return (
       <View collapsable={false} testID="container">
         <View

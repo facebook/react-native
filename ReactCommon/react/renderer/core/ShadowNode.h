@@ -28,15 +28,6 @@ static constexpr const int kShadowNodeChildrenSmallVectorSize = 8;
 
 class ComponentDescriptor;
 struct ShadowNodeFragment;
-class ShadowNode;
-
-// Deprecated: Use ShadowNode::Shared instead
-using SharedShadowNode = std::shared_ptr<const ShadowNode>;
-using WeakShadowNode = std::weak_ptr<const ShadowNode>;
-using SharedShadowNodeList =
-    butter::small_vector<SharedShadowNode, kShadowNodeChildrenSmallVectorSize>;
-using SharedShadowNodeSharedList = std::shared_ptr<const SharedShadowNodeList>;
-using SharedShadowNodeUnsharedList = std::shared_ptr<SharedShadowNodeList>;
 
 class ShadowNode : public Sealable, public DebugStringConvertible {
  public:
@@ -57,7 +48,7 @@ class ShadowNode : public Sealable, public DebugStringConvertible {
           int /* childIndex */>,
       64>;
 
-  static SharedShadowNodeSharedList emptySharedShadowNodeSharedList();
+  static SharedListOfShared emptySharedShadowNodeSharedList();
 
   /*
    * Returns `true` if nodes belong to the same family (they were cloned one
@@ -103,7 +94,7 @@ class ShadowNode : public Sealable, public DebugStringConvertible {
   /*
    * Clones the shadow node using stored `cloneFunction`.
    */
-  ShadowNode::Unshared clone(const ShadowNodeFragment &fragment) const;
+  Unshared clone(const ShadowNodeFragment &fragment) const;
 
   /*
    * Clones the node (and partially the tree starting from the node) by
@@ -112,10 +103,10 @@ class ShadowNode : public Sealable, public DebugStringConvertible {
    *
    * Returns `nullptr` if the operation cannot be performed successfully.
    */
-  ShadowNode::Unshared cloneTree(
+  Unshared cloneTree(
       ShadowNodeFamily const &shadowNodeFamily,
-      std::function<ShadowNode::Unshared(ShadowNode const &oldShadowNode)> const
-          &callback) const;
+      std::function<Unshared(ShadowNode const &oldShadowNode)> const &callback)
+      const;
 
 #pragma mark - Getters
 
@@ -127,8 +118,8 @@ class ShadowNode : public Sealable, public DebugStringConvertible {
    */
   ShadowNodeTraits getTraits() const;
 
-  SharedProps const &getProps() const;
-  SharedShadowNodeList const &getChildren() const;
+  Props::Shared const &getProps() const;
+  ListOfShared const &getChildren() const;
   SharedEventEmitter const &getEventEmitter() const;
   Tag getTag() const;
   SurfaceId getSurfaceId() const;
@@ -137,6 +128,11 @@ class ShadowNode : public Sealable, public DebugStringConvertible {
    * Returns a concrete `ComponentDescriptor` that manages nodes of this type.
    */
   const ComponentDescriptor &getComponentDescriptor() const;
+
+  /*
+   * Returns the `ContextContainer` used by this ShadowNode.
+   */
+  ContextContainer::Shared getContextContainer() const;
 
   /*
    * Returns a state associated with the particular node.
@@ -165,10 +161,10 @@ class ShadowNode : public Sealable, public DebugStringConvertible {
 
 #pragma mark - Mutating Methods
 
-  void appendChild(ShadowNode::Shared const &child);
+  void appendChild(Shared const &child);
   void replaceChild(
       ShadowNode const &oldChild,
-      ShadowNode::Shared const &newChild,
+      Shared const &newChild,
       int suggestedIndex = -1);
 
   /*
@@ -195,8 +191,8 @@ class ShadowNode : public Sealable, public DebugStringConvertible {
 #endif
 
  protected:
-  SharedProps props_;
-  SharedShadowNodeSharedList children_;
+  Props::Shared props_;
+  SharedListOfShared children_;
   State::Shared state_;
   int orderIndex_;
 
@@ -216,7 +212,7 @@ class ShadowNode : public Sealable, public DebugStringConvertible {
 
   mutable std::atomic<bool> hasBeenMounted_{false};
 
-  static SharedProps propsForClonedShadowNode(
+  static Props::Shared propsForClonedShadowNode(
       ShadowNode const &sourceShadowNode,
       Props::Shared const &props);
 

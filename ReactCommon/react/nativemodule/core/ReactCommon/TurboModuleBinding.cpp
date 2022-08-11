@@ -98,11 +98,8 @@ jsi::Value TurboModuleBinding::getModule(
       } else {
         // Option 2: eagerly install all hostfunctions at this point, avoids
         // prototype
-        for (auto it = module->methodMap_.cbegin();
-             it != module->methodMap_.cend();
-             ++it) {
-          auto propName = jsi::PropNameID::forUtf8(runtime, it->first);
-          module->get(runtime, propName, it->second);
+        for (auto &propName : module->getPropertyNames(runtime)) {
+          module->get(runtime, propName);
         }
       }
     }

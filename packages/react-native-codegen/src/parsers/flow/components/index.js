@@ -20,6 +20,8 @@ const {getExtendsProps, removeKnownExtends} = require('./extends');
 const {getCommandOptions, getOptions} = require('./options');
 const {getPropProperties, getProps} = require('./props');
 
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
 function findComponentConfig(ast) {
   const foundConfigs = [];
 
@@ -123,6 +125,8 @@ function findComponentConfig(ast) {
 }
 
 function getCommandProperties(
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   commandTypeName,
   types: TypeDeclarationMap,
   commandOptions: ?CommandOptions,
@@ -175,6 +179,8 @@ function getCommandProperties(
 }
 
 // $FlowFixMe[signature-verification-failure] there's no flowtype for AST
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
 function buildComponentSchema(ast): ComponentSchemaBuilderConfig {
   const {
     componentName,

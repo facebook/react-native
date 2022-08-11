@@ -341,7 +341,8 @@ static void calculateShadowViewMutationsV2(
     ShadowViewMutation::List &mutations,
     ShadowView const &parentShadowView,
     ShadowViewNodePair::NonOwningList &&oldChildPairs,
-    ShadowViewNodePair::NonOwningList &&newChildPairs);
+    ShadowViewNodePair::NonOwningList &&newChildPairs,
+    bool isRecursionRedundant = false);
 
 struct OrderedMutationInstructionContainer {
   ShadowViewMutation::List createMutations{};
@@ -573,7 +574,7 @@ static void updateMatchedPair(
     if (oldPair.shadowView != newPair.shadowView) {
       mutationContainer.updateMutations.push_back(
           ShadowViewMutation::UpdateMutation(
-              oldPair.shadowView, newPair.shadowView));
+              oldPair.shadowView, newPair.shadowView, parentShadowView));
     }
   }
 }
@@ -834,7 +835,9 @@ static void calculateShadowViewMutationsFlattener(
           newTreeNodePair.isConcreteView && oldTreeNodePair.isConcreteView) {
         mutationContainer.updateMutations.push_back(
             ShadowViewMutation::UpdateMutation(
-                oldTreeNodePair.shadowView, newTreeNodePair.shadowView));
+                oldTreeNodePair.shadowView,
+                newTreeNodePair.shadowView,
+                node.shadowView));
       }
 
       // Update children if appropriate.
@@ -1083,7 +1086,9 @@ static void calculateShadowViewMutationsV2(
     ShadowViewMutation::List &mutations,
     ShadowView const &parentShadowView,
     ShadowViewNodePair::NonOwningList &&oldChildPairs,
-    ShadowViewNodePair::NonOwningList &&newChildPairs) {
+    ShadowViewNodePair::NonOwningList &&newChildPairs,
+    bool isRecursionRedundant) {
+  SystraceSection s("Differentiator::calculateShadowViewMutationsV2");
   if (oldChildPairs.empty() && newChildPairs.empty()) {
     return;
   }
@@ -1158,7 +1163,9 @@ static void calculateShadowViewMutationsV2(
         oldChildPair.shadowView != newChildPair.shadowView) {
       mutationContainer.updateMutations.push_back(
           ShadowViewMutation::UpdateMutation(
-              oldChildPair.shadowView, newChildPair.shadowView));
+              oldChildPair.shadowView,
+              newChildPair.shadowView,
+              parentShadowView));
     }
 
     // Recursively update tree if ShadowNode pointers are not equal
@@ -1201,13 +1208,39 @@ static void calculateShadowViewMutationsV2(
         continue;
       }
 
+      // If we take this path, technically the operations and recursion below
+      // are redundant. However, some parts of the Fabric ecosystem (namely, as
+      // of writing this, LayoutAnimations) rely heavily on getting /explicit/
+      // Remove/Delete instructions for every single node in the tree. Thus, we
+      // generate the "RemoveDeleteTree" instruction as well as all of the
+      // individual Remove/Delete operations below, but we mark those as
+      // redundant. The platform layer can then discard the unnecessary
+      // instructions. RemoveDeleteTreeMutation is a significant performance
+      // improvement but could be improved significantly by eliminating the need
+      // for any of the redundant instructions in the future.
+      if (ShadowViewMutation::PlatformSupportsRemoveDeleteTreeInstruction &&
+          !isRecursionRedundant) {
+        mutationContainer.removeMutations.push_back(
+            ShadowViewMutation::RemoveDeleteTreeMutation(
+                parentShadowView,
+                oldChildPair.shadowView,
+                static_cast<int>(oldChildPair.mountIndex)));
+      }
+
       mutationContainer.deleteMutations.push_back(
-          ShadowViewMutation::DeleteMutation(oldChildPair.shadowView));
+          ShadowViewMutation::DeleteMutation(
+              oldChildPair.shadowView,
+              isRecursionRedundant ||
+                  ShadowViewMutation::
+                      PlatformSupportsRemoveDeleteTreeInstruction));
       mutationContainer.removeMutations.push_back(
           ShadowViewMutation::RemoveMutation(
               parentShadowView,
               oldChildPair.shadowView,
-              static_cast<int>(oldChildPair.mountIndex)));
+              static_cast<int>(oldChildPair.mountIndex),
+              isRecursionRedundant ||
+                  ShadowViewMutation::
+                      PlatformSupportsRemoveDeleteTreeInstruction));
 
       // We also have to call the algorithm recursively to clean up the entire
       // subtree starting from the removed view.
@@ -1220,7 +1253,8 @@ static void calculateShadowViewMutationsV2(
           oldChildPair.shadowView,
           sliceChildShadowNodeViewPairsFromViewNodePair(
               oldChildPair, innerScope),
-          {});
+          {},
+          ShadowViewMutation::PlatformSupportsRemoveDeleteTreeInstruction);
     }
   } else if (index == oldChildPairs.size()) {
     // If we don't have any more existing children we can choose a fast path
@@ -1669,7 +1703,7 @@ ShadowViewMutation::List calculateShadowViewMutations(
 
   if (oldRootShadowView != newRootShadowView) {
     mutations.push_back(ShadowViewMutation::UpdateMutation(
-        oldRootShadowView, newRootShadowView));
+        oldRootShadowView, newRootShadowView, {}));
   }
 
   calculateShadowViewMutationsV2(

@@ -89,7 +89,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
   private @Nullable Path mOuterClipPathForBorderRadius;
   private @Nullable Path mPathForBorderRadiusOutline;
   private @Nullable Path mPathForBorder;
-  private Path mPathForSingleBorder = new Path();
+  private final Path mPathForSingleBorder = new Path();
   private @Nullable Path mCenterDrawPath;
   private @Nullable RectF mInnerClipTempRectForBorderRadius;
   private @Nullable RectF mOuterClipTempRectForBorderRadius;
@@ -217,6 +217,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
   public void setBorderColor(int position, float rgb, float alpha) {
     this.setBorderRGB(position, rgb);
     this.setBorderAlpha(position, alpha);
+    mNeedUpdatePathForBorderRadius = true;
   }
 
   private void setBorderRGB(int position, float rgb) {
@@ -523,10 +524,24 @@ public class ReactViewBackgroundDrawable extends Drawable {
 
     final RectF borderWidth = getDirectionAwareBorderInsets();
 
-    mInnerClipTempRectForBorderRadius.top += borderWidth.top;
-    mInnerClipTempRectForBorderRadius.bottom -= borderWidth.bottom;
-    mInnerClipTempRectForBorderRadius.left += borderWidth.left;
-    mInnerClipTempRectForBorderRadius.right -= borderWidth.right;
+    int colorLeft = getBorderColor(Spacing.LEFT);
+    int colorTop = getBorderColor(Spacing.TOP);
+    int colorRight = getBorderColor(Spacing.RIGHT);
+    int colorBottom = getBorderColor(Spacing.BOTTOM);
+    int borderColor = getBorderColor(Spacing.ALL);
+
+    // Clip border ONLY if its color is non transparent
+    if (Color.alpha(colorLeft) != 0
+        && Color.alpha(colorTop) != 0
+        && Color.alpha(colorRight) != 0
+        && Color.alpha(colorBottom) != 0
+        && Color.alpha(borderColor) != 0) {
+
+      mInnerClipTempRectForBorderRadius.top += borderWidth.top;
+      mInnerClipTempRectForBorderRadius.bottom -= borderWidth.bottom;
+      mInnerClipTempRectForBorderRadius.left += borderWidth.left;
+      mInnerClipTempRectForBorderRadius.right -= borderWidth.right;
+    }
 
     mTempRectForCenterDrawPath.top += borderWidth.top * 0.5f;
     mTempRectForCenterDrawPath.bottom -= borderWidth.bottom * 0.5f;

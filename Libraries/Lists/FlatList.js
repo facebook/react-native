@@ -433,6 +433,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     }
   }
 
+  // $FlowFixMe[missing-local-annot]
   componentDidUpdate(prevProps: Props<ItemT>) {
     invariant(
       prevProps.numColumns === this.props.numColumns,
@@ -459,10 +460,11 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   _listRef: ?React.ElementRef<typeof VirtualizedList>;
   _virtualizedListPairs: Array<ViewabilityConfigCallbackPair> = [];
 
-  _captureRef = ref => {
+  _captureRef = (ref: ?React.ElementRef<typeof VirtualizedList>) => {
     this._listRef = ref;
   };
 
+  // $FlowFixMe[missing-local-annot]
   _checkProps(props: Props<ItemT>) {
     const {
       // $FlowFixMe[prop-missing] this prop doesn't exist, is only used for an invariant
@@ -494,13 +496,15 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     );
   }
 
+  // $FlowFixMe[missing-local-annot]
   _getItem = (data: Array<ItemT>, index: number) => {
     const numColumns = numColumnsOrDefault(this.props.numColumns);
     if (numColumns > 1) {
       const ret = [];
       for (let kk = 0; kk < numColumns; kk++) {
-        const item = data[index * numColumns + kk];
-        if (item != null) {
+        const itemIndex = index * numColumns + kk;
+        if (itemIndex < data.length) {
+          const item = data[itemIndex];
           ret.push(item);
         }
       }
@@ -511,7 +515,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   };
 
   _getItemCount = (data: ?Array<ItemT>): number => {
-    if (data) {
+    if (Array.isArray(data)) {
       const numColumns = numColumnsOrDefault(this.props.numColumns);
       return numColumns > 1 ? Math.ceil(data.length / numColumns) : data.length;
     } else {
@@ -519,6 +523,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     }
   };
 
+  // $FlowFixMe[missing-local-annot]
   _keyExtractor = (items: ItemT | Array<ItemT>, index: number) => {
     const numColumns = numColumnsOrDefault(this.props.numColumns);
     const keyExtractor = this.props.keyExtractor ?? defaultKeyExtractor;
@@ -560,6 +565,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
       changed: Array<ViewToken>,
       ...
     }) => void,
+    // $FlowFixMe[missing-local-annot]
   ) {
     return (info: {
       viewableItems: Array<ViewToken>,
@@ -589,6 +595,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     columnWrapperStyle: ?ViewStyleProp,
     numColumns: ?number,
     extraData: ?any,
+    // $FlowFixMe[missing-local-annot]
   ) => {
     const cols = numColumnsOrDefault(numColumns);
 
@@ -596,7 +603,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
       ? 'ListItemComponent'
       : 'renderItem';
 
-    const renderer = (props): React.Node => {
+    const renderer = (props: RenderItemProps<ItemT>): React.Node => {
       if (ListItemComponent) {
         // $FlowFixMe[not-a-component] Component isn't valid
         // $FlowFixMe[incompatible-type-arg] Component isn't valid
@@ -625,6 +632,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
             <View style={StyleSheet.compose(styles.row, columnWrapperStyle)}>
               {item.map((it, kk) => {
                 const element = renderer({
+                  // $FlowFixMe[incompatible-call]
                   item: it,
                   index: index * cols + kk,
                   separators: info.separators,
@@ -642,6 +650,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     };
   };
 
+  // $FlowFixMe[missing-local-annot]
   _memoizedRenderer = memoizeOne(this._renderer);
 
   render(): React.Node {

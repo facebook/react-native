@@ -256,7 +256,7 @@ Error: ${e.message}`;
   },
 };
 
-function setHMRUnavailableReason(reason) {
+function setHMRUnavailableReason(reason: string) {
   invariant(hmrClient, 'Expected HMRClient.setup() call at startup.');
   if (hmrUnavailableReason !== null) {
     // Don't show more than one warning.
@@ -273,7 +273,7 @@ function setHMRUnavailableReason(reason) {
   }
 }
 
-function registerBundleEntryPoints(client) {
+function registerBundleEntryPoints(client: MetroHMRClient) {
   if (hmrUnavailableReason != null) {
     DevSettings.reload('Bundle Splitting – Metro disconnected');
     return;
@@ -290,7 +290,7 @@ function registerBundleEntryPoints(client) {
   }
 }
 
-function flushEarlyLogs(client) {
+function flushEarlyLogs(client: MetroHMRClient) {
   try {
     pendingLogs.forEach(([level, data]) => {
       HMRClient.log(level, data);

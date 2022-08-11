@@ -12,6 +12,8 @@ fi
 
 NUM_CORES=$(sysctl -n hw.ncpu)
 IMPORT_HERMESC_PATH=${HERMES_OVERRIDE_HERMESC_PATH:-$PWD/build_host_hermesc/ImportHermesc.cmake}
+REACT_NATIVE_PATH=${REACT_NATIVE_PATH:-$PWD/../..}
+JSI_PATH="$REACT_NATIVE_PATH/ReactCommon/jsi"
 
 function get_release_version {
   ruby -rcocoapods-core -rjson -e "puts Pod::Specification.from_file('hermes-engine.podspec').version"
@@ -51,6 +53,7 @@ function configure_apple_framework {
     -DCMAKE_OSX_ARCHITECTURES:STRING="$2" \
     -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING="$3" \
     -DHERMES_ENABLE_DEBUGGER:BOOLEAN=true \
+    -DHERMES_ENABLE_INTL:BOOLEAN=true \
     -DHERMES_ENABLE_LIBFUZZER:BOOLEAN=false \
     -DHERMES_ENABLE_FUZZILLI:BOOLEAN=false \
     -DHERMES_ENABLE_TEST_SUITE:BOOLEAN=false \
@@ -59,6 +62,8 @@ function configure_apple_framework {
     -DHERMES_BUILD_APPLE_DSYM:BOOLEAN=true \
     -DHERMES_ENABLE_TOOLS:BOOLEAN="$build_cli_tools" \
     -DIMPORT_HERMESC:PATH="$IMPORT_HERMESC_PATH" \
+    -DJSI_DIR="$JSI_PATH" \
+    -DHERMES_RELEASE_VERSION="for RN $(get_release_version)" \
     -DCMAKE_INSTALL_PREFIX:PATH=../destroot \
     -DCMAKE_BUILD_TYPE="$BUILD_TYPE"
 }

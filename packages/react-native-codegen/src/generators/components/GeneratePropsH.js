@@ -9,6 +9,16 @@
  */
 
 'use strict';
+import type {
+  StringTypeAnnotation,
+  ReservedPropTypeAnnotation,
+  ObjectTypeAnnotation,
+  Int32TypeAnnotation,
+  FloatTypeAnnotation,
+  DoubleTypeAnnotation,
+  ComponentShape,
+  BooleanTypeAnnotation,
+} from '../../CodegenSchema';
 
 const {
   convertDefaultTypeToString,
@@ -76,7 +86,7 @@ const ClassTemplate = ({
   `
 ${enums}
 ${structs}
-class ${className} final${extendClasses} {
+class JSI_EXPORT ${className} final${extendClasses} {
  public:
   ${className}() = default;
   ${className}(const PropsParserContext& context, const ${className} &sourceProps, const RawProps &rawProps);
@@ -257,7 +267,7 @@ static inline std::string toString(const ${enumMask} &value) {
 }
 `.trim();
 
-function getClassExtendString(component): string {
+function getClassExtendString(component: ComponentShape): string {
   if (component.extendsProps.length === 0) {
     throw new Error('Invalid: component.extendsProps is empty');
   }
@@ -286,7 +296,29 @@ function getClassExtendString(component): string {
 
 function getNativeTypeFromAnnotation(
   componentName: string,
-  prop,
+  prop:
+    | NamedShape<PropTypeAnnotation>
+    | {
+        name: string,
+        typeAnnotation:
+          | $FlowFixMe
+          | DoubleTypeAnnotation
+          | FloatTypeAnnotation
+          | BooleanTypeAnnotation
+          | Int32TypeAnnotation
+          | StringTypeAnnotation
+          | ObjectTypeAnnotation<PropTypeAnnotation>
+          | ReservedPropTypeAnnotation
+          | {
+              +default: string,
+              +options: $ReadOnlyArray<string>,
+              +type: 'StringEnumTypeAnnotation',
+            }
+          | {
+              +elementType: ObjectTypeAnnotation<PropTypeAnnotation>,
+              +type: 'ArrayTypeAnnotation',
+            },
+      },
   nameParts: $ReadOnlyArray<string>,
 ): string {
   const typeAnnotation = prop.typeAnnotation;
@@ -400,7 +432,10 @@ function generateArrayEnumString(
   });
 }
 
-function generateStringEnum(componentName, prop) {
+function generateStringEnum(
+  componentName: string,
+  prop: NamedShape<PropTypeAnnotation>,
+) {
   const typeAnnotation = prop.typeAnnotation;
   if (typeAnnotation.type === 'StringEnumTypeAnnotation') {
     const values: $ReadOnlyArray<string> = typeAnnotation.options;
@@ -435,7 +470,10 @@ function generateStringEnum(componentName, prop) {
   return '';
 }
 
-function generateIntEnum(componentName, prop) {
+function generateIntEnum(
+  componentName: string,
+  prop: NamedShape<PropTypeAnnotation>,
+) {
   const typeAnnotation = prop.typeAnnotation;
   if (typeAnnotation.type === 'Int32EnumTypeAnnotation') {
     const values: $ReadOnlyArray<number> = typeAnnotation.options;
@@ -476,7 +514,10 @@ function generateIntEnum(componentName, prop) {
   return '';
 }
 
-function generateEnumString(componentName: string, component): string {
+function generateEnumString(
+  componentName: string,
+  component: ComponentShape,
+): string {
   return component.props
     .map(prop => {
       if (
@@ -538,6 +579,7 @@ function getExtendsImports(
   const imports: Set<string> = new Set();
 
   imports.add('#include <react/renderer/core/PropsParserContext.h>');
+  imports.add('#include <jsi/jsi.h>');
 
   extendsProps.forEach(extendProps => {
     switch (extendProps.type) {
@@ -566,7 +608,13 @@ function getLocalImports(
 ): Set<string> {
   const imports: Set<string> = new Set();
 
-  function addImportsForNativeName(name) {
+  function addImportsForNativeName(
+    name:
+      | 'ColorPrimitive'
+      | 'EdgeInsetsPrimitive'
+      | 'ImageSourcePrimitive'
+      | 'PointPrimitive',
+  ) {
     switch (name) {
       case 'ColorPrimitive':
         imports.add('#include <react/renderer/graphics/Color.h>');
@@ -634,7 +682,10 @@ function getLocalImports(
   return imports;
 }
 
-function generateStructsForComponent(componentName: string, component): string {
+function generateStructsForComponent(
+  componentName: string,
+  component: ComponentShape,
+): string {
   const structs = generateStructs(componentName, component.props, []);
   const structArray = Array.from(structs.values());
   if (structArray.length < 1) {
@@ -645,8 +696,8 @@ function generateStructsForComponent(componentName: string, component): string {
 
 function generateStructs(
   componentName: string,
-  properties,
-  nameParts,
+  properties: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
+  nameParts: Array<string>,
 ): StructsMap {
   const structs: StructsMap = new Map();
   properties.forEach(prop => {

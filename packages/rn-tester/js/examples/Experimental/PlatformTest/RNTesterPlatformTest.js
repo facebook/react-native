@@ -11,7 +11,7 @@
 import type {PlatformTestComponentBaseProps} from './RNTesterPlatformTestTypes';
 
 import * as React from 'react';
-import {StyleSheet, View, Text, ScrollView} from 'react-native';
+import {StyleSheet, View, Text} from 'react-native';
 
 import RNTesterPlatformTestInstructions from './RNTesterPlatformTestInstructions';
 import usePlatformTestHarness from './usePlatformTestHarness';
@@ -32,25 +32,31 @@ export default function RNTesterPlatformTest(props: Props): React.MixedElement {
     component: UnderTestComponent,
   } = props;
 
-  const {harness, reset, results, testKey} = usePlatformTestHarness();
+  const {harness, numPending, reset, results, testKey} =
+    usePlatformTestHarness();
 
   return (
-    <ScrollView style={styles.root}>
-      <Text style={[styles.textBlock, styles.title]}>{title}</Text>
-      <Text style={[styles.textBlock, styles.description]}>{description}</Text>
-      <RNTesterPlatformTestInstructions
-        instructions={instructions}
-        style={styles.block}
-      />
-      <View style={styles.block}>
-        <UnderTestComponent key={testKey} harness={harness} />
+    <View style={styles.root}>
+      <View style={styles.testcaseContainer}>
+        <Text style={[styles.textBlock, styles.title]}>{title}</Text>
+        <Text style={[styles.textBlock, styles.description]}>
+          {description}
+        </Text>
+        <RNTesterPlatformTestInstructions
+          instructions={instructions}
+          style={[styles.instructions, styles.block]}
+        />
+        <View style={[styles.testContainer, styles.block]}>
+          <UnderTestComponent key={testKey} harness={harness} />
+        </View>
       </View>
       <RNTesterPlatformTestResultView
+        numPending={numPending}
         reset={reset}
         results={results}
-        style={styles.block}
+        style={styles.results}
       />
-    </ScrollView>
+    </View>
   );
 }
 
@@ -61,11 +67,30 @@ const styles = StyleSheet.create({
   description: {
     fontSize: 16,
   },
+  instructions: {
+    flexGrow: 0,
+    flexShrink: 0,
+  },
   textBlock: {
     marginBottom: 8,
+    flexGrow: 0,
+    flexShrink: 0,
+  },
+  results: {
+    position: 'absolute',
+    left: 0,
+    bottom: 0,
+    right: 0,
   },
   root: {
+    flex: 1,
+  },
+  testcaseContainer: {
     padding: 8,
+  },
+  testContainer: {
+    flexGrow: 0,
+    flexShrink: 0,
   },
   title: {
     fontSize: 32,

@@ -12,7 +12,7 @@ load(
     "//tools/build_defs/oss:rn_defs.bzl",
     "APPLE",
     "YOGA_APPLE_TARGET",
-    "js_glob",
+    "js_library_glob",
     "make_resource_glob",
     "react_fabric_component_plugin_provider",
     "react_module_plugin_providers",
@@ -46,7 +46,7 @@ yarn_workspace(
 
 rn_library(
     name = "rn-tester",
-    srcs = js_glob(
+    srcs = js_library_glob(
         [
             "js",
             "NativeModuleExample",

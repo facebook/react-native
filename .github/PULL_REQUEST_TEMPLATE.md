@@ -7,7 +7,7 @@
 ## Changelog
 
 <!-- Help reviewers and the release process by writing your own changelog entry. For an example, see:
-https://github.com/facebook/react-native/wiki/Changelog
+https://reactnative.dev/contributing/changelogs-in-pull-requests
 -->
 
 [CATEGORY] [TYPE] - Message

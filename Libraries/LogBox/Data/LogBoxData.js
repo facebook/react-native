@@ -133,7 +133,7 @@ function handleUpdate(): void {
   }
 }
 
-function appendNewLog(newLog) {
+function appendNewLog(newLog: LogBoxLog) {
   // Don't want store these logs because they trigger a
   // state update when we add them to the store.
   if (isMessageIgnored(newLog.message.content)) {
@@ -401,7 +401,7 @@ export function withSubscription(
   WrappedComponent: SubscribedComponent,
 ): React.AbstractComponent<{||}> {
   class LogBoxStateSubscription extends React.Component<Props, State> {
-    static getDerivedStateFromError() {
+    static getDerivedStateFromError(): {hasError: boolean} {
       return {hasError: true};
     }
 
@@ -413,7 +413,7 @@ export function withSubscription(
 
     _subscription: ?Subscription;
 
-    state = {
+    state: State = {
       logs: new Set(),
       isDisabled: false,
       hasError: false,

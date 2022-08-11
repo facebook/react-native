@@ -145,10 +145,10 @@ AndroidTextInputProps::AndroidTextInputProps(
           "selectTextOnFocus",
           sourceProps.selectTextOnFocus,
           {false})),
-      blurOnSubmit(convertRawProp(context, rawProps,
-          "blurOnSubmit",
-          sourceProps.blurOnSubmit,
-          {false})),
+      submitBehavior(convertRawProp(context, rawProps,
+           "submitBehavior",
+          sourceProps.submitBehavior,
+          {})),
       caretHidden(convertRawProp(context, rawProps,
           "caretHidden",
           sourceProps.caretHidden,
@@ -258,6 +258,15 @@ AndroidTextInputProps::AndroidTextInputProps(
           hasValue(rawProps, sourceProps.hasPaddingEnd, "End", "padding", "")) {
 }
 
+void AndroidTextInputProps::setProp(
+    const PropsParserContext &context,
+    RawPropsPropNameHash hash,
+    const char *propName,
+    RawValue const &value) {
+  ViewProps::setProp(context, hash, propName, value);
+  BaseTextProps::setProp(context, hash, propName, value);
+}
+
 // TODO T53300085: support this in codegen; this was hand-written
 folly::dynamic AndroidTextInputProps::getDynamic() const {
   folly::dynamic props = folly::dynamic::object();
@@ -289,7 +298,7 @@ folly::dynamic AndroidTextInputProps::getDynamic() const {
   props["value"] = value;
   props["defaultValue"] = defaultValue;
   props["selectTextOnFocus"] = selectTextOnFocus;
-  props["blurOnSubmit"] = blurOnSubmit;
+  props["submitBehavior"] = submitBehavior;
   props["caretHidden"] = caretHidden;
   props["contextMenuHidden"] = contextMenuHidden;
   props["textShadowColor"] = toAndroidRepr(textShadowColor);

@@ -50,6 +50,27 @@ T callFromJs(
             rt, fromJs<Args>(rt, std::forward<JSArgs>(args), jsInvoker)...),
         jsInvoker);
 
+  } else if constexpr (is_optional_v<T>) {
+    static_assert(
+        is_optional_v<R>
+            ? supportsToJs<typename R::value_type, typename T::value_type>
+            : supportsToJs<R, typename T::value_type>,
+        "Incompatible return type");
+
+    auto result = toJs(
+        rt,
+        (instance->*method)(
+            rt, fromJs<Args>(rt, std::forward<JSArgs>(args), jsInvoker)...),
+        jsInvoker);
+
+    if constexpr (std::is_same_v<decltype(result), jsi::Value>) {
+      if (result.isNull() || result.isUndefined()) {
+        return std::nullopt;
+      }
+    }
+
+    return convert(rt, std::move(result));
+
   } else {
     static_assert(std::is_convertible_v<R, T>, "Incompatible return type");
 

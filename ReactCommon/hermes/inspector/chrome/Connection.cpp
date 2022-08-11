@@ -107,6 +107,7 @@ class Connection::Impl : public inspector::InspectorObserver,
   void handle(const m::runtime::EvaluateRequest &req) override;
   void handle(const m::runtime::GetHeapUsageRequest &req) override;
   void handle(const m::runtime::GetPropertiesRequest &req) override;
+  void handle(const m::runtime::GlobalLexicalScopeNamesRequest &req) override;
   void handle(const m::runtime::RunIfWaitingForDebuggerRequest &req) override;
 
  private:
@@ -1444,6 +1445,45 @@ void Connection::Impl::handle(const m::runtime::GetPropertiesRequest &req) {
             } else if (valuePtr != nullptr) {
               resp->result = makePropsFromValue(
                   *valuePtr, objGroup, req.ownProperties.value_or(true));
+            }
+          })
+      .via(executor_.get())
+      .thenValue([this, resp](auto &&) { sendResponseToClient(*resp); })
+      .thenError<std::exception>(sendErrorToClient(req.id));
+}
+
+void Connection::Impl::handle(
+    const m::runtime::GlobalLexicalScopeNamesRequest &req) {
+  auto resp = std::make_shared<m::runtime::GlobalLexicalScopeNamesResponse>();
+  resp->id = req.id;
+
+  inspector_
+      ->executeIfEnabled(
+          "Runtime.globalLexicalScopeNames",
+          [req, resp](const debugger::ProgramState &state) {
+            if (req.executionContextId.hasValue() &&
+                req.executionContextId.value() != kHermesExecutionContextId) {
+              throw std::invalid_argument("Invalid execution context");
+            }
+
+            const debugger::LexicalInfo &lexicalInfo = state.getLexicalInfo(0);
+            debugger::ScopeDepth scopeCount = lexicalInfo.getScopesCount();
+            if (scopeCount == 0) {
+              return;
+            }
+
+            const debugger::ScopeDepth globalScopeIndex = scopeCount - 1;
+            uint32_t variableCount =
+                lexicalInfo.getVariablesCountInScope(globalScopeIndex);
+            resp->names.reserve(variableCount);
+            for (uint32_t i = 0; i < variableCount; i++) {
+              debugger::String name =
+                  state.getVariableInfo(0, globalScopeIndex, i).name;
+              // The global scope has some entries prefixed with '?', which are
+              // not valid identifiers.
+              if (!name.empty() && name.front() != '?') {
+                resp->names.push_back(name);
+              }
             }
           })
       .via(executor_.get())

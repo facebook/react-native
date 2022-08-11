@@ -712,7 +712,7 @@ describe('Flow Module Parser', () => {
       const RETURN_TYPE_DESCRIPTION = IS_RETURN_TYPE_NULLABLE
         ? 'a nullable'
         : 'a non-nullable';
-      const annotateRet = retType =>
+      const annotateRet = (retType: string) =>
         IS_RETURN_TYPE_NULLABLE ? `?${retType}` : retType;
 
       function parseReturnType(
@@ -927,7 +927,7 @@ describe('Flow Module Parser', () => {
                   ? 'an optional'
                   : 'a required';
 
-              function annotateProp(propName, propType) {
+              function annotateProp(propName: string, propType: string) {
                 if (nullable && optional) {
                   return `${propName}?: ?${propType}`;
                 }
@@ -1229,7 +1229,7 @@ describe('Flow Module Parser', () => {
   });
 });
 
-function parseModule(source) {
+function parseModule(source: string) {
   const schema = parseString(source, `${MODULE_NAME}.js`);
   const module = schema.modules.NativeFoo;
   invariant(

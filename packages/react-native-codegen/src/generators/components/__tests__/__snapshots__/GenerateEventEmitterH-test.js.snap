@@ -14,6 +14,7 @@ Map {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
+#include <jsi/jsi.h>
 
 namespace facebook {
 namespace react {
@@ -40,6 +41,7 @@ Map {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
+#include <jsi/jsi.h>
 
 namespace facebook {
 namespace react {
@@ -66,6 +68,7 @@ Map {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
+#include <jsi/jsi.h>
 
 namespace facebook {
 namespace react {
@@ -92,6 +95,7 @@ Map {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
+#include <jsi/jsi.h>
 
 namespace facebook {
 namespace react {
@@ -118,6 +122,7 @@ Map {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
+#include <jsi/jsi.h>
 
 namespace facebook {
 namespace react {
@@ -144,6 +149,7 @@ Map {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
+#include <jsi/jsi.h>
 
 namespace facebook {
 namespace react {
@@ -170,6 +176,7 @@ Map {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
+#include <jsi/jsi.h>
 
 namespace facebook {
 namespace react {
@@ -196,11 +203,12 @@ Map {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
+#include <jsi/jsi.h>
 
 namespace facebook {
 namespace react {
 
-class EventsNestedObjectNativeComponentEventEmitter : public ViewEventEmitter {
+class JSI_EXPORT EventsNestedObjectNativeComponentEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
 
@@ -241,11 +249,12 @@ Map {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
+#include <jsi/jsi.h>
 
 namespace facebook {
 namespace react {
 
-class EventsNativeComponentEventEmitter : public ViewEventEmitter {
+class JSI_EXPORT EventsNativeComponentEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
 
@@ -305,11 +314,12 @@ Map {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
+#include <jsi/jsi.h>
 
 namespace facebook {
 namespace react {
 
-class InterfaceOnlyComponentEventEmitter : public ViewEventEmitter {
+class JSI_EXPORT InterfaceOnlyComponentEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
 
@@ -346,6 +356,7 @@ Map {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
+#include <jsi/jsi.h>
 
 namespace facebook {
 namespace react {
@@ -372,6 +383,7 @@ Map {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
+#include <jsi/jsi.h>
 
 namespace facebook {
 namespace react {
@@ -398,6 +410,7 @@ Map {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
+#include <jsi/jsi.h>
 
 namespace facebook {
 namespace react {
@@ -424,6 +437,7 @@ Map {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
+#include <jsi/jsi.h>
 
 namespace facebook {
 namespace react {
@@ -450,6 +464,7 @@ Map {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
+#include <jsi/jsi.h>
 
 namespace facebook {
 namespace react {
@@ -476,6 +491,7 @@ Map {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
+#include <jsi/jsi.h>
 
 namespace facebook {
 namespace react {
@@ -502,6 +518,7 @@ Map {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
+#include <jsi/jsi.h>
 
 namespace facebook {
 namespace react {
@@ -528,11 +545,12 @@ Map {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
+#include <jsi/jsi.h>
 
 namespace facebook {
 namespace react {
 
-class InterfaceOnlyComponentEventEmitter : public ViewEventEmitter {
+class JSI_EXPORT InterfaceOnlyComponentEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
 
@@ -563,6 +581,7 @@ Map {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
+#include <jsi/jsi.h>
 
 namespace facebook {
 namespace react {
@@ -589,6 +608,7 @@ Map {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
+#include <jsi/jsi.h>
 
 namespace facebook {
 namespace react {
@@ -615,6 +635,7 @@ Map {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
+#include <jsi/jsi.h>
 
 namespace facebook {
 namespace react {
@@ -641,6 +662,7 @@ Map {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
+#include <jsi/jsi.h>
 
 namespace facebook {
 namespace react {
@@ -667,6 +689,7 @@ Map {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
+#include <jsi/jsi.h>
 
 namespace facebook {
 namespace react {
@@ -693,6 +716,7 @@ Map {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
+#include <jsi/jsi.h>
 
 namespace facebook {
 namespace react {
@@ -719,6 +743,7 @@ Map {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
+#include <jsi/jsi.h>
 
 namespace facebook {
 namespace react {
@@ -745,6 +770,7 @@ Map {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
+#include <jsi/jsi.h>
 
 namespace facebook {
 namespace react {

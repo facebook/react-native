@@ -382,7 +382,7 @@ class CheckboxExample extends React.Component<
     checkboxState: boolean | 'mixed',
   },
 > {
-  state = {
+  state: {checkboxState: boolean | 'mixed'} = {
     checkboxState: true,
   };
 
@@ -401,7 +401,7 @@ class CheckboxExample extends React.Component<
     });
   };
 
-  render() {
+  render(): React.Node {
     return (
       <TouchableOpacity
         onPress={this._onCheckboxPress}
@@ -421,7 +421,7 @@ class SwitchExample extends React.Component<
     switchState: boolean,
   },
 > {
-  state = {
+  state: {switchState: boolean} = {
     switchState: true,
   };
 
@@ -433,7 +433,7 @@ class SwitchExample extends React.Component<
     });
   };
 
-  render() {
+  render(): React.Node {
     return (
       <TouchableOpacity
         onPress={this._onSwitchToggle}
@@ -462,7 +462,7 @@ class SelectionExample extends React.Component<
     current: React.ElementRef<typeof TouchableOpacity> | null,
   };
 
-  state = {
+  state: {isEnabled: boolean, isSelected: boolean} = {
     isSelected: true,
     isEnabled: false,
   };
@@ -534,7 +534,7 @@ class ExpandableElementExample extends React.Component<
     expandState: boolean,
   },
 > {
-  state = {
+  state: {expandState: boolean} = {
     expandState: false,
   };
 
@@ -546,7 +546,7 @@ class ExpandableElementExample extends React.Component<
     });
   };
 
-  render() {
+  render(): React.Node {
     return (
       <TouchableOpacity
         onPress={this._onElementPress}
@@ -567,7 +567,11 @@ class NestedCheckBox extends React.Component<
     checkbox3: boolean | 'mixed',
   },
 > {
-  state = {
+  state: {
+    checkbox1: boolean | 'mixed',
+    checkbox2: boolean | 'mixed',
+    checkbox3: boolean | 'mixed',
+  } = {
     checkbox1: false,
     checkbox2: false,
     checkbox3: false,
@@ -619,7 +623,7 @@ class NestedCheckBox extends React.Component<
     });
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <TouchableOpacity
@@ -1040,13 +1044,13 @@ class FakeSliderExample extends React.Component<{}, FakeSliderExampleState> {
 }
 
 class AnnounceForAccessibility extends React.Component<{}> {
-  _handleOnPress = () =>
+  _handleOnPress = (): TimeoutID =>
     setTimeout(
       () => AccessibilityInfo.announceForAccessibility('Announcement Test'),
       1000,
     );
 
-  _handleOnPressQueued = () =>
+  _handleOnPressQueued = (): TimeoutID =>
     setTimeout(
       () =>
         AccessibilityInfo.announceForAccessibilityWithOptions(
@@ -1115,7 +1119,7 @@ function SetAccessibilityFocusExample(props: {}): React.Node {
 
   const onPress = () => {
     if (myRef && myRef.current) {
-      AccessibilityInfo.sendAccessibilityEvent_unstable(myRef.current, 'focus');
+      AccessibilityInfo.sendAccessibilityEvent(myRef.current, 'focus');
     }
   };
 
@@ -1211,11 +1215,11 @@ class EnabledExample extends React.Component<
     isEnabled: boolean,
   },
 > {
-  state = {
+  state: {isEnabled: boolean} = {
     isEnabled: false,
   };
   _subscription: EventSubscription;
-  componentDidMount() {
+  componentDidMount(): null | Promise<mixed> {
     this._subscription = AccessibilityInfo.addEventListener(
       this.props.eventListener,
       this._handleToggled,
@@ -1307,10 +1311,19 @@ class DisplayOptionsStatusExample extends React.Component<{}> {
   }
 }
 
-function DisplayOptionStatusExample({optionName, optionChecker, notification}) {
+function DisplayOptionStatusExample({
+  optionName,
+  optionChecker,
+  notification,
+}: {
+  notification: string,
+  optionChecker: () => Promise<boolean>,
+  optionName: string,
+}) {
   const [statusEnabled, setStatusEnabled] = React.useState(false);
   React.useEffect(() => {
     const listener = AccessibilityInfo.addEventListener(
+      // $FlowFixMe[prop-missing]
       notification,
       setStatusEnabled,
     );

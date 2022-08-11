@@ -453,7 +453,7 @@ TEST_F(RuntimeSchedulerTest, handlingError) {
   bool didRunTask = false;
   auto firstCallback = createHostFunctionFromLambda([this, &didRunTask](bool) {
     didRunTask = true;
-    jsi::detail::throwJSError(*runtime_, "Test error");
+    throw jsi::JSError(*runtime_, "Test error");
     return jsi::Value::undefined();
   });
 

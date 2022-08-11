@@ -41,7 +41,7 @@ function attachNativeEvent(
   // key path inside the `nativeEvent` object. Ex.: ['contentOffset', 'x'].
   const eventMappings = [];
 
-  const traverse = (value, path) => {
+  const traverse = (value: mixed, path: Array<string>) => {
     if (value instanceof AnimatedValue) {
       value.__makeNative(platformConfig);
 
@@ -94,8 +94,8 @@ function attachNativeEvent(
   };
 }
 
-function validateMapping(argMapping, args) {
-  const validate = (recMapping, recEvt, key) => {
+function validateMapping(argMapping: $ReadOnlyArray<?Mapping>, args: any) {
+  const validate = (recMapping: ?Mapping, recEvt: any, key: string) => {
     if (recMapping instanceof AnimatedValue) {
       invariant(
         typeof recEvt === 'number',
@@ -177,7 +177,7 @@ class AnimatedEvent {
     this._listeners = this._listeners.filter(listener => listener !== callback);
   }
 
-  __attach(viewRef: any, eventName: string) {
+  __attach(viewRef: any, eventName: string): void {
     invariant(
       this.__isNative,
       'Only native driven events need to be attached.',
@@ -191,7 +191,7 @@ class AnimatedEvent {
     );
   }
 
-  __detach(viewTag: any, eventName: string) {
+  __detach(viewTag: any, eventName: string): void {
     invariant(
       this.__isNative,
       'Only native driven events need to be detached.',
@@ -223,7 +223,10 @@ class AnimatedEvent {
         validatedMapping = true;
       }
 
-      const traverse = (recMapping, recEvt) => {
+      const traverse = (
+        recMapping: ?(Mapping | AnimatedValue),
+        recEvt: any,
+      ) => {
         if (recMapping instanceof AnimatedValue) {
           if (typeof recEvt === 'number') {
             recMapping.setValue(recEvt);

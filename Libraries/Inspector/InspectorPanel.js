@@ -120,7 +120,7 @@ type InspectorPanelButtonProps = $ReadOnly<{|
 |}>;
 
 class InspectorPanelButton extends React.Component<InspectorPanelButtonProps> {
-  render() {
+  render(): React.Node {
     return (
       <TouchableHighlight
         onPress={() => this.props.onClick(!this.props.pressed)}

@@ -9,6 +9,7 @@ rn_robolectric_test(
         "view/*.java",
     ]),
     contacts = ["oncall+fbandroid_sheriff@xmail.facebook.com"],
+    language = "JAVA",
     deps = [
         YOGA_TARGET,
         react_native_dep("libraries/fresco/fresco-react-native:fresco-drawee"),

@@ -15,7 +15,6 @@ const {execSync} = require('child_process');
 
 const SDKS_DIR = path.normalize(path.join(__dirname, '..', '..', 'sdks'));
 const HERMES_DIR = path.join(SDKS_DIR, 'hermes');
-const DEFAULT_HERMES_TAG = 'main';
 const HERMES_TAG_FILE_PATH = path.join(SDKS_DIR, '.hermesversion');
 const HERMES_TARBALL_BASE_URL = 'https://github.com/facebook/hermes/tarball/';
 const HERMES_TARBALL_DOWNLOAD_DIR = path.join(SDKS_DIR, 'download');
@@ -158,45 +157,12 @@ function copyPodSpec() {
   );
 }
 
-function isOnAReleaseBranch() {
-  try {
-    let currentBranch = execSync('git rev-parse --abbrev-ref HEAD')
-      .toString()
-      .trim();
-    let currentRemote = execSync('git config --get remote.origin.url')
-      .toString()
-      .trim();
-    return (
-      currentBranch.endsWith('-stable') &&
-      currentRemote.endsWith('facebook/react-native.git')
-    );
-  } catch (error) {
-    // If not inside a git repo, we're going to fail here and return.
-    return false;
-  }
+function isTestingAgainstLocalHermesTarball() {
+  return 'HERMES_ENGINE_TARBALL_PATH' in process.env;
 }
 
-function isOnAReleaseTag() {
-  try {
-    // If on a named tag, this method will return the tag name.
-    // If not, it will throw as the return code is not 0.
-    execSync('git describe --exact-match HEAD', {stdio: 'ignore'});
-  } catch (error) {
-    return false;
-  }
-  let currentRemote = execSync('git config --get remote.origin.url')
-    .toString()
-    .trim();
-  return currentRemote.endsWith('facebook/react-native.git');
-}
-
-function shouldBuildHermesFromSource() {
-  const hermesTag = readHermesTag();
-  return (
-    isOnAReleaseBranch() ||
-    isOnAReleaseTag() ||
-    hermesTag === DEFAULT_HERMES_TAG
-  );
+function shouldBuildHermesFromSource(isInCI) {
+  return !isTestingAgainstLocalHermesTarball() && isInCI;
 }
 
 function shouldUsePrebuiltHermesC(os) {

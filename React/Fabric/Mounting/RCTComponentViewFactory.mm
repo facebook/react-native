@@ -117,7 +117,16 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
   }
 
   // Fallback 2: Try to use Paper Interop.
-  if ([RCTLegacyViewManagerInteropComponentView isSupported:RCTNSStringFromString(name)]) {
+  NSString *componentNameString = RCTNSStringFromString(name);
+  if ([RCTLegacyViewManagerInteropComponentView isSupported:componentNameString]) {
+    RCTLogNewArchitectureValidation(
+        RCTNotAllowedInBridgeless,
+        self,
+        [NSString
+            stringWithFormat:
+                @"Legacy ViewManagers should be migrated to Fabric ComponentViews in the new architecture to reduce risk. Component using interop layer: %@",
+                componentNameString]);
+
     auto flavor = std::make_shared<std::string const>(name);
     auto componentName = ComponentName{flavor->c_str()};
     auto componentHandle = reinterpret_cast<ComponentHandle>(componentName);

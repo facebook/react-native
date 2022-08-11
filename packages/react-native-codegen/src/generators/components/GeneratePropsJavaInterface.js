@@ -9,6 +9,7 @@
  */
 
 'use strict';
+import type {CommandParamTypeAnnotation} from '../../CodegenSchema';
 
 import type {
   NamedShape,
@@ -56,13 +57,13 @@ public interface ${className}<T extends ${extendClasses}> {
 }
 `;
 
-function addNullable(imports) {
+function addNullable(imports: Set<string>) {
   imports.add('import androidx.annotation.Nullable;');
 }
 
 function getJavaValueForProp(
   prop: NamedShape<PropTypeAnnotation>,
-  imports,
+  imports: Set<string>,
 ): string {
   const typeAnnotation = prop.typeAnnotation;
 
@@ -126,7 +127,7 @@ function getJavaValueForProp(
   }
 }
 
-function generatePropsString(component: ComponentShape, imports) {
+function generatePropsString(component: ComponentShape, imports: Set<string>) {
   if (component.props.length === 0) {
     return '// No props';
   }
@@ -140,7 +141,7 @@ function generatePropsString(component: ComponentShape, imports) {
     .join('\n' + '  ');
 }
 
-function getCommandArgJavaType(param) {
+function getCommandArgJavaType(param: NamedShape<CommandParamTypeAnnotation>) {
   const {typeAnnotation} = param;
 
   switch (typeAnnotation.type) {
@@ -198,7 +199,7 @@ function generateCommandsString(
     .join('\n' + '  ');
 }
 
-function getClassExtendString(component): string {
+function getClassExtendString(component: ComponentShape): string {
   const extendString = component.extendsProps
     .map(extendProps => {
       switch (extendProps.type) {

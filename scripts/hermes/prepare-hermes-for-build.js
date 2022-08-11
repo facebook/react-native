@@ -23,12 +23,11 @@ const {
   shouldBuildHermesFromSource,
 } = require('./hermes-utils');
 
-async function main() {
-  if (!shouldBuildHermesFromSource()) {
+async function main(isInCI) {
+  if (!shouldBuildHermesFromSource(isInCI)) {
     copyPodSpec();
     return;
   }
-
   downloadHermesTarball();
   expandHermesTarball();
   copyPodSpec();
@@ -40,6 +39,8 @@ async function main() {
   }
 }
 
-main().then(() => {
+const isInCI = process.env.CI === 'true';
+
+main(isInCI).then(() => {
   process.exit(0);
 });

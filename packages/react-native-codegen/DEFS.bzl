@@ -43,17 +43,12 @@ def rn_codegen_cli():
             ],
             visibility = ["PUBLIC"],
         )
-        fb_native.sh_binary(
+        yarn_workspace_binary(
             name = "generate_all_from_schema",
-            main = "src/cli/generators/generate-all.sh",
-            resources = native.glob(
-                [
-                    "buck_tests/**/*.js",
-                    "src/**/*.js",
-                ],
-            ) + [
-                "package.json",
-                "//xplat/js:setup_env",
+            main = "src/cli/generators/generate-all.js",
+            root = "//xplat/js:workspace",
+            deps = [
+                ":yarn-workspace",
             ],
             visibility = ["PUBLIC"],
         )
@@ -169,6 +164,7 @@ def rn_codegen_modules(
         ],
         autoglob = False,
         labels = library_labels + ["codegen_rule"],
+        language = "JAVA",
         visibility = ["PUBLIC"],
         deps = [
             react_native_dep("third-party/java/jsr-305:jsr-305"),
@@ -470,13 +466,14 @@ def rn_codegen_components(
     # Android handling
     ##################
     if is_running_buck_project():
-        rn_android_library(name = "generated_components_java-{}".format(name), autoglob = False)
+        rn_android_library(name = "generated_components_java-{}".format(name), autoglob = False, language = "JAVA")
     else:
         rn_android_library(
             name = "generated_components_java-{}".format(name),
             srcs = [
                 ":{}".format(zip_generated_java_files),
             ],
+            language = "JAVA",
             autoglob = False,
             labels = library_labels + ["codegen_rule"],
             visibility = ["PUBLIC"],
@@ -492,6 +489,7 @@ def rn_codegen_components(
             srcs = [
                 ":{}".format(zip_generated_cxx_files),
             ],
+            language = "JAVA",
             autoglob = False,
             labels = library_labels + ["codegen_rule"],
             visibility = ["PUBLIC"],
@@ -552,7 +550,7 @@ def rn_codegen_cxx_modules(
             fbobjc_compiler_flags = get_apple_compiler_flags(),
             fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
             labels = library_labels + ["codegen_rule"],
-            platforms = (ANDROID, APPLE),
+            platforms = (ANDROID, APPLE, CXX),
             preprocessor_flags = [
                 "-DLOG_TAG=\"ReactNative\"",
                 "-DWITH_FBSYSTRACE=1",

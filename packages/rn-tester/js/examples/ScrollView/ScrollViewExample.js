@@ -29,10 +29,10 @@ import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import ScrollViewPressableStickyHeaderExample from './ScrollViewPressableStickyHeaderExample';
 
 class EnableDisableList extends React.Component<{}, {scrollEnabled: boolean}> {
-  state = {
+  state: {scrollEnabled: boolean} = {
     scrollEnabled: true,
   };
-  render() {
+  render(): React.Node {
     return (
       <View>
         <ScrollView
@@ -66,12 +66,12 @@ class AppendingList extends React.Component<
   {},
   {items: Array<React.Element<typeof Item>>},
 > {
-  state = {
+  state: {items: Array<React.Element<typeof Item>>} = {
     items: [...Array(AppendingListItemCount)].map((_, ii) => (
       <Item msg={`Item ${ii}`} />
     )),
   };
-  render() {
+  render(): React.Node {
     return (
       <View>
         <ScrollView
@@ -205,6 +205,7 @@ const examples = ([
       return (
         <View>
           <ScrollView
+            accessibilityRole="grid"
             ref={scrollView => {
               _scrollView = scrollView;
             }}
@@ -732,7 +733,7 @@ const RefreshControlExample = () => {
     wait(2000).then(() => setRefreshing(false));
   }, []);
 
-  const wait = timeout => {
+  const wait = (timeout: number) => {
     return new Promise(resolve => {
       setTimeout(resolve, timeout);
     });
@@ -1242,7 +1243,7 @@ class Item extends React.PureComponent<{|
   msg?: string,
   style?: ViewStyleProp,
 |}> {
-  render() {
+  render(): $FlowFixMe {
     return (
       <View style={[styles.item, this.props.style]}>
         <Text>{this.props.msg}</Text>
@@ -1253,7 +1254,9 @@ class Item extends React.PureComponent<{|
 
 let ITEMS = [...Array(12)].map((_, i) => `Item ${i}`);
 
-const createItemRow = (msg, index) => <Item key={index} msg={msg} />;
+const createItemRow = (msg: string, index: number) => (
+  <Item key={index} msg={msg} />
+);
 
 const Button = (props: {
   active?: boolean,

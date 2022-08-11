@@ -56,7 +56,7 @@ class UITemplateProcessor {
   static ShadowNode::Shared runCommand(
       const folly::dynamic &command,
       Tag rootTag,
-      std::vector<SharedShadowNode> &nodes,
+      std::vector<ShadowNode::Shared> &nodes,
       std::vector<folly::dynamic> &registers,
       const ComponentDescriptorRegistry &componentDescriptorRegistry,
       const NativeModuleRegistry &nativeModuleRegistry,

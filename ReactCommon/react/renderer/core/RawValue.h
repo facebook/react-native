@@ -12,6 +12,8 @@
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
 
+#include <react/renderer/core/RawPropsPrimitives.h>
+
 #include <react/debug/react_native_assert.h>
 
 namespace facebook {

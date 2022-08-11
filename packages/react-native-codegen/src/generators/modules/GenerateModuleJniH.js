@@ -54,6 +54,7 @@ namespace react {
 
 ${modules}
 
+JSI_EXPORT
 std::shared_ptr<TurboModule> ${libraryName}_ModuleProvider(const std::string &moduleName, const JavaTurboModule::InitParams &params);
 
 } // namespace react
@@ -131,6 +132,7 @@ target_link_libraries(
   fbjni
   folly_runtime
   glog
+  jsi
   ${libraryName !== 'rncore' ? 'react_codegen_rncore' : ''}
   react_debug
   react_nativemodule_core

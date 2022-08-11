@@ -19,7 +19,7 @@ const {
 } = require('react-native');
 
 class AppPropertiesUpdateExample extends React.Component<{...}> {
-  render() {
+  render(): React.Node {
     // Do not require this unless we are actually rendering.
     const UpdatePropertiesExampleView = requireNativeComponent(
       'UpdatePropertiesExampleView',
@@ -41,7 +41,7 @@ class AppPropertiesUpdateExample extends React.Component<{...}> {
 }
 
 class RootViewSizeFlexibilityExample extends React.Component<{...}> {
-  render() {
+  render(): React.Node {
     // Do not require this unless we are actually rendering.
     const FlexibleSizeExampleView = requireNativeComponent(
       'FlexibleSizeExampleView',

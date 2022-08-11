@@ -51,7 +51,7 @@ const observe = () => {
   };
 };
 
-const addLogs = (logs, options) => {
+const addLogs = (logs: Array<string>, options: void | {flush: boolean}) => {
   logs.forEach(message => {
     LogBoxData.addLog({
       level: 'warn',
@@ -68,7 +68,10 @@ const addLogs = (logs, options) => {
   });
 };
 
-const addSoftErrors = (errors, options) => {
+const addSoftErrors = (
+  errors: Array<string>,
+  options: void | {flush: boolean},
+) => {
   errors.forEach(error => {
     LogBoxData.addException({
       message: '',
@@ -89,7 +92,10 @@ const addSoftErrors = (errors, options) => {
   });
 };
 
-const addFatalErrors = (errors, options) => {
+const addFatalErrors = (
+  errors: Array<$FlowFixMe>,
+  options: void | {flush: boolean},
+) => {
   errors.forEach(error => {
     LogBoxData.addException({
       message: '',
@@ -112,7 +118,7 @@ const addFatalErrors = (errors, options) => {
   });
 };
 
-const addSyntaxError = options => {
+const addSyntaxError = (options: $FlowFixMe) => {
   addFatalErrors(
     [
       {

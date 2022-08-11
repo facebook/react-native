@@ -44,7 +44,7 @@ target_link_libraries(
         react_render_uimanager
         react_utils
         react_config
-        reactnativeutilsjni
+        reactnativejni
         rrc_image
         rrc_modal
         rrc_progressbar

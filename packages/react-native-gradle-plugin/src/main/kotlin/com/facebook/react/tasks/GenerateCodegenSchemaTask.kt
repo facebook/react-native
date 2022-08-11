@@ -33,6 +33,7 @@ abstract class GenerateCodegenSchemaTask : Exec() {
   val jsInputFiles =
       project.fileTree(jsRootDir) {
         it.include("**/*.js")
+        it.include("**/*.ts")
         it.exclude("**/generated/source/codegen/**/*")
       }
 
@@ -59,7 +60,8 @@ abstract class GenerateCodegenSchemaTask : Exec() {
             codegenDir
                 .file("lib/cli/combine/combine-js-to-schema-cli.js")
                 .get()
-                .asFile.absolutePath,
+                .asFile
+                .absolutePath,
             generatedSchemaFile.get().asFile.absolutePath,
             jsRootDir.asFile.get().absolutePath,
         ))

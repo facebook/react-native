@@ -1,5 +1,4 @@
 require_relative '../../scripts/react_native_pods'
-require_relative '../../scripts/cocoapods/new_architecture'
 
 source 'https://cdn.cocoapods.org/'
 platform :ios, '12.4'
@@ -22,14 +21,17 @@ def pods(options = {}, use_flipper: false)
   project 'RNTesterPods.xcodeproj'
 
   fabric_enabled = true
-  hermes_enabled = ENV['USE_HERMES'] == '1'
+
+  # Hermes is now enabled by default.
+  # The following line will only disable Hermes if the USE_HERMES envvar is SET to a value other than 1 (e.g. USE_HERMES=0).
+  hermes_enabled = !ENV.has_key?('USE_HERMES') || ENV['USE_HERMES'] == '1'
   puts "Building RNTester with Fabric #{fabric_enabled ? "enabled" : "disabled"}.#{hermes_enabled ? " Using Hermes engine." : ""}"
 
   if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
     # Custom fabric component is only supported when using codegen discovery.
     pod 'MyNativeView', :path => "NativeComponentExample"
   end
-  
+
   use_react_native!(
     path: @prefix_path,
     fabric_enabled: fabric_enabled,
@@ -65,7 +67,6 @@ target 'RNTesterIntegrationTests' do
 end
 
 post_install do |installer|
-  react_native_post_install(installer, @prefix_path)
+  react_native_post_install(installer, @prefix_path, :mac_catalyst_enabled => false)
   __apply_Xcode_12_5_M1_post_install_workaround(installer)
-  set_clang_cxx_language_standard_if_needed(installer)
 end

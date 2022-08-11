@@ -150,7 +150,7 @@ RCT_EXPORT_METHOD(reportException : (JS::NativeExceptionsManager::ExceptionData 
   }
 }
 
-- (void)reportEarlyJsException:(NSString *)errorStr
+- (void)reportJsException:(NSString *)errorStr
 {
   NSData *jsonData = [errorStr dataUsingEncoding:NSUTF8StringEncoding];
   NSError *jsonError;

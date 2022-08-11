@@ -549,7 +549,7 @@ function buildPropertySchema(
   };
 }
 
-function isModuleInterface(node) {
+function isModuleInterface(node: $FlowFixMe) {
   return (
     node.type === 'InterfaceDeclaration' &&
     node.extends.length === 1 &&

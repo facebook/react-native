@@ -11,6 +11,7 @@ import android.content.Context;
 import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
@@ -35,6 +36,8 @@ import java.util.Stack;
 @ReactPropertyHolder
 public abstract class ViewManager<T extends View, C extends ReactShadowNode>
     extends BaseJavaModule {
+
+  private static String NAME = ViewManager.class.getSimpleName();
 
   /**
    * For View recycling: we store a Stack of unused, dead Views. This is null by default, and when
@@ -199,8 +202,26 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * {@link ViewManager} subclass.
    */
   public void onDropViewInstance(@NonNull T view) {
+    // Some legacy components will return an Activity here instead of a ThemedReactContext
+    Context viewContext = view.getContext();
+    if (viewContext == null) {
+      // Who knows! Anything is possible. Checking instanceof on null is an NPE,
+      // So this is not redundant.
+      FLog.e(NAME, "onDropViewInstance: view [" + view.getId() + "] has a null context");
+      return;
+    }
+    if (!(viewContext instanceof ThemedReactContext)) {
+      FLog.e(
+          NAME,
+          "onDropViewInstance: view ["
+              + view.getId()
+              + "] has a context that is not a ThemedReactContext: "
+              + viewContext);
+      return;
+    }
+
     // View recycling
-    ThemedReactContext themedReactContext = (ThemedReactContext) view.getContext();
+    ThemedReactContext themedReactContext = (ThemedReactContext) viewContext;
     int surfaceId = themedReactContext.getSurfaceId();
     @Nullable Stack<T> recyclableViews = getRecyclableViewStack(surfaceId);
 

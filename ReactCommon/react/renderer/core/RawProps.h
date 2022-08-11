@@ -97,6 +97,15 @@ class RawProps final {
   const RawValue *at(char const *name, char const *prefix, char const *suffix)
       const noexcept;
 
+  /**
+   * Iterator functions: for when you want to iterate over values in-order
+   * instead of using `at` to access values randomly.
+   */
+  void iterateOverValues(
+      std::function<
+          void(RawPropsPropNameHash, const char *, RawValue const &)> const &fn)
+      const;
+
  private:
   friend class RawPropsParser;
 

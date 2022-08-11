@@ -161,8 +161,8 @@ static ShadowNode::Unshared progressState(
 }
 
 static void updateMountedFlag(
-    const SharedShadowNodeList &oldChildren,
-    const SharedShadowNodeList &newChildren) {
+    const ShadowNode::ListOfShared &oldChildren,
+    const ShadowNode::ListOfShared &newChildren) {
   // This is a simplified version of Diffing algorithm that only updates
   // `mounted` flag on `ShadowNode`s. The algorithm sets "mounted" flag before
   // "unmounted" to allow `ShadowNode` detect a situation where the node was

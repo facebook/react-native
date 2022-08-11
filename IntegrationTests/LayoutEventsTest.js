@@ -19,7 +19,7 @@ import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 const deepDiffer = require('react-native/Libraries/Utilities/differ/deepDiffer');
 
-function debug(...args) {
+function debug(...args: Array<void | Layout | string>) {
   // console.log.apply(null, arguments);
 }
 
@@ -119,16 +119,19 @@ class LayoutEventsTest extends React.Component<Props, State> {
   }
 
   onViewLayout: (e: LayoutEvent) => void = (e: LayoutEvent) => {
+    // $FlowFixMe[incompatible-call]
     debug('received view layout event\n', e.nativeEvent);
     this.setState({viewLayout: e.nativeEvent.layout}, this.checkLayout);
   };
 
   onTextLayout: (e: LayoutEvent) => void = (e: LayoutEvent) => {
+    // $FlowFixMe[incompatible-call]
     debug('received text layout event\n', e.nativeEvent);
     this.setState({textLayout: e.nativeEvent.layout}, this.checkLayout);
   };
 
   onImageLayout: (e: LayoutEvent) => void = (e: LayoutEvent) => {
+    // $FlowFixMe[incompatible-call]
     debug('received image layout event\n', e.nativeEvent);
     this.setState({imageLayout: e.nativeEvent.layout}, this.checkLayout);
   };

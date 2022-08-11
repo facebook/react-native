@@ -529,11 +529,16 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   }
 
   @SuppressWarnings("unused")
-  public int getColor(int surfaceId, ReadableMap platformColor) {
+  public int getColor(int surfaceId, String[] resourcePaths) {
     ThemedReactContext context =
         mMountingManager.getSurfaceManagerEnforced(surfaceId, "getColor").getContext();
-    Integer color = ColorPropConverter.getColor(platformColor, context);
-    return color != null ? color : 0;
+    for (String resourcePath : resourcePaths) {
+      Integer color = ColorPropConverter.resolveResourcePath(context, resourcePath);
+      if (color != null) {
+        return color;
+      }
+    }
+    return 0;
   }
 
   @SuppressWarnings("unused")
@@ -806,9 +811,29 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
     if (shouldSchedule) {
       mMountItemDispatcher.addMountItem(mountItem);
+      Runnable runnable =
+          new Runnable() {
+            @Override
+            public void run() {
+              mMountItemDispatcher.tryDispatchMountItems();
+            }
+          };
       if (UiThreadUtil.isOnUiThread()) {
-        // We only read these flags on the UI thread.
-        mMountItemDispatcher.tryDispatchMountItems();
+        runnable.run();
+      } else {
+        // The Choreographer will dispatch any mount items,
+        // but it only gets called at the /beginning/ of the
+        // frame - it has no idea if, or when, there is actually work scheduled. That means if we
+        // have a big chunk of work
+        // scheduled but the scheduling happens 1ms after the
+        // start of a UI frame, we'll miss out on 15ms of time
+        // to perform the work (assuming a 16ms frame).
+        // The DispatchUIFrameCallback still has value because of
+        // the PreMountItems that we need to process at a lower
+        // priority.
+        if (ReactFeatureFlags.enableEarlyScheduledMountItemExecution) {
+          UiThreadUtil.runOnUiThread(runnable);
+        }
       }
     }
 
