@@ -465,7 +465,8 @@ jobs:
     environment:
       - REPORTS_DIR: "./reports/junit"
     steps:
-      - checkout_code_with_cache
+      - checkout_code_with_cache:
+          checkout_shallow: true
       - setup_artifacts
       - setup_ruby
       - run:
@@ -695,7 +696,8 @@ jobs:
     environment:
       - PROJECT_NAME: "AndroidTemplateProject"
     steps:
-      - checkout_code_with_cache
+      - checkout_code_with_cache:
+          checkout_shallow: true
       - run_yarn
       - attach_workspace:
           at: .
@@ -723,7 +725,8 @@ jobs:
       - HERMES_WS_DIR: *hermes_workspace_root
 
     steps:
-      - checkout_code_with_cache
+      - checkout_code_with_cache:
+          checkout_shallow: true
       - run_yarn
       - attach_workspace:
           at: .
@@ -757,7 +760,8 @@ jobs:
   test_ios_rntester:
     executor: reactnativeios
     steps:
-      - checkout_code_with_cache
+      - checkout_code_with_cache:
+          checkout_shallow: true
       - run_yarn
       - *attach_hermes_workspace
 
@@ -814,7 +818,8 @@ jobs:
       - ANDROID_TOOLS_VERSION: 31.0.0
       - GRADLE_OPTS: -Dorg.gradle.daemon=false
     steps:
-      - checkout_code_with_cache
+      - checkout_code_with_cache:
+          checkout_shallow: true
 
       - run:
           name: Install Node
@@ -1008,7 +1013,8 @@ jobs:
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
     steps:
-      - checkout_code_with_cache
+      - checkout_code_with_cache:
+          checkout_shallow: true
       - *attach_hermes_workspace
       - restore_cache:
           key: *hermes_cache_key
@@ -1156,7 +1162,8 @@ jobs:
         default: false
     executor: reactnativeios
     steps:
-      - checkout_code_with_cache
+      - checkout_code_with_cache:
+          checkout_shallow: true
       - run_yarn
       - add_ssh_keys:
           fingerprints:
