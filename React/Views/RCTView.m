@@ -716,21 +716,22 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
 #endif // TODO(macOS GH#774)
 
 #if TARGET_OS_OSX // [TODO(macOS GH#774)
-- (NSShadow*)shadow {
+// Workaround AppKit issue with directly manipulating the view layer's shadow.
+- (NSShadow*)shadow
+{
   CALayer *layer = self.layer;
+  NSShadow shadow = nil;
 
-  // Workaround AppKit issue with directly manipulating the view layer's shadow.
   if (layer.shadowColor != nil && layer.shadowOpacity > 0) {
-    NSShadow *shadow = [NSShadow new];
-
+    shadow = [NSShadow new];
+    
     shadow.shadowColor = [[NSColor colorWithCGColor:layer.shadowColor] colorWithAlphaComponent:layer.shadowOpacity];
     shadow.shadowOffset = layer.shadowOffset;
     shadow.shadowBlurRadius = layer.shadowRadius;
-
-    return shadow;
   }
-  return nil;
+  return shadow;
 }
+
 - (void)viewDidMoveToWindow
 {
   // Subscribe to view bounds changed notification so that the view can be notified when a
