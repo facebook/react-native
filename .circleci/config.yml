@@ -131,7 +131,7 @@ commands:
           command: |
             mkdir ~/.ssh -p
             ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-      - run: git clone --depth << parameters.checkout_depth >> "$CIRCLE_REPOSITORY_URL" --branch "$CIRCLE_BRANCH"
+      - run: git clone --depth << parameters.checkout_depth >> "$CIRCLE_REPOSITORY_URL" --branch "$CIRCLE_BRANCH" .
       - run:
           name: Test
           command: |
