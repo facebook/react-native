@@ -153,16 +153,13 @@ commands:
               - << parameters.checkout_base_cache_key >>
       # Logic to decide whether to shallow copy with cache
       - when:
-          condition:
-            and:
-              - equal: [ true, << parameters.shallow_checkout >> ]
+          condition: << parameters.shallow_checkout >> 
           steps:
             - checkout_shallow:
                 checkout_depth: << parameters.shallow_checkout_depth >>
       - when:
           condition:
-            and:
-              - not: << parameters.shallow_checkout >>
+              not: << parameters.shallow_checkout >>
           steps:
             - checkout
       - save_cache:
