@@ -171,11 +171,6 @@ export type NativeProps = $ReadOnly<{|
    * the error message. Setting accessibilityInvalid to false removes the error message.
    */
   accessibilityErrorMessage?: ?Stringish,
-
-  /**
-   * Setting accessibilityInvalid to true activates the error message. Setting accessibilityInvalid
-   * to false removes the error message.
-   */
   accessibilityInvalid?: ?boolean,
 
   /**
