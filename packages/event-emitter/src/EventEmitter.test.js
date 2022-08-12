@@ -6,7 +6,10 @@
  * @format
  */
 
-import EventEmitter from '../EventEmitter';
+// $FlowFixMe[untyped-import] - `@jest/globals` is not typed.
+import {jest} from '@jest/globals';
+
+import EventEmitter from './EventEmitter';
 
 describe('listeners', () => {
   it('does nothing without listeners', () => {

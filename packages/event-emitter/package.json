@@ -1,0 +1,33 @@
+{
+  "name": "@react-native/event-emitter",
+  "version": "0.71.0",
+  "description": "Event Emitter for React Native.",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:facebook/react-native.git",
+    "directory": "packages/event-emitter"
+  },
+  "license": "MIT",
+  "type": "module",
+  "main": "lib/EventEmitter.js",
+  "types": "lib/EventEmitter.d.ts",
+  "files": [
+    "lib/"
+  ],
+  "scripts": {
+    "build": "scripts/build.sh",
+    "prepublish": "yarn run build",
+    "test": "node --experimental-vm-modules node_modules/.bin/jest src/EventEmitter.test.js && tsd"
+  },
+  "tsd": {
+    "directory": "src/"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.18.10",
+    "@babel/preset-flow": "^7.18.6",
+    "jest": "^28.1.3",
+    "prettier": "^2.4.1",
+    "tsd": "^0.22.0",
+    "typescript": "^4.7.4"
+  }
+}
