@@ -30,7 +30,8 @@
 - (void)show:(BOOL)animated completion:(void (^)(void))completion
 {
   if (@available(iOS 13.0, *)) {
-    self.overrideUserInterfaceStyle = UIApplication.sharedApplication.delegate.window.overrideUserInterfaceStyle;
+    UIUserInterfaceStyle style = RCTSharedApplication().delegate.window.overrideUserInterfaceStyle ?: UIUserInterfaceStyleUnspecified;
+    self.overrideUserInterfaceStyle = style;
   }
   [self.alertWindow makeKeyAndVisible];
   [self.alertWindow.rootViewController presentViewController:self animated:animated completion:completion];
