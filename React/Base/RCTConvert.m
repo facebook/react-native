@@ -1461,6 +1461,7 @@ RCT_ENUM_CONVERTER(
       @"list": NSAccessibilityListRole,
       @"popupbutton": NSAccessibilityPopUpButtonRole,
       @"menubutton": NSAccessibilityMenuButtonRole,
+      @"table": NSAccessibilityTableRole,
     };
   });
 

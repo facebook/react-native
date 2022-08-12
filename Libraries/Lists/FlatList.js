@@ -664,6 +664,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
         removeClippedSubviews={removeClippedSubviewsOrDefault(
           _removeClippedSubviews,
         )}
+        accessibilityRole="table" // TODO(macOS GH#774): Inherit NSAccessibilityTable protocols
         {...this._renderer()}
       />
     );
