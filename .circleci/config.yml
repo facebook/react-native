@@ -818,9 +818,7 @@ jobs:
       - ANDROID_TOOLS_VERSION: 31.0.0
       - GRADLE_OPTS: -Dorg.gradle.daemon=false
     steps:
-      - checkout_code_with_cache:
-          shallow_checkout: true
-
+      - checkout_code_with_cache
       - run:
           name: Install Node
           # Note: Version set separately for non-Windows builds, see above.
