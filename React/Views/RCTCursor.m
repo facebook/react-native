@@ -36,6 +36,7 @@ RCT_ENUM_CONVERTER(
     RCTCursorAuto,
     integerValue)
 
+#if TARGET_OS_OSX // TODO(macOS GH#774)
 + (NSCursor *)NSCursor:(RCTCursor)rctCursor
 {
   NSCursor *cursor;
@@ -99,5 +100,6 @@ RCT_ENUM_CONVERTER(
 
   return cursor;
 }
+#endif // ]TODO(macOS GH#774)
 
 @end

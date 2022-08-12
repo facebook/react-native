@@ -23,7 +23,6 @@ import type {
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {Node} from 'react';
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type {CursorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {
   AccessibilityRole,
   AccessibilityState,
@@ -634,9 +633,4 @@ export type ViewProps = $ReadOnly<{|
    * @platform macos
    */
   draggedTypes?: ?DraggedTypesType, // TODO(macOS GH#774)
-
-  /*
-   * Sets the type of mouse cursor, to show when the mouse pointer is over the view.
-   */
-  cursor?: ?CursorValue, // TODO(macOS GH#774)
 |}>;
