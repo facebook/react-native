@@ -117,6 +117,17 @@ public class ReactFeatureFlags {
   public static boolean enableScrollEventThrottle = false;
 
   /**
+   * Feature flag that controls how turbo modules are exposed to JS
+   *
+   * <ul>
+   *   <li>0 = as a HostObject
+   *   <li>1 = as a plain object, backed with a HostObject as prototype
+   *   <li>2 = as a plain object, with all methods eagerly configured
+   * </ul>
+   */
+  public static int turboModuleBindingMode = 0;
+
+  /**
    * Feature Flag to enable View Recycling. When enabled, individual ViewManagers must still opt-in.
    */
   public static boolean enableViewRecycling = false;
