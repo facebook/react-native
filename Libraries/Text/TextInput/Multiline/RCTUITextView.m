@@ -130,6 +130,8 @@ static UIColor *defaultPlaceholderColor()
     NSString *errorWithLastCharacter = [NSString stringWithFormat: @"%@ %@", lastChar, accessibilityErrorMessage];
     NSString *errorWithText = [NSString stringWithFormat: @"%@ %@", text, accessibilityErrorMessage];
     self.accessibilityValue = errorWithText;
+    // onChangeText announce only the last typed/deleted character
+    // more info at https://bit.ly/3zOHsda
     UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, errorWithLastCharacter);
   } else {
     self.accessibilityValue = nil;
