@@ -94,7 +94,7 @@ int ConnectionDemux::enableDebugging(
       std::make_shared<Connection>(std::move(adapter), title, waitForDebugger));
 }
 
-void ConnectionDemux::disableDebugging(jsi::Runtime &runtime) {
+void ConnectionDemux::disableDebugging(HermesRuntime &runtime) {
   std::lock_guard<std::mutex> lock(mutex_);
 
   for (auto &it : conns_) {
@@ -132,6 +132,8 @@ void ConnectionDemux::removePage(int pageId) {
   globalInspector_.removePage(pageId);
 
   auto conn = conns_.at(pageId);
+  std::string title = conn->getTitle();
+  inspectedContexts_->erase(title);
   conn->disconnect();
   conns_.erase(pageId);
 }

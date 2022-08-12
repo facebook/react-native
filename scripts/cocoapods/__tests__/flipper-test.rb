@@ -85,7 +85,7 @@ class FlipperTests < Test::Unit::TestCase
 
         reactCore_target = installer.target_with_name("React-Core")
         reactCore_target.build_configurations.each do |config|
-            if config.name == 'Debug' then
+            if config.name == 'Debug' || config.name == 'CustomConfig' then
                 assert_equal(config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'], ['$(inherited)', 'FB_SONARKIT_ENABLED=1'])
             else
                 assert_true(config.build_settings.empty?)
@@ -134,15 +134,17 @@ class FlipperTests < Test::Unit::TestCase
                     TargetMock.new(
                         "YogaKit",
                         [
-                            BuildConfigurationMock.new("Debug"),
-                            BuildConfigurationMock.new("Release"),
+                            BuildConfigurationMock.new("Debug", is_debug: true),
+                            BuildConfigurationMock.new("Release", is_debug: false),
+                            BuildConfigurationMock.new("CustomConfig", is_debug: true),
                         ]
                     ),
                     TargetMock.new(
                         "React-Core",
                         [
-                            BuildConfigurationMock.new("Debug"),
-                            BuildConfigurationMock.new("Release"),
+                            BuildConfigurationMock.new("Debug", is_debug: true),
+                            BuildConfigurationMock.new("Release", is_debug: false),
+                            BuildConfigurationMock.new("CustomConfig", is_debug: true),
                         ]
                     )
                 ]

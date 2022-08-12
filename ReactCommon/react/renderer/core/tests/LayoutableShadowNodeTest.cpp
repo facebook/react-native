@@ -13,6 +13,9 @@
 
 using namespace facebook::react;
 
+// TODO: T127619309 re-enable CalculateTransformedFrames
+bool enableCalculateTransformedFrames = false;
+
 /*
  * ┌────────┐
  * │<View>  │
@@ -450,6 +453,11 @@ TEST(LayoutableShadowNodeTest, invertedVerticalView) {
   auto builder = simpleComponentBuilder();
   auto childShadowNode1 = std::shared_ptr<ViewShadowNode>{};
   auto childShadowNode2 = std::shared_ptr<ViewShadowNode>{};
+
+  if (!enableCalculateTransformedFrames) {
+    return;
+  }
+
   // clang-format off
   auto element =
         Element<ViewShadowNode>()
@@ -525,6 +533,11 @@ TEST(LayoutableShadowNodeTest, nestedInvertedVerticalView) {
   auto builder = simpleComponentBuilder();
   auto childShadowNode1 = std::shared_ptr<ViewShadowNode>{};
   auto childShadowNode2 = std::shared_ptr<ViewShadowNode>{};
+
+  if (!enableCalculateTransformedFrames) {
+    return;
+  }
+
   // clang-format off
   auto element =
     Element<ViewShadowNode>()
@@ -601,6 +614,11 @@ TEST(LayoutableShadowNodeTest, invertedHorizontalView) {
   auto builder = simpleComponentBuilder();
   auto childShadowNode1 = std::shared_ptr<ViewShadowNode>{};
   auto childShadowNode2 = std::shared_ptr<ViewShadowNode>{};
+
+  if (!enableCalculateTransformedFrames) {
+    return;
+  }
+
   // clang-format off
   auto element =
         Element<ViewShadowNode>()
@@ -672,6 +690,11 @@ TEST(LayoutableShadowNodeTest, nestedInvertedHorizontalView) {
   auto builder = simpleComponentBuilder();
   auto childShadowNode1 = std::shared_ptr<ViewShadowNode>{};
   auto childShadowNode2 = std::shared_ptr<ViewShadowNode>{};
+
+  if (!enableCalculateTransformedFrames) {
+    return;
+  }
+
   // clang-format off
   auto element =
     Element<ViewShadowNode>()
@@ -738,6 +761,11 @@ TEST(LayoutableShadowNodeTest, inversedContentOriginOffset) {
   auto builder = simpleComponentBuilder();
 
   auto childShadowNode = std::shared_ptr<ViewShadowNode>{};
+
+  if (!enableCalculateTransformedFrames) {
+    return;
+  }
+
   // clang-format off
   auto element =
     Element<ScrollViewShadowNode>()

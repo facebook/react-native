@@ -72,8 +72,6 @@ public class ReactFeatureFlags {
 
   public static boolean enableRuntimeScheduler = false;
 
-  public static boolean enableRuntimeSchedulerInTurboModule = false;
-
   /** Feature flag to configure eager attachment of the root view/initialisation of the JS code */
   public static boolean enableEagerRootViewAttachment = false;
 
@@ -82,6 +80,9 @@ public class ReactFeatureFlags {
 
   /** Enables or disables MapBuffer Serialization */
   public static boolean mapBufferSerializationEnabled = false;
+
+  /** Enables or disables calculation of Transformed Frames */
+  public static boolean calculateTransformedFramesEnabled = false;
 
   /** Feature Flag to use overflowInset values provided by Yoga */
   public static boolean useOverflowInset = false;

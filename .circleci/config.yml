@@ -51,10 +51,10 @@ references:
     checkout_cache_key: &checkout_cache_key v1-checkout
     gems_cache_key: &gems_cache_key v1-gems-{{ checksum "Gemfile.lock" }}
     gradle_cache_key: &gradle_cache_key v1-gradle-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "ReactAndroid/gradle.properties" }}
-    hermes_cache_key: &hermes_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
-    hermes_windows_cache_key: &hermes_windows_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "tmp/hermes/hermesversion" }}
-    hermes_tarball_cache_key: &hermes_tarball_cache_key v1-hermes-tarball-{{ checksum "/tmp/hermes/cache/.hermes-cache-key-file" }}
-    pods_cache_key: &pods_cache_key v6-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
+    hermes_cache_key: &hermes_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
+    hermes_windows_cache_key: &hermes_windows_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "tmp/hermes/hermesversion" }}
+    hermes_tarball_cache_key: &hermes_tarball_cache_key v2-hermes-tarball-{{ checksum "/tmp/hermes/hermesversion" }}
+    pods_cache_key: &pods_cache_key v7-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
     windows_yarn_cache_key: &windows_yarn_cache_key v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
     yarn_cache_key: &yarn_cache_key v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}
 
@@ -289,16 +289,6 @@ commands:
         type: boolean
         default: False
     steps:
-      - run:
-          name: Setup Hermes cache
-          command: |
-            HERMES_CACHE_KEY_FILE="/tmp/hermes/cache/.hermes-cache-key-file"
-            if [ ! -f "$HERMES_CACHE_KEY_FILE" ]; then
-              echo "File not found. Creating it using latest commit from main"
-              mkdir -p /tmp/hermes/cache
-              git ls-remote https://github.com/facebook/hermes main | cut -f 1 > $HERMES_CACHE_KEY_FILE
-            fi
-            cat $HERMES_CACHE_KEY_FILE
       - restore_cache:
           keys:
             - *hermes_tarball_cache_key
@@ -474,8 +464,7 @@ jobs:
             cd scripts
             sh run_ruby_tests.sh
       - run_yarn
-      - attach_workspace:
-          at: /tmp/hermes/
+      - *attach_hermes_workspace
       - run: |
           cd packages/rn-tester
           bundle check || bundle install
@@ -535,6 +524,16 @@ jobs:
             - run:
                 name: "Run Tests: iOS Unit and Integration Tests"
                 command: yarn test-ios
+            - run:
+                name: Zip Derived data folder
+                when: always
+                command: |
+                  echo "zipping tests results"
+                  cd /Users/distiller/Library/Developer/Xcode
+                  XCRESULT_PATH=$(find . -name '*.xcresult')
+                  tar -zcvf xcresults.tar.gz $XCRESULT_PATH
+            - store_artifacts:
+                path: /Users/distiller/Library/Developer/Xcode/xcresults.tar.gz
 
       # Optionally, run disabled tests
       - when:
@@ -560,6 +559,7 @@ jobs:
           platform: ios
       - store_test_results:
           path: ./reports/junit
+
 
   # -------------------------
   #    JOBS: Test Android
@@ -677,8 +677,17 @@ jobs:
   # -------------------------
   test_android_template:
     executor: reactnativeandroid
+    parameters:
+      flavor:
+        type: string
+        default: "Debug"
+      newarchitecture:
+        type: boolean
+        default: false
+    environment:
+      - PROJECT_NAME: "AndroidTemplateProject"
     steps:
-      - checkout
+      - checkout_code_with_cache
       - run_yarn
       - attach_workspace:
           at: .
@@ -687,15 +696,14 @@ jobs:
           name: Create Android template project
           command: |
             REPO_ROOT=$(pwd)
-            PACKAGE=$(cat build/react-native-package-version)
-            PATH_TO_PACKAGE="$REPO_ROOT/build/$PACKAGE"
-            cd template
-            npm add $PATH_TO_PACKAGE
-            npm install
+            node ./scripts/set-rn-template-version.js "file:$REPO_ROOT/build/$(cat build/react-native-package-version)"
+            node cli.js init $PROJECT_NAME --directory "/tmp/$PROJECT_NAME" --template $REPO_ROOT --verbose --skip-install
+            cd /tmp/$PROJECT_NAME
+            yarn
 
       - run:
-          name: Build the template application
-          command: cd template/android/ && ./gradlew assembleDebug
+          name: Build the template application for << parameters.flavor >> with New Architecture set << parameters.newarchitecture >>
+          command: cd /tmp/$PROJECT_NAME/android/ && ./gradlew assemble<< parameters.flavor >> -PnewArchEnabled=<< parameters.newarchitecture >>
 
   # -------------------------
   #    JOBS: Test iOS Template
@@ -726,14 +734,12 @@ jobs:
             PACKAGE=$(cat build/react-native-package-version)
             PATH_TO_PACKAGE="$REPO_ROOT/build/$PACKAGE"
             node ./scripts/set-rn-template-version.js "file:$PATH_TO_PACKAGE"
-            mkdir -p ~/tmp
-            cd ~/tmp
-            node "$REPO_ROOT/cli.js" init "$PROJECT_NAME" --template "$REPO_ROOT" --verbose
+            node cli.js init $PROJECT_NAME --directory "/tmp/$PROJECT_NAME" --template $REPO_ROOT --verbose
       - run:
           name: Build template project
           command: |
             xcodebuild build \
-              -workspace ~/tmp/$PROJECT_NAME/ios/$PROJECT_NAME.xcworkspace \
+              -workspace /tmp/$PROJECT_NAME/ios/$PROJECT_NAME.xcworkspace \
               -scheme $PROJECT_NAME \
               -sdk iphonesimulator
 
@@ -745,6 +751,7 @@ jobs:
     steps:
       - checkout_code_with_cache
       - run_yarn
+      - *attach_hermes_workspace
 
       # The macOS machine can run out of storage if Hermes is enabled and built from source.
       # Since this job does not use the iOS Simulator, deleting it provides a quick way to
@@ -764,9 +771,6 @@ jobs:
 
       - brew_install:
           package: cmake
-
-      - attach_workspace:
-          at: /tmp/hermes
 
       - with_hermes_tarball_cache_span:
           set_tarball_path: True
@@ -924,6 +928,7 @@ jobs:
               HERMES_TAG_SHA=$(git ls-remote https://github.com/facebook/hermes main | cut -f 1 | tr -d '[:space:]')
               echo $HERMES_TAG_SHA > /tmp/hermes/hermesversion
             fi
+            cat /tmp/hermes/hermesversion
       - restore_cache:
           key: *hermes_cache_key
       - run:
@@ -932,6 +937,8 @@ jobs:
             node scripts/hermes/prepare-hermes-for-build $CIRCLE_PULL_REQUEST
             cp sdks/download/* $HERMES_WS_DIR/download/.
             cp -r sdks/hermes/* $HERMES_WS_DIR/hermes/.
+
+            cat /tmp/hermes/hermesversion
       - save_cache:
           key: *hermes_cache_key
           paths:
@@ -1009,10 +1016,6 @@ jobs:
             brew install cmake
       - with_hermes_tarball_cache_span:
           steps:
-            - persist_to_workspace:
-                root: /tmp/hermes/
-                paths:
-                  - cache
             - run:
                 name: Build the Hermes iOS frameworks
                 command: |
@@ -1330,6 +1333,10 @@ workflows:
       - test_android_template:
           requires:
             - build_npm_package
+          matrix:
+            parameters:
+              newarchitecture: [true, false]
+              flavor: ["Debug", "Release"]
       - test_ios_template:
           requires:
             - build_npm_package

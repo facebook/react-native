@@ -83,7 +83,7 @@ def flipper_post_install(installer)
         # Enable flipper for React-Core Debug configuration
         if target.name == 'React-Core'
             target.build_configurations.each do |config|
-                if config.name == 'Debug'
+                if config.debug?
                     config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = ['$(inherited)', 'FB_SONARKIT_ENABLED=1']
                 end
             end

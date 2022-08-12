@@ -433,6 +433,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     }
   }
 
+  // $FlowFixMe[missing-local-annot]
   componentDidUpdate(prevProps: Props<ItemT>) {
     invariant(
       prevProps.numColumns === this.props.numColumns,
@@ -463,6 +464,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     this._listRef = ref;
   };
 
+  // $FlowFixMe[missing-local-annot]
   _checkProps(props: Props<ItemT>) {
     const {
       // $FlowFixMe[prop-missing] this prop doesn't exist, is only used for an invariant
@@ -494,13 +496,15 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     );
   }
 
+  // $FlowFixMe[missing-local-annot]
   _getItem = (data: Array<ItemT>, index: number) => {
     const numColumns = numColumnsOrDefault(this.props.numColumns);
     if (numColumns > 1) {
       const ret = [];
       for (let kk = 0; kk < numColumns; kk++) {
-        const item = data[index * numColumns + kk];
-        if (item != null) {
+        const itemIndex = index * numColumns + kk;
+        if (itemIndex < data.length) {
+          const item = data[itemIndex];
           ret.push(item);
         }
       }
@@ -519,6 +523,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     }
   };
 
+  // $FlowFixMe[missing-local-annot]
   _keyExtractor = (items: ItemT | Array<ItemT>, index: number) => {
     const numColumns = numColumnsOrDefault(this.props.numColumns);
     const keyExtractor = this.props.keyExtractor ?? defaultKeyExtractor;
@@ -560,6 +565,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
       changed: Array<ViewToken>,
       ...
     }) => void,
+    // $FlowFixMe[missing-local-annot]
   ) {
     return (info: {
       viewableItems: Array<ViewToken>,
@@ -589,6 +595,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     columnWrapperStyle: ?ViewStyleProp,
     numColumns: ?number,
     extraData: ?any,
+    // $FlowFixMe[missing-local-annot]
   ) => {
     const cols = numColumnsOrDefault(numColumns);
 
@@ -643,6 +650,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     };
   };
 
+  // $FlowFixMe[missing-local-annot]
   _memoizedRenderer = memoizeOne(this._renderer);
 
   render(): React.Node {

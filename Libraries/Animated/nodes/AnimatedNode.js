@@ -53,7 +53,7 @@ class AnimatedNode {
     this._listeners = {};
   }
 
-  __makeNative(platformConfig: ?PlatformConfig) {
+  __makeNative(platformConfig: ?PlatformConfig): void {
     if (!this.__isNative) {
       throw new Error('This node cannot be made a "native" animated node');
     }

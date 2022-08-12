@@ -121,6 +121,10 @@ ShadowNode::Unshared ShadowNode::clone(
   return family_->componentDescriptor_.cloneShadowNode(*this, fragment);
 }
 
+ContextContainer::Shared ShadowNode::getContextContainer() const {
+  return family_->componentDescriptor_.getContextContainer();
+}
+
 #pragma mark - Getters
 
 ComponentName ShadowNode::getComponentName() const {

@@ -34,7 +34,10 @@ class AnimatedStyle extends AnimatedWithChildren {
   }
 
   // Recursively get values for nested styles (like iOS's shadowOffset)
-  _walkStyleAndGetValues(style: any, initialStyle: ?Object) {
+  _walkStyleAndGetValues(
+    style: any,
+    initialStyle: ?Object,
+  ): {[string]: any | {...}} {
     const updatedStyle: {[string]: any | {...}} = {};
     for (const key in style) {
       const value = style[key];
@@ -63,7 +66,7 @@ class AnimatedStyle extends AnimatedWithChildren {
   }
 
   // Recursively get animated values for nested styles (like iOS's shadowOffset)
-  _walkStyleAndGetAnimatedValues(style: any) {
+  _walkStyleAndGetAnimatedValues(style: any): {[string]: any | {...}} {
     const updatedStyle: {[string]: any | {...}} = {};
     for (const key in style) {
       const value = style[key];

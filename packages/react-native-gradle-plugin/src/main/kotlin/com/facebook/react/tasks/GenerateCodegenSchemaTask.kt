@@ -33,6 +33,7 @@ abstract class GenerateCodegenSchemaTask : Exec() {
   val jsInputFiles =
       project.fileTree(jsRootDir) {
         it.include("**/*.js")
+        it.include("**/*.ts")
         it.exclude("**/generated/source/codegen/**/*")
       }
 

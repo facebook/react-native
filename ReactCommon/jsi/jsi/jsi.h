@@ -290,6 +290,13 @@ class JSI_EXPORT Runtime {
 
   virtual std::string symbolToString(const Symbol&) = 0;
 
+  virtual BigInt createBigIntFromInt64(int64_t) = 0;
+  virtual BigInt createBigIntFromUint64(uint64_t) = 0;
+  virtual bool bigintIsInt64(const BigInt&) = 0;
+  virtual bool bigintIsUint64(const BigInt&) = 0;
+  virtual uint64_t truncate(const BigInt&) = 0;
+  virtual String bigintToString(const BigInt&, int) = 0;
+
   virtual String createStringFromAscii(const char* str, size_t length) = 0;
   virtual String createStringFromUtf8(const uint8_t* utf8, size_t length) = 0;
   virtual std::string utf8(const String&) = 0;
@@ -506,6 +513,53 @@ class JSI_EXPORT BigInt : public Pointer {
 
   BigInt(BigInt&& other) = default;
   BigInt& operator=(BigInt&& other) = default;
+
+  /// Create a BigInt representing the signed 64-bit \p value.
+  static BigInt fromInt64(Runtime& runtime, int64_t value) {
+    return runtime.createBigIntFromInt64(value);
+  }
+
+  /// Create a BigInt representing the unsigned 64-bit \p value.
+  static BigInt fromUint64(Runtime& runtime, uint64_t value) {
+    return runtime.createBigIntFromUint64(value);
+  }
+
+  /// \return whether a === b.
+  static bool strictEquals(Runtime& runtime, const BigInt& a, const BigInt& b) {
+    return runtime.strictEquals(a, b);
+  }
+
+  /// \returns This bigint truncated to a signed 64-bit integer.
+  int64_t getInt64(Runtime& runtime) const {
+    return runtime.truncate(*this);
+  }
+
+  /// \returns Whether this bigint can be losslessly converted to int64_t.
+  bool isInt64(Runtime& runtime) const {
+    return runtime.bigintIsInt64(*this);
+  }
+
+  /// \returns This bigint truncated to a signed 64-bit integer. Throws a
+  /// JSIException if the truncation is lossy.
+  int64_t asInt64(Runtime& runtime) const;
+
+  /// \returns This bigint truncated to an unsigned 64-bit integer.
+  uint64_t getUint64(Runtime& runtime) const {
+    return runtime.truncate(*this);
+  }
+
+  /// \returns Whether this bigint can be losslessly converted to uint64_t.
+  bool isUint64(Runtime& runtime) const {
+    return runtime.bigintIsUint64(*this);
+  }
+
+  /// \returns This bigint truncated to an unsigned 64-bit integer. Throws a
+  /// JSIException if the truncation is lossy.
+  uint64_t asUint64(Runtime& runtime) const;
+
+  /// \returns this BigInt converted to a String in base \p radix. Throws a
+  /// JSIException if radix is not in the [2, 36] range.
+  inline String toString(Runtime& runtime, int radix = 10) const;
 
   friend class Runtime;
   friend class Value;

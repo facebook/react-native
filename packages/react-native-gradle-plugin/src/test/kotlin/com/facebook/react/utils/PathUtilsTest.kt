@@ -7,6 +7,7 @@
 
 package com.facebook.react.utils
 
+import com.facebook.react.ReactExtension
 import com.facebook.react.TestReactExtension
 import com.facebook.react.tests.OS
 import com.facebook.react.tests.OsRule
@@ -237,9 +238,62 @@ class PathUtilsTest {
   }
 
   @Test
+  @WithOs(OS.WIN)
+  fun getBuiltHermescFile_onWindows_withoutOverride() {
+    assertEquals(
+        File(
+            tempFolder.root,
+            "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc.exe"),
+        getBuiltHermescFile(tempFolder.root, ""))
+  }
+
+  @Test
   fun getBuiltHermescFile_withOverride() {
     assertEquals(
         File("/home/circleci/hermes/build/bin/hermesc"),
         getBuiltHermescFile(tempFolder.root, "/home/circleci/hermes"))
+  }
+
+  @Test
+  @WithOs(OS.WIN)
+  fun getHermesCBin_onWindows_returnsHermescExe() {
+    assertEquals("hermesc.exe", getHermesCBin())
+  }
+
+  @Test
+  @WithOs(OS.UNIX)
+  fun getHermesCBin_onUnix_returnsHermesc() {
+    assertEquals("hermesc", getHermesCBin())
+  }
+
+  @Test
+  @WithOs(OS.MAC)
+  fun getHermesCBin_onMax_returnsHermesc() {
+    assertEquals("hermesc", getHermesCBin())
+  }
+
+  @Test
+  fun findPackageJsonFile_withFileInParentFolder_picksItUp() {
+    tempFolder.newFile("package.json")
+    val moduleFolder = tempFolder.newFolder("awesome-module")
+
+    val project = ProjectBuilder.builder().withProjectDir(moduleFolder).build()
+    project.plugins.apply("com.facebook.react")
+    val extension = project.extensions.getByType(ReactExtension::class.java)
+
+    assertEquals(project.file("../package.json"), findPackageJsonFile(project, extension))
+  }
+
+  @Test
+  fun findPackageJsonFile_withFileConfiguredInExtension_picksItUp() {
+    val moduleFolder = tempFolder.newFolder("awesome-module")
+    val localFile = File(moduleFolder, "package.json").apply { writeText("{}") }
+
+    val project = ProjectBuilder.builder().withProjectDir(moduleFolder).build()
+    project.plugins.apply("com.facebook.react")
+    val extension =
+        project.extensions.getByType(ReactExtension::class.java).apply { root.set(moduleFolder) }
+
+    assertEquals(localFile, findPackageJsonFile(project, extension))
   }
 }

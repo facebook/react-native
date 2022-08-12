@@ -29,7 +29,7 @@ const forceTouchAvailable =
   (Platform.OS === 'ios' && Platform.constants.forceTouchAvailable) || false;
 
 class TouchableHighlightBox extends React.Component<{...}, $FlowFixMeState> {
-  state = {
+  state: any | {timesPressed: number} = {
     timesPressed: 0,
   };
 
@@ -39,7 +39,7 @@ class TouchableHighlightBox extends React.Component<{...}, $FlowFixMeState> {
     });
   };
 
-  render() {
+  render(): React.Node {
     let textLog = '';
     if (this.state.timesPressed > 1) {
       textLog = this.state.timesPressed + 'x TouchableHighlight onPress';
@@ -79,7 +79,7 @@ class TouchableWithoutFeedbackBox extends React.Component<
   {...},
   $FlowFixMeState,
 > {
-  state = {
+  state: any | {timesPressed: number} = {
     timesPressed: 0,
   };
 
@@ -89,7 +89,7 @@ class TouchableWithoutFeedbackBox extends React.Component<
     });
   };
 
-  render() {
+  render(): React.Node {
     let textLog = '';
     if (this.state.timesPressed > 1) {
       textLog = this.state.timesPressed + 'x TouchableWithoutFeedback onPress';
@@ -115,7 +115,7 @@ class TouchableWithoutFeedbackBox extends React.Component<
 }
 
 class TextOnPressBox extends React.Component<{...}, $FlowFixMeState> {
-  state = {
+  state: any | {timesPressed: number} = {
     timesPressed: 0,
   };
 
@@ -125,7 +125,7 @@ class TextOnPressBox extends React.Component<{...}, $FlowFixMeState> {
     });
   };
 
-  render() {
+  render(): React.Node {
     let textLog = '';
     if (this.state.timesPressed > 1) {
       textLog = this.state.timesPressed + 'x text onPress';
@@ -150,11 +150,11 @@ class TextOnPressBox extends React.Component<{...}, $FlowFixMeState> {
 }
 
 class TouchableFeedbackEvents extends React.Component<{...}, $FlowFixMeState> {
-  state = {
+  state: any | {eventLog: Array<string>} = {
     eventLog: [],
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View testID="touchable_feedback_events">
         <View style={[styles.row, styles.centered]}>
@@ -190,11 +190,11 @@ class TouchableFeedbackEvents extends React.Component<{...}, $FlowFixMeState> {
 }
 
 class TouchableDelayEvents extends React.Component<{...}, $FlowFixMeState> {
-  state = {
+  state: any | {eventLog: Array<string>} = {
     eventLog: [],
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View testID="touchable_delay_events">
         <View style={[styles.row, styles.centered]}>
@@ -231,17 +231,17 @@ class TouchableDelayEvents extends React.Component<{...}, $FlowFixMeState> {
 }
 
 class ForceTouchExample extends React.Component<{...}, $FlowFixMeState> {
-  state = {
+  state: any | {force: number} = {
     force: 0,
   };
 
-  _renderConsoleText = () => {
+  _renderConsoleText = (): string => {
     return forceTouchAvailable
       ? 'Force: ' + this.state.force.toFixed(3)
       : '3D Touch is not available on this device';
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View testID="touchable_3dtouch_event">
         <View style={styles.forceTouchBox} testID="touchable_3dtouch_output">
@@ -265,7 +265,7 @@ class ForceTouchExample extends React.Component<{...}, $FlowFixMeState> {
 }
 
 class TouchableHitSlop extends React.Component<{...}, $FlowFixMeState> {
-  state = {
+  state: any | {timesPressed: number} = {
     timesPressed: 0,
   };
 
@@ -275,7 +275,7 @@ class TouchableHitSlop extends React.Component<{...}, $FlowFixMeState> {
     });
   };
 
-  render() {
+  render(): React.Node {
     let log = '';
     if (this.state.timesPressed > 1) {
       log = this.state.timesPressed + 'x onPress';
@@ -345,7 +345,7 @@ function TouchableNativeMethods() {
 }
 
 class TouchableDisabled extends React.Component<{...}> {
-  render() {
+  render(): React.Node {
     return (
       <View>
         <TouchableOpacity disabled={true} style={[styles.row, styles.block]}>

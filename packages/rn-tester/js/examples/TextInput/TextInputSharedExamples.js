@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
 });
 
 class WithLabel extends React.Component<$FlowFixMeProps> {
-  render() {
+  render(): React.Node {
     return (
       <View style={styles.labelContainer}>
         <View style={styles.label}>
@@ -100,7 +100,7 @@ class RewriteExample extends React.Component<$FlowFixMeProps, any> {
     super(props);
     this.state = {text: ''};
   }
-  render() {
+  render(): React.Node {
     const limit = 20;
     const remainder = limit - this.state.text.length;
     const remainderColor = remainder > 5 ? 'blue' : 'red';
@@ -134,7 +134,7 @@ class RewriteExampleInvalidCharacters extends React.Component<
     super(props);
     this.state = {text: ''};
   }
-  render() {
+  render(): React.Node {
     return (
       <View style={styles.rewriteContainer}>
         <TextInput
@@ -162,7 +162,7 @@ class RewriteInvalidCharactersAndClearExample extends React.Component<
     super(props);
     this.state = {text: ''};
   }
-  render() {
+  render(): React.Node {
     return (
       <View style={styles.rewriteContainer}>
         <TextInput
@@ -193,13 +193,18 @@ class RewriteInvalidCharactersAndClearExample extends React.Component<
 }
 
 class BlurOnSubmitExample extends React.Component<{...}> {
+  // $FlowFixMe[missing-local-annot]
   ref1 = React.createRef();
+  // $FlowFixMe[missing-local-annot]
   ref2 = React.createRef();
+  // $FlowFixMe[missing-local-annot]
   ref3 = React.createRef();
+  // $FlowFixMe[missing-local-annot]
   ref4 = React.createRef();
+  // $FlowFixMe[missing-local-annot]
   ref5 = React.createRef();
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <TextInput
@@ -249,19 +254,30 @@ class BlurOnSubmitExample extends React.Component<{...}> {
 }
 
 class SubmitBehaviorExample extends React.Component<{...}> {
+  // $FlowFixMe[missing-local-annot]
   ref1 = React.createRef();
+  // $FlowFixMe[missing-local-annot]
   ref2 = React.createRef();
+  // $FlowFixMe[missing-local-annot]
   ref3 = React.createRef();
+  // $FlowFixMe[missing-local-annot]
   ref4 = React.createRef();
+  // $FlowFixMe[missing-local-annot]
   ref5 = React.createRef();
+  // $FlowFixMe[missing-local-annot]
   ref6 = React.createRef();
+  // $FlowFixMe[missing-local-annot]
   ref7 = React.createRef();
+  // $FlowFixMe[missing-local-annot]
   ref8 = React.createRef();
+  // $FlowFixMe[missing-local-annot]
   ref9 = React.createRef();
+  // $FlowFixMe[missing-local-annot]
   ref10 = React.createRef();
+  // $FlowFixMe[missing-local-annot]
   ref11 = React.createRef();
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <TextInput
@@ -333,7 +349,14 @@ class SubmitBehaviorExample extends React.Component<{...}> {
 }
 
 class TextEventsExample extends React.Component<{...}, $FlowFixMeState> {
-  state = {
+  state:
+    | any
+    | {
+        curText: string,
+        prev2Text: string,
+        prev3Text: string,
+        prevText: string,
+      } = {
     curText: '<No Event>',
     prevText: '<No Event>',
     prev2Text: '<No Event>',
@@ -351,7 +374,7 @@ class TextEventsExample extends React.Component<{...}, $FlowFixMeState> {
     });
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <TextInput
@@ -401,7 +424,7 @@ class TokenizedTextExample extends React.Component<
     super(props);
     this.state = {text: 'Hello #World'};
   }
-  render() {
+  render(): React.Node {
     //define delimiter
     let delimiter = /\s+/;
 
@@ -487,7 +510,7 @@ class SelectionExample extends React.Component<
     this.setState({selection});
   }
 
-  getRandomPosition() {
+  getRandomPosition(): number {
     const length = this.state.value.length;
     return Math.round(Math.random() * length);
   }
@@ -516,7 +539,7 @@ class SelectionExample extends React.Component<
     this.placeAt(this.getRandomPosition());
   }
 
-  render() {
+  render(): React.Node {
     const length = this.state.value.length;
 
     return (
