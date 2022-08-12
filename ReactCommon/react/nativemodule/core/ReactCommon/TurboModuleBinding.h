@@ -18,6 +18,12 @@ namespace react {
 
 class JSCallInvoker;
 
+enum class TurboModuleBindingMode : uint8_t {
+  HostObject = 0,
+  Prototype = 1,
+  Eager = 2,
+};
+
 /**
  * Represents the JavaScript binding for the TurboModule system.
  */
@@ -30,11 +36,13 @@ class TurboModuleBinding {
   static void install(
       jsi::Runtime &runtime,
       const TurboModuleProviderFunctionType &&moduleProvider,
+      TurboModuleBindingMode bindingMode,
       std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection);
 
  private:
   TurboModuleBinding(
       const TurboModuleProviderFunctionType &&moduleProvider,
+      TurboModuleBindingMode bindingMode,
       std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection);
   virtual ~TurboModuleBinding();
 
@@ -50,6 +58,7 @@ class TurboModuleBinding {
 
   TurboModuleProviderFunctionType moduleProvider_;
   std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection_;
+  TurboModuleBindingMode bindingMode_;
 };
 
 } // namespace react
