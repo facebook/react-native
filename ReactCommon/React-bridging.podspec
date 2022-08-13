@@ -35,7 +35,8 @@ Pod::Spec.new do |s|
   s.compiler_flags         = folly_compiler_flags
   s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/RCT-Folly\"",
                                "USE_HEADERMAP" => "YES",
-                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++17" }
+                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
+                               "GCC_WARN_PEDANTIC" => "YES" }
 
   s.dependency "RCT-Folly", folly_version
   s.dependency "React-jsi", version
