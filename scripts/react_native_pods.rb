@@ -43,6 +43,8 @@ def use_react_native! (
   app_path: '..',
   config_file_dir: '')
 
+  CodegenUtils.clean_up_build_folder(app_path, $CODEGEN_OUTPUT_DIR)
+
   prefix = path
 
   # The version of folly that must be used
