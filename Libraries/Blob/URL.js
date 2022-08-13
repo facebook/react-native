@@ -8,7 +8,7 @@
  * @flow
  */
 
-const Blob = require('./Blob');
+import type Blob from './Blob';
 
 import NativeBlobModule from './NativeBlobModule';
 
