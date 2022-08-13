@@ -11,6 +11,8 @@ add_compile_options(
         -frtti
         -std=c++17
         -Wall
+        -Wpedantic
+        -Wno-gnu-zero-variadic-macro-arguments
         -DLOG_TAG=\"Fabric\")
 
 file(GLOB react_utils_SRC CONFIGURE_DEPENDS *.cpp *.mm)
