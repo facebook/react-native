@@ -6,7 +6,14 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(-fexceptions -frtti -std=c++17 -Wall -DLOG_TAG=\"Fabric\")
+add_compile_options(
+        -fexceptions
+        -frtti
+        -std=c++17
+        -Wall
+        -Wpedantic
+        -Wno-gnu-zero-variadic-macro-arguments
+        -DLOG_TAG=\"Fabric\")
 
 file(GLOB react_render_textlayourmanager_SRC CONFIGURE_DEPENDS
         *.cpp
