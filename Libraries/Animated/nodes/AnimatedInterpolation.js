@@ -12,7 +12,8 @@
 
 'use strict';
 
-const AnimatedNode = require('./AnimatedNode');
+import type AnimatedNode from './AnimatedNode';
+
 const AnimatedWithChildren = require('./AnimatedWithChildren');
 const NativeAnimatedHelper = require('../NativeAnimatedHelper');
 
