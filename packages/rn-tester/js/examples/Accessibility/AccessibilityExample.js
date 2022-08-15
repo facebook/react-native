@@ -212,8 +212,10 @@ class AccessibilityExample extends React.Component<{}> {
               value="Foo"
             />
           </View>
+        </RNTesterBlock>
+        <RNTesterBlock title="Switch with accessibilityLabelledBy attribute">
           <View>
-            <Text nativeID="formLabel4">Enable Fielld</Text>
+            <Text nativeID="formLabel4">Enable Notifications</Text>
             <Switch
               value={true}
               accessibilityLabel="switch test1"
