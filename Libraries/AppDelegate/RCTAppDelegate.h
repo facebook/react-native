@@ -6,11 +6,16 @@
  */
 
 #import <UIKit/UIKit.h>
+#import <React/RCTBridge.h>
+#import <React/RCTBridgeDelegate.h>
 
 #if RCT_NEW_ARCH_ENABLED
 // When the new architecture is enabled, the RCTAppDelegate imports some additional headers
 #import <React/RCTCxxBridgeDelegate.h>
+#import <React/RCTSurfacePresenterBridgeAdapter.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
+
+
 #endif
 
 /**
@@ -31,6 +36,8 @@
  object.
  *
  * Overridable methods (New Architecture):
+ *   - (BOOL)concurrentRootEnabled
+ *   - (NSDictionary *)prepareInitialProps
  *   - (Class)getModuleClassFromName:(const char *)name
  *   - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                       jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
@@ -39,19 +46,29 @@
                                                          (const facebook::react::ObjCTurboModule::InitParams &)params
  *   - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
  */
-@interface RCTAppDelegate : UIResponder <UIApplicationDelegate>
+@interface RCTAppDelegate : UIResponder <UIApplicationDelegate, RCTBridgeDelegate>
 
 /// The window object, used to render the UViewControllers
 @property (nonatomic, strong) UIWindow *window;
+@property (nonatomic, strong) RCTBridge *bridge;
+@property (nonatomic, strong) NSString *moduleName;
 
 @end
 
 #if RCT_NEW_ARCH_ENABLED
 /// Extension that makes the RCTAppDelegate conform to New Architecture delegates
-@interface RCTAppDelegate () <RCTCxxBridgeDelegate, RCTTurboModuleManagerDelegate>
+@interface RCTAppDelegate () <RCTTurboModuleManagerDelegate, RCTCxxBridgeDelegate>
 
 /// The TurboModule manager
 @property (nonatomic, strong) RCTTurboModuleManager *turboModuleManager;
+@property (nonatomic, strong) RCTSurfacePresenterBridgeAdapter *bridgeAdapter;
+
+/// This method controls whether the `concurrentRoot`feature of React18 is turned on or off.
+///
+/// @see: https://reactjs.org/blog/2022/03/29/react-v18.html
+/// @note: This requires to be rendering on Fabric (i.e. on the New Architecture).
+/// @return: `true` if the `concurrentRoot` feture is enabled. Otherwise, it returns `false`.
+- (BOOL)concurrentRootEnabled;
 
 @end
 #endif
