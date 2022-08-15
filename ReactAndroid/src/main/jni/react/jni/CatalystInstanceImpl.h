@@ -39,8 +39,7 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
 
   static jni::local_ref<jhybriddata> initHybrid(
       jni::alias_ref<jclass>,
-      bool enableRuntimeScheduler,
-      bool enableRuntimeSchedulerInTurboModule);
+      bool enableRuntimeScheduler);
 
   static void registerNatives();
 
@@ -51,9 +50,7 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
  private:
   friend HybridBase;
 
-  CatalystInstanceImpl(
-      bool enableRuntimeScheduler,
-      bool enableRuntimeSchedulerInTurboModule);
+  CatalystInstanceImpl(bool enableRuntimeScheduler);
 
   void initializeBridge(
       jni::alias_ref<ReactCallback::javaobject> callback,
@@ -122,7 +119,6 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   jni::global_ref<JRuntimeScheduler::javaobject> runtimeScheduler_;
 
   bool const enableRuntimeScheduler_;
-  bool const enableRuntimeSchedulerInTurboModule_;
 };
 
 } // namespace react

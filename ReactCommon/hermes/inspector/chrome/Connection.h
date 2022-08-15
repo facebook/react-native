@@ -29,16 +29,13 @@ class INSPECTOR_EXPORT Connection {
   /// Connection constructor enables the debugger on the provided runtime. This
   /// should generally called before you start running any JS in the runtime.
   Connection(
-      RuntimeAdapter &adapter,
+      std::unique_ptr<RuntimeAdapter> adapter,
       const std::string &title,
       bool waitForDebugger = false);
   ~Connection();
 
   /// getRuntime returns the underlying runtime being debugged.
   jsi::Runtime &getRuntime();
-
-  /// getRuntimeAdapter returns the runtime adapter being debugged.
-  RuntimeAdapter &getRuntimeAdapter();
 
   /// getTitle returns the name of the friendly name of the runtime that's shown
   /// to users in Nuclide.

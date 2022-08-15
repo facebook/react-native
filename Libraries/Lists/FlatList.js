@@ -631,18 +631,11 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
           return (
             <View style={StyleSheet.compose(styles.row, columnWrapperStyle)}>
               {item.map((it, kk) => {
-                const itemIndex = index * cols + kk;
-                const accessibilityCollectionItem = {
-                  ...info.accessibilityCollectionItem,
-                  columnIndex: itemIndex % cols,
-                  itemIndex: itemIndex,
-                };
                 const element = renderer({
                   // $FlowFixMe[incompatible-call]
                   item: it,
-                  index: itemIndex,
+                  index: index * cols + kk,
                   separators: info.separators,
-                  accessibilityCollectionItem,
                 });
                 return element != null ? (
                   <React.Fragment key={kk}>{element}</React.Fragment>
@@ -674,7 +667,6 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     return (
       <VirtualizedList
         {...restProps}
-        numColumns={numColumns}
         getItem={this._getItem}
         getItemCount={this._getItemCount}
         keyExtractor={this._keyExtractor}

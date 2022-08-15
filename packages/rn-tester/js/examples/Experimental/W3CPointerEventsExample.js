@@ -17,6 +17,7 @@ import PointerEventAttributesHoverablePointers from './W3CPointerEventPlatformTe
 import PointerEventPointerMove from './W3CPointerEventPlatformTests/PointerEventPointerMove';
 import CompatibilityAnimatedPointerMove from './Compatibility/CompatibilityAnimatedPointerMove';
 import PointerEventPrimaryTouchPointer from './W3CPointerEventPlatformTests/PointerEventPrimaryTouchPointer';
+import PointerEventAttributesNoHoverPointers from './W3CPointerEventPlatformTests/PointerEventAttributesNoHoverPointers';
 
 function EventfulView(props: {|
   name: string,
@@ -238,6 +239,14 @@ export default {
       title: 'Pointer Events hoverable pointer attributes test',
       render(): React.Node {
         return <PointerEventAttributesHoverablePointers />;
+      },
+    },
+    {
+      name: 'pointerevent_attributes_nohover_pointers',
+      description: '',
+      title: 'Pointer Events no-hover pointer attributes test',
+      render(): React.Node {
+        return <PointerEventAttributesNoHoverPointers />;
       },
     },
     {

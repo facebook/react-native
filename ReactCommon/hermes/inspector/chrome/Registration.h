@@ -23,13 +23,15 @@ namespace chrome {
  * (called "pages" in the higher-leavel React Native API) in this process. It
  * should be called before any JS runs in the runtime.
  */
-extern void enableDebugging(RuntimeAdapter &adapter, const std::string &title);
+extern void enableDebugging(
+    std::unique_ptr<RuntimeAdapter> adapter,
+    const std::string &title);
 
 /*
  * disableDebugging removes this runtime from the list of debuggable JS targets
  * in this process.
  */
-extern void disableDebugging(RuntimeAdapter &adapter);
+extern void disableDebugging(HermesRuntime &runtime);
 
 } // namespace chrome
 } // namespace inspector

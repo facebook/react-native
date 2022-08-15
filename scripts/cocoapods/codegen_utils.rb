@@ -131,7 +131,7 @@ class CodegenUtils
     #
     # Returns: the list of dependencies as extracted from the package.json
     def get_codegen_config_from_file(config_path, config_key)
-      empty = {'libraries' => []}
+      empty = {}
       if !File.exist?(config_path)
         return empty
       end
@@ -159,9 +159,6 @@ class CodegenUtils
       elsif app_codegen_config['jsSrcsDir'] then
         codegen_dir = File.join(app_path, app_codegen_config['jsSrcsDir'])
         file_list.concat (Finder.find_codegen_file(codegen_dir))
-      else
-        Pod::UI.warn '[Error] Codegen not properly configured. Please add the `codegenConfig` entry to your `package.json`'
-        abort
       end
 
       input_files = file_list.map { |filename| "${PODS_ROOT}/../#{Pathname.new(filename).realpath().relative_path_from(Pod::Config.instance.installation_root)}" }
