@@ -60,6 +60,7 @@ def use_react_native! (
   pod 'React', :path => "#{prefix}/"
   pod 'React-Core', :path => "#{prefix}/"
   pod 'React-CoreModules', :path => "#{prefix}/React/CoreModules"
+  pod 'React-RCTAppDelegate', :path => "#{prefix}/Libraries/AppDelegate"
   pod 'React-RCTActionSheet', :path => "#{prefix}/Libraries/ActionSheetIOS"
   pod 'React-RCTAnimation', :path => "#{prefix}/Libraries/NativeAnimation"
   pod 'React-RCTBlob', :path => "#{prefix}/Libraries/Blob"
