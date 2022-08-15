@@ -67,11 +67,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'space-between',
   },
-  button: {
-    padding: 8,
-    borderWidth: 1,
-    borderColor: 'blue',
-  },
 });
 
 class AccessibilityExample extends React.Component<{}> {
@@ -1191,75 +1186,10 @@ function DisplayOptionStatusExample({
   );
 }
 
-function AccessibilityExpandedExample() {
-  const [expand, setExpanded] = React.useState(false);
-  return (
-    <>
-      <Text>
-        {' '}
-        The following component does not properly announce the
-        expanded/collapsed state
-      </Text>
-      <Button
-        onPress={() => setExpanded(!expand)}
-        accessibilityState={{expanded: expand}}
-        title="click me to change state"
-      />
-
-      <Text>
-        {' '}
-        The following component properly announces the expanded state, and
-        *does* announce the state chang upon press. But strangely it does *not*
-        announce the visible text. It also does not add custom actions for
-        expand/collapse.
-      </Text>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => setExpanded(!expand)}
-        accessibilityState={{expanded: expand}}>
-        <Text>Click me to change state</Text>
-      </TouchableOpacity>
-      <Text>
-        {' '}
-        The following component properly announces the expanded state, does
-        *not* announce the visible text. It also adds custom actions for expand
-        manually. These do not use Talkbacks built in labels for
-        expand/collapse, as these are only available to set as custom actions.{' '}
-      </Text>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => setExpanded(!expand)}
-        accessibilityActions={[
-          {name: 'expand', label: 'Custom Expand Label'},
-          {name: 'collapse', label: 'Custom Collapse Label'},
-        ]}
-        onAccessibilityAction={event => {
-          switch (event.nativeEvent.actionName) {
-            case 'expand':
-              setExpanded(true);
-              break;
-            case 'collapse':
-              setExpanded(false);
-              break;
-          }
-        }}
-        accessibilityState={{expanded: expand}}>
-        <Text>Click me to change state</Text>
-      </TouchableOpacity>
-    </>
-  );
-}
-
 exports.title = 'Accessibility';
 exports.documentationURL = 'https://reactnative.dev/docs/accessibilityinfo';
 exports.description = 'Examples of using Accessibility APIs.';
 exports.examples = [
-  {
-    title: 'Accessibility expanded',
-    render(): React.Element<typeof AccessibilityExpandedExample> {
-      return <AccessibilityExpandedExample />;
-    },
-  },
   {
     title: 'Accessibility elements',
     render(): React.Element<typeof AccessibilityExample> {
