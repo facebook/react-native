@@ -856,6 +856,26 @@ function runExceptionsManagerTests() {
         );
       });
     });
+    describe('Errors with custom extraData', () => {
+      test('ExtendedErrors may pass custom extraData using the decoratedExtraDataKey symbol', () => {
+        const error = new Error('Some error happened');
+        // Annotates the error with some custom extra data.
+        error[ExceptionsManager.decoratedExtraDataKey] = {foo: 'bar'};
+        ExceptionsManager.handleException(error, true);
+
+        if (__DEV__) {
+          expect(logBoxAddException).toHaveBeenCalledTimes(1);
+          expect(logBoxAddException.mock.calls[0][0].extraData?.foo).toBe(
+            'bar',
+          );
+        } else {
+          expect(nativeReportException).toHaveBeenCalledTimes(1);
+          expect(nativeReportException.mock.calls[0][0].extraData?.foo).toBe(
+            'bar',
+          );
+        }
+      });
+    });
   });
 }
 const linesByFile = new Map();
