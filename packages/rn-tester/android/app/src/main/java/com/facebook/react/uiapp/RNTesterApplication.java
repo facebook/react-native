@@ -136,10 +136,6 @@ public class RNTesterApplication extends Application implements ReactApplication
         @Nullable
         @Override
         protected JSIModulePackage getJSIModulePackage() {
-          if (!BuildConfig.ENABLE_FABRIC && !ReactFeatureFlags.useTurboModules) {
-            return null;
-          }
-
           return new JSIModulePackage() {
             @Override
             public List<JSIModuleSpec> getJSIModules(
@@ -148,34 +144,32 @@ public class RNTesterApplication extends Application implements ReactApplication
               final List<JSIModuleSpec> specs = new ArrayList<>();
 
               // Install the new renderer.
-              if (BuildConfig.ENABLE_FABRIC) {
-                specs.add(
-                    new JSIModuleSpec() {
-                      @Override
-                      public JSIModuleType getJSIModuleType() {
-                        return JSIModuleType.UIManager;
-                      }
+              specs.add(
+                  new JSIModuleSpec() {
+                    @Override
+                    public JSIModuleType getJSIModuleType() {
+                      return JSIModuleType.UIManager;
+                    }
 
-                      @Override
-                      public JSIModuleProvider<UIManager> getJSIModuleProvider() {
-                        final ComponentFactory componentFactory = new ComponentFactory();
-                        CoreComponentsRegistry.register(componentFactory);
-                        RNTesterComponentsRegistry.register(componentFactory);
-                        final ReactInstanceManager reactInstanceManager = getReactInstanceManager();
+                    @Override
+                    public JSIModuleProvider<UIManager> getJSIModuleProvider() {
+                      final ComponentFactory componentFactory = new ComponentFactory();
+                      CoreComponentsRegistry.register(componentFactory);
+                      RNTesterComponentsRegistry.register(componentFactory);
+                      final ReactInstanceManager reactInstanceManager = getReactInstanceManager();
 
-                        ViewManagerRegistry viewManagerRegistry =
-                            new ViewManagerRegistry(
-                                reactInstanceManager.getOrCreateViewManagers(
-                                    reactApplicationContext));
+                      ViewManagerRegistry viewManagerRegistry =
+                          new ViewManagerRegistry(
+                              reactInstanceManager.getOrCreateViewManagers(
+                                  reactApplicationContext));
 
-                        return new FabricJSIModuleProvider(
-                            reactApplicationContext,
-                            componentFactory,
-                            ReactNativeConfig.DEFAULT_CONFIG,
-                            viewManagerRegistry);
-                      }
-                    });
-              }
+                      return new FabricJSIModuleProvider(
+                          reactApplicationContext,
+                          componentFactory,
+                          ReactNativeConfig.DEFAULT_CONFIG,
+                          viewManagerRegistry);
+                    }
+                  });
 
               return specs;
             }
@@ -185,7 +179,7 @@ public class RNTesterApplication extends Application implements ReactApplication
 
   @Override
   public void onCreate() {
-    ReactFeatureFlags.useTurboModules = BuildConfig.ENABLE_TURBOMODULE;
+    ReactFeatureFlags.useTurboModules = true;
     ReactFontManager.getInstance().addCustomFont(this, "Rubik", R.font.rubik);
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
