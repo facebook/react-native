@@ -101,6 +101,6 @@ add_react_android_subdir(src/main/java/com/facebook/react/turbomodule/core/jni)
 add_react_android_subdir(src/main/jni/react/uimanager)
 add_react_android_subdir(src/main/java/com/facebook/react/common/mapbuffer/jni)
 add_react_android_subdir(src/main/java/com/facebook/react/fabric/jni)
-add_react_android_subdir(src/main/java/com/facebook/react/modules/blob/jni)
+add_react_android_subdir(src/main/jni/react/reactnativeblob)
 add_react_android_subdir(src/main/java/com/facebook/hermes/instrumentation/)
 
