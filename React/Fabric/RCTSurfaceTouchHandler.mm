@@ -95,6 +95,11 @@ struct ActiveTouch {
   bool isPrimary;
 
   /*
+   * The button number that was pressed (if applicable) when the event was fired.
+   */
+  int button;
+
+  /*
    * A component view on which the touch was begun.
    */
   __strong UIView<RCTComponentViewProtocol> *componentView = nil;
@@ -164,6 +169,16 @@ static int ButtonMaskToButtons(UIEventButtonMask buttonMask)
   if (@available(iOS 13.4, *)) {
     return (((buttonMask & UIEventButtonMaskPrimary) > 0) ? 1 : 0) |
         (((buttonMask & UIEventButtonMaskSecondary) > 0) ? 2 : 0);
+  }
+  return 0;
+}
+
+static int ButtonMaskToButton(UIEventButtonMask buttonMask)
+{
+  if (@available(iOS 13.4, *)) {
+    if ((buttonMask & UIEventButtonMaskSecondary) > 0) {
+      return 2;
+    }
   }
   return 0;
 }
@@ -291,11 +306,19 @@ static PointerEvent CreatePointerEventFromActiveTouch(ActiveTouch activeTouch, R
 
   PointerEvent event = {};
   event.pointerId = touch.identifier;
-  event.pressure = touch.force;
   event.pointerType = PointerTypeCStringFromUITouchType(activeTouch.touchType);
   event.clientPoint = touch.pagePoint;
   event.screenPoint = touch.screenPoint;
   event.offsetPoint = touch.offsetPoint;
+
+  event.pressure = touch.force;
+  if (@available(iOS 13.4, *)) {
+    if (activeTouch.touchType == UITouchTypeIndirectPointer) {
+      // pointer events with a mouse button pressed should report a pressure of 0.5
+      // when the touch is down and 0.0 when it is lifted regardless of how it is reported by the OS
+      event.pressure = eventType != RCTTouchEventTypeTouchEnd ? 0.5 : 0.0;
+    }
+  }
 
   CGFloat pointerSize = activeTouch.majorRadius * 2.0;
   if (@available(iOS 13.4, *)) {
@@ -312,6 +335,11 @@ static PointerEvent CreatePointerEventFromActiveTouch(ActiveTouch activeTouch, R
   event.tiltY = RadsToDegrees(tilt.y);
 
   event.detail = 0;
+
+  event.button = -1;
+  if (eventType == RCTTouchEventTypeTouchStart || eventType == RCTTouchEventTypeTouchEnd) {
+    event.button = activeTouch.button;
+  }
 
   event.buttons = ButtonMaskToButtons(activeTouch.buttonMask);
   UpdatePointerEventModifierFlags(event, activeTouch.modifierFlags);
@@ -351,11 +379,13 @@ static PointerEvent CreatePointerEventFromIncompleteHoverData(
   event.tiltX = 0;
   event.tiltY = 0;
   event.detail = 0;
+  event.button = -1;
   event.buttons = 0;
   UpdatePointerEventModifierFlags(event, modifierFlags);
   event.tangentialPressure = 0.0;
   event.twist = 0;
   event.isPrimary = true;
+
   return event;
 }
 
@@ -511,13 +541,18 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
           }
           break;
       }
+
+      activeTouch.button = ButtonMaskToButton(event.buttonMask);
     } else {
       activeTouch.touch.identifier = _identifierPool.dequeue();
       if (_primaryTouchPointerId == -1) {
         _primaryTouchPointerId = activeTouch.touch.identifier;
         activeTouch.isPrimary = true;
       }
+
+      activeTouch.button = 0;
     }
+
     _activeTouches.emplace(touch, activeTouch);
   }
 }
