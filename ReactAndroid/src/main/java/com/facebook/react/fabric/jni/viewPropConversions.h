@@ -58,6 +58,10 @@ constexpr MapBuffer::Key VP_ZINDEX = 34;
 constexpr MapBuffer::Key VP_POINTER_ENTER_CAPTURE = 38;
 constexpr MapBuffer::Key VP_POINTER_LEAVE_CAPTURE = 39;
 constexpr MapBuffer::Key VP_POINTER_MOVE_CAPTURE = 40;
+constexpr MapBuffer::Key VP_POINTER_OVER = 41;
+constexpr MapBuffer::Key VP_POINTER_OVER_CAPTURE = 42;
+constexpr MapBuffer::Key VP_POINTER_OUT = 43;
+constexpr MapBuffer::Key VP_POINTER_OUT_CAPTURE = 44;
 
 // Yoga values
 constexpr MapBuffer::Key YG_BORDER_WIDTH = 100;
@@ -475,6 +479,17 @@ static inline MapBuffer viewPropsDiff(
     builder.putBool(
         VP_POINTER_MOVE_CAPTURE,
         newProps.events[ViewEvents::Offset::PointerMoveCapture]);
+    builder.putBool(
+        VP_POINTER_OVER, newProps.events[ViewEvents::Offset::PointerOver]);
+    builder.putBool(
+        VP_POINTER_OVER_CAPTURE,
+        newProps.events[ViewEvents::Offset::PointerOverCapture]);
+
+    builder.putBool(
+        VP_POINTER_OUT, newProps.events[ViewEvents::Offset::PointerOut]);
+    builder.putBool(
+        VP_POINTER_OUT_CAPTURE,
+        newProps.events[ViewEvents::Offset::PointerOutCapture]);
   }
 
   if (oldProps.removeClippedSubviews != newProps.removeClippedSubviews) {
