@@ -584,6 +584,16 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
                 MapBuilder.of(
                     "phasedRegistrationNames",
                     MapBuilder.of("bubbled", "onPointerUp", "captured", "onPointerUpCapture")))
+            .put(
+                "topPointerOut",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onPointerOut", "captured", "onPointerOutCapture")))
+            .put(
+                "topPointerOver",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onPointerOver", "captured", "onPointerOverCapture")))
             .build());
     return eventTypeConstants;
   }
@@ -641,6 +651,26 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   @ReactProp(name = "onPointerEnterCapture")
   public void setPointerEnterCapture(@NonNull T view, boolean value) {
     view.setTag(R.id.pointer_enter_capture, value);
+  }
+
+  @ReactProp(name = "onPointerOver")
+  public void setPointerOver(@NonNull T view, boolean value) {
+    view.setTag(R.id.pointer_over, value);
+  }
+
+  @ReactProp(name = "onPointerOverCapture")
+  public void setPointerOverCapture(@NonNull T view, boolean value) {
+    view.setTag(R.id.pointer_over_capture, value);
+  }
+
+  @ReactProp(name = "onPointerOut")
+  public void setPointerOut(@NonNull T view, boolean value) {
+    view.setTag(R.id.pointer_out, value);
+  }
+
+  @ReactProp(name = "onPointerOutCapture")
+  public void setPointerOutCapture(@NonNull T view, boolean value) {
+    view.setTag(R.id.pointer_out_capture, value);
   }
 
   @ReactProp(name = "onPointerLeave")
