@@ -1,4 +1,5 @@
 ---
+InheritParentConfig: true
 Checks: '>
 clang-diagnostic-*,
 '
