@@ -79,6 +79,7 @@ def run_codegen!(
   folly_version: '2021.07.22.00',
   codegen_utils: CodegenUtils.new()
   )
+
   if new_arch_enabled
     codegen_utils.use_react_native_codegen_discovery!(
       disable_codegen,
