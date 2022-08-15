@@ -89,7 +89,6 @@ add_react_common_subdir(react/nativemodule/core)
 
 # ReactAndroid JNI targets
 add_react_build_subdir(generated/source/codegen/jni)
-add_react_android_subdir(src/main/java/com/facebook/hermes/reactexecutor)
 add_react_android_subdir(src/main/jni/first-party/fbjni)
 add_react_android_subdir(src/main/jni/first-party/fb)
 add_react_android_subdir(src/main/jni/first-party/fbgloginit)
@@ -102,5 +101,5 @@ add_react_android_subdir(src/main/jni/react/uimanager)
 add_react_android_subdir(src/main/java/com/facebook/react/common/mapbuffer/jni)
 add_react_android_subdir(src/main/java/com/facebook/react/fabric/jni)
 add_react_android_subdir(src/main/java/com/facebook/react/modules/blob/jni)
-add_react_android_subdir(src/main/java/com/facebook/hermes/instrumentation/)
-
+add_react_android_subdir(src/main/jni/react/hermes/reactexecutor)
+add_react_android_subdir(src/main/jni/react/hermes/instrumentation/)
