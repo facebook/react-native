@@ -17,7 +17,7 @@ import javax.annotation.concurrent.NotThreadSafe
 
 /**
  * Read-only implementation of the [MapBuffer], imported from C++ environment. Use
- * `<react/common/mapbuffer/jni/JReadableMapBuffer.h> to create it.
+ * `<react/common/mapbuffer/JReadableMapBuffer.h> to create it.
  *
  * See [MapBuffer] documentation for more details
  */
