@@ -6,7 +6,7 @@
  */
 
 package com.facebook.react.uimanager;
-import android.util.Log;
+
 import android.content.Context;
 import android.graphics.Paint;
 import android.graphics.Rect;
