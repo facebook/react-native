@@ -8,6 +8,12 @@ orbs:
   win: circleci/windows@2.4.0
 
 # -------------------------
+#        Single Use Environmental Variables
+# -------------------------
+envs:
+  shallow_checkout_depth: &shallow_checkout_depth 1
+
+# -------------------------
 #        REFERENCES
 # -------------------------
 references:
@@ -113,19 +119,49 @@ executors:
 #        COMMANDS
 # -------------------------
 commands:
+  shallow_checkout:
+    parameters:
+      checkout_depth:
+        default: *shallow_checkout_depth
+        type: integer
+    steps:
+      - run:
+          name: Add shhkey for github
+          command: |
+            mkdir -p ~/.ssh
+            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+      - run: git clone --depth << parameters.checkout_depth >> "$CIRCLE_REPOSITORY_URL" --branch "$CIRCLE_BRANCH" .
+
   # Checkout with cache, on machines that are using Docker the cache is ignored
   checkout_code_with_cache:
     parameters:
       checkout_base_cache_key:
         default: *checkout_cache_key
         type: string
+      shallow_checkout:
+        default: False
+        type: boolean
+      shallow_checkout_depth:
+        default: *shallow_checkout_depth
+        type: integer
     steps:
       - restore_cache:
             keys:
               - << parameters.checkout_base_cache_key >>-{{ .Branch }}-{{ .Revision }}
               - << parameters.checkout_base_cache_key >>-{{ .Branch }}-
               - << parameters.checkout_base_cache_key >>
-      - checkout
+
+      - when:
+          condition: << parameters.shallow_checkout >>
+          steps:
+            - shallow_checkout:
+                checkout_depth: << parameters.shallow_checkout_depth >>
+      - when:
+          condition:
+              not: << parameters.shallow_checkout >>
+          steps:
+            - checkout
+
       - save_cache:
           key: << parameters.checkout_base_cache_key >>-{{ .Branch }}-{{ .Revision }}
           paths:
@@ -304,7 +340,7 @@ jobs:
   analyze_pr:
     executor: reactnativeandroid
     steps:
-      - checkout
+      - shallow_checkout
       - run_yarn
 
       - install_github_bot_deps
@@ -332,7 +368,7 @@ jobs:
   analyze_code:
     executor: reactnativeandroid
     steps:
-      - checkout
+      - shallow_checkout
       - setup_artifacts
       - run_yarn
 
@@ -384,7 +420,7 @@ jobs:
         default: false
     executor: << parameters.executor >>
     steps:
-      - checkout
+      - shallow_checkout
       - setup_artifacts
       - run_yarn
       - run:
@@ -429,7 +465,8 @@ jobs:
     environment:
       - REPORTS_DIR: "./reports/junit"
     steps:
-      - checkout_code_with_cache
+      - checkout_code_with_cache:
+          shallow_checkout: true
       - setup_artifacts
       - setup_ruby
       - run:
@@ -601,7 +638,7 @@ jobs:
         type: boolean
         default: false
     steps:
-      - checkout
+      - shallow_checkout
       - setup_artifacts
       - run_yarn
 
@@ -659,7 +696,8 @@ jobs:
     environment:
       - PROJECT_NAME: "AndroidTemplateProject"
     steps:
-      - checkout_code_with_cache
+      - checkout_code_with_cache:
+          shallow_checkout: true
       - run_yarn
       - attach_workspace:
           at: .
@@ -687,7 +725,8 @@ jobs:
       - HERMES_WS_DIR: *hermes_workspace_root
 
     steps:
-      - checkout_code_with_cache
+      - checkout_code_with_cache:
+          shallow_checkout: true
       - run_yarn
       - attach_workspace:
           at: .
@@ -721,7 +760,8 @@ jobs:
   test_ios_rntester:
     executor: reactnativeios
     steps:
-      - checkout_code_with_cache
+      - checkout_code_with_cache:
+          shallow_checkout: true
       - run_yarn
       - *attach_hermes_workspace
 
@@ -856,7 +896,7 @@ jobs:
       - CI_BUILD_NUMBER: $CIRCLE_BUILD_NUM
       - CI_BUILD_URL: $CIRCLE_BUILD_URL
     steps:
-      - checkout
+      - shallow_checkout
       - setup_artifacts
       - run_yarn
       - run:
@@ -887,7 +927,7 @@ jobs:
             curl -sL https://deb.nodesource.com/setup_16.x | bash -
             apt install -y nodejs
             npm install --global yarn
-      - checkout
+      - shallow_checkout
       - run_yarn
       - run:
           name: Set up Hermes workspace and caching
@@ -972,7 +1012,8 @@ jobs:
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
     steps:
-      - checkout_code_with_cache
+      - checkout_code_with_cache:
+          shallow_checkout: true
       - *attach_hermes_workspace
       - restore_cache:
           key: *hermes_cache_key
@@ -1120,7 +1161,8 @@ jobs:
         default: false
     executor: reactnativeios
     steps:
-      - checkout_code_with_cache
+      - checkout_code_with_cache:
+          shallow_checkout: true
       - run_yarn
       - add_ssh_keys:
           fingerprints:
@@ -1144,7 +1186,7 @@ jobs:
           command: |
             mkdir -p ~/.ssh
             echo '|1|If6MU203eXTaaWL678YEfWkVMrw=|kqLeIAyTy8pzpj8x8Ae4Fr8Mtlc= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
-      - checkout
+      - shallow_checkout
       - *attach_hermes_workspace
       - run:
           name: Copy HermesC binaries
