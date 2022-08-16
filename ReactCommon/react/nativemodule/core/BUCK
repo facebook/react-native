@@ -15,6 +15,7 @@ rn_xplat_cxx_library(
     compiler_flags = [
         "-Wno-global-constructors",
     ],
+    compiler_flags_pedantic = True,
     fbandroid_deps = [
         react_native_target("jni/react/jni:jni"),
         FBJNI_TARGET,
@@ -70,9 +71,7 @@ rn_xplat_cxx_library(
     deps = [
         "//third-party/glog:glog",
         "//xplat/fbsystrace:fbsystrace",
-        "//xplat/folly:headers_only_do_not_use",
         "//xplat/folly:memory",
-        "//xplat/folly:molly",
         "//xplat/jsi:JSIDynamic",
         react_native_xplat_target("cxxreact:bridge"),
         react_native_xplat_target("cxxreact:module"),

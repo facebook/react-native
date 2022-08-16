@@ -90,6 +90,18 @@ const bubblingEventTypes = {
       bubbled: 'onPointerUp',
     },
   },
+  topPointerOut: {
+    phasedRegistrationNames: {
+      captured: 'onPointerOutCapture',
+      bubbled: 'onPointerOut',
+    },
+  },
+  topPointerOver: {
+    phasedRegistrationNames: {
+      captured: 'onPointerOverCapture',
+      bubbled: 'onPointerOver',
+    },
+  },
 };
 
 const directEventTypes = {
@@ -170,6 +182,7 @@ const validAttributesForNonEventProps = {
   translateX: true,
   translateY: true,
   accessibilityLiveRegion: true,
+  needsOffscreenAlphaCompositing: true,
 
   // @ReactProps from LayoutShadowNode
   width: true,

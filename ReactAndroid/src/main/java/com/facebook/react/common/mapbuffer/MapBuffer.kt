@@ -126,6 +126,16 @@ interface MapBuffer : Iterable<MapBuffer.Entry> {
    */
   fun getMapBuffer(key: Int): MapBuffer
 
+  /**
+   * Provides parsed [List<MapBuffer>] value if the entry for given key exists with [DataType.MAP]
+   * type
+   * @param key key to lookup [List<MapBuffer>] value for
+   * @return value associated with the requested key
+   * @throws IllegalArgumentException if the key doesn't exist
+   * @throws IllegalStateException if the data type doesn't match
+   */
+  fun getMapBufferList(key: Int): List<MapBuffer>
+
   /** Iterable entry representing parsed MapBuffer values */
   interface Entry {
     /**

@@ -17,7 +17,7 @@ import javax.annotation.concurrent.NotThreadSafe
 
 /**
  * Read-only implementation of the [MapBuffer], imported from C++ environment. Use
- * `<react/common/mapbuffer/jni/JReadableMapBuffer.h> to create it.
+ * `<react/common/mapbuffer/JReadableMapBuffer.h> to create it.
  *
  * See [MapBuffer] documentation for more details
  */
@@ -137,6 +137,24 @@ class ReadableMapBuffer : MapBuffer {
     return ReadableMapBuffer(ByteBuffer.wrap(newBuffer))
   }
 
+  private fun readMapBufferListValue(position: Int): List<ReadableMapBuffer> {
+    val readMapBufferList = arrayListOf<ReadableMapBuffer>()
+    var offset = offsetForDynamicData + buffer.getInt(position)
+    val sizeMapBufferList = buffer.getInt(offset)
+    offset += Int.SIZE_BYTES
+    var curLen = 0
+    while (curLen < sizeMapBufferList) {
+      val sizeMapBuffer = buffer.getInt(offset + curLen)
+      val newMapBuffer = ByteArray(sizeMapBuffer)
+      curLen = curLen + Int.SIZE_BYTES
+      buffer.position(offset + curLen)
+      buffer[newMapBuffer, 0, sizeMapBuffer]
+      readMapBufferList.add(ReadableMapBuffer(ByteBuffer.wrap(newMapBuffer)))
+      curLen = curLen + sizeMapBuffer
+    }
+    return readMapBufferList
+  }
+
   private fun getKeyOffsetForBucketIndex(bucketIndex: Int): Int {
     return HEADER_SIZE + BUCKET_SIZE * bucketIndex
   }
@@ -171,6 +189,9 @@ class ReadableMapBuffer : MapBuffer {
 
   override fun getMapBuffer(key: Int): ReadableMapBuffer =
       readMapBufferValue(getTypedValueOffsetForKey(key, MapBuffer.DataType.MAP))
+
+  override fun getMapBufferList(key: Int): List<ReadableMapBuffer> =
+      readMapBufferListValue(getTypedValueOffsetForKey(key, MapBuffer.DataType.MAP))
 
   override fun hashCode(): Int {
     buffer.rewind()

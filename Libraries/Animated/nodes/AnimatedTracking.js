@@ -10,7 +10,8 @@
 
 'use strict';
 
-const AnimatedValue = require('./AnimatedValue');
+import type AnimatedValue from './AnimatedValue';
+
 const AnimatedNode = require('./AnimatedNode');
 const {
   generateNewAnimationId,

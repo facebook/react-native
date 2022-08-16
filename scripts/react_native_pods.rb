@@ -43,6 +43,8 @@ def use_react_native! (
   app_path: '..',
   config_file_dir: '')
 
+  CodegenUtils.clean_up_build_folder(app_path, $CODEGEN_OUTPUT_DIR)
+
   prefix = path
 
   # The version of folly that must be used
@@ -58,6 +60,7 @@ def use_react_native! (
   pod 'React', :path => "#{prefix}/"
   pod 'React-Core', :path => "#{prefix}/"
   pod 'React-CoreModules', :path => "#{prefix}/React/CoreModules"
+  pod 'React-RCTAppDelegate', :path => "#{prefix}/Libraries/AppDelegate"
   pod 'React-RCTActionSheet', :path => "#{prefix}/Libraries/ActionSheetIOS"
   pod 'React-RCTAnimation', :path => "#{prefix}/Libraries/NativeAnimation"
   pod 'React-RCTBlob', :path => "#{prefix}/Libraries/Blob"

@@ -153,7 +153,7 @@ fi
   $EXTRA_ARGS \
   $EXTRA_PACKAGER_ARGS
 
-if [[ $USE_HERMES != true ]]; then
+if [[ $USE_HERMES == false ]]; then
   cp "$BUNDLE_FILE" "$DEST/"
   BUNDLE_FILE="$DEST/main.jsbundle"
 else

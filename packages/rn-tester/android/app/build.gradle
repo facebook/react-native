@@ -91,13 +91,6 @@ react {
     codegenDir = new File(rootDir, "node_modules/react-native-codegen")
 }
 
-project.ext.react = [
-    enableCodegen: true, // Keep this here until it's sync'ed to Android template.
-    enableFabric: (System.getenv('USE_FABRIC') ?: 'true').toBoolean()
-]
-
-//apply from: "../../../../react.gradle"
-
 /**
  * Set this to true to create three separate APKs instead of one:
  *   - A universal APK that works on all devices
@@ -113,16 +106,6 @@ def enableSeparateBuildPerCPUArchitecture = true
  * Run Proguard to shrink the Java bytecode in release builds.
  */
 def enableProguardInReleaseBuilds = true
-
-/**
- * Build and enable codegen-related output in RN Tester app.
- */
-def enableCodegen = project.ext.react.enableCodegen
-
-/**
- * Enable Fabric in RN Tester app.
- */
-def enableFabric = project.ext.react.enableFabric
 
 /**
  * Use the international variant of JavaScriptCore
@@ -171,8 +154,6 @@ android {
         versionName "1.0"
         testBuildType System.getProperty('testBuildType', 'debug')  // This will later be used to control the test apk build type
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
-        buildConfigField("boolean", "ENABLE_FABRIC", "$enableFabric")
-        buildConfigField("boolean", "ENABLE_TURBOMODULE", "$enableCodegen") // If using codegen, assume using TurboModule
     }
     signingConfigs {
         release {
@@ -255,63 +236,61 @@ dependencies {
     androidTestImplementation 'junit:junit:4.12'
 }
 
-if (enableCodegen) {
-    // TODO: Move all this logic to CodegenPlugin.java.
-    def reactAndroidProjectDir = project(':ReactAndroid').projectDir;
-    def reactAndroidBuildDir = project(':ReactAndroid').buildDir;
+// TODO: Move all this logic to CodegenPlugin.java.
+def reactAndroidProjectDir = project(':ReactAndroid').projectDir;
+def reactAndroidBuildDir = project(':ReactAndroid').buildDir;
 
-    android {
-        defaultConfig {
-            externalNativeBuild {
-                cmake {
-                    arguments "-DGENERATED_SRC_DIR=$buildDir/generated/source",
-                        "-DPROJECT_BUILD_DIR=$buildDir",
-                        "-DREACT_ANDROID_DIR=$reactAndroidProjectDir",
-                        "-DREACT_ANDROID_BUILD_DIR=$reactAndroidBuildDir",
-                        "-DANDROID_STL=c++_shared"
-
-                    targets "rntester_appmodules"
-                }
-            }
-        }
+android {
+    defaultConfig {
         externalNativeBuild {
             cmake {
-                path "src/main/jni/CMakeLists.txt"
+                arguments "-DGENERATED_SRC_DIR=$buildDir/generated/source",
+                    "-DPROJECT_BUILD_DIR=$buildDir",
+                    "-DREACT_ANDROID_DIR=$reactAndroidProjectDir",
+                    "-DREACT_ANDROID_BUILD_DIR=$reactAndroidBuildDir",
+                    "-DANDROID_STL=c++_shared"
+            
+                targets "rntester_appmodules"
             }
         }
     }
-
-    def packageReactDebugNdkLibs = tasks.register("packageReactDebugNdkLibs", Copy) {
-        // TODO: handle extracting .so from prebuilt :ReactAndroid.
-        dependsOn(":ReactAndroid:packageReactNdkDebugLibsForBuck")
-        dependsOn("generateCodegenArtifactsFromSchema")
-        from("$reactAndroidProjectDir/src/main/jni/prebuilt/lib")
-        into("$buildDir/react-ndk/exported")
-    }
-    def packageReactReleaseNdkLibs = tasks.register("packageReactReleaseNdkLibs", Copy) {
-        // TODO: handle extracting .so from prebuilt :ReactAndroid.
-        dependsOn(":ReactAndroid:packageReactNdkReleaseLibsForBuck")
-        dependsOn("generateCodegenArtifactsFromSchema")
-        from("$reactAndroidProjectDir/src/main/jni/prebuilt/lib")
-        into("$buildDir/react-ndk/exported")
-    }
-
-    afterEvaluate {
-        reactNativeArchitectures().each { architecture ->
-            tasks.findByName("configureCMakeDebug[${architecture}]")?.configure {
-                dependsOn("preHermesDebugBuild")
-                dependsOn("preJscDebugBuild")
-            }
-            tasks.findByName("configureCMakeRelWithDebInfo[${architecture}]")?.configure {
-                dependsOn("preHermesReleaseBuild")
-                dependsOn("preJscReleaseBuild")
-            }
+    externalNativeBuild {
+        cmake {
+            path "src/main/jni/CMakeLists.txt"
         }
-        configureCMakeRelWithDebInfo.dependsOn(packageReactReleaseNdkLibs)
-        preHermesReleaseBuild.dependsOn(packageReactReleaseNdkLibs)
-        preJscReleaseBuild.dependsOn(packageReactReleaseNdkLibs)
-        configureCMakeDebug.dependsOn(packageReactDebugNdkLibs)
-        preHermesDebugBuild.dependsOn(packageReactDebugNdkLibs)
-        preJscDebugBuild.dependsOn(packageReactDebugNdkLibs)
     }
+}
+
+def packageReactDebugNdkLibs = tasks.register("packageReactDebugNdkLibs", Copy) {
+    // TODO: handle extracting .so from prebuilt :ReactAndroid.
+    dependsOn(":ReactAndroid:packageReactNdkDebugLibsForBuck")
+    dependsOn("generateCodegenArtifactsFromSchema")
+    from("$reactAndroidProjectDir/src/main/jni/prebuilt/lib")
+    into("$buildDir/react-ndk/exported")
+}
+def packageReactReleaseNdkLibs = tasks.register("packageReactReleaseNdkLibs", Copy) {
+    // TODO: handle extracting .so from prebuilt :ReactAndroid.
+    dependsOn(":ReactAndroid:packageReactNdkReleaseLibsForBuck")
+    dependsOn("generateCodegenArtifactsFromSchema")
+    from("$reactAndroidProjectDir/src/main/jni/prebuilt/lib")
+    into("$buildDir/react-ndk/exported")
+}
+
+afterEvaluate {
+    reactNativeArchitectures().each { architecture ->
+        tasks.findByName("configureCMakeDebug[${architecture}]")?.configure {
+            dependsOn("preHermesDebugBuild")
+            dependsOn("preJscDebugBuild")
+        }
+        tasks.findByName("configureCMakeRelWithDebInfo[${architecture}]")?.configure {
+            dependsOn("preHermesReleaseBuild")
+            dependsOn("preJscReleaseBuild")
+        }
+    }
+    configureCMakeRelWithDebInfo.dependsOn(packageReactReleaseNdkLibs)
+    preHermesReleaseBuild.dependsOn(packageReactReleaseNdkLibs)
+    preJscReleaseBuild.dependsOn(packageReactReleaseNdkLibs)
+    configureCMakeDebug.dependsOn(packageReactDebugNdkLibs)
+    preHermesDebugBuild.dependsOn(packageReactDebugNdkLibs)
+    preJscDebugBuild.dependsOn(packageReactDebugNdkLibs)
 }

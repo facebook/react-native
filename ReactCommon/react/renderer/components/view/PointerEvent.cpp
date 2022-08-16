@@ -40,6 +40,7 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
       {"altKey", getDebugDescription(pointerEvent.altKey, options)},
       {"metaKey", getDebugDescription(pointerEvent.metaKey, options)},
       {"isPrimary", getDebugDescription(pointerEvent.isPrimary, options)},
+      {"button", getDebugDescription(pointerEvent.button, options)},
   };
 }
 
