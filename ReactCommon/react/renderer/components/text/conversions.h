@@ -26,21 +26,13 @@ inline folly::dynamic toDynamic(ParagraphState const &paragraphState) {
   return newState;
 }
 
-// constants for Text State serialization
-constexpr static MapBuffer::Key TX_STATE_KEY_ATTRIBUTED_STRING = 0;
-constexpr static MapBuffer::Key TX_STATE_KEY_PARAGRAPH_ATTRIBUTES = 1;
-// Used for TextInput
-constexpr static MapBuffer::Key TX_STATE_KEY_HASH = 2;
-constexpr static MapBuffer::Key TX_STATE_KEY_MOST_RECENT_EVENT_COUNT = 3;
-
 inline MapBuffer toMapBuffer(ParagraphState const &paragraphState) {
   auto builder = MapBufferBuilder();
   auto attStringMapBuffer = toMapBuffer(paragraphState.attributedString);
   builder.putMapBuffer(TX_STATE_KEY_ATTRIBUTED_STRING, attStringMapBuffer);
   auto paMapBuffer = toMapBuffer(paragraphState.paragraphAttributes);
   builder.putMapBuffer(TX_STATE_KEY_PARAGRAPH_ATTRIBUTES, paMapBuffer);
-  // TODO: Used for TextInput
-  builder.putInt(TX_STATE_KEY_HASH, 1234);
+  builder.putInt(TX_STATE_KEY_HASH, attStringMapBuffer.getInt(AS_KEY_HASH));
   return builder.build();
 }
 #endif
