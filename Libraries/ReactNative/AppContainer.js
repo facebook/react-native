@@ -77,14 +77,19 @@ class AppContainer extends React.Component<Props, State> {
 
   render(): React.Node {
     let logBox = null;
+    let devtoolsHighlighter = null;
     if (__DEV__) {
-      if (
-        !global.__RCTProfileIsProfiling &&
-        !this.props.internal_excludeLogBox
-      ) {
-        const LogBoxNotificationContainer =
-          require('../LogBox/LogBoxNotificationContainer').default;
-        logBox = <LogBoxNotificationContainer />;
+      if (!global.__RCTProfileIsProfiling) {
+        if (!this.props.internal_excludeLogBox) {
+          const LogBoxNotificationContainer =
+            require('../LogBox/LogBoxNotificationContainer').default;
+          logBox = <LogBoxNotificationContainer />;
+        }
+        if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__ != null) {
+          const DevtoolsHighlighter =
+            require('../Inspector/DevtoolsHighlighter').default;
+          devtoolsHighlighter = <DevtoolsHighlighter />;
+        }
       }
     }
 
@@ -118,6 +123,7 @@ class AppContainer extends React.Component<Props, State> {
       <RootTagContext.Provider value={createRootTag(this.props.rootTag)}>
         <View style={styles.appContainer} pointerEvents="box-none">
           {!this.state.hasError && innerView}
+          {devtoolsHighlighter}
           {this.state.inspector}
           {logBox}
         </View>
