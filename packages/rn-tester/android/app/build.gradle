@@ -197,14 +197,7 @@ android {
     }
 }
 
-configurations {
-  hermesDebugImplementation {}
-  hermesReleaseImplementation {}
-}
-
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
     // Build React Native from source
     implementation project(':ReactAndroid')
 
