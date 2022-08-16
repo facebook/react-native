@@ -31,7 +31,7 @@ const eventList = [
   'pointerLeave',
 ];
 
-function PointerEventAttributesHoverablePointersTestCase(
+function PointerEventAttributesNoHoverPointersTestCase(
   props: PlatformTestComponentBaseProps,
 ) {
   const {harness} = props;
@@ -43,7 +43,7 @@ function PointerEventAttributesHoverablePointersTestCase(
   const [square1Visible, setSquare1Visible] = useState(true);
   const [square2Visible, setSquare2Visible] = useState(false);
 
-  // Adapted from https://github.com/web-platform-tests/wpt/blob/6c26371ea1c144dd612864a278e88b6ba2f3d883/pointerevents/pointerevent_attributes_hoverable_pointers.html#L29
+  // Adapted from https://github.com/web-platform-tests/wpt/blob/8222ceeeebd4beab32f101ebf651a5dd7c5e8365/pointerevents/pointerevent_attributes_nohover_pointers.html#L25
   const checkPointerEventAttributes = useCallback(
     (
       event: PointerEvent,
@@ -75,24 +75,18 @@ function PointerEventAttributesHoverablePointersTestCase(
       }, pointerTestName + "'s type should be " + expectedEventType);
 
       // Test button and buttons
-      if (eventType === 'pointerdown') {
-        harness.test(({assert_equals}) => {
-          assert_equals(event.nativeEvent.button, 0, 'Button attribute is 0');
-        }, pointerTestName + "'s button attribute is 0 when left mouse button is pressed.");
+      harness.test(({assert_equals}) => {
+        assert_equals(event.nativeEvent.button, 0, 'Button attribute is 0');
+      }, pointerTestName + "'s button attribute is 0 when left mouse button is pressed.");
+      if (
+        eventType === 'pointerdown' ||
+        eventType === 'pointerover' ||
+        eventType === 'pointerenter'
+      ) {
         harness.test(({assert_equals}) => {
           assert_equals(event.nativeEvent.buttons, 1, 'Buttons attribute is 1');
         }, pointerTestName + "'s buttons attribute is 1 when left mouse button is pressed.");
-      } else if (eventType === 'pointerup') {
-        harness.test(({assert_equals}) => {
-          assert_equals(event.nativeEvent.button, 0, 'Button attribute is 0');
-        }, pointerTestName + "'s button attribute is 0 when left mouse button is just released.");
-        harness.test(({assert_equals}) => {
-          assert_equals(event.nativeEvent.buttons, 0, 'Buttons attribute is 0');
-        }, pointerTestName + "'s buttons attribute is 0 when left mouse button is just released.");
       } else {
-        harness.test(({assert_equals}) => {
-          assert_equals(event.nativeEvent.button, -1, 'Button attribute is -1');
-        }, pointerTestName + "'s button is -1 when mouse buttons are in released state.");
         harness.test(({assert_equals}) => {
           assert_equals(event.nativeEvent.buttons, 0, 'Buttons attribute is 0');
         }, pointerTestName + "'s buttons is 0 when mouse buttons are in released state.");
@@ -104,40 +98,15 @@ function PointerEventAttributesHoverablePointersTestCase(
       const bottom = targetLayout.y + targetLayout.height;
 
       // Test clientX and clientY
-      if (eventType !== 'pointerout' && eventType !== 'pointerleave') {
-        harness.test(({assert_greater_than_equal, assert_less_than_equal}) => {
-          assert_greater_than_equal(
-            event.nativeEvent.clientX,
-            left,
-            'clientX should be greater or equal than left of the box',
-          );
-          assert_greater_than_equal(
-            event.nativeEvent.clientY,
-            top,
-            'clientY should be greater or equal than top of the box',
-          );
-          assert_less_than_equal(
-            event.nativeEvent.clientX,
-            right,
-            'clientX should be less or equal than right of the box',
-          );
-          assert_less_than_equal(
-            event.nativeEvent.clientY,
-            bottom,
-            'clientY should be less or equal than bottom of the box',
-          );
-        }, pointerTestName + "'s ClientX and ClientY attributes are correct.");
-      } else {
-        harness.test(({assert_true}) => {
-          assert_true(
-            event.nativeEvent.clientX < left ||
-              event.nativeEvent.clientX >= right ||
-              event.nativeEvent.clientY < top ||
-              event.nativeEvent.clientY >= bottom,
-            'ClientX/Y should be out of the boundaries of the box',
-          );
-        }, pointerTestName + "'s ClientX and ClientY attributes are correct.");
-      }
+      harness.test(({assert_true}) => {
+        assert_true(
+          event.nativeEvent.clientX >= left &&
+            event.nativeEvent.clientX < right &&
+            event.nativeEvent.clientY >= top &&
+            event.nativeEvent.clientY < bottom,
+          'ClientX/Y should be in the boundaries of the box',
+        );
+      }, pointerTestName + "'s ClientX and ClientY attributes are correct.");
 
       check_PointerEvent(harness, event, eventType, {
         testNamePrefix,
@@ -260,20 +229,19 @@ const styles = StyleSheet.create({
 });
 
 type Props = $ReadOnly<{}>;
-export default function PointerEventAttributesHoverablePointers(
+export default function PointerEventAttributesNoHoverPointers(
   props: Props,
 ): React.MixedElement {
   return (
     <RNTesterPlatformTest
-      component={PointerEventAttributesHoverablePointersTestCase}
-      description="This test checks the properties of hoverable pointer events. If you are using hoverable pen don't leave the range of digitizer while doing the instructions."
+      component={PointerEventAttributesNoHoverPointersTestCase}
+      description="This test checks the properties of pointer events that do not support hover."
       instructions={[
-        'Move your pointer over the black square and click on it.',
+        'Tap the black square.',
         'Then move it off the black square so that it disappears.',
-        'When red square appears move your pointer over the red square and click on it.',
-        'Then move it off the red square.',
+        'When the red square appears tap on that as well.',
       ]}
-      title="Pointer Events hoverable pointer attributes test"
+      title="Pointer Events no-hover pointer attributes test"
     />
   );
 }

@@ -174,10 +174,16 @@ end
 class BuildConfigurationMock
     attr_reader :name
     attr_reader :build_settings
+    @is_debug
 
-    def initialize(name, build_settings = {})
+    def initialize(name, build_settings = {}, is_debug: false)
         @name = name
         @build_settings = build_settings
+        @is_debug = is_debug
+    end
+
+    def debug?
+      return @is_debug
     end
 end
 
