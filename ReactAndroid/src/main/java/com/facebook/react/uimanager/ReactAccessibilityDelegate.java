@@ -6,7 +6,7 @@
  */
 
 package com.facebook.react.uimanager;
-
+import android.util.Log;
 import android.content.Context;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -223,11 +223,15 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
   @Override
   public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
     super.onInitializeAccessibilityNodeInfo(host, info);
-    info.setTooltipText("this is my tooltip");
     final AccessibilityRole accessibilityRole =
         (AccessibilityRole) host.getTag(R.id.accessibility_role);
+    final String accessibilityHint = (String) host.getTag(R.id.accessibility_hint);
     if (accessibilityRole != null) {
       setRole(info, accessibilityRole, host.getContext());
+    }
+
+    if (accessibilityHint != null) {
+      info.setTooltipText(accessibilityHint);
     }
 
     final Object accessibilityLabelledBy = host.getTag(R.id.labelled_by);
