@@ -27,6 +27,7 @@ const {
   StyleSheet,
   Slider,
   Platform,
+  Switch,
 } = require('react-native');
 import type {EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
 
@@ -225,6 +226,16 @@ class AccessibilityExample extends React.Component<{}> {
               accessibilityLabelledBy={['formLabel2', 'formLabel3']}
               style={styles.default}
               value="Foo"
+            />
+          </View>
+        </RNTesterBlock>
+        <RNTesterBlock title="Switch with accessibilityLabelledBy attribute">
+          <View>
+            <Text nativeID="formLabel4">Enable Notifications</Text>
+            <Switch
+              value={true}
+              accessibilityLabel="switch test1"
+              accessibilityLabelledBy="formLabel4"
             />
           </View>
         </RNTesterBlock>
