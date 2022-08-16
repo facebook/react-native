@@ -106,6 +106,11 @@ public class TextLayoutManagerMapBuffer {
 
     MapBuffer fragment = fragments.getMapBuffer((short) 0);
     MapBuffer textAttributes = fragment.getMapBuffer(FR_KEY_TEXT_ATTRIBUTES);
+
+    if (!textAttributes.contains(TextAttributeProps.TA_KEY_LAYOUT_DIRECTION)) {
+      return false;
+    }
+
     return TextAttributeProps.getLayoutDirection(
             textAttributes.getString(TextAttributeProps.TA_KEY_LAYOUT_DIRECTION))
         == LayoutDirection.RTL;
