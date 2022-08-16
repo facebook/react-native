@@ -20,7 +20,7 @@ class RNTesterTurboModuleManagerDelegate
           TurboModuleManagerDelegate> {
  public:
   static constexpr auto kJavaDescriptor =
-      "Lcom/facebook/react/uiapp/RNTesterTurboModuleManagerDelegate;";
+      "Lcom/facebook/react/defaults/DefaultTurboModuleManagerDelegate;";
 
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jhybridobject>);
 
@@ -32,12 +32,6 @@ class RNTesterTurboModuleManagerDelegate
   std::shared_ptr<TurboModule> getTurboModule(
       const std::string &name,
       const JavaTurboModule::InitParams &params) override;
-
-  /**
-   * Test-only method. Allows user to verify whether a TurboModule can be
-   * created by instances of this class.
-   */
-  bool canCreateTurboModule(const std::string &name);
 
  private:
   friend HybridBase;

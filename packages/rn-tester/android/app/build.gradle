@@ -123,6 +123,13 @@ def reactNativeArchitectures() {
     return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
+/**
+ * The name of the dynamic library for this application. This will contain all the
+ * compiled C++ code and will be loaded at runtime.
+ * For RN tester is "rntester_appmodules" so that we'll have a `librntester_appmodules.so` to load.
+ */
+def dynamicLibraryName = "rntester_appmodules"
+
 android {
     buildToolsVersion = "31.0.0"
     compileSdkVersion 31
@@ -154,6 +161,7 @@ android {
         versionName "1.0"
         testBuildType System.getProperty('testBuildType', 'debug')  // This will later be used to control the test apk build type
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        buildConfigField("String", "DYNAMIC_LIBRARY_NAME", "\"$dynamicLibraryName\"")
     }
     signingConfigs {
         release {
@@ -241,9 +249,8 @@ android {
                     "-DPROJECT_BUILD_DIR=$buildDir",
                     "-DREACT_ANDROID_DIR=$reactAndroidProjectDir",
                     "-DREACT_ANDROID_BUILD_DIR=$reactAndroidBuildDir",
+                    "-DTARGET_NAME=$dynamicLibraryName",
                     "-DANDROID_STL=c++_shared"
-            
-                targets "rntester_appmodules"
             }
         }
     }
