@@ -21,9 +21,6 @@ void RNTesterTurboModuleManagerDelegate::registerNatives() {
   registerHybrid({
       makeNativeMethod(
           "initHybrid", RNTesterTurboModuleManagerDelegate::initHybrid),
-      makeNativeMethod(
-          "canCreateTurboModule",
-          RNTesterTurboModuleManagerDelegate::canCreateTurboModule),
   });
 }
 
@@ -38,12 +35,6 @@ std::shared_ptr<TurboModule> RNTesterTurboModuleManagerDelegate::getTurboModule(
     const std::string &name,
     const JavaTurboModule::InitParams &params) {
   return RNTesterAppModuleProvider(name, params);
-}
-
-bool RNTesterTurboModuleManagerDelegate::canCreateTurboModule(
-    const std::string &name) {
-  return getTurboModule(name, nullptr) != nullptr ||
-      getTurboModule(name, {.moduleName = name}) != nullptr;
 }
 
 } // namespace react
