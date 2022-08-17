@@ -69,11 +69,11 @@ class WebSocketTest extends React.Component<{...}, State> {
     });
   };
 
-  _socketIsConnected = () => {
+  _socketIsConnected = (): boolean => {
     return this.state.socketState === 1; //'OPEN'
   };
 
-  _socketIsDisconnected = () => {
+  _socketIsDisconnected = (): boolean => {
     return this.state.socketState === 3; //'CLOSED'
   };
 
@@ -106,7 +106,7 @@ class WebSocketTest extends React.Component<{...}, State> {
     this._sendText(this.state.testMessage);
   };
 
-  _receivedTestExpectedResponse = () => {
+  _receivedTestExpectedResponse = (): boolean => {
     return this.state.lastMessage === this.state.testExpectedResponse;
   };
 

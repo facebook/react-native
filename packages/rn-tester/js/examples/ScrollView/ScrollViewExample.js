@@ -29,10 +29,10 @@ import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import ScrollViewPressableStickyHeaderExample from './ScrollViewPressableStickyHeaderExample';
 
 class EnableDisableList extends React.Component<{}, {scrollEnabled: boolean}> {
-  state = {
+  state: {scrollEnabled: boolean} = {
     scrollEnabled: true,
   };
-  render() {
+  render(): React.Node {
     return (
       <View>
         <ScrollView
@@ -66,12 +66,12 @@ class AppendingList extends React.Component<
   {},
   {items: Array<React.Element<typeof Item>>},
 > {
-  state = {
+  state: {items: Array<React.Element<typeof Item>>} = {
     items: [...Array(AppendingListItemCount)].map((_, ii) => (
       <Item msg={`Item ${ii}`} />
     )),
   };
-  render() {
+  render(): React.Node {
     return (
       <View>
         <ScrollView
@@ -205,6 +205,7 @@ const examples = ([
       return (
         <View>
           <ScrollView
+            accessibilityRole="grid"
             ref={scrollView => {
               _scrollView = scrollView;
             }}
@@ -1242,7 +1243,7 @@ class Item extends React.PureComponent<{|
   msg?: string,
   style?: ViewStyleProp,
 |}> {
-  render() {
+  render(): $FlowFixMe {
     return (
       <View style={[styles.item, this.props.style]}>
         <Text>{this.props.msg}</Text>

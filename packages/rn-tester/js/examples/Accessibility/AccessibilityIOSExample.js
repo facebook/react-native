@@ -17,7 +17,7 @@ const RNTesterBlock = require('../../components/RNTesterBlock');
 
 type Props = $ReadOnly<{||}>;
 class AccessibilityIOSExample extends React.Component<Props> {
-  render() {
+  render(): React.Node {
     return (
       <RNTesterBlock title="Accessibility iOS APIs">
         <View

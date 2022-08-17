@@ -10,7 +10,7 @@
 
 'use strict';
 
-const AnimatedNode = require('../Animated/nodes/AnimatedNode');
+import type AnimatedNode from '../Animated/nodes/AnimatedNode';
 
 import type {NativeColorValue} from './PlatformColorValueTypes';
 
@@ -590,7 +590,27 @@ export type ____TextStyle_InternalCore = $ReadOnly<{
     | 'oldstyle-nums'
     | 'lining-nums'
     | 'tabular-nums'
-    | 'proportional-nums',
+    | 'proportional-nums'
+    | 'stylistic-one'
+    | 'stylistic-two'
+    | 'stylistic-three'
+    | 'stylistic-four'
+    | 'stylistic-five'
+    | 'stylistic-six'
+    | 'stylistic-seven'
+    | 'stylistic-eight'
+    | 'stylistic-nine'
+    | 'stylistic-ten'
+    | 'stylistic-eleven'
+    | 'stylistic-twelve'
+    | 'stylistic-thirteen'
+    | 'stylistic-fourteen'
+    | 'stylistic-fifteen'
+    | 'stylistic-sixteen'
+    | 'stylistic-seventeen'
+    | 'stylistic-eighteen'
+    | 'stylistic-nineteen'
+    | 'stylistic-twenty',
   >,
   textShadowOffset?: $ReadOnly<{
     width: number,

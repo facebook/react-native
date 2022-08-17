@@ -341,5 +341,9 @@ inline Value Function::callAsConstructor(Runtime& runtime, Args&&... args)
       runtime, {detail::toValue(runtime, std::forward<Args>(args))...});
 }
 
+String BigInt::toString(Runtime& runtime, int radix) const {
+  return runtime.bigintToString(*this, radix);
+}
+
 } // namespace jsi
 } // namespace facebook

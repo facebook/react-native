@@ -7,8 +7,8 @@
 
 #include "RawPropsParser.h"
 
+#include <folly/Hash.h>
 #include <folly/Likely.h>
-#include <folly/hash/Hash.h>
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/RawProps.h>
 

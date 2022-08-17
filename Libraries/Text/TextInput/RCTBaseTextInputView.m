@@ -646,6 +646,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
 - (void)handleInputAccessoryDoneButton
 {
+  // Ignore the value of whether we submitted; just make sure the submit event is called if necessary.
+  [self textInputShouldSubmitOnReturn];
   if ([self textInputShouldReturn]) {
     [self.backedTextInputView endEditing:YES];
   }

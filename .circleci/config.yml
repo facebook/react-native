@@ -47,14 +47,13 @@ references:
   # Anchors for the cache keys
 
   cache_keys:
-    buck_cache_key: &buck_cache_key v3-buck-v2019.01.10.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}}
     checkout_cache_key: &checkout_cache_key v1-checkout
     gems_cache_key: &gems_cache_key v1-gems-{{ checksum "Gemfile.lock" }}
     gradle_cache_key: &gradle_cache_key v1-gradle-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "ReactAndroid/gradle.properties" }}
-    hermes_cache_key: &hermes_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
-    hermes_windows_cache_key: &hermes_windows_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "tmp/hermes/hermesversion" }}
-    hermes_tarball_cache_key: &hermes_tarball_cache_key v1-hermes-tarball-{{ checksum "/tmp/hermes/cache/.hermes-cache-key-file" }}
-    pods_cache_key: &pods_cache_key v6-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
+    hermes_cache_key: &hermes_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
+    hermes_windows_cache_key: &hermes_windows_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "tmp/hermes/hermesversion" }}
+    hermes_tarball_cache_key: &hermes_tarball_cache_key v2-hermes-tarball-{{ checksum "/tmp/hermes/hermesversion" }}
+    pods_cache_key: &pods_cache_key v7-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
     windows_yarn_cache_key: &windows_yarn_cache_key v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
     yarn_cache_key: &yarn_cache_key v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}
 
@@ -177,25 +176,6 @@ commands:
             - ~/.cache/yarn
           key: << parameters.yarn_base_cache_key >>-{{ arch }}-{{ checksum "yarn.lock" }}
 
-  install_buck_tooling:
-    steps:
-      - restore_cache:
-          keys:
-            - *buck_cache_key
-      - run:
-          name: Install BUCK
-          command: |
-            buck --version
-            # Install related tooling
-            if [[ ! -e ~/okbuck ]]; then
-              git clone https://github.com/uber/okbuck.git ~/okbuck --depth=1
-            fi
-      - save_cache:
-          paths:
-            - ~/buck
-            - ~/okbuck
-          key: *buck_cache_key
-
   install_github_bot_deps:
     steps:
       - run:
@@ -247,12 +227,6 @@ commands:
             - ReactAndroid/build/third-party-ndk
           key: *gradle_cache_key
 
-  download_buck_dependencies:
-    steps:
-      - run:
-          name: Download Dependencies Using Buck
-          command: ./scripts/circleci/buck_fetch.sh
-
   run_e2e:
     parameters:
       platform:
@@ -289,16 +263,6 @@ commands:
         type: boolean
         default: False
     steps:
-      - run:
-          name: Setup Hermes cache
-          command: |
-            HERMES_CACHE_KEY_FILE="/tmp/hermes/cache/.hermes-cache-key-file"
-            if [ ! -f "$HERMES_CACHE_KEY_FILE" ]; then
-              echo "File not found. Creating it using latest commit from main"
-              mkdir -p /tmp/hermes/cache
-              git ls-remote https://github.com/facebook/hermes main | cut -f 1 > $HERMES_CACHE_KEY_FILE
-            fi
-            cat $HERMES_CACHE_KEY_FILE
       - restore_cache:
           keys:
             - *hermes_tarball_cache_key
@@ -474,8 +438,7 @@ jobs:
             cd scripts
             sh run_ruby_tests.sh
       - run_yarn
-      - attach_workspace:
-          at: /tmp/hermes/
+      - *attach_hermes_workspace
       - run: |
           cd packages/rn-tester
           bundle check || bundle install
@@ -535,6 +498,16 @@ jobs:
             - run:
                 name: "Run Tests: iOS Unit and Integration Tests"
                 command: yarn test-ios
+            - run:
+                name: Zip Derived data folder
+                when: always
+                command: |
+                  echo "zipping tests results"
+                  cd /Users/distiller/Library/Developer/Xcode
+                  XCRESULT_PATH=$(find . -name '*.xcresult')
+                  tar -zcvf xcresults.tar.gz $XCRESULT_PATH
+            - store_artifacts:
+                path: /Users/distiller/Library/Developer/Xcode/xcresults.tar.gz
 
       # Optionally, run disabled tests
       - when:
@@ -562,6 +535,63 @@ jobs:
           path: ./reports/junit
 
   # -------------------------
+  #    JOBS: Test Buck
+  # -------------------------
+  test_buck:
+    executor: reactnativeandroid
+    environment:
+      KOTLIN_HOME=third-party/kotlin
+    steps:
+      - checkout
+      - setup_artifacts
+      - run_yarn
+
+      - run:
+          name: Download Dependencies Using Buck
+          command: ./scripts/circleci/buck_fetch.sh
+
+      - run:
+          name: Build & Test React Native using Buck
+          command: |
+            buck build ReactAndroid/src/main/java/com/facebook/react
+            buck build ReactAndroid/src/main/java/com/facebook/react/shell
+
+      - run:
+          name: Validate Android Test Environment
+          command: ./scripts/validate-android-test-env.sh
+
+      - run:
+          name: Run Tests - Android Unit Tests with Buck
+          command: buck test ReactAndroid/src/test/... --config build.threads=$BUILD_THREADS --xml ./reports/buck/all-results-raw.xml
+
+      - run:
+          name: Build JavaScript Bundle for instrumentation tests
+          command: node cli.js bundle --max-workers 2 --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
+
+      - run:
+          name: Build Tests - Android Instrumentation Tests with Buck
+          # Here, just build the instrumentation tests. There is a known issue with installing the APK to android-21+ emulator.
+          command: |
+            if [[ ! -e ReactAndroid/src/androidTest/assets/AndroidTestBundle.js ]]; then
+              echo "JavaScript bundle missing, cannot run instrumentation tests. Verify Build JavaScript Bundle step completed successfully."; exit 1;
+            fi
+            source scripts/android-setup.sh && NO_BUCKD=1 retry3 timeout 300 buck build ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=$BUILD_THREADS
+
+      - run:
+          name: Collect Test Results
+          command: |
+            find . -type f -regex ".*/build/test-results/debug/.*xml" -exec cp {} ./reports/build/ \;
+            find . -type f -regex ".*/outputs/androidTest-results/connected/.*xml" -exec cp {} ./reports/outputs/ \;
+            find . -type f -regex ".*/buck-out/gen/ReactAndroid/src/test/.*/.*xml" -exec cp {} ./reports/buck/ \;
+            if [ -f ~/react-native/reports/buck/all-results-raw.xml ]; then
+              ~/react-native/scripts/circleci/buckToJunit/buckToJunit.sh ~/react-native/reports/buck/all-results-raw.xml ~/react-native/reports/junit/results.xml
+            fi
+          when: always
+
+      - store_test_results:
+          path: ./reports/junit
+
+  # -------------------------
   #    JOBS: Test Android
   # -------------------------
   test_android:
@@ -570,14 +600,11 @@ jobs:
       run_disabled_tests:
         type: boolean
         default: false
-    environment:
-      KOTLIN_HOME=third-party/kotlin
     steps:
       - checkout
       - setup_artifacts
       - run_yarn
 
-      # Validate Android SDK installation and packages
       - run:
           name: Validate Android SDK Install
           command: ./scripts/validate-android-sdk.sh
@@ -591,60 +618,23 @@ jobs:
           command: source scripts/android-setup.sh && launchAVD
           background: true
 
-      # Install Buck
-      - install_buck_tooling
-
-      # Validate Android test environment (including Buck)
-      - run:
-          name: Validate Android Test Environment
-          command: ./scripts/validate-android-test-env.sh
-
-      - download_buck_dependencies
       - download_gradle_dependencies
-
-      # Build and compile
-      - run:
-          name: Build & Test React Native using Buck
-          command: |
-            buck build ReactAndroid/src/main/java/com/facebook/react
-            buck build ReactAndroid/src/main/java/com/facebook/react/shell
 
       - run:
           name: Build & Test React Native using Gradle
           command: ./gradlew buildAll
 
       - run:
-          name: Compile Native Libs for Unit and Integration Tests
-          command: ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=$BUILD_THREADS
-          no_output_timeout: 30m
-
-      - run:
           name: Build RN Tester for Release using Gradle
           command: ./gradlew packages:rn-tester:android:app:assembleRelease
-
-      # Build JavaScript Bundle for instrumentation tests
-      - run:
-          name: Build JavaScript Bundle
-          command: node cli.js bundle --max-workers 2 --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
 
       # Wait for AVD to finish booting before running tests
       - run:
           name: Wait for Android Virtual Device
           command: source scripts/android-setup.sh && waitForAVD
 
-      # -------------------------
-      # Run Android tests
-      - run:
-          name: Run Tests - Android Unit Tests with Buck
-          command: buck test ReactAndroid/src/test/... --config build.threads=$BUILD_THREADS --xml ./reports/buck/all-results-raw.xml
-      - run:
-          name: Build Tests - Android Instrumentation Tests with Buck
-          # Here, just build the instrumentation tests. There is a known issue with installing the APK to android-21+ emulator.
-          command: |
-            if [[ ! -e ReactAndroid/src/androidTest/assets/AndroidTestBundle.js ]]; then
-              echo "JavaScript bundle missing, cannot run instrumentation tests. Verify Build JavaScript Bundle step completed successfully."; exit 1;
-            fi
-            source scripts/android-setup.sh && NO_BUCKD=1 retry3 timeout 300 buck build ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=$BUILD_THREADS
+      - report_bundle_size:
+          platform: android
 
       # Optionally, run disabled tests
       - when:
@@ -653,32 +643,23 @@ jobs:
             - run: echo "Failing tests may be moved here temporarily."
             - run_e2e:
                 platform: android
-      # -------------------------
-
-      # Collect Results
-      - report_bundle_size:
-          platform: android
-      - run:
-          name: Collect Test Results
-          command: |
-            find . -type f -regex ".*/build/test-results/debug/.*xml" -exec cp {} ./reports/build/ \;
-            find . -type f -regex ".*/outputs/androidTest-results/connected/.*xml" -exec cp {} ./reports/outputs/ \;
-            find . -type f -regex ".*/buck-out/gen/ReactAndroid/src/test/.*/.*xml" -exec cp {} ./reports/buck/ \;
-            if [ -f ~/react-native/reports/buck/all-results-raw.xml ]; then
-              cd ~/okbuck
-              ./tooling/junit/buck_to_junit.sh ~/react-native/reports/buck/all-results-raw.xml ~/react-native/reports/junit/results.xml
-            fi
-          when: always
-      - store_test_results:
-          path: ./reports/junit
 
   # -------------------------
   #    JOBS: Test Android Template
   # -------------------------
   test_android_template:
     executor: reactnativeandroid
+    parameters:
+      flavor:
+        type: string
+        default: "Debug"
+      newarchitecture:
+        type: boolean
+        default: false
+    environment:
+      - PROJECT_NAME: "AndroidTemplateProject"
     steps:
-      - checkout
+      - checkout_code_with_cache
       - run_yarn
       - attach_workspace:
           at: .
@@ -687,15 +668,14 @@ jobs:
           name: Create Android template project
           command: |
             REPO_ROOT=$(pwd)
-            PACKAGE=$(cat build/react-native-package-version)
-            PATH_TO_PACKAGE="$REPO_ROOT/build/$PACKAGE"
-            cd template
-            npm add $PATH_TO_PACKAGE
-            npm install
+            node ./scripts/set-rn-template-version.js "file:$REPO_ROOT/build/$(cat build/react-native-package-version)"
+            node cli.js init $PROJECT_NAME --directory "/tmp/$PROJECT_NAME" --template $REPO_ROOT --verbose --skip-install
+            cd /tmp/$PROJECT_NAME
+            yarn
 
       - run:
-          name: Build the template application
-          command: cd template/android/ && ./gradlew assembleDebug
+          name: Build the template application for << parameters.flavor >> with New Architecture set << parameters.newarchitecture >>
+          command: cd /tmp/$PROJECT_NAME/android/ && ./gradlew assemble<< parameters.flavor >> -PnewArchEnabled=<< parameters.newarchitecture >>
 
   # -------------------------
   #    JOBS: Test iOS Template
@@ -726,14 +706,12 @@ jobs:
             PACKAGE=$(cat build/react-native-package-version)
             PATH_TO_PACKAGE="$REPO_ROOT/build/$PACKAGE"
             node ./scripts/set-rn-template-version.js "file:$PATH_TO_PACKAGE"
-            mkdir -p ~/tmp
-            cd ~/tmp
-            node "$REPO_ROOT/cli.js" init "$PROJECT_NAME" --template "$REPO_ROOT" --verbose
+            node cli.js init $PROJECT_NAME --directory "/tmp/$PROJECT_NAME" --template $REPO_ROOT --verbose
       - run:
           name: Build template project
           command: |
             xcodebuild build \
-              -workspace ~/tmp/$PROJECT_NAME/ios/$PROJECT_NAME.xcworkspace \
+              -workspace /tmp/$PROJECT_NAME/ios/$PROJECT_NAME.xcworkspace \
               -scheme $PROJECT_NAME \
               -sdk iphonesimulator
 
@@ -745,6 +723,7 @@ jobs:
     steps:
       - checkout_code_with_cache
       - run_yarn
+      - *attach_hermes_workspace
 
       # The macOS machine can run out of storage if Hermes is enabled and built from source.
       # Since this job does not use the iOS Simulator, deleting it provides a quick way to
@@ -764,9 +743,6 @@ jobs:
 
       - brew_install:
           package: cmake
-
-      - attach_workspace:
-          at: /tmp/hermes
 
       - with_hermes_tarball_cache_span:
           set_tarball_path: True
@@ -924,6 +900,7 @@ jobs:
               HERMES_TAG_SHA=$(git ls-remote https://github.com/facebook/hermes main | cut -f 1 | tr -d '[:space:]')
               echo $HERMES_TAG_SHA > /tmp/hermes/hermesversion
             fi
+            cat /tmp/hermes/hermesversion
       - restore_cache:
           key: *hermes_cache_key
       - run:
@@ -932,6 +909,8 @@ jobs:
             node scripts/hermes/prepare-hermes-for-build $CIRCLE_PULL_REQUEST
             cp sdks/download/* $HERMES_WS_DIR/download/.
             cp -r sdks/hermes/* $HERMES_WS_DIR/hermes/.
+
+            cat /tmp/hermes/hermesversion
       - save_cache:
           key: *hermes_cache_key
           paths:
@@ -1009,10 +988,6 @@ jobs:
             brew install cmake
       - with_hermes_tarball_cache_span:
           steps:
-            - persist_to_workspace:
-                root: /tmp/hermes/
-                paths:
-                  - cache
             - run:
                 name: Build the Hermes iOS frameworks
                 command: |
@@ -1180,8 +1155,6 @@ jobs:
             cp -r $HERMES_WS_DIR/linux64-bin/* ./sdks/hermesc/linux64-bin/.
 
       - run_yarn
-      - install_buck_tooling
-      - download_buck_dependencies
       - download_gradle_dependencies
 
       # START: Stables and nightlies
@@ -1330,6 +1303,11 @@ workflows:
       - test_android_template:
           requires:
             - build_npm_package
+          matrix:
+            parameters:
+              newarchitecture: [true, false]
+              flavor: ["Debug", "Release"]
+      - test_buck
       - test_ios_template:
           requires:
             - build_npm_package

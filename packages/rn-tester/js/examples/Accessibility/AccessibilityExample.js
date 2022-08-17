@@ -14,6 +14,7 @@ import type {PressEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
 const React = require('react');
 const {
+  ImageBackground,
   AccessibilityInfo,
   TextInput,
   Button,
@@ -26,6 +27,7 @@ const {
   StyleSheet,
   Slider,
   Platform,
+  Switch,
 } = require('react-native');
 import type {EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
 
@@ -66,6 +68,21 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
+  },
+  container: {
+    flex: 1,
+  },
+  ImageBackground: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  text: {
+    color: 'white',
+    fontSize: 20,
+    lineHeight: 84,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    backgroundColor: '#000000c0',
   },
 });
 
@@ -212,6 +229,16 @@ class AccessibilityExample extends React.Component<{}> {
             />
           </View>
         </RNTesterBlock>
+        <RNTesterBlock title="Switch with accessibilityLabelledBy attribute">
+          <View>
+            <Text nativeID="formLabel4">Enable Notifications</Text>
+            <Switch
+              value={true}
+              accessibilityLabel="switch test1"
+              accessibilityLabelledBy="formLabel4"
+            />
+          </View>
+        </RNTesterBlock>
       </View>
     );
   }
@@ -223,7 +250,7 @@ class CheckboxExample extends React.Component<
     checkboxState: boolean | 'mixed',
   },
 > {
-  state = {
+  state: {checkboxState: boolean | 'mixed'} = {
     checkboxState: true,
   };
 
@@ -242,7 +269,7 @@ class CheckboxExample extends React.Component<
     });
   };
 
-  render() {
+  render(): React.Node {
     return (
       <TouchableOpacity
         onPress={this._onCheckboxPress}
@@ -262,7 +289,7 @@ class SwitchExample extends React.Component<
     switchState: boolean,
   },
 > {
-  state = {
+  state: {switchState: boolean} = {
     switchState: true,
   };
 
@@ -274,7 +301,7 @@ class SwitchExample extends React.Component<
     });
   };
 
-  render() {
+  render(): React.Node {
     return (
       <TouchableOpacity
         onPress={this._onSwitchToggle}
@@ -303,7 +330,7 @@ class SelectionExample extends React.Component<
     current: React.ElementRef<typeof TouchableOpacity> | null,
   };
 
-  state = {
+  state: {isEnabled: boolean, isSelected: boolean} = {
     isSelected: true,
     isEnabled: false,
   };
@@ -375,7 +402,7 @@ class ExpandableElementExample extends React.Component<
     expandState: boolean,
   },
 > {
-  state = {
+  state: {expandState: boolean} = {
     expandState: false,
   };
 
@@ -387,7 +414,7 @@ class ExpandableElementExample extends React.Component<
     });
   };
 
-  render() {
+  render(): React.Node {
     return (
       <TouchableOpacity
         onPress={this._onElementPress}
@@ -408,7 +435,11 @@ class NestedCheckBox extends React.Component<
     checkbox3: boolean | 'mixed',
   },
 > {
-  state = {
+  state: {
+    checkbox1: boolean | 'mixed',
+    checkbox2: boolean | 'mixed',
+    checkbox3: boolean | 'mixed',
+  } = {
     checkbox1: false,
     checkbox2: false,
     checkbox3: false,
@@ -460,7 +491,7 @@ class NestedCheckBox extends React.Component<
     });
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <TouchableOpacity
@@ -881,13 +912,13 @@ class FakeSliderExample extends React.Component<{}, FakeSliderExampleState> {
 }
 
 class AnnounceForAccessibility extends React.Component<{}> {
-  _handleOnPress = () =>
+  _handleOnPress = (): TimeoutID =>
     setTimeout(
       () => AccessibilityInfo.announceForAccessibility('Announcement Test'),
       1000,
     );
 
-  _handleOnPressQueued = () =>
+  _handleOnPressQueued = (): TimeoutID =>
     setTimeout(
       () =>
         AccessibilityInfo.announceForAccessibilityWithOptions(
@@ -1035,6 +1066,44 @@ class EnabledExamples extends React.Component<{}> {
   }
 }
 
+class ImportantForAccessibilityExamples extends React.Component<{}> {
+  render(): React.Node {
+    return (
+      <View>
+        <RNTesterBlock title="ImageBackground with importantForAccessibility=no-hide-descendants">
+          <View style={styles.container}>
+            <ImageBackground
+              importantForAccessibility="no-hide-descendants"
+              source={require('../../assets/trees.jpg')}
+              resizeMode="cover"
+              style={styles.ImageBackground}>
+              <Text style={styles.text}>not accessible</Text>
+            </ImageBackground>
+          </View>
+        </RNTesterBlock>
+        <RNTesterBlock title="ImageBackground with importantForAccessibility=no">
+          <View style={styles.container}>
+            <ImageBackground
+              importantForAccessibility="no"
+              source={require('../../assets/trees.jpg')}
+              resizeMode="cover"
+              style={styles.ImageBackground}>
+              <Text style={styles.text}>accessible</Text>
+            </ImageBackground>
+          </View>
+        </RNTesterBlock>
+        <RNTesterBlock title="Button with importantForAccessibility=no">
+          <Button
+            title="this is text"
+            importantForAccessibility="no"
+            onPress={() => console.log('pressed')}
+          />
+        </RNTesterBlock>
+      </View>
+    );
+  }
+}
+
 class EnabledExample extends React.Component<
   {
     eventListener:
@@ -1052,11 +1121,11 @@ class EnabledExample extends React.Component<
     isEnabled: boolean,
   },
 > {
-  state = {
+  state: {isEnabled: boolean} = {
     isEnabled: false,
   };
   _subscription: EventSubscription;
-  componentDidMount() {
+  componentDidMount(): null | Promise<mixed> {
     this._subscription = AccessibilityInfo.addEventListener(
       this.props.eventListener,
       this._handleToggled,
@@ -1238,6 +1307,12 @@ exports.examples = [
     title: 'Check if these properties are enabled',
     render(): React.Element<typeof EnabledExamples> {
       return <EnabledExamples />;
+    },
+  },
+  {
+    title: 'Testing importantForAccessibility',
+    render(): React.Element<typeof ImportantForAccessibilityExamples> {
+      return <ImportantForAccessibilityExamples />;
     },
   },
   {

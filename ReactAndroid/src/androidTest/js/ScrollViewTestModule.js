@@ -43,7 +43,7 @@ type ItemProps = $ReadOnly<{|
 type ItemState = {||};
 
 class Item extends React.Component<ItemProps, ItemState> {
-  render() {
+  render(): React.Node {
     return (
       <TouchableWithoutFeedback onPress={this.props.onPress}>
         <View style={styles.item_container}>

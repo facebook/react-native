@@ -20,6 +20,15 @@
 namespace facebook {
 namespace react {
 
+#ifdef ANDROID
+// constants for Text State serialization
+constexpr static MapBuffer::Key TX_STATE_KEY_ATTRIBUTED_STRING = 0;
+constexpr static MapBuffer::Key TX_STATE_KEY_PARAGRAPH_ATTRIBUTES = 1;
+// Used for TextInput only
+constexpr static MapBuffer::Key TX_STATE_KEY_HASH = 2;
+constexpr static MapBuffer::Key TX_STATE_KEY_MOST_RECENT_EVENT_COUNT = 3;
+#endif
+
 /*
  * State for <Paragraph> component.
  * Represents what to render and how to render.

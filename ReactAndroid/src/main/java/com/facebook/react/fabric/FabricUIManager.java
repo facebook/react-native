@@ -294,7 +294,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
    * @return a {@link ReadableMap} that contains metadata associated to the React Component that
    *     rendered the Android View received as a parameter. For more details about the keys stored
    *     in the {@link ReadableMap} refer to the "getInspectorDataForInstance" method from
-   *     com/facebook/react/fabric/jni/Binding.cpp file.
+   *     jni/react/fabric/Binding.cpp file.
    */
   @UiThread
   @ThreadConfined(UI)
