@@ -532,6 +532,13 @@ export type Props = $ReadOnly<{|
    */
   editable?: ?boolean,
 
+  /** `readOnly` works like the `readonly` attribute in HTML.
+   *  If `true`, text is not editable. The default value is `false`.
+   *  See https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/readonly
+   *  for more details.
+   */
+  readOnly?: ?boolean,
+
   forwardedRef?: ?ReactRefSetter<
     React.ElementRef<HostComponent<mixed>> & ImperativeMethods,
   >,
@@ -1381,6 +1388,7 @@ const ExportedForwardRef: React.AbstractComponent<
     allowFontScaling = true,
     rejectResponderTermination = true,
     underlineColorAndroid = 'transparent',
+    readOnly = false,
     ...restProps
   },
   forwardedRef: ReactRefSetter<
@@ -1392,6 +1400,7 @@ const ExportedForwardRef: React.AbstractComponent<
       allowFontScaling={allowFontScaling}
       rejectResponderTermination={rejectResponderTermination}
       underlineColorAndroid={underlineColorAndroid}
+      editable={!readOnly}
       {...restProps}
       forwardedRef={forwardedRef}
     />
