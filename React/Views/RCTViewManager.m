@@ -191,10 +191,90 @@ RCT_REMAP_VIEW_PROPERTY(opacity, alpha, CGFloat)
 #else // [TODO(macOS GH#774)
 RCT_REMAP_VIEW_PROPERTY(opacity, alphaValue, CGFloat)
 #endif // ]TODO(macOS GH#774)
-RCT_REMAP_VIEW_PROPERTY(shadowColor, layer.shadowColor, CGColor)
-RCT_REMAP_VIEW_PROPERTY(shadowOffset, layer.shadowOffset, CGSize)
-RCT_REMAP_VIEW_PROPERTY(shadowOpacity, layer.shadowOpacity, float)
-RCT_REMAP_VIEW_PROPERTY(shadowRadius, layer.shadowRadius, CGFloat)
+//RCT_REMAP_VIEW_PROPERTY(shadowColor, layer.shadowColor, CGColor)
+//RCT_REMAP_VIEW_PROPERTY(shadowOffset, layer.shadowOffset, CGSize)
+//RCT_REMAP_VIEW_PROPERTY(shadowOpacity, layer.shadowOpacity, float)
+//RCT_REMAP_VIEW_PROPERTY(shadowRadius, layer.shadowRadius, CGFloat)
+
+RCT_CUSTOM_VIEW_PROPERTY(shadowColor, CGColor, RCTView)
+{
+    NSShadow *shadow = [NSShadow new];
+    shadow.shadowColor = [NSColor colorWithCGColor:[RCTConvert CGColor:json]];
+    if (view.shadow != nil)
+    {
+        shadow.shadowOffset = view.shadow.shadowOffset;
+        shadow.shadowBlurRadius = view.shadow.shadowBlurRadius;
+        shadow.shadowColor = [shadow.shadowColor colorWithAlphaComponent:view.shadow.shadowColor.alphaComponent];
+    }
+    view.shadow = shadow;
+    
+//    NSColor *shadowColor = [NSColor colorWithCGColor:[RCTConvert CGColor:json]];
+//    if (view.shadow == nil)
+//    {
+//        view.shadow = [NSShadow new];
+//        // don't need the next line?
+//        view.shadow.shadowColor = shadowColor;
+//    }
+//    else {
+//        view.shadow.shadowColor = [shadowColor colorWithAlphaComponent:view.shadow.shadowColor.alphaComponent];
+//    }
+}
+
+RCT_CUSTOM_VIEW_PROPERTY(shadowOffset, CGSize, RCTView)
+{
+    NSShadow *shadow = [NSShadow new];
+    shadow.shadowOffset = [RCTConvert CGSize:json];
+    if (view.shadow != nil)
+    {
+        shadow.shadowBlurRadius = view.shadow.shadowBlurRadius;
+        shadow.shadowColor = view.shadow.shadowColor;
+    }
+    view.shadow = shadow;
+    
+//    if (view.shadow == nil)
+//    {
+//        view.shadow = [NSShadow new];
+//    }
+//    view.shadow.shadowOffset = [RCTConvert CGSize:json];
+}
+
+RCT_CUSTOM_VIEW_PROPERTY(shadowOpacity, float, RCTView)
+{
+    NSShadow *shadow = [NSShadow new];
+    if (view.shadow != nil)
+    {
+        shadow.shadowOffset = view.shadow.shadowOffset;
+        shadow.shadowBlurRadius = view.shadow.shadowBlurRadius;
+        shadow.shadowColor = view.shadow.shadowColor;
+    }
+    shadow.shadowColor = [shadow.shadowColor colorWithAlphaComponent:[RCTConvert float:json]];
+    view.shadow = shadow;
+    
+//    float shadowOpacity = [RCTConvert float:json];
+//    if (view.shadow == nil)
+//    {
+//        view.shadow = [NSShadow new];
+//    }
+//    view.shadow.shadowColor = [view.shadow.shadowColor colorWithAlphaComponent:shadowOpacity];
+}
+
+RCT_CUSTOM_VIEW_PROPERTY(shadowRadius, CGFloat, RCTView)
+{
+    NSShadow *shadow = [NSShadow new];
+    if (view.shadow != nil)
+    {
+        shadow.shadowOffset = view.shadow.shadowOffset;
+        shadow.shadowColor = view.shadow.shadowColor;
+    }
+    shadow.shadowBlurRadius = [RCTConvert CGFloat:json];
+    view.shadow = shadow;
+    
+//    if (view.shadow == nil)
+//    {
+//        view.shadow = [NSShadow new];
+//    }
+//    view.shadow.shadowBlurRadius = [RCTConvert CGFloat:json];
+}
 RCT_REMAP_VIEW_PROPERTY(needsOffscreenAlphaCompositing, layer.allowsGroupOpacity, BOOL)
 RCT_CUSTOM_VIEW_PROPERTY(overflow, YGOverflow, RCTView)
 {
