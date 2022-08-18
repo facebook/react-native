@@ -102,6 +102,12 @@ struct ActiveTouch {
   int button;
 
   /*
+   * Informs the event system that when the touch is released it should be treated as the
+   * pointer leaving the screen entirely.
+   */
+  bool shouldLeaveWhenReleased;
+
+  /*
    * A component view on which the touch was begun.
    */
   __strong UIView<RCTComponentViewProtocol> *componentView = nil;
@@ -550,8 +556,14 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
         _primaryTouchPointerId = activeTouch.touch.identifier;
         activeTouch.isPrimary = true;
       }
-
       activeTouch.button = 0;
+    }
+
+    // If the pointer has not been marked as hovering over views before the touch started, we register
+    // that the activeTouch should not maintain its hovered state once the pointer has been lifted.
+    auto currentlyHoveredViews = [_currentlyHoveredViewsPerPointer objectForKey:@(activeTouch.touch.identifier)];
+    if (currentlyHoveredViews == nil || [currentlyHoveredViews count] == 0) {
+      activeTouch.shouldLeaveWhenReleased = YES;
     }
 
     _activeTouches.emplace(touch, activeTouch);
@@ -639,20 +651,39 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
     // emit w3c pointer events
     if (RCTGetDispatchW3CPointerEvents()) {
       PointerEvent pointerEvent = CreatePointerEventFromActiveTouch(activeTouch, eventType);
-      switch (eventType) {
-        case RCTTouchEventTypeTouchStart:
-          activeTouch.eventEmitter->onPointerDown(pointerEvent);
-          break;
-        case RCTTouchEventTypeTouchMove:
-          activeTouch.eventEmitter->onPointerMove(pointerEvent);
-          break;
-        case RCTTouchEventTypeTouchEnd:
-          activeTouch.eventEmitter->onPointerUp(pointerEvent);
-          break;
-        case RCTTouchEventTypeTouchCancel:
-          activeTouch.eventEmitter->onPointerCancel(pointerEvent);
-          break;
+
+      UIView *targetView = nil;
+      bool shouldLeave = (eventType == RCTTouchEventTypeTouchEnd && activeTouch.shouldLeaveWhenReleased) ||
+          eventType == RCTTouchEventTypeTouchCancel;
+      if (!shouldLeave) {
+        CGPoint clientLocation = CGPointMake(pointerEvent.clientPoint.x, pointerEvent.clientPoint.y);
+        targetView = FindClosestFabricManagedTouchableView([_rootComponentView hitTest:clientLocation withEvent:nil]);
       }
+
+      PointerHandler handler = ^(NSOrderedSet<RCTReactTaggedView *> *eventPathViews) {
+        switch (eventType) {
+          case RCTTouchEventTypeTouchStart:
+            activeTouch.eventEmitter->onPointerDown(pointerEvent);
+            break;
+          case RCTTouchEventTypeTouchMove: {
+            bool hasMoveEventListeners =
+                IsAnyViewInPathListeningToEvent(eventPathViews, ViewEvents::Offset::PointerMove) ||
+                IsAnyViewInPathListeningToEvent(eventPathViews, ViewEvents::Offset::PointerMoveCapture);
+            if (hasMoveEventListeners) {
+              activeTouch.eventEmitter->onPointerMove(pointerEvent);
+            }
+            break;
+          }
+          case RCTTouchEventTypeTouchEnd:
+            activeTouch.eventEmitter->onPointerUp(pointerEvent);
+            break;
+          case RCTTouchEventTypeTouchCancel:
+            activeTouch.eventEmitter->onPointerCancel(pointerEvent);
+            break;
+        }
+      };
+
+      [self handleIncomingPointerEvent:pointerEvent onView:targetView withHandler:handler];
     }
   }
 
