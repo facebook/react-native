@@ -1,8 +1,6 @@
 load(
     "//tools/build_defs/oss:rn_defs.bzl",
     "ANDROID",
-    "APPLE",
-    "CXX",
     "fb_xplat_cxx_test",
     "get_apple_compiler_flags",
     "get_apple_inspector_flags",
@@ -40,7 +38,7 @@ rn_xplat_cxx_library(
         "supermodule:xplat/default/public.react_native.infra",
     ],
     macosx_tests_override = [],
-    platforms = (ANDROID, APPLE, CXX),
+    platforms = ANDROID,
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",
         "-DWITH_FBSYSTRACE=1",
@@ -65,7 +63,7 @@ fb_xplat_cxx_test(
         "-Wall",
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],
-    platforms = (ANDROID, APPLE, CXX),
+    platforms = ANDROID,
     deps = [
         "//xplat/third-party/gmock:gtest",
         react_native_xplat_target("react/debug:debug"),
