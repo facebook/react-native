@@ -129,6 +129,13 @@ def reactNativeArchitectures() {
     return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
+/**
+ * The name of the dynamic library for this application. This will contain all the
+ * compiled C++ code and will be loaded at runtime.
+ * The default is "appmodules" so that we'll have a `libappmodules.so` to load.
+ */
+def dynamicLibraryName = "appmodules"
+
 android {
     ndkVersion rootProject.ext.ndkVersion
 
@@ -141,6 +148,7 @@ android {
         versionCode 1
         versionName "1.0"
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
+        buildConfigField "String", "DYNAMIC_LIBRARY_NAME", "\"$dynamicLibraryName\""
 
         if (isNewArchitectureEnabled()) {
             // We configure the CMake build only if you decide to opt-in for the New Architecture.
@@ -150,6 +158,7 @@ android {
                         "-DREACT_ANDROID_DIR=$rootDir/../node_modules/react-native/ReactAndroid",
                         "-DREACT_ANDROID_BUILD_DIR=$rootDir/../node_modules/react-native/ReactAndroid/build",
                         "-DNODE_MODULES_DIR=$rootDir/../node_modules",
+                        "-DTARGET_NAME=$dynamicLibraryName",
                         "-DANDROID_STL=c++_shared"
                 }
             }
