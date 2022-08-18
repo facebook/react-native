@@ -4,7 +4,6 @@ exports[`TextInput tests should render as expected: should deep render when mock
 <RCTSinglelineTextInputView
   accessible={true}
   allowFontScaling={true}
-  editable={true}
   focusable={true}
   forwardedRef={null}
   mostRecentEventCount={0}
@@ -34,7 +33,6 @@ exports[`TextInput tests should render as expected: should deep render when not 
 <RCTSinglelineTextInputView
   accessible={true}
   allowFontScaling={true}
-  editable={true}
   focusable={true}
   forwardedRef={null}
   mostRecentEventCount={0}

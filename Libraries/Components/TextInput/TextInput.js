@@ -1388,7 +1388,8 @@ const ExportedForwardRef: React.AbstractComponent<
     allowFontScaling = true,
     rejectResponderTermination = true,
     underlineColorAndroid = 'transparent',
-    readOnly = false,
+    readOnly,
+    editable,
     ...restProps
   },
   forwardedRef: ReactRefSetter<
@@ -1400,7 +1401,7 @@ const ExportedForwardRef: React.AbstractComponent<
       allowFontScaling={allowFontScaling}
       rejectResponderTermination={rejectResponderTermination}
       underlineColorAndroid={underlineColorAndroid}
-      editable={!readOnly}
+      editable={readOnly !== undefined ? !readOnly : editable}
       {...restProps}
       forwardedRef={forwardedRef}
     />
