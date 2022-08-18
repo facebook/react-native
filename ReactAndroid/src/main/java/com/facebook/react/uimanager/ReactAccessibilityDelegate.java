@@ -96,6 +96,9 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
   public enum AccessibilityRole {
     NONE,
     BUTTON,
+    CHECKBOX,
+    DROPDOWNLIST,
+    EDITTEXT,
     TOGGLEBUTTON,
     LINK,
     SEARCH,
@@ -114,6 +117,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     MENUITEM,
     PROGRESSBAR,
     RADIO,
+    SEEKCONTROL,
     RADIOGROUP,
     SCROLLBAR,
     SPINBUTTON,
@@ -123,12 +127,31 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     TIMER,
     LIST,
     GRID,
+    PAGER,
+    VIEWGROUP,
+    WEBVIEW,
+    DRAWERLAYOUT,
+    SLIDINGDRAWER,
+    ICONMENU,
+    TOAST,
+    DATEPICKER,
+    DATEPICKERDIALOG,
+    TIMEPICKER,
+    TIMEPICKERDIALOG,
+    NUMBERPICKER,
+    SCROLLVIEW,
     TOOLBAR;
 
     public static String getValue(AccessibilityRole role) {
       switch (role) {
         case BUTTON:
           return "android.widget.Button";
+        case CHECKBOX:
+          return "android.widget.CompoundButton";
+        case DROPDOWNLIST:
+          return "android.widget.Spinner.class";
+        case EDITTEXT:
+          return "android.widget.EditText";
         case TOGGLEBUTTON:
           return "android.widget.ToggleButton";
         case SEARCH:
@@ -147,6 +170,8 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
           return "android.widget.CheckBox";
         case RADIO:
           return "android.widget.RadioButton";
+        case SEEKCONTROL:
+          return "android.R.id.accessibilityActionSetProgress";
         case SPINBUTTON:
           return "android.widget.SpinButton";
         case SWITCH:
@@ -155,6 +180,30 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
           return "android.widget.AbsListView";
         case GRID:
           return "android.widget.GridView";
+        case PAGER:
+          return "androidx.viewpager.widget.ViewPager";
+        case VIEWGROUP:
+          return "android.view.ViewGroup";
+        case WEBVIEW:
+          return "android.webkit.WebView";
+        case DRAWERLAYOUT:
+          return "androidx.drawerlayout.widget.DrawerLayout";
+        case SLIDINGDRAWER:
+          return "android.widget.SlidingDrawer.class";
+        case ICONMENU:
+          return "com.android.internal.view.menu.IconMenuView";
+        case TOAST:
+          return "android.widget.Toast";
+        case DATEPICKER:
+          return "android.widget.DatePicker.class";
+        case DATEPICKERDIALOG:
+          return "android.app.DatePickerDialog.class";
+        case TIMEPICKER:
+          return "android.widget.TimePicker.class";
+        case TIMEPICKERDIALOG:
+          return "android.widget.TimePicker";
+        case NUMBERPICKER:
+          return "android.widget.NumberPicker";
         case NONE:
         case LINK:
         case SUMMARY:

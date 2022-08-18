@@ -16,6 +16,9 @@ import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 export type AccessibilityRole =
   | 'none'
   | 'button'
+  | 'checkbox'
+  | 'dropdownlist'
+  | 'edittext'
   | 'togglebutton'
   | 'link'
   | 'search'
@@ -34,6 +37,7 @@ export type AccessibilityRole =
   | 'menuitem'
   | 'progressbar'
   | 'radio'
+  | 'seekcontrol'
   | 'radiogroup'
   | 'scrollbar'
   | 'spinbutton'
@@ -44,7 +48,19 @@ export type AccessibilityRole =
   | 'timer'
   | 'list'
   | 'toolbar'
-  | 'grid';
+  | 'grid'
+  | 'pager'
+  | 'viewgroup'
+  | 'webview'
+  | 'drawerlayout'
+  | 'slidingdrawer'
+  | 'iconmenu'
+  | 'toast'
+  | 'datepicker'
+  | 'datepickerdialog'
+  | 'timepicker'
+  | 'timepickerdialog'
+  | 'numberpicker';
 
 // the info associated with an accessibility action
 export type AccessibilityActionInfo = $ReadOnly<{
