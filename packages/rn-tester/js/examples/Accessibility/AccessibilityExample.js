@@ -637,10 +637,118 @@ class AccessibilityRoleAndStateExample extends React.Component<{}> {
           <Text>Toolbar example</Text>
         </View>
         <View
-          accessibilityLabel="element 17"
-          accessibilityState={{busy: true}}
+          accessibilityLabel="element 19"
+          accessibilityRole="checkedtextview"
           accessible={true}>
-          <Text>State busy example</Text>
+          <Text>Checked Text View example</Text>
+        </View>
+        <View
+          accessibilityLabel="element 20"
+          accessibilityRole="dropdownlist"
+          accessible={true}>
+          <Text>Drop Down List example</Text>
+        </View>
+        <View
+          accessibilityLabel="element 21"
+          accessibilityRole="edittext"
+          accessible={true}>
+          <Text>Edit Text example</Text>
+        </View>
+        <View
+          accessibilityLabel="element 22"
+          accessibilityRole="pager"
+          accessible={true}>
+          <Text>Pager example</Text>
+        </View>
+        <View
+          accessibilityLabel="element 23"
+          accessibilityRole="seekcontrol"
+          accessible={true}>
+          <Text>Seek Control example</Text>
+        </View>
+        <View
+          accessibilityLabel="element 24"
+          accessibilityRole="togglebutton"
+          accessible={true}>
+          <Text>Toggle Button example</Text>
+        </View>
+        <View
+          accessibilityLabel="element 25"
+          accessibilityRole="viewgroup"
+          accessible={true}>
+          <Text>viewgroup example</Text>
+        </View>
+        <View
+          accessibilityLabel="element 26"
+          accessibilityRole="webview"
+          accessible={true}>
+          <Text>webview example</Text>
+        </View>
+        <View
+          accessibilityLabel="element 27"
+          accessibilityRole="drawerlayout"
+          accessible={true}>
+          <Text>drawerlayout example</Text>
+        </View>
+        <View
+          accessibilityLabel="element 28"
+          accessibilityRole="slidingdrawer"
+          accessible={true}>
+          <Text>slidingdrawer example</Text>
+        </View>
+        <View
+          accessibilityLabel="element 29"
+          accessibilityRole="iconmenu"
+          accessible={true}>
+          <Text>iconmenu example</Text>
+        </View>
+        <View
+          accessibilityLabel="element 30"
+          accessibilityRole="toast"
+          accessible={true}>
+          <Text>toast example</Text>
+        </View>
+        <View
+          accessibilityLabel="element 31"
+          accessibilityRole="datepicker"
+          accessible={true}>
+          <Text>datepicker example</Text>
+        </View>
+        <View
+          accessibilityLabel="element 32"
+          accessibilityRole="datepickerdialog"
+          accessible={true}>
+          <Text>datepickerdialog example</Text>
+        </View>
+        <View
+          accessibilityLabel="element 33"
+          accessibilityRole="timepicker"
+          accessible={true}>
+          <Text>timepicker example</Text>
+        </View>
+        <View
+          accessibilityLabel="element 34"
+          accessibilityRole="timepickerdialog"
+          accessible={true}>
+          <Text>timepickerdialog example</Text>
+        </View>
+        <View
+          accessibilityLabel="element 35"
+          accessibilityRole="numberpicker"
+          accessible={true}>
+          <Text>numberpicker example</Text>
+        </View>
+        <View
+          accessibilityLabel="element 36"
+          accessibilityRole="scrollview"
+          accessible={true}>
+          <Text>scrollview example</Text>
+        </View>
+        <View
+          accessibilityLabel="element 37"
+          accessibilityRole="horizontalscrollview"
+          accessible={true}>
+          <Text>horizontalscrollview example</Text>
         </View>
         <ExpandableElementExample />
         <SelectionExample />
