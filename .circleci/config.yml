@@ -135,10 +135,10 @@ commands:
           command: |
             git clone --branch main --no-checkout "$CIRCLE_REPOSITORY_URL" --single-branch .
             # Fetch from fork if applicable
-            if [ -z $CIRCLE_PR_NUMBER ] ; then
+            if [ -n "$CIRCLE_PR_NUMBER" ] ; then
               git fetch --force --depth 1 origin +refs/pull/$CIRCLE_PR_NUMBER/head:refs/remotes/origin/pull/$CIRCLE_PR_NUMBER
             fi
-            if [ -z $CIRCLE_BRANCH ] ; then
+            if [ -n "$CIRCLE_BRANCH" ] ; then
               git checkout --force -B "$CIRCLE_BRANCH" "$CIRCLE_SHA1"
             else
               git checkout main
