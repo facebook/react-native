@@ -8,6 +8,12 @@ orbs:
   win: circleci/windows@2.4.0
 
 # -------------------------
+#        Single Use Environmental Variables
+# -------------------------
+envs:
+  shallow_checkout_depth: &shallow_checkout_depth 1
+
+# -------------------------
 #        REFERENCES
 # -------------------------
 references:
@@ -113,19 +119,54 @@ executors:
 #        COMMANDS
 # -------------------------
 commands:
+  shallow_checkout:
+    parameters:
+      checkout_depth:
+        default: *shallow_checkout_depth
+        type: integer
+    steps:
+      - run:
+          name: Add sshkey for Github
+          command: |
+            mkdir -p ~/.ssh
+            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+      - run:
+          name: Shallow clone repo
+          command: |
+            git clone --branch main --no-checkout "$CIRCLE_REPOSITORY_URL" --single-branch .
+            git fetch --force --depth 1 origin +refs/pull/$CIRCLE_PR_NUMBER/head:refs/remotes/origin/pull/$CIRCLE_PR_NUMBER
+            git checkout --force -B "$CIRCLE_BRANCH" "$CIRCLE_SHA1"
+
   # Checkout with cache, on machines that are using Docker the cache is ignored
   checkout_code_with_cache:
     parameters:
       checkout_base_cache_key:
         default: *checkout_cache_key
         type: string
+      shallow_checkout:
+        default: true
+        type: boolean
+      shallow_checkout_depth:
+        default: *shallow_checkout_depth
+        type: integer
     steps:
       - restore_cache:
             keys:
               - << parameters.checkout_base_cache_key >>-{{ .Branch }}-{{ .Revision }}
               - << parameters.checkout_base_cache_key >>-{{ .Branch }}-
               - << parameters.checkout_base_cache_key >>
-      - checkout
+
+      - when:
+          condition: << parameters.shallow_checkout >>
+          steps:
+            - shallow_checkout:
+                checkout_depth: << parameters.shallow_checkout_depth >>
+      - when:
+          condition:
+              not: << parameters.shallow_checkout >>
+          steps:
+            - checkout
+
       - save_cache:
           key: << parameters.checkout_base_cache_key >>-{{ .Branch }}-{{ .Revision }}
           paths:
@@ -261,7 +302,7 @@ commands:
         type: steps
       set_tarball_path:
         type: boolean
-        default: False
+        default: false
     steps:
       - restore_cache:
           keys:
@@ -304,7 +345,7 @@ jobs:
   analyze_pr:
     executor: reactnativeandroid
     steps:
-      - checkout
+      - shallow_checkout
       - run_yarn
 
       - install_github_bot_deps
@@ -332,7 +373,7 @@ jobs:
   analyze_code:
     executor: reactnativeandroid
     steps:
-      - checkout
+      - shallow_checkout
       - setup_artifacts
       - run_yarn
 
@@ -384,7 +425,7 @@ jobs:
         default: false
     executor: << parameters.executor >>
     steps:
-      - checkout
+      - shallow_checkout
       - setup_artifacts
       - run_yarn
       - run:
@@ -482,7 +523,7 @@ jobs:
           command: bundle exec pod setup
 
       - with_hermes_tarball_cache_span:
-          set_tarball_path: True
+          set_tarball_path: true
           steps:
             - with_rntester_pods_cache_span:
                 steps:
@@ -601,7 +642,7 @@ jobs:
         type: boolean
         default: false
     steps:
-      - checkout
+      - shallow_checkout
       - setup_artifacts
       - run_yarn
 
@@ -745,7 +786,7 @@ jobs:
           package: cmake
 
       - with_hermes_tarball_cache_span:
-          set_tarball_path: True
+          set_tarball_path: true
           steps:
             - run:
                 name: Install CocoaPods dependencies
@@ -778,7 +819,8 @@ jobs:
       - ANDROID_TOOLS_VERSION: 31.0.0
       - GRADLE_OPTS: -Dorg.gradle.daemon=false
     steps:
-      - checkout_code_with_cache
+      - checkout_code_with_cache:
+          shallow_checkout: false
 
       - run:
           name: Install Node
@@ -856,7 +898,7 @@ jobs:
       - CI_BUILD_NUMBER: $CIRCLE_BUILD_NUM
       - CI_BUILD_URL: $CIRCLE_BUILD_URL
     steps:
-      - checkout
+      - shallow_checkout
       - setup_artifacts
       - run_yarn
       - run:
@@ -887,7 +929,7 @@ jobs:
             curl -sL https://deb.nodesource.com/setup_16.x | bash -
             apt install -y nodejs
             npm install --global yarn
-      - checkout
+      - shallow_checkout
       - run_yarn
       - run:
           name: Set up Hermes workspace and caching
@@ -1144,7 +1186,7 @@ jobs:
           command: |
             mkdir -p ~/.ssh
             echo '|1|If6MU203eXTaaWL678YEfWkVMrw=|kqLeIAyTy8pzpj8x8Ae4Fr8Mtlc= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
-      - checkout
+      - shallow_checkout
       - *attach_hermes_workspace
       - run:
           name: Copy HermesC binaries
