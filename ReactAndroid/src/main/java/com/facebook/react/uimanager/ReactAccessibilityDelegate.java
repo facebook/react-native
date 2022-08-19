@@ -149,7 +149,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
         case CHECKBOX:
           return "android.widget.CompoundButton";
         case DROPDOWNLIST:
-          return "android.widget.Spinner.class";
+          return "android.widget.Spinner";
         case EDITTEXT:
           return "android.widget.EditText";
         case TOGGLEBUTTON:
@@ -159,7 +159,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
         case IMAGE:
           return "android.widget.ImageView";
         case IMAGEBUTTON:
-          return "android.widget.ImageButon";
+          return "android.widget.ImageButton";
         case KEYBOARDKEY:
           return "android.inputmethodservice.Keyboard$Key";
         case TEXT:
@@ -171,7 +171,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
         case RADIO:
           return "android.widget.RadioButton";
         case SEEKCONTROL:
-          return "android.R.id.accessibilityActionSetProgress";
+          return "android.widget.SeekBar";
         case SPINBUTTON:
           return "android.widget.SpinButton";
         case SWITCH:
@@ -189,17 +189,17 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
         case DRAWERLAYOUT:
           return "androidx.drawerlayout.widget.DrawerLayout";
         case SLIDINGDRAWER:
-          return "android.widget.SlidingDrawer.class";
+          return "android.widget.SlidingDrawer";
         case ICONMENU:
           return "com.android.internal.view.menu.IconMenuView";
         case TOAST:
           return "android.widget.Toast";
         case DATEPICKER:
-          return "android.widget.DatePicker.class";
+          return "android.widget.DatePicker";
         case DATEPICKERDIALOG:
-          return "android.app.DatePickerDialog.class";
+          return "android.app.DatePickerDialog";
         case TIMEPICKER:
-          return "android.widget.TimePicker.class";
+          return "android.widget.TimePicker";
         case TIMEPICKERDIALOG:
           return "android.widget.TimePicker";
         case NUMBERPICKER:
