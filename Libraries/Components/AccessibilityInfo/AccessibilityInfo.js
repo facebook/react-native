@@ -17,6 +17,7 @@ import NativeAccessibilityInfoAndroid from './NativeAccessibilityInfo';
 import NativeAccessibilityManagerIOS from './NativeAccessibilityManager';
 import legacySendAccessibilityEvent from './legacySendAccessibilityEvent';
 import type {ElementRef} from 'react';
+import type {AccessibilityInfo as AccessibilityInfoType} from './AccessibilityInfo.flow';
 
 // Events that are only supported on Android.
 type AccessibilityEventDefinitionsAndroid = {
@@ -73,7 +74,7 @@ const EventNames: Map<
  *
  * See https://reactnative.dev/docs/accessibilityinfo
  */
-const AccessibilityInfo = {
+const AccessibilityInfo: AccessibilityInfoType = {
   /**
    * Query whether bold text is currently enabled.
    *
@@ -295,6 +296,7 @@ const AccessibilityInfo = {
    */
   addEventListener<K: $Keys<AccessibilityEventDefinitions>>(
     eventName: K,
+    // $FlowIssue[incompatible-type] - Flow bug with unions and generics (T128099423)
     handler: (...$ElementType<AccessibilityEventDefinitions, K>) => void,
   ): EventSubscription {
     const deviceEventName = EventNames.get(eventName);
