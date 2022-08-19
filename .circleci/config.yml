@@ -134,8 +134,15 @@ commands:
           name: Shallow clone repo
           command: |
             git clone --branch main --no-checkout "$CIRCLE_REPOSITORY_URL" --single-branch .
-            git fetch --force --depth 1 origin +refs/pull/$CIRCLE_PR_NUMBER/head:refs/remotes/origin/pull/$CIRCLE_PR_NUMBER
-            git checkout --force -B "$CIRCLE_BRANCH" "$CIRCLE_SHA1"
+            # Fetch from fork if applicable
+            if [ -z $CIRCLE_PR_NUMBER ] ; then
+              git fetch --force --depth 1 origin +refs/pull/$CIRCLE_PR_NUMBER/head:refs/remotes/origin/pull/$CIRCLE_PR_NUMBER
+            fi
+            if [ -z $CIRCLE_BRANCH ] ; then
+              git checkout --force -B "$CIRCLE_BRANCH" "$CIRCLE_SHA1"
+            else
+              git checkout main
+            fi
 
   # Checkout with cache, on machines that are using Docker the cache is ignored
   checkout_code_with_cache:
