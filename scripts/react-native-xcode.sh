@@ -129,7 +129,7 @@ fi
 
 PACKAGER_SOURCEMAP_FILE=
 if [[ $EMIT_SOURCEMAP == true ]]; then
-  if [[ $USE_HERMES == true ]]; then
+  if [[ $USE_HERMES != false ]]; then
     PACKAGER_SOURCEMAP_FILE="$CONFIGURATION_BUILD_DIR/$(basename $SOURCEMAP_FILE)"
   else
     PACKAGER_SOURCEMAP_FILE="$SOURCEMAP_FILE"
@@ -138,7 +138,7 @@ if [[ $EMIT_SOURCEMAP == true ]]; then
 fi
 
 # Hermes doesn't require JS minification.
-if [[ $USE_HERMES == true && $DEV == false ]]; then
+if [[ $USE_HERMES != false && $DEV == false ]]; then
   EXTRA_ARGS="$EXTRA_ARGS --minify false"
 fi
 
