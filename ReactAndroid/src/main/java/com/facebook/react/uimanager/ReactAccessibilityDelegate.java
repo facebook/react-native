@@ -96,7 +96,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
   public enum AccessibilityRole {
     NONE,
     BUTTON,
-    CHECKBOX,
+    CHECKEDTEXTVIEW,
     DROPDOWNLIST,
     EDITTEXT,
     TOGGLEBUTTON,
@@ -128,6 +128,8 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     LIST,
     GRID,
     PAGER,
+    SCROLLVIEW,
+    HORIZONTALSCROLLVIEW,
     VIEWGROUP,
     WEBVIEW,
     DRAWERLAYOUT,
@@ -139,15 +141,14 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     TIMEPICKER,
     TIMEPICKERDIALOG,
     NUMBERPICKER,
-    SCROLLVIEW,
     TOOLBAR;
 
     public static String getValue(AccessibilityRole role) {
       switch (role) {
         case BUTTON:
           return "android.widget.Button";
-        case CHECKBOX:
-          return "android.widget.CompoundButton";
+        case CHECKEDTEXTVIEW:
+          return "android.widget.CheckedTextView";
         case DROPDOWNLIST:
           return "android.widget.Spinner";
         case EDITTEXT:
@@ -182,6 +183,10 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
           return "android.widget.GridView";
         case PAGER:
           return "androidx.viewpager.widget.ViewPager";
+        case SCROLLVIEW:
+          return "android.widget.ScrollView";
+        case HORIZONTALSCROLLVIEW:
+          return "android.widget.HorizontalScrollView";
         case VIEWGROUP:
           return "android.view.ViewGroup";
         case WEBVIEW:
