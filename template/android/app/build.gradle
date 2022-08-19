@@ -157,7 +157,6 @@ android {
                     arguments "-DPROJECT_BUILD_DIR=$buildDir",
                         "-DREACT_ANDROID_DIR=$rootDir/../node_modules/react-native/ReactAndroid",
                         "-DREACT_ANDROID_BUILD_DIR=$rootDir/../node_modules/react-native/ReactAndroid/build",
-                        "-DNODE_MODULES_DIR=$rootDir/../node_modules",
                         "-DTARGET_NAME=$dynamicLibraryName",
                         "-DANDROID_STL=c++_shared"
                 }
