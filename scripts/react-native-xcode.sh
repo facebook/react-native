@@ -170,6 +170,8 @@ else
   if [[ $EMIT_SOURCEMAP == true ]]; then
     HBC_SOURCEMAP_FILE="$DEST/main.jsbundle.map"
     "$NODE_BINARY" "$COMPOSE_SOURCEMAP_PATH" "$PACKAGER_SOURCEMAP_FILE" "$HBC_SOURCEMAP_FILE" -o "$SOURCEMAP_FILE"
+    rm "$HBC_SOURCEMAP_FILE"
+    rm "$PACKAGER_SOURCEMAP_FILE"
   fi
   BUNDLE_FILE="$DEST/main.jsbundle"
 fi
