@@ -3262,10 +3262,10 @@ flow-parser@0.*:
   resolved "https://registry.yarnpkg.com/flow-parser/-/flow-parser-0.163.0.tgz#c2d5c77c57c53e8357016a837f3e3af04a0c87a6"
   integrity sha512-txOsBcZ1nKsKtoAsBFnArFdq0cnPCmEHI5S2jQIgU1ZO1xtWpg64TsZSRktsaOyoWLpAvVxPap4Qbdd/TCJ3FQ==
 
-flow-parser@^0.121.0:
-  version "0.121.0"
-  resolved "https://registry.yarnpkg.com/flow-parser/-/flow-parser-0.121.0.tgz#9f9898eaec91a9f7c323e9e992d81ab5c58e618f"
-  integrity sha512-1gIBiWJNR0tKUNv8gZuk7l9rVX06OuLzY9AoGio7y/JT4V1IZErEMEq2TJS+PFcw/y0RshZ1J/27VfK1UQzYVg==
+flow-parser@^0.185.0:
+  version "0.185.0"
+  resolved "https://registry.yarnpkg.com/flow-parser/-/flow-parser-0.185.0.tgz#56bde60805bad19b2934ebfc50c9485e5c5424f9"
+  integrity sha512-VWpXjEbQbIGQvB6CyWwx56wMioGZ6w2s8qJlFiuE3S7D8O+xE5t988i1u2TGFO5TLSzQPUhfIOzPpLYA93H9Jg==
 
 for-in@^1.0.2:
   version "1.0.2"

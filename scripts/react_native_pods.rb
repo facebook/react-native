@@ -45,6 +45,8 @@ def use_react_native! (
 
   CodegenUtils.clean_up_build_folder(app_path, $CODEGEN_OUTPUT_DIR)
 
+  fabric_enabled = fabric_enabled || new_arch_enabled
+
   prefix = path
 
   # The version of folly that must be used

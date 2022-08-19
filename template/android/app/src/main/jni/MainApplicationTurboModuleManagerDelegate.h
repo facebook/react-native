@@ -14,7 +14,7 @@ class MainApplicationTurboModuleManagerDelegate
  public:
   // Adapt it to the package you used for your Java class.
   static constexpr auto kJavaDescriptor =
-      "Lcom/helloworld/newarchitecture/modules/MainApplicationTurboModuleManagerDelegate;";
+      "Lcom/facebook/react/defaults/DefaultTurboModuleManagerDelegate;";
 
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jhybridobject>);
 
@@ -26,12 +26,6 @@ class MainApplicationTurboModuleManagerDelegate
   std::shared_ptr<TurboModule> getTurboModule(
       const std::string &name,
       const JavaTurboModule::InitParams &params) override;
-
-  /**
-   * Test-only method. Allows user to verify whether a TurboModule can be
-   * created by instances of this class.
-   */
-  bool canCreateTurboModule(const std::string &name);
 };
 
 } // namespace react
