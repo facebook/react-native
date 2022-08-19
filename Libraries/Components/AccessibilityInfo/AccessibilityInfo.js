@@ -192,7 +192,10 @@ const AccessibilityInfo: AccessibilityInfoType = {
       if (Platform.OS === 'android') {
         return Promise.resolve(false);
       } else {
-        if (NativeAccessibilityManagerIOS != null) {
+        if (
+          NativeAccessibilityManagerIOS?.getCurrentPrefersCrossFadeTransitionsState !=
+          null
+        ) {
           NativeAccessibilityManagerIOS.getCurrentPrefersCrossFadeTransitionsState(
             resolve,
             reject,
