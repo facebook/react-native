@@ -38,7 +38,7 @@ def use_react_native! (
   fabric_enabled: false,
   new_arch_enabled: ENV['RCT_NEW_ARCH_ENABLED'] == '1',
   production: ENV['PRODUCTION'] == '1',
-  hermes_enabled: true,
+  hermes_enabled: ENV['USE_HERMES'] && ENV['USE_HERMES'] == '0' ? false : true,
   flipper_configuration: FlipperConfiguration.disabled,
   app_path: '..',
   config_file_dir: '')
