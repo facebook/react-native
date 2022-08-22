@@ -726,6 +726,7 @@ module.exports = ([
     name: 'inputModes',
     render: function (): React.Node {
       const inputMode = [
+        'none',
         'text',
         'decimal',
         'numeric',
