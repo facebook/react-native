@@ -165,6 +165,7 @@ static NSString *RCTRecursiveAccessibilityLabel(RCTUIView *view) // TODO(macOS I
     _hitTestEdgeInsets = UIEdgeInsetsZero;
 #if TARGET_OS_OSX // TODO(macOS GH#774)
     _transform3D = CATransform3DIdentity;
+    _shadowColor = nil;
 #endif // TODO(macOS GH#774)
 
     _backgroundColor = super.backgroundColor;
@@ -716,6 +717,51 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
 #endif // TODO(macOS GH#774)
 
 #if TARGET_OS_OSX // [TODO(macOS GH#774)
+- (void)setShadowColor:(NSColor *)shadowColor
+{
+    if (_shadowColor != shadowColor)
+    {
+        _shadowColor = shadowColor;
+        [self didUpdateShadow];
+    }
+}
+
+- (void)setShadowOffset:(CGSize)shadowOffset
+{
+    if (!CGSizeEqualToSize(_shadowOffset, shadowOffset))
+    {
+        _shadowOffset = shadowOffset;
+        [self didUpdateShadow];
+    }
+}
+
+- (void)setShadowOpacity:(CGFloat)shadowOpacity
+{
+    if (_shadowOpacity != shadowOpacity)
+    {
+        _shadowOpacity = shadowOpacity;
+        [self didUpdateShadow];
+    }
+}
+
+- (void)setShadowRadius:(CGFloat)shadowRadius
+{
+    if (_shadowRadius != shadowRadius)
+    {
+        _shadowRadius = shadowRadius;
+        [self didUpdateShadow];
+    }
+}
+
+-(void)didUpdateShadow
+{
+    NSShadow *shadow = [NSShadow new];
+    shadow.shadowColor = [[self shadowColor] colorWithAlphaComponent:[self shadowOpacity]];
+    shadow.shadowOffset = [self shadowOffset];
+    shadow.shadowBlurRadius = [self shadowRadius];
+    [self setShadow:shadow];
+}
+
 - (void)viewDidMoveToWindow
 {
   // Subscribe to view bounds changed notification so that the view can be notified when a

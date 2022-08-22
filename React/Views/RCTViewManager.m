@@ -191,54 +191,18 @@ RCT_REMAP_VIEW_PROPERTY(opacity, alpha, CGFloat)
 #else // [TODO(macOS GH#774)
 RCT_REMAP_VIEW_PROPERTY(opacity, alphaValue, CGFloat)
 #endif // ]TODO(macOS GH#774)
-//RCT_REMAP_VIEW_PROPERTY(shadowColor, layer.shadowColor, CGColor)
-//RCT_REMAP_VIEW_PROPERTY(shadowOffset, layer.shadowOffset, CGSize)
-//RCT_REMAP_VIEW_PROPERTY(shadowOpacity, layer.shadowOpacity, float)
-//RCT_REMAP_VIEW_PROPERTY(shadowRadius, layer.shadowRadius, CGFloat)
 
-RCT_CUSTOM_VIEW_PROPERTY(shadowColor, CGColor, RCTView)
-{
-    if (view.shadow == nil)
-    {
-        view.shadow = [NSShadow new];
-    }
-    
-    NSColor *shadowColor = [NSColor colorWithCGColor:[RCTConvert CGColor:json]];
-    view.shadow.shadowColor = [shadowColor colorWithAlphaComponent:view.shadow.shadowColor.alphaComponent];
-}
-
-RCT_CUSTOM_VIEW_PROPERTY(shadowOffset, CGSize, RCTView)
-{
-    if (view.shadow == nil)
-    {
-        view.shadow = [NSShadow new];
-    }
-    CGSize shadowOffset = [RCTConvert CGSize:json];
-    view.shadow.shadowOffset = shadowOffset;
-}
-
-RCT_CUSTOM_VIEW_PROPERTY(shadowOpacity, float, RCTView)
-{
-    NSShadow *shadow = [NSShadow new];
-    if (view.shadow != nil)
-    {
-        shadow.shadowOffset = view.shadow.shadowOffset;
-        shadow.shadowBlurRadius = view.shadow.shadowBlurRadius;
-        shadow.shadowColor = view.shadow.shadowColor;
-    }
-    shadow.shadowColor = [shadow.shadowColor colorWithAlphaComponent:[RCTConvert float:json]];
-    view.shadow = shadow;
-}
-
-RCT_CUSTOM_VIEW_PROPERTY(shadowRadius, CGFloat, RCTView)
-{
-    if (view.shadow == nil)
-    {
-        view.shadow = [NSShadow new];
-    }
-    CGFloat shadowRadius = [RCTConvert CGFloat:json];
-    view.shadow.shadowBlurRadius = shadowRadius;
-}
+#if TARGET_OS_OSX // TODO(macOS GH#774)
+RCT_REMAP_VIEW_PROPERTY(shadowColor, layer.shadowColor, CGColor)
+RCT_REMAP_VIEW_PROPERTY(shadowOffset, layer.shadowOffset, CGSize)
+RCT_REMAP_VIEW_PROPERTY(shadowOpacity, layer.shadowOpacity, float)
+RCT_REMAP_VIEW_PROPERTY(shadowRadius, layer.shadowRadius, CGFloat)
+#else // [TODO(macOS GH#774)
+RCT_EXPORT_VIEW_PROPERTY(shadowColor, NSColor)
+RCT_EXPORT_VIEW_PROPERTY(shadowOffset, CGSize)
+RCT_EXPORT_VIEW_PROPERTY(shadowOpacity, CGFloat)
+RCT_EXPORT_VIEW_PROPERTY(shadowRadius, CGFloat)
+#endif // ]TODO(macOS GH#774)
 
 RCT_REMAP_VIEW_PROPERTY(needsOffscreenAlphaCompositing, layer.allowsGroupOpacity, BOOL)
 RCT_CUSTOM_VIEW_PROPERTY(overflow, YGOverflow, RCTView)
