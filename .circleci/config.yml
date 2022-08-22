@@ -1039,18 +1039,29 @@ jobs:
           steps:
             - run:
                 name: Build the Hermes iOS frameworks
+                #background: true
                 command: |
                   cd ~/react-native/sdks/hermes
-                  ./utils/build-ios-framework.sh
+                  ./utils/build-ios-framework.sh #> /tmp/hermes-ios.log
+
+                  #cd ~/react-native/scripts/circleci
+                  #./write-completion-file.sh iOS
             - run:
                 name: Build the Hermes Mac frameworks
+                #background: true
                 command: |
                   cd ~/react-native/sdks/hermes
-                  ./utils/build-mac-framework.sh
+                  ./utils/build-mac-framework.sh #> /tmp/hermes-macos.log
                   cp build_macosx/bin/hermesc /tmp/hermes/osx-bin/.
+
+                  #cd ~/react-native/scripts/circleci
+                  #./write-completion-file.sh MacOS
             - run:
                 name: Package the Hermes Apple frameworks
                 command: |
+                  #cd ~/react-native/scripts/circleci
+                  #./wait-for-completion.sh iOS MacOS
+
                   cd ~/react-native/sdks/hermes
                   . ./utils/build-apple-framework.sh
 
