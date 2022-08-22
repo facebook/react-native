@@ -23,6 +23,7 @@ import type {
   ViewLayoutEvent,
 } from '../View/ViewPropTypes';
 import type {KeyboardEvent, KeyboardMetrics} from './Keyboard';
+import AccessibilityInfo from '../AccessibilityInfo/AccessibilityInfo';
 
 type Props = $ReadOnly<{|
   ...ViewProps,
@@ -71,9 +72,21 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
     this.viewRef = React.createRef();
   }
 
-  _relativeKeyboardHeight(keyboardFrame: KeyboardMetrics): number {
+  async _relativeKeyboardHeight(
+    keyboardFrame: KeyboardMetrics,
+  ): Promise<number> {
     const frame = this._frame;
     if (!frame || !keyboardFrame) {
+      return 0;
+    }
+
+    // On iOS when Prefer Cross-Fade Transitions is enabled, the keyboard position
+    // & height is reported differently (0 instead of Y position value matching height of frame)
+    if (
+      Platform.OS === 'ios' &&
+      keyboardFrame.screenY === 0 &&
+      (await AccessibilityInfo.prefersCrossFadeTransitions())
+    ) {
       return 0;
     }
 
@@ -107,14 +120,14 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
     }
   };
 
-  _updateBottomIfNecessary = () => {
+  _updateBottomIfNecessary = async () => {
     if (this._keyboardEvent == null) {
       this.setState({bottom: 0});
       return;
     }
 
     const {duration, easing, endCoordinates} = this._keyboardEvent;
-    const height = this._relativeKeyboardHeight(endCoordinates);
+    const height = await this._relativeKeyboardHeight(endCoordinates);
 
     if (this.state.bottom === height) {
       return;
