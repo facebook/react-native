@@ -1374,6 +1374,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
             props, TextLayoutManagerMapBuffer.isRTL(attributedString)),
         textBreakStrategy,
         TextAttributeProps.getJustificationMode(props),
-        containsMultipleFragments);
+        containsMultipleFragments, 
+        null);
   }
 }
