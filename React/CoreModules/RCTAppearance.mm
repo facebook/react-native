@@ -137,21 +137,26 @@ RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
   return _currentColorScheme;
 }
 
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 - (void)appearanceChanged:(NSNotification *)notification
 {
   NSDictionary *userInfo = [notification userInfo];
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
   UITraitCollection *traitCollection = nil;
   if (userInfo) {
     traitCollection = userInfo[RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey];
   }
   NSString *newColorScheme = RCTColorSchemePreference(traitCollection);
 #else // [TODO(macOS GH#774)
-  NSAppearance *appearance = nil;
-  if (userInfo) {
-    appearance = userInfo[RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey];
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary *)change
+                       context:(void *)context
+{
+  if (object != NSApp || ![keyPath isEqualToString:@"effectiveAppearance"]) {
+    [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    return;
   }
-  NSString *newColorScheme = RCTColorSchemePreference(appearance);
+  NSString *newColorScheme = RCTColorSchemePreference(nil);
 #endif // ]TODO(macOS GH#774)
   if (![_currentColorScheme isEqualToString:newColorScheme]) {
     _currentColorScheme = newColorScheme;
@@ -168,19 +173,30 @@ RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
 
 - (void)startObserving
 {
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
   if (@available(iOS 13.0, *)) {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(appearanceChanged:)
                                                  name:RCTUserInterfaceStyleDidChangeNotification
                                                object:nil];
   }
+#else  
+  [NSApp addObserver:self
+          forKeyPath:@"effectiveAppearance"
+             options:NSKeyValueObservingOptionNew
+             context:nil];  
+#endif // ]TODO(macOS GH#774)
 }
 
 - (void)stopObserving
 {
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
   if (@available(iOS 13.0, *)) {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
   }
+#else  
+  [NSApp removeObserver:self forKeyPath:@"effectiveAppearance" context:nil];  
+#endif // ]TODO(macOS GH#774)
 }
 
 @end

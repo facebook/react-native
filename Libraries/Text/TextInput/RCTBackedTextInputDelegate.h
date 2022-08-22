@@ -22,6 +22,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)textInputShouldReturn; // May be called right before `textInputShouldEndEditing` if "Return" button was pressed.
 - (void)textInputDidReturn;
 
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
+- (void)automaticSpellingCorrectionDidChange:(BOOL)enabled;
+- (void)continuousSpellCheckingDidChange:(BOOL)enabled;
+- (void)grammarCheckingDidChange:(BOOL)enabled;
+#endif // ]TODO(macOS GH#774)
+
 /*
  * Called before any change in the TextInput. The delegate has the opportunity to change the replacement string or reject the change completely.
  * To change the replacement, return the changed version of the `text`.

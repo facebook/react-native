@@ -18,12 +18,16 @@ const {
   Text,
   TextInput,
   View,
+  Platform, // TODO(macOS GH#774)
   StyleSheet,
   Slider,
   Switch,
   Alert,
 } = require('react-native');
-import type {KeyboardType} from 'react-native/Libraries/Components/TextInput/TextInput';
+import type {
+  KeyboardType,
+  SettingChangeEvent,
+} from 'react-native/Libraries/Components/TextInput/TextInput'; // [TODO(macOS GH#774)
 
 const TextInputSharedExamples = require('./TextInputSharedExamples.js');
 
@@ -322,6 +326,39 @@ const styles = StyleSheet.create({
     width: 24,
   },
 });
+
+// [TODO(macOS GH#774)
+function AutoCorrectSpellCheckGrammarCheckCallbacks(): React.Node {
+  const [enableAutoCorrect, setEnableAutoCorrect] = React.useState(false);
+  const [enableSpellSpeck, setEnableSpellSpeck] = React.useState(false);
+  const [enableGrammarCheck, setEnableGrammarCheck] = React.useState(false);
+  return (
+    <>
+      <Text>
+        enableAutoCorrect: {enableAutoCorrect ? 'enabled' : 'disabled'}
+      </Text>
+      <Text>enableSpellSpeck: {enableSpellSpeck ? 'enabled' : 'disabled'}</Text>
+      <Text>
+        enableGrammarCheck: {enableGrammarCheck ? 'enabled' : 'disabled'}
+      </Text>
+      <TextInput
+        autoCorrect={enableAutoCorrect}
+        style={{padding: 10, marginTop: 10}}
+        multiline={true}
+        onAutoCorrectChange={(event: SettingChangeEvent) =>
+          setEnableAutoCorrect(event.nativeEvent.enabled)
+        }
+        onSpellCheckChange={(event: SettingChangeEvent) =>
+          setEnableSpellSpeck(event.nativeEvent.enabled)
+        }
+        onGrammarCheckChange={(event: SettingChangeEvent) =>
+          setEnableGrammarCheck(event.nativeEvent.enabled)
+        }
+      />
+    </>
+  );
+}
+// ]TODO(macOS GH#774)
 
 exports.displayName = (undefined: ?string);
 exports.title = 'TextInput';
@@ -818,3 +855,14 @@ exports.examples = ([
     },
   },
 ]: Array<RNTesterModuleExample>);
+// [TODO(macOS GH#774)
+if (Platform.OS === 'macos') {
+  exports.examples.push({
+    title:
+      'AutoCorrect, spellCheck and grammarCheck callbacks - Multiline Textfield',
+    render: function (): React.Node {
+      return <AutoCorrectSpellCheckGrammarCheckCallbacks />;
+    },
+  });
+}
+// ]TODO(macOS GH#774)

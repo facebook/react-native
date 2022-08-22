@@ -402,6 +402,29 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
                                eventCount:_nativeEventCount];
 }
 
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
+- (void)automaticSpellingCorrectionDidChange:(BOOL)enabled
+{
+  if (_onAutoCorrectChange) {
+    _onAutoCorrectChange(@{@"enabled": [NSNumber numberWithBool:enabled]});
+  }
+}
+
+- (void)continuousSpellCheckingDidChange:(BOOL)enabled
+{
+  if (_onSpellCheckChange) {
+    _onSpellCheckChange(@{@"enabled": [NSNumber numberWithBool:enabled]});
+  }
+}
+
+- (void)grammarCheckingDidChange:(BOOL)enabled
+{
+  if (_onGrammarCheckChange) {
+    _onGrammarCheckChange(@{@"enabled": [NSNumber numberWithBool:enabled]});
+  }
+}
+#endif // ]TODO(macOS GH#774)
+
 - (BOOL)textInputShouldReturn
 {
   // We send `submit` event here, in `textInputShouldReturn`

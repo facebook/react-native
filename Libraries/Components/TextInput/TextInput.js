@@ -130,6 +130,13 @@ export type EditingEvent = SyntheticEvent<
   |}>,
 >;
 
+// macOS-only // [TODO(macOS GH#774)
+export type SettingChangeEvent = SyntheticEvent<
+  $ReadOnly<{|
+    enabled: boolean,
+  |}>,
+>; // ]TODO(macOS GH#774)
+
 type DataDetectorTypesType =
   // iOS+macOS
   | 'phoneNumber'
@@ -306,7 +313,7 @@ type IOSProps = $ReadOnly<{|
   // [TODO(macOS GH#774)
   /**
    * If `false`, disables grammar-check.
-   * @platform macOS
+   * @platform macos
    */
   grammarCheck?: ?boolean,
   // ]TODO(macOS GH#774)
@@ -636,6 +643,38 @@ export type Props = $ReadOnly<{|
    * Changed text is passed as an argument to the callback handler.
    */
   onChangeText?: ?(text: string) => mixed,
+
+  // [TODO(macOS GH#774)
+  /**
+   * Callback that is called when the text input's autoCorrect setting changes.
+   * This will be called with
+   * `{ nativeEvent: { enabled } }`.
+   * Does only work with 'multiline={true}'.
+   *
+   * @platform macos
+   */
+  onAutoCorrectChange?: ?(e: SettingChangeEvent) => mixed,
+
+  /**
+   * Callback that is called when the text input's spellCheck setting changes.
+   * This will be called with
+   * `{ nativeEvent: { enabled } }`.
+   * Does only work with 'multiline={true}'.
+   *
+   * @platform macos
+   */
+  onSpellCheckChange?: ?(e: SettingChangeEvent) => mixed,
+
+  /**
+   * Callback that is called when the text input's grammarCheck setting changes.
+   * This will be called with
+   * `{ nativeEvent: { enabled } }`.
+   * Does only work with 'multiline={true}'.
+   *
+   * @platform macos
+   */
+  onGrammarCheckChange?: ?(e: SettingChangeEvent) => mixed,
+  // ]TODO(macOS GH#774)
 
   /**
    * DANGER: this API is not stable and will change in the future.

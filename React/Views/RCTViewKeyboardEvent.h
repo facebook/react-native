@@ -7,33 +7,11 @@
 #import <React/RCTComponentEvent.h>
 
 @interface RCTViewKeyboardEvent : RCTComponentEvent
-+ (instancetype)keyDownEventWithReactTag:(NSNumber *)reactTag
-                             capsLockKey:(BOOL)capsLockKey
-                             shiftKey:(BOOL)shiftKey
-                              ctrlKey:(BOOL)controlKey
-                               altKey:(BOOL)optionKey
-                              metaKey:(BOOL)commandKey
-                        numericPadKey:(BOOL)numericPadKey
-                              helpKey:(BOOL)helpKey
-                          functionKey:(BOOL)functionKey
-                         leftArrowKey:(BOOL)leftArrowKey
-                        rightArrowKey:(BOOL)rightArrowKey
-                           upArrowKey:(BOOL)upArrowKey
-                         downArrowKey:(BOOL)downArrowKey
-                                  key:(NSString *)key;
 
-+ (instancetype)keyUpEventWithReactTag:(NSNumber *)reactTag
-                           capsLockKey:(BOOL)capsLockKey
-                              shiftKey:(BOOL)shiftKey
-                               ctrlKey:(BOOL)controlKey
-                                altKey:(BOOL)optionKey
-                               metaKey:(BOOL)commandKey
-                         numericPadKey:(BOOL)numericPadKey
-                               helpKey:(BOOL)helpKey
-                           functionKey:(BOOL)functionKey
-                          leftArrowKey:(BOOL)leftArrowKey
-                         rightArrowKey:(BOOL)rightArrowKey
-                            upArrowKey:(BOOL)upArrowKey
-                          downArrowKey:(BOOL)downArrowKey
-                                   key:(NSString *)key;
+#if TARGET_OS_OSX // TODO(macOS GH#774)
++ (NSDictionary *)bodyFromEvent:(NSEvent *)event;
++ (NSString *)keyFromEvent:(NSEvent *)event;
++ (instancetype)keyEventFromEvent:(NSEvent *)event reactTag:(NSNumber *)reactTag;
+#endif // TODO(macOS GH#774)
+
 @end
