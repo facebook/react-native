@@ -40,10 +40,7 @@ references:
   #        Dependency Anchors
   # -------------------------
   dependency_versions:
-    # The Xcode version used on CircleCI OSS tests must be kept in sync with
-    # the Xcode version used on Sandcastle OSS tests. See _XCODE_VERSION in
-    # tools/utd/migrated_nbtd_jobs/react_native_oss.td
-    xcode_version: &xcode_version "13.3.1"
+    xcode_version: &xcode_version "13.4.1"
     nodelts_image: &nodelts_image "cimg/node:16.14"
     nodeprevlts_image: &nodeprevlts_image "cimg/node:14.19"
 
