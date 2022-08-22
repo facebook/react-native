@@ -10,9 +10,10 @@
 
 'use strict';
 
-const AnimatedValue = require('../nodes/AnimatedValue');
-const AnimatedValueXY = require('../nodes/AnimatedValueXY');
-const AnimatedInterpolation = require('../nodes/AnimatedInterpolation');
+import type AnimatedValue from '../nodes/AnimatedValue';
+import type AnimatedValueXY from '../nodes/AnimatedValueXY';
+import type AnimatedInterpolation from '../nodes/AnimatedInterpolation';
+
 const Animation = require('./Animation');
 const SpringConfig = require('../SpringConfig');
 

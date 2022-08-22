@@ -19,9 +19,9 @@ import type {
 } from '../../../CodegenSchema';
 
 import type {AliasResolver} from '../Utils';
+import type {StructCollector} from './StructCollector';
 
 const invariant = require('invariant');
-const {StructCollector} = require('./StructCollector');
 const {getNamespacedStructName} = require('./Utils');
 const {capitalize} = require('../../Utils');
 const {

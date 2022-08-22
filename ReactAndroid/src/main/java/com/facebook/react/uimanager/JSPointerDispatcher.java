@@ -119,6 +119,20 @@ public class JSPointerDispatcher {
       mTouchEventCoalescingKeyHelper.addCoalescingKey(mDownStartTime);
 
       if (!supportsHover) {
+        // Indirect OVER event dispatches before ENTER
+        boolean listeningForOver =
+            isAnyoneListeningForBubblingEvent(hitPath, EVENT.OVER, EVENT.OVER_CAPTURE);
+        if (listeningForOver) {
+          eventDispatcher.dispatchEvent(
+              PointerEvent.obtain(
+                  PointerEventHelper.POINTER_OVER,
+                  surfaceId,
+                  activeTargetTag,
+                  motionEvent,
+                  mTargetCoordinates,
+                  mPrimaryPointerId));
+        }
+
         List<ViewTarget> enterViewTargets =
             filterByShouldDispatch(hitPath, EVENT.ENTER, EVENT.ENTER_CAPTURE, false);
 
@@ -157,6 +171,8 @@ public class JSPointerDispatcher {
     // New pointer goes down, this can only happen after ACTION_DOWN is sent for the first pointer
     if (action == MotionEvent.ACTION_POINTER_DOWN) {
       mTouchEventCoalescingKeyHelper.incrementCoalescingKey(mDownStartTime);
+
+      // TODO(luwe) We need to fire indirect over,enter events for secondary pointers
 
       boolean listeningForDown =
           isAnyoneListeningForBubblingEvent(hitPath, EVENT.DOWN, EVENT.DOWN_CAPTURE);
@@ -198,6 +214,8 @@ public class JSPointerDispatcher {
     if (action == MotionEvent.ACTION_POINTER_UP) {
       mTouchEventCoalescingKeyHelper.incrementCoalescingKey(mDownStartTime);
 
+      // TODO(luwe) We need to fire indirect out,leave events for secondary pointers
+
       boolean listeningForUp =
           isAnyoneListeningForBubblingEvent(hitPath, EVENT.UP, EVENT.UP_CAPTURE);
       if (listeningForUp) {
@@ -235,6 +253,19 @@ public class JSPointerDispatcher {
       }
 
       if (!supportsHover) {
+        boolean listeningForOut =
+            isAnyoneListeningForBubblingEvent(hitPath, EVENT.OUT, EVENT.OUT_CAPTURE);
+        if (listeningForOut) {
+          eventDispatcher.dispatchEvent(
+              PointerEvent.obtain(
+                  PointerEventHelper.POINTER_OUT,
+                  surfaceId,
+                  activeTargetTag,
+                  motionEvent,
+                  mTargetCoordinates,
+                  mPrimaryPointerId));
+        }
+
         List<ViewTarget> leaveViewTargets =
             filterByShouldDispatch(hitPath, EVENT.LEAVE, EVENT.LEAVE_CAPTURE, false);
 
@@ -408,6 +439,53 @@ public class JSPointerDispatcher {
       // If something has changed in either enter/exit, let's start a new coalescing key
       mTouchEventCoalescingKeyHelper.incrementCoalescingKey(mHoverInteractionKey);
 
+      // Out, Leave events
+      if (mLastHitPath.size() > 0) {
+        int lastTargetTag = mLastHitPath.get(0).getViewId();
+        boolean listeningForOut =
+            isAnyoneListeningForBubblingEvent(mLastHitPath, EVENT.OUT, EVENT.OUT_CAPTURE);
+        if (listeningForOut) {
+          eventDispatcher.dispatchEvent(
+              PointerEvent.obtain(
+                  PointerEventHelper.POINTER_OUT,
+                  surfaceId,
+                  lastTargetTag,
+                  motionEvent,
+                  mTargetCoordinates,
+                  mPrimaryPointerId));
+        }
+
+        // target -> root
+        List<ViewTarget> leaveViewTargets =
+            filterByShouldDispatch(
+                mLastHitPath.subList(0, mLastHitPath.size() - firstDivergentIndexFromBack),
+                EVENT.LEAVE,
+                EVENT.LEAVE_CAPTURE,
+                nonDivergentListeningToLeave);
+        if (leaveViewTargets.size() > 0) {
+          // We want to dispatch from target -> root, so no need to reverse
+          dispatchEventForViewTargets(
+              PointerEventHelper.POINTER_LEAVE,
+              leaveViewTargets,
+              eventDispatcher,
+              surfaceId,
+              motionEvent);
+        }
+      }
+
+      boolean listeningForOver =
+          isAnyoneListeningForBubblingEvent(hitPath, EVENT.OVER, EVENT.OVER_CAPTURE);
+      if (listeningForOver) {
+        eventDispatcher.dispatchEvent(
+            PointerEvent.obtain(
+                PointerEventHelper.POINTER_OVER,
+                surfaceId,
+                targetTag,
+                motionEvent,
+                mTargetCoordinates,
+                mPrimaryPointerId));
+      }
+
       // target -> root
       List<ViewTarget> enterViewTargets =
           filterByShouldDispatch(
@@ -422,23 +500,6 @@ public class JSPointerDispatcher {
         dispatchEventForViewTargets(
             PointerEventHelper.POINTER_ENTER,
             enterViewTargets,
-            eventDispatcher,
-            surfaceId,
-            motionEvent);
-      }
-
-      // target -> root
-      List<ViewTarget> leaveViewTargets =
-          filterByShouldDispatch(
-              mLastHitPath.subList(0, mLastHitPath.size() - firstDivergentIndexFromBack),
-              EVENT.LEAVE,
-              EVENT.LEAVE_CAPTURE,
-              nonDivergentListeningToLeave);
-      if (leaveViewTargets.size() > 0) {
-        // We want to dispatch from target -> root, so no need to reverse
-        dispatchEventForViewTargets(
-            PointerEventHelper.POINTER_LEAVE,
-            leaveViewTargets,
             eventDispatcher,
             surfaceId,
             motionEvent);

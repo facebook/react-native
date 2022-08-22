@@ -380,7 +380,7 @@ class MessageQueue {
     return (
       // $FlowFixMe[cannot-resolve-name]
       typeof DebuggerInternal !== 'undefined' &&
-      DebuggerInternal.shouldPauseOnThrow === true // eslint-disable-line no-undef
+      DebuggerInternal.shouldPauseOnThrow === true
     );
   }
 

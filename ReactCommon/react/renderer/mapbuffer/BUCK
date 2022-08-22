@@ -29,6 +29,7 @@ rn_xplat_cxx_library(
         ],
         prefix = "react/renderer/mapbuffer",
     ),
+    compiler_flags_pedantic = True,
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
     fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
     force_static = True,
@@ -47,8 +48,6 @@ rn_xplat_cxx_library(
     deps = [
         "//third-party/glog:glog",
         "//xplat/fbsystrace:fbsystrace",
-        "//xplat/folly:headers_only_do_not_use",
-        "//xplat/folly:memory",
         react_native_xplat_target("react/debug:debug"),
     ],
 )
@@ -66,7 +65,6 @@ fb_xplat_cxx_test(
     contacts = ["oncall+react_native@xmail.facebook.com"],
     platforms = ANDROID,
     deps = [
-        "//xplat/folly:molly",
         "//xplat/third-party/gmock:gtest",
         react_native_xplat_target("react/debug:debug"),
         react_native_xplat_target("react/renderer/mapbuffer:mapbuffer"),
