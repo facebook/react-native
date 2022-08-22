@@ -12,6 +12,10 @@
 #import <React/RCTEventDispatcherProtocol.h> // TODO(OSS Candidate ISS#2710739)
 #import <React/RCTPointerEvents.h>
 
+#if TARGET_OS_OSX // TODO(macOS GH#774)
+#import <React/RCTCursor.h>
+#endif // TODO(macOS GH#774)
+
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
 extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 #endif // TODO(macOS GH#774)
@@ -123,6 +127,7 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 /**
  * macOS Properties
  */
+@property (nonatomic, assign) RCTCursor cursor;
 
 @property (nonatomic, assign) CATransform3D transform3D;
 

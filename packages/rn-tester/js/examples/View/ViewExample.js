@@ -48,6 +48,66 @@ exports.examples = [
     },
   },
   {
+    title: 'Cursor',
+    render(): React.Node {
+      return (
+        <>
+          <View style={{cursor: 'auto', padding: 10}}>
+            <Text style={{fontSize: 11}}>auto</Text>
+          </View>
+          <View style={{cursor: 'default', padding: 10}}>
+            <Text style={{fontSize: 11}}>default</Text>
+          </View>
+          <View style={{cursor: 'context-menu', padding: 10}}>
+            <Text style={{fontSize: 11}}>context-menu</Text>
+          </View>
+          <View style={{cursor: 'pointer', padding: 10}}>
+            <Text style={{fontSize: 11}}>pointer</Text>
+          </View>
+          <View style={{cursor: 'text', padding: 10}}>
+            <Text style={{fontSize: 11}}>text</Text>
+          </View>
+          <View style={{cursor: 'vertical-text', padding: 10}}>
+            <Text style={{fontSize: 11}}>vertical-text</Text>
+          </View>
+          <View style={{cursor: 'alias', padding: 10}}>
+            <Text style={{fontSize: 11}}>alias</Text>
+          </View>
+          <View style={{cursor: 'copy', padding: 10}}>
+            <Text style={{fontSize: 11}}>copy</Text>
+          </View>
+          <View style={{cursor: 'not-allowed', padding: 10}}>
+            <Text style={{fontSize: 11}}>not-allowed</Text>
+          </View>
+          <View style={{cursor: 'grab', padding: 10}}>
+            <Text style={{fontSize: 11}}>grab</Text>
+          </View>
+          <View style={{cursor: 'grabbing', padding: 10}}>
+            <Text style={{fontSize: 11}}>grabbing</Text>
+          </View>
+          <View style={{cursor: 'col-resize', padding: 10}}>
+            <Text style={{fontSize: 11}}>col-resize</Text>
+          </View>
+          <View style={{cursor: 'row-resize', padding: 10}}>
+            <Text style={{fontSize: 11}}>row-resize</Text>
+          </View>
+          <View style={{cursor: 'n-resize', padding: 10}}>
+            <Text style={{fontSize: 11}}>n-resize</Text>
+          </View>
+          <View style={{cursor: 'e-resize', padding: 10}}>
+            <Text style={{fontSize: 11}}>e-resize</Text>
+          </View>
+          <View style={{cursor: 's-resize', padding: 10}}>
+            <Text style={{fontSize: 11}}>s-resize</Text>
+          </View>
+          <View style={{cursor: 'w-resize', padding: 10}}>
+            <Text style={{fontSize: 11}}>w-resize</Text>
+          </View>
+        </>
+      );
+    },
+  },
+  {
     title: 'Padding/Margin',
     render(): React.Node {
       const styles = StyleSheet.create({

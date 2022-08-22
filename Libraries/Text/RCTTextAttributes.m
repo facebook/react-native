@@ -109,27 +109,27 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
         alignment = NSTextAlignmentRight;
       }
     }
-    
+
     paragraphStyle.alignment = alignment;
     isParagraphStyleUsed = YES;
   }
-  
+
   if (_baseWritingDirection != NSWritingDirectionNatural) {
     paragraphStyle.baseWritingDirection = _baseWritingDirection;
     isParagraphStyleUsed = YES;
   }
-  
+
   if (!isnan(_lineHeight)) {
     CGFloat lineHeight = _lineHeight * self.effectiveFontSizeMultiplier;
     paragraphStyle.minimumLineHeight = lineHeight;
     paragraphStyle.maximumLineHeight = lineHeight;
     isParagraphStyleUsed = YES;
   }
-  
+
   if (isParagraphStyleUsed) {
     return [paragraphStyle copy];
   }
-  
+
   return nil;
 }
 

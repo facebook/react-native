@@ -423,6 +423,13 @@ static RCTUIView *RCTUIViewCommonInit(RCTUIView *self)
   }
 }
 
+// We purposely don't use RCTCursor for the parameter type here because it would introduce an import cycle:
+// RCTUIKit > RCTCursor > RCTConvert > RCTUIKit
+- (void)setCursor:(NSInteger)cursor
+{
+  // This method is required to be defined due to [RCTVirtualTextViewManager view] returning a RCTUIView.
+}
+
 @end
 
 // RCTUIScrollView
