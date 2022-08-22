@@ -2,37 +2,6 @@
 
 ## 0.70-rc.4
 
-### Changed
-
-
-#### Android specific
-
-- Update the new app template to use CMake instead of Android.mk ([dfd7f70eff](https://github.com/facebook/react-native/commit/dfd7f70effeacfeb06d9c2d4762a279a079ee004) by [@cortinico](https://github.com/cortinico))
-- Refactored usage of kotlin plugin ([be35c6dafb](https://github.com/facebook/react-native/commit/be35c6dafbdb46d2ec165460d4bb12f34de6e878) by [@hurali97](https://github.com/hurali97))
-- Bump Gradle to 7.5.1 ([7a911e0730](https://github.com/facebook/react-native/commit/7a911e073094b533cb5a7ce76932c02f83f4fe5d) by [@AlexanderEggers](https://github.com/AlexanderEggers))
-
-#### iOS specific
-
-- Silence warning due to react-native internal details. ([a4599225f5](https://github.com/facebook/react-native/commit/a4599225f5a6a2d6801dd80b7728c1bbe5b2ec3a) by [@cipolleschi](https://github.com/cipolleschi))
-
-### Fixed
-
-- Codegen should ignore `.d.ts` files ([0f0d52067c](https://github.com/facebook/react-native/commit/0f0d52067cb89fdb39a99021f0745282ce087fc2) by [@tido64](https://github.com/tido64))
-- Avoid full copy of large folly::dynamic objects in JSIExecutor#defaultTimeoutInvoker ([521011d4cc](https://github.com/facebook/react-native/commit/521011d4cc713dfce97dc8872fd0f5171e587b5d) by [@christophpurrer](https://github.com/christophpurrer))
-
-#### Android specific
-
-- Fix error of release builds with Hermes enabled for Windows users ([7fcdb9d9d8](https://github.com/facebook/react-native/commit/7fcdb9d9d8f964d24a5ec3d423c67f49b7650ed8) by [@JoseLion](https://github.com/JoseLion))
-
-### Unknown
-
-- Bump react-native-codegen to 0.70.4 ([a22ceecc84](https://github.com/facebook/react-native/commit/a22ceecc849fc62c926643f4d121cf1e4575c693) by [@dmitryrykun](https://github.com/dmitryrykun))
-- Follow up to metro bump ([05dcebc211](https://github.com/facebook/react-native/commit/05dcebc21175a78c6533a8856aed644c45276169) by [@kelset](https://github.com/kelset))
-- Hermes version bump for 0.70.0-RC4 ([0b4b7774e2](https://github.com/facebook/react-native/commit/0b4b7774e2d71259962ed36b7acb5c3989c3be9c) by [@dmitryrykun](https://github.com/dmitryrykun))
-- Upgrade react-native-gradle-plugin to 0.70.2 ([1518f838b7](https://github.com/facebook/react-native/commit/1518f838b70951882f7b414c90407d3eb584cab4) by [@dmitryrykun](https://github.com/dmitryrykun))
-
-## v0.70.0-rc.2
-
 ### Breaking
 
 - Remove jest/preprocessor from the react-native package ([0301cb285b](https://github.com/facebook/react-native/commit/0301cb285b2e85b48a397fe58d565196654d9754) by [@motiz88](https://github.com/motiz88))
@@ -80,28 +49,25 @@
 
 ### Changed
 
-- Bump React Native Codegen to 0.70.0 ([2a274c1a08](https://github.com/facebook/react-native/commit/2a274c1a082c3291d2df1a4b960bf654e217a4dd) by [@cortinico](https://github.com/cortinico), [ce4246a05c](https://github.com/facebook/react-native/commit/ce4246a05c96cd6fe805499960b105267ac044bb) by [@dmitryrykun](https://github.com/dmitryrykun))
-- Bump dependencies before 0.70 branch cut ([080a5921e1](https://github.com/facebook/react-native/commit/080a5921e158dee8b2edc93d56232ba0517d831a) by [@cortinico](https://github.com/cortinico))
-- Upgrade RN CLI to v9.0.0-alpha.9 ([c504d038c4](https://github.com/facebook/react-native/commit/c504d038c470f7a13fb345f57261172c7c85248c) by [@thymikee](https://github.com/thymikee), [f1d624823f](https://github.com/facebook/react-native/commit/f1d624823fe23eb3d30de00cf78beb71dc1b8413) by [@kelset](https://github.com/kelset), [2b49ac6f8b](https://github.com/facebook/react-native/commit/2b49ac6f8b04953be4cd5bf0b1325986b117763c) by [@thymikee](https://github.com/thymikee))
+- Bump React Native Codegen to 0.70.0 ([a22ceecc84](https://github.com/facebook/react-native/commit/a22ceecc849fc62c926643f4d121cf1e4575c693) by [@dmitryrykun](https://github.com/dmitryrykun), [2a274c1a08](https://github.com/facebook/react-native/commit/2a274c1a082c3291d2df1a4b960bf654e217a4dd) by [@cortinico](https://github.com/cortinico), [ce4246a05c](https://github.com/facebook/react-native/commit/ce4246a05c96cd6fe805499960b105267ac044bb) by [@dmitryrykun](https://github.com/dmitryrykun))
+- Upgrade RN CLI to v9.0.0, Metro to 0.72.1 ([0c2fe96998](https://github.com/facebook/react-native/commit/0c2fe969984fff0676f99fe034b3e49d38ed7db6) by [@thymikee](https://github.com/thymikee), [7e580b97bf](https://github.com/facebook/react-native/commit/7e580b97bf63436978d053926e04adeb9ae6f75f) by [@kelset](https://github.com/kelset), [c504d038c4](https://github.com/facebook/react-native/commit/c504d038c470f7a13fb345f57261172c7c85248c) by [@thymikee](https://github.com/thymikee), [f1d624823f](https://github.com/facebook/react-native/commit/f1d624823fe23eb3d30de00cf78beb71dc1b8413) by [@kelset](https://github.com/kelset), [2b49ac6f8b](https://github.com/facebook/react-native/commit/2b49ac6f8b04953be4cd5bf0b1325986b117763c) by [@thymikee](https://github.com/thymikee))
 - Doc: fix minimum iOS version in requirements section ([ec3c8f4380](https://github.com/facebook/react-native/commit/ec3c8f43800a027a0a717367360421089e7293fd) by [@Simon-TechForm](https://github.com/Simon-TechForm))
 - Remove "Early" in Js error reporting pipeline ([0646551d76](https://github.com/facebook/react-native/commit/0646551d7690cd54847eb468f8e43d71ebebdda9) by [@sshic](https://github.com/sshic))
 - Update @react-native/eslint-plugin-specs to 0.70.0 ([d07fae9b23](https://github.com/facebook/react-native/commit/d07fae9b23c258a60045b666167efd5259b962ce), [afd76f69c7](https://github.com/facebook/react-native/commit/afd76f69c7d2408654ba67ac2ed4d612abfbe0ce) by [@dmitryrykun](https://github.com/dmitryrykun), [ea8d8e2f49](https://github.com/facebook/react-native/commit/ea8d8e2f49ea3ce15faeab500b661a1cacacf8a8) by [@cortinico](https://github.com/cortinico))
 - Do not depend on hermes-engine NPM package anymore ([78cd689f9a](https://github.com/facebook/react-native/commit/78cd689f9a634b152ea09ed6cb4fa858ee26e653) by [@cortinico](https://github.com/cortinico))
 - Add ability to pass `ItemSeparatorComponent` as React Element ([5854b11bf9](https://github.com/facebook/react-native/commit/5854b11bf9d42bab9dbe62b9152a3d3a94e42c13) by [@retyui](https://github.com/retyui))
-- Hermes version bump. ([8c682ddd59](https://github.com/facebook/react-native/commit/8c682ddd599b75a547975104cb6f90eec8753daf) by [@dmitryrykun](https://github.com/dmitryrykun), [eb6767813a](https://github.com/facebook/react-native/commit/eb6767813a0efe04a9e79955b8f6ee909a4a76bf) by [@cortinico](https://github.com/cortinico))
+- Hermes version bump. ([0b4b7774e2](https://github.com/facebook/react-native/commit/0b4b7774e2d71259962ed36b7acb5c3989c3be9c) by [@dmitryrykun](https://github.com/dmitryrykun), [8c682ddd59](https://github.com/facebook/react-native/commit/8c682ddd599b75a547975104cb6f90eec8753daf) by [@dmitryrykun](https://github.com/dmitryrykun), [eb6767813a](https://github.com/facebook/react-native/commit/eb6767813a0efe04a9e79955b8f6ee909a4a76bf) by [@cortinico](https://github.com/cortinico))
 - Codemod `{...null}` to `{}` in xplat/js ([f392ba6725](https://github.com/facebook/react-native/commit/f392ba67254e95126974fafabf3e4ef0300e24e8) by [@gkz](https://github.com/gkz))
 - Fix TextInput dropping text when used as uncontrolled component with `defaultValue` ([51f49ca998](https://github.com/facebook/react-native/commit/51f49ca9982f24de08f5a5654a5210e547bb5b86))
 - Suppress errors ahead of launch ([67e12a19cb](https://github.com/facebook/react-native/commit/67e12a19cb236fbe0809fbbc9e516b37a5848a6a) by [@gkz](https://github.com/gkz))
 - Suppress missing 'this' annotations ([6c563a507f](https://github.com/facebook/react-native/commit/6c563a507fd8c41e04a1e62e2ba87993c6eb1e2f) by [@pieterv](https://github.com/pieterv))
 - Suppress missing annotations ([66c6a75650](https://github.com/facebook/react-native/commit/66c6a75650f91d61e7e87a8e661d87101e26cf9c) by [@pieterv](https://github.com/pieterv))
 - Use RuntimeConfig instead of VM Experiment Flag to set up the micro task queue. ([753038cf34](https://github.com/facebook/react-native/commit/753038cf345a45d95ab9b9343447f524e1b36840) by [@fbmal7](https://github.com/fbmal7))
-- Update direct Metro dependencies to 0.72.0 ([64788cc9fe](https://github.com/facebook/react-native/commit/64788cc9fe42fbedc3e3b1c9c516a079cfa71cd1) by [@huntie](https://github.com/huntie), [bdeb4e0655](https://github.com/facebook/react-native/commit/bdeb4e065532dfb1bb4c9c1e87e8a869a737e48a) by [@jacdebug](https://github.com/jacdebug), [894f652639](https://github.com/facebook/react-native/commit/894f6526399098d825ef32c02eb201cd8ba41873) by [@robhogan](https://github.com/robhogan), [08ebc1cfd8](https://github.com/facebook/react-native/commit/08ebc1cfd88a629389c43abf23b40a2bdf1b1579) by [@arushikesarwani94](https://github.com/arushikesarwani94))
+- Update direct Metro dependencies to 0.72.0 ([05dcebc211](https://github.com/facebook/react-native/commit/05dcebc21175a78c6533a8856aed644c45276169) by [@kelset](https://github.com/kelset), [64788cc9fe](https://github.com/facebook/react-native/commit/64788cc9fe42fbedc3e3b1c9c516a079cfa71cd1) by [@huntie](https://github.com/huntie), [bdeb4e0655](https://github.com/facebook/react-native/commit/bdeb4e065532dfb1bb4c9c1e87e8a869a737e48a) by [@jacdebug](https://github.com/jacdebug), [894f652639](https://github.com/facebook/react-native/commit/894f6526399098d825ef32c02eb201cd8ba41873) by [@robhogan](https://github.com/robhogan), [08ebc1cfd8](https://github.com/facebook/react-native/commit/08ebc1cfd88a629389c43abf23b40a2bdf1b1579) by [@arushikesarwani94](https://github.com/arushikesarwani94))
 - ECOSYSTEM.md: update Partner entries ([5471afeebf](https://github.com/facebook/react-native/commit/5471afeebf59853ce31df1ade6a4591414b6aa2f) by [@Simek](https://github.com/Simek))
 - Move ScrollView's contentOffset to common props ([7c581f3d30](https://github.com/facebook/react-native/commit/7c581f3d3007954413d68daf2e868ce93e120615) by [@genkikondo](https://github.com/genkikondo))
-- Upgrade react-native-gradle-plugin to 0.70.1 ([2176173dcc](https://github.com/facebook/react-native/commit/2176173dcc029ab21bfcdfe5c9e150581db47409) by [@dmitryrykun](https://github.com/dmitryrykun))
+- Upgrade react-native-gradle-plugin to 0.70.2 ([1518f838b7](https://github.com/facebook/react-native/commit/1518f838b70951882f7b414c90407d3eb584cab4), [2176173dcc](https://github.com/facebook/react-native/commit/2176173dcc029ab21bfcdfe5c9e150581db47409) by [@dmitryrykun](https://github.com/dmitryrykun))
 - Update a few metro deps as follow up from the commit from main ([7c7ba1babd](https://github.com/facebook/react-native/commit/7c7ba1babd41b6b60f0dc9f48c34d00235d2fef5) by [@kelset](https://github.com/kelset))
-- Upgrade RN CLI to v9.0.0, Metro to 0.72.1 ([0c2fe96998](https://github.com/facebook/react-native/commit/0c2fe969984fff0676f99fe034b3e49d38ed7db6) by [@thymikee](https://github.com/thymikee))
-- Bump CLI to latest v9-alpha11 ([7e580b97bf](https://github.com/facebook/react-native/commit/7e580b97bf63436978d053926e04adeb9ae6f75f) by [@kelset](https://github.com/kelset))
 
 #### Android specific
 
@@ -117,6 +83,10 @@
 - Adapt template to new architecture autolinking on Android ([9ad7cbc3eb](https://github.com/facebook/react-native/commit/9ad7cbc3eb365190e0bfe290e1025553a807b298) by [@thymikee](https://github.com/thymikee))
 - Replaced reactnativeutilsjni with reactnativejni in the build process to reduce size ([54a4fcbfdc](https://github.com/facebook/react-native/commit/54a4fcbfdcc8111b3010b2c31ed3c1d48632ce4c) by [@SparshaSaha](https://github.com/SparshaSaha))
 - Bump Soloader to 0.10.4 ([b9adf2db20](https://github.com/facebook/react-native/commit/b9adf2db20bf9e1436fa58182d886fd9461df9af) by [@mikehardy](https://github.com/mikehardy))
+- Update the new app template to use CMake instead of Android.mk ([dfd7f70eff](https://github.com/facebook/react-native/commit/dfd7f70effeacfeb06d9c2d4762a279a079ee004) by [@cortinico](https://github.com/cortinico))
+- Refactored usage of kotlin plugin ([be35c6dafb](https://github.com/facebook/react-native/commit/be35c6dafbdb46d2ec165460d4bb12f34de6e878) by [@hurali97](https://github.com/hurali97))
+- Bump Gradle to 7.5.1 ([7a911e0730](https://github.com/facebook/react-native/commit/7a911e073094b533cb5a7ce76932c02f83f4fe5d) by [@AlexanderEggers](https://github.com/AlexanderEggers))
+- Fix error of release builds with Hermes enabled for Windows users ([7fcdb9d9d8](https://github.com/facebook/react-native/commit/7fcdb9d9d8f964d24a5ec3d423c67f49b7650ed8) by [@JoseLion](https://github.com/JoseLion))
 
 #### iOS specific
 
@@ -136,6 +106,7 @@
 - Update Podfile to allow `PRODUCTION=1 pod install` ([77752fc403](https://github.com/facebook/react-native/commit/77752fc4037e66d5b0a5851bae79c4d3285ed334) by [@leotm](https://github.com/leotm))
 - Destruct use_reactnative parameters and ad ddocumentation ([79a37e5a88](https://github.com/facebook/react-native/commit/79a37e5a88e179090ade7145a453a46719c87b3f) by [@cipolleschi](https://github.com/cipolleschi))
 - Move codegen in separate files ([7d069b2583](https://github.com/facebook/react-native/commit/7d069b25835ad20654a46ebb1e09631d826598e0) by [@cipolleschi](https://github.com/cipolleschi))
+- Silence warning due to react-native internal details. ([a4599225f5](https://github.com/facebook/react-native/commit/a4599225f5a6a2d6801dd80b7728c1bbe5b2ec3a) by [@cipolleschi](https://github.com/cipolleschi))
 
 ### Removed
 
@@ -165,6 +136,8 @@
 - Allow ReactInstrumentationTest to use custom JSIModules ([eb2a83b0be](https://github.com/facebook/react-native/commit/eb2a83b0be4658654fc6ca6f4671e45f1898798d) by [@christophpurrer](https://github.com/christophpurrer))
 - Working around Long paths limitation on Windows ([883a93871c](https://github.com/facebook/react-native/commit/883a93871cb1fbca4434600a322f63afbba333da) by [@mganandraj](https://github.com/mganandraj))
 - Fix eslint-plugin-specs prepack npm lifecycle hook now that we use npm 8 ([8441c4a6f7](https://github.com/facebook/react-native/commit/8441c4a6f7bfeda73f89f076fe7d8d1132e4b9be) by [@kelset](https://github.com/kelset))
+- Codegen should ignore `.d.ts` files ([0f0d52067c](https://github.com/facebook/react-native/commit/0f0d52067cb89fdb39a99021f0745282ce087fc2) by [@tido64](https://github.com/tido64))
+- Avoid full copy of large folly::dynamic objects in JSIExecutor#defaultTimeoutInvoker ([521011d4cc](https://github.com/facebook/react-native/commit/521011d4cc713dfce97dc8872fd0f5171e587b5d) by [@christophpurrer](https://github.com/christophpurrer))
 
 #### Android specific
 
