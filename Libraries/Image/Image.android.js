@@ -139,12 +139,6 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
     }
   }
 
-  if (props.src) {
-    console.warn(
-      'The <Image> component requires a `source` property rather than `src`.',
-    );
-  }
-
   if (props.children) {
     throw new Error(
       'The <Image> component cannot contain children. If you want to render content on top of the image, consider using the <ImageBackground> component or absolute positioning.',
@@ -163,7 +157,10 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
 
   let style;
   let sources;
-  if (source?.uri != null) {
+  if (props.src) {
+    style = flattenStyle([styles.base, props.style]);
+    sources = [{uri: props.src}];
+  } else if (source?.uri != null) {
     const {width, height} = source;
     style = flattenStyle([{width, height}, styles.base, props.style]);
     sources = [{uri: source.uri}];

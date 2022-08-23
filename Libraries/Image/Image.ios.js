@@ -113,7 +113,12 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
 
   let sources;
   let style: ImageStyleProp;
-  if (Array.isArray(source)) {
+
+  if (props.src) {
+    const uri = props.src;
+    style = flattenStyle([styles.base, props.style]) || {};
+    sources = [{uri: uri, width: undefined, height: undefined}];
+  } else if (Array.isArray(source)) {
     style = flattenStyle([styles.base, props.style]) || {};
     sources = source;
   } else {
@@ -130,12 +135,6 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
   const resizeMode = props.resizeMode || style.resizeMode || 'cover';
   // $FlowFixMe[prop-missing]
   const tintColor = style.tintColor;
-
-  if (props.src != null) {
-    console.warn(
-      'The <Image> component requires a `source` property rather than `src`.',
-    );
-  }
 
   if (props.children != null) {
     throw new Error(

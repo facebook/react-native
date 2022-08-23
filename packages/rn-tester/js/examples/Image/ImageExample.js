@@ -635,11 +635,19 @@ exports.description =
 
 exports.examples = [
   {
-    title: 'Plain Network Image',
+    title: 'Plain Network Image with `source` prop.',
     description: ('If the `source` prop `uri` property is prefixed with ' +
       '"http", then it will be downloaded from the network.': string),
     render: function (): React.Node {
       return <Image source={fullImage} style={styles.base} />;
+    },
+  },
+  {
+    title: 'Plain Network Image with `src` prop.',
+    description: ('If the `src` prop is defined with ' +
+      '"http", then it will be downloaded from the network.': string),
+    render: function (): React.Node {
+      return <Image src={fullImage.uri} style={styles.base} />;
     },
   },
   {

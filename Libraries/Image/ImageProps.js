@@ -170,7 +170,10 @@ export type ImageProps = {|
    */
   testID?: ?string,
 
-  src?: empty,
+  /**
+   * A string representing the resource identifier for the image.
+   */
+  src?: ?string,
   children?: empty,
 |};
 
