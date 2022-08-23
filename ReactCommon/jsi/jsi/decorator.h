@@ -302,6 +302,10 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
   Array createArray(size_t length) override {
     return plain_.createArray(length);
   };
+  ArrayBuffer createArrayBuffer(
+      std::shared_ptr<MutableBuffer> buffer) override {
+    return plain_.createArrayBuffer(std::move(buffer));
+  };
   size_t size(const Array& a) override {
     return plain_.size(a);
   };
@@ -700,6 +704,10 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
   Array createArray(size_t length) override {
     Around around{with_};
     return RD::createArray(length);
+  };
+  ArrayBuffer createArrayBuffer(
+      std::shared_ptr<MutableBuffer> buffer) override {
+    return RD::createArrayBuffer(std::move(buffer));
   };
   size_t size(const Array& a) override {
     Around around{with_};

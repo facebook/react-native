@@ -206,6 +206,8 @@ class JSCRuntime : public jsi::Runtime {
   jsi::Value lockWeakObject(jsi::WeakObject &) override;
 
   jsi::Array createArray(size_t length) override;
+  jsi::ArrayBuffer createArrayBuffer(
+      std::shared_ptr<jsi::MutableBuffer> buffer) override;
   size_t size(const jsi::Array &) override;
   size_t size(const jsi::ArrayBuffer &) override;
   uint8_t *data(const jsi::ArrayBuffer &) override;
@@ -1085,6 +1087,11 @@ jsi::Array JSCRuntime::createArray(size_t length) {
       &exc);
   checkException(exc);
   return createObject(obj).getArray(*this);
+}
+
+jsi::ArrayBuffer JSCRuntime::createArrayBuffer(
+    std::shared_ptr<jsi::MutableBuffer> buffer) {
+  throw std::logic_error("Not implemented");
 }
 
 size_t JSCRuntime::size(const jsi::Array &arr) {
