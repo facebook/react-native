@@ -73,6 +73,50 @@
     translatable="false"
     >Summary</string>
   <string
+    name="scrollview_description"
+    translatable="false"
+    >Scroll View</string>
+  <string
+    name="horizontalscrollview_description"
+    translatable="false"
+    >Horizontal Scroll View</string>
+  <string
+    name="datepicker_description"
+    translatable="false"
+    >Date Picker</string>
+  <string
+    name="datepickerdialog_description"
+    translatable="false"
+    >Date Picker Dialog</string>
+  <string
+    name="timepicker_description"
+    translatable="false"
+    >Time Picker</string>
+  <string
+    name="timepickerdialog_description"
+    translatable="false"
+    >Time Picker Dialog</string>
+  <string
+    name="numberpicker_description"
+    translatable="false"
+    >Number Picker</string>
+  <string
+    name="drawerlayout_description"
+    translatable="false"
+    >Drawer Layout</string>
+  <string
+    name="slidingdrawer_description"
+    translatable="false"
+    >Sliding Drawer</string>
+  <string
+    name="iconmenu_description"
+    translatable="false"
+    >Icon Menu</string>
+  <string
+    name="toast_description"
+    translatable="false"
+    >Toast</string>
+  <string
     name="state_busy_description"
     translatable="false"
     >busy</string>

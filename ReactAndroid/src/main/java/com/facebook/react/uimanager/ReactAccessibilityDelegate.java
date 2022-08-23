@@ -128,27 +128,25 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     LIST,
     GRID,
     PAGER,
-    SCROLLVIEW,
-    HORIZONTALSCROLLVIEW,
+    SCROLLVIEW, // missing
+    HORIZONTALSCROLLVIEW, // missing
     VIEWGROUP,
     WEBVIEW,
-    DRAWERLAYOUT,
-    SLIDINGDRAWER,
-    ICONMENU,
-    TOAST,
-    DATEPICKER,
-    DATEPICKERDIALOG,
-    TIMEPICKER,
-    TIMEPICKERDIALOG,
-    NUMBERPICKER,
+    DRAWERLAYOUT, // announces only when showed
+    SLIDINGDRAWER, // announces only when showed
+    ICONMENU, // announces only when showed
+    TOAST, // announces only when showed
+    DATEPICKER, // missing
+    DATEPICKERDIALOG, // missing
+    TIMEPICKER, // missing
+    TIMEPICKERDIALOG, // missing
+    NUMBERPICKER, // missing
     TOOLBAR;
 
     public static String getValue(AccessibilityRole role) {
       switch (role) {
         case BUTTON:
           return "android.widget.Button";
-        case CHECKEDTEXTVIEW:
-          return "android.widget.CheckedTextView";
         case DROPDOWNLIST:
           return "android.widget.Spinner";
         case EDITTEXT:
@@ -187,10 +185,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
           return "android.widget.ScrollView";
         case HORIZONTALSCROLLVIEW:
           return "android.widget.HorizontalScrollView";
-        case VIEWGROUP:
-          return "android.view.ViewGroup";
-        case WEBVIEW:
-          return "android.webkit.WebView";
         case DRAWERLAYOUT:
           return "androidx.drawerlayout.widget.DrawerLayout";
         case SLIDINGDRAWER:
@@ -209,6 +203,12 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
           return "android.widget.TimePicker";
         case NUMBERPICKER:
           return "android.widget.NumberPicker";
+        case VIEWGROUP:
+          return "android.view.ViewGroup";
+        case WEBVIEW:
+          return "android.webkit.WebView";
+        case CHECKEDTEXTVIEW:
+          return "android.widget.CheckedTextView";
         case NONE:
         case LINK:
         case SUMMARY:
@@ -526,6 +526,28 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
       nodeInfo.setRoleDescription(context.getString(R.string.timer_description));
     } else if (role.equals(AccessibilityRole.TOOLBAR)) {
       nodeInfo.setRoleDescription(context.getString(R.string.toolbar_description));
+    } else if (role.equals(AccessibilityRole.SCROLLVIEW)) {
+      nodeInfo.setRoleDescription(context.getString(R.string.scrollview_description));
+    } else if (role.equals(AccessibilityRole.HORIZONTALSCROLLVIEW)) {
+      nodeInfo.setRoleDescription(context.getString(R.string.horizontalscrollview_description));
+    } else if (role.equals(AccessibilityRole.DRAWERLAYOUT)) {
+      nodeInfo.setRoleDescription(context.getString(R.string.drawerlayout_description));
+    } else if (role.equals(AccessibilityRole.SLIDINGDRAWER)) {
+      nodeInfo.setRoleDescription(context.getString(R.string.slidingdrawer_description));
+    } else if (role.equals(AccessibilityRole.ICONMENU)) {
+      nodeInfo.setRoleDescription(context.getString(R.string.iconmenu_description));
+    } else if (role.equals(AccessibilityRole.TOAST)) {
+      nodeInfo.setRoleDescription(context.getString(R.string.toast_description));
+    } else if (role.equals(AccessibilityRole.DATEPICKER)) {
+      nodeInfo.setRoleDescription(context.getString(R.string.datepicker_description));
+    } else if (role.equals(AccessibilityRole.DATEPICKERDIALOG)) {
+      nodeInfo.setRoleDescription(context.getString(R.string.datepickerdialog_description));
+    } else if (role.equals(AccessibilityRole.TIMEPICKER)) {
+      nodeInfo.setRoleDescription(context.getString(R.string.timepicker_description));
+    } else if (role.equals(AccessibilityRole.TIMEPICKERDIALOG)) {
+      nodeInfo.setRoleDescription(context.getString(R.string.timepickerdialog_description));
+    } else if (role.equals(AccessibilityRole.NUMBERPICKER)) {
+      nodeInfo.setRoleDescription(context.getString(R.string.numberpicker_description));
     }
   }
 
