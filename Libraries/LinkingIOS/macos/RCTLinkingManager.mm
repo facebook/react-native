@@ -21,6 +21,7 @@ NSString *const RCTOpenURLNotification = @"RCTOpenURLNotification";
 
 static NSString *initialURL = nil;
 static BOOL moduleInitalized = NO;
+static BOOL alwaysForegroundLastWindow = YES;
 
 static void postNotificationWithURL(NSString *url, id sender)
 {
@@ -60,6 +61,11 @@ RCT_EXPORT_MODULE()
     return @[@"url"];
 }
 
++ (void)setAlwaysForegroundLastWindow:(BOOL)alwaysForeground
+{
+    alwaysForegroundLastWindow = alwaysForeground;
+}
+
 + (void)getUrlEventHandler:(NSAppleEventDescriptor *)event withReplyEvent:(NSAppleEventDescriptor *)replyEvent
 {
     // extract url value from the event
@@ -76,12 +82,13 @@ RCT_EXPORT_MODULE()
 
 - (void)handleOpenURLNotification:(NSNotification *)notification
 {
-    // foreground top level window, need to grab it like this, because [NSApp mainWindow] returns nil when the app is hidden
-    // and another app is maximized
+    // Activate app, because [NSApp mainWindow] returns nil when the app is hidden and another app is maximized
     [NSApp activateIgnoringOtherApps:YES];
-    NSWindow *lastWindow = [[NSApp windows] lastObject];
-    [lastWindow makeKeyAndOrderFront:nil];
-
+    // foreground top level window
+    if (alwaysForegroundLastWindow) {      
+      NSWindow *lastWindow = [[NSApp windows] lastObject];
+      [lastWindow makeKeyAndOrderFront:nil];
+    }
     [self sendEventWithName:@"url" body:notification.userInfo];
 }
 
