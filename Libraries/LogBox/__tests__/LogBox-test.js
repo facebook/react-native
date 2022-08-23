@@ -384,4 +384,43 @@ describe('LogBox', () => {
       'Custom: after installing for the second time',
     );
   });
+
+  it('`isIgnoredLog` returns true for ignored log', () => {
+    jest.unmock('../Data/LogBoxData');
+    LogBox.ignoreLogs(['ignoreMe']);
+    expect(LogBox.isIgnoredLog('ignoreMe: message', 'another argument')).toBe(true);
+  });
+
+  it('`isIgnoredLog` returns true for regexp based ignored log', () => {
+    jest.unmock('../Data/LogBoxData');
+    LogBox.ignoreLogs([/ignore\d*Me/]);
+    expect(LogBox.isIgnoredLog('ignoreMe')).toBe(true);
+    expect(LogBox.isIgnoredLog('ignore123Me')).toBe(true);
+  });
+
+
+  it('`isIgnoredLog` returns true for any messages when `ignoreAllLogs` was called', () => {
+    jest.unmock('../Data/LogBoxData');
+    LogBox.ignoreAllLogs();
+    expect(LogBox.isIgnoredLog('any messsages')).toBe(true);
+  });
+
+  it('`isIgnoredLog` returns false for non-matched ignored log', () => {
+    jest.unmock('../Data/LogBoxData');
+    LogBox.ignoreLogs(['ignoreMe']);
+    expect(LogBox.isIgnoredLog('showMe: message', 'another argument')).toBe(false);
+  });
+
+  it('`isIgnoredLog` returns false when throwing exception from log parser.', () => {
+    jest.mock('../Data/LogBoxData');
+    const mockError = new Error('Simulated error');
+
+    // Picking a random implemention detail to simulate throwing.
+    (LogBoxData.isMessageIgnored: any).mockImplementation(() => {
+      throw mockError;
+    });
+
+    LogBox.ignoreLogs(['ignoreMe']);
+    expect(LogBox.isIgnoredLog('ignoreMe')).toBe(false);
+  });
 });

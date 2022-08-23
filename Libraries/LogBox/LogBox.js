@@ -24,6 +24,7 @@ interface ILogBox {
   isInstalled(): boolean;
   ignoreLogs($ReadOnlyArray<IgnorePattern>): void;
   ignoreAllLogs(?boolean): void;
+  isIgnoredLog(...args: Array<mixed>): boolean;
   clearAllLogs(): void;
   addLog(log: LogData): void;
   addException(error: ExtendedExceptionData): void;
@@ -109,6 +110,18 @@ if (__DEV__) {
 
     ignoreAllLogs(value?: ?boolean): void {
       LogBoxData.setDisabled(value == null ? true : value);
+    },
+
+    isIgnoredLog(...args: Array<mixed>): boolean {
+      if (LogBoxData.isDisabled()) {
+        return true;
+      }
+
+      try {
+        const {message} = parseLogBoxLog(args);
+        return LogBoxData.isMessageIgnored(message.content);
+      } catch (err) {}
+      return false;
     },
 
     clearAllLogs(): void {
@@ -242,6 +255,10 @@ if (__DEV__) {
 
     ignoreAllLogs(value?: ?boolean): void {
       // Do nothing.
+    },
+
+    isIgnoredLog(...args: Array<mixed>): boolean {
+      return false;
     },
 
     clearAllLogs(): void {
