@@ -6,7 +6,6 @@
  *
  * @emails oncall+react_native
  * @format
- * @flow
  */
 
 import {setStyleAttributePreprocessor} from '../StyleSheet';
