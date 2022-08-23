@@ -131,6 +131,7 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
   const loadingIndicatorSource = resolveAssetSource(
     props.loadingIndicatorSource,
   );
+  const src = props.src;
 
   if (source) {
     const uri = source.uri;
@@ -157,9 +158,9 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
 
   let style;
   let sources;
-  if (props.src) {
+  if (src) {
     style = flattenStyle([styles.base, props.style]);
-    sources = [{uri: props.src}];
+    sources = [{uri: src}];
   } else if (source?.uri != null) {
     const {width, height} = source;
     style = flattenStyle([{width, height}, styles.base, props.style]);
