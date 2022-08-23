@@ -332,12 +332,13 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
   _viewRegistry[reactTag] = rootView;
 
   // Register shadow view
+  RCTRootShadowView *shadowView = [RCTRootShadowView new]; // TODO(macOS GH#774) - do this early to prevent RCTI18nUtil deadlock
+
   RCTExecuteOnUIManagerQueue(^{
     if (!self->_viewRegistry) {
       return;
     }
 
-    RCTRootShadowView *shadowView = [RCTRootShadowView new];
     shadowView.availableSize = availableSize;
     shadowView.reactTag = reactTag;
     shadowView.viewName = NSStringFromClass([rootView class]);
