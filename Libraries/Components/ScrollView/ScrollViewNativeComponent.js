@@ -141,9 +141,10 @@ const RCTScrollViewViewConfig =
         },
       };
 
-const ScrollViewNativeComponent: HostComponent<Props> = NativeComponentRegistry.get<Props>(
-  'RCTScrollView',
-  () => RCTScrollViewViewConfig,
-);
+const ScrollViewNativeComponent: HostComponent<Props> =
+  NativeComponentRegistry.get<Props>(
+    'RCTScrollView',
+    () => RCTScrollViewViewConfig,
+  );
 
 export default ScrollViewNativeComponent;

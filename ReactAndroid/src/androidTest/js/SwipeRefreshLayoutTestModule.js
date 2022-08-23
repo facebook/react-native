@@ -68,8 +68,7 @@ class SwipeRefreshLayoutTestApp extends React.Component {
             refreshing={false}
             onRefresh={() => RecordingModule.onRefresh()}
           />
-        }
-      >
+        }>
         {rows}
       </ScrollView>
     );
@@ -78,7 +77,7 @@ class SwipeRefreshLayoutTestApp extends React.Component {
 
 const SwipeRefreshLayoutTestModule = {
   SwipeRefreshLayoutTestApp,
-  setRows: function(rows) {
+  setRows: function (rows) {
     if (app != null) {
       app.setState({rows});
     }

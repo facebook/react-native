@@ -27,7 +27,7 @@ steps:
   - task: CmdLine@2
     displayName: yarn install
     inputs:
-      script: yarn install
+      script: yarn install --frozen-lockfile
 
   - task: CmdLine@2
     displayName: pod install

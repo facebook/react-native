@@ -55,8 +55,7 @@ class ExampleBox extends React.Component<ExampleBoxProps, ExampleBoxState> {
       <View>
         <View
           onTouchEndCapture={this.handleTouchCapture}
-          onTouchStart={this.flushReactChanges}
-        >
+          onTouchStart={this.flushReactChanges}>
           <Component onLog={this.handleLog} />
         </View>
         <View style={styles.logBox}>
@@ -74,21 +73,18 @@ class NoneExample extends React.Component<$FlowFixMeProps> {
     return (
       <View
         onTouchStart={() => this.props.onLog('A unspecified touched')}
-        style={styles.box}
-      >
+        style={styles.box}>
         <DemoText style={styles.text}>A: unspecified</DemoText>
         <View
           pointerEvents="none"
           onTouchStart={() => this.props.onLog('B none touched')}
-          style={[styles.box, styles.boxPassedThrough]}
-        >
+          style={[styles.box, styles.boxPassedThrough]}>
           <DemoText style={[styles.text, styles.textPassedThrough]}>
             B: none
           </DemoText>
           <View
             onTouchStart={() => this.props.onLog('C unspecified touched')}
-            style={[styles.box, styles.boxPassedThrough]}
-          >
+            style={[styles.box, styles.boxPassedThrough]}>
             <DemoText style={[styles.text, styles.textPassedThrough]}>
               C: unspecified
             </DemoText>
@@ -118,21 +114,18 @@ class BoxNoneExample extends React.Component<$FlowFixMeProps> {
     return (
       <View
         onTouchStart={() => this.props.onLog('A unspecified touched')}
-        style={styles.box}
-      >
+        style={styles.box}>
         <DemoText style={styles.text}>A: unspecified</DemoText>
         <View
           pointerEvents="box-none"
           onTouchStart={() => this.props.onLog('B box-none touched')}
-          style={[styles.box, styles.boxPassedThrough]}
-        >
+          style={[styles.box, styles.boxPassedThrough]}>
           <DemoText style={[styles.text, styles.textPassedThrough]}>
             B: box-none
           </DemoText>
           <View
             onTouchStart={() => this.props.onLog('C unspecified touched')}
-            style={styles.box}
-          >
+            style={styles.box}>
             <DemoText style={styles.text}>C: unspecified</DemoText>
           </View>
           <View
@@ -140,8 +133,7 @@ class BoxNoneExample extends React.Component<$FlowFixMeProps> {
             onTouchStart={() =>
               this.props.onLog('C explicitly unspecified touched')
             }
-            style={[styles.box]}
-          >
+            style={[styles.box]}>
             <DemoText style={[styles.text]}>C: explicitly unspecified</DemoText>
           </View>
         </View>
@@ -155,19 +147,16 @@ class BoxOnlyExample extends React.Component<$FlowFixMeProps> {
     return (
       <View
         onTouchStart={() => this.props.onLog('A unspecified touched')}
-        style={styles.box}
-      >
+        style={styles.box}>
         <DemoText style={styles.text}>A: unspecified</DemoText>
         <View
           pointerEvents="box-only"
           onTouchStart={() => this.props.onLog('B box-only touched')}
-          style={styles.box}
-        >
+          style={styles.box}>
           <DemoText style={styles.text}>B: box-only</DemoText>
           <View
             onTouchStart={() => this.props.onLog('C unspecified touched')}
-            style={[styles.box, styles.boxPassedThrough]}
-          >
+            style={[styles.box, styles.boxPassedThrough]}>
             <DemoText style={[styles.text, styles.textPassedThrough]}>
               C: unspecified
             </DemoText>
@@ -177,8 +166,7 @@ class BoxOnlyExample extends React.Component<$FlowFixMeProps> {
             onTouchStart={() =>
               this.props.onLog('C explicitly unspecified touched')
             }
-            style={[styles.box, styles.boxPassedThrough]}
-          >
+            style={[styles.box, styles.boxPassedThrough]}>
             <DemoText style={[styles.text, styles.textPassedThrough]}>
               C: explicitly unspecified
             </DemoText>
@@ -204,26 +192,22 @@ class OverflowExample extends React.Component<OverflowExampleProps> {
           styles.box,
           styles.boxWithOverflowSet,
           {overflow: this.props.overflow},
-        ]}
-      >
+        ]}>
         <DemoText style={styles.text}>A: overflow: {overflow}</DemoText>
         <View
           onTouchStart={() => this.props.onLog('B overflowing touched')}
-          style={[styles.box, styles.boxOverflowing]}
-        >
+          style={[styles.box, styles.boxOverflowing]}>
           <DemoText style={styles.text}>B: overflowing</DemoText>
         </View>
         <View
           onTouchStart={() => this.props.onLog('C fully outside touched')}
-          style={[styles.box, styles.boxFullyOutside]}
-        >
+          style={[styles.box, styles.boxFullyOutside]}>
           <DemoText style={styles.text}>C: fully outside</DemoText>
           <View
             onTouchStart={() =>
               this.props.onLog('D fully outside child touched')
             }
-            style={[styles.box, styles.boxFullyOutsideChild]}
-          >
+            style={[styles.box, styles.boxFullyOutsideChild]}>
             <DemoText style={styles.text}>D: child of fully outside</DemoText>
           </View>
         </View>
@@ -288,7 +272,7 @@ const infoToExample = info => {
   return {
     title: info.title,
     description: info.description,
-    render: function() {
+    render: function () {
       return <ExampleBox key={info.title} Component={info.Component} />;
     },
   };

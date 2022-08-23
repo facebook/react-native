@@ -45,8 +45,7 @@ export default function RNTOption(props: Props): React.Node {
       onPress={props.onPress}
       onPressIn={() => setPressed(true)}
       onPressOut={() => setPressed(false)}
-      testID={props.testID}
-    >
+      testID={props.testID}>
       <View
         style={[
           styles.container,
@@ -59,8 +58,7 @@ export default function RNTOption(props: Props): React.Node {
               ]
             : null,
           props.style,
-        ]}
-      >
+        ]}>
         <Text style={styles.label}>{props.label}</Text>
       </View>
     </Pressable>

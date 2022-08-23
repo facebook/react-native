@@ -48,12 +48,10 @@ const CloseButton = props => {
       style={[
         styles.closeView,
         {marginHorizontal: props.behavior === 'position' ? 0 : 25},
-      ]}
-    >
+      ]}>
       <Pressable
         onPress={() => props.setModalOpen(false)}
-        style={styles.closeButton}
-      >
+        style={styles.closeButton}>
         <Text>Close</Text>
       </Pressable>
     </View>
@@ -71,15 +69,13 @@ const KeyboardAvoidingViewBehaviour = () => {
             style={{
               flexDirection: 'row',
               justifyContent: 'center',
-            }}
-          >
+            }}>
             <TouchableOpacity
               onPress={() => setBehavior('padding')}
               style={[
                 styles.pillStyle,
                 {backgroundColor: behavior === 'padding' ? 'blue' : 'white'},
-              ]}
-            >
+              ]}>
               <Text style={{color: behavior === 'padding' ? 'white' : 'blue'}}>
                 Padding
               </Text>
@@ -89,8 +85,7 @@ const KeyboardAvoidingViewBehaviour = () => {
               style={[
                 styles.pillStyle,
                 {backgroundColor: behavior === 'position' ? 'blue' : 'white'},
-              ]}
-            >
+              ]}>
               <Text style={{color: behavior === 'position' ? 'white' : 'blue'}}>
                 Position
               </Text>
@@ -100,13 +95,11 @@ const KeyboardAvoidingViewBehaviour = () => {
               style={[
                 styles.pillStyle,
                 {backgroundColor: behavior === 'height' ? 'blue' : 'white'},
-              ]}
-            >
+              ]}>
               <Text
                 style={{
                   color: behavior === 'height' ? 'white' : 'blue',
-                }}
-              >
+                }}>
                 Height
               </Text>
             </TouchableOpacity>
@@ -132,8 +125,7 @@ const KeyboardAvoidingDisabled = () => {
         <KeyboardAvoidingView
           enabled={false}
           behavior={'height'}
-          style={styles.container}
-        >
+          style={styles.container}>
           <CloseButton behavior={'height'} setModalOpen={setModalOpen} />
           <TextInputForm />
         </KeyboardAvoidingView>
@@ -155,8 +147,7 @@ const KeyboardAvoidingVerticalOffset = () => {
         <KeyboardAvoidingView
           keyboardVerticalOffset={20}
           behavior={'padding'}
-          style={styles.container}
-        >
+          style={styles.container}>
           <CloseButton behavior={'height'} setModalOpen={setModalOpen} />
           <TextInputForm />
         </KeyboardAvoidingView>
@@ -179,8 +170,7 @@ const KeyboardAvoidingContentContainerStyle = () => {
           keyboardVerticalOffset={20}
           behavior={'position'}
           style={styles.container}
-          contentContainerStyle={styles.contentContainer}
-        >
+          contentContainerStyle={styles.contentContainer}>
           <CloseButton behavior={'height'} setModalOpen={setModalOpen} />
           <TextInputForm />
         </KeyboardAvoidingView>
@@ -242,16 +232,18 @@ exports.description =
 exports.examples = [
   {
     title: 'Keyboard Avoiding View with different behaviors',
-    description: ('Specify how to react to the presence of the keyboard. Android and iOS both interact' +
-      'with this prop differently. On both iOS and Android, setting behavior is recommended.': string),
+    description:
+      ('Specify how to react to the presence of the keyboard. Android and iOS both interact' +
+        'with this prop differently. On both iOS and Android, setting behavior is recommended.': string),
     render(): React.Node {
       return <KeyboardAvoidingViewBehaviour />;
     },
   },
   {
     title: 'Keyboard Avoiding View with keyboardVerticalOffset={distance}',
-    description: ('This is the distance between the top of the user screen and the react native' +
-      'view, may be non-zero in some use cases. Defaults to 0.': string),
+    description:
+      ('This is the distance between the top of the user screen and the react native' +
+        'view, may be non-zero in some use cases. Defaults to 0.': string),
     render(): React.Node {
       return <KeyboardAvoidingVerticalOffset />;
     },

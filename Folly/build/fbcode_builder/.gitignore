@@ -1,3 +1,0 @@
-# Facebook-internal CI builds don't have write permission outside of the
-# source tree, so we install all projects into this directory.
-/facebook_ci

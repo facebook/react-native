@@ -65,8 +65,7 @@ class PromptOptions extends React.Component<Props, State> {
           style={styles.wrapper}
           // $FlowFixMe[method-unbinding] added when improving typing for this parameters
           // $FlowFixMe[incompatible-call]
-          onPress={() => Alert.prompt('Type a value', null, this.saveResponse)}
-        >
+          onPress={() => Alert.prompt('Type a value', null, this.saveResponse)}>
           <View style={styles.button}>
             <Text>prompt with title & callback</Text>
           </View>
@@ -74,8 +73,9 @@ class PromptOptions extends React.Component<Props, State> {
 
         <TouchableHighlight
           style={styles.wrapper}
-          onPress={() => Alert.prompt('Type a value', null, this.customButtons)}
-        >
+          onPress={() =>
+            Alert.prompt('Type a value', null, this.customButtons)
+          }>
           <View style={styles.button}>
             <Text>prompt with title & custom buttons</Text>
           </View>
@@ -92,8 +92,7 @@ class PromptOptions extends React.Component<Props, State> {
               undefined,
               'phone-pad',
             )
-          }
-        >
+          }>
           <View style={styles.button}>
             <Text>prompt with title & custom keyboard</Text>
           </View>
@@ -111,8 +110,7 @@ class PromptOptions extends React.Component<Props, State> {
               undefined,
               'Default value',
             )
-          }
-        >
+          }>
           <View style={styles.button}>
             <Text>prompt with title, callback & default value</Text>
           </View>
@@ -128,8 +126,7 @@ class PromptOptions extends React.Component<Props, State> {
               'login-password',
               'admin@site.com',
             )
-          }
-        >
+          }>
           <View style={styles.button}>
             <Text>
               prompt with title, custom buttons, login/password & default value
@@ -181,8 +178,7 @@ exports.examples = ([
         <View>
           <TouchableHighlight
             style={styles.wrapper}
-            onPress={() => Alert.prompt('Plain Text Entry')}
-          >
+            onPress={() => Alert.prompt('Plain Text Entry')}>
             <View style={styles.button}>
               <Text>plain-text</Text>
             </View>
@@ -191,8 +187,7 @@ exports.examples = ([
             style={styles.wrapper}
             onPress={() =>
               Alert.prompt('Secure Text', null, null, 'secure-text')
-            }
-          >
+            }>
             <View style={styles.button}>
               <Text>secure-text</Text>
             </View>
@@ -201,8 +196,7 @@ exports.examples = ([
             style={styles.wrapper}
             onPress={() =>
               Alert.prompt('Login & Password', null, null, 'login-password')
-            }
-          >
+            }>
             <View style={styles.button}>
               <Text>login-password</Text>
             </View>

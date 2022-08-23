@@ -102,9 +102,7 @@ class ViewabilityHelper {
     itemCount: number,
     scrollOffset: number,
     viewportHeight: number,
-    getFrameMetrics: (
-      index: number,
-    ) => ?{
+    getFrameMetrics: (index: number) => ?{
       length: number,
       offset: number,
       ...
@@ -116,10 +114,8 @@ class ViewabilityHelper {
       ...
     },
   ): Array<number> {
-    const {
-      itemVisiblePercentThreshold,
-      viewAreaCoveragePercentThreshold,
-    } = this._config;
+    const {itemVisiblePercentThreshold, viewAreaCoveragePercentThreshold} =
+      this._config;
     const viewAreaMode = viewAreaCoveragePercentThreshold != null;
     const viewablePercentThreshold = viewAreaMode
       ? viewAreaCoveragePercentThreshold
@@ -179,9 +175,7 @@ class ViewabilityHelper {
     itemCount: number,
     scrollOffset: number,
     viewportHeight: number,
-    getFrameMetrics: (
-      index: number,
-    ) => ?{
+    getFrameMetrics: (index: number) => ?{
       length: number,
       offset: number,
       ...

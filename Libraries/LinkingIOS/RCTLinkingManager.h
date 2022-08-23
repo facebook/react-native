@@ -15,6 +15,7 @@
 
 #if TARGET_OS_OSX // [TODO(macOS GH#774)
 + (void)getUrlEventHandler:(NSAppleEventDescriptor *)event withReplyEvent:(NSAppleEventDescriptor *)replyEvent;
++ (void)setAlwaysForegroundLastWindow:(BOOL)alwaysForeground;
 #else // ]TODO(macOS GH#774)
 + (BOOL)application:(nonnull UIApplication *)app
             openURL:(nonnull NSURL *)URL

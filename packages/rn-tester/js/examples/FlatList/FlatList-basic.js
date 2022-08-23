@@ -119,8 +119,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
       <RNTesterPage
         noSpacer={true}
         noScroll={true}
-        title="Simple list of items"
-      >
+        title="Simple list of items">
         <View style={styles.container}>
           <View style={styles.searchRow}>
             <View style={styles.options}>

@@ -175,8 +175,7 @@ class TouchableBounce extends React.Component<Props, State> {
         draggedTypes={this.props.draggedTypes}
         // ]TODO(macOS GH#774)
         ref={this.props.hostRef}
-        {...eventHandlersWithoutBlurAndFocus}
-      >
+        {...eventHandlersWithoutBlurAndFocus}>
         {this.props.children}
         {__DEV__ ? (
           <PressabilityDebugView color="orange" hitSlop={this.props.hitSlop} />

@@ -570,8 +570,8 @@ export default class Pressability {
 
     if (process.env.NODE_ENV === 'test') {
       // We are setting this in order to find this node in ReactNativeTestTools
-      responderEventHandlers.onStartShouldSetResponder.testOnly_pressabilityConfig = () =>
-        this._config;
+      responderEventHandlers.onStartShouldSetResponder.testOnly_pressabilityConfig =
+        () => this._config;
     }
 
     const mouseEventHandlers =

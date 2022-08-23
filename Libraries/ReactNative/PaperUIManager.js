@@ -38,9 +38,8 @@ function getViewManagerConfig(viewManagerName: string): any {
     NativeUIManager.getConstantsForViewManager
   ) {
     try {
-      viewManagerConfigs[
-        viewManagerName
-      ] = NativeUIManager.getConstantsForViewManager(viewManagerName);
+      viewManagerConfigs[viewManagerName] =
+        NativeUIManager.getConstantsForViewManager(viewManagerName);
     } catch (e) {
       console.error(
         "NativeUIManager.getConstantsForViewManager('" +

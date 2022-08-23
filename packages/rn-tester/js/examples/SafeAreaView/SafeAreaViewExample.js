@@ -46,13 +46,11 @@ class SafeAreaViewExample extends React.Component<
           visible={this.state.modalVisible}
           onRequestClose={() => this._setModalVisible(false)}
           animationType="slide"
-          supportedOrientations={['portrait', 'landscape']}
-        >
+          supportedOrientations={['portrait', 'landscape']}>
           <View style={styles.modal}>
             <SafeAreaView
               style={styles.safeArea}
-              emulateUnlessSupported={this.state.emulateUnlessSupported}
-            >
+              emulateUnlessSupported={this.state.emulateUnlessSupported}>
               <View style={styles.safeAreaContent}>
                 <Button
                   onPress={this._setModalVisible.bind(this, false)}
@@ -132,10 +130,11 @@ exports.examples = [
   },
   {
     title: 'isIPhoneX_deprecated Example',
-    description: ('`DeviceInfo.isIPhoneX_deprecated` returns true only on iPhone X. ' +
-      'Note: This prop is deprecated and will be removed in a future ' +
-      'release. Please use this only for a quick and temporary solution. ' +
-      'Use <SafeAreaView> instead.': string),
+    description:
+      ('`DeviceInfo.isIPhoneX_deprecated` returns true only on iPhone X. ' +
+        'Note: This prop is deprecated and will be removed in a future ' +
+        'release. Please use this only for a quick and temporary solution. ' +
+        'Use <SafeAreaView> instead.': string),
     render: (): React.Node => <IsIPhoneXExample />,
   },
 ];

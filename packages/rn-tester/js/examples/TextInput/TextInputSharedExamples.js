@@ -356,8 +356,7 @@ class TokenizedTextExample extends React.Component<
           style={styles.multiline}
           onChangeText={text => {
             this.setState({text});
-          }}
-        >
+          }}>
           <Text>{parts}</Text>
         </TextInput>
       </View>
@@ -447,15 +446,13 @@ class SelectionExample extends React.Component<
           <Text
             testID={`${this.props.testID}-cursor-start`}
             // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-            onPress={this.placeAt.bind(this, 0)}
-          >
+            onPress={this.placeAt.bind(this, 0)}>
             Place at Start (0, 0)
           </Text>
           <Text
             testID={`${this.props.testID}-cursor-end`}
             // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-            onPress={this.placeAt.bind(this, length)}
-          >
+            onPress={this.placeAt.bind(this, length)}>
             Place at End ({length}, {length})
           </Text>
           {/* $FlowFixMe[method-unbinding] added when improving typing for this
@@ -464,8 +461,7 @@ class SelectionExample extends React.Component<
           <Text
             testID={`${this.props.testID}-select-all`}
             // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-            onPress={this.select.bind(this, 0, length)}
-          >
+            onPress={this.select.bind(this, 0, length)}>
             Select All
           </Text>
           {/* $FlowFixMe[method-unbinding] added when improving typing for this
@@ -480,7 +476,7 @@ class SelectionExample extends React.Component<
 module.exports = ([
   {
     title: 'Auto-focus',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <TextInput
           autoFocus={true}
@@ -493,27 +489,27 @@ module.exports = ([
   {
     name: 'maxLength',
     title: "Live Re-Write (<sp>  ->  '_') + maxLength",
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <RewriteExample />;
     },
   },
   {
     title: 'Live Re-Write (no spaces allowed)',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <RewriteExampleInvalidCharacters />;
     },
   },
   {
     name: 'clearButton',
     title: 'Live Re-Write (no spaces allowed) and clear',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <RewriteInvalidCharactersAndClearExample />;
     },
   },
   {
     title: 'Auto-capitalize',
     name: 'autoCapitalize',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <WithLabel label="none">
@@ -550,7 +546,7 @@ module.exports = ([
   },
   {
     title: 'Auto-correct',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <WithLabel label="true">
@@ -566,7 +562,7 @@ module.exports = ([
   {
     title: 'Keyboard types',
     name: 'keyboardTypes',
-    render: function(): React.Node {
+    render: function (): React.Node {
       const keyboardTypes = [
         'default',
         'ascii-capable',
@@ -594,19 +590,19 @@ module.exports = ([
   },
   {
     title: 'Blur on submit',
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <BlurOnSubmitExample />;
     },
   },
   {
     title: 'Event handling',
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <TextEventsExample />;
     },
   },
   {
     title: 'fontFamily, fontWeight and fontStyle',
-    render: function(): React.Node {
+    render: function (): React.Node {
       const fontFamilyA =
         Platform.OS === 'ios' ||
         Platform.OS === 'macos' /* TODO(macOS GH#774) */
@@ -656,14 +652,14 @@ module.exports = ([
   {
     title: 'Attributed text',
     name: 'attributedText',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <TokenizedTextExample />;
     },
   },
   {
     title: 'Text selection & cursor placement',
     name: 'cursorPlacement',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <SelectionExample
@@ -684,7 +680,7 @@ module.exports = ([
   {
     title: 'Text selection & cursor placement (imperative)',
     name: 'cursorPlacementImperative',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <SelectionExample

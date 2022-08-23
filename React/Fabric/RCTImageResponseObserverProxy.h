@@ -27,6 +27,7 @@ class RCTImageResponseObserverProxy final : public ImageResponseObserver {
  private:
   __weak id<RCTImageResponseDelegate> delegate_;
 };
+
 } // namespace react
 } // namespace facebook
 

@@ -7,6 +7,7 @@
  * @format
  * @flow strict-local
  */
+
 // TODO: move this file to shims/ReactNative (requires React update and sync)
 
 import requireNativeComponent from '../../Libraries/ReactNative/requireNativeComponent';
@@ -42,8 +43,9 @@ function codegenNativeComponent<Props>(
       componentNameInUse = options.paperComponentNameDeprecated;
     } else {
       throw new Error(
-        `Failed to find native component for either ${componentName} or ${options.paperComponentNameDeprecated ??
-          '(unknown)'}`,
+        `Failed to find native component for either ${componentName} or ${
+          options.paperComponentNameDeprecated ?? '(unknown)'
+        }`,
       );
     }
   }

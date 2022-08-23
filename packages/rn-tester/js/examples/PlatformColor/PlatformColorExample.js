@@ -346,14 +346,15 @@ function VariantColorsExample() {
     <View style={styles.column}>
       <View style={styles.row}>
         <Text style={styles.labelCell}>
-          {// [TODO(OSS Candidate ISS#2710739)
-          Platform.select({
-            ios: "DynamicColorIOS({light: 'red', dark: 'blue'})",
-            android: "PlatformColor('?attr/colorAccent')",
-            macos: "DynamicColorMacOS({light: 'red', dark: 'blue'})",
-            default: 'Unexpected Platform.OS: ' + Platform.OS,
-          })
-          // ]TODO(OSS Candidate ISS#2710739)
+          {
+            // [TODO(OSS Candidate ISS#2710739)
+            Platform.select({
+              ios: "DynamicColorIOS({light: 'red', dark: 'blue'})",
+              android: "PlatformColor('?attr/colorAccent')",
+              macos: "DynamicColorMacOS({light: 'red', dark: 'blue'})",
+              default: 'Unexpected Platform.OS: ' + Platform.OS,
+            })
+            // ]TODO(OSS Candidate ISS#2710739)
           }
         </Text>
         <View

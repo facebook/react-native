@@ -28,7 +28,7 @@ type State = {|
       value: mixed,
       ...
     },
-    ...,
+    ...
   },
 |};
 
@@ -122,14 +122,12 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
               Object.keys(this._tests).forEach(item =>
                 this._setResult(item, this._tests[item]()),
               )
-            }
-          >
+            }>
             <Text style={styles.buttonTextLarge}>Run all tests</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => this.setState({testResults: {}})}
-            style={[styles.column, styles.button]}
-          >
+            style={[styles.column, styles.button]}>
             <Text style={styles.buttonTextLarge}>Clear results</Text>
           </TouchableOpacity>
         </View>
@@ -140,8 +138,7 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
             <View style={styles.item}>
               <TouchableOpacity
                 style={[styles.column, styles.button]}
-                onPress={e => this._setResult(item, this._tests[item]())}
-              >
+                onPress={e => this._setResult(item, this._tests[item]())}>
                 <Text style={styles.buttonText}>{item}</Text>
               </TouchableOpacity>
               <View style={[styles.column]}>{this._renderResult(item)}</View>

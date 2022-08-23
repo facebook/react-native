@@ -33,9 +33,7 @@ let componentNameToExists: Map<string, boolean> = new Map();
  * the current environment.
  */
 export function setRuntimeConfigProvider(
-  runtimeConfigProvider: (
-    name: string,
-  ) => ?{
+  runtimeConfigProvider: (name: string) => ?{
     native: boolean,
     strict: boolean,
     verify: boolean,
@@ -130,7 +128,7 @@ export function getWithFallback_DEPRECATED<Config>(
     }
   }
 
-  const FallbackNativeComponent = function(props: Config): React.Node {
+  const FallbackNativeComponent = function (props: Config): React.Node {
     return null;
   };
   FallbackNativeComponent.displayName = `Fallback(${name})`;

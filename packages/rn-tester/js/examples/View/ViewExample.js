@@ -48,6 +48,66 @@ exports.examples = [
     },
   },
   {
+    title: 'Cursor',
+    render(): React.Node {
+      return (
+        <>
+          <View style={{cursor: 'auto', padding: 10}}>
+            <Text style={{fontSize: 11}}>auto</Text>
+          </View>
+          <View style={{cursor: 'default', padding: 10}}>
+            <Text style={{fontSize: 11}}>default</Text>
+          </View>
+          <View style={{cursor: 'context-menu', padding: 10}}>
+            <Text style={{fontSize: 11}}>context-menu</Text>
+          </View>
+          <View style={{cursor: 'pointer', padding: 10}}>
+            <Text style={{fontSize: 11}}>pointer</Text>
+          </View>
+          <View style={{cursor: 'text', padding: 10}}>
+            <Text style={{fontSize: 11}}>text</Text>
+          </View>
+          <View style={{cursor: 'vertical-text', padding: 10}}>
+            <Text style={{fontSize: 11}}>vertical-text</Text>
+          </View>
+          <View style={{cursor: 'alias', padding: 10}}>
+            <Text style={{fontSize: 11}}>alias</Text>
+          </View>
+          <View style={{cursor: 'copy', padding: 10}}>
+            <Text style={{fontSize: 11}}>copy</Text>
+          </View>
+          <View style={{cursor: 'not-allowed', padding: 10}}>
+            <Text style={{fontSize: 11}}>not-allowed</Text>
+          </View>
+          <View style={{cursor: 'grab', padding: 10}}>
+            <Text style={{fontSize: 11}}>grab</Text>
+          </View>
+          <View style={{cursor: 'grabbing', padding: 10}}>
+            <Text style={{fontSize: 11}}>grabbing</Text>
+          </View>
+          <View style={{cursor: 'col-resize', padding: 10}}>
+            <Text style={{fontSize: 11}}>col-resize</Text>
+          </View>
+          <View style={{cursor: 'row-resize', padding: 10}}>
+            <Text style={{fontSize: 11}}>row-resize</Text>
+          </View>
+          <View style={{cursor: 'n-resize', padding: 10}}>
+            <Text style={{fontSize: 11}}>n-resize</Text>
+          </View>
+          <View style={{cursor: 'e-resize', padding: 10}}>
+            <Text style={{fontSize: 11}}>e-resize</Text>
+          </View>
+          <View style={{cursor: 's-resize', padding: 10}}>
+            <Text style={{fontSize: 11}}>s-resize</Text>
+          </View>
+          <View style={{cursor: 'w-resize', padding: 10}}>
+            <Text style={{fontSize: 11}}>w-resize</Text>
+          </View>
+        </>
+      );
+    },
+  },
+  {
     title: 'Padding/Margin',
     render(): React.Node {
       const styles = StyleSheet.create({
@@ -69,8 +129,7 @@ exports.examples = [
             style={[
               styles.box,
               {margin: 5, padding: 5, alignSelf: 'flex-start'},
-            ]}
-          >
+            ]}>
             <Text style={{fontSize: 11}}>5px margin and padding,</Text>
             <Text style={{fontSize: 11}}>widthAutonomous=true</Text>
           </View>
@@ -119,8 +178,7 @@ exports.examples = [
                           borderStyle: 'dashed',
                         }
                       : null,
-                  ]}
-                >
+                  ]}>
                   <Text style={{fontSize: 11}}>Dashed border style</Text>
                 </View>
                 <View
@@ -136,8 +194,7 @@ exports.examples = [
                           borderStyle: 'dotted',
                         }
                       : null,
-                  ]}
-                >
+                  ]}>
                   <Text style={{fontSize: 11}}>Dotted border style</Text>
                 </View>
               </View>
@@ -302,8 +359,7 @@ exports.examples = [
                 <Text style={{paddingBottom: 10}}>Blobs</Text>
                 <View
                   style={{opacity: 1.0, paddingBottom: 30}}
-                  needsOffscreenAlphaCompositing={this.state.active}
-                >
+                  needsOffscreenAlphaCompositing={this.state.active}>
                   <View
                     style={[
                       styles.alphaCompositing,
@@ -330,8 +386,7 @@ exports.examples = [
                 </Text>
                 <View
                   style={{opacity: 0.8}}
-                  needsOffscreenAlphaCompositing={this.state.active}
-                >
+                  needsOffscreenAlphaCompositing={this.state.active}>
                   <View
                     style={[
                       styles.alphaCompositing,
@@ -401,8 +456,7 @@ exports.examples = [
                       backgroundColor: '#E57373',
                       zIndex: indices[0],
                     },
-                  ]}
-                >
+                  ]}>
                   <Text>ZIndex {indices[0]}</Text>
                 </View>
                 <View
@@ -413,8 +467,7 @@ exports.examples = [
                       backgroundColor: '#FFF176',
                       zIndex: indices[1],
                     },
-                  ]}
-                >
+                  ]}>
                   <Text>ZIndex {indices[1]}</Text>
                 </View>
                 <View
@@ -425,8 +478,7 @@ exports.examples = [
                       backgroundColor: '#81C784',
                       zIndex: indices[2],
                     },
-                  ]}
-                >
+                  ]}>
                   <Text>ZIndex {indices[2]}</Text>
                 </View>
                 <View
@@ -437,8 +489,7 @@ exports.examples = [
                       backgroundColor: '#64B5F6',
                       zIndex: indices[3],
                     },
-                  ]}
-                >
+                  ]}>
                   <Text>ZIndex {indices[3]}</Text>
                 </View>
               </View>
@@ -495,8 +546,7 @@ exports.examples = [
                     width: 50,
                     backgroundColor: 'yellow',
                     display: this.state.index % 5 === 0 ? 'none' : 'flex',
-                  }}
-                >
+                  }}>
                   <View
                     style={{
                       height: 30,
@@ -529,7 +579,7 @@ exports.examples = [
   },
   {
     title: 'BackfaceVisibility',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <>
           <Text style={{paddingBottom: 10}}>
@@ -544,8 +594,7 @@ exports.examples = [
                 alignItems: 'center',
                 backgroundColor: 'blue',
                 backfaceVisibility: 'hidden',
-              }}
-            >
+              }}>
               <Text>Front</Text>
             </View>
             <View
@@ -559,8 +608,7 @@ exports.examples = [
                 transform: [{rotateY: '180deg'}],
                 position: 'absolute',
                 top: 0,
-              }}
-            >
+              }}>
               <Text>Back (You should not see this)</Text>
             </View>
           </View>
@@ -576,8 +624,7 @@ exports.examples = [
                 alignItems: 'center',
                 backgroundColor: 'blue',
                 backfaceVisibility: 'hidden',
-              }}
-            >
+              }}>
               <Text>Front (You should not see this)</Text>
             </View>
             <View
@@ -590,8 +637,7 @@ exports.examples = [
                 backfaceVisibility: 'hidden',
                 position: 'absolute',
                 top: 0,
-              }}
-            >
+              }}>
               <Text>Back</Text>
             </View>
           </View>

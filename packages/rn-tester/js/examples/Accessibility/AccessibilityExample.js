@@ -104,8 +104,7 @@ class AccessibilityExample extends React.Component<{}> {
         <RNTesterBlock title="Accessible view with TextViews with label">
           <View
             accessible={true}
-            accessibilityLabel="I have label, so I read it instead of embedded text."
-          >
+            accessibilityLabel="I have label, so I read it instead of embedded text.">
             <Text style={{color: 'green'}}>This is text one.</Text>
             <Text style={{color: 'blue'}}>This is text two.</Text>
           </View>
@@ -124,8 +123,7 @@ class AccessibilityExample extends React.Component<{}> {
           <View
             accessibilityLabel="Accessibility label."
             accessibilityHint="Accessibility hint."
-            accessible={true}
-          >
+            accessible={true}>
             <Text style={{color: 'green'}}>This is text one.</Text>
             <Text style={{color: 'blue'}}>This is text two.</Text>
           </View>
@@ -138,8 +136,7 @@ class AccessibilityExample extends React.Component<{}> {
         <RNTesterBlock title="Touchable with accessibilityRole = link">
           <TouchableOpacity
             onPress={() => Alert.alert('Link has been clicked!')}
-            accessibilityRole="link"
-          >
+            accessibilityRole="link">
             <View>
               <Text>Click me</Text>
             </View>
@@ -149,8 +146,7 @@ class AccessibilityExample extends React.Component<{}> {
         <RNTesterBlock title="Touchable with accessibilityRole = button">
           <TouchableOpacity
             onPress={() => Alert.alert('Button has been pressed!')}
-            accessibilityRole="button"
-          >
+            accessibilityRole="button">
             <Text>Click me</Text>
           </TouchableOpacity>
         </RNTesterBlock>
@@ -160,8 +156,7 @@ class AccessibilityExample extends React.Component<{}> {
             onPress={() => Alert.alert('Button has been pressed!')}
             accessibilityRole="button"
             accessibilityState={{disabled: true}}
-            disabled={true}
-          >
+            disabled={true}>
             <View>
               <Text>
                 I am disabled. Clicking me will not trigger any action.
@@ -174,8 +169,7 @@ class AccessibilityExample extends React.Component<{}> {
           <TouchableOpacity
             onPress={() => Alert.alert('Disabled Button has been pressed!')}
             accessibilityLabel={'You are pressing Disabled TouchableOpacity'}
-            accessibilityState={{disabled: true}}
-          >
+            accessibilityState={{disabled: true}}>
             <View>
               <Text>
                 I am disabled. Clicking me will not trigger any action.
@@ -186,8 +180,7 @@ class AccessibilityExample extends React.Component<{}> {
         <RNTesterBlock title="View with multiple states">
           <View
             accessible={true}
-            accessibilityState={{selected: true, disabled: true}}
-          >
+            accessibilityState={{selected: true, disabled: true}}>
             <Text>This view is selected and disabled.</Text>
           </View>
         </RNTesterBlock>
@@ -198,8 +191,7 @@ class AccessibilityExample extends React.Component<{}> {
             accessibilityLabel="Accessibility label."
             accessibilityRole="button"
             accessibilityState={{selected: true}}
-            accessibilityHint="Accessibility hint."
-          >
+            accessibilityHint="Accessibility hint.">
             <Text>Accessible view with label, hint, role, and state</Text>
           </View>
         </RNTesterBlock>
@@ -258,8 +250,7 @@ class CheckboxExample extends React.Component<
         accessibilityLabel="element 2"
         accessibilityRole="checkbox"
         accessibilityState={{checked: this.state.checkboxState}}
-        accessibilityHint="click me to change state"
-      >
+        accessibilityHint="click me to change state">
         <Text>Checkbox example</Text>
       </TouchableOpacity>
     );
@@ -291,8 +282,7 @@ class SwitchExample extends React.Component<
         accessibilityLabel="element 12"
         accessibilityRole="switch"
         accessibilityState={{checked: this.state.switchState}}
-        accessible={true}
-      >
+        accessible={true}>
         <Text>Switch example</Text>
       </TouchableOpacity>
     );
@@ -352,8 +342,7 @@ class SelectionExample extends React.Component<
             disabled: !isEnabled,
           }}
           style={styles.touchable}
-          accessibilityHint={accessibilityHint}
-        >
+          accessibilityHint={accessibilityHint}>
           <Text style={{color: 'white'}}>
             {`Selectable TouchableOpacity Example ${touchableHint}`}
           </Text>
@@ -405,8 +394,7 @@ class ExpandableElementExample extends React.Component<
         onPress={this._onElementPress}
         accessibilityLabel="element 18"
         accessibilityState={{expanded: this.state.expandState}}
-        accessibilityHint="click me to change state"
-      >
+        accessibilityHint="click me to change state">
         <Text>Expandable element example</Text>
       </TouchableOpacity>
     );
@@ -482,8 +470,7 @@ class NestedCheckBox extends React.Component<
           accessibilityLabel="Meat"
           accessibilityHint="State changes in 2 seconds after clicking."
           accessibilityRole="checkbox"
-          accessibilityState={{checked: this.state.checkbox1}}
-        >
+          accessibilityState={{checked: this.state.checkbox1}}>
           <Image
             style={styles.image}
             source={
@@ -501,8 +488,7 @@ class NestedCheckBox extends React.Component<
           onPress={this._onPress2}
           accessibilityLabel="Beef"
           accessibilityRole="checkbox"
-          accessibilityState={{checked: this.state.checkbox2}}
-        >
+          accessibilityState={{checked: this.state.checkbox2}}>
           <Image
             style={styles.image}
             source={
@@ -516,8 +502,7 @@ class NestedCheckBox extends React.Component<
           onPress={this._onPress3}
           accessibilityLabel="Bacon"
           accessibilityRole="checkbox"
-          accessibilityState={{checked: this.state.checkbox3}}
-        >
+          accessibilityState={{checked: this.state.checkbox3}}>
           <Image
             style={styles.image}
             source={
@@ -538,108 +523,93 @@ class AccessibilityRoleAndStateExample extends React.Component<{}> {
         <View
           accessibilityLabel="element 1"
           accessibilityRole="alert"
-          accessible={true}
-        >
+          accessible={true}>
           <Text>Alert example</Text>
         </View>
         <CheckboxExample />
         <View
           accessibilityLabel="element 3"
           accessibilityRole="combobox"
-          accessible={true}
-        >
+          accessible={true}>
           <Text>Combobox example</Text>
         </View>
         <View
           accessibilityLabel="element 4"
           accessibilityRole="menu"
-          accessible={true}
-        >
+          accessible={true}>
           <Text>Menu example</Text>
         </View>
         <View
           accessibilityLabel="element 5"
           accessibilityRole="menubar"
-          accessible={true}
-        >
+          accessible={true}>
           <Text>Menu bar example</Text>
         </View>
         <View
           accessibilityLabel="element 6"
           accessibilityRole="menuitem"
-          accessible={true}
-        >
+          accessible={true}>
           <Text>Menu item example</Text>
         </View>
         <View
           accessibilityLabel="element 7"
           accessibilityRole="progressbar"
-          accessible={true}
-        >
+          accessible={true}>
           <Text>Progress bar example</Text>
         </View>
         <View
           accessibilityLabel="element 8"
           accessibilityRole="radio"
-          accessible={true}
-        >
+          accessible={true}>
           <Text>Radio button example</Text>
         </View>
         <View
           accessibilityLabel="element 9"
           accessibilityRole="radiogroup"
-          accessible={true}
-        >
+          accessible={true}>
           <Text>Radio group example</Text>
         </View>
         <View
           accessibilityLabel="element 10"
           accessibilityRole="scrollbar"
-          accessible={true}
-        >
+          accessible={true}>
           <Text>Scrollbar example</Text>
         </View>
         <View
           accessibilityLabel="element 11"
           accessibilityRole="spinbutton"
-          accessible={true}
-        >
+          accessible={true}>
           <Text>Spin button example</Text>
         </View>
         <SwitchExample />
         <View
           accessibilityLabel="element 13"
           accessibilityRole="tab"
-          accessible={true}
-        >
+          accessible={true}>
           <Text>Tab example</Text>
         </View>
         <View
           accessibilityLabel="element 14"
           accessibilityRole="tablist"
-          accessible={true}
-        >
+          accessible={true}>
           <Text>Tab list example</Text>
         </View>
         <View
           accessibilityLabel="element 15"
           accessibilityRole="timer"
-          accessible={true}
-        >
+          accessible={true}>
           <Text>Timer example</Text>
         </View>
         <View
           accessibilityLabel="element 16"
           accessibilityRole="toolbar"
-          accessible={true}
-        >
+          accessible={true}>
           <Text>Toolbar example</Text>
         </View>
         <View
           accessibilityLabel="element 17"
           accessibilityState={{busy: true}}
-          accessible={true}
-        >
+          accessible={true}>
           <Text>State busy example</Text>
         </View>
         <ExpandableElementExample />
@@ -666,8 +636,7 @@ class AccessibilityActionsExample extends React.Component<{}> {
                   Alert.alert('Alert', 'View is clicked');
                   break;
               }
-            }}
-          >
+            }}>
             <Text>Click me</Text>
           </View>
         </RNTesterBlock>
@@ -692,8 +661,7 @@ class AccessibilityActionsExample extends React.Component<{}> {
                   Alert.alert('Alert', 'paste action success');
                   break;
               }
-            }}
-          >
+            }}>
             <Text>This view supports many actions.</Text>
           </View>
         </RNTesterBlock>
@@ -712,8 +680,7 @@ class AccessibilityActionsExample extends React.Component<{}> {
                   Alert.alert('Alert', 'decrement action success');
                   break;
               }
-            }}
-          >
+            }}>
             <Text>Slider</Text>
           </View>
         </RNTesterBlock>
@@ -740,8 +707,7 @@ class AccessibilityActionsExample extends React.Component<{}> {
               }
             }}
             onPress={() => Alert.alert('Button has been pressed!')}
-            accessibilityRole="button"
-          >
+            accessibilityRole="button">
             <View>
               <Text>Click me</Text>
             </View>
@@ -802,14 +768,12 @@ function SliderAccessibilityExample(): React.Node {
     <View>
       <RNTesterBlock
         title="Disabled Slider via disabled"
-        description="Verify with TalkBack/VoiceOver announces Slider as disabled"
-      >
+        description="Verify with TalkBack/VoiceOver announces Slider as disabled">
         <Slider value={25} maximumValue={100} minimumValue={0} disabled />
       </RNTesterBlock>
       <RNTesterBlock
         title="Disabled Slider via accessibiltyState"
-        description="Verify with TalkBack/VoiceOver announces Slider as disabled"
-      >
+        description="Verify with TalkBack/VoiceOver announces Slider as disabled">
         <Slider
           value={75}
           maximumValue={100}
@@ -819,8 +783,7 @@ function SliderAccessibilityExample(): React.Node {
       </RNTesterBlock>
       <RNTesterBlock
         title="Selected Slider"
-        description="Verify with TalkBack/VoiceOver announces Slider as selected"
-      >
+        description="Verify with TalkBack/VoiceOver announces Slider as selected">
         <Slider
           value={75}
           maximumValue={100}
@@ -884,8 +847,7 @@ class FakeSliderExample extends React.Component<{}, FakeSliderExampleState> {
             min: 0,
             now: this.state.current,
             max: 100,
-          }}
-        >
+          }}>
           <Text>Fake Slider</Text>
         </View>
         <TouchableWithoutFeedback
@@ -911,8 +873,7 @@ class FakeSliderExample extends React.Component<{}, FakeSliderExampleState> {
                 break;
             }
           }}
-          accessibilityValue={{text: this.state.textualValue}}
-        >
+          accessibilityValue={{text: this.state.textualValue}}>
           <View>
             <Text>Equalizer</Text>
           </View>
@@ -1064,8 +1025,7 @@ class EnabledExamples extends React.Component<{}> {
             title="isAccessibilityServiceEnabled()"
             description={
               'Event emitted whenever an accessibility service is enabled. This includes TalkBack as well as assistive technologies such as "Select to Speak".'
-            }
-          >
+            }>
             <EnabledExample
               test="any accessibility service"
               eventListener="accessibilityServiceChanged"
@@ -1188,13 +1148,15 @@ class DisplayOptionsStatusExample extends React.Component<{}> {
               optionChecker={AccessibilityInfo.isGrayscaleEnabled}
               notification={'grayscaleChanged'}
             />
-            {isMacOS ? ( // [TODO(maCOS GH#774)
-              <DisplayOptionStatusExample
-                optionName={'High Contrast'}
-                optionChecker={AccessibilityInfo.isHighContrastEnabled}
-                notification={'highContrastChanged'}
-              />
-            ) : null /* ]TODO(maCOS GH#774) */}
+            {
+              isMacOS ? ( // [TODO(maCOS GH#774)
+                <DisplayOptionStatusExample
+                  optionName={'High Contrast'}
+                  optionChecker={AccessibilityInfo.isHighContrastEnabled}
+                  notification={'highContrastChanged'}
+                />
+              ) : null /* ]TODO(maCOS GH#774) */
+            }
             <DisplayOptionStatusExample
               optionName={'Invert Colors'}
               optionChecker={AccessibilityInfo.isInvertColorsEnabled}

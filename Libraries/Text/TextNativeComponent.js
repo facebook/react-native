@@ -25,9 +25,8 @@ type NativeTextProps = $ReadOnly<{
   isPressable?: ?boolean,
 }>;
 
-export const NativeText: HostComponent<NativeTextProps> = (createReactNativeComponentClass(
-  'RCTText',
-  () => ({
+export const NativeText: HostComponent<NativeTextProps> =
+  (createReactNativeComponentClass('RCTText', () => ({
     validAttributes: {
       ...ReactNativeViewAttributes.UIView,
       isHighlighted: true,
@@ -57,8 +56,7 @@ export const NativeText: HostComponent<NativeTextProps> = (createReactNativeComp
       },
     },
     uiViewClassName: 'RCTText',
-  }),
-): any);
+  })): any);
 
 export const NativeVirtualText: HostComponent<NativeTextProps> =
   !global.RN$Bridgeless && !UIManager.hasViewManagerConfig('RCTVirtualText')

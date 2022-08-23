@@ -25,8 +25,7 @@ class FlexTestApp extends React.Component<FlexTestAppProps> {
       <View
         style={FlexTestAppStyles.container}
         testID="container"
-        collapsable={false}
-      >
+        collapsable={false}>
         <View
           style={[FlexTestAppStyles.child, FlexTestAppStyles.bgRed]}
           collapsable={false}
@@ -64,8 +63,7 @@ class FlexWithText extends React.Component<FlexWithTextProps> {
       <View
         style={FlexWithTextStyles.container}
         testID="container"
-        collapsable={false}
-      >
+        collapsable={false}>
         <View style={FlexWithTextStyles.row} collapsable={false}>
           <Text style={FlexWithTextStyles.inner}>Hello</Text>
           <Text style={FlexWithTextStyles.inner}>World</Text>
@@ -121,8 +119,7 @@ class AbsolutePositionBottomRightTestApp extends React.Component<AbsolutePositio
       <View
         style={AbsolutePositionBottomRightTestAppStyles.container}
         testID="container"
-        collapsable={false}
-      >
+        collapsable={false}>
         <View
           style={AbsolutePositionBottomRightTestAppStyles.absolute}
           collapsable={false}

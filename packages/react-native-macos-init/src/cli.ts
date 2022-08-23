@@ -16,9 +16,7 @@ import * as chalk from 'chalk';
 // @ts-ignore
 import * as Registry from 'npm-registry';
 
-const npmConfReg = execSync('npm config get registry')
-  .toString()
-  .trim();
+const npmConfReg = execSync('npm config get registry').toString().trim();
 const NPM_REGISTRY_URL = validUrl.isUri(npmConfReg)
   ? npmConfReg
   : 'http://registry.npmjs.org';
@@ -243,9 +241,8 @@ function printError(message: string, ...optionalParams: any[]) {
     const name = getReactNativeAppName();
     const reactNativeVersion = getReactNativeVersion();
     const reactNativeMacOSVersion = getReactNativeMacOSVersion();
-    const reactNativeMacOSLatestVersion = await getLatestMatchingReactNativeMacOSVersion(
-      'latest',
-    );
+    const reactNativeMacOSLatestVersion =
+      await getLatestMatchingReactNativeMacOSVersion('latest');
 
     if (!version) {
       version = getDefaultReactNativeMacOSSemVerForReactNativeVersion(
@@ -254,9 +251,8 @@ function printError(message: string, ...optionalParams: any[]) {
       );
     }
 
-    const reactNativeMacOSResolvedVersion = await getLatestMatchingReactNativeMacOSVersion(
-      version,
-    );
+    const reactNativeMacOSResolvedVersion =
+      await getLatestMatchingReactNativeMacOSVersion(version);
 
     if (!argv.version) {
       console.log(

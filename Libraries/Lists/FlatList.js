@@ -420,14 +420,13 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     super(props);
     this._checkProps(this.props);
     if (this.props.viewabilityConfigCallbackPairs) {
-      this._virtualizedListPairs = this.props.viewabilityConfigCallbackPairs.map(
-        pair => ({
+      this._virtualizedListPairs =
+        this.props.viewabilityConfigCallbackPairs.map(pair => ({
           viewabilityConfig: pair.viewabilityConfig,
           onViewableItemsChanged: this._createOnViewableItemsChanged(
             pair.onViewableItemsChanged,
           ),
-        }),
-      );
+        }));
     } else if (this.props.onViewableItemsChanged) {
       this._virtualizedListPairs.push({
         /* $FlowFixMe[incompatible-call] (>=0.63.0 site=react_native_fb) This
@@ -665,6 +664,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
         removeClippedSubviews={removeClippedSubviewsOrDefault(
           _removeClippedSubviews,
         )}
+        accessibilityRole="table" // TODO(macOS GH#774): Inherit NSAccessibilityTable protocols
         {...this._renderer()}
       />
     );

@@ -40,8 +40,7 @@ function ContentPress() {
         <Pressable
           onPress={() => {
             setTimesPressed(current => current + 1);
-          }}
-        >
+          }}>
           {({pressed}) => (
             <Text style={styles.text}>{pressed ? 'Pressed!' : 'Press Me'}</Text>
           )}
@@ -71,8 +70,7 @@ function TextOnPressBox() {
         testID="tappable_text"
         onPress={() => {
           setTimesPressed(prev => prev + 1);
-        }}
-      >
+        }}>
         Text has built-in onPress handling
       </Text>
       <View style={styles.logBox}>
@@ -109,15 +107,13 @@ function PressableFeedbackEvents() {
           onPress={() => appendEvent('press')}
           onPressIn={() => appendEvent('pressIn')}
           onPressOut={() => appendEvent('pressOut')}
-          onLongPress={() => appendEvent('longPress')}
-        >
+          onLongPress={() => appendEvent('longPress')}>
           <Text style={styles.button}>Press Me</Text>
         </Pressable>
       </View>
       <View
         testID="pressable_feedback_events_console"
-        style={styles.eventLogBox}
-      >
+        style={styles.eventLogBox}>
         {eventLog.map((e, ii) => (
           <Text key={ii}>{e}</Text>
         ))}
@@ -146,8 +142,7 @@ function PressableDelayEvents() {
           onPressIn={() => appendEvent('pressIn')}
           onPressOut={() => appendEvent('pressOut')}
           delayLongPress={800}
-          onLongPress={() => appendEvent('longPress - 800ms delay')}
-        >
+          onLongPress={() => appendEvent('longPress - 800ms delay')}>
           <Text style={styles.button}>Press Me</Text>
         </Pressable>
       </View>
@@ -178,8 +173,7 @@ function ForceTouchExample() {
           testID="pressable_3dtouch_button"
           onStartShouldSetResponder={() => true}
           onResponderMove={event => setForce(event.nativeEvent?.force || 1)}
-          onResponderRelease={event => setForce(0)}
-        >
+          onResponderRelease={event => setForce(0)}>
           <Text style={styles.button}>Press Me</Text>
         </View>
       </View>
@@ -204,8 +198,7 @@ function PressableHitSlop() {
           onPress={() => setTimesPressed(num => num + 1)}
           style={styles.hitSlopWrapper}
           hitSlop={{top: 30, bottom: 30, left: 60, right: 60}}
-          testID="pressable_hit_slop_button"
-        >
+          testID="pressable_hit_slop_button">
           <Text style={styles.hitSlopButton}>Press Outside This View</Text>
         </Pressable>
       </View>
@@ -255,8 +248,7 @@ function PressableDisabled() {
           {opacity: pressed ? 0.5 : 1},
           styles.row,
           styles.block,
-        ]}
-      >
+        ]}>
         <Text style={styles.button}>Enabled Pressable</Text>
       </Pressable>
     </>
@@ -354,8 +346,7 @@ exports.examples = [
                 backgroundColor: pressed ? 'rgb(210, 230, 255)' : 'white',
               },
               styles.wrapperCustom,
-            ]}
-          >
+            ]}>
             <Text style={styles.text}>Press Me</Text>
           </Pressable>
         </View>
@@ -366,15 +357,16 @@ exports.examples = [
     title: 'Pressable feedback events',
     description: ('<Pressable> components accept onPress, onPressIn, ' +
       'onPressOut, and onLongPress as props.': string),
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <PressableFeedbackEvents />;
     },
   },
   {
     title: 'Pressable with Ripple and Animated child',
-    description: ('Pressable can have an AnimatedComponent as a direct child.': string),
+    description:
+      ('Pressable can have an AnimatedComponent as a direct child.': string),
     platform: 'android',
-    render: function(): React.Node {
+    render: function (): React.Node {
       const mScale = new Animated.Value(1);
       Animated.timing(mScale, {
         toValue: 0.3,
@@ -398,9 +390,10 @@ exports.examples = [
   },
   {
     title: 'Pressable with custom Ripple',
-    description: ("Pressable can specify ripple's radius, color and borderless params": string),
+    description:
+      ("Pressable can specify ripple's radius, color and borderless params": string),
     platform: 'android',
-    render: function(): React.Node {
+    render: function (): React.Node {
       const nativeFeedbackButton = {
         textAlign: 'center',
         margin: 10,
@@ -411,11 +404,9 @@ exports.examples = [
             style={[
               styles.row,
               {justifyContent: 'space-around', alignItems: 'center'},
-            ]}
-          >
+            ]}>
             <Pressable
-              android_ripple={{color: 'orange', borderless: true, radius: 30}}
-            >
+              android_ripple={{color: 'orange', borderless: true, radius: 30}}>
               <View>
                 <Text style={[styles.button, nativeFeedbackButton]}>
                   radius 30
@@ -453,8 +444,7 @@ exports.examples = [
               android_ripple={{
                 borderless: false,
                 foreground: true,
-              }}
-            >
+              }}>
               <Image
                 source={{
                   uri: 'https://www.facebook.com/ads/pics/successstories.png',
@@ -470,7 +460,7 @@ exports.examples = [
   },
   {
     title: '<Text onPress={fn}> with highlight',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <TextOnPressBox />;
     },
   },
@@ -479,7 +469,7 @@ exports.examples = [
     description: ('<Pressable> also accept delayPressIn, ' +
       'delayPressOut, and delayLongPress as props. These props impact the ' +
       'timing of feedback events.': string),
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <PressableDelayEvents />;
     },
   },
@@ -487,31 +477,34 @@ exports.examples = [
     title: '3D Touch / Force Touch',
     description:
       'iPhone 8 and 8 plus support 3D touch, which adds a force property to touches',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <ForceTouchExample />;
     },
     platform: 'ios',
   },
   {
     title: 'Pressable Hit Slop',
-    description: ('<Pressable> components accept hitSlop prop which extends the touch area ' +
-      'without changing the view bounds.': string),
-    render: function(): React.Node {
+    description:
+      ('<Pressable> components accept hitSlop prop which extends the touch area ' +
+        'without changing the view bounds.': string),
+    render: function (): React.Node {
       return <PressableHitSlop />;
     },
   },
   {
     title: 'Pressable Native Methods',
-    description: ('<Pressable> components expose native methods like `measure`.': string),
-    render: function(): React.Node {
+    description:
+      ('<Pressable> components expose native methods like `measure`.': string),
+    render: function (): React.Node {
       return <PressableNativeMethods />;
     },
   },
   {
     title: 'Disabled Pressable',
-    description: ('<Pressable> components accept disabled prop which prevents ' +
-      'any interaction with component': string),
-    render: function(): React.Node {
+    description:
+      ('<Pressable> components accept disabled prop which prevents ' +
+        'any interaction with component': string),
+    render: function (): React.Node {
       return <PressableDisabled />;
     },
   },

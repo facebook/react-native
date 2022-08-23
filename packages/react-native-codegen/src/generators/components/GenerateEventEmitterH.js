@@ -32,7 +32,7 @@ type StructsMap = Map<string, string>;
 
 type ComponentCollection = $ReadOnly<{
   [component: string]: ComponentShape,
-  ...,
+  ...
 }>;
 
 const FileTemplate = ({componentEmitters}: {componentEmitters: string}) => `

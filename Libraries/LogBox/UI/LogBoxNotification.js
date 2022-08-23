@@ -44,8 +44,7 @@ function LogBoxLogNotification(props: Props): React.Node {
         backgroundColor={{
           default: LogBoxStyle.getBackgroundColor(1),
           pressed: LogBoxStyle.getBackgroundColor(0.9),
-        }}
-      >
+        }}>
         <View style={toastStyles.content}>
           <CountBadge count={totalLogCount} level={level} />
           <Message message={log.message} />
@@ -104,8 +103,7 @@ function DismissButton(props: $TEMPORARY$object<{onPress: () => void}>) {
           left: 10,
         }}
         onPress={props.onPress}
-        style={dismissStyles.press}
-      >
+        style={dismissStyles.press}>
         <Image
           source={require('./LogBoxImages/close.png')}
           style={dismissStyles.image}

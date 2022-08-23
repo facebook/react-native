@@ -101,8 +101,7 @@ class AddRemoveExample extends React.Component<{...}, AddRemoveExampleState> {
       <View
         key={key}
         style={styles.view}
-        onLayout={evt => console.log('Box onLayout')}
-      >
+        onLayout={evt => console.log('Box onLayout')}>
         <Text>{key}</Text>
       </View>
     ));

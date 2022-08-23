@@ -84,8 +84,7 @@ class XHRExampleHeaders extends React.Component {
       ) : (
         <TouchableHighlight
           style={styles.wrapper}
-          onPress={this.download.bind(this)}
-        >
+          onPress={this.download.bind(this)}>
           <View style={styles.button}>
             <Text>Get headers</Text>
           </View>

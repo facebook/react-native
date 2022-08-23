@@ -49,13 +49,11 @@ function RNTTestDetails({
           Platform.OS === 'ios'
             ? theme.SystemBackgroundColor
             : theme.BackgroundColor,
-      })}
-    >
+      })}>
       <View style={styles.titleRow}>
         <Text
           numberOfLines={1}
-          style={StyleSheet.compose(styles.title, {color: theme.LabelColor})}
-        >
+          style={StyleSheet.compose(styles.title, {color: theme.LabelColor})}>
           {title}
         </Text>
         {content != null && (

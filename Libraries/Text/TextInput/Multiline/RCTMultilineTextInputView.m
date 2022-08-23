@@ -106,7 +106,9 @@
 - (void)scrollViewDidScroll:(RCTUIScrollView *)scrollView // TODO(macOS ISS#3536887)
 {
   RCTDirectEventBlock onScroll = self.onScroll;
-
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
+  [_scrollView setHasVerticalScroller:YES];
+#endif // ]TODO(macOS GH#774)
   if (onScroll) {
     CGPoint contentOffset = scrollView.contentOffset;
     CGSize contentSize = scrollView.contentSize;

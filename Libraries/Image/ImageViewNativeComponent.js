@@ -128,9 +128,7 @@ const ImageViewViewConfig =
         },
       };
 
-const ImageViewNativeComponent: HostComponent<Props> = NativeComponentRegistry.get<Props>(
-  'RCTImageView',
-  () => ImageViewViewConfig,
-);
+const ImageViewNativeComponent: HostComponent<Props> =
+  NativeComponentRegistry.get<Props>('RCTImageView', () => ImageViewViewConfig);
 
 export default ImageViewNativeComponent;

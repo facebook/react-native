@@ -112,8 +112,7 @@ class AnExTilt extends React.Component<Object, any> {
               {translateX: this.state.panX},
             ],
           },
-        ]}
-      >
+        ]}>
         <Animated.Image
           pointerEvents="none"
           style={{

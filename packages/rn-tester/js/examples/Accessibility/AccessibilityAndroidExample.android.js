@@ -79,8 +79,7 @@ class AccessibilityAndroidExample extends React.Component<
                 importantForAccessibilityValues[
                   this.state.backgroundImportantForAcc
                 ]
-              }
-            >
+              }>
               <View accessible={true} style={styles.touchableContainer}>
                 <Text style={{fontSize: 25}}>Hello</Text>
               </View>
@@ -101,16 +100,14 @@ class AccessibilityAndroidExample extends React.Component<
                 importantForAccessibilityValues[
                   this.state.forgroundImportantForAcc
                 ]
-              }
-            >
+              }>
               <View accessible={true}>
                 <Text style={{fontSize: 20}}>world</Text>
               </View>
             </View>
           </View>
           <TouchableWithoutFeedback
-            onPress={this._changeBackgroundImportantForAcc}
-          >
+            onPress={this._changeBackgroundImportantForAcc}>
             <View style={styles.embedded}>
               <Text>
                 Change importantForAccessibility for background layout.
@@ -128,8 +125,7 @@ class AccessibilityAndroidExample extends React.Component<
             </Text>
           </View>
           <TouchableWithoutFeedback
-            onPress={this._changeForgroundImportantForAcc}
-          >
+            onPress={this._changeForgroundImportantForAcc}>
             <View style={styles.embedded}>
               <Text>
                 Change importantForAccessibility for forground layout.

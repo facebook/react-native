@@ -46,8 +46,7 @@ function renderApplication<Props: Object>(
         showArchitectureIndicator={showArchitectureIndicator}
         WrapperComponent={WrapperComponent}
         initialProps={initialProps ?? Object.freeze({})}
-        internal_excludeLogBox={isLogBox}
-      >
+        internal_excludeLogBox={isLogBox}>
         <RootComponent {...initialProps} rootTag={rootTag} />
       </AppContainer>
     </PerformanceLoggerContext.Provider>

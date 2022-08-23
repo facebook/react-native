@@ -22,8 +22,7 @@ export default function TextAdjustsDynamicLayoutExample(props: {}): React.Node {
           <Text
             adjustsFontSizeToFit={true}
             numberOfLines={1}
-            style={styles.subjectText}
-          >
+            style={styles.subjectText}>
             This is adjusting text.
           </Text>
         </View>

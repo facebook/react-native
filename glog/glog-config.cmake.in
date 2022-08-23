@@ -1,7 +1,0 @@
-@PACKAGE_INIT@
-
-include (CMakeFindDependencyMacro)
-
-@gflags_DEPENDENCY@
-
-include ("${CMAKE_CURRENT_LIST_DIR}/glog-targets.cmake")

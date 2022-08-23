@@ -12,7 +12,7 @@
 
 const FormData = require('../FormData');
 
-describe('FormData', function() {
+describe('FormData', function () {
   var formData;
 
   beforeEach(() => {
@@ -23,7 +23,7 @@ describe('FormData', function() {
     formData = null;
   });
 
-  it('should return non blob null', function() {
+  it('should return non blob null', function () {
     formData.append('null', null);
 
     const expectedPart = {
@@ -36,7 +36,7 @@ describe('FormData', function() {
     expect(formData.getParts()[0]).toMatchObject(expectedPart);
   });
 
-  it('should return blob', function() {
+  it('should return blob', function () {
     formData.append('photo', {
       uri: 'arbitrary/path',
       type: 'image/jpeg',

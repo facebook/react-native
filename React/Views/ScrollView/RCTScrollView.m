@@ -549,6 +549,11 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
 {
   [_scrollView setAccessibilityLabel:accessibilityLabel];
 }
+
+- (void)setAccessibilityRole:(NSAccessibilityRole)accessibilityRole
+{
+  [_scrollView setAccessibilityRole:accessibilityRole];
+}
 #endif // ]TODO(macOS GH#774)
 
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)

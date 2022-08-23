@@ -19,8 +19,7 @@ const ToastWithShortDuration = () => {
     <Pressable
       onPress={() =>
         ToastAndroid.show('Copied to clipboard!', ToastAndroid.SHORT)
-      }
-    >
+      }>
       <Text style={styles.text}>Tap to view toast</Text>
     </Pressable>
   );
@@ -29,8 +28,7 @@ const ToastWithShortDuration = () => {
 const ToastWithLongDuration = () => {
   return (
     <Pressable
-      onPress={() => ToastAndroid.show('Sending message..', ToastAndroid.LONG)}
-    >
+      onPress={() => ToastAndroid.show('Sending message..', ToastAndroid.LONG)}>
       <Text style={styles.text}>Tap to view toast</Text>
     </Pressable>
   );
@@ -45,8 +43,7 @@ const ToastWithTopGravity = () => {
           ToastAndroid.SHORT,
           ToastAndroid.TOP,
         )
-      }
-    >
+      }>
       <Text style={styles.text}>Tap to view toast</Text>
     </Pressable>
   );
@@ -61,8 +58,7 @@ const ToastWithCenterGravity = () => {
           ToastAndroid.SHORT,
           ToastAndroid.CENTER,
         )
-      }
-    >
+      }>
       <Text style={styles.text}>Tap to view toast</Text>
     </Pressable>
   );
@@ -77,8 +73,7 @@ const ToastWithBottomGravity = () => {
           ToastAndroid.SHORT,
           ToastAndroid.BOTTOM,
         )
-      }
-    >
+      }>
       <Text style={styles.text}>Tap to view toast</Text>
     </Pressable>
   );
@@ -95,8 +90,7 @@ const ToastWithXOffset = () => {
           250,
           0,
         )
-      }
-    >
+      }>
       <Text style={styles.text}>Tap to view toast</Text>
     </Pressable>
   );
@@ -113,8 +107,7 @@ const ToastWithYOffset = () => {
           0,
           100,
         )
-      }
-    >
+      }>
       <Text style={styles.text}>Tap to view toast</Text>
     </Pressable>
   );

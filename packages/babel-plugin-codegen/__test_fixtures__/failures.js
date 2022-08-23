@@ -82,7 +82,9 @@ export default (codegenNativeComponent<ModuleProps>('Module'): NativeType);
 `;
 
 module.exports = {
-  'CommandsExportedWithDifferentNameNativeComponent.js': COMMANDS_EXPORTED_WITH_DIFFERENT_NAME,
-  'CommandsExportedWithShorthandNativeComponent.js': COMMANDS_EXPORTED_WITH_SHORTHAND,
+  'CommandsExportedWithDifferentNameNativeComponent.js':
+    COMMANDS_EXPORTED_WITH_DIFFERENT_NAME,
+  'CommandsExportedWithShorthandNativeComponent.js':
+    COMMANDS_EXPORTED_WITH_SHORTHAND,
   'OtherCommandsExportNativeComponent.js': OTHER_COMMANDS_EXPORT,
 };

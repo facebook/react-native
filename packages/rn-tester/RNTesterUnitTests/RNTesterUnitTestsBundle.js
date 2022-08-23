@@ -11,7 +11,7 @@
 
 // eslint-disable-next-line no-unused-vars
 const __fbBatchedBridge = {
-  flushedQueue: function() {
+  flushedQueue: function () {
     return null;
   },
 };

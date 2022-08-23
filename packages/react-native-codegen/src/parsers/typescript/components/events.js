@@ -214,11 +214,8 @@ function buildEventSchema(
     return null;
   }
 
-  const {
-    argumentProps,
-    bubblingType,
-    paperTopLevelNameDeprecated,
-  } = findEventArgumentsAndType(typeAnnotation, types);
+  const {argumentProps, bubblingType, paperTopLevelNameDeprecated} =
+    findEventArgumentsAndType(typeAnnotation, types);
 
   if (bubblingType && argumentProps) {
     if (paperTopLevelNameDeprecated != null) {
@@ -260,7 +257,7 @@ type EventTypeAST = Object;
 type TypeMap = {
   // $FlowFixMe[unclear-type] TODO(T108222691): Use flow-types for @babel/parser
   [string]: Object,
-  ...,
+  ...
 };
 
 function getEvents(

@@ -29,8 +29,7 @@ const RNTesterBlock = ({description, title, children}: Props): React.Node => {
           borderColor: theme.SeparatorColor,
           backgroundColor: theme.SecondaryGroupedBackgroundColor,
         },
-      ]}
-    >
+      ]}>
       <View style={[styles.titleContainer]}>
         <Text style={[styles.titleText, {color: theme.LabelColor}]}>
           {title}
@@ -39,8 +38,7 @@ const RNTesterBlock = ({description, title, children}: Props): React.Node => {
           style={[
             styles.descriptionText,
             {color: theme.LabelColor, marginTop: description ? 10 : 0},
-          ]}
-        >
+          ]}>
           {description}
         </Text>
       </View>

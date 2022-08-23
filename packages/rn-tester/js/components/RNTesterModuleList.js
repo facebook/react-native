@@ -45,8 +45,7 @@ const ExampleModuleRow = ({
           exampleType: item.exampleType,
           key: item.key,
         })
-      }
-    >
+      }>
       <Image
         style={styles.imageStyle}
         source={
@@ -76,16 +75,14 @@ const ExampleModuleRow = ({
               style={{
                 color: onIos ? '#787878' : theme.SeparatorColor,
                 fontWeight: onIos ? '500' : '300',
-              }}
-            >
+              }}>
               iOS
             </Text>
             <Text
               style={{
                 color: onAndroid ? '#787878' : theme.SeparatorColor,
                 fontWeight: onAndroid ? '500' : '300',
-              }}
-            >
+              }}>
               Android
             </Text>
           </View>
@@ -113,8 +110,7 @@ const renderSectionHeader = ({section}: {section: any, ...}) => (
               color: theme.SecondaryLabelColor,
               backgroundColor: theme.GroupedBackgroundColor,
             },
-          ]}
-        >
+          ]}>
           {section.title}
         </Text>
       );

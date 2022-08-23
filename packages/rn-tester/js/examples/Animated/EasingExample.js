@@ -110,8 +110,7 @@ function EasingItem({
           onPress={() => {
             opacityAndScale.current.setValue(0);
             animation.current.start();
-          }}
-        >
+          }}>
           Animate
         </RNTesterButton>
       </View>

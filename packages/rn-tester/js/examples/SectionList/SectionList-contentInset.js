@@ -41,8 +41,10 @@ export function SectionList_contentInset(): React.Node {
   return (
     <>
       <View
-        style={[styles.titleContainer, {height: exampleProps.contentInset.top}]}
-      >
+        style={[
+          styles.titleContainer,
+          {height: exampleProps.contentInset.top},
+        ]}>
         <Text style={styles.titleText}>Menu</Text>
       </View>
       <SectionListBaseExample
@@ -76,7 +78,7 @@ export default {
   title: 'SectionList Content Inset',
   platform: 'ios',
   name: 'SectionList-contentInset',
-  render: function(): React.Element<typeof SectionList_contentInset> {
+  render: function (): React.Element<typeof SectionList_contentInset> {
     return <SectionList_contentInset />;
   },
 };

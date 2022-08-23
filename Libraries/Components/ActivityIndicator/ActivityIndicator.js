@@ -107,8 +107,7 @@ const ActivityIndicator = (
   return (
     <View
       onLayout={onLayout}
-      style={StyleSheet.compose(styles.container, style)}
-    >
+      style={StyleSheet.compose(styles.container, style)}>
       {Platform.OS === 'android' ? (
         // $FlowFixMe[prop-missing] Flow doesn't know when this is the android component
         <PlatformActivityIndicator {...nativeProps} {...androidProps} />

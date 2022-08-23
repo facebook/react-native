@@ -12,6 +12,10 @@
 #import <React/RCTEventDispatcherProtocol.h> // TODO(OSS Candidate ISS#2710739)
 #import <React/RCTPointerEvents.h>
 
+#if TARGET_OS_OSX // TODO(macOS GH#774)
+#import <React/RCTCursor.h>
+#endif // TODO(macOS GH#774)
+
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
 extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 #endif // TODO(macOS GH#774)
@@ -25,6 +29,10 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 
 - (BOOL)becomeFirstResponder;
 - (BOOL)resignFirstResponder;
+
+#if TARGET_OS_OSX
+- (BOOL)handleKeyboardEvent:(NSEvent *)event;
+#endif
 // ]TODO(OSS Candidate ISS#2710739)
 
 /**
@@ -119,6 +127,7 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 /**
  * macOS Properties
  */
+@property (nonatomic, assign) RCTCursor cursor;
 
 @property (nonatomic, assign) CATransform3D transform3D;
 
@@ -135,6 +144,12 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 @property (nonatomic, copy) RCTDirectEventBlock onKeyUp;
 @property (nonatomic, copy) NSArray<NSString*> *validKeysDown;
 @property (nonatomic, copy) NSArray<NSString*> *validKeysUp;
+
+// Shadow Properties
+@property (nonatomic, strong) NSColor *shadowColor;
+@property (nonatomic, assign) CGFloat shadowOpacity;
+@property (nonatomic, assign) CGFloat shadowRadius;
+@property (nonatomic, assign) CGSize shadowOffset;
 #endif // ]TODO(macOS GH#774)
 
 /**

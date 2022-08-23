@@ -60,8 +60,7 @@ describe('TouchableWithoutFeedback with disabled state', () => {
       ReactTestRenderer.create(
         <TouchableWithoutFeedback
           disabled={true}
-          accessibilityState={{checked: true}}
-        >
+          accessibilityState={{checked: true}}>
           <View />
         </TouchableWithoutFeedback>,
       ),
@@ -73,8 +72,7 @@ describe('TouchableWithoutFeedback with disabled state', () => {
       ReactTestRenderer.create(
         <TouchableWithoutFeedback
           disabled={true}
-          accessibilityState={{disabled: false}}
-        >
+          accessibilityState={{disabled: false}}>
           <View />
         </TouchableWithoutFeedback>,
       ),

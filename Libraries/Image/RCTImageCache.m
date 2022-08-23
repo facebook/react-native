@@ -38,10 +38,10 @@ static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat sc
 {
   if (self = [super init]) {
     _decodedImageCache = [NSCache new];
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
     _decodedImageCache.totalCostLimit = 20 * 1024 * 1024; // 20 MB
     _cacheStaleTimes = [NSMutableDictionary new];
 
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(clearCache)
                                                  name:UIApplicationDidReceiveMemoryWarningNotification

@@ -21,8 +21,7 @@ describe('LogBoxButton', () => {
         backgroundColor={{
           default: 'black',
           pressed: 'red',
-        }}
-      >
+        }}>
         <Text>Press me</Text>
       </LogBoxButton>,
     );
@@ -38,8 +37,7 @@ describe('LogBoxButton', () => {
           pressed: 'red',
         }}
         hitSlop={{}}
-        onPress={() => {}}
-      >
+        onPress={() => {}}>
         <Text>Press me</Text>
       </LogBoxButton>,
     );

@@ -29,12 +29,13 @@ const _gesture = PanResponder.create({
 exports.examples = [
   {
     title: 'JSResponderHandlerExample',
-    description: ('This example tests the native JSResponderHandler: when the user ' +
-      'scrolls on the right side of the ScrollView (white area located on the' +
-      ' right side of the gray area), the touch event is managed by native ' +
-      'which blocks the scroll event.': string),
+    description:
+      ('This example tests the native JSResponderHandler: when the user ' +
+        'scrolls on the right side of the ScrollView (white area located on the' +
+        ' right side of the gray area), the touch event is managed by native ' +
+        'which blocks the scroll event.': string),
 
-    render: function(): React.Node {
+    render: function (): React.Node {
       const views = [];
       for (let i = 0; i < 100; i++) {
         views[i] = (
@@ -49,8 +50,7 @@ exports.examples = [
         <View
           style={styles.container}
           {..._gesture.panHandlers}
-          collapsable={false}
-        >
+          collapsable={false}>
           <ScrollView style={styles.scrollview} testID="scroll_view">
             {views}
           </ScrollView>

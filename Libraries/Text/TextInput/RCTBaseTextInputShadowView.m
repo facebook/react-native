@@ -225,7 +225,19 @@
 
   if (!_textStorage) {
     _textContainer = [NSTextContainer new];
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
     _textContainer.lineFragmentPadding = 0.0; // Note, the default value is 5.
+#else
+    // macOS has a bug in multiline where setting the real text view's lineFragmentPadding to 0 will
+    // cause the scroll view to scroll to top when inserting a newline at the bottom of
+    // a NSTextView when it has more rows than can be displayed on screen. The shadow needs to match
+    // the NSTextView that it is tracking.
+    if (_maximumNumberOfLines != 1) {
+      _textContainer.lineFragmentPadding = 1;
+    } else {
+      _textContainer.lineFragmentPadding = 0.0; // Note, the default value is 5.
+    }
+#endif // ]TODO(macOS GH#774)
     _layoutManager = [NSLayoutManager new];
     [_layoutManager addTextContainer:_textContainer];
     _textStorage = [NSTextStorage new];

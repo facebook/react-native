@@ -151,8 +151,7 @@ class LayoutEventsTest extends React.Component<Props, State> {
             this._view = ref;
           }}
           onLayout={this.onViewLayout}
-          style={viewStyle}
-        >
+          style={viewStyle}>
           <Image
             ref={ref => {
               this._img = ref;
@@ -166,8 +165,7 @@ class LayoutEventsTest extends React.Component<Props, State> {
               this._txt = ref;
             }}
             onLayout={this.onTextLayout}
-            style={styles.text}
-          >
+            style={styles.text}>
             A simple piece of text.{this.state.extraText}
           </Text>
           <Text>

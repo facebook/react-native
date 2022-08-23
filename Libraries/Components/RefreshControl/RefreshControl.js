@@ -158,13 +158,8 @@ class RefreshControl extends React.Component<RefreshControlProps> {
 
   render(): React.Node {
     if (Platform.OS === 'ios') {
-      const {
-        enabled,
-        colors,
-        progressBackgroundColor,
-        size,
-        ...props
-      } = this.props;
+      const {enabled, colors, progressBackgroundColor, size, ...props} =
+        this.props;
       return (
         <PullToRefreshViewNativeComponent
           {...props}

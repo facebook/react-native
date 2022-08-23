@@ -59,7 +59,7 @@ exports.description =
 exports.examples = [
   {
     title: 'AccessibilityShowMenu',
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <AccessibilityShowMenu />;
     },
   },

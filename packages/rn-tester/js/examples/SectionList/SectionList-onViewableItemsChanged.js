@@ -53,8 +53,7 @@ export function SectionList_onViewableItemsChanged(props: {
       ref={ref}
       exampleProps={exampleProps}
       onTest={onTest}
-      testOutput={output}
-    >
+      testOutput={output}>
       {offScreen === true ? <View style={styles.offScreen} /> : null}
     </SectionListBaseExample>
   );
@@ -68,7 +67,9 @@ const styles = StyleSheet.create({
 export default {
   title: 'SectionList On Viewable Items Changed',
   name: 'SectionList_onViewableItemsChanged',
-  render: function(): React.Element<typeof SectionList_onViewableItemsChanged> {
+  render: function (): React.Element<
+    typeof SectionList_onViewableItemsChanged,
+  > {
     return (
       <SectionList_onViewableItemsChanged
         viewabilityConfig={VIEWABILITY_CONFIG}

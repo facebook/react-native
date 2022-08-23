@@ -46,7 +46,6 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
     _placeholderView.numberOfLines = 0;
     [self addSubview:_placeholderView];
 #else // [TODO(macOS GH#774)
-    self.insertionPointColor = [NSColor selectedControlColor];
     // Fix blurry text on non-retina displays.
     self.canDrawSubviewsIntoLayer = YES;
     self.allowsUndo = YES;
@@ -126,12 +125,30 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
 }
 
 #if TARGET_OS_OSX // [TODO(macOS GH#774)
+- (void)toggleAutomaticSpellingCorrection:(id)sender
+{
+  self.automaticSpellingCorrectionEnabled = !self.isAutomaticSpellingCorrectionEnabled;
+  [_textInputDelegate automaticSpellingCorrectionDidChange:self.isAutomaticSpellingCorrectionEnabled];
+}
+
+- (void)toggleContinuousSpellChecking:(id)sender
+{
+  self.continuousSpellCheckingEnabled = !self.isContinuousSpellCheckingEnabled;
+  [_textInputDelegate continuousSpellCheckingDidChange:self.isContinuousSpellCheckingEnabled];
+}
+
+- (void)toggleGrammarChecking:(id)sender
+{
+  self.grammarCheckingEnabled = !self.isGrammarCheckingEnabled;
+  [_textInputDelegate grammarCheckingDidChange:self.isGrammarCheckingEnabled];
+}
+
 - (void)setSelectionColor:(RCTUIColor *)selectionColor
 {
   NSMutableDictionary *selectTextAttributes = self.selectedTextAttributes.mutableCopy;
   selectTextAttributes[NSBackgroundColorAttributeName] = selectionColor ?: [NSColor selectedControlColor];
   self.selectedTextAttributes = selectTextAttributes.copy;
-  self.insertionPointColor = self.selectionColor ?: [NSColor selectedControlColor];
+  self.insertionPointColor = self.selectionColor ?: [NSColor textColor];
 }
 
 - (RCTUIColor*)selectionColor
@@ -173,7 +190,7 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
 
 - (BOOL)becomeFirstResponder
 {
-  BOOL success =  [[self window] makeFirstResponder:self];
+  BOOL success = [super becomeFirstResponder];
 
   if (success) {
     id<RCTBackedTextInputDelegate> textInputDelegate = [self textInputDelegate];

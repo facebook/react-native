@@ -35,20 +35,20 @@ type Handler = {
  * queried with `getStats`.
  */
 const JSEventLoopWatchdog = {
-  getStats: function(): Object {
+  getStats: function (): Object {
     return {stallCount, totalStallTime, longestStall, acceptableBusyTime};
   },
-  reset: function() {
+  reset: function () {
     infoLog('JSEventLoopWatchdog: reset');
     totalStallTime = 0;
     stallCount = 0;
     longestStall = 0;
     lastInterval = global.performance.now();
   },
-  addHandler: function(handler: Handler) {
+  addHandler: function (handler: Handler) {
     handlers.push(handler);
   },
-  install: function({thresholdMS}: {thresholdMS: number, ...}) {
+  install: function ({thresholdMS}: {thresholdMS: number, ...}) {
     acceptableBusyTime = thresholdMS;
     if (installed) {
       return;

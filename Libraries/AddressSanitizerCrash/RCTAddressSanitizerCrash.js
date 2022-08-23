@@ -18,8 +18,7 @@ type NativeProps = $ReadOnly<{|
   ...ViewProps,
 |}>;
 
-const RCTAddressSanitizerCrash: HostComponent<NativeProps> = requireNativeComponent<NativeProps>(
-  'RCTAddressSanitizerCrash',
-);
+const RCTAddressSanitizerCrash: HostComponent<NativeProps> =
+  requireNativeComponent<NativeProps>('RCTAddressSanitizerCrash');
 
 module.exports = RCTAddressSanitizerCrash;

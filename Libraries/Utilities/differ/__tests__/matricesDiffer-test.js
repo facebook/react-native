@@ -12,7 +12,7 @@
 
 const matricesDiffer = require('../matricesDiffer');
 
-describe('matricesDiffer', function() {
+describe('matricesDiffer', function () {
   it('diffs matrices with single element', () => {
     var x = [1];
     var y = [2];
