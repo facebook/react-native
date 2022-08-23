@@ -117,6 +117,18 @@ function normalizeColor(color) {
     );
   }
 
+  if ((match = matchers.hwb.exec(color))) {
+    return (
+      (hwbToRgb(
+        parse360(match[1]), // h
+        parsePercentage(match[2]), // w
+        parsePercentage(match[3]), // b
+      ) |
+        0x000000ff) >>> // a
+      0
+    );
+  }
+
   return null;
 }
 
@@ -153,6 +165,24 @@ function hslToRgb(h, s, l) {
   );
 }
 
+function hwbToRgb(h, w, b) {
+  if (w + b >= 1) {
+    const gray = Math.round((w * 255) / (w + b));
+
+    return (gray << 24) | (gray << 16) | (gray << 8);
+  }
+
+  const red = hue2rgb(0, 1, h + 1 / 3) * (1 - w - b) + w;
+  const green = hue2rgb(0, 1, h) * (1 - w - b) + w;
+  const blue = hue2rgb(0, 1, h - 1 / 3) * (1 - w - b) + w;
+
+  return (
+    (Math.round(red * 255) << 24) |
+    (Math.round(green * 255) << 16) |
+    (Math.round(blue * 255) << 8)
+  );
+}
+
 const NUMBER = '[-+]?\\d*\\.?\\d+';
 const PERCENTAGE = NUMBER + '%';
 
@@ -169,6 +199,9 @@ function getMatchers() {
       rgba: new RegExp('rgba' + call(NUMBER, NUMBER, NUMBER, NUMBER)),
       hsl: new RegExp('hsl' + call(NUMBER, PERCENTAGE, PERCENTAGE)),
       hsla: new RegExp('hsla' + call(NUMBER, PERCENTAGE, PERCENTAGE, NUMBER)),
+      hwb: new RegExp('hwb' + call(NUMBER, PERCENTAGE, PERCENTAGE)),
+      // lab: new RegExp('lab'),
+      // lch: new RegExp('lch'),
       hex3: /^#([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/,
       hex4: /^#([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/,
       hex6: /^#([0-9a-fA-F]{6})$/,
