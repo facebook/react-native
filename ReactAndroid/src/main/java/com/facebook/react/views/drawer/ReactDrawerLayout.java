@@ -7,7 +7,14 @@
 
 package com.facebook.react.views.drawer;
 
+import androidx.annotation.Nullable;
+import com.facebook.react.uimanager.ReactAccessibilityDelegate;
+import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import android.view.Gravity;
+import android.view.accessibility.AccessibilityEvent;
+import androidx.core.view.AccessibilityDelegateCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import android.view.MotionEvent;
 import android.view.View;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -15,6 +22,7 @@ import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
+import com.facebook.react.R;
 
 /**
  * Wrapper view for {@link DrawerLayout}. It manages the properties that can be set on the drawer
@@ -25,9 +33,35 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
   public static final int DEFAULT_DRAWER_WIDTH = LayoutParams.MATCH_PARENT;
   private int mDrawerPosition = Gravity.START;
   private int mDrawerWidth = DEFAULT_DRAWER_WIDTH;
+  private String mAccessibilityRole;
 
   public ReactDrawerLayout(ReactContext reactContext) {
     super(reactContext);
+    ViewCompat.setAccessibilityDelegate(this, new AccessibilityDelegateCompat() {
+        @Override
+        public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
+            super.onInitializeAccessibilityNodeInfo(host, info);
+            String accessibilityRoleString = ((ReactDrawerLayout) host).getAccessibilityRole();
+            AccessibilityRole accessibilityRole = AccessibilityRole.fromValue(accessibilityRoleString);
+            info.setClassName(AccessibilityRole.getValue(accessibilityRole));
+        }
+
+        @Override
+        public void onInitializeAccessibilityEvent(View host, AccessibilityEvent event) {
+            super.onInitializeAccessibilityEvent(host, event);
+            String accessibilityRoleString = ((ReactDrawerLayout) host).getAccessibilityRole();
+            AccessibilityRole accessibilityRole = AccessibilityRole.fromValue(accessibilityRoleString);
+            event.setClassName(AccessibilityRole.getValue(accessibilityRole));
+        }
+    });
+  }
+
+  public void setAccessibilityRole(String accessibilityRole) {
+    mAccessibilityRole = accessibilityRole;
+  }
+
+  public String getAccessibilityRole() {
+    return mAccessibilityRole;
   }
 
   @Override

@@ -6,8 +6,11 @@
  */
 
 package com.facebook.react.views.drawer;
-
+import com.facebook.react.R;
+import android.util.Log;
 import android.view.Gravity;
+import androidx.annotation.Nullable;
+import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -53,6 +56,15 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
   @Override
   public @NonNull String getName() {
     return REACT_CLASS;
+  }
+
+  @Override
+  @ReactProp(name = "accessibilityRole")
+  public void setAccessibilityRole(ReactDrawerLayout view, @Nullable String accessibilityRole) {
+    if (accessibilityRole == null) {
+      return;
+    }
+    view.setAccessibilityRole(accessibilityRole);
   }
 
   @Override
