@@ -637,6 +637,12 @@ class AccessibilityRoleAndStateExample extends React.Component<{}> {
           <Text>Toolbar example</Text>
         </View>
         <View
+          accessibilityLabel="element 17"
+          accessibilityState={{busy: true}}
+          accessible={true}>
+          <Text>State busy example</Text>
+        </View>
+        <View
           accessibilityLabel="element 19"
           accessibilityRole="checkedtextview"
           accessible={true}>

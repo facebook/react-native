@@ -16,6 +16,7 @@ import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 export type AccessibilityRole =
   | 'none'
   | 'button'
+  | 'checkedtextview'
   | 'checkbox'
   | 'dropdownlist'
   | 'edittext'
@@ -50,6 +51,8 @@ export type AccessibilityRole =
   | 'toolbar'
   | 'grid'
   | 'pager'
+  | 'scrollview'
+  | 'horizontalscrollview'
   | 'viewgroup'
   | 'webview'
   | 'drawerlayout'
