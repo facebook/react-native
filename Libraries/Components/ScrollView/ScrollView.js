@@ -1510,6 +1510,11 @@ class ScrollView extends React.Component<Props, State> {
       return false;
     }
 
+    // Let presses through if the soft keyboard is detached from the viewport
+    if (this._softKeyboardIsDetached()) {
+      return false;
+    }
+
     if (
       keyboardNeverPersistTaps &&
       this._keyboardIsDismissible() &&
@@ -1549,6 +1554,15 @@ class ScrollView extends React.Component<Props, State> {
   };
 
   /**
+   * Whether an open soft keyboard is present which does not overlap the
+   * viewport. E.g. for a VR soft-keyboard which is detached from the app
+   * viewport.
+   */
+  _softKeyboardIsDetached: () => boolean = () => {
+    return this._keyboardMetrics != null && this._keyboardMetrics.height === 0;
+  };
+
+  /**
    * Invoke this from an `onTouchEnd` event.
    *
    * @param {PressEvent} e Event.
@@ -1556,6 +1570,21 @@ class ScrollView extends React.Component<Props, State> {
   _handleTouchEnd: (e: PressEvent) => void = (e: PressEvent) => {
     const nativeEvent = e.nativeEvent;
     this._isTouching = nativeEvent.touches.length !== 0;
+
+    const {keyboardShouldPersistTaps} = this.props;
+    const keyboardNeverPersistsTaps =
+      !keyboardShouldPersistTaps || keyboardShouldPersistTaps === 'never';
+
+    // Dismiss the keyboard now if we didn't become responder in capture phase
+    // to eat presses, but still want to dismiss on interaction.
+    if (
+      this._softKeyboardIsDetached() &&
+      this._keyboardIsDismissible() &&
+      keyboardNeverPersistsTaps
+    ) {
+      TextInputState.blurTextInput(TextInputState.currentlyFocusedInput());
+    }
+
     this.props.onTouchEnd && this.props.onTouchEnd(e);
   };
 
