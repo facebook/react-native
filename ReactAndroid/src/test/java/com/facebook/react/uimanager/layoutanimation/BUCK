@@ -5,9 +5,7 @@ rn_robolectric_test(
     srcs = glob(["**/*.java"]),
     contacts = ["oncall+react_native@xmail.facebook.com"],
     language = "JAVA",
-    visibility = [
-        "PUBLIC",
-    ],
+    visibility = ["PUBLIC"],
     deps = [
         YOGA_TARGET,
         react_native_dep("third-party/java/assertj:assertj-core"),
