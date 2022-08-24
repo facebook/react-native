@@ -57,13 +57,7 @@ export type AccessibilityRole =
   | 'webview'
   | 'drawerlayout'
   | 'slidingdrawer'
-  | 'iconmenu'
-  | 'toast'
-  | 'datepicker'
-  | 'datepickerdialog'
-  | 'timepicker'
-  | 'timepickerdialog'
-  | 'numberpicker';
+  | 'iconmenu';
 
 // the info associated with an accessibility action
 export type AccessibilityActionInfo = $ReadOnly<{
