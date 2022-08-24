@@ -31,7 +31,6 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
   public static final int DEFAULT_DRAWER_WIDTH = LayoutParams.MATCH_PARENT;
   private int mDrawerPosition = Gravity.START;
   private int mDrawerWidth = DEFAULT_DRAWER_WIDTH;
-  private String mAccessibilityRole;
 
   public ReactDrawerLayout(ReactContext reactContext) {
     super(reactContext);
@@ -42,7 +41,6 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
           public void onInitializeAccessibilityNodeInfo(
               View host, AccessibilityNodeInfoCompat info) {
             super.onInitializeAccessibilityNodeInfo(host, info);
-            String accessibilityRoleString = ((ReactDrawerLayout) host).getAccessibilityRole();
             AccessibilityRole accessibilityRole =
                 (AccessibilityRole) ((ReactDrawerLayout) host).getTag(R.id.accessibility_role);
             info.setClassName(AccessibilityRole.getValue(accessibilityRole));
@@ -51,20 +49,11 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
           @Override
           public void onInitializeAccessibilityEvent(View host, AccessibilityEvent event) {
             super.onInitializeAccessibilityEvent(host, event);
-            String accessibilityRoleString = ((ReactDrawerLayout) host).getAccessibilityRole();
             AccessibilityRole accessibilityRole =
                 (AccessibilityRole) ((ReactDrawerLayout) host).getTag(R.id.accessibility_role);
             event.setClassName(AccessibilityRole.getValue(accessibilityRole));
           }
         });
-  }
-
-  public void setAccessibilityRole(String accessibilityRole) {
-    mAccessibilityRole = accessibilityRole;
-  }
-
-  public String getAccessibilityRole() {
-    return mAccessibilityRole;
   }
 
   @Override

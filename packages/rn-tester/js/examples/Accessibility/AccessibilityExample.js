@@ -691,12 +691,6 @@ class AccessibilityRoleAndStateExample extends React.Component<{}> {
           <Text>Webview example</Text>
         </View>
         <View
-          accessibilityLabel="element 27"
-          accessibilityRole="drawerlayout"
-          accessible={true}>
-          <Text>Drawerlayout example</Text>
-        </View>
-        <View
           accessibilityLabel="element 28"
           accessibilityRole="slidingdrawer"
           accessible={true}>

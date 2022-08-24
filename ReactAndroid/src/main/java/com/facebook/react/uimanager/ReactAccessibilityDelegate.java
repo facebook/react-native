@@ -183,10 +183,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
           return "android.widget.SlidingDrawer";
         case ICONMENU:
           return "com.android.internal.view.menu.IconMenuView";
-        case DATEPICKER:
-          return "android.widget.DatePicker";
-        case DATEPICKERDIALOG:
-          return "android.app.DatePickerDialog";
         case VIEWGROUP:
           return "android.view.ViewGroup";
         case WEBVIEW:

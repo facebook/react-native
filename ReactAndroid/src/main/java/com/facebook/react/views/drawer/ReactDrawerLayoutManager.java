@@ -12,7 +12,6 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.drawerlayout.widget.DrawerLayout;
-import com.facebook.react.R;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
@@ -20,7 +19,6 @@ import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.ViewGroupManager;
@@ -55,15 +53,6 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
   @Override
   public @NonNull String getName() {
     return REACT_CLASS;
-  }
-
-  @Override
-  @ReactProp(name = "accessibilityRole")
-  public void setAccessibilityRole(ReactDrawerLayout view, @Nullable String accessibilityRole) {
-    if (accessibilityRole == null) {
-      return;
-    }
-    view.setTag(R.id.accessibility_role, AccessibilityRole.fromValue(accessibilityRole));
   }
 
   @Override
