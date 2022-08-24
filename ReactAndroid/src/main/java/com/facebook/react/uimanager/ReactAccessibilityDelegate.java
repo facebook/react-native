@@ -135,11 +135,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     DRAWERLAYOUT,
     SLIDINGDRAWER,
     ICONMENU,
-    DATEPICKER, // missing
-    DATEPICKERDIALOG, // missing
-    TIMEPICKER, // missing
-    TIMEPICKERDIALOG, // missing
-    NUMBERPICKER, // missing
     TOOLBAR;
 
     public static String getValue(AccessibilityRole role) {
@@ -177,13 +172,11 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
         case LIST:
           return "android.widget.AbsListView";
         case GRID:
+        case SCROLLVIEW:
+        case HORIZONTALSCROLLVIEW:
           return "android.widget.GridView";
         case PAGER:
           return "androidx.viewpager.widget.ViewPager";
-        case SCROLLVIEW:
-          return "android.widget.GridView";
-        case HORIZONTALSCROLLVIEW:
-          return "android.widget.HorizontalScrollView";
         case DRAWERLAYOUT:
           return "androidx.drawerlayout.widget.DrawerLayout";
         case SLIDINGDRAWER:
@@ -194,12 +187,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
           return "android.widget.DatePicker";
         case DATEPICKERDIALOG:
           return "android.app.DatePickerDialog";
-        case TIMEPICKER:
-          return "android.widget.TimePicker";
-        case TIMEPICKERDIALOG:
-          return "android.widget.TimePicker";
-        case NUMBERPICKER:
-          return "android.widget.NumberPicker";
         case VIEWGROUP:
           return "android.view.ViewGroup";
         case WEBVIEW:
@@ -527,16 +514,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
       nodeInfo.setRoleDescription(context.getString(R.string.scrollview_description));
     } else if (role.equals(AccessibilityRole.HORIZONTALSCROLLVIEW)) {
       nodeInfo.setRoleDescription(context.getString(R.string.horizontalscrollview_description));
-    } else if (role.equals(AccessibilityRole.DATEPICKER)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.datepicker_description));
-    } else if (role.equals(AccessibilityRole.DATEPICKERDIALOG)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.datepickerdialog_description));
-    } else if (role.equals(AccessibilityRole.TIMEPICKER)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.timepicker_description));
-    } else if (role.equals(AccessibilityRole.TIMEPICKERDIALOG)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.timepickerdialog_description));
-    } else if (role.equals(AccessibilityRole.NUMBERPICKER)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.numberpicker_description));
     }
   }
 
