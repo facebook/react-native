@@ -128,14 +128,13 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     LIST,
     GRID,
     PAGER,
-    SCROLLVIEW, // missing
-    HORIZONTALSCROLLVIEW, // missing
+    SCROLLVIEW,
+    HORIZONTALSCROLLVIEW,
     VIEWGROUP,
     WEBVIEW,
-    DRAWERLAYOUT, // announces only when showed
-    SLIDINGDRAWER, // announces only when showed
-    ICONMENU, // announces only when showed
-    TOAST, // announces only when showed
+    DRAWERLAYOUT,
+    SLIDINGDRAWER,
+    ICONMENU,
     DATEPICKER, // missing
     DATEPICKERDIALOG, // missing
     TIMEPICKER, // missing
@@ -182,7 +181,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
         case PAGER:
           return "androidx.viewpager.widget.ViewPager";
         case SCROLLVIEW:
-          return "android.widget.ScrollView";
+          return "android.widget.GridView";
         case HORIZONTALSCROLLVIEW:
           return "android.widget.HorizontalScrollView";
         case DRAWERLAYOUT:
@@ -191,8 +190,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
           return "android.widget.SlidingDrawer";
         case ICONMENU:
           return "com.android.internal.view.menu.IconMenuView";
-        case TOAST:
-          return "android.widget.Toast";
         case DATEPICKER:
           return "android.widget.DatePicker";
         case DATEPICKERDIALOG:
@@ -530,8 +527,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
       nodeInfo.setRoleDescription(context.getString(R.string.scrollview_description));
     } else if (role.equals(AccessibilityRole.HORIZONTALSCROLLVIEW)) {
       nodeInfo.setRoleDescription(context.getString(R.string.horizontalscrollview_description));
-    } else if (role.equals(AccessibilityRole.TOAST)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.toast_description));
     } else if (role.equals(AccessibilityRole.DATEPICKER)) {
       nodeInfo.setRoleDescription(context.getString(R.string.datepicker_description));
     } else if (role.equals(AccessibilityRole.DATEPICKERDIALOG)) {
