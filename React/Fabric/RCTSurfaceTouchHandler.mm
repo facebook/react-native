@@ -349,7 +349,16 @@ static PointerEvent CreatePointerEventFromActiveTouch(ActiveTouch activeTouch, R
     event.button = activeTouch.button;
   }
 
-  event.buttons = ButtonMaskToButtons(activeTouch.buttonMask);
+  event.buttons = 1;
+  if (@available(iOS 13.4, *)) {
+    if (activeTouch.touchType == UITouchTypeIndirectPointer) {
+      // Indirect pointers are the only situations where buttonMask is "accurate"
+      // so we override the assumed "left click" button value when those type of
+      // events are recieved
+      event.buttons = ButtonMaskToButtons(activeTouch.buttonMask);
+    }
+  }
+
   UpdatePointerEventModifierFlags(event, activeTouch.modifierFlags);
 
   // UIEvent's button mask for touch end events still marks the button as down
