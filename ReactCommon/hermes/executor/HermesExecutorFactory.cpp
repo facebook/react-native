@@ -151,9 +151,9 @@ class DecoratedRuntime : public jsi::WithRuntimeDecorator<ReentrancyCheck> {
       bool enableDebugger,
       const std::string &debuggerName)
       : jsi::WithRuntimeDecorator<ReentrancyCheck>(*runtime, reentrancyCheck_),
-        runtime_(std::move(runtime)),
-        enableDebugger_(enableDebugger) {
+        runtime_(std::move(runtime)) {
 #ifdef HERMES_ENABLE_DEBUGGER
+    enableDebugger_ = enableDebugger;
     if (enableDebugger_) {
       std::shared_ptr<HermesRuntime> rt(runtime_, &hermesRuntime);
       auto adapter =
@@ -182,8 +182,8 @@ class DecoratedRuntime : public jsi::WithRuntimeDecorator<ReentrancyCheck> {
 
   std::shared_ptr<Runtime> runtime_;
   ReentrancyCheck reentrancyCheck_;
-  bool enableDebugger_;
 #ifdef HERMES_ENABLE_DEBUGGER
+  bool enableDebugger_;
   facebook::hermes::inspector::chrome::DebugSessionToken debugToken_;
 #endif
 };
