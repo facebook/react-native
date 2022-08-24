@@ -124,7 +124,7 @@ TEST(ConnectionDemuxTests, TestEnableDisable) {
 
   // Disable debugging on runtime2. This should remove its page from the list
   // and call onDisconnect on its remoteConn
-  demux.disableDebugging(*runtime2);
+  demux.disableDebugging(id2);
   expectPages(*inspector, {{id1, "page1"}});
   remoteData2->expectDisconnected();
 

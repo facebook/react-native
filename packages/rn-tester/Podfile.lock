@@ -626,6 +626,12 @@ PODS:
     - React-Core/RCTAnimationHeaders (= 1000.0.0)
     - React-jsi (= 1000.0.0)
     - ReactCommon/turbomodule/core (= 1000.0.0)
+  - React-RCTAppDelegate (1000.0.0):
+    - RCT-Folly
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - ReactCommon/turbomodule/core
   - React-RCTBlob (1000.0.0):
     - RCT-Folly (= 2021.07.22.00)
     - React-Codegen (= 1000.0.0)
@@ -771,6 +777,7 @@ DEPENDENCIES:
   - React-perflogger (from `../../ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../../Libraries/ActionSheetIOS`)
   - React-RCTAnimation (from `../../Libraries/NativeAnimation`)
+  - React-RCTAppDelegate (from `../../Libraries/AppDelegate`)
   - React-RCTBlob (from `../../Libraries/Blob`)
   - React-RCTFabric (from `../../React`)
   - React-RCTImage (from `../../Libraries/Image`)
@@ -855,6 +862,8 @@ EXTERNAL SOURCES:
     :path: "../../Libraries/ActionSheetIOS"
   React-RCTAnimation:
     :path: "../../Libraries/NativeAnimation"
+  React-RCTAppDelegate:
+    :path: "../../Libraries/AppDelegate"
   React-RCTBlob:
     :path: "../../Libraries/Blob"
   React-RCTFabric:
@@ -912,7 +921,7 @@ SPEC CHECKSUMS:
   React-bridging: cc10a051eff1f03306a1d7659593d8aac3242bc3
   React-callinvoker: 5f16202ad4e45f0607b1fae0f6955a8f7c87eef1
   React-Codegen: 5adf19af97eb37a7d441c040521191e446255086
-  React-Core: 0cfb25c65d4dcb856b1807fe44a1ebe5e7ec9749
+  React-Core: ce4282fb714ffbe444b84d296d1728eaee4d0e9f
   React-CoreModules: 675170bccf156da3a3348e04e2036ce401b2010d
   React-cxxreact: 7276467c246302fedf598cc40d7003896ddb20ba
   React-Fabric: abfd61dc5498ce165634af85d65fcc42b82b5bf4
@@ -924,6 +933,7 @@ SPEC CHECKSUMS:
   React-perflogger: c4fdd48988c2d3047186fc1bc1772d634cfca2ea
   React-RCTActionSheet: 166fd1df85ac10219466b45d12a5884d3eaceac1
   React-RCTAnimation: d6127046c6bb44bd3e67b7503c4ad7f91131b58e
+  React-RCTAppDelegate: 475ca9b80e26c1c4aed93ce04363092fa78cf788
   React-RCTBlob: 68675c89ebe6edf310dddd0774ba07b685f090a9
   React-RCTFabric: a98a6effece6719669b8c6b4d2c33fb0edddc613
   React-RCTImage: 6de9f0f4402af859849e97cc73a56a52f400f4c9
@@ -942,6 +952,6 @@ SPEC CHECKSUMS:
   Yoga: 1b1a12ff3d86a10565ea7cbe057d42f5e5fb2a07
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 54d9bd86f3c8151531bd4da1d3ba2e2e1f9a6ca9
+PODFILE CHECKSUM: c3d82494e47e0adce02921f2ed9dba2427f0a9ff
 
 COCOAPODS: 1.11.3

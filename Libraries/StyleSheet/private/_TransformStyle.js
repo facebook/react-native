@@ -8,7 +8,7 @@
  * @format
  */
 
-const AnimatedNode = require('../../Animated/nodes/AnimatedNode');
+import type AnimatedNode from '../../Animated/nodes/AnimatedNode';
 
 export type ____TransformStyle_Internal = $ReadOnly<{|
   /**

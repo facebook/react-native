@@ -657,8 +657,8 @@ static inline void fromRawValue(
         attrIterator->second.hasType<std::string>());
 
     result = NativeDrawable{
-        .kind = NativeDrawable::Kind::ThemeAttr,
-        .themeAttr = (std::string)attrIterator->second,
+        NativeDrawable::Kind::ThemeAttr,
+        (std::string)attrIterator->second,
     };
   } else if (type == "RippleAndroid") {
     auto color = map.find("color");
@@ -666,21 +666,19 @@ static inline void fromRawValue(
     auto rippleRadius = map.find("rippleRadius");
 
     result = NativeDrawable{
-        .kind = NativeDrawable::Kind::Ripple,
-        .ripple =
-            NativeDrawable::Ripple{
-                .color = color != map.end() && color->second.hasType<int32_t>()
-                    ? (int32_t)color->second
-                    : std::optional<int32_t>{},
-                .borderless = borderless != map.end() &&
-                        borderless->second.hasType<bool>()
-                    ? (bool)borderless->second
-                    : false,
-                .rippleRadius = rippleRadius != map.end() &&
-                        rippleRadius->second.hasType<Float>()
-                    ? (Float)rippleRadius->second
-                    : std::optional<Float>{},
-            },
+        NativeDrawable::Kind::Ripple,
+        std::string{},
+        NativeDrawable::Ripple{
+            color != map.end() && color->second.hasType<int32_t>()
+                ? (int32_t)color->second
+                : std::optional<int32_t>{},
+            borderless != map.end() && borderless->second.hasType<bool>()
+                ? (bool)borderless->second
+                : false,
+            rippleRadius != map.end() && rippleRadius->second.hasType<Float>()
+                ? (Float)rippleRadius->second
+                : std::optional<Float>{},
+        },
     };
   } else {
     LOG(ERROR) << "Unknown native drawable type: " << type;

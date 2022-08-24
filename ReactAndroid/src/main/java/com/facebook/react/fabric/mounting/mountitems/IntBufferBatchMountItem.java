@@ -257,6 +257,7 @@ public class IntBufferBatchMountItem implements MountItem {
                     mIntBuffer[i++],
                     mIntBuffer[i++],
                     mIntBuffer[i++],
+                    mIntBuffer[i++],
                     mIntBuffer[i++]));
           } else if (type == INSTRUCTION_UPDATE_PADDING) {
             s.append(
