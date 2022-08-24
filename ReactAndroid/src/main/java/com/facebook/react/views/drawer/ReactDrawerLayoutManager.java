@@ -64,7 +64,7 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
     if (accessibilityRole == null) {
       return;
     }
-    view.setAccessibilityRole(accessibilityRole);
+    view.setTag(R.id.accessibility_role, AccessibilityRole.fromValue(accessibilityRole));
   }
 
   @Override

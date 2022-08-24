@@ -530,8 +530,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
       nodeInfo.setRoleDescription(context.getString(R.string.scrollview_description));
     } else if (role.equals(AccessibilityRole.HORIZONTALSCROLLVIEW)) {
       nodeInfo.setRoleDescription(context.getString(R.string.horizontalscrollview_description));
-    } else if (role.equals(AccessibilityRole.ICONMENU)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.iconmenu_description));
     } else if (role.equals(AccessibilityRole.TOAST)) {
       nodeInfo.setRoleDescription(context.getString(R.string.toast_description));
     } else if (role.equals(AccessibilityRole.DATEPICKER)) {

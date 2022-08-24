@@ -42,7 +42,7 @@ import com.facebook.react.R;
         public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
             super.onInitializeAccessibilityNodeInfo(host, info);
             String accessibilityRoleString = ((ReactDrawerLayout) host).getAccessibilityRole();
-            AccessibilityRole accessibilityRole = AccessibilityRole.fromValue(accessibilityRoleString);
+            AccessibilityRole accessibilityRole = (AccessibilityRole) ((ReactDrawerLayout) host).getTag(R.id.accessibility_role);
             info.setClassName(AccessibilityRole.getValue(accessibilityRole));
         }
 
@@ -50,7 +50,7 @@ import com.facebook.react.R;
         public void onInitializeAccessibilityEvent(View host, AccessibilityEvent event) {
             super.onInitializeAccessibilityEvent(host, event);
             String accessibilityRoleString = ((ReactDrawerLayout) host).getAccessibilityRole();
-            AccessibilityRole accessibilityRole = AccessibilityRole.fromValue(accessibilityRoleString);
+            AccessibilityRole accessibilityRole = (AccessibilityRole) ((ReactDrawerLayout) host).getTag(R.id.accessibility_role);
             event.setClassName(AccessibilityRole.getValue(accessibilityRole));
         }
     });
