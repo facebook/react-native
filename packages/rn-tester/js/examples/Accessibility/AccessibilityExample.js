@@ -703,42 +703,6 @@ class AccessibilityRoleAndStateExample extends React.Component<{}> {
           <Text>Iconmenu example</Text>
         </View>
         <View
-          accessibilityLabel="element 30"
-          accessibilityRole="toast"
-          accessible={true}>
-          <Text>Toast example</Text>
-        </View>
-        <View
-          accessibilityLabel="element 31"
-          accessibilityRole="datepicker"
-          accessible={true}>
-          <Text>Datepicker example</Text>
-        </View>
-        <View
-          accessibilityLabel="element 32"
-          accessibilityRole="datepickerdialog"
-          accessible={true}>
-          <Text>Datepickerdialog example</Text>
-        </View>
-        <View
-          accessibilityLabel="element 33"
-          accessibilityRole="timepicker"
-          accessible={true}>
-          <Text>Timepicker example</Text>
-        </View>
-        <View
-          accessibilityLabel="element 34"
-          accessibilityRole="timepickerdialog"
-          accessible={true}>
-          <Text>Timepickerdialog example</Text>
-        </View>
-        <View
-          accessibilityLabel="element 35"
-          accessibilityRole="numberpicker"
-          accessible={true}>
-          <Text>Numberpicker example</Text>
-        </View>
-        <View
           accessibilityLabel="element 36"
           accessibilityRole="scrollview"
           accessible={true}>
