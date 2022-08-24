@@ -22,6 +22,7 @@ import TextInputState from './TextInputState';
 import invariant from 'invariant';
 import nullthrows from 'nullthrows';
 import setAndForwardRef from '../../Utilities/setAndForwardRef';
+import warnOnce from '../../Utilities/warnOnce';
 
 import usePressability from '../../Pressability/usePressability';
 
@@ -528,6 +529,7 @@ export type Props = $ReadOnly<{|
   defaultValue?: ?Stringish,
 
   /**
+   * @deprecated - use readOnly instead
    * If `false`, text is not editable. The default value is `true`.
    */
   editable?: ?boolean,
@@ -1396,6 +1398,13 @@ const ExportedForwardRef: React.AbstractComponent<
     React.ElementRef<HostComponent<mixed>> & ImperativeMethods,
   >,
 ) {
+  if (__DEV__ && editable !== undefined) {
+    warnOnce(
+      'TextInput-editable-prop-deprecated',
+      'The editable prop from TextInput has been deprecated and will be removed in a future release. Please use the readOnly prop instead',
+    );
+  }
+
   return (
     <InternalTextInput
       allowFontScaling={allowFontScaling}
