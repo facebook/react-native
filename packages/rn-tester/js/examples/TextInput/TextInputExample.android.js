@@ -148,6 +148,13 @@ const styles = StyleSheet.create({
   singleLineWithHeightTextInput: {
     height: 30,
   },
+  default: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#0f0f0f',
+    flex: 1,
+    fontSize: 13,
+    padding: 4,
+  },
 });
 
 exports.title = 'TextInput';
@@ -343,6 +350,35 @@ exports.examples = ([
               multiline with children, aligned bottom-right
             </Text>
           </TextInput>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Editable and Read only',
+    render: function (): React.Node {
+      return (
+        <View>
+          <TextInput
+            placeholder="editable text input using editable prop"
+            style={styles.default}
+            editable
+          />
+          <TextInput
+            placeholder="uneditable text input using editable prop"
+            style={styles.default}
+            editable={false}
+          />
+          <TextInput
+            placeholder="editable text input using readOnly prop"
+            style={styles.default}
+            readOnly={false}
+          />
+          <TextInput
+            placeholder="uneditable text input using readOnly prop"
+            style={styles.default}
+            readOnly
+          />
         </View>
       );
     },

@@ -1510,6 +1510,11 @@ class ScrollView extends React.Component<Props, State> {
       return false;
     }
 
+    // Let presses through if the soft keyboard is detached from the viewport
+    if (this._softKeyboardIsDetached()) {
+      return false;
+    }
+
     if (
       keyboardNeverPersistTaps &&
       this._keyboardIsDismissible() &&
@@ -1540,12 +1545,26 @@ class ScrollView extends React.Component<Props, State> {
 
     // Even if an input is focused, we may not have a keyboard to dismiss. E.g
     // when using a physical keyboard. Ensure we have an event for an opened
-    // keyboard, except on Android where setting windowSoftInputMode to
-    // adjustNone leads to missing keyboard events.
+    // keyboard.
     const softKeyboardMayBeOpen =
-      this._keyboardMetrics != null || Platform.OS === 'android';
+      this._keyboardMetrics != null || this._keyboardEventsAreUnreliable();
 
     return hasFocusedTextInput && softKeyboardMayBeOpen;
+  };
+
+  /**
+   * Whether an open soft keyboard is present which does not overlap the
+   * viewport. E.g. for a VR soft-keyboard which is detached from the app
+   * viewport.
+   */
+  _softKeyboardIsDetached: () => boolean = () => {
+    return this._keyboardMetrics != null && this._keyboardMetrics.height === 0;
+  };
+
+  _keyboardEventsAreUnreliable: () => boolean = () => {
+    // Android versions prior to API 30 rely on observing layout changes when
+    // `android:windowSoftInputMode` is set to `adjustResize` or `adjustPan`.
+    return Platform.OS === 'android' && Platform.Version < 30;
   };
 
   /**
@@ -1556,6 +1575,21 @@ class ScrollView extends React.Component<Props, State> {
   _handleTouchEnd: (e: PressEvent) => void = (e: PressEvent) => {
     const nativeEvent = e.nativeEvent;
     this._isTouching = nativeEvent.touches.length !== 0;
+
+    const {keyboardShouldPersistTaps} = this.props;
+    const keyboardNeverPersistsTaps =
+      !keyboardShouldPersistTaps || keyboardShouldPersistTaps === 'never';
+
+    // Dismiss the keyboard now if we didn't become responder in capture phase
+    // to eat presses, but still want to dismiss on interaction.
+    if (
+      this._softKeyboardIsDetached() &&
+      this._keyboardIsDismissible() &&
+      keyboardNeverPersistsTaps
+    ) {
+      TextInputState.blurTextInput(TextInputState.currentlyFocusedInput());
+    }
+
     this.props.onTouchEnd && this.props.onTouchEnd(e);
   };
 
