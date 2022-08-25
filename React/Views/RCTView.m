@@ -165,7 +165,6 @@ static NSString *RCTRecursiveAccessibilityLabel(RCTUIView *view) // TODO(macOS I
     _hitTestEdgeInsets = UIEdgeInsetsZero;
 #if TARGET_OS_OSX // TODO(macOS GH#774)
     _transform3D = CATransform3DIdentity;
-    _shadowColor = nil;
 #endif // TODO(macOS GH#774)
 
     _backgroundColor = super.backgroundColor;
@@ -717,49 +716,20 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
 #endif // TODO(macOS GH#774)
 
 #if TARGET_OS_OSX // [TODO(macOS GH#774)
-- (void)setShadowColor:(NSColor *)shadowColor
+// Workaround AppKit issue with directly manipulating the view layer's shadow.
+- (NSShadow*)shadow
 {
-    if (_shadowColor != shadowColor)
-    {
-        _shadowColor = shadowColor;
-        [self didUpdateShadow];
-    }
-}
+  CALayer *layer = self.layer;
+  NSShadow *shadow = nil;
 
-- (void)setShadowOffset:(CGSize)shadowOffset
-{
-    if (!CGSizeEqualToSize(_shadowOffset, shadowOffset))
-    {
-        _shadowOffset = shadowOffset;
-        [self didUpdateShadow];
-    }
-}
+  if (layer.shadowColor != nil && layer.shadowOpacity > 0) {
+    shadow = [NSShadow new];
 
-- (void)setShadowOpacity:(CGFloat)shadowOpacity
-{
-    if (_shadowOpacity != shadowOpacity)
-    {
-        _shadowOpacity = shadowOpacity;
-        [self didUpdateShadow];
-    }
-}
-
-- (void)setShadowRadius:(CGFloat)shadowRadius
-{
-    if (_shadowRadius != shadowRadius)
-    {
-        _shadowRadius = shadowRadius;
-        [self didUpdateShadow];
-    }
-}
-
--(void)didUpdateShadow
-{
-    NSShadow *shadow = [NSShadow new];
-    shadow.shadowColor = [[self shadowColor] colorWithAlphaComponent:[self shadowOpacity]];
-    shadow.shadowOffset = [self shadowOffset];
-    shadow.shadowBlurRadius = [self shadowRadius];
-    [self setShadow:shadow];
+    shadow.shadowColor = [[NSColor colorWithCGColor:layer.shadowColor] colorWithAlphaComponent:layer.shadowOpacity];
+    shadow.shadowOffset = layer.shadowOffset;
+    shadow.shadowBlurRadius = layer.shadowRadius;
+  }
+  return shadow;
 }
 
 - (void)viewDidMoveToWindow
