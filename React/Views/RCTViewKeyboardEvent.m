@@ -52,7 +52,15 @@
     return @"Backspace";
   } else if (code == NSDeleteFunctionKey) {
     return @"Delete";
-  }
+	} else if (code == NSHomeFunctionKey) {
+		return @"Home";
+	} else if (code == NSEndFunctionKey) {
+		return @"End";
+	} else if (code == NSPageUpFunctionKey) {
+		return @"PageUp";
+	} else if (code == NSPageDownFunctionKey) {
+		return @"PageDown";
+	}
 
   return key;
 }

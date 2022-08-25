@@ -1188,50 +1188,6 @@ class ScrollView extends React.Component<Props, State> {
   }
 
   // [TODO(macOS GH#774)
-  _handleKeyDown = (event: ScrollEvent) => {
-    if (this.props.onScrollKeyDown) {
-      this.props.onScrollKeyDown(event);
-    } else {
-      if (Platform.OS === 'macos') {
-        const nativeEvent = event.nativeEvent;
-        const key = nativeEvent.key;
-        const kMinScrollOffset = 10;
-        if (key === 'PAGE_UP') {
-          this._handleScrollByKeyDown(event, {
-            x: nativeEvent.contentOffset.x,
-            y:
-              nativeEvent.contentOffset.y +
-              -nativeEvent.layoutMeasurement.height,
-          });
-        } else if (key === 'PAGE_DOWN') {
-          this._handleScrollByKeyDown(event, {
-            x: nativeEvent.contentOffset.x,
-            y:
-              nativeEvent.contentOffset.y +
-              nativeEvent.layoutMeasurement.height,
-          });
-        } else if (key === 'HOME') {
-          this.scrollTo({x: 0, y: 0});
-        } else if (key === 'END') {
-          this.scrollToEnd({animated: true});
-        }
-      }
-    }
-  };
-
-  _handleScrollByKeyDown = (event: ScrollEvent, newOffset) => {
-    const maxX =
-      event.nativeEvent.contentSize.width -
-      event.nativeEvent.layoutMeasurement.width;
-    const maxY =
-      event.nativeEvent.contentSize.height -
-      event.nativeEvent.layoutMeasurement.height;
-    this.scrollTo({
-      x: Math.max(0, Math.min(maxX, newOffset.x)),
-      y: Math.max(0, Math.min(maxY, newOffset.y)),
-    });
-  };
-
   _handlePreferredScrollerStyleDidChange = (event: ScrollEvent) => {
     this.setState({contentKey: this.state.contentKey + 1});
   }; // ]TODO(macOS GH#774)
@@ -1787,7 +1743,6 @@ class ScrollView extends React.Component<Props, State> {
       // Override the onContentSizeChange from props, since this event can
       // bubble up from TextInputs
       onContentSizeChange: null,
-      onScrollKeyDown: this._handleKeyDown, // TODO(macOS GH#774)
       onPreferredScrollerStyleDidChange:
         this._handlePreferredScrollerStyleDidChange, // TODO(macOS GH#774)
       onLayout: this._handleLayout,

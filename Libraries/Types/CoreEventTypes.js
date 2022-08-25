@@ -133,7 +133,6 @@ export type ScrollEvent = SyntheticEvent<
     |}>,
     zoomScale?: number,
     responderIgnoreScroll?: boolean,
-    key?: string, // TODO(macOS GH#774)
     preferredScrollerStyle?: string, // TODO(macOS GH#774)
   |}>,
 >;

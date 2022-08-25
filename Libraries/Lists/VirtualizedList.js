@@ -35,7 +35,7 @@ import type {
   ViewToken,
   ViewabilityConfigCallbackPair,
 } from './ViewabilityHelper';
-import type {ScrollEvent} from '../Types/CoreEventTypes'; // TODO(macOS GH#774)
+import type {KeyEvent} from '../Types/CoreEventTypes'; // TODO(macOS GH#774)
 import {
   VirtualizedListCellContextProvider,
   VirtualizedListContext,
@@ -109,12 +109,24 @@ type OptionalProps = {|
    * this for debugging purposes. Defaults to false.
    */
   disableVirtualization?: ?boolean,
+  // [TODO(macOS GH#774)
   /**
-   * Handles key down events and updates selection based on the key event
+   * Allows you to 'select' a row using arrow keys. The selected row will have the prop `isSelected`
+   * passed in as true to it's renderItem / ListItemComponent. You can also imperatively select a row
+   * using the `selectRowAtIndex` method. You can set the initially selected row using the
+   * `initialSelectedIndex` prop.
+   * Keyboard Behavior:
+   * - ArrowUp: Select row above current selected row
+   * - ArrowDown: Select row below current selected row
+   * - Option+ArrowUp: Select the first row
+   * - Opton+ArrowDown: Select the last 'realized' row
+   * - Home: Scroll to top of list
+   * - End: Scroll to end of list
    *
    * @platform macos
    */
-  enableSelectionOnKeyPress?: ?boolean, // TODO(macOS GH#774)
+  enableSelectionOnKeyPress?: ?boolean,
+  // ]TODO(macOS GH#774)
   /**
    * A marker property for telling the list to re-render (since it implements `PureComponent`). If
    * any of your `renderItem`, Header, Footer, etc. functions depend on anything outside of the
@@ -145,6 +157,12 @@ type OptionalProps = {|
    * `getItemLayout` to be implemented.
    */
   initialScrollIndex?: ?number,
+  // [TODO(macOS GH#774)
+  /**
+   * The initially selected row, if `enableSelectionOnKeyPress` is set.
+   */
+  initialSelectedIndex?: ?number,
+  // ]TODO(macOS GH#774)
   /**
    * Reverses the direction of scroll. Uses scale transforms of -1.
    */
@@ -782,7 +800,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           (this.props.initialScrollIndex || 0) +
             initialNumToRenderOrDefault(this.props.initialNumToRender),
         ) - 1,
-      selectedRowIndex: 0, // TODO(macOS GH#774)
+      selectedRowIndex: this.props.initialSelectedIndex || -1, // TODO(macOS GH#774)
     };
 
     if (this._isNestedWithSameOrientation()) {
@@ -845,7 +863,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       ),
       last: Math.max(0, Math.min(prevState.last, getItemCount(data) - 1)),
       selectedRowIndex: Math.max(
-        0,
+        -1, // Used to indicate no row is selected
         Math.min(prevState.selectedRowIndex, getItemCount(data)),
       ), // TODO(macOS GH#774)
     };
@@ -1309,14 +1327,16 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   _defaultRenderScrollComponent = props => {
-    let keyEventHandler = this.props.onScrollKeyDown; // [TODO(macOS GH#774)
-    if (!keyEventHandler) {
-      keyEventHandler = this.props.enableSelectionOnKeyPress
-        ? this._handleKeyDown
-        : null;
-    }
+    // [TODO(macOS GH#774)
     const preferredScrollerStyleDidChangeHandler =
-      this.props.onPreferredScrollerStyleDidChange; // ]TODO(macOS GH#774)
+      this.props.onPreferredScrollerStyleDidChange;
+
+    const keyboardNavigationProps = {
+      focusable: true,
+      validKeysDown: ['ArrowUp', 'ArrowDown', 'Home', 'End'],
+      onKeyDown: this._handleKeyDown,
+    };
+    // ]TODO(macOS GH#774)
     const onRefresh = props.onRefresh;
     if (this._isNestedWithSameOrientation()) {
       // $FlowFixMe[prop-missing] - Typing ReactNativeComponent revealed errors
@@ -1333,8 +1353,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         <ScrollView
           {...props}
           // [TODO(macOS GH#774)
-          {...(props.enableSelectionOnKeyPress && {focusable: true})}
-          onScrollKeyDown={keyEventHandler}
+          {...(props.enableSelectionOnKeyPress && keyboardNavigationProps)}
           onPreferredScrollerStyleDidChange={
             preferredScrollerStyleDidChangeHandler
           } // TODO(macOS GH#774)]
@@ -1356,8 +1375,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         // $FlowFixMe Invalid prop usage
         <ScrollView
           {...props}
-          {...(props.enableSelectionOnKeyPress && {focusable: true})} // [TODO(macOS GH#774)
-          onScrollKeyDown={keyEventHandler}
+          // [TODO(macOS GH#774)
+          {...(props.enableSelectionOnKeyPress && keyboardNavigationProps)}
           onPreferredScrollerStyleDidChange={
             preferredScrollerStyleDidChangeHandler
           } // TODO(macOS GH#774)]
@@ -1510,98 +1529,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   };
 
   // [TODO(macOS GH#774)
-  _selectRowAboveIndex = rowIndex => {
-    const rowAbove = rowIndex > 0 ? rowIndex - 1 : rowIndex;
-    this.setState(state => {
-      return {selectedRowIndex: rowAbove};
-    });
-    return rowAbove;
-  };
-
   _selectRowAtIndex = rowIndex => {
-    this.setState(state => {
-      return {selectedRowIndex: rowIndex};
-    });
-    return rowIndex;
-  };
+    const prevIndex = this.state.selectedRowIndex;
+    const newIndex = rowIndex;
+    this.setState({selectedRowIndex: newIndex});
 
-  _selectRowBelowIndex = rowIndex => {
-    if (this.props.getItemCount) {
-      const {data} = this.props;
-      const itemCount = this.props.getItemCount(data);
-      const rowBelow = rowIndex < itemCount - 1 ? rowIndex + 1 : rowIndex;
-      this.setState(state => {
-        return {selectedRowIndex: rowBelow};
-      });
-      return rowBelow;
-    } else {
-      return rowIndex;
-    }
-  };
-
-  _handleKeyDown = (event: ScrollEvent) => {
-    if (this.props.onScrollKeyDown) {
-      this.props.onScrollKeyDown(event);
-    } else {
-      if (Platform.OS === 'macos') {
-        // $FlowFixMe Cannot get e.nativeEvent because property nativeEvent is missing in Event
-        const nativeEvent = event.nativeEvent;
-        const key = nativeEvent.key;
-
-        let prevIndex = -1;
-        let newIndex = -1;
-        if ('selectedRowIndex' in this.state) {
-          prevIndex = this.state.selectedRowIndex;
-        }
-
-        // const {data, getItem} = this.props;
-        if (key === 'UP_ARROW') {
-          newIndex = this._selectRowAboveIndex(prevIndex);
-          this._handleSelectionChange(prevIndex, newIndex);
-        } else if (key === 'DOWN_ARROW') {
-          newIndex = this._selectRowBelowIndex(prevIndex);
-          this._handleSelectionChange(prevIndex, newIndex);
-        } else if (key === 'ENTER') {
-          if (this.props.onSelectionEntered) {
-            const item = this.props.getItem(this.props.data, prevIndex);
-            if (this.props.onSelectionEntered) {
-              this.props.onSelectionEntered(item);
-            }
-          }
-        } else if (key === 'OPTION_UP') {
-          newIndex = this._selectRowAtIndex(0);
-          this._handleSelectionChange(prevIndex, newIndex);
-        } else if (key === 'OPTION_DOWN') {
-          newIndex = this._selectRowAtIndex(this.state.last);
-          this._handleSelectionChange(prevIndex, newIndex);
-        } else if (key === 'PAGE_UP') {
-          const maxY =
-            event.nativeEvent.contentSize.height -
-            event.nativeEvent.layoutMeasurement.height;
-          const newOffset = Math.min(
-            maxY,
-            nativeEvent.contentOffset.y + -nativeEvent.layoutMeasurement.height,
-          );
-          this.scrollToOffset({animated: true, offset: newOffset});
-        } else if (key === 'PAGE_DOWN') {
-          const maxY =
-            event.nativeEvent.contentSize.height -
-            event.nativeEvent.layoutMeasurement.height;
-          const newOffset = Math.min(
-            maxY,
-            nativeEvent.contentOffset.y + nativeEvent.layoutMeasurement.height,
-          );
-          this.scrollToOffset({animated: true, offset: newOffset});
-        } else if (key === 'HOME') {
-          this.scrollToOffset({animated: true, offset: 0});
-        } else if (key === 'END') {
-          this.scrollToEnd({animated: true});
-        }
-      }
-    }
-  };
-
-  _handleSelectionChange = (prevIndex, newIndex) => {
     this.ensureItemAtIndexIsVisible(newIndex);
     if (prevIndex !== newIndex) {
       const item = this.props.getItem(this.props.data, newIndex);
@@ -1611,6 +1543,62 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           newSelection: newIndex,
           item: item,
         });
+      }
+    }
+
+    return newIndex;
+  };
+
+  _selectRowAboveIndex = rowIndex => {
+    const rowAbove = rowIndex > 0 ? rowIndex - 1 : rowIndex;
+    this._selectRowAtIndex(rowAbove);
+  };
+
+  _selectRowBelowIndex = rowIndex => {
+    const rowBelow = rowIndex < this.state.last ? rowIndex + 1 : rowIndex;
+    this._selectRowAtIndex(rowBelow);
+  };
+
+  _handleKeyDown = (event: KeyEvent) => {
+    if (Platform.OS === 'macos') {
+      this.props.onKeyDown?.(event);
+      if (event.defaultPrevented) {
+        return;
+      }
+
+      const nativeEvent = event.nativeEvent;
+      const key = nativeEvent.key;
+
+      let selectedIndex = -1;
+      if (this.state.selectedRowIndex >= 0) {
+        selectedIndex = this.state.selectedRowIndex;
+      }
+
+      if (key === 'ArrowUp') {
+        if (nativeEvent.altKey) {
+          // Option+Up selects the first element
+          this._selectRowAtIndex(0);
+        } else {
+          this._selectRowAboveIndex(selectedIndex);
+        }
+      } else if (key === 'ArrowDown') {
+        if (nativeEvent.altKey) {
+          // Option+Down selects the last element
+          this._selectRowAtIndex(this.state.last);
+        } else {
+          this._selectRowBelowIndex(selectedIndex);
+        }
+      } else if (key === 'Enter') {
+        if (this.props.onSelectionEntered) {
+          const item = this.props.getItem(this.props.data, selectedIndex);
+          if (this.props.onSelectionEntered) {
+            this.props.onSelectionEntered(item);
+          }
+        }
+      } else if (key === 'Home') {
+        this.scrollToOffset({animated: true, offset: 0});
+      } else if (key === 'End') {
+        this.scrollToEnd({animated: true});
       }
     }
   };

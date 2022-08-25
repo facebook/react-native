@@ -495,18 +495,8 @@ RCT_EXPORT_VIEW_PROPERTY(onDragLeave, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onDrop, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onKeyDown, RCTDirectEventBlock) // macOS keyboard events
 RCT_EXPORT_VIEW_PROPERTY(onKeyUp, RCTDirectEventBlock) // macOS keyboard events
-RCT_CUSTOM_VIEW_PROPERTY(validKeysDown, NSArray<NSString*>, RCTView)
-{
-  if ([view respondsToSelector:@selector(setValidKeysDown:)]) {
-    view.validKeysDown = [RCTConvert NSArray:json];
-  }
-}
-RCT_CUSTOM_VIEW_PROPERTY(validKeysUp, NSArray<NSString*>, RCTView)
-{
-  if ([view respondsToSelector:@selector(setValidKeysUp:)]) {
-    view.validKeysUp = [RCTConvert NSArray:json];
-  }
-}
+RCT_EXPORT_VIEW_PROPERTY(validKeysDown, NSArray<NSString*>)
+RCT_EXPORT_VIEW_PROPERTY(validKeysUp, NSArray<NSString*>)
 #endif // ]TODO(macOS GH#774)
 #if TARGET_OS_OSX // [TODO(macOS GH#768)
 RCT_CUSTOM_VIEW_PROPERTY(nextKeyViewTag, NSNumber, RCTView)

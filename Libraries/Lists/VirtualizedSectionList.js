@@ -12,7 +12,7 @@ const Platform = require('../Utilities/Platform'); // TODO(macOS GH#774)
 import invariant from 'invariant';
 import type {ViewToken} from './ViewabilityHelper';
 import type {SelectedRowIndexPathType} from './VirtualizedList'; // TODO(macOS GH#774)
-import type {ScrollEvent} from '../Types/CoreEventTypes'; // TODO(macOS GH#774)
+import type {KeyEvent} from '../Types/CoreEventTypes'; // TODO(macOS GH#774)
 import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';
 import {View, VirtualizedList} from 'react-native';
 import * as React from 'react';
@@ -311,8 +311,12 @@ class VirtualizedSectionList<
     }
   };
 
-  _handleKeyDown = (e: ScrollEvent) => {
+  _handleKeyDown = (e: KeyEvent) => {
     if (Platform.OS === 'macos') {
+      if (e.defaultPrevented) {
+        return;
+      }
+
       const event = e.nativeEvent;
       const key = event.key;
       let prevIndexPath = this.state.selectedRowIndexPath;
@@ -320,7 +324,7 @@ class VirtualizedSectionList<
       const sectionIndex = this.state.selectedRowIndexPath.sectionIndex;
       const rowIndex = this.state.selectedRowIndexPath.rowIndex;
 
-      if (key === 'DOWN_ARROW') {
+      if (key === 'ArrowDown') {
         nextIndexPath = this._selectRowBelowIndexPath(prevIndexPath);
         this._ensureItemAtIndexPathIsVisible(nextIndexPath);
 
@@ -332,7 +336,7 @@ class VirtualizedSectionList<
             item: item,
           });
         }
-      } else if (key === 'UP_ARROW') {
+      } else if (key === 'ArrowUp') {
         nextIndexPath = this._selectRowAboveIndexPath(prevIndexPath);
         this._ensureItemAtIndexPathIsVisible(nextIndexPath);
 
@@ -344,7 +348,7 @@ class VirtualizedSectionList<
             item: item,
           });
         }
-      } else if (key === 'ENTER') {
+      } else if (key === 'Enter') {
         if (this.props.onSelectionEntered) {
           const item = this.props.sections[sectionIndex].data[rowIndex];
           this.props.onSelectionEntered(item);

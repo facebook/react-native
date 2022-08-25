@@ -210,7 +210,10 @@ class FlatListExample extends React.PureComponent<Props, State> {
           </View>
           <SeparatorComponent />
           <Animated.FlatList
-            enableSelectionOnKeyPress={this.state.enableSelectionOnKeyPress} // TODO(macOS GH#774)
+            // [TODO(macOS GH#774)
+            enableSelectionOnKeyPress={this.state.enableSelectionOnKeyPress}
+            initialSelectedIndex={0}
+            // ]TODO(macOS GH#774)
             fadingEdgeLength={this.state.fadingEdgeLength}
             ItemSeparatorComponent={ItemSeparatorComponent}
             ListHeaderComponent={<HeaderComponent />}

@@ -77,12 +77,6 @@ type DirectEventProps = $ReadOnly<{|
   onPreferredScrollerStyleDidChange?: ?(event: ScrollEvent) => mixed, // TODO(macOS GH#774)
 
   /**
-   * When `focusable` is true, the system will try to invoke this function
-   * when the user performs accessibility key down gesture.
-   */
-  onScrollKeyDown?: ?(event: ScrollEvent) => mixed, // TODO(macOS GH#774)
-
-  /**
    * Invoked on mount and layout changes with:
    *
    * `{nativeEvent: { layout: {x, y, width, height}}}`

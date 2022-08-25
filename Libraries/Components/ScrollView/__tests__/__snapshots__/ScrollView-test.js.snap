@@ -27,7 +27,6 @@ exports[`<ScrollView /> should render as expected: should deep render when not m
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
-  onScrollKeyDown={[Function]}
   onScrollShouldSetResponder={[Function]}
   onStartShouldSetResponder={[Function]}
   onStartShouldSetResponderCapture={[Function]}

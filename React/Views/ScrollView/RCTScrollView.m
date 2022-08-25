@@ -23,6 +23,8 @@
 
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
 #import "RCTRefreshControl.h"
+#else
+#import "RCTViewKeyboardEvent.h"
 #endif // TODO(macOS GH#774)
 
 /**
@@ -1261,74 +1263,58 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
   }];
 }
 
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
+// [TODO(macOS GH#774)
+#pragma mark - Keyboard Events
 
-- (NSString*)keyCommandFromKeyCode:(NSInteger)keyCode modifierFlags:(NSEventModifierFlags)modifierFlags
-{
-  switch (keyCode)
-  {
-    case 36:
-      return @"ENTER";
+#if TARGET_OS_OSX
+- (RCTViewKeyboardEvent*)keyboardEvent:(NSEvent*)event {
+	BOOL keyDown = event.type == NSEventTypeKeyDown;
+	NSArray<NSString *> *validKeys = keyDown ? self.validKeysDown : self.validKeysUp;
+	NSString *key = [RCTViewKeyboardEvent keyFromEvent:event];
 
-    case 115:
-      return @"HOME";
-
-    case 116:
-      return @"PAGE_UP";
-
-    case 119:
-      return @"END";
-
-    case 121:
-      return @"PAGE_DOWN";
-
-    case 123:
-      return @"LEFT_ARROW";
-
-    case 124:
-      return @"RIGHT_ARROW";
-
-    case 125:
-			if (modifierFlags & NSEventModifierFlagOption) {
-				return @"OPTION_DOWN";
-			} else {
-				return @"DOWN_ARROW";
-			}
-
-    case 126:
-			if (modifierFlags & NSEventModifierFlagOption) {
-				return @"OPTION_UP";
-			} else {
-				return @"UP_ARROW";
-			}
-  }
-  return @"";
-}
-
-- (void)keyDown:(UIEvent*)theEvent
-{
-  // Don't emit a scroll event if tab was pressed while the scrollview is first responder
-  if (!(self == [[self window] firstResponder] && theEvent.keyCode == 48)) {
-    NSString *keyCommand = [self keyCommandFromKeyCode:theEvent.keyCode modifierFlags:theEvent.modifierFlags];
-		if (![keyCommand isEqual: @""]) {
-			RCT_SEND_SCROLL_EVENT(onScrollKeyDown, (@{ @"key": keyCommand}));
-		} else {
-			[super keyDown:theEvent];
-		}
+	// Only post events for keys we care about
+	if (![validKeys containsObject:key]) {
+		return nil;
 	}
 
-  // AX: if a tab key was pressed and the first responder is currently clipped by the scroll view,
-  // automatically scroll to make the view visible to make it navigable via keyboard.
-  if ([theEvent keyCode] == 48) {  //tab key
-    id firstResponder = [[self window] firstResponder];
-    if ([firstResponder isKindOfClass:[NSView class]] &&
-        [firstResponder isDescendantOf:[_scrollView documentView]]) {
-      NSView *view = (NSView*)firstResponder;
-      NSRect visibleRect = ([view superview] == [_scrollView documentView]) ? NSInsetRect(view.frame, -1, -1) :
-                            [view convertRect:view.frame toView:_scrollView.documentView];
-      [[_scrollView documentView] scrollRectToVisible:visibleRect];
-    }
-  }
+	return [RCTViewKeyboardEvent keyEventFromEvent:event reactTag:self.reactTag];
+}
+
+- (BOOL)handleKeyboardEvent:(NSEvent *)event {
+	if (event.type == NSEventTypeKeyDown ? self.onKeyDown : self.onKeyUp) {
+		RCTViewKeyboardEvent *keyboardEvent = [self keyboardEvent:event];
+		if (keyboardEvent) {
+			[_eventDispatcher sendEvent:keyboardEvent];
+			return YES;
+		}
+	}
+	return NO;
+}
+
+- (void)keyDown:(NSEvent *)event {
+	if (![self handleKeyboardEvent:event]) {
+		[super keyDown:event];
+		
+		// AX: if a tab key was pressed and the first responder is currently clipped by the scroll view,
+		// automatically scroll to make the view visible to make it navigable via keyboard.
+		NSString *key = [RCTViewKeyboardEvent keyFromEvent:event];
+		if ([key isEqualToString:@"Tab"]) {
+			id firstResponder = [[self window] firstResponder];
+			if ([firstResponder isKindOfClass:[NSView class]] &&
+					[firstResponder isDescendantOf:[_scrollView documentView]]) {
+				NSView *view = (NSView*)firstResponder;
+				NSRect visibleRect = ([view superview] == [_scrollView documentView]) ? NSInsetRect(view.frame, -1, -1) :
+															[view convertRect:view.frame toView:_scrollView.documentView];
+				[[_scrollView documentView] scrollRectToVisible:visibleRect];
+			 }
+		 }
+	}
+}
+
+- (void)keyUp:(NSEvent *)event {
+	if (![self handleKeyboardEvent:event]) {
+		[super keyUp:event];
+	}
 }
 
 static NSString *RCTStringForScrollerStyle(NSScrollerStyle scrollerStyle) {
@@ -1343,7 +1329,8 @@ static NSString *RCTStringForScrollerStyle(NSScrollerStyle scrollerStyle) {
 - (void)preferredScrollerStyleDidChange:(__unused NSNotification *)notification {
   RCT_SEND_SCROLL_EVENT(onPreferredScrollerStyleDidChange, (@{ @"preferredScrollerStyle": RCTStringForScrollerStyle([NSScroller preferredScrollerStyle])}));
 }
-#endif // ]TODO(macOS GH#774)
+#endif
+// ]TODO(macOS GH#774)
 
 // Note: setting several properties of UIScrollView has the effect of
 // resetting its contentOffset to {0, 0}. To prevent this, we generate
