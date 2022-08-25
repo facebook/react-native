@@ -25,6 +25,15 @@
 
 @synthesize moduleRegistry = _moduleRegistry;
 
+const int FILE_KEY_OF_JS_ERROR = 0;
+const int METHOD_NAME_KEY_OF_JS_ERROR = 1;
+const int LINE_NUMBER_KEY_OF_JS_ERROR = 2;
+const int COLUMN_KEY_OF_JS_ERROR = 3;
+const int FRAMES_KEY_OF_JS_ERROR = 4;
+const int MESSAGE_KEY_OF_JS_ERROR = 5;
+const int ID_KEY_OF_JS_ERROR = 6;
+const int IS_FATAL_KEY_OF_JS_ERROR = 7;
+
 RCT_EXPORT_MODULE()
 
 - (instancetype)initWithDelegate:(id<RCTExceptionsManagerDelegate>)delegate
@@ -150,19 +159,25 @@ RCT_EXPORT_METHOD(reportException : (JS::NativeExceptionsManager::ExceptionData 
   }
 }
 
-- (void)reportJsException:(NSString *)errorStr
+- (void)reportJsException:(const facebook::react::MapBuffer &)errorMap
 {
-  NSData *jsonData = [errorStr dataUsingEncoding:NSUTF8StringEncoding];
-  NSError *jsonError;
-  NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:jsonData
-                                                       options:NSJSONWritingPrettyPrinted
-                                                         error:&jsonError];
-
-  NSString *message = [dict objectForKey:@"message"];
-  double exceptionId = [[dict objectForKey:@"id"] doubleValue];
-  NSArray *stack = [dict objectForKey:@"stack"];
-  BOOL isFatal = [[dict objectForKey:@"isFatal"] boolValue];
-
+  NSString *message = [NSString stringWithCString:errorMap.getString(MESSAGE_KEY_OF_JS_ERROR).c_str()
+                                         encoding:[NSString defaultCStringEncoding]];
+  int exceptionId = errorMap.getInt(ID_KEY_OF_JS_ERROR);
+  BOOL isFatal = errorMap.getBool(IS_FATAL_KEY_OF_JS_ERROR);
+  std::vector<facebook::react::MapBuffer> frames = errorMap.getMapBufferList(FRAMES_KEY_OF_JS_ERROR);
+  NSMutableArray *stack = [[NSMutableArray alloc] init];
+  for (facebook::react::MapBuffer const &mapBuffer : frames) {
+    NSDictionary *frame = @{
+      @"file" : [NSString stringWithCString:mapBuffer.getString(FILE_KEY_OF_JS_ERROR).c_str()
+                                   encoding:[NSString defaultCStringEncoding]],
+      @"methodName" : [NSString stringWithCString:mapBuffer.getString(METHOD_NAME_KEY_OF_JS_ERROR).c_str()
+                                         encoding:[NSString defaultCStringEncoding]],
+      @"lineNumber" : [NSNumber numberWithInt:mapBuffer.getInt(LINE_NUMBER_KEY_OF_JS_ERROR)],
+      @"column" : [NSNumber numberWithInt:mapBuffer.getInt(COLUMN_KEY_OF_JS_ERROR)],
+    };
+    [stack addObject:frame];
+  }
   if (isFatal) {
     [self reportFatalException:message stack:stack exceptionId:exceptionId];
   } else {
