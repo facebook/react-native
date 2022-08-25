@@ -19,6 +19,7 @@ import TouchableNativeFeedback from './Touchable/TouchableNativeFeedback';
 import TouchableOpacity from './Touchable/TouchableOpacity';
 import View from './View/View';
 import invariant from 'invariant';
+import type {Button as ButtonType} from './Button.flow';
 
 import type {
   AccessibilityState,
@@ -400,4 +401,4 @@ const styles = StyleSheet.create({
   }),
 });
 
-module.exports = Button;
+module.exports = (Button: ButtonType);

@@ -1567,6 +1567,51 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
               ],
             },
           },
+          {
+            name: 'getUnion',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'UnionTypeAnnotation',
+                memberType: 'ObjectTypeAnnotation',
+              },
+              params: [
+                {
+                  name: 'chooseInt',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'UnionTypeAnnotation',
+                    memberType: 'NumberTypeAnnotation',
+                  },
+                },
+                {
+                  name: 'chooseFloat',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'UnionTypeAnnotation',
+                    memberType: 'NumberTypeAnnotation',
+                  },
+                },
+                {
+                  name: 'chooseObject',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'UnionTypeAnnotation',
+                    memberType: 'ObjectTypeAnnotation',
+                  },
+                },
+                {
+                  name: 'chooseString',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'UnionTypeAnnotation',
+                    memberType: 'StringTypeAnnotation',
+                  },
+                },
+              ],
+            },
+          },
         ],
       },
       moduleNames: ['SampleTurboModuleCxx'],

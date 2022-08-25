@@ -293,4 +293,9 @@ afterEvaluate {
     configureCMakeDebug.dependsOn(packageReactDebugNdkLibs)
     preHermesDebugBuild.dependsOn(packageReactDebugNdkLibs)
     preJscDebugBuild.dependsOn(packageReactDebugNdkLibs)
+
+    // As we're consuming Hermes from source, we want to make sure
+    // `hermesc` is built before we actually invoke the `emit*HermesResource` task
+    emitHermesDebugHermesResources.dependsOn(":ReactAndroid:hermes-engine:buildHermes")
+    emitHermesReleaseHermesResources.dependsOn(":ReactAndroid:hermes-engine:buildHermes")
 }

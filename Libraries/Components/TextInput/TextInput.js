@@ -709,6 +709,13 @@ export type Props = $ReadOnly<{|
    */
   placeholderTextColor?: ?ColorValue,
 
+  /** `readOnly` works like the `readonly` attribute in HTML.
+   *  If `true`, text is not editable. The default value is `false`.
+   *  See https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/readonly
+   *  for more details.
+   */
+  readOnly?: ?boolean,
+
   /**
    * Determines how the return key should look. On Android you can also use
    * `returnKeyLabel`.
@@ -1381,6 +1388,8 @@ const ExportedForwardRef: React.AbstractComponent<
     allowFontScaling = true,
     rejectResponderTermination = true,
     underlineColorAndroid = 'transparent',
+    readOnly,
+    editable,
     ...restProps
   },
   forwardedRef: ReactRefSetter<
@@ -1392,6 +1401,7 @@ const ExportedForwardRef: React.AbstractComponent<
       allowFontScaling={allowFontScaling}
       rejectResponderTermination={rejectResponderTermination}
       underlineColorAndroid={underlineColorAndroid}
+      editable={readOnly !== undefined ? !readOnly : editable}
       {...restProps}
       forwardedRef={forwardedRef}
     />

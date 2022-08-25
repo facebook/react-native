@@ -295,6 +295,16 @@ export type NativeModulePromiseTypeAnnotation = $ReadOnly<{
   type: 'PromiseTypeAnnotation',
 }>;
 
+export type UnionTypeAnnotationMemberType =
+  | 'NumberTypeAnnotation'
+  | 'ObjectTypeAnnotation'
+  | 'StringTypeAnnotation';
+
+export type NativeModuleUnionTypeAnnotation = $ReadOnly<{
+  type: 'UnionTypeAnnotation',
+  memberType: UnionTypeAnnotationMemberType,
+}>;
+
 export type NativeModuleMixedTypeAnnotation = $ReadOnly<{
   type: 'MixedTypeAnnotation',
 }>;
@@ -311,6 +321,7 @@ export type NativeModuleBaseTypeAnnotation =
   | NativeModuleTypeAliasTypeAnnotation
   | NativeModuleArrayTypeAnnotation<Nullable<NativeModuleBaseTypeAnnotation>>
   | NativeModuleObjectTypeAnnotation
+  | NativeModuleUnionTypeAnnotation
   | NativeModuleMixedTypeAnnotation;
 
 export type NativeModuleParamTypeAnnotation =
