@@ -21,7 +21,6 @@ import {
   useMemo,
   useReducer,
   useRef,
-  useState,
 } from 'react';
 
 type ReducedProps<TProps> = {
@@ -30,8 +29,6 @@ type ReducedProps<TProps> = {
   ...
 };
 type CallbackRef<T> = T => mixed;
-
-let animatedComponentNextId = 1;
 
 export default function useAnimatedProps<TProps: {...}, TInstance>(
   props: TProps,
@@ -141,16 +138,11 @@ function useAnimatedPropsLifecycle(node: AnimatedProps): void {
   const prevNodeRef = useRef<?AnimatedProps>(null);
   const isUnmountingRef = useRef<boolean>(false);
 
-  const [animatedComponentId] = useState(
-    () => `${animatedComponentNextId++}:animatedComponent`,
-  );
-
-  useLayoutEffect(() => {
-    NativeAnimatedHelper.API.setWaitingForIdentifier(animatedComponentId);
-  });
-
   useEffect(() => {
-    NativeAnimatedHelper.API.unsetWaitingForIdentifier(animatedComponentId);
+    // It is ok for multiple components to call `flushQueue` because it noops
+    // if the queue is empty. When multiple animated components are mounted at
+    // the same time. Only first component flushes the queue and the others will noop.
+    NativeAnimatedHelper.API.flushQueue();
   });
 
   useLayoutEffect(() => {

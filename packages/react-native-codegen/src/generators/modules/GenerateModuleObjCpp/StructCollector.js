@@ -114,6 +114,8 @@ class StructCollector {
       }
       case 'MixedTypeAnnotation':
         throw new Error('Mixed types are unsupported in structs');
+      case 'UnionTypeAnnotation':
+        throw new Error('Union types are unsupported in structs');
       default: {
         return wrapNullable(nullable, typeAnnotation);
       }
