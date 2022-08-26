@@ -95,6 +95,14 @@ export type ImageProps = {|
   capInsets?: ?EdgeInsetsProp,
 
   /**
+   * Adds the CORS related header to the request.
+   * Similar to crossorigin from HTML.
+   *
+   * See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#attr-crossorigin
+   */
+  crossOrigin?: ?('anonymous' | 'use-credentials'),
+
+  /**
    * Invoked on load error with `{nativeEvent: {error}}`.
    *
    * See https://reactnative.dev/docs/image#onerror
@@ -155,6 +163,23 @@ export type ImageProps = {|
   style?: ?ImageStyleProp,
 
   /**
+   * A string indicating which referrer to use when fetching the resource.
+   * Similar to referrerpolicy from HTML.
+   *
+   * See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#attr-referrerpolicy
+   */
+  referrerPolicy?: ?(
+    | 'no-referrer'
+    | 'no-referrer-when-downgrade'
+    | 'origin'
+    | 'origin-when-cross-origin'
+    | 'same-origin'
+    | 'strict-origin'
+    | 'strict-origin-when-cross-origin'
+    | 'unsafe-url'
+  ),
+
+  /**
    * Determines how to resize the image when the frame doesn't match the raw
    * image dimensions.
    *
@@ -174,6 +199,13 @@ export type ImageProps = {|
    * A string representing the resource identifier for the image.
    */
   src?: ?string,
+
+  /**
+   * Similar to srcset from HTML.
+   *
+   * See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#attr-srcset
+   */
+  srcSet?: ?string,
   children?: empty,
 |};
 

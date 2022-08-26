@@ -23,6 +23,7 @@ import NativeImageLoaderIOS from './NativeImageLoaderIOS';
 
 import ImageViewNativeComponent from './ImageViewNativeComponent';
 import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
+import type {ImageSource} from './ImageSource';
 
 function getSize(
   uri: string,
@@ -111,23 +112,57 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
     height: undefined,
   };
 
-  let sources;
+  let sources: ImageSource;
   let style: ImageStyleProp;
 
-  if (props.src) {
-    const uri = props.src;
-    style = flattenStyle([styles.base, props.style]) || {};
-    sources = [{uri: uri, width: undefined, height: undefined}];
-  } else if (Array.isArray(source)) {
-    style = flattenStyle([styles.base, props.style]) || {};
-    sources = source;
-  } else {
-    const {width, height, uri} = source;
-    style = flattenStyle([{width, height}, styles.base, props.style]) || {};
-    sources = [source];
+  const {crossOrigin, referrerPolicy, src, srcSet} = props;
 
-    if (uri === '') {
-      console.warn('source.uri should not be an empty string');
+  if (srcSet != null) {
+    const sourceList = [];
+    const srcList = srcSet.split(', ');
+    srcList.forEach(imageSrc => {
+      const [uri, xScale] = imageSrc.split(' ');
+      if (xScale) {
+        const scale = parseInt(xScale.split('x')[0], 10);
+        if (scale) {
+          const headers: {[string]: string} = {};
+          if (crossOrigin === 'use-credentials') {
+            headers['Access-Control-Allow-Credentials'] = 'true';
+          }
+          if (referrerPolicy != null) {
+            headers['Referrer-Policy'] = referrerPolicy;
+          }
+          sourceList.push({headers, scale, uri});
+        }
+      }
+    });
+    if (sourceList.length === 0) {
+      console.warn('The provided value for srcSet is not valid.');
+    }
+    style = flattenStyle([styles.base, props.style]) || {};
+    sources = sourceList;
+  } else if (src != null) {
+    style = flattenStyle([styles.base, props.style]) || {};
+    const headers: {[string]: string} = {};
+    if (crossOrigin === 'use-credentials') {
+      headers['Access-Control-Allow-Credentials'] = 'true';
+    }
+    if (referrerPolicy != null) {
+      headers['Referrer-Policy'] = referrerPolicy;
+    }
+    sources = [{uri: src, headers}];
+  } else {
+    if (Array.isArray(source)) {
+      style = flattenStyle([styles.base, props.style]) || {};
+      sources = source;
+    } else {
+      const {width, height, uri} = source;
+      style = flattenStyle([{width, height}, styles.base, props.style]) || {};
+      sources = [source];
+
+      if (uri === '') {
+        console.warn('source.uri should not be an empty string');
+      }
     }
   }
 
