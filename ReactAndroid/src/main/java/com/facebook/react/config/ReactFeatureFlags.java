@@ -144,4 +144,10 @@ public class ReactFeatureFlags {
 
   /** Temporary flag to allow execution of mount items up to 15ms earlier than normal. */
   public static boolean enableEarlyScheduledMountItemExecution = false;
+
+  /**
+   * Use a bitmap mask instead of clipPath for rounding corners so that they are antialiased in
+   * Android
+   */
+  public static boolean antiAliasRoundedOverflowCorners = false;
 }

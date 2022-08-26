@@ -317,7 +317,6 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   private void updateViewContentDescription(@NonNull T view) {
     final String accessibilityLabel = (String) view.getTag(R.id.accessibility_label);
     final ReadableMap accessibilityState = (ReadableMap) view.getTag(R.id.accessibility_state);
-    final String accessibilityHint = (String) view.getTag(R.id.accessibility_hint);
     final List<String> contentDescription = new ArrayList<>();
     final ReadableMap accessibilityValue = (ReadableMap) view.getTag(R.id.accessibility_value);
     if (accessibilityLabel != null) {
@@ -351,9 +350,6 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       if (text != null && text.getType() == ReadableType.String) {
         contentDescription.add(text.asString());
       }
-    }
-    if (accessibilityHint != null) {
-      contentDescription.add(accessibilityHint);
     }
     if (contentDescription.size() > 0) {
       view.setContentDescription(TextUtils.join(", ", contentDescription));

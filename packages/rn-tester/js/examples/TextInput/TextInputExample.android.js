@@ -392,12 +392,22 @@ exports.examples = ([
           <TextInput
             numberOfLines={2}
             multiline={true}
-            placeholder="Two line input"
+            placeholder="Two line input using numberOfLines prop"
           />
           <TextInput
             numberOfLines={5}
             multiline={true}
-            placeholder="Five line input"
+            placeholder="Five line input using numberOfLines prop"
+          />
+          <TextInput
+            rows={2}
+            multiline={true}
+            placeholder="Two line input using rows prop"
+          />
+          <TextInput
+            rows={5}
+            multiline={true}
+            placeholder="Five line input using rows prop"
           />
         </View>
       );
