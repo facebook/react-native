@@ -51,6 +51,7 @@ type Props = $ReadOnly<{|
   accessibilityState?: ?AccessibilityState,
   accessibilityValue?: ?AccessibilityValue,
   accessibilityViewIsModal?: ?boolean,
+  'aria-modal'?: boolean,
   accessible?: ?boolean,
   focusable?: ?boolean,
   importantForAccessibility?: ?('auto' | 'yes' | 'no' | 'no-hide-descendants'),
@@ -215,6 +216,10 @@ function Pressable(props: Props, forwardedRef): React.Node {
     ...android_rippleConfig?.viewProps,
     accessible: accessible !== false,
     accessibilityState,
+    accessibilityViewIsModal:
+      restProps['aria-modal'] !== null
+        ? restProps['aria-modal']
+        : restProps.accessibilityViewIsModal,
     focusable: focusable !== false,
     hitSlop,
   };
