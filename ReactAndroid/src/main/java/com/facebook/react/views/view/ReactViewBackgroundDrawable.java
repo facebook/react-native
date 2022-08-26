@@ -791,7 +791,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
 
     /** Compute mInnerTopLeftCorner */
     mInnerTopLeftCorner.x = mInnerClipTempRectForBorderRadius.left;
-    mInnerTopLeftCorner.y = mInnerClipTempRectForBorderRadius.top;
+    mInnerTopLeftCorner.y = mInnerClipTempRectForBorderRadius.top * 2;
 
     getEllipseIntersectionWithLine(
         // Ellipse Bounds
@@ -817,7 +817,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
     }
 
     mInnerBottomLeftCorner.x = mInnerClipTempRectForBorderRadius.left;
-    mInnerBottomLeftCorner.y = mInnerClipTempRectForBorderRadius.bottom;
+    mInnerBottomLeftCorner.y = mInnerClipTempRectForBorderRadius.bottom * -2;
 
     getEllipseIntersectionWithLine(
         // Ellipse Bounds
@@ -843,7 +843,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
     }
 
     mInnerTopRightCorner.x = mInnerClipTempRectForBorderRadius.right;
-    mInnerTopRightCorner.y = mInnerClipTempRectForBorderRadius.top;
+    mInnerTopRightCorner.y = mInnerClipTempRectForBorderRadius.top * 2;
 
     getEllipseIntersectionWithLine(
         // Ellipse Bounds
@@ -869,7 +869,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
     }
 
     mInnerBottomRightCorner.x = mInnerClipTempRectForBorderRadius.right;
-    mInnerBottomRightCorner.y = mInnerClipTempRectForBorderRadius.bottom;
+    mInnerBottomRightCorner.y = mInnerClipTempRectForBorderRadius.bottom * -2;
 
     getEllipseIntersectionWithLine(
         // Ellipse Bounds
