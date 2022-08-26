@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 #import <React/RCTBridgeModule.h>
-#import <react/renderer/mapbuffer/MapBuffer.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -39,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)reportFatalException:(nullable NSString *)message
                        stack:(nullable NSArray<NSDictionary *> *)stack
                  exceptionId:(double)exceptionId;
-- (void)reportJsException:(const facebook::react::MapBuffer &)errorMap;
+- (void)reportJsException:(NSString *)errorMap;
 
 @property (nonatomic, weak) id<RCTExceptionsManagerDelegate> delegate;
 
