@@ -51,7 +51,7 @@ type Props = $ReadOnly<{|
   accessibilityState?: ?AccessibilityState,
   accessibilityValue?: ?AccessibilityValue,
   accessibilityViewIsModal?: ?boolean,
-  'aria-modal'?: boolean,
+  'aria-modal'?: ?boolean,
   accessible?: ?boolean,
   focusable?: ?boolean,
   importantForAccessibility?: ?('auto' | 'yes' | 'no' | 'no-hide-descendants'),
