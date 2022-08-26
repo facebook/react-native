@@ -358,8 +358,8 @@ type AndroidViewProps = $ReadOnly<{|
    * for more details.
    *
    * Supports the following values:
-   * - -1 (View is focusable)
-   * - 0 (View is not focusable)
+   * -  0 (View is focusable)
+   * - -1 (View is not focusable)
    *
    * @platform android
    */
