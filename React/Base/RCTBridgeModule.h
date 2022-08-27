@@ -11,13 +11,13 @@
 #import <React/RCTDefines.h>
 #import <React/RCTJSThread.h>
 
+#import "RCTBundleManager.h"
+
 @class RCTBridge;
 @protocol RCTBridgeMethod;
 @class RCTModuleRegistry;
 @class RCTViewRegistry;
 @class RCTCallableJSModules;
-
-#import "Modules/RCTBundleManager.h"
 
 /**
  * The type of a block that is capable of sending a response to a bridged
