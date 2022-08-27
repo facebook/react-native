@@ -5,10 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTBundleManager.h"
 #import "RCTAssert.h"
 #import "RCTBridge+Private.h"
 #import "RCTBridge.h"
+#import "RCTBridgeModule.h"
 
 @implementation RCTBundleManager {
   __weak RCTBridge *_bridge;
