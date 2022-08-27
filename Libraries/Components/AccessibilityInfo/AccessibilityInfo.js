@@ -17,7 +17,7 @@ import NativeAccessibilityInfoAndroid from './NativeAccessibilityInfo';
 import NativeAccessibilityManagerIOS from './NativeAccessibilityManager';
 import legacySendAccessibilityEvent from './legacySendAccessibilityEvent';
 import type {ElementRef} from 'react';
-import type {AccessibilityInfo as AccessibilityInfoType} from './AccessibilityInfo.flow';
+import type {AccessibilityInfoType} from './AccessibilityInfo.flow';
 
 // Events that are only supported on Android.
 type AccessibilityEventDefinitionsAndroid = {
