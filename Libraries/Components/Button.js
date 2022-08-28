@@ -145,6 +145,10 @@ type ButtonProps = $ReadOnly<{|
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
   accessibilityState?: ?AccessibilityState,
+  /**
+   * Indicates whether the element is disabled or not.
+   */
+  'aria-disabled'?: ?boolean,
 
   /**
    * [Android] Controlling if a view fires accessibility events and if it is reported to accessibility services.
@@ -300,9 +304,12 @@ class Button extends React.Component<ButtonProps> {
     const disabled =
       this.props.disabled != null
         ? this.props.disabled
+        : this.props['aria-disabled']
+        ? this.props['aria-disabled']
         : this.props.accessibilityState?.disabled;
 
     const accessibilityState =
+      disabled !== this.props['aria-disabled'] ||
       disabled !== this.props.accessibilityState?.disabled
         ? {...this.props.accessibilityState, disabled}
         : this.props.accessibilityState;
