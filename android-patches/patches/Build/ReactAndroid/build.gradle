@@ -1,5 +1,5 @@
 diff --git a/ReactAndroid/build.gradle b/ReactAndroid/build.gradle
-index 3c23c6a84b4..183bffe7164 100644
+index 3c23c6a84b4..df345f87eab 100644
 --- a/ReactAndroid/build.gradle
 +++ b/ReactAndroid/build.gradle
 @@ -12,6 +12,10 @@ plugins {
@@ -77,3 +77,18 @@ index 3c23c6a84b4..183bffe7164 100644
      preBuild.dependsOn("generateCodegenArtifactsFromSchema")
  
      sourceSets.main {
+@@ -363,8 +389,12 @@ android {
+         // we produce. The reason behind this is that we want to allow users to pick the
+         // JS engine by specifying a dependency on either `hermes-engine` or `android-jsc`
+         // that will include the necessary .so files to load.
+-        exclude("**/libhermes.so")
+-        exclude("**/libjsc.so")
++        if (project.hasProperty('param') ? project.property('param').equals("excludeLibs") : false) {
++            exclude '**/*.so'
++        } else {
++            exclude("**/libhermes.so")
++            exclude("**/libjsc.so")
++        }
+     }
+ 
+     configurations {
