@@ -40,6 +40,8 @@ const Text: React.AbstractComponent<
     'aria-expanded': ariaExpanded,
     'aria-selected': ariaSelected,
     ellipsizeMode,
+    id,
+    nativeID,
     onLongPress,
     onPress,
     onPressIn,
@@ -205,6 +207,7 @@ const Text: React.AbstractComponent<
       isHighlighted={isHighlighted}
       isPressable={isPressable}
       selectable={_selectable}
+      nativeID={id ?? nativeID}
       numberOfLines={numberOfLines}
       selectionColor={selectionColor}
       style={style}
@@ -222,6 +225,7 @@ const Text: React.AbstractComponent<
         allowFontScaling={allowFontScaling !== false}
         ellipsizeMode={ellipsizeMode ?? 'tail'}
         isHighlighted={isHighlighted}
+        nativeID={id ?? nativeID}
         numberOfLines={numberOfLines}
         selectionColor={selectionColor}
         style={style}
