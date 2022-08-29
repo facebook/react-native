@@ -1604,13 +1604,17 @@ const ExportedForwardRef: React.AbstractComponent<
       }
       autoComplete={
         Platform.OS === 'android'
-          ? autoCompleteWebToAutoCompleteAndroidMap[autoComplete] ??
+          ? // $FlowFixMe
+            autoCompleteWebToAutoCompleteAndroidMap[autoComplete] ??
             autoComplete
           : undefined
       }
       textContentType={
-        Platform.OS === 'ios' && autoComplete
-          ? autoCompleteWebToTextContentTypeMap[autoComplete]
+        Platform.OS === 'ios' &&
+        autoComplete &&
+        autoComplete in autoCompleteWebToTextContentTypeMap
+          ? // $FlowFixMe
+            autoCompleteWebToTextContentTypeMap[autoComplete]
           : textContentType
       }
       {...restProps}
