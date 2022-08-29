@@ -600,4 +600,16 @@ exports.examples = [
       );
     },
   },
+  {
+    title: 'View with aria-label="label"',
+    render(): React.Node {
+      return (
+        <View
+          aria-label="Blue background View with Text"
+          style={{backgroundColor: '#527FE4', padding: 5}}>
+          <Text style={{fontSize: 11}}>Blue background</Text>
+        </View>
+      );
+    },
+  },
 ];
