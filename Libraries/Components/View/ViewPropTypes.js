@@ -457,7 +457,7 @@ export type ViewProps = $ReadOnly<{|
 
   'aria-disabled'?: ?boolean,
   'aria-checked'?: ?boolean,
-  'aria-disabled'?: ?boolean,
+  'aria-busy'?: ?boolean,
   'aria-expanded'?: ?boolean,
   'aria-selected'?: ?boolean,
 
