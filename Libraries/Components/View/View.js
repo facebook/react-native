@@ -27,9 +27,33 @@ const View: React.AbstractComponent<
   ViewProps,
   React.ElementRef<typeof ViewNativeComponent>,
 > = React.forwardRef((props: ViewProps, forwardedRef) => {
+  const {
+    'aria-busy': ariaBusy,
+    'aria-checked': ariaChecked,
+    'aria-disabled': ariaDisabled,
+    'aria-expanded': ariaExpanded,
+    'aria-selected': ariaSelected,
+    accessibilityState,
+    ...restProps
+  } = props;
+
+  const _accessibilityState = {
+    busy: ariaBusy ?? accessibilityState?.busy,
+    checked: ariaChecked ?? accessibilityState?.checked,
+    disabled: ariaDisabled ?? accessibilityState?.disabled,
+    expanded: ariaExpanded ?? accessibilityState?.expanded,
+    selected: ariaSelected ?? accessibilityState?.selected,
+  };
+
+  console.log(_accessibilityState, '@@');
+
   return (
     <TextAncestor.Provider value={false}>
-      <ViewNativeComponent {...props} ref={forwardedRef} />
+      <ViewNativeComponent
+        accessibilityState={_accessibilityState}
+        {...restProps}
+        ref={forwardedRef}
+      />
     </TextAncestor.Provider>
   );
 });
