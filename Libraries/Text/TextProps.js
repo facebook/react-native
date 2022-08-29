@@ -57,6 +57,11 @@ export type TextProps = $ReadOnly<{|
   accessibilityLabel?: ?Stringish,
   accessibilityRole?: ?AccessibilityRole,
   accessibilityState?: ?AccessibilityState,
+  'aria-disabled'?: ?boolean,
+  'aria-checked'?: ?boolean,
+  'aria-busy'?: ?boolean,
+  'aria-expanded'?: ?boolean,
+  'aria-selected'?: ?boolean,
 
   /**
    * Whether font should be scaled down automatically.
