@@ -154,10 +154,10 @@ type ButtonProps = $ReadOnly<{|
   accessibilityLanguage?: ?Stringish,
 
   /**
-   * Web to Native Accessibilty props
+   * Alias for accessibilityLabel  https://reactnative.dev/docs/view#accessibilitylabel
    * https://github.com/facebook/react-native/issues/34424
    */
-  'aria-lable'?: ?string,
+  'aria-label'?: ?string,
 |}>;
 
 /**
@@ -339,7 +339,7 @@ class Button extends React.Component<ButtonProps> {
         accessible={accessible}
         accessibilityActions={accessibilityActions}
         onAccessibilityAction={onAccessibilityAction}
-        accessibilityLabel={accessibilityLabel || ariaLable}
+        accessibilityLabel={ariaLable || accessibilityLabel}
         accessibilityHint={accessibilityHint}
         accessibilityLanguage={accessibilityLanguage}
         accessibilityRole="button"
