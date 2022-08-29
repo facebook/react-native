@@ -32,6 +32,12 @@ const Text: React.AbstractComponent<
 > = React.forwardRef((props: TextProps, forwardedRef) => {
   const {
     accessible,
+    'aria-busy': ariaBusy,
+    'aria-checked': ariaChecked,
+    'aria-disabled': ariaDisabled,
+    'aria-expanded': ariaExpanded,
+    'aria-selected': ariaSelected,
+    accessibilityState,
     allowFontScaling,
     ellipsizeMode,
     onLongPress,
@@ -51,14 +57,23 @@ const Text: React.AbstractComponent<
 
   const [isHighlighted, setHighlighted] = useState(false);
 
+  const _accessibilityState = {
+    busy: ariaBusy ?? accessibilityState?.busy,
+    checked: ariaChecked ?? accessibilityState?.checked,
+    disabled: ariaDisabled ?? accessibilityState?.disabled,
+    expanded: ariaExpanded ?? accessibilityState?.expanded,
+    selected: ariaSelected ?? accessibilityState?.selected,
+  };
+
   const _disabled =
     restProps.disabled != null
       ? restProps.disabled
-      : props.accessibilityState?.disabled;
-  const _accessibilityState =
-    _disabled !== props.accessibilityState?.disabled
-      ? {...props.accessibilityState, disabled: _disabled}
-      : props.accessibilityState;
+      : _accessibilityState?.disabled;
+
+  const nativeTextAccessibilityState =
+    _disabled !== _accessibilityState?.disabled
+      ? {..._accessibilityState, disabled: _disabled}
+      : _accessibilityState;
 
   const isPressable =
     (onPress != null ||
@@ -178,6 +193,7 @@ const Text: React.AbstractComponent<
 
   return hasTextAncestor ? (
     <NativeVirtualText
+      accessibilityState={_accessibilityState}
       {...restProps}
       {...eventHandlersForText}
       isHighlighted={isHighlighted}
@@ -194,7 +210,7 @@ const Text: React.AbstractComponent<
         {...eventHandlersForText}
         disabled={_disabled}
         accessible={_accessible}
-        accessibilityState={_accessibilityState}
+        accessibilityState={nativeTextAccessibilityState}
         allowFontScaling={allowFontScaling !== false}
         ellipsizeMode={ellipsizeMode ?? 'tail'}
         isHighlighted={isHighlighted}
