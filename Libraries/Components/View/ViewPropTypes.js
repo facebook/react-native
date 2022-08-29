@@ -455,6 +455,12 @@ export type ViewProps = $ReadOnly<{|
   accessibilityState?: ?AccessibilityState,
   accessibilityValue?: ?AccessibilityValue,
 
+  'aria-disabled'?: ?boolean,
+  'aria-checked'?: ?boolean,
+  'aria-disabled'?: ?boolean,
+  'aria-expanded'?: ?boolean,
+  'aria-selected'?: ?boolean,
+
   /**
    * Provides an array of custom actions available for accessibility.
    *
