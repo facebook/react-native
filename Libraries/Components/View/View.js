@@ -45,8 +45,6 @@ const View: React.AbstractComponent<
     selected: ariaSelected ?? accessibilityState?.selected,
   };
 
-  console.log(_accessibilityState, '@@');
-
   return (
     <TextAncestor.Provider value={false}>
       <ViewNativeComponent
