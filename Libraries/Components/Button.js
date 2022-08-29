@@ -276,7 +276,7 @@ class Button extends React.Component<ButtonProps> {
   render(): React.Node {
     const {
       accessibilityLabel,
-      'aria-lable': ariaLable,
+      'aria-label': ariaLabel,
       importantForAccessibility,
       color,
       onPress,
@@ -340,7 +340,7 @@ class Button extends React.Component<ButtonProps> {
         accessible={accessible}
         accessibilityActions={accessibilityActions}
         onAccessibilityAction={onAccessibilityAction}
-        accessibilityLabel={ariaLable || accessibilityLabel}
+        accessibilityLabel={ariaLabel || accessibilityLabel}
         accessibilityHint={accessibilityHint}
         accessibilityLanguage={accessibilityLanguage}
         accessibilityRole="button"
