@@ -23,8 +23,8 @@ import ReactNativeFeatureFlags from 'react-native/Libraries/ReactNative/ReactNat
 
 const {useEffect, useRef, useState} = React;
 
-function onPressablePress(buttonName: string) {
-  Alert.alert(`Your application has been ${buttonName}!`);
+function onPressablePress(pressableName: string) {
+  Alert.alert(`Your application has been ${pressableName}!`);
 }
 
 const forceTouchAvailable =

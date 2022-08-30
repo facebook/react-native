@@ -32,7 +32,9 @@ const Text: React.AbstractComponent<
 > = React.forwardRef((props: TextProps, forwardedRef) => {
   const {
     accessible,
+    accessibilityLabel,
     allowFontScaling,
+    'aria-label': ariaLabel,
     ellipsizeMode,
     onLongPress,
     onPress,
@@ -46,8 +48,6 @@ const Text: React.AbstractComponent<
     onStartShouldSetResponder,
     pressRetentionOffset,
     suppressHighlighting,
-    accessibilityLabel,
-    'aria-label': ariaLabel,
     ...restProps
   } = props;
 
@@ -182,11 +182,11 @@ const Text: React.AbstractComponent<
     <NativeVirtualText
       {...restProps}
       {...eventHandlersForText}
+      accessibilityLabel={ariaLabel ?? accessibilityLabel}
       isHighlighted={isHighlighted}
       isPressable={isPressable}
       numberOfLines={numberOfLines}
       selectionColor={selectionColor}
-      accessibilityLabel={ariaLabel ?? accessibilityLabel}
       style={style}
       ref={forwardedRef}
     />
