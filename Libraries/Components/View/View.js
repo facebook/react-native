@@ -45,6 +45,16 @@ const View: React.AbstractComponent<
     selected: ariaSelected ?? accessibilityState?.selected,
   };
 
+  /**
+   * Removing undefined keys from _accessibilityState
+   */
+
+  Object.keys(_accessibilityState).forEach(key => {
+    if (_accessibilityState[key] === undefined) {
+      delete _accessibilityState[key];
+    }
+  });
+
   return (
     <TextAncestor.Provider value={false}>
       <ViewNativeComponent
