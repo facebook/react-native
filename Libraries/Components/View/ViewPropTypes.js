@@ -474,8 +474,7 @@ export type ViewProps = $ReadOnly<{|
 
   /**
    * alias for accessibilityState
-   *
-   * see https://reactnative.dev/docs/accessibility#accessibilitystate
+   * It represents textual description of a component's value, or for range-based components, such as sliders and progress bars.
    */
   'aria-valuemax'?: ?AccessibilityValue['max'],
   'aria-valuemin'?: ?AccessibilityValue['min'],
