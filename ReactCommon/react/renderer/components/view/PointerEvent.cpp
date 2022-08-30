@@ -39,6 +39,8 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
       {"shiftKey", getDebugDescription(pointerEvent.shiftKey, options)},
       {"altKey", getDebugDescription(pointerEvent.altKey, options)},
       {"metaKey", getDebugDescription(pointerEvent.metaKey, options)},
+      {"isPrimary", getDebugDescription(pointerEvent.isPrimary, options)},
+      {"button", getDebugDescription(pointerEvent.button, options)},
   };
 }
 

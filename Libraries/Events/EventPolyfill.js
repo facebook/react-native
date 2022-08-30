@@ -227,7 +227,7 @@ class EventPolyfill implements IEvent {
 }
 
 // Assertion magic for polyfill follows.
-declare var checkEvent: Event;
+declare var checkEvent: Event; // eslint-disable-line no-unused-vars
 
 /*::
 // This can be a strict mode error at runtime so put it in a Flow comment.

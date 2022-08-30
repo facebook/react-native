@@ -19,6 +19,7 @@ import TouchableNativeFeedback from './Touchable/TouchableNativeFeedback';
 import TouchableOpacity from './Touchable/TouchableOpacity';
 import View from './View/View';
 import invariant from 'invariant';
+import type {Button as ButtonType} from './Button.flow';
 
 import type {
   AccessibilityState,
@@ -145,6 +146,11 @@ type ButtonProps = $ReadOnly<{|
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
   accessibilityState?: ?AccessibilityState,
+
+  /**
+   * [Android] Controlling if a view fires accessibility events and if it is reported to accessibility services.
+   */
+  importantForAccessibility?: ?('auto' | 'yes' | 'no' | 'no-hide-descendants'),
   accessibilityHint?: ?string,
   accessibilityLanguage?: ?Stringish,
 |}>;
@@ -264,6 +270,7 @@ class Button extends React.Component<ButtonProps> {
   render(): React.Node {
     const {
       accessibilityLabel,
+      importantForAccessibility,
       color,
       onPress,
       touchSoundDisabled,
@@ -315,6 +322,12 @@ class Button extends React.Component<ButtonProps> {
     const Touchable =
       Platform.OS === 'android' ? TouchableNativeFeedback : TouchableOpacity;
 
+    // If `no` is specified for `importantForAccessibility`, it will be changed to `no-hide-descendants` because the text inside should not be focused.
+    const _importantForAccessibility =
+      importantForAccessibility === 'no'
+        ? 'no-hide-descendants'
+        : importantForAccessibility;
+
     return (
       <Touchable
         accessible={accessible}
@@ -325,6 +338,7 @@ class Button extends React.Component<ButtonProps> {
         accessibilityLanguage={accessibilityLanguage}
         accessibilityRole="button"
         accessibilityState={accessibilityState}
+        importantForAccessibility={_importantForAccessibility}
         hasTVPreferredFocus={hasTVPreferredFocus}
         nextFocusDown={nextFocusDown}
         nextFocusForward={nextFocusForward}
@@ -387,4 +401,4 @@ const styles = StyleSheet.create({
   }),
 });
 
-module.exports = Button;
+module.exports = (Button: ButtonType);

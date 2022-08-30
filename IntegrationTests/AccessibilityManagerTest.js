@@ -16,7 +16,7 @@ import * as React from 'react';
 const {TestModule} = NativeModules;
 
 class AccessibilityManagerTest extends React.Component<{...}> {
-  componentDidMount() {
+  componentDidMount(): void {
     invariant(
       NativeAccessibilityManager,
       "NativeAccessibilityManager doesn't exist",

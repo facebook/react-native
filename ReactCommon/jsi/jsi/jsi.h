@@ -31,6 +31,10 @@ class FBJSRuntime;
 namespace facebook {
 namespace jsi {
 
+/// Base class for buffers of data or bytecode that need to be passed to the
+/// runtime. The buffer is expected to be fully immutable, so the result of
+/// size(), data(), and the contents of the pointer returned by data() must not
+/// change after construction.
 class JSI_EXPORT Buffer {
  public:
   virtual ~Buffer();
@@ -50,6 +54,18 @@ class JSI_EXPORT StringBuffer : public Buffer {
 
  private:
   std::string s_;
+};
+
+/// Base class for buffers of data that need to be passed to the runtime. The
+/// result of size() and data() must not change after construction. However, the
+/// region pointed to by data() may be modified by the user or the runtime. The
+/// user must ensure that access to the contents of the buffer is properly
+/// synchronised.
+class JSI_EXPORT MutableBuffer {
+ public:
+  virtual ~MutableBuffer();
+  virtual size_t size() const = 0;
+  virtual uint8_t* data() = 0;
 };
 
 /// PreparedJavaScript is a base class representing JavaScript which is in a
@@ -290,6 +306,13 @@ class JSI_EXPORT Runtime {
 
   virtual std::string symbolToString(const Symbol&) = 0;
 
+  virtual BigInt createBigIntFromInt64(int64_t) = 0;
+  virtual BigInt createBigIntFromUint64(uint64_t) = 0;
+  virtual bool bigintIsInt64(const BigInt&) = 0;
+  virtual bool bigintIsUint64(const BigInt&) = 0;
+  virtual uint64_t truncate(const BigInt&) = 0;
+  virtual String bigintToString(const BigInt&, int) = 0;
+
   virtual String createStringFromAscii(const char* str, size_t length) = 0;
   virtual String createStringFromUtf8(const uint8_t* utf8, size_t length) = 0;
   virtual std::string utf8(const String&) = 0;
@@ -329,6 +352,8 @@ class JSI_EXPORT Runtime {
   virtual Value lockWeakObject(WeakObject&) = 0;
 
   virtual Array createArray(size_t length) = 0;
+  virtual ArrayBuffer createArrayBuffer(
+      std::shared_ptr<MutableBuffer> buffer) = 0;
   virtual size_t size(const Array&) = 0;
   virtual size_t size(const ArrayBuffer&) = 0;
   virtual uint8_t* data(const ArrayBuffer&) = 0;
@@ -506,6 +531,53 @@ class JSI_EXPORT BigInt : public Pointer {
 
   BigInt(BigInt&& other) = default;
   BigInt& operator=(BigInt&& other) = default;
+
+  /// Create a BigInt representing the signed 64-bit \p value.
+  static BigInt fromInt64(Runtime& runtime, int64_t value) {
+    return runtime.createBigIntFromInt64(value);
+  }
+
+  /// Create a BigInt representing the unsigned 64-bit \p value.
+  static BigInt fromUint64(Runtime& runtime, uint64_t value) {
+    return runtime.createBigIntFromUint64(value);
+  }
+
+  /// \return whether a === b.
+  static bool strictEquals(Runtime& runtime, const BigInt& a, const BigInt& b) {
+    return runtime.strictEquals(a, b);
+  }
+
+  /// \returns This bigint truncated to a signed 64-bit integer.
+  int64_t getInt64(Runtime& runtime) const {
+    return runtime.truncate(*this);
+  }
+
+  /// \returns Whether this bigint can be losslessly converted to int64_t.
+  bool isInt64(Runtime& runtime) const {
+    return runtime.bigintIsInt64(*this);
+  }
+
+  /// \returns This bigint truncated to a signed 64-bit integer. Throws a
+  /// JSIException if the truncation is lossy.
+  int64_t asInt64(Runtime& runtime) const;
+
+  /// \returns This bigint truncated to an unsigned 64-bit integer.
+  uint64_t getUint64(Runtime& runtime) const {
+    return runtime.truncate(*this);
+  }
+
+  /// \returns Whether this bigint can be losslessly converted to uint64_t.
+  bool isUint64(Runtime& runtime) const {
+    return runtime.bigintIsUint64(*this);
+  }
+
+  /// \returns This bigint truncated to an unsigned 64-bit integer. Throws a
+  /// JSIException if the truncation is lossy.
+  uint64_t asUint64(Runtime& runtime) const;
+
+  /// \returns this BigInt converted to a String in base \p radix. Throws a
+  /// JSIException if radix is not in the [2, 36] range.
+  inline String toString(Runtime& runtime, int radix = 10) const;
 
   friend class Runtime;
   friend class Value;
@@ -860,6 +932,9 @@ class JSI_EXPORT ArrayBuffer : public Object {
  public:
   ArrayBuffer(ArrayBuffer&&) = default;
   ArrayBuffer& operator=(ArrayBuffer&&) = default;
+
+  ArrayBuffer(Runtime& runtime, std::shared_ptr<MutableBuffer> buffer)
+      : ArrayBuffer(runtime.createArrayBuffer(std::move(buffer))) {}
 
   /// \return the size of the ArrayBuffer, according to its byteLength property.
   /// (C++ naming convention)

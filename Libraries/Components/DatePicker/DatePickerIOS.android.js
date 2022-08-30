@@ -12,6 +12,7 @@ import * as React from 'react';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
 import View from '../View/View';
+import type {DatePickerIOSType} from './DatePickerIOS.flow';
 
 class DummyDatePickerIOS extends React.Component {
   render() {
@@ -42,4 +43,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = DummyDatePickerIOS;
+module.exports = (DummyDatePickerIOS: DatePickerIOSType);

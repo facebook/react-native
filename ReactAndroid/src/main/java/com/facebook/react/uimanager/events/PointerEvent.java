@@ -31,7 +31,8 @@ public class PointerEvent extends Event<PointerEvent> {
       int surfaceId,
       int viewTag,
       MotionEvent motionEventToCopy,
-      float[] offsetCoords) {
+      float[] offsetCoords,
+      int primaryPointerId) {
     PointerEvent event = EVENTS_POOL.acquire();
     if (event == null) {
       event = new PointerEvent();
@@ -42,7 +43,8 @@ public class PointerEvent extends Event<PointerEvent> {
         viewTag,
         Assertions.assertNotNull(motionEventToCopy),
         offsetCoords,
-        0);
+        0,
+        primaryPointerId);
     return event;
   }
 
@@ -52,7 +54,8 @@ public class PointerEvent extends Event<PointerEvent> {
       int viewTag,
       MotionEvent motionEventToCopy,
       float[] offsetCoords,
-      int coalescingKey) {
+      int coalescingKey,
+      int primaryPointerId) {
     PointerEvent event = EVENTS_POOL.acquire();
     if (event == null) {
       event = new PointerEvent();
@@ -63,7 +66,8 @@ public class PointerEvent extends Event<PointerEvent> {
         viewTag,
         Assertions.assertNotNull(motionEventToCopy),
         offsetCoords,
-        coalescingKey);
+        coalescingKey,
+        primaryPointerId);
     return event;
   }
 
@@ -73,6 +77,7 @@ public class PointerEvent extends Event<PointerEvent> {
   private float mOffsetX;
   private float mOffsetY;
   private @Nullable List<WritableMap> mPointersEventData;
+  private int mPrimaryPointerId;
 
   private void init(
       String eventName,
@@ -80,7 +85,8 @@ public class PointerEvent extends Event<PointerEvent> {
       int viewTag,
       MotionEvent motionEventToCopy,
       float[] offsetCoords,
-      int coalescingKey) {
+      int coalescingKey,
+      int primaryPointerId) {
 
     super.init(surfaceId, viewTag, motionEventToCopy.getEventTime());
     mEventName = eventName;
@@ -88,6 +94,7 @@ public class PointerEvent extends Event<PointerEvent> {
     mCoalescingKey = coalescingKey;
     mOffsetX = offsetCoords[0];
     mOffsetY = offsetCoords[1];
+    mPrimaryPointerId = primaryPointerId;
   }
 
   private PointerEvent() {}
@@ -160,16 +167,32 @@ public class PointerEvent extends Event<PointerEvent> {
 
   private WritableMap createPointerEventData(int index) {
     WritableMap pointerEvent = Arguments.createMap();
+    int pointerId = mMotionEvent.getPointerId(index);
 
-    pointerEvent.putDouble("pointerId", mMotionEvent.getPointerId(index));
+    // https://www.w3.org/TR/pointerevents/#pointerevent-interface
+    pointerEvent.putDouble("pointerId", pointerId);
     pointerEvent.putDouble("pressure", mMotionEvent.getPressure(index));
     pointerEvent.putString(
         "pointerType", PointerEventHelper.getW3CPointerType(mMotionEvent.getToolType(index)));
 
+    pointerEvent.putBoolean(
+        "isPrimary", PointerEventHelper.isPrimary(pointerId, mPrimaryPointerId, mMotionEvent));
+
+    // https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent
     // Client refers to upper left edge of the content area (viewport)
     // We define the viewport to be ReactRootView
-    pointerEvent.putDouble("clientX", mMotionEvent.getX(index));
-    pointerEvent.putDouble("clientY", mMotionEvent.getY(index));
+    double clientX = mMotionEvent.getX(index);
+    double clientY = mMotionEvent.getX(index);
+    pointerEvent.putDouble("clientX", clientX);
+    pointerEvent.putDouble("clientY", clientY);
+
+    // x,y values are aliases of clientX, clientY
+    pointerEvent.putDouble("x", clientX);
+    pointerEvent.putDouble("y", clientY);
+
+    // page values in react-native are equivalent to client values since rootview is not scrollable
+    pointerEvent.putDouble("pageX", clientX);
+    pointerEvent.putDouble("pageY", clientY);
 
     // Offset refers to upper left edge of the target view
     pointerEvent.putDouble("offsetX", PixelUtil.toDIPFromPixel(mOffsetX));
@@ -177,6 +200,7 @@ public class PointerEvent extends Event<PointerEvent> {
 
     pointerEvent.putInt("target", this.getViewTag());
     pointerEvent.putDouble("timestamp", this.getTimestampMs());
+
     return pointerEvent;
   }
 
@@ -194,6 +218,8 @@ public class PointerEvent extends Event<PointerEvent> {
       case PointerEventHelper.POINTER_DOWN:
       case PointerEventHelper.POINTER_UP:
       case PointerEventHelper.POINTER_LEAVE:
+      case PointerEventHelper.POINTER_OUT:
+      case PointerEventHelper.POINTER_OVER:
         pointersEventData = Arrays.asList(createPointerEventData(activePointerIndex));
         break;
     }

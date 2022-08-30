@@ -14,8 +14,8 @@ import * as React from 'react';
 import Platform from '../../Utilities/Platform';
 import StyleSheet, {type ColorValue} from '../../StyleSheet/StyleSheet';
 import View from '../View/View';
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
+import type {ActivityIndicator as ActivityIndicatorType} from './ActivityIndicator.flow';
 
 const PlatformActivityIndicator =
   Platform.OS === 'android'
@@ -183,10 +183,8 @@ const ActivityIndicator = (
   ```
 */
 
-const ActivityIndicatorWithRef: React.AbstractComponent<
-  Props,
-  HostComponent<mixed>,
-> = React.forwardRef(ActivityIndicator);
+const ActivityIndicatorWithRef: ActivityIndicatorType =
+  React.forwardRef(ActivityIndicator);
 ActivityIndicatorWithRef.displayName = 'ActivityIndicator';
 
 const styles = StyleSheet.create({

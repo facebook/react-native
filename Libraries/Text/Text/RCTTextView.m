@@ -38,9 +38,9 @@
 - (NSString *)description
 {
   NSString *superDescription = super.description;
-  NSRange semicolonRange = [superDescription rangeOfString:@";"];
-  NSString *replacement = [NSString stringWithFormat:@"; reactTag: %@; text: %@", self.reactTag, _textStorage.string];
-  return [superDescription stringByReplacingCharactersInRange:semicolonRange withString:replacement];
+  NSRange replacementRange = [superDescription rangeOfString:@">"];
+  NSString *replacement = [NSString stringWithFormat:@"; reactTag: %@; text: %@>", self.reactTag, _textStorage.string];
+  return [superDescription stringByReplacingCharactersInRange:replacementRange withString:replacement];
 }
 
 - (void)setSelectable:(BOOL)selectable
@@ -113,7 +113,7 @@
   // CATextLayer disables font smoothing by default now on macOS; we follow suit.
   CGContextSetShouldSmoothFonts(context, NO);
 #endif
-  
+
   NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
   [layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:_contentFrame.origin];
   [layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:_contentFrame.origin];
@@ -157,7 +157,7 @@
     [_highlightLayer removeFromSuperlayer];
     _highlightLayer = nil;
   }
-  
+
 #if TARGET_OS_MACCATALYST
   CGContextRestoreGState(context);
 #endif

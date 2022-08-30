@@ -33,11 +33,6 @@ import type {
 export type ViewLayout = Layout;
 export type ViewLayoutEvent = LayoutEvent;
 
-type BubblingEventProps = $ReadOnly<{|
-  onBlur?: ?(event: BlurEvent) => mixed,
-  onFocus?: ?(event: FocusEvent) => mixed,
-|}>;
-
 type DirectEventProps = $ReadOnly<{|
   /**
    * When `accessible` is true, the system will try to invoke this function
@@ -103,6 +98,17 @@ type PointerEventProps = $ReadOnly<{|
   onPointerDownCapture?: ?(e: PointerEvent) => void,
   onPointerUp?: ?(e: PointerEvent) => void,
   onPointerUpCapture?: ?(e: PointerEvent) => void,
+  onPointerOver?: ?(e: PointerEvent) => void,
+  onPointerOverCapture?: ?(e: PointerEvent) => void,
+  onPointerOut?: ?(e: PointerEvent) => void,
+  onPointerOutCapture?: ?(e: PointerEvent) => void,
+|}>;
+
+type FocusEventProps = $ReadOnly<{|
+  onBlur?: ?(event: BlurEvent) => void,
+  onBlurCapture?: ?(event: BlurEvent) => void,
+  onFocus?: ?(event: FocusEvent) => void,
+  onFocusCapture?: ?(event: FocusEvent) => void,
 |}>;
 
 type TouchEventProps = $ReadOnly<{|
@@ -347,6 +353,19 @@ type AndroidViewProps = $ReadOnly<{|
   focusable?: boolean,
 
   /**
+   * Indicates whether this `View` should be focusable with a non-touch input device, eg. receive focus with a hardware keyboard.
+   * See https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex
+   * for more details.
+   *
+   * Supports the following values:
+   * -  0 (View is focusable)
+   * - -1 (View is not focusable)
+   *
+   * @platform android
+   */
+  tabIndex?: 0 | -1,
+
+  /**
    * The action to perform when this `View` is clicked on by a non-touch click, eg. enter key on a hardware keyboard.
    *
    * @platform android
@@ -394,11 +413,11 @@ type IOSViewProps = $ReadOnly<{|
 |}>;
 
 export type ViewProps = $ReadOnly<{|
-  ...BubblingEventProps,
   ...DirectEventProps,
   ...GestureResponderEventProps,
   ...MouseEventProps,
   ...PointerEventProps,
+  ...FocusEventProps,
   ...TouchEventProps,
   ...AndroidViewProps,
   ...IOSViewProps,

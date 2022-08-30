@@ -100,6 +100,16 @@ struct PointerEvent {
    * Returns true if the meta key was down when the event was fired.
    */
   bool metaKey;
+  /*
+   * Indicates if the pointer represents the primary pointer of this pointer
+   * type.
+   */
+  bool isPrimary;
+  /*
+   * The button number that was pressed (if applicable) when the pointer event
+   * was fired.
+   */
+  int button;
 };
 
 #if RN_DEBUG_STRING_CONVERTIBLE

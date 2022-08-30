@@ -50,4 +50,12 @@
   <item type="id" name="pointer_move"/>
   <item type="id" name="pointer_move_capture"/>
 
+  <!-- tag is used to store if a view is subscribed to the pointerout event -->
+  <item type="id" name="pointer_out"/>
+  <item type="id" name="pointer_out_capture"/>
+
+  <!-- tag is used to store if a view is subscribed to the pointerover event -->
+  <item type="id" name="pointer_over"/>
+  <item type="id" name="pointer_over_capture"/>
+
 </resources>

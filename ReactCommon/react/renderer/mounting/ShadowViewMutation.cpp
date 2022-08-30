@@ -84,10 +84,11 @@ ShadowViewMutation ShadowViewMutation::RemoveDeleteTreeMutation(
 
 ShadowViewMutation ShadowViewMutation::UpdateMutation(
     ShadowView oldChildShadowView,
-    ShadowView newChildShadowView) {
+    ShadowView newChildShadowView,
+    ShadowView parentShadowView) {
   return {
       /* .type = */ Update,
-      /* .parentShadowView = */ {},
+      /* .parentShadowView = */ std::move(parentShadowView),
       /* .oldChildShadowView = */ std::move(oldChildShadowView),
       /* .newChildShadowView = */ std::move(newChildShadowView),
       /* .index = */ -1,

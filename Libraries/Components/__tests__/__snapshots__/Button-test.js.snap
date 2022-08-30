@@ -162,6 +162,96 @@ exports[`<Button /> should be disabled when disabled={true} and accessibilitySta
 </View>
 `;
 
+exports[`<Button /> should be set importantForAccessibility={no-hide-descendants} when importantForAccessibility={no} 1`] = `
+<View
+  accessibilityRole="button"
+  accessible={true}
+  collapsable={false}
+  focusable={false}
+  importantForAccessibility="no-hide-descendants"
+  onClick={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    Object {
+      "opacity": 1,
+    }
+  }
+>
+  <View
+    style={
+      Array [
+        Object {},
+      ]
+    }
+  >
+    <Text
+      style={
+        Array [
+          Object {
+            "color": "#007AFF",
+            "fontSize": 18,
+            "margin": 8,
+            "textAlign": "center",
+          },
+        ]
+      }
+    >
+      Test Button
+    </Text>
+  </View>
+</View>
+`;
+
+exports[`<Button /> should be set importantForAccessibility={no-hide-descendants} when importantForAccessibility={no-hide-descendants} 1`] = `
+<View
+  accessibilityRole="button"
+  accessible={true}
+  collapsable={false}
+  focusable={false}
+  importantForAccessibility="no-hide-descendants"
+  onClick={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    Object {
+      "opacity": 1,
+    }
+  }
+>
+  <View
+    style={
+      Array [
+        Object {},
+      ]
+    }
+  >
+    <Text
+      style={
+        Array [
+          Object {
+            "color": "#007AFF",
+            "fontSize": 18,
+            "margin": 8,
+            "textAlign": "center",
+          },
+        ]
+      }
+    >
+      Test Button
+    </Text>
+  </View>
+</View>
+`;
+
 exports[`<Button /> should not be disabled when disabled={false} and accessibilityState={{disabled: false}} 1`] = `
 <View
   accessibilityRole="button"

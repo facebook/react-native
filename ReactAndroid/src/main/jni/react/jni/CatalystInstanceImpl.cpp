@@ -95,19 +95,13 @@ class JInstanceCallback : public InstanceCallback {
 jni::local_ref<CatalystInstanceImpl::jhybriddata>
 CatalystInstanceImpl::initHybrid(
     jni::alias_ref<jclass>,
-    bool enableRuntimeScheduler,
-    bool enableRuntimeSchedulerInTurboModule) {
-  return makeCxxInstance(
-      enableRuntimeScheduler, enableRuntimeSchedulerInTurboModule);
+    bool enableRuntimeScheduler) {
+  return makeCxxInstance(enableRuntimeScheduler);
 }
 
-CatalystInstanceImpl::CatalystInstanceImpl(
-    bool enableRuntimeScheduler,
-    bool enableRuntimeSchedulerInTurboModule)
+CatalystInstanceImpl::CatalystInstanceImpl(bool enableRuntimeScheduler)
     : instance_(std::make_unique<Instance>()),
-      enableRuntimeScheduler_(enableRuntimeScheduler),
-      enableRuntimeSchedulerInTurboModule_(
-          enableRuntimeScheduler && enableRuntimeSchedulerInTurboModule) {}
+      enableRuntimeScheduler_(enableRuntimeScheduler) {}
 
 void CatalystInstanceImpl::warnOnLegacyNativeModuleSystemUse() {
   CxxNativeModule::setShouldWarnOnUse(true);
@@ -382,7 +376,7 @@ void CatalystInstanceImpl::handleMemoryPressure(int pressureLevel) {
 jni::alias_ref<CallInvokerHolder::javaobject>
 CatalystInstanceImpl::getJSCallInvokerHolder() {
   if (!jsCallInvokerHolder_) {
-    if (enableRuntimeSchedulerInTurboModule_) {
+    if (enableRuntimeScheduler_) {
       auto runtimeScheduler = getRuntimeScheduler();
       auto runtimeSchedulerCallInvoker =
           std::make_shared<RuntimeSchedulerCallInvoker>(

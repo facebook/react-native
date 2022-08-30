@@ -148,6 +148,17 @@ function translatePrimitiveJSTypeToCpp(
       return wrap('bool');
     case 'GenericObjectTypeAnnotation':
       return wrap('jsi::Object');
+    case 'UnionTypeAnnotation':
+      switch (typeAnnotation.memberType) {
+        case 'NumberTypeAnnotation':
+          return wrap('double');
+        case 'ObjectTypeAnnotation':
+          return wrap('jsi::Object');
+        case 'StringTypeAnnotation':
+          return wrap('jsi::String');
+        default:
+          throw new Error(createErrorMessage(realTypeAnnotation.type));
+      }
     case 'ObjectTypeAnnotation':
       return wrap('jsi::Object');
     case 'ArrayTypeAnnotation':

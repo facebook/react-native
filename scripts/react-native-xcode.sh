@@ -129,7 +129,7 @@ fi
 
 PACKAGER_SOURCEMAP_FILE=
 if [[ $EMIT_SOURCEMAP == true ]]; then
-  if [[ $USE_HERMES == true ]]; then
+  if [[ $USE_HERMES != false ]]; then
     PACKAGER_SOURCEMAP_FILE="$CONFIGURATION_BUILD_DIR/$(basename $SOURCEMAP_FILE)"
   else
     PACKAGER_SOURCEMAP_FILE="$SOURCEMAP_FILE"
@@ -138,7 +138,7 @@ if [[ $EMIT_SOURCEMAP == true ]]; then
 fi
 
 # Hermes doesn't require JS minification.
-if [[ $USE_HERMES == true && $DEV == false ]]; then
+if [[ $USE_HERMES != false && $DEV == false ]]; then
   EXTRA_ARGS="$EXTRA_ARGS --minify false"
 fi
 
@@ -153,7 +153,7 @@ fi
   $EXTRA_ARGS \
   $EXTRA_PACKAGER_ARGS
 
-if [[ $USE_HERMES != true ]]; then
+if [[ $USE_HERMES == false ]]; then
   cp "$BUNDLE_FILE" "$DEST/"
   BUNDLE_FILE="$DEST/main.jsbundle"
 else
@@ -168,8 +168,10 @@ else
   fi
   "$HERMES_CLI_PATH" -emit-binary $EXTRA_COMPILER_ARGS -out "$DEST/main.jsbundle" "$BUNDLE_FILE"
   if [[ $EMIT_SOURCEMAP == true ]]; then
-    HBC_SOURCEMAP_FILE="$BUNDLE_FILE.map"
+    HBC_SOURCEMAP_FILE="$DEST/main.jsbundle.map"
     "$NODE_BINARY" "$COMPOSE_SOURCEMAP_PATH" "$PACKAGER_SOURCEMAP_FILE" "$HBC_SOURCEMAP_FILE" -o "$SOURCEMAP_FILE"
+    rm "$HBC_SOURCEMAP_FILE"
+    rm "$PACKAGER_SOURCEMAP_FILE"
   fi
   BUNDLE_FILE="$DEST/main.jsbundle"
 fi

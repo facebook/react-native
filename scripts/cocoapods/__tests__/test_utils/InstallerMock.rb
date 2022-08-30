@@ -41,10 +41,23 @@ class InstallerMock
     attr_reader :aggregate_targets
     attr_reader :target_installation_results
 
-    def initialize(pods_project = PodsProjectMock.new, aggregate_targets = [AggregatedProjectMock.new], target_installation_results: [])
+    InstallationResults = Struct.new(:pod_target_installation_results, :aggregate_target_installation_results)
+
+    def initialize(pods_project = PodsProjectMock.new, aggregate_targets = [AggregatedProjectMock.new],
+                   pod_target_installation_results: {},
+                   aggregate_target_installation_results: {})
         @pods_project = pods_project
         @aggregate_targets = aggregate_targets
-        @target_installation_results = target_installation_results
+
+        @target_installation_results = InstallationResults.new(pod_target_installation_results, aggregate_target_installation_results)
+        aggregate_targets.each do |aggregate_target|
+            aggregate_target.user_project.native_targets.each do |target|
+                @target_installation_results.pod_target_installation_results[target.name] = TargetInstallationResultMock.new(target, target)
+            end
+        end
+        pods_project.native_targets.each do |target|
+            @target_installation_results.pod_target_installation_results[target.name] = TargetInstallationResultMock.new(target, target)
+        end
     end
 
     def target_with_name(name)
@@ -161,27 +174,40 @@ end
 class BuildConfigurationMock
     attr_reader :name
     attr_reader :build_settings
+    @is_debug
 
-    def initialize(name, build_settings = {})
+    def initialize(name, build_settings = {}, is_debug: false)
         @name = name
         @build_settings = build_settings
+        @is_debug = is_debug
+    end
+
+    def debug?
+      return @is_debug
     end
 end
 
-class TargetInstallationResultsMock
-    attr_reader :pod_target_installation_results
-
-    def initialize(pod_target_installation_results: {})
-        @pod_target_installation_results = pod_target_installation_results
-    end
-end
-
-class PodTargetInstallationResultsMock
-    attr_reader :name
+class TargetInstallationResultMock
+    attr_reader :target
     attr_reader :native_target
+    attr_reader :resource_bundle_targets
+    attr_reader :test_native_targets
+    attr_reader :test_resource_bundle_targets
+    attr_reader :test_app_host_targets
+    attr_reader :app_native_targets
+    attr_reader :app_resource_bundle_targets
 
-    def initialize(name: "", native_target: TargetMock.new())
-        @name = name
+    def initialize(target = TargetMock, native_target = TargetMock,
+                   resource_bundle_targets = [], test_native_targets = [],
+                   test_resource_bundle_targets = {}, test_app_host_targets = [],
+                   app_native_targets = {}, app_resource_bundle_targets = {})
+        @target = target
         @native_target = native_target
+        @resource_bundle_targets = resource_bundle_targets
+        @test_native_targets = test_native_targets
+        @test_resource_bundle_targets = test_resource_bundle_targets
+        @test_app_host_targets = test_app_host_targets
+        @app_native_targets = app_native_targets
+        @app_resource_bundle_targets = app_resource_bundle_targets
     end
 end

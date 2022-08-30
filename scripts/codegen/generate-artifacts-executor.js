@@ -51,6 +51,44 @@ function readPackageJSON(appRootDir) {
   return JSON.parse(fs.readFileSync(path.join(appRootDir, 'package.json')));
 }
 
+function printDeprecationWarningIfNeeded(dependency) {
+  if (dependency === REACT_NATIVE_DEPENDENCY_NAME) {
+    return;
+  }
+  console.log(`[Codegen] CodegenConfig Deprecated Setup for ${dependency}.
+    The configuration file still contains the codegen in the libraries array.
+    If possible, replace it with a single object.
+  `);
+  console.debug(`BEFORE:
+    {
+      // ...
+      "codegenConfig": {
+        "libraries": [
+          {
+            "name": "libName1",
+            "type": "all|components|modules",
+            "jsSrcsRoot": "libName1/js"
+          },
+          {
+            "name": "libName2",
+            "type": "all|components|modules",
+            "jsSrcsRoot": "libName2/src"
+          }
+        ]
+      }
+    }
+
+    AFTER:
+    {
+      "codegenConfig": {
+        "name": "libraries",
+        "type": "all",
+        "jsSrcsRoot": "."
+      }
+    }
+  `);
+}
+
 // Reading Libraries
 function extractLibrariesFromConfigurationArray(
   configFile,
@@ -102,38 +140,7 @@ function extractLibrariesFromJSON(
       libraryPath: dependencyPath,
     });
   } else {
-    console.log(`[Codegen] CodegenConfig Deprecated Setup for ${dependency}.
-      The configuration file still contains the codegen in the libraries array.
-      If possible, replace it with a single object.
-    `);
-    console.debug(`BEFORE:
-      {
-        // ...
-        "codegenConfig": {
-          "libraries": [
-            {
-              "name": "libName1",
-              "type": "all|components|modules",
-              "jsSrcsRoot": "libName1/js"
-            },
-            {
-              "name": "libName2",
-              "type": "all|components|modules",
-              "jsSrcsRoot": "libName2/src"
-            }
-          ]
-        }
-      }
-
-      AFTER:
-      {
-        "codegenConfig": {
-          "name": "libraries",
-          "type": "all",
-          "jsSrcsRoot": "."
-        }
-      }
-    `);
+    printDeprecationWarningIfNeeded(dependency);
     extractLibrariesFromConfigurationArray(
       configFile,
       codegenConfigKey,

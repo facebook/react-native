@@ -123,7 +123,7 @@ class Linking extends NativeEventEmitter<LinkingEventDefinitions> {
     }
   }
 
-  _validateURL(url: string) {
+  _validateURL(url: string): void {
     invariant(
       typeof url === 'string',
       'Invalid URL: should be a string. Was: ' + url,

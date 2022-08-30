@@ -37,3 +37,5 @@ Runtime.executionContextCreated
 Runtime.getHeapUsage
 Runtime.getProperties
 Runtime.runIfWaitingForDebugger
+Runtime.globalLexicalScopeNames
+Runtime.compileScript

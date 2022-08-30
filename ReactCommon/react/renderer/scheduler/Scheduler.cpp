@@ -49,18 +49,10 @@ Scheduler::Scheduler(
   auto eventOwnerBox = std::make_shared<EventBeat::OwnerBox>();
   eventOwnerBox->owner = eventDispatcher_;
 
-#ifdef ANDROID
-  auto enableCallImmediates = reactNativeConfig_->getBool(
-      "react_native_new_architecture:enable_call_immediates_android");
-#else
-  auto enableCallImmediates = true;
-#endif
-
   auto weakRuntimeScheduler =
       contextContainer_->find<std::weak_ptr<RuntimeScheduler>>(
           "RuntimeScheduler");
-  auto runtimeScheduler =
-      (enableCallImmediates && weakRuntimeScheduler.has_value())
+  auto runtimeScheduler = weakRuntimeScheduler.has_value()
       ? weakRuntimeScheduler.value().lock()
       : nullptr;
 

@@ -92,8 +92,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     setTransform(view, null);
 
     // RenderNode params not covered by setTransform above
-    view.setPivotX(0);
-    view.setPivotY(0);
+    view.resetPivot();
     view.setTop(0);
     view.setBottom(0);
     view.setLeft(0);
@@ -287,7 +286,9 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       view.setSelected(false);
     }
     view.setTag(R.id.accessibility_state, accessibilityState);
-    view.setEnabled(true);
+    if (accessibilityState.hasKey("disabled") && !accessibilityState.getBoolean("disabled")) {
+      view.setEnabled(true);
+    }
 
     // For states which don't have corresponding methods in
     // AccessibilityNodeInfo, update the view's content description
@@ -316,7 +317,6 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   private void updateViewContentDescription(@NonNull T view) {
     final String accessibilityLabel = (String) view.getTag(R.id.accessibility_label);
     final ReadableMap accessibilityState = (ReadableMap) view.getTag(R.id.accessibility_state);
-    final String accessibilityHint = (String) view.getTag(R.id.accessibility_hint);
     final List<String> contentDescription = new ArrayList<>();
     final ReadableMap accessibilityValue = (ReadableMap) view.getTag(R.id.accessibility_value);
     if (accessibilityLabel != null) {
@@ -350,9 +350,6 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       if (text != null && text.getType() == ReadableType.String) {
         contentDescription.add(text.asString());
       }
-    }
-    if (accessibilityHint != null) {
-      contentDescription.add(accessibilityHint);
     }
     if (contentDescription.size() > 0) {
       view.setContentDescription(TextUtils.join(", ", contentDescription));
@@ -583,6 +580,16 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
                 MapBuilder.of(
                     "phasedRegistrationNames",
                     MapBuilder.of("bubbled", "onPointerUp", "captured", "onPointerUpCapture")))
+            .put(
+                "topPointerOut",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onPointerOut", "captured", "onPointerOutCapture")))
+            .put(
+                "topPointerOver",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onPointerOver", "captured", "onPointerOverCapture")))
             .build());
     return eventTypeConstants;
   }
@@ -640,6 +647,26 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   @ReactProp(name = "onPointerEnterCapture")
   public void setPointerEnterCapture(@NonNull T view, boolean value) {
     view.setTag(R.id.pointer_enter_capture, value);
+  }
+
+  @ReactProp(name = "onPointerOver")
+  public void setPointerOver(@NonNull T view, boolean value) {
+    view.setTag(R.id.pointer_over, value);
+  }
+
+  @ReactProp(name = "onPointerOverCapture")
+  public void setPointerOverCapture(@NonNull T view, boolean value) {
+    view.setTag(R.id.pointer_over_capture, value);
+  }
+
+  @ReactProp(name = "onPointerOut")
+  public void setPointerOut(@NonNull T view, boolean value) {
+    view.setTag(R.id.pointer_out, value);
+  }
+
+  @ReactProp(name = "onPointerOutCapture")
+  public void setPointerOutCapture(@NonNull T view, boolean value) {
+    view.setTag(R.id.pointer_out_capture, value);
   }
 
   @ReactProp(name = "onPointerLeave")

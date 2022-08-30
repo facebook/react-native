@@ -41,21 +41,14 @@ class HermesExecutorRuntimeAdapter
     : public facebook::hermes::inspector::RuntimeAdapter {
  public:
   HermesExecutorRuntimeAdapter(
-      std::shared_ptr<Runtime> runtime,
-      HermesRuntime &hermesRuntime,
+      std::shared_ptr<HermesRuntime> runtime,
       std::shared_ptr<MessageQueueThread> thread)
-      : runtime_(runtime),
-        hermesRuntime_(hermesRuntime),
-        thread_(std::move(thread)) {}
+      : runtime_(runtime), thread_(std::move(thread)) {}
 
   virtual ~HermesExecutorRuntimeAdapter() = default;
 
-  jsi::Runtime &getRuntime() override {
+  HermesRuntime &getRuntime() override {
     return *runtime_;
-  }
-
-  debugger::Debugger &getDebugger() override {
-    return hermesRuntime_.getDebugger();
   }
 
   void tickleJs() override {
@@ -69,8 +62,7 @@ class HermesExecutorRuntimeAdapter
   }
 
  private:
-  std::shared_ptr<Runtime> runtime_;
-  HermesRuntime &hermesRuntime_;
+  std::shared_ptr<HermesRuntime> runtime_;
 
   std::shared_ptr<MessageQueueThread> thread_;
 };
@@ -157,21 +149,18 @@ class DecoratedRuntime : public jsi::WithRuntimeDecorator<ReentrancyCheck> {
       HermesRuntime &hermesRuntime,
       std::shared_ptr<MessageQueueThread> jsQueue)
       : jsi::WithRuntimeDecorator<ReentrancyCheck>(*runtime, reentrancyCheck_),
-        runtime_(std::move(runtime)),
-        hermesRuntime_(hermesRuntime) {
+        runtime_(std::move(runtime)) {
 #ifdef HERMES_ENABLE_DEBUGGER
-    auto adapter = std::make_unique<HermesExecutorRuntimeAdapter>(
-        runtime_, hermesRuntime_, jsQueue);
-    facebook::hermes::inspector::chrome::enableDebugging(
+    std::shared_ptr<HermesRuntime> rt(runtime_, &hermesRuntime);
+    auto adapter = std::make_unique<HermesExecutorRuntimeAdapter>(rt, jsQueue);
+    debugToken_ = facebook::hermes::inspector::chrome::enableDebugging(
         std::move(adapter), "Hermes React Native");
-#else
-    (void)hermesRuntime_;
 #endif
   }
 
   ~DecoratedRuntime() {
 #ifdef HERMES_ENABLE_DEBUGGER
-    facebook::hermes::inspector::chrome::disableDebugging(*runtime_);
+    facebook::hermes::inspector::chrome::disableDebugging(debugToken_);
 #endif
   }
 
@@ -185,7 +174,9 @@ class DecoratedRuntime : public jsi::WithRuntimeDecorator<ReentrancyCheck> {
 
   std::shared_ptr<Runtime> runtime_;
   ReentrancyCheck reentrancyCheck_;
-  HermesRuntime &hermesRuntime_;
+#ifdef HERMES_ENABLE_DEBUGGER
+  facebook::hermes::inspector::chrome::DebugSessionToken debugToken_;
+#endif
 };
 
 } // namespace

@@ -94,9 +94,7 @@ class AndroidTextInputState final {
       AndroidTextInputState const &previousState,
       folly::dynamic const &data);
   folly::dynamic getDynamic() const;
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
-  };
+  MapBuffer getMapBuffer() const;
 };
 
 } // namespace react

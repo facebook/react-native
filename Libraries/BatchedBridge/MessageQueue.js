@@ -241,7 +241,7 @@ class MessageQueue {
     params: mixed[],
     onFail: ?(...mixed[]) => void,
     onSucc: ?(...mixed[]) => void,
-  ) {
+  ): void {
     this.processCallbacks(moduleID, methodID, params, onFail, onSucc);
 
     this._queue[MODULE_IDS].push(moduleID);
@@ -380,7 +380,7 @@ class MessageQueue {
     return (
       // $FlowFixMe[cannot-resolve-name]
       typeof DebuggerInternal !== 'undefined' &&
-      DebuggerInternal.shouldPauseOnThrow === true // eslint-disable-line no-undef
+      DebuggerInternal.shouldPauseOnThrow === true
     );
   }
 
@@ -427,7 +427,7 @@ class MessageQueue {
     Systrace.endEvent();
   }
 
-  __invokeCallback(cbID: number, args: mixed[]) {
+  __invokeCallback(cbID: number, args: mixed[]): void {
     this._lastFlush = Date.now();
     this._eventLoopStartTime = this._lastFlush;
 

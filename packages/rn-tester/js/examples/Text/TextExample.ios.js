@@ -53,7 +53,7 @@ class TextAlignRTLExample extends React.Component<
     };
   }
 
-  render() {
+  render(): React.Node {
     const {isRTL} = this.state;
     const toggleRTL = () => this.setState({isRTL: !isRTL});
     return (
@@ -90,7 +90,7 @@ class TextAlignRTLExample extends React.Component<
 }
 
 class Entity extends React.Component<$FlowFixMeProps> {
-  render() {
+  render(): React.Node {
     return (
       <Text style={{fontWeight: '500', color: '#527fe4'}}>
         {this.props.children}
@@ -100,7 +100,10 @@ class Entity extends React.Component<$FlowFixMeProps> {
 }
 
 class AttributeToggler extends React.Component<{...}, $FlowFixMeState> {
-  state = {fontWeight: 'bold', fontSize: 15};
+  state: any | {fontSize: number, fontWeight: string} = {
+    fontWeight: 'bold',
+    fontSize: 15,
+  };
 
   toggleWeight = () => {
     this.setState({
@@ -114,19 +117,20 @@ class AttributeToggler extends React.Component<{...}, $FlowFixMeState> {
     });
   };
 
-  render() {
+  render(): React.Node {
     const curStyle = {
       fontWeight: this.state.fontWeight,
       fontSize: this.state.fontSize,
     };
     return (
       <View>
+        {/* $FlowFixMe[incompatible-type] */}
         <Text style={curStyle}>
           Tap the controls below to change attributes.
         </Text>
         <Text>
           <Text>
-            See how it will even work on{' '}
+            See how it will even work on {/* $FlowFixMe[incompatible-type] */}
             <Text style={curStyle}>this nested text</Text>
           </Text>
         </Text>
@@ -156,7 +160,7 @@ class AdjustingFontSize extends React.Component<
   AdjustingFontSizeProps,
   AdjustingFontSizeState,
 > {
-  state = {
+  state: AdjustingFontSizeState = {
     dynamicText: '',
     shouldRender: true,
   };
@@ -192,7 +196,7 @@ class AdjustingFontSize extends React.Component<
     });
   };
 
-  render() {
+  render(): React.Node {
     if (!this.state.shouldRender) {
       return <View />;
     }
@@ -270,7 +274,7 @@ class AdjustingFontSize extends React.Component<
 }
 
 class TextBaseLineLayoutExample extends React.Component<{}, mixed> {
-  render() {
+  render(): React.Node {
     const texts = [];
     for (let i = 9; i >= 0; i--) {
       texts.push(
@@ -378,7 +382,21 @@ class TextRenderInfoExample extends React.Component<
     }>,
   },
 > {
-  state = {
+  state: {
+    fontSize: number,
+    numberOfTextBlocks: number,
+    textMetrics: $ReadOnly<{
+      ascender: number,
+      capHeight: number,
+      descender: number,
+      height: number,
+      text?: string,
+      width: number,
+      x: number,
+      xHeight: number,
+      y: number,
+    }>,
+  } = {
     textMetrics: {
       x: 0,
       y: 0,
@@ -393,7 +411,7 @@ class TextRenderInfoExample extends React.Component<
     fontSize: 14,
   };
 
-  render() {
+  render(): React.Node {
     const topOfBox =
       this.state.textMetrics.y +
       this.state.textMetrics.height -
@@ -477,7 +495,19 @@ class TextWithCapBaseBox extends React.Component<
     }>,
   },
 > {
-  state = {
+  state: {
+    textMetrics: $ReadOnly<{
+      ascender: number,
+      capHeight: number,
+      descender: number,
+      height: number,
+      text?: string,
+      width: number,
+      x: number,
+      xHeight: number,
+      y: number,
+    }>,
+  } = {
     textMetrics: {
       x: 0,
       y: 0,
@@ -489,7 +519,7 @@ class TextWithCapBaseBox extends React.Component<
       xHeight: 0,
     },
   };
-  render() {
+  render(): React.Node {
     return (
       <Text
         onTextLayout={event => {
