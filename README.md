@@ -1,3 +1,19 @@
+# Expensify Release
+
+To release this fork to npm there are a couple manual steps needed.
+
+If updating the base react-native version of the fork:
+
+1. Update the `version` variable on line 15 in `sdks/hermes-engine/hermes-engine.podspec` with the version of react-native the fork is based on. For example `version = '0.69.3'`.
+2. Download hermesc from the version of react-native the fork is based on. This can be done by opening the url `https://registry.npmjs.com/react-native/-/react-native-<version>.tgz`. For example `https://registry.npmjs.com/react-native/-/react-native-0.69.3.tgz`. Then copy `sdks/hermesc` to the same directory inside your react-native repository.
+3. Commit the updated files.
+
+Build and publish the fork:
+
+1. Clean previous build if there is one in `android` folder with `rm -rf android`.
+2. Run `node scripts/set-rn-version.js --to-version <version>` where version is the version of the **fork** that is being published, note that this might be different that the version the fork is based on we used previously. For example `node scripts/set-rn-version.js --to-version 0.69.4`.
+3. Run `CIRCLE_TAG=<version> node ./scripts/publish-npm.js` where version is the same as the one in the previous step. For example `CIRCLE_TAG=0.69.4 node ./scripts/publish-npm.js`.
+
 <h1 align="center">
   <a href="https://reactnative.dev/">
     React Native
