@@ -182,6 +182,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
     accessible,
     android_disableSound,
     android_ripple,
+    'aria-label': ariaLabel,
     cancelable,
     children,
     delayHoverIn,
@@ -200,7 +201,6 @@ function Pressable(props: Props, forwardedRef): React.Node {
     style,
     testOnly_pressed,
     unstable_pressDelay,
-    'aria-label': ariaLabel,
     ...restProps
   } = props;
 
@@ -221,8 +221,8 @@ function Pressable(props: Props, forwardedRef): React.Node {
     ...restProps,
     ...android_rippleConfig?.viewProps,
     accessible: accessible !== false,
-    accessibilityState,
     accessibilityLabel,
+    accessibilityState,
     focusable: focusable !== false,
     hitSlop,
   };
