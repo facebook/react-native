@@ -27,10 +27,20 @@ const View: React.AbstractComponent<
   ViewProps,
   React.ElementRef<typeof ViewNativeComponent>,
 > = React.forwardRef(
-  ({tabIndex, focusable, ...otherProps}: ViewProps, forwardedRef) => {
+  (
+    {
+      tabIndex,
+      focusable,
+      accessibilityLabel,
+      'aria-label': ariaLable,
+      ...otherProps
+    }: ViewProps,
+    forwardedRef,
+  ) => {
     return (
       <TextAncestor.Provider value={false}>
         <ViewNativeComponent
+          accessibilityLabel={ariaLable ?? accessibilityLabel}
           focusable={tabIndex !== undefined ? !tabIndex : focusable}
           {...otherProps}
           ref={forwardedRef}
