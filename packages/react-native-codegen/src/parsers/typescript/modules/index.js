@@ -44,6 +44,8 @@ const {
   UnsupportedTypeScriptTypeAnnotationParserError,
   UnsupportedFunctionParamTypeAnnotationParserError,
   UnsupportedFunctionReturnTypeAnnotationParserError,
+  UnsupportedTypeScriptEnumDeclarationParserError,
+  UnsupportedTypeScriptUnionTypeAnnotationParserError,
   UnsupportedModulePropertyParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,
   UnsupportedObjectPropertyValueTypeAnnotationParserError,
@@ -265,6 +267,33 @@ function translateTypeAnnotation(
           });
         }
         default: {
+          const maybeEumDeclaration = types[typeAnnotation.typeName.name];
+          if (
+            cxxOnly &&
+            maybeEumDeclaration &&
+            maybeEumDeclaration.type === 'TSEnumDeclaration'
+          ) {
+            const memberType = maybeEumDeclaration.members[0].initializer
+              ? maybeEumDeclaration.members[0].initializer.type
+                  .replace('NumericLiteral', 'NumberTypeAnnotation')
+                  .replace('StringLiteral', 'StringTypeAnnotation')
+              : 'StringTypeAnnotation';
+            if (
+              memberType === 'NumberTypeAnnotation' ||
+              memberType === 'StringTypeAnnotation'
+            ) {
+              return wrapNullable(nullable, {
+                type: 'EnumDeclaration',
+                memberType: memberType,
+              });
+            } else {
+              throw new UnsupportedTypeScriptEnumDeclarationParserError(
+                hasteModuleName,
+                typeAnnotation,
+                memberType,
+              );
+            }
+          }
           throw new UnsupportedTypeScriptGenericParserError(
             hasteModuleName,
             typeAnnotation,
@@ -418,6 +447,33 @@ function translateTypeAnnotation(
           cxxOnly,
         ),
       );
+    }
+    case 'TSUnionType': {
+      if (cxxOnly) {
+        // Remap literal names
+        const unionTypes = typeAnnotation.types
+          .map(item =>
+            item.literal
+              ? item.literal.type
+                  .replace('NumericLiteral', 'NumberTypeAnnotation')
+                  .replace('StringLiteral', 'StringTypeAnnotation')
+              : 'ObjectTypeAnnotation',
+          )
+          .filter((value, index, self) => self.indexOf(value) === index);
+        // Only support unionTypes of the same kind
+        if (unionTypes.length > 1) {
+          throw new UnsupportedTypeScriptUnionTypeAnnotationParserError(
+            hasteModuleName,
+            typeAnnotation,
+            unionTypes,
+          );
+        }
+        return wrapNullable(nullable, {
+          type: 'UnionTypeAnnotation',
+          memberType: unionTypes[0],
+        });
+      }
+      // Fallthrough
     }
     case 'TSUnknownKeyword': {
       if (cxxOnly) {
