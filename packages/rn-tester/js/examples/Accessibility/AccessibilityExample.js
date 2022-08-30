@@ -255,10 +255,7 @@ class AutomaticContentGrouping extends React.Component<{}> {
     return (
       <View>
         <RNTesterBlock title="Parent and children have different role">
-          <TouchableNativeFeedback
-            accessible={true}
-            importantForAccessibility="yes"
-            accessibilityRole="button">
+          <TouchableNativeFeedback accessible={true} accessibilityRole="button">
             <View accessible={false}>
               <Text accessibilityRole="image" accessible={false}>
                 Text number 1 with a role
@@ -271,7 +268,6 @@ class AutomaticContentGrouping extends React.Component<{}> {
         <RNTesterBlock title="Parent has accessibilityAction cut, copy and paste">
           <TouchableNativeFeedback
             accessible={true}
-            importantForAccessibility="yes"
             accessibilityActions={[
               {name: 'cut', label: 'cut label'},
               {name: 'copy', label: 'copy label'},
@@ -300,6 +296,26 @@ class AutomaticContentGrouping extends React.Component<{}> {
           </TouchableNativeFeedback>
         </RNTesterBlock>
 
+        <RNTesterBlock title="Talkback only pulls the child's contentDescription or text but does not include the child's accessibilityState or accessibilityRole. TalkBack avoids announcements of conflicting states or roles (for example, 'button' and 'slider').">
+          <View
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityState={{checked: true}}>
+            <Text
+              accessible={false}
+              accessibilityState={{checked: true, disabled: false}}>
+              Text number 1
+            </Text>
+            <Text
+              style={styles.smallRedSquare}
+              accessible={false}
+              accessibilityState={{checked: false, disabled: true}}
+              accessibilityLabel="This child Text does not have text, but has an accessibilityLabel and accessibilityState. The child accessibility state disabled is not announced."
+              accessibilityRole="image"
+            />
+          </View>
+        </RNTesterBlock>
+
         <RNTesterBlock title="One of the child has accessibilityLabel, role, state, and accValue">
           <View accessible={true} accessibilityRole="button">
             <View>
@@ -319,10 +335,7 @@ class AutomaticContentGrouping extends React.Component<{}> {
         </RNTesterBlock>
 
         <RNTesterBlock title="With child TextInput">
-          <TouchableNativeFeedback
-            accessible={true}
-            importantForAccessibility="yes"
-            accessibilityRole="button">
+          <TouchableNativeFeedback accessible={true} accessibilityRole="button">
             <TextInput
               value="this is the value"
               accessible={false}
@@ -333,10 +346,7 @@ class AutomaticContentGrouping extends React.Component<{}> {
         </RNTesterBlock>
 
         <RNTesterBlock title="Three levels of nested Components">
-          <TouchableNativeFeedback
-            accessible={true}
-            importantForAccessibility="yes"
-            accessibilityRole="button">
+          <TouchableNativeFeedback accessible={true} accessibilityRole="button">
             <Text accessible={false}>
               Text number 2
               <Text accessible={false}>
@@ -359,34 +369,6 @@ class AutomaticContentGrouping extends React.Component<{}> {
               />
             </View>
           </TouchableNativeFeedback>
-        </RNTesterBlock>
-
-        <RNTesterBlock title="The child is not TextInput, the contentDescription is not empty and does not have nodeText">
-          <TouchableNativeFeedback
-            onPress={() => console.warn('onPress child')}
-            accessible={true}
-            accessibilityRole="button">
-            <View>
-              <Text
-                style={styles.smallRedSquare}
-                accessibilityLabel="this is the child Text accessibilityLabel"
-                accessible={false}
-              />
-            </View>
-          </TouchableNativeFeedback>
-        </RNTesterBlock>
-
-        <RNTesterBlock title="One of the child has accessibilityState (hasStateDescription triggers the announcement)">
-          <View accessible={true} accessibilityRole="button">
-            <Text accessible={false}>Text number 1</Text>
-            <Text
-              style={styles.smallRedSquare}
-              accessible={false}
-              accessibilityState={{checked: true}}
-              accessibilityLabel="this child Text does not have text, but has state and should be announced by TalkBack"
-              accessibilityRole="image"
-            />
-          </View>
         </RNTesterBlock>
 
         <RNTesterBlock title="One of the child has accessibilityHint (hasText triggers the announcement)">
