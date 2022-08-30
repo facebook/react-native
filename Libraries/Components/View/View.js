@@ -27,11 +27,26 @@ const View: React.AbstractComponent<
   ViewProps,
   React.ElementRef<typeof ViewNativeComponent>,
 > = React.forwardRef(
-  ({tabIndex, focusable, ...otherProps}: ViewProps, forwardedRef) => {
+  (
+    {tabIndex, focusable, role, accessibilityRole, ...otherProps}: ViewProps,
+    forwardedRef,
+  ) => {
+    // Map role values to AccessibilityRole values
+    const roleToAccessibilityRoleMapping = {
+      slider: 'adjustable',
+      img: 'image',
+      presentation: 'none',
+      summary: 'region',
+    };
+
+    const _accessibilityRole =
+      roleToAccessibilityRoleMapping[role] ?? accessibilityRole;
+
     return (
       <TextAncestor.Provider value={false}>
         <ViewNativeComponent
           focusable={tabIndex !== undefined ? !tabIndex : focusable}
+          accessibilityRole={_accessibilityRole}
           {...otherProps}
           ref={forwardedRef}
         />
