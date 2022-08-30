@@ -83,7 +83,6 @@ const View: React.AbstractComponent<
       separator: undefined,
       table: undefined,
       term: undefined,
-      separator: undefined,
       tabpanel: undefined,
       treeitem: undefined,
       tree: undefined,
