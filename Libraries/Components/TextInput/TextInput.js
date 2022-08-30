@@ -207,6 +207,15 @@ export type TextContentType =
   | 'newPassword'
   | 'oneTimeCode';
 
+export type enterKeyHintType =
+  | 'enter'
+  | 'done'
+  | 'go'
+  | 'next'
+  | 'previous'
+  | 'search'
+  | 'send';
+
 type PasswordRules = string;
 
 type IOSProps = $ReadOnly<{|
@@ -542,6 +551,21 @@ export type Props = $ReadOnly<{|
   forwardedRef?: ?ReactRefSetter<
     React.ElementRef<HostComponent<mixed>> & ImperativeMethods,
   >,
+
+  /**
+   * `enterKeyHint` defines what action label (or icon) to present for the enter key on virtual keyboards.
+   *
+   * The following values is supported:
+   *
+   * - `enter`
+   * - `done`
+   * - `go`
+   * - `next`
+   * - `previous`
+   * - `search`
+   * - `send`
+   */
+  enterKeyHint?: ?enterKeyHintType,
 
   /**
    * Determines which keyboard to open, e.g.`numeric`.
@@ -1388,6 +1412,16 @@ function InternalTextInput(props: Props): React.Node {
   );
 }
 
+const enterKeyHintToReturnTypeMap = {
+  enter: 'default',
+  done: 'done',
+  go: 'go',
+  next: 'next',
+  previous: 'previous',
+  search: 'search',
+  send: 'send',
+};
+
 const ExportedForwardRef: React.AbstractComponent<
   React.ElementConfig<typeof InternalTextInput>,
   React.ElementRef<HostComponent<mixed>> & ImperativeMethods,
@@ -1398,6 +1432,8 @@ const ExportedForwardRef: React.AbstractComponent<
     underlineColorAndroid = 'transparent',
     readOnly,
     editable,
+    enterKeyHint,
+    returnKeyType,
     ...restProps
   },
   forwardedRef: ReactRefSetter<
@@ -1410,6 +1446,9 @@ const ExportedForwardRef: React.AbstractComponent<
       rejectResponderTermination={rejectResponderTermination}
       underlineColorAndroid={underlineColorAndroid}
       editable={readOnly !== undefined ? !readOnly : editable}
+      returnKeyType={
+        enterKeyHint ? enterKeyHintToReturnTypeMap[enterKeyHint] : returnKeyType
+      }
       {...restProps}
       forwardedRef={forwardedRef}
     />
