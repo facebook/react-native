@@ -26,18 +26,29 @@ export type Props = ViewProps;
 const View: React.AbstractComponent<
   ViewProps,
   React.ElementRef<typeof ViewNativeComponent>,
-> = React.forwardRef((props: ViewProps, forwardedRef) => {
-  const {accessibilityLabel, 'aria-label': ariaLabel, ...restProps} = props;
-  return (
-    <TextAncestor.Provider value={false}>
-      <ViewNativeComponent
-        accessibilityLabel={ariaLabel ?? accessibilityLabel}
-        {...restProps}
-        ref={forwardedRef}
-      />
-    </TextAncestor.Provider>
-  );
-});
+> = React.forwardRef(
+  (
+    {
+      tabIndex,
+      focusable,
+      accessibilityLabel,
+      'aria-label': ariaLabel,
+      ...otherProps
+    }: ViewProps,
+    forwardedRef,
+  ) => {
+    return (
+      <TextAncestor.Provider value={false}>
+        <ViewNativeComponent
+          focusable={tabIndex !== undefined ? !tabIndex : focusable}
+          accessibilityLabel={ariaLabel ?? accessibilityLabel}
+          {...otherProps}
+          ref={forwardedRef}
+        />
+      </TextAncestor.Provider>
+    );
+  },
+);
 
 View.displayName = 'View';
 

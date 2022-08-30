@@ -265,8 +265,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         new IllegalViewOperationException(
             "Do not call addRootView in Fabric; it is unsupported. Call startSurface instead."));
 
-    final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
     ReactRoot reactRootView = (ReactRoot) rootView;
+    final int rootTag = reactRootView.getRootViewTag();
 
     ThemedReactContext reactContext =
         new ThemedReactContext(
@@ -322,7 +322,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       final WritableMap initialProps,
       int widthMeasureSpec,
       int heightMeasureSpec) {
-    final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
+    final int rootTag = ((ReactRoot) rootView).getRootViewTag();
     Context context = rootView.getContext();
     ThemedReactContext reactContext =
         new ThemedReactContext(mReactApplicationContext, context, moduleName, rootTag);

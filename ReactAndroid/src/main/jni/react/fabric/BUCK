@@ -7,7 +7,7 @@ rn_xplat_cxx_library(
     header_namespace = "",
     exported_headers = subdir_glob(
         [
-            ("", "**/*.h"),
+            ("", "*.h"),
         ],
         prefix = "react/fabric",
     ),

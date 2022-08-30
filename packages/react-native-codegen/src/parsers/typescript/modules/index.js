@@ -44,6 +44,7 @@ const {
   UnsupportedTypeScriptTypeAnnotationParserError,
   UnsupportedFunctionParamTypeAnnotationParserError,
   UnsupportedFunctionReturnTypeAnnotationParserError,
+  UnsupportedTypeScriptUnionTypeAnnotationParserError,
   UnsupportedModulePropertyParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,
   UnsupportedObjectPropertyValueTypeAnnotationParserError,
@@ -418,6 +419,33 @@ function translateTypeAnnotation(
           cxxOnly,
         ),
       );
+    }
+    case 'TSUnionType': {
+      if (cxxOnly) {
+        // Remap literal names
+        const unionTypes = typeAnnotation.types
+          .map(item =>
+            item.literal
+              ? item.literal.type
+                  .replace('NumericLiteral', 'NumberTypeAnnotation')
+                  .replace('StringLiteral', 'StringTypeAnnotation')
+              : 'ObjectTypeAnnotation',
+          )
+          .filter((value, index, self) => self.indexOf(value) === index);
+        // Only support unionTypes of the same kind
+        if (unionTypes.length > 1) {
+          throw new UnsupportedTypeScriptUnionTypeAnnotationParserError(
+            hasteModuleName,
+            typeAnnotation,
+            unionTypes,
+          );
+        }
+        return wrapNullable(nullable, {
+          type: 'UnionTypeAnnotation',
+          memberType: unionTypes[0],
+        });
+      }
+      // Fallthrough
     }
     case 'TSUnknownKeyword': {
       if (cxxOnly) {

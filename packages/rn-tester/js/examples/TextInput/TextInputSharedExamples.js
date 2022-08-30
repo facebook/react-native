@@ -728,6 +728,29 @@ module.exports = ([
     },
   },
   {
+    title: 'enterKeyHint modes',
+    name: 'enterKeyHintTypes',
+    render: function (): React.Node {
+      const enterKeyHintTypesHints = [
+        'enter',
+        'done',
+        'go',
+        'next',
+        'previous',
+        'search',
+        'send',
+      ];
+      const examples = enterKeyHintTypesHints.map(hint => {
+        return (
+          <WithLabel key={hint} label={hint}>
+            <TextInput enterKeyHint={hint} style={styles.default} />
+          </WithLabel>
+        );
+      });
+      return <View>{examples}</View>;
+    },
+  },
+  {
     title: 'Submit behavior',
     render: function (): React.Element<any> {
       return <SubmitBehaviorExample />;
