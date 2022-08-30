@@ -49,14 +49,20 @@ type Props = $ReadOnly<{|
   accessibilityLiveRegion?: ?('none' | 'polite' | 'assertive'),
   accessibilityRole?: ?AccessibilityRole,
   accessibilityState?: ?AccessibilityState,
-  'aria-disabled'?: ?boolean,
-  'aria-checked'?: ?boolean,
-  'aria-busy'?: ?boolean,
-  'aria-expanded'?: ?boolean,
-  'aria-selected'?: ?boolean,
   accessibilityValue?: ?AccessibilityValue,
   accessibilityViewIsModal?: ?boolean,
   accessible?: ?boolean,
+
+  /**
+   * alias for accessibilityState
+   *
+   * see https://reactnative.dev/docs/accessibility#accessibilitystate
+   */
+  'aria-busy'?: ?boolean,
+  'aria-checked'?: ?boolean,
+  'aria-disabled'?: ?boolean,
+  'aria-expanded'?: ?boolean,
+  'aria-selected'?: ?boolean,
   focusable?: ?boolean,
   importantForAccessibility?: ?('auto' | 'yes' | 'no' | 'no-hide-descendants'),
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
@@ -179,15 +185,15 @@ type Props = $ReadOnly<{|
  * LTI update could not be added via codemod */
 function Pressable(props: Props, forwardedRef): React.Node {
   const {
+    accessibilityState,
+    android_disableSound,
+    android_ripple,
     accessible,
     'aria-busy': ariaBusy,
     'aria-checked': ariaChecked,
     'aria-disabled': ariaDisabled,
     'aria-expanded': ariaExpanded,
     'aria-selected': ariaSelected,
-    accessibilityState,
-    android_disableSound,
-    android_ripple,
     cancelable,
     children,
     delayHoverIn,
@@ -241,10 +247,13 @@ function Pressable(props: Props, forwardedRef): React.Node {
     ...restProps,
     ...android_rippleConfig?.viewProps,
     accessible: accessible !== false,
-    accessibilityState: _accessibilityState,
     focusable: focusable !== false,
     hitSlop,
   };
+
+  if (Object.keys(_accessibilityState).length !== 0) {
+    restPropsWithDefaults['accessibilityState'] = _accessibilityState;
+  }
 
   const config = useMemo(
     () => ({

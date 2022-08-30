@@ -32,13 +32,13 @@ const Text: React.AbstractComponent<
 > = React.forwardRef((props: TextProps, forwardedRef) => {
   const {
     accessible,
+    accessibilityState,
+    allowFontScaling,
     'aria-busy': ariaBusy,
     'aria-checked': ariaChecked,
     'aria-disabled': ariaDisabled,
     'aria-expanded': ariaExpanded,
     'aria-selected': ariaSelected,
-    accessibilityState,
-    allowFontScaling,
     ellipsizeMode,
     onLongPress,
     onPress,
@@ -201,9 +201,12 @@ const Text: React.AbstractComponent<
     default: accessible,
   });
 
+  if (Object.keys(_accessibilityState).length !== 0) {
+    restProps['accessibilityState'] = _accessibilityState;
+  }
+
   return hasTextAncestor ? (
     <NativeVirtualText
-      accessibilityState={_accessibilityState}
       {...restProps}
       {...eventHandlersForText}
       isHighlighted={isHighlighted}

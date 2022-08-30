@@ -472,12 +472,6 @@ export type ViewProps = $ReadOnly<{|
   accessibilityState?: ?AccessibilityState,
   accessibilityValue?: ?AccessibilityValue,
 
-  'aria-disabled'?: ?boolean,
-  'aria-checked'?: ?boolean,
-  'aria-busy'?: ?boolean,
-  'aria-expanded'?: ?boolean,
-  'aria-selected'?: ?boolean,
-
   /**
    * Provides an array of custom actions available for accessibility.
    *
@@ -490,6 +484,17 @@ export type ViewProps = $ReadOnly<{|
    * @platform android
    */
   accessibilityLabelledBy?: ?string | ?Array<string>,
+
+  /**
+   * alias for accessibilityState
+   *
+   * see https://reactnative.dev/docs/accessibility#accessibilitystate
+   */
+  'aria-busy'?: ?boolean,
+  'aria-checked'?: ?boolean,
+  'aria-disabled'?: ?boolean,
+  'aria-expanded'?: ?boolean,
+  'aria-selected'?: ?boolean,
 
   /**
    * Views that are only used to layout their children or otherwise don't draw

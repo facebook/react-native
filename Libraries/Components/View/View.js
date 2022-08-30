@@ -29,12 +29,12 @@ const View: React.AbstractComponent<
 > = React.forwardRef(
   ({tabIndex, focusable, ...otherProps}: ViewProps, forwardedRef) => {
     const {
+      accessibilityState,
       'aria-busy': ariaBusy,
       'aria-checked': ariaChecked,
       'aria-disabled': ariaDisabled,
       'aria-expanded': ariaExpanded,
       'aria-selected': ariaSelected,
-      accessibilityState,
       ...restProps
     } = otherProps;
 
@@ -55,10 +55,14 @@ const View: React.AbstractComponent<
         delete _accessibilityState[key];
       }
     });
+
+    if (Object.keys(_accessibilityState).length !== 0) {
+      restProps['accessibilityState'] = _accessibilityState;
+    }
+
     return (
       <TextAncestor.Provider value={false}>
         <ViewNativeComponent
-          accessibilityState={_accessibilityState}
           focusable={tabIndex !== undefined ? !tabIndex : focusable}
           {...restProps}
           ref={forwardedRef}
