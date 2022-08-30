@@ -153,6 +153,17 @@ function serializeArg(
       return wrap(val => `${val}.asString(rt)`);
     case 'BooleanTypeAnnotation':
       return wrap(val => `${val}.asBool()`);
+    case 'EnumDeclaration':
+      switch (realTypeAnnotation.memberType) {
+        case 'NumberTypeAnnotation':
+          return wrap(val => `${val}.asNumber()`);
+        case 'StringTypeAnnotation':
+          return wrap(val => `${val}.asString(rt)`);
+        default:
+          throw new Error(
+            `Unknown enum type for "${arg.name}, found: ${realTypeAnnotation.type}"`,
+          );
+      }
     case 'NumberTypeAnnotation':
       return wrap(val => `${val}.asNumber()`);
     case 'FloatTypeAnnotation':
