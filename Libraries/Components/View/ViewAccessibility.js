@@ -46,6 +46,9 @@ export type AccessibilityRole =
   | 'toolbar'
   | 'grid';
 
+// Role types for web
+export type Role = 'slider' | 'img' | 'presentation' | 'summary';
+
 // the info associated with an accessibility action
 export type AccessibilityActionInfo = $ReadOnly<{
   name: string,
