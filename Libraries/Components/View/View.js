@@ -28,11 +28,32 @@ const View: React.AbstractComponent<
   React.ElementRef<typeof ViewNativeComponent>,
 > = React.forwardRef(
   ({tabIndex, focusable, ...otherProps}: ViewProps, forwardedRef) => {
+    const accessibilityValue = {
+      max:
+        otherProps['aria-valuemax'] !== null
+          ? otherProps['aria-valuemax']
+          : otherProps.accessibilityValue?.max,
+      min:
+        otherProps['aria-valuemin'] !== null
+          ? otherProps['aria-valuemin']
+          : otherProps.accessibilityValue?.min,
+      now:
+        otherProps['aria-valuenow'] !== null
+          ? otherProps['aria-valuenow']
+          : otherProps.accessibilityValue?.now,
+      text:
+        otherProps['aria-valuetext'] !== null
+          ? otherProps['aria-valuetext']
+          : otherProps.accessibilityValue?.text,
+    };
+
+    const restWithDefaultProps = {accessibilityValue, ...otherProps};
+
     return (
       <TextAncestor.Provider value={false}>
         <ViewNativeComponent
           focusable={tabIndex !== undefined ? !tabIndex : focusable}
-          {...otherProps}
+          {...restWithDefaultProps}
           ref={forwardedRef}
         />
       </TextAncestor.Provider>

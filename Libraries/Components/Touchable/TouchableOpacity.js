@@ -220,6 +220,25 @@ class TouchableOpacity extends React.Component<Props, State> {
           }
         : this.props.accessibilityState;
 
+    const accessibilityValue = {
+      max:
+        this.props['aria-valuemax'] !== null
+          ? this.props['aria-valuemax']
+          : this.props.accessibilityValue?.max,
+      min:
+        this.props['aria-valuemin'] !== null
+          ? this.props['aria-valuemin']
+          : this.props.accessibilityValue?.min,
+      now:
+        this.props['aria-valuenow'] !== null
+          ? this.props['aria-valuenow']
+          : this.props.accessibilityValue?.now,
+      text:
+        this.props['aria-valuetext'] !== null
+          ? this.props['aria-valuetext']
+          : this.props.accessibilityValue?.max,
+    };
+
     return (
       <Animated.View
         accessible={this.props.accessible !== false}
@@ -230,7 +249,7 @@ class TouchableOpacity extends React.Component<Props, State> {
         accessibilityState={accessibilityState}
         accessibilityActions={this.props.accessibilityActions}
         onAccessibilityAction={this.props.onAccessibilityAction}
-        accessibilityValue={this.props.accessibilityValue}
+        accessibilityValue={accessibilityValue}
         importantForAccessibility={this.props.importantForAccessibility}
         accessibilityLiveRegion={this.props.accessibilityLiveRegion}
         accessibilityViewIsModal={this.props.accessibilityViewIsModal}

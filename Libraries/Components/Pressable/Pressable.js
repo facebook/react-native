@@ -50,6 +50,10 @@ type Props = $ReadOnly<{|
   accessibilityRole?: ?AccessibilityRole,
   accessibilityState?: ?AccessibilityState,
   accessibilityValue?: ?AccessibilityValue,
+  'aria-valuemax'?: AccessibilityValue['max'],
+  'aria-valuemin'?: AccessibilityValue['min'],
+  'aria-valuenow'?: AccessibilityValue['now'],
+  'aria-valuetext'?: AccessibilityValue['text'],
   accessibilityViewIsModal?: ?boolean,
   accessible?: ?boolean,
   focusable?: ?boolean,
@@ -210,12 +214,32 @@ function Pressable(props: Props, forwardedRef): React.Node {
       ? {...props.accessibilityState, disabled}
       : props.accessibilityState;
 
+  const accessibilityValue = {
+    max:
+      props['aria-valuemax'] !== null
+        ? props['aria-valuemax']
+        : props.accessibilityValue?.max,
+    min:
+      props['aria-valuemin'] !== null
+        ? props['aria-valuemin']
+        : props.accessibilityValue?.min,
+    now:
+      props['aria-valuenow'] !== null
+        ? props['aria-valuenow']
+        : props.accessibilityValue?.now,
+    text:
+      props['aria-valuetext'] !== null
+        ? props['aria-valuetext']
+        : props.accessibilityValue?.max,
+  };
+
   const restPropsWithDefaults: React.ElementConfig<typeof View> = {
     ...restProps,
     ...android_rippleConfig?.viewProps,
     accessible: accessible !== false,
     accessibilityState,
     focusable: focusable !== false,
+    accessibilityValue,
     hitSlop,
   };
 

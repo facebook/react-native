@@ -473,6 +473,16 @@ export type ViewProps = $ReadOnly<{|
   accessibilityValue?: ?AccessibilityValue,
 
   /**
+   * alias for accessibilityState
+   *
+   * see https://reactnative.dev/docs/accessibility#accessibilitystate
+   */
+  'aria-valuemax'?: ?AccessibilityValue['max'],
+  'aria-valuemin'?: ?AccessibilityValue['min'],
+  'aria-valuenow'?: ?AccessibilityValue['now'],
+  'aria-valuetext'?: ?AccessibilityValue['text'],
+
+  /**
    * Provides an array of custom actions available for accessibility.
    *
    */
