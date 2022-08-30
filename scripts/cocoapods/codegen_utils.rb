@@ -280,4 +280,25 @@ class CodegenUtils
 
       CodegenUtils.set_react_codegen_discovery_done(true)
     end
+
+    @@CLEANUP_DONE = false
+
+    def self.set_cleanup_done(newValue)
+      @@CLEANUP_DONE = newValue
+    end
+
+    def self.cleanup_done
+      return @@CLEANUP_DONE
+    end
+
+    def self.clean_up_build_folder(app_path, codegen_dir)
+      return if CodegenUtils.cleanup_done()
+      CodegenUtils.set_cleanup_done(true)
+
+      codegen_path = File.join(app_path, codegen_dir)
+      return if !Dir.exist?(codegen_path)
+
+      FileUtils.rm_rf(Dir.glob("#{codegen_path}/*"))
+      CodegenUtils.set_cleanup_done(true)
+    end
 end

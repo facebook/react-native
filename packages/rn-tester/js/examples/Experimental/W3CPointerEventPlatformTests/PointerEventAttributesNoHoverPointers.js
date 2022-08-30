@@ -24,7 +24,6 @@ import {check_PointerEvent, useTestEventHandler} from './PointerEventSupport';
 const eventList = [
   'pointerOver',
   'pointerEnter',
-  'pointerMove',
   'pointerDown',
   'pointerUp',
   'pointerOut',
@@ -151,7 +150,7 @@ function PointerEventAttributesNoHoverPointersTestCase(
           eventType,
           {x: pageX, y: pageY, width, height},
           '',
-          'mouse',
+          'touch',
         );
         if (
           Object.keys(detected_eventTypesRef.current).length ===
@@ -176,7 +175,7 @@ function PointerEventAttributesNoHoverPointersTestCase(
           eventType,
           {x: pageX, y: pageY, width, height},
           'Inner frame ',
-          'mouse',
+          'touch',
         );
         if (
           Object.keys(detected_eventTypesRef.current).length ===

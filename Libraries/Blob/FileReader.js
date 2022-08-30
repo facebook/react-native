@@ -8,7 +8,8 @@
  * @format
  */
 
-const Blob = require('./Blob');
+import type Blob from './Blob';
+
 const EventTarget = require('event-target-shim');
 
 import NativeFileReaderModule from './NativeFileReaderModule';

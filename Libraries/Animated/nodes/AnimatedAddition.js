@@ -10,8 +10,9 @@
 
 'use strict';
 
+import type AnimatedNode from './AnimatedNode';
+
 const AnimatedInterpolation = require('./AnimatedInterpolation');
-const AnimatedNode = require('./AnimatedNode');
 const AnimatedValue = require('./AnimatedValue');
 const AnimatedWithChildren = require('./AnimatedWithChildren');
 

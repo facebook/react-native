@@ -11,11 +11,12 @@
 #import <React/RCTDefines.h>
 #import <React/RCTJSThread.h>
 
+#import "RCTBundleManager.h"
+
 @class RCTBridge;
 @protocol RCTBridgeMethod;
 @class RCTModuleRegistry;
 @class RCTViewRegistry;
-@class RCTBundleManager;
 @class RCTCallableJSModules;
 
 /**
@@ -418,21 +419,6 @@ RCT_EXTERN_C_END
 
 - (id)moduleForName:(const char *)moduleName;
 - (id)moduleForName:(const char *)moduleName lazilyLoadIfNecessary:(BOOL)lazilyLoad;
-@end
-
-typedef void (^RCTBridgelessBundleURLSetter)(NSURL *bundleURL);
-typedef NSURL * (^RCTBridgelessBundleURLGetter)(void);
-
-/**
- * A class that allows NativeModules/TurboModules to read/write the bundleURL, with or without the bridge.
- */
-@interface RCTBundleManager : NSObject
-- (void)setBridge:(RCTBridge *)bridge;
-- (void)setBridgelessBundleURLGetter:(RCTBridgelessBundleURLGetter)getter
-                           andSetter:(RCTBridgelessBundleURLSetter)setter
-                    andDefaultGetter:(RCTBridgelessBundleURLGetter)defaultGetter;
-- (void)resetBundleURL;
-@property NSURL *bundleURL;
 @end
 
 typedef UIView * (^RCTBridgelessComponentViewProvider)(NSNumber *);

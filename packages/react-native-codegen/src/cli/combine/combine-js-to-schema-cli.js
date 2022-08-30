@@ -27,7 +27,9 @@ function filterJSFile(file: string) {
     // NativeSampleTurboModule is for demo purpose. It should be added manually to the
     // app for now.
     !file.endsWith('NativeSampleTurboModule.js') &&
-    !file.includes('__tests')
+    !file.includes('__tests') &&
+    // Ignore TypeScript type declaration files.
+    !file.endsWith('.d.ts')
   );
 }
 

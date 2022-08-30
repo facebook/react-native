@@ -171,7 +171,10 @@ function translateReturnTypeToKind(
     case 'ArrayTypeAnnotation':
       return 'ArrayKind';
     default:
-      (realTypeAnnotation.type: 'MixedTypeAnnotation');
+      (realTypeAnnotation.type:
+        | 'EnumDeclaration'
+        | 'MixedTypeAnnotation'
+        | 'UnionTypeAnnotation');
       throw new Error(
         `Unknown prop type for returning value, found: ${realTypeAnnotation.type}"`,
       );
@@ -226,7 +229,10 @@ function translateParamTypeToJniType(
     case 'FunctionTypeAnnotation':
       return 'Lcom/facebook/react/bridge/Callback;';
     default:
-      (realTypeAnnotation.type: 'MixedTypeAnnotation');
+      (realTypeAnnotation.type:
+        | 'EnumDeclaration'
+        | 'MixedTypeAnnotation'
+        | 'UnionTypeAnnotation');
       throw new Error(
         `Unknown prop type for method arg, found: ${realTypeAnnotation.type}"`,
       );
@@ -278,7 +284,10 @@ function translateReturnTypeToJniType(
     case 'ArrayTypeAnnotation':
       return 'Lcom/facebook/react/bridge/WritableArray;';
     default:
-      (realTypeAnnotation.type: 'MixedTypeAnnotation');
+      (realTypeAnnotation.type:
+        | 'EnumDeclaration'
+        | 'MixedTypeAnnotation'
+        | 'UnionTypeAnnotation');
       throw new Error(
         `Unknown prop type for method return type, found: ${realTypeAnnotation.type}"`,
       );

@@ -90,6 +90,18 @@ const bubblingEventTypes = {
       bubbled: 'onPointerUp',
     },
   },
+  topPointerOut: {
+    phasedRegistrationNames: {
+      captured: 'onPointerOutCapture',
+      bubbled: 'onPointerOut',
+    },
+  },
+  topPointerOver: {
+    phasedRegistrationNames: {
+      captured: 'onPointerOverCapture',
+      bubbled: 'onPointerOver',
+    },
+  },
 };
 
 const directEventTypes = {
@@ -160,6 +172,8 @@ const validAttributesForNonEventProps = {
   accessibilityLabel: true,
   accessibilityHint: true,
   accessibilityRole: true,
+  accessibilityCollection: true,
+  accessibilityCollectionItem: true,
   accessibilityState: true,
   accessibilityActions: true,
   accessibilityValue: true,
@@ -260,8 +274,15 @@ const validAttributesForEventProps = {
 
   // Pointer events
   onPointerEnter: true,
+  onPointerEnterCapture: true,
   onPointerLeave: true,
+  onPointerLeaveCapture: true,
   onPointerMove: true,
+  onPointerMoveCapture: true,
+  onPointerOut: true,
+  onPointerOutCapture: true,
+  onPointerOver: true,
+  onPointerOverCapture: true,
 };
 
 /**

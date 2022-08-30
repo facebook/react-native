@@ -444,6 +444,66 @@ public class TextAttributeProps {
           case "proportional-nums":
             features.add("'pnum'");
             break;
+          case "stylistic-one":
+            features.add("'ss01'");
+            break;
+          case "stylistic-two":
+            features.add("'ss02'");
+            break;
+          case "stylistic-three":
+            features.add("'ss03'");
+            break;
+          case "stylistic-four":
+            features.add("'ss04'");
+            break;
+          case "stylistic-five":
+            features.add("'ss05'");
+            break;
+          case "stylistic-six":
+            features.add("'ss06'");
+            break;
+          case "stylistic-seven":
+            features.add("'ss07'");
+            break;
+          case "stylistic-eight":
+            features.add("'ss08'");
+            break;
+          case "stylistic-nine":
+            features.add("'ss09'");
+            break;
+          case "stylistic-ten":
+            features.add("'ss10'");
+            break;
+          case "stylistic-eleven":
+            features.add("'ss11'");
+            break;
+          case "stylistic-twelve":
+            features.add("'ss12'");
+            break;
+          case "stylistic-thirteen":
+            features.add("'ss13'");
+            break;
+          case "stylistic-fourteen":
+            features.add("'ss14'");
+            break;
+          case "stylistic-fifteen":
+            features.add("'ss15'");
+            break;
+          case "stylistic-sixteen":
+            features.add("'ss16'");
+            break;
+          case "stylistic-seventeen":
+            features.add("'ss17'");
+            break;
+          case "stylistic-eighteen":
+            features.add("'ss18'");
+            break;
+          case "stylistic-nineteen":
+            features.add("'ss19'");
+            break;
+          case "stylistic-twenty":
+            features.add("'ss20'");
+            break;
         }
       }
     }

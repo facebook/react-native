@@ -223,6 +223,48 @@ class UnsupportedFunctionReturnTypeAnnotationParserError extends ParserError {
   }
 }
 
+/**
+ * Enum parsing errors
+ */
+
+class UnsupportedTypeScriptEnumDeclarationParserError extends ParserError {
+  constructor(
+    hasteModuleName: string,
+    arrayElementTypeAST: $FlowFixMe,
+    memberType: string,
+  ) {
+    super(
+      hasteModuleName,
+      arrayElementTypeAST,
+      `Unexpected enum member type ${memberType}. Only string and number enum members are supported`,
+    );
+  }
+}
+
+/**
+ * Union parsing errors
+ */
+
+class UnsupportedTypeScriptUnionTypeAnnotationParserError extends ParserError {
+  constructor(
+    hasteModuleName: string,
+    arrayElementTypeAST: $FlowFixMe,
+    types: string[],
+  ) {
+    super(
+      hasteModuleName,
+      arrayElementTypeAST,
+      `Union members must be of the same type, but multiple types were found ${types.join(
+        ', ',
+      )}'.`,
+    );
+  }
+}
+
+/**
+ * Module parsing errors
+ */
+
 class UnusedModuleTypeScriptInterfaceParserError extends ParserError {
   constructor(hasteModuleName: string, flowInterface: $FlowFixMe) {
     super(
@@ -319,6 +361,8 @@ module.exports = {
   UnsupportedTypeScriptTypeAnnotationParserError,
   UnsupportedFunctionParamTypeAnnotationParserError,
   UnsupportedFunctionReturnTypeAnnotationParserError,
+  UnsupportedTypeScriptEnumDeclarationParserError,
+  UnsupportedTypeScriptUnionTypeAnnotationParserError,
   UnsupportedModulePropertyParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,
   UnsupportedObjectPropertyValueTypeAnnotationParserError,
