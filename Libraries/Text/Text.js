@@ -46,6 +46,8 @@ const Text: React.AbstractComponent<
     onStartShouldSetResponder,
     pressRetentionOffset,
     suppressHighlighting,
+    accessibilityLabel,
+    'aria-label': ariaLabel,
     ...restProps
   } = props;
 
@@ -184,6 +186,7 @@ const Text: React.AbstractComponent<
       isPressable={isPressable}
       numberOfLines={numberOfLines}
       selectionColor={selectionColor}
+      accessibilityLabel={ariaLabel ?? accessibilityLabel}
       style={style}
       ref={forwardedRef}
     />
@@ -194,6 +197,7 @@ const Text: React.AbstractComponent<
         {...eventHandlersForText}
         disabled={_disabled}
         accessible={_accessible}
+        accessibilityLabel={ariaLabel ?? accessibilityLabel}
         accessibilityState={_accessibilityState}
         allowFontScaling={allowFontScaling !== false}
         ellipsizeMode={ellipsizeMode ?? 'tail'}
