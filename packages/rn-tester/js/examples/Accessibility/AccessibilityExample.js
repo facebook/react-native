@@ -254,7 +254,7 @@ class AutomaticContentGrouping extends React.Component<{}> {
   render(): React.Node {
     return (
       <View>
-        <RNTesterBlock title="Parent and children have different role">
+        <RNTesterBlock title="The parent and the children have a different role">
           <TouchableNativeFeedback accessible={true} accessibilityRole="button">
             <View accessible={false}>
               <Text accessibilityRole="image" accessible={false}>
@@ -265,7 +265,7 @@ class AutomaticContentGrouping extends React.Component<{}> {
           </TouchableNativeFeedback>
         </RNTesterBlock>
 
-        <RNTesterBlock title="Parent has accessibilityAction cut, copy and paste">
+        <RNTesterBlock title="The parent has the accessibilityActions cut, copy and paste">
           <TouchableNativeFeedback
             accessible={true}
             accessibilityActions={[
@@ -316,7 +316,7 @@ class AutomaticContentGrouping extends React.Component<{}> {
           </View>
         </RNTesterBlock>
 
-        <RNTesterBlock title="One of the child has accessibilityLabel, role, state, and accValue">
+        <RNTesterBlock title="One of the children has accessibilityLabel, role, state, and accessibilityValue.">
           <View accessible={true} accessibilityRole="button">
             <View>
               <Text accessible={false}>Text number 1</Text>
@@ -334,7 +334,7 @@ class AutomaticContentGrouping extends React.Component<{}> {
           </View>
         </RNTesterBlock>
 
-        <RNTesterBlock title="With child TextInput">
+        <RNTesterBlock title="The parent has a TextInput child component.">
           <TouchableNativeFeedback accessible={true} accessibilityRole="button">
             <TextInput
               value="this is the value"
@@ -345,7 +345,7 @@ class AutomaticContentGrouping extends React.Component<{}> {
           </TouchableNativeFeedback>
         </RNTesterBlock>
 
-        <RNTesterBlock title="Three levels of nested Components">
+        <RNTesterBlock title="The parents include three levels of nested Components.">
           <TouchableNativeFeedback accessible={true} accessibilityRole="button">
             <Text accessible={false}>
               Text number 2
@@ -356,7 +356,7 @@ class AutomaticContentGrouping extends React.Component<{}> {
           </TouchableNativeFeedback>
         </RNTesterBlock>
 
-        <RNTesterBlock title="The child is not TextInput, the contentDescription is not empty and does not have nodeText">
+        <RNTesterBlock title="The child is not TextInput. The contentDescription is not empty and does not have node text.">
           <TouchableNativeFeedback
             onPress={() => console.warn('onPress child')}
             accessible={true}
@@ -371,7 +371,7 @@ class AutomaticContentGrouping extends React.Component<{}> {
           </TouchableNativeFeedback>
         </RNTesterBlock>
 
-        <RNTesterBlock title="One of the child has accessibilityHint (hasText triggers the announcement)">
+        <RNTesterBlock title="One of the child has accessibilityHint (hasText triggers the announcement).">
           <View accessible={true} accessibilityRole="button">
             <Text
               style={styles.smallRedSquare}
