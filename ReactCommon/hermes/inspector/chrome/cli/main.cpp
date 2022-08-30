@@ -213,7 +213,9 @@ static void runDebuggerLoop(
 
 static void runScript(const std::string &scriptSource, const std::string &url) {
   std::shared_ptr<fbhermes::HermesRuntime> runtime(
-      fbhermes::makeHermesRuntime());
+      fbhermes::makeHermesRuntime(::hermes::vm::RuntimeConfig::Builder()
+                                      .withEnableSampleProfiling(true)
+                                      .build()));
   auto adapter =
       std::make_unique<fbhermes::inspector::SharedRuntimeAdapter>(runtime);
   fbhermes::inspector::chrome::Connection conn(
