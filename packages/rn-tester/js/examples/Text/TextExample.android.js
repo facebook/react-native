@@ -18,7 +18,13 @@ const React = require('react');
 const TextInlineView = require('../../components/TextInlineView');
 import TextLegend from '../../components/TextLegend';
 
-const {LayoutAnimation, StyleSheet, Text, View} = require('react-native');
+const {
+  LayoutAnimation,
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+} = require('react-native');
 
 class Entity extends React.Component<{|children: React.Node|}> {
   render(): React.Node {
@@ -997,6 +1003,28 @@ exports.examples = [
       return (
         <View>
           <Text style={{userSelect: 'auto'}}>Text element is selectable</Text>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Text alignment',
+    render: function (): React.Node {
+      return (
+        <View>
+          <Text style={{textAlignVertical: 'top', borderWidth: 1, height: 75}}>
+            Text element aligned to the top via textAlignVertical
+          </Text>
+          <Text style={{verticalAlign: 'top', borderWidth: 1, height: 75}}>
+            Text element aligned to the top via verticalAlign
+          </Text>
+          <Text
+            style={{textAlignVertical: 'center', borderWidth: 1, height: 75}}>
+            Text element aligned to the middle textAlignVertical
+          </Text>
+          <Text style={{verticalAlign: 'middle', borderWidth: 1, height: 75}}>
+            Text element aligned to the middle via textAlignVertical
+          </Text>
         </View>
       );
     },
