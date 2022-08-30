@@ -31,23 +31,53 @@ const View: React.AbstractComponent<
     {tabIndex, focusable, role, accessibilityRole, ...otherProps}: ViewProps,
     forwardedRef,
   ) => {
+    let restProps = {...otherProps};
+
     // Map role values to AccessibilityRole values
     const roleToAccessibilityRoleMapping = {
-      slider: 'adjustable',
+      alert: 'alert',
+      button: 'button',
+      checkbox: 'checkbox',
+      combobox: 'combobox',
+      grid: 'grid',
+      heading: 'header',
       img: 'image',
+      link: 'link',
+      list: 'list',
+      menu: 'menu',
+      menubar: 'menubar',
+      menuitem: 'menuitem',
+      none: 'none',
       presentation: 'none',
-      summary: 'region',
+      progressbar: 'progressbar',
+      radio: 'radio',
+      radiogroup: 'radiogroup',
+      scrollbar: 'scrollbar',
+      searchbox: 'search',
+      slider: 'adjustable',
+      spinbutton: 'spinbutton',
+      summary: 'summary',
+      switch: 'switch',
+      tab: 'tab',
+      tablist: 'tablist',
+      timer: 'timer',
+      toolbar: 'toolbar',
     };
 
-    const _accessibilityRole =
-      roleToAccessibilityRoleMapping[role] ?? accessibilityRole;
+    const _accessibilityRole = role
+      ? roleToAccessibilityRoleMapping[role]
+      : accessibilityRole;
+
+    // set restProps is _accessibilityRole exists
+    if (_accessibilityRole) {
+      restProps = {...restProps, accessibilityRole: _accessibilityRole};
+    }
 
     return (
       <TextAncestor.Provider value={false}>
         <ViewNativeComponent
           focusable={tabIndex !== undefined ? !tabIndex : focusable}
-          accessibilityRole={_accessibilityRole}
-          {...otherProps}
+          {...restProps}
           ref={forwardedRef}
         />
       </TextAncestor.Provider>

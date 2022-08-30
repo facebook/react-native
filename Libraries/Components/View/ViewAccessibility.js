@@ -47,7 +47,34 @@ export type AccessibilityRole =
   | 'grid';
 
 // Role types for web
-export type Role = 'slider' | 'img' | 'presentation' | 'summary';
+export type Role =
+  | 'alert'
+  | 'button'
+  | 'checkbox'
+  | 'combobox'
+  | 'grid'
+  | 'heading'
+  | 'img'
+  | 'link'
+  | 'list'
+  | 'menu'
+  | 'menubar'
+  | 'menuitem'
+  | 'none'
+  | 'presentation'
+  | 'progressbar'
+  | 'radio'
+  | 'radiogroup'
+  | 'scrollbar'
+  | 'searchbox'
+  | 'slider'
+  | 'spinbutton'
+  | 'summary'
+  | 'switch'
+  | 'tab'
+  | 'tablist'
+  | 'timer'
+  | 'toolbar';
 
 // the info associated with an accessibility action
 export type AccessibilityActionInfo = $ReadOnly<{
