@@ -103,7 +103,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
     this._updateBottomIfNecessary();
   };
 
-  _onLayout = (event: ViewLayoutEvent) => {
+  _onLayout = async (event: ViewLayoutEvent) => {
     const wasFrameNull = this._frame == null;
     this._frame = event.nativeEvent.layout;
     if (!this._initialFrameHeight) {
@@ -112,7 +112,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
     }
 
     if (wasFrameNull) {
-      this._updateBottomIfNecessary();
+      await this._updateBottomIfNecessary();
     }
 
     if (this.props.onLayout) {
