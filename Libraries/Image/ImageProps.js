@@ -13,8 +13,11 @@
 import type {SyntheticEvent, LayoutEvent} from '../Types/CoreEventTypes';
 import type {EdgeInsetsProp} from '../StyleSheet/EdgeInsetsPropType';
 import type {ImageSource} from './ImageSource';
-import type {ViewStyleProp, ImageStyleProp} from '../StyleSheet/StyleSheet';
-import type {____ColorValue_Internal} from '../StyleSheet/StyleSheetTypes';
+import type {
+  ColorValue,
+  ViewStyleProp,
+  ImageStyleProp,
+} from '../StyleSheet/StyleSheet';
 import type {ViewProps} from '../Components/View/ViewPropTypes';
 import type {Node, Ref} from 'react';
 import typeof Image from './Image';
@@ -176,7 +179,7 @@ export type ImageProps = {|
    *
    * See https://reactnative.dev/docs/image#tintcolor
    */
-  tintColor?: ____ColorValue_Internal,
+  tintColor?: ColorValue,
 
   src?: empty,
   children?: empty,
