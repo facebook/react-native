@@ -14,9 +14,6 @@ void MainApplicationTurboModuleManagerDelegate::registerNatives() {
   registerHybrid({
       makeNativeMethod(
           "initHybrid", MainApplicationTurboModuleManagerDelegate::initHybrid),
-      makeNativeMethod(
-          "canCreateTurboModule",
-          MainApplicationTurboModuleManagerDelegate::canCreateTurboModule),
   });
 }
 
@@ -33,12 +30,6 @@ MainApplicationTurboModuleManagerDelegate::getTurboModule(
     const std::string &name,
     const JavaTurboModule::InitParams &params) {
   return MainApplicationModuleProvider(name, params);
-}
-
-bool MainApplicationTurboModuleManagerDelegate::canCreateTurboModule(
-    const std::string &name) {
-  return getTurboModule(name, nullptr) != nullptr ||
-      getTurboModule(name, {.moduleName = name}) != nullptr;
 }
 
 } // namespace react

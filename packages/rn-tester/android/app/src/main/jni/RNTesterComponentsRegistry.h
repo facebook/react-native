@@ -19,7 +19,7 @@ class RNTesterComponentsRegistry
     : public facebook::jni::HybridClass<RNTesterComponentsRegistry> {
  public:
   constexpr static auto kJavaDescriptor =
-      "Lcom/facebook/react/uiapp/RNTesterComponentsRegistry;";
+      "Lcom/facebook/react/defaults/DefaultComponentsRegistry;";
 
   static void registerNatives();
 

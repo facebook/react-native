@@ -167,6 +167,7 @@ function withRTLState(
       };
     }
 
+    // $FlowFixMe[missing-local-annot]
     render() {
       const setRTL = (isRTL: boolean) => this.setState({isRTL: isRTL});
       return (

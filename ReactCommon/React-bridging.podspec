@@ -16,7 +16,7 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
+folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-gnu-zero-variadic-macro-arguments'
 folly_version = '2021.07.22.00'
 
 Pod::Spec.new do |s|
@@ -35,7 +35,8 @@ Pod::Spec.new do |s|
   s.compiler_flags         = folly_compiler_flags
   s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/RCT-Folly\"",
                                "USE_HEADERMAP" => "YES",
-                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++17" }
+                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
+                               "GCC_WARN_PEDANTIC" => "YES" }
 
   s.dependency "RCT-Folly", folly_version
   s.dependency "React-jsi", version

@@ -3,7 +3,6 @@ load(
     "ANDROID",
     "APPLE",
     "CXX",
-    "YOGA_CXX_TARGET",
     "fb_xplat_cxx_test",
     "get_apple_compiler_flags",
     "get_apple_inspector_flags",
@@ -29,6 +28,7 @@ rn_xplat_cxx_library(
         ],
         prefix = "react/renderer/components/unimplementedview",
     ),
+    compiler_flags_pedantic = True,
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
     fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
     labels = [
@@ -44,12 +44,6 @@ rn_xplat_cxx_library(
     tests = [":tests"],
     visibility = ["PUBLIC"],
     deps = [
-        "//third-party/glog:glog",
-        "//xplat/fbsystrace:fbsystrace",
-        "//xplat/folly:headers_only_do_not_use",
-        "//xplat/folly:memory",
-        "//xplat/folly:molly",
-        YOGA_CXX_TARGET,
         react_native_xplat_target("react/debug:debug"),
         react_native_xplat_target("react/renderer/debug:debug"),
         react_native_xplat_target("react/renderer/core:core"),
@@ -71,7 +65,6 @@ fb_xplat_cxx_test(
     platforms = (ANDROID, APPLE, CXX),
     deps = [
         ":unimplementedview",
-        "//xplat/folly:molly",
         "//xplat/third-party/gmock:gtest",
     ],
 )

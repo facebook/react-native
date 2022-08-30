@@ -608,9 +608,15 @@ const CXX_ONLY_NATIVE_MODULE = `
 import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
 import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
+export type ChooseInt = 1 | 2 | 3;
+export type ChooseFloat = 1.44 | 2.88 | 5.76;
+export type ChooseObject = {} | {low: string};
+export type ChooseString = 'One' | 'Two' | 'Three';
+
 export interface Spec extends TurboModule {
   readonly getCallback: () => () => void;
   readonly getMixed: (arg: unknown) => unknown;
+  readonly getUnion: (chooseInt: ChooseInt, chooseFloat: ChooseFloat, chooseObject: ChooseObject, chooseString: ChooseString) => ChooseObject;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>(

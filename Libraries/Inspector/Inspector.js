@@ -144,8 +144,6 @@ class Inspector extends React.Component<
   }
 
   _attachToDevtools = (agent: Object) => {
-    agent.addListener('hideNativeHighlight', this._onAgentHideNativeHighlight);
-    agent.addListener('showNativeHighlight', this._onAgentShowNativeHighlight);
     agent.addListener('shutdown', this._onAgentShutdown);
 
     this.setState({
@@ -153,45 +151,9 @@ class Inspector extends React.Component<
     });
   };
 
-  _onAgentHideNativeHighlight = () => {
-    if (this.state.inspected === null) {
-      return;
-    }
-    // we wait to actually hide in order to avoid flicker
-    this._hideTimeoutID = setTimeout(() => {
-      this.setState({
-        inspected: null,
-      });
-    }, 100);
-  };
-
-  _onAgentShowNativeHighlight = (node: any) => {
-    clearTimeout(this._hideTimeoutID);
-
-    // Shape of `node` is different in Fabric.
-    const component = node.canonical ?? node;
-
-    component.measure((x, y, width, height, left, top) => {
-      this.setState({
-        hierarchy: [],
-        inspected: {
-          frame: {left, top, width, height},
-        },
-      });
-    });
-  };
-
   _onAgentShutdown = () => {
     const agent = this.state.devtoolsAgent;
     if (agent != null) {
-      agent.removeListener(
-        'hideNativeHighlight',
-        this._onAgentHideNativeHighlight,
-      );
-      agent.removeListener(
-        'showNativeHighlight',
-        this._onAgentShowNativeHighlight,
-      );
       agent.removeListener('shutdown', this._onAgentShutdown);
 
       this.setState({devtoolsAgent: null});

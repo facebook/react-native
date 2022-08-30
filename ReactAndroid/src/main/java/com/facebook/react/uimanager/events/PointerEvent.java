@@ -218,6 +218,8 @@ public class PointerEvent extends Event<PointerEvent> {
       case PointerEventHelper.POINTER_DOWN:
       case PointerEventHelper.POINTER_UP:
       case PointerEventHelper.POINTER_LEAVE:
+      case PointerEventHelper.POINTER_OUT:
+      case PointerEventHelper.POINTER_OVER:
         pointersEventData = Arrays.asList(createPointerEventData(activePointerIndex));
         break;
     }

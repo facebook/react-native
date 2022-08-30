@@ -105,6 +105,11 @@ struct PointerEvent {
    * type.
    */
   bool isPrimary;
+  /*
+   * The button number that was pressed (if applicable) when the pointer event
+   * was fired.
+   */
+  int button;
 };
 
 #if RN_DEBUG_STRING_CONVERTIBLE

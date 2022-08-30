@@ -26,45 +26,47 @@ export type Props = ViewProps;
 const View: React.AbstractComponent<
   ViewProps,
   React.ElementRef<typeof ViewNativeComponent>,
-> = React.forwardRef((props: ViewProps, forwardedRef) => {
-  const {
-    'aria-busy': ariaBusy,
-    'aria-checked': ariaChecked,
-    'aria-disabled': ariaDisabled,
-    'aria-expanded': ariaExpanded,
-    'aria-selected': ariaSelected,
-    accessibilityState,
-    ...restProps
-  } = props;
+> = React.forwardRef(
+  ({tabIndex, focusable, ...otherProps}: ViewProps, forwardedRef) => {
+    const {
+      'aria-busy': ariaBusy,
+      'aria-checked': ariaChecked,
+      'aria-disabled': ariaDisabled,
+      'aria-expanded': ariaExpanded,
+      'aria-selected': ariaSelected,
+      accessibilityState,
+      ...restProps
+    } = otherProps;
 
-  const _accessibilityState = {
-    busy: ariaBusy ?? accessibilityState?.busy,
-    checked: ariaChecked ?? accessibilityState?.checked,
-    disabled: ariaDisabled ?? accessibilityState?.disabled,
-    expanded: ariaExpanded ?? accessibilityState?.expanded,
-    selected: ariaSelected ?? accessibilityState?.selected,
-  };
+    const _accessibilityState = {
+      busy: ariaBusy ?? accessibilityState?.busy,
+      checked: ariaChecked ?? accessibilityState?.checked,
+      disabled: ariaDisabled ?? accessibilityState?.disabled,
+      expanded: ariaExpanded ?? accessibilityState?.expanded,
+      selected: ariaSelected ?? accessibilityState?.selected,
+    };
 
-  /**
-   * Removing undefined keys from _accessibilityState
-   */
+    /**
+     * Removing undefined keys from _accessibilityState
+     */
 
-  Object.keys(_accessibilityState).forEach(key => {
-    if (_accessibilityState[key] === undefined) {
-      delete _accessibilityState[key];
-    }
-  });
-
-  return (
-    <TextAncestor.Provider value={false}>
-      <ViewNativeComponent
-        accessibilityState={_accessibilityState}
-        {...restProps}
-        ref={forwardedRef}
-      />
-    </TextAncestor.Provider>
-  );
-});
+    Object.keys(_accessibilityState).forEach(key => {
+      if (_accessibilityState[key] === undefined) {
+        delete _accessibilityState[key];
+      }
+    });
+    return (
+      <TextAncestor.Provider value={false}>
+        <ViewNativeComponent
+          accessibilityState={_accessibilityState}
+          focusable={tabIndex !== undefined ? !tabIndex : focusable}
+          {...restProps}
+          ref={forwardedRef}
+        />
+      </TextAncestor.Provider>
+    );
+  },
+);
 
 View.displayName = 'View';
 
