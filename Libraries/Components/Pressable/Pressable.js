@@ -243,7 +243,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
   _accessibilityState =
     disabled != null ? {..._accessibilityState, disabled} : _accessibilityState;
 
-  const restPropsWithDefaults: React.ElementConfig<typeof View> = {
+  let restPropsWithDefaults: React.ElementConfig<typeof View> = {
     ...restProps,
     ...android_rippleConfig?.viewProps,
     accessible: accessible !== false,
@@ -252,7 +252,10 @@ function Pressable(props: Props, forwardedRef): React.Node {
   };
 
   if (Object.keys(_accessibilityState).length !== 0) {
-    restPropsWithDefaults['accessibilityState'] = _accessibilityState;
+    restPropsWithDefaults = {
+      ...restPropsWithDefaults,
+      accessibilityState: _accessibilityState,
+    };
   }
 
   const config = useMemo(

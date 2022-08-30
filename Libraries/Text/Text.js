@@ -32,7 +32,6 @@ const Text: React.AbstractComponent<
 > = React.forwardRef((props: TextProps, forwardedRef) => {
   const {
     accessible,
-    accessibilityState,
     allowFontScaling,
     'aria-busy': ariaBusy,
     'aria-checked': ariaChecked,
@@ -58,11 +57,11 @@ const Text: React.AbstractComponent<
   const [isHighlighted, setHighlighted] = useState(false);
 
   const _accessibilityState = {
-    busy: ariaBusy ?? accessibilityState?.busy,
-    checked: ariaChecked ?? accessibilityState?.checked,
-    disabled: ariaDisabled ?? accessibilityState?.disabled,
-    expanded: ariaExpanded ?? accessibilityState?.expanded,
-    selected: ariaSelected ?? accessibilityState?.selected,
+    busy: ariaBusy ?? props.accessibilityState?.busy,
+    checked: ariaChecked ?? props.accessibilityState?.checked,
+    disabled: ariaDisabled ?? props.accessibilityState?.disabled,
+    expanded: ariaExpanded ?? props.accessibilityState?.expanded,
+    selected: ariaSelected ?? props.accessibilityState?.selected,
   };
 
   /**
@@ -201,13 +200,15 @@ const Text: React.AbstractComponent<
     default: accessible,
   });
 
+  let restWithDefaultProps = {...restProps};
+
   if (Object.keys(_accessibilityState).length !== 0) {
-    restProps['accessibilityState'] = _accessibilityState;
+    restWithDefaultProps.accessibilityState = _accessibilityState;
   }
 
   return hasTextAncestor ? (
     <NativeVirtualText
-      {...restProps}
+      {...restWithDefaultProps}
       {...eventHandlersForText}
       isHighlighted={isHighlighted}
       isPressable={isPressable}
@@ -219,7 +220,7 @@ const Text: React.AbstractComponent<
   ) : (
     <TextAncestor.Provider value={true}>
       <NativeText
-        {...restProps}
+        {...restWithDefaultProps}
         {...eventHandlersForText}
         disabled={_disabled}
         accessible={_accessible}
