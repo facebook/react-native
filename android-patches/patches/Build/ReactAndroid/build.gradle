@@ -1,5 +1,5 @@
 diff --git a/ReactAndroid/build.gradle b/ReactAndroid/build.gradle
-index 3c23c6a84b4..183bffe7164 100644
+index cae7d90ada9..f14559c03a8 100644
 --- a/ReactAndroid/build.gradle
 +++ b/ReactAndroid/build.gradle
 @@ -12,6 +12,10 @@ plugins {
@@ -60,7 +60,7 @@ index 3c23c6a84b4..183bffe7164 100644
  task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
      src("https://github.com/google/glog/archive/v${GLOG_VERSION}.tar.gz")
      onlyIfNewer(true)
-@@ -315,6 +340,7 @@ android {
+@@ -312,6 +337,7 @@ android {
                          "REACT_COMMON_DIR=$projectDir/../ReactCommon",
                          "REACT_GENERATED_SRC_DIR=$buildDir/generated/source",
                          "REACT_SRC_DIR=$projectDir/src/main/java/com/facebook/react",
@@ -68,7 +68,7 @@ index 3c23c6a84b4..183bffe7164 100644
                          "-j${ndkBuildJobs()}"
  
                  if (Os.isFamily(Os.FAMILY_MAC)) {
-@@ -339,7 +365,7 @@ android {
+@@ -331,7 +357,7 @@ android {
          }
      }
  
@@ -77,3 +77,14 @@ index 3c23c6a84b4..183bffe7164 100644
      preBuild.dependsOn("generateCodegenArtifactsFromSchema")
  
      sourceSets.main {
+@@ -351,6 +377,10 @@ android {
+     packagingOptions {
+         exclude("META-INF/NOTICE")
+         exclude("META-INF/LICENSE")
++
++        if (project.hasProperty('param') ? project.property('param').equals("excludeLibs") : false) {
++            exclude '**/*.so'
++        }
+     }
+ 
+     configurations {

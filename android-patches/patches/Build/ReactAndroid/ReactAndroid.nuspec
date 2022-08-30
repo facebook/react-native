@@ -1,9 +1,9 @@
 diff --git a/ReactAndroid/ReactAndroid.nuspec b/ReactAndroid/ReactAndroid.nuspec
 new file mode 100644
-index 00000000000..5ea2105f8ac
+index 00000000000..d468fe65341
 --- /dev/null
 +++ b/ReactAndroid/ReactAndroid.nuspec
-@@ -0,0 +1,231 @@
+@@ -0,0 +1,312 @@
 +<?xml version="1.0" encoding="utf-8"?>
 +<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 +  <metadata>
@@ -118,6 +118,47 @@ index 00000000000..5ea2105f8ac
 +    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86\liblogger.so" target="lib\droidx86"/>
 +    <file src="build\intermediates\stripped_native_libs\release\out\lib\arm64-v8a\liblogger.so" target="lib\droidarm64"/>
 +
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86_64\libreact_render_runtimescheduler.so" target="lib\droidx64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\armeabi-v7a\libreact_render_runtimescheduler.so" target="lib\droidarm"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86\libreact_render_runtimescheduler.so" target="lib\droidx86"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\arm64-v8a\libreact_render_runtimescheduler.so" target="lib\droidarm64"/>
++
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86_64\libruntimeexecutor.so" target="lib\droidx64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\armeabi-v7a\libruntimeexecutor.so" target="lib\droidarm"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86\libruntimeexecutor.so" target="lib\droidx86"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\arm64-v8a\libruntimeexecutor.so" target="lib\droidarm64"/>
++
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86_64\libreact_render_core.so" target="lib\droidx64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\armeabi-v7a\libreact_render_core.so" target="lib\droidarm"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86\libreact_render_core.so" target="lib\droidx86"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\arm64-v8a\libreact_render_core.so" target="lib\droidarm64"/>
++
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86_64\libreact_render_debug.so" target="lib\droidx64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\armeabi-v7a\libreact_render_debug.so" target="lib\droidarm"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86\libreact_render_debug.so" target="lib\droidx86"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\arm64-v8a\libreact_render_debug.so" target="lib\droidarm64"/>
++
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86_64\libreact_debug.so" target="lib\droidx64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\armeabi-v7a\libreact_debug.so" target="lib\droidarm"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86\libreact_debug.so" target="lib\droidx86"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\arm64-v8a\libreact_debug.so" target="lib\droidarm64"/>
++
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86_64\libreact_utils.so" target="lib\droidx64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\armeabi-v7a\libreact_utils.so" target="lib\droidarm"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86\libreact_utils.so" target="lib\droidx86"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\arm64-v8a\libreact_utils.so" target="lib\droidarm64"/>
++
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86_64\libreact_render_graphics.so" target="lib\droidx64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\armeabi-v7a\libreact_render_graphics.so" target="lib\droidarm"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86\libreact_render_graphics.so" target="lib\droidx86"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\arm64-v8a\libreact_render_graphics.so" target="lib\droidarm64"/>
++
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86_64\libreact_render_mapbuffer.so" target="lib\droidx64"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\armeabi-v7a\libreact_render_mapbuffer.so" target="lib\droidarm"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\x86\libreact_render_mapbuffer.so" target="lib\droidx86"/>
++    <file src="build\intermediates\stripped_native_libs\release\out\lib\arm64-v8a\libreact_render_mapbuffer.so" target="lib\droidarm64"/>
++
++
 +    <!-- Unstripped binaries -->
 +    <file src="build\intermediates\merged_native_libs\release\out\lib\x86_64\libfb.so" target="lib\droidx64\unstripped"/>
 +    <file src="build\intermediates\merged_native_libs\release\out\lib\armeabi-v7a\libfb.so" target="lib\droidarm\unstripped"/>
@@ -218,6 +259,46 @@ index 00000000000..5ea2105f8ac
 +    <file src="build\intermediates\merged_native_libs\release\out\lib\armeabi-v7a\liblogger.so" target="lib\droidarm\unstripped"/>
 +    <file src="build\intermediates\merged_native_libs\release\out\lib\x86\liblogger.so" target="lib\droidx86\unstripped"/>
 +    <file src="build\intermediates\merged_native_libs\release\out\lib\arm64-v8a\liblogger.so" target="lib\droidarm64\unstripped"/>
++
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86_64\libreact_render_runtimescheduler.so" target="lib\droidx64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\armeabi-v7a\libreact_render_runtimescheduler.so" target="lib\droidarm\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86\libreact_render_runtimescheduler.so" target="lib\droidx86\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\arm64-v8a\libreact_render_runtimescheduler.so" target="lib\droidarm64\unstripped"/>
++
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86_64\libruntimeexecutor.so" target="lib\droidx64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\armeabi-v7a\libruntimeexecutor.so" target="lib\droidarm\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86\libruntimeexecutor.so" target="lib\droidx86\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\arm64-v8a\libruntimeexecutor.so" target="lib\droidarm64\unstripped"/>
++
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86_64\libreact_render_core.so" target="lib\droidx64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\armeabi-v7a\libreact_render_core.so" target="lib\droidarm\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86\libreact_render_core.so" target="lib\droidx86\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\arm64-v8a\libreact_render_core.so" target="lib\droidarm64\unstripped"/>
++
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86_64\libreact_render_debug.so" target="lib\droidx64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\armeabi-v7a\libreact_render_debug.so" target="lib\droidarm\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86\libreact_render_debug.so" target="lib\droidx86\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\arm64-v8a\libreact_render_debug.so" target="lib\droidarm64\unstripped"/>
++
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86_64\libreact_debug.so" target="lib\droidx64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\armeabi-v7a\libreact_debug.so" target="lib\droidarm\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86\libreact_debug.so" target="lib\droidx86\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\arm64-v8a\libreact_debug.so" target="lib\droidarm64\unstripped"/>
++
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86_64\libreact_utils.so" target="lib\droidx64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\armeabi-v7a\libreact_utils.so" target="lib\droidarm\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86\libreact_utils.so" target="lib\droidx86\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\arm64-v8a\libreact_utils.so" target="lib\droidarm64\unstripped"/>
++
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86_64\libreact_render_graphics.so" target="lib\droidx64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\armeabi-v7a\libreact_render_graphics.so" target="lib\droidarm\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86\libreact_render_graphics.so" target="lib\droidx86\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\arm64-v8a\libreact_render_graphics.so" target="lib\droidarm64\unstripped"/>
++
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86_64\libreact_render_mapbuffer.so" target="lib\droidx64\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\armeabi-v7a\libreact_render_mapbuffer.so" target="lib\droidarm\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\x86\libreact_render_mapbuffer.so" target="lib\droidx86\unstripped"/>
++    <file src="build\intermediates\merged_native_libs\release\out\lib\arm64-v8a\libreact_render_mapbuffer.so" target="lib\droidarm64\unstripped"/>
 +
 +    <!-- AAR and POM -->
 +    <file src="..\android\com\**\*" target="maven\com"/>
