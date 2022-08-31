@@ -19,7 +19,7 @@ const StyleSheet = require('../StyleSheet/StyleSheet');
 const Text = require('../Text/Text');
 const TouchableHighlight = require('../Components/Touchable/TouchableHighlight');
 const View = require('../Components/View/View');
-const SafeAreaView = require('../Components/SafeAreaView/SafeAreaView').default;
+import SafeAreaView from '../Components/SafeAreaView/SafeAreaView';
 
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 
