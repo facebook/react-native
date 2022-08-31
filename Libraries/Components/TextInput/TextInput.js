@@ -1312,6 +1312,14 @@ function InternalTextInput(props: Props): React.Node {
   // so omitting onBlur and onFocus pressability handlers here.
   const {onBlur, onFocus, ...eventHandlers} = usePressability(config) || {};
 
+  const _accessibilityState = {
+    busy: props['aria-busy'] ?? props.accessibilityState?.busy,
+    checked: props['aria-checked'] ?? props.accessibilityState?.checked,
+    disabled: props['aria-disabled'] ?? props.accessibilityState?.disabled,
+    expanded: props['aria-expanded'] ?? props.accessibilityState?.expanded,
+    selected: props['aria-selected'] ?? props.accessibilityState?.selected,
+  };
+
   if (Platform.OS === 'ios') {
     const RCTTextInputView =
       props.multiline === true
@@ -1333,6 +1341,7 @@ function InternalTextInput(props: Props): React.Node {
         {...props}
         {...eventHandlers}
         accessible={accessible}
+        accessibilityState={_accessibilityState}
         submitBehavior={submitBehavior}
         caretHidden={caretHidden}
         dataDetectorTypes={props.dataDetectorTypes}
@@ -1380,6 +1389,7 @@ function InternalTextInput(props: Props): React.Node {
         {...props}
         {...eventHandlers}
         accessible={accessible}
+        accessibilityState={_accessibilityState}
         autoCapitalize={autoCapitalize}
         submitBehavior={submitBehavior}
         caretHidden={caretHidden}
