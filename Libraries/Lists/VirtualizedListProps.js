@@ -264,6 +264,12 @@ type OptionalProps = {|
    * The legacy implementation is no longer supported.
    */
   legacyImplementation?: empty,
+
+  /**
+   * When false, the view cannot be scrolled via touch interaction.
+   * Default value is true.
+   */
+  scrollEnabled?: boolean,
 |};
 
 export type Props = {|
