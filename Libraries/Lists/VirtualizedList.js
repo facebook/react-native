@@ -800,7 +800,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           (this.props.initialScrollIndex || 0) +
             initialNumToRenderOrDefault(this.props.initialNumToRender),
         ) - 1,
-      selectedRowIndex: this.props.initialSelectedIndex || -1, // TODO(macOS GH#774)
+      selectedRowIndex: this.props.initialSelectedIndex ?? -1, // TODO(macOS GH#774)
     };
 
     if (this._isNestedWithSameOrientation()) {
