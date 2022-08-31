@@ -86,6 +86,7 @@ enum class TextDecorationStyle { Solid, Double, Dotted, Dashed };
 enum class AccessibilityRole {
   None,
   Button,
+  EditText,
   Link,
   Search,
   Image,

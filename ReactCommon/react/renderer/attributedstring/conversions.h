@@ -525,6 +525,8 @@ inline std::string toString(const AccessibilityRole &accessibilityRole) {
       return "none";
     case AccessibilityRole::Button:
       return "button";
+    case AccessibilityRole::EditText:
+      return "edittext";
     case AccessibilityRole::Link:
       return "link";
     case AccessibilityRole::Search:
@@ -596,6 +598,8 @@ inline void fromRawValue(
       result = AccessibilityRole::None;
     } else if (string == "button") {
       result = AccessibilityRole::Button;
+    } else if (string == "edittext") {
+      result = AccessibilityRole::EditText;
     } else if (string == "link") {
       result = AccessibilityRole::Link;
     } else if (string == "search") {
