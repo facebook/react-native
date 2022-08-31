@@ -78,13 +78,24 @@ fi
 # shellcheck source=/dev/null
 source "$REACT_NATIVE_DIR/scripts/node-binary.sh"
 
+# If hermes-engine is in the podfile.lock, it means that Hermes is a dependency of the project
+# and it is enabled. If not, it means that hermes is disabled.
+HERMES_ENABLED=$(grep hermes-engine podfile.lock)
+
+# If hermes-engine is not in the podfile.lock, it means that the app is not using Hermes.
+# Setting USE_HERMES is no the only way to set whether the app can use hermes or not: users
+# can also modify manually the Podfile.
+if [[ -z "$HERMES_ENABLED" ]]; then
+  USE_HERMES=false
+fi
+
 HERMES_ENGINE_PATH="$PODS_ROOT/hermes-engine"
 [ -z "$HERMES_CLI_PATH" ] && HERMES_CLI_PATH="$HERMES_ENGINE_PATH/destroot/bin/hermesc"
 
 # Hermes is enabled in new projects by default, so we cannot assume that USE_HERMES=1 is set as an envvar.
 # If hermes-engine is found in Pods, we can assume Hermes has not been disabled.
 # If hermesc is not available and USE_HERMES is either unset or true, show error.
-if [[  -f "$HERMES_ENGINE_PATH" && ! -f "$HERMES_CLI_PATH" ]]; then
+if [[  ! -z "$HERMES_ENABLED" && -f "$HERMES_ENGINE_PATH" && ! -f "$HERMES_CLI_PATH" ]]; then
   echo "error: Hermes is enabled but the hermesc binary could not be found at ${HERMES_CLI_PATH}." \
        "Perhaps you need to run 'bundle exec pod install' or otherwise " \
        "point the HERMES_CLI_PATH variable to your custom location." >&2
