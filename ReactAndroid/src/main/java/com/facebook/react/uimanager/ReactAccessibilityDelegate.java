@@ -117,7 +117,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     MENUITEM,
     PROGRESSBAR,
     RADIO,
-    SEEKCONTROL,
     RADIOGROUP,
     SCROLLBAR,
     SPINBUTTON,
@@ -163,8 +162,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
           return "android.widget.CheckBox";
         case RADIO:
           return "android.widget.RadioButton";
-        case SEEKCONTROL:
-          return "android.widget.SeekBar";
         case SPINBUTTON:
           return "android.widget.SpinButton";
         case SWITCH:

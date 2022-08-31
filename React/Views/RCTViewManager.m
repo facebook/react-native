@@ -59,7 +59,6 @@ RCT_MULTI_ENUM_CONVERTER(
       @"progressbar" : @(UIAccessibilityTraitUpdatesFrequently),
       @"radio" : @(UIAccessibilityTraitNone),
       @"radiogroup" : @(UIAccessibilityTraitNone),
-      @"seekcontrol" : @(UIAccessibilityTraitNone),
       @"scrollbar" : @(UIAccessibilityTraitNone),
       @"spinbutton" : @(UIAccessibilityTraitNone),
       @"switch" : @(SwitchAccessibilityTrait),

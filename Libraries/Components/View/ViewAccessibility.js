@@ -39,7 +39,6 @@ export type AccessibilityRole =
   | 'progressbar'
   | 'radio'
   | 'radiogroup'
-  | 'seekcontrol'
   | 'scrollbar'
   | 'spinbutton'
   | 'switch'
