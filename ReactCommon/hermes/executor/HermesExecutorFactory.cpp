@@ -221,6 +221,12 @@ std::unique_ptr<JSExecutor> HermesExecutorFactory::createJSExecutor(
       decoratedRuntime, delegate, jsQueue, timeoutInvoker_, runtimeInstaller_);
 }
 
+::hermes::vm::RuntimeConfig HermesExecutorFactory::defaultRuntimeConfig() {
+  return ::hermes::vm::RuntimeConfig::Builder()
+      .withEnableSampleProfiling(true)
+      .build();
+}
+
 HermesExecutor::HermesExecutor(
     std::shared_ptr<jsi::Runtime> runtime,
     std::shared_ptr<ExecutorDelegate> delegate,
