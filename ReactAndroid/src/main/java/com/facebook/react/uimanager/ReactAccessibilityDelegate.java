@@ -141,8 +141,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
           return "android.widget.Button";
         case DROPDOWNLIST:
           return "android.widget.Spinner";
-        case EDITTEXT:
-          return "androidx.appcompat.widget.AppCompatEditText";
         case TOGGLEBUTTON:
           return "android.widget.ToggleButton";
         case SEARCH:

@@ -17,7 +17,6 @@ export type AccessibilityRole =
   | 'none'
   | 'button'
   | 'dropdownlist'
-  | 'edittext'
   | 'togglebutton'
   | 'link'
   | 'search'

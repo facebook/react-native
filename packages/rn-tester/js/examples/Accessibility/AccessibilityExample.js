@@ -649,12 +649,6 @@ class AccessibilityRoleAndStateExample extends React.Component<{}> {
           <Text>Drop Down List example</Text>
         </View>
         <View
-          accessibilityLabel="element 21"
-          accessibilityRole="edittext"
-          accessible={true}>
-          <Text>Edit Text example</Text>
-        </View>
-        <View
           accessibilityLabel="element 22"
           accessibilityRole="pager"
           accessible={true}>
