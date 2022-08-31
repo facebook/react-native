@@ -89,10 +89,6 @@
     translatable="false"
     >Icon Menu</string>
   <string
-    name="toast_description"
-    translatable="false"
-    >Toast</string>
-  <string
     name="state_busy_description"
     translatable="false"
     >busy</string>

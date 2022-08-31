@@ -643,55 +643,55 @@ class AccessibilityRoleAndStateExample extends React.Component<{}> {
           <Text>State busy example</Text>
         </View>
         <View
-          accessibilityLabel="element 20"
+          accessibilityLabel="element 17"
           accessibilityRole="dropdownlist"
           accessible={true}>
           <Text>Drop Down List example</Text>
         </View>
         <View
-          accessibilityLabel="element 22"
+          accessibilityLabel="element 18"
           accessibilityRole="pager"
           accessible={true}>
           <Text>Pager example</Text>
         </View>
         <View
-          accessibilityLabel="element 24"
+          accessibilityLabel="element 19"
           accessibilityRole="togglebutton"
           accessible={true}>
           <Text>Toggle Button example</Text>
         </View>
         <View
-          accessibilityLabel="element 25"
+          accessibilityLabel="element 20"
           accessibilityRole="viewgroup"
           accessible={true}>
           <Text>Viewgroup example</Text>
         </View>
         <View
-          accessibilityLabel="element 26"
+          accessibilityLabel="element 21"
           accessibilityRole="webview"
           accessible={true}>
           <Text>Webview example</Text>
         </View>
         <View
-          accessibilityLabel="element 28"
+          accessibilityLabel="element 22"
           accessibilityRole="slidingdrawer"
           accessible={true}>
           <Text>Slidingdrawer example</Text>
         </View>
         <View
-          accessibilityLabel="element 29"
+          accessibilityLabel="element 23"
           accessibilityRole="iconmenu"
           accessible={true}>
           <Text>Iconmenu example</Text>
         </View>
         <View
-          accessibilityLabel="element 36"
+          accessibilityLabel="element 24"
           accessibilityRole="scrollview"
           accessible={true}>
           <Text>Scrollview example</Text>
         </View>
         <View
-          accessibilityLabel="element 37"
+          accessibilityLabel="element 25"
           accessibilityRole="horizontalscrollview"
           accessible={true}>
           <Text>Horizontalscrollview example</Text>

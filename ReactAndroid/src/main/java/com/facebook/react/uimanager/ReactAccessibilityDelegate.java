@@ -97,7 +97,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     NONE,
     BUTTON,
     DROPDOWNLIST,
-    EDITTEXT,
     TOGGLEBUTTON,
     LINK,
     SEARCH,
