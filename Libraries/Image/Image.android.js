@@ -189,6 +189,8 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
       expanded: props['aria-expanded'] ?? props.accessibilityState?.expanded,
       selected: props['aria-selected'] ?? props.accessibilityState?.selected,
     },
+    accessible: props.alt !== undefined ? true : props.accessible,
+    accessibilityLabel: props.alt ?? props.accessibilityLabel,
   };
 
   const objectFit =

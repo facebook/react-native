@@ -180,6 +180,8 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
             tintColor={tintColor}
             source={sources}
             internal_analyticTag={analyticTag}
+            accessible={props.alt !== undefined ? true : props.accessible}
+            accessibilityLabel={props.alt ?? props.accessibilityLabel}
           />
         );
       }}

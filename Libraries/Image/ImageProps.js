@@ -94,6 +94,14 @@ export type ImageProps = {|
   'aria-label'?: ?Stringish,
 
   /**
+   * The text that's read by the screen reader when the user interacts with
+   * the image.
+   *
+   * See https://reactnative.dev/docs/image#alt
+   */
+  alt?: ?Stringish,
+
+  /**
    * blurRadius: the blur radius of the blur filter added to the image
    *
    * See https://reactnative.dev/docs/image#blurradius
