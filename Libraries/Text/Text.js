@@ -64,16 +64,6 @@ const Text: React.AbstractComponent<
     selected: ariaSelected ?? props.accessibilityState?.selected,
   };
 
-  /**
-   * Removing undefined keys from _accessibilityState
-   */
-
-  Object.keys(_accessibilityState).forEach(key => {
-    if (_accessibilityState[key] === undefined) {
-      delete _accessibilityState[key];
-    }
-  });
-
   const _disabled =
     restProps.disabled != null
       ? restProps.disabled

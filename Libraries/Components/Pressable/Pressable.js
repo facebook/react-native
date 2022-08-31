@@ -230,16 +230,6 @@ function Pressable(props: Props, forwardedRef): React.Node {
     selected: ariaSelected ?? accessibilityState?.selected,
   };
 
-  /**
-   * Removing undefined keys from _accessibilityState
-   */
-
-  Object.keys(_accessibilityState).forEach(key => {
-    if (_accessibilityState[key] === undefined) {
-      delete _accessibilityState[key];
-    }
-  });
-
   _accessibilityState =
     disabled != null ? {..._accessibilityState, disabled} : _accessibilityState;
 

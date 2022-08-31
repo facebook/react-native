@@ -29,6 +29,7 @@ const View: React.AbstractComponent<
 > = React.forwardRef(
   ({tabIndex, focusable, ...otherProps}: ViewProps, forwardedRef) => {
     const {
+      accessibilityState,
       'aria-busy': ariaBusy,
       'aria-checked': ariaChecked,
       'aria-disabled': ariaDisabled,
@@ -38,37 +39,19 @@ const View: React.AbstractComponent<
     } = otherProps;
 
     const _accessibilityState = {
-      busy: ariaBusy ?? otherProps.accessibilityState?.busy,
-      checked: ariaChecked ?? otherProps.accessibilityState?.checked,
-      disabled: ariaDisabled ?? otherProps.accessibilityState?.disabled,
-      expanded: ariaExpanded ?? otherProps.accessibilityState?.expanded,
-      selected: ariaSelected ?? otherProps.accessibilityState?.selected,
+      busy: ariaBusy ?? accessibilityState?.busy,
+      checked: ariaChecked ?? accessibilityState?.checked,
+      disabled: ariaDisabled ?? accessibilityState?.disabled,
+      expanded: ariaExpanded ?? accessibilityState?.expanded,
+      selected: ariaSelected ?? accessibilityState?.selected,
     };
-
-    /**
-     * Removing undefined keys from _accessibilityState
-     */
-
-    Object.keys(_accessibilityState).forEach(key => {
-      if (_accessibilityState[key] === undefined) {
-        delete _accessibilityState[key];
-      }
-    });
-
-    let restWithDefaultProps = {...restProps};
-
-    if (Object.keys(_accessibilityState).length !== 0) {
-      restWithDefaultProps = {
-        ...restWithDefaultProps,
-        accessibilityState: _accessibilityState,
-      };
-    }
 
     return (
       <TextAncestor.Provider value={false}>
         <ViewNativeComponent
           focusable={tabIndex !== undefined ? !tabIndex : focusable}
-          {...restWithDefaultProps}
+          accessibilityState={_accessibilityState ?? accessibilityState}
+          {...restProps}
           ref={forwardedRef}
         />
       </TextAncestor.Provider>
