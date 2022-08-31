@@ -26,8 +26,8 @@ jest
 import TestRenderer from 'react-test-renderer';
 import * as React from 'react';
 
-const Animated = require('../Animated');
-const NativeAnimatedHelper = require('../NativeAnimatedHelper');
+const Animated = require('../Animated').default;
+const NativeAnimatedHelper = require('../NativeAnimatedHelper').default;
 
 describe('Native Animated', () => {
   const NativeAnimatedModule = require('../NativeAnimatedModule').default;

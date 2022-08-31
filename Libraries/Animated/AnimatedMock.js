@@ -12,14 +12,14 @@
 
 import type {EndResult} from './animations/Animation';
 
-const {AnimatedEvent, attachNativeEvent} = require('./AnimatedEvent');
-const AnimatedImplementation = require('./AnimatedImplementation');
-const AnimatedInterpolation = require('./nodes/AnimatedInterpolation');
-const AnimatedNode = require('./nodes/AnimatedNode');
-const AnimatedValue = require('./nodes/AnimatedValue');
-const AnimatedValueXY = require('./nodes/AnimatedValueXY');
+import {AnimatedEvent, attachNativeEvent} from './AnimatedEvent';
+import AnimatedImplementation from './AnimatedImplementation';
+import AnimatedInterpolation from './nodes/AnimatedInterpolation';
+import AnimatedNode from './nodes/AnimatedNode';
+import AnimatedValue from './nodes/AnimatedValue';
+import AnimatedValueXY from './nodes/AnimatedValueXY';
 
-const createAnimatedComponent = require('./createAnimatedComponent');
+import createAnimatedComponent from './createAnimatedComponent';
 
 import type {EndCallback} from './animations/Animation';
 import type {TimingAnimationConfig} from './animations/TimingAnimation';
@@ -168,7 +168,7 @@ const loop = function (
 
 export type {AnimatedNumeric as Numeric};
 
-module.exports = {
+export default {
   Value: AnimatedValue,
   ValueXY: AnimatedValueXY,
   Color: AnimatedColor,

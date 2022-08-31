@@ -14,9 +14,9 @@ import type AnimatedValue from '../nodes/AnimatedValue';
 import type AnimatedValueXY from '../nodes/AnimatedValueXY';
 import type AnimatedInterpolation from '../nodes/AnimatedInterpolation';
 
-const Animation = require('./Animation');
+import Animation from './Animation';
 
-const {shouldUseNativeDriver} = require('../NativeAnimatedHelper');
+import {shouldUseNativeDriver} from '../NativeAnimatedHelper';
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type {AnimationConfig, EndCallback} from './Animation';
@@ -54,13 +54,13 @@ export type TimingAnimationConfigSingle = $ReadOnly<{
 let _easeInOut;
 function easeInOut() {
   if (!_easeInOut) {
-    const Easing = require('../Easing');
+    const Easing = require('../Easing').default;
     _easeInOut = Easing.inOut(Easing.ease);
   }
   return _easeInOut;
 }
 
-class TimingAnimation extends Animation {
+export default class TimingAnimation extends Animation {
   _startTime: number;
   _fromValue: number;
   _toValue: number;
@@ -173,5 +173,3 @@ class TimingAnimation extends Animation {
     this.__debouncedOnEnd({finished: false});
   }
 }
-
-module.exports = TimingAnimation;

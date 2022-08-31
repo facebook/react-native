@@ -17,7 +17,7 @@
 
 'use strict';
 
-const bezier = require('../bezier');
+import bezier from '../bezier';
 
 const identity = function (x: number) {
   return x;

@@ -236,7 +236,7 @@ module.exports = {
     return require('./Libraries/Alert/Alert');
   },
   get Animated(): Animated {
-    return require('./Libraries/Animated/Animated');
+    return require('./Libraries/Animated/Animated').default;
   },
   get Appearance(): Appearance {
     return require('./Libraries/Utilities/Appearance');
@@ -279,7 +279,7 @@ module.exports = {
     return require('./Libraries/Utilities/Dimensions');
   },
   get Easing(): Easing {
-    return require('./Libraries/Animated/Easing');
+    return require('./Libraries/Animated/Easing').default;
   },
   get findNodeHandle(): $PropertyType<ReactNative, 'findNodeHandle'> {
     return require('./Libraries/ReactNative/RendererProxy').findNodeHandle;

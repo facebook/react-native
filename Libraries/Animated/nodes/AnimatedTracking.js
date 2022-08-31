@@ -12,16 +12,16 @@
 
 import type AnimatedValue from './AnimatedValue';
 
-const AnimatedNode = require('./AnimatedNode');
-const {
+import AnimatedNode from './AnimatedNode';
+import {
   generateNewAnimationId,
   shouldUseNativeDriver,
-} = require('../NativeAnimatedHelper');
+} from '../NativeAnimatedHelper';
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type {EndCallback} from '../animations/Animation';
 
-class AnimatedTracking extends AnimatedNode {
+export default class AnimatedTracking extends AnimatedNode {
   _value: AnimatedValue;
   _parent: AnimatedNode;
   _callback: ?EndCallback;
@@ -101,5 +101,3 @@ class AnimatedTracking extends AnimatedNode {
     };
   }
 }
-
-module.exports = AnimatedTracking;

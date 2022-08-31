@@ -12,13 +12,13 @@
 
 import type AnimatedNode from './AnimatedNode';
 
-const AnimatedInterpolation = require('./AnimatedInterpolation');
-const AnimatedWithChildren = require('./AnimatedWithChildren');
+import AnimatedInterpolation from './AnimatedInterpolation';
+import AnimatedWithChildren from './AnimatedWithChildren';
 
 import type {InterpolationConfigType} from './AnimatedInterpolation';
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
-class AnimatedDiffClamp extends AnimatedWithChildren {
+export default class AnimatedDiffClamp extends AnimatedWithChildren {
   _a: AnimatedNode;
   _min: number;
   _max: number;
@@ -71,5 +71,3 @@ class AnimatedDiffClamp extends AnimatedWithChildren {
     };
   }
 }
-
-module.exports = AnimatedDiffClamp;

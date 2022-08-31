@@ -10,8 +10,8 @@
 
 'use strict';
 
-const AnimatedMock = require('../AnimatedMock');
-const AnimatedImplementation = require('../AnimatedImplementation');
+import AnimatedMock from '../AnimatedMock';
+import AnimatedImplementation from '../AnimatedImplementation';
 
 describe('Animated Mock', () => {
   it('matches implementation keys', () => {

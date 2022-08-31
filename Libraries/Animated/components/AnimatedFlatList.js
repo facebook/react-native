@@ -10,8 +10,8 @@
 
 import * as React from 'react';
 
-const FlatList = require('../../Lists/FlatList');
-const createAnimatedComponent = require('../createAnimatedComponent');
+import FlatList from '../../Lists/FlatList';
+import createAnimatedComponent from '../createAnimatedComponent';
 
 import type {AnimatedComponentType} from '../createAnimatedComponent';
 
@@ -22,7 +22,7 @@ const FlatListWithEventThrottle = React.forwardRef((props, ref) => (
   <FlatList scrollEventThrottle={0.0001} {...props} ref={ref} />
 ));
 
-module.exports = (createAnimatedComponent(
+export default (createAnimatedComponent(
   FlatListWithEventThrottle,
 ): AnimatedComponentType<
   React.ElementConfig<typeof FlatList>,

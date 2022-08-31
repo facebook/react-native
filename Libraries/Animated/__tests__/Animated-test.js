@@ -21,7 +21,7 @@ jest.mock('../../BatchedBridge/NativeModules', () => ({
   },
 }));
 
-let Animated = require('../Animated');
+let Animated = require('../Animated').default;
 
 describe('Animated tests', () => {
   beforeEach(() => {
@@ -692,7 +692,7 @@ describe('Animated tests', () => {
 
     beforeEach(() => {
       jest.mock('../../Interaction/InteractionManager');
-      Animated = require('../Animated');
+      Animated = require('../Animated').default;
       InteractionManager = require('../../Interaction/InteractionManager');
     });
 
