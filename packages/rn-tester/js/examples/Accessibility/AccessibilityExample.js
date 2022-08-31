@@ -643,12 +643,6 @@ class AccessibilityRoleAndStateExample extends React.Component<{}> {
           <Text>State busy example</Text>
         </View>
         <View
-          accessibilityLabel="element 19"
-          accessibilityRole="checkedtextview"
-          accessible={true}>
-          <Text>Checked Text View example</Text>
-        </View>
-        <View
           accessibilityLabel="element 20"
           accessibilityRole="dropdownlist"
           accessible={true}>
@@ -665,12 +659,6 @@ class AccessibilityRoleAndStateExample extends React.Component<{}> {
           accessibilityRole="pager"
           accessible={true}>
           <Text>Pager example</Text>
-        </View>
-        <View
-          accessibilityLabel="element 23"
-          accessibilityRole="seekcontrol"
-          accessible={true}>
-          <Text>Seek Control example</Text>
         </View>
         <View
           accessibilityLabel="element 24"

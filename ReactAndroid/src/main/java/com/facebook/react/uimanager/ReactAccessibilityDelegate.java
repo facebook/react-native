@@ -96,7 +96,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
   public enum AccessibilityRole {
     NONE,
     BUTTON,
-    CHECKEDTEXTVIEW,
     DROPDOWNLIST,
     EDITTEXT,
     TOGGLEBUTTON,
@@ -184,8 +183,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
           return "android.view.ViewGroup";
         case WEBVIEW:
           return "android.webkit.WebView";
-        case CHECKEDTEXTVIEW:
-          return "android.widget.CheckedTextView";
         case NONE:
         case LINK:
         case SUMMARY:

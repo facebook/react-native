@@ -16,7 +16,6 @@ import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 export type AccessibilityRole =
   | 'none'
   | 'button'
-  | 'checkedtextview'
   | 'checkbox'
   | 'dropdownlist'
   | 'edittext'
