@@ -1295,6 +1295,20 @@ exports.examples = [
     },
   },
   {
+    title: 'Accessibility Label via alt prop',
+    description:
+      'Using the alt prop markes an element as being accessibile, and passes the alt text to accessibilityLabel',
+    render: function (): React.Node {
+      return (
+        <Image
+          alt="Picture of people standing around a table"
+          source={fullImage}
+          style={styles.base}
+        />
+      );
+    },
+  },
+  {
     title: 'Fade Duration',
     description:
       ('The time (in miliseconds) that an image will fade in for when it appears (default = 300).': string),
