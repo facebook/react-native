@@ -31,90 +31,82 @@ const View: React.AbstractComponent<
     {tabIndex, focusable, role, accessibilityRole, ...otherProps}: ViewProps,
     forwardedRef,
   ) => {
-    let restProps = {...otherProps};
-
     // Map role values to AccessibilityRole values
     const roleToAccessibilityRoleMapping = {
       alert: 'alert',
+      alertdialog: undefined,
+      application: undefined,
+      article: undefined,
+      banner: undefined,
       button: 'button',
+      cell: undefined,
       checkbox: 'checkbox',
+      columnheader: undefined,
       combobox: 'combobox',
+      complementary: undefined,
+      contentinfo: undefined,
+      definition: undefined,
+      dialog: undefined,
+      directory: undefined,
+      document: undefined,
+      feed: undefined,
+      figure: undefined,
+      form: undefined,
       grid: 'grid',
+      group: undefined,
       heading: 'header',
       img: 'image',
       link: 'link',
       list: 'list',
+      listitem: undefined,
+      log: undefined,
+      main: undefined,
+      marquee: undefined,
+      math: undefined,
       menu: 'menu',
       menubar: 'menubar',
       menuitem: 'menuitem',
+      meter: undefined,
+      navigation: undefined,
       none: 'none',
+      note: undefined,
       presentation: 'none',
       progressbar: 'progressbar',
       radio: 'radio',
       radiogroup: 'radiogroup',
-      scrollbar: 'scrollbar',
-      searchbox: 'search',
-      slider: 'adjustable',
-      spinbutton: 'spinbutton',
-      summary: 'summary',
-      switch: 'switch',
-      tab: 'tab',
-      tablist: 'tablist',
-      timer: 'timer',
-      toolbar: 'toolbar',
-      tooltip: undefined,
-      feed: undefined,
-      math: undefined,
-      note: undefined,
-      application: undefined,
-      article: undefined,
-      cell: undefined,
-      columnheader: undefined,
-      definition: undefined,
-      directory: undefined,
-      document: undefined,
-      figure: undefined,
-      group: undefined,
-      listitem: undefined,
-      meter: undefined,
+      region: undefined,
       row: undefined,
       rowgroup: undefined,
       rowheader: undefined,
+      scrollbar: 'scrollbar',
+      searchbox: 'search',
       separator: undefined,
+      slider: 'adjustable',
+      spinbutton: 'spinbutton',
+      status: undefined,
+      summary: 'summary',
+      switch: 'switch',
+      tab: 'tab',
       table: undefined,
-      term: undefined,
+      tablist: 'tablist',
       tabpanel: undefined,
-      treeitem: undefined,
+      term: undefined,
+      timer: 'timer',
+      toolbar: 'toolbar',
+      tooltip: undefined,
       tree: undefined,
       treegrid: undefined,
-      banner: undefined,
-      complementary: undefined,
-      contentinfo: undefined,
-      form: undefined,
-      main: undefined,
-      navigation: undefined,
-      region: undefined,
-      log: undefined,
-      marquee: undefined,
-      status: undefined,
-      alertdialog: undefined,
-      dialog: undefined,
+      treeitem: undefined,
     };
-
-    const _accessibilityRole = role
-      ? roleToAccessibilityRoleMapping[role]
-      : accessibilityRole;
-
-    // set restProps is _accessibilityRole exists
-    if (_accessibilityRole) {
-      restProps = {...restProps, accessibilityRole: _accessibilityRole};
-    }
 
     return (
       <TextAncestor.Provider value={false}>
         <ViewNativeComponent
           focusable={tabIndex !== undefined ? !tabIndex : focusable}
-          {...restProps}
+          accessibilityRole={
+            role ? roleToAccessibilityRoleMapping[role] : accessibilityRole
+          }
+          {...otherProps}
           ref={forwardedRef}
         />
       </TextAncestor.Provider>
