@@ -19,7 +19,7 @@ const reactNativeDependencyName = 'react-native';
 const rootPath = path.join(__dirname, '../../..');
 
 describe('generateCode', () => {
-  it('executeNodes with the right arguents', () => {
+  it('executeNodes with the right arguments', () => {
     // Define variables and expected values
     const iosOutputDir = 'app/ios/build/generated/ios';
     const library = {config: {name: 'library', type: 'all'}};
