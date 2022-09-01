@@ -237,16 +237,10 @@ function Pressable(props: Props, forwardedRef): React.Node {
     ...restProps,
     ...android_rippleConfig?.viewProps,
     accessible: accessible !== false,
+    accessibilityState: _accessibilityState,
     focusable: focusable !== false,
     hitSlop,
   };
-
-  if (Object.keys(_accessibilityState).length !== 0) {
-    restPropsWithDefaults = {
-      ...restPropsWithDefaults,
-      accessibilityState: _accessibilityState,
-    };
-  }
 
   const config = useMemo(
     () => ({

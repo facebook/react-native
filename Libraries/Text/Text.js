@@ -189,16 +189,11 @@ const Text: React.AbstractComponent<
     ios: accessible !== false,
     default: accessible,
   });
-
-  let restWithDefaultProps = {...restProps};
-
-  if (Object.keys(_accessibilityState).length !== 0) {
-    restWithDefaultProps.accessibilityState = _accessibilityState;
-  }
-
+  
   return hasTextAncestor ? (
     <NativeVirtualText
-      {...restWithDefaultProps}
+      {...restProps}
+      accessibilityState={_accessibilityState}
       {...eventHandlersForText}
       isHighlighted={isHighlighted}
       isPressable={isPressable}
@@ -210,7 +205,7 @@ const Text: React.AbstractComponent<
   ) : (
     <TextAncestor.Provider value={true}>
       <NativeText
-        {...restWithDefaultProps}
+        {...restProps}
         {...eventHandlersForText}
         disabled={_disabled}
         accessible={_accessible}
