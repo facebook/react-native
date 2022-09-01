@@ -8,7 +8,6 @@
  * @emails oncall+react_native
  */
 
-import AnimatedProps from '../nodes/AnimatedProps';
 import TestRenderer from 'react-test-renderer';
 import * as React from 'react';
 
@@ -21,6 +20,7 @@ jest.mock('../../BatchedBridge/NativeModules', () => ({
   },
 }));
 
+let AnimatedProps = require('../nodes/AnimatedProps').default;
 let Animated = require('../Animated').default;
 
 describe('Animated tests', () => {

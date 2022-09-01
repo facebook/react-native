@@ -10,7 +10,6 @@
 
 'use strict';
 
-import typeof AnimatedNodeType from './AnimatedNode';
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
 import {findNodeHandle} from '../../ReactNative/RendererProxy';
@@ -18,8 +17,8 @@ import {AnimatedEvent} from '../AnimatedEvent';
 import NativeAnimatedHelper from '../NativeAnimatedHelper';
 import invariant from 'invariant';
 
-const AnimatedNode: AnimatedNodeType = require('./AnimatedNode').default;
-const AnimatedStyle = require('./AnimatedStyle').default;
+import AnimatedNode from './AnimatedNode';
+import AnimatedStyle from './AnimatedStyle';
 
 export default class AnimatedProps extends AnimatedNode {
   _props: Object;
