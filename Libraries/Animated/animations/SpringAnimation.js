@@ -19,7 +19,7 @@ import * as SpringConfig from '../SpringConfig';
 
 import invariant from 'invariant';
 
-import {shouldUseNativeDriver} from '../NativeAnimatedHelper';
+import NativeAnimatedHelper from '../NativeAnimatedHelper';
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type {AnimationConfig, EndCallback} from './Animation';
@@ -116,7 +116,7 @@ export default class SpringAnimation extends Animation {
     this._lastVelocity = config.velocity ?? 0;
     this._toValue = config.toValue;
     this._delay = config.delay ?? 0;
-    this._useNativeDriver = shouldUseNativeDriver(config);
+    this._useNativeDriver = NativeAnimatedHelper.shouldUseNativeDriver(config);
     this._platformConfig = config.platformConfig;
     this.__isInteraction = config.isInteraction ?? !this._useNativeDriver;
     this.__iterations = config.iterations ?? 1;

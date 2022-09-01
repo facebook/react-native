@@ -16,7 +16,7 @@ import type AnimatedInterpolation from '../nodes/AnimatedInterpolation';
 
 import Animation from './Animation';
 
-import {shouldUseNativeDriver} from '../NativeAnimatedHelper';
+import NativeAnimatedHelper from '../NativeAnimatedHelper';
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type {AnimationConfig, EndCallback} from './Animation';
@@ -80,7 +80,7 @@ export default class TimingAnimation extends Animation {
     this._duration = config.duration ?? 500;
     this._delay = config.delay ?? 0;
     this.__iterations = config.iterations ?? 1;
-    this._useNativeDriver = shouldUseNativeDriver(config);
+    this._useNativeDriver = NativeAnimatedHelper.shouldUseNativeDriver(config);
     this._platformConfig = config.platformConfig;
     this.__isInteraction = config.isInteraction ?? !this._useNativeDriver;
   }

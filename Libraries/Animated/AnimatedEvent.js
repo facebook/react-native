@@ -17,8 +17,6 @@ import {findNodeHandle} from '../ReactNative/RendererProxy';
 
 import invariant from 'invariant';
 
-import {shouldUseNativeDriver} from './NativeAnimatedHelper';
-
 import type {PlatformConfig} from './AnimatedPlatformConfig';
 
 export type Mapping =
@@ -165,7 +163,7 @@ export class AnimatedEvent {
       this.__addListener(config.listener);
     }
     this._attachedEvent = null;
-    this.__isNative = shouldUseNativeDriver(config);
+    this.__isNative = NativeAnimatedHelper.shouldUseNativeDriver(config);
     this.__platformConfig = config.platformConfig;
   }
 

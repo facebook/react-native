@@ -15,7 +15,7 @@ import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
 import {findNodeHandle} from '../../ReactNative/RendererProxy';
 import {AnimatedEvent} from '../AnimatedEvent';
-import * as NativeAnimatedHelper from '../NativeAnimatedHelper';
+import NativeAnimatedHelper from '../NativeAnimatedHelper';
 import invariant from 'invariant';
 
 const AnimatedNode: AnimatedNodeType = require('./AnimatedNode').default;

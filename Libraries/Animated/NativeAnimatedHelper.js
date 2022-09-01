@@ -91,7 +91,7 @@ const nativeOps: ?typeof NativeAnimatedModule = useSingleOpBatching
  * Wrappers around NativeAnimatedModule to provide flow and autocomplete support for
  * the native module methods, and automatic queue management on Android
  */
-export const API = {
+const API = {
   getValue: function (
     tag: number,
     saveValueCallback: (value: number) => void,
@@ -419,35 +419,35 @@ const SUPPORTED_INTERPOLATION_PARAMS = {
   extrapolateLeft: true,
 };
 
-export function addWhitelistedStyleProp(prop: string): void {
+function addWhitelistedStyleProp(prop: string): void {
   SUPPORTED_STYLES[prop] = true;
 }
 
-export function addWhitelistedTransformProp(prop: string): void {
+function addWhitelistedTransformProp(prop: string): void {
   SUPPORTED_TRANSFORMS[prop] = true;
 }
 
-export function addWhitelistedInterpolationParam(param: string): void {
+function addWhitelistedInterpolationParam(param: string): void {
   SUPPORTED_INTERPOLATION_PARAMS[param] = true;
 }
 
-export function isSupportedColorStyleProp(prop: string): boolean {
+function isSupportedColorStyleProp(prop: string): boolean {
   return SUPPORTED_COLOR_STYLES.hasOwnProperty(prop);
 }
 
-export function isSupportedStyleProp(prop: string): boolean {
+function isSupportedStyleProp(prop: string): boolean {
   return SUPPORTED_STYLES.hasOwnProperty(prop);
 }
 
-export function isSupportedTransformProp(prop: string): boolean {
+function isSupportedTransformProp(prop: string): boolean {
   return SUPPORTED_TRANSFORMS.hasOwnProperty(prop);
 }
 
-export function isSupportedInterpolationParam(param: string): boolean {
+function isSupportedInterpolationParam(param: string): boolean {
   return SUPPORTED_INTERPOLATION_PARAMS.hasOwnProperty(param);
 }
 
-export function validateTransform(
+function validateTransform(
   configs: Array<
     | {
         type: 'animated',
@@ -472,7 +472,7 @@ export function validateTransform(
   });
 }
 
-export function validateStyles(styles: {[key: string]: ?number, ...}): void {
+function validateStyles(styles: {[key: string]: ?number, ...}): void {
   for (const key in styles) {
     if (!isSupportedStyleProp(key)) {
       throw new Error(
@@ -482,7 +482,7 @@ export function validateStyles(styles: {[key: string]: ?number, ...}): void {
   }
 }
 
-export function validateInterpolation<OutputT: number | string>(
+function validateInterpolation<OutputT: number | string>(
   config: InterpolationConfigType<OutputT>,
 ): void {
   for (const key in config) {
@@ -494,21 +494,21 @@ export function validateInterpolation<OutputT: number | string>(
   }
 }
 
-export function generateNewNodeTag(): number {
+function generateNewNodeTag(): number {
   return __nativeAnimatedNodeTagCount++;
 }
 
-export function generateNewAnimationId(): number {
+function generateNewAnimationId(): number {
   return __nativeAnimationIdCount++;
 }
 
-export function assertNativeAnimatedModule(): void {
+function assertNativeAnimatedModule(): void {
   invariant(NativeAnimatedModule, 'Native animated module is not available');
 }
 
 let _warnedMissingNativeAnimated = false;
 
-export function shouldUseNativeDriver(
+function shouldUseNativeDriver(
   config: $ReadOnly<{...AnimationConfig, ...}> | EventConfig,
 ): boolean {
   if (config.useNativeDriver == null) {
@@ -535,7 +535,7 @@ export function shouldUseNativeDriver(
   return config.useNativeDriver || false;
 }
 
-export function transformDataType(value: number | string): number | string {
+function transformDataType(value: number | string): number | string {
   // Change the string type to number type so we can reuse the same logic in
   // iOS and Android platform
   if (typeof value !== 'string') {
