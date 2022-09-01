@@ -79,6 +79,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setTag(R.id.accessibility_state, null);
     view.setTag(R.id.accessibility_actions, null);
     view.setTag(R.id.accessibility_value, null);
+    view.setTag(R.id.accessibility_state_expanded, null);
 
     // This indirectly calls (and resets):
     // setTranslationX
@@ -269,6 +270,9 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   public void setViewState(@NonNull T view, @Nullable ReadableMap accessibilityState) {
     if (accessibilityState == null) {
       return;
+    }
+    if (accessibilityState.hasKey("expanded")) {
+      view.setTag(R.id.accessibility_state_expanded, accessibilityState.getBoolean("expanded"));
     }
     if (accessibilityState.hasKey("selected")) {
       boolean prevSelected = view.isSelected();

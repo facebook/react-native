@@ -223,6 +223,14 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
   @Override
   public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
     super.onInitializeAccessibilityNodeInfo(host, info);
+    if (host.getTag(R.id.accessibility_state_expanded) != null) {
+      final boolean accessibilityStateExpanded =
+          (boolean) host.getTag(R.id.accessibility_state_expanded);
+      info.addAction(
+          accessibilityStateExpanded
+              ? AccessibilityNodeInfoCompat.ACTION_COLLAPSE
+              : AccessibilityNodeInfoCompat.ACTION_EXPAND);
+    }
     final AccessibilityRole accessibilityRole =
         (AccessibilityRole) host.getTag(R.id.accessibility_role);
     final String accessibilityHint = (String) host.getTag(R.id.accessibility_hint);
@@ -353,6 +361,12 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
 
   @Override
   public boolean performAccessibilityAction(View host, int action, Bundle args) {
+    if (action == AccessibilityNodeInfoCompat.ACTION_COLLAPSE) {
+      host.setTag(R.id.accessibility_state_expanded, false);
+    }
+    if (action == AccessibilityNodeInfoCompat.ACTION_EXPAND) {
+      host.setTag(R.id.accessibility_state_expanded, true);
+    }
     if (mAccessibilityActionsMap.containsKey(action)) {
       final WritableMap event = Arguments.createMap();
       event.putString("actionName", mAccessibilityActionsMap.get(action));
@@ -419,11 +433,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
               context.getString(
                   boolValue ? R.string.state_on_description : R.string.state_off_description));
         }
-      } else if (state.equals("expanded") && value.getType() == ReadableType.Boolean) {
-        info.addAction(
-            value.asBoolean()
-                ? AccessibilityNodeInfoCompat.ACTION_COLLAPSE
-                : AccessibilityNodeInfoCompat.ACTION_EXPAND);
       }
     }
   }

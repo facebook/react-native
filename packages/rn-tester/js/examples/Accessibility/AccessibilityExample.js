@@ -1281,10 +1281,17 @@ function AccessibilityExpandedExample(): React.Node {
         <TouchableOpacity
           style={styles.button}
           onPress={() => setExpanded(!expand)}
-          onAccessibilityAction={event => console.log(event)}
           accessibilityState={{expanded: expand}}>
           <Text>Click me to change state</Text>
         </TouchableOpacity>
+      </RNTesterBlock>
+
+      <RNTesterBlock title="expanded/collpased through accessibility menu">
+        <TouchableWithoutFeedback accessible={true} accessibilityRole="button">
+          <View>
+            <Text>Click me</Text>
+          </View>
+        </TouchableWithoutFeedback>
       </RNTesterBlock>
     </>
   );
