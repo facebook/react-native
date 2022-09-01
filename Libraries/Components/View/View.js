@@ -50,7 +50,7 @@ const View: React.AbstractComponent<
       <TextAncestor.Provider value={false}>
         <ViewNativeComponent
           focusable={tabIndex !== undefined ? !tabIndex : focusable}
-          accessibilityState={_accessibilityState ?? accessibilityState}
+          accessibilityState={_accessibilityState}
           {...restProps}
           ref={forwardedRef}
         />
