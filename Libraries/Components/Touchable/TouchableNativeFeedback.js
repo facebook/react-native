@@ -259,6 +259,11 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
           }
         : this.props.accessibilityState;
 
+    const accessibilityLiveRegion =
+      this.props['aria-live'] === 'off'
+        ? 'none'
+        : this.props['aria-live'] ?? this.props.accessibilityLiveRegion;
+
     return React.cloneElement(
       element,
       {
@@ -279,7 +284,7 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
         onAccessibilityAction: this.props.onAccessibilityAction,
         accessibilityValue: this.props.accessibilityValue,
         importantForAccessibility: this.props.importantForAccessibility,
-        accessibilityLiveRegion: this.props.accessibilityLiveRegion,
+        accessibilityLiveRegion: accessibilityLiveRegion,
         accessibilityViewIsModal: this.props.accessibilityViewIsModal,
         accessibilityElementsHidden: this.props.accessibilityElementsHidden,
         hasTVPreferredFocus: this.props.hasTVPreferredFocus,

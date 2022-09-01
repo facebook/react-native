@@ -42,6 +42,7 @@ type Props = $ReadOnly<{|
   accessibilityValue?: ?AccessibilityValue,
   accessibilityViewIsModal?: ?boolean,
   accessible?: ?boolean,
+  'aria-live'?: ?('none' | 'polite' | 'assertive' | 'off'),
   children?: ?React.Node,
   delayLongPress?: ?number,
   delayPressIn?: ?number,
@@ -76,7 +77,6 @@ const PASSTHROUGH_PROPS = [
   'accessibilityLanguage',
   'accessibilityIgnoresInvertColors',
   'accessibilityLabel',
-  'accessibilityLiveRegion',
   'accessibilityRole',
   'accessibilityValue',
   'accessibilityViewIsModal',
@@ -98,6 +98,8 @@ class TouchableWithoutFeedback extends React.Component<Props, State> {
   render(): React.Node {
     const element = React.Children.only(this.props.children);
     const children = [element.props.children];
+    const ariaLive = this.props['aria-live'];
+
     if (__DEV__) {
       if (element.type === View) {
         children.push(
@@ -123,6 +125,10 @@ class TouchableWithoutFeedback extends React.Component<Props, State> {
           : this.props.accessibilityState,
       focusable:
         this.props.focusable !== false && this.props.onPress !== undefined,
+      accessibilityLiveRegion:
+        ariaLive === 'off'
+          ? 'none'
+          : ariaLive ?? this.props.accessibilityLiveRegion,
     };
     for (const prop of PASSTHROUGH_PROPS) {
       if (this.props[prop] !== undefined) {
