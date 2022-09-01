@@ -19,6 +19,7 @@ const StyleSheet = require('../StyleSheet/StyleSheet');
 const Text = require('../Text/Text');
 const TouchableHighlight = require('../Components/Touchable/TouchableHighlight');
 const View = require('../Components/View/View');
+import SafeAreaView from '../Components/SafeAreaView/SafeAreaView';
 
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 
@@ -84,7 +85,7 @@ class InspectorPanel extends React.Component<Props> {
       contents = <View style={styles.waiting}>{this.renderWaiting()}</View>;
     }
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         {!this.props.devtoolsIsOpen && contents}
         <View style={styles.buttonRow}>
           <InspectorPanelButton
@@ -108,7 +109,7 @@ class InspectorPanel extends React.Component<Props> {
             onClick={this.props.setTouchTargeting}
           />
         </View>
-      </View>
+      </SafeAreaView>
     );
   }
 }

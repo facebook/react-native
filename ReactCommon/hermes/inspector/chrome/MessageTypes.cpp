@@ -1,5 +1,5 @@
 // Copyright (c) Meta Platforms, Inc. and affiliates. All Rights Reserved.
-// @generated SignedSource<<d10e11c5f88b40149af7ace19008d0fc>>
+// @generated SignedSource<<8397f2428e68a26e014f91fdb77c1eb3>>
 
 #include "MessageTypes.h"
 
@@ -63,6 +63,7 @@ std::unique_ptr<Request> Request::fromJsonThrowOnError(const std::string &str) {
       {"Profiler.start", makeUnique<profiler::StartRequest>},
       {"Profiler.stop", makeUnique<profiler::StopRequest>},
       {"Runtime.callFunctionOn", makeUnique<runtime::CallFunctionOnRequest>},
+      {"Runtime.compileScript", makeUnique<runtime::CompileScriptRequest>},
       {"Runtime.evaluate", makeUnique<runtime::EvaluateRequest>},
       {"Runtime.getHeapUsage", makeUnique<runtime::GetHeapUsageRequest>},
       {"Runtime.getProperties", makeUnique<runtime::GetPropertiesRequest>},
@@ -1112,6 +1113,39 @@ void runtime::CallFunctionOnRequest::accept(RequestHandler &handler) const {
   handler.handle(*this);
 }
 
+runtime::CompileScriptRequest::CompileScriptRequest()
+    : Request("Runtime.compileScript") {}
+
+runtime::CompileScriptRequest::CompileScriptRequest(const dynamic &obj)
+    : Request("Runtime.compileScript") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(expression, params, "expression");
+  assign(sourceURL, params, "sourceURL");
+  assign(persistScript, params, "persistScript");
+  assign(executionContextId, params, "executionContextId");
+}
+
+dynamic runtime::CompileScriptRequest::toDynamic() const {
+  dynamic params = dynamic::object;
+  put(params, "expression", expression);
+  put(params, "sourceURL", sourceURL);
+  put(params, "persistScript", persistScript);
+  put(params, "executionContextId", executionContextId);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  put(obj, "params", std::move(params));
+  return obj;
+}
+
+void runtime::CompileScriptRequest::accept(RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
 runtime::EvaluateRequest::EvaluateRequest() : Request("Runtime.evaluate") {}
 
 runtime::EvaluateRequest::EvaluateRequest(const dynamic &obj)
@@ -1448,6 +1482,25 @@ runtime::CallFunctionOnResponse::CallFunctionOnResponse(const dynamic &obj) {
 dynamic runtime::CallFunctionOnResponse::toDynamic() const {
   dynamic res = dynamic::object;
   put(res, "result", result);
+  put(res, "exceptionDetails", exceptionDetails);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "result", std::move(res));
+  return obj;
+}
+
+runtime::CompileScriptResponse::CompileScriptResponse(const dynamic &obj) {
+  assign(id, obj, "id");
+
+  dynamic res = obj.at("result");
+  assign(scriptId, res, "scriptId");
+  assign(exceptionDetails, res, "exceptionDetails");
+}
+
+dynamic runtime::CompileScriptResponse::toDynamic() const {
+  dynamic res = dynamic::object;
+  put(res, "scriptId", scriptId);
   put(res, "exceptionDetails", exceptionDetails);
 
   dynamic obj = dynamic::object;

@@ -17,7 +17,7 @@ import NativeAccessibilityInfoAndroid from './NativeAccessibilityInfo';
 import NativeAccessibilityManagerIOS from './NativeAccessibilityManager';
 import legacySendAccessibilityEvent from './legacySendAccessibilityEvent';
 import type {ElementRef} from 'react';
-import type {AccessibilityInfo as AccessibilityInfoType} from './AccessibilityInfo.flow';
+import type {AccessibilityInfoType} from './AccessibilityInfo.flow';
 
 // Events that are only supported on Android.
 type AccessibilityEventDefinitionsAndroid = {
@@ -330,7 +330,8 @@ const AccessibilityInfo: AccessibilityInfoType = {
     const deviceEventName = EventNames.get(eventName);
     return deviceEventName == null
       ? {remove(): void {}}
-      : RCTDeviceEventEmitter.addListener(deviceEventName, handler);
+      : // $FlowFixMe[incompatible-call]
+        RCTDeviceEventEmitter.addListener(deviceEventName, handler);
   },
 
   /**

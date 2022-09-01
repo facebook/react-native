@@ -1260,7 +1260,6 @@ public class ReactInstanceManager {
                   : Arguments.fromBundle(initialProperties),
               reactRoot.getWidthMeasureSpec(),
               reactRoot.getHeightMeasureSpec());
-      reactRoot.setRootViewTag(rootTag);
       reactRoot.setShouldLogContentAppeared(true);
     } else {
       rootTag =
