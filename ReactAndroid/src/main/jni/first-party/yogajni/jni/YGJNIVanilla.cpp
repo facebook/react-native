@@ -147,7 +147,7 @@ static int YGJNILogFunc(
     if (*jloggerPtr) {
       JNIEnv* env = getCurrentEnv();
 
-      jclass cl = env->FindClass("Lcom/facebook/yoga/YogaLogLevel;");
+      jclass cl = env->FindClass("com/facebook/yoga/YogaLogLevel");
       static const jmethodID smethodId =
           facebook::yoga::vanillajni::getStaticMethodId(
               env, cl, "fromInt", "(I)Lcom/facebook/yoga/YogaLogLevel;");
@@ -386,7 +386,7 @@ static void jni_YGNodeCalculateLayoutJNI(
     }
   } catch (const std::logic_error& ex) {
     env->ExceptionClear();
-    jclass cl = env->FindClass("Ljava/lang/IllegalStateException;");
+    jclass cl = env->FindClass("java/lang/IllegalStateException");
     static const jmethodID methodId = facebook::yoga::vanillajni::getMethodId(
         env, cl, "<init>", "(Ljava/lang/String;)V");
     auto throwable = env->NewObject(cl, methodId, env->NewStringUTF(ex.what()));

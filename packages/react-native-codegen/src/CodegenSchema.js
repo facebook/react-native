@@ -282,6 +282,11 @@ export type NativeModuleBooleanTypeAnnotation = $ReadOnly<{
   type: 'BooleanTypeAnnotation',
 }>;
 
+export type NativeModuleEnumDeclaration = $ReadOnly<{
+  type: 'EnumDeclaration',
+  memberType: 'NumberTypeAnnotation' | 'StringTypeAnnotation',
+}>;
+
 export type NativeModuleGenericObjectTypeAnnotation = $ReadOnly<{
   type: 'GenericObjectTypeAnnotation',
 }>;
@@ -316,6 +321,7 @@ export type NativeModuleBaseTypeAnnotation =
   | NativeModuleDoubleTypeAnnotation
   | NativeModuleFloatTypeAnnotation
   | NativeModuleBooleanTypeAnnotation
+  | NativeModuleEnumDeclaration
   | NativeModuleGenericObjectTypeAnnotation
   | ReservedTypeAnnotation
   | NativeModuleTypeAliasTypeAnnotation

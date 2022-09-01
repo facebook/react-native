@@ -21,7 +21,7 @@ class HermesExecutorFactory : public JSExecutorFactory {
       JSIExecutor::RuntimeInstaller runtimeInstaller,
       const JSIScopedTimeoutInvoker &timeoutInvoker =
           JSIExecutor::defaultTimeoutInvoker,
-      ::hermes::vm::RuntimeConfig runtimeConfig = ::hermes::vm::RuntimeConfig())
+      ::hermes::vm::RuntimeConfig runtimeConfig = defaultRuntimeConfig())
       : runtimeInstaller_(runtimeInstaller),
         timeoutInvoker_(timeoutInvoker),
         runtimeConfig_(std::move(runtimeConfig)) {
@@ -33,6 +33,8 @@ class HermesExecutorFactory : public JSExecutorFactory {
       std::shared_ptr<MessageQueueThread> jsQueue) override;
 
  private:
+  static ::hermes::vm::RuntimeConfig defaultRuntimeConfig();
+
   JSIExecutor::RuntimeInstaller runtimeInstaller_;
   JSIScopedTimeoutInvoker timeoutInvoker_;
   ::hermes::vm::RuntimeConfig runtimeConfig_;

@@ -722,9 +722,56 @@ module.exports = ([
     },
   },
   {
+    title: 'Input modes',
+    name: 'inputModes',
+    render: function (): React.Node {
+      const inputMode = [
+        'none',
+        'text',
+        'decimal',
+        'numeric',
+        'tel',
+        'search',
+        'email',
+        'url',
+      ];
+      const examples = inputMode.map(mode => {
+        return (
+          <WithLabel key={mode} label={mode}>
+            <TextInput inputMode={mode} style={styles.default} />
+          </WithLabel>
+        );
+      });
+      return <View>{examples}</View>;
+    },
+  },
+  {
     title: 'Blur on submit',
     render: function (): React.Element<any> {
       return <BlurOnSubmitExample />;
+    },
+  },
+  {
+    title: 'enterKeyHint modes',
+    name: 'enterKeyHintTypes',
+    render: function (): React.Node {
+      const enterKeyHintTypesHints = [
+        'enter',
+        'done',
+        'go',
+        'next',
+        'previous',
+        'search',
+        'send',
+      ];
+      const examples = enterKeyHintTypesHints.map(hint => {
+        return (
+          <WithLabel key={hint} label={hint}>
+            <TextInput enterKeyHint={hint} style={styles.default} />
+          </WithLabel>
+        );
+      });
+      return <View>{examples}</View>;
     },
   },
   {

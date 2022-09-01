@@ -109,9 +109,6 @@ public class JSPointerDispatcher {
 
     // First down pointer
     if (action == MotionEvent.ACTION_DOWN) {
-
-      // Reset mChildHandlingNativeGesture like JSTouchDispatcher does
-      mChildHandlingNativeGesture = -1;
       mPrimaryPointerId = motionEvent.getPointerId(actionIndex);
 
       // Start a "down" coalescing key
