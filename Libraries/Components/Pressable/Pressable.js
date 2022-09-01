@@ -52,6 +52,7 @@ type Props = $ReadOnly<{|
   accessibilityValue?: ?AccessibilityValue,
   accessibilityViewIsModal?: ?boolean,
   accessible?: ?boolean,
+  'aria-live'?: ?('none' | 'polite' | 'assertive' | 'off'),
   focusable?: ?boolean,
   importantForAccessibility?: ?('auto' | 'yes' | 'no' | 'no-hide-descendants'),
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
@@ -175,6 +176,7 @@ type Props = $ReadOnly<{|
 function Pressable(props: Props, forwardedRef): React.Node {
   const {
     accessible,
+    'aria-live': ariaLive,
     android_disableSound,
     android_ripple,
     cancelable,
@@ -210,10 +212,14 @@ function Pressable(props: Props, forwardedRef): React.Node {
       ? {...props.accessibilityState, disabled}
       : props.accessibilityState;
 
+  const accessibilityLiveRegion =
+    ariaLive === 'off' ? 'none' : ariaLive ?? props.accessibilityLiveRegion;
+
   const restPropsWithDefaults: React.ElementConfig<typeof View> = {
     ...restProps,
     ...android_rippleConfig?.viewProps,
     accessible: accessible !== false,
+    accessibilityLiveRegion,
     accessibilityState,
     focusable: focusable !== false,
     hitSlop,
