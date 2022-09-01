@@ -32,8 +32,16 @@ function getTypes(ast: $FlowFixMe): TypeDeclarationMap {
         types[node.declaration.id.name] = node.declaration;
       }
     } else if (
+      node.type === 'ExportNamedDeclaration' &&
+      node.exportKind === 'value' &&
+      node.declaration &&
+      node.declaration.type === 'EnumDeclaration'
+    ) {
+      types[node.declaration.id.name] = node.declaration;
+    } else if (
       node.type === 'TypeAlias' ||
-      node.type === 'InterfaceDeclaration'
+      node.type === 'InterfaceDeclaration' ||
+      node.type === 'EnumDeclaration'
     ) {
       types[node.id.name] = node;
     }
@@ -85,7 +93,10 @@ function resolveTypeAnnotation(
         aliasName: node.id.name,
       };
       const resolvedTypeAnnotation = types[node.id.name];
-      if (resolvedTypeAnnotation == null) {
+      if (
+        resolvedTypeAnnotation == null ||
+        resolvedTypeAnnotation.type === 'EnumDeclaration'
+      ) {
         break;
       }
 

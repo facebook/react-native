@@ -22,6 +22,7 @@ const Platform = {
   OS: 'ios',
   // $FlowFixMe[unsafe-getters-setters]
   get Version(): string {
+    // $FlowFixMe[object-this-reference]
     return this.constants.osVersion;
   },
   // $FlowFixMe[unsafe-getters-setters]
@@ -38,22 +39,28 @@ const Platform = {
     |},
     systemName: string,
   |} {
+    // $FlowFixMe[object-this-reference]
     if (this.__constants == null) {
+      // $FlowFixMe[object-this-reference]
       this.__constants = NativePlatformConstantsIOS.getConstants();
     }
+    // $FlowFixMe[object-this-reference]
     return this.__constants;
   },
   // $FlowFixMe[unsafe-getters-setters]
   get isPad(): boolean {
+    // $FlowFixMe[object-this-reference]
     return this.constants.interfaceIdiom === 'pad';
   },
   // $FlowFixMe[unsafe-getters-setters]
   get isTV(): boolean {
+    // $FlowFixMe[object-this-reference]
     return this.constants.interfaceIdiom === 'tv';
   },
   // $FlowFixMe[unsafe-getters-setters]
   get isTesting(): boolean {
     if (__DEV__) {
+      // $FlowFixMe[object-this-reference]
       return this.constants.isTesting;
     }
     return false;

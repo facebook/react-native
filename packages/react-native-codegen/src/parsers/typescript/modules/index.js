@@ -44,6 +44,7 @@ const {
   UnsupportedTypeScriptTypeAnnotationParserError,
   UnsupportedFunctionParamTypeAnnotationParserError,
   UnsupportedFunctionReturnTypeAnnotationParserError,
+  UnsupportedTypeScriptEnumDeclarationParserError,
   UnsupportedTypeScriptUnionTypeAnnotationParserError,
   UnsupportedModulePropertyParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,
@@ -266,6 +267,33 @@ function translateTypeAnnotation(
           });
         }
         default: {
+          const maybeEumDeclaration = types[typeAnnotation.typeName.name];
+          if (
+            cxxOnly &&
+            maybeEumDeclaration &&
+            maybeEumDeclaration.type === 'TSEnumDeclaration'
+          ) {
+            const memberType = maybeEumDeclaration.members[0].initializer
+              ? maybeEumDeclaration.members[0].initializer.type
+                  .replace('NumericLiteral', 'NumberTypeAnnotation')
+                  .replace('StringLiteral', 'StringTypeAnnotation')
+              : 'StringTypeAnnotation';
+            if (
+              memberType === 'NumberTypeAnnotation' ||
+              memberType === 'StringTypeAnnotation'
+            ) {
+              return wrapNullable(nullable, {
+                type: 'EnumDeclaration',
+                memberType: memberType,
+              });
+            } else {
+              throw new UnsupportedTypeScriptEnumDeclarationParserError(
+                hasteModuleName,
+                typeAnnotation,
+                memberType,
+              );
+            }
+          }
           throw new UnsupportedTypeScriptGenericParserError(
             hasteModuleName,
             typeAnnotation,
