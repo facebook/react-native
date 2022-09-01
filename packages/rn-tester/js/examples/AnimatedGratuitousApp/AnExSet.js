@@ -139,10 +139,11 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 25,
     color: 'white',
-    shadowRadius: 3,
-    shadowColor: 'black',
-    shadowOpacity: 1,
-    shadowOffset: {height: 1},
+    // [TODO(macOS GH#1409)
+    textShadowRadius: 3,
+    textShadowColor: 'rgba(0, 0, 0, 1.0)',
+    textShadowOffset: {height: 1, width: 0},
+    // ]TODO(macOS GH#1409)
   },
 });
 
