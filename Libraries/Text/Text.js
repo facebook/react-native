@@ -189,7 +189,7 @@ const Text: React.AbstractComponent<
     ios: accessible !== false,
     default: accessible,
   });
-  
+
   return hasTextAncestor ? (
     <NativeVirtualText
       {...restProps}
