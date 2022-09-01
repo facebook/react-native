@@ -23,7 +23,7 @@ import NativeImageLoaderIOS from './NativeImageLoaderIOS';
 
 import ImageViewNativeComponent from './ImageViewNativeComponent';
 import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
-import type {ImageSource} from './ImageSource';
+import {getImageSourcesFromImageProps} from './ImageSourceUtils';
 
 function getSize(
   uri: string,
@@ -106,70 +106,31 @@ export type ImageComponentStatics = $ReadOnly<{|
 /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
  * LTI update could not be added via codemod */
 const BaseImage = (props: ImagePropsType, forwardedRef) => {
-  const source = resolveAssetSource(props.source) || {
+  const source = getImageSourcesFromImageProps(props) || {
     uri: undefined,
     width: undefined,
     height: undefined,
   };
 
-  let sources: ImageSource;
+  let sources;
   let style: ImageStyleProp;
-
-  const {crossOrigin, referrerPolicy, src, srcSet} = props;
-
-  if (srcSet != null) {
-    const sourceList = [];
-    const srcList = srcSet.split(', ');
-    srcList.forEach(imageSrc => {
-      const [uri, xScale] = imageSrc.split(' ');
-      if (xScale) {
-        const scale = parseInt(xScale.split('x')[0], 10);
-        if (scale) {
-          const headers: {[string]: string} = {};
-          if (crossOrigin === 'use-credentials') {
-            headers['Access-Control-Allow-Credentials'] = 'true';
-          }
-          if (referrerPolicy != null) {
-            headers['Referrer-Policy'] = referrerPolicy;
-          }
-          sourceList.push({headers, scale, uri});
-        }
-      }
-    });
-    if (sourceList.length === 0) {
-      console.warn('The provided value for srcSet is not valid.');
-    }
+  if (Array.isArray(source)) {
     style = flattenStyle([styles.base, props.style]) || {};
-    sources = sourceList;
-  } else if (src != null) {
-    style = flattenStyle([styles.base, props.style]) || {};
-    const headers: {[string]: string} = {};
-    if (crossOrigin === 'use-credentials') {
-      headers['Access-Control-Allow-Credentials'] = 'true';
-    }
-    if (referrerPolicy != null) {
-      headers['Referrer-Policy'] = referrerPolicy;
-    }
-    sources = [{uri: src, headers}];
+    sources = source;
   } else {
-    if (Array.isArray(source)) {
-      style = flattenStyle([styles.base, props.style]) || {};
-      sources = source;
-    } else {
-      const {width, height, uri} = source;
-      style = flattenStyle([{width, height}, styles.base, props.style]) || {};
-      sources = [source];
+    const {width = props.width, height = props.height, uri} = source;
+    style = flattenStyle([{width, height}, styles.base, props.style]) || {};
+    sources = [source];
 
-      if (uri === '') {
-        console.warn('source.uri should not be an empty string');
-      }
+    if (uri === '') {
+      console.warn('source.uri should not be an empty string');
     }
   }
 
   // $FlowFixMe[prop-missing]
   const resizeMode = props.resizeMode || style.resizeMode || 'cover';
   // $FlowFixMe[prop-missing]
-  const tintColor = style.tintColor;
+  const tintColor = props.tintColor || style.tintColor;
 
   if (props.children != null) {
     throw new Error(
@@ -177,12 +138,14 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
     );
   }
 
+  const {src, ...restProps} = props;
+
   return (
     <ImageAnalyticsTagContext.Consumer>
       {analyticTag => {
         return (
           <ImageViewNativeComponent
-            {...props}
+            {...restProps}
             ref={forwardedRef}
             style={style}
             resizeMode={resizeMode}

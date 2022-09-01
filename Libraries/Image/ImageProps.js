@@ -98,9 +98,23 @@ export type ImageProps = {|
    * Adds the CORS related header to the request.
    * Similar to crossorigin from HTML.
    *
-   * See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#attr-crossorigin
+   * See https://reactnative.dev/docs/image#crossorigin
    */
   crossOrigin?: ?('anonymous' | 'use-credentials'),
+
+  /**
+   * Height of the image component.
+   *
+   * See https://reactnative.dev/docs/image#height
+   */
+  height?: ?number,
+
+  /**
+   * Width of the image component.
+   *
+   * See https://reactnative.dev/docs/image#width
+   */
+  width?: ?number,
 
   /**
    * Invoked on load error with `{nativeEvent: {error}}`.
@@ -166,7 +180,7 @@ export type ImageProps = {|
    * A string indicating which referrer to use when fetching the resource.
    * Similar to referrerpolicy from HTML.
    *
-   * See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#attr-referrerpolicy
+   * See https://reactnative.dev/docs/image#referrerpolicy
    */
   referrerPolicy?: ?(
     | 'no-referrer'
@@ -196,14 +210,17 @@ export type ImageProps = {|
   testID?: ?string,
 
   /**
-   * A string representing the resource identifier for the image.
+   * A string representing the resource identifier for the image. Similar to
+   * src from HTML.
+   *
+   * See https://reactnative.dev/docs/image#src
    */
   src?: ?string,
 
   /**
    * Similar to srcset from HTML.
    *
-   * See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#attr-srcset
+   * See https://reactnative.dev/docs/image#srcset
    */
   srcSet?: ?string,
   children?: empty,

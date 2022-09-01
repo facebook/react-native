@@ -23,6 +23,7 @@ import TextInlineImageNativeComponent from './TextInlineImageNativeComponent';
 
 import type {ImageProps as ImagePropsType} from './ImageProps';
 import type {RootTag} from '../Types/RootTagTypes';
+import {getImageSourcesFromImageProps} from './ImageSourceUtils';
 
 let _requestId = 1;
 function generateRequestId() {
@@ -126,19 +127,11 @@ export type ImageComponentStatics = $ReadOnly<{|
 /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
  * LTI update could not be added via codemod */
 const BaseImage = (props: ImagePropsType, forwardedRef) => {
-  let source = resolveAssetSource(props.source);
+  let source = getImageSourcesFromImageProps(props);
   const defaultSource = resolveAssetSource(props.defaultSource);
   const loadingIndicatorSource = resolveAssetSource(
     props.loadingIndicatorSource,
   );
-  const {crossOrigin, referrerPolicy, src, srcSet} = props;
-
-  if (source) {
-    const uri = source.uri;
-    if (uri === '') {
-      console.warn('source.uri should not be an empty string');
-    }
-  }
 
   if (props.children) {
     throw new Error(
@@ -156,53 +149,18 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
     source = null;
   }
 
-  let sources;
   let style;
-
-  if (srcSet != null) {
-    const sourceList = [];
-    const srcList = srcSet.split(', ');
-    srcList.forEach(imageSrc => {
-      const [uri, xScale] = imageSrc.split(' ');
-      if (xScale) {
-        const scale = parseInt(xScale.split('x')[0], 10);
-        if (scale) {
-          const headers: {[string]: string} = {};
-          if (crossOrigin === 'use-credentials') {
-            headers['Access-Control-Allow-Credentials'] = 'true';
-          }
-          if (referrerPolicy != null) {
-            headers['Referrer-Policy'] = referrerPolicy;
-          }
-          sourceList.push({headers, scale, uri});
-        }
-      }
-    });
-    if (sourceList.length === 0) {
-      console.warn('The provided value for srcSet is not valid.');
+  let sources;
+  if (!Array.isArray(source) && source?.uri != null) {
+    const {width = props.width, height = props.height, uri} = source;
+    style = flattenStyle([{width, height}, styles.base, props.style]);
+    sources = [{uri: uri}];
+    if (uri === '') {
+      console.warn('source.uri should not be an empty string');
     }
-    style = flattenStyle([styles.base, props.style]) || {};
-    console.log(sourceList);
-    sources = sourceList;
-  } else if (src != null) {
-    style = flattenStyle([styles.base, props.style]) || {};
-    const headers: {[string]: string} = {};
-    if (crossOrigin === 'use-credentials') {
-      headers['Access-Control-Allow-Credentials'] = 'true';
-    }
-    if (referrerPolicy != null) {
-      headers['Referrer-Policy'] = referrerPolicy;
-    }
-    sources = [{uri: src, headers}];
   } else {
-    if (source?.uri != null) {
-      const {width, height} = source;
-      style = flattenStyle([{width, height}, styles.base, props.style]);
-      sources = [{uri: source.uri}];
-    } else {
-      style = flattenStyle([styles.base, props.style]);
-      sources = source;
-    }
+    style = flattenStyle([styles.base, props.style]);
+    sources = source;
   }
 
   const {onLoadStart, onLoad, onLoadEnd, onError} = props;
@@ -213,7 +171,7 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
     src: sources,
     /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
      * when making Flow check .android.js files. */
-    headers: source?.headers || sources[0]?.headers,
+    headers: source?.headers,
     defaultSrc: defaultSource ? defaultSource.uri : null,
     loadingIndicatorSrc: loadingIndicatorSource
       ? loadingIndicatorSource.uri
@@ -235,13 +193,13 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
           <TextAncestor.Consumer>
             {hasTextAncestor => {
               if (hasTextAncestor) {
-                let nativeSrc = Array.isArray(sources) ? sources : [sources];
+                let src = Array.isArray(sources) ? sources : [sources];
                 return (
                   <TextInlineImageNativeComponent
                     style={style}
                     resizeMode={props.resizeMode}
                     headers={nativeProps.headers}
-                    src={nativeSrc}
+                    src={src}
                     ref={forwardedRef}
                   />
                 );
