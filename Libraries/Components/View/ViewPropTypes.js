@@ -353,6 +353,19 @@ type AndroidViewProps = $ReadOnly<{|
   focusable?: boolean,
 
   /**
+   * Indicates whether this `View` should be focusable with a non-touch input device, eg. receive focus with a hardware keyboard.
+   * See https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex
+   * for more details.
+   *
+   * Supports the following values:
+   * -  0 (View is focusable)
+   * - -1 (View is not focusable)
+   *
+   * @platform android
+   */
+  tabIndex?: 0 | -1,
+
+  /**
    * The action to perform when this `View` is clicked on by a non-touch click, eg. enter key on a hardware keyboard.
    *
    * @platform android

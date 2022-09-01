@@ -14,10 +14,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
@@ -132,7 +129,6 @@ public class ReactViewGroup extends ViewGroup
   private boolean mNeedsOffscreenAlphaCompositing;
   private @Nullable ViewGroupDrawingOrderHelper mDrawingOrderHelper;
   private @Nullable Path mPath;
-  private @Nullable Paint mPaint;
   private int mLayoutDirection;
   private float mBackfaceOpacity;
   private String mBackfaceVisibility;
@@ -163,7 +159,6 @@ public class ReactViewGroup extends ViewGroup
     mNeedsOffscreenAlphaCompositing = false;
     mDrawingOrderHelper = null;
     mPath = null;
-    mPaint = null;
     mLayoutDirection = 0; // set when background is created
     mBackfaceOpacity = 1.f;
     mBackfaceVisibility = "visible";
@@ -811,16 +806,8 @@ public class ReactViewGroup extends ViewGroup
   @Override
   protected void dispatchDraw(Canvas canvas) {
     try {
-      if (ReactFeatureFlags.antiAliasRoundedOverflowCorners && hasRoundedOverflow()) {
-        int saveCount = canvas.saveLayer(0, 0, getWidth(), getHeight(), null);
-        super.dispatchDraw(canvas);
-        dispatchOverflowDraw(canvas);
-        canvas.restoreToCount(saveCount);
-      } else {
-        dispatchOverflowDraw(canvas);
-        super.dispatchDraw(canvas);
-      }
-
+      dispatchOverflowDraw(canvas);
+      super.dispatchDraw(canvas);
     } catch (NullPointerException | StackOverflowError e) {
       // Adding special exception management for StackOverflowError for logging purposes.
       // This will be removed in the future.
@@ -873,7 +860,7 @@ public class ReactViewGroup extends ViewGroup
 
           boolean hasClipPath = false;
 
-          if (mReactBackgroundDrawable != null && mReactBackgroundDrawable.hasRoundedBorders()) {
+          if (mReactBackgroundDrawable != null) {
             final RectF borderWidth = mReactBackgroundDrawable.getDirectionAwareBorderInsets();
 
             if (borderWidth.top > 0
@@ -993,21 +980,7 @@ public class ReactViewGroup extends ViewGroup
                     Math.max(bottomLeftBorderRadius - borderWidth.bottom, 0),
                   },
                   Path.Direction.CW);
-
-              if (ReactFeatureFlags.antiAliasRoundedOverflowCorners) {
-                mPath.setFillType(Path.FillType.INVERSE_WINDING);
-
-                if (mPaint == null) {
-                  mPaint = new Paint();
-                  mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-                  mPaint.setFlags(Paint.ANTI_ALIAS_FLAG);
-                  mPaint.setColor(getContext().getColor(android.R.color.white));
-                }
-
-                canvas.drawPath(mPath, mPaint);
-              } else {
-                canvas.clipPath(mPath);
-              }
+              canvas.clipPath(mPath);
               hasClipPath = true;
             }
           }
@@ -1020,13 +993,6 @@ public class ReactViewGroup extends ViewGroup
           break;
       }
     }
-  }
-
-  private boolean hasRoundedOverflow() {
-    return mOverflow != null
-        && (mOverflow.equals(ViewProps.HIDDEN.toString())
-            || mOverflow.equals(ViewProps.SCROLL.toString()))
-        && (mReactBackgroundDrawable != null && mReactBackgroundDrawable.hasRoundedBorders());
   }
 
   public void setOpacityIfPossible(float opacity) {

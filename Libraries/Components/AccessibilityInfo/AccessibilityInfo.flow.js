@@ -44,7 +44,7 @@ type AccessibilityEventTypes = 'click' | 'focus';
  *
  * See https://reactnative.dev/docs/accessibilityinfo
  */
-export interface AccessibilityInfo {
+export type AccessibilityInfoType = {
   /**
    * Query whether bold text is currently enabled.
    *
@@ -53,7 +53,7 @@ export interface AccessibilityInfo {
    *
    * See https://reactnative.dev/docs/accessibilityinfo#isBoldTextEnabled
    */
-  isBoldTextEnabled: () => Promise<boolean>;
+  isBoldTextEnabled: () => Promise<boolean>,
 
   /**
    * Query whether grayscale is currently enabled.
@@ -63,7 +63,7 @@ export interface AccessibilityInfo {
    *
    * See https://reactnative.dev/docs/accessibilityinfo#isGrayscaleEnabled
    */
-  isGrayscaleEnabled: () => Promise<boolean>;
+  isGrayscaleEnabled: () => Promise<boolean>,
 
   /**
    * Query whether inverted colors are currently enabled.
@@ -73,7 +73,7 @@ export interface AccessibilityInfo {
    *
    * See https://reactnative.dev/docs/accessibilityinfo#isInvertColorsEnabled
    */
-  isInvertColorsEnabled: () => Promise<boolean>;
+  isInvertColorsEnabled: () => Promise<boolean>,
 
   /**
    * Query whether reduced motion is currently enabled.
@@ -83,7 +83,7 @@ export interface AccessibilityInfo {
    *
    * See https://reactnative.dev/docs/accessibilityinfo#isReduceMotionEnabled
    */
-  isReduceMotionEnabled: () => Promise<boolean>;
+  isReduceMotionEnabled: () => Promise<boolean>,
 
   /**
    * Query whether reduce motion and prefer cross-fade transitions settings are currently enabled.
@@ -93,7 +93,7 @@ export interface AccessibilityInfo {
    *
    * See https://reactnative.dev/docs/accessibilityinfo#prefersCrossFadeTransitions
    */
-  prefersCrossFadeTransitions: () => Promise<boolean>;
+  prefersCrossFadeTransitions: () => Promise<boolean>,
 
   /**
    * Query whether reduced transparency is currently enabled.
@@ -103,7 +103,7 @@ export interface AccessibilityInfo {
    *
    * See https://reactnative.dev/docs/accessibilityinfo#isReduceTransparencyEnabled
    */
-  isReduceTransparencyEnabled: () => Promise<boolean>;
+  isReduceTransparencyEnabled: () => Promise<boolean>,
 
   /**
    * Query whether a screen reader is currently enabled.
@@ -113,7 +113,7 @@ export interface AccessibilityInfo {
    *
    * See https://reactnative.dev/docs/accessibilityinfo#isScreenReaderEnabled
    */
-  isScreenReaderEnabled: () => Promise<boolean>;
+  isScreenReaderEnabled: () => Promise<boolean>,
 
   /**
    * Query whether Accessibility Service is currently enabled.
@@ -125,7 +125,7 @@ export interface AccessibilityInfo {
    *
    * See https://reactnative.dev/docs/accessibilityinfo/#isaccessibilityserviceenabled-android
    */
-  isAccessibilityServiceEnabled: () => Promise<boolean>;
+  isAccessibilityServiceEnabled: () => Promise<boolean>,
 
   /**
    * Add an event handler. Supported events:
@@ -164,14 +164,14 @@ export interface AccessibilityInfo {
   addEventListener<K: $Keys<AccessibilityEventDefinitions>>(
     eventName: K,
     handler: (...$ElementType<AccessibilityEventDefinitions, K>) => void,
-  ): EventSubscription;
+  ): EventSubscription,
 
   /**
    * Set accessibility focus to a React component.
    *
    * See https://reactnative.dev/docs/accessibilityinfo#setaccessibilityfocus
    */
-  setAccessibilityFocus: (reactTag: number) => void;
+  setAccessibilityFocus: (reactTag: number) => void,
 
   /**
    * Send a named accessibility event to a HostComponent.
@@ -179,14 +179,14 @@ export interface AccessibilityInfo {
   sendAccessibilityEvent: (
     handle: ElementRef<HostComponent<mixed>>,
     eventType: AccessibilityEventTypes,
-  ) => void;
+  ) => void,
 
   /**
    * Post a string to be announced by the screen reader.
    *
    * See https://reactnative.dev/docs/accessibilityinfo#announceforaccessibility
    */
-  announceForAccessibility: (announcement: string) => void;
+  announceForAccessibility: (announcement: string) => void,
 
   /**
    * Post a string to be announced by the screen reader.
@@ -197,12 +197,12 @@ export interface AccessibilityInfo {
   announceForAccessibilityWithOptions: (
     announcement: string,
     options: {queue?: boolean},
-  ) => void;
+  ) => void,
 
   /**
    * Get the recommended timeout for changes to the UI needed by this user.
    *
    * See https://reactnative.dev/docs/accessibilityinfo#getrecommendedtimeoutmillis
    */
-  getRecommendedTimeoutMillis: (originalTimeout: number) => Promise<number>;
-}
+  getRecommendedTimeoutMillis: (originalTimeout: number) => Promise<number>,
+};

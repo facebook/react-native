@@ -79,6 +79,50 @@ exports[`RN Codegen Flow Parser can generate fixture CXX_ONLY_NATIVE_MODULE 1`] 
             }
           },
           {
+            'name': 'getEnums',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'StringTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'quality',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'EnumDeclaration',
+                    'memberType': 'StringTypeAnnotation'
+                  }
+                },
+                {
+                  'name': 'resolution',
+                  'optional': true,
+                  'typeAnnotation': {
+                    'type': 'EnumDeclaration',
+                    'memberType': 'NumberTypeAnnotation'
+                  }
+                },
+                {
+                  'name': 'floppy',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'EnumDeclaration',
+                    'memberType': 'NumberTypeAnnotation'
+                  }
+                },
+                {
+                  'name': 'stringOptions',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'EnumDeclaration',
+                    'memberType': 'StringTypeAnnotation'
+                  }
+                }
+              ]
+            }
+          },
+          {
             'name': 'getUnion',
             'optional': false,
             'typeAnnotation': {

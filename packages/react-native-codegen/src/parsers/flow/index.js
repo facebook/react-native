@@ -77,7 +77,7 @@ function buildSchema(contents: string, filename: ?string): SchemaType {
     return {modules: {}};
   }
 
-  const ast = flowParser.parse(contents);
+  const ast = flowParser.parse(contents, {enums: true});
   const configType = getConfigType(ast);
 
   switch (configType) {

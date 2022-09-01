@@ -679,6 +679,16 @@ jobs:
   # -------------------------
   test_ios_template:
     executor: reactnativeios
+    parameters:
+      flavor:
+        type: string
+        default: "Debug"
+      architecture:
+        type: string
+        default: "OldArch"
+      jsengine:
+        type: string
+        default: "Hermes"
     environment:
       - PROJECT_NAME: "iOSTemplateProject"
       - HERMES_WS_DIR: *hermes_workspace_root
@@ -689,13 +699,14 @@ jobs:
       - attach_workspace:
           at: .
       - *attach_hermes_workspace
-      - run:
-          name: Set USE_HERMES=1
-          command: echo "export USE_HERMES=1" >> $BASH_ENV
-      - run:
-          name: Set HERMES_ENGINE_TARBALL_PATH
-          command: |
-            echo "export HERMES_ENGINE_TARBALL_PATH=$(ls -AU $HERMES_WS_DIR/hermes-runtime-darwin/hermes-runtime-darwin-*.tar.gz | head -1)" >> $BASH_ENV
+      - when:
+          condition:
+            equal: ["Hermes", << parameters.jsengine >>]
+          steps:
+            - run:
+                name: Set HERMES_ENGINE_TARBALL_PATH
+                command: |
+                  echo "export HERMES_ENGINE_TARBALL_PATH=$(ls -AU $HERMES_WS_DIR/hermes-runtime-darwin/hermes-runtime-darwin-*.tar.gz | head -1)" >> $BASH_ENV
       - run:
           name: Create iOS template project
           command: |
@@ -703,11 +714,34 @@ jobs:
             PACKAGE=$(cat build/react-native-package-version)
             PATH_TO_PACKAGE="$REPO_ROOT/build/$PACKAGE"
             node ./scripts/set-rn-template-version.js "file:$PATH_TO_PACKAGE"
-            node cli.js init $PROJECT_NAME --directory "/tmp/$PROJECT_NAME" --template $REPO_ROOT --verbose
+            node cli.js init $PROJECT_NAME --directory "/tmp/$PROJECT_NAME" --template $REPO_ROOT --verbose --skip-install
+      - run:
+          name: Install iOS dependencies - Configuration << parameters.flavor >>; New Architecture << parameters.architecture >>; JS Engine << parameters.jsengine>>
+          command: |
+            cd /tmp/$PROJECT_NAME
+            yarn install
+            cd ios
+
+            bundle install
+
+            if [[ << parameters.flavor >> == "Release" ]]; then
+              export PRODUCTION=1
+            fi
+
+            if [[ << parameters.architecture >> == "NewArch" ]]; then
+              export RCT_NEW_ARCH_ENABLED=1
+            fi
+
+            if [[ << parameters.jsengine >> == "JSC" ]]; then
+              export USE_HERMES=0
+            fi
+
+            bundle exec pod install
       - run:
           name: Build template project
           command: |
             xcodebuild build \
+              -configuration << parameters.flavor >> \
               -workspace /tmp/$PROJECT_NAME/ios/$PROJECT_NAME.xcworkspace \
               -scheme $PROJECT_NAME \
               -sdk iphonesimulator
@@ -1308,6 +1342,11 @@ workflows:
       - test_ios_template:
           requires:
             - build_npm_package
+          matrix:
+            parameters:
+              architecture: ["NewArch", "OldArch"]
+              flavor: ["Debug", "Release"]
+              jsengine: ["Hermes", "JSC"]
       - test_ios_rntester:
           requires:
             - build_hermes_macos
