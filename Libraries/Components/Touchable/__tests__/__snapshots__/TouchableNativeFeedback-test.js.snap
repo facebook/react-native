@@ -1,23 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`TouchableWithoutFeedback renders correctly 1`] = `
-<Text
-  accessible={true}
-  focusable={false}
-  onClick={[Function]}
-  onResponderGrant={[Function]}
-  onResponderMove={[Function]}
-  onResponderRelease={[Function]}
-  onResponderTerminate={[Function]}
-  onResponderTerminationRequest={[Function]}
-  onStartShouldSetResponder={[Function]}
->
-  Touchable
-</Text>
-`;
-
 exports[`<TouchableNativeFeedback /> should render as expected 1`] = `
 <View
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
   accessible={true}
   focusable={false}
   onClick={[Function]}
@@ -30,11 +22,19 @@ exports[`<TouchableNativeFeedback /> should render as expected 1`] = `
 />
 `;
 
-exports[`<TouchableNativeFeedback disabled={true}> should be disabled when disabled is true 1`] = `
+exports[`<TouchableNativeFeedback disabled={false} accessibilityState={{disabled:true}}> should overwrite accessibilityState with value of disabled prop 1`] = `
 <View
   accessibilityState={
     Object {
-      "disabled": true,
+      "disabled": false,
+    }
+  }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
     }
   }
   accessible={true}
@@ -54,6 +54,14 @@ exports[`<TouchableNativeFeedback disabled={true} accessibilityState={{}}> shoul
   accessibilityState={
     Object {
       "disabled": true,
+    }
+  }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
     }
   }
   accessible={true}
@@ -76,6 +84,14 @@ exports[`<TouchableNativeFeedback disabled={true} accessibilityState={{checked: 
       "disabled": true,
     }
   }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
   accessible={true}
   focusable={false}
   onClick={[Function]}
@@ -95,23 +111,12 @@ exports[`<TouchableNativeFeedback disabled={true} accessibilityState={{disabled:
       "disabled": true,
     }
   }
-  accessible={true}
-  focusable={false}
-  onClick={[Function]}
-  onResponderGrant={[Function]}
-  onResponderMove={[Function]}
-  onResponderRelease={[Function]}
-  onResponderTerminate={[Function]}
-  onResponderTerminationRequest={[Function]}
-  onStartShouldSetResponder={[Function]}
-/>
-`;
-
-exports[`<TouchableNativeFeedback disabled={false} accessibilityState={{disabled:true}}> should overwrite accessibilityState with value of disabled prop 1`] = `
-<View
-  accessibilityState={
+  accessibilityValue={
     Object {
-      "disabled": false,
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
     }
   }
   accessible={true}
@@ -124,4 +129,55 @@ exports[`<TouchableNativeFeedback disabled={false} accessibilityState={{disabled
   onResponderTerminationRequest={[Function]}
   onStartShouldSetResponder={[Function]}
 />
+`;
+
+exports[`<TouchableNativeFeedback disabled={true}> should be disabled when disabled is true 1`] = `
+<View
+  accessibilityState={
+    Object {
+      "disabled": true,
+    }
+  }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
+  accessible={true}
+  focusable={false}
+  onClick={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+/>
+`;
+
+exports[`TouchableWithoutFeedback renders correctly 1`] = `
+<Text
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
+  accessible={true}
+  focusable={false}
+  onClick={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+>
+  Touchable
+</Text>
 `;

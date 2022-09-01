@@ -2,6 +2,14 @@
 
 exports[`TouchableOpacity renders correctly 1`] = `
 <View
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
   accessible={true}
   collapsable={false}
   focusable={false}
@@ -31,6 +39,14 @@ exports[`TouchableOpacity renders in disabled state when a disabled prop is pass
       "disabled": true,
     }
   }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
   accessible={true}
   collapsable={false}
   focusable={false}
@@ -58,6 +74,14 @@ exports[`TouchableOpacity renders in disabled state when a key disabled in acces
   accessibilityState={
     Object {
       "disabled": true,
+    }
+  }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
     }
   }
   accessible={true}

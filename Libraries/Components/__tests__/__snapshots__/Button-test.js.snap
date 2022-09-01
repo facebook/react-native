@@ -8,6 +8,14 @@ exports[`<Button /> should be disabled and it should set accessibilityState to d
       "disabled": true,
     }
   }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
   accessible={true}
   collapsable={false}
   focusable={false}
@@ -60,6 +68,14 @@ exports[`<Button /> should be disabled when disabled is empty and accessibilityS
   accessibilityState={
     Object {
       "disabled": true,
+    }
+  }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
     }
   }
   accessible={true}
@@ -116,6 +132,14 @@ exports[`<Button /> should be disabled when disabled={true} and accessibilitySta
       "disabled": true,
     }
   }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
   accessible={true}
   collapsable={false}
   focusable={false}
@@ -165,6 +189,14 @@ exports[`<Button /> should be disabled when disabled={true} and accessibilitySta
 exports[`<Button /> should be set importantForAccessibility={no-hide-descendants} when importantForAccessibility={no} 1`] = `
 <View
   accessibilityRole="button"
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
   accessible={true}
   collapsable={false}
   focusable={false}
@@ -210,6 +242,14 @@ exports[`<Button /> should be set importantForAccessibility={no-hide-descendants
 exports[`<Button /> should be set importantForAccessibility={no-hide-descendants} when importantForAccessibility={no-hide-descendants} 1`] = `
 <View
   accessibilityRole="button"
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
   accessible={true}
   collapsable={false}
   focusable={false}
@@ -258,6 +298,14 @@ exports[`<Button /> should not be disabled when disabled={false} and accessibili
   accessibilityState={
     Object {
       "disabled": false,
+    }
+  }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
     }
   }
   accessible={true}
@@ -310,6 +358,14 @@ exports[`<Button /> should not be disabled when disabled={false} and accessibili
       "disabled": false,
     }
   }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
   accessible={true}
   collapsable={false}
   focusable={false}
@@ -358,6 +414,14 @@ exports[`<Button /> should overwrite accessibilityState with value of disabled p
   accessibilityState={
     Object {
       "disabled": true,
+    }
+  }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
     }
   }
   accessible={true}
@@ -409,6 +473,14 @@ exports[`<Button /> should overwrite accessibilityState with value of disabled p
 exports[`<Button /> should render as expected 1`] = `
 <View
   accessibilityRole="button"
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
   accessible={true}
   collapsable={false}
   focusable={false}

@@ -2,6 +2,14 @@
 
 exports[`<Pressable /> should render as expected: should deep render when mocked (please verify output manually) 1`] = `
 <View
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
   accessible={true}
   collapsable={false}
   focusable={true}
@@ -21,6 +29,14 @@ exports[`<Pressable /> should render as expected: should deep render when mocked
 
 exports[`<Pressable /> should render as expected: should deep render when not mocked (please verify output manually) 1`] = `
 <View
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
   accessible={true}
   collapsable={false}
   focusable={true}
@@ -57,6 +73,14 @@ exports[`<Pressable disabled={true} /> should be disabled when disabled is true:
       "disabled": true,
     }
   }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
   accessible={true}
   collapsable={false}
   focusable={true}
@@ -79,6 +103,14 @@ exports[`<Pressable disabled={true} /> should be disabled when disabled is true:
   accessibilityState={
     Object {
       "disabled": true,
+    }
+  }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
     }
   }
   accessible={true}
@@ -121,6 +153,14 @@ exports[`<Pressable disabled={true} accessibilityState={{}} /> should be disable
       "disabled": true,
     }
   }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
   accessible={true}
   collapsable={false}
   focusable={true}
@@ -143,6 +183,14 @@ exports[`<Pressable disabled={true} accessibilityState={{}} /> should be disable
   accessibilityState={
     Object {
       "disabled": true,
+    }
+  }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
     }
   }
   accessible={true}
@@ -188,6 +236,14 @@ exports[`<Pressable disabled={true} accessibilityState={{checked: true}} /> shou
       "disabled": true,
     }
   }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
   accessible={true}
   collapsable={false}
   focusable={true}
@@ -211,6 +267,14 @@ exports[`<Pressable disabled={true} accessibilityState={{checked: true}} /> shou
     Object {
       "checked": true,
       "disabled": true,
+    }
+  }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
     }
   }
   accessible={true}
@@ -263,6 +327,14 @@ exports[`<Pressable disabled={true} accessibilityState={{disabled: false}} /> sh
       "disabled": true,
     }
   }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
   accessible={true}
   collapsable={false}
   focusable={true}
@@ -285,6 +357,14 @@ exports[`<Pressable disabled={true} accessibilityState={{disabled: false}} /> sh
   accessibilityState={
     Object {
       "disabled": true,
+    }
+  }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
     }
   }
   accessible={true}

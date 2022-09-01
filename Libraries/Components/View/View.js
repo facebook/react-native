@@ -47,7 +47,7 @@ const View: React.AbstractComponent<
           : otherProps.accessibilityValue?.text,
     };
 
-    const restWithDefaultProps = {accessibilityValue, ...otherProps};
+    const restWithDefaultProps = {...otherProps, accessibilityValue};
 
     return (
       <TextAncestor.Provider value={false}>
