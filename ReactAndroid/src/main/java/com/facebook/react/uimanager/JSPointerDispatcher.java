@@ -22,7 +22,9 @@ import com.facebook.react.uimanager.events.TouchEvent;
 import com.facebook.react.uimanager.events.TouchEventCoalescingKeyHelper;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * JSPointerDispatcher handles dispatching pointer events to JS from RootViews. If you implement
@@ -37,9 +39,8 @@ public class JSPointerDispatcher {
 
   private final TouchEventCoalescingKeyHelper mTouchEventCoalescingKeyHelper =
       new TouchEventCoalescingKeyHelper();
-  private List<ViewTarget> mLastHitPath = Collections.emptyList();
-  private final float[] mLastEventCoordinates = new float[2];
-  private final float[] mTargetCoordinates = new float[2];
+  private final Map<Integer, List<ViewTarget>> mLastHitPathByPointerId = new HashMap<>();
+  private final Map<Integer, float[]> mLastEventCoodinatesByPointerId = new HashMap<>();
 
   private int mChildHandlingNativeGesture = -1;
   private int mPrimaryPointerId = UNSET_POINTER_ID;
@@ -62,10 +63,11 @@ public class JSPointerDispatcher {
       return;
     }
 
+    float[] targetCoordinates = new float[2];
     List<ViewTarget> hitPath =
         TouchTargetHelper.findTargetPathAndCoordinatesForTouch(
-            motionEvent.getX(), motionEvent.getY(), mRootViewGroup, mTargetCoordinates);
-    dispatchCancelEvent(hitPath, motionEvent, eventDispatcher);
+            motionEvent.getX(), motionEvent.getY(), mRootViewGroup, targetCoordinates);
+    dispatchCancelEvent(hitPath, motionEvent, eventDispatcher, targetCoordinates);
     mChildHandlingNativeGesture = childView.getId();
   }
 
@@ -79,7 +81,8 @@ public class JSPointerDispatcher {
       List<ViewTarget> hitPath,
       int surfaceId,
       MotionEvent motionEvent,
-      EventDispatcher eventDispatcher) {
+      EventDispatcher eventDispatcher,
+      float[] targetCoordinates) {
     if (motionEvent.getActionMasked() == MotionEvent.ACTION_UP) {
       // End of a "down" coalescing key
       mTouchEventCoalescingKeyHelper.removeCoalescingKey(mDownStartTime);
@@ -97,7 +100,7 @@ public class JSPointerDispatcher {
               surfaceId,
               activeTargetTag,
               motionEvent,
-              mTargetCoordinates,
+              targetCoordinates,
               mPrimaryPointerId));
     }
 
@@ -111,7 +114,7 @@ public class JSPointerDispatcher {
                 surfaceId,
                 activeTargetTag,
                 motionEvent,
-                mTargetCoordinates,
+                targetCoordinates,
                 mPrimaryPointerId));
       }
 
@@ -124,13 +127,17 @@ public class JSPointerDispatcher {
           leaveViewTargets,
           eventDispatcher,
           surfaceId,
-          motionEvent);
+          motionEvent,
+          targetCoordinates);
+
+      int activePointerId = motionEvent.getPointerId(motionEvent.getActionIndex());
+      mLastHitPathByPointerId.remove(activePointerId);
+      mLastEventCoodinatesByPointerId.remove(activePointerId);
     }
 
     if (motionEvent.getActionMasked() == MotionEvent.ACTION_UP) {
       mPrimaryPointerId = UNSET_POINTER_ID;
     }
-    return;
   }
 
   private void onDown(
@@ -138,7 +145,8 @@ public class JSPointerDispatcher {
       List<ViewTarget> hitPath,
       int surfaceId,
       MotionEvent motionEvent,
-      EventDispatcher eventDispatcher) {
+      EventDispatcher eventDispatcher,
+      float[] targetCoordinates) {
 
     if (motionEvent.getActionMasked() == MotionEvent.ACTION_DOWN) {
       mPrimaryPointerId = motionEvent.getPointerId(0);
@@ -160,7 +168,7 @@ public class JSPointerDispatcher {
                 surfaceId,
                 activeTargetTag,
                 motionEvent,
-                mTargetCoordinates,
+                targetCoordinates,
                 mPrimaryPointerId));
       }
 
@@ -174,7 +182,8 @@ public class JSPointerDispatcher {
           enterViewTargets,
           eventDispatcher,
           surfaceId,
-          motionEvent);
+          motionEvent,
+          targetCoordinates);
     }
 
     boolean listeningForDown =
@@ -186,7 +195,7 @@ public class JSPointerDispatcher {
               surfaceId,
               activeTargetTag,
               motionEvent,
-              mTargetCoordinates,
+              targetCoordinates,
               mPrimaryPointerId));
     }
   }
@@ -199,18 +208,18 @@ public class JSPointerDispatcher {
       return;
     }
 
-    boolean supportsHover = PointerEventHelper.supportsHover(motionEvent);
     int surfaceId = UIManagerHelper.getSurfaceId(mRootViewGroup);
 
     // Only relevant for POINTER_UP/POINTER_DOWN actions, otherwise 0
     int actionIndex = motionEvent.getActionIndex();
 
+    float[] targetCoordinates = new float[2];
     List<ViewTarget> hitPath =
         TouchTargetHelper.findTargetPathAndCoordinatesForTouch(
             motionEvent.getX(actionIndex),
             motionEvent.getY(actionIndex),
             mRootViewGroup,
-            mTargetCoordinates);
+            targetCoordinates);
 
     if (hitPath.isEmpty()) {
       return;
@@ -220,7 +229,7 @@ public class JSPointerDispatcher {
     int activeTargetTag = activeViewTarget.getViewId();
 
     if (action == MotionEvent.ACTION_HOVER_MOVE) {
-      onMove(motionEvent, eventDispatcher, surfaceId, hitPath);
+      onMove(motionEvent, eventDispatcher, surfaceId, hitPath, targetCoordinates);
       return;
     }
 
@@ -234,7 +243,8 @@ public class JSPointerDispatcher {
     switch (action) {
       case MotionEvent.ACTION_DOWN:
       case MotionEvent.ACTION_POINTER_DOWN:
-        onDown(activeTargetTag, hitPath, surfaceId, motionEvent, eventDispatcher);
+        onDown(
+            activeTargetTag, hitPath, surfaceId, motionEvent, eventDispatcher, targetCoordinates);
         break;
       case MotionEvent.ACTION_MOVE:
         // TODO(luwe) - converge this with ACTION_HOVER_MOVE
@@ -249,27 +259,22 @@ public class JSPointerDispatcher {
                   surfaceId,
                   activeTargetTag,
                   motionEvent,
-                  mTargetCoordinates,
+                  targetCoordinates,
                   coalescingKey,
                   mPrimaryPointerId));
         }
         break;
       case MotionEvent.ACTION_UP:
       case MotionEvent.ACTION_POINTER_UP:
-        onUp(activeTargetTag, hitPath, surfaceId, motionEvent, eventDispatcher);
+        onUp(activeTargetTag, hitPath, surfaceId, motionEvent, eventDispatcher, targetCoordinates);
         break;
       case MotionEvent.ACTION_CANCEL:
-        dispatchCancelEvent(hitPath, motionEvent, eventDispatcher);
+        dispatchCancelEvent(hitPath, motionEvent, eventDispatcher, targetCoordinates);
         break;
       default:
         FLog.w(
             ReactConstants.TAG,
-            "Warning : Motion Event was ignored. Action="
-                + action
-                + " Target="
-                + activeTargetTag
-                + " Supports Hover="
-                + supportsHover);
+            "Warning : Motion Event was ignored. Action=" + action + " Target=" + activeTargetTag);
         return;
     }
   }
@@ -325,13 +330,14 @@ public class JSPointerDispatcher {
       List<ViewTarget> viewTargets,
       EventDispatcher dispatcher,
       int surfaceId,
-      MotionEvent motionEvent) {
+      MotionEvent motionEvent,
+      float[] targetCoordinates) {
 
     for (ViewTarget viewTarget : viewTargets) {
       int viewId = viewTarget.getViewId();
       dispatcher.dispatchEvent(
           PointerEvent.obtain(
-              eventName, surfaceId, viewId, motionEvent, mTargetCoordinates, mPrimaryPointerId));
+              eventName, surfaceId, viewId, motionEvent, targetCoordinates, mPrimaryPointerId));
     }
   }
 
@@ -340,19 +346,31 @@ public class JSPointerDispatcher {
       MotionEvent motionEvent,
       EventDispatcher eventDispatcher,
       int surfaceId,
-      List<ViewTarget> hitPath) {
+      List<ViewTarget> hitPath,
+      float[] targetCoordinates) {
 
     int action = motionEvent.getActionMasked();
     if (action != MotionEvent.ACTION_HOVER_MOVE) {
       return;
     }
 
+    int actionIndex = motionEvent.getActionIndex();
+    int activePointerId = motionEvent.getPointerId(actionIndex);
     float x = motionEvent.getX();
     float y = motionEvent.getY();
+    List<ViewTarget> lastHitPath =
+        mLastHitPathByPointerId.containsKey(activePointerId)
+            ? mLastHitPathByPointerId.get(activePointerId)
+            : Collections.emptyList();
+
+    float[] lastEventCoordinates =
+        mLastEventCoodinatesByPointerId.containsKey(activePointerId)
+            ? mLastEventCoodinatesByPointerId.get(activePointerId)
+            : new float[] {0, 0};
 
     boolean qualifiedMove =
-        (Math.abs(mLastEventCoordinates[0] - x) > ONMOVE_EPSILON
-            || Math.abs(mLastEventCoordinates[1] - y) > ONMOVE_EPSILON);
+        (Math.abs(lastEventCoordinates[0] - x) > ONMOVE_EPSILON
+            || Math.abs(lastEventCoordinates[1] - y) > ONMOVE_EPSILON);
 
     // Early exit
     if (!qualifiedMove) {
@@ -384,15 +402,15 @@ public class JSPointerDispatcher {
     }
 
     // hitState is list ordered from inner child -> parent tag
-    // Traverse hitState back-to-front to find the first divergence with mLastHitState
+    // Traverse hitState back-to-front to find the first divergence with lastHitPath
     // FIXME: this may generate incorrect events when view collapsing changes the hierarchy
     boolean nonDivergentListeningToEnter = false;
     boolean nonDivergentListeningToLeave = false;
     int firstDivergentIndexFromBack = 0;
-    while (firstDivergentIndexFromBack < Math.min(hitPath.size(), mLastHitPath.size())
+    while (firstDivergentIndexFromBack < Math.min(hitPath.size(), lastHitPath.size())
         && hitPath
             .get(hitPath.size() - 1 - firstDivergentIndexFromBack)
-            .equals(mLastHitPath.get(mLastHitPath.size() - 1 - firstDivergentIndexFromBack))) {
+            .equals(lastHitPath.get(lastHitPath.size() - 1 - firstDivergentIndexFromBack))) {
 
       // Track if any non-diverging views are listening to enter/leave
       View nonDivergentViewTargetView =
@@ -410,17 +428,17 @@ public class JSPointerDispatcher {
     }
 
     boolean hasDiverged =
-        firstDivergentIndexFromBack < Math.max(hitPath.size(), mLastHitPath.size());
+        firstDivergentIndexFromBack < Math.max(hitPath.size(), lastHitPath.size());
 
     if (hasDiverged) {
       // If something has changed in either enter/exit, let's start a new coalescing key
       mTouchEventCoalescingKeyHelper.incrementCoalescingKey(mHoverInteractionKey);
 
       // Out, Leave events
-      if (mLastHitPath.size() > 0) {
-        int lastTargetTag = mLastHitPath.get(0).getViewId();
+      if (lastHitPath.size() > 0) {
+        int lastTargetTag = lastHitPath.get(0).getViewId();
         boolean listeningForOut =
-            isAnyoneListeningForBubblingEvent(mLastHitPath, EVENT.OUT, EVENT.OUT_CAPTURE);
+            isAnyoneListeningForBubblingEvent(lastHitPath, EVENT.OUT, EVENT.OUT_CAPTURE);
         if (listeningForOut) {
           eventDispatcher.dispatchEvent(
               PointerEvent.obtain(
@@ -428,14 +446,14 @@ public class JSPointerDispatcher {
                   surfaceId,
                   lastTargetTag,
                   motionEvent,
-                  mTargetCoordinates,
+                  targetCoordinates,
                   mPrimaryPointerId));
         }
 
         // target -> root
         List<ViewTarget> leaveViewTargets =
             filterByShouldDispatch(
-                mLastHitPath.subList(0, mLastHitPath.size() - firstDivergentIndexFromBack),
+                lastHitPath.subList(0, lastHitPath.size() - firstDivergentIndexFromBack),
                 EVENT.LEAVE,
                 EVENT.LEAVE_CAPTURE,
                 nonDivergentListeningToLeave);
@@ -446,7 +464,8 @@ public class JSPointerDispatcher {
               leaveViewTargets,
               eventDispatcher,
               surfaceId,
-              motionEvent);
+              motionEvent,
+              targetCoordinates);
         }
       }
 
@@ -459,7 +478,7 @@ public class JSPointerDispatcher {
                 surfaceId,
                 targetTag,
                 motionEvent,
-                mTargetCoordinates,
+                targetCoordinates,
                 mPrimaryPointerId));
       }
 
@@ -479,7 +498,8 @@ public class JSPointerDispatcher {
             enterViewTargets,
             eventDispatcher,
             surfaceId,
-            motionEvent);
+            motionEvent,
+            targetCoordinates);
       }
     }
 
@@ -493,18 +513,20 @@ public class JSPointerDispatcher {
               surfaceId,
               targetTag,
               motionEvent,
-              mTargetCoordinates,
+              targetCoordinates,
               coalescingKey,
               mPrimaryPointerId));
     }
 
-    mLastHitPath = hitPath;
-    mLastEventCoordinates[0] = x;
-    mLastEventCoordinates[1] = y;
+    mLastHitPathByPointerId.put(activePointerId, hitPath);
+    mLastEventCoodinatesByPointerId.put(activePointerId, new float[] {x, y});
   }
 
   private void dispatchCancelEvent(
-      List<ViewTarget> hitPath, MotionEvent motionEvent, EventDispatcher eventDispatcher) {
+      List<ViewTarget> hitPath,
+      MotionEvent motionEvent,
+      EventDispatcher eventDispatcher,
+      float[] targetCoordinates) {
     // This means the gesture has already ended, via some other CANCEL or UP event. This is not
     // expected to happen very often as it would mean some child View has decided to intercept the
     // touch stream and start a native gesture only upon receiving the UP/CANCEL event.
@@ -526,7 +548,7 @@ public class JSPointerDispatcher {
                     surfaceId,
                     targetTag,
                     motionEvent,
-                    mTargetCoordinates,
+                    targetCoordinates,
                     mPrimaryPointerId));
       }
 
@@ -539,7 +561,8 @@ public class JSPointerDispatcher {
           leaveViewTargets,
           eventDispatcher,
           surfaceId,
-          motionEvent);
+          motionEvent,
+          targetCoordinates);
 
       mTouchEventCoalescingKeyHelper.removeCoalescingKey(mDownStartTime);
       mDownStartTime = TouchEvent.UNSET;
