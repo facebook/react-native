@@ -76,6 +76,7 @@ const PERMISSIONS = Object.freeze({
   UWB_RANGING: 'android.permission.UWB_RANGING',
   POST_NOTIFICATION: 'android.permission.POST_NOTIFICATIONS',
   NEARBY_WIFI_DEVICES: 'android.permission.NEARBY_WIFI_DEVICES',
+  POST_NOTIFICATIONS: 'android.permission.POST_NOTIFICATIONS',
 });
 
 /**
@@ -122,6 +123,7 @@ class PermissionsAndroid {
     RECEIVE_WAP_PUSH: string,
     RECORD_AUDIO: string,
     SEND_SMS: string,
+    POST_NOTIFICATIONS: string,
     USE_SIP: string,
     UWB_RANGING: string,
     WRITE_CALENDAR: string,
