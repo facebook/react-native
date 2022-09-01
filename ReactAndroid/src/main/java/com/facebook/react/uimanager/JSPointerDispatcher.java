@@ -74,6 +74,123 @@ public class JSPointerDispatcher {
     mChildHandlingNativeGesture = -1;
   }
 
+  private void onUp(
+      int activeTargetTag,
+      List<ViewTarget> hitPath,
+      int surfaceId,
+      MotionEvent motionEvent,
+      EventDispatcher eventDispatcher) {
+    if (motionEvent.getActionMasked() == MotionEvent.ACTION_UP) {
+      // End of a "down" coalescing key
+      mTouchEventCoalescingKeyHelper.removeCoalescingKey(mDownStartTime);
+      mDownStartTime = TouchEvent.UNSET;
+    } else {
+      mTouchEventCoalescingKeyHelper.incrementCoalescingKey(mDownStartTime);
+    }
+
+    boolean supportsHover = PointerEventHelper.supportsHover(motionEvent);
+    boolean listeningForUp = isAnyoneListeningForBubblingEvent(hitPath, EVENT.UP, EVENT.UP_CAPTURE);
+    if (listeningForUp) {
+      eventDispatcher.dispatchEvent(
+          PointerEvent.obtain(
+              PointerEventHelper.POINTER_UP,
+              surfaceId,
+              activeTargetTag,
+              motionEvent,
+              mTargetCoordinates,
+              mPrimaryPointerId));
+    }
+
+    if (!supportsHover) {
+      boolean listeningForOut =
+          isAnyoneListeningForBubblingEvent(hitPath, EVENT.OUT, EVENT.OUT_CAPTURE);
+      if (listeningForOut) {
+        eventDispatcher.dispatchEvent(
+            PointerEvent.obtain(
+                PointerEventHelper.POINTER_OUT,
+                surfaceId,
+                activeTargetTag,
+                motionEvent,
+                mTargetCoordinates,
+                mPrimaryPointerId));
+      }
+
+      List<ViewTarget> leaveViewTargets =
+          filterByShouldDispatch(hitPath, EVENT.LEAVE, EVENT.LEAVE_CAPTURE, false);
+
+      // target -> root
+      dispatchEventForViewTargets(
+          PointerEventHelper.POINTER_LEAVE,
+          leaveViewTargets,
+          eventDispatcher,
+          surfaceId,
+          motionEvent);
+    }
+
+    if (motionEvent.getActionMasked() == MotionEvent.ACTION_UP) {
+      mPrimaryPointerId = UNSET_POINTER_ID;
+    }
+    return;
+  }
+
+  private void onDown(
+      int activeTargetTag,
+      List<ViewTarget> hitPath,
+      int surfaceId,
+      MotionEvent motionEvent,
+      EventDispatcher eventDispatcher) {
+
+    if (motionEvent.getActionMasked() == MotionEvent.ACTION_DOWN) {
+      mPrimaryPointerId = motionEvent.getPointerId(0);
+      mDownStartTime = motionEvent.getEventTime();
+      mTouchEventCoalescingKeyHelper.addCoalescingKey(mDownStartTime);
+    } else {
+      mTouchEventCoalescingKeyHelper.incrementCoalescingKey(mDownStartTime);
+    }
+
+    boolean supportsHover = PointerEventHelper.supportsHover(motionEvent);
+    if (!supportsHover) {
+      // Indirect OVER event dispatches before ENTER
+      boolean listeningForOver =
+          isAnyoneListeningForBubblingEvent(hitPath, EVENT.OVER, EVENT.OVER_CAPTURE);
+      if (listeningForOver) {
+        eventDispatcher.dispatchEvent(
+            PointerEvent.obtain(
+                PointerEventHelper.POINTER_OVER,
+                surfaceId,
+                activeTargetTag,
+                motionEvent,
+                mTargetCoordinates,
+                mPrimaryPointerId));
+      }
+
+      List<ViewTarget> enterViewTargets =
+          filterByShouldDispatch(hitPath, EVENT.ENTER, EVENT.ENTER_CAPTURE, false);
+
+      // Dispatch root -> target, we need to reverse order of enterViewTargets
+      Collections.reverse(enterViewTargets);
+      dispatchEventForViewTargets(
+          PointerEventHelper.POINTER_ENTER,
+          enterViewTargets,
+          eventDispatcher,
+          surfaceId,
+          motionEvent);
+    }
+
+    boolean listeningForDown =
+        isAnyoneListeningForBubblingEvent(hitPath, EVENT.DOWN, EVENT.DOWN_CAPTURE);
+    if (listeningForDown) {
+      eventDispatcher.dispatchEvent(
+          PointerEvent.obtain(
+              PointerEventHelper.POINTER_DOWN,
+              surfaceId,
+              activeTargetTag,
+              motionEvent,
+              mTargetCoordinates,
+              mPrimaryPointerId));
+    }
+  }
+
   public void handleMotionEvent(MotionEvent motionEvent, EventDispatcher eventDispatcher) {
     int action = motionEvent.getActionMasked();
 
@@ -103,195 +220,58 @@ public class JSPointerDispatcher {
     int activeTargetTag = activeViewTarget.getViewId();
 
     if (action == MotionEvent.ACTION_HOVER_MOVE) {
-      handleHoverEvent(motionEvent, eventDispatcher, surfaceId, hitPath);
+      onMove(motionEvent, eventDispatcher, surfaceId, hitPath);
       return;
     }
 
-    // First down pointer
-    if (action == MotionEvent.ACTION_DOWN) {
-      mPrimaryPointerId = motionEvent.getPointerId(actionIndex);
-
-      // Start a "down" coalescing key
-      mDownStartTime = motionEvent.getEventTime();
-      mTouchEventCoalescingKeyHelper.addCoalescingKey(mDownStartTime);
-
-      if (!supportsHover) {
-        // Indirect OVER event dispatches before ENTER
-        boolean listeningForOver =
-            isAnyoneListeningForBubblingEvent(hitPath, EVENT.OVER, EVENT.OVER_CAPTURE);
-        if (listeningForOver) {
-          eventDispatcher.dispatchEvent(
-              PointerEvent.obtain(
-                  PointerEventHelper.POINTER_OVER,
-                  surfaceId,
-                  activeTargetTag,
-                  motionEvent,
-                  mTargetCoordinates,
-                  mPrimaryPointerId));
-        }
-
-        List<ViewTarget> enterViewTargets =
-            filterByShouldDispatch(hitPath, EVENT.ENTER, EVENT.ENTER_CAPTURE, false);
-
-        // Dispatch root -> target, we need to reverse order of enterViewTargets
-        Collections.reverse(enterViewTargets);
-        dispatchEventForViewTargets(
-            PointerEventHelper.POINTER_ENTER,
-            enterViewTargets,
-            eventDispatcher,
-            surfaceId,
-            motionEvent);
-      }
-
-      boolean listeningForDown =
-          isAnyoneListeningForBubblingEvent(hitPath, EVENT.DOWN, EVENT.DOWN_CAPTURE);
-      if (listeningForDown) {
-        eventDispatcher.dispatchEvent(
-            PointerEvent.obtain(
-                PointerEventHelper.POINTER_DOWN,
-                surfaceId,
-                activeTargetTag,
-                motionEvent,
-                mTargetCoordinates,
-                mPrimaryPointerId));
-      }
-
-      return;
-    }
-
+    // TODO(luwe) - Update this to properly handle native gesture handling for non-hover move events
     // If the touch was intercepted by a child, we've already sent a cancel event to JS for this
     // gesture, so we shouldn't send any more pointer events related to it.
     if (mChildHandlingNativeGesture != -1) {
       return;
     }
 
-    // New pointer goes down, this can only happen after ACTION_DOWN is sent for the first pointer
-    if (action == MotionEvent.ACTION_POINTER_DOWN) {
-      mTouchEventCoalescingKeyHelper.incrementCoalescingKey(mDownStartTime);
+    switch (action) {
+      case MotionEvent.ACTION_DOWN:
+      case MotionEvent.ACTION_POINTER_DOWN:
+        onDown(activeTargetTag, hitPath, surfaceId, motionEvent, eventDispatcher);
+        break;
+      case MotionEvent.ACTION_MOVE:
+        // TODO(luwe) - converge this with ACTION_HOVER_MOVE
+        int coalescingKey = mTouchEventCoalescingKeyHelper.getCoalescingKey(mDownStartTime);
 
-      // TODO(luwe) We need to fire indirect over,enter events for secondary pointers
-
-      boolean listeningForDown =
-          isAnyoneListeningForBubblingEvent(hitPath, EVENT.DOWN, EVENT.DOWN_CAPTURE);
-      if (listeningForDown) {
-        eventDispatcher.dispatchEvent(
-            PointerEvent.obtain(
-                PointerEventHelper.POINTER_DOWN,
-                surfaceId,
-                activeTargetTag,
-                motionEvent,
-                mTargetCoordinates,
-                mPrimaryPointerId));
-      }
-
-      return;
-    }
-
-    if (action == MotionEvent.ACTION_MOVE) {
-      int coalescingKey = mTouchEventCoalescingKeyHelper.getCoalescingKey(mDownStartTime);
-
-      boolean listeningForMove =
-          isAnyoneListeningForBubblingEvent(hitPath, EVENT.MOVE, EVENT.MOVE_CAPTURE);
-      if (listeningForMove) {
-        eventDispatcher.dispatchEvent(
-            PointerEvent.obtain(
-                PointerEventHelper.POINTER_MOVE,
-                surfaceId,
-                activeTargetTag,
-                motionEvent,
-                mTargetCoordinates,
-                coalescingKey,
-                mPrimaryPointerId));
-      }
-
-      return;
-    }
-
-    // Exactly one of the pointers goes up, not the last one
-    if (action == MotionEvent.ACTION_POINTER_UP) {
-      mTouchEventCoalescingKeyHelper.incrementCoalescingKey(mDownStartTime);
-
-      // TODO(luwe) We need to fire indirect out,leave events for secondary pointers
-
-      boolean listeningForUp =
-          isAnyoneListeningForBubblingEvent(hitPath, EVENT.UP, EVENT.UP_CAPTURE);
-      if (listeningForUp) {
-        eventDispatcher.dispatchEvent(
-            PointerEvent.obtain(
-                PointerEventHelper.POINTER_UP,
-                surfaceId,
-                activeTargetTag,
-                motionEvent,
-                mTargetCoordinates,
-                mPrimaryPointerId));
-      }
-
-      return;
-    }
-
-    // Last pointer comes up
-    if (action == MotionEvent.ACTION_UP) {
-
-      // End of a "down" coalescing key
-      mTouchEventCoalescingKeyHelper.removeCoalescingKey(mDownStartTime);
-      mDownStartTime = TouchEvent.UNSET;
-
-      boolean listeningForUp =
-          isAnyoneListeningForBubblingEvent(hitPath, EVENT.UP, EVENT.UP_CAPTURE);
-      if (listeningForUp) {
-        eventDispatcher.dispatchEvent(
-            PointerEvent.obtain(
-                PointerEventHelper.POINTER_UP,
-                surfaceId,
-                activeTargetTag,
-                motionEvent,
-                mTargetCoordinates,
-                mPrimaryPointerId));
-      }
-
-      if (!supportsHover) {
-        boolean listeningForOut =
-            isAnyoneListeningForBubblingEvent(hitPath, EVENT.OUT, EVENT.OUT_CAPTURE);
-        if (listeningForOut) {
+        boolean listeningForMove =
+            isAnyoneListeningForBubblingEvent(hitPath, EVENT.MOVE, EVENT.MOVE_CAPTURE);
+        if (listeningForMove) {
           eventDispatcher.dispatchEvent(
               PointerEvent.obtain(
-                  PointerEventHelper.POINTER_OUT,
+                  PointerEventHelper.POINTER_MOVE,
                   surfaceId,
                   activeTargetTag,
                   motionEvent,
                   mTargetCoordinates,
+                  coalescingKey,
                   mPrimaryPointerId));
         }
-
-        List<ViewTarget> leaveViewTargets =
-            filterByShouldDispatch(hitPath, EVENT.LEAVE, EVENT.LEAVE_CAPTURE, false);
-
-        // target -> root
-        dispatchEventForViewTargets(
-            PointerEventHelper.POINTER_LEAVE,
-            leaveViewTargets,
-            eventDispatcher,
-            surfaceId,
-            motionEvent);
-      }
-
-      mPrimaryPointerId = UNSET_POINTER_ID;
-      return;
+        break;
+      case MotionEvent.ACTION_UP:
+      case MotionEvent.ACTION_POINTER_UP:
+        onUp(activeTargetTag, hitPath, surfaceId, motionEvent, eventDispatcher);
+        break;
+      case MotionEvent.ACTION_CANCEL:
+        dispatchCancelEvent(hitPath, motionEvent, eventDispatcher);
+        break;
+      default:
+        FLog.w(
+            ReactConstants.TAG,
+            "Warning : Motion Event was ignored. Action="
+                + action
+                + " Target="
+                + activeTargetTag
+                + " Supports Hover="
+                + supportsHover);
+        return;
     }
-
-    if (action == MotionEvent.ACTION_CANCEL) {
-      dispatchCancelEvent(hitPath, motionEvent, eventDispatcher);
-      return;
-    }
-
-    FLog.w(
-        ReactConstants.TAG,
-        "Warning : Motion Event was ignored. Action="
-            + action
-            + " Target="
-            + activeTargetTag
-            + " Supports Hover="
-            + supportsHover);
   }
 
   private static boolean isAnyoneListeningForBubblingEvent(
@@ -356,7 +336,7 @@ public class JSPointerDispatcher {
   }
 
   // called on hover_move motion events only
-  private void handleHoverEvent(
+  private void onMove(
       MotionEvent motionEvent,
       EventDispatcher eventDispatcher,
       int surfaceId,
