@@ -72,6 +72,23 @@ describe('ImageSourceUtils', () => {
     expect(sources[2]).toEqual(expect.objectContaining({uri: uri, scale: 1}));
   });
 
+  it('should use 1x as default scale if only url is provided in srcSet', () => {
+    let uri1 = 'uri1';
+    let scale1 = '2x';
+
+    let uri2 = 'uri2';
+
+    const imageProps = {
+      srcSet: `${uri1} ${scale1}, ${uri2}`,
+    };
+    const sources = getImageSourcesFromImageProps(imageProps);
+
+    expect(sources).toBeDefined();
+    expect(sources).toHaveLength(2);
+    expect(sources[0]).toEqual(expect.objectContaining({uri: uri1, scale: 2}));
+    expect(sources[1]).toEqual(expect.objectContaining({uri: uri2, scale: 1}));
+  });
+
   it('should contain crossorigin headers when provided with src', () => {
     let uri = 'imageURI';
 

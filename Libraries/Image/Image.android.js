@@ -151,14 +151,19 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
 
   let style;
   let sources;
+  let headers;
   if (!Array.isArray(source) && source?.uri != null) {
     const {width = props.width, height = props.height, uri} = source;
     style = flattenStyle([{width, height}, styles.base, props.style]);
-    sources = [{uri: uri}];
+    headers = source.headers;
+    sources = [source];
     if (uri === '') {
       console.warn('source.uri should not be an empty string');
     }
   } else {
+    if (Array.isArray(source)) {
+      headers = source[0].headers;
+    }
     style = flattenStyle([styles.base, props.style]);
     sources = source;
   }
@@ -171,7 +176,7 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
     src: sources,
     /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
      * when making Flow check .android.js files. */
-    headers: source?.headers,
+    headers: headers,
     defaultSrc: defaultSource ? defaultSource.uri : null,
     loadingIndicatorSrc: loadingIndicatorSource
       ? loadingIndicatorSource.uri
