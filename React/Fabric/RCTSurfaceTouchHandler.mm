@@ -174,21 +174,36 @@ static CGFloat RadsToDegrees(CGFloat rads)
 
 static int ButtonMaskToButtons(UIEventButtonMask buttonMask)
 {
+  int buttonsMaskResult = 0;
   if (@available(iOS 13.4, *)) {
-    return (((buttonMask & UIEventButtonMaskPrimary) > 0) ? 1 : 0) |
-        (((buttonMask & UIEventButtonMaskSecondary) > 0) ? 2 : 0);
+    if ((buttonMask & UIEventButtonMaskPrimary) != 0) {
+      buttonsMaskResult |= 1;
+    }
+    if ((buttonMask & UIEventButtonMaskSecondary) != 0) {
+      buttonsMaskResult |= 2;
+    }
+    // undocumented mask value which represents the "auxiliary button" (i.e. middle mouse button)
+    if ((buttonMask & 0x4) != 0) {
+      buttonsMaskResult |= 4;
+    }
   }
-  return 0;
+  return buttonsMaskResult;
 }
 
-static int ButtonMaskToButton(UIEventButtonMask buttonMask)
+static int ButtonMaskDiffToButton(UIEventButtonMask prevButtonMask, UIEventButtonMask curButtonMask)
 {
   if (@available(iOS 13.4, *)) {
-    if ((buttonMask & UIEventButtonMaskSecondary) > 0) {
+    if ((prevButtonMask & UIEventButtonMaskPrimary) != (curButtonMask & UIEventButtonMaskPrimary)) {
+      return 0;
+    }
+    if ((prevButtonMask & 0x4) != (curButtonMask & 0x4)) {
+      return 1;
+    }
+    if ((prevButtonMask & UIEventButtonMaskSecondary) != (curButtonMask & UIEventButtonMaskSecondary)) {
       return 2;
     }
   }
-  return 0;
+  return -1;
 }
 
 static void UpdateActiveTouchWithUITouch(
@@ -220,9 +235,15 @@ static void UpdateActiveTouchWithUITouch(
   activeTouch.altitudeAngle = uiTouch.altitudeAngle;
   activeTouch.azimuthAngle = [uiTouch azimuthAngleInView:nil];
   if (@available(iOS 13.4, *)) {
-    activeTouch.buttonMask = uiEvent.buttonMask;
+    UIEventButtonMask nextButtonMask = 0;
+    if (uiTouch.phase != UITouchPhaseEnded) {
+      nextButtonMask = uiTouch.type == UITouchTypeIndirectPointer ? uiEvent.buttonMask : 1;
+    }
+    activeTouch.button = ButtonMaskDiffToButton(activeTouch.buttonMask, nextButtonMask);
+    activeTouch.buttonMask = nextButtonMask;
     activeTouch.modifierFlags = uiEvent.modifierFlags;
   } else {
+    activeTouch.button = 0;
     activeTouch.buttonMask = 0;
     activeTouch.modifierFlags = 0;
   }
@@ -245,7 +266,6 @@ CreateTouchWithUITouch(UITouch *uiTouch, UIEvent *uiEvent, UIView *rootComponent
     }
     componentView = componentView.superview;
   }
-
   UpdateActiveTouchWithUITouch(activeTouch, uiTouch, uiEvent, rootComponentView, rootViewOriginOffset);
   return activeTouch;
 }
@@ -344,28 +364,10 @@ static PointerEvent CreatePointerEventFromActiveTouch(ActiveTouch activeTouch, R
 
   event.detail = 0;
 
-  event.button = -1;
-  if (eventType == RCTTouchEventTypeTouchStart || eventType == RCTTouchEventTypeTouchEnd) {
-    event.button = activeTouch.button;
-  }
-
-  event.buttons = 1;
-  if (@available(iOS 13.4, *)) {
-    if (activeTouch.touchType == UITouchTypeIndirectPointer) {
-      // Indirect pointers are the only situations where buttonMask is "accurate"
-      // so we override the assumed "left click" button value when those type of
-      // events are recieved
-      event.buttons = ButtonMaskToButtons(activeTouch.buttonMask);
-    }
-  }
+  event.button = activeTouch.button;
+  event.buttons = ButtonMaskToButtons(activeTouch.buttonMask);
 
   UpdatePointerEventModifierFlags(event, activeTouch.modifierFlags);
-
-  // UIEvent's button mask for touch end events still marks the button as down
-  // so this ensures it's set to 0 as per the pointer event spec
-  if (eventType == RCTTouchEventTypeTouchEnd) {
-    event.buttons = 0;
-  }
 
   event.tangentialPressure = 0.0;
   event.twist = 0;
@@ -557,15 +559,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
           }
           break;
       }
-
-      activeTouch.button = ButtonMaskToButton(event.buttonMask);
     } else {
       activeTouch.touch.identifier = _identifierPool.dequeue();
       if (_primaryTouchPointerId == -1) {
         _primaryTouchPointerId = activeTouch.touch.identifier;
         activeTouch.isPrimary = true;
       }
-      activeTouch.button = 0;
     }
 
     // If the pointer has not been marked as hovering over views before the touch started, we register
