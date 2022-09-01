@@ -1261,7 +1261,7 @@ function DisplayOptionStatusExample({
   );
 }
 
-function AccessibilityExpandedExample() {
+function AccessibilityExpandedExample(): React.Node {
   const [expand, setExpanded] = React.useState(false);
   return (
     <>
