@@ -8,7 +8,8 @@
 #import "RCTActivityIndicatorView.h"
 
 #if TARGET_OS_OSX // [TODO(macOS GH#774)
-#import <QuartzCore/QuartzCore.h>
+#import <CoreImage/CIFilter.h>
+#import <CoreImage/CIVector.h>
 
 @interface RCTActivityIndicatorView ()
 @property (nonatomic, readwrite, getter=isAnimating) BOOL animating;
