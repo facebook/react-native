@@ -13,6 +13,7 @@ import * as React from 'react';
 import StatusBar from '../StatusBar/StatusBar';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import View from '../View/View';
+import type {AccessibilityRole} from '../../Components/View/ViewAccessibility';
 
 import dismissKeyboard from '../../Utilities/dismissKeyboard';
 import nullthrows from 'nullthrows';
@@ -38,6 +39,8 @@ type DrawerSlideEvent = $ReadOnly<{|
 |}>;
 
 type Props = $ReadOnly<{|
+  accessibilityRole?: ?AccessibilityRole,
+
   /**
    * Determines whether the keyboard gets dismissed in response to a drag.
    *   - 'none' (the default), drags do not dismiss the keyboard.

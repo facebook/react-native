@@ -553,13 +553,13 @@ class NestedCheckBox extends React.Component<
 class AccessibilityRoleAndStateExample extends React.Component<{}> {
   render(): React.Node {
     const content = [
-      <Text>This is some text</Text>,
-      <Text>This is some text</Text>,
-      <Text>This is some text</Text>,
-      <Text>This is some text</Text>,
-      <Text>This is some text</Text>,
-      <Text>This is some text</Text>,
-      <Text>This is some text</Text>,
+      <Text key={1}>This is some text</Text>,
+      <Text key={2}>This is some text</Text>,
+      <Text key={3}>This is some text</Text>,
+      <Text key={4}>This is some text</Text>,
+      <Text key={5}>This is some text</Text>,
+      <Text key={6}>This is some text</Text>,
+      <Text key={7}>This is some text</Text>,
     ];
 
     return (
@@ -574,7 +574,6 @@ class AccessibilityRoleAndStateExample extends React.Component<{}> {
             {content}
           </ScrollView>
         </RNTesterBlock>
-        <RNTesterBlock title="ScrollView with scrollview role"></RNTesterBlock>
         <RNTesterBlock title="accessibilityRole with View Component">
           <View>
             <View
