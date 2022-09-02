@@ -73,22 +73,6 @@
     translatable="false"
     >Summary</string>
   <string
-    name="scrollview_description"
-    translatable="false"
-    >Scroll View</string>
-  <string
-    name="horizontalscrollview_description"
-    translatable="false"
-    >Horizontal Scroll View</string>
-  <string
-    name="slidingdrawer_description"
-    translatable="false"
-    >Sliding Drawer</string>
-  <string
-    name="iconmenu_description"
-    translatable="false"
-    >Icon Menu</string>
-  <string
     name="state_busy_description"
     translatable="false"
     >busy</string>

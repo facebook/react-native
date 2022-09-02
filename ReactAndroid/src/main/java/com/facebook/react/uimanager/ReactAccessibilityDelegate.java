@@ -165,9 +165,11 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
         case LIST:
           return "android.widget.AbsListView";
         case GRID:
-        case SCROLLVIEW:
-        case HORIZONTALSCROLLVIEW:
           return "android.widget.GridView";
+        case SCROLLVIEW:
+          return "android.widget.ScrollView";
+        case HORIZONTALSCROLLVIEW:
+          return "android.widget.HorizontalScrollView";
         case PAGER:
           return "androidx.viewpager.widget.ViewPager";
         case DRAWERLAYOUT:
@@ -502,10 +504,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
       nodeInfo.setRoleDescription(context.getString(R.string.timer_description));
     } else if (role.equals(AccessibilityRole.TOOLBAR)) {
       nodeInfo.setRoleDescription(context.getString(R.string.toolbar_description));
-    } else if (role.equals(AccessibilityRole.SCROLLVIEW)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.scrollview_description));
-    } else if (role.equals(AccessibilityRole.HORIZONTALSCROLLVIEW)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.horizontalscrollview_description));
     }
   }
 
