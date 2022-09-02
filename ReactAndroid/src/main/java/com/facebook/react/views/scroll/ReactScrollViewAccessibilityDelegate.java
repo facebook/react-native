@@ -18,6 +18,11 @@ import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 
+/**
+ * Adds accessibility features included in ScrollView, GridView methods
+ * onInitializeAccessibilityNodeInfoInternal, onInitializeAccessibilityNodeInfoForItem,
+ * onInitializeAccessibilityEventInternal.
+ */
 public class ReactScrollViewAccessibilityDelegate extends AccessibilityDelegateCompat {
   private final String TAG = ReactScrollViewAccessibilityDelegate.class.getSimpleName();
 

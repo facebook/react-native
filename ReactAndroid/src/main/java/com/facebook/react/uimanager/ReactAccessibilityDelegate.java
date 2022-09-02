@@ -51,6 +51,12 @@ import java.util.List;
 /**
  * Utility class that handles the addition of a "role" for accessibility to either a View or
  * AccessibilityNodeInfo.
+ *
+ * <p>Adding an AccessibilityDelegate on an Android widget disables the original Android
+ * accessibility implementation onInitializeAccessibilityNodeInfoInternal,
+ * onInitializeAccessibilityEventInternal and other accessibility methods from the Android API. For
+ * more info read the implementation of Android View#onInitializeAccessibilityNodeInfo,
+ * AccessibilityDelegateCompat and the Android widget.
  */
 public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
 
