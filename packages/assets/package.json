@@ -1,5 +1,5 @@
 {
-  "name": "@react-native/assets",
+  "name": "@react-native/assets-registry",
   "version": "1.0.0",
   "description": "Asset support code for React Native.",
   "repository": {
