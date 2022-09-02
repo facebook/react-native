@@ -153,6 +153,16 @@ const Text: React.AbstractComponent<
       : processColor(restProps.selectionColor);
 
   let style = restProps.style;
+
+  let _selectable = restProps.selectable;
+  if (style && style.userSelect !== undefined) {
+    _selectable =
+      style.userSelect !== null
+        ? // $FlowFixMe
+          userSelectToSelectableMap[style.userSelect]
+        : restProps.selectable;
+  }
+
   if (__DEV__) {
     if (PressabilityDebug.isEnabled() && onPress != null) {
       style = StyleSheet.compose(restProps.style, {
@@ -182,6 +192,7 @@ const Text: React.AbstractComponent<
       {...eventHandlersForText}
       isHighlighted={isHighlighted}
       isPressable={isPressable}
+      selectable={_selectable}
       numberOfLines={numberOfLines}
       selectionColor={selectionColor}
       style={style}
@@ -193,6 +204,7 @@ const Text: React.AbstractComponent<
         {...restProps}
         {...eventHandlersForText}
         disabled={_disabled}
+        selectable={_selectable}
         accessible={_accessible}
         accessibilityState={_accessibilityState}
         allowFontScaling={allowFontScaling !== false}
@@ -221,5 +233,13 @@ function useLazyInitialization(newValue: boolean): boolean {
   }
   return oldValue;
 }
+
+const userSelectToSelectableMap = {
+  auto: true,
+  text: true,
+  none: false,
+  contain: true,
+  all: true,
+};
 
 module.exports = Text;
