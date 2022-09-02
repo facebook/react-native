@@ -8,4 +8,4 @@ Libraries/Renderer/*
 Libraries/vendor/**/*
 node_modules/
 packages/*/node_modules
-packages/react-native-codegen/lib
+packages/codegen/lib

@@ -18,7 +18,7 @@ fb_native.genrule(
         ],
     ),
     out = "schema-codegen_tests.json",
-    cmd = "$(exe {}) $OUT $SRCS".format(react_native_root_target("packages/react-native-codegen:write_to_json")),
+    cmd = "$(exe {}) $OUT $SRCS".format(react_native_root_target("packages/codegen:write_to_json")),
 )
 
 rn_codegen_components(

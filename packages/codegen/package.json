@@ -2,11 +2,11 @@
   "name": "react-native-codegen",
   "version": "0.71.0",
   "description": "⚛️ Code generation tools for React Native",
-  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/react-native-codegen",
+  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/codegen",
   "repository": {
     "type": "git",
     "url": "git@github.com:facebook/react-native.git",
-    "directory": "packages/react-native-codegen"
+    "directory": "packages/codegen"
   },
   "scripts": {
     "build": "yarn clean && node scripts/build.js --verbose",

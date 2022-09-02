@@ -113,7 +113,7 @@ def rn_codegen_modules(
         name = generate_fixtures_rule_name,
         srcs = native.glob(["src/generators/**/*.js"]),
         cmd = "$(exe {generator_script}) $(location {schema_target}) {library_name} $OUT {android_package_name} {ios_assume_nonnull}".format(
-            generator_script = react_native_root_target("packages/react-native-codegen:generate_all_from_schema"),
+            generator_script = react_native_root_target("packages/codegen:generate_all_from_schema"),
             schema_target = schema_target,
             library_name = name,
             android_package_name = android_package_name,
@@ -274,7 +274,7 @@ def rn_codegen_components(
     fb_native.genrule(
         name = generate_fixtures_rule_name,
         srcs = native.glob(["src/generators/**/*.js"]),
-        cmd = "$(exe {}) $(location {}) {} $OUT".format(react_native_root_target("packages/react-native-codegen:generate_all_from_schema"), schema_target, name),
+        cmd = "$(exe {}) $(location {}) {} $OUT".format(react_native_root_target("packages/codegen:generate_all_from_schema"), schema_target, name),
         out = "codegenfiles-{}".format(name),
         labels = ["codegen_rule", "uses_local_filesystem_abspaths"],
     )
@@ -507,7 +507,7 @@ def rn_codegen_cxx_modules(
     fb_native.genrule(
         name = generate_fixtures_rule_name,
         srcs = native.glob(["src/generators/**/*.js"]),
-        cmd = "$(exe {}) $(location {}) {} $OUT {}".format(react_native_root_target("packages/react-native-codegen:generate_all_from_schema"), schema_target, name, name),
+        cmd = "$(exe {}) $(location {}) {} $OUT {}".format(react_native_root_target("packages/codegen:generate_all_from_schema"), schema_target, name, name),
         out = "codegenfiles-{}".format(name),
         labels = ["codegen_rule"],
     )

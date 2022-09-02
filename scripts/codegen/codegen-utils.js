@@ -22,7 +22,7 @@
 function getCodegen() {
   let RNCodegen;
   try {
-    RNCodegen = require('../../packages/react-native-codegen/lib/generators/RNCodegen.js');
+    RNCodegen = require('../../packages/codegen/lib/generators/RNCodegen.js');
   } catch (e) {
     RNCodegen = require('react-native-codegen/lib/generators/RNCodegen.js');
   }

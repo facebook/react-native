@@ -7,7 +7,7 @@
 # @lint-ignore-every BUCKRESTRICTEDSYNTAX
 
 load(
-    "//packages/react-native-codegen:DEFS.bzl",
+    "//packages/codegen:DEFS.bzl",
     _rn_codegen_components = "rn_codegen_components",
     _rn_codegen_cxx_modules = "rn_codegen_cxx_modules",
     _rn_codegen_modules = "rn_codegen_modules",
@@ -55,7 +55,7 @@ def rn_codegen(
         fb_native.genrule(
             name = module_schema_target,
             srcs = spec_srcs,
-            cmd = "$(exe {}) $OUT $SRCS".format(react_native_root_target("packages/react-native-codegen:write_to_json")),
+            cmd = "$(exe {}) $OUT $SRCS".format(react_native_root_target("packages/codegen:write_to_json")),
             out = "schema-{}.json".format(native_module_spec_name),
             labels = ["codegen_rule", "react_native_schema_target"],
         )
@@ -86,7 +86,7 @@ def rn_codegen(
                     "**/__*__/**",
                 ],
             ),
-            cmd = "$(exe {}) $OUT $SRCS".format(react_native_root_target("packages/react-native-codegen:write_to_json")),
+            cmd = "$(exe {}) $OUT $SRCS".format(react_native_root_target("packages/codegen:write_to_json")),
             out = "schema-{}.json".format(component_spec_name),
             labels = ["codegen_rule"],
         )

@@ -32,7 +32,7 @@ ADD ReactAndroid /app/ReactAndroid
 ADD ReactCommon /app/ReactCommon
 ADD React /app/React
 ADD keystores /app/keystores
-ADD packages/react-native-codegen /app/packages/react-native-codegen
+ADD packages/codegen /app/packages/codegen
 ADD tools /app/tools
 add scripts /app/scripts
 
