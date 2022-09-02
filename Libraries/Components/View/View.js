@@ -125,7 +125,7 @@ const View: React.AbstractComponent<
             ariaHidden ?? accessibilityElementsHidden
           }
           importantForAccessibility={
-            ariaHidden !== undefined
+            ariaHidden === true
               ? 'no-hide-descendants'
               : importantForAccessibility
           }

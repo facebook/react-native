@@ -302,10 +302,16 @@ class TouchableHighlight extends React.Component<Props, State> {
         accessibilityValue={this.props.accessibilityValue}
         accessibilityActions={this.props.accessibilityActions}
         onAccessibilityAction={this.props.onAccessibilityAction}
-        importantForAccessibility={this.props.importantForAccessibility}
+        importantForAccessibility={
+          this.props['aria-hidden'] === true
+            ? 'no-hide-descendants'
+            : this.props.importantForAccessibility
+        }
         accessibilityLiveRegion={this.props.accessibilityLiveRegion}
         accessibilityViewIsModal={this.props.accessibilityViewIsModal}
-        accessibilityElementsHidden={this.props.accessibilityElementsHidden}
+        accessibilityElementsHidden={
+          this.props['aria-hidden'] ?? this.props.accessibilityElementsHidden
+        }
         style={StyleSheet.compose(
           this.props.style,
           this.state.extraStyles?.underlay,

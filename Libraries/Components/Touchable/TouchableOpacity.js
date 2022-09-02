@@ -231,10 +231,16 @@ class TouchableOpacity extends React.Component<Props, State> {
         accessibilityActions={this.props.accessibilityActions}
         onAccessibilityAction={this.props.onAccessibilityAction}
         accessibilityValue={this.props.accessibilityValue}
-        importantForAccessibility={this.props.importantForAccessibility}
+        importantForAccessibility={
+          this.props['aria-hidden'] === true
+            ? 'no-hide-descendants'
+            : this.props.importantForAccessibility
+        }
         accessibilityLiveRegion={this.props.accessibilityLiveRegion}
         accessibilityViewIsModal={this.props.accessibilityViewIsModal}
-        accessibilityElementsHidden={this.props.accessibilityElementsHidden}
+        accessibilityElementsHidden={
+          this.props['aria-hidden'] ?? this.props.accessibilityElementsHidden
+        }
         style={[this.props.style, {opacity: this.state.anim}]}
         nativeID={this.props.nativeID}
         testID={this.props.testID}
