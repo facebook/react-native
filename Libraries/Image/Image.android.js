@@ -190,9 +190,12 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
     ref: forwardedRef,
   };
 
+  // $FlowFixMe[prop-missing]
   const objectFit =
     convertObjectFitToResizeMode(props.objectFit) ||
+    // $FlowFixMe[prop-missing]
     convertObjectFitToResizeMode(style.objectFit);
+  // $FlowFixMe[prop-missing]
   const resizeMode = objectFit || props.resizeMode || style.resizeMode;
 
   return (
