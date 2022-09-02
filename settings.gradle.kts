@@ -16,7 +16,7 @@ pluginManagement {
 include(
     ":ReactAndroid",
     ":ReactAndroid:hermes-engine",
-    ":packages:codegen:android",
+    ":packages:react-native-codegen:android",
     ":packages:rn-tester:android:app")
 
 // Include this to enable codegen Gradle plugin.
