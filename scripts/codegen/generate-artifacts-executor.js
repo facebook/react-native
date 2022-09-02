@@ -222,8 +222,8 @@ function handleLibrariesFromReactNativeConfig(
     const rnConfig = require(rnConfigFilePath);
 
     if (rnConfig.dependencies != null) {
-      Object.keys(rnConfig.dependencies).forEach(dependencyName => {
-        const dependencyConfig = rnConfig.dependencies[dependencyName];
+      Object.keys(rnConfig.dependencies).forEach(name => {
+        const dependencyConfig = rnConfig.dependencies[name];
 
         if (dependencyConfig.root) {
           const codegenConfigFileDir = path.resolve(
@@ -234,14 +234,16 @@ function handleLibrariesFromReactNativeConfig(
             codegenConfigFileDir,
             codegenConfigFilename,
           );
+          const pkgJsonPath = path.join(codegenConfigFileDir, 'package.json');
 
           if (fs.existsSync(configFilePath)) {
+            const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath));
             const configFile = JSON.parse(fs.readFileSync(configFilePath));
             extractLibrariesFromJSON(
               configFile,
               libraries,
               codegenConfigKey,
-              dependencyName,
+              pkgJson.name,
               codegenConfigFileDir,
             );
           }
@@ -409,7 +411,12 @@ function createComponentProvider(
   }
 }
 
-function findCodegenEnabledLibraries(appRootDir) {
+function findCodegenEnabledLibraries(
+  appRootDir,
+  baseCodegenConfigFileDir,
+  codegenConfigFilename,
+  codegenConfigKey,
+) {
   const pkgJson = readPackageJSON(appRootDir);
   const dependencies = {...pkgJson.dependencies, ...pkgJson.devDependencies};
   const libraries = [];
@@ -504,7 +511,12 @@ function execute(
   }
 
   try {
-    const libraries = findCodegenEnabledLibraries(appRootDir);
+    const libraries = findCodegenEnabledLibraries(
+      appRootDir,
+      baseCodegenConfigFileDir,
+      codegenConfigFilename,
+      codegenConfigKey,
+    );
 
     if (libraries.length === 0) {
       console.log('[Codegen] No codegen-enabled libraries found.');
@@ -541,6 +553,7 @@ module.exports = {
   execute: execute,
   // exported for testing purposes only:
   _extractLibrariesFromJSON: extractLibrariesFromJSON,
+  _findCodegenEnabledLibraries: findCodegenEnabledLibraries,
   _executeNodeScript: executeNodeScript,
   _generateCode: generateCode,
   _cleanupEmptyFilesAndFolders: cleanupEmptyFilesAndFolders,
