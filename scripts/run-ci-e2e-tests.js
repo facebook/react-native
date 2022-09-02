@@ -35,6 +35,7 @@ const REACT_NATIVE_APP_DIR = `${REACT_NATIVE_TEMP_DIR}/template`;
 const numberOfRetries = argv.retries || 1;
 let SERVER_PID;
 let APPIUM_PID;
+let VERDACCIO_PID;
 let exitCode;
 
 function describe(message) {
@@ -69,6 +70,46 @@ try {
   }
 
   const REACT_NATIVE_PACKAGE = path.join(ROOT, 'react-native-*.tgz');
+
+  describe('Set up Verdaccio');
+  const verdaccioProcess = spawn('npx', [
+    'verdaccio@5.15.3',
+    '--config',
+    '.circleci/verdaccio/config.yml',
+  ]);
+  VERDACCIO_PID = verdaccioProcess.pid;
+  exec('npx wait-on@6.0.1 http://localhost:4873');
+  exec('npm set registry http://localhost:4873');
+  exec('echo "//localhost:4873/:_authToken=secretToken" > .npmrc');
+
+  describe('Publish packages');
+  const packages = JSON.parse(
+    JSON.parse(exec('yarn --json workspaces info').stdout).data,
+  );
+  Object.keys(packages)
+    .filter(
+      packageName =>
+        packageName !== '@react-native/tester' &&
+        packageName !== '@react-native/repo-config',
+    )
+    .filter(packageName => {
+      const yarnInfo = exec(`yarn info ${packageName} --json`);
+      if (yarnInfo.stderr !== '') {
+        return true;
+      }
+      const versions = JSON.parse(
+        exec(`yarn info ${packageName} --json`).stdout.trim(),
+      ).data.versions;
+      const currentVersion = require(`${process.cwd()}/${
+        packages[packageName].location
+      }/package.json`).version;
+      return !versions.includes(currentVersion);
+    })
+    .forEach(packageName => {
+      exec(
+        `cd ${packages[packageName].location} && npm publish --registry http://localhost:4873 --yes --access public`,
+      );
+    });
 
   describe('Scaffold a basic React Native app from template');
   exec(`rsync -a ${ROOT}/template ${REACT_NATIVE_TEMP_DIR}`);
@@ -156,9 +197,7 @@ try {
 
     describe(`Start Metro, ${SERVER_PID}`);
     // shelljs exec('', {async: true}) does not emit stdout events, so we rely on good old spawn
-    const packagerProcess = spawn('yarn', ['start', '--max-workers 1'], {
-      env: process.env,
-    });
+    const packagerProcess = spawn('yarn', ['start', '--max-workers 1']);
     SERVER_PID = packagerProcess.pid;
     // wait a bit to allow packager to startup
     exec('sleep 15s');
@@ -287,6 +326,10 @@ try {
   if (APPIUM_PID) {
     echo(`Killing appium ${APPIUM_PID}`);
     exec(`kill -9 ${APPIUM_PID}`);
+  }
+  if (VERDACCIO_PID) {
+    echo(`Killing verdaccio ${VERDACCIO_PID}`);
+    exec(`kill -9 ${VERDACCIO_PID}`);
   }
 }
 exit(exitCode);
