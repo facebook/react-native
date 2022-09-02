@@ -46,6 +46,7 @@ const Drawer = () => {
     <DrawerLayoutAndroid
       /* $FlowFixMe */
       ref={drawer}
+      accessibilityRole="drawerlayout"
       drawerWidth={300}
       drawerPosition={drawerPosition}
       renderNavigationView={navigationView}>
