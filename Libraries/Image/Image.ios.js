@@ -173,15 +173,14 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
           <ImageViewNativeComponent
             accessibilityState={_accessibilityState}
             {...restProps}
-            accessibilityLabel={accessibilityLabel}
+            accessible={props.alt !== undefined ? true : props.accessible}
+            accessibilityLabel={accessibilityLabel ?? props.alt}
             ref={forwardedRef}
             style={style}
             resizeMode={resizeMode}
             tintColor={tintColor}
             source={sources}
             internal_analyticTag={analyticTag}
-            accessible={props.alt !== undefined ? true : props.accessible}
-            accessibilityLabel={props.alt ?? props.accessibilityLabel}
           />
         );
       }}

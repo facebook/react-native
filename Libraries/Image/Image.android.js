@@ -181,7 +181,9 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
       ? loadingIndicatorSource.uri
       : null,
     ref: forwardedRef,
-    accessibilityLabel: props['aria-label'] ?? props.accessibilityLabel,
+    accessible: props.alt !== undefined ? true : props.accessible,
+    accessibilityLabel:
+      props['aria-label'] ?? props.accessibilityLabel ?? props.alt,
     accessibilityState: {
       busy: props['aria-busy'] ?? props.accessibilityState?.busy,
       checked: props['aria-checked'] ?? props.accessibilityState?.checked,
@@ -189,8 +191,6 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
       expanded: props['aria-expanded'] ?? props.accessibilityState?.expanded,
       selected: props['aria-selected'] ?? props.accessibilityState?.selected,
     },
-    accessible: props.alt !== undefined ? true : props.accessible,
-    accessibilityLabel: props.alt ?? props.accessibilityLabel,
   };
 
   const objectFit =
