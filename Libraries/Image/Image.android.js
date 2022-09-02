@@ -22,6 +22,8 @@ import NativeImageLoaderAndroid from './NativeImageLoaderAndroid';
 import TextInlineImageNativeComponent from './TextInlineImageNativeComponent';
 
 import type {ImageProps as ImagePropsType} from './ImageProps';
+import type {ImageObjectFit} from './ImageObjectFit';
+import type {ImageResizeMode} from './ImageResizeMode';
 import type {RootTag} from '../Types/RootTagTypes';
 
 let _requestId = 1;
@@ -49,6 +51,21 @@ function getSize(
           console.warn('Failed to get size for image: ' + url);
         },
     );
+}
+
+function getResizeModeEquivalentFromObjectFit(
+  objectFit?: ?ImageObjectFit,
+): ImageResizeMode {
+  if (!objectFit) {
+    return null;
+  }
+  const objectFitMappingToResizeMode = {
+    contain: 'contain',
+    cover: 'cover',
+    fill: 'stretch',
+    'scale-down': 'contain',
+  };
+  return objectFitMappingToResizeMode[objectFit] ?? null;
 }
 
 /**
@@ -188,6 +205,11 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
     ref: forwardedRef,
   };
 
+  const updatedResizeMode =
+    getResizeModeEquivalentFromObjectFit(props.objectFit) ||
+    getResizeModeEquivalentFromObjectFit(style.objectFit) ||
+    props.resizeMode;
+
   return (
     <ImageAnalyticsTagContext.Consumer>
       {analyticTag => {
@@ -206,7 +228,7 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
                 return (
                   <TextInlineImageNativeComponent
                     style={style}
-                    resizeMode={props.resizeMode}
+                    resizeMode={updatedResizeMode}
                     headers={nativeProps.headers}
                     src={src}
                     ref={forwardedRef}
@@ -214,7 +236,12 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
                 );
               }
 
-              return <ImageViewNativeComponent {...nativePropsWithAnalytics} />;
+              return (
+                <ImageViewNativeComponent
+                  resizeMode={updatedResizeMode}
+                  {...nativePropsWithAnalytics}
+                />
+              );
             }}
           </TextAncestor.Consumer>
         );

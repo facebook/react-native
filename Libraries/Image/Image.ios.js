@@ -17,6 +17,8 @@ import flattenStyle from '../StyleSheet/flattenStyle';
 import resolveAssetSource from './resolveAssetSource';
 
 import type {ImageProps as ImagePropsType} from './ImageProps';
+import type {ImageObjectFit} from './ImageObjectFit';
+import type {ImageResizeMode} from './ImageResizeMode';
 
 import type {ImageStyleProp} from '../StyleSheet/StyleSheet';
 import NativeImageLoaderIOS from './NativeImageLoaderIOS';
@@ -37,6 +39,21 @@ function getSize(
           console.warn('Failed to get size for image ' + uri);
         },
     );
+}
+
+function getResizeModeEquivalentFromObjectFit(
+  objectFit?: ?ImageObjectFit,
+): ?ImageResizeMode {
+  if (!objectFit) {
+    return null;
+  }
+  const objectFitMappingToResizeMode = {
+    contain: 'contain',
+    cover: 'cover',
+    fill: 'stretch',
+    'scale-down': 'contain',
+  };
+  return objectFitMappingToResizeMode[objectFit] ?? null;
 }
 
 function getSizeWithHeaders(
@@ -128,6 +145,14 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
 
   // $FlowFixMe[prop-missing]
   const resizeMode = props.resizeMode || style.resizeMode || 'cover';
+
+  const updatedResizeMode =
+    // $FlowFixMe[prop-missing]
+    getResizeModeEquivalentFromObjectFit(props.objectFit) ||
+    // $FlowFixMe[prop-missing]
+    getResizeModeEquivalentFromObjectFit(style.objectFit) ||
+    resizeMode;
+
   // $FlowFixMe[prop-missing]
   const tintColor = style.tintColor;
 
@@ -151,7 +176,7 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
             {...props}
             ref={forwardedRef}
             style={style}
-            resizeMode={resizeMode}
+            resizeMode={updatedResizeMode}
             tintColor={tintColor}
             source={sources}
             internal_analyticTag={analyticTag}

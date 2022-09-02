@@ -602,6 +602,16 @@ const styles = StyleSheet.create({
     fontSize: 11,
     marginBottom: 3,
   },
+  objectFit: {
+    width: 90,
+    height: 60,
+    borderWidth: 0.5,
+    borderColor: 'black',
+  },
+  objectFitText: {
+    fontSize: 11,
+    marginBottom: 3,
+  },
   icon: {
     width: 15,
     height: 15,
@@ -1035,6 +1045,60 @@ exports.examples = [
                     <Image
                       style={styles.resizeMode}
                       resizeMode="center"
+                      source={image}
+                    />
+                  </View>
+                </View>
+              </View>
+            );
+          })}
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Object Fit',
+    description:
+      ('The `objectFit` style props that is partially equivalent to resizeMode style prop, controls how the image is ' +
+        'rendered within the frame.': string),
+    render: function (): React.Node {
+      return (
+        <View>
+          {[smallImage, fullImage].map((image, index) => {
+            return (
+              <View key={index}>
+                <View style={styles.horizontal}>
+                  <View>
+                    <Text style={styles.objectFitText}>Cover</Text>
+                    <Image
+                      style={styles.objectFit}
+                      objectFit="cover"
+                      source={image}
+                    />
+                  </View>
+                  <View style={styles.leftMargin}>
+                    <Text style={styles.objectFitText}>Fill</Text>
+                    <Image
+                      style={styles.objectFit}
+                      objectFit="fill"
+                      source={image}
+                    />
+                  </View>
+                </View>
+                <View style={styles.horizontal}>
+                  <View>
+                    <Text style={styles.objectFitText}>Scale Down</Text>
+                    <Image
+                      style={styles.objectFit}
+                      objectFit="scale-down"
+                      source={image}
+                    />
+                  </View>
+                  <View style={styles.leftMargin}>
+                    <Text style={styles.objectFitText}>Contain</Text>
+                    <Image
+                      style={styles.objectFit}
+                      objectFit="contain"
                       source={image}
                     />
                   </View>

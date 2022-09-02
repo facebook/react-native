@@ -163,6 +163,12 @@ export type ImageProps = {|
   resizeMode?: ?('cover' | 'contain' | 'stretch' | 'repeat' | 'center'),
 
   /**
+   * Partially equivalent to resizeMode, determines how to resize the image when the frame doesn't match the raw
+   * image dimensions.
+   */
+  objectFit?: ?('cover' | 'fill' | 'scale-down' | 'contain'),
+
+  /**
    * A unique identifier for this element to be used in UI Automation
    * testing scripts.
    *
