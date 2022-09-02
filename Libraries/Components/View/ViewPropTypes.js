@@ -300,7 +300,7 @@ type AndroidViewProps = $ReadOnly<{|
    *
    * See https://reactnative.dev/docs/view#accessibilityliveregion
    */
-  'aria-live'?: ?('none' | 'polite' | 'assertive' | 'off'),
+  'aria-live'?: ?('polite' | 'assertive' | 'off'),
 
   /**
    * Controls how view is important for accessibility which is if it

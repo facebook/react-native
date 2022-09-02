@@ -42,7 +42,7 @@ type Props = $ReadOnly<{|
   accessibilityValue?: ?AccessibilityValue,
   accessibilityViewIsModal?: ?boolean,
   accessible?: ?boolean,
-  'aria-live'?: ?('none' | 'polite' | 'assertive' | 'off'),
+  'aria-live'?: ?('polite' | 'assertive' | 'off'),
   children?: ?React.Node,
   delayLongPress?: ?number,
   delayPressIn?: ?number,

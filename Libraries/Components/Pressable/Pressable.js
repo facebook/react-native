@@ -52,7 +52,7 @@ type Props = $ReadOnly<{|
   accessibilityValue?: ?AccessibilityValue,
   accessibilityViewIsModal?: ?boolean,
   accessible?: ?boolean,
-  'aria-live'?: ?('none' | 'polite' | 'assertive' | 'off'),
+  'aria-live'?: ?('polite' | 'assertive' | 'off'),
   focusable?: ?boolean,
   importantForAccessibility?: ?('auto' | 'yes' | 'no' | 'no-hide-descendants'),
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
