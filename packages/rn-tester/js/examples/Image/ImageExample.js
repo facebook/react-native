@@ -608,6 +608,18 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: 'black',
   },
+  objectFitCover: {
+    objectFit: 'cover',
+  },
+  objectFitFill: {
+    objectFit: 'fill',
+  },
+  objectFitScaleDown: {
+    objectFit: 'scale-down',
+  },
+  objectFitContain: {
+    objectFit: 'contain',
+  },
   objectFitText: {
     fontSize: 11,
     marginBottom: 3,
@@ -1059,7 +1071,7 @@ exports.examples = [
   {
     title: 'Object Fit',
     description:
-      ('The `objectFit` style props that is partially equivalent to resizeMode style prop, controls how the image is ' +
+      ('The `objectFit` style props that are partially equivalent to resizeMode style prop, controls how the image is ' +
         'rendered within the frame.': string),
     render: function (): React.Node {
       return (
@@ -1071,16 +1083,14 @@ exports.examples = [
                   <View>
                     <Text style={styles.objectFitText}>Cover</Text>
                     <Image
-                      style={styles.objectFit}
-                      objectFit="cover"
+                      style={[styles.objectFit, styles.objectFitCover]}
                       source={image}
                     />
                   </View>
                   <View style={styles.leftMargin}>
                     <Text style={styles.objectFitText}>Fill</Text>
                     <Image
-                      style={styles.objectFit}
-                      objectFit="fill"
+                      style={[styles.objectFit, styles.objectFitFill]}
                       source={image}
                     />
                   </View>
@@ -1089,16 +1099,14 @@ exports.examples = [
                   <View>
                     <Text style={styles.objectFitText}>Scale Down</Text>
                     <Image
-                      style={styles.objectFit}
-                      objectFit="scale-down"
+                      style={[styles.objectFit, styles.objectFitScaleDown]}
                       source={image}
                     />
                   </View>
                   <View style={styles.leftMargin}>
                     <Text style={styles.objectFitText}>Contain</Text>
                     <Image
-                      style={styles.objectFit}
-                      objectFit="contain"
+                      style={[styles.objectFit, styles.objectFitContain]}
                       source={image}
                     />
                   </View>

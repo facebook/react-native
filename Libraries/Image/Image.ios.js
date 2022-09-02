@@ -148,10 +148,7 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
 
   const updatedResizeMode =
     // $FlowFixMe[prop-missing]
-    getResizeModeEquivalentFromObjectFit(props.objectFit) ||
-    // $FlowFixMe[prop-missing]
-    getResizeModeEquivalentFromObjectFit(style.objectFit) ||
-    resizeMode;
+    getResizeModeEquivalentFromObjectFit(style.objectFit) || resizeMode;
 
   // $FlowFixMe[prop-missing]
   const tintColor = style.tintColor;

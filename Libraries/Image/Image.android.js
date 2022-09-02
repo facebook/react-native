@@ -206,9 +206,7 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
   };
 
   const updatedResizeMode =
-    getResizeModeEquivalentFromObjectFit(props.objectFit) ||
-    getResizeModeEquivalentFromObjectFit(style.objectFit) ||
-    props.resizeMode;
+    getResizeModeEquivalentFromObjectFit(style.objectFit) || props.resizeMode;
 
   return (
     <ImageAnalyticsTagContext.Consumer>
