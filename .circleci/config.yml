@@ -905,7 +905,7 @@ jobs:
   # -------------------------
   prepare_hermes_workspace:
     docker:
-      - image: debian:bullseye
+      - image: debian:11.4
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
       - HERMES_VERSION_FILE: "sdks/.hermesversion"
