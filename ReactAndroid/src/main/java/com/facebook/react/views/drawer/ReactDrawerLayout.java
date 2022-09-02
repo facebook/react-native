@@ -31,6 +31,7 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
   public static final int DEFAULT_DRAWER_WIDTH = LayoutParams.MATCH_PARENT;
   private int mDrawerPosition = Gravity.START;
   private int mDrawerWidth = DEFAULT_DRAWER_WIDTH;
+  private boolean mDragging = false;
 
   public ReactDrawerLayout(ReactContext reactContext) {
     super(reactContext);
@@ -61,6 +62,7 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
     try {
       if (super.onInterceptTouchEvent(ev)) {
         NativeGestureUtil.notifyNativeGestureStarted(this, ev);
+        mDragging = true;
         return true;
       }
     } catch (IllegalArgumentException e) {
@@ -71,6 +73,16 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
     }
 
     return false;
+  }
+
+  @Override
+  public boolean onTouchEvent(MotionEvent ev) {
+    int action = ev.getActionMasked();
+    if (action == MotionEvent.ACTION_UP && mDragging) {
+      NativeGestureUtil.notifyNativeGestureEnded(this, ev);
+      mDragging = false;
+    }
+    return super.onTouchEvent(ev);
   }
 
   /* package */ void openDrawer() {

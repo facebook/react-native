@@ -40,6 +40,7 @@ export type PlatformTestResult = $ReadOnly<{|
 export type PlatformTestContext = $ReadOnly<{
   assert_true(a: boolean, description: string): void,
   assert_equals(a: any, b: any, description: string): void,
+  assert_not_equals(a: any, b: any, description: string): void,
   assert_greater_than_equal(a: number, b: number, description: string): void,
   assert_less_than_equal(a: number, b: number, description: string): void,
 }>;
@@ -48,6 +49,7 @@ export type PlatformTestCase = (context: PlatformTestContext) => void;
 
 export type AsyncPlatformTest = $ReadOnly<{|
   done(): void,
+  step(testcase: PlatformTestCase): void,
 |}>;
 
 export type SyncTestOptions = $ReadOnly<{|
