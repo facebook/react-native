@@ -643,6 +643,7 @@ export type ____ImageStyle_InternalCore = $ReadOnly<{
   ...$Exact<____ViewStyle_Internal>,
   resizeMode?: 'contain' | 'cover' | 'stretch' | 'center' | 'repeat',
   tintColor?: ____ColorValue_Internal,
+  objectFit?: 'cover' | 'contain' | 'fill' | 'scale-down',
   overlayColor?: string,
 }>;
 
@@ -654,6 +655,7 @@ export type ____ImageStyle_Internal = $ReadOnly<{
 export type ____DangerouslyImpreciseStyle_InternalCore = $ReadOnly<{
   ...$Exact<____TextStyle_Internal>,
   resizeMode?: 'contain' | 'cover' | 'stretch' | 'center' | 'repeat',
+  objectFit?: 'cover' | 'contain' | 'fill' | 'scale-down',
   tintColor?: ____ColorValue_Internal,
   overlayColor?: string,
 }>;

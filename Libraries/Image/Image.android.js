@@ -21,6 +21,8 @@ import NativeImageLoaderAndroid from './NativeImageLoaderAndroid';
 
 import TextInlineImageNativeComponent from './TextInlineImageNativeComponent';
 
+import {convertObjectFitToResizeMode} from './ImageUtils';
+
 import type {ImageProps as ImagePropsType} from './ImageProps';
 import type {RootTag} from '../Types/RootTagTypes';
 
@@ -188,6 +190,11 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
     ref: forwardedRef,
   };
 
+  const objectFit =
+    convertObjectFitToResizeMode(props.objectFit) ||
+    convertObjectFitToResizeMode(style.objectFit);
+  const resizeMode = objectFit || props.resizeMode || style.resizeMode;
+
   return (
     <ImageAnalyticsTagContext.Consumer>
       {analyticTag => {
@@ -206,7 +213,7 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
                 return (
                   <TextInlineImageNativeComponent
                     style={style}
-                    resizeMode={props.resizeMode}
+                    resizeMode={resizeMode}
                     headers={nativeProps.headers}
                     src={src}
                     ref={forwardedRef}
@@ -214,7 +221,12 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
                 );
               }
 
-              return <ImageViewNativeComponent {...nativePropsWithAnalytics} />;
+              return (
+                <ImageViewNativeComponent
+                  {...nativePropsWithAnalytics}
+                  resizeMode={resizeMode}
+                />
+              );
             }}
           </TextAncestor.Consumer>
         );

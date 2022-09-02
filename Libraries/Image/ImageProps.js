@@ -167,6 +167,14 @@ export type ImageProps = {|
   resizeMode?: ?('cover' | 'contain' | 'stretch' | 'repeat' | 'center'),
 
   /**
+   * Determines how to resize the image when the frame doesn't match the raw
+   * image dimensions. Partial equivalent to the resizeMode style.
+   *
+   * See https://reactnative.dev/docs/image#resizemode
+   */
+  objectFit?: ?('cover' | 'contain' | 'fill' | 'scale-down'),
+
+  /**
    * A unique identifier for this element to be used in UI Automation
    * testing scripts.
    *

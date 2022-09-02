@@ -141,6 +141,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   overlayColor: colorAttributes,
   resizeMode: true,
   tintColor: colorAttributes,
+  objectFit: true,
 };
 
 module.exports = ReactNativeStyleAttributes;
