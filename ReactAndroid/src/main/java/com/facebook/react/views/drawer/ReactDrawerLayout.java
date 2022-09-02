@@ -44,7 +44,9 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
             super.onInitializeAccessibilityNodeInfo(host, info);
             AccessibilityRole accessibilityRole =
                 (AccessibilityRole) ((ReactDrawerLayout) host).getTag(R.id.accessibility_role);
-            info.setClassName(AccessibilityRole.getValue(accessibilityRole));
+            if (accessibilityRole != null) {
+              info.setClassName(AccessibilityRole.getValue(accessibilityRole));
+            }
           }
 
           @Override
@@ -52,7 +54,9 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
             super.onInitializeAccessibilityEvent(host, event);
             AccessibilityRole accessibilityRole =
                 (AccessibilityRole) ((ReactDrawerLayout) host).getTag(R.id.accessibility_role);
-            event.setClassName(AccessibilityRole.getValue(accessibilityRole));
+            if (accessibilityRole != null) {
+              event.setClassName(AccessibilityRole.getValue(accessibilityRole));
+            }
           }
         });
   }
