@@ -1286,8 +1286,10 @@ function AccessibilityExpandedExample(): React.Node {
         </TouchableOpacity>
       </RNTesterBlock>
 
-      <RNTesterBlock title="expanded/collpased through accessibility menu">
-        <TouchableWithoutFeedback accessible={true} accessibilityRole="button">
+      <RNTesterBlock title="expanded/collpased only managed through the accessibility menu">
+        <TouchableWithoutFeedback
+          accessibilityState={{expanded: true}}
+          accessible={true}>
           <View>
             <Text>Click me</Text>
           </View>
