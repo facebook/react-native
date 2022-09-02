@@ -361,7 +361,7 @@ public class JSPointerDispatcher {
     List<ViewTarget> lastHitPath =
         mLastHitPathByPointerId.containsKey(activePointerId)
             ? mLastHitPathByPointerId.get(activePointerId)
-            : Collections.emptyList();
+            : new ArrayList<ViewTarget>();
 
     float[] lastEventCoordinates =
         mLastEventCoodinatesByPointerId.containsKey(activePointerId)
