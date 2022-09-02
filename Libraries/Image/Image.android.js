@@ -197,7 +197,7 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
     : null;
   // $FlowFixMe[prop-missing]
   const resizeMode =
-    objectFit || props.resizeMode || (style && style.resizeMode);
+    objectFit || props.resizeMode || (style && style.resizeMode) || 'cover';
 
   return (
     <ImageAnalyticsTagContext.Consumer>
