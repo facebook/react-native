@@ -190,13 +190,14 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
     ref: forwardedRef,
   };
 
+  const objectFit = props.objectFit
+    ? convertObjectFitToResizeMode(props.objectFit)
+    : style && style.objectFit
+    ? convertObjectFitToResizeMode(style.objectFit)
+    : null;
   // $FlowFixMe[prop-missing]
-  const objectFit =
-    convertObjectFitToResizeMode(props.objectFit) ||
-    // $FlowFixMe[prop-missing]
-    convertObjectFitToResizeMode(style.objectFit);
-  // $FlowFixMe[prop-missing]
-  const resizeMode = objectFit || props.resizeMode || style.resizeMode;
+  const resizeMode =
+    objectFit || props.resizeMode || (style && style.resizeMode);
 
   return (
     <ImageAnalyticsTagContext.Consumer>

@@ -642,8 +642,8 @@ export type ____TextStyle_Internal = $ReadOnly<{
 export type ____ImageStyle_InternalCore = $ReadOnly<{
   ...$Exact<____ViewStyle_Internal>,
   resizeMode?: 'contain' | 'cover' | 'stretch' | 'center' | 'repeat',
-  tintColor?: ____ColorValue_Internal,
   objectFit?: 'cover' | 'contain' | 'fill' | 'scale-down',
+  tintColor?: ____ColorValue_Internal,
   overlayColor?: string,
 }>;
 

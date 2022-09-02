@@ -8,11 +8,9 @@
  * @format
  */
 
-type ObjectFit = 'cover' | 'contain' | 'fill' | 'scale-down';
 type ResizeMode = 'cover' | 'contain' | 'stretch' | 'repeat' | 'center';
-export function convertObjectFitToResizeMode(
-  objectFit: ?ObjectFit,
-): ?ResizeMode {
+
+export function convertObjectFitToResizeMode(objectFit?: ?string): ?ResizeMode {
   switch (objectFit) {
     case 'contain':
     case 'scale-down':
@@ -22,6 +20,6 @@ export function convertObjectFitToResizeMode(
     case 'fill':
       return 'stretch';
     default:
-      return undefined;
+      return null;
   }
 }
