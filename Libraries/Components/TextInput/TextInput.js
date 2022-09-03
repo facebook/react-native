@@ -23,6 +23,7 @@ import StyleSheet, {
   type TextStyleProp,
   type ViewStyleProp,
 } from '../../StyleSheet/StyleSheet';
+import flattenStyle from '../../StyleSheet/flattenStyle';
 import Text from '../../Text/Text';
 import TextAncestor from '../../Text/TextAncestor';
 import Platform from '../../Utilities/Platform';
@@ -1599,13 +1600,12 @@ const ExportedForwardRef: React.AbstractComponent<
     React.ElementRef<HostComponent<mixed>> & ImperativeMethods,
   >,
 ) {
-  let style = restProps.style;
+  let style = flattenStyle(restProps.style);
+
   if (style && style.verticalAlign !== undefined) {
-    style = StyleSheet.compose(style, {
-      textAlignVertical:
-        // $FlowFixMe
-        verticalAlignToTextAlignVerticalMap[style.verticalAlign],
-    });
+    // $FlowFixMe
+    style.textAlignVertical =
+      verticalAlignToTextAlignVerticalMap[style.verticalAlign];
   }
 
   return (

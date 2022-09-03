@@ -179,6 +179,7 @@ const Text: React.AbstractComponent<
   }
 
   if (style && style.verticalAlign !== undefined) {
+    // $FlowFixMe[prop-missing]
     style = StyleSheet.compose(style, {
       textAlignVertical:
         verticalAlignToTextAlignVerticalMap[style.verticalAlign],
