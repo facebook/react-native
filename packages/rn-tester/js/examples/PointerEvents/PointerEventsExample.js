@@ -107,7 +107,7 @@ class NoneStyleExample extends React.Component<$FlowFixMeProps> {
           style={[
             styles.box,
             styles.boxPassedThrough,
-            styles.pointerEventsNone,
+            styles.pointerEventNone,
           ]}>
           <DemoText style={[styles.text, styles.textPassedThrough]}>
             B: none
@@ -184,7 +184,7 @@ class BoxNoneStyleExample extends React.Component<$FlowFixMeProps> {
           style={[
             styles.box,
             styles.boxPassedThrough,
-            styles.pointerEventsBoxNone,
+            styles.pointerEventBoxNone,
           ]}>
           <DemoText style={[styles.text, styles.textPassedThrough]}>
             B: box-none
@@ -198,7 +198,7 @@ class BoxNoneStyleExample extends React.Component<$FlowFixMeProps> {
             onTouchStart={() =>
               this.props.onLog('C explicitly unspecified touched')
             }
-            style={[styles.box, styles.pointerEventsAuto]}>
+            style={[styles.box, styles.pointerEventAuto]}>
             <DemoText style={[styles.text]}>C: explicitly unspecified</DemoText>
           </View>
         </View>
@@ -251,7 +251,7 @@ class BoxOnlyStyleExample extends React.Component<$FlowFixMeProps> {
         <DemoText style={styles.text}>A: unspecified</DemoText>
         <View
           onTouchStart={() => this.props.onLog('B box-only touched')}
-          style={[styles.box, styles.pointerEventsBoxOnly]}>
+          style={[styles.box, styles.pointerEventBoxOnly]}>
           <DemoText style={styles.text}>B: box-only</DemoText>
           <View
             onTouchStart={() => this.props.onLog('C unspecified touched')}
@@ -267,7 +267,7 @@ class BoxOnlyStyleExample extends React.Component<$FlowFixMeProps> {
             style={[
               styles.box,
               styles.boxPassedThrough,
-              styles.pointerEventsAuto,
+              styles.pointerEventAuto,
             ]}>
             <DemoText style={[styles.text, styles.textPassedThrough]}>
               C: explicitly unspecified
@@ -446,16 +446,16 @@ const styles = StyleSheet.create({
     borderColor: '#f0f0f0',
     backgroundColor: '#f9f9f9',
   },
-  pointerEventsBoxNone: {
+  pointerEventBoxNone: {
     pointerEvents: 'box-none',
   },
-  pointerEventsBoxOnly: {
+  pointerEventBoxOnly: {
     pointerEvents: 'box-only',
   },
-  pointerEventsNone: {
+  pointerEventNone: {
     pointerEvents: 'none',
   },
-  pointerEventsAuto: {
+  pointerEventAuto: {
     pointerEvents: 'auto',
   },
 });
