@@ -7,10 +7,6 @@
 - Remove jest/preprocessor from the react-native package ([0301cb285b](https://github.com/facebook/react-native/commit/0301cb285b2e85b48a397fe58d565196654d9754) by [@motiz88](https://github.com/motiz88))
 - Remove nonstandard Promise.prototype.done ([018d5cf985](https://github.com/facebook/react-native/commit/018d5cf985497273dd700b56168cf1cf64f498d5) by [@motiz88](https://github.com/motiz88))
 
-#### Android specific
-
-- Update template to gitignore `android/app/.cxx` ([542d43df9d](https://github.com/facebook/react-native/commit/542d43df9d84a88f742c273391f2596546b4c804) by [@leotm](https://github.com/leotm))
-
 ### Added
 
 - Support TypeScript array types for turbo module (module only) ([f0c4c291e1](https://github.com/facebook/react-native/commit/f0c4c291e12a8e76f91d3841d65291f0f1f16714) by [@ZihanChen-MSFT](https://github.com/ZihanChen-MSFT))
@@ -35,6 +31,7 @@
 - Option to enable lazyViewManager support with `ViewManagerOnDemandReactPackage` ([d4b59cd9d0](https://github.com/facebook/react-native/commit/d4b59cd9d02a8c4eda3ac4bf89cfe8161847adf0) by [@javache](https://github.com/javache))
 - Support for dataUri in form data ([c663c0ec9d](https://github.com/facebook/react-native/commit/c663c0ec9deee7281f819f222bb29ad79e99f3b8) by [@hetanthakkar1](https://github.com/hetanthakkar1))
 - Add android-only prop documentation at the TextInput js level. ([f2e23215ca](https://github.com/facebook/react-native/commit/f2e23215ca14c3c630aa931cdd114187589ac0fb))
+- Update template to gitignore `android/app/.cxx` ([542d43df9d](https://github.com/facebook/react-native/commit/542d43df9d84a88f742c273391f2596546b4c804) by [@leotm](https://github.com/leotm))
 
 #### iOS specific
 
