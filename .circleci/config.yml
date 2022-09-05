@@ -406,6 +406,27 @@ jobs:
       - store_test_results:
           path: ./reports/junit
 
+  # -----------------------
+  #     JOBS: Codegen Tests
+  # -----------------------
+  test_codegen:
+    parameters:
+      executor:
+        type: executor
+        default: nodelts
+    executor: << parameters.executor >>
+    steps:
+      - checkout
+      - setup_artifacts
+      - run:
+          name: Install Yarn in codegen
+          command: yarn install
+          working_directory: packages/react-native-codegen
+      - run:
+          name: Run Tests
+          command: yarn jest
+          working_directory: packages/react-native-codegen
+
   # -------------------------
   #     JOBS: iOS Unit Tests
   # -------------------------
@@ -1328,6 +1349,7 @@ workflows:
     unless: << pipeline.parameters.run_package_release_workflow_only >>
     jobs:
       - prepare_hermes_workspace
+      - test_codegen
       - build_hermesc_linux:
           requires:
             - prepare_hermes_workspace
