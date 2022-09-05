@@ -547,7 +547,7 @@ export type ViewProps = $ReadOnly<{|
    *
    * See https://reactnative.dev/docs/view#id
    */
-  id?: ?string,
+  id?: string,
 
   /**
    * Used to locate this view in end-to-end tests.

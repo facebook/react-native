@@ -65,7 +65,7 @@ type Props = $ReadOnly<{|
   disabled?: ?boolean,
   focusable?: ?boolean,
   hitSlop?: ?EdgeInsetsProp,
-  id?: ?string,
+  id?: string,
   importantForAccessibility?: ?('auto' | 'yes' | 'no' | 'no-hide-descendants'),
   nativeID?: ?string,
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,

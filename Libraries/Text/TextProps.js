@@ -103,7 +103,7 @@ export type TextProps = $ReadOnly<{|
    *
    * See https://reactnative.dev/docs/text#nativeid
    */
-  id?: ?string,
+  id?: string,
 
   /**
    * Specifies largest possible scale a font can reach when `allowFontScaling` is enabled.
