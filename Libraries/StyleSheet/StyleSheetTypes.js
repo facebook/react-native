@@ -577,7 +577,16 @@ export type ____FontWeight_Internal =
   | '600'
   | '700'
   | '800'
-  | '900';
+  | '900'
+  | 100
+  | 200
+  | 300
+  | 400
+  | 500
+  | 600
+  | 700
+  | 800
+  | 900;
 
 export type ____TextStyle_InternalCore = $ReadOnly<{
   ...$Exact<____ViewStyle_Internal>,
