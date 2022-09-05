@@ -131,7 +131,7 @@ class TouchableBounce extends React.Component<Props, State> {
     const {onBlur, onFocus, ...eventHandlersWithoutBlurAndFocus} =
       this.state.pressability.getEventHandlers();
 
-    let _accessibilityState = {
+    const _accessibilityState = {
       busy: this.props['aria-busy'] ?? this.props.accessibilityState?.busy,
       checked:
         this.props['aria-checked'] ?? this.props.accessibilityState?.checked,

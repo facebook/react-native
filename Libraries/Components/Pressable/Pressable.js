@@ -233,7 +233,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
   _accessibilityState =
     disabled != null ? {..._accessibilityState, disabled} : _accessibilityState;
 
-  let restPropsWithDefaults: React.ElementConfig<typeof View> = {
+  const restPropsWithDefaults: React.ElementConfig<typeof View> = {
     ...restProps,
     ...android_rippleConfig?.viewProps,
     accessible: accessible !== false,
