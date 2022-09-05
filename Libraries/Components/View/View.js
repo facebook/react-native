@@ -13,6 +13,7 @@ import type {ViewProps} from './ViewPropTypes';
 import ViewNativeComponent from './ViewNativeComponent';
 import TextAncestor from '../../Text/TextAncestor';
 import * as React from 'react';
+import processLayoutProps from '../../StyleSheet/processStyle';
 
 export type Props = ViewProps;
 
@@ -27,11 +28,13 @@ const View: React.AbstractComponent<
   ViewProps,
   React.ElementRef<typeof ViewNativeComponent>,
 > = React.forwardRef(
-  ({tabIndex, focusable, ...otherProps}: ViewProps, forwardedRef) => {
+  ({tabIndex, focusable, style, ...otherProps}: ViewProps, forwardedRef) => {
+    const processedStyle = processLayoutProps(style);
     return (
       <TextAncestor.Provider value={false}>
         <ViewNativeComponent
           focusable={tabIndex !== undefined ? !tabIndex : focusable}
+          style={processedStyle}
           {...otherProps}
           ref={forwardedRef}
         />

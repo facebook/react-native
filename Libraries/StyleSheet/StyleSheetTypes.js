@@ -183,6 +183,18 @@ type ____LayoutStyle_Internal = $ReadOnly<{
    */
   margin?: DimensionValue,
 
+  /** `marginBlockEnd` works like `margin-bottom` in CSS.
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/margin-bottom
+   *  for more details.
+   */
+  marginBlockEnd?: DimensionValue,
+
+  /** `marginBlockStart` works like `margin-top` in CSS.
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/margin-top
+   *  for more details.
+   */
+  marginBlockStart?: DimensionValue,
+
   /** `marginBottom` works like `margin-bottom` in CSS.
    *  See https://developer.mozilla.org/en-US/docs/Web/CSS/margin-bottom
    *  for more details.
@@ -199,6 +211,18 @@ type ____LayoutStyle_Internal = $ReadOnly<{
    *  both `marginLeft` and `marginRight`.
    */
   marginHorizontal?: DimensionValue,
+
+  /**
+   * When direction is `ltr`, `marginInlineEnd` is equivalent to `marginRight`.
+   * When direction is `rtl`, `marginInlineEnd` is equivalent to `marginLeft`.
+   */
+  marginInlineEnd?: DimensionValue,
+
+  /**
+   * When direction is `ltr`, `marginInlineStart` is equivalent to `marginLeft`.
+   * When direction is `rtl`, `marginInlineStart` is equivalent to `marginRight`.
+   */
+  marginInlineStart?: DimensionValue,
 
   /** `marginLeft` works like `margin-left` in CSS.
    *  See https://developer.mozilla.org/en-US/docs/Web/CSS/margin-left
@@ -236,6 +260,18 @@ type ____LayoutStyle_Internal = $ReadOnly<{
    */
   padding?: DimensionValue,
 
+  /** `paddingBlockEnd` works like `padding-bottom` in CSS.
+   * See https://developer.mozilla.org/en-US/docs/Web/CSS/padding-bottom
+   * for more details.
+   */
+  paddingBlockEnd?: DimensionValue,
+
+  /** `paddingBlockStart` works like `padding-top` in CSS.
+   * See https://developer.mozilla.org/en-US/docs/Web/CSS/padding-top
+   * for more details.
+   */
+  paddingBlockStart?: DimensionValue,
+
   /** `paddingBottom` works like `padding-bottom` in CSS.
    * See https://developer.mozilla.org/en-US/docs/Web/CSS/padding-bottom
    * for more details.
@@ -252,6 +288,18 @@ type ____LayoutStyle_Internal = $ReadOnly<{
    *  `paddingLeft` and `paddingRight`.
    */
   paddingHorizontal?: DimensionValue,
+
+  /**
+   * When direction is `ltr`, `paddingInlineEnd` is equivalent to `paddingRight`.
+   * When direction is `rtl`, `paddingInlineEnd` is equivalent to `paddingLeft`.
+   */
+  paddingInlineEnd?: DimensionValue,
+
+  /**
+   * When direction is `ltr`, `paddingInlineStart` is equivalent to `paddingLeft`.
+   * When direction is `rtl`, `paddingInlineStart` is equivalent to `paddingRight`.
+   */
+  paddingInlineStart?: DimensionValue,
 
   /** `paddingLeft` works like `padding-left` in CSS.
    * See https://developer.mozilla.org/en-US/docs/Web/CSS/padding-left
