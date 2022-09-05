@@ -29,20 +29,20 @@ const View: React.AbstractComponent<
   React.ElementRef<typeof ViewNativeComponent>,
 > = React.forwardRef(
   (
-    
     {
       accessibilityLiveRegion,
       'aria-live': ariaLive,
       tabIndex,
       focusable,
-      style, pointerEvents, ...otherProps
+      style,
+      pointerEvents,
+      ...otherProps
     }: ViewProps,
-   
     forwardedRef,
-  ,
   ) => {
     const flattendStyle = flattenStyle(style);
     const newPointerEvents = pointerEvents || flattendStyle?.pointerEvents;
+
     return (
       <TextAncestor.Provider value={false}>
         <ViewNativeComponent
