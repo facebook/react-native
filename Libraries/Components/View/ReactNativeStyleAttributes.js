@@ -111,6 +111,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   borderTopRightRadius: true,
   borderTopStartRadius: true,
   opacity: true,
+  pointerEvents: true,
 
   /**
    * Text

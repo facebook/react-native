@@ -100,6 +100,7 @@ class IncorrectlyParameterizedFlowGenericParserError extends ParserError {
   +genericName: string;
   +numTypeParameters: number;
 
+  // $FlowFixMe[missing-local-annot]
   constructor(hasteModuleName: string, genericTypeAnnotation: $FlowFixMe) {
     if (genericTypeAnnotation.typeParameters == null) {
       super(
@@ -228,6 +229,24 @@ class UnsupportedFunctionReturnTypeAnnotationParserError extends ParserError {
 }
 
 /**
+ * Enum parsing errors
+ */
+
+class UnsupportedEnumDeclarationParserError extends ParserError {
+  constructor(
+    hasteModuleName: string,
+    arrayElementTypeAST: $FlowFixMe,
+    memberType: string,
+  ) {
+    super(
+      hasteModuleName,
+      arrayElementTypeAST,
+      `Unexpected enum member type ${memberType}. Only string and number enum members are supported`,
+    );
+  }
+}
+
+/**
  * Union parsing errors
  */
 
@@ -347,6 +366,7 @@ module.exports = {
   UnsupportedFlowTypeAnnotationParserError,
   UnsupportedFunctionParamTypeAnnotationParserError,
   UnsupportedFunctionReturnTypeAnnotationParserError,
+  UnsupportedEnumDeclarationParserError,
   UnsupportedUnionTypeAnnotationParserError,
   UnsupportedModulePropertyParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,

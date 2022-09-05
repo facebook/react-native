@@ -35,8 +35,13 @@ function constructAsyncTestHook(
       $ReadOnly<{[string]: AsyncTestStatus}>,
     ) => $ReadOnly<{[string]: AsyncTestStatus}>,
   ) => void,
+  runTestCase: (
+    testCase: PlatformTestCase,
+  ) => Array<PlatformTestAssertionResult>,
 ) {
   return (description: string, timeoutMs?: number = 10000) => {
+    const assertionsRef = useRef([]);
+
     const timeoutIDRef = useRef<TimeoutID | null>(null);
 
     const timeoutHandler = useCallback(() => {
@@ -44,6 +49,7 @@ function constructAsyncTestHook(
       addTestResult({
         name: description,
         assertions: [
+          ...assertionsRef.current,
           {
             passing: false,
             name: 'async_timeout',
@@ -82,13 +88,16 @@ function constructAsyncTestHook(
           addTestResult({
             name: description,
             assertions: [
+              ...assertionsRef.current,
               {
                 passing: true,
                 name: 'async_test',
                 description: 'async test should be completed',
               },
             ],
-            status: 'PASS',
+            status: didAllAssertionsPass(assertionsRef.current)
+              ? 'PASS'
+              : 'FAIL',
             error: null,
           });
           return {...prev, [description]: 'COMPLETED'};
@@ -96,6 +105,11 @@ function constructAsyncTestHook(
         return prev;
       });
     }, [description]);
+
+    const stepHandler = useCallback(testCase => {
+      const stepAssertions = runTestCase(testCase);
+      assertionsRef.current.push(...stepAssertions);
+    }, []);
 
     // test registration
     useEffect(() => {
@@ -110,8 +124,9 @@ function constructAsyncTestHook(
     return useMemo(
       () => ({
         done: completionHandler,
+        step: stepHandler,
       }),
-      [completionHandler],
+      [completionHandler, stepHandler],
     );
   };
 }
@@ -174,6 +189,74 @@ export default function usePlatformTestHarness(): PlatformTestHarnessHookResult 
     setTestElementKey(k => k + 1);
   }, []);
 
+  const runTestCase = useCallback((testCase: PlatformTestCase) => {
+    const assertionResults: Array<PlatformTestAssertionResult> = [];
+
+    const baseAssert = (
+      assertionName: string,
+      testConditionResult: boolean,
+      description: string,
+      failureMessage: string,
+    ) => {
+      if (testConditionResult) {
+        assertionResults.push({
+          passing: true,
+          name: assertionName,
+          description,
+        });
+      } else {
+        assertionResults.push({
+          passing: false,
+          name: assertionName,
+          description,
+          failureMessage,
+        });
+      }
+    };
+
+    const context: PlatformTestContext = {
+      assert_true: (cond: boolean, desc: string) =>
+        baseAssert(
+          'assert_true',
+          cond,
+          desc,
+          "expected 'true' but recieved 'false'",
+        ),
+      assert_equals: (a: any, b: any, desc: string) =>
+        baseAssert(
+          'assert_equal',
+          a === b,
+          desc,
+          `expected ${a} to equal ${b}`,
+        ),
+      assert_not_equals: (a: any, b: any, desc: string) =>
+        baseAssert(
+          'assert_not_equals',
+          a !== b,
+          desc,
+          `expected ${a} not to equal ${b}`,
+        ),
+      assert_greater_than_equal: (a: number, b: number, desc: string) =>
+        baseAssert(
+          'assert_greater_than_equal',
+          a >= b,
+          desc,
+          `expected ${a} to be greater than or equal to ${b}`,
+        ),
+      assert_less_than_equal: (a: number, b: number, desc: string) =>
+        baseAssert(
+          'assert_less_than_equal',
+          a <= b,
+          desc,
+          `expected ${a} to be less than or equal to ${b}`,
+        ),
+    };
+
+    testCase(context);
+
+    return assertionResults;
+  }, []);
+
   const testFunction: PlatformTestHarness['test'] = useCallback(
     (
       testCase: PlatformTestCase,
@@ -192,63 +275,8 @@ export default function usePlatformTestHarness(): PlatformTestHarnessHookResult 
         return;
       }
 
-      const assertionResults: Array<PlatformTestAssertionResult> = [];
-
-      const baseAssert = (
-        assertionName: string,
-        testConditionResult: boolean,
-        description: string,
-        failureMessage: string,
-      ) => {
-        if (testConditionResult) {
-          assertionResults.push({
-            passing: true,
-            name: assertionName,
-            description,
-          });
-        } else {
-          assertionResults.push({
-            passing: false,
-            name: assertionName,
-            description,
-            failureMessage,
-          });
-        }
-      };
-
-      const context: PlatformTestContext = {
-        assert_true: (cond: boolean, desc: string) =>
-          baseAssert(
-            'assert_true',
-            cond,
-            desc,
-            "expected 'true' but recieved 'false'",
-          ),
-        assert_equals: (a: any, b: any, desc: string) =>
-          baseAssert(
-            'assert_equal',
-            a === b,
-            desc,
-            `expected ${a} to equal ${b}`,
-          ),
-        assert_greater_than_equal: (a: number, b: number, desc: string) =>
-          baseAssert(
-            'assert_greater_than_equal',
-            a >= b,
-            desc,
-            `expected ${a} to be greater than or equal to ${b}`,
-          ),
-        assert_less_than_equal: (a: number, b: number, desc: string) =>
-          baseAssert(
-            'assert_less_than_equal',
-            a <= b,
-            desc,
-            `expected ${a} to be less than or equal to ${b}`,
-          ),
-      };
-
       try {
-        testCase(context);
+        const assertionResults = runTestCase(testCase);
         addTestResult({
           name,
           status: didAllAssertionsPass(assertionResults) ? 'PASS' : 'FAIL',
@@ -259,17 +287,22 @@ export default function usePlatformTestHarness(): PlatformTestHarnessHookResult 
         addTestResult({
           name,
           status: 'ERROR',
-          assertions: assertionResults,
+          assertions: [],
           error,
         });
       }
     },
-    [addTestResult],
+    [addTestResult, runTestCase],
   );
 
   const asyncTestHook: PlatformTestHarness['useAsyncTest'] = useMemo(
-    () => constructAsyncTestHook(addTestResult, updateAsyncTestStatuses),
-    [addTestResult],
+    () =>
+      constructAsyncTestHook(
+        addTestResult,
+        updateAsyncTestStatuses,
+        runTestCase,
+      ),
+    [addTestResult, runTestCase],
   );
 
   const numPendingAsyncTests = useMemo(() => {

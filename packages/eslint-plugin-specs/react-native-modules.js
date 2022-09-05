@@ -134,7 +134,7 @@ function rule(context) {
       const [parsingErrors, tryParse] = createParserErrorCapturer();
 
       const sourceCode = context.getSourceCode().getText();
-      const ast = flowParser.parse(sourceCode);
+      const ast = flowParser.parse(sourceCode, {enums: true});
 
       tryParse(() => {
         buildModuleSchema(hasteModuleName, ast, tryParse);
