@@ -574,6 +574,14 @@ class AccessibilityRoleAndStateExample extends React.Component<{}> {
             {content}
           </ScrollView>
         </RNTesterBlock>
+        <RNTesterBlock title="HorizontalScrollView with horizontalscrollview role">
+          <ScrollView
+            horizontal
+            accessibilityRole="horizontalscrollview"
+            style={styles.scrollView}>
+            {content}
+          </ScrollView>
+        </RNTesterBlock>
         <RNTesterBlock title="accessibilityRole with View Component">
           <View>
             <View
@@ -697,30 +705,6 @@ class AccessibilityRoleAndStateExample extends React.Component<{}> {
               accessibilityRole="webview"
               accessible={true}>
               <Text>Webview example</Text>
-            </View>
-            <View
-              accessibilityLabel="element 23"
-              accessibilityRole="slidingdrawer"
-              accessible={true}>
-              <Text>Slidingdrawer example</Text>
-            </View>
-            <View
-              accessibilityLabel="element 24"
-              accessibilityRole="iconmenu"
-              accessible={true}>
-              <Text>Iconmenu example</Text>
-            </View>
-            <View
-              accessibilityLabel="element 25"
-              accessibilityRole="scrollview"
-              accessible={true}>
-              <Text>Scrollview example</Text>
-            </View>
-            <View
-              accessibilityLabel="element 26"
-              accessibilityRole="horizontalscrollview"
-              accessible={true}>
-              <Text>Horizontalscrollview example</Text>
             </View>
             <ExpandableElementExample />
             <SelectionExample />
