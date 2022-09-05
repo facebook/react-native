@@ -149,21 +149,18 @@ class DecoratedRuntime : public jsi::WithRuntimeDecorator<ReentrancyCheck> {
       HermesRuntime &hermesRuntime,
       std::shared_ptr<MessageQueueThread> jsQueue)
       : jsi::WithRuntimeDecorator<ReentrancyCheck>(*runtime, reentrancyCheck_),
-        runtime_(std::move(runtime)),
-        hermesRuntime_(hermesRuntime) {
+        runtime_(std::move(runtime)) {
 #ifdef HERMES_ENABLE_DEBUGGER
     std::shared_ptr<HermesRuntime> rt(runtime_, &hermesRuntime);
     auto adapter = std::make_unique<HermesExecutorRuntimeAdapter>(rt, jsQueue);
-    facebook::hermes::inspector::chrome::enableDebugging(
+    debugToken_ = facebook::hermes::inspector::chrome::enableDebugging(
         std::move(adapter), "Hermes React Native");
-#else
-    (void)hermesRuntime_;
 #endif
   }
 
   ~DecoratedRuntime() {
 #ifdef HERMES_ENABLE_DEBUGGER
-    facebook::hermes::inspector::chrome::disableDebugging(hermesRuntime_);
+    facebook::hermes::inspector::chrome::disableDebugging(debugToken_);
 #endif
   }
 
@@ -177,7 +174,9 @@ class DecoratedRuntime : public jsi::WithRuntimeDecorator<ReentrancyCheck> {
 
   std::shared_ptr<Runtime> runtime_;
   ReentrancyCheck reentrancyCheck_;
-  HermesRuntime &hermesRuntime_;
+#ifdef HERMES_ENABLE_DEBUGGER
+  facebook::hermes::inspector::chrome::DebugSessionToken debugToken_;
+#endif
 };
 
 } // namespace
@@ -211,6 +210,12 @@ std::unique_ptr<JSExecutor> HermesExecutorFactory::createJSExecutor(
 
   return std::make_unique<HermesExecutor>(
       decoratedRuntime, delegate, jsQueue, timeoutInvoker_, runtimeInstaller_);
+}
+
+::hermes::vm::RuntimeConfig HermesExecutorFactory::defaultRuntimeConfig() {
+  return ::hermes::vm::RuntimeConfig::Builder()
+      .withEnableSampleProfiling(true)
+      .build();
 }
 
 HermesExecutor::HermesExecutor(

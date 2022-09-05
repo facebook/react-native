@@ -112,8 +112,12 @@ class StructCollector {
         this._insertAlias(typeAnnotation.name, structContext, resolveAlias);
         return wrapNullable(nullable, typeAnnotation);
       }
+      case 'EnumDeclaration':
+        throw new Error('Enum types are unsupported in structs');
       case 'MixedTypeAnnotation':
         throw new Error('Mixed types are unsupported in structs');
+      case 'UnionTypeAnnotation':
+        throw new Error('Union types are unsupported in structs');
       default: {
         return wrapNullable(nullable, typeAnnotation);
       }

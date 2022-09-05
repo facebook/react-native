@@ -17,7 +17,7 @@ if USE_FRAMEWORKS
   use_frameworks!
 end
 
-def pods(options = {}, use_flipper: false)
+def pods(options = {}, use_flipper: !IN_CI && !USE_FRAMEWORKS)
   project 'RNTesterPods.xcodeproj'
 
   fabric_enabled = true
@@ -53,7 +53,7 @@ def pods(options = {}, use_flipper: false)
 end
 
 target 'RNTester' do
-  pods({}, :use_flipper => !IN_CI && !USE_FRAMEWORKS)
+  pods()
 end
 
 target 'RNTesterUnitTests' do

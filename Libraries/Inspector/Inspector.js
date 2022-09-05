@@ -20,69 +20,17 @@ const ReactNative = require('../Renderer/shims/ReactNative');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const View = require('../Components/View/View');
 const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
+const getInspectorDataForViewAtPoint = require('./getInspectorDataForViewAtPoint');
 
-const invariant = require('invariant');
-
-import type {
-  HostComponent,
-  TouchedViewDataAtPoint,
-} from '../Renderer/shims/ReactNativeTypes';
-
-type HostRef = React.ElementRef<HostComponent<mixed>>;
-
-export type ReactRenderer = {
-  rendererConfig: {
-    getInspectorDataForViewAtPoint: (
-      inspectedView: ?HostRef,
-      locationX: number,
-      locationY: number,
-      callback: Function,
-    ) => void,
-    ...
-  },
-};
+import type {TouchedViewDataAtPoint} from '../Renderer/shims/ReactNativeTypes';
+import type {HostRef} from './getInspectorDataForViewAtPoint';
 
 const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
-const renderers = findRenderers();
 
 // Required for React DevTools to view/edit React Native styles in Flipper.
 // Flipper doesn't inject these values when initializing DevTools.
 hook.resolveRNStyle = require('../StyleSheet/flattenStyle');
 hook.nativeStyleEditorValidAttributes = Object.keys(ReactNativeStyleAttributes);
-
-function findRenderers(): $ReadOnlyArray<ReactRenderer> {
-  const allRenderers = Array.from(hook.renderers.values());
-  invariant(
-    allRenderers.length >= 1,
-    'Expected to find at least one React Native renderer on DevTools hook.',
-  );
-  return allRenderers;
-}
-
-function getInspectorDataForViewAtPoint(
-  inspectedView: ?HostRef,
-  locationX: number,
-  locationY: number,
-  callback: (viewData: TouchedViewDataAtPoint) => void,
-) {
-  // Check all renderers for inspector data.
-  for (let i = 0; i < renderers.length; i++) {
-    const renderer = renderers[i];
-    if (renderer?.rendererConfig?.getInspectorDataForViewAtPoint != null) {
-      renderer.rendererConfig.getInspectorDataForViewAtPoint(
-        inspectedView,
-        locationX,
-        locationY,
-        viewData => {
-          // Only return with non-empty view data since only one renderer will have this view.
-          if (viewData && viewData.hierarchy.length > 0) {
-            callback(viewData);
-          }
-        },
-      );
-    }
-  }
-}
 
 class Inspector extends React.Component<
   {
@@ -144,8 +92,6 @@ class Inspector extends React.Component<
   }
 
   _attachToDevtools = (agent: Object) => {
-    agent.addListener('hideNativeHighlight', this._onAgentHideNativeHighlight);
-    agent.addListener('showNativeHighlight', this._onAgentShowNativeHighlight);
     agent.addListener('shutdown', this._onAgentShutdown);
 
     this.setState({
@@ -153,45 +99,9 @@ class Inspector extends React.Component<
     });
   };
 
-  _onAgentHideNativeHighlight = () => {
-    if (this.state.inspected === null) {
-      return;
-    }
-    // we wait to actually hide in order to avoid flicker
-    this._hideTimeoutID = setTimeout(() => {
-      this.setState({
-        inspected: null,
-      });
-    }, 100);
-  };
-
-  _onAgentShowNativeHighlight = (node: any) => {
-    clearTimeout(this._hideTimeoutID);
-
-    // Shape of `node` is different in Fabric.
-    const component = node.canonical ?? node;
-
-    component.measure((x, y, width, height, left, top) => {
-      this.setState({
-        hierarchy: [],
-        inspected: {
-          frame: {left, top, width, height},
-        },
-      });
-    });
-  };
-
   _onAgentShutdown = () => {
     const agent = this.state.devtoolsAgent;
     if (agent != null) {
-      agent.removeListener(
-        'hideNativeHighlight',
-        this._onAgentHideNativeHighlight,
-      );
-      agent.removeListener(
-        'showNativeHighlight',
-        this._onAgentShowNativeHighlight,
-      );
       agent.removeListener('shutdown', this._onAgentShutdown);
 
       this.setState({devtoolsAgent: null});
@@ -259,6 +169,7 @@ class Inspector extends React.Component<
           this._setTouchedViewData(viewData);
           this._setTouchedViewData = null;
         }
+        return false;
       },
     );
   }

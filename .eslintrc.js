@@ -12,7 +12,7 @@
 module.exports = {
   root: true,
 
-  extends: ['./packages/eslint-config-react-native-community/index.js'],
+  extends: ['@react-native-community'],
 
   plugins: ['@react-native/eslint-plugin-specs'],
 

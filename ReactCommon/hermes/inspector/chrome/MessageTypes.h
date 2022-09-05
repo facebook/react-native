@@ -1,5 +1,5 @@
 // Copyright (c) Meta Platforms, Inc. and affiliates. All Rights Reserved.
-// @generated SignedSource<<dafd583635231e17c0264beb38610499>>
+// @generated SignedSource<<2bada3d9c303c840ddcc292c7ba52604>>
 
 #pragma once
 
@@ -52,6 +52,8 @@ struct CallArgument;
 struct CallFrame;
 struct CallFunctionOnRequest;
 struct CallFunctionOnResponse;
+struct CompileScriptRequest;
+struct CompileScriptResponse;
 struct ConsoleAPICalledNotification;
 struct EvaluateRequest;
 struct EvaluateResponse;
@@ -141,6 +143,7 @@ struct RequestHandler {
   virtual void handle(const profiler::StartRequest &req) = 0;
   virtual void handle(const profiler::StopRequest &req) = 0;
   virtual void handle(const runtime::CallFunctionOnRequest &req) = 0;
+  virtual void handle(const runtime::CompileScriptRequest &req) = 0;
   virtual void handle(const runtime::EvaluateRequest &req) = 0;
   virtual void handle(const runtime::GetHeapUsageRequest &req) = 0;
   virtual void handle(const runtime::GetPropertiesRequest &req) = 0;
@@ -180,6 +183,7 @@ struct NoopRequestHandler : public RequestHandler {
   void handle(const profiler::StartRequest &req) override {}
   void handle(const profiler::StopRequest &req) override {}
   void handle(const runtime::CallFunctionOnRequest &req) override {}
+  void handle(const runtime::CompileScriptRequest &req) override {}
   void handle(const runtime::EvaluateRequest &req) override {}
   void handle(const runtime::GetHeapUsageRequest &req) override {}
   void handle(const runtime::GetPropertiesRequest &req) override {}
@@ -654,6 +658,19 @@ struct runtime::CallFunctionOnRequest : public Request {
   folly::Optional<std::string> objectGroup;
 };
 
+struct runtime::CompileScriptRequest : public Request {
+  CompileScriptRequest();
+  explicit CompileScriptRequest(const folly::dynamic &obj);
+
+  folly::dynamic toDynamic() const override;
+  void accept(RequestHandler &handler) const override;
+
+  std::string expression;
+  std::string sourceURL;
+  bool persistScript{};
+  folly::Optional<runtime::ExecutionContextId> executionContextId;
+};
+
 struct runtime::EvaluateRequest : public Request {
   EvaluateRequest();
   explicit EvaluateRequest(const folly::dynamic &obj);
@@ -798,6 +815,15 @@ struct runtime::CallFunctionOnResponse : public Response {
   folly::dynamic toDynamic() const override;
 
   runtime::RemoteObject result{};
+  folly::Optional<runtime::ExceptionDetails> exceptionDetails;
+};
+
+struct runtime::CompileScriptResponse : public Response {
+  CompileScriptResponse() = default;
+  explicit CompileScriptResponse(const folly::dynamic &obj);
+  folly::dynamic toDynamic() const override;
+
+  folly::Optional<runtime::ScriptId> scriptId;
   folly::Optional<runtime::ExceptionDetails> exceptionDetails;
 };
 

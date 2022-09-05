@@ -172,8 +172,9 @@ public class PointerEvent extends Event<PointerEvent> {
     // https://www.w3.org/TR/pointerevents/#pointerevent-interface
     pointerEvent.putDouble("pointerId", pointerId);
     pointerEvent.putDouble("pressure", mMotionEvent.getPressure(index));
-    pointerEvent.putString(
-        "pointerType", PointerEventHelper.getW3CPointerType(mMotionEvent.getToolType(index)));
+
+    String pointerType = PointerEventHelper.getW3CPointerType(mMotionEvent.getToolType(index));
+    pointerEvent.putString("pointerType", pointerType);
 
     pointerEvent.putBoolean(
         "isPrimary", PointerEventHelper.isPrimary(pointerId, mPrimaryPointerId, mMotionEvent));
@@ -181,8 +182,8 @@ public class PointerEvent extends Event<PointerEvent> {
     // https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent
     // Client refers to upper left edge of the content area (viewport)
     // We define the viewport to be ReactRootView
-    double clientX = mMotionEvent.getX(index);
-    double clientY = mMotionEvent.getX(index);
+    double clientX = PixelUtil.toDIPFromPixel(mMotionEvent.getX(index));
+    double clientY = PixelUtil.toDIPFromPixel(mMotionEvent.getY(index));
     pointerEvent.putDouble("clientX", clientX);
     pointerEvent.putDouble("clientY", clientY);
 
@@ -201,6 +202,13 @@ public class PointerEvent extends Event<PointerEvent> {
     pointerEvent.putInt("target", this.getViewTag());
     pointerEvent.putDouble("timestamp", this.getTimestampMs());
 
+    if (pointerType.equals(PointerEventHelper.POINTER_TYPE_MOUSE)) {
+      pointerEvent.putDouble("width", 1);
+      pointerEvent.putDouble("height", 1);
+      pointerEvent.putDouble("tiltX", 0);
+      pointerEvent.putDouble("tiltY", 0);
+    }
+
     return pointerEvent;
   }
 
@@ -218,6 +226,8 @@ public class PointerEvent extends Event<PointerEvent> {
       case PointerEventHelper.POINTER_DOWN:
       case PointerEventHelper.POINTER_UP:
       case PointerEventHelper.POINTER_LEAVE:
+      case PointerEventHelper.POINTER_OUT:
+      case PointerEventHelper.POINTER_OVER:
         pointersEventData = Arrays.asList(createPointerEventData(activePointerIndex));
         break;
     }

@@ -188,6 +188,20 @@
 - Add GitHub token permissions for workflows ([3da3d82320](https://github.com/facebook/react-native/commit/3da3d82320bd035c6bd361a82ea12a70dba4e851) by [@varunsh-coder](https://github.com/varunsh-coder))
 - Bump RCT-Folly to 2021-07-22 ([68f3a42fc7](https://github.com/facebook/react-native/commit/68f3a42fc7380051714253f43b42175de361f8bd) by [@luissantana](https://github.com/luissantana))
 
+## v0.69.5
+
+### Changed
+
+- Bump react-native-codegen to 0.69.2 ([df3d52bfbf](https://github.com/facebook/react-native/commit/df3d52bfbf4254cd16e1dc0ca0af2743cd7e11c1) by [@dmitryrykun](https://github.com/dmitryrykun))
+
+#### Android specific
+
+- Replaced reactnativeutilsjni with reactnativejni in the build process to reduce size ([54a4fcbfdc](https://github.com/facebook/react-native/commit/54a4fcbfdcc8111b3010b2c31ed3c1d48632ce4c) by [@SparshaSaha](https://github.com/SparshaSaha))
+
+### Fixed
+
+- Codegen should ignore `.d.ts` files ([0f0d52067c](https://github.com/facebook/react-native/commit/0f0d52067cb89fdb39a99021f0745282ce087fc2) by [@tido64](https://github.com/tido64))
+
 ## v0.69.4
 
 ### Changed

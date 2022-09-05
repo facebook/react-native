@@ -111,7 +111,7 @@ set_target_properties(turbomodulejsijni
         ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libturbomodulejsijni.so)
 target_include_directories(turbomodulejsijni
         INTERFACE
-        ${REACT_ANDROID_SRC_DIR}/java/com/facebook/react/turbomodule/core/jni)
+        ${REACT_ANDROID_SRC_DIR}/jni/react/turbomodule)
 
 ## react_render_core
 add_library(react_render_core SHARED IMPORTED GLOBAL)
@@ -193,7 +193,7 @@ set_target_properties(fabricjni
         PROPERTIES
         IMPORTED_LOCATION
         ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libfabricjni.so)
-target_include_directories(fabricjni INTERFACE ${REACT_ANDROID_SRC_DIR}/java/com/facebook/react/fabric/jni)
+target_include_directories(fabricjni INTERFACE ${REACT_ANDROID_SRC_DIR}/jni/react/fabric)
 
 ## react_render_componentregistry
 add_library(react_render_componentregistry SHARED IMPORTED GLOBAL)

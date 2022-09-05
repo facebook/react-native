@@ -77,6 +77,95 @@ exports[`RN Codegen Flow Parser can generate fixture CXX_ONLY_NATIVE_MODULE 1`] 
                 }
               ]
             }
+          },
+          {
+            'name': 'getEnums',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'StringTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'quality',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'EnumDeclaration',
+                    'memberType': 'StringTypeAnnotation'
+                  }
+                },
+                {
+                  'name': 'resolution',
+                  'optional': true,
+                  'typeAnnotation': {
+                    'type': 'EnumDeclaration',
+                    'memberType': 'NumberTypeAnnotation'
+                  }
+                },
+                {
+                  'name': 'floppy',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'EnumDeclaration',
+                    'memberType': 'NumberTypeAnnotation'
+                  }
+                },
+                {
+                  'name': 'stringOptions',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'EnumDeclaration',
+                    'memberType': 'StringTypeAnnotation'
+                  }
+                }
+              ]
+            }
+          },
+          {
+            'name': 'getUnion',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'UnionTypeAnnotation',
+                'memberType': 'ObjectTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'chooseInt',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'UnionTypeAnnotation',
+                    'memberType': 'NumberTypeAnnotation'
+                  }
+                },
+                {
+                  'name': 'chooseFloat',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'UnionTypeAnnotation',
+                    'memberType': 'NumberTypeAnnotation'
+                  }
+                },
+                {
+                  'name': 'chooseObject',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'UnionTypeAnnotation',
+                    'memberType': 'ObjectTypeAnnotation'
+                  }
+                },
+                {
+                  'name': 'chooseString',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'UnionTypeAnnotation',
+                    'memberType': 'StringTypeAnnotation'
+                  }
+                }
+              ]
+            }
           }
         ]
       },

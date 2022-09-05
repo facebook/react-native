@@ -1226,6 +1226,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       );
       return (
         // $FlowFixMe[prop-missing] Invalid prop usage
+        // $FlowFixMe[incompatible-use]
         <ScrollView
           {...props}
           refreshControl={
@@ -1244,6 +1245,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       );
     } else {
       // $FlowFixMe[prop-missing] Invalid prop usage
+      // $FlowFixMe[incompatible-use]
       return <ScrollView {...props} />;
     }
   };

@@ -13,7 +13,11 @@
 import type {SyntheticEvent, LayoutEvent} from '../Types/CoreEventTypes';
 import type {EdgeInsetsProp} from '../StyleSheet/EdgeInsetsPropType';
 import type {ImageSource} from './ImageSource';
-import type {ViewStyleProp, ImageStyleProp} from '../StyleSheet/StyleSheet';
+import type {
+  ColorValue,
+  ViewStyleProp,
+  ImageStyleProp,
+} from '../StyleSheet/StyleSheet';
 import type {ViewProps} from '../Components/View/ViewPropTypes';
 import type {Node, Ref} from 'react';
 import typeof Image from './Image';
@@ -169,6 +173,13 @@ export type ImageProps = {|
    * See https://reactnative.dev/docs/image#testid
    */
   testID?: ?string,
+
+  /**
+   * Changes the color of all the non-transparent pixels to the tintColor.
+   *
+   * See https://reactnative.dev/docs/image#tintcolor
+   */
+  tintColor?: ColorValue,
 
   src?: empty,
   children?: empty,

@@ -24,7 +24,7 @@ export type KeyboardEventEasing =
   | 'linear'
   | 'keyboard';
 
-export type KeyboardEventCoordinates = $ReadOnly<{|
+export type KeyboardMetrics = $ReadOnly<{|
   screenX: number,
   screenY: number,
   width: number,
@@ -36,7 +36,7 @@ export type KeyboardEvent = AndroidKeyboardEvent | IOSKeyboardEvent;
 type BaseKeyboardEvent = {|
   duration: number,
   easing: KeyboardEventEasing,
-  endCoordinates: KeyboardEventCoordinates,
+  endCoordinates: KeyboardMetrics,
 |};
 
 export type AndroidKeyboardEvent = $ReadOnly<{|
@@ -47,7 +47,7 @@ export type AndroidKeyboardEvent = $ReadOnly<{|
 
 export type IOSKeyboardEvent = $ReadOnly<{|
   ...BaseKeyboardEvent,
-  startCoordinates: KeyboardEventCoordinates,
+  startCoordinates: KeyboardMetrics,
   isEventFromThisApp: boolean,
 |}>;
 
@@ -103,12 +103,23 @@ type KeyboardEventDefinitions = {
  */
 
 class Keyboard {
+  _currentlyShowing: ?KeyboardEvent;
+
   _emitter: NativeEventEmitter<KeyboardEventDefinitions> =
     new NativeEventEmitter(
       // T88715063: NativeEventEmitter only used this parameter on iOS. Now it uses it on all platforms, so this code was modified automatically to preserve its behavior
       // If you want to use the native module on other platforms, please remove this condition and test its behavior
       Platform.OS !== 'ios' ? null : NativeKeyboardObserver,
     );
+
+  constructor() {
+    this.addListener('keyboardDidShow', ev => {
+      this._currentlyShowing = ev;
+    });
+    this.addListener('keyboardDidHide', _ev => {
+      this._currentlyShowing = null;
+    });
+  }
 
   /**
    * The `addListener` function connects a JavaScript function to an identified native
@@ -156,6 +167,20 @@ class Keyboard {
    */
   dismiss(): void {
     dismissKeyboard();
+  }
+
+  /**
+   * Whether the keyboard is last known to be visible.
+   */
+  isVisible(): boolean {
+    return !!this._currentlyShowing;
+  }
+
+  /**
+   * Return the metrics of the soft-keyboard if visible.
+   */
+  metrics(): ?KeyboardMetrics {
+    return this._currentlyShowing?.endCoordinates;
   }
 
   /**

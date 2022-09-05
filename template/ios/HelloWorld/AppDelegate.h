@@ -1,7 +1,6 @@
-#import <React/RCTAppDelegate.h>
-#import <React/RCTBridgeDelegate.h>
+#import <React-RCTAppDelegate/RCTAppDelegate.h>
 #import <UIKit/UIKit.h>
 
-@interface AppDelegate : RCTAppDelegate <RCTBridgeDelegate>
+@interface AppDelegate : RCTAppDelegate
 
 @end

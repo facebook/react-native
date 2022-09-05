@@ -156,7 +156,10 @@ function translateFunctionParamToJavaType(
       imports.add('com.facebook.react.bridge.Callback');
       return 'Callback';
     default:
-      (realTypeAnnotation.type: 'MixedTypeAnnotation');
+      (realTypeAnnotation.type:
+        | 'EnumDeclaration'
+        | 'MixedTypeAnnotation'
+        | 'UnionTypeAnnotation');
       throw new Error(createErrorMessage(realTypeAnnotation.type));
   }
 }
@@ -220,7 +223,10 @@ function translateFunctionReturnTypeToJavaType(
       imports.add('com.facebook.react.bridge.WritableArray');
       return wrapIntoNullableIfNeeded('WritableArray');
     default:
-      (realTypeAnnotation.type: 'MixedTypeAnnotation');
+      (realTypeAnnotation.type:
+        | 'EnumDeclaration'
+        | 'MixedTypeAnnotation'
+        | 'UnionTypeAnnotation');
       throw new Error(createErrorMessage(realTypeAnnotation.type));
   }
 }
@@ -272,7 +278,10 @@ function getFalsyReturnStatementFromReturnType(
     case 'ArrayTypeAnnotation':
       return 'return null;';
     default:
-      (realTypeAnnotation.type: 'MixedTypeAnnotation');
+      (realTypeAnnotation.type:
+        | 'EnumDeclaration'
+        | 'MixedTypeAnnotation'
+        | 'UnionTypeAnnotation');
       throw new Error(createErrorMessage(realTypeAnnotation.type));
   }
 }
