@@ -131,11 +131,13 @@ class TouchableBounce extends React.Component<Props, State> {
     const {onBlur, onFocus, ...eventHandlersWithoutBlurAndFocus} =
       this.state.pressability.getEventHandlers();
 
+    const accessibilityLabel =
+      this.props['aria-label'] ?? this.props.accessibilityLabel;
     return (
       <Animated.View
         style={[{transform: [{scale: this.state.scale}]}, this.props.style]}
         accessible={this.props.accessible !== false}
-        accessibilityLabel={this.props.accessibilityLabel}
+        accessibilityLabel={accessibilityLabel}
         accessibilityHint={this.props.accessibilityHint}
         accessibilityLanguage={this.props.accessibilityLanguage}
         accessibilityRole={this.props.accessibilityRole}

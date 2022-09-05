@@ -220,10 +220,12 @@ class TouchableOpacity extends React.Component<Props, State> {
           }
         : this.props.accessibilityState;
 
+    const accessibilityLabel =
+      this.props['aria-label'] ?? this.props.accessibilityLabel;
     return (
       <Animated.View
         accessible={this.props.accessible !== false}
-        accessibilityLabel={this.props.accessibilityLabel}
+        accessibilityLabel={accessibilityLabel}
         accessibilityHint={this.props.accessibilityHint}
         accessibilityLanguage={this.props.accessibilityLanguage}
         accessibilityRole={this.props.accessibilityRole}

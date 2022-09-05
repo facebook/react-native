@@ -259,6 +259,8 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
           }
         : this.props.accessibilityState;
 
+    const accessibilityLabel =
+      this.props['aria-label'] ?? this.props.accessibilityLabel;
     return React.cloneElement(
       element,
       {
@@ -272,7 +274,7 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
         accessible: this.props.accessible !== false,
         accessibilityHint: this.props.accessibilityHint,
         accessibilityLanguage: this.props.accessibilityLanguage,
-        accessibilityLabel: this.props.accessibilityLabel,
+        accessibilityLabel: accessibilityLabel,
         accessibilityRole: this.props.accessibilityRole,
         accessibilityState: accessibilityState,
         accessibilityActions: this.props.accessibilityActions,
