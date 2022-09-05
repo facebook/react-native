@@ -142,8 +142,7 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
       'The <Image> component cannot contain children. If you want to render content on top of the image, consider using the <ImageBackground> component or absolute positioning.',
     );
   }
-  const accessibilityLabel =
-    this.props['aria-label'] ?? this.props.accessibilityLabel;
+  const accessibilityLabel = props['aria-label'] ?? props.accessibilityLabel;
 
   return (
     <ImageAnalyticsTagContext.Consumer>
