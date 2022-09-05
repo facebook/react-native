@@ -12,6 +12,7 @@ import type {ViewProps} from './ViewPropTypes';
 
 import ViewNativeComponent from './ViewNativeComponent';
 import TextAncestor from '../../Text/TextAncestor';
+import flattenStyle from '../../StyleSheet/flattenStyle';
 import * as React from 'react';
 
 export type Props = ViewProps;
@@ -28,7 +29,14 @@ const View: React.AbstractComponent<
   React.ElementRef<typeof ViewNativeComponent>,
 > = React.forwardRef(
   (
-    {tabIndex, focusable, role, accessibilityRole, ...otherProps}: ViewProps,
+    {
+      tabIndex,
+      focusable,
+      role,
+      accessibilityRole,
+      pointerEvents,
+      ...otherProps
+    }: ViewProps,
     forwardedRef,
   ) => {
     // Map role values to AccessibilityRole values
@@ -99,6 +107,9 @@ const View: React.AbstractComponent<
       treeitem: undefined,
     };
 
+    const flattendStyle = flattenStyle(style);
+    const newPointerEvents = pointerEvents || flattendStyle?.pointerEvents;
+
     return (
       <TextAncestor.Provider value={false}>
         <ViewNativeComponent
@@ -107,6 +118,8 @@ const View: React.AbstractComponent<
             role ? roleToAccessibilityRoleMapping[role] : accessibilityRole
           }
           {...otherProps}
+          style={style}
+          pointerEvents={newPointerEvents}
           ref={forwardedRef}
         />
       </TextAncestor.Provider>

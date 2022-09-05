@@ -15,7 +15,7 @@ namespace yoga {
 namespace vanillajni {
 
 YogaJniException::YogaJniException() {
-  jclass cl = getCurrentEnv()->FindClass("Ljava/lang/RuntimeException;");
+  jclass cl = getCurrentEnv()->FindClass("java/lang/RuntimeException");
   static const jmethodID methodId = facebook::yoga::vanillajni::getMethodId(
       getCurrentEnv(), cl, "<init>", "()V");
   auto throwable = getCurrentEnv()->NewObject(cl, methodId);
