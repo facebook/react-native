@@ -21,6 +21,7 @@ import type {
 import type {ViewProps} from '../Components/View/ViewPropTypes';
 import type {Node, Ref} from 'react';
 import typeof Image from './Image';
+import type {DimensionValue} from '../StyleSheet/StyleSheetTypes';
 
 export type ImageLoadEvent = SyntheticEvent<
   $ReadOnly<{|
@@ -111,14 +112,14 @@ export type ImageProps = {|
    *
    * See https://reactnative.dev/docs/image#height
    */
-  height?: ?number,
+  height?: DimensionValue,
 
   /**
    * Width of the image component.
    *
    * See https://reactnative.dev/docs/image#width
    */
-  width?: ?number,
+  width?: DimensionValue,
 
   /**
    * Invoked on load error with `{nativeEvent: {error}}`.
