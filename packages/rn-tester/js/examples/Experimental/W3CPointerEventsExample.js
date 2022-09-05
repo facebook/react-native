@@ -18,6 +18,7 @@ import PointerEventPointerMove from './W3CPointerEventPlatformTests/PointerEvent
 import CompatibilityAnimatedPointerMove from './Compatibility/CompatibilityAnimatedPointerMove';
 import PointerEventPrimaryTouchPointer from './W3CPointerEventPlatformTests/PointerEventPrimaryTouchPointer';
 import PointerEventAttributesNoHoverPointers from './W3CPointerEventPlatformTests/PointerEventAttributesNoHoverPointers';
+import PointerEventPointerMoveOnChordedMouseButton from './W3CPointerEventPlatformTests/PointerEventPointerMoveOnChordedMouseButton';
 
 function EventfulView(props: {|
   name: string,
@@ -281,6 +282,14 @@ export default {
       title: 'Pointer Event primary touch pointer test',
       render(): React.Node {
         return <PointerEventPrimaryTouchPointer />;
+      },
+    },
+    {
+      name: 'pointerevent_pointermove_on_chorded_mouse_button',
+      description: '',
+      title: 'PointerEvents pointermove on button state changes',
+      render(): React.Node {
+        return <PointerEventPointerMoveOnChordedMouseButton />;
       },
     },
     CompatibilityAnimatedPointerMove,
