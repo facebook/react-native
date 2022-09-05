@@ -14,6 +14,7 @@ import Platform from '../Utilities/Platform';
 import * as PressabilityDebug from '../Pressability/PressabilityDebug';
 import usePressability from '../Pressability/usePressability';
 import StyleSheet from '../StyleSheet/StyleSheet';
+import flattenStyle from '../StyleSheet/flattenStyle';
 import processColor from '../StyleSheet/processColor';
 import TextAncestor from './TextAncestor';
 import {NativeText, NativeVirtualText} from './TextNativeComponent';
@@ -176,6 +177,13 @@ const Text: React.AbstractComponent<
     default: accessible,
   });
 
+  let flattenedStyle = flattenStyle(style);
+
+  flattenedStyle =
+    typeof flattenedStyle?.fontWeight === 'number'
+      ? {...flattenedStyle, fontWeight: flattenedStyle?.fontWeight.toString()}
+      : flattenedStyle;
+
   return hasTextAncestor ? (
     <NativeVirtualText
       {...restProps}
@@ -184,7 +192,7 @@ const Text: React.AbstractComponent<
       isPressable={isPressable}
       numberOfLines={numberOfLines}
       selectionColor={selectionColor}
-      style={style}
+      style={flattenedStyle}
       ref={forwardedRef}
     />
   ) : (
@@ -200,7 +208,7 @@ const Text: React.AbstractComponent<
         isHighlighted={isHighlighted}
         numberOfLines={numberOfLines}
         selectionColor={selectionColor}
-        style={style}
+        style={flattenedStyle}
         ref={forwardedRef}
       />
     </TextAncestor.Provider>
