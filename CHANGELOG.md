@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.70-rc.4
+## 0.70.0
 
 ### Breaking
 
