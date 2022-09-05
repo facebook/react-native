@@ -937,11 +937,36 @@ exports.examples = [
   },
   {
     title: 'Tint Color',
-    description: ('The `tintColor` style prop changes all the non-alpha ' +
+    description: ('The `tintColor` prop changes all the non-alpha ' +
       'pixels to the tint color.': string),
     render: function (): React.Node {
       return (
         <View>
+          <View style={styles.horizontal}>
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[styles.icon, {borderRadius: 5, tintColor: '#ff2d55'}]}
+              tintColor={'#5ac8fa'}
+            />
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[styles.icon, {borderRadius: 5}]}
+              tintColor={'#4cd964'}
+            />
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[styles.icon, {borderRadius: 5}]}
+              tintColor={'#ff2d55'}
+            />
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[styles.icon, {borderRadius: 5}]}
+              tintColor={'#8e8e93'}
+            />
+          </View>
+          <Text style={styles.sectionText}>
+            It also works using the `tintColor` style prop
+          </Text>
           <View style={styles.horizontal}>
             <Image
               source={require('../../assets/uie_thumb_normal.png')}
@@ -958,6 +983,31 @@ exports.examples = [
             <Image
               source={require('../../assets/uie_thumb_normal.png')}
               style={[styles.icon, {borderRadius: 5, tintColor: '#8e8e93'}]}
+            />
+          </View>
+          <Text style={styles.sectionText}>
+            The `tintColor` prop has precedence over the `tintColor` style prop
+          </Text>
+          <View style={styles.horizontal}>
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[styles.icon, {borderRadius: 5, tintColor: '#5ac8fa'}]}
+              tintColor={'#5ac8fa'}
+            />
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[styles.icon, {borderRadius: 5, tintColor: '#4cd964'}]}
+              tintColor={'#5ac8fa'}
+            />
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[styles.icon, {borderRadius: 5, tintColor: '#ff2d55'}]}
+              tintColor={'#5ac8fa'}
+            />
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[styles.icon, {borderRadius: 5, tintColor: '#8e8e93'}]}
+              tintColor={'#5ac8fa'}
             />
           </View>
           <Text style={styles.sectionText}>

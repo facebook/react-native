@@ -100,6 +100,7 @@ class IncorrectlyParameterizedTypeScriptGenericParserError extends ParserError {
   +genericName: string;
   +numTypeParameters: number;
 
+  // $FlowFixMe[missing-local-annot]
   constructor(hasteModuleName: string, genericTypeAnnotation: $FlowFixMe) {
     if (genericTypeAnnotation.typeParameters == null) {
       super(
