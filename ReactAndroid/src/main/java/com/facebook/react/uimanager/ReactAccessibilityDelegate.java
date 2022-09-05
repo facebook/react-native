@@ -363,6 +363,12 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
 
   @Override
   public boolean performAccessibilityAction(View host, int action, Bundle args) {
+    if (action == AccessibilityNodeInfoCompat.ACTION_COLLAPSE) {
+      host.setTag(R.id.accessibility_state_expanded, false);
+    }
+    if (action == AccessibilityNodeInfoCompat.ACTION_EXPAND) {
+      host.setTag(R.id.accessibility_state_expanded, true);
+    }
     if (mAccessibilityActionsMap.containsKey(action)) {
       final WritableMap event = Arguments.createMap();
       event.putString("actionName", mAccessibilityActionsMap.get(action));
