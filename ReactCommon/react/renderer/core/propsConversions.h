@@ -10,9 +10,9 @@
 #include <optional>
 
 #include <folly/Likely.h>
-#include <folly/dynamic.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawProps.h>
+#include <react/renderer/core/RawPropsKey.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Geometry.h>
 #include <react/renderer/graphics/conversions.h>
@@ -43,18 +43,18 @@ template <typename T>
 void fromRawValue(
     const PropsParserContext &context,
     RawValue const &rawValue,
-    std::optional<T> &result) {
-  T res{};
-  fromRawValue(context, rawValue, res);
-  result = std::optional<T>(res);
+    T &result) {
+  result = (T)rawValue;
 }
 
 template <typename T>
 void fromRawValue(
     const PropsParserContext &context,
     RawValue const &rawValue,
-    T &result) {
-  result = (T)rawValue;
+    std::optional<T> &result) {
+  T resultValue;
+  fromRawValue(context, rawValue, resultValue);
+  result = std::optional<T>{std::move(resultValue)};
 }
 
 template <typename T>
@@ -119,7 +119,6 @@ T convertRawProp(
     char const *namePrefix = nullptr,
     char const *nameSuffix = nullptr) {
   const auto *rawValue = rawProps.at(name, namePrefix, nameSuffix);
-
   if (LIKELY(rawValue == nullptr)) {
     return sourceValue;
   }
@@ -130,35 +129,18 @@ T convertRawProp(
     return defaultValue;
   }
 
-  T result;
-  fromRawValue(context, *rawValue, result);
-  return result;
-}
-
-template <typename T>
-static std::optional<T> convertRawProp(
-    const PropsParserContext &context,
-    RawProps const &rawProps,
-    char const *name,
-    std::optional<T> const &sourceValue,
-    std::optional<T> const &defaultValue,
-    char const *namePrefix = nullptr,
-    char const *nameSuffix = nullptr) {
-  const auto *rawValue = rawProps.at(name, namePrefix, nameSuffix);
-
-  if (LIKELY(rawValue == nullptr)) {
-    return sourceValue;
-  }
-
-  // Special case: `null` always means `the prop was removed, use default
-  // value`.
-  if (UNLIKELY(!rawValue->hasValue())) {
+  try {
+    T result;
+    fromRawValue(context, *rawValue, result);
+    return result;
+  } catch (const std::exception &e) {
+    // In case of errors, log the error and fall back to the default
+    RawPropsKey key{namePrefix, name, nameSuffix};
+    // TODO: report this using ErrorUtils so it's more visible to the user
+    LOG(ERROR) << "Error while converting prop '"
+               << static_cast<std::string>(key) << "': " << e.what();
     return defaultValue;
   }
-
-  T result;
-  fromRawValue(context, *rawValue, result);
-  return std::optional<T>{result};
 }
 
 } // namespace react

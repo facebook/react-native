@@ -558,6 +558,7 @@ export type ____ViewStyle_InternalCore = $ReadOnly<{
   borderTopWidth?: number | AnimatedNode,
   opacity?: number | AnimatedNode,
   elevation?: number,
+  pointerEvents?: 'auto' | 'none' | 'box-none' | 'box-only',
 }>;
 
 export type ____ViewStyle_Internal = $ReadOnly<{
