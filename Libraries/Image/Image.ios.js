@@ -128,14 +128,14 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
     }
   }
 
-  // $FlowFixMe[prop-missing]
   const objectFit =
-    convertObjectFitToResizeMode(props.objectFit) ||
     // $FlowFixMe[prop-missing]
-    convertObjectFitToResizeMode(style.objectFit);
+    style && style.objectFit
+      ? convertObjectFitToResizeMode(style.objectFit)
+      : null;
   const resizeMode =
     // $FlowFixMe[prop-missing]
-    objectFit || props.resizeMode || style.resizeMode || 'cover';
+    objectFit || props.resizeMode || (style && style.resizeMode) || 'cover';
   // $FlowFixMe[prop-missing]
   const tintColor = props.tintColor || style.tintColor;
 

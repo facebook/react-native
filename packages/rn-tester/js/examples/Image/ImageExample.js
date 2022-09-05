@@ -1049,16 +1049,14 @@ exports.examples = [
                   <View>
                     <Text style={styles.resizeModeText}>Contain</Text>
                     <Image
-                      style={styles.resizeMode}
-                      objectFit="contain"
+                      style={[styles.resizeMode, {objectFit: 'contain'}]}
                       source={image}
                     />
                   </View>
                   <View style={styles.leftMargin}>
                     <Text style={styles.resizeModeText}>Cover</Text>
                     <Image
-                      style={styles.resizeMode}
-                      objectFit="cover"
+                      style={[styles.resizeMode, {objectFit: 'cover'}]}
                       source={image}
                     />
                   </View>
@@ -1067,16 +1065,14 @@ exports.examples = [
                   <View>
                     <Text style={styles.resizeModeText}>Fill</Text>
                     <Image
-                      style={styles.resizeMode}
-                      objectFit="fill"
+                      style={[styles.resizeMode, {objectFit: 'fill'}]}
                       source={image}
                     />
                   </View>
                   <View style={styles.leftMargin}>
                     <Text style={styles.resizeModeText}>Scale Down</Text>
                     <Image
-                      style={styles.resizeMode}
-                      objectFit="scale-down"
+                      style={[styles.resizeMode, {objectFit: 'scale-down'}]}
                       source={image}
                     />
                   </View>
