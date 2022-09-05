@@ -35,6 +35,7 @@ const View: React.AbstractComponent<
       role,
       accessibilityRole,
       pointerEvents,
+      style,
       ...otherProps
     }: ViewProps,
     forwardedRef,
