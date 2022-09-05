@@ -1267,7 +1267,7 @@ function AccessibilityExpandedExample(): React.Node {
   const collapseAction = [{name: 'collapse'}];
   return (
     <>
-      <RNTesterBlock title="Collapse/Expanded state change">
+      <RNTesterBlock title="Collapse/Expanded state change (Paper)">
         <Text>
           The following component announces expanded/collapsed state correctly
         </Text>
