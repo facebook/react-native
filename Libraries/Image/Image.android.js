@@ -186,6 +186,7 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
       ? loadingIndicatorSource.uri
       : null,
     ref: forwardedRef,
+    accessibilityLabel: props['aria-label'] ?? props.accessibilityLabel,
   };
 
   return (
