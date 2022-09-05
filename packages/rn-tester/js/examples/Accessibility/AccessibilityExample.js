@@ -1263,6 +1263,8 @@ function DisplayOptionStatusExample({
 
 function AccessibilityExpandedExample(): React.Node {
   const [expand, setExpanded] = React.useState(false);
+  const expandAction = [{name: 'expand'}];
+  const collapseAction = [{name: 'collapse'}];
   return (
     <>
       <RNTesterBlock title="Collapse/Expanded state change">
@@ -1272,6 +1274,17 @@ function AccessibilityExpandedExample(): React.Node {
         <Button
           onPress={() => setExpanded(!expand)}
           accessibilityState={{expanded: expand}}
+          accessibilityActions={expand ? collapseAction : expandAction}
+          onAccessibilityAction={event => {
+            switch (event.nativeEvent.actionName) {
+              case 'expand':
+                setExpanded(true);
+                break;
+              case 'collapse':
+                setExpanded(false);
+                break;
+            }
+          }}
           title="click me to change state"
         />
       </RNTesterBlock>
