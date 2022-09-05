@@ -129,7 +129,7 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
   // $FlowFixMe[prop-missing]
   const resizeMode = props.resizeMode || style.resizeMode || 'cover';
   // $FlowFixMe[prop-missing]
-  const tintColor = style.tintColor;
+  const tintColor = props.tintColor || style.tintColor;
 
   if (props.src != null) {
     console.warn(

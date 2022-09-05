@@ -12,6 +12,7 @@ import type {ViewProps} from './ViewPropTypes';
 
 import ViewNativeComponent from './ViewNativeComponent';
 import TextAncestor from '../../Text/TextAncestor';
+import flattenStyle from '../../StyleSheet/flattenStyle';
 import * as React from 'react';
 
 export type Props = ViewProps;
@@ -27,7 +28,10 @@ const View: React.AbstractComponent<
   ViewProps,
   React.ElementRef<typeof ViewNativeComponent>,
 > = React.forwardRef(
-  ({tabIndex, focusable, ...otherProps}: ViewProps, forwardedRef) => {
+  (
+    {tabIndex, focusable, style, pointerEvents, ...otherProps}: ViewProps,
+    forwardedRef,
+  ) => {
     const {
       accessibilityState,
       'aria-busy': ariaBusy,
@@ -46,12 +50,17 @@ const View: React.AbstractComponent<
       selected: ariaSelected ?? accessibilityState?.selected,
     };
 
+    const flattendStyle = flattenStyle(style);
+    const newPointerEvents = pointerEvents || flattendStyle?.pointerEvents;
+
     return (
       <TextAncestor.Provider value={false}>
         <ViewNativeComponent
           focusable={tabIndex !== undefined ? !tabIndex : focusable}
           accessibilityState={_accessibilityState}
           {...restProps}
+          style={style}
+          pointerEvents={newPointerEvents}
           ref={forwardedRef}
         />
       </TextAncestor.Provider>

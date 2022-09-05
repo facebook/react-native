@@ -155,6 +155,16 @@ export type KeyboardType =
   // Android-only
   | 'visible-password';
 
+export type InputMode =
+  | 'none'
+  | 'text'
+  | 'decimal'
+  | 'numeric'
+  | 'tel'
+  | 'search'
+  | 'email'
+  | 'url';
+
 export type ReturnKeyType =
   // Cross Platform
   | 'done'
@@ -566,6 +576,23 @@ export type Props = $ReadOnly<{|
    * - `send`
    */
   enterKeyHint?: ?enterKeyHintType,
+
+  /**
+   * `inputMode` works like the `inputmode` attribute in HTML, it determines which
+   * keyboard to open, e.g.`numeric` and has precedence over keyboardType
+   *
+   * Support the following values:
+   *
+   * - `none`
+   * - `text`
+   * - `decimal`
+   * - `numeric`
+   * - `tel`
+   * - `search`
+   * - `email`
+   * - `url`
+   */
+  inputMode?: ?InputMode,
 
   /**
    * Determines which keyboard to open, e.g.`numeric`.
@@ -1432,6 +1459,17 @@ const enterKeyHintToReturnTypeMap = {
   send: 'send',
 };
 
+const inputModeToKeyboardTypeMap = {
+  none: 'default',
+  text: 'default',
+  decimal: 'decimal-pad',
+  numeric: 'number-pad',
+  tel: 'phone-pad',
+  search: Platform.OS === 'ios' ? 'web-search' : 'default',
+  email: 'email-address',
+  url: 'url',
+};
+
 const ExportedForwardRef: React.AbstractComponent<
   React.ElementConfig<typeof InternalTextInput>,
   React.ElementRef<HostComponent<mixed>> & ImperativeMethods,
@@ -1444,6 +1482,8 @@ const ExportedForwardRef: React.AbstractComponent<
     editable,
     enterKeyHint,
     returnKeyType,
+    inputMode,
+    keyboardType,
     ...restProps
   },
   forwardedRef: ReactRefSetter<
@@ -1458,6 +1498,9 @@ const ExportedForwardRef: React.AbstractComponent<
       editable={readOnly !== undefined ? !readOnly : editable}
       returnKeyType={
         enterKeyHint ? enterKeyHintToReturnTypeMap[enterKeyHint] : returnKeyType
+      }
+      keyboardType={
+        inputMode ? inputModeToKeyboardTypeMap[inputMode] : keyboardType
       }
       {...restProps}
       forwardedRef={forwardedRef}

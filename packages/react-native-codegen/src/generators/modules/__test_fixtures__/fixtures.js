@@ -1568,6 +1568,42 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
             },
           },
           {
+            name: 'getEnums',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'StringTypeAnnotation',
+              },
+              params: [
+                {
+                  name: 'enumInt',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'EnumDeclaration',
+                    memberType: 'NumberTypeAnnotation',
+                  },
+                },
+                {
+                  name: 'enumFloat',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'EnumDeclaration',
+                    memberType: 'NumberTypeAnnotation',
+                  },
+                },
+                {
+                  name: 'enumString',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'EnumDeclaration',
+                    memberType: 'StringTypeAnnotation',
+                  },
+                },
+              ],
+            },
+          },
+          {
             name: 'getUnion',
             optional: false,
             typeAnnotation: {

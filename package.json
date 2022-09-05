@@ -136,7 +136,7 @@
     "ws": "^6.1.4"
   },
   "devDependencies": {
-    "flow-bin": "^0.185.1",
+    "flow-bin": "^0.186.0",
     "hermes-eslint": "0.8.0",
     "react": "18.2.0",
     "react-test-renderer": "^18.2.0"
