@@ -23,6 +23,7 @@ import type {EdgeInsetsOrSizeProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {Node} from 'react';
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {
+  Role,
   AccessibilityRole,
   AccessibilityState,
   AccessibilityValue,
@@ -465,6 +466,11 @@ export type ViewProps = $ReadOnly<{|
    * Indicates to accessibility services to treat UI component like a specific role.
    */
   accessibilityRole?: ?AccessibilityRole,
+
+  /**
+   * Alias for accessibilityRole
+   */
+  role?: ?Role,
 
   /**
    * Indicates to accessibility services that UI Component is in a specific State.
