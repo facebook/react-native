@@ -151,7 +151,7 @@ export type ImageProps = {|
    *
    * See https://reactnative.dev/docs/image#source
    */
-  source?: ?ImageSource,
+  source: ?ImageSource,
 
   /**
    * See https://reactnative.dev/docs/image#style
