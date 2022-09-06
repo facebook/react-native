@@ -187,6 +187,10 @@ const NUMBER = '[-+]?\\d*\\.?\\d+';
 const PERCENTAGE = NUMBER + '%';
 
 function call(...args) {
+  return '\\(\\s*(' + args.join(')\\s*,?\\s*(') + ')\\s*\\)';
+}
+
+function commaSeparatedCall(...args) {
   return '\\(\\s*(' + args.join(')\\s*,\\s*(') + ')\\s*\\)';
 }
 
@@ -196,12 +200,14 @@ function getMatchers() {
   if (cachedMatchers === undefined) {
     cachedMatchers = {
       rgb: new RegExp('rgb' + call(NUMBER, NUMBER, NUMBER)),
-      rgba: new RegExp('rgba' + call(NUMBER, NUMBER, NUMBER, NUMBER)),
+      rgba: new RegExp(
+        'rgba' + commaSeparatedCall(NUMBER, NUMBER, NUMBER, NUMBER),
+      ),
       hsl: new RegExp('hsl' + call(NUMBER, PERCENTAGE, PERCENTAGE)),
-      hsla: new RegExp('hsla' + call(NUMBER, PERCENTAGE, PERCENTAGE, NUMBER)),
+      hsla: new RegExp(
+        'hsla' + commaSeparatedCall(NUMBER, PERCENTAGE, PERCENTAGE, NUMBER),
+      ),
       hwb: new RegExp('hwb' + call(NUMBER, PERCENTAGE, PERCENTAGE)),
-      // lab: new RegExp('lab'),
-      // lch: new RegExp('lch'),
       hex3: /^#([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/,
       hex4: /^#([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/,
       hex6: /^#([0-9a-fA-F]{6})$/,

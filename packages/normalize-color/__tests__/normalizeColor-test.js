@@ -19,6 +19,7 @@ it('accepts only spec compliant colors', () => {
   expect(normalizeColor('#abcdef')).not.toBe(null);
   expect(normalizeColor('#abcdef01')).not.toBe(null);
   expect(normalizeColor('rgb(1,2,3)')).not.toBe(null);
+  expect(normalizeColor('rgb(1 2 3)')).not.toBe(null);
   expect(normalizeColor('rgb(1, 2, 3)')).not.toBe(null);
   expect(normalizeColor('rgb(   1   , 2   , 3   )')).not.toBe(null);
   expect(normalizeColor('rgb(-1, -2, -3)')).not.toBe(null);
@@ -45,6 +46,7 @@ it('refuses non-spec compliant colors', () => {
   expect(normalizeColor('rgb 255 0 0')).toBe(null);
   expect(normalizeColor('RGBA(0, 1, 2)')).toBe(null);
   expect(normalizeColor('rgb (0, 1, 2)')).toBe(null);
+  expect(normalizeColor('rgba(0 0 0 0.0)')).toBe(null);
   expect(normalizeColor('hsv(0, 1, 2)')).toBe(null);
   // $FlowExpectedError - Intentionally malformed argument.
   expect(normalizeColor({r: 10, g: 10, b: 10})).toBe(null);
@@ -81,6 +83,8 @@ it('handles rgb properly', () => {
   expect(normalizeColor('rgb(100, 15, 69)')).toBe(0x640f45ff);
   expect(normalizeColor('rgb(255, 255, 255)')).toBe(0xffffffff);
   expect(normalizeColor('rgb(256, 256, 256)')).toBe(0xffffffff);
+  expect(normalizeColor('rgb(0  0  0)')).toBe(0x000000ff);
+  expect(normalizeColor('rgb(0 0 255)')).toBe(0x0000ffff);
 });
 
 it('handles rgba properly', () => {
@@ -103,6 +107,9 @@ it('handles hsl properly', () => {
   expect(normalizeColor('hsl(70, 110%, 75%)')).toBe(0xeaff80ff);
   expect(normalizeColor('hsl(70, 0%, 75%)')).toBe(0xbfbfbfff);
   expect(normalizeColor('hsl(70, -10%, 75%)')).toBe(0xbfbfbfff);
+  expect(normalizeColor('hsl(0 0% 0%)')).toBe(0x000000ff);
+  expect(normalizeColor('hsl(360 100% 100%)')).toBe(0xffffffff);
+  expect(normalizeColor('hsl(180 50% 50%)')).toBe(0x40bfbfff);
 });
 
 it('handles hsla properly', () => {
@@ -119,8 +126,6 @@ it('handles hwb properly', () => {
   expect(normalizeColor('hwb(70, 50%, 0%)')).toBe(0xeaff80ff);
   expect(normalizeColor('hwb(0, 50%, 50%)')).toBe(0x808080ff);
   expect(normalizeColor('hwb(360, 100%, 100%)')).toBe(0x808080ff);
-  // expect(normalizeColor('hwb(360, 100%, 100%)')).toBe(0xffffff00);
-  // expect(normalizeColor('hwb(180, 50%, 50%)')).toBe(0x40bfbf33);
 });
 
 it('handles named colors properly', () => {
