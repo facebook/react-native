@@ -14,7 +14,6 @@ import ViewNativeComponent from './ViewNativeComponent';
 import TextAncestor from '../../Text/TextAncestor';
 import flattenStyle from '../../StyleSheet/flattenStyle';
 import * as React from 'react';
-import processLayoutProps from '../../StyleSheet/processStyle';
 
 export type Props = ViewProps;
 
@@ -110,8 +109,14 @@ const View: React.AbstractComponent<
     };
 
     const flattendStyle = flattenStyle(style);
-    const processedStyle = processLayoutProps(style);
     const newPointerEvents = pointerEvents || flattendStyle?.pointerEvents;
+
+    Object.keys(layoutPropMap).forEach(key => {
+      if (flattendStyle && flattendStyle[key] !== undefined) {
+        flattendStyle[layoutPropMap[key]] = flattendStyle[key];
+        delete flattendStyle[key];
+      }
+    });
 
     return (
       <TextAncestor.Provider value={false}>
@@ -120,7 +125,7 @@ const View: React.AbstractComponent<
           accessibilityRole={
             role ? roleToAccessibilityRoleMapping[role] : accessibilityRole
           }
-          style={processedStyle}
+          style={flattendStyle}
           {...otherProps}
           pointerEvents={newPointerEvents}
           ref={forwardedRef}
@@ -129,6 +134,21 @@ const View: React.AbstractComponent<
     );
   },
 );
+
+const layoutPropMap = {
+  marginInlineStart: 'marginStart',
+  marginInlineEnd: 'marginEnd',
+  marginBlockStart: 'marginTop',
+  marginBlockEnd: 'marginBottom',
+  marginBlock: 'marginVertical',
+  marginInline: 'marginHorizontal',
+  paddingInlineStart: 'paddingStart',
+  paddingInlineEnd: 'paddingEnd',
+  paddingBlockStart: 'paddingTop',
+  paddingBlockEnd: 'paddingBottom',
+  paddingBlock: 'paddingVertical',
+  paddingInline: 'paddingHorizontal',
+};
 
 View.displayName = 'View';
 
