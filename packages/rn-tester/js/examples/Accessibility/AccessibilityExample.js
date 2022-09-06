@@ -1263,8 +1263,9 @@ function DisplayOptionStatusExample({
 
 function AccessibilityExpandedExample(): React.Node {
   const [expand, setExpanded] = React.useState(false);
-  const expandAction = [{name: 'expand'}];
-  const collapseAction = [{name: 'collapse'}];
+  const [pressed, setPressed] = React.useState(false);
+  const expandAction = {name: 'expand'};
+  const collapseAction = {name: 'collapse'};
   return (
     <>
       <RNTesterBlock title="Collapse/Expanded state change (Paper)">
@@ -1274,7 +1275,7 @@ function AccessibilityExpandedExample(): React.Node {
         <Button
           onPress={() => setExpanded(!expand)}
           accessibilityState={{expanded: expand}}
-          accessibilityActions={expand ? collapseAction : expandAction}
+          accessibilityActions={expand ? [collapseAction] : [expandAction]}
           onAccessibilityAction={event => {
             switch (event.nativeEvent.actionName) {
               case 'expand':
@@ -1299,12 +1300,12 @@ function AccessibilityExpandedExample(): React.Node {
         </TouchableOpacity>
       </RNTesterBlock>
 
-      <RNTesterBlock title="expanded/collpased only managed through the accessibility menu">
+      <RNTesterBlock title="expanded/collapsed only managed through the accessibility menu">
         <TouchableWithoutFeedback
           accessibilityState={{expanded: true}}
           accessible={true}>
           <View>
-            <Text>Click me</Text>
+            <Text>Clicking me does not change state</Text>
           </View>
         </TouchableWithoutFeedback>
       </RNTesterBlock>
