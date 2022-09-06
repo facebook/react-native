@@ -11,7 +11,7 @@ namespace facebook {
 namespace react {
 
 void ComponentDescriptorProviderRegistry::add(
-    ComponentDescriptorProvider provider) const {
+    const ComponentDescriptorProvider &provider) const {
   std::unique_lock<butter::shared_mutex> lock(mutex_);
 
   /*

@@ -82,6 +82,10 @@ class FLEX_LAYOUT_EXPORT FlexBoxStyle {
     return padding[static_cast<size_t>(edge)];
   }
 
+  void setPadding(Edge edge, Dimension dimension) {
+    padding[static_cast<size_t>(edge)] = dimension;
+  }
+
   void setPadding(Edge edge, Float value) {
     padding[static_cast<size_t>(edge)] = Dimension(value, Unit::Point);
   }

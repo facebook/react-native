@@ -31,7 +31,7 @@ void Timeline::pause() const noexcept {
 void Timeline::resume() const noexcept {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
 
-  if (snapshots_.size() > 0) {
+  if (!snapshots_.empty()) {
     rewind(snapshots_.at(snapshots_.size() - 1));
   }
 
@@ -66,8 +66,8 @@ void Timeline::rewind(TimelineFrame const &frame) const noexcept {
 }
 
 RootShadowNode::Unshared Timeline::shadowTreeWillCommit(
-    ShadowTree const &shadowTree,
-    RootShadowNode::Shared const &oldRootShadowNode,
+    ShadowTree const & /*shadowTree*/,
+    RootShadowNode::Shared const & /*oldRootShadowNode*/,
     RootShadowNode::Unshared const &newRootShadowNode) const noexcept {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
 
@@ -107,7 +107,8 @@ void Timeline::rewind(TimelineSnapshot const &snapshot) const noexcept {
   auto rootShadowNode = snapshot.getRootShadowNode();
 
   shadowTree_->commit(
-      [&](RootShadowNode const &oldRootShadowNode) -> RootShadowNode::Unshared {
+      [&](RootShadowNode const & /*oldRootShadowNode*/)
+          -> RootShadowNode::Unshared {
         return std::static_pointer_cast<RootShadowNode>(
             rootShadowNode->ShadowNode::clone({}));
       });

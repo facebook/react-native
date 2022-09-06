@@ -164,7 +164,7 @@ TEST(MapBufferTest, testMapListEntries) {
   mapBufferList.push_back(builder2.build());
 
   auto builder3 = MapBufferBuilder();
-  builder3.putMapBufferList(5, std::move(mapBufferList));
+  builder3.putMapBufferList(5, mapBufferList);
   auto map = builder3.build();
 
   std::vector<MapBuffer> mapBufferList2 = map.getMapBufferList(5);

@@ -22,7 +22,7 @@ void RawPropsKey::render(char *buffer, RawPropsPropNameLength *length)
   *length = 0;
 
   // Prefix
-  if (prefix) {
+  if (prefix != nullptr) {
     auto prefixLength =
         static_cast<RawPropsPropNameLength>(std::strlen(prefix));
     std::memcpy(buffer, prefix, prefixLength);
@@ -35,7 +35,7 @@ void RawPropsKey::render(char *buffer, RawPropsPropNameLength *length)
   *length += nameLength;
 
   // Suffix
-  if (suffix) {
+  if (suffix != nullptr) {
     auto suffixLength =
         static_cast<RawPropsPropNameLength>(std::strlen(suffix));
     std::memcpy(buffer + *length, suffix, suffixLength);
