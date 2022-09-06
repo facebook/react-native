@@ -20,6 +20,7 @@ import {NativeText, NativeVirtualText} from './TextNativeComponent';
 import {type TextProps} from './TextProps';
 import * as React from 'react';
 import {useContext, useMemo, useState} from 'react';
+import flattenStyle from '../StyleSheet/flattenStyle';
 
 /**
  * Text is the fundamental component for displaying text.
@@ -152,7 +153,15 @@ const Text: React.AbstractComponent<
       ? null
       : processColor(restProps.selectionColor);
 
-  let style = restProps.style;
+  let style = flattenStyle(restProps.style);
+
+  Object.keys(layoutPropMap).forEach(key => {
+    if (style && style[key] !== undefined) {
+      style[layoutPropMap[key]] = style[key];
+      delete style[key];
+    }
+  });
+
   if (__DEV__) {
     if (PressabilityDebug.isEnabled() && onPress != null) {
       style = StyleSheet.compose(restProps.style, {
@@ -206,6 +215,21 @@ const Text: React.AbstractComponent<
     </TextAncestor.Provider>
   );
 });
+
+const layoutPropMap = {
+  marginInlineStart: 'marginStart',
+  marginInlineEnd: 'marginEnd',
+  marginBlockStart: 'marginTop',
+  marginBlockEnd: 'marginBottom',
+  marginBlock: 'marginVertical',
+  marginInline: 'marginHorizontal',
+  paddingInlineStart: 'paddingStart',
+  paddingInlineEnd: 'paddingEnd',
+  paddingBlockStart: 'paddingTop',
+  paddingBlockEnd: 'paddingBottom',
+  paddingBlock: 'paddingVertical',
+  paddingInline: 'paddingHorizontal',
+};
 
 Text.displayName = 'Text';
 
