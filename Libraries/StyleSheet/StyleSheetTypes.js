@@ -183,6 +183,11 @@ type ____LayoutStyle_Internal = $ReadOnly<{
    */
   margin?: DimensionValue,
 
+  /** Setting `marginBlock` has the same effect as setting both
+   *  `marginTop` and `marginBottom`.
+   */
+  marginBlock?: DimensionValue,
+
   /** `marginBlockEnd` works like `margin-bottom` in CSS.
    *  See https://developer.mozilla.org/en-US/docs/Web/CSS/margin-bottom
    *  for more details.
@@ -211,6 +216,11 @@ type ____LayoutStyle_Internal = $ReadOnly<{
    *  both `marginLeft` and `marginRight`.
    */
   marginHorizontal?: DimensionValue,
+
+  /** Setting `marginInline` has the same effect as setting
+   *  both `marginLeft` and `marginRight`.
+   */
+  marginInline?: DimensionValue,
 
   /**
    * When direction is `ltr`, `marginInlineEnd` is equivalent to `marginRight`.
@@ -260,6 +270,11 @@ type ____LayoutStyle_Internal = $ReadOnly<{
    */
   padding?: DimensionValue,
 
+  /** Setting `paddingBlock` is like setting both of
+   *  `paddingTop` and `paddingBottom`.
+   */
+  paddingBlock?: DimensionValue,
+
   /** `paddingBlockEnd` works like `padding-bottom` in CSS.
    * See https://developer.mozilla.org/en-US/docs/Web/CSS/padding-bottom
    * for more details.
@@ -288,6 +303,11 @@ type ____LayoutStyle_Internal = $ReadOnly<{
    *  `paddingLeft` and `paddingRight`.
    */
   paddingHorizontal?: DimensionValue,
+
+  /** Setting `paddingInline` is like setting both of
+   *  `paddingLeft` and `paddingRight`.
+   */
+  paddingInline?: DimensionValue,
 
   /**
    * When direction is `ltr`, `paddingInlineEnd` is equivalent to `paddingRight`.
