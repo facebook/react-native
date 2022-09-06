@@ -116,7 +116,7 @@ jsi::Value RuntimeSchedulerBinding::get(
             jsi::Value const *,
             size_t) noexcept -> jsi::Value {
           auto shouldYield = runtimeScheduler_->getShouldYield();
-          return jsi::Value(shouldYield);
+          return {shouldYield};
         });
   }
 
@@ -148,7 +148,7 @@ jsi::Value RuntimeSchedulerBinding::get(
           auto asDouble =
               std::chrono::duration<double, std::milli>(now.time_since_epoch())
                   .count();
-          return jsi::Value(asDouble);
+          return {asDouble};
         });
   }
 

@@ -34,7 +34,7 @@ void BaseTextShadowNode::buildAttributedString(
     // RawShadowNode
     auto rawTextShadowNode =
         traitCast<RawTextShadowNode const *>(childNode.get());
-    if (rawTextShadowNode) {
+    if (rawTextShadowNode != nullptr) {
       auto fragment = AttributedString::Fragment{};
       fragment.string = rawTextShadowNode->getConcreteProps().text;
       fragment.textAttributes = baseTextAttributes;
@@ -50,7 +50,7 @@ void BaseTextShadowNode::buildAttributedString(
 
     // TextShadowNode
     auto textShadowNode = traitCast<TextShadowNode const *>(childNode.get());
-    if (textShadowNode) {
+    if (textShadowNode != nullptr) {
       auto localTextAttributes = baseTextAttributes;
       localTextAttributes.apply(
           textShadowNode->getConcreteProps().textAttributes);
