@@ -155,6 +155,16 @@ export type KeyboardType =
   // Android-only
   | 'visible-password';
 
+export type InputMode =
+  | 'none'
+  | 'text'
+  | 'decimal'
+  | 'numeric'
+  | 'tel'
+  | 'search'
+  | 'email'
+  | 'url';
+
 export type ReturnKeyType =
   // Cross Platform
   | 'done'
@@ -206,6 +216,15 @@ export type TextContentType =
   | 'password'
   | 'newPassword'
   | 'oneTimeCode';
+
+export type enterKeyHintType =
+  | 'enter'
+  | 'done'
+  | 'go'
+  | 'next'
+  | 'previous'
+  | 'search'
+  | 'send';
 
 type PasswordRules = string;
 
@@ -453,6 +472,13 @@ type AndroidProps = $ReadOnly<{|
   returnKeyLabel?: ?string,
 
   /**
+   * Sets the number of rows for a `TextInput`. Use it with multiline set to
+   * `true` to be able to fill the lines.
+   * @platform android
+   */
+  rows?: ?number,
+
+  /**
    * When `false`, it will prevent the soft keyboard from showing when the field is focused.
    * Defaults to `true`.
    */
@@ -535,6 +561,38 @@ export type Props = $ReadOnly<{|
   forwardedRef?: ?ReactRefSetter<
     React.ElementRef<HostComponent<mixed>> & ImperativeMethods,
   >,
+
+  /**
+   * `enterKeyHint` defines what action label (or icon) to present for the enter key on virtual keyboards.
+   *
+   * The following values is supported:
+   *
+   * - `enter`
+   * - `done`
+   * - `go`
+   * - `next`
+   * - `previous`
+   * - `search`
+   * - `send`
+   */
+  enterKeyHint?: ?enterKeyHintType,
+
+  /**
+   * `inputMode` works like the `inputmode` attribute in HTML, it determines which
+   * keyboard to open, e.g.`numeric` and has precedence over keyboardType
+   *
+   * Support the following values:
+   *
+   * - `none`
+   * - `text`
+   * - `decimal`
+   * - `numeric`
+   * - `tel`
+   * - `search`
+   * - `email`
+   * - `url`
+   */
+  inputMode?: ?InputMode,
 
   /**
    * Determines which keyboard to open, e.g.`numeric`.
@@ -708,6 +766,13 @@ export type Props = $ReadOnly<{|
    * The text color of the placeholder string.
    */
   placeholderTextColor?: ?ColorValue,
+
+  /** `readOnly` works like the `readonly` attribute in HTML.
+   *  If `true`, text is not editable. The default value is `false`.
+   *  See https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/readonly
+   *  for more details.
+   */
+  readOnly?: ?boolean,
 
   /**
    * Determines how the return key should look. On Android you can also use
@@ -1349,6 +1414,7 @@ function InternalTextInput(props: Props): React.Node {
         disableFullscreenUI={props.disableFullscreenUI}
         focusable={focusable}
         mostRecentEventCount={mostRecentEventCount}
+        numberOfLines={props.rows ?? props.numberOfLines}
         onBlur={_onBlur}
         onChange={_onChange}
         onFocus={_onFocus}
@@ -1373,6 +1439,27 @@ function InternalTextInput(props: Props): React.Node {
   );
 }
 
+const enterKeyHintToReturnTypeMap = {
+  enter: 'default',
+  done: 'done',
+  go: 'go',
+  next: 'next',
+  previous: 'previous',
+  search: 'search',
+  send: 'send',
+};
+
+const inputModeToKeyboardTypeMap = {
+  none: 'default',
+  text: 'default',
+  decimal: 'decimal-pad',
+  numeric: 'number-pad',
+  tel: 'phone-pad',
+  search: Platform.OS === 'ios' ? 'web-search' : 'default',
+  email: 'email-address',
+  url: 'url',
+};
+
 const ExportedForwardRef: React.AbstractComponent<
   React.ElementConfig<typeof InternalTextInput>,
   React.ElementRef<HostComponent<mixed>> & ImperativeMethods,
@@ -1381,6 +1468,12 @@ const ExportedForwardRef: React.AbstractComponent<
     allowFontScaling = true,
     rejectResponderTermination = true,
     underlineColorAndroid = 'transparent',
+    readOnly,
+    editable,
+    enterKeyHint,
+    returnKeyType,
+    inputMode,
+    keyboardType,
     ...restProps
   },
   forwardedRef: ReactRefSetter<
@@ -1392,6 +1485,13 @@ const ExportedForwardRef: React.AbstractComponent<
       allowFontScaling={allowFontScaling}
       rejectResponderTermination={rejectResponderTermination}
       underlineColorAndroid={underlineColorAndroid}
+      editable={readOnly !== undefined ? !readOnly : editable}
+      returnKeyType={
+        enterKeyHint ? enterKeyHintToReturnTypeMap[enterKeyHint] : returnKeyType
+      }
+      keyboardType={
+        inputMode ? inputModeToKeyboardTypeMap[inputMode] : keyboardType
+      }
       {...restProps}
       forwardedRef={forwardedRef}
     />

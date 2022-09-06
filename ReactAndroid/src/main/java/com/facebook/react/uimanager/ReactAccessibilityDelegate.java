@@ -225,8 +225,13 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     super.onInitializeAccessibilityNodeInfo(host, info);
     final AccessibilityRole accessibilityRole =
         (AccessibilityRole) host.getTag(R.id.accessibility_role);
+    final String accessibilityHint = (String) host.getTag(R.id.accessibility_hint);
     if (accessibilityRole != null) {
       setRole(info, accessibilityRole, host.getContext());
+    }
+
+    if (accessibilityHint != null) {
+      info.setTooltipText(accessibilityHint);
     }
 
     final Object accessibilityLabelledBy = host.getTag(R.id.labelled_by);

@@ -27,12 +27,19 @@ function getTypes(ast: $FlowFixMe): TypeDeclarationMap {
         types[node.declaration.id.name] = node.declaration;
       }
     } else if (
+      node.type === 'ExportNamedDeclaration' &&
+      node.exportKind === 'value' &&
+      node.declaration &&
+      node.declaration.type === 'TSEnumDeclaration'
+    ) {
+      types[node.declaration.id.name] = node.declaration;
+    } else if (
       node.type === 'TSTypeAliasDeclaration' ||
-      node.type === 'TSInterfaceDeclaration'
+      node.type === 'TSInterfaceDeclaration' ||
+      node.type === 'TSEnumDeclaration'
     ) {
       types[node.id.name] = node;
     }
-
     return types;
   }, {});
 }
@@ -92,7 +99,10 @@ function resolveTypeAnnotation(
         aliasName: node.typeName.name,
       };
       const resolvedTypeAnnotation = types[node.typeName.name];
-      if (resolvedTypeAnnotation == null) {
+      if (
+        resolvedTypeAnnotation == null ||
+        resolvedTypeAnnotation.type === 'TSEnumDeclaration'
+      ) {
         break;
       }
 

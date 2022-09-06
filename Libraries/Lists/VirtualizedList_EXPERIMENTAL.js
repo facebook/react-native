@@ -641,7 +641,9 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
         !this._scrollMetrics.offset &&
         Math.abs(distanceFromEnd) >= Number.EPSILON
       ) {
-        return cellsAroundViewport;
+        return cellsAroundViewport.last >= getItemCount(data)
+          ? VirtualizedList._constrainToItemCount(cellsAroundViewport, props)
+          : cellsAroundViewport;
       }
 
       newCellsAroundViewport = computeWindowedRenderLimits(
@@ -1226,6 +1228,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       );
       return (
         // $FlowFixMe[prop-missing] Invalid prop usage
+        // $FlowFixMe[incompatible-use]
         <ScrollView
           {...props}
           refreshControl={
@@ -1244,6 +1247,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       );
     } else {
       // $FlowFixMe[prop-missing] Invalid prop usage
+      // $FlowFixMe[incompatible-use]
       return <ScrollView {...props} />;
     }
   };

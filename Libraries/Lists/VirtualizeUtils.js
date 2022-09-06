@@ -128,7 +128,7 @@ export function computeWindowedRenderLimits(
 } {
   const itemCount = props.getItemCount(props.data);
   if (itemCount === 0) {
-    return prev;
+    return {first: 0, last: -1};
   }
   const {offset, velocity, visibleLength, zoomScale = 1} = scrollMetrics;
 

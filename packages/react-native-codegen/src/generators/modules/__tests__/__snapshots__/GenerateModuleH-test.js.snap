@@ -209,6 +209,8 @@ protected:
 public:
   virtual jsi::Value getMixed(jsi::Runtime &rt, jsi::Value arg) = 0;
   virtual std::optional<double> getNullableNumberFromNullableAlias(jsi::Runtime &rt, std::optional<jsi::Object> a) = 0;
+  virtual jsi::String getEnums(jsi::Runtime &rt, double enumInt, double enumFloat, jsi::String enumString) = 0;
+  virtual jsi::Object getUnion(jsi::Runtime &rt, double chooseInt, double chooseFloat, jsi::Object chooseObject, jsi::String chooseString) = 0;
 
 };
 
@@ -245,6 +247,22 @@ private:
 
       return bridging::callFromJs<std::optional<double>>(
           rt, &T::getNullableNumberFromNullableAlias, jsInvoker_, instance_, std::move(a));
+    }
+    jsi::String getEnums(jsi::Runtime &rt, double enumInt, double enumFloat, jsi::String enumString) override {
+      static_assert(
+          bridging::getParameterCount(&T::getEnums) == 4,
+          \\"Expected getEnums(...) to have 4 parameters\\");
+
+      return bridging::callFromJs<jsi::String>(
+          rt, &T::getEnums, jsInvoker_, instance_, std::move(enumInt), std::move(enumFloat), std::move(enumString));
+    }
+    jsi::Object getUnion(jsi::Runtime &rt, double chooseInt, double chooseFloat, jsi::Object chooseObject, jsi::String chooseString) override {
+      static_assert(
+          bridging::getParameterCount(&T::getUnion) == 5,
+          \\"Expected getUnion(...) to have 5 parameters\\");
+
+      return bridging::callFromJs<jsi::Object>(
+          rt, &T::getUnion, jsInvoker_, instance_, std::move(chooseInt), std::move(chooseFloat), std::move(chooseObject), std::move(chooseString));
     }
 
   private:

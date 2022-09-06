@@ -38,12 +38,14 @@ def use_react_native! (
   fabric_enabled: false,
   new_arch_enabled: ENV['RCT_NEW_ARCH_ENABLED'] == '1',
   production: ENV['PRODUCTION'] == '1',
-  hermes_enabled: true,
+  hermes_enabled: ENV['USE_HERMES'] && ENV['USE_HERMES'] == '0' ? false : true,
   flipper_configuration: FlipperConfiguration.disabled,
   app_path: '..',
   config_file_dir: '')
 
   CodegenUtils.clean_up_build_folder(app_path, $CODEGEN_OUTPUT_DIR)
+
+  fabric_enabled = fabric_enabled || new_arch_enabled
 
   prefix = path
 
@@ -293,5 +295,5 @@ def __apply_Xcode_12_5_M1_post_install_workaround(installer)
   # We need to make a patch to RCT-Folly - remove the `__IPHONE_OS_VERSION_MIN_REQUIRED` check.
   # See https://github.com/facebook/flipper/issues/834 for more details.
   time_header = "#{Pod::Config.instance.installation_root.to_s}/Pods/RCT-Folly/folly/portability/Time.h"
-  `sed -i -e  $'s/ && (__IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0)//' #{time_header}`
+  `sed -i -e  $'s/ && (__IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0)//' '#{time_header}'`
 end

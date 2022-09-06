@@ -66,6 +66,8 @@ Value callGlobalFunction(Runtime& runtime, const char* name, const Value& arg) {
 
 Buffer::~Buffer() = default;
 
+MutableBuffer::~MutableBuffer() = default;
+
 PreparedJavaScript::~PreparedJavaScript() = default;
 
 Value HostObject::get(Runtime&, const PropNameID&) {
