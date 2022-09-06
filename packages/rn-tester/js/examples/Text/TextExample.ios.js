@@ -681,6 +681,7 @@ exports.examples = [
           <Text style={{fontWeight: '300'}}>FONT WEIGHT 300</Text>
           <Text style={{fontWeight: '200'}}>FONT WEIGHT 200</Text>
           <Text style={{fontWeight: '100'}}>FONT WEIGHT 100</Text>
+          <Text style={{fontWeight: 900}}>FONT WEIGHT 900</Text>
         </View>
       );
     },
