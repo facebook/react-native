@@ -48,11 +48,23 @@ function normalizeColor(color) {
   }
 
   if ((match = matchers.rgba.exec(color))) {
+    // rgba(R G B / A) notation
+    if (match[6] !== undefined) {
+      return (
+        ((parse255(match[6]) << 24) | // r
+          (parse255(match[7]) << 16) | // g
+          (parse255(match[8]) << 8) | // b
+          parse1(match[9])) >>> // a
+        0
+      );
+    }
+
+    // rgba(R, G, B, A) notation
     return (
-      ((parse255(match[1]) << 24) | // r
-        (parse255(match[2]) << 16) | // g
-        (parse255(match[3]) << 8) | // b
-        parse1(match[4])) >>> // a
+      ((parse255(match[2]) << 24) | // r
+        (parse255(match[3]) << 16) | // g
+        (parse255(match[4]) << 8) | // b
+        parse1(match[5])) >>> // a
       0
     );
   }
@@ -106,13 +118,27 @@ function normalizeColor(color) {
   }
 
   if ((match = matchers.hsla.exec(color))) {
+    // hsla(H S L / A) notation
+    if (match[6] !== undefined) {
+      return (
+        (hslToRgb(
+          parse360(match[6]), // h
+          parsePercentage(match[7]), // s
+          parsePercentage(match[8]), // l
+        ) |
+          parse1(match[9])) >>> // a
+        0
+      );
+    }
+
+    // hsla(H, S, L, A) notation
     return (
       (hslToRgb(
-        parse360(match[1]), // h
-        parsePercentage(match[2]), // s
-        parsePercentage(match[3]), // l
+        parse360(match[2]), // h
+        parsePercentage(match[3]), // s
+        parsePercentage(match[4]), // l
       ) |
-        parse1(match[4])) >>> // a
+        parse1(match[5])) >>> // a
       0
     );
   }
@@ -190,6 +216,16 @@ function call(...args) {
   return '\\(\\s*(' + args.join(')\\s*,?\\s*(') + ')\\s*\\)';
 }
 
+function callWithSlashSeparator(...args) {
+  return (
+    '\\(\\s*(' +
+    args.slice(0, args.length - 1).join(')\\s*,?\\s*(') +
+    ')\\s*/\\s*(' +
+    args[args.length - 1] +
+    ')\\s*\\)'
+  );
+}
+
 function commaSeparatedCall(...args) {
   return '\\(\\s*(' + args.join(')\\s*,\\s*(') + ')\\s*\\)';
 }
@@ -201,11 +237,19 @@ function getMatchers() {
     cachedMatchers = {
       rgb: new RegExp('rgb' + call(NUMBER, NUMBER, NUMBER)),
       rgba: new RegExp(
-        'rgba' + commaSeparatedCall(NUMBER, NUMBER, NUMBER, NUMBER),
+        'rgba(' +
+          commaSeparatedCall(NUMBER, NUMBER, NUMBER, NUMBER) +
+          '|' +
+          callWithSlashSeparator(NUMBER, NUMBER, NUMBER, NUMBER) +
+          ')',
       ),
       hsl: new RegExp('hsl' + call(NUMBER, PERCENTAGE, PERCENTAGE)),
       hsla: new RegExp(
-        'hsla' + commaSeparatedCall(NUMBER, PERCENTAGE, PERCENTAGE, NUMBER),
+        'hsla(' +
+          commaSeparatedCall(NUMBER, PERCENTAGE, PERCENTAGE, NUMBER) +
+          '|' +
+          callWithSlashSeparator(NUMBER, PERCENTAGE, PERCENTAGE, NUMBER) +
+          ')',
       ),
       hwb: new RegExp('hwb' + call(NUMBER, PERCENTAGE, PERCENTAGE)),
       hex3: /^#([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/,
