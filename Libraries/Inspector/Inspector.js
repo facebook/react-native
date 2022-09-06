@@ -20,69 +20,17 @@ const ReactNative = require('../Renderer/shims/ReactNative');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const View = require('../Components/View/View');
 const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
+const getInspectorDataForViewAtPoint = require('./getInspectorDataForViewAtPoint');
 
-const invariant = require('invariant');
-
-import type {
-  HostComponent,
-  TouchedViewDataAtPoint,
-} from '../Renderer/shims/ReactNativeTypes';
-
-type HostRef = React.ElementRef<HostComponent<mixed>>;
-
-export type ReactRenderer = {
-  rendererConfig: {
-    getInspectorDataForViewAtPoint: (
-      inspectedView: ?HostRef,
-      locationX: number,
-      locationY: number,
-      callback: Function,
-    ) => void,
-    ...
-  },
-};
+import type {TouchedViewDataAtPoint} from '../Renderer/shims/ReactNativeTypes';
+import type {HostRef} from './getInspectorDataForViewAtPoint';
 
 const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
-const renderers = findRenderers();
 
 // Required for React DevTools to view/edit React Native styles in Flipper.
 // Flipper doesn't inject these values when initializing DevTools.
 hook.resolveRNStyle = require('../StyleSheet/flattenStyle');
 hook.nativeStyleEditorValidAttributes = Object.keys(ReactNativeStyleAttributes);
-
-function findRenderers(): $ReadOnlyArray<ReactRenderer> {
-  const allRenderers = Array.from(hook.renderers.values());
-  invariant(
-    allRenderers.length >= 1,
-    'Expected to find at least one React Native renderer on DevTools hook.',
-  );
-  return allRenderers;
-}
-
-function getInspectorDataForViewAtPoint(
-  inspectedView: ?HostRef,
-  locationX: number,
-  locationY: number,
-  callback: (viewData: TouchedViewDataAtPoint) => void,
-) {
-  // Check all renderers for inspector data.
-  for (let i = 0; i < renderers.length; i++) {
-    const renderer = renderers[i];
-    if (renderer?.rendererConfig?.getInspectorDataForViewAtPoint != null) {
-      renderer.rendererConfig.getInspectorDataForViewAtPoint(
-        inspectedView,
-        locationX,
-        locationY,
-        viewData => {
-          // Only return with non-empty view data since only one renderer will have this view.
-          if (viewData && viewData.hierarchy.length > 0) {
-            callback(viewData);
-          }
-        },
-      );
-    }
-  }
-}
 
 class Inspector extends React.Component<
   {
@@ -221,6 +169,7 @@ class Inspector extends React.Component<
           this._setTouchedViewData(viewData);
           this._setTouchedViewData = null;
         }
+        return false;
       },
     );
   }

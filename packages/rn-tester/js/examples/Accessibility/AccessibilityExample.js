@@ -110,7 +110,7 @@ class AccessibilityExample extends React.Component<{}> {
           </View>
         </RNTesterBlock>
 
-        <RNTesterBlock title="Accessible view with TextViews wihout label">
+        <RNTesterBlock title="Accessible view with TextViews without label">
           <View accessible={true}>
             <Text style={{color: 'green'}}>This is text one.</Text>
             <Text style={{color: 'blue'}}>This is text two.</Text>
@@ -754,7 +754,7 @@ class AccessibilityActionsExample extends React.Component<{}> {
             onAccessibilityAction={event => {
               switch (event.nativeEvent.actionName) {
                 case 'activate':
-                  Alert.alert('Alert', 'Activate accessiblity action');
+                  Alert.alert('Alert', 'Activate accessibility action');
                   break;
                 case 'copy':
                   Alert.alert('Alert', 'copy action success');
@@ -762,7 +762,7 @@ class AccessibilityActionsExample extends React.Component<{}> {
               }
             }}
             onPress={() => Alert.alert('Button has been pressed!')}
-            title="Button with accessiblity action"
+            title="Button with accessibility action"
           />
         </RNTesterBlock>
 
@@ -776,7 +776,7 @@ class AccessibilityActionsExample extends React.Component<{}> {
             onAccessibilityAction={event => {
               switch (event.nativeEvent.actionName) {
                 case 'activate':
-                  Alert.alert('Alert', 'Activate accessiblity action');
+                  Alert.alert('Alert', 'Activate accessibility action');
                   break;
                 case 'copy':
                   Alert.alert('Alert', 'copy action success');
@@ -800,7 +800,7 @@ function SliderAccessibilityExample(): React.Node {
         <Slider value={25} maximumValue={100} minimumValue={0} disabled />
       </RNTesterBlock>
       <RNTesterBlock
-        title="Disabled Slider via accessibiltyState"
+        title="Disabled Slider via accessibilityState"
         description="Verify with TalkBack/VoiceOver announces Slider as disabled">
         <Slider
           value={75}
