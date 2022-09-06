@@ -898,8 +898,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
               !scrollContext.horizontal ===
                 !horizontalOrDefault(this.props.horizontal) &&
               !this._hasWarned.nesting &&
-              this.context == null &&
-              this.props.scrollEnabled !== false
+              this.context == null
             ) {
               // TODO (T46547044): use React.warn once 16.9 is sync'd: https://github.com/facebook/react/pull/15170
               console.error(
