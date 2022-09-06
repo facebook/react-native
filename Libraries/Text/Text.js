@@ -179,10 +179,9 @@ const Text: React.AbstractComponent<
 
   let flattenedStyle = flattenStyle(style);
 
-  flattenedStyle =
-    typeof flattenedStyle?.fontWeight === 'number'
-      ? {...flattenedStyle, fontWeight: flattenedStyle?.fontWeight.toString()}
-      : flattenedStyle;
+  if (typeof flattenedStyle?.fontWeight === 'number') {
+    flattenedStyle.fontWeight = flattenedStyle?.fontWeight.toString();
+  }
 
   return hasTextAncestor ? (
     <NativeVirtualText
