@@ -172,10 +172,34 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
     sources = source;
   }
 
+  let flatten_style = flattenStyle(style);
+
+  const layoutPropMap = {
+    marginInlineStart: 'marginStart',
+    marginInlineEnd: 'marginEnd',
+    marginBlockStart: 'marginTop',
+    marginBlockEnd: 'marginBottom',
+    marginBlock: 'marginVertical',
+    marginInline: 'marginHorizontal',
+    paddingInlineStart: 'paddingStart',
+    paddingInlineEnd: 'paddingEnd',
+    paddingBlockStart: 'paddingTop',
+    paddingBlockEnd: 'paddingBottom',
+    paddingBlock: 'paddingVertical',
+    paddingInline: 'paddingHorizontal',
+  };
+
+  Object.keys(layoutPropMap).forEach(key => {
+    if (flatten_style && flatten_style[key] !== undefined) {
+      flatten_style[layoutPropMap[key]] = flatten_style[key];
+      delete flatten_style[key];
+    }
+  });
+
   const {onLoadStart, onLoad, onLoadEnd, onError} = props;
   const nativeProps = {
     ...props,
-    style,
+    flatten_style,
     shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd || onError),
     src: sources,
     /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
@@ -205,7 +229,7 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
                 let src = Array.isArray(sources) ? sources : [sources];
                 return (
                   <TextInlineImageNativeComponent
-                    style={style}
+                    style={flatten_style}
                     resizeMode={props.resizeMode}
                     headers={nativeProps.headers}
                     src={src}

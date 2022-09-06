@@ -126,6 +126,30 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
     }
   }
 
+  let flatten_style = flattenStyle(style);
+
+  const layoutPropMap = {
+    marginInlineStart: 'marginStart',
+    marginInlineEnd: 'marginEnd',
+    marginBlockStart: 'marginTop',
+    marginBlockEnd: 'marginBottom',
+    marginBlock: 'marginVertical',
+    marginInline: 'marginHorizontal',
+    paddingInlineStart: 'paddingStart',
+    paddingInlineEnd: 'paddingEnd',
+    paddingBlockStart: 'paddingTop',
+    paddingBlockEnd: 'paddingBottom',
+    paddingBlock: 'paddingVertical',
+    paddingInline: 'paddingHorizontal',
+  };
+
+  Object.keys(layoutPropMap).forEach(key => {
+    if (flatten_style && flatten_style[key] !== undefined) {
+      flatten_style[layoutPropMap[key]] = flatten_style[key];
+      delete flatten_style[key];
+    }
+  });
+
   // $FlowFixMe[prop-missing]
   const resizeMode = props.resizeMode || style.resizeMode || 'cover';
   // $FlowFixMe[prop-missing]
@@ -150,7 +174,7 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
           <ImageViewNativeComponent
             {...props}
             ref={forwardedRef}
-            style={style}
+            style={flatten_style}
             resizeMode={resizeMode}
             tintColor={tintColor}
             source={sources}
