@@ -13,82 +13,108 @@
 const React = require('react');
 const ReactNative = require('react-native');
 import {Platform} from 'react-native';
-const {Button, PlatformColor, StyleSheet, Text, View} = ReactNative;
+const {Button, PlatformColor, StyleSheet, Text, TextInput, View} = ReactNative;
 
 import type {KeyEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
-type State = {
-  eventStream: string,
-  characters: string,
-};
-
-class KeyEventExample extends React.Component<{}, State> {
-  state: State = {
-    eventStream: '',
-    characters: '',
+function KeyEventExample(): React.Node {
+  const [log, setLog] = React.useState([]);
+  const appendLog = (line: string) => {
+    const limit = 12;
+    let newLog = log.slice(0, limit - 1);
+    newLog.unshift(line);
+    setLog(newLog);
   };
 
-  onKeyDownEvent: (e: KeyEvent) => void = (e: KeyEvent) => {
-    console.log('received view key down event\n', e.nativeEvent.key);
-    this.setState({characters: e.nativeEvent.key});
-    this.setState(prevState => ({
-      eventStream:
-        prevState.eventStream + '\nKey Down: ' + prevState.characters,
-    }));
-  };
-
-  onKeyUpEvent: (e: KeyEvent) => void = (e: KeyEvent) => {
-    console.log('received key up event\n', e.nativeEvent.key);
-    this.setState({characters: e.nativeEvent.key});
-    this.setState(prevState => ({
-      eventStream: prevState.eventStream + '\nKey Up: ' + prevState.characters,
-    }));
-  };
-
-  render() {
-    return (
+  return (
+    <View style={{padding: 10}}>
+      <Text>
+        Key events are called when a component detects a key press.To tab
+        between views on macOS: Enable System Preferences / Keyboard / Shortcuts
+        > Use keyboard navigation to move focus between controls.
+      </Text>
       <View>
-        <Text>Key events are called when a component detects a key press.</Text>
-        <View>
-          {Platform.OS === 'macos' ? (
+        {Platform.OS === 'macos' ? (
+          <>
+            <Text style={styles.title}>View</Text>
+            <Text style={styles.text}>
+              validKeysDown: [g, Escape, Enter, ArrowLeft]{'\n'}
+              validKeysUp: [c, d]
+            </Text>
             <View
               focusable={true}
-              validKeysDown={['g', 'Tab', 'Escape', 'Enter', 'ArrowLeft']}
-              onKeyDown={this.onKeyDownEvent}
+              style={styles.row}
+              validKeysDown={['g', 'Escape', 'Enter', 'ArrowLeft']}
+              onKeyDown={e => appendLog('Key Down:' + e.nativeEvent.key)}
               validKeysUp={['c', 'd']}
-              onKeyUp={this.onKeyUpEvent}>
-              <Button
-                title={'Test button'}
-                onKeyDown={this.onKeyDownEvent}
-                validKeysUp={['j', 'k', 'l']}
-                onKeyUp={this.onKeyUpEvent}
-                onPress={() => {}}
-              />
-            </View>
-          ) : null}
-          <Text>{'Events: ' + this.state.eventStream + '\n\n'}</Text>
-        </View>
+              onKeyUp={e => appendLog('Key Up:' + e.nativeEvent.key)}></View>
+            <Text style={styles.title}>TextInput</Text>
+            <Text style={styles.text}>
+              validKeysDown: [ArrowRight, ArrowDown]{'\n'}
+              validKeysUp: [Escape, Enter]
+            </Text>
+            <TextInput
+              blurOnSubmit={false}
+              placeholder={'Singleline textInput'}
+              multiline={false}
+              focusable={true}
+              style={styles.row}
+              validKeysDown={['ArrowRight', 'ArrowDown']}
+              onKeyDown={e => appendLog('Key Down:' + e.nativeEvent.key)}
+              validKeysUp={['Escape', 'Enter']}
+              onKeyUp={e => appendLog('Key Up:' + e.nativeEvent.key)}
+            />
+            <TextInput
+              placeholder={'Multiline textInput'}
+              multiline={true}
+              focusable={true}
+              style={styles.row}
+              validKeysDown={['ArrowRight', 'ArrowDown']}
+              onKeyDown={e => appendLog('Key Down:' + e.nativeEvent.key)}
+              validKeysUp={['Escape', 'Enter']}
+              onKeyUp={e => appendLog('Key Up:' + e.nativeEvent.key)}
+            />
+            <Text style={styles.text}>
+              validKeysDown: []{'\n'}
+              validKeysUp: []
+            </Text>
+            <TextInput
+              blurOnSubmit={false}
+              placeholder={'Singleline textInput'}
+              multiline={false}
+              focusable={true}
+              style={styles.row}
+            />
+            <TextInput
+              placeholder={'Multiline textInput'}
+              multiline={true}
+              focusable={true}
+              style={styles.row}
+            />
+          </>
+        ) : null}
+        <Text>{'Events:\n' + log.join('\n')}</Text>
       </View>
-    );
-  }
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-  textInput: {
-    ...Platform.select({
-      macos: {
-        color: PlatformColor('textColor'),
-        backgroundColor: PlatformColor('textBackgroundColor'),
-        borderColor: PlatformColor('gridColor'),
-      },
-      default: {
-        borderColor: '#0f0f0f',
-      },
-    }),
-    borderWidth: StyleSheet.hairlineWidth,
-    flex: 1,
-    fontSize: 13,
-    padding: 4,
+  row: {
+    height: 36,
+    marginTop: 8,
+    marginBottom: 8,
+    backgroundColor: 'grey',
+    padding: 10,
+  },
+  title: {
+    fontSize: 14,
+    paddingTop: 12,
+    paddingBottom: 8,
+  },
+  text: {
+    fontSize: 12,
+    paddingBottom: 4,
   },
 });
 

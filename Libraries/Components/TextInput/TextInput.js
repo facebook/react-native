@@ -1333,6 +1333,8 @@ function InternalTextInput(props: Props): React.Node {
         onChangeSync={useOnChangeSync === true ? _onChangeSync : null}
         onContentSizeChange={props.onContentSizeChange}
         onFocus={_onFocus}
+        onKeyDown={props.onKeyDown} // TODO(macOS GH#774)
+        onKeyUp={props.onKeyUp} // TODO(macOS GH#774)
         onScroll={_onScroll}
         onSelectionChange={_onSelectionChange}
         onSelectionChangeShouldSetResponder={emptyFunctionThatReturnsTrue}

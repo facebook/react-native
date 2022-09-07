@@ -514,6 +514,19 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
     [super deleteBackward];
   }
 }
+#else
+- (void)keyDown:(NSEvent *)event {
+  // If hasMarkedText is true then an IME is open, so don't send event to JS.
+  if (self.hasMarkedText || [self.textInputDelegate textInputShouldHandleKeyEvent:event]) {
+    [super keyDown:event];
+  }
+}
+
+- (void)keyUp:(NSEvent *)event {
+  if ([self.textInputDelegate textInputShouldHandleKeyEvent:event]) {
+    [super keyUp:event];
+  }
+}
 #endif // ]TODO(OSS Candidate ISS#2710739)
 
 - (void)_updatePlaceholder
