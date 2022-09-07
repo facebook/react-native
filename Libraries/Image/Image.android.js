@@ -163,9 +163,10 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
     sources = source;
   }
 
+  const {height, width, ...restProps} = props;
   const {onLoadStart, onLoad, onLoadEnd, onError} = props;
   const nativeProps = {
-    ...props,
+    ...restProps,
     style,
     shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd || onError),
     src: sources,

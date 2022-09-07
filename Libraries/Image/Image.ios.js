@@ -138,7 +138,7 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
     );
   }
 
-  const {src, ...restProps} = props;
+  const {src, width, height, ...restProps} = props;
 
   return (
     <ImageAnalyticsTagContext.Consumer>

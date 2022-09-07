@@ -112,14 +112,14 @@ export type ImageProps = {|
    *
    * See https://reactnative.dev/docs/image#height
    */
-  height?: DimensionValue,
+  height?: number,
 
   /**
    * Width of the image component.
    *
    * See https://reactnative.dev/docs/image#width
    */
-  width?: DimensionValue,
+  width?: number,
 
   /**
    * Invoked on load error with `{nativeEvent: {error}}`.

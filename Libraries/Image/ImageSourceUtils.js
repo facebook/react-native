@@ -26,40 +26,41 @@ export function getImageSourcesFromImageProps(
 
   let sources;
 
-  const {crossOrigin, referrerPolicy, src, srcSet} = imageProps;
+  const {crossOrigin, referrerPolicy, src, srcSet, width, height} = imageProps;
 
-  const getHeaders = () => {
-    const headers: {[string]: string} = {};
-    if (crossOrigin === 'use-credentials') {
-      headers['Access-Control-Allow-Credentials'] = 'true';
-    }
-    if (referrerPolicy != null) {
-      headers['Referrer-Policy'] = referrerPolicy;
-    }
-    return headers;
-  };
-
+  const headers: {[string]: string} = {};
+  if (crossOrigin === 'use-credentials') {
+    headers['Access-Control-Allow-Credentials'] = 'true';
+  }
+  if (referrerPolicy != null) {
+    headers['Referrer-Policy'] = referrerPolicy;
+  }
   if (srcSet != null) {
     const sourceList = [];
     const srcSetList = srcSet.split(', ');
     // `src` prop should be used with default scale if `srcSet` does not have 1x scale.
     let shouldUseSrcForDefaultScale = true;
-    const {width, height} = imageProps;
     srcSetList.forEach(imageSrc => {
       const [uri, xScale = '1x'] = imageSrc.split(' ');
-      const scale = parseInt(xScale.split('x')[0], 10);
-      if (scale) {
-        if (scale === 1) {
-          // 1x scale is provided in `srcSet` prop so ignore the `src` prop if provided.
-          shouldUseSrcForDefaultScale = false;
+      if (!xScale.endsWith('x')) {
+        console.warn(
+          'The provided format for scale is not supported yet. Please use scales like 1x, 2x, etc.',
+        );
+      } else {
+        const scale = parseInt(xScale.split('x')[0], 10);
+        if (!isNaN(scale)) {
+          if (scale === 1) {
+            // 1x scale is provided in `srcSet` prop so ignore the `src` prop if provided.
+            shouldUseSrcForDefaultScale = false;
+          }
+          sourceList.push({headers: headers, scale, uri, width, height});
         }
-        sourceList.push({headers: getHeaders(), scale, uri, width, height});
       }
     });
 
     if (shouldUseSrcForDefaultScale && src != null) {
       sourceList.push({
-        headers: getHeaders(),
+        headers: headers,
         scale: 1,
         uri: src,
         width,
@@ -72,8 +73,7 @@ export function getImageSourcesFromImageProps(
 
     sources = sourceList;
   } else if (src != null) {
-    const {width, height} = imageProps;
-    sources = [{uri: src, headers: getHeaders(), width, height}];
+    sources = [{uri: src, headers: headers, width, height}];
   } else {
     sources = source;
   }
