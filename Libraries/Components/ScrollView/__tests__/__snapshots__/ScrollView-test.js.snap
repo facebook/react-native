@@ -16,6 +16,7 @@ exports[`<ScrollView /> should render as expected: should deep render when not m
 <RCTScrollView
   alwaysBounceVertical={true}
   onContentSizeChange={null}
+  onInvertedDidChange={[Function]}
   onLayout={[Function]}
   onMomentumScrollBegin={[Function]}
   onMomentumScrollEnd={[Function]}

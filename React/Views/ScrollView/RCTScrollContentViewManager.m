@@ -14,6 +14,8 @@
 
 RCT_EXPORT_MODULE()
 
+RCT_EXPORT_OSX_VIEW_PROPERTY(inverted, BOOL) // TODO(macOS GH#774)
+
 - (RCTScrollContentView *)view
 {
   return [RCTScrollContentView new];

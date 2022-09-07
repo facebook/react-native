@@ -18,6 +18,12 @@
 #import "RCTScrollView.h"
 
 @implementation RCTScrollContentView
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
+- (BOOL)isFlipped
+{
+  return !self.inverted;
+}
+#endif // ]TODO(macOS GH#774)
 
 - (void)reactSetFrame:(CGRect)frame
 {

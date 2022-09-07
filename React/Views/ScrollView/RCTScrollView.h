@@ -67,6 +67,8 @@
 @property (nonatomic, copy) RCTDirectEventBlock onMomentumScrollEnd;
 @property (nonatomic, copy) RCTDirectEventBlock onPreferredScrollerStyleDidChange; // TODO(macOS GH#774)
 
+@property (nonatomic, copy) RCTDirectEventBlock onInvertedDidChange; // TODO(macOS GH#774)
+
 - (void)flashScrollIndicators; // TODO(macOS GH#774)
 
 @end

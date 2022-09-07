@@ -45,6 +45,7 @@
 @property (nonatomic, assign) BOOL pinchGestureEnabled;
 #else // [TODO(macOS GH#774)
 + (BOOL)isCompatibleWithResponsiveScrolling;
+@property (nonatomic, assign, getter=isInverted) BOOL inverted;
 @property (nonatomic, assign, getter=isScrollEnabled) BOOL scrollEnabled;
 @property (nonatomic, strong) NSPanGestureRecognizer *panGestureRecognizer;
 #endif // ]TODO(macOS GH#774)
@@ -106,6 +107,11 @@
 + (BOOL)isCompatibleWithResponsiveScrolling
 {
   return YES;
+}
+
+- (BOOL)isFlipped
+{
+  return !self.inverted;
 }
 
 - (void)scrollWheel:(NSEvent *)theEvent
@@ -555,6 +561,15 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
 - (void)setAccessibilityRole:(NSAccessibilityRole)accessibilityRole
 {
   [_scrollView setAccessibilityRole:accessibilityRole];
+}
+
+- (void)setInverted:(BOOL)inverted
+{
+  BOOL changed = _inverted != inverted;
+  _inverted = inverted;  
+  if (changed && _onInvertedDidChange) {
+    _onInvertedDidChange(@{});
+  }
 }
 #endif // ]TODO(macOS GH#774)
 

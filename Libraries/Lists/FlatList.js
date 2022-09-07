@@ -136,7 +136,7 @@ type OptionalProps<ItemT> = {|
   initialSelectedIndex?: ?number,
   // ]TODO(macOS GH#774)
   /**
-   * Reverses the direction of scroll. Uses scale transforms of -1.
+   * Reverses the direction of scroll. Uses native inversion on macOS and scale transforms of -1 elsewhere
    */
   inverted?: ?boolean,
   /**

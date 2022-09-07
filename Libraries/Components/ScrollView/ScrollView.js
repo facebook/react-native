@@ -500,6 +500,10 @@ export type Props = $ReadOnly<{|
    */
   invertStickyHeaders?: ?boolean,
   /**
+   * Reverses the direction of scroll. Uses native inversion on macOS and scale transforms of -1 elsewhere
+   */
+  inverted?: ?boolean, // TODO(macOS GH#774)
+  /**
    * Determines whether the keyboard gets dismissed in response to a drag.
    *
    * *Cross platform*
@@ -1192,6 +1196,11 @@ class ScrollView extends React.Component<Props, State> {
     this.setState({contentKey: this.state.contentKey + 1});
   }; // ]TODO(macOS GH#774)
 
+  // [TODO(macOS GH#774)
+  _handleInvertedDidChange = () => {
+    this.setState({contentKey: this.state.contentKey + 1});
+  }; // ]TODO(macOS GH#774)
+
   _handleScroll = (e: ScrollEvent) => {
     if (__DEV__) {
       if (
@@ -1716,6 +1725,7 @@ class ScrollView extends React.Component<Props, State> {
             : this.props.removeClippedSubviews
         }
         key={this.state.contentKey} // TODO(macOS GH#774)
+        inverted={this.props.inverted} // TODO(macOS GH#774)
         collapsable={false}>
         {children}
       </NativeDirectionalScrollContentView>
@@ -1743,6 +1753,7 @@ class ScrollView extends React.Component<Props, State> {
       // Override the onContentSizeChange from props, since this event can
       // bubble up from TextInputs
       onContentSizeChange: null,
+      onInvertedDidChange: this._handleInvertedDidChange, // TODO macOS GH#774
       onPreferredScrollerStyleDidChange:
         this._handlePreferredScrollerStyleDidChange, // TODO(macOS GH#774)
       onLayout: this._handleLayout,

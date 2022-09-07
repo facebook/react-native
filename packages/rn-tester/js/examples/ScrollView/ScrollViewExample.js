@@ -491,6 +491,48 @@ if (Platform.OS === 'ios') {
 }
 exports.examples = examples;
 
+// TODO [(macOS GH#774)
+if (Platform.OS === 'macos') {
+  examples.push({
+    title: '<ScrollView> (inverted = true/false)\n',
+    description:
+      "You can display <ScrollView>'s child components in inverted order",
+    render: function (): React.Node {
+      return <InvertedContentExample />;
+    },
+  });
+}
+
+const InvertedContentExample = () => {
+  const [inverted, setInverted] = useState(true);
+  const [items, setItems] = useState(ITEMS);
+  return (
+    <>
+      <ScrollView
+        style={[styles.scrollView, {height: 200}]}
+        inverted={inverted}>
+        {items.map(createItemRow)}
+      </ScrollView>
+      <Text style={{paddingTop: 10, paddingBottom: 10}}>
+        Same example as above, but with the opposite inverted option
+      </Text>
+      <ScrollView
+        style={[styles.scrollView, {height: 200}]}
+        inverted={!inverted}>
+        {items.map(createItemRow)}
+      </ScrollView>
+      <Button
+        label={'toggle inverted'}
+        onPress={() => {
+          setInverted(!inverted);
+          setItems([...Array(14)].map((_, i) => `Item ${i}`));
+        }}
+      />
+    </>
+  );
+};
+// ]TODO(macOS GH#774)
+
 const AndroidScrollBarOptions = () => {
   const [persistentScrollBar, setPersistentScrollBar] = useState(false);
   return (
