@@ -33,7 +33,7 @@ class ComponentDescriptorProviderRegistry final {
    * `ComponentDescriptorRegistry`s accordingly.
    * The methods can be called on any thread.
    */
-  void add(ComponentDescriptorProvider provider) const;
+  void add(const ComponentDescriptorProvider &provider) const;
 
   /*
    * ComponenDescriptorRegistry will call the `request` in case if a component

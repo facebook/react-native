@@ -49,7 +49,7 @@ void TimelineController::commitHookWasRegistered(
 }
 
 void TimelineController::commitHookWasUnregistered(
-    UIManager const &uiManager) const noexcept {
+    UIManager const & /*uiManager*/) const noexcept {
   uiManager_ = nullptr;
 }
 

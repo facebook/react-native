@@ -166,9 +166,9 @@ TextMeasurement TextLayoutManager::measure(
 
   auto measurement = measureCache_.get(
       {attributedString, paragraphAttributes, layoutConstraints},
-      [&](TextMeasureCacheKey const &key) {
+      [&](TextMeasureCacheKey const & /*key*/) {
         auto telemetry = TransactionTelemetry::threadLocalTelemetry();
-        if (telemetry) {
+        if (telemetry != nullptr) {
           telemetry->willMeasureText();
         }
 
@@ -178,7 +178,7 @@ TextMeasurement TextLayoutManager::measure(
             : doMeasure(
                   attributedString, paragraphAttributes, layoutConstraints);
 
-        if (telemetry) {
+        if (telemetry != nullptr) {
           telemetry->didMeasureText();
         }
 

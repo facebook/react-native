@@ -168,7 +168,7 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
 #pragma mark - LayoutableShadowNode
 
 Size AndroidTextInputShadowNode::measureContent(
-    LayoutContext const &layoutContext,
+    LayoutContext const & /*layoutContext*/,
     LayoutConstraints const &layoutConstraints) const {
   if (getStateData().cachedAttributedStringId != 0) {
     return textLayoutManager_

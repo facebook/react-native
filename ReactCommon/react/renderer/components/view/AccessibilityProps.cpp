@@ -194,7 +194,7 @@ AccessibilityProps::AccessibilityProps(
 void AccessibilityProps::setProp(
     const PropsParserContext &context,
     RawPropsPropNameHash hash,
-    const char *propName,
+    const char * /*propName*/,
     RawValue const &value) {
   switch (hash) {
     RAW_SET_PROP_SWITCH_CASE_BASIC(accessible, false);
@@ -217,7 +217,7 @@ void AccessibilityProps::setProp(
     RAW_SET_PROP_SWITCH_CASE(testId, "testID", std::string{""});
     case CONSTEXPR_RAW_PROPS_KEY_HASH("accessibilityRole"): {
       AccessibilityTraits traits = AccessibilityTraits::None;
-      std::string roleString = "";
+      std::string roleString;
       if (value.hasValue()) {
         fromRawValue(context, value, traits);
         fromRawValue(context, value, roleString);

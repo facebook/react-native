@@ -46,7 +46,7 @@ class UITemplateProcessor {
  public:
   static ShadowNode::Shared buildShadowTree(
       const std::string &jsonStr,
-      int rootTag,
+      int surfaceId,
       const folly::dynamic &params,
       const ComponentDescriptorRegistry &componentDescriptorRegistry,
       const NativeModuleRegistry &nativeModuleRegistry,
@@ -55,7 +55,7 @@ class UITemplateProcessor {
  private:
   static ShadowNode::Shared runCommand(
       const folly::dynamic &command,
-      Tag rootTag,
+      Tag surfaceId,
       std::vector<ShadowNode::Shared> &nodes,
       std::vector<folly::dynamic> &registers,
       const ComponentDescriptorRegistry &componentDescriptorRegistry,
