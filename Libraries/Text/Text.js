@@ -180,7 +180,7 @@ const Text: React.AbstractComponent<
   let flattenedStyle = flattenStyle(style);
 
   if (typeof flattenedStyle?.fontWeight === 'number') {
-    flattenedStyle.fontWeight = flattenedStyle?.fontWeight.toString();
+    flattenedStyle.fontWeight = flattenedStyle.fontWeight.toString();
   }
 
   return hasTextAncestor ? (
