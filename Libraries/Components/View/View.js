@@ -30,12 +30,15 @@ const View: React.AbstractComponent<
 > = React.forwardRef(
   (
     {
-      tabIndex,
-      focusable,
-      role,
+      accessibilityElementsHidden,
       accessibilityRole,
+      'aria-hidden': ariaHidden,
+      focusable,
+      importantForAccessibility,
       pointerEvents,
+      role,
       style,
+      tabIndex,
       ...otherProps
     }: ViewProps,
     forwardedRef,
@@ -117,6 +120,14 @@ const View: React.AbstractComponent<
           focusable={tabIndex !== undefined ? !tabIndex : focusable}
           accessibilityRole={
             role ? roleToAccessibilityRoleMapping[role] : accessibilityRole
+          }
+          accessibilityElementsHidden={
+            ariaHidden ?? accessibilityElementsHidden
+          }
+          importantForAccessibility={
+            ariaHidden === true
+              ? 'no-hide-descendants'
+              : importantForAccessibility
           }
           {...otherProps}
           style={style}

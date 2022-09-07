@@ -492,6 +492,14 @@ export type ViewProps = $ReadOnly<{|
   accessibilityLabelledBy?: ?string | ?Array<string>,
 
   /**
+   * A value indicating whether the accessibility elements contained within
+   * this accessibility element are hidden.
+   *
+   * See https://reactnative.dev/docs/view#aria-hidden
+   */
+  'aria-hidden'?: ?boolean,
+
+  /**
    * Views that are only used to layout their children or otherwise don't draw
    * anything may be automatically removed from the native hierarchy as an
    * optimization. Set this property to `false` to disable this optimization and
