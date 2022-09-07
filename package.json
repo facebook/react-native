@@ -106,7 +106,7 @@
     "metro-source-map": "0.67.0",
     "nullthrows": "^1.1.1",
     "pretty-format": "^26.5.2",
-    "promise": "^8.0.3",
+    "promise": "^8.2.0",
     "react-devtools-core": "^4.23.0",
     "react-native-gradle-plugin": "^0.0.6",
     "react-refresh": "^0.4.0",
