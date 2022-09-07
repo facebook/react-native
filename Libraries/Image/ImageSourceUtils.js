@@ -49,10 +49,9 @@ export function getImageSourcesFromImageProps(
       } else {
         const scale = parseInt(xScale.split('x')[0], 10);
         if (!isNaN(scale)) {
-          if (scale === 1) {
-            // 1x scale is provided in `srcSet` prop so ignore the `src` prop if provided.
-            shouldUseSrcForDefaultScale = false;
-          }
+          // 1x scale is provided in `srcSet` prop so ignore the `src` prop if provided.
+          shouldUseSrcForDefaultScale =
+            scale === 1 ? false : shouldUseSrcForDefaultScale;
           sourceList.push({headers: headers, scale, uri, width, height});
         }
       }
