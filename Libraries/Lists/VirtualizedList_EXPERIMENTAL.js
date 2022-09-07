@@ -235,11 +235,11 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       });
       return;
     }
-    const frame = this.__getFrameMetricsApprox(index, this.props);
+    const frame = this.__getFrameMetricsApprox(Math.floor(index), this.props);
     const offset =
       Math.max(
         0,
-        frame.offset -
+        this._getOffsetApprox(index, this.props) -
           (viewPosition || 0) *
             (this._scrollMetrics.visibleLength - frame.length),
       ) - (viewOffset || 0);
@@ -564,7 +564,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
 
   static _initialRenderRegion(props: Props): {first: number, last: number} {
     const itemCount = props.getItemCount(props.data);
-    const scrollIndex = Math.max(0, props.initialScrollIndex ?? 0);
+    const scrollIndex = Math.floor(Math.max(0, props.initialScrollIndex ?? 0));
 
     return {
       first: scrollIndex,
@@ -1778,6 +1778,23 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       key: this._keyExtractor(item, index, props),
       isViewable,
     };
+  };
+
+  /**
+   * Gets an approximate offset to an item at a given index. Supports
+   * fractional indices.
+   */
+  _getOffsetApprox = (index: number, props: FrameMetricProps): number => {
+    if (Number.isInteger(index)) {
+      return this.__getFrameMetricsApprox(index, props).offset;
+    } else {
+      const frameMetrics = this.__getFrameMetricsApprox(
+        Math.floor(index),
+        props,
+      );
+      const remainder = index - Math.floor(index);
+      return frameMetrics.offset + remainder * frameMetrics.length;
+    }
   };
 
   __getFrameMetricsApprox: (
