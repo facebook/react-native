@@ -641,7 +641,9 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
         !this._scrollMetrics.offset &&
         Math.abs(distanceFromEnd) >= Number.EPSILON
       ) {
-        return cellsAroundViewport;
+        return cellsAroundViewport.last >= getItemCount(data)
+          ? VirtualizedList._constrainToItemCount(cellsAroundViewport, props)
+          : cellsAroundViewport;
       }
 
       newCellsAroundViewport = computeWindowedRenderLimits(

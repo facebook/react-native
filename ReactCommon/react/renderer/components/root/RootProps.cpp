@@ -26,8 +26,8 @@ RootProps::RootProps(
 // If that's a problem and the context is necesary here, refactor RootShadowNode
 // first.
 RootProps::RootProps(
-    const PropsParserContext &context,
-    RootProps const &sourceProps,
+    const PropsParserContext & /*context*/,
+    RootProps const & /*sourceProps*/,
     LayoutConstraints const &layoutConstraints,
     LayoutContext const &layoutContext)
     : ViewProps(),

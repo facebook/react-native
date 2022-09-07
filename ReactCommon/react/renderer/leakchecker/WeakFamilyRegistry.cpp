@@ -28,9 +28,8 @@ WeakFamilyRegistry::WeakFamilies WeakFamilyRegistry::weakFamiliesForSurfaceId(
   std::lock_guard<std::mutex> lock(familiesMutex_);
   if (families_.find(surfaceId) != families_.end()) {
     return families_[surfaceId];
-  } else {
-    return {};
   }
+  return {};
 }
 
 } // namespace react

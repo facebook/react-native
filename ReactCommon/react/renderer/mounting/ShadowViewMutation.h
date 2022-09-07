@@ -125,9 +125,9 @@ using ShadowViewMutationList = std::vector<ShadowViewMutation>;
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 
-std::string getDebugName(ShadowViewMutation const &object);
+std::string getDebugName(ShadowViewMutation const &mutation);
 std::vector<DebugStringConvertibleObject> getDebugProps(
-    ShadowViewMutation const &object,
+    ShadowViewMutation const &mutation,
     DebugStringConvertibleOptions options);
 
 #endif

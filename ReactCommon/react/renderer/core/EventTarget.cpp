@@ -46,7 +46,7 @@ void EventTarget::retain(jsi::Runtime &runtime) const {
   // react_native_assert(!strongInstanceHandle_.isUndefined());
 }
 
-void EventTarget::release(jsi::Runtime &runtime) const {
+void EventTarget::release(jsi::Runtime & /*runtime*/) const {
   // The method does not use `jsi::Runtime` reference.
   // It takes it only to ensure thread-safety (if the caller has the reference,
   // we are on a proper thread).
