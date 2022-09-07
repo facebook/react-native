@@ -157,12 +157,6 @@ type ButtonProps = $ReadOnly<{|
   importantForAccessibility?: ?('auto' | 'yes' | 'no' | 'no-hide-descendants'),
   accessibilityHint?: ?string,
   accessibilityLanguage?: ?Stringish,
-
-  /**
-   * Alias for accessibilityLabel  https://reactnative.dev/docs/view#accessibilitylabel
-   * https://github.com/facebook/react-native/issues/34424
-   */
-  'aria-label'?: ?string,
 |}>;
 
 /**

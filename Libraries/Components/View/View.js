@@ -31,7 +31,7 @@ const View: React.AbstractComponent<
   (
     {
       accessibilityLabel,
-      'aria-label': ariaLable,
+      'aria-label': ariaLabel,
       tabIndex,
       focusable,
       role,
@@ -116,7 +116,7 @@ const View: React.AbstractComponent<
     return (
       <TextAncestor.Provider value={false}>
         <ViewNativeComponent
-          accessibilityLabel={ariaLable ?? accessibilityLabel}
+          accessibilityLabel={ariaLabel ?? accessibilityLabel}
           focusable={tabIndex !== undefined ? !tabIndex : focusable}
           accessibilityRole={
             role ? roleToAccessibilityRoleMapping[role] : accessibilityRole
