@@ -1603,8 +1603,8 @@ const ExportedForwardRef: React.AbstractComponent<
         inputMode ? inputModeToKeyboardTypeMap[inputMode] : keyboardType
       }
       autoComplete={
-        Platform.OS === 'android'
-          ? // $FlowFixMe
+        Platform.OS === 'android' && autoComplete
+          ? // $FlowFixMe[prop-missing]
             autoCompleteWebToAutoCompleteAndroidMap[autoComplete] ??
             autoComplete
           : undefined
@@ -1613,7 +1613,7 @@ const ExportedForwardRef: React.AbstractComponent<
         Platform.OS === 'ios' &&
         autoComplete &&
         autoComplete in autoCompleteWebToTextContentTypeMap
-          ? // $FlowFixMe
+          ? // $FlowFixMe[prop-missing]
             autoCompleteWebToTextContentTypeMap[autoComplete]
           : textContentType
       }
