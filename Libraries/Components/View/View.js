@@ -108,8 +108,8 @@ const View: React.AbstractComponent<
       treeitem: undefined,
     };
 
-    const flattendStyle = flattenStyle(style);
-    const newPointerEvents = pointerEvents || flattendStyle?.pointerEvents;
+    const flattenedStyle = flattenStyle(style);
+    const newPointerEvents = flattenedStyle?.pointerEvents || pointerEvents;
 
     Object.keys(layoutPropMap).forEach(key => {
       if (flattendStyle && flattendStyle[key] !== undefined) {

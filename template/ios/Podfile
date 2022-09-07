@@ -4,6 +4,8 @@ require_relative '../node_modules/react-native/scripts/native_modules'
 platform :ios, '12.4'
 install! 'cocoapods', :deterministic_uuids => false
 
+flipper_config = ENV['NO_FLIPPER'] == "1" ? FlipperConfiguration.disabled : FlipperConfiguration.enabled
+
 target 'HelloWorld' do
   config = use_native_modules!
 
@@ -21,7 +23,7 @@ target 'HelloWorld' do
     #
     # Note that if you have use_frameworks! enabled, Flipper will not work and
     # you should disable the next line.
-    :flipper_configuration => FlipperConfiguration.enabled,
+    :flipper_configuration => flipper_config,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
