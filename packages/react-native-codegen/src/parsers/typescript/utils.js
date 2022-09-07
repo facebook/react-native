@@ -19,7 +19,7 @@ export type TypeDeclarationMap = {[declarationName: string]: $FlowFixMe};
 
 function getTypes(ast: $FlowFixMe): TypeDeclarationMap {
   return ast.body.reduce((types, node) => {
-    if (node.type === 'ExportNamedDeclaration' && node.exportKind === 'type') {
+    if (node.type === 'ExportNamedDeclaration') {
       if (
         node.declaration.type === 'TSTypeAliasDeclaration' ||
         node.declaration.type === 'TSInterfaceDeclaration'
