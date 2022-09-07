@@ -10,19 +10,27 @@ package com.facebook.react.views.imagehelper;
 import android.content.Context;
 import android.net.Uri;
 import androidx.annotation.Nullable;
+
+import com.facebook.imagepipeline.request.ImageRequest;
+import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.modules.fresco.ReactNetworkImageRequest;
+
 import java.util.Objects;
 
 /** Class describing an image source (network URI or resource) and size. */
 public class ImageSource {
 
-  private @Nullable Uri mUri;
-  private String mSource;
-  private double mSize;
+  private final @Nullable Uri mUri;
+  private final ReadableMap mHeaders;
+  private final String mSource;
+  private final double mSize;
   private boolean isResource;
 
-  public ImageSource(Context context, String source, double width, double height) {
+  public ImageSource(Context context, String source, ReadableMap headers, double width, double height) {
     mSource = source;
+    mHeaders = headers;
     mSize = width * height;
 
     // Important: we compute the URI here so that we don't need to hold a reference to the context,
@@ -46,8 +54,27 @@ public class ImageSource {
     return Objects.hash(mUri, mSource, mSize, isResource);
   }
 
+  public ImageSource(Context context, String source, ReadableMap headers) {
+    this(context, source, headers, 0.0d, 0.0d);
+  }
+
+  /** @deprecated for library backwards compatibility only */
   public ImageSource(Context context, String source) {
-    this(context, source, 0.0d, 0.0d);
+    this(context, source, null);
+  }
+
+  public ImageRequestBuilder createImageRequestBuilder() {
+    return ImageRequestBuilder.newBuilderWithSource(getUri());
+  }
+
+  public ImageRequest createImageRequestFromBuilder(final ImageRequestBuilder imageRequestBuilder) {
+    return ReactNetworkImageRequest.fromBuilderWithHeaders(imageRequestBuilder, mHeaders);
+  }
+
+  public ImageRequest createImageRequest() {
+    return createImageRequestFromBuilder(
+      createImageRequestBuilder()
+    );
   }
 
   /** Get the source of this image, as it was passed to the constructor. */

@@ -134,7 +134,6 @@ public class ReactImageView extends GenericDraweeView {
   private @Nullable Object mCallerContext;
   private int mFadeDurationMs = -1;
   private boolean mProgressiveRenderingEnabled;
-  private ReadableMap mHeaders;
 
   // We can't specify rounding in XML, so have to do so here
   private static GenericDraweeHierarchy buildHierarchy(Context context) {
@@ -309,14 +308,15 @@ public class ReactImageView extends GenericDraweeView {
     List<ImageSource> tmpSources = new LinkedList<>();
 
     if (sources == null || sources.size() == 0) {
-      ImageSource imageSource = new ImageSource(getContext(), REMOTE_TRANSPARENT_BITMAP_URI);
+      ImageSource imageSource = new ImageSource(getContext(), REMOTE_TRANSPARENT_BITMAP_URI, null);
       tmpSources.add(imageSource);
     } else {
       // Optimize for the case where we have just one uri, case in which we don't need the sizes
       if (sources.size() == 1) {
         ReadableMap source = sources.getMap(0);
         String uri = source.getString("uri");
-        ImageSource imageSource = new ImageSource(getContext(), uri);
+        ReadableMap headers = source.getMap("headers");
+        ImageSource imageSource = new ImageSource(getContext(), uri, headers);
         tmpSources.add(imageSource);
         if (Uri.EMPTY.equals(imageSource.getUri())) {
           warnImageSource(uri);
@@ -325,9 +325,10 @@ public class ReactImageView extends GenericDraweeView {
         for (int idx = 0; idx < sources.size(); idx++) {
           ReadableMap source = sources.getMap(idx);
           String uri = source.getString("uri");
+          ReadableMap headers = source.getMap("headers");
           ImageSource imageSource =
               new ImageSource(
-                  getContext(), uri, source.getDouble("width"), source.getDouble("height"));
+                  getContext(), uri, headers, source.getDouble("width"), source.getDouble("height"));
           tmpSources.add(imageSource);
           if (Uri.EMPTY.equals(imageSource.getUri())) {
             warnImageSource(uri);
@@ -397,10 +398,6 @@ public class ReactImageView extends GenericDraweeView {
         mBorderCornerRadii != null && !YogaConstants.isUndefined(mBorderCornerRadii[3])
             ? mBorderCornerRadii[3]
             : defaultBorderRadius;
-  }
-
-  public void setHeaders(ReadableMap headers) {
-    mHeaders = headers;
   }
 
   public void maybeUpdateView() {
@@ -479,14 +476,14 @@ public class ReactImageView extends GenericDraweeView {
     ResizeOptions resizeOptions = doResize ? new ResizeOptions(getWidth(), getHeight()) : null;
 
     ImageRequestBuilder imageRequestBuilder =
-        ImageRequestBuilder.newBuilderWithSource(mImageSource.getUri())
+        mImageSource.createImageRequestBuilder()
             .setPostprocessor(postprocessor)
             .setResizeOptions(resizeOptions)
             .setAutoRotateEnabled(true)
             .setProgressiveRenderingEnabled(mProgressiveRenderingEnabled);
 
     ImageRequest imageRequest =
-        ReactNetworkImageRequest.fromBuilderWithHeaders(imageRequestBuilder, mHeaders);
+        mImageSource.createImageRequestFromBuilder(imageRequestBuilder);
 
     if (mGlobalImageLoadListener != null) {
       mGlobalImageLoadListener.onLoadAttempt(mImageSource.getUri());
@@ -503,7 +500,7 @@ public class ReactImageView extends GenericDraweeView {
 
     if (mCachedImageSource != null) {
       ImageRequest cachedImageRequest =
-          ImageRequestBuilder.newBuilderWithSource(mCachedImageSource.getUri())
+          mCachedImageSource.createImageRequestBuilder()
               .setPostprocessor(postprocessor)
               .setResizeOptions(resizeOptions)
               .setAutoRotateEnabled(true)
@@ -568,7 +565,7 @@ public class ReactImageView extends GenericDraweeView {
   private void setSourceImage() {
     mImageSource = null;
     if (mSources.isEmpty()) {
-      ImageSource imageSource = new ImageSource(getContext(), REMOTE_TRANSPARENT_BITMAP_URI);
+      ImageSource imageSource = new ImageSource(getContext(), REMOTE_TRANSPARENT_BITMAP_URI, null);
       mSources.add(imageSource);
     } else if (hasMultipleSources()) {
       MultiSourceResult multiSource =
