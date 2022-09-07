@@ -209,6 +209,10 @@ const AppRegistry = {
         "* A module failed to load due to an error and `AppRegistry.registerComponent` wasn't called.",
     );
 
+    if (__DEV__) {
+      require('./injectDeviceStorageMethods')();
+    }
+
     SceneTracker.setActiveScene({name: appKey});
     runnables[appKey].run(appParameters, displayMode);
   },
