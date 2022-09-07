@@ -20,5 +20,13 @@ const tsSnaps = require('../../../../src/parsers/typescript/components/__tests__
 const tsExtraCases = ['ARRAY2_PROP_TYPES_NO_EVENTS'];
 const ignoredCases = ['ARRAY_PROP_TYPES_NO_EVENTS'];
 
-compareSnaps(flowFixtures, flowSnaps, flowExtraCases, tsFixtures, tsSnaps, tsExtraCases, ignoredCases);
+compareSnaps(
+  flowFixtures,
+  flowSnaps,
+  flowExtraCases,
+  tsFixtures,
+  tsSnaps,
+  tsExtraCases,
+  ignoredCases,
+);
 compareTsArraySnaps(tsSnaps, tsExtraCases);

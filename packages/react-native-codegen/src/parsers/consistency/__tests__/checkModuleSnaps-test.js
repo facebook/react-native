@@ -25,5 +25,13 @@ const tsExtraCases = [
 ];
 const ignoredCases = [];
 
-compareSnaps(flowFixtures, flowSnaps, flowExtraCases, tsFixtures, tsSnaps, tsExtraCases,ignoredCases);
+compareSnaps(
+  flowFixtures,
+  flowSnaps,
+  flowExtraCases,
+  tsFixtures,
+  tsSnaps,
+  tsExtraCases,
+  ignoredCases,
+);
 compareTsArraySnaps(tsSnaps, tsExtraCases);

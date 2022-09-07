@@ -37,22 +37,28 @@ function compareSnaps(
     });
 
     for (const commonCase of commonCases) {
-      const flowSnap = flowSnaps[`RN Codegen Flow Parser can generate fixture ${commonCase} 1`];
-      const tsSnap = tsSnaps[`RN Codegen TypeScript Parser can generate fixture ${commonCase} 1`];
-      
+      const flowSnap =
+        flowSnaps[
+          `RN Codegen Flow Parser can generate fixture ${commonCase} 1`
+        ];
+      const tsSnap =
+        tsSnaps[
+          `RN Codegen TypeScript Parser can generate fixture ${commonCase} 1`
+        ];
+
       it(`should be able to find the snapshot for Flow for case ${commonCase}`, () => {
         expect(typeof flowSnap).toEqual('string');
       });
-      
+
       it(`should be able to find the snapshot for TypeScript for case ${commonCase}`, () => {
         expect(typeof tsSnap).toEqual('string');
       });
 
-      if(ignoredCases.indexOf(commonCase)===-1){
+      if (ignoredCases.indexOf(commonCase) === -1) {
         it(`should generate the same snapshot from Flow and TypeScript for fixture ${commonCase}`, () => {
           expect(flowSnap).toEqual(tsSnap);
         });
-      }else{
+      } else {
         it(`should generate the different snapshot from Flow and TypeScript for fixture ${commonCase}`, () => {
           expect(flowSnap).not.toEqual(tsSnap);
         });
