@@ -22,7 +22,7 @@ function getTypes(ast: $FlowFixMe): TypeDeclarationMap {
     switch (node.type) {
       case 'ExportNamedDeclaration': {
         if (node.declaration) {
-          switch(node.declaration.type) {
+          switch (node.declaration.type) {
             case 'TSTypeAliasDeclaration':
             case 'TSInterfaceDeclaration':
             case 'TSEnumDeclaration': {
