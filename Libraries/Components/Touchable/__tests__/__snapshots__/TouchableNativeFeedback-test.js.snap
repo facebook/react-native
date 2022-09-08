@@ -11,7 +11,7 @@ exports[`<TouchableNativeFeedback /> should render as expected 1`] = `
       "selected": undefined,
     }
   }
-    accessibilityValue={
+  accessibilityValue={
     Object {
       "max": undefined,
       "min": undefined,
@@ -42,7 +42,7 @@ exports[`<TouchableNativeFeedback disabled={false} accessibilityState={{disabled
       "selected": undefined,
     }
   }
-    accessibilityValue={
+  accessibilityValue={
     Object {
       "max": undefined,
       "min": undefined,
@@ -97,6 +97,7 @@ exports[`<TouchableNativeFeedback disabled={true} accessibilityState={{checked: 
 <View
   accessibilityState={
     Object {
+      "busy": undefined,
       "checked": true,
       "disabled": true,
       "expanded": undefined,

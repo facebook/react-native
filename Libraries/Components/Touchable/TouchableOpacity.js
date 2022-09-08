@@ -251,7 +251,7 @@ class TouchableOpacity extends React.Component<Props, State> {
       text:
         this.props['aria-valuetext'] !== null
           ? this.props['aria-valuetext']
-          : this.props.accessibilityValue?.max,
+          : this.props.accessibilityValue?.text,
     };
 
     return (

@@ -979,6 +979,7 @@ class FakeSliderExampleForAccessibilityValue extends React.Component<
           }}
           aria-valuemax={100}
           aria-valuemin={0}
+          aria-valuetext={'slider aria value text'}
           aria-valuenow={this.state.current}>
           <Text>Fake Slider</Text>
         </View>
