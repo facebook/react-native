@@ -297,7 +297,6 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
         ? 'none'
         : this.props['aria-live'] ?? this.props.accessibilityLiveRegion;
 
-
     return React.cloneElement(
       element,
       {
