@@ -15,7 +15,14 @@ const TypeScriptParser = require('../../index.js');
 const fixtures = require('../__test_fixtures__/fixtures.js');
 const failureFixtures = require('../__test_fixtures__/failures.js');
 jest.mock('fs', () => ({
-  readFileSync: filename => fixtures[filename] || failureFixtures[filename],
+  readFileSync: filename => {
+    // Jest in the OSS does not allow to capture variables in closures.
+    // Therefore, we have to bring the variables inside the closure.
+    // see: https://github.com/facebook/jest/issues/2567
+    const readFileFixtures = require('../__test_fixtures__/fixtures.js');
+    const readFileFailureFixtures = require('../__test_fixtures__/failures.js');
+    return readFileFixtures[filename] || readFileFailureFixtures[filename];
+  },
 }));
 
 describe('RN Codegen TypeScript Parser', () => {

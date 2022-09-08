@@ -63,7 +63,7 @@ AncestorList ShadowNodeFamily::getAncestors(
   auto ancestorFamily = ancestorShadowNode.family_.get();
 
   auto family = this;
-  while (family && family != ancestorFamily) {
+  while ((family != nullptr) && family != ancestorFamily) {
     families.push_back(family);
     family = family->parent_.lock().get();
   }

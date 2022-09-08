@@ -406,6 +406,27 @@ jobs:
       - store_test_results:
           path: ./reports/junit
 
+  # -----------------------
+  #     JOBS: Codegen Tests
+  # -----------------------
+  test_codegen:
+    parameters:
+      executor:
+        type: executor
+        default: nodelts
+    executor: << parameters.executor >>
+    steps:
+      - checkout
+      - setup_artifacts
+      - run:
+          name: Install Yarn in codegen
+          command: yarn install
+          working_directory: packages/react-native-codegen
+      - run:
+          name: Run Tests
+          command: yarn jest
+          working_directory: packages/react-native-codegen
+
   # -------------------------
   #     JOBS: iOS Unit Tests
   # -------------------------
@@ -689,11 +710,24 @@ jobs:
       jsengine:
         type: string
         default: "Hermes"
+      flipper:
+        type: string
+        default: "WithFlipper"
     environment:
       - PROJECT_NAME: "iOSTemplateProject"
       - HERMES_WS_DIR: *hermes_workspace_root
-
     steps:
+      # Early exit in case of Release and WithFlipper. The two does not make sense together.
+      # Unfortunately, the `exclude` parameter of `matrix` does not work, so we have to do it manually.
+      - when:
+          condition:
+            and:
+              - equal: [ << parameters.flavor >>, "Release"]
+              - equal: [ << parameters.flipper >>, "WithFlipper" ]
+          steps:
+            - run:
+                command: circleci-agent step halt # this interrupts the job successfully.
+      # Valid configuration, we can continue
       - checkout_code_with_cache
       - run_yarn
       - attach_workspace:
@@ -716,7 +750,7 @@ jobs:
             node ./scripts/set-rn-template-version.js "file:$PATH_TO_PACKAGE"
             node cli.js init $PROJECT_NAME --directory "/tmp/$PROJECT_NAME" --template $REPO_ROOT --verbose --skip-install
       - run:
-          name: Install iOS dependencies - Configuration << parameters.flavor >>; New Architecture << parameters.architecture >>; JS Engine << parameters.jsengine>>
+          name: Install iOS dependencies - Configuration << parameters.flavor >>; New Architecture << parameters.architecture >>; JS Engine << parameters.jsengine>>; Flipper << parameters.flipper >>
           command: |
             cd /tmp/$PROJECT_NAME
             yarn install
@@ -734,6 +768,10 @@ jobs:
 
             if [[ << parameters.jsengine >> == "JSC" ]]; then
               export USE_HERMES=0
+            fi
+
+            if [[ << parameters.flipper >> == "WithoutFlipper" ]]; then
+              export NO_FLIPPER=1
             fi
 
             bundle exec pod install
@@ -1311,6 +1349,7 @@ workflows:
     unless: << pipeline.parameters.run_package_release_workflow_only >>
     jobs:
       - prepare_hermes_workspace
+      - test_codegen
       - build_hermesc_linux:
           requires:
             - prepare_hermes_workspace
@@ -1347,6 +1386,7 @@ workflows:
               architecture: ["NewArch", "OldArch"]
               flavor: ["Debug", "Release"]
               jsengine: ["Hermes", "JSC"]
+              flipper: ["WithFlipper", "WithoutFlipper"]
       - test_ios_rntester:
           requires:
             - build_hermes_macos

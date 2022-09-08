@@ -235,11 +235,11 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       });
       return;
     }
-    const frame = this.__getFrameMetricsApprox(index, this.props);
+    const frame = this.__getFrameMetricsApprox(Math.floor(index), this.props);
     const offset =
       Math.max(
         0,
-        frame.offset -
+        this._getOffsetApprox(index, this.props) -
           (viewPosition || 0) *
             (this._scrollMetrics.visibleLength - frame.length),
       ) - (viewOffset || 0);
@@ -564,7 +564,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
 
   static _initialRenderRegion(props: Props): {first: number, last: number} {
     const itemCount = props.getItemCount(props.data);
-    const scrollIndex = Math.max(0, props.initialScrollIndex ?? 0);
+    const scrollIndex = Math.floor(Math.max(0, props.initialScrollIndex ?? 0));
 
     return {
       first: scrollIndex,
@@ -608,7 +608,9 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     // Wait until the scroll view metrics have been set up. And until then,
     // we will trust the initialNumToRender suggestion
     if (visibleLength <= 0 || contentLength <= 0) {
-      return cellsAroundViewport;
+      return cellsAroundViewport.last >= getItemCount(data)
+        ? VirtualizedList._constrainToItemCount(cellsAroundViewport, props)
+        : cellsAroundViewport;
     }
 
     let newCellsAroundViewport: {first: number, last: number};
@@ -653,6 +655,10 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
         cellsAroundViewport,
         this.__getFrameMetricsApprox,
         this._scrollMetrics,
+      );
+      invariant(
+        newCellsAroundViewport.last < getItemCount(data),
+        'computeWindowedRenderLimits() should return range in-bounds',
       );
     }
 
@@ -1095,7 +1101,8 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
               !scrollContext.horizontal ===
                 !horizontalOrDefault(this.props.horizontal) &&
               !this._hasWarned.nesting &&
-              this.context == null
+              this.context == null &&
+              this.props.scrollEnabled !== false
             ) {
               // TODO (T46547044): use React.warn once 16.9 is sync'd: https://github.com/facebook/react/pull/15170
               console.error(
@@ -1778,6 +1785,23 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       key: this._keyExtractor(item, index, props),
       isViewable,
     };
+  };
+
+  /**
+   * Gets an approximate offset to an item at a given index. Supports
+   * fractional indices.
+   */
+  _getOffsetApprox = (index: number, props: FrameMetricProps): number => {
+    if (Number.isInteger(index)) {
+      return this.__getFrameMetricsApprox(index, props).offset;
+    } else {
+      const frameMetrics = this.__getFrameMetricsApprox(
+        Math.floor(index),
+        props,
+      );
+      const remainder = index - Math.floor(index);
+      return frameMetrics.offset + remainder * frameMetrics.length;
+    }
   };
 
   __getFrameMetricsApprox: (

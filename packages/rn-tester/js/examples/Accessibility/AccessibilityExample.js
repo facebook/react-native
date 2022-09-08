@@ -126,6 +126,14 @@ class AccessibilityExample extends React.Component<{}> {
           </View>
         </RNTesterBlock>
 
+        <RNTesterBlock title="View with hidden children from accessibility tree.">
+          <View aria-hidden>
+            <Text>
+              This view's children are hidden from the accessibility tree
+            </Text>
+          </View>
+        </RNTesterBlock>
+
         {/* Android screen readers will say the accessibility hint instead of the text
            since the view doesn't have a label. */}
         <RNTesterBlock title="Accessible view with TextViews with hint">

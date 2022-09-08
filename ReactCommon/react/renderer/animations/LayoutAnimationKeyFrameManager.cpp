@@ -1183,11 +1183,11 @@ void LayoutAnimationKeyFrameManager::queueFinalMutationsForCompletedKeyFrame(
     AnimationKeyFrame const &keyframe,
     ShadowViewMutation::List &mutationsList,
     bool interrupted,
-    const std::string &logPrefix) const {
+    const std::string & /*logPrefix*/) const {
   if (skipInvalidatedKeyFrames_ && keyframe.invalidated) {
     return;
   }
-  if (keyframe.finalMutationsForKeyFrame.size() > 0) {
+  if (!keyframe.finalMutationsForKeyFrame.empty()) {
     // TODO: modularize this segment, it is repeated 2x in KeyFrameManager
     // as well.
     ShadowView prev = keyframe.viewPrev;

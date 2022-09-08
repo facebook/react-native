@@ -16,8 +16,9 @@ namespace react {
 static LayoutMetrics layoutMetricsFromShadowNode(ShadowNode const &shadowNode) {
   auto layoutableShadowNode =
       traitCast<LayoutableShadowNode const *>(&shadowNode);
-  return layoutableShadowNode ? layoutableShadowNode->getLayoutMetrics()
-                              : EmptyLayoutMetrics;
+  return layoutableShadowNode != nullptr
+      ? layoutableShadowNode->getLayoutMetrics()
+      : EmptyLayoutMetrics;
 }
 
 ShadowView::ShadowView(const ShadowNode &shadowNode)

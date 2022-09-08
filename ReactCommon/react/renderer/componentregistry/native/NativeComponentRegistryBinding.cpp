@@ -20,7 +20,7 @@ namespace react {
  */
 NativeComponentRegistryBinding::NativeComponentRegistryBinding(
     const HasComponentProviderFunctionType &&hasComponentProvider)
-    : hasComponentProvider_(std::move(hasComponentProvider)) {}
+    : hasComponentProvider_(hasComponentProvider) {}
 
 void NativeComponentRegistryBinding::install(
     jsi::Runtime &runtime,
@@ -61,7 +61,7 @@ jsi::Value NativeComponentRegistryBinding::jsProxy(
 
   bool result = hasComponent(moduleName);
 
-  return jsi::Value(result);
+  return {result};
 }
 
 } // namespace react

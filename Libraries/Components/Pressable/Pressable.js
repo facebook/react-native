@@ -53,6 +53,11 @@ type Props = $ReadOnly<{|
   accessibilityViewIsModal?: ?boolean,
   'aria-modal'?: ?boolean,
   accessible?: ?boolean,
+  /**
+   * A value indicating whether the accessibility elements contained within
+   * this accessibility element are hidden.
+   */
+  'aria-hidden'?: ?boolean,
   focusable?: ?boolean,
   importantForAccessibility?: ?('auto' | 'yes' | 'no' | 'no-hide-descendants'),
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,

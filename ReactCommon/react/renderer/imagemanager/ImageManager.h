@@ -33,7 +33,7 @@ class ImageManager {
       const;
 
  private:
-  void *self_;
+  void *self_{};
 };
 
 } // namespace react

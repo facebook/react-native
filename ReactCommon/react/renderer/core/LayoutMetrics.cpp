@@ -15,7 +15,7 @@ namespace react {
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 
-std::string getDebugName(LayoutMetrics const &object) {
+std::string getDebugName(LayoutMetrics const & /*object*/) {
   return "LayoutMetrics";
 }
 

@@ -112,9 +112,9 @@ struct Transform {
   /*
    * Returns a transform that rotates by `angle` radians along the given axis.
    */
-  static Transform RotateX(Float angle);
-  static Transform RotateY(Float angle);
-  static Transform RotateZ(Float angle);
+  static Transform RotateX(Float radians);
+  static Transform RotateY(Float radians);
+  static Transform RotateZ(Float radians);
   static Transform Rotate(Float angleX, Float angleY, Float angleZ);
 
   /**
@@ -145,8 +145,8 @@ struct Transform {
   /*
    * Matrix subscript.
    */
-  Float &at(int x, int y);
-  Float const &at(int x, int y) const;
+  Float &at(int i, int j);
+  Float const &at(int i, int j) const;
 
   /*
    * Concatenates (multiplies) transform matrices.

@@ -132,6 +132,10 @@ class FLEX_LAYOUT_EXPORT FlexItemStyleBase {
     return margin[static_cast<size_t>(edge)];
   }
 
+  void setMargin(Edge edge, Dimension dimension) {
+    margin[static_cast<size_t>(edge)] = dimension;
+  }
+
   void setMargin(Edge edge, Float value) {
     margin[static_cast<size_t>(edge)] = Dimension(value, Unit::Point);
   }
@@ -146,6 +150,10 @@ class FLEX_LAYOUT_EXPORT FlexItemStyleBase {
 
   auto getPosition(Edge edge) const -> Dimension {
     return position[static_cast<size_t>(edge)];
+  }
+
+  void setPosition(Edge edge, Dimension dimension) {
+    position[static_cast<size_t>(edge)] = dimension;
   }
 
   void setPosition(Edge edge, Float value) {

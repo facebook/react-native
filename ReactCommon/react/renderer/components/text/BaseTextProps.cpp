@@ -219,7 +219,7 @@ BaseTextProps::BaseTextProps(
 void BaseTextProps::setProp(
     const PropsParserContext &context,
     RawPropsPropNameHash hash,
-    const char *propName,
+    const char * /*propName*/,
     RawValue const &value) {
   static auto defaults = TextAttributes{};
 
