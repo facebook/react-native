@@ -608,7 +608,9 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     // Wait until the scroll view metrics have been set up. And until then,
     // we will trust the initialNumToRender suggestion
     if (visibleLength <= 0 || contentLength <= 0) {
-      return cellsAroundViewport;
+      return cellsAroundViewport.last >= getItemCount(data)
+        ? VirtualizedList._constrainToItemCount(cellsAroundViewport, props)
+        : cellsAroundViewport;
     }
 
     let newCellsAroundViewport: {first: number, last: number};
@@ -653,6 +655,10 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
         cellsAroundViewport,
         this.__getFrameMetricsApprox,
         this._scrollMetrics,
+      );
+      invariant(
+        newCellsAroundViewport.last < getItemCount(data),
+        'computeWindowedRenderLimits() should return range in-bounds',
       );
     }
 
