@@ -21,6 +21,8 @@ import type {ImageProps as ImagePropsType} from './ImageProps';
 import type {ImageStyleProp} from '../StyleSheet/StyleSheet';
 import NativeImageLoaderIOS from './NativeImageLoaderIOS';
 
+import {convertObjectFitToResizeMode} from './ImageUtils';
+
 import ImageViewNativeComponent from './ImageViewNativeComponent';
 import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
 import {getImageSourcesFromImageProps} from './ImageSourceUtils';
@@ -127,8 +129,14 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
     }
   }
 
-  // $FlowFixMe[prop-missing]
-  const resizeMode = props.resizeMode || style.resizeMode || 'cover';
+  const objectFit =
+    // $FlowFixMe[prop-missing]
+    style && style.objectFit
+      ? convertObjectFitToResizeMode(style.objectFit)
+      : null;
+  const resizeMode =
+    // $FlowFixMe[prop-missing]
+    objectFit || props.resizeMode || (style && style.resizeMode) || 'cover';
   // $FlowFixMe[prop-missing]
   const tintColor = props.tintColor || style.tintColor;
 
