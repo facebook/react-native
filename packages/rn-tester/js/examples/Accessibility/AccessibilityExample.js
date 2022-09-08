@@ -220,6 +220,17 @@ class AccessibilityExample extends React.Component<{}> {
           </View>
         </RNTesterBlock>
 
+        <RNTesterBlock title="View with label, hint, role, and state">
+          <View
+            accessible={true}
+            accessibilityLabel="Accessibility label."
+            accessibilityRole="button"
+            aria-selected={true}
+            accessibilityHint="Accessibility hint.">
+            <Text>Accessible view with label, hint, role, and state</Text>
+          </View>
+        </RNTesterBlock>
+
         <RNTesterBlock title="TextInput with accessibilityLabelledBy attribute">
           <View>
             <Text nativeID="formLabel1">Mail Address</Text>

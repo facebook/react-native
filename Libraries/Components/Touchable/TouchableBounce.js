@@ -131,6 +131,18 @@ class TouchableBounce extends React.Component<Props, State> {
     const {onBlur, onFocus, ...eventHandlersWithoutBlurAndFocus} =
       this.state.pressability.getEventHandlers();
 
+    const _accessibilityState = {
+      busy: this.props['aria-busy'] ?? this.props.accessibilityState?.busy,
+      checked:
+        this.props['aria-checked'] ?? this.props.accessibilityState?.checked,
+      disabled:
+        this.props['aria-disabled'] ?? this.props.accessibilityState?.disabled,
+      expanded:
+        this.props['aria-expanded'] ?? this.props.accessibilityState?.expanded,
+      selected:
+        this.props['aria-selected'] ?? this.props.accessibilityState?.selected,
+    };
+
     return (
       <Animated.View
         style={[{transform: [{scale: this.state.scale}]}, this.props.style]}
@@ -139,7 +151,7 @@ class TouchableBounce extends React.Component<Props, State> {
         accessibilityHint={this.props.accessibilityHint}
         accessibilityLanguage={this.props.accessibilityLanguage}
         accessibilityRole={this.props.accessibilityRole}
-        accessibilityState={this.props.accessibilityState}
+        accessibilityState={_accessibilityState}
         accessibilityActions={this.props.accessibilityActions}
         onAccessibilityAction={this.props.onAccessibilityAction}
         accessibilityValue={this.props.accessibilityValue}

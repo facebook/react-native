@@ -492,7 +492,16 @@ export type ViewProps = $ReadOnly<{|
   accessibilityLabelledBy?: ?string | ?Array<string>,
 
   /**
-   * A value indicating whether the accessibility elements contained within
+   * alias for accessibilityState
+   *
+   * see https://reactnative.dev/docs/accessibility#accessibilitystate
+   */
+  'aria-busy'?: ?boolean,
+  'aria-checked'?: ?boolean,
+  'aria-disabled'?: ?boolean,
+  'aria-expanded'?: ?boolean,
+  'aria-selected'?: ?boolean,
+  /** A value indicating whether the accessibility elements contained within
    * this accessibility element are hidden.
    *
    * See https://reactnative.dev/docs/view#aria-hidden
