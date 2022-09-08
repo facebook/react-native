@@ -28,7 +28,7 @@ Our current partners and other areas of ownership:
 * **[Microsoft](https://twitter.com/ReactNativeMSFT):** Develops [React Native Windows](https://github.com/Microsoft/react-native-windows) and [React Native macOS](https://github.com/microsoft/react-native-macos) for building apps that target Windows and macOS; maintains [rnx-kit](https://github.com/microsoft/rnx-kit), [react-native-test-app](https://github.com/microsoft/react-native-test-app) and coordinates cross-companies efforts such as the [bundle working group](https://github.com/microsoft/rnx-kit/discussions/categories/bundle-working-group).
 * **[Shopify](TODO):** TODO
 * **[Software Mansion](https://swmansion.com/):** Maintain core infrastructure including JSC, Animated, and other popular third-party plugins and organizes [App.js Conf](https://appjs.co/)
-* **[Tesla](TODO ):** TODO
+* **[Tesla](https://www.tesla.com):** Maintains [React Native Camera Kit](http://github.com/teslamotors/react-native-camera-kit) and contributes to React Native core as well as various community libraries.
 
 This list may fluctuate in response to newcomers who meet our partner definition. In terms of open source work, pull requests from partners are commonly prioritized. When you are contributing to React Native, you'll most likely meet somebody who works at one of the partner companies and who is a core contributor:
 
