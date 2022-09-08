@@ -104,23 +104,6 @@ target 'RNTester-macOSIntegrationTests' do
   pod 'React-RCTTest', :path => "./RCTTest"
 end
 
-# [TODO(macOS GH#774): these are special targets used by the internal Microsoft build pipeline
-target 'iosDeviceBuild' do
-  platform :ios, '11.0'
-  pods()
-end
-
-target 'iosSimulatorBuild' do
-  platform :ios, '11.0'
-  pods()
-end
-
-target 'macOSBuild' do
-  platform :osx, '10.15'
-  pods()
-end
-# ]TODO(macOS GH#774)
-
 post_install do |installer|
   react_native_post_install(installer)
   __apply_Xcode_12_5_M1_post_install_workaround(installer)
