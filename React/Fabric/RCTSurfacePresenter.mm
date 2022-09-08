@@ -27,6 +27,7 @@
 
 #import <react/config/ReactNativeConfig.h>
 #import <react/renderer/componentregistry/ComponentDescriptorFactory.h>
+#import <react/renderer/components/text/BaseTextProps.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/scheduler/AsynchronousEventBeat.h>
 #import <react/renderer/scheduler/SchedulerToolbox.h>
@@ -268,6 +269,12 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 
   if (reactNativeConfig && reactNativeConfig->getBool("rn_convergence:dispatch_pointer_events")) {
     RCTSetDispatchW3CPointerEvents(YES);
+  }
+
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_cpp_props_iterator_setter_ios")) {
+    Props::enablePropIteratorSetter = true;
+    AccessibilityProps::enablePropIteratorSetter = true;
+    BaseTextProps::enablePropIteratorSetter = true;
   }
 
   auto componentRegistryFactory =
