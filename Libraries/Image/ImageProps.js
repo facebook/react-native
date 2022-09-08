@@ -21,6 +21,7 @@ import type {
 import type {ViewProps} from '../Components/View/ViewPropTypes';
 import type {Node, Ref} from 'react';
 import typeof Image from './Image';
+import type {DimensionValue} from '../StyleSheet/StyleSheetTypes';
 
 export type ImageLoadEvent = SyntheticEvent<
   $ReadOnly<{|
@@ -99,6 +100,28 @@ export type ImageProps = {|
   capInsets?: ?EdgeInsetsProp,
 
   /**
+   * Adds the CORS related header to the request.
+   * Similar to crossorigin from HTML.
+   *
+   * See https://reactnative.dev/docs/image#crossorigin
+   */
+  crossOrigin?: ?('anonymous' | 'use-credentials'),
+
+  /**
+   * Height of the image component.
+   *
+   * See https://reactnative.dev/docs/image#height
+   */
+  height?: number,
+
+  /**
+   * Width of the image component.
+   *
+   * See https://reactnative.dev/docs/image#width
+   */
+  width?: number,
+
+  /**
    * Invoked on load error with `{nativeEvent: {error}}`.
    *
    * See https://reactnative.dev/docs/image#onerror
@@ -159,6 +182,23 @@ export type ImageProps = {|
   style?: ?ImageStyleProp,
 
   /**
+   * A string indicating which referrer to use when fetching the resource.
+   * Similar to referrerpolicy from HTML.
+   *
+   * See https://reactnative.dev/docs/image#referrerpolicy
+   */
+  referrerPolicy?: ?(
+    | 'no-referrer'
+    | 'no-referrer-when-downgrade'
+    | 'origin'
+    | 'origin-when-cross-origin'
+    | 'same-origin'
+    | 'strict-origin'
+    | 'strict-origin-when-cross-origin'
+    | 'unsafe-url'
+  ),
+
+  /**
    * Determines how to resize the image when the frame doesn't match the raw
    * image dimensions.
    *
@@ -181,7 +221,20 @@ export type ImageProps = {|
    */
   tintColor?: ColorValue,
 
-  src?: empty,
+  /**
+   * A string representing the resource identifier for the image. Similar to
+   * src from HTML.
+   *
+   * See https://reactnative.dev/docs/image#src
+   */
+  src?: ?string,
+
+  /**
+   * Similar to srcset from HTML.
+   *
+   * See https://reactnative.dev/docs/image#srcset
+   */
+  srcSet?: ?string,
   children?: empty,
 |};
 

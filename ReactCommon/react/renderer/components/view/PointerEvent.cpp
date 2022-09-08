@@ -12,7 +12,7 @@ namespace react {
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 
-std::string getDebugName(PointerEvent const &pointerEvent) {
+std::string getDebugName(PointerEvent const & /*pointerEvent*/) {
   return "PointerEvent";
 }
 

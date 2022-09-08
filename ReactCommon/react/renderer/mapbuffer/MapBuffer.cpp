@@ -90,7 +90,7 @@ std::string MapBuffer::getString(Key key) const {
   uint8_t const *stringPtr =
       bytes_.data() + dynamicDataOffset + offset + sizeof(int);
 
-  return std::string(stringPtr, stringPtr + stringLength);
+  return {stringPtr, stringPtr + stringLength};
 }
 
 MapBuffer MapBuffer::getMapBuffer(Key key) const {

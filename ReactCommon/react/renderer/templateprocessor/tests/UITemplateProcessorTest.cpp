@@ -48,7 +48,8 @@ NativeModuleRegistry buildNativeModuleRegistry();
 NativeModuleRegistry buildNativeModuleRegistry() {
   NativeModuleRegistry nMR;
   nMR.registerModule(
-      "MobileConfig", [&](const std::string &, const folly::dynamic &) {
+      "MobileConfig",
+      [&](const std::string & /*unused*/, const folly::dynamic & /*unused*/) {
         return mockSimpleTestValue_;
       });
   return nMR;
@@ -57,19 +58,19 @@ NativeModuleRegistry buildNativeModuleRegistry() {
 class MockReactNativeConfig : public ReactNativeConfig {
  public:
   MockReactNativeConfig() = default;
-  bool getBool(const std::string &param) const override {
+  bool getBool(const std::string & /*param*/) const override {
     return mockSimpleTestValue_;
   }
 
-  std::string getString(const std::string &) const override {
+  std::string getString(const std::string & /*param*/) const override {
     return "";
   }
 
-  int64_t getInt64(const std::string &) const override {
+  int64_t getInt64(const std::string & /*param*/) const override {
     return 0;
   }
 
-  double getDouble(const std::string &) const override {
+  double getDouble(const std::string & /*param*/) const override {
     return 0.0;
   }
 };

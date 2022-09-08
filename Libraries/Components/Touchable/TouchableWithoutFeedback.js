@@ -42,6 +42,7 @@ type Props = $ReadOnly<{|
   accessibilityValue?: ?AccessibilityValue,
   accessibilityViewIsModal?: ?boolean,
   accessible?: ?boolean,
+  'aria-hidden'?: ?boolean,
   'aria-live'?: ?('polite' | 'assertive' | 'off'),
   children?: ?React.Node,
   delayLongPress?: ?number,
@@ -77,6 +78,7 @@ const PASSTHROUGH_PROPS = [
   'accessibilityLanguage',
   'accessibilityIgnoresInvertColors',
   'accessibilityLabel',
+  'accessibilityLiveRegion',
   'accessibilityRole',
   'accessibilityValue',
   'accessibilityViewIsModal',
@@ -125,6 +127,13 @@ class TouchableWithoutFeedback extends React.Component<Props, State> {
           : this.props.accessibilityState,
       focusable:
         this.props.focusable !== false && this.props.onPress !== undefined,
+
+      accessibilityElementsHidden:
+        this.props['aria-hidden'] ?? this.props.accessibilityElementsHidden,
+      importantForAccessibility:
+        this.props['aria-hidden'] === true
+          ? 'no-hide-descendants'
+          : this.props.importantForAccessibility,
       accessibilityLiveRegion:
         ariaLive === 'off'
           ? 'none'
