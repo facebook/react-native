@@ -184,7 +184,7 @@ class UIManager final : public ShadowTreeDelegate {
       jsi::Value const &failureCallback) const;
 
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
-  UIManagerDelegate *delegate_;
+  UIManagerDelegate *delegate_{};
   UIManagerAnimationDelegate *animationDelegate_{nullptr};
   RuntimeExecutor const runtimeExecutor_{};
   ShadowTreeRegistry shadowTreeRegistry_{};

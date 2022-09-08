@@ -23,6 +23,7 @@ import NativeImageLoaderIOS from './NativeImageLoaderIOS';
 
 import ImageViewNativeComponent from './ImageViewNativeComponent';
 import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
+import {getImageSourcesFromImageProps} from './ImageSourceUtils';
 
 function getSize(
   uri: string,
@@ -105,7 +106,7 @@ export type ImageComponentStatics = $ReadOnly<{|
 /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
  * LTI update could not be added via codemod */
 const BaseImage = (props: ImagePropsType, forwardedRef) => {
-  const source = resolveAssetSource(props.source) || {
+  const source = getImageSourcesFromImageProps(props) || {
     uri: undefined,
     width: undefined,
     height: undefined,
@@ -117,7 +118,7 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
     style = flattenStyle([styles.base, props.style]) || {};
     sources = source;
   } else {
-    const {width, height, uri} = source;
+    const {width = props.width, height = props.height, uri} = source;
     style = flattenStyle([{width, height}, styles.base, props.style]) || {};
     sources = [source];
 
@@ -131,12 +132,6 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
   // $FlowFixMe[prop-missing]
   const tintColor = props.tintColor || style.tintColor;
 
-  if (props.src != null) {
-    console.warn(
-      'The <Image> component requires a `source` property rather than `src`.',
-    );
-  }
-
   if (props.children != null) {
     throw new Error(
       'The <Image> component cannot contain children. If you want to render content on top of the image, consider using the <ImageBackground> component or absolute positioning.',
@@ -144,12 +139,14 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
   }
   const accessibilityLabel = props['aria-label'] ?? props.accessibilityLabel;
 
+  const {src, width, height, ...restProps} = props;
+
   return (
     <ImageAnalyticsTagContext.Consumer>
       {analyticTag => {
         return (
           <ImageViewNativeComponent
-            {...props}
+            {...restProps}
             accessibilityLabel={accessibilityLabel}
             ref={forwardedRef}
             style={style}

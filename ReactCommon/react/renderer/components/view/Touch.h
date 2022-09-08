@@ -80,7 +80,7 @@ using Touches = std::unordered_set<Touch, Touch::Hasher, Touch::Comparator>;
 
 std::string getDebugName(Touch const &touch);
 std::vector<DebugStringConvertibleObject> getDebugProps(
-    Touch const &object,
+    Touch const &touch,
     DebugStringConvertibleOptions options);
 
 #endif
