@@ -10,124 +10,14 @@
 
 'use strict';
 
-const invariant = require('invariant');
-
 const TRACE_TAG_REACT_APPS = 1 << 17; // eslint-disable-line no-bitwise
 
 let _enabled = false;
 let _asyncCookie = 0;
-const _markStack = [];
-let _markStackIndex = -1;
-let _canInstallReactHook = false;
-
-// Implements a subset of User Timing API necessary for React measurements.
-// https://developer.mozilla.org/en-US/docs/Web/API/User_Timing_API
-const REACT_MARKER = '\u269B';
-const userTimingPolyfill = __DEV__
-  ? {
-      mark(markName: string) {
-        if (_enabled) {
-          _markStackIndex++;
-          _markStack[_markStackIndex] = markName;
-          let systraceLabel = markName;
-          // Since perf measurements are a shared namespace in User Timing API,
-          // we prefix all React results with a React emoji.
-          if (markName[0] === REACT_MARKER) {
-            // This is coming from React.
-            // Removing component IDs keeps trace colors stable.
-            const indexOfId = markName.lastIndexOf(' (#');
-            const cutoffIndex = indexOfId !== -1 ? indexOfId : markName.length;
-            // Also cut off the emoji because it breaks Systrace
-            systraceLabel = markName.slice(2, cutoffIndex);
-          }
-          Systrace.beginEvent(systraceLabel);
-        }
-      },
-      measure(measureName: string, startMark: ?string, endMark: ?string) {
-        if (_enabled) {
-          invariant(
-            typeof measureName === 'string' &&
-              typeof startMark === 'string' &&
-              typeof endMark === 'undefined',
-            'Only performance.measure(string, string) overload is supported.',
-          );
-          const topMark = _markStack[_markStackIndex];
-          invariant(
-            startMark === topMark,
-            'There was a mismatching performance.measure() call. ' +
-              'Expected "%s" but got "%s."',
-            topMark,
-            startMark,
-          );
-          _markStackIndex--;
-          // We can't use more descriptive measureName because Systrace doesn't
-          // let us edit labels post factum.
-          Systrace.endEvent();
-        }
-      },
-      clearMarks(markName: string) {
-        if (_enabled) {
-          if (_markStackIndex === -1) {
-            return;
-          }
-          if (markName === _markStack[_markStackIndex]) {
-            // React uses this for "cancelling" started measurements.
-            // Systrace doesn't support deleting measurements, so we just stop them.
-            if (userTimingPolyfill != null) {
-              userTimingPolyfill.measure(markName, markName);
-            }
-          }
-        }
-      },
-      clearMeasures() {
-        // React calls this to avoid memory leaks in browsers, but we don't keep
-        // measurements anyway.
-      },
-    }
-  : null;
-
-function installPerformanceHooks(
-  polyfill: null | $TEMPORARY$object<{
-    clearMarks(markName: string): void,
-    clearMeasures(): void,
-    mark(markName: string): void,
-    measure(measureName: string, startMark: ?string, endMark: ?string): void,
-  }>,
-) {
-  if (polyfill) {
-    if (global.performance === undefined) {
-      global.performance = {};
-    }
-
-    Object.keys(polyfill).forEach(methodName => {
-      if (typeof global.performance[methodName] !== 'function') {
-        global.performance[methodName] = polyfill[methodName];
-      }
-    });
-  }
-}
 
 const Systrace = {
-  installReactHook() {
-    if (_enabled) {
-      if (__DEV__) {
-        installPerformanceHooks(userTimingPolyfill);
-      }
-    }
-    _canInstallReactHook = true;
-  },
-
   setEnabled(enabled: boolean) {
-    if (_enabled !== enabled) {
-      if (__DEV__) {
-        if (_canInstallReactHook) {
-          if (enabled) {
-            installPerformanceHooks(userTimingPolyfill);
-          }
-        }
-      }
-      _enabled = enabled;
-    }
+    _enabled = enabled;
   },
 
   isEnabled(): boolean {
@@ -211,6 +101,10 @@ if (__DEV__) {
   // The metro require polyfill can not have dependencies (true for all polyfills).
   // Ensure that `Systrace` is available in polyfill by exposing it globally.
   global[(global.__METRO_GLOBAL_PREFIX__ || '') + '__SYSTRACE'] = Systrace;
+}
+
+if (global.__RCTProfileIsProfiling) {
+  Systrace.setEnabled(true);
 }
 
 module.exports = Systrace;
