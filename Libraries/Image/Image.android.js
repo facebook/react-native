@@ -178,6 +178,13 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
       ? loadingIndicatorSource.uri
       : null,
     ref: forwardedRef,
+    accessibilityState: {
+      busy: props['aria-busy'] ?? props.accessibilityState?.busy,
+      checked: props['aria-checked'] ?? props.accessibilityState?.checked,
+      disabled: props['aria-disabled'] ?? props.accessibilityState?.disabled,
+      expanded: props['aria-expanded'] ?? props.accessibilityState?.expanded,
+      selected: props['aria-selected'] ?? props.accessibilityState?.selected,
+    },
   };
 
   return (

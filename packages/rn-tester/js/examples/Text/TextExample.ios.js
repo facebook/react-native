@@ -1227,4 +1227,14 @@ exports.examples = [
       );
     },
   },
+  {
+    title: 'Selectable Text',
+    render: function (): React.Node {
+      return (
+        <View>
+          <Text style={{userSelect: 'auto'}}>Text element is selectable</Text>
+        </View>
+      );
+    },
+  },
 ];

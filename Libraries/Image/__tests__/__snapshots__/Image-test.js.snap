@@ -12,6 +12,15 @@ exports[`<Image /> should render as <Image> when mocked 1`] = `
 
 exports[`<Image /> should render as <RCTImageView> when not mocked 1`] = `
 <RCTImageView
+  accessibilityState={
+    Object {
+      "busy": undefined,
+      "checked": undefined,
+      "disabled": undefined,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
   internal_analyticTag={null}
   resizeMode="cover"
   source={
