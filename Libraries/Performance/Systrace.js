@@ -13,7 +13,6 @@
 const invariant = require('invariant');
 
 const TRACE_TAG_REACT_APPS = 1 << 17; // eslint-disable-line no-bitwise
-const TRACE_TAG_JS_VM_CALLS = 1 << 27; // eslint-disable-line no-bitwise
 
 let _enabled = false;
 let _asyncCookie = 0;
@@ -121,13 +120,6 @@ const Systrace = {
   setEnabled(enabled: boolean) {
     if (_enabled !== enabled) {
       if (__DEV__) {
-        if (enabled) {
-          global.nativeTraceBeginLegacy &&
-            global.nativeTraceBeginLegacy(TRACE_TAG_JS_VM_CALLS);
-        } else {
-          global.nativeTraceEndLegacy &&
-            global.nativeTraceEndLegacy(TRACE_TAG_JS_VM_CALLS);
-        }
         if (_canInstallReactHook) {
           if (enabled) {
             installPerformanceHooks(userTimingPolyfill);
