@@ -152,6 +152,10 @@ class FLEX_LAYOUT_EXPORT FlexItemStyleBase {
     return position[static_cast<size_t>(edge)];
   }
 
+  void setPosition(Edge edge, Dimension dimension) {
+    position[static_cast<size_t>(edge)] = dimension;
+  }
+
   void setPosition(Edge edge, Float value) {
     position[static_cast<size_t>(edge)] = Dimension(value, Unit::Point);
   }
