@@ -152,6 +152,17 @@ type ButtonProps = $ReadOnly<{|
   accessibilityState?: ?AccessibilityState,
 
   /**
+   * alias for accessibilityState
+   *
+   * see https://reactnative.dev/docs/accessibility#accessibilitystate
+   */
+  'aria-busy'?: ?boolean,
+  'aria-checked'?: ?boolean,
+  'aria-disabled'?: ?boolean,
+  'aria-expanded'?: ?boolean,
+  'aria-selected'?: ?boolean,
+
+  /**
    * [Android] Controlling if a view fires accessibility events and if it is reported to accessibility services.
    */
   importantForAccessibility?: ?('auto' | 'yes' | 'no' | 'no-hide-descendants'),
@@ -275,6 +286,12 @@ class Button extends React.Component<ButtonProps> {
     const {
       accessibilityLabel,
       'aria-label': ariaLabel,
+      accessibilityState,
+      'aria-busy': ariaBusy,
+      'aria-checked': ariaChecked,
+      'aria-disabled': ariaDisabled,
+      'aria-expanded': ariaExpanded,
+      'aria-selected': ariaSelected,
       importantForAccessibility,
       color,
       onPress,
@@ -303,15 +320,23 @@ class Button extends React.Component<ButtonProps> {
       }
     }
 
+    let _accessibilityState = {
+      busy: ariaBusy ?? accessibilityState?.busy,
+      checked: ariaChecked ?? accessibilityState?.checked,
+      disabled: ariaDisabled ?? accessibilityState?.disabled,
+      expanded: ariaExpanded ?? accessibilityState?.expanded,
+      selected: ariaSelected ?? accessibilityState?.selected,
+    };
+
     const disabled =
       this.props.disabled != null
         ? this.props.disabled
-        : this.props.accessibilityState?.disabled;
+        : _accessibilityState?.disabled;
 
-    const accessibilityState =
-      disabled !== this.props.accessibilityState?.disabled
-        ? {...this.props.accessibilityState, disabled}
-        : this.props.accessibilityState;
+    _accessibilityState =
+      disabled !== _accessibilityState?.disabled
+        ? {..._accessibilityState, disabled}
+        : _accessibilityState;
 
     if (disabled) {
       buttonStyles.push(styles.buttonDisabled);
@@ -342,7 +367,7 @@ class Button extends React.Component<ButtonProps> {
         accessibilityHint={accessibilityHint}
         accessibilityLanguage={accessibilityLanguage}
         accessibilityRole="button"
-        accessibilityState={accessibilityState}
+        accessibilityState={_accessibilityState}
         importantForAccessibility={_importantForAccessibility}
         hasTVPreferredFocus={hasTVPreferredFocus}
         nextFocusDown={nextFocusDown}

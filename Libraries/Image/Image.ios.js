@@ -138,14 +138,32 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
     );
   }
   const accessibilityLabel = props['aria-label'] ?? props.accessibilityLabel;
+  const {
+    'aria-busy': ariaBusy,
+    'aria-checked': ariaChecked,
+    'aria-disabled': ariaDisabled,
+    'aria-expanded': ariaExpanded,
+    'aria-selected': ariaSelected,
+    height,
+    src,
+    width,
+    ...restProps
+  } = props;
 
-  const {src, width, height, ...restProps} = props;
+  const _accessibilityState = {
+    busy: ariaBusy ?? props.accessibilityState?.busy,
+    checked: ariaChecked ?? props.accessibilityState?.checked,
+    disabled: ariaDisabled ?? props.accessibilityState?.disabled,
+    expanded: ariaExpanded ?? props.accessibilityState?.expanded,
+    selected: ariaSelected ?? props.accessibilityState?.selected,
+  };
 
   return (
     <ImageAnalyticsTagContext.Consumer>
       {analyticTag => {
         return (
           <ImageViewNativeComponent
+            accessibilityState={_accessibilityState}
             {...restProps}
             accessibilityLabel={accessibilityLabel}
             ref={forwardedRef}

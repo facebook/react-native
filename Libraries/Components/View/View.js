@@ -45,6 +45,24 @@ const View: React.AbstractComponent<
     }: ViewProps,
     forwardedRef,
   ) => {
+    const {
+      accessibilityState,
+      'aria-busy': ariaBusy,
+      'aria-checked': ariaChecked,
+      'aria-disabled': ariaDisabled,
+      'aria-expanded': ariaExpanded,
+      'aria-selected': ariaSelected,
+      ...restProps
+    } = otherProps;
+
+    const _accessibilityState = {
+      busy: ariaBusy ?? accessibilityState?.busy,
+      checked: ariaChecked ?? accessibilityState?.checked,
+      disabled: ariaDisabled ?? accessibilityState?.disabled,
+      expanded: ariaExpanded ?? accessibilityState?.expanded,
+      selected: ariaSelected ?? accessibilityState?.selected,
+    };
+
     // Map role values to AccessibilityRole values
     const roleToAccessibilityRoleMapping = {
       alert: 'alert',
@@ -121,6 +139,7 @@ const View: React.AbstractComponent<
         <ViewNativeComponent
           accessibilityLabel={ariaLabel ?? accessibilityLabel}
           focusable={tabIndex !== undefined ? !tabIndex : focusable}
+          accessibilityState={_accessibilityState}
           accessibilityRole={
             role ? roleToAccessibilityRoleMapping[role] : accessibilityRole
           }
@@ -132,7 +151,7 @@ const View: React.AbstractComponent<
               ? 'no-hide-descendants'
               : importantForAccessibility
           }
-          {...otherProps}
+          {...restProps}
           style={style}
           pointerEvents={newPointerEvents}
           ref={forwardedRef}
