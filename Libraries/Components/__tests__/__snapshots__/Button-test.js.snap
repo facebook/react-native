@@ -5,7 +5,11 @@ exports[`<Button /> should be disabled and it should set accessibilityState to d
   accessibilityRole="button"
   accessibilityState={
     Object {
+      "busy": undefined,
+      "checked": undefined,
       "disabled": true,
+      "expanded": undefined,
+      "selected": undefined,
     }
   }
   accessible={true}
@@ -59,7 +63,11 @@ exports[`<Button /> should be disabled when disabled is empty and accessibilityS
   accessibilityRole="button"
   accessibilityState={
     Object {
+      "busy": undefined,
+      "checked": undefined,
       "disabled": true,
+      "expanded": undefined,
+      "selected": undefined,
     }
   }
   accessible={true}
@@ -113,7 +121,11 @@ exports[`<Button /> should be disabled when disabled={true} and accessibilitySta
   accessibilityRole="button"
   accessibilityState={
     Object {
+      "busy": undefined,
+      "checked": undefined,
       "disabled": true,
+      "expanded": undefined,
+      "selected": undefined,
     }
   }
   accessible={true}
@@ -165,6 +177,15 @@ exports[`<Button /> should be disabled when disabled={true} and accessibilitySta
 exports[`<Button /> should be set importantForAccessibility={no-hide-descendants} when importantForAccessibility={no} 1`] = `
 <View
   accessibilityRole="button"
+  accessibilityState={
+    Object {
+      "busy": undefined,
+      "checked": undefined,
+      "disabled": undefined,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
   accessible={true}
   collapsable={false}
   focusable={false}
@@ -210,6 +231,15 @@ exports[`<Button /> should be set importantForAccessibility={no-hide-descendants
 exports[`<Button /> should be set importantForAccessibility={no-hide-descendants} when importantForAccessibility={no-hide-descendants} 1`] = `
 <View
   accessibilityRole="button"
+  accessibilityState={
+    Object {
+      "busy": undefined,
+      "checked": undefined,
+      "disabled": undefined,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
   accessible={true}
   collapsable={false}
   focusable={false}
@@ -257,7 +287,11 @@ exports[`<Button /> should not be disabled when disabled={false} and accessibili
   accessibilityRole="button"
   accessibilityState={
     Object {
+      "busy": undefined,
+      "checked": undefined,
       "disabled": false,
+      "expanded": undefined,
+      "selected": undefined,
     }
   }
   accessible={true}
@@ -307,7 +341,11 @@ exports[`<Button /> should not be disabled when disabled={false} and accessibili
   accessibilityRole="button"
   accessibilityState={
     Object {
+      "busy": undefined,
+      "checked": undefined,
       "disabled": false,
+      "expanded": undefined,
+      "selected": undefined,
     }
   }
   accessible={true}
@@ -357,7 +395,11 @@ exports[`<Button /> should overwrite accessibilityState with value of disabled p
   accessibilityRole="button"
   accessibilityState={
     Object {
+      "busy": undefined,
+      "checked": undefined,
       "disabled": true,
+      "expanded": undefined,
+      "selected": undefined,
     }
   }
   accessible={true}
@@ -409,6 +451,15 @@ exports[`<Button /> should overwrite accessibilityState with value of disabled p
 exports[`<Button /> should render as expected 1`] = `
 <View
   accessibilityRole="button"
+  accessibilityState={
+    Object {
+      "busy": undefined,
+      "checked": undefined,
+      "disabled": undefined,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
   accessible={true}
   collapsable={false}
   focusable={false}

@@ -162,12 +162,14 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
   };
 
   _createPressabilityConfig(): PressabilityConfig {
+    const accessibilityStateDisabled =
+      this.props['aria-disabled'] ?? this.props.accessibilityState?.disabled;
     return {
       cancelable: !this.props.rejectResponderTermination,
       disabled:
         this.props.disabled != null
           ? this.props.disabled
-          : this.props.accessibilityState?.disabled,
+          : accessibilityStateDisabled,
       hitSlop: this.props.hitSlop,
       delayLongPress: this.props.delayLongPress,
       delayPressIn: this.props.delayPressIn,
@@ -251,13 +253,25 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
     const {onBlur, onFocus, ...eventHandlersWithoutBlurAndFocus} =
       this.state.pressability.getEventHandlers();
 
-    const accessibilityState =
+    let _accessibilityState = {
+      busy: this.props['aria-busy'] ?? this.props.accessibilityState?.busy,
+      checked:
+        this.props['aria-checked'] ?? this.props.accessibilityState?.checked,
+      disabled:
+        this.props['aria-disabled'] ?? this.props.accessibilityState?.disabled,
+      expanded:
+        this.props['aria-expanded'] ?? this.props.accessibilityState?.expanded,
+      selected:
+        this.props['aria-selected'] ?? this.props.accessibilityState?.selected,
+    };
+
+    _accessibilityState =
       this.props.disabled != null
         ? {
-            ...this.props.accessibilityState,
+            ..._accessibilityState,
             disabled: this.props.disabled,
           }
-        : this.props.accessibilityState;
+        : _accessibilityState;
 
     return React.cloneElement(
       element,
@@ -274,7 +288,7 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
         accessibilityLanguage: this.props.accessibilityLanguage,
         accessibilityLabel: this.props.accessibilityLabel,
         accessibilityRole: this.props.accessibilityRole,
-        accessibilityState: accessibilityState,
+        accessibilityState: _accessibilityState,
         accessibilityActions: this.props.accessibilityActions,
         onAccessibilityAction: this.props.onAccessibilityAction,
         accessibilityValue: this.props.accessibilityValue,
