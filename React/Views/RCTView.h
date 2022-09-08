@@ -31,6 +31,7 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 - (BOOL)resignFirstResponder;
 
 #if TARGET_OS_OSX
+- (NSDictionary*)dataTransferInfoFromPasteboard:(NSPasteboard*)pasteboard;
 - (BOOL)handleKeyboardEvent:(NSEvent *)event;
 #endif
 // ]TODO(OSS Candidate ISS#2710739)

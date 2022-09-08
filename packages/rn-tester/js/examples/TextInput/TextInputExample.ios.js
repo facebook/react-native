@@ -18,6 +18,7 @@ const {
   Text,
   TextInput,
   View,
+  Image, // TODO(macOS GH#774)
   Platform, // TODO(macOS GH#774)
   StyleSheet,
   Slider,
@@ -27,6 +28,7 @@ const {
 import type {
   KeyboardType,
   SettingChangeEvent,
+  PasteEvent,
 } from 'react-native/Libraries/Components/TextInput/TextInput'; // [TODO(macOS GH#774)
 
 const TextInputSharedExamples = require('./TextInputSharedExamples.js');
@@ -397,6 +399,41 @@ function OnDragEnterOnDragLeaveOnDrop(): React.Node {
         multiline={true}
         style={styles.multiline}
         placeholder="MULTI LINE w/o onDragEnter|Leave() and onDrop()"
+      />
+    </>
+  );
+}
+
+function OnPaste(): React.Node {
+  const [log, setLog] = React.useState([]);
+  const appendLog = (line: string) => {
+    const limit = 3;
+    let newLog = log.slice(0, limit - 1);
+    newLog.unshift(line);
+    setLog(newLog);
+  };
+  const [imageUri, setImageUri] = React.useState('');
+  return (
+    <>
+      <TextInput
+        multiline={true}
+        style={styles.multiline}
+        onPaste={(e: PasteEvent) => {
+          appendLog(JSON.stringify(e.nativeEvent.dataTransfer.types));
+          setImageUri(e.nativeEvent.dataTransfer.files[0].uri);
+        }}
+        placeholder="MULTI LINE with onPaste() for PNG and TIFF images"
+      />
+      <Text style={{height: 30}}>{log.join('\n')}</Text>
+      <Image
+        source={{uri: imageUri}}
+        style={{
+          width: 128,
+          height: 128,
+          margin: 4,
+          borderWidth: 1,
+          borderColor: 'white',
+        }}
       />
     </>
   );
@@ -913,6 +950,12 @@ if (Platform.OS === 'macos') {
         'onDragEnter, onDragLeave and onDrop - Single- & MultiLineTextInput',
       render: function (): React.Node {
         return <OnDragEnterOnDragLeaveOnDrop />;
+      },
+    },
+    {
+      title: 'onPaste - MultiLineTextInput',
+      render: function (): React.Node {
+        return <OnPaste />;
       },
     },
   );

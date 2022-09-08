@@ -635,6 +635,20 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)decoder)
 - (BOOL)textInputShouldHandleKeyEvent:(NSEvent *)event {
   return ![self handleKeyboardEvent:event];
 }
+
+- (BOOL)textInputShouldHandlePaste:(__unused id)sender
+{
+  NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
+  NSPasteboardType fileType = [pasteboard availableTypeFromArray:@[NSFilenamesPboardType, NSPasteboardTypePNG, NSPasteboardTypeTIFF]];
+
+  // If there's a fileType that is of interest, notify JS. Also blocks notifying JS if it's a text paste
+  if (_onPaste && fileType != nil) {
+    _onPaste([self dataTransferInfoFromPasteboard:pasteboard]);
+  }
+
+  // Only allow pasting text.
+  return fileType == nil;
+}
 #endif // ]TODO(macOS GH#774)
 
 - (void)updateLocalData

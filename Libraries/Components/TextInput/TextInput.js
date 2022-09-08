@@ -135,7 +135,27 @@ export type SettingChangeEvent = SyntheticEvent<
   $ReadOnly<{|
     enabled: boolean,
   |}>,
->; // ]TODO(macOS GH#774)
+>;
+
+export type PasteEvent = SyntheticEvent<
+  $ReadOnly<{|
+    dataTransfer: {|
+      files: $ReadOnlyArray<{|
+        height: number,
+        size: number,
+        type: string,
+        uri: string,
+        width: number,
+      |}>,
+      items: $ReadOnlyArray<{|
+        kind: string,
+        type: string,
+      |}>,
+      types: $ReadOnlyArray<string>,
+    |},
+  |}>,
+>;
+// ]TODO(macOS GH#774)
 
 type DataDetectorTypesType =
   // iOS+macOS
@@ -739,6 +759,13 @@ export type Props = $ReadOnly<{|
    * Called when a touch is released.
    */
   onPressOut?: ?(event: PressEvent) => mixed,
+
+  /**
+   * Fired when a supported element is pasted
+   *
+   * @platform macos
+   */
+  onPaste?: (event: PasteEvent) => void, // TODO(macOS GH#774)
 
   /**
    * Callback that is called when the text input selection is changed.

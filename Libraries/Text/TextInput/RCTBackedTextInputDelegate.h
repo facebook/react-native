@@ -48,6 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)textInputDraggingExited:(id<NSDraggingInfo>)draggingInfo;
 - (BOOL)textInputShouldHandleDragOperation:(id<NSDraggingInfo>)draggingInfo;
 - (void)textInputDidCancel;  // Handle `Escape` key press.
+- (BOOL)textInputShouldHandlePaste:(id<RCTBackedTextInputViewProtocol>)sender; // Return `YES` to have the paste event handled normally. Return `NO` to disallow it and handle it yourself.
 #endif // ]TODO(macOS GH#774)
 
 @optional

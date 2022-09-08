@@ -342,12 +342,25 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
   }
   return YES;
 }
+- (NSArray *)readablePasteboardTypes
+{
+  NSArray *types = [super readablePasteboardTypes];
+  // TODO: Optionally support files/images with a prop
+  return [types arrayByAddingObjectsFromArray:@[NSFilenamesPboardType, NSPasteboardTypePNG, NSPasteboardTypeTIFF]];
+}
+
 #endif // ]TODO(macOS GH#774)
 
 - (void)paste:(id)sender
 {
-  [super paste:sender];
-  _textWasPasted = YES;
+#if TARGET_OS_OSX // TODO(macOS GH#774)
+  if ([self.textInputDelegate textInputShouldHandlePaste:self]) {
+#endif
+    [super paste:sender];
+    _textWasPasted = YES;
+#if TARGET_OS_OSX // TODO(macOS GH#774)
+  }
+#endif
 }
 
 // Turn off scroll animation to fix flaky scrolling.

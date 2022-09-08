@@ -1527,13 +1527,9 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
   block(body);
 }
 
-- (NSDictionary*)dataTransferInfoFromPastboard:(NSPasteboard*)pastboard
+- (NSDictionary*)dataTransferInfoFromPasteboard:(NSPasteboard*)pasteboard
 {
-  if (![pastboard.types containsObject:NSFilenamesPboardType]) {
-    return @{};
-  }
-  
-  NSArray *fileNames = [pastboard propertyListForType:NSFilenamesPboardType];
+  NSArray *fileNames = [pasteboard propertyListForType:NSFilenamesPboardType] ?: @[];
   NSMutableArray *files = [[NSMutableArray alloc] initWithCapacity:fileNames.count];
   NSMutableArray *items = [[NSMutableArray alloc] initWithCapacity:fileNames.count];
   NSMutableArray *types = [[NSMutableArray alloc] initWithCapacity:fileNames.count];
@@ -1559,11 +1555,21 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
       BOOL success = [fileURL getResourceValue:&fileSizeValue
                                         forKey:NSURLFileSizeKey
                                          error:&fileSizeError];
-      
+
+      NSNumber *width = nil;
+      NSNumber *height = nil;
+      if ([MIMETypeString hasPrefix:@"image/"]) {
+        NSImage *image = [[NSImage alloc] initWithContentsOfURL:fileURL];
+        width = @(image.size.width);
+        height = @(image.size.height);
+      }
+
       [files addObject:@{@"name": RCTNullIfNil(fileURL.lastPathComponent),
                          @"type": RCTNullIfNil(MIMETypeString),
-                         @"uri": RCTNullIfNil(fileURL.absoluteString),
-                         @"size": success ? fileSizeValue : (id)kCFNull
+                         @"uri": RCTNullIfNil(fileURL.path),
+                         @"size": success ? fileSizeValue : (id)kCFNull,
+                         @"width": RCTNullIfNil(width),
+                         @"height": RCTNullIfNil(height)
                          }];
 
       [items addObject:@{@"kind": @"file",
@@ -1573,7 +1579,27 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
       [types addObject:RCTNullIfNil(MIMETypeString)];
     }
   }
-  
+
+  NSPasteboardType imageType = [pasteboard availableTypeFromArray:@[NSPasteboardTypePNG, NSPasteboardTypeTIFF]];
+  if (imageType && fileNames.count == 0) {
+    NSString *MIMETypeString = imageType == NSPasteboardTypePNG ? @"image/png" : @"image/tiff";
+    NSData *imageData = [pasteboard dataForType:imageType];
+    NSImage *image = [[NSImage alloc] initWithData:imageData];
+
+    [files addObject:@{@"type": RCTNullIfNil(MIMETypeString),
+                       @"uri": RCTDataURL(MIMETypeString, imageData).absoluteString,
+                       @"size": @(imageData.length),
+                       @"width": @(image.size.width),
+                       @"height": @(image.size.height),
+                      }];
+
+    [items addObject:@{@"kind": @"image",
+                       @"type": RCTNullIfNil(MIMETypeString),
+                      }];
+
+    [types addObject:RCTNullIfNil(MIMETypeString)];
+  }
+
   return @{@"dataTransfer": @{@"files": files,
                               @"items": items,
                               @"types": types}};
@@ -1598,9 +1624,9 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
   [self sendMouseEventWithBlock:self.onDragEnter
                    locationInfo:[self locationInfoFromDraggingLocation:sender.draggingLocation]
                   modifierFlags:0
-                 additionalData:[self dataTransferInfoFromPastboard:pboard]];
-  
-  if ([pboard.types containsObject:NSFilenamesPboardType]) {
+                 additionalData:[self dataTransferInfoFromPasteboard:pboard]];
+
+  if ([pboard availableTypeFromArray:self.registeredDraggedTypes]) {
     if (sourceDragMask & NSDragOperationLink) {
       return NSDragOperationLink;
     } else if (sourceDragMask & NSDragOperationCopy) {
@@ -1615,7 +1641,7 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
   [self sendMouseEventWithBlock:self.onDragLeave
                    locationInfo:[self locationInfoFromDraggingLocation:sender.draggingLocation]
                   modifierFlags:0
-                 additionalData:[self dataTransferInfoFromPastboard:sender.draggingPasteboard]];
+                 additionalData:[self dataTransferInfoFromPasteboard:sender.draggingPasteboard]];
 }
 
 - (BOOL)performDragOperation:(id <NSDraggingInfo>)sender
@@ -1623,7 +1649,7 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
   [self sendMouseEventWithBlock:self.onDrop
                    locationInfo:[self locationInfoFromDraggingLocation:sender.draggingLocation]
                   modifierFlags:0
-                 additionalData:[self dataTransferInfoFromPastboard:[sender draggingPasteboard]]];
+                 additionalData:[self dataTransferInfoFromPasteboard:sender.draggingPasteboard]];
   return YES;
 }
 #endif // ]TODO(macOS GH#774)

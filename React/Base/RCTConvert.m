@@ -1234,6 +1234,8 @@ RCT_JSON_ARRAY_CONVERTER(NSNumber)
   
   if ([type isEqualToString:@"fileUrl"]) {
     return @[NSFilenamesPboardType];
+  } else if ([type isEqualToString:@"image"]) {
+    return @[NSPasteboardTypePNG, NSPasteboardTypeTIFF];
   }
   
   return @[];
