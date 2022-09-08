@@ -250,7 +250,6 @@ function Pressable(props: Props, forwardedRef): React.Node {
     ...android_rippleConfig?.viewProps,
     accessible: accessible !== false,
     accessibilityLabel,
-    accessibilityState,
     accessibilityState: _accessibilityState,
     focusable: focusable !== false,
     hitSlop,
