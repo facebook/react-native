@@ -258,7 +258,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
     text:
       props['aria-valuetext'] !== null
         ? props['aria-valuetext']
-        : props.accessibilityValue?.max,
+        : props.accessibilityValue?.text,
   };
 
   const restPropsWithDefaults: React.ElementConfig<typeof View> = {
