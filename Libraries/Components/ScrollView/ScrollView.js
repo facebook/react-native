@@ -50,8 +50,6 @@ import AndroidHorizontalScrollViewNativeComponent from './AndroidHorizontalScrol
 import ScrollContentViewNativeComponent from './ScrollContentViewNativeComponent';
 import ScrollViewNativeComponent from './ScrollViewNativeComponent';
 
-require('../../Renderer/shims/ReactNative'); // Force side effects to prevent T55744311
-
 const {NativeHorizontalScrollViewTuple, NativeVerticalScrollViewTuple} =
   Platform.OS === 'android'
     ? {
