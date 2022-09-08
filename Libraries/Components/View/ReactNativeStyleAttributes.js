@@ -134,6 +134,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   textShadowOffset: true,
   textShadowRadius: true,
   textTransform: true,
+  userSelect: true,
   writingDirection: true,
 
   /**
