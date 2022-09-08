@@ -77,6 +77,17 @@ export type TextProps = $ReadOnly<{|
    *
    */
   android_hyphenationFrequency?: ?('normal' | 'none' | 'full'),
+
+  /**
+   * alias for accessibilityState
+   *
+   * see https://reactnative.dev/docs/accessibility#accessibilitystate
+   */
+  'aria-busy'?: ?boolean,
+  'aria-checked'?: ?boolean,
+  'aria-disabled'?: ?boolean,
+  'aria-expanded'?: ?boolean,
+  'aria-selected'?: ?boolean,
   children?: ?Node,
 
   /**

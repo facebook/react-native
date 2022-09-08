@@ -56,6 +56,17 @@ type Props = $ReadOnly<{|
   'aria-valuetext'?: AccessibilityValue['text'],
   accessibilityViewIsModal?: ?boolean,
   accessible?: ?boolean,
+
+  /**
+   * alias for accessibilityState
+   *
+   * see https://reactnative.dev/docs/accessibility#accessibilitystate
+   */
+  'aria-busy'?: ?boolean,
+  'aria-checked'?: ?boolean,
+  'aria-disabled'?: ?boolean,
+  'aria-expanded'?: ?boolean,
+  'aria-selected'?: ?boolean,
   /**
    * A value indicating whether the accessibility elements contained within
    * this accessibility element are hidden.
@@ -183,9 +194,15 @@ type Props = $ReadOnly<{|
  * LTI update could not be added via codemod */
 function Pressable(props: Props, forwardedRef): React.Node {
   const {
-    accessible,
+    accessibilityState,
     android_disableSound,
     android_ripple,
+    accessible,
+    'aria-busy': ariaBusy,
+    'aria-checked': ariaChecked,
+    'aria-disabled': ariaDisabled,
+    'aria-expanded': ariaExpanded,
+    'aria-selected': ariaSelected,
     cancelable,
     children,
     delayHoverIn,
@@ -214,10 +231,16 @@ function Pressable(props: Props, forwardedRef): React.Node {
 
   const [pressed, setPressed] = usePressState(testOnly_pressed === true);
 
-  const accessibilityState =
-    disabled != null
-      ? {...props.accessibilityState, disabled}
-      : props.accessibilityState;
+  let _accessibilityState = {
+    busy: ariaBusy ?? accessibilityState?.busy,
+    checked: ariaChecked ?? accessibilityState?.checked,
+    disabled: ariaDisabled ?? accessibilityState?.disabled,
+    expanded: ariaExpanded ?? accessibilityState?.expanded,
+    selected: ariaSelected ?? accessibilityState?.selected,
+  };
+
+  _accessibilityState =
+    disabled != null ? {..._accessibilityState, disabled} : _accessibilityState;
 
   const accessibilityValue = {
     max:
@@ -242,7 +265,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
     ...restProps,
     ...android_rippleConfig?.viewProps,
     accessible: accessible !== false,
-    accessibilityState,
+    accessibilityState: _accessibilityState,
     focusable: focusable !== false,
     accessibilityValue,
     hitSlop,

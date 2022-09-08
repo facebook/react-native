@@ -2,6 +2,15 @@
 
 exports[`TouchableOpacity renders correctly 1`] = `
 <View
+  accessibilityState={
+    Object {
+      "busy": undefined,
+      "checked": undefined,
+      "disabled": undefined,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
   accessibilityValue={
     Object {
       "max": undefined,
@@ -36,7 +45,11 @@ exports[`TouchableOpacity renders in disabled state when a disabled prop is pass
 <View
   accessibilityState={
     Object {
+      "busy": undefined,
+      "checked": undefined,
       "disabled": true,
+      "expanded": undefined,
+      "selected": undefined,
     }
   }
   accessibilityValue={
@@ -73,7 +86,11 @@ exports[`TouchableOpacity renders in disabled state when a key disabled in acces
 <View
   accessibilityState={
     Object {
+      "busy": undefined,
+      "checked": undefined,
       "disabled": true,
+      "expanded": undefined,
+      "selected": undefined,
     }
   }
   accessibilityValue={
