@@ -33,7 +33,6 @@ import com.facebook.react.jscexecutor.JSCExecutor;
 import com.facebook.react.jscexecutor.JSCExecutorFactory;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.packagerconnection.RequestHandler;
-import com.facebook.react.uimanager.UIImplementationProvider;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +51,6 @@ public class ReactInstanceManagerBuilder {
   private @Nullable DevSupportManagerFactory mDevSupportManagerFactory;
   private boolean mRequireActivity;
   private @Nullable LifecycleState mInitialLifecycleState;
-  private @Nullable UIImplementationProvider mUIImplementationProvider;
   private @Nullable JSExceptionHandler mJSExceptionHandler;
   private @Nullable Activity mCurrentActivity;
   private @Nullable DefaultHardwareBackBtnHandler mDefaultHardwareBackBtnHandler;
@@ -69,13 +67,6 @@ public class ReactInstanceManagerBuilder {
   private JSInterpreter jsInterpreter = JSInterpreter.OLD_LOGIC;
 
   /* package protected */ ReactInstanceManagerBuilder() {}
-
-  /** Sets a provider of {@link UIImplementation}. Uses default provider if null is passed. */
-  public ReactInstanceManagerBuilder setUIImplementationProvider(
-      @Nullable UIImplementationProvider uiImplementationProvider) {
-    mUIImplementationProvider = uiImplementationProvider;
-    return this;
-  }
 
   public ReactInstanceManagerBuilder setJSIModulesPackage(
       @Nullable JSIModulePackage jsiModulePackage) {
@@ -325,11 +316,6 @@ public class ReactInstanceManagerBuilder {
         mJSMainModulePath != null || mJSBundleAssetUrl != null || mJSBundleLoader != null,
         "Either MainModulePath or JS Bundle File needs to be provided");
 
-    if (mUIImplementationProvider == null) {
-      // create default UIImplementationProvider if the provided one is null.
-      mUIImplementationProvider = new UIImplementationProvider();
-    }
-
     // We use the name of the device and the app for debugging & metrics
     //noinspection ConstantConditions
     String appName = mApplication.getPackageName();
@@ -355,7 +341,6 @@ public class ReactInstanceManagerBuilder {
         mRequireActivity,
         mBridgeIdleDebugListener,
         Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
-        mUIImplementationProvider,
         mJSExceptionHandler,
         mRedBoxHandler,
         mLazyViewManagersEnabled,
