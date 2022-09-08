@@ -192,6 +192,7 @@ type Props = $ReadOnly<{|
 function Pressable(props: Props, forwardedRef): React.Node {
   const {
     accessible,
+    accessibilityState,
     'aria-live': ariaLive,
     android_disableSound,
     android_ripple,
