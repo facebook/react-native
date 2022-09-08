@@ -44,6 +44,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)textInputShouldHandleDeleteForward:(id<RCTBackedTextInputViewProtocol>)sender; // Return `YES` to have the deleteForward event handled normally. Return `NO` to disallow it and handle it yourself.
 - (BOOL)textInputShouldHandleKeyEvent:(NSEvent *)event; // Return `YES` to have the key event handled normally. Return `NO` to disallow it and handle it yourself.
 - (BOOL)hasValidKeyDownOrValidKeyUp:(NSString *)key;
+- (NSDragOperation)textInputDraggingEntered:(id<NSDraggingInfo>)draggingInfo;
+- (void)textInputDraggingExited:(id<NSDraggingInfo>)draggingInfo;
+- (BOOL)textInputShouldHandleDragOperation:(id<NSDraggingInfo>)draggingInfo;
 - (void)textInputDidCancel;  // Handle `Escape` key press.
 #endif // ]TODO(macOS GH#774)
 

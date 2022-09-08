@@ -358,6 +358,49 @@ function AutoCorrectSpellCheckGrammarCheckCallbacks(): React.Node {
     </>
   );
 }
+
+function OnDragEnterOnDragLeaveOnDrop(): React.Node {
+  const [log, setLog] = React.useState([]);
+  const appendLog = (line: string) => {
+    const limit = 6;
+    let newLog = log.slice(0, limit - 1);
+    newLog.unshift(line);
+    setLog(newLog);
+  };
+  return (
+    <>
+      <TextInput
+        multiline={false}
+        draggedTypes={'fileUrl'}
+        onDragEnter={e => appendLog('SinglelineEnter')}
+        onDragLeave={e => appendLog('SinglelineLeave')}
+        onDrop={e => appendLog('SinglelineDrop')}
+        style={styles.multiline}
+        placeholder="SINGLE LINE with onDragEnter|Leave() and onDrop()"
+      />
+      <TextInput
+        multiline={true}
+        draggedTypes={'fileUrl'}
+        onDragEnter={e => appendLog('MultilineEnter')}
+        onDragLeave={e => appendLog('MultilineLeave')}
+        onDrop={e => appendLog('MultilineDrop')}
+        style={styles.multiline}
+        placeholder="MULTI LINE with onDragEnter|Leave() and onDrop()"
+      />
+      <Text style={{height: 120}}>{log.join('\n')}</Text>
+      <TextInput
+        multiline={false}
+        style={styles.multiline}
+        placeholder="SINGLE LINE w/o onDragEnter|Leave() and onDrop()"
+      />
+      <TextInput
+        multiline={true}
+        style={styles.multiline}
+        placeholder="MULTI LINE w/o onDragEnter|Leave() and onDrop()"
+      />
+    </>
+  );
+}
 // ]TODO(macOS GH#774)
 
 exports.displayName = (undefined: ?string);
@@ -857,12 +900,21 @@ exports.examples = ([
 ]: Array<RNTesterModuleExample>);
 // [TODO(macOS GH#774)
 if (Platform.OS === 'macos') {
-  exports.examples.push({
-    title:
-      'AutoCorrect, spellCheck and grammarCheck callbacks - Multiline Textfield',
-    render: function (): React.Node {
-      return <AutoCorrectSpellCheckGrammarCheckCallbacks />;
+  exports.examples.push(
+    {
+      title:
+        'AutoCorrect, spellCheck and grammarCheck callbacks - Multiline Textfield',
+      render: function (): React.Node {
+        return <AutoCorrectSpellCheckGrammarCheckCallbacks />;
+      },
     },
-  });
+    {
+      title:
+        'onDragEnter, onDragLeave and onDrop - Single- & MultiLineTextInput',
+      render: function (): React.Node {
+        return <OnDragEnterOnDragLeaveOnDrop />;
+      },
+    },
+  );
 }
 // ]TODO(macOS GH#774)

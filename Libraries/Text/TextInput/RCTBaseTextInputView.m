@@ -598,6 +598,31 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)decoder)
   return [self.validKeysDown containsObject:key] || [self.validKeysUp containsObject:key];
 }
 
+- (NSDragOperation)textInputDraggingEntered:(id<NSDraggingInfo>)draggingInfo
+{
+  if ([draggingInfo.draggingPasteboard availableTypeFromArray:self.registeredDraggedTypes]) {
+    return [self draggingEntered:draggingInfo];
+  }
+  return NSDragOperationNone;
+}
+
+- (void)textInputDraggingExited:(id<NSDraggingInfo>)draggingInfo
+{
+  if ([draggingInfo.draggingPasteboard availableTypeFromArray:self.registeredDraggedTypes]) {
+    [self draggingExited:draggingInfo];
+  }
+}
+
+- (BOOL)textInputShouldHandleDragOperation:(id<NSDraggingInfo>)draggingInfo
+{
+  if ([draggingInfo.draggingPasteboard availableTypeFromArray:self.registeredDraggedTypes]) {
+    [self performDragOperation:draggingInfo];
+    return NO;
+  }
+
+  return YES;
+}
+
 - (void)textInputDidCancel {
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeKeyPress
                                  reactTag:self.reactTag
