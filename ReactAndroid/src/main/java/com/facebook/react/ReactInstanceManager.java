@@ -961,39 +961,43 @@ public class ReactInstanceManager {
 
   public Collection<String> getViewManagerNames() {
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstanceManager.getViewManagerNames");
-    Collection<String> viewManagerNames = mViewManagerNames;
-    if (viewManagerNames != null) {
-      return viewManagerNames;
-    }
-    ReactApplicationContext context;
-    synchronized (mReactContextLock) {
-      context = (ReactApplicationContext) getCurrentReactContext();
-      if (context == null || !context.hasActiveReactInstance()) {
-        return Collections.emptyList();
+    try {
+      Collection<String> viewManagerNames = mViewManagerNames;
+      if (viewManagerNames != null) {
+        return viewManagerNames;
       }
-    }
-
-    synchronized (mPackages) {
-      if (mViewManagerNames == null) {
-        Set<String> uniqueNames = new HashSet<>();
-        for (ReactPackage reactPackage : mPackages) {
-          SystraceMessage.beginSection(
-                  TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstanceManager.getViewManagerName")
-              .arg("Package", reactPackage.getClass().getSimpleName())
-              .flush();
-          if (reactPackage instanceof ViewManagerOnDemandReactPackage) {
-            Collection<String> names =
-                ((ViewManagerOnDemandReactPackage) reactPackage).getViewManagerNames(context);
-            if (names != null) {
-              uniqueNames.addAll(names);
-            }
-          }
-          SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
+      ReactApplicationContext context;
+      synchronized (mReactContextLock) {
+        context = (ReactApplicationContext) getCurrentReactContext();
+        if (context == null || !context.hasActiveReactInstance()) {
+          FLog.w(ReactConstants.TAG, "Calling getViewManagerNames without active context");
+          return Collections.emptyList();
         }
-        Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
-        mViewManagerNames = uniqueNames;
       }
-      return mViewManagerNames;
+
+      synchronized (mPackages) {
+        if (mViewManagerNames == null) {
+          Set<String> uniqueNames = new HashSet<>();
+          for (ReactPackage reactPackage : mPackages) {
+            SystraceMessage.beginSection(
+                    TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstanceManager.getViewManagerName")
+                .arg("Package", reactPackage.getClass().getSimpleName())
+                .flush();
+            if (reactPackage instanceof ViewManagerOnDemandReactPackage) {
+              Collection<String> names =
+                  ((ViewManagerOnDemandReactPackage) reactPackage).getViewManagerNames(context);
+              if (names != null) {
+                uniqueNames.addAll(names);
+              }
+            }
+            Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+          }
+          mViewManagerNames = uniqueNames;
+        }
+        return mViewManagerNames;
+      }
+    } finally {
+      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     }
   }
 
