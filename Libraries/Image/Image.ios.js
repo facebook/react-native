@@ -23,6 +23,7 @@ import NativeImageLoaderIOS from './NativeImageLoaderIOS';
 
 import ImageViewNativeComponent from './ImageViewNativeComponent';
 import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
+import {getImageSourcesFromImageProps} from './ImageSourceUtils';
 
 function getSize(
   uri: string,
@@ -105,7 +106,7 @@ export type ImageComponentStatics = $ReadOnly<{|
 /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
  * LTI update could not be added via codemod */
 const BaseImage = (props: ImagePropsType, forwardedRef) => {
-  const source = resolveAssetSource(props.source) || {
+  const source = getImageSourcesFromImageProps(props) || {
     uri: undefined,
     width: undefined,
     height: undefined,
@@ -117,7 +118,7 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
     style = flattenStyle([styles.base, props.style]) || {};
     sources = source;
   } else {
-    const {width, height, uri} = source;
+    const {width = props.width, height = props.height, uri} = source;
     style = flattenStyle([{width, height}, styles.base, props.style]) || {};
     sources = [source];
 
@@ -131,24 +132,29 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
   // $FlowFixMe[prop-missing]
   const tintColor = props.tintColor || style.tintColor;
 
-  if (props.src != null) {
-    console.warn(
-      'The <Image> component requires a `source` property rather than `src`.',
-    );
-  }
-
   if (props.children != null) {
     throw new Error(
       'The <Image> component cannot contain children. If you want to render content on top of the image, consider using the <ImageBackground> component or absolute positioning.',
     );
   }
+  const {
+    'aria-busy': ariaBusy,
+    'aria-checked': ariaChecked,
+    'aria-disabled': ariaDisabled,
+    'aria-expanded': ariaExpanded,
+    'aria-selected': ariaSelected,
+    height,
+    src,
+    width,
+    ...restProps
+  } = props;
 
   const _accessibilityState = {
-    busy: props['aria-busy'] ?? props.accessibilityState?.busy,
-    checked: props['aria-checked'] ?? props.accessibilityState?.checked,
-    disabled: props['aria-disabled'] ?? props.accessibilityState?.disabled,
-    expanded: props['aria-expanded'] ?? props.accessibilityState?.expanded,
-    selected: props['aria-selected'] ?? props.accessibilityState?.selected,
+    busy: ariaBusy ?? props.accessibilityState?.busy,
+    checked: ariaChecked ?? props.accessibilityState?.checked,
+    disabled: ariaDisabled ?? props.accessibilityState?.disabled,
+    expanded: ariaExpanded ?? props.accessibilityState?.expanded,
+    selected: ariaSelected ?? props.accessibilityState?.selected,
   };
 
   return (
@@ -156,8 +162,8 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
       {analyticTag => {
         return (
           <ImageViewNativeComponent
-            {...props}
             accessibilityState={_accessibilityState}
+            {...restProps}
             ref={forwardedRef}
             style={style}
             resizeMode={resizeMode}

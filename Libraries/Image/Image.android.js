@@ -23,6 +23,7 @@ import TextInlineImageNativeComponent from './TextInlineImageNativeComponent';
 
 import type {ImageProps as ImagePropsType} from './ImageProps';
 import type {RootTag} from '../Types/RootTagTypes';
+import {getImageSourcesFromImageProps} from './ImageSourceUtils';
 
 let _requestId = 1;
 function generateRequestId() {
@@ -126,24 +127,11 @@ export type ImageComponentStatics = $ReadOnly<{|
 /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
  * LTI update could not be added via codemod */
 const BaseImage = (props: ImagePropsType, forwardedRef) => {
-  let source = resolveAssetSource(props.source);
+  let source = getImageSourcesFromImageProps(props);
   const defaultSource = resolveAssetSource(props.defaultSource);
   const loadingIndicatorSource = resolveAssetSource(
     props.loadingIndicatorSource,
   );
-
-  if (source) {
-    const uri = source.uri;
-    if (uri === '') {
-      console.warn('source.uri should not be an empty string');
-    }
-  }
-
-  if (props.src) {
-    console.warn(
-      'The <Image> component requires a `source` property rather than `src`.',
-    );
-  }
 
   if (props.children) {
     throw new Error(
@@ -163,24 +151,28 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
 
   let style;
   let sources;
-  if (source?.uri != null) {
-    const {width, height} = source;
+  if (!Array.isArray(source) && source?.uri != null) {
+    const {width = props.width, height = props.height, uri} = source;
     style = flattenStyle([{width, height}, styles.base, props.style]);
-    sources = [{uri: source.uri}];
+    sources = [{uri: uri, width: width, height: height}];
+    if (uri === '') {
+      console.warn('source.uri should not be an empty string');
+    }
   } else {
     style = flattenStyle([styles.base, props.style]);
     sources = source;
   }
 
+  const {height, width, ...restProps} = props;
   const {onLoadStart, onLoad, onLoadEnd, onError} = props;
   const nativeProps = {
-    ...props,
+    ...restProps,
     style,
     shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd || onError),
     src: sources,
     /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
      * when making Flow check .android.js files. */
-    headers: source?.headers,
+    headers: (source?.[0]?.headers || source?.headers: ?{[string]: string}),
     defaultSrc: defaultSource ? defaultSource.uri : null,
     loadingIndicatorSrc: loadingIndicatorSource
       ? loadingIndicatorSource.uri

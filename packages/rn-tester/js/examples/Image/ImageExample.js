@@ -635,11 +635,37 @@ exports.description =
 
 exports.examples = [
   {
-    title: 'Plain Network Image',
+    title: 'Plain Network Image with `source` prop.',
     description: ('If the `source` prop `uri` property is prefixed with ' +
       '"http", then it will be downloaded from the network.': string),
     render: function (): React.Node {
       return <Image source={fullImage} style={styles.base} />;
+    },
+  },
+  {
+    title: 'Plain Network Image with `src` prop.',
+    description: ('If the `src` prop is defined with ' +
+      '"http", then it will be downloaded from the network.': string),
+    render: function (): React.Node {
+      return <Image src={fullImage.uri} style={styles.base} />;
+    },
+  },
+  {
+    title: 'Multiple Image Source using the `srcSet` prop.',
+    description:
+      ('A list of comma seperated uris along with scale are provided in `srcSet`.' +
+        'An appropriate value will be used based on the scale of the device.': string),
+    render: function (): React.Node {
+      return (
+        <Image
+          width={64}
+          height={64}
+          srcSet={
+            'https://www.facebook.com/ads/pics/successstories.png 4x, https://www.facebook.com/favicon.ico 2x'
+          }
+          style={styles.base}
+        />
+      );
     },
   },
   {
