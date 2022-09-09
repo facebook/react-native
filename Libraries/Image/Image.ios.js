@@ -164,6 +164,7 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
     expanded: ariaExpanded ?? props.accessibilityState?.expanded,
     selected: ariaSelected ?? props.accessibilityState?.selected,
   };
+  const accessibilityLabel = props['aria-label'] ?? props.accessibilityLabel;
 
   return (
     <ImageAnalyticsTagContext.Consumer>
@@ -172,6 +173,7 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
           <ImageViewNativeComponent
             accessibilityState={_accessibilityState}
             {...restProps}
+            accessibilityLabel={accessibilityLabel}
             ref={forwardedRef}
             style={style}
             resizeMode={resizeMode}

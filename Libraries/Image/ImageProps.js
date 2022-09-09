@@ -88,6 +88,12 @@ export type ImageProps = {|
   accessibilityLabel?: ?Stringish,
 
   /**
+   * Alias for accessibilityLabel
+   * See https://reactnative.dev/docs/image#accessibilitylabel
+   */
+  'aria-label'?: ?Stringish,
+
+  /**
    * blurRadius: the blur radius of the blur filter added to the image
    *
    * See https://reactnative.dev/docs/image#blurradius

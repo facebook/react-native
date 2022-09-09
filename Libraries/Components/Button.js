@@ -126,7 +126,11 @@ type ButtonProps = $ReadOnly<{|
     Text to display for blindness accessibility features.
    */
   accessibilityLabel?: ?string,
-
+  /**
+   * Alias for accessibilityLabel  https://reactnative.dev/docs/view#accessibilitylabel
+   * https://github.com/facebook/react-native/issues/34424
+   */
+  'aria-label'?: ?string,
   /**
     If `true`, disable all interactions for this component.
 
@@ -286,6 +290,7 @@ class Button extends React.Component<ButtonProps> {
       'aria-checked': ariaChecked,
       'aria-disabled': ariaDisabled,
       'aria-expanded': ariaExpanded,
+      'aria-label': ariaLabel,
       'aria-selected': ariaSelected,
       importantForAccessibility,
       color,
@@ -358,7 +363,7 @@ class Button extends React.Component<ButtonProps> {
         accessible={accessible}
         accessibilityActions={accessibilityActions}
         onAccessibilityAction={onAccessibilityAction}
-        accessibilityLabel={accessibilityLabel}
+        accessibilityLabel={ariaLabel || accessibilityLabel}
         accessibilityHint={accessibilityHint}
         accessibilityLanguage={accessibilityLanguage}
         accessibilityRole="button"

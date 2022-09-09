@@ -58,6 +58,7 @@ type Props = $ReadOnly<{|
   'aria-selected'?: ?boolean,
   'aria-hidden'?: ?boolean,
   'aria-live'?: ?('polite' | 'assertive' | 'off'),
+  'aria-label'?: ?Stringish,
   children?: ?React.Node,
   delayLongPress?: ?number,
   delayPressIn?: ?number,

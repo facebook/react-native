@@ -185,6 +185,11 @@ type Props = $ReadOnly<{|
    * Duration to wait after press down before calling `onPressIn`.
    */
   unstable_pressDelay?: ?number,
+  /**
+   * Web to Native Accessibilty props
+   * https://github.com/facebook/react-native/issues/34424
+   */
+  'aria-label'?: ?string,
 |}>;
 
 /**
@@ -204,6 +209,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
     'aria-checked': ariaChecked,
     'aria-disabled': ariaDisabled,
     'aria-expanded': ariaExpanded,
+    'aria-label': ariaLabel,
     'aria-selected': ariaSelected,
     cancelable,
     children,
@@ -254,11 +260,13 @@ function Pressable(props: Props, forwardedRef): React.Node {
   const accessibilityLiveRegion =
     ariaLive === 'off' ? 'none' : ariaLive ?? props.accessibilityLiveRegion;
 
+  const accessibilityLabel = ariaLabel ?? props.accessibilityLabel;
   const restPropsWithDefaults: React.ElementConfig<typeof View> = {
     ...restProps,
     ...android_rippleConfig?.viewProps,
     accessible: accessible !== false,
     accessibilityLiveRegion,
+    accessibilityLabel,
     accessibilityState: _accessibilityState,
     focusable: focusable !== false,
     accessibilityValue,
