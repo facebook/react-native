@@ -337,7 +337,7 @@ import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboMo
 
 export interface Spec extends TurboModule {
   readonly getArray: (arg: string[]) => string[];
-  readonly getArray: (arg: readonly string[]) => readonly string[];
+  readonly getArray: (arg: readonly string[]) =>  readonly string[];
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
