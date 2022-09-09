@@ -390,8 +390,7 @@ void Connection::Impl::onScriptParsed(
   m::debugger::ScriptParsedNotification note;
   note.scriptId = folly::to<std::string>(info.fileId);
   note.url = info.fileName;
-  // TODO(jpporto): fix test cases sending invalid context id.
-  // note.executionContextId = kHermesExecutionContextId;
+  note.executionContextId = kHermesExecutionContextId;
 
   if (!info.sourceMappingUrl.empty()) {
     note.sourceMapURL = info.sourceMappingUrl;
