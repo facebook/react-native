@@ -132,24 +132,11 @@ const View: React.AbstractComponent<
     };
 
     const accessibilityValue = {
-      max:
-        otherProps['aria-valuemax'] !== null
-          ? otherProps['aria-valuemax']
-          : otherProps.accessibilityValue?.max,
-      min:
-        otherProps['aria-valuemin'] !== null
-          ? otherProps['aria-valuemin']
-          : otherProps.accessibilityValue?.min,
-      now:
-        otherProps['aria-valuenow'] !== null
-          ? otherProps['aria-valuenow']
-          : otherProps.accessibilityValue?.now,
-      text:
-        otherProps['aria-valuetext'] !== null
-          ? otherProps['aria-valuetext']
-          : otherProps.accessibilityValue?.text,
+      max: otherProps['aria-valuemax'] ?? otherProps.accessibilityValue?.max,
+      min: otherProps['aria-valuemin'] ?? otherProps.accessibilityValue?.min,
+      now: otherProps['aria-valuenow'] ?? otherProps.accessibilityValue?.now,
+      text: otherProps['aria-valuetext'] ?? otherProps.accessibilityValue?.text,
     };
-
     const restWithDefaultProps = {...otherProps, accessibilityValue};
 
     const flattenedStyle = flattenStyle(style);

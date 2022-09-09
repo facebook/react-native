@@ -245,22 +245,10 @@ function Pressable(props: Props, forwardedRef): React.Node {
     disabled != null ? {..._accessibilityState, disabled} : _accessibilityState;
 
   const accessibilityValue = {
-    max:
-      props['aria-valuemax'] !== null
-        ? props['aria-valuemax']
-        : props.accessibilityValue?.max,
-    min:
-      props['aria-valuemin'] !== null
-        ? props['aria-valuemin']
-        : props.accessibilityValue?.min,
-    now:
-      props['aria-valuenow'] !== null
-        ? props['aria-valuenow']
-        : props.accessibilityValue?.now,
-    text:
-      props['aria-valuetext'] !== null
-        ? props['aria-valuetext']
-        : props.accessibilityValue?.text,
+    max: props['aria-valuemax'] ?? props.accessibilityValue?.max,
+    min: props['aria-valuemin'] ?? props.accessibilityValue?.min,
+    now: props['aria-valuenow'] ?? props.accessibilityValue?.now,
+    text: props['aria-valuetext'] ?? props.accessibilityValue?.text,
   };
 
   const accessibilityLiveRegion =
