@@ -25,8 +25,8 @@ import com.facebook.react.ReactRootView
 open class DefaultReactActivityDelegate(
     activity: ReactActivity,
     mainComponentName: String,
-    val fabricEnabled: Boolean = false,
-    val concurrentRootEnabled: Boolean = false
+    private val fabricEnabled: Boolean = false,
+    private val concurrentRootEnabled: Boolean = false
 ) : ReactActivityDelegate(activity, mainComponentName) {
 
   /**
@@ -42,5 +42,5 @@ open class DefaultReactActivityDelegate(
   }
 
   override fun createRootView(): ReactRootView =
-      ReactRootView(getContext()).apply { setIsFabric(fabricEnabled) }
+      ReactRootView(context).apply { setIsFabric(fabricEnabled) }
 }
