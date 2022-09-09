@@ -38,7 +38,9 @@ const View: React.AbstractComponent<
       'aria-label': ariaLabel,
       'aria-hidden': ariaHidden,
       focusable,
+      id,
       importantForAccessibility,
+      nativeID,
       pointerEvents,
       role,
       style,
@@ -164,6 +166,7 @@ const View: React.AbstractComponent<
               ? 'no-hide-descendants'
               : importantForAccessibility
           }
+          nativeID={id ?? nativeID}
           {...restWithDefaultProps}
           style={style}
           pointerEvents={newPointerEvents}

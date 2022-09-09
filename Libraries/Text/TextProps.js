@@ -100,6 +100,13 @@ export type TextProps = $ReadOnly<{|
   ellipsizeMode?: ?('clip' | 'head' | 'middle' | 'tail'),
 
   /**
+   * Used to locate this view from native code.
+   *
+   * See https://reactnative.dev/docs/text#nativeid
+   */
+  id?: string,
+
+  /**
    * Specifies largest possible scale a font can reach when `allowFontScaling` is enabled.
    * Possible values:
    * `null/undefined` (default): inherit from the parent node or the global default (0)

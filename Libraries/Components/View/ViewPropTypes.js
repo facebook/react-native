@@ -547,6 +547,15 @@ export type ViewProps = $ReadOnly<{|
   collapsable?: ?boolean,
 
   /**
+   * Used to locate this view from native classes.
+   *
+   * > This disables the 'layout-only view removal' optimization for this view!
+   *
+   * See https://reactnative.dev/docs/view#id
+   */
+  id?: string,
+
+  /**
    * Used to locate this view in end-to-end tests.
    *
    * > This disables the 'layout-only view removal' optimization for this view!
