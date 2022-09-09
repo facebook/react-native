@@ -249,9 +249,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
     ...android_rippleConfig?.viewProps,
     accessible: accessible !== false,
     accessibilityViewIsModal:
-      restProps['aria-modal'] !== null
-        ? restProps['aria-modal']
-        : restProps.accessibilityViewIsModal,
+      restProps['aria-modal'] ?? restProps.accessibilityViewIsModal,
     accessibilityLiveRegion,
     accessibilityState: _accessibilityState,
     focusable: focusable !== false,
