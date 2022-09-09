@@ -184,6 +184,7 @@ jobs:
     pool: cxeiss-ubuntu-20-04-large
     timeoutInMinutes: 120 # how long to run the job before automatically cancelling
     cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
+    condition: contains(variables['Build.SourceBranchName'], '-stable')
     dependsOn:
       - Compliance
     steps:
