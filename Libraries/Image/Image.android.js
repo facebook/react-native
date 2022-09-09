@@ -26,6 +26,7 @@ import {convertObjectFitToResizeMode} from './ImageUtils';
 import type {ImageProps as ImagePropsType} from './ImageProps';
 import type {RootTag} from '../Types/RootTagTypes';
 import {getImageSourcesFromImageProps} from './ImageSourceUtils';
+import processLayoutProps from '../StyleSheet/processStyles';
 
 let _requestId = 1;
 function generateRequestId() {
@@ -169,27 +170,9 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
 
   style = flattenStyle(style);
 
-  const layoutPropMap = {
-    marginInlineStart: 'marginStart',
-    marginInlineEnd: 'marginEnd',
-    marginBlockStart: 'marginTop',
-    marginBlockEnd: 'marginBottom',
-    marginBlock: 'marginVertical',
-    marginInline: 'marginHorizontal',
-    paddingInlineStart: 'paddingStart',
-    paddingInlineEnd: 'paddingEnd',
-    paddingBlockStart: 'paddingTop',
-    paddingBlockEnd: 'paddingBottom',
-    paddingBlock: 'paddingVertical',
-    paddingInline: 'paddingHorizontal',
-  };
-
-  Object.keys(layoutPropMap).forEach(key => {
-    if (style && style[key] !== undefined) {
-      style[layoutPropMap[key]] = style[key];
-      delete style[key];
-    }
-  });
+  if (style) {
+    style = processLayoutProps(style);
+  }
 
   const {onLoadStart, onLoad, onLoadEnd, onError} = props;
   const nativeProps = {

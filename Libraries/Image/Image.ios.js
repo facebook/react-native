@@ -26,6 +26,7 @@ import {convertObjectFitToResizeMode} from './ImageUtils';
 import ImageViewNativeComponent from './ImageViewNativeComponent';
 import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
 import {getImageSourcesFromImageProps} from './ImageSourceUtils';
+import processLayoutProps from '../StyleSheet/processStyles';
 
 function getSize(
   uri: string,
@@ -142,27 +143,9 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
 
   let flattendStyle = flattenStyle(style);
 
-  const layoutPropMap = {
-    marginInlineStart: 'marginStart',
-    marginInlineEnd: 'marginEnd',
-    marginBlockStart: 'marginTop',
-    marginBlockEnd: 'marginBottom',
-    marginBlock: 'marginVertical',
-    marginInline: 'marginHorizontal',
-    paddingInlineStart: 'paddingStart',
-    paddingInlineEnd: 'paddingEnd',
-    paddingBlockStart: 'paddingTop',
-    paddingBlockEnd: 'paddingBottom',
-    paddingBlock: 'paddingVertical',
-    paddingInline: 'paddingHorizontal',
-  };
-
-  Object.keys(layoutPropMap).forEach(key => {
-    if (flattendStyle && flattendStyle[key] !== undefined) {
-      flattendStyle[layoutPropMap[key]] = flattendStyle[key];
-      delete flattendStyle[key];
-    }
-  });
+  if (flattendStyle) {
+    flattendStyle = processLayoutProps(flattendStyle);
+  }
 
   if (props.children != null) {
     throw new Error(
