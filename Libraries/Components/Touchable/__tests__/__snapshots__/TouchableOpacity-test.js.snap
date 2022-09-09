@@ -11,6 +11,14 @@ exports[`TouchableOpacity renders correctly 1`] = `
       "selected": undefined,
     }
   }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
   accessible={true}
   collapsable={false}
   focusable={false}
@@ -44,6 +52,14 @@ exports[`TouchableOpacity renders in disabled state when a disabled prop is pass
       "selected": undefined,
     }
   }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
   accessible={true}
   collapsable={false}
   focusable={false}
@@ -75,6 +91,14 @@ exports[`TouchableOpacity renders in disabled state when a key disabled in acces
       "disabled": true,
       "expanded": undefined,
       "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
     }
   }
   accessible={true}

@@ -2,6 +2,14 @@
 
 exports[`TouchableHighlight renders correctly 1`] = `
 <View
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
   accessible={true}
   focusable={false}
   onClick={[Function]}
@@ -26,6 +34,14 @@ exports[`TouchableHighlight with disabled state should be disabled when disabled
       "disabled": true,
     }
   }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
   accessible={true}
   focusable={false}
   onClick={[Function]}
@@ -47,6 +63,14 @@ exports[`TouchableHighlight with disabled state should be disabled when disabled
       "disabled": true,
     }
   }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
   accessible={true}
   focusable={false}
   onClick={[Function]}
@@ -66,6 +90,14 @@ exports[`TouchableHighlight with disabled state should disable button when acces
   accessibilityState={
     Object {
       "disabled": true,
+    }
+  }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
     }
   }
   accessible={true}
@@ -90,6 +122,14 @@ exports[`TouchableHighlight with disabled state should keep accessibilityState w
       "disabled": true,
     }
   }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
   accessible={true}
   focusable={false}
   onClick={[Function]}
@@ -109,6 +149,14 @@ exports[`TouchableHighlight with disabled state should overwrite accessibilitySt
   accessibilityState={
     Object {
       "disabled": true,
+    }
+  }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
     }
   }
   accessible={true}
