@@ -7,6 +7,7 @@ require "test/unit"
 require_relative "../new_architecture.rb"
 require_relative "./test_utils/InstallerMock.rb"
 require_relative "./test_utils/PodMock.rb"
+require_relative "./test_utils/SpecMock.rb"
 
 class NewArchitectureTests < Test::Unit::TestCase
     def teardown
@@ -108,6 +109,56 @@ class NewArchitectureTests < Test::Unit::TestCase
         assert_equal(react_core_release_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1")
         assert_equal(yoga_debug_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited)")
         assert_equal(yoga_release_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited)")
+    end
+
+    # =================================== #
+    # Test - install Modules Dependencies #
+    # =================================== #
+    def test_installModulesDependencies_whenNewArchEnabledAndNewArchAndNoSearchPathsNorCompilerFlagsArePresent_itInstallDependencies
+        #  Arrange
+        spec = SpecMock.new
+
+        # Act
+        NewArchitectureHelper.install_modules_dependencies(spec, true, '2021.07.22.00')
+
+        # Assert
+        assert_equal(spec.compiler_flags, NewArchitectureHelper.folly_compiler_flags)
+        assert_equal(spec.pod_target_xcconfig["HEADER_SEARCH_PATHS"], "\"$(PODS_ROOT)/boost\"")
+        assert_equal(
+            spec.dependencies,
+            [
+                { :dependency_name => "React-Core" },
+                { :dependency_name => "RCT-Folly", "version"=>"2021.07.22.00" },
+                { :dependency_name => "React-RCTFabric" },
+                { :dependency_name => "React-Codegen" },
+                { :dependency_name => "RCTRequired" },
+                { :dependency_name => "RCTTypeSafety" },
+                { :dependency_name => "ReactCommon/turbomodule/core" }
+        ])
+    end
+
+    def test_installModulesDependencies_whenNewArchDisabledAndSearchPathsAndCompilerFlagsArePresent_itInstallDependenciesAndPreserveOtherSettings
+        #  Arrange
+        spec = SpecMock.new
+        spec.compiler_flags = '-Wno-nullability-completeness'
+        other_flags = "\"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/boost\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Codegen/React_Codegen.framework/Headers\""
+        spec.pod_target_xcconfig = {
+            "HEADER_SEARCH_PATHS" => other_flags
+        }
+
+        # Act
+        NewArchitectureHelper.install_modules_dependencies(spec, false, '2021.07.22.00')
+
+        # Assert
+        assert_equal(spec.compiler_flags, "-Wno-nullability-completeness #{NewArchitectureHelper.folly_compiler_flags}")
+        assert_equal(spec.pod_target_xcconfig["HEADER_SEARCH_PATHS"], "#{other_flags} \"$(PODS_ROOT)/boost\"")
+        assert_equal(
+            spec.dependencies,
+            [
+                { :dependency_name => "React-Core" },
+                { :dependency_name => "RCT-Folly", "version"=>"2021.07.22.00" },
+            ]
+        )
     end
 end
 
