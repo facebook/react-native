@@ -294,6 +294,16 @@ type AndroidViewProps = $ReadOnly<{|
   accessibilityLiveRegion?: ?('none' | 'polite' | 'assertive'),
 
   /**
+   * Indicates to accessibility services whether the user should be notified
+   * when this view changes. Works for Android API >= 19 only.
+   *
+   * @platform android
+   *
+   * See https://reactnative.dev/docs/view#accessibilityliveregion
+   */
+  'aria-live'?: ?('polite' | 'assertive' | 'off'),
+
+  /**
    * Controls how view is important for accessibility which is if it
    * fires accessibility events and if it is reported to accessibility services
    * that query the screen. Works for Android only.

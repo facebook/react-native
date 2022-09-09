@@ -1113,6 +1113,80 @@ it('does not adjust render area until content area layed out', () => {
   expect(component).toMatchSnapshot();
 });
 
+it('does not move render area when initialScrollIndex is > 0 and offset not yet known', () => {
+  const items = generateItems(20);
+  const ITEM_HEIGHT = 10;
+
+  let component;
+
+  ReactTestRenderer.act(() => {
+    component = ReactTestRenderer.create(
+      <VirtualizedList
+        initialNumToRender={5}
+        initialScrollIndex={1}
+        windowSize={10}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
+
+  ReactTestRenderer.act(() => {
+    simulateLayout(component, {
+      viewport: {width: 10, height: 50},
+      content: {width: 10, height: 100},
+    });
+    performAllBatches();
+  });
+
+  // 5 cells should be present starting at index 1, since we have not seen a
+  // scroll event yet for current position.
+  expect(component).toMatchSnapshot();
+});
+
+it('clamps render area when items removed for initialScrollIndex > 0 and scroller position not yet known', () => {
+  const items = generateItems(20);
+  const lessItems = generateItems(15);
+  const ITEM_HEIGHT = 10;
+
+  let component;
+
+  ReactTestRenderer.act(() => {
+    component = ReactTestRenderer.create(
+      <VirtualizedList
+        initialNumToRender={5}
+        initialScrollIndex={14}
+        windowSize={10}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
+
+  ReactTestRenderer.act(() => {
+    component.update(
+      <VirtualizedList
+        initialNumToRender={5}
+        initialScrollIndex={14}
+        windowSize={10}
+        {...baseItemProps(lessItems)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
+
+  ReactTestRenderer.act(() => {
+    simulateLayout(component, {
+      viewport: {width: 10, height: 50},
+      content: {width: 10, height: 100},
+    });
+    performAllBatches();
+  });
+
+  // The initial render range should be adjusted to not overflow the list
+  expect(component).toMatchSnapshot();
+});
+
 it('adjusts render area with non-zero initialScrollIndex', () => {
   const items = generateItems(20);
   const ITEM_HEIGHT = 10;

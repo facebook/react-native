@@ -1062,6 +1062,55 @@ exports.examples = [
     },
   },
   {
+    title: 'Object Fit',
+    description: ('The `objectFit` style prop controls how the image is ' +
+      'rendered within the frame.': string),
+    render: function (): React.Node {
+      return (
+        <View>
+          {[smallImage, fullImage].map((image, index) => {
+            return (
+              <View key={index}>
+                <View style={styles.horizontal}>
+                  <View>
+                    <Text style={styles.resizeModeText}>Contain</Text>
+                    <Image
+                      style={[styles.resizeMode, {objectFit: 'contain'}]}
+                      source={image}
+                    />
+                  </View>
+                  <View style={styles.leftMargin}>
+                    <Text style={styles.resizeModeText}>Cover</Text>
+                    <Image
+                      style={[styles.resizeMode, {objectFit: 'cover'}]}
+                      source={image}
+                    />
+                  </View>
+                </View>
+                <View style={styles.horizontal}>
+                  <View>
+                    <Text style={styles.resizeModeText}>Fill</Text>
+                    <Image
+                      style={[styles.resizeMode, {objectFit: 'fill'}]}
+                      source={image}
+                    />
+                  </View>
+                  <View style={styles.leftMargin}>
+                    <Text style={styles.resizeModeText}>Scale Down</Text>
+                    <Image
+                      style={[styles.resizeMode, {objectFit: 'scale-down'}]}
+                      source={image}
+                    />
+                  </View>
+                </View>
+              </View>
+            );
+          })}
+        </View>
+      );
+    },
+  },
+  {
     title: 'Resize Mode',
     description: ('The `resizeMode` style prop controls how the image is ' +
       'rendered within the frame.': string),

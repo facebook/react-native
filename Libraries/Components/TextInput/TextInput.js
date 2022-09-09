@@ -230,6 +230,36 @@ type PasswordRules = string;
 
 type IOSProps = $ReadOnly<{|
   /**
+   * Give the keyboard and the system information about the
+   * expected semantic meaning for the content that users enter.
+   * @platform ios
+   */
+  autoComplete?: ?(
+    | 'address-line1'
+    | 'address-line2'
+    | 'cc-number'
+    | 'current-password'
+    | 'country'
+    | 'email'
+    | 'name'
+    | 'additional-name'
+    | 'family-name'
+    | 'given-name'
+    | 'nickname'
+    | 'honorific-prefix'
+    | 'honorific-suffix'
+    | 'new-password'
+    | 'off'
+    | 'one-time-code'
+    | 'organization'
+    | 'organization-title'
+    | 'postal-code'
+    | 'street-address'
+    | 'tel'
+    | 'url'
+    | 'username'
+  ),
+  /**
    * When the clear button should appear on the right side of the text view.
    * This property is supported only for single-line TextInput component.
    * @platform ios
@@ -411,6 +441,23 @@ type AndroidProps = $ReadOnly<{|
     | 'username'
     | 'username-new'
     | 'off'
+    // additional HTML autocomplete values
+    | 'address-line1'
+    | 'address-line2'
+    | 'bday'
+    | 'bday-day'
+    | 'bday-month'
+    | 'bday-year'
+    | 'country'
+    | 'current-password'
+    | 'honorific-prefix'
+    | 'honorific-suffix'
+    | 'additional-name'
+    | 'family-name'
+    | 'given-name'
+    | 'new-password'
+    | 'one-time-code'
+    | 'sex'
   ),
 
   /**
@@ -1470,6 +1517,67 @@ const inputModeToKeyboardTypeMap = {
   url: 'url',
 };
 
+// Map HTML autocomplete values to Android autoComplete values
+const autoCompleteWebToAutoCompleteAndroidMap = {
+  'address-line1': 'postal-address-region',
+  'address-line2': 'postal-address-locality',
+  bday: 'birthdate-full',
+  'bday-day': 'birthdate-day',
+  'bday-month': 'birthdate-month',
+  'bday-year': 'birthdate-year',
+  'cc-csc': 'cc-csc',
+  'cc-exp': 'cc-exp',
+  'cc-exp-month': 'cc-exp-month',
+  'cc-exp-year': 'cc-exp-year',
+  'cc-number': 'cc-number',
+  country: 'postal-address-country',
+  'current-password': 'password',
+  email: 'email',
+  'honorific-prefix': 'name-prefix',
+  'honorific-suffix': 'name-suffix',
+  name: 'name',
+  'additional-name': 'name-middle',
+  'family-name': 'name-family',
+  'given-name': 'name-given',
+  'new-password': 'password-new',
+  off: 'off',
+  'one-time-code': 'sms-otp',
+  'postal-code': 'postal-code',
+  sex: 'gender',
+  'street-address': 'street-address',
+  tel: 'tel',
+  'tel-country-code': 'tel-country-code',
+  'tel-national': 'tel-national',
+  username: 'username',
+};
+
+// Map HTML autocomplete values to iOS textContentType values
+const autoCompleteWebToTextContentTypeMap = {
+  'address-line1': 'streetAddressLine1',
+  'address-line2': 'streetAddressLine2',
+  'cc-number': 'creditCardNumber',
+  'current-password': 'password',
+  country: 'countryName',
+  email: 'emailAddress',
+  name: 'name',
+  'additional-name': 'middleName',
+  'family-name': 'familyName',
+  'given-name': 'givenName',
+  nickname: 'nickname',
+  'honorific-prefix': 'namePrefix',
+  'honorific-suffix': 'nameSuffix',
+  'new-password': 'newPassword',
+  off: 'none',
+  'one-time-code': 'oneTimeCode',
+  organization: 'organizationName',
+  'organization-title': 'jobTitle',
+  'postal-code': 'postalCode',
+  'street-address': 'fullStreetAddress',
+  tel: 'telephoneNumber',
+  url: 'URL',
+  username: 'username',
+};
+
 const ExportedForwardRef: React.AbstractComponent<
   React.ElementConfig<typeof InternalTextInput>,
   React.ElementRef<HostComponent<mixed>> & ImperativeMethods,
@@ -1478,6 +1586,8 @@ const ExportedForwardRef: React.AbstractComponent<
     allowFontScaling = true,
     rejectResponderTermination = true,
     underlineColorAndroid = 'transparent',
+    autoComplete,
+    textContentType,
     readOnly,
     editable,
     enterKeyHint,
@@ -1501,6 +1611,21 @@ const ExportedForwardRef: React.AbstractComponent<
       }
       keyboardType={
         inputMode ? inputModeToKeyboardTypeMap[inputMode] : keyboardType
+      }
+      autoComplete={
+        Platform.OS === 'android'
+          ? // $FlowFixMe
+            autoCompleteWebToAutoCompleteAndroidMap[autoComplete] ??
+            autoComplete
+          : undefined
+      }
+      textContentType={
+        Platform.OS === 'ios' &&
+        autoComplete &&
+        autoComplete in autoCompleteWebToTextContentTypeMap
+          ? // $FlowFixMe
+            autoCompleteWebToTextContentTypeMap[autoComplete]
+          : textContentType
       }
       {...restProps}
       forwardedRef={forwardedRef}

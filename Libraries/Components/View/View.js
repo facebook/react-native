@@ -31,6 +31,8 @@ const View: React.AbstractComponent<
   (
     {
       accessibilityElementsHidden,
+      accessibilityLiveRegion,
+      'aria-live': ariaLive,
       accessibilityRole,
       accessibilityLabel,
       'aria-label': ariaLabel,
@@ -138,6 +140,9 @@ const View: React.AbstractComponent<
       <TextAncestor.Provider value={false}>
         <ViewNativeComponent
           accessibilityLabel={ariaLabel ?? accessibilityLabel}
+          accessibilityLiveRegion={
+            ariaLive === 'off' ? 'none' : ariaLive ?? accessibilityLiveRegion
+          }
           focusable={tabIndex !== undefined ? !tabIndex : focusable}
           accessibilityState={_accessibilityState}
           accessibilityRole={

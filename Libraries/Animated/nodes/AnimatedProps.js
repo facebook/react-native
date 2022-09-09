@@ -12,7 +12,7 @@
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
-const ReactNative = require('../../Renderer/shims/ReactNative');
+const {findNodeHandle} = require('../../ReactNative/RendererProxy');
 const {AnimatedEvent} = require('../AnimatedEvent');
 const NativeAnimatedHelper = require('../NativeAnimatedHelper');
 const AnimatedNode = require('./AnimatedNode');
@@ -134,9 +134,7 @@ class AnimatedProps extends AnimatedNode {
 
   __connectAnimatedView(): void {
     invariant(this.__isNative, 'Expected node to be marked as "native"');
-    const nativeViewTag: ?number = ReactNative.findNodeHandle(
-      this._animatedView,
-    );
+    const nativeViewTag: ?number = findNodeHandle(this._animatedView);
     invariant(
       nativeViewTag != null,
       'Unable to locate attached view in the native tree',
@@ -149,9 +147,7 @@ class AnimatedProps extends AnimatedNode {
 
   __disconnectAnimatedView(): void {
     invariant(this.__isNative, 'Expected node to be marked as "native"');
-    const nativeViewTag: ?number = ReactNative.findNodeHandle(
-      this._animatedView,
-    );
+    const nativeViewTag: ?number = findNodeHandle(this._animatedView);
     invariant(
       nativeViewTag != null,
       'Unable to locate attached view in the native tree',

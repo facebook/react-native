@@ -15,7 +15,7 @@ import View from '../Components/View/View';
 import StyleSheet from '../StyleSheet/StyleSheet';
 import Dimensions from '../Utilities/Dimensions';
 const getInspectorDataForViewAtPoint = require('./getInspectorDataForViewAtPoint');
-const ReactNative = require('../Renderer/shims/ReactNative');
+const {findNodeHandle} = require('../ReactNative/RendererProxy');
 
 import type {HostRef} from './getInspectorDataForViewAtPoint';
 
@@ -123,7 +123,7 @@ export default function DevtoolsOverlay({
         viewData => {
           const {touchedViewTag} = viewData;
           if (touchedViewTag != null) {
-            agent.selectNode(ReactNative.findNodeHandle(touchedViewTag));
+            agent.selectNode(findNodeHandle(touchedViewTag));
             return true;
           }
           return false;

@@ -251,6 +251,7 @@ REACT_PUBLIC_HEADERS = {
     "React/RCTBorderStyle.h": RCTVIEWS_PATH + "RCTBorderStyle.h",
     "React/RCTBridge+Private.h": RCTBASE_PATH + "RCTBridge+Private.h",
     "React/RCTBridge.h": RCTBASE_PATH + "RCTBridge.h",
+    "React/RCTBridgeConstants.h": RCTBASE_PATH + "RCTBridgeConstants.h",
     "React/RCTBridgeDelegate.h": RCTBASE_PATH + "RCTBridgeDelegate.h",
     "React/RCTBridgeMethod.h": RCTBASE_PATH + "RCTBridgeMethod.h",
     "React/RCTBridgeModule.h": RCTBASE_PATH + "RCTBridgeModule.h",

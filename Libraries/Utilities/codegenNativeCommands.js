@@ -8,16 +8,7 @@
  * @flow
  */
 
-let dispatchCommand;
-if (global.RN$Bridgeless) {
-  // Note: this function has the same implementation in the legacy and new renderer.
-  // However, evaluating the old renderer comes with some side effects.
-  dispatchCommand =
-    require('../../Libraries/Renderer/shims/ReactFabric').dispatchCommand;
-} else {
-  dispatchCommand =
-    require('../../Libraries/Renderer/shims/ReactNative').dispatchCommand;
-}
+const {dispatchCommand} = require('../ReactNative/RendererProxy');
 
 type Options<T = string> = $ReadOnly<{|
   supportedCommands: $ReadOnlyArray<T>,

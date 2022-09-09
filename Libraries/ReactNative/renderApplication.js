@@ -8,20 +8,21 @@
  * @flow
  */
 
-const AppContainer = require('./AppContainer');
-import GlobalPerformanceLogger from '../Utilities/GlobalPerformanceLogger';
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
-import PerformanceLoggerContext from '../Utilities/PerformanceLoggerContext';
 import type {DisplayModeType} from './DisplayMode';
-import getCachedComponentWithDebugName from './getCachedComponentWithDebugName';
-const React = require('react');
 
-const invariant = require('invariant');
+import GlobalPerformanceLogger from '../Utilities/GlobalPerformanceLogger';
+import PerformanceLoggerContext from '../Utilities/PerformanceLoggerContext';
+import AppContainer from './AppContainer';
+import getCachedComponentWithDebugName from './getCachedComponentWithDebugName';
+import * as Renderer from './RendererProxy';
+import invariant from 'invariant';
+import * as React from 'react';
 
 // require BackHandler so it sets the default handler that exits the app if no listeners respond
-require('../Utilities/BackHandler');
+import '../Utilities/BackHandler';
 
-function renderApplication<Props: Object>(
+export default function renderApplication<Props: Object>(
   RootComponent: React.ComponentType<Props>,
   initialProps: Props,
   rootTag: any,
@@ -69,17 +70,15 @@ function renderApplication<Props: Object>(
     useConcurrentRoot ? '1' : '0',
   );
   performanceLogger.setExtra('usedReactFabric', fabric ? '1' : '0');
-  if (fabric) {
-    require('../Renderer/shims/ReactFabric').render(
-      renderable,
-      rootTag,
-      null,
-      useConcurrentRoot,
-    );
-  } else {
-    require('../Renderer/shims/ReactNative').render(renderable, rootTag);
-  }
+  performanceLogger.setExtra(
+    'usedReactProfiler',
+    Renderer.isProfilingRenderer(),
+  );
+  Renderer.renderElement({
+    element: renderable,
+    rootTag,
+    useFabric: Boolean(fabric),
+    useConcurrentRoot: Boolean(useConcurrentRoot),
+  });
   performanceLogger.stopTimespan('renderApplication_React_render');
 }
-
-module.exports = renderApplication;

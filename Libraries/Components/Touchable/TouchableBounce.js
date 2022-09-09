@@ -133,6 +133,10 @@ class TouchableBounce extends React.Component<Props, State> {
 
     const accessibilityLabel =
       this.props['aria-label'] ?? this.props.accessibilityLabel;
+    const accessibilityLiveRegion =
+      this.props['aria-live'] === 'off'
+        ? 'none'
+        : this.props['aria-live'] ?? this.props.accessibilityLiveRegion;
     const _accessibilityState = {
       busy: this.props['aria-busy'] ?? this.props.accessibilityState?.busy,
       checked:
@@ -157,12 +161,12 @@ class TouchableBounce extends React.Component<Props, State> {
         accessibilityActions={this.props.accessibilityActions}
         onAccessibilityAction={this.props.onAccessibilityAction}
         accessibilityValue={this.props.accessibilityValue}
+        accessibilityLiveRegion={accessibilityLiveRegion}
         importantForAccessibility={
           this.props['aria-hidden'] === true
             ? 'no-hide-descendants'
             : this.props.importantForAccessibility
         }
-        accessibilityLiveRegion={this.props.accessibilityLiveRegion}
         accessibilityViewIsModal={this.props.accessibilityViewIsModal}
         accessibilityElementsHidden={
           this.props['aria-hidden'] ?? this.props.accessibilityElementsHidden

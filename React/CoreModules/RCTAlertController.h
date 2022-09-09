@@ -10,6 +10,5 @@
 @interface RCTAlertController : UIAlertController
 
 - (void)show:(BOOL)animated completion:(void (^)(void))completion;
-- (void)hide;
 
 @end

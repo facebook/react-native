@@ -16,7 +16,7 @@ const InspectorPanel = require('./InspectorPanel');
 const Platform = require('../Utilities/Platform');
 const PressabilityDebug = require('../Pressability/PressabilityDebug');
 const React = require('react');
-const ReactNative = require('../Renderer/shims/ReactNative');
+const {findNodeHandle} = require('../ReactNative/RendererProxy');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const View = require('../Components/View/View');
 const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
@@ -110,10 +110,9 @@ class Inspector extends React.Component<
 
   setSelection(i: number) {
     const hierarchyItem = this.state.hierarchy[i];
-    // we pass in ReactNative.findNodeHandle as the method is injected
-    const {measure, props, source} = hierarchyItem.getInspectorData(
-      ReactNative.findNodeHandle,
-    );
+    // we pass in findNodeHandle as the method is injected
+    const {measure, props, source} =
+      hierarchyItem.getInspectorData(findNodeHandle);
 
     measure((x, y, width, height, left, top) => {
       this.setState({
@@ -143,9 +142,7 @@ class Inspector extends React.Component<
       // Note: This is Paper only. To support Fabric,
       // DevTools needs to be updated to not rely on view tags.
       if (this.state.devtoolsAgent && touchedViewTag) {
-        this.state.devtoolsAgent.selectNode(
-          ReactNative.findNodeHandle(touchedViewTag),
-        );
+        this.state.devtoolsAgent.selectNode(findNodeHandle(touchedViewTag));
       }
 
       this.setState({
