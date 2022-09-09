@@ -21,7 +21,7 @@ Baseline responsibilities of partners include:
 
 Our current partners and other areas of ownership:
 * **[Coinbase](TODO ):** TODO
-* **[Callstack](https://callstack.com/):** Maintains the [React Native CLI](https://github.com/react-native-community/react-native-cli) and organizes [React Native EU](https://react-native.eu/)
+* **[Callstack](https://callstack.com/):** Maintains the [React Native CLI](https://github.com/react-native-community/react-native-cli) and [other community libraries](https://github.com/callstack), organizes [React Native EU](https://react-native.eu/) and hosts [The React Native Show podcast](https://www.callstack.com/podcast-react-native-show)
 * **[Expo](https://expo.dev/):** Builds [Expo Go and SDK](https://github.com/expo/expo), [Snack](https://snack.expo.dev/), and [Expo Application Services](https://expo.dev/eas). Maintains [React Native Directory](https://reactnative.directory/), stewards [React Navigation](https://reactnavigation.org/) along with other partners.
 * **[Infinite Red](https://infinite.red/):** Maintains the [ignite cli/boilerplate](https://github.com/infinitered/ignite), organizes [Chain React Conf](https://cr.infinite.red/), hosts the [React Native Radio podcast](https://reactnativeradio.com), publishes the [React Native Newsletter](https://reactnativenewsletter.com)
 * **[Meta](https://opensource.fb.com/):** Oversees the React Native product and maintains the [React Native core repo](https://reactnative.dev/) 
