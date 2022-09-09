@@ -144,11 +144,11 @@ class ReactNativePodsUtils
             # since the libraries there are only built for x86_64 and i386.
             lib_search_paths.delete("$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)")
             lib_search_paths.delete("\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"")
+        end
 
-            if !(lib_search_paths.include?("$(SDKROOT)/usr/lib/swift") || lib_search_paths.include?("\"$(SDKROOT)/usr/lib/swift\""))
-                # however, $(SDKROOT)/usr/lib/swift is required, at least if user is not running CocoaPods 1.11
-                lib_search_paths.insert(0, "$(SDKROOT)/usr/lib/swift")
-            end
+        if !(lib_search_paths.include?("$(SDKROOT)/usr/lib/swift") || lib_search_paths.include?("\"$(SDKROOT)/usr/lib/swift\""))
+            # however, $(SDKROOT)/usr/lib/swift is required, at least if user is not running CocoaPods 1.11
+            lib_search_paths.insert(0, "$(SDKROOT)/usr/lib/swift")
         end
     end
 
