@@ -947,7 +947,7 @@ SPEC CHECKSUMS:
   React-rncore: 2a6ad37560e94cf7ff32e3f2ae1e708491b4c1f3
   React-runtimeexecutor: 97dca9247f4d3cfe0733384b189c6930fbd402b7
   ReactCommon: 8e39c4b24da570ea2b631accbf779b5891befe0c
-  ScreenshotManager: 71d047abd38a77310985b87f8136b620c5c61e88
+  ScreenshotManager: 3fc534a218e7b8dde632158411d0f15b0ca8893c
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   Yoga: 1b1a12ff3d86a10565ea7cbe057d42f5e5fb2a07
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
