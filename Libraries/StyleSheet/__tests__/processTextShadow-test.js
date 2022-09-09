@@ -74,7 +74,6 @@ describe('processTextShadow', () => {
   });
 
   it('should ignore invalid values', () => {
-    console.log(processTextShadow('11 r b r'));
     expect(processTextShadow('11 r b r')).toMatchObject({xOffset: undefined});
   });
 });
