@@ -21,8 +21,11 @@ import NativeImageLoaderAndroid from './NativeImageLoaderAndroid';
 
 import TextInlineImageNativeComponent from './TextInlineImageNativeComponent';
 
+import {convertObjectFitToResizeMode} from './ImageUtils';
+
 import type {ImageProps as ImagePropsType} from './ImageProps';
 import type {RootTag} from '../Types/RootTagTypes';
+import {getImageSourcesFromImageProps} from './ImageSourceUtils';
 
 let _requestId = 1;
 function generateRequestId() {
@@ -126,24 +129,11 @@ export type ImageComponentStatics = $ReadOnly<{|
 /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
  * LTI update could not be added via codemod */
 const BaseImage = (props: ImagePropsType, forwardedRef) => {
-  let source = resolveAssetSource(props.source);
+  let source = getImageSourcesFromImageProps(props);
   const defaultSource = resolveAssetSource(props.defaultSource);
   const loadingIndicatorSource = resolveAssetSource(
     props.loadingIndicatorSource,
   );
-
-  if (source) {
-    const uri = source.uri;
-    if (uri === '') {
-      console.warn('source.uri should not be an empty string');
-    }
-  }
-
-  if (props.src) {
-    console.warn(
-      'The <Image> component requires a `source` property rather than `src`.',
-    );
-  }
 
   if (props.children) {
     throw new Error(
@@ -163,16 +153,21 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
 
   let style;
   let sources;
-  if (source?.uri != null) {
-    const {width, height} = source;
+  if (!Array.isArray(source) && source?.uri != null) {
+    const {width = props.width, height = props.height, uri} = source;
     style = flattenStyle([{width, height}, styles.base, props.style]);
-    sources = [{uri: source.uri}];
+    sources = [{uri: uri, width: width, height: height}];
+    if (uri === '') {
+      console.warn('source.uri should not be an empty string');
+    }
   } else {
     style = flattenStyle([styles.base, props.style]);
     sources = source;
   }
 
-  let flatten_style = flattenStyle(style);
+  const {height, width, ...restProps} = props;
+
+  style = flattenStyle(style);
 
   const layoutPropMap = {
     marginInlineStart: 'marginStart',
@@ -190,27 +185,42 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
   };
 
   Object.keys(layoutPropMap).forEach(key => {
-    if (flatten_style && flatten_style[key] !== undefined) {
-      flatten_style[layoutPropMap[key]] = flatten_style[key];
-      delete flatten_style[key];
+    if (style && style[key] !== undefined) {
+      style[layoutPropMap[key]] = style[key];
+      delete style[key];
     }
   });
 
   const {onLoadStart, onLoad, onLoadEnd, onError} = props;
   const nativeProps = {
-    ...props,
-    flatten_style,
+    ...restProps,
+    style,
     shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd || onError),
     src: sources,
     /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
      * when making Flow check .android.js files. */
-    headers: source?.headers,
+    headers: (source?.[0]?.headers || source?.headers: ?{[string]: string}),
     defaultSrc: defaultSource ? defaultSource.uri : null,
     loadingIndicatorSrc: loadingIndicatorSource
       ? loadingIndicatorSource.uri
       : null,
     ref: forwardedRef,
+    accessibilityState: {
+      busy: props['aria-busy'] ?? props.accessibilityState?.busy,
+      checked: props['aria-checked'] ?? props.accessibilityState?.checked,
+      disabled: props['aria-disabled'] ?? props.accessibilityState?.disabled,
+      expanded: props['aria-expanded'] ?? props.accessibilityState?.expanded,
+      selected: props['aria-selected'] ?? props.accessibilityState?.selected,
+    },
   };
+
+  const objectFit =
+    style && style.objectFit
+      ? convertObjectFitToResizeMode(style.objectFit)
+      : null;
+  // $FlowFixMe[prop-missing]
+  const resizeMode =
+    objectFit || props.resizeMode || (style && style.resizeMode) || 'cover';
 
   return (
     <ImageAnalyticsTagContext.Consumer>
@@ -229,8 +239,8 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
                 let src = Array.isArray(sources) ? sources : [sources];
                 return (
                   <TextInlineImageNativeComponent
-                    style={flatten_style}
-                    resizeMode={props.resizeMode}
+                    style={style}
+                    resizeMode={resizeMode}
                     headers={nativeProps.headers}
                     src={src}
                     ref={forwardedRef}
@@ -238,7 +248,12 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
                 );
               }
 
-              return <ImageViewNativeComponent {...nativePropsWithAnalytics} />;
+              return (
+                <ImageViewNativeComponent
+                  {...nativePropsWithAnalytics}
+                  resizeMode={resizeMode}
+                />
+              );
             }}
           </TextAncestor.Consumer>
         );

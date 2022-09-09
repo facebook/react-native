@@ -294,6 +294,16 @@ type AndroidViewProps = $ReadOnly<{|
   accessibilityLiveRegion?: ?('none' | 'polite' | 'assertive'),
 
   /**
+   * Indicates to accessibility services whether the user should be notified
+   * when this view changes. Works for Android API >= 19 only.
+   *
+   * @platform android
+   *
+   * See https://reactnative.dev/docs/view#accessibilityliveregion
+   */
+  'aria-live'?: ?('polite' | 'assertive' | 'off'),
+
+  /**
    * Controls how view is important for accessibility which is if it
    * fires accessibility events and if it is reported to accessibility services
    * that query the screen. Works for Android only.
@@ -490,6 +500,23 @@ export type ViewProps = $ReadOnly<{|
    * @platform android
    */
   accessibilityLabelledBy?: ?string | ?Array<string>,
+
+  /**
+   * alias for accessibilityState
+   *
+   * see https://reactnative.dev/docs/accessibility#accessibilitystate
+   */
+  'aria-busy'?: ?boolean,
+  'aria-checked'?: ?boolean,
+  'aria-disabled'?: ?boolean,
+  'aria-expanded'?: ?boolean,
+  'aria-selected'?: ?boolean,
+  /** A value indicating whether the accessibility elements contained within
+   * this accessibility element are hidden.
+   *
+   * See https://reactnative.dev/docs/view#aria-hidden
+   */
+  'aria-hidden'?: ?boolean,
 
   /**
    * Views that are only used to layout their children or otherwise don't draw

@@ -134,6 +134,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   textShadowOffset: true,
   textShadowRadius: true,
   textTransform: true,
+  userSelect: true,
   writingDirection: true,
 
   /**
@@ -142,6 +143,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   overlayColor: colorAttributes,
   resizeMode: true,
   tintColor: colorAttributes,
+  objectFit: true,
 };
 
 module.exports = ReactNativeStyleAttributes;

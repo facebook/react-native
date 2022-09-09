@@ -12,7 +12,7 @@
 const React = require('react');
 const ReactTestRenderer = require('react-test-renderer');
 const TextInput = require('../TextInput');
-const ReactNative = require('../../../Renderer/shims/ReactNative');
+const ReactNative = require('../../../ReactNative/RendererProxy');
 
 const {
   enter,

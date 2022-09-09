@@ -10,13 +10,12 @@
 
 'use strict';
 
-const BatchedBridge = require('react-native/Libraries/BatchedBridge/BatchedBridge');
-const React = require('react');
-
-const renderApplication = require('react-native/Libraries/ReactNative/renderApplication');
-
-const {StyleSheet, Text, View} = require('react-native');
 import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
+
+import * as React from 'react';
+import {StyleSheet, Text, View} from 'react-native';
+import BatchedBridge from 'react-native/Libraries/BatchedBridge/BatchedBridge';
+import renderApplication from 'react-native/Libraries/ReactNative/renderApplication';
 
 type FlexTestAppProps = $ReadOnly<{||}>;
 class FlexTestApp extends React.Component<FlexTestAppProps> {
@@ -267,4 +266,4 @@ BatchedBridge.registerCallableModule(
   UIManagerTestModule,
 );
 
-module.exports = UIManagerTestModule;
+export default UIManagerTestModule;

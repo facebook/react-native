@@ -290,7 +290,10 @@ class TouchableHighlight extends React.Component<Props, State> {
             disabled: this.props.disabled,
           }
         : this.props.accessibilityState;
-
+    const accessibilityLiveRegion =
+      this.props['aria-live'] === 'off'
+        ? 'none'
+        : this.props['aria-live'] ?? this.props.accessibilityLiveRegion;
     return (
       <View
         accessible={this.props.accessible !== false}
@@ -302,10 +305,16 @@ class TouchableHighlight extends React.Component<Props, State> {
         accessibilityValue={this.props.accessibilityValue}
         accessibilityActions={this.props.accessibilityActions}
         onAccessibilityAction={this.props.onAccessibilityAction}
-        importantForAccessibility={this.props.importantForAccessibility}
-        accessibilityLiveRegion={this.props.accessibilityLiveRegion}
+        importantForAccessibility={
+          this.props['aria-hidden'] === true
+            ? 'no-hide-descendants'
+            : this.props.importantForAccessibility
+        }
+        accessibilityLiveRegion={accessibilityLiveRegion}
         accessibilityViewIsModal={this.props.accessibilityViewIsModal}
-        accessibilityElementsHidden={this.props.accessibilityElementsHidden}
+        accessibilityElementsHidden={
+          this.props['aria-hidden'] ?? this.props.accessibilityElementsHidden
+        }
         style={StyleSheet.compose(
           this.props.style,
           this.state.extraStyles?.underlay,

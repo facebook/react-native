@@ -23,15 +23,15 @@ import com.facebook.react.bridge.JSIModulePackage
 abstract class DefaultReactNativeHost protected constructor(application: Application) :
     ReactNativeHost(application) {
 
-  protected override fun getReactPackageTurboModuleManagerDelegateBuilder():
+  override fun getReactPackageTurboModuleManagerDelegateBuilder():
       ReactPackageTurboModuleManagerDelegate.Builder? =
       dynamicLibraryName?.let {
         // If the user provided a dynamic library name, we assume they want to load
         // the default ReactPackageTurboModuleManagerDelegate
-        DefaultTurboModuleManagerDelegate.Builder(it)
+        DefaultTurboModuleManagerDelegate.Builder()
       }
 
-  protected override fun getJSIModulePackage(): JSIModulePackage? =
+  override fun getJSIModulePackage(): JSIModulePackage? =
       dynamicLibraryName?.let {
         // If the user provided a dynamic library name, we assume they want to load
         // the default JSIModulePackage

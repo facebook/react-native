@@ -88,7 +88,7 @@ void TimelineHandler::release() noexcept {
 }
 
 void TimelineHandler::ensureNotEmpty() const noexcept {
-  if (!timeline_) {
+  if (timeline_ == nullptr) {
     abort();
   }
 }

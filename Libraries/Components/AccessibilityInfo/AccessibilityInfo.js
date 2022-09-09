@@ -9,7 +9,7 @@
  */
 
 import RCTDeviceEventEmitter from '../../EventEmitter/RCTDeviceEventEmitter';
-import {sendAccessibilityEvent} from '../../Renderer/shims/ReactNative';
+import {sendAccessibilityEvent} from '../../ReactNative/RendererProxy';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import Platform from '../../Utilities/Platform';
 import type {EventSubscription} from '../../vendor/emitter/EventEmitter';

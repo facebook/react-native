@@ -30,16 +30,39 @@ const View: React.AbstractComponent<
 > = React.forwardRef(
   (
     {
-      tabIndex,
-      focusable,
-      role,
+      accessibilityElementsHidden,
+      accessibilityLiveRegion,
+      'aria-live': ariaLive,
       accessibilityRole,
+      'aria-hidden': ariaHidden,
+      focusable,
+      importantForAccessibility,
       pointerEvents,
+      role,
       style,
+      tabIndex,
       ...otherProps
     }: ViewProps,
     forwardedRef,
   ) => {
+    const {
+      accessibilityState,
+      'aria-busy': ariaBusy,
+      'aria-checked': ariaChecked,
+      'aria-disabled': ariaDisabled,
+      'aria-expanded': ariaExpanded,
+      'aria-selected': ariaSelected,
+      ...restProps
+    } = otherProps;
+
+    const _accessibilityState = {
+      busy: ariaBusy ?? accessibilityState?.busy,
+      checked: ariaChecked ?? accessibilityState?.checked,
+      disabled: ariaDisabled ?? accessibilityState?.disabled,
+      expanded: ariaExpanded ?? accessibilityState?.expanded,
+      selected: ariaSelected ?? accessibilityState?.selected,
+    };
+
     // Map role values to AccessibilityRole values
     const roleToAccessibilityRoleMapping = {
       alert: 'alert',
@@ -108,8 +131,8 @@ const View: React.AbstractComponent<
       treeitem: undefined,
     };
 
-    const flattenedStyle = flattenStyle(style);
-    const newPointerEvents = flattenedStyle?.pointerEvents || pointerEvents;
+    const flattendStyle = flattenStyle(style);
+    const newPointerEvents = flattendStyle?.pointerEvents || pointerEvents;
 
     Object.keys(layoutPropMap).forEach(key => {
       if (flattendStyle && flattendStyle[key] !== undefined) {
@@ -121,9 +144,21 @@ const View: React.AbstractComponent<
     return (
       <TextAncestor.Provider value={false}>
         <ViewNativeComponent
+          accessibilityLiveRegion={
+            ariaLive === 'off' ? 'none' : ariaLive ?? accessibilityLiveRegion
+          }
           focusable={tabIndex !== undefined ? !tabIndex : focusable}
+          accessibilityState={_accessibilityState}
           accessibilityRole={
             role ? roleToAccessibilityRoleMapping[role] : accessibilityRole
+          }
+          accessibilityElementsHidden={
+            ariaHidden ?? accessibilityElementsHidden
+          }
+          importantForAccessibility={
+            ariaHidden === true
+              ? 'no-hide-descendants'
+              : importantForAccessibility
           }
           style={flattendStyle}
           {...otherProps}

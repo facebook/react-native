@@ -42,6 +42,18 @@ type Props = $ReadOnly<{|
   accessibilityValue?: ?AccessibilityValue,
   accessibilityViewIsModal?: ?boolean,
   accessible?: ?boolean,
+  /**
+   * alias for accessibilityState
+   *
+   * see https://reactnative.dev/docs/accessibility#accessibilitystate
+   */
+  'aria-busy'?: ?boolean,
+  'aria-checked'?: ?boolean,
+  'aria-disabled'?: ?boolean,
+  'aria-expanded'?: ?boolean,
+  'aria-selected'?: ?boolean,
+  'aria-hidden'?: ?boolean,
+  'aria-live'?: ?('polite' | 'assertive' | 'off'),
   children?: ?React.Node,
   delayLongPress?: ?number,
   delayPressIn?: ?number,
@@ -98,6 +110,8 @@ class TouchableWithoutFeedback extends React.Component<Props, State> {
   render(): React.Node {
     const element = React.Children.only(this.props.children);
     const children = [element.props.children];
+    const ariaLive = this.props['aria-live'];
+
     if (__DEV__) {
       if (element.type === View) {
         children.push(
@@ -105,6 +119,18 @@ class TouchableWithoutFeedback extends React.Component<Props, State> {
         );
       }
     }
+
+    let _accessibilityState = {
+      busy: this.props['aria-busy'] ?? this.props.accessibilityState?.busy,
+      checked:
+        this.props['aria-checked'] ?? this.props.accessibilityState?.checked,
+      disabled:
+        this.props['aria-disabled'] ?? this.props.accessibilityState?.disabled,
+      expanded:
+        this.props['aria-expanded'] ?? this.props.accessibilityState?.expanded,
+      selected:
+        this.props['aria-selected'] ?? this.props.accessibilityState?.selected,
+    };
 
     // BACKWARD-COMPATIBILITY: Focus and blur events were never supported before
     // adopting `Pressability`, so preserve that behavior.
@@ -117,12 +143,23 @@ class TouchableWithoutFeedback extends React.Component<Props, State> {
       accessibilityState:
         this.props.disabled != null
           ? {
-              ...this.props.accessibilityState,
+              ..._accessibilityState,
               disabled: this.props.disabled,
             }
-          : this.props.accessibilityState,
+          : _accessibilityState,
       focusable:
         this.props.focusable !== false && this.props.onPress !== undefined,
+
+      accessibilityElementsHidden:
+        this.props['aria-hidden'] ?? this.props.accessibilityElementsHidden,
+      importantForAccessibility:
+        this.props['aria-hidden'] === true
+          ? 'no-hide-descendants'
+          : this.props.importantForAccessibility,
+      accessibilityLiveRegion:
+        ariaLive === 'off'
+          ? 'none'
+          : ariaLive ?? this.props.accessibilityLiveRegion,
     };
     for (const prop of PASSTHROUGH_PROPS) {
       if (this.props[prop] !== undefined) {
@@ -142,13 +179,16 @@ class TouchableWithoutFeedback extends React.Component<Props, State> {
   }
 }
 
-function createPressabilityConfig(props: Props): PressabilityConfig {
+function createPressabilityConfig({
+  'aria-disabled': ariaDisabled,
+  ...props
+}: Props): PressabilityConfig {
+  const accessibilityStateDisabled =
+    ariaDisabled ?? props.accessibilityState?.disabled;
   return {
     cancelable: !props.rejectResponderTermination,
     disabled:
-      props.disabled !== null
-        ? props.disabled
-        : props.accessibilityState?.disabled,
+      props.disabled !== null ? props.disabled : accessibilityStateDisabled,
     hitSlop: props.hitSlop,
     delayLongPress: props.delayLongPress,
     delayPressIn: props.delayPressIn,

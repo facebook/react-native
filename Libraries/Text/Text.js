@@ -34,6 +34,11 @@ const Text: React.AbstractComponent<
   const {
     accessible,
     allowFontScaling,
+    'aria-busy': ariaBusy,
+    'aria-checked': ariaChecked,
+    'aria-disabled': ariaDisabled,
+    'aria-expanded': ariaExpanded,
+    'aria-selected': ariaSelected,
     ellipsizeMode,
     onLongPress,
     onPress,
@@ -52,14 +57,23 @@ const Text: React.AbstractComponent<
 
   const [isHighlighted, setHighlighted] = useState(false);
 
+  const _accessibilityState = {
+    busy: ariaBusy ?? props.accessibilityState?.busy,
+    checked: ariaChecked ?? props.accessibilityState?.checked,
+    disabled: ariaDisabled ?? props.accessibilityState?.disabled,
+    expanded: ariaExpanded ?? props.accessibilityState?.expanded,
+    selected: ariaSelected ?? props.accessibilityState?.selected,
+  };
+
   const _disabled =
     restProps.disabled != null
       ? restProps.disabled
-      : props.accessibilityState?.disabled;
-  const _accessibilityState =
-    _disabled !== props.accessibilityState?.disabled
-      ? {...props.accessibilityState, disabled: _disabled}
-      : props.accessibilityState;
+      : _accessibilityState?.disabled;
+
+  const nativeTextAccessibilityState =
+    _disabled !== _accessibilityState?.disabled
+      ? {..._accessibilityState, disabled: _disabled}
+      : _accessibilityState;
 
   const isPressable =
     (onPress != null ||
@@ -155,6 +169,11 @@ const Text: React.AbstractComponent<
 
   let style = flattenStyle(restProps.style);
 
+  let _selectable = restProps.selectable;
+  if (style?.userSelect != null) {
+    _selectable = userSelectToSelectableMap[style.userSelect];
+  }
+
   Object.keys(layoutPropMap).forEach(key => {
     if (style && style[key] !== undefined) {
       style[layoutPropMap[key]] = style[key];
@@ -188,9 +207,11 @@ const Text: React.AbstractComponent<
   return hasTextAncestor ? (
     <NativeVirtualText
       {...restProps}
+      accessibilityState={_accessibilityState}
       {...eventHandlersForText}
       isHighlighted={isHighlighted}
       isPressable={isPressable}
+      selectable={_selectable}
       numberOfLines={numberOfLines}
       selectionColor={selectionColor}
       style={style}
@@ -202,8 +223,9 @@ const Text: React.AbstractComponent<
         {...restProps}
         {...eventHandlersForText}
         disabled={_disabled}
+        selectable={_selectable}
         accessible={_accessible}
-        accessibilityState={_accessibilityState}
+        accessibilityState={nativeTextAccessibilityState}
         allowFontScaling={allowFontScaling !== false}
         ellipsizeMode={ellipsizeMode ?? 'tail'}
         isHighlighted={isHighlighted}
@@ -245,5 +267,13 @@ function useLazyInitialization(newValue: boolean): boolean {
   }
   return oldValue;
 }
+
+const userSelectToSelectableMap = {
+  auto: true,
+  text: true,
+  none: false,
+  contain: true,
+  all: true,
+};
 
 module.exports = Text;

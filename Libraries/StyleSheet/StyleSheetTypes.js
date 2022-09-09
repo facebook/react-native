@@ -700,6 +700,7 @@ export type ____TextStyle_InternalCore = $ReadOnly<{
   textDecorationStyle?: 'solid' | 'double' | 'dotted' | 'dashed',
   textDecorationColor?: ____ColorValue_Internal,
   textTransform?: 'none' | 'capitalize' | 'uppercase' | 'lowercase',
+  userSelect?: 'auto' | 'text' | 'none' | 'contain' | 'all',
   writingDirection?: 'auto' | 'ltr' | 'rtl',
 }>;
 
@@ -711,6 +712,7 @@ export type ____TextStyle_Internal = $ReadOnly<{
 export type ____ImageStyle_InternalCore = $ReadOnly<{
   ...$Exact<____ViewStyle_Internal>,
   resizeMode?: 'contain' | 'cover' | 'stretch' | 'center' | 'repeat',
+  objectFit?: 'cover' | 'contain' | 'fill' | 'scale-down',
   tintColor?: ____ColorValue_Internal,
   overlayColor?: string,
 }>;
@@ -723,6 +725,7 @@ export type ____ImageStyle_Internal = $ReadOnly<{
 export type ____DangerouslyImpreciseStyle_InternalCore = $ReadOnly<{
   ...$Exact<____TextStyle_Internal>,
   resizeMode?: 'contain' | 'cover' | 'stretch' | 'center' | 'repeat',
+  objectFit?: 'cover' | 'contain' | 'fill' | 'scale-down',
   tintColor?: ____ColorValue_Internal,
   overlayColor?: string,
 }>;

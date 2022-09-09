@@ -14,7 +14,7 @@
 
 const React = require('react');
 const Platform = require('../../Utilities/Platform');
-const {findNodeHandle} = require('../../Renderer/shims/ReactNative');
+const {findNodeHandle} = require('../../ReactNative/RendererProxy');
 import {Commands as AndroidTextInputCommands} from '../../Components/TextInput/AndroidTextInputNativeComponent';
 import {Commands as iOSTextInputCommands} from '../../Components/TextInput/RCTSingelineTextInputNativeComponent';
 
