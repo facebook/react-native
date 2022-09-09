@@ -235,6 +235,13 @@ class TouchableOpacity extends React.Component<Props, State> {
           }
         : _accessibilityState;
 
+    const accessibilityValue = {
+      max: this.props['aria-valuemax'] ?? this.props.accessibilityValue?.max,
+      min: this.props['aria-valuemin'] ?? this.props.accessibilityValue?.min,
+      now: this.props['aria-valuenow'] ?? this.props.accessibilityValue?.now,
+      text: this.props['aria-valuetext'] ?? this.props.accessibilityValue?.text,
+    };
+
     const accessibilityLiveRegion =
       this.props['aria-live'] === 'off'
         ? 'none'
@@ -250,7 +257,7 @@ class TouchableOpacity extends React.Component<Props, State> {
         accessibilityState={_accessibilityState}
         accessibilityActions={this.props.accessibilityActions}
         onAccessibilityAction={this.props.onAccessibilityAction}
-        accessibilityValue={this.props.accessibilityValue}
+        accessibilityValue={accessibilityValue}
         importantForAccessibility={
           this.props['aria-hidden'] === true
             ? 'no-hide-descendants'

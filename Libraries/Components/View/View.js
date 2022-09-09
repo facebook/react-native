@@ -131,6 +131,14 @@ const View: React.AbstractComponent<
       treeitem: undefined,
     };
 
+    const accessibilityValue = {
+      max: otherProps['aria-valuemax'] ?? otherProps.accessibilityValue?.max,
+      min: otherProps['aria-valuemin'] ?? otherProps.accessibilityValue?.min,
+      now: otherProps['aria-valuenow'] ?? otherProps.accessibilityValue?.now,
+      text: otherProps['aria-valuetext'] ?? otherProps.accessibilityValue?.text,
+    };
+    const restWithDefaultProps = {...otherProps, accessibilityValue};
+
     const flattenedStyle = flattenStyle(style);
     const newPointerEvents = flattenedStyle?.pointerEvents || pointerEvents;
 
@@ -153,7 +161,7 @@ const View: React.AbstractComponent<
               ? 'no-hide-descendants'
               : importantForAccessibility
           }
-          {...restProps}
+          {...restWithDefaultProps}
           style={style}
           pointerEvents={newPointerEvents}
           ref={forwardedRef}

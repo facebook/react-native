@@ -11,6 +11,14 @@ exports[`<TouchableNativeFeedback /> should render as expected 1`] = `
       "selected": undefined,
     }
   }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
   accessible={true}
   focusable={false}
   onClick={[Function]}
@@ -32,6 +40,14 @@ exports[`<TouchableNativeFeedback disabled={false} accessibilityState={{disabled
       "disabled": false,
       "expanded": undefined,
       "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
     }
   }
   accessible={true}
@@ -57,6 +73,14 @@ exports[`<TouchableNativeFeedback disabled={true} accessibilityState={{}}> shoul
       "selected": undefined,
     }
   }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
   accessible={true}
   focusable={false}
   onClick={[Function]}
@@ -78,6 +102,14 @@ exports[`<TouchableNativeFeedback disabled={true} accessibilityState={{checked: 
       "disabled": true,
       "expanded": undefined,
       "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
     }
   }
   accessible={true}
@@ -103,6 +135,14 @@ exports[`<TouchableNativeFeedback disabled={true} accessibilityState={{disabled:
       "selected": undefined,
     }
   }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
   accessible={true}
   focusable={false}
   onClick={[Function]}
@@ -126,6 +166,14 @@ exports[`<TouchableNativeFeedback disabled={true}> should be disabled when disab
       "selected": undefined,
     }
   }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
   accessible={true}
   focusable={false}
   onClick={[Function]}
@@ -147,6 +195,14 @@ exports[`TouchableWithoutFeedback renders correctly 1`] = `
       "disabled": undefined,
       "expanded": undefined,
       "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    Object {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
     }
   }
   accessible={true}

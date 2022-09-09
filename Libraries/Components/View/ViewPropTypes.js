@@ -489,6 +489,15 @@ export type ViewProps = $ReadOnly<{|
   accessibilityValue?: ?AccessibilityValue,
 
   /**
+   * alias for accessibilityState
+   * It represents textual description of a component's value, or for range-based components, such as sliders and progress bars.
+   */
+  'aria-valuemax'?: ?AccessibilityValue['max'],
+  'aria-valuemin'?: ?AccessibilityValue['min'],
+  'aria-valuenow'?: ?AccessibilityValue['now'],
+  'aria-valuetext'?: ?AccessibilityValue['text'],
+
+  /**
    * Provides an array of custom actions available for accessibility.
    *
    */

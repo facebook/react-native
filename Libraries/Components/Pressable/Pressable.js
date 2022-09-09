@@ -50,6 +50,10 @@ type Props = $ReadOnly<{|
   accessibilityRole?: ?AccessibilityRole,
   accessibilityState?: ?AccessibilityState,
   accessibilityValue?: ?AccessibilityValue,
+  'aria-valuemax'?: AccessibilityValue['max'],
+  'aria-valuemin'?: AccessibilityValue['min'],
+  'aria-valuenow'?: AccessibilityValue['now'],
+  'aria-valuetext'?: AccessibilityValue['text'],
   accessibilityViewIsModal?: ?boolean,
   accessible?: ?boolean,
 
@@ -240,6 +244,13 @@ function Pressable(props: Props, forwardedRef): React.Node {
   _accessibilityState =
     disabled != null ? {..._accessibilityState, disabled} : _accessibilityState;
 
+  const accessibilityValue = {
+    max: props['aria-valuemax'] ?? props.accessibilityValue?.max,
+    min: props['aria-valuemin'] ?? props.accessibilityValue?.min,
+    now: props['aria-valuenow'] ?? props.accessibilityValue?.now,
+    text: props['aria-valuetext'] ?? props.accessibilityValue?.text,
+  };
+
   const accessibilityLiveRegion =
     ariaLive === 'off' ? 'none' : ariaLive ?? props.accessibilityLiveRegion;
 
@@ -250,6 +261,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
     accessibilityLiveRegion,
     accessibilityState: _accessibilityState,
     focusable: focusable !== false,
+    accessibilityValue,
     hitSlop,
   };
 
